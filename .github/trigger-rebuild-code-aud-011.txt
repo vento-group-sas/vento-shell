@@ -1,0 +1,1 @@
+Trigger temporal para recompilar y validar el plan canónico.
