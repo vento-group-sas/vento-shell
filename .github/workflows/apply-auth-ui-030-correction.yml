@@ -1,0 +1,43 @@
+name: Aplicar corrección AUTH-UI-030
+
+on:
+  push:
+    branches:
+      - fix/auth-ui-030-completeness
+    paths:
+      - scripts/docs/apply-auth-ui-030-correction.mjs
+      - .github/workflows/apply-auth-ui-030-correction.yml
+  pull_request:
+    branches:
+      - main
+    paths:
+      - scripts/docs/apply-auth-ui-030-correction.mjs
+      - .github/workflows/apply-auth-ui-030-correction.yml
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    if: ${{ !contains(github.event.head_commit.message || '', '[auth-ui-030-generated]') }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: fix/auth-ui-030-completeness
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+      - name: Aplicar corrección canónica
+        run: node scripts/docs/apply-auth-ui-030-correction.mjs
+      - name: Validar corrección
+        run: |
+          node scripts/docs/validate-auth-ui-030-read-assignments.mjs
+          node scripts/docs/validate-treq-registry.mjs
+      - name: Confirmar cambios
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "docs: complete AUTH-UI-030 read assignment contract [auth-ui-030-generated]"
+          git push origin HEAD:fix/auth-ui-030-completeness
