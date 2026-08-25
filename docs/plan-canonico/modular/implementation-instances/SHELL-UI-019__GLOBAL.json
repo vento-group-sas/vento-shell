@@ -1,10 +1,67 @@
 {
   "instance_id": "SHELL-UI-019::GLOBAL",
   "task_id": "SHELL-UI-019",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
+  "status": "IN_PROGRESS",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/src/InterruptedProcessState.tsx",
+      "change": "CREATE",
+      "scope": "Materialize the approved InterruptedProcessState as a server-safe presentational surface for an externally reconstructed and classified interrupted process, preserving the seventeen canonical resumption statuses, the seven canonical semantic slots, human interruption summaries and externally supplied controls without deriving authority from checkpoints, URL, client state, claims, custody, retries or business effects."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/src/interrupted-process-state.css",
+      "change": "CREATE",
+      "scope": "Materialize token-based responsive presentation for interrupted-process context, work identity, summary, blocking state, actions and results with reflow, touch-target support and focus reachability, without hidden overflow, hover-only behavior, motion-dependent meaning or device-specific authority."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/scripts/validate-interrupted-process-state.mjs",
+      "change": "CREATE",
+      "scope": "Validate the approved SHELL-UI-019 API, exactly seventeen canonical resumption statuses, six human summary fields, seven semantic slots, the 83 canonical future evidence scenarios, authority and checkpoint boundaries, privacy, accessibility, server-safety, consumer non-migration and immutable adjacent scope."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "packages/ui-web/README.md",
+      "change": "MODIFY",
+      "scope": "Reconcile the private ui-web authoring README through SHELL-UI-019, documenting InterruptedProcessState ownership, status and summary contracts, checkpoint-versus-presentation boundaries, actor/context/claim/custody/result handling, composition boundaries, consumer dispositions, accessibility and deferred exports, releases and migration."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-UI-019__GLOBAL.json",
+      "change": "MODIFY",
+      "scope": "Record authorization, physical lifecycle transitions and consolidated evidence only for SHELL-UI-019::GLOBAL."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Execute npm run quality:repair exactly once after materialization and before IMPLEMENTED; require REPAIR_SCOPE PASS and READY_FOR_VALIDATION SI without editing the repair implementation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:start and docs:implementation:finish for the physical branch lifecycle; do not edit the lifecycle implementation."
+    }
+  ],
+  "validation_commands": [
+    "node packages/ui-web/scripts/validate-interrupted-process-state.mjs",
+    "node node_modules/typescript/bin/tsc --noEmit --strict --skipLibCheck --target ES2022 --module ESNext --moduleResolution Bundler --jsx react-jsx packages/ui-web/src/InterruptedProcessState.tsx",
+    "npm run quality:lint:ratchet",
+    "git --no-pager diff --check"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-08-25T11:52:00-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO, SIGAMOS PERO HAS LAS VALDIACIONEEES, NO QUIERO MAS ERRORES NI EN LOS ARCHIVOS Y MUCHO MENOS EN LOS COMANDOS.",
+    "source_contract_sha256": "5e6be08a6b380f0e9c8bd6e1e5be601bfc550b330ee8cbf5d639d70732d0752b"
+  },
   "evidence": []
 }

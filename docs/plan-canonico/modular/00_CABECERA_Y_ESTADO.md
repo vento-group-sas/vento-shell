@@ -34,11 +34,11 @@
 | Siguiente tarea | **INT-DB-001 — Crear registro de sistemas e integraciones externas** |
 | Bloque actual | **BLOQUE R — Fundación física, migraciones por dominio y normalización** |
 | Progreso del bloque | **BLOQUE R: 42 de 51 aprobadas; DATA-NORM-DB-010 pendiente** |
-| Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
-| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-UI-019::GLOBAL** |
+| Estado de implementación | **GLOBAL_IMPLEMENTATION_ACTIVE** |
+| Acción principal obligatoria | **EJECUTAR_IMPLEMENTACION — SHELL-UI-019::GLOBAL** |
 | Carril documental | **ACTIVO — DATA-NORM-DB-010** |
-| Carril físico | **PENDING_AUTHORIZATION — SHELL-UI-019::GLOBAL** |
-| Alcance físico autorizado | **NINGUNO** |
+| Carril físico | **IN_PROGRESS — SHELL-UI-019::GLOBAL** |
+| Alcance físico autorizado | **SHELL-UI-019::GLOBAL** |
 
 ### Continuidad inmediata
 
@@ -60,7 +60,7 @@
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
 | CONTINUIDAD ACTIVA | **BLOQUE R: 42 DE 51 APROBADAS — ACTUAL DATA-NORM-DB-010** |
-| Implementación física | **SHELL-UI-019::GLOBAL — PENDING_AUTHORIZATION** |
+| Implementación física | **SHELL-UI-019::GLOBAL — IN_PROGRESS** |
 
 ## Reglas de edición
 
