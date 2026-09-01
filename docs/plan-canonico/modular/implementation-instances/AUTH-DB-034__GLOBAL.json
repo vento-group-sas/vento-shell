@@ -1,10 +1,117 @@
 {
   "instance_id": "AUTH-DB-034::GLOBAL",
   "task_id": "AUTH-DB-034",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
+  "status": "IN_PROGRESS",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/AUTH-DB-034__GLOBAL.json",
+      "change": "MODIFY",
+      "scope": "Registrar autorización, lifecycle y evidencia consolidada de AUTH-DB-034::GLOBAL."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/roles.sql",
+      "change": "MODIFY",
+      "scope": "Materializar exclusivamente el owner técnico no interactivo requerido por AUTH-DB-034 sin conceder autoridad empresarial a roles runtime."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql",
+      "change": "CREATE",
+      "scope": "Crear exactamente una migration forward versionada para runtime contracts, resolver registry, dataset registry, evaluator, core, helpers, safe projection, private policy predicate, ACL y RLS defensiva de AUTH-DB-034."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql",
+      "change": "CREATE",
+      "scope": "Crear la batería pgTAP propietaria de AUTH-DB-034 con cobertura mínima de los 154 casos físicos contractuales."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/022_auth_db_003_security_definer_containment.test.sql",
+      "change": "MODIFY",
+      "scope": "Avanzar exclusivamente los ratchets de funciones y SECURITY DEFINER por los objetos nuevos de AUTH-DB-034."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/026_auth_db_018_contract_separation.test.sql",
+      "change": "MODIFY",
+      "scope": "Avanzar exclusivamente los ratchets de rutinas privadas y de la excepción safe API de AUTH-DB-034."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/027_auth_db_017_data_api_privileges.test.sql",
+      "change": "MODIFY",
+      "scope": "Avanzar exclusivamente las aserciones Data API y ACL para api.get_safe_authorization_decision(jsonb)."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/MIGRATION_MANIFEST.md",
+      "change": "MODIFY",
+      "scope": "Regenerar el manifiesto canónico después de incorporar la migration AUTH-DB-034."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/migration-manifest.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Regenerar y validar el manifiesto canónico de migrations."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Ejecutar replay limpio y suite pgTAP local."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/recovery-drill.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Ejecutar recovery drill local gobernado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Certificar drift local estricto."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Ejecutar quality:repair exactamente una vez después de materializar y antes de IMPLEMENTED."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Gobernar apertura y cierre de AUTH-DB-034::GLOBAL."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validar alcance físico contra authorized_changes."
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:migrations:manifest:check",
+    "npm run supabase:db:test:clean",
+    "npm run supabase:recovery:local",
+    "node scripts/supabase/environment-drift.mjs local --strict",
+    "npm run quality:lint:ratchet",
+    "git --no-pager diff --check origin/main...HEAD"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-01T01:25:58.948-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza AUTH-DB-034::GLOBAL hasta VERIFIED y merge para materializar exclusivamente el evaluador canónico de autorización sobre vento.authorization@1.1.0 y contract_release_hash sha256:9e8d1d7452ed5844fa76b9c718e7bb82ae029d6031234b3b6d9a17f22c2a4359; la cardinalidad observada es 140 PermissionKey activos pero no se hardcodea como cardinalidad eterna; no se modifica @vento/contracts, no se persisten AuthorizationDecision, no se implementa simulación, no se reescriben las 181 policies legacy observadas, no se migran consumidores RPC, no se retiran helpers legacy, no se modifica Supabase hosted directamente, no se modifica 04A/TREQ y no se autoriza AUTH-DB-032::GLOBAL.",
+    "source_contract_sha256": "b428724a67032dfd1238e7537679c0bffcf62deddaff440b191c753506e696b7"
+  },
   "evidence": []
 }

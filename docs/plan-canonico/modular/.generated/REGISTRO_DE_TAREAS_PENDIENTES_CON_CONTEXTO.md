@@ -11,7 +11,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `VISO-AUTH-001` — Crear catálogo administrativo de roles base | `VISO-AUTH-002` — Crear catálogo administrativo de roles operativos | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `AUTH-DB-034::GLOBAL` — Implementar evaluate_authorization canónico, su núcleo de evaluación, resolvers de recurso y proyecciones seguras | `AUTH-DB-032::GLOBAL` | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `AUTH-DB-034::GLOBAL` — Implementar evaluate_authorization canónico, su núcleo de evaluación, resolvers de recurso y proyecciones seguras | `AUTH-DB-032::GLOBAL` | Una instancia física activa |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -25,7 +25,7 @@
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-04-G-VISO-CORE` — VISO administrador del modelo y núcleo operativo
 - **Siguiente etapa documental:** `PHASE-04-H2-SHELL-APPLICATION`
-- **Acción física prioritaria:** `AUTORIZAR_IMPLEMENTACION` — `AUTH-DB-034::GLOBAL`
+- **Acción física prioritaria:** `EJECUTAR_IMPLEMENTACION` — `AUTH-DB-034::GLOBAL`
 - **Instancias físicas en espera de predecesora:** **4**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -35,7 +35,7 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **ACTUAL** | `AUTH-DB-034::GLOBAL` | Implementar evaluate_authorization canónico, su núcleo de evaluación, resolvers de recurso y proyecciones seguras | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
+| 1 | **ACTUAL** | `AUTH-DB-034::GLOBAL` | Implementar evaluate_authorization canónico, su núcleo de evaluación, resolvers de recurso y proyecciones seguras | `IN_PROGRESS` | ACTUAL — EJECUTAR_IMPLEMENTACION |
 | 2 | PENDIENTE | `AUTH-DB-032::GLOBAL` | Implementar persistencia canónica y vinculación de decisiones de autorización | `WAITING_FOR_PREVIOUS_INSTANCE` | Debe verificarse primero AUTH-DB-034::GLOBAL. |
 | 3 | PENDIENTE | `AUTH-DB-012::GLOBAL` | Implementar auditoría de cambios de permisos | `WAITING_FOR_PREVIOUS_INSTANCE` | Debe verificarse primero AUTH-DB-034::GLOBAL. |
 | 4 | PENDIENTE | `AUTH-DB-013::GLOBAL` | Implementar auditoría de simulación | `WAITING_FOR_PREVIOUS_INSTANCE` | Debe verificarse primero AUTH-DB-034::GLOBAL. |
