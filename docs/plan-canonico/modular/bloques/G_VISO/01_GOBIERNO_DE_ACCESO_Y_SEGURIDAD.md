@@ -11723,7 +11723,1245 @@ Esta tarea no:
 `VISO-AUTH-015 — Mostrar origen de cada permiso`
 
 
-### [ ] VISO-AUTH-015 — Mostrar origen de cada permiso
+### ✅ VISO-AUTH-015 — Mostrar origen de cada permiso
+
+**Estado:** APROBADA
+**Tarea anterior:** VISO-AUTH-014 — Crear simulador de permisos efectivos
+**Tarea siguiente:** VISO-AUTH-016 — Mostrar conflictos de configuración
+**Tipo de tarea:** documental; definición del contrato administrativo de procedencia de permisos que permite reconstruir, para cada permiso y decisión real o simulada, qué concesiones, denegaciones, carriles, alcances, restricciones y versiones participaron sin convertir la explicación en una segunda fuente de autorización
+**Bloque:** `G_VISO — GOBIERNO DE ACCESO Y SEGURIDAD`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md`
+**Estado físico resultante:** contrato documental definido; materialización física diferida por unidad de implementación
+**Cambios físicos autorizados:** ninguno durante el cierre documental; la materialización futura permanece sujeta a `PER_IMPLEMENTATION_UNIT` y al gate `POST_E5_PACKAGE`
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué significa y cómo debe reconstruirse el **origen de cada permiso** dentro de la administración de seguridad de VISO.
+
+La tarea no crea permisos ni decide autorización. Su responsabilidad es proyectar de forma trazable la explicación de una decisión ya evaluada o de una evaluación simulada ya producida, conservando las fuentes que participaron y evitando respuestas simplificadas como:
+
+```text
+"Tiene permiso por su rol"
+```
+
+cuando la decisión real puede depender simultáneamente de:
+
+```text
+rol base
++
+rol operativo
++
+grant individual
++
+scope
++
+territorio
++
+recurso
++
+deny
++
+estado del carril
++
+restricción de dispositivo
++
+versión contractual
+```
+
+La regla raíz queda:
+
+```text
+ORIGEN DE PERMISO
+=
+EVIDENCIA DE POR QUÉ UNA EVALUACIÓN PRODUJO SU RESULTADO
+```
+
+y nunca:
+
+```text
+ORIGEN DE PERMISO
+=
+NUEVA AUTORIDAD
+```
+
+---
+
+#### 2. Base normativa y fuentes de autoridad
+
+Esta tarea consume decisiones ya aprobadas y no redefine sus contratos.
+
+Fuentes vinculantes:
+
+- `ADR-AUTH-001`;
+- `AUTH-CTX-002` — `AuthorizationDecision` canónica;
+- `AUTH-CTX-003` — `SimulationContext` separado;
+- `AUTH-CTX-004` — versionado de contratos de respuesta;
+- `AUTH-CTX-024` y `AUTH-CTX-030` — correlación y trazabilidad de decisiones;
+- `AUTH-MOD-012` — separación entre simulación y autoridad real;
+- `AUTH-RBAC-020` a `AUTH-RBAC-023` — concesiones, denegaciones, excepciones y dispositivos;
+- `AUTH-SIM-001` a `AUTH-SIM-014` — reglas canónicas de simulación;
+- `VISO-AUTH-003` — permisos por rol base;
+- `VISO-AUTH-004` — permisos por rol operativo;
+- `VISO-AUTH-005` y `VISO-AUTH-006` — disponibilidad territorial;
+- `VISO-AUTH-007` a `VISO-AUTH-012` — perfiles, asignaciones y contexto operativo;
+- `VISO-AUTH-013` — vista previa contextual;
+- `VISO-AUTH-014` — simulación de permisos efectivos;
+- la familia contractual `vento.authorization.response-contracts@1.0.0`;
+- los catálogos y datasets versionados de autorización consumidos por la decisión evaluada.
+
+La fuente de verdad continúa siendo la decisión autoritativa y sus datasets de autorización. VISO únicamente proyecta su procedencia.
+
+---
+
+#### 3. Resultado canónico
+
+VISO deberá poder reconstruir para cada permiso evaluado una explicación que preserve, cuando aplique:
+
+1. identidad exacta de la aplicación;
+2. `permission_key` exacta;
+3. plano `REAL` o `SIMULADO`;
+4. identidad de la decisión;
+5. resultado final;
+6. modalidad de combinación entre carriles;
+7. resultado del carril base;
+8. resultado del carril operativo;
+9. concesiones coincidentes;
+10. denegaciones coincidentes;
+11. bloqueos estructurales;
+12. restricciones territoriales y de recurso;
+13. restricción de dispositivo cuando participe;
+14. versión contractual;
+15. versiones y fingerprints de las fuentes;
+16. momento de evaluación;
+17. frescura de la explicación respecto de la decisión original.
+
+El origen debe ser reconstruible sin volver a evaluar el permiso desde la interfaz.
+
+---
+
+#### 4. Definición contractual de “origen”
+
+El término **origen** se usa en esta tarea para describir la procedencia de una decisión de permiso.
+
+No significa únicamente “de qué tabla salió”.
+
+Deben distinguirse tres capas:
+
+| Capa | Responde | Ejemplos |
+| --- | --- | --- |
+| Identidad del permiso | ¿Qué capacidad exacta se evaluó? | aplicación, `permission_key`, versión del catálogo |
+| Procedencia de autoridad | ¿Qué fuentes aportaron `ALLOW` o `DENY`? | rol base, rol operativo, grant individual, deny aplicable |
+| Condiciones de evaluación | ¿Qué restricciones hicieron aplicable o inaplicable la fuente? | carril, scope, territorio, recurso, dispositivo, vigencia |
+
+La tabla física, vista o función que almacenó una fila es evidencia técnica de procedencia, pero no sustituye la semántica contractual de la fuente.
+
+---
+
+#### 5. Separación entre procedencia y decisión
+
+La explicación deberá conservar simultáneamente:
+
+```text
+FUENTES QUE COINCIDIERON
++
+FUENTES QUE BLOQUEARON
++
+CONDICIONES EVALUADAS
++
+RESULTADO FINAL
+```
+
+Un `ALLOW` no autoriza a esconder las denegaciones evaluadas como no aplicables.
+
+Un `DENY` no autoriza a borrar las concesiones candidatas que fueron superadas por precedencia.
+
+Un estado indeterminado no podrá inventar un grant, deny o rol como causa definitiva.
+
+---
+
+#### 6. Entrada real: AuthorizationDecision
+
+Para decisiones reales, la proyección de origen se alimenta de la `AuthorizationDecision` canónica.
+
+Las colecciones contractuales relevantes son:
+
+```text
+matched_allows
+matched_denies
+structural_denies
+actor_wide_denies
+lane_denies
+blocked_reasons
+combination
+final_decision
+audit
+```
+
+La interfaz administrativa no reconstruirá esas colecciones consultando por separado tablas de roles, perfiles o excepciones.
+
+Cuando no exista una decisión canónica con evidencia suficiente, la procedencia no podrá presentarse como autoritativa.
+
+---
+
+#### 7. Fuentes positivas canónicas
+
+`MatchedGrant` define cuatro clases cerradas de procedencia positiva:
+
+| `source_kind` | Significado administrativo |
+| --- | --- |
+| `BASE_ROLE` | la concesión proviene de la matriz del rol base real |
+| `OPERATIONAL_ROLE` | la concesión proviene de la matriz del rol operativo efectivo |
+| `INDIVIDUAL_BASE` | existe una concesión individual aplicable al carril base |
+| `INDIVIDUAL_OPERATIONAL` | existe una concesión individual aplicable al carril operativo |
+
+No se crearán aliases visuales que cambien estas identidades.
+
+Una etiqueta humana podrá explicar la clase, pero deberá conservar detrás el valor contractual exacto.
+
+---
+
+#### 8. Evidencia mínima de una concesión coincidente
+
+Cuando una concesión coincida, VISO deberá conservar como mínimo los atributos que ya forman parte de `MatchedGrant`:
+
+```text
+grant_id
+lane
+source_kind
+source_subject_id
+permission_key
+effect = ALLOW
+scope_code
+matched_territory
+matched_resource
+validity_status
+source_dataset_id
+source_dataset_version
+```
+
+La explicación no podrá reducir una coincidencia a `role_name`.
+
+`source_subject_id` identifica el sujeto contractual de la fuente; su representación humana no podrá cambiar su identidad.
+
+---
+
+#### 9. Carril de la concesión
+
+Toda concesión positiva pertenece exactamente a:
+
+```text
+BASE
+```
+
+o:
+
+```text
+OPERATIONAL
+```
+
+El carril forma parte del origen.
+
+Por tanto:
+
+```text
+BASE_ROLE
+```
+
+no equivale a:
+
+```text
+OPERATIONAL_ROLE
+```
+
+aunque ambos produzcan un `ALLOW` sobre la misma `permission_key`.
+
+Tampoco se fusionarán concesiones individuales base y operativas bajo una etiqueta genérica “excepción”.
+
+---
+
+#### 10. Fuentes negativas canónicas
+
+`MatchedDeny` clasifica la precedencia negativa mediante:
+
+```text
+STRUCTURAL
+ACTOR_WIDE
+BASE_LANE
+OPERATIONAL_LANE
+DEFAULT
+```
+
+La explicación deberá conservar el `deny_class` exacto.
+
+`source_kind` de un deny se tratará como dato contractual de la decisión evaluada y no se cerrará localmente en VISO con una enumeración inventada.
+
+---
+
+#### 11. Evidencia mínima de una denegación coincidente
+
+Para un deny coincidente deberán preservarse, como mínimo:
+
+```text
+deny_id
+deny_class
+lane
+permission_key
+source_kind
+matched_actor
+matched_resource
+matched_territory
+matched_validity
+reason_code
+```
+
+Una denegación no se explicará únicamente con texto libre.
+
+El `reason_code` y la clase permiten distinguir una prohibición real de una ausencia de concesión.
+
+---
+
+#### 12. Default deny
+
+`DEFAULT` es una causa de resultado, no una concesión negativa inventada.
+
+Cuando no exista una concesión suficiente y la política produzca denegación por defecto, VISO deberá mostrar que:
+
+```text
+no existe ALLOW suficiente
++
+la política canónica es fail closed
+→
+DENY por defecto
+```
+
+No deberá mostrarse:
+
+```text
+"denegado por el rol"
+```
+
+si no existe un deny explícito proveniente del rol.
+
+Ausencia de grant y deny explícito son hechos diferentes.
+
+---
+
+#### 13. Concesión candidata superada por deny
+
+La procedencia no se reduce al último elemento que “ganó”.
+
+Caso conceptual:
+
+```text
+grant coincidente
++
+deny aplicable de mayor precedencia
+→
+DENY
+```
+
+La explicación deberá conservar:
+
+- la concesión candidata;
+- su carril;
+- su scope;
+- la denegación que prevaleció;
+- el `reason_code`;
+- el resultado final.
+
+Esto permite distinguir “nunca tuvo una concesión” de “existía una concesión pero una prohibición aplicable prevaleció”.
+
+---
+
+#### 14. Modalidad de autorización
+
+La procedencia deberá conservar la modalidad contractual evaluada:
+
+```text
+BASE_ONLY
+OPERATIONAL_ONLY
+BASE_OR_OPERATIONAL
+BASE_AND_OPERATIONAL
+```
+
+La modalidad determina qué carriles participan.
+
+No se podrá presentar un permiso como originado únicamente en el carril que produjo `ALLOW` si la modalidad exigía además un segundo carril que terminó en `DENY` o estado no resoluble.
+
+---
+
+#### 15. Resultado por carril
+
+Para cada permiso deberá distinguirse:
+
+```text
+resultado del carril BASE
+resultado del carril OPERATIONAL
+resultado final combinado
+```
+
+Un carril no requerido no se interpreta como denegado.
+
+Un carril requerido pero no resoluble no se interpreta como ausente.
+
+La explicación deberá conservar la diferencia entre:
+
+```text
+NO REQUERIDO
+DENEGADO
+NO RESOLUBLE
+PERMITIDO
+```
+
+sin convertir esos estados en nuevos códigos de autorización.
+
+---
+
+#### 16. Scope no equivale a origen
+
+El `scope_code` delimita la concesión; no constituye por sí solo su procedencia.
+
+La explicación debe poder responder por separado:
+
+```text
+¿quién o qué aportó la concesión?
+```
+
+y:
+
+```text
+¿hasta dónde aplica?
+```
+
+Ejemplo conceptual:
+
+```text
+source_kind = BASE_ROLE
+scope_code = alcance territorial concreto
+```
+
+El origen sigue siendo el rol base; el scope define su límite.
+
+---
+
+#### 17. Territorio y recurso
+
+`matched_territory` y `matched_resource` forman parte de la evidencia de aplicabilidad.
+
+Una concesión existente cuyo territorio no coincide no debe mostrarse como permiso efectivo.
+
+Una concesión existente cuyo recurso no coincide no debe mostrarse como permiso efectivo.
+
+La interfaz podrá mostrarla como fuente evaluada solo cuando la decisión canónica la conserve como tal; no deberá inferir coincidencias consultando matrices por su cuenta.
+
+---
+
+#### 18. Vigencia
+
+Una fuente histórica, vencida, retirada o incompatible no podrá presentarse como origen vigente de autoridad.
+
+La explicación deberá conservar la vigencia reportada por la decisión y las versiones de dataset utilizadas.
+
+Cuando el estado actual haya cambiado después del `decided_at`, la explicación se presentará como evidencia histórica de esa decisión y no como garantía del permiso actual.
+
+---
+
+#### 19. Grants individuales
+
+Las concesiones individuales solo podrán mostrarse como origen cuando la evaluación canónica las haya reconocido mediante:
+
+```text
+INDIVIDUAL_BASE
+```
+
+o:
+
+```text
+INDIVIDUAL_OPERATIONAL
+```
+
+La existencia de una fila individual no implica que haya sido efectiva.
+
+VISO no convertirá una concesión individual vencida, fuera de alcance o derrotada por una denegación en “permiso directo”.
+
+---
+
+#### 20. Frontera frente a VISO-AUTH-017
+
+`VISO-AUTH-015` puede **mostrar** que una concesión individual participó en el resultado.
+
+No puede:
+
+- crearla;
+- editarla;
+- aprobarla;
+- extenderla;
+- revocarla;
+- cambiar su vigencia;
+- cambiar su scope;
+- cambiar su motivo;
+- eliminar una denegación que la bloquea.
+
+La administración de excepciones individuales permanece reservada a `VISO-AUTH-017`.
+
+---
+
+#### 21. Bloqueos estructurales
+
+`structural_denies` y `blocked_reasons` no se transformarán en permisos ni grants ficticios.
+
+Cuando una evaluación falle por identidad, contexto, versión, recurso u otra condición estructural, VISO deberá mostrar la causa como bloqueo de evaluación.
+
+Regla:
+
+```text
+PROBLEMA ESTRUCTURAL
+≠
+ORIGEN POSITIVO
+≠
+DENY INVENTADO POR LA UI
+```
+
+---
+
+#### 22. Dispositivo
+
+El dispositivo puede limitar una decisión, pero su mera presencia no constituye una concesión humana.
+
+La explicación deberá separar:
+
+```text
+fuente de autoridad del actor
+```
+
+de:
+
+```text
+restricción o techo del dispositivo
+```
+
+Un dispositivo compartido no se presentará como “rol que dio el permiso”.
+
+Si la decisión fue restringida por el dispositivo, esa restricción deberá conservarse como condición de evaluación.
+
+---
+
+#### 23. Identidad del permiso
+
+Toda explicación se vinculará a una `permission_key` canónica exacta y a la aplicación evaluada.
+
+Una descripción humana, etiqueta de módulo, nombre de pantalla o texto traducido no sustituye la identidad contractual.
+
+La explicación podrá mostrar un nombre legible, pero deberá ser posible reconstruir:
+
+```text
+app_code + permission_key
+```
+
+sin ambigüedad.
+
+---
+
+#### 24. Una explicación por permiso evaluado
+
+No se permite construir una sola etiqueta de origen para todo un trabajador, rol, aplicación o módulo.
+
+Cada `permission_key` conserva su propia explicación.
+
+Dos permisos visibles en la misma pantalla pueden tener:
+
+- fuentes distintas;
+- carriles distintos;
+- scopes distintos;
+- denies distintos;
+- recursos distintos;
+- resultados distintos.
+
+---
+
+#### 25. Múltiples fuentes positivas
+
+Un permiso puede contener más de una concesión coincidente.
+
+VISO deberá conservar todas las coincidencias entregadas por la decisión autoritativa.
+
+No se elegirá silenciosamente una “fuente principal” por:
+
+- orden de consulta;
+- orden visual;
+- rol con mayor jerarquía;
+- primera fila;
+- mayor scope;
+- coincidencia de nombre.
+
+Si la experiencia posterior necesita destacar una fuente, deberá hacerlo sin ocultar las demás.
+
+---
+
+#### 26. Múltiples fuentes negativas
+
+Una decisión puede contener más de una denegación relevante.
+
+Todas las coincidencias conservadas por la decisión deberán permanecer reconstruibles.
+
+La explicación no podrá borrar una denegación estructural porque exista además un deny de carril ni reemplazar varios `reason_code` por una frase genérica.
+
+La precedencia pertenece al evaluador canónico, no a la UI.
+
+---
+
+#### 27. Plano simulado
+
+Para evaluaciones de `VISO-AUTH-014`, el origen se deriva del resultado simulado y nunca se mezcla con autoridad real.
+
+`SimulationMatch` conserva:
+
+```text
+effect
+lane
+provenance
+source_id
+```
+
+`provenance` admite exactamente:
+
+```text
+VIGENTE
+PROPUESTA
+SINTÉTICA
+```
+
+La explicación deberá hacer inequívoca esa procedencia.
+
+---
+
+#### 28. Procedencia simulada
+
+En un escenario simulado:
+
+```text
+VIGENTE
+```
+
+significa que la fuente hipotética parte de una condición real vigente incorporada al escenario.
+
+```text
+PROPUESTA
+```
+
+significa que la fuente proviene del cambio que se está evaluando.
+
+```text
+SINTÉTICA
+```
+
+significa que la fuente pertenece exclusivamente al escenario hipotético.
+
+Ninguna de las tres etiquetas convierte el resultado en autoridad real.
+
+---
+
+#### 29. source_id nulo en simulación
+
+`SimulationMatch.source_id` puede ser `null`.
+
+La ausencia de `source_id` no autoriza a VISO a inventar una fila física.
+
+Cuando el contrato permite una fuente sintética o derivada sin identificador persistido, deberá mostrarse como tal.
+
+Regla:
+
+```text
+source_id = null
+≠
+fuente desconocida reparable por la UI
+```
+
+---
+
+#### 30. Resultado simulado
+
+El plano simulado conserva únicamente:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+La explicación de origen deberá utilizar esos resultados.
+
+Queda prohibido renombrarlos visual o contractualmente como:
+
+```text
+ALLOW
+DENY
+AUTORIZADO
+BLOQUEADO REAL
+```
+
+sin una marca inequívoca de simulación.
+
+---
+
+#### 31. Separación real / simulada
+
+Una misma pantalla futura podrá comparar estado vigente y escenario propuesto, pero las procedencias deben permanecer físicamente distinguibles en los datos consumidos.
+
+No se mezclarán en una sola colección:
+
+- grants reales;
+- matches hipotéticos;
+- denies reales;
+- denies hipotéticos;
+- identificadores de decisión real;
+- identificadores de decisión simulada.
+
+Una fuente propuesta nunca aparecerá como grant vigente.
+
+---
+
+#### 32. Frescura y snapshot
+
+Toda explicación está ligada al snapshot de la decisión que la produjo.
+
+Como mínimo deberán conservarse:
+
+```text
+decision_id o simulated_decision_id
+decided_at o evaluated_at
+contract_version
+catalog_version cuando aplique
+source_dataset_id
+source_dataset_version
+fingerprints disponibles
+```
+
+Un cambio posterior en rol, turno, área, perfil, grant, deny, recurso, dispositivo o versión puede volver obsoleta la explicación.
+
+VISO deberá volver a evaluar cuando necesite representar autoridad actual.
+
+---
+
+#### 33. Explicación histórica versus autoridad actual
+
+Una decisión antigua puede seguir siendo válida como evidencia histórica.
+
+No necesariamente sigue siendo válida como descripción del permiso actual.
+
+La interfaz futura deberá distinguir conceptualmente:
+
+```text
+"por qué esta decisión fue tomada"
+```
+
+de:
+
+```text
+"qué permiso tiene ahora"
+```
+
+La primera puede usar el snapshot histórico.
+
+La segunda exige una evaluación vigente.
+
+---
+
+#### 34. Minimización de información
+
+Mostrar origen no autoriza a revelar datos que el actor administrador no puede consultar.
+
+La explicación deberá minimizar:
+
+- identificadores personales innecesarios;
+- motivos disciplinarios sensibles;
+- datos médicos;
+- secretos;
+- tokens;
+- payloads completos;
+- datos de otro trabajador fuera de alcance;
+- detalles internos de controles que faciliten evasión.
+
+La minimización no puede falsificar el resultado.
+
+Cuando un detalle no pueda exponerse, debe conservarse una explicación segura suficiente para distinguir:
+
+```text
+fuente visible
+fuente restringida
+resultado final
+```
+
+sin revelar el contenido protegido.
+
+---
+
+#### 35. Autorización para consultar procedencia
+
+La capacidad de administrar permisos y la capacidad de ver información sensible de procedencia no se asumirán equivalentes por nombre de pantalla.
+
+La futura implementación deberá validar en servidor:
+
+- acceso a VISO;
+- permiso exacto de consulta aplicable;
+- territorio del actor;
+- relación con el sujeto consultado;
+- sensibilidad del detalle;
+- contexto real del solicitante.
+
+Un selector de trabajador, query string o dato enviado por cliente no ampliará el alcance.
+
+---
+
+#### 36. Reconciliación AS-IS de VISO
+
+El VISO actual ya posee una superficie `roles-permissions` que:
+
+- lista roles activos;
+- lista permisos configurables;
+- lee filas de `role_permissions`;
+- permite registrar `is_allowed`;
+- permite scopes `global`, `site`, `site_type`, `area` y `area_kind`;
+- utiliza una acción administrativa de servidor para escribir y retirar filas.
+
+Esa superficie administra configuración por rol.
+
+No constituye todavía una proyección del **origen efectivo por trabajador y permiso** porque no parte de una `AuthorizationDecision` completa ni materializa simultáneamente:
+
+- `matched_allows`;
+- `matched_denies`;
+- combinación entre carriles;
+- bloqueos estructurales;
+- procedencia simulada;
+- snapshot de decisión.
+
+Por tanto:
+
+```text
+fila de role_permissions
+≠
+origen efectivo completo
+```
+
+---
+
+#### 37. Reconciliación con contratos físicos compartidos
+
+La familia compartida `vento.authorization.response-contracts@1.0.0` ya materializa contratos físicos para `AccessContextV1`, `SimulationContextV1` y `SimulatedAuthorizationDecisionV1`.
+
+La instancia física aprobada de `SHELL-CON-007` excluyó expresamente la materialización del `AuthorizationDecisionV1` completo.
+
+Consecuencia:
+
+- la definición documental de origen real puede cerrarse ahora;
+- la futura unidad física de VISO no podrá asumir que el contrato real completo ya está publicado y consumible;
+- antes de materializar esta tarea deberá comprobarse la dependencia física propietaria de la decisión real;
+- no se crea aquí un contrato paralelo para compensar esa dependencia.
+
+Esta diferencia no bloquea el cierre documental.
+
+---
+
+#### 38. Proyección administrativa conceptual
+
+La futura materialización podrá utilizar una proyección equivalente a:
+
+```ts
+type PermissionOriginProjection = {
+  plane: "REAL" | "SIMULATED";
+  app_code: string;
+  permission_key: string;
+
+  decision_reference: string;
+  evaluated_at: string;
+  result: string;
+  authorization_requirement: string | null;
+
+  base_result: string | null;
+  operational_result: string | null;
+
+  allow_sources: unknown[];
+  deny_sources: unknown[];
+  blocked_reasons: unknown[];
+
+  contract_version: string;
+  source_versions: Record<string, string>;
+};
+```
+
+Esta forma es únicamente documental y no crea un nuevo contrato público.
+
+Los elementos internos de `allow_sources`, `deny_sources` y `blocked_reasons` deberán conservar las estructuras canónicas del evaluador aplicable; no se reemplazarán por tipos locales incompatibles.
+
+---
+
+#### 39. Separación frente a VISO-UX-014
+
+Esta tarea define **semántica, procedencia, identidad y límites de los datos**.
+
+No define la experiencia visual final de explicación.
+
+`VISO-UX-014 — Mostrar origen de permisos de forma comprensible` es responsable posteriormente de decidir, entre otros:
+
+- jerarquía visual;
+- lenguaje humano;
+- niveles de detalle;
+- expansión o colapso;
+- iconografía;
+- microcopy;
+- accesibilidad;
+- comparación visual entre fuentes.
+
+La UX no podrá cambiar la semántica fijada aquí.
+
+---
+
+#### 40. Separación frente a VISO-AUTH-016
+
+`VISO-AUTH-015` explica el origen de una decisión o permiso evaluado.
+
+No construye el inventario transversal de configuraciones incompatibles.
+
+Ejemplos reservados a `VISO-AUTH-016`:
+
+- grants contradictorios entre fuentes;
+- configuración imposible;
+- duplicados incompatibles;
+- matrices que producen conflicto sistémico;
+- combinaciones administrativas que deben impedir un guardado.
+
+Esta tarea puede mostrar denies o bloqueos que ya participaron en una decisión sin convertirlos en un motor de detección global de conflictos.
+
+---
+
+#### 41. Separación frente a VISO-AUTH-018
+
+La procedencia usa evidencia de auditoría para ser reconstruible.
+
+No administra el sistema de auditoría.
+
+`VISO-AUTH-018` permanece responsable de la experiencia administrativa y cobertura de cambios de seguridad.
+
+Esta tarea no crea logs, retención, exportes ni políticas de almacenamiento.
+
+---
+
+#### 42. Separación frente a VISO-AUTH-019 y VISO-AUTH-020
+
+`VISO-AUTH-019` determina quién puede administrar seguridad.
+
+`VISO-AUTH-020` define el exporte de la matriz de acceso.
+
+La procedencia definida aquí no:
+
+- concede privilegios administrativos;
+- convierte una explicación en capacidad de edición;
+- crea un exporte;
+- sustituye el control de lectura del exporte;
+- autoriza acceso masivo a fuentes sensibles.
+
+---
+
+#### 43. Handoff recibido de VISO-AUTH-014
+
+`VISO-AUTH-014` entrega evaluaciones simuladas separadas del plano real.
+
+Esta tarea recibe, cuando aplique:
+
+```text
+simulation_id
+simulated_decision_id
+permission_key
+base_result
+operational_result
+matched_hypothetical_allows
+matched_hypothetical_denies
+blocked_reasons
+final_result
+provenance
+versiones
+```
+
+La tarea no vuelve a ejecutar la simulación para explicar el resultado.
+
+---
+
+#### 44. Handoff a VISO-AUTH-016
+
+`VISO-AUTH-016` recibirá una procedencia ya tipada y separada.
+
+Podrá utilizar como evidencia:
+
+- fuentes positivas;
+- fuentes negativas;
+- carriles;
+- scopes;
+- resultados;
+- bloqueos;
+- versiones;
+- plano real o simulado.
+
+No podrá reinterpretar una fuente como conflicto únicamente por existir más de una coincidencia.
+
+La existencia de múltiples grants o denies es evidencia; la clasificación de conflicto pertenece a la tarea siguiente.
+
+---
+
+#### 45. Casos mínimos que la procedencia deberá distinguir
+
+| Caso | Explicación exigida |
+| --- | --- |
+| Un único grant base válido | identifica `BASE_ROLE`, sujeto fuente, scope, dataset y resultado |
+| Un único grant operativo válido | identifica `OPERATIONAL_ROLE`, carril, contexto y resultado |
+| Grant individual base | identifica `INDIVIDUAL_BASE` sin ocultarlo como rol |
+| Grant individual operativo | identifica `INDIVIDUAL_OPERATIONAL` sin ocultarlo como rol |
+| Grant válido + deny superior | conserva ambos y muestra que el deny prevalece |
+| Sin grant suficiente | explica default deny sin inventar una fuente |
+| Scope no coincidente | separa existencia de grant de aplicabilidad territorial |
+| Recurso no coincidente | separa existencia de grant de aplicabilidad sobre recurso |
+| Contexto estructural inválido | muestra bloqueo sin inventar grant o deny |
+| Dos grants coincidentes | conserva ambos |
+| Dos denies coincidentes | conserva ambos |
+| Simulación vigente | conserva `VIGENTE` |
+| Cambio propuesto | conserva `PROPUESTA` |
+| Escenario sintético | conserva `SINTÉTICA` |
+| Simulación indeterminada | no declara origen efectivo real |
+| Snapshot histórico | no lo presenta como autoridad actual |
+
+---
+
+#### 46. Reglas de consistencia y fallo cerrado
+
+La procedencia será no conforme cuando:
+
+1. el permiso no tenga identidad exacta;
+2. una decisión real no pueda correlacionarse con su `decision_id`;
+3. una simulación no pueda correlacionarse con su decisión simulada;
+4. una fuente positiva pierda `source_kind`;
+5. una fuente positiva pierda su carril;
+6. un deny pierda `deny_class`;
+7. un `reason_code` sea sustituido únicamente por texto libre;
+8. se fusione BASE con OPERATIONAL;
+9. se convierta ausencia de grant en deny explícito;
+10. se convierta un scope en fuente de autoridad;
+11. se convierta un dispositivo en rol;
+12. se convierta una propuesta simulada en grant real;
+13. se descarte una fuente coincidente para simplificar la UI;
+14. se use el estado actual para reescribir una explicación histórica;
+15. una versión incompatible se presente como explicación vigente;
+16. la UI reconstruya autoridad desde tablas parciales cuando falta una decisión canónica.
+
+Ante esos casos:
+
+```text
+EXPLICACIÓN NO AUTORITATIVA
+```
+
+y nunca una procedencia inventada.
+
+---
+
+#### 47. Invariantes
+
+1. El origen explica una decisión; no la concede.
+2. Cada permiso conserva identidad exacta.
+3. La procedencia positiva usa las cuatro clases canónicas de `MatchedGrant`.
+4. La procedencia negativa conserva las cinco clases de `MatchedDeny`.
+5. `source_kind` de deny no se restringe mediante una enumeración local inventada.
+6. BASE y OPERATIONAL permanecen separados.
+7. `BASE_AND_OPERATIONAL` conserva ambos carriles.
+8. Scope y origen son dimensiones distintas.
+9. Territorio y recurso condicionan aplicabilidad.
+10. Ausencia de grant no equivale a deny explícito.
+11. Un grant vencido no se presenta como origen vigente.
+12. Un grant individual no se disfraza como permiso del rol.
+13. Una excepción individual puede mostrarse, pero no administrarse aquí.
+14. Los denies prevalecen conforme al evaluador canónico.
+15. VISO no calcula precedencia propia.
+16. Las fuentes múltiples no se reducen silenciosamente.
+17. Los bloqueos estructurales no se convierten en grants o denies ficticios.
+18. El dispositivo limita; no crea autoridad humana.
+19. La explicación real consume una decisión real.
+20. La explicación simulada consume una decisión simulada.
+21. `VIGENTE`, `PROPUESTA` y `SINTÉTICA` permanecen diferenciadas.
+22. `WOULD_ALLOW` nunca se presenta como `ALLOW`.
+23. El snapshot histórico no se presenta como autoridad actual.
+24. Versiones y tiempos permanecen correlacionables.
+25. La minimización no falsifica el resultado.
+26. La lectura de procedencia se autoriza en servidor.
+27. La superficie AS-IS de `role_permissions` no se declara equivalente al origen efectivo.
+28. No se crea un nuevo contrato público.
+29. `VISO-UX-014` conserva la propiedad de la presentación comprensible.
+30. `VISO-AUTH-016` conserva la propiedad de los conflictos.
+31. `VISO-AUTH-017` conserva la administración de excepciones.
+32. `VISO-AUTH-018` conserva la administración de auditoría.
+33. La materialización física permanece detrás de `POST_E5_PACKAGE`.
+
+---
+
+#### 48. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La obligación de indicar el origen de cada permiso, conservar resultados coherentes entre evaluadores, respetar alcance y preservar evidencia correlacionable ya está registrada en el catálogo vigente.
+
+Esta tarea desarrolla la semántica administrativa de esa cobertura existente sin introducir una nueva capacidad, resultado de autorización, clase de grant, clase de deny, estado de negocio ni transición.
+
+---
+
+#### 49. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, se reutiliza:
+
+- `TREQ-VISO-001` — la administración de seguridad debe indicar el origen de cada permiso y producir el mismo resultado consumido por las aplicaciones operativas;
+- `TREQ-AUTH-001` — una lista local de nombres de rol no puede conceder autorización final;
+- `TREQ-AUTH-004` — evaluadores equivalentes deben producir la misma decisión y razones equivalentes;
+- `TREQ-AUTH-007` — la administración de permisos debe validar capacidad administrativa y territorio;
+- `TREQ-AUTH-008` — las capacidades base y operativas conservan sus requisitos de contexto y carril;
+- `TREQ-AUTH-009` — sede y área se resuelven determinísticamente;
+- `TREQ-AUTH-012` — simulación y autoridad real permanecen separadas;
+- `TREQ-AUTH-014` — cambios de contexto invalidan decisiones derivadas;
+- `TREQ-AUTH-015` — toda decisión y acción protegida conserva evidencia correlacionable de contexto, permiso, recurso, resultado, razones, versión y tiempo.
+
+Estas referencias son trazabilidad heredada. No cambian contenido, estado, paquete, evidencia ni secuencia de ningún requisito.
+
+---
+
+#### 50. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La definición documental no ejecutó build del checkout local propietario. |
+| LOCAL | NOT_EXECUTED | La tarea todavía no fue insertada, normalizada ni validada en la rama documental local. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, protocolo, contrato de entrega, topología, políticas de tarea, VISO-AUTH-014, 04A aplicable, contratos de `AuthorizationDecision` y simulación, materialización de response-contracts y la superficie AS-IS de `roles-permissions` en VISO. |
+| OPERATIVA | NOT_APPLICABLE | No se modificaron trabajadores, roles, permisos, grants, denies, scopes, perfiles, turnos, simulaciones ni configuraciones reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código de VISO, Supabase, contratos físicos, migraciones, RPC, RLS, datos, packages ni despliegues. |
+
+---
+
+#### 51. Criterios de aceptación
+
+- [ ] Cada explicación corresponde a una `permission_key` exacta.
+- [ ] El plano real y el plano simulado permanecen separados.
+- [ ] Una decisión real conserva su referencia de decisión.
+- [ ] Una decisión simulada conserva su referencia de decisión simulada.
+- [ ] Las fuentes positivas conservan `grant_id`.
+- [ ] Las fuentes positivas conservan carril.
+- [ ] Las fuentes positivas conservan `source_kind`.
+- [ ] Se preservan `BASE_ROLE`, `OPERATIONAL_ROLE`, `INDIVIDUAL_BASE` e `INDIVIDUAL_OPERATIONAL`.
+- [ ] Las fuentes positivas conservan `source_subject_id`.
+- [ ] Las fuentes positivas conservan `scope_code`.
+- [ ] Las fuentes positivas conservan coincidencia de territorio y recurso.
+- [ ] Las fuentes positivas conservan dataset y versión.
+- [ ] Las fuentes negativas conservan `deny_id`.
+- [ ] Las fuentes negativas conservan `deny_class`.
+- [ ] Se preservan `STRUCTURAL`, `ACTOR_WIDE`, `BASE_LANE`, `OPERATIONAL_LANE` y `DEFAULT`.
+- [ ] `source_kind` de deny no se restringe mediante una enumeración local inventada.
+- [ ] Los denies conservan actor, recurso, territorio, vigencia y `reason_code`.
+- [ ] Default deny se distingue de deny explícito.
+- [ ] La ausencia de grant no se presenta como deny de rol.
+- [ ] Un grant candidato superado por deny permanece visible en la explicación.
+- [ ] La modalidad `BASE_ONLY` conserva solo el carril requerido.
+- [ ] La modalidad `OPERATIONAL_ONLY` conserva solo el carril requerido.
+- [ ] `BASE_OR_OPERATIONAL` conserva el resultado de ambos carriles participantes.
+- [ ] `BASE_AND_OPERATIONAL` conserva la doble condición.
+- [ ] Un carril no requerido no se presenta como denegado.
+- [ ] Scope se mantiene separado del origen.
+- [ ] Territorio se mantiene separado del origen.
+- [ ] Recurso se mantiene separado del origen.
+- [ ] Un grant fuera de scope no se presenta como permiso efectivo.
+- [ ] Un grant sobre recurso no coincidente no se presenta como permiso efectivo.
+- [ ] Un grant individual no se disfraza como concesión de rol.
+- [ ] Esta tarea no administra excepciones individuales.
+- [ ] Los bloqueos estructurales permanecen separados de grants y denies.
+- [ ] El dispositivo no se presenta como rol ni fuente humana de autoridad.
+- [ ] Cada permiso puede conservar múltiples fuentes positivas.
+- [ ] Cada permiso puede conservar múltiples fuentes negativas.
+- [ ] No se selecciona una fuente principal por jerarquía ni orden de consulta.
+- [ ] `VIGENTE`, `PROPUESTA` y `SINTÉTICA` permanecen diferenciadas.
+- [ ] `source_id = null` en simulación no produce una fuente persistida inventada.
+- [ ] `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE` permanecen como resultados simulados.
+- [ ] Una fuente propuesta no aparece como grant real.
+- [ ] La explicación conserva versiones y timestamp.
+- [ ] Una explicación histórica no se presenta como autoridad actual.
+- [ ] Cambios posteriores fuerzan nueva evaluación para representar autoridad vigente.
+- [ ] La información sensible se minimiza sin falsificar el resultado.
+- [ ] La consulta de procedencia se protege en servidor.
+- [ ] La superficie AS-IS de `roles-permissions` se reconoce como configuración por rol y no como origen efectivo completo.
+- [ ] La materialización parcial de response-contracts no se interpreta como disponibilidad del `AuthorizationDecisionV1` físico completo.
+- [ ] No se crea un contrato público paralelo.
+- [ ] La semántica queda separada de la presentación reservada a `VISO-UX-014`.
+- [ ] Los conflictos transversales permanecen reservados a `VISO-AUTH-016`.
+- [ ] Las excepciones individuales permanecen reservadas a `VISO-AUTH-017`.
+- [ ] La auditoría administrativa permanece reservada a `VISO-AUTH-018`.
+- [ ] Se conservan cero cambios al Registro Canónico de Requisitos de Prueba.
+- [ ] La materialización física permanece detrás de `POST_E5_PACKAGE`.
+
+---
+
+#### 52. Límites
+
+Esta tarea no:
+
+- modifica código de VISO;
+- modifica Supabase;
+- modifica `role_permissions`;
+- modifica roles base;
+- modifica roles operativos;
+- modifica grants individuales;
+- modifica denies;
+- modifica scopes;
+- modifica sedes;
+- modifica áreas;
+- modifica perfiles operativos;
+- modifica turnos;
+- modifica check-ins;
+- crea excepciones;
+- administra excepciones;
+- ejecuta simulaciones;
+- cambia resultados de simulación;
+- crea `AuthorizationDecisionV1` físico;
+- modifica `AccessContextV1`;
+- modifica `SimulationContextV1`;
+- modifica `SimulatedAuthorizationDecisionV1`;
+- crea un nuevo contrato público;
+- crea RPC;
+- crea RLS;
+- crea vistas SQL;
+- crea migraciones;
+- ejecuta SQL de escritura;
+- crea un motor de conflictos;
+- define la UX final de explicación;
+- implementa auditoría física;
+- cambia quién administra seguridad;
+- crea exportes;
+- selecciona package;
+- prepara o aprueba package gate;
+- autoriza ni ejecuta implementación física.
+
+La identidad exacta de la futura unidad física se resolverá exclusivamente mediante el package y gate aplicables.
+
+---
+
+#### 53. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`VISO-AUTH-014 — Crear simulador de permisos efectivos`
+
+**TAREA ACTUAL APROBADA**
+`VISO-AUTH-015 — Mostrar origen de cada permiso`
+
+**SIGUIENTE TAREA RESERVADA**
+`VISO-AUTH-016 — Mostrar conflictos de configuración`
+
+
 ### [ ] VISO-AUTH-016 — Mostrar conflictos de configuración
 ### [ ] VISO-AUTH-017 — Administrar excepciones individuales
 ### [ ] VISO-AUTH-018 — Auditar cambios de seguridad

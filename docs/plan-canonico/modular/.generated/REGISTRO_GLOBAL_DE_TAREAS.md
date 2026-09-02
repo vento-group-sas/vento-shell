@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1105** |
+| Aprobadas | **1106** |
 | En propuesta | **0** |
-| No iniciadas | **491** |
+| No iniciadas | **490** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **69.24% (1105/1596)** |
+| Porcentaje de completamiento | **69.30% (1106/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `VISO-AUTH-014` — Crear simulador de permisos efectivos | ✅ APROBADA |
-| Tarea actual | `VISO-AUTH-015` — Mostrar origen de cada permiso | ⬜ NO INICIADA |
-| Siguiente reservada | `VISO-AUTH-016` — Mostrar conflictos de configuración | ⬜ NO INICIADA |
+| Última aprobada | `VISO-AUTH-015` — Mostrar origen de cada permiso | ✅ APROBADA |
+| Tarea actual | `VISO-AUTH-016` — Mostrar conflictos de configuración | ⬜ NO INICIADA |
+| Siguiente reservada | `VISO-AUTH-017` — Administrar excepciones individuales | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -648,7 +648,7 @@
 | ✅ APROBADA | `VISO-AUTH-012` | Validar turnos con área incompatible | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
 | ✅ APROBADA | `VISO-AUTH-013` | Crear vista previa trabajador × sede × área × turno | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
 | ✅ APROBADA | `VISO-AUTH-014` | Crear simulador de permisos efectivos | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
-| ⬜ NO INICIADA | `VISO-AUTH-015` | Mostrar origen de cada permiso | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
+| ✅ APROBADA | `VISO-AUTH-015` | Mostrar origen de cada permiso | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
 | ⬜ NO INICIADA | `VISO-AUTH-016` | Mostrar conflictos de configuración | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
 | ⬜ NO INICIADA | `VISO-AUTH-017` | Administrar excepciones individuales | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |
 | ⬜ NO INICIADA | `VISO-AUTH-018` | Auditar cambios de seguridad | `bloques/G_VISO/01_GOBIERNO_DE_ACCESO_Y_SEGURIDAD.md` |

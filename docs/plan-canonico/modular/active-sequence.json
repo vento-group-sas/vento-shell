@@ -5,14 +5,14 @@
   "sequence_id": "PHASE-04-G-VISO-CORE",
   "block_code": "BLOQUES G Y G2",
   "block_title": "VISO administrador del modelo y núcleo operativo",
-  "previous_task_id": "VISO-AUTH-014",
+  "previous_task_id": "VISO-AUTH-015",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "SHELL-APP-001",
   "handoff_sequence_id": "PHASE-04-H2-SHELL-APPLICATION",
   "segments": [
     {
       "prefix": "VISO-AUTH",
-      "from": 15,
+      "from": 16,
       "to": 20
     },
     {
@@ -23,12 +23,12 @@
   ],
   "block_progress": {
     "total_tasks": 26,
-    "approved_tasks": 14,
-    "pending_tasks": 12
+    "approved_tasks": 15,
+    "pending_tasks": 11
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 491,
+    "pending_tasks": 490,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 16
