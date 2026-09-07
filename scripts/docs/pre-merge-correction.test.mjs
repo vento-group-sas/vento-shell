@@ -103,6 +103,52 @@ test('validación global admite registro en main y autorización con los TREQ re
   assert.throws(() => validate({ ...f.record, correction_type: 'DOCUMENTARY', target_instance_id: null }), /DOCUMENTARY/u);
 });
 
+test('ignora cambios de main ya presentes al registrar una corrección pre-merge', (t) => {
+  const f = fixture(t);
+  f.write('scripts/docs/transversal.mjs', 'export const lifecycle = 1;\n');
+  const registrationBase = f.commit(
+    'publish transversal before correction registration',
+    ['scripts/docs/transversal.mjs'],
+  );
+  const integration = buildPreMergeIntegration({
+    root: f.root,
+    state: { ...pr, headRefOid: f.anchor },
+    targetInstanceId: instanceId,
+  });
+  const record = {
+    ...f.record,
+    integration,
+    baseline: {
+      ...f.record.baseline,
+      main_commit: registrationBase,
+    },
+  };
+  f.write(f.recordPath, record);
+  f.commit('register correction after transversal', [f.recordPath]);
+  f.git('update-ref', 'refs/remotes/origin/main', 'HEAD');
+
+  f.git('switch', '-c', 'correction/shell-ci-020/corr-001');
+  f.git('merge', '--no-ff', '--no-edit', f.anchor);
+  f.write('src/function.ts', 'export const value = 2;\n');
+  f.commit('remove unused declaration', ['src/function.ts']);
+
+  const args = {
+    root: f.root,
+    record,
+    baseRef: 'origin/main',
+  };
+  const result = assertPreMergeCorrectionScope(args);
+  assert.deepEqual(result.correctionPaths, ['src/function.ts']);
+
+  f.write('scripts/docs/transversal.mjs', 'export const lifecycle = 2;\n');
+  assert.throws(
+    () => assertPreMergeCorrectionScope({
+      ...args,
+      dirtyPaths: ['scripts/docs/transversal.mjs'],
+    }),
+    /fuera de authorized_changes/u,
+  );
+});
 test('integra implementación y delta correctivo sin permitir cambios de ledger o alcance', (t) => {
   const f = fixture(t);
   f.git('switch', '-c', 'correction/shell-ci-020/corr-001');
