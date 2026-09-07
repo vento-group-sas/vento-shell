@@ -5,7 +5,7 @@
   "target_instance_id": "SHELL-CI-020::GAP-PKG-001",
   "correction_type": "PHYSICAL",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021"
@@ -17,13 +17,151 @@
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-001.json",
     "target_instance_record_sha256": "5dfa75cd43b7ec3aaf4807b9841f2c4c1ba16528077416b592ea62291b36060f"
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/functions/shift-runtime-processor/index.ts",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:db:test:clean",
+    "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-001.sql",
+    "node --test tests/packages/GAP-PKG-001/contract.test.ts",
+    "node --test tests/packages/GAP-PKG-001/integration.test.ts",
+    "node --test tests/packages/GAP-PKG-001/security.test.ts",
+    "node --test tests/packages/GAP-PKG-001/e2e.test.ts",
+    "npm test --silent",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "npm run docs:correction:check",
+    "git --no-pager diff --check"
+  ],
+  "affected_treq_ids": [
+    "TREQ-PROC-1490",
+    "TREQ-SUPABASE-005",
+    "TREQ-SUPABASE-006",
+    "TREQ-SUPABASE-1760"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-07T13:07:56-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-020::CORR-001",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=npm run supabase:db:test:clean status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=npm exec -- supabase test db supabase/tests/packages/GAP-PKG-001.sql status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=node --test tests/packages/GAP-PKG-001/contract.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=node --test tests/packages/GAP-PKG-001/integration.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=node --test tests/packages/GAP-PKG-001/security.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=node --test tests/packages/GAP-PKG-001/e2e.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=npm test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=npm run quality:lint:ratchet -- --base origin/main status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=npm run docs:correction:check status=PASS",
+    "LOCAL_VALIDATION candidate=761422331436e842416d8c0974013cf6c8587f95 command=git --no-pager diff --check status=PASS",
+    {
+      "schema_version": 1,
+      "evidence_type": "MRP015_050_CANDIDATE_READY",
+      "foundation_id": "MRP015-050",
+      "gate_id": "CANDIDATE_READY",
+      "owner_task": "SUPA-TRANS-015",
+      "phase": "AFTER_LOCAL_MATERIALIZATION_BEFORE_REMOTE_DEPLOY",
+      "package_id": "GAP-PKG-001",
+      "instance_id": "SHELL-CI-020::GAP-PKG-001",
+      "recorded_at": "2026-09-07T18:49:38.57Z",
+      "candidate_head_sha": "761422331436e842416d8c0974013cf6c8587f95",
+      "authorized_scope_sha256": "6ac21e445ce68157adf0a530dc9061b450b99fa0d699732c3fde85fda53cccb4",
+      "candidate_scope_sha256": "128f9d7964ba38970e79fe53a901947137ce588c1363c0741635ca1fac96cf3d",
+      "candidate_file_count": 1,
+      "status": "PASS",
+      "remote_mutations": false,
+      "secret_values_in_evidence": false,
+      "payload_sha256": "7cff1e153ec727102b0610edc0aa5118a9aabb359b5735edab5ea77230a97852"
+    },
+    {
+      "type": "PRE_MERGE_VALIDATION",
+      "candidate_commit": "761422331436e842416d8c0974013cf6c8587f95",
+      "validation_commands": [
+        "npm run supabase:db:test:clean",
+        "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-001.sql",
+        "node --test tests/packages/GAP-PKG-001/contract.test.ts",
+        "node --test tests/packages/GAP-PKG-001/integration.test.ts",
+        "node --test tests/packages/GAP-PKG-001/security.test.ts",
+        "node --test tests/packages/GAP-PKG-001/e2e.test.ts",
+        "npm test --silent",
+        "npm run quality:lint:ratchet -- --base origin/main",
+        "npm run docs:correction:check",
+        "git --no-pager diff --check"
+      ],
+      "results": [
+        {
+          "command": "npm run supabase:db:test:clean",
+          "status": "PASS"
+        },
+        {
+          "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-001.sql",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-001/contract.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-001/integration.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-001/security.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-001/e2e.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run quality:lint:ratchet -- --base origin/main",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS"
+        },
+        {
+          "command": "git --no-pager diff --check",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        }
+      ],
+      "remote_evidence": [
+        "REMOTE_TARGET STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp",
+        "REMOTE_DEPLOY shift-runtime-processor candidate_head=761422331436e842416d8c0974013cf6c8587f95 source_sha256=1de1643acc04da4179e18247c96a222cf09c0b845fe53fa2b40a1897e1076e90 version_before=24 version_after=25 status=ACTIVE verify_jwt=false ezbr_sha256=f68ce5b8ef7d0dacdb069960d00dec81ee20176d5f05c91a35c5d7c2cac62441",
+        "REMOTE_SOURCE deployed_version=25 auth_boundary_preserved=true formatShiftDate_present=false unused_detail_present=false",
+        "REMOTE_SECRET_PRESENCE shift_runtime_processor_cron configured=true secret_value_exposed=NO",
+        "REMOTE_NEGATIVE_PROBE probe_utc=2026-09-07T18:56:09.4718395Z invalid_x_cron_key result=401 response=Unauthorized",
+        "REMOTE_NEGATIVE_MUTATION_DELTA baseline_utc=2026-09-07T18:54:25.572403Z observed_utc=2026-09-07T19:01:38.062607Z shift_runtime_events=0->0 attendance_logs=0->0 employee_push_tokens=0->0",
+        "REMOTE_CRON anima_shift_runtime_processor_every_5m schedule=*/5_*_*_*_* active=true run=2026-09-07T19:00:00.017435Z status=succeeded http=200 processed=0 reminders=0 autoClosed=0",
+        "REMOTE_503_SCENARIO COVERED_BY_CONTROLLED_LOCAL_BATTERY remote_secret_removal_not_performed",
+        "REMOTE_EVIDENCE PASS"
+      ]
+    }
+  ],
   "opened_at": "2026-09-07T17:31:56.413Z",
   "integration": {
     "mode": "PRE_MERGE",

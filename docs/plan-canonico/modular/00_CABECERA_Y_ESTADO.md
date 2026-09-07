@@ -35,9 +35,9 @@
 | Bloque actual | **BLOQUE H2 — SHELL como aplicación** |
 | Progreso del bloque | **BLOQUE H2: 6 de 21 aprobadas; SHELL-APP-007 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
-| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-020::GAP-PKG-001** |
+| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
 | Carril documental | **ACTIVO — SHELL-APP-007** |
-| Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-020::GAP-PKG-001** |
+| Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
 ### Continuidad inmediata
@@ -60,7 +60,7 @@
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
 | CONTINUIDAD ACTIVA | **BLOQUE H2: 6 DE 21 APROBADAS — ACTUAL SHELL-APP-007** |
-| Implementación física | **SHELL-CI-020::GAP-PKG-001 — PENDING_AUTHORIZATION** |
+| Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
 

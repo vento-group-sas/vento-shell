@@ -8,34 +8,25 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `SHELL-CI-020::CORR-001`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `CONTINUE_PHYSICAL_LIFECYCLE` sobre `SHELL-CI-021::GAP-PKG-001`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `SHELL-CI-020::CORR-001`
+### 1. Correcciones canónicas
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
-- **Edita solamente:**
-  - Ningún cambio autorizado todavía.
-- **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Prepara el package que tiene el turno — `GAP-PKG-001`
 
 - **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-001`
 - **Posición:** **1/189**; ningún package posterior puede adelantarlo.
-- **Estado efectivo:** `IMPLEMENTATION_READY`
-- **Acción exacta:** `AUTHORIZE_PHYSICAL_IMPLEMENTATION`
-- **Objetivo exacto:** `SHELL-CI-020::GAP-PKG-001`
+- **Estado efectivo:** `DEPLOYED`
+- **Acción exacta:** `CONTINUE_PHYSICAL_LIFECYCLE`
+- **Objetivo exacto:** `SHELL-CI-021::GAP-PKG-001`
 - **Comando exacto:** `npm run docs:implementation:status`
 - **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-001.json` — `APPROVED_FOR_IMPLEMENTATION`
 - **Gates:** **6/6 PASS**; faltan **0**.
-- **Por qué:** GAP-PKG-001 ya tiene handoff físico PENDING_AUTHORIZATION; falta autorización física humana.
+- **Por qué:** GAP-PKG-001 ya inició su lifecycle físico y debe cerrarse antes de avanzar.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `SHELL-APP-007`
@@ -45,19 +36,19 @@
 - **Archivo propietario:** `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md`
 - **Regla:** si corre en paralelo con una corrección o un package, usar checkout independiente y serializar los cierres.
 
-### 4. Ejecuta la instancia física autorizada — `SHELL-CI-020::GAP-PKG-001`
+### 4. Ejecuta la instancia física autorizada — `SHELL-CI-021::GAP-PKG-001`
 
 - **Estado:** `PENDING_AUTHORIZATION`
-- **Contrato:** Implementar y desplegar cada paquete aprobado por E5
+- **Contrato:** Ejecutar y resolver el checklist de readiness aprobado
 - **Acción exacta del control:** `AUTORIZAR_IMPLEMENTACIÓN`
-- **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-001.json`
+- **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-001.json`
 
 ## Panel de control — dos carriles
 
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `SHELL-APP-007` — Mostrar rol operativo activo | `SHELL-APP-008` — Mostrar tareas pendientes transversales | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-001` — Implementar y desplegar cada paquete aprobado por E5 | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-021::GAP-PKG-001` — Ejecutar y resolver el checklist de readiness aprobado | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -66,12 +57,12 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1123/1596 aprobadas** | **473** no aprobadas (0 propuesta, 0 rechazadas) | `SHELL-APP-007` |
-| 🟧 **Implementación física conocida** | **96/97 VERIFIED** | **1** no terminales | `SHELL-CI-020::GAP-PKG-001` |
+| 🟧 **Implementación física conocida** | **97/98 VERIFIED** | **1** no terminales | `SHELL-CI-021::GAP-PKG-001` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-04-H2-SHELL-APPLICATION` — SHELL como aplicación
 - **Siguiente etapa documental:** `PHASE-04-I-UI-IMPLEMENTATION`
-- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-001`
+- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-001`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -81,7 +72,7 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **ACTUAL** | `SHELL-CI-020::GAP-PKG-001` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
+| 1 | **ACTUAL** | `SHELL-CI-021::GAP-PKG-001` | Ejecutar y resolver el checklist de readiness aprobado | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
 
 ## Modos de trabajo y materialización
 
