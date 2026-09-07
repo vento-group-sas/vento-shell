@@ -10,6 +10,8 @@ import {
 } from './implementation-control.mjs';
 import { parseTaskBlocks } from './format-canonical-task.mjs';
 import { resolveTaskWorkTopology } from './task-work-topology.mjs';
+import { assertImplementationPaths, implementationBranchName } from './implementation-branch-lifecycle.mjs';
+import { READINESS_PATHS, validateInPackageCandidateEvidence, targetRequiresSupabaseFoundation } from './package-readiness-scanner.mjs';
 
 export const CORRECTION_POLICY_RELATIVE_PATH = 'scripts/docs/correction-control.json';
 export const CORRECTION_RECORDS_DIRECTORY = 'docs/plan-canonico/modular/correction-instances';
@@ -23,7 +25,7 @@ const TASK_ID_PATTERN = /^[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3,4}$/u;
 const CORRECTION_ID_PATTERN = /^([A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3,4})::CORR-([0-9]{3})$/u;
 const HASH_PATTERN = /^[0-9a-f]{64}$/u;
 const COMMIT_PATTERN = /^[0-9a-f]{40}$/u;
-const TREQ_PATTERN = /^TREQ-[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3}$/u;
+const TREQ_PATTERN = /^TREQ-[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3,4}$/u;
 const GIT_MAX_BUFFER_BYTES = 64 * 1024 * 1024;
 const GIT_FAILURE_DIAGNOSTIC_LIMIT = 4000;
 export const DERIVED_CORRECTION_PROJECTIONS = new Set([
@@ -217,6 +219,16 @@ function validatePolicy(policy) {
     if (policy?.registration_branch_prefix !== REGISTRATION_PREFIX) fail(`registration_branch_prefix debe ser ${REGISTRATION_PREFIX}.`);
     if (policy?.correction_id_pattern !== '<TASK-ID>::CORR-<NNN>') fail('correction_id_pattern inválido.');
     if (policy?.required_remote_gate !== 'VENTO Required Gate') fail('required_remote_gate debe ser VENTO Required Gate.');
+    const preMergePolicy = {
+        mode: 'PINNED_IMPLEMENTATION_PR',
+        registration: 'PENDING_AUTHORIZATION_ON_MAIN',
+        integration: 'IMPLEMENTATION_AND_CORRECTION_IN_ONE_PR',
+        historical_instance: 'IMMUTABLE',
+        validation: 'FRESH_CANDIDATE_AND_REQUIRED_ENVIRONMENTS',
+    };
+    for (const [key, value] of Object.entries(preMergePolicy)) {
+        if (policy.pre_merge_physical_corrections?.[key] !== value) fail(`pre_merge_physical_corrections.${key} debe ser ${value}.`);
+    }
     if (policy?.supabase_historical_migrations_immutable !== true) {
         fail('supabase_historical_migrations_immutable debe ser true.');
     }
@@ -282,7 +294,7 @@ function validateTreqDeclaration(record) {
     }
 }
 
-function validateRecord(record, relativePath, { policy, workTopology, implementationControl }) {
+function validateRecord(record, relativePath, { policy, workTopology, implementationControl, root }) {
     if (!record || typeof record !== 'object' || Array.isArray(record)) fail(`${relativePath}: registro inválido.`);
     const correctionId = normalizeCorrectionId(record.correction_id);
     if (correctionId !== record.correction_id) fail(`${relativePath}: correction_id debe estar normalizado.`);
@@ -319,8 +331,11 @@ function validateRecord(record, relativePath, { policy, workTopology, implementa
         const instance = implementationControl.instances.find((entry) => entry.instance_id === targetInstanceId) ?? null;
         if (!instance) fail(`${correctionId}: target_instance_id inexistente: ${targetInstanceId}.`);
         if (instance.task_id !== taskId) fail(`${correctionId}: target_instance_id pertenece a ${instance.task_id}, no a ${taskId}.`);
-        if (instance.status !== 'VERIFIED') fail(`${correctionId}: la instancia objetivo debe permanecer VERIFIED; estado ${instance.status}.`);
+        if (record.integration) {
+            validatePreMergeIntegration({ root, record });
+        } else if (instance.status !== 'VERIFIED') fail(`${correctionId}: la instancia objetivo debe permanecer VERIFIED; estado ${instance.status}.`);
     }
+    if (type === 'DOCUMENTARY' && record.integration) fail(`${correctionId}: DOCUMENTARY no admite integración física PRE_MERGE.`);
 
     if (!record.baseline || typeof record.baseline !== 'object' || Array.isArray(record.baseline)) fail(`${correctionId}: baseline obligatorio.`);
     if (!COMMIT_PATTERN.test(String(record.baseline.main_commit ?? ''))) fail(`${correctionId}: baseline.main_commit inválido.`);
@@ -370,6 +385,7 @@ export function validateCorrectionControl(control, { root = process.cwd(), workT
             policy: control.policy,
             workTopology: topology,
             implementationControl,
+            root,
         });
         if (ids.has(record.correction_id)) fail(`correction_id duplicado: ${record.correction_id}.`);
         ids.add(record.correction_id);
@@ -389,7 +405,7 @@ export function validateCorrectionControl(control, { root = process.cwd(), workT
         }
     }
 
-    return { ...control, records: control.records.map((entry) => ({ ...entry })) };
+    return { ...control, root, records: control.records.map((entry) => ({ ...entry })) };
 }
 
 export function loadValidatedCorrectionControl({ root = process.cwd() } = {}) {
@@ -411,16 +427,27 @@ export function nextCorrectionId(taskId, control) {
     return `${normalizedTask}::CORR-${String(next).padStart(3, '0')}`;
 }
 
-export function openCorrections(control) {
+export function openCorrections(control, { includeUnpublishedVerified = false } = {}) {
     return control.records
         .map((entry) => entry.record)
-        .filter((record) => OPEN_STATUSES.has(record.status));
+        .filter((record) => OPEN_STATUSES.has(record.status)
+            || (includeUnpublishedVerified && record.integration && record.status === 'VERIFIED'
+                && !preMergeCorrectionReleased(control.root ?? process.cwd(), record)));
+}
+
+function preMergeCorrectionReleased(root, record) {
+    const relativePath = correctionRecordRelativePath(record.correction_id);
+    if (!pathExistsAtRef(root, 'origin/main', relativePath)) return false;
+    const published = JSON.parse(sourceAtRef(root, 'origin/main', relativePath));
+    return published.status === 'VERIFIED'
+        && JSON.stringify(published) === JSON.stringify(record)
+        && git(root, ['merge-base', '--is-ancestor', record.integration.head_commit, 'origin/main'], { allowFailure: true }).status === 0;
 }
 
 export function blockingCorrectionsForTarget(control, targetId) {
     const target = String(targetId ?? '').trim();
     if (!target) return [];
-    return openCorrections(control).filter(
+    return openCorrections(control, { includeUnpublishedVerified: true }).filter(
         (record) => record.blocking === true && record.blocked_targets.includes(target),
     );
 }
@@ -486,11 +513,185 @@ export function assertBaselineCurrent({ root = process.cwd(), record, ref = `ori
     if (expected.target_instance_record_path) {
         const instanceSource = sourceAtRef(root, ref, expected.target_instance_record_path);
         const actualInstanceHash = sha256(instanceSource);
-        if (actualInstanceHash !== expected.target_instance_record_sha256) {
+        const allowedHashes = record.integration
+            ? [expected.target_instance_record_sha256, record.integration.base_instance_sha256]
+            : [expected.target_instance_record_sha256];
+        if (!allowedHashes.includes(actualInstanceHash)) {
             fail(`${record.correction_id}: STALE_TARGET; la instancia objetivo cambió desde el registro de la corrección.`);
         }
     }
     return true;
+}
+
+export function assertPreMergePrIdentity(state, { targetInstanceId, headCommit = null } = {}) {
+    if (!Number.isSafeInteger(state?.number) || state.number <= 0
+        || state.state !== 'OPEN' || state.isDraft !== false || state.isCrossRepository !== false
+        || state.baseRefName !== DEFAULT_BRANCH
+        || state.headRefName !== implementationBranchName(targetInstanceId)
+        || !COMMIT_PATTERN.test(String(state.headRefOid ?? ''))
+        || (headCommit && state.headRefOid !== headCommit)) {
+        fail('STALE_TARGET: el PR de implementación debe estar OPEN, en este repositorio, hacia main y conservar su HEAD exacto.');
+    }
+    return true;
+}
+
+export function validatePreMergeIntegration({ root = process.cwd(), record } = {}) {
+    const anchor = record.integration;
+    if (!anchor || anchor.mode !== 'PRE_MERGE'
+        || !Number.isSafeInteger(anchor.pull_request) || anchor.pull_request <= 0
+        || !COMMIT_PATTERN.test(String(anchor.head_commit ?? ''))
+        || !COMMIT_PATTERN.test(String(anchor.base_commit ?? ''))
+        || !HASH_PATTERN.test(String(anchor.base_instance_sha256 ?? ''))
+        || anchor.head_ref !== implementationBranchName(record.target_instance_id)
+        || anchor.base_commit !== record.baseline?.main_commit) {
+        fail(`${record.correction_id}: integración PRE_MERGE inválida.`);
+    }
+    const relativePath = instanceRecordRelativePath(record.target_instance_id);
+    const source = sourceAtRef(root, anchor.head_commit, relativePath);
+    const instance = JSON.parse(source);
+    if (instance.instance_id !== record.target_instance_id || instance.task_id !== record.task_id
+        || instance.status !== 'VERIFIED' || !instance.evidence?.length
+        || instance.authorization?.decision !== 'APPROVED'
+        || record.baseline.target_instance_record_path !== relativePath
+        || sha256(source) !== record.baseline.target_instance_record_sha256) {
+        fail(`${record.correction_id}: PRE_MERGE exige una instancia VERIFIED inmutable en el SHA anclado.`);
+    }
+    const baseSource = sourceAtRef(root, anchor.base_commit, relativePath);
+    if (sha256(baseSource) !== anchor.base_instance_sha256 || JSON.parse(baseSource).status === 'VERIFIED') {
+        fail(`${record.correction_id}: PRE_MERGE exige un objetivo todavía no VERIFIED en main.`);
+    }
+    assertBaselineCurrent({ root, record, ref: anchor.head_commit });
+    assertBaselineCurrent({ root, record, ref: anchor.base_commit });
+    const currentSource = fs.readFileSync(path.join(root, relativePath), 'utf8').replace(/\r\n?/gu, '\n').trimEnd();
+    if (![record.baseline.target_instance_record_sha256, anchor.base_instance_sha256].includes(sha256(currentSource))) {
+        fail(`${record.correction_id}: STALE_TARGET; el ledger local no coincide con la procedencia registrada.`);
+    }
+    if (record.status === 'VERIFIED') assertPreMergeValidationEvidence({ root, record, instance });
+    return instance;
+}
+
+export function assertPreMergeValidationEvidence({ root = process.cwd(), record, instance } = {}) {
+    const receipts = (record.evidence ?? []).filter((entry) => entry?.type === 'PRE_MERGE_VALIDATION');
+    const receipt = receipts[0];
+    if (receipts.length !== 1 || !COMMIT_PATTERN.test(String(receipt?.candidate_commit ?? ''))
+        || receipt.candidate_commit === record.integration.head_commit
+        || JSON.stringify(receipt.validation_commands) !== JSON.stringify(record.validation_commands)
+        || !Array.isArray(receipt.results) || receipt.results.length !== record.validation_commands.length
+        || receipt.results.some((entry, index) => entry?.command !== record.validation_commands[index] || entry.status !== 'PASS')) {
+        fail(`${record.correction_id}: VERIFIED exige PRE_MERGE_VALIDATION nueva y resultados PASS por comando.`);
+    }
+    for (const [left, right] of [[record.integration.head_commit, receipt.candidate_commit], [receipt.candidate_commit, 'HEAD']]) {
+        if (git(root, ['merge-base', '--is-ancestor', left, right], { allowFailure: true }).status !== 0) {
+            fail(`${record.correction_id}: el candidato validado no pertenece al historial de la corrección.`);
+        }
+    }
+    const historical = preMergeCorrectionReleased(root, record);
+    for (const entry of historical ? [] : (record.authorized_changes ?? [])) {
+        if (entry.change === 'EXECUTE_ONLY' || entry.path === correctionRecordRelativePath(record.correction_id)
+            || DERIVED_CORRECTION_PROJECTIONS.has(entry.path)) continue;
+        const candidate = git(root, ['rev-parse', '--verify', `${receipt.candidate_commit}:${entry.path}`], { allowFailure: true });
+        const absolute = path.join(root, entry.path);
+        if (entry.change === 'DELETE') {
+            if (candidate.status === 0 || fs.existsSync(absolute)) fail(`${record.correction_id}: candidato desactualizado para ${entry.path}.`);
+        } else if (candidate.status !== 0 || !fs.existsSync(absolute)
+            || git(root, ['hash-object', `--path=${entry.path}`, '--', entry.path]).stdout !== candidate.stdout) {
+            fail(`${record.correction_id}: candidato desactualizado para ${entry.path}.`);
+        }
+    }
+    const targets = instance.target_environments ?? [];
+    if (targets.length && (JSON.stringify(receipt.target_environments) !== JSON.stringify(targets)
+        || !Array.isArray(receipt.remote_evidence) || receipt.remote_evidence.length === 0
+        || receipt.remote_evidence.some((entry) => typeof entry !== 'string' || !entry.trim()))) {
+        fail(`${record.correction_id}: el candidato corregido exige evidencia remota nueva en los ambientes originales.`);
+    }
+    if (!historical) assertCorrectionPackageCandidate({ root, record, instance, candidateCommit: receipt.candidate_commit });
+    return true;
+}
+
+export function correctionCandidateInstance(instance, record) {
+    const changes = new Map((instance.authorized_changes ?? []).map((entry) => [`${entry.repo}|${entry.path}`, entry]));
+    for (const entry of record.authorized_changes ?? []) {
+        if (entry.change !== 'EXECUTE_ONLY') changes.set(`${entry.repo}|${entry.path}`, entry);
+    }
+    return { ...instance, authorized_changes: [...changes.values()], evidence: record.evidence ?? [] };
+}
+
+export function assertCorrectionPackageCandidate({ root = process.cwd(), record, instance, candidateCommit } = {}) {
+    const match = /^SHELL-CI-020::(GAP-PKG-\d{3})$/u.exec(record.target_instance_id);
+    if (!match) return true;
+    const contract = readJson(path.join(root, READINESS_PATHS.contract), READINESS_PATHS.contract);
+    const foundation = contract.physical_dependencies?.supabase_pre_e5_foundation;
+    const candidate = correctionCandidateInstance(instance, record);
+    if (!candidate.authorized_changes.some((entry) => entry.change !== 'EXECUTE_ONLY'
+        && targetRequiresSupabaseFoundation(entry.path, foundation))) return true;
+    const result = validateInPackageCandidateEvidence({ root, packageId: match[1], instance: candidate,
+        gate: foundation.in_package_candidate_gate, currentHeadSha: candidateCommit });
+    if (result.status !== 'PASS') fail(`${record.correction_id}: MRP015-050 del candidato corregido: ${result.detail}`);
+    return true;
+}
+
+export function assertRegisteredCorrectionOrigin({ root = process.cwd(), record, baseRef } = {}) {
+    const relativePath = correctionRecordRelativePath(record.correction_id);
+    if (!pathExistsAtRef(root, baseRef, relativePath)) fail(`${record.correction_id}: la corrección debe registrarse antes de ejecutarse.`);
+    const registered = JSON.parse(sourceAtRef(root, baseRef, relativePath));
+    for (const key of ['correction_id', 'task_id', 'target_instance_id', 'correction_type', 'baseline', 'integration']) {
+        if (JSON.stringify(registered[key]) !== JSON.stringify(record[key])) {
+            fail(`${record.correction_id}: STALE_TARGET; la procedencia registrada ${key} es inmutable.`);
+        }
+    }
+    return true;
+}
+
+export function buildPreMergeIntegration({ root = process.cwd(), state, targetInstanceId, baseRef = 'HEAD' } = {}) {
+    assertPreMergePrIdentity(state, { targetInstanceId });
+    const baseCommit = git(root, ['rev-parse', baseRef]).stdout.trim();
+    return {
+        mode: 'PRE_MERGE',
+        pull_request: state.number,
+        head_ref: state.headRefName,
+        head_commit: state.headRefOid,
+        base_commit: baseCommit,
+        base_instance_sha256: sha256(sourceAtRef(root, baseCommit, instanceRecordRelativePath(targetInstanceId))),
+    };
+}
+
+function sameBlob(root, left, right, relativePath) {
+    const object = (ref) => git(root, ['rev-parse', '--verify', `${ref}:${relativePath}`], { allowFailure: true });
+    const a = object(left);
+    const b = object(right);
+    return a.status === b.status && (a.status !== 0 || a.stdout === b.stdout);
+}
+
+export function assertPreMergeCorrectionScope({ root = process.cwd(), record, baseRef, headRef = 'HEAD', dirtyPaths = [] } = {}) {
+    assertRegisteredCorrectionOrigin({ root, record, baseRef });
+    const instance = validatePreMergeIntegration({ root, record });
+    const anchor = record.integration;
+    for (const ref of [anchor.head_commit, baseRef]) {
+        if (git(root, ['merge-base', '--is-ancestor', ref, headRef], { allowFailure: true }).status !== 0) {
+            fail(`${record.correction_id}: STALE_TARGET; el candidato debe contener ${ref}.`);
+        }
+    }
+    assertBaselineCurrent({ root, record, ref: baseRef });
+    assertBaselineCurrent({ root, record, ref: headRef });
+    if (!sameBlob(root, anchor.head_commit, headRef, record.baseline.target_instance_record_path)
+        || dirtyPaths.includes(record.baseline.target_instance_record_path)) {
+        fail(`${record.correction_id}: el registro VERIFIED histórico es inmutable.`);
+    }
+    const originalPaths = pathsForRange(root, `${anchor.base_commit}...${anchor.head_commit}`);
+    assertImplementationPaths(originalPaths, instance, { root, baseRef: anchor.base_commit });
+    for (const entry of instance.authorized_changes ?? []) {
+        if (entry.change === 'EXECUTE_ONLY' || entry.path === record.baseline.target_instance_record_path) continue;
+        if (!sameBlob(root, anchor.base_commit, baseRef, entry.path)) {
+            fail(`${record.correction_id}: STALE_TARGET; main cambió ${entry.path}.`);
+        }
+    }
+    const delta = pathsForRange(root, `${anchor.head_commit}..${headRef}`)
+        .filter((entry) => sameBlob(root, anchor.base_commit, baseRef, entry)
+            || !sameBlob(root, baseRef, headRef, entry));
+    assertCorrectionPaths([...new Set([...delta, ...dirtyPaths])], record, {
+        root, baseRef: anchor.head_commit,
+    });
+    return { originalPaths, correctionPaths: delta };
 }
 
 function authorizedScope(record) {
@@ -563,7 +764,7 @@ export function assertVerifiedCorrectionImmutable({ root = process.cwd(), baseRe
 }
 
 function pathsForRange(root, range) {
-    return git(root, ['diff', '--name-only', '--diff-filter=ACMRD', range]).stdout
+    return git(root, ['diff', '--name-only', range]).stdout
         .split(/\r?\n/u)
         .map((entry) => entry.trim())
         .filter(Boolean);
@@ -589,7 +790,10 @@ export function checkCorrectionScope({ root = process.cwd(), range, headRef } = 
     const paths = pathsForRange(root, range);
     const registration = isCorrectionRegistrationHeadRef(headRef);
     assertBaselineCurrent({ root, record, ref: baseRef });
-    assertCorrectionPaths(paths, record, { root, baseRef, registration });
+    if (record.integration && !registration) {
+        if (record.status !== 'VERIFIED') fail(`${record.correction_id}: integración conjunta exige VERIFIED.`);
+        assertPreMergeCorrectionScope({ root, record, baseRef, headRef: range.split(/\.{2,3}/u)[1] });
+    } else assertCorrectionPaths(paths, record, { root, baseRef, registration });
     if (registration && record.status !== 'PENDING_AUTHORIZATION') {
         fail(`${record.correction_id}: correction-register/* solo admite PENDING_AUTHORIZATION.`);
     }

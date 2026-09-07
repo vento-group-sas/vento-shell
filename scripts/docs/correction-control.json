@@ -38,6 +38,13 @@
     "branch_prefix": "correction/",
     "registration_branch_prefix": "correction-register/",
     "correction_id_pattern": "<TASK-ID>::CORR-<NNN>",
+    "pre_merge_physical_corrections": {
+        "mode": "PINNED_IMPLEMENTATION_PR",
+        "registration": "PENDING_AUTHORIZATION_ON_MAIN",
+        "integration": "IMPLEMENTATION_AND_CORRECTION_IN_ONE_PR",
+        "historical_instance": "IMMUTABLE",
+        "validation": "FRESH_CANDIDATE_AND_REQUIRED_ENVIRONMENTS"
+    },
     "rules": [
         "A correction restores conformity with an already approved contract or decision and cannot introduce new capability or expand semantic scope.",
         "The historical approved task identity and any VERIFIED implementation instance remain immutable.",
@@ -46,6 +53,7 @@
         "Only explicitly listed blocked_targets are blocked, and release occurs only after VERIFIED_ON_MAIN.",
         "The correction work branch is correction/<task-id>/corr-<nnn> and authorized_changes is deny-by-default.",
         "Baseline task and implementation identities must remain current or the lifecycle fails STALE_TARGET.",
+        "A physical correction may target a VERIFIED snapshot in an open same-repository implementation PR pinned by exact SHA while main still holds its unverified record. Registration on main preserves both identities; correction/* integrates the original snapshot and a separately authorized corrective delta in one protected PR.",
         "Physical corrections require fresh validation evidence and affected TREQ identifiers before VERIFIED.",
         "Applied Supabase migrations are immutable; physical database corrections use a new forward migration from vento-shell.",
         "Every correction PR targets main, waits for VENTO Required Gate, and merges only the exact validated head commit."

@@ -45,9 +45,9 @@ export function evaluateLintRatchet({ baseline, actualIssues, changedFiles = [] 
   return { newDebt, touchedDebt };
 }
 
-function run(command, args, { allowLintExit = false } = {}) {
+function run(command, args, { allowLintExit = false, root = process.cwd() } = {}) {
   const result = spawnSync(command, args, {
-    cwd: process.cwd(),
+    cwd: root,
     encoding: 'utf8',
     maxBuffer: 64 * 1024 * 1024,
     windowsHide: true,
@@ -59,20 +59,24 @@ function run(command, args, { allowLintExit = false } = {}) {
   return result.stdout;
 }
 
-function changedFiles(args) {
+export function changedFiles(args, { root = process.cwd() } = {}) {
   const range = args.range ?? process.env.QUALITY_DIFF_RANGE;
+  if (args.base && (range || args.staged)) throw new Error('--base no admite --range, QUALITY_DIFF_RANGE ni --staged.');
+  const base = args.base
+    ? run('git', ['merge-base', args.base, 'HEAD'], { root }).trim()
+    : null;
   const gitArgs = range
     ? ['diff', '--name-only', '--diff-filter=ACMRD', range]
     : args.staged
       ? ['diff', '--cached', '--name-only', '--diff-filter=ACMRD']
-      : ['diff', '--name-only', '--diff-filter=ACMRD', 'HEAD'];
-  const files = run('git', gitArgs).split(/\r?\n/u).filter(Boolean);
+      : ['diff', '--name-only', '--diff-filter=ACMRD', base ?? 'HEAD'];
+  const files = run('git', gitArgs, { root }).split(/\r?\n/u).filter(Boolean);
   if (!range && !args.staged) {
-    files.push(...run('git', ['ls-files', '--others', '--exclude-standard'])
+    files.push(...run('git', ['ls-files', '--others', '--exclude-standard'], { root })
       .split(/\r?\n/u)
       .filter(Boolean));
   }
-  return [...new Set(files.map(normalizePath))].sort();
+  return [...new Set(files.map((file) => normalizePath(file, root)))].sort();
 }
 
 function parseArgs(argv) {
@@ -80,7 +84,7 @@ function parseArgs(argv) {
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--staged') args.staged = true;
-    else if (token === '--range' || token === '--baseline') {
+    else if (token === '--range' || token === '--baseline' || token === '--base') {
       const value = argv[index + 1];
       if (!value) throw new Error(`falta el valor de ${token}.`);
       args[token.slice(2)] = value;

@@ -1903,7 +1903,7 @@ function normalizedTargetPath(value) {
     .trim();
 }
 
-function targetRequiresSupabaseFoundation(relativePath, foundation) {
+export function targetRequiresSupabaseFoundation(relativePath, foundation) {
   const normalized = normalizedTargetPath(relativePath);
   if (!normalized) return false;
 

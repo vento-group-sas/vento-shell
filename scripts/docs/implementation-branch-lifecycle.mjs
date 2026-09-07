@@ -914,6 +914,24 @@ function cleanupBranch(root, branch) {
   return { local: 'DELETED', remote: 'DELETED' };
 }
 
+export function preverifyImplementation({ instanceId, root = ensureRepositoryRoot() }) {
+  const { id, instance } = resolveInstance(root, instanceId);
+  if (instance.status !== 'IMPLEMENTED' || instance.authorization?.decision !== 'APPROVED') {
+    fail(`${id}: PREVERIFY exige IMPLEMENTED y autorización APPROVED; no modifica el estado.`);
+  }
+  if (currentBranch(root) !== implementationBranchName(id)) fail(`${id}: rama física incorrecta para PREVERIFY.`);
+  git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+  const base = git(['merge-base', `origin/${DEFAULT_BRANCH}`, 'HEAD'], { cwd: root }).stdout.trim();
+  const paths = git(['diff', '--name-only', base], { cwd: root }).stdout.split(/\r?\n/u).filter(Boolean);
+  assertImplementationPaths([...new Set([...paths, ...worktreePaths(root)])], instance, { root, baseRef: `origin/${DEFAULT_BRANCH}` });
+  npm(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`], { cwd: root });
+  printResult({
+    ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_PREVERIFY', INSTANCE_ID: id,
+    QUALITY_BASE: base, LINT_SCOPE: 'FULL_PR_AND_WORKTREE',
+    STATUS: 'IMPLEMENTED', READY_TO_CONSOLIDATE_VERIFIED_EVIDENCE: 'SI',
+  });
+}
+
 export async function finishImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
   assertInstanceCanFinish(instance);
@@ -951,7 +969,7 @@ export async function finishImplementation({ instanceId, root = ensureRepository
     npmAsync(['run', '--silent', 'docs:plan:test'], { cwd: root }),
     npmAsync(['run', '--silent', 'docs:treq:check'], { cwd: root }),
     npmAsync(['run', '--silent', 'docs:treq:test'], { cwd: root }),
-    npmAsync(['run', '--silent', 'quality:lint:ratchet'], { cwd: root }),
+    npmAsync(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`], { cwd: root }),
   ]);
 
   const dirty = worktreePaths(root);
@@ -1115,6 +1133,7 @@ function usage() {
   console.log('Uso:');
   console.log('  npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL');
   console.log('  npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL');
+  console.log('  npm run docs:implementation:preverify -- --instance-id SHELL-CON-001::GLOBAL');
   console.log('');
   console.log('START exige registro AUTHORIZED, trata continuidad/formato documentales historicos como advisory, crea o recupera implementation/<task-id>/<instance-key>, cambia a IN_PROGRESS, ejecuta el preflight fisico estricto una sola vez y reconcilia derivados con docs:plan:build + docs:plan:check antes de permitir codigo.');
   console.log('FINISH exige VERIFIED, valida alcance exacto desde authorized_changes, admite solo proyecciones derivadas controladas, reanuda post-commit/post-PR/post-merge sin force-push, espera CI, mergea, sincroniza main y limpia la rama.');
@@ -1126,10 +1145,11 @@ async function main() {
     usage();
     return;
   }
-  if (!['start', 'finish'].includes(args.mode)) fail('Modo requerido: start o finish.');
+  if (!['start', 'preverify', 'finish'].includes(args.mode)) fail('Modo requerido: start, preverify o finish.');
   if (!args.instanceId) fail('Falta --instance-id.');
 
   if (args.mode === 'start') startImplementation({ instanceId: args.instanceId });
+  else if (args.mode === 'preverify') preverifyImplementation({ instanceId: args.instanceId });
   else await finishImplementation({ instanceId: args.instanceId });
 }
 
@@ -1147,7 +1167,7 @@ if (isCli) {
     const instanceId = instanceArgIndex >= 0 ? process.argv[instanceArgIndex + 1] : 'DESCONOCIDA';
     printResult({
       ESTADO: 'FAIL',
-      OPERACION: mode === 'finish' ? 'IMPLEMENTATION_FINISH' : 'IMPLEMENTATION_START',
+      OPERACION: `IMPLEMENTATION_${String(mode).toUpperCase()}`,
       INSTANCE_ID: instanceId || 'DESCONOCIDA',
       ERROR: message.replace(/\s+/gu, ' ').trim(),
       WORKTREE_PRESERVED: 'SI',
