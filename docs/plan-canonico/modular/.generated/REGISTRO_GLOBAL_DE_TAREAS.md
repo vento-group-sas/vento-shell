@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1126** |
+| Aprobadas | **1127** |
 | En propuesta | **0** |
-| No iniciadas | **470** |
+| No iniciadas | **469** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **70.55% (1126/1596)** |
+| Porcentaje de completamiento | **70.61% (1127/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-009` — Definir página inicial por tipo de usuario | ✅ APROBADA |
-| Tarea actual | `SHELL-APP-010` — Explicar por qué una aplicación está bloqueada | ⬜ NO INICIADA |
-| Siguiente reservada | `SHELL-APP-011` — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente | ⬜ NO INICIADA |
+| Última aprobada | `SHELL-APP-010` — Explicar por qué una aplicación está bloqueada | ✅ APROBADA |
+| Tarea actual | `SHELL-APP-011` — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente | ⬜ NO INICIADA |
+| Siguiente reservada | `SHELL-APP-012` — Mantener PASS fuera del RBAC laboral del cliente | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -796,7 +796,7 @@
 | ✅ APROBADA | `SHELL-APP-007` | Mostrar rol operativo activo | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ✅ APROBADA | `SHELL-APP-008` | Mostrar tareas pendientes transversales | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ✅ APROBADA | `SHELL-APP-009` | Definir página inicial por tipo de usuario | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
-| ⬜ NO INICIADA | `SHELL-APP-010` | Explicar por qué una aplicación está bloqueada | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
+| ✅ APROBADA | `SHELL-APP-010` | Explicar por qué una aplicación está bloqueada | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-011` | Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-012` | Mantener PASS fuera del RBAC laboral del cliente | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-013` | Evitar lógica funcional propia de otras aplicaciones | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
