@@ -4,7 +4,11 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
-import { scanPackageReadiness } from './package-readiness-scanner.mjs';
+import {
+  parsePackageTaskRouting,
+  scanPackageReadiness,
+} from './package-readiness-scanner.mjs';
+import { getTreqRegistryFragmentPaths } from './treq-registry-files.mjs';
 
 const FACTORY_ID = 'VENTO-PACKAGE-REVIEW-FACTORY-V1';
 const SCHEMA_VERSION = 1;
@@ -20,8 +24,8 @@ const BATCH_MD_PATH = `${OUTPUT_ROOT}/REVIEW_BATCH.md`;
 const RECEIPT_TEMPLATE_PATH = `${OUTPUT_ROOT}/review-receipt-template.json`;
 const CANONICAL_BLOCK_ROOT = 'docs/plan-canonico/modular/bloques';
 const CANONICAL_PACKAGE_SOURCE = 'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md';
-const ROUTING_SOURCE = 'docs/plan-canonico/modular/bloques/W_WORKFLOWS_TAREAS_Y_RESOLUCION/02_MATRIZ_DE_ENRUTAMIENTO_Y_BRECHAS.md';
-const TREQ_SOURCE = 'docs/plan-canonico/modular/bloques/E6_IOT_HARDWARE_Y_QR/04A_REGISTRO_CANONICO_DE_REQUISITOS_DE_PRUEBA.md';
+const ROUTING_SOURCE = 'docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/07_REGISTRO_CANONICO_DE_BRECHAS.md';
+const TREQ_BASE_DIR = 'docs/plan-canonico/modular';
 const IMPLEMENTATION_ORDER_SOURCE = 'docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md';
 const PACKAGE_EXECUTION_POLICY_SOURCE = 'docs/plan-canonico/modular/package-execution-policy.json';
 const PACKAGE_READINESS_CONTRACT_SOURCE = 'scripts/docs/package-readiness/package-readiness-contract.json';
@@ -74,6 +78,324 @@ function git(args, options = {}) {
 
 function normalizePath(value) {
   return String(value ?? '').replaceAll('\\', '/').replace(/^\.\/+/u, '');
+}
+
+function normalizeScalar(value) {
+  return String(value ?? '')
+    .trim()
+    .replace(/^`|`$/gu, '')
+    .replace(/<br\s*\/?>/giu, ' ')
+    .replace(/\s+/gu, ' ')
+    .trim();
+}
+
+function normalizeHeader(value) {
+  return normalizeScalar(value)
+    .normalize('NFKD')
+    .replace(/\p{M}/gu, '')
+    .toLowerCase()
+    .replace(/[^a-z0-9_]+/gu, ' ')
+    .trim();
+}
+
+function parseMarkdownRow(line) {
+  const raw = String(line ?? '').trim();
+  if (!raw.startsWith('|') || !raw.endsWith('|')) return null;
+
+  const body = raw.slice(1, -1);
+  const cells = [];
+  let current = '';
+  let codeFenceLength = 0;
+
+  const nextSpacedDelimiter = (from) => {
+    const match = /\s\|\s/u.exec(body.slice(from));
+    return match ? from + match.index + match[0].indexOf('|') : -1;
+  };
+
+  for (let index = 0; index < body.length; index += 1) {
+    const character = body[index];
+
+    if (character === '\\' && body[index + 1] === '|') {
+      current += '\\|';
+      index += 1;
+      continue;
+    }
+
+    if (character === '`') {
+      let end = index + 1;
+      while (body[end] === '`') end += 1;
+      const fence = body.slice(index, end);
+      const closingFence = codeFenceLength === 0
+        ? body.indexOf('`'.repeat(fence.length), end)
+        : -1;
+      const cellDelimiter = codeFenceLength === 0 ? nextSpacedDelimiter(end) : -1;
+      if (codeFenceLength === 0 && closingFence >= 0 && (cellDelimiter < 0 || closingFence < cellDelimiter)) {
+        codeFenceLength = fence.length;
+      }
+      else if (codeFenceLength === fence.length) codeFenceLength = 0;
+      current += fence;
+      index = end - 1;
+      continue;
+    }
+
+    if (character === '|' && codeFenceLength === 0) {
+      cells.push(normalizeScalar(current));
+      current = '';
+      continue;
+    }
+
+    current += character;
+  }
+
+  cells.push(normalizeScalar(current));
+  return cells;
+}
+
+function separatorRow(cells) {
+  return Array.isArray(cells)
+    && cells.length > 0
+    && cells.every((cell) => /^:?-{3,}:?$/u.test(String(cell).trim()));
+}
+
+function headerIndex(table, candidates) {
+  for (const candidate of candidates) {
+    const normalizedCandidate = normalizeHeader(candidate);
+    const index = table.normalized_header.findIndex(
+      (header) => header === normalizedCandidate || header.includes(normalizedCandidate),
+    );
+    if (index >= 0) return index;
+  }
+  return -1;
+}
+
+function tableValue(row, table, candidates) {
+  const index = headerIndex(table, candidates);
+  return index >= 0 ? normalizeScalar(row.cells[index]) : '';
+}
+
+function extractTaskIdsFromCell(value) {
+  return uniqueSorted(
+    String(value ?? '').match(/\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-\d{3,4}\b/gu) ?? [],
+  );
+}
+
+function extractHeadingSectionWithLines(source, headingPattern) {
+  const lines = String(source ?? '').replace(/\r\n/gu, '\n').split('\n');
+  const start = lines.findIndex((line) => headingPattern.test(line));
+  if (start < 0) return null;
+
+  const level = /^#+/u.exec(lines[start])?.[0].length ?? 6;
+  let end = lines.length;
+
+  for (let index = start + 1; index < lines.length; index += 1) {
+    const heading = /^(#+)\s/u.exec(lines[index]);
+    if (heading && heading[1].length <= level) {
+      end = index;
+      break;
+    }
+  }
+
+  return {
+    lines: lines.slice(start, end),
+    start_line: start + 1,
+  };
+}
+
+function findMarkdownTable(section, requiredHeaders) {
+  if (!section) return null;
+
+  for (let index = 0; index < section.lines.length; index += 1) {
+    const header = parseMarkdownRow(section.lines[index]);
+    if (!header) continue;
+
+    const normalizedHeader = header.map((cell) => normalizeHeader(cell));
+    const hasAll = requiredHeaders.every((required) => {
+      const normalizedRequired = normalizeHeader(required);
+      return normalizedHeader.some(
+        (cell) => cell === normalizedRequired || cell.includes(normalizedRequired),
+      );
+    });
+    if (!hasAll) continue;
+
+    const separator = parseMarkdownRow(section.lines[index + 1]);
+    if (!separatorRow(separator)) continue;
+
+    const rows = [];
+
+    for (let rowIndex = index + 2; rowIndex < section.lines.length; rowIndex += 1) {
+      const rawLine = section.lines[rowIndex];
+      const cells = parseMarkdownRow(rawLine);
+      if (!cells) break;
+      if (separatorRow(cells)) continue;
+
+      rows.push({
+        cells,
+        raw_line: rawLine,
+        line_number: section.start_line + rowIndex,
+      });
+    }
+
+    return {
+      header,
+      normalized_header: normalizedHeader,
+      rows,
+    };
+  }
+
+  return null;
+}
+
+function routingRow(table, row, sourceKind, sourcePath) {
+  const packageId = tableValue(row, table, ['paquete', 'package_id']);
+  const gapId = sourceKind === 'HISTORICAL'
+    ? tableValue(row, table, ['registro'])
+    : tableValue(row, table, ['gap id']);
+
+  if (!/^GAP-PKG-\d{3}$/u.test(packageId) || !gapId) return null;
+
+  const primaryTaskIds = extractTaskIdsFromCell(
+    tableValue(row, table, ['tarea primaria']),
+  );
+  const supportTaskIds = extractTaskIdsFromCell(
+    tableValue(row, table, ['tareas de soporte', 'tareas de apoyo']),
+  );
+
+  const summary = sourceKind === 'HISTORICAL'
+    ? tableValue(row, table, ['brecha resumida'])
+    : tableValue(row, table, ['hallazgo canonico']);
+
+  const capability = tableValue(row, table, ['capacidad']);
+  const processScope = tableValue(row, table, ['proceso/alcance', 'proceso']);
+  const combinedContext = [
+    capability,
+    processScope,
+    tableValue(row, table, ['capacidad / proceso']),
+  ].filter(Boolean).join(' / ');
+
+  return {
+    gap_id: gapId,
+    package_id: packageId,
+    source_kind: sourceKind,
+    source_path: sourcePath,
+    source_line: row.line_number,
+    row_sha256: sha256(row.raw_line),
+    reference: sourceKind === 'HISTORICAL'
+      ? tableValue(row, table, ['referencia representativa'])
+      : tableValue(row, table, ['fuente']),
+    class: tableValue(row, table, ['clase']),
+    context: combinedContext || null,
+    summary: summary || null,
+    confidence: tableValue(row, table, ['confianza']) || null,
+    primary_task_ids: primaryTaskIds,
+    support_task_ids: supportTaskIds,
+  };
+}
+
+export function parseCanonicalGapRouting(source, sourcePath = ROUTING_SOURCE) {
+  const historicalSection = extractHeadingSectionWithLines(
+    source,
+    /^####\s+9\.\s+Matriz completa brecha/u,
+  );
+  const appendOnlySection = extractHeadingSectionWithLines(
+    source,
+    /^###\s+B\.\s+Nuevas brechas canónicas/u,
+  );
+
+  const historicalTable = findMarkdownTable(
+    historicalSection,
+    ['registro', 'referencia representativa', 'tarea primaria', 'paquete', 'confianza'],
+  );
+  const appendOnlyTable = findMarkdownTable(
+    appendOnlySection,
+    ['gap id', 'tarea primaria', 'paquete'],
+  );
+
+  if (!historicalTable) {
+    fail('PACKAGE REVIEW FACTORY no pudo resolver la matriz histórica propietaria de brechas.');
+  }
+  if (!appendOnlyTable) {
+    fail('PACKAGE REVIEW FACTORY no pudo resolver la tabla append-only propietaria de brechas.');
+  }
+
+  const rows = [
+    ...historicalTable.rows
+      .map((row) => routingRow(historicalTable, row, 'HISTORICAL', sourcePath))
+      .filter(Boolean),
+    ...appendOnlyTable.rows
+      .map((row) => routingRow(appendOnlyTable, row, 'APPEND_ONLY', sourcePath))
+      .filter(Boolean),
+  ];
+
+  const seenGap = new Map();
+
+  for (const row of rows) {
+    if (seenGap.has(row.gap_id)) {
+      fail(
+        `PACKAGE REVIEW FACTORY detectó gap_id duplicado ${row.gap_id}: `
+        + `${seenGap.get(row.gap_id)} y ${row.package_id}.`,
+      );
+    }
+    seenGap.set(row.gap_id, row.package_id);
+  }
+
+  return rows.sort((left, right) => (
+    sortPackageIds(left.package_id, right.package_id)
+    || left.gap_id.localeCompare(right.gap_id, 'en')
+  ));
+}
+
+export function buildCanonicalGapRoutingIndex(rows) {
+  const result = new Map();
+
+  for (const row of rows ?? []) {
+    const list = result.get(row.package_id) ?? [];
+    list.push(row);
+    result.set(row.package_id, list);
+  }
+
+  return new Map([...result.entries()].map(([packageId, packageRows]) => [
+    packageId,
+    [...packageRows].sort((left, right) => left.gap_id.localeCompare(right.gap_id, 'en')),
+  ]));
+}
+
+function canonicalTreqRegistryPaths(root) {
+  const baseDir = path.join(root, ...TREQ_BASE_DIR.split('/'));
+  return getTreqRegistryFragmentPaths({ baseDir })
+    .map((relativePath) => normalizePath(`${TREQ_BASE_DIR}/${relativePath}`));
+}
+
+function canonicalTaskRepoPath(value) {
+  const normalized = normalizePath(value);
+  if (!normalized) return '';
+  if (normalized.startsWith('docs/')) return normalized;
+  if (normalized.startsWith('bloques/')) {
+    return normalizePath(`${TREQ_BASE_DIR}/${normalized}`);
+  }
+  return normalized;
+}
+
+function canonicalTaskSourceMap(packages) {
+  const result = new Map();
+
+  for (const pkg of packages) {
+    for (const task of pkg.task_prerequisites?.tasks ?? []) {
+      const taskId = String(task?.task_id ?? '').trim();
+      const source = canonicalTaskRepoPath(task?.source ?? '');
+      if (!taskId || !source) continue;
+
+      const previous = result.get(taskId);
+      if (previous && previous !== source) {
+        fail(
+          `PACKAGE REVIEW FACTORY detectó dos fuentes canónicas para ${taskId}: `
+          + `${previous} y ${source}.`,
+        );
+      }
+      result.set(taskId, source);
+    }
+  }
+
+  return result;
 }
 
 function stableJson(value) {
@@ -205,12 +527,13 @@ function buildSourceManifest(root, workspace) {
   const sources = [
     CANONICAL_PACKAGE_SOURCE,
     ROUTING_SOURCE,
-    TREQ_SOURCE,
     IMPLEMENTATION_ORDER_SOURCE,
     PACKAGE_EXECUTION_POLICY_SOURCE,
     PACKAGE_READINESS_CONTRACT_SOURCE,
     'scripts/docs/package-readiness-scanner.mjs',
+    'scripts/docs/treq-registry-files.mjs',
     'scripts/docs/package-review-factory.mjs',
+    ...canonicalTreqRegistryPaths(root),
   ].map((relativePath) => sourceBlob(root, relativePath));
 
   return {
@@ -256,19 +579,37 @@ function compactTaskPrerequisites(taskPrerequisites) {
       owner: entry?.owner ?? entry?.owner_file ?? null,
       approved: entry?.approved ?? null,
       role: entry?.role ?? entry?.task_role ?? null,
+      source: canonicalTaskRepoPath(entry?.source ?? entry?.relativePath ?? ''),
     })),
   };
 }
 
-export function normalizeReviewPackage(pkg) {
+export function normalizeReviewPackage(
+  pkg,
+  canonicalGapRows = null,
+  canonicalTaskRouting = null,
+) {
   const primaryTaskIds = uniqueSorted(pkg?.primary_task_ids);
   const supportTaskIds = uniqueSorted(pkg?.support_task_ids);
   const taskPrerequisiteIds = taskIdsFromPrerequisites(pkg?.task_prerequisites);
-  const gapIds = uniqueSorted(
+  const projectedGapIds = uniqueSorted(
     pkg?.gap_ids_sampled_from_deliv_pkg_002
       ?? pkg?.gap_ids
       ?? [],
   );
+  const gapRoutingResolved = Array.isArray(canonicalGapRows);
+  const gapRoutingRows = gapRoutingResolved ? canonicalGapRows : [];
+  const gapIds = gapRoutingResolved
+    ? uniqueSorted(gapRoutingRows.map((row) => row.gap_id))
+    : projectedGapIds;
+  const taskRoutingResolved = canonicalTaskRouting !== null;
+  const taskRoutingProjection = taskRoutingResolved
+    ? {
+        source_path: ROUTING_SOURCE,
+        primary_task_ids: uniqueSorted(canonicalTaskRouting?.primary_task_ids),
+        support_task_ids: uniqueSorted(canonicalTaskRouting?.support_task_ids),
+      }
+    : null;
 
   return {
     package_id: String(pkg?.package_id ?? '').trim(),
@@ -286,6 +627,11 @@ export function normalizeReviewPackage(pkg) {
     capability_ids: uniqueSorted(pkg?.capability_ids),
     process_ids: uniqueSorted(pkg?.process_ids),
     gap_ids: gapIds,
+    gap_ids_projected_from_deliv_pkg_002: projectedGapIds,
+    gap_routing_resolved: gapRoutingResolved,
+    gap_routing_rows: gapRoutingRows.map((row) => ({ ...row })),
+    task_routing_resolved: taskRoutingResolved,
+    task_routing_projection: taskRoutingProjection,
     gap_membership_count: Number.isInteger(pkg?.gap_membership_count)
       ? pkg.gap_membership_count
       : null,
@@ -566,28 +912,68 @@ export function analyzePackage(pkg, indexes) {
     ));
   }
 
-  if (
-    Number.isInteger(pkg.gap_membership_count)
-    && pkg.gap_membership_count > 0
-    && pkg.gap_ids.length === 0
-  ) {
-    anomalies.push(anomaly(
-      'GAP_MEMBERSHIP_WITHOUT_ROUTING_IDS',
-      'REVIEW',
-      `${packageId}: gap_membership_count=${pkg.gap_membership_count} pero no se resolvieron gap_ids en el mapping explícito.`,
-    ));
+  if (pkg.gap_routing_resolved) {
+    const routingRows = pkg.gap_routing_rows;
+
+    if (
+      Number.isInteger(pkg.gap_membership_count)
+      && pkg.gap_membership_count !== routingRows.length
+    ) {
+      anomalies.push(anomaly(
+        'GAP_ROUTING_COUNT_MISMATCH',
+        'BLOCKING',
+        `${packageId}: gap_membership_count=${pkg.gap_membership_count} pero el routing canónico expone ${routingRows.length} filas.`,
+        {
+          expected_count: pkg.gap_membership_count,
+          observed_count: routingRows.length,
+        },
+      ));
+    }
+
+    if (pkg.gap_membership_count > 0 && routingRows.length === 0) {
+      anomalies.push(anomaly(
+        'GAP_ROUTING_EVIDENCE_MISSING',
+        'BLOCKING',
+        `${packageId}: posee membresías canónicas pero la factory no pudo materializar sus filas de routing.`,
+      ));
+    }
+
+    if (pkg.task_routing_resolved) {
+      const routingPrimary = pkg.task_routing_projection?.primary_task_ids ?? [];
+      const routingSupport = pkg.task_routing_projection?.support_task_ids ?? [];
+
+      if (stableJson(routingPrimary) !== stableJson(pkg.primary_task_ids)) {
+        anomalies.push(anomaly(
+          'ROUTING_PRIMARY_TASK_PROJECTION_MISMATCH',
+          'BLOCKING',
+          `${packageId}: la proyección agregada de tareas primarias no coincide con el parser canónico de routing.`,
+          {
+            routing_primary_task_ids: routingPrimary,
+            projected_primary_task_ids: pkg.primary_task_ids,
+          },
+        ));
+      }
+
+      if (stableJson(routingSupport) !== stableJson(pkg.support_task_ids)) {
+        anomalies.push(anomaly(
+          'ROUTING_SUPPORT_TASK_PROJECTION_MISMATCH',
+          'BLOCKING',
+          `${packageId}: la proyección agregada de tareas de soporte no coincide con el parser canónico de routing.`,
+          {
+            routing_support_task_ids: routingSupport,
+            projected_support_task_ids: pkg.support_task_ids,
+          },
+        ));
+      }
+    }
   }
 
   return { anomalies, relations };
 }
 
-function taskSectionHeading(line) {
-  const match = /^(#{2,6})\s+.*?\b([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3,4})\b.*$/u.exec(line);
-  if (!match) return null;
-  return {
-    level: match[1].length,
-    taskId: match[2],
-  };
+function markedTaskHeading(line) {
+  const match = /^###\s+(?:✅|🟡|❌|\[[^\]]+\])\s+([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3,4})\b/u.exec(line);
+  return match?.[1] ?? null;
 }
 
 function compactSection(text, limit = TASK_SECTION_CHAR_LIMIT) {
@@ -607,36 +993,130 @@ function compactSection(text, limit = TASK_SECTION_CHAR_LIMIT) {
   };
 }
 
-function collectTaskSections(root, markdownPaths, relevantTaskIds) {
-  const wanted = new Set(relevantTaskIds);
+export function parseTaskTreqDeclaration(block) {
+  const source = String(block ?? '').replace(/\r\n/gu, '\n');
+  const metadata = source.match(
+    /^\*\*Requisitos de prueba creados o modificados:\*\*\s*(\d+)\s*$/imu,
+  );
+  const section = source.match(
+    /^####\s+\d+\.\s+Requisitos de prueba derivados\s*$([\s\S]*?)(?=^####\s+\d+\.|(?![\s\S]))/imu,
+  )?.[1] ?? '';
+  const ids = uniqueSorted(
+    section.match(/\bTREQ-[A-Z0-9-]+\b/gu) ?? [],
+  );
+
+  if (!metadata) {
+    return {
+      metadata_present: false,
+      section_present: section.length > 0,
+      declared_count: null,
+      ids,
+      consistent: ids.length === 0,
+      detail: ids.length === 0
+        ? 'NO_TREQ_DECLARATION_METADATA'
+        : `NO_TREQ_DECLARATION_METADATA_WITH_IDS:${ids.join(',')}`,
+    };
+  }
+
+  const declaredCount = Number(metadata[1]);
+  let detail = 'PASS';
+
+  if (declaredCount === 0 && ids.length > 0) {
+    detail = `DECLARED_0_WITH_IDS:${ids.join(',')}`;
+  } else if (declaredCount > 0 && ids.length === 0) {
+    detail = `DECLARED_${declaredCount}_WITHOUT_IDS`;
+  } else if (declaredCount !== ids.length) {
+    detail = `DECLARED_${declaredCount}_RESOLVED_${ids.length}:${ids.join(',')}`;
+  }
+
+  return {
+    metadata_present: true,
+    section_present: section.length > 0,
+    declared_count: declaredCount,
+    ids,
+    consistent: detail === 'PASS',
+    detail,
+  };
+}
+
+export function canonicalTaskSectionsFromSource(source, wantedTaskIds) {
+  const wanted = new Set(wantedTaskIds);
+  const lines = String(source ?? '').replace(/\r\n/gu, '\n').split('\n');
+  const headings = [];
+  let fenced = false;
+
+  for (let index = 0; index < lines.length; index += 1) {
+    if (/^\s*```/u.test(lines[index])) {
+      fenced = !fenced;
+      continue;
+    }
+    if (fenced) continue;
+
+    const taskId = markedTaskHeading(lines[index]);
+    if (taskId) headings.push({ index, task_id: taskId });
+  }
+
   const result = new Map();
 
-  for (const relativePath of markdownPaths) {
-    const source = fs.readFileSync(
-      path.join(root, ...relativePath.split('/')),
-      'utf8',
-    ).replace(/\r\n/gu, '\n');
+  for (let position = 0; position < headings.length; position += 1) {
+    const heading = headings[position];
+    if (!wanted.has(heading.task_id) || result.has(heading.task_id)) continue;
 
-    const lines = source.split('\n');
+    const end = headings[position + 1]?.index ?? lines.length;
+    const fullBlock = lines.slice(heading.index, end).join('\n');
+    result.set(
+      heading.task_id,
+      {
+        ...compactSection(fullBlock),
+        treq_declaration: parseTaskTreqDeclaration(fullBlock),
+      },
+    );
+  }
 
-    for (let index = 0; index < lines.length; index += 1) {
-      const heading = taskSectionHeading(lines[index]);
-      if (!heading || !wanted.has(heading.taskId) || result.has(heading.taskId)) {
-        continue;
-      }
+  return result;
+}
 
-      let end = lines.length;
-      for (let cursor = index + 1; cursor < lines.length; cursor += 1) {
-        const next = /^(#{1,6})\s+/u.exec(lines[cursor]);
-        if (next && next[1].length <= heading.level) {
-          end = cursor;
-          break;
-        }
-      }
+function collectTaskSections(
+  root,
+  markdownPaths,
+  relevantTaskIds,
+  canonicalSources = new Map(),
+) {
+  const wanted = new Set(relevantTaskIds);
+  const result = new Map();
+  const sourceCache = new Map();
 
-      const compact = compactSection(lines.slice(index, end).join('\n'));
-      result.set(heading.taskId, {
-        task_id: heading.taskId,
+  const readSource = (relativePath) => {
+    if (sourceCache.has(relativePath)) return sourceCache.get(relativePath);
+    const absolute = path.join(root, ...relativePath.split('/'));
+    if (!fs.existsSync(absolute)) {
+      sourceCache.set(relativePath, null);
+      return null;
+    }
+    const source = fs.readFileSync(absolute, 'utf8').replace(/\r\n/gu, '\n');
+    sourceCache.set(relativePath, source);
+    return source;
+  };
+
+  const byCanonicalSource = new Map();
+
+  for (const taskId of wanted) {
+    const sourcePath = normalizePath(canonicalSources.get(taskId) ?? '');
+    if (!sourcePath) continue;
+    const set = byCanonicalSource.get(sourcePath) ?? new Set();
+    set.add(taskId);
+    byCanonicalSource.set(sourcePath, set);
+  }
+
+  for (const [relativePath, taskIds] of byCanonicalSource) {
+    const source = readSource(relativePath);
+    if (!source) continue;
+
+    const sections = canonicalTaskSectionsFromSource(source, taskIds);
+
+    for (const [taskId, compact] of sections) {
+      result.set(taskId, {
+        task_id: taskId,
         source_path: relativePath,
         source_blob_sha: git(
           ['hash-object', relativePath],
@@ -644,6 +1124,33 @@ function collectTaskSections(root, markdownPaths, relevantTaskIds) {
         ).stdout.trim(),
         ...compact,
         text_sha256: sha256(compact.text),
+        provenance: 'CANONICAL_TASK_INVENTORY_SOURCE',
+      });
+    }
+  }
+
+  const unresolved = () => [...wanted].filter((taskId) => !result.has(taskId));
+
+  for (const relativePath of markdownPaths) {
+    const remaining = unresolved();
+    if (remaining.length === 0) break;
+
+    const source = readSource(relativePath);
+    if (!source) continue;
+    const sections = canonicalTaskSectionsFromSource(source, remaining);
+    if (sections.size === 0) continue;
+
+    for (const [taskId, compact] of sections) {
+      result.set(taskId, {
+        task_id: taskId,
+        source_path: relativePath,
+        source_blob_sha: git(
+          ['hash-object', relativePath],
+          { cwd: root },
+        ).stdout.trim(),
+        ...compact,
+        text_sha256: sha256(compact.text),
+        provenance: 'MARKED_TASK_HEADING_FALLBACK',
       });
     }
   }
@@ -663,7 +1170,50 @@ function addSnippet(map, token, snippet) {
   }
 }
 
-function collectTokenSnippets(root, relativePaths, tokens) {
+function collectExactFirstCellSnippets(root, relativePaths, tokens) {
+  const wanted = new Set(tokens);
+  const result = new Map();
+
+  if (wanted.size === 0) return result;
+
+  for (const relativePath of relativePaths) {
+    const absolute = path.join(root, ...relativePath.split('/'));
+    if (!fs.existsSync(absolute)) continue;
+
+    const source = fs.readFileSync(absolute, 'utf8').replace(/\r\n/gu, '\n');
+    const lines = source.split('\n');
+    const blobSha = git(['hash-object', relativePath], { cwd: root }).stdout.trim();
+
+    for (let index = 0; index < lines.length; index += 1) {
+      const cells = parseMarkdownRow(lines[index]);
+      if (!cells || cells.length === 0) continue;
+
+      const token = normalizeScalar(cells[0]);
+      if (!wanted.has(token)) continue;
+
+      const text = lines[index].trim();
+      const snippet = {
+        source_path: relativePath,
+        source_blob_sha: blobSha,
+        start_line: index + 1,
+        end_line: index + 1,
+        text,
+        text_sha256: sha256(text),
+      };
+
+      addSnippet(result, token, snippet);
+    }
+  }
+
+  return result;
+}
+
+function collectTokenSnippets(
+  root,
+  relativePaths,
+  tokens,
+  { contextBefore = 1, contextAfter = 1 } = {},
+) {
   const wanted = new Set(tokens);
   const result = new Map();
 
@@ -682,8 +1232,8 @@ function collectTokenSnippets(root, relativePaths, tokens) {
       const matched = uniqueSorted(ids.filter((id) => wanted.has(id)));
       if (matched.length === 0) continue;
 
-      const start = Math.max(0, index - 1);
-      const end = Math.min(lines.length, index + 2);
+      const start = Math.max(0, index - contextBefore);
+      const end = Math.min(lines.length, index + contextAfter + 1);
       const snippet = {
         source_path: relativePath,
         source_blob_sha: blobSha,
@@ -701,15 +1251,11 @@ function collectTokenSnippets(root, relativePaths, tokens) {
 }
 
 function extractTreqIds(taskSections) {
-  const ids = [];
-
-  for (const section of taskSections) {
-    ids.push(
-      ...(section?.text?.match(/\bTREQ-[A-Z0-9-]+\b/gu) ?? []),
-    );
-  }
-
-  return uniqueSorted(ids);
+  return uniqueSorted(
+    taskSections.flatMap(
+      (section) => section?.treq_declaration?.ids ?? [],
+    ),
+  );
 }
 
 function evidencePreview(value, limit = EVIDENCE_PREVIEW_CHAR_LIMIT) {
@@ -745,6 +1291,31 @@ function compactTaskEvidence(task) {
     preview: textPresent ? evidencePreview(task.text) : null,
     truncated: task?.truncated === true,
     original_chars: Number.isInteger(task?.original_chars) ? task.original_chars : 0,
+    treq_declaration: task?.treq_declaration ?? {
+      metadata_present: false,
+      section_present: false,
+      declared_count: null,
+      ids: [],
+      consistent: true,
+      detail: 'NO_TREQ_DECLARATION_METADATA',
+    },
+  };
+}
+
+function compactGapRoutingRow(row) {
+  return {
+    gap_id: row?.gap_id ?? null,
+    source_kind: row?.source_kind ?? null,
+    source_path: row?.source_path ?? null,
+    source_line: row?.source_line ?? null,
+    row_sha256: row?.row_sha256 ?? null,
+    reference: row?.reference ?? null,
+    class: row?.class ?? null,
+    context: row?.context ?? null,
+    summary_preview: evidencePreview(row?.summary, 120),
+    confidence: row?.confidence ?? null,
+    primary_task_ids: uniqueSorted(row?.primary_task_ids),
+    support_task_ids: uniqueSorted(row?.support_task_ids),
   };
 }
 
@@ -771,6 +1342,14 @@ function sourceEvidenceForPackage({
       text_sha256: null,
       truncated: false,
       original_chars: 0,
+      treq_declaration: {
+        metadata_present: false,
+        section_present: false,
+        declared_count: null,
+        ids: [],
+        consistent: true,
+        detail: 'TASK_SECTION_NOT_AVAILABLE',
+      },
     });
 
   const treqIds = extractTreqIds(
@@ -783,6 +1362,9 @@ function sourceEvidenceForPackage({
     tasks: taskSections.map((task) => compactTaskEvidence(task)),
     gaps: pkg.gap_ids.map((gapId) => ({
       gap_id: gapId,
+      routing_rows: pkg.gap_routing_rows
+        .filter((row) => row.gap_id === gapId)
+        .map((row) => compactGapRoutingRow(row)),
       snippets: (gapSnippetIndex.get(gapId) ?? [])
         .map((snippet) => compactSnippetEvidence(snippet)),
     })),
@@ -806,25 +1388,54 @@ function enrichEvidenceAnomalies(pkg, evidence, anomalies) {
         `${pkg.package_id}: no se pudo extraer bloque canónico para ${task.task_id}.`,
         { task_id: task.task_id },
       ));
+      continue;
+    }
+
+    if (
+      task.treq_declaration?.metadata_present === true
+      && task.treq_declaration?.consistent !== true
+    ) {
+      next.push(anomaly(
+        'TASK_TREQ_DECLARATION_MISMATCH',
+        'BLOCKING',
+        `${pkg.package_id}: ${task.task_id} conserva declaración TREQ inconsistente.`,
+        {
+          task_id: task.task_id,
+          declared_count: task.treq_declaration.declared_count,
+          resolved_ids: task.treq_declaration.ids,
+          detail: task.treq_declaration.detail,
+        },
+      ));
     }
   }
 
   for (const gap of evidence.gaps) {
-    if (gap.snippets.length === 0) {
+    if (gap.routing_rows.length === 0 && gap.snippets.length === 0) {
       next.push(anomaly(
-        'GAP_CANONICAL_SNIPPET_NOT_FOUND',
-        'REVIEW',
-        `${pkg.package_id}: no se encontró evidencia textual para ${gap.gap_id}.`,
+        'GAP_CANONICAL_EVIDENCE_NOT_FOUND',
+        'BLOCKING',
+        `${pkg.package_id}: no se encontró evidencia canónica para ${gap.gap_id}.`,
         { gap_id: gap.gap_id },
+      ));
+    }
+  }
+
+  for (const treq of evidence.treq) {
+    if (treq.snippets.length === 0) {
+      next.push(anomaly(
+        'TREQ_REGISTRY_ROW_NOT_FOUND',
+        'BLOCKING',
+        `${pkg.package_id}: no se encontró la fila canónica 04A para ${treq.treq_id}.`,
+        { treq_id: treq.treq_id },
       ));
     }
   }
 
   if (evidence.package_catalog.length === 0) {
     next.push(anomaly(
-      'PACKAGE_CATALOG_SNIPPET_NOT_FOUND',
-      'REVIEW',
-      `${pkg.package_id}: no se encontró evidencia textual directa en el catálogo canónico de packages.`,
+      'PACKAGE_CATALOG_ROW_NOT_FOUND',
+      'BLOCKING',
+      `${pkg.package_id}: no se encontró una fila propia en el catálogo canónico de packages.`,
     ));
   }
 
@@ -838,9 +1449,11 @@ function evidenceFingerprint(evidence) {
       task_id: entry.task_id,
       source_path: entry.source_path,
       text_sha256: entry.text_sha256,
+      treq_declaration: entry.treq_declaration,
     })),
     gaps: evidence.gaps.map((entry) => ({
       gap_id: entry.gap_id,
+      routing_row_sha256: entry.routing_rows.map((row) => row.row_sha256),
       snippet_sha256: entry.snippets.map((snippet) => snippet.text_sha256),
     })),
     treq: evidence.treq.map((entry) => ({
@@ -1002,13 +1615,45 @@ function dossierMarkdown(dossier, ledgerEntry) {
     `- Dependencies: ${dossier.relations.dependencies.length ? dossier.relations.dependencies.join(', ') : 'NONE'}`,
     `- Primary: ${dossier.package.primary_task_ids.length ? dossier.package.primary_task_ids.join(', ') : 'NONE'}`,
     `- Support: ${dossier.package.support_task_ids.length ? dossier.package.support_task_ids.join(', ') : 'NONE'}`,
+    `- Task routing source: ${dossier.package.task_routing_projection?.source_path ?? 'UNRESOLVED'}`,
     `- Dominant: ${dossier.package.dominant_task_id ?? 'NONE'}`,
     `- Gaps: ${dossier.package.gap_ids.length ? dossier.package.gap_ids.join(', ') : 'NONE'}`,
+    `- Gap memberships: ${dossier.package.gap_membership_count ?? 'UNRESOLVED'}`,
     `- TREQ: ${evidence.treq_ids.length ? evidence.treq_ids.join(', ') : 'NONE'}`,
     '',
-    '### Anomalías deterministas',
+    '### Routing canónico de brechas',
     '',
   ];
+
+  if (evidence.gaps.length === 0) {
+    parts.push('NO CANONICAL GAP ROUTING EXTRACTED', '');
+  } else {
+    for (const gap of evidence.gaps) {
+      if (gap.routing_rows.length === 0) {
+        parts.push(`- **${gap.gap_id}** — NO CANONICAL ROUTING ROW`, '');
+        continue;
+      }
+
+      for (const row of gap.routing_rows) {
+        const primary = row.primary_task_ids.length
+          ? row.primary_task_ids.join(', ')
+          : 'NONE';
+        const support = row.support_task_ids.length
+          ? row.support_task_ids.join(', ')
+          : 'NONE';
+        parts.push(
+          `- **${row.gap_id}** | PRIMARY: ${primary} | SUPPORT: ${support} `
+          + `| CLASS: ${row.class ?? 'UNRESOLVED'} | CONTEXT: ${row.context ?? 'UNRESOLVED'} `
+          + `| ${row.summary_preview ?? 'NO SUMMARY'} `
+          + `| SOURCE: ${row.source_path}:${row.source_line} `
+          + `| SHA: ${row.row_sha256}`,
+        );
+      }
+    }
+    parts.push('');
+  }
+
+  parts.push('### Anomalías deterministas', '');
 
   if (dossier.anomalies.length === 0) {
     parts.push('NONE', '');
@@ -1052,15 +1697,19 @@ function dossierMarkdown(dossier, ledgerEntry) {
     parts.push('```', '');
   }
 
-  parts.push('### Evidencia de brechas', '');
+  parts.push('### Evidencia auxiliar de brechas', '');
   for (const gap of evidence.gaps) {
     parts.push(`#### ${gap.gap_id}`, '');
-    if (gap.snippets.length === 0) {
-      parts.push('NO EVIDENCE EXTRACTED', '');
-      continue;
+
+    for (const row of gap.routing_rows) {
+      parts.push(
+        `Routing owner: \`${row.source_path}:${row.source_line}\` · SHA: \`${row.row_sha256}\``,
+        '',
+      );
     }
+
     for (const snippet of gap.snippets) {
-      parts.push(`Fuente: \`${snippet.source_path}:${snippet.start_line}-${snippet.end_line}\``);
+      parts.push(`Referencia auxiliar: \`${snippet.source_path}:${snippet.start_line}-${snippet.end_line}\``);
       parts.push('');
       parts.push('```text');
       parts.push(snippet.preview ?? 'NO PREVIEW AVAILABLE');
@@ -1119,6 +1768,9 @@ function writeOutputs(root, snapshot, ledger) {
         support_task_ids: dossier.package.support_task_ids,
         dominant_task_id: dossier.package.dominant_task_id,
         gap_ids: dossier.package.gap_ids,
+        gap_membership_count: dossier.package.gap_membership_count,
+        gap_routing_resolved: dossier.package.gap_routing_resolved,
+        task_routing_resolved: dossier.package.task_routing_resolved,
         layer: dossier.package.execution.layer,
         dependencies: dossier.relations.dependencies,
         dependents: dossier.relations.dependents,
@@ -1182,7 +1834,7 @@ function allGapIds(packages) {
 function allTreqIds(taskSections) {
   return uniqueSorted(
     [...taskSections.values()]
-      .flatMap((section) => section.text?.match(/\bTREQ-[A-Z0-9-]+\b/gu) ?? []),
+      .flatMap((section) => section?.treq_declaration?.ids ?? []),
   );
 }
 
@@ -1192,13 +1844,26 @@ export function buildFactoryFromPackages({
   gapSnippetIndex = new Map(),
   packageSnippetIndex = new Map(),
   treqSnippetIndex = new Map(),
+  gapRoutingByPackage = null,
+  taskRoutingByPackage = null,
   sourceManifest,
   previousLedger = null,
   generatedAt = new Date().toISOString(),
 } = {}) {
   const canonical = (rawPackages ?? [])
     .filter(({ source_kind: sourceKind }) => sourceKind === 'CANONICAL_GAP_PACKAGE')
-    .map((pkg) => normalizeReviewPackage(pkg))
+    .map((pkg) => normalizeReviewPackage(
+      pkg,
+      gapRoutingByPackage instanceof Map
+        ? (gapRoutingByPackage.get(pkg.package_id) ?? [])
+        : null,
+      taskRoutingByPackage instanceof Map
+        ? (taskRoutingByPackage.get(pkg.package_id) ?? {
+            primary_task_ids: [],
+            support_task_ids: [],
+          })
+        : null,
+    ))
     .sort((left, right) => sortPackageIds(left.package_id, right.package_id));
 
   const indexes = buildCrossPackageIndexes(canonical);
@@ -1291,18 +1956,51 @@ async function buildFactory(root) {
     fail(`PACKAGE REVIEW FACTORY exige 207 GAP-PKG; observados=${canonicalPackages.length}.`);
   }
 
-  const normalized = canonicalPackages.map((pkg) => normalizeReviewPackage(pkg));
+  const routingAbsolute = path.join(root, ...ROUTING_SOURCE.split('/'));
+  if (!fs.existsSync(routingAbsolute)) {
+    fail(`PACKAGE REVIEW FACTORY no encontró la fuente canónica de routing: ${ROUTING_SOURCE}.`);
+  }
+
+  const routingSource = fs.readFileSync(routingAbsolute, 'utf8');
+  const canonicalGapRoutingRows = parseCanonicalGapRouting(
+    routingSource,
+    ROUTING_SOURCE,
+  );
+  const gapRoutingByPackage = buildCanonicalGapRoutingIndex(canonicalGapRoutingRows);
+  const taskRoutingByPackage = parsePackageTaskRouting(routingSource);
+  const expectedMemberships = canonicalPackages.reduce(
+    (sum, pkg) => sum + (Number.isInteger(pkg?.gap_membership_count) ? pkg.gap_membership_count : 0),
+    0,
+  );
+
+  if (canonicalGapRoutingRows.length !== expectedMemberships) {
+    fail(
+      `PACKAGE REVIEW FACTORY no reconcilia membresías de brecha: `
+      + `scanner=${expectedMemberships}; routing=${canonicalGapRoutingRows.length}.`,
+    );
+  }
+
+  const normalized = canonicalPackages.map((pkg) => normalizeReviewPackage(
+    pkg,
+    gapRoutingByPackage.get(pkg.package_id) ?? [],
+    taskRoutingByPackage.get(pkg.package_id) ?? {
+      primary_task_ids: [],
+      support_task_ids: [],
+    },
+  ));
   const markdownPaths = listTrackedMarkdown(root);
   const relevantTaskIds = allRelevantTaskIds(normalized);
   const gapIds = allGapIds(normalized);
+  const taskSources = canonicalTaskSourceMap(normalized);
 
   const taskSectionIndex = collectTaskSections(
     root,
     markdownPaths,
     relevantTaskIds,
+    taskSources,
   );
 
-  const packageSnippetIndex = collectTokenSnippets(
+  const packageSnippetIndex = collectExactFirstCellSnippets(
     root,
     [CANONICAL_PACKAGE_SOURCE],
     normalized.map(({ package_id: packageId }) => packageId),
@@ -1310,18 +2008,15 @@ async function buildFactory(root) {
 
   const gapSnippetIndex = collectTokenSnippets(
     root,
-    fs.existsSync(path.join(root, ...ROUTING_SOURCE.split('/')))
-      ? [ROUTING_SOURCE]
-      : markdownPaths,
+    [ROUTING_SOURCE],
     gapIds,
+    { contextBefore: 0, contextAfter: 0 },
   );
 
   const treqIds = allTreqIds(taskSectionIndex);
-  const treqSnippetIndex = collectTokenSnippets(
+  const treqSnippetIndex = collectExactFirstCellSnippets(
     root,
-    fs.existsSync(path.join(root, ...TREQ_SOURCE.split('/')))
-      ? [TREQ_SOURCE]
-      : markdownPaths,
+    canonicalTreqRegistryPaths(root),
     treqIds,
   );
 
@@ -1331,6 +2026,8 @@ async function buildFactory(root) {
     gapSnippetIndex,
     packageSnippetIndex,
     treqSnippetIndex,
+    gapRoutingByPackage,
+    taskRoutingByPackage,
     sourceManifest,
     previousLedger,
   });
