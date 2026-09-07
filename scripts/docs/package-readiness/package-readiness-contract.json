@@ -538,7 +538,39 @@
           "foundation_id": "MRP015-040",
           "gate_id": "RESOURCE_MANIFEST_PASS",
           "owner_task": "SUPA-TRANS-015",
-          "evidence_ref": null
+          "evidence_ref": {
+            "schema_version": 1,
+            "foundation_id": "MRP015-040",
+            "gate_id": "RESOURCE_MANIFEST_PASS",
+            "owner_task": "SUPA-TRANS-015",
+            "producer": "docs:package:foundation:record",
+            "recorded_at": "2026-09-07T03:42:30.267Z",
+            "status": "PASS",
+            "checks": [
+              {
+                "id": "MIGRATION_MANIFEST",
+                "status": "PASS",
+                "exit_code": 0,
+                "stdout_sha256": "e9eeb962ffe310bf82c79108768be3bcbeab2297ac109809f51cec9fc3a86e76",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "id": "EXPECTED_RESOURCE_MANIFEST",
+                "status": "PASS",
+                "exit_code": 0,
+                "stdout_sha256": "53cac259f2f03ec84b69bc92aed0442d9e8d1aa1a73b4fbf5db30eca53bf1078",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "id": "STAGING_HOSTED_RESOURCE_PARITY",
+                "status": "PASS",
+                "exit_code": 0,
+                "stdout_sha256": "b5eac50d88058610800eb5191b58fcc8fe570527d77d10abc2233e6e0d5a9a6e",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              }
+            ],
+            "payload_sha256": "d5b0c8a170ad05f0a2a0cee76858ef4322bc263800d7f319377936aeea0fad8f"
+          }
         }
       ],
       "remote_environment_identity": {
