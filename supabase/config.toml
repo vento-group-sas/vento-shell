@@ -393,6 +393,19 @@ verify_jwt = false
 [functions.club-revenuecat-webhook]
 verify_jwt = false
 
+# MRP015-040: local source recovery; no hosted deployment is performed here.
+[functions.delivery-portal]
+verify_jwt = false
+
+[functions.order-message-notify]
+verify_jwt = true
+
+[functions.pass-register-push-token]
+verify_jwt = true
+
+[functions.payments-return]
+verify_jwt = false
+
 [analytics]
 enabled = true
 port = 54327

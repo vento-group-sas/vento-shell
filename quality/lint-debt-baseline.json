@@ -1,23 +1,115 @@
 {
   "schema_version": 1,
-  "baseline_id": "VENTO-SHELL-LINT-DEBT-2026-08-16",
+  "baseline_id": "VENTO-SHELL-LINT-DEBT-2026-09-06",
   "policy": "NO_NEW_DEBT_AND_TOUCHED_FILES_CLEAN",
   "issues": [
-    { "file": "scripts/docs/validate-process-application-integrity.mjs", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 1 },
-    { "file": "scripts/docs/validate-screen-catalog.mjs", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 1 },
-    { "file": "scripts/docs/validate-screen-contract-matrices.mjs", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 1 },
-    { "file": "scripts/docs/validate-screen-process-bindings.mjs", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 1 },
-    { "file": "supabase/functions/announcement-notify/index.ts", "rule": "@typescript-eslint/no-explicit-any", "severity": 2, "count": 1 },
-    { "file": "supabase/functions/attendance-report/index.ts", "rule": "@typescript-eslint/no-explicit-any", "severity": 2, "count": 3 },
-    { "file": "supabase/functions/attendance-report/index.ts", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 3 },
-    { "file": "supabase/functions/document-alerts/index.ts", "rule": "@typescript-eslint/no-explicit-any", "severity": 2, "count": 1 },
-    { "file": "supabase/functions/shift-runtime-processor/index.ts", "rule": "@typescript-eslint/no-explicit-any", "severity": 2, "count": 1 },
-    { "file": "supabase/functions/shift-runtime-processor/index.ts", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 2 },
-    { "file": "supabase/functions/shift-runtime-processor/index.ts", "rule": "prefer-const", "severity": 2, "count": 1 },
-    { "file": "supabase/functions/support-message-notify/index.ts", "rule": "@typescript-eslint/no-explicit-any", "severity": 2, "count": 1 },
-    { "file": "supabase/functions/wallet-pass/index.ts", "rule": "@typescript-eslint/no-unused-vars", "severity": 1, "count": 1 },
-    { "file": "templates/app-shell-standard/src/components/vento/standard/vento-chrome.tsx", "rule": "react-hooks/exhaustive-deps", "severity": 1, "count": 1 },
-    { "file": "templates/app-shell-standard/src/components/vento/standard/vento-chrome.tsx", "rule": "react-hooks/preserve-manual-memoization", "severity": 2, "count": 1 },
-    { "file": "templates/app-shell-standard/src/components/vento/standard/vento-chrome.tsx", "rule": "react-hooks/set-state-in-effect", "severity": 2, "count": 1 }
+    {
+      "file": "scripts/docs/validate-process-application-integrity.mjs",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "scripts/docs/validate-screen-catalog.mjs",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "scripts/docs/validate-screen-contract-matrices.mjs",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "scripts/docs/validate-screen-process-bindings.mjs",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/announcement-notify/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/attendance-report/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 3
+    },
+    {
+      "file": "supabase/functions/attendance-report/index.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 3
+    },
+    {
+      "file": "supabase/functions/delivery-portal/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 3
+    },
+    {
+      "file": "supabase/functions/document-alerts/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/order-message-notify/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/shift-runtime-processor/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/shift-runtime-processor/index.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 2
+    },
+    {
+      "file": "supabase/functions/shift-runtime-processor/index.ts",
+      "rule": "prefer-const",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/support-message-notify/index.ts",
+      "rule": "@typescript-eslint/no-explicit-any",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "supabase/functions/wallet-pass/index.ts",
+      "rule": "@typescript-eslint/no-unused-vars",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "templates/app-shell-standard/src/components/vento/standard/vento-chrome.tsx",
+      "rule": "react-hooks/exhaustive-deps",
+      "severity": 1,
+      "count": 1
+    },
+    {
+      "file": "templates/app-shell-standard/src/components/vento/standard/vento-chrome.tsx",
+      "rule": "react-hooks/preserve-manual-memoization",
+      "severity": 2,
+      "count": 1
+    },
+    {
+      "file": "templates/app-shell-standard/src/components/vento/standard/vento-chrome.tsx",
+      "rule": "react-hooks/set-state-in-effect",
+      "severity": 2,
+      "count": 1
+    }
   ]
 }

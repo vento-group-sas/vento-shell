@@ -13,6 +13,7 @@ const MANAGEMENT_BASE_URL = 'https://api.supabase.com';
 const CONFIG_RELATIVE = 'supabase/config.toml';
 const MANIFEST_RELATIVE = 'supabase/MIGRATION_MANIFEST.md';
 const FUNCTIONS_RELATIVE = 'supabase/functions';
+const READINESS_CONTRACT_RELATIVE = 'scripts/docs/package-readiness/package-readiness-contract.json';
 const OUTPUT_PREFIX = '.delivery/';
 const PROCESS_OUTPUT_MAX_BYTES = 32 * 1024 * 1024;
 const ALLOWED_REMOTE_ROLES = new Set(['staging', 'production']);
@@ -28,6 +29,7 @@ const DEFAULT_SUPABASE_SECRET_NAMES = new Set([
   'SUPABASE_SERVICE_ROLE_KEY',
 ]);
 const MANAGED_SCHEMAS = new Set([
+  '_realtime',
   'auth',
   'extensions',
   'graphql',
@@ -35,6 +37,7 @@ const MANAGED_SCHEMAS = new Set([
   'information_schema',
   'net',
   'pg_catalog',
+  'pgbouncer',
   'realtime',
   'storage',
   'supabase_functions',
@@ -50,8 +53,8 @@ with governed_schemas as (
   from pg_catalog.pg_namespace as n
   where n.nspname !~ '^pg_'
     and n.nspname not in (
-      'auth', 'extensions', 'graphql', 'graphql_public', 'information_schema',
-      'net', 'realtime', 'storage', 'supabase_functions', 'supabase_migrations',
+      '_realtime', 'auth', 'extensions', 'graphql', 'graphql_public', 'information_schema',
+      'net', 'pgbouncer', 'realtime', 'storage', 'supabase_functions', 'supabase_migrations',
       'vault', 'cron', 'vital'
     )
 ),
@@ -162,34 +165,59 @@ policies as (
 ),
 table_grants as (
   select coalesce(jsonb_agg(jsonb_build_object(
-    'schema', g.table_schema,
-    'relation', g.table_name,
-    'grantee', g.grantee,
-    'privilege', g.privilege_type,
-    'grantable', g.is_grantable
-  ) order by g.table_schema, g.table_name, g.grantee, g.privilege_type), '[]'::jsonb) as value
-  from information_schema.table_privileges as g
-  where g.table_schema in (select nspname from governed_schemas)
-    and g.grantee in ('anon', 'authenticated', 'service_role')
+    'schema', n.nspname,
+    'relation', c.relname,
+    'grantor', pg_catalog.pg_get_userbyid(a.grantor),
+    'grantee', case
+      when a.grantee = 0 then 'PUBLIC'
+      else pg_catalog.pg_get_userbyid(a.grantee)
+    end,
+    'privilege', a.privilege_type,
+    'grantable', a.is_grantable
+  ) order by
+    n.nspname,
+    c.relname,
+    case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end,
+    a.privilege_type,
+    pg_catalog.pg_get_userbyid(a.grantor)
+  ), '[]'::jsonb) as value
+  from pg_catalog.pg_class as c
+  join governed_schemas as n on n.oid = c.relnamespace
+  cross join lateral pg_catalog.aclexplode(c.relacl) as a
+  where c.relkind in ('r', 'p', 'v', 'm', 'f')
+    and (
+      case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end
+    ) in ('anon', 'authenticated', 'service_role')
 ),
 routine_grants as (
   select coalesce(jsonb_agg(jsonb_build_object(
-    'schema', g.routine_schema,
-    'routine', g.routine_name,
-    'grantee', g.grantee,
-    'privilege', g.privilege_type,
-    'grantable', g.is_grantable
-  ) order by g.routine_schema, g.routine_name, g.grantee, g.privilege_type), '[]'::jsonb) as value
-  from information_schema.routine_privileges as g
-  where g.routine_schema in (select nspname from governed_schemas)
-    and g.grantee in ('anon', 'authenticated', 'service_role', 'PUBLIC')
-),
-extensions as (
-  select coalesce(jsonb_agg(jsonb_build_object(
-    'name', e.extname,
-    'version', e.extversion
-  ) order by e.extname), '[]'::jsonb) as value
-  from pg_catalog.pg_extension as e
+    'schema', n.nspname,
+    'routine', p.proname,
+    'identity_args', pg_catalog.pg_get_function_identity_arguments(p.oid),
+    'grantor', pg_catalog.pg_get_userbyid(a.grantor),
+    'grantee', case
+      when a.grantee = 0 then 'PUBLIC'
+      else pg_catalog.pg_get_userbyid(a.grantee)
+    end,
+    'privilege', a.privilege_type,
+    'grantable', a.is_grantable
+  ) order by
+    n.nspname,
+    p.proname,
+    pg_catalog.pg_get_function_identity_arguments(p.oid),
+    case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end,
+    a.privilege_type,
+    pg_catalog.pg_get_userbyid(a.grantor)
+  ), '[]'::jsonb) as value
+  from pg_catalog.pg_proc as p
+  join governed_schemas as n on n.oid = p.pronamespace
+  cross join lateral pg_catalog.aclexplode(
+    coalesce(p.proacl, pg_catalog.acldefault('f'::"char", p.proowner))
+  ) as a
+  where p.prokind in ('f', 'p')
+    and (
+      case when a.grantee = 0 then 'PUBLIC' else pg_catalog.pg_get_userbyid(a.grantee) end
+    ) in ('anon', 'authenticated', 'service_role', 'PUBLIC')
 ),
 publications as (
   select coalesce(jsonb_agg(jsonb_build_object(
@@ -217,7 +245,6 @@ types as (
   where t.typtype in ('e', 'd')
 )
 select jsonb_build_object(
-  'postgres_version', current_setting('server_version'),
   'governed_schemas', coalesce((select jsonb_agg(nspname order by nspname) from governed_schemas), '[]'::jsonb),
   'relations', (select value from relations),
   'views', (select value from views),
@@ -229,7 +256,6 @@ select jsonb_build_object(
   'policies', (select value from policies),
   'table_grants', (select value from table_grants),
   'routine_grants', (select value from routine_grants),
-  'extensions', (select value from extensions),
   'publications', (select value from publications),
   'types', (select value from types),
   'vital_boundary', jsonb_build_object(
@@ -237,6 +263,13 @@ select jsonb_build_object(
     'included_in_governed_schemas', false
   )
 )::text as fingerprint;
+`;
+
+const EXTENSION_CAPABILITIES_SQL = String.raw`
+select coalesce(jsonb_agg(jsonb_build_object(
+  'name', e.extname
+) order by e.extname), '[]'::jsonb)::text as extension_capabilities
+from pg_catalog.pg_extension as e;
 `;
 
 const STORAGE_BUCKETS_SQL = String.raw`
@@ -261,6 +294,12 @@ select coalesce(jsonb_agg(jsonb_build_object(
 from cron.job as j;
 `;
 
+const INTERNAL_JOB_SECRET_KEYS_SQL = String.raw`
+select coalesce(jsonb_agg(s.key order by s.key), '[]'::jsonb)::text as internal_job_secret_keys
+from public.internal_job_secrets as s
+where length(btrim(coalesce(s.secret_value, ''))) > 0;
+`;
+
 function fail(code, detail = '') {
   const error = new Error(detail ? `${code}:${detail}` : code);
   error.exitCode = 1;
@@ -277,7 +316,11 @@ function normalizeRepoPath(value) {
 
 function canonicalBytes(value) {
   const input = Buffer.isBuffer(value) ? value : Buffer.from(String(value ?? ''), 'utf8');
-  return Buffer.from(input.toString('utf8').replaceAll('\r\n', '\n'), 'utf8');
+  const normalized = input
+    .toString('utf8')
+    .replace(/^\uFEFF/u, '')
+    .replaceAll('\r\n', '\n');
+  return Buffer.from(normalized, 'utf8');
 }
 
 export function sha256(value) {
@@ -406,6 +449,19 @@ function parseByteSize(value) {
   return Math.round(amount * multipliers[unit]);
 }
 
+const FUNCTION_SOURCE_EXTENSIONS = new Set([
+  '.ts',
+  '.tsx',
+  '.js',
+  '.jsx',
+  '.mjs',
+  '.cjs',
+  '.mts',
+  '.cts',
+  '.json',
+  '.jsonc',
+]);
+
 function listFilesRecursive(directory, prefix = '') {
   const entries = fs.readdirSync(directory, { withFileTypes: true })
     .sort((left, right) => left.name.localeCompare(right.name, 'en'));
@@ -418,6 +474,80 @@ function listFilesRecursive(directory, prefix = '') {
     else if (entry.isFile()) files.push(relative);
   }
   return files;
+}
+
+function npmrcHasEffectiveConfiguration(source) {
+  return canonicalBytes(source)
+    .toString('utf8')
+    .split('\n')
+    .some((line) => {
+      const trimmed = line.trim();
+      return trimmed && !trimmed.startsWith('#') && !trimmed.startsWith(';');
+    });
+}
+
+function denoJsonHasEffectiveConfiguration(source) {
+  const text = canonicalBytes(source).toString('utf8').trim();
+  if (!text) return false;
+  let parsed;
+  try {
+    parsed = JSON.parse(text);
+  } catch {
+    return true;
+  }
+  if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return true;
+  const keys = Object.keys(parsed);
+  if (keys.length === 0) return false;
+  if (
+    keys.length === 1
+    && keys[0] === 'imports'
+    && parsed.imports
+    && typeof parsed.imports === 'object'
+    && !Array.isArray(parsed.imports)
+    && Object.keys(parsed.imports).length === 0
+  ) {
+    return false;
+  }
+  return true;
+}
+
+function functionSourcePaths(directory, configSection, slug) {
+  if (
+    Object.prototype.hasOwnProperty.call(configSection, 'static_files')
+    && (
+      !Array.isArray(configSection.static_files)
+      || configSection.static_files.length > 0
+    )
+  ) {
+    fail('EDGE_FUNCTION_STATIC_FILES_PARITY_UNSUPPORTED', slug);
+  }
+
+  const npmrcPath = path.join(directory, '.npmrc');
+
+  if (
+    fs.existsSync(npmrcPath)
+    && npmrcHasEffectiveConfiguration(fs.readFileSync(npmrcPath))
+  ) {
+    fail('EDGE_FUNCTION_NPMRC_PARITY_UNSUPPORTED', slug);
+  }
+
+  return listFilesRecursive(directory)
+    .filter((relative) => {
+      const normalized = normalizeRepoPath(relative);
+      const basename = path.posix.basename(normalized);
+
+      if (basename === '.npmrc') return false;
+      if (basename === 'deno.json') {
+        const absolute = path.join(directory, ...normalized.split('/'));
+        if (!denoJsonHasEffectiveConfiguration(fs.readFileSync(absolute))) return false;
+      }
+      if (basename === 'deno.lock') return true;
+
+      return FUNCTION_SOURCE_EXTENSIONS.has(
+        path.posix.extname(normalized).toLowerCase(),
+      );
+    })
+    .sort((left, right) => left.localeCompare(right, 'en'));
 }
 
 function referencedSecretNames(source) {
@@ -445,7 +575,8 @@ export function inventoryEdgeFunctions({ root = repoRootFromModule(), configSect
   return entries.map((entry) => {
     const slug = entry.name;
     const directory = path.join(functionsRoot, slug);
-    const files = listFilesRecursive(directory).map((relative) => {
+    const functionConfig = config[`functions.${slug}`] ?? {};
+    const files = functionSourcePaths(directory, functionConfig, slug).map((relative) => {
       const content = canonicalBytes(fs.readFileSync(path.join(directory, ...relative.split('/'))));
       return {
         path: normalizeRepoPath(relative),
@@ -458,7 +589,7 @@ export function inventoryEdgeFunctions({ root = repoRootFromModule(), configSect
       const source = fs.readFileSync(path.join(directory, ...file.path.split('/')), 'utf8');
       for (const name of referencedSecretNames(source)) secrets.add(name);
     }
-    const verifyJwt = config[`functions.${slug}`]?.verify_jwt ?? true;
+    const verifyJwt = functionConfig.verify_jwt ?? true;
     return {
       slug,
       verify_jwt: Boolean(verifyJwt),
@@ -496,6 +627,263 @@ function supabaseCliVersion(root) {
   );
   if (result.status !== 0) return null;
   return safeAscii(result.stdout || result.stderr).split(/\r?\n/u)[0].trim() || null;
+}
+
+function normalizeEdgeEnvironmentNameList(value, code, minimum = 0) {
+  if (!Array.isArray(value)) fail(code);
+
+  const names = value.map((entry) => String(entry ?? '').trim());
+
+  if (
+    names.length < minimum
+    || names.some((name) => !/^[A-Z][A-Z0-9_]*$/u.test(name))
+    || new Set(names).size !== names.length
+  ) {
+    fail(code);
+  }
+
+  return names.sort((left, right) => left.localeCompare(right, 'en'));
+}
+
+function normalizeEdgeEnvironmentRequirements(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    fail('EDGE_ENVIRONMENT_REQUIREMENTS_INVALID');
+  }
+
+  const requiredAll = normalizeEdgeEnvironmentNameList(
+    value.required_all,
+    'EDGE_ENVIRONMENT_REQUIRED_ALL_INVALID',
+  );
+
+  const optionalOrDefaulted = normalizeEdgeEnvironmentNameList(
+    value.optional_or_defaulted,
+    'EDGE_ENVIRONMENT_OPTIONAL_INVALID',
+  );
+
+  const localOnly = normalizeEdgeEnvironmentNameList(
+    value.local_only ?? [],
+    'EDGE_ENVIRONMENT_LOCAL_ONLY_INVALID',
+  );
+
+  if (!Array.isArray(value.required_any_of)) {
+    fail('EDGE_ENVIRONMENT_REQUIRED_ANY_OF_INVALID');
+  }
+
+  const requiredAnyOf = value.required_any_of.map((entry) => {
+    const requirementId = String(entry?.requirement_id ?? '').trim();
+
+    if (!/^[A-Z][A-Z0-9_]*$/u.test(requirementId)) {
+      fail('EDGE_ENVIRONMENT_REQUIREMENT_ID_INVALID');
+    }
+
+    return {
+      requirement_id: requirementId,
+      names: normalizeEdgeEnvironmentNameList(
+        entry?.names,
+        'EDGE_ENVIRONMENT_REQUIRED_ANY_OF_NAMES_INVALID',
+        2,
+      ),
+    };
+  }).sort((left, right) =>
+    left.requirement_id.localeCompare(right.requirement_id, 'en'));
+
+  if (
+    new Set(requiredAnyOf.map((entry) => entry.requirement_id)).size
+    !== requiredAnyOf.length
+  ) {
+    fail('EDGE_ENVIRONMENT_REQUIREMENT_ID_DUPLICATED');
+  }
+
+  const classifiedNames = [
+    ...requiredAll,
+    ...optionalOrDefaulted,
+    ...localOnly,
+    ...requiredAnyOf.flatMap((entry) => entry.names),
+  ];
+
+  if (new Set(classifiedNames).size !== classifiedNames.length) {
+    fail('EDGE_ENVIRONMENT_NAME_CLASSIFIED_MORE_THAN_ONCE');
+  }
+
+  return {
+    required_all: requiredAll,
+    required_any_of: requiredAnyOf,
+    optional_or_defaulted: optionalOrDefaulted,
+    local_only: localOnly,
+  };
+}
+
+function normalizeHostedEnvironmentContracts(value) {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) {
+    fail('HOSTED_ENVIRONMENT_CONTRACTS_INVALID');
+  }
+
+  const normalized = {};
+  for (const [rawRole, rawContract] of Object.entries(value)) {
+    const role = String(rawRole ?? '').trim().toUpperCase();
+    if (!['STAGING', 'PRODUCTION'].includes(role) || normalized[role]) {
+      fail('HOSTED_ENVIRONMENT_ROLE_INVALID', role || 'EMPTY');
+    }
+    if (!rawContract || typeof rawContract !== 'object' || Array.isArray(rawContract)) {
+      fail('HOSTED_ENVIRONMENT_CONTRACT_INVALID', role);
+    }
+
+    const config = rawContract.config;
+    const dataApi = config?.data_api;
+    const auth = config?.auth;
+    const storage = config?.storage;
+    const realtime = config?.realtime;
+    const edgeFunctions = rawContract.edge_functions;
+    const edgeEnvironmentRequirements = rawContract.edge_environment_requirements === undefined
+      ? null
+      : normalizeEdgeEnvironmentRequirements(rawContract.edge_environment_requirements);
+
+    const normalizeUniqueStrings = (entries, code) => {
+      if (!Array.isArray(entries)) fail(code, role);
+      const values = entries.map((entry) => String(entry ?? '').trim());
+      if (values.some((entry) => !entry) || new Set(values).size !== values.length) fail(code, role);
+      return values;
+    };
+
+    const schemas = normalizeUniqueStrings(
+      dataApi?.schemas,
+      'HOSTED_DATA_API_SCHEMAS_INVALID',
+    );
+    const extraSearchPath = normalizeUniqueStrings(
+      dataApi?.extra_search_path,
+      'HOSTED_DATA_API_SEARCH_PATH_INVALID',
+    );
+    const maxRows = Number(dataApi?.max_rows);
+    if (!Number.isInteger(maxRows) || maxRows <= 0) {
+      fail('HOSTED_DATA_API_MAX_ROWS_INVALID', role);
+    }
+
+    if (
+      typeof auth?.signup_enabled !== 'boolean'
+      || typeof auth?.anonymous_sign_ins_enabled !== 'boolean'
+      || !Number.isInteger(Number(auth?.jwt_expiry))
+      || Number(auth.jwt_expiry) <= 0
+      || !/^https?:\/\//u.test(String(auth?.site_url ?? ''))
+    ) {
+      fail('HOSTED_AUTH_CONTRACT_INVALID', role);
+    }
+
+    const fileSizeLimitBytes = Number(storage?.file_size_limit_bytes);
+    if (!Number.isFinite(fileSizeLimitBytes) || fileSizeLimitBytes <= 0) {
+      fail('HOSTED_STORAGE_CONTRACT_INVALID', role);
+    }
+    if (typeof realtime?.suspended !== 'boolean') {
+      fail('HOSTED_REALTIME_CONTRACT_INVALID', role);
+    }
+
+    if (
+      !edgeFunctions
+      || typeof edgeFunctions !== 'object'
+      || Array.isArray(edgeFunctions)
+      || edgeFunctions.default_disposition !== 'REQUIRED_HOSTED'
+      || !Array.isArray(edgeFunctions.solo_local)
+    ) {
+      fail('HOSTED_EDGE_FUNCTION_CONTRACT_INVALID', role);
+    }
+
+    const soloLocal = edgeFunctions.solo_local
+      .map((entry) => String(entry ?? '').trim())
+      .sort((left, right) => left.localeCompare(right, 'en'));
+    if (
+      soloLocal.some((slug) => !/^[a-z0-9][a-z0-9-]*$/u.test(slug))
+      || new Set(soloLocal).size !== soloLocal.length
+    ) {
+      fail('HOSTED_EDGE_FUNCTION_SOLO_LOCAL_INVALID', role);
+    }
+
+    normalized[role] = {
+      config: {
+        data_api: {
+          schemas,
+          extra_search_path: extraSearchPath,
+          max_rows: maxRows,
+        },
+        auth: {
+          signup_enabled: auth.signup_enabled,
+          anonymous_sign_ins_enabled: auth.anonymous_sign_ins_enabled,
+          jwt_expiry: Number(auth.jwt_expiry),
+          site_url: String(auth.site_url),
+        },
+        storage: { file_size_limit_bytes: fileSizeLimitBytes },
+        realtime: { suspended: realtime.suspended },
+      },
+      edge_functions: {
+        default_disposition: 'REQUIRED_HOSTED',
+        solo_local: soloLocal,
+      },
+      edge_environment_requirements: edgeEnvironmentRequirements,
+    };
+  }
+
+  if (!normalized.STAGING) fail('HOSTED_STAGING_ENVIRONMENT_CONTRACT_MISSING');
+  return normalized;
+}
+
+function readHostedResourceBaseline(root) {
+  const absolute = path.join(root, ...READINESS_CONTRACT_RELATIVE.split('/'));
+  const contract = JSON.parse(fs.readFileSync(absolute, 'utf8'));
+  const baseline = contract?.physical_dependencies?.supabase_pre_e5_foundation?.hosted_resource_baseline;
+
+  if (
+    !baseline
+    || baseline.schema_version !== 3
+    || !Array.isArray(baseline.cron_jobs)
+    || !Array.isArray(baseline.internal_job_secret_keys)
+  ) {
+    fail('HOSTED_RESOURCE_BASELINE_MISSING');
+  }
+
+  const cronJobs = baseline.cron_jobs.map((entry) => {
+    if (!entry || typeof entry !== 'object' || Array.isArray(entry)) {
+      fail('HOSTED_CRON_CONTRACT_INVALID');
+    }
+    if ('command' in entry || 'command_sha256' in entry) {
+      fail('HOSTED_CRON_COMMAND_FORBIDDEN');
+    }
+    const jobname = String(entry.jobname ?? '').trim();
+    const schedule = String(entry.schedule ?? '').trim();
+    if (!jobname || !schedule || typeof entry.active !== 'boolean') {
+      fail('HOSTED_CRON_CONTRACT_INVALID', jobname || 'UNKNOWN');
+    }
+    return { jobname, schedule, active: entry.active };
+  }).sort((left, right) =>
+    left.jobname.localeCompare(right.jobname, 'en')
+    || left.schedule.localeCompare(right.schedule, 'en')
+    || Number(left.active) - Number(right.active));
+
+  const internalJobSecretKeys = [...new Set(
+    baseline.internal_job_secret_keys
+      .map((entry) => String(entry ?? '').trim())
+      .filter(Boolean)
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  if (internalJobSecretKeys.length !== baseline.internal_job_secret_keys.length) {
+    fail('HOSTED_INTERNAL_SECRET_KEY_CONTRACT_INVALID');
+  }
+
+  if (baseline.cron_commands_forbidden !== true || baseline.secret_values_forbidden !== true) {
+    fail('HOSTED_RESOURCE_REDACTION_CONTRACT_INVALID');
+  }
+
+  const edgeEnvironmentRequirements = normalizeEdgeEnvironmentRequirements(
+    baseline.edge_environment_requirements,
+  );
+  const environmentContracts = normalizeHostedEnvironmentContracts(
+    baseline.environment_contracts,
+  );
+
+  return {
+    schema_version: 2,
+    cron_jobs: cronJobs,
+    internal_job_secret_keys: internalJobSecretKeys,
+    edge_environment_requirements: edgeEnvironmentRequirements,
+    environment_contracts: environmentContracts,
+  };
 }
 
 function expectedConfigContract(sections) {
@@ -537,9 +925,32 @@ export function buildExpectedBaseline({ root = repoRootFromModule() } = {}) {
   const manifestSource = fs.readFileSync(manifestPath, 'utf8');
   const configSections = parseToml(configSource);
   const edgeFunctions = inventoryEdgeFunctions({ root, configSections });
+  const hostedResources = readHostedResourceBaseline(root);
   const candidate = gitCandidate(root);
   const secretNames = [...new Set(edgeFunctions.flatMap((entry) => entry.referenced_secret_names))]
     .sort((left, right) => left.localeCompare(right, 'en'));
+  const stagingContract = hostedResources.environment_contracts.STAGING;
+  const soloLocal = new Set(stagingContract.edge_functions.solo_local);
+  const localFunctionSlugs = new Set(edgeFunctions.map((entry) => entry.slug));
+  for (const slug of soloLocal) {
+    if (!localFunctionSlugs.has(slug)) {
+      fail('HOSTED_EDGE_FUNCTION_SOLO_LOCAL_SOURCE_MISSING', slug);
+    }
+  }
+  const hostedFunctionSecrets = new Set(
+    edgeFunctions
+      .filter((entry) => !soloLocal.has(entry.slug))
+      .flatMap((entry) => entry.referenced_secret_names),
+  );
+  const exclusiveLocalOnlySecrets = secretNames
+    .filter((name) => !hostedFunctionSecrets.has(name))
+    .sort((left, right) => left.localeCompare(right, 'en'));
+  if (
+    stableStringify(exclusiveLocalOnlySecrets)
+    !== stableStringify(hostedResources.edge_environment_requirements.local_only)
+  ) {
+    fail('HOSTED_LOCAL_ONLY_SECRET_CONTRACT_MISMATCH');
+  }
   const core = {
     schema_version: 1,
     authority: 'VENTO_SHELL_VERSIONED_EXPECTED_STATE',
@@ -560,6 +971,7 @@ export function buildExpectedBaseline({ root = repoRootFromModule() } = {}) {
     },
     edge_functions: edgeFunctions,
     referenced_secret_names: secretNames,
+    hosted_resources: hostedResources,
     toolchain: {
       node: process.version,
       supabase_cli: supabaseCliVersion(root),
@@ -625,8 +1037,22 @@ function runLocalSql(root, projectId, query) {
   return normalizeSqlValue(result.stdout.trim());
 }
 
-function extensionNames(fingerprint) {
-  return new Set((fingerprint?.extensions ?? []).map((entry) => String(entry?.name ?? '')));
+function extensionNames(capabilities) {
+  return new Set((capabilities ?? []).map((entry) => String(entry?.name ?? '')));
+}
+
+function requiredExtensionCapabilities(expected, localObserved) {
+  const required = new Set();
+  if (Array.isArray(expected?.hosted_resources?.cron_jobs)
+    && expected.hosted_resources.cron_jobs.length > 0) {
+    required.add('pg_cron');
+  }
+  const functions = localObserved?.sql_fingerprint?.functions ?? [];
+  if (functions.some((entry) =>
+    /\bnet\.http_(?:get|post|delete)\s*\(/u.test(String(entry?.definition ?? '')))) {
+    required.add('pg_net');
+  }
+  return [...required].sort((left, right) => left.localeCompare(right, 'en'));
 }
 
 export function observeLocalDatabase({ root = repoRootFromModule(), expected = null } = {}) {
@@ -636,10 +1062,11 @@ export function observeLocalDatabase({ root = repoRootFromModule(), expected = n
   if (!projectId) fail('LOCAL_PROJECT_ID_MISSING');
   const harness = runHarness({ mode: 'incremental', root });
   const fingerprint = runLocalSql(root, projectId, FINGERPRINT_SQL);
+  const extensionCapabilities = runLocalSql(root, projectId, EXTENSION_CAPABILITIES_SQL);
   const storageBuckets = runLocalSql(root, projectId, STORAGE_BUCKETS_SQL);
   let cronJobs = [];
   let cronEvidence = 'NOT_APPLICABLE';
-  if (extensionNames(fingerprint).has('pg_cron')) {
+  if (extensionNames(extensionCapabilities).has('pg_cron')) {
     cronJobs = runLocalSql(root, projectId, CRON_JOBS_SQL);
     cronEvidence = 'PASS';
   }
@@ -665,6 +1092,7 @@ export function observeLocalDatabase({ root = repoRootFromModule(), expected = n
       pass: true,
     },
     sql_fingerprint: fingerprint,
+    extension_capabilities: extensionCapabilities,
     storage_buckets: storageBuckets,
     cron: {
       evidence: cronEvidence,
@@ -713,6 +1141,151 @@ async function managementRequest({ token, pathname, method = 'GET', body = null,
   });
   if (!response.ok) fail('MANAGEMENT_API_HTTP', `${response.status}:${pathname}`);
   return response.json();
+}
+
+function multipartBoundary(contentType) {
+  const match = /boundary=(?:"([^"]+)"|([^;]+))/iu.exec(String(contentType ?? ''));
+  const boundary = String(match?.[1] ?? match?.[2] ?? '').trim();
+  if (!boundary) fail('REMOTE_FUNCTION_MULTIPART_BOUNDARY_MISSING');
+  return boundary;
+}
+
+function multipartHeaders(raw) {
+  const headers = {};
+  for (const line of String(raw ?? '').split('\r\n')) {
+    const separator = line.indexOf(':');
+    if (separator < 0) continue;
+    const name = line.slice(0, separator).trim().toLowerCase();
+    const value = line.slice(separator + 1).trim();
+    if (name) headers[name] = value;
+  }
+  return headers;
+}
+
+function dispositionParameter(value, parameter) {
+  const expression = new RegExp(`(?:^|;)\\s*${parameter}=\"([^\"]*)\"`, 'iu');
+  return expression.exec(String(value ?? ''))?.[1] ?? null;
+}
+
+function normalizeRemoteFunctionFileName(slug, rawName) {
+  const name = normalizeRepoPath(rawName);
+  const segments = name.split('/');
+  if (
+    !name
+    || name.includes('\u0000')
+    || name.startsWith('/')
+    || /^[A-Za-z]:\//u.test(name)
+    || segments.includes('..')
+  ) {
+    fail('REMOTE_FUNCTION_FILE_PATH_UNSAFE', slug);
+  }
+  return name;
+}
+
+function parseRemoteFunctionMultipartMetadata(slug, payload) {
+  const source = Buffer.isBuffer(payload) ? payload.toString('utf8') : String(payload ?? '');
+  try {
+    const parsed = JSON.parse(source.trim());
+    const entrypointPath =
+      typeof parsed?.deno2_entrypoint_path === 'string' && parsed.deno2_entrypoint_path.trim()
+        ? parsed.deno2_entrypoint_path.trim()
+        : typeof parsed?.entrypoint_path === 'string' && parsed.entrypoint_path.trim()
+          ? parsed.entrypoint_path.trim()
+          : null;
+    return entrypointPath;
+  } catch {
+    fail('REMOTE_FUNCTION_MULTIPART_METADATA_INVALID', slug);
+  }
+}
+
+export function parseRemoteFunctionMultipart(slug, payload, contentType) {
+  const body = Buffer.isBuffer(payload) ? payload : Buffer.from(payload);
+  const boundary = multipartBoundary(contentType);
+  const delimiter = Buffer.from(`--${boundary}`, 'utf8');
+  const nextPrefix = Buffer.from(`\r\n--${boundary}`, 'utf8');
+  const headerSeparator = Buffer.from('\r\n\r\n', 'utf8');
+  const files = [];
+  let entrypointPath = null;
+
+  let boundaryIndex = body.indexOf(delimiter);
+  if (boundaryIndex < 0) fail('REMOTE_FUNCTION_MULTIPART_OPENING_BOUNDARY_MISSING', slug);
+
+  while (boundaryIndex >= 0) {
+    let cursor = boundaryIndex + delimiter.length;
+
+    if (body[cursor] === 45 && body[cursor + 1] === 45) break;
+
+    if (body[cursor] !== 13 || body[cursor + 1] !== 10) {
+      fail('REMOTE_FUNCTION_MULTIPART_INVALID_BOUNDARY', slug);
+    }
+    cursor += 2;
+
+    const headerEnd = body.indexOf(headerSeparator, cursor);
+    if (headerEnd < 0) fail('REMOTE_FUNCTION_MULTIPART_HEADERS_MISSING', slug);
+
+    const headers = multipartHeaders(body.subarray(cursor, headerEnd).toString('utf8'));
+    const partStart = headerEnd + headerSeparator.length;
+    const nextBoundary = body.indexOf(nextPrefix, partStart);
+
+    if (nextBoundary < 0) fail('REMOTE_FUNCTION_MULTIPART_CLOSING_BOUNDARY_MISSING', slug);
+
+    const disposition = headers['content-disposition'] ?? '';
+    const fieldName = dispositionParameter(disposition, 'name');
+    const filename =
+      headers['supabase-path']
+      ?? dispositionParameter(disposition, 'filename');
+
+    if (filename) {
+      files.push({
+        name: normalizeRemoteFunctionFileName(slug, filename),
+        content: Buffer.from(body.subarray(partStart, nextBoundary)),
+      });
+    } else if (fieldName === 'metadata') {
+      entrypointPath = parseRemoteFunctionMultipartMetadata(
+        slug,
+        body.subarray(partStart, nextBoundary),
+      );
+    }
+
+    boundaryIndex = nextBoundary + 2;
+  }
+
+  if (files.length === 0) {
+    fail('REMOTE_FUNCTION_MULTIPART_FILES_MISSING', slug);
+  }
+
+  return { files, entrypoint_path: entrypointPath };
+}
+
+export async function fetchRemoteFunctionBody({
+  token,
+  projectRef,
+  slug,
+  fetchImpl = fetch,
+} = {}) {
+  const pathname = `/v1/projects/${projectRef}/functions/${slug}/body`;
+  assertManagementRequest('GET', pathname);
+  if (!token) fail('SUPABASE_ACCESS_TOKEN_MISSING');
+
+  const response = await fetchImpl(`${MANAGEMENT_BASE_URL}${pathname}`, {
+    method: 'GET',
+    headers: {
+      Authorization: `Bearer ${token}`,
+      Accept: 'multipart/form-data',
+    },
+  });
+
+  if (!response.ok) {
+    fail('MANAGEMENT_API_HTTP', `${response.status}:${pathname}`);
+  }
+
+  const contentType = String(response.headers?.get?.('content-type') ?? '');
+  if (!contentType.toLowerCase().startsWith('multipart/')) {
+    fail('REMOTE_FUNCTION_MULTIPART_CONTENT_TYPE_INVALID', contentType || 'MISSING');
+  }
+
+  const payload = Buffer.from(await response.arrayBuffer());
+  return parseRemoteFunctionMultipart(slug, payload, contentType);
 }
 
 function normalizeProject(payload) {
@@ -778,19 +1351,70 @@ function normalizeMigrationHistory(payload) {
   })).sort((left, right) => left.version.localeCompare(right.version, 'en') || left.name.localeCompare(right.name, 'en'));
 }
 
+function normalizeRemoteFunctionFilePath(slug, rawName, entrypointPath) {
+  let name = normalizeRemoteFunctionFileName(slug, rawName);
+  if (!entrypointPath) {
+    if (name.startsWith(`${slug}/`)) name = name.slice(slug.length + 1);
+    return name;
+  }
+
+  let entrypoint = normalizeRepoPath(entrypointPath);
+  if (entrypoint.startsWith('file://')) {
+    try {
+      entrypoint = new URL(entrypoint).pathname;
+    } catch {
+      fail('REMOTE_FUNCTION_ENTRYPOINT_PATH_INVALID', slug);
+    }
+  }
+
+  const entrypointAbsolute = entrypoint.startsWith('/');
+  const partAbsolute = name.startsWith('/');
+  if (entrypointAbsolute !== partAbsolute) {
+    if (name.startsWith(`${slug}/`)) name = name.slice(slug.length + 1);
+    return name;
+  }
+
+  const relativePath = path.posix.relative(entrypoint, name);
+  const entrypointName = path.posix.basename(entrypoint);
+  let destination = path.posix.normalize(
+    relativePath
+      ? path.posix.join(entrypointName, relativePath)
+      : entrypointName,
+  );
+  if (destination.startsWith(`${slug}/`)) {
+    destination = destination.slice(slug.length + 1);
+  }
+
+  return normalizeRemoteFunctionFileName(slug, destination);
+}
+
 function normalizeRemoteFunctionFiles(slug, payload) {
   const files = Array.isArray(payload?.files) ? payload.files : [];
   if (files.length === 0) return null;
+  const entrypointPath = String(payload?.entrypoint_path ?? '').trim() || null;
   return files.map((entry) => {
-    let name = normalizeRepoPath(entry?.name ?? '');
-    if (name.startsWith(`${slug}/`)) name = name.slice(slug.length + 1);
+    const name = normalizeRemoteFunctionFilePath(
+      slug,
+      entry?.name ?? '',
+      entrypointPath,
+    );
     const content = canonicalBytes(entry?.content ?? '');
+    const basename = path.posix.basename(name);
+    if (basename === '.npmrc') {
+      if (npmrcHasEffectiveConfiguration(content)) {
+        fail('REMOTE_FUNCTION_NPMRC_PARITY_UNSUPPORTED', slug);
+      }
+      return null;
+    }
+    if (basename === 'deno.json' && !denoJsonHasEffectiveConfiguration(content)) {
+      return null;
+    }
     return {
       path: name,
       sha256: crypto.createHash('sha256').update(content).digest('hex'),
       bytes: content.byteLength,
     };
-  }).sort((left, right) => left.path.localeCompare(right.path, 'en'));
+  }).filter(Boolean).sort((left, right) => left.path.localeCompare(right.path, 'en'));
 }
 
 export function normalizeRemoteFunctionBody(slug, metadata, body) {
@@ -933,9 +1557,10 @@ export async function observeRemoteEnvironment({
       for (const metadata of [...list].sort((left, right) => String(left?.slug ?? '').localeCompare(String(right?.slug ?? ''), 'en'))) {
         const slug = String(metadata?.slug ?? '').trim();
         if (!slug) fail('REMOTE_FUNCTION_SLUG_MISSING');
-        const body = await managementRequest({
+        const body = await fetchRemoteFunctionBody({
           token,
-          pathname: `/v1/projects/${ref}/functions/${slug}/body`,
+          projectRef: ref,
+          slug,
           fetchImpl,
         });
         normalized.push(normalizeRemoteFunctionBody(slug, metadata, body));
@@ -958,11 +1583,25 @@ export async function observeRemoteEnvironment({
       token, pathname: `/v1/projects/${ref}/secrets`, fetchImpl,
     })));
     const sqlFingerprint = await captureSurface('sql_fingerprint', async () => remoteReadOnlySql(ref, token, FINGERPRINT_SQL, fetchImpl));
+    const extensionCapabilities = await captureSurface(
+      'extension_capabilities',
+      async () => remoteReadOnlySql(ref, token, EXTENSION_CAPABILITIES_SQL, fetchImpl),
+    );
     const storageBuckets = await captureSurface('storage_buckets', async () => remoteReadOnlySql(ref, token, STORAGE_BUCKETS_SQL, fetchImpl));
-    const cron = sqlFingerprint.status === 'PASS' && !extensionNames(sqlFingerprint.value).has('pg_cron')
+    const cron = extensionCapabilities.status === 'PASS'
+      && !extensionNames(extensionCapabilities.value).has('pg_cron')
       ? { name: 'cron_jobs', status: 'NOT_APPLICABLE', value: [] }
-      : await captureSurface('cron_jobs', async () => remoteReadOnlySql(ref, token, CRON_JOBS_SQL, fetchImpl));
-    surfaces.push(functionList, auth, storage, realtime, postgrest, secrets, sqlFingerprint, storageBuckets, cron);
+      : extensionCapabilities.status === 'PASS'
+        ? await captureSurface('cron_jobs', async () => remoteReadOnlySql(ref, token, CRON_JOBS_SQL, fetchImpl))
+        : { name: 'cron_jobs', status: 'INSUFFICIENT_EVIDENCE', error: 'EXTENSION_CAPABILITIES_UNAVAILABLE' };
+    const internalJobSecretKeys = await captureSurface(
+      'internal_job_secret_keys',
+      async () => remoteReadOnlySql(ref, token, INTERNAL_JOB_SECRET_KEYS_SQL, fetchImpl),
+    );
+    surfaces.push(
+      functionList, auth, storage, realtime, postgrest, secrets,
+      sqlFingerprint, extensionCapabilities, storageBuckets, cron, internalJobSecretKeys,
+    );
   }
 
   const core = {
@@ -1051,13 +1690,49 @@ function expectedMigrationHistory(expected) {
   return expected.migration_manifest.rows.map((row) => row.version).filter((version) => version !== 'UNVERSIONED').sort();
 }
 
+function cronContractRows(rows) {
+  return (rows ?? []).map((entry) => ({
+    jobname: String(entry?.jobname ?? ''),
+    schedule: String(entry?.schedule ?? ''),
+    active: Boolean(entry?.active),
+  })).sort((left, right) =>
+    left.jobname.localeCompare(right.jobname, 'en')
+    || left.schedule.localeCompare(right.schedule, 'en')
+    || Number(left.active) - Number(right.active));
+}
+
 function functionMap(functions) {
   return new Map((functions ?? []).map((entry) => [entry.slug, entry]));
 }
 
-export function compareFunctionSets(expectedFunctions, observedFunctions, drifts, environment) {
+export function compareFunctionSets(
+  expectedFunctions,
+  observedFunctions,
+  drifts,
+  environment,
+  policy = null,
+) {
   const expectedMap = functionMap(expectedFunctions);
   const observedMap = functionMap(observedFunctions);
+  const soloLocal = new Set(
+    (policy?.solo_local ?? []).map((entry) => String(entry ?? '').trim()),
+  );
+
+  for (const slug of [...soloLocal].sort()) {
+    if (observedMap.has(slug)) {
+      addDrift(drifts, {
+        surface: 'edge_functions',
+        identity: slug,
+        environment,
+        expected: 'ABSENT',
+        observed: 'PRESENT',
+        reason: 'Edge Function is explicitly SOLO_LOCAL for this hosted environment.',
+      });
+    }
+    expectedMap.delete(slug);
+    observedMap.delete(slug);
+  }
+
   for (const slug of [...new Set([...expectedMap.keys(), ...observedMap.keys()])].sort()) {
     const expected = expectedMap.get(slug);
     const observed = observedMap.get(slug);
@@ -1068,7 +1743,7 @@ export function compareFunctionSets(expectedFunctions, observedFunctions, drifts
         environment,
         expected: expected ? 'PRESENT' : 'ABSENT',
         observed: observed ? 'PRESENT' : 'ABSENT',
-        reason: 'Edge Function presence differs from the candidate.',
+        reason: 'Edge Function presence differs from the explicit hosted environment contract.',
       });
       continue;
     }
@@ -1211,6 +1886,90 @@ export function compareLocal({ expected, observed, allowlist = [] } = {}) {
   };
 }
 
+export function evaluateEdgeSecretRequirements({
+  referencedSecretNames = [],
+  requirements = null,
+  observedSecretNames = [],
+  environment = 'staging',
+  identity = 'UNKNOWN',
+} = {}) {
+  const drifts = [];
+  let normalized;
+
+  try {
+    normalized = normalizeEdgeEnvironmentRequirements(requirements);
+  } catch {
+    addDrift(drifts, {
+      surface: 'edge_secrets.expected_contract',
+      identity,
+      environment,
+      expected: 'VERSIONED_EDGE_ENVIRONMENT_REQUIREMENTS',
+      observed: 'INVALID_OR_MISSING',
+      classification: 'INSUFFICIENT_EVIDENCE',
+      reason: 'The versioned Edge environment requirement contract is missing or invalid.',
+    });
+    return drifts;
+  }
+
+  const referenced = [...new Set(
+    referencedSecretNames
+      .map((entry) => String(entry ?? '').trim())
+      .filter(Boolean),
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  const classified = [
+    ...normalized.required_all,
+    ...normalized.optional_or_defaulted,
+    ...normalized.local_only,
+    ...normalized.required_any_of.flatMap((entry) => entry.names),
+  ].sort((left, right) => left.localeCompare(right, 'en'));
+
+  if (stableStringify(referenced) !== stableStringify(classified)) {
+    addDrift(drifts, {
+      surface: 'edge_secrets.expected_contract',
+      identity,
+      environment,
+      expected: classified,
+      observed: referenced,
+      classification: 'INSUFFICIENT_EVIDENCE',
+      reason: 'Every non-default Edge environment name referenced by the candidate must be classified exactly once.',
+    });
+    return drifts;
+  }
+
+  const observed = new Set(
+    observedSecretNames.map((entry) => String(entry ?? '').trim()).filter(Boolean),
+  );
+
+  for (const name of normalized.required_all) {
+    if (!observed.has(name)) {
+      addDrift(drifts, {
+        surface: 'edge_secrets.required_name',
+        identity: name,
+        environment,
+        expected: 'PRESENT',
+        observed: 'ABSENT',
+        reason: 'A required Edge environment name is missing remotely.',
+      });
+    }
+  }
+
+  for (const group of normalized.required_any_of) {
+    if (!group.names.some((name) => observed.has(name))) {
+      addDrift(drifts, {
+        surface: 'edge_secrets.required_any_of',
+        identity: group.requirement_id,
+        environment,
+        expected: group.names,
+        observed: 'NONE_PRESENT',
+        reason: 'None of the allowed Edge environment names for this requirement are configured remotely.',
+      });
+    }
+  }
+
+  return drifts;
+}
+
 export function compareRemote({ expected, localObserved = null, remoteObserved, allowlist = [], scope = 'full' } = {}) {
   const environment = remoteObserved?.environment_role ?? 'unknown';
   const remoteScope = String(scope ?? remoteObserved?.remote_scope ?? 'full').trim().toLowerCase();
@@ -1252,6 +2011,23 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
       reason: 'Remote certification requires a clean immutable candidate.',
     });
   }
+  const versionedEnvironmentContracts = expected?.hosted_resources?.environment_contracts ?? null;
+  const hostedEnvironmentContract = versionedEnvironmentContracts
+    ? versionedEnvironmentContracts[String(environment).toUpperCase()] ?? null
+    : null;
+  if (remoteScope === 'full' && versionedEnvironmentContracts && !hostedEnvironmentContract) {
+    addDrift(drifts, {
+      surface: 'hosted_environment.expected_contract',
+      identity: environment,
+      environment,
+      expected: 'VERSIONED_HOSTED_ENVIRONMENT_CONTRACT',
+      observed: 'MISSING',
+      classification: 'INSUFFICIENT_EVIDENCE',
+      reason: 'Full hosted certification requires an explicit versioned contract for this environment.',
+    });
+    return finalize();
+  }
+
   if (remoteObserved?.identity_status !== 'PASS') {
     for (const issue of remoteObserved?.identity_issues ?? ['ENVIRONMENT_IDENTITY_MISSING']) {
       addDrift(drifts, {
@@ -1313,6 +2089,9 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
 
   if (remoteScope === 'history') return finalize();
 
+  const hostedConfig = hostedEnvironmentContract?.config ?? expected.config.contract;
+  const hostedFunctionPolicy = hostedEnvironmentContract?.edge_functions ?? null;
+
   const functions = surfaceValueOrInsufficient(drifts, surfaces, 'edge_functions', environment);
   const auth = surfaceValueOrInsufficient(drifts, surfaces, 'auth', environment);
   const storage = surfaceValueOrInsufficient(drifts, surfaces, 'storage', environment);
@@ -1320,11 +2099,47 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
   const postgrest = surfaceValueOrInsufficient(drifts, surfaces, 'postgrest', environment);
   const secrets = surfaceValueOrInsufficient(drifts, surfaces, 'secret_names', environment);
   const sqlFingerprint = surfaceValueOrInsufficient(drifts, surfaces, 'sql_fingerprint', environment);
+  const extensionCapabilities = surfaceValueOrInsufficient(
+    drifts, surfaces, 'extension_capabilities', environment,
+  );
   const storageBuckets = surfaceValueOrInsufficient(drifts, surfaces, 'storage_buckets', environment);
+  const versionedHostedCron = Array.isArray(expected?.hosted_resources?.cron_jobs)
+    ? expected.hosted_resources.cron_jobs
+    : null;
   const localCronApplicable = localObserved?.cron?.evidence === 'PASS';
-  const cronJobs = localCronApplicable
+  const hostedExtensions = extensionCapabilities
+    ? extensionNames(extensionCapabilities)
+    : new Set();
+  const hostedPgCronPresent = hostedExtensions.has('pg_cron');
+  const hostedCronRequired = Boolean(versionedHostedCron?.length);
+  const cronJobs = hostedPgCronPresent
     ? surfaceValueOrInsufficient(drifts, surfaces, 'cron_jobs', environment)
     : null;
+
+  if (extensionCapabilities) {
+    for (const capability of requiredExtensionCapabilities(expected, localObserved)) {
+      if (capability === 'pg_cron' || hostedExtensions.has(capability)) continue;
+      addDrift(drifts, {
+        surface: 'extensions.capability',
+        identity: capability,
+        environment,
+        expected: 'PRESENT',
+        observed: 'ABSENT',
+        reason: 'A candidate SQL capability requires a hosted Postgres extension that is absent.',
+      });
+    }
+  }
+
+  if (extensionCapabilities && hostedCronRequired && !hostedPgCronPresent) {
+    addDrift(drifts, {
+      surface: 'cron.extension',
+      identity: remoteObserved.identity.project_ref,
+      environment,
+      expected: 'PRESENT',
+      observed: 'ABSENT',
+      reason: 'The versioned hosted cron contract requires pg_cron in this environment.',
+    });
+  }
 
   if (sqlFingerprint && localObserved?.sql_fingerprint) {
     compareExact(drifts, {
@@ -1347,24 +2162,40 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
     });
   }
 
-  if (functions) compareFunctionSets(expected.edge_functions, functions, drifts, environment);
+  if (functions) {
+    compareFunctionSets(
+      expected.edge_functions,
+      functions,
+      drifts,
+      environment,
+      hostedFunctionPolicy,
+    );
+  }
 
   if (postgrest) {
     compareExact(drifts, {
       surface: 'data_api.schemas',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: normalizeCsv(expected.config.contract.data_api.schemas),
+      expected: normalizeCsv(hostedConfig.data_api.schemas),
       observed: normalizeCsv(postgrest.db_schema),
-      reason: 'Hosted Data API schemas differ from config.toml.',
+      reason: 'Hosted Data API schemas differ from the versioned hosted environment contract.',
+    });
+    compareExact(drifts, {
+      surface: 'data_api.extra_search_path',
+      identity: remoteObserved.identity.project_ref,
+      environment,
+      expected: normalizeCsv(hostedConfig.data_api.extra_search_path ?? []),
+      observed: normalizeCsv(postgrest.db_extra_search_path),
+      reason: 'Hosted Data API search_path differs from the versioned hosted environment contract.',
     });
     compareExact(drifts, {
       surface: 'data_api.max_rows',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: expected.config.contract.data_api.max_rows,
+      expected: hostedConfig.data_api.max_rows,
       observed: Number(postgrest.max_rows),
-      reason: 'Hosted Data API max_rows differs from config.toml.',
+      reason: 'Hosted Data API max_rows differs from the versioned hosted environment contract.',
     });
   }
 
@@ -1373,9 +2204,9 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
       surface: 'storage.file_size_limit',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: expected.config.contract.storage.file_size_limit_bytes,
+      expected: hostedConfig.storage.file_size_limit_bytes,
       observed: Number(storage.file_size_limit),
-      reason: 'Hosted Storage file size limit differs from config.toml.',
+      reason: 'Hosted Storage file size limit differs from the versioned hosted environment contract.',
     });
   }
 
@@ -1384,45 +2215,50 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
       surface: 'auth.signup_enabled',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: expected.config.contract.auth.signup_enabled,
+      expected: hostedConfig.auth.signup_enabled,
       observed: auth.disable_signup === null ? null : !auth.disable_signup,
-      reason: 'Hosted Auth signup policy differs from config.toml.',
+      reason: 'Hosted Auth signup policy differs from the versioned hosted environment contract.',
     });
     compareExact(drifts, {
       surface: 'auth.anonymous_sign_ins_enabled',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: expected.config.contract.auth.anonymous_sign_ins_enabled,
+      expected: hostedConfig.auth.anonymous_sign_ins_enabled,
       observed: auth.external_anonymous_users_enabled,
-      reason: 'Hosted anonymous sign-in policy differs from config.toml.',
+      reason: 'Hosted anonymous sign-in policy differs from the versioned hosted environment contract.',
     });
     compareExact(drifts, {
       surface: 'auth.jwt_expiry',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: expected.config.contract.auth.jwt_expiry,
+      expected: hostedConfig.auth.jwt_expiry,
       observed: Number(auth.jwt_exp),
-      reason: 'Hosted JWT expiry differs from config.toml.',
+      reason: 'Hosted JWT expiry differs from the versioned hosted environment contract.',
     });
     compareExact(drifts, {
       surface: 'auth.site_url',
       identity: remoteObserved.identity.project_ref,
       environment,
-      expected: expected.config.contract.auth.site_url,
+      expected: hostedConfig.auth.site_url,
       observed: auth.site_url,
-      reason: 'Environment-specific Auth site_url requires an explicit overlay allowance when it differs.',
+      reason: 'Hosted Auth site_url differs from the explicit hosted environment contract.',
     });
   }
 
-  if (realtime && expected.config.contract.realtime.enabled && realtime.suspend === true) {
-    addDrift(drifts, {
-      surface: 'realtime.suspend',
-      identity: remoteObserved.identity.project_ref,
-      environment,
-      expected: false,
-      observed: true,
-      reason: 'Realtime is contractually enabled but the hosted service is suspended.',
-    });
+  if (realtime) {
+    const expectedSuspended = hostedEnvironmentContract
+      ? hostedConfig.realtime.suspended
+      : expected.config.contract.realtime.enabled ? false : null;
+    if (expectedSuspended !== null) {
+      compareExact(drifts, {
+        surface: 'realtime.suspend',
+        identity: remoteObserved.identity.project_ref,
+        environment,
+        expected: expectedSuspended,
+        observed: Boolean(realtime.suspend),
+        reason: 'Hosted Realtime suspension differs from the versioned hosted environment contract.',
+      });
+    }
   }
 
   if (storageBuckets && localObserved?.storage_buckets) {
@@ -1436,32 +2272,70 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
     });
   }
 
-  if (localCronApplicable && cronJobs) {
-    compareExact(drifts, {
-      surface: 'cron.jobs',
-      identity: remoteObserved.identity.project_ref,
-      environment,
-      expected: localObserved.cron.jobs,
-      observed: cronJobs,
-      reason: 'Hosted cron job contract differs from the clean local candidate.',
-    });
+  if (hostedPgCronPresent && cronJobs) {
+    const expectedCronJobs = versionedHostedCron
+      ?? (localCronApplicable ? localObserved.cron.jobs : null);
+
+    if (!expectedCronJobs) {
+      addDrift(drifts, {
+        surface: 'cron.jobs.expected_contract',
+        identity: remoteObserved.identity.project_ref,
+        environment,
+        expected: 'VERSIONED_OR_LOCAL_AUTHORITATIVE_CRON_CONTRACT',
+        observed: `HOSTED_CRON_JOBS:${cronJobs.length}`,
+        classification: 'INSUFFICIENT_EVIDENCE',
+        reason: 'Hosted pg_cron is applicable but no authoritative cron contract is available for comparison.',
+      });
+    } else {
+      compareExact(drifts, {
+        surface: 'cron.jobs',
+        identity: remoteObserved.identity.project_ref,
+        environment,
+        expected: cronContractRows(expectedCronJobs),
+        observed: cronContractRows(cronJobs),
+        reason: 'Hosted cron job identities, schedules or active states differ from the authoritative contract.',
+      });
+    }
   }
 
   if (secrets) {
-    const expectedSecrets = expected.referenced_secret_names;
-    const observedSet = new Set(secrets);
-    for (const name of expectedSecrets) {
-      if (!observedSet.has(name)) {
-        addDrift(drifts, {
-          surface: 'edge_secrets.required_name',
-          identity: name,
-          environment,
-          expected: 'PRESENT',
-          observed: 'ABSENT',
-          reason: 'A secret name referenced by versioned Edge Function code is missing remotely.',
-        });
-      }
-    }
+    drifts.push(...evaluateEdgeSecretRequirements({
+      referencedSecretNames: expected.referenced_secret_names,
+      requirements: hostedEnvironmentContract?.edge_environment_requirements
+        ?? expected?.hosted_resources?.edge_environment_requirements,
+      observedSecretNames: secrets,
+      environment,
+      identity: remoteObserved.identity.project_ref,
+    }));
+  }
+
+  const expectedInternalJobSecretKeys = expected?.hosted_resources?.internal_job_secret_keys;
+  const observedInternalJobSecretKeys = surfaceValueOrInsufficient(
+    drifts,
+    surfaces,
+    'internal_job_secret_keys',
+    environment,
+  );
+
+  if (!Array.isArray(expectedInternalJobSecretKeys)) {
+    addDrift(drifts, {
+      surface: 'internal_job_secrets.expected_contract',
+      identity: remoteObserved.identity.project_ref,
+      environment,
+      expected: 'VERSIONED_INTERNAL_JOB_SECRET_KEY_CONTRACT',
+      observed: 'MISSING',
+      classification: 'INSUFFICIENT_EVIDENCE',
+      reason: 'No authoritative configured internal job secret key contract is versioned.',
+    });
+  } else if (observedInternalJobSecretKeys) {
+    compareExact(drifts, {
+      surface: 'internal_job_secrets.configured_keys',
+      identity: remoteObserved.identity.project_ref,
+      environment,
+      expected: [...expectedInternalJobSecretKeys].sort((left, right) => left.localeCompare(right, 'en')),
+      observed: [...observedInternalJobSecretKeys].sort((left, right) => left.localeCompare(right, 'en')),
+      reason: 'Configured internal job secret keys differ from the versioned hosted baseline; values are never compared.',
+    });
   }
 
   return finalize();
@@ -1535,11 +2409,57 @@ function driftCounts(drifts) {
   return counts;
 }
 
-function printControllerResult({ mode, result, output = null, strict = false }) {
+// Observation, certification and process success are deliberately separate.
+// A complete observation can correctly reject an environment. It cannot grant
+// deployment permission or replace the strict hosted certification gate.
+export function controllerOutcome({ mode, result, strict = false } = {}) {
+  const classification = result?.certification;
+  const expectedCertification = mode === 'expected'
+    ? 'EXPECTED_BASELINE_BUILT'
+    : mode === 'local'
+      ? 'LOCAL_CERTIFIED'
+      : mode === 'remote' && result?.environment_role === 'staging'
+        ? 'STAGING_CERTIFIED'
+        : mode === 'remote' && result?.environment_role === 'production'
+          ? 'PRODUCTION_CERTIFIED'
+          : null;
+  const drifts = Array.isArray(result?.drifts) ? result.drifts : null;
+  const knownClassifications = new Set([
+    'UNAUTHORIZED_DRIFT', 'INSUFFICIENT_EVIDENCE',
+    'EXPECTED_OVERLAY', 'TEMPORARY_EXCEPTION',
+  ]);
+  const malformed = !expectedCertification || !drifts
+    || (mode === 'remote' && !ALLOWED_REMOTE_SCOPES.has(result?.remote_scope))
+    || drifts.some((entry) => !knownClassifications.has(entry?.classification));
+  const insufficient = drifts?.some((entry) => entry.classification === 'INSUFFICIENT_EVIDENCE');
+  const unauthorized = drifts?.some((entry) => entry.classification === 'UNAUTHORIZED_DRIFT');
+  const derivedCertification = insufficient
+    ? 'INSUFFICIENT_EVIDENCE'
+    : unauthorized ? 'UNAUTHORIZED_DRIFT' : expectedCertification;
+  const coherent = !malformed && classification === derivedCertification;
+  const certified = coherent && classification === expectedCertification;
+  const observationComplete = mode === 'remote' && coherent
+    && classification !== 'INSUFFICIENT_EVIDENCE';
+  const exitCode = !coherent || (strict && !certified) ? 1 : 0;
+  return {
+    execution_status: exitCode === 0 ? 'PASS' : 'FAIL',
+    observation_status: mode === 'remote'
+      ? observationComplete ? 'PASS' : 'FAIL'
+      : 'NOT_APPLICABLE',
+    environment_certified: mode === 'expected'
+      || (mode === 'remote' && result?.remote_scope !== 'full')
+      ? 'NOT_APPLICABLE' : certified ? 'YES' : 'NO',
+    exit_code: exitCode,
+  };
+}
+
+export function printControllerResult({ mode, result, output = null, strict = false }) {
   const counts = driftCounts(result?.drifts ?? []);
-  const blocking = ['UNAUTHORIZED_DRIFT', 'INSUFFICIENT_EVIDENCE'].includes(result?.certification);
+  const outcome = controllerOutcome({ mode, result, strict });
   console.log(RESULT_START);
-  console.log(`ESTADO: ${strict && blocking ? 'FAIL' : 'PASS'}`);
+  console.log(`ESTADO: ${outcome.execution_status}`);
+  console.log(`OBSERVATION_STATUS: ${outcome.observation_status}`);
+  console.log(`ENVIRONMENT_CERTIFIED: ${outcome.environment_certified}`);
   console.log('OPERACION: SUPABASE_ENVIRONMENT_DRIFT');
   console.log(`MODE: ${safeAscii(mode).toUpperCase()}`);
   console.log(`ENVIRONMENT_ROLE: ${safeAscii(result?.environment_role ?? 'EXPECTED').toUpperCase()}`);
@@ -1553,17 +2473,30 @@ function printControllerResult({ mode, result, output = null, strict = false }) 
   console.log(`UNAUTHORIZED_DRIFT: ${counts.UNAUTHORIZED_DRIFT}`);
   console.log(`INSUFFICIENT_EVIDENCE: ${counts.INSUFFICIENT_EVIDENCE}`);
   console.log(`CERTIFICATION: ${safeAscii(result?.certification ?? 'EXPECTED_BASELINE_BUILT')}`);
+  for (const [index, drift] of (result?.drifts ?? []).entries()) {
+    const position = index + 1;
+    const observed = typeof drift?.observed === 'string'
+      ? drift.observed
+      : stableStringify(drift?.observed ?? null);
+    console.log(`DRIFT_${position}_SURFACE: ${safeAscii(drift?.surface ?? 'UNKNOWN')}`);
+    console.log(`DRIFT_${position}_IDENTITY: ${safeAscii(drift?.identity ?? 'UNKNOWN')}`);
+    console.log(`DRIFT_${position}_CLASSIFICATION: ${safeAscii(drift?.classification ?? 'UNKNOWN')}`);
+    console.log(`DRIFT_${position}_OBSERVED: ${safeAscii(observed)}`);
+    console.log(`DRIFT_${position}_REASON: ${safeAscii(drift?.reason ?? 'UNKNOWN')}`);
+  }
   console.log(`EVIDENCE_FILE: ${safeAscii(output ?? 'NOT_WRITTEN')}`);
   console.log('REMOTE_MUTATIONS: NO');
   console.log('SECRET_VALUES_IN_EVIDENCE: NO');
   console.log('ERROR: NONE');
   console.log(RESULT_END);
-  if (strict && blocking) process.exitCode = 1;
+  if (outcome.exit_code !== 0) process.exitCode = outcome.exit_code;
 }
 
 function printFailure(mode, error) {
   console.log(RESULT_START);
   console.log('ESTADO: FAIL');
+  console.log(`OBSERVATION_STATUS: ${mode === 'remote' ? 'FAIL' : 'NOT_APPLICABLE'}`);
+  console.log(`ENVIRONMENT_CERTIFIED: ${mode === 'expected' ? 'NOT_APPLICABLE' : 'NO'}`);
   console.log('OPERACION: SUPABASE_ENVIRONMENT_DRIFT');
   console.log(`MODE: ${safeAscii(mode || 'UNKNOWN').toUpperCase()}`);
   console.log(`ERROR: ${safeAscii(error?.message ?? String(error)).replace(/\s+/gu, ' ').trim()}`);
@@ -1645,6 +2578,8 @@ if (isCli) await main();
 
 export const __test = Object.freeze({
   FINGERPRINT_SQL,
+  EXTENSION_CAPABILITIES_SQL,
+  requiredExtensionCapabilities,
   STORAGE_BUCKETS_SQL,
   CRON_JOBS_SQL,
   MANAGED_SCHEMAS,

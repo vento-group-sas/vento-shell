@@ -28,6 +28,8 @@
     "supabase:drift:expected": "node scripts/supabase/environment-drift.mjs expected",
     "supabase:drift:local": "node scripts/supabase/environment-drift.mjs local",
     "supabase:drift:remote": "node scripts/supabase/environment-drift.mjs remote",
+    "supabase:staging:reconcile:test": "node --test scripts/supabase/staging-resource-reconciliation.test.mjs",
+    "supabase:staging:reconcile": "node scripts/supabase/staging-resource-reconciliation.mjs",
     "docs:plan:build": "node scripts/docs/build-plan-canonico.mjs",
     "docs:eol:check": "node scripts/docs/validate-eol-policy.mjs",
     "docs:plan:check": "node scripts/docs/sync-local-derived-artifacts.mjs && node scripts/docs/validate-eol-policy.mjs && node scripts/docs/package-gate-lifecycle.mjs check && node scripts/docs/package-execution-control.mjs check && node scripts/docs/audit-prospective-tasks.mjs && node scripts/docs/auto-prepare-canonical-task.mjs --check && node scripts/docs/validate-task-delivery.mjs && node scripts/docs/build-plan-canonico-core.mjs --check && node scripts/docs/sync-pending-task-context.mjs --check && node scripts/docs/normalize-retired-priority-route.mjs --check && node scripts/docs/validate-print-process-bindings.mjs && node scripts/docs/implementation-control.mjs --check && node scripts/docs/correction-control.mjs --check && node scripts/docs/chatgpt-work-starter-readiness.mjs --check && node scripts/docs/correction-starter.mjs --check && node scripts/docs/implementation-readiness-artifacts.mjs --check",

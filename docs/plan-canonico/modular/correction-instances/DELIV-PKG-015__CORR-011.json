@@ -1,0 +1,109 @@
+{
+  "schema_version": 1,
+  "correction_id": "DELIV-PKG-015::CORR-011",
+  "task_id": "DELIV-PKG-015",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "IMPLEMENTATION_DEFECT",
+  "status": "VERIFIED",
+  "blocking": true,
+  "blocked_targets": [
+    "SHELL-CI-020::GAP-PKG-001"
+  ],
+  "baseline": {
+    "main_commit": "d58df01303f44f29c534ea4dc284301d56a8d3c7",
+    "target_task_path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+    "target_task_sha256": "56eaa3da4795d76dd03dbc6ae9a98eb7b50d89b81d196c8843d9570b067915af",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "MODIFY",
+      "scope": "Restore fail-closed hosted STAGING parity observation for full scope; expose exact identity precondition failures safely; require hosted cron evidence independently of local pg_cron; preserve read-only behavior and secret-value redaction."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.test.mjs",
+      "change": "MODIFY",
+      "scope": "Add regression coverage for missing Management API credential, hosted cron applicability independent of local pg_cron, secret-name-only evidence, and fail-closed STAGING full certification."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY",
+      "scope": "Strengthen the existing MRP015-040 RESOURCE_MANIFEST_PASS foundation so Supabase packages cannot enter CI020 without live hosted STAGING resource parity evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY",
+      "scope": "Add regression coverage proving MRP015-040 fails closed when live STAGING hosted parity is absent, unreadable or stale."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness/package-readiness-contract.json",
+      "change": "MODIFY",
+      "scope": "Update the existing MRP015-040 evidence contract to require live hosted STAGING parity without introducing a new foundation identity or changing package semantics."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/ARQUITECTURA-MIGRACIONES-CENTRALIZADAS.md",
+      "change": "MODIFY",
+      "scope": "Clarify the already-approved boundary between versioned EXPECTED state, hosted-only runtime resources, Supabase branch cloning, STAGING parity certification and owner-authorized repair."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Document the corrected pre-E5 STAGING parity gate and distinguish observation from explicit hosted-resource provisioning."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/supabase/environment-drift.mjs",
+    "node --test scripts/supabase/environment-drift.test.mjs",
+    "node --check scripts/docs/package-readiness-scanner.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "npm run supabase:drift:test",
+    "node --test --test-name-pattern=CORR-011_ACCEPTANCE scripts/supabase/environment-drift.test.mjs",
+    "npm run docs:package:readiness:check -- --package GAP-PKG-001",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm test --silent",
+    "git --no-pager diff --check"
+  ],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "CORR-011 restaura la aplicacion fisica del contrato pre-E5 ya aprobado: STAGING debe aportar evidencia hosted suficiente antes de CI020. No modifica comportamiento funcional de negocio, TREQ, 04A, migraciones historicas ni valores secretos.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-05T19:37:00-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADOOO",
+    "source_contract_sha256": "56eaa3da4795d76dd03dbc6ae9a98eb7b50d89b81d196c8843d9570b067915af"
+  },
+  "evidence": [
+    "ACCEPTANCE_REGULARIZATION source=conversation_and_uploaded_checkpoint target=DELIV-PKG-015::CORR-011 scope=detector_acceptance_only; historical authorization and source contract are preserved. This record remains IN_PROGRESS pending actual local validation and controlled closure.",
+    "ACCEPTANCE_REGULARIZATION superseded_closure_command=npm run supabase:drift:remote -- --environment-role staging --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --strict; retained as STAGING environment certification gate, not a required successful result for a read-only detector correction.",
+    "ACCEPTANCE_REGULARIZATION replacement_command=node --test --test-name-pattern=CORR-011_ACCEPTANCE scripts/supabase/environment-drift.test.mjs; checks complete drift observation, positive full certification, incomplete evidence, exact strict exit code and no remote mutation through synthetic fixtures.",
+    "ACCEPTANCE_BOUNDARY correction_status=IN_PROGRESS; no VERIFIED claim, no STAGING certification, no foundation evidence minted, no deployment authorization and no block release.",
+    "VALIDATION_SEMANTICS docs:package:readiness:check validates registry consistency; exit_code=0 is not IMPLEMENTATION_READY=YES. MRP015-040 remains without evidence until its hosted parity gate passes.",
+    "VERIFIED LOCAL_OWNER_REPORT acceptance regularization applied; all 18 registered validation commands PASS on the owner Windows workstation; input checkpoint=81010116ad97992bf74fc7bc6266e9f871418ec9; reported status before closure=IN_PROGRESS.",
+    "VERIFIED DETECTOR_ACCEPTANCE positive and negative synthetic cases preserve strict failure on unauthorized drift or insufficient evidence. Detector acceptance is distinct from hosted environment certification.",
+    "CLOSURE_BOUNDARY MRP015-040 remains NOT_CERTIFIED; no hosted certification evidence is minted; no STAGING repair, production authorization or package deployment is performed. The previous IN_PROGRESS evidence entries are historical.",
+    "PUBLISH_PENDING native correction lifecycle must verify the PR and merge before VERIFIED_ON_MAIN. This local state does not assert that publication has already occurred."
+  ],
+  "opened_at": "2026-09-06T00:18:56.419Z"
+}

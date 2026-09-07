@@ -619,6 +619,7 @@ export function classifyInfraPath(filePath) {
     || normalized === 'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md'
     || normalized.startsWith('scripts/docs/')
     || normalized.startsWith('scripts/quality/')
+    || normalized.startsWith('scripts/supabase/')
     || normalized.startsWith('quality/')
     || normalized.startsWith('.github/')
     || normalized.startsWith('.vscode/')

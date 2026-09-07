@@ -69,7 +69,11 @@ const FOUNDATION_REQUIRED_CHECKS = Object.freeze({
     'PRODUCTION_HISTORY_DRIFT',
   ],
   'MRP015-030': ['CLEAN_REPLAY'],
-  'MRP015-040': ['MIGRATION_MANIFEST', 'EXPECTED_RESOURCE_MANIFEST'],
+  'MRP015-040': [
+    'MIGRATION_MANIFEST',
+    'EXPECTED_RESOURCE_MANIFEST',
+    'STAGING_HOSTED_RESOURCE_PARITY',
+  ],
 });
 
 function fail(message) {
@@ -523,6 +527,15 @@ function foundationChecks(root, foundation, gate, options) {
   if (id === 'MRP015-040') {
     checks.push(runNpmEvidence('MIGRATION_MANIFEST', ['run', '--silent', 'supabase:migrations:manifest:check'], { root }));
     checks.push(runNpmEvidence('EXPECTED_RESOURCE_MANIFEST', ['run', '--silent', 'supabase:drift:expected', '--', '--strict'], { root }));
+    if (bindings.pass) {
+      checks.push(runRemoteDrift(
+        'STAGING_HOSTED_RESOURCE_PARITY',
+        bindings.staging,
+        'STAGING',
+        'full',
+        root,
+      ));
+    }
     return checks;
   }
   fail(`Foundation desconocida: ${id}.`);

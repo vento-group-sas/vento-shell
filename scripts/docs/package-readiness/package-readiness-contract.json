@@ -544,7 +544,7 @@
             "gate_id": "RESOURCE_MANIFEST_PASS",
             "owner_task": "SUPA-TRANS-015",
             "producer": "docs:package:foundation:record",
-            "recorded_at": "2026-09-05T18:12:39.986Z",
+            "recorded_at": "2026-09-07T03:42:30.267Z",
             "status": "PASS",
             "checks": [
               {
@@ -558,11 +558,18 @@
                 "id": "EXPECTED_RESOURCE_MANIFEST",
                 "status": "PASS",
                 "exit_code": 0,
-                "stdout_sha256": "5b5ab558bdcae8ff3308552881275ed62c85a2d61cbe29e7bc89b15a40cd1b7f",
+                "stdout_sha256": "53cac259f2f03ec84b69bc92aed0442d9e8d1aa1a73b4fbf5db30eca53bf1078",
+                "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+              },
+              {
+                "id": "STAGING_HOSTED_RESOURCE_PARITY",
+                "status": "PASS",
+                "exit_code": 0,
+                "stdout_sha256": "b5eac50d88058610800eb5191b58fcc8fe570527d77d10abc2233e6e0d5a9a6e",
                 "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
               }
             ],
-            "payload_sha256": "6c6cb0306f13d822e4e979f1602bd76fb74ee6615ac851cc26a05622884e99a8"
+            "payload_sha256": "d5b0c8a170ad05f0a2a0cee76858ef4322bc263800d7f319377936aeea0fad8f"
           }
         }
       ],
@@ -611,6 +618,189 @@
         "integrity": "SHA256_CANONICAL_JSON_V1",
         "fail_closed": true,
         "secret_values_forbidden": true
+      },
+      "hosted_resource_baseline": {
+        "schema_version": 3,
+        "source": "docs/plan-canonico/modular/bloques/E3_SUPABASE/03_AUDITORIA_DE_NORMALIZACION_Y_CALIDAD_DE_DATOS.md",
+        "cron_jobs": [
+          {
+            "jobname": "anima_attendance_day_end_close_0005",
+            "schedule": "5 0 * * *",
+            "active": true
+          },
+          {
+            "jobname": "anima_shift_runtime_processor_every_5m",
+            "schedule": "*/5 * * * *",
+            "active": true
+          },
+          {
+            "jobname": "attendance_stale_open_shift_autoclose_daily_bogota",
+            "schedule": "10 5 * * *",
+            "active": true
+          },
+          {
+            "jobname": "auto-close-attendance",
+            "schedule": "59 4 * * *",
+            "active": true
+          },
+          {
+            "jobname": "document-alerts-daily",
+            "schedule": "0 14 * * *",
+            "active": true
+          },
+          {
+            "jobname": "pass_delivery_quotes_cleanup_hourly",
+            "schedule": "17 * * * *",
+            "active": true
+          },
+          {
+            "jobname": "pass_payment_checkout_expiry_reconciliation",
+            "schedule": "*/5 * * * *",
+            "active": true
+          }
+        ],
+        "internal_job_secret_keys": [
+          "shift_runtime_processor_cron"
+        ],
+        "cron_commands_forbidden": true,
+        "secret_values_forbidden": true,
+        "edge_environment_requirements": {
+          "required_all": [
+            "ACCOUNT_DELETION_WORKER_SECRET",
+            "ANIMA_OWNER_DELETE_UID",
+            "GOOGLE_WALLET_CLASS_ID",
+            "GOOGLE_WALLET_ISSUER_ID",
+            "GOOGLE_WALLET_SERVICE_ACCOUNT_JSON",
+            "INTERNAL_NOTIFY_SECRET",
+            "RESEND_API_KEY",
+            "WOMPI_INTEGRITY_SECRET",
+            "WOMPI_PUBLIC_KEY"
+          ],
+          "required_any_of": [
+            {
+              "requirement_id": "ANIMA_SET_PASSWORD_URL",
+              "names": [
+                "SET_PASSWORD_WEB_URL",
+                "EXPO_PUBLIC_ANIMA_AUTH_REDIRECT_URL",
+                "INVITE_REDIRECT_URL"
+              ]
+            },
+            {
+              "requirement_id": "GOOGLE_MAPS_SERVER_KEY",
+              "names": [
+                "GOOGLE_MAPS_SERVER_API_KEY",
+                "GOOGLE_MAPS_API_KEY"
+              ]
+            },
+            {
+              "requirement_id": "WOMPI_WEBHOOK_SECRET",
+              "names": [
+                "WOMPI_EVENTS_SECRET",
+                "WOMPI_WEBHOOK_SECRET"
+              ]
+            }
+          ],
+          "optional_or_defaulted": [
+            "ANIMA_INVITE_FROM_EMAIL",
+            "DOCUMENT_ALERTS_CRON_SECRET",
+            "EXPO_PUBLIC_SUPABASE_URL",
+            "SHIFT_RUNTIME_CRON_SECRET",
+            "SHIFT_RUNTIME_TIME_ZONE",
+            "WOMPI_CHECKOUT_BASE_URL",
+            "WOMPI_CHECKOUT_EXPIRATION_MINUTES",
+            "WOMPI_ENVIRONMENT",
+            "WOMPI_RETURN_APP_SCHEME",
+            "WOMPI_RETURN_BASE_URL"
+          ],
+          "local_only": [
+            "GOOGLE_WALLET_EMPLOYEE_CLASS_ID",
+            "REVENUECAT_WEBHOOK_SECRET"
+          ]
+        },
+        "environment_contracts": {
+          "STAGING": {
+            "disposition_authority": "MRP015-040",
+            "config": {
+              "data_api": {
+                "schemas": [
+                  "public",
+                  "api",
+                  "graphql_public"
+                ],
+                "extra_search_path": [
+                  "public",
+                  "extensions"
+                ],
+                "max_rows": 1000
+              },
+              "auth": {
+                "signup_enabled": true,
+                "anonymous_sign_ins_enabled": false,
+                "jwt_expiry": 3600,
+                "site_url": "https://os.ventogroup.co"
+              },
+              "storage": {
+                "file_size_limit_bytes": 52428800
+              },
+              "realtime": {
+                "suspended": false
+              }
+            },
+            "edge_functions": {
+              "default_disposition": "REQUIRED_HOSTED",
+              "solo_local": [
+                "club-revenuecat-webhook",
+                "club-settle-booster",
+                "club-sync-earn-events",
+                "employee-apple-pass",
+                "employee-wallet-pass"
+              ]
+            },
+            "edge_environment_requirements": {
+              "required_all": [
+                "ACCOUNT_DELETION_WORKER_SECRET",
+                "INTERNAL_NOTIFY_SECRET"
+              ],
+              "required_any_of": [
+                {
+                  "requirement_id": "ANIMA_SET_PASSWORD_URL",
+                  "names": [
+                    "SET_PASSWORD_WEB_URL",
+                    "EXPO_PUBLIC_ANIMA_AUTH_REDIRECT_URL",
+                    "INVITE_REDIRECT_URL"
+                  ]
+                }
+              ],
+              "optional_or_defaulted": [
+                "ANIMA_INVITE_FROM_EMAIL",
+                "ANIMA_OWNER_DELETE_UID",
+                "DOCUMENT_ALERTS_CRON_SECRET",
+                "EXPO_PUBLIC_SUPABASE_URL",
+                "GOOGLE_MAPS_API_KEY",
+                "GOOGLE_MAPS_SERVER_API_KEY",
+                "GOOGLE_WALLET_CLASS_ID",
+                "GOOGLE_WALLET_ISSUER_ID",
+                "GOOGLE_WALLET_SERVICE_ACCOUNT_JSON",
+                "RESEND_API_KEY",
+                "SHIFT_RUNTIME_CRON_SECRET",
+                "SHIFT_RUNTIME_TIME_ZONE",
+                "WOMPI_CHECKOUT_BASE_URL",
+                "WOMPI_CHECKOUT_EXPIRATION_MINUTES",
+                "WOMPI_ENVIRONMENT",
+                "WOMPI_EVENTS_SECRET",
+                "WOMPI_INTEGRITY_SECRET",
+                "WOMPI_PUBLIC_KEY",
+                "WOMPI_RETURN_APP_SCHEME",
+                "WOMPI_RETURN_BASE_URL",
+                "WOMPI_WEBHOOK_SECRET"
+              ],
+              "local_only": [
+                "GOOGLE_WALLET_EMPLOYEE_CLASS_ID",
+                "REVENUECAT_WEBHOOK_SECRET"
+              ]
+            }
+          }
+        }
       }
     }
   },

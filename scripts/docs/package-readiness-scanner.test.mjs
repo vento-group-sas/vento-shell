@@ -847,3 +847,98 @@ test('MRP015-050 queda ligado al package, CI020, HEAD, alcance y contenido mater
     fs.rmSync(root, { recursive: true, force: true });
   }
 });
+
+test('CORR-011 MRP015-040 hosted parity: exige STAGING full antes de certificar RESOURCE_MANIFEST_PASS', () => {
+  assert.deepEqual(
+    requiredFoundationCheckIds('MRP015-040'),
+    [
+      'MIGRATION_MANIFEST',
+      'EXPECTED_RESOURCE_MANIFEST',
+      'STAGING_HOSTED_RESOURCE_PARITY',
+    ],
+  );
+
+  const foundation =
+    contract.physical_dependencies.supabase_pre_e5_foundation;
+
+  const staging =
+    foundation.remote_environment_identity.bindings.STAGING;
+
+  assert.deepEqual(
+    remoteDriftArgs(staging, 'STAGING', 'full'),
+    [
+      'run', '--silent', 'supabase:drift:remote', '--',
+      '--environment-role', 'staging',
+      '--project-ref', staging.project_ref,
+      '--owner', staging.owner,
+      '--scope', 'full',
+      '--strict',
+    ],
+  );
+
+  const gate = foundation.ordered_foundation_gates.find(
+    (entry) =>
+      entry.foundation_id === 'MRP015-040'
+      && entry.gate_id === 'RESOURCE_MANIFEST_PASS',
+  );
+
+  assert.ok(gate);
+
+  const passCheck = (id) => ({
+    id,
+    status: 'PASS',
+    exit_code: 0,
+    stdout_sha256: 'a'.repeat(64),
+    stderr_sha256: 'b'.repeat(64),
+  });
+
+  assert.throws(
+    () => buildFoundationEvidenceRef({
+      gate,
+      checks: [
+        passCheck('MIGRATION_MANIFEST'),
+        passCheck('EXPECTED_RESOURCE_MANIFEST'),
+      ],
+    }),
+    /faltan checks STAGING_HOSTED_RESOURCE_PARITY/u,
+  );
+
+  const evidence = buildFoundationEvidenceRef({
+    gate,
+    checks: [
+      passCheck('MIGRATION_MANIFEST'),
+      passCheck('EXPECTED_RESOURCE_MANIFEST'),
+      passCheck('STAGING_HOSTED_RESOURCE_PARITY'),
+    ],
+    recordedAt: '2026-09-05T19:37:00-05:00',
+  });
+
+  assert.equal(evidence.status, 'PASS');
+  assert.deepEqual(
+    evidence.checks.map((entry) => entry.id),
+    [
+      'MIGRATION_MANIFEST',
+      'EXPECTED_RESOURCE_MANIFEST',
+      'STAGING_HOSTED_RESOURCE_PARITY',
+    ],
+  );
+});
+
+
+test('CORR-011_ACCEPTANCE: observacion con drift nunca materializa MRP015-040 como PASS', () => {
+  const foundation = contract.physical_dependencies.supabase_pre_e5_foundation;
+  const gate = foundation.ordered_foundation_gates.find((row) => row.foundation_id === 'MRP015-040');
+  const checks = requiredFoundationCheckIds(gate.foundation_id).map((id) => ({
+    id, status: 'PASS', exit_code: 0,
+    stdout_sha256: 'a'.repeat(64), stderr_sha256: 'b'.repeat(64),
+  }));
+  const failed = checks.map((row) => row.id === 'STAGING_HOSTED_RESOURCE_PARITY'
+    ? { ...row, status: 'FAIL', exit_code: 1 } : row);
+  assert.throws(() => buildFoundationEvidenceRef({ gate, checks: failed }), /checks no PASS/u);
+  const ambiguous = failed.map((row) => ({ ...row, status: 'PASS' }));
+  assert.throws(() => buildFoundationEvidenceRef({ gate, checks: ambiguous }), /checks no PASS/u);
+  const evidence = buildFoundationEvidenceRef({ gate, checks });
+  evidence.checks.find((row) => row.id === 'STAGING_HOSTED_RESOURCE_PARITY').exit_code = 1;
+  assert.equal(validateFoundationEvidenceRef(gate, evidence).status, 'FAIL');
+  assert.equal(validateFoundationEvidenceRef(gate, null).status, 'UNKNOWN');
+});

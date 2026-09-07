@@ -1334,7 +1334,148 @@ CURRENT_EXECUTABLE_WORK
 Cuando `CURRENT_EXECUTABLE_WORK` sea una fundación o un prerrequisito físico, se resuelve primero esa identidad. El package conserva el turno como consumidor bloqueado y no se inicia, despliega ni cierra por inferencia.
 
 Para Supabase, la secuencia global previa al package es R0 → `MRP015-000` → `MRP015-010` → `MRP015-020` → `MRP015-030` → `MRP015-040`. El candidato `MRP015-050` pertenece al ciclo del package y precede al despliegue remoto.
+
+<!-- CORR-011-HOSTED-PARITY:START -->
+### MRP015-040 — paridad hosted obligatoria
+
+`MRP015-040 / RESOURCE_MANIFEST_PASS` no queda PASS solo porque el repositorio pueda construir el manifiesto EXPECTED.
+
+Debe completar las tres evidencias:
+
+```text
+MIGRATION_MANIFEST
+EXPECTED_RESOURCE_MANIFEST
+STAGING_HOSTED_RESOURCE_PARITY
+```
+
+La tercera ejecuta la observación remota sobre el STAGING canónico:
+
+```powershell
+npm run supabase:drift:remote -- --environment-role staging --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --strict
+```
+
+El proceso Node que ejecuta el controlador requiere `SUPABASE_ACCESS_TOKEN` disponible en su entorno para consultar el Management API. La autenticación persistida por `supabase login` puede estar almacenada en el credential store nativo del sistema y no equivale a exportar esa variable al proceso.
+
+El token se utiliza únicamente para observación soportada y no se imprime, versiona ni incorpora a evidencia.
+
+El baseline hosted pre-E5 incluye:
+
+- los cron operativos AS-IS mediante nombre, schedule y estado activo;
+- presencia de claves internas requeridas sin sus valores;
+- las demás superficies contractuales ya cubiertas por el controlador full.
+
+Un FAIL de esta evidencia no se sustituye por una reparación manual ad hoc. Primero se identifica la superficie divergente, se resuelve mediante su propietario físico y después se vuelve a registrar `MRP015-040`.
+
+### Validar CORR-011 sin confundirla con la reparación de STAGING
+
+La aceptación del detector se comprueba con las pruebas completas y con los casos específicos `CORR-011_ACCEPTANCE`:
+
+```powershell
+node --test scripts/supabase/environment-drift.test.mjs
+node --test --test-name-pattern=CORR-011_ACCEPTANCE scripts/supabase/environment-drift.test.mjs
+node --test scripts/docs/package-readiness-scanner.test.mjs
+```
+
+Estos casos no usan PAT, no contactan Supabase y no modifican recursos remotos. Verifican una comparación sintética compatible, diferencias conocidas, evidencia insuficiente, separación de scopes, ausencia de valores secretos en los escenarios ejercitados y el código de salida real de la salida estructurada.
+
+La validación de aceptación que exigía un PASS hosted de `supabase:drift:remote --scope full --strict` se sustituye explícitamente en el registro abierto de `CORR-011` por la batería `CORR-011_ACCEPTANCE`. El comando original queda preservado en la trazabilidad del registro y permanece como gate de certificación ambiental; no se desactiva ni se convierte un FAIL remoto en PASS.
+
+Para una observación completa que detecta diferencias, el resultado remoto estricto conserva:
+
+```text
+ESTADO: FAIL
+OBSERVATION_STATUS: PASS
+ENVIRONMENT_CERTIFIED: NO
+CERTIFICATION: UNAUTHORIZED_DRIFT
+```
+
+La prueba negativa puede pasar porque comprueba esa respuesta exacta. El ambiente continúa sin certificarse. Un error de credencial o de lectura no sirve como sustituto de esa prueba.
+
+`docs:package:readiness:check -- --package GAP-PKG-001` verifica consistencia del registro, no autoriza una implementación. Siempre se leen separadamente `IMPLEMENTATION_READY` y las dependencias pendientes. No registrar `MRP015-040`, no marcar `VERIFIED` y no ejecutar `docs:correction:finish` como consecuencia automática de estos tests.
+
+<!-- CORR-011-HOSTED-PARITY:END -->
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:END -->
+
+<!-- MRP015-040-LOCAL-SOURCE-RECOVERY:START -->
+## MRP015-040 - Recuperación local de fuentes y configuración
+
+### Alcance aprobado
+
+La aprobación `APROBADO LOTE LOCAL` autoriza exclusivamente incorporar tres fuentes existentes en STAGING, explicitar cuatro valores de `verify_jwt` y registrar su procedencia en esta guía. Base Git: `19038651e798e2a39092fe48e768e52955cddd47`. Propietario: `SUPA-TRANS-015 / MRP015-040`. `DELIV-PKG-015::CORR-011` permanece cerrada e inmutable.
+
+Las fuentes se recuperaron mediante `get_edge_function` en STAGING `rcrxixmqhrndcervbllp`, sin invocar handlers. La disposición `CONSERVAR` de `SUPA-TRANS-013` y la aprobación de este lote gobiernan la incorporación. OBSERVED no autoriza una adopción general ni un despliegue.
+
+| Archivo | Operación | Resultado permitido |
+| --- | --- | --- |
+| `supabase/functions/delivery-portal/index.ts` | CREATE | Fuente hosted v1, remoto `index.ts`; preservar handler y RPC. |
+| `supabase/functions/order-message-notify/index.ts` | CREATE | Fuente hosted v3, remoto `index.ts`; preservar autor y notificación. |
+| `supabase/functions/pass-register-push-token/index.ts` | CREATE | Fuente hosted v3, remoto `index.ts`; preservar vinculación al usuario autenticado. |
+| `supabase/config.toml` | MODIFY | Añadir solo las cuatro secciones de funciones descritas abajo. |
+| `docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md` | MODIFY | Este bloque de procedencia, pruebas y límites. |
+
+| Función | Versión hosted | verify_jwt explícito | Frontera preservada |
+| --- | ---: | --- | --- |
+| `delivery-portal` | 1 | `false` | Token de capacidad validado por RPC; el valor false no elimina esa autoridad. |
+| `order-message-notify` | 3 | `true` | Gateway, sesión autenticada y autor de tipo staff. |
+| `pass-register-push-token` | 3 | `true` | Gateway y usuario obtenido por `auth.getUser`. |
+| `payments-return` | 3 | `false` | Retorno público, no autorización de pago. Source local sin cambios. |
+
+No se modifica ningún otro bloque de config ni el gateway hosted. No se copia el site_url productivo a la configuración local. Declarar payments-return no resuelve su diferencia de source.
+
+### Procedencia e integridad
+
+Se conserva el contenido capturado en UTF-8/LF, sin comentarios añadidos ni refactorizaciones en los handlers. El digest de archivo NO es el digest del bundle.
+
+| Función | Bytes index.ts | SHA-256 del archivo |
+| --- | ---: | --- |
+| `delivery-portal` | 8543 | `1b77361881e8b85fd7ac3480dc508645a58418160d97260ae60b924d80f8b69e` |
+| `order-message-notify` | 5173 | `d6424c252c2deced1ea5ccb15f6afa79cee90895f6b5b51b6f42a8c71c0bcb24` |
+| `pass-register-push-token` | 2843 | `530dfc40ea21172005659c0cac7c26bac6f9408b3d07a2354e3e26327c404f92` |
+
+| Función | ezbr_sha256 reportado por STAGING |
+| --- | --- |
+| `delivery-portal` | `316e21a30709e9b25778313bdf8172aba72ad1d4bd2b26679964279b932934dc` |
+| `order-message-notify` | `a9fa8f44d6dae85f530384d8fb6ff5d01b5b44312d646bdd3066a6b43206d214` |
+| `pass-register-push-token` | `0411843c25d5f2a5b117280b721cd8686a831bbd1a56997e9a59bb99d2261d26` |
+
+### Dependencias y validación local
+
+Los imports recuperados conservan `jsr:@supabase/functions-js/edge-runtime.d.ts` y `@supabase/supabase-js@2` mediante JSR para notificación/push y npm para el portal. No hay imports relativos nuevos ni valores de credenciales. El rango `@2` es heredado; no se fija ni certifica un lock Deno en este lote.
+
+El portal consume `get_delivery_portal_data_by_token` y `update_delivery_portal_state`; notificación consume `order_messages`, `order_conversations` y `client_push_tokens`; push consume `client_push_tokens`. Encontrar sus nombres en el baseline no equivale a probar permisos o comportamiento remoto.
+
+La preparación usa parseo/transpilación TypeScript y un harness temporal con `Deno.serve`, `Deno.env`, `createClient`, RPC y `fetch` simulados. Los 32 casos comprueban métodos, configuración ausente, rechazo de sesiones, JSON/UUID inválidos, identidad, autor, destinatarios vacíos, respuesta simulada de Expo, rechazo de PIN/token delegado al RPC, HTML y retorno de pagos sin escrituras. Ninguna prueba contacta servicios reales.
+
+Regresiones existentes, sin PAT ni despliegues:
+
+```powershell
+node --test scripts/supabase/environment-drift.test.mjs
+node --test scripts/docs/package-readiness-scanner.test.mjs
+npm run supabase:migrations:manifest:check
+npm run docs:correction:check
+npm run docs:treq:check
+npm test --silent
+```
+
+El inventario local pasa de 26 a 29 funciones. Las tres nuevas fuentes solo referencian variables administradas de Supabase; el conjunto no administrado sigue en 28 nombres, cubiertos por el contrato existente. `package-readiness-contract.json` no se modifica.
+
+### Límites de aceptación
+
+- La preparación en Linux con Node v22.16.0 no sustituye la validación en la toolchain fijada. No se ejecutaron Deno check, functions serve, compilador hosted ni ESLint con dependencias del proyecto. Parsear/transpilar no prueba todos los tipos ni resuelve los imports remotos.
+- Se conservan los `any` y rangos de dependencias heredados; no se añaden excepciones para ocultarlos ni se cambia lógica de negocio durante la captura.
+- Los mocks de portal no demuestran validación real de token, PIN, expiración, concurrencia, RLS o grants. Esa autoridad sigue en los RPC.
+- `order-message-notify` conserva `sent` como cuenta de mensajes preparados, no entrega confirmada. Fallos de proveedor, reintentos e idempotencia siguen pendientes de aceptación operativa.
+- Probar el usuario obtenido por getUser no certifica propiedad del dispositivo ni todas las colisiones de tokens entre usuarios.
+- No se declaran capacidades terminadas, pagos aprobados, proveedores probados ni paridad integral.
+
+### Publicación y continuidad
+
+Este lote no hace commit, push, PR, deploy, migraciones, secretos, datos ni activación de cron. Antes de publicar debe verificarse que las integraciones Git no desplieguen automáticamente. La incorporación local no autoriza producción ni reabre CORR-011.
+
+`MRP015-040` conserva `evidence_ref: null` y sigue NOT_CERTIFIED. No se ejecuta FULL remoto ni se afirma un nuevo total de hallazgos. Las cinco funciones solo locales, las diferencias de fuentes/SQL, proveedores, cron y clave interna mantienen su tratamiento pendiente.
+
+No se crean ni modifican TREQ o fragmentos 04A. Las referencias `TREQ-SUPABASE-259`, `TREQ-SUPABASE-261` y `TREQ-SUPABASE-262` no pasan a cobertura remota por esta captura. `SHELL-CI-020::GAP-PKG-001` conserva su trabajo; `SHELL-CI-021::GAP-PKG-001` no se inicia.
+<!-- MRP015-040-LOCAL-SOURCE-RECOVERY:END -->
 
 ---
 
