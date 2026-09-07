@@ -16,6 +16,9 @@ const CHECK_COMPLETION_ATTEMPTS = 720;
 const CHECK_COMPLETION_INTERVAL_MS = 5000;
 const MERGE_CONFIRM_ATTEMPTS = 24;
 const MERGE_CONFIRM_INTERVAL_MS = 5000;
+const GITHUB_TRANSPORT_ATTEMPTS = 20;
+const GITHUB_TRANSPORT_INTERVAL_MS = 2000;
+const GITHUB_TRANSIENT_MARKER = 'GITHUB_TRANSIENT_UNAVAILABLE';
 
 function fail(message, code = 1) {
   const error = new Error(message);
@@ -174,7 +177,55 @@ function readJsonAtRef(root, ref, relativePath, label) {
 }
 
 function gh(args, options = {}) {
-  return run('gh', args, options);
+  const {
+    transportAttempts = GITHUB_TRANSPORT_ATTEMPTS,
+    transportIntervalMs = GITHUB_TRANSPORT_INTERVAL_MS,
+    ...runOptions
+  } = options;
+  const callerAllowsFailure = runOptions.allowFailure === true;
+  let last = {
+    status: 1,
+    stdout: '',
+    stderr: GITHUB_TRANSIENT_MARKER,
+  };
+
+  for (let attempt = 1; attempt <= transportAttempts; attempt += 1) {
+    const result = run('gh', args, {
+      ...runOptions,
+      allowFailure: true,
+    });
+
+    if (result.status === 0) return result;
+
+    if (!isTransientPrChecksFailure(result)) {
+      if (callerAllowsFailure) return result;
+      fail(
+        result.stderr
+        || result.stdout
+        || `gh ${args.join(' ')} fallo.`,
+        result.status,
+      );
+    }
+
+    last = result;
+
+    if (attempt < transportAttempts) {
+      sleep(transportIntervalMs);
+    }
+  }
+
+  if (callerAllowsFailure) {
+    return {
+      status: last.status || 1,
+      stdout: '',
+      stderr: GITHUB_TRANSIENT_MARKER,
+    };
+  }
+
+  fail(
+    `GitHub temporalmente no disponible despues de ${transportAttempts} intentos.`,
+    last.status || 1,
+  );
 }
 
 function sleep(milliseconds) {
@@ -189,7 +240,7 @@ export function isTransientPrChecksFailure({ stdout, stderr }) {
     .filter(Boolean)
     .join('\n');
   if (!combined) return false;
-  return /(?:HTTP\s+(?:408|425|429|499|500|502|503|504)\b|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up|connection reset|temporarily unavailable|timed?\s*out|Something went wrong while executing your query)/iu.test(combined);
+  return /(?:GITHUB_TRANSIENT_UNAVAILABLE|HTTP\s+(?:408|425|429|499|500|502|503|504)\b|unexpected EOF|dial tcp|connectex|connection attempt failed|failed to respond|TLS handshake timeout|context deadline exceeded|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up|connection reset|connection refused|network is unreachable|temporary failure in name resolution|no such host|forcibly closed by the remote host|i\/o timeout|temporarily unavailable|timed?\s*out|Something went wrong while executing your query)/iu.test(combined);
 }
 
 export function classifyPrChecksProbe({ status, stdout, stderr }) {
@@ -198,7 +249,7 @@ export function classifyPrChecksProbe({ status, stdout, stderr }) {
   const combined = [rawStdout, rawStderr].filter(Boolean).join('\n');
 
   if (isTransientPrChecksFailure({ stdout: rawStdout, stderr: rawStderr })) {
-    return { state: 'RETRY', count: 0, detail: combined };
+    return { state: 'RETRY', count: 0, detail: GITHUB_TRANSIENT_MARKER };
   }
 
   if (rawStdout.startsWith('[')) {
@@ -338,7 +389,7 @@ export function waitForPrChecksToComplete(root, prNumber, {
       fail(`No se pudieron consultar checks de PR #${prNumber}: ${classification.detail}`, probe.status || 1);
     }
     if (classification.state === 'RETRY') {
-      console.warn(`[CHECKS] PR #${prNumber} transient query failure; retrying (${attempt}/${attempts}).`);
+      console.log(`[CHECKS] PR #${prNumber} esperando disponibilidad de GitHub (${attempt}/${attempts}).`);
     } else if (classification.state === 'WAIT' && (attempt === 1 || attempt % 12 === 0)) {
       console.log(`[CHECKS] PR #${prNumber} pending (${attempt}/${attempts}).`);
     }

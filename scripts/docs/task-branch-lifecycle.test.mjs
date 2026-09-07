@@ -320,7 +320,7 @@ test('distingue checks aun no registrados de errores reales de gh', () => {
     {
       state: 'RETRY',
       count: 0,
-      detail: 'HTTP 499: 499 (https://api.github.com/graphql)',
+      detail: 'GITHUB_TRANSIENT_UNAVAILABLE',
     },
   );
 
@@ -363,6 +363,69 @@ test('distingue checks aun no registrados de errores reales de gh', () => {
     }),
     { state: 'ERROR', count: 0, detail: 'HTTP 403: Resource not accessible' },
   );
+});
+
+test('absorbe fallos transitorios de GitHub sin exponer errores de transporte', () => {
+  const transientMessages = [
+    'Post "https://api.github.com/graphql": unexpected EOF',
+    'Post "https://api.github.com/graphql": dial tcp 140.82.114.6:443: connectex: A connection attempt failed because the connected party did not properly respond after a period of time, or established connection failed because connected host has failed to respond.',
+    'Post "https://api.github.com/graphql": TLS handshake timeout',
+    'Post "https://api.github.com/graphql": context deadline exceeded',
+    'read tcp 10.0.0.1:50000->140.82.114.6:443: wsarecv: An existing connection was forcibly closed by the remote host',
+  ];
+
+  for (const stderr of transientMessages) {
+    assert.equal(
+      isTransientPrChecksFailure({
+        status: 1,
+        stdout: '',
+        stderr,
+      }),
+      true,
+      stderr,
+    );
+
+    assert.deepEqual(
+      classifyPrChecksProbe({
+        status: 1,
+        stdout: '',
+        stderr,
+      }),
+      {
+        state: 'RETRY',
+        count: 0,
+        detail: 'GITHUB_TRANSIENT_UNAVAILABLE',
+      },
+    );
+  }
+
+  assert.equal(
+    isTransientPrChecksFailure({
+      status: 1,
+      stdout: '',
+      stderr: 'HTTP 403: Resource not accessible',
+    }),
+    false,
+  );
+
+  for (const relativePath of [
+    'scripts/docs/task-branch-lifecycle.mjs',
+    'scripts/docs/implementation-branch-lifecycle.mjs',
+    'scripts/docs/correction-branch-lifecycle.mjs',
+  ]) {
+    const source = fs.readFileSync(relativePath, 'utf8');
+    assert.match(source, /GITHUB_TRANSPORT_ATTEMPTS/u);
+    assert.match(source, /GITHUB_TRANSIENT_MARKER/u);
+    assert.match(source, /isTransientPrChecksFailure/u);
+    assert.match(source, /allowFailure: true/u);
+  }
+
+  const taskSource = fs.readFileSync(
+    'scripts/docs/task-branch-lifecycle.mjs',
+    'utf8',
+  );
+  assert.doesNotMatch(taskSource, /transient query failure/u);
+  assert.match(taskSource, /esperando disponibilidad de GitHub/u);
 });
 
 test('clasifica polling de CI como pending, pass o fail sin depender de watch', () => {

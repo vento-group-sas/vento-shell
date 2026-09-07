@@ -6,6 +6,7 @@ import { spawnSync } from 'node:child_process';
 
 import {
     classifyPrChecksProbe,
+    isTransientPrChecksFailure,
     parsePorcelainPaths,
     resolveNpmInvocation,
     waitForPrChecksToComplete,
@@ -42,6 +43,9 @@ const CHECK_REGISTRATION_ATTEMPTS = 60;
 const CHECK_REGISTRATION_INTERVAL_MS = 2000;
 const MERGE_CONFIRM_ATTEMPTS = 60;
 const MERGE_CONFIRM_INTERVAL_MS = 2000;
+const GITHUB_TRANSPORT_ATTEMPTS = 20;
+const GITHUB_TRANSPORT_INTERVAL_MS = 2000;
+const GITHUB_TRANSIENT_MARKER = 'GITHUB_TRANSIENT_UNAVAILABLE';
 
 function fail(message, code = 1) {
     const error = new Error(message);
@@ -78,7 +82,55 @@ function git(args, options = {}) {
 }
 
 function gh(args, options = {}) {
-    return run('gh', args, options);
+    const {
+        transportAttempts = GITHUB_TRANSPORT_ATTEMPTS,
+        transportIntervalMs = GITHUB_TRANSPORT_INTERVAL_MS,
+        ...runOptions
+    } = options;
+    const callerAllowsFailure = runOptions.allowFailure === true;
+    let last = {
+        status: 1,
+        stdout: '',
+        stderr: GITHUB_TRANSIENT_MARKER,
+    };
+
+    for (let attempt = 1; attempt <= transportAttempts; attempt += 1) {
+        const result = run('gh', args, {
+            ...runOptions,
+            allowFailure: true,
+        });
+
+        if (result.status === 0) return result;
+
+        if (!isTransientPrChecksFailure(result)) {
+            if (callerAllowsFailure) return result;
+            fail(
+                result.stderr
+                || result.stdout
+                || `gh ${args.join(' ')} falló.`,
+                result.status,
+            );
+        }
+
+        last = result;
+
+        if (attempt < transportAttempts) {
+            sleep(transportIntervalMs);
+        }
+    }
+
+    if (callerAllowsFailure) {
+        return {
+            status: last.status || 1,
+            stdout: '',
+            stderr: GITHUB_TRANSIENT_MARKER,
+        };
+    }
+
+    fail(
+        `GitHub temporalmente no disponible después de ${transportAttempts} intentos.`,
+        last.status || 1,
+    );
 }
 
 function npm(args, options = {}) {
