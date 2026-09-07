@@ -734,6 +734,9 @@ function normalizeHostedEnvironmentContracts(value) {
     const storage = config?.storage;
     const realtime = config?.realtime;
     const edgeFunctions = rawContract.edge_functions;
+    const edgeEnvironmentRequirements = rawContract.edge_environment_requirements === undefined
+      ? null
+      : normalizeEdgeEnvironmentRequirements(rawContract.edge_environment_requirements);
 
     const normalizeUniqueStrings = (entries, code) => {
       if (!Array.isArray(entries)) fail(code, role);
@@ -813,6 +816,7 @@ function normalizeHostedEnvironmentContracts(value) {
         default_disposition: 'REQUIRED_HOSTED',
         solo_local: soloLocal,
       },
+      edge_environment_requirements: edgeEnvironmentRequirements,
     };
   }
 
@@ -827,7 +831,7 @@ function readHostedResourceBaseline(root) {
 
   if (
     !baseline
-    || baseline.schema_version !== 2
+    || baseline.schema_version !== 3
     || !Array.isArray(baseline.cron_jobs)
     || !Array.isArray(baseline.internal_job_secret_keys)
   ) {
@@ -2297,7 +2301,8 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
   if (secrets) {
     drifts.push(...evaluateEdgeSecretRequirements({
       referencedSecretNames: expected.referenced_secret_names,
-      requirements: expected?.hosted_resources?.edge_environment_requirements,
+      requirements: hostedEnvironmentContract?.edge_environment_requirements
+        ?? expected?.hosted_resources?.edge_environment_requirements,
       observedSecretNames: secrets,
       environment,
       identity: remoteObserved.identity.project_ref,
