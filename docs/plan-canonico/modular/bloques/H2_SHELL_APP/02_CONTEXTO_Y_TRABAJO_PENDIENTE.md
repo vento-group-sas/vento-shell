@@ -1789,6 +1789,1439 @@ Esta tarea no:
 `SHELL-APP-006 — Mostrar área activa`
 
 
-### [ ] SHELL-APP-006 — Mostrar área activa
+### ✅ SHELL-APP-006 — Mostrar área activa
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-005 — Mostrar sede activa
+**Tarea siguiente:** SHELL-APP-007 — Mostrar rol operativo activo
+**Tipo de tarea:** definición técnico-documental de la presentación de área dentro del contexto laboral de SHELL, separando área administrativa y área operativa, preservando la semántica de operación site-wide y evitando convertir área seleccionada, primaria, asignada o tipo de área en autoridad
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md`
+**Estado físico resultante:** contrato documental de presentación de área definido y reconciliado con el contexto territorial vigente; runtime de SHELL sin modificaciones
+**Cambios físicos autorizados:** ninguno.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo SHELL muestra el área relevante dentro de la región `Contexto laboral` sin introducir una propiedad genérica llamada `área actual` que mezcle navegación administrativa, turno, afiliación laboral y autorización.
+
+La tarea distingue:
+
+- área administrativa;
+- área operativa;
+- área asignada;
+- área primaria por sede;
+- área seleccionada;
+- tipo de área;
+- área del recurso;
+- ausencia legítima de área específica;
+- indisponibilidad o invalidez del contexto de área.
+
+La tarea no modifica la resolución de esos hechos.
+
+Únicamente define su presentación segura dentro del Hub.
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-005`
+
+Se conserva sin reapertura:
+
+1. existe una región transversal `Contexto laboral`;
+2. el segmento `Turno` ya está definido;
+3. el segmento `Sede` ya distingue canal administrativo y canal operativo;
+4. la sede operativa procede del turno;
+5. la sede seleccionada no crea autoridad;
+6. cobertura multisede no se convierte en una sede específica;
+7. hechos operativos visibles deben proceder del mismo snapshot;
+8. identificadores internos no se muestran al trabajador;
+9. área administrativa y área operativa deben permanecer conceptualmente separadas;
+10. `SafeContextProjectionV1` no se amplía silenciosamente.
+
+`SHELL-APP-006` agrega únicamente el segmento `Área`.
+
+---
+
+#### 3. Modelo de áreas consumido
+
+La tarea consume la separación aprobada por `AUTH-MOD-008`:
+
+```text
+ÁREA ORGANIZACIONAL
+≠
+ÁREA ASIGNADA
+≠
+ÁREA PRIMARIA POR SEDE
+≠
+ÁREA SELECCIONADA
+≠
+ÁREA ADMINISTRATIVA
+≠
+ÁREA OPERATIVA
+≠
+ÁREA DEL RECURSO
+```
+
+También se conserva:
+
+```text
+ÁREA ESPECÍFICA
+≠
+TIPO DE ÁREA
+```
+
+La UI no fusiona estos conceptos para simplificar el modelo.
+
+---
+
+#### 4. Propiedad de cada concepto
+
+| Concepto | Fuente o función canónica | Uso en `SHELL-APP-006` |
+| --- | --- | --- |
+| área organizacional | `public.areas` | catálogo y descriptor humano |
+| área asignada | `employee_areas` / `assigned_areas` | afiliación laboral; no crea área operativa |
+| área primaria | referencia habitual por empleado y sede | fallback de navegación administrativa únicamente cuando sea válida |
+| área seleccionada | preferencia administrativa de navegación | filtro validable; nunca autoridad |
+| área administrativa | filtro territorial administrativo resuelto | puede presentarse en el canal administrativo |
+| área operativa | `operational_area` derivada del turno | se presenta en el canal operativo cuando el contexto es utilizable |
+| tipo de área | `area_kind` | clasificación funcional; no identifica un área específica |
+| área del recurso | territorio real del recurso | no pertenece al segmento de contexto del Hub |
+
+---
+
+#### 5. Regla principal de presentación
+
+SHELL no utiliza una etiqueta ambigua:
+
+```text
+Área actual
+```
+
+Cuando los canales deban distinguirse, utiliza:
+
+```text
+Área operativa
+Área administrativa
+```
+
+La presentación puede compactarse visualmente cuando ambos canales resuelvan exactamente la misma área, pero no elimina la procedencia semántica de cada uno.
+
+---
+
+#### 6. Fuente de la área operativa
+
+La fuente autoritativa es:
+
+```text
+AccessContext.operational_area
+```
+
+y su origen contractual es:
+
+```text
+active_shift.area_id
+```
+
+Cadena:
+
+```text
+turno publicado y vigente
+→ active_shift.area_id
+→ operational_area
+→ área operativa presentable
+```
+
+La UI no consulta directamente `employee_shifts` para reconstruir este hecho.
+
+---
+
+#### 7. Forma contractual consumida
+
+La forma vigente de `OperationalAreaContext` contiene:
+
+```text
+area_id
+site_id
+area_kind
+source
+area_active
+compatible_with_role
+```
+
+donde `source` puede representar:
+
+```text
+SHIFT
+CHECKIN_CONFIRMED_SHIFT
+```
+
+La fuente sigue siendo el turno en ambos casos.
+
+El check-in solo puede confirmar coherencia.
+
+---
+
+#### 8. Dependencia de la sede operativa
+
+Toda área operativa específica debe pertenecer a la sede operativa exacta del mismo snapshot.
+
+Regla:
+
+```text
+operational_area.site_id
+=
+operational_site.site_id
+```
+
+Una incompatibilidad de sede y área no se corrige mediante:
+
+- nombre humano;
+- `area_kind`;
+- área primaria;
+- área seleccionada;
+- área asignada;
+- primera coincidencia;
+- dispositivo.
+
+---
+
+#### 9. Área operativa antes del check-in
+
+Cuando existe turno vigente con área específica válida:
+
+```text
+active_shift.area_id != null
+active_checkin_session = null
+```
+
+SHELL puede mostrar el área operativa antes del check-in.
+
+Resultado conceptual:
+
+```text
+Turno vigente
+Entrada pendiente
+Sede operativa válida
+Área operativa válida
+```
+
+La ausencia de check-in no elimina el área del turno.
+
+---
+
+#### 10. Check-in que confirma el área
+
+Cuando el check-in activo coincide exactamente con el área del turno, el contexto puede declarar:
+
+```text
+source = CHECKIN_CONFIRMED_SHIFT
+```
+
+La UI no necesita mostrar esa procedencia.
+
+La confirmación no crea ni cambia el área.
+
+---
+
+#### 11. Check-in sin área
+
+Si el turno declara área y el check-in compatible no contiene área:
+
+```text
+active_shift.area_id != null
+active_checkin_session.area_id = null
+```
+
+el área continúa procediendo del turno.
+
+SHELL no la oculta por esa ausencia.
+
+---
+
+#### 12. Check-in con área incompatible
+
+Cuando el check-in presenta un área distinta de la del turno:
+
+- no reemplaza el área del turno;
+- no corrige el turno;
+- no crea una segunda área operativa;
+- no utiliza el área capturada como fallback.
+
+La resolución canónica decide el efecto estructural del conflicto.
+
+SHELL consume únicamente la proyección segura resultante.
+
+No intenta reconciliarlo localmente.
+
+---
+
+#### 13. Ausencia de turno
+
+Cuando no existe turno vigente de forma legítima:
+
+```text
+active_shift = null
+operational_area = null
+```
+
+SHELL muestra:
+
+```text
+Sin área operativa
+```
+
+No utiliza:
+
+- área asignada;
+- área primaria;
+- área seleccionada;
+- área del último turno;
+- área del último check-in;
+- área del dispositivo.
+
+---
+
+#### 14. Área específica operativa válida
+
+Se muestra una área operativa específica únicamente cuando la proyección server-side determina que el área:
+
+- existe;
+- pertenece a la sede operativa;
+- está activa;
+- es compatible con el rol operativo;
+- corresponde al turno vigente;
+- pertenece al snapshot actual.
+
+Presentación:
+
+```text
+Área operativa
+<descriptor humano>
+```
+
+El descriptor humano no es la fuente de autoridad.
+
+---
+
+#### 15. Operación site-wide con área nula
+
+Una ausencia de `operational_area` puede ser legítima cuando el rol está configurado para operar a nivel de sede sin exigir área específica.
+
+Caso:
+
+```text
+active_shift válido
+operational_site válida
+active_shift.area_id = null
+rol site-wide válido
+```
+
+Presentación:
+
+```text
+Área operativa
+Sin área específica
+Alcance: nivel sede
+```
+
+Esto no significa:
+
+```text
+cualquier área
+```
+
+ni:
+
+```text
+todas las áreas
+```
+
+---
+
+#### 16. Área requerida pero ausente
+
+Cuando el rol o la configuración territorial exige una área específica y el turno no la declara:
+
+```text
+active_shift.area_id = null
+operational_role.valid_for_area = false
+```
+
+SHELL no presenta `Alcance: nivel sede`.
+
+Presenta:
+
+```text
+Área operativa no disponible
+```
+
+No completa el dato mediante fallback.
+
+---
+
+#### 17. Área existente pero inactiva
+
+Un `OperationalAreaContext` puede conservar el hecho observado con:
+
+```text
+area_active = false
+```
+
+Ese estado no se presenta como área activa utilizable.
+
+Resultado:
+
+```text
+Área operativa no disponible
+```
+
+La UI no transforma la existencia del registro en validez operativa.
+
+---
+
+#### 18. Área incompatible con el rol
+
+Un área puede existir, estar activa y pertenecer a la sede, pero ser incompatible con el rol:
+
+```text
+compatible_with_role = false
+```
+
+Resultado de presentación operativa:
+
+```text
+Área operativa no disponible
+```
+
+La tarea no muestra ni repara la configuración del rol.
+
+`SHELL-APP-007` conserva la responsabilidad de presentar el rol operativo.
+
+---
+
+#### 19. Área desconocida, ambigua o de otra sede
+
+Cuando `active_shift.area_id`:
+
+- no existe;
+- es ambiguo;
+- no puede resolverse;
+- pertenece a otra sede;
+- no corresponde a una entidad de área válida;
+
+SHELL no inventa un descriptor.
+
+Resultado:
+
+```text
+Área operativa no disponible
+```
+
+El turno o la fuente territorial deberá corregirse fuera de esta presentación.
+
+---
+
+#### 20. `null` no es wildcard
+
+La presentación conserva estrictamente:
+
+```text
+operational_area = null
+≠
+cualquier área
+```
+
+El `null` debe clasificarse por el servidor como, por ejemplo:
+
+- ausencia de turno;
+- operación válida a nivel sede;
+- área requerida ausente;
+- contexto inválido.
+
+El cliente no decide cuál significado aplica.
+
+---
+
+#### 21. Permisos que no exigen área
+
+La presentación del segmento no evalúa una acción empresarial concreta.
+
+Por tanto, un contexto operativo legítimamente site-wide puede mostrarse como:
+
+```text
+Sin área específica
+Alcance: nivel sede
+```
+
+aunque una capacidad posterior pueda exigir área.
+
+Cada permiso y recurso se reevalúan en su frontera propietaria.
+
+---
+
+#### 22. Permisos que exigen área
+
+La existencia del segmento `Área operativa` no concede una capacidad.
+
+Para una acción cuyo contrato exige área, el evaluador seguirá requiriendo una `operational_area` válida, activa, compatible con el rol y compatible con el recurso.
+
+SHELL no convierte su representación visual en evidencia de autorización.
+
+---
+
+#### 23. `employee_areas` no es requisito operativo general
+
+La falta de afiliación permanente en `employee_areas` no oculta por sí sola una área operativa válida del turno.
+
+Se conserva:
+
+```text
+ÁREA ASIGNADA
+→ afiliación
+
+ÁREA DEL TURNO
+→ contexto operativo
+```
+
+Una asignación temporal válida puede existir sin convertir el área del turno en una afiliación permanente.
+
+---
+
+#### 24. Área primaria
+
+El área primaria:
+
+- es opcional;
+- pertenece a una sede exacta;
+- puede ser distinta por sede;
+- no concede permisos;
+- no crea área operativa;
+- no corrige un turno;
+- no reemplaza una incompatibilidad.
+
+Solo puede participar como referencia de navegación administrativa después de validar el contexto administrativo correspondiente.
+
+---
+
+#### 25. Área seleccionada
+
+`selected_area_id` es una preferencia administrativa.
+
+No modifica:
+
+- turno;
+- sede operativa;
+- área operativa;
+- rol operativo;
+- check-in;
+- permisos;
+- recurso.
+
+SHELL no la utiliza como fuente operativa.
+
+---
+
+#### 26. Dependencia de la sede administrativa
+
+Una área administrativa específica debe pertenecer a la sede administrativa específica presentada por `SHELL-APP-005`.
+
+Regla conceptual:
+
+```text
+administrative_area.site_id
+=
+administrative_site.site_id
+```
+
+cuando ambos sean específicos.
+
+Si no existe una sede administrativa específica, SHELL no muestra una área administrativa específica por inferencia desde una lista de cobertura.
+
+---
+
+#### 27. Resolución administrativa
+
+La resolución de navegación administrativa conserva la precedencia aprobada:
+
+```text
+1. área solicitada
+2. validar
+3. área seleccionada
+4. área primaria de la sede administrativa
+5. sin área específica
+```
+
+Cada candidato debe permanecer dentro de:
+
+- la sede administrativa específica;
+- la cobertura administrativa vigente;
+- el catálogo de áreas activo;
+- la política de navegación aplicable.
+
+La resolución ocurre en servidor.
+
+---
+
+#### 28. Fallback a primaria únicamente de navegación
+
+El área primaria puede servir como valor inicial de navegación cuando:
+
+- existe una sede administrativa específica;
+- el área primaria pertenece a esa sede;
+- está activa;
+- es compatible con la cobertura administrativa;
+- la cobertura es válida.
+
+No puede utilizarse para:
+
+- reparar cobertura inválida;
+- ampliar alcance;
+- crear autoridad;
+- sustituir área operativa;
+- resolver recurso;
+- corregir un área solicitada fuera de cobertura.
+
+---
+
+#### 29. Cambio de sede administrativa
+
+Cuando cambia la sede administrativa, SHELL debe revalidar el área administrativa.
+
+Secuencia:
+
+```text
+cambia sede administrativa
+→ validar área administrativa actual
+→ conservar si pertenece y sigue autorizada como filtro
+→ si no, resolver primaria válida
+→ si no existe, quedar sin área específica
+```
+
+La transición no modifica el área operativa.
+
+---
+
+#### 30. Cobertura administrativa y área específica
+
+`AdministrativeCoverageContext` puede contener:
+
+```text
+NONE
+ASSIGNED_SITES
+SPECIFIC_SITE
+ASSIGNED_AREAS
+SPECIFIC_AREA
+ORGANIZATION
+```
+
+Ese modo define cobertura base.
+
+No constituye automáticamente una selección visual de área.
+
+En particular:
+
+```text
+administrative_coverage.area_ids[0]
+```
+
+no se convierte localmente en área activa.
+
+---
+
+#### 31. Cobertura por sede
+
+Cuando la cobertura administrativa permite una sede completa y no existe una área administrativa específica resuelta:
+
+```text
+Área administrativa
+Sin área específica
+Cobertura: nivel sede
+```
+
+La ausencia de filtro de área no significa ausencia de cobertura.
+
+---
+
+#### 32. Cobertura por áreas asignadas
+
+Cuando la cobertura válida está basada en áreas asignadas pero ninguna área específica está activa como filtro:
+
+```text
+Área administrativa
+Sin área específica
+Cobertura: áreas asignadas
+```
+
+SHELL no elige automáticamente:
+
+- la primera;
+- la única;
+- la primaria;
+- la más reciente;
+
+salvo que la resolución de navegación canónica haya producido explícitamente una área administrativa específica.
+
+---
+
+#### 33. Cobertura organizacional
+
+Cuando la cobertura administrativa es organizacional y no existe un filtro específico:
+
+```text
+Área administrativa
+Sin área específica
+Cobertura: organización
+```
+
+`ORGANIZATION` no significa que exista una área llamada `Todas`.
+
+---
+
+#### 34. Sin contexto administrativo territorial
+
+Cuando la cobertura administrativa válida es `NONE` y no existe una área administrativa específica:
+
+```text
+Sin área administrativa
+```
+
+Esto no implica ausencia de área operativa.
+
+Los carriles continúan independientes.
+
+---
+
+#### 35. Área administrativa no disponible
+
+Si la resolución administrativa es contradictoria, ambigua, incompatible con la sede o técnicamente no confiable, SHELL muestra:
+
+```text
+Área administrativa no disponible
+```
+
+No utiliza el área operativa para ocultar el fallo.
+
+No usa selected area, primary area o assigned areas sin validación.
+
+---
+
+#### 36. Área específica y tipo de área
+
+`area_id` y `area_kind` permanecen separados.
+
+Ejemplo conceptual:
+
+```text
+Área específica
+Vento Café / Caja
+
+Tipo
+caja
+```
+
+El `area_kind` puede utilizarse como información secundaria cuando sea útil.
+
+No sustituye la identidad del área.
+
+Dos áreas de tipo `caja` en sedes diferentes siguen siendo áreas distintas.
+
+---
+
+#### 37. Catálogo humano de áreas
+
+La identidad visible se resuelve contra el catálogo canónico `public.areas`.
+
+La UI muestra un descriptor humano seguro.
+
+No utiliza como etiqueta primaria:
+
+- `area_id`;
+- UUID;
+- clave interna;
+- `area_kind` como sustituto;
+- identificador de asignación;
+- referencia de turno;
+- identificador de sesión.
+
+---
+
+#### 38. Desambiguación entre sedes
+
+Toda área pertenece a exactamente una sede.
+
+Cuando un mismo nombre humano pueda existir en más de una sede, la presentación conserva suficiente contexto para distinguirlo.
+
+Ejemplo:
+
+```text
+Vento Café / Caja
+Saudo / Caja
+```
+
+Si el segmento `Sede` ya está inequívocamente asociado al canal, la UI puede evitar repetir el nombre de sede visualmente, pero la semántica accesible debe conservar la asociación.
+
+---
+
+#### 39. Área administrativa y operativa diferentes
+
+Es válido:
+
+```text
+Área operativa
+Bodega
+
+Área administrativa
+Repostería
+```
+
+si cada una pertenece a su canal y sede correspondiente.
+
+La diferencia no constituye conflicto por sí sola.
+
+No se intenta sincronizarlas.
+
+---
+
+#### 40. Área administrativa y operativa iguales
+
+Cuando ambos canales resuelven exactamente el mismo `area_id` dentro de la misma sede, la UI puede compactar:
+
+```text
+Área
+Caja
+Operativa · Administrativa
+```
+
+La igualdad se decide por identidad canónica, no por nombre humano.
+
+Dos áreas con el mismo nombre pero distintos IDs no se compactan como una sola.
+
+---
+
+#### 41. Solo área operativa
+
+Puede existir área operativa válida sin área administrativa específica.
+
+SHELL muestra el canal operativo.
+
+No crea un filtro administrativo a partir del turno.
+
+---
+
+#### 42. Solo área administrativa
+
+Puede existir área administrativa específica sin turno vigente o sin área operativa.
+
+SHELL muestra el filtro administrativo.
+
+La ausencia operativa no elimina el carril base.
+
+---
+
+#### 43. Ninguna área específica
+
+Puede existir un contexto válido sin ninguna área específica visible.
+
+Ejemplos:
+
+- actor administrativo con cobertura a nivel sede;
+- cobertura organizacional;
+- rol operativo site-wide;
+- empleado sin turno y sin filtro administrativo.
+
+La UI conserva el significado de cada canal y no inventa una área general.
+
+---
+
+#### 44. Relación con el segmento `Turno`
+
+Cuando el segmento `Turno` muestra:
+
+```text
+Turno vigente
+```
+
+una área específica del mismo turno puede mostrarse antes del check-in.
+
+Cuando muestra:
+
+```text
+Sin turno activo
+```
+
+no se conserva una área operativa residual del turno anterior.
+
+Cuando muestra:
+
+```text
+Turno no disponible
+```
+
+SHELL no presenta una área operativa como activa a partir de un snapshot que el servidor haya clasificado como no confiable para ese contexto.
+
+---
+
+#### 45. Relación con el segmento `Sede`
+
+La presentación debe satisfacer:
+
+```text
+área operativa específica
+→ pertenece a sede operativa específica
+
+área administrativa específica
+→ pertenece a sede administrativa específica
+```
+
+No se permite presentar:
+
+```text
+Sede operativa = SAUDO
+Área operativa = Caja de Vento Café
+```
+
+ni la combinación equivalente en el canal administrativo.
+
+---
+
+#### 46. Snapshot único
+
+Turno, sede operativa y área operativa presentados deben proceder del mismo `AccessContext` o de una proyección derivada del mismo snapshot.
+
+Queda prohibido mezclar:
+
+```text
+turno del contexto A
++
+sede del contexto A
++
+área del contexto B
+```
+
+La nueva resolución sustituye el conjunto anterior.
+
+---
+
+#### 47. Contexto obsoleto
+
+La presentación de área deja de ser confiable cuando cambian, entre otros:
+
+- turno;
+- sede del turno;
+- área del turno;
+- estado del área;
+- habilitación territorial;
+- rol operativo;
+- check-in;
+- actor;
+- sesión;
+- cobertura administrativa;
+- sede administrativa;
+- selección administrativa válida.
+
+La estrategia de caché e invalidación pertenece a sus contratos propietarios.
+
+La UI no conserva la área anterior como autoridad.
+
+---
+
+#### 48. Sin selector dentro de esta tarea
+
+`SHELL-APP-006` no crea:
+
+- selector de área;
+- dropdown;
+- búsqueda;
+- CTA `Cambiar área`;
+- persistencia de preferencia;
+- mutación de `selected_area_id`.
+
+La tarea define qué mostrar.
+
+No define cómo cambiar el filtro administrativo.
+
+---
+
+#### 49. Sin navegación implícita
+
+El descriptor de área no se convierte automáticamente en enlace o botón.
+
+Mostrar una área no crea una transición entre pantallas o aplicaciones.
+
+---
+
+#### 50. Separación frente a `SHELL-APP-007`
+
+Aunque la validez del área operativa depende de compatibilidad con el rol, esta tarea no muestra:
+
+- nombre del rol;
+- código de rol;
+- catálogo de roles;
+- habilitación completa del rol.
+
+`SHELL-APP-007` conserva la responsabilidad de:
+
+```text
+Mostrar rol operativo activo
+```
+
+`SHELL-APP-006` consume únicamente el resultado territorial necesario para clasificar el área.
+
+---
+
+#### 51. Separación frente a `SHELL-APP-008`
+
+Esta tarea no muestra:
+
+- tareas pendientes;
+- aprobaciones;
+- alertas;
+- conteos;
+- notificaciones;
+- trabajo transversal.
+
+Ese contenido permanece reservado a `SHELL-APP-008`.
+
+---
+
+#### 52. Frontera server/client
+
+La resolución del área visible ocurre en servidor.
+
+El cliente puede recibir un view model reducido con información suficiente para:
+
+- distinguir canal;
+- distinguir estado;
+- mostrar descriptor humano;
+- indicar alcance a nivel sede u organización cuando corresponda.
+
+El cliente no evalúa:
+
+- asignaciones;
+- cobertura;
+- turno;
+- rol;
+- compatibilidad territorial;
+- permisos.
+
+---
+
+#### 53. Frontera con `SafeContextProjectionV1`
+
+`SafeContextProjectionV1@1.0.0` conserva su allowlist vigente.
+
+Esta tarea no agrega silenciosamente:
+
+- área administrativa;
+- área operativa;
+- listas de `area_ids`;
+- área seleccionada;
+- área primaria;
+- nombres de área;
+- `area_kind`;
+- metadata territorial.
+
+La futura materialización puede producir un view model de presentación desde servidor sin cambiar el contrato compartido.
+
+---
+
+#### 54. View model de presentación
+
+Una materialización futura puede utilizar una forma local equivalente a:
+
+```text
+operational
+  state
+  display_name
+  scope_label
+
+administrative
+  state
+  display_name
+  coverage_label
+
+relationship
+```
+
+Estados conceptuales suficientes para presentación pueden distinguir:
+
+```text
+SPECIFIC
+SITE_WIDE
+ABSENT
+UNAVAILABLE
+```
+
+en el canal operativo, y:
+
+```text
+SPECIFIC
+UNFILTERED
+ABSENT
+UNAVAILABLE
+```
+
+en el canal administrativo.
+
+Estos estados pertenecen al view model de presentación.
+
+No se incorporan a `AccessContext` ni funcionan como estados de autorización.
+
+---
+
+#### 55. Relación entre canales
+
+`relationship` puede expresar para compactación visual:
+
+```text
+SAME
+DIFFERENT
+SINGLE_CHANNEL
+NONE
+```
+
+La igualdad solo existe cuando ambos canales identifican exactamente la misma área canónica.
+
+El campo es de presentación y no concede permisos.
+
+---
+
+#### 56. Fail closed de descriptor humano
+
+Si el servidor no puede asociar un `area_id` confiable con un descriptor canónico compatible, SHELL no muestra un nombre posiblemente incorrecto.
+
+Resultado por canal:
+
+```text
+Área operativa no disponible
+```
+
+o:
+
+```text
+Área administrativa no disponible
+```
+
+No se reutiliza el último nombre conocido.
+
+---
+
+#### 57. Privacidad y minimización
+
+El segmento no expone:
+
+- `area_id`;
+- listas completas de `area_ids`;
+- `shift_id`;
+- IDs de asignación;
+- identidad de otros trabajadores;
+- structural issues completos;
+- fingerprints;
+- metadata interna de resolución;
+- SQLSTATE;
+- errores crudos.
+
+Solo muestra la información territorial necesaria para comprender el contexto propio.
+
+---
+
+#### 58. Accesibilidad
+
+La diferencia entre:
+
+- área operativa;
+- área administrativa;
+- nivel sede;
+- ausencia;
+- indisponibilidad;
+
+no depende únicamente de color, icono, posición u opacidad.
+
+Debe existir texto o semántica accesible que permita distinguir cada caso.
+
+---
+
+#### 59. Dispositivo compartido
+
+Cuando cambia el actor efectivo:
+
+- se descarta el área visible del actor anterior;
+- no se hereda selected area como autoridad;
+- no se conserva operational area anterior;
+- el área configurada en el dispositivo no se convierte en área laboral del nuevo actor.
+
+La presentación requiere un contexto nuevo.
+
+---
+
+#### 60. Simulación
+
+Una área simulada no se muestra como área real del Hub.
+
+```text
+SimulationContext
+≠
+AccessContext
+```
+
+La simulación no cambia:
+
+- área administrativa real;
+- área operativa real;
+- selected area real;
+- cobertura real;
+- turno real.
+
+---
+
+#### 61. Decisión documental consolidada
+
+```text
+ÁREA OPERATIVA ESPECÍFICA
+→ operational_area
+→ deriva del turno
+→ requiere área activa y compatible
+
+ÁREA OPERATIVA SITE-WIDE
+→ operational_area = null
+→ rol/configuración permiten nivel sede
+→ Sin área específica / Alcance: nivel sede
+
+ÁREA OPERATIVA REQUERIDA AUSENTE
+→ no fallback
+→ Área operativa no disponible
+
+ÁREA ADMINISTRATIVA
+→ filtro de navegación validado
+→ subordinado a sede administrativa
+→ no autoridad
+
+ÁREA ASIGNADA
+→ afiliación
+→ no fuente operativa
+
+ÁREA PRIMARIA
+→ referencia administrativa
+→ no fuente operativa
+
+ÁREA SELECCIONADA
+→ preferencia
+→ no autoridad
+
+AREA_KIND
+→ clasificación
+→ no identidad
+
+CHECK-IN
+→ confirma coherencia
+→ no crea área
+
+NULL
+→ nunca wildcard
+```
+
+---
+
+#### 62. Handoff a `SHELL-APP-007`
+
+La siguiente tarea recibe:
+
+1. la región `Contexto laboral`;
+2. segmento `Turno` definido;
+3. segmento `Sede` con canales administrativo y operativo;
+4. segmento `Área` con canales administrativo y operativo;
+5. distinción entre área específica y operación site-wide;
+6. regla de que un área operativa específica procede del turno;
+7. regla de que `null` no es wildcard;
+8. regla de que `area_kind` no sustituye `area_id`;
+9. regla de que la compatibilidad territorial del área ya fue consumida sin mostrar el rol;
+10. obligación de usar el mismo snapshot operativo;
+11. prohibición de convertir rol visible en autoridad.
+
+`SHELL-APP-007` añadirá exclusivamente el segmento `Rol operativo` sin reabrir la semántica de área.
+
+---
+
+#### 63. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa la presentación de hechos territoriales ya gobernados por los contratos vigentes de contexto, cobertura administrativa, turno, sede, área operativa, proyección segura y autorización.
+
+No modifica `AccessContext`, `AssignedAreaContext`, `AdministrativeCoverageContext`, `OperationalAreaContext`, `SafeContextProjectionV1`, permisos, prerrequisitos ni fronteras de seguridad.
+
+---
+
+#### 64. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-SHELL-030` — visibilidad derivada de permisos y contexto sin sustituir autorización;
+- `TREQ-SHELL-063` — frontera server/client de contexto y autorización;
+- `TREQ-SHELL-067` — resolución de `AccessContext` validada y fail closed;
+- `TREQ-SHELL-069` — solo decisiones válidas permiten continuar donde corresponda;
+- `TREQ-SHELL-070` — proyección segura de contexto sin ampliar silenciosamente su allowlist;
+- `TREQ-SHELL-072` — cliente sin RPC internas ni autoridad propia;
+- `TREQ-SHELL-073` — separación entre denegación, contrato inválido y fallos técnicos;
+- `TREQ-SHELL-085` — consumidores cliente sin autoridad legacy;
+- `TREQ-SHELL-086` — prohibición de autoridad local basada en rol, sede, turno, check-in o booleanos legacy.
+
+La semántica territorial de área permanece gobernada además por `AUTH-MOD-008`, `AUTH-CTX-009`, `AUTH-CTX-013` y sus contratos propietarios.
+
+Esta sección es trazabilidad heredada y no actualiza 04A.
+
+---
+
+#### 65. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado ni sometido a la batería documental del checkout local de `SHELL-APP-006`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, calidad, entrega, package readiness ni batería global sobre la rama local de la tarea. |
+| REMOTA | PASS | Se verificó la continuidad vigente con `SHELL-APP-005` como tarea anterior y `SHELL-APP-006` como actual, el owner H2, topología `PER_IMPLEMENTATION_UNIT`, protocolo, contrato de entrega, políticas de formato y desarrollo, `AUTH-MOD-008`, `AUTH-CTX-009`, `AUTH-CTX-013`, `AccessContextV1`, `OperationalAreaContext`, familia 04A SHELL, `package.json` y validadores documentales aplicables. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define presentación documental y no prueba áreas, turnos, filtros, usuarios o permisos reales en una experiencia desplegada. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea ni autoriza una instancia física de `SHELL-APP-006` y no modifica runtime, infraestructura, datos ni despliegues. |
+
+---
+
+#### 66. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-006 — Mostrar área activa`.
+- [ ] `SHELL-APP-005` permanece como tarea anterior.
+- [ ] `SHELL-APP-007` permanece como siguiente tarea.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] La topología futura permanece `PER_IMPLEMENTATION_UNIT` sin crear instancia física.
+- [ ] No se crea una propiedad autoritativa genérica llamada `área actual`.
+- [ ] Se distinguen área administrativa y área operativa.
+- [ ] El área operativa procede de `AccessContext.operational_area`.
+- [ ] `operational_area` procede exclusivamente del turno vigente.
+- [ ] El área operativa específica pertenece a la sede operativa.
+- [ ] El área operativa puede mostrarse antes del check-in.
+- [ ] El check-in no crea ni cambia el área del turno.
+- [ ] Un check-in sin área no elimina el área del turno.
+- [ ] Un check-in incompatible no se usa como fallback.
+- [ ] Sin turno válido no existe área operativa.
+- [ ] `employee_areas` no se usa como requisito operativo general.
+- [ ] Área primaria no se usa como fuente operativa.
+- [ ] Área seleccionada no se usa como fuente operativa.
+- [ ] Área del dispositivo no se usa como fuente operativa.
+- [ ] `employees.area_id` legacy no se usa como fuente operativa.
+- [ ] Un `operational_area = null` legítimo puede representar operación site-wide.
+- [ ] Operación site-wide se presenta como `Sin área específica` y `Alcance: nivel sede`.
+- [ ] `null` nunca se presenta como cualquier área.
+- [ ] Un rol que exige área con `area_id = null` produce indisponibilidad.
+- [ ] Área inactiva no se presenta como activa utilizable.
+- [ ] Área incompatible con rol no se presenta como activa utilizable.
+- [ ] Área desconocida, ambigua o de otra sede falla cerrada en presentación.
+- [ ] La presentación del área no concede permisos.
+- [ ] El área administrativa es un filtro de navegación validado.
+- [ ] El área administrativa específica pertenece a la sede administrativa.
+- [ ] Sin sede administrativa específica no se infiere una área específica desde una lista.
+- [ ] Requested area, selected area y primary area se validan en servidor.
+- [ ] La primaria solo sirve como fallback de navegación válida.
+- [ ] Cambiar sede administrativa revalida el área administrativa.
+- [ ] Cobertura administrativa no equivale a selección de área.
+- [ ] `ASSIGNED_AREAS` no obliga a seleccionar la primera área.
+- [ ] `ORGANIZATION` no crea una área `Todas`.
+- [ ] Cobertura a nivel sede puede existir sin área específica.
+- [ ] Área administrativa y operativa diferentes pueden coexistir.
+- [ ] Áreas iguales se compactan solo por identidad canónica exacta.
+- [ ] Nombres iguales con IDs distintos no se fusionan.
+- [ ] `area_kind` no sustituye `area_id`.
+- [ ] El descriptor humano procede de `public.areas`.
+- [ ] Turno, sede y área operativos proceden del mismo snapshot.
+- [ ] Un contexto obsoleto no conserva área anterior como autoridad.
+- [ ] El segmento no crea selector ni CTA para cambiar área.
+- [ ] Mostrar área no crea navegación implícita.
+- [ ] No se desarrolla el rol operativo visible.
+- [ ] No se desarrollan tareas pendientes transversales.
+- [ ] El cliente no evalúa asignaciones, cobertura, turno, rol o permisos.
+- [ ] `SafeContextProjectionV1` no se amplía silenciosamente.
+- [ ] El view model de presentación no funciona como capability token.
+- [ ] Ausencia, site-wide e indisponibilidad se distinguen.
+- [ ] Un actor nuevo no hereda el área visual del actor anterior.
+- [ ] Una simulación no se presenta como área real.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se modifica código ni Supabase.
+- [ ] No se autoriza implementación física.
+
+---
+
+#### 67. Límites
+
+Esta tarea no:
+
+- modifica `AccessContextV1`;
+- modifica `AssignedAreaContext`;
+- modifica `AdministrativeCoverageContext`;
+- modifica `OperationalAreaContext`;
+- modifica `SafeContextProjectionV1`;
+- crea un contrato compartido nuevo;
+- modifica `public.areas`;
+- modifica `employee_areas`;
+- modifica `employee_settings`;
+- modifica `employee_shifts`;
+- modifica áreas primarias;
+- modifica áreas seleccionadas;
+- modifica asignaciones;
+- modifica cobertura administrativa;
+- modifica turnos;
+- modifica check-ins;
+- modifica roles operativos;
+- modifica habilitaciones territoriales;
+- modifica permisos;
+- modifica grants;
+- modifica denies;
+- modifica prerrequisitos de área;
+- modifica territorio del recurso;
+- crea selector de área;
+- crea CTA para cambiar área;
+- persiste preferencias;
+- crea navegación;
+- muestra rol operativo;
+- muestra tareas pendientes;
+- define layout responsive final;
+- define colores;
+- define iconos;
+- define animaciones;
+- define estrategia de caché;
+- define TTL;
+- implementa Realtime;
+- modifica middleware;
+- modifica Server Actions;
+- modifica RLS;
+- modifica RPC;
+- modifica Auth;
+- modifica datos;
+- crea migraciones;
+- despliega;
+- crea o autoriza una instancia física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba;
+- desarrolla `SHELL-APP-007`.
+
+---
+
+#### 68. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-005 — Mostrar sede activa`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-006 — Mostrar área activa`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-007 — Mostrar rol operativo activo`
+
+
 ### [ ] SHELL-APP-007 — Mostrar rol operativo activo
 ### [ ] SHELL-APP-008 — Mostrar tareas pendientes transversales

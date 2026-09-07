@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1122** |
+| Aprobadas | **1123** |
 | En propuesta | **0** |
-| No iniciadas | **474** |
+| No iniciadas | **473** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **70.30% (1122/1596)** |
+| Porcentaje de completamiento | **70.36% (1123/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-005` — Mostrar sede activa | ✅ APROBADA |
-| Tarea actual | `SHELL-APP-006` — Mostrar área activa | ⬜ NO INICIADA |
-| Siguiente reservada | `SHELL-APP-007` — Mostrar rol operativo activo | ⬜ NO INICIADA |
+| Última aprobada | `SHELL-APP-006` — Mostrar área activa | ✅ APROBADA |
+| Tarea actual | `SHELL-APP-007` — Mostrar rol operativo activo | ⬜ NO INICIADA |
+| Siguiente reservada | `SHELL-APP-008` — Mostrar tareas pendientes transversales | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -792,7 +792,7 @@
 | ✅ APROBADA | `SHELL-APP-003` | Definir aplicaciones visibles por contexto | `bloques/H2_SHELL_APP/01_INVENTARIO_Y_VISIBILIDAD_DE_APLICACIONES.md` |
 | ✅ APROBADA | `SHELL-APP-004` | Mostrar turno activo | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ✅ APROBADA | `SHELL-APP-005` | Mostrar sede activa | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
-| ⬜ NO INICIADA | `SHELL-APP-006` | Mostrar área activa | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
+| ✅ APROBADA | `SHELL-APP-006` | Mostrar área activa | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ⬜ NO INICIADA | `SHELL-APP-007` | Mostrar rol operativo activo | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ⬜ NO INICIADA | `SHELL-APP-008` | Mostrar tareas pendientes transversales | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ⬜ NO INICIADA | `SHELL-APP-009` | Definir página inicial por tipo de usuario | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
