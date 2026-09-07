@@ -14,6 +14,11 @@ import {
     DERIVED_CORRECTION_PROJECTIONS,
     assertBaselineCurrent,
     assertCorrectionPaths,
+    assertPreMergeCorrectionScope,
+    assertPreMergePrIdentity,
+    assertRegisteredCorrectionOrigin,
+    buildPreMergeIntegration,
+    correctionCandidateInstance,
     computeBaselineAtRef,
     correctionBranchName,
     correctionRecord,
@@ -23,10 +28,12 @@ import {
     nextCorrectionId,
     normalizeCorrectionId,
     normalizeTaskId,
+    validatePreMergeIntegration,
 } from './correction-control.mjs';
 import { loadImplementationControl } from './implementation-control.mjs';
 import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 import { classifyCommitPath } from './commit-scope.mjs';
+import { assertPackagePhysicalDependenciesReady, buildInPackageCandidateEvidence, scanPackageReadiness } from './package-readiness-scanner.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
@@ -231,11 +238,23 @@ export function prepareCorrection({
     reasonCode,
     targetInstanceId = null,
     blockedTargets = [],
+    implementationPr = null,
 } = {}) {
     ensureGhReady(root);
     reconcileDerivedWorktree(root, [], 'CORRECTION_PREPARE');
     ensureMainSynchronized(root);
     reconcileDerivedWorktree(root, [], 'CORRECTION_PREPARE_POST_SYNC');
+
+    let integration = null;
+    if (implementationPr !== null) {
+        if (String(type).toUpperCase() === 'DOCUMENTARY' || !targetInstanceId) {
+            fail('--implementation-pr exige una corrección física y --target-instance-id.');
+        }
+        const state = readImplementationPr(root, implementationPr);
+        assertPreMergePrIdentity(state, { targetInstanceId });
+        git(['fetch', 'origin', state.headRefName, '--quiet'], { cwd: root });
+        integration = buildPreMergeIntegration({ root, state, targetInstanceId });
+    }
 
     const normalizedTaskId = normalizeTaskId(taskId);
     const normalizedType = String(type ?? '').trim().toUpperCase();
@@ -258,7 +277,7 @@ export function prepareCorrection({
         const instance = implementation.instances.find((entry) => entry.instance_id === normalizedTargetInstanceId) ?? null;
         if (!instance) fail(`No existe target_instance_id ${normalizedTargetInstanceId}.`);
         if (instance.task_id !== normalizedTaskId) fail(`${normalizedTargetInstanceId} pertenece a ${instance.task_id}, no a ${normalizedTaskId}.`);
-        if (instance.status !== 'VERIFIED') fail(`${normalizedTargetInstanceId} debe permanecer VERIFIED; estado ${instance.status}.`);
+        if (!integration && instance.status !== 'VERIFIED') fail(`${normalizedTargetInstanceId} debe permanecer VERIFIED; estado ${instance.status}.`);
     }
 
     const normalizedBlockedTargets = [...new Set(blockedTargets.map((entry) => String(entry).trim()).filter(Boolean))].sort();
@@ -274,10 +293,11 @@ export function prepareCorrection({
     }
     const baseline = computeBaselineAtRef({
         root,
-        ref: 'HEAD',
+        ref: integration?.head_commit ?? 'HEAD',
         taskId: normalizedTaskId,
         targetInstanceId: normalizedTargetInstanceId,
     });
+    if (integration) baseline.main_commit = integration.base_commit;
     const record = buildPendingRecord({
         correctionId,
         taskId: normalizedTaskId,
@@ -287,6 +307,10 @@ export function prepareCorrection({
         blockedTargets: normalizedBlockedTargets,
         baseline,
     });
+    if (integration) {
+        record.integration = integration;
+        validatePreMergeIntegration({ root, record });
+    }
     const recordPath = writeRecord(root, record);
     loadValidatedCorrectionControl({ root });
 
@@ -359,6 +383,20 @@ function readOpenPrState(root, prNumber) {
         gh(['pr', 'view', String(prNumber), '--json', 'number,state,isDraft,mergeable,headRefOid,baseRefName'], { cwd: root }).stdout,
         'gh pr view',
     );
+}
+
+function readImplementationPr(root, prNumber) {
+    if (!Number.isSafeInteger(Number(prNumber)) || Number(prNumber) <= 0) fail('Número de PR inválido.');
+    return parseJsonOutput(gh(['pr', 'view', String(prNumber), '--json',
+        'number,state,isDraft,isCrossRepository,headRefName,headRefOid,baseRefName'], { cwd: root }).stdout, 'implementation PR');
+}
+
+function assertPendingImplementationPr(root, record) {
+    if (!record.integration) return;
+    assertPreMergePrIdentity(readImplementationPr(root, record.integration.pull_request), {
+        targetInstanceId: record.target_instance_id,
+        headCommit: record.integration.head_commit,
+    });
 }
 
 function ensureOpenPrIdentity(state, prNumber, headSha) {
@@ -442,7 +480,7 @@ function commitDirtyByLane(root, dirtyPaths, commitMessage) {
     return created;
 }
 
-function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commitMessage }) {
+function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commitMessage, beforeMerge = () => {} }) {
     const dirty = worktreePaths(root);
     if (dirty.length > 0) {
         const invalid = dirty.filter((entry) => !allowedPaths.includes(entry));
@@ -463,6 +501,7 @@ function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commit
     const completed = waitForPrChecksToComplete(root, prNumber);
     state = readOpenPrState(root, prNumber);
     ensureOpenPrIdentity(state, prNumber, headSha);
+    beforeMerge();
     gh(['pr', 'merge', String(prNumber), '--merge', '--match-head-commit', headSha], { cwd: root });
     const merged = waitForPrMerged(root, prNumber, headSha);
     git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
@@ -493,6 +532,7 @@ export function registerCorrection({ root = ensureRepositoryRoot(), correctionId
     reconcileDerivedWorktree(root, [recordPath], 'CORRECTION_REGISTER');
     const record = readRecord(root, id);
     if (record.status !== 'PENDING_AUTHORIZATION') fail(`${id} debe estar PENDING_AUTHORIZATION para register.`);
+    assertPendingImplementationPr(root, record);
     const branch = correctionRegistrationBranchName(id);
     git(['switch', '-c', branch], { cwd: root });
     npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
@@ -517,6 +557,7 @@ export function registerCorrection({ root = ensureRepositoryRoot(), correctionId
         body,
         allowedPaths,
         commitMessage: `correction(${id}): register`,
+        beforeMerge: () => assertPendingImplementationPr(root, record),
     });
     printResult({
         ESTADO: 'PASS',
@@ -548,9 +589,15 @@ export function startCorrection({ root = ensureRepositoryRoot(), correctionId } 
     if (!record.authorization || record.authorization.decision !== 'APPROVED') fail(`${id} no conserva authorization APPROVED.`);
     loadValidatedCorrectionControl({ root });
     assertBaselineCurrent({ root, record, ref: `origin/${DEFAULT_BRANCH}` });
+    assertPendingImplementationPr(root, record);
     const branch = correctionBranchName(id);
     if (localBranchExists(root, branch) || remoteBranchExists(root, branch)) fail(`${branch} ya existe; reanude esa rama en vez de abrir otra.`);
-    git(['switch', '-c', branch], { cwd: root });
+    if (record.integration) {
+        assertRegisteredCorrectionOrigin({ root, record, baseRef: `origin/${DEFAULT_BRANCH}` });
+        git(['fetch', 'origin', record.integration.head_ref, '--quiet'], { cwd: root });
+        git(['switch', '-c', branch], { cwd: root });
+        git(['merge', '--no-ff', '--no-edit', record.integration.head_commit], { cwd: root });
+    } else git(['switch', '-c', branch], { cwd: root });
     git(['push', '-u', 'origin', branch], { cwd: root });
     const next = { ...record, status: 'IN_PROGRESS' };
     writeRecord(root, next);
@@ -589,8 +636,44 @@ function prBodyForCorrection(record) {
         `Tarea objetivo: ${record.task_id}`,
         `Tipo: ${record.correction_type}`,
         `Estado final: ${record.status}`,
+        ...(record.integration ? [
+            `Integra ${record.target_instance_id} desde PR #${record.integration.pull_request} (${record.integration.head_commit}).`,
+            `La corrección conserva el ledger original y aporta evidencia nueva: ${record.correction_id}.`,
+        ] : []),
         '',
     ].join('\n');
+}
+
+export function recordCorrectionCandidate({ root = ensureRepositoryRoot(), correctionId } = {}) {
+    const id = normalizeCorrectionId(correctionId);
+    const record = readRecord(root, id);
+    if (!record.integration || !['IN_PROGRESS', 'IMPLEMENTED'].includes(record.status)
+        || currentBranch(root) !== correctionBranchName(id)) {
+        fail(`${id}: candidate exige una corrección PRE_MERGE activa en su rama propia.`);
+    }
+    loadValidatedCorrectionControl({ root });
+    assertPendingImplementationPr(root, record);
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+    const dirty = worktreePaths(root);
+    if (dirty.some((entry) => entry !== correctionRecordRelativePath(id) && !DERIVED_CORRECTION_PROJECTIONS.has(entry))) {
+        fail(`${id}: candidate exige materialización física commiteada antes de certificar su SHA.`);
+    }
+    assertPreMergeCorrectionScope({ root, record, baseRef: 'origin/main', dirtyPaths: dirty });
+    npm(['run', '--silent', 'quality:lint:ratchet', '--', '--base', 'origin/main'], { cwd: root });
+    const instance = validatePreMergeIntegration({ root, record });
+    const packageId = record.target_instance_id.split('::')[1];
+    const readiness = scanPackageReadiness({ root, check: true, trigger: 'correction-candidate', supplied: { skipDerivedReports: true } });
+    assertPackagePhysicalDependenciesReady({ registry: readiness.registry, packageId, operation: 'CORRECTION_CANDIDATE' });
+    const evidence = buildInPackageCandidateEvidence({ root, packageId,
+        instance: correctionCandidateInstance(instance, record),
+        gate: readiness.contract.physical_dependencies.supabase_pre_e5_foundation.in_package_candidate_gate });
+    const next = { ...record, evidence: [
+        ...record.evidence.filter((entry) => entry?.evidence_type !== evidence.evidence_type), evidence,
+    ] };
+    writeRecord(root, next);
+    printResult({ ESTADO: 'PASS', OPERACION: 'CORRECTION_CANDIDATE', CORRECTION_ID: id,
+        CANDIDATE_HEAD_SHA: evidence.candidate_head_sha, REMOTE_MUTATIONS: 'NO' });
+    return next;
 }
 
 export function finishCorrection({ root = ensureRepositoryRoot(), correctionId } = {}) {
@@ -604,13 +687,25 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
     if (!Array.isArray(record.evidence) || record.evidence.length === 0) fail(`${id} no puede cerrarse sin evidence.`);
     loadValidatedCorrectionControl({ root });
     assertBaselineCurrent({ root, record, ref: `origin/${DEFAULT_BRANCH}` });
+    assertPendingImplementationPr(root, record);
+
+    if (record.integration && /^SHELL-CI-020::GAP-PKG-\d{3}$/u.test(record.target_instance_id)) {
+        const readiness = scanPackageReadiness({ root, check: true,
+            trigger: 'correction-finish-prerequisites', supplied: { skipDerivedReports: true } });
+        assertPackagePhysicalDependenciesReady({ registry: readiness.registry,
+            packageId: record.target_instance_id.split('::')[1], operation: 'CORRECTION_FINISH_PREREQUISITES' });
+    }
+
+    const assertScope = (paths) => record.integration
+        ? assertPreMergeCorrectionScope({ root, record, baseRef: `origin/${DEFAULT_BRANCH}`, dirtyPaths: worktreePaths(root) })
+        : assertCorrectionPaths(paths, record, { root, baseRef: `origin/${DEFAULT_BRANCH}`, registration: false });
 
     npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
     const dirtyBeforeStage = worktreePaths(root);
     const branchPaths = git(['diff', '--name-only', '--diff-filter=ACMRD', `origin/${DEFAULT_BRANCH}...HEAD`], { cwd: root }).stdout
         .split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
     const combinedPaths = [...new Set([...branchPaths, ...dirtyBeforeStage])].sort();
-    assertCorrectionPaths(combinedPaths, record, { root, baseRef: `origin/${DEFAULT_BRANCH}`, registration: false });
+    assertScope(combinedPaths);
 
     npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
     npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
@@ -621,7 +716,8 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
     const finalBranchPaths = git(['diff', '--name-only', '--diff-filter=ACMRD', `origin/${DEFAULT_BRANCH}...HEAD`], { cwd: root }).stdout
         .split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
     const finalPaths = [...new Set([...finalBranchPaths, ...finalDirtyPaths])].sort();
-    assertCorrectionPaths(finalPaths, record, { root, baseRef: `origin/${DEFAULT_BRANCH}`, registration: false });
+    assertScope(finalPaths);
+    npm(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`], { cwd: root });
 
     const result = publishBranchAndMerge(root, {
         branch,
@@ -629,6 +725,13 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
         body: prBodyForCorrection(record),
         allowedPaths: finalPaths,
         commitMessage: `correction(${id}): verified correction`,
+        beforeMerge: () => {
+            assertPendingImplementationPr(root, record);
+            if (record.integration) {
+                git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+                assertPreMergeCorrectionScope({ root, record, baseRef: `origin/${DEFAULT_BRANCH}` });
+            }
+        },
     });
     printResult({
         ESTADO: 'PASS',
@@ -641,6 +744,7 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
         VERIFIED_ON_MAIN: 'SI',
         BLOCK_RELEASED: record.blocking ? 'SI' : 'NO_APLICA',
         READY_TO_RESUME_BLOCKED_WORK: 'SI',
+        ...(record.integration ? { SUPERSEDED_IMPLEMENTATION_PR: record.integration.pull_request } : {}),
     });
     return result;
 }
@@ -667,6 +771,7 @@ function parseArgs(argv) {
         targetInstanceId: null,
         blockedTargets: [],
         correctionId: null,
+        implementationPr: null,
     };
     const tokens = [...argv];
     args.mode = tokens.shift() ?? null;
@@ -693,6 +798,10 @@ function parseArgs(argv) {
             if (!value) fail('falta valor de --block-target.');
             args.blockedTargets.push(value);
             index += 1;
+        } else if (token === '--implementation-pr') {
+            if (!/^[1-9][0-9]*$/u.test(value ?? '')) fail('--implementation-pr exige un número de PR positivo.');
+            args.implementationPr = Number(value);
+            index += 1;
         } else if (token === '--correction-id') {
             if (!value) fail('falta valor de --correction-id.');
             args.correctionId = value;
@@ -712,6 +821,7 @@ export function main(argv = process.argv.slice(2)) {
             reasonCode: args.reasonCode,
             targetInstanceId: args.targetInstanceId,
             blockedTargets: args.blockedTargets,
+            implementationPr: args.implementationPr,
         });
     }
     if (args.mode === 'register') {
@@ -725,6 +835,10 @@ export function main(argv = process.argv.slice(2)) {
     if (args.mode === 'finish') {
         if (!args.correctionId) fail('finish exige --correction-id.');
         return finishCorrection({ correctionId: args.correctionId });
+    }
+    if (args.mode === 'candidate') {
+        if (!args.correctionId) fail('candidate exige --correction-id.');
+        return recordCorrectionCandidate({ correctionId: args.correctionId });
     }
     if (args.mode === 'status') return correctionStatus({ correctionId: args.correctionId });
     fail(`modo desconocido: ${args.mode || 'VACÍO'}.`);

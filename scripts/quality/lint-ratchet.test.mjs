@@ -1,7 +1,35 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import { execFileSync } from 'node:child_process';
 
-import { evaluateLintRatchet, summarizeLintResults } from './lint-ratchet.mjs';
+import { changedFiles, evaluateLintRatchet, summarizeLintResults } from './lint-ratchet.mjs';
+
+test('base incluye deuda del archivo ya commiteado, cambios locales y archivos nuevos', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-lint-range-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = (...args) => execFileSync('git', args, { cwd: root, encoding: 'utf8', windowsHide: true, stdio: ['ignore', 'pipe', 'pipe'] }).trim();
+  git('init', '-b', 'main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.invalid');
+  fs.writeFileSync(path.join(root, 'legacy.ts'), 'export const value = 1;\n');
+  git('add', '--', 'legacy.ts');
+  git('commit', '-m', 'baseline');
+  git('switch', '-c', 'implementation/test');
+  fs.appendFileSync(path.join(root, 'legacy.ts'), 'const detail = "unused";\n');
+  git('add', '--', 'legacy.ts');
+  git('commit', '-m', 'implementation');
+  const issue = { file: 'legacy.ts', rule: '@typescript-eslint/no-unused-vars', severity: 1, count: 2 };
+  const baseline = { issues: [issue] };
+  assert.deepEqual(changedFiles({}, { root }), []);
+  assert.deepEqual(evaluateLintRatchet({ baseline, actualIssues: [issue], changedFiles: changedFiles({ base: 'main' }, { root }) }).touchedDebt, [issue]);
+  fs.writeFileSync(path.join(root, 'new.ts'), 'export {};\n');
+  assert.deepEqual(changedFiles({ base: 'main' }, { root }), ['legacy.ts', 'new.ts']);
+  assert.throws(() => changedFiles({ base: 'missing' }, { root }));
+  assert.throws(() => changedFiles({ base: 'main', range: 'main..HEAD' }, { root }), /no admite/u);
+});
 
 test('resume ESLint por archivo, regla y severidad', () => {
   const issues = summarizeLintResults([

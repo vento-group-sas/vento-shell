@@ -238,7 +238,7 @@ test('finish conserva validadores, reanuda post-commit y usa polling reintentabl
   const planTest = source.indexOf("npmAsync(['run', '--silent', 'docs:plan:test']", parallel);
   const treqCheck = source.indexOf("npmAsync(['run', '--silent', 'docs:treq:check']", parallel);
   const treqTest = source.indexOf("npmAsync(['run', '--silent', 'docs:treq:test']", parallel);
-  const lint = source.indexOf("npmAsync(['run', '--silent', 'quality:lint:ratchet']", parallel);
+  const lint = source.indexOf("npmAsync(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`]", parallel);
   const dirty = source.indexOf('const dirty = worktreePaths(root);', parallel);
   const finishMode = source.indexOf('const finishMode = resolveImplementationFinishMode({', dirty);
   const commitScope = source.indexOf("'docs:commit-scope:check'", finishMode);
