@@ -1329,7 +1329,7 @@ test('CORR-011 hosted resource baseline: versiona los siete cron AS-IS sin coman
 
   assert.equal(baseline.cron_commands_forbidden, true);
   assert.equal(baseline.secret_values_forbidden, true);
-  assert.equal(baseline.schema_version, 2);
+  assert.equal(baseline.schema_version, 3);
   assert.deepEqual(
     baseline.edge_environment_requirements.local_only,
     ['GOOGLE_WALLET_EMPLOYEE_CLASS_ID', 'REVENUECAT_WEBHOOK_SECRET'],
@@ -1738,4 +1738,39 @@ test('CORR-011_ACCEPTANCE: observador full sintetico solo usa GET y SQL read-onl
   const serialized = JSON.stringify({ observed, result });
   assert.equal(serialized.includes(forbiddenValue), false);
   assert.equal(serialized.includes('SYNTHETIC_PAT_ONLY'), false);
+});
+
+
+test('MRP015-040 STAGING secret policy override keeps dormant external integrations non-blocking', () => {
+  const fixture = acceptanceFixture();
+  fixture.expected.referenced_secret_names = ['EXTERNAL_SECRET'];
+  fixture.expected.hosted_resources.edge_environment_requirements = {
+    required_all: ['EXTERNAL_SECRET'],
+    required_any_of: [],
+    optional_or_defaulted: [],
+    local_only: [],
+  };
+  fixture.expected.hosted_resources.environment_contracts ??= {};
+  fixture.expected.hosted_resources.environment_contracts.STAGING ??= {};
+  fixture.expected.hosted_resources.environment_contracts.STAGING.edge_environment_requirements = {
+    required_all: [],
+    required_any_of: [],
+    optional_or_defaulted: ['EXTERNAL_SECRET'],
+    local_only: [],
+  };
+  const secretSurface = fixture.remoteObserved.surfaces.find((row) => row.name === 'secret_names');
+  secretSurface.value = [];
+
+  const stagingResult = compareRemote(fixture);
+  assert.equal(
+    stagingResult.drifts.some((row) => String(row.surface).startsWith('edge_secrets.')),
+    false,
+  );
+
+  delete fixture.expected.hosted_resources.environment_contracts.STAGING.edge_environment_requirements;
+  const fallbackResult = compareRemote(fixture);
+  assert.equal(
+    fallbackResult.drifts.some((row) => row.surface === 'edge_secrets.required_name' && row.identity === 'EXTERNAL_SECRET'),
+    true,
+  );
 });

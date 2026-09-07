@@ -230,3 +230,29 @@ test('Google service account values are validated structurally', () => {
   );
   assert.equal(__test.usableSecretValue('GOOGLE_WALLET_SERVICE_ACCOUNT_JSON', '{}'), false);
 });
+
+
+test('STAGING secret plan requests only blocking requirements and ignores dormant external integrations', () => {
+  const requirements = {
+    required_all: ['ACCOUNT_DELETION_WORKER_SECRET', 'INTERNAL_NOTIFY_SECRET'],
+    required_any_of: [
+      { requirement_id: 'ANIMA_SET_PASSWORD_URL', names: ['SET_PASSWORD_WEB_URL', 'INVITE_REDIRECT_URL'] },
+    ],
+    optional_or_defaulted: ['GOOGLE_WALLET_CLASS_ID', 'RESEND_API_KEY', 'WOMPI_PUBLIC_KEY'],
+    local_only: [],
+  };
+  const discovered = {
+    resolved: new Map([
+      ['ACCOUNT_DELETION_WORKER_SECRET', { value: 'internal-a', source: 'test' }],
+      ['INTERNAL_NOTIFY_SECRET', { value: 'internal-b', source: 'test' }],
+      ['GOOGLE_WALLET_CLASS_ID', { value: 'external-value', source: 'test' }],
+    ]),
+    ambiguous: [],
+  };
+  const plan = buildSecretPlan(requirements, ['SET_PASSWORD_WEB_URL'], discovered);
+  assert.deepEqual(
+    plan.to_set.map((row) => row.name),
+    ['ACCOUNT_DELETION_WORKER_SECRET', 'INTERNAL_NOTIFY_SECRET'],
+  );
+  assert.deepEqual(plan.unresolved, []);
+});

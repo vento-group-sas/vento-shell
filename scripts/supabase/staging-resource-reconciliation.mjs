@@ -864,6 +864,8 @@ async function buildPlan({ root, args, token, fetchImpl = fetch } = {}) {
   const functions = requiredSurface(surfaces, 'edge_functions');
   const secretNames = requiredSurface(surfaces, 'secret_names');
   const staging = expected.hosted_resources.environment_contracts.STAGING;
+  const stagingSecretRequirements = staging.edge_environment_requirements
+    ?? expected.hosted_resources.edge_environment_requirements;
   const acl = buildAclPlan(localObserved.sql_fingerprint, remoteFingerprint);
   const dataApi = buildDataApiPlan(staging.config.data_api, postgrest);
   const localCronRows = readLocalCronRows(root, expected.hosted_resources.cron_jobs);
@@ -871,13 +873,13 @@ async function buildPlan({ root, args, token, fetchImpl = fetch } = {}) {
   const functionPlan = buildFunctionPlan(expected.edge_functions, functions, staging);
   const discovered = await discoverSecretSources({
     root,
-    requirements: expected.hosted_resources.edge_environment_requirements,
+    requirements: stagingSecretRequirements,
     projectRef: args.projectRef,
     token,
     fetchImpl,
   });
   const secrets = buildSecretPlan(
-    expected.hosted_resources.edge_environment_requirements,
+    stagingSecretRequirements,
     secretNames,
     discovered,
   );

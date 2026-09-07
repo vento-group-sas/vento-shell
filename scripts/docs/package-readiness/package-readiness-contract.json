@@ -588,7 +588,7 @@
         "secret_values_forbidden": true
       },
       "hosted_resource_baseline": {
-        "schema_version": 2,
+        "schema_version": 3,
         "source": "docs/plan-canonico/modular/bloques/E3_SUPABASE/03_AUDITORIA_DE_NORMALIZACION_Y_CALIDAD_DE_DATOS.md",
         "cron_jobs": [
           {
@@ -722,6 +722,49 @@
                 "club-sync-earn-events",
                 "employee-apple-pass",
                 "employee-wallet-pass"
+              ]
+            },
+            "edge_environment_requirements": {
+              "required_all": [
+                "ACCOUNT_DELETION_WORKER_SECRET",
+                "INTERNAL_NOTIFY_SECRET"
+              ],
+              "required_any_of": [
+                {
+                  "requirement_id": "ANIMA_SET_PASSWORD_URL",
+                  "names": [
+                    "SET_PASSWORD_WEB_URL",
+                    "EXPO_PUBLIC_ANIMA_AUTH_REDIRECT_URL",
+                    "INVITE_REDIRECT_URL"
+                  ]
+                }
+              ],
+              "optional_or_defaulted": [
+                "ANIMA_INVITE_FROM_EMAIL",
+                "ANIMA_OWNER_DELETE_UID",
+                "DOCUMENT_ALERTS_CRON_SECRET",
+                "EXPO_PUBLIC_SUPABASE_URL",
+                "GOOGLE_MAPS_API_KEY",
+                "GOOGLE_MAPS_SERVER_API_KEY",
+                "GOOGLE_WALLET_CLASS_ID",
+                "GOOGLE_WALLET_ISSUER_ID",
+                "GOOGLE_WALLET_SERVICE_ACCOUNT_JSON",
+                "RESEND_API_KEY",
+                "SHIFT_RUNTIME_CRON_SECRET",
+                "SHIFT_RUNTIME_TIME_ZONE",
+                "WOMPI_CHECKOUT_BASE_URL",
+                "WOMPI_CHECKOUT_EXPIRATION_MINUTES",
+                "WOMPI_ENVIRONMENT",
+                "WOMPI_EVENTS_SECRET",
+                "WOMPI_INTEGRITY_SECRET",
+                "WOMPI_PUBLIC_KEY",
+                "WOMPI_RETURN_APP_SCHEME",
+                "WOMPI_RETURN_BASE_URL",
+                "WOMPI_WEBHOOK_SECRET"
+              ],
+              "local_only": [
+                "GOOGLE_WALLET_EMPLOYEE_CLASS_ID",
+                "REVENUECAT_WEBHOOK_SECRET"
               ]
             }
           }
