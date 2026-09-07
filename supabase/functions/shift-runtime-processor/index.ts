@@ -228,18 +228,6 @@ function matchSessionToShift(shift: ShiftRow, sessions: SessionRow[], timeZone: 
   return candidates[0] ?? null
 }
 
-function formatShiftDate(shiftDate: string) {
-  try {
-    const value = new Date(`${shiftDate}T12:00:00`)
-    return value.toLocaleDateString("es-CO", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    })
-  } catch {
-    return shiftDate
-  }
-}
 
 async function sendPush(messages: { to: string; title: string; body: string; data?: Record<string, unknown> }[]) {
   if (messages.length === 0) return []
@@ -508,7 +496,6 @@ async function handleRequest(req: Request) {
     ) {
       const tokensForEmployee = tokensByEmployee.get(shift.employee_id) ?? []
       const siteName = unwrapRelation(shift.sites)?.name ?? "tu sede"
-      const detail = `${formatShiftDate(shift.shift_date)}, ${shift.end_time.slice(0, 5)}`
       const hasTokens = tokensForEmployee.length > 0
 
       if (hasTokens) {
@@ -557,7 +544,6 @@ async function handleRequest(req: Request) {
     ) {
       const tokensForEmployee = tokensByEmployee.get(shift.employee_id) ?? []
       const siteName = unwrapRelation(shift.sites)?.name ?? "tu sede"
-      const detail = `${formatShiftDate(shift.shift_date)}, ${shift.end_time.slice(0, 5)}`
       const hasTokens = tokensForEmployee.length > 0
 
       if (hasTokens) {
