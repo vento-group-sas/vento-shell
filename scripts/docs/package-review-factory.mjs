@@ -27,6 +27,8 @@ const PACKAGE_EXECUTION_POLICY_SOURCE = 'docs/plan-canonico/modular/package-exec
 const PACKAGE_READINESS_CONTRACT_SOURCE = 'scripts/docs/package-readiness/package-readiness-contract.json';
 const TASK_SECTION_CHAR_LIMIT = 9000;
 const TOKEN_SNIPPET_LIMIT = 8;
+const EVIDENCE_PREVIEW_CHAR_LIMIT = 160;
+const BATCH_HEADER_RESERVE_MAX_CHARS = 4096;
 const REVIEW_TOOLING_PATHS = new Set([
   'package.json',
   'scripts/docs/package-review-factory.mjs',
@@ -710,6 +712,42 @@ function extractTreqIds(taskSections) {
   return uniqueSorted(ids);
 }
 
+function evidencePreview(value, limit = EVIDENCE_PREVIEW_CHAR_LIMIT) {
+  const normalized = String(value ?? '').replace(/\s+/gu, ' ').trim();
+  if (!normalized) return null;
+  if (normalized.length <= limit) return normalized;
+  return `${normalized.slice(0, Math.max(0, limit - 3))}...`;
+}
+
+function compactSnippetEvidence(snippet) {
+  const textPresent = typeof snippet?.text === 'string' && snippet.text.length > 0;
+
+  return {
+    source_path: snippet?.source_path ?? null,
+    source_blob_sha: snippet?.source_blob_sha ?? null,
+    start_line: snippet?.start_line ?? null,
+    end_line: snippet?.end_line ?? null,
+    text_sha256: snippet?.text_sha256 ?? null,
+    text_present: textPresent,
+    preview: textPresent ? evidencePreview(snippet.text) : null,
+  };
+}
+
+function compactTaskEvidence(task) {
+  const textPresent = typeof task?.text === 'string' && task.text.length > 0;
+
+  return {
+    task_id: task?.task_id ?? null,
+    source_path: task?.source_path ?? null,
+    source_blob_sha: task?.source_blob_sha ?? null,
+    text_sha256: task?.text_sha256 ?? null,
+    text_present: textPresent,
+    preview: textPresent ? evidencePreview(task.text) : null,
+    truncated: task?.truncated === true,
+    original_chars: Number.isInteger(task?.original_chars) ? task.original_chars : 0,
+  };
+}
+
 function sourceEvidenceForPackage({
   pkg,
   taskSectionIndex,
@@ -740,16 +778,19 @@ function sourceEvidenceForPackage({
   );
 
   return {
-    package_catalog: packageSnippetIndex.get(pkg.package_id) ?? [],
-    tasks: taskSections,
+    package_catalog: (packageSnippetIndex.get(pkg.package_id) ?? [])
+      .map((snippet) => compactSnippetEvidence(snippet)),
+    tasks: taskSections.map((task) => compactTaskEvidence(task)),
     gaps: pkg.gap_ids.map((gapId) => ({
       gap_id: gapId,
-      snippets: gapSnippetIndex.get(gapId) ?? [],
+      snippets: (gapSnippetIndex.get(gapId) ?? [])
+        .map((snippet) => compactSnippetEvidence(snippet)),
     })),
     treq_ids: treqIds,
     treq: treqIds.map((treqId) => ({
       treq_id: treqId,
-      snippets: treqSnippetIndex.get(treqId) ?? [],
+      snippets: (treqSnippetIndex.get(treqId) ?? [])
+        .map((snippet) => compactSnippetEvidence(snippet)),
     })),
   };
 }
@@ -758,7 +799,7 @@ function enrichEvidenceAnomalies(pkg, evidence, anomalies) {
   const next = [...anomalies];
 
   for (const task of evidence.tasks) {
-    if (!task.text) {
+    if (!task.text_present) {
       next.push(anomaly(
         'TASK_CANONICAL_SECTION_NOT_FOUND',
         'REVIEW',
@@ -991,7 +1032,7 @@ function dossierMarkdown(dossier, ledgerEntry) {
       parts.push(`Fuente: \`${snippet.source_path}:${snippet.start_line}-${snippet.end_line}\``);
       parts.push('');
       parts.push('```text');
-      parts.push(snippet.text);
+      parts.push(snippet.preview ?? 'NO PREVIEW AVAILABLE');
       parts.push('```', '');
     }
   }
@@ -1000,14 +1041,14 @@ function dossierMarkdown(dossier, ledgerEntry) {
   for (const task of evidence.tasks) {
     parts.push(`#### ${task.task_id}`);
     parts.push('');
-    if (!task.text) {
+    if (!task.text_present) {
       parts.push('NO CANONICAL SECTION EXTRACTED', '');
       continue;
     }
     parts.push(`Fuente: \`${task.source_path}\` · SHA texto: \`${task.text_sha256}\`${task.truncated ? ' · TRUNCATED' : ''}`);
     parts.push('');
     parts.push('```markdown');
-    parts.push(task.text);
+    parts.push(task.preview ?? 'NO PREVIEW AVAILABLE');
     parts.push('```', '');
   }
 
@@ -1022,7 +1063,7 @@ function dossierMarkdown(dossier, ledgerEntry) {
       parts.push(`Fuente: \`${snippet.source_path}:${snippet.start_line}-${snippet.end_line}\``);
       parts.push('');
       parts.push('```text');
-      parts.push(snippet.text);
+      parts.push(snippet.preview ?? 'NO PREVIEW AVAILABLE');
       parts.push('```', '');
     }
   }
@@ -1041,7 +1082,7 @@ function dossierMarkdown(dossier, ledgerEntry) {
         parts.push(`Fuente: \`${snippet.source_path}:${snippet.start_line}-${snippet.end_line}\``);
         parts.push('');
         parts.push('```text');
-        parts.push(snippet.text);
+        parts.push(snippet.preview ?? 'NO PREVIEW AVAILABLE');
         parts.push('```', '');
       }
     }
@@ -1325,12 +1366,55 @@ function printStatus(result) {
   console.log('CANONICAL_MUTATIONS: NO');
 }
 
+export function compactMarkdownForBudget(markdown, maxChars) {
+  if (!Number.isInteger(maxChars) || maxChars < 512) {
+    fail('maxChars de batch debe ser entero >= 512.');
+  }
+
+  const normalized = String(markdown ?? '');
+  if (normalized.length <= maxChars) {
+    return {
+      markdown: normalized,
+      truncated: false,
+      original_chars: normalized.length,
+    };
+  }
+
+  const marker = `\n\n[BATCH_EVIDENCE_TRUNCATED original_chars=${normalized.length} max_chars=${maxChars}]\n`;
+  const contentLimit = Math.max(0, maxChars - marker.length);
+  const compact = `${normalized.slice(0, contentLimit).trimEnd()}${marker}`;
+
+  return {
+    markdown: compact.slice(0, maxChars),
+    truncated: true,
+    original_chars: normalized.length,
+  };
+}
+
+function batchHeaderReserve(maxChars) {
+  return Math.min(
+    BATCH_HEADER_RESERVE_MAX_CHARS,
+    Math.max(512, Math.floor(maxChars * 0.1)),
+  );
+}
+
 export function selectReviewBatch({
   dossiers,
   ledger,
   size = 5,
   maxChars = 50000,
 } = {}) {
+  if (!Number.isInteger(size) || size <= 0) fail('size de batch debe ser entero positivo.');
+  if (!Number.isInteger(maxChars) || maxChars < 2048) fail('maxChars de batch debe ser entero >= 2048.');
+
+  const reserveChars = batchHeaderReserve(maxChars);
+  const contentBudget = maxChars - reserveChars;
+  const perPackageBudget = Math.floor(contentBudget / size);
+
+  if (perPackageBudget < 512) {
+    fail(`Presupuesto insuficiente: maxChars=${maxChars}; size=${size}.`);
+  }
+
   const ledgerMap = ledgerEntryMap(ledger);
   const candidates = dossiers
     .filter((dossier) => {
@@ -1353,20 +1437,20 @@ export function selectReviewBatch({
   for (const dossier of candidates) {
     if (selected.length >= size) break;
     const ledgerEntry = ledgerMap.get(dossier.package_id);
-    const markdown = dossierMarkdown(dossier, ledgerEntry);
-    const candidateChars = markdown.length;
+    const rendered = compactMarkdownForBudget(
+      dossierMarkdown(dossier, ledgerEntry),
+      perPackageBudget,
+    );
+    const candidateChars = rendered.markdown.length;
 
-    if (
-      selected.length > 0
-      && usedChars + candidateChars > maxChars
-    ) {
-      break;
-    }
+    if (usedChars + candidateChars > contentBudget) continue;
 
     selected.push({
       dossier,
       ledger_entry: ledgerEntry,
-      markdown,
+      markdown: rendered.markdown,
+      batch_truncated: rendered.truncated,
+      original_chars: rendered.original_chars,
     });
     usedChars += candidateChars;
   }
@@ -1375,6 +1459,9 @@ export function selectReviewBatch({
     selected,
     used_chars: usedChars,
     remaining_after_batch: Math.max(0, candidates.length - selected.length),
+    content_budget: contentBudget,
+    per_package_budget: perPackageBudget,
+    header_reserve_chars: reserveChars,
   };
 }
 
@@ -1402,7 +1489,14 @@ function writeBatch(root, result, { size, maxChars }) {
       infer_missing_content: false,
       contradiction_requires_exact_evidence: true,
     },
-    dossiers: batch.selected.map(({ dossier }) => dossier),
+    dossiers: batch.selected.map(({ dossier, batch_truncated: batchTruncated, original_chars: originalChars }) => ({
+      ...dossier,
+      batch_projection: {
+        truncated: batchTruncated,
+        original_markdown_chars: originalChars,
+        per_package_budget: batch.per_package_budget,
+      },
+    })),
   };
 
   writeJson(root, BATCH_JSON_PATH, json);
@@ -1413,10 +1507,13 @@ function writeBatch(root, result, { size, maxChars }) {
     `Batch: \`${batchId}\``,
     `Source HEAD: \`${sourceHead}\``,
     `Packages: ${json.package_ids.join(', ') || 'NONE'}`,
+    `Char budget: ${maxChars}`,
+    `Per-package budget: ${batch.per_package_budget}`,
     '',
     '## Contrato de revisión',
     '',
-    '- Revisar semánticamente solo contra la evidencia incluida.',
+    '- Revisar semánticamente solo contra la evidencia incluida y las fuentes canónicas referenciadas.',
+    '- Los previews son auxiliares; los SHA y source refs conservan la trazabilidad.',
     '- No completar huecos con conocimiento general.',
     '- PASS solo si routing, ownership, dependencias y alcance son coherentes.',
     '- CONTRADICTION exige identificar la contradicción exacta y sus fuentes.',
@@ -1424,7 +1521,13 @@ function writeBatch(root, result, { size, maxChars }) {
     ...batch.selected.map(({ markdown: dossierMd }) => dossierMd),
   ].join('\n');
 
-  writeText(root, BATCH_MD_PATH, `${markdown.trimEnd()}\n`);
+  const finalMarkdown = `${markdown.trimEnd()}\n`;
+
+  if (finalMarkdown.length > maxChars) {
+    fail(`REVIEW_BATCH excede maxChars: ${finalMarkdown.length} > ${maxChars}.`);
+  }
+
+  writeText(root, BATCH_MD_PATH, finalMarkdown);
 
   const receiptTemplate = {
     schema_version: SCHEMA_VERSION,
@@ -1446,7 +1549,10 @@ function writeBatch(root, result, { size, maxChars }) {
   console.log(`BATCH_ID: ${batchId}`);
   console.log(`PACKAGES: ${json.package_ids.join(',') || 'NONE'}`);
   console.log(`PACKAGE_COUNT: ${json.package_ids.length}`);
-  console.log(`USED_CHARS: ${batch.used_chars}`);
+  console.log(`USED_CHARS: ${finalMarkdown.length}`);
+  console.log(`CHAR_BUDGET: ${maxChars}`);
+  console.log(`BUDGET_COMPLIANCE: ${finalMarkdown.length <= maxChars ? 'PASS' : 'FAIL'}`);
+  console.log(`TRUNCATED_PACKAGES: ${batch.selected.filter(({ batch_truncated: value }) => value).map(({ dossier }) => dossier.package_id).join(',') || 'NONE'}`);
   console.log(`REMAINING_AFTER_BATCH: ${batch.remaining_after_batch}`);
   console.log(`BATCH_MD: ${BATCH_MD_PATH}`);
   console.log(`BATCH_JSON: ${BATCH_JSON_PATH}`);
