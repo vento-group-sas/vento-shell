@@ -228,18 +228,6 @@ function matchSessionToShift(shift: ShiftRow, sessions: SessionRow[], timeZone: 
   return candidates[0] ?? null
 }
 
-function formatShiftDate(shiftDate: string) {
-  try {
-    const value = new Date(`${shiftDate}T12:00:00`)
-    return value.toLocaleDateString("es-CO", {
-      weekday: "short",
-      day: "numeric",
-      month: "short",
-    })
-  } catch {
-    return shiftDate
-  }
-}
 
 async function sendPush(messages: { to: string; title: string; body: string; data?: Record<string, unknown> }[]) {
   if (messages.length === 0) return []
@@ -265,7 +253,7 @@ async function sendPush(messages: { to: string; title: string; body: string; dat
       }
 
       const data = Array.isArray(payload?.data) ? payload.data : []
-      data.forEach((item: any, index: number) => {
+      data.forEach((item, index: number) => {
         if (item?.status === "error" && item?.details?.error === "DeviceNotRegistered") {
           const token = chunk[index]?.to
           if (token) invalidTokens.add(token)
@@ -309,6 +297,10 @@ async function handleRequest(req: Request) {
     auth: { persistSession: false },
   })
 
+  // GAP-PKG-001:CRON_AUTHORIZATION_START
+  const environmentCronSecret =
+    String(Deno.env.get("SHIFT_RUNTIME_CRON_SECRET") ?? "").trim()
+
   const { data: secretRow, error: secretError } = await supabase
     .from("internal_job_secrets")
     .select("secret_value")
@@ -316,22 +308,26 @@ async function handleRequest(req: Request) {
     .limit(1)
     .maybeSingle<InternalJobSecretRow>()
 
-  if (secretError) {
-    return new Response(JSON.stringify({ error: secretError.message }), {
-      status: 500,
+  const tableCronSecret =
+    secretError ? "" : String(secretRow?.secret_value ?? "").trim()
+
+  const expectedCronSecret = tableCronSecret || environmentCronSecret
+
+  if (!expectedCronSecret) {
+    console.error("[shift-runtime-processor] cron_secret_missing")
+    return new Response(JSON.stringify({ error: "service_unavailable" }), {
+      status: 503,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   }
 
-  const expectedCronSecret =
-    String(secretRow?.secret_value ?? "").trim() || String(Deno.env.get("SHIFT_RUNTIME_CRON_SECRET") ?? "").trim()
-
-  if (expectedCronSecret && req.headers.get("x-cron-key") !== expectedCronSecret) {
+  if (req.headers.get("x-cron-key") !== expectedCronSecret) {
     return new Response(JSON.stringify({ error: "Unauthorized" }), {
       status: 401,
       headers: { ...corsHeaders, "Content-Type": "application/json" },
     })
   }
+  // GAP-PKG-001:CRON_AUTHORIZATION_END
 
   const now = new Date()
   const nowIso = now.toISOString()
@@ -471,7 +467,7 @@ async function handleRequest(req: Request) {
   })
 
   let reminderCount = 0
-  let autoClosedCount = 0
+  const autoClosedCount = 0
   let skippedCount = 0
   const pushMessages: { to: string; title: string; body: string; data?: Record<string, unknown> }[] = []
   const pendingRuntimeInserts: Array<Record<string, unknown>> = []
@@ -500,7 +496,6 @@ async function handleRequest(req: Request) {
     ) {
       const tokensForEmployee = tokensByEmployee.get(shift.employee_id) ?? []
       const siteName = unwrapRelation(shift.sites)?.name ?? "tu sede"
-      const detail = `${formatShiftDate(shift.shift_date)}, ${shift.end_time.slice(0, 5)}`
       const hasTokens = tokensForEmployee.length > 0
 
       if (hasTokens) {
@@ -549,7 +544,6 @@ async function handleRequest(req: Request) {
     ) {
       const tokensForEmployee = tokensByEmployee.get(shift.employee_id) ?? []
       const siteName = unwrapRelation(shift.sites)?.name ?? "tu sede"
-      const detail = `${formatShiftDate(shift.shift_date)}, ${shift.end_time.slice(0, 5)}`
       const hasTokens = tokensForEmployee.length > 0
 
       if (hasTokens) {

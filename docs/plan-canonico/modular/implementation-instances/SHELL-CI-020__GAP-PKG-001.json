@@ -1,10 +1,181 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-001",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "VERIFIED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/functions/shift-runtime-processor/index.ts",
+      "change": "MODIFY",
+      "scope": "Harden only the existing cron authorization boundary so missing usable server-side secret configuration fails closed before business processing. Preserve table-secret precedence, environment fallback, valid-secret behavior and existing business semantics."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/packages/GAP-PKG-001.sql",
+      "change": "CREATE",
+      "scope": "Create the GAP-PKG-001 TP-DB-001 pgTAP reconciliation evidence without adding database schema, migrations, RLS, grants, RPC or cron mutations."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-001/contract.test.ts",
+      "change": "CREATE",
+      "scope": "Create contractual assertions for the fail-closed authorization boundary and the four TREQ mapped to GAP-PKG-001."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-001/integration.test.ts",
+      "change": "CREATE",
+      "scope": "Create integration assertions for exact package scope, implementation-unit identity, environment profile and preservation of the existing business pipeline after authorization."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-001/security.test.ts",
+      "change": "CREATE",
+      "scope": "Create controlled security tests for 503 missing-secret behavior, 401 invalid-caller behavior, source precedence, zero business access on denied paths and absence of secret leakage."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-001/e2e.test.ts",
+      "change": "CREATE",
+      "scope": "Create controlled local HTTP transport tests for the real extracted authorization boundary and all deterministic GAP-PKG-001 fixture scenarios."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-001/fixtures.json",
+      "change": "CREATE",
+      "scope": "Create deterministic synthetic fixtures, environment identity and explicit oracles for TREQ-PROC-1490, TREQ-SUPABASE-005, TREQ-SUPABASE-006 and TREQ-SUPABASE-1760. Never include real secrets."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-001.json",
+      "change": "MODIFY",
+      "scope": "Record only authorization, lifecycle state and consolidated evidence for SHELL-CI-020::GAP-PKG-001."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:start and docs:implementation:finish as the authoritative physical lifecycle without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run quality:repair exactly once after complete materialization and before IMPLEMENTED."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate the intermediate materialization commit against the exact authorized instance scope without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the existing clean local Supabase database harness without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-test-command-gate.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the canonical repository test facade through npm test without modifying the script."
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:db:test:clean",
+    "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-001.sql",
+    "node --test tests/packages/GAP-PKG-001/contract.test.ts",
+    "node --test tests/packages/GAP-PKG-001/integration.test.ts",
+    "node --test tests/packages/GAP-PKG-001/security.test.ts",
+    "node --test tests/packages/GAP-PKG-001/e2e.test.ts",
+    "npm test --silent"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-03T14:17:00-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO, SIGAMOS",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-001 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO GAP-PKG-001.",
+    "E5_GATE E5-GATE-008::GAP-PKG-001 PASS",
+    "PHYSICAL_IDENTITY targets=7",
+    "IMPLEMENTATION_UNIT shift-runtime-processor",
+    "ENV_PROFILE ENV-SUPABASE-LOCAL-CI-STAGING"
+  ],
+  "evidence": [
+    "PRE_VALIDATION_ATTEMPT quality:repair attempt=1 result=FAIL reason=REPAIR_REQUIRES_MANUAL_LINT",
+    "PRE_VALIDATION_REMEDIATION supabase/functions/shift-runtime-processor/index.ts preexisting_no_explicit_any_removed semantic_change=NO",
+    "PRE_VALIDATION_TARGETED_ESLINT supabase/functions/shift-runtime-processor/index.ts PASS",
+    "PRE_VALIDATION_GATE quality:repair attempt=2 PASS",
+    "PRE_VALIDATION_GATE READY_FOR_VALIDATION SI",
+    "PROCESS_FINDING add_pre_repair_lint_probe_to_reusable_physical_model_after_GAP-PKG-001_closure",
+    "SOURCE CONTRACT SHA256 eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a",
+    "TREQ_SET TREQ-PROC-1490 TREQ-SUPABASE-005 TREQ-SUPABASE-006 TREQ-SUPABASE-1760",
+    "TREQ_CHANGES 0",
+    "04A_CHANGES 0",
+    "FILE_SHA256 supabase/functions/shift-runtime-processor/index.ts 85eaa8692a3e2db6ea61600635ed3fcc3def29610aee47091a9083c566adb6b9",
+    "FILE_SHA256 supabase/tests/packages/GAP-PKG-001.sql ed3fa09fffbbd3496bcdf99205914b1a02fc606a96e576dc98e1bde93ffdf370",
+    "FILE_SHA256 tests/packages/GAP-PKG-001/contract.test.ts eb69a4f085c1e5d1d8742eb42fe4d9126f49ceb72c5ba1618385f38374b74dce",
+    "FILE_SHA256 tests/packages/GAP-PKG-001/integration.test.ts 6f18d70ae8d007be009db075418af22a9b1ad592831e384d4edd64c567b569d2",
+    "FILE_SHA256 tests/packages/GAP-PKG-001/security.test.ts 1a4119e9dd14ca75c235db9758156b33852cca4b02b4086c07bc2907eebb2f1d",
+    "FILE_SHA256 tests/packages/GAP-PKG-001/e2e.test.ts ffc48e6ff65fdab1139068268667df78e0bf47ea9de7a56f957b41d8cfbf6361",
+    "FILE_SHA256 tests/packages/GAP-PKG-001/fixtures.json f4b4ad08ae20ea9e099961448d995b0cd3dc6188a15e86d91c64afc67379398e",
+    "VALIDATION npm run supabase:db:test:clean PASS",
+    "VALIDATION npm exec -- supabase test db supabase/tests/packages/GAP-PKG-001.sql PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-001/contract.test.ts PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-001/integration.test.ts PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-001/security.test.ts PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-001/e2e.test.ts PASS",
+    "VALIDATION npm test --silent PASS",
+    "TREQ TREQ-PROC-1490 PASS",
+    "TREQ TREQ-SUPABASE-005 PASS",
+    "TREQ TREQ-SUPABASE-006 PASS",
+    "TREQ TREQ-SUPABASE-1760 PASS",
+    "FINAL_PHYSICAL_BATTERY 7/7 PASS",
+    {
+      "schema_version": 1,
+      "evidence_type": "MRP015_050_CANDIDATE_READY",
+      "foundation_id": "MRP015-050",
+      "gate_id": "CANDIDATE_READY",
+      "owner_task": "SUPA-TRANS-015",
+      "phase": "AFTER_LOCAL_MATERIALIZATION_BEFORE_REMOTE_DEPLOY",
+      "package_id": "GAP-PKG-001",
+      "instance_id": "SHELL-CI-020::GAP-PKG-001",
+      "recorded_at": "2026-09-07T15:08:04.054Z",
+      "candidate_head_sha": "cbf280bc2f60b851de91b948b6f7325bf3bfe278",
+      "authorized_scope_sha256": "6ac21e445ce68157adf0a530dc9061b450b99fa0d699732c3fde85fda53cccb4",
+      "candidate_scope_sha256": "3e0081031ca32c112e18d72f33be1880925de4eb283972476baba590da06659d",
+      "candidate_file_count": 1,
+      "status": "PASS",
+      "remote_mutations": false,
+      "secret_values_in_evidence": false,
+      "payload_sha256": "e900f502bb91e533b0e43fe58360c49abb21d361b9074a0bef91d8c43643a21c"
+    },
+    "REMOTE_TARGET STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp",
+    "REMOTE_DEPLOY shift-runtime-processor candidate_head=cbf280bc2f60b851de91b948b6f7325bf3bfe278 version_before=23 version_after=24 status=ACTIVE verify_jwt=false ezbr_sha256=97689fe52f115da64e84c7c736d491db25d3413ed9e8a7d8a023c69e669960a7",
+    "REMOTE_SOURCE GAP-PKG-001 cron authorization fail-closed boundary present in deployed version 24",
+    "REMOTE_SECRET_PRESENCE shift_runtime_processor_cron configured=true secret_value_exposed=NO",
+    "REMOTE_CRON anima_shift_runtime_processor_every_5m schedule=*/5_*_*_*_* active=true run=2026-09-07T15:15:00Z status=succeeded http=200 processed=0 reminders=0 autoClosed=0",
+    "REMOTE_NEGATIVE_PROBE probe_utc=2026-09-07T15:17:30.4209317Z invalid_x_cron_key result=401 response=Unauthorized",
+    "REMOTE_NEGATIVE_MUTATION_DELTA window_start=2026-09-07T15:17:25Z window_end=2026-09-07T15:17:36Z shift_runtime_events=0 attendance_logs=0 employee_push_tokens=0",
+    "REMOTE_503_SCENARIO COVERED_BY_CONTROLLED_LOCAL_BATTERY remote_secret_removal_not_performed",
+    "REMOTE_EVIDENCE PASS",
+    "RESULT SHELL-CI-020::GAP-PKG-001 VERIFIED"
+  ],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }

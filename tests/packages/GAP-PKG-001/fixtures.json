@@ -1,0 +1,77 @@
+{
+  "package_id": "GAP-PKG-001",
+  "environment_profile": "ENV-SUPABASE-LOCAL-CI-STAGING",
+  "implementation_unit": "shift-runtime-processor",
+  "treq_oracles": {
+    "TREQ-PROC-1490": "Every unconfigured or unauthorized cron request terminates at the authorization boundary before the existing business processing pipeline.",
+    "TREQ-SUPABASE-005": "Server-side cron authorization fails closed when no usable server secret exists and rejects callers whose x-cron-key does not match the configured secret.",
+    "TREQ-SUPABASE-006": "Authorization responses, diagnostics, fixtures and evidence never expose real configured secret material.",
+    "TREQ-SUPABASE-1760": "The canonical shift runtime cron contract preserves table-secret precedence, environment fallback and x-cron-key request authentication."
+  },
+  "scenarios": [
+    {
+      "id": "missing-all-secrets",
+      "table_secret": "",
+      "environment_secret": "",
+      "request_secret": null,
+      "table_lookup_error": false,
+      "expected_status": 503
+    },
+    {
+      "id": "lookup-failure-without-fallback",
+      "table_secret": "",
+      "environment_secret": "",
+      "request_secret": null,
+      "table_lookup_error": true,
+      "expected_status": 503
+    },
+    {
+      "id": "missing-request-secret",
+      "table_secret": "synthetic-table-secret",
+      "environment_secret": "",
+      "request_secret": null,
+      "table_lookup_error": false,
+      "expected_status": 401
+    },
+    {
+      "id": "wrong-request-secret",
+      "table_secret": "synthetic-table-secret",
+      "environment_secret": "",
+      "request_secret": "synthetic-wrong-secret",
+      "table_lookup_error": false,
+      "expected_status": 401
+    },
+    {
+      "id": "table-secret-priority-accepts-table",
+      "table_secret": "synthetic-table-secret",
+      "environment_secret": "synthetic-environment-secret",
+      "request_secret": "synthetic-table-secret",
+      "table_lookup_error": false,
+      "expected_status": 200
+    },
+    {
+      "id": "table-secret-priority-rejects-environment",
+      "table_secret": "synthetic-table-secret",
+      "environment_secret": "synthetic-environment-secret",
+      "request_secret": "synthetic-environment-secret",
+      "table_lookup_error": false,
+      "expected_status": 401
+    },
+    {
+      "id": "environment-fallback",
+      "table_secret": "",
+      "environment_secret": "synthetic-environment-secret",
+      "request_secret": "synthetic-environment-secret",
+      "table_lookup_error": false,
+      "expected_status": 200
+    },
+    {
+      "id": "lookup-failure-environment-fallback",
+      "table_secret": "",
+      "environment_secret": "synthetic-environment-secret",
+      "request_secret": "synthetic-environment-secret",
+      "table_lookup_error": true,
+      "expected_status": 200
+    }
+  ]
+}
