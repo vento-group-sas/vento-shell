@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1120** |
+| Tareas aprobadas | **1121** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **476** |
+| Tareas no iniciadas | **475** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **70.18% (1120/1596)** |
+| Porcentaje de completamiento | **70.24% (1121/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **SHELL-APP-003 — Definir aplicaciones visibles por contexto** |
-| Tarea actual | **SHELL-APP-004 — Mostrar turno activo** |
+| Última tarea aprobada | **SHELL-APP-004 — Mostrar turno activo** |
+| Tarea actual | **SHELL-APP-005 — Mostrar sede activa** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **SHELL-APP-005 — Mostrar sede activa** |
+| Siguiente tarea | **SHELL-APP-006 — Mostrar área activa** |
 | Bloque actual | **BLOQUE H2 — SHELL como aplicación** |
-| Progreso del bloque | **BLOQUE H2: 3 de 21 aprobadas; SHELL-APP-004 pendiente** |
+| Progreso del bloque | **BLOQUE H2: 4 de 21 aprobadas; SHELL-APP-005 pendiente** |
 | Estado de implementación | **IMPLEMENTATION_BLOCKED** |
 | Acción principal obligatoria | **WAIT_FOR_FOUNDATION_PREREQUISITE — MRP015-040** |
-| Carril documental | **ACTIVO — SHELL-APP-004** |
+| Carril documental | **ACTIVO — SHELL-APP-005** |
 | Carril físico | **SIN INSTANCIA FÍSICA ACTIVA** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `SHELL-APP-003` — Definir aplicaciones visibles por contexto |
-| Tarea actual | `SHELL-APP-004` — Mostrar turno activo — **NO INICIADA** |
-| Siguiente tarea | `SHELL-APP-005` — Mostrar sede activa |
+| Última aprobada | `SHELL-APP-004` — Mostrar turno activo |
+| Tarea actual | `SHELL-APP-005` — Mostrar sede activa — **NO INICIADA** |
+| Siguiente tarea | `SHELL-APP-006` — Mostrar área activa |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE H2: 3 DE 21 APROBADAS — ACTUAL SHELL-APP-004** |
+| CONTINUIDAD ACTIVA | **BLOQUE H2: 4 DE 21 APROBADAS — ACTUAL SHELL-APP-005** |
 | Implementación física | **SIN INSTANCIA FÍSICA ACTIVA** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-SHELL-APP-003 — Definir aplicaciones visibles por contexto
-        ↓
-TAREA ACTUAL
 SHELL-APP-004 — Mostrar turno activo
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 SHELL-APP-005 — Mostrar sede activa
         ↓
+SIGUIENTE TAREA RESERVADA
+SHELL-APP-006 — Mostrar área activa
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE H2 — 3 de 21 tareas aprobadas
+BLOQUE H2 — 4 de 21 tareas aprobadas
 ```
