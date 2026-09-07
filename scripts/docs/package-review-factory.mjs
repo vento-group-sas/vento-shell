@@ -1001,9 +1001,12 @@ export function parseTaskTreqDeclaration(block) {
   const section = source.match(
     /^####\s+\d+\.\s+Requisitos de prueba derivados\s*$([\s\S]*?)(?=^####\s+\d+\.|(?![\s\S]))/imu,
   )?.[1] ?? '';
-  const ids = uniqueSorted(
+  const referencedIds = uniqueSorted(
     section.match(/\bTREQ-[A-Z0-9-]+\b/gu) ?? [],
   );
+  const noGenerationResult = /\*\*Resultado:\*\*\s*NO GENERA REQUISITOS DE PRUEBA(?:\s+NUEVOS)?\.?/iu
+    .test(section);
+  const ids = noGenerationResult ? [] : referencedIds;
 
   if (!metadata) {
     return {
@@ -1011,21 +1014,23 @@ export function parseTaskTreqDeclaration(block) {
       section_present: section.length > 0,
       declared_count: null,
       ids,
-      consistent: ids.length === 0,
-      detail: ids.length === 0
-        ? 'NO_TREQ_DECLARATION_METADATA'
-        : `NO_TREQ_DECLARATION_METADATA_WITH_IDS:${ids.join(',')}`,
+      consistent: true,
+      detail: noGenerationResult
+        ? 'NO_TREQ_DECLARATION_METADATA_NO_GENERATION'
+        : 'NO_TREQ_DECLARATION_METADATA',
     };
   }
 
   const declaredCount = Number(metadata[1]);
   let detail = 'PASS';
 
-  if (declaredCount === 0 && ids.length > 0) {
+  if (noGenerationResult && declaredCount !== 0) {
+    detail = `DECLARED_${declaredCount}_BUT_SECTION_NO_GENERA`;
+  } else if (!noGenerationResult && declaredCount === 0 && ids.length > 0) {
     detail = `DECLARED_0_WITH_IDS:${ids.join(',')}`;
-  } else if (declaredCount > 0 && ids.length === 0) {
+  } else if (!noGenerationResult && declaredCount > 0 && ids.length === 0) {
     detail = `DECLARED_${declaredCount}_WITHOUT_IDS`;
-  } else if (declaredCount !== ids.length) {
+  } else if (!noGenerationResult && declaredCount !== ids.length) {
     detail = `DECLARED_${declaredCount}_RESOLVED_${ids.length}:${ids.join(',')}`;
   }
 

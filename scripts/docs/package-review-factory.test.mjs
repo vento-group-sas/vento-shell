@@ -610,6 +610,108 @@ test('TREQ solo se extrae desde Requisitos de prueba derivados', () => {
   assert.equal(declaration.consistent, true);
 });
 
+test('TREQ NO GENERA ignora referencias de cobertura existente dentro de la seccion derivada', () => {
+  const fixtures = [
+    {
+      taskId: 'TI-UX-003',
+      ids: [
+        'TREQ-NEXO-019',
+        'TREQ-PROC-457',
+        'TREQ-PROC-461',
+        'TREQ-PROC-500',
+        'TREQ-UX-003',
+        'TREQ-UX-005',
+        'TREQ-UX-010',
+        'TREQ-VISO-002',
+      ],
+    },
+    {
+      taskId: 'INFO-DOM-001',
+      ids: [
+        'TREQ-ANIMA-005',
+        'TREQ-INTEGRATION-021',
+        'TREQ-PASS-012',
+        'TREQ-SHELL-011',
+        'TREQ-SUPABASE-013',
+        'TREQ-VISO-003',
+      ],
+    },
+    {
+      taskId: 'SHELL-CON-010',
+      ids: [
+        'TREQ-PROC-038',
+        'TREQ-PROC-052',
+        'TREQ-SHELL-002',
+        'TREQ-SHELL-006',
+        'TREQ-SHELL-008',
+      ],
+    },
+    {
+      taskId: 'SHELL-UI-001',
+      ids: [
+        'TREQ-SHELL-002',
+        'TREQ-SHELL-006',
+        'TREQ-SHELL-007',
+        'TREQ-SHELL-008',
+        'TREQ-SHELL-029',
+        'TREQ-SHELL-030',
+        'TREQ-SHELL-031',
+        'TREQ-SHELL-032',
+        'TREQ-SHELL-035',
+        'TREQ-SHELL-036',
+      ],
+    },
+  ];
+
+  for (const fixture of fixtures) {
+    const block = [
+      `### ✅ ${fixture.taskId} — Tarea`,
+      '',
+      '**Requisitos de prueba creados o modificados:** 0',
+      '',
+      '#### 7. Requisitos de prueba derivados',
+      '',
+      '**Resultado:** NO GENERA REQUISITOS DE PRUEBA',
+      '',
+      `**Justificación:** cobertura vigente: ${fixture.ids.map((id) => `\`${id}\``).join(', ')}.`,
+      '',
+      '#### 8. Evidencia',
+      '',
+    ].join('\n');
+
+    const declaration = parseTaskTreqDeclaration(block);
+
+    assert.equal(declaration.declared_count, 0, fixture.taskId);
+    assert.deepEqual(declaration.ids, [], fixture.taskId);
+    assert.equal(declaration.consistent, true, fixture.taskId);
+    assert.equal(declaration.detail, 'PASS', fixture.taskId);
+  }
+});
+
+test('TREQ NO GENERA sigue fallando si la cabecera declara cambios', () => {
+  const block = [
+    '### ✅ TEST-TASK-001 — Tarea',
+    '',
+    '**Requisitos de prueba creados o modificados:** 1',
+    '',
+    '#### 7. Requisitos de prueba derivados',
+    '',
+    '**Resultado:** NO GENERA REQUISITOS DE PRUEBA',
+    '',
+    'Justificación con referencia existente `TREQ-SHELL-001`.',
+    '',
+    '#### 8. Evidencia',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 1);
+  assert.deepEqual(declaration.ids, []);
+  assert.equal(declaration.consistent, false);
+  assert.equal(declaration.detail, 'DECLARED_1_BUT_SECTION_NO_GENERA');
+});
+
 test('TREQ derivados valida conteo declarado y conserva IDs', () => {
   const block = [
     '### ✅ TEST-TASK-001 — Tarea',
