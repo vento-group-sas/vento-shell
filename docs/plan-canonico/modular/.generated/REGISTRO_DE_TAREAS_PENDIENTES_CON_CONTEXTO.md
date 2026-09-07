@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `WAIT_FOR_FOUNDATION_PREREQUISITE` sobre `MRP015-040`.
+> **Prioridad del checkout actual:** ejecutar `AUTHORIZE_PHYSICAL_IMPLEMENTATION` sobre `SHELL-CI-020::GAP-PKG-001`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,18 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Resuelve la fundación que tiene precedencia — `MRP015-040`
+### 2. Prepara el package que tiene el turno — `GAP-PKG-001`
 
-- **CURRENT_EXECUTABLE_WORK:** `MRP015-040`
-- **Gate:** `RESOURCE_MANIFEST_PASS`
-- **Owner canónico:** `SUPA-TRANS-015`
-- **Estado:** `UNKNOWN`
-- **Package consumidor bloqueado:** `GAP-PKG-001` — posición **1/189**.
-- **Acción exacta:** `WAIT_FOR_FOUNDATION_PREREQUISITE`
-- **Comando de comprobación:** `npm run docs:package:readiness:check -- --package GAP-PKG-001`
-- **Por qué:** GAP-PKG-001 conserva el turno como package consumidor, pero el trabajo requerido actual es MRP015-040 / RESOURCE_MANIFEST_PASS, propiedad de SUPA-TRANS-015. El comando solo reevalúa el gate; no autoriza el package.
-- **Regla:** no autorizar, iniciar, desplegar ni cerrar el package consumidor hasta que esta fundación y las anteriores queden satisfechas.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-001`
+- **Posición:** **1/189**; ningún package posterior puede adelantarlo.
+- **Estado efectivo:** `IMPLEMENTATION_READY`
+- **Acción exacta:** `AUTHORIZE_PHYSICAL_IMPLEMENTATION`
+- **Objetivo exacto:** `SHELL-CI-020::GAP-PKG-001`
+- **Comando exacto:** `npm run docs:implementation:status`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-001.json` — `APPROVED_FOR_IMPLEMENTATION`
+- **Gates:** **6/6 PASS**; faltan **0**.
+- **Por qué:** GAP-PKG-001 ya tiene handoff físico PENDING_AUTHORIZATION; falta autorización física humana.
+- **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `SHELL-APP-005`
 
@@ -37,9 +38,9 @@
 
 ### 4. Ejecuta la instancia física autorizada — `SHELL-CI-020::GAP-PKG-001`
 
-- **Estado:** `WAITING_FOR_FOUNDATION_PREREQUISITE`
+- **Estado:** `PENDING_AUTHORIZATION`
 - **Contrato:** Implementar y desplegar cada paquete aprobado por E5
-- **Acción exacta del control:** `EJECUTAR_IMPLEMENTACIÓN`
+- **Acción exacta del control:** `AUTORIZAR_IMPLEMENTACIÓN`
 - **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-001.json`
 
 ## Panel de control — dos carriles
@@ -47,7 +48,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `SHELL-APP-005` — Mostrar sede activa | `SHELL-APP-006` — Mostrar área activa | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `WAITING_FOR_FOUNDATION_PREREQUISITE` | `SHELL-CI-020::GAP-PKG-001` — Implementar y desplegar cada paquete aprobado por E5 | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-001` — Implementar y desplegar cada paquete aprobado por E5 | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -61,7 +62,7 @@
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-04-H2-SHELL-APPLICATION` — SHELL como aplicación
 - **Siguiente etapa documental:** `PHASE-04-I-UI-IMPLEMENTATION`
-- **Acción primaria del control de instancias:** `WAIT_FOR_FOUNDATION_PREREQUISITE` — `MRP015-040`
+- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-001`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -71,7 +72,7 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **ACTUAL** | `SHELL-CI-020::GAP-PKG-001` | Implementar y desplegar cada paquete aprobado por E5 | `WAITING_FOR_FOUNDATION_PREREQUISITE` | ACTUAL — WAIT_FOR_FOUNDATION_PREREQUISITE |
+| 1 | **ACTUAL** | `SHELL-CI-020::GAP-PKG-001` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
 
 ## Modos de trabajo y materialización
 
