@@ -1,0 +1,10 @@
+{
+  "instance_id": "SHELL-CI-021::GAP-PKG-001",
+  "task_id": "SHELL-CI-021",
+  "status": "PENDING_AUTHORIZATION",
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "authorization": null,
+  "evidence": []
+}
