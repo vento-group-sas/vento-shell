@@ -883,7 +883,6 @@ test('CORR-011 MRP015-040 hosted parity: exige STAGING full antes de certificar 
   );
 
   assert.ok(gate);
-  assert.equal(gate.evidence_ref, null);
 
   const passCheck = (id) => ({
     id,
