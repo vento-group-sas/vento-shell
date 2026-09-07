@@ -1,0 +1,36 @@
+{
+  "schema_version": 1,
+  "correction_id": "SHELL-CI-020::CORR-001",
+  "task_id": "SHELL-CI-020",
+  "target_instance_id": "SHELL-CI-020::GAP-PKG-001",
+  "correction_type": "PHYSICAL",
+  "reason_code": "IMPLEMENTATION_DEFECT",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": true,
+  "blocked_targets": [
+    "SHELL-CI-021"
+  ],
+  "baseline": {
+    "main_commit": "699ff54758542cab31fc774414fdf31f67b4416f",
+    "target_task_path": "docs/plan-canonico/modular/bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md",
+    "target_task_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a",
+    "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-001.json",
+    "target_instance_record_sha256": "5dfa75cd43b7ec3aaf4807b9841f2c4c1ba16528077416b592ea62291b36060f"
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-09-07T17:31:56.413Z",
+  "integration": {
+    "mode": "PRE_MERGE",
+    "pull_request": 364,
+    "head_ref": "implementation/shell-ci-020/gap-pkg-001",
+    "head_commit": "d7866fc0f2a80f784a794d3fedb0c632f5e46bc4",
+    "base_commit": "699ff54758542cab31fc774414fdf31f67b4416f",
+    "base_instance_sha256": "b71d2ee6f39e518099532ff8d65678e86ea3c9e2be6d730f9c8285c403b99094"
+  }
+}

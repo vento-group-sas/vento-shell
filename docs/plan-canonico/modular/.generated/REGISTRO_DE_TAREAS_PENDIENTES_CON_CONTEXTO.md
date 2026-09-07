@@ -8,13 +8,22 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `AUTHORIZE_PHYSICAL_IMPLEMENTATION` sobre `SHELL-CI-020::GAP-PKG-001`.
+> **Prioridad del checkout actual:** terminar `SHELL-CI-020::CORR-001`; este checkout ya pertenece a esa corrección.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Correcciones canónicas
+### 1. Decide la corrección propuesta — `SHELL-CI-020::CORR-001`
 
-- **Acción:** ninguna corrección abierta.
+- **Estado:** `PENDING_AUTHORIZATION`
+- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
+- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
+- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Edita solamente:**
+  - Ningún cambio autorizado todavía.
+- **Valida, en este orden:**
+  1. Ninguna validación autorizada todavía.
+- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Prepara el package que tiene el turno — `GAP-PKG-001`
 
