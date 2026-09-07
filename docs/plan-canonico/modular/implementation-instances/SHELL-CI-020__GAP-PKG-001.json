@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-001",
   "task_id": "SHELL-CI-020",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -121,7 +121,6 @@
     "TREQ_SET TREQ-PROC-1490 TREQ-SUPABASE-005 TREQ-SUPABASE-006 TREQ-SUPABASE-1760",
     "TREQ_CHANGES 0",
     "04A_CHANGES 0",
-    "REMOTE_EVIDENCE PENDING",
     "FILE_SHA256 supabase/functions/shift-runtime-processor/index.ts 85eaa8692a3e2db6ea61600635ed3fcc3def29610aee47091a9083c566adb6b9",
     "FILE_SHA256 supabase/tests/packages/GAP-PKG-001.sql ed3fa09fffbbd3496bcdf99205914b1a02fc606a96e576dc98e1bde93ffdf370",
     "FILE_SHA256 tests/packages/GAP-PKG-001/contract.test.ts eb69a4f085c1e5d1d8742eb42fe4d9126f49ceb72c5ba1618385f38374b74dce",
@@ -141,7 +140,35 @@
     "TREQ TREQ-SUPABASE-006 PASS",
     "TREQ TREQ-SUPABASE-1760 PASS",
     "FINAL_PHYSICAL_BATTERY 7/7 PASS",
-    "REMOTE_EVIDENCE PENDING"
+    {
+      "schema_version": 1,
+      "evidence_type": "MRP015_050_CANDIDATE_READY",
+      "foundation_id": "MRP015-050",
+      "gate_id": "CANDIDATE_READY",
+      "owner_task": "SUPA-TRANS-015",
+      "phase": "AFTER_LOCAL_MATERIALIZATION_BEFORE_REMOTE_DEPLOY",
+      "package_id": "GAP-PKG-001",
+      "instance_id": "SHELL-CI-020::GAP-PKG-001",
+      "recorded_at": "2026-09-07T15:08:04.054Z",
+      "candidate_head_sha": "cbf280bc2f60b851de91b948b6f7325bf3bfe278",
+      "authorized_scope_sha256": "6ac21e445ce68157adf0a530dc9061b450b99fa0d699732c3fde85fda53cccb4",
+      "candidate_scope_sha256": "3e0081031ca32c112e18d72f33be1880925de4eb283972476baba590da06659d",
+      "candidate_file_count": 1,
+      "status": "PASS",
+      "remote_mutations": false,
+      "secret_values_in_evidence": false,
+      "payload_sha256": "e900f502bb91e533b0e43fe58360c49abb21d361b9074a0bef91d8c43643a21c"
+    },
+    "REMOTE_TARGET STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp",
+    "REMOTE_DEPLOY shift-runtime-processor candidate_head=cbf280bc2f60b851de91b948b6f7325bf3bfe278 version_before=23 version_after=24 status=ACTIVE verify_jwt=false ezbr_sha256=97689fe52f115da64e84c7c736d491db25d3413ed9e8a7d8a023c69e669960a7",
+    "REMOTE_SOURCE GAP-PKG-001 cron authorization fail-closed boundary present in deployed version 24",
+    "REMOTE_SECRET_PRESENCE shift_runtime_processor_cron configured=true secret_value_exposed=NO",
+    "REMOTE_CRON anima_shift_runtime_processor_every_5m schedule=*/5_*_*_*_* active=true run=2026-09-07T15:15:00Z status=succeeded http=200 processed=0 reminders=0 autoClosed=0",
+    "REMOTE_NEGATIVE_PROBE probe_utc=2026-09-07T15:17:30.4209317Z invalid_x_cron_key result=401 response=Unauthorized",
+    "REMOTE_NEGATIVE_MUTATION_DELTA window_start=2026-09-07T15:17:25Z window_end=2026-09-07T15:17:36Z shift_runtime_events=0 attendance_logs=0 employee_push_tokens=0",
+    "REMOTE_503_SCENARIO COVERED_BY_CONTROLLED_LOCAL_BATTERY remote_secret_removal_not_performed",
+    "REMOTE_EVIDENCE PASS",
+    "RESULT SHELL-CI-020::GAP-PKG-001 VERIFIED"
   ],
   "target_environments": [
     {
