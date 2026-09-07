@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   analyzePackage,
+  compactMarkdownForBudget,
   buildCrossPackageIndexes,
   buildFactoryFromPackages,
   normalizeReviewPackage,
@@ -323,4 +324,60 @@ test('receipt exige fingerprint vigente y evidencia para contradiccion', () => {
     }),
     /CONTRADICTION exige/u,
   );
+});
+
+test('compactMarkdownForBudget aplica un limite duro incluso al primer dossier', () => {
+  const result = compactMarkdownForBudget('x'.repeat(20000), 5000);
+
+  assert.equal(result.truncated, true);
+  assert.equal(result.original_chars, 20000);
+  assert.ok(result.markdown.length <= 5000);
+  assert.match(result.markdown, /BATCH_EVIDENCE_TRUNCATED/u);
+});
+
+test('factory no duplica texto canónico completo dentro del dossier y batch respeta presupuesto', () => {
+  const taskIds = Array.from({ length: 120 }, (_, index) => `TASK-X-${String(index + 1).padStart(3, '0')}`);
+  const taskSectionIndex = new Map(taskIds.map((taskId) => [taskId, {
+    task_id: taskId,
+    source_path: `docs/${taskId}.md`,
+    source_blob_sha: 'a'.repeat(40),
+    text: `## ${taskId}\n${'evidence '.repeat(2000)}`,
+    text_sha256: 'b'.repeat(64),
+    truncated: true,
+    original_chars: 18000,
+  }]));
+
+  const sourceManifest = {
+    generated_from_head: 'a'.repeat(40),
+  };
+
+  const built = buildFactoryFromPackages({
+    rawPackages: [
+      rawPackage({
+        id: 'GAP-PKG-001',
+        layer: 0,
+        primary: taskIds,
+        dominant: taskIds[0],
+      }),
+    ],
+    taskSectionIndex,
+    sourceManifest,
+    generatedAt: '2026-09-07T20:00:00Z',
+  });
+
+  const evidence = built.dossiers[0].source_evidence.tasks[0];
+  assert.equal(Object.hasOwn(evidence, 'text'), false);
+  assert.equal(evidence.text_present, true);
+  assert.ok(evidence.preview.length <= 160);
+
+  const batch = selectReviewBatch({
+    dossiers: built.dossiers,
+    ledger: built.ledger,
+    size: 1,
+    maxChars: 5000,
+  });
+
+  assert.equal(batch.selected.length, 1);
+  assert.ok(batch.selected[0].markdown.length <= batch.per_package_budget);
+  assert.ok(batch.used_chars <= batch.content_budget);
 });
