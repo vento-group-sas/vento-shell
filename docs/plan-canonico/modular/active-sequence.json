@@ -5,25 +5,25 @@
   "sequence_id": "PHASE-04-H2-SHELL-APPLICATION",
   "block_code": "BLOQUE H2",
   "block_title": "SHELL como aplicación",
-  "previous_task_id": "SHELL-APP-003",
+  "previous_task_id": "SHELL-APP-004",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "AUTH-UI-040",
   "handoff_sequence_id": "PHASE-04-I-UI-IMPLEMENTATION",
   "segments": [
     {
       "prefix": "SHELL-APP",
-      "from": 4,
+      "from": 5,
       "to": 21
     }
   ],
   "block_progress": {
     "total_tasks": 21,
-    "approved_tasks": 3,
-    "pending_tasks": 18
+    "approved_tasks": 4,
+    "pending_tasks": 17
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 476,
+    "pending_tasks": 475,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 17
