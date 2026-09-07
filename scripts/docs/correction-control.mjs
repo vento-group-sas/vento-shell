@@ -685,8 +685,9 @@ export function assertPreMergeCorrectionScope({ root = process.cwd(), record, ba
             fail(`${record.correction_id}: STALE_TARGET; main cambió ${entry.path}.`);
         }
     }
+    const originalPathSet = new Set(originalPaths);
     const delta = pathsForRange(root, `${anchor.head_commit}..${headRef}`)
-        .filter((entry) => sameBlob(root, anchor.base_commit, baseRef, entry)
+        .filter((entry) => originalPathSet.has(entry)
             || !sameBlob(root, baseRef, headRef, entry));
     assertCorrectionPaths([...new Set([...delta, ...dirtyPaths])], record, {
         root, baseRef: anchor.head_commit,
