@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1124** |
+| Aprobadas | **1125** |
 | En propuesta | **0** |
-| No iniciadas | **472** |
+| No iniciadas | **471** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **70.43% (1124/1596)** |
+| Porcentaje de completamiento | **70.49% (1125/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-007` — Mostrar rol operativo activo | ✅ APROBADA |
-| Tarea actual | `SHELL-APP-008` — Mostrar tareas pendientes transversales | ⬜ NO INICIADA |
-| Siguiente reservada | `SHELL-APP-009` — Definir página inicial por tipo de usuario | ⬜ NO INICIADA |
+| Última aprobada | `SHELL-APP-008` — Mostrar tareas pendientes transversales | ✅ APROBADA |
+| Tarea actual | `SHELL-APP-009` — Definir página inicial por tipo de usuario | ⬜ NO INICIADA |
+| Siguiente reservada | `SHELL-APP-010` — Explicar por qué una aplicación está bloqueada | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -794,7 +794,7 @@
 | ✅ APROBADA | `SHELL-APP-005` | Mostrar sede activa | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ✅ APROBADA | `SHELL-APP-006` | Mostrar área activa | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ✅ APROBADA | `SHELL-APP-007` | Mostrar rol operativo activo | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
-| ⬜ NO INICIADA | `SHELL-APP-008` | Mostrar tareas pendientes transversales | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
+| ✅ APROBADA | `SHELL-APP-008` | Mostrar tareas pendientes transversales | `bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md` |
 | ⬜ NO INICIADA | `SHELL-APP-009` | Definir página inicial por tipo de usuario | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-010` | Explicar por qué una aplicación está bloqueada | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-011` | Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |

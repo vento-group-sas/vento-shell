@@ -4521,4 +4521,1483 @@ Esta tarea no:
 `SHELL-APP-008 — Mostrar tareas pendientes transversales`
 
 
-### [ ] SHELL-APP-008 — Mostrar tareas pendientes transversales
+### ✅ SHELL-APP-008 — Mostrar tareas pendientes transversales
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-007 — Mostrar rol operativo activo
+**Tarea siguiente:** SHELL-APP-009 — Definir página inicial por tipo de usuario
+**Tipo de tarea:** definición técnico-documental de la proyección transversal de ítems de trabajo pendientes en SHELL; agrega una superficie informativa y navegable de foco y obligaciones cross-app sin convertir SHELL en propietaria, scheduler, ejecutora, motor de workflow ni autoridad universal, y conserva `PER_IMPLEMENTATION_UNIT` únicamente como topología de materialización posterior
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md`
+**Estado físico resultante:** contrato documental de presentación transversal de trabajo pendiente definido y reconciliado con `UX-BASE-002`, `SHELL-CON-015`, `SHELL-CON-016` y el contexto laboral aprobado; runtime de SHELL sin modificaciones
+**Cambios físicos autorizados:** ninguno; no se modifican código, contratos compartidos, procesos, ítems runtime, colas, claims, leases, navegación física, autorización, Supabase, datos, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo SHELL presenta al actor efectivo el trabajo pendiente que puede provenir de varias aplicaciones de Vento OS, de forma transversal, priorizada, comprensible y segura.
+
+La tarea debe permitir responder desde SHELL:
+
+```text
+¿QUÉ TENGO PENDIENTE?
+¿QUÉ DEBO ATENDER AHORA?
+¿QUÉ VIENE DESPUÉS?
+¿QUÉ ESTÁ EN ESPERA?
+¿QUÉ ESTÁ BLOQUEADO?
+¿QUÉ APLICACIÓN ES PROPIETARIA DEL TRABAJO?
+```
+
+sin convertir la proyección visual en fuente de verdad, permiso, claim, inicio, finalización o transferencia de propiedad.
+
+La regla principal queda:
+
+```text
+ÍTEM DE TRABAJO CANÓNICO
++
+ACTOR / COLA ELEGIBLE
++
+CONTEXTO VÁLIDO
++
+ESTADO Y READINESS VIGENTES
++
+PRIORIDAD CANÓNICA
++
+APLICACIÓN PROPIETARIA
+→
+PROYECCIÓN TRANSVERSAL EN SHELL
+```
+
+Nunca:
+
+```text
+ALERTA
+O NOTIFICACIÓN
+O REGISTRO CON STATUS = PENDING
+O TARJETA DE APLICACIÓN
+O ELEMENTO DE MENÚ
+O TAREA DEL PLAN CANÓNICO
+→
+TAREA DEL TRABAJADOR
+```
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-007`
+
+Se conserva sin reapertura:
+
+1. existe una región `Contexto laboral`;
+2. el segmento `Turno` ya está definido;
+3. el segmento `Sede` ya está definido;
+4. el segmento `Área` ya está definido;
+5. el segmento `Rol operativo` ya está definido;
+6. el rol operativo visible procede del contexto operativo resuelto;
+7. rol base y rol operativo permanecen separados;
+8. ausencia e indisponibilidad son estados diferentes;
+9. los hechos operativos visibles proceden del mismo snapshot;
+10. el cliente no fabrica autoridad desde estado local;
+11. la presentación visible no sustituye autorización;
+12. `SafeContextProjectionV1` no se amplía silenciosamente;
+13. las tareas pendientes transversales no pertenecen a la región `Contexto laboral`.
+
+`SHELL-APP-008` agrega una responsabilidad separada:
+
+```text
+Trabajo pendiente
+```
+
+sin reabrir la semántica de turno, sede, área o rol operativo.
+
+---
+
+#### 3. Significado de “tareas pendientes transversales”
+
+En esta tarea, una tarea pendiente transversal es una proyección en SHELL de un `work_item` empresarial existente cuya aplicación propietaria puede ser distinta de SHELL.
+
+“Transversal” significa:
+
+```text
+UNA SOLA VISTA DE ORIENTACIÓN
++
+VARIAS APLICACIONES PROPIETARIAS POSIBLES
+```
+
+No significa:
+
+```text
+SHELL ES PROPIETARIA DE TODAS LAS TAREAS
+```
+
+ni:
+
+```text
+SHELL REIMPLEMENTA LOS WORKFLOWS DE TODAS LAS APLICACIONES
+```
+
+---
+
+#### 4. Exclusión del backlog técnico y documental
+
+La superficie definida por esta tarea no muestra como obligaciones del trabajador:
+
+- tareas canónicas `SHELL-*`, `AUTH-*`, `NEXO-*` u otras del plan;
+- `GAP-PKG-*`;
+- expedientes `DELIV-PKG-*`;
+- gates E5;
+- instancias de implementación;
+- issues de GitHub;
+- pull requests;
+- commits;
+- CI;
+- fallos de documentación;
+- tareas de migración técnica;
+- TODO de código;
+- hallazgos de auditoría sin obligación empresarial runtime.
+
+Esos objetos pueden tener su propia gobernanza, pero no son `work_item` del actor por pertenecer al proyecto Vento OS.
+
+---
+
+#### 5. Autoridad semántica consumida
+
+La tarea consume sin modificar la autoridad de `UX-BASE-002`.
+
+La separación obligatoria permanece:
+
+```text
+PROCESS
+≠
+PROCESS INSTANCE
+≠
+PROCESS STEP
+≠
+WORK ITEM
+≠
+CURRENT FOCUS
+≠
+NEXT ACTION
+≠
+ALERT
+≠
+NOTIFICATION
+≠
+MESSAGE
+≠
+NAVIGATION
+```
+
+Una alerta puede originar o acompañar una obligación.
+
+No se convierte en tarea hasta que exista responsabilidad, estado y fuente canónica de trabajo.
+
+---
+
+#### 6. Contrato compartido consumido
+
+La materialización vigente de `SHELL-CON-015::GLOBAL` conserva el contrato estático de ítems de trabajo bajo el namespace lógico:
+
+```text
+@vento/contracts/work-items
+```
+
+`SHELL-APP-008` consume ese vocabulario.
+
+No crea:
+
+- otra definición de `work_item`;
+- otro catálogo de estados;
+- otro catálogo de readiness;
+- otro sistema de prioridad;
+- otra serialización de `work_item_id`;
+- otra fuente de ownership.
+
+---
+
+#### 7. Universo contractual preservado
+
+La tarea conserva exactamente el universo materializado por `SHELL-CON-015`:
+
+```text
+29 campos contractuales
+8 clases de ítem de trabajo
+16 estados conceptuales
+7 estados de readiness
+6 niveles de prioridad
+0 instancias runtime en el contrato estático
+0 catálogo estático de work_item_id
+```
+
+No se añaden identidades ni miembros locales para facilitar la UI.
+
+---
+
+#### 8. Los 29 campos contractuales
+
+La proyección transversal reconoce que el contrato de origen puede contener exactamente estos nombres:
+
+```text
+work_item_id
+process_id
+process_instance_id
+process_step
+owner_app_code
+source_ref
+work_item_type
+work_lane
+status
+readiness_status
+assignment_mode
+assigned_actor_ref
+eligible_actor_set_ref
+queue_ref
+required_context_ref
+required_permission_ref
+resource_ref
+location_ref
+available_at
+due_at
+priority_class
+priority_policy_version
+blocking_refs
+next_action_code
+work_item_version
+claim_or_lease_ref
+idempotency_scope
+created_at
+updated_at
+```
+
+Que un campo exista en el contrato no significa que deba exponerse al cliente o al trabajador.
+
+La proyección de presentación aplica minimización.
+
+---
+
+#### 9. Las ocho clases preservadas
+
+La tarea no modifica las ocho clases:
+
+```text
+EXECUTE_STEP
+VERIFY_STEP
+HANDOFF_ACCEPTANCE
+PERSONAL_OBLIGATION
+SUPERVISORY_RESPONSE
+SAFETY_RESPONSE
+FOLLOW_UP
+RECOVERY
+```
+
+La clase no es permiso, rol, prioridad, aplicación, estado ni título humano.
+
+SHELL no infiere una etiqueta visible únicamente desde el nombre técnico de la clase.
+
+---
+
+#### 10. Los dieciséis estados preservados
+
+La tarea conserva:
+
+```text
+NOT_READY
+AVAILABLE
+OFFERED
+ASSIGNED
+CLAIMED
+IN_PROGRESS
+WAITING
+BLOCKED
+PAUSED
+COMPLETION_PENDING_SYNC
+COMPLETED
+CANCELLED
+SUPERSEDED
+EXPIRED
+CONFLICT
+RECONCILIATION_REQUIRED
+```
+
+No se colapsan silenciosamente.
+
+En particular:
+
+```text
+WAITING ≠ BLOCKED
+PAUSED ≠ WAITING
+COMPLETION_PENDING_SYNC ≠ COMPLETED
+CONFLICT ≠ BLOCKED
+RECONCILIATION_REQUIRED ≠ COMPLETED
+```
+
+---
+
+#### 11. Los siete estados de readiness preservados
+
+La tarea conserva:
+
+```text
+EXECUTABLE_NOW
+VISIBLE_NOT_EXECUTABLE
+WAITING_EXTERNAL
+BLOCKED_RECOVERABLE
+BLOCKED_REQUIRES_OTHER_ACTOR
+STALE_REQUIRES_REFRESH
+NOT_ELIGIBLE
+```
+
+Regla crítica:
+
+```text
+VISIBLE
+≠
+EXECUTABLE
+≠
+AUTORIZADO IRREVOCABLEMENTE
+```
+
+La acción efectiva siempre pertenece a la aplicación propietaria y se revalida allí.
+
+---
+
+#### 12. Los seis niveles de prioridad preservados
+
+SHELL no crea un score visual propio.
+
+Conserva la precedencia conceptual ya aprobada:
+
+```text
+0 → seguridad, emergencia o custodia crítica
+1 → trabajo ya en ejecución que debe continuar
+2 → compromiso inmediato con cliente, producción, entrega o cadena
+3 → tarea asignada con vencimiento o bloqueo de terceros
+4 → tarea disponible priorizada por política
+5 → mantenimiento, seguimiento o trabajo sin urgencia
+```
+
+La UI no reprioriza usando:
+
+- `created_at`;
+- color;
+- orden recibido;
+- nombre de aplicación;
+- posición en un array;
+- nombre del rol;
+- tamaño del badge;
+- orden manual local;
+- score opaco de frontend.
+
+---
+
+#### 13. `work_item_id` como referencia opaca
+
+`work_item_id` identifica una obligación runtime concreta.
+
+SHELL no deduce desde ese valor proceso, aplicación, actor, permiso, territorio, prioridad, estado, tipo ni recurso.
+
+Conocer `work_item_id` no concede autorización para verlo, reclamarlo, iniciarlo, completarlo o cancelarlo.
+
+La serialización concreta permanece fuera del alcance de esta tarea.
+
+---
+
+#### 14. Propiedad empresarial
+
+Cada obligación conserva:
+
+```text
+owner_app_code
+```
+
+La aplicación propietaria mantiene autoridad sobre estado, versión, transición, claim, lease, ejecución, finalización, cancelación, reglas funcionales y revalidación.
+
+SHELL muestra una proyección.
+
+No adquiere propiedad por mostrarla.
+
+---
+
+#### 15. SHELL como coordinador, no propietaria universal
+
+El contrato de ownership vigente conserva:
+
+```text
+shell
+→ AppCode canónico
+→ coordinador transversal
+→ 0 procesos empresariales propios en el corte vigente
+```
+
+Por tanto:
+
+```text
+SHELL MUESTRA
+SHELL ORIENTA
+SHELL NAVEGA
+```
+
+pero no:
+
+```text
+SHELL REESCRIBE ESTADO PRIVADO DE LA APP PROPIETARIA
+SHELL COMPLETA EL PROCESO AJENO
+SHELL ASUME OWNERSHIP
+```
+
+---
+
+#### 16. Fuente de verdad de la proyección
+
+La futura materialización debe consumir una proyección server-side autorizada de ítems reales.
+
+SHELL no construirá tareas consultando de forma ad hoc tablas privadas de cada aplicación para localizar registros con palabras como:
+
+```text
+pending
+requested
+open
+draft
+waiting
+```
+
+La presencia de un estado empresarial pendiente no demuestra por sí sola que exista un `work_item` asignable o visible para el actor.
+
+---
+
+#### 17. Región `Trabajo pendiente`
+
+La superficie transversal se denomina conceptualmente:
+
+```text
+Trabajo pendiente
+```
+
+y permanece separada de:
+
+```text
+Contexto laboral
+```
+
+La región `Contexto laboral` responde:
+
+```text
+¿BAJO QUÉ CONTEXTO ESTOY?
+```
+
+La región `Trabajo pendiente` responde:
+
+```text
+¿QUÉ OBLIGACIONES DEBO ATENDER?
+```
+
+No se mezclan en una sola tarjeta ni se presentan como si turno, sede, área o rol fueran tareas.
+
+---
+
+#### 18. Jerarquía de presentación
+
+La superficie conserva cuatro grupos semánticos:
+
+```text
+AHORA
+DESPUÉS
+EN ESPERA
+BLOQUEADAS
+```
+
+El objetivo es orientar.
+
+No se presenta una lista plana donde todas las obligaciones compitan con el mismo peso visual.
+
+---
+
+#### 19. `AHORA`
+
+`AHORA` contiene como máximo un foco principal.
+
+La selección debe proceder de la política canónica de foco y prioridad.
+
+Reglas:
+
+1. una obligación válida ya iniciada permanece como foco por defecto;
+2. una prioridad excepcional aprobada puede desplazarla según el contrato propietario;
+3. la UI no elige el primer elemento recibido;
+4. la UI no elige la aplicación favorita;
+5. la UI no usa vencimiento aislado como algoritmo completo;
+6. la UI no inventa foco cuando no existe candidato confiable.
+
+Si no existe foco ejecutable o legítimamente visible, `AHORA` presenta un estado humano, no una tarea fabricada.
+
+---
+
+#### 20. Trabajo ya en ejecución
+
+Cuando existe una obligación válida con continuidad en ejecución, SHELL la preserva como foco visual mientras la proyección vigente así lo indique.
+
+Esta tarea no implementa la persistencia cross-app del trabajo en curso.
+
+La conservación técnica de una tarea al navegar pertenece a:
+
+```text
+SHELL-APP-016 — Conservar tarea en curso cuando corresponda
+```
+
+`SHELL-APP-008` únicamente define cómo se representa una tarea en curso cuando la proyección vigente la identifica.
+
+---
+
+#### 21. `DESPUÉS`
+
+`DESPUÉS` resume obligaciones válidas que permanecen relevantes para el actor pero no son el foco actual.
+
+Puede contener trabajo disponible, asignado, ofrecido, programado para una disponibilidad posterior, compatible con una transición futura o priorizado después del foco.
+
+La superficie conserva orden canónico, vencimiento cuando exista, aplicación propietaria, estado público e incompatibilidad contextual relevante cuando deba conocerse.
+
+No crea una segunda acción primaria que compita con `AHORA`.
+
+---
+
+#### 22. `EN ESPERA`
+
+`EN ESPERA` conserva obligaciones cuyo progreso depende de una condición temporal, un tercero, un evento externo, sincronización, una reactivación explícita u otra condición de salida definida por el propietario.
+
+`WAITING` no se presenta como `BLOCKED`.
+
+`COMPLETION_PENDING_SYNC` tampoco se presenta como `COMPLETED`.
+
+La tarea en espera conserva visibilidad suficiente para que el actor comprenda que la obligación existe y por qué no requiere acción inmediata.
+
+---
+
+#### 23. `BLOQUEADAS`
+
+`BLOQUEADAS` conserva obligaciones que requieren tratamiento antes de continuar.
+
+Puede representar de forma segura estados asociados con bloqueo recuperable, necesidad de otro actor, conflicto, reconciliación requerida o contexto/versión que exige refresco cuando el propietario mantenga visible la obligación.
+
+La proyección muestra una causa pública mínima y el responsable o condición de salida cuando exista esa información autorizada.
+
+No expone `blocking_refs` crudos como texto para el usuario.
+
+---
+
+#### 24. Estado terminal
+
+Los estados:
+
+```text
+COMPLETED
+CANCELLED
+SUPERSEDED
+EXPIRED
+```
+
+no se mantienen como trabajo pendiente ordinario después de que la proyección autoritativa los retire del conjunto pendiente.
+
+Si uno de esos estados origina una obligación de recuperación, seguimiento o reconciliación, esa obligación debe existir como `work_item` propio conforme al contrato.
+
+SHELL no resucita una tarea terminal porque permanezca en caché.
+
+---
+
+#### 25. Ausencia legítima de trabajo
+
+SHELL puede afirmar:
+
+```text
+Sin tareas pendientes
+```
+
+únicamente cuando la proyección server-side válida demuestra que el actor fue resuelto, el universo aplicable fue consultado conforme al contrato, la proyección es vigente, no existen obligaciones visibles pendientes y no se está ocultando un fallo de una fuente propietaria.
+
+Cero elementos por error no equivale a cero trabajo.
+
+---
+
+#### 26. Trabajo no disponible
+
+Cuando la proyección no puede resolverse con confianza, SHELL utiliza un estado diferente:
+
+```text
+Tareas pendientes no disponibles
+```
+
+No usa `Sin tareas pendientes` ante backend no disponible, contrato incompatible, proyección inválida, fuente incompleta no declarada, respuesta stale, actor ambiguo o fallo de integración que impide certificar completitud.
+
+Ausencia e indisponibilidad permanecen separadas.
+
+---
+
+#### 27. Proyección parcial
+
+Si la infraestructura futura admite resultados parciales por aplicaciones propietarias, SHELL solo podrá mostrar un resultado parcial cuando la propia respuesta declare su incompletitud.
+
+Ejemplo conceptual:
+
+```text
+Trabajo pendiente
+Datos incompletos
+3 tareas visibles
+1 fuente no disponible
+```
+
+Queda prohibido convertir silenciosamente:
+
+```text
+APP PROPIETARIA NO RESPONDIÓ
+→
+0 TAREAS EN ESA APP
+```
+
+Un resultado parcial nunca habilita la etiqueta global `Sin tareas pendientes`.
+
+---
+
+#### 28. Tareas futuras
+
+Una obligación futura no se presenta como foco actual solo por existir.
+
+Puede aparecer resumida en `DESPUÉS` cuando su existencia sea legítimamente visible, `available_at` o su condición de disponibilidad sean confiables, mostrarla ayude a orientar al actor y la política propietaria permita esa proyección.
+
+No se inventa cuenta regresiva cuando no existe una fuente temporal autorizada.
+
+---
+
+#### 29. Contexto incompatible
+
+Una obligación puede seguir siendo visible y no ser ejecutable en el contexto actual.
+
+La interfaz puede informar conceptualmente:
+
+```text
+Visible
+No disponible en este contexto
+```
+
+cuando la proyección autorizada así lo determine.
+
+SHELL no cambia automáticamente turno, sede, área, rol operativo, actor, dispositivo o filtro administrativo para volver ejecutable la tarea.
+
+---
+
+#### 30. Permiso insuficiente y elegibilidad
+
+SHELL no convierte una obligación `NOT_ELIGIBLE` en una acción disponible.
+
+Tampoco infiere elegibilidad desde rol visible, aplicación visible, pertenencia a una sede, acceso previo, tarjeta habilitada o navegación exitosa.
+
+La proyección server-side determina qué información puede mostrarse y con qué readiness.
+
+La aplicación propietaria revalida de nuevo antes de producir efectos.
+
+---
+
+#### 31. Apertura no equivale a claim
+
+Abrir una tarea desde SHELL:
+
+```text
+≠ OFFER
+≠ ASSIGNMENT
+≠ CLAIM
+≠ IN_PROGRESS
+≠ COMPLETION
+```
+
+La navegación no modifica el estado del `work_item`.
+
+Si el proceso necesita claim, este ocurre en la autoridad propietaria mediante su mecanismo atómico e idempotente.
+
+---
+
+#### 32. Acción primaria
+
+El foco puede ofrecer una única acción primaria humana, normalmente orientada a abrir la superficie propietaria adecuada.
+
+La etiqueta debe expresar acción y objeto cuando sea necesario.
+
+Ejemplos conceptuales:
+
+```text
+Preparar remisión
+Revisar solicitud
+Aceptar entrega
+Continuar producción
+Resolver bloqueo
+```
+
+No se usa como etiqueta primaria un código técnico como:
+
+```text
+next_action_code
+EXECUTE_STEP
+AVAILABLE
+```
+
+El código canónico puede respaldar la proyección, pero la etiqueta humana procede de metadata autorizada.
+
+---
+
+#### 33. Navegación hacia la aplicación propietaria
+
+La secuencia conceptual es:
+
+```text
+SHELL
+→ muestra proyección segura
+→ resuelve destino autorizado
+→ navega con referencias no secretas permitidas
+→ aplicación propietaria
+→ revalida actor
+→ revalida contexto
+→ revalida permiso
+→ revalida work_item y versión
+→ decide la acción efectiva
+```
+
+El deep link no transporta autoridad.
+
+---
+
+#### 34. Datos prohibidos en enlaces
+
+SHELL no coloca en URL o estado de navegación como autoridad permisos concedidos, roles efectivos, actor autoritativo, claims, leases, tokens de capacidad, secretos, prioridad efectiva manipulable, estado objetivo, decisión `ALLOW` reutilizable ni evidencia sensible.
+
+Una referencia opaca no secreta puede viajar solo cuando el contrato de handoff o navegación aplicable la permita.
+
+---
+
+#### 35. View model local de presentación
+
+Una futura materialización puede construir server-side un view model reducido equivalente a:
+
+```text
+surface_state
+focus
+  public_title
+  public_summary
+  owner_app
+  public_status
+  public_readiness
+  due_label
+  primary_action_label
+  safe_destination
+queues
+  after_count
+  waiting_count
+  blocked_count
+  items
+projection_freshness
+projection_completeness
+```
+
+Esta forma es local a presentación.
+
+No modifica `@vento/contracts/work-items`.
+
+No es un contrato de autorización ni una fuente de verdad empresarial.
+
+---
+
+#### 36. Minimización de datos
+
+La UI no necesita exponer de forma ordinaria:
+
+- `work_item_id`;
+- `process_instance_id`;
+- `assigned_actor_ref`;
+- `eligible_actor_set_ref`;
+- `queue_ref`;
+- `required_permission_ref`;
+- `claim_or_lease_ref`;
+- `idempotency_scope`;
+- `blocking_refs`;
+- metadata interna de resolución;
+- fingerprints;
+- secretos;
+- SQLSTATE;
+- errores crudos.
+
+Los identificadores necesarios para navegación o correlación pueden mantenerse server-side o transportarse mediante una referencia segura aprobada.
+
+---
+
+#### 37. Título humano del trabajo
+
+El título visible no se deriva automáticamente del nombre de tabla, endpoint, evento, permiso, estado, clase, ruta o aplicación.
+
+La aplicación propietaria o el contrato de proyección aporta un descriptor humano estable.
+
+Ejemplo válido:
+
+```text
+Preparar remisión
+```
+
+No:
+
+```text
+inventory_remission status=requested
+```
+
+---
+
+#### 38. Aplicación propietaria visible
+
+Cada tarea puede mostrar un descriptor humano de su aplicación propietaria cuando ayude a comprender el origen.
+
+La identidad se resuelve desde el catálogo canónico de `AppCode`.
+
+SHELL no mantiene otra lista local de nombres de aplicaciones para esta superficie.
+
+---
+
+#### 39. Conteos y badges
+
+Los conteos de `DESPUÉS`, `EN ESPERA` y `BLOQUEADAS` se calculan sobre exactamente el mismo universo visible usado para renderizar los ítems.
+
+Queda prohibido:
+
+```text
+badge = 12
+lista visible = 3
+```
+
+cuando los nueve restantes sean objetos que el actor no está autorizado a conocer.
+
+Un conteo no puede filtrar la existencia de trabajo oculto.
+
+---
+
+#### 40. Filtro por aplicación
+
+Esta tarea no exige un selector de aplicación.
+
+Si una futura presentación ofrece agrupación o filtro visual por aplicación, este opera únicamente sobre la proyección ya autorizada.
+
+No consulta trabajo adicional, no cambia elegibilidad, no cambia prioridad canónica y no cambia ownership.
+
+---
+
+#### 41. Relación con la visibilidad de aplicaciones
+
+`SHELL-APP-002` y `SHELL-APP-003` conservan autoridad sobre aplicaciones visibles por actor y contexto.
+
+`SHELL-APP-008` no recalcula esa política.
+
+Una obligación visible cuyo destino no sea actualmente ejecutable no autoriza a SHELL a habilitar una aplicación.
+
+La proyección expresa el estado aplicable y la aplicación propietaria resuelve la entrada cuando corresponda.
+
+---
+
+#### 42. Relación con `Contexto laboral`
+
+Los cuatro segmentos de contexto ya aprobados pueden ayudar al actor a entender por qué una tarea está o no disponible.
+
+Pero `Turno`, `Sede`, `Área` y `Rol operativo` no se copian dentro de cada tarea como autoridad independiente.
+
+La tarea pendiente y el contexto laboral se consumen como proyecciones coherentes, sin duplicar fuentes de verdad.
+
+---
+
+#### 43. Snapshot y coherencia
+
+Cuando una tarea se presenta como ejecutable bajo un contexto operativo, la proyección debe corresponder a una resolución coherente de actor, contexto y trabajo.
+
+SHELL no mezcla:
+
+```text
+actor del snapshot A
++
+contexto del snapshot B
++
+work item del snapshot C
+```
+
+como si fueran una sola realidad vigente.
+
+La futura implementación define su mecanismo exacto de composición y frescura.
+
+---
+
+#### 44. Frescura
+
+Una proyección obsoleta no conserva autoridad visual para iniciar trabajo.
+
+Cuando la fuente declara:
+
+```text
+STALE_REQUIRES_REFRESH
+```
+
+SHELL no ofrece el ítem como ejecutable.
+
+Puede mostrar un estado humano como `Actualizar para continuar` sin convertir el refresh en una reautorización implícita.
+
+Esta tarea no define TTL.
+
+---
+
+#### 45. Cambio de actor
+
+En un dispositivo compartido, cuando cambia el actor efectivo:
+
+1. se descarta el foco visible del actor anterior;
+2. se descartan sus colas personales;
+3. no se heredan claims;
+4. no se heredan borradores;
+5. no se conserva un badge calculado para el actor anterior;
+6. se resuelve una nueva proyección.
+
+La sesión técnica del dispositivo no se convierte en el actor empresarial.
+
+---
+
+#### 46. Cola de estación versus cola del actor
+
+Cuando exista una estación compartida, la semántica mantiene separadas:
+
+```text
+cola de estación
+actor humano
+foco del actor
+sesión técnica
+```
+
+Una cola de estación puede exponer una proyección mínima permitida.
+
+No atribuye obligaciones personales al dispositivo.
+
+La composición física exacta pertenece a las tareas de estaciones compartidas.
+
+---
+
+#### 47. Simulación
+
+Una simulación no reemplaza la cola real del actor.
+
+```text
+SimulationContext
+≠
+AccessContext real
+```
+
+Si una futura superficie administrativa permite simular trabajo, deberá estar claramente diferenciada y gobernada por sus tareas de simulación.
+
+`SHELL-APP-008` define exclusivamente la proyección real del actor efectivo.
+
+---
+
+#### 48. Estado inicial de carga
+
+Antes de disponer de una proyección válida, SHELL no muestra prematuramente `Sin tareas pendientes`.
+
+La fase de resolución puede representarse como carga o estado neutro.
+
+El resultado final solo se afirma después de resolver la proyección.
+
+Esta tarea no prescribe spinner, skeleton, animación ni duración.
+
+---
+
+#### 49. Actualización de la proyección
+
+Cuando se recibe una nueva proyección válida:
+
+- reemplaza la anterior de manera coherente;
+- no conserva ítems terminales retirados;
+- no conserva counts anteriores;
+- no conserva el foco del actor anterior;
+- no conserva disponibilidad anterior si cambió readiness;
+- no mezcla dos versiones del mismo `work_item`.
+
+La estrategia física de invalidación, Realtime, polling o cache no se define aquí.
+
+---
+
+#### 50. Fallo de una aplicación propietaria
+
+Un fallo al obtener trabajo de una propietaria no concede a SHELL permiso para consultar tablas privadas como fallback, reconstruir tareas por status, reutilizar una respuesta antigua como vigente, marcar la fuente con cero pendientes ni cambiar el `owner_app_code`.
+
+SHELL conserva el fallo como indisponibilidad o incompletitud de la proyección según el contrato aplicable.
+
+---
+
+#### 51. Errores públicos
+
+La superficie no muestra stack traces, SQLSTATE, nombres de tabla, nombres de RPC, payloads, tokens ni excepciones crudas.
+
+Presenta estados humanos suficientes para distinguir:
+
+```text
+Sin tareas pendientes
+Tareas pendientes no disponibles
+Datos incompletos
+En espera
+Bloqueada
+Actualizar para continuar
+```
+
+El catálogo detallado de mensajes pertenece a sus contratos propietarios.
+
+---
+
+#### 52. Frontera con `SHELL-APP-009`
+
+Esta tarea no decide qué URL es la página inicial, qué tipo de usuario aterriza primero en qué superficie, si `Trabajo pendiente` precede visualmente al launcher para todos, si un actor administrativo entra a una vista diferente, si un trabajador operativo es redirigido ni qué variante de home se usa por tipo de usuario.
+
+Eso pertenece a:
+
+```text
+SHELL-APP-009 — Definir página inicial por tipo de usuario
+```
+
+`SHELL-APP-008` define la semántica de la superficie de trabajo pendiente que `SHELL-APP-009` podrá ubicar o priorizar.
+
+---
+
+#### 53. Frontera con `SHELL-APP-010`
+
+Esta tarea puede mostrar el estado público de un `work_item`:
+
+```text
+ejecutable
+en espera
+bloqueado
+stale
+no disponible
+```
+
+No define la explicación completa de por qué una aplicación está bloqueada.
+
+Esa responsabilidad pertenece a:
+
+```text
+SHELL-APP-010 — Explicar por qué una aplicación está bloqueada
+```
+
+La causa mínima de una tarea bloqueada y la explicación de acceso a una aplicación son responsabilidades distintas.
+
+---
+
+#### 54. Frontera con `SHELL-APP-011` y `SHELL-APP-012`
+
+Esta tarea no redefine qué aplicaciones laborales ve un trabajador, qué superficie cliente ve un usuario de Vento Pass, la frontera empleado versus cliente ni la identidad aceptada por cada aplicación.
+
+La cola transversal consume únicamente obligaciones que la resolución autorizada haya determinado visibles para el actor efectivo.
+
+---
+
+#### 55. Frontera con `SHELL-APP-013`
+
+SHELL no absorbe lógica funcional de NEXO, FOGO, ORIGO, PULSO, VISO, ANIMA, NUMERA, AURA o PASS.
+
+La creación, transición y finalización de cada obligación permanece en su propietaria.
+
+`SHELL-APP-013` conserva la responsabilidad de impedir que el Hub replique lógica propia de otras aplicaciones.
+
+---
+
+#### 56. Frontera con `SHELL-APP-014`
+
+Esta tarea permite conceptualizar una navegación segura hacia la propietaria.
+
+No define retorno a SHELL, conservación de origen, handoff completo, callback, breadcrumbs cross-app ni política de `returnTo`.
+
+El retorno seguro entre aplicaciones pertenece a `SHELL-APP-014`.
+
+---
+
+#### 57. Frontera con `SHELL-APP-015`
+
+La tarea no define todavía cómo se conserva contexto al cambiar de aplicación.
+
+Un deep link a la propietaria no autoriza a transportar actor, rol, sede, área o permiso como autoridad.
+
+La conservación de contexto pertenece a `SHELL-APP-015`.
+
+---
+
+#### 58. Frontera con `SHELL-APP-016`
+
+Esta tarea puede mostrar un `IN_PROGRESS` vigente como foco.
+
+No define la mecánica para conservar o reanudar ese trabajo durante navegación.
+
+Esa responsabilidad pertenece a `SHELL-APP-016`.
+
+---
+
+#### 59. Frontera con `SHELL-APP-017` y `SHELL-APP-018`
+
+La semántica `AHORA`, `DESPUÉS`, `EN ESPERA` y `BLOQUEADAS` es independiente del tamaño de pantalla.
+
+Esta tarea no define columnas finales, breakpoints, densidad final, interacción final en computador, interacción final en tablet, gestos, tamaños definitivos ni componentes visuales finales.
+
+Esas decisiones permanecen en las tareas de experiencia por dispositivo.
+
+---
+
+#### 60. Accesibilidad
+
+La prioridad y estado del trabajo no dependen únicamente de color, icono, posición, animación, sonido o vibración.
+
+Debe existir texto o semántica accesible para distinguir foco, siguiente trabajo, espera, bloqueo, indisponibilidad, stale, aplicación propietaria y acción principal.
+
+El orden visual debe conservar un orden semántico comprensible.
+
+---
+
+#### 61. Privacidad
+
+SHELL aplica minimización por actor.
+
+La superficie no revela por conteos, títulos o metadata trabajo de otro empleado, contenido de otra cola no visible, nombres sensibles, recursos fuera de alcance ni existencia de procesos que el actor no deba conocer.
+
+Cambiar de actor exige recalcular la proyección.
+
+---
+
+#### 62. No mutación desde la superficie transversal
+
+`SHELL-APP-008` no crea botones de negocio para completar, aprobar, rechazar, cancelar, reasignar, reclamar, liberar claim, pausar, reanudar o transferir custodia.
+
+La acción primaria de SHELL es navegación u orientación hacia la propietaria.
+
+Una mutación empresarial futura dentro de SHELL requeriría una responsabilidad canónica explícita diferente.
+
+---
+
+#### 63. Sin motor de workflow
+
+Esta tarea no crea scheduler, worker, motor BPM, cola técnica, inbox, outbox, broker, topic, lease manager, claim engine, tabla universal de tareas ni RPC universal de tareas.
+
+El contrato estático compartido tampoco materializa instancias runtime por sí solo.
+
+---
+
+#### 64. Sin persistencia universal
+
+SHELL no crea una copia mutable central de todas las obligaciones únicamente para renderizar el Hub.
+
+Una futura arquitectura puede usar referencia, proyección, caché controlada o resultado derivado siempre que conserve ownership, frescura y fuente de verdad.
+
+La elección física queda fuera de esta tarea.
+
+---
+
+#### 65. Ejemplo conceptual de presentación
+
+Una composición válida puede expresar:
+
+```text
+Trabajo pendiente
+
+AHORA
+Preparar remisión
+NEXO
+Vence 10:30
+[Abrir en NEXO]
+
+DESPUÉS · 3
+- Revisar solicitud
+- Confirmar recepción
+- Seguimiento pendiente
+
+EN ESPERA · 1
+- Esperando condición externa
+
+BLOQUEADAS · 1
+- Requiere intervención
+```
+
+Los textos son ejemplos de estructura.
+
+No representan instancias runtime reales ni datos sembrados.
+
+---
+
+#### 66. Decisión documental consolidada
+
+```text
+TRABAJO PENDIENTE
+→ work_item real
+→ fuente canónica
+→ propietaria explícita
+→ actor/cola elegible
+→ estado/readiness vigentes
+→ prioridad canónica
+→ proyección server-side segura
+
+SHELL
+→ agrega orientación cross-app
+→ muestra 1 foco principal
+→ resume Después / En espera / Bloqueadas
+→ muestra propietaria
+→ navega de forma segura
+
+SHELL
+X crea work_item
+X toma claim por abrir
+X completa workflow ajeno
+X cambia ownership
+X reautoriza desde cliente
+X infiere tareas desde status de tablas
+X trata alertas como tareas
+X trata fallos de fuente como cero pendientes
+
+SIN TRABAJO
+≠
+TRABAJO NO DISPONIBLE
+
+WAITING
+≠
+BLOCKED
+
+VISIBLE
+≠
+EXECUTABLE
+≠
+AUTORIZADO IRREVOCABLEMENTE
+```
+
+---
+
+#### 67. Handoff a `SHELL-APP-009`
+
+La siguiente tarea recibe:
+
+1. una región `Contexto laboral` cerrada con `Turno`, `Sede`, `Área` y `Rol operativo`;
+2. una superficie separada `Trabajo pendiente`;
+3. semántica transversal basada exclusivamente en `work_item` reales;
+4. `AHORA` con máximo un foco principal;
+5. colas secundarias `DESPUÉS`, `EN ESPERA` y `BLOQUEADAS`;
+6. prioridad canónica, no ranking local;
+7. ownership conservado en `owner_app_code`;
+8. SHELL como coordinador y proyección, no propietaria universal;
+9. apertura que no implica claim ni inicio;
+10. navegación hacia propietaria con revalidación;
+11. separación entre ausencia, indisponibilidad e incompletitud;
+12. minimización y counts sin fuga de trabajo oculto;
+13. frescura y cambio de actor sin herencia de tareas;
+14. prohibición de mezclar trabajo pendiente con `Contexto laboral`;
+15. prohibición de decidir todavía la página inicial por tipo de usuario.
+
+`SHELL-APP-009` podrá decidir la entrada inicial de cada tipo de usuario sin reabrir la semántica de los ítems de trabajo.
+
+---
+
+#### 68. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa en SHELL una semántica ya gobernada por `UX-BASE-002`, `SHELL-CON-015` y `SHELL-CON-016`.
+
+No modifica el contrato estático de ítems de trabajo, el universo de estados, readiness, prioridad, ownership, handoff, autorización ni el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 69. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-UX-024` — el foco procede de un ítem de trabajo real y no de alertas, menús o registros recientes;
+- `TREQ-UX-025` — elegibilidad, asignación, oferta, claim, inicio, pausa y finalización permanecen separadas;
+- `TREQ-UX-026` — prioridad determinista, versionada y explicable;
+- `TREQ-UX-027` — precedencia de seguridad sin bypass de controles;
+- `TREQ-UX-028` — continuidad del trabajo ya iniciado;
+- `TREQ-UX-029` — foco principal y colas `Ahora`, `Después`, `En espera` y `Bloqueadas`;
+- `TREQ-UX-030` — una acción primaria humana y reautorización propietaria;
+- `TREQ-UX-031` — separación de `WAITING` y `BLOCKED`;
+- `TREQ-UX-032` — handoffs sin recepción o custodia ficticias;
+- `TREQ-UX-033` — separación de estación, actor, foco y sesión técnica;
+- `TREQ-UX-034` — SHELL puede proyectar y navegar, pero la propietaria revalida y ejecuta;
+- `TREQ-UX-035` — claim atómico e idempotente cuando aplique;
+- `TREQ-UX-036` — frescura, offline y revalidación;
+- `TREQ-UX-037` — estados vacíos y de contexto diferenciados sin inventar trabajo;
+- `TREQ-UX-038` — accesibilidad y señales redundantes;
+- `TREQ-UX-039` — métricas de foco interpretadas con contexto y guardrails;
+- `TREQ-UX-040` — eventos correlacionados y apertura distinta de inicio.
+
+Esta sección es trazabilidad heredada.
+
+No actualiza 04A.
+
+---
+
+#### 70. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado ni sometido a la batería documental del checkout local de `SHELL-APP-008`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía format, quality, delivery, validadores de dominio ni batería global sobre la rama local de `SHELL-APP-008`. |
+| REMOTA | PASS | Se verificaron `main` posterior al cierre de `SHELL-APP-007`, continuidad H2, owner vigente, topología `PER_IMPLEMENTATION_UNIT`, protocolo y contrato de entrega, políticas documentales, `UX-BASE-002`, `SHELL-CON-015::GLOBAL`, contrato materializado `@vento/contracts/work-items`, `SHELL-CON-016::GLOBAL`, 04A UX vigente y runtime AS-IS de SHELL. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define presentación documental y no prueba colas, claims, prioridades, usuarios, work items o procesos reales en un ambiente desplegado. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea ni autoriza una instancia física `SHELL-APP-008::<implementation_unit_id>` y no modifica runtime, infraestructura, datos ni despliegues. |
+
+---
+
+#### 71. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-008 — Mostrar tareas pendientes transversales`.
+- [ ] `SHELL-APP-007` permanece como tarea anterior.
+- [ ] `SHELL-APP-009` permanece como siguiente tarea.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] La futura topología permanece `PER_IMPLEMENTATION_UNIT` sin crear instancia física.
+- [ ] `Trabajo pendiente` permanece separado de `Contexto laboral`.
+- [ ] Una tarea visible deriva de un `work_item` real.
+- [ ] Alertas, notificaciones, mensajes, menús y registros recientes no se convierten en tareas por sí solos.
+- [ ] El backlog documental y técnico de Vento OS no se presenta como trabajo empresarial del actor.
+- [ ] Se preservan exactamente 29 campos contractuales del contrato compartido.
+- [ ] Se preservan exactamente 8 clases de work item.
+- [ ] Se preservan exactamente 16 estados.
+- [ ] Se preservan exactamente 7 estados de readiness.
+- [ ] Se preservan exactamente 6 niveles de prioridad.
+- [ ] No se crea un catálogo estático de `work_item_id`.
+- [ ] `work_item_id` permanece referencia opaca.
+- [ ] `owner_app_code` conserva la propietaria empresarial.
+- [ ] SHELL no se convierte en propietaria universal.
+- [ ] SHELL no crea work items desde registros con status pendiente.
+- [ ] SHELL no consulta tablas privadas como fallback para fabricar tareas.
+- [ ] `AHORA` contiene máximo un foco principal.
+- [ ] Un trabajo válido en ejecución conserva precedencia por defecto según la política canónica.
+- [ ] `DESPUÉS` no compite visualmente con el foco.
+- [ ] `WAITING` y `BLOCKED` permanecen diferenciados.
+- [ ] `COMPLETION_PENDING_SYNC` no se presenta como completado.
+- [ ] Estados terminales no permanecen en la cola por caché.
+- [ ] `Sin tareas pendientes` exige una proyección válida y completa.
+- [ ] `Tareas pendientes no disponibles` se distingue de ausencia.
+- [ ] Un resultado parcial no se presenta como conjunto completo.
+- [ ] Una fuente propietaria fallida no equivale a cero tareas.
+- [ ] Las tareas futuras no se convierten en foco por existencia.
+- [ ] Un contexto incompatible no se corrige automáticamente desde SHELL.
+- [ ] `NOT_ELIGIBLE` no se convierte en acción disponible.
+- [ ] Abrir una tarea no produce claim ni inicio.
+- [ ] La acción primaria usa lenguaje humano.
+- [ ] Códigos técnicos no se muestran como CTA principal.
+- [ ] La aplicación propietaria revalida antes de ejecutar.
+- [ ] Deep links no transportan permiso, actor, token, estado objetivo ni prioridad como autoridad.
+- [ ] La proyección aplica minimización de datos.
+- [ ] Los títulos humanos no se derivan de tablas o estados técnicos.
+- [ ] La propietaria se identifica desde el catálogo canónico de aplicaciones.
+- [ ] Los badges usan el mismo universo visible que las listas.
+- [ ] Los counts no filtran trabajo oculto.
+- [ ] Un filtro visual futuro no amplía el universo autorizado.
+- [ ] La visibilidad de aplicaciones no se recalcula desde esta tarea.
+- [ ] Work item y contexto se presentan coherentemente sin mezclar snapshots incompatibles.
+- [ ] `STALE_REQUIRES_REFRESH` no se presenta como ejecutable.
+- [ ] No se inventa TTL.
+- [ ] Un cambio de actor descarta foco y colas anteriores.
+- [ ] Dispositivo, cola de estación y actor humano permanecen separados.
+- [ ] Simulación no reemplaza trabajo real.
+- [ ] La carga inicial no se presenta prematuramente como cero tareas.
+- [ ] Una nueva proyección sustituye coherentemente la anterior.
+- [ ] Un fallo de propietaria no dispara fallback a tablas privadas.
+- [ ] Los errores públicos no exponen detalles internos.
+- [ ] No se define la página inicial por tipo de usuario.
+- [ ] No se absorbe la explicación de bloqueo de aplicaciones.
+- [ ] No se redefine la frontera trabajador versus cliente.
+- [ ] No se absorbe lógica funcional propietaria.
+- [ ] No se define el retorno cross-app.
+- [ ] No se define conservación de contexto entre aplicaciones.
+- [ ] No se define conservación técnica de tarea en curso.
+- [ ] No se define layout final de computador o tablet.
+- [ ] La semántica es accesible y no depende solo del color.
+- [ ] No se exponen tareas de otros actores por títulos o counts.
+- [ ] La superficie transversal no ejecuta mutaciones empresariales.
+- [ ] No se crea motor de workflow ni persistencia universal.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se modifica código ni Supabase.
+- [ ] No se autoriza implementación física.
+
+---
+
+#### 72. Límites
+
+Esta tarea no:
+
+- modifica `@vento/contracts/work-items`;
+- modifica `SHELL-CON-015`;
+- modifica `SHELL-CON-016`;
+- modifica `UX-BASE-002`;
+- añade campos al contrato de work item;
+- crea `work_item_id`;
+- crea instancias runtime de tareas;
+- crea procesos;
+- crea estados de proceso;
+- crea acciones funcionales;
+- crea eventos empresariales;
+- crea handoffs;
+- crea ownership;
+- modifica prioridad;
+- implementa score de frontend;
+- crea claims;
+- crea leases;
+- crea scheduler;
+- crea worker;
+- crea motor de workflow;
+- crea inbox;
+- crea outbox;
+- crea colas técnicas;
+- crea tabla universal de tareas;
+- consulta tablas privadas como fuente alternativa;
+- completa, cancela, asigna o reasigna trabajo;
+- muta procesos de otras aplicaciones;
+- cambia contexto laboral;
+- cambia turno;
+- cambia sede;
+- cambia área;
+- cambia rol operativo;
+- modifica autorización;
+- modifica permisos;
+- modifica grants o denies;
+- modifica simulación;
+- define página inicial por tipo de usuario;
+- define explicación completa de bloqueo de aplicación;
+- redefine aplicaciones laborales o cliente;
+- replica lógica funcional propietaria;
+- define retorno seguro cross-app;
+- define conservación cross-app del contexto;
+- define conservación técnica de la tarea en curso;
+- define experiencia final de computador;
+- define experiencia final de tablet;
+- ejecuta pruebas finales de navegación;
+- define colores, iconos, animaciones o breakpoints finales;
+- define TTL, polling, Realtime o estrategia de caché;
+- modifica middleware;
+- modifica Server Actions;
+- modifica RPC;
+- modifica RLS;
+- modifica Auth;
+- modifica Supabase;
+- modifica datos;
+- crea migraciones;
+- crea despliegues;
+- crea o autoriza una instancia física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba;
+- desarrolla `SHELL-APP-009`.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-007 — Mostrar rol operativo activo`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-008 — Mostrar tareas pendientes transversales`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-009 — Definir página inicial por tipo de usuario`
