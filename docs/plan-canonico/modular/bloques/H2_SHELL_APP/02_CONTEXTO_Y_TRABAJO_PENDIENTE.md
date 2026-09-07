@@ -3223,5 +3223,1302 @@ Esta tarea no:
 `SHELL-APP-007 — Mostrar rol operativo activo`
 
 
-### [ ] SHELL-APP-007 — Mostrar rol operativo activo
+### ✅ SHELL-APP-007 — Mostrar rol operativo activo
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-006 — Mostrar área activa
+**Tarea siguiente:** SHELL-APP-008 — Mostrar tareas pendientes transversales
+**Tipo de tarea:** definición técnico-documental de la presentación del rol operativo efectivo dentro del contexto laboral de SHELL, preservando la separación entre rol base y rol operativo, el universo vigente de doce `OperationalRoleCode`, la compatibilidad territorial ya resuelta y la frontera server/client; el marcador canónico define una sola vez el contrato y su futura materialización conserva topología `PER_IMPLEMENTATION_UNIT`
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/02_CONTEXTO_Y_TRABAJO_PENDIENTE.md`
+**Estado físico resultante:** contrato documental de presentación de rol operativo definido y reconciliado con `AccessContext`, `OperationalRoleContext`, turno, sede y área operativas; runtime de SHELL sin modificaciones
+**Cambios físicos autorizados:** ninguno; no se modifican código, catálogos, contratos compartidos, turnos, permisos, Supabase, datos, navegación, despliegues ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo SHELL muestra el rol operativo efectivo del trabajador dentro de la región `Contexto laboral` sin convertir un texto visible, un código de rol o una selección de interfaz en autoridad.
+
+La tarea debe permitir que el actor comprenda qué función operativa está ejecutando en el turno vigente y, al mismo tiempo, conservar de forma estricta que:
+
+```text
+rol operativo visible
+=
+hecho de presentación
+
+rol operativo visible
+≠
+permiso
+≠
+identidad
+≠
+rol base
+≠
+autorización
+```
+
+La tarea no modifica cómo se resuelve el rol operativo.
+
+Únicamente define cómo se presenta de forma comprensible, coherente y segura dentro del Hub.
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-006`
+
+Se conserva sin reapertura:
+
+1. existe una región transversal `Contexto laboral`;
+2. el segmento `Turno` ya está definido;
+3. el segmento `Sede` ya separa canal administrativo y operativo;
+4. el segmento `Área` ya separa canal administrativo y operativo;
+5. un turno vigente puede existir antes del check-in;
+6. la sede operativa procede del turno;
+7. el área operativa específica procede del turno;
+8. un rol site-wide puede operar sin `area_id` específica cuando el contexto lo permite;
+9. `null` no funciona como wildcard;
+10. `area_kind` no sustituye `area_id`;
+11. turno, sede, área y rol operativo visibles deben proceder del mismo snapshot operativo;
+12. un valor visible nunca se convierte en autoridad.
+
+`SHELL-APP-007` agrega exclusivamente el segmento `Rol operativo`.
+
+---
+
+#### 3. Separación canónica entre rol base y rol operativo
+
+SHELL conserva:
+
+```text
+ROL BASE
+≠
+ROL OPERATIVO
+```
+
+El rol base representa una asignación laboral estable.
+
+El rol operativo representa la función temporal efectiva del actor durante un turno válido.
+
+Por tanto:
+
+```text
+employees.role
+→ rol base
+
+active_shift.operational_role_code
+→ rol operativo efectivo
+```
+
+La interfaz no fusiona ambos conceptos bajo una etiqueta genérica `Rol`.
+
+---
+
+#### 4. Fuente de verdad del rol operativo
+
+El rol operativo visible procede del contexto resuelto en servidor.
+
+Cadena conceptual:
+
+```text
+actor efectivo
+→ turno publicado y vigente
+→ operational_role_code
+→ OperationalRoleContext
+→ validación territorial
+→ rol operativo efectivo
+→ presentación en SHELL
+```
+
+La UI no consulta ni reconstruye el rol desde fuentes locales.
+
+---
+
+#### 5. Forma contractual consumida
+
+La tarea consume la forma vigente de `OperationalRoleContext`:
+
+```text
+role_code
+shift_id
+site_id
+area_id
+valid_for_site
+valid_for_area
+```
+
+Estos campos determinan identidad y coherencia del hecho operativo.
+
+No todos se muestran al trabajador.
+
+---
+
+#### 6. El rol deriva del turno
+
+La regla canónica permanece:
+
+```text
+turno válido
+→ operational_role_code
+→ rol operativo efectivo
+```
+
+Sin turno operativo válido no se crea un rol operativo mediante:
+
+- rol base;
+- perfil predeterminado;
+- último turno;
+- historial;
+- dispositivo;
+- selección del usuario;
+- query string;
+- cookie;
+- estado React;
+- simulación.
+
+---
+
+#### 7. El check-in no crea el rol
+
+El rol operativo puede existir antes del check-in cuando existe un turno vigente y confiable.
+
+Por tanto:
+
+```text
+Turno vigente
++
+Entrada pendiente
++
+OperationalRoleContext válido
+→ mostrar Rol operativo
+```
+
+El check-in puede formar parte de la disponibilidad de determinadas capacidades, pero no crea ni selecciona el rol del turno.
+
+---
+
+#### 8. Rol operativo con turno activo
+
+Cuando el segmento `Turno` muestra:
+
+```text
+Turno activo
+```
+
+y el rol operativo del mismo snapshot es válido, SHELL muestra el descriptor humano correspondiente.
+
+Ejemplo conceptual:
+
+```text
+Rol operativo
+Bodeguero
+```
+
+La presencia del rol no significa que todas las acciones propias de ese oficio estén autorizadas.
+
+---
+
+#### 9. Rol operativo con turno vigente antes del check-in
+
+Cuando el segmento `Turno` muestra:
+
+```text
+Turno vigente
+Entrada pendiente
+```
+
+SHELL puede mostrar simultáneamente:
+
+```text
+Rol operativo
+Producción panadería
+```
+
+si el rol ya fue resuelto de forma válida desde ese turno.
+
+No se oculta el rol hasta el check-in.
+
+---
+
+#### 10. Sin turno operativo válido
+
+Cuando la ausencia de turno vigente es legítima:
+
+```text
+operational_role = null
+```
+
+y no existe rol operativo efectivo.
+
+Estado humano:
+
+```text
+Sin rol operativo activo
+```
+
+La ausencia no se rellena con el rol base ni con el último rol conocido.
+
+---
+
+#### 11. Rol operativo no disponible
+
+Cuando existe una inconsistencia, ambigüedad o fallo que impide confiar en el rol operativo, SHELL no presenta una ausencia legítima.
+
+Estado humano:
+
+```text
+Rol operativo no disponible
+```
+
+Aplica, entre otros, cuando:
+
+- el turno es ambiguo o no resoluble;
+- el código de rol no pertenece al catálogo vigente;
+- el rol no es válido para la sede;
+- el rol no es válido para el área cuando corresponde;
+- el rol contradice el turno resuelto;
+- la respuesta contractual es inválida;
+- el backend no puede producir una proyección confiable;
+- el snapshot quedó obsoleto;
+- no puede resolverse un descriptor humano confiable.
+
+---
+
+#### 12. Ausencia e indisponibilidad son distintas
+
+La UI conserva:
+
+```text
+Sin rol operativo activo
+≠
+Rol operativo no disponible
+```
+
+`Sin rol operativo activo` afirma una ausencia legítima.
+
+`Rol operativo no disponible` afirma que SHELL no puede presentar el hecho de forma confiable.
+
+No se intercambian para simplificar mensajes.
+
+---
+
+#### 13. Universo vigente de roles operativos
+
+El universo canónico consumido por esta tarea contiene exactamente doce identidades:
+
+| `OperationalRoleCode` | Descriptor humano de presentación |
+| --- | --- |
+| `cajero_satelite` | `Cajero satélite` |
+| `barista_satelite` | `Barista satélite` |
+| `cocinero_satelite` | `Cocinero satélite` |
+| `servicio_salon` | `Servicio salón` |
+| `mostrador_satelite` | `Mostrador satélite` |
+| `operador_integral_satelite` | `Operador integral satélite` |
+| `produccion_cocina` | `Producción cocina` |
+| `produccion_panaderia` | `Producción panadería` |
+| `produccion_reposteria` | `Producción repostería` |
+| `bodeguero` | `Bodeguero` |
+| `conductor_logistica` | `Conductor logística` |
+| `gerencia_operativa` | `Gerencia operativa` |
+
+La tabla define únicamente la etiqueta humana de presentación para cada identidad contractual vigente.
+
+No agrega roles ni modifica grants.
+
+---
+
+#### 14. `propietario_admin` no pertenece al universo vigente
+
+`propietario_admin` no es un `OperationalRoleCode` vigente.
+
+Por tanto:
+
+```text
+propietario_admin
+→ no presentar como rol operativo válido
+```
+
+Si una fuente legacy o un payload incompatible lo entrega como rol operativo efectivo, SHELL no lo acepta por compatibilidad nominal.
+
+La presentación pasa a:
+
+```text
+Rol operativo no disponible
+```
+
+hasta que una resolución canónica válida produzca una de las doce identidades vigentes.
+
+---
+
+#### 15. Prohibición de códigos libres
+
+La UI no presenta como rol operativo válido un string arbitrario.
+
+Queda prohibido aceptar por presentación:
+
+```text
+barista_temporal
+bodeguero_auxiliar
+propietario_admin
+rol_personalizado
+texto_libre
+```
+
+La coincidencia debe ser exacta contra el universo canónico vigente.
+
+---
+
+#### 16. El descriptor humano no reemplaza el código canónico
+
+La autoridad contractual permanece en la identidad estable `role_code`.
+
+El descriptor:
+
+```text
+Bodeguero
+```
+
+es presentación.
+
+No se utiliza para evaluar permisos ni para reconstruir:
+
+```text
+bodeguero
+```
+
+mediante normalización de texto.
+
+Queda prohibido:
+
+```text
+"Bodeguero"
+→ lowercase
+→ quitar espacios
+→ asumir role_code
+```
+
+---
+
+#### 17. Sin humanización heurística del código
+
+SHELL no transforma automáticamente:
+
+```text
+produccion_panaderia
+```
+
+en una etiqueta mediante:
+
+- reemplazo de `_`;
+- capitalización;
+- traducción local;
+- diccionario incompleto;
+- nombre de rol base parecido;
+- lógica por prefijos.
+
+La etiqueta debe corresponder a la matriz documental definida por esta tarea o a una proyección equivalente derivada de la misma fuente versionada.
+
+---
+
+#### 18. Relación con sede operativa
+
+Un rol operativo visible debe ser coherente con la sede operativa del mismo snapshot.
+
+Debe cumplirse conceptualmente:
+
+```text
+OperationalRoleContext.site_id
+=
+OperationalSiteContext.site_id
+```
+
+cuando ambos están presentes.
+
+La UI no muestra un rol como válido si el contexto server-side lo clasifica como territorialmente incompatible.
+
+---
+
+#### 19. Relación con área operativa específica
+
+Cuando existe área operativa específica:
+
+```text
+OperationalRoleContext.area_id
+=
+OperationalAreaContext.area_id
+```
+
+y el rol debe ser válido para esa área según el contexto resuelto.
+
+SHELL no intenta corregir una incompatibilidad eligiendo otra área o rol.
+
+---
+
+#### 20. Relación con operación site-wide
+
+Una operación válida puede ser site-wide y no requerir `area_id` específica.
+
+En ese caso, el segmento `Área` conserva su estado site-wide y el segmento `Rol operativo` puede mostrar el rol válido del mismo turno.
+
+Queda prohibido inferir:
+
+```text
+area_id = null
+→ rol inválido
+```
+
+o:
+
+```text
+area_id = null
+→ todas las áreas
+```
+
+La validez llega resuelta desde el contexto canónico.
+
+---
+
+#### 21. `valid_for_site` y `valid_for_area`
+
+SHELL consume la validez territorial del rol.
+
+No la calcula desde:
+
+- nombre de la sede;
+- nombre del área;
+- `role_family`;
+- rol base;
+- listas locales;
+- permisos visibles;
+- heurísticas de aplicación.
+
+Si la resolución indica incompatibilidad territorial, la presentación no la oculta mediante un label aparentemente correcto.
+
+---
+
+#### 22. `role_family` no es el rol operativo
+
+Una familia como:
+
+```text
+satelite
+produccion
+logistica
+gerencia
+```
+
+no sustituye `role_code`.
+
+Esta tarea no muestra la familia como valor principal del rol.
+
+Dos roles de una misma familia continúan siendo identidades distintas.
+
+---
+
+#### 23. El rol operativo no concede permiso por sí solo
+
+La interfaz debe preservar:
+
+```text
+rol operativo válido
++
+permiso ausente
+=
+acción no autorizada
+```
+
+y:
+
+```text
+rol operativo visible
+≠
+AuthorizationDecision
+```
+
+El segmento no presenta frases como:
+
+```text
+Acceso completo
+Permisos de bodeguero
+Todo habilitado
+```
+
+por la sola existencia del rol.
+
+---
+
+#### 24. El rol visible no altera el launcher
+
+`SHELL-APP-003` conserva la responsabilidad de la visibilidad de aplicaciones.
+
+`SHELL-APP-007` no recalcula ni amplía:
+
+- aplicaciones visibles;
+- rutas;
+- destinos;
+- permisos de entrada;
+- prerrequisitos;
+- estados de aplicación.
+
+El rol mostrado es explicación contextual, no un segundo motor de visibilidad.
+
+---
+
+#### 25. El rol visible no autoriza navegación
+
+El nombre del rol no se convierte automáticamente en:
+
+- enlace;
+- botón;
+- selector;
+- acceso directo;
+- filtro de aplicaciones;
+- CTA de cambio.
+
+Mostrar un rol no crea una transición.
+
+---
+
+#### 26. Actor administrativo sin turno
+
+Un actor con autoridad base puede utilizar SHELL sin turno operativo cuando las capacidades correspondientes no dependen del carril operativo.
+
+En ese caso:
+
+```text
+Sin rol operativo activo
+```
+
+no implica:
+
+```text
+Sin autorización
+```
+
+El carril base permanece independiente.
+
+---
+
+#### 27. Rol base parecido al rol operativo
+
+La coincidencia nominal entre un rol base legacy y un rol operativo no permite fallback.
+
+Ejemplo conceptual:
+
+```text
+base_role = bodeguero
+operational_role = null
+```
+
+no autoriza mostrar:
+
+```text
+Rol operativo
+Bodeguero
+```
+
+El segmento muestra:
+
+```text
+Sin rol operativo activo
+```
+
+o `Rol operativo no disponible` si la ausencia no es confiable.
+
+---
+
+#### 28. Perfil predeterminado
+
+Un `default_operational_role`, perfil de planificación o preferencia equivalente puede ayudar a crear un turno.
+
+No representa el rol efectivo actual.
+
+Queda:
+
+```text
+default_operational_role
+→ planificación
+
+active_shift.operational_role_code
+→ rol operativo efectivo
+```
+
+SHELL no muestra el primero como sustituto del segundo.
+
+---
+
+#### 29. Último rol conocido
+
+SHELL no conserva el rol operativo anterior cuando deja de existir el turno que lo sustentaba.
+
+No se permite:
+
+```text
+sin turno actual
+→ usar último operational_role
+```
+
+ni siquiera con fines de comodidad visual.
+
+---
+
+#### 30. Cambio de turno
+
+Cuando cambia el turno resuelto:
+
+1. el rol anterior deja de ser elegible;
+2. SHELL reemplaza el segmento completo;
+3. no conserva el label anterior mientras resuelve el nuevo;
+4. no mezcla el rol de un turno con sede o área de otro;
+5. un fallo de nueva resolución produce `Rol operativo no disponible`.
+
+---
+
+#### 31. Snapshot único
+
+Turno, sede operativa, área operativa y rol operativo presentados deben proceder del mismo `AccessContext` o de una proyección derivada del mismo snapshot.
+
+Queda prohibido:
+
+```text
+turno del contexto A
++
+sede del contexto A
++
+área del contexto A
++
+rol del contexto B
+```
+
+La nueva resolución sustituye el conjunto anterior.
+
+---
+
+#### 32. Cambio de actor
+
+Cuando cambia el actor efectivo:
+
+- se descarta el rol visible del actor anterior;
+- no se reutiliza el último rol;
+- no se conserva un label desde caché local como autoridad;
+- la nueva presentación exige un nuevo contexto resuelto.
+
+---
+
+#### 33. Dispositivo compartido
+
+El dispositivo compartido no posee un rol operativo humano propio.
+
+Su:
+
+- plantilla;
+- `navigation_role`;
+- configuración;
+- nombre;
+- sede configurada;
+- aplicación habilitada;
+
+no sustituyen el rol del actor efectivo.
+
+Sin actor humano resoluble, SHELL no presenta el rol de un usuario anterior.
+
+---
+
+#### 34. `navigation_role`
+
+`navigation_role` permanece como preferencia o dato de presentación del dispositivo cuando exista.
+
+Queda:
+
+```text
+navigation_role
+≠
+operational_role
+```
+
+SHELL no lo usa como fallback ni para completar un contexto incompleto.
+
+---
+
+#### 35. Simulación
+
+Un rol simulado no se muestra como rol real del Hub.
+
+```text
+SimulationContext
+≠
+AccessContext
+```
+
+La simulación no cambia el segmento real `Rol operativo`.
+
+Si una superficie futura necesita mostrar simulación, deberá identificarla explícitamente como simulada mediante su contrato propietario.
+
+---
+
+#### 36. Contexto obsoleto
+
+Un snapshot obsoleto no conserva el rol como vigente.
+
+Pueden volverlo obsoleto, entre otros:
+
+- cambio de turno;
+- publicación, cancelación o retiro del turno;
+- cambio de rol del turno;
+- cambio de sede;
+- cambio de área;
+- cambio de habilitación territorial;
+- cambio de actor;
+- cierre de sesión;
+- cambio contractual;
+- invalidación server-side.
+
+La estrategia física de caché o invalidación pertenece a sus tareas propietarias.
+
+---
+
+#### 37. Revalidación
+
+Cuando SHELL recibe una nueva resolución válida:
+
+1. reemplaza el estado anterior;
+2. sustituye el descriptor de rol;
+3. elimina el rol si ya no existe turno;
+4. cambia a indisponible si el nuevo contexto no es confiable;
+5. no conserva valores de snapshots anteriores;
+6. mantiene turno, sede, área y rol sincronizados.
+
+---
+
+#### 38. Frontera server/client
+
+La resolución del rol operativo ocurre en servidor.
+
+El cliente puede recibir una proyección segura o un view model de presentación reducido.
+
+El cliente no:
+
+- consulta directamente `employee_shifts` para decidir rol;
+- consulta `public.operational_roles` para autorizar;
+- evalúa `site_operational_roles`;
+- decide `valid_for_site`;
+- decide `valid_for_area`;
+- selecciona un fallback;
+- evalúa permisos;
+- transforma un label en autoridad.
+
+---
+
+#### 39. Frontera con `SafeContextProjectionV1`
+
+`SafeContextProjectionV1@1.0.0` ya contempla el hecho seguro de rol operativo dentro de su allowlist vigente.
+
+Esta tarea no amplía silenciosamente el contrato compartido.
+
+En particular, no agrega:
+
+- label humano;
+- familia de rol;
+- grants;
+- denies;
+- permisos efectivos;
+- matriz territorial;
+- `shift_id`;
+- listas de roles;
+- metadata interna.
+
+La futura materialización puede construir desde servidor un view model de presentación con el descriptor humano sin cambiar `SafeContextProjectionV1`.
+
+---
+
+#### 40. View model de presentación
+
+Una materialización futura puede utilizar una forma local equivalente a:
+
+```text
+state
+display_name
+```
+
+con estados conceptuales:
+
+```text
+ACTIVE
+ABSENT
+UNAVAILABLE
+```
+
+Semántica:
+
+```text
+ACTIVE
+→ rol operativo canónico y confiable
+
+ABSENT
+→ ausencia legítima de rol por ausencia de turno operativo válido
+
+UNAVAILABLE
+→ rol no resoluble o no confiable
+```
+
+Estos estados pertenecen únicamente a presentación.
+
+No se incorporan a `AccessContext`.
+
+---
+
+#### 41. No exponer `role_code` como etiqueta primaria
+
+El trabajador debe recibir un descriptor humano.
+
+SHELL no usa como etiqueta principal:
+
+```text
+cajero_satelite
+produccion_reposteria
+conductor_logistica
+```
+
+El código puede existir técnicamente en una proyección segura, pero no sustituye el descriptor humano definido por esta tarea.
+
+---
+
+#### 42. Fail closed del descriptor humano
+
+Si SHELL recibe un `role_code` canónico pero no puede asociarlo de forma confiable con el descriptor de presentación de la misma versión, no humaniza el código por heurística.
+
+Resultado:
+
+```text
+Rol operativo no disponible
+```
+
+La ausencia del descriptor no se resuelve con un texto fabricado.
+
+---
+
+#### 43. Coherencia con el segmento `Turno`
+
+La matriz mínima de coherencia queda:
+
+| Segmento `Turno` | Rol operativo resuelto | Presentación del rol |
+| --- | --- | --- |
+| `Turno activo` | válido | descriptor humano |
+| `Turno vigente` + `Entrada pendiente` | válido | descriptor humano |
+| `Sin turno activo` | ausencia legítima | `Sin rol operativo activo` |
+| `Turno no disponible` | no confiable | `Rol operativo no disponible` |
+
+SHELL no muestra un rol activo junto a un turno clasificado como no disponible.
+
+---
+
+#### 44. Coherencia con el segmento `Sede`
+
+Cuando existe rol operativo válido:
+
+```text
+rol.site_id
+→ misma sede operativa del snapshot
+```
+
+Si la sede operativa está clasificada como no disponible por una incompatibilidad que afecta el rol, SHELL tampoco presenta el rol como confiable.
+
+No utiliza el rol para inventar una sede.
+
+---
+
+#### 45. Coherencia con el segmento `Área`
+
+Cuando el turno trabaja sobre área específica:
+
+```text
+rol.area_id
+→ misma área operativa del snapshot
+```
+
+Cuando la operación es site-wide y el área específica no aplica, el rol puede seguir siendo válido si así lo resolvió el contexto.
+
+SHELL no utiliza el nombre del rol para inventar un área.
+
+---
+
+#### 46. No inferir alcance desde el nombre del rol
+
+Queda prohibido inferir por texto:
+
+```text
+produccion_panaderia
+→ área = Panadería
+
+bodeguero
+→ área = Bodega
+
+conductor_logistica
+→ sede = Centro de Producción
+```
+
+El nombre o código del rol no reemplaza los hechos territoriales resueltos.
+
+---
+
+#### 47. No mostrar grants o capacidades
+
+El segmento `Rol operativo` no enumera:
+
+- permisos heredados;
+- permisos operativos;
+- aplicaciones habilitadas;
+- grants;
+- denies;
+- scopes;
+- excepciones;
+- restricciones internas.
+
+La tarea muestra función efectiva, no matriz de autorización.
+
+---
+
+#### 48. Privacidad y minimización
+
+El segmento no expone:
+
+- `shift_id`;
+- `site_id`;
+- `area_id`;
+- IDs de empleado;
+- actor session;
+- device ID;
+- structural issues completos;
+- fingerprints;
+- hashes de catálogo;
+- matched grants;
+- matched denies;
+- SQLSTATE;
+- errores crudos;
+- metadata interna de resolución.
+
+Solo muestra el descriptor humano y el estado necesarios para comprender el contexto propio.
+
+---
+
+#### 49. Accesibilidad
+
+La diferencia entre:
+
+```text
+rol operativo activo
+sin rol operativo activo
+rol operativo no disponible
+```
+
+no depende únicamente de:
+
+- color;
+- icono;
+- opacidad;
+- posición;
+- animación.
+
+Debe existir texto o semántica accesible suficiente.
+
+---
+
+#### 50. Sin selector dentro de esta tarea
+
+`SHELL-APP-007` no crea:
+
+- selector de rol;
+- dropdown;
+- búsqueda;
+- CTA `Cambiar rol`;
+- edición de turno;
+- persistencia de preferencia;
+- cambio de perfil;
+- cambio de rol base.
+
+La tarea define qué mostrar.
+
+No define cómo cambiar el rol operativo.
+
+---
+
+#### 51. Sin navegación implícita
+
+El descriptor del rol no se convierte automáticamente en enlace, botón o filtro.
+
+Mostrar:
+
+```text
+Bodeguero
+```
+
+no abre NEXO ni concede una ruta específica.
+
+---
+
+#### 52. Separación frente a `SHELL-APP-008`
+
+Esta tarea no muestra:
+
+- tareas pendientes;
+- aprobaciones;
+- alertas transversales;
+- notificaciones;
+- conteos;
+- work items;
+- bloqueos de otras aplicaciones;
+- acciones de seguimiento.
+
+Ese contenido permanece reservado a:
+
+```text
+SHELL-APP-008 — Mostrar tareas pendientes transversales
+```
+
+---
+
+#### 53. Decisión documental consolidada
+
+```text
+ROL OPERATIVO EFECTIVO
+→ turno publicado y vigente
+→ OperationalRoleContext
+→ role_code dentro de los 12 OperationalRoleCode
+→ compatibilidad territorial ya resuelta
+→ descriptor humano
+→ mostrar en Contexto laboral
+
+CHECK-IN
+→ no crea el rol
+→ el rol puede mostrarse antes del check-in
+
+ROL BASE
+→ no fallback
+
+DEFAULT OPERATIONAL ROLE
+→ planificación
+→ no fallback
+
+ÚLTIMO ROL
+→ no fallback
+
+NAVIGATION ROLE
+→ no fallback
+
+ROL SIMULADO
+→ no sustituye contexto real
+
+ROLE_CODE DESCONOCIDO
+→ Rol operativo no disponible
+
+AUSENCIA LEGÍTIMA DE TURNO
+→ Sin rol operativo activo
+
+CONTEXTO INVÁLIDO O AMBIGUO
+→ Rol operativo no disponible
+
+ROL VISIBLE
+→ información contextual
+→ nunca autorización
+```
+
+---
+
+#### 54. Handoff a `SHELL-APP-008`
+
+La siguiente tarea recibe:
+
+1. la región `Contexto laboral`;
+2. segmento `Turno` definido;
+3. segmento `Sede` definido;
+4. segmento `Área` definido;
+5. segmento `Rol operativo` definido;
+6. universo vigente de doce roles operativos;
+7. separación estricta entre rol base y rol operativo;
+8. distinción entre ausencia e indisponibilidad;
+9. obligación de mantener un único snapshot operativo;
+10. prohibición de usar el rol visible como autoridad;
+11. frontera server/client ya fijada;
+12. obligación de no mezclar tareas pendientes con el contexto laboral.
+
+`SHELL-APP-008` podrá agregar la superficie de trabajo pendiente transversal sin reabrir la semántica del rol operativo.
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa la presentación de un hecho operativo ya gobernado por los contratos vigentes de roles, contexto, turno, territorio, proyección segura y autorización.
+
+No modifica `OperationalRoleCode`, `AccessContext`, `OperationalRoleContext`, `SafeContextProjectionV1`, permisos, grants, prerrequisitos ni fronteras de seguridad.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-SHELL-030` — visibilidad derivada de permisos y contexto sin sustituir autorización;
+- `TREQ-SHELL-041` — universo exacto de doce `OperationalRoleCode`, sin `propietario_admin`, aliases ni fallbacks;
+- `TREQ-SHELL-043` — `OperationalRoleContext` reutiliza el catálogo operativo canónico y mantiene separado contexto real, simulación y decisión;
+- `TREQ-SHELL-063` — frontera server/client de contexto y autorización;
+- `TREQ-SHELL-067` — resolución de `AccessContext` validada y fail closed;
+- `TREQ-SHELL-069` — solo decisiones válidas permiten continuar donde corresponda;
+- `TREQ-SHELL-070` — proyección segura de contexto sin ampliar silenciosamente su allowlist;
+- `TREQ-SHELL-072` — cliente sin RPC internas ni autoridad propia;
+- `TREQ-SHELL-073` — separación entre denegación, contrato inválido y fallos técnicos;
+- `TREQ-SHELL-085` — consumidores cliente sin autoridad legacy;
+- `TREQ-SHELL-086` — prohibición de autoridad local basada en rol, turno, territorio, check-in o booleanos legacy.
+
+La semántica del rol operativo permanece gobernada además por los contratos AUTH-MOD, AUTH-CTX y AUTH-SRV propietarios.
+
+Esta sección es trazabilidad heredada y no actualiza 04A.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado ni sometido a la batería documental del checkout local de `SHELL-APP-007`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía format, quality, delivery, work-topology, TREQ, package readiness ni batería global sobre la rama local de la tarea. |
+| REMOTA | PASS | Se verificaron `main` posterior al cierre de `SHELL-APP-006`, continuidad H2, archivo propietario, topología `PER_IMPLEMENTATION_UNIT`, protocolo, contrato de entrega, políticas documentales, universo vigente de doce `OperationalRoleCode`, exclusión de `propietario_admin`, `AccessContext`, `OperationalRoleContext`, fuente del rol desde turno válido, frontera server/client y cobertura 04A SHELL vigente. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define presentación documental y no prueba turnos, roles, usuarios o experiencia desplegada con datos reales. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea ni autoriza una instancia física de `SHELL-APP-007` y no modifica runtime, infraestructura, Supabase, datos ni despliegues. |
+
+---
+
+#### 58. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-007 — Mostrar rol operativo activo`.
+- [ ] `SHELL-APP-006` permanece como tarea anterior.
+- [ ] `SHELL-APP-008` permanece como siguiente tarea.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] La topología futura permanece `PER_IMPLEMENTATION_UNIT` sin crear instancia física.
+- [ ] El rol operativo se mantiene separado del rol base.
+- [ ] El rol operativo procede exclusivamente del turno válido y del contexto resuelto.
+- [ ] El check-in no crea ni selecciona el rol operativo.
+- [ ] Un turno vigente antes del check-in puede mostrar el rol operativo.
+- [ ] Sin turno válido no existe fallback al rol base.
+- [ ] Sin turno válido no existe fallback al perfil predeterminado.
+- [ ] Sin turno válido no existe fallback al último turno.
+- [ ] Sin turno válido no existe fallback a `navigation_role`.
+- [ ] Sin turno válido no existe fallback a una selección de UI.
+- [ ] El universo visible reconoce exactamente doce `OperationalRoleCode`.
+- [ ] `propietario_admin` no se acepta como rol operativo vigente.
+- [ ] No se aceptan strings libres, aliases ni códigos inventados.
+- [ ] Cada código vigente tiene un descriptor humano explícito.
+- [ ] El descriptor humano no se transforma de vuelta en autoridad.
+- [ ] No se humaniza un código desconocido por heurística.
+- [ ] Un rol con código desconocido produce `Rol operativo no disponible`.
+- [ ] La ausencia legítima produce `Sin rol operativo activo`.
+- [ ] Invalidez, ambigüedad o fallo producen `Rol operativo no disponible`.
+- [ ] Ausencia e indisponibilidad no se confunden.
+- [ ] La sede del rol es coherente con la sede operativa del mismo snapshot.
+- [ ] El área del rol es coherente con el área operativa cuando existe área específica.
+- [ ] La operación site-wide puede conservar un rol válido sin inventar área.
+- [ ] `role_family` no sustituye `role_code`.
+- [ ] El nombre del rol no infiere sede o área.
+- [ ] El rol visible no concede permisos.
+- [ ] El rol visible no sustituye una `AuthorizationDecision`.
+- [ ] El rol visible no modifica el launcher definido por `SHELL-APP-003`.
+- [ ] Mostrar rol no crea navegación implícita.
+- [ ] Mostrar rol no crea un selector ni CTA de cambio.
+- [ ] Un actor administrativo sin turno puede conservar autoridad base.
+- [ ] Un cambio de turno descarta el rol anterior.
+- [ ] Un cambio de actor descarta el rol anterior.
+- [ ] Un dispositivo compartido no aporta un rol humano propio.
+- [ ] `navigation_role` no se usa como rol operativo.
+- [ ] Una simulación no se presenta como rol real.
+- [ ] Un snapshot obsoleto no conserva el rol anterior.
+- [ ] Turno, sede, área y rol proceden del mismo snapshot operativo.
+- [ ] El cliente no evalúa catálogos, matriz territorial o permisos para decidir el rol.
+- [ ] `SafeContextProjectionV1` no se amplía silenciosamente.
+- [ ] El view model local no funciona como capability token.
+- [ ] El trabajador recibe descriptor humano y no `role_code` como etiqueta principal.
+- [ ] Los grants, denies y scopes no se exponen en el segmento.
+- [ ] El estado es accesible mediante texto o semántica equivalente.
+- [ ] No se desarrollan tareas pendientes transversales.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se modifica código.
+- [ ] No se modifica Supabase.
+- [ ] No se crean migraciones.
+- [ ] No se despliega.
+- [ ] No se crea ni autoriza una instancia física.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- modifica `OperationalRoleCode`;
+- modifica `AccessContextV1`;
+- modifica `OperationalRoleContext`;
+- modifica `ActiveShiftContext`;
+- modifica `SafeContextProjectionV1`;
+- modifica el catálogo físico de roles;
+- modifica grants o denies;
+- modifica permisos;
+- modifica prerrequisitos;
+- modifica turnos;
+- modifica check-ins;
+- modifica sede operativa;
+- modifica área operativa;
+- modifica cobertura administrativa;
+- modifica rol base;
+- modifica perfiles predeterminados;
+- modifica `navigation_role`;
+- modifica dispositivos compartidos;
+- modifica simulación;
+- crea selector de rol;
+- crea CTA de cambio de rol;
+- crea navegación por rol;
+- define permisos por rol;
+- define aplicaciones por rol;
+- muestra matriz de permisos;
+- muestra tareas pendientes;
+- define layout responsive final;
+- define colores;
+- define iconos;
+- define animaciones;
+- define estrategia de caché;
+- define TTL;
+- implementa Realtime;
+- modifica middleware;
+- modifica Server Actions;
+- modifica RLS;
+- modifica RPC;
+- modifica Auth;
+- modifica datos;
+- crea migraciones;
+- despliega;
+- crea `implementation_unit_id`;
+- crea o autoriza una instancia física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica el Registro Canónico de Requisitos de Prueba;
+- desarrolla `SHELL-APP-008`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-006 — Mostrar área activa`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-007 — Mostrar rol operativo activo`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-008 — Mostrar tareas pendientes transversales`
+
+
 ### [ ] SHELL-APP-008 — Mostrar tareas pendientes transversales
