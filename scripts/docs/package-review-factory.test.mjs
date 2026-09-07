@@ -4,9 +4,13 @@ import test from 'node:test';
 import {
   analyzePackage,
   compactMarkdownForBudget,
+  buildCanonicalGapRoutingIndex,
   buildCrossPackageIndexes,
   buildFactoryFromPackages,
+  canonicalTaskSectionsFromSource,
   normalizeReviewPackage,
+  parseCanonicalGapRouting,
+  parseTaskTreqDeclaration,
   selectReviewBatch,
   validateReviewReceipt,
 } from './package-review-factory.mjs';
@@ -39,6 +43,7 @@ function rawPackage({
         .map((taskId) => ({
           task_id: taskId,
           state: 'APROBADA',
+          source: `docs/${taskId}.md`,
         })),
     },
     repository_owner: 'vento-shell',
@@ -380,4 +385,315 @@ test('factory no duplica texto canónico completo dentro del dossier y batch res
   assert.equal(batch.selected.length, 1);
   assert.ok(batch.selected[0].markdown.length <= batch.per_package_budget);
   assert.ok(batch.used_chars <= batch.content_budget);
+});
+
+test('routing canónico recupera gap_id, primaria y soporte por package', () => {
+  const source = [
+    '#### 9. Matriz completa brecha → tarea → paquete',
+    '',
+    '| Registro | Referencia representativa | Brecha resumida | Clase | Capacidad / proceso | Propietario / fecha | Tarea primaria | Tareas de soporte | Paquete | Confianza |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    '| `H-CODE-001-001` | `CODE-AUD-001` | Falta A | `TECNICA` | `CAP-01.01` | `OWN / 2026-01-01` | `TASK-A-001` | `TASK-S-001`; `TASK-S-002` | `GAP-PKG-001` | `ALTA` |',
+    '',
+    '### B. Nuevas brechas canónicas',
+    '',
+    '| Gap ID | Fuente | Clase | Criticidad | Capacidad | Proceso/alcance | Hallazgo canónico | Propietario | Fecha | Tarea primaria | Tareas de soporte | Paquete | Perfil | Evidencia | Revisor | Estado |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    '| `H-PROC-001-001` | `PROC-COVER-010` | `FUNCIONAL` | `HIGH` | `CAP-02.01` | `VPROC-0002` | Falta B | `OWN` | `2026-01-02` | `TASK-B-001` | `TASK-S-003` | `GAP-PKG-002` | `P1` | `EVID` | `REV` | `ABIERTA` |',
+    '',
+  ].join('\n');
+
+  const rows = parseCanonicalGapRouting(
+    source,
+    'docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/07_REGISTRO_CANONICO_DE_BRECHAS.md',
+  );
+
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].gap_id, 'H-CODE-001-001');
+  assert.equal(rows[0].package_id, 'GAP-PKG-001');
+  assert.deepEqual(rows[0].primary_task_ids, ['TASK-A-001']);
+  assert.deepEqual(rows[0].support_task_ids, ['TASK-S-001', 'TASK-S-002']);
+  assert.equal(rows[1].gap_id, 'H-PROC-001-001');
+  assert.equal(rows[1].package_id, 'GAP-PKG-002');
+  assert.deepEqual(rows[1].support_task_ids, ['TASK-S-003']);
+});
+
+test('factory usa routing canónico como gap_ids y bloquea conteos incoherentes', () => {
+  const routingRows = [{
+    gap_id: 'H-CODE-001-001',
+    package_id: 'GAP-PKG-001',
+    source_kind: 'HISTORICAL',
+    source_path: 'routing.md',
+    source_line: 5,
+    row_sha256: 'a'.repeat(64),
+    reference: 'CODE-AUD-001',
+    class: 'TECNICA',
+    context: 'CAP-01.01',
+    summary: 'Falta A',
+    confidence: 'ALTA',
+    primary_task_ids: ['TASK-A-001'],
+    support_task_ids: ['TASK-S-001'],
+  }];
+
+  const raw = rawPackage({
+    id: 'GAP-PKG-001',
+    layer: 0,
+    primary: ['TASK-A-001'],
+    support: ['TASK-S-001'],
+    dominant: 'TASK-A-001',
+    gaps: [],
+  });
+  raw.gap_membership_count = 1;
+
+  const normalized = normalizeReviewPackage(raw, routingRows);
+  assert.deepEqual(normalized.gap_ids, ['H-CODE-001-001']);
+  assert.equal(normalized.gap_routing_resolved, true);
+
+  const indexes = buildCrossPackageIndexes([normalized]);
+  const analyzed = analyzePackage(normalized, indexes);
+  assert.equal(
+    analyzed.anomalies.some(({ code }) => code === 'GAP_ROUTING_COUNT_MISMATCH'),
+    false,
+  );
+
+  const bad = normalizeReviewPackage(
+    { ...raw, gap_membership_count: 2 },
+    routingRows,
+  );
+  const badResult = analyzePackage(
+    bad,
+    buildCrossPackageIndexes([bad]),
+  );
+  assert.equal(
+    badResult.anomalies.some(
+      ({ code, severity }) => code === 'GAP_ROUTING_COUNT_MISMATCH' && severity === 'BLOCKING',
+    ),
+    true,
+  );
+});
+
+test('primary/support overlap permanece REVIEW cuando el routing es válido', () => {
+  const routingRows = [
+    {
+      gap_id: 'H-CODE-001-001',
+      package_id: 'GAP-PKG-001',
+      source_kind: 'HISTORICAL',
+      source_path: 'routing.md',
+      source_line: 5,
+      row_sha256: 'a'.repeat(64),
+      primary_task_ids: ['TASK-A-001'],
+      support_task_ids: ['TASK-X-001'],
+    },
+    {
+      gap_id: 'H-CODE-001-002',
+      package_id: 'GAP-PKG-001',
+      source_kind: 'HISTORICAL',
+      source_path: 'routing.md',
+      source_line: 6,
+      row_sha256: 'b'.repeat(64),
+      primary_task_ids: ['TASK-X-001'],
+      support_task_ids: [],
+    },
+  ];
+
+  const raw = rawPackage({
+    id: 'GAP-PKG-001',
+    layer: 0,
+    primary: ['TASK-A-001', 'TASK-X-001'],
+    support: ['TASK-X-001'],
+    dominant: 'TASK-A-001',
+  });
+  raw.gap_membership_count = 2;
+
+  const normalized = normalizeReviewPackage(raw, routingRows);
+  const analyzed = analyzePackage(
+    normalized,
+    buildCrossPackageIndexes([normalized]),
+  );
+
+  const overlap = analyzed.anomalies.find(
+    ({ code }) => code === 'PRIMARY_SUPPORT_OVERLAP',
+  );
+
+  assert.equal(overlap?.severity, 'REVIEW');
+  assert.equal(
+    analyzed.anomalies.some(({ severity }) => severity === 'BLOCKING'),
+    false,
+  );
+});
+
+test('routing index conserva todas las filas de cada package', () => {
+  const index = buildCanonicalGapRoutingIndex([
+    { package_id: 'GAP-PKG-001', gap_id: 'H-002' },
+    { package_id: 'GAP-PKG-001', gap_id: 'H-001' },
+    { package_id: 'GAP-PKG-002', gap_id: 'H-003' },
+  ]);
+
+  assert.deepEqual(
+    index.get('GAP-PKG-001').map(({ gap_id: gapId }) => gapId),
+    ['H-001', 'H-002'],
+  );
+  assert.equal(index.get('GAP-PKG-002').length, 1);
+});
+
+test('evidencia de tarea ignora headings históricos dentro de fences', () => {
+  const source = [
+    'Texto histórico.',
+    '```md',
+    '### [ ] SHELL-AUD-011 — Propuesta histórica',
+    'No debe ser seleccionada.',
+    '```',
+    '',
+    '### ✅ SHELL-AUD-011 — Tarea canónica aprobada',
+    '',
+    '**Estado:** APROBADA',
+    '',
+    'Contenido vigente.',
+    '',
+  ].join('\n');
+
+  const sections = canonicalTaskSectionsFromSource(
+    source,
+    ['SHELL-AUD-011'],
+  );
+
+  const section = sections.get('SHELL-AUD-011');
+  assert.ok(section);
+  assert.match(section.text, /Tarea canónica aprobada/u);
+  assert.doesNotMatch(section.text, /Propuesta histórica/u);
+});
+
+test('routing conserva delimitadores ante backtick no cerrado en extracto truncado', () => {
+  const source = [
+    '#### 9. Matriz completa brecha → tarea → paquete',
+    '',
+    '| Registro | Referencia representativa | Brecha resumida | Clase | Capacidad / proceso | Propietario / fecha | Tarea primaria | Tareas de soporte | Paquete | Confianza |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    '| `H-CODE-001-001` | `CODE-AUD-001` | Extracto truncado con `campo sin cierre... | `TECNICA` | `CAP-01.01` | `OWN / 2026-01-01` | `TASK-A-001` | `TASK-S-001` | `GAP-PKG-001` | `ALTA` |',
+    '',
+    '### B. Nuevas brechas canónicas',
+    '',
+    '| Gap ID | Fuente | Clase | Criticidad | Capacidad | Proceso/alcance | Hallazgo canónico | Propietario | Fecha | Tarea primaria | Tareas de soporte | Paquete | Perfil | Evidencia | Revisor | Estado |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |',
+    '| `H-PROC-001-001` | `PROC-COVER-010` | `FUNCIONAL` | `HIGH` | `CAP-02.01` | `VPROC-0002` | Falta B | `OWN` | `2026-01-02` | `TASK-B-001` | `TASK-S-002` | `GAP-PKG-002` | `P1` | `EVID` | `REV` | `ABIERTA` |',
+    '',
+  ].join('\n');
+
+  const rows = parseCanonicalGapRouting(source, 'routing.md');
+
+  assert.equal(rows.length, 2);
+  assert.equal(rows[0].package_id, 'GAP-PKG-001');
+  assert.deepEqual(rows[0].primary_task_ids, ['TASK-A-001']);
+  assert.deepEqual(rows[0].support_task_ids, ['TASK-S-001']);
+});
+
+test('TREQ solo se extrae desde Requisitos de prueba derivados', () => {
+  const block = [
+    '### ✅ INT-DB-008 — Tarea',
+    '',
+    '**Requisitos de prueba creados o modificados:** 0',
+    '',
+    'Texto general que menciona TREQ-INTEGRATION-004 y TREQ-INTEGRATION-006.',
+    '',
+    '#### 9. Requisitos de prueba derivados',
+    '',
+    '**Resultado:** NO GENERA REQUISITOS DE PRUEBA',
+    '',
+    '#### 10. Continuidad',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 0);
+  assert.deepEqual(declaration.ids, []);
+  assert.equal(declaration.consistent, true);
+});
+
+test('TREQ derivados valida conteo declarado y conserva IDs', () => {
+  const block = [
+    '### ✅ TEST-TASK-001 — Tarea',
+    '',
+    '**Requisitos de prueba creados o modificados:** 2',
+    '',
+    '#### 7. Requisitos de prueba derivados',
+    '',
+    '- `TREQ-SHELL-001`',
+    '- `TREQ-SHELL-002`',
+    '',
+    '#### 8. Evidencia',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 2);
+  assert.deepEqual(declaration.ids, ['TREQ-SHELL-001', 'TREQ-SHELL-002']);
+  assert.equal(declaration.consistent, true);
+});
+
+test('TREQ derivados marca mismatch sin convertirlo en fallo del parser', () => {
+  const block = [
+    '### ✅ TEST-TASK-001 — Tarea',
+    '',
+    '**Requisitos de prueba creados o modificados:** 2',
+    '',
+    '#### 7. Requisitos de prueba derivados',
+    '',
+    '- `TREQ-SHELL-001`',
+    '',
+    '#### 8. Evidencia',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 2);
+  assert.deepEqual(declaration.ids, ['TREQ-SHELL-001']);
+  assert.equal(declaration.consistent, false);
+  assert.match(declaration.detail, /DECLARED_2_RESOLVED_1/u);
+});
+
+test('support de tabla de paquetes nuevos no se compara contra fila de membership', () => {
+  const membershipRows = [{
+    gap_id: 'H-PROC-COVER-010-001',
+    package_id: 'GAP-PKG-202',
+    source_kind: 'APPEND_ONLY',
+    source_path: 'routing.md',
+    source_line: 10,
+    row_sha256: 'a'.repeat(64),
+    primary_task_ids: ['INFO-DOM-012'],
+    support_task_ids: [],
+  }];
+
+  const raw = rawPackage({
+    id: 'GAP-PKG-202',
+    layer: 0,
+    primary: ['INFO-DOM-012'],
+    support: ['DATA-DOM-004', 'DATA-DOM-015', 'READY-GATE-014'],
+    dominant: 'INFO-DOM-012',
+  });
+  raw.gap_membership_count = 1;
+
+  const normalized = normalizeReviewPackage(
+    raw,
+    membershipRows,
+    {
+      primary_task_ids: ['INFO-DOM-012'],
+      support_task_ids: ['READY-GATE-014', 'DATA-DOM-004', 'DATA-DOM-015'],
+    },
+  );
+
+  const analyzed = analyzePackage(
+    normalized,
+    buildCrossPackageIndexes([normalized]),
+  );
+
+  assert.equal(
+    analyzed.anomalies.some(
+      ({ code }) => code === 'ROUTING_SUPPORT_TASK_PROJECTION_MISMATCH',
+    ),
+    false,
+  );
+  assert.equal(normalized.task_routing_resolved, true);
 });
