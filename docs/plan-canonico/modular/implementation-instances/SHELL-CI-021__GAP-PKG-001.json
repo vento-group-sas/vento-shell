@@ -1,10 +1,177 @@
 {
   "instance_id": "SHELL-CI-021::GAP-PKG-001",
   "task_id": "SHELL-CI-021",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "VERIFIED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-001.json",
+      "change": "MODIFY",
+      "scope": "Record only the explicit authorization, lifecycle state, READY-GATE-001..015 observed evidence, readiness decisions, blockers, owners, freshness metadata and the final pilot-entry decision for SHELL-CI-021::GAP-PKG-001. Do not modify SHELL-CI-020 or any global canonical task marker."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:start through the canonical correction guard; do not edit the guard."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical physical start/finish lifecycle; do not edit lifecycle code."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/canonical-task-preflight.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Execute the physical preflight required by the lifecycle; do not edit the preflight."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate the already approved GAP-PKG-001 package gate; do not mutate the package gate."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the canonical package readiness consistency check only; do not use it as a substitute for READY-GATE-001..015 evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate that GAP-PKG-001 retains the current physical turn; do not alter package execution policy."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate implementation-readiness derived artifacts through the existing check command; do not edit the validator."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:package:gate:check -- --package-id GAP-PKG-001",
+    "npm run docs:package:readiness:check -- --package GAP-PKG-001",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-08T15:35:08.746Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO, SIGMOS",
+    "source_contract_sha256": "e395b9fa825770cfc1fc735af82a12f15aaceeee915ced174e4e003dc341e31c"
+  },
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-001 APPROVED_FOR_IMPLEMENTATION",
+    "SHELL-CI-020::GAP-PKG-001 VERIFIED",
+    "CI020 REMOTE_EVIDENCE PASS",
+    "TARGET_ENVIRONMENT STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp",
+    "READY_GATE_SET READY-GATE-001..015",
+    "CI020 EFFECTIVE_CORRECTION SHELL-CI-020::CORR-001 VERIFIED",
+    "CI020 CANDIDATE_HEAD 761422331436e842416d8c0974013cf6c8587f95",
+    "CI020 DEPLOYED_VERSION shift-runtime-processor=25"
+  ],
+  "evidence": [
+    {
+      "type": "CI020_EFFECTIVE_PREDECESSOR_RECONCILIATION_V1",
+      "status": "PASS",
+      "base_instance_id": "SHELL-CI-020::GAP-PKG-001",
+      "correction_id": "SHELL-CI-020::CORR-001",
+      "correction_status": "VERIFIED",
+      "historical_instance_policy": "IMMUTABLE",
+      "candidate_head": "761422331436e842416d8c0974013cf6c8587f95",
+      "deployed_component": "shift-runtime-processor",
+      "deployed_version": 25,
+      "target_environment": {
+        "environment_role": "STAGING",
+        "target_type": "SUPABASE_PROJECT_REF",
+        "target_id": "rcrxixmqhrndcervbllp",
+        "owner": "SUPA-TRANS-015"
+      },
+      "source": "verified physical correction overlay",
+      "secret_values_exposed": false
+    },
+    "LOCAL_VALIDATION candidate=b35f4605339cdcdf3dd8f95c5618832bde77ab4b command=npm run docs:package:gate:check -- --package-id GAP-PKG-001 status=PASS",
+    "LOCAL_VALIDATION candidate=b35f4605339cdcdf3dd8f95c5618832bde77ab4b command=npm run docs:package:readiness:check -- --package GAP-PKG-001 status=PASS",
+    "LOCAL_VALIDATION candidate=b35f4605339cdcdf3dd8f95c5618832bde77ab4b command=npm run docs:package:execution:check status=PASS",
+    "LOCAL_VALIDATION candidate=b35f4605339cdcdf3dd8f95c5618832bde77ab4b command=npm run docs:implementation:check status=PASS",
+    {
+      "type": "IMPLEMENTATION_EXECUTION_EVIDENCE_V1",
+      "schema_version": 1,
+      "instance_id": "SHELL-CI-021::GAP-PKG-001",
+      "candidate_commit": "b35f4605339cdcdf3dd8f95c5618832bde77ab4b",
+      "observed_at": "2026-09-08T21:08:06.868Z",
+      "validation_commands": [
+        "npm run docs:package:gate:check -- --package-id GAP-PKG-001",
+        "npm run docs:package:readiness:check -- --package GAP-PKG-001",
+        "npm run docs:package:execution:check",
+        "npm run docs:implementation:check"
+      ],
+      "results": [
+        {
+          "command": "npm run docs:package:gate:check -- --package-id GAP-PKG-001",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:package:readiness:check -- --package GAP-PKG-001",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:package:execution:check",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:implementation:check",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        }
+      ],
+      "environment_results": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015",
+          "status": "PASS",
+          "evidence": [
+            ".delivery/SHELL-CI-021__GAP-PKG-001__post-rollback-staging-full/20260908194234126-d6ac25f0/summary.json",
+            ".delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-014/20260908201645903-3895d205/summary.json",
+            ".delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/summary.json"
+          ]
+        }
+      ],
+      "operational_evidence": [
+        "READY_GATE_012 PASS evidence=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-012/20260908192651880-a6f3f5dd/summary.json",
+        "READY_GATE_014 PASS evidence=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-014/20260908201645903-3895d205/summary.json",
+        "READY_GATE_015 APROBAR_ENTRADA manifest=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/pilot-entry-decision-manifest.json",
+        "READY_GATE_015 decision=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/pilot-entry-decision.json",
+        "READY_GATE_015 authority=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/pilot-entry-authority.json",
+        "HOSTED shift-runtime-processor version=29 ezbr_sha256=bfccb18ae648bbbf48c52311dcb9a74b8df43dc5636c6da69f4c342055a7cf27",
+        "DECISION_ACTOR VENTO_OWNER approval=APROBADOOOOO, SIGAMOS PERO MAS RÁPIDO PORFAVOR, NECESITO AVANZAR"
+      ]
+    }
+  ],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }

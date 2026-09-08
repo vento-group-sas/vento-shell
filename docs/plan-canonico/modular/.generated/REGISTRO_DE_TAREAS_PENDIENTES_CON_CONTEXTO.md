@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `CONTINUE_PHYSICAL_LIFECYCLE` sobre `SHELL-CI-021::GAP-PKG-001`.
+> **Prioridad del checkout actual:** ejecutar `CONTINUE_PHYSICAL_LIFECYCLE` sobre `SHELL-CI-022::GAP-PKG-001`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -22,7 +22,7 @@
 - **Posición:** **1/189**; ningún package posterior puede adelantarlo.
 - **Estado efectivo:** `DEPLOYED`
 - **Acción exacta:** `CONTINUE_PHYSICAL_LIFECYCLE`
-- **Objetivo exacto:** `SHELL-CI-021::GAP-PKG-001`
+- **Objetivo exacto:** `SHELL-CI-022::GAP-PKG-001`
 - **Comando exacto:** `npm run docs:implementation:status`
 - **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-001.json` — `APPROVED_FOR_IMPLEMENTATION`
 - **Gates:** **6/6 PASS**; faltan **0**.
@@ -36,19 +36,19 @@
 - **Archivo propietario:** `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md`
 - **Regla:** si corre en paralelo con una corrección o un package, usar checkout independiente y serializar los cierres.
 
-### 4. Ejecuta la instancia física autorizada — `SHELL-CI-021::GAP-PKG-001`
+### 4. Ejecuta la instancia física autorizada — `SHELL-CI-022::GAP-PKG-001`
 
 - **Estado:** `PENDING_AUTHORIZATION`
-- **Contrato:** Ejecutar y resolver el checklist de readiness aprobado
+- **Contrato:** Ejecutar cutover y piloto conforme al plan aprobado
 - **Acción exacta del control:** `AUTORIZAR_IMPLEMENTACIÓN`
-- **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-001.json`
+- **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json`
 
 ## Panel de control — dos carriles
 
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible | `AUTH-UI-043` — Vincular cada acción con protección de servidor | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-021::GAP-PKG-001` — Ejecutar y resolver el checklist de readiness aprobado | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -57,12 +57,12 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1140/1596 aprobadas** | **456** no aprobadas (0 propuesta, 0 rechazadas) | `AUTH-UI-042` |
-| 🟧 **Implementación física conocida** | **97/98 VERIFIED** | **1** no terminales | `SHELL-CI-021::GAP-PKG-001` |
+| 🟧 **Implementación física conocida** | **98/99 VERIFIED** | **1** no terminales | `SHELL-CI-022::GAP-PKG-001` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-04-I-UI-IMPLEMENTATION` — Protección y estados de interfaz
 - **Siguiente etapa documental:** `PHASE-04-PQ-DEVICE-AND-SIMULATION`
-- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-001`
+- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-022::GAP-PKG-001`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -72,7 +72,7 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **ACTUAL** | `SHELL-CI-021::GAP-PKG-001` | Ejecutar y resolver el checklist de readiness aprobado | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
+| 1 | **ACTUAL** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
 
 ## Modos de trabajo y materialización
 

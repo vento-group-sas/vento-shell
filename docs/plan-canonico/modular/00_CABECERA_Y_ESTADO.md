@@ -35,9 +35,9 @@
 | Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
 | Progreso del bloque | **BLOQUE I: 2 de 12 aprobadas; AUTH-UI-042 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
-| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
+| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
 | Carril documental | **ACTIVO — AUTH-UI-042** |
-| Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
+| Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
 ### Continuidad inmediata
@@ -60,7 +60,7 @@
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
 | CONTINUIDAD ACTIVA | **BLOQUE I: 2 DE 12 APROBADAS — ACTUAL AUTH-UI-042** |
-| Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
+| Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
 
