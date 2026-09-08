@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1127** |
+| Tareas aprobadas | **1128** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **469** |
+| Tareas no iniciadas | **468** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **70.61% (1127/1596)** |
+| Porcentaje de completamiento | **70.68% (1128/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **SHELL-APP-010 — Explicar por qué una aplicación está bloqueada** |
-| Tarea actual | **SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente** |
+| Última tarea aprobada | **SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente** |
+| Tarea actual | **SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente** |
+| Siguiente tarea | **SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones** |
 | Bloque actual | **BLOQUE H2 — SHELL como aplicación** |
-| Progreso del bloque | **BLOQUE H2: 10 de 21 aprobadas; SHELL-APP-011 pendiente** |
+| Progreso del bloque | **BLOQUE H2: 11 de 21 aprobadas; SHELL-APP-012 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
-| Carril documental | **ACTIVO — SHELL-APP-011** |
+| Carril documental | **ACTIVO — SHELL-APP-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `SHELL-APP-010` — Explicar por qué una aplicación está bloqueada |
-| Tarea actual | `SHELL-APP-011` — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente — **NO INICIADA** |
-| Siguiente tarea | `SHELL-APP-012` — Mantener PASS fuera del RBAC laboral del cliente |
+| Última aprobada | `SHELL-APP-011` — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente |
+| Tarea actual | `SHELL-APP-012` — Mantener PASS fuera del RBAC laboral del cliente — **NO INICIADA** |
+| Siguiente tarea | `SHELL-APP-013` — Evitar lógica funcional propia de otras aplicaciones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE H2: 10 DE 21 APROBADAS — ACTUAL SHELL-APP-011** |
+| CONTINUIDAD ACTIVA | **BLOQUE H2: 11 DE 21 APROBADAS — ACTUAL SHELL-APP-012** |
 | Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-SHELL-APP-010 — Explicar por qué una aplicación está bloqueada
-        ↓
-TAREA ACTUAL
 SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente
         ↓
+SIGUIENTE TAREA RESERVADA
+SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE H2 — 10 de 21 tareas aprobadas
+BLOQUE H2 — 11 de 21 tareas aprobadas
 ```

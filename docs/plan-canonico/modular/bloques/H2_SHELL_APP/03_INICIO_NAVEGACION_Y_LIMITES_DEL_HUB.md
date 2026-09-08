@@ -2149,7 +2149,882 @@ No crea ni autoriza una instancia física, no crea ni modifica requisitos de pru
 `SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente`
 
 
-### [ ] SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente
+### ✅ SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-010 — Explicar por qué una aplicación está bloqueada
+**Tarea siguiente:** SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente
+**Tipo de tarea:** definición técnico-documental de la frontera de presentación entre el Hub laboral de SHELL y las superficies adyacentes; conserva el catálogo, actor efectivo, visibilidad y autorización existentes, fija PASS como superficie cliente adyacente fuera del grid laboral primario y mantiene `PER_IMPLEMENTATION_UNIT` únicamente como topología de materialización posterior
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md`
+**Estado físico resultante:** frontera documental laboral/adyacente definida para las diez aplicaciones canónicas, con siete identidades de aplicación laboral primaria o contextual, una identidad `HUB_SELF`, una aplicación laboral diferida y una aplicación cliente adyacente, sin cambios de runtime ni creación de instancia física
+**Cambios físicos autorizados:** ninguno; no se modifican código, rutas, launcher, login, autenticación, contratos, catálogo de aplicaciones, permisos, RBAC, Supabase, datos, configuración, dominios ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Separar de forma explícita la experiencia laboral de SHELL de cualquier superficie adyacente que pertenezca a otro dominio de identidad, sin convertir Vento OS en portal universal para clientes, login normal de Vento Pass, launcher de productos cliente, puente de identidad cliente hacia RBAC laboral ni home híbrido empleado/cliente.
+
+La decisión conserva:
+
+```text
+SHELL
+→ HUB LABORAL
+
+PASS
+→ APLICACIÓN DE CLIENTE
+→ SUPERFICIE ADYACENTE
+
+AURA
+→ APLICACIÓN LABORAL
+→ DIFERIDA
+
+APLICACIONES LABORALES NÚCLEO
+→ ACCESOS LABORALES SEGÚN VISIBILIDAD Y AUTORIZACIÓN
+```
+
+La separación es de identidad, propósito y presentación. No crea autoridad nueva.
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-010`
+
+Se reciben sin reapertura:
+
+1. `HIDDEN_BASE` y `CONTEXT_HIDDEN` permanecen distintos de `CONTEXT_BLOCKED`;
+2. una aplicación oculta no se convierte en tarjeta bloqueada;
+3. AURA diferida no se presenta como denegación de autorización;
+4. PASS adyacente no se presenta como denegación laboral;
+5. una denegación visible usa `SafeDecisionProjectionV1` y razones públicas gobernadas;
+6. indisponibilidad técnica y denegación permanecen separadas;
+7. SHELL no crea copy ni mappings locales de autorización;
+8. una aplicación bloqueada permanece no navegable;
+9. la aplicación destino revalida autorización;
+10. la frontera laboral versus superficies adyacentes quedó reservada a esta tarea.
+
+Esta tarea no redefine la explicación de bloqueos.
+
+---
+
+#### 3. Fuentes de clasificación
+
+La separación reutiliza únicamente clasificaciones ya aprobadas:
+
+```text
+AppCode
++
+TIPO DE APLICACIÓN
++
+DOMINIO DE IDENTIDAD
++
+ALCANCE DEL ROADMAP
++
+CLASE DE PRESENTACIÓN EN SHELL
++
+actor_type
+```
+
+No se infiere desde nombre comercial, repositorio, dominio web, existencia de un permiso `*.access`, presencia en una lista local, contenido temático de una pantalla ni último destino visitado.
+
+---
+
+#### 4. Universo canónico de aplicaciones
+
+Se conservan exactamente diez aplicaciones:
+
+| Código | Nombre | Tipo | Dominio de identidad | Roadmap |
+| --- | --- | --- | --- | --- |
+| `shell` | Vento OS | Hub | Laboral | Núcleo |
+| `anima` | ANIMA | Híbrida | Laboral | Núcleo |
+| `viso` | VISO | Administrativa | Laboral | Núcleo |
+| `nexo` | NEXO | Híbrida | Laboral | Núcleo |
+| `fogo` | FOGO | Operativa | Laboral | Núcleo |
+| `origo` | ORIGO | Híbrida | Laboral | Núcleo |
+| `pulso` | PULSO | Operativa | Laboral | Núcleo |
+| `numera` | NUMERA | Híbrida | Laboral | Núcleo |
+| `aura` | AURA | Administrativa | Laboral | Diferido |
+| `pass` | Vento Pass | Cliente | Cliente | Adyacente |
+
+No se crea ninguna identidad adicional.
+
+---
+
+#### 5. Clasificación de presentación heredada
+
+Se conserva exactamente:
+
+| Aplicación | Clase de presentación |
+| --- | --- |
+| `shell` | `HUB_SELF` |
+| `anima` | `PRIMARY_BASE` |
+| `viso` | `PRIMARY_BASE` |
+| `nexo` | `PRIMARY_BASE_OR_CONTEXT` |
+| `fogo` | `PRIMARY_BASE_OR_CONTEXT` |
+| `origo` | `PRIMARY_BASE_OR_CONTEXT` |
+| `pulso` | `PRIMARY_CONTEXT_ONLY` |
+| `numera` | `PRIMARY_BASE` |
+| `aura` | `DEFERRED_RESERVED` |
+| `pass` | `ADJACENT_RESERVED` |
+
+Estas clases gobiernan presentación y no sustituyen una decisión de autorización.
+
+---
+
+#### 6. Resultado cuantitativo de la frontera
+
+La reconciliación queda:
+
+```text
+CANONICAL_APPS = 10
+HUB_SELF = 1
+PRIMARY_BASE = 3
+PRIMARY_BASE_OR_CONTEXT = 3
+PRIMARY_CONTEXT_ONLY = 1
+DEFERRED_RESERVED = 1
+ADJACENT_RESERVED = 1
+
+1 + 3 + 3 + 1 + 1 + 1 = 10
+
+APLICACIONES CON CARRIL BASE PRIMARIO = 6
+```
+
+Las siete identidades que pueden participar como aplicaciones laborales primarias o contextuales son:
+
+```text
+anima
+viso
+nexo
+fogo
+origo
+pulso
+numera
+```
+
+---
+
+#### 7. SHELL es la superficie laboral de coordinación
+
+`shell` permanece `HUB_SELF`.
+
+SHELL organiza contexto laboral, trabajo pendiente, accesos laborales autorizados y navegación general. No aparece como tarjeta de sí misma y no absorbe la experiencia cliente de PASS.
+
+```text
+SHELL
+≠
+PORTAL UNIVERSAL DE TODOS LOS PRODUCTOS VENTO
+```
+
+---
+
+#### 8. Región laboral primaria
+
+La experiencia de un `EMPLOYEE` puede proyectar como accesos secundarios `anima`, `viso`, `nexo`, `fogo`, `origo`, `pulso` y `numera`, exclusivamente conforme a visibilidad por actor, visibilidad por contexto, disponibilidad, bloqueo, autorización de entrada y ciclo de vida.
+
+Pertenecer a este universo no produce `ALLOW`.
+
+---
+
+#### 9. AURA no es superficie adyacente
+
+AURA conserva:
+
+```text
+DOMINIO = Laboral
+ROADMAP = Diferido
+PRESENTACIÓN = DEFERRED_RESERVED
+```
+
+Por tanto, AURA sigue fuera de navegación mientras permanezca diferida, pero no se reclasifica como producto cliente ni como superficie adyacente.
+
+---
+
+#### 10. PASS es la única aplicación adyacente actual
+
+En el catálogo vigente:
+
+```text
+ADJACENT_CUSTOMER_APPS = 1
+```
+
+y esa identidad es `pass`.
+
+No se inventan otras aplicaciones adyacentes. Una futura superficie adyacente requerirá clasificación canónica explícita.
+
+---
+
+#### 11. Significado de `ADJACENT_RESERVED`
+
+Para PASS, `ADJACENT_RESERVED` significa simultáneamente:
+
+- existe canónicamente;
+- pertenece al dominio de cliente;
+- no forma parte del grid laboral primario;
+- una posible elegibilidad laboral-administrativa no equivale al acceso normal del cliente;
+- una posible elegibilidad laboral-administrativa no la convierte en tarjeta laboral primaria;
+- su exposición laboral exacta requiere contrato propio;
+- su acceso normal de cliente permanece fuera de la política laboral de SHELL.
+
+`ADJACENT_RESERVED` no concede acceso.
+
+---
+
+#### 12. El tema de los datos no cambia el dominio de la aplicación
+
+Que una aplicación laboral procese información relacionada con clientes no la convierte en aplicación cliente.
+
+PULSO puede operar ventas, pedidos, fidelización y clientes y sigue siendo laboral. VISO puede administrar información empresarial relacionada con clientes y sigue siendo laboral.
+
+La clasificación depende de la identidad canónica de la aplicación y del propósito de la acción, no del sustantivo mostrado en los datos.
+
+---
+
+#### 13. ANIMA tampoco es superficie adyacente
+
+ANIMA contiene experiencias personales del trabajador, pero su dominio de identidad continúa siendo laboral.
+
+```text
+AUTOSERVICIO DEL TRABAJADOR
+≠
+SUPERFICIE CLIENTE
+```
+
+Las acciones personales del trabajador no convierten ANIMA en PASS ni en aplicación cliente.
+
+---
+
+#### 14. Identidad principal de PASS
+
+PASS conserva:
+
+```text
+TIPO = Cliente
+DOMINIO DE IDENTIDAD = Cliente
+ROADMAP = Adyacente
+```
+
+El acceso normal del cliente no se autoriza mediante `employees.role` ni mediante otra fuente de RBAC laboral.
+
+---
+
+#### 15. `pass.access` permanece separado del acceso del cliente
+
+El permiso `pass.access` permanece en el catálogo laboral y conserva modalidad `BASE_ONLY`, pero su significado canónico no es autorizar la sesión normal del cliente.
+
+Se conserva:
+
+```text
+PASS_CUSTOMER_ACCESS
+≠
+LABOR_RBAC
+```
+
+Esta tarea no elimina, renombra ni redefine `pass.access`.
+
+---
+
+#### 16. Elegibilidad laboral-administrativa de PASS
+
+Las concesiones laborales existentes hacia PASS se interpretan únicamente como elegibilidad laboral-administrativa adyacente.
+
+```text
+PASS_LABOR_ADMIN_ELIGIBILITY
+≠
+PRIMARY_LABOR_HUB_CARD
+```
+
+Una concesión laboral no transforma la experiencia cliente completa en aplicación laboral.
+
+---
+
+#### 17. `pass.access` no basta para materializar una superficie
+
+Se conserva:
+
+```text
+PERMISO EXISTENTE
+≠
+CAPACIDAD NAVEGABLE CONFIRMADA
+```
+
+La futura exposición laboral de PASS exige al menos superficie laboral o administrativa explícita, owner funcional, destino canónico, proceso aprobado, autorización exacta, consumidor registrado y disponibilidad demostrable.
+
+Mientras esa superficie no esté resuelta:
+
+```text
+ADJACENT_RESERVED
+→ NO PROMOCIÓN AUTOMÁTICA A NAVEGABLE
+```
+
+---
+
+#### 18. Baseline de consumidores laborales de PASS
+
+El registro canónico de consumidores de contexto/autorización conserva:
+
+```text
+PASS
+→ 0 consumidores laborales por defecto
+```
+
+Por tanto, SHELL no inventa una ruta laboral de PASS únicamente porque existan el código `pass` y el permiso `pass.access`.
+
+---
+
+#### 19. Empleado con elegibilidad laboral hacia PASS
+
+Si un `EMPLOYEE` posee una concesión laboral compatible con `pass.access`, SHELL no convierte por esa sola condición a PASS en tarjeta primaria.
+
+La elegibilidad sigue siendo adyacente y su navegación permanece condicionada a la existencia de una superficie laboral-administrativa explícitamente aprobada.
+
+---
+
+#### 20. Empleado sin elegibilidad laboral hacia PASS
+
+Un `EMPLOYEE` sin elegibilidad laboral hacia PASS tampoco recibe una tarjeta `Vento Pass — Bloqueada` como fallback.
+
+La ausencia de elegibilidad no convierte una superficie adyacente en capacidad que deba enumerarse.
+
+---
+
+#### 21. `CUSTOMER` no recibe el Hub laboral
+
+Se conserva:
+
+```text
+CUSTOMER
+→ NO_INTERACTIVE_LABOR_HUB
+```
+
+Un cliente no recibe home laboral, contexto laboral, trabajo pendiente laboral ni grid de aplicaciones laborales. Tampoco recibe PASS como tarjeta dentro de ese grid.
+
+---
+
+#### 22. SHELL no es el login normal del cliente
+
+La superficie de acceso de SHELL pertenece al ecosistema laboral.
+
+```text
+SHELL LOGIN
+≠
+CUSTOMER PASS LOGIN
+```
+
+Compartir infraestructura técnica de autenticación no convierte ambas experiencias en una misma frontera funcional. La entrada normal del cliente permanece responsabilidad de PASS y sus contratos propietarios.
+
+---
+
+#### 23. No existe redirección automática `CUSTOMER → PASS` desde SHELL
+
+La clasificación `actor_type = CUSTOMER` no autoriza a SHELL a construir una redirección automática hacia PASS.
+
+Esta tarea no crea rutas, redirect, deep link ni bootstrap de sesión cliente.
+
+El resultado se conserva:
+
+```text
+CUSTOMER
+→ SIN HOME LABORAL
+```
+
+---
+
+#### 24. SHELL no hace bootstrap de una sesión cliente
+
+SHELL no utiliza `shell.access`, rol base, rol operativo, sede, área, turno, check-in, concesiones laborales ni selección local para fabricar una sesión o autorización cliente.
+
+Una sesión autenticada tampoco demuestra por sí sola que el actor pueda usar PASS como cliente.
+
+---
+
+#### 25. Infraestructura compartida no mezcla dominios
+
+Puede existir infraestructura técnica compartida, pero se conserva:
+
+```text
+AUTENTICACIÓN COMPARTIDA POSIBLE
+≠
+AUTORIZACIÓN COMPARTIDA
+≠
+MISMO ACTOR EFECTIVO
+≠
+MISMO HOME
+≠
+MISMO RBAC
+```
+
+---
+
+#### 26. Persona con identidad laboral y de cliente
+
+Una misma persona puede relacionarse con Vento como trabajador y cliente sin crear un actor híbrido nuevo.
+
+Cuando la sesión laboral resuelve `actor_type = EMPLOYEE`, SHELL presenta exclusivamente la experiencia laboral aplicable. La identidad cliente no se fusiona en el home para mostrar puntos, perfil de fidelización, pedidos personales ni controles de PASS.
+
+---
+
+#### 27. No se mezclan perfiles laborales y de cliente
+
+La superficie laboral no combina `employee + customer profile` como una identidad de autorización única.
+
+Datos de cliente no completan rol base, rol operativo, sede, área, turno, check-in ni permisos laborales. Datos laborales tampoco completan la autorización normal del cliente.
+
+---
+
+#### 28. Trabajo laboral relacionado con PASS no equivale a uso cliente
+
+Una persona puede ejecutar trabajo empresarial sobre fidelización, puntos, redenciones, clientes, campañas, soporte o configuración comercial. Ese trabajo sigue siendo laboral cuando se ejecuta mediante aplicación, permiso, actor y proceso laborales.
+
+Ejemplo:
+
+```text
+PULSO
+→ redención realizada por trabajador autorizado
+→ trabajo laboral
+→ no sesión cliente PASS
+```
+
+---
+
+#### 29. La aplicación propietaria conserva la capacidad
+
+Si una operación laboral relacionada con PASS pertenece canónicamente a PULSO, VISO u otra aplicación laboral, SHELL navega hacia ese owner conforme a autorización.
+
+No redirige a PASS por asociación temática.
+
+---
+
+#### 30. `owner_app_code = pass` no crea una tarjeta primaria
+
+Si en el futuro aparece un `work_item` legítimo cuyo owner sea `pass`, esa referencia no reclasifica automáticamente toda la aplicación como laboral primaria.
+
+Antes de presentar navegación deberán estar resueltos naturaleza laboral de la superficie, actor admitido, permiso exacto, destino, disponibilidad y contrato de handoff.
+
+---
+
+#### 31. Separación conceptual en la página laboral
+
+La página `task-first` conserva:
+
+```text
+CONTEXTO
+FOCO
+ACCIÓN
+ESTADO
+OBLIGACIONES
+ACCESOS SECUNDARIOS
+```
+
+Dentro de los accesos secundarios, la presentación futura debe distinguir conceptualmente:
+
+```text
+ACCESOS LABORALES
+≠
+SUPERFICIES ADYACENTES
+```
+
+Esta tarea no fija columnas, tabs, cards, drawers, tamaños ni breakpoints.
+
+---
+
+#### 32. Una superficie adyacente no compite con el trabajo
+
+Una superficie adyacente no se vuelve foco por existir, no desplaza el `work_item`, no compite con la acción principal, no se mezcla con aplicaciones laborales como si tuviera el mismo propósito y no se usa como relleno cuando no existen tareas.
+
+La prioridad `task-first` permanece intacta.
+
+---
+
+#### 33. No se usa el mismo conteo para laboral y adyacente
+
+SHELL no deberá presentar una cifra como `10 apps laborales` porque el catálogo de diez incluye `shell` como Hub, AURA diferida y PASS cliente adyacente.
+
+Los conteos futuros deberán respetar clase de presentación y disponibilidad real.
+
+---
+
+#### 34. Copy AS-IS no redefine la frontera
+
+Texto promocional como `Un solo acceso para todo el ecosistema` no tiene autoridad para convertir SHELL en portal cliente.
+
+La semántica canónica prevalece sobre copy, chips, métricas y listas locales. Esta tarea no modifica todavía esos textos físicos.
+
+---
+
+#### 35. Los chips de login no son catálogo laboral
+
+La lista visual de `Apps conectadas` observada en `/login` no define catálogo, dominio, superficie adyacente, disponibilidad ni autorización.
+
+La frontera final se deriva de contratos canónicos, no de listas locales.
+
+---
+
+#### 36. `shell.access` no autoriza al cliente
+
+`shell.access` permanece `BASE_ONLY` y gobierna la entrada laboral de SHELL conforme a las decisiones previas.
+
+No se usa como permiso de acceso normal de `CUSTOMER`.
+
+---
+
+#### 37. `pass.access` no completa `shell.access`
+
+La existencia de `pass.access` no satisface `shell.access`; la existencia de `shell.access` tampoco satisface la autorización normal del cliente PASS.
+
+Son identidades y propósitos distintos.
+
+---
+
+#### 38. La frontera no crea SSO cliente
+
+Esta tarea no define SSO entre SHELL y PASS cliente, intercambio de tokens cliente, sincronización de sesión, retorno cliente hacia SHELL, logout conjunto laboral/cliente ni account linking.
+
+---
+
+#### 39. `returnTo` no redefine el dominio
+
+Un parámetro, URL o destino solicitado no puede transformar la entrada laboral de SHELL en entrada cliente PASS por sí solo.
+
+La validación completa de retorno cross-app permanece reservada a `SHELL-APP-014`.
+
+---
+
+#### 40. Deep link no reclasifica la superficie
+
+Conocer o abrir directamente una URL de PASS no la clasifica como aplicación laboral ni concede acceso cliente o laboral-administrativo.
+
+La superficie destino resuelve su propio actor y autorización.
+
+---
+
+#### 41. PASS no hereda contexto laboral por navegación
+
+Una navegación futura hacia una superficie adyacente no transporta como autoridad rol base, rol operativo, turno, check-in, sede, área ni selección de estación.
+
+Esos datos solo podrán proyectarse cuando un contrato laboral explícito los requiera y nunca se convierten en credenciales del cliente.
+
+---
+
+#### 42. SHELL no importa contexto cliente al Hub
+
+SHELL no utiliza saldo de puntos, nivel de fidelización, perfil de cliente, pedidos personales, preferencias comerciales, consentimientos ni historial PASS para decidir visibilidad laboral.
+
+---
+
+#### 43. Privacidad de la separación
+
+La región laboral no revela por defecto si el trabajador posee cuenta PASS, es cliente de una marca, tiene puntos, pertenece a un nivel, mantiene pedidos personales o preferencias de marketing.
+
+Una capacidad laboral autorizada podrá acceder a datos de cliente solo cuando su finalidad y contrato lo permitan.
+
+---
+
+#### 44. Cambio de actor
+
+Cuando cambia el actor efectivo entre `EMPLOYEE` y `CUSTOMER`, SHELL no conserva grid, accesos, bloqueos, contexto, trabajo ni elegibilidad adyacente del actor anterior.
+
+Toda proyección debe resolverse nuevamente.
+
+---
+
+#### 45. Dispositivo compartido
+
+Un dispositivo laboral compartido no convierte al actor en cliente PASS ni mantiene una sesión cliente personal por inferencia desde el actor operativo.
+
+---
+
+#### 46. Simulación
+
+La simulación laboral no puede convertirse en simulación de identidad cliente.
+
+```text
+SIMULAR ROL O CONTEXTO LABORAL
+≠
+IMPERSONAR CUSTOMER
+```
+
+---
+
+#### 47. Estado de ciclo de vida antes de presentación
+
+Se conserva:
+
+```text
+APLICACIÓN LABORAL + DIFERIDA
+→ NO NAVEGABLE
+```
+
+para AURA, y:
+
+```text
+APLICACIÓN ADYACENTE + SIN SUPERFICIE LABORAL CONFIRMADA
+→ NO PROMOCIÓN AUTOMÁTICA
+```
+
+para PASS.
+
+---
+
+#### 48. Frontera visual mínima
+
+Cuando una futura superficie adyacente pueda presentarse legítimamente a un empleado, deberá distinguirse de los accesos laborales mediante estructura perceptible y semántica, no únicamente mediante color, icono u opacidad.
+
+La persona debe poder comprender que entra a una superficie de propósito distinto. El diseño final por dispositivo permanece reservado a tareas posteriores.
+
+---
+
+#### 49. Frontera de navegación
+
+Una superficie adyacente nunca se presenta como parte requerida del flujo laboral ordinario salvo que exista un `work_item` o handoff laboral explícito con owner, permiso y destino propios.
+
+Incluso entonces, el handoff no convierte la experiencia cliente completa en capacidad laboral.
+
+---
+
+#### 50. No existe acceso cliente por transitividad
+
+Queda prohibido:
+
+```text
+EMPLOYEE tiene shell.access
++
+EMPLOYEE tiene pass.access
+→ CUSTOMER ACCESS
+```
+
+También:
+
+```text
+CUSTOMER autenticado
+→ shell.access implícito
+```
+
+---
+
+#### 51. Branding e infraestructura común no fusionan fronteras
+
+Compartir marca Vento, dominio corporativo, Supabase, repositorio de migraciones, catálogo, librerías, estilos o componentes no convierte dos productos en una misma frontera de identidad.
+
+---
+
+#### 52. Futuras superficies adyacentes
+
+Una futura superficie solo podrá clasificarse como adyacente mediante decisión canónica que defina identidad estable, owner, dominio de identidad, propósito, actor admitido, condición de exposición, navegación, autorización, datos proyectables y retorno.
+
+SHELL no crea categorías adyacentes dinámicamente desde URLs externas.
+
+---
+
+#### 53. La tarea no crea un nuevo tipo de aplicación
+
+Se mantienen los cinco tipos descriptivos aprobados:
+
+```text
+hub
+administrative
+operational
+hybrid
+customer
+```
+
+`ADJACENT_RESERVED` es clase de presentación, no sexto tipo de aplicación.
+
+---
+
+#### 54. La tarea no crea un nuevo actor
+
+Se mantienen exactamente:
+
+```text
+EMPLOYEE
+CUSTOMER
+SYSTEM
+UNRESOLVED
+```
+
+No se crean `EMPLOYEE_CUSTOMER`, `PASS_USER`, `ADJACENT_USER` ni `HYBRID_USER`.
+
+---
+
+#### 55. Decisión documental consolidada
+
+```text
+CANONICAL APPS = 10
+
+shell
+→ HUB_SELF
+→ laboral
+
+anima / viso / nexo / fogo / origo / pulso / numera
+→ laborales primarias o contextuales
+→ visibilidad y autorización ya gobernadas
+
+aura
+→ laboral
+→ DEFERRED_RESERVED
+→ no navegable mientras permanezca diferida
+
+pass
+→ customer
+→ ADJACENT_RESERVED
+→ fuera del grid laboral primario
+
+EMPLOYEE
+→ puede recibir home laboral
+→ no recibe experiencia cliente por inferencia
+
+CUSTOMER
+→ no recibe home laboral
+→ SHELL no se convierte en entrada normal de PASS
+
+pass.access
+→ permiso laboral BASE_ONLY existente
+→ no autoriza al cliente
+→ no convierte PASS en tarjeta primaria
+→ no materializa por sí solo una superficie navegable
+
+PASS_CUSTOMER_ACCESS
+≠ LABOR_RBAC
+
+PASS_LABOR_ADMIN_ELIGIBILITY
+≠ PRIMARY_LABOR_HUB_CARD
+```
+
+---
+
+#### 56. Handoff a `SHELL-APP-012`
+
+`SHELL-APP-012` recibe:
+
+1. PASS fijada como única aplicación cliente adyacente actual;
+2. PASS fuera del grid laboral primario;
+3. `CUSTOMER` fuera del Hub laboral;
+4. ausencia de redirección automática cliente desde SHELL;
+5. `pass.access` conservado como permiso laboral `BASE_ONLY`;
+6. `pass.access` separado de la autorización normal del cliente;
+7. elegibilidad laboral-administrativa PASS separada de tarjeta primaria;
+8. baseline de cero consumidores laborales por defecto para PASS;
+9. prohibición de inferir una superficie laboral PASS desde el permiso;
+10. separación entre identidad laboral y perfil cliente;
+11. prohibición de mezclar contexto laboral con autoridad cliente;
+12. necesidad de resolver el significado y uso final del RBAC laboral de PASS sin alterar la frontera cliente.
+
+La siguiente tarea podrá especificar la regla RBAC de PASS sin volver a mezclar ambas experiencias.
+
+---
+
+#### 57. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa en SHELL una frontera ya protegida por catálogo de aplicaciones, clasificación de actor, autorización, visibilidad, identidad cliente, minimización y registro de consumidores.
+
+No modifica el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 58. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-SHELL-001` — una aplicación no se considera operativa por registro o permiso aislado;
+- `TREQ-SHELL-003` — identidad, destino, estado y disponibilidad de aplicación provienen del catálogo gobernado;
+- `TREQ-SHELL-028` — launcher, login, navegación y registros consumen una fuente versionada de aplicaciones;
+- `TREQ-SHELL-030` — visibilidad de navegación no sustituye autorización de servidor;
+- `TREQ-SHELL-080` — el registro de consumidores conserva PASS con cero consumidores laborales por defecto y prohíbe inventar rutas;
+- `TREQ-UX-003` — cada actor recibe únicamente información y acciones adecuadas a su tarea y autorización;
+- `TREQ-UX-008` — la intención se clasifica por acción, efecto y actor, no por nombre de aplicación;
+- `TREQ-UX-009` — el contexto operativo no puede fabricarse desde estado local;
+- `TREQ-PASS-010` — la identidad cliente separa persona, cuenta autenticada, relación, perfil, preferencias y consentimientos.
+
+Estas referencias constituyen trazabilidad heredada y no actualizan 04A.
+
+---
+
+#### 59. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto aún no ha sido insertado ni sometido a la batería documental del checkout local de `SHELL-APP-011`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, quality, delivery, topología, package checks ni batería global sobre la rama local de `SHELL-APP-011`. |
+| REMOTA | PASS | Se verificaron el `main` posterior al cierre de `SHELL-APP-010`, continuidad H2, ruta normal, topología `PER_IMPLEMENTATION_UNIT`, protocolo, contrato de entrega, políticas de formato/desarrollo, `package.json`, owner H2, `SHELL-APP-002`, `SHELL-APP-003`, `SHELL-APP-009`, `SHELL-APP-010`, catálogo de aplicaciones, modalidad de `*.access`, semántica de `pass.access`, 04A SHELL, 04A PASS y runtime AS-IS de `/` y `/login`. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define la frontera documental laboral/adyacente; no prueba cuentas cliente reales, empleados reales, autenticación productiva, navegación desplegada ni dominios productivos. |
+| FÍSICA | NOT_APPLICABLE | Esta aprobación documental no crea ni autoriza una instancia física de `SHELL-APP-011` y no modifica código, datos, infraestructura ni despliegues. |
+
+---
+
+#### 60. Criterios de aceptación
+
+- [ ] El título y la continuidad corresponden exactamente a `SHELL-APP-010 → SHELL-APP-011 → SHELL-APP-012`.
+- [ ] La tarea permanece exclusivamente documental y `PER_IMPLEMENTATION_UNIT` no autoriza materialización física.
+- [ ] Se conservan exactamente diez aplicaciones canónicas.
+- [ ] `shell` permanece `HUB_SELF`.
+- [ ] Existen exactamente siete identidades de aplicación laboral primaria o contextual.
+- [ ] AURA permanece laboral, diferida y `DEFERRED_RESERVED`.
+- [ ] PASS permanece tipo Cliente, dominio Cliente, roadmap Adyacente y `ADJACENT_RESERVED`.
+- [ ] PASS es la única aplicación cliente adyacente actual.
+- [ ] PASS no entra al grid laboral primario.
+- [ ] Aplicaciones laborales que procesan datos de clientes no se reclasifican como cliente.
+- [ ] ANIMA permanece laboral aunque contenga autoservicio personal.
+- [ ] `CUSTOMER` no recibe Hub laboral y `EMPLOYEE` continúa siendo el actor del home laboral.
+- [ ] No se crea actor híbrido empleado/cliente.
+- [ ] SHELL no se convierte en login normal del cliente ni crea redirección automática `CUSTOMER → PASS`.
+- [ ] Compartir autenticación técnica no mezcla autorización.
+- [ ] `shell.access` no autoriza clientes.
+- [ ] `pass.access` permanece `BASE_ONLY` y no autoriza la sesión normal del cliente.
+- [ ] `pass.access` no completa `shell.access` ni crea por sí solo una tarjeta laboral PASS.
+- [ ] La elegibilidad laboral-administrativa PASS no se convierte en tarjeta primaria.
+- [ ] Se conserva el baseline PASS de cero consumidores laborales por defecto.
+- [ ] No se inventa ruta laboral PASS.
+- [ ] Un empleado sin elegibilidad PASS no recibe tarjeta PASS bloqueada por fallback.
+- [ ] Un empleado con elegibilidad PASS no recibe tarjeta primaria por esa sola concesión.
+- [ ] Una futura superficie laboral PASS requiere owner y contrato explícitos.
+- [ ] Un `work_item` con owner PASS no reclasifica automáticamente toda PASS.
+- [ ] Accesos laborales y superficies adyacentes permanecen conceptualmente separados y no compiten con el foco `task-first`.
+- [ ] No se presentan las diez aplicaciones como si todas fueran apps laborales navegables.
+- [ ] Copy, chips o listas AS-IS no redefinen la frontera canónica.
+- [ ] `returnTo` y deep links no cambian dominio ni conceden acceso.
+- [ ] PASS no hereda contexto laboral como autoridad cliente.
+- [ ] SHELL no importa perfil personal PASS al home laboral.
+- [ ] La región laboral no revela por defecto la relación personal del trabajador con PASS.
+- [ ] Cambio de actor invalida proyecciones anteriores.
+- [ ] Dispositivo compartido y simulación laboral no crean identidad cliente.
+- [ ] Una superficie adyacente navegable futura deberá distinguirse semánticamente de accesos laborales.
+- [ ] No existe acceso cliente por transitividad, branding o infraestructura común.
+- [ ] No se crea un sexto tipo de aplicación ni un quinto `actor_type`.
+- [ ] No se desarrolla el RBAC final de PASS reservado a `SHELL-APP-012`.
+- [ ] No se desarrolla retorno cross-app reservado a `SHELL-APP-014`.
+- [ ] No se modifica código, Supabase, permisos, datos, configuración ni despliegues.
+- [ ] No se crean ni modifican requisitos de prueba y no se modifica 04A.
+- [ ] No se crea ni autoriza una instancia física.
+
+---
+
+#### 61. Límites
+
+Esta tarea no modifica el catálogo de aplicaciones, tipos, dominios de identidad, AURA, permisos, grants, denies, matrices, roles, tipos de actor, contratos funcionales de PASS, puntos, redenciones, pedidos, perfiles cliente, owners de capacidades ajenas, proyecciones seguras, mensajes de bloqueo, visibilidad por actor o contexto, página inicial `task-first`, retorno cross-app, conservación de contexto/tarea, UI responsive, código, middleware, Auth, Supabase, datos, migraciones, configuración o despliegues.
+
+No crea ni autoriza una instancia física, no crea ni modifica requisitos de prueba, no modifica el Registro Canónico de Requisitos de Prueba y no desarrolla `SHELL-APP-012`.
+
+---
+
+#### 62. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-010 — Explicar por qué una aplicación está bloqueada`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente`
+
+
 ### [ ] SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente
 ### [ ] SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
 ### [ ] SHELL-APP-014 — Definir retorno seguro entre aplicaciones
