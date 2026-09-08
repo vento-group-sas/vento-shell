@@ -2286,7 +2286,1142 @@ Su trabajo deberá verificar actores, roles, contexto, visibilidad, destinos y d
 `SHELL-APP-019 — Probar navegación por rol`
 
 
-### [ ] SHELL-APP-019 — Probar navegación por rol
+### ✅ SHELL-APP-019 — Probar navegación por rol
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-018 — Diseñar experiencia para tablet
+**Tarea siguiente:** SHELL-APP-020 — Probar navegación con bloqueos reales
+**Tipo de tarea:** validación técnico-documental de navegación por actor, rol y contexto sobre los contratos canónicos de SHELL y el runtime AS-IS remoto; registra cobertura, resultados y no conformidades sin ejecutar bloqueos físicos reales ni modificar runtime; materialización física posterior según topología `PER_IMPLEMENTATION_UNIT`
+**Bloque:** H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md`
+**Estado físico resultante:** matriz documental de navegación por rol cerrada contra el snapshot remoto vigente; contrato TO-BE verificable y runtime AS-IS clasificado como no conforme en los desvíos registrados; código, datos, Supabase, consumidores y despliegues permanecen sin modificaciones
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, componentes compartidos, autorización, datos, Supabase, configuración, pruebas ejecutables, dispositivos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Probar documentalmente la navegación de SHELL por actor, rol y contexto sobre las decisiones ya aprobadas de visibilidad, página inicial, bloqueo, continuidad, experiencia de computador y experiencia de tablet.
+
+La tarea debe responder de forma verificable:
+
+1. qué actor puede recibir el Hub laboral;
+2. qué aplicaciones son presentables por carril base;
+3. qué aplicaciones pueden adquirir visibilidad por carril operativo;
+4. qué papel tiene cada rol base;
+5. qué papel tiene cada rol operativo;
+6. qué ocurre cuando el contexto está ausente, inválido, obsoleto o ambiguo;
+7. qué destinos son navegables;
+8. qué estados deben quedar ocultos, bloqueados o reservados;
+9. si computador y tablet conservan la misma semántica de autorización;
+10. si el runtime AS-IS observado permite certificar esas reglas.
+
+El resultado de esta tarea es una validación y un registro de no conformidades. No constituye implementación de las correcciones encontradas.
+
+#### 2. Alcance de prueba
+
+La validación cubre:
+
+- los cuatro tipos canónicos de actor efectivo;
+- los ocho roles base vigentes;
+- los doce roles operativos vigentes;
+- las diez aplicaciones canónicas;
+- los permisos de entrada `*.access`;
+- carril base;
+- carril operativo;
+- visibilidad base;
+- visibilidad contextual;
+- ocultamiento;
+- bloqueo de presentación;
+- reserva por lifecycle;
+- frontera laboral/cliente;
+- entrada al Hub;
+- navegación secundaria;
+- computador;
+- tablet personal;
+- tablet compartida;
+- URL directa como frontera de reautorización;
+- cambio de actor y contexto;
+- frescura;
+- separación entre denegación y fallo técnico;
+- AS-IS de `src/app/page.tsx`;
+- primitivas compartidas de navegación ya materializadas.
+
+No se ejecutan sesiones productivas ni bloqueos reales de infraestructura.
+
+#### 3. Fuentes canónicas consumidas
+
+La prueba consume sin reabrir:
+
+- `SHELL-APP-002` para visibilidad por actor;
+- `SHELL-APP-003` para visibilidad por contexto;
+- `SHELL-APP-004` a `SHELL-APP-007` para contexto laboral visible;
+- `SHELL-APP-008` para trabajo pendiente;
+- `SHELL-APP-009` para página inicial por actor efectivo;
+- `SHELL-APP-010` para explicación segura de aplicaciones bloqueadas;
+- `SHELL-APP-011` y `SHELL-APP-012` para fronteras laborales y cliente;
+- `SHELL-APP-014` a `SHELL-APP-016` para retorno, contexto y continuidad;
+- `SHELL-APP-017` para experiencia de computador;
+- `SHELL-APP-018` para experiencia de tablet;
+- el catálogo, autorización, contexto y primitivas compartidas ya aprobados.
+
+019 no crea una fuente paralela de permisos, roles o visibilidad.
+
+#### 4. Snapshot remoto evaluado
+
+La auditoría documental queda anclada al snapshot remoto:
+
+| Campo | Valor |
+|---|---|
+| Repositorio | `vento-group-sas/vento-shell` |
+| Rama | `main` |
+| Commit | `23907b52b30b91485ac0eb2e5022a8b891c3d93a` |
+| Archivo runtime principal evaluado | `src/app/page.tsx` |
+| Componente compartido de navegación evaluado | `packages/ui-web/src/TaskNavigation.tsx` |
+| Validador compartido evaluado | `packages/ui-web/scripts/validate-task-navigation.mjs` |
+| Estado de la evaluación | `AUDITORIA_DOCUMENTAL_COMPLETA` |
+
+Cambios posteriores del runtime obligarán a una nueva evaluación antes de reutilizar este resultado como evidencia de conformidad física.
+
+#### 5. Distinción entre aprobar la prueba y aprobar el runtime
+
+Se fija:
+
+```text
+PRUEBA DOCUMENTAL COMPLETA
+!=
+RUNTIME CONFORME
+```
+
+La tarea puede quedar documentalmente aprobada aunque el sistema observado presente desvíos.
+
+El resultado queda separado en:
+
+```text
+RESULTADO_AUDITORIA_019 = PASS_DOCUMENTAL
+RESULTADO_CONFORMIDAD_AS_IS = NO_CONFORME
+RESULTADO_PRUEBA_FISICA_POR_ACTORES = NO_EJECUTADO
+```
+
+Los desvíos son salida de la prueba, no motivo para falsificar un PASS del producto.
+
+#### 6. Estados internos de resultado usados por la matriz
+
+Las matrices de 019 usan únicamente estas etiquetas descriptivas:
+
+| Estado | Significado |
+|---|---|
+| `CONFORME_CONTRATO` | la expectativa está definida de forma coherente por los contratos vigentes |
+| `NO_CONFORME_AS_IS` | el código remoto observado contradice o no materializa una obligación verificable |
+| `NO_CERTIFICABLE_AS_IS` | el snapshot no contiene la información o integración necesaria para demostrar la expectativa completa |
+| `NO_EJECUTADO_FISICO` | exige sesión, actor, dispositivo o ambiente real |
+| `RESERVADO_020` | corresponde específicamente a bloqueos reales de la siguiente tarea |
+
+Estas etiquetas no sustituyen estados de autorización, de proceso ni de evidencia.
+
+#### 7. Universo de actor efectivo
+
+Se conservan exactamente cuatro tipos:
+
+| Actor | Hub laboral esperado |
+|---|---|
+| `EMPLOYEE` | elegible únicamente si es laboralmente válido y posee entrada efectiva a SHELL |
+| `CUSTOMER` | no recibe Hub laboral |
+| `SYSTEM` | no recibe interfaz humana |
+| `UNRESOLVED` | falla cerrado |
+
+No se añade una categoría por rol, dispositivo, sede o aplicación.
+
+#### 8. Resultado AS-IS por tipo de actor
+
+| Caso | Expectativa canónica | Resultado AS-IS | Evidencia |
+|---|---|---|---|
+| `EMPLOYEE` válido | Hub laboral sujeto a identidad laboral, `shell.access`, contexto y trabajo | `NO_CERTIFICABLE_AS_IS` | la raíz comprueba usuario autenticado, pero no materializa la clasificación canónica del actor ni la entrada `shell.access` |
+| `CUSTOMER` | sin Hub laboral | `NO_CONFORME_AS_IS` | el runtime no distingue `CUSTOMER` antes de construir la experiencia laboral |
+| `SYSTEM` | sin interfaz humana | `NO_CERTIFICABLE_AS_IS` | el runtime no implementa clasificación `SYSTEM` en la raíz |
+| `UNRESOLVED` | fail closed sin grid laboral | `NO_CERTIFICABLE_AS_IS` | la raíz distingue sesión ausente, pero no demuestra la clasificación de un usuario autenticado con actor laboral no resoluble |
+
+Hallazgo asociado: `RNF-02`.
+
+#### 9. Universo de roles base
+
+Se conservan exactamente:
+
+1. `propietario`;
+2. `gerente_general`;
+3. `gerente`;
+4. `supervisor`;
+5. `auxiliar_administrativa`;
+6. `contador`;
+7. `marketing`;
+8. `trabajador_operativo`.
+
+El nombre del rol no constituye autorización ni define una página inicial distinta.
+
+#### 10. Universo de aplicaciones
+
+La navegación se contrasta contra diez identidades:
+
+1. `shell`;
+2. `anima`;
+3. `viso`;
+4. `nexo`;
+5. `fogo`;
+6. `origo`;
+7. `pulso`;
+8. `numera`;
+9. `aura`;
+10. `pass`.
+
+SHELL es `HUB_SELF`, AURA permanece reservada por lifecycle y PASS permanece fuera del grid laboral primario.
+
+#### 11. Modalidad de entrada por aplicación
+
+| Aplicación | Permiso | Modalidad |
+|---|---|---|
+| SHELL | `shell.access` | `BASE_ONLY` |
+| ANIMA | `anima.access` | `BASE_ONLY` |
+| VISO | `viso.access` | `BASE_ONLY` |
+| NEXO | `nexo.access` | `BASE_OR_OPERATIONAL` |
+| FOGO | `fogo.access` | `BASE_OR_OPERATIONAL` |
+| ORIGO | `origo.access` | `BASE_OR_OPERATIONAL` |
+| PULSO | `pulso.access` | `OPERATIONAL_ONLY` |
+| NUMERA | `numera.access` | `BASE_ONLY` |
+| AURA | `aura.access` | `BASE_ONLY` más reserva de lifecycle |
+| PASS | `pass.access` | `BASE_ONLY` dentro de frontera adyacente |
+
+019 prueba estas modalidades; no las redefine.
+
+#### 12. Matriz canónica base por rol
+
+Leyenda:
+
+- `HUB` = superficie SHELL;
+- `V` = visible por carril base;
+- `H` = no visible por carril base;
+- `D` = diferida;
+- `A` = adyacente, fuera del grid laboral primario.
+
+| Rol base | SHELL | ANIMA | VISO | NEXO | FOGO | ORIGO | PULSO | NUMERA | AURA | PASS |
+|---|---|---|---|---|---|---|---|---|---|---|
+| `propietario` | HUB | V | V | V | V | V | H | V | D | A |
+| `gerente_general` | HUB | V | V | V | V | V | H | V | D | A |
+| `gerente` | HUB | V | V | V | V | V | H | V | D | H |
+| `supervisor` | HUB | V | V | V | V | V | H | H | D | H |
+| `auxiliar_administrativa` | HUB | V | V | V | V | V | H | V | D | H |
+| `contador` | HUB | V | V | V | V | V | H | V | D | H |
+| `marketing` | HUB | V | V | V | H | H | H | H | D | H |
+| `trabajador_operativo` | HUB | V | H | H | H | H | H | H | D | H |
+
+Control heredado:
+
+```text
+BASE_VISIBILITY_EDGES = 39
+ANIMA = 8
+VISO = 7
+NEXO = 7
+FOGO = 6
+ORIGO = 6
+NUMERA = 5
+PULSO = 0
+```
+
+#### 13. Resultado de prueba por rol base
+
+| Caso | Rol | Resultado del contrato | Certificación AS-IS | Motivo principal |
+|---|---|---|---|---|
+| `RNAV-B01` | `propietario` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | el runtime no proyecta el catálogo completo ni una matriz canónica de actor/rol |
+| `RNAV-B02` | `gerente_general` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | mismo límite estructural |
+| `RNAV-B03` | `gerente` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | mismo límite estructural |
+| `RNAV-B04` | `supervisor` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | mismo límite estructural |
+| `RNAV-B05` | `auxiliar_administrativa` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | mismo límite estructural |
+| `RNAV-B06` | `contador` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | mismo límite estructural |
+| `RNAV-B07` | `marketing` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | mismo límite estructural |
+| `RNAV-B08` | `trabajador_operativo` | `CONFORME_CONTRATO` | `NO_CERTIFICABLE_AS_IS` | el runtime no puede demostrar ANIMA como acceso base y ausencia ordinaria del resto mediante la política final |
+
+Todos los roles base quedan cubiertos una vez. Faltantes: 0. Duplicados: 0.
+
+#### 14. No se prueba autorización por nombre de rol
+
+Los ocho casos anteriores no deben implementarse como:
+
+```text
+if role == ...
+```
+
+La matriz es un oracle documental de reconciliación.
+
+La navegación real debe provenir de:
+
+```text
+ACTOR EFECTIVO
++ DECISIÓN DE AUTORIZACIÓN
++ CONTEXTO CUANDO APLIQUE
++ POLÍTICA DE PRESENTACIÓN
+```
+
+#### 15. Concesiones individuales
+
+Una concesión individual válida puede cambiar la salida efectiva respecto de la baseline del rol base.
+
+Por tanto, 019 no declara que la tabla de la sección 12 sea un resultado inmutable por persona.
+
+Caso obligatorio:
+
+```text
+ROL BASE SIN ALLOW
++ CONCESIÓN INDIVIDUAL VÁLIDA
+-> PUEDE PRODUCIR ALLOW
+```
+
+y:
+
+```text
+ROL BASE CON ALLOW
++ DENY APLICABLE
+-> NO CONSERVA ALLOW POR LA TABLA
+```
+
+La UI no intenta identificar localmente qué fuente produjo la decisión.
+
+#### 16. Universo de roles operativos
+
+Se conservan exactamente doce:
+
+1. `cajero_satelite`;
+2. `barista_satelite`;
+3. `cocinero_satelite`;
+4. `servicio_salon`;
+5. `mostrador_satelite`;
+6. `operador_integral_satelite`;
+7. `produccion_cocina`;
+8. `produccion_panaderia`;
+9. `produccion_reposteria`;
+10. `bodeguero`;
+11. `conductor_logistica`;
+12. `gerencia_operativa`.
+
+No son tipos de actor ni sustituyen el rol base.
+
+#### 17. Matriz operativa heredada
+
+| Rol operativo | NEXO | FOGO | ORIGO | PULSO |
+|---|---|---|---|---|
+| `cajero_satelite` | candidato | — | — | candidato |
+| `barista_satelite` | candidato | — | — | candidato |
+| `cocinero_satelite` | candidato | — | — | candidato |
+| `servicio_salon` | candidato | — | — | candidato |
+| `mostrador_satelite` | candidato | — | — | candidato |
+| `operador_integral_satelite` | candidato | — | — | candidato |
+| `produccion_cocina` | candidato | candidato | — | — |
+| `produccion_panaderia` | candidato | candidato | — | — |
+| `produccion_reposteria` | candidato | candidato | — | — |
+| `bodeguero` | candidato | — | candidato | — |
+| `conductor_logistica` | candidato | — | — | — |
+| `gerencia_operativa` | candidato | candidato | candidato | candidato |
+
+Control heredado:
+
+```text
+OPERATIONAL_ROLES = 12
+OPERATIONAL_VISIBILITY_EDGES = 25
+NEXO = 12
+PULSO = 7
+FOGO = 4
+ORIGO = 2
+```
+
+#### 18. Resultado de prueba por rol operativo
+
+| Caso | Rol operativo | Candidatos esperados | Certificación AS-IS |
+|---|---|---|---|
+| `RNAV-O01` | `cajero_satelite` | NEXO, PULSO | `NO_CONFORME_AS_IS` |
+| `RNAV-O02` | `barista_satelite` | NEXO, PULSO | `NO_CONFORME_AS_IS` |
+| `RNAV-O03` | `cocinero_satelite` | NEXO, PULSO | `NO_CONFORME_AS_IS` |
+| `RNAV-O04` | `servicio_salon` | NEXO, PULSO | `NO_CONFORME_AS_IS` |
+| `RNAV-O05` | `mostrador_satelite` | NEXO, PULSO | `NO_CONFORME_AS_IS` |
+| `RNAV-O06` | `operador_integral_satelite` | NEXO, PULSO | `NO_CONFORME_AS_IS` |
+| `RNAV-O07` | `produccion_cocina` | NEXO, FOGO | `NO_CONFORME_AS_IS` |
+| `RNAV-O08` | `produccion_panaderia` | NEXO, FOGO | `NO_CONFORME_AS_IS` |
+| `RNAV-O09` | `produccion_reposteria` | NEXO, FOGO | `NO_CONFORME_AS_IS` |
+| `RNAV-O10` | `bodeguero` | NEXO, ORIGO | `NO_CONFORME_AS_IS` |
+| `RNAV-O11` | `conductor_logistica` | NEXO | `NO_CONFORME_AS_IS` |
+| `RNAV-O12` | `gerencia_operativa` | NEXO, FOGO, ORIGO, PULSO | `NO_CONFORME_AS_IS` |
+
+Motivo común verificado: la raíz vigente no consume una resolución explícita de turno, rol operativo, sede y área para producir la política contextual final; usa el helper legacy de permiso para las cinco tarjetas locales y entrega `null` como sede y área desde el caller.
+
+Todos los roles operativos quedan cubiertos una vez. Faltantes: 0. Duplicados: 0.
+
+#### 19. `candidato` no equivale a visible
+
+Cada celda `candidato` de la matriz operativa requiere resolver:
+
+```text
+TURNO VIGENTE
++ ROL OPERATIVO
++ SEDE
++ ÁREA CUANDO EL GRANT LA EXIGE
++ GRANT
++ DENY
++ ESTADO DE APLICACIÓN
++ DECISIÓN DE AUTORIZACIÓN
+```
+
+La matriz operativa no es allowlist de frontend.
+
+#### 20. Prerrequisito operativo de entrada
+
+Para NEXO, FOGO, ORIGO y PULSO se conserva:
+
+```text
+PRERREQUISITO DE ENTRADA = T
+```
+
+donde `T` exige turno publicado y vigente, pero no exige check-in activo para `app.access`.
+
+019 verifica específicamente que:
+
+```text
+TURNO VIGENTE SIN CHECK-IN
+!=
+APLICACIÓN AUTOMÁTICAMENTE BLOQUEADA
+```
+
+Las capacidades internas `T+C` pertenecen al destino.
+
+#### 21. Matriz de contexto de entrada
+
+| Escenario | BASE_OR_OPERATIONAL | OPERATIONAL_ONLY | Resultado esperado |
+|---|---|---|---|
+| sin turno vigente + base ALLOW | visible por base | no aplicable | navegable por base |
+| sin turno vigente + sin base ALLOW | no visible por operativo | PULSO no visible | oculto contextual |
+| turno vigente sin check-in + grant completo | visible por operativo | visible por operativo | navegable |
+| turno vigente + check-in compatible | visible por operativo | visible por operativo | navegable |
+| check-in activo incompatible | base independiente puede sobrevivir | carril operativo inválido | no derivar ALLOW operativo |
+| área requerida ausente | base independiente puede sobrevivir | carril operativo incompleto | bloqueo u ocultamiento según relevancia segura |
+| turno ambiguo | base independiente puede sobrevivir | sin ALLOW operativo | no seleccionar turno por conveniencia |
+| turno expirado/cancelado/retirado | base independiente puede sobrevivir | sin ALLOW operativo | no conservar visibilidad operativa stale |
+| contexto stale | requiere nueva resolución | requiere nueva resolución | no reutilizar autoridad |
+| bloqueo estructural global | sin grid laboral | sin grid laboral | fail closed |
+
+#### 22. Independencia de carriles
+
+Para NEXO, FOGO y ORIGO:
+
+```text
+BASE_ALLOW COMPLETO
+OR
+OPERATIONAL_ALLOW COMPLETO
+```
+
+puede producir entrada.
+
+No se acepta:
+
+```text
+PERMISO DE UN CARRIL
++ TERRITORIO DEL OTRO
+```
+
+para construir una autorización híbrida.
+
+PULSO no posee carril base de entrada.
+
+#### 23. Página inicial por rol
+
+La prueba confirma como oracle:
+
+```text
+MISMO ACTOR TYPE EMPLOYEE
+-> MISMA SEMÁNTICA DE HOME LABORAL
+```
+
+El rol no produce homes diferentes.
+
+Ninguno de estos roles redirige por nombre a una aplicación:
+
+- propietario;
+- gerente general;
+- gerente;
+- supervisor;
+- auxiliar administrativa;
+- contador;
+- marketing;
+- trabajador operativo;
+- cualquiera de los doce roles operativos.
+
+Las diferencias pertenecen a trabajo, aplicaciones visibles y contexto, no a una plantilla de home separada por rol.
+
+#### 24. Resultado AS-IS de página inicial
+
+El runtime observado continúa centrado en:
+
+```text
+CENTRO DE APLICACIONES
++ CINCO TARJETAS
+```
+
+y no materializa la composición final:
+
+```text
+CONTEXTO
+-> FOCO DE TRABAJO
+-> ACCIÓN PRINCIPAL
+-> ESTADO
+-> OBLIGACIONES
+-> ACCESOS SECUNDARIOS
+```
+
+Resultado:
+
+```text
+RNF-06 = NO_CONFORME_AS_IS
+```
+
+Este hallazgo no reabre 017 ni 018.
+
+#### 25. Cobertura de computador y tablet
+
+Cada oracle de actor y rol de 019 aplica a:
+
+- experiencia de computador de 017;
+- `PERSONAL_TABLET` de 018;
+- `SHARED_TABLET` de 018 cuando corresponda.
+
+La semántica de autorización y visibilidad no cambia por dispositivo.
+
+Control conceptual:
+
+```text
+8 ROLES BASE x 2 FAMILIAS DE EXPERIENCIA = 16 PROYECCIONES MÍNIMAS
+12 ROLES OPERATIVOS x 2 FAMILIAS DE EXPERIENCIA = 24 PROYECCIONES MÍNIMAS
+TOTAL ROLE-SURFACE = 40
+```
+
+La tablet compartida añade limpieza de actor y contexto, no otra matriz de permisos.
+
+#### 26. Cambio de actor en dispositivo compartido
+
+Al cambiar actor:
+
+1. la navegación anterior deja de ser vigente;
+2. se descartan proyecciones personales;
+3. se resuelve el actor nuevo;
+4. se resuelve contexto nuevo;
+5. se recalcula trabajo;
+6. se recalculan aplicaciones;
+7. no se hereda un enlace habilitado del actor anterior;
+8. no se hereda una explicación personal de bloqueo.
+
+Una tablet técnica no conserva el rol del trabajador previo.
+
+#### 27. Cambio de rol operativo
+
+Un rol operativo nuevo requiere realidad laboral y contexto nuevos.
+
+No se admite:
+
+```text
+SELECTOR DE ROL
+-> NUEVA NAVEGACIÓN AUTORIZADA
+```
+
+sin resolución propietaria.
+
+El estado local, URL, cookie o nombre visual no cambian autoridad.
+
+#### 28. Cambio de sede y área
+
+La navegación dependiente de carril operativo debe recalcularse si cambia:
+
+- sede;
+- área;
+- turno;
+- compatibilidad del rol;
+- grant;
+- deny.
+
+Una tarjeta visible por contexto anterior no conserva navegación cuando la proyección queda stale.
+
+#### 29. Aplicación visible no equivale a autorización interna
+
+Se prueba la invariancia:
+
+```text
+APP VISIBLE
+!=
+TODAS LAS ACCIONES PERMITIDAS
+```
+
+La aplicación destino vuelve a resolver permisos, contexto, recurso y estado para cada capacidad protegida.
+
+#### 30. Aplicación oculta no equivale a endpoint desprotegido
+
+Se mantiene:
+
+```text
+APP OCULTA
++ URL DIRECTA
+-> DESTINO REAUTORIZA
+```
+
+019 valida esta regla como contrato de navegación.
+
+La ejecución adversarial con bloqueos reales, sesiones y destinos desplegados pertenece a 020 o a la materialización física correspondiente.
+
+#### 31. Estado bloqueado
+
+Cuando una aplicación deba permanecer visible como bloqueada:
+
+- no es navegable;
+- no conserva `href` ejecutable como salida ordinaria;
+- la causa pública procede de la decisión segura;
+- la UI no infiere la causa desde el rol;
+- la UI no presenta un fallo técnico como deny personal.
+
+`TaskNavigation` ya posee estados presentacionales no accionables para bloqueo contextual y bloqueo requerido.
+
+#### 32. Estado oculto
+
+`HIDDEN_BASE` o `CONTEXT_HIDDEN` no se convierten automáticamente en una tarjeta deshabilitada.
+
+Una aplicación que no debe revelarse permanece fuera de la navegación presentada.
+
+Por tanto:
+
+```text
+HIDDEN
+!=
+DISABLED VISIBLE
+```
+
+La selección entre ocultar y bloquear proviene de la política canónica de presentación.
+
+#### 33. AURA
+
+AURA permanece:
+
+```text
+DEFERRED_RESERVED
+```
+
+Ningún rol base u operativo la vuelve visible por estar presente en el catálogo.
+
+019 no activa AURA.
+
+#### 34. PASS
+
+PASS permanece fuera del grid laboral primario.
+
+Los casos de propietario y gerente general que tengan una relación administrativa adyacente no convierten PASS en una aplicación laboral de SHELL.
+
+019 no mezcla identidad `CUSTOMER` con RBAC laboral.
+
+#### 35. ANIMA y NUMERA
+
+ANIMA y NUMERA forman parte de la matriz base aprobada.
+
+El runtime actual del launcher no las incluye entre sus cinco tarjetas.
+
+Resultado:
+
+```text
+RNF-01 = NO_CONFORME_AS_IS
+```
+
+La ausencia impide certificar la matriz completa de roles desde el Hub vigente.
+
+#### 36. PULSO
+
+PULSO es `OPERATIONAL_ONLY` para entrada ordinaria.
+
+El runtime actual la trata como una de cinco tarjetas consultadas mediante el mismo helper general usado para las demás.
+
+Sin consumo explícito de la política contextual final de 003, 019 no puede certificar la navegación PULSO por los siete roles operativos candidatos.
+
+Resultado:
+
+```text
+RNF-03 = NO_CONFORME_AS_IS
+```
+
+#### 37. Denegación versus indisponibilidad técnica
+
+El runtime AS-IS intenta dos firmas de `has_permission`.
+
+Cuando ambas producen error, `resolveAccess` devuelve:
+
+```text
+disabled
+```
+
+La presentación posterior usa `Sin acceso` / `Bloqueada`.
+
+Esto colapsa:
+
+```text
+DENIED
+```
+
+y:
+
+```text
+EVALUATION_UNAVAILABLE
+```
+
+como una misma salida visual.
+
+Resultado:
+
+```text
+RNF-04 = NO_CONFORME_AS_IS
+```
+
+#### 38. Hidden versus blocked en AS-IS
+
+Las cinco aplicaciones locales se materializan como tarjetas tanto cuando están habilitadas como cuando quedan `disabled`.
+
+El runtime no posee una clasificación explícita que distinga:
+
+```text
+VISIBLE_BASE
+CONTEXT_VISIBLE
+CONTEXT_BLOCKED
+CONTEXT_HIDDEN
+DEFERRED_RESERVED
+ADJACENT_RESERVED
+```
+
+Resultado:
+
+```text
+RNF-05 = NO_CONFORME_AS_IS
+```
+
+#### 39. Catálogo runtime limitado
+
+El launcher AS-IS contiene únicamente:
+
+- VISO;
+- NEXO;
+- FOGO;
+- ORIGO;
+- PULSO.
+
+No contiene como tarjetas:
+
+- ANIMA;
+- NUMERA;
+- AURA;
+- PASS;
+- SHELL, que correctamente no debe ser tarjeta de sí mismo.
+
+La omisión de ANIMA y NUMERA es material para la prueba por rol; AURA y PASS conservan además sus reservas canónicas.
+
+#### 40. Actor efectivo no materializado en la raíz
+
+La raíz usa la sesión Supabase para determinar si existe `user`.
+
+No se observa en `src/app/page.tsx` una resolución explícita de:
+
+```text
+EMPLOYEE
+CUSTOMER
+SYSTEM
+UNRESOLVED
+```
+
+ni una comprobación explícita de empleado activo y `shell.access` antes de construir el Hub laboral.
+
+Resultado:
+
+```text
+RNF-02 = NO_CONFORME_AS_IS
+```
+
+#### 41. Carril operativo no materializado en la raíz
+
+El caller del launcher envía `p_site_id = null` y `p_area_id = null` al helper legacy y no recibe en esa superficie una proyección explícita de:
+
+- turno vigente;
+- rol operativo;
+- sede operativa;
+- área operativa;
+- check-in;
+- relevancia contextual;
+- estado de carril.
+
+Resultado:
+
+```text
+RNF-03 = NO_CONFORME_AS_IS
+```
+
+No se concluye que la base de datos carezca de esos conceptos. El hallazgo se limita al consumo visible en la raíz evaluada.
+
+#### 42. `TaskNavigation` compartido
+
+El componente compartido materializado:
+
+- admite `PRIMARY`;
+- admite `SECONDARY`;
+- admite `DISCOVERABLE`;
+- admite `CONTEXTUAL_DISABLED`;
+- admite `REQUIRED_BLOCKED`;
+- no admite `HIDDEN` como estado renderizable;
+- vuelve no accionables los dos estados bloqueados;
+- no conoce roles;
+- no conoce permisos;
+- no conoce `AccessContext`;
+- no consulta Supabase;
+- no decide autorización;
+- conserva orden e identidades entregados por el owner.
+
+Esta separación es compatible con el contrato de 019.
+
+#### 43. Resultado del validador compartido como evidencia estática
+
+El validador de `TaskNavigation` contiene cincuenta escenarios de su contrato propio e inspecciona, entre otras fronteras:
+
+- estados bloqueados no accionables;
+- ausencia de inferencia de permisos;
+- ausencia de inferencia de roles;
+- ausencia de inferencia de contexto;
+- ausencia de Supabase y red;
+- preservación de orden;
+- identidad estable;
+- navegación accesible;
+- reflow;
+- separación del landmark de `AppShell`.
+
+019 no presenta ese validador como prueba de roles de SHELL.
+
+Prueba el componente, no la política de navegación por actor del Hub.
+
+#### 44. Hallazgos reales
+
+| ID | Hallazgo | Severidad documental | Bloquea cierre documental de 019 | Propietario de salida |
+|---|---|---|---|---|
+| `RNF-01` | launcher AS-IS no materializa el universo necesario para certificar la matriz completa de aplicaciones por rol | alta | no | materialización física de visibilidad/catálogo de SHELL |
+| `RNF-02` | raíz AS-IS no materializa la clasificación de actor efectivo y entrada laboral final antes del Hub | crítica | no | materialización física de contexto/entrada de SHELL |
+| `RNF-03` | raíz AS-IS no materializa la política final del carril operativo para navegación contextual | crítica | no | materialización física de `SHELL-APP-003` y contratos de autorización |
+| `RNF-04` | errores del helper legacy terminan presentados como `disabled`, sin preservar denegación versus evaluación no disponible | alta | no | materialización física de explicación segura de `SHELL-APP-010` |
+| `RNF-05` | cinco tarjetas AS-IS no distinguen ocultamiento, bloqueo contextual, reserva y visibilidad final | alta | no | materialización física de `SHELL-APP-002`, `SHELL-APP-003` y `SHELL-APP-010` |
+| `RNF-06` | home AS-IS continúa app-first y no materializa aún la navegación task-first aprobada en 009, 017 y 018 | alta | no | materialización física de experiencia SHELL |
+| `RNF-07` | el componente compartido seguro de navegación existe, pero `src/app/page.tsx` no lo consume como integración final | media | no | adopción/migración física correspondiente |
+| `RNF-08` | no existe evidencia de ejecución por actores reales dentro de esta tarea documental | esperada | no | instancia física posterior de prueba y certificación |
+
+Ningún hallazgo crea una nueva tarea canónica.
+
+#### 45. Condiciones de salida de los hallazgos
+
+`RNF-01` se cierra cuando el runtime consume un catálogo gobernado capaz de representar la política aprobada completa sin listas locales divergentes.
+
+`RNF-02` se cierra cuando la entrada laboral consume actor efectivo y condiciones de acceso a SHELL resueltas por sus propietarios antes de renderizar el Hub.
+
+`RNF-03` se cierra cuando NEXO, FOGO, ORIGO y PULSO reciben la proyección contextual de entrada aprobada, con carriles completos e independientes.
+
+`RNF-04` se cierra cuando una denegación válida y una evaluación no disponible producen estados públicos distintos.
+
+`RNF-05` se cierra cuando la presentación diferencia explícitamente visible, oculto, bloqueado, diferido y adyacente según el contrato.
+
+`RNF-06` se cierra cuando el home materializa la composición task-first ya aprobada.
+
+`RNF-07` se cierra cuando la adopción física correspondiente demuestra paridad, compatibilidad y rollback.
+
+`RNF-08` se cierra únicamente con evidencia física o integrada de actores y ambientes autorizados.
+
+019 no declara ninguna de estas condiciones cumplida.
+
+#### 46. Matriz de invariantes de seguridad por rol
+
+| Invariante | Resultado contractual |
+|---|---|
+| rol base no es autorización | `CONFORME_CONTRATO` |
+| rol operativo no es actor | `CONFORME_CONTRATO` |
+| tarjeta visible no es capability | `CONFORME_CONTRATO` |
+| tarjeta oculta no elimina guard de destino | `CONFORME_CONTRATO` |
+| aplicación `BASE_ONLY` no recibe acceso desde rol operativo | `CONFORME_CONTRATO` |
+| PULSO no recibe fallback base | `CONFORME_CONTRATO` |
+| base y operativo no mezclan fragmentos | `CONFORME_CONTRATO` |
+| turno futuro no habilita navegación actual | `CONFORME_CONTRATO` |
+| check-in no es requisito de `app.access` con prerrequisito `T` | `CONFORME_CONTRATO` |
+| contexto stale no conserva autoridad | `CONFORME_CONTRATO` |
+| dispositivo compartido no es actor | `CONFORME_CONTRATO` |
+| simulación no concede navegación real | `CONFORME_CONTRATO` |
+
+#### 47. Matriz de resultados AS-IS
+
+| Superficie/contrato | Resultado |
+|---|---|
+| universo de diez aplicaciones | `NO_CONFORME_AS_IS` |
+| cuatro tipos de actor en root | `NO_CONFORME_AS_IS` |
+| ocho roles base certificables end-to-end | `NO_CERTIFICABLE_AS_IS` |
+| doce roles operativos certificables end-to-end | `NO_CONFORME_AS_IS` |
+| carril operativo de entrada | `NO_CONFORME_AS_IS` |
+| distinción deny/error técnico | `NO_CONFORME_AS_IS` |
+| hidden versus blocked | `NO_CONFORME_AS_IS` |
+| task-first home | `NO_CONFORME_AS_IS` |
+| primitiva compartida role-agnostic | `CONFORME_CONTRATO` |
+| bloqueos reales y adversariales | `RESERVADO_020` |
+| prueba física con trabajadores | `NO_EJECUTADO_FISICO` |
+
+#### 48. No se modifica la evidencia histórica
+
+Los resultados de 019 no reescriben retrospectivamente:
+
+- auditorías AS-IS anteriores;
+- contratos de autorización;
+- decisiones de 002 y 003;
+- decisiones de página inicial;
+- contratos de bloqueo;
+- experiencias 017 y 018;
+- evidencia de componentes compartidos.
+
+019 registra el estado observado frente a esas fuentes.
+
+#### 49. No se convierte un FAIL AS-IS en requisito nuevo
+
+Los hallazgos son incumplimientos o materializaciones pendientes de reglas ya existentes.
+
+Por tanto:
+
+```text
+HALLAZGO AS_IS
+!=
+REQUISITO NUEVO
+```
+
+La corrección deberá demostrar conformidad contra la cobertura vigente en el lifecycle físico aplicable.
+
+#### 50. Frontera con `SHELL-APP-020`
+
+019 no ejecuta bloqueos reales.
+
+Queda reservado a 020 verificar, según sus fuentes vigentes:
+
+- denegaciones reales;
+- contextos inválidos reales;
+- expiraciones;
+- pérdida de autorización;
+- fallos de backend;
+- bloqueo por dispositivo;
+- URL directa bajo guard real;
+- cambio de actor real;
+- cambios de turno, sede o área en ejecución;
+- recuperación después del bloqueo;
+- mensajes y acciones realmente observados.
+
+019 entrega los oracles y defectos de navegación por rol que 020 podrá consumir sin reabrir la matriz.
+
+#### 51. Frontera con `SHELL-APP-021`
+
+Los enlaces actuales de perfil y configuración que todavía apuntan a `/` no se corrigen en 019.
+
+Su retiro permanece reservado a:
+
+`SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real`.
+
+La presencia de esos placeholders no se usa para distorsionar el resultado de navegación por rol.
+
+#### 52. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La prueba confronta el runtime AS-IS con reglas de navegación, autorización, contexto, seguridad y presentación que ya poseen cobertura canónica. Los hallazgos registrados son no conformidades frente a obligaciones existentes, no reglas nuevas.
+
+#### 53. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, 019 reutiliza especialmente:
+
+- `TREQ-SHELL-015` — disponibilidad del launcher derivada de decisión canónica;
+- `TREQ-SHELL-016` — aplicación sin acceso efectivo no navegable y enforcement propio del destino;
+- `TREQ-SHELL-028` — catálogo único versionado para launcher y navegación;
+- `TREQ-SHELL-030` — visibilidad derivada de permisos y contexto sin sustituir autorización;
+- `TREQ-SHELL-031` — simulación separada de autoridad real;
+- `TREQ-SHELL-063` — frontera server/client sin decisión autoritativa en la UI;
+- `TREQ-SHELL-070` — proyección segura de contexto;
+- `TREQ-SHELL-071` — proyección segura de decisión;
+- `TREQ-SHELL-072` — cliente sin autoridad propia;
+- `TREQ-SHELL-073` — separación entre denegación, contrato inválido y fallos de backend.
+
+También permanecen aplicables los requisitos de autorización y UX propietarios que protegen actor efectivo, modalidad, territorio, dispositivo, accesibilidad, continuidad y navegación.
+
+Esta enumeración es trazabilidad heredada. No actualiza el registro.
+
+#### 54. Resultado cuantitativo
+
+```text
+ACTOR_TYPES_TESTED = 4
+BASE_ROLES_TESTED = 8
+OPERATIONAL_ROLES_TESTED = 12
+CANONICAL_APPS_IN_ORACLE = 10
+
+BASE_MATRIX_EDGES = 39
+OPERATIONAL_MATRIX_EDGES = 25
+
+BASE_ROLE_CASES = 8
+OPERATIONAL_ROLE_CASES = 12
+ROLE_CASES_TOTAL = 20
+
+ROLE_SURFACE_PROJECTIONS_MINIMUM = 40
+
+AS_IS_FINDINGS = 8
+AS_IS_FINDINGS_BLOCKING_DOCUMENTARY_CLOSE = 0
+NEW_TREQ = 0
+MODIFIED_TREQ = 0
+```
+
+#### 55. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-019 — Probar navegación por rol`.
+- [ ] `SHELL-APP-018` permanece como tarea anterior.
+- [ ] `SHELL-APP-020` permanece como siguiente tarea.
+- [ ] La tarea permanece en carril documental.
+- [ ] La topología posterior `PER_IMPLEMENTATION_UNIT` no se interpreta como autorización física.
+- [ ] Se cubren exactamente cuatro tipos de actor efectivo.
+- [ ] Se cubren exactamente ocho roles base.
+- [ ] Se cubren exactamente doce roles operativos.
+- [ ] Se conserva el universo de diez aplicaciones.
+- [ ] La matriz base conserva 39 relaciones de visibilidad.
+- [ ] La matriz operativa conserva 25 relaciones candidatas.
+- [ ] NEXO conserva 12 roles operativos candidatos.
+- [ ] PULSO conserva 7.
+- [ ] FOGO conserva 4.
+- [ ] ORIGO conserva 2.
+- [ ] La navegación no se deriva del nombre de rol.
+- [ ] `CUSTOMER`, `SYSTEM` y `UNRESOLVED` no reciben Hub laboral por inferencia.
+- [ ] `shell.access` permanece como condición de entrada laboral de SHELL.
+- [ ] Carril base y carril operativo permanecen independientes.
+- [ ] `T` no se transforma en `T+C` para `app.access`.
+- [ ] Un turno vigente sin check-in puede seguir habilitando entrada cuando el grant lo permite.
+- [ ] Turno futuro, ambiguo, expirado, cancelado o retirado no crea visibilidad operativa vigente.
+- [ ] Aplicación visible no concede capacidades internas.
+- [ ] Aplicación oculta no elimina enforcement del destino.
+- [ ] `HIDDEN` no se colapsa a tarjeta bloqueada.
+- [ ] Denegación y evaluación no disponible permanecen distintas.
+- [ ] AURA permanece diferida.
+- [ ] PASS permanece fuera del grid laboral primario.
+- [ ] ANIMA y NUMERA forman parte de la matriz base aunque no estén hoy en el launcher AS-IS.
+- [ ] Computador y tablet conservan la misma semántica de roles.
+- [ ] Tablet compartida no hereda navegación entre actores.
+- [ ] Los veinte roles consumidos por la prueba tienen exactamente una decisión documental.
+- [ ] Los hallazgos AS-IS tienen propietario y condición de salida.
+- [ ] Los hallazgos no crean tareas canónicas nuevas.
+- [ ] Los bloqueos reales permanecen reservados a 020.
+- [ ] Los placeholders permanecen reservados a 021.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+#### 56. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+|---|---|---|
+| BUILD | NOT_APPLICABLE | 019 produce exclusivamente un artefacto documental de prueba y hallazgos; no modifica código ejecutable ni crea una prueba runtime que requiera build propio en esta etapa. |
+| LOCAL | NOT_EXECUTED | La tarea todavía no ha sido incorporada y normalizada en el checkout local del lifecycle documental, por lo que format, quality, delivery y batería global permanecen pendientes de ese checkout. |
+| REMOTA | PASS | Se inspeccionó `main` en `23907b52b30b91485ac0eb2e5022a8b891c3d93a`, la continuidad vigente, topología, políticas documentales, owner H2, contratos de visibilidad 002/003, página inicial 009, bloqueo 010, experiencias 017/018, 04A SHELL, `src/app/page.tsx`, `TaskNavigation` y su validador compartido. |
+| OPERATIVA | PASS | Se ejecutó una prueba documental estática completa sobre los cuatro tipos de actor, ocho roles base, doce roles operativos, diez aplicaciones, 39 relaciones base, 25 relaciones operativas y las fronteras de navegación; el resultado registra explícitamente que el runtime AS-IS es no conforme y que no se ejecutaron sesiones reales. |
+| FÍSICA | NOT_APPLICABLE | La ejecución con actores, dispositivos, ambientes y bloqueos reales no pertenece a esta aprobación documental; 020 y el lifecycle físico posterior conservan esa evidencia. |
+
+#### 57. Límites
+
+Esta tarea no:
+
+- modifica `src/app/page.tsx`;
+- modifica `TaskNavigation`;
+- modifica componentes compartidos;
+- crea un test ejecutable de runtime;
+- altera roles;
+- altera grants;
+- altera denies;
+- crea permisos;
+- modifica catálogo;
+- modifica `AccessContext`;
+- modifica autorización;
+- modifica Supabase;
+- modifica datos;
+- despliega aplicaciones;
+- prueba usuarios productivos;
+- prueba bloqueos reales;
+- afirma que una URL directa ya fue denegada en ambiente real;
+- corrige los hallazgos;
+- activa AURA;
+- introduce PASS al Hub laboral;
+- retira placeholders;
+- crea o modifica requisitos de prueba;
+- autoriza una instancia física.
+
+#### 58. Resultado canónico de 019
+
+La salida queda:
+
+```text
+CONTRATO DE NAVEGACIÓN POR ROL
+-> VERIFICADO DOCUMENTALMENTE
+
+4 TIPOS DE ACTOR
+-> CUBIERTOS
+
+8 ROLES BASE
+-> CUBIERTOS
+
+12 ROLES OPERATIVOS
+-> CUBIERTOS
+
+10 APLICACIONES
+-> CUBIERTAS EN EL ORACLE
+
+RUNTIME AS_IS
+-> NO CONFORME
+
+HALLAZGOS
+-> REGISTRADOS CON OWNER Y SALIDA
+
+BLOQUEOS REALES
+-> RESERVADOS A 020
+
+CAMBIO FÍSICO
+-> NO AUTORIZADO
+```
+
+#### 59. Handoff a `SHELL-APP-020`
+
+020 recibe:
+
+1. los cuatro tipos de actor;
+2. los ocho roles base;
+3. los doce roles operativos;
+4. la matriz base de 39 relaciones;
+5. la matriz operativa de 25 relaciones;
+6. los oracles de entrada por contexto;
+7. la separación base/operativo;
+8. la regla `T` para entrada;
+9. la separación hidden/blocked;
+10. la separación deny/evaluation unavailable;
+11. los ocho hallazgos AS-IS;
+12. la exigencia de enforcement propio del destino;
+13. la invariancia entre computador y tablet;
+14. la prohibición de transportar autoridad por navegación.
+
+020 deberá probar bloqueos reales sin redefinir estas matrices.
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-018 — Diseñar experiencia para tablet`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-019 — Probar navegación por rol`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-020 — Probar navegación con bloqueos reales`
+
+
 ### [ ] SHELL-APP-020 — Probar navegación con bloqueos reales
 
 ### [ ] SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
