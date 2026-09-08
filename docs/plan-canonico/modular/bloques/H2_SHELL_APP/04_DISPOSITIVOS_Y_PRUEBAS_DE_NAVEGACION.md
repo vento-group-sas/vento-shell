@@ -3422,7 +3422,1260 @@ CAMBIO FÍSICO
 `SHELL-APP-020 — Probar navegación con bloqueos reales`
 
 
-### [ ] SHELL-APP-020 — Probar navegación con bloqueos reales
+### ✅ SHELL-APP-020 — Probar navegación con bloqueos reales
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-019 — Probar navegación por rol
+**Tarea siguiente:** SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
+**Tipo de tarea:** validación técnico-documental de navegación ante bloqueos reales representados por código, contratos y pruebas ejecutables vigentes; contrasta el comportamiento AS-IS de SHELL con los oráculos canónicos sin ejecutar una instancia física, modificar runtime ni certificar ambientes no observados
+**Bloque:** H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md`
+**Estado físico resultante:** matriz canónica de navegación bloqueada y recuperación cerrada contra el snapshot remoto vigente, con cobertura estática de bloqueos materializados y brechas AS-IS identificadas; runtime, datos, Supabase, consumidores, dispositivos y despliegues sin modificaciones
+**Cambios físicos autorizados:** ninguno; no se modifican código, navegación runtime, contratos, pruebas ejecutables, autorización, datos, Supabase, configuración, dispositivos, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Probar documentalmente cómo debe comportarse la navegación de SHELL cuando una decisión de entrada, un contexto, un dispositivo, una sesión o una dependencia impiden continuar de forma segura, utilizando bloqueos que ya están representados por fuentes reales del repositorio vigente.
+
+La tarea debe determinar:
+
+1. qué clases de bloqueo son relevantes para la entrada a una aplicación;
+2. cuáles pertenecen únicamente a una capacidad interna y no deben bloquear toda la aplicación;
+3. qué ocurre cuando no existe sesión válida;
+4. qué ocurre cuando el actor laboral no es válido;
+5. qué ocurre ante denegación de acceso;
+6. qué ocurre ante contexto operativo inválido;
+7. qué ocurre ante contexto obsoleto;
+8. qué ocurre ante dispositivo compartido no autorizado;
+9. qué ocurre ante simulación;
+10. qué ocurre ante indisponibilidad técnica de autorización;
+11. qué ocurre ante navegación directa;
+12. cómo cambia la presentación después de recuperar una condición válida;
+13. qué parte está materializada en código o pruebas ejecutables;
+14. qué parte todavía no puede certificarse físicamente desde el runtime AS-IS de SHELL.
+
+#### 2. Alcance
+
+La validación cubre:
+
+- entrada a SHELL;
+- entrada desde SHELL hacia aplicaciones laborales;
+- decisión de autorización exacta;
+- bloqueo estructural;
+- bloqueo del carril base;
+- bloqueo del carril operativo;
+- sesión ausente o inválida;
+- empleado inactivo;
+- sede y área;
+- turno;
+- check-in cuando el permiso exacto lo exige;
+- rol operativo;
+- dispositivo compartido;
+- simulación;
+- configuración inconsistente;
+- permiso no registrado;
+- indisponibilidad del evaluador;
+- frescura;
+- cambio de actor;
+- cambio de turno, sede o área;
+- navegación directa;
+- separación entre `DENY` y fallo técnico;
+- presentación segura del bloqueo;
+- recuperación;
+- computador;
+- tablet personal;
+- tablet compartida.
+
+No se ejecutan mutaciones ni cambios de infraestructura.
+
+#### 3. Snapshot remoto evaluado
+
+La prueba queda anclada al siguiente snapshot verificable:
+
+| Campo | Valor |
+|---|---|
+| Repositorio | `vento-group-sas/vento-shell` |
+| Rama | `main` |
+| Commit | `35089a93ff41753d565090b5e766547daa45868f` |
+| Última tarea aprobada | `SHELL-APP-019 — Probar navegación por rol` |
+| Tarea actual | `SHELL-APP-020 — Probar navegación con bloqueos reales` |
+| Siguiente tarea | `SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real` |
+| Owner H2 inspeccionado | `04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
+| Runtime SHELL inspeccionado | `src/app/page.tsx`, `src/app/login/page.tsx`, `middleware.ts` |
+| Evidencia backend inspeccionada | suites SQL de autorización, frescura, simulación, dispositivo y persistencia |
+
+Una modificación posterior de estas superficies exige reconciliar la evidencia antes de reutilizarla como fotografía vigente.
+
+#### 4. Handoff recibido de `SHELL-APP-019`
+
+019 entrega sin reapertura:
+
+1. cuatro tipos de actor;
+2. ocho roles base;
+3. doce roles operativos;
+4. matriz base de 39 relaciones;
+5. matriz operativa de 25 relaciones;
+6. oráculos de entrada por contexto;
+7. separación base/operativo;
+8. prerrequisito `T` para entrada operativa;
+9. separación entre ocultamiento y bloqueo;
+10. separación entre denegación e indisponibilidad de evaluación;
+11. ocho hallazgos AS-IS;
+12. enforcement propio del destino;
+13. invariancia entre computador y tablet;
+14. prohibición de transportar autoridad por navegación.
+
+020 prueba los bloqueos sin modificar esas matrices.
+
+#### 5. Significado de “bloqueo real”
+
+En esta tarea:
+
+```text
+BLOQUEO REAL
+=
+CONDICIÓN REPRESENTADA POR
+CÓDIGO VIGENTE
+O CONTRATO CANÓNICO VIGENTE
+O PRUEBA EJECUTABLE VIGENTE
+```
+
+No significa:
+
+```text
+BLOQUEO REAL
+=
+PRUEBA PRODUCTIVA DECLARADA SIN EVIDENCIA
+```
+
+Por tanto, la tarea diferencia:
+
+- existencia y semántica del bloqueo;
+- materialización observable en el repositorio;
+- presentación actual de SHELL;
+- ejecución física en un ambiente y actor concretos.
+
+#### 6. Regla general de navegación bloqueada
+
+La navegación solo puede continuar cuando existe una conclusión autoritativa suficiente para hacerlo.
+
+Se conserva:
+
+```text
+ALLOW VÁLIDO
+-> PUEDE CONTINUAR SEGÚN LAS DEMÁS CONDICIONES
+
+DENY VÁLIDO
+-> NO NAVEGA
+
+CONTRATO INVÁLIDO
+-> NO NAVEGA
+
+BACKEND NO DISPONIBLE
+-> NO NAVEGA
+
+RESPUESTA BACKEND INVÁLIDA
+-> NO NAVEGA
+
+CONTEXTO STALE
+-> NO CONSERVA AUTORIDAD ANTERIOR
+```
+
+La UI no transforma una ausencia de evidencia en acceso.
+
+#### 7. Frontera entre aplicación y capacidad interna
+
+Un bloqueo de una capacidad interna no se eleva automáticamente a bloqueo de entrada de toda la aplicación.
+
+Se conserva:
+
+```text
+DENY DE PERMISO INTERNO
+!=
+DENY DE app.access
+```
+
+La tarjeta o destino de aplicación se gobierna por la evaluación exacta de su permiso de entrada.
+
+#### 8. Universo público de razones
+
+La presentación de autorización reutiliza exactamente el universo vigente de veinte razones públicas:
+
+1. `AUTH_NO_SESSION`;
+2. `AUTH_USER_INACTIVE`;
+3. `AUTH_APP_ACCESS_DENIED`;
+4. `AUTH_ADMIN_PERMISSION_DENIED`;
+5. `AUTH_OPERATIONAL_PERMISSION_DENIED`;
+6. `AUTH_SITE_ASSIGNMENT_REQUIRED`;
+7. `AUTH_ACTIVE_SITE_REQUIRED`;
+8. `AUTH_AREA_ASSIGNMENT_REQUIRED`;
+9. `AUTH_ACTIVE_AREA_REQUIRED`;
+10. `AUTH_PUBLISHED_SHIFT_REQUIRED`;
+11. `AUTH_OUTSIDE_SHIFT_WINDOW`;
+12. `AUTH_CHECKIN_REQUIRED`;
+13. `AUTH_OPERATIONAL_ROLE_REQUIRED`;
+14. `AUTH_OPERATIONAL_ROLE_INVALID_FOR_SITE`;
+15. `AUTH_OPERATIONAL_ROLE_INVALID_FOR_AREA`;
+16. `AUTH_SHARED_DEVICE_NOT_AUTHORIZED`;
+17. `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION`;
+18. `AUTH_ADMINISTRATIVE_CONFIGURATION_INCONSISTENT`;
+19. `AUTH_PERMISSION_NOT_REGISTERED`;
+20. `AUTH_AUTHORIZATION_EVALUATION_UNAVAILABLE`.
+
+020 no crea un código local de SHELL.
+
+#### 9. Matriz principal de las veinte razones
+
+| Razón pública | Tratamiento de navegación en 020 | Regla de no inferencia |
+|---|---|---|
+| `AUTH_NO_SESSION` | bloquea una navegación que requiere sesión válida | no se sustituye por presencia visual de email o cookies |
+| `AUTH_USER_INACTIVE` | bloquea entrada laboral cuando la decisión exacta la devuelve | no se deduce solo de una etiqueta de perfil |
+| `AUTH_APP_ACCESS_DENIED` | bloquea la aplicación evaluada | no se reescribe por rol |
+| `AUTH_ADMIN_PERMISSION_DENIED` | bloquea la capacidad exacta evaluada | no bloquea toda la aplicación si procede de otro permiso |
+| `AUTH_OPERATIONAL_PERMISSION_DENIED` | bloquea la capacidad exacta evaluada | no bloquea toda la aplicación si procede de otro permiso |
+| `AUTH_SITE_ASSIGNMENT_REQUIRED` | bloquea cuando la autorización exacta exige asignación territorial | no se fabrica desde un campo vacío del cliente |
+| `AUTH_ACTIVE_SITE_REQUIRED` | bloquea cuando la decisión exige sede operativa vigente | no se usa sede seleccionada como fallback |
+| `AUTH_AREA_ASSIGNMENT_REQUIRED` | bloquea cuando el contrato exacto exige afiliación de área | no se inventa desde el nombre del rol |
+| `AUTH_ACTIVE_AREA_REQUIRED` | bloquea cuando el grant exacto exige área operativa válida | no se sustituye por área primaria |
+| `AUTH_PUBLISHED_SHIFT_REQUIRED` | bloquea cuando el permiso exacto exige turno publicado/vigente | un turno futuro no satisface el requisito actual |
+| `AUTH_OUTSIDE_SHIFT_WINDOW` | bloquea cuando el actor está fuera de la ventana válida | no se colapsa con ausencia total de turno |
+| `AUTH_CHECKIN_REQUIRED` | bloquea únicamente permisos que realmente exijan check-in | no se fabrica para `app.access` cuyo prerrequisito sea `T` |
+| `AUTH_OPERATIONAL_ROLE_REQUIRED` | bloquea cuando el permiso exacto exige rol operativo | el rol base no lo reemplaza |
+| `AUTH_OPERATIONAL_ROLE_INVALID_FOR_SITE` | bloquea el carril afectado | no se elige otra sede para conseguir acceso |
+| `AUTH_OPERATIONAL_ROLE_INVALID_FOR_AREA` | bloquea el carril afectado | no se elige otra área para conseguir acceso |
+| `AUTH_SHARED_DEVICE_NOT_AUTHORIZED` | bloquea cuando la decisión exacta considera incompatible el dispositivo | el dispositivo no se convierte en actor |
+| `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` | bloquea la acción real afectada en simulación | no convierte preview en autoridad |
+| `AUTH_ADMINISTRATIVE_CONFIGURATION_INCONSISTENT` | bloquea sin atribuir falta de permiso al trabajador | no se traduce como `No tienes acceso` |
+| `AUTH_PERMISSION_NOT_REGISTERED` | bloquea la función no registrada | no crea alias ni permiso local |
+| `AUTH_AUTHORIZATION_EVALUATION_UNAVAILABLE` | bloquea mientras no pueda verificarse autorización | no se representa como deny personal |
+
+#### 10. Sesión ausente
+
+El middleware vigente contiene un bloqueo real de acceso a superficies protegidas:
+
+- ausencia de cookies Supabase conduce al acceso;
+- ausencia de configuración requerida conduce al acceso;
+- error al validar la sesión conduce al acceso y limpia cookies Supabase aplicables;
+- sesión sin usuario válido conduce al acceso y limpia cookies aplicables.
+
+Esto prueba la existencia de una frontera fail-closed para sesión en el runtime actual.
+
+No prueba por sí solo la política final de actor laboral de SHELL.
+
+#### 11. Sesión presente no equivale a actor laboral válido
+
+La existencia de `user` en Supabase no demuestra:
+
+- `EMPLOYEE`;
+- empleado activo;
+- `shell.access`;
+- contexto laboral;
+- rol operativo;
+- aplicación elegible.
+
+La navegación final sigue necesitando las resoluciones aprobadas en tareas anteriores.
+
+El runtime AS-IS todavía no materializa toda esa cadena en `src/app/page.tsx`.
+
+#### 12. Empleado inactivo
+
+Un actor laboral inactivo no conserva navegación por:
+
+- sesión técnica aún válida;
+- rol histórico;
+- grant histórico;
+- tarjeta cacheada;
+- aplicación abierta;
+- contexto anterior.
+
+La razón pública se consume solo desde la decisión autoritativa aplicable.
+
+#### 13. Denegación de acceso a aplicación
+
+Cuando el permiso exacto de entrada produce `AUTH_APP_ACCESS_DENIED`:
+
+```text
+NAVIGABLE = NO
+```
+
+La UI puede presentar la explicación segura aprobada.
+
+No muestra:
+
+- grant faltante;
+- deny ganador;
+- tabla;
+- política;
+- rol de otra persona;
+- permiso crudo como instrucción de soporte.
+
+#### 14. Denegación administrativa
+
+`AUTH_ADMIN_PERMISSION_DENIED` mantiene alcance sobre el permiso exacto evaluado.
+
+Ejemplo de frontera:
+
+```text
+APP ACCESS = ALLOW
+CAPACIDAD ADMINISTRATIVA = DENY
+```
+
+no autoriza a SHELL a ocultar toda la aplicación.
+
+El destino conserva el bloqueo de la capacidad administrativa.
+
+#### 15. Denegación operativa
+
+`AUTH_OPERATIONAL_PERMISSION_DENIED` mantiene la misma regla de precisión.
+
+Una denegación operacional interna:
+
+```text
+!=
+DENEGACIÓN AUTOMÁTICA DE app.access
+```
+
+La aplicación puede seguir siendo visible por un carril base independiente cuando corresponda.
+
+#### 16. Sede requerida
+
+Cuando la decisión exacta requiere sede:
+
+- no se usa sede primaria como autoridad sustituta;
+- no se usa sede seleccionada;
+- no se usa sede del dispositivo sin reconciliación;
+- no se usa último valor conocido;
+- no se deriva una sede desde la URL.
+
+El carril afectado permanece no autorizado.
+
+#### 17. Sede activa requerida
+
+Una sede existente pero no válida para el contexto operativo no satisface la autorización.
+
+Un cambio de sede invalida la proyección dependiente de la sede anterior.
+
+La navegación no conserva el resultado anterior por continuidad visual.
+
+#### 18. Área requerida
+
+Cuando el grant concreto exige área:
+
+- área nula no se interpreta como cualquier área;
+- área primaria no sustituye área operativa;
+- área elegida en cliente no amplía autoridad;
+- el nombre del rol no fabrica el área.
+
+Roles legítimamente site-wide conservan la semántica definida por su contrato.
+
+#### 19. Área activa requerida
+
+Un área inactiva, incompatible o perteneciente a otro contexto no completa el carril.
+
+La UI no intenta encontrar automáticamente otra área que produzca un resultado permisivo.
+
+#### 20. Turno publicado requerido
+
+Para permisos operativos de entrada que exigen `T`:
+
+```text
+T
+=
+TURNO PUBLICADO Y VIGENTE
+```
+
+No satisfacen `T`:
+
+- borrador;
+- turno futuro;
+- turno finalizado;
+- turno cancelado;
+- turno retirado;
+- turno ambiguo.
+
+#### 21. Fuera de ventana
+
+`AUTH_OUTSIDE_SHIFT_WINDOW` permanece distinto de `AUTH_PUBLISHED_SHIFT_REQUIRED`.
+
+Esto permite distinguir:
+
+```text
+NO EXISTE TURNO PUBLICADO APLICABLE
+```
+
+de:
+
+```text
+EXISTE TURNO PERO NO ES VIGENTE AHORA
+```
+
+La recuperación puede ser diferente y SHELL no colapsa ambos estados.
+
+#### 22. Check-in requerido
+
+La frontera aprobada de 019 se mantiene:
+
+```text
+nexo.access
+fogo.access
+origo.access
+pulso.access
+```
+
+usan prerrequisito operativo de entrada `T`.
+
+Por tanto, SHELL no puede inventar `AUTH_CHECKIN_REQUIRED` para esas entradas solo porque no exista check-in.
+
+`AUTH_CHECKIN_REQUIRED` permanece válido para capacidades cuyo contrato exacto use `T+C`.
+
+#### 23. Rol operativo requerido
+
+Un rol operativo se obtiene de la realidad laboral resuelta.
+
+No puede provenir de:
+
+- selector visual;
+- rol base;
+- cookie;
+- query;
+- aplicación abierta;
+- dispositivo;
+- última sesión;
+- texto visible.
+
+Sin rol operativo válido, el carril que lo necesita no produce entrada.
+
+#### 24. Rol operativo incompatible con sede
+
+La incompatibilidad no se repara localmente cambiando sede.
+
+El resultado seguro es conservar bloqueado el carril operativo afectado y solicitar nueva resolución cuando corresponda.
+
+Un carril base independiente puede seguir siendo válido si el bloqueo no es transversal.
+
+#### 25. Rol operativo incompatible con área
+
+La misma separación aplica al área.
+
+No se mezclan:
+
+```text
+ROL DE UN CONTEXTO
++
+ÁREA DE OTRO CONTEXTO
+```
+
+para fabricar un `ALLOW`.
+
+#### 26. Dispositivo compartido no autorizado
+
+La identidad técnica del dispositivo solo puede restringir.
+
+No puede conceder:
+
+- actor;
+- rol;
+- permiso;
+- turno;
+- sede;
+- área;
+- check-in.
+
+La suite de dispositivo vigente contiene pruebas ejecutables de fallo cerrado para dispositivo desconocido y para una decisión `DENY` al intentar registrar dispositivo.
+
+#### 27. Simulación
+
+La simulación permanece no ejecutable como autoridad real.
+
+La suite vigente de simulación contiene controles ejecutables que:
+
+- impiden marcar una evaluación simulada como ejecutable;
+- rechazan permisos clasificados `NOT_ALLOWED`;
+- mantienen tres permisos en esa categoría dentro del snapshot probado;
+- impiden que la administración de simulación se auto-simule como autorización real.
+
+La navegación real nunca deriva un `ALLOW` desde un resultado hipotético.
+
+#### 28. Configuración administrativa inconsistente
+
+Cuando la autorización no puede validar coherentemente la configuración necesaria:
+
+- se bloquea la navegación afectada;
+- no se culpa al usuario;
+- no se sustituye por `AUTH_APP_ACCESS_DENIED`;
+- no se cierra la sesión únicamente por esta razón;
+- la recuperación pertenece a revisión autorizada.
+
+#### 29. Permiso no registrado
+
+Un permiso ausente del catálogo gobernado no se crea en cliente ni se corrige mediante:
+
+- alias;
+- string alternativo;
+- nombre de aplicación;
+- permiso parecido;
+- rol;
+- fallback legacy no autorizado.
+
+La función permanece no disponible hasta corregir su propietario.
+
+#### 30. Evaluación de autorización no disponible
+
+La indisponibilidad técnica produce una semántica distinta de `DENY`.
+
+Se conserva:
+
+```text
+NO SE PUDO EVALUAR
+!=
+SE EVALUÓ Y SE DENEGÓ
+```
+
+La suite de persistencia vigente modela explícitamente:
+
+- `AUTH_AUTHORIZATION_EVALUATION_UNAVAILABLE`;
+- `TECHNICAL_UNAVAILABLE`;
+- `decision_produced = false`;
+- `executable = false`;
+- sesión preservada;
+- efecto no confirmado;
+- recuperación controlada.
+
+#### 31. Cuatro categorías internas de fallo
+
+Los adapters futuros conservan las categorías cerradas:
+
+```text
+DENIED
+CONTRACT_INVALID
+BACKEND_UNAVAILABLE
+BACKEND_RESPONSE_INVALID
+```
+
+Solo `DENIED` deriva de una decisión canónica válida con `DENY`.
+
+Las otras tres categorías también bloquean, pero no se presentan como falta de permiso del trabajador.
+
+#### 32. Comportamiento AS-IS del launcher
+
+La raíz vigente resuelve cinco tarjetas mediante `has_permission`.
+
+El resultado se reduce a:
+
+```text
+enabled
+o
+disabled
+```
+
+y la tarjeta muestra:
+
+```text
+Disponible
+o
+Sin acceso / Bloqueada
+```
+
+Esta interfaz no representa todavía el universo completo de causas aprobado.
+
+#### 33. Error de RPC en el launcher
+
+El runtime intenta primero una firma de `has_permission` y luego una segunda firma de compatibilidad.
+
+Si ambas fallan:
+
+```text
+return "disabled"
+```
+
+Por tanto, el AS-IS no conserva la diferencia entre:
+
+- denegación autoritativa;
+- contrato inválido;
+- backend no disponible;
+- respuesta inválida.
+
+Este resultado conserva el hallazgo `RNF-04` de 019.
+
+#### 34. Tarjeta bloqueada AS-IS
+
+Una tarjeta con `access = disabled` no recibe enlace de apertura.
+
+El runtime presenta un botón deshabilitado con `aria-disabled="true"`.
+
+Esto aporta evidencia estática de bloqueo en la superficie SHELL actual.
+
+No demuestra enforcement de la aplicación destino.
+
+#### 35. Oculto y bloqueado siguen separados
+
+La política final mantiene:
+
+```text
+HIDDEN
+!=
+BLOCKED VISIBLE
+```
+
+El AS-IS actual renderiza sus cinco aplicaciones locales incluso cuando quedan `disabled`.
+
+Por tanto, no certifica la política completa de:
+
+- visible;
+- contextual visible;
+- contextual bloqueada;
+- contextual oculta;
+- diferida;
+- adyacente.
+
+Esto conserva `RNF-05`.
+
+#### 36. Navegación directa
+
+Alterar:
+
+- DOM;
+- `href`;
+- JavaScript;
+- estado local;
+- query string;
+- historial;
+- enlace copiado;
+
+no puede crear autoridad.
+
+La aplicación destino debe reautorizar.
+
+La evidencia 04A vigente mantiene esa comprobación de destino sin certificar, por lo que 020 no declara una ejecución E2E inexistente.
+
+#### 37. Frontera `returnTo`
+
+El login vigente acepta actualmente cualquier valor que comience por:
+
+```text
+http://
+https://
+```
+
+como retorno.
+
+Esto mantiene una brecha real ya registrada para navegación.
+
+020 no la corrige ni la usa como comportamiento aprobado.
+
+La recuperación de esta brecha conserva su propietario existente.
+
+#### 38. Cambio de actor
+
+Cuando cambia el actor efectivo:
+
+1. la navegación personal anterior deja de ser vigente;
+2. las decisiones anteriores no se reutilizan;
+3. se descarta la presentación personal anterior;
+4. se resuelve nuevo contexto;
+5. se reevalúan permisos;
+6. se recalculan destinos;
+7. no se hereda un bloqueo personal ni un `ALLOW`.
+
+Esto es especialmente obligatorio en tablet compartida.
+
+#### 39. Cambio de turno
+
+Un cambio de turno puede alterar:
+
+- rol operativo;
+- sede;
+- área;
+- ventana temporal;
+- elegibilidad del carril operativo.
+
+La aplicación previamente visible por contexto no conserva autoridad sin nueva resolución.
+
+#### 40. Cambio de sede
+
+La sede anterior no permanece válida por estar dibujada en la interfaz.
+
+Una nueva realidad territorial obliga a recalcular el carril afectado.
+
+#### 41. Cambio de área
+
+Cuando un grant exige área, la variación de área invalida la conclusión dependiente del valor anterior.
+
+No existe transición permisiva automática entre áreas.
+
+#### 42. Cambio de rol operativo
+
+La navegación se recalcula desde el nuevo contexto.
+
+La UI no convierte un selector, etiqueta o cookie en transición laboral.
+
+#### 43. Cambio de grant o deny
+
+Un grant retirado o un deny nuevo puede invalidar una navegación previamente disponible.
+
+Se conserva:
+
+```text
+ANTES FUE ALLOW
+!=
+SIGUE SIENDO ALLOW
+```
+
+La visibilidad anterior no es capability.
+
+#### 44. Contexto obsoleto
+
+La infraestructura de frescura vigente incluye generación, bindings, invalidación y pruebas ejecutables dedicadas.
+
+020 adopta la regla:
+
+```text
+STALE
+!=
+AUTORIDAD VIGENTE
+```
+
+Una caché o snapshot anterior no puede autorizar después de un evento invalidante.
+
+#### 45. Sesión expirada
+
+Una sesión expirada bloquea nuevas acciones protegidas.
+
+La superficie puede preservar continuidad documental o de trabajo según contrato, pero no autoridad.
+
+Reautenticar no significa reusar automáticamente la decisión anterior.
+
+#### 46. Backend indisponible
+
+Cuando la dependencia de autorización no está disponible:
+
+- no se presenta `ALLOW`;
+- no se presenta una denegación personal inventada;
+- no se ejecuta el destino protegido;
+- la sesión puede preservarse;
+- la UI utiliza el perfil público seguro aplicable;
+- el retry solo existe cuando la política lo permite.
+
+#### 47. Respuesta backend inválida
+
+Una respuesta con shape, versión o catálogo incompatible no se castea como decisión válida.
+
+La navegación permanece bloqueada.
+
+La falla contractual no se convierte en reason code de autorización por similitud de texto.
+
+#### 48. Contrato inválido
+
+Una versión desconocida, estructura parcial o valor fuera del catálogo falla cerrado.
+
+No existe fallback hacia un booleano legacy para declarar conformidad final.
+
+#### 49. Evaluador de autorización materializado
+
+El repositorio contiene una suite ejecutable dedicada al evaluador canónico con 174 aserciones declaradas.
+
+Entre sus escenarios se encuentra una comprobación de sesión ausente que conserva `AUTH_NO_SESSION`.
+
+La existencia del test demuestra materialización de la comprobación.
+
+Esta tarea no declara el resultado de una ejecución que no observó.
+
+#### 50. Suite de frescura materializada
+
+Existe una suite ejecutable dedicada a frescura de contexto.
+
+Inspecciona, entre otras materias:
+
+- owner aislado;
+- RLS;
+- privilegios;
+- generaciones;
+- bindings;
+- invalidación;
+- fuentes materializadas;
+- fuentes todavía bloqueadas;
+- identidad de sesión;
+- exposición mínima.
+
+Esto proporciona evidencia real de que el problema de contexto stale tiene implementación y pruebas específicas.
+
+#### 51. Suite de simulación materializada
+
+Existe una suite ejecutable dedicada a auditoría de simulación.
+
+La suite contiene escenarios que fallan cerrado cuando:
+
+- el caller intenta marcar una simulación como ejecutable;
+- intenta simular un permiso cuyo contrato es `NOT_ALLOWED`;
+- intenta relabelar una política de simulación;
+- intenta auto-simular la administración real de simulación.
+
+La simulación continúa separada de autoridad.
+
+#### 52. Suite de dispositivo materializada
+
+Existe una suite ejecutable dedicada a dispositivo con 199 aserciones declaradas.
+
+Incluye comprobaciones de que:
+
+- un dispositivo desconocido falla cerrado;
+- una decisión `DENY` no permite registrar dispositivo;
+- una identidad de versión inválida es rechazada.
+
+Esto confirma una frontera real de dispositivo en backend.
+
+#### 53. Persistencia de decisión y fallo técnico materializados
+
+Existe una suite ejecutable de persistencia con 457 aserciones declaradas.
+
+La suite modela separadamente:
+
+- decisiones `ALLOW`;
+- decisiones `DENY`;
+- fallos técnicos;
+- intentos de evaluación;
+- correlación;
+- no ejecutabilidad del fallo;
+- efectos no confirmados;
+- política de recuperación.
+
+020 utiliza esa separación como evidencia del oráculo técnico.
+
+#### 54. Matriz de evidencia estática
+
+| Familia | Evidencia materializada observada | Resultado para 020 |
+|---|---|---|
+| sesión ausente | middleware + evaluador | bloqueo representado |
+| app deny | evaluador/persistencia + tarjeta deshabilitada | bloqueo representado; UI final incompleta |
+| sede/área/turno/rol | contratos + evaluador/contexto | oráculo representado; consumo final de SHELL incompleto |
+| contexto stale | infraestructura y suite de frescura | bloqueo representado |
+| dispositivo | contratos y suite de dispositivo | bloqueo representado |
+| simulación | contratos y suite de simulación | bloqueo representado |
+| indisponibilidad técnica | contrato y suite de persistencia | bloqueo representado; UI AS-IS colapsa causa |
+| navegación directa | obligación de enforcement en destino | no certificada E2E |
+| `returnTo` no aprobado | código AS-IS permite absoluto HTTP/HTTPS | brecha real confirmada |
+| cambio de actor | contrato de dispositivo compartido/contexto | oráculo definido; ejecución humana no afirmada |
+
+#### 55. Reconciliación de los ocho hallazgos de 019
+
+| Hallazgo heredado | Efecto en 020 | Owner conservado | Condición de salida |
+|---|---|---|---|
+| `RNF-01` | impide probar el universo completo de apps desde el launcher actual | materialización física de catálogo/visibilidad de SHELL | launcher consume catálogo gobernado y política completa |
+| `RNF-02` | impide probar todos los bloqueos por actor desde la raíz actual | materialización física de entrada/contexto de SHELL | actor efectivo y entrada laboral se resuelven antes de render |
+| `RNF-03` | impide probar navegación contextual final desde SHELL | materialización física de visibilidad contextual/autorización | carril operativo final se consume en la raíz |
+| `RNF-04` | hace indistinguible deny de fallo técnico en la UI actual | materialización física de explicación segura | cuatro categorías se proyectan sin colapso indebido |
+| `RNF-05` | impide distinguir ocultamiento y bloqueo final | materialización física de presentación | visible/oculto/bloqueado/reservado quedan diferenciados |
+| `RNF-06` | limita la prueba de bloqueo sobre el home task-first final | materialización física de experiencia SHELL | home consume contexto, foco, acción y accesos secundarios |
+| `RNF-07` | la primitiva segura existe sin integración final en la raíz | adopción física correspondiente | integración demuestra paridad y rollback |
+| `RNF-08` | no existe ejecución con actores reales dentro de la documentación | lifecycle físico posterior | evidencia atribuible a ambiente, actor y commit |
+
+019 no queda reescrita; 020 consume estos hallazgos.
+
+#### 56. Bloqueo global versus bloqueo de carril
+
+Se conserva la diferencia:
+
+```text
+BLOCKING_ALL
+```
+
+impide el Hub laboral autorizado.
+
+Un problema limitado al carril operativo puede dejar vigente un carril base independiente de NEXO, FOGO u ORIGO.
+
+PULSO no tiene fallback base de entrada.
+
+#### 57. Bloqueo visible versus ausencia
+
+Una aplicación puede quedar:
+
+- no presentable;
+- visible pero bloqueada;
+- visible y navegable;
+- reservada por lifecycle.
+
+La elección pertenece a la política de presentación ya aprobada.
+
+020 no convierte todos los `DENY` en tarjetas visibles.
+
+#### 58. Mensaje seguro
+
+La explicación visible proviene de la proyección segura y del catálogo compartido de mensajes.
+
+La superficie no reconstruye la razón a partir de:
+
+- rol;
+- ausencia de campo;
+- error RPC;
+- texto del backend;
+- HTTP status aislado;
+- nombre de tabla;
+- permiso local.
+
+#### 59. Información que no se expone
+
+Un bloqueo ordinario no revela:
+
+- matched grants;
+- matched denies;
+- datasets;
+- SQLSTATE;
+- stack trace;
+- JWT;
+- cookie;
+- token;
+- service role;
+- query interna;
+- payload completo de contexto;
+- huellas internas;
+- secretos;
+- sujetos no autorizados;
+- listas de personas con acceso.
+
+#### 60. Recuperación
+
+Una recuperación segura puede requerir:
+
+- reautenticación;
+- nueva resolución de contexto;
+- esperar ventana válida;
+- corregir configuración;
+- cambiar dispositivo mediante proceso autorizado;
+- terminar simulación;
+- registrar check-in cuando el permiso exacto lo requiera;
+- revisión administrativa;
+- retry técnico gobernado.
+
+La UI no ofrece una recuperación que amplíe autoridad.
+
+#### 61. Recuperar no equivale a reusar decisión
+
+Después de resolver la causa:
+
+```text
+NUEVA REALIDAD
+-> NUEVA RESOLUCIÓN
+-> NUEVA EVALUACIÓN
+```
+
+No se reactiva una tarjeta usando un `ALLOW` anterior.
+
+#### 62. Idempotencia durante bloqueo
+
+Repetir el toque, recargar, rotar, volver del destino o reconectar no debe crear una segunda intención empresarial.
+
+Un bloqueo no se supera multiplicando solicitudes.
+
+#### 63. Navegación en computador
+
+La experiencia de computador conserva:
+
+- contexto;
+- foco;
+- acción;
+- bloqueo;
+- continuidad;
+- accesos secundarios.
+
+La mayor superficie visual no muestra información interna adicional sobre autorización.
+
+#### 64. Navegación en tablet
+
+Tablet conserva la misma decisión de autoridad.
+
+Tacto, orientación, tamaño, teclado o dispositivo compartido no cambian el outcome.
+
+Un target más grande no convierte una acción bloqueada en elegible.
+
+#### 65. Tablet compartida
+
+Cuando un bloqueo depende del actor:
+
+- la explicación pertenece al actor vigente;
+- cambiar actor descarta la explicación personal anterior;
+- se recalcula la navegación;
+- no se hereda una recuperación;
+- no se hereda strong reauth;
+- no se hereda un destino autorizado.
+
+La estación técnica permanece separada del trabajador.
+
+#### 66. Accesibilidad del bloqueo
+
+Un estado bloqueado debe ser perceptible sin depender únicamente de:
+
+- color;
+- icono;
+- hover;
+- sonido;
+- vibración;
+- posición.
+
+Cuando exista explicación o recuperación, debe ser alcanzable mediante modalidades accesibles aplicables.
+
+#### 67. No se usa un botón deshabilitado como seguridad
+
+El estado visual:
+
+```text
+disabled
+```
+
+es presentación.
+
+No sustituye:
+
+- autorización server-side;
+- guard del destino;
+- RLS;
+- validación del recurso;
+- decisión de contexto.
+
+#### 68. Observabilidad
+
+La evidencia futura de una ejecución física deberá permitir atribuir, de forma segura:
+
+- commit;
+- aplicación;
+- permiso exacto;
+- actor o fixture controlado;
+- contexto relevante;
+- tipo de resultado;
+- reason code público cuando aplique;
+- correlación;
+- destino;
+- resultado de navegación;
+- recuperación;
+- ausencia de efecto no autorizado.
+
+La observabilidad no expone secretos ni convierte `correlation_id` en autoridad.
+
+#### 69. Qué no puede certificarse desde esta tarea documental
+
+No se declara como físicamente ejecutado:
+
+- navegador en staging;
+- cuenta real de cada rol;
+- manipulación real de DOM contra cada aplicación;
+- guard real de cada repositorio destino;
+- cambio real de turno en ambiente;
+- cambio real de sede;
+- cambio real de área;
+- expiración real de sesión;
+- revocación real durante navegación;
+- caída real del backend;
+- recuperación real posterior;
+- mensajes visuales desplegados finales.
+
+Estas comprobaciones requieren la instancia física y ambiente atribuibles correspondientes.
+
+#### 70. Resultado sustantivo
+
+La tarea concluye:
+
+```text
+BLOQUEOS CANÓNICOS
+-> RECONCILIADOS
+
+20 RAZONES PÚBLICAS
+-> CLASIFICADAS
+
+DENY VS FALLO TÉCNICO
+-> SEPARADOS
+
+BLOQUEO DE APP VS CAPACIDAD INTERNA
+-> SEPARADOS
+
+SESIÓN
+-> BLOQUEO AS_IS OBSERVABLE
+
+TARJETA DESHABILITADA
+-> BLOQUEO AS_IS OBSERVABLE
+
+EVALUADOR / FRESCURA / SIMULACIÓN / DISPOSITIVO / PERSISTENCIA
+-> PRUEBAS EJECUTABLES MATERIALIZADAS
+
+DESTINO E2E
+-> NO CERTIFICADO DESDE LA DOCUMENTACIÓN
+
+SHELL AS_IS
+-> NO MATERIALIZA TODA LA PRESENTACIÓN FINAL
+
+CAMBIO FÍSICO
+-> NO AUTORIZADO
+```
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Los bloqueos, fronteras de autorización, fallos técnicos, navegación adversarial, contexto y seguridad utilizados por 020 ya están protegidos por requisitos vigentes. La tarea los contrasta contra el repositorio actual y no introduce una obligación independiente.
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, la tarea reutiliza especialmente:
+
+- `TREQ-SHELL-014` — sesión válida en la raíz y snapshot del launcher;
+- `TREQ-SHELL-015` — disponibilidad derivada de decisión canónica y compatibilidad legacy fail-closed;
+- `TREQ-SHELL-016` — aplicación sin acceso no navegable y enforcement propio del destino;
+- `TREQ-SHELL-017` — cierre de sesión y no reutilización de contexto anterior;
+- `TREQ-SHELL-018` — retorno restringido a destinos aprobados;
+- `TREQ-SHELL-030` — visibilidad por permiso/contexto sin sustituir autorización;
+- `TREQ-SHELL-031` — simulación separada de autoridad;
+- `TREQ-SHELL-063` — frontera server/client fail-closed;
+- `TREQ-SHELL-069` — solo `ALLOW` válido permite continuar;
+- `TREQ-SHELL-070` — proyección segura de contexto;
+- `TREQ-SHELL-071` — proyección segura de decisión;
+- `TREQ-SHELL-072` — cliente sin autoridad propia;
+- `TREQ-SHELL-073` — separación entre deny, contrato inválido y fallos backend;
+- `TREQ-SHELL-078` — invalidación después de cambios relevantes;
+- `TREQ-SHELL-079` — correlación y observabilidad sin ampliar autoridad.
+
+Los requisitos de autorización propietarios continúan cubriendo las razones y condiciones subyacentes.
+
+#### 73. Decisiones sobre 04A
+
+La prueba no cambia:
+
+- regla protegida;
+- owner;
+- paquete;
+- estado;
+- artefacto;
+- último resultado;
+- evidencia;
+- relación.
+
+La existencia de pruebas ejecutables inspeccionadas no se convierte en resultado `VERIFICADO`, porque esta conversación no ejecutó esas suites ni certificó un ambiente.
+
+#### 74. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-020 — Probar navegación con bloqueos reales`.
+- [ ] `SHELL-APP-019` permanece como tarea anterior.
+- [ ] `SHELL-APP-021` permanece como siguiente tarea.
+- [ ] La conversación permanece documental.
+- [ ] La topología `PER_IMPLEMENTATION_UNIT` no se interpreta como autorización física.
+- [ ] Se conserva el handoff completo de 019.
+- [ ] Las veinte razones públicas vigentes están cubiertas.
+- [ ] No se crea reason code local.
+- [ ] Denegación e indisponibilidad técnica permanecen distintas.
+- [ ] Deny de capacidad interna no se convierte en deny automático de aplicación.
+- [ ] `AUTH_CHECKIN_REQUIRED` no se fabrica para `app.access` con prerrequisito `T`.
+- [ ] Ausencia de sesión bloquea navegación protegida.
+- [ ] Usuario autenticado no se confunde con empleado válido.
+- [ ] Contexto stale no conserva autoridad.
+- [ ] Cambio de actor obliga nueva resolución.
+- [ ] Cambio de turno obliga nueva resolución cuando afecta navegación.
+- [ ] Cambio de sede obliga nueva resolución cuando afecta navegación.
+- [ ] Cambio de área obliga nueva resolución cuando afecta navegación.
+- [ ] Cambio de rol operativo obliga nueva resolución.
+- [ ] Cambio de grant o deny invalida resultados anteriores aplicables.
+- [ ] Dispositivo compartido no concede autoridad.
+- [ ] Simulación no concede autoridad real.
+- [ ] Permiso no registrado no recibe alias local.
+- [ ] Configuración inconsistente no se presenta como falta personal de permiso.
+- [ ] Fallo backend bloquea sin simular un deny.
+- [ ] Respuesta inválida bloquea.
+- [ ] Contrato inválido bloquea.
+- [ ] Tarjeta AS-IS `disabled` permanece no accionable.
+- [ ] El bloqueo visual no sustituye enforcement server-side.
+- [ ] Navegación directa no se considera autorización.
+- [ ] La brecha de `returnTo` queda registrada sin corrección desde 020.
+- [ ] Los ocho hallazgos de 019 conservan owner y condición de salida.
+- [ ] Las suites ejecutables inspeccionadas no se presentan como ejecutadas.
+- [ ] Computador y tablet conservan la misma semántica de autoridad.
+- [ ] El dispositivo compartido limpia navegación personal al cambiar actor.
+- [ ] La explicación no expone evidencia sensible.
+- [ ] La recuperación no amplía permisos.
+- [ ] 021 permanece sin desarrollar.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos.
+
+#### 75. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+|---|---|---|
+| BUILD | NOT_APPLICABLE | La tarea produce exclusivamente un contrato documental de prueba y no modifica artefactos ejecutables que requieran build propio en esta etapa. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout documental de la tarea, por lo que su normalización y batería local corresponden al lifecycle posterior a la incorporación. |
+| REMOTA | PASS | Se inspeccionaron `main` en `35089a93ff41753d565090b5e766547daa45868f`, continuidad, topología, políticas documentales, owner H2, 019, 010, 04A SHELL, `middleware.ts`, raíz, login y las suites vigentes de evaluador, frescura, simulación, dispositivo y persistencia. |
+| OPERATIVA | PASS | Se cerró la matriz documental de bloqueos contra código, contratos y pruebas ejecutables reales del snapshot, incluyendo las veinte razones públicas, separación app/capacidad, deny/técnico, stale, dispositivo, simulación, navegación directa y recuperación, registrando expresamente las no conformidades AS-IS. |
+| FÍSICA | NOT_APPLICABLE | La tarea documental no autoriza sesiones de staging, actores reales, cambios de ambiente ni ejecución de bloqueos físicos; esas evidencias pertenecen al lifecycle físico aplicable. |
+
+#### 76. Límites
+
+Esta tarea no:
+
+- modifica `middleware.ts`;
+- modifica `src/app/page.tsx`;
+- modifica `src/app/login/page.tsx`;
+- modifica contratos;
+- modifica mensajes de autorización;
+- modifica suites SQL;
+- ejecuta migraciones;
+- ejecuta pruebas de base de datos;
+- cambia Supabase;
+- cambia grants o denies;
+- cambia roles;
+- cambia permisos;
+- cambia contexto;
+- modifica dispositivos;
+- configura staging;
+- usa cuentas productivas;
+- modifica aplicaciones destino;
+- corrige `returnTo`;
+- certifica enforcement E2E de destinos;
+- declara ejecutadas suites inspeccionadas;
+- cambia estados de requisitos por inferencia;
+- crea requisitos;
+- modifica 04A;
+- desarrolla 021;
+- autoriza implementación física.
+
+#### 77. Cierre del minibloque de pruebas de navegación
+
+Con 019 y 020 queda documentalmente definido:
+
+```text
+NAVEGACIÓN POR ROL
++
+NAVEGACIÓN ANTE BLOQUEOS
+```
+
+019 fija quién y bajo qué contexto puede navegar.
+
+020 fija qué impide navegar, cómo se distingue el bloqueo, qué debe revalidarse y qué brechas impiden certificar el AS-IS completo.
+
+La materialización continúa separada del cierre documental.
+
+#### 78. Handoff a `SHELL-APP-021`
+
+021 recibe únicamente su responsabilidad ya reservada:
+
+- los enlaces visibles `Mi perfil` y `Configuración de usuario`;
+- su destino actual `/`;
+- la obligación de no presentar una capacidad inexistente;
+- el inventario y hallazgos previos relacionados.
+
+021 no recibe autorización para corregir los bloqueos documentados en 020 ni para reabrir la matriz de navegación.
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-019 — Probar navegación por rol`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-020 — Probar navegación con bloqueos reales`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real`
+
 
 ### [ ] SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
 
