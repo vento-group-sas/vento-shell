@@ -47,3 +47,7 @@ next-env.d.ts
 
 .delivery/
 /INICIADOR_VENTO_ACTUAL.txt
+
+# repository hygiene: non-canonical local diagnostics
+/debug.log
+/tmp/supabase-advisors-*.json
