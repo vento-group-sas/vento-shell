@@ -1007,7 +1007,1285 @@ Toda materialización posterior debe respetar ownership, topología y gates vige
 `SHELL-APP-018 — Diseñar experiencia para tablet`
 
 
-### [ ] SHELL-APP-018 — Diseñar experiencia para tablet
+### ✅ SHELL-APP-018 — Diseñar experiencia para tablet
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-017 — Diseñar experiencia para computador
+**Tarea siguiente:** SHELL-APP-019 — Probar navegación por rol
+**Tipo de tarea:** documental de diseño de experiencia para tablet; especializa composición, ergonomía e interacción táctil de SHELL sobre semántica ya aprobada; materialización física posterior según topología `PER_IMPLEMENTATION_UNIT`
+**Bloque:** H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md`
+**Estado físico resultante:** contrato documental de experiencia de SHELL para tablet definido; runtime de SHELL, componentes compartidos, consumidores, dispositivos y configuración sin modificaciones
+**Cambios físicos autorizados:** ninguno; no se modifican código, componentes compartidos, navegación runtime, autorización, datos, Supabase, dispositivos, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la experiencia canónica de SHELL cuando la superficie aplicable es una tablet personal o compartida, especializando para interacción táctil la semántica ya aprobada de contexto laboral, foco de trabajo, siguiente acción, bloqueos, continuidad, navegación y retorno entre aplicaciones.
+
+La tarea fija cómo debe organizarse SHELL para que una persona pueda operar con lectura mínima, objetivos táctiles adecuados, contexto persistente y una única acción principal, sin convertir una tablet en un escritorio reducido, un kiosco implícito, una fuente de autoridad o un backoffice general.
+
+#### 2. Alcance
+
+Esta tarea define exclusivamente la experiencia de SHELL para las clases de superficie tablet ya reconocidas:
+
+- `PERSONAL_TABLET`;
+- `SHARED_TABLET`.
+
+La definición cubre:
+
+- composición semántica;
+- jerarquía visual y táctil;
+- reflow;
+- orientación;
+- postura y alcance;
+- targets táctiles;
+- navegación secundaria;
+- teclado virtual;
+- entradas alternativas;
+- actor y contexto en tablet compartida;
+- privacidad entre actores;
+- conectividad y frescura;
+- interrupción y reanudación;
+- feedback;
+- accesibilidad;
+- fronteras con periféricos, kiosco, backoffice y aplicaciones propietarias.
+
+No se implementa ninguna de estas decisiones durante la tarea documental.
+
+#### 3. Resultado canónico
+
+SHELL en tablet queda definido como una superficie:
+
+```text
+TASK-FIRST
++ TOUCH-FIRST
++ CONTEXT-AWARE
++ LOW-TO-MEDIUM DENSITY
++ ONE PRIMARY FOCUS
++ ONE PRIMARY ACTION
++ SAFE RESUME
++ SECONDARY NAVIGATION
+```
+
+La tablet mejora movilidad, proximidad al trabajo y velocidad táctil, pero no cambia la autoridad empresarial ni crea una semántica distinta de trabajo.
+
+#### 4. Decisión central
+
+Se fija:
+
+```text
+TABLET
+!= DESKTOP ENCOGIDO
+
+TABLET
+!= KIOSCO IMPLÍCITO
+
+TABLET COMPARTIDA
+!= ACTOR COMPARTIDO
+
+PANTALLA TÁCTIL
+!= AUTORIDAD
+
+ORIENTACIÓN
+!= CONTEXTO
+
+TAMAÑO DE VIEWPORT
+!= PERMISO
+```
+
+La experiencia se deriva de tarea, actor, contexto, estación, clase de superficie y capacidades ya resueltas por sus propietarios.
+
+#### 5. Semántica heredada de `SHELL-APP-017`
+
+018 conserva sin redefinir:
+
+1. contexto esencial antes de actuar;
+2. un único foco `AHORA` dominante;
+3. una acción principal asociada al foco;
+4. estado, bloqueo y continuidad visibles;
+5. `DESPUÉS`, `EN ESPERA` y `BLOQUEADAS` como obligaciones secundarias distintas;
+6. aplicaciones como accesos secundarios;
+7. navegación cross-app sin transportar autoridad;
+8. revalidación al retornar;
+9. densidad determinada por la tarea y no por el dispositivo.
+
+La especialización táctil puede cambiar disposición, tamaño, agrupación, alcance y modalidad, pero no esos significados.
+
+#### 6. Perfil de superficie obligatorio
+
+Antes de elegir una composición tablet, la capa propietaria deberá tener resuelto, cuando aplique:
+
+```text
+TAREA
++ ACTOR
++ CONTEXTO
++ ESTACIÓN
++ CLASE DE SUPERFICIE
++ POSTURA
++ MOVILIDAD
++ AMBIENTE
++ MODALIDAD DE ENTRADA
++ PERIFÉRICOS
++ RIESGO
++ CONECTIVIDAD
+```
+
+SHELL no deduce ese perfil a partir de `userAgent`, touch points, orientación CSS, ancho de viewport, nombre del dispositivo, URL o presencia de un puntero táctil.
+
+#### 7. Clases tablet admitidas
+
+| Clase | Significado | Uso en SHELL | Autoridad implícita |
+|---|---|---|---:|
+| `PERSONAL_TABLET` | tablet asignada o utilizada en una sesión personal ya resuelta | composición táctil con contexto del actor vigente | no |
+| `SHARED_TABLET` | tablet usada sucesivamente por distintos trabajadores | composición táctil con identidad humana y contexto material perceptibles | no |
+
+No se crea una tercera clase tablet por área, sede, aplicación, rol o tamaño de pantalla.
+
+#### 8. Frontera con `FIXED_KIOSK`
+
+`FIXED_KIOSK` no pertenece a esta tarea.
+
+Una tablet físicamente montada no se convierte automáticamente en kiosco. La clasificación depende del perfil de estación, gobierno del host, restricciones del dispositivo y contrato correspondiente.
+
+La experiencia tablet no absorbe:
+
+- contención del sistema operativo;
+- allowlists del host;
+- administración MDM;
+- salida de mantenimiento;
+- fullscreen como frontera de seguridad;
+- reglas propietarias de `KioskTaskSurface`.
+
+#### 9. Densidad por defecto
+
+El Hub laboral de SHELL en tablet permanece ordinariamente en `D1_CONTEXTUAL`.
+
+Puede reducirse localmente a `D0_FOCUSED` cuando una tarea, postura o estación exige atención casi exclusiva al paso actual.
+
+No asciende a `D2_COMPARATIVE`, `D3_ANALYTICAL` o `D4_SPECIALIZED` por:
+
+- ser una tablet grande;
+- estar en orientación horizontal;
+- disponer de teclado o stylus;
+- pertenecer a gerencia;
+- tener permisos amplios;
+- admitir muchas aplicaciones;
+- existir espacio visual sobrante.
+
+#### 10. Trabajo administrativo desde tablet
+
+Una obligación administrativa puede aparecer como foco real de SHELL en tablet.
+
+SHELL conserva su función de orientación y continuidad. Si la ejecución exige una superficie densa, comparación extensa, edición masiva, auditoría profunda o workspace especializado, la acción principal conduce a la aplicación propietaria cuando el perfil, dispositivo y autorización lo permiten.
+
+La tablet no obliga a replicar en SHELL una interfaz administrativa completa.
+
+#### 11. Orden semántico obligatorio
+
+La experiencia tablet conserva este orden:
+
+```text
+1. CONTEXTO PERSISTENTE
+2. BLOQUEO MATERIAL, SI EXISTE
+3. IDENTIDAD DEL TRABAJO
+4. CONTENIDO DEL PASO
+5. ACCIÓN PRINCIPAL, SI EXISTE
+6. SOPORTE SECUNDARIO
+7. RESULTADO O RECEIPT, SI EXISTE
+```
+
+Este orden coincide con la composición compartida disponible para tablet y evita crear una jerarquía paralela solo para SHELL.
+
+#### 12. Correspondencia con `TabletTaskSurface`
+
+La materialización compartida vigente ofrece los slots:
+
+| Orden | Slot | Papel en la experiencia de SHELL |
+|---:|---|---|
+| 1 | `PERSISTENT_CONTEXT` | actor, estación y contexto material ya resueltos |
+| 2 | `BLOCKING_STATE` | bloqueo o condición material que impide el avance ordinario |
+| 3 | `WORK_IDENTITY` | obligación, objeto o foco actual |
+| 4 | `STEP_CONTENT` | información y decisión del paso actual |
+| 5 | `PRIMARY_ACTION` | única acción principal segura, cuando existe |
+| 6 | `SECONDARY_SUPPORT` | ayuda, detalle o acciones secundarias no competidoras |
+| 7 | `RESULT_AND_RECEIPT` | resultado confirmado, pendiente o clasificación ya resuelta |
+
+018 adopta esta anatomía como referencia compatible de composición, sin afirmar que el runtime actual de SHELL ya la consuma.
+
+#### 13. `TabletTaskSurface` no recibe autoridad
+
+La futura integración de SHELL no deberá convertir el componente compartido en resolvedor de:
+
+- actor;
+- permisos;
+- rol;
+- sede;
+- área;
+- turno;
+- check-in;
+- elegibilidad;
+- conectividad;
+- orientación autoritativa;
+- dispositivo;
+- idempotencia;
+- retry;
+- estado empresarial.
+
+La dirección permanece:
+
+```text
+PROPIETARIO RESUELVE
+-> PROYECCIÓN SEGURA
+-> SHELL COMPONE
+-> TabletTaskSurface PRESENTA
+```
+
+#### 14. Composición de una columna
+
+En espacio táctil reducido o cuando la postura favorece lectura secuencial, la composición ordinaria usa una columna principal.
+
+Prioridades:
+
+1. no separar el dato crítico de la acción que afecta;
+2. no obligar a alternar repetidamente entre extremos de pantalla;
+3. no crear dos focos simultáneos;
+4. conservar contexto y trabajo identificables durante scroll;
+5. mantener secundarias por debajo de la obligación principal.
+
+#### 15. Composición con espacio horizontal suficiente
+
+Cuando exista espacio usable suficiente, puede separarse:
+
+```text
+CONTENIDO DEL PASO
+|
+RAIL DE ACCIONES Y SOPORTE
+```
+
+La segunda región no crea un segundo workspace, una segunda tarea ni una nueva autoridad.
+
+La composición ancha conserva:
+
+- un solo `WORK_IDENTITY`;
+- un solo `STEP_CONTENT`;
+- como máximo un `PRIMARY_ACTION`;
+- la misma semántica de estados;
+- el mismo orden lógico de lectura y accesibilidad.
+
+#### 16. No existe un breakpoint de autoridad
+
+Los breakpoints CSS pueden modificar presentación, pero no deciden:
+
+- clase de superficie;
+- actor;
+- autorización;
+- densidad empresarial;
+- tarea vigente;
+- contexto laboral;
+- si una acción es segura;
+- si un workspace administrativo debe existir.
+
+Una media query nunca sustituye la resolución del perfil.
+
+#### 17. Reflow
+
+La experiencia debe refluir sin scroll horizontal ordinario para completar la tarea principal.
+
+Durante reflow se conserva:
+
+- contexto material;
+- identidad del trabajo;
+- estado;
+- errores;
+- datos capturados;
+- borrador cuando su propietario lo permite;
+- acción principal;
+- soporte;
+- resultado.
+
+El reflow no duplica regiones ni crea estados diferentes entre retrato y paisaje.
+
+#### 18. Orientación
+
+Retrato y paisaje son presentaciones del mismo estado semántico.
+
+Rotar la tablet no puede:
+
+- cambiar actor;
+- cambiar sede o área;
+- modificar foco;
+- reiniciar el proceso;
+- perder borrador;
+- volver a enviar una intención;
+- confirmar una operación;
+- transformar una acción secundaria en primaria;
+- activar un modo administrativo.
+
+Una orientación fija solo procede cuando el perfil de estación o proceso la exige.
+
+#### 19. Postura y montaje
+
+La experiencia debe soportar perfiles como:
+
+- tablet sostenida con una mano;
+- tablet sostenida con dos manos;
+- operación de pie;
+- tablet apoyada temporalmente;
+- tablet montada con inclinación controlada;
+- uso por personas de distintas alturas y lateralidad.
+
+No se declara una zona universal de alcance. La posición efectiva de controles frecuentes debe validarse con el montaje y postura reales.
+
+#### 20. Objetivos táctiles
+
+Los controles ordinarios compuestos dentro de la experiencia deben usar preferentemente un área activable mínima equivalente a 48 por 48 unidades lógicas.
+
+Se conserva además:
+
+- mínimo nativo Apple de 44 por 44 puntos cuando corresponda;
+- piso web WCAG de 24 por 24 CSS px como conformidad mínima, no como objetivo operativo ordinario;
+- el hit area puede ser mayor que el icono visible;
+- guantes, movimiento, riesgo y precisión requerida pueden exigir objetivos mayores.
+
+#### 21. Separación entre acciones
+
+Las áreas activables no se superponen.
+
+Se mantiene separación perceptible entre:
+
+- confirmar y cancelar;
+- aceptar y rechazar;
+- avanzar y eliminar;
+- acción ordinaria y excepción;
+- controles de filas o elementos adyacentes;
+- cerrar sesión y continuar trabajo;
+- acción principal y acción destructiva.
+
+La proximidad visual no puede volver ambiguo el efecto de un toque impreciso.
+
+#### 22. Acción principal táctil
+
+La acción principal:
+
+- permanece próxima al contenido que modifica;
+- conserva posición estable durante la intención;
+- no se desplaza bajo el dedo por animaciones o actualizaciones irrelevantes;
+- no se oculta tras navegación secundaria;
+- no es sustituida por un icono ambiguo;
+- puede faltar cuando no existe salida segura.
+
+Deshabilitar visualmente un control no sustituye la revalidación de servidor.
+
+#### 23. Barra persistente de acción
+
+Una barra persistente puede usarse únicamente cuando ayuda al alcance y no:
+
+- cubre campos;
+- tapa errores;
+- oculta consecuencias;
+- invade áreas seguras;
+- duplica el CTA;
+- fija una acción que dejó de ser elegible;
+- impide zoom o reflow.
+
+La persistencia visual no convierte la acción en permanentemente válida.
+
+#### 24. Navegación secundaria
+
+La navegación de SHELL permanece subordinada al trabajo.
+
+En tablet puede presentarse mediante una superficie táctil compacta o divulgación explícita, siempre que:
+
+- no requiera hover;
+- no oculte el foco actual;
+- no convierta aplicaciones en mosaico dominante;
+- no exponga destinos no autorizados;
+- no conserve estado personal de otro actor;
+- no interprete la apertura como inicio de trabajo.
+
+Esta tarea no impone una ubicación universal de navegación inferior, lateral o superior.
+
+#### 25. Accesos a aplicaciones
+
+Los accesos a aplicaciones son secundarios frente a una obligación vigente.
+
+Cuando no exista trabajo válido, pueden adquirir mayor prominencia como navegación disponible, pero no fabrican una tarea ni prueban elegibilidad empresarial.
+
+En tablet se evita presentar una cuadrícula de módulos como sustituto de una bandeja laboral cuando ya existe trabajo real.
+
+#### 26. `AHORA`
+
+Como máximo una obligación ocupa `AHORA`.
+
+El foco incluye suficiente información para reconocer:
+
+- objeto;
+- estado;
+- propietario;
+- bloqueo material;
+- siguiente acción;
+- continuidad si existe interrupción;
+- frescura cuando sea relevante.
+
+Tocar una tarjeta secundaria no altera autoridad por sí solo.
+
+#### 27. `DESPUÉS`, `EN ESPERA` y `BLOQUEADAS`
+
+Estas familias permanecen separadas.
+
+En tablet pueden compactarse como listas o regiones progresivas, pero no mezclarse en una sola lista sin significado.
+
+| Familia | Significado | Tratamiento táctil |
+|---|---|---|
+| `DESPUÉS` | obligación elegible posterior | accesible sin competir con `AHORA` |
+| `EN ESPERA` | espera legítima de dependencia o confirmación | muestra condición y seguimiento aplicable |
+| `BLOQUEADAS` | requiere resolución identificada | muestra bloqueo y acción segura, si existe |
+
+#### 28. Estados de continuidad
+
+Tablet reutiliza la clasificación de continuidad aprobada.
+
+No crea aliases táctiles para:
+
+- `CHECKPOINT_AVAILABLE`;
+- `VALIDATING`;
+- `RESUMABLE`;
+- `RESUMABLE_WITH_REVIEW`;
+- `WAITING_FOR_DEPENDENCY`;
+- `HANDOFF_REQUIRED`;
+- `REASSIGNMENT_REQUIRED`;
+- `CONFLICT`;
+- `RESULT_UNKNOWN`;
+- `REAUTH_REQUIRED`;
+- `RECONCILIATION_REQUIRED`;
+- `SUPERSEDED`;
+- `COMPLETED`;
+- `EXPIRED`;
+- `INVALID`.
+
+La presentación táctil no cambia el significado de esos estados.
+
+#### 29. `RESULT_UNKNOWN`
+
+Cuando el resultado es desconocido:
+
+- no se ofrece el mismo CTA como reintento ciego;
+- no se crea una nueva intención equivalente por doble toque;
+- se conserva la obligación de resolver o conciliar la intención original;
+- la UI explica que no puede afirmar éxito ni fracaso;
+- la acción segura llega ya resuelta por el propietario.
+
+#### 30. Borrador, checkpoint y resultado
+
+Se mantiene:
+
+```text
+BORRADOR
+!= CHECKPOINT
+!= OPERACIÓN PENDIENTE
+!= RECEIPT
+!= ESTADO EMPRESARIAL
+```
+
+Cerrar teclado, rotar pantalla, cambiar aplicación, bloquear la tablet o volver a SHELL no promueve un artefacto al estado siguiente.
+
+#### 31. Teclado virtual
+
+SHELL y las superficies propietarias deberán minimizar escritura durante operación táctil.
+
+Cuando exista captura:
+
+- el teclado no cubre el campo activo;
+- el error asociado permanece alcanzable;
+- la consecuencia de confirmar sigue visible cuando es material;
+- el cierre del teclado no confirma;
+- abrir teclado no cambia foco empresarial;
+- el borrador se conserva ante una falla recuperable según contrato propietario.
+
+#### 32. Minimización de escritura
+
+La interfaz prefiere:
+
+- datos derivados de contexto confiable;
+- escaneo;
+- listas cortas contextuales;
+- controles de cantidad;
+- motivos estructurados;
+- teclado numérico apropiado;
+- captura periférica cuando el proceso la gobierna.
+
+Texto libre solo se solicita cuando produce información nueva que no puede derivarse de forma segura.
+
+#### 33. Cantidades y unidades
+
+Cuando un paso presenta o captura cantidad, la experiencia conserva:
+
+```text
+VALOR
++ UNIDAD
++ PRESENTACIÓN
++ LÍMITE
++ PRECISIÓN
++ EFECTO
+```
+
+Cero, vacío, desconocido y no observado permanecen estados distintos.
+
+SHELL no ejecuta conversiones empresariales por estar en tablet; la aplicación propietaria conserva esa responsabilidad.
+
+#### 34. Gestos
+
+Ninguna función esencial depende exclusivamente de:
+
+- hover;
+- swipe oculto;
+- drag preciso;
+- long press;
+- doble toque;
+- pinza;
+- gesto de borde;
+- icono sin etiqueta cuando el significado no es universal.
+
+Si existe arrastre, debe existir alternativa de puntero simple salvo que el movimiento sea esencial al propósito.
+
+#### 35. Modalidades alternativas
+
+La experiencia no bloquea artificialmente:
+
+- teclado;
+- mouse;
+- stylus;
+- lector de pantalla;
+- switch access;
+- controles accesibles compatibles.
+
+`TOUCH-FIRST` significa optimizada para tacto, no `TOUCH-ONLY`.
+
+#### 36. Guantes, humedad y entorno
+
+El uso de tablet debe considerar, según estación:
+
+- guantes;
+- humedad;
+- grasa;
+- harina o polvo;
+- frío;
+- limpieza;
+- reflejos;
+- ruido;
+- vibración;
+- movimiento;
+- distancia de lectura.
+
+Aumentar el tamaño de botones no basta si tocar la pantalla es antihigiénico, inseguro o ineficiente.
+
+#### 37. Manos ocupadas y seguridad física
+
+SHELL no exige interacción con pantalla mientras la persona:
+
+- conduce;
+- manipula cuchillos;
+- trabaja con calor o maquinaria;
+- sostiene cargas;
+- sostiene un producto con ambas manos;
+- debe mantener atención continua sobre el entorno.
+
+El proceso propietario define un punto seguro de interacción o una modalidad alternativa.
+
+#### 38. Periféricos
+
+Escáner, cámara, impresora, báscula, datáfono y otros periféricos permanecen bajo sus propietarios.
+
+SHELL puede presentar una conclusión o navegación relacionada con el trabajo, pero no interpreta por sí mismo:
+
+- lectura recibida;
+- dispositivo seleccionado;
+- capacidad disponible;
+- comando enviado;
+- ejecución física;
+- resultado confirmado;
+- retry seguro.
+
+Captura y efecto empresarial permanecen separados.
+
+#### 39. Tablet personal
+
+`PERSONAL_TABLET` no concede autoridad persistente por pertenecer a una persona.
+
+Cada acción sigue dependiendo de:
+
+- sesión vigente;
+- actor efectivo;
+- contexto;
+- permiso;
+- recurso;
+- estado;
+- versión;
+- condiciones de la aplicación propietaria.
+
+Una asociación técnica del equipo no sustituye esas comprobaciones.
+
+#### 40. Tablet compartida
+
+`SHARED_TABLET` exige que la identidad humana y el contexto material sean perceptibles cuando puedan afectar atribución o autoridad.
+
+La tablet técnica nunca se presenta como trabajador.
+
+Cuando no existe actor humano válido, las mutaciones personales permanecen bloqueadas y la interfaz conduce a la identificación o resolución segura correspondiente.
+
+#### 41. Contexto visible en tablet compartida
+
+Según aplique, la superficie permite reconocer:
+
+- estación o dispositivo;
+- sede;
+- área;
+- actor humano;
+- rol operativo;
+- turno;
+- check-in;
+- tarea o recurso;
+- conectividad;
+- simulación o delegación vigente.
+
+La presentación puede compactar estos datos, pero no ocultar una dimensión cuya confusión pueda cambiar atribución, autoridad o efecto.
+
+#### 42. Configuración del dispositivo solo restringe
+
+Una aplicación, sede, área, rol, estación o plantilla fijados al dispositivo pueden limitar posibilidades técnicas o de presentación.
+
+No pueden:
+
+- conceder permiso;
+- crear actor;
+- crear turno;
+- crear check-in;
+- fabricar sede activa;
+- fabricar área activa;
+- asumir ownership del recurso;
+- ampliar autorización.
+
+#### 43. Cambio de actor
+
+La transición de actor en tablet compartida sigue:
+
+```text
+DETENER NUEVAS MUTACIONES
+-> RESOLVER TRABAJO / BORRADOR / CLAIM / CUSTODIA
+-> CERRAR O TRANSFERIR SEGÚN CONTRATO PROPIETARIO
+-> LIMPIAR CAPAS PERSONALES
+-> IDENTIFICAR NUEVO ACTOR
+-> RESOLVER NUEVO CONTEXTO
+-> RECALCULAR TRABAJO Y CAPACIDADES
+```
+
+El actor nuevo no hereda estado personal del anterior por continuidad visual.
+
+#### 44. Datos que no se heredan entre actores
+
+No se transfieren implícitamente:
+
+- PIN;
+- firma;
+- preferencias personales;
+- búsquedas;
+- favoritos;
+- filtros personales;
+- datos sensibles;
+- borradores personales;
+- claims;
+- strong reauth;
+- historial privado;
+- una selección de recurso incompatible;
+- controles avanzados abiertos.
+
+Los hechos empresariales autoritativos permanecen en su fuente propietaria y pueden reaparecer si el nuevo actor está autorizado para verlos.
+
+#### 45. Expiración e inactividad
+
+La inactividad puede bloquear nuevas mutaciones y proteger la pantalla conforme a la política propietaria.
+
+No puede:
+
+- borrar silenciosamente trabajo;
+- convertir el dispositivo en actor;
+- transferir una tarea al siguiente usuario;
+- mantener strong reauth después de expirar;
+- reactivar autoridad stale al volver.
+
+La reanudación reconstruye contexto y elegibilidad.
+
+#### 46. Privacidad
+
+En tablet compartida o visible a terceros se aplica minimización antes del render.
+
+SHELL no usa ocultamiento visual como sustituto de autorización.
+
+Se evitan previews innecesarios de:
+
+- datos personales;
+- finanzas;
+- permisos internos;
+- salud;
+- notas internas;
+- datos de terceros;
+- secretos;
+- diagnósticos técnicos sensibles.
+
+#### 47. Conectividad
+
+La experiencia diferencia, según la política ya resuelta de cada acción:
+
+- online requerido;
+- captura offline permitida;
+- cola offline permitida;
+- lectura stale read-only;
+- contingencia manual.
+
+SHELL no decide esa política por el tipo de dispositivo.
+
+#### 48. Estado perceptible de conectividad
+
+Cuando sea material, la interfaz muestra en lenguaje humano:
+
+- conexión;
+- frescura;
+- pendientes;
+- último punto confirmado;
+- limitaciones;
+- siguiente acción segura.
+
+Una caché no es autorización y un guardado local no equivale a confirmación de servidor.
+
+#### 49. Reconexión
+
+Reconectar no ejecuta automáticamente una intención pendiente ni restaura autoridad anterior.
+
+La capa propietaria revalida, según corresponda:
+
+- actor;
+- sesión;
+- contexto;
+- permiso;
+- recurso;
+- versión;
+- claim;
+- custodia;
+- estado de la intención pendiente.
+
+#### 50. Doble toque e idempotencia
+
+Un doble toque, repetición durante latencia, rotación, reconexión o callback tardío no debe producir un segundo efecto empresarial.
+
+La superficie diferencia:
+
+```text
+TOQUE RECONOCIDO
+-> PROCESANDO
+-> CONFIRMADO
+   o BLOQUEADO
+   o PENDIENTE
+   o RESULTADO DESCONOCIDO
+```
+
+La protección real contra duplicación permanece en la frontera propietaria y de servidor.
+
+#### 51. Feedback
+
+Toda interacción relevante reconoce la intención sin simular éxito.
+
+Se mantienen separados:
+
+- reconocimiento local;
+- solicitud enviada;
+- aceptación técnica;
+- efecto empresarial confirmado;
+- confirmación física;
+- resultado desconocido.
+
+Sonido o vibración pueden reforzar, pero nunca ser el único canal.
+
+#### 52. Errores y bloqueos
+
+Un error o bloqueo operativo en tablet debe permitir entender, según aplique:
+
+```text
+QUÉ OCURRIÓ
+QUÉ NO OCURRIÓ
+QUÉ SE CONSERVÓ
+QUÉ IMPIDE CONTINUAR
+QUÉ PUEDE HACER AHORA
+QUIÉN RESUELVE
+```
+
+No se muestran códigos técnicos como explicación principal al trabajador.
+
+#### 53. Carga inicial
+
+Mientras se resuelven trabajo y contexto, SHELL usa un estado neutral de resolución.
+
+No presenta prematuramente:
+
+- `Sin tareas pendientes`;
+- acceso confirmado;
+- actor confirmado;
+- contexto confirmado;
+- bloqueo definitivo;
+- una lista de aplicaciones como sustituto del resultado todavía desconocido.
+
+#### 54. Estado vacío
+
+Un estado vacío solo se presenta cuando la fuente aplicable ha confirmado que no existe trabajo visible para el universo autorizado y fresco.
+
+Una consulta fallida, parcial, stale o no resuelta no equivale a cero tareas.
+
+#### 55. Fuente parcial o no disponible
+
+Si una fuente propietaria no está disponible:
+
+- el estado se muestra como indisponibilidad o frescura insuficiente;
+- no se fabrican work items;
+- no se eliminan obligaciones conocidas por inferencia;
+- no se promueve un acceso secundario a foco por ausencia de datos;
+- se ofrece únicamente una acción segura ya gobernada.
+
+#### 56. Navegación cross-app
+
+Tablet reutiliza los contratos de retorno, contexto y continuidad de `SHELL-APP-014`, `SHELL-APP-015` y `SHELL-APP-016`.
+
+Un handoff puede transportar intención y correlación permitidas, pero no:
+
+- permiso;
+- actor como autoridad;
+- sede o área como authority claim;
+- estado objetivo impuesto;
+- claim transferido por URL;
+- checkpoint fabricado desde history.
+
+#### 57. Retorno a SHELL
+
+Al volver desde otra aplicación, SHELL vuelve a resolver el estado necesario.
+
+No restaura ciegamente:
+
+- acción previa;
+- tarjeta previa;
+- claim;
+- actor;
+- contexto;
+- resultado;
+- filtro personal;
+- contenido sensible.
+
+La continuidad preserva la obligación, no una captura visual obsoleta.
+
+#### 58. Cambio de aplicación con trabajo en curso
+
+Cambiar de aplicación no marca el trabajo como completado ni liberado.
+
+La capa propietaria conserva la distinción entre:
+
+- trabajo en progreso;
+- pausa;
+- espera;
+- handoff;
+- claim;
+- custodia;
+- operación pendiente;
+- cierre confirmado.
+
+SHELL orienta y vuelve a proyectar el estado resuelto.
+
+#### 59. Aplicación propietaria
+
+SHELL no absorbe lógica empresarial por tener una superficie tablet.
+
+La aplicación propietaria conserva:
+
+- validación del recurso;
+- ejecución;
+- mutación;
+- autorización final;
+- idempotencia;
+- receipts;
+- captura especializada;
+- periféricos;
+- reglas de unidad;
+- reglas de negocio;
+- reconciliación.
+
+#### 60. Componentes compartidos compatibles
+
+La futura experiencia puede componer, cuando corresponda, componentes compartidos ya existentes para:
+
+- contexto;
+- diagnóstico;
+- errores recuperables;
+- navegación de trabajo;
+- estado de proceso;
+- acción principal;
+- confirmación sensible;
+- simulación;
+- interrupción;
+- handoff cross-app;
+- superficie tablet.
+
+018 no declara que SHELL los consuma hoy ni autoriza su modificación.
+
+#### 61. Estado AS-IS de SHELL
+
+La página inicial vigente continúa siendo una implementación legacy centrada principalmente en acceso a aplicaciones y resolución `has_permission`.
+
+Ese AS-IS no redefine el contrato TO-BE aprobado para computador ni el contrato tablet de 018.
+
+La implementación posterior deberá reconciliarse mediante el lifecycle físico correspondiente, sin tratar el código actual como definición canónica de experiencia.
+
+#### 62. Accesibilidad táctil
+
+La experiencia conserva:
+
+- nombre, rol y estado accesibles;
+- orden de foco lógico;
+- foco visible;
+- lector de pantalla;
+- teclado;
+- switch access;
+- zoom;
+- escalado de texto;
+- contraste;
+- reflow;
+- alternativas a gesto, audio y color;
+- tiempo suficiente para leer y actuar;
+- autenticación accesible según propietario.
+
+El área activable ampliada debe corresponder al control anunciado y no capturar objetivos vecinos.
+
+#### 63. Foco de accesibilidad
+
+Una actualización de estado no fuerza foco de manera universal.
+
+El sistema debe:
+
+- conservar orden semántico;
+- anunciar cambios críticos mediante el patrón apropiado cuando corresponda;
+- evitar traps de teclado;
+- mantener controles alcanzables con teclado virtual;
+- permitir navegación a contenido principal;
+- no ocultar información crítica por colapso visual.
+
+#### 64. Movimiento y estabilidad
+
+Animación, transición o reordenamiento no deben mover un objetivo mientras la persona intenta tocarlo.
+
+El movimiento no sustituye:
+
+- estado;
+- feedback;
+- confirmación;
+- bloqueo;
+- receipt.
+
+Se respeta reducción de movimiento cuando aplique.
+
+#### 65. Ayuda contextual
+
+La ayuda prioriza:
+
+1. microayuda breve;
+2. guía del paso;
+3. escalamiento con contexto seguro.
+
+No exige abandonar el foco ni copiar logs, secretos o códigos técnicos.
+
+La ayuda es secundaria y no compite con `PRIMARY_ACTION`.
+
+#### 66. Sin administración del dispositivo en flujo ordinario
+
+SHELL tablet no presenta en el flujo laboral ordinario controles de:
+
+- MDM;
+- red del sistema;
+- credenciales técnicas;
+- allowlists;
+- drivers;
+- configuración de navegador;
+- depuración;
+- secretos;
+- mantenimiento privilegiado.
+
+La existencia de soporte técnico no crea un backoffice dentro de la superficie laboral.
+
+#### 67. Simulación y delegación
+
+Si existe simulación o delegación válida, debe permanecer perceptible conforme a sus contratos propietarios.
+
+La tablet no mezcla actor real con actor simulado, no convierte preview en mutación y no usa una simulación como autorización real.
+
+El cambio de actor o contexto invalida las proyecciones que dejen de ser vigentes.
+
+#### 68. Matriz de composición por situación
+
+| Situación | Región dominante | Acción principal | Tratamiento tablet |
+|---|---|---|---|
+| trabajo `IN_PROGRESS` válido | `WORK_IDENTITY` + `STEP_CONTENT` | continuar según estado revalidado | foco táctil dominante |
+| trabajo `CLAIMED` no iniciado | identidad del trabajo | iniciar acción elegible | no muestra progreso inexistente |
+| `PAUSED` recuperable | continuidad | iniciar clasificación de reanudación | no auto-reanuda por volver a pantalla |
+| `RESUMABLE` | continuidad | continuar al punto validado | CTA único y estable |
+| `RESUMABLE_WITH_REVIEW` | revisión | revisar antes de continuar | cambios visibles antes del CTA |
+| `WAITING` | estado/cola secundaria | seguimiento si corresponde | no bloquea otro foco elegible |
+| `BLOCKED` | bloqueo material | resolver o escalar si existe salida segura | bloqueo visible antes del CTA |
+| `COMPLETION_PENDING_SYNC` | resultado/estado | revisar sincronización | no se presenta completado |
+| `RESULT_UNKNOWN` | resultado/recuperación | resolver intención original | no reintento equivalente |
+| `CONFLICT` | revisión | comparar o conciliar | sin sobrescritura silenciosa |
+| sin trabajo válido confirmado | estado vacío | sin acción empresarial inventada | accesos secundarios disponibles |
+| fuente parcial o no disponible | indisponibilidad | consulta segura o espera | no equivale a cero trabajo |
+
+#### 69. Matriz de modalidad de entrada
+
+| Modalidad | Uso válido | Condición |
+|---|---|---|
+| tacto | selección y acción ordinaria | target, separación, postura y riesgo adecuados |
+| teclado virtual | captura necesaria | no oculta campo, error ni consecuencia material |
+| teclado físico | entrada compatible | no convierte la superficie en escritorio administrativo |
+| stylus | precisión o firma propietaria cuando aplique | no requerido como única entrada ordinaria |
+| mouse | apoyo compatible | no habilita hover-only |
+| escáner/cámara | identificación o captura propietaria | captura no equivale a efecto confirmado |
+| periférico físico | medición, pago, impresión u otra función especializada | estado y resultado gobernados externamente |
+
+#### 70. Matriz de actor en tablet compartida
+
+| Estado | Presentación | Mutación personal |
+|---|---|---|
+| actor no resuelto | superficie neutral de identificación/resolución | bloqueada |
+| actor vigente + contexto válido | identidad y contexto materiales perceptibles | según autorización de servidor |
+| actor cambiando | transición explícita y limpieza | bloqueada hasta nueva resolución |
+| sesión expirada | protección de pantalla + continuidad preservada | bloqueada hasta reautenticación/revalidación |
+| actor nuevo | nueva resolución de contexto y trabajo | no hereda estado personal anterior |
+| dispositivo revocado/incompatible | condición material de bloqueo | bloqueada |
+
+#### 71. Matriz de orientación y reflow
+
+| Cambio | Debe conservar | No puede provocar |
+|---|---|---|
+| retrato → paisaje | estado, foco, draft, acción elegible | envío o confirmación |
+| paisaje → retrato | orden semántico, errores, resultado | pérdida de contexto |
+| teclado abierto | campo, error y consecuencia | scroll horizontal estructural |
+| zoom/texto aumentado | significado y operabilidad | ocultamiento de CTA material |
+| ancho disponible mayor | misma obligación y estado | densidad administrativa automática |
+| ancho disponible menor | una columna operable | conversión automática a otra clase de dispositivo |
+
+#### 72. Matriz de conectividad
+
+| Estado resuelto | Presentación | Restricción |
+|---|---|---|
+| online vigente | estado y frescura ordinarios | autorización sigue en servidor |
+| actualización en curso | conserva información conocida | no sustituye por vacío |
+| offline capture allowed | pendiente local explícito | no presenta confirmación remota |
+| offline queue allowed | cola y estado perceptibles | no duplica al reconectar |
+| stale read-only | antigüedad y limitación visibles | no habilita mutación |
+| manual contingency | instrucción humana y condición de retorno | no simula operación digital confirmada |
+| result unknown | incertidumbre explícita | no retry ciego |
+
+#### 73. Matriz de fronteras de responsabilidad
+
+| Materia | SHELL tablet | Propietario externo |
+|---|---|---|
+| perfil de dispositivo | consume conclusión | estación/dispositivo |
+| actor y contexto | presenta proyección | resolutores de identidad/contexto |
+| autorización | orienta disponibilidad | servidor propietario |
+| work item | presenta proyección | dominio propietario |
+| acción principal | compone acción ya resuelta | dominio + autorización |
+| ejecución | no ejecuta por presentación | aplicación propietaria |
+| idempotencia | refleja estado | servidor/contrato de intención |
+| periféricos | orienta si aplica | host/aplicación/driver |
+| reanudación | presenta clasificación | checkpoint + propietarios |
+| handoff | orienta y navega | contratos cross-app |
+| privacidad | minimiza presentación | política + servidor + proyección |
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA NUEVOS
+
+**Requisitos creados:** **0**
+**Requisitos modificados:** **0**
+
+La tarea especializa en SHELL comportamientos táctiles, de dispositivo compartido, densidad, continuidad y accesibilidad ya protegidos por el Registro Canónico vigente. No introduce una obligación de comportamiento nueva que requiera alterar el registro.
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+La trazabilidad existente aplicable a 018 incluye, sin modificación:
+
+- `TREQ-SHELL-016` — un acceso bloqueado no navega y el destino mantiene enforcement propio;
+- `TREQ-SHELL-017` — logout invalida sesión y evita reutilizar contexto anterior;
+- `TREQ-SHELL-030` — visibilidad de navegación derivada de permisos y contexto sin convertir UI en autorización;
+- `TREQ-SHELL-063` — consumo de proyección segura sin ampliar autoridad;
+- `TREQ-SHELL-070` — shape seguro de contexto compartido;
+- `TREQ-SHELL-072` — parsing cliente puro, sin decisiones de autoridad;
+- `TREQ-UX-009` — contexto operativo completo cuando aplique;
+- `TREQ-UX-020` — significado y ownership coherentes entre aplicaciones;
+- `TREQ-UX-021` — diferenciación estructural, accesible y responsive;
+- `TREQ-UX-024` — foco derivado de trabajo real;
+- `TREQ-UX-028` — continuidad del foco válido iniciado;
+- `TREQ-UX-029` — foco principal con obligaciones secundarias diferenciadas;
+- `TREQ-UX-034` — SHELL proyecta y navega mientras la propietaria revalida y ejecuta;
+- `TREQ-UX-036` — frescura, offline y reanudación segura;
+- `TREQ-UX-038` — foco comunicado mediante estructura y señales accesibles;
+- `TREQ-UX-047` — navegación organizada por trabajo y resultados;
+- `TREQ-UX-063` — superficie operativa enfocada sin backoffice denso ordinario;
+- `TREQ-UX-141` — golden path desde obligación hasta resultado y siguiente paso;
+- `TREQ-UX-199` — divulgación táctil, actor/contexto y limpieza en dispositivo compartido;
+- `TREQ-UX-204` a `TREQ-UX-226` — perfil táctil, targets, ergonomía, reflow, entradas, periféricos, ambiente, actor compartido, privacidad, idempotencia, feedback, conectividad, accesibilidad, kiosco y prueba física;
+- `TREQ-UX-227` a `TREQ-UX-230` — densidad determinada por tarea y no por tipo físico de dispositivo;
+- `TREQ-UX-274` a `TREQ-UX-296` — checkpoint, interrupción, reanudación, claim, custodia, conflicto y continuidad cross-device/cross-app;
+- `TREQ-UX-2053` — identidad técnica del dispositivo separada del actor humano;
+- `TREQ-UX-2057` — configuración técnica del dispositivo solo restringe y no concede contexto o autoridad;
+- `TREQ-UX-2058` — cambio o expiración de actor limpia estado personal y exige resolución nueva;
+- `TREQ-UX-2059` — caché y conectividad no sustituyen autorización vigente en dispositivo compartido.
+
+Esta enumeración documenta trazabilidad vigente y no altera el Registro Canónico de Requisitos de Prueba.
+
+#### 76. Observabilidad y verificabilidad
+
+Una futura implementación debe permitir verificar, sin convertir telemetría en autoridad:
+
+- clase de superficie aplicada;
+- work item presentado como foco;
+- actor y contexto proyectados;
+- estado de conectividad material;
+- acción principal proyectada;
+- ausencia de doble CTA equivalente;
+- cambios de actor y limpieza de estado personal;
+- interrupción y reanudación;
+- orientación/reflow sin pérdida de estado;
+- intentos repetidos o dobles toques evitados;
+- bloqueos y resultado desconocido;
+- handoff y retorno cross-app;
+- uso de modalidades alternativas cuando correspondan.
+
+La medición no debe convertirse en vigilancia individual ni en prueba de autorización.
+
+#### 77. Seguridad
+
+La experiencia tablet mantiene `fail closed`:
+
+- touch no concede autoridad;
+- viewport no concede autoridad;
+- dispositivo compartido no concede autoridad;
+- un actor anterior no autoriza al siguiente;
+- una caché no autoriza;
+- una navegación visible no autoriza;
+- una pantalla abierta no conserva claim indefinidamente;
+- reconectar no confirma pendientes;
+- rotar no reenvía intenciones;
+- un periférico presente no autoriza su uso;
+- un resultado local no simula efecto empresarial;
+- una acción stale no se conserva habilitada por continuidad visual.
+
+#### 78. Criterios de aceptación
+
+- [ ] La experiencia de tablet está definida como `task-first`, `touch-first` y `D1_CONTEXTUAL` ordinaria.
+- [ ] `PERSONAL_TABLET` y `SHARED_TABLET` son las únicas clases tablet de esta tarea.
+- [ ] `FIXED_KIOSK` permanece fuera de 018.
+- [ ] La experiencia no detecta clase, autoridad o densidad desde user agent, touch points, viewport u orientación.
+- [ ] El orden semántico coincide con contexto, bloqueo, trabajo, paso, acción, soporte y resultado.
+- [ ] Existe como máximo una acción principal y puede faltar cuando no hay salida segura.
+- [ ] La composición de una columna y la composición ancha conservan la misma semántica.
+- [ ] No existe scroll horizontal ordinario como requisito para completar el trabajo principal.
+- [ ] Rotación, reflow, zoom y teclado no alteran actor, foco, borrador, intención o autoridad.
+- [ ] Los objetivos táctiles ordinarios usan preferentemente 48 por 48 unidades lógicas y respetan los mínimos aplicables.
+- [ ] Acciones incompatibles conservan separación y hit areas no superpuestas.
+- [ ] Ninguna función esencial depende solo de hover, swipe oculto, drag preciso, long press, doble toque, pinza o gesto de borde.
+- [ ] Teclado, mouse, stylus y tecnologías de asistencia permanecen compatibles cuando corresponda.
+- [ ] La escritura se minimiza y el teclado virtual no oculta datos materiales.
+- [ ] Cantidad, unidad, presentación, precisión y efecto permanecen explícitos cuando aplican.
+- [ ] Guantes, humedad, grasa, harina, frío, reflejo, ruido, movimiento y distancia se consideran por perfil de estación.
+- [ ] La interfaz no exige tocar la pantalla durante una condición físicamente insegura.
+- [ ] Periféricos permanecen bajo ownership externo y captura no equivale a efecto empresarial.
+- [ ] Tablet personal no concede autoridad persistente por asociación técnica del dispositivo.
+- [ ] Tablet compartida mantiene actor humano y contexto material perceptibles.
+- [ ] Sin actor válido no existen mutaciones personales habilitadas.
+- [ ] La configuración del dispositivo solo restringe; no concede permiso, sede, área, turno o check-in.
+- [ ] Cambio de actor limpia estado personal sin transferir borradores, claims, strong reauth o datos privados.
+- [ ] Inactividad protege la superficie sin borrar trabajo ni restaurar autoridad stale.
+- [ ] Conectividad, frescura, pendientes y último punto confirmado permanecen distinguibles cuando son materiales.
+- [ ] Doble toque, latencia, rotación, reconexión y callbacks tardíos no deben duplicar efectos.
+- [ ] Feedback local, enviado, confirmado, físico y desconocido permanecen separados.
+- [ ] Carga, vacío, indisponibilidad y fuente parcial no se confunden.
+- [ ] Retorno y handoff cross-app conservan 014–016 y no transportan autoridad.
+- [ ] `TabletTaskSurface` se usa como referencia compatible sin afirmar adopción actual de SHELL.
+- [ ] El AS-IS app-first actual no redefine el TO-BE tablet.
+- [ ] La accesibilidad táctil cubre foco, lector, teclado, switch, zoom, reflow y alternativas sensoriales.
+- [ ] La administración del dispositivo no invade el flujo laboral ordinario.
+- [ ] La prueba sistemática por rol permanece reservada a `SHELL-APP-019`.
+- [ ] La prueba con bloqueos reales permanece reservada a `SHELL-APP-020`.
+- [ ] Los placeholders de perfil/configuración permanecen reservados a `SHELL-APP-021`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos en esta tarea.
+
+#### 79. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+|---|---|---|
+| BUILD | NOT_APPLICABLE | La tarea define un contrato documental y no autoriza modificación ejecutable ni artefacto runtime que requiera build propio. |
+| LOCAL | NOT_EXECUTED | La comprobación del checkout completo corresponde al lifecycle documental después de incorporar la tarea en su archivo propietario y normalizarla. |
+| REMOTA | NOT_EXECUTED | La comprobación de rama, PR y checks pertenece al cierre documental y no se declara anticipadamente. |
+| OPERATIVA | PASS | El contrato fue contrastado documentalmente contra `SHELL-APP-017`, `UX-BASE-011`, densidad de `UX-BASE-012`, gramática y bandeja `UX-STATION`, requisitos vigentes de tablet/dispositivo compartido y la implementación compartida actual de `TabletTaskSurface`, preservando ownership y límites. |
+| FÍSICA | NOT_APPLICABLE | Esta tarea no despliega ni prueba un dispositivo real; la validación física representativa permanece como obligación de materialización y piloto posteriores. |
+
+#### 80. Límites
+
+Esta tarea no:
+
+- modifica `TabletTaskSurface`;
+- declara que SHELL ya consume `TabletTaskSurface`;
+- convierte una tablet en kiosco;
+- implementa MDM;
+- define hardware definitivo;
+- compra dispositivos;
+- configura orientaciones del sistema operativo;
+- crea breakpoints de autoridad;
+- implementa navegación runtime;
+- modifica `src/app/page.tsx`;
+- modifica autorización;
+- cambia Supabase;
+- cambia datos;
+- crea o modifica TREQ;
+- ejecuta pruebas por rol;
+- ejecuta pruebas con bloqueos reales;
+- retira placeholders de perfil o configuración;
+- activa AURA;
+- cambia PASS;
+- autoriza implementación física.
+
+Toda materialización posterior debe respetar ownership, topología, gates y pruebas físicas aplicables.
+
+#### 81. Handoff a `SHELL-APP-019`
+
+`SHELL-APP-019` recibe dos contratos de experiencia ya cerrados:
+
+- computador, definido por `SHELL-APP-017`;
+- tablet, definido por `SHELL-APP-018`.
+
+019 deberá probar navegación por rol sin redefinir composición, densidad, autoridad, continuidad, clases tablet o semántica táctil.
+
+Su trabajo deberá verificar actores, roles, contexto, visibilidad, destinos y denegaciones sobre las experiencias ya definidas.
+
+#### 82. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-017 — Diseñar experiencia para computador`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-018 — Diseñar experiencia para tablet`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-019 — Probar navegación por rol`
+
+
 ### [ ] SHELL-APP-019 — Probar navegación por rol
 ### [ ] SHELL-APP-020 — Probar navegación con bloqueos reales
 
