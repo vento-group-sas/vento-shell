@@ -10,15 +10,21 @@ import {
   classifyExecutionState,
   evaluateCandidatePreverifyReceipt,
   resolveExecutorInstanceId,
+  runValidationCommandsWithPolicy,
   runValidationCommandsWithShadow,
   validateExecutionEvidenceReceipt,
 } from './implementation-execution-coordinator.mjs';
 import {
+  assessSafeSelectiveExecution,
   buildShadowImpactPlan,
   createCandidateValidationReceipt,
+  createSafeSelectiveValidationRecord,
+  deriveSafeSelectiveCertification,
   fingerprintCandidateRepositoryState,
+  IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION,
   observeShadowImpact,
   validateCandidateValidationReceipt,
+  validateSafeSelectiveValidationRecord,
 } from './implementation-validation-engine.mjs';
 
 test('clasifica estados físicos en gates deterministas', () => {
@@ -301,7 +307,7 @@ test('F3 integra receipt en evidence-request, mantiene fallback y no toca gates 
   assert.match(source, /if \(preverifyReceipt\.status === 'PASS'\)/u);
   assert.match(source, /PREVERIFY no reutilizable .* se ejecuta completo/u);
   assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:preverify', id\)/u);
-  assert.match(source, /validateExecutionEvidenceReceipt\(\{ instance: refreshed, receipt, candidateCommit \}\)/u);
+  assert.match(source, /validateExecutionEvidenceReceipt\(\{\s*instance: refreshed,\s*receipt,\s*candidateCommit,\s*certification,\s*\}\)/u);
   assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:finish', instanceId\)/u);
 
   const sealStart = source.indexOf('async function sealVerifiedEvidence');
@@ -471,4 +477,457 @@ test('F4 expone el diagnóstico shadow en el resultado de fallo sin cambiar fail
   assert.match(source, /SHADOW_IMPACT: shadowImpact\?\.classification \?\? 'NONE'/u);
   assert.match(source, /SHADOW_COMMAND: shadowImpact\?\.command \?\? 'NONE'/u);
   assert.match(source, /SHADOW_SELECTED: shadowImpact \? \(shadowImpact\.selected \? 'SI' : 'NO'\) : 'N\/A'/u);
+});
+
+
+
+function shadowCertificationFixture() {
+  const packageIds = [
+    'GAP-PKG-001',
+    'GAP-PKG-002',
+    'GAP-PKG-003',
+    'GAP-PKG-001',
+    'GAP-PKG-002',
+  ];
+  const instances = packageIds.map((packageId, index) => {
+    const other = packageId === 'GAP-PKG-001' ? 'GAP-PKG-009' : 'GAP-PKG-001';
+    const plan = buildShadowImpactPlan({
+      changedPaths: [`tests/packages/${packageId}/contract.test.ts`],
+      validationCommands: [
+        `node --test tests/packages/${packageId}/contract.test.ts`,
+        `node --test tests/packages/${other}/contract.test.ts`,
+        'git diff --check',
+      ],
+    });
+    const observation = observeShadowImpact({
+      plan,
+      results: plan.fullCommands.map((command) => ({ command, status: 'PASS' })),
+    });
+    return {
+      instanceId: `SHELL-CI-${String(20 + index).padStart(3, '0')}::${packageId}`,
+      status: 'VERIFIED',
+      authorizedChanges: [
+        {
+          repo: 'vento-group-sas/vento-shell',
+          path: `tests/packages/${packageId}/contract.test.ts`,
+          change: 'CREATE',
+        },
+        {
+          repo: 'vento-group-sas/vento-shell',
+          path: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-${String(20 + index).padStart(3, '0')}__${packageId}.json`,
+          change: 'MODIFY',
+        },
+      ],
+      evidence: [{
+        type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
+        validation_engine_shadow_impact: observation,
+      }],
+    };
+  });
+  return deriveSafeSelectiveCertification({ instances });
+}
+
+const certifiedF5 = shadowCertificationFixture();
+
+
+test('F5 deriva certificacion automaticamente desde evidencia F4 VERIFIED', () => {
+  assert.equal(certifiedF5.status, 'CERTIFIED');
+  assert.equal(certifiedF5.observedOmissionBearingSamples, 5);
+  assert.equal(certifiedF5.observedDistinctPackages, 3);
+  assert.equal(certifiedF5.observedFalseNegatives, 0);
+  assert.deepEqual(certifiedF5.distinctPackageIds, [
+    'GAP-PKG-001',
+    'GAP-PKG-002',
+    'GAP-PKG-003',
+  ]);
+  assert.match(certifiedF5.certificationSha256, /^[a-f0-9]{64}$/u);
+});
+
+test('F5 cuenta como maximo una muestra por instancia VERIFIED', () => {
+  const packageId = 'GAP-PKG-001';
+  const plan = buildShadowImpactPlan({
+    changedPaths: [`tests/packages/${packageId}/contract.test.ts`],
+    validationCommands: [
+      `node --test tests/packages/${packageId}/contract.test.ts`,
+      'node --test tests/packages/GAP-PKG-009/contract.test.ts',
+    ],
+  });
+  const observation = observeShadowImpact({
+    plan,
+    results: plan.fullCommands.map((command) => ({ command, status: 'PASS' })),
+  });
+  const certification = deriveSafeSelectiveCertification({
+    instances: [{
+      instanceId: `SHELL-CI-020::${packageId}`,
+      status: 'VERIFIED',
+      authorizedChanges: [{
+        repo: 'vento-group-sas/vento-shell',
+        path: `tests/packages/${packageId}/contract.test.ts`,
+        change: 'CREATE',
+      }],
+      evidence: [
+        { validation_engine_shadow_impact: observation },
+        { validation_engine_shadow_impact: observation },
+      ],
+    }],
+  });
+  assert.equal(certification.observedOmissionBearingSamples, 1);
+  assert.equal(certification.observedDistinctPackages, 1);
+});
+
+test('F5 no certifica evidencia shadow de una instancia VERIFIED con alcance transversal', () => {
+  const packageId = 'GAP-PKG-001';
+  const plan = buildShadowImpactPlan({
+    changedPaths: [`tests/packages/${packageId}/contract.test.ts`],
+    validationCommands: [
+      `node --test tests/packages/${packageId}/contract.test.ts`,
+      'node --test tests/packages/GAP-PKG-009/contract.test.ts',
+    ],
+  });
+  const observation = observeShadowImpact({
+    plan,
+    results: plan.fullCommands.map((command) => ({ command, status: 'PASS' })),
+  });
+  const certification = deriveSafeSelectiveCertification({
+    instances: [{
+      instanceId: `SHELL-CI-020::${packageId}`,
+      status: 'VERIFIED',
+      authorizedChanges: [
+        {
+          repo: 'vento-group-sas/vento-shell',
+          path: 'supabase/functions/shift-runtime-processor/index.ts',
+          change: 'MODIFY',
+        },
+        {
+          repo: 'vento-group-sas/vento-shell',
+          path: `tests/packages/${packageId}/contract.test.ts`,
+          change: 'CREATE',
+        },
+      ],
+      evidence: [{ validation_engine_shadow_impact: observation }],
+    }],
+  });
+  assert.equal(certification.status, 'PENDING_REAL_SHADOW_EVIDENCE');
+  assert.equal(certification.observedOmissionBearingSamples, 0);
+  assert.equal(certification.observedDistinctPackages, 0);
+});
+
+test('F5 identifica candidato closed-scope pero mantiene full fallback sin certificacion shadow real', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: [
+      'tests/packages/GAP-PKG-002/contract.test.ts',
+      'supabase/tests/packages/GAP-PKG-002.sql',
+      'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-002.json',
+    ],
+    validationCommands: [
+      'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+      'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+      'npm exec -- supabase test db supabase/tests/packages/GAP-PKG-002.sql',
+      'git diff --check',
+    ],
+  });
+  const pending = assessSafeSelectiveExecution({ plan });
+  assert.equal(pending.candidateEligible, true);
+  assert.equal(pending.selectiveExecution, false);
+  assert.equal(pending.fullFallback, true);
+  assert.equal(pending.packageId, 'GAP-PKG-002');
+  assert.equal(pending.reason, 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING');
+  assert.equal(pending.certificationStatus, 'PENDING_REAL_SHADOW_EVIDENCE');
+  assert.deepEqual(pending.executedCommands, plan.fullCommands);
+  assert.deepEqual(pending.notApplicableCommands, []);
+
+  const certified = assessSafeSelectiveExecution({ plan, certification: certifiedF5 });
+  assert.equal(certified.selectiveExecution, true);
+  assert.equal(certified.fullFallback, false);
+  assert.equal(certified.reason, 'SAFE_PACKAGE_LOCAL_CLOSED_SCOPE_CERTIFIED');
+  assert.deepEqual(certified.notApplicableCommands, [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+  ]);
+  assert.match(certified.decisionSha256, /^[a-f0-9]{64}$/u);
+});
+
+test('F5 usa full fallback ante cualquier path transversal aunque el shadow proponga omitir', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: [
+      'supabase/functions/shift-runtime-processor/index.ts',
+      'tests/packages/GAP-PKG-001/contract.test.ts',
+    ],
+    validationCommands: [
+      'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+      'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+      'npm test --silent',
+    ],
+  });
+  const decision = assessSafeSelectiveExecution({ plan });
+  assert.equal(decision.selectiveExecution, false);
+  assert.equal(decision.fullFallback, true);
+  assert.match(decision.reason, /^FULL_FALLBACK_CROSS_CUTTING_PATH:/u);
+  assert.deepEqual(decision.executedCommands, plan.fullCommands);
+  assert.deepEqual(decision.notApplicableCommands, []);
+});
+
+test('F5 usa full fallback para multiples packages o ausencia de validator del package actual', () => {
+  const multi = assessSafeSelectiveExecution({
+    plan: buildShadowImpactPlan({
+      changedPaths: [
+        'tests/packages/GAP-PKG-001/a.test.ts',
+        'tests/packages/GAP-PKG-002/b.test.ts',
+      ],
+      validationCommands: [
+        'node --test tests/packages/GAP-PKG-001/a.test.ts',
+        'node --test tests/packages/GAP-PKG-003/c.test.ts',
+      ],
+    }),
+  });
+  assert.equal(multi.selectiveExecution, false);
+  assert.equal(multi.reason, 'FULL_FALLBACK_MULTI_PACKAGE_SCOPE');
+
+  const noMatch = assessSafeSelectiveExecution({
+    plan: buildShadowImpactPlan({
+      changedPaths: ['tests/packages/GAP-PKG-002/fixture.json'],
+      validationCommands: ['node --test tests/packages/GAP-PKG-001/a.test.ts'],
+    }),
+  });
+  assert.equal(noMatch.selectiveExecution, false);
+  assert.equal(noMatch.reason, 'FULL_FALLBACK_NO_MATCHING_PACKAGE_VALIDATOR');
+});
+
+test('F5 ejecuta solo comandos aplicables dentro del closed scope', () => {
+  const commands = [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+    'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    'git diff --check',
+  ];
+  const executed = [];
+  const result = runValidationCommandsWithPolicy({
+    root: '/repo',
+    changedPaths: [
+      'tests/packages/GAP-PKG-002/contract.test.ts',
+      'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-002.json',
+    ],
+    validationCommands: commands,
+    runner: (_root, command) => executed.push(command),
+    certification: certifiedF5,
+  });
+  assert.equal(result.decision.selectiveExecution, true);
+  assert.deepEqual(executed, [
+    'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    'git diff --check',
+  ]);
+  assert.equal(result.shadowObservation, null);
+});
+
+test('F5 production default ejecuta suite completa aun en closed scope mientras certificacion esta pendiente', () => {
+  const commands = [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+    'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    'git diff --check',
+  ];
+  const executed = [];
+  const result = runValidationCommandsWithPolicy({
+    root: '/repo',
+    changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+    validationCommands: commands,
+    runner: (_root, command) => executed.push(command),
+  });
+  assert.equal(result.decision.candidateEligible, true);
+  assert.equal(result.decision.selectiveExecution, false);
+  assert.equal(result.decision.reason, 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING');
+  assert.deepEqual(executed, commands);
+  assert.equal(result.shadowObservation.fullSuiteExecuted, true);
+  assert.equal(result.shadowObservation.validationGatesSkipped, 0);
+});
+
+test('F5 full fallback ejecuta suite completa y conserva F4 como guard', () => {
+  const commands = [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+    'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    'npm test --silent',
+  ];
+  const executed = [];
+  const result = runValidationCommandsWithPolicy({
+    root: '/repo',
+    changedPaths: [
+      'supabase/functions/shift-runtime-processor/index.ts',
+      'tests/packages/GAP-PKG-001/contract.test.ts',
+    ],
+    validationCommands: commands,
+    runner: (_root, command) => executed.push(command),
+  });
+  assert.equal(result.decision.selectiveExecution, false);
+  assert.deepEqual(executed, commands);
+  assert.equal(result.shadowObservation.fullSuiteExecuted, true);
+  assert.equal(result.shadowObservation.validationGatesSkipped, 0);
+});
+
+test('F5 record sella candidato, decision y particion PASS/NOT_APPLICABLE', () => {
+  const commands = [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+    'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    'git diff --check',
+  ];
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+    validationCommands: commands,
+  });
+  const decision = assessSafeSelectiveExecution({ plan, certification: certifiedF5 });
+  const record = createSafeSelectiveValidationRecord({
+    plan,
+    decision,
+    results: decision.executedCommands.map((command) => ({ command, status: 'PASS' })),
+    candidateCommit: 'a'.repeat(40),
+    certification: certifiedF5,
+  });
+  const validated = validateSafeSelectiveValidationRecord({
+    record,
+    candidateCommit: 'a'.repeat(40),
+    validationCommands: commands,
+    certification: certifiedF5,
+  });
+  assert.equal(validated.status, 'PASS');
+  assert.equal(validated.selectiveExecution, true);
+  assert.deepEqual(validated.notApplicableCommands, [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+  ]);
+
+  const tampered = structuredClone(record);
+  tampered.notApplicableCommands = [];
+  assert.throws(
+    () => validateSafeSelectiveValidationRecord({
+      record: tampered,
+      candidateCommit: 'a'.repeat(40),
+      validationCommands: commands,
+      certification: certifiedF5,
+    }),
+    /integridad SHA-256/u,
+  );
+});
+
+test('F5 fallo de validator seleccionado sigue siendo fail-fast', () => {
+  const failing = 'node --test tests/packages/GAP-PKG-002/contract.test.ts';
+  assert.throws(
+    () => runValidationCommandsWithPolicy({
+      root: '/repo',
+      changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+      validationCommands: [
+        'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+        failing,
+      ],
+      runner: (_root, command) => {
+        if (command === failing) throw new Error('synthetic selective failure');
+      },
+      certification: certifiedF5,
+    }),
+    (error) => {
+      assert.equal(error.message, 'synthetic selective failure');
+      assert.equal(error.safeSelective.classification, 'SAFE_SELECTIVE_SELECTED_VALIDATOR_FAILURE');
+      assert.equal(error.safeSelective.command, failing);
+      return true;
+    },
+  );
+});
+
+test('F5 integra record en evidence request y no toca remote, authorization, preverify ni finish', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  assert.match(source, /validation_engine_selective_validation: selectiveValidation/u);
+  assert.match(source, /runValidationCommandsWithPolicy\(\{/u);
+  assert.match(source, /status: notApplicable\.has\(command\) \? 'NOT_APPLICABLE' : 'PASS'/u);
+  assert.match(source, /validateSafeSelectiveValidationRecord\(\{/u);
+  assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:preverify', id\)/u);
+  assert.match(source, /validateExecutionEvidenceReceipt\(\{\s*instance: refreshed,\s*receipt,\s*candidateCommit,\s*certification,\s*\}\)/u);
+  assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:finish', instanceId\)/u);
+  assert.match(source, /SAFE_SELECTIVE: safeSelective\?\.classification \?\? 'NONE'/u);
+});
+
+
+test('F5 certification incompleta nunca habilita seleccion', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+    validationCommands: [
+      'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+      'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    ],
+  });
+  const insufficient = assessSafeSelectiveExecution({
+    plan,
+    certification: IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION,
+  });
+  assert.equal(insufficient.candidateEligible, true);
+  assert.equal(insufficient.selectiveExecution, false);
+  assert.equal(insufficient.reason, 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING');
+});
+
+test('F5 evidence receipt acepta NOT_APPLICABLE solo con record selectivo certificado exacto', () => {
+  const instance = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-002',
+    validation_commands: [
+      'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+      'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+      'git diff --check',
+    ],
+    target_environments: [],
+  };
+  const candidateCommit = 'b'.repeat(40);
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+    validationCommands: instance.validation_commands,
+  });
+  const decision = assessSafeSelectiveExecution({ plan, certification: certifiedF5 });
+  const record = createSafeSelectiveValidationRecord({
+    plan,
+    decision,
+    results: decision.executedCommands.map((command) => ({ command, status: 'PASS' })),
+    candidateCommit,
+    certification: certifiedF5,
+  });
+  const receipt = {
+    schema_version: 1,
+    instance_id: instance.instance_id,
+    candidate_commit: candidateCommit,
+    observed_at: '2026-09-08T03:30:00Z',
+    validation_commands: instance.validation_commands,
+    results: [
+      { command: instance.validation_commands[0], status: 'NOT_APPLICABLE' },
+      { command: instance.validation_commands[1], status: 'PASS' },
+      { command: instance.validation_commands[2], status: 'PASS' },
+    ],
+    target_environments: [],
+    environment_results: [],
+    operational_evidence: ['F5 selective validation record PASS'],
+    validation_engine_selective_validation: record,
+  };
+  assert.equal(validateExecutionEvidenceReceipt({
+    instance,
+    receipt,
+    candidateCommit,
+    certification: certifiedF5,
+  }), true);
+
+  const forged = structuredClone(receipt);
+  forged.results[0].status = 'PASS';
+  assert.throws(
+    () => validateExecutionEvidenceReceipt({
+      instance,
+      receipt: forged,
+      candidateCommit,
+      certification: certifiedF5,
+    }),
+    /resultado local exacto/u,
+  );
+});
+
+
+test('F5 rechaza certificacion manipulada aunque declare CERTIFIED', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+    validationCommands: [
+      'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+      'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    ],
+  });
+  const tampered = { ...certifiedF5, observedOmissionBearingSamples: 999 };
+  const decision = assessSafeSelectiveExecution({ plan, certification: tampered });
+  assert.equal(decision.candidateEligible, true);
+  assert.equal(decision.selectiveExecution, false);
+  assert.equal(decision.reason, 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING');
 });

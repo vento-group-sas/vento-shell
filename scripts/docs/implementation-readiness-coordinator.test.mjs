@@ -212,6 +212,7 @@ test('validation engine ejecuta readiness una vez e inyecta el mismo package_exe
     'F2_SHARED_IMMUTABLE_CONTEXT',
     'F3_DEDUPLICATION_CANDIDATE_RECEIPTS',
     'F4_SHADOW_IMPACT_SELECTION',
+    'F5_SAFE_SELECTIVE_VALIDATION',
   ]);
   assert.equal(result.validationEngine.observability.packageReadinessScans, 1);
   assert.equal(result.validationEngine.observability.packageExecutionReuses, 1);
@@ -223,10 +224,20 @@ test('validation engine ejecuta readiness una vez e inyecta el mismo package_exe
   assert.equal(result.validationEngine.policy.remoteReuse, 'NEVER_REUSE');
   assert.equal(result.validationEngine.policy.authorizationReuse, 'NEVER_REUSE');
   assert.equal(result.validationEngine.policy.prMergeReuse, 'NEVER_REUSE');
-  assert.equal(result.validationEngine.policy.shadowImpactMode, 'OBSERVE_ONLY');
-  assert.equal(result.validationEngine.policy.selectiveExecution, false);
+  assert.equal(result.validationEngine.policy.shadowImpactMode, 'ACTIVE_GUARD');
+  assert.equal(result.validationEngine.policy.selectiveExecution, 'GUARDED_PENDING_REAL_SHADOW_CERTIFICATION');
+  assert.equal(result.validationEngine.policy.safeSelectivePolicy, 'PACKAGE_LOCAL_CLOSED_SCOPE_V1');
+  assert.equal(result.validationEngine.policy.safeSelectiveCertification, 'PENDING_REAL_SHADOW_EVIDENCE');
+  assert.equal(result.validationEngine.policy.safeSelectiveMinimumOmissionBearingSamples, 5);
+  assert.equal(result.validationEngine.policy.safeSelectiveMinimumDistinctPackages, 3);
   assert.equal(result.validationEngine.policy.fullValidationRequired, true);
+  assert.equal(result.validationEngine.policy.fullValidationFallback, true);
   assert.equal(result.validationEngine.phaseStatus.F4_SHADOW_IMPACT_SELECTION, 'ACTIVE');
+  assert.equal(result.validationEngine.phaseStatus.F5_SAFE_SELECTIVE_VALIDATION, 'ACTIVE_GUARDED');
+  assert.equal(result.validationEngine.safeSelectiveCertification.status, 'PENDING_REAL_SHADOW_EVIDENCE');
+  assert.equal(result.validationEngine.safeSelectiveCertification.observedOmissionBearingSamples, 0);
+  assert.equal(result.validationEngine.safeSelectiveCertification.observedDistinctPackages, 0);
+  assert.match(result.validationEngine.safeSelectiveCertification.certificationSha256, /^[a-f0-9]{64}$/u);
   assert.equal(result.validationEngine.context.immutable, true);
   assert.equal(result.validationEngine.observability.packageReadinessMs, 4);
   assert.equal(result.validationEngine.observability.implementationControlMs, 2);
