@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1138** |
+| Tareas aprobadas | **1139** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **458** |
+| Tareas no iniciadas | **457** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.30% (1138/1596)** |
+| Porcentaje de completamiento | **71.37% (1139/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real** |
-| Tarea actual | **AUTH-UI-040 — Ocultar enlaces no autorizados** |
+| Última tarea aprobada | **AUTH-UI-040 — Ocultar enlaces no autorizados** |
+| Tarea actual | **AUTH-UI-041 — Bloquear acceso directo por URL** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-041 — Bloquear acceso directo por URL** |
+| Siguiente tarea | **AUTH-UI-042 — Bloquear acciones aunque el botón sea visible** |
 | Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
-| Progreso del bloque | **BLOQUE I: 0 de 12 aprobadas; AUTH-UI-040 pendiente** |
+| Progreso del bloque | **BLOQUE I: 1 de 12 aprobadas; AUTH-UI-041 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-040** |
+| Carril documental | **ACTIVO — AUTH-UI-041** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `SHELL-APP-021` — Retirar placeholders de perfil y configuración sin destino real |
-| Tarea actual | `AUTH-UI-040` — Ocultar enlaces no autorizados — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-041` — Bloquear acceso directo por URL |
+| Última aprobada | `AUTH-UI-040` — Ocultar enlaces no autorizados |
+| Tarea actual | `AUTH-UI-041` — Bloquear acceso directo por URL — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE I: 0 DE 12 APROBADAS — ACTUAL AUTH-UI-040** |
+| CONTINUIDAD ACTIVA | **BLOQUE I: 1 DE 12 APROBADAS — ACTUAL AUTH-UI-041** |
 | Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
-        ↓
-TAREA ACTUAL
 AUTH-UI-040 — Ocultar enlaces no autorizados
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-041 — Bloquear acceso directo por URL
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-042 — Bloquear acciones aunque el botón sea visible
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE I — 0 de 12 tareas aprobadas
+BLOQUE I — 1 de 12 tareas aprobadas
 ```

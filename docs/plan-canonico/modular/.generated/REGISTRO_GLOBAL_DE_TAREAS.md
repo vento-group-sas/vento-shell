@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1138** |
+| Aprobadas | **1139** |
 | En propuesta | **0** |
-| No iniciadas | **458** |
+| No iniciadas | **457** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.30% (1138/1596)** |
+| Porcentaje de completamiento | **71.37% (1139/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-021` — Retirar placeholders de perfil y configuración sin destino real | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-040` — Ocultar enlaces no autorizados | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-041` — Bloquear acceso directo por URL | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-040` — Ocultar enlaces no autorizados | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-041` — Bloquear acceso directo por URL | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -847,7 +847,7 @@
 | ✅ APROBADA | `AUTH-UI-037` | Definir si admite simulación | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-038` | Definir campos sensibles visibles | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-039` | Definir masking según permiso | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
-| ⬜ NO INICIADA | `AUTH-UI-040` | Ocultar enlaces no autorizados | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
+| ✅ APROBADA | `AUTH-UI-040` | Ocultar enlaces no autorizados | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-041` | Bloquear acceso directo por URL | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-042` | Bloquear acciones aunque el botón sea visible | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-043` | Vincular cada acción con protección de servidor | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
