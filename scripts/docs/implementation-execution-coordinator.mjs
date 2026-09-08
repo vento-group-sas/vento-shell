@@ -15,8 +15,10 @@ import {
 } from './implementation-control.mjs';
 import { deriveCoordinatedImplementationStatus } from './implementation-readiness-coordinator.mjs';
 import {
+  buildShadowImpactPlan,
   createCandidateValidationReceipt,
   fingerprintCandidateRepositoryState,
+  observeShadowImpact,
   validateCandidateValidationReceipt,
 } from './implementation-validation-engine.mjs';
 import {
@@ -273,6 +275,43 @@ function runValidationCommand(root, command) {
   if (status !== 0) fail(`validation_command fallo: ${command}`, status);
 }
 
+export function runValidationCommandsWithShadow({
+  root = process.cwd(),
+  changedPaths = [],
+  validationCommands = [],
+  runner = runValidationCommand,
+} = {}) {
+  const plan = buildShadowImpactPlan({ changedPaths, validationCommands });
+  console.log(
+    `[VALIDATION ENGINE] F4 shadow selected=${plan.selectedCommandCount}/${plan.fullCommandCount} `
+    + `omitted=${plan.omittedCommandCount} execution=FULL_SUITE_SHADOW_ONLY.`,
+  );
+  const results = [];
+  for (const entry of plan.entries) {
+    try {
+      runner(root, entry.command);
+      results.push({ command: entry.command, status: 'PASS' });
+    } catch (error) {
+      const classification = entry.selected ? 'SELECTED_VALIDATOR_FAILURE' : 'SHADOW_FALSE_NEGATIVE';
+      console.warn(
+        `[VALIDATION ENGINE] F4 ${classification} command=${entry.command} reason=${entry.reason}.`,
+      );
+      if (error && typeof error === 'object') {
+        error.shadowImpact = {
+          planSha256: plan.planSha256,
+          command: entry.command,
+          selected: entry.selected,
+          reason: entry.reason,
+          classification,
+        };
+      }
+      throw error;
+    }
+  }
+  const observation = observeShadowImpact({ plan, results });
+  return { plan, observation };
+}
+
 function retryTransient(label, operation, { attempts = 4, intervalMs = 2500 } = {}) {
   let last = null;
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
@@ -450,7 +489,7 @@ function maybeRecordCi020Candidate(root, instance) {
   return 'RECORDED';
 }
 
-function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt) {
+function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt, shadowImpact = null) {
   const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
   const request = {
@@ -468,6 +507,7 @@ function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt)
     })),
     operational_evidence: [],
     validation_engine_preverify_receipt: preverifyReceipt,
+    validation_engine_shadow_impact: shadowImpact,
   };
   fs.writeFileSync(absolute, `${JSON.stringify(request, null, 2)}\n`, 'utf8');
   return EVIDENCE_REQUEST_PATH;
@@ -567,9 +607,15 @@ async function materializeImplementation({ root, id, instance }) {
     { root, baseRef: `origin/${DEFAULT_BRANCH}` },
   );
 
-  for (const command of refreshedBefore.validation_commands ?? []) {
-    runValidationCommand(root, command);
-  }
+  const validationChangedPaths = [...new Set([
+    ...branchChangedPaths(root),
+    ...worktreePaths(root),
+  ])];
+  const shadowValidation = runValidationCommandsWithShadow({
+    root,
+    changedPaths: validationChangedPaths,
+    validationCommands: refreshedBefore.validation_commands ?? [],
+  });
 
   const refreshedAfterValidation = resolveInstance(root, id).instance;
   const dirty = worktreePaths(root);
@@ -625,6 +671,7 @@ async function materializeImplementation({ root, id, instance }) {
     candidateCommit,
     mrpStatus,
     rebaseline,
+    shadowImpact: shadowValidation.observation,
   };
 }
 
@@ -807,6 +854,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         refreshedAfterPreverify,
         candidateCommit,
         preverifyReceipt,
+        materializedResult?.shadowImpact ?? null,
       );
       printResult({
         ESTADO: 'PASS',
@@ -819,6 +867,12 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         MRP015_050: materializedResult?.mrpStatus ?? 'PRESERVED_OR_NO_APLICA',
         PREVERIFY: 'PASS',
         PREVERIFY_RECEIPT: 'RECORDED_EXACT_CANDIDATE',
+        SHADOW_IMPACT_SELECTION: materializedResult?.shadowImpact ? 'OBSERVED_FULL_SUITE' : 'NOT_OBSERVED_THIS_RUN',
+        SHADOW_SELECTED: materializedResult?.shadowImpact?.selectedCommandCount ?? 'N/A',
+        SHADOW_OMITTED: materializedResult?.shadowImpact?.omittedCommandCount ?? 'N/A',
+        SHADOW_POTENTIAL_REDUCTION_PERCENT: materializedResult?.shadowImpact?.potentialReductionPercent ?? 'N/A',
+        SHADOW_FALSE_NEGATIVES: materializedResult?.shadowImpact?.observedFalseNegativeCount ?? 'N/A',
+        VALIDATION_GATES_SKIPPED: 0,
         EVIDENCE_REQUEST: requestPath,
         NEXT_GATE: 'EXTERNAL_EVIDENCE',
         HUMAN_GATE: 'SI',
@@ -935,11 +989,15 @@ if (isCli) {
     await main();
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
+    const shadowImpact = error && typeof error === 'object' ? error.shadowImpact ?? null : null;
     printResult({
       ESTADO: 'FAIL',
       OPERACION: 'IMPLEMENTATION_ACCELERATOR',
       STEP: 'AUTO_DETECTED',
       CAUSE: message.replace(/\s+/gu, ' ').trim(),
+      SHADOW_IMPACT: shadowImpact?.classification ?? 'NONE',
+      SHADOW_COMMAND: shadowImpact?.command ?? 'NONE',
+      SHADOW_SELECTED: shadowImpact ? (shadowImpact.selected ? 'SI' : 'NO') : 'N/A',
       RESUMABLE: 'SI',
       WORKTREE_PRESERVED: 'SI',
     });

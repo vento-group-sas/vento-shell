@@ -9,6 +9,7 @@ export const IMPLEMENTATION_VALIDATION_PHASES = Object.freeze([
   'F1_OBSERVABILITY',
   'F2_SHARED_IMMUTABLE_CONTEXT',
   'F3_DEDUPLICATION_CANDIDATE_RECEIPTS',
+  'F4_SHADOW_IMPACT_SELECTION',
 ]);
 
 function sha256(value) {
@@ -51,6 +52,190 @@ export const IMPLEMENTATION_VALIDATION_REUSE_POLICY = Object.freeze({
 });
 
 const PREVERIFY_VALIDATOR_ID = 'IMPLEMENTATION_PREVERIFY_V1';
+
+const SHADOW_IMPACT_SELECTOR_ID = 'IMPLEMENTATION_SHADOW_IMPACT_SELECTOR_V1';
+const SHADOW_EXECUTION_MODE = 'FULL_SUITE_SHADOW_ONLY';
+
+function normalizedChangedPaths(values) {
+  if (!Array.isArray(values)) return [];
+  return [...new Set(values
+    .map((value) => String(value ?? '').replaceAll('\\', '/').trim())
+    .filter(Boolean))]
+    .sort((left, right) => left.localeCompare(right, 'en'));
+}
+
+function packageTokens(value) {
+  return [...new Set(
+    String(value ?? '').toUpperCase().match(/\b[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-PKG-\d{3}\b/gu) ?? [],
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+}
+
+function pathTouchesDocs(relativePath) {
+  const value = String(relativePath ?? '').toLowerCase();
+  return value.startsWith('docs/')
+    || value.startsWith('scripts/docs/')
+    || value === 'package.json'
+    || value.startsWith('.github/');
+}
+
+function pathTouchesSupabase(relativePath) {
+  const value = String(relativePath ?? '').toLowerCase();
+  return value.startsWith('supabase/')
+    || (value.startsWith('scripts/') && value.includes('supabase'))
+    || value === 'package.json'
+    || value.startsWith('.github/');
+}
+
+function isBroadValidationCommand(command) {
+  const value = String(command ?? '').toLowerCase();
+  return /(?:^|\s)npm(?:\.cmd)?\s+ci(?:\s|$)/u.test(value)
+    || /(?:^|\s)npm(?:\.cmd)?\s+test(?:\s|$)/u.test(value)
+    || /(?:^|\s)npm(?:\.cmd)?\s+run\s+(?:test(?::\S+)?|lint(?::\S+)?|typecheck(?::\S+)?|build(?::\S+)?)(?:\s|$)/u.test(value)
+    || value.includes('quality:lint:ratchet')
+    || /git\s+diff\s+--check/u.test(value);
+}
+
+function shadowSelectionDecision(command, changedPaths) {
+  const value = String(command ?? '').trim();
+  const lower = value.toLowerCase();
+  if (!value) return { selected: true, reason: 'EMPTY_COMMAND_CONSERVATIVE' };
+  if (changedPaths.length === 0) return { selected: true, reason: 'NO_CHANGED_PATHS_CONSERVATIVE_FULL' };
+  if (isBroadValidationCommand(value)) return { selected: true, reason: 'BROAD_VALIDATOR_ALWAYS_SELECTED' };
+
+  const commandPackages = packageTokens(value);
+  if (commandPackages.length > 0) {
+    const changedPackages = new Set(changedPaths.flatMap((entry) => packageTokens(entry)));
+    if (commandPackages.some((entry) => changedPackages.has(entry))) {
+      return { selected: true, reason: 'PACKAGE_ID_MATCH' };
+    }
+    return { selected: false, reason: 'PACKAGE_ID_NO_MATCH' };
+  }
+
+  const docsSpecific = lower.includes('docs:') || lower.includes('scripts/docs/');
+  if (docsSpecific) {
+    return changedPaths.some(pathTouchesDocs)
+      ? { selected: true, reason: 'DOCS_DOMAIN_MATCH' }
+      : { selected: false, reason: 'DOCS_DOMAIN_NO_MATCH' };
+  }
+
+  const supabaseSpecific = lower.includes('supabase');
+  if (supabaseSpecific) {
+    return changedPaths.some(pathTouchesSupabase)
+      ? { selected: true, reason: 'SUPABASE_DOMAIN_MATCH' }
+      : { selected: false, reason: 'SUPABASE_DOMAIN_NO_MATCH' };
+  }
+
+  return { selected: true, reason: 'UNKNOWN_COMMAND_CONSERVATIVE' };
+}
+
+export function buildShadowImpactPlan({
+  changedPaths = [],
+  validationCommands = [],
+} = {}) {
+  const paths = normalizedChangedPaths(changedPaths);
+  const commands = normalizedValidationCommands(validationCommands);
+  const entries = commands.map((command, index) => {
+    const decision = shadowSelectionDecision(command, paths);
+    return {
+      index,
+      command,
+      selected: decision.selected,
+      reason: decision.reason,
+    };
+  });
+  const selectedCommands = entries.filter(({ selected }) => selected).map(({ command }) => command);
+  const omittedCommands = entries.filter(({ selected }) => !selected).map(({ command }) => command);
+  const payload = {
+    schemaVersion: 1,
+    engineId: IMPLEMENTATION_VALIDATION_ENGINE_ID,
+    phase: 'F4_SHADOW_IMPACT_SELECTION',
+    selectorId: SHADOW_IMPACT_SELECTOR_ID,
+    executionMode: SHADOW_EXECUTION_MODE,
+    selectiveExecution: false,
+    fullValidationRequired: true,
+    validationGatesSkipped: 0,
+    changedPaths: paths,
+    fullCommands: commands,
+    selectedCommands,
+    omittedCommands,
+    entries,
+    fullCommandCount: commands.length,
+    selectedCommandCount: selectedCommands.length,
+    omittedCommandCount: omittedCommands.length,
+    potentialReductionPercent: commands.length === 0
+      ? 0
+      : Number(((omittedCommands.length / commands.length) * 100).toFixed(2)),
+  };
+  return deepFreeze({
+    ...payload,
+    planSha256: sha256(canonicalJson(payload)),
+  });
+}
+
+export function observeShadowImpact({ plan, results = [] } = {}) {
+  if (!plan || typeof plan !== 'object' || Array.isArray(plan)) {
+    throw new Error('F4 shadow impact exige plan.');
+  }
+  if (
+    plan.phase !== 'F4_SHADOW_IMPACT_SELECTION'
+    || plan.selectorId !== SHADOW_IMPACT_SELECTOR_ID
+    || plan.executionMode !== SHADOW_EXECUTION_MODE
+    || plan.selectiveExecution !== false
+    || plan.fullValidationRequired !== true
+    || plan.validationGatesSkipped !== 0
+  ) {
+    throw new Error('F4 shadow impact rechaza plan con identidad o política inválida.');
+  }
+  const { planSha256, ...planPayload } = plan;
+  if (!/^[a-f0-9]{64}$/u.test(String(planSha256 ?? ''))
+    || sha256(canonicalJson(planPayload)) !== planSha256) {
+    throw new Error('F4 shadow impact rechaza plan con integridad SHA-256 inválida.');
+  }
+
+  const normalizedResults = Array.isArray(results) ? results.map((result) => ({
+    command: String(result?.command ?? '').trim(),
+    status: String(result?.status ?? '').trim().toUpperCase(),
+  })) : [];
+  if (normalizedResults.length !== plan.fullCommands.length) {
+    throw new Error('F4 shadow impact exige resultado de la suite completa.');
+  }
+  for (let index = 0; index < plan.fullCommands.length; index += 1) {
+    if (normalizedResults[index].command !== plan.fullCommands[index]) {
+      throw new Error(`F4 shadow impact desalineado en command[${index}].`);
+    }
+    if (!['PASS', 'FAIL'].includes(normalizedResults[index].status)) {
+      throw new Error(`F4 shadow impact status inválido en command[${index}].`);
+    }
+  }
+
+  const selected = new Set(plan.selectedCommands);
+  const failures = normalizedResults.filter(({ status }) => status !== 'PASS');
+  const falseNegatives = failures.filter(({ command }) => !selected.has(command));
+  const payload = {
+    schemaVersion: 1,
+    engineId: IMPLEMENTATION_VALIDATION_ENGINE_ID,
+    phase: 'F4_SHADOW_IMPACT_SELECTION',
+    selectorId: SHADOW_IMPACT_SELECTOR_ID,
+    planSha256,
+    executionMode: SHADOW_EXECUTION_MODE,
+    selectiveExecution: false,
+    fullSuiteExecuted: true,
+    validationGatesSkipped: 0,
+    fullSuiteStatus: failures.length === 0 ? 'PASS' : 'FAIL',
+    fullCommandCount: plan.fullCommandCount,
+    selectedCommandCount: plan.selectedCommandCount,
+    omittedCommandCount: plan.omittedCommandCount,
+    potentialReductionPercent: plan.potentialReductionPercent,
+    observedFailureCount: failures.length,
+    observedFalseNegativeCount: falseNegatives.length,
+    observedFalseNegatives: falseNegatives.map(({ command }) => command),
+    eligibleForSelectiveExecution: false,
+  };
+  return deepFreeze({
+    ...payload,
+    observationSha256: sha256(canonicalJson(payload)),
+  });
+}
 
 function normalizedValidationCommands(values) {
   if (!Array.isArray(values)) return [];
@@ -305,6 +490,7 @@ export async function deriveImplementationValidationInputs({
       F1_OBSERVABILITY: 'ACTIVE',
       F2_SHARED_IMMUTABLE_CONTEXT: 'ACTIVE',
       F3_DEDUPLICATION_CANDIDATE_RECEIPTS: 'ACTIVE',
+      F4_SHADOW_IMPACT_SELECTION: 'ACTIVE',
     },
     policy: {
       semantics: 'PRESERVED',
@@ -315,6 +501,9 @@ export async function deriveImplementationValidationInputs({
       remoteReuse: IMPLEMENTATION_VALIDATION_REUSE_POLICY.REMOTE,
       authorizationReuse: IMPLEMENTATION_VALIDATION_REUSE_POLICY.AUTHORIZATION,
       prMergeReuse: IMPLEMENTATION_VALIDATION_REUSE_POLICY.PR_MERGE,
+      shadowImpactMode: 'OBSERVE_ONLY',
+      selectiveExecution: false,
+      fullValidationRequired: true,
     },
     context: {
       immutable: context.immutable,
