@@ -1,6 +1,7 @@
-import { spawnSync } from 'node:child_process';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { spawnGitUtf8 } from './docs-runtime-primitives.mjs';
 
 export const PACKAGE_REGISTRY_PATH = 'scripts/docs/package-readiness/implementation-package-registry.json';
 
@@ -26,9 +27,8 @@ export function analyzeReadinessCommitScope(paths, baseAnalyzeCommitScope) {
 }
 
 function runGit(args) {
-  const result = spawnSync('git', args, {
+  const result = spawnGitUtf8(args, {
     cwd: process.cwd(),
-    encoding: 'utf8',
     windowsHide: true,
   });
   if (result.status !== 0) {

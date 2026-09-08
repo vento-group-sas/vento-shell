@@ -1,7 +1,8 @@
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { spawnGitUtf8 } from './docs-runtime-primitives.mjs';
 
 import {
   assertImplementationPaths,
@@ -161,9 +162,8 @@ export function analyzeCommitScope(paths) {
 }
 
 function runGit(args) {
-  const result = spawnSync('git', args, {
+  const result = spawnGitUtf8(args, {
     cwd: process.cwd(),
-    encoding: 'utf8',
     windowsHide: true,
   });
   if (result.status !== 0) {
