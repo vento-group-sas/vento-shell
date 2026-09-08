@@ -1,7 +1,7 @@
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
-import { scanPackageReadiness } from './package-readiness-scanner.mjs';
+import { deriveImplementationValidationInputs } from './implementation-validation-engine.mjs';
 
 function queueCandidate(registry) {
   const current = registry?.package_execution?.current ?? null;
@@ -93,13 +93,22 @@ export function coordinateImplementationStatus({ baseControl, registry }) {
   };
 }
 
-export async function deriveCoordinatedImplementationStatus({ root = process.cwd() } = {}) {
-  const [{ deriveImplementationControl }, readiness] = await Promise.all([
-    import('./implementation-control.mjs'),
-    Promise.resolve(scanPackageReadiness({ root, check: true, trigger: 'implementation-status' })),
-  ]);
-  const baseControl = deriveImplementationControl({ root });
-  return coordinateImplementationStatus({ baseControl, registry: readiness.registry });
+export async function deriveCoordinatedImplementationStatus({
+  root = process.cwd(),
+  validationDependencies = {},
+} = {}) {
+  const inputs = await deriveImplementationValidationInputs({
+    root,
+    dependencies: validationDependencies,
+  });
+  const coordinated = coordinateImplementationStatus({
+    baseControl: inputs.baseControl,
+    registry: inputs.registry,
+  });
+  return {
+    ...coordinated,
+    validationEngine: inputs.validationEngine,
+  };
 }
 
 function printStatus(status) {
@@ -111,14 +120,26 @@ function printStatus(status) {
   if (status.readinessCurrent) {
     console.log(`CURRENT_PACKAGE: ${status.readinessCurrent.package_id}`);
     console.log(`CURRENT_POSITION: ${status.readinessCurrent.position}`);
-    console.log(`CURRENT_EXECUTABLE_WORK: ${status.readinessCurrent.current_work?.id ?? "NONE"}`);
-    console.log(`CURRENT_EXECUTABLE_WORK_KIND: ${status.readinessCurrent.current_work?.kind ?? "NONE"}`);
+    console.log(`CURRENT_EXECUTABLE_WORK: ${status.readinessCurrent.current_work?.id ?? 'NONE'}`);
+    console.log(`CURRENT_EXECUTABLE_WORK_KIND: ${status.readinessCurrent.current_work?.kind ?? 'NONE'}`);
   }
   if (status.readinessCandidate) {
     console.log(`PACKAGE_ID: ${status.readinessCandidate.packageId}`);
     console.log(`PACKAGE_GATE: ${status.readinessCandidate.gateId}`);
     console.log(`PACKAGE_STATUS: ${status.readinessCandidate.status}`);
     console.log('PHYSICAL_AUTHORIZATION_REQUIRED: SI');
+  }
+  if (status.validationEngine) {
+    const engine = status.validationEngine;
+    console.log(`VALIDATION_ENGINE: ${engine.engineId}`);
+    console.log(`VALIDATION_ENGINE_PHASES: ${engine.phases.join(',')}`);
+    console.log(`VALIDATION_CONTEXT_IMMUTABLE: ${engine.context.immutable ? 'SI' : 'NO'}`);
+    console.log(`VALIDATION_CONTEXT_SHA256: ${engine.context.fingerprintSha256}`);
+    console.log(`PACKAGE_READINESS_SCANS: ${engine.observability.packageReadinessScans}`);
+    console.log(`PACKAGE_EXECUTION_REUSES: ${engine.observability.packageExecutionReuses}`);
+    console.log(`DUPLICATE_READINESS_SCANS_AVOIDED: ${engine.observability.duplicateReadinessScansAvoided}`);
+    console.log(`VALIDATION_GATES_SKIPPED: ${engine.observability.validationGatesSkipped}`);
+    console.log(`VALIDATION_TOTAL_MS: ${engine.observability.totalMs}`);
   }
 }
 

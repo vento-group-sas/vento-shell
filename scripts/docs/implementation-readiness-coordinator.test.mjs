@@ -1,7 +1,11 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { coordinateImplementationStatus } from './implementation-readiness-coordinator.mjs';
+import {
+  coordinateImplementationStatus,
+  deriveCoordinatedImplementationStatus,
+} from './implementation-readiness-coordinator.mjs';
+import { createImplementationValidationContext } from './implementation-validation-engine.mjs';
 
 function baseControl(active = null) {
   return {
@@ -151,4 +155,84 @@ test('coordinador conserva la autorización derivada de CI021 aunque package_exe
   assert.equal(result.coordinationSource, 'IMPLEMENTATION_CONTROL_ACTIVE_INSTANCE');
   assert.equal(result.coordinatedPrimaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
   assert.equal(result.coordinatedPrimaryAction.target, instanceId);
+});
+
+test('validation context clona y congela package_execution y la cola compartida', () => {
+  const source = structuredClone(readyRegistry);
+  const context = createImplementationValidationContext({ registry: source });
+
+  assert.equal(context.immutable, true);
+  assert.equal(Object.isFrozen(context), true);
+  assert.equal(Object.isFrozen(context.packageExecution), true);
+  assert.equal(Object.isFrozen(context.registryProjection), true);
+  assert.notEqual(context.packageExecution, source.package_execution);
+  assert.equal(context.packageExecution.current.package_id, 'NEXO-PACKAGE-001');
+  assert.match(context.fingerprintSha256, /^[a-f0-9]{64}$/u);
+
+  source.package_execution.current.package_id = 'MUTATED-AFTER-CONTEXT';
+  assert.equal(context.packageExecution.current.package_id, 'NEXO-PACKAGE-001');
+  assert.throws(() => {
+    context.packageExecution.current.package_id = 'MUTATED-INSIDE-CONTEXT';
+  }, TypeError);
+});
+
+test('validation engine ejecuta readiness una vez e inyecta el mismo package_execution al control', async () => {
+  let readinessScans = 0;
+  let suppliedPackageExecution = null;
+  const ticks = [0, 1, 5, 6, 8, 10];
+  let tickIndex = 0;
+
+  const result = await deriveCoordinatedImplementationStatus({
+    root: '/repo',
+    validationDependencies: {
+      scanPackageReadiness: ({ root, check, trigger }) => {
+        readinessScans += 1;
+        assert.equal(root, '/repo');
+        assert.equal(check, true);
+        assert.equal(trigger, 'implementation-status');
+        return { registry: structuredClone(readyRegistry) };
+      },
+      deriveImplementationControl: ({ root, packageExecution }) => {
+        assert.equal(root, '/repo');
+        suppliedPackageExecution = packageExecution;
+        return baseControl();
+      },
+      now: () => ticks[tickIndex++],
+    },
+  });
+
+  assert.equal(readinessScans, 1);
+  assert.equal(suppliedPackageExecution.current.package_id, 'NEXO-PACKAGE-001');
+  assert.equal(Object.isFrozen(suppliedPackageExecution), true);
+  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_LINEAR');
+  assert.equal(result.coordinatedPrimaryAction.target, 'SHELL-CI-020::NEXO-PACKAGE-001');
+  assert.equal(result.validationEngine.engineId, 'VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1');
+  assert.deepEqual(result.validationEngine.phases, [
+    'F1_OBSERVABILITY',
+    'F2_SHARED_IMMUTABLE_CONTEXT',
+  ]);
+  assert.equal(result.validationEngine.observability.packageReadinessScans, 1);
+  assert.equal(result.validationEngine.observability.packageExecutionReuses, 1);
+  assert.equal(result.validationEngine.observability.duplicateReadinessScansAvoided, 1);
+  assert.equal(result.validationEngine.observability.validationGatesSkipped, 0);
+  assert.equal(result.validationEngine.policy.validationGatesSkipped, 0);
+  assert.equal(result.validationEngine.policy.semantics, 'PRESERVED');
+  assert.equal(result.validationEngine.context.immutable, true);
+  assert.equal(result.validationEngine.observability.packageReadinessMs, 4);
+  assert.equal(result.validationEngine.observability.implementationControlMs, 2);
+  assert.equal(result.validationEngine.observability.totalMs, 10);
+});
+
+test('validation engine falla cerrado si readiness no entrega package_execution', async () => {
+  await assert.rejects(
+    deriveCoordinatedImplementationStatus({
+      root: '/repo',
+      validationDependencies: {
+        scanPackageReadiness: () => ({ registry: { implementation_ready_queue: [] } }),
+        deriveImplementationControl: () => baseControl(),
+        now: () => 0,
+      },
+    }),
+    /registry\.package_execution/u,
+  );
 });
