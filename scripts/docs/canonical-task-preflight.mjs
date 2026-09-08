@@ -136,6 +136,7 @@ export function classifyPreflightFindings({
   behind = 0,
   ahead = 0,
   activeSequenceCurrent = true,
+  taskStructure = 'DEVELOPED',
   formatState = 'OK',
   contractErrors = [],
 } = {}) {
@@ -194,7 +195,15 @@ export function classifyPreflightFindings({
     }
   }
   if (!activeSequenceCurrent) blockers.push('active-sequence.json requiere regeneración.');
-  if (formatState !== 'OK') blockers.push(`formato de tarea: ${formatState}.`);
+  if (formatState !== 'OK') {
+    if (taskStructure === 'EMPTY_DRAFT' && formatState === 'NEEDS_FORMAT') {
+      advisories.push(
+        'formato prospectivo pendiente permitido mientras la tarea permanezca EMPTY_DRAFT.',
+      );
+    } else {
+      blockers.push(`formato de tarea: ${formatState}.`);
+    }
+  }
   if (contractErrors.length > 0) {
     blockers.push(`contrato de entrega inválido: ${contractErrors.join('; ')}`);
   }
@@ -279,6 +288,7 @@ export function derivePreflight({
     behind,
     ahead,
     activeSequenceCurrent,
+    taskStructure: sectionCount === 0 ? 'EMPTY_DRAFT' : 'DEVELOPED',
     formatState,
     contractErrors,
   });

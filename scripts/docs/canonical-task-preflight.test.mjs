@@ -174,6 +174,35 @@ test('behind, formato, active-sequence y contrato inválido siguen siendo bloque
   assert.ok(result.blockers.some((entry) => /contrato de entrega inválido/u.test(entry)));
 });
 
+test('borrador documental vacío trata NEEDS_FORMAT como advisory y permite start', () => {
+  const result = classifyPreflightFindings({
+    requestedTaskId: 'SHELL-APP-021',
+    currentTaskId: 'SHELL-APP-021',
+    taskStructure: 'EMPTY_DRAFT',
+    formatState: 'NEEDS_FORMAT',
+  });
+
+  assert.deepEqual(result.blockers, []);
+  assert.ok(
+    result.advisories.some((entry) => /EMPTY_DRAFT/u.test(entry)),
+  );
+});
+
+test('tarea desarrollada conserva NEEDS_FORMAT como bloqueo real', () => {
+  const result = classifyPreflightFindings({
+    requestedTaskId: 'SHELL-APP-021',
+    currentTaskId: 'SHELL-APP-021',
+    taskStructure: 'DEVELOPED',
+    formatState: 'NEEDS_FORMAT',
+  });
+
+  assert.equal(result.blockers.length, 1);
+  assert.match(
+    result.blockers[0],
+    /formato de tarea: NEEDS_FORMAT/u,
+  );
+});
+
 test('ahead durante una instancia física es aviso y no bloqueo', () => {
   const result = classifyPreflightFindings({
     requestedTaskId: 'SHELL-CI-005',
