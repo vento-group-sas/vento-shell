@@ -1,7 +1,8 @@
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+
+import { spawnGitUtf8 } from './docs-runtime-primitives.mjs';
 
 const REQUIRED_POLICY_FILES = Object.freeze([
   '.gitattributes',
@@ -34,9 +35,8 @@ function fail(message) {
 }
 
 function runGit(root, args) {
-  const result = spawnSync('git', args, {
+  const result = spawnGitUtf8(args, {
     cwd: root,
-    encoding: 'utf8',
     windowsHide: true,
     maxBuffer: 16 * 1024 * 1024,
   });

@@ -1,8 +1,12 @@
-import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
+
+import {
+  sha256 as runtimeSha256,
+  spawnGitUtf8,
+  writePrettyJson,
+} from './docs-runtime-primitives.mjs';
 
 const REPOSITORIES = [
   'vento-anima',
@@ -36,12 +40,8 @@ function fail(message) {
   throw new Error(message);
 }
 
-function sha256(source) {
-  return crypto.createHash('sha256').update(source).digest('hex');
-}
-
 function git(repositoryPath, args) {
-  const result = spawnSync('git', args, { cwd: repositoryPath, encoding: 'utf8' });
+  const result = spawnGitUtf8(args, { cwd: repositoryPath });
   return result.status === 0 ? result.stdout.trim() : null;
 }
 
@@ -81,7 +81,7 @@ function readPackage(repositoryPath) {
   const source = fs.readFileSync(packagePath);
   const manifest = JSON.parse(source.toString('utf8'));
   return {
-    sha256: sha256(source),
+    sha256: runtimeSha256(source),
     package_manager: manifest.packageManager ?? null,
     node_engine: manifest.engines?.node ?? null,
     npm_engine: manifest.engines?.npm ?? null,
@@ -233,8 +233,7 @@ export function main(argv = process.argv.slice(2)) {
   });
 
   if (args.writeBaseline) {
-    fs.mkdirSync(path.dirname(args.baseline), { recursive: true });
-    fs.writeFileSync(args.baseline, `${JSON.stringify(snapshot, null, 2)}\n`, 'utf8');
+    writePrettyJson(args.baseline, snapshot);
   }
 
   const result = {
