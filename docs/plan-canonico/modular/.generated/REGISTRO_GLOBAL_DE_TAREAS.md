@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1139** |
+| Aprobadas | **1140** |
 | En propuesta | **0** |
-| No iniciadas | **457** |
+| No iniciadas | **456** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.37% (1139/1596)** |
+| Porcentaje de completamiento | **71.43% (1140/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-040` — Ocultar enlaces no autorizados | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-041` — Bloquear acceso directo por URL | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-041` — Bloquear acceso directo por URL | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-043` — Vincular cada acción con protección de servidor | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -848,7 +848,7 @@
 | ✅ APROBADA | `AUTH-UI-038` | Definir campos sensibles visibles | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-039` | Definir masking según permiso | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-040` | Ocultar enlaces no autorizados | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
-| ⬜ NO INICIADA | `AUTH-UI-041` | Bloquear acceso directo por URL | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
+| ✅ APROBADA | `AUTH-UI-041` | Bloquear acceso directo por URL | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-042` | Bloquear acciones aunque el botón sea visible | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-043` | Vincular cada acción con protección de servidor | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-044` | Evitar permisos derivados de nombres de rutas | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
