@@ -10,11 +10,14 @@ import {
   classifyExecutionState,
   evaluateCandidatePreverifyReceipt,
   resolveExecutorInstanceId,
+  runValidationCommandsWithShadow,
   validateExecutionEvidenceReceipt,
 } from './implementation-execution-coordinator.mjs';
 import {
+  buildShadowImpactPlan,
   createCandidateValidationReceipt,
   fingerprintCandidateRepositoryState,
+  observeShadowImpact,
   validateCandidateValidationReceipt,
 } from './implementation-validation-engine.mjs';
 
@@ -306,4 +309,166 @@ test('F3 integra receipt en evidence-request, mantiene fallback y no toca gates 
   const seal = source.slice(sealStart, sealEnd);
   assert.doesNotMatch(seal, /ensureCurrentMainContained\(/u);
   assert.doesNotMatch(seal, /ensureImplementationBranch\(/u);
+});
+
+
+test('F4 shadow selecciona por dominio y conserva validadores globales', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['docs/plan-canonico/modular/bloques/H2_SHELL_APP/example.md'],
+    validationCommands: [
+      'npm run docs:plan:check',
+      'npm run supabase:db:test:clean',
+      'npm test --silent',
+      'node custom-validator.mjs',
+    ],
+  });
+  assert.equal(plan.phase, 'F4_SHADOW_IMPACT_SELECTION');
+  assert.equal(plan.selectiveExecution, false);
+  assert.equal(plan.fullValidationRequired, true);
+  assert.equal(plan.validationGatesSkipped, 0);
+  assert.deepEqual(plan.selectedCommands, [
+    'npm run docs:plan:check',
+    'npm test --silent',
+    'node custom-validator.mjs',
+  ]);
+  assert.deepEqual(plan.omittedCommands, ['npm run supabase:db:test:clean']);
+});
+
+test('F4 shadow usa package identity y default conservador', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['tests/packages/GAP-PKG-002/contract.test.ts'],
+    validationCommands: [
+      'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+      'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+      'git diff --check',
+      'node scripts/quality/unknown-validator.mjs',
+    ],
+  });
+  assert.deepEqual(plan.omittedCommands, [
+    'node --test tests/packages/GAP-PKG-001/contract.test.ts',
+  ]);
+  assert.deepEqual(plan.selectedCommands, [
+    'node --test tests/packages/GAP-PKG-002/contract.test.ts',
+    'git diff --check',
+    'node scripts/quality/unknown-validator.mjs',
+  ]);
+});
+
+test('F4 shadow sin changed paths selecciona suite completa', () => {
+  const commands = ['npm run docs:plan:check', 'npm run supabase:db:test:clean'];
+  const plan = buildShadowImpactPlan({ changedPaths: [], validationCommands: commands });
+  assert.deepEqual(plan.selectedCommands, commands);
+  assert.deepEqual(plan.omittedCommands, []);
+  assert.equal(plan.potentialReductionPercent, 0);
+});
+
+test('F4 observación compara contra la suite completa y detecta falsos negativos', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['docs/example.md'],
+    validationCommands: ['npm run docs:plan:check', 'npm run supabase:db:test:clean'],
+  });
+  const pass = observeShadowImpact({
+    plan,
+    results: [
+      { command: 'npm run docs:plan:check', status: 'PASS' },
+      { command: 'npm run supabase:db:test:clean', status: 'PASS' },
+    ],
+  });
+  assert.equal(pass.fullSuiteExecuted, true);
+  assert.equal(pass.observedFalseNegativeCount, 0);
+  assert.equal(pass.eligibleForSelectiveExecution, false);
+
+  const miss = observeShadowImpact({
+    plan,
+    results: [
+      { command: 'npm run docs:plan:check', status: 'PASS' },
+      { command: 'npm run supabase:db:test:clean', status: 'FAIL' },
+    ],
+  });
+  assert.equal(miss.fullSuiteStatus, 'FAIL');
+  assert.equal(miss.observedFalseNegativeCount, 1);
+  assert.deepEqual(miss.observedFalseNegatives, ['npm run supabase:db:test:clean']);
+});
+
+test('F4 accelerator ejecuta todos los comandos aunque shadow proponga omitir', () => {
+  const commands = [
+    'npm run docs:plan:check',
+    'npm run supabase:db:test:clean',
+    'npm test --silent',
+  ];
+  const executed = [];
+  const result = runValidationCommandsWithShadow({
+    root: '/repo',
+    changedPaths: ['docs/example.md'],
+    validationCommands: commands,
+    runner: (_root, command) => executed.push(command),
+  });
+  assert.deepEqual(executed, commands);
+  assert.equal(result.plan.omittedCommandCount, 1);
+  assert.equal(result.observation.fullSuiteExecuted, true);
+  assert.equal(result.observation.validationGatesSkipped, 0);
+});
+
+test('F4 accelerator identifica fallo de un validator shadow-omitido sin convertirlo en skip', () => {
+  const failing = 'npm run supabase:db:test:clean';
+  assert.throws(
+    () => runValidationCommandsWithShadow({
+      root: '/repo',
+      changedPaths: ['docs/example.md'],
+      validationCommands: ['npm run docs:plan:check', failing],
+      runner: (_root, command) => {
+        if (command === failing) throw new Error('synthetic failure');
+      },
+    }),
+    (error) => {
+      assert.equal(error.message, 'synthetic failure');
+      assert.equal(error.shadowImpact.classification, 'SHADOW_FALSE_NEGATIVE');
+      assert.equal(error.shadowImpact.selected, false);
+      return true;
+    },
+  );
+});
+
+test('F4 se persiste solo como observación en evidence-request y no habilita ejecución selectiva', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  assert.match(source, /validation_engine_shadow_impact: shadowImpact/u);
+  assert.match(source, /runValidationCommandsWithShadow\(\{/u);
+  assert.match(source, /for \(const entry of plan\.entries\)/u);
+  assert.match(source, /VALIDATION_GATES_SKIPPED: 0/u);
+  assert.doesNotMatch(source, /for \(const command of plan\.selectedCommands\)/u);
+});
+
+
+test('F4 rechaza observación incompleta o plan alterado', () => {
+  const plan = buildShadowImpactPlan({
+    changedPaths: ['docs/example.md'],
+    validationCommands: ['npm run docs:plan:check', 'npm run supabase:db:test:clean'],
+  });
+  assert.throws(
+    () => observeShadowImpact({
+      plan,
+      results: [{ command: 'npm run docs:plan:check', status: 'PASS' }],
+    }),
+    /suite completa/u,
+  );
+
+  const tampered = structuredClone(plan);
+  tampered.omittedCommandCount += 1;
+  assert.throws(
+    () => observeShadowImpact({
+      plan: tampered,
+      results: [
+        { command: 'npm run docs:plan:check', status: 'PASS' },
+        { command: 'npm run supabase:db:test:clean', status: 'PASS' },
+      ],
+    }),
+    /integridad SHA-256/u,
+  );
+});
+
+test('F4 expone el diagnóstico shadow en el resultado de fallo sin cambiar fail-fast', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  assert.match(source, /SHADOW_IMPACT: shadowImpact\?\.classification \?\? 'NONE'/u);
+  assert.match(source, /SHADOW_COMMAND: shadowImpact\?\.command \?\? 'NONE'/u);
+  assert.match(source, /SHADOW_SELECTED: shadowImpact \? \(shadowImpact\.selected \? 'SI' : 'NO'\) : 'N\/A'/u);
 });
