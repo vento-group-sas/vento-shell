@@ -101,7 +101,7 @@ export function main(argv = process.argv.slice(2)) {
     throw new Error('la baseline de lint no contiene una política soportada.');
   }
   const eslintCli = path.resolve('node_modules/eslint/bin/eslint.js');
-  const output = run(process.execPath, [eslintCli, '.', '--format', 'json'], { allowLintExit: true });
+  const output = run(process.execPath, [eslintCli, '.', '--ignore-pattern', '.delivery/**', '--format', 'json'], { allowLintExit: true });
   const actualIssues = summarizeLintResults(JSON.parse(output));
   const files = changedFiles(args);
   const result = evaluateLintRatchet({ baseline, actualIssues, changedFiles: files });

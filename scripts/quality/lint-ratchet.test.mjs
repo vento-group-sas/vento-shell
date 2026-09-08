@@ -68,3 +68,8 @@ test('rechaza aumentos y cualquier hallazgo en un archivo tocado', () => {
   assert.equal(result.newDebt[0].added, 1);
   assert.deepEqual(result.touchedDebt, [issue]);
 });
+
+test('excluye evidencia local .delivery del universo ESLint del ratchet', () => {
+  const source = fs.readFileSync(new URL('./lint-ratchet.mjs', import.meta.url), 'utf8');
+  assert.ok(source.includes("[eslintCli, '.', '--ignore-pattern', '.delivery/**', '--format', 'json']"));
+});
