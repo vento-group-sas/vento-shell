@@ -15,11 +15,14 @@ import {
 } from './implementation-control.mjs';
 import { deriveCoordinatedImplementationStatus } from './implementation-readiness-coordinator.mjs';
 import {
+  assessSafeSelectiveExecution,
   buildShadowImpactPlan,
   createCandidateValidationReceipt,
+  createSafeSelectiveValidationRecord,
   fingerprintCandidateRepositoryState,
   observeShadowImpact,
   validateCandidateValidationReceipt,
+  validateSafeSelectiveValidationRecord,
 } from './implementation-validation-engine.mjs';
 import {
   recordInPackageCandidateEvidence,
@@ -280,8 +283,9 @@ export function runValidationCommandsWithShadow({
   changedPaths = [],
   validationCommands = [],
   runner = runValidationCommand,
+  plan: suppliedPlan = null,
 } = {}) {
-  const plan = buildShadowImpactPlan({ changedPaths, validationCommands });
+  const plan = suppliedPlan ?? buildShadowImpactPlan({ changedPaths, validationCommands });
   console.log(
     `[VALIDATION ENGINE] F4 shadow selected=${plan.selectedCommandCount}/${plan.fullCommandCount} `
     + `omitted=${plan.omittedCommandCount} execution=FULL_SUITE_SHADOW_ONLY.`,
@@ -309,7 +313,67 @@ export function runValidationCommandsWithShadow({
     }
   }
   const observation = observeShadowImpact({ plan, results });
-  return { plan, observation };
+  return { plan, observation, results };
+}
+
+export function runValidationCommandsWithPolicy({
+  root = process.cwd(),
+  changedPaths = [],
+  validationCommands = [],
+  runner = runValidationCommand,
+  certification = undefined,
+} = {}) {
+  const plan = buildShadowImpactPlan({ changedPaths, validationCommands });
+  const decision = certification
+    ? assessSafeSelectiveExecution({ plan, certification })
+    : assessSafeSelectiveExecution({ plan });
+
+  if (!decision.selectiveExecution) {
+    console.log(
+      `[VALIDATION ENGINE] F5 full fallback reason=${decision.reason} commands=${plan.fullCommandCount}.`,
+    );
+    const full = runValidationCommandsWithShadow({
+      root,
+      changedPaths,
+      validationCommands,
+      runner,
+      plan,
+    });
+    return {
+      plan,
+      decision,
+      results: full.results,
+      shadowObservation: full.observation,
+    };
+  }
+
+  console.log(
+    `[VALIDATION ENGINE] F5 safe selective package=${decision.packageId} `
+    + `executed=${decision.executedCommandCount}/${decision.fullCommandCount} `
+    + `not_applicable=${decision.notApplicableCommandCount}.`,
+  );
+  const results = [];
+  for (const command of decision.executedCommands) {
+    try {
+      runner(root, command);
+      results.push({ command, status: 'PASS' });
+    } catch (error) {
+      if (error && typeof error === 'object') {
+        error.safeSelective = {
+          decisionSha256: decision.decisionSha256,
+          command,
+          classification: 'SAFE_SELECTIVE_SELECTED_VALIDATOR_FAILURE',
+        };
+      }
+      throw error;
+    }
+  }
+  return {
+    plan,
+    decision,
+    results,
+    shadowObservation: null,
+  };
 }
 
 function retryTransient(label, operation, { attempts = 4, intervalMs = 2500 } = {}) {
@@ -438,9 +502,32 @@ function pushCandidate(root, branch) {
   if (local !== remote) fail(`${branch}: push no dejo remoto en ${local}; actual ${remote}.`);
 }
 
-function localValidationEvidence(instance, candidateCommit) {
-  return (instance.validation_commands ?? []).map(
-    (command) => `LOCAL_VALIDATION candidate=${candidateCommit} command=${command} status=PASS`,
+function validationResultStatuses(instance, selectiveValidation = null, certification = undefined) {
+  const commands = [...(instance.validation_commands ?? [])];
+  if (!selectiveValidation) {
+    return commands.map((command) => ({ command, status: 'PASS' }));
+  }
+  const validated = validateSafeSelectiveValidationRecord({
+    record: selectiveValidation,
+    candidateCommit: selectiveValidation.candidateCommit,
+    validationCommands: commands,
+    certification,
+  });
+  const notApplicable = new Set(validated.notApplicableCommands);
+  return commands.map((command) => ({
+    command,
+    status: notApplicable.has(command) ? 'NOT_APPLICABLE' : 'PASS',
+  }));
+}
+
+function localValidationEvidence(
+  instance,
+  candidateCommit,
+  selectiveValidation = null,
+  certification = undefined,
+) {
+  return validationResultStatuses(instance, selectiveValidation, certification).map(
+    ({ command, status }) => `LOCAL_VALIDATION candidate=${candidateCommit} command=${command} status=${status}`,
   );
 }
 
@@ -489,7 +576,15 @@ function maybeRecordCi020Candidate(root, instance) {
   return 'RECORDED';
 }
 
-function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt, shadowImpact = null) {
+function writeEvidenceRequest(
+  root,
+  instance,
+  candidateCommit,
+  preverifyReceipt,
+  shadowImpact = null,
+  selectiveValidation = null,
+  certification = undefined,
+) {
   const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
   const request = {
@@ -498,7 +593,7 @@ function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt,
     candidate_commit: candidateCommit,
     observed_at: null,
     validation_commands: [...(instance.validation_commands ?? [])],
-    results: (instance.validation_commands ?? []).map((command) => ({ command, status: 'PASS' })),
+    results: validationResultStatuses(instance, selectiveValidation, certification),
     target_environments: [...(instance.target_environments ?? [])],
     environment_results: (instance.target_environments ?? []).map((target) => ({
       ...target,
@@ -508,6 +603,7 @@ function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt,
     operational_evidence: [],
     validation_engine_preverify_receipt: preverifyReceipt,
     validation_engine_shadow_impact: shadowImpact,
+    validation_engine_selective_validation: selectiveValidation,
   };
   fs.writeFileSync(absolute, `${JSON.stringify(request, null, 2)}\n`, 'utf8');
   return EVIDENCE_REQUEST_PATH;
@@ -541,7 +637,12 @@ export function resolveExecutorInstanceId({ explicitInstanceId = null, coordinat
   return null;
 }
 
-export function validateExecutionEvidenceReceipt({ instance, receipt, candidateCommit } = {}) {
+export function validateExecutionEvidenceReceipt({
+  instance,
+  receipt,
+  candidateCommit,
+  certification = undefined,
+} = {}) {
   if (!instance || typeof instance !== 'object') fail('Instancia obligatoria para validar evidencia.');
   if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) fail('Evidence receipt debe ser un objeto JSON.');
   if (receipt.schema_version !== 1) fail('Evidence receipt schema_version debe ser 1.');
@@ -560,11 +661,26 @@ export function validateExecutionEvidenceReceipt({ instance, receipt, candidateC
   if (JSON.stringify(receipt.validation_commands ?? []) !== JSON.stringify(commands)) {
     fail('Evidence receipt validation_commands no coincide con la instancia.');
   }
+  let selectiveValidation = null;
+  if (receipt.validation_engine_selective_validation) {
+    try {
+      selectiveValidation = validateSafeSelectiveValidationRecord({
+        record: receipt.validation_engine_selective_validation,
+        candidateCommit,
+        validationCommands: commands,
+        certification,
+      });
+    } catch (error) {
+      fail(`Evidence receipt F5 invalido: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+  const notApplicable = new Set(selectiveValidation?.notApplicableCommands ?? []);
   const results = receipt.results ?? [];
-  if (results.length !== commands.length || results.some((result, index) => (
-    result?.command !== commands[index] || result?.status !== 'PASS'
-  ))) {
-    fail('Evidence receipt no conserva PASS exacto para cada validation_command.');
+  if (results.length !== commands.length || results.some((result, index) => {
+    const expectedStatus = notApplicable.has(commands[index]) ? 'NOT_APPLICABLE' : 'PASS';
+    return result?.command !== commands[index] || result?.status !== expectedStatus;
+  })) {
+    fail('Evidence receipt no conserva el resultado local exacto para cada validation_command.');
   }
 
   const targets = instance.target_environments ?? [];
@@ -596,7 +712,7 @@ export function validateExecutionEvidenceReceipt({ instance, receipt, candidateC
   return true;
 }
 
-async function materializeImplementation({ root, id, instance }) {
+async function materializeImplementation({ root, id, instance, certification = undefined }) {
   const branch = ensureImplementationBranch(root, id);
   const rebaseline = ensureCurrentMainContained(root, instance);
   const refreshedBefore = resolveInstance(root, id).instance;
@@ -611,10 +727,11 @@ async function materializeImplementation({ root, id, instance }) {
     ...branchChangedPaths(root),
     ...worktreePaths(root),
   ])];
-  const shadowValidation = runValidationCommandsWithShadow({
+  const validationRun = runValidationCommandsWithPolicy({
     root,
     changedPaths: validationChangedPaths,
     validationCommands: refreshedBefore.validation_commands ?? [],
+    certification,
   });
 
   const refreshedAfterValidation = resolveInstance(root, id).instance;
@@ -652,12 +769,19 @@ async function materializeImplementation({ root, id, instance }) {
   pushCandidate(root, branch);
   const mrpStatus = maybeRecordCi020Candidate(root, resolveInstance(root, id).instance);
   const refreshed = resolveInstance(root, id).instance;
+  const selectiveValidation = createSafeSelectiveValidationRecord({
+    plan: validationRun.plan,
+    decision: validationRun.decision,
+    results: validationRun.results,
+    candidateCommit,
+    certification,
+  });
   const next = {
     ...refreshed,
     status: 'IMPLEMENTED',
     evidence: replaceLocalValidationEvidence(
       refreshed.evidence,
-      localValidationEvidence(refreshed, candidateCommit),
+      localValidationEvidence(refreshed, candidateCommit, selectiveValidation, certification),
     ),
   };
   writeInstance(root, next);
@@ -671,11 +795,17 @@ async function materializeImplementation({ root, id, instance }) {
     candidateCommit,
     mrpStatus,
     rebaseline,
-    shadowImpact: shadowValidation.observation,
+    shadowImpact: validationRun.shadowObservation,
+    selectiveValidation,
   };
 }
 
-async function sealVerifiedEvidence({ root, id, evidenceFile }) {
+async function sealVerifiedEvidence({
+  root,
+  id,
+  evidenceFile,
+  certification = undefined,
+}) {
   const instance = resolveInstance(root, id).instance;
   if (instance.status !== 'IMPLEMENTED') fail(`${id}: --evidence-file exige IMPLEMENTED.`);
 
@@ -708,7 +838,12 @@ async function sealVerifiedEvidence({ root, id, evidenceFile }) {
   }
 
   const refreshed = resolveInstance(root, id).instance;
-  validateExecutionEvidenceReceipt({ instance: refreshed, receipt, candidateCommit });
+  validateExecutionEvidenceReceipt({
+    instance: refreshed,
+    receipt,
+    candidateCommit,
+    certification,
+  });
 
   const evidenceReceipt = {
     type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
@@ -766,6 +901,7 @@ async function printStatus({ root, explicitInstanceId }) {
 async function advance({ root, explicitInstanceId, materialized, evidenceFile }) {
   const coordinatedStatus = await deriveCoordinatedImplementationStatus({ root });
   const instanceId = resolveExecutorInstanceId({ explicitInstanceId, coordinatedStatus });
+  const safeSelectiveCertification = coordinatedStatus.validationEngine?.safeSelectiveCertification ?? undefined;
 
   if (!instanceId) {
     const action = coordinatedStatus.coordinatedPrimaryAction;
@@ -828,6 +964,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       root,
       id: instanceId,
       instance,
+      certification: safeSelectiveCertification,
     });
     instance = materializedResult.instance;
     state = classifyExecutionState(instance);
@@ -855,6 +992,8 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         candidateCommit,
         preverifyReceipt,
         materializedResult?.shadowImpact ?? null,
+        materializedResult?.selectiveValidation ?? null,
+        safeSelectiveCertification,
       );
       printResult({
         ESTADO: 'PASS',
@@ -867,11 +1006,15 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         MRP015_050: materializedResult?.mrpStatus ?? 'PRESERVED_OR_NO_APLICA',
         PREVERIFY: 'PASS',
         PREVERIFY_RECEIPT: 'RECORDED_EXACT_CANDIDATE',
-        SHADOW_IMPACT_SELECTION: materializedResult?.shadowImpact ? 'OBSERVED_FULL_SUITE' : 'NOT_OBSERVED_THIS_RUN',
+        SHADOW_IMPACT_SELECTION: materializedResult?.shadowImpact ? 'OBSERVED_FULL_SUITE' : 'F5_SELECTIVE_OR_NOT_OBSERVED_THIS_RUN',
         SHADOW_SELECTED: materializedResult?.shadowImpact?.selectedCommandCount ?? 'N/A',
         SHADOW_OMITTED: materializedResult?.shadowImpact?.omittedCommandCount ?? 'N/A',
         SHADOW_POTENTIAL_REDUCTION_PERCENT: materializedResult?.shadowImpact?.potentialReductionPercent ?? 'N/A',
         SHADOW_FALSE_NEGATIVES: materializedResult?.shadowImpact?.observedFalseNegativeCount ?? 'N/A',
+        VALIDATION_MODE: materializedResult?.selectiveValidation?.executionMode ?? 'NOT_OBSERVED_THIS_RUN',
+        VALIDATION_EXECUTED: materializedResult?.selectiveValidation?.executedCommands?.length ?? 'N/A',
+        VALIDATION_NOT_APPLICABLE: materializedResult?.selectiveValidation?.notApplicableCommands?.length ?? 'N/A',
+        FULL_FALLBACK_USED: materializedResult?.selectiveValidation?.fullFallbackUsed ?? 'N/A',
         VALIDATION_GATES_SKIPPED: 0,
         EVIDENCE_REQUEST: requestPath,
         NEXT_GATE: 'EXTERNAL_EVIDENCE',
@@ -885,6 +1028,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       root,
       id: instanceId,
       evidenceFile,
+      certification: safeSelectiveCertification,
     });
     runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
     printResult({
@@ -990,6 +1134,7 @@ if (isCli) {
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const shadowImpact = error && typeof error === 'object' ? error.shadowImpact ?? null : null;
+    const safeSelective = error && typeof error === 'object' ? error.safeSelective ?? null : null;
     printResult({
       ESTADO: 'FAIL',
       OPERACION: 'IMPLEMENTATION_ACCELERATOR',
@@ -998,6 +1143,8 @@ if (isCli) {
       SHADOW_IMPACT: shadowImpact?.classification ?? 'NONE',
       SHADOW_COMMAND: shadowImpact?.command ?? 'NONE',
       SHADOW_SELECTED: shadowImpact ? (shadowImpact.selected ? 'SI' : 'NO') : 'N/A',
+      SAFE_SELECTIVE: safeSelective?.classification ?? 'NONE',
+      SAFE_SELECTIVE_COMMAND: safeSelective?.command ?? 'NONE',
       RESUMABLE: 'SI',
       WORKTREE_PRESERVED: 'SI',
     });

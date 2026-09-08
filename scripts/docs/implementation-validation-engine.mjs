@@ -10,6 +10,7 @@ export const IMPLEMENTATION_VALIDATION_PHASES = Object.freeze([
   'F2_SHARED_IMMUTABLE_CONTEXT',
   'F3_DEDUPLICATION_CANDIDATE_RECEIPTS',
   'F4_SHADOW_IMPACT_SELECTION',
+  'F5_SAFE_SELECTIVE_VALIDATION',
 ]);
 
 function sha256(value) {
@@ -55,6 +56,46 @@ const PREVERIFY_VALIDATOR_ID = 'IMPLEMENTATION_PREVERIFY_V1';
 
 const SHADOW_IMPACT_SELECTOR_ID = 'IMPLEMENTATION_SHADOW_IMPACT_SELECTOR_V1';
 const SHADOW_EXECUTION_MODE = 'FULL_SUITE_SHADOW_ONLY';
+const SAFE_SELECTIVE_POLICY_ID = 'PACKAGE_LOCAL_CLOSED_SCOPE_V1';
+const SAFE_SELECTIVE_REPOSITORY = 'vento-group-sas/vento-shell';
+const SAFE_SELECTIVE_EXECUTION_MODE = 'CONDITIONAL_SAFE_SELECTIVE';
+const SAFE_SELECTIVE_MINIMUM_OMISSION_BEARING_SAMPLES = 5;
+const SAFE_SELECTIVE_MINIMUM_DISTINCT_PACKAGES = 3;
+
+function safeSelectiveCertificationSnapshot({
+  observedOmissionBearingSamples = 0,
+  distinctPackageIds = [],
+  observedFalseNegatives = 0,
+} = {}) {
+  const packages = [...new Set((Array.isArray(distinctPackageIds) ? distinctPackageIds : [])
+    .map((value) => String(value ?? '').trim().toUpperCase())
+    .filter(Boolean))].sort((left, right) => left.localeCompare(right, 'en'));
+  const samples = Number(observedOmissionBearingSamples) || 0;
+  const falseNegatives = Number(observedFalseNegatives) || 0;
+  const certified = samples >= SAFE_SELECTIVE_MINIMUM_OMISSION_BEARING_SAMPLES
+    && packages.length >= SAFE_SELECTIVE_MINIMUM_DISTINCT_PACKAGES
+    && falseNegatives === 0;
+  const status = falseNegatives > 0
+    ? 'BLOCKED_SHADOW_FALSE_NEGATIVE'
+    : certified ? 'CERTIFIED' : 'PENDING_REAL_SHADOW_EVIDENCE';
+  const payload = {
+    schemaVersion: 1,
+    policyId: SAFE_SELECTIVE_POLICY_ID,
+    status,
+    minimumOmissionBearingSamples: SAFE_SELECTIVE_MINIMUM_OMISSION_BEARING_SAMPLES,
+    minimumDistinctPackages: SAFE_SELECTIVE_MINIMUM_DISTINCT_PACKAGES,
+    observedOmissionBearingSamples: samples,
+    observedDistinctPackages: packages.length,
+    distinctPackageIds: packages,
+    observedFalseNegatives: falseNegatives,
+  };
+  return deepFreeze({
+    ...payload,
+    certificationSha256: sha256(canonicalJson(payload)),
+  });
+}
+
+export const IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION = safeSelectiveCertificationSnapshot();
 
 function normalizedChangedPaths(values) {
   if (!Array.isArray(values)) return [];
@@ -172,7 +213,7 @@ export function buildShadowImpactPlan({
   });
 }
 
-export function observeShadowImpact({ plan, results = [] } = {}) {
+function assertShadowImpactPlan(plan) {
   if (!plan || typeof plan !== 'object' || Array.isArray(plan)) {
     throw new Error('F4 shadow impact exige plan.');
   }
@@ -191,6 +232,12 @@ export function observeShadowImpact({ plan, results = [] } = {}) {
     || sha256(canonicalJson(planPayload)) !== planSha256) {
     throw new Error('F4 shadow impact rechaza plan con integridad SHA-256 inválida.');
   }
+  return true;
+}
+
+export function observeShadowImpact({ plan, results = [] } = {}) {
+  assertShadowImpactPlan(plan);
+  const planSha256 = plan.planSha256;
 
   const normalizedResults = Array.isArray(results) ? results.map((result) => ({
     command: String(result?.command ?? '').trim(),
@@ -234,6 +281,368 @@ export function observeShadowImpact({ plan, results = [] } = {}) {
   return deepFreeze({
     ...payload,
     observationSha256: sha256(canonicalJson(payload)),
+  });
+}
+
+
+function validateStoredShadowObservation(observation) {
+  if (!observation || typeof observation !== 'object' || Array.isArray(observation)) return false;
+  if (
+    observation.schemaVersion !== 1
+    || observation.engineId !== IMPLEMENTATION_VALIDATION_ENGINE_ID
+    || observation.phase !== 'F4_SHADOW_IMPACT_SELECTION'
+    || observation.selectorId !== SHADOW_IMPACT_SELECTOR_ID
+    || observation.executionMode !== SHADOW_EXECUTION_MODE
+    || observation.selectiveExecution !== false
+    || observation.fullSuiteExecuted !== true
+    || observation.validationGatesSkipped !== 0
+  ) return false;
+  const { observationSha256, ...payload } = observation;
+  return /^[a-f0-9]{64}$/u.test(String(observationSha256 ?? ''))
+    && sha256(canonicalJson(payload)) === observationSha256;
+}
+
+export function deriveSafeSelectiveCertification({ instances = [] } = {}) {
+  const seen = new Set();
+  const packageIds = new Set();
+  let samples = 0;
+  let falseNegatives = 0;
+
+  for (const instance of Array.isArray(instances) ? instances : []) {
+    if (String(instance?.status ?? '').trim().toUpperCase() !== 'VERIFIED') continue;
+    const instanceId = String(instance?.instanceId ?? instance?.instance_id ?? '').trim().toUpperCase();
+    const packageMatch = /::([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-PKG-\d{3})$/u.exec(instanceId);
+    if (!packageMatch) continue;
+    const packageId = packageMatch[1];
+    if (safeSelectiveSamplePackageId(instance, packageId) !== packageId) continue;
+    for (const evidence of Array.isArray(instance?.evidence) ? instance.evidence : []) {
+      const observation = evidence?.validation_engine_shadow_impact ?? null;
+      if (!validateStoredShadowObservation(observation)) continue;
+      if (Number(observation.omittedCommandCount) <= 0) continue;
+      const observationFalseNegatives = (Number(observation.observedFalseNegativeCount) || 0)
+        + (observation.fullSuiteStatus === 'PASS' ? 0 : 1);
+      const key = instanceId;
+      if (seen.has(key)) {
+        falseNegatives += observationFalseNegatives;
+        continue;
+      }
+      seen.add(key);
+      samples += 1;
+      packageIds.add(packageId);
+      falseNegatives += observationFalseNegatives;
+    }
+  }
+
+  return safeSelectiveCertificationSnapshot({
+    observedOmissionBearingSamples: samples,
+    distinctPackageIds: [...packageIds],
+    observedFalseNegatives: falseNegatives,
+  });
+}
+
+function packageLocalPathIdentity(relativePath) {
+  const value = String(relativePath ?? '').replaceAll('\\', '/').trim();
+  const patterns = [
+    /^tests\/packages\/([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-PKG-\d{3})(?:\/|$)/iu,
+    /^supabase\/tests\/packages\/([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-PKG-\d{3})\.sql$/iu,
+    /^docs\/plan-canonico\/modular\/implementation-instances\/[^/]*__([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)*-PKG-\d{3})\.json$/iu,
+  ];
+  for (const pattern of patterns) {
+    const match = pattern.exec(value);
+    if (match) return match[1].toUpperCase();
+  }
+  return null;
+}
+
+function safeSelectiveSamplePackageId(instance, expectedPackageId) {
+  const changes = instance?.authorizedChanges ?? instance?.authorized_changes ?? [];
+  if (!Array.isArray(changes) || changes.length === 0) return null;
+  if (changes.some((entry) => !entry || typeof entry !== 'object' || Array.isArray(entry))) return null;
+  const writable = changes.filter(
+    (entry) => String(entry?.change ?? '').trim().toUpperCase() !== 'EXECUTE_ONLY',
+  );
+  if (writable.length === 0) return null;
+  const identities = [];
+  for (const entry of writable) {
+    if (String(entry?.repo ?? '').trim() !== SAFE_SELECTIVE_REPOSITORY) return null;
+    const packageId = packageLocalPathIdentity(entry?.path);
+    if (!packageId) return null;
+    identities.push(packageId);
+  }
+  const unique = [...new Set(identities)];
+  if (unique.length !== 1 || unique[0] !== expectedPackageId) return null;
+  return unique[0];
+}
+
+export function assessSafeSelectiveExecution({
+  plan,
+  certification = IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION,
+} = {}) {
+  assertShadowImpactPlan(plan);
+
+  let candidateEligible = false;
+  let candidateReason = 'CLOSED_SCOPE_NOT_EVALUATED';
+  let packageId = null;
+
+  if (plan.changedPaths.length === 0) {
+    candidateReason = 'NO_CHANGED_PATHS';
+  } else if (plan.omittedCommandCount === 0) {
+    candidateReason = 'NO_REDUCTION';
+  } else {
+    const identities = plan.changedPaths.map((entry) => ({
+      path: entry,
+      packageId: packageLocalPathIdentity(entry),
+    }));
+    const outsideClosedScope = identities.find(({ packageId: identity }) => !identity);
+    if (outsideClosedScope) {
+      candidateReason = `CROSS_CUTTING_PATH:${outsideClosedScope.path}`;
+    } else {
+      const packageIds = [...new Set(identities.map(({ packageId: identity }) => identity))];
+      if (packageIds.length !== 1) {
+        candidateReason = 'MULTI_PACKAGE_SCOPE';
+      } else {
+        [packageId] = packageIds;
+        const unsafeOmission = plan.entries.find(
+          (entry) => !entry.selected && entry.reason !== 'PACKAGE_ID_NO_MATCH',
+        );
+        const matchingPackageValidator = plan.entries.some(
+          (entry) => entry.selected && entry.reason === 'PACKAGE_ID_MATCH',
+        );
+        if (unsafeOmission) {
+          candidateReason = `UNSAFE_OMISSION:${unsafeOmission.reason}`;
+        } else if (!matchingPackageValidator) {
+          candidateReason = 'NO_MATCHING_PACKAGE_VALIDATOR';
+        } else {
+          candidateEligible = true;
+          candidateReason = 'SAFE_PACKAGE_LOCAL_CLOSED_SCOPE';
+        }
+      }
+    }
+  }
+
+  const certificationPayload = certification && typeof certification === 'object' && !Array.isArray(certification)
+    ? Object.fromEntries(Object.entries(certification).filter(([key]) => key !== 'certificationSha256'))
+    : null;
+  const certificationIntegrityValid = certificationPayload
+    && /^[a-f0-9]{64}$/u.test(String(certification?.certificationSha256 ?? ''))
+    && sha256(canonicalJson(certificationPayload)) === certification.certificationSha256;
+  const certificationValid = certificationIntegrityValid
+    && certification.schemaVersion === 1
+    && certification.policyId === SAFE_SELECTIVE_POLICY_ID
+    && certification.status === 'CERTIFIED'
+    && Number(certification.minimumOmissionBearingSamples) === SAFE_SELECTIVE_MINIMUM_OMISSION_BEARING_SAMPLES
+    && Number(certification.minimumDistinctPackages) === SAFE_SELECTIVE_MINIMUM_DISTINCT_PACKAGES
+    && Number(certification.observedOmissionBearingSamples) >= SAFE_SELECTIVE_MINIMUM_OMISSION_BEARING_SAMPLES
+    && Number(certification.observedDistinctPackages) >= SAFE_SELECTIVE_MINIMUM_DISTINCT_PACKAGES
+    && Array.isArray(certification.distinctPackageIds)
+    && certification.distinctPackageIds.length === Number(certification.observedDistinctPackages)
+    && Number(certification.observedFalseNegatives) === 0;
+
+  const selectiveExecution = candidateEligible && certificationValid;
+  let reason;
+  if (selectiveExecution) reason = 'SAFE_PACKAGE_LOCAL_CLOSED_SCOPE_CERTIFIED';
+  else if (candidateEligible && certification?.status === 'BLOCKED_SHADOW_FALSE_NEGATIVE') {
+    reason = 'FULL_FALLBACK_SHADOW_FALSE_NEGATIVE';
+  } else if (candidateEligible) reason = 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING';
+  else reason = `FULL_FALLBACK_${candidateReason}`;
+
+  const executedCommands = selectiveExecution ? plan.selectedCommands : plan.fullCommands;
+  const notApplicableCommands = selectiveExecution ? plan.omittedCommands : [];
+  const payload = {
+    schemaVersion: 1,
+    engineId: IMPLEMENTATION_VALIDATION_ENGINE_ID,
+    phase: 'F5_SAFE_SELECTIVE_VALIDATION',
+    policyId: SAFE_SELECTIVE_POLICY_ID,
+    executionMode: SAFE_SELECTIVE_EXECUTION_MODE,
+    planSha256: plan.planSha256,
+    candidateEligible,
+    candidateReason,
+    selectiveExecution,
+    fullFallback: !selectiveExecution,
+    fullFallbackAvailable: true,
+    validationGatesSkipped: 0,
+    reason,
+    packageId,
+    certificationStatus: String(certification?.status ?? 'INVALID'),
+    certificationSha256: String(certification?.certificationSha256 ?? ''),
+    certificationMinimumOmissionBearingSamples: Number(certification?.minimumOmissionBearingSamples ?? 0),
+    certificationMinimumDistinctPackages: Number(certification?.minimumDistinctPackages ?? 0),
+    certificationObservedOmissionBearingSamples: Number(certification?.observedOmissionBearingSamples ?? 0),
+    certificationObservedDistinctPackages: Number(certification?.observedDistinctPackages ?? 0),
+    certificationObservedFalseNegatives: Number(certification?.observedFalseNegatives ?? 0),
+    fullCommandCount: plan.fullCommandCount,
+    executedCommandCount: executedCommands.length,
+    notApplicableCommandCount: notApplicableCommands.length,
+    potentialNotApplicableCommandCount: candidateEligible ? plan.omittedCommandCount : 0,
+    executedCommands,
+    notApplicableCommands,
+  };
+  return deepFreeze({
+    ...payload,
+    decisionSha256: sha256(canonicalJson(payload)),
+  });
+}
+
+function assertSafeSelectiveDecision(plan, decision, certification) {
+  if (!decision || typeof decision !== 'object' || Array.isArray(decision)) {
+    throw new Error('F5 safe selective exige decision.');
+  }
+  const expected = assessSafeSelectiveExecution({ plan, certification });
+  if (canonicalJson(decision) !== canonicalJson(expected)) {
+    throw new Error('F5 safe selective rechaza decision distinta de la politica determinista vigente.');
+  }
+  return expected;
+}
+
+export function createSafeSelectiveValidationRecord({
+  plan,
+  decision,
+  results = [],
+  candidateCommit,
+  certification = IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION,
+} = {}) {
+  const expectedDecision = assertSafeSelectiveDecision(plan, decision, certification);
+  const commit = String(candidateCommit ?? '').trim().toLowerCase();
+  if (!/^[a-f0-9]{40}$/u.test(commit)) {
+    throw new Error('F5 safe selective exige candidateCommit valido.');
+  }
+  const normalizedResults = Array.isArray(results) ? results.map((result) => ({
+    command: String(result?.command ?? '').trim(),
+    status: String(result?.status ?? '').trim().toUpperCase(),
+  })) : [];
+  if (normalizedResults.length !== expectedDecision.executedCommands.length) {
+    throw new Error('F5 safe selective results no coincide con comandos ejecutados.');
+  }
+  for (let index = 0; index < expectedDecision.executedCommands.length; index += 1) {
+    if (normalizedResults[index].command !== expectedDecision.executedCommands[index]
+      || normalizedResults[index].status !== 'PASS') {
+      throw new Error(`F5 safe selective resultado invalido en command[${index}].`);
+    }
+  }
+
+  const payload = {
+    schemaVersion: 1,
+    engineId: IMPLEMENTATION_VALIDATION_ENGINE_ID,
+    phase: 'F5_SAFE_SELECTIVE_VALIDATION',
+    policyId: SAFE_SELECTIVE_POLICY_ID,
+    candidateCommit: commit,
+    planSha256: plan.planSha256,
+    decisionSha256: expectedDecision.decisionSha256,
+    changedPaths: [...plan.changedPaths],
+    validationCommands: [...plan.fullCommands],
+    executionMode: expectedDecision.selectiveExecution ? 'SAFE_SELECTIVE' : 'FULL_FALLBACK',
+    selectiveExecution: expectedDecision.selectiveExecution,
+    fullFallbackUsed: expectedDecision.fullFallback,
+    fullFallbackAvailable: true,
+    validationGatesSkipped: 0,
+    reason: expectedDecision.reason,
+    packageId: expectedDecision.packageId,
+    candidateEligible: expectedDecision.candidateEligible,
+    candidateReason: expectedDecision.candidateReason,
+    potentialNotApplicableCommandCount: expectedDecision.potentialNotApplicableCommandCount,
+    certificationStatus: expectedDecision.certificationStatus,
+    certificationSha256: expectedDecision.certificationSha256,
+    certificationMinimumOmissionBearingSamples: expectedDecision.certificationMinimumOmissionBearingSamples,
+    certificationMinimumDistinctPackages: expectedDecision.certificationMinimumDistinctPackages,
+    certificationObservedOmissionBearingSamples: expectedDecision.certificationObservedOmissionBearingSamples,
+    certificationObservedDistinctPackages: expectedDecision.certificationObservedDistinctPackages,
+    certificationObservedFalseNegatives: expectedDecision.certificationObservedFalseNegatives,
+    executedCommands: [...expectedDecision.executedCommands],
+    notApplicableCommands: [...expectedDecision.notApplicableCommands],
+    results: normalizedResults,
+    status: 'PASS',
+  };
+  return deepFreeze({
+    ...payload,
+    recordSha256: sha256(canonicalJson(payload)),
+  });
+}
+
+export function validateSafeSelectiveValidationRecord({
+  record,
+  candidateCommit,
+  validationCommands = [],
+  certification = IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION,
+} = {}) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) {
+    throw new Error('F5 safe selective record obligatorio.');
+  }
+  const commit = String(candidateCommit ?? '').trim().toLowerCase();
+  if (!/^[a-f0-9]{40}$/u.test(commit) || record.candidateCommit !== commit) {
+    throw new Error('F5 safe selective record no corresponde al candidato actual.');
+  }
+  if (
+    record.schemaVersion !== 1
+    || record.engineId !== IMPLEMENTATION_VALIDATION_ENGINE_ID
+    || record.phase !== 'F5_SAFE_SELECTIVE_VALIDATION'
+    || record.policyId !== SAFE_SELECTIVE_POLICY_ID
+    || record.status !== 'PASS'
+    || record.validationGatesSkipped !== 0
+    || record.fullFallbackAvailable !== true
+  ) {
+    throw new Error('F5 safe selective record conserva identidad o politica invalida.');
+  }
+  const { recordSha256, ...payload } = record;
+  if (!/^[a-f0-9]{64}$/u.test(String(recordSha256 ?? ''))
+    || sha256(canonicalJson(payload)) !== recordSha256) {
+    throw new Error('F5 safe selective record conserva integridad SHA-256 invalida.');
+  }
+
+  const commands = normalizedValidationCommands(validationCommands);
+  if (canonicalJson(record.validationCommands ?? []) !== canonicalJson(commands)) {
+    throw new Error('F5 safe selective validationCommands no coincide con la instancia.');
+  }
+  const plan = buildShadowImpactPlan({
+    changedPaths: record.changedPaths ?? [],
+    validationCommands: commands,
+  });
+  const decision = assessSafeSelectiveExecution({ plan, certification });
+  if (record.planSha256 !== plan.planSha256 || record.decisionSha256 !== decision.decisionSha256) {
+    throw new Error('F5 safe selective record no coincide con el plan determinista actual.');
+  }
+  const expectedMode = decision.selectiveExecution ? 'SAFE_SELECTIVE' : 'FULL_FALLBACK';
+  if (
+    record.executionMode !== expectedMode
+    || record.selectiveExecution !== decision.selectiveExecution
+    || record.fullFallbackUsed !== decision.fullFallback
+    || record.reason !== decision.reason
+    || record.packageId !== decision.packageId
+    || record.candidateEligible !== decision.candidateEligible
+    || record.candidateReason !== decision.candidateReason
+    || record.potentialNotApplicableCommandCount !== decision.potentialNotApplicableCommandCount
+    || record.certificationStatus !== decision.certificationStatus
+    || record.certificationSha256 !== decision.certificationSha256
+    || record.certificationMinimumOmissionBearingSamples !== decision.certificationMinimumOmissionBearingSamples
+    || record.certificationMinimumDistinctPackages !== decision.certificationMinimumDistinctPackages
+    || record.certificationObservedOmissionBearingSamples !== decision.certificationObservedOmissionBearingSamples
+    || record.certificationObservedDistinctPackages !== decision.certificationObservedDistinctPackages
+    || record.certificationObservedFalseNegatives !== decision.certificationObservedFalseNegatives
+    || canonicalJson(record.executedCommands ?? []) !== canonicalJson(decision.executedCommands)
+    || canonicalJson(record.notApplicableCommands ?? []) !== canonicalJson(decision.notApplicableCommands)
+  ) {
+    throw new Error('F5 safe selective record no conserva la decision determinista vigente.');
+  }
+  const normalizedResults = Array.isArray(record.results) ? record.results.map((result) => ({
+    command: String(result?.command ?? '').trim(),
+    status: String(result?.status ?? '').trim().toUpperCase(),
+  })) : [];
+  if (normalizedResults.length !== decision.executedCommands.length) {
+    throw new Error('F5 safe selective record no conserva resultados ejecutados completos.');
+  }
+  for (let index = 0; index < decision.executedCommands.length; index += 1) {
+    if (normalizedResults[index].command !== decision.executedCommands[index]
+      || normalizedResults[index].status !== 'PASS') {
+      throw new Error(`F5 safe selective record resultado invalido en command[${index}].`);
+    }
+  }
+  return deepFreeze({
+    status: 'PASS',
+    selectiveExecution: decision.selectiveExecution,
+    fullFallbackUsed: decision.fullFallback,
+    reason: decision.reason,
+    packageId: decision.packageId,
+    executedCommands: [...decision.executedCommands],
+    notApplicableCommands: [...decision.notApplicableCommands],
   });
 }
 
@@ -469,6 +878,10 @@ export async function deriveImplementationValidationInputs({
   });
   const controlFinishedAt = now();
 
+  const safeSelectiveCertification = deriveSafeSelectiveCertification({
+    instances: baseControl?.physical?.instances ?? [],
+  });
+
   const finishedAt = now();
   const observability = deepFreeze({
     packageReadinessScans: 1,
@@ -491,6 +904,9 @@ export async function deriveImplementationValidationInputs({
       F2_SHARED_IMMUTABLE_CONTEXT: 'ACTIVE',
       F3_DEDUPLICATION_CANDIDATE_RECEIPTS: 'ACTIVE',
       F4_SHADOW_IMPACT_SELECTION: 'ACTIVE',
+      F5_SAFE_SELECTIVE_VALIDATION: safeSelectiveCertification.status === 'CERTIFIED'
+        ? 'ACTIVE_CERTIFIED'
+        : 'ACTIVE_GUARDED',
     },
     policy: {
       semantics: 'PRESERVED',
@@ -501,9 +917,16 @@ export async function deriveImplementationValidationInputs({
       remoteReuse: IMPLEMENTATION_VALIDATION_REUSE_POLICY.REMOTE,
       authorizationReuse: IMPLEMENTATION_VALIDATION_REUSE_POLICY.AUTHORIZATION,
       prMergeReuse: IMPLEMENTATION_VALIDATION_REUSE_POLICY.PR_MERGE,
-      shadowImpactMode: 'OBSERVE_ONLY',
-      selectiveExecution: false,
-      fullValidationRequired: true,
+      shadowImpactMode: 'ACTIVE_GUARD',
+      selectiveExecution: safeSelectiveCertification.status === 'CERTIFIED'
+        ? 'CERTIFIED_PACKAGE_LOCAL_CLOSED_SCOPE_ONLY'
+        : 'GUARDED_PENDING_REAL_SHADOW_CERTIFICATION',
+      safeSelectivePolicy: SAFE_SELECTIVE_POLICY_ID,
+      safeSelectiveCertification: safeSelectiveCertification.status,
+      safeSelectiveMinimumOmissionBearingSamples: safeSelectiveCertification.minimumOmissionBearingSamples,
+      safeSelectiveMinimumDistinctPackages: safeSelectiveCertification.minimumDistinctPackages,
+      fullValidationRequired: safeSelectiveCertification.status !== 'CERTIFIED',
+      fullValidationFallback: true,
     },
     context: {
       immutable: context.immutable,
@@ -511,6 +934,7 @@ export async function deriveImplementationValidationInputs({
       packageExecutionSource: 'PACKAGE_READINESS_SHARED_CONTEXT',
     },
     observability,
+    safeSelectiveCertification,
   });
 
   return {
