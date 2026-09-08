@@ -1,9 +1,13 @@
-import { createHash } from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import {
+  contentIdentity as qualityContentIdentity,
+  logicalIdentity as qualityLogicalIdentity,
+  stableJson as qualityStableJson,
+} from './quality-primitives.mjs';
 
 export const EVIDENCE_INSTANCE_ID = 'SHELL-CI-019::GLOBAL';
 export const EVIDENCE_CONTRACT_ID = 'SHELL-CI-019';
@@ -31,19 +35,14 @@ const SECRET_VALUES = [
   /\beyJ[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\.[A-Za-z0-9_-]{10,}\b/u,
 ];
 
-const sha = (value) => createHash('sha256').update(String(value), 'utf8').digest('hex');
+
 
 export function stableJson(value) {
-  if (Array.isArray(value)) return `[${value.map(stableJson).join(',')}]`;
-  if (value && typeof value === 'object') {
-    const keys = Object.keys(value).sort((a, b) => a.localeCompare(b, 'en'));
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
-  }
-  return JSON.stringify(value);
+  return qualityStableJson(value);
 }
 
-export const logicalIdentity = (value) => `sha256:${sha(stableJson(value))}`;
-export const contentIdentity = (value) => `sha256:${sha(value)}`;
+export const logicalIdentity = qualityLogicalIdentity;
+export const contentIdentity = qualityContentIdentity;
 
 function publisherIdentity() {
   return contentIdentity(fs.readFileSync(fileURLToPath(import.meta.url), 'utf8').replace(/\r\n?/gu, '\n'));

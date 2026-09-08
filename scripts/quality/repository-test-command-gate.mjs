@@ -3,6 +3,11 @@ import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import {
+  asSha256Identity as qualityAsSha256Identity,
+  logicalIdentity as qualityLogicalIdentity,
+  writePrettyJson as qualityWritePrettyJson,
+} from './quality-primitives.mjs';
 
 export const TEST_COMMAND_GATE_INSTANCE_ID = 'SHELL-CI-016::GLOBAL';
 export const TEST_COMMAND_GATE_SCHEMA_VERSION = 1;
@@ -28,6 +33,7 @@ export const SHELL_REQUIRED_QUALITY_TEST_FILES = Object.freeze([
   'scripts/quality/shared-package-consumer-update-gate.test.mjs',
   'scripts/quality/repository-rollback-gate.test.mjs',
   'scripts/quality/deployment-independence-gate.test.mjs',
+  'scripts/quality/quality-primitives.test.mjs',
   'scripts/quality/repository-test-command-gate.test.mjs',
 ]);
 
@@ -63,25 +69,16 @@ const ABSOLUTE_UNIX_PATH_PATTERN = /(?:^|[\s"'])\/(?:Users|home|workspace|mnt)\/
 const TEST_SUMMARY_PATTERN = /^(?:#|\u2139)\s*(tests|pass|fail|cancelled|skipped|todo)\s+(\d+)\s*$/gmu;
 const COMMIT_PATTERN = /^[0-9a-f]{40}$/u;
 
-function sha256(value) {
-  return createHash('sha256').update(String(value), 'utf8').digest('hex');
-}
+
 
 export function sha256Identity(value) {
-  return `sha256:${sha256(value)}`;
+  return qualityAsSha256Identity(String(value));
 }
 
-function stableJson(value) {
-  if (Array.isArray(value)) return `[${value.map((entry) => stableJson(entry)).join(',')}]`;
-  if (value && typeof value === 'object') {
-    const keys = Object.keys(value).sort((left, right) => left.localeCompare(right, 'en'));
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
-  }
-  return JSON.stringify(value);
-}
+
 
 export function logicalIdentity(value) {
-  return sha256Identity(stableJson(value));
+  return qualityLogicalIdentity(value);
 }
 
 function normalizeCommand(command) {
@@ -514,9 +511,7 @@ export function certifyCanonicalRepositories({ shellRoot } = {}) {
 
 function writeEvidence(shellRoot, evidence) {
   const evidencePath = path.join(shellRoot, RUNTIME_EVIDENCE_RELATIVE_PATH);
-  fs.mkdirSync(path.dirname(evidencePath), { recursive: true });
-  fs.writeFileSync(evidencePath, `${JSON.stringify(evidence, null, 2)}\n`, 'utf8');
-  return evidencePath;
+  return qualityWritePrettyJson(evidencePath, evidence);
 }
 
 export function validateSelfContract() {

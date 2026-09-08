@@ -1,7 +1,6 @@
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
-import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import {
@@ -10,6 +9,10 @@ import {
   parseSemver,
   validateReleaseContract,
 } from './shared-package-release-gate.mjs';
+import {
+  spawnUtf8 as qualitySpawnUtf8,
+  writePrettyJson as qualityWritePrettyJson,
+} from './quality-primitives.mjs';
 
 export const CHANGELOG_GATE_INSTANCE_ID = 'SHELL-CI-004::GLOBAL';
 export const CHANGELOG_CONTRACT_SCHEMA_VERSION = 1;
@@ -656,19 +659,15 @@ function evidenceDirectory(evidenceRoot, packageName, version) {
 
 function writeEvidence(evidenceRoot, evidence) {
   const directory = evidenceDirectory(evidenceRoot, evidence.package_name, evidence.release_version);
-  fs.mkdirSync(directory, { recursive: true });
-  const filePath = path.join(directory, `${evidence.changelog_run_identity}-${evidence.phase.toLowerCase()}.json`);
-  fs.writeFileSync(filePath, `${JSON.stringify(sanitizeObject(evidence), null, 2)}\n`, 'utf8');
-  return filePath;
+  const filePath = path.join(
+    directory,
+    `${evidence.changelog_run_identity}-${evidence.phase.toLowerCase()}.json`,
+  );
+  return qualityWritePrettyJson(filePath, sanitizeObject(evidence));
 }
 
 function run(command, args, options = {}) {
-  return spawnSync(command, args, {
-    encoding: 'utf8',
-    windowsHide: true,
-    maxBuffer: 16 * 1024 * 1024,
-    ...options,
-  });
+  return qualitySpawnUtf8(command, args, options);
 }
 
 function resolveRepositoryRoot(startPath) {
