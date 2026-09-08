@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1139** |
+| Tareas aprobadas | **1140** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **457** |
+| Tareas no iniciadas | **456** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.37% (1139/1596)** |
+| Porcentaje de completamiento | **71.43% (1140/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-040 — Ocultar enlaces no autorizados** |
-| Tarea actual | **AUTH-UI-041 — Bloquear acceso directo por URL** |
+| Última tarea aprobada | **AUTH-UI-041 — Bloquear acceso directo por URL** |
+| Tarea actual | **AUTH-UI-042 — Bloquear acciones aunque el botón sea visible** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-042 — Bloquear acciones aunque el botón sea visible** |
+| Siguiente tarea | **AUTH-UI-043 — Vincular cada acción con protección de servidor** |
 | Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
-| Progreso del bloque | **BLOQUE I: 1 de 12 aprobadas; AUTH-UI-041 pendiente** |
+| Progreso del bloque | **BLOQUE I: 2 de 12 aprobadas; AUTH-UI-042 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-041** |
+| Carril documental | **ACTIVO — AUTH-UI-042** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-040` — Ocultar enlaces no autorizados |
-| Tarea actual | `AUTH-UI-041` — Bloquear acceso directo por URL — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible |
+| Última aprobada | `AUTH-UI-041` — Bloquear acceso directo por URL |
+| Tarea actual | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-043` — Vincular cada acción con protección de servidor |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE I: 1 DE 12 APROBADAS — ACTUAL AUTH-UI-041** |
+| CONTINUIDAD ACTIVA | **BLOQUE I: 2 DE 12 APROBADAS — ACTUAL AUTH-UI-042** |
 | Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-040 — Ocultar enlaces no autorizados
-        ↓
-TAREA ACTUAL
 AUTH-UI-041 — Bloquear acceso directo por URL
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-042 — Bloquear acciones aunque el botón sea visible
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-043 — Vincular cada acción con protección de servidor
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE I — 1 de 12 tareas aprobadas
+BLOQUE I — 2 de 12 tareas aprobadas
 ```
