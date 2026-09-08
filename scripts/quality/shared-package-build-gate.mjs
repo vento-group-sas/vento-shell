@@ -5,6 +5,13 @@ import path from 'node:path';
 import { spawnSync } from 'node:child_process';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 import zlib from 'node:zlib';
+import {
+  asSha256Identity as qualityAsSha256Identity,
+  readJson as qualityReadJson,
+  sha256 as qualitySha256,
+  stableStringify as qualityStableStringify,
+  writePrettyJson as qualityWritePrettyJson,
+} from './quality-primitives.mjs';
 
 export const CANONICAL_SHARED_PACKAGES = Object.freeze([
   '@vento/contracts',
@@ -58,27 +65,18 @@ function isPlainObject(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value);
 }
 
-function canonicalize(value) {
-  if (Array.isArray(value)) return value.map(canonicalize);
-  if (!isPlainObject(value)) return value;
-  return Object.fromEntries(
-    Object.keys(value)
-      .sort((left, right) => left.localeCompare(right))
-      .map((key) => [key, canonicalize(value[key])]),
-  );
-}
+
 
 export function stableStringify(value) {
-  return JSON.stringify(canonicalize(value));
+  return qualityStableStringify(value);
 }
 
 export function sha256(value) {
-  const data = Buffer.isBuffer(value) ? value : Buffer.from(String(value), 'utf8');
-  return crypto.createHash('sha256').update(data).digest('hex');
+  return qualitySha256(value);
 }
 
 function asSha256Identity(value) {
-  return `sha256:${sha256(value)}`;
+  return qualityAsSha256Identity(value);
 }
 
 function nonEmptyString(value) {
@@ -100,17 +98,7 @@ function assertRelativePath(candidate, label) {
 }
 
 function readJson(filePath, label) {
-  let source;
-  try {
-    source = fs.readFileSync(filePath, 'utf8');
-  } catch (error) {
-    throw new Error(`Cannot read ${label}: ${error instanceof Error ? error.message : String(error)}`);
-  }
-  try {
-    return { source, value: JSON.parse(source) };
-  } catch (error) {
-    throw new Error(`Invalid JSON in ${label}: ${error instanceof Error ? error.message : String(error)}`);
-  }
+  return qualityReadJson(filePath, label);
 }
 
 function runGit(root, args) {
@@ -1030,10 +1018,8 @@ function sanitizeObject(value) {
 
 function writeEvidence(evidenceRoot, evidence) {
   const directory = evidenceDirectory(evidenceRoot, evidence.package_name);
-  fs.mkdirSync(directory, { recursive: true });
   const filePath = path.join(directory, `${evidence.run_identity}.json`);
-  fs.writeFileSync(filePath, `${JSON.stringify(sanitizeObject(evidence), null, 2)}\n`, 'utf8');
-  return filePath;
+  return qualityWritePrettyJson(filePath, sanitizeObject(evidence));
 }
 
 function buildRunDiagnostic(run) {

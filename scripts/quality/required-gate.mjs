@@ -1,8 +1,8 @@
-import { createHash } from 'node:crypto';
 import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { logicalIdentity as qualityLogicalIdentity } from './quality-primitives.mjs';
 
 export const REQUIRED_GATE_INSTANCE_ID = 'SHELL-CI-018::GLOBAL';
 export const REQUIRED_GATE_SCHEMA_VERSION = 1;
@@ -44,21 +44,12 @@ const TREQ_PATTERN = /^TREQ-[A-Z]+-\d{3,}$/u;
 const WORKFLOW_RELATIVE_PATH = '.github/workflows/vento-required-gate.yml';
 const VISO_LEGACY_WORKFLOW_RELATIVE_PATH = '.github/workflows/apply-guided-product-form.yml';
 
-function sha256(value) {
-  return createHash('sha256').update(String(value), 'utf8').digest('hex');
-}
 
-function stableJson(value) {
-  if (Array.isArray(value)) return `[${value.map((entry) => stableJson(entry)).join(',')}]`;
-  if (value && typeof value === 'object') {
-    const keys = Object.keys(value).sort((left, right) => left.localeCompare(right, 'en'));
-    return `{${keys.map((key) => `${JSON.stringify(key)}:${stableJson(value[key])}`).join(',')}}`;
-  }
-  return JSON.stringify(value);
-}
+
+
 
 export function logicalIdentity(value) {
-  return `sha256:${sha256(stableJson(value))}`;
+  return qualityLogicalIdentity(value);
 }
 
 function checkResultToGateState(result) {
