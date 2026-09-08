@@ -4404,7 +4404,1304 @@ Esta tarea no:
 `SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones`
 
 
-### [ ] SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
+### ✅ SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente
+**Tarea siguiente:** SHELL-APP-014 — Definir retorno seguro entre aplicaciones
+**Tipo de tarea:** definición técnico-documental de la frontera de propiedad funcional de SHELL; fija qué puede coordinar, proyectar y presentar el Hub sin absorber procesos, reglas de negocio, consultas propietarias, mutaciones, estados ni autoridad de otras aplicaciones, conservando `PER_IMPLEMENTATION_UNIT` únicamente como topología de materialización posterior
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md`
+**Estado físico resultante:** contrato documental de no absorción funcional definido para SHELL sobre las diez aplicaciones canónicas, la propiedad vigente de 69 procesos, los ítems de trabajo, proyecciones y comandos entre aplicaciones, sin modificar runtime ni crear instancia física
+**Cambios físicos autorizados:** ninguno; no se modifican código, rutas, componentes, contratos, procesos, ownership, permisos, Supabase, datos, RLS, RPC, migraciones, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una frontera verificable para que SHELL siga siendo el Hub coordinador de Vento OS sin convertirse en una aplicación monolítica que replique o ejecute la lógica funcional de ANIMA, VISO, NEXO, FOGO, ORIGO, PULSO, NUMERA, AURA o PASS.
+
+La regla central queda:
+
+```text
+SHELL
+→ COORDINA
+→ PROYECTA
+→ PRESENTA
+→ NAVEGA
+→ ENTREGA REFERENCIAS SEGURAS
+
+SHELL
+≠ PROPIETARIA UNIVERSAL
+≠ MOTOR DE PROCESOS AJENOS
+≠ FUENTE DE VERDAD DE DOMINIOS AJENOS
+≠ AUTORIZADOR UNIVERSAL
+≠ ESCRITOR UNIVERSAL
+```
+
+La presencia de una tarea, dato, enlace, resumen, botón o estado de otra aplicación dentro del Hub no transfiere ownership ni permite reimplementar su comportamiento.
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-012`
+
+Se reciben sin reapertura:
+
+1. SHELL como coordinador y no propietaria de lógica PASS;
+2. `pass.access` delimitado a entrada laboral-administrativa;
+3. separación entre acceso de aplicación y capacidades funcionales internas;
+4. operaciones de fidelización conservadas en sus owners canónicos;
+5. PULSO como owner de sus superficies operativas relacionadas con PASS;
+6. prohibición de convertir rutas o asociaciones temáticas en propiedad funcional;
+7. prohibición de crear lógica de negocio en SHELL para resolver ausencia de contrato de otra aplicación;
+8. obligación de revalidar autorización en la aplicación propietaria;
+9. separación estricta entre presentación coordinada y ejecución funcional.
+
+Esta tarea generaliza esas reglas a las diez aplicaciones canónicas.
+
+---
+
+#### 3. Problema que se resuelve
+
+Un Hub transversal necesita conocer suficiente información para:
+
+- mostrar contexto;
+- presentar trabajo pendiente;
+- explicar accesos;
+- abrir aplicaciones;
+- coordinar handoffs;
+- mostrar referencias y proyecciones mínimas.
+
+Ese rol transversal puede degenerar en un anti-patrón si SHELL comienza a:
+
+- consultar tablas ajenas para reconstruir reglas de negocio;
+- ejecutar mutaciones de otra aplicación;
+- copiar formularios de dominio;
+- decidir estados de procesos ajenos;
+- reproducir validaciones propietarias;
+- implementar un fallback local cuando un servicio o aplicación no está disponible;
+- completar tareas por el solo hecho de mostrarlas;
+- compensar o corregir hechos ajenos;
+- centralizar toda operación porque el Hub ya presenta el acceso.
+
+La tarea bloquea esa deriva antes de materializar la experiencia final de navegación.
+
+---
+
+#### 4. Principio rector de propiedad funcional
+
+La propiedad se obtiene de los contratos canónicos de proceso, capacidad, fuente y trabajo.
+
+No se obtiene de:
+
+```text
+UBICACIÓN DEL CÓDIGO
+NOMBRE DEL REPOSITORIO
+NOMBRE DE UNA TABLA
+NOMBRE DE UNA PANTALLA
+RUTA O DEEP LINK
+ÚLTIMO ESCRITOR
+APLICACIÓN QUE PRESENTA EL DATO
+APLICACIÓN QUE DISPARA LA NAVEGACIÓN
+APLICACIÓN QUE RECIBE UN EVENTO
+APLICACIÓN QUE MUESTRA UN WORK ITEM
+```
+
+Mover o reutilizar una representación técnica no cambia por sí mismo el owner funcional.
+
+---
+
+#### 5. Qué se considera lógica funcional de otra aplicación
+
+Para esta tarea, constituye lógica funcional ajena cualquier comportamiento que defina o altere el significado empresarial de un dominio cuyo owner no es SHELL.
+
+Incluye, entre otros:
+
+1. validar una regla empresarial propietaria;
+2. decidir una transición de estado de proceso;
+3. crear, modificar, cancelar, cerrar, revertir o compensar un hecho empresarial;
+4. calcular un resultado que sea fuente de verdad del dominio;
+5. resolver elegibilidad empresarial propia de la aplicación;
+6. interpretar un recurso para decidir un estado funcional;
+7. ejecutar una consulta que reconstruya semántica propietaria desde datos crudos;
+8. modificar tablas, RPC, endpoints o recursos de otra propietaria;
+9. mantener formularios de dominio que produzcan la mutación propietaria;
+10. ejecutar claim, start, completion, cancelación o reasignación de trabajo ajeno;
+11. fabricar una regla sustitutiva cuando el owner o su contrato no estén disponibles;
+12. corregir directamente un dato ajeno para “sincronizar” aplicaciones.
+
+---
+
+#### 6. Qué no demuestra ownership
+
+Ninguna de estas condiciones transfiere propiedad funcional a SHELL:
+
+- el dato aparece en el home;
+- el dato se usa para ordenar o presentar una referencia autorizada;
+- existe una tarjeta de aplicación;
+- SHELL conoce el `AppCode`;
+- SHELL conoce un `ProcessId`;
+- SHELL conoce un `work_item_id`;
+- el repositorio `vento-shell` contiene un contrato compartido;
+- el repositorio `vento-shell` contiene una migración de Supabase;
+- una librería compartida vive dentro del workspace técnico;
+- SHELL recibe un evento;
+- SHELL participa en un handoff;
+- SHELL inicia navegación hacia el owner;
+- una aplicación se encuentra temporalmente indisponible.
+
+---
+
+#### 7. Fuente canónica de ownership
+
+La proyección materializada de propiedad funcional conserva como autoridades:
+
+```text
+PROC-CAT-005
+PROC-APPLICATION-OWNERSHIP-REGISTRY-001
+CAP-MAP-008
+SHELL-CON-015
+SHELL-CON-016
+```
+
+Para procesos:
+
+```text
+process_id
+→ owner_app_code
+→ authority_ref
+```
+
+Para una capacidad específica, la fuente aplicable debe resolverse con la granularidad aprobada.
+
+Una referencia no resuelta no puede completarse por inferencia desde nombres, tablas, repositorios, rutas o UI.
+
+---
+
+#### 8. Universo vigente de propiedad de procesos
+
+El contrato materializado de ownership conserva:
+
+```text
+CANONICAL_APP_CODES = 10
+PROCESS_OWNER_APP_CODES_USED = 9
+CANONICAL_PROCESSES = 69
+SHELL_OWNED_PROCESSES = 0
+NON_SHELL_OWNED_PROCESSES = 69
+```
+
+La distribución vigente es:
+
+| `owner_app_code` | Procesos propietarios |
+| --- | ---: |
+| `shell` | 0 |
+| `anima` | 1 |
+| `viso` | 20 |
+| `nexo` | 16 |
+| `fogo` | 6 |
+| `origo` | 4 |
+| `pulso` | 12 |
+| `numera` | 7 |
+| `aura` | 2 |
+| `pass` | 1 |
+| **Total** | **69** |
+
+La diferencia entre diez aplicaciones canónicas y nueve aplicaciones propietarias de procesos es deliberada.
+
+---
+
+#### 9. Matriz de frontera por aplicación
+
+| Aplicación | Dominio o rol canónico resumido | Procesos propios vigentes | Lo que SHELL puede hacer | Lo que SHELL no absorbe |
+| --- | --- | ---: | --- | --- |
+| `shell` | Hub laboral y coordinación | 0 | presentar home, contexto permitido, trabajo proyectado, accesos y navegación | apropiarse de los 69 procesos ajenos |
+| `anima` | fuerza laboral, asistencia y relación del trabajador | 1 | mostrar referencias o trabajo autorizado y abrir ANIMA | turnos, asistencia, documentos o lógica laboral propietaria |
+| `viso` | administración, gobierno, seguridad y supervisión | 20 | mostrar obligaciones administrativas autorizadas y abrir VISO | mutaciones administrativas, decisiones o gobierno de otros dominios |
+| `nexo` | inventario y logística | 16 | proyectar tareas o referencias mínimas y abrir NEXO | stock, remisiones, ubicaciones, movimientos, activos o logística |
+| `fogo` | producción | 6 | proyectar trabajo productivo autorizado y abrir FOGO | lotes, órdenes, recetas, consumo o ejecución productiva |
+| `origo` | compras y abastecimiento | 4 | proyectar obligaciones autorizadas y abrir ORIGO | órdenes, proveedores, recepción o decisiones de abastecimiento |
+| `pulso` | POS, ventas, pedidos, pagos, salón y fidelización operativa | 12 | mostrar referencias autorizadas y abrir PULSO | ventas, pedidos, pagos, caja, puntos, redenciones o entregas |
+| `numera` | costos, gastos, rentabilidad y finanzas | 7 | mostrar referencias o trabajo financiero autorizado y abrir NUMERA | cálculo financiero fuente, conciliación, costos o cierres propietarios |
+| `aura` | aplicación administrativa laboral diferida | 2 | conservar su identidad y estado canónico cuando corresponda | implementar su producto o lógica por estar diferida |
+| `pass` | producto cliente adyacente | 1 | respetar la frontera adyacente y handoffs explícitos autorizados | identidad cliente, cuenta, pedidos, puntos, recompensas o lógica cliente |
+
+La matriz conserva el owner vigente; no reasigna procesos.
+
+---
+
+#### 10. Cero procesos de SHELL no significa cero responsabilidad propia
+
+`SHELL_OWNED_PROCESSES = 0` se refiere al registro canónico vigente de 69 procesos empresariales.
+
+No significa que la aplicación SHELL carezca de comportamiento propio.
+
+SHELL sí posee responsabilidades de Hub, entre ellas:
+
+- entrada al ecosistema laboral;
+- composición del home de SHELL;
+- presentación de contexto permitido;
+- presentación de trabajo proyectado;
+- presentación de accesos;
+- explicación segura de bloqueos;
+- navegación y coordinación entre superficies;
+- gestión de su propia experiencia de sesión conforme a contratos compartidos.
+
+Esas responsabilidades no convierten a SHELL en propietaria de los procesos empresariales que presenta.
+
+---
+
+#### 11. Responsabilidades legítimas de SHELL
+
+SHELL puede implementar lógica propia cuando el efecto pertenece al Hub y no modifica significado empresarial ajeno.
+
+Ejemplos admitidos:
+
+1. componer regiones del home aprobadas;
+2. renderizar un catálogo canónico de accesos;
+3. consumir proyecciones seguras de contexto y autorización;
+4. mostrar referencias mínimas de work items autorizados;
+5. presentar estados de disponibilidad y bloqueo según contratos aprobados;
+6. elegir composición responsive de su propia UI;
+7. formatear datos ya proyectados sin cambiar su semántica;
+8. conservar estado puramente visual que no conceda autoridad ni altere un proceso;
+9. abrir el destino propietario con referencias autorizadas;
+10. propagar correlación técnica no autoritativa cuando el contrato aplicable lo permita.
+
+---
+
+#### 12. Presentar no equivale a ejecutar
+
+Se conserva:
+
+```text
+MOSTRAR
+≠ EJECUTAR
+
+NAVEGAR
+≠ MUTAR
+
+PROYECTAR
+≠ POSEER
+
+CONOCER UNA REFERENCIA
+≠ AUTORIZAR
+
+MOSTRAR UNA ACCIÓN
+≠ APLICAR SU EFECTO
+```
+
+La UI de SHELL puede hacer visible una posibilidad sin convertirse en el ejecutor de la capacidad empresarial.
+
+---
+
+#### 13. Referencias y proyecciones no adquieren propiedad
+
+Las representaciones compartidas admitidas por el contrato de ownership incluyen:
+
+```text
+REFERENCE
+PROJECTION
+CONTROLLED_CACHE
+DERIVED_RESULT
+EVIDENCE_COPY
+```
+
+Una referencia, proyección, caché controlada o copia de evidencia no adquiere autoridad sobre el original.
+
+SHELL debe conservar esa separación.
+
+---
+
+#### 14. `DERIVED_RESULT` de presentación
+
+Un resultado derivado puede pertenecer a SHELL únicamente cuando su semántica sea propia de la presentación y no reescriba el hecho fuente.
+
+Ejemplos compatibles:
+
+- formatear una fecha ya autorizada;
+- agrupar visualmente elementos que ya llegaron en una proyección autorizada;
+- contar únicamente elementos ya visibles y permitidos cuando ese conteo no revele filas ocultas;
+- truncar o adaptar copy para el dispositivo;
+- elegir una disposición visual.
+
+No son resultados de presentación:
+
+- recalcular prioridad empresarial;
+- reconstruir saldo;
+- determinar stock disponible;
+- decidir una aprobación;
+- calcular un costo fuente;
+- inferir readiness del proceso;
+- reconstruir un estado ausente desde campos parciales.
+
+---
+
+#### 15. Work items
+
+El contrato de trabajo conserva:
+
+```text
+owner_app_code
+```
+
+como propietaria empresarial de cada obligación runtime.
+
+SHELL puede mostrar una proyección autorizada del work item, pero no adquiere por ello ownership.
+
+Se conserva:
+
+```text
+ELIGIBILITY
+≠ OFFER
+≠ ASSIGNMENT
+≠ CLAIM
+≠ EXECUTION
+≠ COMPLETION
+```
+
+Abrir, visualizar o navegar desde SHELL no produce claim, start, completion ni cancelación.
+
+---
+
+#### 16. Estado de trabajo y aplicación propietaria
+
+Cuando un work item aparece en SHELL:
+
+- su `work_item_id` permanece opaco;
+- su `owner_app_code` permanece vigente;
+- su estado procede del owner o contrato compartido autorizado;
+- su `next_action_code` no concede permiso;
+- su versión debe conservarse;
+- la acción real se revalida en la autoridad propietaria;
+- SHELL no fabrica una transición local para mantener fluidez visual.
+
+---
+
+#### 17. Handoff no transfiere ownership automáticamente
+
+Un handoff puede transferir trabajo, custodia o responsabilidad de atención sin transferir automáticamente la propiedad del hecho empresarial.
+
+Por tanto:
+
+```text
+HANDOFF
+≠ OWNER CHANGE
+```
+
+SHELL puede coordinar el handoff conforme al contrato compartido, pero no interpreta la recepción como permiso para modificar el dominio de la aplicación origen o destino.
+
+---
+
+#### 18. Lectura cross-app
+
+SHELL no deberá crear consultas propietarias para reconstruir desde datos crudos el significado interno de otra aplicación.
+
+La lectura transversal debe preferir:
+
+```text
+PROYECCIÓN CANÓNICA
+REFERENCIA COMPARTIDA
+CONTRATO DE LECTURA AUTORIZADO
+```
+
+La proyección debe ser mínima, versionada, atribuible y compatible con la finalidad de SHELL.
+
+Una consulta directa que copie reglas, filtros, joins o interpretación empresarial de otra aplicación constituye acoplamiento funcional y no se vuelve válida por ser de solo lectura.
+
+---
+
+#### 19. Escritura cross-app
+
+SHELL no escribe directamente el estado privado de otra propietaria.
+
+La secuencia canónica es:
+
+```text
+SHELL COMO CONSUMIDOR AUTORIZADO
+→ SOLICITA ACCIÓN MEDIANTE CONTRATO
+→ OWNER REVALIDA ACTOR, AUTORIZACIÓN, CONTEXTO, ESTADO, VERSIÓN Y RECURSO
+→ OWNER APLICA O RECHAZA
+→ OWNER CONFIRMA RESULTADO
+→ SHELL PRESENTA RESULTADO SEGURO
+```
+
+La presentación de la acción en el Hub no concede autoridad de escritura.
+
+---
+
+#### 20. Comando propietario
+
+Cuando exista un comando cross-app aprobado, SHELL puede actuar como consumidor únicamente dentro del contrato declarado.
+
+El comando no permite a SHELL:
+
+- modificar directamente la tabla fuente;
+- llamar una mutación ajena sin contrato;
+- omitir autorización del owner;
+- omitir versión o idempotencia cuando apliquen;
+- convertir una respuesta parcial en éxito;
+- cambiar a otro endpoint para forzar el efecto;
+- reproducir localmente el efecto ante error.
+
+---
+
+#### 21. Confirmación del owner antes del éxito
+
+SHELL no presenta una mutación ajena como completada hasta recibir un resultado confirmado por la autoridad propietaria.
+
+Se prohíbe:
+
+```text
+CLICK
+→ ÉXITO OPTIMISTA EMPRESARIAL IRREVERSIBLE
+```
+
+cuando el efecto fuente todavía no ha sido confirmado.
+
+Los estados visuales transitorios deben permanecer diferenciados de un hecho empresarial confirmado.
+
+---
+
+#### 22. Ausencia de contrato
+
+Si SHELL necesita una capacidad de otra aplicación y no existe contrato suficiente:
+
+```text
+NO CONTRACT
+→ NO LOCAL REIMPLEMENTATION
+→ NO DIRECT DATABASE FALLBACK
+→ NO FOREIGN MUTATING RPC
+→ NO INVENTED BUSINESS RULE
+```
+
+La ausencia de contrato es una restricción que debe conservarse.
+
+No se resuelve absorbiendo la lógica en el Hub.
+
+---
+
+#### 23. Owner no disponible
+
+Si la aplicación o servicio propietario no está disponible:
+
+- SHELL no ejecuta un sustituto local;
+- no modifica el recurso mediante otra aplicación;
+- no afirma que la operación quedó completada;
+- conserva la referencia y el estado seguro que pueda demostrar;
+- diferencia indisponibilidad técnica de denegación y de resultado empresarial;
+- ofrece únicamente recuperación o navegación permitida por contratos existentes.
+
+La continuidad de contexto y retorno se define en tareas posteriores.
+
+---
+
+#### 24. Proyección stale, incompleta o inválida
+
+SHELL no convierte una proyección stale, incompleta o inválida en una nueva fuente de verdad.
+
+Resultado:
+
+```text
+STALE
+→ REFRESH O BLOQUEO SEGURO
+
+INCOMPLETE
+→ ESTADO INCOMPLETO EXPLÍCITO
+
+INVALID
+→ NO INTERPRETAR COMO HECHO EMPRESARIAL
+```
+
+No se completan campos faltantes mediante inferencias locales.
+
+---
+
+#### 25. Error técnico no equivale a resultado funcional
+
+Se conserva la separación:
+
+```text
+ERROR TÉCNICO
+≠ DENY
+≠ CANCELLED
+≠ COMPLETED
+≠ NO_WORK_AVAILABLE
+≠ SIN STOCK
+≠ SALDO CERO
+≠ PROCESO RECHAZADO
+```
+
+SHELL presenta el error técnico de forma segura sin fabricar el outcome del dominio propietario.
+
+---
+
+#### 26. Autorización y lógica funcional permanecen separadas
+
+SHELL puede consumir la decisión canónica de autorización necesaria para su presentación.
+
+Eso no lo autoriza a reproducir la autorización interna de cada acción de otra aplicación.
+
+La aplicación propietaria debe revalidar la acción real.
+
+Se conserva:
+
+```text
+VISIBILIDAD EN SHELL
+≠ AUTORIZACIÓN FINAL DE LA ACCIÓN
+```
+
+---
+
+#### 27. `app.access` no equivale a capacidad interna
+
+Los permisos de entrada siguen separados de las capacidades funcionales específicas.
+
+Ejemplos:
+
+```text
+nexo.access
+≠ registrar retiro
+
+fogo.access
+≠ crear lote
+
+origo.access
+≠ aprobar compra
+
+pulso.access
+≠ otorgar puntos
+
+pass.access
+≠ administrar cuenta cliente
+```
+
+SHELL no transforma una decisión de entrada en autoridad para funciones internas.
+
+---
+
+#### 28. Código compartido no equivale a lógica de SHELL
+
+El repositorio `vento-shell` contiene fundaciones compartidas que pueden ser consumidas por varias aplicaciones.
+
+La ubicación física de un contrato en ese repositorio no convierte su semántica en propiedad de la aplicación `shell`.
+
+Se mantiene la separación:
+
+```text
+vento-shell
+→ REPOSITORIO TÉCNICO
+
+shell
+→ APP_CODE DEL HUB
+
+@vento/contracts/*
+@vento/os-context/*
+otros paquetes compartidos aprobados
+→ FUNDACIONES TRANSVERSALES SEGÚN SU CONTRATO
+```
+
+---
+
+#### 29. Ownership técnico y funcional
+
+Un mismo repositorio puede alojar:
+
+- aplicación SHELL;
+- paquetes compartidos;
+- validadores;
+- migraciones;
+- contratos;
+- tooling de CI.
+
+Esto no autoriza la ecuación:
+
+```text
+ARCHIVO EN vento-shell
+→ OWNER FUNCIONAL = shell
+```
+
+El owner funcional continúa resolviéndose desde las autoridades canónicas aplicables.
+
+---
+
+#### 30. Supabase en `vento-shell`
+
+La gobernanza del proyecto exige que las modificaciones de Supabase de VENTO se creen, versionen, documenten y ejecuten desde `vento-shell`.
+
+Esa regla de repositorio no cambia la propiedad empresarial del dato.
+
+Por tanto:
+
+```text
+MIGRACIÓN UBICADA EN vento-shell
+≠ DATO PROPIEDAD DE shell
+
+RPC IMPLEMENTADA DESDE vento-shell
+≠ CAPACIDAD PROPIEDAD DE shell
+```
+
+Una futura modificación de Supabase deberá seguir respetando el owner funcional, la autorización y los contratos del dominio afectado.
+
+---
+
+#### 31. Criterios para promover algo a fundación compartida
+
+Una lógica no se vuelve compartida por conveniencia técnica.
+
+Antes de promoverla debe existir una decisión canónica que identifique, como mínimo:
+
+1. owner semántico o autoridad fuente;
+2. finalidad transversal real;
+3. contrato verificable;
+4. namespace y versión;
+5. consumidores declarados;
+6. límites de renderer o plataforma cuando apliquen;
+7. comportamiento ante incompatibilidad;
+8. pruebas del package y consumidores;
+9. estrategia de rollback;
+10. ausencia de absorción de reglas de dominio propietarias.
+
+Sin esa decisión, la lógica permanece en su aplicación o renderer propietario.
+
+---
+
+#### 32. Ser genérico o puro no basta
+
+No se promoverá a SHELL o a un paquete compartido una superficie únicamente porque:
+
+- esté escrita en TypeScript;
+- sea una función pura;
+- se repita en dos lugares;
+- parezca reutilizable;
+- tenga un nombre genérico;
+- no use componentes visuales;
+- sea fácil de mover;
+- viva cerca de un contrato compartido.
+
+La semántica y el owner prevalecen sobre la forma técnica.
+
+---
+
+#### 33. Patrones cross-app prohibidos
+
+Se preservan como incompatibles con esta frontera:
+
+```text
+DIRECT_FOREIGN_TABLE_WRITE
+DIRECT_FOREIGN_RPC_WITHOUT_CONTRACT
+CLIENT_MULTI_OWNER_TRANSACTION
+SHARED_SCHEMA_OWNER_BYPASS
+TRIGGER_CASCADE_INTO_FOREIGN_DOMAIN
+WORKER_OR_CRON_FOREIGN_MUTATION
+WEBHOOK_DIRECT_FOREIGN_MUTATION
+CONSUMER_PROJECTION_AS_SOURCE_WRITE
+MANUAL_SQL_CROSS_DOMAIN_REPAIR
+BATCH_OR_IMPORT_CROSS_DOMAIN_WRITE
+COMPENSATION_BY_FOREIGN_EDIT
+SHELL_OR_ADMIN_HUB_FOREIGN_MUTATION
+```
+
+En particular, SHELL no adquiere escritura universal por presentar una acción.
+
+---
+
+#### 34. ANIMA
+
+SHELL puede presentar información laboral mínima o un work item cuyo owner sea ANIMA.
+
+No puede sustituir a ANIMA para:
+
+- registrar asistencia;
+- decidir una marcación;
+- administrar documentos laborales;
+- modificar un hecho propio de la relación del trabajador;
+- completar una etapa propietaria por navegación.
+
+---
+
+#### 35. VISO
+
+SHELL puede presentar una obligación administrativa o referencia segura de VISO.
+
+No puede convertir el Hub en consola universal para:
+
+- administrar seguridad;
+- modificar roles o permisos;
+- publicar decisiones propietarias de VISO;
+- mutar datos de otros dominios porque VISO los supervise.
+
+Presentar una decisión no transfiere propiedad de escritura.
+
+---
+
+#### 36. NEXO
+
+SHELL puede mostrar una referencia autorizada a una remisión, conteo, retiro, ubicación, activo u obligación logística cuando el contrato de trabajo lo permita.
+
+No puede:
+
+- recalcular stock;
+- registrar movimientos;
+- preparar o recibir remisiones;
+- asignar ubicaciones;
+- crear traslados;
+- ejecutar conteos;
+- corregir inventario.
+
+Esas acciones permanecen en NEXO y sus contratos propietarios.
+
+---
+
+#### 37. FOGO
+
+SHELL puede proyectar una tarea de producción y abrir FOGO.
+
+No puede:
+
+- crear lotes;
+- registrar consumo;
+- determinar ejecución productiva;
+- modificar recetas;
+- cerrar producción;
+- reemplazar FOGO porque su superficie esté indisponible.
+
+---
+
+#### 38. ORIGO
+
+SHELL puede presentar obligaciones relacionadas con compra, proveedor o recepción cuando exista una proyección autorizada.
+
+No puede:
+
+- crear o aprobar órdenes por inferencia;
+- modificar proveedores;
+- registrar recepción física;
+- alterar el ciclo de abastecimiento;
+- convertir una vista transversal en owner de compras.
+
+---
+
+#### 39. PULSO
+
+SHELL puede abrir PULSO o presentar referencias mínimas autorizadas.
+
+No puede:
+
+- registrar ventas;
+- modificar pedidos;
+- cobrar;
+- cerrar caja;
+- entregar pedidos;
+- otorgar puntos;
+- validar redenciones;
+- ejecutar operaciones PULSO relacionadas con PASS.
+
+Las superficies operativas relacionadas con PASS permanecen PULSO-owned cuando así lo establece el contrato canónico.
+
+---
+
+#### 40. NUMERA
+
+SHELL puede presentar una obligación financiera o referencia autorizada.
+
+No puede reconstruir ni convertirse en fuente de:
+
+- costos;
+- gastos;
+- rentabilidad;
+- punto de equilibrio;
+- conciliaciones;
+- reportes financieros fuente.
+
+Un resumen visible no convierte al Hub en motor financiero.
+
+---
+
+#### 41. AURA
+
+AURA conserva su identidad canónica y sus procesos propietarios aunque su roadmap permanezca diferido.
+
+El diferimiento no autoriza:
+
+```text
+AURA NO DISPONIBLE
+→ IMPLEMENTAR SU LÓGICA EN SHELL
+```
+
+SHELL conserva la reserva y no crea una implementación sustituta.
+
+---
+
+#### 42. PASS
+
+PASS permanece como aplicación cliente adyacente y conserva su proceso propietario.
+
+SHELL no absorbe:
+
+- identidad cliente;
+- perfil;
+- pedidos;
+- preferencias;
+- consentimientos;
+- fidelización;
+- puntos;
+- recompensas;
+- redenciones.
+
+La frontera específica de `pass.access` aprobada en `SHELL-APP-012` permanece intacta.
+
+---
+
+#### 43. Estado AS-IS de la página principal de SHELL
+
+El runtime vigente de `src/app/page.tsx` conserva principalmente:
+
+- catálogo local de cinco accesos;
+- resolución legacy de `has_permission` para entrada;
+- tarjetas `Disponible` o `Sin acceso`;
+- navegación hacia aplicaciones;
+- sesión y cierre de sesión;
+- placeholders de perfil y configuración ya inventariados.
+
+No se utiliza esta tarea para corregir ese catálogo local, la compatibilidad legacy de autorización, los estados de bloqueo o los placeholders.
+
+Esas brechas conservan sus propietarios y tareas ya aprobadas o reservadas.
+
+---
+
+#### 44. No utilizar el Hub como fallback funcional
+
+Cuando una aplicación tenga una brecha, deuda o feature pendiente, SHELL no debe “resolverla” incorporando temporalmente el formulario o regla al Hub.
+
+Se prohíbe:
+
+```text
+OWNER INCOMPLETO
+→ COPIA EN SHELL
+
+OWNER CAÍDO
+→ FLUJO LOCAL EN SHELL
+
+CONTRATO AUSENTE
+→ QUERY DIRECTA
+
+ENDPOINT FALLA
+→ WRITE DIRECTO
+```
+
+Una solución temporal sigue requiriendo owner, contrato, autorización, evidencia y retiro gobernado.
+
+---
+
+#### 45. No duplicar lógica para mejorar UX
+
+Reducir pasos de navegación no justifica duplicar lógica funcional.
+
+Una experiencia más directa debe lograrse mediante:
+
+- deep link autorizado;
+- handoff contractual;
+- comando propietario explícito;
+- proyección mínima;
+- componente compartido aprobado cuando corresponda.
+
+No mediante una segunda implementación de la misma regla dentro de SHELL.
+
+---
+
+#### 46. No usar eventos como comandos
+
+Recibir o conocer un evento empresarial no autoriza a SHELL a ejecutar la acción que produjo ese evento ni una mutación compensatoria.
+
+Se conserva:
+
+```text
+EVENTO
+→ HECHO CONFIRMADO
+
+EVENTO
+≠ COMANDO
+≠ PERMISO
+≠ TRANSFERENCIA DE OWNER
+```
+
+---
+
+#### 47. No convertir observabilidad en autoridad
+
+Logs, métricas, auditoría, correlación y evidencia pueden permitir que SHELL o herramientas transversales expliquen o diagnostiquen un estado.
+
+No permiten:
+
+- corregir el recurso;
+- saltar el owner;
+- repetir una mutación;
+- conceder permiso;
+- declarar completado un proceso.
+
+---
+
+#### 48. Respuesta segura cuando la lógica pertenece a otra aplicación
+
+| Condición observada en SHELL | Respuesta segura | Respuesta prohibida |
+| --- | --- | --- |
+| proyección válida | presentar la información permitida | reinterpretar el dato como fuente local |
+| acción disponible con owner válido | abrir el owner o solicitar el comando aprobado | ejecutar mutación directa |
+| owner indisponible | informar indisponibilidad y preservar referencia | implementar fallback empresarial |
+| contrato ausente | bloquear la acción local | inventar endpoint, regla o query |
+| proyección stale | refrescar o bloquear | usarla como autoridad vigente |
+| proyección incompleta | mostrar incompletitud | rellenar por inferencia |
+| deny del owner | presentar razón segura cuando exista | buscar otro carril para forzar allow |
+| error técnico | presentar error técnico | convertirlo en resultado empresarial |
+| resultado pendiente | mantener pending | mostrar éxito antes de confirmación |
+| work item visible | abrir o referenciar según contrato | marcarlo iniciado o completado |
+
+---
+
+#### 49. Ownership no resuelto
+
+Cuando la autoridad compartida no pueda resolver el owner con suficiente granularidad:
+
+```text
+OWNER = UNRESOLVED
+→ NO INFERIR
+→ NO MATERIALIZAR LÓGICA EN SHELL
+```
+
+La resolución debe volver a las autoridades canónicas de propiedad y capacidad ya existentes.
+
+Esta tarea no crea un nuevo owner ni una tarea administrativa paralela.
+
+---
+
+#### 50. Separación con `SHELL-APP-014`
+
+Esta tarea define que SHELL puede coordinar navegación sin ejecutar la lógica propietaria.
+
+No define todavía:
+
+- forma final del retorno entre aplicaciones;
+- validación completa de `returnTo`;
+- allowlist de destinos de retorno;
+- expiración del retorno;
+- compatibilidad de deep links;
+- recuperación del origen tras una aplicación externa.
+
+Esas decisiones permanecen reservadas a `SHELL-APP-014`.
+
+---
+
+#### 51. Separación con `SHELL-APP-015`
+
+Esta tarea exige no fabricar contexto funcional durante una transición.
+
+No define todavía qué partes del contexto se conservan al cambiar de aplicación ni cómo se revalidan después del cambio.
+
+Esa responsabilidad permanece reservada a `SHELL-APP-015`.
+
+---
+
+#### 52. Separación con `SHELL-APP-016`
+
+Esta tarea establece que mostrar o navegar desde un work item no modifica su lifecycle.
+
+No define todavía cuándo una tarea en curso debe conservarse entre aplicaciones, cómo se reanuda o cómo se trata una interrupción.
+
+Esa responsabilidad permanece reservada a `SHELL-APP-016`.
+
+---
+
+#### 53. Decisión documental consolidada
+
+```text
+CANONICAL APPS
+→ 10
+
+CANONICAL PROCESSES
+→ 69
+
+SHELL PROCESS OWNERSHIP
+→ 0
+
+SHELL
+→ HUB
+→ COORDINATOR
+→ PRESENTATION OWNER OF ITS OWN SURFACES
+→ CONSUMER OF SAFE REFERENCES/PROJECTIONS
+→ NAVIGATION COORDINATOR
+
+FOREIGN DOMAIN
+→ OWNER APP RETAINS BUSINESS AUTHORITY
+
+REFERENCE / PROJECTION / CACHE / EVIDENCE
+→ NO OWNERSHIP TRANSFER
+
+WORK ITEM DISPLAY
+→ NO CLAIM
+→ NO START
+→ NO COMPLETE
+
+CROSS-APP MUTATION
+→ EXPLICIT CONTRACT
+→ OWNER REVALIDATES
+→ OWNER MUTATES
+→ OWNER CONFIRMS
+
+NO CONTRACT / OWNER UNAVAILABLE
+→ NO SHELL FALLBACK BUSINESS LOGIC
+
+vento-shell REPOSITORY
+→ MAY HOST SHARED FOUNDATION AND SUPABASE CHANGES
+→ DOES NOT MAKE shell APP UNIVERSAL OWNER
+
+SHARED PROMOTION
+→ REQUIRES CANONICAL OWNER + CONTRACT + CONSUMERS + TESTS + ROLLBACK
+
+SHELL-APP-014
+→ RETORNO SEGURO RESERVADO
+
+SHELL-APP-015
+→ CONSERVACIÓN DE CONTEXTO RESERVADA
+
+SHELL-APP-016
+→ CONSERVACIÓN DE TAREA EN CURSO RESERVADA
+```
+
+---
+
+#### 54. Handoff a `SHELL-APP-014`
+
+`SHELL-APP-014` recibe:
+
+1. SHELL como coordinador sin ownership universal;
+2. 69 procesos conservados en sus nueve aplicaciones propietarias vigentes;
+3. navegación separada de ejecución funcional;
+4. referencias, proyecciones y work items sin transferencia de ownership;
+5. aplicación destino obligada a revalidar autorización, contexto, estado, versión y recurso;
+6. handoff separado de cambio de owner;
+7. ausencia de fallback funcional en SHELL cuando el destino está indisponible;
+8. error técnico separado del resultado empresarial;
+9. navegación que no produce claim, start ni completion;
+10. detalle de retorno seguro todavía no definido.
+
+La siguiente tarea puede definir el retorno cross-app sin reabrir la propiedad funcional.
+
+---
+
+#### 55. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea consolida para SHELL fronteras ya protegidas por contratos y requisitos vigentes de autorización, ownership, integración, trabajo y sharing.
+
+No modifica el Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-AUTH-001` — una lista local de roles o presentación no concede autorización final;
+- `TREQ-SHELL-001` — una aplicación no se considera operativa por la sola existencia de un registro o permiso; requiere owner, alcance, proceso y superficie verificables;
+- `TREQ-SHELL-002` — responsabilidades compartidas deben provenir de implementación compartida, generada o local explícitamente clasificada;
+- `TREQ-SHELL-003` — identidad, destino, estado y disponibilidad de aplicaciones proceden del catálogo canónico;
+- `TREQ-SHELL-057` — pantallas, layouts, formularios de dominio, composición de procesos, consultas propias y capacidades de plataforma permanecen en el renderer o aplicación propietaria salvo sharing canónico completo;
+- `TREQ-SHELL-063` — la frontera cliente/servidor de contexto y autorización no permite convertir proyecciones o lógica cliente en autoridad;
+- `TREQ-INTEGRATION-006` — cada dato empresarial se captura en su aplicación propietaria y se propaga mediante contratos o eventos aprobados;
+- `TREQ-INTEGRATION-288` a `TREQ-INTEGRATION-317` — requisitos vigentes derivados de `INT-APP-010` que protegen la prohibición de escrituras cruzadas sin contrato y sus controles asociados.
+
+Estas referencias constituyen trazabilidad heredada.
+
+No actualizan 04A.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto aún no ha sido insertado ni sometido a `docs:plan:build` en la rama local de `SHELL-APP-013`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, quality, delivery, topología ni batería documental sobre el checkout local de `SHELL-APP-013`. |
+| REMOTA | PASS | Se verificaron `main` en `fe6e34235b842b7470d51701e7d25b777f605574` posterior al cierre de `SHELL-APP-012`, continuidad H2, owner y marcador vigente, ruta normal, topología `PER_IMPLEMENTATION_UNIT`, políticas de formato/desarrollo, validadores aplicables, `package.json`, catálogo de diez aplicaciones, handoff de `SHELL-APP-012`, contrato materializado de ownership con 69 procesos y `shell = 0`, contrato de work items, principios E2, `INT-APP-010`, 04A AUTH/SHELL/INTEGRATION y el runtime vigente de `src/app/page.tsx`. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define una frontera documental y no ejecuta procesos reales de inventario, producción, compras, POS, finanzas, talento, AURA o PASS. |
+| FÍSICA | NOT_APPLICABLE | La aprobación documental no crea ni autoriza una instancia física de `SHELL-APP-013` y no modifica código, datos, Supabase, infraestructura ni despliegues. |
+
+---
+
+#### 58. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones`.
+- [ ] `SHELL-APP-012` permanece como tarea anterior.
+- [ ] `SHELL-APP-014` permanece como tarea siguiente.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] `PER_IMPLEMENTATION_UNIT` se conserva únicamente como topología de materialización posterior.
+- [ ] Se conservan exactamente diez aplicaciones canónicas.
+- [ ] Se conservan exactamente 69 procesos en el registro de ownership vigente.
+- [ ] Se conservan exactamente nueve aplicaciones con al menos un proceso propietario.
+- [ ] `shell` conserva exactamente cero procesos propietarios dentro de los 69 procesos vigentes.
+- [ ] `anima` conserva 1 proceso propietario.
+- [ ] `viso` conserva 20 procesos propietarios.
+- [ ] `nexo` conserva 16 procesos propietarios.
+- [ ] `fogo` conserva 6 procesos propietarios.
+- [ ] `origo` conserva 4 procesos propietarios.
+- [ ] `pulso` conserva 12 procesos propietarios.
+- [ ] `numera` conserva 7 procesos propietarios.
+- [ ] `aura` conserva 2 procesos propietarios.
+- [ ] `pass` conserva 1 proceso propietario.
+- [ ] La suma de procesos propietarios permanece en 69.
+- [ ] Cero procesos propietarios no elimina las responsabilidades legítimas del Hub.
+- [ ] SHELL permanece coordinador transversal y no propietaria universal.
+- [ ] Ubicación de código no define owner funcional.
+- [ ] Repositorio técnico no define owner funcional.
+- [ ] Tabla o RPC no define owner funcional por su nombre o ubicación.
+- [ ] Presentar información no transfiere ownership.
+- [ ] Navegar no transfiere ownership.
+- [ ] Recibir un evento no transfiere ownership.
+- [ ] Un handoff no cambia owner automáticamente.
+- [ ] Un work item conserva `owner_app_code`.
+- [ ] Mostrar un work item no produce claim.
+- [ ] Mostrar un work item no produce start.
+- [ ] Mostrar un work item no produce completion.
+- [ ] `next_action_code` no concede permiso.
+- [ ] La aplicación propietaria revalida la acción efectiva.
+- [ ] SHELL puede consumir referencias mínimas autorizadas.
+- [ ] SHELL puede consumir proyecciones seguras autorizadas.
+- [ ] Una proyección no se convierte en fuente de verdad local.
+- [ ] Una caché controlada no transfiere ownership.
+- [ ] Una copia de evidencia no transfiere ownership.
+- [ ] Un resultado derivado de presentación no reescribe el hecho fuente.
+- [ ] SHELL no recalcula prioridad empresarial localmente.
+- [ ] SHELL no reconstruye estados funcionales ausentes.
+- [ ] SHELL no crea consultas propietarias de otra aplicación para reconstruir su semántica.
+- [ ] SHELL no escribe directamente tablas de otra propietaria.
+- [ ] SHELL no invoca mutaciones extranjeras sin contrato.
+- [ ] SHELL no ejecuta una transacción cliente que muta múltiples owners como una sola autoridad local.
+- [ ] SHELL no usa triggers, workers o webhooks para escribir silenciosamente otro dominio.
+- [ ] SHELL no usa proyecciones para sobrescribir la fuente.
+- [ ] SHELL no realiza reparación cross-domain manual como lógica normal.
+- [ ] SHELL no compensa mediante edición del dominio ajeno.
+- [ ] `SHELL_OR_ADMIN_HUB_FOREIGN_MUTATION` permanece prohibido.
+- [ ] Toda mutación cross-app autorizada usa contrato explícito.
+- [ ] El owner revalida actor, autorización, contexto, estado, versión y recurso.
+- [ ] El owner aplica o rechaza la mutación.
+- [ ] El owner confirma el resultado antes de que SHELL lo trate como hecho final.
+- [ ] Un contrato ausente no produce reimplementación local.
+- [ ] Un owner indisponible no produce fallback empresarial en SHELL.
+- [ ] Una proyección stale no se usa como autoridad vigente.
+- [ ] Una proyección incompleta no se rellena por inferencia.
+- [ ] Un error técnico no se convierte en estado empresarial.
+- [ ] Visibilidad en SHELL no sustituye autorización del owner.
+- [ ] `app.access` no se convierte en capacidad interna.
+- [ ] El repositorio `vento-shell` no se confunde con la aplicación `shell`.
+- [ ] Un package compartido dentro de `vento-shell` no se considera lógica de SHELL por ubicación.
+- [ ] La gobernanza de Supabase desde `vento-shell` no transfiere propiedad empresarial a `shell`.
+- [ ] El sharing exige owner, contrato, consumidores, pruebas y rollback.
+- [ ] Ser TypeScript, puro o reutilizable no basta para promover lógica a sharing.
+- [ ] ANIMA conserva su lógica laboral propietaria.
+- [ ] VISO conserva su lógica administrativa propietaria.
+- [ ] NEXO conserva inventario y logística.
+- [ ] FOGO conserva producción.
+- [ ] ORIGO conserva compras y abastecimiento.
+- [ ] PULSO conserva POS, ventas, pedidos, pagos y operaciones de fidelización que le pertenecen.
+- [ ] NUMERA conserva su lógica financiera propietaria.
+- [ ] AURA diferida no se reimplementa en SHELL.
+- [ ] PASS conserva su lógica cliente y la frontera aprobada en `SHELL-APP-012`.
+- [ ] El AS-IS de `src/app/page.tsx` se registra sin corregirse desde esta tarea.
+- [ ] No se usa SHELL como fallback de una feature incompleta de otra aplicación.
+- [ ] No se duplica lógica funcional únicamente para reducir navegación.
+- [ ] Los eventos no se usan como comandos.
+- [ ] Observabilidad no se convierte en autoridad de corrección.
+- [ ] Ownership no resuelto falla cerrado sin inferencia.
+- [ ] No se desarrolla el retorno seguro reservado a `SHELL-APP-014`.
+- [ ] No se desarrolla conservación de contexto reservada a `SHELL-APP-015`.
+- [ ] No se desarrolla conservación de tarea en curso reservada a `SHELL-APP-016`.
+- [ ] No se modifican ownership, procesos, capacidades ni catálogo.
+- [ ] No se modifica código.
+- [ ] No se modifica Supabase.
+- [ ] No se crean migraciones.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se crea ni autoriza una instancia física.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- reasigna procesos;
+- modifica `owner_app_code`;
+- cambia `PROC-CAT-005`;
+- cambia `CAP-MAP-008`;
+- cambia la proyección materializada de ownership;
+- crea procesos para SHELL;
+- elimina responsabilidades legítimas del Hub;
+- crea comandos cross-app nuevos;
+- crea endpoints;
+- crea RPC;
+- crea Server Actions;
+- crea tablas;
+- crea vistas;
+- crea triggers;
+- crea workers;
+- crea webhooks;
+- crea eventos;
+- crea work items;
+- modifica el lifecycle de work items;
+- cambia `AppCode`;
+- cambia permisos;
+- cambia matrices;
+- cambia autorización;
+- cambia contratos compartidos;
+- promueve código a packages compartidos;
+- modifica ANIMA;
+- modifica VISO;
+- modifica NEXO;
+- modifica FOGO;
+- modifica ORIGO;
+- modifica PULSO;
+- modifica NUMERA;
+- modifica AURA;
+- modifica PASS;
+- modifica `src/app/page.tsx`;
+- corrige catálogo local de SHELL;
+- corrige `has_permission` legacy;
+- corrige placeholders de perfil o configuración;
+- define retorno seguro entre aplicaciones;
+- define conservación de contexto cross-app;
+- define conservación de tarea en curso;
+- modifica Supabase;
+- modifica datos;
+- crea migraciones;
+- cambia configuración;
+- despliega;
+- crea una instancia física;
+- autoriza implementación física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica 04A.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-014 — Definir retorno seguro entre aplicaciones`
+
+
 ### [ ] SHELL-APP-014 — Definir retorno seguro entre aplicaciones
 ### [ ] SHELL-APP-015 — Conservar contexto al cambiar de aplicación
 ### [ ] SHELL-APP-016 — Conservar tarea en curso cuando corresponda
