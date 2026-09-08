@@ -1,16 +1,20 @@
-import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
 
 import { parseTaskBlocks } from '../../../scripts/docs/format-canonical-task.mjs';
+import { createUiValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  requireFromRepo,
+  assert,
+  includesAll,
+  excludesAll,
+  sha256,
+  assertGitUnchanged,
+} = createUiValidatorHarness(import.meta.url);
 const ownerPath = path.join(repoRoot, 'docs', 'plan-canonico', 'modular', 'bloques', 'H_FUNDACION_COMPARTIDA', '07_COMPONENTES_WEB_COMPARTIDOS.md');
 const componentPath = path.join(packageRoot, 'src', 'ContextDiagnostic.tsx');
 const cssPath = path.join(packageRoot, 'src', 'context-diagnostic.css');
@@ -18,32 +22,6 @@ const readmePath = path.join(packageRoot, 'README.md');
 const packagePath = path.join(packageRoot, 'package.json');
 const SOURCE_CONTRACT_SHA256 = 'fc2e0b744a47240025472f329a91d3e57e4728096b9c6da18050fb7afc03bca2';
 const STATES = ['resolving', 'changing', 'stale', 'invalid', 'unavailable'];
-const requireFromRepo = createRequire(path.join(repoRoot, 'package.json'));
-
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
-
-function includesAll(source, expected, label) {
-  for (const value of expected) assert(source.includes(value), `${label} missing: ${value}`);
-}
-
-function excludesAll(source, forbidden, label) {
-  for (const value of forbidden) assert(!source.includes(value), `${label} contains forbidden value: ${value}`);
-}
-
-function run(command, args) {
-  return spawnSync(command, args, { cwd: repoRoot, encoding: 'utf8', windowsHide: true });
-}
-
-function sha256(value) {
-  return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
-}
-
-function assertGitUnchanged(paths) {
-  const result = run('git', ['diff', '--quiet', '--', ...paths]);
-  assert(result.status === 0, `out-of-scope immutable path changed: ${paths.join(', ')}`);
-}
 
 function loadRuntime(source) {
   const ts = requireFromRepo('typescript');
