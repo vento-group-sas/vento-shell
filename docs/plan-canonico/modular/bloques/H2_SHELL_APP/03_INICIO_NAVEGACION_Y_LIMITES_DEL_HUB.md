@@ -7010,5 +7010,1444 @@ La siguiente tarea podrá decidir qué contexto se conserva o se reconstruye al 
 `SHELL-APP-015 — Conservar contexto al cambiar de aplicación`
 
 
-### [ ] SHELL-APP-015 — Conservar contexto al cambiar de aplicación
+### ✅ SHELL-APP-015 — Conservar contexto al cambiar de aplicación
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-014 — Definir retorno seguro entre aplicaciones
+**Tarea siguiente:** SHELL-APP-016 — Conservar tarea en curso cuando corresponda
+**Tipo de tarea:** definición técnico-documental de continuidad de contexto cross-app; fija qué referencias pueden conservarse durante un cambio de aplicación, qué hechos deben resolverse de nuevo para el `AppCode` destino y cómo impedir que snapshots, filtros, URLs o proyecciones del origen se conviertan en autoridad, conservando `PER_IMPLEMENTATION_UNIT` únicamente como topología de materialización posterior
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md`
+**Estado físico resultante:** contrato documental de continuidad de contexto cross-app definido con re-resolución autoritativa por aplicación destino, preservación mínima no autoritativa y separación estricta de la conservación de tarea en curso reservada a `SHELL-APP-016`, sin modificar runtime ni crear una instancia física
+**Cambios físicos autorizados:** ninguno; no se modifican código, rutas, componentes, contratos compartidos, cachés, sesión, permisos, Supabase, datos, RLS, RPC, migraciones, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué significa **conservar contexto** cuando una persona cambia de una aplicación Vento OS a otra sin convertir continuidad de experiencia en reutilización de autoridad.
+
+La decisión raíz queda:
+
+```text
+CAMBIO DE APLICACIÓN
++
+REFERENCIAS DE CONTINUIDAD VÁLIDAS
++
+IDENTIDAD Y SESIÓN VIGENTES
++
+APP DESTINO CANÓNICA
+→
+NUEVA RESOLUCIÓN AUTORITATIVA EN DESTINO
+→
+CONTEXTO DESTINO VÁLIDO
+```
+
+Y nunca:
+
+```text
+CONTEXTO DEL ORIGEN
+→ COPIAR
+→ CONTEXTO AUTORITATIVO DEL DESTINO
+```
+
+Conservar contexto significa que la experiencia puede mantener continuidad semántica suficiente para que el actor comprenda dónde está y qué relación existe con el flujo anterior, mientras la aplicación destino vuelve a resolver sus hechos efectivos.
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-014`
+
+Se reciben sin reapertura:
+
+1. destino de retorno validado antes de navegar;
+2. `returnTo` tratado como transporte no confiable;
+3. aplicación destino obligada a revalidar autoridad;
+4. origen, ambiente y flujo compatibles como condición de retorno;
+5. handoff empresarial separado de navegación ordinaria y autenticación;
+6. proceso e instancia preservados conceptualmente cuando el handoff lo exige;
+7. actor, recurso, sede, área, estado, versión y correlación reconocidos como referencias que pueden condicionar el retorno;
+8. URL minimizada y no autoritativa;
+9. retorno stale, inválido o no autorizado con fallo cerrado;
+10. cambio de actor o sesión que obliga a recalificar el destino;
+11. historial del navegador y query parameters sin autoridad;
+12. detalle de restauración de contexto reservado expresamente a esta tarea.
+
+`SHELL-APP-015` no redefine la política de destino seguro.
+
+---
+
+#### 3. Definición canónica de continuidad de contexto
+
+La continuidad de contexto cross-app se compone de dos capas distintas:
+
+```text
+CONTINUIDAD SEMÁNTICA
+→ conserva referencias mínimas y orientación humana
+
+CONTEXTO AUTORITATIVO
+→ se resuelve nuevamente para la aplicación destino
+```
+
+La primera puede acompañar la navegación.
+
+La segunda no se transporta como autoridad entre aplicaciones.
+
+---
+
+#### 4. Invariante principal: contexto ligado a aplicación
+
+`AccessContextV1` se resuelve para una aplicación canónica solicitante.
+
+Por tanto:
+
+```text
+AccessContext ORIGEN
+≠
+AccessContext DESTINO
+```
+
+aunque ambos correspondan a:
+
+- la misma persona;
+- la misma sesión;
+- el mismo turno;
+- la misma sede;
+- la misma área;
+- el mismo rol operativo;
+- el mismo dispositivo.
+
+La igualdad visible de algunos valores no convierte los dos contextos en la misma resolución.
+
+---
+
+#### 5. Cambio de aplicación no reutiliza `AccessContextV1`
+
+Al abrir una aplicación distinta, el contexto autoritativo del origen no se reutiliza como contexto del destino.
+
+La aplicación destino debe resolver un contexto nuevo utilizando:
+
+- su `AppCode` canónico;
+- la credencial técnica y sesión vigentes;
+- las fuentes empresariales autoritativas;
+- el instante de resolución aplicable;
+- los contratos de contexto vigentes.
+
+El caller no suministra actor, empleado, rol, sede, área, turno, check-in o dispositivo como hechos efectivos.
+
+---
+
+#### 6. `context_id` no es identidad cross-app
+
+`context_id` identifica una resolución de contexto.
+
+No representa:
+
+- identidad global de sesión;
+- identidad permanente del trabajador;
+- handoff;
+- proceso;
+- recurso;
+- tarea;
+- cadena de navegación.
+
+Un cambio de aplicación puede producir otro `context_id` aunque los valores visibles resulten equivalentes.
+
+La continuidad no exige igualdad de `context_id`.
+
+---
+
+#### 7. Mismo contexto visible como resultado, no como supuesto
+
+Si la aplicación destino resuelve nuevamente:
+
+```text
+mismo turno
++
+misma sede operativa
++
+misma área operativa
++
+mismo rol operativo
+```
+
+la interfaz puede presentar continuidad visual.
+
+Ese resultado significa:
+
+```text
+DOS RESOLUCIONES VÁLIDAS
+→ HECHOS VISIBLES EQUIVALENTES
+```
+
+No significa:
+
+```text
+EL DESTINO CONFÍA EN EL SNAPSHOT DEL ORIGEN
+```
+
+---
+
+#### 8. Hechos que deben resolverse de nuevo
+
+La resolución destino conserva la forma completa del contrato contextual aplicable.
+
+Deben volver a resolverse o validarse, cuando correspondan:
+
+1. principal;
+2. actor efectivo;
+3. identidad de dominio;
+4. empleado;
+5. rol base;
+6. sedes asignadas;
+7. áreas asignadas;
+8. cobertura administrativa;
+9. turno vigente;
+10. check-in vigente;
+11. rol operativo;
+12. sede operativa;
+13. área operativa;
+14. contexto de dispositivo;
+15. readiness del carril base;
+16. readiness del carril operativo;
+17. problemas estructurales;
+18. metadata y frescura de resolución.
+
+Ninguna de estas dimensiones se hereda únicamente porque la navegación provenga de una aplicación autorizada.
+
+---
+
+#### 9. Lo que sí puede conservar la navegación
+
+Sin crear otro contrato runtime, la navegación puede conservar referencias ya permitidas por sus contratos propietarios, entre ellas:
+
+- aplicación de origen;
+- aplicación destino;
+- intención de navegación;
+- relación de retorno aprobada;
+- correlación y causalidad;
+- proceso e instancia cuando exista un handoff válido;
+- referencia al recurso cuando el contrato de handoff la requiera;
+- referencia de estado o versión cuando sea necesaria para revalidar;
+- información mínima de presentación que permita orientar al actor durante la transición.
+
+Cada referencia conserva su propietario y no se convierte en autoridad contextual.
+
+---
+
+#### 10. Referencia no equivale a hecho efectivo
+
+Una referencia transportada como:
+
+```text
+site_id
+area_id
+role_code
+shift_ref
+resource_ref
+```
+
+solo puede conservar significado si el contrato propietario la admite como referencia.
+
+Nunca constituye por sí sola:
+
+```text
+SEDE OPERATIVA EFECTIVA
+ÁREA OPERATIVA EFECTIVA
+ROL OPERATIVO EFECTIVO
+TURNO VIGENTE
+AUTORIZACIÓN SOBRE EL RECURSO
+```
+
+El destino revalida contra su contexto y sus fuentes.
+
+---
+
+#### 11. `SafeContextProjectionV1` como proyección, no transferencia de autoridad
+
+`SafeContextProjectionV1` conserva su condición de DTO seguro de presentación y transporte.
+
+Sus doce campos permanecen:
+
+```text
+projection_version
+app_code
+context_id
+resolved_at
+principal_type
+actor_type
+base_role_code
+operational_role_code
+operational_site_id
+operational_area_id
+base_readiness
+operational_readiness
+```
+
+Esta tarea no agrega campos.
+
+La proyección no contiene permiso, `ALLOW`, `DENY` ni autoridad ejecutable.
+
+---
+
+#### 12. `app_code` de la proyección impide reinterpretación
+
+Una `SafeContextProjectionV1` emitida para una aplicación conserva su `app_code`.
+
+La aplicación destino no puede:
+
+- cambiar ese código;
+- ignorarlo;
+- interpretar la proyección como si hubiese sido emitida para el destino;
+- usarla para evitar su propia resolución;
+- convertirla en capability token.
+
+Una proyección del origen sigue siendo una proyección del origen.
+
+---
+
+#### 13. Uso permitido de la proyección durante transición
+
+Cuando la experiencia necesite continuidad visual, una proyección segura vigente del origen puede utilizarse únicamente como orientación transitoria claramente no autoritativa.
+
+Puede permitir que el actor comprenda, por ejemplo, cuál era el contexto desde el que inició la transición.
+
+Mientras el destino no haya resuelto su contexto:
+
+- la proyección anterior no habilita acciones contextuales;
+- no confirma el contexto del destino;
+- no se mezcla con datos parciales nuevos;
+- no sustituye el estado de resolución.
+
+---
+
+#### 14. No se crea un contrato `ContextTransfer`
+
+Esta tarea no crea:
+
+- un nuevo DTO cross-app;
+- un `ContextTransfer`;
+- un token de contexto;
+- un identificador global de contexto;
+- una cookie cross-app de autoridad;
+- un payload universal de contexto;
+- una sesión paralela de contexto.
+
+Los contratos existentes continúan siendo las autoridades.
+
+---
+
+#### 15. Re-resolución al entrar al destino
+
+La secuencia conceptual obligatoria es:
+
+```text
+ORIGEN
+→ valida navegación
+→ transporta únicamente referencias permitidas
+→ abre destino
+→ destino identifica su AppCode
+→ destino resuelve AccessContext nuevo
+→ destino valida contrato y frescura
+→ destino presenta su contexto
+→ acciones posteriores se autorizan en sus fronteras exactas
+```
+
+La navegación no puede saltar la resolución del destino.
+
+---
+
+#### 16. Cambio de aplicación mediante SHELL
+
+Cuando SHELL coordina el salto:
+
+```text
+SHELL
+→ COORDINA
+→ NO POSEE EL CONTEXTO EMPRESARIAL
+→ NO REESCRIBE EL CONTEXTO PARA EL DESTINO
+```
+
+SHELL puede presentar y transportar referencias permitidas.
+
+No se convierte en un servicio autoritativo universal de contexto por ocupar el centro de navegación.
+
+---
+
+#### 17. Cambio directo entre aplicaciones
+
+Un salto directo entre aplicaciones internas no reduce los controles.
+
+La aplicación receptora aplica las mismas obligaciones de:
+
+- destino válido;
+- sesión vigente;
+- actor vigente;
+- resolución contextual propia;
+- revalidación del recurso;
+- autorización server-side.
+
+No es obligatorio pasar visualmente por SHELL para conservar estas garantías.
+
+---
+
+#### 18. Retorno a la aplicación de origen
+
+Volver a una aplicación utilizada previamente no reactiva automáticamente su `AccessContextV1` anterior.
+
+La aplicación que vuelve a ser destino debe resolver nuevamente su contexto.
+
+Por tanto:
+
+```text
+A → B → A
+```
+
+implica conceptualmente:
+
+```text
+contexto A1
+→ contexto B1
+→ contexto A2
+```
+
+`A2` puede ser equivalente a `A1`, pero no se presume que lo sea.
+
+---
+
+#### 19. Round-trip de autenticación
+
+Un round-trip por autenticación conserva la intención de retorno según `SHELL-APP-014`.
+
+No conserva una autorización contextual anterior como si la sesión no hubiese cambiado.
+
+Después de autenticación o reautenticación, el destino vuelve a resolver:
+
+- sesión;
+- actor;
+- contexto;
+- autorización aplicable.
+
+La autenticación exitosa no demuestra que el contexto previo continúe vigente.
+
+---
+
+#### 20. Cambio de actor
+
+Si cambia el actor efectivo:
+
+```text
+CONTEXTO ANTERIOR
+→ DESCARTAR COMO ORIENTACIÓN ACTIVA
+```
+
+No se conservan visualmente como contexto vigente del nuevo actor:
+
+- turno;
+- sede;
+- área;
+- rol operativo;
+- readiness;
+- trabajo;
+- datos personales.
+
+Esto es obligatorio en dispositivos compartidos.
+
+---
+
+#### 21. Cambio de sesión
+
+Si la sesión expira, se cierra o cambia de sujeto:
+
+- las referencias vinculadas al actor anterior se recalifican;
+- el contexto anterior deja de ser vigente;
+- no se reutiliza una proyección almacenada;
+- el destino requiere nueva resolución antes de cualquier acción contextual.
+
+Una cookie o estado cliente remanente no preserva autoridad.
+
+---
+
+#### 22. Dispositivo compartido
+
+La terminal y el actor humano permanecen separados.
+
+Al cambiar de aplicación en un dispositivo compartido:
+
+1. el destino vuelve a resolver principal y actor;
+2. aplica las restricciones actuales del dispositivo;
+3. no hereda el actor anterior por identidad del terminal;
+4. no usa `shared_device_id` como sustituto de identidad humana;
+5. no conserva turno, sede, área o rol del usuario anterior.
+
+El dispositivo puede restringir; nunca amplía autoridad.
+
+---
+
+#### 23. Turno
+
+El segmento `Turno` conserva la semántica aprobada por `SHELL-APP-004`.
+
+Al cambiar de aplicación:
+
+- el turno visible puede mantenerse solo si la resolución destino confirma el mismo hecho;
+- un turno que terminó durante la navegación no se conserva;
+- un check-in nuevo o terminado modifica la presentación;
+- un turno ambiguo no se selecciona por semejanza con el origen;
+- fallo de resolución no se convierte en ausencia.
+
+No se transportan horas antiguas para llenar un contexto no resuelto.
+
+---
+
+#### 24. Sede
+
+La sede operativa del destino procede nuevamente del contexto operativo resuelto.
+
+No se utiliza como fallback:
+
+- sede seleccionada;
+- sede primaria;
+- última sede operativa;
+- sede de la aplicación de origen;
+- sede del dispositivo;
+- sede incluida en una URL.
+
+La sede administrativa y la sede operativa permanecen separadas.
+
+---
+
+#### 25. Área
+
+El área operativa del destino se deriva nuevamente del contexto válido.
+
+No se fabrica desde:
+
+- área seleccionada;
+- filtro administrativo;
+- área primaria;
+- área del origen;
+- tipo de área;
+- query parameter;
+- local storage.
+
+La operación site-wide válida permanece distinguible de un área operativa específica.
+
+---
+
+#### 26. Rol operativo
+
+El rol operativo no se conserva como string de navegación.
+
+El destino utiliza el rol operativo que resulte de su contexto vigente.
+
+Un `role_code` recibido como referencia:
+
+- no crea rol efectivo;
+- no corrige contexto faltante;
+- no sustituye el turno;
+- no amplía territorio;
+- no concede permiso.
+
+El rol base permanece separado.
+
+---
+
+#### 27. Readiness
+
+`base_readiness` y `operational_readiness` son atributos de una proyección contextual específica.
+
+El destino no hereda readiness del origen.
+
+Debe consumir el readiness que corresponda al contexto recién resuelto.
+
+Se conserva la invariante:
+
+```text
+READY
+≠
+ALLOW
+```
+
+y un cambio de aplicación no altera esa frontera.
+
+---
+
+#### 28. Contexto administrativo
+
+Un filtro, selección o cobertura administrativa puede acompañar una transición únicamente cuando la aplicación destino posea un contrato que permita consumirlo como preferencia o referencia.
+
+Nunca se transforma por transitividad en:
+
+- sede operativa;
+- área operativa;
+- territorio del recurso;
+- alcance de permiso;
+- autorización.
+
+Si el destino no reconoce la preferencia, la descarta sin fabricar equivalencia.
+
+---
+
+#### 29. Contexto operativo
+
+El contexto operativo se deriva de hechos vigentes.
+
+No existe una propiedad cross-app editable llamada:
+
+```text
+sede actual
+área actual
+rol actual
+```
+
+que pueda sobrescribirse para cambiar el contexto real.
+
+Las aplicaciones presentan hechos resueltos; no los sincronizan mediante estado de UI.
+
+---
+
+#### 30. Territorio del recurso
+
+Conservar la sede o área visibles no demuestra que el recurso del destino pertenezca a ese territorio.
+
+Antes de una acción sobre recurso, la frontera propietaria compara:
+
+```text
+CONTEXTO EFECTIVO
++
+TERRITORIO DEL RECURSO
++
+PERMISO Y SCOPE
++
+ESTADO DEL RECURSO
+```
+
+según sus contratos.
+
+El contexto cross-app no sustituye el contrato de recurso.
+
+---
+
+#### 31. Handoff empresarial
+
+Cuando la navegación forma parte de un handoff válido, las referencias de:
+
+- proceso;
+- instancia;
+- recurso;
+- actor emisor;
+- participante;
+- estado;
+- versión;
+- correlación;
+- destino de retorno
+
+pueden preservar continuidad del mismo proceso.
+
+El contexto efectivo del receptor se sigue resolviendo de nuevo.
+
+Un handoff válido no congela turno, sede, área, rol o autorización del receptor.
+
+---
+
+#### 32. Relación con las 49 relaciones de handoff materializadas
+
+La matriz vigente de `SHELL-CON-014` conserva:
+
+```text
+49 relaciones
+27 directas
+22 condicionales
+8 procesos
+9 aplicaciones participantes
+```
+
+`SHELL-APP-015` no modifica esa matriz.
+
+La existencia de una relación declara que el traspaso está contractualmente reconocido; no declara que el contexto del emisor sea el contexto del receptor.
+
+---
+
+#### 33. Relación condicional
+
+Una relación `CONDICIONAL` no queda habilitada por transportar contexto.
+
+La condición propietaria debe cumplirse de forma independiente.
+
+No se permite:
+
+```text
+CONTEXTO DEL ORIGEN PARECE COMPATIBLE
+→ HABILITAR RELACIÓN CONDICIONAL
+```
+
+La elegibilidad se resuelve en la frontera propietaria.
+
+---
+
+#### 34. Correlación y causalidad
+
+La correlación puede conservarse entre aplicaciones para reconstruir:
+
+- quién inició la transición;
+- qué flujo la causó;
+- qué solicitud corresponde a qué resultado;
+- qué retorno pertenece al mismo recorrido.
+
+La correlación no concede:
+
+- identidad;
+- contexto;
+- permiso;
+- ownership;
+- prioridad;
+- claim;
+- estado de proceso.
+
+Es trazabilidad, no autoridad.
+
+---
+
+#### 35. URL y query parameters
+
+La URL puede transportar únicamente datos permitidos por el contrato de navegación.
+
+No constituye fuente autoritativa de:
+
+- actor;
+- rol;
+- sede;
+- área;
+- turno;
+- check-in;
+- dispositivo;
+- readiness;
+- permiso;
+- scope;
+- decisión.
+
+Un query parameter correcto sintácticamente puede ser inválido semánticamente y debe revalidarse.
+
+---
+
+#### 36. Historial del navegador
+
+`back`, `forward`, restauración de pestaña o historial no reactivan automáticamente el contexto que existía cuando se creó una entrada del historial.
+
+La superficie restaurada:
+
+1. identifica la sesión vigente;
+2. resuelve contexto aplicable;
+3. compara cualquier referencia con el estado actual;
+4. presenta el resultado vigente.
+
+El historial no es snapshot de autoridad.
+
+---
+
+#### 37. Reload y reapertura
+
+Recargar una aplicación o volver a abrirla no justifica confiar en:
+
+- estado React persistido;
+- store cliente;
+- memoria de módulo;
+- `localStorage`;
+- `sessionStorage`;
+- una proyección antigua;
+- datos precargados por otra aplicación.
+
+La presentación puede restaurarse progresivamente, pero la autoridad se obtiene de fuentes vigentes.
+
+---
+
+#### 38. Deep links
+
+Un deep link válido identifica un destino y puede incluir referencias admitidas.
+
+No transporta un contexto operativo autoritativo.
+
+Al abrir un deep link:
+
+```text
+DESTINO VÁLIDO
+→ RESOLUCIÓN DE CONTEXTO
+→ REVALIDACIÓN
+→ PRESENTACIÓN / ACCIÓN
+```
+
+Un deep link no invierte ese orden.
+
+---
+
+#### 39. Prohibición de snapshots mezclados
+
+Queda prohibido construir un contexto aparente combinando campos de resoluciones diferentes.
+
+Ejemplos prohibidos:
+
+```text
+turno del origen
++
+sede del destino
+```
+
+```text
+rol operativo del origen
++
+readiness nuevo
+```
+
+```text
+área almacenada
++
+context_id nuevo
+```
+
+Cada presentación contextual debe corresponder a una resolución coherente o a una proyección derivada de ella.
+
+---
+
+#### 40. Carrera entre navegación y cambio contextual
+
+Si turno, check-in, rol, sede, área, actor, asignación o dispositivo cambian mientras una navegación está en curso:
+
+```text
+ESTADO NUEVO CONFIRMADO
+→ PREVALECE
+```
+
+El destino no fuerza equivalencia con el contexto que inició la navegación.
+
+Una referencia que ya no coincide se trata como stale o incompatible según su contrato.
+
+---
+
+#### 41. Contexto stale
+
+Un contexto o proyección obsoletos:
+
+- pueden servir como evidencia histórica o referencia de transición cuando sea seguro;
+- no autorizan ejecución;
+- no se presentan como vigentes;
+- no rellenan campos faltantes del nuevo contexto;
+- no se usan como fallback para mantener disponibilidad.
+
+La aplicación debe obtener estado nuevo o fallar cerrado para las capacidades dependientes de contexto.
+
+---
+
+#### 42. Frescura y caché
+
+La estrategia física de caché no pertenece a esta tarea.
+
+Se preservan las responsabilidades existentes:
+
+```text
+L0 request-scoped
+→ propietario contractual correspondiente
+
+L1 cross-request
+→ SHELL-CTX-006
+
+generaciones y token de frescura
+→ AUTH-DB-035
+```
+
+`SHELL-APP-015` solo exige que una aplicación consumidora no trate un valor stale como contexto vigente.
+
+---
+
+#### 43. TTL no equivale a vigencia
+
+Un TTL no demuestra que el contexto siga siendo correcto.
+
+Puede existir un cambio relevante antes de su vencimiento.
+
+Por tanto:
+
+```text
+TTL VÁLIDO
+≠
+CONTEXTO AUTORITATIVO VIGENTE
+```
+
+Esta tarea no introduce otro TTL ni otra política de caché.
+
+---
+
+#### 44. Pérdida de red durante el cambio
+
+Si el destino no puede resolver un contexto requerido por pérdida de red o indisponibilidad:
+
+- no reutiliza como autoridad el contexto del origen;
+- no inventa `Sin turno`, `Sin sede` o `Sin área`;
+- no asume readiness;
+- no habilita acciones contextuales por optimismo;
+- distingue indisponibilidad de ausencia legítima.
+
+La recuperación técnica pertenece a los contratos de resiliencia y a la aplicación propietaria.
+
+---
+
+#### 45. Estado humano durante resolución
+
+Sin crear estados contractuales nuevos, la interfaz puede distinguir conceptualmente:
+
+| Condición | Tratamiento |
+| --- | --- |
+| contexto del origen conocido y transición iniciada | origen puede mantenerse como referencia visual temporal |
+| destino resolviendo | acciones dependientes del contexto destino permanecen bloqueadas |
+| destino confirma hechos equivalentes | se presenta continuidad sin afirmar reutilización del snapshot |
+| destino confirma hechos distintos | se reemplaza la referencia anterior por el contexto nuevo |
+| destino demuestra ausencia legítima | se presenta el estado de ausencia aplicable |
+| destino no puede resolver con confianza | se presenta indisponibilidad o invalidez segura |
+| actor o sesión cambió | se descarta la referencia contextual anterior |
+
+La copy final de error permanece en sus contratos propietarios.
+
+---
+
+#### 46. No parpadeo autoritativo
+
+La búsqueda de continuidad visual no permite mostrar el contexto viejo como vigente durante unos milisegundos y habilitar controles dependientes de él.
+
+Puede existir continuidad visual de orientación, pero debe diferenciarse de:
+
+- contexto confirmado;
+- readiness confirmado;
+- autorización confirmada.
+
+La UI no sacrifica seguridad para evitar un cambio visual.
+
+---
+
+#### 47. Cambio legítimo de contexto
+
+Si el destino resuelve un contexto diferente, no se considera automáticamente error.
+
+Ejemplos legítimos incluyen:
+
+- una aplicación que no aplica carril operativo;
+- cambio de check-in;
+- fin de turno;
+- cambio aprobado de asignación;
+- restricción de dispositivo distinta;
+- `app_code` con política contextual diferente.
+
+El nuevo contexto se presenta sin intentar restaurar el anterior.
+
+---
+
+#### 48. Ausencia versus invalidez
+
+Se conserva la distinción:
+
+```text
+AUSENCIA LEGÍTIMA
+≠
+INFORMACIÓN NO DISPONIBLE
+≠
+CONTRATO INVÁLIDO
+≠
+CONTEXTO STALE
+```
+
+Una aplicación no transforma una condición desconocida en `null` para conservar navegación fluida.
+
+---
+
+#### 49. Frontera laboral y PASS
+
+La continuidad de contexto laboral no se proyecta por defecto hacia la superficie cliente de PASS.
+
+Un tránsito hacia PASS no autoriza transportar:
+
+- rol base laboral;
+- rol operativo;
+- turno;
+- check-in;
+- sede operativa;
+- área operativa;
+- readiness laboral;
+- permisos laborales.
+
+La identidad cliente y el RBAC cliente conservan sus contratos propios.
+
+---
+
+#### 50. AURA diferida
+
+La presencia de AURA en catálogos o relaciones documentales no autoriza activarla mediante un salto de contexto.
+
+`SHELL-APP-015` no cambia su readiness ni su estado de roadmap.
+
+Una referencia contextual válida no convierte una aplicación diferida en destino operativo disponible.
+
+---
+
+#### 51. Simulación
+
+`SimulationContext` permanece separado del contexto real.
+
+Un cambio de aplicación no:
+
+- convierte simulación en contexto real;
+- transporta un override como rol efectivo;
+- sustituye sede o área reales con valores simulados;
+- permite ejecutar una mutación real desde una proyección simulada.
+
+La simulación conserva sus contratos y superficies propietarias.
+
+---
+
+#### 52. Delegación e impersonación
+
+Cuando exista delegación o impersonación autorizada por sus contratos, su condición no puede desaparecer visualmente por cambiar de aplicación si continúa siendo material para la seguridad de la experiencia.
+
+Sin embargo, el destino debe volver a resolver el actor efectivo y su contexto.
+
+Esta tarea no crea mecanismos de delegación ni impersonación.
+
+---
+
+#### 53. Separación de autorización
+
+Conservar contexto no significa conservar una decisión de autorización.
+
+Toda acción protegida conserva:
+
+```text
+CONTEXTO VIGENTE
++
+PERMISO EXACTO
++
+RECURSO EXACTO
++
+ESTADO ACTUAL
+→
+NUEVA EVALUACIÓN CUANDO CORRESPONDA
+```
+
+Una decisión emitida para otra aplicación, permiso, recurso o snapshot no se reutiliza por conveniencia.
+
+---
+
+#### 54. Separación con trabajo en curso
+
+Esta tarea no define cómo conservar:
+
+- claim;
+- lease;
+- tarea activa;
+- borrador de dominio;
+- progreso de formulario;
+- operación offline pendiente;
+- custodia;
+- bloqueo optimista;
+- checkpoint de proceso;
+- mecanismo de resume.
+
+Esas decisiones pertenecen a `SHELL-APP-016` y a los contratos propietarios de cada proceso.
+
+`SHELL-APP-015` conserva únicamente la semántica contextual necesaria para que esa tarea posterior pueda decidir reanudación sin heredar autoridad stale.
+
+---
+
+#### 55. Formularios abiertos
+
+Una superficie que permanezca abierta mientras cambia el contexto no puede confirmar una mutación con la autoridad anterior.
+
+Antes de una mutación contextual:
+
+- revalida el contexto aplicable;
+- revalida el recurso;
+- revalida la autorización;
+- detecta incompatibilidades.
+
+El tratamiento del borrador y su reanudación queda fuera de esta tarea.
+
+---
+
+#### 56. Ownership funcional
+
+La propiedad funcional aprobada por `SHELL-APP-013` permanece intacta.
+
+SHELL no adquiere ownership sobre:
+
+- turnos;
+- asistencia;
+- inventario;
+- producción;
+- compras;
+- POS;
+- finanzas;
+- maestros;
+- procesos;
+- recursos.
+
+La continuidad cross-app coordina acceso a hechos; no traslada su fuente de verdad.
+
+---
+
+#### 57. Estado AS-IS del SDK contextual
+
+El package físico actual `@vento/os-context` conserva todavía una forma legacy `EffectiveContext` y adapters directos a RPC heredadas.
+
+Entre sus campos legacy existen:
+
+```text
+effective_operational_role
+site_id
+area_id
+shift_id
+is_simulation
+bypass_applied
+can_operate
+blocked_reasons
+```
+
+Esta tarea no adopta esa forma como contrato final.
+
+No corrige runtime, no migra consumidores y no materializa los contratos contextuales pendientes.
+
+---
+
+#### 58. Prohibiciones de implementación local
+
+Una aplicación no resuelve continuidad cross-app mediante:
+
+- copiar `EffectiveContext` del origen;
+- compartir un store mutable global;
+- transportar `can_operate`;
+- persistir `bypass_applied`;
+- usar `blocked_reasons` como decisión;
+- consultar tablas locales para completar contexto;
+- mantener una matriz local de sede o rol;
+- usar el último contexto exitoso ante fallo;
+- rebautizar un snapshot del origen con el `AppCode` destino.
+
+Estas prácticas crean una segunda autoridad y quedan prohibidas.
+
+---
+
+#### 59. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA**
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+Justificación: la tarea especializa para SHELL la continuidad de contexto cross-app utilizando contratos de contexto, navegación, handoff, frescura, UX y seguridad ya protegidos por requisitos vigentes. No introduce una identidad contractual nueva, un nuevo DTO, una nueva decisión de autorización ni una nueva conducta observable que requiera una fila adicional en el registro.
+
+El Registro Canónico de Requisitos de Prueba permanece sin cambios.
+
+---
+
+#### 60. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, se reutiliza la cobertura vigente de:
+
+- `TREQ-SHELL-018` — frontera segura de `returnTo` y destinos aprobados;
+- `TREQ-SHELL-030` — visibilidad derivada de permisos y contexto sin sustituir autorización;
+- `TREQ-SHELL-063` — frontera server/client de contexto y autorización;
+- `TREQ-SHELL-067` — resolución de `AccessContext` para `AppCode` canónico, validada y fail closed;
+- `TREQ-SHELL-070` — `SafeContextProjectionV1` con allowlist cerrada y sin autoridad ejecutable;
+- `TREQ-SHELL-072` — cliente sin RPC internas de autorización ni autoridad propia;
+- `TREQ-INTEGRATION-005` — handoff con proceso, recurso, actor, territorio, estado, acción y destino de retorno preservados con revalidación;
+- `TREQ-UX-006` — recuperación segura frente a pérdida de sesión, red, dispositivo o proveedor;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricarlo desde filtros, preferencias o estado técnico;
+- `TREQ-UX-011` — cruces entre carriles y aplicaciones con correlación, contexto y reautorización.
+
+La lista expresa trazabilidad de cobertura existente y no modifica esas filas.
+
+---
+
+#### 61. Matriz de decisión cross-app
+
+| Situación | ¿Puede conservar orientación del origen? | ¿Debe resolver contexto destino? | Resultado |
+| --- | --- | --- | --- |
+| misma sesión y actor, app distinta | sí, de forma mínima | sí | contexto destino manda |
+| misma persona y mismos valores visibles | sí | sí | equivalencia confirmada, no snapshot reutilizado |
+| `returnTo` validado después de login | sí, intención | sí | retorno solo tras resolución destino |
+| handoff válido | sí, referencias contractuales | sí | continuidad de proceso sin transferencia de contexto |
+| deep link válido | sí, referencia admitida | sí | destino revalida |
+| cambio de turno durante navegación | no como vigente | sí | nuevo turno o estado seguro |
+| cambio de check-in | no como vigente | sí | nueva condición operativa |
+| cambio de sede o área | no como vigente | sí | nuevo territorio efectivo |
+| cambio de rol operativo | no como vigente | sí | rol nuevo o ausencia válida |
+| actor distinto en dispositivo compartido | no | sí | contexto anterior descartado |
+| sesión expirada o reemplazada | no | sí después de autenticación válida | contexto anterior descartado |
+| red caída sin resolución disponible | solo como referencia explícita si es seguro | sí antes de operar | no autoridad stale |
+| proyección origen con versión desconocida | no | sí | rechazo de la proyección |
+| app destino diferida o no disponible | no habilita | no produce disponibilidad | se mantiene bloqueada |
+| tránsito a PASS cliente | no se transporta contexto laboral | aplica contrato cliente, no contexto laboral | fronteras separadas |
+
+---
+
+#### 62. Matriz de preservación por dimensión
+
+| Dimensión | Durante el salto | En el destino |
+| --- | --- | --- |
+| actor efectivo | referencia solo para correlación cuando el contrato lo permita | se resuelve de nuevo |
+| rol base | no se usa como authority carry-over | se resuelve de nuevo |
+| turno | puede orientar temporalmente | se resuelve de nuevo |
+| check-in | no se presume vigente | se resuelve de nuevo |
+| rol operativo | no se transporta como efectivo | se resuelve de nuevo |
+| sede operativa | no se transporta como efectiva | se resuelve de nuevo |
+| área operativa | no se transporta como efectiva | se resuelve de nuevo |
+| readiness | no se hereda | se obtiene del nuevo contexto |
+| dispositivo | terminal puede ser físicamente el mismo | restricciones se resuelven de nuevo |
+| proceso/instancia | puede conservarse en handoff válido | se revalida contra owner |
+| recurso | puede conservarse como referencia | scope, territorio y estado se revalidan |
+| correlación | sí | se conserva como trazabilidad |
+| decisión de autorización | no | se evalúa donde corresponda |
+| `context_id` | puede quedar como referencia histórica | nueva resolución usa su propia identidad |
+
+---
+
+#### 63. Matriz de fuentes rechazadas como autoridad destino
+
+| Fuente | Tratamiento |
+| --- | --- |
+| query parameter | referencia no confiable; validar |
+| fragmento URL | nunca autoridad contextual |
+| `returnTo` | transporte de destino; no contexto |
+| `localStorage` | no autoridad |
+| `sessionStorage` | no autoridad |
+| cookie editable de UI | no autoridad |
+| React state | no autoridad |
+| store global cliente | no autoridad |
+| historial del navegador | no autoridad |
+| último contexto exitoso | no fallback autoritativo |
+| `EffectiveContext` legacy del origen | no contrato destino |
+| `SafeContextProjectionV1` del origen | presentación/orientación; no autoridad destino |
+| sede primaria | no sede operativa |
+| sede seleccionada | no sede operativa |
+| área seleccionada | no área operativa |
+| nombre del rol | no rol efectivo |
+| dispositivo compartido | no actor humano |
+| simulación | no contexto real |
+
+---
+
+#### 64. Seguridad y privacidad
+
+La continuidad cross-app aplica minimización.
+
+No se transportan por conveniencia:
+
+- tokens;
+- secretos;
+- credenciales;
+- grants;
+- denies;
+- fingerprints internos;
+- SQLSTATE;
+- stack traces;
+- queries;
+- nombres de tablas;
+- identificadores de otros actores;
+- asignaciones completas;
+- GPS o geocercas;
+- evidencia interna innecesaria.
+
+Las referencias necesarias se limitan al contrato de navegación o handoff aplicable.
+
+---
+
+#### 65. Observabilidad
+
+La trazabilidad futura debe permitir distinguir al menos:
+
+```text
+ORIGEN
+DESTINO
+CORRELACIÓN
+RESOLUCIÓN DE CONTEXTO DESTINO
+CAMBIO O EQUIVALENCIA DE CONTEXTO
+RESULTADO DE NAVEGACIÓN
+```
+
+sin registrar datos sensibles como sustituto de evidencia.
+
+Observar una transición no concede autoridad para modificar el contexto.
+
+---
+
+#### 66. Compatibilidad y versiones
+
+Una proyección o contrato contextual se consume solo si su versión es compatible.
+
+Una versión desconocida no se interpreta por semejanza estructural.
+
+Una aplicación no puede aceptar un payload antiguo y completar campos con defaults locales para simular compatibilidad.
+
+La transición de versiones conserva sus gates y contratos propietarios.
+
+---
+
+#### 67. Fallo seguro
+
+Cuando el destino no puede demostrar un contexto válido:
+
+```text
+NO CONTEXTO CONFIABLE
+→ NO ACCIÓN DEPENDIENTE DE CONTEXTO
+```
+
+La aplicación puede seguir mostrando superficies que no dependan de ese contexto si están autorizadas por su propio carril.
+
+No se bloquea por inferencia toda la identidad base, pero tampoco se inventa el carril operativo.
+
+---
+
+#### 68. Rollback conceptual
+
+Una futura implementación podrá retirar o degradar mecanismos de optimización sin degradar las invariantes de esta tarea.
+
+El rollback seguro siempre puede volver a:
+
+```text
+RESOLUCIÓN FRESCA POR APP DESTINO
++
+SIN REUTILIZACIÓN CROSS-APP DE AUTORIDAD
+```
+
+Nunca vuelve a:
+
+- copiar contexto legacy;
+- servir stale para mantener disponibilidad;
+- confiar en URL;
+- usar actor del dispositivo;
+- usar sede primaria como operativa;
+- restaurar `can_operate` como decisión.
+
+---
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado en la rama documental de `SHELL-APP-015` ni sometido a la compilación canónica del plan. |
+| LOCAL | NOT_EXECUTED | El checkout local de `SHELL-APP-015` todavía no ha ejecutado formateo, quality, delivery, topología ni la batería documental posterior a la inserción. |
+| REMOTA | PASS | Se verificó `main` en `382e67b0976a6ffc7be423d629dac0459d32e3c4`, cierre de `SHELL-APP-014`, `active-sequence.json` con `SHELL-APP-015` como siguiente trabajo documental, owner vigente, ruta normal, topología `PER_IMPLEMENTATION_UNIT`, políticas de formato/desarrollo, protocolo, manifest, contratos `AccessContextV1` y `SafeContextProjectionV1`, responsabilidades de `SHELL-CTX-006`, principios UX cross-app, cobertura 04A aplicable y estado legacy actual de `@vento/os-context`. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define semántica documental de continuidad de contexto; no ejecuta un proceso empresarial ni modifica una sesión operativa real. |
+| FÍSICA | NOT_APPLICABLE | Esta aprobación documental no crea ni autoriza una instancia `SHELL-APP-015` por `implementation_unit_id` y no modifica código, Supabase, datos, infraestructura ni despliegues. |
+
+---
+
+#### 70. Criterios de aceptación
+
+- [ ] `SHELL-APP-014` permanece como tarea anterior.
+- [ ] `SHELL-APP-016` permanece como tarea siguiente.
+- [ ] La tarea conserva topología `PER_IMPLEMENTATION_UNIT` solo para materialización posterior.
+- [ ] `AccessContextV1` del origen nunca se reutiliza como contexto autoritativo del destino.
+- [ ] Cada aplicación destino resuelve contexto usando su propio `AppCode`.
+- [ ] `context_id` no se usa como identidad cross-app.
+- [ ] Igualdad visible de contexto se interpreta como resultado de resoluciones equivalentes.
+- [ ] Principal, actor, identidad, empleado, roles, territorio, turno, check-in, dispositivo, readiness e issues se resuelven de nuevo cuando apliquen.
+- [ ] Referencias de navegación y handoff permanecen no autoritativas.
+- [ ] `SafeContextProjectionV1` conserva exactamente sus doce campos.
+- [ ] La proyección del origen no se rebautiza ni se usa como proyección del destino.
+- [ ] No se crea un nuevo contrato de transferencia de contexto.
+- [ ] Retornar a una aplicación previamente visitada exige nueva resolución.
+- [ ] Login y reautenticación no restauran autorización contextual anterior.
+- [ ] Cambio de actor o sesión descarta el contexto previo.
+- [ ] Dispositivo compartido no transfiere actor humano.
+- [ ] Turno, sede, área y rol visibles solo permanecen si el destino los confirma.
+- [ ] Readiness no se hereda y no se convierte en `ALLOW`.
+- [ ] Filtros administrativos no se transforman en contexto operativo.
+- [ ] Territorio del recurso se revalida independientemente.
+- [ ] Handoff conserva continuidad de proceso sin transferir contexto efectivo.
+- [ ] Las 49 relaciones de handoff permanecen sin modificación.
+- [ ] Correlación conserva trazabilidad sin autoridad.
+- [ ] URL, historial, reload y deep links no son fuentes de contexto.
+- [ ] No se mezclan campos de snapshots distintos.
+- [ ] Un cambio contextual concurrente hace prevalecer el estado nuevo confirmado.
+- [ ] Contexto stale no se usa como fallback autoritativo.
+- [ ] No se crea política de caché, TTL o invalidación alternativa.
+- [ ] Pérdida de red no convierte contexto viejo en autoridad.
+- [ ] Ausencia, indisponibilidad, invalidez y stale permanecen separados.
+- [ ] PASS no recibe contexto laboral por transitividad.
+- [ ] AURA no se activa por continuidad de contexto.
+- [ ] Simulación no se convierte en contexto real.
+- [ ] Delegación o impersonación no desaparecen silenciosamente cuando sean materiales.
+- [ ] Decisiones de autorización no se reutilizan cross-app.
+- [ ] Claims, leases, borradores, checkpoints y resume permanecen reservados a `SHELL-APP-016`.
+- [ ] Formularios abiertos no confirman con contexto vencido.
+- [ ] SHELL conserva coordinación sin ownership universal.
+- [ ] `EffectiveContext` legacy no se adopta como contrato final.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica el Registro Canónico de Requisitos de Prueba.
+- [ ] No se modifica runtime ni se crea una instancia física.
+
+---
+
+#### 71. Handoff a `SHELL-APP-016`
+
+`SHELL-APP-016` recibe:
+
+1. contexto autoritativo resuelto por aplicación, nunca copiado cross-app;
+2. distinción entre continuidad semántica y autoridad;
+3. actor, sesión, turno, sede, área, rol y dispositivo revalidados en destino;
+4. referencias de proceso, instancia, recurso y correlación conservables cuando exista contrato;
+5. contexto stale sin autoridad;
+6. prohibición de mezclar snapshots;
+7. formulario o superficie abierta obligada a revalidar antes de mutar;
+8. ausencia, invalidez e indisponibilidad separadas;
+9. handoff y navegación sin claim, start ni resume implícitos;
+10. definición de conservación de trabajo en curso todavía pendiente.
+
+La siguiente tarea puede decidir qué estado de tarea, claim, borrador o checkpoint se conserva y cómo se reanuda, sin reabrir la política contextual.
+
+---
+
+#### 72. Límites
+
+Esta tarea no:
+
+- modifica `AccessContextV1`;
+- modifica `SafeContextProjectionV1`;
+- crea contratos compartidos nuevos;
+- crea payloads runtime de handoff;
+- crea rutas, URLs o deep links;
+- modifica `returnTo`;
+- implementa SSO;
+- modifica sesión o cookies;
+- implementa caché L0 o L1;
+- implementa generación o invalidación de frescura;
+- implementa contexto en `@vento/os-context`;
+- migra consumidores legacy;
+- modifica turnos o check-ins;
+- modifica sedes, áreas o roles;
+- modifica dispositivos compartidos;
+- modifica simulación, delegación o impersonación;
+- modifica permisos, grants, denies, scopes o decisiones;
+- modifica ownership, procesos o relaciones de handoff;
+- modifica PASS;
+- activa AURA;
+- modifica código de SHELL;
+- modifica Supabase, RLS, RPC, migraciones o datos;
+- crea una instancia física;
+- define claim, lease, borrador, checkpoint, offline queue o resume;
+- desarrolla `SHELL-APP-016`.
+
+---
+
+#### 73. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-014 — Definir retorno seguro entre aplicaciones`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-015 — Conservar contexto al cambiar de aplicación`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-016 — Conservar tarea en curso cuando corresponda`
+
+
 ### [ ] SHELL-APP-016 — Conservar tarea en curso cuando corresponda
