@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1136** |
+| Aprobadas | **1137** |
 | En propuesta | **0** |
-| No iniciadas | **460** |
+| No iniciadas | **459** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.18% (1136/1596)** |
+| Porcentaje de completamiento | **71.24% (1137/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-019` — Probar navegación por rol | ✅ APROBADA |
-| Tarea actual | `SHELL-APP-020` — Probar navegación con bloqueos reales | ⬜ NO INICIADA |
-| Siguiente reservada | `SHELL-APP-021` — Retirar placeholders de perfil y configuración sin destino real | ⬜ NO INICIADA |
+| Última aprobada | `SHELL-APP-020` — Probar navegación con bloqueos reales | ✅ APROBADA |
+| Tarea actual | `SHELL-APP-021` — Retirar placeholders de perfil y configuración sin destino real | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-040` — Ocultar enlaces no autorizados | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -806,7 +806,7 @@
 | ✅ APROBADA | `SHELL-APP-017` | Diseñar experiencia para computador | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ✅ APROBADA | `SHELL-APP-018` | Diseñar experiencia para tablet | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ✅ APROBADA | `SHELL-APP-019` | Probar navegación por rol | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
-| ⬜ NO INICIADA | `SHELL-APP-020` | Probar navegación con bloqueos reales | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
+| ✅ APROBADA | `SHELL-APP-020` | Probar navegación con bloqueos reales | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ⬜ NO INICIADA | `SHELL-APP-021` | Retirar placeholders de perfil y configuración sin destino real | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ✅ APROBADA | `AUTH-UI-001` | Inventariar todas las rutas de NEXO | `bloques/I_NAVEGACION_Y_PANTALLAS/01_INVENTARIO_COMPLETO_DE_SUPERFICIES.md` |
 | ✅ APROBADA | `AUTH-UI-002` | Inventariar todas las rutas de FOGO | `bloques/I_NAVEGACION_Y_PANTALLAS/01_INVENTARIO_COMPLETO_DE_SUPERFICIES.md` |

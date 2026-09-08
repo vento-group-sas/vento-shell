@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1136** |
+| Tareas aprobadas | **1137** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **460** |
+| Tareas no iniciadas | **459** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.18% (1136/1596)** |
+| Porcentaje de completamiento | **71.24% (1137/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **SHELL-APP-019 — Probar navegación por rol** |
-| Tarea actual | **SHELL-APP-020 — Probar navegación con bloqueos reales** |
+| Última tarea aprobada | **SHELL-APP-020 — Probar navegación con bloqueos reales** |
+| Tarea actual | **SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real** |
+| Siguiente tarea | **AUTH-UI-040 — Ocultar enlaces no autorizados** |
 | Bloque actual | **BLOQUE H2 — SHELL como aplicación** |
-| Progreso del bloque | **BLOQUE H2: 19 de 21 aprobadas; SHELL-APP-020 pendiente** |
+| Progreso del bloque | **BLOQUE H2: 20 de 21 aprobadas; SHELL-APP-021 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
-| Carril documental | **ACTIVO — SHELL-APP-020** |
+| Carril documental | **ACTIVO — SHELL-APP-021** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `SHELL-APP-019` — Probar navegación por rol |
-| Tarea actual | `SHELL-APP-020` — Probar navegación con bloqueos reales — **NO INICIADA** |
-| Siguiente tarea | `SHELL-APP-021` — Retirar placeholders de perfil y configuración sin destino real |
+| Última aprobada | `SHELL-APP-020` — Probar navegación con bloqueos reales |
+| Tarea actual | `SHELL-APP-021` — Retirar placeholders de perfil y configuración sin destino real — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-040` — Ocultar enlaces no autorizados |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE H2: 19 DE 21 APROBADAS — ACTUAL SHELL-APP-020** |
+| CONTINUIDAD ACTIVA | **BLOQUE H2: 20 DE 21 APROBADAS — ACTUAL SHELL-APP-021** |
 | Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-SHELL-APP-019 — Probar navegación por rol
-        ↓
-TAREA ACTUAL
 SHELL-APP-020 — Probar navegación con bloqueos reales
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-040 — Ocultar enlaces no autorizados
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE H2 — 19 de 21 tareas aprobadas
+BLOQUE H2 — 20 de 21 tareas aprobadas
 ```
