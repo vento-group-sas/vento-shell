@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1141** |
+| Aprobadas | **1142** |
 | En propuesta | **0** |
-| No iniciadas | **455** |
+| No iniciadas | **454** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.49% (1141/1596)** |
+| Porcentaje de completamiento | **71.55% (1142/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-042` — Bloquear acciones aunque el botón sea visible | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-043` — Vincular cada acción con protección de servidor | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-044` — Evitar permisos derivados de nombres de rutas | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-043` — Vincular cada acción con protección de servidor | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-044` — Evitar permisos derivados de nombres de rutas | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-045` — Unificar navegación y autorización | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -850,7 +850,7 @@
 | ✅ APROBADA | `AUTH-UI-040` | Ocultar enlaces no autorizados | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-041` | Bloquear acceso directo por URL | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-042` | Bloquear acciones aunque el botón sea visible | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
-| ⬜ NO INICIADA | `AUTH-UI-043` | Vincular cada acción con protección de servidor | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
+| ✅ APROBADA | `AUTH-UI-043` | Vincular cada acción con protección de servidor | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-044` | Evitar permisos derivados de nombres de rutas | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-045` | Unificar navegación y autorización | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ⬜ NO INICIADA | `AUTH-UI-046` | Mostrar contexto activo en cada aplicación | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
