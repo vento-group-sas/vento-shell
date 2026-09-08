@@ -3025,7 +3025,1385 @@ No crea ni autoriza una instancia física, no crea ni modifica requisitos de pru
 `SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente`
 
 
-### [ ] SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente
+### ✅ SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente
+**Tarea siguiente:** SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
+**Tipo de tarea:** definición técnico-documental de la frontera de autorización entre la identidad cliente de PASS y las capacidades laborales relacionadas con PASS; fija el significado de `pass.access`, conserva la separación cliente/laboral, reconcilia la elegibilidad base existente con las superficies PASS observadas y mantiene `PER_IMPLEMENTATION_UNIT` únicamente como topología de materialización posterior
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md`
+**Estado físico resultante:** contrato documental de frontera PASS/RBAC cerrado: el cliente continúa fuera del RBAC laboral, `pass.access` queda limitado a una capacidad laboral-administrativa `BASE_ONLY` y las superficies laborales relacionadas con PASS permanecen separadas de la experiencia cliente, sin cambios de runtime ni creación de instancia física
+**Cambios físicos autorizados:** ninguno; no se modifican código, rutas, autenticación, catálogo, permisos, matrices, Supabase, datos, RLS, RPC, configuración, aplicaciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Cerrar la ambigüedad histórica producida por la coexistencia de:
+
+```text
+PASS
+→ aplicación de tipo Cliente
+→ dominio de identidad Cliente
+→ roadmap Adyacente
+
+pass.access
+→ permiso existente dentro del catálogo laboral
+→ BASE_ONLY
+
+PASS runtime
+→ experiencia principal de cliente
+→ superficies laborales embebidas observadas
+```
+
+La tarea establece una frontera verificable que impide convertir el RBAC laboral en mecanismo de autorización del cliente y, al mismo tiempo, conserva las capacidades laborales relacionadas con PASS que ya poseen propietario, controles y trazabilidad canónicos.
+
+La regla central queda:
+
+```text
+AUTORIZACIÓN NORMAL DEL CLIENTE PASS
+≠
+RBAC LABORAL
+
+CAPACIDAD LABORAL RELACIONADA CON PASS
+→ AUTORIZACIÓN LABORAL EXPLÍCITA
+
+pass.access
+→ ENTRADA LABORAL-ADMINISTRATIVA
+→ NO IDENTIDAD CLIENTE
+→ NO AUTORIZACIÓN TOTAL DE PASS
+```
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-011`
+
+Se reciben sin reapertura:
+
+1. PASS es la única aplicación cliente adyacente actual;
+2. PASS permanece fuera del grid laboral primario;
+3. `CUSTOMER` permanece fuera del Hub laboral;
+4. SHELL no crea redirección automática `CUSTOMER → PASS`;
+5. `pass.access` se conserva como permiso laboral `BASE_ONLY`;
+6. `pass.access` está separado de la autorización normal del cliente;
+7. elegibilidad laboral-administrativa hacia PASS no equivale a tarjeta primaria;
+8. PASS conserva baseline de cero consumidores laborales por defecto dentro del registro compartido de autorización/contexto;
+9. el permiso no autoriza a inventar una superficie laboral navegable;
+10. identidad laboral y perfil cliente permanecen separados;
+11. contexto laboral no se convierte en autoridad cliente;
+12. esta tarea debe cerrar el significado y uso del RBAC laboral de PASS sin alterar la frontera cliente.
+
+---
+
+#### 3. Decisión principal
+
+La ambigüedad se cierra con dos carriles conceptualmente independientes:
+
+```text
+CARRIL CLIENTE
+principal autenticado
+→ identidad cliente válida
+→ contratos de PASS
+→ recurso/acción de cliente
+→ autorización propia del dominio cliente
+
+CARRIL LABORAL
+principal autenticado
+→ identidad laboral válida
+→ actor EMPLOYEE
+→ permiso laboral exacto
+→ contexto/alcance cuando aplique
+→ autorización laboral
+```
+
+No existe conversión automática entre los dos carriles.
+
+---
+
+#### 4. Identidad canónica de PASS
+
+Se conserva:
+
+| Campo | Decisión |
+| --- | --- |
+| `app_code` | `pass` |
+| Nombre | Vento Pass |
+| Tipo de aplicación | Cliente |
+| Dominio de identidad | Cliente |
+| Alcance de roadmap | Adyacente |
+| Clase de presentación en SHELL | `ADJACENT_RESERVED` |
+
+La existencia de componentes laborales dentro del repositorio PASS no cambia esta identidad primaria.
+
+---
+
+#### 5. Fuente de identidad del cliente
+
+La identidad normal del cliente pertenece al dominio:
+
+```text
+public.users
+```
+
+y no se resuelve desde:
+
+```text
+employees.role
+role_permissions
+employee_permissions
+operational_role_permissions
+turno
+check-in
+rol operativo
+sede operativa
+área operativa
+```
+
+La relación laboral de una persona no sustituye su identidad cliente.
+
+---
+
+#### 6. Fuente de identidad laboral
+
+Cuando una capacidad relacionada con PASS es laboral, el actor debe resolverse por la arquitectura laboral vigente:
+
+```text
+principal autenticado
++
+employees
++
+empleado activo
++
+actor efectivo EMPLOYEE
++
+permiso laboral exacto
++
+alcance/contexto aplicable
+→ decisión laboral
+```
+
+Una fila en `public.users` no sustituye a `employees`.
+
+---
+
+#### 7. Una persona puede tener ambas relaciones
+
+La misma persona puede ser simultáneamente:
+
+```text
+CLIENTE
++
+TRABAJADOR
+```
+
+sin que exista un actor híbrido nuevo.
+
+Se conserva:
+
+```text
+actor_type ∈ {
+  EMPLOYEE,
+  CUSTOMER,
+  SYSTEM,
+  UNRESOLVED
+}
+```
+
+La acción concreta determina qué actor efectivo y qué contrato deben utilizarse.
+
+---
+
+#### 8. Regla de no fusión
+
+Queda prohibido derivar:
+
+```text
+CUSTOMER + employee encontrado
+→ CUSTOMER_EMPLOYEE
+```
+
+o:
+
+```text
+EMPLOYEE + perfil PASS encontrado
+→ EMPLOYEE_CUSTOMER
+```
+
+La coexistencia de identidades se representa mediante relaciones separadas y resolución explícita por superficie y acción.
+
+---
+
+#### 9. Significado final de `pass.access`
+
+`pass.access` se conserva como permiso canónico laboral de entrada:
+
+```text
+permission_key = pass.access
+authorization_requirement = BASE_ONLY
+scope_profile = NT-CLIENT-ADMIN
+```
+
+Su significado queda limitado a:
+
+```text
+ENTRAR A UNA SUPERFICIE LABORAL-ADMINISTRATIVA DE PASS
+CUANDO ESA SUPERFICIE EXISTA, ESTÉ REGISTRADA
+Y SEA NAVEGABLE SEGÚN SU CONTRATO
+```
+
+No representa el acceso normal del cliente final.
+
+---
+
+#### 10. `pass.access` no es autenticación de cliente
+
+Una decisión laboral:
+
+```text
+pass.access = ALLOW
+```
+
+no produce:
+
+- autenticación cliente;
+- creación de perfil cliente;
+- cuenta PASS;
+- sesión cliente;
+- nivel de fidelización;
+- saldo de puntos;
+- historial de compras;
+- consentimiento;
+- preferencias;
+- autorización de pedidos.
+
+---
+
+#### 11. `pass.access` no es permiso paraguas
+
+`pass.access` tampoco concede automáticamente:
+
+- consultar clientes;
+- buscar cuentas;
+- ver datos personales;
+- otorgar puntos;
+- ajustar puntos;
+- validar canjes;
+- redimir beneficios;
+- administrar campañas;
+- modificar preferencias;
+- gestionar consentimientos;
+- procesar reclamos;
+- operar pedidos;
+- ejecutar acciones propietarias de PULSO.
+
+Cada capacidad laboral requiere su permiso y owner exactos.
+
+---
+
+#### 12. Modalidad `BASE_ONLY`
+
+La modalidad de `pass.access` permanece:
+
+```text
+BASE_ONLY
+```
+
+Esto significa que la capacidad solo puede satisfacerse por el carril base compatible.
+
+No significa:
+
+```text
+GLOBAL
+UNIVERSAL
+CLIENTE
+SIN RECURSO
+SIN DENEGACIONES
+SIN VALIDACIÓN
+```
+
+La evaluación conserva empleado activo, permiso activo, alcance, recurso, denegaciones y demás restricciones aplicables.
+
+---
+
+#### 13. Matriz base exacta para `pass.access`
+
+Se conserva la decisión aprobada de los ocho roles base vigentes:
+
+| Rol base | `pass.access` | Resultado |
+| --- | --- | --- |
+| `propietario` | ASIGNAR | elegibilidad laboral-administrativa `NT-CLIENT-ADMIN` |
+| `gerente_general` | ASIGNAR | elegibilidad laboral-administrativa `NT-CLIENT-ADMIN` |
+| `gerente` | NO ASIGNAR | denegación por defecto |
+| `supervisor` | NO ASIGNAR | denegación por defecto |
+| `auxiliar_administrativa` | NO ASIGNAR | denegación por defecto |
+| `contador` | NO ASIGNAR | denegación por defecto |
+| `marketing` | NO ASIGNAR | denegación por defecto |
+| `trabajador_operativo` | NO ASIGNAR | denegación por defecto |
+
+Total:
+
+```text
+BASE_ROLES = 8
+PASS_ACCESS_BASE_GRANTS = 2
+PASS_ACCESS_BASE_DEFAULT_DENIALS = 6
+```
+
+---
+
+#### 14. Propietario
+
+Para `propietario`:
+
+```text
+pass.access
+→ ASIGNAR
+→ BASE_ONLY
+→ NT-CLIENT-ADMIN
+```
+
+La asignación permite únicamente elegibilidad hacia una superficie laboral-administrativa PASS válida.
+
+No concede autoridad de cliente ni autoridad funcional ilimitada.
+
+---
+
+#### 15. Gerente general
+
+Para `gerente_general`:
+
+```text
+pass.access
+→ ASIGNAR
+→ BASE_ONLY
+→ NT-CLIENT-ADMIN
+```
+
+La semántica es idéntica en naturaleza a la de propietario respecto de la frontera cliente/laboral.
+
+No existe bypass por nombre de rol.
+
+---
+
+#### 16. Gerente y supervisor
+
+`gerente` y `supervisor` no reciben `pass.access` por su rol base.
+
+La condición se mantiene por denegación por defecto.
+
+Una responsabilidad local de sede no implica administración de PASS.
+
+---
+
+#### 17. Roles funcionales
+
+`auxiliar_administrativa`, `contador` y `marketing` no reciben `pass.access` por defecto.
+
+En particular:
+
+```text
+marketing
+≠ acceso implícito a PASS
+≠ acceso implícito a clientes
+≠ acceso implícito a puntos
+≠ acceso implícito a canjes
+```
+
+Las responsabilidades futuras deberán materializarse mediante capacidades laborales atómicas y explícitas.
+
+---
+
+#### 18. `trabajador_operativo`
+
+`trabajador_operativo` no recibe `pass.access` por el rol base.
+
+Una función operativa relacionada con clientes o fidelización debe pertenecer al permiso operativo o laboral concreto de la aplicación propietaria.
+
+No se utiliza `pass.access` como sustituto de esas capacidades.
+
+---
+
+#### 19. Concesión individual
+
+Una futura concesión individual laboral de `pass.access`, si es válida según los contratos canónicos, conserva exactamente la misma frontera:
+
+```text
+INDIVIDUAL ALLOW DE pass.access
+≠ CUSTOMER ACCESS
+```
+
+No puede convertir un permiso laboral en credencial de cliente.
+
+---
+
+#### 20. Denegaciones y precedencia
+
+Una concesión base no supera:
+
+- denegación individual aplicable;
+- denegación transversal;
+- empleado inactivo;
+- configuración inconsistente;
+- recurso inválido;
+- superficie no disponible;
+- aislamiento de ambiente;
+- bloqueo estructural.
+
+La semántica de PASS no crea una excepción de precedencia.
+
+---
+
+#### 21. `CUSTOMER` permanece fuera del RBAC laboral
+
+Para acceso normal a PASS:
+
+```text
+actor_type = CUSTOMER
+```
+
+no se consulta el RBAC laboral como mecanismo de concesión de acceso al producto cliente.
+
+El cliente no necesita:
+
+```text
+shell.access
+pass.access
+employees.role
+role_permissions
+turno
+check-in
+```
+
+para ser cliente legítimo de PASS.
+
+---
+
+#### 22. Un cliente sin empleado sigue siendo cliente válido
+
+La ausencia de una fila laboral:
+
+```text
+employee = null
+```
+
+no debe invalidar por sí misma una sesión cliente válida.
+
+Las capacidades laborales embebidas se ocultan o quedan no disponibles.
+
+La experiencia normal de cliente continúa bajo su contrato propio.
+
+---
+
+#### 23. Un empleado sin perfil cliente no adquiere PASS cliente
+
+La existencia de:
+
+```text
+employee activo
++
+pass.access ALLOW
+```
+
+no crea una identidad cliente inexistente.
+
+No se sintetizan:
+
+- `public.users`;
+- perfil;
+- relación de marca;
+- puntos;
+- preferencias;
+- consentimientos.
+
+---
+
+#### 24. Baseline runtime vigente de PASS
+
+El snapshot canónico vigente de PASS conserva:
+
+```text
+15 Stack.Screen de cliente
+21 superficies lógicas cliente/transversales
+0 rutas exclusivamente laborales
+3 superficies laborales embebidas activas dentro de Home
+```
+
+La rama `main` de PASS continúa en el mismo commit utilizado por el inventario aprobado.
+
+Por tanto, no existe evidencia actual de una ruta laboral dedicada que convierta `pass.access` en navegación autónoma.
+
+---
+
+#### 25. Superficie laboral embebida 001
+
+Se conserva:
+
+```text
+PASS-LABOR-SURFACE-001
+```
+
+como bloque de contexto dentro del menú de usuario de `Home`.
+
+Puede mostrar rol y sede laborales cuando la identidad laboral y la capacidad aplicable estén válidamente resueltas.
+
+No transforma `Home` en pantalla laboral.
+
+---
+
+#### 26. Superficie laboral embebida 002
+
+Se conserva:
+
+```text
+PASS-LABOR-SURFACE-002
+```
+
+como conjunto de acciones embebidas del menú para cambio de rol/sede y retorno al rol real.
+
+No constituye una ruta laboral ni una capacidad autónoma.
+
+Su presentación no concede autoridad.
+
+---
+
+#### 27. Superficie laboral embebida 003
+
+Se conserva:
+
+```text
+PASS-LABOR-SURFACE-003
+```
+
+como modal de simulación observado.
+
+La selección de rol o sede debe permanecer separada de autoridad real.
+
+No puede autorizar mutaciones ni reemplazar el contexto resuelto por servidor.
+
+---
+
+#### 28. `Home` sigue siendo superficie de cliente
+
+Aunque `Home` contenga los tres bloques laborales:
+
+```text
+Home
+→ CUSTOMER SURFACE
+```
+
+Se prohíbe:
+
+```text
+Home + employeeRole
+→ LABOR APP
+```
+
+o:
+
+```text
+Home + role switcher
+→ LABOR NAVIGATION
+```
+
+La clasificación de la pantalla no cambia por bloques condicionales embebidos.
+
+---
+
+#### 29. Cero rutas exclusivamente laborales
+
+Mientras el inventario no cambie mediante una decisión canónica posterior:
+
+```text
+PASS_EXCLUSIVE_LABOR_ROUTES = 0
+```
+
+Un permiso `pass.access` existente no autoriza a SHELL a inventar:
+
+- ruta;
+- tarjeta;
+- deep link;
+- dashboard;
+- launcher;
+- pantalla administrativa.
+
+---
+
+#### 30. Baseline de consumidores de autorización/contexto
+
+El registro compartido conserva:
+
+```text
+PASS_LABOR_CONSUMERS_DEFAULT = 0
+```
+
+dentro del baseline de consumidores de autorización/contexto.
+
+Esto impide fabricar un consumidor nuevo solo para “dar uso” a `pass.access`.
+
+Cualquier consumidor real posterior debe registrarse con owner, path, API actual/objetivo, migración, evidencia y removal gate.
+
+---
+
+#### 31. Las superficies laborales embebidas no contradicen el baseline
+
+Los tres bloques laborales observados en PASS forman parte del inventario de superficies y de sus TREQ propietarios.
+
+Eso no significa que ya exista un consumidor canónico nuevo del SDK compartido de autorización/contexto.
+
+Se conserva la diferencia entre:
+
+```text
+SUPERFICIE OBSERVADA
+≠
+CONSUMIDOR CANÓNICO REGISTRADO
+```
+
+---
+
+#### 32. Rol local de PASS no es autoridad
+
+El runtime actual contiene claves locales como:
+
+```text
+owner
+manager
+global_manager
+staff
+cashier
+waiter
+barista
+cook
+chef
+baker
+pastry
+warehouse
+logistics
+client
+```
+
+Estas cadenas no son una segunda taxonomía canónica de autorización.
+
+No pueden utilizarse como claves definitivas para decidir permisos.
+
+---
+
+#### 33. `PRIVILEGED_ROLES` es evidencia AS-IS, no contrato
+
+La lista local observada:
+
+```text
+owner
+manager
+global_manager
+```
+
+utilizada para habilitar controles de cambio de rol/sede es un hallazgo AS-IS.
+
+No equivale a:
+
+```text
+CANONICAL_AUTHORIZATION_ALLOWLIST
+```
+
+La autorización final debe provenir del modelo canónico.
+
+---
+
+#### 34. Alias ingleses
+
+Los alias locales no sustituyen los códigos canónicos de rol.
+
+Por tanto:
+
+```text
+owner
+≠ autoridad canónica por string
+
+manager
+≠ autoridad canónica por string
+
+global_manager
+≠ autoridad canónica por string
+```
+
+La reconciliación de consumidores y aliases pertenece a las tareas propietarias ya registradas.
+
+---
+
+#### 35. Perfil laboral mínimo
+
+Cuando PASS necesite conocer que un cliente autenticado también posee relación laboral, la proyección laboral debe ser mínima y vinculada al usuario autenticado.
+
+No podrá:
+
+- consultar perfiles de terceros;
+- usar correo coincidente como prueba suficiente;
+- usar datos cliente para elevar rol;
+- tratar ausencia de empleado como permiso;
+- exponer información laboral no necesaria.
+
+---
+
+#### 36. Error laboral no derriba la experiencia cliente
+
+Si falla:
+
+- consulta de `employees`;
+- consulta de sedes;
+- carga de rol laboral;
+- simulación;
+- componente laboral de contexto;
+
+la respuesta segura es aislar la capacidad laboral afectada.
+
+No se debe transformar el fallo en:
+
+```text
+CUSTOMER SESSION INVALID
+```
+
+cuando la sesión cliente sigue siendo válida.
+
+---
+
+#### 37. Sedes laborales
+
+Una sede mostrada en controles laborales de PASS solo puede provenir de asignaciones laborales válidas.
+
+No se convierte en sede efectiva por:
+
+- selección cliente;
+- AsyncStorage;
+- parámetro;
+- estado React;
+- perfil de cliente;
+- última sede visitada comercialmente.
+
+---
+
+#### 38. Simulación laboral
+
+Toda simulación debe mantener:
+
+```text
+REAL ROLE
+REAL SITE
+SIMULATED ROLE
+SIMULATED SITE
+```
+
+como conceptos separados.
+
+La simulación no modifica:
+
+- rol persistente;
+- grants reales;
+- identidad cliente;
+- saldo;
+- puntos;
+- permisos server.
+
+---
+
+#### 39. Persistencia local
+
+Estado local, caché o AsyncStorage no son fuentes de autorización.
+
+La persistencia de una selección simulada debe quedar subordinada a:
+
+- actor vigente;
+- expiración;
+- limpieza;
+- revalidación;
+- reglas de simulación.
+
+Una selección de otro usuario no puede revivir después del cambio de sesión.
+
+---
+
+#### 40. Acciones de fidelización ejecutadas por trabajadores
+
+La operación laboral sobre puntos o redenciones no convierte al trabajador en cliente ni usa `pass.access` como permiso funcional.
+
+Cada acción debe conservar:
+
+```text
+EMPLOYEE
++
+OWNER APP
++
+PERMISSION KEY EXACTA
++
+RECURSO
++
+SEDE/CONTEXTO
++
+DECISIÓN SERVER
+```
+
+---
+
+#### 41. PULSO conserva sus operaciones
+
+Las superficies operativas de PULSO relacionadas con PASS permanecen propiedad de PULSO cuando el contrato así lo define.
+
+Ejemplos:
+
+- identificar cliente;
+- mostrar proyección mínima;
+- otorgar puntos;
+- validar redención;
+- confirmar actor en dispositivo compartido.
+
+No se duplican como rutas laborales de PASS.
+
+---
+
+#### 42. `pos.main` no reemplaza permisos atómicos
+
+La existencia de un permiso general de acceso a PULSO no autoriza por sí sola cada acción de fidelización.
+
+Del mismo modo:
+
+```text
+pass.access
+```
+
+tampoco reemplaza los permisos atómicos de esas operaciones.
+
+---
+
+#### 43. Datos de cliente para personal laboral
+
+Un trabajador solo recibe los campos de cliente necesarios para la acción autorizada.
+
+No se deriva acceso masivo a:
+
+- correo;
+- teléfono;
+- documento;
+- fecha de nacimiento;
+- historial;
+- preferencias;
+- consentimientos;
+- saldo;
+
+por tener `pass.access`.
+
+---
+
+#### 44. Saldo y ledger
+
+El saldo de puntos pertenece al modelo de fidelización del cliente.
+
+Un permiso de entrada laboral-administrativa:
+
+```text
+pass.access
+```
+
+no habilita modificación del ledger.
+
+Toda modificación requiere el contrato de servidor, permiso, actor, recurso, idempotencia y auditoría aplicables.
+
+---
+
+#### 45. Consentimientos y preferencias
+
+Consentimientos y preferencias comerciales pertenecen al propósito cliente y de privacidad correspondiente.
+
+Una relación laboral no permite utilizarlos, cambiarlos o ignorarlos por defecto.
+
+Una acción laboral sobre esos datos requiere finalidad y capacidad explícitas.
+
+---
+
+#### 46. Acceso directo y deep link
+
+Conocer un enlace de PASS no concede:
+
+```text
+CUSTOMER ACCESS
+```
+
+ni:
+
+```text
+LABOR ADMIN ACCESS
+```
+
+La superficie destino revalida su identidad y autorización propietarias.
+
+SHELL no transforma un deep link en permiso.
+
+---
+
+#### 47. Tarjeta de SHELL
+
+PASS permanece:
+
+```text
+ADJACENT_RESERVED
+```
+
+y no ingresa al grid laboral primario por la existencia de los dos grants base de `pass.access`.
+
+La presentación futura de una superficie laboral PASS requerirá contrato explícito y no podrá confundirse con la entrada cliente.
+
+---
+
+#### 48. No tarjeta bloqueada por defecto
+
+Para roles sin `pass.access`, SHELL no debe fabricar:
+
+```text
+Vento Pass
+→ Bloqueada
+```
+
+como si PASS perteneciera al conjunto laboral primario.
+
+La ausencia de elegibilidad laboral-administrativa conserva la superficie adyacente fuera de presentación.
+
+---
+
+#### 49. No promoción por owner o gerencia
+
+Que `propietario` y `gerente_general` tengan elegibilidad base no convierte PASS completa en herramienta administrativa general.
+
+La concesión queda acotada a:
+
+```text
+NT-CLIENT-ADMIN
+```
+
+y a superficies laborales-administrativas reales.
+
+---
+
+#### 50. No nuevas matrices locales
+
+SHELL y PASS no pueden crear otra matriz como:
+
+```text
+if role === "owner" → allow
+if role === "manager" → allow
+```
+
+para sustituir la decisión canónica.
+
+Las listas locales solo pueden participar como presentación o transición controlada sin autoridad final.
+
+---
+
+#### 51. No reutilización de identidad cliente para elevar permisos
+
+Se prohíbe derivar rol laboral desde:
+
+- tier del cliente;
+- nivel de fidelización;
+- marca preferida;
+- número de compras;
+- saldo;
+- email;
+- teléfono;
+- nombre;
+- atributos autoadministrables.
+
+La identidad cliente nunca eleva autoridad laboral.
+
+---
+
+#### 52. No reutilización de identidad laboral para ventajas cliente
+
+La condición de trabajador tampoco concede automáticamente:
+
+- puntos especiales;
+- nivel cliente;
+- recompensas;
+- redenciones;
+- acceso a compras;
+- datos de otra cuenta.
+
+Cualquier política comercial para empleados requerirá contrato propietario independiente.
+
+---
+
+#### 53. Separación de logout y sesión
+
+Esta tarea no afirma que cliente y trabajador deban tener sesiones técnicas completamente distintas.
+
+Sí fija que:
+
+```text
+SESIÓN TÉCNICA COMPARTIDA POSIBLE
+≠
+AUTORIZACIÓN COMPARTIDA
+```
+
+Cerrar o renovar una sesión debe respetar los contratos propietarios sin inferir permisos cruzados.
+
+---
+
+#### 54. Cambio de actor
+
+Ante cambio efectivo de actor o usuario:
+
+- se invalidan proyecciones laborales anteriores;
+- se limpia simulación que no pertenezca al nuevo contexto;
+- no se conserva rol/sede del actor anterior;
+- no se conserva autoridad por haber estado visible previamente.
+
+---
+
+#### 55. Dispositivo compartido
+
+Una estación laboral o POS compartido no utiliza la sesión del cliente como identidad del trabajador.
+
+Las mutaciones laborales deben identificar al actor humano real conforme al contrato de dispositivo.
+
+La sesión administrativa del dispositivo no transfiere privilegios al operador.
+
+---
+
+#### 56. Seguridad ante manipulación cliente
+
+Cambiar desde el cliente:
+
+- rol;
+- sede;
+- navegación;
+- flags;
+- estado React;
+- AsyncStorage;
+- parámetros;
+
+no puede producir una decisión ALLOW en servidor.
+
+La manipulación solo puede cambiar presentación no autoritativa o terminar en rechazo.
+
+---
+
+#### 57. Autoridad de SHELL
+
+SHELL coordina:
+
+- identidad laboral;
+- contexto laboral;
+- trabajo;
+- presentación de accesos;
+- handoff seguro.
+
+SHELL no se convierte en fuente funcional de:
+
+- fidelización;
+- clientes;
+- campañas;
+- puntos;
+- pedidos;
+- canjes.
+
+La siguiente tarea profundiza la prohibición general de absorber lógica de otras aplicaciones.
+
+---
+
+#### 58. Responsables ya existentes de las brechas físicas
+
+Esta tarea no crea pendientes narrativos nuevos.
+
+Las condiciones físicas observadas ya tienen propietarios canónicos, entre ellos:
+
+| Brecha | Propietario canónico existente |
+| --- | --- |
+| inventario y frontera de superficies PASS | `AUTH-UI-009` y continuidad `AUTH-UI-*` |
+| perfil laboral mínimo en PASS | `AUTH-UI-030` a `AUTH-UI-044`, `AUTH-DB-002`, `AUTH-SRV-*` |
+| sedes laborales autorizadas | `AUTH-UI-022`, `AUTH-UI-037`, `AUTH-SRV-006`, `AUTH-SRV-012` |
+| simulación de rol/sede | `AUTH-SIM-*`, `AUTH-UI-038`, `AUTH-SRV-015` |
+| reconciliación de roles locales | `AUTH-CAT-003`, `AUTH-CAT-017` a `AUTH-CAT-019`, `AUTH-UI-026`, `AUTH-UI-045` |
+| operaciones laborales PULSO/PASS | `PULSO-AUTH-016`, `PASS-INT-*`, `AUTH-SRV-*` |
+| consumidores de autorización/contexto | `SHELL-AUTH-003` a `SHELL-AUTH-005` |
+
+No se inventa otro owner.
+
+---
+
+#### 59. Resultado documental consolidado
+
+```text
+PASS
+→ CUSTOMER APP
+→ CUSTOMER IDENTITY DOMAIN
+→ ADJACENT_RESERVED
+
+CUSTOMER ACCESS
+→ NO LABOR RBAC
+
+pass.access
+→ CANONICAL LABOR PERMISSION
+→ BASE_ONLY
+→ NT-CLIENT-ADMIN
+→ NOT CUSTOMER AUTH
+
+BASE GRANTS
+→ propietario
+→ gerente_general
+
+DEFAULT NO GRANT
+→ gerente
+→ supervisor
+→ auxiliar_administrativa
+→ contador
+→ marketing
+→ trabajador_operativo
+
+PASS RUNTIME SNAPSHOT
+→ 15 CUSTOMER STACK SCREENS
+→ 21 CUSTOMER/TRANSVERSE LOGICAL SURFACES
+→ 0 EXCLUSIVE LABOR ROUTES
+→ 3 EMBEDDED LABOR SURFACES
+
+LOCAL ROLE ALLOWLIST
+→ AS-IS ONLY
+→ NOT AUTHORITY
+
+PULSO PASS-RELATED OPERATIONS
+→ REMAIN PULSO-OWNED WHEN CANONICAL CONTRACT SAYS SO
+
+SHELL
+→ DOES NOT CREATE CUSTOMER AUTH
+→ DOES NOT INVENT PASS LABOR ROUTE
+```
+
+---
+
+#### 60. Handoff a `SHELL-APP-013`
+
+`SHELL-APP-013` recibe:
+
+1. SHELL como coordinador y no propietaria de lógica PASS;
+2. `pass.access` delimitado a entrada laboral-administrativa;
+3. separación entre acceso de aplicación y capacidades funcionales internas;
+4. operaciones de fidelización conservadas en sus owners canónicos;
+5. PULSO como owner de sus superficies operativas relacionadas con PASS;
+6. prohibición de convertir rutas o asociaciones temáticas en propiedad funcional;
+7. prohibición de crear lógica de negocio en SHELL para resolver ausencia de contrato de otra aplicación;
+8. obligación de revalidar autorización en la aplicación propietaria;
+9. separación estricta entre presentación coordinada y ejecución funcional.
+
+La siguiente tarea puede generalizar esta frontera a todas las aplicaciones sin reabrir la identidad cliente de PASS.
+
+---
+
+#### 61. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea consolida en SHELL decisiones ya protegidas por requisitos vigentes de AUTH, SHELL y PASS.
+
+No altera reglas históricas, estados, relaciones ni secuencias del Registro Canónico de Requisitos de Prueba.
+
+---
+
+#### 62. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, la tarea reutiliza:
+
+- `TREQ-AUTH-001` — una lista local de roles no concede autorización final;
+- `TREQ-AUTH-006` — identidad cliente y campos privilegiados permanecen separados y minimizados;
+- `TREQ-AUTH-007` — administración laboral requiere capacidad explícita y territorio válido;
+- `TREQ-SHELL-001` — registro o permiso aislado no convierte una aplicación en capacidad operativa;
+- `TREQ-SHELL-030` — visibilidad no sustituye autorización de servidor;
+- `TREQ-SHELL-031` — simulación de rol/sede permanece separada de autoridad real;
+- `TREQ-SHELL-080` — registro de consumidores conserva PASS con cero consumidores laborales por defecto;
+- `TREQ-SHELL-086` — role allowlists, overrides y datos del caller no crean autoridad local;
+- `TREQ-PASS-010` — identidad, cuenta, perfil, preferencias y consentimientos de cliente permanecen separados;
+- `TREQ-PASS-015` — PASS conserva cero rutas exclusivamente laborales mientras no exista un delta aprobado;
+- `TREQ-PASS-016` — controles laborales embebidos requieren perfil laboral vigente y capacidad aprobada;
+- `TREQ-PASS-017` — perfil laboral mínimo vinculado al usuario autenticado;
+- `TREQ-PASS-018` — sedes laborales de PASS proceden de asignaciones autorizadas;
+- `TREQ-PASS-019` — rol/sede locales son simulación, no autoridad;
+- `TREQ-PASS-020` — simulación laboral posee ciclo de vida y limpieza;
+- `TREQ-PASS-021` — roles locales PASS deben reconciliarse con el catálogo canónico;
+- `TREQ-PASS-022` — operaciones PULSO relacionadas con PASS requieren permisos exactos;
+- `TREQ-PASS-034` — superficies PASS y PULSO se reconcilian sin duplicar ownership.
+
+Estas referencias son trazabilidad heredada y no representan cambios del registro.
+
+---
+
+#### 63. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto aún no ha sido insertado ni compilado dentro de la rama local de `SHELL-APP-012`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, quality, delivery, topología ni batería documental sobre el checkout local de `SHELL-APP-012`. |
+| REMOTA | PASS | Se verificaron el `main` posterior al cierre de `SHELL-APP-011`, continuidad, ruta normal, topología, políticas documentales, owner H2, handoff de `SHELL-APP-011`, catálogo y modalidad de PASS, matrices de ocho roles base, ADR de identidad, 04A de AUTH/SHELL/PASS, inventario `AUTH-UI-009` y el runtime vigente de PASS en el mismo commit de su snapshot aprobado. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define una frontera documental; no prueba sesiones reales de clientes, trabajadores, puntos, redenciones, POS ni navegación desplegada. |
+| FÍSICA | NOT_APPLICABLE | La aprobación documental no crea ni autoriza una instancia `SHELL-APP-012::implementation_unit_id` y no modifica código, datos, Supabase, infraestructura ni despliegues. |
+
+---
+
+#### 64. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente`.
+- [ ] `SHELL-APP-011` permanece como tarea anterior.
+- [ ] `SHELL-APP-013` permanece como tarea siguiente.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] `PER_IMPLEMENTATION_UNIT` se conserva únicamente como topología física posterior.
+- [ ] PASS conserva `app_code = pass`.
+- [ ] PASS conserva tipo `Cliente`.
+- [ ] PASS conserva dominio de identidad `Cliente`.
+- [ ] PASS conserva roadmap `Adyacente`.
+- [ ] PASS conserva `ADJACENT_RESERVED`.
+- [ ] La identidad normal del cliente se mantiene separada de `employees`.
+- [ ] `public.users` no sustituye identidad laboral.
+- [ ] Una persona puede ser cliente y trabajador sin crear actor híbrido.
+- [ ] Se conservan exactamente cuatro `actor_type`.
+- [ ] `CUSTOMER` no recibe RBAC laboral por su identidad cliente.
+- [ ] Un cliente válido no requiere `pass.access`.
+- [ ] Un cliente válido no requiere `shell.access`.
+- [ ] Un cliente sin empleado puede conservar su experiencia cliente.
+- [ ] Un empleado sin perfil cliente no recibe identidad cliente por inferencia.
+- [ ] `pass.access` se conserva; no se elimina.
+- [ ] `pass.access` conserva modalidad `BASE_ONLY`.
+- [ ] `pass.access` conserva alcance `NT-CLIENT-ADMIN`.
+- [ ] `pass.access` se limita a entrada laboral-administrativa.
+- [ ] `pass.access` no autentica clientes.
+- [ ] `pass.access` no concede puntos.
+- [ ] `pass.access` no concede redenciones.
+- [ ] `pass.access` no expone automáticamente fidelización.
+- [ ] `pass.access` no es permiso paraguas de PASS.
+- [ ] Se conservan exactamente ocho roles base.
+- [ ] `propietario` conserva grant de `pass.access`.
+- [ ] `gerente_general` conserva grant de `pass.access`.
+- [ ] `gerente` no recibe grant por defecto.
+- [ ] `supervisor` no recibe grant por defecto.
+- [ ] `auxiliar_administrativa` no recibe grant por defecto.
+- [ ] `contador` no recibe grant por defecto.
+- [ ] `marketing` no recibe grant por defecto.
+- [ ] `trabajador_operativo` no recibe grant por defecto.
+- [ ] El total queda en 2 grants y 6 denegaciones por defecto.
+- [ ] Ningún rol obtiene bypass por nombre.
+- [ ] Una concesión individual laboral no concede acceso cliente.
+- [ ] Las denegaciones y bloqueos canónicos conservan precedencia.
+- [ ] El snapshot PASS conserva 15 `Stack.Screen`.
+- [ ] El snapshot PASS conserva 21 superficies cliente/transversales.
+- [ ] PASS conserva 0 rutas exclusivamente laborales.
+- [ ] PASS conserva 3 superficies laborales embebidas.
+- [ ] `PASS-LABOR-SURFACE-001` no convierte Home en laboral.
+- [ ] `PASS-LABOR-SURFACE-002` no se considera ruta laboral.
+- [ ] `PASS-LABOR-SURFACE-003` permanece simulación no autoritativa.
+- [ ] Home continúa clasificada como superficie cliente.
+- [ ] El baseline compartido conserva 0 consumidores laborales PASS por defecto.
+- [ ] Una superficie observada no se confunde con consumidor canónico registrado.
+- [ ] No se inventa ruta laboral para utilizar `pass.access`.
+- [ ] PASS no entra al grid laboral primario.
+- [ ] Roles locales ingleses no son claves canónicas de autorización.
+- [ ] `PRIVILEGED_ROLES` no se convierte en allowlist canónica.
+- [ ] Los controles laborales requieren identidad y capacidad válidas.
+- [ ] Un error laboral no invalida por sí solo una sesión cliente válida.
+- [ ] La sede seleccionada localmente no se convierte en autoridad.
+- [ ] AsyncStorage y estado React no conceden permisos.
+- [ ] Simulación laboral no modifica identidad cliente ni autorización real.
+- [ ] Operaciones de fidelización laborales usan permisos exactos.
+- [ ] Operaciones PULSO permanecen atribuidas a PULSO cuando corresponda.
+- [ ] `pos.main` no sustituye permisos atómicos.
+- [ ] El personal recibe proyecciones mínimas de datos cliente.
+- [ ] El saldo o ledger no se modifica por `pass.access`.
+- [ ] Consentimientos no se modifican por relación laboral implícita.
+- [ ] Deep links no conceden acceso.
+- [ ] No se fabrica tarjeta PASS bloqueada para roles sin grant.
+- [ ] Los dos grants base no promocionan PASS completa a herramienta administrativa.
+- [ ] SHELL no crea matrices locales de roles.
+- [ ] Identidad cliente no eleva autoridad laboral.
+- [ ] Identidad laboral no concede ventajas cliente por inferencia.
+- [ ] Compartir sesión técnica no equivale a compartir autorización.
+- [ ] Cambio de actor invalida contexto/simulación anterior.
+- [ ] Dispositivo compartido no transfiere privilegios.
+- [ ] Manipulación cliente no produce ALLOW.
+- [ ] Las brechas físicas conservan propietarios existentes.
+- [ ] No se modifica catálogo.
+- [ ] No se modifican matrices.
+- [ ] No se modifican permisos.
+- [ ] No se modifica Supabase.
+- [ ] No se modifica runtime.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se desarrolla `SHELL-APP-013`.
+- [ ] No se crea ni autoriza una instancia física.
+
+---
+
+#### 65. Límites
+
+Esta tarea no:
+
+- elimina `pass.access`;
+- crea un permiso sustituto;
+- cambia `BASE_ONLY`;
+- cambia matrices aprobadas;
+- crea grants;
+- crea denies explícitos redundantes;
+- cambia `public.users`;
+- cambia `employees`;
+- redefine autenticación cliente;
+- crea SSO cliente;
+- crea account linking;
+- crea una identidad híbrida;
+- modifica puntos;
+- modifica ledger;
+- modifica redenciones;
+- modifica pedidos;
+- modifica campañas;
+- modifica consentimientos;
+- modifica preferencias;
+- modifica perfil de cliente;
+- crea rutas laborales PASS;
+- crea tarjetas PASS en SHELL;
+- crea consumidores nuevos de autorización/contexto;
+- modifica el registro de consumidores;
+- corrige los aliases locales de roles;
+- corrige `PRIVILEGED_ROLES`;
+- implementa simulación canónica;
+- corrige el Header de PASS;
+- modifica PULSO;
+- mueve ownership de PULSO a PASS;
+- cambia `SafeContextProjectionV1`;
+- cambia `SafeDecisionProjectionV1`;
+- cambia RLS;
+- cambia RPC;
+- modifica migraciones;
+- modifica Supabase;
+- modifica datos;
+- cambia configuración;
+- despliega;
+- crea una instancia física;
+- autoriza implementación física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla lógica funcional de otras aplicaciones reservada a `SHELL-APP-013`.
+
+---
+
+#### 66. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-011 — Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-012 — Mantener PASS fuera del RBAC laboral del cliente`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones`
+
+
 ### [ ] SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
 ### [ ] SHELL-APP-014 — Definir retorno seguro entre aplicaciones
 ### [ ] SHELL-APP-015 — Conservar contexto al cambiar de aplicación
