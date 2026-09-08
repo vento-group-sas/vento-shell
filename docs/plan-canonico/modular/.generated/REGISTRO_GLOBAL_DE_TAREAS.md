@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1134** |
+| Aprobadas | **1135** |
 | En propuesta | **0** |
-| No iniciadas | **462** |
+| No iniciadas | **461** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.05% (1134/1596)** |
+| Porcentaje de completamiento | **71.12% (1135/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-017` — Diseñar experiencia para computador | ✅ APROBADA |
-| Tarea actual | `SHELL-APP-018` — Diseñar experiencia para tablet | ⬜ NO INICIADA |
-| Siguiente reservada | `SHELL-APP-019` — Probar navegación por rol | ⬜ NO INICIADA |
+| Última aprobada | `SHELL-APP-018` — Diseñar experiencia para tablet | ✅ APROBADA |
+| Tarea actual | `SHELL-APP-019` — Probar navegación por rol | ⬜ NO INICIADA |
+| Siguiente reservada | `SHELL-APP-020` — Probar navegación con bloqueos reales | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -804,7 +804,7 @@
 | ✅ APROBADA | `SHELL-APP-015` | Conservar contexto al cambiar de aplicación | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ✅ APROBADA | `SHELL-APP-016` | Conservar tarea en curso cuando corresponda | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ✅ APROBADA | `SHELL-APP-017` | Diseñar experiencia para computador | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
-| ⬜ NO INICIADA | `SHELL-APP-018` | Diseñar experiencia para tablet | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
+| ✅ APROBADA | `SHELL-APP-018` | Diseñar experiencia para tablet | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ⬜ NO INICIADA | `SHELL-APP-019` | Probar navegación por rol | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ⬜ NO INICIADA | `SHELL-APP-020` | Probar navegación con bloqueos reales | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
 | ⬜ NO INICIADA | `SHELL-APP-021` | Retirar placeholders de perfil y configuración sin destino real | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
