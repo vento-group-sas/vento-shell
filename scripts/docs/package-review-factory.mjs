@@ -1589,19 +1589,98 @@ function summaryCounts(ledger) {
   return counts;
 }
 
-function buildAnomalyQueue(dossiers, ledger) {
+export function reviewSchedulingState({
+  dossier,
+  reviewStatus,
+  currentExecutionPackageId = null,
+} = {}) {
+  const status = String(reviewStatus ?? 'NEEDS_REVIEW').trim().toUpperCase();
+  if (!['NEEDS_REVIEW', 'STALE'].includes(status)) return null;
+
+  const blockedByTaskIds = uniqueSorted(
+    dossier?.package?.task_prerequisites?.missing_task_ids ?? [],
+  );
+  const blockedByAnomalyCodes = uniqueSorted(
+    (dossier?.anomalies ?? [])
+      .filter(({ severity }) => severity === 'BLOCKING')
+      .map(({ code }) => code),
+  );
+
+  if (blockedByTaskIds.length > 0 || blockedByAnomalyCodes.length > 0) {
+    return {
+      classification: 'WAITING_DOCUMENTATION',
+      eligible_for_batch: false,
+      waiting_reason: blockedByTaskIds.length > 0
+        ? 'TASK_PREREQUISITES_PENDING'
+        : 'DETERMINISTIC_BLOCKING_ANOMALY',
+      blocked_by_task_ids: blockedByTaskIds,
+      blocked_by_anomaly_codes: blockedByAnomalyCodes,
+    };
+  }
+
+  const current = String(currentExecutionPackageId ?? '').trim().toUpperCase();
+  const classification = current && dossier?.package_id === current
+    ? 'EXECUTION_CRITICAL'
+    : 'REVIEWABLE_NOW';
+
+  return {
+    classification,
+    eligible_for_batch: true,
+    waiting_reason: null,
+    blocked_by_task_ids: [],
+    blocked_by_anomaly_codes: [],
+  };
+}
+
+function reviewSchedulingRank(classification) {
+  if (classification === 'EXECUTION_CRITICAL') return 2;
+  if (classification === 'REVIEWABLE_NOW') return 1;
+  return 0;
+}
+
+function reviewSchedulingCounts(queue) {
+  const counts = {
+    EXECUTION_CRITICAL: 0,
+    REVIEWABLE_NOW: 0,
+    WAITING_DOCUMENTATION: 0,
+  };
+
+  for (const entry of queue ?? []) {
+    if (Object.hasOwn(counts, entry.scheduling_class)) {
+      counts[entry.scheduling_class] += 1;
+    }
+  }
+
+  return counts;
+}
+
+function buildAnomalyQueue(
+  dossiers,
+  ledger,
+  currentExecutionPackageId = null,
+) {
   const ledgerMap = ledgerEntryMap(ledger);
 
   return dossiers
     .map((dossier) => {
       const ledgerEntry = ledgerMap.get(dossier.package_id);
       const status = ledgerEntry?.status ?? 'NEEDS_REVIEW';
+      const scheduling = reviewSchedulingState({
+        dossier,
+        reviewStatus: status,
+        currentExecutionPackageId,
+      });
 
       return {
         package_id: dossier.package_id,
         review_status: status,
         review_fingerprint: dossier.review_fingerprint,
         priority: reviewPriority(dossier, status),
+        scheduling_class: scheduling?.classification ?? null,
+        eligible_for_batch: scheduling?.eligible_for_batch ?? false,
+        waiting_reason: scheduling?.waiting_reason ?? null,
+        blocked_by_task_ids: scheduling?.blocked_by_task_ids ?? [],
+        blocked_by_anomaly_codes: scheduling?.blocked_by_anomaly_codes ?? [],
         anomaly_counts: {
           BLOCKING: dossier.anomalies.filter(({ severity }) => severity === 'BLOCKING').length,
           REVIEW: dossier.anomalies.filter(({ severity }) => severity === 'REVIEW').length,
@@ -1611,7 +1690,9 @@ function buildAnomalyQueue(dossiers, ledger) {
     })
     .filter(({ review_status: status }) => ['NEEDS_REVIEW', 'STALE'].includes(status))
     .sort((left, right) => (
-      right.priority - left.priority
+      reviewSchedulingRank(right.scheduling_class)
+      - reviewSchedulingRank(left.scheduling_class)
+      || right.priority - left.priority
       || sortPackageIds(left.package_id, right.package_id)
     ));
 }
@@ -1757,8 +1838,16 @@ function dossierMarkdown(dossier, ledgerEntry) {
 
 function writeOutputs(root, snapshot, ledger) {
   const ledgerMap = ledgerEntryMap(ledger);
-  const queue = buildAnomalyQueue(snapshot.dossiers, ledger);
+  const currentExecutionPackageId = (
+    snapshot.review_scheduler?.current_execution_package_id ?? null
+  );
+  const queue = buildAnomalyQueue(
+    snapshot.dossiers,
+    ledger,
+    currentExecutionPackageId,
+  );
   const counts = summaryCounts(ledger);
+  const schedulingCounts = reviewSchedulingCounts(queue);
 
   const index = {
     schema_version: SCHEMA_VERSION,
@@ -1769,16 +1858,32 @@ function writeOutputs(root, snapshot, ledger) {
     package_count: snapshot.dossiers.length,
     review_counts: counts,
     deterministic_anomaly_counts: snapshot.metrics.deterministic_anomaly_counts,
+    review_scheduling: {
+      current_execution_package_id: currentExecutionPackageId,
+      counts: schedulingCounts,
+    },
     packages: snapshot.dossiers.map((dossier) => {
       const ledgerEntry = ledgerMap.get(dossier.package_id);
+      const reviewStatus = ledgerEntry?.status ?? 'NEEDS_REVIEW';
+      const scheduling = reviewSchedulingState({
+        dossier,
+        reviewStatus,
+        currentExecutionPackageId,
+      });
+
       return {
         package_id: dossier.package_id,
-        review_status: ledgerEntry?.status ?? 'NEEDS_REVIEW',
+        review_status: reviewStatus,
         review_fingerprint: dossier.review_fingerprint,
         priority: reviewPriority(
           dossier,
-          ledgerEntry?.status ?? 'NEEDS_REVIEW',
+          reviewStatus,
         ),
+        scheduling_class: scheduling?.classification ?? null,
+        eligible_for_batch: scheduling?.eligible_for_batch ?? false,
+        waiting_reason: scheduling?.waiting_reason ?? null,
+        blocked_by_task_ids: scheduling?.blocked_by_task_ids ?? [],
+        blocked_by_anomaly_codes: scheduling?.blocked_by_anomaly_codes ?? [],
         primary_task_ids: dossier.package.primary_task_ids,
         support_task_ids: dossier.package.support_task_ids,
         dominant_task_id: dossier.package.dominant_task_id,
@@ -1803,6 +1908,10 @@ function writeOutputs(root, snapshot, ledger) {
     schema_version: SCHEMA_VERSION,
     factory_id: FACTORY_ID,
     source_head: snapshot.source_manifest.generated_from_head,
+    review_scheduling: {
+      current_execution_package_id: currentExecutionPackageId,
+      counts: schedulingCounts,
+    },
     queue,
   });
   writeJson(root, SOURCE_MANIFEST_PATH, snapshot.source_manifest);
@@ -1828,7 +1937,12 @@ function writeOutputs(root, snapshot, ledger) {
 
   writeText(root, DOSSIERS_MD_PATH, `${dossiersMarkdown.trimEnd()}\n`);
 
-  return { index, queue, counts };
+  return {
+    index,
+    queue,
+    counts,
+    schedulingCounts,
+  };
 }
 
 function allRelevantTaskIds(packages) {
@@ -1863,6 +1977,7 @@ export function buildFactoryFromPackages({
   taskRoutingByPackage = null,
   sourceManifest,
   previousLedger = null,
+  currentExecutionPackageId = null,
   generatedAt = new Date().toISOString(),
 } = {}) {
   const canonical = (rawPackages ?? [])
@@ -1932,9 +2047,20 @@ export function buildFactoryFromPackages({
     ),
   };
 
+  const normalizedCurrentExecutionPackageId = (
+    /^GAP-PKG-\d{3}$/u.test(
+      String(currentExecutionPackageId ?? '').trim().toUpperCase(),
+    )
+      ? String(currentExecutionPackageId).trim().toUpperCase()
+      : null
+  );
+
   return {
     generated_at: generatedAt,
     source_manifest: sourceManifest,
+    review_scheduler: {
+      current_execution_package_id: normalizedCurrentExecutionPackageId,
+    },
     dossiers,
     ledger,
     metrics: {
@@ -2045,6 +2171,8 @@ async function buildFactory(root) {
     taskRoutingByPackage,
     sourceManifest,
     previousLedger,
+    currentExecutionPackageId:
+      readiness?.registry?.package_execution?.current?.package_id ?? null,
   });
 
   const output = writeOutputs(root, snapshot, snapshot.ledger);
@@ -2057,7 +2185,12 @@ async function buildFactory(root) {
 }
 
 function printStatus(result) {
-  const { snapshot, counts, queue } = result;
+  const {
+    snapshot,
+    counts,
+    queue,
+    schedulingCounts,
+  } = result;
 
   console.log('=== PACKAGE REVIEW FACTORY STATUS ===');
   console.log(`FACTORY_ID: ${FACTORY_ID}`);
@@ -2071,6 +2204,10 @@ function printStatus(result) {
   console.log(`REVIEW_ANOMALIES: ${snapshot.metrics.deterministic_anomaly_counts.REVIEW}`);
   console.log(`PACKAGES_WITH_BLOCKING_ANOMALIES: ${snapshot.metrics.packages_with_blocking_anomalies}`);
   console.log(`PACKAGES_WITH_REVIEW_ANOMALIES: ${snapshot.metrics.packages_with_review_anomalies}`);
+  console.log(`CURRENT_EXECUTION_PACKAGE: ${snapshot.review_scheduler?.current_execution_package_id ?? 'NONE'}`);
+  console.log(`EXECUTION_CRITICAL: ${schedulingCounts.EXECUTION_CRITICAL}`);
+  console.log(`REVIEWABLE_NOW: ${schedulingCounts.REVIEWABLE_NOW}`);
+  console.log(`WAITING_DOCUMENTATION: ${schedulingCounts.WAITING_DOCUMENTATION}`);
   console.log(`ANOMALY_QUEUE: ${queue.length}`);
   console.log(`INDEX: ${INDEX_PATH}`);
   console.log(`DOSSIERS: ${DOSSIERS_MD_PATH}`);
@@ -2113,6 +2250,7 @@ function batchHeaderReserve(maxChars) {
 export function selectReviewBatch({
   dossiers,
   ledger,
+  currentExecutionPackageId = null,
   size = 5,
   maxChars = 50000,
 } = {}) {
@@ -2128,26 +2266,43 @@ export function selectReviewBatch({
   }
 
   const ledgerMap = ledgerEntryMap(ledger);
-  const candidates = dossiers
-    .filter((dossier) => {
+  const pending = dossiers
+    .map((dossier) => {
       const status = ledgerMap.get(dossier.package_id)?.status ?? 'NEEDS_REVIEW';
-      return ['NEEDS_REVIEW', 'STALE'].includes(status);
+      const scheduling = reviewSchedulingState({
+        dossier,
+        reviewStatus: status,
+        currentExecutionPackageId,
+      });
+
+      return {
+        dossier,
+        status,
+        scheduling,
+      };
     })
-    .sort((left, right) => {
-      const leftStatus = ledgerMap.get(left.package_id)?.status ?? 'NEEDS_REVIEW';
-      const rightStatus = ledgerMap.get(right.package_id)?.status ?? 'NEEDS_REVIEW';
-      return (
-        reviewPriority(right, rightStatus)
-        - reviewPriority(left, leftStatus)
-        || sortPackageIds(left.package_id, right.package_id)
-      );
-    });
+    .filter(({ scheduling }) => scheduling !== null);
+
+  const candidates = pending
+    .filter(({ scheduling }) => scheduling.eligible_for_batch)
+    .sort((left, right) => (
+      reviewSchedulingRank(right.scheduling.classification)
+      - reviewSchedulingRank(left.scheduling.classification)
+      || reviewPriority(right.dossier, right.status)
+      - reviewPriority(left.dossier, left.status)
+      || sortPackageIds(left.dossier.package_id, right.dossier.package_id)
+    ));
 
   const selected = [];
   let usedChars = 0;
 
-  for (const dossier of candidates) {
+  for (const candidate of candidates) {
     if (selected.length >= size) break;
+
+    const {
+      dossier,
+      scheduling,
+    } = candidate;
     const ledgerEntry = ledgerMap.get(dossier.package_id);
     const rendered = compactMarkdownForBudget(
       dossierMarkdown(dossier, ledgerEntry),
@@ -2160,6 +2315,7 @@ export function selectReviewBatch({
     selected.push({
       dossier,
       ledger_entry: ledgerEntry,
+      scheduling,
       markdown: rendered.markdown,
       batch_truncated: rendered.truncated,
       original_chars: rendered.original_chars,
@@ -2170,7 +2326,20 @@ export function selectReviewBatch({
   return {
     selected,
     used_chars: usedChars,
-    remaining_after_batch: Math.max(0, candidates.length - selected.length),
+    remaining_after_batch: Math.max(0, pending.length - selected.length),
+    reviewable_remaining_after_batch: Math.max(
+      0,
+      candidates.length - selected.length,
+    ),
+    execution_critical_count: pending.filter(
+      ({ scheduling }) => scheduling.classification === 'EXECUTION_CRITICAL',
+    ).length,
+    reviewable_now_count: pending.filter(
+      ({ scheduling }) => scheduling.classification === 'REVIEWABLE_NOW',
+    ).length,
+    waiting_documentation_count: pending.filter(
+      ({ scheduling }) => scheduling.classification === 'WAITING_DOCUMENTATION',
+    ).length,
     content_budget: contentBudget,
     per_package_budget: perPackageBudget,
     header_reserve_chars: reserveChars,
@@ -2178,9 +2347,13 @@ export function selectReviewBatch({
 }
 
 function writeBatch(root, result, { size, maxChars }) {
+  const currentExecutionPackageId = (
+    result.snapshot.review_scheduler?.current_execution_package_id ?? null
+  );
   const batch = selectReviewBatch({
     dossiers: result.snapshot.dossiers,
     ledger: result.ledger,
+    currentExecutionPackageId,
     size,
     maxChars,
   });
@@ -2195,14 +2368,27 @@ function writeBatch(root, result, { size, maxChars }) {
     source_head: sourceHead,
     generated_at: new Date().toISOString(),
     package_ids: batch.selected.map(({ dossier }) => dossier.package_id),
+    review_scheduler: {
+      current_execution_package_id: currentExecutionPackageId,
+      execution_critical_count: batch.execution_critical_count,
+      reviewable_now_count: batch.reviewable_now_count,
+      waiting_documentation_count: batch.waiting_documentation_count,
+      reviewable_remaining_after_batch: batch.reviewable_remaining_after_batch,
+    },
     review_contract: {
       allowed_decisions: ['PASS', 'CONTRADICTION'],
       source_only: true,
       infer_missing_content: false,
       contradiction_requires_exact_evidence: true,
     },
-    dossiers: batch.selected.map(({ dossier, batch_truncated: batchTruncated, original_chars: originalChars }) => ({
+    dossiers: batch.selected.map(({
+      dossier,
+      scheduling,
+      batch_truncated: batchTruncated,
+      original_chars: originalChars,
+    }) => ({
       ...dossier,
+      review_scheduler: scheduling,
       batch_projection: {
         truncated: batchTruncated,
         original_markdown_chars: originalChars,
@@ -2221,6 +2407,10 @@ function writeBatch(root, result, { size, maxChars }) {
     `Packages: ${json.package_ids.join(', ') || 'NONE'}`,
     `Char budget: ${maxChars}`,
     `Per-package budget: ${batch.per_package_budget}`,
+    `Current execution package: ${currentExecutionPackageId ?? 'NONE'}`,
+    `Execution critical candidates: ${batch.execution_critical_count}`,
+    `Reviewable now candidates: ${batch.reviewable_now_count}`,
+    `Waiting documentation: ${batch.waiting_documentation_count}`,
     '',
     '## Contrato de revisión',
     '',
@@ -2266,6 +2456,11 @@ function writeBatch(root, result, { size, maxChars }) {
   console.log(`BUDGET_COMPLIANCE: ${finalMarkdown.length <= maxChars ? 'PASS' : 'FAIL'}`);
   console.log(`TRUNCATED_PACKAGES: ${batch.selected.filter(({ batch_truncated: value }) => value).map(({ dossier }) => dossier.package_id).join(',') || 'NONE'}`);
   console.log(`REMAINING_AFTER_BATCH: ${batch.remaining_after_batch}`);
+  console.log(`REVIEWABLE_REMAINING_AFTER_BATCH: ${batch.reviewable_remaining_after_batch}`);
+  console.log(`CURRENT_EXECUTION_PACKAGE: ${currentExecutionPackageId ?? 'NONE'}`);
+  console.log(`EXECUTION_CRITICAL: ${batch.execution_critical_count}`);
+  console.log(`REVIEWABLE_NOW: ${batch.reviewable_now_count}`);
+  console.log(`WAITING_DOCUMENTATION: ${batch.waiting_documentation_count}`);
   console.log(`BATCH_MD: ${BATCH_MD_PATH}`);
   console.log(`BATCH_JSON: ${BATCH_JSON_PATH}`);
   console.log(`RECEIPT_TEMPLATE: ${RECEIPT_TEMPLATE_PATH}`);

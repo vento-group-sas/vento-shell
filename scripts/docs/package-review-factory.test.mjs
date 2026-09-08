@@ -11,6 +11,7 @@ import {
   normalizeReviewPackage,
   parseCanonicalGapRouting,
   parseTaskTreqDeclaration,
+  reviewSchedulingState,
   selectReviewBatch,
   validateReviewReceipt,
 } from './package-review-factory.mjs';
@@ -216,6 +217,18 @@ test('batch prioriza STALE y anomalies sin superar size', () => {
   const sourceManifest = {
     generated_from_head: 'a'.repeat(40),
   };
+  const packageSnippetIndex = new Map([
+    ['GAP-PKG-001', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-001',
+      text_sha256: '1'.repeat(64),
+    }]],
+    ['GAP-PKG-002', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-002',
+      text_sha256: '2'.repeat(64),
+    }]],
+  ]);
 
   const built = buildFactoryFromPackages({
     rawPackages: [
@@ -233,6 +246,7 @@ test('batch prioriza STALE y anomalies sin superar size', () => {
         dominant: 'TASK-B-001',
       }),
     ],
+    packageSnippetIndex,
     sourceManifest,
     generatedAt: '2026-09-07T20:00:00Z',
   });
@@ -248,6 +262,181 @@ test('batch prioriza STALE y anomalies sin superar size', () => {
 
   assert.equal(batch.selected.length, 1);
   assert.equal(batch.selected[0].dossier.package_id, 'GAP-PKG-002');
+});
+
+test('scheduler excluye WAITING_DOCUMENTATION y prioriza EXECUTION_CRITICAL', () => {
+  const sourceManifest = {
+    generated_from_head: 'a'.repeat(40),
+  };
+
+  const waiting = rawPackage({
+    id: 'GAP-PKG-002',
+    layer: 1,
+    primary: ['TASK-B-001'],
+    dominant: 'TASK-B-001',
+  });
+  waiting.task_prerequisites = {
+    ...waiting.task_prerequisites,
+    progress_percent: 50,
+    missing_task_ids: ['TASK-B-002'],
+    tasks: [
+      ...waiting.task_prerequisites.tasks,
+      {
+        task_id: 'TASK-B-002',
+        state: 'NO_INICIADA',
+        source: 'docs/TASK-B-002.md',
+      },
+    ],
+  };
+
+  const packageSnippetIndex = new Map([
+    ['GAP-PKG-001', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-001',
+      text_sha256: '1'.repeat(64),
+    }]],
+    ['GAP-PKG-002', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-002',
+      text_sha256: '2'.repeat(64),
+    }]],
+    ['GAP-PKG-003', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-003',
+      text_sha256: '3'.repeat(64),
+    }]],
+  ]);
+
+  const built = buildFactoryFromPackages({
+    rawPackages: [
+      rawPackage({
+        id: 'GAP-PKG-001',
+        layer: 0,
+        primary: ['TASK-A-001'],
+        dominant: 'TASK-A-001',
+      }),
+      waiting,
+      rawPackage({
+        id: 'GAP-PKG-003',
+        layer: 1,
+        primary: ['TASK-C-001'],
+        dominant: 'TASK-C-001',
+      }),
+    ],
+    packageSnippetIndex,
+    sourceManifest,
+    currentExecutionPackageId: 'GAP-PKG-001',
+    generatedAt: '2026-09-08T01:30:00Z',
+  });
+
+  const byId = new Map(
+    built.dossiers.map((dossier) => [dossier.package_id, dossier]),
+  );
+
+  const critical = reviewSchedulingState({
+    dossier: byId.get('GAP-PKG-001'),
+    reviewStatus: 'NEEDS_REVIEW',
+    currentExecutionPackageId: 'GAP-PKG-001',
+  });
+  const blocked = reviewSchedulingState({
+    dossier: byId.get('GAP-PKG-002'),
+    reviewStatus: 'NEEDS_REVIEW',
+    currentExecutionPackageId: 'GAP-PKG-001',
+  });
+  const reviewable = reviewSchedulingState({
+    dossier: byId.get('GAP-PKG-003'),
+    reviewStatus: 'NEEDS_REVIEW',
+    currentExecutionPackageId: 'GAP-PKG-001',
+  });
+
+  assert.equal(critical.classification, 'EXECUTION_CRITICAL');
+  assert.equal(critical.eligible_for_batch, true);
+  assert.equal(blocked.classification, 'WAITING_DOCUMENTATION');
+  assert.equal(blocked.eligible_for_batch, false);
+  assert.deepEqual(blocked.blocked_by_task_ids, ['TASK-B-002']);
+  assert.equal(reviewable.classification, 'REVIEWABLE_NOW');
+  assert.equal(reviewable.eligible_for_batch, true);
+
+  const batch = selectReviewBatch({
+    dossiers: built.dossiers,
+    ledger: built.ledger,
+    currentExecutionPackageId: 'GAP-PKG-001',
+    size: 2,
+    maxChars: 100000,
+  });
+
+  assert.deepEqual(
+    batch.selected.map(({ dossier }) => dossier.package_id),
+    ['GAP-PKG-001', 'GAP-PKG-003'],
+  );
+  assert.equal(
+    batch.selected[0].scheduling.classification,
+    'EXECUTION_CRITICAL',
+  );
+  assert.equal(batch.waiting_documentation_count, 1);
+  assert.equal(batch.reviewable_remaining_after_batch, 0);
+});
+
+test('scheduler reactiva automaticamente al desaparecer prerequisites pendientes', () => {
+  const sourceManifest = {
+    generated_from_head: 'a'.repeat(40),
+  };
+
+  const pkg = rawPackage({
+    id: 'GAP-PKG-010',
+    layer: 2,
+    primary: ['TASK-A-001'],
+    dominant: 'TASK-A-001',
+  });
+  pkg.task_prerequisites = {
+    ...pkg.task_prerequisites,
+    progress_percent: 50,
+    missing_task_ids: ['TASK-A-002'],
+    tasks: [
+      ...pkg.task_prerequisites.tasks,
+      {
+        task_id: 'TASK-A-002',
+        state: 'NO_INICIADA',
+        source: 'docs/TASK-A-002.md',
+      },
+    ],
+  };
+
+  const packageSnippetIndex = new Map([
+    ['GAP-PKG-010', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-010',
+      text_sha256: 'a'.repeat(64),
+    }]],
+  ]);
+
+  const built = buildFactoryFromPackages({
+    rawPackages: [pkg],
+    packageSnippetIndex,
+    sourceManifest,
+    generatedAt: '2026-09-08T01:31:00Z',
+  });
+
+  const dossier = built.dossiers[0];
+
+  const waiting = reviewSchedulingState({
+    dossier,
+    reviewStatus: 'NEEDS_REVIEW',
+  });
+
+  assert.equal(waiting.classification, 'WAITING_DOCUMENTATION');
+
+  dossier.package.task_prerequisites.missing_task_ids = [];
+  dossier.package.task_prerequisites.progress_percent = 100;
+
+  const ready = reviewSchedulingState({
+    dossier,
+    reviewStatus: 'NEEDS_REVIEW',
+  });
+
+  assert.equal(ready.classification, 'REVIEWABLE_NOW');
+  assert.equal(ready.eligible_for_batch, true);
+  assert.deepEqual(ready.blocked_by_task_ids, []);
 });
 
 test('receipt exige fingerprint vigente y evidencia para contradiccion', () => {
@@ -355,6 +544,13 @@ test('factory no duplica texto canónico completo dentro del dossier y batch res
   const sourceManifest = {
     generated_from_head: 'a'.repeat(40),
   };
+  const packageSnippetIndex = new Map([
+    ['GAP-PKG-001', [{
+      source_path: 'docs/packages.md',
+      text: 'GAP-PKG-001',
+      text_sha256: '1'.repeat(64),
+    }]],
+  ]);
 
   const built = buildFactoryFromPackages({
     rawPackages: [
@@ -366,6 +562,7 @@ test('factory no duplica texto canónico completo dentro del dossier y batch res
       }),
     ],
     taskSectionIndex,
+    packageSnippetIndex,
     sourceManifest,
     generatedAt: '2026-09-07T20:00:00Z',
   });
