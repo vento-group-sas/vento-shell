@@ -5702,6 +5702,1313 @@ Esta tarea no:
 `SHELL-APP-014 — Definir retorno seguro entre aplicaciones`
 
 
-### [ ] SHELL-APP-014 — Definir retorno seguro entre aplicaciones
+### ✅ SHELL-APP-014 — Definir retorno seguro entre aplicaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones
+**Tarea siguiente:** SHELL-APP-015 — Conservar contexto al cambiar de aplicación
+**Tipo de tarea:** definición técnico-documental del retorno seguro entre aplicaciones y de la frontera de `returnTo`; especializa navegación, autenticación y handoffs sin convertir un destino de retorno en autorización, ownership, estado empresarial ni reanudación implícita, y conserva `PER_IMPLEMENTATION_UNIT` únicamente como topología de materialización posterior
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md`
+**Estado físico resultante:** contrato documental de retorno cross-app definido para SHELL sobre navegación ordinaria, round-trip de autenticación y handoff ligado a proceso, con validación fail-closed del destino y sin modificar runtime ni crear instancia física
+**Cambios físicos autorizados:** ninguno; no se modifican rutas, código, autenticación, middleware, contratos, catálogos, dominios, permisos, Supabase, datos, RLS, RPC, migraciones, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo una persona o flujo autorizado puede salir de una superficie de Vento OS, atravesar otra aplicación o el acceso central y regresar a un destino válido sin perder la intención de navegación ni convertir el retorno en una fuente de autoridad.
+
+La política debe impedir simultáneamente:
+
+- redirecciones hacia orígenes arbitrarios;
+- confianza en parámetros de URL como autorización;
+- retorno a una aplicación que ya no es válida para el actor;
+- reapertura silenciosa de una instancia empresarial distinta;
+- duplicación de efectos por navegación repetida;
+- transferencia accidental de ownership entre aplicaciones;
+- restauración de contexto o trabajo que ya quedó obsoleto;
+- uso de SHELL como fallback funcional cuando el destino no puede ejecutar su responsabilidad.
+
+La regla central queda:
+
+```text
+RETORNO
+=
+CONTINUIDAD DE NAVEGACIÓN VALIDADA
+
+RETORNO
+!=
+AUTORIZACIÓN
+!=
+OWNERSHIP
+!=
+CLAIM
+!=
+START
+!=
+COMPLETE
+!=
+RESULTADO EMPRESARIAL
+```
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-013`
+
+Se reciben sin reapertura:
+
+1. SHELL coordina sin convertirse en propietaria universal;
+2. los 69 procesos empresariales vigentes conservan sus nueve aplicaciones propietarias;
+3. navegación y ejecución funcional permanecen separadas;
+4. referencias, proyecciones y work items no transfieren ownership;
+5. la aplicación destino revalida autorización, contexto, estado, versión y recurso;
+6. un handoff no cambia automáticamente la propietaria;
+7. si el destino está indisponible, SHELL no absorbe su lógica como fallback;
+8. error técnico y resultado empresarial permanecen distintos;
+9. navegar no produce claim, inicio ni finalización;
+10. el detalle del retorno cross-app se desarrolla exclusivamente aquí.
+
+Esta tarea no reabre la distribución funcional cerrada por `SHELL-APP-013`.
+
+---
+
+#### 3. Alcance exacto de la tarea
+
+`SHELL-APP-014` define exclusivamente:
+
+- qué significa un retorno seguro;
+- cómo se trata `returnTo` como dato no confiable;
+- qué clases conceptuales de viaje deben distinguirse;
+- qué condiciones hacen elegible un destino;
+- cómo se valida un origen o destino antes de navegar;
+- cómo se trata un retorno ligado a un handoff de proceso;
+- qué ocurre ante destino inválido, obsoleto, no autorizado o técnicamente indisponible;
+- qué información puede y no puede transportarse en la navegación;
+- cuándo un retorno previo deja de ser reutilizable;
+- cómo se evita que una redirección produzca autoridad o un efecto empresarial.
+
+No define todavía la restauración completa de contexto ni la conservación técnica de una tarea en curso.
+
+---
+
+#### 4. Tres escenarios conceptuales distintos
+
+La política distingue tres escenarios sin crear un enum nuevo:
+
+| Escenario | Finalidad | Autoridad principal |
+| --- | --- | --- |
+| round-trip de autenticación | llegar al acceso central y volver a un destino permitido | sesión e identidad revalidadas + destino permitido |
+| navegación cross-app ordinaria | abrir otra aplicación o volver al Hub sin afirmar handoff empresarial | catálogo, visibilidad y autorización vigentes |
+| retorno ligado a handoff | continuar la misma intención dentro de una relación empresarial aprobada | contrato `ApplicationHandoffRelation` + aplicación propietaria y receptora |
+
+Los tres pueden utilizar navegación web, pero no comparten automáticamente el mismo significado empresarial.
+
+---
+
+#### 5. `returnTo` es una sugerencia de transporte no confiable
+
+`returnTo` puede expresar un destino solicitado.
+
+No demuestra:
+
+- identidad;
+- actor efectivo;
+- rol base;
+- rol operativo;
+- permiso;
+- sede;
+- área;
+- turno;
+- check-in;
+- ownership;
+- pertenencia a un handoff;
+- estado de proceso;
+- existencia de una tarea;
+- autorización para mutar.
+
+Por tanto:
+
+```text
+returnTo recibido
+→ NORMALIZAR
+→ VALIDAR
+→ RESOLVER DESTINO PERMITIDO
+→ NAVEGAR SOLO SI SIGUE SIENDO VÁLIDO
+```
+
+Nunca:
+
+```text
+returnTo recibido
+→ REDIRECT DIRECTO
+```
+
+---
+
+#### 6. Baseline AS-IS observado
+
+El runtime vigente conserva una frontera todavía permisiva:
+
+- `safeReturnTo()` acepta cualquier valor absoluto que comience por `http://` o `https://`;
+- una sesión ya existente puede redirigirse hacia el valor normalizado por esa función;
+- después de un inicio de sesión exitoso, el cliente asigna el destino a `window.location.href`;
+- el middleware construye el acceso central incorporando la URL completa solicitada como `returnTo`.
+
+Esta condición es evidencia AS-IS.
+
+No constituye la política TO-BE y no se corrige físicamente en esta tarea documental.
+
+---
+
+#### 7. Política TO-BE para rutas internas
+
+Una ruta relativa solo puede admitirse como retorno cuando:
+
+1. su resolución permanece dentro de la aplicación o superficie que legítimamente la interpreta;
+2. el patrón de ruta continúa vigente;
+3. no intenta cambiar de origen mediante sintaxis ambigua;
+4. no contiene un esquema embebido;
+5. no contiene credenciales;
+6. el actor puede llegar a esa superficie bajo sus contratos actuales;
+7. la aplicación destino vuelve a validar la acción efectiva.
+
+Una ruta relativa válida para una aplicación no se convierte por ello en ruta válida para otra.
+
+---
+
+#### 8. Política TO-BE para destinos absolutos
+
+Un destino absoluto solo puede admitirse cuando el origen exacto está explícitamente aprobado para:
+
+- la aplicación correspondiente;
+- el ambiente correspondiente;
+- el flujo solicitado;
+- el estado de ciclo de vida vigente.
+
+La tarea no crea una lista hardcodeada de hosts.
+
+La materialización posterior deberá resolver los orígenes permitidos desde las fuentes canónicas propietarias vigentes y rechazar cualquier destino que no pueda reconciliarse con ellas.
+
+---
+
+#### 9. Esquemas admitidos
+
+La existencia de una URL sintácticamente válida no basta.
+
+Un esquema solo puede utilizarse cuando está aprobado por el contrato de navegación aplicable.
+
+Quedan rechazados por defecto:
+
+- esquemas desconocidos;
+- esquemas no registrados para el flujo;
+- URLs que intenten incorporar credenciales en la autoridad;
+- destinos que cambien silenciosamente de protocolo o ambiente;
+- valores que dependan de interpretación permisiva del navegador.
+
+La tarea no inventa un catálogo nuevo de esquemas.
+
+---
+
+#### 10. No se infiere confianza por sufijo o branding
+
+No es válido razonar:
+
+```text
+contiene "vento"
+→ DESTINO CONFIABLE
+```
+
+ni:
+
+```text
+termina en un dominio parecido
+→ DESTINO CONFIABLE
+```
+
+ni:
+
+```text
+la metadata local conoce el host
+→ DESTINO AUTORIZADO
+```
+
+La confianza requiere identidad canónica de aplicación, origen aprobado y ambiente compatible.
+
+---
+
+#### 11. El ambiente forma parte de la validez
+
+Un retorno no puede cruzar por inferencia entre:
+
+- producción;
+- staging;
+- preview;
+- desarrollo;
+- sandbox;
+- cualquier ambiente futuro gobernado.
+
+La coincidencia de ruta o aplicación no autoriza un salto de ambiente.
+
+El destino debe pertenecer al ambiente efectivo del flujo o a una transición cross-environment expresamente autorizada por su contrato propietario.
+
+Esta tarea no crea una transición cross-environment nueva.
+
+---
+
+#### 12. Sin lista local paralela de destinos
+
+SHELL no mantendrá una segunda autoridad como:
+
+```text
+ALLOWED_RETURN_HOSTS = [...]
+```
+
+si esa lista replica manualmente un catálogo o configuración canónica ya existente.
+
+Una implementación puede materializar una proyección derivada o adaptador verificable, pero la fuente de significado debe conservar propietario, versión y frescura.
+
+Una lista local stale falla cerrada; no amplía destinos por conveniencia.
+
+---
+
+#### 13. Validación antes y después de autenticación
+
+La elegibilidad del destino debe comprobarse tanto para:
+
+- una sesión ya existente;
+- una sesión que acaba de autenticarse.
+
+No puede existir esta diferencia:
+
+```text
+SESION EXISTENTE
+→ DESTINO VALIDADO
+
+LOGIN NUEVO
+→ DESTINO CRUDO
+```
+
+ni la inversa.
+
+La forma de entrada cambia, pero la frontera de retorno es la misma.
+
+---
+
+#### 14. La validación no puede depender solo del cliente
+
+Una asignación de navegador, estado React, query parameter o helper cliente no constituye la única barrera de seguridad.
+
+La navegación final y la aplicación receptora deberán conservar validaciones autoritativas en las capas propietarias aplicables.
+
+Modificar desde el cliente:
+
+- `returnTo`;
+- `href`;
+- `location`;
+- query parameters;
+- estado local;
+
+no puede fabricar acceso.
+
+---
+
+#### 15. Destino permitido no equivale a autorización de aplicación
+
+Incluso si un origen es válido:
+
+```text
+ORIGEN APROBADO
+!=
+app.access ALLOW
+```
+
+El destino conserva su guard.
+
+Por tanto, un usuario que conoce una URL válida no obtiene por ello una aplicación que su actor o contexto no puede abrir.
+
+---
+
+#### 16. Visibilidad y retorno permanecen separados
+
+La política aprobada de visibilidad continúa perteneciendo a `SHELL-APP-002` y `SHELL-APP-003`.
+
+Se conserva:
+
+```text
+RETORNO VALIDO
+!=
+FORZAR APP VISIBLE
+
+APP VISIBLE
+!=
+ACEPTAR CUALQUIER RETORNO HACIA ELLA
+```
+
+Un destino oculto por irrelevancia no reaparece solo porque fue mencionado por un parámetro anterior.
+
+---
+
+#### 17. Aplicación bloqueada
+
+Cuando la aplicación es presentable pero actualmente no navegable:
+
+- el retorno no la habilita;
+- no se reutiliza un `ALLOW` anterior;
+- la explicación segura sigue `SHELL-APP-010`;
+- el destino continúa siendo no navegable;
+- modificar el enlace no sustituye la revalidación de la aplicación receptora.
+
+El retorno no transforma `CONTEXT_BLOCKED` en autorización.
+
+---
+
+#### 18. Aplicación técnicamente indisponible
+
+Una indisponibilidad técnica del destino:
+
+```text
+!= DENY EMPRESARIAL
+!= TAREA COMPLETADA
+!= RESULTADO NEGATIVO DEL PROCESO
+```
+
+SHELL puede presentar recuperación o navegación segura ya aprobada.
+
+No ejecuta la operación funcional en nombre de la aplicación indisponible.
+
+---
+
+#### 19. AURA permanece diferida
+
+AURA conserva su ciclo de vida diferido.
+
+Un valor de retorno que apunte a AURA no:
+
+- activa AURA;
+- crea readiness;
+- crea una tarjeta navegable;
+- crea permiso;
+- convierte una relación documental de handoff en capacidad operativa.
+
+El estado de ciclo de vida prevalece sobre el destino solicitado.
+
+---
+
+#### 20. PASS permanece adyacente
+
+PASS conserva:
+
+```text
+ADJACENT_RESERVED
+```
+
+Esta tarea no crea:
+
+- `CUSTOMER → PASS` automático;
+- SSO cliente;
+- account linking;
+- intercambio de autorización cliente/laboral;
+- retorno laboral hacia PASS por transitividad.
+
+Una navegación futura hacia una superficie PASS deberá respetar la frontera cliente/laboral aprobada por `SHELL-APP-011` y `SHELL-APP-012`.
+
+---
+
+#### 21. Round-trip de autenticación no es handoff empresarial
+
+El viaje:
+
+```text
+APP
+→ LOGIN CENTRAL
+→ APP
+```
+
+puede existir exclusivamente para restaurar una sesión válida.
+
+No implica:
+
+- `HANDOFF_REQUEST`;
+- `HANDOFF_PROJECTION`;
+- cambio de etapa empresarial;
+- aceptación de trabajo;
+- cambio de propietaria;
+- nuevo proceso.
+
+No se obliga a crear una relación `ApplicationHandoffRelation` para cada acceso central.
+
+---
+
+#### 22. Navegación ordinaria no es handoff empresarial
+
+Abrir una aplicación autorizada desde SHELL o regresar al Hub puede ser una navegación ordinaria.
+
+La mera existencia de:
+
+- un link;
+- una tarjeta;
+- un deep link;
+- un botón volver;
+- historial del navegador;
+
+no convierte el viaje en handoff empresarial.
+
+Un handoff requiere pertenencia al contrato empresarial correspondiente.
+
+---
+
+#### 23. Universo actual de `ApplicationHandoffRelation`
+
+El contrato estático materializado conserva exactamente:
+
+```text
+RELACIONES = 49
+DIRECTA = 27
+CONDICIONAL = 22
+PROCESOS = 8
+APLICACIONES PARTICIPANTES = 9
+APLICACIONES PROPIETARIAS EN ESTE CORTE = 1
+TUPLAS DUPLICADAS = 0
+OWNER_IGUAL_PARTICIPANT = 0
+```
+
+La única aplicación propietaria dentro de este universo de relaciones es:
+
+```text
+viso
+```
+
+Estas cifras no describen toda navegación de Vento OS; describen exclusivamente el universo contractual vigente de handoffs materializados por `SHELL-CON-014::GLOBAL`.
+
+---
+
+#### 24. Ocho procesos del universo de handoff
+
+Se conservan exactamente:
+
+```text
+VPROC-0005
+VPROC-0006
+VPROC-0007
+VPROC-0009
+VPROC-0011
+VPROC-0059
+VPROC-0065
+VPROC-0066
+```
+
+Un `ProcessId` sintácticamente válido pero ausente de este conjunto no puede presentarse como relación vigente de `ApplicationHandoffRelation` por inferencia.
+
+---
+
+#### 25. Nueve aplicaciones participantes del universo de handoff
+
+Se conservan exactamente:
+
+```text
+shell
+anima
+nexo
+fogo
+origo
+pulso
+numera
+aura
+pass
+```
+
+La pertenencia al conjunto de participantes no demuestra que exista una relación para cualquier proceso, pareja o dirección imaginada.
+
+La tupla exacta sigue siendo la identidad de pertenencia.
+
+---
+
+#### 26. Identidad de relación de handoff
+
+Una relación vigente se identifica únicamente mediante:
+
+```text
+ProcessId
++
+owner_application
++
+participant_application
+```
+
+No se crea:
+
+- un ID serial alternativo;
+- un ID derivado desde una URL;
+- un ID derivado desde una pantalla;
+- un ID derivado desde el usuario;
+- un ID derivado desde `returnTo`.
+
+La navegación utiliza la relación; no redefine su identidad.
+
+---
+
+#### 27. `DIRECTA` y `CONDICIONAL`
+
+Se conservan dos clases contractuales:
+
+```text
+DIRECTA
+CONDICIONAL
+```
+
+Una relación `CONDICIONAL` no queda habilitada por la sola existencia de la fila.
+
+Debe satisfacerse la condición empresarial y técnica propietaria que haga aplicable el handoff.
+
+SHELL no interpreta `CONDICIONAL` como un permiso débil ni como fallback navegable.
+
+---
+
+#### 28. Constantes de integración del handoff
+
+Para las 49 relaciones vigentes se conservan:
+
+```text
+consumer_mode = SOLICITUD_HANDOFF_Y_EVENTO
+integration_profile = HANDOFF_PROJECTION
+exchange_family = HANDOFF_REQUEST
+```
+
+Estas constantes clasifican el intercambio.
+
+No convierten una redirección en un evento confirmado ni una solicitud en efecto ejecutado.
+
+---
+
+#### 29. Datos mínimos que un handoff runtime deberá poder preservar
+
+Cuando un retorno pertenezca a un handoff real, la materialización posterior deberá poder conservar, cuando aplique:
+
+- el mismo proceso;
+- la misma instancia de proceso;
+- el recurso empresarial exacto;
+- aplicación propietaria;
+- aplicación participante;
+- actor emisor;
+- actor o función receptora;
+- sede;
+- área;
+- estado vigente;
+- trabajo o acción pendiente;
+- destino de retorno;
+- correlación y causalidad;
+- evidencia;
+- emisión;
+- recepción;
+- aceptación;
+- resultado;
+- idempotencia suficiente contra doble aceptación o doble efecto.
+
+Esta tarea no define un payload físico nuevo.
+
+---
+
+#### 30. URL no es contenedor del estado empresarial
+
+Los elementos anteriores no se trasladan indiscriminadamente como query parameters.
+
+Se conserva:
+
+```text
+URL
+→ REFERENCIA DE NAVEGACIÓN MINIMIZADA
+
+ESTADO EMPRESARIAL
+→ FUENTE PROPIETARIA
+```
+
+Por tanto, una URL no debe transportar como autoridad:
+
+- estado completo del proceso;
+- permisos;
+- roles;
+- decisión de autorización;
+- saldo;
+- resultado de una mutación;
+- evidencia sensible;
+- secretos.
+
+---
+
+#### 31. Mismo proceso y misma instancia
+
+Regresar desde una aplicación participante no crea otra instancia empresarial por conveniencia de navegación.
+
+Para un handoff vigente:
+
+```text
+PROCESS_ID ANTES = PROCESS_ID DESPUÉS
+PROCESS_INSTANCE_REF ANTES = PROCESS_INSTANCE_REF DESPUÉS
+```
+
+salvo que el proceso propietario confirme explícitamente una transición que cree otra instancia bajo un contrato distinto.
+
+El navegador no toma esa decisión.
+
+---
+
+#### 32. Handoff no cambia ownership
+
+Se conserva:
+
+```text
+owner_application
+→ mantiene registro principal, reglas, estado, corrección y cierre
+
+participant_application
+→ solicita, recibe o ejecuta solo el efecto permitido
+```
+
+El hecho de que una persona termine visualmente en la participante no transfiere ownership.
+
+El retorno tampoco lo devuelve porque nunca se había transferido por navegación.
+
+---
+
+#### 33. Enviar no equivale a aceptar
+
+Para un handoff:
+
+```text
+SEND
+!=
+RECEIVE
+!=
+ACCEPT
+!=
+EXECUTE
+!=
+COMPLETE
+```
+
+La navegación puede ocurrir entre cualquiera de esos hitos cuando el flujo lo requiera, pero no sustituye el estado empresarial propietario.
+
+---
+
+#### 34. La receptora revalida
+
+Antes de ejecutar un efecto, la aplicación receptora debe revalidar como mínimo los elementos que su contrato requiera, incluidos cuando apliquen:
+
+- relación de handoff;
+- actor;
+- autorización;
+- contexto;
+- recurso;
+- estado;
+- versión.
+
+Un valor recibido desde la URL no puede declarar que esas validaciones ya ocurrieron.
+
+---
+
+#### 35. La propietaria conserva la verdad del resultado
+
+Un parámetro como:
+
+```text
+success=true
+completed=1
+approved=yes
+```
+
+no puede convertirse en resultado empresarial.
+
+El resultado debe proceder de la fuente propietaria o de una proyección/evento aprobado que confirme el hecho.
+
+SHELL solo presenta el resultado seguro que pueda demostrar.
+
+---
+
+#### 36. Navegación sin efecto empresarial
+
+Abrir, redirigir, volver, refrescar o repetir una URL no produce por sí mismo:
+
+- escritura empresarial;
+- aceptación;
+- aprobación;
+- claim;
+- start;
+- complete;
+- cancelación;
+- compensación.
+
+Si el flujo exige un efecto, este debe ejecutarse mediante el contrato propietario correspondiente y conservar su idempotencia.
+
+---
+
+#### 37. Idempotencia separada del retorno
+
+Un retorno puede repetirse por:
+
+- refresh;
+- back/forward;
+- reintento de autenticación;
+- reapertura de pestaña;
+- recuperación del navegador.
+
+La repetición de navegación no autoriza repetir el efecto empresarial.
+
+Los efectos reintentables conservan las claves, resultados recuperables y controles de idempotencia de sus contratos propietarios.
+
+---
+
+#### 38. Deep links compatibles
+
+Un deep link puede participar en el retorno únicamente si:
+
+- pertenece a una aplicación y ambiente aprobados;
+- el patrón continúa soportado;
+- la aplicación receptora conserva compatibilidad para esa versión;
+- el destino revalida su autoridad;
+- no amplía datos ni privilegios por los parámetros transportados.
+
+Un deep link conocido no es un bypass.
+
+---
+
+#### 39. Ruta renombrada o reemplazada
+
+Cuando una ruta haya sido sustituida, el retorno solo podrá usar:
+
+- el destino vigente; o
+- una transición compatible y gobernada que siga dentro de su ventana de soporte.
+
+Queda prohibido seleccionar por heurística una ruta “parecida” o el primer destino disponible.
+
+Una compatibilidad retirada produce retorno inválido, no navegación aproximada.
+
+---
+
+#### 40. No se inventa una duración universal
+
+Esta tarea no fija un TTL numérico arbitrario para todos los retornos.
+
+La vigencia depende del contrato que originó el retorno.
+
+Como mínimo, un retorno anterior deja de ser reutilizable cuando se demuestra cualquiera de estas condiciones aplicables:
+
+- cambió el actor efectivo de forma incompatible;
+- la sesión requerida dejó de ser válida;
+- el destino dejó de pertenecer al ambiente o aplicación aprobados;
+- la ruta o compatibilidad terminó su vigencia;
+- el handoff dejó de ser aplicable;
+- el proceso o instancia ya no admite la continuación solicitada;
+- el recurso o versión ya no coincide con la intención original;
+- una fuente propietaria marca la referencia como expirada, supersedida o inválida.
+
+Una futura implementación puede tener expiraciones concretas cuando su contrato propietario las defina.
+
+---
+
+#### 41. Cambio de actor
+
+Ante un cambio efectivo de actor:
+
+- no se hereda el permiso del actor anterior;
+- no se conserva un destino privilegiado solo porque estaba abierto;
+- no se reutiliza contexto autoritativo anterior;
+- la aplicación destino vuelve a resolver autorización.
+
+Un retorno puede seguir apuntando a una superficie pública o permitida para el nuevo actor, pero debe volver a calificarse desde cero.
+
+---
+
+#### 42. Logout y sesión inválida
+
+Cerrar sesión invalida la confianza previa asociada a la sesión.
+
+Un destino almacenado o visible antes del logout no puede reintroducir privilegios al volver a abrirse.
+
+Después de una nueva autenticación:
+
+```text
+IDENTIDAD ACTUAL
++
+DESTINO ACTUALMENTE PERMITIDO
+→ POSIBLE RETORNO
+```
+
+No:
+
+```text
+DESTINO PREVIO
+→ PRIVILEGIO PREVIO RESTAURADO
+```
+
+---
+
+#### 43. Dispositivo compartido
+
+En una estación compartida, el retorno no puede transportar la autoridad del operador anterior ni la autoridad máxima de la sesión técnica del dispositivo.
+
+La aplicación receptora debe identificar y validar al actor humano efectivo conforme al contrato del dispositivo cuando la acción lo requiera.
+
+Cambiar de trabajador invalida cualquier proyección de navegación que dependa del actor anterior.
+
+---
+
+#### 44. Historial del navegador
+
+`Back`, `Forward` y restauración de pestaña son mecanismos del navegador.
+
+No constituyen una fuente canónica de continuidad.
+
+Al volver mediante historial:
+
+- la superficie revalida sesión;
+- la superficie revalida actor y autorización cuando aplique;
+- una proyección stale no se trata como vigente;
+- una mutación anterior no se repite por navegación.
+
+---
+
+#### 45. Sin pila recursiva de `returnTo`
+
+Esta tarea no crea una cadena autoritativa como:
+
+```text
+returnTo=A?returnTo=B?returnTo=C
+```
+
+para representar continuidad empresarial.
+
+La continuidad multi-app se conserva mediante identidades y correlaciones contractuales del flujo, no mediante una pila de URLs confiada recursivamente.
+
+Cada salto valida su destino actual.
+
+---
+
+#### 46. Minimización del destino
+
+El retorno no debe contener secretos ni material que aumente el impacto de una fuga de URL.
+
+No se transportan en un destino de retorno:
+
+- contraseñas;
+- access tokens;
+- refresh tokens;
+- credenciales de proveedor;
+- secretos de aplicación;
+- claves API;
+- evidencia sensible completa;
+- datos personales no necesarios;
+- decisiones de autorización serializadas como verdad reutilizable.
+
+Las referencias opacas aprobadas se minimizan al propósito del flujo.
+
+---
+
+#### 47. Fragmentos y query parameters
+
+Query parameters y fragmentos pueden transportar información de navegación cuando el contrato de la superficie los admite.
+
+No pueden:
+
+- crear permisos;
+- cambiar el actor;
+- elevar el alcance;
+- confirmar una acción;
+- sustituir el recurso validado en servidor;
+- reclasificar la aplicación;
+- seleccionar un ambiente no aprobado.
+
+Toda referencia sensible conserva minimización y validación propietaria.
+
+---
+
+#### 48. Retorno seguro ante fallo de destino
+
+Si el destino solicitado no puede validarse, el sistema falla cerrado.
+
+No se intenta una URL aproximada ni una aplicación “equivalente”.
+
+La recuperación deberá seleccionar únicamente una superficie que ya sea segura para el actor y el estado disponibles conforme a contratos aprobados.
+
+Para un `EMPLOYEE` que conserve entrada válida a SHELL, el home laboral aprobado puede actuar como superficie segura cuando corresponda.
+
+Esto no crea el mismo fallback para otros tipos de actor.
+
+---
+
+#### 49. Fallback por tipo de actor
+
+Se conserva la política de `SHELL-APP-009`:
+
+| Actor efectivo | Tratamiento de recuperación |
+| --- | --- |
+| `EMPLOYEE` válido y con entrada efectiva a SHELL | puede volver a la experiencia laboral segura ya aprobada |
+| `CUSTOMER` | no se envía por defecto al Hub laboral ni a PASS por inferencia |
+| `SYSTEM` | no recibe interfaz humana de fallback |
+| `UNRESOLVED` | falla cerrado sin Hub laboral |
+
+La tarea no crea un quinto actor ni una ruta alternativa específica por rol.
+
+---
+
+#### 50. Fallo técnico durante autenticación
+
+Un error de autenticación o de resolución del destino no se presenta como resultado del proceso empresarial solicitado.
+
+Se conserva la intención únicamente hasta donde pueda demostrarse de forma segura.
+
+No se afirma que el trabajo fue completado, rechazado o cancelado por un fallo técnico de navegación.
+
+---
+
+#### 51. Fallo técnico después de un handoff
+
+Si la navegación hacia la participante falla después de una solicitud de handoff:
+
+- no se presume aceptación;
+- no se presume ejecución;
+- no se crea otro handoff por recargar;
+- el estado empresarial se consulta desde sus fuentes propietarias;
+- la recuperación no modifica el proceso desde SHELL.
+
+La idempotencia del efecto permanece en el contrato técnico propietario.
+
+---
+
+#### 52. Reentrada después de resultado confirmado
+
+Cuando la fuente propietaria ya confirma que el resultado solicitado ocurrió, volver a una URL anterior no reactiva automáticamente la acción.
+
+La superficie deberá mostrar el estado vigente o conducir a la siguiente acción permitida conforme al propietario.
+
+No repite el comando porque la URL anterior siga disponible.
+
+---
+
+#### 53. Contexto que esta tarea sí conserva conceptualmente
+
+Para validar el retorno, esta tarea reconoce que pueden ser necesarias referencias a:
+
+- actor;
+- aplicación origen y destino;
+- proceso e instancia;
+- recurso;
+- sede y área;
+- estado;
+- versión;
+- correlación;
+- acción o trabajo pendiente.
+
+Reconocer estas referencias no define cómo se restauran en la UI ni qué parte del contexto se mantiene al cambiar de aplicación.
+
+Ese detalle permanece reservado a `SHELL-APP-015`.
+
+---
+
+#### 54. Tarea en curso todavía reservada
+
+Esta tarea no decide:
+
+- si una tarea queda `CLAIMED` durante el cambio de aplicación;
+- cómo se renueva un lease;
+- cómo se conserva `IN_PROGRESS`;
+- cómo se reanuda un draft;
+- cómo se maneja `COMPLETION_PENDING_SYNC`;
+- cómo se representa una pausa;
+- cuándo una tarea debe volver al foco principal.
+
+Estas decisiones permanecen reservadas a `SHELL-APP-016` y a los contratos técnicos propietarios.
+
+---
+
+#### 55. SHELL no se convierte en proxy universal
+
+El retorno seguro no autoriza a SHELL a:
+
+- reenviar cualquier request a cualquier host;
+- actuar como reverse proxy universal;
+- ejecutar RPC de la aplicación destino;
+- consultar datos privados para reconstruir una operación ajena;
+- firmar una decisión empresarial en nombre de otra aplicación;
+- almacenar payloads funcionales completos para “reanudar” una app.
+
+SHELL conserva coordinación y navegación, no ejecución universal.
+
+---
+
+#### 56. Propiedad de corrección del hallazgo AS-IS
+
+La existencia actual de `safeReturnTo` permisivo ya está registrada como una brecha física de SHELL.
+
+Esta tarea no crea un pendiente narrativo paralelo.
+
+La corrección física deberá permanecer en las tareas y controles de interfaz/servidor ya vinculados al requisito vigente de frontera de `returnTo`, y en la futura materialización autorizada que consuma este contrato.
+
+No se inventa aquí un `implementation_unit_id` ni una rama física.
+
+---
+
+#### 57. Resultado documental consolidado
+
+```text
+RETURN TARGET
+→ UNTRUSTED INPUT
+→ NORMALIZE
+→ VALIDATE APP / ORIGIN / ENVIRONMENT / FLOW
+→ REVALIDATE SESSION AND DESTINATION AUTHORITY
+→ NAVIGATE OR FAIL CLOSED
+
+AUTH ROUND-TRIP
+→ NOT BUSINESS HANDOFF
+
+ORDINARY CROSS-APP NAVIGATION
+→ NOT BUSINESS HANDOFF BY DEFAULT
+
+PROCESS HANDOFF RETURN
+→ EXACT ApplicationHandoffRelation WHEN HANDOFF SEMANTICS APPLY
+→ SAME PROCESS / INSTANCE
+→ OWNER PRESERVED
+→ RECEIVER REVALIDATES
+
+URL
+→ NAVIGATION REFERENCE
+→ NOT BUSINESS STATE
+→ NOT AUTHORIZATION
+
+NAVIGATION
+→ NO BUSINESS EFFECT BY ITSELF
+
+INVALID / STALE / UNAUTHORIZED DESTINATION
+→ FAIL CLOSED
+→ SAFE RECOVERY BY CURRENT ACTOR CONTRACT
+
+SHELL-APP-015
+→ CONTEXT RESTORATION RESERVED
+
+SHELL-APP-016
+→ WORK-IN-PROGRESS PRESERVATION RESERVED
+```
+
+---
+
+#### 58. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea especializa para SHELL reglas de retorno, handoff, navegación, autorización, propiedad, idempotencia y compatibilidad que ya están protegidas por cobertura canónica vigente.
+
+No introduce una identidad, comportamiento empresarial o frontera de seguridad nueva que requiera modificar el registro.
+
+---
+
+#### 59. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-SHELL-003` — destinos e identidad de aplicaciones proceden de fuente canónica y no de listas locales divergentes;
+- `TREQ-SHELL-016` — una aplicación sin acceso efectivo permanece no navegable y la manipulación de interfaz no concede operación;
+- `TREQ-SHELL-018` — `returnTo` admite solo rutas internas u orígenes Vento OS explícitamente aprobados, normalizados y ligados al flujo, rechazando URLs absolutas arbitrarias, esquemas no permitidos, credenciales embebidas y dominios no registrados;
+- `TREQ-SHELL-019` — una sesión ya válida solo se redirige a un destino permitido bajo la política de acceso vigente;
+- `TREQ-INTEGRATION-001` — esquemas, dominios y URLs corresponden al ambiente y contrato aprobados;
+- `TREQ-INTEGRATION-003` — efectos reintentables conservan identidad estable, resultado recuperable e idempotencia;
+- `TREQ-INTEGRATION-005` — el traspaso conserva proceso, recurso, actor, sede, área, estado, acción pendiente y destino de retorno, con revalidación en la receptora y compatibilidad controlada de deep links;
+- `TREQ-INTEGRATION-006` — los datos empresariales permanecen en su aplicación propietaria y se propagan por contratos aprobados;
+- `TREQ-PROC-034` — todo traspaso conserva identidad de instancia, actores, función, contexto, territorio, pendientes, tiempos y aceptación sin crear un proceso paralelo.
+
+Estas referencias son trazabilidad heredada.
+
+No actualizan 04A.
+
+---
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido insertado ni sometido a `docs:plan:build` dentro de la rama local de `SHELL-APP-014`. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, quality, delivery, topología ni la batería documental sobre el checkout local de `SHELL-APP-014`. |
+| REMOTA | PASS | Se verificaron `main` posterior al cierre de `SHELL-APP-013`, continuidad H2, ruta normal, topología `PER_IMPLEMENTATION_UNIT`, políticas vigentes de formato y desarrollo, archivo propietario y marcador actual, `package.json`, preflight y lifecycle documental, contrato estático materializado y `VERIFIED` de `SHELL-CON-014::GLOBAL`, universo 49/27/22/8/9 de handoffs, TREQ vigentes de SHELL/INTEGRATION/PROC y el runtime AS-IS de `returnTo` en login, formulario y middleware. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define política documental de retorno; no ejecuta sesiones reales, handoffs empresariales, procesos, navegadores productivos ni cambios de actor desplegados. |
+| FÍSICA | NOT_APPLICABLE | La aprobación documental no crea ni autoriza una instancia física de `SHELL-APP-014` y no modifica código, rutas, datos, Supabase, infraestructura ni despliegues. |
+
+---
+
+#### 61. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-014 — Definir retorno seguro entre aplicaciones`.
+- [ ] `SHELL-APP-013` permanece como tarea anterior.
+- [ ] `SHELL-APP-015` permanece como tarea siguiente.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] `PER_IMPLEMENTATION_UNIT` se conserva solo como topología posterior.
+- [ ] El retorno se define como continuidad de navegación y no como autorización.
+- [ ] `returnTo` se trata como input no confiable.
+- [ ] Una ruta relativa no puede salir de la superficie que legítimamente la interpreta.
+- [ ] Una URL absoluta requiere origen explícitamente aprobado para aplicación, ambiente y flujo.
+- [ ] No se crea una lista hardcodeada de hosts como nueva autoridad canónica.
+- [ ] Se rechazan esquemas no aprobados.
+- [ ] Se rechazan credenciales embebidas.
+- [ ] Se rechazan dominios no registrados.
+- [ ] Un nombre parecido a Vento no crea confianza.
+- [ ] Un retorno no cruza ambientes por inferencia.
+- [ ] Una sesión existente y un login nuevo usan la misma frontera de destino permitido.
+- [ ] La validación no depende solo del cliente.
+- [ ] Un origen válido no equivale a `app.access`.
+- [ ] Retorno y visibilidad permanecen separados.
+- [ ] Una app bloqueada no se habilita por un retorno anterior.
+- [ ] Una app indisponible no convierte a SHELL en fallback funcional.
+- [ ] AURA permanece diferida.
+- [ ] PASS permanece adyacente.
+- [ ] No se crea SSO cliente ni `CUSTOMER → PASS` automático.
+- [ ] El round-trip de autenticación no se clasifica automáticamente como handoff empresarial.
+- [ ] La navegación ordinaria no se clasifica automáticamente como handoff empresarial.
+- [ ] El universo de handoff conserva exactamente 49 relaciones.
+- [ ] Se conservan exactamente 27 relaciones `DIRECTA`.
+- [ ] Se conservan exactamente 22 relaciones `CONDICIONAL`.
+- [ ] Se conservan exactamente 8 `ProcessId` en el universo materializado.
+- [ ] Se conservan exactamente 9 aplicaciones participantes.
+- [ ] `viso` conserva la única propiedad dentro del universo actual de handoffs.
+- [ ] Se conservan 0 tuplas duplicadas.
+- [ ] Se conservan 0 relaciones owner=participant.
+- [ ] Se conservan los ocho `ProcessId` exactos aprobados.
+- [ ] Se conservan las nueve aplicaciones participantes exactas aprobadas.
+- [ ] La identidad de relación sigue siendo la tupla ProcessId/owner/participant.
+- [ ] No se crea ID serial alternativo para el handoff.
+- [ ] `CONDICIONAL` no se interpreta como relación habilitada por defecto.
+- [ ] Se conservan `SOLICITUD_HANDOFF_Y_EVENTO`, `HANDOFF_PROJECTION` y `HANDOFF_REQUEST`.
+- [ ] La tarea no crea un payload runtime de handoff.
+- [ ] La URL no transporta estado empresarial como autoridad.
+- [ ] Un handoff conserva el mismo proceso e instancia salvo transición propietaria explícita.
+- [ ] La navegación no cambia ownership.
+- [ ] Enviar, recibir, aceptar, ejecutar y completar permanecen separados.
+- [ ] La receptora revalida contrato, actor, autorización, contexto, recurso, estado y versión cuando apliquen.
+- [ ] Un parámetro de éxito no constituye resultado empresarial.
+- [ ] Navegar no produce efecto empresarial por sí mismo.
+- [ ] Refrescar o volver no repite una mutación.
+- [ ] Deep links siguen contrato, ambiente, soporte y autorización.
+- [ ] Una ruta retirada no se reemplaza por heurística.
+- [ ] No se inventa un TTL universal.
+- [ ] Un retorno stale o incompatible deja de ser reutilizable.
+- [ ] Cambio de actor obliga a recalificar el destino.
+- [ ] Logout no conserva privilegios mediante un destino previo.
+- [ ] Un dispositivo compartido no transfiere autoridad entre operadores.
+- [ ] Historial del navegador no es autoridad canónica de retorno.
+- [ ] No se crea una pila recursiva de URLs como modelo empresarial.
+- [ ] El destino no contiene secretos ni tokens.
+- [ ] Query parameters no crean permisos ni resultados.
+- [ ] Un retorno inválido falla cerrado.
+- [ ] La recuperación respeta el tipo de actor efectivo.
+- [ ] `CUSTOMER`, `SYSTEM` y `UNRESOLVED` no reciben fallback laboral por inferencia.
+- [ ] Un fallo de autenticación no se presenta como resultado empresarial.
+- [ ] Un fallo de navegación después de handoff no se interpreta como aceptación.
+- [ ] Reabrir una URL después de un resultado no repite la acción.
+- [ ] La restauración detallada de contexto permanece reservada a `SHELL-APP-015`.
+- [ ] La conservación técnica de tarea en curso permanece reservada a `SHELL-APP-016`.
+- [ ] SHELL no se convierte en proxy universal.
+- [ ] La brecha AS-IS de `safeReturnTo` conserva sus propietarios físicos existentes.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se modifica código.
+- [ ] No se modifica Supabase.
+- [ ] No se crean migraciones.
+- [ ] No se despliega.
+- [ ] No se crea ni autoriza una instancia física.
+
+---
+
+#### 62. Límites
+
+Esta tarea no:
+
+- cambia el catálogo canónico de aplicaciones;
+- cambia el ownership de los 69 procesos;
+- modifica las 49 relaciones de handoff;
+- crea otra relación;
+- habilita una relación condicional;
+- cambia `AppCode`;
+- cambia `ProcessId`;
+- crea una identidad de handoff adicional;
+- crea rutas;
+- crea URLs;
+- fija dominios nuevos;
+- fija un origen de producción por inferencia;
+- fija un TTL universal;
+- crea un stack de `returnTo`;
+- crea cookies nuevas;
+- crea tokens de retorno;
+- crea un payload runtime de handoff;
+- implementa inbox u outbox;
+- implementa idempotencia;
+- implementa persistencia;
+- implementa SSO cliente;
+- implementa account linking;
+- activa AURA;
+- incorpora PASS al Hub laboral;
+- cambia visibilidad de aplicaciones;
+- cambia explicación de bloqueos;
+- absorbe lógica de otra aplicación;
+- restaura detalladamente contexto cross-app;
+- conserva técnicamente una tarea en curso;
+- define leases o claims;
+- define UI final de computador o tablet;
+- corrige físicamente `safeReturnTo`;
+- corrige middleware;
+- corrige el formulario de login;
+- modifica permisos;
+- modifica autorización runtime;
+- modifica Supabase;
+- modifica RLS;
+- modifica RPC;
+- modifica migraciones;
+- modifica datos;
+- modifica configuración;
+- despliega;
+- crea una instancia física;
+- crea requisitos de prueba;
+- modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `SHELL-APP-015`;
+- desarrolla `SHELL-APP-016`.
+
+---
+
+#### 63. Handoff a `SHELL-APP-015`
+
+`SHELL-APP-015` recibe:
+
+1. destino de retorno validado antes de navegar;
+2. `returnTo` tratado como transporte no confiable;
+3. aplicación destino obligada a revalidar autoridad;
+4. origen, ambiente y flujo compatibles como condición de retorno;
+5. handoff empresarial separado de navegación ordinaria y autenticación;
+6. proceso e instancia preservados conceptualmente cuando el handoff lo exige;
+7. actor, recurso, sede, área, estado, versión y correlación reconocidos como referencias que pueden condicionar el retorno;
+8. URL minimizada y no autoritativa;
+9. retorno stale, inválido o no autorizado con fallo cerrado;
+10. cambio de actor o sesión que obliga a recalificar el destino;
+11. prohibición de usar historial o query parameters como autoridad;
+12. detalle de restauración del contexto todavía no definido.
+
+La siguiente tarea podrá decidir qué contexto se conserva o se reconstruye al cambiar de aplicación sin reabrir la política de destino seguro.
+
+---
+
+#### 64. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-013 — Evitar lógica funcional propia de otras aplicaciones`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-014 — Definir retorno seguro entre aplicaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-015 — Conservar contexto al cambiar de aplicación`
+
+
 ### [ ] SHELL-APP-015 — Conservar contexto al cambiar de aplicación
 ### [ ] SHELL-APP-016 — Conservar tarea en curso cuando corresponda

@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1130** |
+| Aprobadas | **1131** |
 | En propuesta | **0** |
-| No iniciadas | **466** |
+| No iniciadas | **465** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **70.80% (1130/1596)** |
+| Porcentaje de completamiento | **70.86% (1131/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `SHELL-APP-013` — Evitar lógica funcional propia de otras aplicaciones | ✅ APROBADA |
-| Tarea actual | `SHELL-APP-014` — Definir retorno seguro entre aplicaciones | ⬜ NO INICIADA |
-| Siguiente reservada | `SHELL-APP-015` — Conservar contexto al cambiar de aplicación | ⬜ NO INICIADA |
+| Última aprobada | `SHELL-APP-014` — Definir retorno seguro entre aplicaciones | ✅ APROBADA |
+| Tarea actual | `SHELL-APP-015` — Conservar contexto al cambiar de aplicación | ⬜ NO INICIADA |
+| Siguiente reservada | `SHELL-APP-016` — Conservar tarea en curso cuando corresponda | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -800,7 +800,7 @@
 | ✅ APROBADA | `SHELL-APP-011` | Separar aplicaciones laborales de superficies adyacentes sin convertir SHELL en acceso del cliente | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ✅ APROBADA | `SHELL-APP-012` | Mantener PASS fuera del RBAC laboral del cliente | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ✅ APROBADA | `SHELL-APP-013` | Evitar lógica funcional propia de otras aplicaciones | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
-| ⬜ NO INICIADA | `SHELL-APP-014` | Definir retorno seguro entre aplicaciones | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
+| ✅ APROBADA | `SHELL-APP-014` | Definir retorno seguro entre aplicaciones | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-015` | Conservar contexto al cambiar de aplicación | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-016` | Conservar tarea en curso cuando corresponda | `bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md` |
 | ⬜ NO INICIADA | `SHELL-APP-017` | Diseñar experiencia para computador | `bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md` |
