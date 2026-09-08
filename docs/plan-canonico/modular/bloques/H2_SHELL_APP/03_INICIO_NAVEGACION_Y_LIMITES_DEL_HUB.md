@@ -8450,4 +8450,1486 @@ Esta tarea no:
 `SHELL-APP-016 — Conservar tarea en curso cuando corresponda`
 
 
-### [ ] SHELL-APP-016 — Conservar tarea en curso cuando corresponda
+### ✅ SHELL-APP-016 — Conservar tarea en curso cuando corresponda
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-015 — Conservar contexto al cambiar de aplicación
+**Tarea siguiente:** SHELL-APP-017 — Diseñar experiencia para computador
+**Tipo de tarea:** definición técnico-documental de la conservación y reanudación segura de trabajo en curso durante navegación, retorno, interrupción o cambio de aplicación, especializando para SHELL los contratos vigentes de work items, contexto, checkpoints, handoffs, concurrencia y recuperación; la futura materialización conserva topología `PER_IMPLEMENTATION_UNIT` sin crear ni autorizar una instancia física en esta tarea
+**Bloque:** BLOQUE H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/03_INICIO_NAVEGACION_Y_LIMITES_DEL_HUB.md`
+**Estado físico resultante:** contrato documental de conservación de tarea en curso definido y reconciliado con `SHELL-APP-008`, `SHELL-APP-014`, `SHELL-APP-015`, `SHELL-CON-014`, `SHELL-CON-015`, `UX-BASE-002`, `UX-BASE-013` y `UX-BASE-014`, sin cambios de runtime ni creación de instancia física
+**Cambios físicos autorizados:** ninguno; no se modifican código, rutas, navegación runtime, contratos compartidos, work items runtime, claims, leases, checkpoints, borradores, colas, handoffs, autorización, Supabase, datos, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cuándo SHELL debe conservar la continuidad de una tarea que ya posee responsabilidad, ejecución, evidencia o recuperación pendiente y cómo debe orientar su reanudación sin convertir navegación, estado cliente, un checkpoint o una proyección anterior en autoridad.
+
+La tarea responde de forma cerrada:
+
+```text
+¿CUÁNDO EL TRABAJO SIGUE SIENDO LA TAREA ACTUAL?
+¿QUÉ IDENTIDAD SE CONSERVA AL CAMBIAR DE APLICACIÓN?
+¿QUÉ OCURRE CON CLAIM, LEASE, BORRADOR Y CHECKPOINT?
+¿CUÁNDO SE PUEDE MOSTRAR CONTINUAR?
+¿CUÁNDO HAY QUE REVISAR, REASIGNAR, CONCILIAR O DEJAR DE REANUDAR?
+```
+
+La regla raíz es:
+
+```text
+CONTINUIDAD DE TRABAJO
+=
+MISMA OBLIGACIÓN EMPRESARIAL VIGENTE
++
+ESTADO NO TERMINAL COMPATIBLE
++
+RESPONSABILIDAD O RECUPERACIÓN PENDIENTE
++
+REFERENCIAS DE CONTINUIDAD VÁLIDAS
++
+CONTEXTO NUEVO RESUELTO
++
+REVALIDACIÓN DE CLAIM, RECURSO, VERSIÓN Y AUTORIZACIÓN
+
+CONTINUIDAD DE TRABAJO
+≠
+ÚLTIMA PANTALLA ABIERTA
+```
+
+---
+
+#### 2. Handoff recibido de `SHELL-APP-015`
+
+Se reciben sin reapertura:
+
+1. cada aplicación destino resuelve un `AccessContext` nuevo para su propio `AppCode`;
+2. el contexto de origen puede conservarse como referencia histórica o de orientación, nunca como autoridad del destino;
+3. el contexto nuevo confirmado prevalece sobre cualquier proyección anterior;
+4. `SafeContextProjectionV1` permanece no autoritativa;
+5. cambio de actor, sesión o dispositivo invalida la proyección previa cuando corresponda;
+6. una superficie abierta debe revalidar antes de mutar;
+7. ausencia, invalidez, indisponibilidad y stale permanecen diferenciados;
+8. handoff y navegación no producen claim, start ni resume implícitos;
+9. la tarea en curso debe conservarse separadamente de la política contextual;
+10. claim, lease, borrador, checkpoint, offline y resume quedaron reservados a esta tarea y a sus contratos propietarios.
+
+`SHELL-APP-016` decide únicamente la continuidad del trabajo sobre esa base contextual ya aprobada.
+
+---
+
+#### 3. Fuentes canónicas consumidas
+
+La tarea conserva las decisiones vigentes de:
+
+- `SHELL-APP-008` para foco y trabajo pendiente transversal;
+- `SHELL-APP-014` para retorno seguro entre aplicaciones;
+- `SHELL-APP-015` para re-resolución de contexto cross-app;
+- `SHELL-CON-014` para relaciones de handoff;
+- `SHELL-CON-015` para el contrato estático de work items;
+- `UX-BASE-002` para foco, estados, prioridad, claim, concurrencia e interrupción;
+- `UX-BASE-013` para conectividad, operaciones pendientes y sincronización;
+- `UX-BASE-014` para checkpoint semántico y reanudación;
+- contratos de autorización, contexto, dispositivos, colas, integración y evidencia que posean la ejecución física correspondiente.
+
+Esta tarea no sustituye ninguna de esas autoridades.
+
+---
+
+#### 4. Universo contractual del work item
+
+Se conserva exactamente el contrato compartido vigente:
+
+```text
+29 campos contractuales
+8 clases de work item
+16 estados conceptuales
+7 estados de readiness
+6 niveles de prioridad
+0 instancias runtime creadas por el contrato estático
+```
+
+`SHELL-APP-016` no añade campos, clases, estados, readiness ni niveles de prioridad.
+
+---
+
+#### 5. Identidad de la obligación
+
+La continuidad se ancla en:
+
+```text
+work_item_id
+```
+
+como referencia opaca de una obligación runtime concreta.
+
+Se conserva la separación:
+
+```text
+work_item_id
+≠ process_id
+≠ process_instance_id
+≠ process_step
+≠ navigation_id
+≠ claim_or_lease_ref
+≠ checkpoint_id
+≠ draft_ref
+≠ handoff_relation
+≠ alert_or_notification_id
+```
+
+Conocer `work_item_id` no autoriza a visualizar, reclamar, iniciar, reanudar, completar, cancelar ni reasignar la obligación.
+
+---
+
+#### 6. Campos relevantes para continuidad
+
+Sin crear una proyección nueva, la continuidad puede necesitar referencias ya contempladas por el contrato vigente, entre ellas:
+
+```text
+work_item_id
+process_id
+process_instance_id
+process_step
+owner_app_code
+status
+readiness_status
+assigned_actor_ref
+required_context_ref
+required_permission_ref
+resource_ref
+location_ref
+next_action_code
+work_item_version
+claim_or_lease_ref
+idempotency_scope
+updated_at
+```
+
+La selección anterior no define un payload de red ni una nueva allowlist pública.
+
+La aplicación propietaria decide qué referencias son necesarias para cada caso.
+
+---
+
+#### 7. Estados conceptuales vigentes
+
+Se conservan exactamente:
+
+```text
+NOT_READY
+AVAILABLE
+OFFERED
+ASSIGNED
+CLAIMED
+IN_PROGRESS
+WAITING
+BLOCKED
+PAUSED
+COMPLETION_PENDING_SYNC
+COMPLETED
+CANCELLED
+SUPERSEDED
+EXPIRED
+CONFLICT
+RECONCILIATION_REQUIRED
+```
+
+Esta tarea no crea un estado `CURRENT`, `RESUMING`, `OPEN_IN_SHELL` ni equivalente dentro de `WorkItemStatus`.
+
+---
+
+#### 8. Readiness vigente
+
+Se conservan exactamente:
+
+```text
+EXECUTABLE_NOW
+VISIBLE_NOT_EXECUTABLE
+WAITING_EXTERNAL
+BLOCKED_RECOVERABLE
+BLOCKED_REQUIRES_OTHER_ACTOR
+STALE_REQUIRES_REFRESH
+NOT_ELIGIBLE
+```
+
+El readiness describe la posibilidad actual de actuar sobre el work item.
+
+No sustituye autorización y no reemplaza el estado del ítem.
+
+---
+
+#### 9. Qué significa “tarea en curso”
+
+En esta tarea, “en curso” es una categoría de continuidad de experiencia, no un nuevo estado contractual.
+
+Una obligación merece continuidad prioritaria cuando existe al menos uno de estos motivos vigentes:
+
+1. ejecución real iniciada y no terminada;
+2. reserva o responsabilidad exclusiva todavía válida que debe resolverse;
+3. pausa controlada con punto de reanudación;
+4. evidencia o efecto local pendiente de confirmación;
+5. custodia o handoff todavía no liberados;
+6. conflicto o resultado desconocido que exige recuperación;
+7. bloqueo cuya siguiente acción continúa perteneciendo al actor.
+
+La última ruta visitada no forma parte de la definición.
+
+---
+
+#### 10. Matriz principal por estado
+
+| `WorkItemStatus` | Conservación | Tratamiento de foco |
+| --- | --- | --- |
+| `NOT_READY` | se conserva como obligación futura cuando sea visible | no es tarea en curso |
+| `AVAILABLE` | se conserva en cola autorizada | no es tarea en curso |
+| `OFFERED` | se conserva la oferta vigente | no implica responsabilidad iniciada |
+| `ASSIGNED` | se conserva la asignación | no equivale a ejecución |
+| `CLAIMED` | se conserva la referencia a la reserva si sigue vigente | prioridad de continuidad, pero no se presenta como `IN_PROGRESS` |
+| `IN_PROGRESS` | se conserva por defecto | permanece como foco salvo causa válida de interrupción |
+| `WAITING` | se conserva la obligación y condición esperada | normalmente sale del foco si no exige acción actual |
+| `BLOCKED` | se conserva el bloqueo y responsabilidad | puede permanecer como foco si el actor debe resolver, escalar o mantener custodia |
+| `PAUSED` | se conserva el punto de reanudación | candidato explícito a reanudación |
+| `COMPLETION_PENDING_SYNC` | se conserva hasta resolver confirmación | prioridad de recuperación; nunca se muestra como `COMPLETED` |
+| `COMPLETED` | se conserva como historia/resultado | no se reanuda |
+| `CANCELLED` | se conserva como estado terminal | no se reanuda |
+| `SUPERSEDED` | se conserva referencia al reemplazo cuando exista | no se reanuda como obligación antigua |
+| `EXPIRED` | se conserva como estado terminal | no se reanuda |
+| `CONFLICT` | se conserva para resolución | pasa a recuperación, no a repetición de la acción original |
+| `RECONCILIATION_REQUIRED` | se conserva hasta conciliar | prioridad de recuperación |
+
+La matriz no modifica los estados de dominio que pueda poseer cada aplicación.
+
+---
+
+#### 11. `AVAILABLE`, `OFFERED` y `ASSIGNED`
+
+Estos estados no se convierten en trabajo ya iniciado por haber sido visibles antes de una navegación.
+
+Se conserva:
+
+```text
+VISIBLE
+≠ OFFERED
+≠ ASSIGNED
+≠ CLAIMED
+≠ IN_PROGRESS
+```
+
+Volver a una tarjeta o abrir la aplicación propietaria no eleva el estado.
+
+---
+
+#### 12. `CLAIMED`
+
+Un `CLAIMED` conserva una reserva o exclusividad que puede ser relevante para la continuidad, pero no demuestra ejecución real.
+
+Al volver:
+
+1. se localiza el work item vigente;
+2. se consulta la validez del claim o lease en su autoridad propietaria;
+3. se compara actor, recurso, etapa, versión y contexto;
+4. solo entonces se determina si puede iniciarse, renovarse, liberarse, reasignarse o entrar en conflicto.
+
+SHELL no infiere vigencia desde la mera existencia de `claim_or_lease_ref`.
+
+---
+
+#### 13. `IN_PROGRESS`
+
+La regla por defecto permanece:
+
+```text
+TRABAJO VÁLIDO EN EJECUCIÓN
+→ PERMANECE COMO FOCO
+```
+
+No se desplaza silenciosamente porque:
+
+- se abrió otra aplicación;
+- llegó una tarea más nueva;
+- apareció una notificación;
+- cambió el orden visual;
+- se refrescó una métrica;
+- se volvió al Hub;
+- se recargó el navegador.
+
+La continuidad depende de que el trabajo siga siendo válido y reanudable al momento de volver.
+
+---
+
+#### 14. `WAITING`
+
+`WAITING` representa una dependencia esperada y normal.
+
+Si el actor no tiene una acción inmediata:
+
+```text
+WAITING
+→ CONSERVAR OBLIGACIÓN
+→ MOVER A EN ESPERA
+→ CONSERVAR CONDICIÓN DE REACTIVACIÓN
+```
+
+No se mantiene artificialmente como foco principal para impedir que el trabajador atienda otra obligación compatible.
+
+---
+
+#### 15. `BLOCKED`
+
+Una tarea `BLOCKED` puede conservar el foco cuando el actor aún debe:
+
+- corregir información;
+- aportar evidencia;
+- resolver un impedimento dentro de su autoridad;
+- escalar;
+- proteger custodia;
+- esperar activamente una condición que requiere seguimiento propio.
+
+Si el bloqueo requiere exclusivamente a otro actor, la obligación puede pasar a la cola bloqueada o de espera conforme al contrato propietario.
+
+---
+
+#### 16. `PAUSED`
+
+`PAUSED` representa una interrupción controlada con punto de continuidad.
+
+La pausa debe conservar, cuando aplique:
+
+- work item;
+- punto semántico de reanudación;
+- estado confirmado;
+- evidencia capturada;
+- responsable;
+- causa;
+- siguiente acción;
+- condición de retorno.
+
+Pausar no equivale a liberar claim, cancelar, hacer handoff ni completar.
+
+---
+
+#### 17. `COMPLETION_PENDING_SYNC`
+
+Este estado significa que existe evidencia o intención de cierre pendiente de confirmación por la fuente autoritativa.
+
+Se conserva:
+
+```text
+COMPLETION_PENDING_SYNC
+≠ COMPLETED
+```
+
+Al volver, la prioridad es consultar la intención original, su idempotencia, receipt y estado empresarial antes de permitir un nuevo intento.
+
+No se crea una segunda operación para “asegurar” el cierre.
+
+---
+
+#### 18. `CONFLICT` y `RECONCILIATION_REQUIRED`
+
+Estos estados no permiten reanudar ciegamente la acción previa.
+
+La continuidad se transforma en trabajo de recuperación:
+
+```text
+CONFLICT
+O
+RECONCILIATION_REQUIRED
+→ RECONSTRUIR HECHOS
+→ COMPARAR VERSIONES Y RESULTADOS
+→ PRESENTAR SIGUIENTE ACCIÓN SEGURA
+```
+
+No se utiliza `last write wins` para esconder el conflicto.
+
+---
+
+#### 19. Estados terminales
+
+No se reanudan como tarea activa:
+
+```text
+COMPLETED
+CANCELLED
+SUPERSEDED
+EXPIRED
+```
+
+Si una URL o historial anterior vuelve a abrirse, la aplicación propietaria presenta el estado vigente.
+
+`SUPERSEDED` puede orientar hacia el reemplazo aprobado cuando exista relación explícita, pero no revive el work item anterior.
+
+---
+
+#### 20. Prioridad de trabajo ya iniciado
+
+Se conserva el nivel conceptual de prioridad:
+
+```text
+NIVEL 1
+→ TRABAJO YA EN EJECUCIÓN QUE DEBE CONTINUAR
+```
+
+La regla no supera automáticamente:
+
+```text
+NIVEL 0
+→ SEGURIDAD, EMERGENCIA O CUSTODIA CRÍTICA
+```
+
+Por tanto, conservar una tarea en curso no significa hacerla ininterrumpible.
+
+---
+
+#### 21. Foco y estado son conceptos distintos
+
+`status` pertenece al work item.
+
+El foco pertenece a la experiencia del actor.
+
+Por tanto:
+
+```text
+IN_PROGRESS
+→ NORMALMENTE FOCO
+
+WAITING
+→ NORMALMENTE EN ESPERA
+
+BLOCKED
+→ FOCO O COLA SEGÚN SIGUIENTE ACCIÓN
+
+RECONCILIATION_REQUIRED
+→ FOCO DE RECUPERACIÓN CUANDO EXIGE ACCIÓN DEL ACTOR
+```
+
+SHELL no cambia `status` para acomodar la jerarquía visual.
+
+---
+
+#### 22. Abrir y navegar continúan sin efectos
+
+Se conserva:
+
+```text
+ABRIR TARJETA
+≠ CLAIM
+
+ABRIR APLICACIÓN
+≠ START
+
+VOLVER A SHELL
+≠ PAUSE
+
+CAMBIAR DE APLICACIÓN
+≠ RELEASE
+
+REFRESH
+≠ RETRY EMPRESARIAL
+```
+
+Toda mutación pertenece a la autoridad propietaria.
+
+---
+
+#### 23. Cambio de aplicación como interrupción
+
+Un salto cross-app puede constituir `NAVIGATION_AWAY` para la experiencia de reanudación.
+
+Eso no obliga a cambiar el estado empresarial.
+
+Una tarea puede permanecer `IN_PROGRESS` mientras el actor consulta o completa un paso auxiliar en otra aplicación, siempre que el proceso propietario lo admita.
+
+La navegación no inventa una pausa.
+
+---
+
+#### 24. Continuidad cross-app del mismo work item
+
+Cuando el contrato del flujo permite continuar la misma obligación a través de otra aplicación, puede conservarse la misma referencia:
+
+```text
+work_item_id ANTES
+=
+work_item_id DESPUÉS
+```
+
+si la autoridad propietaria confirma que sigue siendo la misma obligación.
+
+No se crea un work item espejo solo por cambiar de aplicación.
+
+---
+
+#### 25. Prohibición de clonar trabajo para el retorno
+
+SHELL no crea una copia mutable de la tarea para poder volver después.
+
+Queda prohibido:
+
+- duplicar `work_item_id` bajo otra identidad local;
+- crear una tarea de retorno sin obligación empresarial;
+- copiar estado y marcarlo como vigente;
+- convertir una notificación en work item sustituto;
+- reconstruir una obligación desde el historial del navegador.
+
+El retorno localiza la obligación autoritativa existente.
+
+---
+
+#### 26. Ownership funcional
+
+`owner_app_code` conserva la propiedad empresarial de:
+
+- estado;
+- transición;
+- claim o lease;
+- recurso;
+- borrador de dominio;
+- checkpoint propietario;
+- evidencia;
+- cierre;
+- cancelación;
+- reasignación;
+- recuperación.
+
+SHELL coordina presentación y navegación.
+
+No se convierte en scheduler, claim engine, workflow engine ni base universal de tareas.
+
+---
+
+#### 27. `claim_or_lease_ref`
+
+`claim_or_lease_ref` permanece una referencia contractual separada de `work_item_id`.
+
+Su presencia no permite a SHELL:
+
+- renovar un lease;
+- extender expiración;
+- transferir claim;
+- liberar claim;
+- ejecutar takeover;
+- resolver una carrera;
+- declarar responsable actual.
+
+Esas decisiones pertenecen al mecanismo propietario del trabajo excluyente.
+
+---
+
+#### 28. Lease expirado
+
+La expiración de un lease no borra:
+
+- evidencia capturada;
+- borrador;
+- checkpoint;
+- operaciones pendientes;
+- historia de ejecución.
+
+Sí puede volver inválida la continuación inmediata.
+
+El resultado puede requerir nueva toma, reasignación, takeover autorizado, revisión o conciliación.
+
+---
+
+#### 29. Claim en otro dispositivo o actor
+
+Antes de reanudar trabajo excluyente se verifica si el claim continúa atribuido al actor y combinación permitidos.
+
+Si otra ejecución válida posee la reserva:
+
+- se retira el CTA de ejecución local;
+- se muestra el estado vigente permitido;
+- el borrador local no enviado no se aplica automáticamente;
+- se ofrece recuperación, cola, reasignación o conciliación según contrato;
+- no se fuerza un segundo claim.
+
+---
+
+#### 30. Cambio de actor
+
+Cambiar de trabajador no transfiere:
+
+```text
+BORRADOR
+CLAIM
+LEASE
+CUSTODIA
+CHECKPOINT AUTORIZATIVO
+PERMISO
+```
+
+El trabajo del actor anterior se clasifica antes de limpiar su superficie.
+
+El nuevo actor recibe únicamente obligaciones que pueda visualizar o aceptar según una resolución nueva.
+
+Una transferencia exige handoff explícito cuando corresponda.
+
+---
+
+#### 31. Dispositivo compartido
+
+En un dispositivo compartido permanecen separados:
+
+```text
+SESIÓN TÉCNICA
+ACTOR HUMANO
+COLA DE ESTACIÓN
+FOCO DEL ACTOR
+TRABAJO RECUPERABLE DEL ACTOR
+```
+
+La pantalla bloqueada no revela contenido sensible del trabajo anterior.
+
+La identificación del nuevo actor precede a la lista de reanudación personal.
+
+---
+
+#### 32. Logout, revocación y cierre de sesión
+
+Cerrar sesión no equivale a:
+
+- completar la tarea;
+- descartar un borrador;
+- borrar evidencia pendiente;
+- liberar custodia;
+- transferir claim;
+- cancelar una operación enviada.
+
+El cierre debe dejar cada elemento en un estado propietario coherente y ocultar la información personal del actor anterior.
+
+Una revocación puede convertir un checkpoint en no recuperable sin eliminar historia o evidencia que deba conservarse.
+
+---
+
+#### 33. Contexto nuevo al regresar
+
+Antes de reanudar, el destino aplica la regla de `SHELL-APP-015`:
+
+```text
+APLICACIÓN DESTINO
+→ RESUELVE ACCESS CONTEXT NUEVO
+```
+
+No reutiliza el contexto que estaba vigente cuando se inició la tarea.
+
+El contexto antiguo puede participar únicamente como referencia comparativa del checkpoint.
+
+---
+
+#### 34. Cambio de contexto compatible
+
+Si sede, área, turno, check-in, rol operativo, dispositivo u otra dimensión contextual cambió, la aplicación compara el contexto nuevo con los requisitos actuales del work item.
+
+Cuando es compatible:
+
+```text
+CONTEXTO NUEVO COMPATIBLE
++
+TRABAJO VIGENTE
++
+AUTORIZACIÓN VÁLIDA
+→ POSIBLE REANUDACIÓN
+```
+
+La compatibilidad no se decide desde SHELL por igualdad textual de IDs.
+
+---
+
+#### 35. Cambio de contexto incompatible
+
+Cuando el contexto nuevo no satisface el trabajo:
+
+```text
+NO REANUDAR CIEGAMENTE
+```
+
+Las salidas controladas son las que autorice el propietario, por ejemplo:
+
+- bloquear;
+- volver a cola;
+- reasignar;
+- hacer handoff;
+- conservar borrador para revisión;
+- escalar;
+- conciliar.
+
+No se restaura el contexto antiguo para forzar continuidad.
+
+---
+
+#### 36. Autorización exacta al reanudar
+
+Una autorización emitida antes de la interrupción no funciona como capability token de reanudación.
+
+Antes de una mutación se conserva:
+
+```text
+ACTOR ACTUAL
++
+CONTEXTO ACTUAL
++
+PERMISO EXACTO
++
+RECURSO Y VERSIÓN ACTUALES
++
+ESTADO ACTUAL DEL WORK ITEM
+→ EVALUACIÓN ACTUAL
+```
+
+La mera presencia de un botón `Continuar` nunca sustituye esa evaluación.
+
+---
+
+#### 37. Recurso y versión
+
+La reanudación compara la versión observada con el recurso vigente.
+
+Debe distinguir, cuando aplique:
+
+```text
+SIN CAMBIOS
+CAMBIOS NO SUPERPUESTOS
+CAMBIOS SUPERPUESTOS
+RECURSO CERRADO
+RECURSO CANCELADO
+RECURSO REEMPLAZADO
+ESQUEMA INCOMPATIBLE
+```
+
+No se reabre un recurso cerrado por restaurar una pantalla antigua.
+
+---
+
+#### 38. Checkpoint semántico
+
+La continuidad puede apoyarse en el concepto de checkpoint ya aprobado por `UX-BASE-014`.
+
+Se conserva:
+
+```text
+CHECKPOINT SEMÁNTICO
+≠ URL
+≠ HISTORIAL
+≠ SCREENSHOT
+≠ ESTADO COMPLETO DEL COMPONENTE
+≠ PERMISO CONGELADO
+```
+
+El checkpoint referencia un punto lógico de trabajo.
+
+No reemplaza al work item ni al estado empresarial.
+
+---
+
+#### 39. Sin nuevo contrato público de checkpoint
+
+`SHELL-APP-016` no convierte la forma conceptual de `ProcessCheckpoint` en:
+
+- un nuevo contrato público;
+- un nuevo namespace;
+- un tipo compartido materializado;
+- una tabla;
+- un schema;
+- un endpoint;
+- un payload obligatorio para todas las aplicaciones.
+
+La materialización física permanece en sus tareas propietarias.
+
+---
+
+#### 40. Referencias que un checkpoint puede conservar
+
+Cuando el proceso propietario use checkpoint, puede conservar referencias a:
+
+- proceso e instancia;
+- etapa;
+- work item;
+- recurso y versión observada;
+- actor y contexto originales;
+- sede y área observadas;
+- claim o lease;
+- custodia;
+- borrador;
+- operaciones pendientes;
+- evidencia;
+- aplicación propietaria;
+- momento, vigencia y política de resume.
+
+Esas referencias permiten comparar el pasado con el estado actual.
+
+---
+
+#### 41. Datos que el checkpoint no congela como autoridad
+
+No se preservan como autoridad futura:
+
+- permiso previamente concedido;
+- rol efectivo futuro;
+- sesión indefinidamente válida;
+- decisión `ALLOW` previa;
+- estado objetivo solicitado por cliente;
+- resultado empresarial no confirmado;
+- secretos, PIN o tokens reutilizables;
+- payload empresarial completo innecesario;
+- contexto operativo viejo como fallback.
+
+Toda reanudación vuelve a validar sus autoridades.
+
+---
+
+#### 42. Borrador, checkpoint, operación pendiente, receipt y estado empresarial
+
+Se conservan como objetos semánticamente distintos:
+
+```text
+BORRADOR
+→ trabajo todavía no confirmado
+
+CHECKPOINT
+→ referencia al punto de continuidad
+
+OPERACIÓN PENDIENTE
+→ intención preparada o enviada con resultado pendiente
+
+RECEIPT
+→ evidencia de recepción o ejecución según contrato
+
+ESTADO EMPRESARIAL
+→ verdad autoritativa del proceso
+```
+
+Ninguno puede sustituir silenciosamente a otro.
+
+---
+
+#### 43. Estados de reanudación ya aprobados
+
+La clasificación de reanudación de `UX-BASE-014` permanece separada de `WorkItemStatus` y conserva:
+
+```text
+NO_CHECKPOINT
+DRAFT_ONLY
+CHECKPOINT_AVAILABLE
+VALIDATING
+RESUMABLE
+RESUMABLE_WITH_REVIEW
+WAITING_FOR_DEPENDENCY
+HANDOFF_REQUIRED
+REASSIGNMENT_REQUIRED
+CONFLICT
+RESULT_UNKNOWN
+REAUTH_REQUIRED
+RECONCILIATION_REQUIRED
+SUPERSEDED
+COMPLETED
+EXPIRED
+INVALID
+```
+
+`SHELL-APP-016` no fusiona ambos vocabularios.
+
+---
+
+#### 44. Secuencia de clasificación antes de continuar
+
+La secuencia conceptual es:
+
+```text
+IDENTIFICAR ACTOR Y DISPOSITIVO
+→ RESOLVER CONTEXTO NUEVO
+→ LOCALIZAR WORK ITEM Y RECURSO AUTORITATIVOS
+→ LOCALIZAR CHECKPOINT Y BORRADORES
+→ CONSULTAR OPERACIONES PENDIENTES Y RECEIPTS
+→ COMPARAR VERSIONES, CLAIM Y CUSTODIA
+→ CLASIFICAR REANUDACIÓN
+→ MOSTRAR RESUMEN HUMANO
+→ CONTINUAR, REVISAR, REASIGNAR O CONCILIAR
+```
+
+No se muestra `Continuar` como acción ejecutable antes de terminar la clasificación necesaria.
+
+---
+
+#### 45. `RESUMABLE`
+
+La reanudación directa exige, cuando aplique:
+
+- mismo actor atribuible;
+- sesión válida;
+- dispositivo permitido;
+- contexto compatible;
+- turno y check-in válidos;
+- work item todavía abierto;
+- recurso y versión compatibles;
+- claim o lease válido o renovable;
+- custodia compatible;
+- ausencia de resultado desconocido;
+- borrador compatible;
+- permiso exacto revalidado.
+
+Si una condición falla, no se degrada a “continuar de todas formas”.
+
+---
+
+#### 46. `RESUMABLE_WITH_REVIEW`
+
+Cuando la tarea puede continuar pero cambió información relevante, la experiencia debe explicar:
+
+- qué estaba guardado;
+- qué cambió;
+- qué parte sigue siendo válida;
+- qué debe revisarse;
+- qué no puede aplicarse automáticamente.
+
+Cambios no superpuestos pueden reaplicarse únicamente bajo la política propietaria.
+
+Cambios superpuestos exigen comparación o intervención.
+
+---
+
+#### 47. Resultado desconocido
+
+Si una interrupción ocurre después de enviar una mutación:
+
+```text
+RESULT_UNKNOWN
+→ CONSULTAR IDEMPOTENCY SCOPE O KEY
+→ CONSULTAR RECEIPT
+→ CONSULTAR ESTADO DEL RECURSO
+→ CLASIFICAR RESULTADO
+```
+
+No se genera una nueva intención hasta resolver la original.
+
+La navegación no decide si el efecto ocurrió.
+
+---
+
+#### 48. Operación offline pendiente
+
+Una acción capturada o completada localmente no se presenta como confirmada por el sistema.
+
+Se conserva:
+
+```text
+GUARDADO LOCAL
+≠ EN COLA
+≠ ENVIADO
+≠ RECIBIDO
+≠ CONFIRMADO
+```
+
+`COMPLETION_PENDING_SYNC` permanece pendiente hasta que la fuente propietaria confirme el resultado.
+
+---
+
+#### 49. Reconexión
+
+Al recuperar conectividad, no se ejecuta automáticamente todo lo pendiente.
+
+La recuperación debe revalidar, cuando aplique:
+
+- sesión;
+- dispositivo;
+- contexto;
+- revocaciones;
+- versiones;
+- estado del work item;
+- claim;
+- recurso;
+- dependencias;
+- receipts;
+- idempotencia.
+
+Los conflictos detienen el efecto afectado y se explican.
+
+---
+
+#### 50. Interrupción y preemption
+
+Cambiar de foco requiere tratar el trabajo actual antes de abrir otro incompatible.
+
+Secuencia conceptual:
+
+```text
+FOCO ACTUAL
+→ SOLICITUD DE INTERRUPCIÓN
+→ VALIDAR CRITICIDAD Y AUTORIDAD
+→ GUARDAR O CERRAR PUNTO SEGURO
+→ PAUSAR, HANDOFF O CONTINUAR
+→ ABRIR NUEVO FOCO
+```
+
+No se abandona silenciosamente trabajo parcial, custodia, evidencia o mutaciones con resultado desconocido.
+
+---
+
+#### 51. Emergencia y seguridad
+
+Una obligación de nivel 0 puede interrumpir trabajo de nivel 1 cuando el contrato lo exige.
+
+La interrupción registra o conserva:
+
+- causa;
+- punto seguro;
+- responsabilidad residual;
+- custodia;
+- siguiente acción;
+- condición de retorno.
+
+La emergencia no borra el trabajo anterior ni lo marca completado.
+
+---
+
+#### 52. Handoff
+
+La continuidad de un handoff conserva la separación:
+
+```text
+OFRECIDO
+≠ ACEPTADO
+≠ CUSTODIA TRANSFERIDA
+≠ ACTOR ANTERIOR LIBERADO
+≠ IN_PROGRESS DEL RECEPTOR
+```
+
+El actor saliente conserva su responsabilidad hasta el punto de liberación aprobado.
+
+El receptor no hereda claim, contexto ni autorización por aceptar navegación.
+
+---
+
+#### 53. Custodia
+
+La custodia física de dinero, lote, activo, documento, remisión u otro recurso no se deduce de:
+
+- una pantalla abierta;
+- un draft;
+- un checkpoint;
+- un retorno;
+- una navegación exitosa.
+
+Si existe divergencia entre custodia física y digital, la tarea entra en conciliación según su propietario.
+
+---
+
+#### 54. Aplicación propietaria no disponible
+
+Si la aplicación propietaria no puede abrirse:
+
+- el intento no inicia la tarea;
+- el intento no libera claim;
+- el intento no completa ni cancela;
+- el work item conserva el estado demostrado por su fuente;
+- SHELL puede mostrar una recuperación segura sin ejecutar lógica propietaria;
+- una respuesta stale no se promociona a vigente.
+
+La indisponibilidad de una app no convierte a SHELL en fallback funcional.
+
+---
+
+#### 55. Continuidad entre dispositivos
+
+La misma tarea solo puede continuarse en otro dispositivo cuando el contrato propietario permita una transferencia segura.
+
+Como mínimo deben verificarse:
+
+- checkpoint sincronizado o transferencia equivalente;
+- actor reidentificado;
+- dispositivo compatible;
+- contexto compatible;
+- claim movible o renovable cuando aplique;
+- ausencia de borrador local exclusivo no sincronizado en el equipo anterior.
+
+Un borrador solo local no se presume disponible en otro dispositivo.
+
+---
+
+#### 56. Reload, historial y reapertura
+
+Recargar, restaurar pestaña, usar `Back` o `Forward` y volver a una URL anterior no constituyen reanudación empresarial.
+
+La superficie debe:
+
+1. identificar la sesión actual;
+2. resolver contexto actual;
+3. localizar work item actual;
+4. clasificar su estado;
+5. decidir si existe continuidad válida.
+
+El historial no conserva claim ni permiso.
+
+---
+
+#### 57. Capas de continuidad de `SHELL-APP-014` a `SHELL-APP-016`
+
+La composición queda:
+
+```text
+SHELL-APP-014
+→ ¿EL DESTINO DE RETORNO ES SEGURO?
+
+SHELL-APP-015
+→ ¿CUÁL ES EL CONTEXTO ACTUAL DEL DESTINO?
+
+SHELL-APP-016
+→ ¿EL TRABAJO ORIGINAL SIGUE SIENDO VIGENTE Y REANUDABLE?
+```
+
+Ninguna capa sustituye a la siguiente.
+
+Un destino válido no demuestra contexto compatible y un contexto compatible no demuestra que el work item siga abierto.
+
+---
+
+#### 58. Sin release o claim implícitos por navegación
+
+La navegación no ejecuta automáticamente:
+
+- claim;
+- renovación de lease;
+- release;
+- pause;
+- resume;
+- takeover;
+- reassignment;
+- handoff acceptance;
+- completion.
+
+Cada transición requiere la autoridad propietaria aplicable.
+
+---
+
+#### 59. Sin doble ejecución por recuperación
+
+La reanudación debe impedir que:
+
+- una segunda pestaña ejecute el mismo work item;
+- dos dispositivos conserven claims incompatibles;
+- un refresh vuelva a enviar una mutación;
+- un timeout genere una intención nueva antes de consultar la original;
+- un checkpoint viejo reactive una versión supersedida;
+- un borrador se aplique después de una cancelación.
+
+Idempotencia, versión y claim forman parte de las comprobaciones propietarias.
+
+---
+
+#### 60. Sin persistencia universal en SHELL
+
+SHELL no crea para esta tarea:
+
+- tabla universal de tareas;
+- tabla universal de checkpoints;
+- almacenamiento universal de borradores;
+- lease manager;
+- claim engine;
+- scheduler;
+- workflow engine;
+- outbox o inbox universal;
+- caché local de autoridad;
+- store global mutable compartido entre aplicaciones.
+
+La continuidad se compone sobre referencias y contratos propietarios.
+
+---
+
+#### 61. Presentación de continuidad en SHELL
+
+SHELL puede presentar una proyección segura de que existe trabajo recuperable.
+
+La presentación puede comunicar, cuando la fuente lo permite:
+
+- título humano;
+- aplicación propietaria;
+- estado público;
+- si requiere continuar, revisar, esperar, reasignar o conciliar;
+- último avance confirmado de forma segura;
+- cambios relevantes minimizados;
+- una acción de navegación segura hacia la propietaria.
+
+La proyección no concede capacidad de ejecutar la mutación desde SHELL.
+
+---
+
+#### 62. Orden de recuperación al volver
+
+Cuando existen varios pendientes, se conserva el orden conceptual ya aprobado:
+
+```text
+1. RESULTADOS DESCONOCIDOS O CONCILIACIONES
+2. CUSTODIAS Y HANDOFFS PENDIENTES
+3. TAREAS CON CLAIM VIGENTE
+4. BORRADORES RECUPERABLES
+5. TAREAS PRÓXIMAS A VENCER
+6. COLA ORDINARIA
+```
+
+Ese orden no sustituye la prioridad de seguridad ni la política empresarial propietaria.
+
+---
+
+#### 63. Acción `Continuar`
+
+Una etiqueta humana `Continuar` puede mostrarse únicamente cuando la clasificación indique que existe una vía segura de reanudación o cuando la acción abra la propietaria para terminar esa clasificación.
+
+Debe quedar claro si la acción significa:
+
+- abrir para validar;
+- continuar directamente;
+- revisar cambios;
+- conciliar;
+- esperar;
+- solicitar reasignación.
+
+La UI no usa una sola acción ambigua para todos los estados.
+
+---
+
+#### 64. Accesibilidad y privacidad
+
+La continuidad no depende únicamente de color, posición, icono o animación.
+
+En dispositivos compartidos o superficies bloqueadas se minimizan:
+
+- identidad de otros actores;
+- datos sensibles del recurso;
+- contenido del borrador;
+- evidencia;
+- información de custodia;
+- detalles de conflictos.
+
+El actor autorizado recibe suficiente información para comprender qué se conservó y qué debe hacer.
+
+---
+
+#### 65. Responsables físicos existentes
+
+Esta tarea no crea pendientes técnicos sin propietario.
+
+Las responsabilidades físicas conservan sus owners canónicos:
+
+| Materia | Propietarios existentes |
+| --- | --- |
+| contrato estático de work items | `SHELL-CON-015` |
+| foco, prioridad, claim e interrupción | `UX-BASE-002` y contratos propietarios de cada dominio |
+| conectividad y operaciones pendientes | `UX-BASE-013`, `NFR-REQ-004`, `QUEUE-ARC-001` a `QUEUE-ARC-012` |
+| checkpoint y algoritmo de reanudación | `UX-BASE-014` y materializaciones propietarias |
+| contexto actual | contratos `AUTH-CTX` y `SHELL-APP-015` |
+| autorización de la acción | contratos `AUTH-SRV`, `AUTH-DB` y adapters compartidos aplicables |
+| dispositivos compartidos | contratos `AUTH-DEV` y estaciones propietarias |
+| handoff cross-app | `SHELL-CON-014` y contratos `INT-APP` aplicables |
+| evidencia y retención | contratos `EVID-ARC` y requisitos no funcionales aplicables |
+
+La futura materialización debe usar esos owners en vez de crear mecanismos locales equivalentes dentro de SHELL.
+
+---
+
+#### 66. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Justificación: `SHELL-APP-016` especializa para SHELL comportamientos de continuidad, claim, reanudación, offline, handoff, contexto, idempotencia y recuperación ya definidos y protegidos por requisitos vigentes. No crea un nuevo estado de work item, un nuevo estado de reanudación, un nuevo DTO, una nueva fuente de autoridad ni una nueva transición empresarial.
+
+El Registro Canónico de Requisitos de Prueba permanece sin cambios.
+
+---
+
+#### 67. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico de Requisitos de Prueba, esta tarea reutiliza:
+
+- `TREQ-UX-024` a `TREQ-UX-040` — identidad de work item, elegibilidad, asignación, claim, ejecución, prioridad, continuidad, handoff, concurrencia, leases, offline, frescura, reanudación, accesibilidad, eventos y versionado;
+- `TREQ-UX-274` a `TREQ-UX-296` — checkpoint, interrupciones, reanudación, borradores, receipts, resultados desconocidos, actores, handoffs, claims, custodia, contexto, conflictos, dispositivos, aplicaciones, privacidad, retención y pruebas;
+- `TREQ-UX-006` — recuperación ante pérdida de red, sesión, dispositivo o proveedor sin perder ni duplicar trabajo;
+- `TREQ-INTEGRATION-003` — idempotencia, resultado recuperable y tratamiento seguro de reintentos;
+- `TREQ-INTEGRATION-005` — continuidad de proceso, recurso, actor, estado, acción pendiente y retorno entre aplicaciones con revalidación;
+- `TREQ-SHELL-018` — destino de retorno validado y limitado a superficies aprobadas;
+- `TREQ-SHELL-030` — visibilidad de navegación derivada de contexto y permisos sin sustituir autorización;
+- `TREQ-SHELL-063` — frontera server/client sin autoridad ejecutable en proyecciones cliente;
+- `TREQ-SHELL-067` — resolución validada y fail closed de `AccessContext`;
+- `TREQ-SHELL-070` — proyección segura de contexto con allowlist cerrada;
+- `TREQ-SHELL-072` — cliente sin RPC internas de autorización ni autoridad propia.
+
+Estas referencias son trazabilidad heredada y no representan cambios del registro.
+
+---
+
+#### 68. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al archivo modular de la rama local de `SHELL-APP-016`, por lo que no existe build documental de esta tarea. |
+| LOCAL | NOT_EXECUTED | No se han ejecutado todavía formateo, quality, delivery, topología ni batería documental sobre el checkout local de `SHELL-APP-016`. |
+| REMOTA | PASS | Se verificaron en `main` el cierre de `SHELL-APP-015`, `active-sequence.json` con `SHELL-APP-016` como siguiente pendiente, el marcador exacto en el owner H2, la topología `PER_IMPLEMENTATION_UNIT`, el contrato materializado de work items con 29 campos, 8 clases, 16 estados, 7 readiness y 6 prioridades, y las reglas vigentes de foco, conectividad, checkpoint y reanudación. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define comportamiento documental; no ejecuta una tarea real, claim, lease, handoff, operación offline, custodia ni reanudación sobre usuarios o procesos desplegados. |
+| FÍSICA | NOT_APPLICABLE | La aprobación documental no crea ni autoriza una instancia física y no modifica código, contratos runtime, Supabase, datos, colas, dispositivos, configuración ni despliegues. |
+
+---
+
+#### 69. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-016 — Conservar tarea en curso cuando corresponda`.
+- [ ] `SHELL-APP-015` permanece como tarea anterior.
+- [ ] `SHELL-APP-017 — Diseñar experiencia para computador` permanece como tarea siguiente.
+- [ ] La tarea permanece exclusivamente documental.
+- [ ] La topología posterior permanece `PER_IMPLEMENTATION_UNIT` sin crear instancia física.
+- [ ] El contrato compartido conserva 29 campos.
+- [ ] El contrato compartido conserva 8 clases.
+- [ ] El contrato compartido conserva 16 estados conceptuales.
+- [ ] El contrato compartido conserva 7 estados de readiness.
+- [ ] El contrato compartido conserva 6 niveles de prioridad.
+- [ ] `work_item_id` permanece referencia opaca.
+- [ ] `work_item_id` no se confunde con `process_instance_id`.
+- [ ] `work_item_id` no se confunde con `claim_or_lease_ref`.
+- [ ] `work_item_id` no se confunde con checkpoint, borrador ni navegación.
+- [ ] `AVAILABLE`, `OFFERED` y `ASSIGNED` no se presentan como trabajo iniciado.
+- [ ] `CLAIMED` no se presenta como `IN_PROGRESS`.
+- [ ] Un claim se revalida antes de continuar.
+- [ ] `IN_PROGRESS` válido permanece como foco por defecto.
+- [ ] Seguridad y emergencia conservan precedencia sobre trabajo ordinario ya iniciado.
+- [ ] `WAITING` conserva obligación y condición de reactivación sin ocupar foco cuando no exige acción.
+- [ ] `BLOCKED` puede permanecer foco solo cuando el actor conserva acción o responsabilidad material.
+- [ ] `PAUSED` conserva un punto de reanudación sin implicar release ni completion.
+- [ ] `COMPLETION_PENDING_SYNC` no se transforma en `COMPLETED`.
+- [ ] `CONFLICT` y `RECONCILIATION_REQUIRED` activan recuperación, no repetición ciega.
+- [ ] `COMPLETED`, `CANCELLED`, `SUPERSEDED` y `EXPIRED` no se reanudan como activos.
+- [ ] Foco y `WorkItemStatus` permanecen separados.
+- [ ] Abrir una tarjeta no hace claim.
+- [ ] Abrir una aplicación no inicia ejecución.
+- [ ] Cambiar de aplicación no pausa ni libera automáticamente.
+- [ ] Refresh no reintenta una mutación empresarial.
+- [ ] Una navegación cross-app puede conservar el mismo work item únicamente cuando sigue siendo la misma obligación.
+- [ ] SHELL no clona tareas para conservarlas.
+- [ ] `owner_app_code` conserva estado, transición y cierre.
+- [ ] SHELL no renueva, libera ni transfiere claims o leases.
+- [ ] La expiración de lease no borra evidencia ni borradores.
+- [ ] Un claim en otro actor o dispositivo bloquea doble ejecución.
+- [ ] Cambiar de actor no transfiere borrador, claim, lease ni custodia.
+- [ ] Un dispositivo compartido separa sesión técnica y actor humano.
+- [ ] Logout no equivale a completar, descartar ni liberar obligaciones.
+- [ ] La reanudación resuelve un `AccessContext` nuevo.
+- [ ] El contexto anterior se usa solo como referencia comparativa.
+- [ ] Un contexto nuevo compatible exige reautorización antes de mutar.
+- [ ] Un contexto incompatible no se corrige restaurando el anterior.
+- [ ] La autorización anterior no funciona como capability token.
+- [ ] Recurso y versión se vuelven a comparar.
+- [ ] Checkpoint semántico no equivale a URL, historial, screenshot o permiso.
+- [ ] La forma conceptual de checkpoint no se convierte en contrato público nuevo.
+- [ ] Borrador, checkpoint, operación pendiente, receipt y estado empresarial permanecen separados.
+- [ ] Los 17 estados de reanudación de `UX-BASE-014` permanecen separados de `WorkItemStatus`.
+- [ ] `Continuar` no se habilita antes de la clasificación necesaria.
+- [ ] `RESUMABLE` exige actor, contexto, recurso, claim y permiso compatibles cuando aplican.
+- [ ] `RESUMABLE_WITH_REVIEW` explica cambios antes de aplicar información local.
+- [ ] Un resultado desconocido se consulta antes de reintentar.
+- [ ] Una operación local pendiente no se presenta como confirmada.
+- [ ] La reconexión revalida antes de sincronizar efectos.
+- [ ] Preemption conserva punto seguro y responsabilidad residual.
+- [ ] Un handoff ofrecido no equivale a aceptado.
+- [ ] Custodia no se deduce de pantalla, draft o checkpoint.
+- [ ] Fallo de la aplicación propietaria no inicia, libera ni completa trabajo.
+- [ ] Continuidad entre dispositivos exige sincronización o transferencia segura.
+- [ ] Historial y reload no restauran autoridad.
+- [ ] Se conserva la secuencia retorno seguro → contexto actual → trabajo reanudable.
+- [ ] Navegación no ejecuta release, claim, pause, resume, takeover, reasignación, handoff acceptance ni completion.
+- [ ] Recuperación impide doble ejecución y doble efecto.
+- [ ] SHELL no crea persistencia universal ni workflow engine.
+- [ ] La proyección de continuidad en SHELL permanece mínima y no autoritativa.
+- [ ] Se conserva el orden de recuperación de resultados desconocidos, custodia, claims, borradores, vencimientos y cola ordinaria.
+- [ ] Accesibilidad y privacidad se mantienen en reanudación y dispositivo compartido.
+- [ ] Toda responsabilidad física conserva un propietario existente.
+- [ ] No se modifica `@vento/contracts/work-items`.
+- [ ] No se modifica `AccessContextV1`.
+- [ ] No se modifica `SafeContextProjectionV1`.
+- [ ] No se modifica `ApplicationHandoffRelation`.
+- [ ] No se crea un nuevo DTO de continuidad.
+- [ ] No se modifica Supabase.
+- [ ] No se modifica runtime.
+- [ ] No se crean requisitos de prueba.
+- [ ] No se modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se desarrolla `SHELL-APP-017`.
+
+---
+
+#### 70. Límites
+
+Esta tarea no:
+
+- crea work items runtime;
+- modifica los 29 campos del contrato compartido;
+- modifica las 8 clases;
+- modifica los 16 estados;
+- modifica los 7 readiness;
+- modifica los 6 niveles de prioridad;
+- define serialización de `work_item_id`;
+- implementa claim engine;
+- implementa lease manager;
+- implementa scheduler;
+- implementa workflow engine;
+- implementa una tabla universal de tareas;
+- implementa persistencia universal de checkpoints;
+- implementa borradores de dominio;
+- implementa colas offline;
+- implementa inbox u outbox;
+- implementa receipts;
+- implementa idempotencia física;
+- implementa locks;
+- implementa sincronización;
+- implementa almacenamiento local;
+- implementa cifrado local;
+- implementa handoffs;
+- implementa custodia;
+- modifica contexto o autorización;
+- crea rutas, URLs o deep links;
+- modifica `returnTo`;
+- modifica login, middleware, cookies o sesión;
+- modifica `@vento/contracts` ni `@vento/os-context`;
+- modifica código de SHELL;
+- modifica Supabase, RLS, RPC, migraciones o datos;
+- activa AURA;
+- altera la frontera cliente de PASS;
+- crea una instancia física;
+- define layout final de computador;
+- desarrolla `SHELL-APP-017`.
+
+---
+
+#### 71. Handoff a `SHELL-APP-017`
+
+`SHELL-APP-017` recibe sin reapertura:
+
+1. una tarea `IN_PROGRESS` válida permanece como foco por defecto;
+2. seguridad y emergencia pueden interrumpirla mediante tratamiento explícito;
+3. `CLAIMED`, `PAUSED`, `COMPLETION_PENDING_SYNC`, `CONFLICT` y `RECONCILIATION_REQUIRED` conservan tratamientos distintos;
+4. `WAITING` y `BLOCKED` no se colapsan;
+5. estados terminales no se reanudan;
+6. foco, status y readiness permanecen separados;
+7. `Continuar` requiere clasificación y revalidación, no una URL anterior;
+8. retorno seguro, contexto actual y trabajo reanudable forman tres capas independientes;
+9. SHELL presenta continuidad mínima sin ejecutar lógica propietaria;
+10. el layout de computador deberá representar foco, recuperación, espera, bloqueo y accesos sin cambiar estas semánticas.
+
+La siguiente tarea puede decidir la composición visual para computador sin redefinir work items, claims, checkpoints o reglas de reanudación.
+
+---
+
+#### 72. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-015 — Conservar contexto al cambiar de aplicación`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-016 — Conservar tarea en curso cuando corresponda`
+
+**SIGUIENTE TAREA RESERVADA**
+`SHELL-APP-017 — Diseñar experiencia para computador`

@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1132** |
+| Tareas aprobadas | **1133** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **464** |
+| Tareas no iniciadas | **463** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **70.93% (1132/1596)** |
+| Porcentaje de completamiento | **70.99% (1133/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **SHELL-APP-015 — Conservar contexto al cambiar de aplicación** |
-| Tarea actual | **SHELL-APP-016 — Conservar tarea en curso cuando corresponda** |
+| Última tarea aprobada | **SHELL-APP-016 — Conservar tarea en curso cuando corresponda** |
+| Tarea actual | **SHELL-APP-017 — Diseñar experiencia para computador** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **SHELL-APP-017 — Diseñar experiencia para computador** |
+| Siguiente tarea | **SHELL-APP-018 — Diseñar experiencia para tablet** |
 | Bloque actual | **BLOQUE H2 — SHELL como aplicación** |
-| Progreso del bloque | **BLOQUE H2: 15 de 21 aprobadas; SHELL-APP-016 pendiente** |
+| Progreso del bloque | **BLOQUE H2: 16 de 21 aprobadas; SHELL-APP-017 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-001** |
-| Carril documental | **ACTIVO — SHELL-APP-016** |
+| Carril documental | **ACTIVO — SHELL-APP-017** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `SHELL-APP-015` — Conservar contexto al cambiar de aplicación |
-| Tarea actual | `SHELL-APP-016` — Conservar tarea en curso cuando corresponda — **NO INICIADA** |
-| Siguiente tarea | `SHELL-APP-017` — Diseñar experiencia para computador |
+| Última aprobada | `SHELL-APP-016` — Conservar tarea en curso cuando corresponda |
+| Tarea actual | `SHELL-APP-017` — Diseñar experiencia para computador — **NO INICIADA** |
+| Siguiente tarea | `SHELL-APP-018` — Diseñar experiencia para tablet |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE H2: 15 DE 21 APROBADAS — ACTUAL SHELL-APP-016** |
+| CONTINUIDAD ACTIVA | **BLOQUE H2: 16 DE 21 APROBADAS — ACTUAL SHELL-APP-017** |
 | Implementación física | **SHELL-CI-021::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-SHELL-APP-015 — Conservar contexto al cambiar de aplicación
-        ↓
-TAREA ACTUAL
 SHELL-APP-016 — Conservar tarea en curso cuando corresponda
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 SHELL-APP-017 — Diseñar experiencia para computador
         ↓
+SIGUIENTE TAREA RESERVADA
+SHELL-APP-018 — Diseñar experiencia para tablet
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE H2 — 15 de 21 tareas aprobadas
+BLOQUE H2 — 16 de 21 tareas aprobadas
 ```
