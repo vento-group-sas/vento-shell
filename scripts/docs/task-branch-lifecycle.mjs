@@ -661,6 +661,7 @@ export function classifyInfraPath(filePath) {
     || normalized === 'package-lock.json'
     || normalized === 'packages/contracts/README.md'
     || normalized === 'packages/contracts/authorization/README.md'
+    || /^packages\/(?:[^/]+\/)+scripts\/.+\.(?:cjs|js|mjs)$/u.test(normalized)
     || normalized === 'docs/plan-canonico/modular/chatgpt-work-starter-template.txt'
     || normalized === 'docs/plan-canonico/modular/01_PROTOCOLO.md'
     || normalized === 'docs/plan-canonico/modular/package-gate-policy.json'

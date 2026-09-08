@@ -168,6 +168,14 @@ test('cambio transversal usa infra/<change-id> y bloquea archivos canonicos de t
   assert.equal(classifyInfraPath('.editorconfig'), 'ALLOWED');
   assert.equal(classifyInfraPath('packages/contracts/README.md'), 'ALLOWED');
   assert.equal(classifyInfraPath('packages/contracts/authorization/README.md'), 'ALLOWED');
+  assert.equal(classifyInfraPath('packages/ui-web/scripts/validate-alert.mjs'), 'ALLOWED');
+  assert.equal(classifyInfraPath('packages/data-normalization/scripts/validate-normalization-types.mjs'), 'ALLOWED');
+  assert.equal(
+    classifyInfraPath('packages/contracts/authorization/scripts/generate-authorization-contracts.mjs'),
+    'ALLOWED',
+  );
+  assert.equal(classifyInfraPath('packages/ui-web/src/Alert.tsx'), 'OTHER');
+  assert.equal(classifyInfraPath('packages/ui-web/package.json'), 'OTHER');
   assert.equal(
     classifyInfraPath('docs/plan-canonico/modular/chatgpt-work-starter-template.txt'),
     'ALLOWED',
