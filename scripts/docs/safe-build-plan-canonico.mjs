@@ -24,6 +24,7 @@ import {
 } from './treq-registry-files.mjs';
 import { autoPrepareCanonicalTask } from './auto-prepare-canonical-task.mjs';
 import { assertProspectiveTasks } from './audit-prospective-tasks.mjs';
+import { saveRecoveryArtifact } from './plan-recovery-store.mjs';
 
 const root = process.cwd();
 const baseDir = path.resolve(root, 'docs/plan-canonico/modular');
@@ -81,31 +82,12 @@ function saveValidSnapshot() {
 }
 
 function saveRecoveryCopy(source, reconciliation) {
-  const timestamp = new Date().toISOString().replaceAll(':', '-');
-  const shortHash = sha256(source).slice(0, 12);
-  const prefix = `${timestamp}-${shortHash}`;
-
-  fs.mkdirSync(recoveryDir, { recursive: true });
-  fs.writeFileSync(
-    path.join(recoveryDir, `${prefix}-04A-entrante.md`),
+  return saveRecoveryArtifact({
+    root,
+    recoveryDir,
     source,
-    'utf8'
-  );
-  fs.writeFileSync(
-    path.join(recoveryDir, `${prefix}-reconciliacion.json`),
-    `${JSON.stringify({
-      createdAt: new Date().toISOString(),
-      incomingSha256: sha256(source),
-      restoredHistoricalIds: reconciliation.changedExistingIds ?? [],
-      preservedHistoricalIds:
-        reconciliation.preservedChangedExistingIds ?? [],
-      preservedNewIds: reconciliation.newIds ?? [],
-      normalizedApprovalIds: reconciliation.normalizedApprovalIds ?? [],
-    }, null, 2)}\n`,
-    'utf8'
-  );
-
-  return path.relative(root, path.join(recoveryDir, `${prefix}-04A-entrante.md`));
+    reconciliation,
+  }).payloadPath;
 }
 
 function attemptSafeReconciliation() {
