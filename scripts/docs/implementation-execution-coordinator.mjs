@@ -15,6 +15,11 @@ import {
 } from './implementation-control.mjs';
 import { deriveCoordinatedImplementationStatus } from './implementation-readiness-coordinator.mjs';
 import {
+  createCandidateValidationReceipt,
+  fingerprintCandidateRepositoryState,
+  validateCandidateValidationReceipt,
+} from './implementation-validation-engine.mjs';
+import {
   recordInPackageCandidateEvidence,
   scanPackageReadiness,
   validateInPackageCandidateEvidence,
@@ -117,6 +122,73 @@ function worktreePaths(root) {
   return parsePorcelainPaths(
     git(['status', '--porcelain=v1', '--untracked-files=all'], { cwd: root }).stdout,
   );
+}
+
+export function candidateValidationState(root, instance) {
+  const candidateCommit = currentHead(root).toLowerCase();
+  const gitStatus = git(['status', '--porcelain=v1', '--untracked-files=all'], { cwd: root }).stdout;
+  const trackedDiff = git(['diff', '--binary', 'HEAD', '--'], { cwd: root }).stdout;
+  const untrackedPaths = git(['ls-files', '--others', '--exclude-standard'], { cwd: root }).stdout
+    .split(/\r?\n/u)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+  const objectShas = untrackedPaths.length > 0
+    ? git(['hash-object', '--', ...untrackedPaths], { cwd: root }).stdout
+      .split(/\r?\n/u)
+      .map((entry) => entry.trim().toLowerCase())
+      .filter(Boolean)
+    : [];
+  if (objectShas.length !== untrackedPaths.length) {
+    fail('No se pudo fingerprintar exactamente el conjunto de archivos untracked del candidato.');
+  }
+  const untrackedFiles = untrackedPaths.map((entry, index) => ({
+    path: entry.replaceAll('\\', '/'),
+    objectSha: objectShas[index],
+  }));
+  const repositoryStateSha256 = fingerprintCandidateRepositoryState({
+    candidateCommit,
+    gitStatus,
+    trackedDiff,
+    untrackedFiles,
+  });
+  return {
+    candidateCommit,
+    repositoryStateSha256,
+    validationCommands: [...(instance.validation_commands ?? [])],
+    toolchain: {
+      nodeVersion: process.version,
+      platform: process.platform,
+      arch: process.arch,
+    },
+  };
+}
+
+export function evaluateCandidatePreverifyReceipt({ instance, request, candidateState } = {}) {
+  if (!instance || typeof instance !== 'object') {
+    return { status: 'MISS', reusable: false, reason: 'INSTANCE_MISSING' };
+  }
+  if (!candidateState || typeof candidateState !== 'object') {
+    return { status: 'MISS', reusable: false, reason: 'CANDIDATE_STATE_MISSING' };
+  }
+  return validateCandidateValidationReceipt({
+    receipt: request?.validation_engine_preverify_receipt ?? null,
+    instanceId: instance.instance_id,
+    candidateCommit: candidateState.candidateCommit,
+    repositoryStateSha256: candidateState.repositoryStateSha256,
+    validationCommands: candidateState.validationCommands,
+    toolchain: candidateState.toolchain,
+  });
+}
+
+function readEvidenceRequest(root) {
+  const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
+  if (!fs.existsSync(absolute)) return null;
+  try {
+    const parsed = JSON.parse(fs.readFileSync(absolute, 'utf8'));
+    return parsed && typeof parsed === 'object' && !Array.isArray(parsed) ? parsed : null;
+  } catch {
+    return null;
+  }
 }
 
 function localBranchExists(root, branch) {
@@ -378,7 +450,7 @@ function maybeRecordCi020Candidate(root, instance) {
   return 'RECORDED';
 }
 
-function writeEvidenceRequest(root, instance, candidateCommit) {
+function writeEvidenceRequest(root, instance, candidateCommit, preverifyReceipt) {
   const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
   const request = {
@@ -395,6 +467,7 @@ function writeEvidenceRequest(root, instance, candidateCommit) {
       evidence: [],
     })),
     operational_evidence: [],
+    validation_engine_preverify_receipt: preverifyReceipt,
   };
   fs.writeFileSync(absolute, `${JSON.stringify(request, null, 2)}\n`, 'utf8');
   return EVIDENCE_REQUEST_PATH;
@@ -556,12 +629,25 @@ async function materializeImplementation({ root, id, instance }) {
 }
 
 async function sealVerifiedEvidence({ root, id, evidenceFile }) {
-  ensureImplementationBranch(root, id);
   const instance = resolveInstance(root, id).instance;
   if (instance.status !== 'IMPLEMENTED') fail(`${id}: --evidence-file exige IMPLEMENTED.`);
 
-  ensureCurrentMainContained(root, instance);
-  runCanonicalLifecycle(root, 'docs:implementation:preverify', id);
+  const refreshedBeforePreverify = instance;
+  const candidateState = candidateValidationState(root, refreshedBeforePreverify);
+  const priorRequest = readEvidenceRequest(root);
+  const preverifyReceipt = evaluateCandidatePreverifyReceipt({
+    instance: refreshedBeforePreverify,
+    request: priorRequest,
+    candidateState,
+  });
+  let preverifyStatus = 'RERUN';
+  if (preverifyReceipt.status === 'PASS') {
+    preverifyStatus = 'REUSED_EXACT_CANDIDATE';
+    console.log(`[VALIDATION ENGINE] ${id}: PREVERIFY reutilizado por fingerprint exacto del candidato.`);
+  } else {
+    console.log(`[VALIDATION ENGINE] ${id}: PREVERIFY no reutilizable (${preverifyReceipt.reason}); se ejecuta completo.`);
+    runCanonicalLifecycle(root, 'docs:implementation:preverify', id);
+  }
 
   const candidateCommit = currentHead(root);
   const absoluteEvidence = path.resolve(root, evidenceFile);
@@ -596,7 +682,7 @@ async function sealVerifiedEvidence({ root, id, evidenceFile }) {
   npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
   npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
   git(['diff', '--check'], { cwd: root });
-  return candidateCommit;
+  return { candidateCommit, preverifyStatus };
 }
 
 async function printStatus({ root, explicitInstanceId }) {
@@ -706,8 +792,22 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
 
     if (!evidenceFile) {
       runCanonicalLifecycle(root, 'docs:implementation:preverify', instanceId);
-      const candidateCommit = currentHead(root);
-      const requestPath = writeEvidenceRequest(root, resolveInstance(root, instanceId).instance, candidateCommit);
+      const refreshedAfterPreverify = resolveInstance(root, instanceId).instance;
+      const candidateState = candidateValidationState(root, refreshedAfterPreverify);
+      const candidateCommit = candidateState.candidateCommit;
+      const preverifyReceipt = createCandidateValidationReceipt({
+        instanceId,
+        candidateCommit,
+        repositoryStateSha256: candidateState.repositoryStateSha256,
+        validationCommands: candidateState.validationCommands,
+        toolchain: candidateState.toolchain,
+      });
+      const requestPath = writeEvidenceRequest(
+        root,
+        refreshedAfterPreverify,
+        candidateCommit,
+        preverifyReceipt,
+      );
       printResult({
         ESTADO: 'PASS',
         OPERACION: 'IMPLEMENTATION_ACCELERATOR',
@@ -718,6 +818,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         REBASELINE: materializedResult?.rebaseline ?? 'CURRENT',
         MRP015_050: materializedResult?.mrpStatus ?? 'PRESERVED_OR_NO_APLICA',
         PREVERIFY: 'PASS',
+        PREVERIFY_RECEIPT: 'RECORDED_EXACT_CANDIDATE',
         EVIDENCE_REQUEST: requestPath,
         NEXT_GATE: 'EXTERNAL_EVIDENCE',
         HUMAN_GATE: 'SI',
@@ -726,7 +827,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       return;
     }
 
-    const candidateCommit = await sealVerifiedEvidence({
+    const sealed = await sealVerifiedEvidence({
       root,
       id: instanceId,
       evidenceFile,
@@ -736,7 +837,8 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       ESTADO: 'PASS',
       OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE',
       INSTANCE_ID: instanceId,
-      CANDIDATE_SHA: candidateCommit,
+      CANDIDATE_SHA: sealed.candidateCommit,
+      PREVERIFY: sealed.preverifyStatus,
       EVIDENCE_RECEIPT: 'PASS',
       VERIFIED: 'SI',
       FINISH: 'PASS',

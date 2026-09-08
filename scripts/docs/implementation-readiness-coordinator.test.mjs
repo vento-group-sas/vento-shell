@@ -210,6 +210,7 @@ test('validation engine ejecuta readiness una vez e inyecta el mismo package_exe
   assert.deepEqual(result.validationEngine.phases, [
     'F1_OBSERVABILITY',
     'F2_SHARED_IMMUTABLE_CONTEXT',
+    'F3_DEDUPLICATION_CANDIDATE_RECEIPTS',
   ]);
   assert.equal(result.validationEngine.observability.packageReadinessScans, 1);
   assert.equal(result.validationEngine.observability.packageExecutionReuses, 1);
@@ -217,6 +218,10 @@ test('validation engine ejecuta readiness una vez e inyecta el mismo package_exe
   assert.equal(result.validationEngine.observability.validationGatesSkipped, 0);
   assert.equal(result.validationEngine.policy.validationGatesSkipped, 0);
   assert.equal(result.validationEngine.policy.semantics, 'PRESERVED');
+  assert.equal(result.validationEngine.policy.candidateReceiptReuse, 'EXACT_CANDIDATE_FINGERPRINT_ONLY');
+  assert.equal(result.validationEngine.policy.remoteReuse, 'NEVER_REUSE');
+  assert.equal(result.validationEngine.policy.authorizationReuse, 'NEVER_REUSE');
+  assert.equal(result.validationEngine.policy.prMergeReuse, 'NEVER_REUSE');
   assert.equal(result.validationEngine.context.immutable, true);
   assert.equal(result.validationEngine.observability.packageReadinessMs, 4);
   assert.equal(result.validationEngine.observability.implementationControlMs, 2);
