@@ -1,13 +1,24 @@
-import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { pathToFileURL, fileURLToPath } from 'node:url';
+import { pathToFileURL } from 'node:url';
+import { createDataNormalizationValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  assert,
+  exactArray,
+  includesAll,
+  assertGitUnchanged,
+  run,
+  sha256,
+} = createDataNormalizationValidatorHarness(
+  import.meta.url,
+  {
+    gitUnchangedMessage: "out-of-scope canonical or package metadata changed",
+  },
+);
 
 const rulesPath = path.join(packageRoot, 'src', 'normalization.rules.ts');
 const typesPath = path.join(packageRoot, 'src', 'normalization.types.ts');
@@ -70,53 +81,10 @@ const expectedFunctions = [
   'applyCommercialCapitalization',
 ];
 
-function fail(message) {
-  throw new Error(message);
-}
-
-function assert(condition, message) {
-  if (!condition) fail(message);
-}
-
-function exactArray(actual, expected, label) {
-  assert(
-    JSON.stringify(actual) === JSON.stringify(expected),
-    `${label} mismatch: expected=${JSON.stringify(expected)} actual=${JSON.stringify(actual)}`,
-  );
-}
-
-function includesAll(actual, expected, label) {
-  const missing = expected.filter((entry) => !actual.includes(entry));
-  assert(missing.length === 0, `${label} missing: ${missing.join(', ')}`);
-}
-
 function extractUnion(source, name) {
   const match = source.match(new RegExp(`export type ${name} =([\\s\\S]*?);`, 'u'));
   assert(match, `missing union ${name}`);
   return [...match[1].matchAll(/'([^']+)'/gu)].map((item) => item[1]);
-}
-
-function run(command, args, options = {}) {
-  const result = spawnSync(command, args, {
-    cwd: options.cwd ?? repoRoot,
-    encoding: 'utf8',
-    windowsHide: true,
-    env: process.env,
-  });
-  if (result.error) throw result.error;
-  return {
-    status: Number.isInteger(result.status) ? result.status : 1,
-    stdout: String(result.stdout ?? '').trim(),
-    stderr: String(result.stderr ?? '').trim(),
-  };
-}
-
-function assertGitUnchanged(paths) {
-  const result = run('git', ['diff', '--quiet', '--', ...paths]);
-  assert(
-    result.status === 0,
-    `out-of-scope canonical or package metadata changed: ${paths.join(', ')}`,
-  );
 }
 
 function sourceContractBlock(owner) {
@@ -145,10 +113,6 @@ function sourceContractBlock(owner) {
 
   assert(start >= 0 && end > start, 'canonical SHELL-NORM-003 task block not found');
   return lines.slice(start, end).join('\n');
-}
-
-function sha256(value) {
-  return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
 }
 
 function compileRules(tempDir) {

@@ -1,15 +1,25 @@
-import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
-import { pathToFileURL, fileURLToPath } from 'node:url';
+import { pathToFileURL } from 'node:url';
 
 import { parseTaskBlocks } from '../../../scripts/docs/format-canonical-task.mjs';
+import { createDataNormalizationValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  assert,
+  exactArray,
+  includesAll,
+  assertGitUnchanged,
+  run,
+  sha256,
+  canonicalTaskBlock,
+  asciiSafe,
+} = createDataNormalizationValidatorHarness(
+  import.meta.url,
+);
 const sourceRoot = path.join(packageRoot, 'src');
 const conformanceRoot = path.join(packageRoot, 'conformance');
 const conformancePath = path.join(conformanceRoot, 'normalization.conformance.ts');
@@ -168,59 +178,6 @@ const expectedTreatmentModes = [
   'STRUCTURAL_RESOLUTION_REQUIRED',
   'PROHIBITED',
 ];
-
-function asciiSafe(value) {
-  return String(value)
-    .normalize('NFD')
-    .replace(/[\u0300-\u036f]/gu, '')
-    .replace(/[^\x20-\x7E]/gu, '?');
-}
-
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
-
-function exactArray(actual, expected, label) {
-  assert(
-    JSON.stringify(actual) === JSON.stringify(expected),
-    `${label} mismatch: expected=${JSON.stringify(expected)} actual=${JSON.stringify(actual)}`,
-  );
-}
-
-function includesAll(actual, expected, label) {
-  const missing = expected.filter((entry) => !actual.includes(entry));
-  assert(missing.length === 0, `${label} missing: ${missing.join(', ')}`);
-}
-
-function run(command, args, options = {}) {
-  const result = spawnSync(command, args, {
-    cwd: options.cwd ?? repoRoot,
-    encoding: 'utf8',
-    windowsHide: true,
-    env: process.env,
-  });
-  if (result.error) throw result.error;
-  return {
-    status: Number.isInteger(result.status) ? result.status : 1,
-    stdout: String(result.stdout ?? '').trim(),
-    stderr: String(result.stderr ?? '').trim(),
-  };
-}
-
-function assertGitUnchanged(paths) {
-  const result = run('git', ['diff', '--quiet', '--', ...paths]);
-  assert(result.status === 0, `out-of-scope immutable file changed: ${paths.join(', ')}`);
-}
-
-function sha256(value) {
-  return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
-}
-
-function canonicalTaskBlock(owner, taskId) {
-  const task = parseTaskBlocks(owner).find((entry) => entry.id === taskId) ?? null;
-  assert(task, `canonical task ${taskId} not found`);
-  return task.block;
-}
 
 function asciiFold(value) {
   return String(value)
