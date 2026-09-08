@@ -4677,10 +4677,778 @@ La materialización continúa separada del cierre documental.
 `SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real`
 
 
-### [ ] SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
+### ✅ SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real
+
+**Estado:** APROBADA
+**Tarea anterior:** SHELL-APP-020 — Probar navegación con bloqueos reales
+**Tarea siguiente:** AUTH-UI-040 — Ocultar enlaces no autorizados
+**Tipo de tarea:** documental de saneamiento de navegación y retiro controlado de acciones placeholder del Hub; define el delta físico futuro de SHELL sin ejecutarlo en esta conversación y conserva la topología `PER_IMPLEMENTATION_UNIT`
+**Bloque:** H2 — SHELL como aplicación
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/H2_SHELL_APP/04_DISPOSITIVOS_Y_PRUEBAS_DE_NAVEGACION.md`
+**Estado físico resultante:** contrato documental de retiro de `RET-ART-008` y `RET-ART-009` definido; las acciones runtime actuales permanecen sin modificación hasta la instancia física autorizada correspondiente
+**Cambios físicos autorizados:** ninguno durante esta tarea documental; no se modifica runtime, navegación, componentes compartidos, autenticación, autorización, Supabase, datos, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Retirar del diseño objetivo de SHELL las acciones visibles `Mi perfil` y `Configuración de usuario` mientras no exista para cada una una capacidad funcional aprobada y una ruta propietaria distinta de `/`.
+
+La tarea cierra el saneamiento del mini-bloque H2 evitando que el Hub comunique capacidades inexistentes y define el cambio físico mínimo que una materialización posterior deberá realizar sin crear funcionalidad sustitutiva por inferencia.
+
+#### 2. Resultado canónico
+
+Queda aprobada esta regla:
+
+```text
+CAPACIDAD FUNCIONAL NO APROBADA
++
+RUTA PROPIETARIA NO EXISTENTE
+=
+ACCIÓN NO PRESENTADA
+```
+
+Y queda prohibido:
+
+```text
+DESTINO /
+=
+PERFIL
+
+DESTINO /
+=
+CONFIGURACIÓN
+```
+
+La raíz de SHELL continúa siendo el Hub. Volver al Hub no constituye una implementación de perfil ni de configuración.
+
+#### 3. Snapshot remoto de referencia
+
+La decisión se reconcilia contra:
+
+| Campo | Valor |
+| --- | --- |
+| Repositorio | `vento-group-sas/vento-shell` |
+| Rama | `main` |
+| Commit | `4140b78990bfadd20e7197f4b91f2bf286d59f14` |
+| Última tarea cerrada | `SHELL-APP-020 — Probar navegación con bloqueos reales` |
+| Tarea documental actual | `SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real` |
+| Handoff posterior | `AUTH-UI-040 — Ocultar enlaces no autorizados` |
+| Runtime principal inspeccionado | `src/app/page.tsx` |
+| Superficie compartida relacionada | `packages/ui-web/src/AppShell.tsx` |
+| Registro de prueba relacionado | dominio SHELL del Registro Canónico de Requisitos de Prueba |
+
+El snapshot fija la evidencia AS-IS utilizada por esta decisión. Una materialización posterior deberá volver a verificar el runtime vigente antes de eliminar código.
+
+#### 4. Handoff recibido de `SHELL-APP-020`
+
+020 entrega exclusivamente:
+
+- los enlaces visibles `Mi perfil` y `Configuración de usuario`;
+- su destino actual `/`;
+- la obligación de no presentar una capacidad inexistente;
+- el inventario y los hallazgos previos relacionados.
+
+021 no reabre:
+
+- la matriz de navegación por rol;
+- la matriz de bloqueos;
+- las veinte razones públicas;
+- la separación entre denegación y fallo técnico;
+- la política de navegación directa;
+- las brechas de `returnTo`.
+
+#### 5. Dependencia `SHELL-AUD-011`
+
+`SHELL-AUD-011` ya tomó la decisión propietaria de retiro.
+
+Las identidades aplicables son:
+
+| ID | Tipo | Superficie | Estado decidido | Propietarios |
+| --- | --- | --- | --- | --- |
+| `RET-ART-008` | navegación | acceso `Mi perfil` con destino `/` | `RETIRAR_PLACEHOLDER` | `SHELL-UI-010`; `SHELL-APP-021` |
+| `RET-ART-009` | navegación | acceso de configuración con destino `/` | `RETIRAR_PLACEHOLDER` | `SHELL-UI-010`; `SHELL-APP-021` |
+
+021 no vuelve a decidir si deben conservarse.
+
+#### 6. Semántica de retiro heredada
+
+La auditoría distingue:
+
+```text
+RETIRAR DEL DESTINO CANÓNICO
+AUTORIZAR RETIRO FÍSICO POSTERIOR
+ELIMINAR FÍSICAMENTE
+```
+
+Esta tarea documental opera sobre la definición canónica y el contrato del cambio futuro.
+
+No ejecuta la eliminación física.
+
+#### 7. Dependencia `SHELL-UI-010`
+
+`SHELL-UI-010` define `AppShell` como marco de composición.
+
+La superficie compartida:
+
+- recibe utilidades preparadas mediante `headerActions`;
+- no decide qué acciones de sesión existen;
+- no resuelve rutas empresariales;
+- no resuelve identidad;
+- no resuelve autorización;
+- no resuelve contexto;
+- no integra obligatoriamente un `ProfileMenu`.
+
+Por tanto, retirar estos placeholders del runtime de SHELL no exige alterar `AppShell`.
+
+#### 8. `ProfileMenu` no es obligación de `AppShell`
+
+El contrato compartido permite que un consumidor componga utilidades de cabecera, pero no canoniza un menú de perfil como capacidad obligatoria.
+
+Se conserva:
+
+```text
+SLOT DE HEADER ACTIONS
+!=
+CAPACIDAD DE PERFIL
+
+SLOT DE HEADER ACTIONS
+!=
+CAPACIDAD DE CONFIGURACIÓN
+```
+
+La existencia del slot no autoriza inventar acciones para llenarlo.
+
+#### 9. Estado AS-IS del menú de sesión
+
+El Hub vigente mantiene un menú de sesión que contiene:
+
+1. indicador de sesión activa;
+2. email del usuario;
+3. `Mi perfil`;
+4. `Configuración de usuario`;
+5. `Cerrar sesión`.
+
+La tarea afecta únicamente los puntos 3 y 4.
+
+#### 10. Estado AS-IS de `Mi perfil`
+
+La acción visible:
+
+```text
+Mi perfil
+-> /
+```
+
+retorna al mismo Hub.
+
+No existe evidencia de una capacidad de perfil propietaria detrás de ese destino.
+
+#### 11. Estado AS-IS de `Configuración de usuario`
+
+La acción visible:
+
+```text
+Configuración de usuario
+-> /
+```
+
+retorna al mismo Hub.
+
+No existe evidencia de una capacidad de configuración propietaria detrás de ese destino.
+
+#### 12. Ausencia de rutas propietarias
+
+El árbol runtime actual de `src/app` conserva dos páginas:
+
+```text
+/
+ /login
+```
+
+No existe en el snapshot una página propietaria de perfil o configuración que permita reinterpretar los placeholders como enlaces funcionales.
+
+#### 13. No se inventan destinos
+
+021 no crea ni reserva por inferencia:
+
+```text
+/profile
+/settings
+/account
+/preferences
+/user
+/me
+/config
+/configuracion
+/perfil
+```
+
+Una ruta futura deberá provenir de una capacidad aprobada, un propietario definido y una tarea funcional independiente.
+
+#### 14. No se inventan capacidades
+
+La tarea no crea conceptos funcionales como:
+
+- editar nombre;
+- cambiar email;
+- administrar avatar;
+- cambiar contraseña desde el Hub;
+- preferencias personales;
+- preferencias de idioma;
+- preferencias de notificación;
+- administración de sesión;
+- administración de dispositivos;
+- configuración de sede;
+- configuración de área;
+- configuración de rol.
+
+Si alguno se aprueba en el futuro, tendrá su propio alcance.
+
+#### 15. No se sustituye por “Próximamente”
+
+La decisión `RETIRAR_PLACEHOLDER` significa retirar la acción de la navegación objetivo.
+
+No se sustituye por:
+
+- botón deshabilitado;
+- enlace sin `href`;
+- chip;
+- tooltip;
+- texto `Próximamente`;
+- modal vacío;
+- alerta de función futura.
+
+Una función inexistente no necesita ocupar espacio interactivo.
+
+#### 16. No se convierte en bloqueo de autorización
+
+Los placeholders no representan una capacidad implementada que el actor tenga denegada.
+
+Por tanto:
+
+```text
+CAPACIDAD INEXISTENTE
+!=
+CAPACIDAD DENEGADA
+```
+
+No se utiliza el lenguaje `Sin acceso`, `Bloqueada` ni otro mensaje de autorización para justificar su ausencia.
+
+#### 17. No se crea permiso
+
+021 no crea claves como:
+
+```text
+shell.profile.view
+shell.profile.update
+shell.settings.view
+shell.settings.update
+```
+
+La ausencia de una capacidad no se corrige inventando un permiso.
+
+#### 18. No se crea estado de navegación
+
+021 no agrega un estado especial como:
+
+```text
+PLACEHOLDER
+COMING_SOON
+UNIMPLEMENTED
+PROFILE_DISABLED
+SETTINGS_DISABLED
+```
+
+La acción simplemente deja de pertenecer a la navegación materializada cuando se ejecute su retiro físico.
+
+#### 19. Delta funcional objetivo
+
+Después de una futura materialización conforme a este contrato:
+
+| Elemento | Antes | Después |
+| --- | ---: | ---: |
+| Acciones placeholder de perfil/configuración visibles | 2 | 0 |
+| Rutas runtime de página de SHELL | 2 | 2 |
+| Nuevas rutas de perfil | 0 | 0 |
+| Nuevas rutas de configuración | 0 | 0 |
+| Acción de cierre de sesión | 1 | 1 |
+| Email de sesión mostrado | 1 | 1 |
+| Nuevos permisos | 0 | 0 |
+| Nuevas capacidades empresariales | 0 | 0 |
+
+#### 20. Superficie propietaria del cambio físico futuro
+
+El código AS-IS sitúa ambas acciones en:
+
+```text
+src/app/page.tsx
+```
+
+La futura materialización se limita al menú de sesión de esa superficie.
+
+No se extiende por semejanza a otras aplicaciones o repositorios.
+
+#### 21. Delta de código esperado
+
+La futura instancia deberá producir el mínimo delta necesario para que:
+
+- desaparezca el bloque interactivo de `Mi perfil`;
+- desaparezca el bloque interactivo de `Configuración de usuario`;
+- desaparezca el import de `Link` si después del retiro no conserva ningún consumidor en el archivo;
+- permanezca intacta la información de sesión necesaria;
+- permanezca intacta la acción de cierre de sesión.
+
+El contrato describe el resultado esperado, no ejecuta el cambio.
+
+#### 22. Import `Link`
+
+En el snapshot inspeccionado, el import:
+
+```text
+next/link
+```
+
+se utiliza para los dos placeholders del menú.
+
+La implementación futura debe verificar nuevamente consumidores antes de retirar un import.
+
+Un import sin uso no forma parte del resultado aceptable.
+
+#### 23. Acción `Cerrar sesión`
+
+`Cerrar sesión` es funcional y permanece fuera del retiro.
+
+Se conserva su responsabilidad actual:
+
+```text
+supabase.auth.signOut()
+-> /login?returnTo=/
+```
+
+021 no cambia su semántica ni su contrato de seguridad.
+
+#### 24. Identidad de sesión
+
+La presentación de:
+
+- sesión activa;
+- email;
+- iniciales del usuario;
+
+no se clasifica como placeholder de perfil.
+
+Es información de sesión ya existente y permanece mientras su contrato propietario no cambie.
+
+#### 25. Contenedor del menú
+
+La existencia del menú de sesión continúa justificada por utilidades reales de sesión.
+
+La retirada de dos elementos no exige eliminar:
+
+- `<details>`;
+- trigger del menú;
+- resumen de sesión;
+- formulario de logout.
+
+Un contenedor con al menos una utilidad real no se considera placeholder por el solo retiro de enlaces.
+
+#### 26. No se traslada logout
+
+021 no mueve `Cerrar sesión` a otra región solo para compensar visualmente el espacio liberado.
+
+La composición futura podrá evolucionar mediante su propietario, pero esta tarea limita su cambio a las acciones inexistentes.
+
+#### 27. No se modifica el launcher
+
+Las tarjetas VISO, NEXO, FOGO, ORIGO y PULSO permanecen fuera del alcance de 021.
+
+La tarea no corrige:
+
+- catálogo local;
+- firmas de `has_permission`;
+- estados `enabled` o `disabled`;
+- destinos de aplicaciones;
+- rail de logos;
+- conteos.
+
+#### 28. No se modifica login
+
+`src/app/login/page.tsx` no es propietario de los dos placeholders.
+
+021 no cambia:
+
+- `safeReturnTo`;
+- metadata;
+- formulario;
+- recuperación;
+- redirect de sesión;
+- hosts reconocidos.
+
+#### 29. No se modifica middleware
+
+El matcher, cookies, validación de usuario y redirects del middleware permanecen fuera del alcance.
+
+Retirar dos acciones del Hub no requiere alterar protección de rutas.
+
+#### 30. No se modifica `@vento/ui-web`
+
+El package compartido no recibe un cambio por esta tarea.
+
+No se modifica:
+
+- `AppShell`;
+- `headerActions`;
+- `TaskNavigation`;
+- `Button`;
+- estilos compartidos;
+- exports;
+- publicación;
+- adopción de consumidores.
+
+#### 31. No se modifica el template histórico
+
+La plantilla `templates/app-shell-standard` no es runtime de SHELL.
+
+021 no usa la tarea como excusa para retirar o reescribir `ProfileMenu` en consumidores o plantillas.
+
+Toda migración o retiro legacy conserva su owner y gate.
+
+#### 32. Frontera con `AUTH-UI-040`
+
+`AUTH-UI-040 — Ocultar enlaces no autorizados` inicia el bloque siguiente de enforcement de interfaz.
+
+021 no absorbe esa política.
+
+Se mantiene:
+
+```text
+021
+-> RETIRA DOS ACCIONES SIN CAPACIDAD REAL
+
+AUTH-UI-040
+-> GOBIERNA OCULTAMIENTO DE ENLACES POR AUTORIZACIÓN
+```
+
+Una acción inexistente y un enlace existente pero no autorizado son problemas distintos.
+
+#### 33. Frontera con autorización
+
+Eliminar un placeholder no sustituye un guard.
+
+Si en el futuro se crea una capacidad de perfil o configuración, su navegación deberá cumplir autorización y protección de servidor según su contrato propio.
+
+La ausencia actual de acción no se convierte en mecanismo de seguridad.
+
+#### 34. Frontera con navegación directa
+
+No existe una ruta de perfil/configuración que deba bloquearse desde esta tarea.
+
+Si una ruta nueva aparece antes de la materialización, el delta deberá detenerse y reconciliar esa nueva realidad antes de retirar o reintroducir navegación.
+
+#### 35. Frontera con inventario histórico
+
+`SHELL-APP-001` conserva su valor como snapshot AS-IS histórico.
+
+No se reescribe retroactivamente su cifra de dos placeholders.
+
+021 define el delta posterior:
+
+```text
+SNAPSHOT HISTÓRICO
+2 PLACEHOLDERS
+
+OBJETIVO DESPUÉS DE MATERIALIZAR 021
+0 PLACEHOLDERS
+```
+
+#### 36. Superficie `SHELL-SURFACE-005`
+
+El menú de sesión continúa siendo una superficie runtime estable.
+
+El retiro de dos entradas cambia su composición, no elimina su identidad.
+
+La futura reconciliación de inventario deberá distinguir:
+
+```text
+SUPERFICIE EXISTENTE
++
+CONTENIDO SANEADO
+```
+
+de:
+
+```text
+SUPERFICIE ELIMINADA
+```
+
+#### 37. Hallazgo `SHELL-SURFACE-FINDING-004`
+
+El hallazgo histórico identifica que ambos enlaces apuntan a `/`.
+
+021 adopta ese hallazgo como entrada y define su resolución futura mediante retiro.
+
+No modifica los otros hallazgos del inventario.
+
+#### 38. Accesibilidad
+
+La materialización futura debe conservar:
+
+- trigger de sesión alcanzable;
+- orden de foco coherente;
+- interacción por teclado del menú;
+- contraste y legibilidad de utilidades restantes;
+- acceso al cierre de sesión.
+
+Retirar enlaces inexistentes no puede degradar la interacción de los controles válidos que permanecen.
+
+#### 39. Semántica del foco
+
+El orden de tabulación no debe contener huecos interactivos correspondientes a acciones retiradas.
+
+No se preserva un elemento invisible, `aria-hidden` o con estilos de ocultamiento como sustituto del retiro del nodo interactivo.
+
+#### 40. Semántica para lector de pantalla
+
+Después de la materialización no deben anunciarse:
+
+- `Mi perfil`;
+- `Configuración de usuario`;
+
+como enlaces o acciones disponibles.
+
+No se mantiene copy accesible de una capacidad inexistente.
+
+#### 41. Navegación
+
+La verificación física futura debe demostrar que:
+
+1. abrir el menú no cambia la ruta;
+2. cerrar el menú no cambia la ruta;
+3. no existe acción visible de perfil;
+4. no existe acción visible de configuración;
+5. no existe navegación circular a `/` atribuible a esos conceptos;
+6. logout conserva su destino;
+7. el Hub continúa navegando hacia aplicaciones permitidas según sus contratos vigentes.
+
+#### 42. Build
+
+La futura materialización debe superar el build aplicable de SHELL.
+
+El retiro no se considera completo si deja:
+
+- import sin uso que bloquee calidad;
+- JSX inválido;
+- estructura rota;
+- error de tipos;
+- fallo de build.
+
+#### 43. Lint y calidad
+
+El delta futuro debe ser compatible con la configuración vigente de lint y las comprobaciones de calidad del repositorio.
+
+No se acepta silenciar una regla para conservar código muerto derivado del retiro.
+
+#### 44. Pruebas
+
+Las pruebas aplicables deberán cubrir el comportamiento real del runtime modificado.
+
+La tarea no inventa una suite nueva dentro de esta documentación.
+
+Si existe una prueba que presupone la existencia de los placeholders, la materialización deberá actualizarla de forma trazable al nuevo contrato, sin eliminar cobertura ajena.
+
+#### 45. Rollback
+
+La futura instancia debe conservar rollback reproducible al snapshot previo del mismo cambio.
+
+El rollback se usa para recuperar una implementación fallida, no para convertir los placeholders en arquitectura aprobada.
+
+Después de un rollback técnico, el contrato documental de retiro continúa vigente hasta que la materialización pueda completarse correctamente o una decisión canónica posterior lo sustituya.
+
+#### 46. Condición ante nuevo consumidor o nueva ruta
+
+Antes de ejecutar el retiro físico se revalida:
+
+- que ambos placeholders sigan apuntando a `/`;
+- que no exista una ruta funcional aprobada para alguno;
+- que no exista una tarea posterior ya materializada que haya convertido la acción en capacidad real;
+- que el import `Link` no haya adquirido otro consumidor en el archivo.
+
+Si la realidad cambió, no se aplica mecánicamente el delta antiguo.
+
+#### 47. Condición para reintroducción futura
+
+`Mi perfil` o `Configuración de usuario` solo podrán reaparecer cuando exista, como mínimo:
+
+1. capacidad funcional aprobada;
+2. propietario;
+3. ruta o destino real;
+4. contrato de autorización aplicable;
+5. tratamiento de errores y estados;
+6. cobertura de prueba;
+7. aprobación independiente;
+8. materialización y despliegue verificables.
+
+021 no reserva una reintroducción automática.
+
+#### 48. Cierre del mini-bloque H2
+
+Con la aprobación de 021 queda documentalmente cerrado el mini-bloque:
+
+```text
+DISPOSITIVOS
++
+PRUEBAS DE NAVEGACIÓN
++
+SANEAMIENTO DE NAVEGACIÓN
+```
+
+Su resultado comprende:
+
+- experiencia de computador;
+- experiencia de tablet;
+- navegación por rol;
+- navegación con bloqueos;
+- retiro definido de dos placeholders que anuncian capacidades inexistentes.
+
+La ejecución física continúa gobernada por sus lifecycle e identidades correspondientes.
+
+#### 49. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La obligación de no presentar estas dos acciones como capacidades implementadas ya está registrada. La tarea define su resolución documental y no altera el contrato de prueba ni registra una ejecución física.
+
+#### 50. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro Canónico, 021 reutiliza especialmente:
+
+- `TREQ-SHELL-004` — retiro solo con evidencia reproducible de consumidores, framework, navegación, CI y pruebas;
+- `TREQ-SHELL-005` — comandos reproducibles de calidad, build y prueba;
+- `TREQ-SHELL-007` — rollback verificable;
+- `TREQ-SHELL-013` — identidad estable y delta explícito de superficies;
+- `TREQ-SHELL-027` — `Mi perfil` y `Configuración de usuario` no pueden presentarse como capacidades implementadas mientras resuelvan a `/`;
+- `TREQ-PROC-007` — una capacidad ausente o diferida no puede presentarse como operativa por tener infraestructura parcial.
+
+Estas referencias son trazabilidad existente y no una actualización del registro.
+
+#### 51. Decisión sobre 04A
+
+No se modifica el Registro Canónico de Requisitos de Prueba.
+
+La evidencia remota confirma que la obligación específica ya existe y que su resultado físico continúa pendiente de una materialización futura.
+
+No se transforma observación estática en resultado de ejecución.
+
+#### 52. Criterios de aceptación
+
+- [ ] El título es exactamente `SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real`.
+- [ ] `SHELL-APP-020` permanece como tarea anterior.
+- [ ] `AUTH-UI-040` queda como siguiente tarea reservada.
+- [ ] Se conservan las decisiones `RET-ART-008` y `RET-ART-009`.
+- [ ] Ambas mantienen estado `RETIRAR_PLACEHOLDER`.
+- [ ] `Mi perfil` se reconoce con destino AS-IS `/`.
+- [ ] `Configuración de usuario` se reconoce con destino AS-IS `/`.
+- [ ] No se cuenta ninguno como capacidad implementada.
+- [ ] No se crea una ruta de perfil.
+- [ ] No se crea una ruta de configuración.
+- [ ] No se crea un permiso.
+- [ ] No se crea un estado `Próximamente`.
+- [ ] No se presenta la inexistencia como denegación de autorización.
+- [ ] El objetivo físico reduce placeholders visibles de 2 a 0.
+- [ ] Las páginas runtime permanecen en 2 salvo cambio canónico posterior.
+- [ ] La acción `Cerrar sesión` permanece.
+- [ ] La identidad de sesión y email permanecen fuera del retiro.
+- [ ] El contenedor del menú no se elimina por inferencia.
+- [ ] `AppShell` no se modifica.
+- [ ] `headerActions` no se convierte en obligación de perfil.
+- [ ] El template histórico no se modifica.
+- [ ] El launcher no se modifica.
+- [ ] Login no se modifica.
+- [ ] Middleware no se modifica.
+- [ ] La futura implementación elimina el import `Link` únicamente si continúa sin consumidores.
+- [ ] El inventario histórico no se reescribe retroactivamente.
+- [ ] `SHELL-SURFACE-005` conserva su identidad.
+- [ ] El lector de pantalla deja de anunciar las dos acciones después de la materialización.
+- [ ] El orden de foco no conserva nodos interactivos vacíos.
+- [ ] La navegación circular por esos conceptos desaparece después de la materialización.
+- [ ] La futura instancia ejecuta build y pruebas aplicables.
+- [ ] La futura instancia conserva rollback reproducible.
+- [ ] Una nueva ruta o capacidad antes de ejecutar obliga a reconciliar el delta.
+- [ ] Una reintroducción futura requiere tarea y aprobación independientes.
+- [ ] No se desarrollan decisiones de `AUTH-UI-040`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se ejecutan cambios físicos desde esta tarea documental.
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | El artefacto documental no modifica código ejecutable; el build pertenece a la futura materialización física del retiro. |
+| LOCAL | NOT_EXECUTED | El bloque todavía no está incorporado al checkout documental de la tarea y su batería local corresponde al lifecycle posterior a su incorporación. |
+| REMOTA | PASS | Se inspeccionó `main` en `4140b78990bfadd20e7197f4b91f2bf286d59f14`, la continuidad activa, topología, owner H2, `SHELL-AUD-011`, `SHELL-UI-010`, `AppShell`, el runtime `src/app/page.tsx`, el árbol `src/app`, el inventario H2 y el registro de prueba SHELL. |
+| OPERATIVA | PASS | Se reconciliaron 2 de 2 placeholders objetivo, 2 de 2 destinos `/`, 0 rutas propietarias de perfil/configuración, conservación de sesión/logout y fronteras exactas con AppShell, inventario histórico y `AUTH-UI-040`. |
+| FÍSICA | NOT_APPLICABLE | La conversación documental no autoriza ni ejecuta la instancia `PER_IMPLEMENTATION_UNIT`; runtime, build físico, despliegue y rollback quedan para el lifecycle físico correspondiente. |
+
+#### 54. Límites
+
+Esta tarea no:
+
+- modifica `src/app/page.tsx`;
+- modifica `src/app/login/page.tsx`;
+- modifica `middleware.ts`;
+- modifica `packages/ui-web`;
+- modifica templates;
+- crea rutas;
+- crea páginas;
+- crea permisos;
+- crea capacidades de perfil;
+- crea capacidades de configuración;
+- cambia autenticación;
+- cambia autorización;
+- cambia Supabase;
+- cambia datos;
+- cambia configuración;
+- cambia despliegues;
+- cambia el catálogo de aplicaciones;
+- corrige `safeReturnTo`;
+- reabre las pruebas de navegación de 019 o 020;
+- reescribe `SHELL-APP-001`;
+- actualiza 04A;
+- desarrolla `AUTH-UI-040`;
+- autoriza implementación física.
+
+#### 55. Handoff a `AUTH-UI-040`
+
+El bloque H2 entrega al siguiente tramo únicamente el estado documental ya saneado:
+
+- las dos acciones placeholder carecen de legitimidad como capacidades;
+- su retiro físico futuro queda definido por 021;
+- una acción inexistente no debe confundirse con una acción existente pero no autorizada;
+- la política general de ocultamiento por autorización pertenece a `AUTH-UI-040`.
+
+`AUTH-UI-040` no se desarrolla dentro de 021.
 
 **Propósito:** eliminar del Hub las acciones `Mi perfil` y `Configuración` mientras no exista una capacidad funcional aprobada y una ruta propietaria distinta de `/`.
 
 **Dependencias:** decisión de retiro `SHELL-AUD-011`; composición definida por `SHELL-UI-010`.
 
 **Puerta de cierre:** ninguna acción visible anuncia una capacidad inexistente; navegación, build y rollback de SHELL quedan verificados. Crear perfil o configuración requerirá una tarea funcional nueva y aprobación independiente.
+
+---
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`SHELL-APP-020 — Probar navegación con bloqueos reales`
+
+**TAREA ACTUAL APROBADA**
+`SHELL-APP-021 — Retirar placeholders de perfil y configuración sin destino real`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-040 — Ocultar enlaces no autorizados`
