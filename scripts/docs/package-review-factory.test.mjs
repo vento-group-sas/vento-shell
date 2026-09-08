@@ -799,3 +799,120 @@ test('support de tabla de paquetes nuevos no se compara contra fila de membershi
   );
   assert.equal(normalized.task_routing_resolved, true);
 });
+
+test('TREQ SHELL-UI-001 reconoce declaración narrativa real de cero cambios', () => {
+  const block = [
+    '### ✅ SHELL-UI-001 — Crear @vento/ui-web',
+    '',
+    '**Requisitos de prueba creados o modificados:** 0',
+    '',
+    '#### 40. Requisitos de prueba derivados',
+    '',
+    '`SHELL-UI-001` crea **0** requisitos `TREQ-*` y modifica **0** requisitos existentes.',
+    '',
+    'Justificación:',
+    '',
+    '- `TREQ-SHELL-002` ya protege la obligación compartida;',
+    '- `TREQ-SHELL-006` ya exige pruebas del package;',
+    '- `TREQ-SHELL-029` conserva el template como fuente histórica.',
+    '',
+    '#### 41. Evidencia de validación',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 0);
+  assert.deepEqual(declaration.ids, []);
+  assert.equal(declaration.consistent, true);
+  assert.equal(declaration.detail, 'PASS');
+});
+
+test('TREQ INT-EXT-002 reconoce declaración real NO GENERA sin etiqueta Resultado', () => {
+  const block = [
+    '### ✅ INT-EXT-002 — Definir principal técnico independiente por integración',
+    '',
+    '**Requisitos de prueba creados o modificados:** 0',
+    '',
+    '#### 18. Requisitos de prueba derivados',
+    '',
+    '**NO GENERA REQUISITOS DE PRUEBA.**',
+    '',
+    'Justificación: cobertura existente `TREQ-AUTH-015`, `TREQ-AUTH-021`, `TREQ-INTEGRATION-020`, `TREQ-SUPABASE-866`.',
+    '',
+    '#### 19. Evidencia de validación',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 0);
+  assert.deepEqual(declaration.ids, []);
+  assert.equal(declaration.consistent, true);
+  assert.equal(declaration.detail, 'PASS');
+});
+
+test('TREQ cero explícito por creados y modificados ignora referencias de cobertura', () => {
+  const block = [
+    '### ✅ TEST-TASK-001 — Tarea',
+    '',
+    '**Requisitos de prueba creados o modificados:** 0',
+    '',
+    '#### 7. Requisitos de prueba derivados',
+    '',
+    '**Requisitos creados:** **0**',
+    '**Requisitos modificados:** **0**',
+    '',
+    'Cobertura ya vigente: `TREQ-SHELL-001`, `TREQ-SHELL-002`.',
+    '',
+    '#### 8. Evidencia',
+    '',
+  ].join('\n');
+
+  const declaration = parseTaskTreqDeclaration(block);
+
+  assert.equal(declaration.declared_count, 0);
+  assert.deepEqual(declaration.ids, []);
+  assert.equal(declaration.consistent, true);
+  assert.equal(declaration.detail, 'PASS');
+});
+
+test('TREQ variantes reales de cero cambios siguen fallando cerrado si la cabecera declara cambios', () => {
+  const fixtures = [
+    [
+      '**NO GENERA REQUISITOS DE PRUEBA.**',
+      'Cobertura existente `TREQ-SHELL-001`.',
+    ],
+    [
+      '`TEST-TASK-001` crea **0** requisitos `TREQ-*` y modifica **0** requisitos existentes.',
+      'Cobertura existente `TREQ-SHELL-001`.',
+    ],
+    [
+      '**Requisitos creados:** **0**',
+      '**Requisitos modificados:** **0**',
+      'Cobertura existente `TREQ-SHELL-001`.',
+    ],
+  ];
+
+  for (const sectionLines of fixtures) {
+    const block = [
+      '### ✅ TEST-TASK-001 — Tarea',
+      '',
+      '**Requisitos de prueba creados o modificados:** 1',
+      '',
+      '#### 7. Requisitos de prueba derivados',
+      '',
+      ...sectionLines,
+      '',
+      '#### 8. Evidencia',
+      '',
+    ].join('\n');
+
+    const declaration = parseTaskTreqDeclaration(block);
+
+    assert.equal(declaration.declared_count, 1);
+    assert.deepEqual(declaration.ids, []);
+    assert.equal(declaration.consistent, false);
+    assert.equal(declaration.detail, 'DECLARED_1_BUT_SECTION_NO_GENERA');
+  }
+});

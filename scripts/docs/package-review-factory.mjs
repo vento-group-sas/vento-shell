@@ -1004,8 +1004,18 @@ export function parseTaskTreqDeclaration(block) {
   const referencedIds = uniqueSorted(
     section.match(/\bTREQ-[A-Z0-9-]+\b/gu) ?? [],
   );
-  const noGenerationResult = /\*\*Resultado:\*\*\s*NO GENERA REQUISITOS DE PRUEBA(?:\s+NUEVOS)?\.?/iu
-    .test(section);
+  const noGenerationResult = (
+    /\*\*Resultado:\*\*\s*NO GENERA REQUISITOS DE PRUEBA(?:\s+NUEVOS)?\.?/iu
+      .test(section)
+    || /\*\*NO GENERA REQUISITOS DE PRUEBA(?:\s+NUEVOS)?\.?\*\*/iu
+      .test(section)
+    || /\bcrea\s+(?:\*\*)?0(?:\*\*)?\s+requisitos(?:\s+`TREQ-\*`)?\s+y\s+modifica\s+(?:\*\*)?0(?:\*\*)?\s+requisitos\b/iu
+      .test(section)
+    || (
+      /\*\*Requisitos creados:\*\*\s*(?:\*\*)?0(?:\*\*)?/iu.test(section)
+      && /\*\*Requisitos modificados:\*\*\s*(?:\*\*)?0(?:\*\*)?/iu.test(section)
+    )
+  );
   const ids = noGenerationResult ? [] : referencedIds;
 
   if (!metadata) {
