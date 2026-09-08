@@ -1,14 +1,18 @@
-import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { createUiValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  requireFromRepo,
+  assert,
+  includesAll,
+  excludesAll,
+  sha256,
+  assertGitUnchanged,
+} = createUiValidatorHarness(import.meta.url);
 const ownerPath = path.join(
   repoRoot,
   'docs',
@@ -24,30 +28,9 @@ const componentPath = path.join(packageRoot, 'src', 'SensitiveActionConfirmation
 const cssPath = path.join(packageRoot, 'src', 'sensitive-action-confirmation.css');
 
 const SOURCE_CONTRACT_SHA256 = 'cab6f99042a3bf3097d5827b9f95369e1d628ae547e8ad8d19a61d2b6883e918';
-const requireFromRepo = createRequire(path.join(repoRoot, 'package.json'));
-
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
-
-function includesAll(source, expected, label) {
-  for (const value of expected) {
-    assert(source.includes(value), `${label} missing: ${value}`);
-  }
-}
-
-function excludesAll(source, forbidden, label) {
-  for (const value of forbidden) {
-    assert(!source.includes(value), `${label} contains forbidden value: ${value}`);
-  }
-}
 
 function countMatches(source, pattern) {
   return [...source.matchAll(pattern)].length;
-}
-
-function sha256(value) {
-  return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
 }
 
 function normalizeSource(source) {
@@ -80,20 +63,6 @@ function canonicalTaskBlock(owner, taskId) {
 
   assert(start !== -1, `canonical task ${taskId} not found`);
   return lines.slice(start, end).join('\n');
-}
-
-function run(command, args) {
-  return spawnSync(command, args, {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    windowsHide: true,
-    maxBuffer: 16 * 1024 * 1024,
-  });
-}
-
-function assertGitUnchanged(paths) {
-  const result = run('git', ['diff', '--quiet', '--', ...paths]);
-  assert(result.status === 0, `out-of-scope immutable path changed: ${paths.join(', ')}`);
 }
 
 function loadRuntime(source) {

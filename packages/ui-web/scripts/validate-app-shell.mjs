@@ -1,16 +1,20 @@
-import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import vm from 'node:vm';
-import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
 
 import { parseTaskBlocks } from '../../../scripts/docs/format-canonical-task.mjs';
+import { createUiValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  requireFromRepo,
+  assert,
+  includesAll,
+  excludesAll,
+  sha256,
+  assertGitUnchanged,
+} = createUiValidatorHarness(import.meta.url);
 const ownerPath = path.join(
   repoRoot,
   'docs',
@@ -26,46 +30,11 @@ const componentPath = path.join(packageRoot, 'src', 'AppShell.tsx');
 const cssPath = path.join(packageRoot, 'src', 'app-shell.css');
 
 const SOURCE_CONTRACT_SHA256 = 'd015d322f8f1aff853f8bc450c81e745a2c248a8156c5b639af18257798fa1d6';
-const requireFromRepo = createRequire(path.join(repoRoot, 'package.json'));
-
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
-
-function includesAll(source, expected, label) {
-  for (const value of expected) {
-    assert(source.includes(value), `${label} missing: ${value}`);
-  }
-}
-
-function excludesAll(source, forbidden, label) {
-  for (const value of forbidden) {
-    assert(!source.includes(value), `${label} contains forbidden value: ${value}`);
-  }
-}
-
-function run(command, args) {
-  return spawnSync(command, args, {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    windowsHide: true,
-    maxBuffer: 16 * 1024 * 1024,
-  });
-}
-
-function sha256(value) {
-  return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
-}
 
 function canonicalTaskBlock(owner, taskId) {
   const task = parseTaskBlocks(owner).find((entry) => entry.id === taskId) ?? null;
   assert(task, `canonical task ${taskId} not found`);
   return task.block;
-}
-
-function assertGitUnchanged(paths) {
-  const result = run('git', ['diff', '--quiet', '--', ...paths]);
-  assert(result.status === 0, `out-of-scope immutable path changed: ${paths.join(', ')}`);
 }
 
 function loadRuntime(source) {

@@ -1,13 +1,17 @@
-import crypto from 'node:crypto';
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { createRequire } from 'node:module';
-import { fileURLToPath } from 'node:url';
+import { createUiValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  requireFromRepo,
+  assert,
+  includesAll,
+  excludesAll,
+  sha256,
+  assertGitUnchanged,
+} = createUiValidatorHarness(import.meta.url);
 const ownerPath = path.join(
   repoRoot,
   'docs',
@@ -23,27 +27,6 @@ const componentPath = path.join(packageRoot, 'src', 'PrimaryActionPanel.tsx');
 const cssPath = path.join(packageRoot, 'src', 'primary-action-panel.css');
 
 const SOURCE_CONTRACT_SHA256 = '7ce826f3e35f3e7c6516d42400171ddbcb830b518b80ecec7619d42d09015d1c';
-const requireFromRepo = createRequire(path.join(repoRoot, 'package.json'));
-
-function assert(condition, message) {
-  if (!condition) throw new Error(message);
-}
-
-function includesAll(source, expected, label) {
-  for (const value of expected) {
-    assert(source.includes(value), `${label} missing: ${value}`);
-  }
-}
-
-function excludesAll(source, forbidden, label) {
-  for (const value of forbidden) {
-    assert(!source.includes(value), `${label} contains forbidden value: ${value}`);
-  }
-}
-
-function sha256(value) {
-  return crypto.createHash('sha256').update(value, 'utf8').digest('hex');
-}
 
 function normalizeSource(source) {
   return source.replace(/^\uFEFF/u, '').replace(/\r\n?/gu, '\n');
@@ -75,20 +58,6 @@ function canonicalTaskBlock(owner, taskId) {
 
   assert(start !== -1, `canonical task ${taskId} not found`);
   return lines.slice(start, end).join('\n');
-}
-
-function run(command, args) {
-  return spawnSync(command, args, {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    windowsHide: true,
-    maxBuffer: 16 * 1024 * 1024,
-  });
-}
-
-function assertGitUnchanged(paths) {
-  const result = run('git', ['diff', '--quiet', '--', ...paths]);
-  assert(result.status === 0, `out-of-scope immutable path changed: ${paths.join(', ')}`);
 }
 
 function assertTypeScriptTranspile(source) {
