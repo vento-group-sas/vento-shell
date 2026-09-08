@@ -1,11 +1,21 @@
-import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { createDataNormalizationValidatorHarness } from './validator-harness.mjs';
 
-const here = path.dirname(fileURLToPath(import.meta.url));
-const packageRoot = path.resolve(here, '..');
-const repoRoot = path.resolve(packageRoot, '..', '..');
+const {
+  packageRoot,
+  repoRoot,
+  assert,
+  exactArray,
+  includesAll,
+  assertGitUnchanged,
+} = createDataNormalizationValidatorHarness(
+  import.meta.url,
+  {
+    gitUnchangedMessage: "out-of-scope canonical or package metadata changed",
+    includesAllMessage: "missing required entries",
+  },
+);
 
 const typesPath = path.join(packageRoot, 'src', 'normalization.types.ts');
 const readmePath = path.join(packageRoot, 'README.md');
@@ -112,21 +122,6 @@ const expectedInterfaces = {
   ],
 };
 
-function fail(message) {
-  throw new Error(message);
-}
-
-function assert(condition, message) {
-  if (!condition) fail(message);
-}
-
-function exactArray(actual, expected, label) {
-  assert(
-    JSON.stringify(actual) === JSON.stringify(expected),
-    `${label} mismatch: expected=${JSON.stringify(expected)} actual=${JSON.stringify(actual)}`,
-  );
-}
-
 function extractUnion(source, name) {
   const match = source.match(new RegExp(`export type ${name} =([\\s\\S]*?);`, 'u'));
   assert(match, `missing union ${name}`);
@@ -150,24 +145,6 @@ function stripComments(source) {
 
 function countOccurrences(source, token) {
   return source.split(token).length - 1;
-}
-
-function assertGitUnchanged(paths) {
-  const result = spawnSync('git', ['diff', '--quiet', '--', ...paths], {
-    cwd: repoRoot,
-    encoding: 'utf8',
-    windowsHide: true,
-  });
-  if (result.error) throw result.error;
-  assert(
-    result.status === 0,
-    `out-of-scope canonical or package metadata changed: ${paths.join(', ')}`,
-  );
-}
-
-function includesAll(actual, expected, label) {
-  const missing = expected.filter((entry) => !actual.includes(entry));
-  assert(missing.length === 0, `${label} missing required entries: ${missing.join(', ')}`);
 }
 
 function main() {
