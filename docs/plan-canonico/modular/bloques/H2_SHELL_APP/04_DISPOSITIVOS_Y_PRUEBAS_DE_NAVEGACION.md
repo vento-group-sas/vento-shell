@@ -29,7 +29,6 @@ Esta sección organiza **dispositivos, pruebas y saneamiento de navegación** de
 **Cambios físicos autorizados:** ninguno; no se modifican código, componentes compartidos, navegación runtime, autorización, contratos físicos, Supabase, datos, configuración ni despliegues
 **Requisitos de prueba creados o modificados:** 0
 
-
 ---
 
 #### 1. Propósito
