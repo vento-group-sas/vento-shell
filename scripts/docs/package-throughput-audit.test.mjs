@@ -36,9 +36,34 @@ test('audita throughput sin autorizar paralelismo', () => {
     ],
   };
 
+  const applicationClosure = {
+    model_id: 'VENTO-PACKAGE-APPLICATION-CLOSURE-V1',
+    fingerprint_sha256: 'a'.repeat(64),
+    applications: [
+      { application_id: 'origo', completion_state: 'INCOMPLETE' },
+      { application_id: 'nexo', completion_state: 'COMPLETE_EXPLICIT_SCOPE' },
+    ],
+    metrics: {
+      applications: 2,
+      package_closure_counts: { CLOSED: 1, OPEN: 1 },
+      relationship_counts: {
+        PRERREQUISITO_DE: 1,
+        IMPLEMENTADO_POR: 2,
+        CONSUMIDO_POR: 3,
+        EVIDENCIADO_POR: 4,
+        CIERRA_CRITERIO_DE: 1,
+      },
+      packages_with_unresolved_consumers: 1,
+      acceptance_criteria_total: 5,
+      acceptance_criteria_explicitly_closed: 3,
+      acceptance_criteria_unknown: 2,
+    },
+  };
+
   const audit = buildPackageThroughputAudit({
     registry,
     policy: { mode: 'DETERMINISTIC_LINEAR_TOPOLOGICAL' },
+    applicationClosure,
   });
 
   assert.equal(audit.canonical_gap_packages, 2);
@@ -46,6 +71,26 @@ test('audita throughput sin autorizar paralelismo', () => {
   assert.equal(audit.graph_roots, 1);
   assert.equal(audit.supabase_mutation_required, 1);
   assert.equal(audit.parallel_execution_authorized, false);
+  assert.equal(audit.application_closure_available, true);
+  assert.equal(audit.application_closure_model_id, 'VENTO-PACKAGE-APPLICATION-CLOSURE-V1');
+  assert.equal(audit.application_closure_fingerprint_sha256, 'a'.repeat(64));
+  assert.equal(audit.application_count, 2);
+  assert.deepEqual(audit.package_closure_counts, { CLOSED: 1, OPEN: 1 });
+  assert.deepEqual(audit.application_completion_counts, {
+    COMPLETE_EXPLICIT_SCOPE: 1,
+    INCOMPLETE: 1,
+  });
+  assert.equal(audit.packages_with_unresolved_consumers, 1);
+  assert.equal(audit.acceptance_criteria_total, 5);
+  assert.equal(audit.acceptance_criteria_explicitly_closed, 3);
+  assert.equal(audit.acceptance_criteria_unknown, 2);
+  assert.deepEqual(audit.application_relationship_counts, {
+    PRERREQUISITO_DE: 1,
+    IMPLEMENTADO_POR: 2,
+    CONSUMIDO_POR: 3,
+    EVIDENCIADO_POR: 4,
+    CIERRA_CRITERIO_DE: 1,
+  });
   assert.equal(audit.execution_policy, 'DETERMINISTIC_LINEAR_TOPOLOGICAL');
   assert.equal(audit.distinct_target_paths, 2);
   assert.equal(audit.shared_target_paths, 1);
@@ -53,4 +98,18 @@ test('audita throughput sin autorizar paralelismo', () => {
   assert.deepEqual(audit.top_shared_targets, [
     { target_path: 'supabase/functions/a/index.ts', package_count: 2 },
   ]);
+});
+
+test('no infiere cierre por aplicacion si la proyeccion no fue suministrada', () => {
+  const audit = buildPackageThroughputAudit({
+    registry: { packages: [] },
+    policy: { mode: 'DETERMINISTIC_LINEAR_TOPOLOGICAL' },
+  });
+
+  assert.equal(audit.parallel_execution_authorized, false);
+  assert.equal(audit.application_closure_available, false);
+  assert.equal(audit.application_closure_model_id, null);
+  assert.equal(audit.package_closure_counts, null);
+  assert.equal(audit.application_completion_counts, null);
+  assert.equal(audit.application_relationship_counts, null);
 });
