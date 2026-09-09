@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1149** |
+| Tareas aprobadas | **1150** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **447** |
+| Tareas no iniciadas | **446** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.99% (1149/1596)** |
+| Porcentaje de completamiento | **72.06% (1150/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-050 — Estandarizar estados vacíos** |
-| Tarea actual | **AUTH-UI-051 — Estandarizar errores recuperables** |
+| Última tarea aprobada | **AUTH-DEV-006 — Asignar permisos máximos del dispositivo** |
+| Tarea actual | **AUTH-DEV-007 — Exigir firma o PIN del trabajador** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-DEV-007 — Exigir firma o PIN del trabajador** |
-| Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
-| Progreso del bloque | **BLOQUE I: 11 de 12 aprobadas; AUTH-UI-051 pendiente** |
+| Siguiente tarea | **AUTH-DEV-008 — Combinar límite del dispositivo y trabajador** |
+| Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
+| Progreso del bloque | **BLOQUES P Y Q: 12 de 30 aprobadas; AUTH-DEV-007 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-051** |
+| Carril documental | **ACTIVO — AUTH-DEV-007** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-050` — Estandarizar estados vacíos |
-| Tarea actual | `AUTH-UI-051` — Estandarizar errores recuperables — **NO INICIADA** |
-| Siguiente tarea | `AUTH-DEV-007` — Exigir firma o PIN del trabajador |
+| Última aprobada | `AUTH-DEV-006` — Asignar permisos máximos del dispositivo |
+| Tarea actual | `AUTH-DEV-007` — Exigir firma o PIN del trabajador — **NO INICIADA** |
+| Siguiente tarea | `AUTH-DEV-008` — Combinar límite del dispositivo y trabajador |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE I: 11 DE 12 APROBADAS — ACTUAL AUTH-UI-051** |
+| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 12 DE 30 APROBADAS — ACTUAL AUTH-DEV-007** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-050 — Estandarizar estados vacíos
+AUTH-DEV-006 — Asignar permisos máximos del dispositivo
         ↓
 TAREA ACTUAL
-AUTH-UI-051 — Estandarizar errores recuperables
-        ↓
-SIGUIENTE TAREA RESERVADA
 AUTH-DEV-007 — Exigir firma o PIN del trabajador
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-DEV-008 — Combinar límite del dispositivo y trabajador
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE I — 11 de 12 tareas aprobadas
+BLOQUES P Y Q — 12 de 30 tareas aprobadas
 ```

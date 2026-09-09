@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1149** |
+| Aprobadas | **1150** |
 | En propuesta | **0** |
-| No iniciadas | **447** |
+| No iniciadas | **446** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.99% (1149/1596)** |
+| Porcentaje de completamiento | **72.06% (1150/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-050` — Estandarizar estados vacíos | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-051` — Estandarizar errores recuperables | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-DEV-007` — Exigir firma o PIN del trabajador | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-DEV-006` — Asignar permisos máximos del dispositivo | ✅ APROBADA |
+| Tarea actual | `AUTH-DEV-007` — Exigir firma o PIN del trabajador | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-DEV-008` — Combinar límite del dispositivo y trabajador | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -858,7 +858,7 @@
 | ✅ APROBADA | `AUTH-UI-048` | Estandarizar estados sin acceso | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-049` | Estandarizar estados de carga | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-050` | Estandarizar estados vacíos | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | `AUTH-UI-051` | Estandarizar errores recuperables | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | `AUTH-UI-051` | Estandarizar errores recuperables | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-052` | Diseñar página inicial según actor | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-053` | Diseñar navegación según tareas frecuentes | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-054` | Reducir opciones irrelevantes | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
