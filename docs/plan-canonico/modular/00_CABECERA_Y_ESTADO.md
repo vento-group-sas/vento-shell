@@ -34,11 +34,11 @@
 | Siguiente tarea | **AUTH-DEV-009 — Evitar heredar permisos administrativos** |
 | Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
 | Progreso del bloque | **BLOQUES P Y Q: 13 de 30 aprobadas; AUTH-DEV-008 pendiente** |
-| Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
-| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
+| Estado de implementación | **GLOBAL_IMPLEMENTATION_ACTIVE** |
+| Acción principal obligatoria | **EJECUTAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
 | Carril documental | **ACTIVO — AUTH-DEV-008** |
-| Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
-| Alcance físico autorizado | **NINGUNO** |
+| Carril físico | **IN_PROGRESS — SHELL-CI-022::GAP-PKG-001** |
+| Alcance físico autorizado | **SHELL-CI-022::GAP-PKG-001** |
 
 ### Continuidad inmediata
 
@@ -60,7 +60,7 @@
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
 | CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 13 DE 30 APROBADAS — ACTUAL AUTH-DEV-008** |
-| Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
+| Implementación física | **SHELL-CI-022::GAP-PKG-001 — IN_PROGRESS** |
 
 ## Reglas de edición
 

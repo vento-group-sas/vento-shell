@@ -1,10 +1,109 @@
 {
   "instance_id": "SHELL-CI-022::GAP-PKG-001",
   "task_id": "SHELL-CI-022",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "IN_PROGRESS",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json",
+      "change": "MODIFY",
+      "scope": "Record only the exact physical authorization, lifecycle state, cutover/pilot evidence, decisions, metrics, incidents, reconciliation outcomes, pilot-exit result and handoff evidence for SHELL-CI-022::GAP-PKG-001. Do not modify CI020, CI021, the package gate or any global canonical task marker."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:start through the canonical correction guard; do not edit the guard."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical physical preverify/finish lifecycle; do not edit lifecycle code."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/canonical-task-preflight.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Execute the physical preflight required by the lifecycle; do not edit the preflight."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate the approved GAP-PKG-001 package gate; do not mutate the package gate."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate the current package readiness projection; do not use it to fabricate cutover evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate that GAP-PKG-001 retains the current physical turn; do not alter package execution policy."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate implementation-readiness derived artifacts; do not edit the validator."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the existing accelerator to advance the authorized instance only to real semantic gates; do not edit the coordinator."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Regenerate and compare the Entrega 2 work package for this exact instance; do not edit the work-package model."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:package:gate:check -- --package-id GAP-PKG-001",
+    "npm run docs:package:readiness:check -- --package GAP-PKG-001",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-09T15:14-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "201015d43375fe94e3f699646a11efa4e021a569a9ac1931279f9aacf60e6001",
+    "proposal_response_sha256": "82f5ef26bb3b83841f79fedf91ccef06399bced774420da7035a204566c98900",
+    "scope_contract_sha256": "c3cab7ea813e3a1fb04c2969465208845fb628b432a4d6b9f57c87302fe99a3b",
+    "scope_proposal_id": "VENTO-ENTREGA2-FASE2-CI022-GAP-PKG-001-AUTHORIZATION-V2"
+  },
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-001 APPROVED_FOR_IMPLEMENTATION",
+    "SHELL-CI-020::GAP-PKG-001 VERIFIED with effective correction overlay preserved",
+    "CI020 EFFECTIVE_CANDIDATE_HEAD 761422331436e842416d8c0974013cf6c8587f95",
+    "CI021 HOSTED_DEPLOY shift-runtime-processor version=29 ezbr_sha256=bfccb18ae648bbbf48c52311dcb9a74b8df43dc5636c6da69f4c342055a7cf27 status=ACTIVE verify_jwt=false",
+    "SHELL-CI-021::GAP-PKG-001 VERIFIED",
+    "READY_GATE_015 APROBAR_ENTRADA manifest=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/pilot-entry-decision-manifest.json sha256=a00440d86fc8aee2812e4d0cdd305789444ca4b4b41cabf7bec9ea827f4e49fc",
+    "READY_GATE_015 decision=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/pilot-entry-decision.json sha256=3ae6bcccef75ba25ee47a71d11f0fc699c87d1950d6459fcb80cdf431baad97b",
+    "READY_GATE_015 authority=.delivery/SHELL-CI-021__GAP-PKG-001__ready-gate-015/20260908210806854-66b89595/pilot-entry-authority.json sha256=bcfe48f46965b96bdadee96a0b6ed1ca6e21389c289cb18115ddd30512d09c71",
+    "TARGET_ENVIRONMENT STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp",
+    "PACKAGE_GATE production_authorized=false",
+    "NO_NEW_TECHNICAL_MUTATION_AUTHORIZED"
+  ],
+  "evidence": [],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }

@@ -38,9 +38,9 @@
 
 ### 4. Ejecuta la instancia física autorizada — `SHELL-CI-022::GAP-PKG-001`
 
-- **Estado:** `PENDING_AUTHORIZATION`
+- **Estado:** `IN_PROGRESS`
 - **Contrato:** Ejecutar cutover y piloto conforme al plan aprobado
-- **Acción exacta del control:** `AUTORIZAR_IMPLEMENTACIÓN`
+- **Acción exacta del control:** `EJECUTAR_IMPLEMENTACIÓN`
 - **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json`
 
 ## Panel de control — dos carriles
@@ -48,7 +48,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `AUTH-DEV-008` — Combinar límite del dispositivo y trabajador | `AUTH-DEV-009` — Evitar heredar permisos administrativos | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -62,7 +62,7 @@
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-04-PQ-DEVICE-AND-SIMULATION` — Dispositivos compartidos y simulación estricta
 - **Siguiente etapa documental:** `PHASE-05-NEXO`
-- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-022::GAP-PKG-001`
+- **Acción primaria del control de instancias:** `EJECUTAR_IMPLEMENTACION` — `SHELL-CI-022::GAP-PKG-001`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -72,7 +72,7 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **ACTUAL** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
+| 1 | **ACTUAL** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `IN_PROGRESS` | ACTUAL — EJECUTAR_IMPLEMENTACION |
 
 ## Modos de trabajo y materialización
 
