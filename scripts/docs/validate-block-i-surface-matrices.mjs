@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { validateActionServerCoverage } from './validate-action-server-coverage.mjs';
 
 const INVENTORY_PATH =
   'docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/01_INVENTARIO_COMPLETO_DE_SUPERFICIES.md';
@@ -232,6 +233,7 @@ export function validateBlockISurfaceMatrices({ root = process.cwd() } = {}) {
   const classification = normalize(fs.readFileSync(path.join(root, CLASSIFICATION_PATH), 'utf8'));
   const eligibilitySource = normalize(fs.readFileSync(path.join(root, ELIGIBILITY_PATH), 'utf8'));
   const authorizationSource = normalize(fs.readFileSync(path.join(root, AUTHORIZATION_PATH), 'utf8'));
+  const serverCoverage = validateActionServerCoverage(authorizationSource);
   const catalogSource = normalize(fs.readFileSync(path.join(root, CATALOG_PATH), 'utf8'));
   const sections = {
     inventory: task(inventory, 'AUTH-UI-009', 'AUTH-UI-010'),
@@ -393,6 +395,7 @@ export function validateBlockISurfaceMatrices({ root = process.cwd() } = {}) {
 
   return {
     rows: matrices.process.size,
+    serverCoverage,
     renderedViews: uniqueRendered,
     aliases: aliases.length,
     redirects: redirects.length,

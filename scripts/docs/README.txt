@@ -163,6 +163,12 @@ Organización:
 - docs:plan:check valida también el contrato modular de entrega. Los artefactos
   concretos se validan con docs:delivery:check -- --task <archivo> y los
   fragmentos 04A afectados cuando corresponda.
+- docs:delivery:check -- --task-id AUTH-UI-044 extrae un único bloque del
+  propietario a .delivery/task-deliveries y valida ese artefacto UTF-8.
+  No usar baselines, diffs ni el archivo propietario completo como entrega.
+- docs:task:quality -- --task-id AUTH-UI-044 revisa la tarea indicada y genera
+  su brief y diff. Sin ID usa la rama task/<id>; fuera de ella usa continuidad.
+  Un marcador preformateado no constituye aprobación canónica.
 - docs:task:preflight deriva la tarea vigente desde execution-route.json y las
   fuentes reales, comprueba contrato, formato, continuidad y estado Git local,
   y enumera validadores proporcionales sin modificar archivos.

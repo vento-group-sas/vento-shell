@@ -304,12 +304,14 @@ ${renderList(semantic.preflight.validators.map((validator) => `\`${validator}\``
 export function writeCurrentTaskDevelopmentArtifacts({
   root = process.cwd(),
   buildSucceeded = false,
+  taskId = null,
 } = {}) {
-  const semantic = validateProspectiveTaskSemantics({ root });
+  const semantic = validateProspectiveTaskSemantics({ root, taskId });
   if (semantic.skipped) return { skipped: true };
   const inventory = readCanonicalTaskInventory(root);
   const current = inventory.get(semantic.preflight.task.id);
-  const previous = inventory.get(semantic.preflight.continuity.previous);
+  const previousId = current?.block.match(/^\*\*Tarea anterior:\*\*\s+`?([A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3})/mu)?.[1];
+  const previous = inventory.get(previousId ?? semantic.preflight.continuity.previous);
   if (!current) throw new Error(`no se pudo aislar ${semantic.preflight.task.id} para el brief.`);
   const deliveryDir = path.join(root, '.delivery');
   const baselineDir = path.join(deliveryDir, 'task-baselines');
