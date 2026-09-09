@@ -106,12 +106,14 @@ test('package.json enruta starter, status, commit-scope y lifecycle por readines
   const starterCommand = packageJson.scripts['docs:chatgpt:starter'];
   assert.equal(
     starterCommand,
-    'node scripts/docs/chatgpt-work-starter-readiness.mjs && node scripts/docs/correction-starter.mjs',
+    'node scripts/docs/chatgpt-work-starter-readiness.mjs && node scripts/docs/implementation-work-package.mjs --write && node scripts/docs/correction-starter.mjs',
   );
   const readinessStarter = starterCommand.indexOf('chatgpt-work-starter-readiness.mjs');
+  const workPackageStarter = starterCommand.indexOf('implementation-work-package.mjs --write');
   const correctionStarter = starterCommand.indexOf('correction-starter.mjs');
   assert.ok(readinessStarter >= 0);
-  assert.ok(correctionStarter > readinessStarter);
+  assert.ok(workPackageStarter > readinessStarter);
+  assert.ok(correctionStarter > workPackageStarter);
   assert.equal(packageJson.scripts['docs:implementation:status'], 'node scripts/docs/implementation-readiness-coordinator.mjs');
   assert.equal(packageJson.scripts['docs:commit-scope:check'], 'node scripts/docs/commit-scope-readiness.mjs');
   assert.equal(packageJson.scripts['docs:task:start'], 'node scripts/docs/task-branch-lifecycle-readiness.mjs start');
