@@ -1,0 +1,263 @@
+{
+  "schema_version": 1,
+  "correction_id": "DELIV-PKG-015::CORR-012",
+  "task_id": "DELIV-PKG-015",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "DOCUMENTARY_CONTRADICTION",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": true,
+  "blocked_targets": [
+    "SHELL-CI-020"
+  ],
+  "baseline": {
+    "main_commit": "dc4cc3fbcaa837868bd50edb964c7101378ff278",
+    "target_task_path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+    "target_task_sha256": "56eaa3da4795d76dd03dbc6ae9a98eb7b50d89b81d196c8843d9570b067915af",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Reconcile the approved DELIV-PKG-015 partial-order contract with governed frontier semantics without introducing manual package selection."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Replace single-global-turn protocol text with deterministic governed frontier semantics while preserving explicit dependencies, layer priority, package_id tie-breaker and fail-closed physical entry."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Clarify deterministic partial order, eligible frontier, active physical locks and serialized close semantics."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Document governed multi-package physical throughput, independent checkouts, serialized close and exact operator boundaries."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/package-execution-policy.json",
+      "change": "MODIFY",
+      "scope": "Replace TOPOLOGICAL_TURN_HOLDER global monopoly with deterministic governed eligible frontier and active physical conflict-lock semantics."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "MODIFY",
+      "scope": "Derive eligible frontier and active physical set; preserve dependency precedence, automatic scheduling, correction freeze and fail-closed collision handling."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover deterministic frontier, dependency blocking, active conflicts, unknown fail-closed behavior and no human package selection."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Authorize package gate mutations only for packages admitted by the governed frontier and remove future-artifact assumptions tied to a single global turn."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY",
+      "scope": "Project frontier, active locks and per-package executable work while preserving foundation/readiness gates."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for governed frontier, blocked conflicts, parked pilots and deterministic eligibility."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-integration.test.mjs",
+      "change": "MODIFY",
+      "scope": "Update integration invariants from one global turn to governed frontier without weakening lifecycle, branch or correction gates."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.mjs",
+      "change": "MODIFY",
+      "scope": "Represent multiple governed active physical instances while keeping documentary dual lane, per-instance authority, independent checkouts and serialized close."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover multiple governed physical instances, collision isolation, independent checkouts and serialized close."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Coordinate a deterministic set of eligible package work instead of a single current package while preserving validation and authorization boundaries."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover frontier-aware coordination and fail-closed eligibility."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.mjs",
+      "change": "MODIFY",
+      "scope": "Expose the governed frontier and exact executable work without inviting manual package choice."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for frontier-aware starter output and deterministic next work."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/sync-pending-task-context.mjs",
+      "change": "MODIFY",
+      "scope": "Render multiple governed physical items in flight without collapsing them to ONE_ACTIVE_INSTANCE."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/sync-pending-task-context.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for active-set and frontier projections."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-throughput-audit.mjs",
+      "change": "MODIFY",
+      "scope": "Measure post-correction throughput and frontier metrics while remaining ANALYSIS_ONLY."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-throughput-audit.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover pre/post policy reporting without making the auditor an authorization source."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "MODIFY",
+      "scope": "Replace single-current-package assertions with governed-frontier admission while preserving open-correction freeze and per-instance scope checks."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for frontier-aware implementation correction guards."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-review-factory.mjs",
+      "change": "MODIFY",
+      "scope": "Project execution criticality from governed active/frontier state instead of assuming one current execution package."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-review-factory.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for review factory behavior with multiple governed active packages."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-validation-engine.mjs",
+      "change": "MODIFY",
+      "scope": "Accept and preserve frontier-aware package_execution context without weakening validation reuse or observability."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-validation-engine.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for frontier-aware validation context."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Advance one explicitly authorized instance inside the governed active set without reintroducing a global package monopoly."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover per-instance accelerator operation with concurrent independent active packages."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.mjs",
+      "change": "MODIFY",
+      "scope": "Keep work-package generation per target instance while supporting a multi-active governed physical context."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for work-package generation under multi-active package execution."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Preserve branch-per-instance lifecycle while allowing multiple governed active physical instances in separate checkouts and serialized close."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover concurrent governed active instances, separate checkouts and serialized close/reconciliation."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/package-execution-control.mjs",
+    "node --test scripts/docs/package-execution-control.test.mjs",
+    "node --check scripts/docs/package-readiness-scanner.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "node --check scripts/docs/implementation-control.mjs",
+    "node --test scripts/docs/implementation-control.test.mjs",
+    "node --check scripts/docs/implementation-readiness-coordinator.mjs",
+    "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-correction-guard.mjs",
+    "node --test scripts/docs/implementation-correction-guard.test.mjs",
+    "node --check scripts/docs/implementation-validation-engine.mjs",
+    "node --test scripts/docs/implementation-validation-engine.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-work-package.mjs",
+    "node --test scripts/docs/implementation-work-package.test.mjs",
+    "node --check scripts/docs/package-throughput-audit.mjs",
+    "node --test scripts/docs/package-throughput-audit.test.mjs",
+    "node --test scripts/docs/package-readiness-integration.test.mjs",
+    "npm run docs:package:execution:check",
+    "npm run docs:package:readiness:check",
+    "npm run docs:package:throughput:audit",
+    "npm run docs:package:application:closure",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm test --silent",
+    "git --no-pager diff --check"
+  ],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Entrega 3 corrige gobierno, scheduling y proyecciones de ejecucion de packages sin modificar comportamiento funcional de negocio ni requisitos TREQ; conserva 04A y criterios de cierre.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-09-09T23:20:44.489Z"
+}
