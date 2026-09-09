@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1148** |
+| Aprobadas | **1149** |
 | En propuesta | **0** |
-| No iniciadas | **448** |
+| No iniciadas | **447** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.93% (1148/1596)** |
+| Porcentaje de completamiento | **71.99% (1149/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-049` — Estandarizar estados de carga | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-050` — Estandarizar estados vacíos | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-051` — Estandarizar errores recuperables | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-050` — Estandarizar estados vacíos | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-051` — Estandarizar errores recuperables | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-DEV-007` — Exigir firma o PIN del trabajador | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -857,7 +857,7 @@
 | ✅ APROBADA | `AUTH-UI-047` | Mostrar rol simulado claramente | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-048` | Estandarizar estados sin acceso | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-049` | Estandarizar estados de carga | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | `AUTH-UI-050` | Estandarizar estados vacíos | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | `AUTH-UI-050` | Estandarizar estados vacíos | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-051` | Estandarizar errores recuperables | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-052` | Diseñar página inicial según actor | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-053` | Diseñar navegación según tareas frecuentes | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |

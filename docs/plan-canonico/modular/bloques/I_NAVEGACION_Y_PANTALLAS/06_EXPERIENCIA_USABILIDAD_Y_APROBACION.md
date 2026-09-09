@@ -1714,7 +1714,484 @@ La materialización física de este contrato pertenece a las instancias consumid
 `AUTH-UI-050 — Estandarizar estados vacíos`
 
 
-### [ ] AUTH-UI-050 — Estandarizar estados vacíos
+### ✅ AUTH-UI-050 — Estandarizar estados vacíos
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-049 — Estandarizar estados de carga
+**Tarea siguiente:** AUTH-UI-051 — Estandarizar errores recuperables
+**Tipo de tarea:** documental; estandarización transversal de estados vacíos de interfaz sobre contratos canónicos existentes, con materialización física posterior por implementation_unit_id
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Estandarizar para BLOQUE I la representación de una ausencia válida, autorizada y demostrable de contenido, trabajo, selección, historial, evidencia, oferta, configuración, endpoint o snapshot, sin confundir esa ausencia con carga, bloqueo, error, parcialidad, resultado desconocido o falta de autorización.
+
+La condición canónica es:
+
+```text
+ENTRADA Y CONTEXTO VALIDOS
++
+AUTORIZACION CONFIRMADA
++
+FUENTE O CONSULTA COMPLETA Y SUFICIENTEMENTE FRESCA
++
+PREDICADO DE AUSENCIA DEL PERFIL CUMPLIDO
++
+NINGUNA FUENTE AUTORITATIVA AUN PENDIENTE
++
+NINGUN FALLO, CONFLICTO O RESULTADO DESCONOCIDO
+=
+ESTADO VACIO LEGITIMO
+```
+
+Por tanto:
+
+```text
+VACIO != CARGA
+VACIO != BLOQUEO
+VACIO != ERROR
+VACIO != CONSULTA PARCIAL
+VACIO != OFFLINE SIN SNAPSHOT VERIFICABLE
+VACIO != RECURSO NO AUTORIZADO
+VACIO != RESULTADO DESCONOCIDO
+```
+
+Un estado vacío es una conclusión de experiencia sobre un alcance autorizado; nunca constituye una ampliación de permisos, una prueba de inexistencia global ni una autorización para fabricar trabajo, recursos o acciones.
+
+---
+
+#### 2. Resultado canónico
+
+`AUTH-UI-050` congela para BLOQUE I las decisiones ya aprobadas por `PROC-SCREEN-018 — Definir estados vacíos` y las consume sin reinterpretación local.
+
+Los artefactos canónicos consumidos son:
+
+- `SCREEN-EMPTY-STATE-CONTRACT-001`;
+- `SCREEN-EMPTY-PROFILE-CATALOG-001`;
+- `SCREEN-EMPTY-VARIANT-VOCABULARY-001`;
+- `SCREEN-EMPTY-ACTIVATION-ORDER-001`;
+- `SCREEN-EMPTY-CONTENT-CONTRACT-001`;
+- `SCREEN-EMPTY-ACTION-POLICY-001`;
+- `SCREEN-EMPTY-STATE-MATRIX-001`;
+- `SCREEN-EMPTY-STATE-SUMMARY-001`;
+- `SCREEN-EMPTY-STATE-CHANGE-POLICY-001`;
+- `SCREEN-EMPTY-STATE-VALIDATION-GATE-001`;
+- `SCREEN-EMPTY-STATE-CARRYOVER-REGISTER-001`.
+
+La proyección materializa contractualmente:
+
+1. exactamente un perfil vacío base por cada `VSCREEN-*` admitida;
+2. un vocabulario cerrado de catorce perfiles;
+3. tres variantes controladas;
+4. predicados de activación y fronteras de no inferencia;
+5. política de contenido, privacidad y accesibilidad;
+6. política de CTA y acciones alternativas heredadas;
+7. reglas de refresco, caché y consistencia;
+8. binding determinista con la matriz de 177 pantallas;
+9. fronteras explícitas con estados sin acceso, carga y recuperación.
+
+No se crea una segunda matriz de verdad ni una taxonomía de vacíos paralela.
+
+---
+
+#### 3. Universo canónico de aplicación
+
+La decisión cubre exactamente 177 `VSCREEN-*` admitidas por el catálogo de pantallas.
+
+| Aplicación | Universo de pantallas | Cantidad |
+| --- | --- | ---: |
+| `shell` | `VSCREEN-0001..0006`; `VSCREEN-0175` | 7 |
+| `viso` | `VSCREEN-0007..0026`; `VSCREEN-0113..0123` | 31 |
+| `anima` | `VSCREEN-0027..0032`; `VSCREEN-0124..0131` | 14 |
+| `nexo` | `VSCREEN-0033..0054`; `VSCREEN-0132..0144`; `VSCREEN-0176..0177` | 37 |
+| `fogo` | `VSCREEN-0055..0067`; `VSCREEN-0173..0174` | 15 |
+| `origo` | `VSCREEN-0068..0079`; `VSCREEN-0145..0146` | 14 |
+| `pulso` | `VSCREEN-0080..0093`; `VSCREEN-0147..0152` | 20 |
+| `numera` | `VSCREEN-0094..0106`; `VSCREEN-0153..0159` | 20 |
+| `pass` | `VSCREEN-0107..0112`; `VSCREEN-0160..0172` | 19 |
+| **Total** | **universo materializado** | **177** |
+
+`aura` permanece como aplicación canónica sin `VSCREEN-*` admitidas en este universo. Esta tarea no fabrica superficies, estados o perfiles vacíos para AURA.
+
+Cada identidad conserva nombre, aplicación, clase, entrada y salida aprobados. La cardinalidad contra `SCREEN-EMPTY-STATE-MATRIX-001` es exactamente `1:1`: una fila por pantalla, cero faltantes, cero duplicados y cero reclasificaciones locales.
+
+---
+
+#### 4. Orden de activación y precedencia
+
+La experiencia aplica esta precedencia:
+
+```text
+1. IDENTIDAD, AUTORIZACION O PRERREQUISITO NO SATISFECHO -> AUTH-UI-048
+2. FUENTE, CONSULTA, VERSION, CURSOR O EFECTO AUN EN RESOLUCION -> AUTH-UI-049
+3. FALLO, TIMEOUT, PARCIALIDAD, CONFLICTO O RESULTADO DESCONOCIDO -> AUTH-UI-051
+4. DATOS CONFIRMADOS DISPONIBLES -> CONTENIDO NORMAL
+5. RESULTADO AUTORIZADO, COMPLETO Y FRESCO CUMPLE PREDICADO DE AUSENCIA -> AUTH-UI-050
+```
+
+Reglas obligatorias:
+
+1. el vacío solo se evalúa después de completar autenticación, autorización, contexto, recurso y consulta aplicables;
+2. una respuesta parcial no activa vacío aunque la porción recibida tenga cero filas;
+3. caché ausente, offline sin snapshot verificable, timeout, fallo de fuente o token inválido no son vacío;
+4. una consulta desactualizada no puede presentar cero como conclusión fresca;
+5. una fuente externa no conciliada no se representa como vacío;
+6. un recurso no autorizado no se representa como inexistente;
+7. una condición de bloqueo conocida no se convierte en vacío para simplificar la interfaz;
+8. el render de un vacío no modifica estado empresarial ni ejecuta acciones.
+
+---
+
+#### 5. Catálogo canónico de perfiles vacíos
+
+Se consumen exactamente catorce perfiles y sus 177 asignaciones.
+
+| Perfil | Pantallas | Predicado canónico | Frontera material |
+| --- | ---: | --- | --- |
+| `EMPTY-AUTHORIZED-START` | 52 | `AUTHORIZED_SURFACE_READY_WITHOUT_STARTED_RESOURCE` | la superficie está autorizada y lista; no se usa cuando falta un prerrequisito, recurso obligatorio o autorización |
+| `EMPTY-CART` | 2 | `AUTHORIZED_CART_EXISTS_AND_LINE_COUNT_ZERO` | no implica pedido, reserva, pago, checkout ni beneficio aplicado |
+| `EMPTY-CLEAR-QUEUE` | 30 | `AUTHORIZED_QUEUE_COMPLETE_AND_PENDING_COUNT_ZERO` | exige consulta completa y fresca; parcialidad, stale, error u offline no conciliado no producen cola despejada |
+| `EMPTY-CONFIGURATION-BOOTSTRAP` | 14 | `AUTHORIZED_CONFIGURATION_SCOPE_HAS_NO_ACTIVE_OR_DRAFT_VERSION` | no oculta una versión existente ni permite editar, aprobar o publicar sin el contrato de configuración |
+| `EMPTY-FIRST-RECORD` | 10 | `AUTHORIZED_SCOPE_HAS_NO_CANONICAL_RECORDS` | significa ausencia en el alcance autorizado, no inexistencia global |
+| `EMPTY-NO-ASSIGNED-WORK` | 25 | `AUTHORIZED_OPERATIONAL_ASSIGNMENTS_ZERO` | no permite autoasignación, creación de órdenes ni ampliación de sede, área, turno o ruta |
+| `EMPTY-NO-ENDPOINT` | 1 | `AUTHORIZED_DEVICE_DISCOVERY_COMPLETE_AND_COMPATIBLE_ENDPOINT_COUNT_ZERO` | es configuración sin endpoint compatible; no oculta un bloqueo operativo de una operación que exige periférico |
+| `EMPTY-NO-EVIDENCE` | 2 | `AUTHORIZED_AUDIT_QUERY_COMPLETE_AND_EVIDENCE_COUNT_ZERO` | no concluye que el hecho nunca ocurrió ni sustituye retención, integridad, permisos o fuentes pendientes |
+| `EMPTY-NO-HISTORY` | 3 | `AUTHORIZED_OWN_HISTORY_COUNT_ZERO` | se limita al historial propio y al alcance consultado; no enumera terceros |
+| `EMPTY-NO-MESSAGES` | 3 | `AUTHORIZED_CONVERSATION_OR_INBOX_COMPLETE_AND_MESSAGE_COUNT_ZERO` | no revela conversaciones, participantes o mensajes fuera del alcance |
+| `EMPTY-NO-OFFERING` | 4 | `AUTHORIZED_OFFERING_QUERY_COMPLETE_AND_ELIGIBLE_COUNT_ZERO` | no fuerza disponibilidad ni oculta fallos de catálogo, precio, stock o integración |
+| `EMPTY-NO-OWN-RESOURCE` | 7 | `AUTHORIZED_OWN_RESOURCE_LOOKUP_COMPLETE_AND_RESOURCE_ABSENT` | no confirma existencia de recursos de otras cuentas o personas |
+| `EMPTY-NO-SELECTION` | 18 | `AUTHORIZED_MASTER_CONTEXT_READY_AND_SELECTION_NULL` | ausencia de selección no equivale a recurso inexistente, eliminado o no autorizado |
+| `EMPTY-NO-SNAPSHOT` | 6 | `AUTHORIZED_READ_QUERY_COMPLETE_AND_SNAPSHOT_ROW_COUNT_ZERO` | snapshot sin filas no equivale a KPI, monto, saldo o medición igual a cero |
+| **Total** | **177** | **cobertura completa** | **un perfil base por pantalla** |
+
+Ninguna aplicación puede escoger un perfil por conveniencia visual, nombre de ruta, componente, último estado usado o heurística de frontend.
+
+---
+
+#### 6. Distribución por aplicación
+
+La distribución de perfiles se conserva exactamente así:
+
+| Aplicación | Pantallas | Distribución canónica |
+| --- | ---: | --- |
+| `shell` | 7 | `EMPTY-AUTHORIZED-START`: 5; `EMPTY-CLEAR-QUEUE`: 1; `EMPTY-NO-ASSIGNED-WORK`: 1 |
+| `viso` | 31 | `EMPTY-AUTHORIZED-START`: 5; `EMPTY-CLEAR-QUEUE`: 10; `EMPTY-CONFIGURATION-BOOTSTRAP`: 4; `EMPTY-FIRST-RECORD`: 7; `EMPTY-NO-SELECTION`: 5 |
+| `anima` | 14 | `EMPTY-AUTHORIZED-START`: 4; `EMPTY-NO-ASSIGNED-WORK`: 3; `EMPTY-NO-HISTORY`: 1; `EMPTY-NO-MESSAGES`: 1; `EMPTY-NO-OWN-RESOURCE`: 5 |
+| `nexo` | 37 | `EMPTY-AUTHORIZED-START`: 16; `EMPTY-CLEAR-QUEUE`: 2; `EMPTY-CONFIGURATION-BOOTSTRAP`: 7; `EMPTY-NO-ASSIGNED-WORK`: 9; `EMPTY-NO-ENDPOINT`: 1; `EMPTY-NO-SELECTION`: 1; `EMPTY-NO-SNAPSHOT`: 1 |
+| `fogo` | 15 | `EMPTY-AUTHORIZED-START`: 4; `EMPTY-CLEAR-QUEUE`: 2; `EMPTY-CONFIGURATION-BOOTSTRAP`: 2; `EMPTY-NO-ASSIGNED-WORK`: 5; `EMPTY-NO-SELECTION`: 1; `EMPTY-NO-SNAPSHOT`: 1 |
+| `origo` | 14 | `EMPTY-AUTHORIZED-START`: 4; `EMPTY-CLEAR-QUEUE`: 3; `EMPTY-FIRST-RECORD`: 2; `EMPTY-NO-ASSIGNED-WORK`: 2; `EMPTY-NO-EVIDENCE`: 1; `EMPTY-NO-SELECTION`: 2 |
+| `pulso` | 20 | `EMPTY-AUTHORIZED-START`: 5; `EMPTY-CLEAR-QUEUE`: 4; `EMPTY-CONFIGURATION-BOOTSTRAP`: 1; `EMPTY-NO-ASSIGNED-WORK`: 4; `EMPTY-NO-SELECTION`: 6 |
+| `numera` | 20 | `EMPTY-AUTHORIZED-START`: 5; `EMPTY-CLEAR-QUEUE`: 8; `EMPTY-FIRST-RECORD`: 1; `EMPTY-NO-EVIDENCE`: 1; `EMPTY-NO-SELECTION`: 1; `EMPTY-NO-SNAPSHOT`: 4 |
+| `pass` | 19 | `EMPTY-AUTHORIZED-START`: 4; `EMPTY-CART`: 2; `EMPTY-NO-ASSIGNED-WORK`: 1; `EMPTY-NO-HISTORY`: 2; `EMPTY-NO-MESSAGES`: 2; `EMPTY-NO-OFFERING`: 4; `EMPTY-NO-OWN-RESOURCE`: 2; `EMPTY-NO-SELECTION`: 2 |
+| **Total** | **177** | **cobertura completa** |
+
+La suma por aplicación y la suma por perfil deben reconciliar simultáneamente en 177.
+
+---
+
+#### 7. Variantes controladas
+
+Las variantes no reemplazan el perfil base. Explican una causa temporal o contextual más específica.
+
+| Variante | Pantallas | Predicado | Regla |
+| --- | ---: | --- | --- |
+| `VARIANT-FILTERED-NO-MATCH` | 30 | `ACTIVE_FILTERS_AND_RESULT_COUNT_ZERO` | conserva filtros, periodo y alcance visibles; permite únicamente la acción aprobada para ajustar o limpiar filtros |
+| `VARIANT-NO-SELECTION` | 18 | `MASTER_CONTEXT_LOADED_AND_SELECTION_NULL` | no consulta ni muta detalle hasta existir selección autorizada |
+| `VARIANT-POST-COMPLETION-CLEAR` | 55 | `CONFIRMED_EXIT_RECEIPT_AND_REMAINING_WORK_ZERO` | requiere receipt confirmado, invalidación y nueva consulta antes de declarar que todo quedó atendido |
+
+Precedencias específicas:
+
+- filtros activos con cero resultados usan `VARIANT-FILTERED-NO-MATCH`;
+- maestro cargado sin selección usa `VARIANT-NO-SELECTION`;
+- cola despejada tras completar una acción usa `VARIANT-POST-COMPLETION-CLEAR` únicamente después de confirmación y refresco;
+- al cambiar filtro, selección o receipt, la variante se reevalúa contra el perfil base.
+
+---
+
+#### 8. Contrato de contenido
+
+Todo estado vacío contiene, cuando aplique al canal:
+
+1. título de intención que describe la causa sin culpar al actor;
+2. explicación de qué falta y qué alcance sí fue consultado;
+3. alcance visible relevante: sede, área, periodo, actor, ruta, pedido o filtros;
+4. frescura mediante última consulta, versión o actualización sin detalle técnico innecesario;
+5. CTA primaria únicamente cuando la matriz referencia una acción aprobada;
+6. acción alternativa únicamente cuando ya existe como filtro, ayuda, selección, actualización o soporte aprobado;
+7. estado accesible perceptible sin depender solo de icono o color;
+8. telemetría mínima estructurada sin payloads sensibles.
+
+Se prohíbe:
+
+- afirmar inexistencia global cuando solo se conoce ausencia dentro del alcance autorizado;
+- afirmar que todo está bien con una consulta parcial o desactualizada;
+- presentar una denegación de permiso como vacío;
+- mostrar números o identidades fuera del alcance del actor;
+- ofrecer creación o configuración cuando la acción no existe o no está autorizada;
+- mezclar no selección, no historial, no pendientes y error bajo un mensaje genérico.
+
+---
+
+#### 9. Política de acciones en vacío
+
+La matriz aprobada contiene **79 pantallas con CTA primaria**, **98 sin CTA primaria empresarial**, **60 con acción alternativa** y **0 acciones nuevas creadas por el contrato de vacío**.
+
+Reglas:
+
+1. `empty_cta` y `empty_alternative` solo consumen una acción canónica ya existente o `NONE`;
+2. etiqueta, efecto, disponibilidad, ubicación y confirmación pertenecen al contrato de acción y no se redefinen aquí;
+3. una CTA se oculta o deshabilita cuando la acción original no está disponible sin revelar causas sensibles;
+4. la acción vuelve a validar autorización, contexto, recurso y estado antes de ejecutarse;
+5. renderizar el vacío nunca ejecuta automáticamente una mutación;
+6. `EMPTY-NO-ASSIGNED-WORK` no permite autoasignación;
+7. `EMPTY-CART` no habilita checkout ni pago;
+8. `EMPTY-NO-ENDPOINT` puede conducir a descubrimiento permitido en configuración, pero no sustituye un bloqueo técnico de una operación activa;
+9. acciones destructivas no se presentan como CTA principal del vacío;
+10. cuando la matriz declara `NONE`, no se fabrica una acción empresarial implícita.
+
+Cambiar una CTA o permitir una acción nueva exige modificar primero el contrato propietario de acciones; el copy del vacío no crea capacidades.
+
+---
+
+#### 10. Vinculación determinista por pantalla
+
+Para cada `VSCREEN-*` del universo de la sección 3 se aplica este binding:
+
+```text
+screen_id
+-> fila unica en SCREEN-EMPTY-STATE-MATRIX-001
+-> empty_base_profile
+-> allowed_variants
+-> activation_predicate
+-> empty_cta
+-> empty_alternative
+-> refresh_policy
+-> boundary
+```
+
+La implementación posterior no puede resolver ninguno de esos campos mediante heurística local.
+
+La consistencia exige simultáneamente:
+
+- mismo `screen_id`, nombre, aplicación y clase;
+- misma condición de entrada y de salida;
+- exactamente un perfil vacío base;
+- únicamente variantes permitidas por la fila;
+- predicado correspondiente al perfil;
+- CTA y alternativa existentes o `NONE`;
+- política de refresco preservada;
+- frontera de no inferencia preservada.
+
+La huella contractual no puede cambiar silenciosamente al materializar componentes posteriores.
+
+---
+
+#### 11. Refresco, consistencia, privacidad y accesibilidad
+
+Reglas transversales:
+
+1. colas vacías usan actualización por evento o refresco manual controlado, no busy polling indiscriminado;
+2. filtros permanecen hasta que el actor los cambie;
+3. un vacío respaldado por caché declara frescura y se revalida cuando cambia la fuente;
+4. el vacío no limpia borradores, adjuntos, capturas, evidencia o trabajo no confirmado;
+5. un receipt confirmado invalida la proyección antes de mostrar una cola despejada;
+6. una fuente externa no conciliada se entrega a recuperación, no a vacío;
+7. cambiar actor en dispositivo compartido elimina primero el estado visible del actor anterior;
+8. el vacío expresa únicamente ausencia dentro del alcance autorizado;
+9. cliente y trabajador reciben estados limitados a sus propios recursos;
+10. una URL directa a un recurso ajeno se resuelve mediante autorización y no enumeración, no mediante un vacío revelador;
+11. filtros, conteos y telemetría no incluyen identificadores sensibles completos;
+12. el significado del estado no depende exclusivamente de icono, color o animación;
+13. el orden de foco y los anuncios accesibles conservan la intención y la acción disponible;
+14. soporte y diagnóstico reciben referencias seguras, no payload empresarial completo.
+
+---
+
+#### 12. Fronteras críticas preservadas
+
+La proyección mantiene, entre otras, estas fronteras materiales:
+
+- `VSCREEN-0001` sin destinos no concede aplicaciones ni permisos;
+- `VSCREEN-0004` no conserva el actor anterior en una estación compartida;
+- `VSCREEN-0038` sin selección no crea una ubicación;
+- `VSCREEN-0041` solo declara ausencia de diferencias después de conteo completo y fresco;
+- `VSCREEN-0047..0050` sin remisiones no adelantan estados ni custodia;
+- `VSCREEN-0057..0067` sin lote asignado no crean, inician ni cierran producción;
+- `VSCREEN-0077` sin recepción elegible no genera entrada ni recepción parcial;
+- `VSCREEN-0084` sin pedido seleccionado no inicia ni confirma pago;
+- `VSCREEN-0089` y `VSCREEN-0090` no abren ni cierran caja al renderizar un vacío;
+- `VSCREEN-0106` sin filas no genera un reporte oficial vacío como evidencia de inexistencia;
+- `VSCREEN-0110` sin beneficio seleccionado no genera ticket ni consume puntos;
+- `VSCREEN-0135` sin instancia no altera la definición del kit;
+- `VSCREEN-0139` sin paradas no confirma entrega ni rechazo;
+- `VSCREEN-0144` sin trabajos no configura impresoras ni reimprime automáticamente;
+- `VSCREEN-0153` sin datos elegibles no ejecuta pago laboral;
+- `VSCREEN-0162` y `VSCREEN-0164` con carrito vacío no crean pedido, reserva o pago;
+- `VSCREEN-0165` sin resultado propio no revela pedido o pago ajeno;
+- `VSCREEN-0173` sin evidencia no concluye que un lote o evento nunca existió;
+- `VSCREEN-0177` sin endpoint conserva separadas configuración y cola productiva.
+
+---
+
+#### 13. Frontera con AUTH-UI-048, AUTH-UI-049 y AUTH-UI-051
+
+| Condición | Propietario | Regla |
+| --- | --- | --- |
+| autorización, contexto o prerrequisito concluyentemente no permitido | `AUTH-UI-048` | no presentar denegación como ausencia de datos |
+| dato, contexto, versión, cursor o efecto requerido todavía en resolución | `AUTH-UI-049` | no afirmar cero ni ausencia mientras la fuente está pendiente |
+| consulta o inicialización autorizada, completa y fresca que cumple el predicado de ausencia | `AUTH-UI-050` | mostrar el perfil vacío y variante aprobados |
+| fallo, timeout, rechazo, parcialidad, conflicto, dependencia degradada o resultado desconocido | `AUTH-UI-051` | no esconder una condición recuperable como vacío |
+
+La clasificación del estado de interfaz no modifica autoridad, proceso, propiedad del recurso ni resultado empresarial.
+
+---
+
+#### 14. Gobierno de cambios y gate de consistencia
+
+Cambiar un estado vacío exige declarar:
+
+1. pantalla afectada;
+2. perfil y variante anteriores y nuevos;
+3. predicado de activación;
+4. alcance y frescura;
+5. contenido y terminología;
+6. CTA primaria y acción alternativa;
+7. impacto sobre entrada, salida, borrador, privacidad y telemetría;
+8. pruebas, responsable, fecha y aprobación.
+
+La validación debe fallar cuando ocurra cualquiera de estas condiciones:
+
+- falta una de las 177 pantallas;
+- cambia identidad, nombre, aplicación, clase, entrada o salida aprobados;
+- una pantalla no tiene exactamente un perfil vacío base;
+- se usa un perfil o variante fuera del vocabulario;
+- el predicado no corresponde al perfil;
+- una CTA o alternativa no pertenece al contrato de acciones o no es `NONE`;
+- un vacío absorbe carga, bloqueo, error, parcialidad, asincronía o resultado desconocido;
+- una cola despejada no exige consulta completa y fresca;
+- un vacío filtrado no preserva filtros y alcance;
+- ausencia de selección se trata como recurso inexistente;
+- ausencia de historial o recurso propio enumera terceros;
+- renderizar el vacío ejecuta una mutación o efecto externo;
+- `EMPTY-CART` habilita checkout o pago;
+- `EMPTY-NO-ENDPOINT` oculta un bloqueo operativo;
+- `VARIANT-POST-COMPLETION-CLEAR` aparece sin receipt confirmado e invalidación/refresco;
+- el vacío limpia borradores o evidencia no confirmados;
+- los resúmenes por perfil o aplicación no reconcilian con 177;
+- la huella contractual cambia silenciosamente.
+
+---
+
+#### 15. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea proyecta en BLOQUE I un contrato de estados vacíos ya aprobado y cubierto por requisitos existentes. No modifica el registro modular 04A.
+
+---
+
+#### 16. Cobertura de prueba vigente reutilizada
+
+La cobertura existente derivada por `PROC-SCREEN-018` permanece vigente mediante `TREQ-UX-1007` a `TREQ-UX-1034`.
+
+Esa cobertura protege, entre otros puntos:
+
+- cardinalidad exacta de 177 pantallas y un perfil vacío base por pantalla;
+- distinción entre vacío, carga, bloqueo, error, parcialidad y resultado desconocido;
+- variantes filtrada, no selección y posterior a terminación;
+- consulta completa y fresca antes de afirmar cola despejada;
+- prohibición de autoasignación desde ausencia de trabajo;
+- CTA limitadas a acciones ya aprobadas;
+- no selección distinta de inexistencia o denegación;
+- privacidad y no enumeración;
+- carrito vacío sin checkout ni pago;
+- colas sin busy polling indiscriminado;
+- preservación de borradores y evidencia no confirmados;
+- protección de remisiones, producción, POS, rutas, inventario e impresión frente a efectos materiales disparados por un vacío;
+- gobierno versionado de cualquier cambio de disparador, perfil, variante, contenido o CTA.
+
+Esta sección es trazabilidad de requisitos existentes y no representa creación ni modificación del registro.
+
+---
+
+#### 17. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El bloque todavía no ha sido insertado ni normalizado en el checkout de trabajo de la tarea. |
+| LOCAL | NOT_EXECUTED | Las comprobaciones de formato, calidad, entrega, BLOQUE I, topología y plan corresponden al checkout después de insertar el bloque. |
+| REMOTA | NOT_EXECUTED | La tarea todavía no tiene cierre documental, PR ni merge propios. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define un contrato documental de experiencia y no ejecuta una sesión operativa real. |
+| FÍSICA | NOT_APPLICABLE | La tarea no modifica código, Supabase, datos, infraestructura, dispositivos, aplicaciones desplegadas ni configuración runtime. |
+
+---
+
+#### 18. Criterios de aceptación
+
+`AUTH-UI-050` queda documentalmente aceptable cuando se demuestre todo lo siguiente:
+
+- [ ] existen exactamente 177 decisiones de vacío, una por cada `VSCREEN-*` admitida;
+- [ ] la distribución por aplicación suma 177 y no introduce superficies ficticias de AURA;
+- [ ] los catorce perfiles suman 177 sin faltantes ni perfiles adicionales;
+- [ ] las tres variantes conservan su predicado y regla de activación;
+- [ ] cada vacío se activa únicamente después de una resolución autorizada, completa y suficientemente fresca;
+- [ ] ninguna consulta parcial, stale, fallida, no autorizada o no conciliada produce vacío o cero confirmado;
+- [ ] las 79 CTA primarias y 60 alternativas permanecen referenciadas desde acciones ya aprobadas y no se crean capacidades nuevas;
+- [ ] renderizar vacío no ejecuta mutaciones ni efectos externos;
+- [ ] `EMPTY-NO-ASSIGNED-WORK` no permite autoasignación;
+- [ ] `EMPTY-CART` no permite checkout ni pago;
+- [ ] `EMPTY-NO-ENDPOINT` no sustituye un bloqueo operativo;
+- [ ] filtros, alcance, frescura, borradores, evidencia y privacidad se conservan según el contrato;
+- [ ] no selección, no historial, no evidencia, no oferta, no recurso propio y no snapshot permanecen semánticamente diferenciados;
+- [ ] `AUTH-UI-048`, `AUTH-UI-049` y `AUTH-UI-051` conservan sus fronteras sin absorción;
+- [ ] la cobertura existente de prueba se reutiliza sin modificar el registro 04A;
+- [ ] no se realizan cambios físicos en esta tarea documental.
+
+---
+
+#### 19. Límites
+
+Esta tarea no:
+
+- redefine estados sin acceso, cubiertos por `AUTH-UI-048`;
+- redefine estados de carga o acciones pendientes, cubiertos por `AUTH-UI-049`;
+- define la recuperación de errores, conflictos, parcialidad, timeout o resultados desconocidos, reservada a `AUTH-UI-051`;
+- crea nuevos permisos, roles, acciones, procesos, rutas o superficies;
+- cambia identidad, aplicación, entrada o salida de las 177 `VSCREEN-*`;
+- crea una superficie para AURA;
+- modifica contratos de servidor, Auth, RLS, RPC, migraciones o datos;
+- implementa componentes, copy final, estilos, telemetría, hooks, loaders, empty states runtime ni pruebas de usuario;
+- ejecuta acciones materiales por renderizar un vacío;
+- cambia el registro 04A;
+- autoriza la materialización física posterior derivada de `PER_IMPLEMENTATION_UNIT`.
+
+La implementación, automatización y evidencia física permanecen sujetas a las instancias consumidoras, paquetes y gates que correspondan.
+
+---
+
+#### 20. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-049 — Estandarizar estados de carga`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-050 — Estandarizar estados vacíos`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-051 — Estandarizar errores recuperables`
+
+
 ### [ ] AUTH-UI-051 — Estandarizar errores recuperables
 <!-- EXECUTION-GATE-RECONCILIATION:B601-800:AUTH-UI-052-060 -->
 ### Reconciliación topológica de AUTH-UI-052 a AUTH-UI-060
