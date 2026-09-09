@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1144** |
+| Aprobadas | **1145** |
 | En propuesta | **0** |
-| No iniciadas | **452** |
+| No iniciadas | **451** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.68% (1144/1596)** |
+| Porcentaje de completamiento | **71.74% (1145/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-045` — Unificar navegación y autorización | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-046` — Mostrar contexto activo en cada aplicación | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-047` — Mostrar rol simulado claramente | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-046` — Mostrar contexto activo en cada aplicación | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-047` — Mostrar rol simulado claramente | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-048` — Estandarizar estados sin acceso | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -853,7 +853,7 @@
 | ✅ APROBADA | `AUTH-UI-043` | Vincular cada acción con protección de servidor | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-044` | Evitar permisos derivados de nombres de rutas | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-045` | Unificar navegación y autorización | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
-| ⬜ NO INICIADA | `AUTH-UI-046` | Mostrar contexto activo en cada aplicación | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | `AUTH-UI-046` | Mostrar contexto activo en cada aplicación | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-047` | Mostrar rol simulado claramente | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-048` | Estandarizar estados sin acceso | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-049` | Estandarizar estados de carga | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |

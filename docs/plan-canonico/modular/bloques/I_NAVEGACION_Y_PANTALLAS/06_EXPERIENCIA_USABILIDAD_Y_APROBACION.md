@@ -39,7 +39,429 @@ y se ejecutarán únicamente después de la puerta aplicable del paquete.
 **Límites funcionales:** comienza con “Mostrar contexto activo en cada aplicación” y concluye con “Aprobar la pantalla antes de retirarla del roadmap”.
 <!-- PLAN-SECTION-META:END -->
 
-### [ ] AUTH-UI-046 — Mostrar contexto activo en cada aplicación
+### ✅ AUTH-UI-046 — Mostrar contexto activo en cada aplicación
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-045 — Unificar navegación y autorización
+**Tarea siguiente:** AUTH-UI-047 — Mostrar rol simulado claramente
+**Tipo de tarea:** definición documental transversal de presentación visible del contexto activo por aplicación; materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** `BLOQUE I — Protección y estados de interfaz`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, rutas, componentes, Supabase, RLS, RPC, permisos, datos, despliegues ni configuración de aplicaciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Aplicar a las aplicaciones canónicas de Vento OS el contrato transversal de contexto activo definido por `UX-ACTIVE-CONTEXT-VISIBILITY-CONTRACT-001`, de modo que una persona pueda reconocer bajo qué actor, carril, territorio, jornada, rol, dispositivo, simulación, alcance y estado de frescura está consultando o actuando antes de ejecutar una operación material.
+
+La presentación visible del contexto no crea autoridad y no sustituye la decisión de autorización. Esta tarea convierte el contrato UX ya aprobado en una regla de proyección por aplicación sin inferir sede, área, turno, rol o permiso a partir del nombre de la aplicación, la ruta, el menú o el estado local del cliente.
+
+```text
+CONTEXTO AUTORITATIVO RESUELTO
+        ↓
+PROYECCION CONTEXTUAL DE LA APLICACION
+        ↓
+RESUMEN HUMANO PERSISTENTE
+        ↓
+SUPERFICIE / ACCION
+
+PROYECCION VISIBLE != AUTORIZACION
+APLICACION != CONTEXTO
+RUTA != CONTEXTO
+FILTRO != TERRITORIO OPERATIVO ACTIVO
+```
+
+---
+
+#### 2. Fuentes y handoff consumidos
+
+La tarea consume, sin redefinir:
+
+- `UX-BASE-005` y `UX-ACTIVE-CONTEXT-VISIBILITY-CONTRACT-001`, que fijan la semántica de actor, sede, área, turno, check-in, rol, dispositivo, simulación, alcance y frescura visibles;
+- `AUTH-UI-015..025`, que ya clasifican las superficies, su contexto de uso, frecuencia y acciones sin convertir el nombre de la aplicación en criterio funcional;
+- `AUTH-UI-032..039`, que separan requisitos de turno, check-in, sede, área, dispositivo compartido, simulación, sensibilidad y masking;
+- `AUTH-UI-040..045`, que cierran navegación, acceso directo, protección de acciones, autorización de servidor, prohibición de permisos nominales e integración de navegación con autorización;
+- el catálogo de diez aplicaciones canónicas: `shell`, `anima`, `viso`, `nexo`, `fogo`, `origo`, `pulso`, `numera`, `aura` y `pass`;
+- `SCREEN-CANONICAL-CATALOG-001`, que contiene 177 pantallas canónicas `VSCREEN-*` asignadas a nueve aplicaciones y ninguna pantalla admitida todavía para `aura`;
+- los contratos de contexto, autorización, dispositivos, integración, resiliencia y experiencia ya aprobados que determinan si cada dimensión aplica a una superficie concreta.
+
+El handoff de `AUTH-UI-045` permanece vigente: navegación puede descubrir o conducir a una superficie, pero la aplicación destino reconstruye su contexto efectivo y revalida autoridad. Ningún dato transportado por navegación se vuelve contexto autoritativo por aparecer en la interfaz.
+
+---
+
+#### 3. Resultado material
+
+Se define `APPLICATION-ACTIVE-CONTEXT-PRESENTATION-REGISTER-001` como registro documental vinculante para proyectar contexto activo en las diez aplicaciones canónicas.
+
+Cada fila del registro conserva como mínimo:
+
+| Campo | Regla |
+| --- | --- |
+| `application_code` | código canónico exacto de la aplicación |
+| `screen_coverage` | conjunto de `VSCREEN-*` ya asignado por `PROC-SCREEN-002`; no reasigna pantallas |
+| `canonical_screen_count` | cantidad heredada del catálogo de pantallas |
+| `context_projection_profile` | dimensiones humanas que la aplicación debe poder presentar cuando resulten materiales |
+| `context_source` | resolución autoritativa de servidor y contratos de contexto; nunca la ruta o el cliente |
+| `experience_lane_source` | clasificación heredada de la superficie o acción; nunca el nombre de la aplicación |
+| `territorial_distinction` | separación entre contexto operativo, cobertura administrativa, filtro y territorio del recurso |
+| `role_distinction` | separación entre rol base, rol operativo, delegación y simulación cuando apliquen |
+| `freshness_state` | uno de los estados cerrados de contexto aprobados |
+| `cross_app_rule` | revalidación en destino; el handoff transporta referencias seguras, no autoridad |
+| `physical_materialization` | diferida a la instancia física correspondiente por `implementation_unit_id` |
+
+La aplicación no puede eliminar una dimensión obligatoria para una superficie concreta alegando que no forma parte de su perfil ordinario. El perfil de aplicación define la gramática visible; la obligación efectiva procede del contexto y de la clasificación contractual de la superficie o acción.
+
+---
+
+#### 4. Invariantes de contexto visible
+
+Se fijan las siguientes equivalencias prohibidas:
+
+```text
+CONTEXTO MOSTRADO != CONTEXTO DECLARADO POR EL CLIENTE
+CONTEXTO MOSTRADO != PERMISO
+CONTEXTO MOSTRADO != DECISION DE AUTORIZACION
+SEDE ASIGNADA != SEDE OPERATIVA ACTIVA
+AREA ASIGNADA != AREA OPERATIVA ACTIVA
+FILTRO ADMINISTRATIVO != CONTEXTO OPERATIVO
+TURNO PROGRAMADO != CHECK-IN ACTIVO
+CHECK-IN ACTIVO != AUTORIZACION SUFICIENTE
+ROL BASE != ROL OPERATIVO
+ROL DE NAVEGACION != ROL EFECTIVO
+SIMULACION != AUTORIDAD REAL
+DISPOSITIVO TECNICO != ACTOR HUMANO
+RUTA / QUERY PARAM / COOKIE / LOCALSTORAGE != FUENTE AUTORITATIVA
+```
+
+Reglas:
+
+1. El contexto visible describe el contexto efectivo resuelto; no lo fabrica.
+2. La aplicación puede presentar etiquetas humanas, pero no reinterpretar el valor contractual subyacente.
+3. Una selección visual puede solicitar un cambio; no se mostrará como activa antes de resolución autoritativa.
+4. Una dimensión no aplicable se omite o se presenta como no aplicable; no se rellena con un valor aproximado.
+5. Una dimensión obligatoria no resuelta produce un estado explícito y bloquea las mutaciones que dependan de ella.
+6. La navegación y el layout pueden compactar la presentación, pero no esconder el contexto material únicamente dentro de un menú de perfil.
+7. La proyección visible se invalida cuando cambia actor, rol, sede, área, turno, check-in, dispositivo, delegación, simulación, permiso, custodia o frescura de forma material.
+
+---
+
+#### 5. Unidad mínima de presentación
+
+La proyección contextual disponible para una superficie deberá poder representar, cuando aplique:
+
+- actor efectivo mediante etiqueta humana minimizada;
+- carril o naturaleza de experiencia relevante;
+- sede operativa activa o cobertura administrativa, distinguidas explícitamente;
+- área operativa activa cuando la operación dependa de ella;
+- turno y estado de check-in cuando sean prerrequisitos del trabajo;
+- rol efectivo y, cuando sea necesario para evitar ambigüedad, rol base;
+- dispositivo o estación cuando modifiquen la interpretación del contexto;
+- indicador de simulación o delegación cuando exista, sin definir todavía el tratamiento visual detallado reservado a `AUTH-UI-047`;
+- territorio del recurso cuando difiera del contexto activo o cuando el proceso sea multiterritorio;
+- periodo, entidad, campaña, negocio u otro alcance de dominio cuando la aplicación no opere mediante territorio laboral ordinario;
+- estado de frescura y última resolución relevante cuando el contexto pueda estar vencido, degradado o en transición;
+- referencia segura para diagnóstico o soporte cuando exista inconsistencia.
+
+Los identificadores técnicos, UUID, claves de permisos, nombres de tablas, `navigation_role`, `effective_role`, `checkin_id`, `territory_scope` y equivalentes no son contenido humano principal.
+
+---
+
+#### 6. Estados cerrados de contexto
+
+`APPLICATION-ACTIVE-CONTEXT-PRESENTATION-REGISTER-001` conserva exactamente los estados aprobados por `UX-BASE-005`:
+
+| Estado | Semántica visible | Regla de acción |
+| --- | --- | --- |
+| `RESOLVING` | el contexto está siendo reconstruido o verificado | no afirmar contexto activo; bloquear mutaciones dependientes |
+| `ACTIVE` | el contexto requerido está resuelto y vigente | la acción puede continuar solo si su autorización específica también permite |
+| `CHANGING` | existe una transición de contexto solicitada aún no consolidada | conservar visible el contexto anterior y el cambio pendiente; no anticipar autoridad |
+| `STALE` | la proyección perdió frescura suficiente | permitir únicamente comportamiento compatible con la política de frescura; revalidar antes de mutar |
+| `INVALID` | el contexto es incompatible, expiró o quedó revocado | bloquear acciones dependientes y no aplicar fallback |
+| `UNAVAILABLE` | no puede obtenerse una dimensión necesaria o su fuente | declarar indisponibilidad y bloquear las acciones que la requieren |
+
+Ningún estado de frescura sustituye el estado empresarial del proceso, recurso, pedido, lote, turno, movimiento o caso mostrado por la aplicación.
+
+---
+
+#### 7. Matriz por aplicación
+
+| Aplicación | Pantallas canónicas heredadas | Cantidad | Proyección contextual mínima por aplicación | Distinción obligatoria |
+| --- | --- | ---: | --- | --- |
+| `shell` | `VSCREEN-0001..0006`; `VSCREEN-0175` | 7 | actor; carril; aplicación activa; sede operativa o alcance administrativo cuando aplique; rol efectivo; estado y frescura; dispositivo o simulación cuando sean materiales | SHELL coordina entrada y navegación transversal, pero no fabrica contexto empresarial ni hereda autoridad al destino |
+| `anima` | `VSCREEN-0027..0032`; `VSCREEN-0124..0131` | 14 | trabajador; jornada; sede y área cuando exista contexto operativo; rol operativo cuando aplique; turno/check-in; estado y frescura | experiencia personal laboral no equivale a administración de trabajadores; las superficies personales no inventan contexto operativo si no lo requieren |
+| `viso` | `VSCREEN-0007..0026`; `VSCREEN-0113..0123` | 31 | actor; rol base o efectivo; cobertura administrativa; filtros seleccionados; delegación o simulación cuando apliquen; estado y frescura | cobertura y filtros administrativos nunca se presentan como sede o área operativa activa |
+| `nexo` | `VSCREEN-0033..0054`; `VSCREEN-0132..0144`; `VSCREEN-0176..0177` | 37 | actor; sede; área o estación; rol; turno/check-in cuando apliquen; territorio del recurso; estado y frescura | ubicación, sede activa, destino logístico y territorio del recurso permanecen separados; procesos multiterritorio muestran extremos relevantes |
+| `fogo` | `VSCREEN-0055..0067`; `VSCREEN-0173..0174` | 15 | actor; sede; área productiva o estación; rol; turno/check-in cuando apliquen; lote, orden o recurso productivo material; estado y frescura | área productiva activa no se deduce del equipo ni del recetario; cambiar área revalida contexto antes de mutar |
+| `origo` | `VSCREEN-0068..0079`; `VSCREEN-0145..0146` | 14 | actor; carril; sede receptora cuando la etapa sea operativa o cobertura administrativa cuando sea de compra; rol; recurso de compra; estado y frescura | recepción física y trabajo administrativo de compra no comparten por defecto el mismo territorio ni la misma jornada |
+| `pulso` | `VSCREEN-0080..0093`; `VSCREEN-0147..0152` | 20 | actor; sede comercial; punto o estación cuando aplique; rol; jornada/check-in cuando la acción sea operativa; recurso comercial; estado y frescura | sede, punto de operación, sesión técnica y actor humano permanecen separados |
+| `numera` | `VSCREEN-0094..0106`; `VSCREEN-0153..0159` | 20 | actor; entidad; periodo; alcance financiero; rol; filtros; estado y frescura | no se inventan sede, área, turno o check-in operativos para una superficie financiera administrativa que no los requiera |
+| `pass` | `VSCREEN-0107..0112`; `VSCREEN-0160..0172` | 19 | cliente; negocio, pedido, compra o servicio consultado cuando aplique; estado de sesión y frescura necesarios para la experiencia | PASS conserva identidad cliente; no muestra contexto laboral, rol operativo, turno o check-in como si el cliente fuera trabajador |
+| `aura` | ninguna pantalla `VSCREEN-*` admitida | 0 | marca o campaña, alcance y rol autorizado cuando exista una superficie canónica futura | la aplicación permanece canónica pero diferida; no se fabrican pantallas, rutas ni contexto físico para aparentar materialización |
+| **Total** | `VSCREEN-0001..0177` según asignación canónica, con rangos no semánticos | **177** | **177 pantallas ya admitidas quedan cubiertas por la regla de su aplicación propietaria; `aura` conserva cobertura explícita con 0 pantallas** | **0 pantallas reasignadas; 0 aplicaciones omitidas** |
+
+Los rangos anteriores documentan el lote heredado; no reservan futuros IDs por aplicación y no convierten el identificador `VSCREEN-*` en semántica de contexto.
+
+---
+
+#### 8. Vinculación determinista con superficies
+
+Para cada `VSCREEN-*` existente:
+
+```text
+VSCREEN
+  -> APPLICATION_CODE heredado de SCREEN-CANONICAL-CATALOG-001
+  -> CONTEXT_PROJECTION_PROFILE(application_code)
+  -> CLASIFICACION / ACCION / PRERREQUISITOS heredados
+  -> DIMENSIONES CONTEXTUALES MATERIALMENTE APLICABLES
+  -> PRESENTACION HUMANA
+```
+
+Reglas:
+
+1. Las 177 pantallas ya canónicas conservan exactamente su `application_code`.
+2. La tarea no crea una segunda identidad de pantalla y no usa la ruta como join.
+3. El perfil de aplicación no concede permiso y no reemplaza la clasificación funcional de la pantalla.
+4. Una pantalla administrativa dentro de una aplicación operativa conserva semántica administrativa y no recibe por herencia un turno o área operativa ficticios.
+5. Una pantalla operativa exige las dimensiones contextuales que su acción y contratos requieran, aunque otra pantalla de la misma aplicación no las necesite.
+6. Las superficies cross-app revalidan el contexto en la aplicación destino.
+7. `aura` conserva una fila de aplicación con cero pantallas hasta que una tarea propietaria admita una identidad canónica real.
+
+Reconciliación:
+
+| Control | Resultado |
+| --- | ---: |
+| Aplicaciones canónicas esperadas | **10** |
+| Aplicaciones materializadas en el registro | **10** |
+| Aplicaciones con `VSCREEN-*` admitidas | **9** |
+| Aplicaciones canónicas diferidas sin pantalla | **1** |
+| Pantallas canónicas esperadas | **177** |
+| Pantallas cubiertas por vínculo de aplicación | **177** |
+| Pantallas reasignadas por esta tarea | **0** |
+| Aplicaciones omitidas | **0** |
+| Nuevas identidades de pantalla | **0** |
+| Nuevas fuentes de autoridad | **0** |
+
+---
+
+#### 9. Presentación persistente y adaptación por dispositivo
+
+La persistencia expresa disponibilidad perceptible del contexto material, no una geometría única para todas las aplicaciones.
+
+| Superficie | Regla documental |
+| --- | --- |
+| escritorio | contexto material en encabezado, barra o región persistentemente accesible durante la acción; detalle ampliable sin ocultar el resumen |
+| tablet | resumen persistente con actor, territorio y rol suficientes para evitar atribución ambigua; detalle inmediato cuando existan más dimensiones |
+| móvil | versión compacta recurrente en la parte superior o región equivalente y acceso de una acción al detalle; no relegar todo al perfil |
+| kiosco / estación compartida | estación o dispositivo, territorio, actor humano y rol operativo visibles y separados cuando apliquen; ausencia de actor no se presenta como sesión laboral válida |
+
+El diseño físico de componentes, tamaños, tokens, breakpoints, iconografía y copy final permanece fuera del alcance documental de esta tarea y se materializa posteriormente en las unidades físicas correspondientes.
+
+---
+
+#### 10. Cambios de contexto
+
+Cambiar una dimensión material seguirá la secuencia vinculante:
+
+```text
+SOLICITUD DE CAMBIO
+  -> VALIDAR ELEGIBILIDAD
+  -> REVISAR TRABAJO, BORRADORES, CLAIMS Y CUSTODIA INCOMPATIBLES
+  -> CONFIRMAR EFECTO CUANDO CORRESPONDA
+  -> RESOLVER NUEVO CONTEXTO EN FUENTE AUTORITATIVA
+  -> INVALIDAR PROYECCIONES DEL CONTEXTO ANTERIOR
+  -> PUBLICAR NUEVA PROYECCION VISIBLE
+  -> REVALIDAR LA ACCION / REANUDAR / REDIRIGIR
+```
+
+Durante `CHANGING` no se sustituye anticipadamente el contexto vigente por el solicitado. Si la transición falla, la interfaz conserva el último contexto autoritativamente válido o pasa a `INVALID`/`UNAVAILABLE`; no fabrica un contexto intermedio.
+
+Un cambio material invalida controles, acciones y confirmaciones que dependan del contexto anterior. Un borrador conservable mantiene referencia a su contexto de origen y deberá revalidarse o migrarse explícitamente antes de confirmarse.
+
+---
+
+#### 11. Handoff entre aplicaciones
+
+Los saltos desde SHELL, notificaciones, deep links o una aplicación propietaria hacia otra aplicación transportan únicamente referencias seguras suficientes para localizar el destino.
+
+La aplicación destino deberá reconstruir y revalidar, según corresponda:
+
+- actor;
+- rol efectivo;
+- sede y área;
+- turno y check-in;
+- dispositivo o estación;
+- delegación o simulación;
+- territorio del recurso;
+- frescura;
+- permiso y autorización específicos de la operación.
+
+Queda prohibido transportar como autoridad mediante URL, query param, estado local o payload de navegación:
+
+- un rol efectivo impuesto;
+- una sede o área declaradas como activas;
+- un permiso concedido;
+- una decisión de autorización;
+- un estado objetivo de negocio;
+- un actor autoritativo.
+
+El retorno conserva referencias de continuidad, no una autorización congelada.
+
+---
+
+#### 12. Dispositivos compartidos, administración y simulación
+
+##### 12.1. Dispositivo compartido
+
+Se mantienen separados:
+
+```text
+TERMINAL TECNICO
+ESTACION / TERRITORIO
+ACTOR HUMANO
+ROL OPERATIVO
+TURNO
+CHECK-IN
+CONTEXTO DE TAREA
+```
+
+Sin actor humano válido puede mostrarse contexto mínimo de estación, pero las mutaciones personales o atribuibles permanecen bloqueadas. Cambiar actor invalida datos, búsquedas, borradores, claims y proyecciones incompatibles del actor previo conforme a los contratos propietarios.
+
+##### 12.2. Superficie administrativa
+
+Empresa, cobertura, población, periodo y filtros pueden formar parte de la proyección administrativa. Ninguno se presenta como contexto operativo activo si no existe una resolución operativa independiente.
+
+##### 12.3. Simulación y delegación
+
+Esta tarea exige que su existencia sea una dimensión disponible para la proyección cuando modifique la interpretación del contexto. `AUTH-UI-047` conserva la responsabilidad exclusiva de definir cómo el rol simulado debe mostrarse claramente y diferenciarse del rol real; `AUTH-UI-046` no absorbe ese diseño.
+
+---
+
+#### 13. Seguridad, privacidad y accesibilidad
+
+1. El contexto visible usa etiquetas humanas y minimización; no expone documentos, correo, teléfono, UUID, tokens, permisos internos ni datos del actor previo como identificadores ordinarios.
+2. La presencia de una dimensión en la interfaz no concede lectura ni mutación sobre esa dimensión.
+3. La presentación no depende exclusivamente de color, icono, hover, sonido o vibración.
+4. Un cambio material de contexto debe poder anunciarse de forma perceptible sin generar ruido continuo.
+5. Los bloqueos críticos de contexto conservan una ruta accesible hacia la explicación o recuperación definida por las tareas posteriores.
+6. La aplicación no descarga datos sensibles solo para decidir después ocultarlos mediante presentación.
+7. La falta de contexto no se transforma en pantalla vacía que afirme ausencia de trabajo.
+8. Un estado `STALE`, `INVALID` o `UNAVAILABLE` no se oculta para mantener continuidad visual aparente.
+
+---
+
+#### 14. Fronteras con tareas posteriores
+
+Esta tarea no absorbe:
+
+- `AUTH-UI-047`: semántica y tratamiento visible específico del rol simulado;
+- `AUTH-UI-048..051`: mensajes, bloqueo, recuperación y estados de error de interfaz más allá de la clasificación mínima de frescura contextual;
+- `AUTH-UI-052..054`: simplificación de flujos frecuentes, navegación y priorización posterior;
+- `AUTH-UI-055..060`: componentes reutilizables, accesibilidad final, prototipos, pruebas con usuarios y aprobación UX;
+- tareas de `AUTH-CTX-*`, `AUTH-SRV-*`, `AUTH-DB-*`, `AUTH-DEV-*` o `AUTH-SIM-*`: resolución física o técnica de contexto, autorización, dispositivos o simulación;
+- tareas propietarias de cada aplicación: implementación concreta del header, barra, selector, store, hook, endpoint, cache, listener o componente equivalente;
+- publicación de nuevas pantallas de `aura`;
+- cambios al catálogo de permisos, al catálogo de pantallas o a la propiedad de una pantalla existente.
+
+La materialización física posterior debe consumir este contrato sin convertirlo en una implementación global única: la topología vigente exige instancias por `implementation_unit_id`.
+
+---
+
+#### 15. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Requisitos creados: `0`
+Requisitos modificados: `0`
+
+Justificación: el comportamiento de contexto activo, su fuente autoritativa, dimensiones, cambios, estados, cross-app, dispositivos, privacidad, accesibilidad, frescura y migración ya está protegido por requisitos de UX aprobados. Esta tarea materializa la decisión por aplicación y no cambia el comportamiento protegido ni introduce una obligación adicional que requiera una nueva fila del registro.
+
+---
+
+#### 16. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificación del registro, la cobertura aprobada de `TREQ-UX-077` a `TREQ-UX-096`, que protege el contrato completo de contexto activo definido por `UX-BASE-005` y asigna explícitamente responsabilidades a `AUTH-UI-046` en fuente autoritativa, distinciones territoriales, unidad mínima, turno/check-in, múltiples asignaciones, handoff cross-app y persistencia responsive.
+
+Como trazabilidad complementaria ya existente, `TREQ-UX-216` protege actor y contexto en tablet/kiosco compartido y `TREQ-UX-308` protege etiquetas humanas diferenciadas para rol, sede, área, turno, check-in, simulación y delegación. Estas referencias no constituyen creación ni modificación de requisitos.
+
+---
+
+#### 17. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | la tarea es documental; compilación y batería del checkout deben ejecutarse después de insertar y formatear el artefacto |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron validadores contra el worktree local del usuario |
+| REMOTA | `NOT_EXECUTED` | se auditó el repositorio canónico vigente para diseñar la tarea, pero no se ejecutó una validación remota del resultado materializado |
+| OPERATIVA | `NOT_APPLICABLE` | esta tarea no ejecuta piloto ni uso real; esa evidencia pertenece a materialización y validación UX posteriores |
+| FÍSICA | `NOT_APPLICABLE` | no se modifican dispositivos, aplicaciones desplegadas, Supabase, infraestructura ni estaciones |
+
+La auditoría documental previa verificó coherencia entre continuidad, topología, catálogo de aplicaciones, catálogo de pantallas, contrato UX activo y registro de requisitos existente. Esa auditoría no se declara como ejecución de los gates del repositorio.
+
+---
+
+#### 18. Criterios de aceptación
+
+- [ ] existen exactamente diez filas de aplicación: `shell`, `anima`, `viso`, `nexo`, `fogo`, `origo`, `pulso`, `numera`, `aura` y `pass`;
+- [ ] las nueve aplicaciones con pantallas conservan exactamente 177 `VSCREEN-*` ya admitidas y ninguna pantalla cambia de aplicación;
+- [ ] `aura` queda explícitamente representada con cero pantallas canónicas sin inventar una superficie;
+- [ ] toda superficie material puede proyectar contexto efectivo desde fuente autoritativa;
+- [ ] aplicación, ruta, menú, query param, cookie, localStorage o último valor usado no fabrican contexto;
+- [ ] sede asignada, sede activa, filtro administrativo y territorio del recurso permanecen diferenciados;
+- [ ] área asignada, área activa y estación permanecen diferenciadas cuando corresponda;
+- [ ] turno programado, turno vigente y check-in permanecen diferenciados;
+- [ ] rol base, rol operativo, delegación y simulación no se colapsan en una única etiqueta ambigua;
+- [ ] PASS no hereda contexto laboral y NUMERA no inventa contexto operativo inexistente;
+- [ ] las superficies administrativas no transforman filtros en autoridad operativa;
+- [ ] los estados `RESOLVING`, `ACTIVE`, `CHANGING`, `STALE`, `INVALID` y `UNAVAILABLE` conservan su semántica;
+- [ ] un cambio material invalida acciones y proyecciones incompatibles antes de reanudar;
+- [ ] los handoffs cross-app transportan referencias y revalidan contexto en destino;
+- [ ] la presentación permanece perceptible en escritorio, tablet, móvil y kiosco según el dispositivo aplicable;
+- [ ] dispositivo técnico y actor humano permanecen separados en estaciones compartidas;
+- [ ] no se crean permisos, pantallas, rutas, contextos o requisitos de prueba por inferencia;
+- [ ] la responsabilidad visual específica del rol simulado permanece reservada a `AUTH-UI-047`;
+- [ ] la materialización física permanece diferida a instancias `PER_IMPLEMENTATION_UNIT`;
+- [ ] el registro 04A permanece sin cambios.
+
+---
+
+#### 19. Límites
+
+`AUTH-UI-046` define qué contexto debe poder reconocerse en cada aplicación y cómo se conserva la semántica transversal al proyectarlo. No define un componente universal, no impone una arquitectura frontend única, no publica cambios físicos y no reemplaza los contratos propietarios de contexto o autorización.
+
+Una implementación posterior podrá variar layout, componente, framework o mecanismo de transporte siempre que preserve:
+
+- fuente autoritativa;
+- identidad del actor;
+- distinciones territoriales y administrativas;
+- semántica de turno/check-in;
+- rol efectivo;
+- dispositivo y simulación cuando apliquen;
+- frescura;
+- fail-closed;
+- revalidación cross-app;
+- privacidad y accesibilidad;
+- trazabilidad del cambio de contexto.
+
+No se permite reducir el contrato para hacer coincidir una implementación legacy. Una discrepancia física deberá corregirse en la instancia propietaria correspondiente, no redefiniendo el significado de contexto en esta tarea.
+
+---
+
+#### 20. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-045 — Unificar navegación y autorización`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-046 — Mostrar contexto activo en cada aplicación`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-047 — Mostrar rol simulado claramente`
+
+
 ### [ ] AUTH-UI-047 — Mostrar rol simulado claramente
 ### [ ] AUTH-UI-048 — Estandarizar estados sin acceso
 ### [ ] AUTH-UI-049 — Estandarizar estados de carga
