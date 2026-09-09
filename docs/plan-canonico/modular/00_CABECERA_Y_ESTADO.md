@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1142** |
+| Tareas aprobadas | **1143** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **454** |
+| Tareas no iniciadas | **453** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.55% (1142/1596)** |
+| Porcentaje de completamiento | **71.62% (1143/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-043 — Vincular cada acción con protección de servidor** |
-| Tarea actual | **AUTH-UI-044 — Evitar permisos derivados de nombres de rutas** |
+| Última tarea aprobada | **AUTH-UI-044 — Evitar permisos derivados de nombres de rutas** |
+| Tarea actual | **AUTH-UI-045 — Unificar navegación y autorización** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-045 — Unificar navegación y autorización** |
+| Siguiente tarea | **AUTH-UI-046 — Mostrar contexto activo en cada aplicación** |
 | Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
-| Progreso del bloque | **BLOQUE I: 4 de 12 aprobadas; AUTH-UI-044 pendiente** |
+| Progreso del bloque | **BLOQUE I: 5 de 12 aprobadas; AUTH-UI-045 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-044** |
+| Carril documental | **ACTIVO — AUTH-UI-045** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-043` — Vincular cada acción con protección de servidor |
-| Tarea actual | `AUTH-UI-044` — Evitar permisos derivados de nombres de rutas — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-045` — Unificar navegación y autorización |
+| Última aprobada | `AUTH-UI-044` — Evitar permisos derivados de nombres de rutas |
+| Tarea actual | `AUTH-UI-045` — Unificar navegación y autorización — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-046` — Mostrar contexto activo en cada aplicación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE I: 4 DE 12 APROBADAS — ACTUAL AUTH-UI-044** |
+| CONTINUIDAD ACTIVA | **BLOQUE I: 5 DE 12 APROBADAS — ACTUAL AUTH-UI-045** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-043 — Vincular cada acción con protección de servidor
-        ↓
-TAREA ACTUAL
 AUTH-UI-044 — Evitar permisos derivados de nombres de rutas
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-045 — Unificar navegación y autorización
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-046 — Mostrar contexto activo en cada aplicación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE I — 4 de 12 tareas aprobadas
+BLOQUE I — 5 de 12 tareas aprobadas
 ```

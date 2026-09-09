@@ -2,6 +2,7 @@ import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
+import { parseTaskBlocks } from './format-canonical-task.mjs';
 
 const DEFAULT_CONTRACT = 'docs/plan-canonico/modular/delivery-contract.json';
 const TASK_ID_SOURCE = '[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\\d{3}';
@@ -50,7 +51,7 @@ function parseArgs(argv) {
       continue;
     }
 
-    if (!['--contract', '--task', '--registry'].includes(token)) {
+    if (!['--contract', '--task', '--task-id', '--registry'].includes(token)) {
       fail(`Argumento desconocido: ${token}`);
     }
 
@@ -69,17 +70,37 @@ function parseArgs(argv) {
     index += 1;
   }
 
+  if (args.task && args['task-id']) fail('Usa --task o --task-id, no ambos.');
   return args;
+}
+
+export function extractDeliveryTask({ root = process.cwd(), taskId }) {
+  if (!new RegExp(`^${TASK_ID_SOURCE}$`, 'u').test(taskId)) fail(`ID de tarea inválido: ${taskId}`);
+  const base = path.join(root, 'docs/plan-canonico/modular');
+  const manifest = JSON.parse(readUtf8(path.join(base, 'manifest.json'), 'Manifest'));
+  const matches = [];
+  for (const file of manifest.files) {
+    if (!file.endsWith('.md')) continue;
+    const blocks = parseTaskBlocks(readUtf8(path.join(base, file), 'Fragmento'));
+    matches.push(...blocks.filter(({ id }) => id === taskId));
+  }
+  if (matches.length !== 1) fail(`${taskId}: se esperaba un bloque propietario único; encontrados ${matches.length}.`);
+  const taskPath = path.join(root, '.delivery/task-deliveries', `${taskId}_APROBADA_PARA_REEMPLAZAR.md`);
+  fs.mkdirSync(path.dirname(taskPath), { recursive: true });
+  fs.writeFileSync(taskPath, `${matches[0].block.trimEnd()}\n`, 'utf8');
+  return taskPath;
 }
 
 function printUsage() {
   console.log(`Uso:
   npm run docs:delivery:check
   npm run docs:delivery:check -- --task <archivo-tarea.md> [--registry <fragmento-04A.md> ...]
+  npm run docs:delivery:check -- --task-id AUTH-UI-044
 
 Opciones:
   --contract <ruta>   Contrato de entrega. Predeterminado: ${DEFAULT_CONTRACT}
   --task <ruta>       Artefacto de tarea que se validará.
+  --task-id <ID>      Extrae exactamente una tarea del propietario y valida el artefacto UTF-8.
   --registry <ruta>   Fragmento 04A completo. Puede repetirse una vez por cada fragmento afectado.
   --help              Muestra esta ayuda.
 
@@ -850,6 +871,11 @@ export function main() {
   console.log(
     `OK: contrato de entrega modular; SHA-256 ${contractHash}.`
   );
+
+  if (args['task-id']) {
+    args.task = extractDeliveryTask({ taskId: args['task-id'] });
+    console.log(`Artefacto extraído: ${args.task}`);
+  }
 
   if (!args.task) {
     console.log(
