@@ -37,6 +37,8 @@ const NON_UNIT_VALUES = new Set([
   'PENDIENTE',
   'BLOQUEADO',
   'UNRESOLVED',
+  'NO_MATERIALIZADO',
+  'NO MATERIALIZADO',
 ]);
 
 function fail(message) {
