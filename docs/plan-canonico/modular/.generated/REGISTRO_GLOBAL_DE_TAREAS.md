@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1150** |
+| Aprobadas | **1151** |
 | En propuesta | **0** |
-| No iniciadas | **446** |
+| No iniciadas | **445** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.06% (1150/1596)** |
+| Porcentaje de completamiento | **72.12% (1151/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-DEV-006` — Asignar permisos máximos del dispositivo | ✅ APROBADA |
-| Tarea actual | `AUTH-DEV-007` — Exigir firma o PIN del trabajador | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-DEV-008` — Combinar límite del dispositivo y trabajador | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-DEV-007` — Exigir firma o PIN del trabajador | ✅ APROBADA |
+| Tarea actual | `AUTH-DEV-008` — Combinar límite del dispositivo y trabajador | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-DEV-009` — Evitar heredar permisos administrativos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1188,7 +1188,7 @@
 | ✅ APROBADA | `AUTH-DEV-004` | Asignar área fija o permitida | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
 | ✅ APROBADA | `AUTH-DEV-005` | Asignar aplicaciones permitidas | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
 | ✅ APROBADA | `AUTH-DEV-006` | Asignar permisos máximos del dispositivo | `bloques/P_DISPOSITIVOS_COMPARTIDOS/01_IDENTIDAD_ALCANCE_Y_LIMITES_DEL_DISPOSITIVO.md` |
-| ⬜ NO INICIADA | `AUTH-DEV-007` | Exigir firma o PIN del trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
+| ✅ APROBADA | `AUTH-DEV-007` | Exigir firma o PIN del trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-008` | Combinar límite del dispositivo y trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-009` | Evitar heredar permisos administrativos | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-010` | Registrar dispositivo y trabajador en auditoría | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
