@@ -222,9 +222,27 @@ function canonicalCatalogSource({ passPackage = null } = {}) {
     const pass = packageId === passPackage;
     return `| \`${packageId}\` | \`KEEP_AS_SINGLE_UNIT\` | \`${pass ? 'PASS' : 'BLOQUEADO'}\` | \`${pass ? 'READY' : 'BLOQUEADO_014_Y_EVIDENCIA'}\` | \`${pass ? `${packageId}::UNIT` : 'PENDIENTE'}\` | \`${pass ? 'PASS' : 'BLOQUEADO'}\` | \`${pass ? 'NONE' : 'DELIV-PKG-014'}\` | \`${pass ? '0 bloqueadores' : 'Confirmar identidad física y evidencia'}\` |`;
   }).join('\n');
+  const ownershipRows = Array.from({ length: 207 }, (_, index) => {
+    const packageId = `GAP-PKG-${String(index + 1).padStart(3, '0')}`;
+    const applicationOwner = packageId === 'GAP-PKG-005'
+      ? 'POS'
+      : packageId === 'GAP-PKG-010'
+        ? 'FRONTERA_DISTRIBUIDA_TALENTO_VISO_ANIMA'
+        : 'FRONTERA_DISTRIBUIDA';
+    const domainOwner = packageId === 'GAP-PKG-001' ? 'TEST-DOM' : 'TEST-CAP';
+    const repositoryOwner = packageId === 'GAP-PKG-006' ? 'NO_CONFIRMADO' : 'devVentoGroup/vento-shell';
+    const ownershipState = packageId === 'GAP-PKG-006'
+      ? 'REPOSITORIO_NO_CONFIRMADO'
+      : 'APLICACION_Y_REPOSITORIO_CONFIRMADOS';
+    const blockingCondition = packageId === 'GAP-PKG-006'
+      ? 'Confirmar repositorio propietario de AURA antes de materializacion fisica'
+      : 'NINGUNA';
+    return `| \`${packageId}\` | \`${applicationOwner}\` | \`${domainOwner}\` | \`${repositoryOwner}\` | \`${ownershipState}\` | \`${blockingCondition}\` |`;
+  }).join('\n');
   const runtimeRows = Array.from({ length: 207 }, (_, index) => {
     const packageId = `GAP-PKG-${String(index + 1).padStart(3, '0')}`;
-    return `| \`${packageId}\` | \`devVentoGroup/vento-shell\` | \`TP-DB-001\` | \`DATABASE_RPC_BOUNDARY\` | \`OWN-SEG\` | \`ESPECIFICADO\` | \`IMPLEMENTACION_BLOQUEADA\` |`;
+    const repositoryOwner = packageId === 'GAP-PKG-006' ? 'NO_CONFIRMADO' : 'devVentoGroup/vento-shell';
+    return `| \`${packageId}\` | \`${repositoryOwner}\` | \`TP-DB-001\` | \`DATABASE_RPC_BOUNDARY\` | \`OWN-SEG\` | \`ESPECIFICADO\` | \`IMPLEMENTACION_BLOQUEADA\` |`;
   }).join('\n');
   const dominantRows = Array.from({ length: 207 }, (_, index) => {
     const packageId = `GAP-PKG-${String(index + 1).padStart(3, '0')}`;
@@ -242,7 +260,7 @@ function canonicalCatalogSource({ passPackage = null } = {}) {
       : '`TP-DB-001` / `ENV-SUPABASE-LOCAL-CI-STAGING`';
     return `| \`${packageId}\` | \`devVentoGroup/vento-shell\` | \`OWN-SEG\` | ${profile} | \`READY\` | Capa 1 | fixture | \`ESPECIFICADO\` |`;
   }).join('\n');
-  return `### ✅ DELIV-PKG-002 — Vincular\n\n| package_id | process_id | gap_id estable E1 | capability_id |\n| --- | --- | --- | --- |\n| \`GAP-PKG-001\` | \`VPROC-0001\` | \`H-001\` | \`CAP-01.01\` |\n\n### ✅ DELIV-PKG-007 — Runtime\n\n| package_id | Tarea dominante | runtime_profile | Lógica | Server Action | API | RPC | Edge | Estado |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n${dominantRows}\n\n### ✅ DELIV-PKG-015 — Orden\n\n| package_id | Dependencia entre paquetes | Orden actual | Orden posterior al gate |\n| --- | --- | --- | --- |\n${orderRows}\n\n### ✅ DELIV-PKG-017 — Observabilidad\n\n| Paquete | Repositorio propietario | Perfil 016 | Runtime | Responsable de decisión | Resultado 017 | Gate heredado |\n| --- | --- | --- | --- | --- | --- | --- |\n${runtimeRows}\n\n### ✅ DELIV-PKG-019 — Rollout\n\n| package_id | Repositorio | Propietario | Perfil / ambiente | Gate físico 015 | Orden | Artefacto de rollout | Resultado 019 |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n${deploymentRows}\n\n### ✅ DELIV-PKG-025 — Cierre final\n\n| package_id | Disposición 025 | Estado 023 heredado | Estado físico heredado | implementation_unit_id | Decisión final 025 | Propietario de salida | Condición de salida |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n${finalRows}\n`;
+  return `### ✅ DELIV-PKG-002 — Vincular\n\n| package_id | process_id | gap_id estable E1 | capability_id |\n| --- | --- | --- | --- |\n| \`GAP-PKG-001\` | \`VPROC-0001\` | \`H-001\` | \`CAP-01.01\` |\n\n### ✅ DELIV-PKG-003 — Ownership\n\n| package_id | application_owner | domain_owner | repo_owner | ownership_state | blocking_condition |\n| --- | --- | --- | --- | --- | --- |\n${ownershipRows}\n\n### ✅ DELIV-PKG-007 — Runtime\n\n| package_id | Tarea dominante | runtime_profile | Lógica | Server Action | API | RPC | Edge | Estado |\n| --- | --- | --- | --- | --- | --- | --- | --- | --- |\n${dominantRows}\n\n### ✅ DELIV-PKG-015 — Orden\n\n| package_id | Dependencia entre paquetes | Orden actual | Orden posterior al gate |\n| --- | --- | --- | --- |\n${orderRows}\n\n### ✅ DELIV-PKG-017 — Observabilidad\n\n| Paquete | Repositorio propietario | Perfil 016 | Runtime | Responsable de decisión | Resultado 017 | Gate heredado |\n| --- | --- | --- | --- | --- | --- | --- |\n${runtimeRows}\n\n### ✅ DELIV-PKG-019 — Rollout\n\n| package_id | Repositorio | Propietario | Perfil / ambiente | Gate físico 015 | Orden | Artefacto de rollout | Resultado 019 |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n${deploymentRows}\n\n### ✅ DELIV-PKG-025 — Cierre final\n\n| package_id | Disposición 025 | Estado 023 heredado | Estado físico heredado | implementation_unit_id | Decisión final 025 | Propietario de salida | Condición de salida |\n| --- | --- | --- | --- | --- | --- | --- | --- |\n${finalRows}\n`;
 }
 
 test('el contrato conserva 14 condiciones, DELIV-PKG-001..025 y catálogo GAP-PKG-001..207', () => {
@@ -389,6 +407,54 @@ test('DELIV-PKG-025 se convierte en catálogo maestro exacto de 207 packages sin
   assert.deepEqual(catalog.packages[0].primary_task_ids, ['TEST-CAP-001', 'TEST-PENDING-001']);
   assert.deepEqual(catalog.packages[0].support_task_ids, ['TEST-SUPPORT-001']);
   assert.equal(catalog.packages[0].dominant_task_id, 'TEST-DOM-001');
+  assert.equal(catalog.packages[0].application_owner, 'FRONTERA_DISTRIBUIDA');
+  assert.equal(catalog.packages[0].domain_owner, 'TEST-DOM');
+  assert.equal(catalog.packages[0].repo_owner, 'devVentoGroup/vento-shell');
+  assert.equal(catalog.packages[0].ownership_state, 'APLICACION_Y_REPOSITORIO_CONFIRMADOS');
+  assert.equal(catalog.packages[0].blocking_condition, 'NINGUNA');
+  assert.equal(catalog.packages[4].application_owner, 'POS');
+  assert.equal(catalog.packages[9].application_owner, 'FRONTERA_DISTRIBUIDA_TALENTO_VISO_ANIMA');
+  assert.equal(catalog.packages[5].repo_owner, 'NO_CONFIRMADO');
+  assert.equal(catalog.packages[5].ownership_state, 'REPOSITORIO_NO_CONFIRMADO');
+  assert.match(catalog.packages[5].blocking_condition, /Confirmar repositorio propietario de AURA/u);
+  assert.equal(catalog.packages.filter(({ application_owner: owner }) => Boolean(owner)).length, 207);
+});
+
+test('DELIV-PKG-003 falla cerrado ante ownership faltante o duplicado', () => {
+  const row207 = '| `GAP-PKG-207` | `FRONTERA_DISTRIBUIDA` | `TEST-CAP` | `devVentoGroup/vento-shell` | `APLICACION_Y_REPOSITORIO_CONFIRMADOS` | `NINGUNA` |';
+  const missing = canonicalCatalogSource().replace(`${row207}\n`, '');
+  assert.throws(
+    () => parseCanonicalPackageCatalogFromSource(missing, contract, canonicalGapRoutingSource()),
+    /DELIV-PKG-003 ownership incompleto:.*GAP-PKG-207/u,
+  );
+
+  const row001 = '| `GAP-PKG-001` | `FRONTERA_DISTRIBUIDA` | `TEST-DOM` | `devVentoGroup/vento-shell` | `APLICACION_Y_REPOSITORIO_CONFIRMADOS` | `NINGUNA` |';
+  const duplicated = canonicalCatalogSource().replace(row001, `${row001}\n${row001}`);
+  assert.throws(
+    () => parseCanonicalPackageCatalogFromSource(duplicated, contract, canonicalGapRoutingSource()),
+    /DELIV-PKG-003 duplica ownership para GAP-PKG-001/u,
+  );
+});
+
+test('DELIV-PKG-003 falla cerrado ante contradiccion de dominio o repositorio con E5', () => {
+  const row001 = '| `GAP-PKG-001` | `FRONTERA_DISTRIBUIDA` | `TEST-DOM` | `devVentoGroup/vento-shell` | `APLICACION_Y_REPOSITORIO_CONFIRMADOS` | `NINGUNA` |';
+  const domainMismatch = canonicalCatalogSource().replace(
+    row001,
+    row001.replace('`TEST-DOM`', '`TEST-CAP`'),
+  );
+  assert.throws(
+    () => parseCanonicalPackageCatalogFromSource(domainMismatch, contract, canonicalGapRoutingSource()),
+    /Contradiccion DELIV-PKG-003\/DELIV-PKG-007.*domain_owner/u,
+  );
+
+  const repositoryMismatch = canonicalCatalogSource().replace(
+    row001,
+    row001.replace('`devVentoGroup/vento-shell`', '`devVentoGroup/vento-pass`'),
+  );
+  assert.throws(
+    () => parseCanonicalPackageCatalogFromSource(repositoryMismatch, contract, canonicalGapRoutingSource()),
+    /Contradiccion DELIV-PKG-003\/DELIV-PKG-017.*repo_owner/u,
+  );
 });
 
 test('catálogo incompleto falla cerrado en lugar de inventar el package faltante', () => {
@@ -425,6 +491,12 @@ test('scanner de producción reconcilia los 207 GAP-PKG directamente desde E5', 
   assert.equal(persisted.gate_documentary, undefined);
   assert.equal(persisted.blockers, undefined);
   const effective = result.registry.packages[0];
+  assert.equal(effective.owner_application, 'FRONTERA_DISTRIBUIDA');
+  assert.equal(effective.domain_owner, 'TEST-DOM');
+  assert.equal(effective.repository_owner, 'devVentoGroup/vento-shell');
+  assert.equal(effective.ownership_state, 'APLICACION_Y_REPOSITORIO_CONFIRMADOS');
+  assert.equal(effective.ownership_blocking_condition, 'NINGUNA');
+  assert.equal(result.registry.packages.filter(({ source_kind: kind, owner_application: owner }) => kind === 'CANONICAL_GAP_PACKAGE' && Boolean(owner)).length, 207);
   assert.equal(effective.canonical_prerequisites.final_decision_025, 'BLOQUEADO');
   assert.equal(effective.task_prerequisites.total, 4);
   assert.equal(effective.task_prerequisites.approved, 3);

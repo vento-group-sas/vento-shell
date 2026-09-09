@@ -1253,6 +1253,95 @@ function parseRepositoryProjection(source) {
   return result;
 }
 
+function parseOwnershipProjection(source, config) {
+  const block = extractTaskBlock(source, 'DELIV-PKG-003');
+  const table = findTable(block, [
+    'package_id',
+    'application_owner',
+    'domain_owner',
+    'repo_owner',
+    'ownership_state',
+    'blocking_condition',
+  ]);
+  if (!table) {
+    fail('DELIV-PKG-003 no contiene la matriz canonica de ownership esperada.');
+  }
+
+  const expectedIds = canonicalIdSequence(config);
+  const expectedSet = new Set(expectedIds);
+  const result = new Map();
+  for (const row of table.rows) {
+    const packageId = tableValue(row, table, ['package_id', 'paquete']);
+    if (!/^GAP-PKG-\d{3}$/u.test(packageId)) continue;
+    if (!expectedSet.has(packageId)) {
+      fail(`DELIV-PKG-003 contiene package inesperado: ${packageId}.`);
+    }
+    if (result.has(packageId)) {
+      fail(`DELIV-PKG-003 duplica ownership para ${packageId}.`);
+    }
+
+    const entry = {
+      application_owner: tableValue(row, table, ['application_owner']),
+      domain_owner: tableValue(row, table, ['domain_owner']),
+      repo_owner: tableValue(row, table, ['repo_owner']),
+      ownership_state: tableValue(row, table, ['ownership_state']),
+      blocking_condition: tableValue(row, table, ['blocking_condition']),
+    };
+    const missingFields = Object.entries(entry)
+      .filter(([, value]) => !normalizeScalar(value))
+      .map(([field]) => field);
+    if (missingFields.length > 0) {
+      fail(`DELIV-PKG-003 deja campos de ownership vacios en ${packageId}: ${missingFields.join(', ')}.`);
+    }
+    result.set(packageId, entry);
+  }
+
+  const missingIds = expectedIds.filter((packageId) => !result.has(packageId));
+  if (result.size !== expectedIds.length || missingIds.length > 0) {
+    fail(
+      `DELIV-PKG-003 ownership incompleto: esperados ${expectedIds.length} packages y encontrados ${result.size}. `
+      + `Faltantes: ${missingIds.join(', ') || 'NONE'}.`,
+    );
+  }
+  return result;
+}
+
+function validateOwnershipProjectionAlignment({
+  ownershipProjection,
+  repositoryProjection,
+  dominantProjection,
+  config,
+}) {
+  for (const packageId of canonicalIdSequence(config)) {
+    const ownership = ownershipProjection.get(packageId);
+    const repository = repositoryProjection.get(packageId);
+    const dominantTaskId = dominantProjection.get(packageId)?.dominant_task_id ?? null;
+    if (!ownership) {
+      fail(`DELIV-PKG-003 no resolvio ownership para ${packageId}.`);
+    }
+    if (!repository) {
+      fail(`DELIV-PKG-017 no resolvio repositorio para ${packageId}; no puede reconciliarse DELIV-PKG-003.`);
+    }
+    if (!dominantTaskId) {
+      fail(`DELIV-PKG-007 no resolvio tarea dominante para ${packageId}; no puede reconciliarse DELIV-PKG-003.`);
+    }
+
+    const dominantNamespace = normalizeScalar(dominantTaskId).replace(/-\d{3,4}$/u, '');
+    if (ownership.domain_owner !== dominantNamespace) {
+      fail(
+        `Contradiccion DELIV-PKG-003/DELIV-PKG-007 en ${packageId}: `
+        + `domain_owner=${ownership.domain_owner} y namespace dominante=${dominantNamespace}.`,
+      );
+    }
+    if (ownership.repo_owner !== repository.repository_owner) {
+      fail(
+        `Contradiccion DELIV-PKG-003/DELIV-PKG-017 en ${packageId}: `
+        + `repo_owner=${ownership.repo_owner} y repositorio propietario=${repository.repository_owner}.`,
+      );
+    }
+  }
+}
+
 export function parseDeploymentEnvironmentProjection(source) {
   let block;
   try {
@@ -1564,10 +1653,17 @@ export function parseCanonicalPackageCatalogFromSource(source, contract, gapRout
     fail(`${config.final_decision_task} no contiene la matriz final esperada de package_id y condiciones de salida.`);
   }
   const repositoryProjection = parseRepositoryProjection(source);
+  const ownershipProjection = parseOwnershipProjection(source, config);
   const processProjection = parseProcessProjection(source);
   const taskRouting = parsePackageTaskRouting(gapRoutingSource);
   const membershipAudit = parseGapMembershipAudit(gapRoutingSource, config);
   const dominantProjection = parseDominantTaskProjection(source);
+  validateOwnershipProjectionAlignment({
+    ownershipProjection,
+    repositoryProjection,
+    dominantProjection,
+    config,
+  });
   const executionProjection = parsePackageExecutionProjection(source);
   const deploymentEnvironmentProjection = parseDeploymentEnvironmentProjection(source);
   const packages = [];
@@ -1587,6 +1683,7 @@ export function parseCanonicalPackageCatalogFromSource(source, contract, gapRout
       final_decision_025: tableValue(row, table, ['decision final 025']),
       exit_owner: tableValue(row, table, ['propietario de salida']),
       exit_condition: tableValue(row, table, ['condicion de salida']),
+      ...(ownershipProjection.get(packageId) ?? {}),
       ...(repositoryProjection.get(packageId) ?? {}),
       ...(processProjection.get(packageId) ?? { capability_ids: [], process_ids: [], gap_ids_sampled_from_deliv_pkg_002: [] }),
       ...(taskRouting.get(packageId) ?? { primary_task_ids: [], support_task_ids: [] }),
@@ -1835,6 +1932,9 @@ export function auditPackageRegistry({ registry, canonicalCatalog = null }) {
   for (const pkg of canonical) {
     if (!Array.isArray(pkg.primary_task_ids) || pkg.primary_task_ids.length === 0) errors.push(`${pkg.package_id}: sin tarea primaria.`);
     if (!pkg.dominant_task_id) errors.push(`${pkg.package_id}: sin tarea dominante.`);
+    if (!normalizeScalar(pkg.owner_application)) errors.push(`${pkg.package_id}: sin application_owner canonico.`);
+    if (!normalizeScalar(pkg.domain_owner)) errors.push(`${pkg.package_id}: sin domain_owner canonico.`);
+    if (!normalizeScalar(pkg.ownership_state)) errors.push(`${pkg.package_id}: sin ownership_state canonico.`);
     if (!normalizeScalar(pkg.repository_owner)) errors.push(`${pkg.package_id}: sin repositorio propietario.`);
     if (!normalizeScalar(pkg.runtime_profile)) errors.push(`${pkg.package_id}: sin runtime_profile.`);
     if (!normalizeScalar(pkg.canonical_prerequisites?.exit_owner)) errors.push(`${pkg.package_id}: sin propietario de salida.`);
@@ -2418,8 +2518,11 @@ function reconcileCanonicalRegistry({ registry, catalog, contract, inventory, pa
       process_ids: entry.process_ids ?? [],
       gap_membership_count: entry.gap_membership_count ?? 0,
       objective: `Paquete canónico ${entry.package_id} materializado por E5`,
-      owner_application: null,
-      repository_owner: entry.repository_owner ?? null,
+      owner_application: entry.application_owner ?? null,
+      domain_owner: entry.domain_owner ?? null,
+      ownership_state: entry.ownership_state ?? null,
+      ownership_blocking_condition: entry.blocking_condition ?? null,
+      repository_owner: entry.repo_owner ?? null,
       runtime_profile: entry.runtime_profile ?? null,
       execution: entry.execution,
       execution_requirements: executionRequirements,
