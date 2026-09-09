@@ -685,14 +685,12 @@ export function normalizeReviewPackage(
 }
 
 function documentaryReviewPackageFingerprint(pkg) {
-  const {
-    owner_application: _ownerApplication,
-    domain_owner: _domainOwner,
-    ownership_state: _ownershipState,
-    ownership_blocking_condition: _ownershipBlockingCondition,
-    canonical_prerequisites: _canonicalPrerequisites,
-    ...documentaryPackage
-  } = pkg;
+  const documentaryPackage = { ...pkg };
+  delete documentaryPackage.owner_application;
+  delete documentaryPackage.domain_owner;
+  delete documentaryPackage.ownership_state;
+  delete documentaryPackage.ownership_blocking_condition;
+  delete documentaryPackage.canonical_prerequisites;
   return documentaryPackage;
 }
 
