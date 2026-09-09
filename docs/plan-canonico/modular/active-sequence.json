@@ -5,25 +5,25 @@
   "sequence_id": "PHASE-04-I-UI-IMPLEMENTATION",
   "block_code": "BLOQUE I",
   "block_title": "Protección y estados de interfaz",
-  "previous_task_id": "AUTH-UI-048",
+  "previous_task_id": "AUTH-UI-049",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "AUTH-DEV-007",
   "handoff_sequence_id": "PHASE-04-PQ-DEVICE-AND-SIMULATION",
   "segments": [
     {
       "prefix": "AUTH-UI",
-      "from": 49,
+      "from": 50,
       "to": 51
     }
   ],
   "block_progress": {
     "total_tasks": 12,
-    "approved_tasks": 9,
-    "pending_tasks": 3
+    "approved_tasks": 10,
+    "pending_tasks": 2
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 449,
+    "pending_tasks": 448,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 18

@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1147** |
+| Tareas aprobadas | **1148** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **449** |
+| Tareas no iniciadas | **448** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.87% (1147/1596)** |
+| Porcentaje de completamiento | **71.93% (1148/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-048 — Estandarizar estados sin acceso** |
-| Tarea actual | **AUTH-UI-049 — Estandarizar estados de carga** |
+| Última tarea aprobada | **AUTH-UI-049 — Estandarizar estados de carga** |
+| Tarea actual | **AUTH-UI-050 — Estandarizar estados vacíos** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-050 — Estandarizar estados vacíos** |
+| Siguiente tarea | **AUTH-UI-051 — Estandarizar errores recuperables** |
 | Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
-| Progreso del bloque | **BLOQUE I: 9 de 12 aprobadas; AUTH-UI-049 pendiente** |
+| Progreso del bloque | **BLOQUE I: 10 de 12 aprobadas; AUTH-UI-050 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-049** |
+| Carril documental | **ACTIVO — AUTH-UI-050** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-048` — Estandarizar estados sin acceso |
-| Tarea actual | `AUTH-UI-049` — Estandarizar estados de carga — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-050` — Estandarizar estados vacíos |
+| Última aprobada | `AUTH-UI-049` — Estandarizar estados de carga |
+| Tarea actual | `AUTH-UI-050` — Estandarizar estados vacíos — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-051` — Estandarizar errores recuperables |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE I: 9 DE 12 APROBADAS — ACTUAL AUTH-UI-049** |
+| CONTINUIDAD ACTIVA | **BLOQUE I: 10 DE 12 APROBADAS — ACTUAL AUTH-UI-050** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-048 — Estandarizar estados sin acceso
-        ↓
-TAREA ACTUAL
 AUTH-UI-049 — Estandarizar estados de carga
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-050 — Estandarizar estados vacíos
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-051 — Estandarizar errores recuperables
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE I — 9 de 12 tareas aprobadas
+BLOQUE I — 10 de 12 tareas aprobadas
 ```
