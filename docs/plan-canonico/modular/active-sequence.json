@@ -2,31 +2,36 @@
   "schema_version": 1,
   "generated_from": "execution-route.json",
   "route_id": "NORMAL-CANONICAL-FLOW-001",
-  "sequence_id": "PHASE-04-I-UI-IMPLEMENTATION",
-  "block_code": "BLOQUE I",
-  "block_title": "Protección y estados de interfaz",
-  "previous_task_id": "AUTH-UI-050",
+  "sequence_id": "PHASE-04-PQ-DEVICE-AND-SIMULATION",
+  "block_code": "BLOQUES P Y Q",
+  "block_title": "Dispositivos compartidos y simulación estricta",
+  "previous_task_id": "AUTH-DEV-006",
   "latest_treq_task_id": "NEXO-UX-025",
-  "handoff_task_id": "AUTH-DEV-007",
-  "handoff_sequence_id": "PHASE-04-PQ-DEVICE-AND-SIMULATION",
+  "handoff_task_id": "NEXO-DOM-002",
+  "handoff_sequence_id": "PHASE-05-NEXO",
   "segments": [
     {
-      "prefix": "AUTH-UI",
-      "from": 51,
-      "to": 51
+      "prefix": "AUTH-DEV",
+      "from": 7,
+      "to": 16
+    },
+    {
+      "prefix": "AUTH-SIM",
+      "from": 7,
+      "to": 14
     }
   ],
   "block_progress": {
-    "total_tasks": 12,
-    "approved_tasks": 11,
-    "pending_tasks": 1
+    "total_tasks": 30,
+    "approved_tasks": 12,
+    "pending_tasks": 18
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 447,
+    "pending_tasks": 446,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
-    "active_stage": 18
+    "active_stage": 19
   },
   "selected_route_id": "NORMAL-CANONICAL-FLOW-001"
 }

@@ -2192,7 +2192,521 @@ La implementación, automatización y evidencia física permanecen sujetas a las
 `AUTH-UI-051 — Estandarizar errores recuperables`
 
 
-### [ ] AUTH-UI-051 — Estandarizar errores recuperables
+### ✅ AUTH-UI-051 — Estandarizar errores recuperables
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-050 — Estandarizar estados vacíos
+**Tarea siguiente:** AUTH-DEV-007 — Exigir firma o PIN del trabajador
+**Tipo de tarea:** definición documental transversal de presentación y recuperación de errores recuperables sobre contratos canónicos existentes; materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, componentes, rutas, Supabase, RLS, RPC, permisos, datos, integraciones, infraestructura, despliegues ni configuración runtime
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Estandarizar en BLOQUE I la presentación de errores recuperables sin crear una segunda fuente de verdad y sin convertir fallos, timeouts, rechazos, parcialidad, conflictos o resultados desconocidos en vacío, carga indefinida, denegación o éxito aparente.
+
+La interfaz deberá conservar la semántica aprobada por `PROC-SCREEN-021` y presentar la recuperación como una transición controlada desde un defecto observado hacia una salida segura, reconciliada y verificable.
+
+```text
+FALLO O INCERTIDUMBRE OBSERVADA
++
+ULTIMO ESTADO CONFIRMADO
++
+TRABAJO LOCAL IDENTIFICADO
++
+CORRELACION, VERSION, CURSOR O IDEMPOTENCY KEY
++
+POLITICA DE REINTENTO DEL PERFIL
++
+ACCION SEGURA Y ESCALAMIENTO
++
+EVIDENCIA TERMINAL AUTORITATIVA
+=
+RECUPERACION SIN DUPLICIDAD, PERDIDA, FILTRACION NI EXITO FICTICIO
+```
+
+Invariantes:
+
+```text
+RECOVERY != EMPTY
+RECOVERY != BLOCKED
+RECOVERY != LOADING
+TIMEOUT != OPERACION NO EJECUTADA
+CALLBACK != RESULTADO TERMINAL
+REINTENTO != REPETICION A CIEGAS
+CERRAR LA VISTA != CANCELAR EL TRABAJO
+```
+
+---
+
+#### 2. Fuentes y handoff consumidos
+
+Esta tarea consume sin reinterpretación:
+
+- `AUTH-UI-048`, que estandariza estados sin acceso cuando existe una decisión concluyente de denegación o bloqueo;
+- `AUTH-UI-049`, que estandariza carga y acciones pendientes mientras una fuente o resultado continúan legítimamente en resolución;
+- `AUTH-UI-050`, que estandariza estados vacíos únicamente después de una consulta autorizada, completa y fresca o de una condición de inicio demostrada;
+- `PROC-SCREEN-021 — Definir recuperación ante errores`, propietario sustantivo del contrato de recuperación;
+- la matriz `SCREEN-RECOVERY-STATE-MATRIX-001`, con una decisión única para cada una de las 177 pantallas canónicas;
+- el registro modular 04A vigente, que ya contiene la cobertura de prueba derivada por `PROC-SCREEN-021`.
+
+Los artefactos lógicos consumidos son:
+
+- `SCREEN-RECOVERY-STATE-CONTRACT-001`;
+- `SCREEN-RECOVERY-PRECEDENCE-001`;
+- `SCREEN-RECOVERY-FAILURE-VOCABULARY-001`;
+- `SCREEN-RECOVERY-PROFILE-CATALOG-001`;
+- `SCREEN-RECOVERY-RETRY-POLICY-001`;
+- `SCREEN-RECOVERY-UNKNOWN-RESULT-CONTRACT-001`;
+- `SCREEN-RECOVERY-PRESERVATION-CONTRACT-001`;
+- `SCREEN-RECOVERY-PARTIAL-RESULT-CONTRACT-001`;
+- `SCREEN-RECOVERY-CONFLICT-CONTRACT-001`;
+- `SCREEN-RECOVERY-EXTERNAL-CONTRACT-001`;
+- `SCREEN-RECOVERY-OFFLINE-REALTIME-CONTRACT-001`;
+- `SCREEN-RECOVERY-PRESENTATION-CONTRACT-001`;
+- `SCREEN-RECOVERY-ACCESSIBILITY-PRIVACY-CONTRACT-001`;
+- `SCREEN-RECOVERY-OBSERVABILITY-CONTRACT-001`;
+- `SCREEN-RECOVERY-STATE-MATRIX-001`;
+- `SCREEN-RECOVERY-STATE-SUMMARY-001`;
+- `SCREEN-RECOVERY-STATE-CHANGE-POLICY-001`;
+- `SCREEN-RECOVERY-STATE-VALIDATION-GATE-001`;
+- `SCREEN-RECOVERY-STATE-CARRYOVER-REGISTER-001`.
+
+No se crea una matriz competidora ni se modifica la autoridad de esos contratos.
+
+---
+
+#### 3. Resultado canónico
+
+`AUTH-UI-051` congela para la capa de experiencia de BLOQUE I:
+
+1. una precedencia única entre bloqueo, carga, recuperación, contenido y vacío;
+2. dieciséis categorías canónicas de fallo;
+3. dieciocho perfiles canónicos de recuperación;
+4. siete políticas canónicas de reintento;
+5. preservación explícita del último estado confirmado y del trabajo local permitido;
+6. tratamiento separado del resultado desconocido después de posible aceptación;
+7. reglas cerradas para validación, conflicto, parcialidad, Realtime, offline, archivos, dispositivos y reconciliación externa;
+8. presentación humana, accesible y compatible con privacidad y no enumeración;
+9. observabilidad con referencias seguras, sin payloads sensibles;
+10. vinculación determinista `1:1` entre las 177 identidades `VSCREEN-*` y su fila en `SCREEN-RECOVERY-STATE-MATRIX-001`.
+
+Resultado cuantitativo heredado y preservado:
+
+| Dimensión | Resultado |
+| --- | ---: |
+| Pantallas con contrato de recuperación | 177 |
+| Perfiles de recuperación | 18 |
+| Categorías de fallo | 16 |
+| Políticas de reintento | 7 |
+| Contratos de preservación | 177 |
+| Evidencias terminales | 177 |
+| Rutas de escalamiento | 177 |
+| Pantallas omitidas | 0 |
+| Reintentos ciegos autorizados | 0 |
+| Éxitos fabricados | 0 |
+| Cargas, vacíos o bloqueos absorbidos como error | 0 |
+
+---
+
+#### 4. Precedencia de estado
+
+La experiencia aplica esta precedencia conceptual:
+
+```text
+1. IDENTIDAD, AUTORIZACION O CONDICION CONOCIDA INCUMPLIDA
+   -> AUTH-UI-048
+
+2. OPERACION IDENTIFICADA TODAVIA EN CURSO DENTRO DE SU CONTRATO
+   -> AUTH-UI-049
+
+3. FALLO, TIMEOUT, RECHAZO, PARCIALIDAD, CONFLICTO O RESULTADO DESCONOCIDO
+   -> AUTH-UI-051
+
+4. RESULTADO AUTORIZADO, COMPLETO Y FRESCO CON DATOS
+   -> CONTENIDO NORMAL
+
+5. RESULTADO AUTORIZADO, COMPLETO Y FRESCO SIN DATOS
+   -> AUTH-UI-050
+```
+
+Reglas obligatorias:
+
+- una pérdida de sesión confirmada transfiere a estado sin acceso o bloqueo; un fallo al consultar la sesión permanece en recuperación hasta resolver la validez;
+- una dependencia no configurada pertenece al bloqueo; una dependencia configurada pero indisponible pertenece a recuperación;
+- un timeout no prueba que una mutación no haya sido aceptada;
+- una consulta fallida, parcial, obsoleta o no autorizada nunca activa vacío ni confirma un conteo cero;
+- una operación que continúa en servidor no permanece como spinner indefinido;
+- un error local no invalida un éxito ya confirmado por la fuente;
+- un éxito visual nunca sustituye confirmación autoritativa.
+
+---
+
+#### 5. Vocabulario canónico de fallo
+
+Se consumen exactamente dieciséis categorías:
+
+| Categoría | Semántica de experiencia |
+| --- | --- |
+| `NETWORK_UNAVAILABLE` | la fuente no pudo alcanzarse o se perdió conectividad sin resultado confiable |
+| `REQUEST_TIMEOUT_BEFORE_ACCEPTANCE` | venció el plazo y existe evidencia de que la operación no fue aceptada |
+| `RESULT_UNKNOWN_AFTER_POSSIBLE_ACCEPTANCE` | pudo existir aceptación de una mutación y falta la confirmación del resultado |
+| `RATE_LIMITED` | la fuente rechazó temporalmente por frecuencia, cuota o protección antiabuso |
+| `SERVER_REJECTION` | la fuente rechazó explícitamente la solicitud sin producir éxito |
+| `VALIDATION_REJECTION` | la entrada incumple una regla de forma o negocio confirmada por la fuente |
+| `VERSION_OR_CONCURRENCY_CONFLICT` | la base cambió, existe lock o una operación compite por el mismo recurso |
+| `PARTIAL_RESULT` | solo una parte del conjunto, snapshot, lote o agregado quedó confirmada |
+| `STALE_OR_OUT_OF_ORDER_RESPONSE` | una respuesta antigua o fuera de orden compite con una versión más reciente |
+| `DEPENDENCY_UNAVAILABLE` | una dependencia configurada está indisponible o degradada |
+| `REALTIME_GAP` | el cursor, secuencia o stream tiene un hueco, desconexión u orden incierto |
+| `OFFLINE_SYNC_CONFLICT` | un hecho local no puede aceptarse, deduplicarse u ordenarse limpiamente al sincronizar |
+| `EXTERNAL_RECONCILIATION_UNKNOWN` | un proveedor, pago, impresión, entrega o adaptador pudo producir efecto sin confirmación canónica |
+| `FILE_OR_INTEGRITY_FAILURE` | archivo, evidencia, checksum, tamaño, formato o generación no pudo verificarse |
+| `DEVICE_OR_PERIPHERAL_FAILURE` | cámara, escáner, impresora, geolocalización o dispositivo no produjo resultado verificable |
+| `UNEXPECTED_INTERNAL_FAILURE` | ocurrió un defecto no clasificado sin resultado empresarial confiable |
+
+Cada incidente visible usa una categoría primaria. Las causas secundarias pueden existir para diagnóstico interno, pero no se convierten en copy técnico, SQL, stack trace, secreto, política interna, clave, payload empresarial o enumeración de recursos.
+
+---
+
+#### 6. Políticas canónicas de reintento
+
+Se consumen exactamente siete políticas:
+
+| Política | Regla |
+| --- | --- |
+| `AUTO_READ_RETRY_WITH_BACKOFF` | solo lecturas idempotentes; máximo acotado, jitter y respeto de `retry-after` |
+| `USER_INITIATED_READ_RETRY` | la persona repite una lectura segura sin duplicar mutaciones ni borrar el último snapshot |
+| `REVALIDATE_CONTEXT_THEN_RETRY` | revalidar actor, alcance, recurso, versión y prerrequisitos antes de una nueva solicitud |
+| `RESOLVE_VALIDATION_OR_CONFLICT_THEN_RETRY` | corregir entrada o resolver diferencia de versión antes de crear un nuevo intento |
+| `STATUS_BEFORE_MUTATION_RETRY` | consultar estado por referencia o idempotency key antes de decidir si corresponde repetir |
+| `RECONCILE_OFFLINE_OR_STREAM_THEN_CONTINUE` | recuperar cursor o conciliar hechos locales individualmente antes de continuar |
+| `NO_BLIND_RETRY_ESCALATE` | no repetir automáticamente; reconciliar, abandonar de forma segura o escalar con correlación |
+
+Reglas transversales:
+
+1. solo las lecturas idempotentes admiten reintento automático;
+2. todo reintento automático es acotado, cancelable, observable y respeta `retry-after` cuando exista;
+3. toda mutación con aceptación incierta exige consultar el estado antes de repetir;
+4. la misma referencia de cliente o idempotency key identifica la consulta y reconciliación del intento original;
+5. un nuevo intento material solo nace cuando existe evidencia autoritativa de que el anterior no produjo efecto;
+6. pago, caja, custodia, inventario, entrega, publicación, cierre, conciliación y efectos externos nunca se repiten a ciegas;
+7. agotado el límite de intentos, la interfaz ofrece escalamiento o abandono seguro y no reinicia el ciclo indefinidamente.
+
+---
+
+#### 7. Catálogo de perfiles de recuperación
+
+Las 177 pantallas se vinculan exactamente a estos dieciocho perfiles:
+
+| Perfil | Pantallas | Política dominante |
+| --- | ---: | --- |
+| `RECOVERY-ANALYTIC-SNAPSHOT` | 8 | lectura idempotente acotada; preservar snapshot confirmado y `as_of` |
+| `RECOVERY-AUTH-CHANNEL` | 1 | reintento iniciado por la persona sin enumeración de cuenta ni retención de secretos |
+| `RECOVERY-CASE-WORKSPACE` | 23 | resolver validación o conflicto conservando caso, borrador, adjuntos y referencia |
+| `RECOVERY-CUSTOMER-FLOW` | 14 | consultar estado antes de repetir mutaciones de recursos propios |
+| `RECOVERY-DEVICE-BOOTSTRAP` | 1 | limpiar residuos del actor anterior y revalidar dispositivo y contexto |
+| `RECOVERY-DOCUMENT-EVIDENCE` | 3 | preservar referencia local e integridad; revalidar antes de transferir o regenerar |
+| `RECOVERY-EXTERNAL-RECONCILIATION` | 3 | reconciliar correlaciones interna y externa; cero reintento ciego |
+| `RECOVERY-FINANCIAL-WORKSPACE` | 14 | consultar estado antes de postings, aprobaciones, conciliación, cierre o evidencia |
+| `RECOVERY-IDENTITY-CONTEXT` | 2 | limpiar datos incompatibles y revalidar identidad, sesión y alcance |
+| `RECOVERY-OPERATIONAL-TASK` | 34 | consultar estado antes de repetir transición, custodia, sincronización o captura |
+| `RECOVERY-POS-TRANSACTION` | 8 | consultar transacción antes de repetir venta, pago, caja o receipt |
+| `RECOVERY-QUEUE-SNAPSHOT` | 22 | lectura idempotente acotada; no producir vacío o cero desde consulta incompleta |
+| `RECOVERY-REALTIME-COMMUNICATION` | 3 | reconciliar cursor y envío; reenviar solo con evidencia de no aceptación |
+| `RECOVERY-REALTIME-TRACKING` | 3 | reconciliar stream y snapshot sin inferir estados terminales desde huecos |
+| `RECOVERY-ROUTE-EXECUTION` | 5 | reconciliar ruta, parada, custodia, evidencia y último sync antes de continuar |
+| `RECOVERY-SELF-SERVICE` | 14 | revalidar contexto y preservar únicamente datos propios confirmados y borrador permitido |
+| `RECOVERY-VERSIONED-EDITOR` | 18 | resolver validación o conflicto sin sobrescritura silenciosa ni pérdida de borrador |
+| `RECOVERY-WORKSPACE-HUB` | 1 | reintento de lectura iniciado por la persona sin destinos stale ni residuos cross-actor |
+| **Total** | **177** | **cobertura completa** |
+
+La asignación de perfil no se infiere por nombre de ruta, componente, aplicación o último mensaje mostrado. Se consume de la fila única de `SCREEN-RECOVERY-STATE-MATRIX-001`.
+
+---
+
+#### 8. Universo canónico de aplicación
+
+La proyección cubre exactamente el universo `VSCREEN-*` ya aprobado:
+
+| Aplicación | Universo | Pantallas |
+| --- | --- | ---: |
+| `shell` | `VSCREEN-0001..0006`; `VSCREEN-0175` | 7 |
+| `viso` | `VSCREEN-0007..0026`; `VSCREEN-0113..0123` | 31 |
+| `anima` | `VSCREEN-0027..0032`; `VSCREEN-0124..0131` | 14 |
+| `nexo` | `VSCREEN-0033..0054`; `VSCREEN-0132..0144`; `VSCREEN-0176..0177` | 37 |
+| `fogo` | `VSCREEN-0055..0067`; `VSCREEN-0173..0174` | 15 |
+| `origo` | `VSCREEN-0068..0079`; `VSCREEN-0145..0146` | 14 |
+| `pulso` | `VSCREEN-0080..0093`; `VSCREEN-0147..0152` | 20 |
+| `numera` | `VSCREEN-0094..0106`; `VSCREEN-0153..0159` | 20 |
+| `pass` | `VSCREEN-0107..0112`; `VSCREEN-0160..0172` | 19 |
+| **Total** | **universo materializado** | **177** |
+
+AURA permanece sin `VSCREEN-*` en este universo. Esta tarea no fabrica una pantalla, perfil o error recuperable inexistente para AURA.
+
+---
+
+#### 9. Vinculación determinista por pantalla
+
+Para cada una de las 177 identidades se aplica esta resolución cerrada:
+
+```text
+screen_id
+-> fila unica en SCREEN-RECOVERY-STATE-MATRIX-001
+-> empty_profile heredado
+-> load_profile heredado
+-> block_profile heredado
+-> recovery_profile
+-> allowed_failure_categories
+-> preservation_policy
+-> recovery_actions
+-> retry_policy
+-> terminal_evidence
+-> escalation_route
+-> recovery_boundary
+```
+
+Condiciones de integridad:
+
+- una fila por `screen_id`;
+- cero faltantes;
+- cero duplicados;
+- mismo nombre, aplicación, clase y entrada aprobados;
+- mismos perfiles vacío, carga y bloqueo heredados;
+- exactamente un perfil de recuperación;
+- solo categorías de fallo del vocabulario canónico;
+- al menos una salida segura, evidencia terminal, escalamiento y frontera;
+- ninguna reclasificación local por conveniencia visual;
+- ninguna segunda matriz de autoridad dentro de BLOQUE I.
+
+La decisión individual de cada pantalla es, por tanto, la fila identificada por su `screen_id` en la matriz canónica de `PROC-SCREEN-021`; esta proyección obliga a consumirla completa y sin reinterpretación.
+
+---
+
+#### 10. Resultado desconocido e idempotencia
+
+Cuando una solicitud mutable pierde su confirmación:
+
+```text
+SOLICITUD MUTABLE EMITIDA
+-> POSIBLE ACEPTACION
+-> CONFIRMACION PERDIDA
+-> NO ASUMIR EXITO NI FALLO
+-> CONSULTAR ESTADO POR CORRELACION O IDEMPOTENCY KEY
+-> RECONCILIAR UN UNICO RESULTADO CANONICO
+-> SOLO ENTONCES CONFIRMAR, CORREGIR, REINTENTAR O ESCALAR
+```
+
+Reglas:
+
+- un timeout posterior al envío se trata como resultado desconocido salvo evidencia autoritativa de no aceptación;
+- no se genera una segunda venta, pago, redención, movimiento, decisión, mensaje, impresión, entrega o publicación para resolver incertidumbre;
+- `202 Accepted`, callback, evento aislado, trabajo en cola o respuesta de periférico son intermedios cuando el contrato exige reconciliación adicional;
+- salir de la pantalla no cancela la operación;
+- cancelar exige capacidad contractual y confirmación propia;
+- si la fuente no ofrece consulta de estado, se aplica `NO_BLIND_RETRY_ESCALATE` y se preserva la correlación para soporte.
+
+---
+
+#### 11. Preservación, parcialidad y conflicto
+
+Durante recuperación:
+
+1. se conserva el último dato confirmado con versión, cursor o `as_of` cuando pertenece al actor y alcance vigentes;
+2. formularios, carritos, conteos, capturas, archivos, rutas y evidencias locales permanecen separados del estado empresarial confirmado;
+3. el trabajo local no se limpia antes de receipt, descarte explícito o exportación segura;
+4. cambiar actor, sesión, cuenta, sede o token elimina primero todo dato incompatible;
+5. los datos parciales se identifican como incompletos y no participan en totales, cierres, aprobaciones o decisiones que exijan cobertura completa;
+6. respuestas stale o fuera de orden se descartan por versión, cursor o secuencia;
+7. los valores optimistas se revierten o quedan marcados y no sustituyen dinero, custodia, permisos, saldos ni estados terminales;
+8. una validación rechazada conserva valores y enfoca el primer problema accionable;
+9. un conflicto de versión conserva borrador y base confirmada y prohíbe sobrescritura silenciosa;
+10. si el conflicto demuestra que la acción ya no está autorizada por contexto, estado o autoridad, el caso abandona recuperación y transfiere a estado sin acceso o bloqueo.
+
+---
+
+#### 12. Realtime, offline, archivos, dispositivos y externos
+
+Reglas de continuidad:
+
+- Realtime reanuda desde un cursor válido o solicita snapshot completo; no infiere estados terminales desde un hueco;
+- la sincronización offline resuelve cada hecho como aceptado, duplicado, rechazado o en conflicto;
+- recuperar conectividad no equivale a éxito global de la cola offline;
+- pagos, impresión, entrega, mensajería, archivos y proveedores conservan correlaciones interna y externa;
+- un adaptador indisponible se distingue de uno no configurado;
+- un periférico distingue comando emitido, recibido, ejecutado y resultado físico verificado;
+- un archivo distingue selección local, transferencia, recepción, validación de integridad y registro canónico;
+- una fuente externa no conciliada permanece en recuperación y nunca produce vacío o éxito final por sí sola.
+
+---
+
+#### 13. Presentación, accesibilidad, privacidad y soporte
+
+Todo estado recuperable explica, con lenguaje humano:
+
+1. qué no pudo completarse;
+2. qué información o trabajo se conservó;
+3. si el resultado es conocido o desconocido;
+4. qué acción segura está disponible;
+5. cuándo corresponde reconciliar o esperar;
+6. cuándo debe escalarse;
+7. una referencia segura cuando soporte pueda utilizarla.
+
+Prohibiciones:
+
+- no usar éxito para ocultar incertidumbre;
+- no usar vacío para ocultar fallo;
+- no usar denegación para ocultar fallo técnico;
+- no mostrar SQL, stack traces, tokens, payloads, políticas internas, identificadores sensibles o recursos ajenos;
+- no revelar existencia de cuenta, pedido, saldo, expediente o recurso fuera del alcance;
+- no mover de forma inesperada la acción principal durante un reintento.
+
+Accesibilidad:
+
+- el foco permanece en el contexto del error o se mueve de forma predecible al resumen de recuperación;
+- una región parcial anuncia el fallo una sola vez y no interrumpe regiones independientes;
+- reintento, corrección, reconciliación y escalamiento respetan contraste, movimiento reducido, tamaño táctil y lectura asistiva.
+
+---
+
+#### 14. Observabilidad y evidencia
+
+Cuando corresponda, la observabilidad conserva:
+
+- `screen_id`;
+- perfil de recuperación;
+- categoría primaria;
+- actor y recurso mediante referencias opacas;
+- operación, intento y correlación con tratamiento seguro;
+- versión, cursor, fase y momento del fallo;
+- política de reintento y número acotado de intento;
+- señal de posible aceptación;
+- reconciliación, abandono o escalamiento;
+- resultado terminal y referencia de evidencia;
+- transición desde carga, bloqueo o contenido y destino posterior.
+
+No se registran secretos, datos completos de pago, códigos de un solo uso, documentos completos, mensajes sensibles, archivos ni payloads empresariales sin una política específica que lo autorice.
+
+---
+
+#### 15. Fronteras con tareas vecinas y autoridad
+
+| Condición | Propietario de experiencia | Regla |
+| --- | --- | --- |
+| denegación, falta de autoridad o condición conocida incumplida | `AUTH-UI-048` | presentar límite concluyente sin atribuirlo a fallo técnico |
+| fuente o resultado identificados todavía en curso | `AUTH-UI-049` | presentar carga acotada sin fabricar éxito |
+| lectura autorizada, completa y fresca con ausencia demostrada | `AUTH-UI-050` | presentar vacío sin confundirlo con fallo |
+| fallo, timeout, rechazo, parcialidad, conflicto o resultado desconocido observado | `AUTH-UI-051` | recuperar, reconciliar, corregir, escalar o abandonar con seguridad |
+
+`AUTH-UI-051` no decide permisos, roles, RLS, RPC, autenticación, autoridad empresarial, idempotencia de servidor ni resultado de dominio. La interfaz consume esas decisiones y evidencias; no las reemplaza.
+
+La familia de mensajes de bloqueo y error sigue siendo propietaria de sus reason codes. Esta tarea no crea ni renombra códigos de razón y no convierte el copy visible en lógica de autorización.
+
+---
+
+#### 16. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea proyecta sobre BLOQUE I un contrato de recuperación ya aprobado y cubierto por el registro modular vigente. No incorpora una regla nueva ni altera una fila de prueba existente.
+
+---
+
+#### 17. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro 04A, la cobertura derivada por `PROC-SCREEN-021`:
+
+`TREQ-UX-1097..1130`
+
+La cobertura vigente protege, entre otros aspectos:
+
+- activación de recuperación únicamente ante fallos o incertidumbre observada;
+- salida de carga cuando se supera el plazo contractual;
+- distinción entre dependencia no configurada y dependencia indisponible;
+- prohibición de vacío desde consulta fallida, parcial, stale o no autorizada;
+- preservación de último dato confirmado y trabajo local;
+- limpieza de datos incompatibles al cambiar actor o contexto;
+- prohibición de fabricar resultados empresariales;
+- reintento automático limitado a lecturas idempotentes;
+- consulta de estado antes de repetir mutaciones con aceptación posible;
+- reconciliación de pagos, caja, custodia, inventario, entrega, publicación y efectos externos;
+- integridad de archivos, hardware, Realtime y offline;
+- accesibilidad, privacidad, referencias seguras y observabilidad;
+- escalamiento o abandono seguro después del límite de intentos;
+- versionado contractual de cualquier cambio en perfil, categoría, preservación, acción, retry, evidencia, escalamiento o frontera.
+
+Esta sección es trazabilidad reutilizada y no declara requisitos afectados por la entrega.
+
+---
+
+#### 18. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El artefacto documental todavía no ha sido insertado ni normalizado en el checkout de trabajo. |
+| LOCAL | NOT_EXECUTED | El formateo, la calidad de tarea, la entrega, BLOQUE I, topología y la batería documental deben ejecutarse después de insertar el bloque en su archivo propietario. |
+| REMOTA | NOT_EXECUTED | Todavía no existe PR ni merge de `AUTH-UI-051`; la proyección preentrega no sustituye el cierre documental del repositorio. |
+| OPERATIVA | NOT_APPLICABLE | Esta tarea define semántica documental de recuperación y no ejecuta una sesión operativa real. |
+| FÍSICA | NOT_APPLICABLE | Esta tarea no modifica código, Supabase, datos, infraestructura, dispositivos, aplicaciones desplegadas ni configuración runtime. |
+
+---
+
+#### 19. Criterios de aceptación
+
+`AUTH-UI-051` queda documentalmente aceptable cuando:
+
+- [ ] las 177 pantallas conservan identidad, nombre, aplicación, clase, entrada y contratos precedentes;
+- [ ] cada pantalla consume exactamente una fila de `SCREEN-RECOVERY-STATE-MATRIX-001`;
+- [ ] los 18 perfiles de recuperación suman 177;
+- [ ] se usan exclusivamente las 16 categorías canónicas de fallo;
+- [ ] se usan exclusivamente las 7 políticas canónicas de reintento;
+- [ ] cada pantalla conserva preservación, acciones seguras, evidencia terminal, escalamiento y frontera;
+- [ ] una condición conocida incumplida no se presenta como recuperación;
+- [ ] una operación todavía en curso no se presenta como fallo;
+- [ ] una consulta fallida, parcial, stale o no autorizada no produce vacío ni conteo cero;
+- [ ] un timeout mutable no autoriza repetición ciega;
+- [ ] resultado desconocido exige consulta o reconciliación antes de repetir;
+- [ ] borradores, carritos, conteos, rutas, archivos y evidencias no se pierden por entrar en recuperación;
+- [ ] parcialidad no se presenta como cobertura completa;
+- [ ] conflicto no sobrescribe una versión silenciosamente;
+- [ ] Realtime y offline recuperan continuidad mediante cursor, snapshot o conciliación por elemento;
+- [ ] pago, caja, custodia, inventario, entrega, publicación, cierre, conciliación y efectos externos consultan estado antes de repetir;
+- [ ] mensajes, accesibilidad, soporte y observabilidad no filtran información sensible;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos en esta tarea documental.
+
+---
+
+#### 20. Límites
+
+Esta tarea no:
+
+- modifica el contrato de estados sin acceso de `AUTH-UI-048`;
+- modifica el contrato de carga de `AUTH-UI-049`;
+- modifica el contrato de vacío de `AUTH-UI-050`;
+- crea o altera categorías, perfiles, retry policies o filas de `PROC-SCREEN-021`;
+- modifica reason codes de la familia de mensajes de bloqueo y error;
+- decide autenticación, permisos, roles, contexto, RLS, RPC, idempotencia de servidor o resultados de dominio;
+- crea rutas, acciones, pantallas, procesos, datos, tablas, migraciones o integraciones;
+- implementa componentes de error, hooks, toasts, modales, banners, retries, colas, adaptadores, telemetría o estilos;
+- ejecuta cambios en Supabase, infraestructura, proveedores, periféricos o despliegues;
+- autoriza ninguna instancia física derivada de `PER_IMPLEMENTATION_UNIT`;
+- modifica el registro 04A;
+- desarrolla `AUTH-DEV-007`;
+- desarrolla ni adelanta `AUTH-UI-052..060`, que pertenecen a una etapa posterior de continuidad.
+
+La materialización física posterior solo podrá ocurrir mediante la instancia correspondiente a cada `implementation_unit_id` y sus gates autorizados.
+
 <!-- EXECUTION-GATE-RECONCILIATION:B601-800:AUTH-UI-052-060 -->
 ### Reconciliación topológica de AUTH-UI-052 a AUTH-UI-060
 
@@ -2200,6 +2714,19 @@ Estas tareas diseñan, prototipan, prueban y aprueban el contrato de experiencia
 
 | modalidad | `DEFINE_ONCE` |
 | gate temporal | `NO_PHYSICAL_INSTANCE` |
+
+---
+
+#### 21. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-050 — Estandarizar estados vacíos`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-051 — Estandarizar errores recuperables`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-007 — Exigir firma o PIN del trabajador`
 
 ### [ ] AUTH-UI-052 — Diseñar página inicial según actor
 
