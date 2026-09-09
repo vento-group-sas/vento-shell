@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1147** |
+| Aprobadas | **1148** |
 | En propuesta | **0** |
-| No iniciadas | **449** |
+| No iniciadas | **448** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.87% (1147/1596)** |
+| Porcentaje de completamiento | **71.93% (1148/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-048` — Estandarizar estados sin acceso | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-049` — Estandarizar estados de carga | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-050` — Estandarizar estados vacíos | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-049` — Estandarizar estados de carga | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-050` — Estandarizar estados vacíos | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-051` — Estandarizar errores recuperables | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -856,7 +856,7 @@
 | ✅ APROBADA | `AUTH-UI-046` | Mostrar contexto activo en cada aplicación | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-047` | Mostrar rol simulado claramente | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-048` | Estandarizar estados sin acceso | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | `AUTH-UI-049` | Estandarizar estados de carga | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | `AUTH-UI-049` | Estandarizar estados de carga | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-050` | Estandarizar estados vacíos | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-051` | Estandarizar errores recuperables | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-052` | Diseñar página inicial según actor | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |

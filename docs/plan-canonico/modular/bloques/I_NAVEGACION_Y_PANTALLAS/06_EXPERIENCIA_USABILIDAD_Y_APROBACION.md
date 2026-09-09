@@ -1293,7 +1293,427 @@ Cualquier implementación concreta deberá consumir este estándar sin ampliar a
 `AUTH-UI-049 — Estandarizar estados de carga`
 
 
-### [ ] AUTH-UI-049 — Estandarizar estados de carga
+### ✅ AUTH-UI-049 — Estandarizar estados de carga
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-048 — Estandarizar estados sin acceso
+**Tarea siguiente:** AUTH-UI-050 — Estandarizar estados vacíos
+**Tipo de tarea:** documental; estandarización transversal de estados de carga y acciones pendientes de interfaz sobre contratos canónicos existentes, con materialización física posterior por implementation_unit_id
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Estandarizar la representación de carga en las superficies canónicas de Vento OS para que una espera de datos, resolución de contexto, actualización, paginación, sincronización, acción pendiente, generación o reconciliación externa conserve una semántica única y verificable.
+
+La tarea adopta como autoridad documental el contrato aprobado por `PROC-SCREEN-019 — Definir estados de carga` y materializa su consumo dentro del BLOQUE I. No redefine perfiles ni variantes, no cambia la identidad de las pantallas y no convierte la interfaz en fuente de autoridad empresarial.
+
+La regla raíz queda:
+
+```text
+SUPERFICIE O ACCION CON RESULTADO AUN NO CONFIRMADO
++
+FUENTE AUTORITATIVA O CORRELACION EN RESOLUCION
+→
+ESTADO DE CARGA O PENDIENTE CORRESPONDIENTE
++
+PRESERVACION SEGURA DEL ESTADO YA CONFIRMADO
++
+BLOQUEO MINIMO DE ACCIONES DEPENDIENTES
++
+SALIDA SOLO POR EVIDENCIA TERMINAL DEL CONTRATO
+```
+
+Un estado de carga no significa por sí mismo:
+
+- acceso denegado o contexto bloqueado;
+- ausencia de registros;
+- error técnico;
+- resultado empresarial exitoso;
+- aceptación de una mutación;
+- entrega, pago, impresión, sincronización o publicación terminada;
+- autorización para reintentar una operación con resultado incierto.
+
+---
+
+#### 2. Resultado canónico
+
+`AUTH-UI-049` congela para BLOQUE I las siguientes decisiones ya aprobadas por `PROC-SCREEN-019`:
+
+1. precedencia entre carga, contenido confirmado, vacío, bloqueo y recuperación;
+2. vocabulario canónico de variantes de carga;
+3. catálogo canónico de perfiles de carga;
+4. catálogo de perfiles de acción pendiente;
+5. reglas de presentación, preservación de datos, alcance interactivo y confirmación terminal;
+6. reglas de reconciliación de efectos externos;
+7. reglas de accesibilidad, foco y privacidad durante carga;
+8. vinculación determinista de las 177 pantallas canónicas con su fila única en `SCREEN-LOAD-STATE-MATRIX-001`.
+
+No se crea una segunda matriz de verdad. La materialización de esta tarea consiste en declarar que la capa de experiencia del BLOQUE I debe consumir sin reinterpretación los artefactos:
+
+- `SCREEN-LOAD-STATE-CONTRACT-001`;
+- `SCREEN-LOAD-PRECEDENCE-001`;
+- `SCREEN-LOAD-VARIANT-VOCABULARY-001`;
+- `SCREEN-LOAD-PROFILE-CATALOG-001`;
+- `SCREEN-ACTION-PENDING-PROFILE-CATALOG-001`;
+- `SCREEN-LOAD-PRESENTATION-CONTRACT-001`;
+- `SCREEN-LOAD-DATA-CONSISTENCY-CONTRACT-001`;
+- `SCREEN-LOAD-INTERACTION-SCOPE-CONTRACT-001`;
+- `SCREEN-LOAD-EXTERNAL-RECONCILIATION-CONTRACT-001`;
+- `SCREEN-LOAD-ACCESSIBILITY-CONTRACT-001`;
+- `SCREEN-LOAD-STATE-MATRIX-001`;
+- `SCREEN-LOAD-STATE-SUMMARY-001`;
+- `SCREEN-LOAD-STATE-CHANGE-POLICY-001`;
+- `SCREEN-LOAD-STATE-VALIDATION-GATE-001`;
+- `SCREEN-LOAD-STATE-CARRYOVER-REGISTER-001`.
+
+---
+
+#### 3. Universo canónico de aplicación
+
+La decisión cubre exactamente 177 `VSCREEN-*` admitidas por el catálogo de pantallas. Cada identidad conserva la aplicación, clase, entrada, salida, perfil vacío, perfil de carga, variantes, presentación, política de datos previos, perfil pendiente, alcance interactivo, confirmación terminal y frontera de carga aprobados en su fila de `SCREEN-LOAD-STATE-MATRIX-001`.
+
+| Aplicación | Universo de pantallas | Cantidad | Distribución canónica de perfiles de carga |
+| --- | --- | ---: | --- |
+| `shell` | `VSCREEN-0001..0006`; `VSCREEN-0175` | 7 | `LOAD-IDENTITY-CONTEXT`: 4; `LOAD-REALTIME-COMMUNICATION`: 1; `LOAD-SELF-SERVICE`: 1; `LOAD-WORKSPACE-HUB`: 1 |
+| `viso` | `VSCREEN-0007..0026`; `VSCREEN-0113..0123` | 31 | `LOAD-CASE-WORKSPACE`: 16; `LOAD-DOCUMENT-AND-EVIDENCE`: 1; `LOAD-QUEUE-AND-PRIORITY`: 10; `LOAD-VERSIONED-EDITOR`: 4 |
+| `anima` | `VSCREEN-0027..0032`; `VSCREEN-0124..0131` | 14 | `LOAD-OPERATIONAL-TASK`: 1; `LOAD-SELF-SERVICE`: 13 |
+| `nexo` | `VSCREEN-0033..0054`; `VSCREEN-0132..0144`; `VSCREEN-0176..0177` | 37 | `LOAD-ANALYTIC-SNAPSHOT`: 1; `LOAD-CASE-WORKSPACE`: 2; `LOAD-EXTERNAL-RECONCILIATION`: 3; `LOAD-OPERATIONAL-TASK`: 17; `LOAD-QUEUE-AND-PRIORITY`: 2; `LOAD-ROUTE-EXECUTION`: 5; `LOAD-VERSIONED-EDITOR`: 7 |
+| `fogo` | `VSCREEN-0055..0067`; `VSCREEN-0173..0174` | 15 | `LOAD-ANALYTIC-SNAPSHOT`: 2; `LOAD-OPERATIONAL-TASK`: 9; `LOAD-QUEUE-AND-PRIORITY`: 2; `LOAD-VERSIONED-EDITOR`: 2 |
+| `origo` | `VSCREEN-0068..0079`; `VSCREEN-0145..0146` | 14 | `LOAD-ANALYTIC-SNAPSHOT`: 1; `LOAD-CASE-WORKSPACE`: 5; `LOAD-OPERATIONAL-TASK`: 2; `LOAD-QUEUE-AND-PRIORITY`: 3; `LOAD-VERSIONED-EDITOR`: 3 |
+| `pulso` | `VSCREEN-0080..0093`; `VSCREEN-0147..0152` | 20 | `LOAD-OPERATIONAL-TASK`: 5; `LOAD-POS-TRANSACTION`: 8; `LOAD-QUEUE-AND-PRIORITY`: 5; `LOAD-VERSIONED-EDITOR`: 2 |
+| `numera` | `VSCREEN-0094..0106`; `VSCREEN-0153..0159` | 20 | `LOAD-ANALYTIC-SNAPSHOT`: 4; `LOAD-DOCUMENT-AND-EVIDENCE`: 2; `LOAD-FINANCIAL-WORKSPACE`: 14 |
+| `pass` | `VSCREEN-0107..0112`; `VSCREEN-0160..0172` | 19 | `LOAD-CUSTOMER-FLOW`: 14; `LOAD-REALTIME-COMMUNICATION`: 2; `LOAD-REALTIME-TRACKING`: 3 |
+| **Total** | **universo materializado** | **177** | **177 decisiones de carga** |
+
+`aura` permanece como aplicación canónica sin `VSCREEN-*` admitidas en este universo. `AUTH-UI-049` no fabrica una pantalla, perfil o estado de carga inexistente para AURA.
+
+Para cada identidad del universo anterior se exige cardinalidad exacta `1:1` contra `SCREEN-LOAD-STATE-MATRIX-001`: una fila por pantalla, cero faltantes, cero duplicados y cero reclasificaciones locales.
+
+---
+
+#### 4. Precedencia de estado
+
+La experiencia aplica la siguiente precedencia conceptual:
+
+```text
+1. RESOLVER IDENTIDAD, CONTEXTO, AUTORIZACION Y FUENTE REQUERIDA
+2. SI EXISTE BLOQUEO O DENEGACION CONCLUYENTE → AUTH-UI-048
+3. SI LA FUENTE NECESARIA SIGUE RESOLVIENDOSE → AUTH-UI-049
+4. SI LA CONSULTA AUTORIZADA TERMINA COMPLETA Y EL RESULTADO ES CERO → AUTH-UI-050
+5. SI OCURRE FALLO, RESULTADO DESCONOCIDO, CONFLICTO O RECUPERACION → AUTH-UI-051
+6. SI EXISTE RESULTADO CONFIRMADO → MOSTRAR CONTENIDO O ESTADO TERMINAL CORRESPONDIENTE
+```
+
+Reglas obligatorias:
+
+- una superficie no puede mostrar vacío mientras la consulta necesaria esté incompleta;
+- un bloqueo concluyente no puede mantenerse como spinner indefinido;
+- un fallo técnico no puede ocultarse como carga indefinida;
+- una respuesta parcial no permite afirmar cero, total completo o ausencia;
+- un valor stale no se presenta como versión fresca sin marcador;
+- una acción enviada no se presenta como éxito hasta cumplir su confirmación terminal;
+- un resultado desconocido después de una posible aceptación no autoriza una segunda intención empresarial.
+
+---
+
+#### 5. Vocabulario canónico de variantes de carga
+
+Se consumen exactamente nueve variantes:
+
+| Variante | Activación | Presentación obligatoria | Salida válida |
+| --- | --- | --- | --- |
+| `INITIAL` | primera resolución autorizada de la superficie | skeleton o gate estructural sin valores inventados | contenido, vacío, bloqueo o recuperación |
+| `SECTION` | una región independiente solicita datos | placeholder limitado a la región y estado ocupado local | sección actualizada o recuperación local |
+| `BACKGROUND_REFRESH` | existe una versión confirmada y se consulta una más reciente | conservar datos con stale y progreso discreto | versión nueva, sin cambio o recuperación |
+| `PAGINATION` | se solicita el siguiente cursor | conservar filas y reservar espacio al final | lote agregado, fin de colección o recuperación |
+| `ACTION_PENDING` | una acción ya aprobada fue enviada | indicador en acción o recurso, bloqueo mínimo y referencia de solicitud | confirmación contractual, rechazo o recuperación |
+| `EXTERNAL_RECONCILIATION` | existe intención interna y resultado externo pendiente | etapa y correlación; distinguir aceptado, procesando y terminal | éxito correlacionado, fallo o resultado desconocido recuperable |
+| `REALTIME_RECONNECT` | el canal pierde continuidad | conservar snapshot con marcador y recuperar cursor | continuidad restablecida o snapshot reconciliado |
+| `UPLOAD_OR_GENERATION` | se transfiere o genera archivo, evidencia o salida | progreso por bytes o fases solo cuando sean medibles y referencia segura | integridad y referencia confirmadas o recuperación |
+| `OFFLINE_SYNC` | un hecho local identificado espera sincronización | estado local pendiente, correlación e identidad de intento | aceptación, deduplicación, conflicto o recuperación |
+
+No existe una variante genérica de espera sin fuente, identidad de operación, condición de salida o política de recuperación.
+
+---
+
+#### 6. Catálogo canónico de perfiles de carga
+
+Las 177 pantallas se distribuyen en 16 perfiles, sin perfiles adicionales:
+
+| Perfil | Pantallas | Regla material que se conserva |
+| --- | ---: | --- |
+| `LOAD-ANALYTIC-SNAPSHOT` | 8 | conservar último snapshot confirmado con `as_of` y stale; no concluir cero, total o decisión desde snapshot incompleto |
+| `LOAD-CASE-WORKSPACE` | 23 | conservar borrador y última versión confirmada; bloquear solo campos o acciones dependientes de la versión en resolución |
+| `LOAD-CUSTOMER-FLOW` | 14 | conservar carrito, selecciones y última versión comercial confirmada; no inferir precio, disponibilidad, puntos, pago o propiedad |
+| `LOAD-DOCUMENT-AND-EVIDENCE` | 3 | conservar metadata confirmada y borrador local permitido; no declarar validez, exportación o custodia desde progreso local |
+| `LOAD-EXTERNAL-RECONCILIATION` | 3 | conservar intención interna, referencia y último estado externo confirmado; impedir despacho externo duplicado |
+| `LOAD-FINANCIAL-WORKSPACE` | 14 | conservar periodo, versión y borrador confirmados; ocultar importes no confirmados y bloquear decisiones materiales dependientes |
+| `LOAD-IDENTITY-CONTEXT` | 4 | limpiar datos del actor anterior antes de resolver; no aceptar identidad o contexto afirmados por cliente |
+| `LOAD-OPERATIONAL-TASK` | 34 | conservar turno, área, recurso y hechos confirmados del actor; no ejecutar transición desde estado desconocido |
+| `LOAD-POS-TRANSACTION` | 8 | conservar carrito, líneas y última versión de precio confirmada; ocultar totales no confirmados y no fabricar éxito de venta o pago |
+| `LOAD-QUEUE-AND-PRIORITY` | 22 | conservar filas confirmadas con marcador stale; no declarar cola vacía o conteo cero antes de consulta fresca completa |
+| `LOAD-REALTIME-COMMUNICATION` | 3 | conservar mensajes confirmados, cursor y borrador permitido; impedir envío duplicado y mezcla de actores |
+| `LOAD-REALTIME-TRACKING` | 3 | conservar último estado confirmado, versión y marcador de reconexión; no inferir estado terminal desde hueco de stream |
+| `LOAD-ROUTE-EXECUTION` | 5 | conservar ruta, parada, custodia, evidencia y último sync confirmados; no confirmar salida, entrega o retorno desde sync incierto |
+| `LOAD-SELF-SERVICE` | 14 | conservar únicamente datos confirmados del sujeto actual y su borrador permitido; no enumerar otros sujetos |
+| `LOAD-VERSIONED-EDITOR` | 18 | conservar borrador local separado de la versión base confirmada; no editar, aprobar, publicar o superseder sin base válida |
+| `LOAD-WORKSPACE-HUB` | 1 | ocultar destinos del contexto anterior hasta resolver el contexto vigente; no inferir aplicaciones o tareas desde contexto stale |
+| **Total** | **177** | **cobertura completa** |
+
+La elección de perfil pertenece a la fila canónica de cada `VSCREEN-*`; ninguna aplicación puede escoger un perfil por conveniencia visual, nombre de ruta, componente o último estado usado.
+
+---
+
+#### 7. Perfiles de acción pendiente
+
+Una carga de lectura y una acción ya enviada conservan semánticas diferentes. Cuando una acción está pendiente, la interfaz usa el perfil derivado del efecto aprobado y bloquea únicamente el alcance que podría duplicar, contradecir o anticipar ese efecto.
+
+| Perfil pendiente | Pantallas | Alcance bloqueado | Evidencia terminal exigida |
+| --- | ---: | --- | --- |
+| `PENDING-NAVIGATION-REVALIDATION` | 18 | apertura del destino dependiente | revalidación del destino por el contrato de navegación |
+| `PENDING-READ-SNAPSHOT` | 14 | vistas o exportaciones dependientes del snapshot | lectura confirmada por servidor |
+| `PENDING-DOMAIN-COMMIT` | 72 | nueva mutación del mismo recurso o replay duplicado | mutación de dominio confirmada por servidor |
+| `PENDING-DECISION-COMMIT` | 22 | decisión sobre el mismo alcance y acciones conflictivas | decisión confirmada por servidor |
+| `PENDING-FINANCIAL-COMMIT` | 20 | alcance financiero y pagos duplicados o conflictivos | confirmación financiera autoritativa |
+| `PENDING-VERSIONED-CONFIGURATION` | 15 | edición, aprobación o publicación dependiente de versión | versión de configuración confirmada por servidor |
+| `PENDING-DRAFT-SAVE` | 5 | nuevo guardado conflictivo de la misma versión de borrador | persistencia del borrador confirmada por servidor |
+| `PENDING-SESSION-COMMIT` | 4 | superficies dependientes de identidad o sesión | mutación de sesión confirmada por servidor |
+| `PENDING-EXTERNAL-RECONCILIATION` | 3 | despacho externo duplicado; se conserva consulta y salida segura | conciliación de estados interno y externo |
+| `PENDING-COMMUNICATION-SEND` | 3 | envío duplicado para la misma referencia de cliente | envío confirmado por servidor |
+| `PENDING-EVIDENCE-GENERATION` | 1 | generación o exportación duplicada | evidencia o salida generada y confirmada por servidor |
+| **Total** | **177** | **alcance dependiente mínimo** | **confirmación según efecto** |
+
+`ACTION_PENDING` nunca autoriza una segunda venta, pago, redención, movimiento, decisión, mensaje, impresión, entrega, publicación o generación para resolver incertidumbre sobre la primera intención.
+
+---
+
+#### 8. Vinculación determinista por pantalla
+
+Para toda pantalla `VSCREEN-*` del universo de la sección 3 se aplica el siguiente binding:
+
+```text
+screen_id
+→ fila única en SCREEN-LOAD-STATE-MATRIX-001
+→ load_profile
+→ allowed_variants
+→ initial_presentation
+→ previous_data_policy
+→ primary_pending_profile
+→ interactive_scope
+→ terminal_confirmation
+→ load_boundary
+```
+
+Esta tarea no permite resolver ninguno de esos campos por heurística de frontend.
+
+La consistencia exige simultáneamente:
+
+- mismo `screen_id` que el catálogo canónico;
+- mismo perfil vacío heredado, sin anticipar `AUTH-UI-050`;
+- mismo perfil de carga aprobado;
+- únicamente las variantes permitidas por la fila;
+- misma política de datos previos;
+- mismo perfil pendiente principal;
+- mismo alcance interactivo;
+- misma evidencia terminal;
+- misma frontera contra inferencias, éxito falso, dato stale o duplicación.
+
+La huella de las 177 identidades y su clasificación no puede cambiar silenciosamente al materializar componentes posteriores.
+
+---
+
+#### 9. Preservación de datos y alcance interactivo
+
+Durante carga se conserva información ya confirmada solo cuando el perfil canónico lo permite y siempre con su condición de frescura visible.
+
+Reglas transversales:
+
+1. `BACKGROUND_REFRESH` conserva el último dato confirmado y lo marca como stale o en actualización; no vacía la superficie para aparentar una carga inicial nueva.
+2. `INITIAL` no reutiliza datos, destinos, actor, sesión o contexto de una identidad anterior cuando el contrato exige una nueva resolución.
+3. Los borradores locales permanecen separados del estado empresarial confirmado.
+4. Los importes, balances, totales, disponibilidad, pagos y estados terminales no se completan con placeholders semánticos ni datos inventados.
+5. Una respuesta parcial o página incompleta no habilita una conclusión de cobertura completa.
+6. La paginación conserva las filas ya confirmadas y no duplica, pierde ni reordena silenciosamente elementos.
+7. Un hueco de Realtime conserva el snapshot confirmado y exige recuperar cursor o snapshot completo antes de inferir continuidad.
+8. Una cola offline no muestra completado antes de aceptación y conciliación del servidor.
+9. Salir visualmente de una pantalla no cancela una operación del servidor, proveedor o periférico.
+10. La cancelación de un trabajo exige capacidad contractual y confirmación propia.
+
+El alcance interactivo durante carga es mínimo: permanecen disponibles solamente navegación, filtros, consultas, soporte o controles que el perfil declare seguros; se bloquean las acciones que dependan del dato o efecto todavía no confirmado.
+
+---
+
+#### 10. Presentación y accesibilidad
+
+La presentación conserva el significado de la estructura sin fabricar contenido:
+
+- un skeleton mantiene jerarquía y espacio, pero no replica nombres, saldos, conteos, estados, fotos, QR, códigos o importes reales;
+- un spinner aislado se limita a controles o regiones pequeñas; una superficie estructurada utiliza skeleton o etapas comprensibles;
+- un porcentaje se muestra únicamente cuando la fuente conoce un total o fases medibles;
+- la carga extensa explica qué está ocurriendo, la referencia segura disponible y las salidas realmente permitidas;
+- ninguna animación puede impedir lectura, escaneo, foco, toque o uso con movimiento reducido;
+- la carga no desplaza bruscamente controles críticos ni mueve el objetivo táctil activo;
+- cada región cargando expone estado ocupado y un nombre accesible sin anunciar continuamente la animación;
+- los cambios relevantes se anuncian una sola vez mediante la región viva apropiada;
+- el foco permanece en el control activador durante la carga y solo se mueve al resultado cuando el flujo lo exige;
+- skeletons y placeholders respetan contraste, movimiento reducido y tamaño táctil;
+- el cambio de actor elimina pantalla, caché visible, anuncios y borradores no transferibles antes de resolver el siguiente contexto.
+
+Los indicadores de sincronización, pago, impresión, entrega o generación usan terminología del estado real y no un mensaje genérico de éxito.
+
+---
+
+#### 11. Reconciliación externa y resultado desconocido
+
+Cuando interviene un proveedor, periférico, callback, cola o servicio externo se conservan por separado:
+
+```text
+INTENCION INTERNA
++
+CORRELACION INTERNA
++
+REFERENCIA EXTERNA
++
+ESTADO INTERNO CONFIRMADO
++
+ESTADO EXTERNO OBSERVADO
++
+CONDICION TERMINAL DEL CONTRATO
+```
+
+No constituyen éxito terminal por sí mismos:
+
+- una aceptación asíncrona;
+- un callback aislado;
+- un trabajo en cola;
+- un evento observado sin continuidad probada;
+- la respuesta local de un periférico;
+- una notificación de cliente;
+- abandonar la pantalla.
+
+Si no puede determinarse si la operación fue aceptada o ejecutada, el estado abandona la carga ordinaria y pasa al tratamiento de resultado desconocido o recuperación de `AUTH-UI-051`. Reintentar exige primero consultar o reconciliar el intento original cuando exista posibilidad de efecto previo.
+
+---
+
+#### 12. Fronteras con AUTH-UI-048, AUTH-UI-050 y AUTH-UI-051
+
+`AUTH-UI-049` queda acotada así:
+
+| Condición | Propietario | Regla |
+| --- | --- | --- |
+| autorización, contexto o prerrequisito ya evaluado como no permitido o bloqueado | `AUTH-UI-048` | no mantener un spinner para ocultar una decisión concluyente |
+| dato, contexto, versión, cursor o efecto requerido todavía en resolución | `AUTH-UI-049` | mostrar el perfil y variante de carga correspondientes |
+| consulta autorizada, completa, fresca y con resultado cero o condición de inicio vacía | `AUTH-UI-050` | no anticipar vacío antes de demostrar la condición |
+| fallo técnico, timeout, conflicto, resultado desconocido, integración degradada o recuperación | `AUTH-UI-051` | no convertir fallo en carga infinita ni ofrecer reintento ciego |
+
+Una transición entre estas tareas cambia la categoría de experiencia, no la autoridad empresarial subyacente.
+
+---
+
+#### 13. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea consume contratos de carga y matrices de pantalla ya aprobados y no introduce una regla nueva que requiera alterar el registro modular de requisitos de prueba.
+
+---
+
+#### 14. Cobertura de prueba vigente reutilizada
+
+Permanece vigente la cobertura ya derivada por los contratos canónicos de estados de interfaz y por `PROC-SCREEN-019`, incluida la verificación de:
+
+- cobertura exacta de las 177 pantallas;
+- ausencia de perfiles o variantes no canónicas;
+- preservación de datos confirmados durante refresh, paginación, Realtime y offline;
+- prohibición de vacío o cero desde consulta incompleta;
+- prohibición de éxito antes de confirmación terminal;
+- idempotencia y reconciliación ante resultado desconocido;
+- accesibilidad, foco, movimiento reducido y privacidad durante carga;
+- consistencia entre perfil de carga, perfil pendiente, efecto y evidencia terminal;
+- detección de faltantes, duplicados o cambios silenciosos de huella.
+
+Esta trazabilidad se reutiliza sin modificar identificadores ni filas del registro 04A.
+
+---
+
+#### 15. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea permanece como artefacto documental prospectivo y todavía no ha sido insertada ni normalizada en el checkout de trabajo. |
+| LOCAL | NOT_EXECUTED | Las validaciones de formato, calidad, entrega, BLOQUE I, topología y plan deben ejecutarse después de insertar el bloque en su archivo propietario. |
+| REMOTA | NOT_EXECUTED | No existe todavía cierre documental, PR ni merge de `AUTH-UI-049`. |
+| OPERATIVA | NOT_APPLICABLE | La tarea define el contrato documental de presentación y no ejecuta una sesión operativa real. |
+| FÍSICA | NOT_APPLICABLE | La tarea no modifica código, Supabase, datos, infraestructura, dispositivos, aplicaciones desplegadas ni configuraciones runtime. |
+
+---
+
+#### 16. Criterios de aceptación
+
+`AUTH-UI-049` queda documentalmente aceptable cuando se demuestre todo lo siguiente:
+
+- [ ] existe exactamente una decisión de carga para cada una de las 177 `VSCREEN-*` admitidas;
+- [ ] la distribución por aplicación suma 177 sin incluir pantallas ficticias de AURA;
+- [ ] los 16 perfiles de carga suman 177 y conservan su significado canónico;
+- [ ] las nueve variantes de carga permanecen diferenciadas y con salida definida;
+- [ ] los perfiles de acción pendiente cubren las 177 pantallas y no fabrican éxito desde envío local;
+- [ ] `INITIAL`, `SECTION`, refresh, paginación, Realtime, offline, upload y reconciliación no comparten una semántica genérica de espera;
+- [ ] el dato previamente confirmado se preserva o limpia exactamente como indica el perfil;
+- [ ] el alcance interactivo bloquea solo las acciones dependientes o con riesgo de duplicación;
+- [ ] toda salida de carga exige la evidencia terminal prevista por su contrato;
+- [ ] vacío se alcanza únicamente después de una consulta completa o condición de inicio demostrada;
+- [ ] bloqueo o denegación concluyentes se entregan a `AUTH-UI-048`;
+- [ ] estados vacíos se entregan a `AUTH-UI-050`;
+- [ ] fallos, conflictos y resultados desconocidos se entregan a `AUTH-UI-051`;
+- [ ] no existe reintento ciego de mutaciones o efectos externos con aceptación incierta;
+- [ ] skeletons, indicadores, foco y anuncios cumplen la política de accesibilidad y privacidad;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se realizan cambios físicos en esta tarea documental.
+
+---
+
+#### 17. Límites
+
+Esta tarea no:
+
+- define estados de sin acceso, ya cubiertos por `AUTH-UI-048`;
+- define la semántica detallada de estados vacíos, reservada a `AUTH-UI-050`;
+- define la recuperación de errores, conflictos o resultados desconocidos, reservada a `AUTH-UI-051`;
+- cambia permisos, roles, contexto, RLS, RPC, Auth, contratos de servidor o catálogos de autorización;
+- cambia las 177 identidades `VSCREEN-*` ni su pertenencia a aplicaciones;
+- crea superficies para AURA;
+- implementa componentes, skeletons, spinners, loaders, hooks, estados runtime o estilos;
+- cambia datos, Supabase, colas, integraciones, proveedores, periféricos o despliegues;
+- autoriza la instancia física posterior derivada de la topología `PER_IMPLEMENTATION_UNIT`;
+- modifica el registro 04A.
+
+La materialización física de este contrato pertenece a las instancias consumidoras autorizadas por la topología y sus gates correspondientes.
+
+---
+
+#### 18. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-048 — Estandarizar estados sin acceso`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-049 — Estandarizar estados de carga`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-050 — Estandarizar estados vacíos`
+
+
 ### [ ] AUTH-UI-050 — Estandarizar estados vacíos
 ### [ ] AUTH-UI-051 — Estandarizar errores recuperables
 <!-- EXECUTION-GATE-RECONCILIATION:B601-800:AUTH-UI-052-060 -->
