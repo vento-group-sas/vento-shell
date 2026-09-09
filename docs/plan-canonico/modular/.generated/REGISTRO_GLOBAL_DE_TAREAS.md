@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1146** |
+| Aprobadas | **1147** |
 | En propuesta | **0** |
-| No iniciadas | **450** |
+| No iniciadas | **449** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **71.80% (1146/1596)** |
+| Porcentaje de completamiento | **71.87% (1147/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-047` — Mostrar rol simulado claramente | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-048` — Estandarizar estados sin acceso | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-049` — Estandarizar estados de carga | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-048` — Estandarizar estados sin acceso | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-049` — Estandarizar estados de carga | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-050` — Estandarizar estados vacíos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -855,7 +855,7 @@
 | ✅ APROBADA | `AUTH-UI-045` | Unificar navegación y autorización | `bloques/I_NAVEGACION_Y_PANTALLAS/05_AUTORIZACION_DE_VISTAS_Y_ACCIONES.md` |
 | ✅ APROBADA | `AUTH-UI-046` | Mostrar contexto activo en cada aplicación | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | `AUTH-UI-047` | Mostrar rol simulado claramente | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | `AUTH-UI-048` | Estandarizar estados sin acceso | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | `AUTH-UI-048` | Estandarizar estados sin acceso | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-049` | Estandarizar estados de carga | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-050` | Estandarizar estados vacíos | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | `AUTH-UI-051` | Estandarizar errores recuperables | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
