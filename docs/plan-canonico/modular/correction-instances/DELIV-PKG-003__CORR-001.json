@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,63 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "npm run docs:package:readiness:check",
+    "npm run docs:package:review:test",
+    "npm run docs:package:throughput:audit",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
+  "zero_treq_reason": "La corrección restaura exclusivamente la proyección derivada de ownership ya aprobada por DELIV-PKG-003; no crea ni modifica requisitos TREQ ni el registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-08T20:54:44-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO DELIV-PKG-003::CORR-001: autoriza exclusivamente corregir scripts/docs/package-readiness-scanner.mjs y scripts/docs/package-readiness-scanner.test.mjs para proyectar determinísticamente el ownership ya aprobado por DELIV-PKG-003, fallando cerrado ante faltantes, duplicados o contradicciones. No autoriza capacidad funcional nueva, cambios TREQ o 04A, implementation-instances, código de producto, datos, Supabase, deploy ni piloto.",
+    "source_contract_sha256": "f03118044ee56a049d069ec90cf596b1e5afc3f29a5ba36f1ac76743fa983c32"
+  },
+  "evidence": [
+    "IMPLEMENTED scripts/docs/package-readiness-scanner.mjs proyecta deterministamente application_owner, domain_owner, repo_owner, ownership_state y blocking_condition desde DELIV-PKG-003 para GAP-PKG-001..207.",
+    "IMPLEMENTED scripts/docs/package-readiness-scanner.mjs falla cerrado ante ownership faltante, duplicado o contradictorio con DELIV-PKG-007 o DELIV-PKG-017.",
+    "IMPLEMENTED scripts/docs/package-readiness-scanner.test.mjs cubre 207/207 packages, owner directo, frontera distribuida TALENTO/VISO/ANIMA, NO_CONFIRMADO y contradicciones de dominio/repositorio.",
+    "VERIFIED npm run docs:correction:check PASS.",
+    "VERIFIED npm run docs:correction:test PASS.",
+    "VERIFIED node --test scripts/docs/package-readiness-scanner.test.mjs PASS.",
+    "VERIFIED npm run docs:package:readiness:check PASS; catalogo canonico GAP-PKG 207/207.",
+    "VERIFIED npm run docs:package:review:test PASS.",
+    "VERIFIED npm run docs:package:throughput:audit PASS.",
+    "VERIFIED npm run docs:plan:build PASS.",
+    "VERIFIED npm run docs:plan:check PASS.",
+    "VERIFIED npm run docs:plan:test PASS.",
+    "VERIFIED npm run docs:treq:check PASS.",
+    "VERIFIED npm run docs:treq:test PASS.",
+    "VERIFIED git --no-pager diff --check PASS.",
+    "VERIFIED TREQ_MODIFIED=NO y REGISTRO_04A_MODIFIED=NO.",
+    "VERIFIED alcance local previo al cierre limitado al correction record, package-readiness-scanner.mjs, package-readiness-scanner.test.mjs y proyecciones derivadas permitidas."
+  ],
   "opened_at": "2026-09-09T01:31:51.531Z"
 }
