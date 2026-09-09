@@ -1113,3 +1113,135 @@ test('TREQ variantes reales de cero cambios siguen fallando cerrado si la cabece
     assert.equal(declaration.detail, 'DECLARED_1_BUT_SECTION_NO_GENERA');
   }
 });
+
+test('preserva ownership, unidad E5 y cierre por aplicación en el dossier', () => {
+  const sourceManifest = {
+    generated_from_head: 'test-head',
+    generated_from_branch: 'main',
+  };
+  const pkg = {
+    ...rawPackage({
+      id: 'GAP-PKG-001',
+      layer: 0,
+      primary: ['AUTH-DB-003'],
+      dominant: 'AUTH-DB-003',
+      gaps: ['H-CODE-017-016'],
+    }),
+    owner_application: 'FRONTERA_DISTRIBUIDA',
+    domain_owner: 'AUTH-DB',
+    ownership_state: 'ASIGNADO_CON_FRONTERA_DISTRIBUIDA',
+    ownership_blocking_condition: '—',
+    canonical_prerequisites: {
+      implementation_unit_id: 'shift-runtime-processor',
+      disposition_025: 'KEEP_AS_SINGLE_UNIT',
+      final_decision_025: 'PASS',
+    },
+  };
+  const applicationClosure = {
+    schema_version: 1,
+    model_id: 'VENTO-PACKAGE-APPLICATION-CLOSURE-V1',
+    fingerprint_sha256: 'closure-fingerprint',
+    metrics: {
+      canonical_packages: 1,
+      applications: 10,
+      package_closure_counts: { CLOSED: 0, OPEN: 1 },
+      relationship_counts: {
+        PRERREQUISITO_DE: 0,
+        IMPLEMENTADO_POR: 1,
+        CONSUMIDO_POR: 1,
+        EVIDENCIADO_POR: 1,
+        CIERRA_CRITERIO_DE: 0,
+      },
+      packages_with_unresolved_consumers: 0,
+      acceptance_criteria_total: 1,
+      acceptance_criteria_explicitly_closed: 0,
+      acceptance_criteria_unknown: 1,
+    },
+    applications: [{ application_id: 'nexo', completion_state: 'INCOMPLETE' }],
+    packages: [{
+      package_id: 'GAP-PKG-001',
+      relations: {
+        PRERREQUISITO_DE: [],
+        IMPLEMENTADO_POR: [{ implementation_unit_id: 'shift-runtime-processor' }],
+        CONSUMIDO_POR: [{ application_id: 'nexo' }],
+        EVIDENCIADO_POR: [{ instance_id: 'SHELL-CI-020::GAP-PKG-001' }],
+        CIERRA_CRITERIO_DE: [],
+      },
+      unresolved_consumers: [],
+      acceptance_criteria: [{ criterion_id: 'GAP-PKG-001::AC-001', state: 'UNKNOWN' }],
+      closure: {
+        closure_state: 'OPEN',
+        acceptance_criteria_total: 1,
+        acceptance_criteria_explicitly_closed: 0,
+        acceptance_criteria_unknown: 1,
+      },
+    }],
+  };
+
+  const snapshot = buildFactoryFromPackages({
+    rawPackages: [pkg],
+    sourceManifest,
+    applicationClosure,
+  });
+  const dossier = snapshot.dossiers[0];
+
+  assert.equal(dossier.package.owner_application, 'FRONTERA_DISTRIBUIDA');
+  assert.equal(dossier.package.domain_owner, 'AUTH-DB');
+  assert.equal(dossier.package.canonical_prerequisites.implementation_unit_id, 'shift-runtime-processor');
+  assert.equal(dossier.application_closure.closure.closure_state, 'OPEN');
+  assert.deepEqual(
+    dossier.application_closure.relations.CONSUMIDO_POR.map(({ application_id: id }) => id),
+    ['nexo'],
+  );
+  assert.equal(snapshot.application_closure.model_id, 'VENTO-PACKAGE-APPLICATION-CLOSURE-V1');
+});
+
+test('review fingerprint no cambia por ownership, unidad E5 ni cierre físico', () => {
+  const sourceManifest = { generated_from_head: 'same-head', generated_from_branch: 'main' };
+  const base = rawPackage({
+    id: 'GAP-PKG-001',
+    layer: 0,
+    primary: ['AUTH-DB-003'],
+    dominant: 'AUTH-DB-003',
+    gaps: ['H-CODE-017-016'],
+  });
+  const rawA = {
+    ...base,
+    owner_application: 'FRONTERA_DISTRIBUIDA',
+    domain_owner: 'AUTH-DB',
+    ownership_state: 'ASIGNADO_CON_FRONTERA_DISTRIBUIDA',
+    ownership_blocking_condition: 'NINGUNA',
+    canonical_prerequisites: {
+      implementation_unit_id: 'unit-a',
+      disposition_025: 'KEEP_AS_SINGLE_UNIT',
+      final_decision_025: 'PASS',
+    },
+  };
+  const rawB = {
+    ...base,
+    owner_application: 'nexo',
+    domain_owner: 'OTHER',
+    ownership_state: 'OTHER_STATE',
+    ownership_blocking_condition: 'OTHER_BLOCKER',
+    canonical_prerequisites: {
+      implementation_unit_id: 'unit-b',
+      disposition_025: 'SPLIT_INTO_IMPLEMENTATION_UNITS',
+      final_decision_025: 'OTHER',
+    },
+  };
+  const closureA = {
+    model_id: 'VENTO-PACKAGE-APPLICATION-CLOSURE-V1',
+    packages: [{ package_id: 'GAP-PKG-001', closure: { closure_state: 'OPEN' }, relations: { CONSUMIDO_POR: [] } }],
+  };
+  const closureB = {
+    model_id: 'VENTO-PACKAGE-APPLICATION-CLOSURE-V1',
+    packages: [{ package_id: 'GAP-PKG-001', closure: { closure_state: 'CLOSED' }, relations: { CONSUMIDO_POR: [{ application_id: 'nexo' }] } }],
+  };
+
+  const first = buildFactoryFromPackages({ rawPackages: [rawA], sourceManifest, applicationClosure: closureA });
+  const second = buildFactoryFromPackages({ rawPackages: [rawB], sourceManifest, applicationClosure: closureB });
+
+  assert.equal(first.dossiers[0].review_fingerprint, second.dossiers[0].review_fingerprint);
+  assert.notEqual(first.dossiers[0].package.owner_application, second.dossiers[0].package.owner_application);
+  assert.notEqual(first.dossiers[0].application_closure.closure.closure_state, second.dossiers[0].application_closure.closure.closure_state);
+});

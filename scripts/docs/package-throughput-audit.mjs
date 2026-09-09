@@ -3,6 +3,7 @@ import { fileURLToPath } from 'node:url';
 
 import { readPackageExecutionPolicy } from './package-execution-control.mjs';
 import { scanPackageReadiness } from './package-readiness-scanner.mjs';
+import { loadPackageApplicationClosure } from './package-application-closure.mjs';
 
 function increment(map, key) {
   const normalized = String(key ?? 'UNKNOWN').trim() || 'UNKNOWN';
@@ -15,7 +16,7 @@ function sortedObject(map) {
   );
 }
 
-export function buildPackageThroughputAudit({ registry, policy } = {}) {
+export function buildPackageThroughputAudit({ registry, policy, applicationClosure } = {}) {
   const packages = registry?.packages ?? [];
   const canonical = packages.filter(
     ({ source_kind: sourceKind }) => sourceKind === 'CANONICAL_GAP_PACKAGE',
@@ -55,11 +56,28 @@ export function buildPackageThroughputAudit({ registry, policy } = {}) {
     .filter(([, count]) => count > 1)
     .sort((left, right) => right[1] - left[1] || left[0].localeCompare(right[0], 'en'));
 
+  const closureMetrics = applicationClosure?.metrics ?? null;
+  const applicationCompletionCounts = new Map();
+  for (const application of applicationClosure?.applications ?? []) {
+    increment(applicationCompletionCounts, application?.completion_state ?? 'UNKNOWN');
+  }
+
   return {
     schema_version: 1,
     scope: 'ANALYSIS_ONLY',
     execution_policy: policy?.mode ?? 'UNKNOWN',
     parallel_execution_authorized: false,
+    application_closure_available: Boolean(applicationClosure),
+    application_closure_model_id: applicationClosure?.model_id ?? null,
+    application_closure_fingerprint_sha256: applicationClosure?.fingerprint_sha256 ?? null,
+    application_count: closureMetrics?.applications ?? null,
+    package_closure_counts: closureMetrics?.package_closure_counts ?? null,
+    packages_with_unresolved_consumers: closureMetrics?.packages_with_unresolved_consumers ?? null,
+    acceptance_criteria_total: closureMetrics?.acceptance_criteria_total ?? null,
+    acceptance_criteria_explicitly_closed: closureMetrics?.acceptance_criteria_explicitly_closed ?? null,
+    acceptance_criteria_unknown: closureMetrics?.acceptance_criteria_unknown ?? null,
+    application_completion_counts: applicationClosure ? sortedObject(applicationCompletionCounts) : null,
+    application_relationship_counts: closureMetrics?.relationship_counts ?? null,
     total_packages: packages.length,
     canonical_gap_packages: canonical.length,
     current_package: registry?.package_execution?.current?.package_id ?? null,
@@ -88,6 +106,17 @@ function printAudit(audit) {
   console.log(`SCOPE: ${audit.scope}`);
   console.log(`EXECUTION_POLICY: ${audit.execution_policy}`);
   console.log(`PARALLEL_EXECUTION_AUTHORIZED: ${audit.parallel_execution_authorized ? 'SI' : 'NO'}`);
+  console.log(`APPLICATION_CLOSURE_AVAILABLE: ${audit.application_closure_available ? 'SI' : 'NO'}`);
+  console.log(`APPLICATION_CLOSURE_MODEL_ID: ${audit.application_closure_model_id ?? 'NONE'}`);
+  console.log(`APPLICATION_CLOSURE_FINGERPRINT_SHA256: ${audit.application_closure_fingerprint_sha256 ?? 'NONE'}`);
+  console.log(`APPLICATION_COUNT: ${audit.application_count ?? 'NONE'}`);
+  console.log(`PACKAGE_CLOSURE_COUNTS: ${JSON.stringify(audit.package_closure_counts)}`);
+  console.log(`APPLICATION_COMPLETION_COUNTS: ${JSON.stringify(audit.application_completion_counts)}`);
+  console.log(`PACKAGES_WITH_UNRESOLVED_CONSUMERS: ${audit.packages_with_unresolved_consumers ?? 'NONE'}`);
+  console.log(`ACCEPTANCE_CRITERIA_TOTAL: ${audit.acceptance_criteria_total ?? 'NONE'}`);
+  console.log(`ACCEPTANCE_CRITERIA_EXPLICITLY_CLOSED: ${audit.acceptance_criteria_explicitly_closed ?? 'NONE'}`);
+  console.log(`ACCEPTANCE_CRITERIA_UNKNOWN: ${audit.acceptance_criteria_unknown ?? 'NONE'}`);
+  console.log(`APPLICATION_RELATIONSHIP_COUNTS: ${JSON.stringify(audit.application_relationship_counts)}`);
   console.log(`TOTAL_PACKAGES: ${audit.total_packages}`);
   console.log(`CANONICAL_GAP_PACKAGES: ${audit.canonical_gap_packages}`);
   console.log(`CURRENT_PACKAGE: ${audit.current_package ?? 'NONE'}`);
@@ -116,7 +145,15 @@ async function main() {
     supplied: { skipDerivedReports: true },
   });
   const policy = readPackageExecutionPolicy(root);
-  const audit = buildPackageThroughputAudit({ registry: readiness.registry, policy });
+  const applicationClosure = loadPackageApplicationClosure({
+    root,
+    registry: readiness.registry,
+  });
+  const audit = buildPackageThroughputAudit({
+    registry: readiness.registry,
+    policy,
+    applicationClosure,
+  });
   if (process.argv.includes('--json')) {
     console.log(JSON.stringify(audit, null, 2));
     return;

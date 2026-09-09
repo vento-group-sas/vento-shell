@@ -9,6 +9,10 @@ import {
   scanPackageReadiness,
 } from './package-readiness-scanner.mjs';
 import { getTreqRegistryFragmentPaths } from './treq-registry-files.mjs';
+import {
+  CONSUMER_SOURCE,
+  loadPackageApplicationClosure,
+} from './package-application-closure.mjs';
 
 const FACTORY_ID = 'VENTO-PACKAGE-REVIEW-FACTORY-V1';
 const SCHEMA_VERSION = 1;
@@ -22,6 +26,7 @@ const DOSSIERS_MD_PATH = `${OUTPUT_ROOT}/PACKAGE_REVIEW_DOSSIERS.md`;
 const BATCH_JSON_PATH = `${OUTPUT_ROOT}/review-batch.json`;
 const BATCH_MD_PATH = `${OUTPUT_ROOT}/REVIEW_BATCH.md`;
 const RECEIPT_TEMPLATE_PATH = `${OUTPUT_ROOT}/review-receipt-template.json`;
+const APPLICATION_CLOSURE_PATH = `${OUTPUT_ROOT}/application-closure.json`;
 const CANONICAL_BLOCK_ROOT = 'docs/plan-canonico/modular/bloques';
 const CANONICAL_PACKAGE_SOURCE = 'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md';
 const ROUTING_SOURCE = 'docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/07_REGISTRO_CANONICO_DE_BRECHAS.md';
@@ -37,6 +42,10 @@ const REVIEW_TOOLING_PATHS = new Set([
   'package.json',
   'scripts/docs/package-review-factory.mjs',
   'scripts/docs/package-review-factory.test.mjs',
+  'scripts/docs/package-application-closure.mjs',
+  'scripts/docs/package-application-closure.test.mjs',
+  'scripts/docs/package-throughput-audit.mjs',
+  'scripts/docs/package-throughput-audit.test.mjs',
 ]);
 
 function fail(message, code = 1) {
@@ -533,6 +542,8 @@ function buildSourceManifest(root, workspace) {
     'scripts/docs/package-readiness-scanner.mjs',
     'scripts/docs/treq-registry-files.mjs',
     'scripts/docs/package-review-factory.mjs',
+    CONSUMER_SOURCE,
+    'scripts/docs/package-application-closure.mjs',
     ...canonicalTreqRegistryPaths(root),
   ].map((relativePath) => sourceBlob(root, relativePath));
 
@@ -617,6 +628,19 @@ export function normalizeReviewPackage(
     status: pkg?.status ?? null,
     status_scope: pkg?.status_scope ?? null,
     objective: pkg?.objective ?? null,
+    owner_application: pkg?.owner_application ?? null,
+    domain_owner: pkg?.domain_owner ?? null,
+    ownership_state: pkg?.ownership_state ?? null,
+    ownership_blocking_condition: pkg?.ownership_blocking_condition ?? null,
+    canonical_prerequisites: {
+      disposition_025: pkg?.canonical_prerequisites?.disposition_025 ?? null,
+      state_023: pkg?.canonical_prerequisites?.state_023 ?? null,
+      physical_state: pkg?.canonical_prerequisites?.physical_state ?? null,
+      implementation_unit_id: pkg?.canonical_prerequisites?.implementation_unit_id ?? null,
+      final_decision_025: pkg?.canonical_prerequisites?.final_decision_025 ?? null,
+      exit_owner: pkg?.canonical_prerequisites?.exit_owner ?? null,
+      exit_condition: pkg?.canonical_prerequisites?.exit_condition ?? null,
+    },
     repository_owner: pkg?.repository_owner ?? null,
     runtime_profile: pkg?.runtime_profile ?? null,
     dominant_task_id: pkg?.dominant_task_id ?? null,
@@ -658,6 +682,16 @@ export function normalizeReviewPackage(
     package_gate: pkg?.package_gate ?? null,
     next_execution: pkg?.next_execution ?? null,
   };
+}
+
+function documentaryReviewPackageFingerprint(pkg) {
+  const documentaryPackage = { ...pkg };
+  delete documentaryPackage.owner_application;
+  delete documentaryPackage.domain_owner;
+  delete documentaryPackage.ownership_state;
+  delete documentaryPackage.ownership_blocking_condition;
+  delete documentaryPackage.canonical_prerequisites;
+  return documentaryPackage;
 }
 
 function packageIdNumber(packageId) {
@@ -1706,6 +1740,11 @@ function dossierMarkdown(dossier, ledgerEntry) {
     `- Review status: \`${ledgerEntry?.status ?? 'NEEDS_REVIEW'}\``,
     `- Review fingerprint: \`${dossier.review_fingerprint}\``,
     `- Repository: \`${dossier.package.repository_owner ?? 'UNRESOLVED'}\``,
+    `- Application owner: \`${dossier.package.owner_application ?? 'UNRESOLVED'}\``,
+    `- Domain owner: \`${dossier.package.domain_owner ?? 'UNRESOLVED'}\``,
+    `- Implementation unit E5: \`${dossier.package.canonical_prerequisites?.implementation_unit_id ?? 'UNRESOLVED'}\``,
+    `- Package closure: \`${dossier.application_closure?.closure?.closure_state ?? 'UNKNOWN'}\``,
+    `- Consumer applications: ${(dossier.application_closure?.relations?.CONSUMIDO_POR ?? []).map((entry) => entry.application_id).join(', ') || 'NONE'}`,
     `- Runtime: \`${dossier.package.runtime_profile ?? 'UNRESOLVED'}\``,
     `- Layer: \`${dossier.package.execution.layer ?? 'UNRESOLVED'}\``,
     `- Dependencies: ${dossier.relations.dependencies.length ? dossier.relations.dependencies.join(', ') : 'NONE'}`,
@@ -1855,6 +1894,12 @@ function writeOutputs(root, snapshot, ledger) {
     source_head: snapshot.source_manifest.generated_from_head,
     source_manifest_sha256: sha256(stableJson(snapshot.source_manifest)),
     generated_at: snapshot.generated_at,
+    application_closure: snapshot.application_closure ? {
+      model_id: snapshot.application_closure.model_id,
+      fingerprint_sha256: snapshot.application_closure.fingerprint_sha256,
+      metrics: snapshot.application_closure.metrics,
+      applications: snapshot.application_closure.applications,
+    } : null,
     package_count: snapshot.dossiers.length,
     review_counts: counts,
     deterministic_anomaly_counts: snapshot.metrics.deterministic_anomaly_counts,
@@ -1887,6 +1932,12 @@ function writeOutputs(root, snapshot, ledger) {
         primary_task_ids: dossier.package.primary_task_ids,
         support_task_ids: dossier.package.support_task_ids,
         dominant_task_id: dossier.package.dominant_task_id,
+        owner_application: dossier.package.owner_application,
+        domain_owner: dossier.package.domain_owner,
+        implementation_unit_id: dossier.package.canonical_prerequisites?.implementation_unit_id ?? null,
+        closure_state: dossier.application_closure?.closure?.closure_state ?? 'UNKNOWN',
+        consumer_application_ids: (dossier.application_closure?.relations?.CONSUMIDO_POR ?? [])
+          .map((entry) => entry.application_id),
         gap_ids: dossier.package.gap_ids,
         gap_membership_count: dossier.package.gap_membership_count,
         gap_routing_resolved: dossier.package.gap_routing_resolved,
@@ -1915,6 +1966,9 @@ function writeOutputs(root, snapshot, ledger) {
     queue,
   });
   writeJson(root, SOURCE_MANIFEST_PATH, snapshot.source_manifest);
+  if (snapshot.application_closure) {
+    writeJson(root, APPLICATION_CLOSURE_PATH, snapshot.application_closure);
+  }
 
   let dossiersMarkdown = [
     '# VENTO PACKAGE REVIEW DOSSIERS',
@@ -1978,6 +2032,7 @@ export function buildFactoryFromPackages({
   sourceManifest,
   previousLedger = null,
   currentExecutionPackageId = null,
+  applicationClosure = null,
   generatedAt = new Date().toISOString(),
 } = {}) {
   const canonical = (rawPackages ?? [])
@@ -1997,9 +2052,13 @@ export function buildFactoryFromPackages({
     .sort((left, right) => sortPackageIds(left.package_id, right.package_id));
 
   const indexes = buildCrossPackageIndexes(canonical);
+  const closureByPackage = new Map(
+    (applicationClosure?.packages ?? []).map((entry) => [entry.package_id, entry]),
+  );
 
   const dossiers = canonical.map((pkg) => {
     const deterministic = analyzePackage(pkg, indexes);
+    const applicationClosurePackage = closureByPackage.get(pkg.package_id) ?? null;
     const sourceEvidence = sourceEvidenceForPackage({
       pkg,
       taskSectionIndex,
@@ -2017,7 +2076,7 @@ export function buildFactoryFromPackages({
     ));
 
     const fingerprintPayload = {
-      package: pkg,
+      package: documentaryReviewPackageFingerprint(pkg),
       relations: deterministic.relations,
       evidence: evidenceFingerprint(sourceEvidence),
     };
@@ -2031,6 +2090,7 @@ export function buildFactoryFromPackages({
       relations: deterministic.relations,
       anomalies,
       source_evidence: sourceEvidence,
+      application_closure: applicationClosurePackage,
     };
   });
 
@@ -2061,6 +2121,7 @@ export function buildFactoryFromPackages({
     review_scheduler: {
       current_execution_package_id: normalizedCurrentExecutionPackageId,
     },
+    application_closure: applicationClosure,
     dossiers,
     ledger,
     metrics: {
@@ -2088,6 +2149,10 @@ async function buildFactory(root) {
     supplied: { skipDerivedReports: true },
   });
 
+  const applicationClosure = loadPackageApplicationClosure({
+    root,
+    registry: readiness.registry,
+  });
   const rawPackages = readiness?.registry?.packages ?? [];
   const canonicalPackages = rawPackages.filter(
     ({ source_kind: sourceKind }) => sourceKind === 'CANONICAL_GAP_PACKAGE',
@@ -2173,6 +2238,7 @@ async function buildFactory(root) {
     previousLedger,
     currentExecutionPackageId:
       readiness?.registry?.package_execution?.current?.package_id ?? null,
+    applicationClosure,
   });
 
   const output = writeOutputs(root, snapshot, snapshot.ledger);
@@ -2209,6 +2275,9 @@ function printStatus(result) {
   console.log(`REVIEWABLE_NOW: ${schedulingCounts.REVIEWABLE_NOW}`);
   console.log(`WAITING_DOCUMENTATION: ${schedulingCounts.WAITING_DOCUMENTATION}`);
   console.log(`ANOMALY_QUEUE: ${queue.length}`);
+  console.log(`PACKAGE_CLOSURE_CLOSED: ${snapshot.application_closure?.metrics?.package_closure_counts?.CLOSED ?? 0}`);
+  console.log(`PACKAGE_CLOSURE_OPEN: ${snapshot.application_closure?.metrics?.package_closure_counts?.OPEN ?? 0}`);
+  console.log(`APPLICATION_CLOSURE: ${APPLICATION_CLOSURE_PATH}`);
   console.log(`INDEX: ${INDEX_PATH}`);
   console.log(`DOSSIERS: ${DOSSIERS_MD_PATH}`);
   console.log(`LEDGER: ${LEDGER_PATH}`);
