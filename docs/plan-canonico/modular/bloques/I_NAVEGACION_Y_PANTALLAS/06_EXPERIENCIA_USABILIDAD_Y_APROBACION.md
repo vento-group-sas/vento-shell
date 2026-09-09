@@ -462,7 +462,450 @@ No se permite reducir el contrato para hacer coincidir una implementación legac
 `AUTH-UI-047 — Mostrar rol simulado claramente`
 
 
-### [ ] AUTH-UI-047 — Mostrar rol simulado claramente
+### ✅ AUTH-UI-047 — Mostrar rol simulado claramente
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-046 — Mostrar contexto activo en cada aplicación
+**Tarea siguiente:** AUTH-UI-048 — Estandarizar estados sin acceso
+**Tipo de tarea:** definición documental transversal de semántica visible del rol simulado y separación inequívoca respecto del actor, rol y autoridad reales; materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** `BLOQUE I — Protección y estados de interfaz`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, componentes, rutas, Supabase, RLS, RPC, permisos, sesiones, cookies, claims, datos, catálogos, despliegues ni configuración de aplicaciones
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una presentación inequívoca del rol simulado en cualquier superficie afectada por una simulación de autorización, de modo que la persona pueda reconocer simultáneamente:
+
+- que se encuentra en un escenario hipotético;
+- qué rol exacto está siendo representado;
+- si el rol objetivo pertenece al catálogo `BASE` o `OPERATIONAL`;
+- que el actor humano, la sesión y la autoridad reales continúan siendo los del solicitante;
+- que un resultado hipotético no concede acceso, no ejecuta acciones y no reemplaza el contexto real;
+- qué dimensiones adicionales del escenario siguen siendo necesarias para interpretar el rol operativo simulado.
+
+La tarea desarrolla únicamente la semántica y la obligación de presentación del rol. No crea una identidad de usuario simulada, no realiza impersonación y no convierte la vista previa en una sesión empresarial ejecutable.
+
+```text
+ACTOR REAL
++
+ROL REAL
++
+ROL OBJETIVO SIMULADO TIPADO
++
+CONTEXTO HIPOTETICO
++
+RESULTADO HIPOTETICO
+=
+PRESENTACION EXPLICATIVA DE SIMULACION
+
+PRESENTACION EXPLICATIVA
+!=
+AUTORIDAD REAL
+```
+
+---
+
+#### 2. Fuentes y handoff consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-UI-046` y `APPLICATION-ACTIVE-CONTEXT-PRESENTATION-REGISTER-001`, que exigen que la simulación sea una dimensión disponible del contexto visible y reservan a esta tarea su tratamiento visual específico;
+- `UX-BASE-005` y `UX-ACTIVE-CONTEXT-VISIBILITY-CONTRACT-001`, que separan rol base, rol operativo, delegación, simulación y rol de navegación, y exigen que la simulación permanezca perceptible en las superficies afectadas;
+- `AUTH-SIM-001`, que separa solicitante humano real, sesión real, objetivo simulado y autoridad ejecutable;
+- `AUTH-SIM-002`, `SIMULATABLE-ROLE-CONTRACT-001` y `SIMULATABLE-ROLE-REGISTER-001`, que definen referencias de rol tipadas, ocho roles base canónicos, doce roles operativos canónicos y estados cerrados de disponibilidad del objetivo;
+- `AUTH-SIM-003..005`, que completan sede, área, turno y check-in hipotéticos cuando una evaluación operacional los exige;
+- `AUTH-SIM-006`, que mantiene separados los planos real y simulado y limita el resultado hipotético a `WOULD_ALLOW`, `WOULD_DENY` o `INDETERMINATE` con `executable = false`;
+- `AUTH-UI-037`, que ya prohíbe usar simulación como bypass de autoridad;
+- el catálogo de aplicaciones y pantallas consumido por `AUTH-UI-046`.
+
+Handoff principal:
+
+```text
+AUTH-UI-046
+CONTEXTO ACTIVO VISIBLE
+        ↓
+AUTH-UI-047
+ROL SIMULADO INEQUIVOCO
+        ↓
+AUTH-UI-048..051
+ESTADOS DE BLOQUEO, CARGA, VACIO Y RECUPERACION
+```
+
+La existencia del rol simulado no reemplaza ninguna dimensión resuelta por `AUTH-UI-046`; únicamente añade la representación explícita del escenario hipotético cuando corresponde.
+
+---
+
+#### 3. Resultado material
+
+Se definen dos artefactos documentales vinculantes:
+
+1. `SIMULATED-ROLE-VISIBILITY-CONTRACT-001`, que fija separación de identidades, gramática visible, reglas por tipo de rol, comportamiento ante estados inválidos, accesibilidad, minimización y fronteras con simulación física;
+2. `SIMULATED-ROLE-PRESENTATION-REGISTER-001`, que materializa una decisión de presentación para las veinte identidades de rol canónicamente simulables definidas por `AUTH-SIM-002`.
+
+El contrato no replica el catálogo de roles. Cada fila conserva la referencia tipada propietaria y consume sus decisiones de versión, sensibilidad, disponibilidad y completitud.
+
+Campos mínimos del registro:
+
+| Campo | Regla |
+| --- | --- |
+| `simulated_role_reference` | referencia exacta y tipada `BASE/<role_code>` u `OPERATIONAL/<role_code>` |
+| `role_kind` | `BASE` u `OPERATIONAL`; nunca se infiere desde el texto |
+| `canonical_role_status` | consume la decisión del contrato de simulación; esta tarea no la redefine |
+| `runtime_role_status` | consume el estado vigente del objetivo; solo un objetivo disponible puede presentarse como simulación activa |
+| `human_role_label` | etiqueta humana de la identidad exacta; el código técnico no es contenido principal |
+| `simulation_marker_required` | siempre verdadero cuando una simulación aceptada afecta la superficie |
+| `real_identity_context_required` | siempre verdadero; la simulación no oculta la existencia del actor real |
+| `operational_context_required` | verdadero cuando la acción simulada necesita sede, área, turno, check-in u otra dimensión operacional |
+| `hypothetical_result_label` | separa `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE` de cualquier decisión real |
+| `execution_affordance` | siempre no ejecutable dentro de la vista previa simulada |
+| `source_contract` | `AUTH-SIM-002` y contratos de contexto aplicables |
+| `physical_materialization` | diferida a la instancia física propietaria por `implementation_unit_id` |
+
+---
+
+#### 4. Separación obligatoria de identidades
+
+La presentación deberá conservar simultáneamente los siguientes planos cuando existan:
+
+| Plano | Identidad | Regla visible |
+| --- | --- | --- |
+| actor real | persona humana autenticada que solicita la simulación | permanece atribuible y no es reemplazada por el sujeto o rol simulado |
+| rol base real | rol base efectivo del actor real | no se renombra como el rol objetivo |
+| rol operativo real | rol operativo vigente del actor real cuando exista | no se presta al escenario hipotético |
+| rol base simulado | referencia `BASE/...` seleccionada y aceptada | se etiqueta expresamente como rol simulado |
+| rol operativo simulado | referencia `OPERATIONAL/...` seleccionada y aceptada | se etiqueta expresamente como rol operativo simulado y exige contexto hipotético suficiente |
+| rol de navegación | recorte técnico o legacy de interfaz | no se presenta como rol laboral real ni simulado |
+| sujeto simulado | sujeto hipotético o tercero explícito, cuando aplique | nunca sustituye visualmente al actor real |
+
+Invariantes:
+
+```text
+ROL SIMULADO != ROL REAL
+ROL SIMULADO != ACTOR REAL
+ROL SIMULADO != ROL DE NAVEGACION
+ROL SIMULADO != PERMISO
+ROL SIMULADO != SESION
+ROL SIMULADO != IMPERSONACION
+WOULD_ALLOW != ALLOW
+WOULD_DENY != DENY REAL
+INDETERMINATE != PERMITIDO
+```
+
+Una interfaz que muestre únicamente el nombre del rol objetivo sin declarar que es simulado incumple esta tarea.
+
+---
+
+#### 5. Gramática visible mínima
+
+Cuando una simulación aceptada afecte la superficie, la interfaz deberá exponer de forma perceptible, sin depender solo de color o iconografía:
+
+1. un indicador explícito de que existe simulación;
+2. la etiqueta humana del rol objetivo;
+3. el tipo del rol cuando sea necesario para evitar ambigüedad entre `BASE` y `OPERATIONAL`;
+4. la separación respecto de la identidad o contexto real del solicitante;
+5. las dimensiones hipotéticas requeridas por el escenario, sin presentarlas como contexto real;
+6. el resultado hipotético, cuando exista, identificado como vista previa no ejecutable.
+
+`UX-BASE-005` ya fija como referencia humana mínima la estructura:
+
+```text
+SIMULACIÓN ACTIVA
+Viendo como: Supervisor de Vento Café
+No estás actuando con el contexto real de tu cuenta
+```
+
+La materialización física podrá adaptar longitud y composición al dispositivo, pero deberá conservar esas tres ideas semánticas: **modo simulado**, **rol objetivo** y **separación de la cuenta/contexto real**.
+
+Queda prohibido usar como contenido principal:
+
+- `role_code`;
+- `navigation_role`;
+- UUID;
+- claves de permisos;
+- nombres de tablas;
+- claims;
+- nombres de funciones, RPC o helpers;
+- un badge sin texto equivalente;
+- una diferencia únicamente cromática.
+
+---
+
+#### 6. Estados del objetivo y regla de presentación
+
+Los estados definidos por `AUTH-SIM-002` gobiernan si el rol puede mostrarse como objetivo activo:
+
+| Estado del objetivo | Presentación permitida |
+| --- | --- |
+| `SIMULABLE + AVAILABLE` | puede presentarse como rol simulado activo únicamente dentro de una simulación aceptada y vigente |
+| `SIMULABLE + BLOCKED_NOT_MATERIALIZED` | no se presenta como simulación activa; conserva el bloqueo de materialización |
+| `NOT_SIMULABLE + BLOCKED_LEGACY` | no se normaliza, renombra ni presenta como equivalente canónico |
+| `NOT_SIMULABLE + BLOCKED_DEPRECATED` | no se presenta como objetivo vigente |
+| `NOT_SIMULABLE + BLOCKED_INACTIVE` | no se presenta como rol activo |
+| `NOT_SIMULABLE + BLOCKED_AMBIGUOUS` | no se elige un tipo o catálogo por inferencia |
+| `NOT_SIMULABLE + BLOCKED_UNKNOWN` | no se fabrica etiqueta ni autoridad para el código desconocido |
+| `BLOCKED_VERSION_MISMATCH` | no se presenta una versión como si fuera compatible; requiere reconstrucción del escenario |
+
+Esta tarea no define el mensaje completo de recuperación para cada bloqueo. Esa presentación deberá reutilizar las tareas de estados y errores correspondientes sin convertir un objetivo inválido en simulación activa.
+
+---
+
+#### 7. Matriz completa de roles base simulables
+
+Las ocho identidades base canónicas mantienen una decisión de presentación explícita:
+
+| Rol objetivo | Tipo visible | Tratamiento del rol simulado | Separación obligatoria |
+| --- | --- | --- | --- |
+| `BASE/propietario` | rol base simulado | mostrar como objetivo privilegiado únicamente cuando el contrato de simulación lo acepte | no confundir con el rol real del solicitante ni con autoridad de propietario |
+| `BASE/gerente_general` | rol base simulado | mostrar la identidad exacta y su condición hipotética | no presentar alcance global por nombre del rol |
+| `BASE/gerente` | rol base simulado | mostrar rol y cobertura hipotética por separado | cobertura administrativa simulada no es sede operativa real |
+| `BASE/supervisor` | rol base simulado | mostrar solo cuando su estado de runtime permita construir la simulación | no sustituir un objetivo no materializado por otro rol |
+| `BASE/auxiliar_administrativa` | rol base simulado | mostrar identidad funcional exacta | no derivar autoridad gerencial u operativa |
+| `BASE/contador` | rol base simulado | mostrar identidad funcional sensible con minimización aplicable | no revelar datos por autoridad simulada |
+| `BASE/marketing` | rol base simulado | mostrar identidad funcional exacta | no convertir capacidad de contenido en administración global |
+| `BASE/trabajador_operativo` | rol base simulado | mostrar solo cuando su estado de runtime permita construir la simulación | no tratarlo como rol operativo ni inferir oficio |
+
+La clase de sensibilidad, disponibilidad física y necesidad de reautenticación permanecen gobernadas por `AUTH-SIM-002`; esta tarea únicamente define su representación visible.
+
+---
+
+#### 8. Matriz completa de roles operativos simulables
+
+Las doce identidades operativas canónicas mantienen una decisión de presentación explícita:
+
+| Rol objetivo | Familia | Tratamiento visible | Contexto hipotético asociado |
+| --- | --- | --- | --- |
+| `OPERATIONAL/cajero_satelite` | Satélite | rol operativo simulado | sede, área, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/barista_satelite` | Satélite | rol operativo simulado | sede, área, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/cocinero_satelite` | Satélite | rol operativo simulado | sede, área, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/servicio_salon` | Satélite | rol operativo simulado | sede, área, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/mostrador_satelite` | Satélite | rol operativo simulado | sede, área, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/operador_integral_satelite` | Satélite | rol operativo simulado | sede, área compatible, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/produccion_cocina` | Producción | rol operativo simulado | sede, área de producción, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/produccion_panaderia` | Producción | rol operativo simulado | sede, área de producción, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/produccion_reposteria` | Producción | rol operativo simulado | sede, área de producción, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/bodeguero` | Logística | rol operativo simulado | sede, área logística, turno, permiso, recurso y check-in cuando aplique |
+| `OPERATIONAL/conductor_logistica` | Logística | rol operativo simulado | sede base, itinerario o custodia, turno, permiso, recurso y check-in exigido por política |
+| `OPERATIONAL/gerencia_operativa` | Coordinación operativa | rol operativo simulado | sede, área compatible, turno, permiso, recurso y check-in cuando aplique |
+
+Un rol operativo simulado sin el contexto hipotético requerido no se presenta como capacidad ejecutable. Cuando falte una dimensión necesaria, el resultado permanece `INDETERMINATE` o el estado de bloqueo que corresponda según los contratos propietarios.
+
+---
+
+#### 9. Colisiones, legacy y roles híbridos
+
+##### 9.1. Identidades bare prohibidas
+
+La interfaz no podrá presentar una cadena bare como identidad suficiente.
+
+```text
+BASE/bodeguero
+!=
+OPERATIONAL/bodeguero
+```
+
+El texto visible podrá coincidir parcialmente, pero la semántica y el tipo deberán permanecer diferenciados.
+
+##### 9.2. Legacy y deprecados
+
+Los códigos legacy o deprecados no se transforman por semejanza textual. Una referencia bloqueada conserva su diagnóstico y no se muestra como rol simulado canónico activo.
+
+##### 9.3. Escenarios con rol base y operativo
+
+Cuando el escenario contenga ambos carriles, se presentan como dos referencias independientes:
+
+```text
+ROL BASE SIMULADO
++
+ROL OPERATIVO SIMULADO
+```
+
+No se crea un tercer rol híbrido, no se concatenan permisos y no se muestra una etiqueta única que oculte qué carril aporta cada parte del escenario.
+
+---
+
+#### 10. Resultado hipotético y no ejecutabilidad
+
+Cuando la simulación produzca una decisión explicativa, la interfaz conservará exactamente el dominio hipotético:
+
+| Resultado | Interpretación visible |
+| --- | --- |
+| `WOULD_ALLOW` | el escenario hipotético permitiría la capacidad si todas sus premisas fueran reales; no autoriza ejecutar |
+| `WOULD_DENY` | el escenario hipotético denegaría la capacidad; no modifica permisos reales fuera de la vista previa |
+| `INDETERMINATE` | faltan datos, versiones o contexto para resolver el escenario; nunca se trata como permitido |
+
+Reglas:
+
+1. ningún resultado hipotético usa la palabra o estado `ALLOW` ejecutable;
+2. ningún CTA de negocio se habilita por `WOULD_ALLOW`;
+3. datos reales visibles continúan limitados por el actor y permisos reales;
+4. salir de la vista previa obliga a una autorización real fresca antes de cualquier operación;
+5. un resultado cacheado, expirado o incompatible no mantiene el rol simulado como vigente.
+
+---
+
+#### 11. Proyección por aplicación
+
+`AUTH-UI-047` reutiliza las diez filas de aplicación materializadas por `AUTH-UI-046`; no reasigna pantallas ni crea una matriz de autorización paralela.
+
+| Aplicación | Regla cuando una simulación afecta la superficie |
+| --- | --- |
+| `shell` | puede transportar la referencia de vista previa y mostrar el estado simulado, pero el destino reconstruye contexto y nunca hereda autoridad |
+| `anima` | el rol simulado no sustituye al trabajador real, jornada, asistencia ni check-in reales |
+| `viso` | puede presentar herramientas de simulación y comparación; actor real, rol objetivo y resultado hipotético permanecen separados |
+| `nexo` | un rol operativo simulado muestra por separado sede, área/estación y territorio hipotéticos; inventario real sigue limitado por autoridad real |
+| `fogo` | un rol productivo simulado no crea turno, check-in, área productiva, lote ni autorización de producción reales |
+| `origo` | un rol simulado no concede recepción, aprobación o alcance de proveedores fuera de la autoridad real |
+| `pulso` | un rol simulado no crea sesión de caja, punto, sede comercial, custodia ni capacidad de venta real |
+| `numera` | un rol simulado no amplía entidad, periodo, información financiera ni capacidad de mutación real |
+| `aura` | conserva cero pantallas canónicas admitidas en el catálogo consumido; esta tarea no fabrica una superficie de simulación |
+| `pass` | una simulación laboral no convierte al rol simulado en identidad cliente ni amplía datos o acciones del cliente |
+
+La presencia del indicador de simulación en una aplicación no demuestra que esa aplicación sea propietaria de la simulación ni que deba implementar una superficie propia para iniciarla.
+
+---
+
+#### 12. Accesibilidad, privacidad y minimización
+
+La presentación deberá cumplir:
+
+1. la condición simulada es comprensible sin depender de color, opacidad, icono, hover, sonido o vibración;
+2. el rol objetivo y la separación del contexto real permanecen accesibles por teclado y lector de pantalla cuando la superficie sea interactiva;
+3. un cambio de rol simulado produce una actualización perceptible sin repetir anuncios de forma disruptiva;
+4. el rol simulado no se oculta únicamente en el menú de perfil;
+5. el actor real se representa con minimización suficiente para conservar atribución sin exponer documento, correo, teléfono u otros datos innecesarios;
+6. un sujeto simulado de tercero no revela identidad o información adicional si el solicitante no tiene derecho real a conocerla;
+7. los datos sensibles continúan sujetos a masking y alcance reales;
+8. el texto visible no se usa como fuente de autorización ni como identificador técnico.
+
+---
+
+#### 13. Fronteras con tareas posteriores y con BLOQUE Q
+
+Esta tarea no absorbe:
+
+- `AUTH-UI-048`: taxonomía y presentación transversal de estados sin acceso;
+- `AUTH-UI-049`: estados de carga;
+- `AUTH-UI-050`: estados vacíos;
+- `AUTH-UI-051`: errores recuperables;
+- `AUTH-SIM-007`: diseño y lifecycle del aviso persistente transversal de simulación;
+- `AUTH-SIM-008..009`: auditoría de inicio y salida de simulación;
+- `AUTH-SIM-010`: bloqueo físico de acciones críticas durante simulación;
+- `AUTH-SIM-011`: modo físico solo lectura;
+- `AUTH-SIM-012..014` y `AUTH-QA-019`: validación integral y pruebas de simulación;
+- tareas propietarias de cada aplicación: componentes, stores, hooks, layouts, rutas, server actions o bindings concretos;
+- cambios físicos en catálogos, base de datos, sesiones o contratos compartidos.
+
+La obligación de que el rol simulado sea inequívoco es inmediata en el contrato documental. El componente concreto, su ubicación, persistencia técnica, lifecycle y pruebas pertenecen a las instancias físicas y tareas propietarias posteriores.
+
+---
+
+#### 14. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la obligación de separar rol real, rol operativo, delegación, simulación, actor y contexto ya está protegida por requisitos canónicos vigentes provenientes de los contratos UX y de simulación. Esta tarea materializa la presentación documental de esa cobertura sin cambiar una regla protegida, prioridad, modalidad, propietario, paquete, estado, evidencia o relación del registro 04A.
+
+---
+
+#### 15. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro 04A, la cobertura existente que protege:
+
+- visibilidad persistente y diferenciada de rol base, rol operativo, delegación y simulación;
+- separación entre actor real, rol objetivo simulado y autoridad ejecutable;
+- identidad tipada del rol objetivo y rechazo de roles legacy, deprecados, desconocidos o ambiguos;
+- no ejecutabilidad de navegación y controles simulados;
+- separación de contexto real y simulado en sesión, permisos, datos, caché y endpoints;
+- visibilidad de actor, rol y contexto en dispositivos compartidos;
+- etiquetas humanas diferenciadas para rol base, rol operativo, simulación y delegación.
+
+Trazabilidad vigente reutilizada: `TREQ-UX-080`, `TREQ-UX-216`, `TREQ-UX-308`, `TREQ-AUTH-073`, `TREQ-AUTH-076`, `TREQ-AUTH-119..127`.
+
+---
+
+#### 16. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| `BUILD` | `NOT_EXECUTED` | la tarea no ha sido insertada ni compilada todavía en el checkout del usuario |
+| `LOCAL` | `NOT_EXECUTED` | no se han ejecutado formateo, quality, delivery check ni batería local sobre el archivo propietario modificado |
+| `REMOTA` | `NOT_EXECUTED` | no existe cierre documental, PR ni validación remota de `AUTH-UI-047` |
+| `OPERATIVA` | `NOT_APPLICABLE` | la tarea define semántica documental y no ejecuta una sesión real de simulación |
+| `FÍSICA` | `NOT_APPLICABLE` | no se modifica código, infraestructura, Supabase, dispositivo, UI desplegada ni datos |
+
+---
+
+#### 17. Criterios de aceptación
+
+- [ ] Se distingue inequívocamente rol simulado, rol real, actor real y rol de navegación.
+- [ ] Se conserva `BASE` frente a `OPERATIONAL` sin inferencia por texto.
+- [ ] Las veinte identidades de rol simulables de `AUTH-SIM-002` tienen decisión de presentación.
+- [ ] Los ocho roles base canónicos están cubiertos sin faltantes ni duplicados.
+- [ ] Los doce roles operativos canónicos están cubiertos sin faltantes ni duplicados.
+- [ ] Un objetivo bloqueado, legacy, deprecado, inactivo, ambiguo, desconocido o con versión incompatible no se presenta como simulación activa.
+- [ ] `BASE/bodeguero` y `OPERATIONAL/bodeguero` permanecen diferenciados.
+- [ ] Un escenario base + operativo no crea un rol híbrido ni une permisos indiscriminadamente.
+- [ ] `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE` permanecen resultados hipotéticos no ejecutables.
+- [ ] El actor y la autoridad reales permanecen identificables y no son sustituidos por el sujeto simulado.
+- [ ] Las diez aplicaciones consumidas por `AUTH-UI-046` conservan una regla explícita de proyección cuando la simulación las afecta.
+- [ ] `aura` conserva cero pantallas canónicas admitidas y no recibe una superficie inventada.
+- [ ] `pass` conserva identidad cliente separada de cualquier simulación laboral.
+- [ ] La presentación es accesible y no depende únicamente de color o iconografía.
+- [ ] La tarea no absorbe el aviso persistente y lifecycle de `AUTH-SIM-007`.
+- [ ] La tarea no absorbe los estados sin acceso de `AUTH-UI-048`.
+- [ ] No se crean ni modifican requisitos de prueba.
+- [ ] No se modifica 04A.
+- [ ] No se autoriza materialización física.
+
+---
+
+#### 18. Límites
+
+`AUTH-UI-047` no:
+
+- inicia una simulación;
+- decide quién puede simular;
+- modifica los veinte roles simulables;
+- materializa roles ausentes;
+- crea aliases para roles legacy;
+- decide sede, área, turno o check-in simulados;
+- mezcla permisos reales y simulados;
+- crea una sesión o identidad de impersonación;
+- cambia JWT, cookies, claims o `localStorage`;
+- habilita navegación o acciones empresariales reales mediante `WOULD_ALLOW`;
+- crea componentes, banners, headers, badges, layouts o stores físicos;
+- define la implementación completa del aviso persistente de `AUTH-SIM-007`;
+- define mensajes de no acceso, carga, vacío o recuperación reservados a `AUTH-UI-048..051`;
+- modifica Supabase, RLS, RPC, datos, catálogos, rutas o despliegues;
+- modifica requisitos existentes del registro 04A;
+- inicia ni autoriza una instancia física.
+
+La materialización posterior conserva la topología `PER_IMPLEMENTATION_UNIT` de la etapa documental vigente.
+
+---
+
+#### 19. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-046 — Mostrar contexto activo en cada aplicación`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-047 — Mostrar rol simulado claramente`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-048 — Estandarizar estados sin acceso`
+
+
 ### [ ] AUTH-UI-048 — Estandarizar estados sin acceso
 ### [ ] AUTH-UI-049 — Estandarizar estados de carga
 ### [ ] AUTH-UI-050 — Estandarizar estados vacíos

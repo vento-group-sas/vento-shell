@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1145** |
+| Tareas aprobadas | **1146** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **451** |
+| Tareas no iniciadas | **450** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **71.74% (1145/1596)** |
+| Porcentaje de completamiento | **71.80% (1146/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-046 — Mostrar contexto activo en cada aplicación** |
-| Tarea actual | **AUTH-UI-047 — Mostrar rol simulado claramente** |
+| Última tarea aprobada | **AUTH-UI-047 — Mostrar rol simulado claramente** |
+| Tarea actual | **AUTH-UI-048 — Estandarizar estados sin acceso** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-048 — Estandarizar estados sin acceso** |
+| Siguiente tarea | **AUTH-UI-049 — Estandarizar estados de carga** |
 | Bloque actual | **BLOQUE I — Protección y estados de interfaz** |
-| Progreso del bloque | **BLOQUE I: 7 de 12 aprobadas; AUTH-UI-047 pendiente** |
+| Progreso del bloque | **BLOQUE I: 8 de 12 aprobadas; AUTH-UI-048 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-047** |
+| Carril documental | **ACTIVO — AUTH-UI-048** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-046` — Mostrar contexto activo en cada aplicación |
-| Tarea actual | `AUTH-UI-047` — Mostrar rol simulado claramente — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-048` — Estandarizar estados sin acceso |
+| Última aprobada | `AUTH-UI-047` — Mostrar rol simulado claramente |
+| Tarea actual | `AUTH-UI-048` — Estandarizar estados sin acceso — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-049` — Estandarizar estados de carga |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE I: 7 DE 12 APROBADAS — ACTUAL AUTH-UI-047** |
+| CONTINUIDAD ACTIVA | **BLOQUE I: 8 DE 12 APROBADAS — ACTUAL AUTH-UI-048** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-046 — Mostrar contexto activo en cada aplicación
-        ↓
-TAREA ACTUAL
 AUTH-UI-047 — Mostrar rol simulado claramente
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-048 — Estandarizar estados sin acceso
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-049 — Estandarizar estados de carga
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE I — 7 de 12 tareas aprobadas
+BLOQUE I — 8 de 12 tareas aprobadas
 ```
