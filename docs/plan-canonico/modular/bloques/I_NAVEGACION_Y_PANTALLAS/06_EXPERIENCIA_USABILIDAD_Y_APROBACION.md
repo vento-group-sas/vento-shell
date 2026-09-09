@@ -906,7 +906,393 @@ La materialización posterior conserva la topología `PER_IMPLEMENTATION_UNIT` d
 `AUTH-UI-048 — Estandarizar estados sin acceso`
 
 
-### [ ] AUTH-UI-048 — Estandarizar estados sin acceso
+### ✅ AUTH-UI-048 — Estandarizar estados sin acceso
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-047 — Mostrar rol simulado claramente
+**Tarea siguiente:** AUTH-UI-049 — Estandarizar estados de carga
+**Tipo de tarea:** definición documental transversal de presentación de estados sin acceso; materialización física posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** `BLOQUE I — Protección y estados de interfaz`
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, componentes, rutas, Supabase, RLS, RPC, permisos, datos, mensajes desplegados, aplicaciones ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Estandarizar cómo Vento OS presenta una condición de **sin acceso** cuando una superficie o acción protegida no puede continuar por una decisión autoritativa de autenticación, autorización o contexto, sin convertir la interfaz en fuente de autoridad y sin mezclar una denegación con carga, ausencia de datos o fallo técnico.
+
+La regla transversal queda:
+
+```text
+DECISION AUTORITATIVA DE ACCESO
+        ↓
+CAUSA ESTRUCTURADA Y SEGURA
+        ↓
+CLASIFICACION BLOCKED O DENIED CUANDO CORRESPONDA
+        ↓
+PRESENTACION HUMANA ESTANDAR
+        ↓
+ACCION SIGUIENTE SEGURA O ESCALAMIENTO
+
+PRESENTACION UI != DECISION DE AUTORIZACION
+MENSAJE != PERMISO
+OCULTAR != DENEGAR
+DESHABILITAR != PROTEGER
+```
+
+Esta tarea no crea nuevos motivos de denegación. Consume las causas canónicas ya definidas y estandariza su proyección visual.
+
+---
+
+#### 2. Fuentes y handoff consumidos
+
+La tarea consume, sin redefinir:
+
+- `AUTH-UI-040..045`, que separan navegación, acceso directo, acciones visibles y autorización autoritativa;
+- `AUTH-UI-046`, que exige mantener visible el contexto activo y distinguir estados de resolución o invalidez;
+- `AUTH-UI-047`, que fija la separación perceptible entre rol real y rol simulado;
+- `UX-BASE-003`, que separa texto humano, estado interno, ruta y permiso;
+- `UX-BASE-004`, que distingue autorización, relevancia, visibilidad, habilitación y estados vacíos;
+- `UX-BASE-005`, que define contexto autoritativo, ausencia de fallbacks y tratamiento de contexto inválido o no resuelto;
+- `UX-BASE-006`, que define la taxonomía transversal `BLOCKED`, `DENIED`, `WAITING`, `CONFLICT`, `TECHNICAL_FAILURE`, `VALIDATION_REQUIRED`, `WARNING` e `INFO`, junto con anatomía, recuperación, privacidad y accesibilidad del mensaje;
+- `AUTH-ERR-001..020`, que ya poseen las causas y contratos canónicos de bloqueo, denegación, configuración y separación frente a errores técnicos;
+- las diez aplicaciones canónicas ya reconciliadas por el mini-bloque: `shell`, `anima`, `viso`, `nexo`, `fogo`, `origo`, `pulso`, `numera`, `aura` y `pass`.
+
+El handoff de `AUTH-UI-047` permanece intacto: cuando exista simulación, el estado de acceso deberá conservar actor y rol reales diferenciados del rol hipotético. Un escenario simulado no modifica la decisión real ni la semántica de una denegación real.
+
+---
+
+#### 3. Resultado material
+
+Queda definido un estándar documental transversal de presentación de **sin acceso** aplicable a las superficies protegidas de las diez aplicaciones canónicas.
+
+El estándar exige que cada estado de sin acceso conserve simultáneamente:
+
+| Dimensión | Regla |
+| --- | --- |
+| fuente | decisión autoritativa o contrato canónico; nunca copy, ruta o estado local inventado |
+| clasificación | conservar `BLOCKED` y `DENIED` como categorías distintas cuando así lo determine la causa |
+| título humano | describir la situación sin código interno como contenido principal |
+| causa segura | explicar únicamente la frontera que el actor necesita conocer |
+| efecto | indicar qué superficie, acción o continuación queda bloqueada sin revelar recursos no autorizados |
+| contexto conservado | mantener visibles las dimensiones materiales que siguen siendo válidas |
+| acción siguiente | ofrecer solo una recuperación que el actor pueda ejecutar legítimamente |
+| escalamiento | identificar clase de responsable o canal cuando el actor no pueda resolver la causa |
+| referencia | permitir una referencia segura de soporte cuando sea necesaria, sin exponer secretos ni trazas técnicas |
+| accesibilidad | mantener percepción, lectura y navegación sin depender únicamente de color, icono, hover, sonido o vibración |
+| revalidación | toda recuperación o reapertura vuelve a consultar la fuente autoritativa |
+
+No se crea un enum nuevo ni se renombran reason codes existentes. La semántica procede de los contratos propietarios y la UI solo la proyecta.
+
+---
+
+#### 4. Frontera cerrada entre estados
+
+La experiencia deberá distinguir de forma determinista:
+
+| Condición observada | Tratamiento | Regla |
+| --- | --- | --- |
+| la autoridad confirmó que el actor no puede acceder | `DENIED` | presentar sin acceso y no ofrecer bypass |
+| falta una precondición o contexto resoluble que impide continuar | `BLOCKED` | presentar bloqueo y la condición segura de salida |
+| la autorización o el contexto todavía se están resolviendo | no es sin acceso todavía | corresponde a `AUTH-UI-049`; no anticipar una denegación |
+| el actor sí puede leer pero el conjunto autorizado contiene cero elementos | no es sin acceso | corresponde a `AUTH-UI-050` |
+| existe fallo técnico, timeout, dependencia caída o resultado incierto | no es denegación | corresponde a `AUTH-UI-051` y al contrato técnico aplicable |
+| existe espera empresarial o de handoff | `WAITING`, no denegación | conservar propietario, condición y siguiente revisión |
+| existe conflicto concurrente | `CONFLICT`, no denegación por defecto | bloquear mutación y conservar recuperación propia |
+| faltan datos corregibles del formulario | `VALIDATION_REQUIRED`, no denegación por defecto | señalar la corrección accionable sin fabricar falta de permiso |
+| existe advertencia o información | `WARNING` o `INFO` | no convertirla en bloqueo si el contrato permite continuar |
+
+Invariantes:
+
+```text
+NO_ACCESS != LOADING
+NO_ACCESS != EMPTY
+NO_ACCESS != TECHNICAL_FAILURE
+NO_ACCESS != RESULT_UNKNOWN
+NO_ACCESS != WAITING
+NO_ACCESS != CONFLICT
+DENIED != BLOCKED
+```
+
+Una pantalla no podrá utilizar “sin acceso” como fallback universal para cualquier resultado no exitoso.
+
+---
+
+#### 5. Gramática visible mínima
+
+##### 5.1 Estado de superficie completa
+
+Cuando la superficie completa no pueda abrirse, la presentación deberá contener, según aplique:
+
+1. título humano inequívoco;
+2. explicación segura de la causa o frontera;
+3. efecto concreto sobre la superficie actual;
+4. contexto que continúa vigente;
+5. siguiente acción permitida;
+6. escalamiento o referencia de soporte cuando no exista recuperación directa;
+7. retorno seguro a una superficie autorizada cuando exista un destino contractual válido.
+
+La superficie no debe mostrar contenido protegido detrás del mensaje ni mantenerlo accesible en DOM, caché visual, foco o regiones ocultas.
+
+##### 5.2 Estado de acción bloqueada dentro de una superficie permitida
+
+Cuando la lectura de la superficie sea válida pero una acción específica no lo sea:
+
+- se preservará el contenido que el actor sí puede consultar;
+- el bloqueo se asociará a la acción o región afectada;
+- la explicación no convertirá un control deshabilitado en mecanismo de seguridad;
+- el endpoint o comando seguirá revalidando autoridad independientemente del estado del botón;
+- no se reemplazará toda la pantalla por un estado global si la restricción es exclusivamente de una acción.
+
+##### 5.3 Entrada directa, deep link o retorno cross-app
+
+Una entrada directa deberá revalidar en destino. Si la decisión es de sin acceso:
+
+- el conocimiento de la URL no habilita la superficie;
+- el origen no transporta autoridad;
+- la pantalla no revelará título, recurso, conteo o identidad sensible que el actor no esté autorizado a conocer;
+- el retorno propuesto deberá ser seguro y no depender de una URL arbitraria enviada por el cliente.
+
+---
+
+#### 6. Proyección de las causas canónicas
+
+`AUTH-ERR-001..020` permanece como familia propietaria de causas y contratos de bloqueo. `AUTH-UI-048` no modifica sus reason codes, precedencia, HTTP, auditoría ni reglas de servidor.
+
+La estandarización de UI agrupa su presentación únicamente por significado observable:
+
+| Familia de causa | Presentación esperada | Prohibición |
+| --- | --- | --- |
+| autenticación o identidad no utilizable | indicar que se requiere recuperar o resolver identidad cuando el contrato lo permita | no presentarlo como permiso faltante inventado |
+| acceso a aplicación o permiso denegado | indicar que esa capacidad no está disponible para el contexto actual | no revelar matrices, permisos de terceros ni forma de elevar privilegios |
+| sede, área, turno, check-in o rol operativo incompatibles | identificar la dimensión que impide continuar y el contexto que sí permanece válido | no aplicar sede primaria, último rol, área del dispositivo ni otro fallback |
+| dispositivo no autorizado | separar restricción del dispositivo de la identidad humana | no culpar al actor ni convertir el terminal en empleado |
+| acción incompatible con simulación | mantener visible el plano real y el simulado y bloquear el efecto real | no convertir un resultado hipotético en autoridad |
+| configuración o catálogo inconsistente | presentar indisponibilidad segura y ruta de escalamiento | no degradar el conflicto estructural a permiso faltante ni inventar configuración |
+| permiso no registrado o identidad contractual no resoluble | fallar cerrado con mensaje minimizado | no sugerir un código alternativo, alias o permiso aproximado |
+| error técnico frente a denegación | conservar planos separados | nunca mapear un fallo técnico a “no tienes acceso” por conveniencia de UI |
+| distribución cross-app | conservar semántica equivalente y revalidar al abrir | no congelar una decisión antigua en notificación, correo o deep link |
+
+Las aplicaciones podrán adaptar longitud, densidad o composición al dispositivo, pero no cambiar la categoría, causa, efecto o política de recuperación.
+
+---
+
+#### 7. Contexto, simulación y cambios materiales
+
+Un estado de sin acceso deberá conservar las separaciones aprobadas en las tareas anteriores:
+
+```text
+ACTOR REAL
+ROL REAL
+ROL SIMULADO CUANDO EXISTA
+SEDE / AREA / TURNO / CHECK-IN REALES
+DISPOSITIVO
+FRESCURA
+DECISION REAL
+```
+
+Reglas:
+
+1. si una simulación está activa, la denegación real permanece atribuida al actor real;
+2. el rol simulado puede explicar un escenario, pero no corrige ni reemplaza una denegación real;
+3. un cambio de actor, rol, sede, área, turno, check-in, dispositivo, delegación, simulación o permiso invalida mensajes incompatibles y obliga a revalidar;
+4. un mensaje `STALE` o perteneciente al contexto anterior no podrá mantenerse como decisión vigente;
+5. en dispositivos compartidos, cambiar actor limpia mensajes, referencias privadas y destinos del actor previo;
+6. una ausencia de contexto no se rellenará silenciosamente con asignaciones históricas o preferencias locales.
+
+---
+
+#### 8. Seguridad, privacidad y antienumeración
+
+La presentación de sin acceso deberá aplicar divulgación mínima.
+
+No se mostrará como contenido ordinario:
+
+- `permission_code`;
+- reason codes internos cuando su exposición no sea necesaria para soporte;
+- nombres de tablas, RPC, RLS, SQL, stack traces o payloads;
+- UUID o identificadores internos como explicación principal;
+- usuarios, roles o actores que sí poseen acceso;
+- existencia, nombre, cantidad o detalle de recursos sensibles cuando la autorización no permita conocerlos;
+- reglas antifraude, secretos, tokens, claims, políticas internas explotables o condiciones de bypass;
+- instrucciones para elevar permisos, cambiar roles artificialmente, usar otra cuenta o reutilizar credenciales.
+
+Cuando distinguir “no existe” de “no está autorizado” permita enumeración, la proyección visible deberá generalizar la respuesta conforme al contrato de seguridad propietario.
+
+Una referencia de soporte podrá exponerse solo si es opaca, no secreta y suficiente para correlacionar evidencia sin revelar el detalle técnico.
+
+---
+
+#### 9. Recuperación y escalamiento
+
+La acción siguiente depende de la causa autoritativa. No existe un CTA universal de reintento ni un CTA universal de “contactar administrador”.
+
+Reglas:
+
+1. autenticación requerida puede conducir a la recuperación de sesión definida por su contrato;
+2. un contexto corregible puede ofrecer selección o resolución únicamente mediante el mecanismo autorizado;
+3. una denegación estable no ofrecerá `Reintentar` como si fuera transitoria;
+4. si el actor no puede resolver la causa, se mostrará la clase de responsable, condición de revisión o canal definido por el proceso;
+5. no se solicitará al usuario que copie manualmente payloads, stacks, permisos o información técnica sensible;
+6. una notificación o escalamiento no prueba que el problema quedó resuelto;
+7. después de cualquier recuperación, la superficie o acción revalida desde cero antes de habilitarse.
+
+---
+
+#### 10. Accesibilidad y consistencia por dispositivo
+
+El estándar aplica a web, móvil, tablet y kiosco cuando la superficie sea aplicable.
+
+La presentación deberá:
+
+- tener un nombre o encabezado comprensible;
+- asociar el mensaje con la región o acción bloqueada;
+- conservar orden de lectura lógico;
+- ser navegable por teclado cuando exista teclado;
+- ser anunciable por tecnologías de asistencia;
+- no depender de color, icono, hover, sonido o vibración;
+- evitar loops de foco o anuncios repetitivos;
+- mantener objetivos táctiles y densidad compatibles con la estación;
+- conservar la misma semántica de causa y recuperación aunque cambie la composición responsive.
+
+La accesibilidad detallada y la validación con usuarios permanecen además bajo las tareas posteriores de prototipado, pruebas y aprobación del mini-bloque.
+
+---
+
+#### 11. Fronteras con tareas posteriores
+
+Esta tarea no absorbe:
+
+- `AUTH-UI-049`: estados de carga, resolución y espera de datos necesarios para saber si existe acceso o contenido;
+- `AUTH-UI-050`: estados vacíos cuando la lectura fue autorizada y la ausencia de elementos es demostrable;
+- `AUTH-UI-051`: errores recuperables, fallos técnicos, timeouts, resultado desconocido, retry e idempotencia;
+- `AUTH-UI-052..060`: simplificación, navegación, componentes, prototipos, pruebas con usuarios y aprobación de pantallas;
+- `AUTH-ERR-001..020`: propiedad de los reason codes, precedencia, contratos de bloqueo y separación técnica;
+- `AUTH-SRV-*`, `AUTH-DB-*`, `AUTH-CTX-*` y tareas propietarias de cada aplicación: resolución y enforcement físicos;
+- `AUTH-SIM-007..014`: lifecycle, persistencia, auditoría, restricciones y validación física de simulación.
+
+La materialización de este estándar queda diferida a las instancias físicas propietarias por `implementation_unit_id`.
+
+---
+
+#### Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+**Justificación:** la taxonomía de impedimentos, la anatomía de mensajes, la separación entre denegación y fallo técnico, el tratamiento de contexto, la antienumeración, la accesibilidad y la migración de mensajes ya poseen cobertura contractual registrada. Esta tarea concreta su proyección de interfaz sin alterar la regla protegida, prioridad, modalidad, responsable, estado ni relación de esos requisitos.
+
+---
+
+#### Cobertura de prueba vigente reutilizada
+
+Se reutilizan, sin modificación del registro:
+
+- `TREQ-UX-055`, para mensaje humano, efecto, siguiente paso y referencia segura;
+- `TREQ-UX-072`, para no confundir falta de visibilidad, error de carga y ausencia real;
+- `TREQ-UX-082`, para bloquear sin fallbacks cuando falta contexto obligatorio;
+- `TREQ-UX-094`, para explicar contexto ausente, inválido o no resuelto sin afirmar ausencia de trabajo;
+- `TREQ-UX-097`, para conservar separadas las categorías de impedimento;
+- `TREQ-UX-098`, para derivar la explicación de causa estructurada y no del copy;
+- `TREQ-UX-099`, para la anatomía mínima de la explicación humana;
+- `TREQ-UX-100`, para acciones de recuperación seguras;
+- `TREQ-UX-102`, para escalamiento con responsable y contexto;
+- `TREQ-UX-103`, para denegaciones sin fuga de información ni bypass;
+- `TREQ-UX-104`, para bloqueos de actor, territorio, jornada, rol, dispositivo, simulación o frescura;
+- `TREQ-UX-110`, para divulgación segura y antienumeración;
+- `TREQ-UX-111`, para mensajes seguros en dispositivos compartidos;
+- `TREQ-UX-113`, para consistencia y revalidación cross-app;
+- `TREQ-UX-114`, para accesibilidad de bloqueos y recuperación;
+- `TREQ-UX-115`, para lenguaje directo, neutral y no punitivo;
+- `TREQ-UX-116`, para vigencia, resolución y deduplicación de mensajes;
+- `TREQ-UX-117`, para migración y retiro controlado de mensajes legacy;
+- `TREQ-UX-309`, para distinguir denegación, bloqueo, espera, conflicto, fallo técnico y otros estados de recuperación.
+
+Estas referencias son trazabilidad heredada y no constituyen cambios al registro.
+
+---
+
+#### Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| `BUILD` | `NOT_EXECUTED` | la tarea aún no ha sido insertada ni compilada en el checkout del usuario |
+| `LOCAL` | `NOT_EXECUTED` | no se han ejecutado formateo, quality, delivery check, validadores de dominio ni batería global sobre el archivo propietario modificado |
+| `REMOTA` | `NOT_EXECUTED` | no existe todavía cierre documental, PR ni validación remota de `AUTH-UI-048` |
+| `OPERATIVA` | `NOT_APPLICABLE` | la tarea define un contrato documental de presentación y no ejecuta una sesión real ni una operación empresarial |
+| `FÍSICA` | `NOT_APPLICABLE` | no se modifica código, infraestructura, Supabase, dispositivo, UI desplegada ni datos |
+
+---
+
+#### Criterios de aceptación
+
+- [x] Se definió una presentación común de sin acceso sin crear una fuente nueva de autoridad.
+- [x] Se conservaron `BLOCKED` y `DENIED` como categorías distintas.
+- [x] Se separó sin acceso de carga, vacío, espera, conflicto, validación y fallo técnico.
+- [x] Se prohibió presentar una resolución todavía pendiente como denegación.
+- [x] Se prohibió presentar cero resultados autorizados como falta de acceso.
+- [x] Se prohibió presentar un fallo técnico como falta de permiso.
+- [x] Se definió anatomía mínima para superficie completa y acción bloqueada.
+- [x] Se conservó revalidación en URL directa, deep link y handoff cross-app.
+- [x] Se conservaron actor, contexto real y simulación como planos diferenciados.
+- [x] Se aplicó antienumeración y minimización de datos en mensajes de denegación.
+- [x] Se prohibieron rutas de recuperación que eleven permisos, cambien roles artificialmente o sugieran cuentas ajenas.
+- [x] Se definió recuperación específica por causa y no un retry universal.
+- [x] Se definió escalamiento cuando el actor no puede resolver el bloqueo.
+- [x] Se definieron requisitos de accesibilidad y consistencia responsive.
+- [x] Se preservó la propiedad de reason codes y enforcement en sus contratos propietarios.
+- [x] Se mantuvieron `AUTH-UI-049`, `AUTH-UI-050` y `AUTH-UI-051` fuera del alcance de esta tarea.
+- [x] Se mantuvo la materialización física diferida a `PER_IMPLEMENTATION_UNIT`.
+- [x] No se crearon ni modificaron requisitos de prueba.
+- [x] No se modificó el registro 04A.
+- [x] No se modificó código, Supabase, configuración, permisos, datos ni despliegues.
+
+---
+
+#### Límites
+
+`AUTH-UI-048` define exclusivamente la proyección documental de condiciones de sin acceso ya resueltas por contratos autoritativos.
+
+No define:
+
+- nuevos reason codes;
+- nuevas decisiones de autorización;
+- nuevos permisos;
+- nuevas rutas;
+- nuevos estados de carga, vacío o error recuperable;
+- reglas de retry o idempotencia;
+- componentes físicos compartidos;
+- implementación por aplicación;
+- migraciones de código o datos;
+- cambios en Supabase, RLS, RPC o Auth;
+- diseño final de prototipos;
+- resultados de pruebas con usuarios;
+- aprobación final de pantallas.
+
+Cualquier implementación concreta deberá consumir este estándar sin ampliar autoridad ni cambiar la causa canónica que lo originó.
+
+---
+
+#### Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-047 — Mostrar rol simulado claramente`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-048 — Estandarizar estados sin acceso`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-049 — Estandarizar estados de carga`
+
+
 ### [ ] AUTH-UI-049 — Estandarizar estados de carga
 ### [ ] AUTH-UI-050 — Estandarizar estados vacíos
 ### [ ] AUTH-UI-051 — Estandarizar errores recuperables
