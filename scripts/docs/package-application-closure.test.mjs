@@ -181,6 +181,31 @@ test('IMPLEMENTADO_POR deduplica la misma unidad conservando ambas procedencias'
   assert.deepEqual(relations[0].sources, ['DELIV-PKG-025', 'PACKAGE_GATE']);
 });
 
+test('IMPLEMENTADO_POR no materializa valores centinela de E5', () => {
+  const projection = parseCapabilityConsumerProjection(CAP_MAP_005);
+
+  for (const sentinel of ['NO_MATERIALIZADO', 'NO MATERIALIZADO', 'NO_APLICA']) {
+    const overrides = new Map([[
+      'GAP-PKG-001',
+      {
+        canonical_prerequisites: { implementation_unit_id: sentinel },
+      },
+    ]]);
+    const model = buildPackageApplicationClosure({
+      registry: { packages: canonicalPackages(overrides) },
+      consumerProjection: projection,
+      packageGates: [],
+      implementationInstances: [],
+    });
+
+    assert.equal(
+      model.packages[0].relations.IMPLEMENTADO_POR.length,
+      0,
+      `sentinel ${sentinel} no puede convertirse en implementation_unit_id`,
+    );
+  }
+});
+
 test('CI020 VERIFIED no equivale a package CLOSED', () => {
   const projection = parseCapabilityConsumerProjection(CAP_MAP_005);
   const model = buildPackageApplicationClosure({
