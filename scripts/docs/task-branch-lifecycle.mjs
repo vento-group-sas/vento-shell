@@ -91,7 +91,19 @@ export function classifyTaskFinishContinuity({
   }
 
   const baseCurrentTaskId = activeSequenceTaskIds(baseActiveSequence)[0] ?? null;
+  const baseNextTaskId = activeSequenceTaskIds(baseActiveSequence)[1] ?? null;
   const baseHandoffTaskId = String(baseActiveSequence?.handoff_task_id ?? '').trim();
+  const activeSequenceTransition = (
+    activeSequenceCurrent === true
+    && baseCurrentTaskId === taskId
+    && baseNextTaskId !== null
+    && continuityCurrent === baseNextTaskId
+  );
+
+  if (activeSequenceTransition) {
+    return { allowed: true, mode: 'ACTIVE_SEQUENCE_TRANSITION' };
+  }
+
   const terminalStageTransition = (
     activeSequenceCurrent === true
     && baseCurrentTaskId === taskId

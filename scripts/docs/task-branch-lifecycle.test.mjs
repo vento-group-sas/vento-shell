@@ -66,6 +66,40 @@ test('finish conserva el cierre estandar cuando previous coincide con la tarea',
   );
 });
 
+test('finish admite avance al siguiente task de main aunque previous siga el orden canonico global', () => {
+  const baseActiveSequence = {
+    segments: [
+      { prefix: 'AUTH-DEV', from: 16, to: 16 },
+      { prefix: 'AUTH-SIM', from: 7, to: 14 },
+    ],
+    handoff_task_id: 'NEXO-DOM-002',
+  };
+
+  assert.deepEqual(
+    classifyTaskFinishContinuity({
+      taskId: 'AUTH-DEV-016',
+      taskState: 'APROBADA',
+      continuityPrevious: 'AUTH-SIM-006',
+      continuityCurrent: 'AUTH-SIM-007',
+      activeSequenceCurrent: true,
+      baseActiveSequence,
+    }),
+    { allowed: true, mode: 'ACTIVE_SEQUENCE_TRANSITION' },
+  );
+
+  assert.deepEqual(
+    classifyTaskFinishContinuity({
+      taskId: 'AUTH-DEV-016',
+      taskState: 'APROBADA',
+      continuityPrevious: 'AUTH-SIM-006',
+      continuityCurrent: 'AUTH-SIM-008',
+      activeSequenceCurrent: true,
+      baseActiveSequence,
+    }),
+    { allowed: false, mode: 'CONTINUITY_MISMATCH' },
+  );
+});
+
 test('finish admite cierre terminal solo contra el handoff declarado por main', () => {
   const baseActiveSequence = {
     segments: [{ prefix: 'INT-DB', from: 8, to: 8 }],
