@@ -2022,18 +2022,98 @@ export function derivePackageExecutionRequirements({ contract, packageGate = nul
   const targets = Array.isArray(packageGate?.physical_identity?.targets)
     ? packageGate.physical_identity.targets
     : [];
+  const implementationUnits = Array.isArray(packageGate?.implementation_units)
+    ? packageGate.implementation_units
+    : [];
+  const deploymentTargets = Array.isArray(packageGate?.deployment_environment?.targets)
+    ? packageGate.deployment_environment.targets
+    : [];
 
-  const targetPaths = targets
-    .map((target) => normalizedTargetPath(target?.path))
-    .filter(Boolean);
+  // Applicability is path-based. Repository identity is required only to derive
+  // collision-safe resource keys; a path-only target must not erase a Supabase requirement.
+  const targetPaths = [...new Set(
+    targets
+      .map((target) => normalizedTargetPath(target?.path))
+      .filter(Boolean),
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  const qualifiedTargets = targets
+    .map((target) => ({
+      repository: String(target?.repository ?? '').trim(),
+      path: normalizedTargetPath(target?.path),
+    }))
+    .filter(({ repository, path: relativePath }) => repository && relativePath);
+
+  const targetPathKeys = [...new Set(
+    qualifiedTargets.map(({ repository, path: relativePath }) => `${repository}:${relativePath}`),
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  const targetRepositories = [...new Set(
+    qualifiedTargets.map(({ repository }) => repository),
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  const implementationUnitIds = [...new Set(
+    implementationUnits
+      .map((unit) => {
+        const repository = String(unit?.repository ?? '').trim();
+        const unitId = String(unit?.unit_id ?? '').trim();
+        return repository && unitId ? `${repository}:${unitId}` : '';
+      })
+      .filter(Boolean),
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  const deploymentTargetKeys = [...new Set(
+    deploymentTargets
+      .map((target) => {
+        const role = String(target?.environment_role ?? '').trim().toUpperCase();
+        const type = String(target?.target_type ?? '').trim().toUpperCase();
+        const id = String(target?.target_id ?? '').trim();
+        return role && type && id ? `${role}:${type}:${id}` : '';
+      })
+      .filter(Boolean),
+  )].sort((left, right) => left.localeCompare(right, 'en'));
+
+  const resourceKeys = new Set();
+  for (const { repository, path: relativePath } of qualifiedTargets) {
+    resourceKeys.add(`PATH::${repository}::${relativePath}`);
+
+    if (relativePath.startsWith('supabase/migrations/')) {
+      resourceKeys.add(`SHARED::${repository}::SUPABASE_SCHEMA`);
+    }
+    if (relativePath === 'supabase/config.toml') {
+      resourceKeys.add(`SHARED::${repository}::SUPABASE_CONFIG`);
+    }
+    if (relativePath.startsWith('supabase/functions/_shared/')) {
+      resourceKeys.add(`SHARED::${repository}::SUPABASE_FUNCTIONS_SHARED`);
+    }
+    if (relativePath.startsWith('.github/workflows/')) {
+      resourceKeys.add(`SHARED::${repository}::GITHUB_WORKFLOWS`);
+    }
+    if (['package.json', 'package-lock.json', 'pnpm-lock.yaml', 'yarn.lock'].includes(relativePath)) {
+      resourceKeys.add(`SHARED::${repository}::REPOSITORY_DEPENDENCIES`);
+    }
+  }
+
+  for (const unitKey of implementationUnitIds) {
+    resourceKeys.add(`UNIT::${unitKey}`);
+  }
 
   const supabaseMutationRequired = Boolean(foundation)
     && targetPaths.some((relativePath) => targetRequiresSupabaseFoundation(relativePath, foundation));
 
+  const common = {
+    supabase_mutation_required: supabaseMutationRequired,
+    target_paths: targetPaths,
+    target_path_keys: targetPathKeys,
+    target_repositories: targetRepositories,
+    implementation_unit_ids: implementationUnitIds,
+    deployment_target_keys: deploymentTargetKeys,
+    resource_keys: [...resourceKeys].sort((left, right) => left.localeCompare(right, 'en')),
+  };
+
   if (!supabaseMutationRequired) {
     return {
-      supabase_mutation_required: false,
-      target_paths: targetPaths,
+      ...common,
       required_verified_instance_refs: [],
       pre_entry_foundation_gates: [],
       remote_environment_identity: null,
@@ -2042,8 +2122,7 @@ export function derivePackageExecutionRequirements({ contract, packageGate = nul
   }
 
   return {
-    supabase_mutation_required: true,
-    target_paths: targetPaths,
+    ...common,
     required_verified_instance_refs: [...(foundation.required_verified_instances ?? [])],
     pre_entry_foundation_gates: (foundation.ordered_foundation_gates ?? []).map((gate) => ({ ...gate })),
     remote_environment_identity: foundation.remote_environment_identity
@@ -2803,7 +2882,14 @@ function blockerFamily(blocker) {
   return first >= 0 ? value.slice(0, first) : value;
 }
 
-export function renderReadinessBlock({ capabilityResults, registry, activeSequence, trigger, indexCoverage, canonicalCatalog }) {
+export function renderReadinessBlock({
+  capabilityResults,
+  registry,
+  activeSequence,
+  trigger,
+  indexCoverage,
+  canonicalCatalog,
+}) {
   const readyCaps = capabilityResults.filter(({ status }) => status === 'READY_FOR_COMPILATION');
   const blockedCaps = capabilityResults.filter(({ status }) => status === 'BLOCKED');
   const unmapped = indexCoverage?.unmapped_package_ids ?? [];
@@ -2820,7 +2906,65 @@ export function renderReadinessBlock({ capabilityResults, registry, activeSequen
     blockerFamily,
   ).slice(0, 10));
   const blockedPackageCount = registry.packages.filter((pkg) => (pkg.blockers ?? []).length > 0).length;
-  return `=== PACKAGE READINESS SUMMARY ===\n\nTRIGGER: ${trigger}\nCANONICAL GAP PACKAGE CATALOG: ${catalogSummary(canonicalCatalog)}\nTOTAL PACKAGES EVALUATED: ${registry.packages.length}\nBLOCKED PACKAGES: ${blockedPackageCount}\nIMPLEMENTATION_READY: ${registry.implementation_ready_queue.length}\n\nLINEAR EXECUTION:\n- MODE: ${execution?.mode ?? 'NOT_EVALUATED'}\n- HUMAN PACKAGE SELECTION: FALSE\n- STATE: ${execution?.state ?? 'NOT_EVALUATED'}\n- CURRENT PACKAGE: ${current?.package_id ?? 'NONE'}\n- POSITION: ${current ? `${current.position}/${execution.sequence.length}` : `0/${execution?.sequence.length ?? 0}`}\n- LAYER: ${current?.layer ?? 'NONE'}\n- STATUS: ${currentPackage?.status ?? 'NONE'}\n- ACTION: ${action?.type ?? 'NONE'}\n- TARGET: ${action?.target ?? 'NONE'}\n- REASON: ${action?.reason ?? 'NONE'}\n- COMMAND: ${action?.command ?? 'NONE'}\n- DEFERRED OUTSIDE ACTIVE LINE: ${execution?.deferred.length ?? 0}\n- RULE: a blocked current package retains its turn; later ready packages never bypass it\n\nPACKAGE SOURCES:\n${sourceSummary}\n\nSTATUS SUMMARY:\n${packageStatusSummary}\n\nSPECIAL CAPABILITIES:\n- detected: ${capabilityResults.length}\n- blocked/maturing: ${blockedCaps.length}\n- ready_for_compilation: ${readyCaps.length}\n- unmapped: ${unmapped.length}\n\nTOP BLOCKER FAMILIES:\n${blockerSummary}\n\nNEXT DOCUMENTATION WORK:\n${documentationCurrent(activeSequence) ?? 'EMPTY'}\n\nPERSISTENT REGISTRY:\n- ${READINESS_PATHS.packageRegistry}\n- compact state only; do not use it as the detailed dossier\n\nDERIVED DETAIL:\n- ${READINESS_PATHS.reportJson}\n- ${READINESS_PATHS.reportMarkdown}\n- regenerable; full package diagnostics live here\n\n=== END PACKAGE READINESS SUMMARY ===`;
+
+  return `=== PACKAGE READINESS SUMMARY ===
+
+TRIGGER: ${trigger}
+CANONICAL GAP PACKAGE CATALOG: ${catalogSummary(canonicalCatalog)}
+TOTAL PACKAGES EVALUATED: ${registry.packages.length}
+BLOCKED PACKAGES: ${blockedPackageCount}
+IMPLEMENTATION_READY: ${registry.implementation_ready_queue.length}
+
+GOVERNED FRONTIER EXECUTION:
+- MODE: ${execution?.mode ?? 'NOT_EVALUATED'}
+- HUMAN PACKAGE SELECTION: FALSE
+- STATE: ${execution?.state ?? 'NOT_EVALUATED'}
+- PRIMARY PACKAGE: ${current?.package_id ?? 'NONE'}
+- PRIMARY POSITION: ${current ? `${current.position}/${execution.sequence.length}` : `0/${execution?.sequence.length ?? 0}`}
+- CURRENT EXECUTABLE WORK: ${execution?.current_work?.id ?? current?.current_work?.id ?? 'NONE'}
+- CURRENT EXECUTABLE WORK KIND: ${execution?.current_work?.kind ?? current?.current_work?.kind ?? 'NONE'}
+- LAYER: ${current?.layer ?? 'NONE'}
+- STATUS: ${currentPackage?.status ?? 'NONE'}
+- ACTION: ${action?.type ?? 'NONE'}
+- TARGET: ${action?.target ?? 'NONE'}
+- REASON: ${action?.reason ?? 'NONE'}
+- COMMAND: ${action?.command ?? 'NONE'}
+- FRONTIER COUNT: ${execution?.frontier?.length ?? 0}
+- SCHEDULABLE FRONTIER COUNT: ${execution?.schedulable_frontier?.length ?? 0}
+- AUTHORIZATION FRONTIER COUNT: ${execution?.authorization_frontier?.length ?? 0}
+- ACTIVE PHYSICAL COUNT: ${execution?.active_physical?.length ?? 0}
+- WAITING COUNT: ${execution?.waiting?.length ?? 0}
+- DEFERRED OUTSIDE CANONICAL FRONTIER: ${execution?.deferred?.length ?? 0}
+- RULE: dependency waits and physical conflicts stay local to the affected package; independent eligible work may continue deterministically
+
+PACKAGE SOURCES:
+${sourceSummary}
+
+STATUS SUMMARY:
+${packageStatusSummary}
+
+SPECIAL CAPABILITIES:
+- detected: ${capabilityResults.length}
+- blocked/maturing: ${blockedCaps.length}
+- ready_for_compilation: ${readyCaps.length}
+- unmapped: ${unmapped.length}
+
+TOP BLOCKER FAMILIES:
+${blockerSummary}
+
+NEXT DOCUMENTATION WORK:
+${documentationCurrent(activeSequence) ?? 'EMPTY'}
+
+PERSISTENT REGISTRY:
+- ${READINESS_PATHS.packageRegistry}
+- compact state only; do not use it as the detailed dossier
+
+DERIVED DETAIL:
+- ${READINESS_PATHS.reportJson}
+- ${READINESS_PATHS.reportMarkdown}
+- regenerable; full package diagnostics live here
+
+=== END PACKAGE READINESS SUMMARY ===`;
 }
 
 function markdownCell(value) {
@@ -2859,12 +3003,21 @@ function dominantTaskLabel(pkg) {
 
 function renderExecutionSequence(result) {
   const execution = result.registry.package_execution;
-  if (!execution) return '_La ejecución lineal no fue evaluada en este fixture._';
+  if (!execution) return '_La governed frontier no fue evaluada en este fixture._';
+
   const rows = execution.sequence.map((entry) => {
-    const marker = entry.current ? '**ACTUAL**' : entry.status === 'CLOSED' ? 'CERRADO' : 'PENDIENTE';
-    return `| ${entry.position} | ${packageLink(entry.package_id)} | ${entry.layer} | ${statusIcon(entry.status)} ${entry.status} | ${marker} | ${markdownCell(entry.depends_on_package_ids.join(', ') || 'ninguna explícita')} |`;
+    let role = 'WAITING_DEPENDENCY';
+    if (entry.status === 'CLOSED') role = 'CLOSED';
+    else if (entry.active_physical) role = 'ACTIVE_PHYSICAL';
+    else if (entry.current) role = 'PRIMARY';
+    else if (entry.dependency_eligible) role = 'ELIGIBLE';
+
+    return `| ${entry.position} | ${packageLink(entry.package_id)} | ${entry.layer} | ${statusIcon(entry.status)} ${entry.status} | ${role} | ${markdownCell(entry.depends_on_package_ids.join(', ') || 'ninguna explícita')} |`;
   });
-  return `| Posición | Package | Capa | Estado | Turno | Depende de |\n| -: | --- | -: | --- | --- | --- |\n${rows.join('\n')}`;
+
+  return `| Posición topológica | Package | Capa | Estado | Rol gobernado | Depende de |
+| -: | --- | -: | --- | --- | --- |
+${rows.join('\n')}`;
 }
 
 function renderRepositorySummary(packages) {
@@ -2933,33 +3086,61 @@ export function renderReadinessMarkdown(result) {
   const currentGates = currentPackage?.readiness_progress?.gates ?? null;
   const currentPackageGate = currentPackage?.package_gate?.status
     ?? (currentPackage?.source_kind === 'CANONICAL_GAP_PACKAGE' ? 'NOT_PREPARED' : 'N/A');
+
   const readyMessage = current
-    ? `El turno único corresponde a **${current.package_id}** (${current.position}/${execution.sequence.length}). Su acción exacta es **${current.next_action.type}** sobre **${current.next_action.target}**. Aunque otro package llegue a IMPLEMENTATION_READY, no puede adelantarlo.`
-    : 'La línea ejecutable está completa o no fue evaluada. No existe una selección humana pendiente.';
+    ? `El primary determinista es **${current.package_id}** (${current.position}/${execution.sequence.length}). Su acción exacta es **${current.next_action.type}** sobre **${current.next_action.target}**. Los packages WAITING o ACTIVE_PHYSICAL permanecen trazados sin monopolizar este primary.`
+    : execution?.active_physical?.length > 0
+      ? `No existe trabajo nuevo schedulable; permanecen **${execution.active_physical.length}** package(s) en ACTIVE_PHYSICAL.`
+      : 'La frontier está completa o no contiene trabajo schedulable. No existe selección humana pendiente.';
+
   const layerGroups = new Map();
   for (const entry of execution?.sequence ?? []) {
     const group = layerGroups.get(entry.layer) ?? [];
     group.push(entry);
     layerGroups.set(entry.layer, group);
   }
+
   const layerRows = [...layerGroups.entries()]
     .sort(([left], [right]) => Number(left) - Number(right))
     .map(([layer, entries]) => {
       const closed = entries.filter(({ status }) => status === 'CLOSED').length;
-      const layerCurrent = entries.find(({ current: isCurrent }) => isCurrent)?.package_id ?? '—';
-      return `| ${layer} | ${entries.length} | ${closed} | ${entries.length - closed} | ${markdownCell(layerCurrent)} |`;
+      const primary = entries.find(({ current: isCurrent }) => isCurrent)?.package_id ?? '—';
+      const active = entries.filter(({ active_physical: isActive }) => isActive).length;
+      const eligible = entries.filter(({ dependency_eligible: isEligible }) => isEligible).length;
+      return `| ${layer} | ${entries.length} | ${closed} | ${entries.length - closed} | ${eligible} | ${active} | ${markdownCell(primary)} |`;
     }).join('\n');
+
   const layerTable = layerRows
-    ? `| Capa | Packages | Cerrados | Restantes | Package actual |\n| -: | ---: | ---: | ---: | --- |\n${layerRows}`
-    : '_No hay packages en la línea ejecutable._';
+    ? `| Capa | Packages | Cerrados | Restantes | Dependency-eligible | Active physical | Primary |
+| -: | ---: | ---: | ---: | ---: | ---: | --- |
+${layerRows}`
+    : '_No hay packages en la secuencia gobernada._';
+
   const deferredTable = execution?.deferred?.length > 0
-    ? `| Package | Estado | Motivo de diferimiento |\n| --- | --- | --- |\n${execution.deferred.map((entry) => `| ${packageLink(entry.package_id)} | ${statusIcon(entry.status)} ${entry.status} | ${markdownCell(entry.reason)} |`).join('\n')}`
-    : '✅ No hay packages diferidos fuera de la línea activa.';
+    ? `| Package | Estado | Motivo de diferimiento |
+| --- | --- | --- |
+${execution.deferred.map((entry) => `| ${packageLink(entry.package_id)} | ${statusIcon(entry.status)} ${entry.status} | ${markdownCell(entry.reason)} |`).join('\n')}`
+    : '✅ No hay packages diferidos fuera de la frontier canónica.';
+
+  const activeTable = execution?.active_physical?.length > 0
+    ? `| Package | Fase | Próxima instancia | Locks activos |
+| --- | --- | --- | ---: |
+${execution.active_physical.map((entry) => `| ${packageLink(entry.package_id)} | ${markdownCell(entry.phase ?? 'UNKNOWN')} | \`${markdownCell(entry.next_action?.target ?? 'NONE')}\` | ${(entry.resource_locks ?? []).length} |`).join('\n')}`
+    : '✅ No hay packages ACTIVE_PHYSICAL.';
+
+  const waitingTable = execution?.waiting?.length > 0
+    ? `| Package | Motivo | Acción / dependencia | Admisión física |
+| --- | --- | --- | --- |
+${execution.waiting.slice(0, 50).map((entry) => `| ${packageLink(entry.package_id)} | ${markdownCell(entry.kind ?? 'WAITING')} | ${markdownCell(entry.next_action?.target ?? entry.pending_dependency_ids?.join(', ') ?? 'NONE')} | ${markdownCell(entry.physical_admission?.status ?? 'N/A')} |`).join('\n')}`
+    : '✅ No hay packages WAITING.';
+
   const specialTable = special.length > 0
-    ? `| Package especial | Objetivo | Estado | Tareas | Gates | Faltan |\n| --- | --- | --- | ---: | ---: | ---: |\n${special.map((pkg) => `| ${packageLink(pkg.package_id)} | ${markdownCell(pkg.objective)} | ${statusIcon(pkg.status)} ${pkg.status} | ${pkg.readiness_progress.task_prerequisites.approved}/${pkg.readiness_progress.task_prerequisites.total} | ${pkg.readiness_progress.gates.passed}/${pkg.readiness_progress.gates.total} | **${pkg.readiness_progress.remaining_obligations}** |`).join('\n')}`
+    ? `| Package especial | Objetivo | Estado | Tareas | Gates | Faltan |
+| --- | --- | --- | ---: | ---: | ---: |
+${special.map((pkg) => `| ${packageLink(pkg.package_id)} | ${markdownCell(pkg.objective)} | ${statusIcon(pkg.status)} ${pkg.status} | ${pkg.readiness_progress.task_prerequisites.approved}/${pkg.readiness_progress.task_prerequisites.total} | ${pkg.readiness_progress.gates.passed}/${pkg.readiness_progress.gates.total} | **${pkg.readiness_progress.remaining_obligations}** |`).join('\n')}`
     : '_No hay capacidades especiales declaradas._';
 
-  return `# VENTO OS — GUÍA VIVA DE EJECUCIÓN LINEAL Y READINESS DE PACKAGES
+  return `# VENTO OS — GUÍA VIVA DE GOVERNED FRONTIER Y READINESS DE PACKAGES
 
 > [!IMPORTANT]
 > Este archivo es **autogenerado y regenerable**. No lo edites manualmente ni lo uses como fuente canónica. Se reconstruye con \`npm run docs:package:readiness\` y durante el build del plan.
@@ -2979,17 +3160,21 @@ export function renderReadinessMarkdown(result) {
 | Modo | \`${execution?.mode ?? 'NOT_EVALUATED'}\` |
 | Siguiente automático | **${execution?.automatic_next === true ? 'SÍ' : 'NO'}** |
 | Selección humana de package | **${execution?.human_package_selection === false ? 'NO' : 'NO EVALUADO'}** |
-| Estado de la línea | **${execution?.state ?? 'NOT_EVALUATED'}** |
-| Package actual | **${current?.package_id ?? 'NONE'}** |
+| Estado de frontier | **${execution?.state ?? 'NOT_EVALUATED'}** |
+| Primary package | **${current?.package_id ?? 'NONE'}** |
 | CURRENT_EXECUTABLE_WORK | **${currentWork ? `${currentWork.kind}:${currentWork.id}` : 'NONE'}** |
-| Package consumidor bloqueado | **${currentWork?.kind && currentWork.kind !== 'PACKAGE' ? current?.package_id ?? 'NONE' : 'NONE'}** |
-| Posición actual | **${current ? `${current.position}/${execution.sequence.length}` : `0/${execution?.sequence.length ?? 0}`}** |
+| Posición topológica primary | **${current ? `${current.position}/${execution.sequence.length}` : `0/${execution?.sequence.length ?? 0}`}** |
 | Acción exacta | **${current?.next_action.type ?? 'NONE'}** |
 | Objetivo | ${markdownCell(current?.next_action.target ?? 'NONE')} |
-| Packages diferidos | **${execution?.deferred.length ?? 0}** |
+| Frontier | **${execution?.frontier?.length ?? 0}** |
+| Schedulable frontier | **${execution?.schedulable_frontier?.length ?? 0}** |
+| Authorization frontier | **${execution?.authorization_frontier?.length ?? 0}** |
+| Active physical | **${execution?.active_physical?.length ?? 0}** |
+| Waiting | **${execution?.waiting?.length ?? 0}** |
+| Packages diferidos | **${execution?.deferred?.length ?? 0}** |
 | Autorización física | **Siempre separada y explícita** |
 
-## Cómo funciona la línea
+## Cómo funciona la governed frontier
 
 \`\`\`text
 DELIV-PKG-015
@@ -3004,57 +3189,78 @@ CAPA DE IMPLEMENTACION (0 -> 4)
 PACKAGE_ID COMO DESEMPATE ESTABLE
      |
      v
-PRIMER PACKAGE NO CERRADO = TURNO ACTUAL
+DEPENDENCY-ELIGIBLE FRONTIER
      |
-     v
-PRIMER PRERREQUISITO / FUNDACION INCUMPLIDO = CURRENT_EXECUTABLE_WORK
+     +--> WAIT / DEPENDENCY / UNKNOWN / CONFLICT
+     |       -> permanece trazado sin monopolizar roots independientes
      |
-     +--> EXISTE -----------> BLOQUEA AL PACKAGE CONSUMIDOR
+     +--> ACTIVE_PHYSICAL
+     |       -> conserva locks exactos
+     |       -> CI020/CI021 conserva locks exclusivos de transición
+     |       -> CI022/CI023/CI024 libera locks amplios y conserva surfaces exactas
      |
-     +--> NO EXISTE --------> PACKAGE PUEDE CONTINUAR
-     |
-     +--> GATE COMPLETO ----> IMPLEMENTATION_READY
-                                  |
-                                  v
-                         AUTORIZACION FISICA HUMANA
-                                  |
-                                  v
-                         IMPLEMENTACION / CIERRE
-                                  |
-                                  v
-                         SIGUIENTE PACKAGE AUTOMATICO
+     +--> SCHEDULABLE
+             -> PRIMARY DETERMINISTA
+             -> gate / handoff / siguiente trabajo
+             -> autorización física siempre explícita
 \`\`\`
 
 ### Reglas inmutables
 
-1. **Existe una sola línea ejecutable.** No hay una lista de candidatos entre los cuales escoger manualmente.
-2. **Las dependencias explícitas mandan primero.** La fuente es \`DELIV-PKG-015\`.
-3. **La capa de implementación ordena después de las dependencias.** Las capas válidas son 0 a 4.
-4. **\`package_id\` solo desempata de forma estable.** No crea prioridad empresarial nueva.
-5. **El primer package no \`CLOSED\` conserva el turno aunque esté bloqueado.** Ningún package posterior puede adelantarlo.
-6. **\`CURRENT_EXECUTABLE_WORK\` es el primer prerrequisito o fundación incumplida; el package actual queda como consumidor bloqueado hasta cerrarlo.**
-7. **\`IMPLEMENTATION_READY\` no equivale a \`AUTHORIZED\`.** La autorización física humana sigue siendo obligatoria.
-7. **Los packages sin orden físico canónico quedan diferidos fuera de la línea activa.** No bloquean la secuencia hasta que su fuente propietaria materialice un orden válido.
+1. **No existe selección humana de packages.** La prioridad se deriva automáticamente.
+2. **Las dependencias explícitas son hard prerequisites.** Un dependiente no entra a la frontier hasta que sus predecessors estén \`CLOSED\`.
+3. **La capa y \`package_id\` ordenan determinísticamente los roots dependency-eligible.**
+4. **WAITING no equivale a descartado ni adelantado.** El package conserva su posición topológica y evidencia, pero no monopoliza el primary global.
+5. **Scope físico UNKNOWN falla cerrado para la admisión del package afectado.** No bloquea maduración documental independiente.
+6. **Las colisiones se deciden por resource locks derivados del package-gate.**
+7. **CI020/CI021 conservan locks amplios de transición; CI022/CI023/CI024 conservan locks exactos de path/unidad y liberan el mutex amplio cuando termina la mutación.**
+8. **\`IMPLEMENTATION_READY\` no equivale a \`AUTHORIZED\`.** La autorización humana sigue siendo obligatoria por instancia.
+9. **Cada package conserva \`SHELL-CI-020 → 021 → 022 → 023 → 024\`.** El cierre de package y aplicación no cambia.
+10. **Los merges/cierres permanecen serializados y reconciliados contra el último \`main\`.**
 
-## Package actual
+## Primary frontier package
 
 ${readyMessage}
 
-${current ? `| Campo | Valor |\n| --- | --- |\n| Package | ${packageLink(current.package_id)} |\n| Posición | **${current.position}/${execution.sequence.length}** |\n| Capa | **${current.layer}** |\n| Estado efectivo | ${statusIcon(current.status)} **${current.status}** |\n| Dependencias explícitas | ${markdownCell(current.depends_on_package_ids.join(', ') || 'ninguna')} |\n| Tareas prerrequisito | ${currentTasks ? `**${currentTasks.approved}/${currentTasks.total}**` : 'N/A'} |\n| Gates de readiness | ${currentGates ? `**${currentGates.passed}/${currentGates.total}**` : 'N/A'} |\n| Package gate | **${markdownCell(currentPackageGate)}** |\n| CURRENT_EXECUTABLE_WORK | **${markdownCell(currentWork ? `${currentWork.kind}:${currentWork.id}` : current.package_id)}** |\n| Gate de fundación | ${markdownCell(currentWork?.gate_id ?? "N/A")} |\n| Owner de fundación | ${markdownCell(currentWork?.owner_task ?? "N/A")} |\n| Acción exacta | **${markdownCell(current.next_action.type)}** |\n| Objetivo | ${markdownCell(current.next_action.target)} |\n| Comando | \`${current.next_action.command}\` |\n| Autorización física | **REQUERIDA; este reporte no la concede** |\n\n**Por qué conserva el turno:** ${markdownCell(current.next_action.reason)}` : '✅ No existe un package actual pendiente.'}
+${current ? `| Campo | Valor |
+| --- | --- |
+| Package | ${packageLink(current.package_id)} |
+| Posición topológica | **${current.position}/${execution.sequence.length}** |
+| Capa | **${current.layer}** |
+| Estado efectivo | ${statusIcon(current.status)} **${current.status}** |
+| Dependencias explícitas | ${markdownCell(current.depends_on_package_ids.join(', ') || 'ninguna')} |
+| Tareas prerrequisito | ${currentTasks ? `**${currentTasks.approved}/${currentTasks.total}**` : 'N/A'} |
+| Gates de readiness | ${currentGates ? `**${currentGates.passed}/${currentGates.total}**` : 'N/A'} |
+| Package gate | **${markdownCell(currentPackageGate)}** |
+| CURRENT_EXECUTABLE_WORK | **${markdownCell(currentWork ? `${currentWork.kind}:${currentWork.id}` : current.package_id)}** |
+| Acción exacta | **${markdownCell(current.next_action.type)}** |
+| Objetivo | ${markdownCell(current.next_action.target)} |
+| Comando | \`${current.next_action.command}\` |
+| Autorización física | **REQUERIDA; este reporte no la concede** |
+
+**Por qué es primary:** ${markdownCell(current.next_action.reason)}` : '✅ No existe un primary package pendiente.'}
+
+## Active physical set
+
+${activeTable}
+
+## Waiting set
+
+${waitingTable}
 
 ## Progreso por capa
 
-> Esta tabla resume la secuencia ejecutable. Un package posterior puede estar técnicamente listo y aun así permanecer pendiente porque el turno es lineal.
+> Esta tabla conserva el orden topológico, pero no convierte una espera independiente en un mutex global.
 
 ${layerTable}
 
-## Lista lineal completa
+## Secuencia topológica completa
 
-> **Lectura:** \`ACTUAL\` es el único package que puede avanzar. \`PENDIENTE\` significa esperar turno, incluso cuando el readiness técnico sea favorable.
+> **Lectura:** \`PRIMARY\` es la siguiente acción nueva determinista; \`ACTIVE_PHYSICAL\` continúa su propio lifecycle; \`ELIGIBLE\` puede entrar al primary cuando corresponda; \`WAITING_DEPENDENCY\` aún no cumple dependencias explícitas.
 
 ${renderExecutionSequence(result)}
 
-## Packages diferidos fuera de la línea activa
+## Packages diferidos fuera de la frontier canónica
 
 ${deferredTable}
 
@@ -3072,6 +3278,8 @@ ${deferredTable}
 | Vínculos de tarea aprobados | **${metrics.task_links_approved}/${metrics.task_links_total}** |
 | Vínculos de tarea pendientes | **${metrics.task_links_remaining}** |
 | Packages IMPLEMENTATION_READY | **${result.registry.implementation_ready_queue.length}** |
+| Frontier dependency-eligible | **${execution?.frontier?.length ?? 0}** |
+| Active physical | **${execution?.active_physical?.length ?? 0}** |
 
 ### Estados actuales
 
@@ -3082,11 +3290,12 @@ ${statusRows}
 ### Auditoría de coherencia
 
 - ✅ Sin IDs duplicados.
-- ✅ Los 207 GAP-PKG tienen tarea primaria, tarea dominante, runtime, repositorio o estado explícito, propietario y condición de salida.
+- ✅ Los 207 GAP-PKG conservan tarea primaria, tarea dominante, runtime, ownership y condición de salida.
 - ✅ No existen referencias a tareas desconocidas.
 - ✅ Los contadores de tareas, gates y obligaciones restantes cuadran package por package.
-- ✅ La línea consume dependencias explícitas de DELIV-PKG-015, luego capa y finalmente package_id como desempate estable.
-- ✅ Un package bloqueado conserva el turno; ningún package posterior puede adelantarlo.
+- ✅ La prioridad consume dependencias explícitas de DELIV-PKG-015, luego capa y finalmente package_id como desempate estable.
+- ✅ Un package WAITING conserva trazabilidad sin monopolizar roots independientes.
+- ✅ La admisión física UNKNOWN o conflictiva falla cerrado para el package afectado.
 ${warningRows}
 
 ## Capacidades especiales
@@ -3111,44 +3320,37 @@ Cada ficha muestra exclusivamente información derivada: descripción, estado, t
 
 ${packages.map(renderPackageCard).join('\n\n')}
 
-## Corrección excepcional del orden
+## Corrección excepcional de dependencias u orden
 
-La línea no admite selección humana ni bypass del package actual.
+La governed frontier no admite selección humana, bypass de dependencias ni autorización implícita.
 
-Si el orden derivado contradice una decisión canónica ya aprobada, se corrige la fuente \`DELIV-PKG-015\` mediante el lifecycle de correcciones. Mientras exista una corrección de esa tarea que todavía no esté \`VERIFIED\`, las mutaciones de package permanecen bloqueadas.
+Si dependencias, capas o desempates derivados contradicen una decisión canónica ya aprobada, se corrige la fuente \`DELIV-PKG-015\` mediante el lifecycle de correcciones. Mientras exista una corrección bloqueante de esa fuente que todavía no esté \`VERIFIED\` en \`main\`, las mutaciones de package permanecen bloqueadas.
 
-La apertura controlada de esa corrección se inicia con:
+Una corrección restaura conformidad con contratos aprobados. No puede utilizarse para repriorizar packages por conveniencia ni para introducir una dependencia nueva no aprobada.
 
-\`\`\`powershell
-npm run docs:correction:prepare -- --task-id DELIV-PKG-015 --type DOCUMENTARY --reason-code DOCUMENTARY_CONTRADICTION --block-target SHELL-CI-020
-\`\`\`
-
-Una corrección restaura conformidad con contratos ya aprobados. No puede utilizarse para repriorizar packages por conveniencia ni para introducir una dependencia nueva no aprobada.
 ## Fuentes canónicas y responsabilidad
 
 | Función | Fuente / control |
 | --- | --- |
-| Dependencias, capas y orden posterior al gate | \`DELIV-PKG-015\` |
-| Política de ejecución lineal | \`${READINESS_PATHS.packageExecutionPolicy}\` |
+| Dependencias, capas y desempate | \`DELIV-PKG-015\` |
+| Política de governed frontier | \`${READINESS_PATHS.packageExecutionPolicy}\` |
 | Política de gate por package | \`${READINESS_PATHS.packageGatePolicy}\` |
 | Expedientes package-gate | \`${READINESS_PATHS.packageGateInstances}/\` |
 | Readiness y proyección humana | \`scripts/docs/package-readiness-scanner.mjs\` |
 | Implementación física | \`${READINESS_PATHS.implementationInstances}/\` |
 | Registro persistente mínimo | \`${READINESS_PATHS.packageRegistry}\` |
 
-> Esta guía **no decide el orden, no concede gates y no autoriza implementación**. Solo proyecta de forma legible el estado derivado de las fuentes anteriores.
+> Esta guía **no elige packages, no concede gates y no autoriza implementación**. Solo proyecta el estado derivado.
 
 ## Uso operativo
 
 \`\`\`powershell
 npm run docs:package:execution:status
-npm run docs:package:start -- --package-id GAP-PKG-001
 npm run docs:chatgpt:starter
-npm run docs:package:gate:status -- --package-id GAP-PKG-001
-npm run docs:package:finish -- --package-id GAP-PKG-001
-npm run docs:package:handoff -- --package-id GAP-PKG-001
 npm run docs:implementation:status
 \`\`\`
+
+Los comandos específicos de package se ejecutan únicamente sobre el primary o la instancia física exacta que proyecten esos controles.
 
 Artefactos derivados:
 

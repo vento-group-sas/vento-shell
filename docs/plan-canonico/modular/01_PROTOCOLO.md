@@ -1178,11 +1178,64 @@ Si la secuencia derivada de `DELIV-PKG-015` contradice una decisión canónica y
 El lifecycle de correcciones solo restaura conformidad con contratos o decisiones ya aprobados. No puede utilizarse para repriorizar packages por conveniencia ni para introducir nuevas dependencias de negocio fuera del proceso documental canónico.
 
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:START -->
-## Invariante transversal de implementación lineal fail-closed
+## Invariante transversal de governed frontier fail-closed
 
-`CURRENT_PACKAGE` es el consumidor que conserva el turno. `CURRENT_EXECUTABLE_WORK` es el primer prerrequisito o fundación incumplida que debe resolverse antes de actuar sobre ese consumidor.
+`PRIMARY_PACKAGE` es el package dependency-eligible con la primera acción schedulable según dependencias explícitas, capa y `package_id`. `CURRENT_EXECUTABLE_WORK` identifica el trabajo exacto de ese primary.
 
-Los iniciadores, el scanner de readiness, package-execution, implementation-readiness y `REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md` deben proyectar la misma identidad de trabajo actual. Ningún carril puede convertir un package bloqueado en autorización física.
+Un package con prerrequisito documental, físico o de fundación incumplido permanece `WAITING` con su identidad, posición y evidencia. La espera bloquea únicamente las acciones del package afectado; no convierte ese package en mutex global ni autoriza a omitir dependencias.
 
-Cuando el package modifica Supabase, las fundaciones PRE_E5 y los gates aplicables de `SUPA-TRANS-015` se evalúan antes de habilitar `SHELL-CI-020`. La evidencia ausente es bloqueante; no se infieren ambientes, project refs, owners ni ejecución previa.
+Los iniciadores, package-readiness, package-execution, implementation-readiness y `REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md` deben proyectar el mismo primary, el mismo active physical set y los mismos waits. Ningún carril puede convertir un package bloqueado en autorización física.
+
+Cuando un package modifica Supabase, las fundaciones PRE_E5 y gates aplicables de `SUPA-TRANS-015` siguen siendo prerrequisitos duros antes de `SHELL-CI-020::<package_id>`. Evidencia ausente permanece `UNKNOWN` y falla cerrado para ese package; no se infieren ambientes, project refs, owners ni ejecución previa.
+
+Las instancias en `SHELL-CI-020` y `SHELL-CI-021` conservan locks exclusivos de transición compartida. Durante `SHELL-CI-022` a `SHELL-CI-024` se conservan los locks exactos de path/unidad, pero se liberan los locks amplios de transición ya finalizada. Los cierres y merges continúan serializados contra el último `main`.
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:END -->
+
+<!-- CORR-012-GOVERNED-FRONTIER:START -->
+### CORR-012 — Governed eligible frontier para ejecución física
+
+```text
+DELIV-PKG-015 partial order
+        ↓
+explicit package dependencies
+        ↓
+implementation layer
+        ↓
+package_id stable tie-breaker
+        ↓
+DEPENDENCY-ELIGIBLE FRONTIER
+        ↓
+deterministic primary schedulable package
+        │
+        ├─ WAITING
+        │      → dependency / prerequisite / UNKNOWN / conflict
+        │      → package-local block only
+        │
+        ├─ AUTHORIZATION_FRONTIER
+        │      → PENDING_AUTHORIZATION reserves full admission locks
+        │      → human approval remains explicit
+        │
+        └─ ACTIVE_PHYSICAL
+               → exact package lifecycle continues
+               → CI020/CI021: persistent + exclusive transition locks
+               → CI022/CI023/CI024: persistent exact locks only
+               → long observation does not hold the global primary
+```
+
+Invariantes:
+
+- `human_package_selection=false` permanece obligatorio.
+- Las dependencias explícitas son hard prerequisites.
+- Capa y `package_id` dan prioridad determinista entre roots dependency-eligible.
+- Scope físico o implementation unit no resoluble produce `UNKNOWN` y falla cerrado solo para la admisión física del package afectado.
+- Los target paths y implementation units generan locks persistentes exactos.
+- Migraciones/schema, configuración Supabase, helpers compartidos de Edge Functions, manifests de dependencias y workflows generan locks exclusivos de transición.
+- Los locks exclusivos de transición se mantienen durante CI020/CI021 y se liberan al entrar a CI022; los locks exactos permanecen durante piloto, hypercare y cierre.
+- Un handoff `PENDING_AUTHORIZATION` reserva todo su scope probado y no se autoautoriza.
+- Cada package preserva `SHELL-CI-020 → SHELL-CI-021 → SHELL-CI-022 → SHELL-CI-023 → SHELL-CI-024`.
+- Checkouts físicos simultáneos deben ser independientes.
+- Merge y cierre permanecen serializados y deben reconciliar el último `main`.
+- El cierre de package sigue dependiendo de CI024 VERIFIED + evidencia; el cierre de aplicación y producto no cambia.
+- El auditor de throughput es diagnóstico y nunca concede autorización por sí mismo.
+
+<!-- CORR-012-GOVERNED-FRONTIER:END -->

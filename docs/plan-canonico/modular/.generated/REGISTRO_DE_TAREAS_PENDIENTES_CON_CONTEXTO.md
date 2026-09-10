@@ -2,104 +2,31 @@
 
 > Archivo derivado. No editar manualmente.
 >
-> Vista humana coordinada de correcciones, documentación canónica, preparación lineal de packages e implementación física. El detalle exhaustivo inferior conserva la autoridad estructural utilizada por los validadores.
+> Vista humana coordinada de correcciones, documentación canónica, preparación por governed frontier de packages e implementación física. El detalle exhaustivo inferior conserva la autoridad estructural utilizada por los validadores.
 >
 > El marcador documental define contratos; las instancias físicas materializan únicamente lo autorizado. Ningún carril reabre ni sustituye silenciosamente al otro.
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-012`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-002`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-012`
+### 1. Correcciones canónicas
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
-- **Edita solamente:**
-  - `MODIFY` `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md`
-  - `MODIFY` `docs/plan-canonico/modular/01_PROTOCOLO.md`
-  - `MODIFY` `docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md`
-  - `MODIFY` `docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md`
-  - `MODIFY` `docs/plan-canonico/modular/package-execution-policy.json`
-  - `MODIFY` `scripts/docs/package-execution-control.mjs`
-  - `MODIFY` `scripts/docs/package-execution-control.test.mjs`
-  - `MODIFY` `scripts/docs/package-gate-lifecycle.mjs`
-  - `MODIFY` `scripts/docs/package-readiness-scanner.mjs`
-  - `MODIFY` `scripts/docs/package-readiness-scanner.test.mjs`
-  - `MODIFY` `scripts/docs/package-readiness-integration.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-control.mjs`
-  - `MODIFY` `scripts/docs/implementation-control.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-readiness-coordinator.mjs`
-  - `MODIFY` `scripts/docs/implementation-readiness-coordinator.test.mjs`
-  - `MODIFY` `scripts/docs/chatgpt-work-starter-readiness.mjs`
-  - `MODIFY` `scripts/docs/chatgpt-work-starter-readiness.test.mjs`
-  - `MODIFY` `scripts/docs/sync-pending-task-context.mjs`
-  - `MODIFY` `scripts/docs/sync-pending-task-context.test.mjs`
-  - `MODIFY` `scripts/docs/package-throughput-audit.mjs`
-  - `MODIFY` `scripts/docs/package-throughput-audit.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-correction-guard.mjs`
-  - `MODIFY` `scripts/docs/implementation-correction-guard.test.mjs`
-  - `MODIFY` `scripts/docs/package-review-factory.mjs`
-  - `MODIFY` `scripts/docs/package-review-factory.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-validation-engine.mjs`
-  - `MODIFY` `scripts/docs/implementation-validation-engine.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-execution-coordinator.mjs`
-  - `MODIFY` `scripts/docs/implementation-execution-coordinator.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-work-package.mjs`
-  - `MODIFY` `scripts/docs/implementation-work-package.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-branch-lifecycle.mjs`
-  - `MODIFY` `scripts/docs/implementation-branch-lifecycle.test.mjs`
-- **Valida, en este orden:**
-  1. `node --check scripts/docs/package-execution-control.mjs`
-  2. `node --test scripts/docs/package-execution-control.test.mjs`
-  3. `node --check scripts/docs/package-readiness-scanner.mjs`
-  4. `node --test scripts/docs/package-readiness-scanner.test.mjs`
-  5. `node --check scripts/docs/implementation-control.mjs`
-  6. `node --test scripts/docs/implementation-control.test.mjs`
-  7. `node --check scripts/docs/implementation-readiness-coordinator.mjs`
-  8. `node --test scripts/docs/implementation-readiness-coordinator.test.mjs`
-  9. `node --check scripts/docs/implementation-correction-guard.mjs`
-  10. `node --test scripts/docs/implementation-correction-guard.test.mjs`
-  11. `node --check scripts/docs/implementation-validation-engine.mjs`
-  12. `node --test scripts/docs/implementation-validation-engine.test.mjs`
-  13. `node --check scripts/docs/implementation-execution-coordinator.mjs`
-  14. `node --test scripts/docs/implementation-execution-coordinator.test.mjs`
-  15. `node --check scripts/docs/implementation-work-package.mjs`
-  16. `node --test scripts/docs/implementation-work-package.test.mjs`
-  17. `node --check scripts/docs/package-throughput-audit.mjs`
-  18. `node --test scripts/docs/package-throughput-audit.test.mjs`
-  19. `node --test scripts/docs/package-readiness-integration.test.mjs`
-  20. `npm run docs:package:execution:check`
-  21. `npm run docs:package:readiness:check`
-  22. `npm run docs:package:throughput:audit`
-  23. `npm run docs:package:application:closure`
-  24. `npm run docs:implementation:check`
-  25. `npm run docs:correction:check`
-  26. `npm run docs:correction:test`
-  27. `npm run docs:plan:build`
-  28. `npm run docs:plan:check`
-  29. `npm run docs:plan:test`
-  30. `npm run docs:treq:check`
-  31. `npm run docs:treq:test`
-  32. `npm test --silent`
-  33. `git --no-pager diff --check`
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
-### 2. Prepara el package que tiene el turno — `GAP-PKG-001`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-002`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-001`
-- **Posición:** **1/189**; ningún package posterior puede adelantarlo.
-- **Estado efectivo:** `DEPLOYED`
-- **Acción exacta:** `CONTINUE_PHYSICAL_LIFECYCLE`
-- **Objetivo exacto:** `SHELL-CI-022::GAP-PKG-001`
-- **Comando exacto:** `npm run docs:implementation:status`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-001.json` — `APPROVED_FOR_IMPLEMENTATION`
-- **Gates:** **6/6 PASS**; faltan **0**.
-- **Por qué:** GAP-PKG-001 ya inició su lifecycle físico y debe cerrarse antes de avanzar.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-002`
+- **Posición topológica:** **2/189**; prioridad derivada, sin selección humana.
+- **Estado efectivo:** `COMPILED`
+- **Acción exacta:** `PREPARE_PACKAGE_GATE`
+- **Objetivo exacto:** `GAP-PKG-002`
+- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-002`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-002.json` — `NOT_PREPARED`
+- **Gates:** **2/6 PASS**; faltan **4**.
+- **Por qué:** GAP-PKG-002 está dependency-eligible y no tiene expediente package-gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `AUTH-DEV-009`

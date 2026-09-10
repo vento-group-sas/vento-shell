@@ -60,8 +60,14 @@ function expectedInstancePattern(taskId, lifecycle) {
   return null;
 }
 
-export function derivePackageLifecycleCandidate({ packageExecution, workTopology, explicitById }) {
-  const action = packageExecution?.current?.next_action ?? null;
+export function derivePackageLifecycleCandidate({
+  packageExecution,
+  executionEntry = null,
+  workTopology,
+  explicitById,
+}) {
+  const entry = executionEntry ?? packageExecution?.current ?? null;
+  const action = entry?.next_action ?? null;
   if (action?.type !== 'CONTINUE_PHYSICAL_LIFECYCLE') return null;
 
   const instanceId = String(action.target ?? '').trim();
@@ -70,8 +76,8 @@ export function derivePackageLifecycleCandidate({ packageExecution, workTopology
 
   const taskId = match[1];
   const packageId = match[2];
-  if (String(packageExecution?.current?.package_id ?? '').trim() !== packageId) {
-    fail([`${instanceId} no pertenece al package actual ${packageExecution?.current?.package_id ?? 'NONE'}.`]);
+  if (String(entry?.package_id ?? '').trim() !== packageId) {
+    fail([`${instanceId} no pertenece al package proyectado ${entry?.package_id ?? 'NONE'}.`]);
   }
 
   const task = workTopology.inventory.get(taskId) ?? null;
@@ -79,8 +85,8 @@ export function derivePackageLifecycleCandidate({ packageExecution, workTopology
   if (!task || stateFromMarker(task.marker) !== 'APROBADA') {
     fail([`${taskId} debe existir y estar APROBADA para derivar ${instanceId}.`]);
   }
-  if (lifecycle?.mode !== 'TEMPLATE_PER_PACKAGE') {
-    fail([`${taskId} debe conservar topología TEMPLATE_PER_PACKAGE; actual ${lifecycle?.mode ?? 'NONE'}.`]);
+  if (!['TEMPLATE_PER_PACKAGE', 'PER_IMPLEMENTATION_UNIT'].includes(lifecycle?.mode)) {
+    fail([`${taskId} debe conservar topología por package/unidad; actual ${lifecycle?.mode ?? 'NONE'}.`]);
   }
 
   const explicit = explicitById.get(instanceId) ?? null;
@@ -99,6 +105,7 @@ export function derivePackageLifecycleCandidate({ packageExecution, workTopology
     targetEnvironments: explicit?.target_environments ?? [],
     evidence: explicit?.evidence ?? [],
     blocker: explicit?.blocker ?? null,
+    packageId,
   };
 }
 
@@ -392,12 +399,27 @@ export function deriveImplementationControl({
       };
     });
 
-  const packageCandidate = derivePackageLifecycleCandidate({
-    packageExecution,
-    workTopology,
-    explicitById,
-  });
-  const packageCandidates = packageCandidate ? [packageCandidate] : [];
+  const packageExecutionEntries = [
+    ...(packageExecution?.active_physical ?? []),
+    ...(packageExecution?.current?.next_action?.type === 'CONTINUE_PHYSICAL_LIFECYCLE'
+      ? [packageExecution.current]
+      : []),
+  ];
+  const seenPackageEntries = new Set();
+  const packageCandidates = packageExecutionEntries
+    .filter((entry) => {
+      const key = `${entry?.package_id ?? ''}::${entry?.next_action?.target ?? ''}`;
+      if (!entry || seenPackageEntries.has(key)) return false;
+      seenPackageEntries.add(key);
+      return true;
+    })
+    .map((executionEntry) => derivePackageLifecycleCandidate({
+      packageExecution,
+      executionEntry,
+      workTopology,
+      explicitById,
+    }))
+    .filter(Boolean);
   const candidateIds = new Set(
     [...globalCandidates, ...packageCandidates].map(({ instanceId }) => instanceId),
   );
@@ -564,7 +586,7 @@ export function deriveImplementationControl({
     coordination: {
       mode: 'CONTROLLED_DUAL_LANE',
       documentaryConcurrency: 'ONE_ACTIVE_TASK',
-      physicalConcurrency: 'ONE_ACTIVE_INSTANCE',
+      physicalConcurrency: 'GOVERNED_ACTIVE_SET',
       separateCheckoutsRequired: Boolean(selected),
       mergePolicy: 'SERIALIZED_CLOSE',
       latestMainReconciliationRequired: Boolean(selected),
@@ -573,6 +595,13 @@ export function deriveImplementationControl({
     documentary,
     physical: {
       active: selected,
+      activeSet: instances.filter(({ status }) => ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(status)),
+      activePackageSet: (packageExecution?.active_physical ?? []).map((entry) => ({
+        packageId: entry.package_id,
+        status: entry.status,
+        nextAction: entry.next_action,
+        resourceLocks: entry.resource_locks ?? [],
+      })),
       instances,
       recordedInstances: control.instances,
       recordDirectory: control.instance_records_directory,

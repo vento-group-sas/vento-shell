@@ -1,7 +1,7 @@
 {
   "schema_version": 1,
   "policy_id": "PACKAGE-EXECUTION-001",
-  "mode": "DETERMINISTIC_LINEAR_TOPOLOGICAL",
+  "mode": "DETERMINISTIC_GOVERNED_FRONTIER",
   "automatic_next": true,
   "human_package_selection": false,
   "source_task": "DELIV-PKG-015",
@@ -20,10 +20,18 @@
   "terminal_statuses": [
     "CLOSED"
   ],
-  "stop_on_blocked_current": true,
+  "stop_on_blocked_current": false,
   "physical_authorization_required": true,
   "defer_without_canonical_order": true,
-  "current_package_semantics": "TOPOLOGICAL_TURN_HOLDER",
-  "current_executable_work_semantics": "FIRST_UNMET_PREREQUISITE_ELSE_CURRENT_PACKAGE",
-  "foundation_prerequisites_precede_consumer": true
+  "current_package_semantics": "DETERMINISTIC_PRIMARY_FRONTIER_MEMBER",
+  "current_executable_work_semantics": "FIRST_SCHEDULABLE_FRONTIER_WORK",
+  "foundation_prerequisites_precede_consumer": true,
+  "frontier_semantics": "ALL_DEPENDENCY_ELIGIBLE_NONTERMINAL_PACKAGES",
+  "active_physical_semantics": "IMPLEMENTING_OR_DEPLOYED_PACKAGES_RETAIN_EXACT_RESOURCE_LOCKS",
+  "physical_admission_semantics": "PROVEN_NON_CONFLICTING_WITH_ACTIVE_AND_RESERVED_SET",
+  "unknown_physical_identity": "FAIL_CLOSED_PHYSICAL_ADMISSION_ONLY",
+  "long_observation_holds_global_turn": false,
+  "independent_checkout_required": true,
+  "serialized_close": true,
+  "shared_resource_conflicts_serialized": true
 }

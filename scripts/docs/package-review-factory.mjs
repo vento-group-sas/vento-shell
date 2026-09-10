@@ -2237,7 +2237,9 @@ async function buildFactory(root) {
     sourceManifest,
     previousLedger,
     currentExecutionPackageId:
-      readiness?.registry?.package_execution?.current?.package_id ?? null,
+      readiness?.registry?.package_execution?.current?.package_id
+      ?? readiness?.registry?.package_execution?.active_physical?.[0]?.package_id
+      ?? null,
     applicationClosure,
   });
 

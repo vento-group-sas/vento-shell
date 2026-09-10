@@ -227,7 +227,7 @@ test('los iniciadores usan una única proyección readiness y prohíben cambio s
   assert.match(starterSource, /Nunca ejecute docs:package:gate:approve por inferencia/u);
   assert.doesNotMatch(starterSource, /packages\.find\(\(\{ package_gate/u);
   assert.match(starterSource, /Selección humana de package: FALSE/u);
-  assert.match(starterSource, /Un bloqueo conserva el turno/u);
+  assert.match(starterSource, /no monopoliza roots independientes/u);
   assert.match(starterSource, /docs:package:start/u);
   assert.match(starterSource, /DELIV-PKG-015/u);
   assert.match(starterSource, /PENDING_AUTHORIZATION/u);
@@ -240,13 +240,13 @@ test('el índice inicial no inventa un catálogo masivo y solo siembra identidad
   assert.equal(index.capabilities.VISO_SCHEDULE_MONTHLY.canonical_package_id, 'VISO-SCHEDULE-MONTHLY-001');
 });
 
-test('la línea real proyecta la primera fundación Supabase no demostrada', () => {
+test('la governed frontier conserva la fundación pendiente en el package afectado sin exigir que sea primary global', () => {
   const contract = JSON.parse(fs.readFileSync('scripts/docs/package-readiness/package-readiness-contract.json', 'utf8'));
   const foundation = contract.physical_dependencies.supabase_pre_e5_foundation;
   const remote = foundation.remote_environment_identity;
   const remoteReady = ['STAGING', 'PRODUCTION'].every((role) => {
     const binding = remote.bindings[role];
-    return binding.classification === role && String(binding.project_ref ?? "").trim() && String(binding.owner ?? "").trim();
+    return binding.classification === role && String(binding.project_ref ?? '').trim() && String(binding.owner ?? '').trim();
   }) && remote.bindings.STAGING.project_ref !== remote.bindings.PRODUCTION.project_ref;
 
   const firstUnresolved = foundation.ordered_foundation_gates.find((gate) => {
@@ -255,16 +255,25 @@ test('la línea real proyecta la primera fundación Supabase no demostrada', () 
     return false;
   }) ?? null;
 
-  const result = scanPackageReadiness({ root: process.cwd(), check: true, trigger: 'corr-002-integration', supplied: { skipDerivedReports: true } });
-  const current = result.registry.package_execution.current;
+  const result = scanPackageReadiness({
+    root: process.cwd(),
+    check: true,
+    trigger: 'corr-012-integration',
+    supplied: { skipDerivedReports: true },
+  });
+  const execution = result.registry.package_execution;
+  const gap001 = (execution.frontier ?? []).find(({ package_id: packageId }) => packageId === 'GAP-PKG-001')
+    ?? (execution.active_physical ?? []).find(({ package_id: packageId }) => packageId === 'GAP-PKG-001')
+    ?? null;
 
   if (firstUnresolved) {
-    assert.equal(current.package_id, 'GAP-PKG-001');
-    assert.equal(current.next_action.type, 'WAIT_FOR_FOUNDATION_PREREQUISITE');
-    assert.equal(result.registry.package_execution.current_work.id, firstUnresolved.foundation_id);
-    assert.equal(result.registry.package_execution.current_work.consumer_package_id, current.package_id);
+    assert.ok(gap001);
+    assert.equal(gap001.next_action.type, 'WAIT_FOR_FOUNDATION_PREREQUISITE');
+    assert.equal(gap001.current_work.id, firstUnresolved.foundation_id);
+    assert.equal(gap001.current_work.consumer_package_id, 'GAP-PKG-001');
+    assert.ok((execution.waiting ?? []).some(({ package_id: packageId }) => packageId === 'GAP-PKG-001'));
   } else {
-    assert.notEqual(current?.next_action?.type, 'WAIT_FOR_FOUNDATION_PREREQUISITE');
+    assert.notEqual(gap001?.next_action?.type, 'WAIT_FOR_FOUNDATION_PREREQUISITE');
   }
 });
 

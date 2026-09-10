@@ -133,3 +133,30 @@ test('guard solo admite la etapa física exacta CI020..CI024 del package actual'
     /IMPLEMENTATION_START_NOT_READY/u,
   );
 });
+
+test('package activo puede continuar aunque ya no sea primary frontier member', () => {
+  const instance = {
+    instance_id: 'SHELL-CI-022::GAP-PKG-001',
+    task_id: 'SHELL-CI-022',
+  };
+  const readiness = {
+    registry: {
+      package_execution: {
+        current: {
+          package_id: 'GAP-PKG-002',
+          next_action: { type: 'PREPARE_PACKAGE_GATE', target: 'GAP-PKG-002' },
+        },
+        active_physical: [{
+          package_id: 'GAP-PKG-001',
+          status: 'DEPLOYED',
+          next_action: {
+            type: 'CONTINUE_PHYSICAL_LIFECYCLE',
+            target: 'SHELL-CI-022::GAP-PKG-001',
+          },
+        }],
+      },
+      packages: [],
+    },
+  };
+  assert.doesNotThrow(() => assertImplementationPackageReadiness({ instance, readiness }));
+});

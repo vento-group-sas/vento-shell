@@ -19,7 +19,7 @@ function baseControl(active = null) {
 
 const readyRegistry = {
   package_execution: {
-    mode: 'DETERMINISTIC_LINEAR_TOPOLOGICAL',
+    mode: 'DETERMINISTIC_GOVERNED_FRONTIER',
     state: 'READY_FOR_AUTHORIZATION',
     sequence: [{ package_id: 'NEXO-PACKAGE-001' }],
     current: {
@@ -52,7 +52,7 @@ test('una instancia física ya activa conserva prioridad sobre la cola de packag
 
 test('sin instancia activa, el package actual ready produce candidato READY_FOR_AUTHORIZATION', () => {
   const result = coordinateImplementationStatus({ baseControl: baseControl(), registry: readyRegistry });
-  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_LINEAR');
+  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_GOVERNED_FRONTIER');
   assert.equal(result.coordinatedPrimaryAction.type, 'AUTHORIZE_PHYSICAL_IMPLEMENTATION');
   assert.equal(result.coordinatedPrimaryAction.target, 'SHELL-CI-020::NEXO-PACKAGE-001');
   assert.equal(result.readinessCandidate.status, 'READY_FOR_AUTHORIZATION');
@@ -95,7 +95,7 @@ test('un package actual bloqueado conserva el turno aunque otro esté ready', ()
       }],
     },
   });
-  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_LINEAR');
+  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_GOVERNED_FRONTIER');
   assert.equal(result.coordinatedPrimaryAction.type, 'PREPARE_PACKAGE_GATE');
   assert.equal(result.coordinatedPrimaryAction.target, 'GAP-PKG-001');
   assert.equal(result.readinessCandidate, null);
@@ -204,7 +204,7 @@ test('validation engine ejecuta readiness una vez e inyecta el mismo package_exe
   assert.equal(readinessScans, 1);
   assert.equal(suppliedPackageExecution.current.package_id, 'NEXO-PACKAGE-001');
   assert.equal(Object.isFrozen(suppliedPackageExecution), true);
-  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_LINEAR');
+  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_GOVERNED_FRONTIER');
   assert.equal(result.coordinatedPrimaryAction.target, 'SHELL-CI-020::NEXO-PACKAGE-001');
   assert.equal(result.validationEngine.engineId, 'VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1');
   assert.deepEqual(result.validationEngine.phases, [
@@ -256,4 +256,51 @@ test('validation engine falla cerrado si readiness no entrega package_execution'
     }),
     /registry\.package_execution/u,
   );
+});
+
+test('un package físico activo no monopoliza un primary independiente de la governed frontier', () => {
+  const active = {
+    instanceId: 'SHELL-CI-022::GAP-PKG-001',
+    status: 'IN_PROGRESS',
+  };
+  const registry = {
+    implementation_ready_queue: [],
+    package_execution: {
+      mode: 'DETERMINISTIC_GOVERNED_FRONTIER',
+      state: 'FRONTIER_READY',
+      sequence: [
+        { position: 1, package_id: 'GAP-PKG-001' },
+        { position: 2, package_id: 'GAP-PKG-002' },
+      ],
+      active_physical: [{
+        position: 1,
+        package_id: 'GAP-PKG-001',
+        status: 'DEPLOYED',
+        next_action: {
+          type: 'CONTINUE_PHYSICAL_LIFECYCLE',
+          target: 'SHELL-CI-022::GAP-PKG-001',
+          command: 'npm run docs:implementation:status',
+          reason: 'Pilot observation.',
+        },
+      }],
+      current: {
+        position: 2,
+        package_id: 'GAP-PKG-002',
+        next_action: {
+          type: 'PREPARE_PACKAGE_GATE',
+          target: 'GAP-PKG-002',
+          command: 'npm run docs:package:start -- --package-id GAP-PKG-002',
+          reason: 'Independent root.',
+        },
+      },
+    },
+  };
+
+  const result = coordinateImplementationStatus({
+    baseControl: baseControl(active),
+    registry,
+  });
+  assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_GOVERNED_FRONTIER_WITH_ACTIVE_SET');
+  assert.equal(result.coordinatedPrimaryAction.target, 'GAP-PKG-002');
+  assert.equal(result.coordinatedPrimaryAction.type, 'PREPARE_PACKAGE_GATE');
 });

@@ -637,7 +637,7 @@ test('el package muestra tareas aprobadas, pendientes y progreso exacto', () => 
   assert.ok(!pkg.blockers.some((blocker) => blocker.startsWith('GATE:')));
 });
 
-test('nearest-to-ready queda como dato diagnóstico y no compite con el turno lineal', () => {
+test('nearest-to-ready queda como dato diagnóstico y no compite con el primary gobernado', () => {
   const result = scanPackageReadiness({
     root: process.cwd(),
     trigger: 'test-nearest-progress',
@@ -658,7 +658,7 @@ test('nearest-to-ready queda como dato diagnóstico y no compite con el turno li
   });
   assert.equal(result.registry.nearest_to_ready_queue[0].package_id, 'GAP-PKG-002');
   assert.equal(result.registry.nearest_to_ready_queue[0].task_progress.remaining, 0);
-  assert.match(result.block, /CURRENT PACKAGE: GAP-PKG-001/u);
+  assert.match(result.block, /PRIMARY PACKAGE: GAP-PKG-001/u);
   assert.match(result.block, /ACTION: PREPARE_PACKAGE_GATE/u);
   assert.doesNotMatch(result.block, /NEAREST TO READY/u);
 });
@@ -689,16 +689,16 @@ test('detalle por package lista tareas, gates y obligaciones restantes', () => {
   assert.match(detail, /TOTAL REMAINING OBLIGATIONS:/u);
   assert.equal(result.integrityAudit.status, 'PASS');
   const report = renderReadinessMarkdown(result);
-  assert.match(report, /GUÍA VIVA DE EJECUCIÓN LINEAL Y READINESS DE PACKAGES/u);
+  assert.match(report, /GUÍA VIVA DE GOVERNED FRONTIER Y READINESS DE PACKAGES/u);
   assert.match(report, /## Panel de control/u);
-  assert.match(report, /## Cómo funciona la línea/u);
-  assert.match(report, /## Package actual/u);
+  assert.match(report, /## Cómo funciona la governed frontier/u);
+  assert.match(report, /## Primary frontier package/u);
   assert.match(report, /## Progreso por capa/u);
-  assert.match(report, /## Lista lineal completa/u);
-  assert.match(report, /## Packages diferidos fuera de la línea activa/u);
+  assert.match(report, /## Secuencia topológica completa/u);
+  assert.match(report, /## Packages diferidos fuera de la frontier canónica/u);
   assert.match(report, /PREPARE_PACKAGE_GATE/u);
   assert.match(report, /npm run docs:package:start -- --package-id GAP-PKG-001/u);
-  assert.match(report, /Ningún package posterior puede adelantarlo/u);
+  assert.match(report, /no monopoliza|sin monopolizar/u);
   assert.match(report, /Catálogo completo/u);
   assert.match(report, /Tareas faltantes/u);
   assert.match(report, /TEST-PENDING-001/u);
@@ -718,6 +718,9 @@ test('Supabase remoto exige R0 y fundaciones MRP015 antes del package', () => {
   const gate = { physical_identity: { targets: [{ path: 'supabase/functions/example/index.ts' }] } };
   const requirements = derivePackageExecutionRequirements({ contract, packageGate: gate });
   assert.equal(requirements.supabase_mutation_required, true);
+  assert.deepEqual(requirements.target_paths, ['supabase/functions/example/index.ts']);
+  assert.deepEqual(requirements.target_path_keys, []);
+  assert.deepEqual(requirements.resource_keys, []);
   assert.deepEqual(requirements.pre_entry_foundation_gates.map(({ foundation_id: id }) => id), ['MRP015-000', 'MRP015-010', 'MRP015-020', 'MRP015-030', 'MRP015-040']);
 
   const unresolvedContract = structuredClone(contract);

@@ -98,7 +98,7 @@ test('elige una sola autorización física y mantiene activo el carril documenta
   assert.equal(result.documentary.parallelWithPhysical, true);
   assert.equal(result.coordination.mode, 'CONTROLLED_DUAL_LANE');
   assert.equal(result.coordination.documentaryConcurrency, 'ONE_ACTIVE_TASK');
-  assert.equal(result.coordination.physicalConcurrency, 'ONE_ACTIVE_INSTANCE');
+  assert.equal(result.coordination.physicalConcurrency, 'GOVERNED_ACTIVE_SET');
   assert.equal(result.coordination.separateCheckoutsRequired, true);
   assert.equal(result.coordination.mergePolicy, 'SERIALIZED_CLOSE');
   assert.equal(result.coordination.latestMainReconciliationRequired, true);

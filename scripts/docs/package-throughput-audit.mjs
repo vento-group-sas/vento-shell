@@ -67,6 +67,12 @@ export function buildPackageThroughputAudit({ registry, policy, applicationClosu
     scope: 'ANALYSIS_ONLY',
     execution_policy: policy?.mode ?? 'UNKNOWN',
     parallel_execution_authorized: false,
+    governed_frontier_supported: registry?.package_execution?.mode === 'DETERMINISTIC_GOVERNED_FRONTIER',
+    frontier_count: registry?.package_execution?.frontier?.length ?? 0,
+    schedulable_frontier_count: registry?.package_execution?.schedulable_frontier?.length ?? 0,
+    authorization_frontier_count: registry?.package_execution?.authorization_frontier?.length ?? 0,
+    active_physical_count: registry?.package_execution?.active_physical?.length ?? 0,
+    waiting_frontier_count: registry?.package_execution?.waiting?.length ?? 0,
     application_closure_available: Boolean(applicationClosure),
     application_closure_model_id: applicationClosure?.model_id ?? null,
     application_closure_fingerprint_sha256: applicationClosure?.fingerprint_sha256 ?? null,
@@ -106,6 +112,12 @@ function printAudit(audit) {
   console.log(`SCOPE: ${audit.scope}`);
   console.log(`EXECUTION_POLICY: ${audit.execution_policy}`);
   console.log(`PARALLEL_EXECUTION_AUTHORIZED: ${audit.parallel_execution_authorized ? 'SI' : 'NO'}`);
+  console.log(`GOVERNED_FRONTIER_SUPPORTED: ${audit.governed_frontier_supported ? 'SI' : 'NO'}`);
+  console.log(`FRONTIER_COUNT: ${audit.frontier_count}`);
+  console.log(`SCHEDULABLE_FRONTIER_COUNT: ${audit.schedulable_frontier_count}`);
+  console.log(`AUTHORIZATION_FRONTIER_COUNT: ${audit.authorization_frontier_count}`);
+  console.log(`ACTIVE_PHYSICAL_COUNT: ${audit.active_physical_count}`);
+  console.log(`WAITING_FRONTIER_COUNT: ${audit.waiting_frontier_count}`);
   console.log(`APPLICATION_CLOSURE_AVAILABLE: ${audit.application_closure_available ? 'SI' : 'NO'}`);
   console.log(`APPLICATION_CLOSURE_MODEL_ID: ${audit.application_closure_model_id ?? 'NONE'}`);
   console.log(`APPLICATION_CLOSURE_FINGERPRINT_SHA256: ${audit.application_closure_fingerprint_sha256 ?? 'NONE'}`);

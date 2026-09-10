@@ -62,7 +62,7 @@ test('audita throughput sin autorizar paralelismo', () => {
 
   const audit = buildPackageThroughputAudit({
     registry,
-    policy: { mode: 'DETERMINISTIC_LINEAR_TOPOLOGICAL' },
+    policy: { mode: 'DETERMINISTIC_GOVERNED_FRONTIER' },
     applicationClosure,
   });
 
@@ -91,7 +91,7 @@ test('audita throughput sin autorizar paralelismo', () => {
     EVIDENCIADO_POR: 4,
     CIERRA_CRITERIO_DE: 1,
   });
-  assert.equal(audit.execution_policy, 'DETERMINISTIC_LINEAR_TOPOLOGICAL');
+  assert.equal(audit.execution_policy, 'DETERMINISTIC_GOVERNED_FRONTIER');
   assert.equal(audit.distinct_target_paths, 2);
   assert.equal(audit.shared_target_paths, 1);
   assert.equal(audit.max_packages_per_target_path, 2);
@@ -103,7 +103,7 @@ test('audita throughput sin autorizar paralelismo', () => {
 test('no infiere cierre por aplicacion si la proyeccion no fue suministrada', () => {
   const audit = buildPackageThroughputAudit({
     registry: { packages: [] },
-    policy: { mode: 'DETERMINISTIC_LINEAR_TOPOLOGICAL' },
+    policy: { mode: 'DETERMINISTIC_GOVERNED_FRONTIER' },
   });
 
   assert.equal(audit.parallel_execution_authorized, false);

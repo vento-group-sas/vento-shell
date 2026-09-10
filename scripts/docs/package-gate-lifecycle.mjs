@@ -439,7 +439,17 @@ export function finishPackageGate({
   }
 
   const synchronized = synchronizePackageReadiness(root, 'package-finish-precheck');
-  const handoff = materializePendingPhysicalHandoff(root, id, synchronized);
+  const execution = synchronized.registry.package_execution ?? null;
+  const admission = (execution?.physical_admission ?? [])
+    .find(({ package_id: packageId }) => packageId === id) ?? null;
+  const primary = execution?.current ?? null;
+  const handoff = (
+    admission?.status === 'ADMISSIBLE'
+    && primary?.package_id === id
+    && primary?.next_action?.type === 'MATERIALIZE_PHYSICAL_HANDOFF'
+  )
+    ? materializePendingPhysicalHandoff(root, id, synchronized)
+    : null;
 
   npm(['run', 'docs:package:gate:check'], { cwd: root, inherit: true });
   npm(['run', 'docs:package:execution:check'], { cwd: root, inherit: true });
@@ -463,6 +473,7 @@ export function finishPackageGate({
   console.log(`PACKAGE: ${id}`);
   console.log(`BRANCH: ${branch}`);
   console.log(`HANDOFF_CREATED: ${handoff?.created === true ? 'YES' : 'NO'}`);
+  console.log(`HANDOFF_DEFERRED_BY_FRONTIER: ${handoff ? 'NO' : 'YES'}`);
   console.log('NEXT: npm run docs:package:execution:status');
 
   npm(['run', 'docs:package:execution:status'], { cwd: root, inherit: true });
