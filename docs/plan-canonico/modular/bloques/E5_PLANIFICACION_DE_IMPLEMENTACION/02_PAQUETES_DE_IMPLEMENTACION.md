@@ -7131,6 +7131,55 @@ La ausencia de evidencia de cualquiera de esos gates bloquea fail-closed. Un nom
 Si una fundación requerida carece todavía de ejecutor físico materializado, la línea se detiene en la identidad de esa fundación y conserva su owner canónico; nunca salta al package consumidor.
 <!-- DELIV-PKG-015-CORR-002:END -->
 
+<!-- CORR-012-GOVERNED-FRONTIER:START -->
+### CORR-012 — Governed eligible frontier para ejecución física
+
+```text
+DELIV-PKG-015 partial order
+        ↓
+explicit package dependencies
+        ↓
+implementation layer
+        ↓
+package_id stable tie-breaker
+        ↓
+DEPENDENCY-ELIGIBLE FRONTIER
+        ↓
+deterministic primary schedulable package
+        │
+        ├─ WAITING
+        │      → dependency / prerequisite / UNKNOWN / conflict
+        │      → package-local block only
+        │
+        ├─ AUTHORIZATION_FRONTIER
+        │      → PENDING_AUTHORIZATION reserves full admission locks
+        │      → human approval remains explicit
+        │
+        └─ ACTIVE_PHYSICAL
+               → exact package lifecycle continues
+               → CI020/CI021: persistent + exclusive transition locks
+               → CI022/CI023/CI024: persistent exact locks only
+               → long observation does not hold the global primary
+```
+
+Invariantes:
+
+- `human_package_selection=false` permanece obligatorio.
+- Las dependencias explícitas son hard prerequisites.
+- Capa y `package_id` dan prioridad determinista entre roots dependency-eligible.
+- Scope físico o implementation unit no resoluble produce `UNKNOWN` y falla cerrado solo para la admisión física del package afectado.
+- Los target paths y implementation units generan locks persistentes exactos.
+- Migraciones/schema, configuración Supabase, helpers compartidos de Edge Functions, manifests de dependencias y workflows generan locks exclusivos de transición.
+- Los locks exclusivos de transición se mantienen durante CI020/CI021 y se liberan al entrar a CI022; los locks exactos permanecen durante piloto, hypercare y cierre.
+- Un handoff `PENDING_AUTHORIZATION` reserva todo su scope probado y no se autoautoriza.
+- Cada package preserva `SHELL-CI-020 → SHELL-CI-021 → SHELL-CI-022 → SHELL-CI-023 → SHELL-CI-024`.
+- Checkouts físicos simultáneos deben ser independientes.
+- Merge y cierre permanecen serializados y deben reconciliar el último `main`.
+- El cierre de package sigue dependiendo de CI024 VERIFIED + evidencia; el cierre de aplicación y producto no cambia.
+- El auditor de throughput es diagnóstico y nunca concede autorización por sí mismo.
+
+<!-- CORR-012-GOVERNED-FRONTIER:END -->
+
 ### ✅ DELIV-PKG-016 — Vincular requisitos `TREQ-*` y definir pruebas unitarias, contractuales, de integración, seguridad y E2E
 
 **Estado:** APROBADA

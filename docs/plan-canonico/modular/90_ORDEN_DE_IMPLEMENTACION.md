@@ -930,14 +930,65 @@ la trazabilidad sea completa;
 el piloto operativo haya sido aprobado.
 
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:START -->
-### Invariante de turno y trabajo ejecutable
+### Invariante de governed frontier y trabajo ejecutable
 
-La linealidad de `DELIV-PKG-015` distingue dos identidades:
+La precedencia física de `DELIV-PKG-015` distingue:
 
-- `CURRENT_PACKAGE`: package no cerrado que conserva el turno topológico;
-- `CURRENT_EXECUTABLE_WORK`: primer prerrequisito físico o fundación incumplida del package actual.
+- `PRIMARY_PACKAGE`: primer package dependency-eligible con acción schedulable según dependencias explícitas, capa y `package_id`;
+- `CURRENT_EXECUTABLE_WORK`: trabajo exacto del primary;
+- `WAITING`: package todavía bloqueado por dependencia, prerrequisito, scope `UNKNOWN` o conflicto;
+- `ACTIVE_PHYSICAL`: package que ya inició su lifecycle y conserva los resource locks aplicables.
 
-Si ambas identidades difieren, el package queda como consumidor bloqueado. El registro de pendientes, los iniciadores y los controles de implementación deben mostrar primero `CURRENT_EXECUTABLE_WORK` y prohibir el avance a packages posteriores.
+Un `WAITING` no puede iniciar, desplegar ni cerrar por inferencia, pero tampoco impide que otro root independiente y dependency-eligible continúe. Un `ACTIVE_PHYSICAL` no monopoliza el primary global.
 
-Para mutaciones Supabase, después de R0 se consumen en orden `MRP015-000`, `MRP015-010`, `MRP015-020`, `MRP015-030` y `MRP015-040`; `MRP015-050` se certifica dentro del ciclo del candidato antes del despliegue remoto.
+Para mutaciones Supabase, después de R0 se consumen en orden `MRP015-000`, `MRP015-010`, `MRP015-020`, `MRP015-030` y `MRP015-040`; `MRP015-050` se certifica dentro del ciclo del candidato antes del despliegue remoto. Los locks compartidos de transición se mantienen durante CI020/CI021 y los locks exactos persisten durante piloto/hypercare. Los merges y cierres siguen serializados.
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:END -->
+
+<!-- CORR-012-GOVERNED-FRONTIER:START -->
+### CORR-012 — Governed eligible frontier para ejecución física
+
+```text
+DELIV-PKG-015 partial order
+        ↓
+explicit package dependencies
+        ↓
+implementation layer
+        ↓
+package_id stable tie-breaker
+        ↓
+DEPENDENCY-ELIGIBLE FRONTIER
+        ↓
+deterministic primary schedulable package
+        │
+        ├─ WAITING
+        │      → dependency / prerequisite / UNKNOWN / conflict
+        │      → package-local block only
+        │
+        ├─ AUTHORIZATION_FRONTIER
+        │      → PENDING_AUTHORIZATION reserves full admission locks
+        │      → human approval remains explicit
+        │
+        └─ ACTIVE_PHYSICAL
+               → exact package lifecycle continues
+               → CI020/CI021: persistent + exclusive transition locks
+               → CI022/CI023/CI024: persistent exact locks only
+               → long observation does not hold the global primary
+```
+
+Invariantes:
+
+- `human_package_selection=false` permanece obligatorio.
+- Las dependencias explícitas son hard prerequisites.
+- Capa y `package_id` dan prioridad determinista entre roots dependency-eligible.
+- Scope físico o implementation unit no resoluble produce `UNKNOWN` y falla cerrado solo para la admisión física del package afectado.
+- Los target paths y implementation units generan locks persistentes exactos.
+- Migraciones/schema, configuración Supabase, helpers compartidos de Edge Functions, manifests de dependencias y workflows generan locks exclusivos de transición.
+- Los locks exclusivos de transición se mantienen durante CI020/CI021 y se liberan al entrar a CI022; los locks exactos permanecen durante piloto, hypercare y cierre.
+- Un handoff `PENDING_AUTHORIZATION` reserva todo su scope probado y no se autoautoriza.
+- Cada package preserva `SHELL-CI-020 → SHELL-CI-021 → SHELL-CI-022 → SHELL-CI-023 → SHELL-CI-024`.
+- Checkouts físicos simultáneos deben ser independientes.
+- Merge y cierre permanecen serializados y deben reconciliar el último `main`.
+- El cierre de package sigue dependiendo de CI024 VERIFIED + evidencia; el cierre de aplicación y producto no cambia.
+- El auditor de throughput es diagnóstico y nunca concede autorización por sí mismo.
+
+<!-- CORR-012-GOVERNED-FRONTIER:END -->
