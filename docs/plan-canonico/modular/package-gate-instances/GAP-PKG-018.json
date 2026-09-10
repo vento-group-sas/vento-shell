@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-018",
+  "status": "MATURATION_DRAFT",
+  "created_at": "2026-09-10T05:05:40.074Z",
+  "updated_at": "2026-09-10T05:05:40.074Z",
+  "canonical_snapshot": {
+    "repository_owner": "devVentoGroup/vento-shell",
+    "runtime_profile": "DATABASE_RPC_BOUNDARY",
+    "dominant_task_id": "SUPA-AUD-010",
+    "task_ids": [
+      "SUPA-ARC-008",
+      "SUPA-ARC-009",
+      "SUPA-AUD-010"
+    ],
+    "missing_task_ids": []
+  },
+  "physical_identity": {
+    "targets": []
+  },
+  "implementation_units": [],
+  "evidence_plan": {
+    "tests": [],
+    "observability": [],
+    "acceptance_criteria": [],
+    "rollback_steps": []
+  },
+  "authorization": {
+    "decision": "PENDING",
+    "approved_by": null,
+    "approved_at": null,
+    "approval_ref": null,
+    "approval_statement": null
+  }
+}

@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-018`.
+> **Prioridad del checkout actual:** ejecutar `MATURE_PACKAGE_GATE` sobre `GAP-PKG-018`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -21,12 +21,12 @@
 - **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-018`
 - **Posición topológica:** **5/189**; prioridad derivada, sin selección humana.
 - **Estado efectivo:** `COMPILED`
-- **Acción exacta:** `PREPARE_PACKAGE_GATE`
+- **Acción exacta:** `MATURE_PACKAGE_GATE`
 - **Objetivo exacto:** `GAP-PKG-018`
-- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-018`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json` — `NOT_PREPARED`
+- **Comando exacto:** `npm run docs:package:gate:status -- --package-id GAP-PKG-018`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json` — `MATURATION_DRAFT`
 - **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-018 está dependency-eligible y no tiene expediente package-gate.
+- **Por qué:** GAP-PKG-018 debe completar identidad, unidades, evidencia y aprobación de gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `AUTH-DEV-010`
