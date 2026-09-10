@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1157** |
+| Tareas aprobadas | **1158** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **439** |
+| Tareas no iniciadas | **438** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **72.49% (1157/1596)** |
+| Porcentaje de completamiento | **72.56% (1158/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-DEV-013 — Manejar cambio de trabajador** |
-| Tarea actual | **AUTH-DEV-014 — Probar tablets de NEXO** |
+| Última tarea aprobada | **AUTH-DEV-014 — Probar tablets de NEXO** |
+| Tarea actual | **AUTH-DEV-015 — Probar terminales de PULSO** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-DEV-015 — Probar terminales de PULSO** |
+| Siguiente tarea | **AUTH-DEV-016 — Probar pantallas de FOGO** |
 | Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
-| Progreso del bloque | **BLOQUES P Y Q: 19 de 30 aprobadas; AUTH-DEV-014 pendiente** |
+| Progreso del bloque | **BLOQUES P Y Q: 20 de 30 aprobadas; AUTH-DEV-015 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-DEV-014** |
+| Carril documental | **ACTIVO — AUTH-DEV-015** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-DEV-013` — Manejar cambio de trabajador |
-| Tarea actual | `AUTH-DEV-014` — Probar tablets de NEXO — **NO INICIADA** |
-| Siguiente tarea | `AUTH-DEV-015` — Probar terminales de PULSO |
+| Última aprobada | `AUTH-DEV-014` — Probar tablets de NEXO |
+| Tarea actual | `AUTH-DEV-015` — Probar terminales de PULSO — **NO INICIADA** |
+| Siguiente tarea | `AUTH-DEV-016` — Probar pantallas de FOGO |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 19 DE 30 APROBADAS — ACTUAL AUTH-DEV-014** |
+| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 20 DE 30 APROBADAS — ACTUAL AUTH-DEV-015** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-DEV-013 — Manejar cambio de trabajador
-        ↓
-TAREA ACTUAL
 AUTH-DEV-014 — Probar tablets de NEXO
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-DEV-015 — Probar terminales de PULSO
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-DEV-016 — Probar pantallas de FOGO
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES P Y Q — 19 de 30 tareas aprobadas
+BLOQUES P Y Q — 20 de 30 tareas aprobadas
 ```
