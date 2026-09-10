@@ -519,6 +519,699 @@ Esta tarea no:
 `AUTH-DEV-008 — Combinar límite del dispositivo y trabajador`
 
 
-### [ ] AUTH-DEV-008 — Combinar límite del dispositivo y trabajador
+### ✅ AUTH-DEV-008 — Combinar límite del dispositivo y trabajador
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-007 — Exigir firma o PIN del trabajador
+**Tarea siguiente:** AUTH-DEV-009 — Evitar heredar permisos administrativos
+**Tipo de tarea:** documental; contrato canónico de intersección restrictiva entre autoridad efectiva del trabajador y techo efectivo del dispositivo compartido, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la regla única con la que una acción empresarial solicitada desde un dispositivo compartido combina, sin sumas ni herencias implícitas, la autoridad que posee el trabajador humano identificado con el techo máximo que permite la instancia de dispositivo.
+
+La decisión parte del handoff aprobado por `AUTH-DEV-007`: existe un dispositivo técnico resuelto, un actor humano exacto resuelto mediante sesión o firma correlacionable y un contexto laboral que debe provenir de sus propias fuentes autoritativas.
+
+La combinación aprobada es restrictiva:
+
+```text
+AUTORIDAD DEL TRABAJADOR
+INTERSECCION
+TECHO EFECTIVO DEL DISPOSITIVO
+=
+CAPACIDAD CANDIDATA DESDE EL DISPOSITIVO
+```
+
+La capacidad candidata todavía debe satisfacer aplicación, modo de sesión, sede, área, recurso, prerrequisitos, sensibilidad, reautenticación fuerte cuando corresponda y ausencia de denegaciones antes de producir una acción posible.
+
+La tarea no crea permisos para el dispositivo, no convierte al principal técnico en trabajador, no fusiona carriles administrativo y operativo y no materializa cambios en código, Supabase, migraciones, configuración, datos ni dispositivos.
+
+---
+
+#### 2. Alcance y límites
+
+`AUTH-DEV-008` resuelve exclusivamente la combinación entre:
+
+1. el actor humano efectivo identificado conforme a `AUTH-DEV-007`;
+2. el permiso efectivo que ese actor posee conforme al modelo canónico de autorización;
+3. el techo exacto del dispositivo aprobado por `AUTH-DEV-006`;
+4. la aplicación efectiva de la instancia;
+5. el modo de sesión compatible;
+6. el territorio utilizable como intersección entre contexto humano y restricción del dispositivo;
+7. el recurso y los prerrequisitos de la acción;
+8. la clasificación de compatibilidad con dispositivo compartido;
+9. la ausencia de denegaciones aplicables.
+
+Quedan fuera de esta tarea:
+
+- la captura y validación del PIN o firma ligera, cerrada por `AUTH-DEV-007`;
+- la prohibición detallada de herencia de privilegios administrativos, reservada a `AUTH-DEV-009`;
+- el contrato completo de auditoría conjunta dispositivo-trabajador, reservado a `AUTH-DEV-010`;
+- la revocación del dispositivo, reservada a `AUTH-DEV-011`;
+- la expiración de sesión, reservada a `AUTH-DEV-012`;
+- el cambio de trabajador y la limpieza completa del handoff, reservados a `AUTH-DEV-013`;
+- las pruebas físicas de NEXO, PULSO y FOGO, reservadas a `AUTH-DEV-014`, `AUTH-DEV-015` y `AUTH-DEV-016`;
+- la creación de una instancia física en esta conversación documental.
+
+---
+
+#### 3. Fuentes contractuales consumidas
+
+La combinación conserva sin modificación las decisiones aprobadas previamente:
+
+- el dispositivo compartido es un principal técnico, no un actor empresarial;
+- el trabajador humano de la sesión es el actor efectivo;
+- el dispositivo solo puede restringir una capacidad que el actor ya posee, exigir condiciones adicionales o bloquearla;
+- una aplicación permitida solo habilita superficie y nunca concede por sí misma `<app>.access` ni capacidades internas;
+- `navigation_role` es navegación o presentación y no una fuente de autorización;
+- la instancia puede reducir su plantilla, nunca ampliarla;
+- el territorio del dispositivo se intersecta con el territorio del actor y nunca se une;
+- una sesión de actor no crea turno, check-in, rol operativo, sede, área ni permiso;
+- una prueba ligera no satisface `STRONG_REAUTH_REQUIRED`;
+- una capacidad `NOT_ALLOWED` permanece excluida universalmente;
+- una denegación aplicable prevalece sobre cualquier allow candidato.
+
+La política legacy `same_site_active_worker` no es suficiente como política final porque una coincidencia de sede no demuestra permiso, área, rol operativo, recurso, prerrequisitos ni compatibilidad completa con el dispositivo.
+
+---
+
+#### 4. Resultado canónico
+
+Para cada acción empresarial desde un dispositivo compartido se evaluará exactamente una combinación contextual y por permiso.
+
+```text
+PERMISO EFECTIVO DEL ACTOR
+∩
+TECHO EFECTIVO DEL DISPOSITIVO
+∩
+APLICACION EFECTIVA
+∩
+MODO DE SESION COMPATIBLE
+∩
+SEDE Y AREA COMPATIBLES
+∩
+RECURSO Y PRERREQUISITOS VALIDOS
+∩
+REAUTENTICACION FUERTE CUANDO APLIQUE
+∩
+AUSENCIA DE DENEGACIONES
+=
+ACCION POSIBLE
+```
+
+La fórmula es una intersección lógica de condiciones obligatorias. Ningún componente ausente puede ser sustituido por otro.
+
+En particular:
+
+```text
+DISPOSITIVO PERMITE
+!=
+ACTOR TIENE PERMISO
+```
+
+```text
+ACTOR TIENE PERMISO
+!=
+DISPOSITIVO PERMITE
+```
+
+```text
+APP VISIBLE
+!=
+APP AUTORIZADA PARA EL ACTOR
+```
+
+```text
+NAVIGATION_ROLE
+!=
+ROL EFECTIVO
+```
+
+```text
+MISMA SEDE
+!=
+AUTORIDAD SUFICIENTE
+```
+
+```text
+PIN O FIRMA VALIDA
+!=
+ALLOW
+```
+
+---
+
+#### 5. Techo efectivo del dispositivo consumido
+
+`AUTH-DEV-008` no redefine el techo aprobado por `AUTH-DEV-006`.
+
+El techo efectivo se consume como un conjunto cerrado de claves canónicas exactas derivado de:
+
+```text
+PAQUETES EXACTOS DE LA VERSION DE PLANTILLA
+∩
+CLAVES NO RETIRADAS POR LA INSTANCIA
+∩
+CLAVES DE APLICACIONES EFECTIVAS
+∩
+CLAVES CANONICAS ACTIVAS COMPATIBLES CON DISPOSITIVO
+```
+
+Reglas de consumo:
+
+1. una clave fuera del techo produce `DENY` aunque el trabajador la posea;
+2. una clave dentro del techo no produce `ALLOW` si el trabajador no la posee;
+3. una reducción de instancia solo puede retirar capacidades;
+4. una clave nueva o desconocida no se incorpora por prefijo, alias, rol, aplicación, ruta o similitud semántica;
+5. un techo ausente, conflictivo, no versionado o no resoluble no equivale a ilimitado;
+6. el cliente no puede declarar ni ampliar el techo;
+7. una aplicación efectiva sin su acceso contractual coherente constituye conflicto, no autorización implícita.
+
+---
+
+#### 6. Autoridad efectiva del trabajador
+
+La autoridad del trabajador se resuelve independientemente del dispositivo.
+
+La presencia de una sesión de actor válida demuestra quién actúa; no demuestra qué puede hacer.
+
+La autoridad humana deberá derivarse de las fuentes canónicas del actor y del permiso solicitado, incluyendo según corresponda:
+
+- identidad laboral activa;
+- rol base y permisos base vigentes;
+- concesiones individuales compatibles;
+- turno publicado y vigente;
+- rol operativo efectivo;
+- check-in cuando el permiso lo exija;
+- sede y área efectivas;
+- alcance del permiso;
+- recurso exacto;
+- sensibilidad y controles reforzados;
+- denegaciones estructurales, transversales, individuales o de carril.
+
+El dispositivo no podrá completar ninguno de estos elementos faltantes.
+
+---
+
+#### 7. Combinación por modalidad de autorización
+
+La modalidad del permiso continúa siendo autoritativa.
+
+| Modalidad | Autoridad humana requerida | Efecto del dispositivo |
+| --- | --- | --- |
+| `BASE_ONLY` | componente base válido dentro de cobertura, alcance y recurso | restringe la clave, aplicación, territorio y condiciones; no exige turno por sí mismo |
+| `BASE_OR_OPERATIONAL` | al menos uno de los carriles debe producir un allow humano válido por sus propias reglas | restringe el carril válido; no mezcla componentes de dos evaluaciones fallidas |
+| `BASE_AND_OPERATIONAL` | componente base válido y componente operativo válido para el mismo actor y contexto compatible | restringe ambos; nunca aporta el componente faltante |
+| `OPERATIONAL_ONLY` | turno, rol operativo, territorio y demás prerrequisitos operativos aplicables | restringe la ejecución; no crea un carril base alternativo |
+
+Reglas:
+
+1. el dispositivo no cambia la modalidad del permiso;
+2. una capacidad base no se vuelve operativa por ejecutarse en una tablet;
+3. una capacidad operativa no se vuelve base porque el trabajador tenga un rol administrativo;
+4. `BASE_AND_OPERATIONAL` no se satisface tomando el componente base de una persona y el operativo de otra;
+5. un resultado permitido en un carril no elimina una denegación que tenga precedencia canónica.
+
+---
+
+#### 8. Aplicación efectiva
+
+La aplicación solicitada deberá pertenecer al conjunto efectivo del dispositivo y estar activa y disponible conforme al contrato de `AUTH-DEV-005`.
+
+La pertenencia permite continuar la evaluación, pero no concede acceso.
+
+Para una acción dentro de una aplicación deberán cumplirse separadamente:
+
+```text
+APP SOLICITADA EN CONJUNTO EFECTIVO
++
+CLAVE DE ACCESO O CAPACIDAD EXACTA EN TECHO
++
+ACTOR HUMANO CON ESA CLAVE EFECTIVA
++
+CONTEXTO Y RECURSO VALIDOS
+=
+EVALUACION PUEDE CONTINUAR
+```
+
+Queda prohibido:
+
+- devolver `ALLOW` para `<app>.access` solo porque la app esté permitida en el dispositivo;
+- utilizar la presencia de una app para inferir todas sus capacidades internas;
+- utilizar una ruta existente como prueba de permiso;
+- utilizar una app instalada localmente como ampliación de la configuración efectiva.
+
+---
+
+#### 9. Modo de sesión y actor
+
+La evaluación desde dispositivo compartido exige un actor humano resoluble para toda acción empresarial.
+
+Casos:
+
+```text
+DISPOSITIVO ACTIVO
++
+SIN SESION HUMANA VALIDA
+->
+SIN ACCIONES EMPRESARIALES
+```
+
+```text
+DISPOSITIVO ACTIVO
++
+UNA SESION HUMANA VALIDA
+->
+ACTOR = EMPLEADO EXACTO DE LA SESION
+->
+EVALUAR SU AUTORIDAD
+```
+
+```text
+DOS O MAS SESIONES HUMANAS INCOMPATIBLES
+->
+ACTOR NO RESUELTO
+->
+DENY / BLOQUEO ESTRUCTURAL
+```
+
+No se utilizará como actor:
+
+- el usuario técnico;
+- `navigation_role`;
+- el último empleado;
+- el trabajador de la sede;
+- el último PIN;
+- una cookie de cliente;
+- un `employee_id` enviado por la interfaz.
+
+---
+
+#### 10. Territorio como intersección
+
+El territorio utilizable desde un dispositivo compartido se resuelve de forma restrictiva.
+
+```text
+TERRITORIO AUTORIZADO DEL ACTOR
+∩
+TERRITORIO PERMITIDO POR LA INSTANCIA
+∩
+TERRITORIO REAL DEL RECURSO
+=
+TERRITORIO UTILIZABLE
+```
+
+Nunca:
+
+```text
+TERRITORIO DEL ACTOR
+∪
+TERRITORIO DEL DISPOSITIVO
+```
+
+Reglas:
+
+1. la sede fija del dispositivo no crea una sede activa para el trabajador;
+2. el área fija o conjunto permitido no crea el área operativa del trabajador;
+3. el turno sigue siendo la fuente del territorio operativo cuando aplique;
+4. la cobertura administrativa sigue siendo una propiedad del actor, no del terminal;
+5. el recurso deberá resolverse en servidor y coincidir con el territorio permitido;
+6. una preferencia de interfaz no amplía territorio;
+7. una coincidencia parcial de sede sin área requerida produce denegación;
+8. una acción multiárea o multisede deberá satisfacer todas las dimensiones que su contrato exija.
+
+---
+
+#### 11. Área efectiva única por acción
+
+Cuando la política del dispositivo admite un conjunto de áreas, cada acción concreta deberá resolverse contra una sola área efectiva o contra una semántica explícita de recurso multiárea ya definida por el permiso.
+
+Un conjunto de áreas permitidas no significa que el trabajador opere simultáneamente en todas ellas.
+
+```text
+AREAS PERMITIDAS DEL DISPOSITIVO
+=
+CONJUNTO MAXIMO
+```
+
+```text
+AREA EFECTIVA DE LA ACCION
+=
+AREA RESUELTA DEL ACTOR Y DEL RECURSO
+DENTRO DEL CONJUNTO MAXIMO
+```
+
+No se seleccionará automáticamente un área para conseguir que una autorización pase.
+
+---
+
+#### 12. Compatibilidad de clasificación del permiso
+
+La clasificación de compatibilidad de dispositivo sigue siendo una restricción adicional:
+
+| Clasificación | Regla |
+| --- | --- |
+| `STANDARD_ACTOR_SESSION` | puede continuar únicamente con actor humano y contexto válidos, además del techo y demás controles |
+| `STRONG_REAUTH_REQUIRED` | exige evidencia fuerte personal vigente y soporte real del dispositivo; el PIN ligero de `AUTH-DEV-007` no basta |
+| `NOT_ALLOWED` | la capacidad queda fuera de toda instancia y toda acción se deniega |
+
+Una clasificación faltante, desconocida o incompatible se resuelve de forma cerrada.
+
+---
+
+#### 13. Denegaciones y fail closed
+
+La intersección produce `DENY` o bloqueo cuando ocurra al menos una de estas condiciones:
+
+1. no existe actor humano válido;
+2. el empleado está inactivo;
+3. la clave solicitada no es canónica o está inactiva;
+4. el actor no posee la clave efectiva requerida;
+5. la clave no pertenece al techo efectivo del dispositivo;
+6. la aplicación no pertenece al conjunto efectivo;
+7. el modo de sesión es incompatible;
+8. falta turno o check-in cuando el permiso los exige;
+9. la sede o área no coincide;
+10. el recurso está fuera del alcance;
+11. la capacidad es `NOT_ALLOWED`;
+12. falta reautenticación fuerte para una capacidad `STRONG_REAUTH_REQUIRED`;
+13. existe una denegación con precedencia;
+14. la plantilla, instancia, paquete, sesión o contexto están en conflicto;
+15. el resultado depende de una fuente legacy no reconciliada;
+16. existe más de un actor candidato válido;
+17. no puede resolverse de forma única el territorio requerido.
+
+La ausencia de evidencia no se transforma en allow.
+
+---
+
+#### 14. Prohibición de sumas
+
+La evaluación no utiliza sumas de autoridad entre dispositivo y humano.
+
+Queda prohibido interpretar:
+
+```text
+PERMISOS DEL TRABAJADOR
++
+PERMISOS DEL DISPOSITIVO
+```
+
+porque el dispositivo no posee permisos empresariales propios.
+
+También queda prohibido sumar:
+
+- permisos del trabajador actual y del anterior;
+- rol base del trabajador y `navigation_role` como si fueran dos grants;
+- cobertura administrativa del actor y sede fija del dispositivo;
+- áreas permitidas por la instancia y áreas no autorizadas del actor;
+- aplicaciones de plantilla e instancia como unión expansiva;
+- resultados parciales de carriles que no satisfacen por separado su contrato.
+
+---
+
+#### 15. Estado y recálculo
+
+La decisión se calcula sobre un snapshot coherente y no puede sobrevivir a cambios que afecten sus entradas.
+
+Deberá recalcularse cuando cambie materialmente alguno de estos elementos:
+
+- actor humano;
+- sesión de actor;
+- estado del empleado;
+- rol base;
+- permisos o denegaciones del actor;
+- turno, check-in, rol operativo, sede o área;
+- aplicación solicitada;
+- conjunto efectivo de aplicaciones;
+- versión de plantilla;
+- reducción de instancia;
+- paquete o techo efectivo;
+- clasificación de compatibilidad;
+- recurso objetivo;
+- requisito de reautenticación fuerte.
+
+Esta tarea define la obligación de recalcular. La mecánica de invalidación, expiración, limpieza de estado y cambio de trabajador permanece en sus propietarios posteriores.
+
+---
+
+#### 16. Matriz completa de las 19 identidades
+
+La tarea conserva el universo de 19 claves aprobado por `AUTH-DEV-001` a `AUTH-DEV-006` y asigna una decisión de combinación a cada identidad sin crear dispositivos por inferencia.
+
+| Identidad | Clase / estado | Decisión de combinación | Restricción humana y territorial | Resultado documental |
+| --- | --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` / `REGISTERED_UNVERIFIED` | usar únicamente el techo candidato reducido de su configuración `pos_satellite`; nunca conceder por app visible o `navigation_role` | actor humano exacto; permiso efectivo propio; VENTO_CAFE y Caja compatibles con actor y recurso | combinación definida; operación física no certificada |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` / `REGISTERED_UNVERIFIED` | conservar la reducción candidata a NEXO y reemplazar la suficiencia de `same_site_active_worker` por la intersección completa | actor humano exacto; permiso efectivo propio; CENTRO_PROD y Bodega compatibles con actor y recurso | combinación definida; política legacy sola queda insuficiente |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` / `OBSERVED_ONLY` | no calcular autoridad de dispositivo hasta existir identidad y enrolamiento autoritativos | ninguna observación física crea actor, sede, área, app o permiso | sin autoridad materializable por observación |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` / `OBSERVED_ONLY` | no calcular autoridad de dispositivo hasta existir identidad y enrolamiento autoritativos | ninguna cuenta conjunta o uso observado sustituye actor humano | sin autoridad materializable por observación |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor de caja con techo máximo de la plantilla y reducción de instancia | sede fija y área exacta de Caja; turno/check-in según permiso | política de combinación definida |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor de barra con techo máximo de la plantilla y reducción de instancia | sede fija y área exacta de Barra; turno/check-in según permiso | política de combinación definida |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor de cocina satélite con techo máximo de la plantilla y reducción de instancia | sede fija y área exacta de Cocina; turno/check-in según permiso | política de combinación definida |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor de servicio con techo máximo de la plantilla y reducción de instancia | sede fija y área exacta de Servicio; turno/check-in según permiso | política de combinación definida |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor de mostrador con techo máximo de la plantilla y reducción de instancia | sede fija y área exacta de Mostrador; turno/check-in según permiso | política de combinación definida |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor con techo integrado sin sumar perfiles de otras plantillas | sede fija; área efectiva única dentro del conjunto permitido | política de combinación definida |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar autoridad del actor con techo de producción | sede de producción y área exacta de Cocina Caliente; rol operativo y prerrequisitos aplicables | política de combinación definida |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar autoridad del actor con techo de producción | sede de producción y área exacta de Galletería y Panadería; rol operativo y prerrequisitos aplicables | política de combinación definida |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar autoridad del actor con techo de producción | sede de producción y área exacta de Repostería; rol operativo y prerrequisitos aplicables | política de combinación definida |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar autoridad real del bodeguero u otro actor elegible con techo de bodega; nunca aceptar misma sede como prueba suficiente | sede y área de Bodega exactas; rol, turno, check-in y recurso según permiso | política objetivo sustituye suficiencia de `same_site_active_worker` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar actor logístico con techo de terminal y restricciones del recurso/vehículo | sede base o propietaria y contexto de ruta/recurso sin convertir destino u origen en autoridad | política de combinación definida |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | evaluar un único modo vigente; administrativo y operativo permanecen mutuamente excluyentes | cada carril conserva sus propios permisos, territorio y prerrequisitos | prohibida la unión de ambos modos |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar autoridad real del actor con el techo operativo de coordinación | coordinación no concede ejecución de oficios ajenos; territorio y recurso siguen obligatorios | política de combinación definida |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` / `POLICY_DEFINED` | intersectar permisos base reales del actor con el techo administrativo del terminal | cobertura administrativa pertenece al actor; la terminal no crea cobertura global ni bypass por rol | política de combinación definida |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` / `NO_APLICA` | no admite nuevas instancias ni cálculo de autoridad para nueva operación | cualquier transición debe usar las plantillas productivas sustitutas aprobadas | bloqueada para nueva materialización |
+
+Control de cardinalidad:
+
+```text
+TOTAL ESPERADO: 19
+TOTAL MATERIALIZADO EN MATRIZ: 19
+FALTANTES: 0
+DUPLICADOS: 0
+```
+
+---
+
+#### 17. Reglas específicas para las instancias configuradas
+
+##### 17.1 `CAJA_VENTO_CAFE_01`
+
+La configuración registral conserva como candidato el conjunto `shell`, `nexo`, `pulso` de `pos_satellite`.
+
+La evaluación futura no podrá utilizar:
+
+- `pulso` como permiso de entrada por sí mismo;
+- `navigation_role` como rol efectivo;
+- la sede/área registrales como contexto humano suficiente;
+- la existencia de la fila como evidencia de operación física validada.
+
+Una acción solo podrá continuar cuando el trabajador real posea la capacidad solicitada y las restantes condiciones de la intersección sean válidas.
+
+##### 17.2 `KIOSCO_BODEGA_CP`
+
+La configuración registral conserva como candidato únicamente `nexo` y no añade `shell` ni `origo` desde la plantilla.
+
+La política legacy `same_site_active_worker` queda expresamente insuficiente como regla final.
+
+```text
+TRABAJADOR ACTIVO EN CENTRO_PROD
+!=
+TRABAJADOR AUTORIZADO PARA CUALQUIER ACCION DE BODEGA
+```
+
+La combinación objetivo exige permiso exacto, contexto operativo aplicable, área Bodega compatible, recurso válido, techo del dispositivo y ausencia de denegaciones.
+
+---
+
+#### 18. Terminales mixtas y administrativas
+
+##### 18.1 `procurement_reception`
+
+El terminal puede soportar superficies administrativas y operativas, pero no una sesión híbrida que sume los privilegios de ambos carriles.
+
+Cada acción deberá declarar y resolver un único modo aplicable.
+
+```text
+MODO ADMINISTRATIVO
+-> evaluar carril base del actor
+-> aplicar techo del dispositivo
+```
+
+```text
+MODO OPERATIVO
+-> evaluar carril operativo del actor
+-> aplicar techo del dispositivo
+```
+
+Un fallo en ambos modos no puede combinarse para producir un allow.
+
+##### 18.2 `operations_management_terminal`
+
+El terminal permite coordinación operativa dentro de su techo, pero el actor conserva su identidad, permisos, territorio y segregación de funciones.
+
+La presencia de capacidades de varios dominios no convierte a gerencia operativa en bodeguero, productor, receptor, cajero o conductor.
+
+##### 18.3 `management_terminal`
+
+El terminal administrativo es únicamente una superficie restrictiva.
+
+La cobertura organizacional, multisede o por área deberá pertenecer al actor humano y al permiso evaluado. El dispositivo no crea cobertura administrativa por estar instalado en oficina, por su nombre, por su plantilla ni por el usuario técnico autenticado.
+
+La prohibición detallada de transferencia o herencia administrativa continúa en `AUTH-DEV-009`.
+
+---
+
+#### 19. Estado físico observado y brechas de materialización
+
+La definición documental no declara conforme el comportamiento actual de los consumidores.
+
+Se reconoce como brecha física que existen helpers consumidores donde, para sesiones de dispositivo compartido:
+
+- una aplicación permitida puede ser tratada como suficiente para su clave de acceso;
+- otras capacidades pueden evaluarse usando `navigation_role`;
+- sede o área del dispositivo o de parámetros preferidos pueden participar antes de demostrar el contexto humano canónico completo.
+
+Ese comportamiento no redefine esta tarea.
+
+La materialización posterior deberá hacer que todos los consumidores aplicables evalúen la misma intersección canónica y será certificada por las tareas físicas de dispositivo correspondientes.
+
+No se modifica ningún consumidor desde este marcador documental.
+
+---
+
+#### 20. Handoff exacto hacia AUTH-DEV-009
+
+`AUTH-DEV-008` entrega a `AUTH-DEV-009` una regla de autorización sin suma de privilegios:
+
+```text
+ACTOR HUMANO EXACTO
++
+AUTORIDAD HUMANA RESUELTA
++
+TECHO DE DISPOSITIVO RESUELTO
++
+INTERSECCION CONTEXTUAL EVALUADA
+=
+NINGUNA AUTORIDAD PROCEDE DEL PRINCIPAL TECNICO
+```
+
+`AUTH-DEV-009` deberá cerrar específicamente cualquier camino por el que privilegios administrativos del usuario técnico, una sesión administrativa previa, el trabajador anterior, `navigation_role`, una app visible o un estado residual puedan heredarse por otro trabajador.
+
+Esta tarea no desarrolla esa política posterior.
+
+---
+
+#### 21. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+La cobertura vigente ya protege la intersección entre actor, dispositivo, aplicación, modo, territorio, recurso, sensibilidad y denegaciones, además de la limpieza ante cambios de actor o aplicación y las reglas específicas de las plantillas afectadas.
+
+No se crea ni modifica el registro 04A en esta tarea.
+
+---
+
+#### 22. Cobertura de prueba vigente reutilizada
+
+Se reutilizan sin modificación:
+
+- `TREQ-AUTH-011` — autoridad efectiva como intersección entre límites del dispositivo y permisos del trabajador identificado;
+- `TREQ-AUTH-054` — recálculo y limpieza ante cambio de aplicación o actor;
+- `TREQ-AUTH-056` — restricciones de terminales de recepción, gerencia operativa y gerencia administrativa;
+- `TREQ-AUTH-059` — resolución exacta del techo efectivo del dispositivo;
+- `TREQ-AUTH-060` — membresía exacta y versionada de paquetes;
+- `TREQ-AUTH-061` — coherencia entre aplicaciones efectivas y claves del techo;
+- `TREQ-AUTH-062` — intersección completa por acción desde dispositivo compartido;
+- `TREQ-AUTH-063` — tratamiento de `STANDARD_ACTOR_SESSION`, `STRONG_REAUTH_REQUIRED` y `NOT_ALLOWED`;
+- `TREQ-AUTH-067` — restricciones de plantillas mixtas, administrativas y productivas;
+- `TREQ-AUTH-068` — integridad de la matriz completa de permisos máximos.
+
+Estos identificadores se citan únicamente como trazabilidad de cobertura existente y no representan cambios al registro.
+
+---
+
+#### 23. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no ejecuta build de aplicaciones durante su definición. |
+| LOCAL | NOT_EXECUTED | La batería documental del checkout propietario se ejecuta después de insertar y normalizar el bloque. |
+| REMOTA | NOT_EXECUTED | Se consultaron fuentes remotas como auditoría estática, pero no se ejecutó un gate remoto de esta tarea durante su definición. |
+| OPERATIVA | NOT_APPLICABLE | La tarea no autoriza pruebas operativas ni interacción con estaciones reales. |
+| FÍSICA | NOT_APPLICABLE | La materialización física pertenece a instancias posteriores gobernadas por `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`. |
+
+---
+
+#### 24. Criterios de aceptación
+
+- [x] La combinación se define como intersección y nunca como unión o suma.
+- [x] El dispositivo continúa siendo principal técnico y el empleado continúa siendo actor humano.
+- [x] La sesión de actor identifica, pero no concede permisos.
+- [x] El techo del dispositivo restringe y nunca concede una clave.
+- [x] La autoridad humana se resuelve independientemente del dispositivo.
+- [x] Se preservan las cuatro modalidades de autorización sin mezclarlas.
+- [x] Una aplicación visible no concede `<app>.access` ni capacidades internas.
+- [x] `navigation_role` no participa como fuente de autoridad.
+- [x] La política `same_site_active_worker` queda explícitamente insuficiente como regla final.
+- [x] Sede y área se resuelven por intersección entre actor, dispositivo y recurso.
+- [x] Un conjunto permitido de áreas no crea múltiples áreas activas simultáneas.
+- [x] `STANDARD_ACTOR_SESSION` conserva actor y contexto obligatorios.
+- [x] `STRONG_REAUTH_REQUIRED` no se degrada a PIN ligero.
+- [x] `NOT_ALLOWED` permanece excluido.
+- [x] Las denegaciones conservan precedencia.
+- [x] Se materializa una decisión para las 19 identidades del universo heredado.
+- [x] La matriz contiene 19 filas, sin faltantes ni duplicados.
+- [x] Las dos observaciones físicas no reciben autoridad por inferencia.
+- [x] `procurement_reception` conserva modos mutuamente excluyentes.
+- [x] `operations_management_terminal` no convierte coordinación en ejecución de otros oficios.
+- [x] `management_terminal` no crea cobertura administrativa.
+- [x] Se identifica la brecha física actual sin convertirla en una modificación autorizada.
+- [x] Se conserva intacta la responsabilidad de `AUTH-DEV-009` a `AUTH-DEV-016`.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica 04A.
+- [x] No se autorizan cambios físicos.
+
+---
+
+#### 25. Límites
+
+Esta tarea no:
+
+- modifica código, Supabase, migraciones, RLS, RPC, configuración, datos, aplicaciones o dispositivos;
+- crea un nuevo permiso, rol, aplicación, plantilla, paquete, sede, área o dispositivo;
+- cambia las 19 identidades heredadas;
+- cambia los nueve paquetes ni sus membresías;
+- cambia la clasificación `STANDARD_ACTOR_SESSION`, `STRONG_REAUTH_REQUIRED` o `NOT_ALLOWED`;
+- redefine el techo efectivo de `AUTH-DEV-006`;
+- redefine la identificación humana de `AUTH-DEV-007`;
+- desarrolla la prohibición específica de herencia administrativa de `AUTH-DEV-009`;
+- desarrolla el contrato de auditoría de `AUTH-DEV-010`;
+- define revocación, expiración o cambio de trabajador;
+- ejecuta pruebas físicas de NEXO, PULSO o FOGO;
+- asigna una instancia física propia durante este trabajo documental;
+- modifica requisitos de prueba existentes.
+
+---
+
+#### 26. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-007 — Exigir firma o PIN del trabajador`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-008 — Combinar límite del dispositivo y trabajador`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-009 — Evitar heredar permisos administrativos`
+
+
 ### [ ] AUTH-DEV-009 — Evitar heredar permisos administrativos
 ### [ ] AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría
