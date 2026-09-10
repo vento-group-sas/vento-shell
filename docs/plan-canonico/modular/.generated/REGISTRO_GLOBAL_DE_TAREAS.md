@@ -12,18 +12,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1159** |
+| Aprobadas | **1160** |
 | En propuesta | **0** |
-| No iniciadas | **437** |
+| No iniciadas | **436** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.62% (1159/1596)** |
+| Porcentaje de completamiento | **72.68% (1160/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **437** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1060** |
+| ⏸ NO_EVALUADA | **436** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1061** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -36,9 +36,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-DEV-015` — Probar terminales de PULSO | ✅ APROBADA |
-| Tarea actual | `AUTH-DEV-016` — Probar pantallas de FOGO | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-SIM-007` — Mostrar aviso persistente | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-SIM-006` — No mezclar permisos reales y simulados | ✅ APROBADA |
+| Tarea actual | `AUTH-SIM-007` — Mostrar aviso persistente | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-SIM-008` — Registrar inicio de simulación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1213,7 +1213,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-DEV-013` | Manejar cambio de trabajador | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-DEV-014` | Probar tablets de NEXO | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-DEV-015` | Probar terminales de PULSO | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-DEV-016` | Probar pantallas de FOGO | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-DEV-016` | Probar pantallas de FOGO | — | — | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-001` | Definir quién puede simular | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-002` | Definir roles simulables | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-003` | Definir sede simulada | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
