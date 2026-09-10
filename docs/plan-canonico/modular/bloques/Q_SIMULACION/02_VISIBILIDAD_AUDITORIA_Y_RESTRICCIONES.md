@@ -2305,6 +2305,1337 @@ La salida no puede editar ni borrar el inicio y no puede inferirse desde el desm
 `AUTH-SIM-009 — Registrar salida de simulación`
 
 
-### [ ] AUTH-SIM-009 — Registrar salida de simulación
+### ✅ AUTH-SIM-009 — Registrar salida de simulación
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-SIM-008 — Registrar inicio de simulación
+**Tarea siguiente:** AUTH-SIM-010 — Bloquear acciones críticas durante simulación
+**Tipo de tarea:** documental; contrato canónico de salida autoritativa, cierre terminal, expiración, revocación, invalidez y retorno confirmado al contexto real, con materialización posterior por implementation_unit_id conforme a PER_IMPLEMENTATION_UNIT y gate POST_E5_PACKAGE
+**Bloque:** BLOQUE Q — Simulación
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, Supabase, migraciones, RLS, RPC, contratos compartidos, clientes, sesiones, eventos persistidos, aplicaciones, datos, permisos, despliegues ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cuándo una simulación deja de estar autoritativamente activa, qué hecho terminal demuestra su cierre, cómo se preserva la historia del inicio y de las evaluaciones ya registradas y bajo qué condiciones puede presentarse nuevamente un contexto real fresco sin confundir solicitud de salida, cierre terminal y restauración visual.
+
+La regla raíz queda:
+
+```text
+SIMULACION ACTIVA O DRAFT TERMINABLE
++
+CAUSA TERMINAL VALIDA
++
+TRANSICION AUTORITATIVA PERSISTIDA CUANDO CORRESPONDA
++
+ESTADO TERMINAL DERIVADO
++
+INVALIDACION DE PREVIEW SIMULADA
++
+NUEVA RESOLUCION DEL CONTEXTO REAL
+=
+SALIDA DE SIMULACION CONFIRMADA
+```
+
+Y siempre:
+
+```text
+SOLICITAR SALIDA
+!=
+SALIDA CONFIRMADA
+```
+
+```text
+OCULTAR AVISO
+!=
+SALIDA CONFIRMADA
+```
+
+```text
+SIMULATION_COMPLETED
+!=
+AUTORIDAD REAL RESTAURADA POR CACHE
+```
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+¿CUANDO DEJA DE ESTAR VIGENTE UNA SIMULACION?
+```
+
+```text
+¿QUE CAUSA TERMINAL QUEDO REGISTRADA?
+```
+
+```text
+¿COMO SE DEMUESTRA QUE EL CONTEXTO SIMULADO YA NO PUEDE SEGUIR UTILIZANDOSE?
+```
+
+```text
+¿CUANDO PUEDE LA SUPERFICIE VOLVER A PRESENTAR CONTEXTO REAL?
+```
+
+No define todavía el bloqueo multicanal de acciones críticas durante una simulación; esa responsabilidad permanece en `AUTH-SIM-010`.
+
+#### 3. Handoff recibido de AUTH-SIM-008
+
+`AUTH-SIM-008` entrega un lifecycle identificable por:
+
+- `simulation_id`;
+- revisión vigente;
+- actor real;
+- sesión real;
+- decisión real del solicitante;
+- fingerprint del escenario inicial;
+- `created_at`;
+- evento `SIMULATION_ACTIVATED` cuando el inicio fue confirmado;
+- `expires_at`;
+- correlación;
+- versiones y fingerprints fuente.
+
+La salida conserva toda esa historia y nunca corrige el inicio mediante mutación destructiva.
+
+#### 4. Handoff recibido de AUTH-SIM-007
+
+La presentación ya distingue:
+
+```text
+RESOLVING
+ACTIVE
+STALE
+INVALID
+EXIT_PENDING
+```
+
+Para esta tarea son vinculantes dos reglas:
+
+```text
+component unmounted != simulation ended
+```
+
+```text
+exit requested != real context restored
+```
+
+`EXIT_PENDING` representa una transición visible pendiente; no es un estado persistido adicional del lifecycle ni un evento empresarial nuevo.
+
+#### 5. Contratos consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-SIM-001..005`, para elegibilidad y escenario hipotético;
+- `AUTH-SIM-006`, para separación entre autoridad real, evaluación simulada, presentación y auditoría;
+- `AUTH-SIM-007`, para lifecycle visible y `EXIT_PENDING`;
+- `AUTH-SIM-008`, para creación, activación, correlación e historia de inicio;
+- `AUTH-SRV-014`, para principal técnico y actor real;
+- `AUTH-SRV-015`, para separación del plano simulado y del plano real;
+- `AUTH-DB-013`, para persistencia append-only, eventos terminales, intentos, fingerprints, idempotencia y estado derivado;
+- los contratos vigentes de autorización, contexto, sesión, dispositivo compartido, auditoría y versiones.
+
+#### 6. Topología y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+El marcador actual define una sola vez el contrato reutilizable.
+
+Cada materialización física futura pertenece a un `implementation_unit_id` concreto y conserva su propia evidencia sin reabrir esta definición documental.
+
+#### 7. Salida no equivale a navegación
+
+No constituyen salida de simulación:
+
+- cerrar un modal;
+- abandonar una pantalla;
+- navegar a otra ruta;
+- cambiar de aplicación;
+- desmontar `SimulatedRoleNotice`;
+- borrar estado React;
+- limpiar una cookie;
+- limpiar `localStorage`, `sessionStorage` o IndexedDB;
+- recargar la página;
+- cerrar una tab;
+- recibir un booleano local;
+- pulsar un control visual de salida;
+- perder conectividad;
+- ocultar la preview por error de renderizado.
+
+La salida existe únicamente cuando el lifecycle autoritativo deja de ser utilizable como `ACTIVE` y esa condición es confirmada por su fuente propietaria.
+
+#### 8. Causas terminales canónicas
+
+El vocabulario físico vigente reconoce exactamente estas causas terminales de simulación:
+
+```text
+SIMULATION_COMPLETED
+SIMULATION_EXPIRED
+SIMULATION_REVOKED
+SIMULATION_INVALIDATED
+```
+
+Esta tarea no introduce alias persistidos como:
+
+```text
+SIMULATION_EXITED
+SIMULATION_STOPPED
+SIMULATION_CLOSED
+SIMULATION_ENDED
+EXIT_CONFIRMED
+REAL_CONTEXT_RESTORED
+```
+
+como nuevos eventos canónicos.
+
+#### 9. Salida normal solicitada por la persona
+
+La salida voluntaria ordinaria de una simulación `ACTIVE` culmina en:
+
+```text
+SIMULATION_COMPLETED
+```
+
+La acción visual de solicitar salida solo inicia el intento. Hasta que el servidor confirme el estado terminal, la superficie conserva semántica de simulación y no presenta el contexto real como restaurado.
+
+#### 10. Commit point de salida normal
+
+El commit point canónico de la salida voluntaria es:
+
+```text
+SIMULATION_COMPLETED
+```
+
+persistido sobre el mismo `simulation_id` y correlacionado con el lifecycle existente.
+
+Solo después de que el estado derivado confirme:
+
+```text
+status = COMPLETED
+```
+
+puede declararse que la simulación dejó de estar activa por finalización normal.
+
+#### 11. Solicitud de salida sin evento nuevo
+
+La intención de salir no crea un nuevo tipo de evento persistido.
+
+Mientras la operación está pendiente:
+
+- la UI puede reflejar `EXIT_PENDING` conforme a `AUTH-SIM-007`;
+- la simulación no se presenta como cerrada;
+- no se publica contexto real optimistamente;
+- no se ejecuta una acción real con datos derivados de la simulación;
+- el intento conserva correlación y evidencia técnica o de intento cuando corresponda.
+
+#### 12. Estado terminal COMPLETED
+
+`COMPLETED` significa que la simulación fue finalizada de manera autoritativa desde `ACTIVE`.
+
+Implica:
+
+- no aceptar nuevas revisiones de escenario;
+- no aceptar nuevas evaluaciones simuladas;
+- no reactivar el mismo lifecycle;
+- retirar la preview simulada;
+- impedir reutilización de receipts, respuestas o cache de ese lifecycle como si siguiera activo;
+- conservar íntegra la evidencia histórica.
+
+#### 13. Expiración
+
+La expiración ocurre cuando `expires_at` deja de ser futuro.
+
+La fundación física vigente puede derivar `EXPIRED` por tiempo aun antes de que exista el evento explícito de expiración.
+
+Por tanto se distinguen:
+
+```text
+ESTADO DE SEGURIDAD DERIVADO = EXPIRED
+```
+
+```text
+EVIDENCIA HISTORICA DE EXPIRACION = SIMULATION_EXPIRED
+```
+
+Una materialización completa no utiliza la ausencia del evento como permiso para prolongar la simulación.
+
+#### 14. Commit point de expiración auditable
+
+Para certificar históricamente la expiración, el lifecycle debe poder conservar:
+
+```text
+SIMULATION_EXPIRED
+```
+
+sin alterar `expires_at` ni extenderlo retroactivamente.
+
+El evento de expiración solo es válido cuando el vencimiento ya ocurrió según tiempo autoritativo.
+
+#### 15. Expiración no depende de la UI
+
+La expiración no depende de:
+
+- timer del navegador;
+- foco de ventana;
+- actividad reciente;
+- navegación;
+- refresh;
+- visibilidad del aviso;
+- reconexión;
+- heartbeat exclusivamente cliente;
+- cierre o reapertura de la aplicación.
+
+El reloj cliente puede mostrar información, pero no decide el estado terminal.
+
+#### 16. Revocación
+
+`SIMULATION_REVOKED` representa la terminación deliberada de un lifecycle todavía `DRAFT` o `ACTIVE` por una decisión autorizada distinta de la finalización ordinaria del simulador.
+
+La revocación no se disfraza como `SIMULATION_COMPLETED` cuando la causa material es administrativa, de seguridad o de gobierno.
+
+#### 17. Invalidez
+
+`SIMULATION_INVALIDATED` representa la terminación porque el lifecycle ya no puede considerarse semántica o contractualmente válido.
+
+Entre las causas que pueden exigir evaluación propietaria se encuentran:
+
+- pérdida de compatibilidad entre actor, sesión y simulación;
+- contaminación entre contexto real y simulado;
+- cambio material que invalide la revisión vigente;
+- incompatibilidad de versiones o fingerprints;
+- evidencia de replay incompatible;
+- incapacidad de demostrar la integridad necesaria del escenario.
+
+La causa exacta se registra mediante el reason code permitido por el owner; esta tarea no crea un catálogo nuevo de reasons.
+
+#### 18. Precedencia terminal observada
+
+La función física vigente de estado derivado aplica precedencia de seguridad:
+
+```text
+INVALID
+>
+REVOKED
+>
+COMPLETED
+>
+EXPIRED
+>
+ACTIVE
+>
+DRAFT
+```
+
+Además, la persistencia vigente restringe el lifecycle a un único evento terminal entre `SIMULATION_COMPLETED`, `SIMULATION_EXPIRED`, `SIMULATION_REVOKED` y `SIMULATION_INVALIDATED`.
+
+Esta tarea conserva esa unicidad y no define terminales concurrentes válidos.
+
+#### 19. Transiciones permitidas
+
+La semántica propietaria queda:
+
+| Estado previo | Causa | Resultado terminal |
+| --- | --- | --- |
+| `ACTIVE` | finalización voluntaria válida | `COMPLETED` |
+| `DRAFT` o `ACTIVE` | revocación autorizada | `REVOKED` |
+| `DRAFT` o `ACTIVE` | invalidez confirmada | `INVALID` |
+| `DRAFT`, `ACTIVE` o expiración ya derivada | vencimiento autoritativo | `EXPIRED` |
+
+No se habilita una transición terminal desde un lifecycle inexistente.
+
+#### 20. Unicidad de terminal
+
+Una simulación no puede terminar dos veces con causas diferentes.
+
+No es conforme:
+
+```text
+SIMULATION_COMPLETED
+->
+SIMULATION_REVOKED
+```
+
+ni:
+
+```text
+SIMULATION_EXPIRED
+->
+SIMULATION_COMPLETED
+```
+
+ni cualquier combinación de dos terminales exitosos para el mismo `simulation_id`.
+
+#### 21. Idempotencia de salida normal
+
+La transición terminal conserva `operation_id` y fingerprint de operación.
+
+Repetir la misma operación lógica con:
+
+```text
+MISMO simulation_id
++
+MISMO operation_id
++
+MISMO fingerprint
+```
+
+debe converger en el mismo resultado lógico sin crear un segundo evento.
+
+#### 22. Conflicto de idempotencia
+
+Reutilizar el mismo `operation_id` con contenido materialmente diferente produce conflicto.
+
+No se sobrescribe el evento previo y no se cambia la causa terminal para acomodar el reintento.
+
+#### 23. Doble click y reintento de cliente
+
+Un doble click, retry de red o reenvío automático no puede producir dos cierres.
+
+La capa propietaria debe:
+
+1. conservar identidad de operación estable para el mismo intento lógico;
+2. volver a consultar estado autoritativo ante respuesta incierta;
+3. converger si el cierre ya ocurrió;
+4. tratar el payload incompatible como conflicto;
+5. no crear un lifecycle nuevo para simular idempotencia.
+
+#### 24. Respuesta perdida después de completar
+
+Si `SIMULATION_COMPLETED` quedó persistido pero la respuesta al cliente se pierde:
+
+- el cliente no repite una mutación ciega con identidad distinta;
+- vuelve a resolver el lifecycle;
+- reconoce `COMPLETED` si el servidor ya lo confirmó;
+- retira la preview únicamente después de esa confirmación;
+- reconstruye el contexto real desde su fuente autoritativa.
+
+#### 25. Fallo antes del terminal
+
+Si el cierre no alcanza el commit point:
+
+```text
+NO TERMINAL EVENT
+=
+NO SALIDA CONFIRMADA POR ESA OPERACION
+```
+
+La UI no transforma un timeout, error de transporte o error local en éxito empresarial.
+
+#### 26. Intentos no exitosos
+
+La persistencia vigente separa los intentos fallidos del stream de eventos exitosos.
+
+Para esta tarea son relevantes las operaciones ya existentes:
+
+```text
+COMPLETE_SIMULATION
+EXPIRE_SIMULATION
+REVOKE_SIMULATION
+INVALIDATE_SIMULATION
+```
+
+con resultados no exitosos ya tipados como:
+
+```text
+DENIED
+INVALID
+CONFLICT
+TECHNICAL_FAILURE
+NO_CHANGE
+ROLLED_BACK
+```
+
+Un intento fallido no se presenta como evento terminal exitoso.
+
+#### 27. Autorización de completion
+
+Una finalización normal que requiere una decisión real debe evaluarse desde el plano real.
+
+La decisión utilizada para sostener el terminal:
+
+- no procede del rol simulado;
+- no procede del resultado `WOULD_ALLOW`;
+- no procede del contenido de la preview;
+- no procede de una cookie de simulación;
+- debe ser una decisión real `ALLOW` válida para el owner de la operación.
+
+Esta tarea no redefine la clave de permiso propietaria del servicio físico.
+
+#### 28. Actor real y cierre
+
+La salida ordinaria debe mantener identidad inequívoca del actor humano real que solicita la finalización.
+
+Una materialización no puede tratar como solicitante a:
+
+- sujeto simulado;
+- rol simulado;
+- principal técnico por sí solo;
+- dispositivo compartido;
+- actor mostrado en la preview;
+- último actor conocido por cache.
+
+#### 29. Compatibilidad entre actor, sesión y root
+
+Una finalización voluntaria debe demostrar compatibilidad entre el lifecycle que se cierra y el actor/sesión reales autorizados para cerrarlo.
+
+Si existe un cierre administrativo por otra autoridad, su semántica debe expresarse mediante la causa terminal propietaria correspondiente y no mediante suplantación del actor original.
+
+La infraestructura actual observada aporta el event writer genérico, pero la inspección estática no demuestra por sí sola una capa consumidora completa que imponga esta política en todas las unidades.
+
+#### 30. Pérdida de sesión real
+
+Si la sesión real expira, se revoca o deja de poder reconstruirse mientras existe una simulación:
+
+- la simulación no se convierte en sesión autónoma;
+- el actor simulado no autentica;
+- la preview no puede seguir presentándose como activa por cache;
+- la salida voluntaria que requiera identidad real no se inventa localmente;
+- la capa propietaria debe resolver de forma segura el estado terminal o inválido aplicable;
+- cualquier retorno operativo exige una nueva sesión real válida.
+
+#### 31. Cambio de actor en dispositivo compartido
+
+Si cambia el actor humano en una estación compartida:
+
+- la simulación anterior no se transfiere al nuevo actor;
+- el nuevo actor no puede completar el lifecycle fingiendo ser el anterior;
+- la preview del actor anterior se retira;
+- el owner vuelve a resolver lifecycle, sesión y contexto;
+- cualquier terminación pendiente conserva su correlación original.
+
+#### 32. Salida y contexto real son dos confirmaciones distintas
+
+La salida canónica distingue:
+
+```text
+A. LIFECYCLE SIMULADO TERMINAL
+```
+
+```text
+B. CONTEXTO REAL FRESCO RESUELTO
+```
+
+A no debe confundirse con B.
+
+`COMPLETED`, `EXPIRED`, `REVOKED` o `INVALID` demuestran que la simulación ya no es activa. El contexto real que se presenta después debe resolverse nuevamente desde las fuentes reales propietarias.
+
+#### 33. Prohibición de restauración desde snapshot simulado
+
+Al terminar una simulación no se reconstruye el contexto real mediante:
+
+- valores guardados antes de entrar en simulación;
+- actor o rol copiados en estado cliente;
+- cookies de role override;
+- `localStorage`;
+- `sessionStorage`;
+- último `EffectiveContext` cacheado;
+- datos del sujeto simulado;
+- invertir manualmente campos del escenario hipotético.
+
+La restauración es una nueva resolución real.
+
+#### 34. Contexto real fresco
+
+Antes de permitir que la superficie se presente nuevamente como operativa en contexto real, debe resolverse al menos lo material que corresponda a su owner:
+
+- sesión real vigente;
+- actor real;
+- principal técnico cuando aplique;
+- rol real;
+- contexto laboral real;
+- sede y área reales;
+- turno y check-in reales cuando sean necesarios;
+- estado de dispositivo compartido;
+- permisos y denegaciones vigentes;
+- versiones y fingerprints aplicables.
+
+La salida no garantiza que la persona tenga acceso real a la misma superficie que estaba simulando.
+
+#### 35. Cero herencia de permiso simulado
+
+Después de un terminal debe mantenerse:
+
+```text
+SIMULATED WOULD_ALLOW
+!=
+REAL ALLOW
+```
+
+La próxima acción real requiere una decisión real nueva o vigente conforme a su contrato propietario.
+
+No se reutiliza una evaluación simulada como preautorización.
+
+#### 36. Cero mutación empresarial durante salida
+
+La transición de salida modifica exclusivamente lifecycle, auditoría y estado técnico necesario para abandonar la simulación.
+
+No puede ejecutar por efecto colateral la acción hipotética que estaba siendo simulada.
+
+Debe mantenerse:
+
+```text
+EXIT SIMULATION
+->
+LIFECYCLE / AUDIT ONLY
+->
+ZERO SIMULATED BUSINESS EFFECT
+```
+
+#### 37. Salida y AUTH-SIM-010
+
+Un cierre correcto no demuestra que durante la simulación anterior todas las acciones críticas estuvieron bloqueadas.
+
+`AUTH-SIM-010` conserva la responsabilidad de enforcement crítico en todos los canales.
+
+Esta tarea no usa el evento terminal como sustituto de ese bloqueo.
+
+#### 38. Salida y modo solo lectura
+
+Terminar una simulación no define si la preview fue correctamente read-only mientras estuvo activa.
+
+`AUTH-SIM-011` mantiene esa política.
+
+La salida únicamente impide prolongar la simulación después del terminal.
+
+#### 39. Salida y navegación simulada
+
+`AUTH-SIM-012` conserva las pruebas de navegación y persistencia visible.
+
+Esta tarea fija una regla específica:
+
+```text
+NAVIGATE AWAY
+!=
+EXIT SIMULATION
+```
+
+Una navegación posterior al terminal debe resolver contexto desde cero en la superficie destino.
+
+#### 40. Salida y Server Actions
+
+`AUTH-SIM-013` conserva la certificación de Server Actions.
+
+Un Server Action real no puede concluir que ya es seguro ejecutarse únicamente porque el cliente afirme haber salido de simulación.
+
+Debe resolver autoridad real en servidor.
+
+#### 41. Salida y prueba integral
+
+`AUTH-SIM-014` conserva la certificación transversal en aplicaciones aplicables.
+
+Un cierre correcto en una unidad no demuestra que todas las aplicaciones invaliden correctamente preview, cache y acciones derivadas.
+
+#### 42. Lifecycle visible durante salida voluntaria
+
+La secuencia visible esperada es:
+
+```text
+ACTIVE
+->
+EXIT_PENDING
+->
+terminal confirmado
+->
+preview simulada retirada
+->
+contexto real vuelto a resolver
+```
+
+`EXIT_PENDING` no publica contexto real ni oculta prematuramente la condición simulada.
+
+#### 43. Salida fallida
+
+Si el intento de completion falla antes de confirmación:
+
+- `EXIT_PENDING` no se interpreta como terminal;
+- la UI vuelve a resolver lifecycle;
+- puede volver a `ACTIVE`, `STALE` o `INVALID` según la fuente propietaria;
+- no conserva una copia optimista del contexto real;
+- el intento fallido permanece separado del event stream exitoso.
+
+#### 44. Expiración durante uso
+
+Si `expires_at` vence mientras la preview está abierta:
+
+- la preview deja de considerarse vigente aunque el usuario no interactúe;
+- no se espera a que la persona pulse salir;
+- no se extiende la vida por actividad;
+- la presentación pasa a un estado seguro y retira contenido simulado;
+- la capa propietaria registra o reconcilia la evidencia terminal correspondiente;
+- el contexto real se vuelve a resolver antes de continuar.
+
+#### 45. Revocación remota
+
+Si otro actor o proceso autorizado revoca una simulación:
+
+- una tab abierta no conserva `ACTIVE` por cache;
+- el cliente no puede revertir la revocación mediante refresh;
+- la simulación no se reactiva al recuperar conectividad;
+- el actor original debe recibir el estado terminal cuando vuelva a resolver;
+- cualquier trabajo real posterior se autoriza desde contexto real.
+
+#### 46. Invalidación remota
+
+Una invalidación confirmada obliga a retirar la preview aunque visualmente el escenario todavía parezca coherente.
+
+La UI no decide que puede continuar porque sus filtros, etiquetas o datos locales no cambiaron.
+
+#### 47. Varias tabs
+
+Todas las tabs asociadas al mismo lifecycle deben converger en el estado autoritativo.
+
+Reglas:
+
+1. una tab que solicita salida no cierra localmente a las demás;
+2. una tab que confirma `COMPLETED` obliga a las demás a dejar de tratar la simulación como `ACTIVE` cuando revaliden;
+3. una respuesta tardía `ACTIVE` anterior al terminal no puede resucitar la simulación;
+4. una tab no restaura contexto real de otra mediante storage compartido;
+5. cada superficie vuelve a resolver lo que necesite.
+
+#### 48. Respuestas tardías
+
+Después de un terminal, una respuesta tardía de:
+
+- activación;
+- revisión;
+- evaluación;
+- navegación;
+- fetch de preview;
+
+no puede volver a publicar el escenario como vigente.
+
+La capa consumidora compara identidad, revisión, correlación y estado antes de aceptar resultados.
+
+#### 49. Refresh durante EXIT_PENDING
+
+Un refresh durante `EXIT_PENDING` no se interpreta como cancelación ni como éxito.
+
+Al reconstruirse la aplicación debe consultar nuevamente:
+
+- lifecycle de simulación;
+- estado derivado;
+- expiración;
+- sesión real;
+- actor real;
+- contexto real solo después de resolver el terminal.
+
+#### 50. Cierre de tab
+
+Cerrar la tab no constituye un terminal.
+
+Si la simulación sigue `ACTIVE` en servidor, una futura reapertura debe detectarla según el contrato propietario y no asumir que el cierre de ventana la terminó.
+
+#### 51. Offline
+
+No se confirma una salida voluntaria offline.
+
+Una intención capturada sin confirmación:
+
+- no se presenta como `COMPLETED`;
+- no habilita operación real;
+- no se encola ciegamente como autoridad para ejecutarse al reconectar;
+- exige nueva resolución de sesión, lifecycle e intención al recuperar conectividad.
+
+Si el tiempo autoritativo implica expiración durante la desconexión, la preview local tampoco puede prolongarse como `ACTIVE`.
+
+#### 52. Cache
+
+Ningún cache puede convertir un estado terminal en `ACTIVE`.
+
+Después de `COMPLETED`, `EXPIRED`, `REVOKED` o `INVALID`:
+
+- se invalidan proyecciones simuladas reutilizables;
+- se descartan resultados hipotéticos stale;
+- se impide que un cache de navegación restaure el aviso como activo;
+- se resuelve nuevamente el contexto real antes de presentar operación.
+
+#### 53. Cookies y storage
+
+Eliminar una cookie o storage puede formar parte de una limpieza técnica de una unidad, pero no constituye evidencia canónica de salida.
+
+Asimismo, conservar una cookie residual no puede reactivar una simulación cuyo lifecycle ya es terminal.
+
+#### 54. Receipt de salida
+
+La respuesta segura de una futura capa de servicio debe permitir al consumidor distinguir inequívocamente:
+
+- `simulation_id` al que corresponde el resultado;
+- estado terminal resultante;
+- identidad o correlación suficiente de la operación;
+- si la respuesta provino de una operación idempotente ya existente;
+- información temporal mínima necesaria para evitar respuestas stale.
+
+El consumidor no necesita recibir el registro interno completo ni secretos.
+
+Los nombres físicos del receipt pertenecen al owner del servicio; esta tarea fija la semántica, no un DTO nuevo.
+
+#### 55. Resultado seguro de salida
+
+La capa consumidora debe poder distinguir entre:
+
+```text
+COMPLETED
+EXPIRED
+REVOKED
+INVALID
+```
+
+como estados terminales y entre resultados de intento no exitoso ya vigentes como:
+
+```text
+DENIED
+INVALID
+CONFLICT
+TECHNICAL_FAILURE
+NO_CHANGE
+ROLLED_BACK
+```
+
+No se confunde un error técnico con una decisión de autorización ni con un terminal confirmado.
+
+#### 56. Auditoría append-only
+
+La salida agrega evidencia; no reescribe la historia.
+
+No se permite:
+
+- `UPDATE` del evento de activación para marcarlo cerrado;
+- `DELETE` de revisiones previas;
+- borrar evaluaciones simuladas al salir;
+- cambiar fingerprints para hacer coincidir el estado actual;
+- modificar `created_at` o `expires_at` históricos para simplificar el cierre;
+- reemplazar el evento terminal por un booleano mutable.
+
+#### 57. Correlación
+
+El terminal conserva la correlación del lifecycle y debe poder enlazarse con:
+
+- root;
+- revisión vigente o aplicable;
+- actor real cuando corresponda;
+- decisión real cuando corresponda;
+- causa terminal;
+- operación terminal;
+- intentos fallidos relacionados;
+- contexto y sesión reales mediante las referencias propietarias ya existentes.
+
+La correlación no concede autoridad.
+
+#### 58. Causación
+
+Cuando exista una causa identificable se conserva `causation_id` o semántica equivalente ya soportada.
+
+La causación puede relacionar el terminal con una decisión, evento de seguridad, expiración o comando previo sin convertir ese identificador en token o permiso.
+
+#### 59. Fingerprint de operación
+
+Toda transición terminal persistida conserva fingerprint de operación.
+
+El fingerprint permite detectar reutilización incompatible del mismo `operation_id` y no se usa como credencial.
+
+#### 60. Fingerprint de evento
+
+El evento terminal conserva fingerprint propio.
+
+La evidencia no se valida comparando únicamente copy visible, URL, cookie o timestamp del cliente.
+
+#### 61. Tiempo terminal
+
+`occurred_at` y `recorded_at` proceden del plano autoritativo.
+
+El navegador no elige el momento que vuelve terminal al lifecycle.
+
+En expiración, `expires_at` sigue siendo el límite de vigencia; el evento histórico no extiende ni retrocede ese límite.
+
+#### 62. Correcciones históricas
+
+Si la evidencia de salida fue registrada incorrectamente, no se modifica destructivamente.
+
+La fundación vigente dispone de correcciones append-only y del evento `SIMULATION_CORRECTION_LINKED`.
+
+Una corrección:
+
+- referencia el objeto afectado;
+- conserva la evidencia original;
+- conserva actor y autorización de corrección;
+- mantiene correlación;
+- no cambia autoridad mediante campos prohibidos;
+- no crea un segundo terminal para reescribir el primero.
+
+#### 63. Privacidad y minimización
+
+La evidencia de salida no almacena por defecto:
+
+- JWT completos;
+- access tokens;
+- refresh tokens;
+- cookies;
+- contraseñas;
+- OTP;
+- PIN;
+- service-role keys;
+- API keys;
+- credenciales privadas;
+- headers completos;
+- payloads personales innecesarios.
+
+Se utilizan referencias, reasons estructurados y fingerprints mínimos.
+
+#### 64. Estado físico positivo observado
+
+La infraestructura vigente ya contiene:
+
+- `audit.authorization_simulations`;
+- revisiones append-only;
+- evaluaciones simuladas;
+- eventos append-only;
+- intentos fallidos;
+- enlaces de evidencia;
+- correcciones;
+- fingerprints;
+- `operation_id` idempotente por simulación;
+- eventos `SIMULATION_COMPLETED`, `SIMULATION_EXPIRED`, `SIMULATION_REVOKED` y `SIMULATION_INVALIDATED`;
+- estado derivado `COMPLETED`, `EXPIRED`, `REVOKED` e `INVALID`.
+
+Esta base física es reutilizable, pero no demuestra por sí sola una salida consumidora completa.
+
+#### 65. Estado físico positivo: terminal único
+
+La persistencia actual contiene una restricción que impide más de un evento terminal entre:
+
+```text
+SIMULATION_COMPLETED
+SIMULATION_EXPIRED
+SIMULATION_REVOKED
+SIMULATION_INVALIDATED
+```
+
+para el mismo `simulation_id`.
+
+Esta tarea conserva esa propiedad.
+
+#### 66. Estado físico positivo: completion desde ACTIVE
+
+El writer privado vigente acepta `SIMULATION_COMPLETED` únicamente cuando el estado derivado previo es `ACTIVE`.
+
+Por tanto:
+
+```text
+DRAFT
+->
+SIMULATION_COMPLETED
+```
+
+no es una transición válida de finalización ordinaria.
+
+#### 67. Estado físico positivo: revocación e invalidez
+
+El writer privado vigente acepta `SIMULATION_REVOKED` y `SIMULATION_INVALIDATED` únicamente cuando el estado previo es `DRAFT` o `ACTIVE`.
+
+Un lifecycle ya terminal no se vuelve a revocar ni invalidar mediante un segundo evento terminal.
+
+#### 68. Estado físico positivo: expiración
+
+El writer privado vigente permite registrar `SIMULATION_EXPIRED` cuando el vencimiento ya ocurrió y el estado es compatible.
+
+La función de estado también puede derivar `EXPIRED` directamente desde `expires_at`.
+
+La futura capa de servicio debe reconciliar ambas dimensiones sin prolongar el lifecycle ni perder la evidencia histórica exigida.
+
+#### 69. Bloqueo físico: stop legacy neutralizado
+
+La función pública legacy:
+
+```text
+stop_context_simulation_v1
+```
+
+permanece presente por compatibilidad, pero su implementación vigente devuelve `false`.
+
+Por tanto, su existencia no demuestra una salida canónica operativa.
+
+#### 70. Bloqueo físico: cliente compartido todavía usa stop legacy
+
+`@vento/os-context` conserva un helper `stopContextSimulation` que invoca `stop_context_simulation_v1`.
+
+Bajo el estado físico vigente, ese helper no constituye el servicio canónico de salida definido por esta tarea.
+
+Su sustitución pertenece a los owners físicos, packages y consumidores correspondientes.
+
+#### 71. Bloqueo físico: servicio consumidor no demostrado
+
+La inspección vigente no demuestra un flujo consumidor completo que ejecute de extremo a extremo:
+
+```text
+ACTIVE SIMULATION
+->
+REAL ACTOR REQUESTS EXIT
+->
+REAL AUTHORIZATION RESOLVED
+->
+SIMULATION_COMPLETED
+->
+TERMINAL RECEIPT
+->
+SIMULATED PREVIEW INVALIDATED
+->
+REAL CONTEXT RE-RESOLVED
+```
+
+La existencia del event writer privado es fundación, no adopción completa.
+
+#### 72. Bloqueo físico: compatibilidad actor-root por consumidor
+
+El writer genérico exige una decisión real `ALLOW` para terminales distintos de expiración, pero esta inspección estática no certifica por sí sola que cada futura unidad valide correctamente la relación entre:
+
+- actor que opera;
+- sesión real;
+- root de simulación;
+- lifecycle original;
+- causa terminal seleccionada.
+
+Esa compatibilidad debe demostrarse en cada materialización propietaria.
+
+#### 73. No reapertura de AUTH-DB-013
+
+Esta tarea no modifica la migración ni sus tablas, funciones, constraints, índices o grants.
+
+Los nombres SQL actuales se consumen como evidencia física existente.
+
+Cualquier corrección física futura seguirá el lifecycle propietario correspondiente.
+
+#### 74. No reapertura de AUTH-SRV-015
+
+`AUTH-SRV-015` conserva la separación entre plano real y plano simulado.
+
+Esta tarea especializa el momento de salida y retorno al plano real sin redefinir:
+
+- actor;
+- rol;
+- permiso;
+- resultado simulado;
+- catálogo;
+- envelope de auditoría;
+- servicio físico.
+
+#### 75. Evidencia mínima de una futura unidad
+
+Cada materialización de `AUTH-SIM-009` para un `implementation_unit_id` deberá demostrar, como mínimo:
+
+1. package y unidad propietaria identificados;
+2. gate E5 aplicable en PASS;
+3. servicio terminal propietario identificado;
+4. `simulation_id` resuelto desde fuente autoritativa;
+5. estado previo compatible;
+6. actor real y sesión real cuando la causa lo requiera;
+7. decisión real aplicable cuando corresponda;
+8. `operation_id` e idempotencia;
+9. fingerprint estable de operación;
+10. completion desde `ACTIVE` únicamente;
+11. expiración sin prolongación local;
+12. revocación e invalidez con causa propietaria;
+13. único terminal por lifecycle;
+14. reintento idempotente sin duplicación;
+15. conflicto de idempotencia sin overwrite;
+16. respuesta perdida recuperada por resolución autoritativa;
+17. intento fallido separado del event stream exitoso;
+18. preview retirada después del terminal, no antes;
+19. `EXIT_PENDING` sin falsa restauración;
+20. contexto real vuelto a resolver desde fuentes reales;
+21. ausencia de herencia de permisos simulados;
+22. tabs y respuestas tardías sin resurrección del lifecycle;
+23. refresh sin suposición de éxito;
+24. offline sin completion local;
+25. cache y storage invalidados de forma segura;
+26. cambio de actor en dispositivo compartido sin transferencia;
+27. pérdida de sesión sin simulación autónoma;
+28. cero mutaciones empresariales derivadas de la preview;
+29. minimización de datos y secretos;
+30. rollback sin borrar evidencia histórica.
+
+#### 76. Matriz mínima de casos de salida
+
+| Caso | Terminal esperado | Contexto real |
+| --- | --- | --- |
+| actor autorizado finaliza simulación `ACTIVE` | `COMPLETED` | re-resolver después del terminal |
+| doble click de la misma operación | mismo `COMPLETED` idempotente | una sola reconstrucción lógica |
+| mismo `operation_id` con payload distinto | conflicto | no asumir salida nueva |
+| timeout después de persistir completion | resolver `COMPLETED` | re-resolver solo tras confirmación |
+| fallo antes de persistir completion | sin terminal por esa operación | no presentar restauración |
+| simulación vence por `expires_at` | `EXPIRED` | retirar preview y re-resolver |
+| revocación autorizada de lifecycle vigente | `REVOKED` | retirar preview y re-resolver |
+| incompatibilidad confirmada del lifecycle | `INVALID` | retirar preview y re-resolver |
+| tab secundaria conserva respuesta `ACTIVE` tardía | terminal vigente prevalece | no resucitar preview |
+| refresh durante `EXIT_PENDING` | volver a resolver | no inferir éxito |
+| cierre de tab | ningún terminal por ese hecho | no inferir salida |
+| salida offline no confirmada | ningún completion confirmado | no habilitar operación real |
+| sesión real perdida | no usar simulación como sesión | exigir resolución/reauth propietaria |
+| actor cambia en dispositivo compartido | lifecycle anterior no se transfiere | resolver nuevo actor y contexto |
+
+#### 77. Rollback de una futura unidad
+
+El rollback técnico no puede:
+
+- borrar eventos terminales válidos;
+- borrar roots, revisiones o evaluaciones históricas;
+- convertir `COMPLETED`, `EXPIRED`, `REVOKED` o `INVALID` en `ACTIVE`;
+- reactivar `stop_context_simulation_v1` como writer permisivo sin contrato;
+- restaurar cookies como fuente de lifecycle;
+- reutilizar `EffectiveContext` legacy como mezcla de autoridad;
+- borrar intentos fallidos necesarios para trazabilidad;
+- alterar `expires_at` histórico;
+- reactivar una simulación terminal para recuperar compatibilidad con código anterior.
+
+#### 78. Invariantes
+
+1. Solicitar salida no equivale a salida confirmada.
+2. `EXIT_PENDING` es presentación, no evento empresarial nuevo.
+3. `SIMULATION_COMPLETED` es el terminal de salida voluntaria normal.
+4. `SIMULATION_EXPIRED` conserva expiración auditable.
+5. `SIMULATION_REVOKED` conserva revocación autorizada.
+6. `SIMULATION_INVALIDATED` conserva invalidez confirmada.
+7. No se introducen aliases terminales persistidos.
+8. Un lifecycle tiene como máximo un evento terminal exitoso.
+9. Completion solo parte de `ACTIVE`.
+10. Revocación e invalidez solo parten de estados no terminales permitidos.
+11. Expiración no depende del reloj cliente.
+12. Expiración derivada bloquea uso aunque el evento histórico aún deba reconciliarse.
+13. La UI no termina simulaciones desmontando componentes.
+14. Navegar no termina simulaciones.
+15. Cerrar una tab no termina simulaciones.
+16. Limpiar storage no termina simulaciones.
+17. Una respuesta perdida no produce duplicación.
+18. Idempotencia conserva el mismo resultado lógico.
+19. Reutilización incompatible de operation ID produce conflicto.
+20. Un terminal no borra el inicio.
+21. Un terminal no borra evaluaciones previas.
+22. Las correcciones son append-only.
+23. El resultado simulado nunca se convierte en autoridad real.
+24. El contexto real se vuelve a resolver después del terminal.
+25. Un snapshot previo no restaura autoridad real.
+26. El rol simulado no autoriza completion.
+27. El principal técnico no sustituye al actor humano cuando este es requerido.
+28. El cambio de actor no transfiere el lifecycle.
+29. La pérdida de sesión no deja una simulación autónoma.
+30. Tabs y respuestas tardías no resucitan estados terminales.
+31. Offline no confirma completion.
+32. Cero efectos empresariales se ejecutan como consecuencia de salir.
+33. `stop_context_simulation_v1` legacy no se adopta como implementación canónica.
+34. `stopContextSimulation` actual no se presenta como servicio final.
+35. La base `AUTH-DB-013` no se reabre.
+36. `AUTH-SRV-015` no se redefine.
+37. No se modifica 04A.
+38. No se inicia `AUTH-SIM-010`.
+
+#### 79. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. diferencia entre solicitud y confirmación de salida;
+2. commit point de completion;
+3. terminales canónicos existentes;
+4. completion normal;
+5. expiración;
+6. revocación;
+7. invalidez;
+8. unicidad terminal;
+9. idempotencia;
+10. conflicto de idempotencia;
+11. intentos fallidos;
+12. actor y sesión reales;
+13. separación entre terminal y restauración real;
+14. re-resolución de contexto real;
+15. cero herencia de autoridad simulada;
+16. tabs y respuestas tardías;
+17. refresh;
+18. offline;
+19. cache y storage;
+20. auditoría append-only;
+21. correlación, causación y fingerprints;
+22. privacidad;
+23. estado físico positivo actual;
+24. bloqueos físicos legacy actuales;
+25. evidencia mínima por unidad;
+26. rollback;
+27. handoff exacto hacia bloqueo crítico.
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: lifecycle de simulación, separación de autoridad real y simulada, auditoría append-only, expiración, revocación, invalidez, cero efectos, idempotencia, bloqueo de autoridad simulada, visibilidad, contexto real y certificación multicanal ya disponen de cobertura canónica vigente. Esta tarea especializa la semántica de salida utilizando el vocabulario terminal y la persistencia ya definidos, sin crear una obligación verificable nueva ni cambiar owner, prioridad, modalidad, paquete, estado o relación del registro.
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- simulación auditable y no ejecutable;
+- actor y sesión reales;
+- identidad tipada del escenario;
+- separación entre autoridad real y simulada;
+- lifecycle y expiración;
+- versiones y fingerprints reproducibles;
+- auditoría de intentos y eventos;
+- mutaciones bloqueadas desde simulación;
+- cero efectos empresariales;
+- invalidación de contexto y cache;
+- paridad de consumidores y canales.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-012`, `TREQ-AUTH-079..128`, `TREQ-AUTH-165`, `TREQ-AUTH-279..288` y la cobertura transversal de auditoría, UI y contratos compartidos ya registrada.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `AUTH-SIM-009`.
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto de tarea se preparó de forma independiente y todavía no fue incorporado al archivo propietario ni sometido al build documental del checkout del usuario |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron formateador, task quality, delivery check, topología, TREQ ni batería global dentro de un checkout local de `vento-shell` |
+| REMOTA | `PASS` | se verificaron en solo lectura la continuidad vigente, owner de `AUTH-SIM-009`, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas de formato y desarrollo, contrato de entrega, `AUTH-SIM-007`, `AUTH-SIM-008`, persistencia `AUTH-DB-013`, vocabulario terminal, transiciones e implementación legacy de `@vento/os-context` |
+| OPERATIVA | `NOT_EXECUTED` | no se inició, completó, expiró, revocó ni invalidó una simulación real durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron servicios, funciones, migraciones, tablas, clientes, aplicaciones, dispositivos, datos ni entornos desplegados |
+
+#### 83. Criterios de aceptación
+
+- [x] Se distingue solicitar salida de confirmar salida.
+- [x] Se conserva `EXIT_PENDING` como estado visible, no como evento persistido nuevo.
+- [x] `SIMULATION_COMPLETED` queda como commit point de salida voluntaria normal.
+- [x] Completion solo se acepta conceptualmente desde `ACTIVE`.
+- [x] Se conserva `SIMULATION_EXPIRED` para expiración auditable.
+- [x] Se reconoce expiración derivada por `expires_at` sin prolongación local.
+- [x] Se conserva `SIMULATION_REVOKED` para revocación.
+- [x] Se conserva `SIMULATION_INVALIDATED` para invalidez.
+- [x] No se crean aliases terminales nuevos.
+- [x] Se conserva un único terminal exitoso por lifecycle.
+- [x] Se define idempotencia mediante identidad y fingerprint de operación.
+- [x] Se define conflicto ante reutilización incompatible de la operación.
+- [x] Doble click y retry no duplican el cierre.
+- [x] Una respuesta perdida exige nueva resolución autoritativa.
+- [x] Un fallo antes del commit point no se presenta como salida confirmada.
+- [x] Intentos fallidos permanecen separados de eventos exitosos.
+- [x] Se conserva actor real para salida cuando corresponda.
+- [x] Se conserva sesión real cuando corresponda.
+- [x] El rol simulado no autoriza la salida.
+- [x] El principal técnico no sustituye al actor humano.
+- [x] Se distingue terminal de simulación de restauración de contexto real.
+- [x] El contexto real se vuelve a resolver desde fuentes reales.
+- [x] No se restaura contexto real desde snapshots o storage.
+- [x] Ningún `WOULD_ALLOW` se convierte en `ALLOW` al salir.
+- [x] La salida no ejecuta la acción simulada.
+- [x] Navegación no equivale a salida.
+- [x] Cierre de tab no equivale a salida.
+- [x] Refresh durante `EXIT_PENDING` vuelve a resolver el lifecycle.
+- [x] Offline no confirma completion.
+- [x] Cache no resucita terminales.
+- [x] Cookies y storage no son evidencia de salida.
+- [x] Varias tabs convergen en el estado terminal autoritativo.
+- [x] Respuestas tardías no reactivan la simulación.
+- [x] Cambio de actor en dispositivo compartido no transfiere la simulación.
+- [x] Pérdida de sesión real no crea una sesión simulada autónoma.
+- [x] Auditoría permanece append-only.
+- [x] Correlación y causación se preservan.
+- [x] Fingerprints no se utilizan como credenciales.
+- [x] Se minimizan secretos y datos sensibles.
+- [x] Se reconoce la fundación física positiva de `AUTH-DB-013`.
+- [x] Se reconoce `stop_context_simulation_v1` como compatibilidad legacy neutralizada.
+- [x] Se reconoce que `stopContextSimulation` todavía invoca el stop legacy.
+- [x] No se presenta la fundación privada como adopción consumidora completa.
+- [x] No se reabre `AUTH-DB-013`.
+- [x] No se reabre `AUTH-SRV-015`.
+- [x] Se define evidencia mínima por futura unidad.
+- [x] Se define rollback sin pérdida histórica.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecutan cambios físicos.
+- [x] `AUTH-SIM-010` permanece reservada.
+
+#### 84. Límites
+
+Esta tarea no:
+
+- ejecuta una salida real de simulación;
+- completa una simulación desplegada;
+- expira una simulación desplegada;
+- revoca una simulación desplegada;
+- invalida una simulación desplegada;
+- registra eventos reales;
+- modifica `audit.authorization_simulations`;
+- modifica `audit.authorization_simulation_revisions`;
+- modifica `audit.authorization_simulation_events`;
+- modifica `audit.authorization_simulation_attempts`;
+- modifica `context_simulation_sessions`;
+- modifica Supabase;
+- crea migraciones;
+- cambia RLS;
+- cambia grants;
+- cambia funciones;
+- habilita o redefine `stop_context_simulation_v1`;
+- implementa el servicio autoritativo de salida;
+- modifica `@vento/os-context`;
+- modifica VISO;
+- modifica NEXO;
+- modifica FOGO;
+- modifica ORIGO;
+- modifica PULSO;
+- modifica dispositivos;
+- cambia roles;
+- cambia permisos;
+- cambia turnos;
+- cambia check-ins;
+- implementa bloqueo de acciones críticas;
+- implementa modo solo lectura;
+- ejecuta pruebas multicanal finales;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `AUTH-SIM-010`.
+
+#### 85. Handoff exacto hacia AUTH-SIM-010
+
+`AUTH-SIM-009` entrega a `AUTH-SIM-010` una frontera de lifecycle inequívoca:
+
+```text
+DRAFT / ACTIVE
+=
+SIMULACION NO TERMINAL
+```
+
+```text
+COMPLETED / EXPIRED / REVOKED / INVALID
+=
+SIMULACION TERMINAL
+```
+
+`AUTH-SIM-010` deberá impedir que acciones críticas produzcan efectos reales mientras una simulación permanezca en un estado no terminal aplicable o mientras el canal todavía no haya revalidado de forma segura el retorno al contexto real.
+
+El terminal no sustituye la autorización real de la siguiente acción.
+
+---
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-SIM-008 — Registrar inicio de simulación`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-SIM-009 — Registrar salida de simulación`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-SIM-010 — Bloquear acciones críticas durante simulación`
+
+
 ### [ ] AUTH-SIM-010 — Bloquear acciones críticas durante simulación
 ### [ ] AUTH-SIM-011 — Definir modo solo lectura

@@ -12,18 +12,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1162** |
+| Aprobadas | **1163** |
 | En propuesta | **0** |
-| No iniciadas | **434** |
+| No iniciadas | **433** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.81% (1162/1596)** |
+| Porcentaje de completamiento | **72.87% (1163/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **434** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1063** |
+| ⏸ NO_EVALUADA | **433** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1064** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -36,9 +36,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-SIM-008` — Registrar inicio de simulación | ✅ APROBADA |
-| Tarea actual | `AUTH-SIM-009` — Registrar salida de simulación | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-SIM-010` — Bloquear acciones críticas durante simulación | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-SIM-009` — Registrar salida de simulación | ✅ APROBADA |
+| Tarea actual | `AUTH-SIM-010` — Bloquear acciones críticas durante simulación | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-SIM-011` — Definir modo solo lectura | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1222,7 +1222,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-006` | No mezclar permisos reales y simulados | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-007` | Mostrar aviso persistente | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-008` | Registrar inicio de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-009` | Registrar salida de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-009` | Registrar salida de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-010` | Bloquear acciones críticas durante simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-011` | Definir modo solo lectura | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-012` | Validar navegación como rol simulado | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
