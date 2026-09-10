@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-002",
+  "status": "WAITING_DOCUMENTATION",
+  "created_at": "2026-09-10T04:25:48.917Z",
+  "updated_at": "2026-09-10T04:25:48.917Z",
+  "canonical_snapshot": {
+    "repository_owner": "devVentoGroup/vento-shell",
+    "runtime_profile": "DATABASE_RPC_BOUNDARY",
+    "dominant_task_id": "AUTH-DB-002",
+    "task_ids": [
+      "AUTH-DB-002",
+      "AUTH-DB-004",
+      "AUTH-SRV-005",
+      "PASS-INT-001",
+      "PASS-INT-002",
+      "PASS-INT-004",
+      "PULSO-AUTH-009",
+      "PULSO-AUTH-010"
+    ],
+    "missing_task_ids": [
+      "PASS-INT-001",
+      "PASS-INT-002",
+      "PASS-INT-004",
+      "PULSO-AUTH-009",
+      "PULSO-AUTH-010"
+    ]
+  },
+  "physical_identity": {
+    "targets": []
+  },
+  "implementation_units": [],
+  "evidence_plan": {
+    "tests": [],
+    "observability": [],
+    "acceptance_criteria": [],
+    "rollback_steps": []
+  },
+  "authorization": {
+    "decision": "PENDING",
+    "approved_by": null,
+    "approved_at": null,
+    "approval_ref": null,
+    "approval_statement": null
+  }
+}
