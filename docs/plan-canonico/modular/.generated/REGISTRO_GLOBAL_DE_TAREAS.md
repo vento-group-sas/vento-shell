@@ -12,18 +12,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1164** |
+| Aprobadas | **1165** |
 | En propuesta | **0** |
-| No iniciadas | **432** |
+| No iniciadas | **431** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.93% (1164/1596)** |
+| Porcentaje de completamiento | **72.99% (1165/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **432** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1065** |
+| ⏸ NO_EVALUADA | **431** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1066** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -36,9 +36,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-SIM-010` — Bloquear acciones críticas durante simulación | ✅ APROBADA |
-| Tarea actual | `AUTH-SIM-011` — Definir modo solo lectura | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-SIM-012` — Validar navegación como rol simulado | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-SIM-011` — Definir modo solo lectura | ✅ APROBADA |
+| Tarea actual | `AUTH-SIM-012` — Validar navegación como rol simulado | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-SIM-013` — Validar Server Actions como rol simulado | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1224,7 +1224,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-008` | Registrar inicio de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-009` | Registrar salida de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-010` | Bloquear acciones críticas durante simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-011` | Definir modo solo lectura | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-011` | Definir modo solo lectura | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-012` | Validar navegación como rol simulado | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-013` | Validar Server Actions como rol simulado | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-014` | Probar en todas las aplicaciones | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
