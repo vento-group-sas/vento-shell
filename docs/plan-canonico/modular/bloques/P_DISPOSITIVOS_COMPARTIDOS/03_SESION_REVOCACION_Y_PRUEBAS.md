@@ -2173,7 +2173,1154 @@ Esta tarea no:
 `AUTH-DEV-013 — Manejar cambio de trabajador`
 
 
-### [ ] AUTH-DEV-013 — Manejar cambio de trabajador
+### ✅ AUTH-DEV-013 — Manejar cambio de trabajador
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-012 — Manejar sesión expirada
+**Tarea siguiente:** AUTH-DEV-014 — Probar tablets de NEXO
+**Tipo de tarea:** documental; contrato canónico de cambio secuencial de trabajador, cierre e invalidación del actor anterior, limpieza de estado sensible y establecimiento independiente del nuevo actor en dispositivo compartido, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo un dispositivo compartido todavía elegible cambia del trabajador A al trabajador B sin mantener simultáneamente dos actores mutantes, sin editar la identidad humana de una sesión existente, sin transferir autoridad, contexto, reautenticaciones o estado sensible del actor anterior y sin perder la atribución del trabajo empresarial ya confirmado o pendiente.
+
+La regla principal queda:
+
+```text
+DEVICE ELEGIBLE
++
+SESSION_A VIGENTE
++
+SOLICITUD EXPLICITA DE CAMBIO
+->
+BLOQUEAR NUEVAS MUTACIONES DE A
+->
+CLASIFICAR TRABAJO PENDIENTE
+->
+CERRAR SESSION_A
+->
+INVALIDAR AUTORIDAD Y ESTADO DE A
+->
+LIMPIAR ESTADO PERSONAL Y SENSIBLE
+->
+SIN ACTOR EFECTIVO
+->
+IDENTIFICAR B INDEPENDIENTEMENTE
+->
+RESOLVER CONTEXTO B DESDE FUENTES VIGENTES
+->
+CREAR SESSION_B NUEVA
+->
+RECOMPONER SUPERFICIE
+->
+B COMO UNICO ACTOR EFECTIVO
+```
+
+El cambio de trabajador es una transición de identidad humana sobre un principal técnico estable. No es una revocación del dispositivo, una renovación de la sesión anterior ni una reasignación automática del trabajo empresarial.
+
+---
+
+#### 2. Handoff recibido de AUTH-DEV-012
+
+`AUTH-DEV-012` entrega una sesión temporal inequívoca:
+
+```text
+DEVICE ELEGIBLE
++
+ACTOR_SESSION_ID UNICO
++
+started_at SERVER-SIDE
++
+expires_at FIJO SEGUN PERFIL
++
+resolved_at < expires_at
+=
+ACTOR SESSION TEMPORALMENTE ELEGIBLE
+```
+
+y:
+
+```text
+resolved_at >= expires_at
+->
+ACTOR SESSION NO ELEGIBLE
+->
+ACTOR EFFECTIVE UNRESOLVED
+->
+NUEVA IDENTIFICACION REQUERIDA
+```
+
+`AUTH-DEV-013` consume esa semántica y añade exclusivamente el cambio ordinario entre trabajadores mientras el dispositivo permanezca elegible.
+
+Se preservan sin modificación:
+
+- identidad técnica y lifecycle del dispositivo;
+- separación entre principal técnico y actor humano;
+- identificación ligera y firma de acción;
+- intersección restrictiva entre autoridad humana y techo del dispositivo;
+- prohibición de herencia administrativa;
+- auditoría conjunta de dispositivo y trabajador;
+- revocación de `AUTH-DEV-011`;
+- expiración y política temporal de `AUTH-DEV-012`.
+
+---
+
+#### 3. Resultado canónico
+
+El cambio de trabajador queda regido por estas invariantes:
+
+1. una estación secuencial tendrá como máximo un actor humano elegible para nuevas mutaciones;
+2. el cambio debe ser explícito y no puede inferirse desde presencia, último PIN, navegación, turno, sede, área o actividad reciente;
+3. la sesión del trabajador A deja de ser elegible antes de habilitar nuevas mutaciones del trabajador B;
+4. la sesión A no se transforma en la sesión B;
+5. B debe identificarse de forma independiente;
+6. el contexto de B debe resolverse de nuevo desde fuentes server-side vigentes;
+7. B recibe una sesión nueva con identidad y temporalidad propias;
+8. ningún permiso, rol, cobertura, turno, check-in, reautenticación, firma o decisión de A se hereda;
+9. todo estado personal o sensible de A se limpia o se neutraliza antes de exponerlo a B;
+10. el trabajo empresarial confirmado conserva la autoría original;
+11. el trabajo pendiente no se reenvía ni se atribuye a B por el solo hecho del cambio;
+12. cualquier transferencia empresarial entre A y B requiere un handoff explícito cuando el proceso lo permita;
+13. un fallo durante la transición no restaura silenciosamente a A;
+14. una revocación o invalidez del dispositivo tiene precedencia y bloquea la creación de B.
+
+---
+
+#### 4. Cambio de trabajador no es mutación de una sesión existente
+
+Queda prohibido modelar el cambio así:
+
+```text
+SESSION_A.employee_id = B
+```
+
+o mediante cualquier equivalente que conserve la misma identidad de sesión y sustituya al humano.
+
+La transición correcta es:
+
+```text
+SESSION_A
+device_id = D
+employee_id = A
+estado = NO ELEGIBLE DESPUES DEL CIERRE
+```
+
+seguida por:
+
+```text
+SESSION_B
+device_id = D
+employee_id = B
+nuevo actor_session_id
+nuevo started_at
+nuevo expires_at
+nuevo contexto resuelto
+```
+
+La historia de A permanece asociada a A.
+
+La nueva sesión no reutiliza como autoridad:
+
+- `actor_session_id` de A;
+- `started_at` de A;
+- `expires_at` de A;
+- contexto laboral u operativo de A;
+- evidencia de firma de A;
+- evidencia STRONG de A;
+- decisiones cacheadas de A.
+
+---
+
+#### 5. Principal técnico durante el cambio
+
+El principal autenticado del dispositivo puede permanecer estable durante el cambio:
+
+```text
+PRINCIPAL TECNICO = DEVICE D
+ACTOR A = TERMINA
+ACTOR B = SE RESUELVE DESPUES
+```
+
+El dispositivo no se convierte en A ni en B.
+
+Durante la ventana sin actor humano:
+
+```text
+DEVICE PRINCIPAL = ELEGIBLE SEGUN LIFECYCLE
+ACTOR HUMANO = UNRESOLVED
+ACCIONES TECNICAS EXPRESAMENTE ADMITIDAS = POSIBLES
+NUEVAS ACCIONES EMPRESARIALES QUE EXIGEN HUMANO = BLOQUEADAS
+```
+
+El principal técnico no rellena el vacío entre actores.
+
+---
+
+#### 6. Máquina de estados reutilizada
+
+El cambio ordinario utiliza los estados canónicos ya aprobados:
+
+```text
+ACTIVE
+->
+LOCKED
+->
+CLOSING
+->
+CLOSED / NO_ACTOR
+->
+IDENTIFYING
+->
+CONTEXT_RESOLVING
+->
+ACTIVE
+```
+
+`TRANSFER_PENDING` se utiliza únicamente cuando existe un traspaso empresarial explícito que deba ser aceptado.
+
+`RECOVERY_REQUIRED` se utiliza cuando el estado de cierre, limpieza, pendiente o transición no puede resolverse con certeza.
+
+No se crea un estado nuevo específico de “switch”.
+
+---
+
+#### 7. Inicio explícito del cambio
+
+El cambio comienza por una intención explícita de cerrar o cambiar al actor actual.
+
+No constituyen solicitud de cambio por sí solos:
+
+- actividad de otra persona frente al dispositivo;
+- presentación accidental de otra credencial;
+- cambio de aplicación;
+- cambio de ruta;
+- cambio de sede o área visual;
+- cambio de modo de una pantalla;
+- cierre de un modal;
+- inactividad;
+- heartbeat;
+- suspensión del navegador;
+- pérdida de red;
+- cambio de turno detectado;
+- expiración temporal.
+
+Cuando la sesión A ya expiró, aplica la semántica de `AUTH-DEV-012`: A ya no es actor elegible y la identificación de B comienza desde ausencia de actor, no desde una transferencia implícita de A.
+
+---
+
+#### 8. Bloqueo de nuevas mutaciones de A
+
+Una vez aceptado el inicio efectivo del cambio, la estación debe impedir que A origine nuevas mutaciones empresariales bajo la sesión que se está cerrando.
+
+El bloqueo cubre todas las aplicaciones y superficies que compartan esa misma actor session.
+
+No basta con deshabilitar un botón en la vista actual.
+
+El estado de cambio debe impedir que:
+
+- otra pestaña use la autoridad de A;
+- otra aplicación continúe usando un contexto de A;
+- un Server Action consuma un snapshot viejo;
+- una llamada directa reutilice una decisión previa;
+- una cola local interprete a A como todavía activo;
+- Realtime reactive controles de A;
+- un refresh visual restaure el actor anterior.
+
+Las operaciones ya enviadas se clasifican según su estado real antes de decidir cualquier recuperación.
+
+---
+
+#### 9. Cierre de la sesión A
+
+La sesión A debe quedar no elegible para nuevas acciones antes de habilitar la sesión B.
+
+El cierre conserva historia suficiente para demostrar:
+
+- dispositivo;
+- trabajador A;
+- inicio;
+- expiración original;
+- instante de cierre;
+- motivo de cierre;
+- contexto relevante;
+- correlación con la transición.
+
+La sesión A no se elimina para ocultar la transición.
+
+Una vez cerrada como parte del cambio, no se reactiva mediante un simple cancel, refresh o reidentificación parcial.
+
+Si A necesita volver a operar posteriormente, deberá obtener una nueva sesión conforme al mismo contrato aplicable a cualquier otro trabajador.
+
+---
+
+#### 10. Punto seguro sin actor
+
+Entre A y B existe una frontera autoritativa real:
+
+```text
+SESSION_A NO ELEGIBLE
++
+SESSION_B AUN NO CREADA
+=
+NO ACTOR EFECTIVO
+```
+
+Ese estado no es un error si el cierre de A fue correcto.
+
+La superficie puede mostrar la experiencia de identificación permitida, pero no puede presentar como activa la autoridad de A ni anticipar la autoridad de B.
+
+Si B abandona el proceso, falla la identificación o no posee contexto suficiente, la estación permanece sin actor elegible o en el estado de recuperación aplicable.
+
+---
+
+#### 11. Identificación independiente de B
+
+B debe demostrar su identidad mediante un mecanismo aprobado.
+
+No se acepta como identificación de B:
+
+- selección de nombre;
+- trabajador esperado por horario;
+- trabajador asignado al área;
+- último trabajador de la lista;
+- PIN de A;
+- sesión de A;
+- credencial administrativa previa;
+- `navigation_role`;
+- dispositivo físico;
+- turno que pertenecía a A;
+- check-in de A;
+- actor almacenado en cliente.
+
+La prueba de B se valida en servidor y debe resolver un único empleado humano elegible.
+
+---
+
+#### 12. Resolución fresca del contexto de B
+
+Identificar a B no autoriza todavía una acción.
+
+Antes de crear una sesión de actor utilizable deben resolverse las fuentes aplicables de B, entre ellas:
+
+- identidad laboral vigente;
+- rol base cuando corresponda;
+- asignaciones;
+- cobertura administrativa;
+- turno vigente cuando corresponda;
+- check-in vigente cuando corresponda;
+- rol operativo;
+- sede;
+- área;
+- política del dispositivo;
+- aplicaciones efectivas;
+- techo del dispositivo;
+- compatibilidad territorial;
+- requisitos del permiso.
+
+Nada de ese contexto se copia desde A.
+
+---
+
+#### 13. Creación de la sesión B
+
+La sesión B debe ser una nueva identidad temporal.
+
+Como mínimo debe quedar vinculada conceptualmente a:
+
+```text
+device_id
+employee_id
+shift_id
+site_id
+area_id
+operational_role
+started_at
+expires_at
+ended_at
+```
+
+`started_at` y `expires_at` se calculan conforme a `AUTH-DEV-012`.
+
+La creación de B no extiende, reabre ni reescribe A.
+
+El cambio queda completado únicamente cuando exista exactamente una sesión elegible y esa sesión corresponda inequívocamente a B.
+
+---
+
+#### 14. No herencia de autoridad
+
+B no recibe desde A:
+
+- rol base;
+- rol operativo;
+- grants;
+- denegaciones individuales;
+- cobertura administrativa;
+- asignaciones;
+- turno;
+- check-in;
+- sede operativa;
+- área operativa;
+- permiso efectivo;
+- resultado `ALLOW`;
+- decisión de autorización cacheada;
+- excepción;
+- elevación;
+- reautenticación fuerte;
+- firma de acción;
+- segundo actor;
+- aprobación temporal;
+- token derivado de contexto.
+
+La autoridad de B se calcula desde B.
+
+---
+
+#### 15. Limpieza transversal de aplicaciones
+
+El cambio de actor obliga a limpiar el estado sensible de **todas las aplicaciones** que dependan de la actor session del dispositivo.
+
+La limpieza no se limita a la app visible al iniciar el cambio.
+
+Debe considerar:
+
+- estado React o equivalente;
+- cachés cliente identificables;
+- Local Storage y Session Storage cuando contengan estado ligado al actor;
+- datos precargados del actor;
+- formularios;
+- borradores personales;
+- filtros y búsquedas;
+- recursos recientes;
+- archivos;
+- fotografías;
+- cámara;
+- escáner;
+- portapapeles;
+- descargas;
+- datos sensibles visibles;
+- credenciales y autocompletado;
+- notificaciones personales;
+- rutas de retorno;
+- estado de navegador o WebView;
+- handles o referencias a recursos sensibles.
+
+Solo puede conservarse aquello que el contrato del proceso declare explícitamente como estado de estación no personal o como evidencia empresarial persistida.
+
+---
+
+#### 16. Reautenticación fuerte y aprobaciones
+
+Toda evidencia STRONG vinculada a A queda no utilizable por B.
+
+B debe obtener su propia reautenticación cuando una acción la exija.
+
+Queda prohibido:
+
+```text
+A COMPLETO STRONG
+->
+CAMBIO A B
+->
+B USA STRONG DE A
+```
+
+También quedan no transferibles por defecto:
+
+- aprobaciones temporales;
+- elevaciones;
+- segundo factor contextual;
+- confirmaciones personales;
+- excepciones ligadas al actor.
+
+El cambio de trabajador no crea una excepción a la clasificación de seguridad del permiso.
+
+---
+
+#### 17. Firmas de acción
+
+Una firma de acción emitida para A conserva su atribución histórica a A.
+
+No puede transformarse en una firma de B ni utilizarse para demostrar presencia de B.
+
+Cuando una operación pendiente requiera una nueva firma para continuar, B debe producir su propia evidencia conforme al contrato de la acción.
+
+La firma de A puede conservarse como evidencia del paso que A realizó, no como autoridad del paso que B realizará.
+
+---
+
+#### 18. Trabajo empresarial durante el cambio
+
+El trabajo se clasifica antes de limpiar o continuar.
+
+| Estado del trabajo | Tratamiento obligatorio |
+| --- | --- |
+| dato no confirmado | descartar, convertir en borrador neutral permitido o transferir únicamente mediante política explícita |
+| comando enviado y pendiente | conservar actor, contexto, idempotencia y receipt originales; no reenviar automáticamente |
+| resultado confirmado | mantener autoría original; B puede continuar un paso posterior solo tras autorización propia |
+| conflicto | enviar a recuperación; no atribuir a B |
+| resultado incierto | reconciliar antes de repetir; el cambio de actor no autoriza reintento |
+| archivo o captura temporal | limpiar o transferir mediante finalidad y aceptación explícitas |
+| aprobación o elevación temporal | invalidar para B |
+| filtros, búsqueda o selección personal | limpiar |
+| contexto declarado de estación no personal | puede conservarse solo si su contrato lo permite |
+
+El cambio de actor no decide por sí mismo el ownership empresarial de una entidad.
+
+---
+
+#### 19. Diferencia entre cambio simple y handoff empresarial
+
+Cambiar de trabajador y transferir trabajo son operaciones distintas.
+
+Cambio simple:
+
+```text
+A DEJA DE SER ACTOR
+->
+ESTADO PERSONAL DE A SE LIMPIA
+->
+B SE IDENTIFICA
+->
+B COMIENZA SU PROPIO TRABAJO O CONTINUA SOLO LO QUE EL PROCESO PERMITA
+```
+
+Handoff empresarial:
+
+```text
+A DELIMITA UN WORK ITEM
++
+B SE IDENTIFICA INDEPENDIENTEMENTE
++
+B ACEPTA
++
+SE CONSERVA EVIDENCIA DE ORIGEN Y DESTINO
+=
+TRANSFERENCIA EXPLICITA DEL TRABAJO
+```
+
+El handoff transfiere responsabilidad sobre un work item cuando el proceso lo permite. Nunca transfiere sesión, rol, permiso, cobertura, firma, STRONG ni decisión de autorización.
+
+---
+
+#### 20. Contrato de handoff reutilizado
+
+Cuando exista traspaso explícito, debe poder conservarse la información funcional ya aprobada para:
+
+```text
+transfer_receipt_id
+source_actor_id
+target_actor_id
+process_id
+step_id
+work_item_id
+resource_version
+source_station_id
+target_station_id
+initiated_at
+accepted_at
+handoff_reason
+state_at_transfer
+pending_effects[]
+evidence_reference
+```
+
+Reglas:
+
+1. A inicia y delimita el objeto transferido;
+2. B se identifica independientemente;
+3. B acepta el recurso y el estado recibido;
+4. los efectos confirmados conservan su autor original;
+5. los pendientes no se duplican ni se reenvían automáticamente;
+6. la responsabilidad cambia solo después de aceptación o regla explícita de abandono;
+7. un handoff rechazado, vencido o incierto permanece recuperable.
+
+Esta tarea no obliga a que todo cambio de trabajador cree un handoff.
+
+---
+
+#### 21. Borradores
+
+Un borrador personal de A no puede aparecer ante B como si fuera propio.
+
+Cada dominio debe distinguir entre:
+
+- borrador personal;
+- borrador de estación expresamente neutral;
+- work item empresarial persistido;
+- resultado confirmado.
+
+Sin una clasificación autoritativa suficiente, el estado no confirmado se limpia o se bloquea para recuperación.
+
+No se convierte silenciosamente un borrador personal en borrador compartido.
+
+---
+
+#### 22. Operaciones confirmadas
+
+Una operación confirmada antes del cambio conserva:
+
+- actor original;
+- contexto original registrable;
+- timestamps;
+- receipt;
+- correlación;
+- estado empresarial resultante.
+
+El cambio no reescribe auditoría histórica.
+
+B puede continuar el proceso únicamente desde el estado empresarial confirmado y con su propia autorización.
+
+---
+
+#### 23. Operaciones enviadas y pendientes
+
+Una operación enviada por A y todavía pendiente mantiene la identidad de A.
+
+Si el resultado llega después de que B ya esté activo:
+
+- se atribuye a A;
+- no se convierte en operación de B;
+- no amplía la autoridad de B;
+- no restaura la sesión A;
+- no debe sobrescribir silenciosamente estado personal de B.
+
+La interfaz debe reconciliar el resultado como evento del trabajo original.
+
+---
+
+#### 24. Resultado incierto e idempotencia
+
+Si no puede saberse si una mutación de A produjo efecto, el cambio de trabajador no autoriza repetirla.
+
+La secuencia segura es:
+
+```text
+RESULTADO INCIERTO DE A
+->
+RECONCILIAR POR CONTRATO DEL DOMINIO
+->
+DETERMINAR ESTADO REAL
+->
+SOLO ENTONCES PERMITIR UNA INTENCION NUEVA
+```
+
+Una reidentificación o una nueva sesión B no cambia la identidad lógica del intento anterior.
+
+La correlación e idempotencia deben impedir duplicados durante reintentos o fallos de red.
+
+---
+
+#### 25. Offline y sincronización
+
+Una cola offline preparada por A conserva la atribución histórica de A, pero no conserva automáticamente autoridad ejecutable.
+
+Si se sincroniza después del cambio:
+
+```text
+COLA PREPARADA POR A
++
+SESSION_A NO ELEGIBLE
+->
+REAUTORIZAR SEGUN CONTRATO DE SINCRONIZACION
+```
+
+No se permite:
+
+- ejecutar con un `ALLOW` de A almacenado;
+- atribuir la cola a B;
+- usar la sesión B para hacer parecer que B creó la intención;
+- reenviar automáticamente la mutación después de identificar a B.
+
+Los datos recuperables deben mantener lineage suficiente para distinguir preparación, autorización y efecto.
+
+---
+
+#### 26. Varias pestañas, ventanas y aplicaciones
+
+El cambio de actor es transversal al dispositivo y a la actor session.
+
+No puede existir:
+
+```text
+APP A -> ACTOR B
+APP B -> ACTOR A
+```
+
+si ambas superficies dependen de la misma sesión secuencial.
+
+Cuando A deja de ser elegible, todas las superficies deben dejar de consumir su autoridad.
+
+Una pestaña stale que todavía muestre a A no puede producir una mutación bajo A.
+
+---
+
+#### 27. Cambio de aplicación durante la transición
+
+Cambiar de aplicación no completa ni cancela el cambio de trabajador.
+
+Durante `LOCKED`, `CLOSING`, `NO_ACTOR`, `IDENTIFYING` o `CONTEXT_RESOLVING`, otra aplicación del dispositivo debe observar un estado compatible.
+
+Una app no puede mantener a A mientras otra identifica a B.
+
+La sesión B, una vez creada, conserva la política temporal que le corresponda y no recibe una extensión por cambiar de app.
+
+---
+
+#### 28. Dispositivo revocado durante el cambio
+
+Si el dispositivo deja de ser elegible durante la transición, la precedencia es:
+
+```text
+DEVICE NO ELEGIBLE
+->
+NO CREAR SESSION_B
+->
+BLOQUEAR EFECTOS EMPRESARIALES
+```
+
+No se continúa con la identificación de B para “terminar” el cambio.
+
+`AUTH-DEV-011` conserva la semántica propietaria del lifecycle y revocación.
+
+---
+
+#### 29. Sesión A expirada durante el cambio
+
+Si A expira antes de completar el cierre:
+
+```text
+SESSION_A = NO ELEGIBLE
+```
+
+La transición no puede reabrirla.
+
+La limpieza y recuperación deben continuar hasta alcanzar un estado seguro.
+
+La creación de B sigue exigiendo identificación independiente y nueva sesión.
+
+`AUTH-DEV-012` conserva la frontera temporal y sus TTL.
+
+---
+
+#### 30. Contexto de B inválido o insuficiente
+
+B puede identificarse correctamente y aun así no ser elegible para operar.
+
+Ejemplos:
+
+- empleado inactivo;
+- turno requerido ausente;
+- check-in requerido ausente;
+- rol operativo ausente;
+- sede incompatible;
+- área incompatible;
+- permiso insuficiente;
+- política de actor no satisfecha;
+- dispositivo incompatible con la acción;
+- reautenticación fuerte requerida.
+
+En esos casos no se restaura A ni se fabrica contexto para B.
+
+La estación permanece sin capacidad empresarial para esa acción y conserva la razón propietaria aplicable.
+
+---
+
+#### 31. Fallo de limpieza
+
+Si no puede confirmarse que el estado sensible de A fue limpiado o aislado, B no debe recibir una superficie que pueda exponerlo o utilizarlo.
+
+El estado aplicable es de recuperación controlada.
+
+```text
+LIMPIEZA INCIERTA
+->
+RECOVERY_REQUIRED
+->
+NO NUEVAS MUTACIONES HASTA RESOLUCION
+```
+
+El objetivo no es borrar evidencia empresarial, sino impedir exposición o reutilización de estado personal y autoritativo.
+
+---
+
+#### 32. Concurrencia y cardinalidad
+
+Para una estación `SHARED-SEQUENTIAL`:
+
+```text
+0 sesiones elegibles
+->
+NO_ACTOR / IDENTIFICACION
+```
+
+```text
+1 sesion elegible
+->
+UNICO ACTOR CANDIDATO
+```
+
+```text
+2 O MAS SESIONES ELEGIBLES INCOMPATIBLES
+->
+INCONSISTENCIA
+->
+NO ELEGIR LA MAS RECIENTE
+->
+NO PRODUCIR NUEVO EFECTO EMPRESARIAL
+```
+
+La creación de B debe fallar cerrado si deja dos sesiones elegibles incompatibles.
+
+---
+
+#### 33. Auditoría de la transición
+
+La transición A→B debe poder reconstruirse a partir de la historia canónica y sus correlaciones.
+
+Debe ser posible determinar, cuando aplique:
+
+- dispositivo;
+- sesión A;
+- trabajador A;
+- motivo e instante de cierre;
+- estado de pendientes;
+- resultado de limpieza;
+- transición sin actor;
+- método de identificación de B sin guardar el secreto;
+- sesión B;
+- trabajador B;
+- nuevo contexto;
+- decisiones y resultados posteriores.
+
+No es obligatorio almacenar A y B en una sola fila si la secuencia de eventos conserva una relación inequívoca.
+
+La auditoría describe lo ocurrido; no concede autoridad.
+
+---
+
+#### 34. Privacidad y secretos
+
+El cambio de trabajador no debe persistir ni exponer:
+
+- PIN;
+- contraseña;
+- token completo;
+- dato biométrico crudo;
+- secreto de reautenticación;
+- contenido sensible innecesario del actor anterior.
+
+La limpieza visible y de cliente debe minimizar la exposición a B y a terceros.
+
+La evidencia de transición utiliza referencias opacas y metadatos estrictamente necesarios.
+
+---
+
+#### 35. Matriz de cobertura sobre las 19 identidades heredadas
+
+| `inventory_key` | Clase | Decisión de cambio de trabajador | Estado documental |
+| --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` | debe aplicar A→sin actor→B y limpieza transversal cuando su identidad física y plantilla queden certificadas | `REGISTERED_UNVERIFIED` |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` | debe aplicar A→sin actor→B y limpieza transversal cuando su identidad física y plantilla queden certificadas | `REGISTERED_UNVERIFIED` |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` | no materializar transición ni actor session por inferencia antes de enrolamiento | `OBSERVED_ONLY` |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` | no materializar transición ni actor session por inferencia antes de enrolamiento | `OBSERVED_ONLY` |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` | cambio secuencial; limpiar actor y estado sensible de todas sus apps antes de B | `POLICY_DEFINED` |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` | cambio secuencial; no transferir autoridad ni acción preparada por A | `POLICY_DEFINED` |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` | cambio secuencial; conservar solo trabajo empresarial persistido y atribuible | `POLICY_DEFINED` |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` | cambio secuencial de alta rotación; no usar último trabajador como fallback | `POLICY_DEFINED` |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` | cambio secuencial; limpiar borradores personales, filtros y estado sensible | `POLICY_DEFINED` |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` | cambio secuencial transversal a funciones; no sumar autoridad entre perfiles | `POLICY_DEFINED` |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` | cambio secuencial; resultados confirmados conservan autor original y pendientes se reconcilian | `POLICY_DEFINED` |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` | cambio secuencial; resultados confirmados conservan autor original y pendientes se reconcilian | `POLICY_DEFINED` |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` | cambio secuencial; resultados confirmados conservan autor original y pendientes se reconcilian | `POLICY_DEFINED` |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` | cambio secuencial; no transferir sesión, turno, check-in ni permisos de bodega | `POLICY_DEFINED` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` | cambio secuencial; ruta o vehículo pueden persistir como recurso empresarial, nunca como autoridad de A | `POLICY_DEFINED` |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` | cambio de actor independiente del cambio de modo; B resuelve de nuevo modo, contexto y permisos | `POLICY_DEFINED` |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` | cambio secuencial transversal a sus apps; coordinación previa no transfiere autoridad | `POLICY_DEFINED` |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` | cambio secuencial con invalidación total de STRONG, elevaciones y estado administrativo de A | `POLICY_DEFINED` |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` | no recibe nueva política de cambio ni nuevas sesiones | `NO_APLICA` |
+
+Control:
+
+```text
+TOTAL ESPERADO: 19
+TOTAL MATERIALIZADO: 19
+
+CONFIGURED_INSTANCE: 2
+PHYSICAL_OBSERVATION: 2
+TARGET_TEMPLATE: 14
+RETIRED_LEGACY_TEMPLATE: 1
+
+FALTANTES: 0
+DUPLICADOS: 0
+```
+
+---
+
+#### 36. Casos especiales por plantilla
+
+##### 36.1 `management_terminal`
+
+El cambio invalida cualquier evidencia STRONG, elevación o aprobación temporal de A.
+
+B puede ejecutar administración solo con su propia autoridad base, cobertura real y reautenticación cuando corresponda.
+
+La terminal no transfiere privilegios administrativos.
+
+##### 36.2 `operations_management_terminal`
+
+La amplitud de aplicaciones no permite conservar contextos parciales de A en una app distinta.
+
+El cambio se aplica a la actor session transversal y obliga a recomponer la superficie desde B.
+
+##### 36.3 `procurement_reception`
+
+Cambio de trabajador y cambio de modo son dimensiones independientes.
+
+Si ambos ocurren:
+
+```text
+CERRAR A
+->
+IDENTIFICAR B
+->
+RESOLVER CONTEXTO Y MODO DE B
+```
+
+No se copia a B el carril administrativo u operativo utilizado por A.
+
+##### 36.4 `logistics_vehicle_terminal`
+
+Vehículo, ruta, origen o destino pueden ser estado empresarial del proceso si su contrato lo define.
+
+Ese estado no representa al trabajador y no permite reconstruir a B desde A.
+
+##### 36.5 Plantillas productivas
+
+Un batch, orden o resultado ya confirmado conserva su actor histórico.
+
+Un borrador personal, firma, STRONG o selección temporal de A no se vuelve estado de B.
+
+---
+
+#### 37. Estado físico observado
+
+La revisión del estado físico disponible reconoce:
+
+1. existen estructuras canónicas destinadas a `shared_operational_device_actor_sessions`;
+2. el modelo documental exige que el actor de dispositivo provenga de una sesión activa, única y vigente;
+3. NEXO, PULSO y FOGO observados ya poseen helpers de firma por acción desde dispositivo compartido;
+4. esos helpers pueden resolver `actor_employee_id` y `actor_shift_id` mediante una firma/PIN de la acción;
+5. no se observó en esos consumidores uso de `actor_session_id` ni consumo directo de `shared_operational_device_actor_sessions`;
+6. por tanto, la firma de acción existente no demuestra materialización del ciclo persistente A→cierre→B;
+7. la adopción y certificación física permanecen para las unidades posteriores del bloque.
+
+Resultado:
+
+```text
+IDENTIFICACION POR ACCION = OBSERVADA EN CONSUMIDORES
+ACTOR SESSION PERSISTENTE CONSUMIDA = NO DEMOSTRADA
+CAMBIO TRANSVERSAL A -> B = NO DEMOSTRADO
+LIMPIEZA MULTIAPP = NO DEMOSTRADA
+CERTIFICACION FISICA = NO REALIZADA
+```
+
+Esta tarea no modifica consumidores.
+
+---
+
+#### 38. Frontera con AUTH-DEV-014 a AUTH-DEV-016
+
+`AUTH-DEV-013` define la semántica común de cambio de trabajador.
+
+Las tareas siguientes conservan la comprobación física por superficie:
+
+- `AUTH-DEV-014`: tablets de NEXO;
+- `AUTH-DEV-015`: terminales de PULSO;
+- `AUTH-DEV-016`: pantallas de FOGO.
+
+Esas pruebas deberán observar el contrato aprobado, no redefinirlo.
+
+No se ejecuta ninguna de ellas en este marcador documental.
+
+---
+
+#### 39. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+El cambio de trabajador desarrolla obligaciones de seguridad, sesión, invalidación, limpieza, atribución y recuperación ya protegidas por el registro vigente. No altera el registro modular.
+
+---
+
+#### 40. Cobertura de prueba vigente reutilizada
+
+Se reutilizan sin modificación:
+
+- `TREQ-AUTH-003` — incluye cambio de actor dentro del lifecycle auditable del dispositivo compartido;
+- `TREQ-AUTH-011` — exige actor humano real, intersección de autoridad y registro del cambio de trabajador;
+- `TREQ-AUTH-014` — exige invalidación de contexto, caché y tokens derivados ante cambio de trabajador;
+- `TREQ-AUTH-015` — exige evidencia correlacionable de actor, dispositivo, contexto, decisión y resultado;
+- `TREQ-AUTH-054` — exige limpiar todas las aplicaciones al cambiar actor y prohíbe transferir estado sensible;
+- `TREQ-AUTH-273` — exige sesión única y vigente del actor, política satisfecha y contexto propio;
+- `TREQ-AUTH-277` — exige invalidación, recuperación segura, cero reintentos automáticos y auditoría;
+- `TREQ-AUTH-278` — reserva la reconciliación física de sesiones de actor, invalidación y consumidores;
+- `TREQ-AUTH-331` — conserva identificación de actor y reautenticación fuerte como estados interactivos separados de una denegación del dispositivo.
+
+Estas referencias constituyen trazabilidad de cobertura existente y no representan requisitos afectados por esta tarea.
+
+---
+
+#### 41. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en el archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores contra el checkout local durante la preparación del artefacto. |
+| REMOTA | `NOT_EXECUTED` | Se inspeccionaron fuentes remotas vigentes y consumidores observables, pero no se ejecutó un gate remoto de esta tarea. |
+| OPERATIVA | `NOT_APPLICABLE` | La tarea no cambia trabajadores, sesiones reales ni operación de estaciones durante su definición documental. |
+| FÍSICA | `NOT_APPLICABLE` | La materialización futura pertenece a unidades `PER_IMPLEMENTATION_UNIT` después del gate `POST_E5_PACKAGE`. |
+
+---
+
+#### 42. Criterios de aceptación
+
+- [x] El cambio de trabajador es explícito.
+- [x] El dispositivo técnico permanece separado del actor humano.
+- [x] A deja de ser elegible antes de habilitar mutaciones de B.
+- [x] Existe una frontera real sin actor entre A y B.
+- [x] La sesión A no se convierte en sesión B.
+- [x] B obtiene un nuevo `actor_session_id`.
+- [x] B obtiene `started_at` y `expires_at` propios.
+- [x] B se identifica de forma independiente.
+- [x] El contexto de B se reconstruye desde fuentes vigentes.
+- [x] Rol, grants, cobertura, turno, check-in, sede, área y permisos de A no se heredan.
+- [x] STRONG, firmas, elevaciones y aprobaciones de A no se transfieren.
+- [x] La limpieza aplica transversalmente a todas las aplicaciones del dispositivo.
+- [x] Estado React, cachés, almacenamiento cliente y recursos sensibles de A no pueden reactivar autoridad.
+- [x] Los borradores personales de A no aparecen como propios de B.
+- [x] Los resultados confirmados conservan la autoría de A.
+- [x] Los comandos pendientes conservan actor, contexto, idempotencia y receipt originales.
+- [x] Los resultados inciertos se reconcilian antes de cualquier reintento.
+- [x] Las colas offline no heredan autoridad de A ni se atribuyen a B.
+- [x] Cambio simple y handoff empresarial permanecen separados.
+- [x] El handoff transfiere work item, no autoridad.
+- [x] Dos sesiones incompatibles bloquean en vez de elegir la más reciente.
+- [x] El fallo de identificación de B no restaura silenciosamente A.
+- [x] El fallo de limpieza produce recuperación controlada.
+- [x] Una revocación del dispositivo bloquea la creación de B.
+- [x] La expiración de A conserva la semántica de `AUTH-DEV-012`.
+- [x] Se cubren exactamente las 19 identidades heredadas.
+- [x] Se conserva la distribución 2 + 2 + 14 + 1.
+- [x] Las dos instancias configuradas siguen `REGISTERED_UNVERIFIED`.
+- [x] Las observaciones físicas no reciben actor session por inferencia.
+- [x] La plantilla `production_center` permanece retirada.
+- [x] Se documenta la brecha física de actor session sin modificar consumidores.
+- [x] `AUTH-DEV-014`, `AUTH-DEV-015` y `AUTH-DEV-016` conservan sus pruebas físicas.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autorizan cambios físicos.
+
+---
+
+#### 43. Handoff exacto hacia AUTH-DEV-014
+
+`AUTH-DEV-013` entrega a `AUTH-DEV-014` el siguiente contrato observable para una tablet de NEXO:
+
+```text
+UN DISPOSITIVO ELEGIBLE
++
+UN SOLO ACTOR EFECTIVO
++
+CAMBIO A -> B EXPLICITO
++
+SESSION_A NO ELEGIBLE
++
+ESTADO SENSIBLE DE A LIMPIO O AISLADO
++
+B IDENTIFICADO INDEPENDIENTEMENTE
++
+SESSION_B NUEVA
++
+CONTEXTO B RESUELTO
+=
+CAMBIO DE TRABAJADOR CONFORME
+```
+
+La comprobación física posterior deberá demostrar, sin redefinir esta tarea:
+
+- que A no puede producir nuevas mutaciones después del cambio;
+- que B no hereda autoridad ni estado sensible de A;
+- que B necesita su propia identidad y sesión;
+- que pendientes y resultados conservan atribución correcta;
+- que las superficies NEXO del dispositivo observan un estado de actor coherente;
+- que no sobreviven firmas o reautenticaciones de A;
+- que un fallo de transición queda bloqueado o recuperable sin fallback permisivo.
+
+---
+
+#### 44. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica RPC;
+- modifica grants;
+- modifica Auth;
+- crea jobs;
+- modifica datos reales;
+- crea o cierra sesiones reales;
+- cambia trabajadores reales;
+- modifica turnos;
+- modifica check-ins;
+- cambia roles;
+- cambia permisos;
+- cambia sedes o áreas;
+- cambia aplicaciones o paquetes del dispositivo;
+- redefine PIN o firma ligera;
+- convierte PIN ligero en STRONG;
+- redefine la no herencia de `AUTH-DEV-009`;
+- redefine la auditoría de `AUTH-DEV-010`;
+- redefine la revocación de `AUTH-DEV-011`;
+- redefine TTL, expiración o inactividad de `AUTH-DEV-012`;
+- diseña ownership empresarial específico de cada dominio;
+- ejecuta pruebas físicas de `AUTH-DEV-014`, `AUTH-DEV-015` o `AUTH-DEV-016`;
+- modifica NEXO, PULSO, FOGO u otra aplicación consumidora;
+- asigna identidad a observaciones físicas;
+- certifica las instancias registradas;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- inicia materialización física.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-012 — Manejar sesión expirada`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-013 — Manejar cambio de trabajador`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-014 — Probar tablets de NEXO`
+
+
 ### [ ] AUTH-DEV-014 — Probar tablets de NEXO
 ### [ ] AUTH-DEV-015 — Probar terminales de PULSO
 ### [ ] AUTH-DEV-016 — Probar pantallas de FOGO
