@@ -734,7 +734,1577 @@ La lectura de código y contratos constituye auditoría estática local, no evid
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-SIM-008 — Registrar inicio de simulación`
 
-### [ ] AUTH-SIM-008 — Registrar inicio de simulación
+### ✅ AUTH-SIM-008 — Registrar inicio de simulación
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-SIM-007 — Mostrar aviso persistente
+**Tarea siguiente:** AUTH-SIM-009 — Registrar salida de simulación
+**Tipo de tarea:** documental; contrato canónico de inicio autoritativo, persistencia y auditoría correlacionable de simulación, con materialización posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE Q — Simulación
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, Supabase, migraciones, RLS, RPC, contratos compartidos, consumidores, sesiones, auditoría persistida, datos, permisos, despliegues ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cuándo una simulación se considera realmente iniciada, qué evidencia autoritativa debe existir para demostrarlo y cómo correlacionar el intento, la autorización real del simulador, el escenario hipotético, la sesión de simulación y su activación sin convertir ningún dato simulado en autoridad ejecutable.
+
+La regla raíz queda:
+
+```text
+SOLICITUD DE SIMULACION
++
+ACTOR REAL ELEGIBLE
++
+AUTORIDAD REAL VALIDADA
++
+ESCENARIO HIPOTETICO COMPLETO Y VERSIONADO
++
+ROOT DE SIMULACION PERSISTIDO
++
+REVISION INICIAL PERSISTIDA
++
+ACTIVACION AUTORITATIVA CONFIRMADA
++
+CORRELACION Y EVIDENCIA INMUTABLES
+=
+SIMULACION INICIADA
+```
+
+Y siempre:
+
+```text
+SOLICITUD RECIBIDA
+!=
+SIMULACION INICIADA
+```
+
+```text
+SIMULATION_CREATED
+!=
+SIMULATION_ACTIVATED
+```
+
+```text
+SIMULACION ACTIVA
+!=
+AUTORIDAD REAL
+```
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+¿CUANDO COMENZO AUTORITATIVAMENTE UNA SIMULACION?
+```
+
+```text
+¿QUIEN LA SOLICITO DESDE SU CONTEXTO REAL?
+```
+
+```text
+¿QUE ESCENARIO EXACTO QUEDO ACTIVADO?
+```
+
+```text
+¿BAJO QUE VERSIONES, FINGERPRINTS Y CORRELACION QUEDO REGISTRADO EL INICIO?
+```
+
+No responde todavía cómo termina, expira o vuelve al contexto real; esa responsabilidad permanece en `AUTH-SIM-009`.
+
+#### 3. Handoff recibido de AUTH-SIM-007
+
+`AUTH-SIM-007` deja definidas cinco condiciones visibles:
+
+```text
+RESOLVING
+ACTIVE
+STALE
+INVALID
+EXIT_PENDING
+```
+
+Y fija dos reglas obligatorias para esta tarea:
+
+```text
+component mounted != simulation started
+component unmounted != simulation ended
+```
+
+El aviso puede reflejar un estado resuelto, pero nunca crea el lifecycle empresarial.
+
+`AUTH-SIM-008` debe aportar la evidencia que permite pasar de una transición conocida a una simulación autoritativamente `ACTIVE`.
+
+#### 4. Contratos consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-SIM-001`, que decide quién puede solicitar una simulación desde autoridad real;
+- `AUTH-SIM-002`, que tipa roles y sujetos simulables;
+- `AUTH-SIM-003`, que define sede simulada;
+- `AUTH-SIM-004`, que define área simulada;
+- `AUTH-SIM-005`, que define turno y check-in simulados;
+- `AUTH-SIM-006`, que separa autoridad real, evaluación simulada, preview y auditoría;
+- `AUTH-SIM-007`, que hace visible el lifecycle sin originarlo;
+- `AUTH-SRV-014`, que conserva principal técnico y actor efectivo reales;
+- `AUTH-SRV-015`, que conserva rol, sujeto, contexto y resultado simulados como plano independiente;
+- `AUTH-DB-013`, que aporta la persistencia append-only de simulación;
+- los contratos vigentes de autorización, contexto, auditoría, dispositivo compartido, sesiones y versiones.
+
+#### 5. Topología y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+instance = AUTH-SIM-008::<implementation_unit_id>
+execution_gate = POST_E5_PACKAGE
+```
+
+El marcador actual define una sola vez el contrato reutilizable.
+
+Cada unidad física futura deberá materializar el inicio en su `implementation_unit_id` sin reabrir este marcador y sin inferir una unidad desde una aplicación, repositorio, pantalla o dispositivo.
+
+#### 6. Inicio no equivale a apertura de superficie
+
+No constituyen inicio de simulación:
+
+- abrir la pantalla del simulador;
+- montar `SimulatedRoleNotice`;
+- seleccionar un rol;
+- seleccionar una sede;
+- seleccionar un área;
+- seleccionar un turno;
+- modificar filtros;
+- mostrar una preview local;
+- crear estado React;
+- escribir una cookie;
+- escribir `localStorage` o `sessionStorage`;
+- recibir un `simulation_id` legacy sin estado autoritativo;
+- construir un objeto hipotético en memoria.
+
+El inicio existe únicamente cuando la transición autoritativa completa ha quedado confirmada.
+
+#### 7. Tres momentos distintos
+
+El lifecycle de inicio distingue obligatoriamente:
+
+| Momento | Semántica | Estado de simulación |
+| --- | --- | --- |
+| `REQUESTED` conceptual | existe una intención de solicitar simulación | ninguna sesión activa por ese hecho |
+| `CREATED` persistido | existe root y revisión inicial auditables | `DRAFT` |
+| `ACTIVATED` persistido | la activación autoritativa fue registrada sobre el draft válido | `ACTIVE` |
+
+Los nombres `REQUESTED`, `CREATED` y `ACTIVATED` describen la semántica contractual; no obligan a crear una columna física con esos nombres.
+
+#### 8. Commit point del inicio
+
+El commit point canónico de `AUTH-SIM-008` es:
+
+```text
+SIMULATION_ACTIVATED
+```
+
+Solo después de que la persistencia autoritativa derive:
+
+```text
+status = ACTIVE
+```
+
+puede declararse:
+
+```text
+SIMULATION_STARTED = TRUE
+```
+
+La existencia exclusiva de `SIMULATION_CREATED` deja el lifecycle en `DRAFT` y no satisface esta tarea.
+
+#### 9. Estado DRAFT
+
+Un draft representa una simulación creada pero todavía no activada.
+
+Puede contener:
+
+- `simulation_id`;
+- revisión inicial;
+- escenario normalizado;
+- actor real;
+- sesión real;
+- decisión que autorizó solicitar la simulación;
+- timestamps;
+- versiones;
+- fingerprints;
+- correlación.
+
+No puede presentarse como una simulación activa ni habilitar preview confirmado.
+
+#### 10. Transición DRAFT a ACTIVE
+
+La única transición de inicio conforme es:
+
+```text
+DRAFT
+->
+SIMULATION_ACTIVATED
+->
+ACTIVE
+```
+
+La activación exige que el draft siga siendo elegible en el momento de la transición.
+
+Un draft ya completado, revocado, invalidado o expirado no puede activarse.
+
+#### 11. Actor real obligatorio
+
+Toda simulación interactiva conserva un actor humano real.
+
+El actor real debe provenir de una sesión personal y una resolución autoritativa anterior al escenario hipotético.
+
+No puede derivarse de:
+
+- sujeto simulado;
+- rol simulado;
+- principal técnico;
+- dispositivo compartido;
+- `navigation_role`;
+- empleado objetivo enviado por cliente;
+- último simulador;
+- usuario mostrado en la preview.
+
+#### 12. Sesión real obligatoria
+
+El inicio conserva referencia de la sesión real que permitió solicitar la simulación.
+
+La sesión de simulación nunca sustituye:
+
+```text
+real_session_id
+```
+
+Una sesión real expirada, revocada, cambiada o no reconstruible impide confirmar el inicio.
+
+#### 13. Permiso real del simulador
+
+Antes de crear o activar el escenario, la autoridad real debe demostrar al menos:
+
+```text
+viso.access
++
+viso.authorization.context_simulations.view
+```
+
+junto con el resto de contratos de alcance, justificación, reautenticación y denegaciones aplicables.
+
+El rol simulado nunca aporta estos permisos.
+
+#### 14. Decisión de autorización del solicitante
+
+El inicio debe enlazarse con una decisión real de autorización del solicitante.
+
+La decisión debe conservar:
+
+- actor real;
+- principal real;
+- permiso exacto;
+- aplicación;
+- contexto real;
+- resultado real;
+- razones;
+- correlación;
+- versión.
+
+Solo una decisión real autorizada puede sostener creación y activación.
+
+#### 15. Alcance real como techo
+
+El escenario solicitado debe permanecer dentro del alcance real que el simulador puede inspeccionar.
+
+Debe cumplirse:
+
+```text
+SIMULATED_SCOPE
+subset_of
+REAL_INSPECTION_SCOPE
+```
+
+La simulación no amplía lectura de sujetos, sedes, áreas, permisos, recursos ni información protegida.
+
+#### 16. Justificación
+
+Cuando el contrato exija justificación, el inicio conserva una referencia normalizada y auditable.
+
+No se utiliza texto libre como sustituto de autorización.
+
+No se incluyen secretos, credenciales ni datos personales innecesarios.
+
+#### 17. Reautenticación fuerte
+
+Cuando el objetivo o sensibilidad lo exija, la reautenticación fuerte se verifica sobre el actor real antes de activar.
+
+La evidencia fuerte:
+
+- pertenece al mismo actor;
+- es vigente;
+- corresponde al propósito aplicable;
+- no se transfiere al sujeto simulado;
+- no convierte un `WOULD_ALLOW` en `ALLOW`;
+- no se reutiliza como secreto de una acción real posterior.
+
+#### 18. Identidad de solicitud
+
+Toda intención lógica de inicio conserva una identidad de solicitud:
+
+```text
+simulation_request_id
+```
+
+La identidad sirve para correlacionar el intento de inicio.
+
+No funciona como:
+
+- permiso;
+- token;
+- sesión;
+- bearer credential;
+- idempotency key de una mutación empresarial real.
+
+La implementación física puede mapear esta identidad a campos o referencias distintos si mantiene su unicidad y trazabilidad.
+
+#### 19. Identidad de simulación
+
+Después de crear el root existe:
+
+```text
+simulation_id
+```
+
+`simulation_id` identifica el lifecycle de simulación.
+
+No identifica:
+
+- actor;
+- sesión real;
+- rol;
+- autorización;
+- recurso real;
+- permiso ejecutable.
+
+#### 20. Revisión inicial
+
+Todo root válido conserva una primera revisión del escenario.
+
+La revisión inicial debe poder demostrar exactamente qué se pretendía simular en el momento de creación.
+
+No se reconstruye después desde los filtros actuales del frontend.
+
+#### 21. Escenario tipado
+
+La revisión inicial conserva, cuando apliquen:
+
+- `scenario_kind`;
+- sujeto simulado;
+- rol simulado tipado;
+- sede simulada;
+- área simulada;
+- turno simulado;
+- check-in simulado;
+- recurso simulado;
+- instante hipotético resuelto;
+- snapshot de política;
+- versiones y fingerprints.
+
+Una dimensión obligatoria ausente no se completa desde el contexto real.
+
+#### 22. Rol simulado
+
+Cuando exista rol simulado se conserva al menos:
+
+```text
+role_kind
+role_code
+role_catalog_version
+role_matrix_version
+```
+
+`BASE` y `OPERATIONAL` permanecen namespaces distintos.
+
+Un `role_code` aislado no basta.
+
+#### 23. Sede simulada
+
+La sede hipotética debe ser explícita y compatible con el escenario.
+
+No se toma por fallback de:
+
+- sede real;
+- sede primaria;
+- sede del dispositivo;
+- filtro visual;
+- primera sede disponible.
+
+#### 24. Área simulada
+
+El área hipotética conserva su identidad y relación con la sede simulada.
+
+No se usa:
+
+- `GENERAL` como wildcard;
+- primera área;
+- área real del actor;
+- área del dispositivo;
+- selección local sin validación.
+
+#### 25. Turno y check-in simulados
+
+Cuando el escenario requiera temporalidad laboral se conserva el modo exacto de turno y el estado hipotético de check-in.
+
+Ni turno ni check-in simulados producen presencia real.
+
+Ni turno ni check-in reales completan silenciosamente un escenario hipotético incompleto.
+
+#### 26. Recurso simulado
+
+Cuando la simulación evalúe una acción o recurso concreto, el inicio conserva la referencia y modo de recurso permitidos por el contrato.
+
+La existencia de la simulación no autoriza a leer el recurso real fuera del alcance real del simulador.
+
+#### 27. Tiempo de creación
+
+El root conserva un instante de creación autoritativo.
+
+Ese instante no se deriva del reloj del navegador.
+
+Se utiliza para reconstruir la historia de creación, no para probar por sí solo la activación.
+
+#### 28. Tiempo de expiración
+
+Toda simulación conserva un `expires_at` válido posterior a la creación.
+
+La expiración:
+
+- no se infiere desde un timer visual;
+- no se extiende por actividad de UI;
+- no se extiende por refresh;
+- no se extiende por reintento;
+- impide activar un draft que ya expiró.
+
+El registro y semántica terminal de expiración permanecen bajo `AUTH-SIM-009`.
+
+#### 29. Correlación
+
+El inicio conserva un `correlation_id` capaz de relacionar:
+
+- solicitud;
+- decisión real del solicitante;
+- root;
+- revisión inicial;
+- evento de creación;
+- evento de activación;
+- intentos fallidos cuando corresponda;
+- evaluaciones posteriores.
+
+La correlación no concede autoridad.
+
+#### 30. Causación
+
+Cuando exista una causa anterior identificable se conserva `causation_id` o referencia semánticamente equivalente.
+
+La causación permite reconstruir por qué nació la transición sin convertir el identificador en permiso o token.
+
+#### 31. Fingerprint del contexto real
+
+El contexto real utilizado para autorizar al simulador conserva fingerprint estable.
+
+Si la decisión real y el contexto no coinciden, el inicio falla cerrado.
+
+Un fingerprint no sustituye el contenido autoritativo ni concede acceso.
+
+#### 32. Fingerprint del escenario
+
+La revisión inicial conserva un fingerprint del escenario hipotético.
+
+Dos escenarios materialmente distintos no deben resultar indistinguibles por compartir etiqueta visible.
+
+El fingerprint permite detectar replay o reutilización incompatible.
+
+#### 33. Versiones fuente
+
+La evidencia de inicio conserva las versiones necesarias para reproducir la decisión y el escenario.
+
+No se aceptan como identidad suficiente valores ambiguos como:
+
+```text
+latest
+current
+unknown
+```
+
+cuando la fuente requiere una versión exacta.
+
+#### 34. Fingerprints fuente
+
+Las fuentes materiales de la simulación conservan fingerprints cuando el contrato físico los proporcione.
+
+El inicio no se certifica si las identidades de fuente necesarias son ambiguas o no reproducibles.
+
+#### 35. Idempotencia de creación
+
+Reintentar la misma intención lógica con la misma clave de idempotencia y el mismo request fingerprint debe converger en el mismo root.
+
+Resultado esperado:
+
+```text
+MISMO ACTOR REAL
++
+MISMA SESION REAL
++
+MISMA CLAVE DE IDEMPOTENCIA
++
+MISMO REQUEST FINGERPRINT
+=
+MISMO SIMULATION_ID
+```
+
+No se crea un segundo root.
+
+#### 36. Conflicto de idempotencia
+
+Si la misma clave de creación se reutiliza con una solicitud materialmente distinta:
+
+```text
+IDEMPOTENCY KEY REUSED
++
+REQUEST FINGERPRINT DIFFERENT
+=
+CONFLICT
+```
+
+No se sobrescribe el root anterior y no se activa silenciosamente el escenario nuevo.
+
+#### 37. Idempotencia de activación
+
+La transición de activación conserva una identidad de operación propia.
+
+Repetir la misma operación con el mismo fingerprint debe devolver el mismo resultado lógico.
+
+Reutilizar la misma identidad de operación con otro contenido produce conflicto.
+
+#### 38. Activación única
+
+Una simulación solo puede pasar una vez de `DRAFT` a `ACTIVE` dentro del mismo lifecycle.
+
+No se admite:
+
+```text
+ACTIVE -> SIMULATION_ACTIVATED
+```
+
+ni reactivación posterior a un estado terminal.
+
+#### 39. Compatibilidad actor-root en activación
+
+La decisión utilizada para confirmar la activación debe pertenecer al mismo lifecycle real que creó el draft.
+
+Deben ser compatibles:
+
+- actor real;
+- sesión real;
+- autorización del simulador;
+- contexto real;
+- correlación;
+- revisión activa.
+
+Una decisión válida de otra persona o sesión no puede activar un draft ajeno.
+
+#### 40. Frescura antes de activar
+
+Entre creación y activación pueden cambiar fuentes materiales.
+
+Antes del commit point deben mantenerse válidos o revalidarse según contrato:
+
+- actor real;
+- sesión;
+- permiso de simulación;
+- alcance;
+- reautenticación;
+- política;
+- versiones;
+- objetivo;
+- contexto real.
+
+Si un cambio afecta la decisión, el draft no se activa con evidencia stale.
+
+#### 41. Simulación anidada
+
+Una simulación activa no puede autorizar una segunda simulación.
+
+El inicio se evalúa desde contexto real no simulado.
+
+No se admite:
+
+```text
+SIMULATION A
+-> simulated authority
+-> START SIMULATION B
+```
+
+La existencia de un preview activo debe bloquear o cerrar explícitamente la intención según los contratos propietarios, sin reemplazo silencioso.
+
+#### 42. Concurrencia de inicios
+
+Dos intentos concurrentes para la misma sesión real no pueden producir dos simulaciones activas incompatibles sin una decisión explícita del modelo.
+
+La implementación deberá converger mediante idempotencia, serialización o conflicto seguro.
+
+Nunca se selecciona después la simulación más nueva para ocultar la carrera.
+
+#### 43. Solicitud denegada
+
+Si el actor real no puede solicitar la simulación:
+
+```text
+REAL AUTHORITY = DENY
+->
+NO ACTIVE SIMULATION
+```
+
+Puede conservarse un intento de auditoría mínimo cuando el contrato de persistencia lo permita.
+
+No se fabrica una revisión completa de un escenario al que la persona no estaba autorizada a acceder.
+
+#### 44. Escenario inválido
+
+Si el actor real es elegible pero el escenario solicitado es inválido, ambiguo o incompleto:
+
+```text
+REQUESTER ELIGIBLE
++
+SCENARIO INVALID
+=
+NO ACTIVE SIMULATION
+```
+
+La autoridad para usar el simulador y la validez del escenario son decisiones distintas.
+
+#### 45. Fallo técnico antes de creación
+
+Si una falla impide producir un root coherente:
+
+- no se emite `SIMULATION_CREATED` falso;
+- no se emite `SIMULATION_ACTIVATED`;
+- no se presenta `ACTIVE`;
+- la telemetría técnica permanece separada de la auditoría empresarial;
+- el reintento posterior conserva una identidad lógica controlada.
+
+#### 46. Fallo después de creación y antes de activación
+
+Si el root y la revisión quedaron persistidos pero la activación no se confirmó:
+
+```text
+ROOT EXISTS
++
+SIMULATION_CREATED
++
+NO SIMULATION_ACTIVATED
+=
+DRAFT, NO ACTIVE
+```
+
+La UI no puede interpretar el root como éxito de inicio.
+
+La resolución posterior debe consultar estado autoritativo antes de reintentar.
+
+#### 47. Respuesta perdida después de activar
+
+Si el servidor activó y la respuesta al cliente se perdió:
+
+- no se crea otra simulación por reflejo;
+- el cliente vuelve a resolver el estado por identidad y correlación;
+- una operación idempotente debe converger;
+- `ACTIVE` se presenta solo después de confirmación autoritativa;
+- no se convierte el timeout en certeza de fallo empresarial.
+
+#### 48. Resultado del comando de inicio
+
+La respuesta segura del servicio debe permitir distinguir al menos:
+
+```text
+ACTIVE
+DRAFT
+DENIED
+INVALID
+CONFLICT
+TECHNICAL_FAILURE
+```
+
+Los nombres físicos pueden variar si conservan estas semánticas y no confunden un error técnico con una decisión de autorización.
+
+#### 49. Receipt de inicio confirmado
+
+Un receipt de inicio confirmado debe permitir correlacionar, sin exponer secretos:
+
+- identidad de simulación;
+- revisión activa;
+- estado `ACTIVE`;
+- actor real o referencia segura según consumidor;
+- timestamps relevantes;
+- expiración;
+- correlation;
+- fingerprints o referencias necesarias;
+- `executable = false` para el plano simulado.
+
+El cliente no necesita recibir la evidencia interna completa.
+
+#### 50. Evento `SIMULATION_CREATED`
+
+`SIMULATION_CREATED` demuestra que existe un root append-only y una revisión inicial coherentes.
+
+No prueba activación.
+
+No debe disparar por sí solo:
+
+- acciones reales;
+- permisos;
+- RLS ampliada;
+- cambio de sesión autenticada;
+- cambio de actor efectivo;
+- presentación `ACTIVE` sin confirmación.
+
+#### 51. Evento `SIMULATION_ACTIVATED`
+
+`SIMULATION_ACTIVATED` representa la transición autoritativa de inicio.
+
+Debe conservar como mínimo:
+
+- `simulation_id`;
+- revisión aplicable;
+- identidad de operación;
+- decisión real autorizada;
+- actor real;
+- principal técnico;
+- razón estructurada;
+- correlación;
+- causación cuando exista;
+- timestamp;
+- fingerprint del evento.
+
+#### 52. Vocabulary cerrado
+
+El lifecycle persistido conserva el vocabulario canónico vigente de eventos.
+
+`AUTH-SIM-008` usa únicamente los eventos de inicio ya existentes:
+
+```text
+SIMULATION_CREATED
+SIMULATION_ACTIVATED
+```
+
+No introduce alias como:
+
+```text
+SIMULATION_STARTED
+STARTED
+OPENED
+PREVIEW_OPENED
+ROLE_SWITCHED
+```
+
+como nuevos eventos persistidos canónicos.
+
+#### 53. Intentos sin éxito
+
+La persistencia actual admite intentos no exitosos separados del event stream exitoso.
+
+Para inicio son relevantes las operaciones:
+
+```text
+CREATE_SIMULATION
+ACTIVATE_SIMULATION
+```
+
+con resultados no exitosos tipados como:
+
+```text
+DENIED
+INVALID
+CONFLICT
+TECHNICAL_FAILURE
+NO_CHANGE
+ROLLED_BACK
+```
+
+Un intento fallido no se presenta como evento de lifecycle exitoso.
+
+#### 54. Auditoría append-only
+
+La evidencia de inicio es histórica e inmutable.
+
+No se corrige mediante `UPDATE` o `DELETE` de un evento anterior.
+
+Una corrección autorizada usa el mecanismo de corrección propietario y conserva la evidencia original.
+
+#### 55. Enlaces de evidencia
+
+La persistencia puede correlacionar explícitamente, entre otros:
+
+- decisión de autorización del solicitante;
+- contexto real de acceso;
+- sesión real;
+- device context cuando aplique;
+- evidencia adicional.
+
+Un link no concede autoridad ni reemplaza la fuente enlazada.
+
+#### 56. Dispositivo compartido
+
+Una simulación interactiva no puede iniciarse únicamente porque exista un dispositivo compartido autenticado.
+
+Debe conservarse:
+
+```text
+technical principal
+!=
+real human simulator
+```
+
+Si una superficie compartida participa, debe resolver al humano real conforme al contrato y mantener separado el device.
+
+#### 57. Cambio de actor en dispositivo compartido
+
+Si cambia el actor humano antes de activar:
+
+- el draft anterior no se activa como el actor nuevo;
+- la elegibilidad se reevalúa;
+- la sesión real y actor deben corresponder;
+- estado sensible del solicitante anterior se limpia;
+- no se transfiere reautenticación.
+
+#### 58. Preview RESOLVING
+
+`AUTH-SIM-007` puede mostrar `RESOLVING` únicamente cuando la capa propietaria confirma que existe una transición de simulación conocida.
+
+`RESOLVING` no equivale a `DRAFT` en todos los detalles físicos y no concede autoridad.
+
+La UI no inventa ese estado desde un click local.
+
+#### 59. Preview ACTIVE
+
+La transición visible a `ACTIVE` requiere una resolución autoritativa que confirme:
+
+```text
+simulation status = ACTIVE
+```
+
+El aviso entonces refleja el escenario activo.
+
+No se adelanta visualmente por optimismo del cliente.
+
+#### 60. Respuesta tardía de un inicio anterior
+
+Una respuesta de un intento anterior no puede reemplazar un escenario más reciente que ya haya sido resuelto autoritativamente.
+
+La UI compara identidades, revisión y correlación antes de publicar el resultado.
+
+#### 61. Varias tabs
+
+Varias ventanas no crean sesiones independientes por compartir storage.
+
+Cada tab debe revalidar el lifecycle autoritativo.
+
+Una tab no puede activar otra simulación por montar componentes ni ocultar el aviso de otra por estado local.
+
+#### 62. Refresh durante inicio
+
+Un refresh durante `RESOLVING` no se interpreta como cancelación ni éxito.
+
+Después del refresh se vuelve a resolver:
+
+- sesión real;
+- simulación asociada;
+- estado derivado;
+- revisión vigente;
+- expiración.
+
+#### 63. Offline
+
+No se inicia una simulación offline.
+
+Una solicitud capturada sin confirmación no se encola como autoridad para ejecutarse automáticamente al reconectar.
+
+La reconexión exige revalidar el contexto real y la intención.
+
+#### 64. Cache
+
+Ni una respuesta cacheada ni un snapshot local pueden convertir un `DRAFT`, `STALE` o estado desconocido en `ACTIVE`.
+
+La cache de preview permanece separada de la fuente de lifecycle.
+
+#### 65. Cookies y storage
+
+Cookies, `localStorage`, `sessionStorage` e IndexedDB pueden ser mecanismos técnicos no autoritativos cuando un owner los necesite, pero no prueban inicio.
+
+La fuente de verdad del lifecycle debe ser server-side y correlacionable.
+
+#### 66. No modificación de autoridad real
+
+Al activarse una simulación no se modifica:
+
+- sesión autenticada real;
+- actor real;
+- rol base real;
+- rol operativo real;
+- turno real;
+- check-in real;
+- grants reales;
+- denies reales;
+- claims reales;
+- RLS real;
+- cobertura real.
+
+#### 67. Resultado simulado no ejecutable
+
+El inicio prepara una sesión para evaluaciones hipotéticas.
+
+No produce por sí solo:
+
+```text
+ALLOW
+```
+
+Toda evaluación posterior conserva:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+con:
+
+```text
+executable = false
+```
+
+#### 68. Inicio no preautoriza acciones
+
+Una simulación `ACTIVE` no es una preautorización de la acción que se está examinando.
+
+Una acción real posterior exige salir del plano simulado y producir una decisión real nueva conforme a los contratos propietarios.
+
+#### 69. Start y evaluación son hechos distintos
+
+Se conserva:
+
+```text
+SIMULATION_ACTIVATED
+!=
+SIMULATION_EVALUATED
+```
+
+El inicio puede existir antes de que se evalúe una acción concreta.
+
+Cada evaluación conserva su propia identidad, permiso, recurso, resultado y fingerprint.
+
+#### 70. Start y salida son hechos distintos
+
+Se conserva:
+
+```text
+SIMULATION_ACTIVATED
+!=
+SIMULATION_COMPLETED
+```
+
+`AUTH-SIM-008` no registra:
+
+- salida;
+- completion;
+- expiración terminal;
+- revocación terminal;
+- retorno confirmado al contexto real.
+
+Eso pertenece a `AUTH-SIM-009`.
+
+#### 71. Start y bloqueo crítico son hechos distintos
+
+Registrar una simulación activa no demuestra que todas las acciones críticas estén bloqueadas.
+
+`AUTH-SIM-010` mantiene la responsabilidad de enforcement multicanal.
+
+La ausencia de esa materialización impide usar el registro de inicio como garantía de seguridad operacional.
+
+#### 72. Start y solo lectura son hechos distintos
+
+Una sesión `ACTIVE` no implica por sí sola que la interfaz completa sea read-only.
+
+`AUTH-SIM-011` mantiene la política y materialización de solo lectura.
+
+#### 73. Start y navegación simulada son hechos distintos
+
+`AUTH-SIM-012` probará navegación, persistencia visual y transición entre superficies.
+
+El registro de inicio no certifica esas superficies por sí solo.
+
+#### 74. Start y Server Actions son hechos distintos
+
+`AUTH-SIM-013` comprobará que Server Actions no consuman autoridad simulada.
+
+`AUTH-SIM-008` registra el lifecycle; no reemplaza esa certificación de ejecución.
+
+#### 75. Start y prueba integral son hechos distintos
+
+`AUTH-SIM-014` probará el contrato en todas las aplicaciones aplicables.
+
+Un inicio correcto en una unidad no certifica todas las aplicaciones.
+
+#### 76. Estado físico actual de persistencia
+
+La infraestructura actual contiene una fundación append-only para simulación con:
+
+- root de simulación;
+- revisiones;
+- evaluaciones;
+- eventos;
+- intentos;
+- enlaces;
+- correcciones;
+- fingerprints;
+- idempotencia;
+- lifecycle derivado.
+
+Esta evidencia demuestra una base física disponible, no una adopción completa por los consumidores.
+
+#### 77. Estado derivado vigente
+
+La persistencia vigente deriva el lifecycle con precedencia terminal y reconoce:
+
+```text
+DRAFT
+ACTIVE
+EXPIRED
+COMPLETED
+REVOKED
+INVALID
+```
+
+Para esta tarea son propietarios de inicio:
+
+```text
+DRAFT
+ACTIVE
+```
+
+Los estados terminales se consumen como límites, pero su transición funcional pertenece a `AUTH-SIM-009` y otros owners aplicables.
+
+#### 78. Base física positiva: creación append-only
+
+La operación privada de creación vigente:
+
+- valida el envelope;
+- rechaza secretos y campos no permitidos;
+- exige una decisión real autorizada para `viso.authorization.context_simulations.view`;
+- verifica contexto real y fingerprint;
+- exige correlación;
+- valida escenario y fuentes;
+- aplica idempotencia;
+- crea root y revisión inicial;
+- emite `SIMULATION_CREATED`;
+- devuelve `status = DRAFT`.
+
+Es una base física coherente con la separación entre creación e inicio confirmado.
+
+#### 79. Base física positiva: activación explícita
+
+La operación privada de eventos vigente acepta `SIMULATION_ACTIVATED` únicamente desde `DRAFT`.
+
+Después del evento, el estado derivado pasa a `ACTIVE`.
+
+La activación conserva identidad de operación e idempotencia propia.
+
+#### 80. Base física positiva: intentos fallidos separados
+
+La persistencia vigente conserva una tabla específica de intentos y vocabulario de resultados no exitosos.
+
+Esto permite registrar fallos de creación o activación sin inventar eventos exitosos.
+
+La futura capa de servicio debe usar esta distinción de forma consistente.
+
+#### 81. Bloqueo estático: writer público legacy deshabilitado
+
+La función pública legacy:
+
+```text
+start_context_simulation_v1
+```
+
+está deliberadamente deshabilitada y falla con:
+
+```text
+AUTH_DB_013_LEGACY_SIMULATION_START_DISABLED
+```
+
+Por tanto, la existencia del nombre legacy no demuestra un camino de inicio operativo vigente.
+
+#### 82. Bloqueo estático: cliente compartido todavía invoca el writer legacy
+
+`@vento/os-context` conserva actualmente un helper `startContextSimulation` que invoca `start_context_simulation_v1`.
+
+Ese helper no constituye el servicio canónico de inicio bajo el estado físico vigente.
+
+La salida pertenece a la adopción contractual y al servicio autoritativo de simulación; esta tarea no modifica el paquete.
+
+#### 83. Bloqueo estático: input legacy insuficiente
+
+El `ContextSimulationInput` actual de `@vento/os-context` contiene principalmente:
+
+- sede;
+- área;
+- rol operativo;
+- rol administrativo;
+- duración;
+- metadata.
+
+No representa por sí solo el contrato completo de:
+
+- actor real;
+- decisión real;
+- sujeto tipado;
+- rol tipado;
+- turno y check-in simulados;
+- recurso;
+- versiones;
+- fingerprints;
+- idempotencia;
+- correlación.
+
+No puede declararse contrato final de inicio.
+
+#### 84. Bloqueo estático: simulación mezclada en EffectiveContext
+
+`@vento/os-context` todavía conserva `source = simulation`, `simulation_id`, `is_simulation` y `can_operate` dentro de un `EffectiveContext` compartido con autoridad real.
+
+Eso permanece sujeto al contrato de separación de `AUTH-SIM-006` y `AUTH-SRV-015`.
+
+`AUTH-SIM-008` no adopta esa forma como fuente de autoridad.
+
+#### 85. Bloqueo estático: servicio autoritativo no adoptado por consumidores
+
+La fundación privada de auditoría no es invocable directamente por clientes ordinarios y el writer legacy público está neutralizado.
+
+La inspección vigente no demuestra un flujo consumidor completo que:
+
+```text
+REQUEST
+->
+AUTHORIZE REAL ACTOR
+->
+CREATE DRAFT
+->
+ACTIVATE
+->
+RETURN ACTIVE RECEIPT
+```
+
+La materialización pertenece a los owners de servicio, package y consumidor.
+
+#### 86. No reapertura de AUTH-DB-013
+
+Esta tarea no modifica la migración ya materializada.
+
+Los campos y nombres SQL actuales son evidencia de una implementación existente; no obligan a que todas las capas consumidoras expongan la misma forma.
+
+Cualquier corrección física futura conserva su lifecycle y owner correspondiente.
+
+#### 87. No reapertura de AUTH-SRV-015
+
+`AUTH-SRV-015` ya fija el envelope de auditoría simulada y la separación de planos.
+
+`AUTH-SIM-008` especializa el momento de inicio y su correlación.
+
+No redefine:
+
+- tipos de actor;
+- catálogo de rol;
+- resultado simulado;
+- política de permisos;
+- servicio físico.
+
+#### 88. Evidencia mínima de una futura unidad
+
+Cada materialización `AUTH-SIM-008::<implementation_unit_id>` deberá demostrar, como mínimo:
+
+1. package propietario y gate E5 aplicable;
+2. servicio de inicio real identificado;
+3. actor real y sesión real resueltos;
+4. permiso de simulación evaluado desde autoridad real;
+5. alcance y justificación válidos;
+6. reautenticación cuando corresponda;
+7. escenario completo y tipado;
+8. versiones y fingerprints reproducibles;
+9. creación idempotente del root;
+10. revisión inicial exacta;
+11. `SIMULATION_CREATED` con estado `DRAFT`;
+12. activación explícita;
+13. `SIMULATION_ACTIVATED` con estado `ACTIVE`;
+14. idempotencia de activación;
+15. no activación de draft expirado o terminal;
+16. correlación entre solicitud, decisión, root, revisión y activación;
+17. intento denegado sin active simulation;
+18. escenario inválido sin active simulation;
+19. conflicto de idempotencia sin overwrite;
+20. respuesta perdida sin duplicación;
+21. refresh sin suposición;
+22. tabs sin autoridad local;
+23. offline sin start automático;
+24. aviso `ACTIVE` únicamente después de confirmación;
+25. resultado simulado siempre no ejecutable;
+26. ausencia de efectos empresariales reales;
+27. minimización de datos;
+28. rollback sin borrar evidencia histórica.
+
+#### 89. Matriz mínima de casos de inicio
+
+| Caso | Creación | Activación | Estado esperado |
+| --- | --- | --- | --- |
+| actor real elegible + escenario válido | sí | sí | `ACTIVE` |
+| permiso real ausente | no activa | no | sin simulación activa |
+| actor real no resoluble | no activa | no | sin simulación activa |
+| sesión real inválida | no activa | no | sin simulación activa |
+| escenario incompleto | no activa | no | sin simulación activa |
+| draft válido sin evento de activación | sí | no | `DRAFT` |
+| draft expirado antes de activar | sí | no | `EXPIRED` |
+| activación repetida idempotente | ya existe | converge | `ACTIVE` sin duplicación |
+| misma idempotency key con payload distinto | conflicto | no | sin nueva simulación activa |
+| respuesta de activación perdida | ya existe | resolver | `ACTIVE` solo si servidor lo confirma |
+| solicitud offline | no | no | sin simulación activa |
+| solicitud desde contexto ya simulado | bloqueada | no | sin simulación anidada |
+
+#### 90. Cero efectos reales durante inicio
+
+Crear y activar una simulación no puede ejecutar la acción hipotética ni modificar el dominio simulado.
+
+Debe mantenerse:
+
+```text
+START SIMULATION
+->
+AUDIT / PREVIEW STATE ONLY
+->
+ZERO BUSINESS MUTATION
+```
+
+Cualquier efecto real causado por la autoridad simulada convierte la materialización en FAIL.
+
+#### 91. Datos prohibidos en evidencia de inicio
+
+No se almacenan por defecto:
+
+- JWT completos;
+- access tokens;
+- refresh tokens;
+- cookies;
+- contraseñas;
+- OTP;
+- PIN;
+- service-role keys;
+- API keys;
+- credenciales privadas;
+- headers completos;
+- payloads personales innecesarios.
+
+La auditoría utiliza referencias y fingerprints mínimos.
+
+#### 92. Auditabilidad histórica
+
+Una vez iniciada, la historia debe permitir reconstruir:
+
+```text
+REAL ACTOR
+->
+REAL AUTHORIZATION
+->
+SIMULATION REQUEST
+->
+INITIAL SCENARIO
+->
+SIMULATION CREATED
+->
+SIMULATION ACTIVATED
+```
+
+sin depender de logs libres o del estado actual de catálogos.
+
+#### 93. Correcciones históricas
+
+Si una evidencia de inicio fue registrada incorrectamente, no se reescribe.
+
+La corrección debe:
+
+- referenciar el objeto afectado;
+- indicar razón;
+- conservar actor corrector;
+- conservar autorización;
+- mantener correlación;
+- preservar evidencia original.
+
+#### 94. Rollback de una futura unidad
+
+El rollback técnico no puede:
+
+- borrar roots históricos;
+- borrar eventos válidos;
+- convertir `DRAFT` en `ACTIVE` por fallback;
+- reactivar writer legacy permisivo;
+- restaurar mezcla de autoridad real y simulada;
+- reutilizar cookies como fuente de lifecycle;
+- borrar intentos fallidos necesarios para trazabilidad;
+- modificar un escenario histórico para hacerlo coincidir con código anterior.
+
+#### 95. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. diferencia request/create/activate;
+2. commit point de inicio;
+3. actor real;
+4. sesión real;
+5. permiso del simulador;
+6. decisión real;
+7. alcance;
+8. justificación;
+9. strong cuando aplique;
+10. identidad de solicitud;
+11. `simulation_id`;
+12. revisión inicial;
+13. escenario tipado;
+14. timestamps y expiración;
+15. correlación y causación;
+16. versiones y fingerprints;
+17. idempotencia de creación;
+18. idempotencia de activación;
+19. concurrencia;
+20. fallos de creación y activación;
+21. receipt de inicio;
+22. semántica de `SIMULATION_CREATED`;
+23. semántica de `SIMULATION_ACTIVATED`;
+24. relación con el aviso persistente;
+25. tabs, refresh, cache y offline;
+26. separación de autoridad real;
+27. cero efectos;
+28. bases y bloqueos físicos actuales;
+29. evidencia mínima por unidad;
+30. handoff exacto hacia salida.
+
+#### 96. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: elegibilidad del simulador, identidad tipada del escenario, separación de autoridad real y simulada, lifecycle, auditoría reproducible, idempotencia, cero efectos, mutaciones bloqueadas, visibilidad y certificación multicanal ya están protegidos por requisitos canónicos vigentes. Esta tarea materializa el contrato específico del inicio sin cambiar regla protegida, prioridad, modalidad, owner, paquete, estado o relación del registro.
+
+#### 97. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- simulación auditable y no ejecutable;
+- elegibilidad del solicitante real;
+- identidad tipada de roles y sujetos simulados;
+- sede y área simuladas;
+- turno y check-in simulados;
+- separación de los cuatro planos;
+- resultados `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE`;
+- actor real y sesión real en auditoría;
+- versiones y fingerprints reproducibles;
+- lifecycle de simulación;
+- bloqueo de autoridad simulada en mutaciones;
+- cero efectos empresariales;
+- paridad de consumidores y canales.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-012`, `TREQ-AUTH-079..128`, `TREQ-AUTH-165`, `TREQ-AUTH-279..288` y la cobertura transversal de auditoría, UI y contratos compartidos ya registrada.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `AUTH-SIM-008`.
+
+#### 98. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto todavía no fue incorporado al archivo propietario ni pasó por el build documental del checkout del usuario |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron formateador, quality, delivery, topology, TREQ ni batería global contra la rama local de `AUTH-SIM-008` |
+| REMOTA | `PASS` | se verificaron en solo lectura `main`, continuidad, topología, políticas documentales, owner, 04A AUTH, package.json, contratos de `AUTH-SIM-001..007`, `AUTH-SRV-014..015`, la migración física `AUTH-DB-013` y `@vento/os-context` vigentes |
+| OPERATIVA | `NOT_EXECUTED` | no se solicitó, creó, activó, evaluó ni terminó una simulación real durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron servicios, migraciones, RPC, clientes, sesiones, eventos, aplicaciones, dispositivos ni datos desplegados |
+
+#### 99. Criterios de aceptación
+
+- [x] Se distingue solicitud, creación y activación.
+- [x] `SIMULATION_CREATED` no se interpreta como inicio confirmado.
+- [x] `SIMULATION_ACTIVATED` es el commit point del inicio.
+- [x] La creación queda en `DRAFT`.
+- [x] La activación válida produce `ACTIVE`.
+- [x] Se conserva el actor humano real.
+- [x] Se conserva la sesión real.
+- [x] Se exige autoridad real para solicitar simulación.
+- [x] El rol simulado no autoautoriza el inicio.
+- [x] El alcance simulado permanece bajo el techo real de inspección.
+- [x] Se conserva justificación cuando aplica.
+- [x] Se conserva STRONG cuando aplica sin transferirlo al escenario.
+- [x] Se distingue `simulation_request_id` de `simulation_id`.
+- [x] Se exige revisión inicial reproducible.
+- [x] Se conserva escenario tipado.
+- [x] Se conservan sede, área, turno, check-in y recurso simulados cuando aplican.
+- [x] Se conservan versiones y fingerprints.
+- [x] Se conservan `created_at` y `expires_at` sin confiar en reloj cliente.
+- [x] Se conserva correlación.
+- [x] Se conserva causación cuando existe.
+- [x] Se define idempotencia de creación.
+- [x] Se define conflicto de idempotencia.
+- [x] Se define idempotencia de activación.
+- [x] Se impide reactivación fuera de `DRAFT`.
+- [x] Se exige compatibilidad entre actor, sesión, decisión, root y activación.
+- [x] Se exige frescura antes del commit point.
+- [x] Se prohíbe simulación anidada.
+- [x] Se define concurrencia segura de inicios.
+- [x] Un `DENY` real no produce simulación activa.
+- [x] Un escenario inválido no produce simulación activa.
+- [x] Un fallo antes de creación no fabrica eventos exitosos.
+- [x] Un fallo entre creación y activación deja `DRAFT`, no `ACTIVE`.
+- [x] Una respuesta perdida se recupera sin duplicación.
+- [x] Se define receipt seguro de inicio.
+- [x] Se conserva vocabulario canónico de eventos.
+- [x] Los intentos fallidos permanecen separados de eventos exitosos.
+- [x] La evidencia es append-only.
+- [x] Se preservan links de contexto, sesión y decisión.
+- [x] Un dispositivo técnico no sustituye al simulador humano.
+- [x] El cambio de actor invalida una activación stale.
+- [x] `RESOLVING` no se deriva de un click local.
+- [x] `ACTIVE` visible espera confirmación autoritativa.
+- [x] Tabs, refresh, cache y storage no originan lifecycle.
+- [x] No se inicia offline.
+- [x] La autoridad real no se modifica al activar simulación.
+- [x] Toda evaluación simulada continúa `executable = false`.
+- [x] El inicio no preautoriza acciones reales.
+- [x] Inicio y evaluación permanecen separados.
+- [x] Inicio y salida permanecen separados.
+- [x] Inicio y bloqueo crítico permanecen separados.
+- [x] Inicio y solo lectura permanecen separados.
+- [x] Inicio y pruebas posteriores permanecen separados.
+- [x] Se reconoce la fundación append-only actual sin presentarla como adopción completa.
+- [x] Se reconoce `start_context_simulation_v1` como writer legacy deshabilitado.
+- [x] Se reconoce que `@vento/os-context` todavía invoca el writer legacy.
+- [x] El input legacy no se adopta como contrato final.
+- [x] `EffectiveContext` legacy no se adopta como mezcla autorizada.
+- [x] No se reabre `AUTH-DB-013`.
+- [x] No se reabre `AUTH-SRV-015`.
+- [x] Se define evidencia mínima por futura unidad.
+- [x] Se exige cero efectos empresariales durante el inicio.
+- [x] Se excluyen secretos y PII innecesaria de la evidencia.
+- [x] Se preserva auditabilidad histórica.
+- [x] El rollback no borra ni reinterpreta evidencia válida.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecutan cambios físicos.
+- [x] `AUTH-SIM-009` permanece reservada.
+
+#### 100. Límites
+
+Esta tarea no:
+
+- ejecuta una simulación;
+- crea un root real;
+- activa una sesión real de simulación;
+- registra eventos reales;
+- modifica `audit.authorization_simulations`;
+- modifica `audit.authorization_simulation_revisions`;
+- modifica `audit.authorization_simulation_events`;
+- modifica `audit.authorization_simulation_attempts`;
+- modifica `context_simulation_sessions`;
+- modifica Supabase;
+- crea migraciones;
+- cambia RLS;
+- cambia grants;
+- cambia funciones;
+- habilita `start_context_simulation_v1`;
+- implementa el servicio autoritativo;
+- modifica `@vento/os-context`;
+- modifica VISO;
+- modifica NEXO;
+- modifica FOGO;
+- modifica ORIGO;
+- modifica PULSO;
+- modifica dispositivos;
+- cambia roles;
+- cambia permisos;
+- cambia turnos;
+- cambia check-ins;
+- crea strong reauth;
+- implementa bloqueo de acciones críticas;
+- implementa modo solo lectura;
+- implementa salida de simulación;
+- registra expiración o retorno real;
+- ejecuta pruebas multicanal finales;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `AUTH-SIM-009`.
+
+#### 101. Handoff exacto hacia AUTH-SIM-009
+
+`AUTH-SIM-008` entrega a `AUTH-SIM-009` una sesión que, cuando exista físicamente y esté activa, debe poder identificarse mediante:
+
+```text
+simulation_id
++
+revision vigente
++
+real actor
++
+real session
++
+requester authorization decision
++
+initial scenario fingerprint
++
+created_at
++
+activated event
++
+expires_at
++
+correlation
++
+source versions/fingerprints
+```
+
+`AUTH-SIM-009` deberá conservar esa historia al registrar:
+
+- salida solicitada;
+- salida confirmada;
+- expiración;
+- revocación o invalidez cuando apliquen;
+- retorno confirmado al contexto real.
+
+La salida no puede editar ni borrar el inicio y no puede inferirse desde el desmontaje del aviso.
+
+#### 102. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-SIM-007 — Mostrar aviso persistente`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-SIM-008 — Registrar inicio de simulación`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-SIM-009 — Registrar salida de simulación`
+
+
 ### [ ] AUTH-SIM-009 — Registrar salida de simulación
 ### [ ] AUTH-SIM-010 — Bloquear acciones críticas durante simulación
 ### [ ] AUTH-SIM-011 — Definir modo solo lectura

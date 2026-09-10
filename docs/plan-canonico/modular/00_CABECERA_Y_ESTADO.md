@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1161** |
+| Tareas aprobadas | **1162** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **435** |
+| Tareas no iniciadas | **434** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **72.74% (1161/1596)** |
+| Porcentaje de completamiento | **72.81% (1162/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-SIM-007 — Mostrar aviso persistente** |
-| Tarea actual | **AUTH-SIM-008 — Registrar inicio de simulación** |
+| Última tarea aprobada | **AUTH-SIM-008 — Registrar inicio de simulación** |
+| Tarea actual | **AUTH-SIM-009 — Registrar salida de simulación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-SIM-009 — Registrar salida de simulación** |
+| Siguiente tarea | **AUTH-SIM-010 — Bloquear acciones críticas durante simulación** |
 | Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
-| Progreso del bloque | **BLOQUES P Y Q: 23 de 30 aprobadas; AUTH-SIM-008 pendiente** |
+| Progreso del bloque | **BLOQUES P Y Q: 24 de 30 aprobadas; AUTH-SIM-009 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-SIM-008** |
+| Carril documental | **ACTIVO — AUTH-SIM-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-SIM-007` — Mostrar aviso persistente |
-| Tarea actual | `AUTH-SIM-008` — Registrar inicio de simulación — **NO INICIADA** |
-| Siguiente tarea | `AUTH-SIM-009` — Registrar salida de simulación |
+| Última aprobada | `AUTH-SIM-008` — Registrar inicio de simulación |
+| Tarea actual | `AUTH-SIM-009` — Registrar salida de simulación — **NO INICIADA** |
+| Siguiente tarea | `AUTH-SIM-010` — Bloquear acciones críticas durante simulación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 23 DE 30 APROBADAS — ACTUAL AUTH-SIM-008** |
+| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 24 DE 30 APROBADAS — ACTUAL AUTH-SIM-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-SIM-007 — Mostrar aviso persistente
-        ↓
-TAREA ACTUAL
 AUTH-SIM-008 — Registrar inicio de simulación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-SIM-009 — Registrar salida de simulación
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-SIM-010 — Bloquear acciones críticas durante simulación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES P Y Q — 23 de 30 tareas aprobadas
+BLOQUES P Y Q — 24 de 30 tareas aprobadas
 ```
