@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1153** |
+| Aprobadas | **1154** |
 | En propuesta | **0** |
-| No iniciadas | **443** |
+| No iniciadas | **442** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.24% (1153/1596)** |
+| Porcentaje de completamiento | **72.31% (1154/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-DEV-009` — Evitar heredar permisos administrativos | ✅ APROBADA |
-| Tarea actual | `AUTH-DEV-010` — Registrar dispositivo y trabajador en auditoría | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-DEV-011` — Permitir revocar un dispositivo | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-DEV-010` — Registrar dispositivo y trabajador en auditoría | ✅ APROBADA |
+| Tarea actual | `AUTH-DEV-011` — Permitir revocar un dispositivo | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-DEV-012` — Manejar sesión expirada | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1191,7 +1191,7 @@
 | ✅ APROBADA | `AUTH-DEV-007` | Exigir firma o PIN del trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ✅ APROBADA | `AUTH-DEV-008` | Combinar límite del dispositivo y trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ✅ APROBADA | `AUTH-DEV-009` | Evitar heredar permisos administrativos | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
-| ⬜ NO INICIADA | `AUTH-DEV-010` | Registrar dispositivo y trabajador en auditoría | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
+| ✅ APROBADA | `AUTH-DEV-010` | Registrar dispositivo y trabajador en auditoría | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-011` | Permitir revocar un dispositivo | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-012` | Manejar sesión expirada | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-013` | Manejar cambio de trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
