@@ -3321,6 +3321,1979 @@ Esta tarea no:
 `AUTH-DEV-014 — Probar tablets de NEXO`
 
 
-### [ ] AUTH-DEV-014 — Probar tablets de NEXO
+### ✅ AUTH-DEV-014 — Probar tablets de NEXO
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-013 — Manejar cambio de trabajador
+**Tarea siguiente:** AUTH-DEV-015 — Probar terminales de PULSO
+**Tipo de tarea:** documental; contrato canónico de prueba y certificación por unidad de implementación para dispositivos compartidos que exponen NEXO, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada, reproducible y auditable cómo se deberá probar una unidad física de dispositivo compartido que exponga NEXO antes de declararla conforme con los contratos `AUTH-DEV-001` a `AUTH-DEV-013`.
+
+La tarea convierte el título “Probar tablets de NEXO” en un contrato verificable por `implementation_unit_id`.
+
+La certificación futura deberá demostrar simultáneamente:
+
+```text
+IDENTIDAD FISICA Y TECNICA RESUELTAS
++
+DEVICE ELEGIBLE
++
+NEXO EN EL CONJUNTO EFECTIVO DE APLICACIONES
++
+ACTOR HUMANO UNICO Y VIGENTE
++
+AUTORIDAD = TRABAJADOR INTERSECCION TECHO DEL DEVICE
++
+TERRITORIO Y RECURSO COMPATIBLES
++
+DENEGACIONES FAIL CLOSED
++
+LIFECYCLE DE SESION Y DEVICE
++
+AUDITORIA CORRELACIONABLE
++
+LIMPIEZA ENTRE ACTORES
++
+COMPORTAMIENTO NEXO REAL
+=
+UNIDAD NEXO COMPARTIDA CERTIFICABLE
+```
+
+Una prueba de navegador, un build, una suite sintética, una fila activa de dispositivo o una captura visual aislada no equivalen por sí solos a certificación física.
+
+---
+
+#### 2. Naturaleza del marcador y materialización posterior
+
+El marcador canónico se desarrolla una sola vez como contrato reutilizable.
+
+La topología física aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto:
+
+1. esta tarea documental no crea ni ejecuta una instancia física;
+2. cada unidad física aplicable tendrá como máximo una materialización propia de este contrato;
+3. una misma unidad podrá conservar lineage hacia los paquetes que la consuman;
+4. la ejecución física exige el paquete propietario aplicable y su gate E5 correspondiente;
+5. el resultado documental no autoriza cambios en dispositivo, código, Supabase o ambientes;
+6. la certificación futura se decide sobre evidencia real de la unidad exacta, no sobre semejanza con otra tablet o kiosco.
+
+---
+
+#### 3. Handoff recibido de AUTH-DEV-013
+
+`AUTH-DEV-013` entrega el siguiente comportamiento observable:
+
+```text
+UN DISPOSITIVO ELEGIBLE
++
+UN SOLO ACTOR EFECTIVO
++
+CAMBIO A -> B EXPLICITO
++
+SESSION_A NO ELEGIBLE
++
+ESTADO SENSIBLE DE A LIMPIO O AISLADO
++
+B IDENTIFICADO INDEPENDIENTEMENTE
++
+SESSION_B NUEVA
++
+CONTEXTO B RESUELTO
+=
+CAMBIO DE TRABAJADOR CONFORME
+```
+
+`AUTH-DEV-014` no redefine esa transición.
+
+La prueba futura deberá demostrar, como mínimo:
+
+- que A no puede producir nuevas mutaciones después del cambio;
+- que B no hereda autoridad ni estado sensible de A;
+- que B necesita su propia identificación y sesión;
+- que pendientes y resultados conservan atribución correcta;
+- que todas las superficies NEXO de la unidad observan el mismo actor efectivo;
+- que una firma o reautenticación de A no sobrevive para B;
+- que un fallo de transición queda bloqueado o recuperable sin fallback permisivo.
+
+---
+
+#### 4. Contratos precedentes que la prueba debe observar
+
+La prueba no vuelve a decidir el modelo de dispositivo.
+
+Debe verificar la materialización de estas responsabilidades ya aprobadas:
+
+| Contrato | Obligación que debe observarse físicamente en NEXO |
+| --- | --- |
+| `AUTH-DEV-001` | la unidad probada corresponde a una identidad reconciliada y no a una observación inferida |
+| `AUTH-DEV-002` | dispositivo, endpoint, principal técnico y activo físico permanecen separados y correlacionables |
+| `AUTH-DEV-003` | la sede del dispositivo limita y no concede autoridad |
+| `AUTH-DEV-004` | el área fija o conjunto permitido limita y no sustituye el área del actor o recurso |
+| `AUTH-DEV-005` | NEXO solo está disponible si pertenece al conjunto efectivo de aplicaciones |
+| `AUTH-DEV-006` | el paquete máximo del dispositivo restringe capacidades y nunca las concede por sí solo |
+| `AUTH-DEV-007` | un humano real se identifica mediante prueba aprobada; seleccionar un nombre no basta |
+| `AUTH-DEV-008` | la autoridad efectiva resulta de la intersección entre trabajador y dispositivo |
+| `AUTH-DEV-009` | no existe herencia de privilegio administrativo, rol de navegación ni estado residual |
+| `AUTH-DEV-010` | dispositivo, principal técnico, trabajador, sesión, decisión y resultado quedan correlacionados |
+| `AUTH-DEV-011` | un dispositivo revocado deja de producir nuevos efectos empresariales |
+| `AUTH-DEV-012` | una sesión expirada deja de ser autoridad aunque el dispositivo continúe autenticado |
+| `AUTH-DEV-013` | el cambio A→B cierra A, limpia estado y establece B mediante una sesión nueva |
+
+Ninguna prueba puede relajar uno de esos contratos para facilitar el escenario.
+
+---
+
+#### 5. Unidad exacta de certificación
+
+La certificación pertenece a una `implementation_unit_id` concreta.
+
+Antes de ejecutar escenarios físicos deberá quedar resuelta y registrada, sin ambigüedad, la relación entre:
+
+- `implementation_unit_id`;
+- activo físico;
+- endpoint;
+- `device_id`;
+- `device_code`;
+- principal técnico;
+- plantilla y versión;
+- vínculo de sede;
+- política de área;
+- asociaciones efectivas de aplicaciones;
+- aplicación predeterminada;
+- paquete máximo de capacidades;
+- versión desplegada de NEXO;
+- versiones de contratos compartidos consumidos;
+- ambiente de prueba;
+- evidencia de autorización física aplicable.
+
+La prueba de una unidad no certifica otra unidad aunque use la misma plantilla, modelo de hardware, aplicación o sede.
+
+---
+
+#### 6. Condiciones previas obligatorias
+
+Una ejecución física de esta prueba solo puede comenzar cuando la unidad cumpla las precondiciones de su lifecycle.
+
+Debe demostrarse:
+
+1. identidad física y técnica reconciliada;
+2. `device_id` único;
+3. principal técnico vinculado de forma inequívoca;
+4. estado del dispositivo resoluble;
+5. plantilla y versión resolubles;
+6. sede resoluble;
+7. política de área resoluble;
+8. NEXO dentro del conjunto efectivo cuando el escenario lo requiera;
+9. paquete máximo versionado y resoluble;
+10. código y build de NEXO identificables;
+11. contratos compartidos identificables;
+12. datos de prueba controlados;
+13. actores de prueba válidos;
+14. recursos de prueba identificables;
+15. ausencia de conflictos de identidad pendientes;
+16. autorización física del paquete aplicable.
+
+Una observación física sin enrolamiento no satisface estas precondiciones.
+
+---
+
+#### 7. Evidencia mínima por ejecución física
+
+Cada ejecución futura deberá conservar evidencia suficiente para reproducir qué se probó.
+
+Como mínimo:
+
+- unidad de implementación;
+- `device_id`;
+- referencia del activo y endpoint;
+- principal técnico;
+- plantilla y versión;
+- sede y área gobernadas;
+- conjunto efectivo de aplicaciones;
+- paquete máximo y versión;
+- commit o build exacto de NEXO;
+- versiones de contratos compartidos;
+- ambiente;
+- momento de inicio y finalización;
+- actor humano del escenario cuando aplique;
+- `actor_session_id` cuando aplique;
+- permiso exacto;
+- recurso exacto;
+- estado esperado;
+- estado observado;
+- decisión de autorización;
+- razones estructuradas cuando existan;
+- correlación;
+- receipt o evidencia del efecto cuando exista;
+- evidencia del estado anterior y posterior cuando el escenario muta datos;
+- resultado del escenario;
+- defecto asociado cuando el resultado no sea conforme.
+
+La evidencia no debe incluir secretos reutilizables.
+
+---
+
+#### 8. Regla de PASS físico
+
+La unidad solo podrá declararse conforme cuando todos los escenarios obligatorios aplicables hayan sido ejecutados y no exista un fallo pendiente que afecte el contrato.
+
+Debe cumplirse:
+
+```text
+ESCENARIOS OBLIGATORIOS EJECUTADOS
++
+DENY PATHS DEMOSTRADOS
++
+CERO FALLOS CONTRACTUALES ABIERTOS
++
+CERO ESCENARIOS OMITIDOS SIN JUSTIFICACION CANONICA
++
+EVIDENCIA IDENTIFICABLE Y NO STALE
+=
+PASS FISICO POSIBLE
+```
+
+Un escenario fuera del paquete efectivo de la unidad no se elimina del protocolo: se verifica como indisponibilidad o denegación cuando esa sea la expectativa contractual.
+
+No se acepta transformar una capacidad ausente en un “skip” silencioso.
+
+---
+
+#### 9. Invalidez de evidencia stale
+
+La evidencia física deja de ser suficiente cuando cambia materialmente alguno de los elementos de los que depende.
+
+Incluye, según corresponda:
+
+- unidad física;
+- endpoint;
+- `device_id`;
+- principal técnico;
+- plantilla o versión;
+- sede;
+- política de área;
+- conjunto de aplicaciones;
+- aplicación predeterminada;
+- paquete máximo;
+- commit o build de NEXO;
+- versión de contratos compartidos;
+- política de actor;
+- política temporal;
+- configuración de autorización;
+- ambiente;
+- fixture o recurso usado por el escenario.
+
+Una evidencia stale se conserva históricamente, pero no certifica el estado nuevo.
+
+---
+
+#### 10. Línea base técnica de NEXO a observar
+
+El repositorio NEXO dispone de una línea base automatizada con doce superficies de consumidor.
+
+La certificación física reutilizará esa taxonomía como cobertura técnica, sin confundirla con evidencia de hardware.
+
+| Superficie | Cobertura |
+| --- | --- |
+| `NEXO-SURFACE-001` | identidad, sesión y permisos |
+| `NEXO-SURFACE-002` | contexto operativo |
+| `NEXO-SURFACE-003` | catálogo, categorías, unidad y presentación |
+| `NEXO-SURFACE-004` | stock por sede y LOC |
+| `NEXO-SURFACE-005` | entradas, conteos, ajustes, retiros y traslados |
+| `NEXO-SURFACE-006` | LOC, board, kiosco y posiciones |
+| `NEXO-SURFACE-007` | remisiones |
+| `NEXO-SURFACE-008` | división y recepción parcial |
+| `NEXO-SURFACE-009` | activos físicos y conteos |
+| `NEXO-SURFACE-010` | configuración, accesos y políticas operativas |
+| `NEXO-SURFACE-011` | integración y fronteras de dominio |
+| `NEXO-SURFACE-012` | UI, SSR, interacción, accesibilidad e impresión |
+
+La suite sintética de consumidor es prerrequisito técnico útil, pero no demuestra por sí sola actor real, dispositivo real, lifecycle, limpieza entre trabajadores, ergonomía física ni efecto empresarial observado en la unidad.
+
+---
+
+#### 11. Matriz de cobertura por superficie NEXO
+
+Para cada unidad física probada se deberá materializar una decisión sobre las doce superficies.
+
+| Superficie | Comprobación mínima en una unidad compartida |
+| --- | --- |
+| `NEXO-SURFACE-001` | principal técnico separado; actor session válida; permiso exacto; denegación sin actor o sin permiso |
+| `NEXO-SURFACE-002` | sede, área, rol operativo, turno y check-in se resuelven desde fuentes vigentes y no desde selección de cliente |
+| `NEXO-SURFACE-003` | lectura de catálogo respeta autoridad, contexto y representación canónica de unidades |
+| `NEXO-SURFACE-004` | stock visible pertenece al territorio y LOC permitidos |
+| `NEXO-SURFACE-005` | toda mutación exige actor, permiso, contexto, recurso e idempotencia aplicables |
+| `NEXO-SURFACE-006` | acceso de kiosco/LOC no convierte dispositivo o código en autoridad y bloquea targets no permitidos |
+| `NEXO-SURFACE-007` | remisiones conservan actor, transición legal, sede, recurso y autorización por cada comando |
+| `NEXO-SURFACE-008` | división y recepción parcial conservan actor original, cantidades, pendientes y autorización |
+| `NEXO-SURFACE-009` | activo serializado o conteo conserva identidad, ubicación y actor |
+| `NEXO-SURFACE-010` | configuración y políticas permanecen bloqueadas salvo capacidad exacta del humano actual |
+| `NEXO-SURFACE-011` | API, RPC y otras fronteras producen decisión equivalente y no eluden el actor compartido |
+| `NEXO-SURFACE-012` | la experiencia táctil refleja actor, bloqueo, errores, accesibilidad y estados reales sin convertirse en fuente de autorización |
+
+La cobertura física no requiere que una unidad posea todas las capacidades NEXO. Exige demostrar que aquello fuera de su techo no puede ejecutarse.
+
+---
+
+#### 12. Escenario de principal técnico sin actor
+
+Debe probarse el dispositivo autenticado y elegible sin una actor session humana válida.
+
+Resultado requerido:
+
+```text
+PRINCIPAL TECNICO VALIDO
++
+DEVICE ELEGIBLE
++
+NEXO PERMITIDO
++
+ACTOR HUMANO AUSENTE
+=
+NO MUTACION EMPRESARIAL QUE EXIJA HUMANO
+```
+
+La interfaz podrá ofrecer identificación.
+
+No podrá:
+
+- inferir último trabajador;
+- usar `navigation_role` como actor;
+- usar un trabajador seleccionado de una lista;
+- usar sede o área del dispositivo como sustituto de actor;
+- ejecutar una mutación con la identidad técnica;
+- degradar la ausencia limpia de actor a un permiso implícito.
+
+---
+
+#### 13. Estado interactivo de identificación
+
+Cuando el dispositivo es elegible y falta el actor, la experiencia debe distinguir la necesidad de identificar al trabajador de una denegación estable del dispositivo.
+
+La prueba debe comprobar:
+
+- mensaje reconocible;
+- ausencia de efecto empresarial;
+- posibilidad de iniciar identificación segura;
+- ausencia de exposición de candidatos privilegiados;
+- ausencia de reintento automático de la mutación;
+- preservación de la intención solo cuando su contrato lo permita.
+
+El estado interactivo no autoriza la operación pendiente.
+
+---
+
+#### 14. Identificación del trabajador
+
+La prueba deberá demostrar que el humano real se resuelve mediante un mecanismo aprobado y validado en servidor.
+
+No es evidencia suficiente:
+
+- elegir un nombre;
+- seleccionar un `employee_id`;
+- enviar el trabajador desde un formulario;
+- escoger al trabajador de una lista;
+- usar el último trabajador;
+- confiar en la persona programada para el turno;
+- usar el `navigation_role`;
+- usar la cuenta técnica del dispositivo;
+- usar una etiqueta física.
+
+El resultado debe vincular inequívocamente el humano real con la sesión o firma que corresponda.
+
+---
+
+#### 15. Sesión única del actor
+
+Debe probarse la cardinalidad:
+
+```text
+0 SESIONES ELEGIBLES
+->
+SIN ACTOR EFECTIVO
+```
+
+```text
+1 SESION ELEGIBLE
+->
+ACTOR CANDIDATO UNICO
+```
+
+```text
+2 O MAS SESIONES INCOMPATIBLES
+->
+INCONSISTENCIA
+->
+CERO NUEVOS EFECTOS EMPRESARIALES
+```
+
+No se elige la sesión más reciente, la primera fila ni la que coincida con la navegación.
+
+---
+
+#### 16. Aplicación NEXO permitida
+
+La prueba positiva de NEXO exige que `nexo` pertenezca al conjunto efectivo de aplicaciones de la instancia.
+
+Debe demostrarse:
+
+```text
+NEXO EN PLANTILLA
++
+NEXO EN REDUCCION VIGENTE DE INSTANCIA
++
+CLIENTE COMPATIBLE
++
+VINCULO ACTIVO Y SIN CONFLICTO
+=
+SUPERFICIE NEXO ELEGIBLE PARA CONTINUAR EVALUACION
+```
+
+Eso todavía no concede `nexo.access` ni permisos internos.
+
+---
+
+#### 17. NEXO fuera del conjunto efectivo
+
+Debe existir una prueba negativa para una unidad donde NEXO haya sido retirado, suspendido o no pertenezca al conjunto efectivo.
+
+Resultado requerido:
+
+- no se ofrece como aplicación disponible;
+- un acceso directo no produce superficie empresarial utilizable;
+- una llamada protegida no evita el control;
+- una app instalada localmente no reintroduce autoridad;
+- una respuesta cacheada no reabre NEXO;
+- no se producen efectos empresariales.
+
+La existencia del cliente no es autorización.
+
+---
+
+#### 18. Acceso a NEXO no equivale a permiso interno
+
+Debe demostrarse:
+
+```text
+NEXO PERMITIDO EN DEVICE
+!=
+nexo.access CONCEDIDO
+```
+
+y:
+
+```text
+nexo.access CONCEDIDO
+!=
+PERMISO INTERNO NEXO CONCEDIDO
+```
+
+Cada capacidad protegida continúa exigiendo la evaluación exacta aplicable al actor, contexto y recurso.
+
+Una prueba física falla si el simple hecho de que NEXO esté permitido en el dispositivo convierte automáticamente `nexo.access` en `ALLOW`.
+
+---
+
+#### 19. Rol de navegación
+
+La prueba debe demostrar que `navigation_role` solo afecta presentación o navegación autorizada.
+
+Queda prohibido como fuente de:
+
+- actor humano;
+- rol base;
+- rol operativo;
+- permiso;
+- paquete;
+- sede;
+- área;
+- capacidad NEXO;
+- bypass.
+
+Una mutación que solo funcione porque el dispositivo tiene un `navigation_role` compatible no es conforme.
+
+---
+
+#### 20. Intersección trabajador–dispositivo
+
+Para una capacidad NEXO:
+
+```text
+AUTORIDAD HUMANA VIGENTE
+INTERSECCION
+TECHO EFECTIVO DEL DISPOSITIVO
+INTERSECCION
+APLICACION NEXO EFECTIVA
+INTERSECCION
+TERRITORIO
+INTERSECCION
+RECURSO
+=
+CAPACIDAD EVALUABLE
+```
+
+La prueba debe incluir:
+
+1. actor con permiso y dispositivo que lo admite;
+2. actor con permiso pero dispositivo que no lo admite;
+3. dispositivo que admite la capacidad pero actor sin permiso;
+4. actor y dispositivo compatibles pero territorio incompatible;
+5. actor y dispositivo compatibles pero recurso incompatible.
+
+Solo el primer escenario puede continuar hacia `ALLOW`, sujeto a las demás restricciones.
+
+---
+
+#### 21. Sede del dispositivo
+
+Debe probarse que la sede registrada del dispositivo es un límite adicional.
+
+La prueba debe incluir:
+
+- actor compatible con la sede;
+- actor de otra sede;
+- recurso de otra sede;
+- selección de sede desde cliente;
+- estado cacheado de una sede anterior.
+
+Una sede enviada por la interfaz no puede ampliar la sede resuelta server-side.
+
+---
+
+#### 22. Área del dispositivo
+
+Debe probarse la política de área aplicable a la unidad.
+
+Según la plantilla o instancia:
+
+- área fija exacta;
+- conjunto explícito de áreas;
+- área base de custodia;
+- modo mixto;
+- área exclusivamente física.
+
+La prueba debe demostrar que:
+
+- el dispositivo no fabrica el área del actor;
+- un área solicitada desde cliente no amplía la política;
+- el recurso debe ser compatible;
+- una política ausente o ambigua falla cerrado;
+- cambiar de área o miembro invalida contexto dependiente.
+
+---
+
+#### 23. Turno y check-in
+
+Cuando la capacidad sea operacional y los requiera, debe probarse:
+
+- turno publicado y vigente;
+- check-in vigente;
+- coincidencia con el trabajador;
+- sede y área compatibles;
+- rol operativo exacto.
+
+Debe existir prueba negativa para:
+
+- turno ausente;
+- turno vencido;
+- turno de otro trabajador;
+- check-in ausente;
+- check-in residual;
+- área de asistencia incompatible.
+
+El dispositivo no aporta turno ni check-in.
+
+---
+
+#### 24. Capacidad STANDARD
+
+Para una capacidad clasificada como utilizable con sesión estándar de actor, debe probarse:
+
+- sesión humana única y vigente;
+- dispositivo elegible;
+- aplicación efectiva;
+- permiso exacto;
+- contexto;
+- territorio;
+- recurso;
+- ausencia de denegaciones.
+
+El PIN o mecanismo de identificación no reemplaza ninguna de esas condiciones.
+
+---
+
+#### 25. Capacidad STRONG
+
+Para una capacidad que exige reautenticación fuerte:
+
+```text
+ACTOR SESSION VIGENTE
++
+PERMISO Y CONTEXTO VALIDOS
++
+STRONG DEL MISMO ACTOR PARA LA ACCION Y RECURSO
+=
+PUEDE CONTINUAR LA EVALUACION
+```
+
+Debe probarse que:
+
+- una identificación ligera no cuenta como STRONG;
+- STRONG de A no funciona para B;
+- STRONG de otra aplicación o recurso no se reutiliza;
+- STRONG vencida no se extiende por actividad;
+- cambiar de actor la invalida.
+
+---
+
+#### 26. Capacidad no admitida por dispositivo compartido
+
+Debe existir prueba negativa de una capacidad clasificada como no permitida desde dispositivo compartido.
+
+Resultado:
+
+```text
+DEVICE COMPARTIDO
++
+CAPACIDAD NO ADMITIDA
+=
+CERO EFECTO EMPRESARIAL
+```
+
+Ni actor privilegiado, ni rol administrativo, ni STRONG, ni presencia física convierten esa capacidad en permitida.
+
+---
+
+#### 27. Kiosco y acceso por LOC
+
+La superficie de kiosco debe probar:
+
+- target declarado;
+- LOC activo;
+- territorio compatible;
+- aplicación NEXO permitida;
+- permiso exacto;
+- actor vigente cuando la acción empresarial lo requiera;
+- acceso directo con target desconocido;
+- LOC fuera de alcance;
+- manipulación de parámetros;
+- estado stale después de un cambio de actor o dispositivo.
+
+El identificador de LOC no es autorización.
+
+---
+
+#### 28. Retiro desde kiosco
+
+El retiro de inventario desde un kiosco NEXO es un escenario obligatorio cuando la unidad exponga esa función.
+
+Antes del efecto debe demostrarse:
+
+- dispositivo elegible;
+- actor humano real;
+- sesión o prueba humana conforme;
+- permiso de retiro aplicable;
+- permiso de traslado cuando aplique;
+- origen permitido;
+- trabajador y destino resueltos por fuentes confiables;
+- stock suficiente;
+- unidad y presentación válidas;
+- idempotencia o control equivalente contra duplicado;
+- auditoría del actor real.
+
+Elegir un trabajador visible en la pantalla no sustituye su identificación.
+
+---
+
+#### 29. Retiro con destino
+
+Cuando el trabajador tenga un destino válido y el flujo produzca traslado, debe verificarse:
+
+- origen y destino distintos;
+- ambos LOC válidos;
+- misma política territorial aplicable;
+- cantidad exacta;
+- movimiento y proyecciones consistentes;
+- actor humano conservado;
+- principal técnico conservado por separado;
+- receipt correlacionable;
+- ausencia de doble contabilización.
+
+La identidad del actor no se obtiene del LOC destino.
+
+---
+
+#### 30. Retiro sin destino
+
+Cuando el contrato de dominio permita un retiro sin LOC destino, debe verificarse:
+
+- razón operacional válida;
+- actor humano real;
+- cantidad exacta;
+- movimiento de consumo o tipo propietario correcto;
+- proyección de stock consistente;
+- ausencia de saldo negativo indebido;
+- auditoría del resultado;
+- ausencia de atribución al usuario técnico como trabajador.
+
+La ausencia de destino no relaja identificación ni autorización.
+
+---
+
+#### 31. Remisiones
+
+Las superficies de remisiones deben probar comandos representativos de sus estados aplicables.
+
+La cobertura debe incluir, cuando corresponda:
+
+- solicitud;
+- preparación;
+- despacho;
+- tránsito;
+- recepción;
+- recepción parcial;
+- continuación después de recepción parcial;
+- cierre.
+
+Cada comando se reevalúa con actor, dispositivo, permiso, sede, área, recurso y estado vigentes.
+
+Una firma de una acción no crea una actor session universal.
+
+---
+
+#### 32. Pendientes de remisión y cambio de actor
+
+Debe probarse un comando de A cuyo resultado permanezca pendiente mientras ocurre cambio A→B.
+
+Resultado requerido:
+
+- la intención mantiene atribución a A;
+- B no recibe la intención como propia;
+- un resultado tardío se reconcilia con A;
+- B continúa solo mediante una nueva intención autorizada cuando corresponda;
+- no se duplica el comando.
+
+---
+
+#### 33. Inventario, movimientos y traslados
+
+Para una capacidad incluida en el techo de la unidad se deberá probar, según corresponda:
+
+- lectura;
+- creación de movimiento;
+- retiro;
+- traslado;
+- ajuste;
+- conteo;
+- entrada.
+
+Para cada mutación se verifica:
+
+- actor;
+- permiso;
+- contexto;
+- territorio;
+- recurso;
+- cantidad;
+- estado previo;
+- estado posterior;
+- correlación;
+- idempotencia o control de repetición.
+
+Una proyección de stock no puede cambiar sin un efecto empresarial atribuible.
+
+---
+
+#### 34. Catálogo y configuración
+
+Debe probarse que las superficies administrativas o de configuración permanecen restringidas.
+
+Una tablet operacional no recibe autoridad para modificar configuración por:
+
+- aplicación visible;
+- `navigation_role`;
+- cuenta técnica;
+- ubicación;
+- actor con otro permiso;
+- acceso directo.
+
+Si el actor actual sí posee capacidad administrativa compatible y la plantilla admite ese carril, la evaluación utiliza exclusivamente la autoridad real del actor y no la del terminal.
+
+---
+
+#### 35. Activos físicos y conteos
+
+Cuando la unidad exponga esas funciones, la prueba deberá preservar:
+
+- identidad serializada del activo cuando corresponda;
+- ubicación;
+- actor;
+- dispositivo;
+- recurso;
+- estado anterior;
+- estado posterior;
+- evidencia de conteo separada de un ajuste.
+
+Observar una diferencia no concede permiso para corregir inventario.
+
+---
+
+#### 36. Cambio de trabajador A→B
+
+La prueba física debe ejecutar un cambio real de actor sobre la unidad.
+
+Debe observarse:
+
+1. A está activo;
+2. se inicia cambio explícito;
+3. nuevas mutaciones de A quedan bloqueadas;
+4. pendientes se clasifican;
+5. A deja de ser elegible;
+6. se limpia o aísla estado sensible de A;
+7. existe una frontera sin actor;
+8. B se identifica de forma independiente;
+9. se resuelve contexto de B;
+10. se crea una sesión nueva para B;
+11. B se convierte en único actor efectivo;
+12. todas las superficies NEXO observan B.
+
+No se edita la identidad de la sesión A para convertirla en B.
+
+---
+
+#### 37. Limpieza entre actores
+
+Después del cambio A→B se debe comprobar que B no recibe estado personal o autoritativo de A.
+
+Debe revisarse, según exista en la superficie:
+
+- formularios;
+- borradores personales;
+- filtros personales;
+- búsquedas;
+- recursos recientes;
+- archivos locales;
+- imágenes temporales;
+- cámara;
+- escáner;
+- portapapeles;
+- datos sensibles visibles;
+- caché identificable;
+- credenciales;
+- autocompletado;
+- elevaciones;
+- aprobaciones;
+- mensajes personales;
+- retorno a recursos sensibles;
+- estado de navegador o WebView.
+
+La evidencia empresarial confirmada no se borra.
+
+---
+
+#### 38. Sesión expirada
+
+Debe probarse el límite temporal de la plantilla o instancia.
+
+Resultado:
+
+```text
+resolved_at >= expires_at
+->
+SESSION NO ELEGIBLE
+->
+ACTOR EFECTIVO NO RESUELTO
+->
+CERO NUEVA MUTACION HUMANA
+```
+
+El dispositivo puede seguir técnicamente autenticado.
+
+La UI no puede restaurar autoridad mediante refresh, heartbeat, navegación o actividad.
+
+---
+
+#### 39. Inactividad
+
+Cuando la política de la unidad incluya bloqueo por inactividad, debe probarse:
+
+- frontera de inactividad;
+- bloqueo de mutaciones;
+- preservación segura del trabajo permitido;
+- recuperación mediante identificación suficiente;
+- no extensión del `hard_ttl`;
+- no uso del movimiento o toque como prueba de identidad.
+
+La política de inactividad no sustituye `expires_at`.
+
+---
+
+#### 40. Revocación del dispositivo
+
+Debe probarse que un dispositivo revocado deja de producir nuevos efectos empresariales incluso si:
+
+- la sesión Auth técnica continúa viva;
+- NEXO permanece abierto;
+- una pestaña mantiene datos;
+- existe una actor session anterior;
+- existe una firma previa;
+- existe una decisión previa;
+- existe trabajo local pendiente.
+
+El estado del dispositivo tiene precedencia sobre reidentificación de actor.
+
+---
+
+#### 41. Suspensión y conflicto
+
+Deben distinguirse de la revocación:
+
+- suspensión;
+- identidad conflictiva;
+- configuración conflictiva;
+- aplicación conflictiva;
+- indisponibilidad técnica.
+
+Todos bloquean los efectos que su contrato declare, pero no se registran falsamente como revocación.
+
+Un fallo técnico no se presenta como una denegación contractual confirmada si no pudo resolverse la causa.
+
+---
+
+#### 42. Cambio de aplicaciones
+
+Debe probarse que retirar NEXO o cambiar el conjunto efectivo:
+
+- invalida contexto dependiente;
+- bloquea nuevos accesos empresariales;
+- limpia superficie incompatible;
+- invalida decisiones y reautenticaciones relacionadas;
+- conserva historia;
+- no se revierte por cliente instalado, caché o acceso directo.
+
+Añadir NEXO no concede permisos internos al actor.
+
+---
+
+#### 43. Aplicación predeterminada
+
+Cuando NEXO sea aplicación predeterminada de una instancia, debe verificarse:
+
+- exactamente un default;
+- default dentro del conjunto efectivo;
+- ausencia de divergencia entre fuentes de configuración;
+- launcher coherente;
+- comportamiento fail closed ante conflicto.
+
+Ser default no concede `nexo.access`.
+
+---
+
+#### 44. Varias pestañas y ventanas
+
+La prueba debe usar al menos dos superficies concurrentes cuando la plataforma lo permita.
+
+Debe demostrarse:
+
+- un único actor efectivo;
+- cambio A→B propagado;
+- expiración propagada;
+- revocación propagada;
+- ausencia de mutación desde pestaña stale;
+- ausencia de restauración de A por navegación hacia atrás;
+- consistencia del contexto.
+
+Una segunda pestaña no constituye una segunda sesión humana independiente por defecto.
+
+---
+
+#### 45. Offline y reconexión
+
+Debe existir escenario de desconexión o equivalente controlado cuando la unidad admita operación degradada.
+
+Al reconectar se verifica:
+
+- frescura de device;
+- frescura de actor session;
+- contexto;
+- permiso;
+- recurso;
+- idempotencia;
+- decisión actual.
+
+Una intención capturada antes de expiración, cambio de actor o revocación no conserva automáticamente autoridad para ejecutarse después.
+
+---
+
+#### 46. Reintento y resultado incierto
+
+Debe probarse una interrupción donde el cliente no pueda saber si la mutación produjo efecto.
+
+La recuperación deberá:
+
+1. reconciliar estado real;
+2. conservar la identidad del intento;
+3. evitar duplicado;
+4. conservar actor original;
+5. exigir nueva autorización si se crea una intención nueva.
+
+Cambiar de actor o reabrir NEXO no autoriza repetir.
+
+---
+
+#### 47. Auditoría
+
+Para una mutación positiva desde dispositivo compartido deberá poder reconstruirse, cuando aplique:
+
+- principal técnico;
+- `device_id`;
+- trabajador;
+- `actor_session_id`;
+- aplicación;
+- permiso;
+- contexto;
+- sede;
+- área;
+- recurso;
+- decisión;
+- razones;
+- resultado empresarial;
+- timestamps;
+- correlación.
+
+La auditoría no puede depender únicamente de texto libre con el nombre del trabajador.
+
+---
+
+#### 48. Denegaciones auditables
+
+Las pruebas negativas deberán conservar evidencia suficiente para demostrar:
+
+- qué identidad técnica intentó;
+- qué dispositivo se resolvió;
+- qué actor pudo resolverse;
+- qué permiso y recurso se evaluaron;
+- qué restricción concluyente bloqueó;
+- que el efecto empresarial fue cero.
+
+No se fabrica un actor cuando no pudo resolverse.
+
+---
+
+#### 49. Privacidad
+
+La prueba debe confirmar que no quedan expuestos o persistidos indebidamente:
+
+- PIN;
+- contraseña;
+- access token;
+- refresh token;
+- JWT completo;
+- secreto administrativo;
+- material STRONG reutilizable;
+- dato biométrico crudo;
+- información personal innecesaria del actor anterior.
+
+Logs, métricas, auditoría, receipts y mensajes deben preservar minimización.
+
+---
+
+#### 50. Experiencia táctil
+
+La certificación física debe observar la interacción real de la unidad.
+
+Debe comprobar:
+
+- controles utilizables mediante toque;
+- actor visible de forma inequívoca;
+- acción clara de bloquear, cambiar o cerrar actor;
+- estados de carga y bloqueo entendibles;
+- errores recuperables;
+- ausencia de acciones sensibles ocultas detrás de gestos ambiguos;
+- contenido utilizable en la orientación y viewport soportados por la unidad;
+- foco y navegación accesibles cuando aplique;
+- no dependencia exclusiva de color;
+- ausencia de clipping que impida ejecutar o comprender una acción necesaria.
+
+No se fija aquí un tamaño físico universal de tablet.
+
+---
+
+#### 51. Periféricos NEXO
+
+Cuando la unidad use cámara, escáner, lector, impresora u otro periférico, la prueba deberá distinguir:
+
+```text
+COMANDO ENVIADO AL PERIFERICO
+!=
+RESULTADO FISICO CONFIRMADO
+```
+
+Debe verificarse:
+
+- periférico correcto;
+- asociación con la unidad;
+- autorización de la acción;
+- resultado;
+- error;
+- recuperación;
+- no duplicación;
+- limpieza de estado sensible entre actores.
+
+La existencia del periférico no concede autoridad.
+
+---
+
+#### 52. Impresión
+
+Cuando la unidad permita impresión, una prueba deberá conservar diferencia entre:
+
+- vista previa;
+- trabajo en cola;
+- envío;
+- aceptación por dispositivo;
+- salida física observada.
+
+La vista previa o el envío no sustituyen confirmación física cuando el criterio exija salida tangible.
+
+Actor, dispositivo y trabajo deben permanecer correlacionables.
+
+---
+
+#### 53. Resultado de negocio
+
+Toda prueba de mutación deberá verificar el estado real del dominio.
+
+No basta con:
+
+- mensaje de éxito;
+- `200`;
+- redirect;
+- toast;
+- cambio local de pantalla;
+- respuesta de RPC sin reconciliación cuando exista riesgo de resultado incierto.
+
+La evidencia debe comprobar el efecto o no efecto empresarial que el escenario espera.
+
+---
+
+#### 54. Cero efectos en deny
+
+Para cada denegación obligatoria se verificará:
+
+```text
+DECISION NO AUTORIZADA
+->
+CERO NUEVO EFECTO EMPRESARIAL
+```
+
+Debe comprobarse el dominio afectado, no solo la respuesta visual.
+
+No puede existir:
+
+- movimiento parcial;
+- stock parcialmente cambiado;
+- remisión parcialmente alterada;
+- auditoría que afirme éxito;
+- trabajo de periférico disparado indebidamente.
+
+---
+
+#### 55. Matriz del universo heredado
+
+La tarea conserva las 19 identidades documentales y define su relación con la prueba NEXO sin convertir plantillas u observaciones en unidades físicas.
+
+| `inventory_key` | Clase | Relación con AUTH-DEV-014 | Estado conservado |
+| --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` | NEXO pertenece a su conjunto registral candidato; una eventual prueba NEXO solo certifica esa superficie y no sustituye la certificación PULSO de `AUTH-DEV-015` | `REGISTERED_UNVERIFIED` |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` | objetivo registral directo de la prueba NEXO cuando identidad, endpoint, plantilla y unidad física queden reconciliados | `REGISTERED_UNVERIFIED` |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` | candidata a prueba solo después de identidad, enrolamiento y asociación autoritativa; no se infiere NEXO por observación | `OBSERVED_ONLY` |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` | candidata a prueba solo después de identidad, enrolamiento y asociación autoritativa; no se infiere NEXO por observación | `OBSERVED_ONLY` |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de aplicaciones; cada unidad real se prueba según su reducción efectiva | `POLICY_DEFINED` |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de aplicaciones; no concede inventario por la plantilla | `POLICY_DEFINED` |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de aplicaciones; la prueba conserva área y actor de cocina satélite | `POLICY_DEFINED` |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de aplicaciones; observaciones de servicio no materializan una instancia | `POLICY_DEFINED` |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de aplicaciones; la proximidad con caja o servicio no amplía capacidades | `POLICY_DEFINED` |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de aplicaciones; integración de funciones no suma autoridad | `POLICY_DEFINED` |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` | NEXO pertenece al máximo junto con SHELL y FOGO; área productiva sigue siendo exacta | `POLICY_DEFINED` |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` | NEXO pertenece al máximo junto con SHELL y FOGO; panadería no hereda otras áreas | `POLICY_DEFINED` |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` | NEXO pertenece al máximo junto con SHELL y FOGO; repostería no hereda otras áreas | `POLICY_DEFINED` |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` | NEXO pertenece al máximo junto con SHELL y ORIGO; la unidad puede reducir a NEXO sin ampliar plantilla | `POLICY_DEFINED` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` | NEXO pertenece al máximo junto con SHELL; movilidad no cambia autoridad ni área base | `POLICY_DEFINED` |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` | NEXO pertenece al máximo junto con SHELL y ORIGO; modos administrativo y operativo siguen separados | `POLICY_DEFINED` |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` | NEXO pertenece al máximo de cinco apps; amplitud de superficie no concede ejecución de otros oficios | `POLICY_DEFINED` |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` | NEXO no pertenece al máximo de aplicaciones; una unidad conforme debe bloquear NEXO | `POLICY_DEFINED` |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` | no recibe nuevas unidades ni nueva certificación NEXO | `NO_APLICA` |
+
+Control:
+
+```text
+TOTAL ESPERADO: 19
+TOTAL MATERIALIZADO: 19
+
+CONFIGURED_INSTANCE: 2
+PHYSICAL_OBSERVATION: 2
+TARGET_TEMPLATE: 14
+RETIRED_LEGACY_TEMPLATE: 1
+
+TARGET_TEMPLATE CON NEXO EN MAXIMO: 13
+TARGET_TEMPLATE SIN NEXO EN MAXIMO: 1
+
+FALTANTES: 0
+DUPLICADOS: 0
+```
+
+---
+
+#### 56. `KIOSCO_BODEGA_CP`
+
+`configured_device:KIOSCO_BODEGA_CP` conserva:
+
+```text
+clase = CONFIGURED_INSTANCE
+estado documental = REGISTERED_UNVERIFIED
+conjunto registral candidato = nexo
+default registral candidato = nexo
+plantilla candidata = warehouse_kiosk
+```
+
+La prueba futura deberá demostrar antes de cambiar ese estado:
+
+- correspondencia con activo físico;
+- endpoint;
+- principal técnico;
+- `device_id`;
+- plantilla y versión;
+- sede;
+- área;
+- reducción efectiva de aplicaciones;
+- build real de NEXO;
+- actor session;
+- permisos;
+- lifecycle;
+- auditoría;
+- operación de kiosco real.
+
+La fila técnica por sí sola no constituye certificación.
+
+---
+
+#### 57. Observación de tablet de servicio de Vento Café
+
+La referencia `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` permanece separada de las instancias configuradas.
+
+AUTH-DEV-014 no declara:
+
+- que sea `CAJA_VENTO_CAFE_01`;
+- que ejecute NEXO;
+- que corresponda a `service_satellite`;
+- que posea un `device_id`;
+- que use una cuenta técnica conforme;
+- que constituya una sola unidad física.
+
+Solo podrá entrar a una ejecución física después de reconciliación y enrolamiento.
+
+---
+
+#### 58. Observación de dispositivo compartido de Saudo
+
+La referencia `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` también permanece `OBSERVED_ONLY`.
+
+El tipo exacto de equipo, cantidad, endpoint, identidad técnica, plantilla y aplicaciones no se infieren.
+
+No se crea una prueba positiva de NEXO sobre esa observación hasta resolver la unidad física.
+
+---
+
+#### 59. Línea base estática observada en NEXO
+
+La inspección del consumidor NEXO actual permite registrar hechos técnicos que deberán cerrarse antes de un PASS físico.
+
+Se observan:
+
+1. `OperationalSession` representa modo `shared_device`, identidad técnica, sede, área, `navigationRole` y apps permitidas;
+2. ese shape no expone `actor_session_id` ni `actor_session_expires_at`;
+3. el resolutor actual de dispositivo consulta una fila activa y sus aplicaciones;
+4. la lógica actual conserva `navigationRole` como `role` de la sesión;
+5. la evaluación de permiso de dispositivo usa ese `navigationRole` para `has_operational_role_permission`;
+6. la evaluación actual trata el permiso de acceso a aplicación como permitido cuando la aplicación pertenece al conjunto del dispositivo;
+7. los argumentos preferidos de sede y área pueden participar en la sesión operacional;
+8. existe un helper de firma de actor por acción para dispositivo compartido;
+9. ese helper produce una firma, `actor_employee_id` y `actor_shift_id`, pero no demuestra una actor session persistente;
+10. el consumidor contiene además flujos NEXO que no usan ese helper.
+
+Estos hechos no constituyen una certificación física.
+
+---
+
+#### 60. Bloqueo estático: actor session no materializada en `OperationalSession`
+
+La forma observada actualmente no contiene:
+
+- `actor_session_id`;
+- `actor_session_expires_at`;
+- identidad humana efectiva persistida en la sesión operacional.
+
+Por tanto, esa forma por sí sola no puede demostrar:
+
+```text
+PRINCIPAL TECNICO
++
+DEVICE
++
+ACTOR SESSION UNICA Y VIGENTE
++
+ACTOR HUMANO
+```
+
+Condición de salida para una futura certificación: la unidad y el consumidor deben demostrar consumo de la sesión humana canónica aplicable, o una materialización equivalente que preserve exactamente las mismas invariantes.
+
+---
+
+#### 61. Bloqueo estático: `navigationRole` usado como autoridad
+
+El consumidor observado utiliza `navigationRole` dentro de la evaluación de permisos operativos de dispositivo compartido.
+
+Eso no satisface el contrato aprobado donde:
+
+```text
+navigation_role
+!=
+actor
+!=
+rol operativo efectivo
+!=
+permiso
+```
+
+Una futura ejecución física debe demostrar que el permiso se resuelve desde el actor humano y su contexto vigente, restringido por el dispositivo.
+
+---
+
+#### 62. Bloqueo estático: acceso de aplicación implícito
+
+La lógica observada retorna autorización para el permiso de acceso de aplicación cuando la app está permitida por el dispositivo.
+
+La prueba de conformidad debe demostrar lo contrario:
+
+```text
+APP NEXO EN DEVICE
+->
+SUPERFICIE ELEGIBLE
+->
+AUN DEBE RESOLVERSE ACTOR Y AUTORIDAD DE ACCESO
+```
+
+El conjunto de aplicaciones no es un grant.
+
+---
+
+#### 63. Bloqueo estático: territorio preferido desde consumidor
+
+La forma observada acepta referencias preferidas de sede y área al resolver `OperationalSession`.
+
+La prueba física debe demostrar que ningún valor solicitado por UI, cookie, query, body o estado de cliente puede ampliar el territorio server-side.
+
+La selección puede orientar una solicitud de contexto, pero no convertirse en autoridad.
+
+---
+
+#### 64. Bloqueo estático: selección de trabajador en retiro de kiosco
+
+La superficie observada de retiro de kiosco presenta una lista de trabajadores y admite un `employee_id` seleccionado.
+
+La interfaz observada incluso describe la confirmación como selección de trabajador sin PIN personal.
+
+Eso no demuestra la identificación humana exigida por `AUTH-DEV-007`.
+
+Una futura prueba no puede aceptar:
+
+```text
+SELECCION DE EMPLOYEE_ID
+=
+ACTOR HUMANO IDENTIFICADO
+```
+
+La identificación deberá demostrar presencia e identidad mediante el mecanismo aprobado.
+
+---
+
+#### 65. Bloqueo estático: mutación de kiosco sin firma de actor observada
+
+La acción observada de retiro de kiosco recibe el trabajador desde `FormData`, consulta su asignación y ejecuta mutaciones de inventario.
+
+No se observó en esa acción una llamada al helper de firma de dispositivo compartido ni una actor session humana persistente.
+
+Además, varias escrituras conservan `user.id` como `created_by`; en un dispositivo compartido ese usuario corresponde al principal autenticado técnico, no demuestra por sí solo el trabajador humano.
+
+La futura certificación deberá demostrar atribución separada y correlacionable del principal técnico y del actor humano.
+
+---
+
+#### 66. Firma por acción observada en remisiones
+
+NEXO sí contiene un helper de firma para dispositivo compartido que llama `sign_shared_device_action`.
+
+Ese helper:
+
+- requiere un PIN para la acción cuando la sesión es de dispositivo compartido;
+- recibe aplicación, acción y recurso;
+- retorna un identificador de firma;
+- retorna el empleado resuelto;
+- retorna turno cuando existe.
+
+Esta capacidad constituye una base parcial útil.
+
+No demuestra por sí sola:
+
+- una actor session persistente;
+- cambio A→B;
+- expiración de actor session;
+- revocación de todas las superficies;
+- limpieza transversal;
+- cobertura de kiosco;
+- cobertura de todas las mutaciones NEXO.
+
+---
+
+#### 67. Baseline CI de NEXO
+
+NEXO posee una suite automatizada de consumidor.
+
+La evidencia de baseline exige, entre otros controles:
+
+- commit exacto del consumidor;
+- identidades de manifest y lockfile;
+- contrato y suite identificables;
+- ambiente no productivo;
+- pruebas ejecutadas;
+- cero fallos;
+- cero omitidas;
+- deny paths demostrados;
+- ausencia de secretos.
+
+La suite debe pasar antes de una certificación física cuando forme parte de la unidad.
+
+Sin embargo:
+
+```text
+BASELINE CI PASS
+!=
+TABLET FISICA CERTIFICADA
+```
+
+La suite usa escenarios sintéticos y no sustituye hardware, actor real, lifecycle, red ni efectos observados de la unidad.
+
+---
+
+#### 68. Defectos reales y cierre
+
+Todo defecto detectado durante la ejecución física futura debe quedar ligado a:
+
+- escenario;
+- unidad;
+- build;
+- evidencia;
+- severidad material;
+- contrato incumplido;
+- propietario canónico existente;
+- condición exacta de salida;
+- reejecución requerida.
+
+No se inventa una tarea administrativa para cada defecto.
+
+Si la causa pertenece a un contrato `AUTH-DEV-007` a `AUTH-DEV-013`, su materialización aplicable debe corregirse antes de reejecutar la certificación de la misma unidad.
+
+Si pertenece a NEXO, contexto, servidor, base de datos o UI, se utiliza el propietario canónico existente correspondiente.
+
+Un defecto que permita efecto empresarial sin actor, sin permiso o después de revocación bloquea la certificación.
+
+---
+
+#### 69. Reejecución después de corrección
+
+Una corrección invalida únicamente la evidencia que dependa materialmente del cambio, pero la certificación final debe volver a demostrar todos los escenarios afectados y sus dependencias.
+
+No se conserva un PASS anterior cuando cambió:
+
+- autorización;
+- actor session;
+- lifecycle;
+- territorio;
+- paquete;
+- app binding;
+- código del flujo;
+- contrato compartido;
+- idempotencia;
+- auditoría;
+- UI que participa en el escenario.
+
+El historial anterior permanece como evidencia histórica.
+
+---
+
+#### 70. Cobertura positiva y negativa
+
+Una certificación completa no puede contener solo “happy path”.
+
+Como mínimo debe incluir por familia:
+
+- caso permitido;
+- actor ausente;
+- actor incorrecto o no elegible;
+- permiso ausente;
+- device fuera de política;
+- app fuera de conjunto;
+- territorio incompatible;
+- recurso incompatible;
+- sesión expirada;
+- cambio de actor;
+- device revocado;
+- estado stale;
+- resultado incierto;
+- reintento;
+- concurrencia cuando aplique.
+
+La ausencia de deny paths demostrados impide certificar autorización.
+
+---
+
+#### 71. Separación entre capas
+
+Cada escenario debe poder distinguir si el control fue observado en:
+
+- UI;
+- RSC o render server-side;
+- Server Action;
+- Route Handler o API;
+- RPC/PostgREST;
+- RLS/Data API;
+- procesamiento asíncrono;
+- cliente offline;
+- Realtime;
+- periférico.
+
+No todas las capas participan en todos los escenarios.
+
+Cuando una capa sí pueda producir el mismo efecto protegido, deberá producir una decisión equivalente.
+
+---
+
+#### 72. No confianza en la UI
+
+La prueba debe intentar el mismo efecto sin depender del control visual cuando el canal técnico exista.
+
+Ejemplos contractuales:
+
+- acceso directo;
+- request manual controlada;
+- RPC protegida;
+- reintento desde estado stale.
+
+Ocultar un botón no constituye una denegación server-side.
+
+---
+
+#### 73. Recurso y cantidad
+
+En inventario y remisiones, una prueba de autorización no se limita al código de permiso.
+
+Debe validar también:
+
+- recurso;
+- producto;
+- LOC;
+- documento;
+- cantidad;
+- estado;
+- sede;
+- área;
+- transición.
+
+Un permiso correcto sobre el recurso equivocado debe fallar.
+
+---
+
+#### 74. Idempotencia
+
+Para toda mutación que admita reintento, el protocolo debe provocar un reintento controlado.
+
+Se comprobará:
+
+- mismo intento lógico no duplica efecto;
+- actor original se conserva;
+- correlation no concede autoridad;
+- una nueva sesión no convierte el reintento en intención de B;
+- un `ALLOW` previo no se reutiliza después de un cambio material.
+
+---
+
+#### 75. Auditoría de cambio de actor
+
+El caso A→B debe permitir reconstruir:
+
+- sesión A;
+- trabajador A;
+- cierre de A;
+- estado de pendientes;
+- limpieza;
+- frontera sin actor;
+- identificación de B;
+- sesión B;
+- trabajador B;
+- acciones posteriores de B.
+
+No es obligatorio registrar A y B en una sola fila.
+
+Sí es obligatorio que la historia sea inequívoca.
+
+---
+
+#### 76. Seguridad del secreto humano
+
+Cuando se use PIN u otra prueba humana:
+
+- se captura solo para el propósito permitido;
+- se valida en servidor;
+- no se conserva en contexto;
+- no se incluye en auditoría;
+- no se muestra al siguiente actor;
+- no se usa como permiso;
+- no se usa como STRONG salvo contrato independiente que lo establezca;
+- no se reutiliza como credencial universal.
+
+La evidencia de la prueba conserva referencia opaca, no el secreto.
+
+---
+
+#### 77. Respuesta ante fallo técnico
+
+La prueba debe distinguir:
+
+```text
+DENY CONTRACTUAL
+!=
+FALLO TECNICO
+```
+
+Si no puede resolverse dispositivo, actor, reloj, contexto, política o recurso por indisponibilidad:
+
+- no se fabrica un `ALLOW`;
+- no se fabrica una causa concluyente que no fue observada;
+- no se produce el efecto protegido;
+- la interfaz ofrece recuperación segura;
+- la auditoría conserva el fallo técnico suficiente.
+
+---
+
+#### 78. Recuperación
+
+Después de un fallo, la recuperación no puede:
+
+- usar una cuenta genérica;
+- restaurar al último actor;
+- escoger una sesión arbitraria;
+- desactivar permisos;
+- ejecutar con service role como bypass;
+- omitir el control de sede o área;
+- reenviar automáticamente una mutación incierta;
+- reactivar un dispositivo revocado.
+
+La recuperación vuelve a una frontera autorizativa válida.
+
+---
+
+#### 79. Estado de la unidad después de la prueba
+
+El resultado físico futuro debe conservar por separado:
+
+- estado técnico del dispositivo;
+- suficiencia de evidencia física;
+- resultado de los escenarios;
+- defectos abiertos;
+- validez temporal de la evidencia.
+
+Un dispositivo técnicamente activo puede seguir sin certificación.
+
+Una unidad con un defecto crítico no se presenta como parcialmente autorizada para el mismo efecto protegido.
+
+---
+
+#### 80. Criterio sobre las dos instancias registradas
+
+Las dos instancias actuales continúan `REGISTERED_UNVERIFIED`.
+
+`AUTH-DEV-014` no cambia ese estado documental por inspección de código.
+
+Para `KIOSCO_BODEGA_CP`, esta tarea define el protocolo que permitirá aportar la evidencia NEXO necesaria cuando exista una unidad física reconciliada y autorizada.
+
+Para `CAJA_VENTO_CAFE_01`, la dimensión NEXO puede probarse dentro de una unidad que efectivamente la exponga, pero la certificación del comportamiento terminal PULSO permanece reservada a `AUTH-DEV-015`.
+
+---
+
+#### 81. Resultado documental de esta tarea
+
+La tarea deja definidos:
+
+1. unidad exacta de certificación;
+2. precondiciones;
+3. evidencia mínima;
+4. criterio de PASS;
+5. invalidación de evidencia stale;
+6. doce superficies NEXO;
+7. pruebas positivas y negativas;
+8. identificación humana;
+9. actor session;
+10. permiso y techo;
+11. sede, área y recurso;
+12. STRONG;
+13. kiosco;
+14. retiros;
+15. remisiones;
+16. inventario;
+17. lifecycle;
+18. cambio de actor;
+19. offline, concurrencia e idempotencia;
+20. auditoría;
+21. privacidad;
+22. experiencia táctil;
+23. periféricos;
+24. universo de 19 identidades;
+25. bloqueos estáticos actuales;
+26. criterio para defectos y reejecución.
+
+La evidencia física permanece pendiente de la futura materialización autorizada.
+
+---
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+El protocolo desarrolla y hace ejecutables obligaciones de prueba ya presentes en el registro canónico. No modifica el registro modular.
+
+---
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+Se reutilizan sin modificación:
+
+- `TREQ-AUTH-003` — lifecycle auditable de dispositivo compartido, incluido cambio de actor, expiración, suspensión y revocación;
+- `TREQ-AUTH-011` — actor humano real e intersección entre límites del dispositivo y permisos del trabajador;
+- `TREQ-AUTH-014` — invalidación de contexto, caché y autoridad derivada ante cambios relevantes;
+- `TREQ-AUTH-015` — evidencia correlacionable de principal, actor, dispositivo, contexto, decisión y resultado;
+- `TREQ-AUTH-052` — aplicación fuera del conjunto efectivo bloqueada también por acceso directo y capas server-side;
+- `TREQ-AUTH-053` — aplicación predeterminada única y conflicto fail closed;
+- `TREQ-AUTH-054` — cambio de aplicación o actor limpia estado incompatible y reautenticaciones;
+- `TREQ-AUTH-058` — cobertura exacta del universo de 19 identidades y asociaciones máximas de aplicaciones;
+- `TREQ-AUTH-269` — bloqueo de solicitudes empresariales desde dispositivo compartido no autorizable;
+- `TREQ-AUTH-271` — resolución determinista del estado y configuración del dispositivo;
+- `TREQ-AUTH-272` — clasificación de capacidades compatibles con dispositivo compartido;
+- `TREQ-AUTH-273` — sesión única y vigente del actor, política humana, territorio, recurso y STRONG cuando corresponda;
+- `TREQ-AUTH-275` — paridad de decisión entre canales;
+- `TREQ-AUTH-277` — recuperación segura, invalidación, privacidad y auditoría en bloqueos;
+- `TREQ-AUTH-278` — reconciliación física de sesiones, paquetes, invalidación y consumidores compartidos;
+- `TREQ-AUTH-331` — separación de estados interactivos de identificación y STRONG respecto de denegaciones de dispositivo;
+- `TREQ-NEXO-006` — remisiones sin doble contabilización y con efecto real verificable;
+- `TREQ-NEXO-009` — jerarquía única para capacidades de remisión con paridad entre interfaz y servidor;
+- `TREQ-NEXO-011` — movimientos y proyecciones reconciliables, atomicidad, idempotencia y operación offline;
+- `TREQ-NEXO-028` — acceso por LOC normalizado y destino local seguro;
+- `TREQ-NEXO-029` — kiosco restringido a targets declarados;
+- `TREQ-NEXO-030` — cobertura del middleware sobre las superficies aplicables.
+
+Estas referencias son trazabilidad de cobertura existente y no representan cambios al registro.
+
+---
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | El build documental y el build del consumidor se ejecutarán en sus etapas correspondientes después de incorporar el contrato. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores sobre el checkout local del usuario durante la preparación documental. |
+| REMOTA | `NOT_EXECUTED` | Se inspeccionó el estado vigente de repositorios y contratos como fuente, pero no se ejecutó un gate remoto de AUTH-DEV-014. |
+| OPERATIVA | `NOT_EXECUTED` | Los escenarios operativos definidos por esta tarea requieren una unidad autorizada y todavía no fueron ejecutados. |
+| FÍSICA | `NOT_EXECUTED` | No se ejecutó una tablet, kiosco o unidad física; la evidencia deberá provenir de la futura instancia `PER_IMPLEMENTATION_UNIT`. |
+
+---
+
+#### 85. Criterios de aceptación
+
+- [x] La tarea define un protocolo reutilizable por `implementation_unit_id`.
+- [x] La materialización permanece detrás de `POST_E5_PACKAGE`.
+- [x] No se declara una certificación física sin ejecución.
+- [x] Se recibe exactamente el handoff de `AUTH-DEV-013`.
+- [x] Se verifican las obligaciones de `AUTH-DEV-001` a `AUTH-DEV-013` sin reabrirlas.
+- [x] Se define identidad mínima de la unidad física.
+- [x] Se define evidencia mínima reproducible.
+- [x] Se define criterio de PASS físico.
+- [x] La evidencia stale no certifica un estado nuevo.
+- [x] Se cubren las doce superficies de baseline NEXO.
+- [x] Se distingue CI sintético de certificación física.
+- [x] Se exige prueba con principal técnico y sin actor.
+- [x] Se exige identificación humana real.
+- [x] Seleccionar un trabajador no sustituye identificación.
+- [x] Se exige una sola actor session elegible.
+- [x] NEXO permitido en el device no concede `nexo.access`.
+- [x] `nexo.access` no concede permisos internos.
+- [x] `navigation_role` no concede autoridad.
+- [x] Se exige intersección trabajador–dispositivo.
+- [x] Se prueba sede.
+- [x] Se prueba área.
+- [x] Se prueban turno y check-in cuando correspondan.
+- [x] Se prueban capacidades STANDARD.
+- [x] Se prueban capacidades STRONG.
+- [x] Se prueban capacidades no admitidas en dispositivo compartido.
+- [x] Se prueba kiosco y acceso por LOC.
+- [x] Se prueba retiro con y sin destino cuando aplique.
+- [x] Se prueban remisiones representativas.
+- [x] Se prueba inventario y movimientos según techo de la unidad.
+- [x] Se prueba que configuración permanezca restringida.
+- [x] Se prueba cambio A→B.
+- [x] Se prueba limpieza de estado de A.
+- [x] Se prueba expiración.
+- [x] Se prueba inactividad cuando aplique.
+- [x] Se prueba revocación.
+- [x] Se prueban suspensión y conflicto sin confundirlos con revocación.
+- [x] Se prueba cambio de aplicaciones.
+- [x] Se prueba default de aplicación.
+- [x] Se prueba consistencia entre varias superficies concurrentes.
+- [x] Se prueba offline cuando la unidad lo admita.
+- [x] Se prueba resultado incierto.
+- [x] Se prueba reintento e idempotencia.
+- [x] Se exige auditoría conjunta.
+- [x] Se exige cero efectos en deny.
+- [x] Se exige minimización de secretos y datos personales.
+- [x] Se incluye experiencia táctil.
+- [x] Se incluyen periféricos cuando existan.
+- [x] Se distingue envío a periférico de resultado físico.
+- [x] Se exige comprobar el efecto empresarial real.
+- [x] Se preservan las 19 identidades.
+- [x] Se preserva la distribución 2 + 2 + 14 + 1.
+- [x] Se preservan 13 plantillas con NEXO y 1 sin NEXO.
+- [x] `KIOSCO_BODEGA_CP` permanece `REGISTERED_UNVERIFIED`.
+- [x] `CAJA_VENTO_CAFE_01` permanece `REGISTERED_UNVERIFIED`.
+- [x] Las dos observaciones permanecen `OBSERVED_ONLY`.
+- [x] `management_terminal` no recibe NEXO.
+- [x] `production_center` permanece retirada.
+- [x] Se registran los bloqueos estáticos observados del consumidor sin declararlos prueba física.
+- [x] Se reconoce el helper de firma por acción como base parcial, no como actor session completa.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza ningún cambio físico.
+- [x] `AUTH-DEV-015` conserva íntegra la certificación específica de terminales PULSO.
+
+---
+
+#### 86. Handoff exacto hacia AUTH-DEV-015
+
+`AUTH-DEV-014` entrega a `AUTH-DEV-015`:
+
+```text
+PROTOCOLO DE CERTIFICACION POR IMPLEMENTATION_UNIT DEFINIDO
++
+IDENTIDAD Y EVIDENCIA MINIMAS DEFINIDAS
++
+DENY PATHS OBLIGATORIOS
++
+ACTOR SESSION Y LIFECYCLE OBSERVABLES
++
+CAMBIO A -> B Y LIMPIEZA OBSERVABLES
++
+PARIDAD ENTRE CANALES EXIGIDA
++
+CERO EFECTOS EN DENY
++
+UNIVERSO DE 19 IDENTIDADES PRESERVADO
++
+FRONTERA NEXO CERRADA DOCUMENTALMENTE
+```
+
+`AUTH-DEV-015` podrá reutilizar las invariantes transversales de dispositivo compartido, pero deberá definir y comprobar de forma independiente las particularidades de las terminales PULSO.
+
+AUTH-DEV-014 no desarrolla pagos, caja, venta, salón, canje ni otras operaciones específicas de PULSO.
+
+---
+
+#### 87. Límites
+
+Esta tarea no:
+
+- ejecuta una tablet;
+- ejecuta un kiosco;
+- ejecuta una prueba física;
+- modifica dispositivos;
+- enrola endpoints;
+- asocia activos;
+- cambia plantillas;
+- cambia aplicaciones;
+- cambia paquetes de permisos;
+- cambia sede o área;
+- crea actor sessions reales;
+- cambia trabajadores reales;
+- modifica turnos;
+- modifica check-ins;
+- revoca dispositivos;
+- cambia sesiones Auth;
+- rota credenciales;
+- modifica código NEXO;
+- modifica código SHELL;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica RPC;
+- modifica grants;
+- modifica datos reales;
+- modifica configuración;
+- despliega;
+- certifica `KIOSCO_BODEGA_CP`;
+- certifica `CAJA_VENTO_CAFE_01`;
+- identifica técnicamente las dos observaciones físicas;
+- convierte una plantilla en unidad desplegada;
+- declara que una suite CI sustituye una prueba física;
+- corrige los bloqueos estáticos observados;
+- redefine autorización NEXO;
+- desarrolla `NEXO-AUTH-016`;
+- desarrolla `NEXO-AUTH-020`;
+- desarrolla `AUTH-DEV-015`;
+- desarrolla `AUTH-DEV-016`;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A.
+
+---
+
+#### 88. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-013 — Manejar cambio de trabajador`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-014 — Probar tablets de NEXO`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-015 — Probar terminales de PULSO`
+
+
 ### [ ] AUTH-DEV-015 — Probar terminales de PULSO
 ### [ ] AUTH-DEV-016 — Probar pantallas de FOGO
