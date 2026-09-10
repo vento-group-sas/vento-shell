@@ -665,6 +665,7 @@ export function classifyInfraPath(filePath) {
     || normalized === 'docs/plan-canonico/modular/chatgpt-work-starter-template.txt'
     || normalized === 'docs/plan-canonico/modular/01_PROTOCOLO.md'
     || normalized === 'docs/plan-canonico/modular/package-gate-policy.json'
+    || normalized === 'docs/plan-canonico/modular/implementation-materialization-map.json'
     || normalized === 'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md'
     || normalized === 'docs/plan-canonico/modular/active-sequence.json'
     || normalized === 'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md'

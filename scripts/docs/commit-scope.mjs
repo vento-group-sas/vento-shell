@@ -18,6 +18,7 @@ const TRANSVERSAL_PLAN_FILES = new Set([
   'docs/plan-canonico/modular/implementation-readiness-policy.json',
   'docs/plan-canonico/modular/implementation-control.json',
   'docs/plan-canonico/modular/package-gate-policy.json',
+  'docs/plan-canonico/modular/implementation-materialization-map.json',
   'docs/plan-canonico/modular/package-selection-policy.json',
   'docs/plan-canonico/modular/package-execution-policy.json',
   'docs/plan-canonico/modular/chatgpt-work-starter-template.txt',

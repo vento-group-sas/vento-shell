@@ -25,6 +25,10 @@ test('clasifica fuentes canónicas y herramientas transversales por separado', (
     classifyCommitPath('docs/plan-canonico/modular/package-execution-policy.json'),
     'TRANSVERSAL',
   );
+  assert.equal(
+    classifyCommitPath('docs/plan-canonico/modular/implementation-materialization-map.json'),
+    'TRANSVERSAL',
+  );
   assert.equal(classifyCommitPath('.gitattributes'), 'TRANSVERSAL');
   assert.equal(classifyCommitPath('.editorconfig'), 'TRANSVERSAL');
   assert.equal(
@@ -36,6 +40,14 @@ test('clasifica fuentes canónicas y herramientas transversales por separado', (
   assert.equal(classifyCommitPath('docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md'), 'PROJECTION');
   assert.equal(classifyCommitPath('src/app/page.tsx'), 'APPLICATION');
   assert.equal(classifyCommitPath('docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md'), 'OPERATIONS_DOC');
+});
+
+test('permite mapa de materializacion junto a tooling transversal', () => {
+  const result = analyzeCommitScope([
+    'docs/plan-canonico/modular/implementation-materialization-map.json',
+    'scripts/docs/implementation-materialization.mjs',
+  ]);
+  assert.deepEqual(result.errors, []);
 });
 
 test('rechaza mezclar una tarea canónica con infraestructura transversal', () => {
