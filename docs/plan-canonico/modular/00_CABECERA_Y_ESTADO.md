@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1152** |
+| Tareas aprobadas | **1153** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **444** |
+| Tareas no iniciadas | **443** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **72.18% (1152/1596)** |
+| Porcentaje de completamiento | **72.24% (1153/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-DEV-008 — Combinar límite del dispositivo y trabajador** |
-| Tarea actual | **AUTH-DEV-009 — Evitar heredar permisos administrativos** |
+| Última tarea aprobada | **AUTH-DEV-009 — Evitar heredar permisos administrativos** |
+| Tarea actual | **AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría** |
+| Siguiente tarea | **AUTH-DEV-011 — Permitir revocar un dispositivo** |
 | Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
-| Progreso del bloque | **BLOQUES P Y Q: 14 de 30 aprobadas; AUTH-DEV-009 pendiente** |
+| Progreso del bloque | **BLOQUES P Y Q: 15 de 30 aprobadas; AUTH-DEV-010 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-DEV-009** |
+| Carril documental | **ACTIVO — AUTH-DEV-010** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-DEV-008` — Combinar límite del dispositivo y trabajador |
-| Tarea actual | `AUTH-DEV-009` — Evitar heredar permisos administrativos — **NO INICIADA** |
-| Siguiente tarea | `AUTH-DEV-010` — Registrar dispositivo y trabajador en auditoría |
+| Última aprobada | `AUTH-DEV-009` — Evitar heredar permisos administrativos |
+| Tarea actual | `AUTH-DEV-010` — Registrar dispositivo y trabajador en auditoría — **NO INICIADA** |
+| Siguiente tarea | `AUTH-DEV-011` — Permitir revocar un dispositivo |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 14 DE 30 APROBADAS — ACTUAL AUTH-DEV-009** |
+| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 15 DE 30 APROBADAS — ACTUAL AUTH-DEV-010** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-DEV-008 — Combinar límite del dispositivo y trabajador
-        ↓
-TAREA ACTUAL
 AUTH-DEV-009 — Evitar heredar permisos administrativos
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-DEV-011 — Permitir revocar un dispositivo
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES P Y Q — 14 de 30 tareas aprobadas
+BLOQUES P Y Q — 15 de 30 tareas aprobadas
 ```
