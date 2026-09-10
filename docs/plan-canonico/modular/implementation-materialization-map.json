@@ -1,0 +1,13 @@
+{
+  "schema_version": 1,
+  "map_id": "CANONICAL-IMPLEMENTATION-MATERIALIZATION-001",
+  "semantics": {
+    "task_marker_scope": "DOCUMENTARY_CONTRACT_ONLY",
+    "materialization_scope": "PHYSICAL_PRODUCT_RESULT",
+    "package_reference_is_materialization": false,
+    "verified_requires_evidence": true,
+    "unknown_relation_behavior": "FAIL_CLOSED_AS_UNMAPPED",
+    "direct_instance_materializes_own_task": true
+  },
+  "relations": []
+}

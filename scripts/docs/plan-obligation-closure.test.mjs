@@ -10,6 +10,14 @@ import {
   treatmentClass,
 } from './plan-obligation-closure.mjs';
 
+import {
+  IMPLEMENTATION_MATERIALIZATION_MAP_ID,
+  assertImplementationMaterializationIndex,
+  buildImplementationMaterializationIndex,
+  normalizeMaterializationUnitId,
+  validateImplementationMaterializationRelations,
+} from './implementation-materialization.mjs';
+
 const MODES = {
   DEFINE_ONCE: 'DEFINITION_CONSUMPTION',
   GLOBAL_ENABLE_ONCE: 'GLOBAL_FOUNDATION',
@@ -104,4 +112,90 @@ test('integración real clasifica todo el inventario y conserva incidencias como
   assert.ok(report.metrics.incidence_relations >= report.metrics.incidence_tasks);
   assert.equal(report.structural_coverage.product_completion_claim, false);
   assert.equal(report.invariants.product_completion_claim, false);
+});
+
+const MATERIALIZATION_TEST_SEMANTICS = {
+  task_marker_scope: 'DOCUMENTARY_CONTRACT_ONLY',
+  materialization_scope: 'PHYSICAL_PRODUCT_RESULT',
+  package_reference_is_materialization: false,
+  verified_requires_evidence: true,
+  unknown_relation_behavior: 'FAIL_CLOSED_AS_UNMAPPED',
+  direct_instance_materializes_own_task: true,
+};
+
+test('materialization normaliza sentinelas y conserva unit IDs reales', () => {
+  assert.equal(normalizeMaterializationUnitId('NO_MATERIALIZADO'), null);
+  assert.equal(normalizeMaterializationUnitId('unit-real-001'), 'unit-real-001');
+});
+
+test('una implementation unit conocida puede materializar varios contratos aprobados', () => {
+  const inventory = new Map([
+    ['ANIMA-UX-003', { id: 'ANIMA-UX-003', marker: '✅' }],
+    ['ANIMA-UX-004', { id: 'ANIMA-UX-004', marker: '✅' }],
+  ]);
+  const knownUnits = new Map([['unit-real-001', { unit_id: 'unit-real-001' }]]);
+  const map = {
+    schema_version: 1,
+    map_id: IMPLEMENTATION_MATERIALIZATION_MAP_ID,
+    semantics: MATERIALIZATION_TEST_SEMANTICS,
+    relations: [
+      {
+        task_id: 'ANIMA-UX-003',
+        completion_rule: 'ALL_REQUIRED',
+        implementation_unit_ids: ['unit-real-001'],
+        source_refs: ['TEST:ANIMA-UX-003'],
+      },
+      {
+        task_id: 'ANIMA-UX-004',
+        completion_rule: 'ALL_REQUIRED',
+        implementation_unit_ids: ['unit-real-001'],
+        source_refs: ['TEST:ANIMA-UX-004'],
+      },
+    ],
+  };
+
+  assert.deepEqual(
+    validateImplementationMaterializationRelations(
+      map,
+      { topologyResult: { inventory }, knownUnits },
+    ),
+    [],
+  );
+});
+
+test('materialization falla cerrado ante una implementation unit inventada', () => {
+  const inventory = new Map([
+    ['ANIMA-UX-003', { id: 'ANIMA-UX-003', marker: '✅' }],
+  ]);
+  const map = {
+    schema_version: 1,
+    map_id: IMPLEMENTATION_MATERIALIZATION_MAP_ID,
+    semantics: MATERIALIZATION_TEST_SEMANTICS,
+    relations: [
+      {
+        task_id: 'ANIMA-UX-003',
+        completion_rule: 'ALL_REQUIRED',
+        implementation_unit_ids: ['unit-no-conocida'],
+        source_refs: ['TEST:UNKNOWN'],
+      },
+    ],
+  };
+
+  const errors = validateImplementationMaterializationRelations(
+    map,
+    { topologyResult: { inventory }, knownUnits: new Map() },
+  );
+  assert.match(errors.join('\n'), /no es una implementation_unit conocida/u);
+});
+
+test('integración real construye índice task a materializadores sin reclamar cierre físico', () => {
+  const materialization = buildImplementationMaterializationIndex({ root: process.cwd() });
+  assert.equal(materialization.model_id, IMPLEMENTATION_MATERIALIZATION_MAP_ID);
+  assert.equal(assertImplementationMaterializationIndex(materialization), true);
+  assert.equal(
+    materialization.metrics.canonical_tasks,
+    buildPlanObligationClosure({ root: process.cwd() }).metrics.canonical_task_obligations,
+  );
+  assert.equal(materialization.invariants.package_reference_is_not_materialization_relation, true);
+  assert.equal(materialization.invariants.materialization_completion_claim, false);
 });
