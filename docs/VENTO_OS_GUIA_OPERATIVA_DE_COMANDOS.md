@@ -1321,7 +1321,7 @@ gh pr status
 Si recuerdas estos diez comandos, puedes resolver la mayoría del trabajo diario sin memorizar el resto.
 
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:START -->
-## Implementación lineal: package consumidor y trabajo ejecutable
+## Governed frontier: package consumidor y trabajo ejecutable
 
 Antes de autorizar o continuar una implementación por package, consultar el scanner y distinguir:
 
@@ -1331,7 +1331,7 @@ CURRENT_PACKAGE
 CURRENT_EXECUTABLE_WORK
 ```
 
-Cuando `CURRENT_EXECUTABLE_WORK` sea una fundación o un prerrequisito físico, se resuelve primero esa identidad. El package conserva el turno como consumidor bloqueado y no se inicia, despliega ni cierra por inferencia.
+Cuando `CURRENT_EXECUTABLE_WORK` sea una fundación o un prerrequisito físico, se resuelve primero esa identidad para el package afectado. El package permanece WAITING y no se inicia, despliega ni cierra por inferencia; otro root independiente puede continuar solo si la governed frontier lo declara dependency-eligible y sin conflicto.
 
 Para Supabase, la secuencia global previa al package es R0 → `MRP015-000` → `MRP015-010` → `MRP015-020` → `MRP015-030` → `MRP015-040`. El candidato `MRP015-050` pertenece al ciclo del package y precede al despliegue remoto.
 
@@ -1647,3 +1647,52 @@ node scripts/docs/package-readiness-scanner.mjs --record-candidate GAP-PKG-001
 
 La evidencia se guarda dentro de `evidence` del ledger `SHELL-CI-020` y queda ligada a `package_id`, `instance_id`, HEAD, `authorized_changes` y hashes de las superficies Supabase materializadas. Si cualquiera de esos elementos cambia, la evidencia queda stale y debe regenerarse antes de cerrar CI020. Nunca contiene secretos ni autoriza producción.
 <!-- CURRENT-EXECUTABLE-WORK-CORR-010:END -->
+
+<!-- CORR-012-GOVERNED-FRONTIER:START -->
+### CORR-012 — Governed eligible frontier para ejecución física
+
+```text
+DELIV-PKG-015 partial order
+        ↓
+explicit package dependencies
+        ↓
+implementation layer
+        ↓
+package_id stable tie-breaker
+        ↓
+DEPENDENCY-ELIGIBLE FRONTIER
+        ↓
+deterministic primary schedulable package
+        │
+        ├─ WAITING
+        │      → dependency / prerequisite / UNKNOWN / conflict
+        │      → package-local block only
+        │
+        ├─ AUTHORIZATION_FRONTIER
+        │      → PENDING_AUTHORIZATION reserves full admission locks
+        │      → human approval remains explicit
+        │
+        └─ ACTIVE_PHYSICAL
+               → exact package lifecycle continues
+               → CI020/CI021: persistent + exclusive transition locks
+               → CI022/CI023/CI024: persistent exact locks only
+               → long observation does not hold the global primary
+```
+
+Invariantes:
+
+- `human_package_selection=false` permanece obligatorio.
+- Las dependencias explícitas son hard prerequisites.
+- Capa y `package_id` dan prioridad determinista entre roots dependency-eligible.
+- Scope físico o implementation unit no resoluble produce `UNKNOWN` y falla cerrado solo para la admisión física del package afectado.
+- Los target paths y implementation units generan locks persistentes exactos.
+- Migraciones/schema, configuración Supabase, helpers compartidos de Edge Functions, manifests de dependencias y workflows generan locks exclusivos de transición.
+- Los locks exclusivos de transición se mantienen durante CI020/CI021 y se liberan al entrar a CI022; los locks exactos permanecen durante piloto, hypercare y cierre.
+- Un handoff `PENDING_AUTHORIZATION` reserva todo su scope probado y no se autoautoriza.
+- Cada package preserva `SHELL-CI-020 → SHELL-CI-021 → SHELL-CI-022 → SHELL-CI-023 → SHELL-CI-024`.
+- Checkouts físicos simultáneos deben ser independientes.
+- Merge y cierre permanecen serializados y deben reconciliar el último `main`.
+- El cierre de package sigue dependiendo de CI024 VERIFIED + evidencia; el cierre de aplicación y producto no cambia.
+- El auditor de throughput es diagnóstico y nunca concede autorización por sí mismo.
+
+<!-- CORR-012-GOVERNED-FRONTIER:END -->
