@@ -5268,4 +5268,1543 @@ El modo visual deberá respetar `FULL_PREVIEW`, `DECISION_ONLY` y `NOT_ALLOWED` 
 `AUTH-SIM-011 — Definir modo solo lectura`
 
 
-### [ ] AUTH-SIM-011 — Definir modo solo lectura
+### ✅ AUTH-SIM-011 — Definir modo solo lectura
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-SIM-010 — Bloquear acciones críticas durante simulación
+**Tarea siguiente:** AUTH-SIM-012 — Validar navegación como rol simulado
+**Tipo de tarea:** documental; contrato canónico de experiencia de solo lectura durante simulación, con materialización posterior por implementation_unit_id conforme a PER_IMPLEMENTATION_UNIT y gate POST_E5_PACKAGE
+**Bloque:** BLOQUE Q — Simulación
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, componentes, aplicaciones, Supabase, migraciones, RLS, RPC, Server Actions, Route Handlers, Edge Functions, Realtime, datos, permisos, sesiones, contratos compartidos, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe presentarse una simulación como experiencia de solo lectura sin convertir la presentación en un mecanismo de autorización, sin degradar el bloqueo server-side ya fijado y sin permitir que controles, formularios, navegación, caché o estado cliente produzcan un efecto real.
+
+La regla raíz queda:
+
+```text
+SIMULACION VIGENTE
++
+CONTENIDO PERMITIDO POR simulation_requirement
++
+PRESENTACION EXPLICITA DE PREVIEW
++
+INTERACCIONES NO EJECUTABLES
++
+ENFORCEMENT SERVER-SIDE INDEPENDIENTE
+=
+MODO SOLO LECTURA SEGURO
+```
+
+Y siempre:
+
+```text
+SOLO LECTURA VISUAL
+!=
+AUTORIZACION
+```
+
+```text
+CONTROL DESHABILITADO
+!=
+ENFORCEMENT SERVER-SIDE
+```
+
+```text
+PREVIEW INTERACTIVA
+!=
+EFECTO EMPRESARIAL
+```
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+COMO DEBE COMPORTARSE LA INTERFAZ MIENTRAS LA PERSONA OBSERVA UNA SIMULACION?
+```
+
+```text
+QUE INTERACCIONES PUEDEN PERMANECER DISPONIBLES SIN CONVERTIRSE EN EJECUCION REAL?
+```
+
+```text
+COMO SE PRESENTAN LOS CONTROLES QUE EN CONTEXTO REAL SERIAN MUTADORES?
+```
+
+```text
+COMO SE RESPETAN FULL_PREVIEW, DECISION_ONLY Y NOT_ALLOWED EN LA EXPERIENCIA?
+```
+
+No valida todavía la navegación integral entre superficies; esa responsabilidad permanece en `AUTH-SIM-012`.
+
+#### 3. Handoff recibido de AUTH-SIM-010
+
+`AUTH-SIM-010` entrega una regla de seguridad ya cerrada:
+
+```text
+SIMULATED ORIGIN
+-> REAL EXECUTION FORBIDDEN
+```
+
+```text
+SIMULATED RESULT
+-> executable = false
+```
+
+```text
+SERVER-SIDE DENY
+=
+SECURITY AUTHORITY
+```
+
+El modo solo lectura definido aquí es una proyección de esa no ejecutabilidad hacia la experiencia de usuario.
+
+No sustituye ni debilita el guard autoritativo.
+
+#### 4. Handoff recibido de AUTH-SIM-007
+
+La experiencia ya dispone de un aviso persistente con lifecycle visible:
+
+```text
+RESOLVING
+ACTIVE
+STALE
+INVALID
+EXIT_PENDING
+```
+
+El modo solo lectura debe coexistir con ese aviso.
+
+La ausencia del aviso no convierte la superficie en contexto real ni habilita controles.
+
+Si una preview no puede conservar su indicador obligatorio, deja de ser utilizable como preview válida.
+
+#### 5. Contratos consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-SIM-001..005`, para identidad y dimensiones hipotéticas del escenario;
+- `AUTH-SIM-006`, para separación entre autoridad real, evaluación simulada, presentación y auditoría;
+- `AUTH-SIM-007`, para aviso persistente y lifecycle visible;
+- `AUTH-SIM-008`, para inicio autoritativo;
+- `AUTH-SIM-009`, para salida, terminales y retorno a contexto real;
+- `AUTH-SIM-010`, para bloqueo multicanal de ejecución y cero efectos;
+- `AUTH-SRV-015`, para separación del plano real y simulado;
+- `AUTH-DB-013`, para lifecycle y evaluación simulada append-only;
+- el catálogo vigente de `simulation_requirement`;
+- los contratos vigentes de autorización, contexto, recursos, privacidad, accesibilidad, dispositivos compartidos e invalidación.
+
+#### 6. Topología y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+El marcador documental define una sola vez el contrato reutilizable.
+
+Cada unidad física futura deberá materializar el modo solo lectura sobre su propia superficie y demostrar el comportamiento aplicable sin reabrir esta definición.
+
+#### 7. Definición canónica de solo lectura
+
+El modo solo lectura de simulación significa que la persona puede observar y, cuando el contrato lo permita, explorar una representación hipotética sin producir mutaciones, transiciones de dominio, despachos externos ni ampliación de acceso a datos reales.
+
+Puede existir interacción de presentación sin existir ejecución empresarial.
+
+Por tanto:
+
+```text
+READ-ONLY SIMULATION
+=
+OBSERVE
++
+EXPLORE SAFE PRESENTATION
++
+EVALUATE HYPOTHETICALLY
+-
+REAL EFFECTS
+```
+
+#### 8. Solo lectura no equivale a pantalla congelada
+
+Una superficie read-only no necesita convertirse en una imagen estática.
+
+Pueden conservarse, cuando no cambien autoridad ni negocio:
+
+- expandir y contraer secciones;
+- cambiar tabs puramente locales;
+- ordenar una tabla ya autorizada;
+- paginar contenido permitido;
+- aplicar filtros de presentación;
+- abrir tooltips;
+- inspeccionar detalles ya incluidos en el dataset permitido;
+- seleccionar texto;
+- mover foco;
+- recorrer componentes con teclado;
+- mostrar estados hipotéticos;
+- solicitar una nueva evaluación simulada no ejecutable cuando el contrato aplicable lo permita.
+
+Ninguna de estas interacciones puede utilizarse para crear autoridad real o sortear `AUTH-SIM-010`.
+
+#### 9. Solo lectura no equivale a CSS
+
+No es suficiente:
+
+- aplicar opacidad;
+- cambiar color de un botón;
+- ocultar el cursor;
+- cubrir la pantalla con un overlay visual;
+- remover un icono;
+- ocultar temporalmente un formulario;
+- añadir una clase CSS denominada read-only;
+- mostrar el texto `Solo lectura` sin neutralizar handlers ejecutables.
+
+La presentación debe ser coherente con la no ejecutabilidad real del modo.
+
+#### 10. Separación entre experiencia y seguridad
+
+La responsabilidad queda dividida:
+
+```text
+AUTH-SIM-011
+-> PRESENTACION Y COMPORTAMIENTO READ-ONLY
+```
+
+```text
+AUTH-SIM-010
+-> ENFORCEMENT Y CERO EFECTOS
+```
+
+Una falla de `AUTH-SIM-011` puede producir una experiencia engañosa.
+
+Una falla de `AUTH-SIM-010` puede producir un efecto real y es un problema de seguridad.
+
+Una implementación conforme necesita ambas capas.
+
+#### 11. Fuente del modo
+
+La superficie no decide que está en read-only exclusivamente por:
+
+- query param;
+- pathname;
+- hash;
+- cookie local;
+- `localStorage`;
+- `sessionStorage`;
+- prop enviada por una pantalla sin procedencia autoritativa;
+- rol mostrado;
+- nombre de ruta;
+- `can_operate`;
+- existencia de `simulation_id` suministrado por cliente;
+- nombre del usuario;
+- último estado React.
+
+El modo se deriva de una proyección autoritativa de simulación y de la clasificación vigente del permiso o capacidad observada.
+
+#### 12. Autoridad real como techo de datos
+
+Read-only no amplía el dataset real disponible para el actor.
+
+Debe mantenerse:
+
+```text
+DATA_VISIBLE_IN_PREVIEW
+subset_of
+REAL_DATA_SCOPE_AUTHORIZED_FOR_ACTOR
++
+SAFE_SYNTHETIC_OR_MASKED_DATA_ALLOWED_BY_CONTRACT
+```
+
+El rol simulado no concede acceso a filas, archivos, campos o sujetos reales que el actor real no puede consultar.
+
+#### 13. Tres clasificaciones y ninguna cuarta
+
+El modo solo lectura consume exactamente:
+
+```text
+FULL_PREVIEW
+DECISION_ONLY
+NOT_ALLOWED
+```
+
+No crea una cuarta clasificación ni un nuevo valor de `simulation_requirement`.
+
+Read-only es una semántica de presentación que interpreta la clasificación vigente.
+
+La distribución canónica heredada permanece sin cambios:
+
+```text
+TOTAL = 140
+FULL_PREVIEW = 85
+DECISION_ONLY = 52
+NOT_ALLOWED = 3
+```
+
+Las tres claves excluidas que permanecen `NOT_ALLOWED` son:
+
+- `aura.access`;
+- `pass.access`;
+- `viso.authorization.context_simulations.view`.
+
+Esta tarea no reclasifica permisos ni altera esa distribución.
+
+#### 14. FULL_PREVIEW
+
+Para `FULL_PREVIEW` puede mostrarse una representación funcional de la superficie, siempre que:
+
+- los datos reales visibles ya estén autorizados al actor real o sean sintéticos, vacíos o enmascarados conforme al contrato;
+- los controles que producirían efectos reales sean inertes, interceptados o sustituidos por representación explicativa;
+- cualquier evaluación de permiso siga siendo hipotética;
+- el aviso de simulación permanezca visible;
+- el servidor continúe rechazando ejecución real originada en simulación.
+
+`FULL_PREVIEW` no significa full execution.
+
+#### 15. DECISION_ONLY
+
+Para `DECISION_ONLY` la experiencia queda limitada a la evaluación hipotética y su explicación permitida.
+
+No se muestra por autoridad simulada:
+
+- contenido protegido del recurso;
+- formulario operativo;
+- detalle sensible;
+- dataset empresarial;
+- adjuntos protegidos;
+- controles de mutación;
+- una pantalla funcional que permita inferir más información que la decisión.
+
+La UI puede presentar el resultado hipotético seguro y la información mínima necesaria para comprenderlo.
+
+#### 16. NOT_ALLOWED
+
+Para `NOT_ALLOWED` no existe preview funcional de la capacidad.
+
+La superficie no transforma el permiso en read-only para sortear la exclusión.
+
+Debe mantenerse:
+
+```text
+NOT_ALLOWED
+-> NO SIMULATION PREVIEW FOR THAT CAPABILITY
+```
+
+La existencia de permiso real para usar una aplicación no cambia esta clasificación.
+
+#### 17. Clasificación ausente o desconocida
+
+Una capacidad sin `simulation_requirement` concluyente no recibe una preview permisiva.
+
+Resultado:
+
+```text
+UNKNOWN SIMULATION CLASSIFICATION
+-> FAIL CLOSED
+```
+
+No se utiliza `FULL_PREVIEW` como default.
+
+#### 18. Controles mutadores
+
+Todo control que en contexto real produciría una mutación debe presentarse de forma coherente con cero ejecución.
+
+Ejemplos:
+
+- Guardar;
+- Crear;
+- Editar;
+- Eliminar;
+- Cancelar una entidad;
+- Aprobar;
+- Rechazar;
+- Confirmar;
+- Publicar;
+- Enviar;
+- Pagar;
+- Cobrar;
+- Despachar;
+- Recibir;
+- Completar;
+- Ajustar inventario;
+- marcar una asistencia real;
+- emitir una orden;
+- cerrar una operación;
+- cambiar configuración;
+- ejecutar una integración.
+
+El control puede representarse para explicar qué ocurriría, pero no puede conservar un handler real ejecutable.
+
+#### 19. Control visible e inerte
+
+Cuando un control mutador deba permanecer visible para fines de comprensión de la preview, su estado debe comunicar claramente que no ejecutará la acción real.
+
+La representación no puede sugerir que:
+
+- la acción ya está autorizada;
+- el click producirá el cambio;
+- el cambio se guardará al salir;
+- el cambio se encuentra en cola;
+- el cambio será aplicado después;
+- el resultado simulado es una confirmación real.
+
+#### 20. Control sustituido por explicación
+
+Cuando mostrar el control operativo resulte engañoso, inseguro o incompatible con la clasificación, puede sustituirse por una representación explicativa.
+
+La sustitución conserva el significado funcional necesario para la simulación sin exponer un camino ejecutable.
+
+No se inventa una acción equivalente más permisiva.
+
+#### 21. Formularios
+
+Un formulario mostrado en `FULL_PREVIEW` puede representar campos y estados hipotéticos solo si la superficie propietaria puede mantener cero efectos.
+
+La interacción con el formulario no crea un draft empresarial real.
+
+No se permite:
+
+- autosave real;
+- validación que escriba estado persistente empresarial;
+- creación anticipada de entidades;
+- reservas reales;
+- locks de negocio;
+- uploads reales;
+- escritura de preferencias con impacto operativo;
+- dispatch de side effects.
+
+#### 22. Campos de texto
+
+Un campo de texto de preview puede:
+
+- mostrar un valor hipotético;
+- permitir selección y lectura;
+- cuando el owner lo necesite, permitir edición puramente local para evaluar una variante hipotética.
+
+Si permite edición local, el valor debe permanecer dentro del escenario simulado y no convertirse en payload real reutilizable.
+
+No se utiliza autosave.
+
+#### 23. Selectores
+
+Selectores de sede, área, rol, turno, estado o recurso pueden existir únicamente como edición del escenario hipotético cuando el contrato de simulación propietario lo permita.
+
+Cambiar un selector:
+
+```text
+MAY CHANGE SIMULATED SCENARIO
+!=
+CHANGE REAL CONTEXT
+```
+
+No modifica sesión, turno, check-in, rol, sede o área reales.
+
+#### 24. Toggles y switches
+
+Un toggle visible en preview no puede disparar un cambio empresarial real.
+
+Si representa una condición hipotética, debe quedar claramente contenida en la revisión o estado local simulado permitido.
+
+No escribe configuración real ni feature flags.
+
+#### 25. Checkboxes y selección múltiple
+
+Seleccionar filas o elementos dentro de la preview puede permitirse como interacción local de análisis.
+
+La selección no debe:
+
+- crear una operación bulk pendiente;
+- reservar recursos;
+- alterar estados;
+- acumular una cola ejecutable;
+- sobrevivir a la salida como intención real automática.
+
+#### 26. Drag and drop
+
+Drag and drop puede existir únicamente cuando sea una representación local sin efecto empresarial.
+
+No puede:
+
+- reordenar persistencia real;
+- mover inventario;
+- reasignar trabajo;
+- adjuntar archivos reales;
+- cambiar prioridad operativa;
+- producir un comando diferido.
+
+#### 27. Uploads
+
+Los controles de carga de archivos no ejecutan uploads reales desde simulación.
+
+Cuando sea necesario representar el paso, la UI puede mostrar el control como inerte o utilizar una representación sintética permitida.
+
+No se conserva el archivo seleccionado como operación pendiente para ejecutarse al salir.
+
+#### 28. Extracción y exportaciones
+
+Una extracción o exportación puede externalizar información y no se trata automáticamente como interacción pasiva.
+
+La preview no utiliza autoridad simulada para:
+
+- obtener adjuntos protegidos;
+- exportar datasets;
+- generar reportes reales;
+- producir archivos con información no autorizada al actor real.
+
+Cualquier lectura o exportación real exige autoridad real independiente conforme al contrato propietario.
+
+#### 29. Impresión
+
+Un control de impresión en preview no dispara hardware, BrowserPrint, spooler, cola de impresión ni impresión remota.
+
+Puede mostrarse una representación visual no ejecutable cuando resulte necesaria para comprender el flujo.
+
+#### 30. Notificaciones
+
+La preview no envía notificaciones reales.
+
+No se ejecutan:
+
+- email;
+- SMS;
+- push;
+- mensajes internos con efecto real;
+- alertas a terceros;
+- confirmaciones empresariales.
+
+La UI puede representar el resultado hipotético sin dispatch.
+
+#### 31. Integraciones externas
+
+Controles que normalmente disparan integraciones deben permanecer no ejecutables.
+
+No se emiten:
+
+- webhooks;
+- llamadas a proveedores;
+- comandos de hardware;
+- publicaciones externas;
+- movimientos financieros;
+- acciones logísticas reales.
+
+#### 32. Atajos de teclado
+
+Un control inerte no puede seguir ejecutándose mediante shortcut.
+
+El modo solo lectura debe ser consistente para:
+
+- click;
+- Enter;
+- Space;
+- atajos globales;
+- command palette;
+- hotkeys;
+- accesos contextuales equivalentes.
+
+La seguridad server-side permanece independiente de esta neutralización.
+
+#### 33. Gestos y eventos alternos
+
+Long press, swipe, context menu, doble click, touch y otros gestos no pueden conservar un camino mutador alterno que el control principal ya neutralizó.
+
+El mismo significado read-only aplica a todos los métodos de interacción de una acción.
+
+#### 34. Menús contextuales
+
+Un menú contextual no puede reintroducir:
+
+- Editar;
+- Eliminar;
+- Aprobar;
+- Exportar;
+- Imprimir;
+- Mover;
+- Compartir;
+- otras acciones reales;
+
+si esas acciones están bloqueadas por procedencia simulada.
+
+#### 35. Acciones bulk
+
+La preview no puede construir una operación bulk real a partir de una selección hipotética.
+
+No se permite preparar una mutación masiva que luego se ejecute automáticamente al salir.
+
+#### 36. Búsqueda, filtros y ordenamiento
+
+Búsqueda, filtros y ordenamiento pueden permanecer disponibles cuando operan exclusivamente sobre información cuya lectura ya es válida para la preview.
+
+No pueden utilizarse para ampliar el alcance real del actor.
+
+Una consulta server-side disparada por un filtro continúa evaluando acceso real a los datos retornados.
+
+#### 37. Paginación
+
+La paginación no amplía por sí sola el alcance de lectura.
+
+Cada página obtenida debe respetar la misma frontera de datos autorizados al actor real y la clasificación de simulación.
+
+#### 38. Tabs internas y acordeones
+
+Tabs, acordeones y disclosure controls puramente presentacionales pueden conservar interacción normal.
+
+Cambiar de tab no se interpreta como mutación, salida de simulación ni cambio de autoridad.
+
+#### 39. Tooltips y ayuda contextual
+
+Tooltips y ayuda pueden explicar:
+
+- que la vista es simulada;
+- que una acción no se ejecutará;
+- qué representa una decisión hipotética;
+- cómo salir de la simulación cuando exista el control propietario.
+
+No revelan razones internas, permisos ocultos, catálogos sensibles o detalles que el actor real no puede conocer.
+
+#### 40. Copiar contenido
+
+Seleccionar y copiar texto ya visible no convierte el resultado en autoridad.
+
+Cuando la información sea protegida, su visibilidad y posibilidad de externalización siguen limitadas por la autoridad real y por la política propietaria de datos.
+
+Read-only no crea un permiso implícito para compartir información.
+
+#### 41. Navegación de preview
+
+Esta tarea fija únicamente la frontera de presentación:
+
+- una navegación que represente el recorrido hipotético puede existir si conserva procedencia simulada y cero efectos;
+- un enlace no puede escapar silenciosamente a una superficie real protegida usando autoridad simulada;
+- un enlace real ejecutable no se habilita por `WOULD_ALLOW`;
+- una ruta nueva no elimina por sí misma el modo read-only.
+
+La validación integral de navegación pertenece a `AUTH-SIM-012`.
+
+#### 42. Navegación externa
+
+Un enlace a una superficie externa o integración no se trata como preview interna automáticamente.
+
+La UI debe evitar que una simulación dispare un flujo externo con consecuencias reales.
+
+La autorización y naturaleza del destino se resuelven por su owner.
+
+#### 43. Datos sintéticos
+
+`FULL_PREVIEW` puede utilizar datos sintéticos cuando el owner de la superficie lo permita.
+
+Los datos sintéticos deben mantenerse inequívocamente separados de registros reales y no deben persistirse como entidades empresariales.
+
+#### 44. Datos vacíos
+
+Una preview puede utilizar estados vacíos cuando mostrar datos reales no sea necesario o no esté autorizado.
+
+Un empty state simulado no debe interpretarse como confirmación de que la fuente real no contiene datos.
+
+#### 45. Datos enmascarados
+
+La presentación puede utilizar datos enmascarados cuando el contrato propietario lo permita.
+
+El enmascaramiento no sustituye autorización y no puede ser reversible mediante información entregada al cliente.
+
+#### 46. Datos reales ya autorizados
+
+`FULL_PREVIEW` puede mostrar datos reales únicamente cuando su lectura ya está autorizada al actor real de forma independiente de la simulación.
+
+Debe mantenerse:
+
+```text
+SIMULATED ROLE WOULD ALLOW DATA
++
+REAL ACTOR CANNOT READ DATA
+=
+DO NOT EXPOSE DATA
+```
+
+#### 47. Acciones reales ya autorizadas
+
+Aunque el actor real sí pudiera ejecutar una acción fuera de simulación, un control originado en la preview no reutiliza esa autoridad para ejecutar dentro del plano simulado.
+
+Debe salir del flujo simulado y producir una solicitud real nueva conforme a `AUTH-SIM-009` y `AUTH-SIM-010`.
+
+#### 48. Resultado hipotético positivo
+
+Un resultado:
+
+```text
+WOULD_ALLOW
+```
+
+puede representarse visualmente como permitido en el escenario hipotético.
+
+Sin embargo:
+
+- no habilita un writer real;
+- no convierte el control en ejecutable;
+- no crea un token;
+- no genera un grant;
+- no activa una ruta real protegida;
+- no elimina el copy de no ejecutabilidad.
+
+#### 49. Resultado hipotético negativo
+
+`WOULD_DENY` puede explicar que el escenario simulado no permitiría la capacidad.
+
+No se confunde con una denegación de la cuenta real.
+
+La UI no debe sugerir que la persona perdió permisos reales por observar ese resultado.
+
+#### 50. Resultado indeterminado
+
+`INDETERMINATE` no se convierte en `WOULD_DENY` por conveniencia visual ni en `WOULD_ALLOW` por optimismo.
+
+La superficie debe mostrar una condición segura y no ejecutar.
+
+#### 51. Estado ACTIVE
+
+En `ACTIVE`, la superficie puede mostrar la preview compatible con su `simulation_requirement`.
+
+Todos los controles de efecto real permanecen no ejecutables.
+
+El aviso persistente permanece visible.
+
+#### 52. Estado RESOLVING
+
+Mientras la simulación está `RESOLVING`:
+
+- no se adelanta la preview confirmada;
+- no se habilitan controles basados en un escenario todavía no resuelto;
+- no se conserva un formulario ejecutable del escenario anterior;
+- no se utiliza una evaluación stale.
+
+La UI espera o muestra skeleton/estado seguro según su owner.
+
+#### 53. Estado STALE
+
+Cuando la proyección pasa a `STALE`:
+
+- la preview deja de ser operativamente utilizable;
+- controles hipotéticos que dependan de la revisión stale quedan suspendidos;
+- no se ejecuta con el último `WOULD_ALLOW`;
+- se exige nueva resolución.
+
+#### 54. Estado INVALID de presentación
+
+Cuando el aviso utiliza `INVALID` como estado visible de limpieza o incompatibilidad:
+
+- se retira o bloquea la preview;
+- no se degrada automáticamente a contexto real;
+- no se habilitan controles reales por ausencia del escenario;
+- se espera la resolución propietaria correspondiente.
+
+Este uso visible no redefine el terminal persistido `INVALID` del lifecycle.
+
+#### 55. Estado EXIT_PENDING
+
+Durante `EXIT_PENDING` la superficie continúa tratándose como simulada.
+
+No se anticipa el retorno operativo.
+
+Los controles reales siguen sin habilitarse hasta que exista:
+
+```text
+TERMINAL CONFIRMADO
++
+CONTEXTO REAL FRESCO
+```
+
+#### 56. Estados terminales
+
+`COMPLETED`, `EXPIRED`, `REVOKED` e `INVALID` terminal impiden seguir utilizando la preview como vigente.
+
+El modo read-only se retira junto con el contenido simulado, pero no se reemplaza por una copia cacheada del contexto real.
+
+#### 57. Retorno a contexto real
+
+Después de un terminal, la superficie solo vuelve a comportamiento real cuando su contexto real ha sido re-resuelto.
+
+No se reactiva un control real a partir de:
+
+- el último estado previo a simular;
+- una cookie;
+- un snapshot;
+- valores del formulario simulado;
+- un `WOULD_ALLOW`;
+- el rol simulado;
+- una idempotency key simulada.
+
+#### 58. Optimistic UI
+
+No existe optimistic mutation empresarial desde simulación.
+
+La UI no debe mostrar temporalmente un estado como si la acción real hubiera sucedido y luego depender del servidor para revertirlo.
+
+Cuando represente un resultado hipotético, debe etiquetarlo como escenario simulado y mantenerlo separado del estado real.
+
+#### 59. Autosave
+
+Autosave de negocio queda deshabilitado dentro de una preview.
+
+Una edición hipotética puede conservarse como parte del escenario simulado únicamente mediante el mecanismo propietario de revisión de simulación, no mediante el writer real de la entidad observada.
+
+#### 60. Dirty state
+
+Cambios locales hipotéticos no se presentan como cambios empresariales pendientes.
+
+La UI puede advertir que existe una variante del escenario sin sugerir que deba guardarse en el dominio real.
+
+Al salir no se ofrece una acción automática de `Guardar cambios reales` basada en ese estado simulado.
+
+#### 61. Confirmaciones
+
+Un modal de confirmación real no debe aparecer después de un control que ya es inerte en simulación como si la siguiente confirmación pudiera autorizar la mutación.
+
+Si se representa el flujo de confirmación por razones de preview, toda la secuencia permanece hipotética y no ejecutable.
+
+#### 62. Modales y drawers
+
+Abrir modales o drawers puramente presentacionales es válido.
+
+Su contenido conserva la misma clasificación y frontera de datos que la superficie origen.
+
+Un modal no obtiene permiso adicional por estar fuera del árbol principal de la pantalla.
+
+#### 63. Portales y overlays
+
+Elementos renderizados mediante portal conservan el estado de simulación.
+
+No se considera conforme un botón ejecutable únicamente porque se renderice fuera del contenedor visual de la preview.
+
+#### 64. Componentes reutilizados
+
+Un componente compartido utilizado tanto en contexto real como simulado debe recibir o resolver una proyección de presentación suficiente para comportarse de manera no ejecutable durante simulación.
+
+No debe inferir read-only únicamente desde etiquetas visibles o desde la ausencia de un callback cuando el contrato requiera explicación accesible.
+
+#### 65. Server Components
+
+Un Server Component puede renderizar una representación read-only únicamente con datos cuya lectura sea válida para el actor real y el escenario permitido.
+
+La renderización server-side no convierte una evaluación simulada en autoridad de lectura real.
+
+#### 66. Client Components
+
+Un Client Component no decide autorización.
+
+Puede aplicar comportamiento read-only, interceptar una interacción de preview y mostrar explicación, pero cualquier operación que alcance servidor conserva el enforcement de `AUTH-SIM-010`.
+
+#### 67. Accesibilidad: foco
+
+El modo solo lectura debe conservar una experiencia de teclado comprensible.
+
+No se elimina indiscriminadamente todo elemento del orden de foco si eso impide conocer qué acciones existirían en el escenario.
+
+Los controles presentados como no disponibles deben comunicar su estado de forma perceptible.
+
+#### 68. Accesibilidad: estado no ejecutable
+
+La no ejecutabilidad no puede comunicarse exclusivamente por color.
+
+La superficie debe ofrecer texto, semántica accesible o explicación equivalente conforme al componente propietario.
+
+#### 69. Accesibilidad: controles inertes
+
+Cuando un control visual permanezca enfocable para explicación, su activación no puede ejecutar el efecto real.
+
+Cuando el elemento se deshabilite nativamente y deje de ser enfocable, debe existir contexto suficiente para que la persona entienda por qué la acción no está disponible.
+
+Esta tarea no obliga a un único patrón HTML para todas las superficies.
+
+#### 70. Accesibilidad: lectores de pantalla
+
+La persona debe poder identificar:
+
+- que está en simulación;
+- que la superficie es de solo lectura;
+- qué resultado es hipotético;
+- que las acciones reales no se ejecutarán;
+- cuándo la preview dejó de estar vigente.
+
+No se exponen detalles internos de seguridad para satisfacer esta explicación.
+
+#### 71. Copy de modo solo lectura
+
+La experiencia puede adaptar el texto al contexto de la aplicación, pero debe conservar simultáneamente estas ideas:
+
+```text
+ESTAS EN UNA SIMULACION
+```
+
+```text
+PUEDES REVISAR EL ESCENARIO PERMITIDO
+```
+
+```text
+LAS ACCIONES REALES NO SE EJECUTAN DESDE ESTA VISTA
+```
+
+No se utiliza un mensaje que sugiera que el usuario carece de permiso real cuando la única causa es estar en una preview simulada.
+
+#### 72. Relación con AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION
+
+El modo read-only debe prevenir que la persona interprete un control como ejecutable.
+
+Si una solicitud de ejecución aun alcanza un owner server-side, `AUTH-SIM-010` conserva la respuesta de seguridad aplicable, incluyendo `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` cuando corresponda.
+
+El mensaje visual preventivo no sustituye ese resultado.
+
+#### 73. Sesión real preservada
+
+El modo read-only no implica cerrar la sesión real.
+
+La persona continúa siendo el actor real de la simulación mientras la sesión siga vigente.
+
+Un bloqueo de acción simulada no se transforma en logout genérico.
+
+#### 74. Dispositivo compartido
+
+En un dispositivo compartido deben mantenerse separados:
+
+```text
+TECHNICAL PRINCIPAL
+REAL HUMAN ACTOR
+SIMULATED SUBJECT OR ROLE
+READ-ONLY PRESENTATION
+```
+
+Cambiar de actor humano invalida la relación de preview anterior según los contratos propietarios.
+
+No se transfiere el estado read-only de una persona como si fuera la simulación de la siguiente.
+
+#### 75. Cambio de actor
+
+Si cambia el actor real:
+
+- la preview anterior deja de ser utilizable;
+- no se conserva formulario hipotético sensible;
+- no se heredan resultados simulados;
+- no se conservan permisos derivados;
+- se vuelve a resolver lifecycle y contexto.
+
+#### 76. Cambio de escenario
+
+Cambiar una dimensión hipotética material obliga a tratar el resultado anterior como correspondiente a otra revisión.
+
+No se conserva un `WOULD_ALLOW` previo como habilitación visual del nuevo escenario.
+
+#### 77. Cambio de política
+
+Si cambia una fuente material de autorización o clasificación:
+
+- la preview pierde frescura hasta revalidación;
+- el modo no utiliza la clasificación cacheada para seguir mostrando contenido sensible;
+- controles mutadores permanecen inertes;
+- no se ejecuta una acción basada en una decisión anterior.
+
+#### 78. Respuestas tardías
+
+Una respuesta tardía de una revisión anterior no puede reactivar controles ni reemplazar el contenido del escenario vigente sin verificar identidad, revisión y correlación.
+
+El comportamiento read-only debe converger con el estado autoritativo actual.
+
+#### 79. Varias tabs
+
+Varias tabs pueden presentar la misma simulación, pero cada una debe respetar el lifecycle autoritativo.
+
+Una tab no puede:
+
+- convertir sus controles en reales porque otra cerró la preview;
+- conservar `ACTIVE` después de un terminal confirmado;
+- ejecutar un handler stale;
+- compartir un draft hipotético como intención empresarial real.
+
+#### 80. Refresh
+
+Un refresh no elimina el modo read-only por defecto.
+
+Después de reconstruir la aplicación deben resolverse nuevamente lifecycle, clasificación y contexto material antes de presentar la preview como vigente.
+
+#### 81. Offline
+
+Offline no convierte la preview en un editor local que sincronizará mutaciones reales más tarde.
+
+No se encolan operaciones empresariales desde simulación.
+
+Al reconectar se vuelve a resolver el escenario y cualquier acción real posterior requiere una solicitud nueva.
+
+#### 82. Cache
+
+La cache puede mejorar presentación, pero no conserva autoridad.
+
+No puede:
+
+- reactivar controles reales;
+- ampliar datasets;
+- restaurar un escenario terminal;
+- convertir un resultado simulado en decisión real;
+- conservar un formulario real enviable después de perder la simulación.
+
+#### 83. Storage cliente
+
+Persistencia cliente de preferencias visuales no constituye prueba de simulación vigente ni de read-only.
+
+No se guardan en storage como intención real:
+
+- payloads mutadores;
+- claves idempotentes de operaciones empresariales;
+- credenciales;
+- tokens;
+- permisos calculados;
+- datos sensibles innecesarios.
+
+#### 84. Privacidad
+
+El modo read-only no utiliza la simulación para revelar:
+
+- sujetos fuera del alcance real del actor;
+- documentos personales;
+- información financiera no autorizada;
+- secretos;
+- credenciales;
+- configuraciones internas sensibles;
+- reason codes internos cuando no sean aptos para la persona.
+
+La explicación visual aplica minimización.
+
+#### 85. Estado físico positivo: aviso compartido
+
+Existe una primitiva compartida `SimulatedRoleNotice` que recibe texto de título, rol simulado, descripción y etiqueta no ejecutable.
+
+Esa primitiva aporta presentación del aviso, pero por sí sola no controla descendientes, handlers, formularios ni mutaciones.
+
+Su existencia no demuestra materialización completa del modo read-only.
+
+#### 86. Estado físico actual: separación no certificada en UI
+
+La inspección estática no demuestra un boundary compartido y transversal que aplique automáticamente la semántica read-only de esta tarea a todas las superficies de las aplicaciones.
+
+La ausencia de un componente común no autoriza a inferir una implementación concreta; cada unidad futura deberá demostrar cómo cumple el contrato.
+
+#### 87. Estado físico actual: EffectiveContext legacy
+
+`@vento/os-context` conserva una forma `EffectiveContext` con campos de simulación y `can_operate` junto al contexto efectivo.
+
+Ese shape no se adopta como fuente de read-only ni como autoridad final.
+
+Un booleano no reemplaza la clasificación, lifecycle, procedencia y decisión tipada requeridos.
+
+#### 88. Estado físico actual: handlers reales no certificados
+
+La documentación vigente no permite afirmar que todos los componentes consumidores hayan neutralizado hoy:
+
+- callbacks mutadores;
+- submissions;
+- shortcuts;
+- acciones bulk;
+- uploads;
+- exportaciones;
+- impresiones;
+- integraciones;
+- handlers alternos.
+
+La materialización futura debe demostrarlo por unidad.
+
+#### 89. Frontera con AUTH-SIM-012
+
+Esta tarea define cómo una superficie ya situada en simulación se comporta como read-only.
+
+`AUTH-SIM-012` conserva la responsabilidad de validar:
+
+- navegación entre superficies;
+- persistencia correcta de procedencia simulada al cambiar de ruta;
+- acceso a destinos permitidos;
+- rechazo de escapes hacia contexto real;
+- convergencia de navegación y lifecycle.
+
+Esta tarea no certifica esos recorridos.
+
+#### 90. Frontera con AUTH-SIM-013
+
+Esta tarea exige que un control de preview no pueda considerarse ejecutable.
+
+`AUTH-SIM-013` conserva la certificación específica de que Server Actions no consuman autoridad simulada.
+
+Read-only visual no certifica Server Actions.
+
+#### 91. Frontera con AUTH-SIM-014
+
+Esta tarea define el contrato común de experiencia.
+
+`AUTH-SIM-014` conserva la certificación integral de que las aplicaciones aplicables cumplen el contrato de simulación.
+
+Una definición documental de read-only no equivale a cobertura física completa.
+
+#### 92. Aplicaciones canónicas
+
+La experiencia conserva una decisión explícita para las diez aplicaciones canónicas sin inventar pantallas ni consumidores nuevos.
+
+| Aplicación | Regla de modo solo lectura |
+| --- | --- |
+| SHELL | aplicar la clasificación de simulación de la capacidad y conservar cero autoridad simulada |
+| ANIMA | preview solo dentro de clasificación vigente y datos autorizados al actor real |
+| AURA | conservar la exclusión de simulación vigente; no fabricar preview read-only por inferencia |
+| FOGO | controles de producción o cambios reales permanecen no ejecutables en preview |
+| NEXO | inventario, logística y operaciones visibles en preview no producen movimientos, retiros, recepciones ni cambios reales |
+| NUMERA | cálculos o vistas hipotéticas no ejecutan efectos contables, financieros o de costo reales |
+| ORIGO | compras y recepciones simuladas no generan órdenes, recepciones ni movimientos reales |
+| PASS | conservar la exclusión de simulación vigente y separación del dominio cliente |
+| PULSO | preview no registra ventas, pagos, cierres ni efectos de POS |
+| VISO | administración y simulación permanecen separadas; el permiso de administrar simulación no se auto-simula |
+
+La decisión exacta por permiso continúa perteneciendo a `simulation_requirement`.
+
+#### 93. Matriz de interacción
+
+| Interacción | FULL_PREVIEW | DECISION_ONLY | NOT_ALLOWED |
+| --- | --- | --- | --- |
+| ver resultado hipotético | permitido | permitido | no |
+| ver contenido protegido por autoridad simulada | no | no | no |
+| ver datos reales ya autorizados al actor real | puede aplicar | solo información mínima permitida por el contrato de decisión; nunca contenido protegido del recurso por autoridad simulada | no por simulación |
+| datos sintéticos o enmascarados | puede aplicar | mínimos y explicativos | no |
+| filtros locales | puede aplicar | solo sobre información permitida | no |
+| editar escenario hipotético | puede aplicar según owner | limitado a inputs de evaluación | no |
+| submit empresarial | no | no | no |
+| upload real | no | no | no |
+| exportación protegida por autoridad simulada | no | no | no |
+| impresión real | no | no | no |
+| webhook o integración | no | no | no |
+| navegación simulada | puede aplicar; se certifica en AUTH-SIM-012 | puede aplicar solo al flujo explicativo; se certifica en AUTH-SIM-012 | no |
+
+#### 94. Matriz de lifecycle y presentación
+
+| Estado | Preview | Controles de efecto | Recuperación |
+| --- | --- | --- | --- |
+| `RESOLVING` | no confirmada | inertes/no disponibles | resolver escenario |
+| `ACTIVE` | según clasificación | inertes | continuar preview |
+| `STALE` | suspendida | inertes | revalidar |
+| `INVALID` visible | retirar/bloquear | inertes | resolver lifecycle |
+| `EXIT_PENDING` | conserva semántica simulada | inertes | esperar terminal + contexto real |
+| terminal persistido | retirar | no usar request simulado | resolver contexto real fresco |
+| contexto real fresco | ya no es preview | depende de autorización real | evaluación normal |
+
+#### 95. Matriz de controles
+
+| Clase de control | Comportamiento en simulación |
+| --- | --- |
+| lectura de texto | disponible dentro de alcance permitido |
+| filtro/orden local | disponible si no amplía datos |
+| tab/acordeón | disponible como presentación |
+| selector de escenario | puede modificar solo escenario hipotético si el owner lo permite |
+| input hipotético | local o revisión simulada; nunca autosave real |
+| botón mutador | inerte, interceptado o sustituido por explicación |
+| submit | no ejecutable |
+| upload | no ejecutable contra storage real |
+| delete/approve/reject | no ejecutable |
+| bulk action | no ejecutable |
+| export protegido | no ejecutable por autoridad simulada |
+| impresión | no ejecutable |
+| notificación | no ejecutable |
+| integración/webhook | no ejecutable |
+
+#### 96. Evidencia mínima de una futura unidad
+
+Cada materialización de `AUTH-SIM-011` para un `implementation_unit_id` deberá demostrar, como mínimo:
+
+1. package y unidad propietaria identificados;
+2. gate E5 aplicable en PASS;
+3. superficie y capacidad identificadas;
+4. clasificación `simulation_requirement` resuelta desde fuente vigente;
+5. lifecycle de simulación resuelto;
+6. aviso persistente presente cuando corresponda;
+7. `FULL_PREVIEW` sin writers reales;
+8. `DECISION_ONLY` sin contenido protegido por autoridad simulada;
+9. `NOT_ALLOWED` sin preview funcional;
+10. permiso no clasificado fail-closed;
+11. datos reales limitados por autoridad real;
+12. datos sintéticos separados de datos reales;
+13. controles mutadores no ejecutables;
+14. submissions neutralizados;
+15. autosave real ausente;
+16. shortcuts equivalentes neutralizados;
+17. gestos alternos neutralizados;
+18. acciones bulk neutralizadas;
+19. uploads reales neutralizados;
+20. exportaciones protegidas neutralizadas;
+21. impresión real neutralizada;
+22. notificaciones reales neutralizadas;
+23. integraciones reales neutralizadas;
+24. filtros y ordenamiento sin ampliación de datos;
+25. accesibilidad del estado read-only;
+26. copy de simulación perceptible;
+27. `WOULD_ALLOW` sin habilitación real;
+28. `WOULD_DENY` sin degradar permisos reales;
+29. `INDETERMINATE` sin optimismo;
+30. `RESOLVING` fail-closed;
+31. `STALE` fail-closed;
+32. `INVALID` visible sin fallback real;
+33. `EXIT_PENDING` sin anticipar contexto real;
+34. terminal sin replay del request simulado;
+35. retorno real solo tras nueva resolución;
+36. varias tabs convergentes;
+37. refresh con revalidación;
+38. offline sin cola de mutaciones reales;
+39. cache sin autoridad;
+40. cambio de actor sin transferencia;
+41. cambio de escenario sin reutilizar evaluación stale;
+42. cambio de política con invalidación;
+43. respuesta tardía sin reactivar controles;
+44. server-side deny independiente del estado visual;
+45. cero efectos empresariales observados;
+46. rollback sin reintroducir handlers permisivos.
+
+#### 97. Casos mínimos de prueba futura
+
+| Caso | Resultado esperado |
+| --- | --- |
+| `FULL_PREVIEW` muestra formulario | representación visible, submit real inerte |
+| `FULL_PREVIEW` con `WOULD_ALLOW` | control puede verse permitido hipotéticamente, pero no ejecutar |
+| `DECISION_ONLY` | resultado visible sin formulario operativo ni datos protegidos |
+| `NOT_ALLOWED` | sin preview funcional |
+| permiso sin clasificación | fail-closed |
+| click en Guardar | ninguna mutación; enforcement server-side permanece disponible |
+| Enter sobre submit | ninguna mutación |
+| shortcut de guardar | ninguna mutación |
+| doble click | ninguna mutación |
+| autosave | no writer empresarial |
+| upload | no archivo real persistido |
+| imprimir | ningún job físico |
+| exportar contenido protegido | no export por autoridad simulada |
+| enviar notificación | ningún dispatch real |
+| disparar webhook | ningún dispatch externo |
+| cambiar filtro | solo datos permitidos al actor real |
+| cambiar selector hipotético | nueva variante simulada, no contexto real |
+| perder frescura | preview suspendida, controles inertes |
+| solicitar salida | controles reales siguen inertes durante EXIT_PENDING |
+| terminal + request viejo | request simulado sigue no ejecutable |
+| terminal + contexto real fresco | acción posterior se evalúa como solicitud real nueva |
+| cambio de actor en estación compartida | preview anterior no se transfiere |
+| refresh | re-resolver antes de presentar ACTIVE |
+| offline | no encolar mutación real |
+
+#### 98. Rollback de una futura unidad
+
+El rollback técnico no puede:
+
+- restaurar handlers reales dentro de una preview;
+- convertir `FULL_PREVIEW` en permiso de escritura;
+- convertir `DECISION_ONLY` en formulario operativo;
+- permitir `NOT_ALLOWED` como fallback read-only;
+- reactivar autosave real;
+- reactivar uploads o exportaciones por autoridad simulada;
+- reutilizar `can_operate` como fuente de read-only o autorización;
+- retirar el aviso persistente mientras la preview siga utilizable;
+- reintroducir una ruta de shortcut o gesto ejecutable;
+- conservar drafts simulados como comandos reales pendientes;
+- reactivar replay offline;
+- convertir un terminal en autorización para ejecutar la acción previa.
+
+#### 99. Invariantes
+
+1. El modo solo lectura es presentación, no autoridad.
+2. El guard server-side permanece obligatorio.
+3. La ausencia de control visual no sustituye enforcement.
+4. `FULL_PREVIEW` no ejecuta acciones reales.
+5. `DECISION_ONLY` no muestra formularios operativos por autoridad simulada.
+6. `NOT_ALLOWED` no se convierte en read-only.
+7. No existe una cuarta clasificación de simulación.
+8. Permiso no clasificado falla cerrado.
+9. Los datos reales visibles permanecen bajo autoridad real.
+10. El rol simulado no amplía datos.
+11. Datos sintéticos no se persisten como entidades reales.
+12. Controles mutadores son inertes, interceptados o sustituidos.
+13. Un botón visualmente habilitado en la hipótesis no tiene handler real ejecutable.
+14. Submit real permanece bloqueado.
+15. Autosave real permanece bloqueado.
+16. Upload real permanece bloqueado.
+17. Exportación protegida por autoridad simulada permanece bloqueada.
+18. Impresión real permanece bloqueada.
+19. Notificación real permanece bloqueada.
+20. Webhook real permanece bloqueado.
+21. Integración real permanece bloqueada.
+22. Acciones bulk no preparan comandos reales.
+23. Shortcuts no crean bypass.
+24. Gestos alternos no crean bypass.
+25. Portales no crean bypass.
+26. Modales no crean autoridad adicional.
+27. Filtros no amplían alcance de datos.
+28. Paginación no amplía alcance de datos.
+29. Tabs internas no cambian autoridad.
+30. `WOULD_ALLOW` no equivale a `ALLOW`.
+31. `WOULD_DENY` no equivale a pérdida de permiso real.
+32. `INDETERMINATE` no se resuelve por optimismo.
+33. `RESOLVING` no habilita provisionalmente.
+34. `STALE` no reutiliza evaluación anterior.
+35. `INVALID` visible no degrada a contexto real.
+36. `EXIT_PENDING` mantiene el modo simulado.
+37. Un terminal retira la preview, no restaura autoridad desde cache.
+38. La acción real posterior exige solicitud real nueva.
+39. Cambiar actor invalida la preview anterior.
+40. Cambiar escenario invalida evaluaciones incompatibles.
+41. Cambiar política invalida proyecciones stale.
+42. Respuestas tardías no reactivan controles.
+43. Varias tabs convergen en lifecycle autoritativo.
+44. Refresh exige revalidación.
+45. Offline no encola mutaciones reales.
+46. Cache no crea autoridad.
+47. Storage cliente no crea autoridad.
+48. La sesión real puede preservarse sin volver ejecutable la preview.
+49. Dispositivo compartido no sustituye al actor humano.
+50. El aviso persistente sigue siendo obligatorio cuando corresponda.
+51. `SimulatedRoleNotice` por sí solo no certifica read-only.
+52. `EffectiveContext.can_operate` no se adopta como fuente final.
+53. La ausencia actual de certificación física no se presenta como cumplimiento.
+54. `AUTH-SIM-012` conserva navegación simulada.
+55. `AUTH-SIM-013` conserva certificación de Server Actions.
+56. `AUTH-SIM-014` conserva certificación integral.
+57. No se modifica `AUTH-DB-013`.
+58. No se redefine `AUTH-SRV-015`.
+59. No se crean ni modifican requisitos de prueba.
+60. No se modifica 04A.
+61. No se ejecutan cambios físicos en esta tarea.
+
+#### 100. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. significado de modo solo lectura durante simulación;
+2. separación entre presentación y enforcement;
+3. fuente autoritativa del modo;
+4. techo de autoridad real sobre datos;
+5. interpretación de `FULL_PREVIEW`;
+6. interpretación de `DECISION_ONLY`;
+7. interpretación de `NOT_ALLOWED`;
+8. default fail-closed;
+9. comportamiento de controles mutadores;
+10. formularios y campos hipotéticos;
+11. ausencia de autosave real;
+12. selects, toggles y selección local;
+13. uploads;
+14. exportaciones;
+15. impresión;
+16. notificaciones;
+17. integraciones;
+18. shortcuts y gestos;
+19. acciones bulk;
+20. filtros, orden y paginación;
+21. navegación como frontera hacia `AUTH-SIM-012`;
+22. datos sintéticos, vacíos, enmascarados y reales autorizados;
+23. lifecycle visible y terminal;
+24. retorno a contexto real fresco;
+25. accesibilidad;
+26. privacidad;
+27. dispositivos compartidos;
+28. concurrencia, tabs, refresh, offline y cache;
+29. estado físico positivo del aviso;
+30. brechas físicas no certificadas;
+31. matriz de aplicaciones;
+32. evidencia mínima por futura unidad;
+33. rollback;
+34. handoff hacia navegación simulada.
+
+#### 101. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya cubre separación de autoridad, clasificación `FULL_PREVIEW` / `DECISION_ONLY` / `NOT_ALLOWED`, controles inertes, ausencia de formularios operativos bajo `DECISION_ONLY`, bloqueo multicanal, cero efectos, lifecycle, experiencia visible, accesibilidad, invalidación, concurrencia, salida fresca y reconciliación física. Esta tarea especializa la experiencia de solo lectura sin crear una obligación verificable nueva ni cambiar owner, prioridad, modalidad, paquete, estado o relaciones del registro.
+
+#### 102. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- simulación no ejecutable;
+- cuatro planos separados;
+- clasificación de simulación por permiso;
+- controles inertes;
+- contenido permitido por `FULL_PREVIEW`;
+- restricción de `DECISION_ONLY`;
+- exclusión `NOT_ALLOWED`;
+- cero efectos empresariales;
+- bloqueo de canales reales;
+- experiencia y copy de simulación;
+- invalidación y retorno a contexto real;
+- aplicaciones canónicas y reconciliación física.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-012`, `TREQ-AUTH-119..128`, `TREQ-AUTH-165` y `TREQ-AUTH-279..288`.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `AUTH-SIM-011`.
+
+#### 103. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto de tarea se preparó de forma independiente y todavía no fue incorporado al archivo propietario ni sometido al build documental del checkout del usuario |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron apertura de rama, preflight, formateador, task quality, delivery check, topología, TREQ ni batería global dentro del checkout local del usuario |
+| REMOTA | `PASS` | se verificaron en solo lectura el estado canónico vigente, continuidad `AUTH-SIM-010 -> AUTH-SIM-011 -> AUTH-SIM-012`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas de formato y desarrollo, contrato de entrega, handoff completo de `AUTH-SIM-010`, clasificación `FULL_PREVIEW` / `DECISION_ONLY` / `NOT_ALLOWED`, cobertura 04A de simulación y estado físico de `SimulatedRoleNotice` y `@vento/os-context` |
+| OPERATIVA | `NOT_EXECUTED` | no se ejecutó una simulación ni se interactuó con una aplicación desplegada durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron componentes, aplicaciones, código, Supabase, migraciones, RLS, RPC, Server Actions, handlers, datos, permisos, sesiones, configuración ni despliegues |
+
+#### 104. Criterios de aceptación
+
+- [x] Se define read-only como experiencia de preview sin efectos reales.
+- [x] Se separa read-only visual de enforcement server-side.
+- [x] Se conserva `AUTH-SIM-010` como autoridad de bloqueo.
+- [x] Se consume el lifecycle visible de `AUTH-SIM-007`.
+- [x] Se conserva la salida autoritativa de `AUTH-SIM-009`.
+- [x] Se conserva `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`.
+- [x] Se define una fuente autoritativa del modo y se excluyen flags locales como autoridad.
+- [x] Se mantiene la autoridad real como techo de datos.
+- [x] Se conservan exactamente `FULL_PREVIEW`, `DECISION_ONLY` y `NOT_ALLOWED`.
+- [x] `FULL_PREVIEW` permite preview, no ejecución.
+- [x] `DECISION_ONLY` no expone formulario operativo ni contenido protegido por autoridad simulada.
+- [x] `NOT_ALLOWED` no se degrada a read-only.
+- [x] Clasificación desconocida falla cerrado.
+- [x] Controles mutadores quedan inertes, interceptados o sustituidos.
+- [x] Un control hipotéticamente permitido no conserva handler real.
+- [x] Formularios no realizan autosave empresarial.
+- [x] Selectores de escenario no cambian contexto real.
+- [x] Toggles hipotéticos no cambian configuración real.
+- [x] Acciones bulk no crean comandos reales pendientes.
+- [x] Uploads no persisten archivos reales.
+- [x] Exportaciones protegidas no usan autoridad simulada.
+- [x] Impresión no genera jobs físicos.
+- [x] Notificaciones no generan dispatch real.
+- [x] Integraciones no generan side effects.
+- [x] Shortcuts no crean bypass.
+- [x] Gestos alternos no crean bypass.
+- [x] Filtros no amplían datos.
+- [x] Paginación no amplía datos.
+- [x] Tabs y acordeones pueden permanecer presentacionales.
+- [x] Se conserva privacidad y minimización.
+- [x] Se define el tratamiento de datos sintéticos, vacíos y enmascarados.
+- [x] Datos reales visibles requieren autoridad real independiente.
+- [x] `WOULD_ALLOW` no habilita acción real.
+- [x] `WOULD_DENY` no se presenta como pérdida de permisos reales.
+- [x] `INDETERMINATE` permanece no ejecutable.
+- [x] `RESOLVING` no habilita controles.
+- [x] `STALE` suspende la preview.
+- [x] `INVALID` visible no produce fallback real.
+- [x] `EXIT_PENDING` mantiene read-only.
+- [x] Terminales retiran preview sin restaurar cache real.
+- [x] La acción real posterior exige contexto real fresco.
+- [x] Optimistic UI empresarial queda prohibida.
+- [x] Dirty state simulado no se convierte en cambio real pendiente.
+- [x] Modales y portales no crean bypass.
+- [x] Componentes cliente no deciden autorización.
+- [x] Server Components no amplían lectura por rol simulado.
+- [x] Se cubre accesibilidad de foco, estado y lectores de pantalla.
+- [x] Se mantiene la sesión real cuando siga vigente.
+- [x] Dispositivo compartido no sustituye al actor.
+- [x] Cambio de actor no transfiere preview.
+- [x] Cambio de escenario invalida resultados incompatibles.
+- [x] Cambio de política invalida proyecciones stale.
+- [x] Respuestas tardías no reactivan controles.
+- [x] Varias tabs convergen.
+- [x] Refresh revalida.
+- [x] Offline no encola mutaciones.
+- [x] Cache y storage no crean autoridad.
+- [x] Se reconoce `SimulatedRoleNotice` como primitiva de aviso, no como boundary completo.
+- [x] Se reconoce `EffectiveContext` legacy como shape no adoptado para autoridad final.
+- [x] Se preservan fronteras con `AUTH-SIM-012`, `AUTH-SIM-013` y `AUTH-SIM-014`.
+- [x] Se conserva una decisión para las diez aplicaciones sin inventar pantallas.
+- [x] AURA y PASS conservan sus exclusiones vigentes.
+- [x] VISO no auto-simula el permiso de simulación.
+- [x] No se reabre `AUTH-DB-013`.
+- [x] No se redefine `AUTH-SRV-015`.
+- [x] Se define evidencia mínima por futura unidad.
+- [x] Se define rollback fail-closed.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecutan cambios físicos.
+- [x] `AUTH-SIM-012` permanece reservada.
+
+#### 105. Límites
+
+Esta tarea no:
+
+- implementa componentes;
+- modifica `SimulatedRoleNotice`;
+- crea un boundary read-only físico;
+- modifica `AppShell`;
+- modifica aplicaciones;
+- modifica `@vento/os-context`;
+- elimina `EffectiveContext` legacy;
+- cambia `can_operate`;
+- modifica Supabase;
+- crea migraciones;
+- cambia RLS;
+- cambia grants;
+- cambia RPC;
+- modifica Server Actions;
+- modifica Route Handlers;
+- modifica Edge Functions;
+- modifica Realtime;
+- modifica jobs o colas;
+- modifica webhooks;
+- modifica integraciones;
+- modifica impresión;
+- cambia sesiones;
+- cambia roles;
+- cambia permisos;
+- cambia `simulation_requirement`;
+- reclasifica permisos;
+- modifica `AUTH-DB-013`;
+- modifica `AUTH-SRV-015`;
+- ejecuta simulaciones reales;
+- valida físicamente navegación;
+- desarrolla `AUTH-SIM-012`;
+- certifica Server Actions de `AUTH-SIM-013`;
+- ejecuta certificación integral de `AUTH-SIM-014`;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A.
+
+#### 106. Handoff exacto hacia AUTH-SIM-012
+
+`AUTH-SIM-011` entrega a `AUTH-SIM-012` una superficie con semántica visual cerrada:
+
+```text
+SIMULATION PREVIEW
+-> READ-ONLY PRESENTATION
+-> ZERO REAL EFFECTS
+```
+
+```text
+NAVIGATION INSIDE PREVIEW
+MUST PRESERVE
+SIMULATED PROVENANCE
+```
+
+```text
+ROUTE CHANGE
+!=
+EXIT SIMULATION
+```
+
+`AUTH-SIM-012` deberá validar que la navegación entre superficies conserve lifecycle, aviso, clasificación, procedencia simulada, read-only y cero efectos; además deberá demostrar que ninguna ruta convierte el escenario en contexto real por pérdida de estado cliente o por bypass de guards.
+
+Esta tarea no anticipa la matriz física de rutas ni los resultados de esa validación.
+
+---
+
+#### 107. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-SIM-010 — Bloquear acciones críticas durante simulación`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-SIM-011 — Definir modo solo lectura`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-SIM-012 — Validar navegación como rol simulado`
