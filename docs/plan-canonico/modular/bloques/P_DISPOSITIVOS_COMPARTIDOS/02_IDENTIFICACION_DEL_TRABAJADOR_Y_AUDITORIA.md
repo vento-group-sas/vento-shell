@@ -1213,5 +1213,757 @@ Esta tarea no:
 `AUTH-DEV-009 — Evitar heredar permisos administrativos`
 
 
-### [ ] AUTH-DEV-009 — Evitar heredar permisos administrativos
+### ✅ AUTH-DEV-009 — Evitar heredar permisos administrativos
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-008 — Combinar límite del dispositivo y trabajador
+**Tarea siguiente:** AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría
+**Tipo de tarea:** documental; contrato canónico de no herencia de autoridad administrativa entre principal técnico, sesiones, trabajadores y estado residual en dispositivo compartido, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo un dispositivo compartido impide que un trabajador adquiera autoridad administrativa que no le pertenece por efecto del principal técnico autenticado, de una sesión administrativa previa, del trabajador anterior, de `navigation_role`, de una aplicación visible, de una plantilla, de un paquete del dispositivo o de estado residual conservado por cliente, servidor o infraestructura.
+
+La tarea preserva la intersección restrictiva aprobada por `AUTH-DEV-008` y añade la barrera específica de no herencia administrativa. No elimina capacidades administrativas legítimas del trabajador actual: cuando el actor humano vigente posee una capacidad base válida y su contexto cumple todos los requisitos, esa capacidad puede participar en la decisión únicamente como autoridad propia del actor.
+
+Regla principal:
+
+```text
+AUTORIDAD ADMINISTRATIVA DEL ACTOR ACTUAL
+=
+AUTORIDAD BASE RESUELTA PARA ESE ACTOR
+INTERSECCION
+TECHO EFECTIVO DEL DISPOSITIVO
+INTERSECCION
+APLICACION EFECTIVA
+INTERSECCION
+ALCANCE Y RECURSO VALIDOS
+INTERSECCION
+CONTROLES ADICIONALES APLICABLES
+INTERSECCION
+AUSENCIA DE DENEGACIONES
+```
+
+Nunca:
+
+```text
+AUTORIDAD ADMINISTRATIVA DEL ACTOR ACTUAL
+=
+AUTORIDAD DEL PRINCIPAL TECNICO
+O
+AUTORIDAD DE UN ADMINISTRADOR PREVIO
+O
+AUTORIDAD DEL TRABAJADOR ANTERIOR
+O
+NAVIGATION_ROLE
+O
+APLICACION VISIBLE
+O
+ESTADO RESIDUAL
+```
+
+---
+
+#### 2. Handoff recibido de AUTH-DEV-008
+
+`AUTH-DEV-008` entrega una decisión sin suma de privilegios:
+
+```text
+ACTOR HUMANO EXACTO
++
+AUTORIDAD HUMANA RESUELTA
++
+TECHO DE DISPOSITIVO RESUELTO
++
+INTERSECCION CONTEXTUAL EVALUADA
+=
+NINGUNA AUTORIDAD PROCEDE DEL PRINCIPAL TECNICO
+```
+
+`AUTH-DEV-009` profundiza exclusivamente la última garantía y la extiende a toda fuente residual o indirecta capaz de aparentar autoridad administrativa.
+
+Se preservan sin modificación:
+
+- la identidad humana y firma ligera definidas por `AUTH-DEV-007`;
+- la intersección de autoridad del trabajador y techo del dispositivo definida por `AUTH-DEV-008`;
+- la separación entre principal técnico, dispositivo empresarial y actor efectivo;
+- la obligación de resolver identidad, autoridad, contexto y recurso en servidor;
+- la regla según la cual el dispositivo restringe y nunca concede;
+- la independencia entre carril base y carril operativo;
+- la clasificación vigente de capacidades compatibles con dispositivo compartido;
+- la obligación de reautenticación fuerte cuando corresponda;
+- la prevalencia de denegaciones aplicables.
+
+---
+
+#### 3. Resultado canónico
+
+La no herencia administrativa queda regida por estas decisiones:
+
+1. el principal técnico del dispositivo no aporta permisos base ni cobertura administrativa al actor humano;
+2. el trabajador actual solo puede utilizar autoridad administrativa que el servidor resuelva para ese mismo trabajador;
+3. ninguna sesión personal o administrativa previa puede permanecer como fuente de autoridad después de cambiar al modo de dispositivo compartido o de cambiar el actor humano efectivo;
+4. el trabajador anterior no presta rol, permisos, cobertura, alcance, reautenticación ni decisiones en caché al trabajador siguiente;
+5. `navigation_role` puede orientar presentación o experiencia, pero no participa en autorización;
+6. una aplicación permitida o visible es superficie disponible, no un `ALLOW` del actor;
+7. una plantilla o paquete de capacidades fija un techo restrictivo y nunca crea autoridad humana;
+8. la sede o área física del dispositivo no crea cobertura administrativa;
+9. la autoridad administrativa no se infiere desde cookies, almacenamiento local, estado de interfaz, parámetros de ruta, cabeceras de cliente ni snapshots antiguos;
+10. una credencial técnica privilegiada, `service_role` o cliente administrativo no convierte al proceso ni al actor humano en administrador empresarial;
+11. toda decisión sensible se revalida contra actor, contexto, dispositivo, recurso y controles vigentes antes del efecto;
+12. ante identidad, autoridad, frescura o separación ambiguas, la decisión falla cerrada;
+13. cualquier dato residual puede conservar valor de auditoría o diagnóstico cuando corresponda, pero no autoridad;
+14. el contrato aplica tanto a capacidades administrativas puras como al componente base de capacidades de doble condición;
+15. el resultado deja a `AUTH-DEV-010` principal, dispositivo, actor y fuente de autoridad claramente separables para auditoría.
+
+---
+
+#### 4. Qué significa herencia administrativa
+
+Existe herencia administrativa prohibida cuando una decisión del trabajador actual depende total o parcialmente de una autoridad que fue resuelta para otra identidad, otro contexto o una credencial técnica.
+
+Casos prohibidos:
+
+| Fuente heredada | Ejemplo conceptual | Resultado obligatorio |
+| --- | --- | --- |
+| principal técnico | el usuario Auth del kiosco posee o aparenta privilegios y el actor humano los recibe | ignorar esa autoridad empresarial y evaluar al actor humano |
+| administrador configurador | una persona administró el terminal antes de dejarlo en operación | sus permisos no forman parte de la sesión operativa posterior |
+| sesión personal previa | el navegador conserva una sesión administrativa anterior | no reutilizarla como fuente del actor o del carril base actual |
+| trabajador anterior | el último actor tenía mayor cobertura | no conservar rol, permisos, alcance ni decisiones reutilizables |
+| `navigation_role` | el dispositivo anuncia `bodeguero` o cualquier otro rol | usar solo para presentación permitida; nunca como autoridad |
+| aplicación visible | VISO, NUMERA u otra app está disponible en el terminal | exigir permiso propio del actor y contexto correspondiente |
+| plantilla o paquete | el terminal admite un conjunto amplio de capacidades | tratarlo como techo; nunca como concesión |
+| sede o área del dispositivo | el terminal está físicamente en una sede administrativa | no crear cobertura del actor por ubicación |
+| caché o snapshot | una evaluación anterior produjo `ALLOW` | invalidar su uso si actor, contexto o recurso ya no coinciden |
+| cookie o estado local | una selección o override quedó persistido | no aceptarlo como fuente autoritativa |
+| credencial de servicio | un backend usa privilegio técnico elevado | separar capacidad técnica de autoridad empresarial |
+
+La mera persistencia técnica de una sesión o valor no autoriza su reutilización empresarial.
+
+---
+
+#### 5. Fuentes válidas de autoridad administrativa
+
+Una capacidad administrativa desde dispositivo compartido solo puede proceder del actor humano actual y de contratos autoritativos asociados a ese actor.
+
+Fuentes admisibles, según el permiso evaluado:
+
+- identidad laboral vigente del trabajador;
+- rol base canónico vigente;
+- concesiones individuales base vigentes cuando estén permitidas;
+- cobertura administrativa resuelta para el actor;
+- alcance máximo de la capacidad;
+- recurso real resuelto en servidor;
+- denegaciones y restricciones vigentes;
+- sensibilidad y reautenticación exigidas;
+- estado y versión del recurso cuando sean relevantes;
+- techo y aplicaciones efectivas del dispositivo únicamente como restricciones adicionales.
+
+La existencia de una fuente admisible no produce por sí sola `ALLOW`. La decisión continúa sometida al contrato completo de autorización.
+
+---
+
+#### 6. Fuentes prohibidas como autoridad administrativa
+
+No pueden crear, ampliar, sustituir o restaurar autoridad del actor:
+
+- `auth_user_id` técnico del dispositivo;
+- rol, metadata o claims no canónicos del usuario técnico;
+- `navigation_role`;
+- nombre o tipo del dispositivo;
+- plantilla del dispositivo;
+- paquete de capacidades;
+- conjunto de aplicaciones permitidas;
+- aplicación predeterminada;
+- ruta o pantalla abierta;
+- rol de navegación del trabajador anterior;
+- rol base del trabajador anterior;
+- rol operativo del trabajador anterior;
+- cobertura administrativa del trabajador anterior;
+- sede o área del dispositivo como sustituto de cobertura humana;
+- turno o check-in de otra persona;
+- una sesión personal anterior conservada por navegador;
+- una simulación previa;
+- una reautenticación emitida para otro actor, aplicación, acción o recurso;
+- un resultado de permiso cacheado para otra identidad o snapshot;
+- un parámetro enviado por cliente;
+- `service_role`, `createAdminClient()` o equivalente técnico privilegiado;
+- el hecho de que una operación técnica pueda ejecutarse con privilegios de infraestructura.
+
+---
+
+#### 7. Principal técnico y actor humano
+
+En dispositivo compartido se conserva la separación:
+
+```text
+PRINCIPAL TECNICO
+=
+SUJETO QUE PRESENTA LA CREDENCIAL DEL DISPOSITIVO
+```
+
+```text
+ACTOR HUMANO
+=
+TRABAJADOR RESUELTO POR LA SESION DE ACTOR VIGENTE
+```
+
+```text
+AUTORIDAD EMPRESARIAL
+=
+AUTORIDAD RESUELTA PARA EL ACTOR HUMANO Y SU CONTEXTO
+```
+
+Por tanto:
+
+```text
+PRINCIPAL TECNICO VALIDO
+!=
+TRABAJADOR
+!=
+ROL
+!=
+PERMISO
+!=
+COBERTURA ADMINISTRATIVA
+```
+
+El dispositivo puede permanecer autenticado técnicamente durante múltiples cambios de trabajador sin que la continuidad de esa autenticación produzca continuidad de autoridad humana.
+
+---
+
+#### 8. Administrador que configuró o abrió el dispositivo
+
+Que una persona con autoridad administrativa haya configurado, enrolado, iniciado, reparado o abierto un dispositivo no transfiere esa autoridad al siguiente actor.
+
+Se prohíbe interpretar como permiso del trabajador:
+
+- el actor que creó la instancia;
+- el actor que instaló o configuró una aplicación;
+- el actor que seleccionó una sede, área o plantilla;
+- el actor que inició una sesión técnica persistente;
+- el actor que ejecutó una operación de soporte;
+- el actor que dejó una pantalla administrativa abierta;
+- el actor que emitió una decisión o consulta anterior.
+
+La administración técnica del terminal y la autoridad empresarial del trabajador son dominios separados.
+
+---
+
+#### 9. Sesión administrativa previa
+
+Una sesión personal previa no puede mezclarse con una sesión de dispositivo compartido.
+
+Cuando el contexto efectivo pasa a dispositivo compartido:
+
+1. la fuente de principal pasa a representar el dispositivo técnico;
+2. el actor empresarial debe resolverse por la sesión de actor correspondiente;
+3. la autoridad base debe resolverse para ese actor;
+4. cualquier autorización asociada al usuario personal anterior deja de ser reutilizable;
+5. una cookie, token de interfaz, caché, estado de servidor o snapshot de la sesión anterior no puede complementar el nuevo actor;
+6. si no puede demostrarse la separación, la acción se deniega.
+
+No se permite una composición como:
+
+```text
+DISPOSITIVO TECNICO
++
+ACTOR OPERATIVO A
++
+PERMISOS ADMINISTRATIVOS DE SESION PERSONAL B
+=
+ALLOW
+```
+
+---
+
+#### 10. Trabajador anterior
+
+El cambio de actor no crea una cadena de autoridad acumulativa.
+
+El trabajador nuevo no hereda del anterior:
+
+- rol base;
+- rol operativo;
+- permisos;
+- concesiones individuales;
+- denegaciones interpretadas como allows;
+- cobertura administrativa;
+- turno;
+- check-in;
+- sede o área operativa;
+- selecciones territoriales con efecto autoritativo;
+- reautenticaciones;
+- firmas de acción;
+- decisiones de permiso;
+- recursos sensibles abiertos;
+- autorizaciones de procesos en curso que requieran el actor original.
+
+`AUTH-DEV-009` define que ninguno de esos elementos puede utilizarse como autoridad del nuevo trabajador. La mecánica completa de cierre, limpieza y handoff del cambio de trabajador continúa reservada a `AUTH-DEV-013`.
+
+---
+
+#### 11. `navigation_role`
+
+`navigation_role` no participa en:
+
+- actor efectivo;
+- rol base;
+- rol operativo;
+- permiso;
+- cobertura administrativa;
+- sede o área autorizada;
+- modalidad de autorización;
+- decisión final.
+
+Puede utilizarse únicamente para presentación inicial, menú sugerido, perfil visual o experiencia controlada cuando el contrato de interfaz lo permita.
+
+Queda prohibida cualquier equivalencia de autorización basada en:
+
+```text
+navigation_role
+-> rol efectivo
+```
+
+```text
+navigation_role
+-> conjunto de permisos
+```
+
+```text
+navigation_role
+-> cobertura administrativa
+```
+
+Un valor históricamente presente puede conservarse como dato de compatibilidad o presentación, pero debe ser ignorado por el evaluador autoritativo.
+
+---
+
+#### 12. Aplicaciones, plantillas y paquetes
+
+La disponibilidad de una aplicación significa únicamente que el dispositivo puede exponer esa superficie dentro de su configuración efectiva.
+
+No significa que el trabajador actual tenga:
+
+- acceso a la aplicación;
+- capacidades internas de la aplicación;
+- autoridad administrativa;
+- alcance organizacional;
+- acceso a información sensible;
+- derecho a ejecutar una mutación.
+
+Las plantillas y paquetes conservan la semántica de techo:
+
+```text
+DISPOSITIVO PERMITE
+!=
+ACTOR TIENE PERMISO
+```
+
+Una clave dentro del techo puede continuar siendo denegada al actor. Una clave fuera del techo se deniega aunque el actor la posea.
+
+---
+
+#### 13. Autoridad administrativa legítima del actor actual
+
+La prohibición de herencia no implica prohibición universal de administración desde terminal compartida.
+
+Cuando una plantilla admite una superficie administrativa, el trabajador actual podrá ejercer únicamente sus capacidades propias si todas las condiciones aplicables son válidas.
+
+Ejemplo conceptual:
+
+```text
+ACTOR ACTUAL POSEE CAPACIDAD BASE
++
+COBERTURA ADMINISTRATIVA DEL MISMO ACTOR
++
+RECURSO DENTRO DEL ALCANCE
++
+CAPACIDAD DENTRO DEL TECHO DEL DISPOSITIVO
++
+APLICACION EFECTIVA
++
+REAUTENTICACION FUERTE SI APLICA
++
+SIN DENEGACION
+=
+CAPACIDAD ADMINISTRATIVA POSIBLE
+```
+
+La ubicación del terminal, su plantilla administrativa o el principal técnico no añaden cobertura ni capacidades.
+
+---
+
+#### 14. Separación entre carril base y carril operativo
+
+El dispositivo no mezcla los carriles para fabricar autoridad.
+
+Reglas:
+
+1. una capacidad base conserva sus requisitos de rol base, concesiones, cobertura y recurso;
+2. una capacidad operativa conserva turno, check-in cuando corresponda, rol operativo, sede, área y recurso;
+3. una capacidad de doble condición exige ambos componentes cuando así lo declare su modalidad;
+4. el hecho de que el actor cumpla el carril operativo no crea un carril base;
+5. el hecho de que el actor posea autoridad base no crea turno, check-in ni rol operativo;
+6. el dispositivo no presta un carril faltante;
+7. una sesión residual de otro trabajador no completa el carril ausente;
+8. un `navigation_role` o paquete no completa ninguno de los dos carriles.
+
+---
+
+#### 15. Reautenticación fuerte, PIN y firma
+
+Las evidencias de autenticación no son transferibles entre actores ni usos incompatibles.
+
+Reglas:
+
+- el PIN o mecanismo ligero de `AUTH-DEV-007` identifica al humano o produce firma ligera, pero no crea autoridad administrativa;
+- una firma de acción pertenece al trabajador y operación para los que fue emitida;
+- una evidencia STRONG pertenece al actor, aplicación, acción, recurso y vigencia definidos por su contrato;
+- cambiar de trabajador invalida el uso autoritativo de la evidencia emitida para el anterior;
+- cambiar a un contexto incompatible impide reutilizar la evidencia;
+- el dispositivo no puede presentar como propia una reautenticación humana anterior;
+- una clave técnica privilegiada no satisface una exigencia de reautenticación humana.
+
+---
+
+#### 16. Estado residual del cliente y del servidor
+
+La implementación posterior deberá tratar como no autoritativos los estados residuales que sobrevivan visual o técnicamente a un cambio de actor o contexto.
+
+Incluye, según el consumidor:
+
+- caché de permisos;
+- caché de cobertura;
+- snapshots de `AccessContext`;
+- respuestas de server actions;
+- estado React;
+- stores de cliente;
+- almacenamiento local o de sesión;
+- cookies de navegación o selección;
+- datos precargados;
+- recursos abiertos por el actor anterior;
+- formularios con decisiones sensibles calculadas previamente;
+- resultados de una reautenticación anterior.
+
+La persistencia de datos para experiencia o recuperación no implica persistencia de autoridad.
+
+Antes de una acción protegida, el servidor debe revalidar el contexto materialmente necesario. Un resultado viejo solo puede reutilizarse cuando el contrato demuestre que actor, dispositivo, contexto, recurso, versión y vigencia siguen siendo compatibles.
+
+---
+
+#### 17. Credenciales técnicas privilegiadas y clientes administrativos
+
+Una operación ejecutada por infraestructura privilegiada conserva dos planos:
+
+```text
+CAPACIDAD TECNICA DE EJECUCION
+!=
+AUTORIDAD EMPRESARIAL PARA ORDENAR EL EFECTO
+```
+
+`service_role`, clientes administrativos, funciones privilegiadas o procesos internos pueden ser necesarios para implementar una operación, pero no conceden al trabajador una capacidad empresarial.
+
+Toda mutación atribuida a un trabajador desde dispositivo compartido debe conservar:
+
+- actor humano efectivo;
+- autoridad empresarial evaluada para ese actor;
+- dispositivo y principal técnico como contexto técnico;
+- recurso y alcance;
+- controles adicionales;
+- resultado de autorización.
+
+Si solo existe privilegio técnico y no autoridad empresarial resoluble, la operación falla cerrada.
+
+---
+
+#### 18. Territorio y cobertura administrativa
+
+La sede y el área del dispositivo son restricciones o atributos físicos; no son cobertura administrativa del trabajador.
+
+Reglas:
+
+1. una terminal ubicada en oficina no concede organización completa;
+2. una terminal ubicada en una sede no concede administración de esa sede;
+3. un área física administrativa no concede administración de esa área;
+4. un actor con cobertura organizacional legítima no la obtiene del dispositivo, sino de su autoridad humana;
+5. un actor con cobertura limitada no puede ampliarla porque el terminal esté en otra sede;
+6. una sede o área seleccionada en interfaz no reemplaza la cobertura resuelta;
+7. `null` o ausencia no significan todas las sedes o áreas;
+8. el recurso real continúa controlando el territorio material de la acción.
+
+---
+
+#### 19. Terminales y modos especiales
+
+##### 19.1 `procurement_reception`
+
+La plantilla conserva modos administrativo y operativo mutuamente excluyentes.
+
+Al cambiar de modo se debe reevaluar el carril aplicable. La autoridad calculada en un modo no se reutiliza en el otro.
+
+El modo administrativo no hereda autoridad del turno operativo y el modo operativo no hereda permisos administrativos de una sesión previa.
+
+##### 19.2 `operations_management_terminal`
+
+La amplitud de aplicaciones y capacidades del terminal sigue siendo un techo operativo.
+
+Coordinar, observar o administrar el flujo operativo no concede por sí mismo capacidades base administrativas ni facultades físicas de otros oficios.
+
+##### 19.3 `management_terminal`
+
+La plantilla administrativa permite una superficie restringida para `shell`, `numera` y `viso`, pero el terminal no crea rol base, cobertura administrativa ni bypass por jerarquía.
+
+Cada capacidad administrativa pertenece al actor actual y conserva sensibilidad, alcance, recurso, reautenticación y denegaciones.
+
+##### 19.4 Plantillas operativas
+
+Las plantillas satélite, producción, bodega y logística no adquieren capacidades administrativas por el nombre de su dispositivo, ubicación, rol de navegación, aplicaciones instaladas ni por haber sido configuradas por un administrador.
+
+---
+
+#### 20. Revalidación e invalidación de autoridad
+
+La reutilización de una decisión administrativa queda invalidada cuando un cambio material pueda alterar su resultado.
+
+Como mínimo, deben considerarse cambios en:
+
+- actor humano;
+- sesión de actor;
+- principal técnico o dispositivo;
+- estado del dispositivo;
+- rol base;
+- concesiones individuales;
+- cobertura administrativa;
+- turno o rol operativo cuando la modalidad los requiera;
+- sede o área aplicable;
+- aplicación;
+- techo del dispositivo;
+- clasificación de compatibilidad;
+- reautenticación;
+- recurso;
+- estado o versión del recurso;
+- denegaciones.
+
+El cambio material exige una decisión nueva o una revalidación equivalente antes del efecto. No se acepta un `ALLOW` histórico como autoridad autónoma.
+
+---
+
+#### 21. Matriz de no herencia sobre las 19 identidades
+
+La política se proyecta sobre el mismo universo canónico de dispositivos y plantillas definido en `AUTH-DEV-001` a `AUTH-DEV-006`.
+
+| Identidad canónica | Clase | Regla de no herencia administrativa | Autoridad humana utilizable | Estado heredado |
+| --- | --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` | El usuario técnico, `navigation_role`, apps registrales y cualquier sesión previa no conceden autoridad al cajero o trabajador actual. | Solo la autoridad propia del actor actual dentro del techo candidato y contexto válido. | `REGISTERED_UNVERIFIED` |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` | `same_site_active_worker`, usuario técnico, `navigation_role` y la coincidencia de sede no crean permisos administrativos. | Solo la autoridad propia del actor exacto; el dispositivo permanece restrictivo. | `REGISTERED_UNVERIFIED` |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` | No se infiere administrador, actor, rol, permiso ni cobertura desde la observación física o cuenta conjunta. | Ninguna hasta que exista identidad y actor técnicamente reconciliados; después solo la del actor real. | `OBSERVED_ONLY` |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` | No se infiere autoridad desde dispositivo observado, tipo supuesto, cuenta conjunta ni uso histórico. | Ninguna por observación; una futura instancia deberá resolver al actor real. | `OBSERVED_ONLY` |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` | Caja satélite no hereda privilegios del configurador, principal técnico ni trabajador anterior. | Solo autoridad del actor actual dentro del techo y área exacta. | `POLICY_DEFINED` |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` | Barra no recibe capacidades administrativas por apps, plantilla o navegación. | Solo autoridad propia del actor actual cuando una capacidad aplicable exista. | `POLICY_DEFINED` |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` | Cocina satélite no reutiliza autoridad de caja, gerencia, otro trabajador o sesión previa. | Solo autoridad propia del actor actual y contexto compatible. | `POLICY_DEFINED` |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` | Servicio no convierte una cuenta compartida o una pantalla abierta en autoridad administrativa. | Solo autoridad del actor real después de identificación y evaluación. | `POLICY_DEFINED` |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` | Mostrador no hereda autoridad por proximidad con caja, servicio o administrador configurador. | Solo autoridad del actor actual dentro de su contexto. | `POLICY_DEFINED` |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` | Integrar funciones no suma roles, permisos ni autoridades de otros perfiles satélite. | Intersección de autoridad propia del actor con techo y contexto de la acción. | `POLICY_DEFINED` |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` | Producción de Cocina Caliente no hereda autoridad administrativa ni de otras áreas productivas. | Solo autoridad propia del actor; las capacidades operativas conservan el área exacta. | `POLICY_DEFINED` |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` | Galletería y Panadería no hereda autoridad administrativa ni de otras áreas productivas. | Solo autoridad propia del actor; las capacidades operativas conservan el área exacta. | `POLICY_DEFINED` |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` | Repostería no hereda autoridad administrativa ni de otras áreas productivas. | Solo autoridad propia del actor; las capacidades operativas conservan el área exacta. | `POLICY_DEFINED` |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` | Bodega no convierte `same_site_active_worker`, `navigation_role` o ubicación en rol, permiso o cobertura administrativa. | Solo autoridad propia del actor exacto dentro del techo y área de bodega. | `POLICY_DEFINED` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` | Vehículo, ruta, origen, destino y sedes visitadas no transfieren autoridad administrativa al conductor. | Solo autoridad propia del actor; el terminal conserva límites logísticos. | `POLICY_DEFINED` |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` | Los modos administrativo y operativo no comparten autoridad calculada ni estado autorizante. | En cada modo, solo la autoridad propia del actor y del carril correspondiente. | `POLICY_DEFINED` |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` | La coordinación operativa y la amplitud de superficie no se convierten en rol base ni cobertura administrativa. | Solo autoridad propia del actor para la capacidad exacta; coordinación no suma facultades. | `POLICY_DEFINED` |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` | La naturaleza administrativa del terminal, su ubicación y sus aplicaciones no conceden permisos ni cobertura. | Solo permisos base y cobertura administrativa del actor actual, dentro del techo y con STRONG cuando aplique. | `POLICY_DEFINED` |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` | La historia de la plantilla no puede reactivar ni trasladar privilegios a nuevas instancias o actores. | Ninguna autoridad nueva procede de la plantilla retirada. | `NO_APLICA` |
+
+Cobertura materializada:
+
+```text
+2 instancias configuradas
++
+2 observaciones fisicas
++
+14 plantillas objetivo
++
+1 plantilla legacy retirada
+=
+19 identidades con regla explicita de no herencia
+```
+
+No se añaden identidades ni se modifica su clasificación heredada.
+
+---
+
+#### 22. Brechas físicas observadas y propietarios
+
+El contrato documental reconoce brechas de implementación ya observables sin autorizarlas ni corregirlas en esta tarea.
+
+##### 22.1 Helpers locales de dispositivo compartido
+
+Existen consumidores donde el modo de dispositivo compartido puede derivar comportamiento autoritativo desde `navigation_role` y donde la aplicación permitida puede tratarse como suficiente para el acceso de entrada.
+
+Eso no satisface el contrato final.
+
+Condición de salida:
+
+- los consumidores deberán utilizar contexto y autorización centralizados;
+- `navigation_role` deberá dejar de participar como fuente de permiso;
+- la aplicación permitida deberá permanecer como restricción de superficie;
+- el actor humano y su autoridad deberán resolverse de forma independiente;
+- la compatibilidad con estructuras legacy deberá mantenerse sin conservar autoridad heredada.
+
+Propietarios canónicos: `AUTH-CTX-027`, `AUTH-CTX-028` y las materializaciones físicas aplicables de `AUTH-DEV-009` dentro de los paquetes correspondientes.
+
+##### 22.2 Estado residual entre trabajadores
+
+El contrato prohíbe reutilizar autoridad del actor anterior. La mecánica completa de terminación, limpieza y transición segura entre trabajadores pertenece a `AUTH-DEV-013`.
+
+Condición de salida de esta tarea: la política de no herencia queda definida de forma que `AUTH-DEV-013` pueda limpiar todo estado incompatible sin decidir nuevamente qué autoridad puede transferirse.
+
+##### 22.3 Auditoría final
+
+La tarea actual separa las fuentes y prohíbe su herencia, pero no diseña el registro completo de auditoría conjunta.
+
+Propietario canónico: `AUTH-DEV-010`.
+
+Condición de salida: entregar a esa tarea principal técnico, dispositivo, actor humano y fuente de autoridad como conceptos no intercambiables.
+
+---
+
+#### 23. Handoff exacto hacia AUTH-DEV-010
+
+`AUTH-DEV-009` entrega a `AUTH-DEV-010` una decisión donde la autoridad de la acción puede atribuirse sin contaminación entre identidades:
+
+```text
+PRINCIPAL TECNICO IDENTIFICABLE
++
+DISPOSITIVO IDENTIFICABLE
++
+ACTOR HUMANO ACTUAL IDENTIFICABLE
++
+AUTORIDAD RESUELTA SOLO PARA ESE ACTOR
++
+FUENTES HEREDADAS EXCLUIDAS
++
+CONTEXTO Y RECURSO CORRELACIONABLES
+=
+BASE LIMPIA PARA AUDITORIA CONJUNTA
+```
+
+`AUTH-DEV-010` será responsable de definir cómo registrar conjuntamente dispositivo y trabajador en la auditoría sin fusionar sus identidades.
+
+Esta tarea no define el esquema final del evento, receipt, tabla, payload o almacenamiento de auditoría.
+
+---
+
+#### 24. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+Justificación: el registro vigente ya protege de forma explícita la intersección entre límites del dispositivo y permisos del trabajador, la prohibición de transferir privilegios administrativos al actor operativo, la invalidación de contexto ante cambios de identidad, el recálculo ante cambio de actor o aplicación y la separación entre techo de dispositivo y autoridad humana. Esta tarea desarrolla el contrato documental responsable sin introducir una obligación de prueba nueva ni alterar una obligación existente.
+
+---
+
+#### 25. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-AUTH-001` — una lista local de nombres de rol no concede autorización final;
+- `TREQ-AUTH-011` — la autoridad desde dispositivo compartido es la intersección entre límites del dispositivo y permisos del trabajador identificado y el administrador autenticado no transfiere privilegios administrativos al actor operativo;
+- `TREQ-AUTH-014` — cambios de trabajador, dispositivo, rol, territorio o contexto invalidan decisiones y autoridad derivada cuando afectan la resolución;
+- `TREQ-AUTH-054` — cambio de aplicación o actor exige recálculo e invalida estado y reautenticaciones incompatibles;
+- `TREQ-AUTH-056` — las terminales de recepción, gerencia operativa y gerencia administrativa conservan sus restricciones propias sin ampliar cobertura;
+- `TREQ-AUTH-062` — toda acción desde dispositivo compartido intersecta autoridad del actor, techo del dispositivo, aplicación, modo, territorio, recurso, prerrequisitos y denegaciones;
+- `TREQ-AUTH-063` — las capacidades estándar conservan actor y contexto, las fuertes exigen reautenticación personal y las no permitidas permanecen excluidas.
+
+Estos requisitos se citan únicamente como trazabilidad de cobertura existente y no representan cambios al registro.
+
+---
+
+#### 26. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El contrato es documental y la compilación canónica corresponde al flujo de integración posterior a su inserción en el archivo propietario. |
+| LOCAL | NOT_EXECUTED | La comprobación del checkout completo corresponde al flujo documental sobre la rama propia de la tarea. |
+| REMOTA | NOT_EXECUTED | No se ha publicado ni fusionado este marcador documental como parte de esta definición. |
+| OPERATIVA | NOT_APPLICABLE | La tarea no ejecuta operación empresarial ni modifica comportamiento productivo. |
+| FÍSICA | NOT_APPLICABLE | El marcador define el contrato; ninguna instancia física se materializa durante esta tarea. |
+
+---
+
+#### 27. Criterios de aceptación
+
+- [x] Se preserva la separación entre principal técnico, dispositivo y actor humano.
+- [x] Se prohíbe que el principal técnico aporte permisos base o cobertura administrativa.
+- [x] Se prohíbe heredar autoridad del administrador que configuró o abrió el dispositivo.
+- [x] Se prohíbe mezclar una sesión administrativa previa con el actor actual del dispositivo.
+- [x] Se prohíbe heredar rol, permisos, cobertura, reautenticación o decisiones del trabajador anterior.
+- [x] `navigation_role` queda limitado a presentación y fuera de autorización.
+- [x] Las aplicaciones visibles, plantillas y paquetes quedan definidos como límites y no concesiones.
+- [x] La sede y área físicas del dispositivo no crean cobertura administrativa.
+- [x] Se preservan los carriles base y operativo sin composición permisiva.
+- [x] PIN, firma ligera y STRONG no se transfieren entre actores o usos incompatibles.
+- [x] Cookies, cachés, snapshots y estado de interfaz no son fuentes autoritativas.
+- [x] `service_role` y clientes administrativos no crean autoridad empresarial.
+- [x] `procurement_reception` conserva modos excluyentes.
+- [x] `operations_management_terminal` conserva naturaleza operativa restrictiva.
+- [x] `management_terminal` admite únicamente la autoridad administrativa propia del actor actual.
+- [x] Se proyecta una decisión explícita sobre las 19 identidades del universo heredado.
+- [x] Se documentan las brechas físicas actuales sin ejecutar modificaciones.
+- [x] Se preserva la responsabilidad de `AUTH-DEV-010` sobre la auditoría conjunta.
+- [x] Se preserva la responsabilidad de `AUTH-DEV-013` sobre el handoff completo de cambio de trabajador.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autorizan cambios físicos.
+
+---
+
+#### 28. Límites
+
+Esta tarea no:
+
+- modifica código, configuración, datos, Supabase, migraciones, RLS, RPC, grants, secretos o aplicaciones;
+- modifica el principal técnico ni la identidad de dispositivo aprobados anteriormente;
+- redefine cómo se captura o valida PIN o firma ligera;
+- redefine la intersección aprobada por `AUTH-DEV-008`;
+- elimina capacidades administrativas legítimas del actor humano actual;
+- crea un nuevo rol, permiso, paquete, plantilla, aplicación o dispositivo;
+- cambia las 19 identidades heredadas ni sus estados documentales;
+- cambia los paquetes o techos definidos por `AUTH-DEV-006`;
+- cambia la clasificación de compatibilidad de capacidades con dispositivo compartido;
+- redefine el carril base ni el carril operativo;
+- define el registro final de auditoría de dispositivo y trabajador; pertenece a `AUTH-DEV-010`;
+- define revocación de dispositivo o sesión; pertenece a `AUTH-DEV-011`;
+- fija duración o expiración numérica de sesión; pertenece a `AUTH-DEV-012`;
+- implementa la limpieza completa y transición de cambio de trabajador; pertenece a `AUTH-DEV-013`;
+- ejecuta pruebas físicas de NEXO, PULSO o FOGO; pertenecen a `AUTH-DEV-014`, `AUTH-DEV-015` y `AUTH-DEV-016`;
+- autoriza una instancia física durante este marcador documental;
+- modifica requisitos de prueba existentes.
+
+---
+
+#### 29. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-008 — Combinar límite del dispositivo y trabajador`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-009 — Evitar heredar permisos administrativos`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría`
+
+
 ### [ ] AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría
