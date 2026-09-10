@@ -414,3 +414,65 @@ test('registro global separa estado documental y estado físico sin convertir UN
   assert.match(markdown, /⏸ NO_EVALUADA/u);
   assert.match(markdown, /SIN_TRAZABILIDAD_FISICA.*no equivale.*NO IMPLEMENTADA/u);
 });
+
+test('registro global falla cerrado si NO_EVALUADA no coincide con las tareas documentales no aprobadas', () => {
+  const approved = {
+    ...task('TEST-MAT-101', 'APROBADA'),
+    fileIndex: 0,
+    taskIndex: 0,
+  };
+  const pending = {
+    ...task('TEST-MAT-102', 'NO INICIADA'),
+    fileIndex: 0,
+    taskIndex: 1,
+  };
+  const taskMap = new Map([
+    [approved.id, approved],
+    [pending.id, pending],
+  ]);
+
+  assert.throws(
+    () => buildRegistryMarkdown(
+      taskMap,
+      {
+        total: 2,
+        auth: 0,
+        approved: 1,
+        proposed: 0,
+        notStarted: 1,
+        rejected: 0,
+        completionPercentage: 50,
+      },
+      {
+        lastApproved: approved,
+        current: pending,
+        next: null,
+        handoff: null,
+        isComplete: false,
+      },
+      {
+        tasks: [
+          {
+            task_id: approved.id,
+            task_state: 'NO_APROBADA',
+            mode: 'DEFINE_ONCE',
+            relation_state: 'UNMAPPED',
+            explicit_materialization: null,
+            materializing_unit_ids: [],
+            direct_instances: [],
+          },
+          {
+            task_id: pending.id,
+            task_state: 'NO_APROBADA',
+            mode: 'DEFINE_ONCE',
+            relation_state: 'UNMAPPED',
+            explicit_materialization: null,
+            materializing_unit_ids: [],
+            direct_instances: [],
+          },
+        ],
+      },
+    ),
+    /NO_EVALUADA desalineado con estado documental/u,
+  );
+});
