@@ -30,7 +30,7 @@ function readiness(ready = true) {
     registry: {
       implementation_ready_queue: queue,
       package_execution: {
-        mode: 'DETERMINISTIC_LINEAR_TOPOLOGICAL',
+        mode: 'DETERMINISTIC_GOVERNED_FRONTIER',
         state: ready ? 'READY_FOR_AUTHORIZATION' : 'BLOCKED_ON_CURRENT',
         current,
         sequence: [current],
@@ -88,7 +88,7 @@ test('el iniciador documental avisa package listo sin cambiar de carril', () => 
 
 test('el iniciador físico distingue package listo de instancia AUTHORIZED', () => {
   const block = renderReadinessStarterBlock({ readiness: readiness(), lane: 'PHYSICAL_IMPLEMENTATION', coordinated });
-  assert.match(block, /Solo el package actual puede avanzar/u);
+  assert.match(block, /primary derivado/u);
   assert.match(block, /no equivale a AUTHORIZED/u);
   assert.match(block, /Status: READY_FOR_AUTHORIZATION/u);
   assert.match(block, /No implementation instance is authorized/u);
@@ -96,7 +96,8 @@ test('el iniciador físico distingue package listo de instancia AUTHORIZED', () 
 
 test('cola vacía no inventa candidato implementable', () => {
   const block = renderReadinessStarterBlock({ readiness: readiness(false), lane: 'SELECTOR', coordinated: null });
-  assert.match(block, /PACKAGE_EXECUTION_LINEAR — TURNO ÚNICO:\n- 1\/1: NEXO-PACKAGE-001 -> PREPARE_PACKAGE_GATE/u);
+  assert.match(block, /PACKAGE_EXECUTION_GOVERNED_FRONTIER/u);
+  assert.match(block, /- PRIMARY 1\/1: NEXO-PACKAGE-001 -> PREPARE_PACKAGE_GATE/u);
   assert.doesNotMatch(block, /PACKAGE IMPLEMENTABLE DETECTED/u);
 });
 
@@ -114,7 +115,7 @@ test('el expediente enfocado siempre pertenece al package actual derivado', () =
   }];
   const block = renderReadinessStarterBlock({ readiness: snapshot, lane: 'SELECTOR', coordinated: null });
   assert.match(block, /Selección humana de package: FALSE/u);
-  assert.match(block, /Package actual: GAP-PKG-061/u);
+  assert.match(block, /Primary package: GAP-PKG-061/u);
   assert.match(block, /Expediente exacto: package-gate-instances\/GAP-PKG-061.json/u);
   assert.match(block, /Acción exacta: MATURE_PACKAGE_GATE/u);
 });

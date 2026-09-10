@@ -646,10 +646,10 @@ function renderPackageAction(action) {
   }
 
   return [
-    `### 2. Prepara el package que tiene el turno — \`${current.package_id}\``,
+    `### 2. Ejecuta el primary de la governed frontier — \`${current.package_id}\``,
     '',
     `- **CURRENT_EXECUTABLE_WORK:** \`${work.id}\``,
-    `- **Posición:** **${current.position}/${action.packageExecution.sequence.length}**; ningún package posterior puede adelantarlo.`,
+    `- **Posición topológica:** **${current.position}/${action.packageExecution.sequence.length}**; prioridad derivada, sin selección humana.`,
     `- **Estado efectivo:** \`${record?.status ?? current.status ?? 'UNKNOWN'}\``,
     `- **Acción exacta:** \`${current.next_action.type}\``,
     `- **Objetivo exacto:** \`${current.next_action.target}\``,
@@ -687,7 +687,7 @@ function renderPhysicalAction(action) {
       '',
       '- **Acción ahora:** `NO_INICIAR_IMPLEMENTACIÓN_FÍSICA`.',
       '- **Motivo:** no existe una instancia física no terminal registrada por `implementation-control`.',
-      '- **Se desbloquea cuando:** el package actual complete su gate, materialice el handoff físico y el usuario apruebe explícitamente la instancia exacta.',
+      '- **Se desbloquea cuando:** el primary frontier package complete su gate, materialice el handoff físico y el usuario apruebe explícitamente la instancia exacta.',
     ];
   }
   return [
@@ -816,7 +816,7 @@ function render(tasks, route, active, workTopology, implementationControl, corre
     '',
     '> Archivo derivado. No editar manualmente.',
     '>',
-    '> Vista humana coordinada de correcciones, documentación canónica, preparación lineal de packages e implementación física. El detalle exhaustivo inferior conserva la autoridad estructural utilizada por los validadores.',
+    '> Vista humana coordinada de correcciones, documentación canónica, preparación por governed frontier de packages e implementación física. El detalle exhaustivo inferior conserva la autoridad estructural utilizada por los validadores.',
     '>',
     '> El marcador documental define contratos; las instancias físicas materializan únicamente lo autorizado. Ningún carril reabre ni sustituye silenciosamente al otro.',
     '',

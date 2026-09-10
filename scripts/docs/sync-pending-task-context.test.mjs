@@ -225,7 +225,7 @@ test('resume el carril fisico sin mezclar instancias terminales con la cola pend
   ]);
 });
 
-test('prioriza una corrección activa y publica el turno lineal de package sin inventar autorización física', () => {
+test('prioriza una corrección activa y publica el primary gobernado sin inventar autorización física', () => {
   const documentaryTasks = [
     {
       ...task('VISO-AUTH-018'),
@@ -297,7 +297,7 @@ test('prioriza una corrección activa y publica el turno lineal de package sin i
   ).join('\n');
   assert.match(source, /QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR/u);
   assert.match(source, /Termina la corrección abierta — `GAP-CTRL-006::CORR-001`/u);
-  assert.match(source, /Prepara el package que tiene el turno — `GAP-PKG-001`/u);
+  assert.match(source, /Ejecuta el primary de la governed frontier — `GAP-PKG-001`/u);
   assert.match(source, /npm run docs:package:start -- --package-id GAP-PKG-001/u);
   assert.match(source, /Continúa la documentación — `VISO-AUTH-018`/u);
   assert.match(source, /`NO_INICIAR_IMPLEMENTACIÓN_FÍSICA`/u);
@@ -375,5 +375,5 @@ test('registro de pendientes prioriza la fundación sobre el package consumidor'
   const source = renderOperationalActionCenter(tasks, implementationControl, { records: [] }, readiness).join("\n");
   assert.match(source, /Resuelve la fundación que tiene precedencia — `MRP015-000`/u);
   assert.match(source, /Package consumidor bloqueado:.*`GAP-PKG-001`/u);
-  assert.doesNotMatch(source, /Prepara el package que tiene el turno — `GAP-PKG-001`/u);
+  assert.doesNotMatch(source, /Ejecuta el primary de la governed frontier — `GAP-PKG-001`/u);
 });

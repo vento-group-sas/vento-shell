@@ -77,21 +77,25 @@ export function assertImplementationPackageReadiness({ instance, readiness } = {
   if (!identity) return true;
 
   const execution = readiness?.registry?.package_execution ?? null;
-  const current = execution?.current ?? null;
+  const active = (execution?.active_physical ?? [])
+    .find(({ package_id: packageId }) => packageId === identity.packageId) ?? null;
+  const current = execution?.current?.package_id === identity.packageId
+    ? execution.current
+    : null;
+  const projected = active ?? current;
 
-  if (!current || current.package_id !== identity.packageId) {
+  if (!projected) {
     fail(
-      `IMPLEMENTATION_START_NOT_READY: ${instance.instance_id} no coincide con el package actual `
-      + `${current?.package_id ?? 'NONE'}.`,
+      `IMPLEMENTATION_START_NOT_READY: ${instance.instance_id} no pertenece al primary ni al active physical set gobernado.`,
     );
   }
 
-  const action = current.next_action;
+  const action = projected.next_action;
   if (
     action?.type !== 'CONTINUE_PHYSICAL_LIFECYCLE'
     || action?.target !== identity.instanceId
   ) {
-    const work = execution.current_work ?? current.current_work ?? null;
+    const work = projected.current_work ?? execution?.current_work ?? null;
     fail(
       `IMPLEMENTATION_START_NOT_READY: ${instance.instance_id}; `
       + `CURRENT_EXECUTABLE_WORK=${work?.id ?? action?.target ?? 'UNKNOWN'}; `
