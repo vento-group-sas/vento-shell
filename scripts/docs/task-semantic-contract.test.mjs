@@ -2,10 +2,12 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 
 import {
   isHistoricalApprovedExemption,
+  readCanonicalTaskInventory,
   validateTaskDevelopmentPolicy,
   validateTaskSemanticContract,
 } from './task-semantic-contract.mjs';
@@ -391,4 +393,44 @@ test('la ausencia del contador TREQ no se interpreta como contradicción', () =>
   });
   assert.ok(![...result.errors, ...result.warnings]
     .some(({ code }) => code === 'TREQ_COUNT_CONTRADICTION'));
+});
+
+test('inventario canónico preserva files sobre auxiliary_files para el mismo task_id', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-canonical-inventory-'));
+  try {
+    const baseDir = path.join(root, 'docs', 'plan-canonico', 'modular');
+    fs.mkdirSync(baseDir, { recursive: true });
+    fs.writeFileSync(
+      path.join(baseDir, 'manifest.json'),
+      JSON.stringify({
+        files: ['canonical.md'],
+        auxiliary_files: ['proposal.md', 'aux-unique.md'],
+      }),
+      'utf8',
+    );
+    fs.writeFileSync(
+      path.join(baseDir, 'canonical.md'),
+      '### ✅ TEST-AUX-001 — Autoridad canónica\n',
+      'utf8',
+    );
+    fs.writeFileSync(
+      path.join(baseDir, 'proposal.md'),
+      '### 🟡 TEST-AUX-001 — Propuesta histórica\n',
+      'utf8',
+    );
+    fs.writeFileSync(
+      path.join(baseDir, 'aux-unique.md'),
+      '### ✅ TEST-AUX-002 — Auxiliary único\n',
+      'utf8',
+    );
+
+    const result = readCanonicalTaskInventory(root);
+
+    assert.equal(result.get('TEST-AUX-001')?.marker, '✅');
+    assert.equal(result.get('TEST-AUX-001')?.relativePath, 'canonical.md');
+    assert.equal(result.get('TEST-AUX-002')?.marker, '✅');
+    assert.equal(result.get('TEST-AUX-002')?.relativePath, 'aux-unique.md');
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });

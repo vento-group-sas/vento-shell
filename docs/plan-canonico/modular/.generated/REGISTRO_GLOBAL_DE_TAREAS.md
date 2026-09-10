@@ -22,8 +22,8 @@
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **439** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1058** |
+| ⏸ NO_EVALUADA | **438** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1059** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -223,7 +223,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-013` | Detectar código legacy todavía activo | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_03_PROCESOS_PARCIALES_LEGACY_DUPLICADOS_Y_SIN_CONSUMIDOR.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-014` | Detectar código duplicado y fuentes de verdad competidoras | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_03_PROCESOS_PARCIALES_LEGACY_DUPLICADOS_Y_SIN_CONSUMIDOR.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-015` | Detectar rutas, componentes, funciones y tablas sin consumidores | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_03_PROCESOS_PARCIALES_LEGACY_DUPLICADOS_Y_SIN_CONSUMIDOR.md` |
-| ✅ APROBADA | ⏸ NO_EVALUADA | `CODE-AUD-016` | Ejecutar build, lint, tipos y pruebas disponibles por repositorio | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_04_VALIDACION_TECNICA_SEGURIDAD_RESILIENCIA_Y_BACKLOG.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-016` | Ejecutar build, lint, tipos y pruebas disponibles por repositorio | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_04_VALIDACION_TECNICA_SEGURIDAD_RESILIENCIA_Y_BACKLOG.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-017` | Auditar autorización, validación de servidor y exposición de datos | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_04_VALIDACION_TECNICA_SEGURIDAD_RESILIENCIA_Y_BACKLOG.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-018` | Auditar operación offline, reintentos, concurrencia e idempotencia | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_04_VALIDACION_TECNICA_SEGURIDAD_RESILIENCIA_Y_BACKLOG.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `CODE-AUD-019` | Vincular cada capacidad con su implementación actual verificable | — | — | `bloques/E1_DESCUBRIMIENTO_OPERATIVO/04_04_VALIDACION_TECNICA_SEGURIDAD_RESILIENCIA_Y_BACKLOG.md` |

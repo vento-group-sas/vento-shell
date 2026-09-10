@@ -71,14 +71,26 @@ export function readCanonicalTaskInventory(root = process.cwd()) {
   const baseDir = path.join(root, 'docs', 'plan-canonico', 'modular');
   const manifest = JSON.parse(fs.readFileSync(path.join(baseDir, 'manifest.json'), 'utf8'));
   const inventory = new Map();
-  for (const relativePath of [...manifest.files, ...(manifest.auxiliary_files ?? [])]) {
+
+  const addFile = (relativePath, { preserveCanonical = false } = {}) => {
     const filePath = path.join(baseDir, relativePath);
-    if (!fs.existsSync(filePath) || !relativePath.endsWith('.md')) continue;
+    if (!fs.existsSync(filePath) || !relativePath.endsWith('.md')) return;
     const source = fs.readFileSync(filePath, 'utf8');
     for (const task of parseTaskBlocks(source)) {
-      inventory.set(task.id, { ...task, relativePath: relativePath.replaceAll('\\', '/'), filePath });
+      if (preserveCanonical && inventory.has(task.id)) continue;
+      inventory.set(task.id, {
+        ...task,
+        relativePath: relativePath.replaceAll('\\', '/'),
+        filePath,
+      });
     }
+  };
+
+  for (const relativePath of manifest.files ?? []) addFile(relativePath);
+  for (const relativePath of manifest.auxiliary_files ?? []) {
+    addFile(relativePath, { preserveCanonical: true });
   }
+
   return inventory;
 }
 

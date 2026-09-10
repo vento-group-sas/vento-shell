@@ -543,6 +543,15 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     );
   }
 
+  const documentaryNotApproved = stats.total - stats.approved;
+  if (physical.counts.DOCUMENTARY_PENDING !== documentaryNotApproved) {
+    fail(
+      `estado físico NO_EVALUADA desalineado con estado documental: `
+      + `${physical.counts.DOCUMENTARY_PENDING} físico(s) vs `
+      + `${documentaryNotApproved} tarea(s) no aprobada(s).`,
+    );
+  }
+
   const lines = [
     '# REGISTRO GLOBAL DE TAREAS — VENTO OS',
     '',
