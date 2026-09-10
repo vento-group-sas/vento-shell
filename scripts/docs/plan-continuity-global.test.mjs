@@ -3,6 +3,7 @@ import test from 'node:test';
 
 import {
   buildProgressSummary,
+  buildRegistryMarkdown,
   calculateCompletionPercentage,
   expandSequenceSegments,
   resolveHandoff,
@@ -347,4 +348,69 @@ test('acepta una ruta terminal sin handoff', () => {
     handoff_task_id: null,
     handoff_sequence_id: null,
   }, ['PRE-001', 'TEST-A-001']), null);
+});
+
+test('registro global separa estado documental y estado físico sin convertir UNMAPPED en NO IMPLEMENTADA', () => {
+  const approved = {
+    ...task('TEST-MAT-001', 'APROBADA'),
+    fileIndex: 0,
+    taskIndex: 0,
+  };
+  const pending = {
+    ...task('TEST-MAT-002', 'NO INICIADA'),
+    fileIndex: 0,
+    taskIndex: 1,
+  };
+  const taskMap = new Map([
+    [approved.id, approved],
+    [pending.id, pending],
+  ]);
+  const materialization = {
+    tasks: [
+      {
+        task_id: approved.id,
+        task_state: 'APROBADA',
+        mode: 'DEFINE_ONCE',
+        relation_state: 'UNMAPPED',
+        explicit_materialization: null,
+        materializing_unit_ids: [],
+        direct_instances: [],
+      },
+      {
+        task_id: pending.id,
+        task_state: 'NO_APROBADA',
+        mode: 'DEFINE_ONCE',
+        relation_state: 'UNMAPPED',
+        explicit_materialization: null,
+        materializing_unit_ids: [],
+        direct_instances: [],
+      },
+    ],
+  };
+  const stats = {
+    total: 2,
+    auth: 0,
+    approved: 1,
+    proposed: 0,
+    notStarted: 1,
+    rejected: 0,
+    completionPercentage: 50,
+  };
+  const markdown = buildRegistryMarkdown(
+    taskMap,
+    stats,
+    {
+      lastApproved: approved,
+      current: pending,
+      next: null,
+      handoff: null,
+      isComplete: false,
+    },
+    materialization,
+  );
+
+  assert.match(markdown, /Estado documental \| Estado físico/u);
+  assert.match(markdown, /⚠️ SIN_TRAZABILIDAD_FISICA/u);
+  assert.match(markdown, /⏸ NO_EVALUADA/u);
+  assert.match(markdown, /SIN_TRAZABILIDAD_FISICA.*no equivale.*NO IMPLEMENTADA/u);
 });

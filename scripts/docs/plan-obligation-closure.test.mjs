@@ -14,6 +14,8 @@ import {
   IMPLEMENTATION_MATERIALIZATION_MAP_ID,
   assertImplementationMaterializationIndex,
   buildImplementationMaterializationIndex,
+  buildPhysicalMaterializationSummary,
+  deriveTaskPhysicalProjection,
   normalizeMaterializationUnitId,
   validateImplementationMaterializationRelations,
 } from './implementation-materialization.mjs';
@@ -198,4 +200,100 @@ test('integración real construye índice task a materializadores sin reclamar c
   );
   assert.equal(materialization.invariants.package_reference_is_not_materialization_relation, true);
   assert.equal(materialization.invariants.materialization_completion_claim, false);
+});
+
+test('estado físico solo declara MATERIALIZADA para singleton VERIFIED con evidencia', () => {
+  const result = deriveTaskPhysicalProjection({
+    task_state: 'APROBADA',
+    mode: 'GLOBAL_ENABLE_ONCE',
+    relation_state: 'DIRECT_INSTANCE_ONLY',
+    explicit_materialization: null,
+    materializing_unit_ids: [],
+    direct_instances: [{
+      instance_id: 'TEST-TASK-010::GLOBAL',
+      status: 'VERIFIED',
+      evidence_count: 1,
+      implementation_unit_id: null,
+    }],
+  });
+  assert.equal(result.code, 'MATERIALIZED');
+  assert.equal(result.display, '✅ MATERIALIZADA');
+  assert.deepEqual(result.evidence_refs, ['TEST-TASK-010::GLOBAL']);
+});
+
+test('estado físico mantiene cobertura abierta para instancias no singleton aunque estén VERIFIED', () => {
+  const result = deriveTaskPhysicalProjection({
+    task_state: 'APROBADA',
+    mode: 'PER_IMPLEMENTATION_UNIT',
+    relation_state: 'DIRECT_INSTANCE_ONLY',
+    explicit_materialization: null,
+    materializing_unit_ids: ['unit-real-001'],
+    direct_instances: [{
+      instance_id: 'TEST-TASK-011::unit-real-001',
+      status: 'VERIFIED',
+      evidence_count: 1,
+      implementation_unit_id: 'unit-real-001',
+    }],
+  });
+  assert.equal(result.code, 'PARTIAL');
+  assert.match(result.display, /COBERTURA ABIERTA/u);
+});
+
+test('estado físico no confunde contrato aprobado sin relación con NO IMPLEMENTADA', () => {
+  const result = deriveTaskPhysicalProjection({
+    task_state: 'APROBADA',
+    mode: 'DEFINE_ONCE',
+    relation_state: 'UNMAPPED',
+    explicit_materialization: null,
+    materializing_unit_ids: [],
+    direct_instances: [],
+  });
+  assert.equal(result.code, 'UNMAPPED');
+  assert.equal(result.display, '⚠️ SIN_TRAZABILIDAD_FISICA');
+});
+
+test('estado físico no evalúa una tarea documental todavía no aprobada', () => {
+  const result = deriveTaskPhysicalProjection({
+    task_state: 'NO_APROBADA',
+    mode: 'DEFINE_ONCE',
+    relation_state: 'UNMAPPED',
+    explicit_materialization: null,
+    materializing_unit_ids: [],
+    direct_instances: [],
+  });
+  assert.equal(result.code, 'DOCUMENTARY_PENDING');
+  assert.equal(result.display, '⏸ NO_EVALUADA');
+});
+
+test('resumen físico cuenta todos los estados observados', () => {
+  const summary = buildPhysicalMaterializationSummary({
+    tasks: [
+      {
+        task_id: 'TEST-TASK-020',
+        task_state: 'APROBADA',
+        mode: 'GLOBAL_FINAL',
+        relation_state: 'DIRECT_INSTANCE_ONLY',
+        explicit_materialization: null,
+        materializing_unit_ids: [],
+        direct_instances: [{
+          instance_id: 'TEST-TASK-020::GLOBAL-FINAL',
+          status: 'VERIFIED',
+          evidence_count: 1,
+          implementation_unit_id: null,
+        }],
+      },
+      {
+        task_id: 'TEST-TASK-021',
+        task_state: 'APROBADA',
+        mode: 'DEFINE_ONCE',
+        relation_state: 'UNMAPPED',
+        explicit_materialization: null,
+        materializing_unit_ids: [],
+        direct_instances: [],
+      },
+    ],
+  });
+  assert.equal(summary.counts.MATERIALIZED, 1);
+  assert.equal(summary.counts.UNMAPPED, 1);
+  assert.equal(summary.rows.length, 2);
 });
