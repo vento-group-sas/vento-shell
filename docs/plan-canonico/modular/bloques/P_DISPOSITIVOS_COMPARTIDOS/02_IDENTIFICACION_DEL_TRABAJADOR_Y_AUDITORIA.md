@@ -1966,4 +1966,960 @@ Esta tarea no:
 `AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría`
 
 
-### [ ] AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría
+### ✅ AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-009 — Evitar heredar permisos administrativos
+**Tarea siguiente:** AUTH-DEV-011 — Permitir revocar un dispositivo
+**Tipo de tarea:** documental; contrato canónico de trazabilidad conjunta de dispositivo compartido y trabajador humano en auditoría, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo toda operación empresarial originada desde un dispositivo compartido conserva evidencia suficiente para distinguir y correlacionar, sin fusionarlos, al principal técnico, la identidad del dispositivo, el trabajador humano efectivo, la sesión de actor cuando exista, el contexto laboral utilizado, la decisión de autorización y el resultado real de la operación.
+
+La tarea cierra el mini-bloque `AUTH-DEV-007` a `AUTH-DEV-010` mediante una regla de atribución verificable:
+
+```text
+DISPOSITIVO COMPARTIDO
++
+PRINCIPAL TECNICO
++
+TRABAJADOR HUMANO ACTUAL
++
+CONTEXTO Y AUTORIDAD RESUELTOS
++
+DECISION DE AUTORIZACION
++
+RESULTADO DE EJECUCION
+=
+EVIDENCIA CORRELACIONABLE SIN FUSION DE IDENTIDADES
+```
+
+La auditoría no crea autoridad. Su función es demostrar quién o qué presentó la credencial técnica, qué dispositivo intervino, a qué humano se atribuyó la acción, bajo qué contexto fue evaluada y qué ocurrió realmente.
+
+---
+
+#### 2. Handoff recibido de AUTH-DEV-009
+
+`AUTH-DEV-009` entrega cuatro conceptos separados y no intercambiables:
+
+```text
+PRINCIPAL TECNICO IDENTIFICABLE
++
+DISPOSITIVO IDENTIFICABLE
++
+ACTOR HUMANO ACTUAL IDENTIFICABLE
++
+FUENTE DE AUTORIDAD PERTENECIENTE AL ACTOR ACTUAL
+```
+
+La separación anterior impide que la auditoría reconstruya al trabajador desde:
+
+- el usuario técnico del dispositivo;
+- el administrador que creó o configuró el dispositivo;
+- el trabajador anterior;
+- `navigation_role`;
+- una aplicación visible;
+- una plantilla;
+- un paquete de capacidades;
+- un estado residual de interfaz;
+- una cookie, caché o decisión previa;
+- una credencial técnica privilegiada.
+
+`AUTH-DEV-010` consume esa separación y define cómo conservarla como evidencia.
+
+---
+
+#### 3. Resultado canónico
+
+Toda acción protegida desde dispositivo compartido deberá poder responder de forma reproducible:
+
+1. cuál fue el principal técnico autenticado;
+2. cuál fue el `device_id` canónico involucrado;
+3. cuál fue el trabajador humano efectivo, si pudo resolverse;
+4. qué `actor_session_id` vinculó al trabajador con el dispositivo, cuando aplique;
+5. qué aplicación y capacidad exactas fueron evaluadas;
+6. qué sede y área efectivas participaron cuando el contrato las requiere;
+7. qué rol base y rol operativo participaron cuando correspondan;
+8. qué turno y check-in participaron cuando la modalidad los requiere;
+9. qué recurso o destino empresarial fue evaluado;
+10. qué decisión de autorización se produjo;
+11. qué razones estructuradas explican la decisión;
+12. qué versión contractual y fuentes versionadas sustentaron la resolución;
+13. cuándo ocurrió el hecho y cuándo fue registrado;
+14. qué correlación enlaza decisión, intento, ejecución y evidencia;
+15. cuál fue el resultado real de ejecución o ausencia de efecto.
+
+Una evidencia que solo conserve el dispositivo o solo conserve al trabajador es insuficiente para una acción empresarial originada desde dispositivo compartido.
+
+---
+
+#### 4. Planos de auditoría que deben permanecer separados
+
+La trazabilidad de dispositivos compartidos conserva cuatro planos relacionados, pero no sustituibles entre sí:
+
+| Plano | Pregunta que responde | Fuente contractual |
+| --- | --- | --- |
+| ciclo de vida del dispositivo | qué ocurrió con la identidad, configuración, sesión de actor o estado del dispositivo | fundación append-only de auditoría de dispositivo |
+| decisión de autorización | por qué una acción fue permitida o denegada | decisión canónica de autorización |
+| ejecución empresarial | qué efecto se intentó y qué resultado produjo | acción de servidor y auditoría del dominio propietario |
+| correlación | cómo se demuestra que los hechos pertenecen a la misma operación lógica | `authorization_decision_id`, `correlation_id`, causación e idempotencia cuando apliquen |
+
+No se utilizará una fila de ciclo de vida del dispositivo como sustituto de la auditoría empresarial de una venta, recepción, movimiento, producción, redención u otra operación de dominio.
+
+Tampoco se duplicará indiscriminadamente el payload empresarial dentro de la auditoría del dispositivo.
+
+---
+
+#### 5. Contrato de identidad auditada
+
+La evidencia conserva de forma independiente:
+
+```text
+principal tecnico
+!=
+dispositivo
+!=
+actor humano
+!=
+rol
+!=
+sesion de actor
+!=
+sesion Auth
+!=
+turno
+!=
+check-in
+```
+
+Para una operación ordinaria desde dispositivo compartido:
+
+```text
+principal_type = SHARED_DEVICE
+actor_type = EMPLOYEE
+attribution_source = DEVICE_ACTOR_SESSION
+```
+
+cuando exista una sesión de actor válida y la acción exija actor humano.
+
+El identificador Auth del usuario técnico no se copiará como `employee_id` por conveniencia, aunque dos UUID pudieran coincidir accidentalmente en datos legacy.
+
+---
+
+#### 6. Principal técnico
+
+El principal técnico identifica quién o qué presentó la credencial técnica aceptada para la solicitud.
+
+En un dispositivo compartido deberá conservarse una referencia segura al principal técnico, pero nunca:
+
+- access token;
+- refresh token;
+- JWT completo;
+- contraseña;
+- PIN del trabajador;
+- secreto de firma;
+- API key;
+- service role key;
+- credencial completa del endpoint.
+
+La existencia de un principal técnico válido no demuestra actor humano, permiso ni decisión `ALLOW`.
+
+---
+
+#### 7. Identidad del dispositivo
+
+La identidad de auditoría del dispositivo usa el `device_id` canónico resuelto en servidor.
+
+Podrán conservarse otras referencias seguras para trazabilidad, como código de dispositivo, endpoint o vínculo de credencial, cuando el contrato físico las provea, pero ninguna sustituye al `device_id` ni adquiere semántica de actor humano.
+
+La auditoría no inferirá sede, área, rol o permiso desde el texto de `device_code`.
+
+Una observación física sin enrolamiento no recibe `device_id` únicamente para completar la auditoría.
+
+---
+
+#### 8. Trabajador humano efectivo
+
+Cuando la acción exige humano, el trabajador auditado es exactamente el empleado resuelto como actor efectivo en servidor.
+
+La fuente válida es la sesión de actor o el mecanismo canónico equivalente, no:
+
+- el último trabajador conocido;
+- el empleado que configuró el dispositivo;
+- el usuario técnico;
+- un `employee_id` enviado por el cliente;
+- el nombre mostrado en interfaz;
+- el rol operativo esperado;
+- la sede del dispositivo;
+- el turno de otra persona.
+
+Si el actor no puede resolverse de forma única, no se inventa un trabajador para llenar la auditoría.
+
+---
+
+#### 9. Sesión de actor
+
+Cuando exista sesión de actor válida, la evidencia deberá poder correlacionar:
+
+```text
+device_id
++
+actor_employee_id
++
+actor_session_id
+```
+
+La sesión utilizada debe pertenecer al mismo dispositivo, al mismo trabajador y al contexto vigente que participó en la decisión.
+
+La sesión de actor no se convierte en:
+
+- permiso;
+- turno;
+- check-in;
+- reautenticación fuerte;
+- bearer token para ejecutar otra acción.
+
+La duración, expiración y renovación numéricas permanecen fuera de esta tarea.
+
+---
+
+#### 10. Administrador del dispositivo y trabajador operativo
+
+Una modificación administrativa sobre el dispositivo y una acción empresarial ejecutada por un trabajador representan atribuciones distintas.
+
+La auditoría física puede conservar, cuando corresponda:
+
+```text
+administrative_actor_id
+actor_employee_id
+technical_principal_id
+```
+
+Estos campos no son sinónimos.
+
+`administrative_actor_id` identifica al actor humano que autorizó o realizó una gestión administrativa del dispositivo cuando existe esa decisión.
+
+`actor_employee_id` identifica al trabajador humano al que se atribuye el uso operativo del dispositivo o la sesión de actor.
+
+`technical_principal_id` identifica el principal técnico que presentó la credencial o ejecutó el carril técnico.
+
+Una misma persona puede aparecer legítimamente en más de una dimensión en un caso concreto, pero la semántica no se fusiona por coincidencia de valor.
+
+---
+
+#### 11. Decisión de autorización y ejecución real
+
+La auditoría deberá separar:
+
+```text
+AUTORIZACION
+```
+
+```text
+EJECUCION
+```
+
+Una decisión `ALLOW` no demuestra que la operación fue ejecutada.
+
+Una decisión `DENY` demuestra que no existía autorización para producir el efecto solicitado, pero debe conservar evidencia suficiente para investigar el intento cuando las identidades mínimas pudieron resolverse.
+
+Una ejecución confirmada deberá enlazarse con la decisión que la autorizó o con la revalidación equivalente exigida por el contrato del dominio.
+
+---
+
+#### 12. Evidencia mínima de una acción empresarial protegida
+
+Cuando una acción empresarial desde dispositivo compartido sea procesable, la evidencia correlacionable deberá incluir o poder resolver desde referencias inmutables:
+
+- principal técnico y su clase;
+- `device_id`;
+- `actor_employee_id` o estado de actor no resuelto;
+- `actor_session_id` cuando aplique;
+- aplicación;
+- permiso o capacidad exacta;
+- modalidad y carril utilizados cuando sean materiales;
+- rol base cuando participe;
+- rol operativo cuando participe;
+- turno cuando sea requerido;
+- check-in cuando sea requerido;
+- sede efectiva;
+- área efectiva cuando aplique;
+- recurso o descriptor de destino;
+- decisión;
+- razones;
+- versión contractual;
+- referencias de fuentes y fingerprints disponibles;
+- timestamp del hecho;
+- correlación con el intento lógico;
+- resultado de ejecución o ausencia de efecto.
+
+No se exige duplicar una misma dimensión en todas las tablas físicas si puede reconstruirse de forma inequívoca mediante referencias inmutables y correlacionadas.
+
+---
+
+#### 13. Uso de la fundación física AUTH-DB-014
+
+La fundación física de auditoría de dispositivo ya existe y se consume como contrato, no se redefine.
+
+La materialización posterior de `AUTH-DEV-010` deberá reutilizar la familia física existente de:
+
+- raíz auditable del dispositivo;
+- revisiones append-only;
+- eventos append-only;
+- intentos;
+- vínculos de evidencia;
+- correcciones auditadas.
+
+La tarea no crea una tabla paralela de auditoría de dispositivos ni un segundo writer canónico.
+
+La adopción progresiva de writers físicos permanece bajo su propietario de transición y las futuras unidades de implementación consumidoras deberán usar la superficie canónica correspondiente.
+
+---
+
+#### 14. Catálogo de eventos: reutilizar, no inventar
+
+La auditoría física ya posee un catálogo de eventos de ciclo de vida y sesión de actor.
+
+Para el ámbito de trabajador y dispositivo son relevantes, entre otros, los eventos existentes:
+
+```text
+ACTOR_SESSION_STARTED
+ACTOR_SESSION_ENDED
+ACTOR_SESSION_EXPIRED
+ACTOR_SESSION_REVOKED
+ACTOR_CHANGED
+```
+
+La tarea no crea un tipo de evento genérico adicional para representar cada acción empresarial dentro del catálogo de lifecycle del dispositivo.
+
+Las acciones empresariales se auditan mediante la decisión de autorización, la evidencia de ejecución y el dominio propietario, enlazadas al dispositivo mediante referencias de identidad y correlación.
+
+Si una operación empresarial coincide además con un cambio real de lifecycle del dispositivo o de su sesión de actor, ambos hechos se conservan como eventos distintos y correlacionables.
+
+---
+
+#### 15. Cambio de trabajador
+
+El cambio de trabajador debe ser reconstruible históricamente sin reescribir la identidad anterior.
+
+La auditoría deberá permitir demostrar:
+
+```text
+SESION ANTERIOR TERMINA O DEJA DE SER VIGENTE
++
+CAMBIO DE ACTOR CORRELACIONADO
++
+NUEVA SESION DEL NUEVO ACTOR
+=
+HISTORIA DE HANDOFF RECONSTRUIBLE
+```
+
+No es obligatorio representar los dos trabajadores en una sola fila si la secuencia de eventos y sus correlaciones permite reconstruir inequívocamente el antes y el después.
+
+`AUTH-DEV-013` conserva la responsabilidad de definir la mecánica completa del cambio, limpieza de estado, invalidación y nuevo actor. Esta tarea únicamente exige que ese cambio sea auditable.
+
+---
+
+#### 16. Acción permitida
+
+Una acción permitida desde dispositivo compartido requiere como mínimo:
+
+1. principal técnico válido;
+2. dispositivo válido;
+3. actor humano válido cuando el contrato lo exige;
+4. autoridad del actor resuelta sin herencia administrativa;
+5. techo del dispositivo aplicado;
+6. aplicación permitida;
+7. contexto y territorio válidos;
+8. permiso exacto;
+9. ausencia de denegaciones aplicables;
+10. decisión `ALLOW` válida;
+11. ejecución empresarial realizada o resultado no ejecutado explícito;
+12. evidencia correlacionable.
+
+La auditoría no corrige una falla de autorización. Registra el resultado de la evaluación y de la ejecución.
+
+---
+
+#### 17. Acción denegada
+
+Cuando el servidor puede resolver identidad mínima y producir una decisión válida, una denegación deberá conservar evidencia suficiente del intento.
+
+Como mínimo, según disponibilidad autoritativa:
+
+- principal;
+- dispositivo;
+- actor efectivo o `UNRESOLVED`;
+- capacidad solicitada;
+- recurso o intento de recurso;
+- territorio resoluble;
+- decisión `DENY`;
+- razones estructuradas;
+- timestamp;
+- correlación.
+
+Una denegación no fabrica un `after` ni un resultado empresarial exitoso.
+
+---
+
+#### 18. Dispositivo sin actor humano resoluble
+
+Un dispositivo puede conservar eventos técnicos de lifecycle sin poseer actor humano.
+
+Pero si una acción empresarial requiere actor y no existe una sesión de actor válida:
+
+```text
+principal tecnico = RESUELTO
+
+device_id = RESUELTO
+
+actor_type = UNRESOLVED
+
+actor_employee_id = null
+
+NO PRODUCE EFECTO EMPRESARIAL
+```
+
+La auditoría registra el estado no resuelto cuando exista una decisión o intento auditable; no reutiliza el último empleado para completar campos.
+
+---
+
+#### 19. Fallo técnico antes de una decisión válida
+
+Un fallo técnico previo a la construcción de una decisión de autorización completa no se convierte artificialmente en `DENY` y no genera un `decision_id` ficticio.
+
+La telemetría técnica y la auditoría empresarial permanecen separadas.
+
+Cuando el fallo impide construir evidencia mínima coherente:
+
+```text
+NO DECISION FABRICADA
++
+NO ACTOR INVENTADO
++
+NO EFECTO EMPRESARIAL AFIRMADO
++
+TELEMETRIA TECNICA SEPARADA
+```
+
+La política transversal de indisponibilidad técnica conserva su propietario canónico fuera de esta tarea.
+
+---
+
+#### 20. Sede y área
+
+Para acciones empresariales, la auditoría utiliza la sede y el área efectivas que participaron realmente en la decisión.
+
+No utiliza como sustituto:
+
+- sede física del dispositivo cuando el contrato evalúa otra dimensión territorial;
+- sede seleccionada por interfaz;
+- área seleccionada;
+- nombre de plantilla;
+- ubicación inferida desde `device_code`;
+- último contexto del trabajador anterior.
+
+Cuando el dispositivo impone una restricción territorial adicional, la evidencia debe permitir distinguir la restricción del dispositivo del territorio resuelto para el trabajador y el recurso.
+
+---
+
+#### 21. Aplicación, permiso y recurso
+
+La trazabilidad debe conservar la capacidad concreta que fue evaluada.
+
+Una aplicación abierta no sustituye el permiso exacto.
+
+Un permiso de entrada a aplicación no sustituye una capacidad interna.
+
+El recurso o destino empresarial debe quedar correlacionado cuando el contrato de la operación lo requiera.
+
+Los nombres visuales, rutas o etiquetas no se utilizan como identificadores autoritativos de permiso.
+
+---
+
+#### 22. Infraestructura privilegiada
+
+Una operación puede necesitar infraestructura privilegiada para persistir un efecto.
+
+Se mantiene:
+
+```text
+CAPACIDAD TECNICA DE EJECUCION
+!=
+AUTORIDAD EMPRESARIAL DEL ACTOR
+```
+
+`service_role`, admin clients, funciones privilegiadas o procesos internos no se registran como explicación suficiente de la autorización empresarial.
+
+La auditoría debe conservar quién fue el actor empresarial y qué decisión autorizó el efecto, aunque la escritura física haya sido ejecutada por infraestructura técnica privilegiada.
+
+---
+
+#### 23. Firma o PIN del trabajador
+
+El PIN o mecanismo ligero es un secreto efímero y nunca forma parte del contenido auditable persistente.
+
+Cuando una acción exige firma individual, la auditoría puede conservar una referencia opaca de firma o evidencia de validación vinculada al actor y a la operación, pero nunca:
+
+- el PIN;
+- una copia reversible del secreto;
+- el valor completo de una credencial;
+- un hash reutilizable como credencial;
+- el secreto dentro de `event_payload`;
+- el secreto dentro de logs, métricas o receipts.
+
+La referencia de firma tampoco concede autoridad por sí sola.
+
+---
+
+#### 24. Tiempo del hecho y tiempo de registro
+
+La auditoría conserva separados conceptualmente:
+
+```text
+occurred_at
+```
+
+y:
+
+```text
+recorded_at
+```
+
+Un evento retrasado, sincronizado posteriormente o importado desde una fuente legacy no se presenta como ocurrido en el momento de ingestión.
+
+La diferencia temporal tampoco permite ejecutar con una autorización histórica obsoleta. Las operaciones que se sincronizan después deben respetar sus contratos de reautorización, idempotencia y frescura.
+
+---
+
+#### 25. Correlación, causación e idempotencia
+
+Una misma operación lógica debe poder enlazar, según aplique:
+
+- intento;
+- decisión;
+- evento de dispositivo;
+- cambio de sesión de actor;
+- ejecución empresarial;
+- retry;
+- corrección;
+- rollback o compensación.
+
+`correlation_id` no concede permiso.
+
+Una idempotency key no concede permiso.
+
+Un reintento no reutiliza una decisión obsoleta como autoridad.
+
+La duplicación técnica del mismo source operation no puede producir una historia contradictoria ni dos efectos empresariales cuando el contrato exige idempotencia.
+
+---
+
+#### 26. Inmutabilidad y correcciones
+
+La evidencia histórica es append-only.
+
+Una corrección posterior no reescribe silenciosamente:
+
+- el actor original;
+- el dispositivo original;
+- el timestamp del hecho;
+- la decisión original;
+- el resultado original;
+- la fuente original.
+
+La corrección debe producir nueva evidencia enlazada al hecho corregido, conservando el histórico previo.
+
+Un cambio de nombre, plantilla o configuración posterior del dispositivo no reinterpreta retroactivamente acciones antiguas.
+
+---
+
+#### 27. Importación de evidencia legacy
+
+Los eventos legacy existentes pueden conservarse como evidencia histórica importada cuando la fundación física los clasifique como tales.
+
+Una importación legacy no demuestra automáticamente:
+
+- conformidad actual;
+- identidad física verificada;
+- sesión de actor válida;
+- contexto completo;
+- decisión canónica histórica si nunca existió;
+- operación actual del dispositivo.
+
+Queda prohibido fabricar campos faltantes para hacer parecer completa una fila histórica parcial.
+
+---
+
+#### 28. Estado físico observado
+
+La fundación física append-only de auditoría de dispositivo se encuentra materializada y verificada en `vento-shell`.
+
+Al mismo tiempo, la adopción por consumidores permanece incompleta:
+
+- existe infraestructura legacy de `shared_operational_device_events`;
+- la creación administrativa de dispositivos observada continúa escribiendo directamente en la superficie legacy;
+- no se encontró adopción de aplicación del writer canónico de eventos de dispositivo en la revisión actual;
+- los eventos legacy conservan valor histórico, pero no constituyen una segunda fuente canónica;
+- no existen evidencias suficientes para declarar operación integral conforme de las estaciones compartidas.
+
+Este estado observado no autoriza cambios de código, migraciones, RPC, RLS, datos ni configuración durante esta tarea documental.
+
+---
+
+#### 29. Cobertura de las 19 identidades heredadas
+
+La tarea consume exactamente el universo de 19 identidades documentales aprobado por `AUTH-DEV-001` a `AUTH-DEV-006`.
+
+| `inventory_key` | Clase | Decisión de auditoría | Estado documental |
+| --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` | Toda operación futura conforme debe correlacionar dispositivo y actor humano; la evidencia registral actual no certifica runtime ni actor. | `REGISTERED_UNVERIFIED` |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` | Toda operación futura conforme debe correlacionar dispositivo y actor humano; la evidencia registral actual no certifica runtime ni actor. | `REGISTERED_UNVERIFIED` |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` | No puede auditarse como dispositivo canónico hasta demostrar enrolamiento e identidad; conservar únicamente la observación de origen. | `OBSERVED_ONLY` |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` | No puede auditarse como dispositivo canónico hasta demostrar enrolamiento e identidad; conservar únicamente la observación de origen. | `OBSERVED_ONLY` |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá aplicar la trazabilidad dispositivo-trabajador; una plantilla por sí sola no emite eventos de runtime. | `POLICY_DEFINED` |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá aplicar la trazabilidad dispositivo-trabajador; una plantilla por sí sola no emite eventos de runtime. | `POLICY_DEFINED` |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá aplicar la trazabilidad dispositivo-trabajador; una plantilla por sí sola no emite eventos de runtime. | `POLICY_DEFINED` |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá aplicar la trazabilidad dispositivo-trabajador; una plantilla por sí sola no emite eventos de runtime. | `POLICY_DEFINED` |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá aplicar la trazabilidad dispositivo-trabajador; una plantilla por sí sola no emite eventos de runtime. | `POLICY_DEFINED` |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá aplicar la trazabilidad dispositivo-trabajador; la integración funcional no fusiona actores ni auditorías. | `POLICY_DEFINED` |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá registrar actor, dispositivo y área efectiva exacta de la operación. | `POLICY_DEFINED` |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá registrar actor, dispositivo y área efectiva exacta de la operación. | `POLICY_DEFINED` |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá registrar actor, dispositivo y área efectiva exacta de la operación. | `POLICY_DEFINED` |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá registrar actor humano, dispositivo, territorio y capacidad exacta sin usar la política legacy como atribución suficiente. | `POLICY_DEFINED` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` | Toda futura instancia derivada deberá correlacionar actor y dispositivo sin convertir ruta, vehículo u origen/destino en identidad humana. | `POLICY_DEFINED` |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` | La evidencia deberá distinguir el modo administrativo u operativo realmente evaluado y conservar el actor correspondiente sin mezclar carriles. | `POLICY_DEFINED` |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` | La evidencia deberá identificar al trabajador y capacidad exactos; la amplitud de superficies no convierte coordinación en ejecución de otros oficios. | `POLICY_DEFINED` |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` | Toda acción administrativa deberá atribuirse al humano actual y a su autoridad real; la terminal y el principal técnico no son el administrador empresarial. | `POLICY_DEFINED` |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` | Conserva únicamente historia; no admite nuevas instancias ni nuevos eventos de runtime como plantilla objetivo. | `NO_APLICA` |
+
+Resultado de cobertura:
+
+```text
+19 identidades esperadas
+=
+2 CONFIGURED_INSTANCE
++
+2 PHYSICAL_OBSERVATION
++
+14 TARGET_TEMPLATE
++
+1 RETIRED_LEGACY_TEMPLATE
+
+19 decisiones materializadas documentalmente
+0 faltantes
+0 duplicados
+```
+
+---
+
+#### 30. Casos especiales de terminal
+
+##### 30.1 `procurement_reception`
+
+Los modos administrativo y operativo permanecen mutuamente excluyentes.
+
+La auditoría debe conservar cuál modo participó en la decisión y qué actor humano fue resuelto.
+
+Un mismo dispositivo no permite fusionar en una sola autoridad el carril administrativo y el operativo.
+
+##### 30.2 `operations_management_terminal`
+
+La terminal puede exponer una superficie operativa amplia, pero cada acción auditada conserva la capacidad exacta, el actor real y el territorio efectivo.
+
+No se registra el nombre de la terminal como sustituto del oficio ejecutado.
+
+##### 30.3 `management_terminal`
+
+Una acción administrativa desde esta terminal se atribuye al humano actual y a su carril base real.
+
+La ubicación física, plantilla, app visible, principal técnico o uso previo por otro administrador no explican por sí solos la autorización.
+
+---
+
+#### 31. Relación con AUTH-SRV-014
+
+`AUTH-SRV-014` conserva la atribución general de las acciones protegidas.
+
+`AUTH-DEV-010` especializa esa obligación para dispositivos compartidos y exige que la evidencia pueda correlacionar simultáneamente:
+
+```text
+principal_type = SHARED_DEVICE
++
+device_id
++
+actor_type = EMPLOYEE o UNRESOLVED
++
+actor_session_id cuando exista
++
+contexto aplicable
++
+decision_id cuando exista
++
+resultado de ejecucion
+```
+
+No se crea un segundo `operational_actor_id` cuando el actor efectivo ya identifica al trabajador.
+
+---
+
+#### 32. Relación con AUTH-DB-014
+
+`AUTH-DB-014` es la fundación física propietaria de la auditoría de dispositivos.
+
+`AUTH-DEV-010` no cambia sus tablas, constraints, funciones, event catalog, ownership, ACL, fingerprints ni contrato físico.
+
+Las futuras materializaciones consumidoras deberán respetar el contrato físico vigente en vez de escribir una interpretación paralela.
+
+---
+
+#### 33. Relación con AUTH-DB-020
+
+La adopción progresiva de writers y objetos físicos permanece bajo `AUTH-DB-020` cuando corresponda a transición de base de datos.
+
+Por tanto, esta tarea documental:
+
+- identifica la necesidad de consumo del writer canónico;
+- prohíbe crear una segunda fuente de auditoría;
+- no migra por sí misma consumidores legacy;
+- no retira por sí misma la superficie legacy;
+- no modifica bases de datos.
+
+Las unidades físicas posteriores deberán coordinar su consumo con la transición física aprobada, sin duplicar ownership.
+
+---
+
+#### 34. Privacidad y minimización
+
+La auditoría debe conservar evidencia suficiente sin copiar datos que no son necesarios para demostrar la operación.
+
+Queda prohibido persistir por conveniencia:
+
+- secretos;
+- PIN;
+- tokens;
+- credenciales completas;
+- contraseñas temporales;
+- payloads completos de formularios si contienen datos no necesarios;
+- datos personales ajenos al propósito de auditoría;
+- snapshots completos de recursos cuando bastan campos mínimos o referencias.
+
+Los identificadores y fingerprints de evidencia no deben funcionar como credenciales reutilizables.
+
+---
+
+#### 35. Ausencia, nulidad e invalidez
+
+La auditoría distingue:
+
+```text
+actor no requerido
+```
+
+```text
+actor requerido pero no resuelto
+```
+
+```text
+actor resuelto
+```
+
+```text
+evidencia no disponible por fallo tecnico
+```
+
+`null` no significa automáticamente cualquiera de estos estados.
+
+Cuando una dimensión es obligatoria y no puede resolverse, la acción falla cerrada conforme al contrato de autorización propietario.
+
+La ausencia de un campo opcional no convierte una evidencia incompleta en una evidencia válida si el contrato exigía ese dato.
+
+---
+
+#### 36. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Requisitos creados: 0.
+
+Requisitos modificados: 0.
+
+Justificación: las obligaciones de atribución conjunta de dispositivo y trabajador, no transferencia de privilegios, auditoría de decisiones y acciones protegidas, e integridad de identidad de dispositivo ya están cubiertas por requisitos canónicos vigentes. Esta tarea cierra la responsabilidad documental y la enlaza con la fundación física ya existente sin introducir una regla de prueba nueva ni modificar el registro modular 04A.
+
+---
+
+#### 37. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro vigente:
+
+- `TREQ-AUTH-011` — exige intersección de autoridad en dispositivo compartido, prohíbe transferencia administrativa y obliga a registrar dispositivo, principal, actor, sede, área y cambio de trabajador;
+- `TREQ-AUTH-015` — exige evidencia correlacionable de principal, actor, roles, turno, check-in, territorio, dispositivo, permiso, recurso, decisión, razones, versión y timestamp, también en denegaciones, reintentos, rollback y operaciones administrativas;
+- `TREQ-AUTH-019` — mantiene separadas las identidades de dispositivo, endpoint, activo, estación, principal técnico y actor humano;
+- `TREQ-AUTH-021` — exige vínculo técnico único, explícito, versionado y server-side sin exposición de secretos;
+- `TREQ-PASS-029` — exige que mutaciones PULSO-PASS desde dispositivo compartido vinculen principal técnico, actor humano, dispositivo, sede, permiso y resultado.
+
+Estos identificadores se citan únicamente como trazabilidad de cobertura existente y no representan cambios al registro.
+
+---
+
+#### 38. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación canónica deberá ejecutarse después de incorporar la tarea en su archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores contra el checkout local del usuario durante la preparación documental. |
+| REMOTA | `NOT_EXECUTED` | Se revisaron fuentes remotas como insumo documental, pero no se ejecutó una validación runtime o de repositorio remoto que autorice declarar PASS. |
+| OPERATIVA | `NOT_APPLICABLE` | La tarea no autoriza operación real de dispositivos ni cambios de proceso. |
+| FÍSICA | `NOT_APPLICABLE` | La tarea no autoriza cambios físicos, migraciones, RPC, RLS, datos, aplicaciones ni configuración. |
+
+---
+
+#### 39. Criterios de aceptación
+
+- [x] El principal técnico y el trabajador humano permanecen separados.
+- [x] El `device_id` y el actor humano quedan simultáneamente trazables cuando la acción exige humano.
+- [x] La sesión de actor se correlaciona sin convertirse en permiso, turno o check-in.
+- [x] El administrador del dispositivo y el trabajador operativo no se fusionan por conveniencia.
+- [x] La autoridad de la acción sigue perteneciendo al actor humano y a su contexto, no a la auditoría.
+- [x] La decisión de autorización y el resultado de ejecución permanecen separados.
+- [x] Las denegaciones conservan atribución mínima cuando puede resolverse.
+- [x] Un actor no resuelto no se completa usando el último trabajador.
+- [x] Un fallo técnico no fabrica `DENY`, actor ni decisión.
+- [x] El PIN y los secretos quedan fuera de la evidencia persistente.
+- [x] `occurred_at` y `recorded_at` mantienen semánticas distintas.
+- [x] Correlación e idempotencia no se convierten en autoridad.
+- [x] La historia permanece append-only y las correcciones generan nueva evidencia.
+- [x] Los eventos legacy se preservan sin fabricar conformidad histórica.
+- [x] Se reutiliza la fundación física de `AUTH-DB-014` sin crear una auditoría paralela.
+- [x] No se inventa un nuevo event type empresarial dentro del catálogo de lifecycle del dispositivo.
+- [x] Se reconoce la adopción legacy todavía incompleta sin autorizar su corrección física aquí.
+- [x] La matriz cubre exactamente 19 identidades heredadas.
+- [x] La distribución permanece 2 + 2 + 14 + 1.
+- [x] Las dos observaciones físicas no reciben `device_id` por inferencia.
+- [x] Las plantillas objetivo no generan eventos de runtime por existir documentalmente.
+- [x] `procurement_reception` conserva modos excluyentes.
+- [x] `operations_management_terminal` no convierte coordinación en ejecución de otros oficios.
+- [x] `management_terminal` atribuye administración al humano real y no al terminal.
+- [x] Se conserva el ownership físico de `AUTH-DB-014`, `AUTH-DB-020` y `AUTH-SRV-014`.
+- [x] No se absorbe la mecánica de revocación de `AUTH-DEV-011`.
+- [x] No se absorbe expiración de `AUTH-DEV-012`.
+- [x] No se absorbe cambio de trabajador de `AUTH-DEV-013`.
+- [x] No se ejecutan las pruebas físicas de `AUTH-DEV-014` a `AUTH-DEV-016`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autorizan cambios físicos.
+
+---
+
+#### 40. Cierre del mini-bloque AUTH-DEV-007 a AUTH-DEV-010
+
+El mini-bloque queda contractualmente compuesto por cuatro responsabilidades no solapadas:
+
+```text
+AUTH-DEV-007
+-> identificar al trabajador real mediante prueba humana ligera
+
+AUTH-DEV-008
+-> combinar restrictivamente autoridad humana y techo del dispositivo
+
+AUTH-DEV-009
+-> impedir herencia administrativa del principal, actores previos o estado residual
+
+AUTH-DEV-010
+-> conservar dispositivo y trabajador como evidencia correlacionable de la accion
+```
+
+Resultado conjunto:
+
+```text
+IDENTIDAD HUMANA RESUELTA
++
+AUTORIDAD RESTRINGIDA
++
+NO HERENCIA ADMINISTRATIVA
++
+AUDITORIA CONJUNTA
+=
+CONTRATO DOCUMENTAL COMPLETO DE IDENTIFICACION Y ATRIBUCION EN DISPOSITIVO COMPARTIDO
+```
+
+Este cierre documental no equivale a materialización física ni a certificación de los dispositivos observados.
+
+---
+
+#### 41. Handoff exacto hacia AUTH-DEV-011
+
+`AUTH-DEV-010` entrega a `AUTH-DEV-011` una cadena auditable donde la identidad del dispositivo, el principal técnico y el actor humano no se confunden y los cambios de lifecycle pueden conservar evidencia append-only.
+
+El handoff mínimo es:
+
+```text
+DEVICE_ID CANONICO RESOLUBLE
++
+PRINCIPAL TECNICO SEPARADO
++
+ACTOR HUMANO O ESTADO UNRESOLVED
++
+ACTOR_SESSION_ID CUANDO EXISTA
++
+DECISION Y RESULTADO CORRELACIONABLES
++
+HISTORIA APPEND-ONLY DISPONIBLE
+```
+
+`AUTH-DEV-011` conserva exclusivamente la responsabilidad de definir la revocación operativa del dispositivo y sus efectos de acceso. Esta tarea no desarrolla esa política.
+
+---
+
+#### 42. Límites
+
+Esta tarea no:
+
+- crea ni modifica tablas de auditoría;
+- crea migraciones;
+- modifica Supabase;
+- modifica RLS, RPC, grants, funciones o triggers;
+- cambia el catálogo físico de eventos;
+- crea un nuevo writer de auditoría;
+- retira la superficie legacy;
+- migra consumidores físicos;
+- cambia código de VISO, NEXO, FOGO, PULSO, ORIGO, SHELL u otras aplicaciones;
+- define retención numérica de auditoría;
+- define TTL de sesión o firma;
+- define límites de intentos o lockout;
+- define la mecánica de revocación de `AUTH-DEV-011`;
+- define la expiración de `AUTH-DEV-012`;
+- define la mecánica completa de cambio de trabajador de `AUTH-DEV-013`;
+- ejecuta pruebas físicas de `AUTH-DEV-014`, `AUTH-DEV-015` o `AUTH-DEV-016`;
+- modifica el modelo de identidad aprobado por `AUTH-DEV-002`;
+- modifica sede, área, aplicaciones o techo del dispositivo;
+- modifica la intersección aprobada por `AUTH-DEV-008`;
+- reabre la no herencia administrativa de `AUTH-DEV-009`;
+- modifica `AUTH-DB-014` ni su instancia física verificada;
+- absorbe la adopción de writers propietaria de `AUTH-DB-020`;
+- sustituye la atribución general de acciones protegidas definida por `AUTH-SRV-014`;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- asigna ni autoriza una instancia física durante este trabajo documental.
+
+---
+
+#### 43. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-009 — Evitar heredar permisos administrativos`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-010 — Registrar dispositivo y trabajador en auditoría`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-011 — Permitir revocar un dispositivo`
