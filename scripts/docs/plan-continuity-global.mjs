@@ -5,6 +5,10 @@ import {
 } from './continuity-route.mjs';
 import { readAndResolveExecutionRoute } from './execution-route.mjs';
 import { deriveImplementationControl } from './implementation-control.mjs';
+import {
+  buildImplementationMaterializationIndex,
+  buildPhysicalMaterializationSummary,
+} from './implementation-materialization.mjs';
 
 const TASK_REGEX = /^###\s+(?<marker>\[[ x~]\]|[✅🟡❌])\s+(?<id>[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3})\b(?:\s+[—-]\s+(?<title>[^\n]+))?$/gmu;
 
@@ -526,17 +530,27 @@ function escapeMarkdownCell(value) {
   return String(value).replaceAll('|', '\\|').replaceAll('\n', ' ');
 }
 
-function buildRegistryMarkdown(taskMap, stats, continuity) {
+export function buildRegistryMarkdown(taskMap, stats, continuity, materializationReport) {
   const tasks = [...taskMap.values()].sort(
     (a, b) => a.fileIndex - b.fileIndex || a.taskIndex - b.taskIndex
   );
+  const physical = buildPhysicalMaterializationSummary(materializationReport);
+
+  if (physical.rows.length !== tasks.length) {
+    fail(
+      `materialization report no cubre el registro global: `
+      + `${physical.rows.length}/${tasks.length} tareas.`,
+    );
+  }
 
   const lines = [
     '# REGISTRO GLOBAL DE TAREAS — VENTO OS',
     '',
     '> Archivo derivado. No editar manualmente.',
     '>',
-    '> La fuente de verdad del estado es exclusivamente el marcador del encabezado de cada tarea.',
+    '> El estado documental deriva exclusivamente del marcador del encabezado de cada tarea.',
+    '>',
+    '> El estado físico deriva de `CANONICAL-IMPLEMENTATION-MATERIALIZATION-001`; `SIN_TRAZABILIDAD_FISICA` no equivale a `NO IMPLEMENTADA`.',
     '',
     '## Resumen global',
     '',
@@ -549,6 +563,20 @@ function buildRegistryMarkdown(taskMap, stats, continuity) {
     `| No iniciadas | **${stats.notStarted}** |`,
     `| Rechazadas | **${stats.rejected}** |`,
     `| Porcentaje de completamiento | **${stats.completionPercentage.toFixed(2)}% (${stats.approved}/${stats.total})** |`,
+    '',
+    '## Resumen de materialización física',
+    '',
+    '| Estado físico | Tareas |',
+    '| --- | ---: |',
+    `| ⏸ NO_EVALUADA | **${physical.counts.DOCUMENTARY_PENDING}** |`,
+    `| ⚠️ SIN_TRAZABILIDAD_FISICA | **${physical.counts.UNMAPPED}** |`,
+    `| 🧩 MAPEADA | **${physical.counts.MAPPED}** |`,
+    `| 🟡 EN_IMPLEMENTACION | **${physical.counts.IN_IMPLEMENTATION}** |`,
+    `| 🟠 PARCIAL | **${physical.counts.PARTIAL}** |`,
+    `| ✅ MATERIALIZADA | **${physical.counts.MATERIALIZED}** |`,
+    '| ➖ NO_APLICA_FISICO | **0 — clasificación reservada para reconciliación explícita** |',
+    '',
+    '> `MATERIALIZADA` solo se declara automáticamente para obligaciones singleton con instancia `VERIFIED` y evidencia. Las cardinalidades abiertas permanecen `PARCIAL` hasta que una relación explícita permita demostrar cobertura completa.',
     '',
     '## Continuidad activa',
     '',
@@ -572,13 +600,22 @@ function buildRegistryMarkdown(taskMap, stats, continuity) {
     '',
     '## Registro completo',
     '',
-    '| Estado | Identificador | Título | Fragmento fuente |',
-    '| --- | --- | --- | --- |'
+    '| Estado documental | Estado físico | Identificador | Título | Materializada por | Evidencia física | Fragmento fuente |',
+    '| --- | --- | --- | --- | --- | --- | --- |'
   );
 
   for (const task of tasks) {
+    const physicalTask = physical.byTask.get(task.id);
+    if (!physicalTask) fail(`falta proyección física para ${task.id}.`);
+    const materializerRefs = physicalTask.materializer_refs.length > 0
+      ? physicalTask.materializer_refs.map((value) => `\`${escapeMarkdownCell(value)}\``).join('<br>')
+      : '—';
+    const evidenceRefs = physicalTask.evidence_refs.length > 0
+      ? physicalTask.evidence_refs.map((value) => `\`${escapeMarkdownCell(value)}\``).join('<br>')
+      : '—';
+
     lines.push(
-      `| ${stateIcon(task.state)} ${task.state} | \`${task.id}\` | ${escapeMarkdownCell(task.title)} | \`${escapeMarkdownCell(task.relativePath)}\` |`
+      `| ${stateIcon(task.state)} ${task.state} | ${escapeMarkdownCell(physicalTask.display)} | \`${task.id}\` | ${escapeMarkdownCell(task.title)} | ${materializerRefs} | ${evidenceRefs} | \`${escapeMarkdownCell(task.relativePath)}\` |`
     );
   }
 
@@ -632,6 +669,7 @@ export function syncPlanContinuity({ root = process.cwd(), checkOnly = false } =
   const continuity = resolveContinuity(continuityTaskMap, sequenceIds);
   continuity.handoff = resolveHandoff(continuityTaskMap, activeConfig, sequenceIds);
   const implementationControl = deriveImplementationControl({ root });
+  const materializationReport = buildImplementationMaterializationIndex({ root });
 
   const currentHeader = fs.readFileSync(headerPath, 'utf8');
   const nextHeader = updateHeader(
@@ -643,7 +681,12 @@ export function syncPlanContinuity({ root = process.cwd(), checkOnly = false } =
     activeConfig,
     implementationControl,
   );
-  const nextRegistry = buildRegistryMarkdown(taskMap, stats, continuity);
+  const nextRegistry = buildRegistryMarkdown(
+    taskMap,
+    stats,
+    continuity,
+    materializationReport,
+  );
   const headerChanged = nextHeader !== currentHeader;
   const registryChanged = !fs.existsSync(registryPath) || fs.readFileSync(registryPath, 'utf8') !== nextRegistry;
 
@@ -678,6 +721,7 @@ export function syncPlanContinuity({ root = process.cwd(), checkOnly = false } =
     taskMap,
     activeConfig,
     implementationControl,
+    materializationReport,
     ...continuity,
   };
 }

@@ -25,6 +25,25 @@ const NON_UNIT_VALUES = new Set([
   'NO MATERIALIZADO',
 ]);
 
+const ACTIVE_PHYSICAL_STATUSES = new Set([
+  'AUTHORIZED',
+  'IN_PROGRESS',
+  'IMPLEMENTED',
+]);
+const SINGLETON_PHYSICAL_MODES = new Set([
+  'GLOBAL_ENABLE_ONCE',
+  'GLOBAL_FINAL',
+]);
+
+export const TASK_PHYSICAL_STATE_CODES = Object.freeze({
+  DOCUMENTARY_PENDING: 'DOCUMENTARY_PENDING',
+  UNMAPPED: 'UNMAPPED',
+  MAPPED: 'MAPPED',
+  IN_IMPLEMENTATION: 'IN_IMPLEMENTATION',
+  PARTIAL: 'PARTIAL',
+  MATERIALIZED: 'MATERIALIZED',
+});
+
 function fail(message) {
   throw new Error(message);
 }
@@ -255,6 +274,123 @@ export function validateImplementationMaterializationRelations(map, {
   return errors;
 }
 
+export function deriveTaskPhysicalProjection(task) {
+  const approved = String(task?.task_state ?? '').trim() === 'APROBADA';
+  const directInstances = Array.isArray(task?.direct_instances) ? task.direct_instances : [];
+  const verifiedWithEvidence = directInstances.filter(
+    (instance) => instance.status === 'VERIFIED' && Number(instance.evidence_count ?? 0) > 0,
+  );
+  const activeInstances = directInstances.filter(
+    (instance) => ACTIVE_PHYSICAL_STATUSES.has(instance.status),
+  );
+  const explicit = task?.explicit_materialization ?? null;
+  const unitIds = uniqueSorted(task?.materializing_unit_ids ?? []);
+  const directIds = uniqueSorted(directInstances.map((instance) => instance.instance_id));
+  const materializerRefs = unitIds.length > 0 ? unitIds : directIds;
+  const evidenceRefs = uniqueSorted(
+    verifiedWithEvidence.map((instance) => instance.instance_id),
+  );
+
+  const result = (code, display, detail) => ({
+    code,
+    display,
+    detail,
+    materializer_refs: materializerRefs,
+    evidence_refs: evidenceRefs,
+    source_refs: uniqueSorted(explicit?.source_refs ?? []),
+  });
+
+  if (!approved) {
+    return result(
+      TASK_PHYSICAL_STATE_CODES.DOCUMENTARY_PENDING,
+      '⏸ NO_EVALUADA',
+      'La tarea todavía no está APROBADA documentalmente; no se reclama estado físico.',
+    );
+  }
+
+  if (task?.relation_state === 'UNMAPPED') {
+    return result(
+      TASK_PHYSICAL_STATE_CODES.UNMAPPED,
+      '⚠️ SIN_TRAZABILIDAD_FISICA',
+      'Contrato aprobado sin relación física demostrada todavía.',
+    );
+  }
+
+  if (directInstances.length === 0) {
+    return result(
+      TASK_PHYSICAL_STATE_CODES.MAPPED,
+      '🧩 MAPEADA',
+      explicit
+        ? 'La relación explícita con unit(s) existe; la evidencia de ejecución se resolverá en la frontier física.'
+        : 'Existe relación física, pero todavía no hay instancia directa observable.',
+    );
+  }
+
+  if (
+    SINGLETON_PHYSICAL_MODES.has(task?.mode)
+    && verifiedWithEvidence.length === directInstances.length
+  ) {
+    return result(
+      TASK_PHYSICAL_STATE_CODES.MATERIALIZED,
+      '✅ MATERIALIZADA',
+      String(verifiedWithEvidence.length) + '/' + String(directInstances.length)
+        + ' instancia(s) singleton VERIFIED con evidencia.',
+    );
+  }
+
+  if (verifiedWithEvidence.length > 0) {
+    const completeObserved = verifiedWithEvidence.length === directInstances.length;
+    return result(
+      TASK_PHYSICAL_STATE_CODES.PARTIAL,
+      completeObserved
+        ? '🟠 PARCIAL — COBERTURA ABIERTA'
+        : '🟠 PARCIAL ' + String(verifiedWithEvidence.length) + '/' + String(directInstances.length),
+      completeObserved
+        ? 'Todas las instancias observadas están VERIFIED con evidencia, pero la cardinalidad no permite afirmar cobertura física global sin relación explícita completa.'
+        : String(verifiedWithEvidence.length) + '/' + String(directInstances.length)
+          + ' instancia(s) observadas están VERIFIED con evidencia.',
+    );
+  }
+
+  if (activeInstances.length > 0) {
+    return result(
+      TASK_PHYSICAL_STATE_CODES.IN_IMPLEMENTATION,
+      '🟡 EN_IMPLEMENTACION',
+      String(activeInstances.length) + '/' + String(directInstances.length)
+        + ' instancia(s) están en lifecycle físico activo.',
+    );
+  }
+
+  return result(
+    TASK_PHYSICAL_STATE_CODES.MAPPED,
+    '🧩 MAPEADA',
+    'La relación física existe, pero ninguna instancia observada está VERIFIED con evidencia.',
+  );
+}
+
+export function buildPhysicalMaterializationSummary(materializationReport) {
+  const rows = (materializationReport?.tasks ?? []).map((task) => ({
+    task_id: task.task_id,
+    ...deriveTaskPhysicalProjection(task),
+  }));
+  const byTask = new Map(rows.map((row) => [row.task_id, row]));
+  const counts = {
+    DOCUMENTARY_PENDING: 0,
+    UNMAPPED: 0,
+    MAPPED: 0,
+    IN_IMPLEMENTATION: 0,
+    PARTIAL: 0,
+    MATERIALIZED: 0,
+  };
+  for (const row of rows) {
+    if (!Object.hasOwn(counts, row.code)) {
+      throw new Error(`estado físico desconocido: ${row.code ?? 'EMPTY'}.`);
+    }
+    counts[row.code] += 1;
+  }
+  return { rows, byTask, counts };
+}
+
 export function buildImplementationMaterializationIndex({ root = process.cwd() } = {}) {
   const topologyResult = resolveTaskWorkTopology({ root });
   const implementationControl = loadImplementationControl({ root });
@@ -325,6 +461,7 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
       mode: topologyResult.topology.get(task.id)?.mode ?? null,
       execution_gate: topologyResult.topology.get(task.id)?.executionGate ?? null,
       explicit_materialization: explicit,
+      direct_instances: directInstances,
       direct_instance_ids: directInstances.map((instance) => instance.instance_id),
       direct_verified_instance_ids: directInstances
         .filter((instance) => instance.status === 'VERIFIED')
