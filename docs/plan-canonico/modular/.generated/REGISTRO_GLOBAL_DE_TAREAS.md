@@ -12,18 +12,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1160** |
+| Aprobadas | **1161** |
 | En propuesta | **0** |
-| No iniciadas | **436** |
+| No iniciadas | **435** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.68% (1160/1596)** |
+| Porcentaje de completamiento | **72.74% (1161/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **436** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1061** |
+| ⏸ NO_EVALUADA | **435** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1062** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -36,9 +36,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-SIM-006` — No mezclar permisos reales y simulados | ✅ APROBADA |
-| Tarea actual | `AUTH-SIM-007` — Mostrar aviso persistente | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-SIM-008` — Registrar inicio de simulación | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-SIM-007` — Mostrar aviso persistente | ✅ APROBADA |
+| Tarea actual | `AUTH-SIM-008` — Registrar inicio de simulación | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-SIM-009` — Registrar salida de simulación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1220,7 +1220,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-004` | Definir área simulada | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-005` | Definir turno simulado | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-006` | No mezclar permisos reales y simulados | — | — | `bloques/Q_SIMULACION/01_CONTEXTO_Y_ALCANCE_SIMULADO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-007` | Mostrar aviso persistente | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | `AUTH-SIM-007` | Mostrar aviso persistente | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-008` | Registrar inicio de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-009` | Registrar salida de simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | `AUTH-SIM-010` | Bloquear acciones críticas durante simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
