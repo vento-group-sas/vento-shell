@@ -3637,5 +3637,1635 @@ El terminal no sustituye la autorización real de la siguiente acción.
 `AUTH-SIM-010 — Bloquear acciones críticas durante simulación`
 
 
-### [ ] AUTH-SIM-010 — Bloquear acciones críticas durante simulación
+### ✅ AUTH-SIM-010 — Bloquear acciones críticas durante simulación
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-SIM-009 — Registrar salida de simulación
+**Tarea siguiente:** AUTH-SIM-011 — Definir modo solo lectura
+**Tipo de tarea:** documental; contrato canónico de enforcement fail-closed para impedir acciones críticas, lecturas protegidas y efectos reales desde procedencia simulada, con materialización posterior por implementation_unit_id conforme a PER_IMPLEMENTATION_UNIT y gate POST_E5_PACKAGE
+**Bloque:** BLOQUE Q — Simulación
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, Supabase, migraciones, RLS, RPC, Server Actions, Route Handlers, Edge Functions, Realtime, colas, jobs, webhooks, integraciones, contratos compartidos, clientes, aplicaciones, datos, permisos, despliegues ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera de seguridad que impide que una simulación produzca autoridad, lectura protegida, mutación, transacción o efecto empresarial real, independientemente del canal por el que se intente ejecutar la operación.
+
+La regla raíz queda:
+
+```text
+PROCEDENCIA SIMULADA
++
+INTENTO DE ACCION CRITICA, LECTURA PROTEGIDA O EFECTO REAL
+=
+DENY
++
+AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION
++
+HTTP 403 CUANDO EXISTA RESPUESTA HTTP
++
+SIMULATION_EXECUTION_FORBIDDEN
++
+executable = false
++
+ZERO BUSINESS EFFECTS
+```
+
+Y siempre:
+
+```text
+WOULD_ALLOW
+!=
+ALLOW
+```
+
+```text
+PREVIEW
+!=
+AUTORIDAD
+```
+
+```text
+CONTROL VISIBLE
+!=
+ACCION EJECUTABLE
+```
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+¿QUE DEBE BLOQUEARSE CUANDO UNA SOLICITUD PROVIENE DE UNA SIMULACION?
+```
+
+```text
+¿EN QUE FRONTERA DEBE PRODUCIRSE EL DENY ANTES DE CUALQUIER EFECTO?
+```
+
+```text
+¿COMO SE CONSERVA LA MISMA DECISION ENTRE CANALES SIN CONVERTIR PREVIEW EN AUTORIDAD?
+```
+
+```text
+¿CUANDO PUEDE UNA OPERACION VOLVER A EVALUARSE COMO REAL DESPUES DE SALIR DE LA SIMULACION?
+```
+
+No define todavía el diseño completo del modo visual solo lectura; esa responsabilidad permanece en `AUTH-SIM-011`.
+
+#### 3. Handoff recibido de AUTH-SIM-009
+
+`AUTH-SIM-009` entrega una frontera de lifecycle inequívoca:
+
+```text
+DRAFT / ACTIVE
+=
+SIMULACION NO TERMINAL
+```
+
+```text
+COMPLETED / EXPIRED / REVOKED / INVALID
+=
+SIMULACION TERMINAL
+```
+
+Además entrega la regla de retorno:
+
+```text
+TERMINAL CONFIRMADO
+!=
+CONTEXTO REAL REVALIDADO
+```
+
+Por tanto, una operación crítica no puede ejecutarse únicamente porque el lifecycle haya alcanzado un estado terminal; el canal debe haber descartado la procedencia simulada y vuelto a resolver un contexto real fresco antes de evaluar una operación real nueva.
+
+#### 4. Contratos consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-SIM-001..005`, para elegibilidad y construcción del escenario hipotético;
+- `AUTH-SIM-006`, para separación entre autoridad real, evaluación simulada, presentación y auditoría;
+- `AUTH-SIM-007`, para visibilidad y estados de presentación;
+- `AUTH-SIM-008`, para inicio autoritativo y correlacionado;
+- `AUTH-SIM-009`, para terminales y retorno confirmado al contexto real;
+- `AUTH-SRV-014`, para principal técnico, actor real y actor operativo;
+- `AUTH-SRV-015`, para separación de planos, auditoría y resultado simulado no ejecutable;
+- `AUTH-DB-013`, para persistencia append-only y política física de simulación disponible;
+- `AUTH-ERR-016`, para el bloqueo público “Acción no permitida en simulación”;
+- contratos vigentes de autorización, contexto, catálogo, recurso, sesión, dispositivo compartido, RLS, auditoría, idempotencia, versiones y fingerprints.
+
+#### 5. Topología y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+El marcador actual define una sola vez el contrato reutilizable.
+
+Cada unidad física futura deberá materializar el bloqueo en su `implementation_unit_id`, con evidencia propia de los canales que realmente posea, sin reabrir esta definición documental ni inferir la unidad desde una aplicación, una pantalla o un repositorio.
+
+#### 6. Invariante principal
+
+Durante una simulación válida, el sistema puede explicar qué ocurriría, pero no puede producir el efecto explicado.
+
+La relación obligatoria es:
+
+```text
+SIMULATED DECISION
+-> WOULD_ALLOW | WOULD_DENY | INDETERMINATE
+-> executable = false
+```
+
+Nunca:
+
+```text
+SIMULATED DECISION
+-> ALLOW
+```
+
+ni:
+
+```text
+SIMULATED DECISION
+-> REAL SIDE EFFECT
+```
+
+#### 7. Qué se considera acción crítica
+
+Para esta tarea, una acción crítica es cualquier operación cuyo resultado pueda crear, alterar, cancelar, aprobar, publicar, reservar, despachar, recibir, pagar, cobrar, notificar, imprimir, exportar, sincronizar, autorizar, ejecutar o comprometer un estado empresarial real.
+
+La clasificación no depende de que el control se vea como botón destructivo.
+
+Una operación es crítica por su efecto real, no por su apariencia visual.
+
+#### 8. Qué se considera efecto real
+
+Se considera efecto real cualquier cambio o salida observable fuera del plano hipotético, incluidos:
+
+- `INSERT`, `UPDATE`, `DELETE`, `UPSERT` o mutación equivalente;
+- commit de transacción;
+- cambio de estado de workflow;
+- creación o consumo de reserva;
+- movimiento de inventario;
+- creación de remisión, pedido, pago, recibo, comprobante o ajuste;
+- emisión de notificación;
+- impresión física o generación operativa destinada a ejecución;
+- exportación de información protegida;
+- publicación hacia tercero;
+- envío de webhook;
+- encolado de trabajo;
+- creación de job;
+- ejecución de integración externa;
+- escritura en Storage cuando represente evidencia o estado empresarial;
+- publicación Realtime que derive de una mutación prohibida;
+- cualquier side effect equivalente aunque no produzca una fila SQL directa.
+
+#### 9. Lectura protegida real
+
+Una simulación no puede usar autoridad hipotética para ampliar lectura real.
+
+Si la preview necesita datos reales, estos deben haber sido obtenidos mediante una autorización real independiente del actor real y dentro de su alcance real vigente.
+
+Se conserva:
+
+```text
+SIMULATED PERMISSION
+!=
+REAL DATA READ AUTHORITY
+```
+
+Una solicitud del plano simulado que pretenda leer un recurso protegido únicamente porque el escenario produciría `WOULD_ALLOW` debe ser denegada.
+
+#### 10. Datos permitidos en preview
+
+La preview puede utilizar únicamente las clases de datos permitidas por el contrato de simulación aplicable:
+
+- datos sintéticos;
+- datos vacíos;
+- datos enmascarados;
+- datos reales ya autorizados al actor real por un plano real separado.
+
+El hecho de que un dato aparezca en una preview no amplía su autorización ni permite reutilizarlo para una acción real.
+
+#### 11. Procedencia simulada
+
+El bloqueo se decide por procedencia autoritativa, no por una bandera visual aislada.
+
+Una solicitud pertenece al plano simulado cuando la fuente propietaria puede relacionarla con un lifecycle o evaluación simulada mediante identidad, sesión, contexto, correlación, token de propósito no ejecutable o mecanismo equivalente aprobado.
+
+No se adopta como prueba suficiente por sí sola:
+
+- `is_simulation` enviado por cliente;
+- `simulation_id` enviado por cliente;
+- query param;
+- cookie local;
+- `localStorage`;
+- estado React;
+- nombre del rol mostrado;
+- URL de preview;
+- existencia del aviso visual;
+- `can_operate`;
+- un booleano de permiso;
+- metadata arbitraria del navegador.
+
+#### 12. Simulación ACTIVE
+
+Cuando una solicitud pertenece a un lifecycle `ACTIVE`, toda acción crítica o lectura protegida intentada desde ese plano debe fallar cerrado antes del primer efecto real.
+
+La simulación puede continuar disponible como preview cuando el lifecycle y el contrato lo permitan.
+
+El deny de ejecución no equivale a terminar automáticamente la simulación.
+
+#### 13. Simulación DRAFT
+
+Un lifecycle `DRAFT` no concede preview activa ni autoridad.
+
+Si una solicitud intenta usar un draft como procedencia ejecutable:
+
+```text
+DRAFT
++
+REAL EFFECT ATTEMPT
+=
+DENY
+```
+
+No se activa el draft como consecuencia del intento.
+
+No se completa silenciosamente información faltante desde el contexto real.
+
+#### 14. RESOLVING
+
+Mientras la presentación se encuentre en `RESOLVING`, una acción crítica no puede usar el estado indeterminado como permiso provisional.
+
+La ausencia temporal de confirmación debe degradar a no ejecutable.
+
+Nunca:
+
+```text
+UNKNOWN SIMULATION STATE
+-> OPTIMISTIC REAL ACTION
+```
+
+#### 15. STALE
+
+Una preview `STALE` no puede ejecutar acciones reales ni reutilizar una evaluación simulada anterior.
+
+Debe volver a resolver las fuentes requeridas antes de producir una evaluación hipotética nueva.
+
+El estado stale nunca se convierte en autoridad por conservar una respuesta `WOULD_ALLOW` previa.
+
+#### 16. INVALID visible y terminal
+
+`INVALID` puede aparecer como estado de presentación de una preview no confiable y también como estado terminal derivado cuando el lifecycle fue invalidado autoritativamente.
+
+En ambos casos no se permite ejecutar la acción que se estaba simulando.
+
+La presentación `INVALID` no se degrada a contexto real implícito; y el terminal `INVALID` tampoco vuelve real una request simulada histórica.
+
+El consumidor debe resolver el owner de recuperación correspondiente y, para volver al plano real, cumplir el retorno seguro definido por `AUTH-SIM-009`.
+
+#### 17. EXIT_PENDING
+
+Durante `EXIT_PENDING` el bloqueo de acciones críticas permanece vigente.
+
+Se conserva:
+
+```text
+EXIT REQUESTED
+!=
+REAL CONTEXT READY
+```
+
+La interfaz no puede ocultar la barrera y ejecutar inmediatamente la acción real que estaba siendo simulada.
+
+#### 18. Estados terminales
+
+`COMPLETED`, `EXPIRED`, `REVOKED` e `INVALID` terminan el lifecycle de simulación, pero no reutilizan automáticamente la solicitud pendiente como solicitud real.
+
+Después del terminal:
+
+1. se descarta la procedencia simulada;
+2. se descartan resultados y cachés simulados aplicables;
+3. se vuelve a resolver actor, sesión y contexto reales;
+4. se construye una solicitud nueva;
+5. se evalúa de nuevo el permiso real;
+6. se evalúan de nuevo alcance y recurso;
+7. solo entonces puede existir una decisión real ejecutable.
+
+#### 19. Bloqueo por solicitud, no autoridad global ficticia
+
+La simulación no reemplaza la sesión real ni convierte al usuario completo en un principal simulado.
+
+El bloqueo se aplica a solicitudes cuya procedencia es simulada o cuyo contexto está contaminado por artefactos simulados.
+
+Una operación verdaderamente real y separada debe demostrar su propia procedencia real, su contexto fresco y su autorización real; no puede obtener esa separación simplemente omitiendo `simulation_id` de una solicitud originada en preview.
+
+#### 20. Omitir simulation_id no es bypass
+
+Un consumidor no puede transformar una solicitud simulada en real eliminando o dejando de enviar `simulation_id`.
+
+La procedencia debe reconstruirse server-side desde las fuentes autoritativas aplicables.
+
+Se conserva:
+
+```text
+SIMULATED ORIGIN
++
+SIMULATION_ID OMITTED BY CLIENT
+!=
+REAL ORIGIN
+```
+
+#### 21. Contexto simulado dentro de solicitud real
+
+Si una solicitud que pretende ser real transporta identidad, rol, territorio, revisión, resultado, fingerprint, recurso o cualquier otro valor proveniente del escenario simulado, el canal debe detectar contaminación y fallar cerrado.
+
+La razón interna propietaria puede distinguir:
+
+```text
+SIMULATION_CONTEXT_IN_REAL_REQUEST
+```
+
+o:
+
+```text
+REAL_CONTEXT_CONTAMINATED
+```
+
+sin cambiar el código público definido por el contrato de bloqueo cuando corresponda.
+
+#### 22. Cuatro planos obligatoriamente separados
+
+Se conservan cuatro planos:
+
+```text
+1. REAL AUTHORITY
+2. SIMULATED EVALUATION
+3. PRESENTATION
+4. AUDIT
+```
+
+Cada plano conserva tipos, propósito y fuentes propios.
+
+No se comparte un booleano ambiguo capaz de ser interpretado indistintamente como resultado hipotético y autorización real.
+
+#### 23. Resultado simulado
+
+La evaluación simulada solo admite:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+con:
+
+```text
+executable = false
+```
+
+Ningún adapter puede traducir `WOULD_ALLOW` a `ALLOW`, `true`, `can_operate = true` o forma equivalente que luego sea consumida por un writer real.
+
+#### 24. FULL_PREVIEW
+
+Cuando un permiso está clasificado como `FULL_PREVIEW`, la simulación puede mostrar la preview permitida por el contrato, incluso para una capacidad que en operación real sería mutadora.
+
+Eso no convierte el control en ejecutable.
+
+Un control de una capacidad mutadora en `FULL_PREVIEW` puede:
+
+- mostrar forma, estructura o estado hipotético permitido;
+- invocar exclusivamente al evaluador no ejecutable cuando aplique;
+- explicar el resultado simulado de forma segura.
+
+No puede invocar el writer real.
+
+#### 25. DECISION_ONLY
+
+Cuando un permiso está clasificado como `DECISION_ONLY`:
+
+- puede calcularse el resultado hipotético permitido;
+- puede mostrarse una explicación segura;
+- no se renderiza contenido protegido por la autoridad simulada;
+- no se presenta un formulario operativo del recurso;
+- no se habilita writer real;
+- no se produce efecto empresarial.
+
+#### 26. NOT_ALLOWED
+
+Cuando el permiso tiene `simulation_requirement = NOT_ALLOWED`, la capacidad no puede participar como permiso simulado.
+
+La simulación no debe mostrar un preview que sugiera que esa capacidad es simulable.
+
+Un valor ausente, desconocido o fuera del catálogo permitido también falla cerrado; nunca hereda `FULL_PREVIEW` por defecto.
+
+#### 27. Snapshot contractual de clasificación
+
+El contrato vigente de simulación conserva un snapshot documental de 140 permisos con distribución:
+
+```text
+FULL_PREVIEW = 85
+DECISION_ONLY = 52
+NOT_ALLOWED = 3
+TOTAL = 140
+```
+
+Esta tarea no modifica esa distribución.
+
+La evidencia física vigente registra un baseline de 179 permisos frente al snapshot documental de 140, con delta 39 todavía no reconciliado por esa comparación. Cualquier permiso sin clasificación canónica aplicable permanece fail-closed para simulación hasta su owner correspondiente.
+
+#### 28. Tres permisos excluidos del plano simulado
+
+El catálogo vigente excluye de simulación:
+
+```text
+aura.access
+pass.access
+viso.authorization.context_simulations.view
+```
+
+La propia capacidad de administrar simulaciones no puede autoautorizarse dentro de una simulación.
+
+La exclusión de AURA y PASS permanece vigente según sus contratos de dominio.
+
+#### 29. Código público de bloqueo
+
+El código público canónico para una acción no permitida por procedencia simulada es:
+
+```text
+AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION
+```
+
+No se crean aliases públicos como:
+
+```text
+SIMULATION_BLOCKED_ACTION
+PREVIEW_ONLY
+READ_ONLY_SIMULATION
+CANNOT_EXECUTE_PREVIEW
+```
+
+#### 30. Estado y razón interna
+
+El contrato vigente relaciona el bloqueo con estado semántico:
+
+```text
+SIMULATION_EXECUTION_FORBIDDEN
+```
+
+Las razones internas pueden especializar contaminación, lifecycle o causa técnica únicamente cuando el catálogo propietario ya lo permita.
+
+La razón interna no se expone como detalle sensible al usuario.
+
+#### 31. HTTP
+
+Cuando el canal produzca una respuesta HTTP y la causa corresponda a esta política, el resultado esperado es:
+
+```text
+403
+```
+
+No se traduce a `401` únicamente para forzar login.
+
+No se usa `200` con un booleano ambiguo para representar un deny crítico.
+
+Los canales no HTTP conservan una semántica equivalente de deny no ejecutable.
+
+#### 32. executable=false
+
+Toda respuesta del plano simulado y todo deny de ejecución derivado de esta política conserva semántica inequívoca de no ejecutabilidad.
+
+Se mantiene:
+
+```text
+executable = false
+```
+
+El campo o representación física final pertenece al contrato de respuesta propietario, pero ningún consumidor puede perder esa semántica.
+
+#### 33. Cero efectos empresariales
+
+El deny debe ocurrir antes de cualquier efecto observable.
+
+Se exige:
+
+```text
+ROWS_WRITTEN = 0
+STATE_TRANSITIONS = 0
+OUTBOX_MESSAGES = 0
+QUEUED_JOBS = 0
+WEBHOOKS_SENT = 0
+NOTIFICATIONS_SENT = 0
+PRINT_JOBS = 0
+EXTERNAL_MUTATIONS = 0
+```
+
+Las métricas son semánticas de cero efectos y no obligan a crear columnas o contadores físicos con esos nombres.
+
+#### 34. Sin efecto parcial
+
+No es conforme:
+
+```text
+WRITE LOCAL ROW
+-> DETECT SIMULATION
+-> ROLLBACK BEST EFFORT
+```
+
+cuando el bloqueo puede resolverse antes del write.
+
+La frontera debe ubicarse antes de la primera mutación, transacción comprometible o dispatch externo.
+
+Si una transacción se abre para resolver autorización, no puede producir efectos empresariales antes de decidir el deny.
+
+#### 35. Sesión real preservada
+
+El bloqueo por simulación no cierra la sesión real del actor.
+
+Se conserva:
+
+```text
+DENY SIMULATED EXECUTION
++
+PRESERVE REAL AUTHENTICATED SESSION
+```
+
+La recuperación normal es continuar la preview o salir de ella de forma autoritativa; no forzar autenticación nueva salvo que otro contrato la requiera.
+
+#### 36. No redirección genérica a login
+
+`AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` no significa “sin sesión”.
+
+El consumidor no debe:
+
+- cerrar sesión;
+- borrar identidad real;
+- redirigir a login como respuesta genérica;
+- presentar la causa como credencial inválida.
+
+Si la sesión real sí es inválida, la precedencia de errores aplicable debe resolver la causa propietaria antes de esta política.
+
+#### 37. Actor real
+
+Toda auditoría del intento conserva actor real cuando el contrato lo requiera.
+
+El actor simulado no existe como principal ejecutor.
+
+El sujeto hipotético, rol simulado o empleado objetivo nunca reemplazan al actor humano real responsable de la simulación.
+
+#### 38. Sesión real
+
+La sesión real continúa siendo la sesión autenticada.
+
+La identidad de simulación tiene propósito de preview y trazabilidad; no es un bearer credential empresarial.
+
+Una simulación no puede sobrevivir como autoridad cuando la sesión real deja de ser válida.
+
+#### 39. Rol simulado
+
+El rol simulado solo participa en la evaluación hipotética.
+
+No puede participar como rol efectivo real en:
+
+- RLS;
+- writer RPC;
+- Server Action ejecutable;
+- Route Handler real;
+- Edge Function mutadora;
+- job;
+- integración;
+- autorización de webhook;
+- política de negocio real.
+
+#### 40. Principal técnico
+
+Un principal técnico puede transportar o ejecutar infraestructura, pero no convierte el resultado simulado en autoridad real.
+
+`service_role`, worker, service account o credencial técnica no pueden utilizarse para saltar el bloqueo y ejecutar en nombre del escenario simulado.
+
+#### 41. Reautenticación fuerte
+
+Una reautenticación fuerte válida del actor real no convierte una acción simulada en acción real.
+
+La reautenticación puede ser prerrequisito para acceder a determinadas capacidades de simulación, pero mantiene:
+
+```text
+SIMULATED RESULT
+-> executable = false
+```
+
+Después de salir, una operación real debe satisfacer nuevamente los requisitos reales que le correspondan.
+
+#### 42. Autorización real posterior
+
+La única vía para ejecutar la acción examinada es abandonar el plano simulado y crear una nueva solicitud real.
+
+La nueva operación debe resolver nuevamente:
+
+- actor;
+- sesión;
+- aplicación;
+- permiso;
+- modalidad;
+- contexto;
+- rol aplicable;
+- sede;
+- área;
+- turno y check-in cuando apliquen;
+- dispositivo cuando aplique;
+- scope;
+- recurso;
+- denies;
+- versiones;
+- frescura.
+
+No hereda la respuesta de la simulación.
+
+#### 43. Idempotency keys
+
+Una idempotency key utilizada para una evaluación o intento simulado no se reutiliza para ejecutar después una mutación real.
+
+Se conserva separación de namespaces y propósitos.
+
+Un replay real con identidad procedente del plano simulado debe fallar cerrado o ser tratado por el owner de conflicto correspondiente.
+
+#### 44. Doble click
+
+Dos intentos de ejecutar el mismo control desde preview deben converger en deny sin duplicar efectos ni generar una ejecución real por carrera.
+
+El segundo intento no puede observar que el primero fue denegado y usar esa denegación como autorización.
+
+#### 45. Concurrencia
+
+Una carrera entre:
+
+- salida de simulación;
+- expiración;
+- refresh;
+- cambio de actor;
+- nueva resolución real;
+- intento de acción;
+
+se resuelve contra estado autoritativo y precedencia de seguridad.
+
+Si no puede demostrarse procedencia real fresca en el commit point de la acción, la operación no se ejecuta.
+
+#### 46. Respuesta tardía
+
+Una respuesta `WOULD_ALLOW` tardía no puede autorizar una acción real que ya fue reconstruida después del terminal.
+
+Una respuesta real `ALLOW` perteneciente a otra revisión de contexto tampoco puede reutilizarse si el contexto material cambió.
+
+Identidad, versión y fingerprint evitan mezclar respuestas concurrentes.
+
+#### 47. Respuesta perdida
+
+Perder la respuesta de un deny no habilita reintento automático como operación real.
+
+La aplicación puede volver a resolver el estado y repetir la evaluación no ejecutable si corresponde.
+
+Nunca transforma un timeout en “probablemente ejecutable”.
+
+#### 48. Offline
+
+Una acción capturada desde preview mientras el cliente está offline no se encola como mutación real para ejecutarse al reconectar.
+
+La reconexión exige revalidar:
+
+- sesión real;
+- lifecycle de simulación;
+- procedencia;
+- intención del usuario;
+- contexto actual.
+
+Las colas offline no son una vía de bypass.
+
+#### 49. Replay
+
+Requests, receipts, decisiones, fingerprints, tokens de propósito, snapshots o idempotency keys del plano simulado no pueden reproducirse contra un endpoint real para obtener efecto.
+
+La ausencia de un lifecycle activo posterior no vuelve ejecutable un artefacto histórico simulado.
+
+#### 50. Jobs
+
+Un proceso asíncrono no puede ejecutar un trabajo empresarial originado en procedencia simulada.
+
+La validación debe ocurrir antes de persistir o despachar el trabajo ejecutable cuando la arquitectura permita decidirlo en ese punto.
+
+Si el job recibe una referencia de origen simulada, debe fallar cerrado y conservar evidencia conforme al owner.
+
+#### 51. Colas
+
+Una preview no puede producir un mensaje que posteriormente cause una mutación real por desacoplamiento temporal.
+
+El bloqueo cubre tanto el producer como el consumer cuando corresponda.
+
+Un consumer no puede confiar únicamente en que el producer ya validó la procedencia.
+
+#### 52. Webhooks
+
+Ningún webhook empresarial puede enviarse como consecuencia de una acción simulada.
+
+Una evaluación hipotética puede representar que un webhook existiría en operación real, pero no puede materializar el dispatch.
+
+#### 53. Integraciones externas
+
+ERP, pagos, facturación, mensajería, proveedores, impresoras, servicios externos u otras integraciones permanecen en cero efectos durante preview.
+
+No se aceptan “sandbox” externos como sustituto automático de este contrato salvo que otro contrato canónico defina explícitamente un plano de simulación externo aislado.
+
+#### 54. Notificaciones
+
+Una simulación puede mostrar cómo se vería una notificación cuando el contrato de preview lo permita, pero no debe enviar una notificación real a empleados, clientes, proveedores o canales externos.
+
+No se crea outbox ejecutable desde autoridad simulada.
+
+#### 55. Impresión
+
+Un preview puede representar un documento o etiqueta si su contrato lo permite.
+
+No debe crear un trabajo físico de impresión ni enviar ZPL, PDF operativo u orden equivalente a una impresora como efecto de la simulación.
+
+La visualización no autoriza el hardware.
+
+#### 56. Exportaciones
+
+Una simulación no amplía la capacidad de exportar información real.
+
+Una exportación real de datos protegidos es una operación del plano real y exige autorización real independiente.
+
+Generar una representación sintética o enmascarada de preview no cambia esta regla.
+
+#### 57. Server Actions
+
+Toda Server Action que pueda producir un efecto empresarial debe resolver la procedencia y bloquear ejecución simulada server-side antes del efecto.
+
+La UI deshabilitada no es control suficiente.
+
+`AUTH-SIM-013` conserva la certificación específica de Server Actions como tarea posterior; esta tarea define la regla que esa certificación deberá probar.
+
+#### 58. Route Handlers
+
+Todo Route Handler ejecutable conserva la misma frontera.
+
+No se permite bypass por invocación directa, URL construida manualmente, fetch externo o llamada sin pasar por la pantalla de preview.
+
+#### 59. RSC y fetch server-side
+
+RSC y fetch server-side no pueden usar procedencia simulada para recuperar información protegida que el actor real no pueda leer.
+
+Una renderización server-side sigue siendo un canal de acceso a datos y debe respetar la separación entre preview y autoridad real.
+
+#### 60. RPC y PostgREST
+
+Un writer RPC o llamada PostgREST no puede aceptar rol, sitio, área, permiso, decisión o recurso simulado como autoridad.
+
+El bloqueo debe ocurrir antes de una mutación real.
+
+Una llamada directa a Supabase no puede saltar la protección de aplicación.
+
+#### 61. RLS y Data API
+
+RLS permanece como defensa server-side y no debe conceder acceso por contexto simulado.
+
+Claims, GUC, parámetros o helpers de simulación no pueden ampliar políticas reales.
+
+Una política demasiado amplia no se considera compensada por un botón deshabilitado en frontend.
+
+#### 62. Edge Functions
+
+Una Edge Function que reciba una solicitud procedente de simulación debe conservar la misma semántica de deny y cero efectos.
+
+Credenciales técnicas de la función no convierten la acción en válida.
+
+#### 63. Realtime
+
+La simulación no amplía acceso a canales, topics, streams o payloads protegidos.
+
+Una suscripción real requiere autoridad real.
+
+Además, una simulación no debe originar una mutación que luego aparezca por Realtime y sea interpretada como simple preview.
+
+#### 64. Clientes nativos
+
+Web, móvil, escritorio, kiosco u otro cliente no pueden definir excepciones locales que conviertan la simulación en ejecutable.
+
+La semántica pública del bloqueo debe mantenerse aunque la presentación y mecanismo de transporte sean distintos.
+
+#### 65. Dispositivos compartidos
+
+Un dispositivo compartido no puede ejecutar usando el rol simulado de la persona que está inspeccionando un escenario.
+
+Se conservan separadas:
+
+- identidad del dispositivo;
+- principal técnico;
+- actor humano real;
+- sesión real;
+- escenario simulado;
+- rol simulado;
+- autorización real.
+
+Un cambio de actor invalida cualquier vinculación de preview que no pueda demostrarse compatible con el nuevo actor.
+
+#### 66. VISO
+
+VISO puede administrar y presentar simulaciones conforme a sus permisos reales, pero una simulación no puede autoautorizar:
+
+```text
+viso.authorization.context_simulations.view
+```
+
+Tampoco puede usar un rol simulado para ampliar la autoridad administrativa real del simulador.
+
+#### 67. AURA y PASS
+
+Las exclusiones canónicas de `aura.access` y `pass.access` permanecen vigentes.
+
+Esta tarea no transforma AURA ni PASS en superficies simulables por conveniencia de implementación.
+
+Los contratos propios de sus dominios continúan siendo autoridad sobre sus datos y actores.
+
+#### 68. Cobertura de aplicaciones
+
+La política vigente debe conservar decisión coherente para las diez aplicaciones canónicas:
+
+```text
+SHELL
+ANIMA
+AURA
+FOGO
+NEXO
+NUMERA
+ORIGO
+PASS
+PULSO
+VISO
+```
+
+Ninguna aplicación puede aceptar autoridad simulada.
+
+Las diferencias de dominio o UI no crean excepciones al principio de cero efectos reales.
+
+#### 69. Frontera transaccional
+
+El guard de simulación debe resolverse dentro de una frontera que no permita efectos entre la detección de procedencia y el deny.
+
+Cuando existan múltiples capas defensivas, todas deben concordar en no ejecución.
+
+Una capa inferior no puede “arreglar” después un efecto que una capa superior ya emitió.
+
+#### 70. Fail-closed ante fuente indisponible
+
+Si la procedencia, lifecycle, clasificación de simulación o fuente necesaria para decidir no puede resolverse de manera confiable, el canal no puede asumir que la operación es real.
+
+La indisponibilidad técnica conserva su causa propietaria cuando corresponda y no debe falsearse como una decisión empresarial.
+
+En cualquier caso, ausencia de evidencia suficiente nunca habilita el efecto.
+
+#### 71. Clasificación ausente
+
+Una clave de permiso que no tenga clasificación de simulación demostrable no usa `FULL_PREVIEW` por inferencia.
+
+La política es:
+
+```text
+UNCLASSIFIED FOR SIMULATION
+-> FAIL CLOSED
+```
+
+hasta que el owner canónico reconcilie catálogo y materialización.
+
+#### 72. Cambio de catálogo o política
+
+Si cambian catálogo, clasificación de simulación, roles, contexto, reglas de acceso o versiones materiales:
+
+- se invalida la evaluación hipotética stale;
+- no se reutiliza `WOULD_ALLOW` previo;
+- no se ejecuta una acción real con snapshot anterior;
+- se requiere nueva resolución bajo las versiones vigentes.
+
+#### 73. Fingerprints
+
+Los fingerprints permiten detectar mezcla, replay y stale state.
+
+No son credenciales.
+
+Un fingerprint de escenario no puede presentarse a un writer real como prueba de autorización.
+
+#### 74. Auditoría del intento bloqueado
+
+Cuando el contrato de auditoría lo requiera, el intento bloqueado debe poder correlacionar sin registrar secretos:
+
+- actor real;
+- sesión o referencia segura;
+- `simulation_id` o referencia de lifecycle;
+- revisión simulada aplicable;
+- permiso o acción evaluada;
+- recurso en forma permitida;
+- código público;
+- razón interna permitida;
+- resultado no ejecutable;
+- timestamp autoritativo;
+- correlación;
+- versiones y fingerprints necesarios;
+- confirmación de cero efectos cuando la evidencia del canal la proporcione.
+
+#### 75. Intento denegado no es evento de negocio exitoso
+
+Un intento bloqueado por simulación no se registra como si la acción empresarial hubiera ocurrido.
+
+Debe permanecer separado de:
+
+- evento de dominio exitoso;
+- cambio de workflow;
+- auditoría de una mutación real;
+- receipt de operación completada.
+
+La auditoría de seguridad no crea el efecto que documenta como bloqueado.
+
+#### 76. Telemetría técnica
+
+Logs, métricas y trazas técnicas pueden observar el deny sin reemplazar la auditoría empresarial requerida.
+
+La telemetría no debe contener:
+
+- secretos;
+- tokens completos;
+- contenido protegido innecesario;
+- datos personales sin necesidad;
+- payloads simulados completos cuando un identificador o fingerprint sea suficiente.
+
+#### 77. Mensaje seguro
+
+La experiencia puede explicar que la acción no está disponible en simulación y que no se realizaron cambios.
+
+No debe revelar:
+
+- permiso interno detallado si no corresponde al usuario;
+- política interna;
+- reason code sensible;
+- rol elegible alternativo;
+- cómo saltar el guard;
+- credenciales;
+- estructura de RLS;
+- nombres de funciones privilegiadas;
+- detalles de seguridad innecesarios.
+
+La definición visual completa del modo read-only pertenece a `AUTH-SIM-011`.
+
+#### 78. No reintento automático como real
+
+Después de recibir el deny, el cliente no puede:
+
+1. salir automáticamente de simulación;
+2. eliminar el indicador local;
+3. repetir la misma acción como real;
+4. reutilizar el mismo payload;
+5. conservar la misma idempotency key;
+6. ejecutar sin una nueva intención explícita del usuario.
+
+Una acción real posterior requiere una solicitud nueva después del retorno confirmado al contexto real.
+
+#### 79. No autoejecución al salir
+
+La salida de simulación nunca ejecuta automáticamente la acción que se estaba previsualizando.
+
+Se conserva:
+
+```text
+PREVIEW ACTION
+-> EXIT SIMULATION
+-> NO REAL EFFECT
+```
+
+Si la persona quiere realizar la operación real, debe iniciarla nuevamente en el contexto real ya revalidado.
+
+#### 80. No autoridad desde controles visuales
+
+Un botón deshabilitado, overlay, modal, banner o estado read-only mejora experiencia, pero no satisface por sí solo esta tarea.
+
+La seguridad propietaria debe existir del lado servidor o en la frontera autoritativa del canal.
+
+Por tanto:
+
+```text
+UI BLOCK
+!=
+SECURITY ENFORCEMENT
+```
+
+#### 81. Frontera exacta con AUTH-SIM-011
+
+`AUTH-SIM-010` define:
+
+- qué operaciones no pueden ejecutarse;
+- cómo detectar procedencia simulada;
+- semántica de deny;
+- cero efectos;
+- equivalencia multicanal;
+- retorno a autorización real fresca.
+
+`AUTH-SIM-011` queda responsable de:
+
+- qué superficies se presentan como solo lectura;
+- qué controles se deshabilitan, sustituyen u ocultan;
+- cómo se comunica visualmente la no ejecutabilidad;
+- comportamiento de focus, teclado y accesibilidad del modo read-only;
+- consistencia visual del estado no ejecutable.
+
+La UI de `AUTH-SIM-011` es defensa de experiencia, no sustituto del enforcement de esta tarea.
+
+#### 82. Frontera exacta con AUTH-SIM-012
+
+`AUTH-SIM-012` conserva la validación de navegación simulada entre superficies.
+
+Esta tarea no certifica navegación ni persistencia visual entre rutas.
+
+Solo exige que cambiar de ruta o canal no elimine el bloqueo server-side cuando la procedencia continúe siendo simulada.
+
+#### 83. Frontera exacta con AUTH-SIM-013
+
+`AUTH-SIM-013` conserva la validación específica de Server Actions como rol simulado.
+
+Esta tarea no ejecuta esa certificación.
+
+Entrega el contrato que `AUTH-SIM-013` deberá demostrar en el canal Server Actions.
+
+#### 84. Frontera exacta con AUTH-SIM-014
+
+`AUTH-SIM-014` conserva la prueba integral en aplicaciones aplicables.
+
+Esta tarea no declara paridad física por documentar la matriz de canales.
+
+La ausencia actual de evidencia multicanal permanece una brecha física hasta la materialización y certificación correspondientes.
+
+#### 85. Estado físico positivo: persistencia de simulación
+
+`AUTH-DB-013` ya aporta una fundación append-only para lifecycle, revisiones, evaluaciones, eventos, intentos, enlaces, correcciones, fingerprints e idempotencia.
+
+También contiene una política física de simulación alineada con las clases:
+
+```text
+FULL_PREVIEW
+DECISION_ONLY
+NOT_ALLOWED
+```
+
+Esta base es evidencia disponible, no prueba de enforcement completo en todos los consumidores.
+
+#### 86. Estado físico positivo: resultado no ejecutable
+
+La fundación vigente separa evaluación simulada y lifecycle real de sesión.
+
+La existencia de tablas y funciones privadas permite conservar evidencia hipotética sin convertirla por sí sola en writer empresarial.
+
+Esta tarea reutiliza esa separación y no la reabre.
+
+#### 87. Bloqueo físico actual: EffectiveContext legacy
+
+`@vento/os-context` conserva actualmente un `EffectiveContext` que mezcla en la misma forma:
+
+```text
+source
+simulation_id
+is_simulation
+can_operate
+blocked_reasons
+```
+
+junto con contexto efectivo real.
+
+Esa forma no se adopta como contrato final de enforcement porque permite ambigüedad entre procedencia, contexto y capacidad de operar.
+
+Su reconciliación pertenece a los owners físicos correspondientes.
+
+#### 88. Bloqueo físico actual: booleano de permiso legacy
+
+`@vento/os-context` conserva un helper `hasEffectivePermission` que devuelve un booleano.
+
+Un booleano aislado no satisface el contrato de cuatro planos ni demuestra:
+
+- procedencia;
+- lifecycle de simulación;
+- reason code;
+- `executable = false`;
+- recurso;
+- contexto;
+- versión;
+- fingerprint;
+- cero efectos.
+
+Esta tarea no modifica el helper; registra la frontera que una materialización futura debe reconciliar.
+
+#### 89. Bloqueo físico actual: cliente de simulación legacy
+
+El cliente compartido todavía expone `startContextSimulation` y `stopContextSimulation` sobre RPC legacy.
+
+La presencia de estos helpers no prueba que un canal empresarial esté protegido por el contrato de bloqueo de ejecución.
+
+El enforcement debe demostrarse en cada unidad y canal propietario.
+
+#### 90. Bloqueo físico actual: paridad no certificada
+
+La inspección estática disponible no permite afirmar que hoy todos los siguientes canales produzcan la misma denegación antes de efectos:
+
+```text
+Launcher / navegación
+RSC / fetch server-side
+Server Actions
+Route Handlers
+RPC / PostgREST
+RLS / Data API
+Edge Functions
+Realtime
+cliente offline
+procesos asincronos
+```
+
+La materialización física posterior debe aportar evidencia por canal aplicable.
+
+#### 91. No reapertura de AUTH-DB-013
+
+Esta tarea no modifica:
+
+- migración de auditoría de simulación;
+- tablas append-only;
+- funciones privadas;
+- constraints;
+- grants;
+- RLS;
+- política física ya registrada.
+
+Cualquier cambio físico futuro sigue su lifecycle de implementación propietario.
+
+#### 92. No reapertura de AUTH-SRV-015
+
+`AUTH-SRV-015` conserva el envelope y separación entre auditoría real y simulada.
+
+Esta tarea especializa el enforcement de ejecución durante simulación sin redefinir:
+
+- identidad del actor;
+- catálogo de roles;
+- decisión real;
+- evaluación simulada;
+- schema de auditoría;
+- servicio físico propietario.
+
+#### 93. Evidencia mínima de una futura unidad
+
+Cada materialización `AUTH-SIM-010` para un `implementation_unit_id` deberá demostrar, como mínimo:
+
+1. package y unidad propietaria identificados;
+2. gate E5 aplicable en PASS;
+3. canales físicos de la unidad inventariados;
+4. fuente autoritativa de procedencia simulada identificada;
+5. separación real/simulado demostrada;
+6. `DRAFT` no ejecutable;
+7. `ACTIVE` no ejecutable para efectos reales;
+8. `RESOLVING`, `STALE`, `INVALID` y `EXIT_PENDING` fail-closed cuando correspondan;
+9. estados terminales sin replay de la solicitud simulada;
+10. re-resolución real antes de una acción real posterior;
+11. `WOULD_ALLOW` no convertible en `ALLOW`;
+12. `executable = false` preservado;
+13. código público de bloqueo correcto;
+14. `403` en canales HTTP aplicables;
+15. razón interna propietaria correcta;
+16. sesión real preservada cuando siga siendo válida;
+17. cero rows mutadas;
+18. cero transiciones de dominio;
+19. cero outbox ejecutable;
+20. cero jobs o mensajes ejecutables;
+21. cero webhooks;
+22. cero notificaciones reales;
+23. cero impresión física;
+24. cero integración externa;
+25. lectura protegida sin ampliación por autoridad simulada;
+26. RLS sin claims simulados autoritativos;
+27. RPC/PostgREST sin bypass;
+28. Server Actions sin bypass;
+29. Route Handlers sin bypass;
+30. Edge Functions sin bypass;
+31. Realtime sin ampliación;
+32. cliente offline sin replay;
+33. procesos asíncronos sin ejecución diferida;
+34. dispositivos compartidos sin transferencia de actor;
+35. permiso no clasificado fail-closed;
+36. idempotency keys separadas por propósito;
+37. doble click sin efecto;
+38. concurrencia sin carrera permisiva;
+39. respuestas tardías sin autoridad;
+40. auditoría correlacionable del deny;
+41. logs sin secretos;
+42. rollback sin introducir writer permisivo;
+43. pruebas positivas y negativas del guard;
+44. evidencia de alcance suficiente para certificar los canales realmente aplicables a la unidad.
+
+#### 94. Matriz mínima de canales
+
+| Canal | Riesgo que debe quedar bloqueado | Evidencia futura mínima |
+| --- | --- | --- |
+| navegación / launcher | convertir preview en ruta real ejecutable | procedencia preservada y deny antes de operación |
+| RSC / fetch server-side | leer datos protegidos por autoridad hipotética | consulta real independiente o deny |
+| Server Actions | mutar desde control de preview | deny server-side y cero writes |
+| Route Handlers | bypass por llamada directa | respuesta equivalente y cero efectos |
+| RPC / PostgREST | invocar writer sin UI | guard autoritativo y cero mutaciones |
+| RLS / Data API | ampliar lectura o escritura con contexto simulado | políticas sin autoridad simulada |
+| Edge Functions | usar credencial técnica para efectuar la acción | deny antes de dispatch o mutación |
+| Realtime | ampliar suscripción o reflejar mutación prohibida | scope real y cero origen mutador |
+| offline | encolar para ejecución posterior | ninguna operación real encolada |
+| procesos asíncronos | diferir el bypass a worker | procedencia validada y cero side effects |
+| webhook / integración | producir efecto externo | cero dispatch externo |
+| impresión | accionar hardware desde preview | cero print jobs físicos |
+
+#### 95. Matriz mínima de lifecycle y ejecución
+
+| Estado observado | Solicitud procedente de preview | Acción crítica real |
+| --- | --- | --- |
+| `DRAFT` | no ejecutable | DENY |
+| `ACTIVE` | preview/evaluación no ejecutable | DENY |
+| `RESOLVING` | esperar resolución | DENY / no ejecutar |
+| `STALE` | re-resolver | DENY / no ejecutar |
+| `INVALID` de presentación sin retorno real confirmado | recuperar según owner | DENY / no ejecutar |
+| `EXIT_PENDING` | esperar terminal + retorno real | DENY / no ejecutar |
+| `COMPLETED` con request simulada antigua | artefacto histórico | DENY / replay prohibido |
+| `EXPIRED` con request simulada antigua | artefacto histórico | DENY / replay prohibido |
+| `REVOKED` con request simulada antigua | artefacto histórico | DENY / replay prohibido |
+| `INVALID` terminal del lifecycle con request simulada antigua | artefacto histórico | DENY / replay prohibido |
+| contexto real fresco posterior | sin procedencia simulada | evaluar autorización real desde cero |
+
+#### 96. Matriz mínima de clasificación de simulación
+
+| simulation_requirement | Decisión hipotética | Contenido | Acción real |
+| --- | --- | --- | --- |
+| `FULL_PREVIEW` | permitida | preview permitida por contrato | bloqueada |
+| `DECISION_ONLY` | permitida | sin contenido protegido ni formulario operativo por autoridad simulada | bloqueada |
+| `NOT_ALLOWED` | no simular | no preview autorizada para esa capacidad | bloqueada |
+| ausente/desconocido | no asumir | fail-closed | bloqueada |
+
+#### 97. Matriz de casos críticos
+
+| Caso | Resultado esperado |
+| --- | --- |
+| `WOULD_ALLOW` seguido de click en “Guardar” dentro de preview | `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION`, cero writes |
+| llamada directa al Route Handler evitando UI | mismo deny, cero efectos |
+| RPC writer invocado desde cliente simulado | deny antes de mutación |
+| RLS recibe contexto simulado | no ampliar autoridad real |
+| Edge Function usa service credential | la credencial técnica no sustituye autorización real |
+| preview intenta emitir webhook | cero dispatch |
+| preview intenta imprimir | cero print jobs |
+| acción offline desde preview | no encolar mutación real |
+| doble click | dos denies o convergencia equivalente, cero efecto único o duplicado |
+| timeout del deny | no reintentar como real automáticamente |
+| terminal confirmado pero request antiguo reintentado | replay denegado |
+| terminal + contexto real fresco + nueva intención | evaluar desde cero bajo autorización real |
+| `simulation_id` omitido desde una superficie todavía simulada | no convertir en request real |
+| resultado simulado cacheado después de cambio de política | stale; no ejecutar |
+| permiso físico sin clasificación de simulación | fail-closed |
+| cambio de actor en dispositivo compartido | no transferir preview ni autorización |
+
+#### 98. Rollback de una futura unidad
+
+El rollback técnico de una materialización no puede:
+
+- convertir `WOULD_ALLOW` en autoridad real;
+- restaurar `can_operate` como guard autoritativo ambiguo;
+- permitir writers solo porque la UI esté deshabilitada;
+- reactivar un bypass por `simulation_id` omitido;
+- ampliar RLS con claims simulados;
+- reactivar helpers legacy como fuente final de autoridad;
+- permitir jobs, colas o webhooks originados en preview;
+- degradar permiso no clasificado a `FULL_PREVIEW`;
+- borrar evidencia de intentos bloqueados necesaria para trazabilidad;
+- reejecutar automáticamente operaciones que fueron rechazadas durante simulación;
+- alterar terminales ya registrados por `AUTH-SIM-009`;
+- borrar historia de simulación para aparentar que la operación era real.
+
+#### 99. Invariantes
+
+1. Una simulación nunca concede autoridad real.
+2. `WOULD_ALLOW` nunca equivale a `ALLOW`.
+3. Todo resultado simulado permanece `executable = false`.
+4. Una acción crítica se define por su efecto, no por el control visual.
+5. Las lecturas protegidas no se amplían mediante autoridad simulada.
+6. Datos reales en preview requieren autorización real independiente.
+7. `FULL_PREVIEW` no habilita writers.
+8. `DECISION_ONLY` no habilita contenido protegido ni formularios operativos por autoridad simulada.
+9. `NOT_ALLOWED` no se simula.
+10. Permiso no clasificado falla cerrado.
+11. `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` conserva el código público.
+12. Los canales HTTP aplicables conservan `403`.
+13. `SIMULATION_EXECUTION_FORBIDDEN` conserva la razón de enforcement aplicable.
+14. `SIMULATION_CONTEXT_IN_REAL_REQUEST` puede distinguir contaminación de una solicitud real.
+15. Un booleano no sustituye una decisión tipada.
+16. `can_operate` legacy no es autoridad suficiente.
+17. `simulation_id` enviado por cliente no es autoridad ni única fuente de procedencia.
+18. Omitir `simulation_id` no convierte preview en contexto real.
+19. `DRAFT` no es ejecutable.
+20. `ACTIVE` solo permite evaluación hipotética y preview conforme al contrato.
+21. `RESOLVING` falla cerrado para efectos.
+22. `STALE` falla cerrado para efectos.
+23. `INVALID` falla cerrado para efectos.
+24. `EXIT_PENDING` mantiene el bloqueo.
+25. Un terminal no autoejecuta la acción observada.
+26. Una request simulada histórica no se vuelve real al terminar el lifecycle.
+27. Una acción real posterior exige solicitud nueva.
+28. La autorización real posterior se resuelve desde cero.
+29. Idempotency keys simuladas no se reutilizan para mutaciones reales.
+30. Doble click no produce efecto.
+31. Concurrencia no crea carrera permisiva.
+32. Timeout no convierte deny en allow.
+33. Offline no encola mutaciones reales desde preview.
+34. Jobs no ejecutan procedencia simulada.
+35. Colas no difieren el bypass.
+36. Webhooks no salen desde preview.
+37. Integraciones externas permanecen en cero efectos.
+38. Notificaciones reales no se emiten desde preview.
+39. Impresión física no se dispara desde preview.
+40. Exportación protegida exige autoridad real.
+41. Server Actions deben bloquear server-side.
+42. Route Handlers deben bloquear invocación directa.
+43. RPC/PostgREST no acepta autoridad simulada.
+44. RLS no amplía acceso con contexto simulado.
+45. Edge Functions no convierten credencial técnica en autoridad del actor.
+46. Realtime no amplía acceso ni oculta efectos prohibidos.
+47. Clientes nativos no crean excepciones.
+48. Dispositivos compartidos no transfieren rol simulado entre actores.
+49. La sesión real se preserva cuando sigue siendo válida.
+50. El bloqueo no equivale a logout.
+51. El actor real permanece responsable de la simulación.
+52. El principal técnico no es actor humano.
+53. Strong reauth no convierte preview en ejecución.
+54. Auditoría del deny no crea evento de dominio exitoso.
+55. Telemetría no sustituye auditoría requerida.
+56. Logs y evidencia minimizan secretos y datos sensibles.
+57. La clasificación contractual 85/52/3 no se modifica.
+58. `aura.access`, `pass.access` y `viso.authorization.context_simulations.view` permanecen excluidos.
+59. Las diez aplicaciones canónicas conservan cero autoridad simulada.
+60. `AUTH-DB-013` no se reabre.
+61. `AUTH-SRV-015` no se redefine.
+62. `AUTH-SIM-011` conserva el modo visual solo lectura.
+63. `AUTH-SIM-012` conserva la navegación simulada.
+64. `AUTH-SIM-013` conserva la certificación específica de Server Actions.
+65. `AUTH-SIM-014` conserva la certificación integral de aplicaciones.
+66. No se modifica 04A.
+67. No se ejecutan cambios físicos en esta tarea.
+
+#### 100. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. criterio de acción crítica;
+2. criterio de efecto real;
+3. tratamiento de lecturas protegidas;
+4. procedencia simulada;
+5. bloqueo durante `DRAFT`, `ACTIVE` y estados visibles no seguros;
+6. comportamiento después de estados terminales;
+7. nueva autorización real posterior;
+8. separación de cuatro planos;
+9. `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE` no ejecutables;
+10. semántica `FULL_PREVIEW`;
+11. semántica `DECISION_ONLY`;
+12. semántica `NOT_ALLOWED`;
+13. fail-closed para permisos sin clasificación;
+14. código público y razón de enforcement;
+15. HTTP 403 cuando aplica;
+16. cero efectos empresariales;
+17. sesión real preservada;
+18. actor y principal técnico separados;
+19. no bypass por omisión de `simulation_id`;
+20. detección de contaminación real/simulada;
+21. idempotencia, replay y concurrencia;
+22. offline, colas y procesos asíncronos;
+23. webhooks, integraciones, notificaciones e impresión;
+24. Server Actions, Route Handlers, RSC/fetch, RPC/PostgREST, RLS/Data API, Edge y Realtime;
+25. dispositivos compartidos;
+26. VISO, AURA y PASS;
+27. cobertura de diez aplicaciones;
+28. auditoría y privacidad;
+29. evidencia física positiva actual;
+30. brechas físicas legacy actuales;
+31. matriz mínima por canal;
+32. matriz de lifecycle;
+33. matriz de clasificación;
+34. evidencia mínima futura;
+35. rollback;
+36. handoff exacto hacia modo solo lectura.
+
+#### 101. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el bloqueo de ejecución desde simulación, separación de planos, resultado no ejecutable, código público, canales, aplicaciones, cero efectos, invalidación, replay, concurrencia, auditoría y reconciliación física ya disponen de cobertura canónica vigente. Esta tarea especializa el contrato documental de enforcement para el tramo `AUTH-SIM-010` sin crear una obligación verificable nueva ni cambiar owner, prioridad, modalidad, paquete, estado o relación del registro.
+
+#### 102. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- simulación auditable y no ejecutable;
+- separación entre autoridad real, evaluación simulada, presentación y auditoría;
+- bloqueo de acción o lectura protegida desde procedencia simulada;
+- código `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION`;
+- estado `SIMULATION_EXECUTION_FORBIDDEN`;
+- `executable = false`;
+- cero efectos empresariales;
+- clasificación `FULL_PREVIEW`, `DECISION_ONLY` y `NOT_ALLOWED`;
+- bloqueo multicanal;
+- invalidación, replay, concurrencia e idempotencia;
+- diez aplicaciones canónicas;
+- reconciliación física de APIs, tipos, RLS, RPC, contexto efectivo y permisos.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-012`, `TREQ-AUTH-119..128`, `TREQ-AUTH-165`, `TREQ-AUTH-279..288` y la cobertura transversal de auditoría, UI, catálogo, contexto, aplicaciones y contratos compartidos ya registrada.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `AUTH-SIM-010`.
+
+#### 103. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto de tarea se preparó de forma independiente y todavía no fue incorporado al archivo propietario ni sometido al build documental del checkout del usuario |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron preflight, formateador, task quality, delivery check, topología, TREQ ni batería global dentro del checkout local del usuario |
+| REMOTA | `PASS` | se verificaron en solo lectura `main`, continuidad `AUTH-SIM-009 -> AUTH-SIM-010 -> AUTH-SIM-011`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas de formato y desarrollo, contrato de entrega, handoff de `AUTH-SIM-009`, cobertura 04A de simulación, código público/razón de bloqueo, clasificación 85/52/3, contratos de canal y estado legacy de `@vento/os-context` |
+| OPERATIVA | `NOT_EXECUTED` | no se inició una simulación ni se intentó ejecutar una acción crítica real en un entorno desplegado durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron código, migraciones, funciones, RLS, RPC, Server Actions, aplicaciones, datos, colas, integraciones, hardware, configuración ni entornos desplegados |
+
+#### 104. Criterios de aceptación
+
+- [x] Se define acción crítica por efecto real y no por apariencia visual.
+- [x] Se define efecto empresarial real incluyendo side effects externos.
+- [x] Se prohíbe ampliar lecturas protegidas mediante autoridad simulada.
+- [x] Se permite preview solo dentro de la autoridad real ya disponible al actor.
+- [x] Se define procedencia simulada como propiedad autoritativa, no bandera de cliente.
+- [x] `DRAFT` permanece no ejecutable.
+- [x] `ACTIVE` bloquea efectos reales.
+- [x] `RESOLVING` no concede permiso provisional.
+- [x] `STALE` no reutiliza `WOULD_ALLOW` anterior.
+- [x] `INVALID` no degrada a contexto real implícito.
+- [x] `EXIT_PENDING` mantiene el bloqueo.
+- [x] Estados terminales no convierten requests antiguas en reales.
+- [x] La operación real posterior exige solicitud nueva.
+- [x] Se conservan cuatro planos separados.
+- [x] `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE` permanecen no ejecutables.
+- [x] `FULL_PREVIEW` no habilita writers.
+- [x] `DECISION_ONLY` no habilita contenido protegido por autoridad simulada.
+- [x] `NOT_ALLOWED` no se simula.
+- [x] Permiso sin clasificación falla cerrado.
+- [x] Se conserva la distribución contractual 85/52/3 sin modificarla.
+- [x] Se conservan las tres claves excluidas de simulación.
+- [x] Se conserva `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION`.
+- [x] Se conserva `SIMULATION_EXECUTION_FORBIDDEN`.
+- [x] Se conserva `403` para canales HTTP aplicables.
+- [x] Se conserva `executable = false`.
+- [x] Se exige cero efectos empresariales.
+- [x] Se bloquean efectos parciales.
+- [x] La sesión real se preserva cuando sigue siendo válida.
+- [x] El deny no se convierte en logout genérico.
+- [x] Actor real y rol simulado permanecen separados.
+- [x] El principal técnico no sustituye autoridad humana.
+- [x] Strong reauth no convierte preview en ejecución.
+- [x] Se exige autorización real fresca después de salir.
+- [x] Idempotency keys simuladas no se reutilizan como reales.
+- [x] Doble click no produce efecto.
+- [x] Concurrencia falla cerrado ante procedencia no demostrada.
+- [x] Respuestas tardías no conceden autoridad.
+- [x] Offline no encola mutación real.
+- [x] Replay simulado no se acepta en endpoints reales.
+- [x] Jobs no ejecutan trabajo originado en preview.
+- [x] Colas no difieren el bypass.
+- [x] Webhooks no se envían desde simulación.
+- [x] Integraciones externas conservan cero efectos.
+- [x] Notificaciones reales no se emiten desde preview.
+- [x] Impresión física no se dispara desde preview.
+- [x] Exportación protegida exige autoridad real.
+- [x] Server Actions requieren guard server-side.
+- [x] Route Handlers no admiten bypass por llamada directa.
+- [x] RSC/fetch no amplían lectura por escenario hipotético.
+- [x] RPC/PostgREST no aceptan autoridad simulada.
+- [x] RLS/Data API no amplían acceso con contexto simulado.
+- [x] Edge Functions no convierten credencial técnica en permiso del actor.
+- [x] Realtime no amplía scope ni oculta efectos prohibidos.
+- [x] Clientes nativos conservan semántica equivalente.
+- [x] Dispositivos compartidos no transfieren rol simulado entre actores.
+- [x] VISO no autoautoriza su permiso de simulación.
+- [x] AURA y PASS conservan exclusiones vigentes.
+- [x] Las diez aplicaciones canónicas permanecen sin autoridad simulada.
+- [x] Se define frontera transaccional previa al efecto.
+- [x] Fuente indisponible no habilita acción.
+- [x] Cambios de política invalidan evaluaciones stale.
+- [x] Fingerprints no se usan como credenciales.
+- [x] Intentos bloqueados pueden auditarse sin convertirse en eventos de dominio.
+- [x] Telemetría técnica no sustituye auditoría.
+- [x] Mensaje seguro no filtra detalles internos.
+- [x] No existe reintento automático como operación real.
+- [x] Salir no autoejecuta la acción previsualizada.
+- [x] UI bloqueada no sustituye enforcement server-side.
+- [x] `AUTH-SIM-011` conserva el modo visual solo lectura.
+- [x] `AUTH-SIM-012` conserva navegación simulada.
+- [x] `AUTH-SIM-013` conserva certificación específica de Server Actions.
+- [x] `AUTH-SIM-014` conserva certificación integral.
+- [x] Se reconoce `AUTH-DB-013` como fundación física positiva sin declarar adopción completa.
+- [x] Se identifica `EffectiveContext` legacy como forma no adoptada para autoridad final.
+- [x] Se identifica `hasEffectivePermission` booleano como evidencia insuficiente para enforcement final.
+- [x] Se identifica ausencia de certificación multicanal física actual.
+- [x] No se reabre `AUTH-DB-013`.
+- [x] No se reabre `AUTH-SRV-015`.
+- [x] Se define evidencia mínima por futura unidad.
+- [x] Se define rollback fail-closed.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecutan cambios físicos.
+- [x] `AUTH-SIM-011` permanece reservada.
+
+#### 105. Límites
+
+Esta tarea no:
+
+- ejecuta una simulación real;
+- intenta una mutación real;
+- modifica Supabase;
+- crea migraciones;
+- cambia RLS;
+- cambia grants;
+- cambia funciones o RPC;
+- modifica `AUTH-DB-013`;
+- modifica `AUTH-SRV-015`;
+- implementa guards;
+- modifica Server Actions;
+- modifica Route Handlers;
+- modifica RSC;
+- modifica Edge Functions;
+- modifica Realtime;
+- modifica colas;
+- modifica jobs;
+- modifica webhooks;
+- modifica integraciones;
+- modifica impresoras;
+- modifica `@vento/os-context`;
+- retira `EffectiveContext` legacy;
+- cambia `hasEffectivePermission`;
+- modifica el catálogo físico de permisos;
+- reclasifica los 140 permisos documentales;
+- reconcilia los permisos físicos adicionales;
+- implementa la experiencia completa de solo lectura;
+- desarrolla `AUTH-SIM-011`;
+- valida navegación simulada de `AUTH-SIM-012`;
+- certifica Server Actions de `AUTH-SIM-013`;
+- ejecuta certificación integral de `AUTH-SIM-014`;
+- modifica ninguna de las diez aplicaciones canónicas;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A.
+
+#### 106. Handoff exacto hacia AUTH-SIM-011
+
+`AUTH-SIM-010` entrega a `AUTH-SIM-011` una regla de seguridad ya fijada:
+
+```text
+SIMULATED ORIGIN
+-> REAL EXECUTION FORBIDDEN
+```
+
+```text
+SIMULATED RESULT
+-> executable = false
+```
+
+```text
+SERVER-SIDE DENY
+=
+SECURITY AUTHORITY
+```
+
+`AUTH-SIM-011` deberá convertir esa no ejecutabilidad en una experiencia de solo lectura coherente, accesible y persistente sin asumir que ocultar o deshabilitar controles sustituye el guard server-side.
+
+El modo visual deberá respetar `FULL_PREVIEW`, `DECISION_ONLY` y `NOT_ALLOWED` sin crear una cuarta clasificación ni ampliar datos o acciones disponibles.
+
+---
+
+#### 107. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-SIM-009 — Registrar salida de simulación`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-SIM-010 — Bloquear acciones críticas durante simulación`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-SIM-011 — Definir modo solo lectura`
+
+
 ### [ ] AUTH-SIM-011 — Definir modo solo lectura
