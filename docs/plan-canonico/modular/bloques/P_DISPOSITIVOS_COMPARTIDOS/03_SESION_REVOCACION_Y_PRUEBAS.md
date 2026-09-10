@@ -8020,4 +8020,1209 @@ Esta tarea no:
 `AUTH-DEV-016 — Probar pantallas de FOGO`
 
 
-### [ ] AUTH-DEV-016 — Probar pantallas de FOGO
+### ✅ AUTH-DEV-016 — Probar pantallas de FOGO
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-015 — Probar terminales de PULSO
+**Tarea siguiente:** AUTH-SIM-007 — Mostrar aviso persistente
+**Tipo de tarea:** documental; contrato canónico de prueba y certificación por unidad de implementación para pantallas compartidas que exponen FOGO, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada, reproducible y auditable cómo deberá probarse una unidad física compartida que exponga FOGO antes de declararla conforme con los contratos de dispositivo, actor, autorización, producción, recetas operativas, lotes, inventario, trazabilidad y experiencia de estación.
+
+La tarea especializa para FOGO el protocolo transversal heredado de `AUTH-DEV-014` y `AUTH-DEV-015`.
+
+La certificación futura deberá demostrar simultáneamente:
+
+```text
+UNIDAD FOGO ENROLADA Y VERIFICADA
++
+DEVICE ELEGIBLE
++
+FOGO EN EL CONJUNTO EFECTIVO DE APLICACIONES
++
+ACTOR HUMANO UNICO Y VIGENTE
++
+ROL PRODUCTIVO, TURNO, CHECK-IN Y AREA COMPATIBLES
++
+TECHO DEL DISPOSITIVO INTERSECTADO CON EL ACTOR
++
+ORDEN, RECETA, LOTE, INSUMO Y DESTINO VALIDOS
++
+ACCION SERVER-SIDE EXACTA
++
+EFECTOS FOGO Y NEXO CORRELACIONADOS
++
+DENY CON CERO EFECTOS EMPRESARIALES
++
+CAMBIO DE ACTOR Y LIFECYCLE OBSERVABLES
++
+INTERACCION FISICA UTILIZABLE
+=
+UNIDAD FOGO CERTIFICABLE
+```
+
+Una página renderizada, un build, una fila técnica, un PIN aceptado, una suite sintética o un lote creado en un ambiente distinto no certifican por sí solos una pantalla FOGO compartida.
+
+---
+
+#### 2. Naturaleza del marcador y materialización posterior
+
+El marcador actual desarrolla un contrato documental reutilizable.
+
+La topología aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. esta tarea no crea una instancia física;
+2. esta tarea no ejecuta una terminal de producción;
+3. la materialización pertenece a una `implementation_unit_id` concreta;
+4. cada unidad física se certifica independientemente;
+5. la evidencia de una plantilla no certifica una instancia;
+6. la evidencia de otra aplicación no certifica FOGO;
+7. la evidencia sintética del consumidor no reemplaza evidencia de estación;
+8. la ejecución física espera el package aplicable y su gate temporal;
+9. un cambio material invalida la evidencia dependiente;
+10. el historial de una ejecución anterior permanece auditable aunque deje de certificar el estado vigente.
+
+---
+
+#### 3. Handoff recibido de AUTH-DEV-015
+
+`AUTH-DEV-015` entrega:
+
+```text
+PROTOCOLO TRANSVERSAL POR IMPLEMENTATION_UNIT REUTILIZADO
++
+CERTIFICACION PULSO ESPECIALIZADA
++
+ACTOR, DEVICE Y TERRITORIO EXIGIDOS
++
+STANDARD, STRONG Y NOT_ALLOWED OBSERVABLES
++
+CAMBIO A -> B Y LIMPIEZA OBSERVABLES
++
+IDEMPOTENCIA Y RESULTADO INCIERTO PROBABLES
++
+CERO EFECTOS EN DENY
++
+AUDITORIA CONJUNTA EXIGIDA
++
+UNIVERSO DE 19 IDENTIDADES PRESERVADO
++
+FRONTERA PULSO CERRADA DOCUMENTALMENTE
+```
+
+`AUTH-DEV-016` conserva esas invariantes y añade únicamente las particularidades de FOGO. No reabre NEXO, PULSO, identidad de dispositivo, sede, área, aplicaciones, paquetes, actor session, expiración, revocación, cambio de trabajador ni auditoría transversal.
+
+---
+
+#### 4. Frontera con el BLOQUE L FOGO
+
+Esta tarea prueba contratos de FOGO cuando hayan sido materializados; no los implementa.
+
+Propietarios funcionales posteriores:
+
+- `FOGO-AUTH-001` — Inventariar vistas y acciones productivas;
+- `FOGO-AUTH-002` — Definir permisos por área productiva;
+- `FOGO-AUTH-003` — Filtrar cola por sede y área;
+- `FOGO-AUTH-004` — Restringir Panadería;
+- `FOGO-AUTH-005` — Restringir Repostería;
+- `FOGO-AUTH-006` — Restringir Cocina;
+- `FOGO-AUTH-007` — Restringir Insumos;
+- `FOGO-AUTH-008` — Definir permisos de supervisor;
+- `FOGO-AUTH-009` — Proteger inicio de producción;
+- `FOGO-AUTH-010` — Proteger producción parcial;
+- `FOGO-AUTH-011` — Proteger finalización;
+- `FOGO-AUTH-012` — Proteger correcciones y anulaciones;
+- `FOGO-AUTH-013` — Proteger lotes y recetas;
+- `FOGO-AUTH-014` — Registrar actor y turno;
+- `FOGO-AUTH-015` — Migrar a paquetes de `vento-shell`;
+- `FOGO-AUTH-016` — Ejecutar pruebas integrales.
+
+La certificación física consume esos resultados cuando existan. No los adelanta.
+
+---
+
+#### 5. Frontera con la experiencia FOGO
+
+La experiencia objetivo conserva propietarios propios:
+
+- `FOGO-UX-001` a `FOGO-UX-015` inventarían, separan, diseñan y validan la experiencia de producción;
+- las tres áreas productivas permanecen separadas;
+- el recetario operativo permanece separado de la administración de recetas;
+- inicio, parcial, finalización, desperdicio, resultado, corrección e integraciones con NEXO conservan owners específicos.
+
+`AUTH-DEV-016` verifica la materialización física resultante. No redefine esos diseños.
+
+---
+
+#### 6. Unidad exacta de certificación
+
+La certificación pertenece a una unidad física concreta.
+
+Antes de ejecutar escenarios deberá quedar resuelta la relación entre:
+
+- unidad de implementación;
+- activo físico;
+- estación;
+- endpoint;
+- `device_id`;
+- `device_code`;
+- principal técnico;
+- plantilla y versión;
+- sede;
+- política de área;
+- aplicaciones efectivas;
+- aplicación predeterminada;
+- paquete de permisos;
+- build de FOGO;
+- contratos compartidos;
+- ambiente;
+- periféricos;
+- actor humano;
+- turno y check-in cuando correspondan.
+
+No se transfiere un PASS por compartir modelo de tablet, navegador, área, sede, plantilla, imagen de sistema, build o usuario técnico.
+
+---
+
+#### 7. Ausencia actual de una instancia configurada FOGO
+
+El inventario vigente conserva dos instancias configuradas:
+
+```text
+CAJA_VENTO_CAFE_01
+KIOSCO_BODEGA_CP
+```
+
+Ninguna incluye FOGO en su conjunto registral candidato.
+
+```text
+INSTANCIAS CONFIGURADAS FOGO CERTIFICABLES HOY
+=
+0
+```
+
+Esta tarea no convierte ninguna en terminal FOGO. La futura certificación requiere una unidad materializada bajo una plantilla que admita FOGO.
+
+---
+
+#### 8. Plantillas que admiten FOGO
+
+FOGO pertenece al máximo de exactamente cuatro plantillas:
+
+```text
+production_kitchen
+production_bakery
+production_pastry
+operations_management_terminal
+```
+
+Las tres primeras son especializadas por área productiva. `operations_management_terminal` es una terminal de coordinación operativa con techo más amplio.
+
+---
+
+#### 9. Plantillas que no admiten FOGO
+
+FOGO queda fuera del máximo de exactamente diez plantillas:
+
+```text
+pos_satellite
+bar_satellite
+kitchen_satellite
+service_satellite
+counter_satellite
+integrated_satellite
+warehouse_kiosk
+logistics_vehicle_terminal
+procurement_reception
+management_terminal
+```
+
+Debe fallar cerrado aunque FOGO esté instalado, exista un enlace, haya una pestaña abierta, el trabajador tenga permisos FOGO en otro contexto o el principal técnico siga autenticado.
+
+---
+
+#### 10. Plantilla retirada
+
+`production_center` permanece retirada. No recibe nuevas instancias, asociaciones, paquetes ni certificación FOGO.
+
+La transición productiva utiliza:
+
+```text
+production_kitchen
+production_bakery
+production_pastry
+```
+
+---
+
+#### 11. Paquete productivo compartido
+
+Las tres plantillas especializadas consumen:
+
+```text
+DEVICE-SHELL-CORE-v1
++
+DEVICE-PRODUCTION-CORE-v1
+```
+
+Resultado:
+
+```text
+17 CLAVES
+17 STANDARD
+0 STRONG
+```
+
+El hecho de que el paquete no exija STRONG no elimina actor humano, turno, check-in cuando corresponda, área, recurso, estado, idempotencia ni auditoría.
+
+---
+
+#### 12. Claves FOGO del paquete productivo
+
+`DEVICE-PRODUCTION-CORE-v1` conserva exactamente estas cinco claves FOGO:
+
+```text
+fogo.access
+fogo.production.batches.view
+fogo.production.batches.create
+fogo.production.orders.view
+fogo.production.recipe_book.view
+```
+
+Las once claves restantes pertenecen al soporte NEXO necesario para catálogos, existencias, ubicaciones, lotes y retiros productivos.
+
+---
+
+#### 13. Paquete de gerencia operativa
+
+`operations_management_terminal` usa:
+
+```text
+DEVICE-SHELL-CORE-v1
++
+DEVICE-OPERATIONS-MANAGEMENT-v1
+```
+
+Su techo total contiene 49 claves: 42 STANDARD y 7 STRONG.
+
+Dentro de FOGO conserva:
+
+```text
+fogo.access
+fogo.production.batches.view
+fogo.production.orders.view
+fogo.production.recipe_book.view
+```
+
+No contiene `fogo.production.batches.create`. Una terminal de gestión operativa no adquiere ejecución física de producción por poder consultar FOGO.
+
+---
+
+#### 14. Roles productivos exactos
+
+Las tres áreas productivas conservan roles separados:
+
+```text
+produccion_cocina
+produccion_panaderia
+produccion_reposteria
+```
+
+Cada rol se resuelve desde el contexto laboral vigente. No se deriva de plantilla, nombre de pantalla, producto, receta, terminal, área seleccionada, `navigation_role` ni último trabajador.
+
+---
+
+#### 15. Prueba por área productiva
+
+`production_kitchen` deberá demostrar Cocina Caliente y denegar Panadería/Repostería.
+
+`production_bakery` deberá demostrar Galletería y Panadería y denegar Cocina Caliente/Repostería.
+
+`production_pastry` deberá demostrar Repostería y denegar Cocina Caliente/Panadería.
+
+Compartir la sede no concede otras áreas.
+
+---
+
+#### 16. Sede y área
+
+Para operación productiva:
+
+```text
+SEDE DEL ACTOR
+INTERSECCION
+SEDE DEL DISPOSITIVO
+INTERSECCION
+SEDE DEL RECURSO
+=
+SEDE EVALUABLE
+```
+
+Para una plantilla especializada:
+
+```text
+AREA DEL ACTOR
+=
+AREA FIJA DEL DISPOSITIVO
+=
+AREA DEL RECURSO CUANDO APLIQUE
+```
+
+La prueba debe incluir actores, órdenes, lotes, ubicaciones y recetas incompatibles territorialmente. El dispositivo puede restringir; nunca concede sede o área laboral.
+
+---
+
+#### 17. Turno y check-in
+
+`fogo.production.orders.view` y `fogo.production.recipe_book.view` conservan prerrequisito de turno según sus contratos.
+
+`fogo.production.batches.create` exige operación laboral vigente y presencia confirmada.
+
+Debe probarse:
+
+- turno válido;
+- turno ausente;
+- turno vencido;
+- turno de otro trabajador;
+- turno de otra sede o área;
+- check-in válido para creación;
+- check-in ausente;
+- check-in residual;
+- check-in de otro trabajador.
+
+El PIN del dispositivo no sustituye turno ni check-in.
+
+---
+
+#### 18. Principal técnico sin actor
+
+Debe probarse:
+
+```text
+PRINCIPAL TECNICO VALIDO
++
+DEVICE VALIDO
++
+FOGO DISPONIBLE
++
+ACTOR HUMANO AUSENTE
+=
+CERO MUTACION PRODUCTIVA
+```
+
+Puede mostrarse un estado seguro de identificación. No puede iniciar lote, registrar consumo, terminar producción, corregir producción, elegir último trabajador ni usar el principal técnico como productor.
+
+---
+
+#### 19. Actor session única
+
+Debe demostrarse:
+
+```text
+0 SESIONES ELEGIBLES
+->
+SIN ACTOR EFECTIVO
+```
+
+```text
+1 SESION ELEGIBLE
+->
+ACTOR CANDIDATO UNICO
+```
+
+```text
+2 O MAS SESIONES INCOMPATIBLES
+->
+CONFLICTO
+->
+CERO NUEVO EFECTO PRODUCTIVO
+```
+
+No se elige una sesión por orden, recencia, área, heartbeat o turno programado.
+
+---
+
+#### 20. `navigation_role`
+
+`navigation_role` es una pista de navegación. No es fuente de actor, rol operativo, turno, check-in, permiso, sede, área, acceso FOGO, lote ni autorización.
+
+Una prueba que altere autoridad cambiando solamente `navigation_role` es FAIL.
+
+---
+
+#### 21. Aplicación FOGO y acceso
+
+La app debe pertenecer al conjunto efectivo del dispositivo.
+
+```text
+FOGO EN PLANTILLA
++
+FOGO EN INSTANCIA
++
+CLIENTE COMPATIBLE
++
+VINCULO VIGENTE
+=
+SUPERFICIE ELEGIBLE PARA CONTINUAR EVALUACION
+```
+
+`fogo.access` solo permite continuar la evaluación de entrada. No concede órdenes, recetario, lotes, creación, finalización, corrección, recetas administrativas, inventario ni retiros.
+
+---
+
+#### 22. FOGO fuera del conjunto efectivo
+
+Debe existir una prueba negativa donde FOGO no pertenezca al conjunto efectivo.
+
+Resultado requerido:
+
+- launcher no ofrece FOGO;
+- acceso directo no concede acceso;
+- acciones de servidor no ejecutan efectos;
+- pestaña stale no mantiene autoridad;
+- cliente instalado manualmente no crea asociación;
+- cero efectos productivos.
+
+---
+
+#### 23. Recetario operativo
+
+`fogo.production.recipe_book.view` representa la proyección operativa publicada y aplicable.
+
+La prueba debe demostrar versión, receta aplicable, área, producto, instrucciones suficientes, no exposición administrativa indebida, no edición, no publicación y no acceso al maestro completo.
+
+---
+
+#### 24. Administración de recetas
+
+El recetario operativo y la administración de recetas son superficies distintas.
+
+```text
+RECETARIO OPERATIVO
+!=
+ADMINISTRACION DE RECETAS
+```
+
+Las pantallas de creación y edición no se habilitan a una terminal productiva por tener `fogo.production.recipe_book.view`.
+
+El consumidor actual usa `fogo.production.recipes.manage` en superficies administrativas; ese identificador permanece `DECOMPOSE_REQUIRED`. La certificación final no puede tratarlo como permiso atómico definitivo.
+
+`fogo.production.recipes.view` permanece `NOT_ALLOWED` para dispositivo compartido en el contrato vigente.
+
+---
+
+#### 25. Órdenes y cola productiva
+
+`fogo.production.orders.view` solo permite consultar órdenes aplicables.
+
+Debe probarse orden de la sede y área correctas, orden de otra área, orden de otra sede, orden inactiva y estado incompatible.
+
+La cola visible debe provenir del contexto efectivo. No se construye autoritativamente desde área enviada por cliente, rol de navegación, última selección o preferencia local.
+
+---
+
+#### 26. Inicio de lote
+
+Cuando `FOGO-AUTH-009` esté materializada, debe resolverse actor, turno, check-in, device, sede, área, orden, receta, versión, cantidades, destino cuando aplique, idempotencia y estado inicial.
+
+Un formulario visible no autoriza el inicio.
+
+---
+
+#### 27. Crear lote y frontera autoritativa
+
+La clave `fogo.production.batches.create` debe revalidarse en la frontera autoritativa de la mutación.
+
+No es suficiente:
+
+- botón visible;
+- `canCreate` calculado previamente;
+- permiso de lectura del recetario;
+- firma aislada del actor;
+- control de página sin enforcement server-side final.
+
+El consumidor actual presenta una base parcial: la página comprueba capacidad de creación, la acción vuelve a resolver acceso, exige firma del trabajador en dispositivo compartido e invoca la operación real de lote.
+
+La certificación final debe demostrar enforcement exacto de `fogo.production.batches.create` en la operación que produce el efecto.
+
+---
+
+#### 28. Firma del trabajador
+
+El helper vigente puede resolver firma, trabajador y turno. Esa evidencia es parcial.
+
+```text
+FIRMA DE ACCION
+!=
+ACTOR SESSION
+!=
+PERMISO
+!=
+STRONG
+```
+
+El secreto humano es efímero, no se muestra, no se loguea, no se reutiliza y no sustituye turno ni check-in.
+
+---
+
+#### 29. Producción parcial, finalización y corrección
+
+Cuando los owners FOGO estén materializados, la prueba debe separar:
+
+```text
+INICIO
+!=
+PROGRESO PARCIAL
+!=
+FINALIZACION
+!=
+CORRECCION
+!=
+ANULACION
+```
+
+Cada transición conserva actor, lote, paso, cantidades, estado anterior, estado nuevo, timestamp y auditoría.
+
+Correcciones y anulaciones preservan el dato original, motivo, actor original, actor corrector y compensaciones. No borran historia productiva.
+
+---
+
+#### 30. Lote, receta y versión
+
+Cada lote conserva la receta y versión exactas aplicables al momento de ejecución.
+
+Una actualización posterior no modifica retrospectivamente ingredientes, cantidades, pasos, rendimiento esperado ni snapshot histórico.
+
+La información de receta se limita a lo necesario para operar. Una pantalla compartida no se convierte en canal de administración de fórmulas.
+
+---
+
+#### 31. Ingredientes, empaques y resultados
+
+La prueba debe verificar, cuando apliquen:
+
+- cantidad prevista;
+- cantidad real;
+- unidad;
+- producto;
+- ingrediente;
+- empaque;
+- coproducto;
+- subproducto;
+- desperdicio;
+- rendimiento;
+- salida;
+- actor;
+- lote;
+- ubicación;
+- destino.
+
+No se ocultan diferencias corrigiendo silenciosamente cantidades finales.
+
+---
+
+#### 32. Ubicaciones, LPN y retiros
+
+Los consumos deben provenir de ubicaciones compatibles con sede, área, producto, estado y operación.
+
+Cuando aplique stock específico, se verifica LPN o lote de inventario, disponibilidad, cantidad, unidad, ubicación y no consumo doble.
+
+El package productivo incluye `nexo.inventory.withdrawals.view` y `nexo.inventory.withdrawals.register`. El retiro se limita al consumo relacionado con la orden o lote productivo; no concede ajustes globales, entradas, traslados generales, conteos, inventario negativo ni remisiones.
+
+---
+
+#### 33. Separación lote–retiro
+
+Crear lote y registrar consumo son hechos distintos.
+
+La orquestación debe demostrar:
+
+- no duplicación de inventario;
+- no omisión de consumo;
+- correlación con lote;
+- actor;
+- cantidades;
+- estado reconciliable.
+
+Un lote creado no prueba por sí solo inventario correcto.
+
+---
+
+#### 34. Integración FOGO–NEXO
+
+FOGO conserva la ejecución productiva y NEXO conserva inventario.
+
+```text
+FOGO
+=
+ORDEN, RECETA, LOTE Y EJECUCION PRODUCTIVA
+
+NEXO
+=
+STOCK, LPN, UBICACION, MOVIMIENTO Y RETIRO
+```
+
+La operación vigente `fogo_create_real_production_batch` puede producir efectos reales sobre lote, consumos, proyecciones de inventario, movimientos `production_consume` y destino de salida.
+
+Por ello, la prueba física verifica estado empresarial posterior en ambos dominios, no solo el retorno de una función.
+
+---
+
+#### 35. Destino y modo de salida
+
+Cuando la operación soporte distintos modos de salida, la prueba verifica el modo aplicable y su efecto real.
+
+Cuando la salida entre a inventario, la ubicación de destino debe existir, pertenecer a la sede, ser compatible y quedar correlacionada con el lote.
+
+Un modo o destino enviado por interfaz no se acepta sin validación server-side.
+
+---
+
+#### 36. Atomicidad, idempotencia y concurrencia
+
+Debe provocarse un fallo controlado dentro de una operación con varios efectos para demostrar que no queda lote sin consumos requeridos, consumo sin lote, salida sin entradas, stock reducido dos veces o auditoría de éxito falsa.
+
+Debe provocarse un reintento del mismo hecho:
+
+```text
+MISMA INTENCION EMPRESARIAL
++
+MISMA IDENTIDAD ESTABLE
+->
+UN SOLO EFECTO
+```
+
+Debe probarse concurrencia sobre lote, orden, stock, LPN, ubicación o intención de creación, evitando doble consumo, inventario inválido, lotes incompatibles y pérdida silenciosa.
+
+---
+
+#### 37. Resultado incierto y reconexión
+
+Debe existir una prueba donde el cliente pierda la respuesta de una mutación.
+
+La recuperación conserva identidad del intento, consulta estado real, evita reenvío ciego, evita duplicación, conserva actor original y exige nueva autorización si nace una intención distinta.
+
+Tras reconectar se revalidan device, actor session, app, permiso, turno, check-in, sede, área, recurso, estado de lote e idempotencia.
+
+---
+
+#### 38. Cambio de trabajador A→B
+
+La unidad debe ejecutar un cambio real de actor.
+
+Se observa:
+
+1. A identificado y vigente;
+2. FOGO abierto bajo A;
+3. cambio explícito;
+4. A deja de ser elegible;
+5. nuevos efectos de A quedan bloqueados;
+6. secretos de A se limpian;
+7. estado personal no se transfiere;
+8. B se identifica independientemente;
+9. sesión B es nueva;
+10. contexto B se resuelve desde sus fuentes;
+11. FOGO refleja B como actor efectivo.
+
+Un formulario abierto por A no puede enviarse como si B hubiera originado la intención. Una respuesta tardía de A conserva actor A y no restaura su autoridad.
+
+---
+
+#### 39. Expiración, revocación y cambios materiales
+
+Una actor session expirada produce cero nueva mutación productiva aunque el principal técnico siga autenticado.
+
+Después de revocar el device, FOGO abierto no puede iniciar lote, registrar consumo, finalizar, corregir, exportar contenido protegido ni procesar una intención stale.
+
+Cambios de aplicación, área o sede invalidan contextos, decisiones y formularios incompatibles. No se reutiliza un `ALLOW` anterior.
+
+---
+
+#### 40. Acceso directo y no-access
+
+Cada página protegida debe probarse también por acceso directo. Ocultar un enlace no reemplaza autorización.
+
+El estado `no-access` debe ser inerte: no ejecuta la acción original, no muestra datos protegidos, no sugiere bypass, no expone causas internas sensibles y no reintenta automáticamente una mutación.
+
+---
+
+#### 41. Línea base de páginas FOGO
+
+La línea base vigente contiene exactamente nueve archivos de página:
+
+```text
+src/app/page.tsx
+src/app/login/page.tsx
+src/app/no-access/page.tsx
+src/app/production-batches/page.tsx
+src/app/production-batches/new/page.tsx
+src/app/recipe-book/page.tsx
+src/app/recipes/page.tsx
+src/app/recipes/[id]/edit/page.tsx
+src/app/recipes/new/page.tsx
+```
+
+Además conserva un handler de exportación separado:
+
+```text
+src/app/recipes/pdf/route.tsx
+```
+
+El handler no se cuenta como página y debe probarse como canal independiente de autorización.
+
+---
+
+#### 42. Doce superficies del baseline FOGO
+
+El baseline vigente define:
+
+| Superficie | Cobertura |
+| --- | --- |
+| `FOGO-SURFACE-001` | identidad, sesión y permisos |
+| `FOGO-SURFACE-002` | contexto operativo, sede, área y actor |
+| `FOGO-SURFACE-003` | inventario de páginas y acceso |
+| `FOGO-SURFACE-004` | administración de recetas |
+| `FOGO-SURFACE-005` | estructura de receta, unidades e ingredientes |
+| `FOGO-SURFACE-006` | pasos, salidas y publicación |
+| `FOGO-SURFACE-007` | recetario operativo |
+| `FOGO-SURFACE-008` | creación de lotes |
+| `FOGO-SURFACE-009` | destino, empaque y modo de salida |
+| `FOGO-SURFACE-010` | lotes, consumo, rendimiento y trazabilidad |
+| `FOGO-SURFACE-011` | integración y fronteras de dominio |
+| `FOGO-SURFACE-012` | UI, SSR, interacción, accesibilidad y exportación |
+
+La certificación física materializa una decisión para las doce.
+
+---
+
+#### 43. Baseline CI008
+
+El consumidor FOGO dispone de un baseline específico que exige:
+
+```text
+42 PRUEBAS CONTRACTUALES
+0 FALLIDAS
+0 OMITIDAS
+AL MENOS 16 DENY PATHS
+```
+
+La evidencia sintética debe quedar vinculada a repositorio, branch, commit, manifest, lockfile, contrato, suite, fixtures, inventario de páginas, contratos fuente, ambiente, runtime, framework, paquetes compartidos y resultado.
+
+El baseline es prerrequisito técnico, no una ejecución física de estación.
+
+---
+
+#### 44. Bloqueos estáticos actuales
+
+La certificación final debe detectar y cerrar, mediante sus owners existentes, las siguientes brechas observadas en el consumidor actual:
+
+1. `OperationalSession` no materializa de forma suficiente una actor session persistente, identidad humana efectiva y expiración;
+2. `navigationRole` participa todavía en la resolución operativa y no puede ser autoridad;
+3. la pertenencia de FOGO al conjunto del dispositivo puede actuar como acceso implícito y debe separarse del grant humano;
+4. los valores preferidos de sede y área no pueden ampliar vínculos server-side;
+5. las pantallas administrativas usan `fogo.production.recipes.manage`, marcado `DECOMPOSE_REQUIRED`;
+6. la creación de lote debe demostrar enforcement exacto de `fogo.production.batches.create` en la frontera que produce el efecto, sin confiar solo en la página o en una capacidad de lectura;
+7. no existe una instancia configurada FOGO entre las dos unidades registrales actuales.
+
+Son hallazgos estáticos. No son resultados de ejecución física.
+
+---
+
+#### 45. Bases parciales positivas
+
+El consumidor ya aporta bases útiles que no deben confundirse con PASS:
+
+- firma de actor en creación de lote compartido;
+- resolución de trabajador y turno dentro de la firma cuando están disponibles;
+- operación real de lote con efectos productivos e inventario;
+- package productivo con claves FOGO operativas y soporte NEXO;
+- baseline CI008 con 12 superficies y 42 pruebas contractuales.
+
+Estas bases reducen trabajo futuro, pero no sustituyen actor session, lifecycle, territorio, enforcement exacto ni evidencia física.
+
+---
+
+#### 46. Universo canónico de 19 identidades
+
+| `inventory_key` | Clase | Decisión frente a FOGO | Estado conservado |
+| --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` | FOGO fuera del conjunto candidato; control negativo | `REGISTERED_UNVERIFIED` |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` | FOGO fuera de la reducción candidata; control negativo | `REGISTERED_UNVERIFIED` |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` | no inferir FOGO, plantilla ni unidad | `OBSERVED_ONLY` |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` | no inferir FOGO, plantilla ni unidad | `OBSERVED_ONLY` |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` | candidata futura para certificación FOGO de Cocina Caliente | `POLICY_DEFINED` |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` | candidata futura para certificación FOGO de Galletería y Panadería | `POLICY_DEFINED` |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` | candidata futura para certificación FOGO de Repostería | `POLICY_DEFINED` |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` | candidata futura para consulta y coordinación FOGO dentro de su techo | `POLICY_DEFINED` |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` | FOGO fuera del máximo | `POLICY_DEFINED` |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` | no admite nueva certificación FOGO | `NO_APLICA` |
+
+Control:
+
+```text
+TOTAL ESPERADO: 19
+TOTAL MATERIALIZADO: 19
+CONFIGURED_INSTANCE: 2
+PHYSICAL_OBSERVATION: 2
+TARGET_TEMPLATE: 14
+RETIRED_LEGACY_TEMPLATE: 1
+TARGET_TEMPLATE CON FOGO: 4
+TARGET_TEMPLATE SIN FOGO: 10
+INSTANCIAS CONFIGURADAS CON FOGO: 0
+FALTANTES: 0
+DUPLICADOS: 0
+```
+
+---
+
+#### 47. Auditoría y cero efectos en deny
+
+Para una mutación productiva positiva debe poder reconstruirse, cuando aplique: principal técnico, device, actor, actor session, turno, check-in, sede, área, aplicación, permiso, orden, receta y versión, lote, ingredientes, cantidades, ubicaciones, destino, decisión, operación, resultado, timestamps y correlación.
+
+Para cada deny concluyente se verifica el estado empresarial real. No puede quedar lote parcial, consumo parcial, movimiento de inventario, stock reducido, output publicado, desperdicio registrado como éxito, estado de lote cambiado ni auditoría de éxito falsa.
+
+---
+
+#### 48. Paridad entre canales y error técnico
+
+La misma intención empresarial debe respetar una decisión equivalente desde cualquier canal capaz de ejecutarla: RSC, Server Action, handler, RPC, Data API, RLS, Edge Function, cliente offline o proceso asíncrono.
+
+```text
+DENY CONTRACTUAL
+!=
+ERROR TECNICO
+```
+
+Si falla una fuente necesaria, no se fabrica `ALLOW`, no se fabrica una causa contractual falsa y no se produce el efecto protegido.
+
+---
+
+#### 49. Experiencia física, privacidad y periféricos
+
+La prueba física debe observar tacto, legibilidad, distancia, reflejo, humedad, grasa, harina, guantes, ruido, calor, frío, interrupciones, escritura mínima, tamaño de controles, teclado virtual y confirmaciones según el puesto real.
+
+La estación debe mostrar inequívocamente el actor vigente sin exponer más datos personales de los necesarios.
+
+No deben exponerse PIN, contraseña, token, JWT, service-role key, secreto técnico, datos del trabajador anterior, recetas fuera de finalidad ni información de otra área.
+
+Si la estación usa scanner, balanza, impresora, lector, sensor u otro periférico, debe conservarse la diferencia entre comando emitido y resultado físico confirmado.
+
+---
+
+#### 50. Evidencia stale y criterio de PASS físico
+
+La evidencia deja de certificar el estado actual cuando cambia materialmente la unidad, endpoint, principal técnico, device, plantilla, app binding, package, build FOGO, catálogo, permisos, actor policy, sede, área, integración NEXO, operación de producción, ambiente o fixture.
+
+Una unidad solo podrá alcanzar PASS si:
+
+```text
+IDENTIDAD FISICA RESUELTA
++
+LIFECYCLE CONFORME
++
+APP FOGO EFECTIVA
++
+PACKAGE EXACTO
++
+ACTOR SESSION REAL
++
+TERRITORIO CONFORME
++
+OWNERS FOGO MATERIALIZADOS
++
+SCENARIOS POSITIVOS EJECUTADOS
++
+DENY PATHS EJECUTADOS
++
+CERO FALLOS CONTRACTUALES ABIERTOS
++
+EFECTOS FOGO Y NEXO RECONCILIADOS
++
+EVIDENCIA NO STALE
+=
+PASS FISICO
+```
+
+La ausencia actual de una unidad FOGO configurada impide fabricar ese PASS durante esta tarea documental.
+
+---
+
+#### 51. Ownership de defectos y reejecución
+
+Todo defecto futuro se liga a unidad, escenario, build, evidencia, contrato incumplido, severidad, owner existente, condición de salida y reejecución requerida.
+
+Owners principales:
+
+- `FOGO-AUTH-003` a `FOGO-AUTH-016`;
+- `FOGO-UX-001` a `FOGO-UX-015`;
+- owners transversales de dispositivo;
+- owners NEXO de inventario;
+- owners de catálogo y autorización;
+- packages E5 aplicables.
+
+Una corrección invalida la evidencia dependiente cuando cambie guard, permission binding, actor session, helper compartido, lifecycle, área, sede, receta, operación de lote, integración NEXO, idempotencia, UI participante, package o build.
+
+---
+
+#### 52. Cobertura mínima positiva y negativa
+
+La futura certificación incluye, como mínimo:
+
+- acceso válido;
+- device sin FOGO;
+- actor ausente;
+- actor expirado;
+- actor incorrecto;
+- turno ausente;
+- check-in ausente para mutación;
+- rol incorrecto;
+- sede incorrecta;
+- área incorrecta;
+- recurso incorrecto;
+- orden incorrecta;
+- receta incorrecta;
+- permiso ausente;
+- lote válido;
+- lote inválido;
+- reintento;
+- concurrencia;
+- respuesta perdida;
+- cambio A→B;
+- device revocado;
+- app retirada;
+- pestaña stale;
+- fallo técnico;
+- deny con verificación de cero efectos.
+
+---
+
+#### 53. Resultado documental de esta tarea
+
+Quedan definidos:
+
+1. unidad de certificación;
+2. condiciones previas;
+3. cuatro plantillas FOGO;
+4. diez plantillas sin FOGO;
+5. package de producción;
+6. package de gestión;
+7. roles por área;
+8. turno y check-in;
+9. actor session;
+10. app FOGO;
+11. recetario operativo;
+12. administración de recetas;
+13. órdenes y cola;
+14. inicio de lote;
+15. producción parcial;
+16. finalización y corrección;
+17. receta y versión;
+18. ingredientes, empaques y resultados;
+19. ubicaciones, LPN y retiros;
+20. integración FOGO–NEXO;
+21. atomicidad, idempotencia y concurrencia;
+22. resultado incierto;
+23. cambio A→B;
+24. expiración y revocación;
+25. navegación directa;
+26. nueve páginas y un handler;
+27. doce superficies;
+28. baseline CI008;
+29. bloqueos estáticos;
+30. bases parciales;
+31. universo de 19 identidades;
+32. auditoría;
+33. paridad de canales;
+34. privacidad e interacción física;
+35. PASS y reejecución.
+
+La evidencia física permanece pendiente.
+
+---
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea desarrolla un protocolo de certificación para obligaciones ya registradas en los dominios de autorización y FOGO. El registro modular permanece sin cambios.
+
+---
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura existente sobre lifecycle del dispositivo, separación de principal técnico y actor, actor session única, aplicación efectiva, package exacto, territorio, clasificación compartida, paridad entre canales, cero efectos en deny, inventario de 19 identidades, lotes, recetario operativo, receta y versión, producción parcial, finalización, corrección, actor y turno, consumo, desperdicio, resultados, inventario, nueve páginas FOGO, handler de exportación, acceso directo, permiso exacto de creación e integración FOGO–NEXO.
+
+Esta trazabilidad no representa una actualización del registro.
+
+---
+
+#### 56. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | El build documental y el build del consumidor se ejecutarán en sus etapas correspondientes después de incorporar el contrato. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores sobre el checkout local durante la preparación documental. |
+| REMOTA | `NOT_EXECUTED` | Se inspeccionaron fuentes remotas vigentes para desarrollar el contrato, pero no se ejecutó un gate remoto de AUTH-DEV-016. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutaron lotes, recetas, retiros, cambios de actor ni escenarios operativos de esta certificación. |
+| FÍSICA | `NOT_EXECUTED` | No existe una ejecución física de una unidad FOGO certificada por esta tarea. |
+
+---
+
+#### 57. Criterios de aceptación
+
+- [x] Se consumió el handoff de `AUTH-DEV-015`.
+- [x] Se mantuvo `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`.
+- [x] No se ejecutó materialización física.
+- [x] Se distinguió baseline sintético de certificación física.
+- [x] Se preservaron las 19 identidades y la distribución 2 + 2 + 14 + 1.
+- [x] Se identificaron exactamente 4 plantillas con FOGO y 10 sin FOGO.
+- [x] Se preservó que ninguna instancia configurada actual incluye FOGO.
+- [x] No se convirtió ninguna observación en unidad FOGO.
+- [x] Se preservó `production_center` como retirada.
+- [x] Se preservó el package productivo de 17 claves STANDARD.
+- [x] Se separó la terminal de gestión operativa de la ejecución física.
+- [x] Se separaron cocina, panadería y repostería.
+- [x] Se exigieron turno, check-in cuando corresponde y actor session única.
+- [x] `navigation_role` quedó no autoritativo.
+- [x] FOGO permitido no equivale a grant humano.
+- [x] `fogo.access` no equivale a operaciones internas.
+- [x] Se protegió el recetario operativo y se separó administración de recetas.
+- [x] Se registró `fogo.production.recipes.manage` como legacy pendiente de descomposición.
+- [x] Se preservó `fogo.production.recipes.view` como `NOT_ALLOWED` para dispositivo compartido.
+- [x] Se protegieron órdenes y cola por área.
+- [x] Se definió enforcement exacto de creación de lote en la frontera autoritativa.
+- [x] Se separaron inicio, parcial, finalización, corrección y anulación.
+- [x] Se exigió receta y versión exactas.
+- [x] Se exigieron cantidades reales, desperdicio y rendimiento.
+- [x] Se protegieron ubicaciones, LPN y retiros.
+- [x] Se separó lote de retiro.
+- [x] Se reconoció el efecto productivo real del flujo actual sin declararlo PASS.
+- [x] Se exigió reconciliación FOGO–NEXO.
+- [x] Se exigieron atomicidad, idempotencia, concurrencia y recuperación de resultado incierto.
+- [x] Se exigió cambio A→B, expiración, revocación e invalidación por cambios materiales.
+- [x] Se conservaron exactamente nueve páginas y un handler de exportación.
+- [x] Se definieron las doce superficies FOGO.
+- [x] Se preservó baseline CI008 de 42 pruebas y al menos 16 deny paths.
+- [x] Se registraron bloqueos estáticos sin presentarlos como validación ejecutada.
+- [x] Se reconocieron bases parciales positivas sin fabricar PASS.
+- [x] Se exigió cero efectos en deny y auditoría correlacionable.
+- [x] Se exigió paridad entre canales y se distinguió error técnico de deny.
+- [x] Se incluyeron interacción física, privacidad y periféricos cuando correspondan.
+- [x] Se definieron stale evidence, PASS físico y reejecución.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se modifica FOGO, NEXO, Supabase ni ningún dispositivo.
+- [x] No se desarrolla `AUTH-SIM-007`.
+
+---
+
+#### 58. Cierre documental del BLOQUE P
+
+Con `AUTH-DEV-016` queda especificada documentalmente la cobertura del bloque de dispositivos compartidos:
+
+```text
+IDENTIDAD
++
+SEDE
++
+AREA
++
+APLICACIONES
++
+TECHO DE PERMISOS
++
+IDENTIFICACION DEL TRABAJADOR
++
+ACTOR SESSION
++
+CAMBIO DE ACTOR
++
+AUDITORIA
++
+REVOCACION
++
+EXPIRACION
++
+PRUEBA NEXO
++
+PRUEBA PULSO
++
+PRUEBA FOGO
+=
+FRONTERA DOCUMENTAL DE DISPOSITIVOS COMPARTIDOS CERRADA
+```
+
+Esto no equivale a cerrar sus materializaciones físicas. Los packages y unidades posteriores deben aportar evidencia de ejecución.
+
+---
+
+#### 59. Handoff exacto hacia AUTH-SIM-007
+
+`AUTH-DEV-016` entrega:
+
+```text
+FRONTERA DE DISPOSITIVOS COMPARTIDOS CERRADA DOCUMENTALMENTE
++
+CERTIFICACION NEXO, PULSO Y FOGO ESPECIFICADA
++
+DEVICE, PRINCIPAL TECNICO, ACTOR Y ACTOR SESSION SEPARADOS
++
+SEDE, AREA, APP Y PACKAGE COMO LIMITES RESTRICTIVOS
++
+LIFECYCLE, EXPIRACION Y CAMBIO DE ACTOR DEFINIDOS
++
+CERO EFECTOS EN DENY EXIGIDO
++
+EVIDENCIA FISICA DIFERIDA A UNIDADES POST-E5
+```
+
+`AUTH-SIM-007` puede continuar con la visibilidad de simulación sin reinterpretar un dispositivo compartido como simulación. La simulación y el dispositivo continúan siendo dimensiones independientes. No recibe ningún PASS físico implícito.
+
+---
+
+#### 60. Límites
+
+Esta tarea no crea una unidad FOGO, certifica una unidad física, instala FOGO, cambia aplicaciones, crea plantillas, amplía paquetes, crea permisos, descompone permisos legacy, modifica matrices, modifica FOGO-AUTH o FOGO-UX, modifica código FOGO/NEXO/SHELL, modifica Supabase, crea migraciones, modifica RLS/RPC/grants, ejecuta lotes, consume inventario, crea retiros, cambia stock, publica outputs, cambia recetas, cambia turnos/check-ins, crea actor sessions, cambia trabajadores, revoca dispositivos, modifica las dos instancias configuradas, convierte observaciones en instancias, reactiva `production_center`, desarrolla simulación, crea o modifica requisitos de prueba ni modifica el registro 04A.
+
+---
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-015 — Probar terminales de PULSO`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-016 — Probar pantallas de FOGO`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-SIM-007 — Mostrar aviso persistente`

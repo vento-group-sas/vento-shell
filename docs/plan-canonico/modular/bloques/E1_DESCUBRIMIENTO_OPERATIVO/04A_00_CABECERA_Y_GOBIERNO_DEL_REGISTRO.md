@@ -88,7 +88,7 @@ Dominios iniciales:
 | Filas con catorce columnas        | **7066 de 7066** |
 | Identificadores duplicados        |            **0** |
 | Relaciones `TREQ-*` no resolubles |            **0** |
-| Última tarea incorporada          | `AUTH-DEV-006` |
+| Última tarea incorporada          | `AUTH-SIM-006` |
 | Fecha de normalización            |     `2026-08-17` |
 
 Distribución vigente:
