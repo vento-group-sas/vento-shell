@@ -10,19 +10,19 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1156** |
+| Aprobadas | **1157** |
 | En propuesta | **0** |
-| No iniciadas | **440** |
+| No iniciadas | **439** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **72.43% (1156/1596)** |
+| Porcentaje de completamiento | **72.49% (1157/1596)** |
 
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-DEV-012` — Manejar sesión expirada | ✅ APROBADA |
-| Tarea actual | `AUTH-DEV-013` — Manejar cambio de trabajador | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-DEV-014` — Probar tablets de NEXO | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-DEV-013` — Manejar cambio de trabajador | ✅ APROBADA |
+| Tarea actual | `AUTH-DEV-014` — Probar tablets de NEXO | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-DEV-015` — Probar terminales de PULSO | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1194,7 +1194,7 @@
 | ✅ APROBADA | `AUTH-DEV-010` | Registrar dispositivo y trabajador en auditoría | `bloques/P_DISPOSITIVOS_COMPARTIDOS/02_IDENTIFICACION_DEL_TRABAJADOR_Y_AUDITORIA.md` |
 | ✅ APROBADA | `AUTH-DEV-011` | Permitir revocar un dispositivo | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ✅ APROBADA | `AUTH-DEV-012` | Manejar sesión expirada | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
-| ⬜ NO INICIADA | `AUTH-DEV-013` | Manejar cambio de trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
+| ✅ APROBADA | `AUTH-DEV-013` | Manejar cambio de trabajador | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-014` | Probar tablets de NEXO | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-015` | Probar terminales de PULSO | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
 | ⬜ NO INICIADA | `AUTH-DEV-016` | Probar pantallas de FOGO | `bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md` |
