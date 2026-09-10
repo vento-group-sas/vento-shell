@@ -5295,5 +5295,2729 @@ Esta tarea no:
 `AUTH-DEV-015 — Probar terminales de PULSO`
 
 
-### [ ] AUTH-DEV-015 — Probar terminales de PULSO
+### ✅ AUTH-DEV-015 — Probar terminales de PULSO
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-DEV-014 — Probar tablets de NEXO
+**Tarea siguiente:** AUTH-DEV-016 — Probar pantallas de FOGO
+**Tipo de tarea:** documental; contrato canónico de prueba y certificación por unidad de implementación para terminales compartidos que exponen PULSO, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE P — Dispositivos compartidos
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/P_DISPOSITIVOS_COMPARTIDOS/03_SESION_REVOCACION_Y_PRUEBAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada, reproducible y auditable cómo se deberá probar una unidad física de terminal compartido que exponga PULSO antes de declararla conforme con los contratos de dispositivo compartido, autorización, venta, caja, pedidos, salón, fidelización y experiencia aplicables.
+
+La tarea convierte el título “Probar terminales de PULSO” en un contrato verificable por `implementation_unit_id`.
+
+La certificación futura deberá demostrar simultáneamente:
+
+```text
+IDENTIDAD FISICA Y TECNICA RESUELTAS
++
+DEVICE ELEGIBLE
++
+PULSO EN EL CONJUNTO EFECTIVO DE APLICACIONES
++
+ACTOR HUMANO UNICO Y VIGENTE
++
+AUTORIDAD HUMANA INTERSECTADA CON EL TECHO DEL DEVICE
++
+SEDE, AREA, RECURSO Y ESTADO COMPATIBLES
++
+ACCION PULSO EXACTA AUTORIZADA
++
+DENEGACIONES FAIL CLOSED
++
+LIFECYCLE DE ACTOR Y DEVICE
++
+AUDITORIA CORRELACIONABLE
++
+LIMPIEZA ENTRE ACTORES
++
+ATOMICIDAD, IDEMPOTENCIA Y RECUPERACION
++
+RESULTADO COMERCIAL REAL VERIFICABLE
+=
+UNIDAD PULSO COMPARTIDA CERTIFICABLE
+```
+
+Una prueba de navegador, un build, una suite sintética, una fila activa de dispositivo, una firma aislada o una captura visual no equivalen por sí solos a certificación física.
+
+---
+
+#### 2. Naturaleza del marcador y materialización posterior
+
+El marcador canónico se desarrolla una sola vez como contrato reutilizable.
+
+La topología física aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto:
+
+1. esta tarea documental no crea ni ejecuta una instancia física;
+2. cada unidad física aplicable tendrá como máximo una materialización propia del contrato;
+3. una misma unidad podrá conservar lineage hacia los paquetes que la consuman;
+4. la ejecución física exige el package propietario aplicable y su gate E5 correspondiente;
+5. la certificación de PULSO no se ejecuta anticipadamente por existir código actual;
+6. la prueba de una terminal no certifica otra terminal;
+7. la evidencia de una plantilla no certifica una instancia;
+8. la evidencia de una instancia registral no certifica su correspondencia física.
+
+---
+
+#### 3. Handoff recibido de AUTH-DEV-014
+
+`AUTH-DEV-014` entrega a esta tarea:
+
+```text
+PROTOCOLO DE CERTIFICACION POR IMPLEMENTATION_UNIT DEFINIDO
++
+IDENTIDAD Y EVIDENCIA MINIMAS DEFINIDAS
++
+DENY PATHS OBLIGATORIOS
++
+ACTOR SESSION Y LIFECYCLE OBSERVABLES
++
+CAMBIO A -> B Y LIMPIEZA OBSERVABLES
++
+PARIDAD ENTRE CANALES EXIGIDA
++
+CERO EFECTOS EN DENY
++
+UNIVERSO DE 19 IDENTIDADES PRESERVADO
++
+FRONTERA NEXO CERRADA DOCUMENTALMENTE
+```
+
+`AUTH-DEV-015` reutiliza esas invariantes transversales y añade únicamente las particularidades de una terminal PULSO.
+
+No redefine:
+
+- identidad del dispositivo;
+- actor session;
+- cambio de trabajador;
+- expiración;
+- revocación;
+- aplicación permitida;
+- paquete máximo;
+- precedencia de autorización;
+- semántica de NEXO.
+
+---
+
+#### 4. Frontera con el BLOQUE N PULSO
+
+Esta tarea no implementa ni sustituye las tareas propietarias de PULSO.
+
+La certificación futura consume, cuando estén materializadas, los resultados de:
+
+- `PULSO-AUTH-001` a `PULSO-AUTH-008`, que inventarían superficies y definen permisos;
+- `PULSO-AUTH-009`, que protege acumulación de puntos;
+- `PULSO-AUTH-010`, que protege redenciones;
+- `PULSO-AUTH-011`, que limita operación a sede del turno;
+- `PULSO-AUTH-012`, que integra dispositivos POS compartidos;
+- `PULSO-AUTH-013`, que registra al trabajador que ejecuta la operación;
+- `PULSO-AUTH-014`, que mantiene configuración administrativa separada;
+- `PULSO-AUTH-015`, que migra a paquetes de `vento-shell`;
+- `PULSO-AUTH-016`, que ejecuta pruebas integrales;
+- `PULSO-UX-001` a `PULSO-UX-021`, que definen la experiencia POS objetivo.
+
+El contrato de esta tarea especifica qué deberá demostrar físicamente una terminal cuando esos propietarios hayan entregado sus capacidades.
+
+No inventa las claves atómicas que `PULSO-AUTH` todavía debe fijar.
+
+---
+
+#### 5. Unidad exacta de certificación
+
+La certificación pertenece a una `implementation_unit_id` concreta.
+
+Antes de ejecutar escenarios físicos deberá quedar resuelta y registrada, sin ambigüedad, la relación entre:
+
+- `implementation_unit_id`;
+- activo físico;
+- endpoint;
+- `device_id`;
+- `device_code`;
+- principal técnico;
+- plantilla y versión;
+- vínculo de sede;
+- política de área;
+- asociaciones efectivas de aplicaciones;
+- aplicación predeterminada;
+- paquete máximo de capacidades;
+- versión desplegada de PULSO;
+- versiones de contratos compartidos consumidos;
+- ambiente de prueba;
+- estación o puesto físico aplicable;
+- periféricos relevantes;
+- evidencia de autorización física aplicable.
+
+La certificación de una unidad no se hereda por modelo de hardware, nombre del puesto, sede, plantilla o versión de aplicación.
+
+---
+
+#### 6. Condiciones previas obligatorias
+
+Una ejecución física solo puede comenzar cuando la unidad cumpla las precondiciones de su lifecycle.
+
+Debe demostrarse:
+
+1. identidad física y técnica reconciliada;
+2. `device_id` único;
+3. principal técnico vinculado de forma inequívoca;
+4. estado del dispositivo resoluble;
+5. plantilla y versión resolubles;
+6. sede resoluble;
+7. política de área resoluble;
+8. PULSO dentro del conjunto efectivo cuando el escenario lo requiera;
+9. paquete máximo versionado y resoluble;
+10. build de PULSO identificable;
+11. contratos compartidos identificables;
+12. datos de prueba controlados;
+13. actores de prueba válidos;
+14. recursos comerciales de prueba identificables;
+15. ausencia de conflictos de identidad pendientes;
+16. owner de cada capacidad PULSO materializado cuando el escenario dependa de ella;
+17. autorización física del package aplicable.
+
+Una observación física sin enrolamiento no satisface estas precondiciones.
+
+---
+
+#### 7. Evidencia mínima por ejecución física
+
+Cada ejecución futura deberá conservar evidencia suficiente para reproducir qué se probó.
+
+Como mínimo:
+
+- unidad de implementación;
+- `device_id`;
+- referencia del activo y endpoint;
+- principal técnico;
+- plantilla y versión;
+- sede y área gobernadas;
+- conjunto efectivo de aplicaciones;
+- paquete máximo y versión;
+- commit o build exacto de PULSO;
+- versiones de contratos compartidos;
+- ambiente;
+- momento de inicio y finalización;
+- actor humano del escenario cuando aplique;
+- `actor_session_id` cuando aplique;
+- permiso o capacidad exactos;
+- recurso exacto;
+- estado comercial previo;
+- estado esperado;
+- estado observado;
+- decisión de autorización;
+- razones estructuradas cuando existan;
+- correlación;
+- idempotency key o referencia estable cuando aplique;
+- receipt o evidencia del efecto;
+- estado empresarial posterior;
+- resultado del escenario;
+- defecto asociado cuando el resultado no sea conforme.
+
+La evidencia no debe incluir PIN, token, secreto, credencial reutilizable ni payload sensible innecesario.
+
+---
+
+#### 8. Regla de PASS físico
+
+La unidad solo podrá declararse conforme cuando todos los escenarios obligatorios aplicables hayan sido ejecutados y no exista un fallo pendiente que afecte el contrato.
+
+Debe cumplirse:
+
+```text
+ESCENARIOS OBLIGATORIOS EJECUTADOS
++
+DENY PATHS DEMOSTRADOS
++
+CAPACIDADES PULSO PROPIETARIAS MATERIALIZADAS
++
+CERO FALLOS CONTRACTUALES ABIERTOS
++
+CERO ESCENARIOS OMITIDOS SIN JUSTIFICACION CANONICA
++
+EVIDENCIA IDENTIFICABLE Y NO STALE
+=
+PASS FISICO POSIBLE
+```
+
+Una capacidad PULSO todavía no implementada no se convierte en PASS.
+
+Si la unidad no debe poseer una capacidad, el escenario correspondiente demuestra indisponibilidad o denegación conforme.
+
+---
+
+#### 9. Evidencia stale
+
+La evidencia deja de certificar el estado actual cuando cambia materialmente alguno de los elementos de los que depende.
+
+Incluye, según corresponda:
+
+- unidad física;
+- endpoint;
+- `device_id`;
+- principal técnico;
+- plantilla o versión;
+- sede;
+- política de área;
+- conjunto de aplicaciones;
+- aplicación predeterminada;
+- paquete máximo;
+- commit o build de PULSO;
+- versión de contratos compartidos;
+- definición de permisos PULSO;
+- política de actor;
+- política temporal;
+- configuración de autorización;
+- integración PULSO–PASS;
+- integración PULSO–NEXO;
+- proveedor de pagos;
+- ambiente;
+- fixture o recurso usado por el escenario.
+
+Una evidencia stale se conserva históricamente, pero no certifica el estado nuevo.
+
+---
+
+#### 10. Línea base técnica de PULSO
+
+La línea base automatizada actual de PULSO define doce superficies de consumidor.
+
+| Superficie | Cobertura |
+| --- | --- |
+| `PULSO-SURFACE-001` | identidad, sesión, SSO y acceso PULSO |
+| `PULSO-SURFACE-002` | contexto operativo, sede, actor y dispositivo |
+| `PULSO-SURFACE-003` | inventario de rutas y navegación |
+| `PULSO-SURFACE-004` | escáner e identificación de cliente |
+| `PULSO-SURFACE-005` | loyalty, redención y acreditación |
+| `PULSO-SURFACE-006` | pedidos, líneas, estado, pago y fulfillment |
+| `PULSO-SURFACE-007` | despacho, chat, facturación e historial |
+| `PULSO-SURFACE-008` | salón, mesas, sesiones, llamados y Realtime |
+| `PULSO-SURFACE-009` | importación de ventas, mapeos, lotes y publicación |
+| `PULSO-SURFACE-010` | atomicidad, idempotencia, concurrencia y recuperación |
+| `PULSO-SURFACE-011` | integración y fronteras de dominio |
+| `PULSO-SURFACE-012` | UI, SSR, interacción, accesibilidad y Realtime |
+
+La suite de baseline exige exactamente 42 pruebas contractuales, cero fallos, cero omitidas y al menos 16 deny paths.
+
+Ese baseline es prerrequisito técnico útil.
+
+No constituye por sí solo evidencia física de una terminal.
+
+---
+
+#### 11. Inventario de rutas observado
+
+La línea base vigente reconoce seis archivos de página y cinco rutas de negocio más una ruta de denegación.
+
+Las superficies observadas incluyen:
+
+- raíz;
+- scanner;
+- orders;
+- sales-imports;
+- salon;
+- no-access.
+
+La certificación física debe mantener esa identidad de snapshot y detectar cualquier delta material antes de reutilizar evidencia.
+
+Una página existente no demuestra que su proceso empresarial completo esté implementado.
+
+---
+
+#### 12. Matriz de cobertura por superficie PULSO
+
+Para cada unidad física probada se deberá materializar una decisión sobre las doce superficies.
+
+| Superficie | Comprobación mínima en terminal compartido |
+| --- | --- |
+| `PULSO-SURFACE-001` | principal técnico separado, actor session vigente, acceso PULSO legítimo, retorno SSO seguro y deny sin actor o autoridad |
+| `PULSO-SURFACE-002` | sede, área, rol operativo, turno, check-in, actor y device se resuelven desde fuentes vigentes |
+| `PULSO-SURFACE-003` | rutas directas no eluden sesión, aplicación, actor, territorio ni permiso |
+| `PULSO-SURFACE-004` | escáner identifica cliente sin convertir identidad de cliente en identidad laboral ni usar sede de cliente como autoridad |
+| `PULSO-SURFACE-005` | puntos y redención exigen actor real, comando autorizado, sede, idempotencia, auditoría y resultado PASS correlacionado |
+| `PULSO-SURFACE-006` | pedido, línea, transición, pago y fulfillment permanecen separados y protegidos por acción |
+| `PULSO-SURFACE-007` | despacho, chat, facturación e historial conservan permisos y estados independientes |
+| `PULSO-SURFACE-008` | salón, mesas, sesiones y llamados quedan limitados por sede, actor y transición real |
+| `PULSO-SURFACE-009` | importación, mapeo y publicación usan autorización, archivo validado, idempotencia y auditoría |
+| `PULSO-SURFACE-010` | reintentos, concurrencia, timeouts y respuestas perdidas no duplican efectos |
+| `PULSO-SURFACE-011` | PASS, NEXO, NUMERA, SHELL y proveedores permanecen como dominios separados con contratos explícitos |
+| `PULSO-SURFACE-012` | UI táctil, SSR, interacción y Realtime reflejan estado real sin convertirse en fuente de autoridad |
+
+La cobertura no exige que una unidad posea todas las capacidades comerciales.
+
+Exige demostrar que lo que está fuera de su alcance no puede ejecutarse.
+
+---
+
+#### 13. Principal técnico sin actor humano
+
+Debe probarse el terminal autenticado y elegible sin actor humano vigente.
+
+Resultado requerido:
+
+```text
+PRINCIPAL TECNICO VALIDO
++
+DEVICE ELEGIBLE
++
+PULSO DISPONIBLE
++
+ACTOR HUMANO AUSENTE
+=
+CERO MUTACION EMPRESARIAL QUE EXIJA HUMANO
+```
+
+La UI puede ofrecer identificación.
+
+No puede:
+
+- inferir último cajero;
+- inferir último mesero;
+- usar `navigation_role` como actor;
+- usar el principal técnico como trabajador;
+- reutilizar una firma anterior;
+- degradar ausencia de actor a autorización.
+
+---
+
+#### 14. Identificación del trabajador
+
+La prueba debe demostrar que el humano real se identifica por un mecanismo aprobado y validado server-side.
+
+No es suficiente:
+
+- seleccionar un nombre;
+- enviar un `employee_id`;
+- usar el trabajador programado;
+- usar la cuenta técnica;
+- usar el rol de navegación;
+- usar la sede del terminal;
+- recordar al último actor;
+- confiar en un valor del frontend.
+
+La identidad humana debe quedar separada de cliente, dispositivo, cuenta Auth técnica, mesa y orden.
+
+---
+
+#### 15. Actor session única
+
+Debe probarse:
+
+```text
+0 SESIONES ELEGIBLES
+->
+SIN ACTOR EFECTIVO
+```
+
+```text
+1 SESION ELEGIBLE
+->
+ACTOR CANDIDATO UNICO
+```
+
+```text
+2 O MAS SESIONES INCOMPATIBLES
+->
+INCONSISTENCIA
+->
+CERO NUEVO EFECTO EMPRESARIAL
+```
+
+No se elige la sesión más nueva, la primera fila ni la que coincida con la pantalla abierta.
+
+---
+
+#### 16. Aplicación PULSO permitida
+
+La prueba positiva exige que `pulso` pertenezca al conjunto efectivo de aplicaciones de la instancia.
+
+Debe demostrarse:
+
+```text
+PULSO EN PLANTILLA
++
+PULSO EN INSTANCIA VIGENTE
++
+CLIENTE COMPATIBLE
++
+VINCULO ACTIVO Y SIN CONFLICTO
+=
+SUPERFICIE PULSO ELEGIBLE PARA CONTINUAR EVALUACION
+```
+
+Esto no concede automáticamente ninguna operación comercial.
+
+---
+
+#### 17. PULSO fuera del conjunto efectivo
+
+Debe existir una prueba negativa donde PULSO no pertenezca al conjunto efectivo o haya sido retirado, suspendido o conflictuado.
+
+Resultado requerido:
+
+- no se ofrece como superficie empresarial disponible;
+- acceso directo no crea autoridad;
+- una instalación local no reintroduce acceso;
+- caché o pestaña antigua no reabre PULSO;
+- Server Actions y otros canales no eluden el estado;
+- no se producen efectos empresariales.
+
+---
+
+#### 18. `pulso.access` no concede operación comercial
+
+La prueba debe demostrar:
+
+```text
+PULSO PERMITIDO EN DEVICE
+!=
+pulso.access HUMANO
+!=
+CAPACIDAD COMERCIAL ESPECIFICA
+```
+
+La presencia de `pulso.access` en el techo del dispositivo solo permite continuar la evaluación que corresponda.
+
+No concede por sí sola:
+
+- venta;
+- pedido;
+- línea;
+- precio;
+- pago;
+- caja;
+- anulación;
+- reembolso;
+- despacho;
+- fidelización;
+- redención;
+- salón;
+- configuración;
+- importación.
+
+---
+
+#### 19. `pulso.pos.main` como superficie legacy amplia
+
+El consumidor vigente usa `pulso.pos.main` como guard amplio de sus cinco rutas de negocio.
+
+El catálogo canónico conserva esa clave como `DECOMPOSE_REQUIRED`.
+
+Por tanto, la prueba física final no puede aceptar:
+
+```text
+pulso.pos.main = TODA AUTORIDAD PULSO
+```
+
+La suficiencia del permiso debe demostrarse con las capacidades exactas que definan los propietarios `PULSO-AUTH`.
+
+`AUTH-DEV-015` no inventa esas claves antes de que existan.
+
+---
+
+#### 20. Techo actual de `CAJA_VENTO_CAFE_01`
+
+La instancia registral candidata conserva:
+
+```text
+template = pos_satellite
+apps = shell + nexo + pulso
+default_app_candidate = pulso
+device_package_candidate =
+  DEVICE-SHELL-CORE-v1
+  +
+  DEVICE-SATELLITE-REQUESTER-v1
+```
+
+Ese techo candidato tiene 12 claves: 11 `STANDARD` y 1 `STRONG`.
+
+Dentro de `DEVICE-SATELLITE-REQUESTER-v1`, la clave PULSO observada es `pulso.access`; la clave fuerte observada pertenece a NEXO.
+
+Consecuencia:
+
+la existencia del paquete candidato actual no demuestra todavía un techo final para las operaciones atómicas de PULSO.
+
+La reconciliación pertenece a la integración y migración PULSO posteriores; la certificación no ampliará el package por inferencia.
+
+---
+
+#### 21. Intersección trabajador–dispositivo
+
+Para toda operación PULSO protegida:
+
+```text
+AUTORIDAD HUMANA VIGENTE
+INTERSECCION
+TECHO EFECTIVO DEL DISPOSITIVO
+INTERSECCION
+APLICACION PULSO EFECTIVA
+INTERSECCION
+TERRITORIO
+INTERSECCION
+RECURSO
+INTERSECCION
+ESTADO DE NEGOCIO
+=
+CAPACIDAD EVALUABLE
+```
+
+La prueba debe incluir:
+
+1. actor autorizado y device compatible;
+2. actor autorizado y device incompatible;
+3. device compatible y actor sin capacidad;
+4. actor/device compatibles con sede incompatible;
+5. actor/device compatibles con recurso incompatible;
+6. actor/device compatibles con transición de estado inválida.
+
+Solo el primer caso puede continuar hacia `ALLOW`, sujeto a los demás controles.
+
+---
+
+#### 22. Rol de navegación
+
+`navigation_role` se prueba únicamente como dato de navegación o presentación.
+
+No puede ser fuente de:
+
+- actor;
+- rol base;
+- rol operativo;
+- permiso;
+- sede;
+- área;
+- capacidad PULSO;
+- acceso a caja;
+- acceso a pedidos;
+- bypass.
+
+Una operación que funcione porque `navigation_role` coincide con un rol operativo no es conforme.
+
+---
+
+#### 23. Sede del terminal
+
+La sede del terminal es un límite adicional.
+
+Debe probarse:
+
+- actor compatible con la sede;
+- actor de otra sede;
+- recurso de otra sede;
+- pedido de otra sede;
+- mesa de otra sede;
+- `site_id` manipulado;
+- cache de una sede anterior;
+- cambio autorizado de sede cuando exista contrato para ello.
+
+Un parámetro `site_id` del cliente nunca amplía territorio.
+
+---
+
+#### 24. Área del terminal
+
+Debe probarse la política de área aplicable a la plantilla e instancia.
+
+En perfiles satélite ordinarios la política esperada es de área operacional exacta.
+
+La prueba debe demostrar que:
+
+- el device no crea el área del actor;
+- el actor no hereda el área de la pantalla;
+- un recurso de otra área no se autoriza por estar visible;
+- una selección de cliente no amplía área;
+- cambiar de área invalida contexto dependiente;
+- una política ausente, múltiple o contradictoria falla cerrado.
+
+---
+
+#### 25. Turno y check-in
+
+Cuando la operación sea laboral-operativa, debe probarse:
+
+- turno publicado y vigente;
+- check-in activo;
+- coincidencia con trabajador;
+- sede compatible;
+- área compatible;
+- rol operativo aplicable.
+
+Debe existir prueba negativa para:
+
+- turno ausente;
+- turno vencido;
+- turno de otro trabajador;
+- check-in ausente;
+- check-in residual;
+- sede o área incompatibles.
+
+El terminal no aporta turno ni check-in.
+
+---
+
+#### 26. Capacidad STANDARD
+
+Una capacidad clasificada como `STANDARD_ACTOR_SESSION` deberá exigir:
+
+- actor session única y vigente;
+- device elegible;
+- aplicación efectiva;
+- permiso exacto;
+- contexto;
+- territorio;
+- recurso;
+- estado comercial;
+- ausencia de denegaciones.
+
+Una firma de una operación anterior no reemplaza la actor session.
+
+---
+
+#### 27. Capacidad STRONG
+
+Una capacidad `STRONG_REAUTH_REQUIRED` deberá demostrar:
+
+```text
+ACTOR SESSION VIGENTE
++
+PERMISO Y CONTEXTO VALIDOS
++
+STRONG DEL MISMO ACTOR
++
+ACCION Y RECURSO COMPATIBLES
+=
+PUEDE CONTINUAR EVALUACION
+```
+
+Debe probarse que:
+
+- un PIN ligero no cuenta como STRONG por sí solo;
+- STRONG de A no sirve para B;
+- STRONG de otro recurso no se reutiliza;
+- STRONG vencida no se revive por actividad;
+- cambio de actor la invalida.
+
+---
+
+#### 28. Capacidad NOT_ALLOWED
+
+Cuando una capacidad esté clasificada `NOT_ALLOWED` para dispositivo compartido:
+
+```text
+DEVICE COMPARTIDO
++
+CAPACIDAD NOT_ALLOWED
+=
+CERO EFECTO EMPRESARIAL
+```
+
+Ni supervisor, administrador, PIN, STRONG, URL directa ni presencia física convierten esa capacidad en permitida.
+
+---
+
+#### 29. Acceso directo por ruta
+
+La certificación debe intentar las rutas de negocio mediante acceso directo.
+
+Debe demostrar:
+
+- sesión válida;
+- PULSO efectivo;
+- actor conforme;
+- territorio;
+- guard aplicable;
+- permiso o capacidad de la superficie;
+- retorno seguro;
+- no-access real ante denegación.
+
+Ocultar un link no constituye control.
+
+---
+
+#### 30. Ruta `/no-access`
+
+La superficie de denegación debe probarse como estado inerte.
+
+No puede:
+
+- conceder permiso;
+- ejecutar la acción original;
+- mostrar datos protegidos;
+- reintentar automáticamente;
+- revelar causas internas sensibles;
+- convertir un fallo técnico en permiso.
+
+La sesión independiente que siga siendo válida no debe destruirse sin necesidad.
+
+---
+
+#### 31. Scanner e identidad de cliente
+
+La prueba del scanner debe separar:
+
+```text
+TRABAJADOR
+!=
+CLIENTE
+!=
+PRINCIPAL TECNICO
+!=
+DEVICE
+```
+
+Identificar un cliente no cambia el actor laboral efectivo.
+
+Debe probarse:
+
+- formato válido;
+- formato inválido;
+- cliente inexistente;
+- cliente de contexto incompatible;
+- proyección mínima;
+- limpieza del cliente;
+- cambio de trabajador con cliente seleccionado;
+- intento desde device sin actor cuando la acción posterior requiera actor.
+
+---
+
+#### 32. Proyección de cliente
+
+La tarjeta operativa debe exponer únicamente los datos necesarios para la acción autorizada.
+
+La prueba revisará:
+
+- finalidad;
+- masking;
+- retención;
+- limpieza al cambiar cliente;
+- limpieza al cambiar actor;
+- limpieza al expirar operación;
+- ausencia de búsqueda lateral;
+- ausencia de persistencia innecesaria.
+
+La presencia actual de nombre, correo y puntos es una superficie que debe demostrar minimización final antes de certificarse.
+
+---
+
+#### 33. Fidelización — acumulación
+
+Otorgar puntos desde PULSO debe probar:
+
+- cliente resuelto;
+- compra elegible;
+- monto;
+- moneda;
+- regla vigente;
+- sede;
+- actor;
+- device;
+- capacidad exacta;
+- referencia externa estable;
+- atomicidad;
+- idempotencia;
+- ledger;
+- saldo;
+- auditoría;
+- resultado.
+
+Una respuesta perdida no puede otorgar puntos dos veces.
+
+---
+
+#### 34. Fidelización — redención
+
+Validar o consumir una redención debe probar:
+
+- código;
+- cliente;
+- recompensa;
+- sede;
+- vigencia;
+- estado pendiente;
+- saldo o reserva aplicable;
+- actor;
+- device;
+- permiso;
+- transición atómica;
+- idempotencia;
+- resultado.
+
+Un código usado, cancelado, vencido o territorialmente incompatible falla sin efecto.
+
+---
+
+#### 35. Firma de trabajador para lealtad
+
+PULSO ya contiene una base parcial que exige firma de trabajador para acumulación y redención cuando la sesión técnica se reconoce como dispositivo compartido.
+
+La prueba debe demostrar que esa firma:
+
+- corresponde al humano real;
+- precede al efecto;
+- se vincula a la acción;
+- se vincula al recurso;
+- no eleva permisos;
+- no sustituye actor session;
+- no se reutiliza fuera de su propósito;
+- no se convierte en STRONG automáticamente;
+- queda correlacionada con el resultado.
+
+---
+
+#### 36. Firma por acción no equivale a actor session
+
+La existencia de una firma válida para una mutación no puede generalizarse.
+
+```text
+FIRMA DE ACCION
+!=
+ACTOR SESSION PERSISTENTE
+!=
+PERMISO
+!=
+STRONG
+```
+
+Una firma válida para puntos no autoriza pedidos, caja, salón, importación ni otra acción.
+
+---
+
+#### 37. Secreto del trabajador
+
+Cuando se use PIN u otra prueba humana:
+
+- se captura como secreto efímero;
+- se presenta como input protegido;
+- se valida en servidor;
+- no se persiste en contexto o storage del cliente;
+- no se registra en logs;
+- no se reutiliza;
+- se limpia después de éxito;
+- se limpia después de error;
+- se limpia al cambiar modo;
+- se limpia al cambiar cliente;
+- se limpia al cambiar actor;
+- se limpia al expirar;
+- aplica controles de intentos y bloqueo según contrato.
+
+Una referencia opaca a la prueba sí puede conservarse en auditoría.
+
+---
+
+#### 38. Generación de referencia externa de puntos
+
+La prueba deberá demostrar que la idempotency key o referencia externa para puntos proviene del hecho empresarial o de un identificador estable emitido y validado por servidor.
+
+No se admite como fuente suficiente:
+
+- `Date.now`;
+- `Math.random`;
+- identificadores truncados;
+- estado de interfaz.
+
+Ante un reintento del mismo hecho, la referencia estable debe reutilizarse.
+
+---
+
+#### 39. Pedidos
+
+Cuando la capacidad esté materializada, la terminal deberá probar:
+
+- creación;
+- líneas;
+- revisión;
+- confirmación;
+- transición;
+- cancelación según autoridad;
+- fulfillment;
+- estado final.
+
+Cada comando reevalúa:
+
+- actor;
+- device;
+- sede;
+- área;
+- permiso;
+- recurso;
+- estado de origen;
+- transición;
+- columnas permitidas.
+
+Abrir `/orders` no autoriza mutaciones.
+
+---
+
+#### 40. Estado de pedidos
+
+Debe provocarse al menos una transición válida y una inválida.
+
+La válida conserva:
+
+- estado anterior;
+- comando;
+- actor;
+- estado nuevo;
+- timestamp;
+- correlación.
+
+La inválida produce:
+
+```text
+CERO CAMBIO DE ESTADO
++
+CERO EFECTO COLATERAL
++
+EVIDENCIA DE DENEGACION O CONFLICTO
+```
+
+---
+
+#### 41. Pago y fulfillment
+
+Pedido, pago y fulfillment permanecen hechos separados.
+
+La prueba no puede inferir:
+
+- pago por estado de pedido;
+- entrega por pago;
+- preparación por cobro;
+- facturación por cierre visual.
+
+Cuando esas capacidades existan, se prueban como transiciones independientes y correlacionadas.
+
+---
+
+#### 42. Caja
+
+La certificación de una terminal POS completa no puede declarar operativo el ciclo de caja hasta demostrar, cuando el package incluya esas capacidades:
+
+- apertura;
+- fondo;
+- movimientos;
+- venta;
+- cobro;
+- efectivo esperado;
+- conteo;
+- diferencia;
+- cierre;
+- aprobación cuando corresponda;
+- conciliación;
+- reversos y pendientes.
+
+La línea base actual declara ese cierre formal todavía pendiente.
+
+`AUTH-DEV-015` no lo implementa.
+
+---
+
+#### 43. Venta
+
+La prueba de una venta completa deberá diferenciar:
+
+- pedido;
+- venta;
+- pago;
+- inventario;
+- fidelización;
+- hecho económico;
+- documento fiscal.
+
+Un toast o cambio de pantalla no prueba que esos hechos hayan ocurrido correctamente.
+
+---
+
+#### 44. Anulación, devolución y reembolso
+
+Cuando estén materializados, deben probarse como semánticas separadas.
+
+No se acepta:
+
+```text
+ANULAR = BORRAR
+DEVOLVER = ANULAR
+REEMBOLSAR = DEVOLVER
+```
+
+Cada uno requiere:
+
+- actor;
+- capacidad;
+- recurso;
+- motivo;
+- estado de origen;
+- compensaciones;
+- auditoría;
+- resultado.
+
+La prueba no diseña esas semánticas; verifica las definidas por sus owners PULSO.
+
+---
+
+#### 45. Descuentos y cambios sensibles
+
+Una acción sensible de precio, descuento, propina, anulación, devolución, reembolso o reapertura debe probar:
+
+- capacidad exacta;
+- actor real;
+- contexto;
+- recurso;
+- confirmación cuando corresponda;
+- STRONG cuando el catálogo lo exija;
+- historial;
+- no herencia desde un administrador anterior.
+
+---
+
+#### 46. Salón
+
+La superficie `/salon` debe probar, cuando la capacidad esté materializada:
+
+- zonas;
+- mesas;
+- sesión de mesa;
+- llamados;
+- asignación;
+- atención;
+- resolución;
+- cancelación;
+- cierre;
+- Realtime.
+
+Cada recurso queda limitado por la sede autorizada.
+
+---
+
+#### 47. Mesa no es actor
+
+La prueba mantiene:
+
+```text
+MESA
+!=
+SESION DE MESA
+!=
+TRABAJADOR
+!=
+ACTOR SESSION
+!=
+CLIENTE
+```
+
+Cambiar de mesa no cambia al trabajador.
+
+Cambiar de trabajador no reasigna silenciosamente la responsabilidad histórica de una mesa o llamado.
+
+---
+
+#### 48. Realtime
+
+Un evento Realtime puede actualizar presentación, pero no conceder autoridad.
+
+Debe probarse:
+
+- suscripción;
+- filtrado territorial;
+- limpieza al desmontar;
+- cambio de actor;
+- cambio de sede;
+- revocación;
+- mensaje stale;
+- payload de recurso fuera de alcance.
+
+La recepción de un evento no autoriza una mutación posterior.
+
+---
+
+#### 49. Despacho, chat, facturación e historial
+
+La visibilidad del tablero no concede las operaciones asociadas.
+
+La prueba debe separar, cuando existan:
+
+- lectura;
+- despacho;
+- chat;
+- solicitud o referencia de facturación;
+- historial;
+- archivo;
+- entrega.
+
+Cada mutación exige su autoridad y estado exactos.
+
+---
+
+#### 50. Importación de ventas
+
+La superficie de importación debe probar:
+
+- archivo admitido;
+- archivo inválido;
+- mapeo;
+- lote;
+- hash o identidad;
+- autorización;
+- publicación;
+- reintento;
+- lote duplicado;
+- auditoría;
+- estado posterior.
+
+Abrir la pantalla no concede publicar.
+
+---
+
+#### 51. Efecto de inventario
+
+PULSO no debe inventar una fuente paralela de inventario.
+
+Cuando una venta o importación produzca efecto de inventario, la prueba deberá demostrar:
+
+- contrato con NEXO/SHELL;
+- operación exacta;
+- cantidad;
+- unidad;
+- producto;
+- sede;
+- idempotencia;
+- correlación con venta o lote;
+- ausencia de doble contabilización;
+- estado reconciliado.
+
+La línea base actual declara que el descuento de inventario no debe resolverse localmente en PULSO antes del contrato correspondiente.
+
+---
+
+#### 52. Integración con PASS
+
+PULSO conserva la operación de caja y PASS conserva la propiedad de cliente y fidelización según los contratos aprobados.
+
+La prueba debe demostrar que:
+
+- identificar cliente no crea una copia propietaria de identidad;
+- puntos usan el ledger propietario;
+- redención usa el estado propietario;
+- PULSO conserva referencia y resultado;
+- una caída no duplica el efecto;
+- actor laboral y cliente permanecen separados;
+- device y sede permanecen correlacionados.
+
+---
+
+#### 53. Integración con NUMERA
+
+Cuando la venta publique hechos económicos hacia NUMERA, la certificación deberá verificar:
+
+- evento o contrato propietario;
+- identidad de venta;
+- importes;
+- estado;
+- actor;
+- reverso o compensación;
+- idempotencia.
+
+PULSO no se declara contabilidad canónica por producir el hecho comercial.
+
+---
+
+#### 54. Integración con proveedores externos
+
+Cuando exista proveedor de pago, fiscal, mensajería o entrega:
+
+- secretos permanecen server-side;
+- estados externos se mapean sin inventar éxito;
+- timeout no se asume fallo definitivo;
+- webhook repetido no duplica efecto;
+- evento tardío no retrocede un estado terminal válido;
+- referencia externa se conserva;
+- conciliación queda disponible.
+
+---
+
+#### 55. Resultado incierto
+
+Debe probarse al menos una interrupción donde el cliente no pueda saber si la mutación produjo efecto.
+
+La recuperación debe:
+
+1. conservar identidad del intento;
+2. consultar o reconciliar estado real;
+3. evitar un segundo efecto;
+4. conservar actor original;
+5. clasificar el resultado;
+6. exigir nueva autorización únicamente si nace una intención nueva.
+
+Un timeout no se transforma automáticamente en `FAIL` empresarial.
+
+---
+
+#### 56. Idempotencia
+
+Para cada mutación reintentable se debe provocar un reintento controlado.
+
+Se comprobará:
+
+- mismo hecho no duplica efecto;
+- misma referencia estable converge;
+- actor original se conserva;
+- correlation no concede autoridad;
+- cambio A→B no cambia la autoría del intento;
+- una decisión antigua no se reutiliza tras cambio material.
+
+---
+
+#### 57. Concurrencia
+
+Según la superficie, deben probarse solicitudes concurrentes que compitan por:
+
+- misma redención;
+- misma referencia de puntos;
+- misma transición de pedido;
+- mismo pago;
+- mismo lote;
+- misma mesa o llamado.
+
+El resultado debe converger conforme al contrato propietario sin duplicación ni transición imposible.
+
+---
+
+#### 58. Cambio de trabajador A→B
+
+La terminal debe ejecutar un cambio real de actor.
+
+Debe observarse:
+
+1. A activo;
+2. cambio explícito;
+3. nuevas mutaciones de A bloqueadas;
+4. pendientes clasificados;
+5. A deja de ser elegible;
+6. estado sensible de A limpiado o aislado;
+7. frontera sin actor;
+8. B se identifica de forma independiente;
+9. contexto de B se resuelve;
+10. sesión B es nueva;
+11. B queda como único actor efectivo;
+12. superficies PULSO observan B.
+
+La sesión A no se edita para convertirla en B.
+
+---
+
+#### 59. Limpieza entre actores
+
+Después de A→B se comprueba que B no recibe:
+
+- cliente seleccionado de A cuando no corresponda;
+- PIN de A;
+- monto de A;
+- código QR de A;
+- borrador personal;
+- filtros personales;
+- mesa personal;
+- búsqueda;
+- datos sensibles;
+- autocompletado;
+- aprobaciones;
+- elevaciones;
+- estado de navegador que permita actuar como A;
+- pending action sin owner.
+
+La evidencia empresarial confirmada se conserva con su actor histórico.
+
+---
+
+#### 60. Sesión expirada
+
+Debe probarse:
+
+```text
+resolved_at >= actor_session_expires_at
+->
+SESSION NO ELEGIBLE
+->
+ACTOR EFECTIVO NO RESUELTO
+->
+CERO NUEVA MUTACION HUMANA
+```
+
+El principal técnico puede seguir autenticado.
+
+Actividad de caja, scanner, Realtime o navegación no revive la actor session.
+
+---
+
+#### 61. Inactividad
+
+Cuando la política de la unidad tenga bloqueo por inactividad:
+
+- nuevas mutaciones se detienen;
+- estado permitido se preserva con seguridad;
+- secreto humano no persiste;
+- recuperación exige identificación suficiente;
+- `hard_ttl` no se extiende;
+- toque, scanner o Realtime no cuentan como identidad.
+
+---
+
+#### 62. Revocación del dispositivo
+
+Debe probarse que un device revocado deja de producir nuevos efectos aunque:
+
+- PULSO continúe abierto;
+- Auth técnica continúe viva;
+- exista actor session previa;
+- exista PIN previamente usado;
+- exista una decisión previa;
+- exista una pestaña stale;
+- exista un evento Realtime pendiente;
+- exista una intención local.
+
+La revocación del device precede a la reidentificación del trabajador.
+
+---
+
+#### 63. Suspensión y conflicto
+
+Suspensión, conflicto e indisponibilidad técnica permanecen separados de revocación.
+
+La prueba debe verificar que ninguno se presenta falsamente como otro.
+
+Todos bloquean aquello que sus contratos invaliden y conservan evidencia suficiente para recuperación.
+
+---
+
+#### 64. Cambio de aplicaciones
+
+Si PULSO es retirado del conjunto efectivo:
+
+- se bloquean nuevos accesos;
+- se invalidan contextos relacionados;
+- se limpian superficies incompatibles;
+- se invalidan decisiones y elevaciones;
+- se conserva historial;
+- una pestaña abierta no reintroduce PULSO.
+
+Añadir PULSO no concede permisos del trabajador.
+
+---
+
+#### 65. Aplicación predeterminada
+
+Cuando PULSO sea aplicación predeterminada debe comprobarse:
+
+- exactamente un default;
+- default dentro del conjunto efectivo;
+- launcher coherente;
+- versión identificable;
+- ausencia de divergencia entre fuentes;
+- fail closed ante conflicto.
+
+Ser default no concede autoridad empresarial.
+
+---
+
+#### 66. Varias pestañas y superficies
+
+Cuando el runtime lo permita, deben coexistir al menos dos superficies.
+
+La prueba debe demostrar:
+
+- actor único;
+- cambio A→B propagado;
+- expiración propagada;
+- revocación propagada;
+- no mutación desde pestaña stale;
+- consistencia de sede;
+- limpieza de cliente y estado sensible según superficie.
+
+---
+
+#### 67. Offline y reconexión
+
+Cuando la unidad admita operación degradada o retenga intenciones localmente, debe probarse reconexión.
+
+Antes de ejecutar la intención se revalida:
+
+- device;
+- actor session;
+- aplicación;
+- permiso;
+- territorio;
+- recurso;
+- estado comercial;
+- idempotencia.
+
+Una intención capturada antes de revocación, cambio de actor o expiración no conserva autoridad automáticamente.
+
+---
+
+#### 68. Auditoría
+
+Para una mutación positiva deben poder reconstruirse, cuando aplique:
+
+- principal técnico;
+- `device_id`;
+- trabajador;
+- actor session;
+- aplicación;
+- capacidad;
+- sede;
+- área;
+- recurso;
+- estado anterior;
+- decisión;
+- razones;
+- operación;
+- resultado;
+- estado posterior;
+- timestamps;
+- correlación.
+
+La auditoría no puede atribuir la operación únicamente a la cuenta técnica.
+
+---
+
+#### 69. Denegaciones auditables
+
+Las pruebas negativas deberán conservar evidencia suficiente para demostrar:
+
+- principal técnico;
+- device;
+- actor cuando se pudo resolver;
+- acción;
+- recurso;
+- territorio;
+- causa concluyente;
+- cero efecto.
+
+No se fabrica actor, permiso ni decisión si la resolución técnica no llegó a ese punto.
+
+---
+
+#### 70. Cero efectos en deny
+
+Para cada denegación obligatoria:
+
+```text
+DECISION NO AUTORIZADA
+->
+CERO NUEVO EFECTO EMPRESARIAL
+```
+
+Se verifica el dominio real, no solo el mensaje.
+
+No puede existir:
+
+- pedido parcialmente mutado;
+- puntos aplicados;
+- redención consumida;
+- pago creado;
+- caja modificada;
+- lote publicado;
+- mesa alterada;
+- auditoría de éxito falsa;
+- evento externo disparado indebidamente.
+
+---
+
+#### 71. Fallo técnico
+
+Debe distinguirse:
+
+```text
+DENY CONTRACTUAL
+!=
+FALLO TECNICO
+```
+
+Si no puede resolverse una fuente necesaria:
+
+- no se fabrica `ALLOW`;
+- no se fabrica causa concluyente inexistente;
+- no se produce efecto protegido;
+- se ofrece recuperación segura;
+- se conserva diagnóstico suficiente sin exponer secretos.
+
+---
+
+#### 72. Recuperación
+
+La recuperación no puede:
+
+- usar una cuenta genérica;
+- restaurar al último actor;
+- seleccionar sesión arbitraria;
+- omitir permisos;
+- usar service role como bypass de autorización empresarial;
+- ampliar sede;
+- reenviar automáticamente una mutación incierta;
+- reactivar device revocado;
+- reutilizar PIN previo.
+
+Debe volver a una frontera de autorización válida.
+
+---
+
+#### 73. Privacidad
+
+La terminal no debe exponer o persistir indebidamente:
+
+- PIN;
+- contraseña;
+- access token;
+- refresh token;
+- JWT completo;
+- service-role key;
+- secreto administrativo;
+- material STRONG reutilizable;
+- datos del trabajador anterior;
+- datos del cliente sin finalidad;
+- datos de otra sede.
+
+Logs, métricas, receipts y auditoría deben preservar minimización.
+
+---
+
+#### 74. Experiencia táctil POS
+
+La certificación física debe observar la interacción real de la terminal.
+
+Debe comprobar:
+
+- controles táctiles utilizables;
+- actor visible de forma inequívoca;
+- mecanismo claro para cambio o bloqueo de actor;
+- acciones sensibles identificables;
+- confirmaciones cuando corresponda;
+- estados de carga;
+- errores recuperables;
+- no dependencia exclusiva de color;
+- viewport soportado;
+- ausencia de clipping funcional;
+- interacción compatible con operación de caja y servicio.
+
+La definición final de experiencia pertenece a `PULSO-UX-015`.
+
+Esta tarea verifica su materialización, no la diseña.
+
+---
+
+#### 75. Scanner físico
+
+Cuando exista lector USB, cámara u otro scanner:
+
+```text
+LECTURA DEL DISPOSITIVO
+!=
+IDENTIDAD VALIDADA
+!=
+AUTORIDAD
+```
+
+Debe verificarse:
+
+- periférico correcto;
+- permiso de uso;
+- formato;
+- resultado;
+- error;
+- cancelación;
+- privacidad;
+- limpieza entre actores;
+- fallback permitido;
+- no duplicación de lectura.
+
+Un componente de cámara no montado no se declara superficie física activa.
+
+---
+
+#### 76. Impresión y periféricos adicionales
+
+Si la unidad PULSO incorpora impresora, cajón, datáfono, lector u otro periférico:
+
+```text
+COMANDO EMITIDO
+!=
+RESULTADO FISICO CONFIRMADO
+```
+
+Se conserva:
+
+- device;
+- periférico;
+- actor;
+- operación;
+- comando;
+- resultado;
+- error;
+- reintento;
+- correlación.
+
+La existencia física del periférico no concede autoridad.
+
+---
+
+#### 77. Corte entre PULSO y PASS
+
+Un scanner de cliente o canje no fusiona los dominios.
+
+Debe quedar inequívoco:
+
+```text
+PULSO
+=
+OPERACION COMERCIAL Y TERMINAL
+
+PASS
+=
+CLIENTE, LEALTAD Y ESTADO PROPIETARIO
+```
+
+Las referencias cruzadas son contratos de integración, no copias de autoridad.
+
+---
+
+#### 78. Corte entre PULSO y NEXO
+
+Una venta o publicación que afecte inventario debe usar el contrato propietario correspondiente.
+
+PULSO no:
+
+- redefine stock;
+- inventa LOC;
+- modifica proyecciones fuera del contrato;
+- duplica movimientos;
+- usa una respuesta visual como confirmación de inventario.
+
+NEXO tampoco se convierte en owner de la venta.
+
+---
+
+#### 79. Estado actual del POS integral
+
+La línea base técnica vigente tiene implementados Auth/SSO, salón, orders, scanner y acciones de fidelización.
+
+Continúan pendientes en la propia fuente PULSO:
+
+- cierre formal de caja;
+- pagos;
+- sesiones POS;
+- integración única de fidelización;
+- consolidación de llamados Realtime cuando corresponda;
+- estados compartidos con cocina/bar/delivery;
+- reporting operacional.
+
+La existencia de superficies parciales no permite declarar el POS integral conforme.
+
+---
+
+#### 80. Bloqueo estático: actor session no materializada en `OperationalSession`
+
+La forma observada de `OperationalSession` en PULSO no expone:
+
+- `actor_session_id`;
+- `actor_session_expires_at`;
+- actor humano efectivo.
+
+Por sí sola no demuestra:
+
+```text
+PRINCIPAL TECNICO
++
+DEVICE
++
+ACTOR SESSION UNICA Y VIGENTE
++
+TRABAJADOR
+```
+
+La salida pertenece a la materialización de los contratos de actor compartido y a `PULSO-AUTH-012`, `PULSO-AUTH-013` y propietarios relacionados.
+
+---
+
+#### 81. Bloqueo estático: `navigationRole` como fuente de permiso
+
+La implementación observada asigna `navigationRole` como `role` de la sesión compartida y lo utiliza para consultar `has_operational_role_permission`.
+
+Esto no satisface el contrato aprobado:
+
+```text
+navigation_role
+!=
+actor
+!=
+rol operativo efectivo
+!=
+permiso
+```
+
+La futura certificación debe demostrar que la autoridad proviene del trabajador humano y su contexto, limitada por el device.
+
+---
+
+#### 82. Bloqueo estático: acceso implícito por aplicación
+
+La lógica observada considera satisfecho el permiso de acceso de la aplicación cuando la app pertenece al conjunto permitido del device.
+
+Eso no demuestra la separación requerida:
+
+```text
+APP PULSO PERMITIDA
+->
+PUEDE CONTINUAR EVALUACION
+->
+NO ES UN GRANT HUMANO
+```
+
+La reconciliación física debe retirar ese allow implícito antes del PASS final.
+
+---
+
+#### 83. Bloqueo estático: territorio preferido
+
+El resolutor observado acepta `preferredSiteId` y `preferredAreaId`.
+
+La ruta scanner recibe `site_id` desde query y lo utiliza al solicitar acceso.
+
+Además, el cliente conserva ese `site_id` como sede para acciones posteriores.
+
+La certificación debe demostrar que ningún valor de URL, body, cookie o estado de interfaz amplía el territorio server-side.
+
+---
+
+#### 84. Bloqueo estático: `identifyClientAction`
+
+La acción observada de identificación de cliente:
+
+- obtiene al usuario Auth;
+- consulta `has_permission`;
+- recibe `siteId` desde el consumidor;
+- no demuestra consumo de una actor session de dispositivo compartido;
+- no utiliza el helper de firma de trabajador.
+
+Por tanto, esa acción no constituye evidencia suficiente de atribución humana en terminal compartida.
+
+La salida pertenece a la autorización PULSO, al contrato de identificación de cliente y a la adopción compartida correspondiente.
+
+---
+
+#### 85. Bloqueo estático: cobertura de firma limitada
+
+La búsqueda del consumidor vigente muestra uso del helper de firma compartida en:
+
+- acumulación de puntos;
+- redención.
+
+No se observó esa misma integración como prueba de actor en:
+
+- identificación de cliente;
+- pedidos;
+- salón;
+- importación de ventas.
+
+La certificación no puede extrapolar la cobertura de dos acciones al resto de PULSO.
+
+---
+
+#### 86. Bloqueo estático: `pulso.pos.main` amplio
+
+Las cinco rutas de negocio observadas usan `pulso.pos.main` como permiso amplio de entrada.
+
+El registro canónico exige que esa evidencia no se interprete como suficiencia para todas las acciones.
+
+El inventario final de capacidades y permisos atómicos pertenece a `PULSO-AUTH-001` a `PULSO-AUTH-008`, y su aplicación server-side a las tareas posteriores del mismo bloque.
+
+---
+
+#### 87. Bloqueo estático: referencia externa no estable
+
+El componente observado de scanner construye una referencia para otorgar puntos combinando, entre otros valores:
+
+- fragmentos de sede;
+- fragmentos de usuario;
+- `Date.now`;
+- `Math.random`.
+
+El contrato vigente de idempotencia prohíbe depender únicamente de ese tipo de valores.
+
+La certificación de acumulación de puntos deberá esperar una referencia ligada al hecho empresarial o emitida y validada de forma estable por servidor.
+
+El propietario de la corrección permanece en la integración PASS y sus contratos de idempotencia existentes.
+
+---
+
+#### 88. Bloqueo estático: limpieza incompleta del PIN
+
+El componente observado conserva `sharedActorPin` en estado local.
+
+Se observa limpieza explícita después de una acumulación de puntos exitosa.
+
+No se observa limpieza equivalente demostrada en todas las fronteras exigidas, incluidas:
+
+- error;
+- cambio de modo;
+- cambio de cliente;
+- redención exitosa;
+- expiración.
+
+La certificación debe demostrar limpieza completa conforme al contrato de secreto efímero.
+
+---
+
+#### 89. Base parcial positiva: firma de lealtad
+
+La implementación vigente ya aporta una base parcial útil:
+
+- input protegido de firma del trabajador cuando el dispositivo es compartido;
+- RPC `sign_shared_device_action`;
+- resolución de `actor_employee_id`;
+- resolución de `actor_shift_id` cuando existe;
+- `signature_id`;
+- vinculación posterior con la transacción o redención.
+
+Esto es evidencia estática de capacidad parcial.
+
+No es un PASS físico ni sustituye actor session, permisos atómicos, lifecycle o pruebas E2E.
+
+---
+
+#### 90. Base parcial positiva: baseline CI010
+
+PULSO dispone de un baseline específico del consumidor con:
+
+- 12 superficies;
+- 42 pruebas contractuales;
+- inventario de rutas;
+- contratos fuente;
+- perfiles de cuatro paquetes compartidos;
+- deny paths;
+- control de secretos;
+- evidencia identificable;
+- invalidación por cambios materiales.
+
+El baseline debe permanecer verde como prerrequisito técnico de la unidad aplicable.
+
+No sustituye la prueba física.
+
+---
+
+#### 91. Universo canónico de 19 identidades
+
+La tarea conserva las 19 identidades documentales y define su relación exacta con PULSO.
+
+| `inventory_key` | Clase | Relación con AUTH-DEV-015 | Estado conservado |
+| --- | --- | --- | --- |
+| `configured_device:CAJA_VENTO_CAFE_01` | `CONFIGURED_INSTANCE` | objetivo registral principal de esta prueba; PULSO pertenece al conjunto candidato y es default candidato | `REGISTERED_UNVERIFIED` |
+| `configured_device:KIOSCO_BODEGA_CP` | `CONFIGURED_INSTANCE` | PULSO no pertenece a la reducción registral candidata; debe permanecer bloqueado | `REGISTERED_UNVERIFIED` |
+| `physical_observation:VENTO_CAFE/SERVICIO/tablet_compartida` | `PHYSICAL_OBSERVATION` | candidata solo después de reconciliar identidad y demostrar si realmente expone PULSO | `OBSERVED_ONLY` |
+| `physical_observation:SAUDO/SERVICIO/dispositivo_compartido` | `PHYSICAL_OBSERVATION` | candidata solo después de reconciliar identidad y demostrar si realmente expone PULSO | `OBSERVED_ONLY` |
+| `target_template:pos_satellite` | `TARGET_TEMPLATE` | PULSO admitido; perfil POS satélite | `POLICY_DEFINED` |
+| `target_template:bar_satellite` | `TARGET_TEMPLATE` | PULSO admitido; no crea autoridad de caja por proximidad funcional | `POLICY_DEFINED` |
+| `target_template:kitchen_satellite` | `TARGET_TEMPLATE` | PULSO admitido; no crea autoridad de caja o servicio | `POLICY_DEFINED` |
+| `target_template:service_satellite` | `TARGET_TEMPLATE` | PULSO admitido; actor y área de servicio permanecen propios | `POLICY_DEFINED` |
+| `target_template:counter_satellite` | `TARGET_TEMPLATE` | PULSO admitido; mostrador no hereda caja o salón | `POLICY_DEFINED` |
+| `target_template:integrated_satellite` | `TARGET_TEMPLATE` | PULSO admitido; integración no suma todas las autoridades | `POLICY_DEFINED` |
+| `target_template:production_kitchen` | `TARGET_TEMPLATE` | PULSO fuera del máximo; acceso debe fallar cerrado | `POLICY_DEFINED` |
+| `target_template:production_bakery` | `TARGET_TEMPLATE` | PULSO fuera del máximo; acceso debe fallar cerrado | `POLICY_DEFINED` |
+| `target_template:production_pastry` | `TARGET_TEMPLATE` | PULSO fuera del máximo; acceso debe fallar cerrado | `POLICY_DEFINED` |
+| `target_template:warehouse_kiosk` | `TARGET_TEMPLATE` | PULSO fuera del máximo; acceso debe fallar cerrado | `POLICY_DEFINED` |
+| `target_template:logistics_vehicle_terminal` | `TARGET_TEMPLATE` | PULSO fuera del máximo; movilidad no habilita PULSO | `POLICY_DEFINED` |
+| `target_template:procurement_reception` | `TARGET_TEMPLATE` | PULSO fuera del máximo; recepción no habilita caja | `POLICY_DEFINED` |
+| `target_template:operations_management_terminal` | `TARGET_TEMPLATE` | PULSO admitido dentro de un techo operativo amplio; no crea autoridad administrativa | `POLICY_DEFINED` |
+| `target_template:management_terminal` | `TARGET_TEMPLATE` | PULSO fuera del máximo; terminal administrativa no se convierte en POS | `POLICY_DEFINED` |
+| `retired_legacy_template:production_center` | `RETIRED_LEGACY_TEMPLATE` | no recibe nueva unidad ni certificación PULSO | `NO_APLICA` |
+
+Control:
+
+```text
+TOTAL ESPERADO: 19
+TOTAL MATERIALIZADO: 19
+
+CONFIGURED_INSTANCE: 2
+PHYSICAL_OBSERVATION: 2
+TARGET_TEMPLATE: 14
+RETIRED_LEGACY_TEMPLATE: 1
+
+TARGET_TEMPLATE CON PULSO EN MAXIMO: 7
+TARGET_TEMPLATE SIN PULSO EN MAXIMO: 7
+
+FALTANTES: 0
+DUPLICADOS: 0
+```
+
+---
+
+#### 92. `CAJA_VENTO_CAFE_01`
+
+La instancia conserva:
+
+```text
+inventory_key = configured_device:CAJA_VENTO_CAFE_01
+template_candidate = pos_satellite
+apps_candidate = shell + nexo + pulso
+default_app_candidate = pulso
+state = REGISTERED_UNVERIFIED
+```
+
+Para cambiar de estado deberá demostrarse:
+
+- correspondencia con equipo físico;
+- endpoint;
+- principal técnico;
+- `device_id`;
+- plantilla y versión;
+- sede;
+- área;
+- app bindings;
+- launcher;
+- build PULSO;
+- actor session;
+- worker actual;
+- permisos PULSO finales;
+- lifecycle;
+- auditoría;
+- operación POS real.
+
+La fila registral no constituye certificación.
+
+---
+
+#### 93. `KIOSCO_BODEGA_CP` como control negativo
+
+La reducción registral candidata del kiosco contiene únicamente NEXO.
+
+PULSO no pertenece a su conjunto efectivo candidato.
+
+AUTH-DEV-015 debe usar esta clase de unidad como escenario conceptual de control negativo:
+
+```text
+PULSO FUERA DE INSTANCIA
+->
+PULSO NO AUTORIZABLE
+```
+
+No se añade PULSO al kiosco para poder probarlo.
+
+---
+
+#### 94. Observaciones físicas de servicio
+
+Las observaciones de Vento Café y Saudo permanecen `OBSERVED_ONLY`.
+
+No se declara:
+
+- cuántos equipos físicos existen;
+- si ejecutan PULSO;
+- si corresponden a una instancia configurada;
+- si usan `service_satellite`;
+- si tienen principal técnico conforme;
+- si son dispositivos administrados.
+
+Solo entran en una ejecución física después de reconciliación.
+
+---
+
+#### 95. Plantillas con PULSO
+
+PULSO pertenece al máximo de exactamente siete plantillas:
+
+```text
+pos_satellite
+bar_satellite
+kitchen_satellite
+service_satellite
+counter_satellite
+integrated_satellite
+operations_management_terminal
+```
+
+La presencia de PULSO no homogeneiza sus funciones.
+
+Cada plantilla conserva área, rol, package y recursos propios.
+
+---
+
+#### 96. Plantillas sin PULSO
+
+PULSO queda fuera del máximo de exactamente siete plantillas:
+
+```text
+production_kitchen
+production_bakery
+production_pastry
+warehouse_kiosk
+logistics_vehicle_terminal
+procurement_reception
+management_terminal
+```
+
+Una ejecución conforme debe demostrar que instalación local, URL, caché o actor privilegiado no amplían este máximo.
+
+---
+
+#### 97. Prueba de cajero
+
+Cuando los contratos propietarios estén materializados, el perfil de cajero debe demostrar:
+
+- actor real;
+- sede satélite;
+- área de caja;
+- permiso de acceso;
+- capacidades de venta/cobro exactas;
+- segregación respecto de configuración;
+- auditoría;
+- cambio de actor;
+- cierre de sesión humana.
+
+Ser cajero no concede administración.
+
+---
+
+#### 98. Prueba de servicio de salón
+
+Cuando una terminal de servicio exponga PULSO, debe demostrar:
+
+- actor de servicio;
+- sede;
+- área;
+- mesas permitidas;
+- llamados permitidos;
+- pedidos permitidos;
+- ausencia de caja o configuración no autorizada;
+- cambio A→B;
+- limpieza del cliente y mesa según contrato.
+
+---
+
+#### 99. Prueba de barra, cocina y mostrador
+
+La disponibilidad de PULSO en una plantilla satélite no convierte esos perfiles en cajero.
+
+Debe probarse que:
+
+- barra conserva su oficio;
+- cocina conserva su oficio;
+- mostrador conserva su oficio;
+- acciones de venta o cobro solo aparecen y funcionan si el actor posee la capacidad exacta;
+- ningún perfil hereda permisos de otro por compartir terminal o app.
+
+---
+
+#### 100. Terminal de operación integrada
+
+`integrated_satellite` puede concentrar más funciones, pero la prueba debe demostrar que cada acción continúa evaluándose individualmente.
+
+No se permite:
+
+```text
+TERMINAL INTEGRADA
+=
+UNION DE TODOS LOS PERMISOS
+```
+
+La integración física solo reduce cambios de dispositivo; no elimina segregación.
+
+---
+
+#### 101. Terminal de gestión de operaciones
+
+`operations_management_terminal` admite PULSO dentro de un package operativo más amplio.
+
+La prueba debe distinguir:
+
+- visibilidad;
+- coordinación;
+- operación propia;
+- capacidad STRONG;
+- acciones de otros oficios;
+- administración.
+
+La amplitud del terminal no convierte al actor en owner, administrador, cajero o repartidor global.
+
+---
+
+#### 102. Administración separada
+
+La terminal PULSO no hereda privilegios administrativos desde:
+
+- cuenta técnica;
+- provisioning;
+- sesión de administrador anterior;
+- VISO;
+- rol de navegación;
+- modo mantenimiento.
+
+La configuración administrativa se prueba por separado y solo desde capacidad humana explícita.
+
+---
+
+#### 103. Cambio de operador durante una venta
+
+Debe probarse una intención comercial iniciada por A que aún no haya alcanzado commit point cuando se solicita cambio A→B.
+
+La política propietaria deberá clasificar si:
+
+- se cancela;
+- queda draft atribuible a A;
+- requiere reautorización;
+- se completa por A ya comprometida;
+- se transfiere mediante un comando explícito permitido.
+
+Nunca se cambia silenciosamente el actor histórico a B.
+
+---
+
+#### 104. Resultado tardío después de cambio A→B
+
+Si una operación de A responde después del cambio:
+
+- conserva actor A;
+- conserva correlation;
+- no crea una nueva intención de B;
+- no duplica efecto;
+- actualiza la UI de B solo como estado empresarial cuando corresponda;
+- no restaura autoridad de A.
+
+---
+
+#### 105. Cambio de cliente
+
+Cambiar cliente no cambia trabajador.
+
+La prueba debe limpiar el estado del cliente anterior y conservar la actor session del trabajador mientras siga vigente.
+
+Debe diferenciar:
+
+```text
+CAMBIO DE CLIENTE
+!=
+CAMBIO DE TRABAJADOR
+```
+
+---
+
+#### 106. Cambio de mesa
+
+Cambiar mesa no cambia trabajador ni cliente automáticamente.
+
+La sesión de mesa y sus pedidos conservan identidad propia.
+
+La prueba debe evitar que un cambio de vista reasigne autoría histórica.
+
+---
+
+#### 107. Confirmaciones sensibles
+
+Cuando el contrato PULSO defina confirmación adicional:
+
+- la confirmación no sustituye permiso;
+- la confirmación no sustituye STRONG;
+- el actor que confirma debe seguir vigente;
+- un cambio de actor invalida confirmación personal incompatible;
+- el recurso y monto mostrados deben corresponder a la operación real.
+
+---
+
+#### 108. Estado del terminal después de una denegación
+
+Después de un deny:
+
+- el device puede seguir técnicamente operativo si la causa no invalida el device;
+- PULSO puede seguir abierto si la app sigue permitida;
+- el actor puede conservar otras capacidades;
+- la operación denegada no deja efecto;
+- el estado sensible no se filtra;
+- no hay reintento automático.
+
+El deny no se traduce automáticamente en logout global.
+
+---
+
+#### 109. Defectos reales y ownership
+
+Todo defecto futuro queda ligado a:
+
+- unidad;
+- escenario;
+- build;
+- evidencia;
+- contrato incumplido;
+- severidad;
+- owner canónico;
+- condición de salida;
+- reejecución requerida.
+
+Owners existentes relevantes incluyen:
+
+- `PULSO-AUTH-012` para integración del POS compartido;
+- `PULSO-AUTH-013` para trabajador ejecutor;
+- `PULSO-AUTH-015` para adopción de paquetes;
+- `PULSO-AUTH-016` para pruebas integrales;
+- `PULSO-UX-014` para experiencia de actor real;
+- `PULSO-UX-015` para experiencia táctil;
+- contratos PASS para fidelización;
+- contratos NEXO/SHELL para inventario;
+- contratos de autorización transversal para actor, territorio, lifecycle y auditoría.
+
+No se crea una tarea paralela si ya existe owner.
+
+---
+
+#### 110. Reejecución después de corrección
+
+Una corrección invalida la evidencia que dependa materialmente del cambio.
+
+La certificación final vuelve a ejecutar los escenarios afectados y sus dependencias cuando cambie:
+
+- guard;
+- permiso;
+- actor session;
+- device policy;
+- territorio;
+- app binding;
+- código de acción;
+- integración PASS;
+- integración NEXO;
+- payment adapter;
+- idempotencia;
+- auditoría;
+- UI que participa en el escenario.
+
+El historial previo no se borra.
+
+---
+
+#### 111. Cobertura positiva y negativa
+
+Una certificación completa no contiene solo happy path.
+
+Como mínimo incluye:
+
+- caso permitido;
+- actor ausente;
+- actor incorrecto;
+- actor expirado;
+- permiso ausente;
+- app fuera del device;
+- device fuera de política;
+- sede incompatible;
+- área incompatible;
+- recurso incompatible;
+- estado de negocio inválido;
+- cambio A→B;
+- device revocado;
+- estado stale;
+- referencia duplicada;
+- timeout;
+- reintento;
+- concurrencia;
+- fallo técnico.
+
+---
+
+#### 112. Paridad entre canales
+
+Cada efecto protegido debe identificar todos los canales capaces de producirlo.
+
+Según la operación:
+
+- launcher;
+- RSC;
+- Server Action;
+- Route Handler;
+- RPC/PostgREST;
+- RLS/Data API;
+- Edge Function;
+- Realtime;
+- cliente offline;
+- proceso asíncrono;
+- webhook.
+
+Cuando dos canales pueden producir el mismo efecto, deben respetar decisión equivalente.
+
+---
+
+#### 113. No confianza en UI
+
+La prueba debe intentar el efecto sin depender del control visual cuando exista un canal técnico.
+
+Ocultar un botón no basta.
+
+Un acceso directo, request controlada o replay no puede eludir actor, permiso, territorio, recurso o estado.
+
+---
+
+#### 114. Estado empresarial real
+
+Toda mutación exitosa deberá verificarse en la fuente de verdad propietaria.
+
+No bastan:
+
+- toast;
+- redirect;
+- HTTP exitoso;
+- respuesta de RPC aislada;
+- estado React;
+- mensaje Realtime;
+- botón deshabilitado;
+- recibo no reconciliado.
+
+La prueba confirma el efecto o el no efecto real.
+
+---
+
+#### 115. Criterio especial para pagos
+
+Un resultado de pago debe distinguir:
+
+- intento;
+- autorización;
+- confirmación;
+- captura cuando aplique;
+- fallo;
+- timeout;
+- reverso;
+- reembolso;
+- conciliación.
+
+Una ausencia de respuesta no se interpreta como dinero no movido.
+
+---
+
+#### 116. Criterio especial para fidelización
+
+Una operación de lealtad positiva debe confirmar conjuntamente:
+
+- evento origen;
+- transacción;
+- puntos;
+- ledger;
+- saldo proyectado;
+- actor;
+- device;
+- sede;
+- referencia;
+- idempotencia.
+
+La UI no fija el saldo.
+
+---
+
+#### 117. Criterio especial para importaciones
+
+La publicación de un lote debe poder demostrarse como operación única.
+
+El mismo archivo o hecho no puede producir dos publicaciones por reintento.
+
+El hash del archivo puede contribuir a identidad, pero no sustituye actor, autorización, mapping, package ni semántica del lote.
+
+---
+
+#### 118. Criterio especial para Realtime
+
+Realtime demuestra propagación de estado, no commit point por sí solo.
+
+La prueba verifica que un evento duplicado, atrasado o fuera de territorio no produce mutación local autoritativa ni habilita una acción prohibida.
+
+---
+
+#### 119. Resultado documental de esta tarea
+
+La tarea deja definidos:
+
+1. contrato por unidad física;
+2. precondiciones;
+3. evidencia mínima;
+4. criterio de PASS;
+5. frescura;
+6. doce superficies PULSO;
+7. rutas y acceso directo;
+8. actor humano;
+9. actor session;
+10. aplicación y device;
+11. `pulso.access`;
+12. tratamiento de `pulso.pos.main`;
+13. sede y área;
+14. STANDARD, STRONG y NOT_ALLOWED;
+15. scanner;
+16. cliente;
+17. acumulación;
+18. redención;
+19. secreto humano;
+20. pedidos;
+21. pago;
+22. caja;
+23. venta;
+24. salón;
+25. importación;
+26. integración PASS;
+27. integración NEXO;
+28. integración NUMERA y externos;
+29. idempotencia;
+30. concurrencia;
+31. cambio A→B;
+32. expiración;
+33. revocación;
+34. privacidad;
+35. experiencia táctil;
+36. periféricos;
+37. auditoría;
+38. cero efectos en deny;
+39. universo de 19 identidades;
+40. bloqueos estáticos actuales;
+41. owners de salida;
+42. reejecución.
+
+La evidencia física permanece pendiente de la futura materialización autorizada.
+
+---
+
+#### 120. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+La tarea desarrolla y vuelve ejecutables obligaciones ya registradas en los dominios de autorización, PULSO y PASS. El registro modular permanece sin cambios.
+
+---
+
+#### 121. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura existente sobre:
+
+- lifecycle completo de dispositivo compartido;
+- intersección entre device y trabajador;
+- segregación de funciones;
+- actor session única y vigente;
+- clasificación STANDARD, STRONG y NOT_ALLOWED;
+- paridad entre canales;
+- reconciliación física de device, aplicaciones y paquetes;
+- inventario de seis páginas PULSO;
+- acceso directo;
+- `site_id` no autoritativo;
+- `pulso.pos.main` como evidencia amplia pendiente de descomposición;
+- pedidos y transiciones protegidas por acción;
+- importaciones protegidas;
+- salón territorial;
+- POS integral E2E;
+- caja, pago, venta, reversión y cierre;
+- integración PULSO–PASS;
+- identificación de cliente;
+- proyección mínima;
+- acumulación y redención;
+- referencia externa estable;
+- firma humana en dispositivo compartido;
+- secreto humano efímero;
+- scanner y hardware cuando corresponda.
+
+Estas referencias son trazabilidad de cobertura existente y no representan una actualización del registro.
+
+---
+
+#### 122. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | El build documental y el build del consumidor se ejecutarán en sus etapas correspondientes después de incorporar el contrato. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores sobre el checkout local del usuario durante la preparación documental. |
+| REMOTA | `NOT_EXECUTED` | Se inspeccionaron repositorios, contratos y código vigentes como fuentes; no se ejecutó un gate remoto de AUTH-DEV-015. |
+| OPERATIVA | `NOT_EXECUTED` | Los escenarios comerciales definidos requieren una unidad y capacidades autorizadas y todavía no fueron ejecutados. |
+| FÍSICA | `NOT_EXECUTED` | No se ejecutó una terminal POS física; la evidencia deberá provenir de la futura instancia `PER_IMPLEMENTATION_UNIT`. |
+
+---
+
+#### 123. Criterios de aceptación
+
+- [x] La tarea define un protocolo reutilizable por `implementation_unit_id`.
+- [x] La materialización permanece detrás de `POST_E5_PACKAGE`.
+- [x] No se declara certificación física sin ejecución.
+- [x] Se consume el handoff de `AUTH-DEV-014`.
+- [x] Se preservan las invariantes de `AUTH-DEV-001` a `AUTH-DEV-013`.
+- [x] No se reabre NEXO.
+- [x] No se desarrollan anticipadamente tareas PULSO-AUTH.
+- [x] No se desarrollan anticipadamente tareas PULSO-UX.
+- [x] Se define identidad mínima de la unidad.
+- [x] Se define evidencia mínima reproducible.
+- [x] Se define criterio de PASS.
+- [x] Evidencia stale no certifica el estado nuevo.
+- [x] Se cubren las doce superficies PULSO.
+- [x] Se conserva la línea base de seis páginas.
+- [x] Se distingue baseline CI de certificación física.
+- [x] Se exige actor humano real.
+- [x] Se exige actor session única y vigente.
+- [x] Se distingue firma por acción de actor session.
+- [x] Se exige limpieza del secreto humano.
+- [x] Se exige cambio A→B.
+- [x] Se exige expiración.
+- [x] Se exige revocación.
+- [x] Se exige intersección trabajador–device.
+- [x] PULSO permitido no equivale a autoridad comercial.
+- [x] `pulso.access` no concede operaciones.
+- [x] `pulso.pos.main` amplio no se acepta como autorización atómica final.
+- [x] `navigation_role` no concede autoridad.
+- [x] Se prueba `site_id` adversarial.
+- [x] Se prueba área.
+- [x] Se prueban turno y check-in cuando correspondan.
+- [x] Se prueban STANDARD, STRONG y NOT_ALLOWED.
+- [x] Se prueba scanner.
+- [x] Se separan trabajador y cliente.
+- [x] Se prueba minimización de cliente.
+- [x] Se prueba acumulación de puntos.
+- [x] Se prueba redención.
+- [x] Se exige referencia externa estable.
+- [x] Se prueba secreto del trabajador.
+- [x] Se prueban pedidos.
+- [x] Se prueban transiciones válidas e inválidas.
+- [x] Se separan pedido, pago y fulfillment.
+- [x] Se define criterio para caja sin declararla actualmente completa.
+- [x] Se define criterio de venta integral.
+- [x] Se separan anulación, devolución y reembolso.
+- [x] Se prueban acciones sensibles.
+- [x] Se prueba salón y Realtime.
+- [x] Se prueba importación de ventas.
+- [x] Se conserva frontera PULSO–PASS.
+- [x] Se conserva frontera PULSO–NEXO.
+- [x] Se conserva frontera PULSO–NUMERA.
+- [x] Se prueban timeouts y resultados inciertos.
+- [x] Se prueban reintentos e idempotencia.
+- [x] Se prueba concurrencia.
+- [x] Se exige auditoría conjunta de principal, device y trabajador.
+- [x] Se exige cero efectos en deny.
+- [x] Se distingue fallo técnico de deny.
+- [x] Se exige recuperación segura.
+- [x] Se exige privacidad.
+- [x] Se incluye experiencia táctil.
+- [x] Se incluyen periféricos cuando existan.
+- [x] Se distingue comando de resultado físico.
+- [x] Se preservan las 19 identidades.
+- [x] Se preserva la distribución 2 + 2 + 14 + 1.
+- [x] Se preservan exactamente 7 plantillas con PULSO y 7 sin PULSO.
+- [x] `CAJA_VENTO_CAFE_01` permanece `REGISTERED_UNVERIFIED`.
+- [x] `KIOSCO_BODEGA_CP` permanece sin PULSO en su reducción candidata.
+- [x] Las observaciones permanecen `OBSERVED_ONLY`.
+- [x] `production_center` permanece retirada.
+- [x] Se registran bloqueos estáticos sin presentarlos como validación ejecutada.
+- [x] Se reconocen bases parciales positivas sin fabricar PASS.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza ningún cambio físico.
+- [x] `AUTH-DEV-016` conserva íntegra la certificación específica de pantallas FOGO.
+
+---
+
+#### 124. Handoff exacto hacia AUTH-DEV-016
+
+`AUTH-DEV-015` entrega a `AUTH-DEV-016`:
+
+```text
+PROTOCOLO TRANSVERSAL POR IMPLEMENTATION_UNIT REUTILIZADO
++
+CERTIFICACION PULSO ESPECIALIZADA
++
+ACTOR, DEVICE Y TERRITORIO EXIGIDOS
++
+STANDARD, STRONG Y NOT_ALLOWED OBSERVABLES
++
+CAMBIO A -> B Y LIMPIEZA OBSERVABLES
++
+IDEMPOTENCIA Y RESULTADO INCIERTO PROBABLES
++
+CERO EFECTOS EN DENY
++
+AUDITORIA CONJUNTA EXIGIDA
++
+UNIVERSO DE 19 IDENTIDADES PRESERVADO
++
+FRONTERA PULSO CERRADA DOCUMENTALMENTE
+```
+
+`AUTH-DEV-016` podrá reutilizar las invariantes transversales de dispositivo compartido, pero deberá definir y comprobar de forma independiente las particularidades de las pantallas FOGO.
+
+AUTH-DEV-015 no desarrolla producción, recetas, ejecución de estación, pantallas de cocina o interacción específica de FOGO.
+
+---
+
+#### 125. Límites
+
+Esta tarea no:
+
+- ejecuta una terminal PULSO;
+- ejecuta pruebas físicas;
+- modifica dispositivos;
+- enrola endpoints;
+- cambia activos;
+- cambia plantillas;
+- cambia aplicaciones;
+- amplía paquetes;
+- inventa permisos PULSO;
+- cambia sede o área;
+- crea actor sessions reales;
+- cambia trabajadores reales;
+- modifica turnos;
+- modifica check-ins;
+- revoca dispositivos;
+- cambia Auth;
+- rota credenciales;
+- modifica PULSO;
+- modifica PASS;
+- modifica NEXO;
+- modifica NUMERA;
+- modifica SHELL;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica RPC;
+- modifica grants;
+- modifica datos reales;
+- modifica proveedores externos;
+- modifica pagos;
+- modifica caja;
+- modifica inventario;
+- despliega;
+- certifica `CAJA_VENTO_CAFE_01`;
+- certifica `KIOSCO_BODEGA_CP`;
+- identifica técnicamente las observaciones físicas;
+- convierte una plantilla en unidad desplegada;
+- declara un baseline CI como prueba física;
+- corrige los bloqueos estáticos observados;
+- desarrolla `PULSO-AUTH-001` a `PULSO-AUTH-016`;
+- desarrolla `PULSO-UX-001` a `PULSO-UX-021`;
+- desarrolla `AUTH-DEV-016`;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A.
+
+---
+
+#### 126. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-DEV-014 — Probar tablets de NEXO`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-DEV-015 — Probar terminales de PULSO`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-DEV-016 — Probar pantallas de FOGO`
+
+
 ### [ ] AUTH-DEV-016 — Probar pantallas de FOGO
