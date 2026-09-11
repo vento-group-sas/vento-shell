@@ -11182,7 +11182,1532 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad`
 
-### [ ] NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
+### ✅ NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-008 — Definir custodia y responsable actual
+**Tarea siguiente:** NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
+**Tipo de tarea:** documental; definición canónica de granularidad física para separar activos con identidad individual y reutilizables controlados por cantidad, con decisión gobernada, representación autoritativa única, transición versionada, conservación de cantidad e identidad, reconciliación legacy y fronteras con custodia, condición, préstamos, conteos y mantenimiento bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una frontera única y verificable entre un activo físico que requiere
+identidad e historia por unidad y un conjunto de reutilizables equivalentes que
+se controla por cantidad, evitando que la misma existencia sea representada a
+la vez como grupo e instancias individuales o que un operador escoja la
+granularidad desde una pantalla sin una decisión de dominio aprobada.
+
+La regla raíz queda:
+
+```text
+HECHOS FÍSICOS Y OPERATIVOS
++
+CLASE PRIMARIA APROBADA
++
+NECESIDAD REAL DE HISTORIA POR UNIDAD
++
+GRANULARIDAD DE CONTROL
++
+UNA REPRESENTACIÓN AUTORITATIVA
+→
+SERIALIZED_ASSET
+OR
+REUSABLE_QUANTITY
+SIN DOBLE REPRESENTACIÓN
+```
+
+Esta tarea define el contrato. No reclasifica productos reales, no crea activos,
+no ajusta grupos, no migra datos y no modifica Supabase ni aplicaciones.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. la dimensión `CONTROL_GRANULARITY`;
+2. exactamente dos resultados aplicables a esta frontera:
+   `INDIVIDUAL_IDENTITY` y `QUANTITY_CONTROLLED`;
+3. la correspondencia de `SERIALIZED_ASSET` con identidad individual;
+4. la correspondencia de `REUSABLE_QUANTITY` con control por cantidad;
+5. criterios positivos y negativos para elegir cada granularidad;
+6. prohibición de usar el modo de UI como autoridad;
+7. prohibición de usar `inventory_kind=asset` como decisión final;
+8. diferencia entre producto o modelo y existencia física;
+9. identidad individual estable aun sin serial de fabricante;
+10. grupos por cantidad sin fabricar identidad por unidad;
+11. reglas de QR, placa, serial y código;
+12. representación autoritativa única;
+13. tratamiento de custodia según la granularidad;
+14. conservación de cantidad e identidad;
+15. transición versionada de cantidad a identidad individual;
+16. tratamiento fail-closed de la transición inversa no autorizada
+    automáticamente;
+17. reconciliación de las cohortes legacy D3, D4, D5 y D6;
+18. reconciliación del snapshot remoto actual frente al snapshot histórico;
+19. fronteras con condición, préstamos, conteos, mantenimiento y baja;
+20. handoff exacto hacia `NEXO-DOM-010`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- las siete clases primarias de `NEXO-DOM-001`;
+- una sola clase primaria activa por identidad y período;
+- `REUSABLE_QUANTITY` como unidades equivalentes recuperables cuyo conteo por
+  cantidad es suficiente y no justifica historia individual;
+- `SERIALIZED_ASSET` como unidad física individual con historia, custodia o
+  riesgo propios e identificador estable;
+- la regla de que un reutilizable por cantidad no usa serial ni placa por
+  unidad;
+- la regla de que una unidad que requiere historia individual debe transicionar
+  de forma controlada hacia `SERIALIZED_ASSET`;
+- ubicación, custodia, condición, disponibilidad, propiedad y costo como
+  dimensiones independientes;
+- `NEXO-DOM-008`, que permite custodia individual para sujetos identificados y
+  custodia por alcance cuantificado sin fabricar identidades;
+- la prohibición de doble contabilización;
+- transición versionada, determinista, auditable e idempotente como condición
+  para cambiar el modelo de control;
+- la matriz individual y las cohortes legacy ya registradas por
+  `NEXO-DOM-001`.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+CUÁNDO UNA EXISTENCIA REUTILIZABLE
+DEBE TENER IDENTIDAD FÍSICA INDIVIDUAL
+Y CUÁNDO DEBE PERMANECER CONTROLADA POR CANTIDAD?
+```
+
+También responde:
+
+```text
+CÓMO EVITAR QUE LA MISMA EXISTENCIA
+SEA SIMULTÁNEAMENTE GRUPO E INSTANCIAS?
+```
+
+No redefine condición, préstamo, mantenimiento, conteo, baja, kit, contenedor,
+LPN ni reglas económicas.
+
+---
+
+#### 5. `CONTROL_GRANULARITY`
+
+Se define una dimensión conceptual separada de la clase primaria:
+
+```text
+CONTROL_GRANULARITY
+=
+INDIVIDUAL_IDENTITY
+OR
+QUANTITY_CONTROLLED
+```
+
+Esta dimensión expresa cómo se identifica la existencia física operativamente.
+
+No constituye una octava clase primaria.
+
+---
+
+#### 6. Correspondencia canónica
+
+Para la frontera propietaria de esta tarea:
+
+```text
+SERIALIZED_ASSET
+→
+INDIVIDUAL_IDENTITY
+```
+
+```text
+REUSABLE_QUANTITY
+→
+QUANTITY_CONTROLLED
+```
+
+No se permite una instancia activa de `SERIALIZED_ASSET` controlada únicamente
+como cantidad indistinta ni un `REUSABLE_QUANTITY` que fabrique historia por
+unidad sin transición de clase.
+
+---
+
+#### 7. Producto o modelo no es existencia física
+
+Se fija:
+
+```text
+PRODUCT OR MODEL
+!=
+PHYSICAL INSTANCE
+```
+
+Un producto o modelo describe qué clase de objeto es. La representación física
+describe qué unidades o cantidades reales existen.
+
+Un mismo producto o modelo puede originar múltiples activos individuales o
+varios alcances de cantidad según la clase primaria aprobada, pero no puede
+usar simultáneamente dos modelos de control incompatibles para la misma
+existencia.
+
+---
+
+#### 8. `REUSABLE_QUANTITY`
+
+`REUSABLE_QUANTITY` aplica cuando existen unidades físicamente equivalentes,
+reutilizables o retornables y el negocio puede controlarlas de forma suficiente
+mediante cantidad sin distinguir una unidad específica a lo largo del tiempo.
+
+Se requiere:
+
+```text
+INTERCHANGEABLE UNITS
++
+RETURN OR REUSE EXPECTED
++
+QUANTITY CONTROL SUFFICIENT
++
+NO MATERIAL UNIT HISTORY REQUIRED
+→
+REUSABLE_QUANTITY
+```
+
+---
+
+#### 9. Equivalencia física para control por cantidad
+
+Las unidades de un grupo por cantidad deben ser sustituibles entre sí para el
+propósito operativo que gobierna el control.
+
+La equivalencia debe ser compatible, cuando aplique, con:
+
+- producto o modelo;
+- unidad de conteo;
+- uso autorizado;
+- condición o bucket de condición;
+- ubicación o alcance físico;
+- obligación de retorno;
+- restricciones de seguridad;
+- compatibilidad material;
+- demás dimensiones que el owner aplicable declare discriminantes.
+
+Un grupo no puede mezclar unidades cuya diferencia exige decisiones por unidad.
+
+---
+
+#### 10. Lo que no exige identidad individual
+
+Por sí solos no obligan a crear un activo individual:
+
+- que el grupo tenga un QR;
+- que exista un código de grupo;
+- que las unidades sean contables;
+- que estén asignadas a una sede;
+- que exista un responsable por cantidad;
+- que deban retornar;
+- que puedan dañarse;
+- que tengan costo agregado;
+- que sean herramientas, vajilla, decoración o recipientes;
+- que la pantalla actual permita seleccionar modo individual.
+
+La necesidad de historia individual debe ser material y demostrable.
+
+---
+
+#### 11. QR de grupo
+
+Un QR puede identificar un alcance de cantidad sin identificar cada unidad.
+
+Se fija:
+
+```text
+GROUP QR
+!=
+UNIT IDENTITY
+```
+
+El QR de una caja, bolsa, bandeja, grupo o expediente sirve para resolver el
+grupo autoritativo; no convierte automáticamente cada pieza en activo
+serializado.
+
+---
+
+#### 12. Cantidad esperada
+
+El control por cantidad puede conservar una cantidad esperada que representa la
+existencia que debería estar bajo el alcance según hechos autoritativos.
+
+La cantidad esperada no se sobrescribe con una observación de conteo sin una
+decisión de reconciliación.
+
+---
+
+#### 13. Cantidad observada
+
+La cantidad observada es resultado de una observación o conteo y puede diferir
+de la esperada.
+
+Se fija:
+
+```text
+OBSERVED QUANTITY
+!=
+AUTOMATIC AUTHORITATIVE QUANTITY
+```
+
+Las diferencias se investigan y se resuelven mediante los contratos de conteo,
+condición, pérdida, faltante o ajuste que correspondan.
+
+---
+
+#### 14. Cantidad utilizable y otros componentes
+
+El modelo por cantidad debe poder distinguir componentes operativos cuando sus
+owners sean materializados, incluyendo cantidad utilizable, prestada, dañada,
+perdida, retornada u otras proyecciones aprobadas.
+
+Esta tarea no define los estados ni transiciones de esos componentes.
+
+`NEXO-DOM-010`, `NEXO-DOM-011` y `NEXO-DOM-015` conservan esa responsabilidad.
+
+---
+
+#### 15. No hay identidad por unidad en reutilizables
+
+Se prohíbe:
+
+```text
+REUSABLE_QUANTITY
+→
+ONE RECORD PER PHYSICAL PIECE
+```
+
+como comportamiento ordinario.
+
+La existencia puede dividirse en alcances cuantificados por ubicación, custodia
+o proceso sin convertir cada pieza en una identidad individual.
+
+---
+
+#### 16. Alcances por cantidad
+
+Un mismo modelo reutilizable puede distribuir su cantidad entre varios alcances
+físicos reconciliables.
+
+Ejemplo conceptual:
+
+```text
+TOTAL AUTHORITATIVE QUANTITY = 40
+
+SCOPE A = 15
+SCOPE B = 25
+
+SUM(A, B) = 40
+OVERLAP = 0
+```
+
+Los alcances no crean stock adicional.
+
+---
+
+#### 17. `SERIALIZED_ASSET`
+
+`SERIALIZED_ASSET` aplica cuando una unidad física debe conservar identidad
+estable e historia propia.
+
+Se requiere:
+
+```text
+PHYSICAL UNIT
++
+MATERIAL UNIT-SPECIFIC CONTROL
++
+STABLE INSTANCE IDENTITY
+→
+SERIALIZED_ASSET
+```
+
+La identidad física existe aunque el fabricante no haya emitido un serial.
+
+---
+
+#### 18. Criterios de identidad individual
+
+Una unidad requiere control individual cuando una política aprobada exige una o
+más obligaciones materiales por unidad, por ejemplo:
+
+- serial de fabricante relevante;
+- placa o código interno individual requerido;
+- QR individual requerido;
+- mantenimiento por unidad;
+- calibración, inspección o certificación por unidad;
+- garantía o seguro individual;
+- valor o criticidad que exige expediente propio;
+- custodia o préstamo individual;
+- condición o disponibilidad independiente;
+- trazabilidad de pérdida, recuperación, baja o disposición por unidad;
+- historial técnico que no puede preservarse mediante una cantidad agregada.
+
+La existencia de una señal debe evaluarse por su significado operativo, no por
+el nombre de un campo.
+
+---
+
+#### 19. Identidad individual sin serial de fabricante
+
+Se fija:
+
+```text
+NO MANUFACTURER SERIAL
+!=
+NO INDIVIDUAL IDENTITY
+```
+
+Un activo puede requerir identidad individual y utilizar un identificador
+interno estable cuando no exista serial físico de fabricante.
+
+No se inventa un serial de fabricante.
+
+---
+
+#### 20. Serial no es identidad canónica
+
+Se fija:
+
+```text
+SERIAL
+!=
+CANONICAL ASSET ID
+```
+
+El serial puede corregirse, descubrirse o cambiar por reemplazo de placa
+conforme a un proceso válido sin que la identidad canónica de la unidad deba
+cambiar por inferencia.
+
+La identidad interna permanece estable y el historial de valores observados se
+conserva cuando sea material.
+
+---
+
+#### 21. Placa interna
+
+Una placa interna es una representación visible o escaneable de la identidad,
+no la identidad misma.
+
+Reemitir una placa no crea otro activo.
+
+Dos activos distintos no pueden compartir simultáneamente la misma placa
+vigente si el contrato físico la declara única.
+
+---
+
+#### 22. QR individual
+
+Un QR individual identifica una instancia cuando el contrato lo vincula con una
+identidad física exacta.
+
+Se fija:
+
+```text
+QR TOKEN
+!=
+BUSINESS AUTHORITY
+```
+
+Escanear la etiqueta no concede permiso ni sustituye la comprobación server-side
+de identidad, estado, custodia o acción.
+
+---
+
+#### 23. Historia por unidad
+
+El expediente de un activo individual debe poder conservar, según apliquen:
+
+- identidad;
+- modelo o producto;
+- serial, placa y códigos;
+- ubicación;
+- custodia;
+- condición;
+- disponibilidad;
+- garantía;
+- mantenimiento;
+- calibración o inspección;
+- préstamo y devolución;
+- pérdida, hallazgo o baja;
+- documentos;
+- movimientos;
+- revisiones y correcciones.
+
+Las tareas posteriores definen el detalle de cada dimensión.
+
+---
+
+#### 24. Valor y criticidad
+
+El valor o la criticidad pueden justificar control individual cuando la política
+empresarial exige trazabilidad específica por unidad.
+
+Se fija:
+
+```text
+HIGH VALUE OR CRITICALITY
+MAY REQUIRE
+INDIVIDUAL_IDENTITY
+```
+
+pero un umbral numérico no se inventa en esta tarea.
+
+La configuración de umbrales y criterios pertenece a las políticas que se
+materialicen posteriormente.
+
+---
+
+#### 25. Mantenimiento
+
+Cuando el mantenimiento debe planearse, ejecutarse, probarse o liberarse por
+unidad, la representación adecuada debe conservar identidad individual.
+
+Un mantenimiento agregado por modelo no prueba que cada unidad necesite
+expediente individual.
+
+`NEXO-DOM-012` conserva el ciclo detallado de mantenimiento, reparación y
+disponibilidad.
+
+---
+
+#### 26. Garantía y seguro
+
+Una garantía o seguro ligado a una unidad exacta requiere que esa unidad pueda
+ser identificada sin ambigüedad.
+
+Una garantía genérica del modelo, proveedor o compra no convierte
+automáticamente todas las unidades en activos individualizados.
+
+---
+
+#### 27. Custodia individual
+
+`NEXO-DOM-008` fija que una identidad individual puede tener un responsable
+actual propio.
+
+Por tanto:
+
+```text
+UNIT-SPECIFIC CUSTODY REQUIRED
+→
+INDIVIDUAL IDENTITY REQUIRED
+```
+
+cuando la responsabilidad debe atribuirse a una unidad exacta.
+
+---
+
+#### 28. Custodia por cantidad no obliga a individualizar
+
+Se mantiene:
+
+```text
+QUANTITY-SCOPE CUSTODY
+!=
+INDIVIDUAL CUSTODY
+```
+
+Un grupo reutilizable puede dividir su responsabilidad en porciones
+cuantificadas sin crear una identidad por pieza.
+
+---
+
+#### 29. Condición individual
+
+Si dos unidades del mismo modelo deben conservar condición independiente y la
+identidad de la unidad materialmente importa, el control individual puede ser
+obligatorio.
+
+Si la política permite buckets de cantidad por condición para unidades
+equivalentes, el control puede seguir siendo por cantidad.
+
+La taxonomía exacta de condición pertenece a `NEXO-DOM-010`.
+
+---
+
+#### 30. Disponibilidad individual
+
+Una unidad que puede estar disponible, bloqueada o liberada de forma
+independiente y requiere reconocimiento exacto puede necesitar identidad
+individual.
+
+El estado concreto de disponibilidad permanece en sus owners posteriores y no
+se define aquí.
+
+---
+
+#### 31. Préstamo
+
+Un préstamo de una identidad exacta exige que la existencia pueda ser
+individualizada.
+
+Un préstamo por cantidad de unidades equivalentes no fabrica identidades.
+
+El workflow de préstamo, devolución, transferencia y cambio de custodia
+pertenece a `NEXO-DOM-011`.
+
+---
+
+#### 32. Conteo
+
+El método de conteo debe respetar la granularidad.
+
+Para `REUSABLE_QUANTITY`:
+
+```text
+COUNT → QUANTITY OBSERVATION
+```
+
+Para `SERIALIZED_ASSET`:
+
+```text
+COUNT → SET OF EXACT IDENTITIES OBSERVED
+```
+
+`NEXO-DOM-015` define el proceso de conteo y sus diferencias.
+
+---
+
+#### 33. Conteo no cambia granularidad
+
+Un conteo nunca convierte por sí solo:
+
+- una cantidad en activos individuales;
+- activos individuales en una cantidad genérica;
+- faltantes en bajas;
+- hallazgos en altas;
+- diferencias en reclasificaciones.
+
+La observación se conserva y cualquier transición requiere su owner.
+
+---
+
+#### 34. `NEXO-PHYSICAL-GRANULARITY-CONTRACT-001`
+
+La decisión conceptual mínima queda:
+
+```text
+PRIMARY CLASS
++
+CONTROL GRANULARITY
++
+REPRESENTATION REVISION
++
+EFFECTIVE PERIOD
++
+DECISION BASIS
++
+APPROVAL
+→
+AUTHORITATIVE PHYSICAL REPRESENTATION
+```
+
+La forma física futura puede variar, pero deberá conservar equivalencia
+contractual, historia y reconciliación.
+
+---
+
+#### 35. Matriz de decisión de granularidad
+
+| Pregunta | Sí | No |
+| --- | --- | --- |
+| ¿la unidad requiere identidad estable por historia propia? | `INDIVIDUAL_IDENTITY` | continuar |
+| ¿requiere mantenimiento, garantía, calibración o inspección por unidad? | `INDIVIDUAL_IDENTITY` | continuar |
+| ¿requiere custodia o préstamo de una unidad exacta? | `INDIVIDUAL_IDENTITY` | continuar |
+| ¿requiere condición, disponibilidad, pérdida o baja por unidad? | `INDIVIDUAL_IDENTITY` | continuar |
+| ¿las unidades son equivalentes y sustituibles para el control aplicable? | continuar | revisión obligatoria |
+| ¿el conteo por cantidad conserva toda la trazabilidad material necesaria? | `QUANTITY_CONTROLLED` | revisión obligatoria |
+
+Una respuesta ambigua no usa fallback.
+
+---
+
+#### 36. Resultado ambiguo
+
+Si los hechos no permiten decidir entre control individual y cantidad:
+
+```text
+GRANULARITY = UNRESOLVED
+```
+
+como estado de decisión, no como tercera clase ni tercer modelo operativo.
+
+Mientras la decisión esté sin resolver, no se habilitan nuevas operaciones que
+dependan de una granularidad definitiva.
+
+---
+
+#### 37. La UI no decide la clase
+
+Se fija:
+
+```text
+UI MODE SELECTION
+!=
+CANONICAL CLASSIFICATION
+```
+
+Una interfaz puede capturar hechos o una propuesta de granularidad, pero la
+decisión autoritativa debe provenir del contrato de dominio y validarse en
+servidor.
+
+---
+
+#### 38. `asset_mode` legacy
+
+La superficie AS-IS de creación de activos permite actualmente seleccionar
+`item` o `group`.
+
+Ese selector se clasifica como mecanismo legacy de captura.
+
+No es autoridad para decidir:
+
+```text
+SERIALIZED_ASSET
+OR
+REUSABLE_QUANTITY
+```
+
+La implementación futura debe derivar o validar la granularidad desde una clase
+primaria aprobada y no desde una elección arbitraria del operador.
+
+---
+
+#### 39. `inventory_kind=asset` no es clasificación final
+
+Se mantiene:
+
+```text
+LEGACY inventory_kind = asset
+!=
+SERIALIZED_ASSET
+!=
+REUSABLE_QUANTITY
+```
+
+El valor legacy agrupa comportamientos incompatibles y no puede resolver por sí
+solo la granularidad.
+
+---
+
+#### 40. Nombre, categoría e imagen
+
+No son evidencia suficiente para decidir control individual o por cantidad:
+
+- nombre;
+- descripción;
+- categoría;
+- imagen;
+- proveedor;
+- sede;
+- ruta de aplicación;
+- label de formulario.
+
+La decisión utiliza hechos físicos y operativos.
+
+---
+
+#### 41. Código existente no prueba granularidad
+
+La existencia de `asset_code`, `group_code`, `qr_token`, serial, placa o un
+identificador técnico previo se trata como evidencia a reconciliar.
+
+No se adopta la clase únicamente porque una fila ya exista en una tabla legacy.
+
+---
+
+#### 42. Representación autoritativa única
+
+Se exige:
+
+```text
+ONE PHYSICAL EXISTENCE
+→
+ONE AUTHORITATIVE CONTROL REPRESENTATION
+```
+
+Una misma existencia no puede estar simultáneamente contabilizada como:
+
+- parte de un grupo reutilizable;
+- activo individual;
+- stock adicional;
+- otra representación duplicada.
+
+---
+
+#### 43. Producto con múltiples instancias
+
+Un producto aprobado como `SERIALIZED_ASSET` puede poseer múltiples instancias
+físicas, cada una con identidad estable propia.
+
+```text
+ONE PRODUCT MODEL
+→
+MANY ASSET IDENTITIES
+```
+
+La cantidad de instancias se obtiene del conjunto de identidades, no de una
+cantidad agregada que sustituya sus expedientes.
+
+---
+
+#### 44. Producto con control por cantidad
+
+Un producto aprobado como `REUSABLE_QUANTITY` puede distribuir su existencia
+entre varios grupos o alcances de cantidad cuando la operación lo requiera.
+
+```text
+ONE PRODUCT MODEL
+→
+MANY QUANTITY SCOPES
+```
+
+La suma autoritativa de los alcances debe reconciliar con la existencia física
+sin solapamiento.
+
+---
+
+#### 45. Grupo no es contenedor físico
+
+Un `asset_group` legacy o futuro alcance de cantidad no se convierte por su
+nombre en `PHYSICAL_CONTAINER`.
+
+Se mantiene:
+
+```text
+REUSABLE_QUANTITY
+!=
+PHYSICAL_CONTAINER
+```
+
+Una caja o bolsa usada para agrupar piezas equivalentes puede ser solo soporte
+operativo. Si el recipiente mismo requiere identidad, capacidad, condición y
+ciclo de retorno propios, pertenece al contrato de contenedor físico.
+
+---
+
+#### 46. Grupo no es kit
+
+Se mantiene:
+
+```text
+REUSABLE_QUANTITY GROUP
+!=
+KIT_INSTANCE
+```
+
+Un grupo representa cantidad equivalente. Un kit representa composición,
+miembros y completitud.
+
+No se usa un grupo para ocultar una composición que debe gestionarse como kit.
+
+---
+
+#### 47. Activo individual no es repuesto
+
+Se mantiene:
+
+```text
+SERIALIZED_ASSET
+!=
+SPARE_PART
+```
+
+Una pieza almacenada para mantenimiento conserva el modelo de repuesto hasta la
+transición propietaria aplicable.
+
+Tener serial no convierte por sí solo una pieza en activo operativo.
+
+---
+
+#### 48. Promoción de cantidad a identidad individual
+
+Cuando una política aprobada determina que una o más unidades antes
+controladas por cantidad requieren historia individual, la transición debe ser
+explícita y versionada.
+
+Se fija:
+
+```text
+REUSABLE_QUANTITY
+→
+CONTROLLED TRANSITION
+→
+SERIALIZED_ASSET
+```
+
+Nunca ocurre por editar una fila, escanear un QR, registrar un daño o crear
+manualmente un `asset_item`.
+
+---
+
+#### 49. Conservación en promoción
+
+Para promover `N` unidades se exige conceptualmente:
+
+```text
+SOURCE QUANTITY BEFORE = Q
+N > 0
+N <= Q
+SOURCE QUANTITY AFTER = Q - N
+NEW AUTHORITATIVE INDIVIDUAL IDENTITIES = N
+TOTAL PHYSICAL EXISTENCE CONSERVED = TRUE
+```
+
+Las nuevas identidades deben corresponder a unidades físicas realmente
+identificadas.
+
+---
+
+#### 50. Evidencia de identidad durante promoción
+
+La transición debe conservar:
+
+- modelo o producto de origen;
+- alcance de cantidad de origen;
+- cantidad retirada;
+- identidades individuales resultantes;
+- fecha efectiva;
+- decisión y razón;
+- actor autorizado;
+- ubicación;
+- custodia;
+- condición conocida cuando aplique;
+- referencias de compra, garantía o costo cuando sean materiales;
+- correlación;
+- idempotencia;
+- lineage suficiente para demostrar que no se duplicó existencia.
+
+---
+
+#### 51. Seriales durante promoción
+
+Si las unidades promovidas tienen serial real, este se registra contra la
+identidad individual correspondiente.
+
+Si no existe serial:
+
+- no se inventa uno de fabricante;
+- puede emitirse un identificador interno estable conforme al contrato
+  aplicable;
+- la ausencia de serial no invalida una identidad individual justificada por
+  otros criterios.
+
+---
+
+#### 52. Activación de la nueva representación
+
+La representación individual solo se vuelve autoritativa cuando la reducción
+del alcance por cantidad y la activación de las identidades resultantes son
+reconciliables como una misma transición.
+
+Se prohíbe una ventana final aceptada donde la misma unidad permanezca activa en
+ambos modelos.
+
+---
+
+#### 53. Fallo durante transición
+
+Si la transición no puede demostrar cantidad, identidades, lineage, revisión o
+autorización:
+
+```text
+TRANSITION = REJECTED
+```
+
+No se reduce la cantidad fuente de forma irreversible y no se presentan
+identidades destino como activas parcialmente.
+
+La compensación física futura pertenece a la implementación propietaria.
+
+---
+
+#### 54. Idempotencia de promoción
+
+Un retry de la misma transición:
+
+- no reduce dos veces el grupo;
+- no crea otra identidad para la misma unidad;
+- no incrementa dos veces revisiones;
+- no duplica movimientos;
+- no duplica history lineage.
+
+La misma identidad de operación debe recuperar el resultado ya decidido.
+
+---
+
+#### 55. Concurrencia de granularidad
+
+Una transición de granularidad debe validar revisiones vigentes de la
+clasificación y de la existencia afectada.
+
+Se fija conceptualmente:
+
+```text
+EXPECTED REPRESENTATION REVISION
+=
+CURRENT REPRESENTATION REVISION
+```
+
+Dos actores no pueden promover simultáneamente la misma cantidad o unidad y
+terminar con representaciones incompatibles.
+
+---
+
+#### 56. Transición inversa
+
+Esta tarea no autoriza automáticamente convertir activos individuales
+existentes de vuelta a un grupo por cantidad.
+
+Se fija:
+
+```text
+SERIALIZED_ASSET
+→
+REUSABLE_QUANTITY
+!=
+AUTOMATIC OR IMPLIED
+```
+
+Cualquier cambio futuro de ese tipo deberá usar la transición de clase aprobada
+por `NEXO-DOM-001`, conservar las identidades históricas, demostrar que no hay
+obligaciones por unidad que exijan continuidad y reconciliar cantidad sin
+borrar expedientes.
+
+Hasta existir esa decisión concreta, se falla cerrado.
+
+---
+
+#### 57. Historia de identidad retirada
+
+Una transición autorizada nunca recicla ni borra un identificador de activo que
+ya tuvo historia.
+
+Aunque una identidad deje de estar operativa, su expediente histórico debe
+seguir resolviendo movimientos, custodias, mantenimientos, garantías,
+incidentes y evidencias previas.
+
+---
+
+#### 58. Cohorte D3
+
+La cohorte histórica D3 corresponde a productos legacy `asset` con
+representación únicamente en `asset_items`.
+
+Su resultado permanece:
+
+```text
+CANDIDATE_SERIALIZED_ASSET
+```
+
+y no equivale a aprobación automática.
+
+La condición de salida continúa exigiendo validar que la historia por instancia
+es material y consolidar la identidad individual.
+
+---
+
+#### 59. Cohorte D4
+
+La cohorte histórica D4 corresponde a productos legacy `asset` con
+representación únicamente en `asset_groups`.
+
+Su resultado permanece:
+
+```text
+CANDIDATE_REUSABLE_QUANTITY
+```
+
+y no equivale a aprobación automática.
+
+La condición de salida exige validar retorno, condición, equivalencia y ausencia
+de necesidad de historia individual.
+
+---
+
+#### 60. Cohorte D5
+
+La cohorte D5 representa productos con `asset_items` y `asset_groups`
+simultáneamente.
+
+Se mantiene:
+
+```text
+CONFLICTING_REPRESENTATION
+→
+BLOCKED
+```
+
+No se elige una representación contando cuál tiene más filas ni se conserva
+ambas por compatibilidad.
+
+La salida requiere reconciliar qué existencia representa cada fila, resolver
+solapamientos y dejar una sola representación autoritativa por existencia.
+
+---
+
+#### 61. Cohorte D6
+
+La cohorte D6 corresponde a productos legacy `asset` sin instancia individual
+ni grupo.
+
+Se mantiene:
+
+```text
+INCOMPLETE_INSTANCE_MODEL
+→
+BLOCKED
+```
+
+No se crea automáticamente un `asset_item` ni un grupo.
+
+La salida exige hechos físicos suficientes para decidir si corresponde a
+modelo, activo individual, reutilizable por cantidad, contenedor, kit, repuesto
+o registro no inventariable conforme a las clases ya aprobadas.
+
+---
+
+#### 62. Serial legacy a nivel de producto
+
+El AS-IS conserva `product_asset_profiles.serial_number` a nivel de producto.
+
+Se fija:
+
+```text
+PRODUCT-LEVEL SERIAL
+!=
+PROOF OF UNIT IDENTITY
+```
+
+Un serial que identifica una unidad física debe quedar vinculado a la instancia
+correspondiente durante la transición física futura.
+
+El campo legacy no se usa para crear múltiples instancias con el mismo serial ni
+para clasificar automáticamente el producto.
+
+---
+
+#### 63. Snapshot histórico de `NEXO-DOM-001`
+
+El snapshot documental histórico de la clasificación registró:
+
+| Métrica | Resultado histórico |
+| --- | ---: |
+| productos legacy `asset` | 169 |
+| filas `asset_items` | 38 |
+| filas `asset_groups` | 90 |
+| productos solo con items | 25 |
+| productos solo con grupos | 85 |
+| productos con ambas representaciones | 4 |
+| productos sin item ni grupo | 55 |
+| instancias en productos solo-item | 34 |
+| grupos en productos solo-grupo | 86 |
+
+Estas cifras permanecen como evidencia histórica y no se reescriben
+retroactivamente.
+
+---
+
+#### 64. Snapshot remoto observado para esta tarea
+
+Una consulta de solo lectura sobre el proyecto remoto autorizado durante el
+desarrollo de esta tarea observó:
+
+| Métrica | Resultado observado |
+| --- | ---: |
+| productos legacy `asset` | 210 |
+| filas `asset_items` | 38 |
+| filas `asset_groups` | 128 |
+| productos solo con items | 25 |
+| productos solo con grupos | 122 |
+| productos con ambas representaciones | 4 |
+| productos sin item ni grupo | 59 |
+| instancias en productos solo-item | 34 |
+| grupos en productos solo-grupo | 124 |
+
+La observación no reclasifica ninguna identidad.
+
+---
+
+#### 65. Deriva respecto del snapshot histórico
+
+La comparación entre ambos snapshots evidencia:
+
+| Métrica | Delta observado |
+| --- | ---: |
+| productos legacy `asset` | +41 |
+| filas `asset_items` | 0 |
+| filas `asset_groups` | +38 |
+| productos solo con items | 0 |
+| productos solo con grupos | +37 |
+| productos con ambas representaciones | 0 |
+| productos sin item ni grupo | +4 |
+| instancias en productos solo-item | 0 |
+| grupos en productos solo-grupo | +38 |
+
+Esta deriva se clasifica como evidencia AS-IS a reconciliar. No modifica por sí
+sola la matriz histórica ni autoriza una nueva clasificación masiva.
+
+---
+
+#### 66. Interpretación del AS-IS actual
+
+La superficie remota confirma que el sistema continúa utilizando dos
+representaciones físicas:
+
+```text
+asset_items
+```
+
+para identidad individual, y:
+
+```text
+asset_groups
+```
+
+para grupos por cantidad.
+
+La coexistencia de ambas tablas es reutilizable como evidencia y posible
+fundación física, pero no constituye por sí sola el enforcement del contrato
+objetivo.
+
+---
+
+#### 67. Brecha de creación actual
+
+La creación actual en NEXO acepta un modo visual `item` o `group` para productos
+filtrados por `inventory_kind=asset`.
+
+Eso permite que la selección del operador influya directamente sobre cuál tabla
+recibe una nueva representación.
+
+La salida objetivo exige que:
+
+```text
+APPROVED DOMAIN GRANULARITY
+→
+ALLOWED PHYSICAL REPRESENTATION
+```
+
+y no al contrario.
+
+---
+
+#### 68. Brecha de atributos
+
+La representación individual AS-IS contiene campos unitarios como código de
+activo, placa interna, serial, ubicación, responsable, condición, lifecycle,
+garantía, valor y especificaciones.
+
+La representación por grupo contiene código de grupo, QR, cantidad esperada,
+unidad, ubicación, responsable, condición y lifecycle.
+
+Estas diferencias son consistentes con dos granularidades distintas, pero
+varios campos mezclan todavía decisiones reservadas a tareas posteriores y no
+prueban cumplimiento integral.
+
+---
+
+#### 69. Brecha de movimientos
+
+`asset_movements` admite referencias a `asset_item_id` o `asset_group_id` y una
+cantidad opcional.
+
+La existencia de esta base permite conservar movimientos de ambas
+granularidades, pero la implementación física futura deberá demostrar:
+
+- exclusividad correcta del sujeto;
+- cantidad solo cuando corresponde;
+- no doble representación;
+- transición atómica de granularidad;
+- idempotencia;
+- reconciliación con ubicación y custodia;
+- rechazo de una identidad o grupo incompatible con su clase aprobada.
+
+Esta tarea no modifica el ledger.
+
+---
+
+#### 70. Adopción física futura
+
+La materialización posterior deberá impedir:
+
+- crear `asset_item` para un producto aprobado como `REUSABLE_QUANTITY`;
+- crear `asset_group` para un producto aprobado como `SERIALIZED_ASSET`;
+- permitir que el usuario cambie granularidad con un radio o parámetro de
+  cliente;
+- aceptar `inventory_kind=asset` como decisión final;
+- duplicar existencia entre item y grupo;
+- copiar cantidad de grupo a instancias sin descontarla;
+- inventar seriales;
+- reciclar identidades;
+- borrar historia durante transición;
+- conservar dos representaciones activas tras promoción;
+- usar QR de grupo como identidad de cada pieza;
+- usar ubicación, custodio o condición como única heurística de clase;
+- normalizar el conflicto D5 eligiendo una tabla sin evidencia;
+- completar D6 fabricando instancias;
+- ejecutar backfill irreversible sin evidencia, gate y rollback propietarios.
+
+---
+
+#### 71. Matriz de fronteras con tareas posteriores
+
+| Responsabilidad | Propietario contractual |
+| --- | --- |
+| clasificación primaria y transición de clase | `NEXO-DOM-001` |
+| custodia y responsable actual | `NEXO-DOM-008` |
+| granularidad individual o por cantidad | `NEXO-DOM-009` |
+| condición, daño, pérdida y faltante | `NEXO-DOM-010` |
+| préstamo, devolución, transferencia y cambio de custodia | `NEXO-DOM-011` |
+| mantenimiento, reparación y disponibilidad | `NEXO-DOM-012` |
+| baja, descarte, venta o reemplazo | `NEXO-DOM-013` |
+| kits y completitud | `NEXO-DOM-014` |
+| conteos de activos, reutilizables y contenedores | `NEXO-DOM-015` |
+| repuestos y compatibilidad | `NEXO-DOM-016` |
+| auditoría, historial y evidencia | `NEXO-DOM-017` |
+| contenedor físico frente a LPN | `NEXO-DOM-019` |
+| persistencia, migraciones y enforcement físico | arquitectura e implementación física propietarias |
+
+Ninguna tarea consumidora puede cambiar la granularidad por conveniencia local.
+
+---
+
+#### 72. Handoff hacia `NEXO-DOM-010`
+
+Esta tarea entrega:
+
+```text
+EXACT AUTHORITATIVE CONTROL GRANULARITY
++
+SERIALIZED IDENTITY OR QUANTITY SCOPE
++
+ONE REPRESENTATION PER PHYSICAL EXISTENCE
++
+QUANTITY CONSERVATION
++
+VERSIONED PROMOTION TO INDIVIDUAL IDENTITY
++
+NO UI OR LEGACY HEURISTIC AUTHORITY
++
+KNOWN AS-IS REPRESENTATION DRIFT
+```
+
+`NEXO-DOM-010` deberá definir estado, condición, daño, pérdida y faltante
+respetando que:
+
+- una identidad individual conserva condición e incidentes por unidad;
+- un reutilizable por cantidad conserva cantidades por condición o estado sin
+  fabricar identidades;
+- observar daño o pérdida no cambia granularidad por inferencia;
+- una diferencia de conteo no promueve ni despromueve clase;
+- la misma existencia no puede quedar simultáneamente en grupo e identidad
+  individual para explicar una discrepancia.
+
+---
+
+#### 73. Handoffs posteriores
+
+Quedan reservados:
+
+- `NEXO-DOM-010`: condición, daño, pérdida y faltante;
+- `NEXO-DOM-011`: préstamo, devolución, transferencia y cambio de custodia;
+- `NEXO-DOM-012`: mantenimiento, reparación y disponibilidad;
+- `NEXO-DOM-013`: baja, descarte, venta o reemplazo;
+- `NEXO-DOM-015`: conteos de activos, reutilizables y contenedores;
+- `NEXO-DOM-017`: auditoría, historial y evidencia;
+- `NEXO-DOM-019`: contenedor físico frente a LPN.
+
+Esta tarea no desarrolla esos contratos.
+
+---
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege de forma directa la separación
+entre clase y granularidad, el comportamiento diferenciado de reutilizables por
+cantidad y activos serializados, la prohibición de doble representación, la
+transición versionada y la reconciliación del legacy. Esta tarea especializa el
+contrato de dominio y no introduce una obligación de prueba independiente.
+
+---
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-040`, para una única clase primaria activa por identidad y período;
+- `TREQ-NEXO-041`, para mantener clase separada de serial, ubicación, custodia,
+  condición, disponibilidad, propiedad y demás dimensiones;
+- `TREQ-NEXO-043`, para separar explícitamente reutilizables por cantidad y
+  activos serializados, impedir grupo e instancia simultáneos y exigir
+  transición versionada hacia identidad individual;
+- `TREQ-NEXO-047`, para aplicar comportamiento por clase sin duplicar saldo,
+  instancia, grupo, LPN o valor;
+- `TREQ-NEXO-048`, para transición legacy versionada, determinista, auditable e
+  idempotente sin clasificación por heurística;
+- `TREQ-NEXO-049`, para conservar la matriz individual histórica, sus cohortes,
+  bloqueos y reconciliación física.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main`, cierre de `NEXO-DOM-008`, continuidad, ruta, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, 04A NEXO, owner, handoff anterior, `package.json`, validadores, CAP-SCOPE-007, código actual de `asset_items` y `asset_groups` y una consulta de solo lectura al proyecto remoto que observó 210 productos legacy `asset`, 38 items, 128 groups y cuatro productos con doble representación. |
+| OPERATIVA | NOT_EXECUTED | No se creó, reclasificó, contó, prestó, devolvió, mantuvo ni retiró un activo o grupo real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron productos, clases, `asset_items`, `asset_groups`, movimientos, datos, Supabase, aplicaciones ni infraestructura. |
+
+---
+
+#### 77. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Se define `CONTROL_GRANULARITY` como dimensión separada.
+- [x] Se distinguen `INDIVIDUAL_IDENTITY` y `QUANTITY_CONTROLLED`.
+- [x] `SERIALIZED_ASSET` exige identidad individual.
+- [x] `REUSABLE_QUANTITY` exige control por cantidad sin historia unitaria.
+- [x] Producto o modelo se separa de instancia física.
+- [x] Se definen criterios positivos de control individual.
+- [x] Se definen criterios positivos de control por cantidad.
+- [x] QR de grupo no se convierte en identidad individual.
+- [x] Ausencia de serial de fabricante no impide identidad individual.
+- [x] Serial no sustituye la identidad canónica.
+- [x] Placa y QR son representaciones y no autoridad.
+- [x] Se preserva historia individual cuando es material.
+- [x] Se preservan cantidad esperada y observada como conceptos distintos.
+- [x] Un conteo no cambia granularidad.
+- [x] Custodia por cantidad no fabrica identidades.
+- [x] Custodia individual conserva una unidad exacta.
+- [x] UI no decide clase ni granularidad.
+- [x] `asset_mode` se clasifica como captura legacy y no autoridad canónica.
+- [x] `inventory_kind=asset` no decide el resultado final.
+- [x] Nombre, categoría e imagen no deciden granularidad.
+- [x] Existencia de una fila legacy no prueba clasificación.
+- [x] Se exige una sola representación autoritativa por existencia.
+- [x] Un producto serializado puede tener varias identidades individuales.
+- [x] Un producto reutilizable puede tener varios alcances cuantificados sin solapamiento.
+- [x] Grupo por cantidad permanece separado de contenedor físico.
+- [x] Grupo por cantidad permanece separado de kit.
+- [x] Activo individual permanece separado de repuesto.
+- [x] Se define promoción versionada de cantidad a identidad individual.
+- [x] La promoción conserva cantidad total.
+- [x] La promoción conserva lineage y evidencia.
+- [x] La promoción no inventa seriales.
+- [x] La activación destino no deja doble representación.
+- [x] Fallos de transición no producen estado parcial aceptado.
+- [x] Retries son idempotentes.
+- [x] Concurrencia valida revisión.
+- [x] La transición inversa no se autoriza automáticamente.
+- [x] Las identidades históricas no se reciclan.
+- [x] D3 permanece candidata y requiere validación.
+- [x] D4 permanece candidata y requiere validación.
+- [x] D5 permanece bloqueada por doble representación.
+- [x] D6 permanece bloqueada por modelo incompleto.
+- [x] El serial legacy a nivel de producto no prueba identidad unitaria.
+- [x] Se preserva el snapshot histórico sin reescribirlo.
+- [x] Se registra el snapshot remoto actual como evidencia separada.
+- [x] La deriva física observada no reclasifica identidades.
+- [x] `asset_items` y `asset_groups` se tratan como superficies AS-IS parciales.
+- [x] Se registra la brecha actual de elección `item/group`.
+- [x] Se preservan fronteras con condición, préstamo, mantenimiento, baja y conteos.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-010`.
+
+---
+
+#### 78. Límites
+
+Esta tarea no:
+
+- reclasifica ningún producto;
+- cambia una fila D3, D4, D5 o D6;
+- crea activos individuales;
+- crea grupos;
+- divide o fusiona grupos reales;
+- promueve unidades reales;
+- despromueve activos reales;
+- inventa seriales, placas ni QR;
+- modifica `product_inventory_profiles`;
+- modifica `product_asset_profiles`;
+- modifica `asset_items`;
+- modifica `asset_groups`;
+- modifica `asset_movements`;
+- modifica cantidades;
+- ejecuta conteos;
+- cambia ubicación;
+- cambia custodia;
+- define estados de condición;
+- resuelve daño, pérdida o faltante;
+- implementa préstamos o devoluciones;
+- define mantenimiento completo;
+- ejecuta baja, venta o disposición;
+- crea tablas, columnas, enums, constraints, índices, triggers o vistas;
+- crea RPC, RLS, Server Actions ni Route Handlers;
+- cambia datos;
+- ejecuta migraciones o backfills;
+- modifica Supabase;
+- modifica `vento-nexo`;
+- implementa UI;
+- crea permisos;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-010`.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-008 — Definir custodia y responsable actual`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante`
+
 ### [ ] NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
 ### [ ] NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
 ### [ ] NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad

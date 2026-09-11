@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1175** |
+| Aprobadas | **1176** |
 | En propuesta | **0** |
-| No iniciadas | **421** |
+| No iniciadas | **420** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **73.62% (1175/1596)** |
+| Porcentaje de completamiento | **73.68% (1176/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **421** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1076** |
+| ⏸ NO_EVALUADA | **420** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1077** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-008` — Definir custodia y responsable actual | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-009` — Separar activo individual y reutilizable controlado por cantidad | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-010` — Definir estado, condición, daño, pérdida y faltante | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-009` — Separar activo individual y reutilizable controlado por cantidad | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-010` — Definir estado, condición, daño, pérdida y faltante | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -960,7 +960,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-006` | Definir LPN anidados y contenedores retornables | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-007` | Definir relación sede → LOC → LPN → contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-008` | Definir custodia y responsable actual | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-009` | Separar activo individual y reutilizable controlado por cantidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-009` | Separar activo individual y reutilizable controlado por cantidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-010` | Definir estado, condición, daño, pérdida y faltante | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-011` | Definir préstamo, devolución, transferencia y cambio de custodia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-012` | Definir mantenimiento, reparación y disponibilidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
