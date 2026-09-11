@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1169** |
+| Aprobadas | **1170** |
 | En propuesta | **0** |
-| No iniciadas | **427** |
+| No iniciadas | **426** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **73.25% (1169/1596)** |
+| Porcentaje de completamiento | **73.31% (1170/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **427** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1070** |
+| ⏸ NO_EVALUADA | **426** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1071** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-002` — Definir propósito y tipos canónicos de LPN | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-003` — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-004` — Definir contenido, empaque y desempaque de LPN | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-003` — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-004` — Definir contenido, empaque y desempaque de LPN | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-005` — Definir división, unión y transferencia de contenido | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -954,7 +954,7 @@
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-020` | Ejecutar pruebas integrales | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-001` | Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-002` | Definir propósito y tipos canónicos de LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-003` | Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-003` | Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-004` | Definir contenido, empaque y desempaque de LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-005` | Definir división, unión y transferencia de contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-006` | Definir LPN anidados y contenedores retornables | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
