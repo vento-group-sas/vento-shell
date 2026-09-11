@@ -1,9 +1,9 @@
 {
   "schema_version": 1,
   "package_id": "GAP-PKG-018",
-  "status": "MATURATION_DRAFT",
+  "status": "READY_FOR_APPROVAL",
   "created_at": "2026-09-10T05:05:40.074Z",
-  "updated_at": "2026-09-10T05:05:40.074Z",
+  "updated_at": "2026-09-11T19:15:17.111Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "DATABASE_RPC_BOUNDARY",
@@ -16,14 +16,123 @@
     "missing_task_ids": []
   },
   "physical_identity": {
-    "targets": []
+    "targets": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260829200745_auth_db_019_identity_links.sql",
+        "symbol_or_surface": "identity_access.principals; identity_access.identity_resolution_cases; identity_access.enterprise_identity_links",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-018.sql",
+        "symbol_or_surface": "GAP-PKG-018 TP-DB-001 pgTAP adoption evidence for identity_access",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 identity contract evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 Auth-to-enterprise identity integration evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 identity security boundary evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-018 controlled identity resolution end-to-end evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-018/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-DB-001 fixtures for GAP-PKG-018 canonical TREQ evidence",
+        "operation": "CREAR"
+      }
+    ]
   },
-  "implementation_units": [],
+  "implementation_units": [
+    {
+      "unit_id": "identity_access",
+      "repository": "vento-group-sas/vento-shell",
+      "change": "Adopt the already VERIFIED identity_access foundation from AUTH-DB-019 and materialize GAP-PKG-018 package-specific TP-DB-001 evidence for SUPA-ARC-008, SUPA-ARC-009 and SUPA-AUD-010 without changing Auth hosted objects, VITAL, legacy foreign keys or production."
+    }
+  ],
   "evidence_plan": {
-    "tests": [],
-    "observability": [],
-    "acceptance_criteria": [],
-    "rollback_steps": []
+    "tests": [
+      {
+        "command": "npm run supabase:db:test:clean",
+        "expected_result": "PASS on the governed clean local Supabase replay and pgTAP harness with no hosted mutation."
+      },
+      {
+        "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-018.sql",
+        "expected_result": "PASS for GAP-PKG-018 TP-DB-001 assertions over the existing identity_access foundation."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-018/contract.test.ts",
+        "expected_result": "PASS for the eleven canonical GAP-PKG-018 TREQ contracts and identity source-of-truth boundaries."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-018/integration.test.ts",
+        "expected_result": "PASS for Auth-to-enterprise principal linkage and compatibility with the existing AccessContext resolver graph."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-018/security.test.ts",
+        "expected_result": "PASS for fail-closed identity resolution, minimum privilege and non-authoritative Auth metadata boundaries."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-018/e2e.test.ts",
+        "expected_result": "PASS for controlled end-to-end identity resolution scenarios without production or hosted Auth mutation."
+      },
+      {
+        "command": "npm test --silent",
+        "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      }
+    ],
+    "observability": [
+      {
+        "signal": "identity_access.principals + identity_access.enterprise_identity_links + identity_access.identity_resolution_cases",
+        "expected_result": "The three AUTH-DB-019 foundation objects remain present and queryable in governed local replay with no persistent backfill requirement."
+      },
+      {
+        "signal": "app_private.get_access_context(text) + api.get_safe_access_context(text)",
+        "expected_result": "The existing AUTH-DB-033 resolver graph continues consuming canonical principal/link data without introducing a competing identity source."
+      },
+      {
+        "signal": "GAP-PKG-018 canonical TREQ assertion coverage",
+        "expected_result": "All eleven current canonical TREQ IDs for GAP-PKG-018 have an explicit reproducible assertion or fixture mapping in the package evidence."
+      },
+      {
+        "signal": "Hosted/Auth/VITAL/production mutation delta",
+        "expected_result": "Exactly zero direct hosted Auth mutations, VITAL mutations and production-target mutations during package evidence materialization."
+      }
+    ],
+    "acceptance_criteria": [
+      "GAP-PKG-018 adopts the existing VERIFIED AUTH-DB-019 identity_access foundation rather than creating a competing identity schema or duplicating its principal/link objects.",
+      "auth.users remains the authentication account source while enterprise identity is represented through identity_access principals and explicit Auth-to-enterprise links; role or site metadata stored in Auth metadata is not treated as enterprise authority.",
+      "Worker, client and device identity linkage scenarios are tested with deterministic fixtures, including missing, ambiguous, inactive or conflicting mappings that must resolve explicitly or fail closed.",
+      "The existing AUTH-DB-033 AccessContext resolver graph remains compatible with identity_access and no package test may weaken its ownership, privilege or safe-projection guarantees.",
+      "Each of the eleven canonical TREQ IDs currently assigned to GAP-PKG-018 has explicit package-specific evidence in the six reserved TP-DB-001 artifacts.",
+      "No database schema, hosted Auth configuration, VITAL object, legacy Auth foreign key or production environment is modified by this adoption package unless a later package-gate re-maturation explicitly authorizes a proven delta.",
+      "All six package-specific evidence artifacts plus the clean local Supabase replay and canonical npm regression facade pass before physical verification.",
+      "Production remains unauthorized; the only remote deployment target declared by the dossier is STAGING project rcrxixmqhrndcervbllp under SUPA-TRANS-015 governance."
+    ],
+    "rollback_steps": [
+      "If package-specific evidence materialization fails, revert only the GAP-PKG-018 evidence files created by the authorized implementation instance; do not alter the already VERIFIED AUTH-DB-019 foundation.",
+      "If tests prove that identity_access requires a product or schema delta, stop the implementation and re-mature GAP-PKG-018 with the exact new physical target before making that delta.",
+      "No database rollback is required for the dossier as currently scoped because the physical product/schema operation is adoption without modification and the confirmed delta is package-specific evidence only.",
+      "After any evidence rollback, rerun the existing AUTH-DB-019 and AUTH-DB-033 local database tests to confirm the pre-package physical foundation remains unchanged."
+    ]
   },
   "authorization": {
     "decision": "PENDING",
@@ -31,5 +140,19 @@
     "approved_at": null,
     "approval_ref": null,
     "approval_statement": null
+  },
+  "deployment_environment": {
+    "canonical_task_id": "DELIV-PKG-019",
+    "rollout_profile": "TP-DB-001",
+    "environment_profile": "ENV-SUPABASE-LOCAL-CI-STAGING",
+    "targets": [
+      {
+        "environment_role": "STAGING",
+        "target_type": "SUPABASE_PROJECT_REF",
+        "target_id": "rcrxixmqhrndcervbllp",
+        "owner": "SUPA-TRANS-015"
+      }
+    ],
+    "production_authorized": false
   }
 }

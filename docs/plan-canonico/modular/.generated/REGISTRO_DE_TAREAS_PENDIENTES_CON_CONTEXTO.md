@@ -24,7 +24,7 @@
 - **Acción exacta:** `MATURE_PACKAGE_GATE`
 - **Objetivo exacto:** `GAP-PKG-018`
 - **Comando exacto:** `npm run docs:package:gate:status -- --package-id GAP-PKG-018`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json` — `MATURATION_DRAFT`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json` — `READY_FOR_APPROVAL`
 - **Gates:** **2/6 PASS**; faltan **4**.
 - **Por qué:** GAP-PKG-018 debe completar identidad, unidades, evidencia y aprobación de gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
