@@ -6352,7 +6352,1443 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-005 — Definir división, unión y transferencia de contenido`
 
-### [ ] NEXO-DOM-005 — Definir división, unión y transferencia de contenido
+### ✅ NEXO-DOM-005 — Definir división, unión y transferencia de contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
+**Tarea siguiente:** NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
+**Tipo de tarea:** documental; definición canónica de división, unión y transferencia atómica de contenido entre LPN, con conservación de cantidad, identidad, dimensiones de existencia, lineage, revisiones, idempotencia, concurrencia y fronteras con lifecycle, ubicación, custodia y movimiento físico bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NEXO transforma la membresía autoritativa de contenido de un LPN
+sin crear, destruir, duplicar ni perder existencia por efecto de dividir,
+unir o transferir contenido.
+
+La regla raíz queda:
+
+```text
+CONTENIDO AUTORITATIVO VÁLIDO
++
+IDENTIDAD Y DIMENSIONES DE EXISTENCIA CONSERVADAS
++
+UNA OPERACIÓN DE CONTENIDO ATÓMICA
++
+REVISIONES ESPERADAS VIGENTES
++
+IDEMPOTENCIA
++
+LINEAGE COMPLETO
+→
+MISMA EXISTENCIA ECONÓMICA Y FÍSICA
+CON UNA NUEVA DISTRIBUCIÓN LOGÍSTICA RECONCILIABLE
+```
+
+Estas operaciones modifican la distribución o representación logística del
+contenido; no fabrican stock, no borran historia y no sustituyen movimientos,
+ubicaciones, custodias, remisiones, ciclos de vida ni contenedores físicos.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente tres operaciones conceptuales:
+
+```text
+SPLIT_CONTENT
+MERGE_CONTENT
+TRANSFER_CONTENT
+```
+
+Los nombres son semántica contractual y no obligan a crear enums, RPC, rutas,
+funciones o métodos físicos con esos identificadores.
+
+El resultado cubre:
+
+1. división de una porción controlada por cantidad;
+2. unión de porciones compatibles;
+3. transferencia directa entre dos LPN distintos;
+4. comportamiento de identidad serializada e instancia de kit;
+5. conservación exacta de cantidades y dimensiones;
+6. lineage de origen y destino;
+7. atomicidad de la decisión;
+8. revisiones de contenido y lifecycle;
+9. idempotencia y concurrencia;
+10. fallos, retries y operación offline;
+11. prohibición de doble contabilización;
+12. fronteras con las tareas posteriores del mini-bloque.
+
+---
+
+#### 3. Handoff recibido de `NEXO-DOM-004`
+
+Esta tarea consume sin redefinir:
+
+```text
+IMMUTABLE LPN IDENTITY
++
+ONE CURRENT PURPOSE TYPE
++
+ONE CURRENT LIFECYCLE STATE
++
+THREE CONTENT SHAPES
++
+EXACT INVENTORY DIMENSIONS
++
+SINGLE ACCOUNTING RULE
++
+MONOTONIC CONTENT REVISION
++
+IDEMPOTENT PACK/UNPACK
+```
+
+También conserva la regla de que una transferencia entre LPN no puede
+materializarse como un `UNPACK` ya confirmado seguido de un `PACK` independiente.
+Ambos lados pertenecen a una sola decisión de negocio.
+
+---
+
+#### 4. Formas de contenido consumidas
+
+Se reutilizan exactamente las tres formas aprobadas:
+
+```text
+QUANTITY_SLICE
+SERIALIZED_IDENTITY
+KIT_INSTANCE
+```
+
+No se crea una cuarta forma.
+
+`PHYSICAL_CONTAINER` continúa fuera del contenido ordinario de LPN y su vínculo
+permanece separado.
+
+---
+
+#### 5. Invariante global de conservación
+
+Para toda operación aceptada se exige:
+
+```text
+AUTHORITATIVE CONTENT BEFORE
+=
+AUTHORITATIVE CONTENT AFTER
+```
+
+La igualdad se evalúa por identidad exacta o por conjunto completo de
+dimensiones de existencia, según la forma de contenido.
+
+En una operación de esta tarea:
+
+```text
+CREATED INVENTORY = 0
+DESTROYED INVENTORY = 0
+DUPLICATED INVENTORY = 0
+LOST INVENTORY = 0
+```
+
+Cualquier consumo, merma, producción, ajuste, disposición o transformación que
+cambie realmente la existencia pertenece a su contrato de movimiento o proceso
+propietario y no puede ocultarse como división, unión o transferencia.
+
+---
+
+#### 6. Clave de equivalencia para contenido por cantidad
+
+Dos `QUANTITY_SLICE` solo pueden considerarse equivalentes para unión cuando
+coinciden todas las dimensiones que distinguen existencia bajo los contratos
+vigentes.
+
+Como mínimo, cuando apliquen:
+
+- identidad maestra del producto o material;
+- clase primaria de control;
+- unidad canónica de stock;
+- presentación cuando sea una dimensión material de existencia;
+- lote;
+- vencimiento;
+- condición;
+- estado de liberación;
+- propietario o fuente de propiedad cuando diferencie existencia;
+- demás dimensiones canónicas que el owner correspondiente declare
+  discriminantes.
+
+Se fija:
+
+```text
+UNKNOWN DIMENSION
+!=
+KNOWN DIMENSION
+```
+
+```text
+NULL OR ABSENT
+!=
+ARBITRARY MATCH
+```
+
+Ante ambigüedad material, la unión falla cerrada.
+
+---
+
+#### 7. Precisión y unidad
+
+Toda división, unión o transferencia por cantidad opera sobre la unidad
+canónica de stock y su precisión aprobada.
+
+Reglas:
+
+- cantidad finita;
+- cantidad positiva para una porción transferida o creada por división;
+- prohibido generar cantidades negativas;
+- prohibido exceder la cantidad fuente;
+- prohibido usar redondeo que altere el total conservado;
+- las conversiones de presentación o unidad no pertenecen implícitamente a
+  estas operaciones;
+- si una conversión es necesaria, debe resolverse por su contrato propietario
+  antes de comparar o consolidar las cantidades.
+
+---
+
+#### 8. `SPLIT_CONTENT`
+
+`SPLIT_CONTENT` divide una `QUANTITY_SLICE` en dos o más porciones hijas sin
+cambiar el LPN autoritativo por el solo hecho de dividir.
+
+Forma conceptual:
+
+```text
+ONE QUANTITY_SLICE
+→
+TWO OR MORE QUANTITY_SLICE CHILDREN
+```
+
+con:
+
+```text
+SUM(CHILD QUANTITIES)
+=
+SOURCE QUANTITY
+```
+
+---
+
+#### 9. Precondiciones de división
+
+Una división ordinaria exige:
+
+1. LPN existente;
+2. lifecycle compatible con mutación autoritativa de contenido;
+3. membresía fuente autoritativa vigente;
+4. forma `QUANTITY_SLICE`;
+5. revisión de contenido esperada vigente;
+6. revisión de lifecycle vigente cuando sea material;
+7. actor autorizado;
+8. cantidades hijas válidas;
+9. conservación de dimensiones;
+10. correlación;
+11. idempotencia;
+12. ausencia de bloqueo superior aplicable.
+
+El cliente no puede declarar por sí solo que una membresía es elegible.
+
+---
+
+#### 10. División conserva dimensiones
+
+Todas las porciones producidas por una división conservan las mismas
+dimensiones de existencia de la fuente.
+
+Se prohíbe utilizar `SPLIT_CONTENT` para:
+
+- cambiar lote;
+- cambiar vencimiento;
+- cambiar condición;
+- cambiar unidad canónica;
+- cambiar clase primaria;
+- cambiar producto;
+- cambiar owner económico;
+- convertir cantidad fungible en identidad serializada;
+- reclasificar contenido.
+
+Un cambio real de una dimensión exige la transición propietaria correspondiente.
+
+---
+
+#### 11. División y lineage
+
+Cada porción resultante conserva lineage hacia:
+
+- membresía fuente;
+- LPN fuente;
+- operación de división;
+- cantidad fuente anterior;
+- cantidad hija;
+- dimensiones heredadas;
+- revisión anterior y resultante;
+- actor;
+- instante de servidor;
+- correlación e idempotencia.
+
+La implementación física podrá normalizar filas, pero no puede perder la
+capacidad de reconstruir la procedencia.
+
+---
+
+#### 12. División no transfiere entre LPN por sí sola
+
+Una división ordinaria ocurre dentro de la membresía del mismo LPN.
+
+Si el objetivo empresarial es enviar una parte hacia otro LPN:
+
+```text
+PARTIAL TRANSFER
+=
+ONE TRANSFER_CONTENT OPERATION
+```
+
+No se permite confirmar primero una división independiente y dejar una porción
+en estado intermedio para transferirla después como si ambas acciones fueran
+una sola intención.
+
+La partición necesaria puede ser parte interna de la misma decisión atómica de
+transferencia.
+
+---
+
+#### 13. Formas no divisibles
+
+`SERIALIZED_IDENTITY` no se divide.
+
+`KIT_INSTANCE` no se divide como cantidad genérica.
+
+Se fija:
+
+```text
+SPLIT(SERIALIZED_IDENTITY) = DENY
+SPLIT(KIT_INSTANCE) = DENY
+```
+
+La descomposición de un kit pertenece al dominio de kit. La transformación de
+una identidad serializada pertenece al owner de esa identidad y nunca se
+modela como fraccionamiento de LPN.
+
+---
+
+#### 14. `MERGE_CONTENT`
+
+`MERGE_CONTENT` une dos o más `QUANTITY_SLICE` compatibles dentro del mismo LPN
+para obtener una representación normalizada sin perder origen ni cambiar la
+existencia total.
+
+Forma conceptual:
+
+```text
+TWO OR MORE COMPATIBLE QUANTITY_SLICE
+→
+ONE QUANTITY_SLICE
+```
+
+con:
+
+```text
+TARGET QUANTITY
+=
+SUM(SOURCE QUANTITIES)
+```
+
+---
+
+#### 15. Precondiciones de unión
+
+La unión exige:
+
+1. un mismo LPN autoritativo;
+2. lifecycle compatible con mutación de contenido;
+3. al menos dos membresías fuente vigentes;
+4. forma `QUANTITY_SLICE` en todas;
+5. clave de equivalencia completa e idéntica;
+6. revisiones vigentes;
+7. actor autorizado;
+8. suma representable sin pérdida de precisión;
+9. correlación;
+10. idempotencia;
+11. ausencia de bloqueo de trazabilidad.
+
+---
+
+#### 16. Unión incompatible
+
+Nunca se unen por simplificación filas que difieren materialmente en:
+
+- producto;
+- clase primaria;
+- unidad canónica;
+- lote;
+- vencimiento;
+- condición;
+- liberación;
+- presentación material;
+- propiedad diferenciadora;
+- otra dimensión canónica discriminante.
+
+Se fija:
+
+```text
+DIFFERENT LOT
+→
+NO MERGE
+```
+
+```text
+DIFFERENT CONDITION
+→
+NO MERGE
+```
+
+La comodidad visual no permite destruir trazabilidad.
+
+---
+
+#### 17. Unión conserva todos los orígenes
+
+El resultado de una unión conserva lineage hacia todas las membresías fuente.
+
+No basta con conservar únicamente la primera fila o el último identificador.
+
+Debe poder reconstruirse:
+
+```text
+MERGED MEMBERSHIP
+→
+ALL SOURCE MEMBERSHIPS
+→
+ORIGINAL CONTENT HISTORY
+```
+
+---
+
+#### 18. Identidades exactas no se fusionan
+
+Dos `SERIALIZED_IDENTITY` pueden coexistir dentro de un LPN, pero no se
+convierten en una sola identidad.
+
+Dos `KIT_INSTANCE` pueden coexistir dentro de un LPN, pero no se convierten en
+una sola instancia.
+
+Por tanto:
+
+```text
+MERGE(SERIALIZED_IDENTITY) = DENY
+MERGE(KIT_INSTANCE) = DENY
+```
+
+Una proyección UI puede agrupar visualmente elementos, pero la fuente
+canónica mantiene identidades separadas.
+
+---
+
+#### 19. `TRANSFER_CONTENT`
+
+`TRANSFER_CONTENT` mueve de forma autoritativa contenido seleccionado desde un
+LPN fuente hacia un LPN destino distinto.
+
+Se fija:
+
+```text
+SOURCE_LPN_ID
+!=
+TARGET_LPN_ID
+```
+
+Si ambos identificadores son iguales, no existe una transferencia entre LPN.
+Una normalización interna deberá usar las reglas de división o unión según
+corresponda.
+
+---
+
+#### 20. Transferencia es una sola decisión
+
+La transferencia se modela como una única intención de negocio:
+
+```text
+VALID SOURCE MEMBERSHIP
++
+VALID TARGET LPN
++
+AUTHORIZED TRANSFER INTENT
++
+ATOMIC SOURCE/TARGET UPDATE
+→
+TRANSFERRED CONTENT
+```
+
+Está prohibido modelarla como:
+
+```text
+COMMITTED UNPACK
++
+LATER INDEPENDENT PACK
+```
+
+porque existiría una ventana en la que el contenido puede perderse, duplicarse
+o quedar irreconciliable.
+
+---
+
+#### 21. Lifecycle de LPN fuente y destino
+
+Para una transferencia ordinaria de contenido:
+
+```text
+SOURCE_LPN_STATE = ACTIVE
+TARGET_LPN_STATE = ACTIVE
+```
+
+`DRAFT` conserva únicamente preparación conforme al contrato anterior y no
+recibe membresía autoritativa mediante una transferencia real ordinaria.
+
+`CLOSED`, `CANCELLED` y `VOID` bloquean nuevas transferencias operativas.
+
+La transferencia no cambia automáticamente el lifecycle de ninguno de los dos
+LPN.
+
+---
+
+#### 22. Transferencia no cierra el LPN fuente
+
+Transferir todo el contenido de un LPN y dejarlo sin membresías no produce:
+
+```text
+AUTO CLOSE
+```
+
+El cierre conserva las precondiciones de `NEXO-DOM-003`.
+
+Se fija:
+
+```text
+SOURCE BECOMES EMPTY
+!=
+SOURCE BECOMES CLOSED
+```
+
+---
+
+#### 23. Transferencia no cambia purpose type
+
+Mover contenido hacia o desde un LPN no modifica por inferencia:
+
+- purpose type del origen;
+- purpose type del destino.
+
+Un cambio de purpose conserva su contrato versionado independiente.
+
+---
+
+#### 24. Transferencia parcial de `QUANTITY_SLICE`
+
+Cuando se transfiere una parte de una porción:
+
+```text
+0 < TRANSFER QUANTITY <= SOURCE QUANTITY
+```
+
+La decisión atómica debe producir:
+
+```text
+SOURCE AFTER
+=
+SOURCE BEFORE - TRANSFER QUANTITY
+```
+
+```text
+TARGET AFTER
+=
+TARGET BEFORE + TRANSFER QUANTITY
+```
+
+bajo exactamente las mismas dimensiones de existencia.
+
+La suma consolidada entre origen y destino permanece constante.
+
+---
+
+#### 25. Transferencia total de `QUANTITY_SLICE`
+
+Cuando la cantidad transferida equivale a toda la membresía fuente:
+
+- la fuente deja de poseer esa cantidad autoritativa;
+- el destino la recibe con las mismas dimensiones;
+- la historia de la membresía fuente permanece;
+- la representación física futura podrá retirar o cerrar la fila corriente,
+  pero no borrar lineage;
+- no se crea una nueva existencia económica.
+
+---
+
+#### 26. Consolidación en el destino
+
+Una transferencia por cantidad puede consolidarse con una membresía existente
+del LPN destino únicamente si satisface exactamente la clave de equivalencia de
+esta tarea.
+
+Si no es compatible:
+
+```text
+TARGET GETS SEPARATE MEMBERSHIP
+```
+
+No se fuerza una unión para reducir filas.
+
+---
+
+#### 27. Transferencia de `SERIALIZED_IDENTITY`
+
+Una identidad serializada se mueve como una unidad indivisible.
+
+La operación exige:
+
+```text
+SOURCE HAS IDENTITY = TRUE
+TARGET HAS IDENTITY = FALSE
+```
+
+Después de la transferencia:
+
+```text
+SOURCE HAS IDENTITY = FALSE
+TARGET HAS IDENTITY = TRUE
+```
+
+La identidad física exacta permanece igual.
+
+Nunca se clona, fracciona ni renumera por estar en otro LPN.
+
+---
+
+#### 28. Transferencia de `KIT_INSTANCE`
+
+Una instancia de kit se transfiere conservando su identidad de instancia.
+
+La transferencia:
+
+- no desarma el kit;
+- no recrea sus componentes;
+- no cambia su versión por inferencia;
+- no altera su completitud por el solo traslado de membresía;
+- no duplica valoración;
+- conserva lineage entre LPN origen y destino.
+
+La composición interna pertenece a las tareas propietarias de kit.
+
+---
+
+#### 29. Contenedor físico no es contenido transferible de esta tarea
+
+`PHYSICAL_CONTAINER` no se trata como `SERIALIZED_IDENTITY` ordinaria de
+contenido LPN para usar `TRANSFER_CONTENT`.
+
+La relación entre contenedor físico y LPN permanece separada y pertenece a
+`NEXO-DOM-019` a `NEXO-DOM-024` según corresponda.
+
+---
+
+#### 30. LPN anidado permanece fuera de esta tarea
+
+Un LPN no se convierte en una línea ordinaria de contenido de otro LPN bajo
+`TRANSFER_CONTENT`.
+
+El anidamiento se reserva íntegramente a `NEXO-DOM-006`.
+
+Esta tarea entrega invariantes de cantidad, identidad y lineage que el
+anidamiento deberá respetar, pero no define relaciones padre-hijo entre LPN.
+
+---
+
+#### 31. Atomicidad de una transferencia
+
+La actualización de origen y destino es indivisible desde la perspectiva de
+negocio.
+
+Se exige:
+
+```text
+SOURCE REMOVAL ACCEPTED
+IFF
+TARGET ADDITION ACCEPTED
+```
+
+Si cualquiera de los lados falla:
+
+```text
+COMMITTED BUSINESS TRANSFER = FALSE
+```
+
+No existe un estado canónico aceptado donde el origen ya perdió contenido y el
+destino todavía no lo posee como resultado final de la misma transferencia.
+
+---
+
+#### 32. Transferencia multilínea
+
+Una intención que declara varias membresías dentro de una misma transferencia
+se acepta completa o se rechaza completa.
+
+Se fija:
+
+```text
+MULTI-LINE TRANSFER
+→
+ALL OR NOTHING
+```
+
+No se permite presentar éxito parcial como transferencia completa.
+
+Si el negocio desea ejecutar subconjuntos independientes, cada subconjunto debe
+ser una intención explícita con su propia idempotencia y resultado.
+
+---
+
+#### 33. Revisiones de contenido
+
+Toda mutación aceptada conserva revisiones monotónicas.
+
+Para una división o unión dentro del mismo LPN:
+
+```text
+EXPECTED_CONTENT_REVISION
+=
+CURRENT_CONTENT_REVISION
+```
+
+antes de aceptar la operación.
+
+La operación incrementa la revisión de contenido una sola vez como decisión
+lógica, aun cuando su implementación requiera varias filas.
+
+---
+
+#### 34. Revisiones en transferencia
+
+`TRANSFER_CONTENT` valida simultáneamente las revisiones esperadas del LPN
+fuente y del LPN destino.
+
+Se requiere:
+
+```text
+EXPECTED_SOURCE_CONTENT_REVISION
+=
+CURRENT_SOURCE_CONTENT_REVISION
+```
+
+```text
+EXPECTED_TARGET_CONTENT_REVISION
+=
+CURRENT_TARGET_CONTENT_REVISION
+```
+
+La aceptación actualiza ambas de forma correlacionada.
+
+No existe last-write-wins silencioso.
+
+---
+
+#### 35. Revalidación de lifecycle
+
+La revisión de contenido no sustituye la revisión de lifecycle.
+
+Antes de confirmar una transferencia se debe comprobar que ambos LPN continúan
+en estado permitido.
+
+Ejemplo:
+
+```text
+CLIENT SAW TARGET ACTIVE
+TARGET IS NOW CLOSED
+→
+TRANSFER REJECTED
+```
+
+Una vista antigua no revive un LPN terminal.
+
+---
+
+#### 36. Idempotencia
+
+Cada intención mutable debe poseer identidad de idempotencia suficiente.
+
+Un retry de la misma intención:
+
+- no resta dos veces del origen;
+- no suma dos veces al destino;
+- no genera dos splits;
+- no genera dos merges;
+- no duplica lineage;
+- no incrementa revisiones dos veces;
+- no duplica efectos dependientes.
+
+El mismo identificador de operación debe recuperar o reproducir el resultado ya
+aceptado.
+
+---
+
+#### 37. Concurrencia
+
+Dos operaciones concurrentes sobre una misma membresía o LPN no pueden
+sobrescribirse silenciosamente.
+
+Casos a proteger incluyen:
+
+- dos transferencias de la misma cantidad;
+- split simultáneo con transfer;
+- merge simultáneo con unpack;
+- cierre de LPN concurrente con transfer;
+- anulación concurrente con transfer;
+- cambio de condición concurrente con merge;
+- dos destinos intentando tomar la misma identidad serializada.
+
+Solo la operación que satisfaga las revisiones vigentes puede avanzar; las
+otras revalidan o fallan sin efecto.
+
+---
+
+#### 38. Identidad serializada única
+
+Para `SERIALIZED_IDENTITY` se mantiene:
+
+```text
+AUTHORITATIVE_LPN_MEMBERSHIP_COUNT <= 1
+```
+
+Una identidad nunca puede terminar autoritativamente en origen y destino al
+mismo tiempo por una transferencia.
+
+La misma regla conceptual aplica a `KIT_INSTANCE`.
+
+---
+
+#### 39. No doble contabilización
+
+Las operaciones de esta tarea respetan la regla de fuente única de existencia.
+
+Se prohíbe que una cantidad o identidad quede simultáneamente:
+
+- como stock suelto y como contenido LPN por la misma existencia;
+- en dos LPN como miembro autoritativo completo;
+- duplicada por una fila de lineage;
+- duplicada por una proyección;
+- duplicada por retry;
+- duplicada por estado offline.
+
+La transformación de membresía debe correlacionarse con el control de
+inventario necesario para que representación y saldo permanezcan conciliables.
+
+---
+
+#### 40. Reserva y obligaciones existentes
+
+Una transferencia de contenido no puede borrar ni reescribir por inferencia una
+reserva, asignación, obligación de retorno, orden, remisión o compromiso que
+depende del contenido.
+
+Si existe una relación de este tipo:
+
+- el owner de la relación determina si puede mantenerse, migrarse, re-vincularse
+  o debe bloquear la transferencia;
+- cualquier cambio requerido debe ocurrir dentro de una decisión compatible y
+  auditable;
+- ante ausencia de una regla aplicable, la transferencia falla cerrada.
+
+Esta tarea no inventa estados de reserva o remisión.
+
+---
+
+#### 41. Custodia
+
+Transferir membresía entre LPN no equivale a aceptar una transferencia de
+custodia.
+
+Se fija:
+
+```text
+TRANSFER_CONTENT
+!=
+TRANSFER_CUSTODY
+```
+
+La custodia y el responsable actual pertenecen a `NEXO-DOM-008` y sus contratos
+de autorización.
+
+Si una operación concreta requiere cambio de custodia, ambas decisiones deben
+quedar correlacionadas sin que una se infiera de la otra.
+
+---
+
+#### 42. Ubicación
+
+Cambiar la membresía de LPN no autoriza a teletransportar inventario entre
+ubicaciones físicas.
+
+Si origen y destino pertenecen a contextos físicos distintos, la operación debe
+satisfacer el contrato de movimiento aplicable antes de considerarse efectiva.
+
+La relación sede → LOC → LPN → contenido pertenece a `NEXO-DOM-007`.
+
+---
+
+#### 43. Transferir contenido no es mover un LPN
+
+Se separan dos operaciones:
+
+```text
+TRANSFER_CONTENT
+!=
+MOVE_LPN
+```
+
+`TRANSFER_CONTENT` cambia qué LPN posee una membresía seleccionada.
+
+Mover físicamente un LPN completo y preservar atómicamente todo su contenido
+pertenece a `NEXO-DOM-022`.
+
+Esta tarea no redefine esa operación.
+
+---
+
+#### 44. Trazabilidad interna
+
+Toda división, unión o transferencia conserva las dimensiones de trazabilidad
+que ya existan sobre el contenido.
+
+No puede perder por efecto de estas operaciones:
+
+- lote;
+- serial;
+- vencimiento;
+- condición;
+- origen;
+- liberación;
+- unidad;
+- presentación material;
+- identidad de kit;
+- demás dimensiones exigidas por el owner.
+
+La especificación integral de trazabilidad interna permanece en
+`NEXO-DOM-023`.
+
+---
+
+#### 45. Capacidad y compatibilidad
+
+Esta tarea no define peso, volumen, capacidad máxima ni reglas materiales de
+compatibilidad.
+
+Sin embargo, una transferencia hacia un LPN destino no puede ignorar una regla
+aplicable de capacidad o compatibilidad.
+
+Si la implementación no puede demostrar elegibilidad del destino:
+
+```text
+TRANSFER = DENY
+```
+
+El contrato propietario permanece en `NEXO-DOM-024`.
+
+---
+
+#### 46. Operación offline
+
+Una intención capturada offline no equivale a una transferencia canónica.
+
+Se fija:
+
+```text
+OFFLINE TRANSFER INTENT
+!=
+COMMITTED TRANSFER_CONTENT
+```
+
+Al reconectar se debe:
+
+1. recuperar lifecycle vigente de ambos LPN;
+2. recuperar revisiones de contenido vigentes;
+3. recuperar membresías fuente actuales;
+4. revalidar autorización;
+5. revalidar restricciones aplicables;
+6. aplicar idempotencia;
+7. aceptar o rechazar la intención completa;
+8. conservar evidencia del resultado.
+
+---
+
+#### 47. Timeout y respuesta perdida
+
+Ante timeout, el cliente no puede inferir que la transferencia falló y emitir
+otra intención equivalente con un nuevo identificador.
+
+Debe consultar o reintentar con la misma identidad de idempotencia hasta poder
+resolver:
+
+```text
+ACCEPTED
+OR
+REJECTED
+OR
+UNKNOWN REQUIRING RECONCILIATION
+```
+
+Un resultado desconocido no autoriza duplicar el contenido.
+
+---
+
+#### 48. Fallo técnico
+
+Cuando no se puede demostrar identidad, revisión, autorización, cantidad,
+compatibilidad o integridad:
+
+- no se confirma la operación;
+- no se presenta el origen como reducido;
+- no se presenta el destino como incrementado;
+- no se avanza lifecycle;
+- no se genera un éxito parcial;
+- no se borra evidencia diagnóstica;
+- no se exponen secretos.
+
+La operación falla cerrada.
+
+---
+
+#### 49. Compensación
+
+La mutación nuclear de membresía fuente/destino de una transferencia debe ser
+atómica y no se diseña como una saga de dos commits independientes.
+
+Si existen efectos externos adicionales que no pueden compartir la misma
+transacción técnica, cada owner conserva su política de confirmación,
+reconciliación o compensación.
+
+Una compensación externa no autoriza una ventana permanente de doble
+contabilización dentro del ledger de contenido LPN.
+
+---
+
+#### 50. Auditoría mínima
+
+Cada operación aceptada o rechazada deberá poder atribuirse, según aplique, a:
+
+- identificador de operación;
+- tipo de operación;
+- LPN fuente;
+- LPN destino cuando exista;
+- membresías fuente;
+- membresías resultantes;
+- cantidad o identidad exacta;
+- dimensiones materiales;
+- revisiones antes y después;
+- actor efectivo;
+- contexto de autorización;
+- instante de servidor;
+- correlación;
+- idempotencia;
+- razón de rechazo o excepción;
+- referencias de proceso o movimiento cuando sean materiales.
+
+No se almacenan credenciales ni secretos como evidencia operativa.
+
+---
+
+#### 51. Lineage de transferencia
+
+Toda transferencia aceptada debe permitir responder:
+
+```text
+WHAT MOVED?
+FROM WHICH LPN?
+TO WHICH LPN?
+HOW MUCH OR WHICH EXACT IDENTITY?
+FROM WHICH MEMBERSHIP?
+IN WHICH OPERATION?
+UNDER WHICH REVISIONS?
+BY WHICH AUTHORIZED ACTOR?
+```
+
+Para transferencias parciales, la porción destino conserva enlace con la
+membresía fuente original y con la operación que la particionó.
+
+---
+
+#### 52. Matriz por forma de contenido
+
+| Forma | Dividir | Unir | Transferir entre LPN | Invariante principal |
+| --- | --- | --- | --- | --- |
+| `QUANTITY_SLICE` | sí, según precisión y política | sí, solo con dimensiones equivalentes | sí, parcial o total | conservar suma exacta y dimensiones |
+| `SERIALIZED_IDENTITY` | no | no | sí, identidad completa | máximo una membresía autoritativa |
+| `KIT_INSTANCE` | no como cantidad | no como identidad | sí, instancia completa | preservar instancia y composición propietaria |
+
+La matriz no convierte `PHYSICAL_CONTAINER` ni otro LPN en una cuarta forma.
+
+---
+
+#### 53. Matriz de operaciones prohibidas
+
+| Caso | Resultado |
+| --- | --- |
+| dividir una identidad serializada | DENY |
+| unir dos seriales como una identidad | DENY |
+| dividir una instancia de kit como cantidad genérica | DENY |
+| unir lotes distintos | DENY |
+| unir condiciones distintas | DENY |
+| transferir hacia el mismo LPN | DENY como transferencia |
+| transferir desde LPN no `ACTIVE` | DENY ordinario |
+| transferir hacia LPN no `ACTIVE` | DENY ordinario |
+| transferir más cantidad que la fuente | DENY |
+| transferir cantidad cero o negativa | DENY |
+| confirmar origen y destino en commits de negocio independientes | DENY |
+| aceptar una revisión obsoleta | DENY |
+| transferir una identidad ya autoritativa en otro LPN | DENY |
+| usar un LPN como contenido ordinario de otro | fuera de alcance; `NEXO-DOM-006` |
+| mover físicamente un LPN completo mediante `TRANSFER_CONTENT` | fuera de alcance; `NEXO-DOM-022` |
+| ignorar capacidad o compatibilidad desconocida | DENY |
+
+---
+
+#### 54. Matriz de conservación por operación
+
+| Dimensión | `SPLIT_CONTENT` | `MERGE_CONTENT` | `TRANSFER_CONTENT` |
+| --- | --- | --- | --- |
+| cantidad total | conserva | conserva | conserva entre origen y destino |
+| identidad serializada | no aplica | no aplica | conserva exactamente |
+| identidad de kit | no aplica | no aplica | conserva exactamente |
+| producto o sujeto | conserva | exige igualdad | conserva |
+| unidad canónica | conserva | exige igualdad | conserva |
+| lote | conserva | exige igualdad | conserva |
+| vencimiento | conserva | exige igualdad | conserva |
+| condición | conserva | exige igualdad | conserva |
+| purpose type del LPN | no cambia | no cambia | no cambia por inferencia |
+| lifecycle del LPN | no cambia | no cambia | no cambia por inferencia |
+| lineage | amplía | agrega todos los orígenes | agrega origen y destino |
+| revisión de contenido | monotónica | monotónica | monotónica en ambos LPN |
+
+---
+
+#### 55. Casos de aceptación por cantidad
+
+Se consideran válidos conceptualmente, sujetos a autorización y contratos
+posteriores:
+
+1. dividir 10 unidades compatibles en 4 y 6 dentro del mismo LPN;
+2. unir 4 y 6 de la misma existencia dimensional en 10;
+3. transferir 3 de 10 desde LPN A a LPN B;
+4. transferir 10 de 10 desde LPN A a LPN B;
+5. consolidar en B la cantidad transferida con una membresía exactamente
+   compatible;
+6. mantenerla separada cuando existe una dimensión material distinta;
+7. reintentar cualquiera de las operaciones con la misma idempotencia sin
+   duplicar efecto.
+
+---
+
+#### 56. Casos de identidad exacta
+
+Para una identidad serializada o instancia de kit:
+
+- origen debe poseerla autoritativamente;
+- destino no debe poseerla;
+- la transferencia es indivisible;
+- el origen la pierde y el destino la adquiere dentro de la misma decisión;
+- no se crea una identidad nueva;
+- no se pierde historia previa;
+- una proyección agrupada no sustituye la identidad exacta.
+
+---
+
+#### 57. Operaciones visuales y autoridad
+
+Una UI puede mostrar controles de dividir, unir o transferir, pero:
+
+```text
+VISIBLE CONTROL
+!=
+AUTHORIZED OPERATION
+```
+
+La autoridad se resuelve server-side en el momento de la mutación.
+
+Valores enviados por cliente sobre rol, estado, revisión, saldo o pertenencia se
+tratan como intención o precondición declarada, nunca como fuente de verdad.
+
+---
+
+#### 58. Propiedad del movimiento físico
+
+Esta tarea define transformación de membresía, no el catálogo integral de
+movimientos físicos de inventario.
+
+Cuando una transferencia de membresía implica desplazamiento físico real, debe
+existir correlación con el movimiento propietario correspondiente.
+
+No se acepta una membresía de destino que contradiga la ubicación física
+canónica.
+
+---
+
+#### 59. Estado AS-IS reconciliado
+
+La evidencia canónica vigente registra una implementación LPN parcial:
+
+- existe `inventory_lpns`;
+- existe `inventory_lpn_items` con cobertura limitada a producto, cantidad,
+  unidad, lote y vencimiento;
+- la representación actual no cubre por identidad todo el universo objetivo de
+  activos, kits y contenedores;
+- la superficie API inspeccionada de LPN es de lectura y no demuestra una
+  mutación end-to-end de división, unión o transferencia;
+- el ciclo completo de LPN continúa pendiente de materialización y evidencia
+  física en sus owners posteriores.
+
+Estas observaciones no prueban inexistencia absoluta de lógica fuera de las
+fuentes inspeccionadas; sí impiden declarar esta capacidad como implementada o
+certificada desde esta tarea documental.
+
+---
+
+#### 60. Reconciliación física futura
+
+La futura implementación deberá demostrar, como mínimo:
+
+- conservación exacta de cantidad;
+- unicidad de identidades serializadas;
+- unicidad de instancias de kit;
+- atomicidad origen/destino;
+- revisiones monotónicas;
+- idempotencia de retries;
+- ausencia de saldo duplicado;
+- lineage completo;
+- enforcement server-side;
+- concurrencia fail-closed;
+- paridad de lectura después de cada operación;
+- conservación de trazabilidad de lote, vencimiento y condición;
+- rechazo de lifecycle incompatible;
+- rechazo de destino incompatible o no verificable.
+
+La forma física concreta pertenece a las instancias y paquetes autorizados
+posteriores.
+
+---
+
+#### 61. Responsabilidades
+
+| Responsabilidad | Owner contractual |
+| --- | --- |
+| propósito e identidad LPN | `NEXO-DOM-002` |
+| lifecycle LPN | `NEXO-DOM-003` |
+| contenido, `PACK` y `UNPACK` | `NEXO-DOM-004` |
+| split, merge y transferencia entre LPN | `NEXO-DOM-005` |
+| LPN anidados y retornables | `NEXO-DOM-006` |
+| sede, LOC, LPN y contenido | `NEXO-DOM-007` |
+| custodia y responsable | `NEXO-DOM-008` |
+| no doble contabilización formal | `NEXO-DOM-021` |
+| movimiento atómico de un LPN completo | `NEXO-DOM-022` |
+| trazabilidad interna | `NEXO-DOM-023` |
+| capacidad y compatibilidad | `NEXO-DOM-024` |
+| autorización de mutaciones | familia `NEXO-AUTH` y autorización transversal |
+| persistencia, RPC, RLS y migraciones | arquitectura e implementación física propietarias |
+
+---
+
+#### 62. Handoff hacia `NEXO-DOM-006`
+
+Esta tarea entrega a `NEXO-DOM-006`:
+
+```text
+THREE STABLE CONTENT SHAPES
++
+EXACT QUANTITY CONSERVATION
++
+EXACT IDENTITY CONSERVATION
++
+ATOMIC CONTENT TRANSFER
++
+SOURCE/TARGET LINEAGE
++
+MONOTONIC REVISIONS
++
+NO LPN-AS-ORDINARY-CONTENT
+```
+
+`NEXO-DOM-006` deberá definir anidamiento y contenedores retornables sin
+convertir un LPN hijo en `QUANTITY_SLICE`, `SERIALIZED_IDENTITY` o
+`KIT_INSTANCE`, y sin debilitar la regla de una única representación
+autoritativa del contenido.
+
+---
+
+#### 63. Handoff hacia `NEXO-DOM-007`
+
+La relación física de ubicación posterior deberá poder distinguir:
+
+```text
+CONTENT TRANSFER BETWEEN LPN
+```
+
+frente a:
+
+```text
+PHYSICAL MOVE BETWEEN SITE OR LOC
+```
+
+`NEXO-DOM-007` recibe membresías y lineage estables y define cómo sede, LOC, LPN
+y contenido se correlacionan sin duplicar ubicación.
+
+---
+
+#### 64. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro canónico vigente ya protege explícitamente
+atomicidad, idempotencia, concurrencia, no doble contabilización y conservación
+de trazabilidad al mover, dividir, unir o desempaquetar contenido LPN. Esta
+tarea especializa el contrato de dominio sin introducir una obligación de
+prueba independiente.
+
+---
+
+#### 65. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro canónico, se reutiliza:
+
+- `TREQ-NEXO-004`, para el ciclo LPN ejecutable y auditable con contenido y sin
+  doble contabilización;
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, atomicidad,
+  idempotencia, concurrencia y separación entre existencia suelta y contenido
+  LPN;
+- `TREQ-NEXO-012`, para conservar lote, serial, vencimiento, condición y demás
+  trazabilidad al empacar, mover, dividir, unir o desempacar;
+- `TREQ-NEXO-016`, para mantener separados LPN, remisión, viaje, bulto,
+  contenedor, custodia, entrega y recepción;
+- `TREQ-NEXO-047`, para impedir duplicación de saldo, instancia, kit,
+  contenedor, contenido LPN o valor.
+
+Estas referencias son trazabilidad reutilizada y no representan cambios del
+registro.
+
+---
+
+#### 66. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al owner y el build canónico corresponden al checkout local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron main vigente, continuidad, topología, owner, handoff de la tarea anterior, registro NEXO, contrato de entrega, políticas documentales, package scripts y superficies LPN remotas relevantes. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron divisiones, uniones ni transferencias sobre inventario operativo. |
+| FÍSICA | NOT_EXECUTED | No se modificaron LPN, contenido, datos, Supabase, código ni despliegues. |
+
+---
+
+#### 67. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Se definen exactamente `SPLIT_CONTENT`, `MERGE_CONTENT` y `TRANSFER_CONTENT` como operaciones conceptuales.
+- [x] Las tres formas de contenido de la tarea anterior permanecen sin cambios.
+- [x] La división conserva exactamente la cantidad total.
+- [x] La división conserva dimensiones de existencia.
+- [x] La división no fracciona identidades serializadas ni instancias de kit.
+- [x] La unión solo consolida `QUANTITY_SLICE` compatibles.
+- [x] La unión conserva lineage de todos los orígenes.
+- [x] La unión no fusiona seriales ni kits.
+- [x] La transferencia exige LPN fuente y destino distintos.
+- [x] Fuente y destino ordinarios deben estar `ACTIVE`.
+- [x] La transferencia es una decisión atómica común.
+- [x] Se prohíbe implementar transfer como `UNPACK` confirmado seguido de `PACK` independiente.
+- [x] La transferencia parcial conserva la suma origen-destino.
+- [x] La transferencia total conserva historia.
+- [x] Las identidades exactas se mueven sin clonarse.
+- [x] Una transferencia multilínea es all-or-nothing.
+- [x] Se validan revisiones de contenido de ambos LPN.
+- [x] Se revalida lifecycle antes del commit.
+- [x] Se define idempotencia de retries.
+- [x] Se define control de concurrencia.
+- [x] Se prohíbe doble contabilización.
+- [x] Reservas, custodias y remisiones no se reescriben por inferencia.
+- [x] Transferir contenido no equivale a mover físicamente un LPN.
+- [x] Un LPN no se trata como contenido ordinario de otro.
+- [x] Se preserva trazabilidad interna.
+- [x] Capacidad y compatibilidad permanecen en su owner.
+- [x] Offline no confirma estado canónico antes de servidor.
+- [x] Timeout no autoriza una segunda intención duplicada.
+- [x] El estado AS-IS se presenta como parcial y no certificado.
+- [x] Se preserva la cobertura de pruebas existente sin modificarla.
+- [x] No se autoriza ningún cambio físico.
+- [x] `NEXO-DOM-006` recibe un handoff explícito.
+
+---
+
+#### 68. Límites
+
+Esta tarea no:
+
+- crea tablas, columnas, enums, constraints, índices, triggers o vistas;
+- crea RPC, Server Actions ni Route Handlers;
+- modifica `inventory_lpns`;
+- modifica `inventory_lpn_items`;
+- migra contenido legacy;
+- ejecuta backfills;
+- cambia saldos;
+- crea movimientos reales;
+- cambia ubicaciones;
+- transfiere custodia;
+- cambia remisiones;
+- cambia lifecycle de LPN;
+- cambia purpose type;
+- define LPN anidados;
+- define el ciclo de contenedores retornables;
+- define sede, LOC o posiciones;
+- define capacidad, peso o volumen;
+- define la operación física de mover un LPN completo;
+- define el modelo completo de lote, serial, vencimiento y condición;
+- crea permisos;
+- modifica Supabase;
+- modifica código;
+- modifica datos;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro canónico de requisitos;
+- desarrolla `NEXO-DOM-006`.
+
+---
+
+#### 69. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-005 — Definir división, unión y transferencia de contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-006 — Definir LPN anidados y contenedores retornables`
+
 ### [ ] NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
 ### [ ] NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
 ### [ ] NEXO-DOM-008 — Definir custodia y responsable actual
