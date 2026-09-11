@@ -4130,4 +4130,1449 @@ FULL APPLICATION CERTIFICATION
 `AUTH-SIM-014 — Probar en todas las aplicaciones`
 
 
-### [ ] AUTH-SIM-014 — Probar en todas las aplicaciones
+### ✅ AUTH-SIM-014 — Probar en todas las aplicaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-SIM-013 — Validar Server Actions como rol simulado
+**Tarea siguiente:** NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN
+**Tipo de tarea:** documental; contrato canónico de certificación integral transversal de simulación por aplicación, con materialización posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE Q — Simulación
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica código, aplicaciones, Supabase, migraciones, RLS, RPC, Server Actions, Route Handlers, Edge Functions, Realtime, jobs, colas, webhooks, integraciones, datos, permisos, sesiones, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Cerrar el contrato documental de validación integral de simulación definiendo qué debe demostrar cada aplicación canónica de Vento OS para considerarse conforme frente a navegación, presentación read-only, Server Actions, canales server-side, datos, lifecycle, concurrencia, replay y cero efectos reales.
+
+La regla raíz queda:
+
+```text
+TEN CANONICAL APPLICATIONS
++
+APPLICATION-SPECIFIC APPLICABILITY
++
+SIMULATED PROVENANCE PRESERVED
++
+READ-ONLY EXPERIENCE
++
+SERVER-SIDE ENFORCEMENT
++
+REAL DATA CEILING
++
+ZERO REAL EFFECTS
++
+TRACEABLE EVIDENCE
+=
+INTEGRAL SIMULATION CERTIFICATION
+```
+
+Y siempre:
+
+```text
+ONE PASSING SURFACE
+!=
+APPLICATION CERTIFICATION
+```
+
+```text
+APPLICATION CERTIFICATION
+!=
+GLOBAL CERTIFICATION
+```
+
+```text
+DOCUMENTED CONTRACT
+!=
+PHYSICAL EVIDENCE
+```
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+COMO SE CERTIFICA EL CONTRATO DE SIMULACION EN CADA APLICACION CANONICA?
+```
+
+```text
+QUE CANALES Y EFECTOS DEBE PROBAR CADA APLICACION SEGUN SU ALCANCE REAL?
+```
+
+```text
+COMO SE DEMUESTRA QUE UNA APLICACION NO ACEPTA AUTORIDAD SIMULADA?
+```
+
+```text
+QUE CONJUNTO DE EVIDENCIA PERMITE CERRAR EL MINI-BLOQUE DE SIMULACION?
+```
+
+No implementa ni ejecuta la certificación física. Define el contrato que deberán satisfacer las futuras unidades propietarias.
+
+#### 3. Handoff recibido de AUTH-SIM-013
+
+`AUTH-SIM-013` entrega una frontera específica de Server Actions ya cerrada:
+
+```text
+SIMULATED ORIGIN
++
+BUSINESS SERVER ACTION
+=
+DENY BEFORE EFFECT
+```
+
+```text
+SERVER ACTION
+MUST RESOLVE REAL AUTHORITY
+INDEPENDENTLY OF SIMULATED ROLE
+```
+
+```text
+PASSING SERVER ACTION TESTS
+!=
+FULL APPLICATION CERTIFICATION
+```
+
+Por tanto, esta tarea integra la evidencia de Server Actions con el resto de canales aplicables de cada aplicación sin inferir cobertura integral desde una sola superficie.
+
+#### 4. Handoff recibido de AUTH-SIM-012
+
+`AUTH-SIM-012` entrega navegación simulada bajo estas invariantes:
+
+```text
+NAVIGATION MAY PRESERVE A SIMULATION
+BUT NEVER GRANTS REAL AUTHORITY
+```
+
+```text
+DESTINATION REQUEST WITH SIMULATED ORIGIN
+REMAINS NON-EXECUTABLE
+```
+
+```text
+ROUTER / URL / HISTORY
+ARE NOT AUTHORIZATION SOURCES
+```
+
+La certificación por aplicación debe demostrar que la navegación no pierde procedencia, aviso, read-only, lifecycle ni techo de autoridad real.
+
+#### 5. Handoff recibido de AUTH-SIM-011
+
+`AUTH-SIM-011` entrega una experiencia de preview con:
+
+```text
+SIMULATION PREVIEW
+-> READ-ONLY PRESENTATION
+-> ZERO REAL EFFECTS
+```
+
+La aplicación solo puede certificarse si sus controles mutadores, formularios, shortcuts, autosave, uploads, exportaciones, impresiones, notificaciones e integraciones aplicables permanecen no ejecutables durante la simulación.
+
+#### 6. Handoff recibido de AUTH-SIM-010
+
+`AUTH-SIM-010` conserva el enforcement material:
+
+```text
+SIMULATED ORIGIN
+-> REAL EXECUTION FORBIDDEN
+```
+
+```text
+SIMULATED RESULT
+-> executable = false
+```
+
+La certificación integral no acepta una UI inerte como sustituto del deny server-side.
+
+#### 7. Handoffs de lifecycle
+
+`AUTH-SIM-007..009` conservan:
+
+- aviso persistente;
+- inicio autoritativo;
+- salida autoritativa;
+- expiración;
+- revocación;
+- invalidez;
+- retorno a contexto real fresco.
+
+La aplicación debe demostrar que sus superficies convergen con ese lifecycle y no convierten cambio de pantalla, refresh, tab, pérdida de estado cliente o cierre visual en una transición empresarial inexistente.
+
+#### 8. Contratos consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-SIM-001..013`;
+- `AUTH-SRV-001..018` según la superficie aplicable;
+- `AUTH-DB-013` como fundación append-only de simulación;
+- contratos de autorización, contexto, catálogo, recursos, sesiones, dispositivos compartidos, auditoría, idempotencia, privacidad y accesibilidad;
+- catálogo vigente de `simulation_requirement`;
+- inventario vigente de superficies server-side;
+- decisiones canónicas por aplicación;
+- evidencia física disponible y brechas ya registradas.
+
+#### 9. Topología y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+El marcador documental se desarrolla una sola vez.
+
+La certificación física posterior se materializa por `implementation_unit_id` y puede ser consumida por uno o varios paquetes únicamente mediante lineage explícito.
+
+Esta tarea no crea, autoriza ni ejecuta una instancia física.
+
+#### 10. Definición de certificación integral por aplicación
+
+Una aplicación queda certificada únicamente cuando existe evidencia suficiente de todas las dimensiones que le resultan aplicables y evidencia explícita de no aplicabilidad para las que realmente no posee.
+
+La fórmula queda:
+
+```text
+APPLICATION PASS
+=
+ALL APPLICABLE DIMENSIONS PASS
++
+ALL NON-APPLICABLE DIMENSIONS JUSTIFIED
++
+ZERO UNKNOWN CRITICAL DIMENSIONS
++
+ZERO REAL EFFECTS FROM SIMULATION
+```
+
+Una dimensión sin evidencia no se convierte en PASS por ausencia de fallos observados.
+
+#### 11. Unidad de certificación
+
+La aplicación es una dimensión de cobertura empresarial.
+
+La identidad física de ejecución sigue siendo:
+
+```text
+AUTH-SIM-014::<implementation_unit_id>
+```
+
+Por tanto:
+
+```text
+APPLICATION
+!=
+IMPLEMENTATION UNIT
+```
+
+Una unidad puede cubrir una o varias superficies de una aplicación y una aplicación puede requerir varias unidades. El expediente debe demostrar completitud mediante lineage, no por igualdad de nombres.
+
+#### 12. Universo canónico de aplicaciones
+
+El universo queda cerrado en diez aplicaciones:
+
+```text
+SHELL
+ANIMA
+AURA
+FOGO
+NEXO
+NUMERA
+ORIGO
+PASS
+PULSO
+VISO
+```
+
+Resultado documental:
+
+```text
+EXPECTED_APPLICATIONS = 10
+DOCUMENTED_APPLICATION_DECISIONS = 10
+OMITTED_APPLICATIONS = 0
+```
+
+No se agrega ni retira una aplicación por observación local de repositorios.
+
+#### 13. Dimensiones obligatorias de certificación
+
+Cada aplicación debe resolver, según aplique:
+
+1. elegibilidad y entrada a simulación;
+2. procedencia simulada;
+3. aviso persistente;
+4. read-only;
+5. navegación;
+6. Server Components y fetch server-side;
+7. Server Actions;
+8. Route Handlers o APIs;
+9. RPC/PostgREST;
+10. RLS/Data API;
+11. Edge Functions;
+12. Realtime;
+13. offline;
+14. procesos asíncronos;
+15. jobs y colas;
+16. webhooks e integraciones;
+17. notificaciones;
+18. impresión;
+19. exportaciones;
+20. Storage cuando produzca estado o evidencia empresarial;
+21. dispositivos compartidos cuando apliquen;
+22. lifecycle y terminales;
+23. reautorización posterior a salida;
+24. concurrencia, tabs y respuestas tardías;
+25. idempotencia y replay;
+26. privacidad y minimización;
+27. accesibilidad;
+28. auditoría y evidencia.
+
+#### 14. Clasificación de simulación preservada
+
+La certificación consume exactamente:
+
+```text
+TOTAL = 140
+FULL_PREVIEW = 85
+DECISION_ONLY = 52
+NOT_ALLOWED = 3
+```
+
+No modifica esa distribución.
+
+Las claves excluidas permanecen:
+
+```text
+aura.access
+pass.access
+viso.authorization.context_simulations.view
+```
+
+Un permiso sin clasificación demostrable permanece fail-closed.
+
+#### 15. Delta físico no reconciliado
+
+La evidencia física vigente registra un baseline de 179 permisos frente al snapshot documental de 140.
+
+La diferencia de 39 identidades no se interpreta como cobertura implícita.
+
+Toda identidad sin clasificación canónica aplicable debe permanecer fuera de certificación positiva hasta que su owner reconcilie catálogo, implementación y pruebas.
+
+#### 16. Regla de aplicabilidad por canal
+
+Un canal puede declararse no aplicable solo cuando existe evidencia versionada y reproducible de que la aplicación o unidad no posee esa superficie ni un equivalente funcional.
+
+No es suficiente:
+
+- no encontrar una coincidencia en una búsqueda parcial;
+- no haber visto el canal durante una prueba manual;
+- que el repositorio histórico no lo listara;
+- que el frontend no muestre un control;
+- que una unidad no lo haya ejercitado todavía.
+
+La ausencia no demostrada permanece sin certificar.
+
+#### 17. Regla de PASS por canal
+
+Un canal aplicable obtiene PASS únicamente si demuestra simultáneamente:
+
+- procedencia simulada correctamente detectada o preservada;
+- autoridad real separada;
+- clasificación vigente;
+- resultado simulado no ejecutable;
+- deny antes del efecto cuando se intenta ejecución real;
+- cero efectos observables;
+- causa y respuesta equivalentes al contrato;
+- evidencia correlacionable y reproducible.
+
+#### 18. Regla de PASS por aplicación
+
+Una aplicación no puede obtener PASS mientras exista cualquiera de estas condiciones:
+
+- canal crítico aplicable sin evidencia;
+- bypass conocido;
+- uso autoritativo de rol o contexto simulado;
+- ampliación de datos reales;
+- writer alcanzable desde preview;
+- replay posterior;
+- lifecycle divergente;
+- integración externa ejecutable;
+- evidencia física stale o no atribuible a la versión certificada.
+
+#### 19. Regla de PASS global del mini-bloque
+
+El cierre físico futuro del contrato de simulación requiere:
+
+```text
+10 APPLICATION DECISIONS
++
+ALL APPLICABLE UNITS CERTIFIED
++
+NO UNRESOLVED CRITICAL GAP
++
+ZERO SIMULATED AUTHORITY ACCEPTED
++
+ZERO REAL EFFECTS
+=
+SIMULATION BLOCK PHYSICAL PASS
+```
+
+Esta tarea documental no declara ese PASS físico.
+
+#### 20. SHELL
+
+SHELL debe demostrar, según sus superficies aplicables:
+
+- que el launcher y navegación no convierten preview en acceso real;
+- que la transición entre aplicaciones preserva procedencia hasta revalidación del destino;
+- que ningún permiso simulado habilita una aplicación real;
+- que Server Components, acciones o handlers propios usan autoridad real;
+- que la sesión real permanece separada del escenario;
+- que sign-out, perfil y navegación real no se reinterpretan como operaciones del rol simulado;
+- que la simulación no convierte SHELL en autoridad universal para aplicaciones destino.
+
+La aplicación destino conserva su propia decisión.
+
+#### 21. ANIMA
+
+ANIMA debe conservar la separación entre simulación laboral y hechos reales de asistencia.
+
+La certificación debe demostrar, según aplique:
+
+- rol, sede, área, turno y check-in simulados no modifican trabajador ni jornada reales;
+- ninguna preview registra entrada, salida, novedad o asistencia;
+- offline no encola hechos reales derivados de simulación;
+- sincronización posterior no convierte una intención simulada en evento laboral;
+- datos reales visibles permanecen dentro de la autoridad real del actor.
+
+La ausencia de Server Actions web no elimina la obligación sobre RPC, APIs, sincronización nativa u otros canales reales que sí existan.
+
+#### 22. AURA
+
+AURA conserva la exclusión vigente del permiso `aura.access` y no debe recibir una superficie de simulación fabricada para satisfacer la matriz.
+
+La certificación correcta para la capacidad excluida demuestra:
+
+```text
+NOT_ALLOWED
+-> NO SIMULATION PREVIEW
+-> NO SIMULATED AUTHORITY
+```
+
+Si en el futuro aparecen superficies AURA canónicas, deberán ingresar primero por sus owners y catálogo antes de incorporarse a una certificación física de simulación.
+
+#### 23. FOGO
+
+FOGO debe demostrar que una preview productiva no puede:
+
+- crear o editar una receta real;
+- iniciar, modificar o cerrar un lote;
+- consumir inventario;
+- publicar una preparación;
+- registrar trazabilidad real;
+- imprimir o despachar una orden real;
+- producir una integración derivada del escenario.
+
+Rol, área, turno o contexto simulados nunca satisfacen los prerrequisitos operativos reales.
+
+#### 24. NEXO
+
+NEXO debe demostrar que la simulación no produce movimientos físicos ni lógicos de inventario o logística.
+
+Deben quedar cubiertos, según aplique:
+
+- stock;
+- entradas;
+- retiros;
+- transferencias;
+- ubicaciones;
+- activos;
+- conteos;
+- remisiones;
+- carga;
+- recepción;
+- tránsito;
+- configuraciones operativas;
+- impresión de etiquetas;
+- acciones de dispositivos compartidos.
+
+Una sede, área, estación o rol simulado no amplía autoridad ni territorio reales.
+
+#### 25. NUMERA
+
+NUMERA debe mantener una frontera reforzada de datos financieros y de costos.
+
+La simulación no puede:
+
+- ampliar entidades o periodos visibles;
+- exponer saldos o costos fuera del alcance real;
+- registrar asientos, ajustes o cierres;
+- persistir un cálculo hipotético como hecho contable;
+- exportar información protegida por autoridad simulada;
+- disparar procesos financieros reales.
+
+Los cálculos de preview permanecen inequívocamente separados de la contabilidad real.
+
+#### 26. ORIGO
+
+ORIGO debe demostrar que una simulación de compra o recepción no puede:
+
+- crear o modificar una orden real;
+- aprobar una compra;
+- confirmar una recepción;
+- registrar un movimiento de inventario;
+- alterar proveedor o maestro;
+- enviar comunicación o integración real;
+- generar documentos operativos ejecutables.
+
+La cobertura simulada nunca concede acceso adicional a datos del proveedor.
+
+#### 27. PASS
+
+PASS conserva la exclusión vigente de `pass.access` dentro del plano simulado y la separación entre identidad cliente e identidad laboral.
+
+La certificación debe demostrar:
+
+- una sesión cliente real no se convierte en sesión laboral simulada;
+- un rol laboral simulado no modifica puntos, nivel, saldo, perfil o identidad cliente;
+- no se crea una preview cliente por inferencia desde un rol laboral;
+- cualquier superficie administrativa autorizada que represente PASS permanece fuera de la sesión cliente y bajo autoridad real independiente.
+
+#### 28. PULSO
+
+PULSO debe demostrar cero efectos de POS desde simulación.
+
+La preview no puede:
+
+- abrir o alterar una sesión de caja real;
+- crear una venta;
+- registrar pago;
+- redimir beneficios;
+- modificar pedido;
+- cerrar caja;
+- emitir devolución o reembolso;
+- imprimir comprobante operativo;
+- disparar integración de pago o fiscal;
+- transferir custodia.
+
+Un `WOULD_ALLOW` nunca habilita el flujo transaccional real.
+
+#### 29. VISO
+
+VISO administra y presenta simulaciones desde autoridad real, pero no puede autoautorizar la propia capacidad de simulación.
+
+Debe demostrar:
+
+- `viso.authorization.context_simulations.view` permanece `NOT_ALLOWED` como permiso simulado;
+- actor real y sujeto simulado permanecen separados;
+- herramientas de comparación no escriben configuración real por autoridad simulada;
+- administración de roles, sedes, áreas, horarios, catálogos o permisos conserva autorización real independiente;
+- la UI de simulación no convierte filtros, role override o contexto hipotético en contexto efectivo real.
+
+#### 30. Matriz canónica por aplicación
+
+| Aplicación | Resultado contractual durante simulación | Condición especial |
+| --- | --- | --- |
+| `SHELL` | preview y navegación sin autoridad simulada | destino siempre revalida |
+| `ANIMA` | preview laboral sin hechos reales de asistencia | offline no ejecuta después |
+| `AURA` | exclusión de simulación preservada | no fabricar superficie |
+| `FOGO` | preview productiva sin lote ni consumo real | cero efectos de producción |
+| `NEXO` | preview logística sin movimientos reales | dispositivos y etiquetas incluidos cuando apliquen |
+| `NUMERA` | preview financiera sin efectos contables | minimización reforzada |
+| `ORIGO` | preview de compra/recepción sin orden ni recepción real | datos de proveedor bajo autoridad real |
+| `PASS` | exclusión laboral preservada | identidad cliente separada |
+| `PULSO` | preview POS sin venta, pago ni caja real | cero efectos transaccionales |
+| `VISO` | administración real separada de simulación | permiso de simulación no auto-simulable |
+
+#### 31. Matriz de clasificación
+
+| Clasificación | Decisión hipotética | Contenido permitido | Efecto real |
+| --- | --- | --- | --- |
+| `FULL_PREVIEW` | sí | preview permitida bajo techo real de datos | prohibido |
+| `DECISION_ONLY` | sí | decisión y explicación mínima | prohibido |
+| `NOT_ALLOWED` | no | sin preview funcional de la capacidad | prohibido |
+| desconocida | no asumir | fail-closed | prohibido |
+
+#### 32. Matriz de lifecycle
+
+| Estado | Presentación | Ejecución real desde procedencia simulada |
+| --- | --- | --- |
+| `DRAFT` | no preview activa | DENY |
+| `RESOLVING` | no confirmada | DENY |
+| `ACTIVE` | según clasificación | DENY |
+| `STALE` | suspendida | DENY |
+| `INVALID` visible | retirar o bloquear | DENY |
+| `EXIT_PENDING` | conserva semántica simulada | DENY |
+| `COMPLETED` con request antigua | artefacto histórico | DENY replay |
+| `EXPIRED` con request antigua | artefacto histórico | DENY replay |
+| `REVOKED` con request antigua | artefacto histórico | DENY replay |
+| `INVALID` terminal con request antigua | artefacto histórico | DENY replay |
+| contexto real fresco posterior | fuera de simulación | evaluar desde cero |
+
+#### 33. Matriz multicanal
+
+| Canal | Evidencia mínima de conformidad |
+| --- | --- |
+| launcher / navegación | no convierte preview en acceso real y revalida destino |
+| RSC / fetch server-side | no amplía datos con autoridad simulada |
+| Server Actions | deny server-side antes del efecto |
+| Route Handlers / APIs | llamada directa no crea bypass |
+| RPC / PostgREST | writer no acepta rol, territorio o decisión simulados como autoridad |
+| RLS / Data API | policies no amplían filas por contexto simulado |
+| Edge Functions | credencial técnica no sustituye autoridad del actor |
+| Realtime | scope real preservado y sin origen mutador prohibido |
+| offline | no encola mutación real desde preview |
+| procesos asíncronos | no difieren el bypass a worker |
+| jobs / colas | producer y consumer preservan procedencia y cero efectos |
+| webhook / integración | cero dispatch externo |
+| notificaciones | cero envío real |
+| impresión | cero job físico |
+| exportaciones | no externalizan datos por autoridad simulada |
+
+#### 34. Techo de datos reales
+
+En todas las aplicaciones debe mantenerse:
+
+```text
+REAL DATA VISIBLE IN PREVIEW
+subset_of
+REAL ACTOR AUTHORIZED DATA
+```
+
+El rol simulado no amplía filas, campos, documentos, adjuntos, saldos, proveedores, clientes, trabajadores, inventario, costos o configuraciones visibles.
+
+Datos sintéticos, vacíos o enmascarados permanecen explícitamente separados de datos reales.
+
+#### 35. Aviso persistente
+
+Toda superficie que presente contenido afectado por simulación debe conservar el aviso definido por su contrato.
+
+La certificación debe demostrar que:
+
+- ruta, layout, modal, portal, tab o refresh no eliminan silenciosamente la condición;
+- el aviso no puede descartarse mientras continúe la preview;
+- su ausencia accidental no habilita operación real;
+- la experiencia sigue siendo perceptible y accesible.
+
+#### 36. Read-only integral
+
+La aplicación debe probar todos los métodos de activación relevantes, no solo el click principal.
+
+Incluye cuando apliquen:
+
+- Enter;
+- Space;
+- shortcuts;
+- command palette;
+- doble click;
+- touch;
+- gestos;
+- menús contextuales;
+- acciones bulk;
+- autosave;
+- uploads;
+- controles alternos reutilizados.
+
+Ningún método alterno puede conservar un writer real desde preview.
+
+#### 37. Navegación integral
+
+Las pruebas deben incluir los mecanismos de navegación que la aplicación realmente posea:
+
+- links internos;
+- push/replace;
+- redirects cliente;
+- redirects servidor;
+- deep links;
+- URL directa;
+- back/forward;
+- back-forward cache;
+- refresh;
+- hard reload;
+- nueva tab;
+- nueva ventana;
+- cambio de aplicación.
+
+Cada destino revalida lo material y conserva la procedencia simulada cuando corresponda.
+
+#### 38. Server Actions
+
+Toda Server Action empresarial aplicable debe cubrir al menos:
+
+1. llamada desde preview;
+2. llamada directa sin depender del control visual;
+3. intento con `WOULD_ALLOW`;
+4. omisión o manipulación de referencia cliente;
+5. replay de payload simulado;
+6. lifecycle no vigente;
+7. contexto real fresco posterior con solicitud nueva.
+
+El caso simulado debe terminar antes del efecto y el caso real posterior debe reautorizarse desde cero.
+
+#### 39. Route Handlers y APIs
+
+Los endpoints aplicables deben demostrar que invocar directamente el transporte no evita la política.
+
+No se admite una diferencia donde:
+
+```text
+UI -> DENY
+DIRECT HTTP -> EFFECT
+```
+
+La respuesta pública conserva la semántica del owner y cero efectos.
+
+#### 40. RPC y PostgREST
+
+Una llamada directa a Supabase no puede recibir como autoridad:
+
+- rol simulado;
+- sede simulada;
+- área simulada;
+- turno simulado;
+- check-in simulado;
+- permiso simulado;
+- resultado `WOULD_ALLOW`;
+- `can_operate`;
+- un booleano ambiguo.
+
+Writers y funciones protegidas deben demostrar bloqueo o autoridad real independiente.
+
+#### 41. RLS y Data API
+
+La certificación debe demostrar que el contexto simulado no amplía SELECT, INSERT, UPDATE o DELETE.
+
+No se acepta una política amplia compensada por UI read-only.
+
+Las pruebas negativas deben incluir acceso territorial, recurso y actor fuera del alcance real cuando sean aplicables.
+
+#### 42. Edge Functions
+
+Una Edge Function aplicable conserva procedencia y autoridad real incluso cuando utiliza credenciales técnicas internas.
+
+La credencial del servicio no convierte una operación simulada en efecto autorizado.
+
+Debe existir deny antes de dispatch o mutación cuando la procedencia permanezca simulada.
+
+#### 43. Realtime
+
+Realtime no puede:
+
+- ampliar topics o streams por rol simulado;
+- exponer payload protegido fuera del alcance real;
+- ocultar una mutación prohibida tratándola como simple actualización de preview.
+
+Toda suscripción real se autoriza mediante el plano real.
+
+#### 44. Offline
+
+Una aplicación con comportamiento offline debe demostrar:
+
+```text
+SIMULATED ACTION OFFLINE
+-> NO EXECUTABLE BUSINESS QUEUE
+```
+
+Al reconectar se revalida lifecycle, actor, sesión, contexto e intención.
+
+No existe autoejecución de una intención capturada durante preview.
+
+#### 45. Procesos asíncronos, jobs y colas
+
+La separación temporal no elimina la procedencia.
+
+Cuando una operación pueda producir un job o mensaje ejecutable:
+
+- el producer no debe encolarlo desde simulación;
+- el consumer no debe asumir que el producer ya protegió el origen;
+- una referencia simulada recibida por el worker falla cerrado;
+- cero efectos externos deben quedar correlacionados.
+
+#### 46. Webhooks e integraciones
+
+Una preview puede representar que existiría una integración, pero no materializarla.
+
+Deben permanecer en cero:
+
+- webhooks;
+- pagos;
+- facturación;
+- mensajería externa;
+- proveedores;
+- hardware;
+- publicaciones externas;
+- sincronizaciones empresariales.
+
+#### 47. Notificaciones
+
+La representación hipotética de una notificación no envía mensajes reales.
+
+Email, SMS, push, mensajería interna con efecto empresarial y canales de terceros permanecen sin dispatch desde procedencia simulada.
+
+#### 48. Impresión
+
+La preview puede representar un comprobante, etiqueta o documento cuando el contrato lo permita.
+
+No puede enviar un trabajo a BrowserPrint, spooler, impresora local, impresora remota o hardware equivalente.
+
+La certificación debe observar cero trabajos físicos originados en simulación.
+
+#### 49. Exportaciones
+
+Exportar información real es una salida de datos y requiere autoridad real independiente.
+
+La simulación no puede ampliar:
+
+- datasets;
+- reportes;
+- adjuntos;
+- archivos;
+- datos financieros;
+- datos personales;
+- inventarios;
+- información de proveedores o clientes.
+
+Una exportación sintética o enmascarada, cuando exista, permanece inequívocamente etiquetada como preview.
+
+#### 50. Dispositivos compartidos
+
+Cuando una aplicación opere en estación compartida, la certificación conserva separados:
+
+```text
+DEVICE
+TECHNICAL PRINCIPAL
+REAL HUMAN ACTOR
+REAL OPERATIONAL CONTEXT
+SIMULATION
+SIMULATED ROLE
+```
+
+Cambiar de trabajador invalida la preview anterior y no transfiere resultados, permisos, formulario ni intención simulados.
+
+#### 51. Concurrencia y múltiples ventanas
+
+Cada aplicación debe cubrir las carreras que le resulten materialmente posibles:
+
+- terminal concurrente;
+- expiración;
+- cambio de actor;
+- cambio de escenario;
+- cambio de política;
+- respuesta tardía;
+- doble click;
+- dos tabs;
+- refresh durante `EXIT_PENDING`;
+- reintento después de timeout.
+
+Si no puede demostrarse procedencia real fresca en el commit point, no existe efecto.
+
+#### 52. Replay e idempotencia
+
+Una identidad usada por preview no se reutiliza como autorización o idempotency key de una mutación real.
+
+Debe probarse que:
+
+- request simulado histórico sigue no ejecutable después del terminal;
+- respuesta `WOULD_ALLOW` stale no habilita una acción;
+- payload capturado en preview no se reproduce como real;
+- la solicitud real posterior utiliza una intención nueva y su propio namespace de idempotencia.
+
+#### 53. Retorno a contexto real
+
+Después de `COMPLETED`, `EXPIRED`, `REVOKED` o `INVALID`, la aplicación no restaura autoridad desde cache o estado previo.
+
+La secuencia válida es:
+
+```text
+TERMINAL CONFIRMED
+-> SIMULATED STATE DISCARDED
+-> REAL CONTEXT RE-RESOLVED
+-> NEW REAL REQUEST
+-> REAL AUTHORIZATION
+```
+
+El terminal no autoejecuta la acción simulada.
+
+#### 54. Evidencia positiva
+
+Las pruebas positivas demuestran únicamente lo que debe funcionar dentro del contrato, por ejemplo:
+
+- preview permitida en `FULL_PREVIEW`;
+- decisión visible en `DECISION_ONLY`;
+- navegación simulada segura;
+- datos reales ya autorizados visibles cuando corresponde;
+- salida autoritativa y retorno fresco;
+- operación real nueva autorizada después de abandonar correctamente la simulación.
+
+Un positivo nunca requiere producir un efecto real desde procedencia simulada.
+
+#### 55. Evidencia negativa
+
+Las pruebas negativas deben intentar de forma controlada los bypass aplicables:
+
+- control mutador;
+- llamada directa;
+- manipulación cliente;
+- omisión de referencia;
+- replay;
+- cache stale;
+- history;
+- deep link;
+- RPC directa;
+- endpoint directo;
+- worker;
+- offline;
+- tab concurrente;
+- actor cambiado;
+- permiso desconocido;
+- clasificación ausente.
+
+El resultado conforme es deny, no ejecutabilidad y cero efectos.
+
+#### 56. Evidencia mínima por aplicación
+
+El expediente físico futuro debe conservar para cada aplicación:
+
+1. aplicación y versión certificadas;
+2. unidades que aportan cobertura;
+3. inventario de canales aplicables;
+4. justificación de cada no aplicabilidad;
+5. permisos o capacidades ejercitados;
+6. clasificaciones de simulación usadas;
+7. escenarios positivos;
+8. escenarios negativos;
+9. lifecycle ejercitado;
+10. evidencia de cero efectos;
+11. evidencia de techo de datos;
+12. evidencia de concurrencia/replay cuando aplique;
+13. accesibilidad y presentación cuando exista preview;
+14. trazabilidad de fallos;
+15. resultado final de la aplicación.
+
+#### 57. Evidencia mínima por unidad física
+
+Cada `AUTH-SIM-014::<implementation_unit_id>` debe demostrar:
+
+- package y gate E5 aplicables;
+- commit o versión exacta;
+- superficies incluidas;
+- aplicaciones cubiertas;
+- canales cubiertos;
+- fixtures y datos de prueba controlados;
+- baseline de efectos antes de probar;
+- resultado después de cada intento;
+- cero escrituras y cero dispatch no autorizados;
+- logs y auditoría correlacionables;
+- rollback verificable;
+- relación con otras unidades necesarias para completar la aplicación.
+
+#### 58. Evidencia de cero efectos
+
+La certificación no se limita a recibir un código de error.
+
+Debe demostrar, cuando aplique:
+
+```text
+ROWS_WRITTEN = 0
+STATE_TRANSITIONS = 0
+OUTBOX_MESSAGES = 0
+QUEUED_JOBS = 0
+WEBHOOKS_SENT = 0
+NOTIFICATIONS_SENT = 0
+PRINT_JOBS = 0
+EXTERNAL_MUTATIONS = 0
+```
+
+Las métricas son semánticas; cada unidad puede usar evidencia física equivalente.
+
+#### 59. Agregación de fallos
+
+Un fallo no se oculta promediando resultados de la aplicación.
+
+La regla es:
+
+```text
+ONE CRITICAL APPLICABLE FAILURE
+-> APPLICATION FAIL
+```
+
+El expediente conserva el canal, escenario, versión, owner y evidencia que bloquean la certificación.
+
+#### 60. No certificación por ausencia de uso
+
+No se considera evidencia suficiente:
+
+- cero sesiones actuales de simulación;
+- cero usuarios que hayan intentado la acción;
+- ausencia de incidentes;
+- feature aún no utilizada;
+- código aparentemente inaccesible desde la UI;
+- un writer legacy sin consumidores observados.
+
+La seguridad se demuestra mediante contrato y pruebas, no por falta de tráfico.
+
+#### 61. Versiones y fingerprints
+
+La evidencia debe vincularse con la versión real certificada.
+
+Cambios materiales en:
+
+- código;
+- catálogo;
+- permisos;
+- `simulation_requirement`;
+- RLS;
+- funciones;
+- rutas;
+- contratos compartidos;
+- configuración;
+- consumidores;
+
+invalidan la reutilización silenciosa de evidencia anterior cuando afecten el resultado.
+
+#### 62. Auditoría
+
+La certificación conserva, según aplique:
+
+- actor real;
+- sesión real;
+- aplicación;
+- unidad;
+- simulación;
+- revisión;
+- permiso/capacidad;
+- recurso;
+- canal;
+- decisión real;
+- resultado simulado;
+- razón de bloqueo;
+- versión;
+- fingerprint;
+- timestamp;
+- evidencia de efecto cero.
+
+La auditoría no concede autoridad.
+
+#### 63. Privacidad y minimización
+
+La evidencia no almacena por defecto:
+
+- JWT completos;
+- access tokens;
+- refresh tokens;
+- cookies completas;
+- contraseñas;
+- PIN;
+- OTP;
+- service-role keys;
+- API keys;
+- payloads personales innecesarios;
+- documentos o información financiera completa cuando basta una referencia segura.
+
+La prueba conserva lo necesario para reproducibilidad sin convertir el expediente en una fuga de datos.
+
+#### 64. Accesibilidad
+
+Las aplicaciones que materialicen preview deben demostrar:
+
+- condición de simulación perceptible sin depender solo de color;
+- rol y carácter no ejecutable identificables;
+- foco predecible;
+- controles inertes comprensibles;
+- teclado sin bypass;
+- zoom y reflow;
+- lector de pantalla cuando aplique;
+- cambio de lifecycle anunciado sin ruido repetitivo.
+
+La accesibilidad no sustituye el enforcement, pero forma parte de la certificación integral de la experiencia.
+
+#### 65. Estado físico actual: contratos disponibles
+
+Existen contratos documentales y una fundación física de auditoría de simulación que permiten definir el comportamiento esperado.
+
+También existen inventarios de superficies server-side y una primitiva visual compartida.
+
+Estas bases son evidencia de preparación, no certificación física de las diez aplicaciones.
+
+#### 66. Estado físico actual: mezcla en EffectiveContext
+
+`@vento/os-context` todavía conserva campos de simulación y `can_operate` dentro de un contexto efectivo compartido.
+
+Mientras esa mezcla permanezca en una unidad consumidora sin reconciliación y pruebas suficientes, no puede usarse como evidencia positiva de separación integral.
+
+#### 67. Estado físico actual: booleano de permiso
+
+`hasEffectivePermission` conserva una salida booleana.
+
+Un booleano no demuestra:
+
+- procedencia;
+- lifecycle;
+- clasificación;
+- razón;
+- `executable = false`;
+- recurso;
+- versión;
+- fingerprint;
+- cero efectos.
+
+No se adopta como evidencia suficiente de certificación.
+
+#### 68. Estado físico actual: start/stop legacy
+
+Los helpers compartidos de inicio y salida todavía conservan integración con RPC legacy.
+
+Su existencia no demuestra un lifecycle consumidor completo conforme en cada aplicación.
+
+La certificación futura debe utilizar la materialización propietaria vigente y demostrar el flujo real de inicio, preview, salida y retorno fresco.
+
+#### 69. Estado físico actual: paridad multicanal no certificada
+
+La inspección estática disponible no demuestra hoy que las diez aplicaciones y todos sus canales aplicables produzcan decisiones equivalentes ante procedencia simulada.
+
+Por tanto:
+
+```text
+CURRENT PHYSICAL GLOBAL SIMULATION CERTIFICATION = NOT ESTABLISHED
+```
+
+Esta tarea no convierte esa ausencia de evidencia en un PASS documental de implementación.
+
+#### 70. Registro de estado por aplicación para esta tarea documental
+
+| Aplicación | Decisión documental | Certificación física observada por esta tarea |
+| --- | --- | --- |
+| `SHELL` | definida | `NOT_EXECUTED` |
+| `ANIMA` | definida | `NOT_EXECUTED` |
+| `AURA` | exclusión preservada | `NOT_EXECUTED` |
+| `FOGO` | definida | `NOT_EXECUTED` |
+| `NEXO` | definida | `NOT_EXECUTED` |
+| `NUMERA` | definida | `NOT_EXECUTED` |
+| `ORIGO` | definida | `NOT_EXECUTED` |
+| `PASS` | exclusión laboral preservada | `NOT_EXECUTED` |
+| `PULSO` | definida | `NOT_EXECUTED` |
+| `VISO` | definida | `NOT_EXECUTED` |
+
+La tabla registra exclusivamente el alcance de esta definición documental.
+
+#### 71. Rollback de una futura unidad
+
+El rollback técnico no puede:
+
+- restaurar autoridad simulada como contexto efectivo;
+- reactivar `can_operate` como guard ambiguo;
+- convertir un booleano simulado en permiso real;
+- reactivar writers accesibles desde preview;
+- retirar el aviso conservando contenido simulado;
+- convertir `NOT_ALLOWED` en read-only;
+- convertir `DECISION_ONLY` en formulario operativo;
+- degradar permisos desconocidos a `FULL_PREVIEW`;
+- restaurar replay offline;
+- reutilizar idempotency keys de preview como reales;
+- ampliar RLS con rol o territorio simulado;
+- reactivar webhooks, impresión, notificaciones o integraciones desde preview;
+- borrar evidencia histórica para aparentar conformidad.
+
+#### 72. Invariantes
+
+1. Existen exactamente diez aplicaciones canónicas en la matriz.
+2. Ninguna aplicación acepta autoridad simulada.
+3. Una superficie aprobada no certifica una aplicación completa.
+4. Una aplicación aprobada no certifica el bloque completo.
+5. La no aplicabilidad exige evidencia.
+6. Evidencia ausente no equivale a PASS.
+7. `FULL_PREVIEW` no habilita efectos reales.
+8. `DECISION_ONLY` no habilita contenido protegido por autoridad simulada.
+9. `NOT_ALLOWED` no se degrada a preview.
+10. Clasificación desconocida falla cerrado.
+11. La distribución 85/52/3 permanece intacta.
+12. El delta físico 179/140 no se interpreta como clasificación automática.
+13. AURA conserva su exclusión.
+14. PASS conserva separación cliente/laboral.
+15. VISO no autoautoriza la simulación.
+16. SHELL no concede autoridad a destinos.
+17. ANIMA no registra asistencia desde preview.
+18. FOGO no produce efectos de producción desde preview.
+19. NEXO no mueve inventario ni logística desde preview.
+20. NUMERA no produce efectos contables desde preview.
+21. ORIGO no crea compras o recepciones desde preview.
+22. PULSO no produce efectos POS desde preview.
+23. Navegación no crea autoridad.
+24. Read-only no sustituye enforcement.
+25. Server Actions bloquean antes del efecto.
+26. Route Handlers no crean bypass.
+27. RPC/PostgREST no aceptan autoridad simulada.
+28. RLS/Data API no amplían datos por simulación.
+29. Edge Functions no convierten credenciales técnicas en autoridad del actor.
+30. Realtime no amplía acceso por simulación.
+31. Offline no encola mutaciones reales.
+32. Jobs y colas no difieren el bypass.
+33. Webhooks e integraciones permanecen en cero efectos.
+34. Notificaciones reales no salen desde preview.
+35. Impresión física no se dispara desde preview.
+36. Exportaciones protegidas exigen autoridad real.
+37. El actor real permanece separado del sujeto simulado.
+38. La sesión real permanece separada del lifecycle simulado.
+39. Cambiar actor invalida la preview previa.
+40. Cambiar escenario invalida resultados incompatibles.
+41. Cambiar política invalida evidencia stale.
+42. Tabs y respuestas tardías no resucitan un estado terminal.
+43. El terminal no autoejecuta la acción simulada.
+44. Una acción real posterior usa contexto real fresco.
+45. Replay simulado permanece prohibido.
+46. Idempotencia de preview no se reutiliza para mutación real.
+47. La autoridad real es techo de datos.
+48. Evidencia de error no basta sin evidencia de cero efectos cuando el canal puede producirlos.
+49. Privacidad y minimización forman parte del expediente.
+50. Accesibilidad forma parte de la experiencia certificada.
+51. La auditoría no concede autoridad.
+52. `EffectiveContext` legacy no se adopta como separación certificada.
+53. El booleano de permiso legacy no certifica el contrato.
+54. Los helpers legacy de start/stop no prueban adopción integral.
+55. La paridad multicanal actual no se presume.
+56. No se modifica `AUTH-DB-013`.
+57. No se redefine `AUTH-SRV-015`.
+58. No se crean ni modifican requisitos de prueba.
+59. No se modifica 04A.
+60. No se ejecutan cambios físicos en esta tarea.
+
+#### 73. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. universo exacto de diez aplicaciones;
+2. regla de aplicabilidad por canal;
+3. definición de PASS por canal;
+4. definición de PASS por aplicación;
+5. definición de PASS global futuro;
+6. matriz de decisiones por aplicación;
+7. interpretación de las tres clasificaciones;
+8. tratamiento de permisos no clasificados;
+9. matriz de lifecycle;
+10. matriz multicanal;
+11. techo de datos reales;
+12. aviso persistente;
+13. read-only;
+14. navegación;
+15. Server Actions;
+16. Route Handlers/APIs;
+17. RPC/PostgREST;
+18. RLS/Data API;
+19. Edge Functions;
+20. Realtime;
+21. offline;
+22. procesos asíncronos;
+23. jobs y colas;
+24. webhooks e integraciones;
+25. notificaciones;
+26. impresión;
+27. exportaciones;
+28. dispositivos compartidos;
+29. concurrencia;
+30. replay e idempotencia;
+31. retorno a contexto real;
+32. evidencia positiva y negativa;
+33. evidencia mínima por aplicación;
+34. evidencia mínima por unidad;
+35. cero efectos;
+36. agregación de fallos;
+37. versiones y fingerprints;
+38. auditoría;
+39. privacidad;
+40. accesibilidad;
+41. brechas físicas vigentes;
+42. rollback;
+43. cierre del mini-bloque documental de simulación.
+
+#### 74. Cierre documental del mini-bloque
+
+Con `AUTH-SIM-014` queda definida la última pieza documental del mini-bloque `AUTH-SIM-012..014`:
+
+```text
+AUTH-SIM-012
+-> NAVIGATION CERTIFICATION CONTRACT
+```
+
+```text
+AUTH-SIM-013
+-> SERVER ACTION CERTIFICATION CONTRACT
+```
+
+```text
+AUTH-SIM-014
+-> CROSS-APPLICATION INTEGRAL CERTIFICATION CONTRACT
+```
+
+Esto cierra la definición documental del tramo, no sus implementaciones físicas futuras.
+
+#### 75. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya protege separación entre autoridad real y simulada, clasificación de simulación, bloqueo de ejecución, paridad multicanal, lifecycle, navegación, Server Actions, aplicaciones canónicas, cero efectos, experiencia, auditoría, invalidación, replay y reconciliación física. Esta tarea agrega la regla de agregación y certificación integral por aplicación sin introducir una obligación verificable nueva ni cambiar owner, prioridad, modalidad, paquete, estado o relaciones del registro.
+
+#### 76. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- simulación no ejecutable y cuatro planos separados;
+- resultados `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE`;
+- techo de autoridad real sobre datos;
+- bloqueo de mutaciones y lecturas protegidas;
+- navegación y controles de preview;
+- Server Actions y canales server-side;
+- lifecycle, salida fresca, invalidación y replay;
+- diez aplicaciones canónicas;
+- indicador persistente, privacidad, concurrencia e idempotencia;
+- reconciliación física de APIs, tipos, permisos, RLS, RPC y consumers.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-012`, `TREQ-AUTH-119..128`, `TREQ-AUTH-165`, `TREQ-AUTH-275`, `TREQ-AUTH-279..288` y la cobertura transversal de aplicaciones, UI, contratos compartidos, auditoría y regresión ya registrada.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `AUTH-SIM-014`.
+
+#### 77. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto se preparó de forma independiente y todavía no fue incorporado al archivo propietario ni sometido al build documental del checkout del usuario |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron apertura de rama, preflight, formateador, task quality, delivery check, topología, TREQ ni batería global dentro del checkout local del usuario |
+| REMOTA | `PASS` | se verificaron en solo lectura `main`, cierre de `AUTH-SIM-013`, continuidad hacia `AUTH-SIM-014`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas documentales, contrato de entrega, handoff completo de `AUTH-SIM-013`, matrices previas de simulación, familia 04A AUTH, comandos vigentes y brechas físicas compartidas relevantes |
+| OPERATIVA | `NOT_EXECUTED` | no se ejecutó una simulación real ni se probaron recorridos o efectos en aplicaciones desplegadas durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron ni certificaron aplicaciones, código, Server Actions, Route Handlers, RPC, RLS, Edge Functions, Realtime, colas, integraciones, hardware, Supabase, datos o despliegues |
+
+#### 78. Criterios de aceptación
+
+- [x] Se define un universo exacto de diez aplicaciones.
+- [x] Se conserva `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`.
+- [x] Se distingue aplicación de unidad física.
+- [x] Se define aplicabilidad de canales con evidencia obligatoria.
+- [x] Se impide usar ausencia no demostrada como `NOT_APPLICABLE`.
+- [x] Se define PASS por canal.
+- [x] Se define PASS por aplicación.
+- [x] Se define cierre físico global futuro sin declararlo ejecutado.
+- [x] Se conserva la clasificación 85/52/3.
+- [x] Se conservan las tres claves `NOT_ALLOWED`.
+- [x] Se registra el delta físico 179/140 sin clasificarlo por inferencia.
+- [x] SHELL conserva revalidación en destino.
+- [x] ANIMA conserva separación de hechos reales de asistencia.
+- [x] AURA conserva exclusión sin fabricar superficie.
+- [x] FOGO conserva cero efectos productivos.
+- [x] NEXO conserva cero movimientos logísticos o de inventario.
+- [x] NUMERA conserva cero efectos financieros y techo reforzado de datos.
+- [x] ORIGO conserva cero órdenes y recepciones reales.
+- [x] PASS conserva exclusión laboral y separación de identidad cliente.
+- [x] PULSO conserva cero efectos POS.
+- [x] VISO conserva separación entre administración real y simulación.
+- [x] Se cubre aviso persistente.
+- [x] Se cubre read-only y métodos alternos de interacción.
+- [x] Se cubre navegación integral.
+- [x] Se cubren Server Actions.
+- [x] Se cubren Route Handlers y APIs.
+- [x] Se cubren RPC/PostgREST.
+- [x] Se cubren RLS/Data API.
+- [x] Se cubren Edge Functions.
+- [x] Se cubre Realtime.
+- [x] Se cubre offline.
+- [x] Se cubren procesos asíncronos, jobs y colas.
+- [x] Se cubren webhooks e integraciones.
+- [x] Se cubren notificaciones.
+- [x] Se cubre impresión.
+- [x] Se cubren exportaciones.
+- [x] Se cubren dispositivos compartidos cuando apliquen.
+- [x] Se cubren concurrencia, tabs y respuestas tardías.
+- [x] Se cubren replay e idempotencia.
+- [x] Se exige contexto real fresco después de terminal.
+- [x] Se definen pruebas positivas y negativas.
+- [x] Se define evidencia mínima por aplicación.
+- [x] Se define evidencia mínima por unidad.
+- [x] Se exige evidencia de cero efectos.
+- [x] Un fallo crítico aplicable bloquea PASS de la aplicación.
+- [x] Cero tráfico no se acepta como evidencia de seguridad.
+- [x] Se vincula evidencia con versiones y fingerprints.
+- [x] Se conserva auditoría correlacionable.
+- [x] Se conserva privacidad y minimización.
+- [x] Se incluye accesibilidad en la certificación integral.
+- [x] Se reconoce la fundación física existente sin presentarla como certificación.
+- [x] Se conserva la brecha de mezcla de `EffectiveContext`.
+- [x] Se conserva la insuficiencia del booleano `hasEffectivePermission`.
+- [x] Se conservan los helpers legacy de start/stop como brecha no certificada.
+- [x] No se presume paridad multicanal física actual.
+- [x] Se define rollback fail-closed.
+- [x] Se cierra documentalmente el mini-bloque `AUTH-SIM-012..014`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecutan cambios físicos.
+- [x] `NEXO-DOM-002` permanece reservada.
+
+#### 79. Límites
+
+Esta tarea no:
+
+- ejecuta simulaciones reales;
+- certifica físicamente ninguna aplicación;
+- crea una instancia física;
+- modifica aplicaciones;
+- modifica código;
+- modifica `@vento/os-context`;
+- corrige `EffectiveContext`;
+- cambia `hasEffectivePermission`;
+- modifica Server Actions;
+- modifica Route Handlers;
+- modifica APIs;
+- modifica RPC/PostgREST;
+- modifica RLS/Data API;
+- modifica Edge Functions;
+- modifica Realtime;
+- modifica offline queues;
+- modifica jobs o colas;
+- modifica webhooks o integraciones;
+- modifica notificaciones;
+- modifica impresión;
+- modifica exportaciones;
+- modifica Supabase;
+- crea migraciones;
+- modifica Auth;
+- modifica Storage;
+- cambia roles;
+- cambia permisos;
+- cambia `simulation_requirement`;
+- reclasifica el snapshot 85/52/3;
+- reconcilia por sí sola el delta físico 179/140;
+- modifica `AUTH-DB-013`;
+- redefine `AUTH-SRV-015`;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-002`.
+
+#### 80. Handoff de cierre hacia la siguiente etapa
+
+`AUTH-SIM-014` cierra el contrato documental del BLOQUE Q sin transferir semántica de simulación al dominio NEXO.
+
+La continuidad siguiente pertenece a su propia etapa canónica:
+
+```text
+AUTH-SIM-014 CLOSED
+-> PHASE-04-PQ DOCUMENTARY SEGMENT COMPLETE
+-> CONTINUITY RESOLVES NEXT CANONICAL TASK
+```
+
+`NEXO-DOM-002` deberá iniciarse únicamente después del cierre documental válido de esta tarea y utilizar sus propios contratos de dominio, sin absorber una implementación física pendiente de simulación.
+
+#### 81. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-SIM-013 — Validar Server Actions como rol simulado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-SIM-014 — Probar en todas las aplicaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN`
