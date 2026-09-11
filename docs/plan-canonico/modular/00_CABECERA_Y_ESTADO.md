@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1174** |
+| Tareas aprobadas | **1175** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **422** |
+| Tareas no iniciadas | **421** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **73.56% (1174/1596)** |
+| Porcentaje de completamiento | **73.62% (1175/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido** |
-| Tarea actual | **NEXO-DOM-008 — Definir custodia y responsable actual** |
+| Última tarea aprobada | **NEXO-DOM-008 — Definir custodia y responsable actual** |
+| Tarea actual | **NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad** |
+| Siguiente tarea | **NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 32 de 127 aprobadas; NEXO-DOM-008 pendiente** |
+| Progreso del bloque | **BLOQUE K: 33 de 127 aprobadas; NEXO-DOM-009 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-DOM-008** |
+| Carril documental | **ACTIVO — NEXO-DOM-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-007` — Definir relación sede → LOC → LPN → contenido |
-| Tarea actual | `NEXO-DOM-008` — Definir custodia y responsable actual — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-009` — Separar activo individual y reutilizable controlado por cantidad |
+| Última aprobada | `NEXO-DOM-008` — Definir custodia y responsable actual |
+| Tarea actual | `NEXO-DOM-009` — Separar activo individual y reutilizable controlado por cantidad — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-010` — Definir estado, condición, daño, pérdida y faltante |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 32 DE 127 APROBADAS — ACTUAL NEXO-DOM-008** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 33 DE 127 APROBADAS — ACTUAL NEXO-DOM-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
-        ↓
-TAREA ACTUAL
 NEXO-DOM-008 — Definir custodia y responsable actual
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 32 de 127 tareas aprobadas
+BLOQUE K — 33 de 127 tareas aprobadas
 ```
