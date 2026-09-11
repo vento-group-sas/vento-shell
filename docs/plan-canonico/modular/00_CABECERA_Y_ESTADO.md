@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1167** |
+| Tareas aprobadas | **1168** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **429** |
+| Tareas no iniciadas | **428** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **73.12% (1167/1596)** |
+| Porcentaje de completamiento | **73.18% (1168/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-SIM-013 — Validar Server Actions como rol simulado** |
-| Tarea actual | **AUTH-SIM-014 — Probar en todas las aplicaciones** |
+| Última tarea aprobada | **NEXO-DOM-001 — Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores** |
+| Tarea actual | **NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN** |
-| Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
-| Progreso del bloque | **BLOQUES P Y Q: 29 de 30 aprobadas; AUTH-SIM-014 pendiente** |
+| Siguiente tarea | **NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar** |
+| Bloque actual | **BLOQUE K — NEXO** |
+| Progreso del bloque | **BLOQUE K: 26 de 127 aprobadas; NEXO-DOM-002 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-SIM-014** |
+| Carril documental | **ACTIVO — NEXO-DOM-002** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-SIM-013` — Validar Server Actions como rol simulado |
-| Tarea actual | `AUTH-SIM-014` — Probar en todas las aplicaciones — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-002` — Definir propósito y tipos canónicos de LPN |
+| Última aprobada | `NEXO-DOM-001` — Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores |
+| Tarea actual | `NEXO-DOM-002` — Definir propósito y tipos canónicos de LPN — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-003` — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 29 DE 30 APROBADAS — ACTUAL AUTH-SIM-014** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 26 DE 127 APROBADAS — ACTUAL NEXO-DOM-002** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-SIM-013 — Validar Server Actions como rol simulado
+NEXO-DOM-001 — Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores
         ↓
 TAREA ACTUAL
-AUTH-SIM-014 — Probar en todas las aplicaciones
-        ↓
-SIGUIENTE TAREA RESERVADA
 NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES P Y Q — 29 de 30 tareas aprobadas
+BLOQUE K — 26 de 127 tareas aprobadas
 ```
