@@ -535,6 +535,19 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     (a, b) => a.fileIndex - b.fileIndex || a.taskIndex - b.taskIndex
   );
   const physical = buildPhysicalMaterializationSummary(materializationReport);
+  const adoptionCounts = {
+    EXISTING_NEEDS_ADOPTION_EVIDENCE: 0,
+    PARTIAL_DELTA: 0,
+    NOT_IMPLEMENTED: 0,
+    CONTRADICTION: 0,
+    REUSE_VERIFIED: 0,
+  };
+  for (const row of physical.rows) {
+    if (row.adoption_classification && Object.hasOwn(adoptionCounts, row.adoption_classification)) {
+      adoptionCounts[row.adoption_classification] += 1;
+    }
+  }
+  const adoptionClassified = Object.values(adoptionCounts).reduce((total, count) => total + count, 0);
 
   if (physical.rows.length !== tasks.length) {
     fail(
@@ -560,6 +573,8 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     '> El estado documental deriva exclusivamente del marcador del encabezado de cada tarea.',
     '>',
     '> El estado físico deriva de `CANONICAL-IMPLEMENTATION-MATERIALIZATION-001`; `SIN_TRAZABILIDAD_FISICA` no equivale a `NO IMPLEMENTADA`.',
+    '>',
+    '> La clasificación de adopción deriva de la reconciliación explícita de `STEP_GLOBAL_04`; no declara materialización ni crea relaciones TASK -> UNIT.',
     '',
     '## Resumen global',
     '',
@@ -587,6 +602,17 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     '',
     '> `MATERIALIZADA` solo se declara automáticamente para obligaciones singleton con instancia `VERIFIED` y evidencia. Las cardinalidades abiertas permanecen `PARCIAL` hasta que una relación explícita permita demostrar cobertura completa.',
     '',
+    '## Resumen de reconciliación de adopción',
+    '',
+    '| Clasificación | Tareas |',
+    '| --- | ---: |',
+    `| EXISTING_NEEDS_ADOPTION_EVIDENCE | **${adoptionCounts.EXISTING_NEEDS_ADOPTION_EVIDENCE}** |`,
+    `| PARTIAL_DELTA | **${adoptionCounts.PARTIAL_DELTA}** |`,
+    `| NOT_IMPLEMENTED | **${adoptionCounts.NOT_IMPLEMENTED}** |`,
+    `| CONTRADICTION | **${adoptionCounts.CONTRADICTION}** |`,
+    `| REUSE_VERIFIED | **${adoptionCounts.REUSE_VERIFIED}** |`,
+    `| Clasificadas por STEP_GLOBAL_04 | **${adoptionClassified}** |`,
+    '',
     '## Continuidad activa',
     '',
     '| Relación | Tarea | Estado |',
@@ -609,8 +635,8 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     '',
     '## Registro completo',
     '',
-    '| Estado documental | Estado físico | Identificador | Título | Materializada por | Evidencia física | Fragmento fuente |',
-    '| --- | --- | --- | --- | --- | --- | --- |'
+    '| Estado documental | Estado físico | Clasificación de adopción | Identificador | Título | Materializada por | Evidencia física | Fragmento fuente |',
+    '| --- | --- | --- | --- | --- | --- | --- | --- |'
   );
 
   for (const task of tasks) {
@@ -624,7 +650,7 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
       : '—';
 
     lines.push(
-      `| ${stateIcon(task.state)} ${task.state} | ${escapeMarkdownCell(physicalTask.display)} | \`${task.id}\` | ${escapeMarkdownCell(task.title)} | ${materializerRefs} | ${evidenceRefs} | \`${escapeMarkdownCell(task.relativePath)}\` |`
+      `| ${stateIcon(task.state)} ${task.state} | ${escapeMarkdownCell(physicalTask.display)} | ${escapeMarkdownCell(physicalTask.adoption_classification ?? '—')} | \`${task.id}\` | ${escapeMarkdownCell(task.title)} | ${materializerRefs} | ${evidenceRefs} | \`${escapeMarkdownCell(task.relativePath)}\` |`
     );
   }
 
