@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1166** |
+| Aprobadas | **1167** |
 | En propuesta | **0** |
-| No iniciadas | **430** |
+| No iniciadas | **429** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **73.06% (1166/1596)** |
+| Porcentaje de completamiento | **73.12% (1167/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **430** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1067** |
+| ⏸ NO_EVALUADA | **429** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1068** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -49,9 +49,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-SIM-012` — Validar navegación como rol simulado | ✅ APROBADA |
-| Tarea actual | `AUTH-SIM-013` — Validar Server Actions como rol simulado | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-SIM-014` — Probar en todas las aplicaciones | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-SIM-013` — Validar Server Actions como rol simulado | ✅ APROBADA |
+| Tarea actual | `AUTH-SIM-014` — Probar en todas las aplicaciones | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-002` — Definir propósito y tipos canónicos de LPN | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1239,7 +1239,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | PARTIAL_DELTA | `AUTH-SIM-010` | Bloquear acciones críticas durante simulación | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-SIM-011` | Definir modo solo lectura | — | — | `bloques/Q_SIMULACION/02_VISIBILIDAD_AUDITORIA_Y_RESTRICCIONES.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-SIM-012` | Validar navegación como rol simulado | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-SIM-013` | Validar Server Actions como rol simulado | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-SIM-013` | Validar Server Actions como rol simulado | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-SIM-014` | Probar en todas las aplicaciones | — | — | `bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md` |
 | ✅ APROBADA | ✅ MATERIALIZADA | — | `AUTH-DB-015` | Documentar y versionar todas las migraciones en vento-shell | `AUTH-DB-015::GLOBAL` | `AUTH-DB-015::GLOBAL` | `bloques/R_SUPABASE/01_R0_PREPARACION_PRUEBAS_Y_CONTENCION_DE_RIESGOS.md` |
 | ✅ APROBADA | ✅ MATERIALIZADA | — | `AUTH-DB-027` | Crear harness de pruebas de esquema, integridad, RLS, RPC y migraciones | `AUTH-DB-027::GLOBAL` | `AUTH-DB-027::GLOBAL` | `bloques/R_SUPABASE/01_R0_PREPARACION_PRUEBAS_Y_CONTENCION_DE_RIESGOS.md` |
