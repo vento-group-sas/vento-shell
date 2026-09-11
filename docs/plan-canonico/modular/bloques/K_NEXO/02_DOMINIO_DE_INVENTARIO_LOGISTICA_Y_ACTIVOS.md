@@ -2311,7 +2311,1402 @@ La continuidad normal de `NEXO-DOM-002` a `NEXO-DOM-038` permanece preservada
 y no se inicia en esta tarea.
 
 
-### [ ] NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN
+### ✅ NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-001 — Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores
+**Tarea siguiente:** NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
+**Tipo de tarea:** documental; definición canónica de propósito, identidad y tipos de propósito de LPN, bajo topología DEFINE_ONCE y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no modifica código, aplicaciones, contratos compilados, Supabase, migraciones, tablas, vistas, funciones, RLS, RPC, datos, permisos, rutas, componentes, dispositivos, impresión, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué representa un LPN dentro de VENTO OS, qué problema resuelve y qué tipos canónicos de propósito logístico puede asumir, evitando que la identidad logística sea confundida con una ubicación, un producto, una clase de inventario, un lote, un documento, un envío o un contenedor físico.
+
+La regla raíz queda:
+
+```text
+LPN
+=
+IDENTIDAD LOGISTICA ESTABLE
++
+AGRUPACION TRAZABLE DE CONTENIDO
++
+PROPOSITO LOGISTICO EXPLICITO
+```
+
+Y siempre:
+
+```text
+LPN
+!=
+LOC
+!=
+CONTENEDOR FISICO
+!=
+PRODUCTO
+!=
+LOTE
+!=
+REMISION
+!=
+MOVIMIENTO
+```
+
+Un LPN permite identificar una unidad logística de contenido como una sola referencia operativa sin borrar la identidad, cantidad, lote, serial, condición o clase de cada existencia contenida.
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+QUE ES UN LPN EN VENTO OS?
+```
+
+```text
+PARA QUE EXISTE?
+```
+
+```text
+QUE TIPOS DE PROPOSITO LOGISTICO SON CANONICOS?
+```
+
+```text
+QUE DIMENSIONES NO DEBEN CONFUNDIRSE CON EL TIPO DEL LPN?
+```
+
+No define todavía el lifecycle completo, las operaciones de empaque y desempaque, la división y unión, el anidamiento, la jerarquía sede-LOC-LPN-contenido, la custodia ni las reglas avanzadas de contenedor físico.
+
+#### 3. Handoff recibido de NEXO-DOM-001
+
+`NEXO-DOM-001` fija que la clase primaria de control físico y el LPN son dimensiones distintas.
+
+Las siete clases primarias ya aprobadas son:
+
+```text
+CONSUMABLE
+QUANTITY_STOCK
+REUSABLE_QUANTITY
+SERIALIZED_ASSET
+SPARE_PART
+KIT
+PHYSICAL_CONTAINER
+```
+
+Ninguna de ellas equivale a LPN.
+
+Por tanto:
+
+```text
+INVENTORY CLASS
+!=
+LPN PURPOSE TYPE
+```
+
+Una misma clase primaria puede participar en un LPN cuando las tareas propietarias de contenido y compatibilidad lo permitan, sin cambiar de clase por haber sido agrupada logísticamente.
+
+#### 4. Fuentes y decisiones consumidas
+
+La tarea consume sin reabrir:
+
+- la propiedad de NEXO sobre inventario, ubicaciones, LPN, contenedores, movimientos, custodia y logística;
+- la definición previa de LPN como identidad logística de contenido que puede moverse como conjunto;
+- la separación entre producto, presentación, unidad, lote, serial, LOC, posición, LPN y contenedor;
+- la clasificación física aprobada por `NEXO-DOM-001`;
+- la regla de no doble contabilización entre existencia suelta y contenido de LPN;
+- la trazabilidad de lote, serial, condición y vencimiento;
+- la separación entre remisión, viaje, manifiesto, bulto, contenedor, LPN y movimiento;
+- el inventario AS-IS que demuestra tablas y endpoint LPN parciales sin lifecycle funcional completo;
+- la topología `DEFINE_ONCE` aplicable a `NEXO-DOM-002`.
+
+#### 5. Resultado material
+
+Se definen cuatro artefactos documentales vinculantes:
+
+1. `NEXO-LPN-IDENTITY-CONTRACT-001`, que fija el significado y las fronteras de identidad del LPN;
+2. `NEXO-LPN-PURPOSE-TYPE-CATALOG-001`, que cierra el catálogo de tipos de propósito;
+3. `NEXO-LPN-PURPOSE-DECISION-MATRIX-001`, que determina cuándo corresponde cada tipo y qué no puede inferirse de él;
+4. `NEXO-LPN-PHYSICAL-RECONCILIATION-001`, que registra el estado físico conocido sin declarar adopción inexistente.
+
+Cobertura:
+
+| Resultado | Total esperado | Total materializado | Faltantes | Duplicados |
+| --- | ---: | ---: | ---: | ---: |
+| definición raíz de LPN | 1 | 1 | 0 | 0 |
+| tipos canónicos de propósito | 6 | 6 | 0 | 0 |
+| tipos físicos de contenedor convertidos en LPN | 0 | 0 | 0 | 0 |
+| clasificaciones primarias de inventario redefinidas | 0 | 0 | 0 | 0 |
+| tareas posteriores absorbidas | 0 | 0 | 0 | 0 |
+| requisitos de prueba nuevos o modificados | 0 | 0 | 0 | 0 |
+
+#### 6. Topología contractual
+
+La tarea se define una sola vez:
+
+```text
+mode = DEFINE_ONCE
+physical_instance = NONE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Su resultado es un contrato documental reutilizable por las tareas posteriores de dominio, autorización, experiencia, arquitectura y materialización.
+
+No existe una instancia física `NEXO-DOM-002` por package, aplicación, repositorio, sede, LOC o implementation unit.
+
+#### 7. Definición canónica de LPN
+
+Un LPN es una identidad logística estable asignada a una agrupación controlada de contenido para poder referenciarla, localizarla, moverla, custodiarla, reconciliarla y auditarla como unidad logística sin perder el detalle de sus componentes.
+
+Su función es reducir ambigüedad operativa:
+
+```text
+MUCHAS EXISTENCIAS FISICAS O CANTIDADES
++
+UNA AGRUPACION LOGISTICA CONTROLADA
+=
+UN LPN IDENTIFICABLE
+```
+
+El LPN no reemplaza el ledger de inventario ni crea existencia adicional.
+
+#### 8. Identidad logística y contenido son objetos distintos
+
+El LPN identifica la agrupación logística.
+
+El contenido identifica lo que está dentro de esa agrupación.
+
+Por tanto:
+
+```text
+LPN_IDENTITY
+!=
+LPN_CONTENT
+```
+
+Cerrar, anular, reetiquetar o cambiar la relación del LPN no autoriza por sí solo a eliminar, crear o alterar existencias.
+
+Las reglas completas de contenido pertenecen a `NEXO-DOM-004` y tareas posteriores.
+
+#### 9. LPN no es ubicación
+
+Un LPN puede encontrarse en una ubicación, pero no es una ubicación.
+
+Se conserva:
+
+```text
+SITE
+-> LOC
+-> OPTIONAL POSITION
+```
+
+como jerarquía física de ubicación.
+
+El LPN se relaciona con esa jerarquía sin sustituirla.
+
+No se permite tratar el código LPN como:
+
+- sede;
+- LOC;
+- posición;
+- estante;
+- zona;
+- dirección física permanente.
+
+#### 10. LPN no es contenedor físico
+
+El LPN puede estar asociado a una caja, bandeja, canasta, pallet, carro, recipiente, huacal, tote u otro contenedor físico cuando el dominio lo permita, pero la forma física no define la identidad LPN.
+
+Se conserva:
+
+```text
+LPN
+!=
+PHYSICAL_CONTAINER
+```
+
+El contenedor físico puede tener identidad, capacidad, condición, custodia, disponibilidad y ciclo de retorno propios.
+
+La relación avanzada entre ambas identidades pertenece a `NEXO-DOM-019` y `NEXO-DOM-020`.
+
+#### 11. LPN no es bulto
+
+`Bulto` describe una unidad física o documental de carga según el proceso logístico aplicable.
+
+No se adopta como sinónimo universal de LPN.
+
+Una operación puede relacionar bulto y LPN, pero debe conservar sus identidades cuando ambas existan.
+
+#### 12. LPN no es remisión
+
+Una remisión coordina una necesidad y sus cantidades por etapas.
+
+Un LPN agrupa contenido físico/logístico.
+
+Por tanto:
+
+```text
+REMISION
+!=
+LPN
+```
+
+Una remisión puede relacionarse con uno o varios LPN según el proceso posterior, sin que el LPN herede la identidad documental de la remisión.
+
+Esta tarea no fija cardinalidades de remisión-LPN.
+
+#### 13. LPN no es viaje ni manifiesto
+
+El viaje representa ejecución de transporte.
+
+El manifiesto representa la composición publicada o aceptada de una carga conforme al proceso propietario.
+
+El LPN representa una agrupación logística de contenido.
+
+Ninguno sustituye al otro.
+
+#### 14. LPN no es movimiento de inventario
+
+Mover, empacar, desempacar, dividir o unir contenido puede requerir movimientos canónicos.
+
+El LPN no es el movimiento.
+
+Se conserva:
+
+```text
+LPN = OBJECT OF LOGISTIC TRACEABILITY
+MOVEMENT = BUSINESS FACT THAT CHANGES PHYSICAL PROJECTION
+```
+
+La existencia de un LPN no permite modificar saldos sin el hecho propietario correspondiente.
+
+#### 15. LPN no es producto, presentación ni unidad
+
+El LPN puede contener referencias a productos, presentaciones o cantidades, pero no adquiere su identidad.
+
+No son tipos LPN:
+
+- `ingredient`;
+- `finished`;
+- `resale`;
+- producto terminado;
+- insumo;
+- caja de doce unidades;
+- kilogramo;
+- litro;
+- unidad.
+
+Esas clasificaciones pertenecen a catálogo, inventario o presentación.
+
+#### 16. LPN no es lote, serial ni vencimiento
+
+Lote, serial y vencimiento son dimensiones de trazabilidad del contenido.
+
+No son categorías del LPN.
+
+Un LPN puede contener contenido sujeto a esas dimensiones conforme a las reglas posteriores sin convertirse en `LOT_LPN`, `SERIAL_LPN` o equivalente.
+
+#### 17. LPN no es condición
+
+No son tipos canónicos de LPN:
+
+```text
+QUARANTINE
+DAMAGED
+EXPIRED
+LOST
+BLOCKED
+RELEASED
+```
+
+Esos valores expresan condición, disponibilidad o estado de contenido/operación según el owner correspondiente.
+
+La condición no se codifica en la identidad de propósito del LPN.
+
+#### 18. LPN no es clase primaria de inventario
+
+Empacar una existencia dentro de un LPN no cambia su clase primaria.
+
+Ejemplos:
+
+```text
+QUANTITY_STOCK dentro de LPN
+continua siendo QUANTITY_STOCK
+```
+
+```text
+SERIALIZED_ASSET dentro de LPN
+continua siendo SERIALIZED_ASSET
+```
+
+```text
+PHYSICAL_CONTAINER vinculado a LPN
+continua siendo PHYSICAL_CONTAINER
+```
+
+No se crea una octava clase denominada `LPN`.
+
+#### 19. LPN no es kit
+
+Un kit tiene definición, instancia, miembros y regla de completitud propias.
+
+Un LPN puede transportar o agrupar un kit cuando el contrato posterior lo permita, pero no sustituye esa identidad.
+
+Se conserva:
+
+```text
+KIT INSTANCE
+!=
+LPN
+```
+
+#### 20. Dimensión propietaria de esta tarea
+
+El único tipo que esta tarea fija es:
+
+```text
+LPN_PURPOSE_TYPE
+```
+
+Este tipo responde:
+
+```text
+PARA QUE EXISTE ESTA AGRUPACION LOGISTICA EN ESTE CONTEXTO?
+```
+
+No responde:
+
+- qué forma física tiene;
+- cuánto dura;
+- cuál es su estado de lifecycle;
+- qué condición tiene su contenido;
+- si contiene uno o varios productos;
+- si contiene otros LPN;
+- quién tiene custodia;
+- dónde está ubicado;
+- qué documento lo originó;
+- qué capacidad física soporta.
+
+#### 21. Catálogo cerrado de tipos de propósito
+
+`NEXO-LPN-PURPOSE-TYPE-CATALOG-001` contiene exactamente:
+
+```text
+STORAGE
+RECEIVING
+TRANSFER
+FULFILLMENT
+PRODUCTION_STAGING
+RETURN
+```
+
+Reconciliación:
+
+```text
+EXPECTED_PURPOSE_TYPES = 6
+MATERIALIZED_PURPOSE_TYPES = 6
+MISSING_PURPOSE_TYPES = 0
+DUPLICATE_PURPOSE_TYPES = 0
+```
+
+Ningún consumidor puede fabricar un séptimo tipo local sin una decisión canónica posterior.
+
+#### 22. Tipo STORAGE
+
+`STORAGE` identifica una agrupación cuyo propósito principal es mantener contenido físicamente agrupado y trazable mientras permanece almacenado o disponible dentro del dominio de inventario.
+
+No significa:
+
+- LOC permanente;
+- contenedor físico permanente;
+- stock disponible por definición;
+- ausencia de lote o condición;
+- permiso para mezclar contenido incompatible.
+
+Un LPN `STORAGE` continúa requiriendo ubicación, contenido, condición y elegibilidad conforme a sus contratos propietarios.
+
+#### 23. Tipo RECEIVING
+
+`RECEIVING` identifica una agrupación cuyo propósito principal es contener y reconciliar existencia durante una entrada física pendiente de ubicación, aceptación, clasificación o cierre del proceso de recepción aplicable.
+
+Puede participar en entradas provenientes de compra, transferencia, devolución u otro origen autorizado sin convertirse en la orden, remisión o recepción documental.
+
+`RECEIVING` no implica que el contenido ya esté liberado, disponible o definitivamente almacenado.
+
+#### 24. Tipo TRANSFER
+
+`TRANSFER` identifica una agrupación creada para trasladar existencia entre ubicaciones, posiciones, áreas o sedes mediante un movimiento o proceso de transferencia propietario.
+
+Su existencia no ejecuta el movimiento.
+
+Se conserva:
+
+```text
+TRANSFER LPN CREATED
+!=
+INVENTORY TRANSFER COMMITTED
+```
+
+Origen, destino, contenido, tránsito, aceptación y reconciliación pertenecen a los contratos posteriores aplicables.
+
+#### 25. Tipo FULFILLMENT
+
+`FULFILLMENT` identifica una agrupación preparada para satisfacer una necesidad logística concreta de abastecimiento, despacho, remisión, entrega o carga.
+
+No es sinónimo de remisión, manifiesto, viaje, pedido o envío.
+
+El LPN conserva identidad propia y se relaciona con el caso logístico propietario.
+
+Una relación documental no convierte el contenido en entregado, despachado o recibido por inferencia.
+
+#### 26. Tipo PRODUCTION_STAGING
+
+`PRODUCTION_STAGING` identifica una agrupación logística de materiales o resultados físicos que se prepara para entregar a producción, recibir desde producción o mantener en una zona de staging controlada entre NEXO y el proceso productivo propietario.
+
+No crea ni sustituye:
+
+- orden de producción;
+- receta;
+- lote de producción;
+- consumo de ingredientes;
+- rendimiento;
+- liberación de calidad.
+
+FOGO conserva los hechos productivos; NEXO conserva la agrupación, ubicación y movimiento físico que le corresponden.
+
+#### 27. Tipo RETURN
+
+`RETURN` identifica una agrupación cuyo propósito principal es soportar un flujo de retorno físico hacia un origen, sede, bodega, proveedor, área o proceso de disposición/reconciliación autorizado.
+
+No implica automáticamente:
+
+- devolución aceptada;
+- reingreso a stock disponible;
+- nota crédito;
+- reversión contable;
+- liberación;
+- descarte;
+- cierre de custodia.
+
+Cada efecto pertenece a su proceso propietario.
+
+#### 28. Matriz de propósito y exclusiones
+
+`NEXO-LPN-PURPOSE-DECISION-MATRIX-001`:
+
+| Tipo | Pregunta que responde | Ejemplo de uso permitido | No significa |
+| --- | --- | --- | --- |
+| `STORAGE` | ¿la agrupación existe para almacenamiento controlado? | existencia agrupada dentro de bodega | LOC, disponibilidad o contenedor |
+| `RECEIVING` | ¿la agrupación existe para entrada y reconciliación física? | contenido recibido pendiente de put-away o aceptación | recepción cerrada o stock liberado |
+| `TRANSFER` | ¿la agrupación existe para un traslado de inventario? | contenido preparado para mover entre ubicaciones | movimiento ya ejecutado |
+| `FULFILLMENT` | ¿la agrupación existe para satisfacer un caso logístico? | contenido alistado para remisión o despacho | remisión, viaje o entrega |
+| `PRODUCTION_STAGING` | ¿la agrupación existe para staging físico con producción? | materiales alistados para entrega a FOGO | lote u orden productiva |
+| `RETURN` | ¿la agrupación existe para un flujo de retorno? | retorno desde sede o tercero | devolución aceptada o reversión económica |
+
+#### 29. Regla de selección del tipo
+
+El tipo se selecciona por el propósito logístico dominante y autorizado del LPN, no por:
+
+- nombre visible;
+- forma del empaque;
+- color de etiqueta;
+- ruta de UI;
+- categoría de producto;
+- `inventory_kind` legacy;
+- estado del contenido;
+- actor que lo creó;
+- ubicación actual;
+- documento disponible;
+- tabla existente.
+
+Si el propósito no puede determinarse de forma inequívoca, el sistema no debe inventar un tipo por fallback silencioso.
+
+#### 30. Un único propósito primario vigente
+
+Un LPN no conserva simultáneamente varios valores activos de `LPN_PURPOSE_TYPE`.
+
+Se exige:
+
+```text
+ONE LPN
+-> ONE CURRENT PRIMARY PURPOSE TYPE
+```
+
+Las relaciones con procesos, documentos y movimientos pueden ser múltiples a lo largo de la historia sin convertir el tipo en un arreglo de etiquetas acumulativas.
+
+#### 31. Cambio de propósito
+
+Esta tarea no define las transiciones de lifecycle que permiten o impiden cambiar el propósito.
+
+Sí fija una frontera:
+
+```text
+PURPOSE CHANGE
+!=
+SILENT FIELD OVERWRITE
+```
+
+Cualquier cambio material deberá conservar historia y respetar `NEXO-DOM-003` y los contratos posteriores que resulten aplicables.
+
+#### 32. Tipo no equivale a temporalidad
+
+`TEMPORARY` y `PERSISTENT` no son tipos de propósito.
+
+La duración o persistencia de la identidad LPN es una dimensión separada.
+
+Se conserva:
+
+```text
+PURPOSE TYPE
+!=
+IDENTITY DURATION
+```
+
+La relación entre identidad permanente de contenedor e identidad temporal o persistente de LPN pertenece a `NEXO-DOM-019` y `NEXO-DOM-020`.
+
+#### 33. Tipo no equivale a composición
+
+No son tipos de propósito:
+
+```text
+SINGLE_SKU
+MIXED_SKU
+SINGLE_LOT
+MIXED_LOT
+EMPTY
+FULL
+PARTIAL
+```
+
+Esas propiedades pertenecen al contenido, compatibilidad, ocupación o estado.
+
+`NEXO-DOM-004`, `NEXO-DOM-005`, `NEXO-DOM-006`, `NEXO-DOM-023` y `NEXO-DOM-024` conservan sus decisiones.
+
+#### 34. Tipo no equivale a jerarquía
+
+No son tipos de propósito:
+
+```text
+PARENT
+CHILD
+NESTED
+LEAF
+```
+
+El anidamiento es una relación estructural entre LPN y pertenece a `NEXO-DOM-006`.
+
+Un LPN de cualquiera de los seis propósitos puede participar únicamente en las relaciones que esa tarea posterior autorice.
+
+#### 35. Tipo no equivale a forma de contenedor
+
+Queda prohibido usar como `LPN_PURPOSE_TYPE` valores como:
+
+```text
+PALLET
+BOX
+BAG
+TOTE
+CRATE
+TRAY
+CART
+BIN
+BASKET
+```
+
+Si una forma física necesita clasificación, pertenece al modelo de contenedor, empaque o presentación correspondiente.
+
+Esto corrige conceptualmente la mezcla observada de `inventory_lpns.container_type` sin modificar todavía el esquema físico.
+
+#### 36. Tipo no equivale a estado del lifecycle
+
+No son tipos de propósito:
+
+```text
+DRAFT
+ACTIVE
+CLOSED
+CANCELLED
+VOID
+RELABELED
+```
+
+Los estados y transiciones exactos pertenecen a `NEXO-DOM-003`.
+
+El purpose type describe para qué existe el LPN; el lifecycle describe en qué estado se encuentra.
+
+#### 37. Tipo no equivale a custodia
+
+No son tipos de propósito:
+
+```text
+WAREHOUSE_OWNED
+DRIVER_OWNED
+STORE_OWNED
+THIRD_PARTY
+```
+
+La custodia y el responsable actual pertenecen a `NEXO-DOM-008` y a los procesos de transferencia de custodia.
+
+#### 38. Tipo no equivale a dirección
+
+`INBOUND` y `OUTBOUND` pueden describir dirección relativa dentro de un proceso, pero no se adoptan como tipos canónicos independientes.
+
+La dirección se deriva del contexto de origen/destino y del proceso propietario.
+
+Esto evita duplicar combinaciones como `INBOUND_TRANSFER`, `OUTBOUND_TRANSFER`, `INBOUND_RETURN` y equivalentes.
+
+#### 39. Tipo no equivale a motivo de excepción
+
+Un LPN con contenido dañado, faltante, bloqueado, vencido o en investigación conserva su propósito logístico salvo que una transición propietaria establezca otra cosa.
+
+No se crea un tipo `EXCEPTION` como contenedor genérico de estados heterogéneos.
+
+#### 40. Código e identidad humana
+
+Todo LPN deberá poder conservar una identidad estable distinta de su texto visible o etiqueta impresa.
+
+La representación futura podrá incluir:
+
+- identificador técnico estable;
+- código humano/escaneable estable o versionado conforme al lifecycle;
+- etiqueta legible;
+- purpose type;
+- referencias de trazabilidad necesarias.
+
+Esta tarea no fija el formato físico del código, el algoritmo de numeración ni la etiqueta de impresión; esa responsabilidad permanece en las tareas de lifecycle, experiencia e integración de impresión.
+
+#### 41. El tipo no otorga autorización
+
+Conocer o seleccionar un purpose type no concede permiso para:
+
+- crear LPN;
+- cambiar contenido;
+- moverlo;
+- cerrar;
+- anular;
+- reetiquetar;
+- transferir custodia;
+- imprimir;
+- vincular contenedor;
+- despachar o recibir.
+
+La autorización continúa bajo los contratos NEXO-AUTH y transversales correspondientes.
+
+#### 42. El tipo no ejecuta inventario
+
+Asignar `STORAGE`, `RECEIVING`, `TRANSFER`, `FULFILLMENT`, `PRODUCTION_STAGING` o `RETURN` no crea por sí solo:
+
+- movimiento;
+- reserva;
+- saldo;
+- disponibilidad;
+- tránsito;
+- recepción;
+- consumo;
+- transferencia;
+- ajuste.
+
+Todo efecto necesita el hecho de negocio propietario y su autorización.
+
+#### 43. No doble contabilización
+
+El LPN es una agrupación logística, no una existencia adicional.
+
+Debe mantenerse:
+
+```text
+CONTENT ACCOUNTED INSIDE LPN
++
+SAME CONTENT ACCOUNTED AS LOOSE STOCK
+=
+INVALID DOUBLE REPRESENTATION
+```
+
+El purpose type nunca justifica duplicar saldo, cantidad, activo, kit, contenedor o valor.
+
+La materialización completa de esta regla permanece en `NEXO-DOM-021` y contratos de inventario relacionados.
+
+#### 44. Movimiento atómico como handoff
+
+Esta tarea conserva la expectativa ya aprobada de que mover un LPN debe preservar la coherencia de su contenido.
+
+No implementa esa operación ni define su transacción.
+
+El contrato operativo detallado permanece en `NEXO-DOM-022`.
+
+#### 45. Lote, serial y condición como handoff
+
+El purpose type no elimina trazabilidad individual o por cantidad.
+
+Un LPN debe poder conservar relaciones suficientes para que cada contenido mantenga lote, serial, vencimiento, condición y demás dimensiones aplicables.
+
+La definición detallada permanece en `NEXO-DOM-023`.
+
+#### 46. Capacidad y compatibilidad como handoff
+
+El purpose type tampoco decide si físicamente una combinación de contenido cabe o es compatible.
+
+Peso, volumen, capacidad, compatibilidad, restricciones físicas y reglas equivalentes pertenecen a `NEXO-DOM-024` y al modelo de contenedor aplicable.
+
+#### 47. Estado físico conocido
+
+La línea base física conocida contiene infraestructura LPN parcial:
+
+- tabla `inventory_lpns`;
+- tabla `inventory_lpn_items`;
+- endpoint de lectura de LPN en NEXO;
+- un componente de creación sin consumidor confirmado en la auditoría previa;
+- una ruta histórica `/inventory/lpns` que no constituye una superficie funcional completa;
+- permisos y estructuras parciales sin lifecycle completo certificado.
+
+La existencia de estas piezas no se interpreta como adopción del contrato definido aquí.
+
+#### 48. Brecha física: container_type embebido
+
+El modelo físico observado conserva `inventory_lpns.container_type`.
+
+Ese campo mezcla una identidad logística con una característica de forma física.
+
+La decisión de esta tarea es únicamente contractual:
+
+```text
+container_type
+MUST NOT DEFINE
+LPN_PURPOSE_TYPE
+```
+
+Su corrección física pertenece a `NEXO-DOM-019`, `NEXO-DOM-020`, `SUPA-ARC-005` y los owners de transición aplicables.
+
+#### 49. Brecha física: contenido limitado
+
+La estructura `inventory_lpn_items` observada está limitada a producto, cantidad, unidad, lote y vencimiento.
+
+Eso no demuestra soporte suficiente para todas las clases de contenido que el modelo canónico puede requerir.
+
+La ampliación o sustitución física pertenece a `NEXO-DOM-004`, `NEXO-DOM-006`, `NEXO-DOM-024` y arquitectura propietaria.
+
+Esta tarea no modifica el esquema.
+
+#### 50. Brecha física: endpoint parcial
+
+El endpoint actual de NEXO consulta `inventory_lpns` y expone una proyección reducida de identidad, código, sede y fecha de creación.
+
+Ese endpoint no demuestra:
+
+- purpose type canónico;
+- lifecycle completo;
+- contenido completo;
+- ubicación efectiva;
+- custodia;
+- contenedor;
+- trazabilidad;
+- mutaciones;
+- adopción de las seis categorías.
+
+No se adapta ni se declara conforme en esta tarea.
+
+#### 51. Brecha física: cero adopción demostrada
+
+La auditoría previa registró infraestructura LPN fragmentada y ausencia de un ciclo funcional alcanzable de principio a fin.
+
+Por tanto, esta tarea no declara:
+
+```text
+LPN_CANONICAL_IMPLEMENTED = TRUE
+```
+
+La salida es definición documental, no certificación física.
+
+#### 52. Reconciliación del legacy
+
+`NEXO-LPN-PHYSICAL-RECONCILIATION-001`:
+
+| Evidencia física | Estado frente al contrato | Owner de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `inventory_lpns` existe | `FOUNDATION_PARTIAL` | arquitectura y dominio LPN posterior | schema compatible y adopción demostrada |
+| `inventory_lpns.container_type` embebido | `CONCEPTUAL_MIXING` | `NEXO-DOM-019`; `NEXO-DOM-020`; `SUPA-ARC-005` | separar forma física de purpose type e identidad |
+| `inventory_lpn_items` limitado | `CONTENT_MODEL_INCOMPLETE` | `NEXO-DOM-004`; `NEXO-DOM-006`; `NEXO-DOM-024` | representar contenido canónico sin pérdida de identidad |
+| endpoint GET LPN parcial | `READ_PROJECTION_PARTIAL` | experiencia/servicio propietario | contrato y autorización completos, con pruebas |
+| formulario de creación sin consumidor confirmado | `ORPHAN_OR_UNCONFIRMED_CONSUMER` | experiencia LPN propietaria | consumidor real y flujo end-to-end demostrados |
+| lifecycle completo no alcanzable | `NOT_IMPLEMENTED_END_TO_END` | `NEXO-DOM-003..008`; `NEXO-DOM-019..024` y owners físicos | ciclo y relaciones materializados y certificados |
+
+Ninguna brecha bloquea la aprobación documental de la definición; todas bloquean declarar implementación física completa.
+
+#### 53. Matriz de casos de clasificación
+
+| Caso | Tipo canónico | Decisión |
+| --- | --- | --- |
+| existencia agrupada para permanecer almacenada | `STORAGE` | permitido |
+| mercancía o existencia agrupada durante entrada física | `RECEIVING` | permitido |
+| existencias agrupadas para traslado interno | `TRANSFER` | permitido |
+| contenido preparado para remisión/despacho/entrega | `FULFILLMENT` | permitido |
+| materiales agrupados para staging con producción | `PRODUCTION_STAGING` | permitido |
+| contenido agrupado para retorno físico | `RETURN` | permitido |
+| pallet como forma física | ninguno | no es purpose type |
+| caja como forma física | ninguno | no es purpose type |
+| contenido en cuarentena | conserva purpose type aplicable | cuarentena es condición |
+| LPN temporal | conserva purpose type aplicable | temporalidad es dimensión separada |
+| LPN persistente | conserva purpose type aplicable | temporalidad es dimensión separada |
+| un solo SKU | conserva purpose type aplicable | composición es dimensión separada |
+| contenido mixto | conserva purpose type aplicable | composición es dimensión separada |
+| LPN padre | conserva purpose type aplicable | jerarquía es dimensión separada |
+| LPN en tránsito | conserva purpose type aplicable | tránsito es estado/proyección de movimiento |
+| LPN dentro de una remisión | normalmente `FULFILLMENT` si ese es su propósito dominante | remisión no es tipo |
+| LPN retornado desde sede | `RETURN` si el propósito dominante es el retorno | la recepción posterior no se infiere como completada |
+| LPN de ingredientes alistados para producción | `PRODUCTION_STAGING` | no crea consumo ni lote productivo |
+| purpose indeterminado | ninguno | fail-closed para creación canónica |
+| valor legacy `container_type` | ninguno por sí solo | no se convierte automáticamente |
+
+#### 54. Reglas de normalización
+
+Los consumidores futuros deben utilizar los códigos canónicos exactos para la dimensión de propósito.
+
+Las etiquetas humanas pueden traducirse o adaptarse visualmente sin crear nuevos valores persistidos.
+
+Ejemplos de presentación aceptable:
+
+| Código | Etiqueta humana base |
+| --- | --- |
+| `STORAGE` | Almacenamiento |
+| `RECEIVING` | Recepción |
+| `TRANSFER` | Traslado |
+| `FULFILLMENT` | Alistamiento / despacho |
+| `PRODUCTION_STAGING` | Staging de producción |
+| `RETURN` | Retorno |
+
+La etiqueta no es la identidad contractual.
+
+#### 55. Unknown values
+
+Un valor fuera del catálogo no se aproxima por nombre ni se mapea heurísticamente.
+
+Se conserva:
+
+```text
+UNKNOWN LPN PURPOSE
+-> NO SILENT FALLBACK
+-> REQUIRE RECONCILIATION
+```
+
+Un consumidor legacy puede seguir mostrando datos históricos durante transición controlada, pero no puede fabricar semántica canónica inexistente.
+
+#### 56. Migración futura
+
+La transición de valores legacy hacia `LPN_PURPOSE_TYPE` deberá ser:
+
+- explícita;
+- versionada;
+- determinista;
+- auditable;
+- idempotente;
+- reversible antes de activación cuando el plan físico lo exija;
+- bloqueante ante ambigüedad.
+
+Esta tarea no asigna purpose types a filas reales ni ejecuta backfill.
+
+No se permite derivar automáticamente el tipo solo desde `container_type`, nombre, código, ruta o ubicación.
+
+#### 57. Creación futura
+
+Una futura creación canónica de LPN deberá disponer de un purpose type válido antes de quedar operativamente utilizable.
+
+Esta tarea no define:
+
+- el estado inicial;
+- el commit point;
+- la activación;
+- la anulación;
+- la reetiquetación;
+- la idempotencia de creación.
+
+Esos puntos pertenecen a `NEXO-DOM-003` y arquitectura física posterior.
+
+#### 58. Etiquetas y escaneo
+
+La etiqueta o código escaneable representa la identidad del LPN, no el purpose type como sustituto de identidad.
+
+Cambiar una etiqueta visible no debe convertir un `STORAGE` en `TRANSFER` ni crear otra identidad por inferencia.
+
+La política de impresión, tamaño, simbología, reimpresión y hardware pertenece a `NEXO-DOM-018`, experiencia e infraestructura de impresión.
+
+#### 59. Dispositivos compartidos
+
+Escanear o seleccionar un LPN desde tablet, kiosco o estación compartida no concede custodia ni autoridad.
+
+El dispositivo, principal técnico, actor humano, contexto operativo, LPN y purpose type permanecen separados.
+
+La autorización del actor se resuelve por sus contratos propietarios.
+
+#### 60. Offline y cache
+
+Un purpose type cacheado puede servir como proyección de lectura cuando el contrato posterior lo permita, pero no como autoridad para ejecutar una transición de inventario.
+
+Offline no puede:
+
+- inventar un purpose type;
+- cambiarlo silenciosamente;
+- resolver ambigüedad de legacy;
+- convertir una etiqueta física en fuente final;
+- duplicar un LPN al reconectar.
+
+La política completa de operación offline pertenece a las tareas propietarias posteriores.
+
+#### 61. Concurrencia
+
+Dos operaciones concurrentes no pueden dejar un LPN con dos purpose types primarios vigentes.
+
+Esta tarea fija la invariante, no el mecanismo transaccional.
+
+La arquitectura física deberá usar versión, serialización, compare-and-set, evento, constraint o mecanismo equivalente aprobado para conservarla.
+
+#### 62. Auditoría
+
+La historia futura debe permitir responder:
+
+```text
+QUE LPN ERA?
+QUE PROPOSITO TENIA?
+BAJO QUE VERSION?
+CUANDO CAMBIO?
+QUIEN O QUE PROCESO AUTORIZO EL CAMBIO?
+```
+
+El purpose type no se reconstruye únicamente desde el estado actual o desde logs libres.
+
+La implementación exacta de auditoría pertenece a `NEXO-DOM-017` y arquitectura transversal.
+
+#### 63. Privacidad y minimización
+
+La identidad LPN y su purpose type no deben transportar datos personales innecesarios.
+
+No se codifican en la etiqueta o código:
+
+- nombre del trabajador;
+- email;
+- documento personal;
+- credenciales;
+- permisos;
+- secretos;
+- tokens;
+- información sensible ajena a la identificación logística.
+
+#### 64. Integración con ORIGO
+
+ORIGO puede originar hechos de compra o recepción que den contexto a un LPN `RECEIVING`, pero no se convierte en propietario de la identidad logística NEXO.
+
+NEXO no reescribe la orden de compra para representar el LPN.
+
+Ambos hechos se correlacionan mediante contratos de integración posteriores.
+
+#### 65. Integración con FOGO
+
+FOGO puede originar demanda productiva, consumo o producto resultante.
+
+NEXO puede agrupar físicamente materiales o resultados mediante `PRODUCTION_STAGING` cuando corresponda.
+
+El LPN no sustituye:
+
+- receta;
+- orden;
+- batch;
+- lote de producción;
+- rendimiento;
+- liberación productiva.
+
+#### 66. Integración con PULSO y PASS
+
+PULSO y PASS no son propietarios de LPN.
+
+Si una operación comercial requiere conocer agrupaciones logísticas, consume una proyección autorizada de NEXO.
+
+Pedido, cliente, pago, beneficio y LPN permanecen identidades distintas.
+
+#### 67. Integración con NUMERA
+
+NUMERA puede consumir movimientos o hechos económicos correlacionados, pero el purpose type no representa:
+
+- costo;
+- centro de costo;
+- asiento;
+- valoración;
+- reconocimiento contable.
+
+Cambiar purpose type no genera por sí solo un hecho contable.
+
+#### 68. Integración con SHELL y VISO
+
+SHELL y VISO pueden consumir catálogos, permisos, configuración o proyecciones administrativas conforme a sus contratos.
+
+Ninguno redefine localmente los seis purpose types.
+
+La administración del catálogo no equivale a propiedad del contenido o movimiento de un LPN.
+
+#### 69. Handoff hacia NEXO-DOM-003
+
+`NEXO-DOM-002` entrega a `NEXO-DOM-003`:
+
+```text
+LPN IDENTITY
++
+ONE CURRENT PURPOSE TYPE
++
+PURPOSE CATALOG OF 6 VALUES
+```
+
+`NEXO-DOM-003` deberá definir cómo una identidad LPN se crea, activa, cierra, anula y reetiqueta sin convertir esos estados o eventos en nuevos purpose types.
+
+Además deberá determinar cómo se preserva la historia si un purpose type puede cambiar dentro del lifecycle.
+
+#### 70. Handoff hacia NEXO-DOM-004
+
+`NEXO-DOM-004` recibe una identidad LPN ya separada de su contenido.
+
+Debe definir:
+
+- qué puede entrar;
+- cómo se representa;
+- cómo se empaca;
+- cómo se desempaca;
+- cómo se conservan cantidades e identidades.
+
+No puede usar el purpose type como sustituto de la composición real.
+
+#### 71. Handoff hacia NEXO-DOM-005
+
+`NEXO-DOM-005` recibe la regla de identidad estable y purpose type vigente.
+
+Dividir, unir o transferir contenido deberá decidir qué ocurre con las identidades resultantes sin duplicar existencia ni inferir purpose types incompatibles.
+
+#### 72. Handoff hacia NEXO-DOM-006
+
+`NEXO-DOM-006` recibe la separación:
+
+```text
+PURPOSE TYPE
+!=
+NESTING RELATION
+```
+
+Deberá definir LPN anidados y contenedores retornables sin convertir `PARENT`, `CHILD` o forma física en tipos de propósito.
+
+#### 73. Handoff hacia NEXO-DOM-007
+
+`NEXO-DOM-007` recibe la separación:
+
+```text
+LPN
+!=
+LOC
+```
+
+Deberá cerrar la relación sede, LOC, LPN y contenido sin convertir ubicación en identidad logística ni permitir doble ubicación incompatible.
+
+#### 74. Handoff hacia NEXO-DOM-008
+
+`NEXO-DOM-008` recibe la separación:
+
+```text
+LPN PURPOSE
+!=
+CUSTODY
+```
+
+Deberá definir responsable y custodio actual sin codificar esa relación dentro del purpose type.
+
+#### 75. Handoff hacia NEXO-DOM-019 a NEXO-DOM-024
+
+Las tareas avanzadas reciben estas fronteras obligatorias:
+
+- `NEXO-DOM-019`: contenedor físico e identidad LPN permanecen separadas;
+- `NEXO-DOM-020`: persistencia o cambio de LPN no se deriva de la forma física;
+- `NEXO-DOM-021`: el LPN no crea saldo adicional;
+- `NEXO-DOM-022`: mover un LPN debe preservar atomicidad del contenido;
+- `NEXO-DOM-023`: lote, serial, vencimiento y condición pertenecen al contenido;
+- `NEXO-DOM-024`: capacidad, peso, volumen y compatibilidad no son purpose types.
+
+#### 76. Handoff hacia autorización y experiencia
+
+Las tareas `NEXO-AUTH-*` y `NEXO-UX-*` posteriores deberán consumir los seis purpose types sin convertirlos en roles o permisos.
+
+La experiencia podrá mostrar etiquetas humanas, filtros y agrupaciones, pero la autorización se resolverá desde permisos, actor y contexto reales.
+
+Una opción de UI no puede crear un purpose type fuera del catálogo.
+
+#### 77. Contrato para materialización posterior
+
+Aunque `NEXO-DOM-002` no tiene instancia física propia, toda materialización posterior que represente LPN deberá preservar:
+
+1. identidad LPN separada;
+2. uno de los seis purpose types;
+3. ausencia de fallback silencioso;
+4. separación respecto de contenedor físico;
+5. separación respecto de lifecycle;
+6. separación respecto de condición;
+7. separación respecto de composición;
+8. separación respecto de ubicación;
+9. separación respecto de custodia;
+10. separación respecto de clase primaria;
+11. no doble contabilización;
+12. migración legacy explícita y trazable.
+
+#### 78. Invariantes
+
+1. LPN es identidad logística de contenido.
+2. LPN no es LOC.
+3. LPN no es posición.
+4. LPN no es contenedor físico.
+5. LPN no es bulto por definición.
+6. LPN no es producto.
+7. LPN no es presentación.
+8. LPN no es unidad de medida.
+9. LPN no es lote.
+10. LPN no es serial.
+11. LPN no es remisión.
+12. LPN no es viaje.
+13. LPN no es manifiesto.
+14. LPN no es movimiento.
+15. LPN no es clase primaria de inventario.
+16. LPN no es kit.
+17. El tipo propietario de esta tarea es `LPN_PURPOSE_TYPE`.
+18. Existen exactamente seis purpose types canónicos.
+19. `STORAGE` representa almacenamiento controlado.
+20. `RECEIVING` representa agrupación durante entrada física.
+21. `TRANSFER` representa agrupación para traslado.
+22. `FULFILLMENT` representa agrupación para satisfacer un caso logístico.
+23. `PRODUCTION_STAGING` representa staging físico con producción.
+24. `RETURN` representa flujo de retorno.
+25. Solo existe un purpose type primario vigente por LPN.
+26. Purpose type no equivale a lifecycle.
+27. Purpose type no equivale a temporalidad.
+28. Purpose type no equivale a composición.
+29. Purpose type no equivale a nesting.
+30. Purpose type no equivale a condición.
+31. Purpose type no equivale a custodia.
+32. Purpose type no equivale a dirección.
+33. Purpose type no equivale a forma física.
+34. `container_type` no define purpose type.
+35. Valores desconocidos no usan fallback silencioso.
+36. El purpose type no concede autorización.
+37. El purpose type no ejecuta movimientos.
+38. El purpose type no cambia saldo.
+39. El LPN no crea existencia adicional.
+40. No se permite doble contabilización suelto/LPN.
+41. La identidad del contenido se preserva.
+42. El tipo no reemplaza lote, serial o condición.
+43. El tipo no reemplaza documentos logísticos.
+44. Los códigos humanos pueden traducirse en UI, no en persistencia canónica.
+45. Una etiqueta no es autoridad.
+46. Offline no fabrica tipos.
+47. Concurrencia no deja dos purpose types primarios vigentes.
+48. Cambiar propósito no es overwrite silencioso.
+49. Las brechas físicas actuales no se presentan como implementación completa.
+50. `NEXO-DOM-003` conserva el lifecycle.
+51. `NEXO-DOM-004` conserva contenido, empaque y desempaque.
+52. `NEXO-DOM-005` conserva división, unión y transferencia de contenido.
+53. `NEXO-DOM-006` conserva anidamiento y retornables.
+54. `NEXO-DOM-007` conserva sede-LOC-LPN-contenido.
+55. `NEXO-DOM-008` conserva custodia.
+56. `NEXO-DOM-019..024` conservan relación avanzada con contenedor y contenido.
+57. No se modifica código ni Supabase.
+58. No se crea instancia física propia.
+59. No se modifica 04A.
+60. No se inicia `NEXO-DOM-003`.
+
+#### 79. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. significado de LPN;
+2. propósito empresarial de la identidad;
+3. separación de identidad y contenido;
+4. separación de ubicación;
+5. separación de contenedor físico;
+6. separación de bulto;
+7. separación de remisión, viaje y manifiesto;
+8. separación de movimiento;
+9. separación de producto, presentación y unidad;
+10. separación de lote, serial y vencimiento;
+11. separación de condición;
+12. separación de clase primaria;
+13. separación de kit;
+14. dimensión `LPN_PURPOSE_TYPE`;
+15. catálogo cerrado de seis valores;
+16. `STORAGE`;
+17. `RECEIVING`;
+18. `TRANSFER`;
+19. `FULFILLMENT`;
+20. `PRODUCTION_STAGING`;
+21. `RETURN`;
+22. regla de selección por propósito dominante;
+23. propósito único vigente;
+24. separación de temporalidad;
+25. separación de composición;
+26. separación de jerarquía;
+27. separación de lifecycle;
+28. separación de custodia;
+29. ausencia de fallback silencioso;
+30. estado físico parcial conocido;
+31. brecha `container_type`;
+32. brecha de contenido limitado;
+33. endpoint parcial;
+34. reconciliación legacy;
+35. handoffs exactos a las tareas posteriores.
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la separación entre LPN, contenido, ubicación, contenedor, clase primaria, stock y proceso logístico; el ciclo LPN; la trazabilidad dentro de LPN; la no doble contabilización; la separación de contenedores; los movimientos y la reconciliación del modelo físico ya disponen de cobertura canónica vigente. Esta tarea especializa y cierra el propósito y la taxonomía documental sin cambiar prioridad, modalidad, owner, paquete, estado o relación de requisitos existentes.
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro 04A, se reutiliza la cobertura vigente de:
+
+- `TREQ-NEXO-004`, para ciclo LPN ejecutable y auditable sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos/proyecciones conciliables y separación de existencia suelta frente a contenido LPN;
+- `TREQ-NEXO-012`, para lote, serial, condición y trazabilidad dentro de LPN;
+- `TREQ-NEXO-013`, para separar activo, contenedor, LPN y stock;
+- `TREQ-NEXO-016`, para separar LPN, bulto, contenedor, remisión, viaje y custodia en logística;
+- `TREQ-NEXO-040` y `TREQ-NEXO-041`, para preservar la clase primaria y mantenerla separada de LPN;
+- `TREQ-NEXO-046`, para separar identidad de contenedor físico e identidad LPN;
+- `TREQ-NEXO-047`, para impedir duplicación entre saldo, instancia, kit, contenedor y contenido LPN;
+- `TREQ-NEXO-048` y `TREQ-NEXO-049`, para reconciliación legacy, paridad y transición sin clasificación destructiva.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `NEXO-DOM-002`.
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto aún no ha sido insertado ni normalizado mediante el build documental del checkout de la tarea |
+| LOCAL | `NOT_EXECUTED` | no se han ejecutado formateador, quality, delivery, topología, TREQ, batería global ni diff contra la rama local de `NEXO-DOM-002` |
+| REMOTA | `PASS` | se verificaron en solo lectura `main`, continuidad vigente, topología, políticas de formato y desarrollo, contrato de entrega, owner, `NEXO-DOM-001`, cobertura 04A NEXO, definición previa de LPN, proceso/logística AS-IS, endpoint LPN actual y brechas físicas conocidas |
+| OPERATIVA | `NOT_EXECUTED` | no se creó, escaneó, movió, empacó, recibió, despachó, retornó ni reconcilió un LPN real durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron tablas, filas, endpoints, componentes, aplicaciones, etiquetas, dispositivos, migraciones, RLS, RPC, Supabase ni entornos desplegados |
+
+La validación remota es auditoría estática de fuentes vigentes y no equivale a certificación de runtime.
+
+#### 83. Criterios de aceptación
+
+- [x] Se define LPN como identidad logística de contenido.
+- [x] Se define el propósito de agrupar contenido sin crear existencia adicional.
+- [x] Se separa identidad LPN de contenido.
+- [x] Se separa LPN de sede, LOC y posición.
+- [x] Se separa LPN de contenedor físico.
+- [x] Se separa LPN de bulto.
+- [x] Se separa LPN de remisión.
+- [x] Se separa LPN de viaje y manifiesto.
+- [x] Se separa LPN de movimiento.
+- [x] Se separa LPN de producto, presentación y unidad.
+- [x] Se separa LPN de lote, serial y vencimiento.
+- [x] Se separa LPN de condición.
+- [x] Se separa LPN de las siete clases primarias de inventario.
+- [x] Se separa LPN de kit.
+- [x] Se define `LPN_PURPOSE_TYPE` como dimensión propietaria.
+- [x] Se cierra el catálogo en exactamente seis valores.
+- [x] Se define `STORAGE`.
+- [x] Se define `RECEIVING`.
+- [x] Se define `TRANSFER`.
+- [x] Se define `FULFILLMENT`.
+- [x] Se define `PRODUCTION_STAGING`.
+- [x] Se define `RETURN`.
+- [x] Se define una matriz de decisión por propósito.
+- [x] Se exige un solo propósito primario vigente.
+- [x] Se prohíbe selección por nombre, pantalla, categoría o `inventory_kind`.
+- [x] Se prohíbe fallback silencioso para tipos desconocidos.
+- [x] Se separa purpose type de temporalidad.
+- [x] Se separa purpose type de composición.
+- [x] Se separa purpose type de anidamiento.
+- [x] Se separa purpose type de lifecycle.
+- [x] Se separa purpose type de custodia.
+- [x] Se separa purpose type de dirección inbound/outbound.
+- [x] Se excluyen formas físicas como tipos de propósito.
+- [x] Se excluyen estados y condiciones como tipos de propósito.
+- [x] Se establece que cambiar propósito no puede ser overwrite silencioso.
+- [x] Se preserva no doble contabilización.
+- [x] Se preserva atomicidad futura de movimiento de contenido.
+- [x] Se preserva trazabilidad de lote, serial y condición.
+- [x] Se preserva capacidad y compatibilidad para su owner posterior.
+- [x] Se registra el estado físico LPN como parcial.
+- [x] Se registra la mezcla legacy de `container_type` sin corregirla físicamente.
+- [x] Se registra el límite de `inventory_lpn_items`.
+- [x] Se registra el endpoint GET como proyección parcial, no implementación completa.
+- [x] Se conservan handoffs exactos hacia `NEXO-DOM-003..008`.
+- [x] Se conservan handoffs exactos hacia `NEXO-DOM-019..024`.
+- [x] Se preservan autorización, offline, concurrencia, auditoría y minimización como fronteras.
+- [x] Se conserva `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecuta ningún cambio físico.
+- [x] `NEXO-DOM-003` permanece reservada.
+
+#### 84. Límites
+
+Esta tarea no:
+
+- crea un LPN real;
+- modifica `inventory_lpns`;
+- modifica `inventory_lpn_items`;
+- elimina o transforma `container_type`;
+- crea un enum físico;
+- crea tipos TypeScript;
+- crea migraciones;
+- modifica Supabase;
+- cambia RLS;
+- cambia grants;
+- cambia RPC;
+- cambia endpoints;
+- modifica `vento-nexo`;
+- modifica componentes;
+- modifica rutas;
+- implementa formularios;
+- imprime etiquetas;
+- define tamaño o simbología de etiquetas;
+- ejecuta escaneo;
+- asigna purpose type a filas existentes;
+- ejecuta backfill;
+- define el lifecycle completo;
+- define idempotencia de creación;
+- define cierre, anulación o reetiquetación;
+- define empaque o desempaque detallado;
+- define división o unión de contenido;
+- define LPN anidados;
+- define relación completa sede-LOC-LPN-contenido;
+- define custodia completa;
+- define cuándo un contenedor conserva o cambia LPN;
+- implementa no doble contabilización;
+- implementa movimiento atómico;
+- implementa trazabilidad interna de lotes/seriales;
+- implementa capacidad o compatibilidad física;
+- cambia autorización;
+- cambia procesos FOGO, ORIGO, PULSO, PASS o NUMERA;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- crea una instancia física propia;
+- desarrolla `NEXO-DOM-003`.
+
+#### 85. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-001 — Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar`
+
 ### [ ] NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
 ### [ ] NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
 ### [ ] NEXO-DOM-005 — Definir división, unión y transferencia de contenido
