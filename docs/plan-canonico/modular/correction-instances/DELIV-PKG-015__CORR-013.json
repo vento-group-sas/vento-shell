@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-018"
@@ -17,12 +17,100 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-control.json",
+      "change": "MODIFY",
+      "scope": "Cambiar single_primary_action a false para alinear el contrato de control con GOVERNED_ACTIVE_SET sin autorizar trabajo fisico."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar multiples acciones fisicas gobernadas simultaneas, incluir authorization_frontier, conservar primaryAction solo como compatibility pointer y materializar borradores pendientes de todas las acciones admitidas."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir pipeline multi-activo CI020/CI022, prioridad de cambio sobre observacion y compatibilidad primary."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/sync-pending-task-context.mjs",
+      "change": "MODIFY",
+      "scope": "Renderizar multiples instancias EN_CURSO y todas las acciones gobernadas sin colapsarlas a ACTUAL/PENDIENTE singular."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/sync-pending-task-context.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir cola fisica multi-activa en REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter.mjs",
+      "change": "MODIFY",
+      "scope": "Mostrar GOVERNED_ACTIONABLE_SET en iniciadores y retirar exclusividad artificial de una sola instancia fisica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir proyeccion multi-activa del iniciador fisico."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/plan-continuity-global.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar en cabecera y progreso todas las acciones fisicas gobernadas, no una accion principal obligatoria singular."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/plan-continuity-global.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir cabecera multi-activa y ausencia de monopolio fisico singular."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-control.mjs",
+    "node --test scripts/docs/implementation-control.test.mjs",
+    "node --check scripts/docs/sync-pending-task-context.mjs",
+    "node --test scripts/docs/sync-pending-task-context.test.mjs",
+    "node --check scripts/docs/chatgpt-work-starter.mjs",
+    "node --test scripts/docs/chatgpt-work-starter.test.mjs",
+    "node --check scripts/docs/plan-continuity-global.mjs",
+    "node --test scripts/docs/plan-continuity-global.test.mjs",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
+  "zero_treq_reason": "La correccion reconcilia scheduling, seleccion y proyecciones multi-activas del carril fisico sin cambiar comportamiento funcional de negocio ni requisitos TREQ.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-11T21:06:59.996Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    "IMPLEMENTED WAVES_MULTI_ACTIVE_PHYSICAL_PIPELINE_CORRECTION_V1R8_LOCAL_DIRECT_DEPENDENCY_BOOTSTRAP: local normal worktree materialized and certified after preserving unrelated changes; candidate_digest=56d12eba7a74e223375572211ce7da4701372e23a62c161107f6e3eab94cad59.",
+    "IMPLEMENTED dependency bootstrap=INSTALLED; quality:repair executed exactly once after unrelated packages/** changes were shelved from the correction scope.",
+    "IMPLEMENTED no temporary branch or temporary clone used.",
+    "VERIFIED WAVES_MULTI_ACTIVE_PHYSICAL_PIPELINE_CORRECTION_V1R8_LOCAL_DIRECT_DEPENDENCY_BOOTSTRAP: local direct certification and authorized validations PASS; candidate_digest=56d12eba7a74e223375572211ce7da4701372e23a62c161107f6e3eab94cad59.",
+    "VERIFIED no physical authorization added; GAP-PKG-001 pilot not executed; no product mutation or Supabase remote mutation performed by this correction runner.",
+    "VERIFIED unrelated packages/** changes were excluded from correction scope and remain recoverable from the preservation stash."
+  ],
   "opened_at": "2026-09-11T20:58:38.479Z"
 }
