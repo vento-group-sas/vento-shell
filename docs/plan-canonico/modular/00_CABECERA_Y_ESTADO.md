@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1170** |
+| Tareas aprobadas | **1171** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **426** |
+| Tareas no iniciadas | **425** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **73.31% (1170/1596)** |
+| Porcentaje de completamiento | **73.37% (1171/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar** |
-| Tarea actual | **NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN** |
+| Última tarea aprobada | **NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN** |
+| Tarea actual | **NEXO-DOM-005 — Definir división, unión y transferencia de contenido** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-005 — Definir división, unión y transferencia de contenido** |
+| Siguiente tarea | **NEXO-DOM-006 — Definir LPN anidados y contenedores retornables** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 28 de 127 aprobadas; NEXO-DOM-004 pendiente** |
+| Progreso del bloque | **BLOQUE K: 29 de 127 aprobadas; NEXO-DOM-005 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-DOM-004** |
+| Carril documental | **ACTIVO — NEXO-DOM-005** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-003` — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar |
-| Tarea actual | `NEXO-DOM-004` — Definir contenido, empaque y desempaque de LPN — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-005` — Definir división, unión y transferencia de contenido |
+| Última aprobada | `NEXO-DOM-004` — Definir contenido, empaque y desempaque de LPN |
+| Tarea actual | `NEXO-DOM-005` — Definir división, unión y transferencia de contenido — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-006` — Definir LPN anidados y contenedores retornables |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 28 DE 127 APROBADAS — ACTUAL NEXO-DOM-004** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 29 DE 127 APROBADAS — ACTUAL NEXO-DOM-005** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
-        ↓
-TAREA ACTUAL
 NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-005 — Definir división, unión y transferencia de contenido
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 28 de 127 tareas aprobadas
+BLOQUE K — 29 de 127 tareas aprobadas
 ```

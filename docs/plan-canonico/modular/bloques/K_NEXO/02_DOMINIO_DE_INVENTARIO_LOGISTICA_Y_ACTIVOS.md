@@ -4852,7 +4852,1506 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN`
 
-### [ ] NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
+### ✅ NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
+**Tarea siguiente:** NEXO-DOM-005 — Definir división, unión y transferencia de contenido
+**Tipo de tarea:** documental; definición canónica del contenido de LPN, su representación, membresía, empaque y desempaque, conservación de identidad y cantidad, idempotencia, concurrencia, trazabilidad y fronteras con lifecycle, ubicación, custodia, contenedores y transferencias bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma única y verificable qué significa que una existencia o identidad física esté contenida en un LPN y cómo se ejecutan las operaciones de empaque y desempaque sin crear saldo duplicado, perder dimensiones de inventario, fusionar identidades ni convertir al LPN en ubicación, contenedor físico, kit, remisión o movimiento.
+
+La regla raíz queda:
+
+```text
+LPN ACTIVO
++
+CONTENIDO ELEGIBLE E IDENTIFICADO
++
+ORIGEN RECONCILIABLE
++
+UNA MEMBRESÍA AUTORITATIVA
++
+MOVIMIENTO CORRELACIONADO
++
+IDEMPOTENCIA Y CONCURRENCIA
+→
+CONTENIDO LPN RECONSTRUIBLE
+SIN DOBLE CONTABILIZACIÓN
+```
+
+Esta tarea define el contrato de dominio. No materializa tablas, APIs, Server Actions, RLS, UI, migraciones, datos ni operaciones físicas.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. la diferencia entre contenido planificado y contenido empacado autoritativo;
+2. las formas canónicas de contenido por cantidad, por identidad serializada y por instancia de kit;
+3. las clases primarias elegibles para contenido LPN;
+4. las dimensiones que una membresía debe preservar;
+5. la regla de una sola contabilización física;
+6. el contrato de `PACK`;
+7. el contrato de `UNPACK`;
+8. las precondiciones de ambas operaciones;
+9. conservación exacta de cantidad o identidad;
+10. reglas de granularidad por clase primaria;
+11. idempotencia;
+12. control de concurrencia mediante revisión de contenido;
+13. comportamiento ante retry, offline y respuestas tardías;
+14. coexistencia de contenido mixto bajo compatibilidad explícita;
+15. preservación de lote, vencimiento, condición, presentación y unidad;
+16. separación respecto de lifecycle, ubicación, custodia, remisión, kit y contenedor físico;
+17. reconciliación del modelo físico parcial existente;
+18. handoff exacto hacia `NEXO-DOM-005`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- la identidad LPN inmutable;
+- exactamente un purpose type vigente;
+- los seis purpose types aprobados;
+- un único lifecycle state vigente;
+- los estados `DRAFT`, `ACTIVE`, `CLOSED`, `CANCELLED` y `VOID`;
+- la revisión monotónica de lifecycle;
+- la regla de que `ACTIVE` es el único estado ordinario que permite operaciones reales de contenido;
+- la prohibición de reabrir estados terminales;
+- la separación entre LPN y contenedor físico;
+- las siete clases primarias de control de inventario;
+- la fuente canónica de movimientos y proyecciones reconciliables;
+- la prohibición de contabilizar simultáneamente una cantidad como stock suelto y contenido LPN;
+- la necesidad de autorización server-side para todo efecto real;
+- idempotencia, concurrencia, auditoría y conservación histórica como reglas transversales.
+
+---
+
+#### 4. Definición de contenido LPN
+
+Contenido LPN es una membresía logística explícita entre una identidad LPN y una porción o identidad física de inventario que continúa conservando su identidad de dominio original.
+
+Se fija:
+
+```text
+PACKED INTO LPN
+!=
+NEW PRODUCT
+```
+
+```text
+PACKED INTO LPN
+!=
+NEW STOCK
+```
+
+```text
+PACKED INTO LPN
+!=
+OWNERSHIP TRANSFER
+```
+
+```text
+PACKED INTO LPN
+!=
+NEW PHYSICAL CONTAINER
+```
+
+El LPN agrega trazabilidad logística; no sustituye el objeto contenido.
+
+---
+
+#### 5. Dos planos: plan y membresía autoritativa
+
+Se separan exactamente dos conceptos:
+
+```text
+CONTENT PLAN
+```
+
+```text
+AUTHORITATIVE PACKED MEMBERSHIP
+```
+
+`CONTENT PLAN` describe intención de preparación y puede existir mientras el LPN está `DRAFT`.
+
+`AUTHORITATIVE PACKED MEMBERSHIP` demuestra que una cantidad o identidad dejó de estar contabilizada como existencia suelta y pasó a estar controlada como contenido del LPN mediante un efecto correlacionado.
+
+Nunca se consideran equivalentes.
+
+---
+
+#### 6. Plan de contenido en `DRAFT`
+
+Mientras el LPN está `DRAFT` puede prepararse una lista de contenido previsto sin presentar el LPN como operativo.
+
+El plan:
+
+- puede incluir sujeto, cantidad prevista y dimensiones conocidas;
+- puede ser corregido antes de activación;
+- no crea saldo;
+- no mueve stock;
+- no confirma empaque físico;
+- no reserva por sí solo;
+- no transfiere custodia;
+- no confirma disponibilidad;
+- no convierte al LPN en `ACTIVE`;
+- no puede consumirse como membresía autoritativa por otro proceso.
+
+Si la preparación necesita una reserva real, esa reserva deberá producirse mediante su contrato propietario y no por la mera existencia del plan.
+
+---
+
+#### 7. Membresía autoritativa
+
+Una membresía autoritativa representa contenido que ya pertenece logísticamente al LPN para efectos de trazabilidad física.
+
+Debe existir únicamente después de una operación real aceptada por servidor y correlacionada con el movimiento o cambio de control necesario para impedir doble contabilización.
+
+Se fija:
+
+```text
+AUTHORITATIVE MEMBERSHIP
+→
+SERVER ACCEPTED
++
+RECONCILIABLE INVENTORY EFFECT
+```
+
+Un registro local, una selección visual o una intención offline no bastan.
+
+---
+
+#### 8. Estados del lifecycle y contenido
+
+| Lifecycle | Plan de contenido | Empaque autoritativo nuevo | Desempaque ordinario | Lectura histórica |
+| --- | --- | --- | --- | --- |
+| `DRAFT` | permitido | prohibido | no aplica | permitido |
+| `ACTIVE` | permitido como ayuda no autoritativa | permitido | permitido | permitido |
+| `CLOSED` | no operativo | prohibido | prohibido ordinariamente | permitido |
+| `CANCELLED` | histórico | prohibido | prohibido | permitido |
+| `VOID` | histórico | prohibido | prohibido ordinariamente | permitido |
+
+Una operación excepcional de reconciliación sobre un estado terminal pertenece al contrato de compensación o corrección propietario y nunca se presenta como empaque o desempaque ordinario.
+
+---
+
+#### 9. Activación y primer empaque son decisiones separadas
+
+Un flujo de usuario puede orquestar activación y empaque consecutivamente, pero el dominio conserva dos decisiones distintas:
+
+```text
+ACTIVATE LPN
+!=
+PACK CONTENT
+```
+
+La activación debe quedar aceptada antes del primer empaque autoritativo. Un fallo del empaque no revierte silenciosamente el lifecycle; cualquier compensación deberá ser explícita e idempotente.
+
+---
+
+#### 10. Formas canónicas de contenido
+
+Se fijan tres formas conceptuales de membresía:
+
+```text
+QUANTITY_SLICE
+SERIALIZED_IDENTITY
+KIT_INSTANCE
+```
+
+Estas formas describen granularidad de control dentro del LPN y no crean nuevas clases primarias de inventario.
+
+---
+
+#### 11. `QUANTITY_SLICE`
+
+`QUANTITY_SLICE` representa una porción medible de una existencia controlada por cantidad.
+
+Aplica, según política de la clase, a:
+
+- `CONSUMABLE`;
+- `QUANTITY_STOCK`;
+- `REUSABLE_QUANTITY`;
+- `SPARE_PART` cuando se controla por cantidad.
+
+Debe preservar como mínimo las dimensiones necesarias para identificar sin ambigüedad el saldo de origen.
+
+---
+
+#### 12. `SERIALIZED_IDENTITY`
+
+`SERIALIZED_IDENTITY` representa una identidad física indivisible para efectos de membresía LPN.
+
+Aplica a:
+
+- `SERIALIZED_ASSET` cuando el contrato permite viajar dentro de LPN;
+- `SPARE_PART` serializado;
+- cualquier otra clase cuya política aprobada exija identidad individual exacta.
+
+Una identidad serializada:
+
+- no admite cantidad fraccionaria;
+- no puede estar en dos LPN simultáneamente;
+- no pierde serial, identidad ni historia al empacarse;
+- no se convierte en línea fungible por entrar al LPN.
+
+---
+
+#### 13. `KIT_INSTANCE`
+
+`KIT_INSTANCE` representa una instancia materializada de kit que puede viajar dentro de un LPN sin convertirse en LPN.
+
+Solo una instancia válida y reconciliable puede ser contenido.
+
+La definición del kit, sus componentes, completitud, sustituciones y ciclo propio permanecen en sus tareas propietarias.
+
+Se fija:
+
+```text
+KIT INSTANCE IN LPN
+!=
+LPN
+```
+
+---
+
+#### 14. Clases primarias y forma de contenido
+
+| Clase primaria | Forma ordinaria dentro de LPN | Regla |
+| --- | --- | --- |
+| `CONSUMABLE` | `QUANTITY_SLICE` | cantidad y dimensiones aplicables |
+| `QUANTITY_STOCK` | `QUANTITY_SLICE` | cantidad, lote, condición y demás dimensiones de existencia |
+| `REUSABLE_QUANTITY` | `QUANTITY_SLICE` | cantidad equivalente recuperable, sin inventar identidad individual |
+| `SERIALIZED_ASSET` | `SERIALIZED_IDENTITY` | identidad exacta cuando el contrato lo permita |
+| `SPARE_PART` | `QUANTITY_SLICE` o `SERIALIZED_IDENTITY` | según política de la pieza |
+| `KIT` | `KIT_INSTANCE` | instancia materializada, no definición abstracta |
+| `PHYSICAL_CONTAINER` | no es contenido ordinario de este contrato | su vínculo con LPN es una relación separada |
+
+---
+
+#### 15. Contenedor físico no es contenido LPN
+
+`PHYSICAL_CONTAINER` no se modela como una línea de contenido ordinaria en esta tarea.
+
+Un contenedor físico puede soportar, transportar o vincularse con un LPN, pero conserva identidad propia.
+
+Se fija:
+
+```text
+PHYSICAL CONTAINER
+!=
+LPN CONTENT LINE
+```
+
+La relación avanzada entre ambos pertenece a `NEXO-DOM-019` a `NEXO-DOM-024`.
+
+---
+
+#### 16. LPN anidado no es contenido ordinario de esta tarea
+
+Una identidad LPN no puede introducirse como si fuera una línea normal de producto o activo dentro de otra identidad LPN.
+
+La semántica de LPN anidados pertenece a `NEXO-DOM-006`.
+
+Hasta que dicho contrato sea aplicado por una implementación física, un consumidor no puede fabricar anidamiento interpretando un `lpn_id` como `subject_id` de contenido ordinario.
+
+---
+
+#### 17. Dimensiones obligatorias de una membresía por cantidad
+
+Una membresía `QUANTITY_SLICE` debe conservar las dimensiones que hagan distinta a la existencia de origen, según apliquen:
+
+- identidad maestra de producto o material;
+- clase primaria;
+- presentación;
+- unidad canónica de stock;
+- cantidad;
+- lote;
+- vencimiento;
+- condición;
+- estado de disponibilidad cuando sea una dimensión independiente;
+- referencia de origen suficiente para reconciliar la salida del saldo suelto;
+- sede o contexto territorial aplicable;
+- revisión del contenido LPN;
+- correlación de la operación.
+
+No todas las dimensiones son obligatorias para todas las clases; las aplicables no pueden descartarse al empacar.
+
+---
+
+#### 18. Dimensiones obligatorias por identidad
+
+Una membresía `SERIALIZED_IDENTITY` debe preservar como mínimo:
+
+- identidad física estable;
+- clase primaria;
+- producto o modelo maestro cuando aplique;
+- serial, placa o código individual cuando aplique;
+- condición;
+- referencia de origen;
+- referencias de custodia o ubicación sin apropiarse de sus contratos;
+- revisión del contenido LPN;
+- correlación.
+
+Cantidad arbitraria no sustituye la identidad exacta.
+
+---
+
+#### 19. Clave conceptual de una línea por cantidad
+
+Dos porciones solo pueden consolidarse en una misma línea lógica cuando todas las dimensiones que afectan identidad de existencia son compatibles.
+
+Como mínimo no se fusionan silenciosamente cantidades con diferencias en:
+
+- producto;
+- clase primaria;
+- unidad canónica incompatible;
+- presentación cuando sea material;
+- lote;
+- vencimiento;
+- condición;
+- propietario o estado de control cuando sea una dimensión material.
+
+Se fija:
+
+```text
+DIFFERENT INVENTORY DIMENSIONS
+→
+DIFFERENT LOGICAL CONTENT MEMBERSHIP
+```
+
+---
+
+#### 20. Contenido mixto
+
+Un LPN puede contener más de un producto o más de una clase primaria elegible únicamente cuando las reglas de compatibilidad, capacidad, seguridad, condición y proceso aplicables lo permitan.
+
+`MIXED` no es purpose type ni lifecycle state.
+
+Se fija:
+
+```text
+MULTIPLE CONTENT LINES
+!=
+MIXED LPN TYPE
+```
+
+La tarea no define todavía algoritmos de compatibilidad física; preserva su gate propietario.
+
+---
+
+#### 21. Fuente de verdad de contenido
+
+La fuente autoritativa de contenido deberá poder reconciliarse con la fuente canónica de movimientos o efectos físicos de inventario.
+
+Una proyección de contenido puede existir para lectura eficiente, pero no puede producir saldo independiente.
+
+Se fija:
+
+```text
+CONTENT PROJECTION
+!=
+SECOND INVENTORY LEDGER
+```
+
+Toda divergencia entre membresía LPN y movimientos deberá clasificarse como inconsistencia a reconciliar, no como dos verdades válidas.
+
+---
+
+#### 22. Regla de una sola contabilización
+
+Para una misma cantidad o identidad física, el control autoritativo no puede representarla simultáneamente como:
+
+- stock suelto disponible;
+- contenido de uno o más LPN;
+- otra identidad independiente creada por el empaque.
+
+Para cantidades:
+
+```text
+TOTAL_BEFORE
+=
+LOOSE_BEFORE + SUM(LPN_CONTENT_BEFORE)
+```
+
+Un `PACK` puro conserva:
+
+```text
+TOTAL_AFTER = TOTAL_BEFORE
+LOOSE_AFTER = LOOSE_BEFORE - Q
+TARGET_LPN_AFTER = TARGET_LPN_BEFORE + Q
+```
+
+Un `UNPACK` puro conserva:
+
+```text
+TOTAL_AFTER = TOTAL_BEFORE
+SOURCE_LPN_AFTER = SOURCE_LPN_BEFORE - Q
+DESTINATION_LOOSE_AFTER = DESTINATION_LOOSE_BEFORE + Q
+```
+
+Producción, consumo, merma o ajuste son hechos distintos y no pueden ocultarse dentro de `PACK` o `UNPACK`.
+
+---
+
+#### 23. Unicidad para identidades serializadas
+
+Para una identidad física individual se fija:
+
+```text
+AUTHORITATIVE_LPN_MEMBERSHIP_COUNT <= 1
+```
+
+Empacar una identidad ya contenida en otro LPN debe rechazarse o resolverse mediante la transferencia propietaria de `NEXO-DOM-005`; nunca se duplica la membresía.
+
+---
+
+#### 24. Contrato de `PACK`
+
+`PACK` incorpora una cantidad o identidad elegible a la membresía autoritativa de un LPN.
+
+La operación debe ser una única intención de negocio y debe poder demostrar:
+
+```text
+VALID SOURCE
++
+VALID TARGET LPN
++
+VALID CONTENT
++
+SERVER AUTHORIZATION
++
+ATOMIC INVENTORY RECONCILIATION
++
+IDEMPOTENCY
+→
+PACK ACCEPTED
+```
+
+No es un simple `INSERT` de una fila de contenido.
+
+---
+
+#### 25. Precondiciones de `PACK`
+
+Antes de aceptar un empaque real deben verificarse como mínimo:
+
+1. LPN existente;
+2. lifecycle `ACTIVE`;
+3. revisión de lifecycle vigente cuando sea material;
+4. revisión de contenido esperada vigente;
+5. actor y autorización válidos;
+6. purpose type vigente;
+7. sujeto de contenido elegible;
+8. clase primaria conocida;
+9. cantidad positiva o identidad exacta;
+10. existencia de origen suficiente;
+11. dimensiones de origen completas;
+12. ausencia de membresía incompatible o duplicada;
+13. condición apta según política;
+14. compatibilidad y capacidad cuando apliquen;
+15. correlación;
+16. idempotencia;
+17. posibilidad de persistir el efecto de inventario y la membresía de forma atómica o con compensación contractualmente equivalente.
+
+---
+
+#### 26. Empaque de cantidad
+
+Empacar una cantidad `Q`:
+
+- exige `Q > 0`;
+- exige saldo suficiente en la dimensión exacta de origen;
+- reduce el saldo suelto autoritativo en `Q`;
+- incrementa la membresía del LPN en `Q` para la misma dimensión;
+- conserva la unidad canónica;
+- conserva lote, vencimiento y condición cuando apliquen;
+- conserva trazabilidad a la fuente;
+- no cambia el lifecycle;
+- no cambia el purpose type;
+- no transfiere custodia por inferencia.
+
+---
+
+#### 27. Empaque de identidad serializada
+
+Empacar una identidad serializada:
+
+- exige que la identidad exista y sea elegible;
+- exige que no pertenezca autoritativamente a otro LPN;
+- mueve la relación de control hacia el LPN sin crear copia;
+- conserva serial e identidad física;
+- conserva condición;
+- no transforma la identidad en cantidad;
+- no crea ni destruye un activo, repuesto o elemento físico.
+
+---
+
+#### 28. Empaque de kit
+
+Empacar un `KIT_INSTANCE` exige una instancia materializada válida.
+
+La membresía del kit no duplica la valoración ni las existencias de sus componentes.
+
+Esta tarea no decide constitución, sustitución, completitud o desarme del kit; únicamente conserva la identidad de la instancia recibida del contrato propietario.
+
+---
+
+#### 29. Empaque de reutilizables y repuestos
+
+`REUSABLE_QUANTITY` se empaca por la granularidad de cantidad aprobada y conserva condición y obligación de retorno cuando correspondan.
+
+`SPARE_PART` se empaca por cantidad o identidad serializada según su política vigente.
+
+El empaque no convierte un reutilizable en activo serializado ni un repuesto en componente instalado.
+
+---
+
+#### 30. Empaque y lifecycle
+
+Se fija:
+
+```text
+PACK
+!=
+ACTIVATE
+```
+
+```text
+PACK
+!=
+CLOSE
+```
+
+```text
+PACK
+!=
+VOID
+```
+
+Una operación de contenido nunca cambia el lifecycle por inferencia.
+
+---
+
+#### 31. Contrato de `UNPACK`
+
+`UNPACK` retira de forma autoritativa una cantidad o identidad de un LPN hacia un destino de inventario declarado y reconciliable.
+
+La operación debe demostrar:
+
+```text
+VALID SOURCE LPN MEMBERSHIP
++
+VALID DESTINATION CONTEXT
++
+SERVER AUTHORIZATION
++
+ATOMIC INVENTORY RECONCILIATION
++
+IDEMPOTENCY
+→
+UNPACK ACCEPTED
+```
+
+No equivale a borrar una fila.
+
+---
+
+#### 32. Precondiciones de `UNPACK`
+
+Antes de aceptar un desempaque ordinario deben verificarse:
+
+1. LPN existente y `ACTIVE`;
+2. revisión vigente;
+3. membresía autoritativa existente;
+4. cantidad suficiente o identidad exacta;
+5. destino permitido;
+6. actor autorizado;
+7. compatibilidad de destino cuando aplique;
+8. conservación de dimensiones;
+9. correlación;
+10. idempotencia;
+11. persistencia atómica o compensable del cambio de control.
+
+Un cliente no puede desempaquetar basándose solo en una proyección desactualizada.
+
+---
+
+#### 33. Desempaque parcial por cantidad
+
+Para contenido fungible o equivalente puede desempaquetarse una porción `Q` siempre que:
+
+```text
+0 < Q <= PACKED_QUANTITY
+```
+
+La operación disminuye la membresía del LPN y aumenta la existencia del destino declarado por la misma cantidad y dimensiones compatibles.
+
+Esta operación parcial no es la división entre dos LPN definida en `NEXO-DOM-005`.
+
+---
+
+#### 34. Desempaque completo
+
+Un desempaque completo deja en cero la cantidad autoritativa de una línea por cantidad o elimina la membresía activa de una identidad, conservando toda su historia.
+
+Se fija:
+
+```text
+ACTIVE MEMBERSHIP REMOVED
+!=
+HISTORY DELETED
+```
+
+La proyección actual puede dejar de mostrar una línea con saldo cero, pero la auditoría debe permitir reconstruirla.
+
+---
+
+#### 35. Desempaque no cierra el LPN
+
+Se fija:
+
+```text
+LPN EMPTY
+!=
+LPN CLOSED
+```
+
+Un LPN puede quedar sin contenido y continuar `ACTIVE` mientras el proceso propietario lo requiera.
+
+Cerrar continúa siendo una transición explícita de `NEXO-DOM-003`.
+
+---
+
+#### 36. Cierre con contenido final
+
+Esta tarea no impone que `CLOSED` signifique necesariamente cantidad histórica cero.
+
+Antes del cierre, todo contenido debe quedar reconciliable mediante una de estas condiciones contractuales:
+
+- fue desempaquetado o transferido por una operación válida;
+- fue consumido, recibido, entregado o tratado por el proceso propietario correspondiente;
+- permanece como manifestación final inmutable cuya interpretación está definida por el proceso propietario.
+
+Después de `CLOSED` no existe membresía mutable ordinaria.
+
+---
+
+#### 37. `VOID` y contenido residual
+
+Anular un LPN no borra ni pone en cero su contenido por sí solo.
+
+Si existe contenido residual al momento de `VOID`, deberá existir una reconciliación o compensación explícita en el dominio propietario.
+
+Se prohíbe:
+
+```text
+VOID LPN
+→
+DELETE CONTENT
+```
+
+```text
+VOID LPN
+→
+AUTO RETURN STOCK
+```
+
+---
+
+#### 38. Transferencia entre LPN no pertenece a `UNPACK` + `PACK` informal
+
+Mover contenido de un LPN a otro no puede implementarse como dos operaciones independientes sin contrato común.
+
+Se fija:
+
+```text
+LPN A
+→ CONTENT →
+LPN B
+```
+
+como responsabilidad de `NEXO-DOM-005`.
+
+Esta tarea solo define empaque desde existencia no contenida y desempaque hacia un destino no contenido declarado. Un consumidor no puede simular una transferencia borrando de un LPN y agregando a otro sin atomicidad.
+
+---
+
+#### 39. División y unión permanecen reservadas
+
+No se define aquí:
+
+- dividir un LPN en dos LPN;
+- unir contenidos de dos LPN;
+- transferir una fracción directamente entre LPN;
+- conservar lineage de origen y destino entre múltiples LPN.
+
+Todo ello pertenece a `NEXO-DOM-005`.
+
+---
+
+#### 40. Revisión de contenido
+
+Cada LPN con capacidad de mutación de contenido debe disponer conceptualmente de una revisión monotónica independiente de la revisión de lifecycle.
+
+Se fija:
+
+```text
+CONTENT_REVISION_MONOTONIC = TRUE
+```
+
+Una operación de contenido aceptada cambia la revisión de contenido. No cambia por sí sola la revisión de lifecycle.
+
+---
+
+#### 41. Concurrencia
+
+Antes de mutar membresía se compara:
+
+```text
+EXPECTED_CONTENT_REVISION
+=
+CURRENT_CONTENT_REVISION
+```
+
+Si dos actores empacan, desempaquetan o modifican la misma membresía concurrentemente, solo la operación que valide el estado esperado puede establecer el siguiente resultado.
+
+La operación restante debe revalidar saldo, membresía, lifecycle, autorización y revisión antes de decidir.
+
+---
+
+#### 42. Concurrencia con lifecycle
+
+Una operación de contenido también debe fallar cerrada cuando el lifecycle cambió de forma incompatible durante la operación.
+
+Ejemplo:
+
+```text
+CLIENT SAW ACTIVE
+SERVER IS NOW CLOSED
+→
+PACK/UNPACK REJECTED
+```
+
+La revisión de contenido no sustituye la revisión de lifecycle cuando ambas son materiales.
+
+---
+
+#### 43. Idempotencia
+
+Toda mutación de contenido debe aceptar una identidad de operación suficiente para reconocer reintentos de la misma intención.
+
+Un replay de la misma operación:
+
+- no descuenta dos veces del origen;
+- no incrementa dos veces la membresía;
+- no desempaqueta dos veces;
+- no incrementa dos veces la revisión;
+- no crea dos movimientos;
+- no duplica auditoría como dos decisiones independientes.
+
+---
+
+#### 44. Retry después de timeout
+
+Ante timeout o respuesta perdida:
+
+1. el cliente no asume fallo ni éxito por ausencia de respuesta;
+2. consulta o reintenta mediante la misma identidad de idempotencia;
+3. el servidor devuelve el resultado ya aceptado o decide una única vez;
+4. la reconciliación verifica membresía y movimiento correlacionado.
+
+Se prohíbe crear una segunda mutación para “compensar” un resultado desconocido sin resolver primero el estado autoritativo.
+
+---
+
+#### 45. Operación offline
+
+Una intención offline de empaque o desempaque no es membresía canónica.
+
+Se fija:
+
+```text
+OFFLINE PACK INTENT
+!=
+PACKED CONTENT
+```
+
+Al reconectar se debe:
+
+1. recuperar lifecycle vigente;
+2. recuperar revisión de contenido;
+3. recuperar saldo o identidad vigente;
+4. revalidar autorización;
+5. revalidar compatibilidad y precondiciones;
+6. aplicar idempotencia;
+7. aceptar o rechazar la intención;
+8. conservar evidencia de la decisión.
+
+---
+
+#### 46. Respuestas tardías
+
+Una respuesta tardía nunca puede sobrescribir una proyección más reciente.
+
+Si:
+
+```text
+CLIENT_CONTENT_REVISION < SERVER_CONTENT_REVISION
+```
+
+la autoridad permanece en el servidor.
+
+La interfaz debe reconciliar antes de permitir una nueva mutación dependiente de esa vista.
+
+---
+
+#### 47. Unidades y conversiones
+
+El LPN no crea una nueva semántica de medida.
+
+Para contenido por cantidad:
+
+- se conserva la unidad canónica de stock;
+- cualquier presentación de captura debe usar factores aprobados;
+- la conversión se aplica una sola vez;
+- empaque y desempaque deben ser simétricos respecto de la cantidad canónica;
+- no se redondea de forma que se cree o destruya cantidad fuera de tolerancia;
+- la precisión y tolerancia pertenecen al contrato de unidades vigente.
+
+---
+
+#### 48. Lote y vencimiento
+
+Cuando la existencia de origen está loteada o posee vencimiento material:
+
+- el empaque conserva el lote exacto;
+- conserva vencimiento aplicable;
+- no fusiona lotes distintos;
+- no reemplaza vencimiento real por default de producto;
+- el desempaque conserva las mismas dimensiones salvo una transición de dominio explícita ajena a esta operación.
+
+El LPN no se convierte en lote.
+
+---
+
+#### 49. Condición
+
+La condición del contenido permanece separada del lifecycle LPN.
+
+Se fija:
+
+```text
+LPN ACTIVE
+!=
+CONTENT GOOD
+```
+
+```text
+LPN VOID
+!=
+CONTENT DAMAGED
+```
+
+Contenido con condiciones incompatibles no puede consolidarse silenciosamente en una misma membresía lógica.
+
+---
+
+#### 50. Compatibilidad y capacidad
+
+Empaque y desempaque consumen las decisiones de compatibilidad y capacidad aplicables, pero esta tarea no define su algoritmo final.
+
+Hasta que dichas reglas estén materializadas, una implementación no puede asumir:
+
+- mezcla segura;
+- capacidad infinita;
+- peso irrelevante;
+- volumen irrelevante;
+- compatibilidad térmica;
+- compatibilidad sanitaria;
+- compatibilidad química;
+- compatibilidad por condición.
+
+Los contratos avanzados de capacidad y contenedores permanecen en sus owners posteriores.
+
+---
+
+#### 51. Ubicación
+
+La membresía LPN no duplica una ubicación independiente para el contenido cuando la ubicación debe derivarse del LPN.
+
+Se fija:
+
+```text
+PACKED CONTENT LOCATION
+→
+RESOLVED THROUGH CANONICAL LPN LOCATION MODEL
+```
+
+La relación exacta sede → LOC → LPN → contenido pertenece a `NEXO-DOM-007`.
+
+Hasta entonces, esta tarea exige únicamente que el origen y destino sean reconciliables y no generen existencia simultáneamente suelta y contenida.
+
+---
+
+#### 52. Custodia
+
+Empacar o desempaquetar no transfiere custodia por inferencia.
+
+Se fija:
+
+```text
+PACK
+!=
+ACCEPT CUSTODY
+```
+
+```text
+UNPACK
+!=
+RETURN CUSTODY
+```
+
+Custodia y responsable actual pertenecen a `NEXO-DOM-008`.
+
+---
+
+#### 53. Reserva y disponibilidad
+
+Un plan de contenido no reserva stock.
+
+Una membresía empacada tampoco debe considerarse libremente disponible por el solo hecho de existir.
+
+Se fija:
+
+```text
+CONTENT PLAN
+!=
+RESERVATION
+```
+
+```text
+PACKED
+!=
+AVAILABLE
+```
+
+Las políticas de reserva y disponibilidad conservan sus contratos propietarios.
+
+---
+
+#### 54. Remisiones y despacho
+
+Un LPN `FULFILLMENT` puede contener inventario destinado a una remisión o despacho, pero:
+
+```text
+PACKED FOR FULFILLMENT
+!=
+DISPATCHED
+```
+
+```text
+UNPACKED
+!=
+RECEIVED
+```
+
+Remisión, viaje, despacho, transporte, recepción y conciliación conservan estados independientes.
+
+---
+
+#### 55. `RECEIVING`
+
+En un LPN con purpose type `RECEIVING`, contenido planificado o empacado puede representar existencia en proceso de recepción, pero el empaque no significa aceptación empresarial ni liberación a stock disponible.
+
+La transición de recepción correspondiente debe permanecer explícita y correlacionable.
+
+---
+
+#### 56. `TRANSFER`
+
+En un LPN `TRANSFER`, empacar contenido prepara o agrupa material para un traslado, pero:
+
+```text
+PACK INTO TRANSFER LPN
+!=
+TRANSFER COMMITTED
+```
+
+La salida, tránsito, llegada y conciliación pertenecen a sus procesos y a `NEXO-DOM-005` cuando exista transferencia de contenido entre LPN.
+
+---
+
+#### 57. `FULFILLMENT`
+
+En `FULFILLMENT`, la membresía identifica qué contenido quedó agrupado para satisfacer un caso logístico.
+
+No prueba por sí sola:
+
+- reserva aprobada;
+- carga en vehículo;
+- salida de sede;
+- entrega;
+- recepción;
+- cierre de remisión.
+
+---
+
+#### 58. `PRODUCTION_STAGING`
+
+En `PRODUCTION_STAGING`, el plan puede expresar materiales previstos y la membresía autoritativa puede representar materiales físicamente agrupados para entrega a producción.
+
+Se fija:
+
+```text
+PACKED FOR PRODUCTION
+!=
+PRODUCTION CONSUMED
+```
+
+FOGO conserva la ejecución productiva y el consumo real; NEXO conserva el estado físico y la trazabilidad de inventario.
+
+---
+
+#### 59. `RETURN`
+
+En `RETURN`, empacar contenido representa agrupación física para retorno.
+
+No significa automáticamente:
+
+- devolución comercial aceptada;
+- reversión económica;
+- devolución a proveedor cerrada;
+- recepción de retorno completada;
+- restauración de disponibilidad.
+
+Cada efecto permanece en su proceso propietario.
+
+---
+
+#### 60. `STORAGE`
+
+En `STORAGE`, el contenido puede permanecer agrupado mientras el LPN está activo.
+
+El purpose type no elimina la necesidad de:
+
+- ubicación válida;
+- condición conocida;
+- compatibilidad;
+- conteo reconciliable;
+- autorización;
+- disponibilidad explícita cuando corresponda.
+
+---
+
+#### 61. Material de empaque y empaque logístico
+
+Una caja, bolsa, película, etiqueta u otro material usado físicamente durante el empaque no se convierte automáticamente en LPN ni en contenido por ser utilizado en la operación.
+
+Si ese material es inventariable:
+
+- conserva su clase primaria;
+- su consumo, asignación o inclusión física debe registrar el hecho correspondiente;
+- el valor del material no se fusiona con el contenido por inferencia.
+
+La forma física permanente o retornable pertenece al contrato de contenedor cuando corresponda.
+
+---
+
+#### 62. Auditoría mínima de `PACK` y `UNPACK`
+
+Toda operación aceptada debe poder atribuirse, como mínimo, a:
+
+- `lpn_id`;
+- lifecycle vigente;
+- revisión de lifecycle cuando aplique;
+- revisión de contenido anterior y resultante;
+- forma de contenido;
+- identidad o dimensiones de la existencia;
+- cantidad y unidad cuando apliquen;
+- origen;
+- destino;
+- actor efectivo;
+- contexto de autorización;
+- sede o ámbito aplicable;
+- instante de servidor;
+- correlación;
+- idempotencia;
+- comando de dominio;
+- referencias al movimiento o efecto físico correlacionado;
+- resultado aceptado o rechazado.
+
+Los nombres físicos de campos no quedan impuestos por esta definición documental.
+
+---
+
+#### 63. Observabilidad
+
+La implementación futura deberá distinguir, al menos:
+
+- plan creado o modificado;
+- empaque aceptado;
+- empaque rechazado;
+- desempaque aceptado;
+- desempaque rechazado;
+- replay idempotente;
+- conflicto de revisión;
+- saldo insuficiente;
+- identidad ya contenida;
+- lifecycle incompatible;
+- autorización denegada;
+- incompatibilidad física;
+- intento offline pendiente;
+- reconciliación posterior;
+- divergencia entre membresía y movimiento.
+
+Las métricas no sustituyen la evidencia transaccional.
+
+---
+
+#### 64. Seguridad y autoridad
+
+Esta tarea define semántica de contenido, no permisos concretos.
+
+Todo `PACK` o `UNPACK` real requiere autorización resuelta en servidor.
+
+No son autoridad:
+
+- un botón visible;
+- una etiqueta escaneada;
+- un payload enviado por cliente;
+- un `site_id` del formulario;
+- un role name visual;
+- una caché local;
+- una intención offline.
+
+Los permisos exactos permanecen en la familia `NEXO-AUTH` y contratos transversales.
+
+---
+
+#### 65. Privacidad y minimización
+
+La membresía de contenido y su auditoría no duplican información personal innecesaria.
+
+Cuando una referencia estable de actor, sesión, dispositivo, orden, remisión o proceso sea suficiente, no se incrusta el objeto completo.
+
+No se almacenan secretos, tokens ni credenciales dentro del contenido LPN.
+
+---
+
+#### 66. Reconciliación AS-IS
+
+La evidencia física vigente se clasifica como parcial:
+
+- existe `inventory_lpns`;
+- existe `inventory_lpn_items`;
+- `inventory_lpn_items` representa producto, cantidad, unidad, lote y vencimiento;
+- el modelo observado no representa de forma completa activos serializados, kits ni otras identidades previstas por el dominio;
+- el endpoint LPN observado es de lectura parcial;
+- existe un formulario de creación sin ciclo end-to-end certificado;
+- no existe evidencia suficiente para declarar empaque y desempaque integrales;
+- no existe evidencia suficiente para declarar atomicidad completa entre membresía y movimiento;
+- la ausencia de LPN y contenidos observados en auditoría no convierte el esquema en implementación validada.
+
+Esta tarea no corrige físicamente ninguna de esas brechas.
+
+---
+
+#### 67. Reglas de transición física futura
+
+La materialización posterior deberá evitar:
+
+- convertir filas legacy en contenido autoritativo sin evidencia;
+- duplicar saldo durante backfill;
+- perder lote, unidad o vencimiento existentes;
+- inventar seriales;
+- interpretar `container_type` como contenido;
+- usar ausencia de fila como prueba de desempaque histórico;
+- fusionar contenidos de dimensiones distintas;
+- habilitar LPN anidados sin el contrato de `NEXO-DOM-006`;
+- habilitar transferencias entre LPN como dos updates independientes;
+- aceptar un contenido legacy sin clase primaria reconciliable.
+
+Cualquier backfill físico deberá tener su package, evidencia, rollback y gate propietarios.
+
+---
+
+#### 68. Matriz de invariantes por forma
+
+| Forma | Identidad | Cantidad | Fraccionable | Membresía simultánea | Dimensiones críticas |
+| --- | --- | --- | --- | --- | --- |
+| `QUANTITY_SLICE` | sujeto + dimensiones de existencia | obligatoria | según unidad/política | puede distribuirse entre saldos sin duplicarse | unidad, lote, vencimiento, condición, presentación cuando apliquen |
+| `SERIALIZED_IDENTITY` | identidad física exacta | no arbitraria | no | máximo un LPN autoritativo | serial/identidad, condición, origen |
+| `KIT_INSTANCE` | instancia de kit | identidad de instancia | no como simple cantidad | máximo una membresía autoritativa | instancia, versión/completitud según owner |
+
+---
+
+#### 69. Matriz de operaciones y efectos prohibidos
+
+| Operación | Efecto permitido | Efecto prohibido por inferencia |
+| --- | --- | --- |
+| planificar | registrar intención no autoritativa | mover o reservar stock |
+| `PACK` | transferir control físico hacia el LPN de forma reconciliada | crear stock, activar LPN, transferir custodia |
+| `UNPACK` | transferir control físico desde el LPN a destino declarado | cerrar LPN, aceptar recepción, cancelar remisión |
+| reintentar | recuperar una única decisión idempotente | repetir descuento o incremento |
+| leer contenido | proyectar membresía e historia | convertirse en ledger alterno |
+
+---
+
+#### 70. Escenarios negativos obligatorios
+
+El contrato debe impedir, como mínimo:
+
+1. contenido autoritativo nuevo en `DRAFT`;
+2. empaque en `CLOSED`;
+3. empaque en `CANCELLED`;
+4. empaque en `VOID`;
+5. desempaque ordinario en estado terminal;
+6. misma identidad serializada en dos LPN;
+7. misma cantidad contabilizada como suelta y empacada;
+8. retry que duplica empaque;
+9. retry que duplica desempaque;
+10. cantidad negativa o cero como mutación válida;
+11. desempaque superior al contenido disponible;
+12. pérdida de lote;
+13. pérdida de vencimiento;
+14. pérdida de condición;
+15. conversión de unidad divergente;
+16. fusión silenciosa de lotes distintos;
+17. fusión silenciosa de condiciones distintas;
+18. `PHYSICAL_CONTAINER` tratado como línea ordinaria de contenido;
+19. LPN tratado como contenido LPN antes del contrato de anidamiento;
+20. transferencia LPN a LPN implementada como delete + insert independiente;
+21. etiqueta tratada como autoridad para mutar contenido;
+22. intención offline tratada como empaque confirmado;
+23. respuesta tardía sobrescribiendo revisión nueva;
+24. `PACK` cerrando o activando lifecycle implícitamente;
+25. `UNPACK` cerrando lifecycle implícitamente;
+26. borrado de historia cuando la membresía actual llega a cero;
+27. propósito `FULFILLMENT` interpretado como despacho ejecutado;
+28. propósito `RECEIVING` interpretado como recepción aceptada;
+29. propósito `PRODUCTION_STAGING` interpretado como consumo de producción;
+30. plan de contenido interpretado como reserva.
+
+---
+
+#### 71. Responsabilidades
+
+| Responsabilidad | Propietario contractual |
+| --- | --- |
+| identidad, purpose type | `NEXO-DOM-002` |
+| lifecycle de LPN | `NEXO-DOM-003` |
+| contenido, `PACK`, `UNPACK` | `NEXO-DOM-004` |
+| división, unión y transferencia entre LPN | `NEXO-DOM-005` |
+| LPN anidados y retornables | `NEXO-DOM-006` |
+| sede, LOC, LPN y contenido | `NEXO-DOM-007` |
+| custodia y responsable | `NEXO-DOM-008` |
+| impresión y etiquetas | `NEXO-DOM-018` y servicios de impresión |
+| contenedor físico y vínculos avanzados | `NEXO-DOM-019` a `NEXO-DOM-024` |
+| autorización | familia `NEXO-AUTH` y autorización transversal |
+| persistencia, RPC, RLS y migraciones | arquitectura e implementación física propietarias |
+
+---
+
+#### 72. Handoff hacia `NEXO-DOM-005`
+
+Esta tarea entrega a `NEXO-DOM-005`:
+
+```text
+IMMUTABLE LPN IDENTITY
++
+ACTIVE-ONLY AUTHORITATIVE CONTENT MUTATION
++
+THREE CONTENT SHAPES
++
+EXACT INVENTORY DIMENSIONS
++
+SINGLE ACCOUNTING RULE
++
+MONOTONIC CONTENT REVISION
++
+IDEMPOTENT PACK/UNPACK
+```
+
+`NEXO-DOM-005` deberá definir división, unión y transferencia de contenido entre LPN preservando:
+
+- cantidad total;
+- identidades serializadas;
+- dimensiones de existencia;
+- lineage de origen y destino;
+- revisiones;
+- atomicidad;
+- idempotencia;
+- lifecycle independiente;
+- ausencia de doble contabilización.
+
+No podrá modelar una transferencia como un desempaque confirmado seguido de un empaque independiente sin una decisión atómica común.
+
+---
+
+#### 73. Handoffs posteriores
+
+Se conserva explícitamente:
+
+- `NEXO-DOM-006`: anidamiento de LPN y contenedores retornables;
+- `NEXO-DOM-007`: ubicación sede → LOC → LPN → contenido;
+- `NEXO-DOM-008`: custodia y responsable actual;
+- `NEXO-DOM-018`: etiquetas e impresión;
+- `NEXO-DOM-019`: separación de contenedor físico y LPN;
+- `NEXO-DOM-020`: continuidad o cierre respecto del contenedor;
+- `NEXO-DOM-021`: no doble contabilización;
+- `NEXO-DOM-022`: movimiento atómico del LPN y su contenido;
+- `NEXO-DOM-023`: trazabilidad interna;
+- `NEXO-DOM-024`: capacidad y compatibilidad.
+
+Esta tarea no desarrolla esos contratos.
+
+---
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya protege el ciclo integral de LPN, la fuente canónica de movimientos, la no doble contabilización, idempotencia, separación de identidades logísticas y físicas y comportamiento de contenido. Esta tarea especializa el contrato de dominio sin introducir una obligación de prueba independiente.
+
+---
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar:
+
+- `TREQ-NEXO-004`, que exige un ciclo LPN auditable incluyendo contenido;
+- `TREQ-NEXO-011`, que protege movimientos reconciliables, no doble contabilización, concurrencia e idempotencia;
+- `TREQ-NEXO-016`, que separa LPN de remisión, viaje, contenedor, custodia y entrega;
+- `TREQ-NEXO-046`, que separa identidad de contenedor físico e identidad LPN;
+- `TREQ-NEXO-047`, que impide duplicación entre saldo, instancia, kit, contenedor y contenido LPN.
+
+Estas referencias son trazabilidad de cobertura existente y no una modificación del registro.
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación y build canónico corresponden al checkout local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron en `main` continuidad, owner, tarea anterior aprobada, handoff de lifecycle, topología, contrato de entrega, políticas documentales, registro NEXO vigente, brechas LPN y superficies físicas observables. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó empaque o desempaque real en operación. |
+| FÍSICA | NOT_EXECUTED | No se modificaron LPN, contenido, stock, movimientos, Supabase, aplicaciones ni datos. |
+
+---
+
+#### 77. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Se define contenido LPN como membresía logística y no como identidad nueva.
+- [x] Se separa plan de contenido de membresía autoritativa.
+- [x] `DRAFT` admite preparación sin efecto real.
+- [x] `ACTIVE` es el único estado ordinario para `PACK` y `UNPACK`.
+- [x] Se fijan `QUANTITY_SLICE`, `SERIALIZED_IDENTITY` y `KIT_INSTANCE`.
+- [x] Se mapean las siete clases primarias a su tratamiento LPN.
+- [x] `PHYSICAL_CONTAINER` no se trata como línea ordinaria de contenido.
+- [x] LPN anidado permanece reservado a `NEXO-DOM-006`.
+- [x] Se preservan producto, presentación, unidad, lote, vencimiento, condición e identidad cuando apliquen.
+- [x] Se prohíbe consolidar dimensiones incompatibles.
+- [x] Se permite contenido mixto únicamente bajo compatibilidad aplicable.
+- [x] Se define una sola contabilización física.
+- [x] Se define conservación exacta de cantidad en `PACK` y `UNPACK`.
+- [x] Se impide membresía simultánea de una identidad serializada.
+- [x] Se define `PACK` con precondiciones completas.
+- [x] Se define `UNPACK` con precondiciones completas.
+- [x] Se permite desempaque parcial por cantidad sin invadir transferencia LPN a LPN.
+- [x] Vacío no equivale a cerrado.
+- [x] Cierre no borra historia de contenido.
+- [x] `VOID` no borra ni devuelve stock automáticamente.
+- [x] Transferencia directa entre LPN queda reservada a `NEXO-DOM-005`.
+- [x] Se define revisión monotónica de contenido.
+- [x] Se define concurrencia contra revisión de contenido y lifecycle.
+- [x] Se define idempotencia para empaque y desempaque.
+- [x] Se define retry seguro.
+- [x] Una intención offline no se presenta como membresía canónica.
+- [x] Respuestas tardías no sobrescriben revisión nueva.
+- [x] Se preservan unidades y conversiones.
+- [x] Se preservan lote y vencimiento.
+- [x] Se separa condición de lifecycle.
+- [x] Se preservan gates de capacidad y compatibilidad.
+- [x] Se mantienen separados ubicación, custodia, reserva, remisión y producción.
+- [x] Se reconcilia el modelo AS-IS como parcial sin declararlo completo.
+- [x] Se conserva la cobertura de pruebas vigente sin duplicarla.
+- [x] No se modifica 04A.
+- [x] No se autoriza ninguna materialización física.
+- [x] El handoff a `NEXO-DOM-005` queda completo y no desarrolla la tarea siguiente.
+
+---
+
+#### 78. Límites
+
+Esta tarea no:
+
+- crea tablas, columnas, enums, constraints, índices o triggers;
+- crea vistas, RPC, RLS, funciones o políticas;
+- modifica `inventory_lpns`;
+- modifica `inventory_lpn_items`;
+- implementa `PACK` o `UNPACK`;
+- crea Server Actions, Route Handlers o UI;
+- define permisos concretos;
+- define algoritmos finales de capacidad o compatibilidad;
+- define división, unión o transferencia entre LPN;
+- define anidamiento LPN;
+- define ubicación detallada;
+- define custodia;
+- define lifecycle del contenedor físico;
+- define impresión o hardware;
+- ejecuta movimientos de inventario;
+- crea o mueve stock;
+- modifica remisiones;
+- modifica FOGO, ORIGO, PULSO, PASS o NUMERA;
+- modifica Supabase;
+- modifica datos;
+- ejecuta migraciones o backfills;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-005`.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-005 — Definir división, unión y transferencia de contenido`
+
 ### [ ] NEXO-DOM-005 — Definir división, unión y transferencia de contenido
 ### [ ] NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
 ### [ ] NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
