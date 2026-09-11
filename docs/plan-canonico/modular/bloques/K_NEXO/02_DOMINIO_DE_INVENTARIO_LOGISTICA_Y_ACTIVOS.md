@@ -14226,7 +14226,1965 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia`
 
-### [ ] NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
+### ✅ NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
+**Tarea siguiente:** NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
+**Tipo de tarea:** documental; definición canónica de entrega, préstamo, devolución, transferencia física y cambio de custodia para activos individuales, reutilizables controlados por cantidad y otros sujetos físicos aplicables, con aceptación explícita, obligación de retorno, historia no destructiva, conservación de identidad o cantidad, condición en handoff, revisiones, idempotencia, concurrencia, operación offline y fronteras con ubicación, propiedad, disponibilidad, mantenimiento, conteo, LPN y efectos económicos bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para entregar, prestar, devolver,
+transferir físicamente y cambiar la custodia de sujetos controlados por NEXO sin
+confundir movimiento con responsabilidad, sin inferir aceptación y sin borrar
+condición, incidentes, obligaciones de retorno ni historia.
+
+La regla raíz queda:
+
+```text
+ELIGIBLE PHYSICAL SUBJECT OR QUANTITY SCOPE
++
+CURRENT AUTHORITATIVE CUSTODY
++
+EXPLICIT HANDOFF INTENT
++
+SERVER-VALIDATED AUTHORITY
++
+REQUIRED ACCEPTANCE
++
+IDENTITY OR QUANTITY CONSERVATION
++
+CONDITION AND INCIDENT PRESERVATION
++
+AUDITABLE HISTORY
+→
+RECONCILABLE HANDOFF RESULT
+```
+
+La tarea define semántica de dominio. No ejecuta préstamos, devoluciones,
+movimientos, cambios de custodio ni modificaciones físicas.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. vocabulario único para entrega, préstamo, devolución, transferencia física y
+   cambio de custodia;
+2. separación estricta entre ubicación, custodia, propiedad, uso y
+   disponibilidad;
+3. un expediente de préstamo con obligación de retorno;
+4. un ciclo verificable de préstamo;
+5. un expediente de devolución correlacionado;
+6. devolución total o parcial para control por cantidad;
+7. transferencia de custodia con aceptación explícita;
+8. tratamiento del custodio anterior, receptor propuesto e intermediarios;
+9. reglas de tránsito y cadena de custodia;
+10. conservación de condición e incidentes durante cada handoff;
+11. invariantes para identidad individual;
+12. invariantes para control por cantidad;
+13. no doble custodia sobre el mismo alcance;
+14. revisiones monotónicas;
+15. idempotencia;
+16. concurrencia fail-closed;
+17. operación offline como intención pendiente;
+18. resultado desconocido que exige reconciliación;
+19. evidencia mínima;
+20. segregación de capacidades;
+21. reconciliación del AS-IS;
+22. handoff exacto hacia `NEXO-DOM-012`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria de `NEXO-DOM-001`;
+- movimiento y contenido de LPN ya definidos por sus owners;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, faltante, pérdida, hallazgo y recuperación de
+  `NEXO-DOM-010`;
+- una sola representación autoritativa por existencia física;
+- una sola custodia actual por alcance activo;
+- aceptación explícita cuando cambia responsabilidad;
+- obligación de retorno separada de custodia;
+- ubicación separada de custodia;
+- propiedad separada de custodia;
+- evidencia e historia no destructivas.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+CÓMO SE ENTREGA O PRESTA UN SUJETO,
+QUIÉN CONSERVA RESPONSABILIDAD EN CADA MOMENTO,
+CUÁNDO EL RECEPTOR SE CONVIERTE EN CUSTODIO,
+CÓMO SE REGISTRA UNA DEVOLUCIÓN,
+CÓMO SE TRANSFIERE CUSTODIA O UBICACIÓN
+Y CÓMO SE CIERRA UNA OBLIGACIÓN DE RETORNO
+SIN DUPLICAR IDENTIDAD, CANTIDAD O RESPONSABILIDAD?
+```
+
+---
+
+#### 5. Vocabulario canónico
+
+Se distinguen los siguientes conceptos:
+
+```text
+DELIVERY
+LOAN
+RETURN
+PHYSICAL_TRANSFER
+CUSTODY_TRANSFER
+RETURN_OBLIGATION
+CUSTODY_SCOPE
+HANDOFF
+```
+
+Ninguno es sinónimo automático de otro.
+
+---
+
+#### 6. `HANDOFF`
+
+`HANDOFF` es el límite operacional en el que una parte entrega control físico o
+responsabilidad a otra y debe conservar evidencia suficiente para establecer
+qué se ofreció, qué se recibió, en qué condición y con qué resultado.
+
+Un handoff puede participar en:
+
+- una entrega;
+- el inicio de un préstamo;
+- una devolución;
+- una transferencia de custodia;
+- un tramo de tránsito;
+- una entrega a tercero.
+
+---
+
+#### 7. Tipos de operación
+
+Se fijan como operaciones conceptualmente distintas:
+
+| Operación | Efecto principal |
+| --- | --- |
+| `DELIVERY` | entrega física o puesta a disposición |
+| `LOAN` | custodia temporal con obligación de retorno |
+| `RETURN` | reconciliación de una obligación o tenencia previa |
+| `PHYSICAL_TRANSFER` | cambio de ubicación o tránsito |
+| `CUSTODY_TRANSFER` | cambio del responsable actual |
+
+Una misma intención empresarial puede orquestar varias, pero cada efecto debe
+seguir siendo trazable por separado.
+
+---
+
+#### 8. `DELIVERY`
+
+`DELIVERY` demuestra que un sujeto o cantidad fue puesto a disposición de un
+receptor dentro de un contexto determinado.
+
+No implica automáticamente:
+
+```text
+LOAN ACTIVE
+CUSTODY ACCEPTED
+OWNERSHIP TRANSFERRED
+AVAILABLE FOR USE
+RETURN OBLIGATION CREATED
+```
+
+Esas consecuencias requieren su propio contrato.
+
+---
+
+#### 9. `LOAN`
+
+`LOAN` es una relación temporal en la que un sujeto o cantidad queda bajo una
+tenencia aprobada y genera una obligación explícita de retorno o resolución
+equivalente autorizada.
+
+Se fija:
+
+```text
+LOAN
+=
+TEMPORARY CUSTODY ARRANGEMENT
++
+RETURN OBLIGATION
+```
+
+No transfiere propiedad.
+
+---
+
+#### 10. `RETURN`
+
+`RETURN` es la operación que presenta para recepción un sujeto o cantidad
+relacionado con una obligación, préstamo o tenencia previa.
+
+Se fija:
+
+```text
+RETURN PRESENTED
+!=
+RETURN ACCEPTED
+```
+
+cuando la política exige aceptación del receptor.
+
+---
+
+#### 11. `PHYSICAL_TRANSFER`
+
+`PHYSICAL_TRANSFER` describe el traslado entre ubicaciones o tramos físicos.
+
+Se fija:
+
+```text
+PHYSICAL_TRANSFER
+!=
+CUSTODY_TRANSFER
+```
+
+Puede existir movimiento sin cambio de custodio y cambio de custodio sin cambio
+de ubicación.
+
+---
+
+#### 12. `CUSTODY_TRANSFER`
+
+`CUSTODY_TRANSFER` cambia quién es responsable actual de un alcance de custodia.
+
+Se fija:
+
+```text
+CUSTODY TRANSFER
+=
+SOURCE CUSTODY
++
+TARGET CUSTODIAN
++
+ACCEPTANCE
++
+EFFECTIVE TRANSITION
+```
+
+La mera designación del receptor no lo convierte en custodio actual.
+
+---
+
+#### 13. Propiedad
+
+Se preserva:
+
+```text
+CUSTODY
+!=
+OWNERSHIP
+```
+
+Préstamo, devolución, entrega o transferencia de custodia no cambian titularidad
+por inferencia.
+
+---
+
+#### 14. Ubicación
+
+Se preserva:
+
+```text
+CUSTODY
+!=
+LOCATION
+```
+
+Un activo puede permanecer en el mismo LOC y cambiar de custodio.
+
+Un activo puede moverse de LOC sin cambiar de custodio.
+
+---
+
+#### 15. Uso
+
+Se preserva:
+
+```text
+CUSTODIAN
+!=
+USER
+```
+
+La persona que utiliza temporalmente un sujeto no se convierte automáticamente
+en responsable autoritativo si el contrato de custodia no lo establece.
+
+---
+
+#### 16. Disponibilidad
+
+Se preserva:
+
+```text
+RETURNED
+!=
+AVAILABLE
+```
+
+Una devolución aceptada no libera automáticamente el sujeto para uso.
+
+Disponibilidad, inspección, mantenimiento, reparación y liberación pertenecen a
+`NEXO-DOM-012`.
+
+---
+
+#### 17. Obligación de retorno
+
+`RETURN_OBLIGATION` es una obligación durable y reconciliable, distinta de la
+custodia actual.
+
+Se fija:
+
+```text
+RETURN OBLIGATION
+!=
+CUSTODY
+```
+
+Puede existir mientras el custodio esté conocido, en transición o sujeto a una
+excepción documentada.
+
+---
+
+#### 18. Alcance individual
+
+Para `INDIVIDUAL_IDENTITY`, el alcance de una operación es una identidad física
+exacta.
+
+```text
+ONE LOAN SUBJECT
+→
+ONE STABLE PHYSICAL IDENTITY
+```
+
+La identidad no cambia al prestar, devolver o transferir custodia.
+
+---
+
+#### 19. Alcance por cantidad
+
+Para `QUANTITY_CONTROLLED`, el alcance es una cantidad positiva dentro de un
+grupo o scope autoritativo.
+
+No se fabrican identidades por unidad.
+
+```text
+TRANSFERRED QUANTITY > 0
+TRANSFERRED QUANTITY <= SOURCE CUSTODY QUANTITY
+```
+
+---
+
+#### 20. Elegibilidad del sujeto
+
+Antes de iniciar un handoff debe poder demostrarse:
+
+- sujeto o scope existente;
+- clase y granularidad vigentes;
+- representación autoritativa única;
+- cantidad suficiente cuando corresponda;
+- custodia actual reconciliada;
+- revisión vigente;
+- ausencia de conflicto bloqueante;
+- autoridad para la acción;
+- condición e incidentes relevantes;
+- ubicación conocida cuando la operación física la requiere.
+
+La incertidumbre material falla cerrada.
+
+---
+
+#### 21. Expediente de préstamo
+
+Todo préstamo debe poder conservar como mínimo:
+
+- identidad del préstamo;
+- sujeto o scope;
+- cantidad y unidad cuando corresponda;
+- custodio de origen;
+- receptor propuesto;
+- custodio efectivo después de aceptación;
+- fecha de entrega o inicio;
+- fecha esperada de retorno cuando aplique;
+- política de vencimiento;
+- condición de salida;
+- ubicación de salida;
+- obligación de retorno;
+- evidencia;
+- actor solicitante;
+- actor que autoriza cuando corresponda;
+- aceptación del receptor;
+- correlación;
+- idempotencia;
+- revisión;
+- estado;
+- incidentes vinculados.
+
+---
+
+#### 22. Ciclo del préstamo
+
+El ciclo conceptual mínimo distingue:
+
+```text
+PROPOSED
+ACTIVE
+RETURN_PENDING
+CLOSED
+CANCELLED
+EXCEPTION
+```
+
+La representación física futura puede usar otra forma siempre que conserve los
+mismos estados distinguibles y sus invariantes.
+
+---
+
+#### 23. `PROPOSED`
+
+`PROPOSED` significa que existe una intención válida de préstamo, pero todavía
+no se ha completado la aceptación requerida.
+
+Mientras permanece propuesto:
+
+- el receptor no es custodio actual;
+- la obligación no se presenta como préstamo activo;
+- no se consume disponibilidad por inferencia fuera de su owner;
+- el custodio previo conserva responsabilidad salvo transición intermedia
+  explícita.
+
+---
+
+#### 24. `ACTIVE`
+
+Un préstamo se vuelve `ACTIVE` únicamente cuando la transición de custodia
+requerida ha quedado aceptada y reconciliada.
+
+```text
+LOAN ACTIVE
+→
+TARGET CUSTODY EFFECTIVE
++
+RETURN OBLIGATION OPEN
+```
+
+---
+
+#### 25. `RETURN_PENDING`
+
+`RETURN_PENDING` indica que la devolución fue iniciada o presentada, pero el
+cierre todavía depende de la recepción, aceptación o reconciliación aplicable.
+
+No equivale a préstamo cerrado.
+
+---
+
+#### 26. `CLOSED`
+
+Un préstamo queda `CLOSED` únicamente cuando su obligación de retorno ha sido
+reconciliada completamente mediante devolución aceptada o una resolución
+autorizada que explique cada identidad o cantidad pendiente.
+
+El cierre no borra la historia.
+
+---
+
+#### 27. `CANCELLED`
+
+`CANCELLED` aplica a una intención que no alcanzó estado activo o a una
+cancelación permitida por política antes de producir efectos irreversibles.
+
+Se prohíbe usar cancelación para borrar:
+
+- custodia ya aceptada;
+- cantidad ya entregada;
+- obligación de retorno activa;
+- incidentes;
+- evidencia.
+
+---
+
+#### 28. `EXCEPTION`
+
+`EXCEPTION` conserva un préstamo que no puede cerrar de forma ordinaria por una
+diferencia material, por ejemplo:
+
+- faltante;
+- pérdida confirmada;
+- daño;
+- cantidad no reconciliada;
+- identidad incorrecta;
+- disputa de recepción;
+- tercero no reconciliado.
+
+La excepción exige owner y resolución explícitos.
+
+---
+
+#### 29. Fecha de retorno
+
+Cuando la política del préstamo exige vencimiento, debe existir una fecha o
+instante esperado de retorno.
+
+La ausencia de fecha no significa préstamo indefinido por defecto.
+
+Un préstamo sin fecha fija solo es válido cuando una política aprobada lo
+permite explícitamente.
+
+---
+
+#### 30. Extensión de plazo
+
+Extender un préstamo no reescribe destructivamente la fecha original.
+
+Debe conservar:
+
+- vencimiento anterior;
+- nuevo vencimiento;
+- razón;
+- actor;
+- instante;
+- aprobación requerida;
+- revisión.
+
+---
+
+#### 31. Aceptación de salida
+
+Cuando el préstamo cambia custodia:
+
+```text
+LOAN OFFERED
++
+RECEIVER ACCEPTED
+→
+LOAN ACTIVE
+```
+
+La aceptación debe corresponder al sujeto, cantidad, condición y contexto que
+realmente se ofrecen.
+
+---
+
+#### 32. Custodio anterior
+
+Hasta que exista aceptación efectiva del destino, el custodio anterior conserva
+responsabilidad, salvo que se haya creado y aceptado un scope intermedio de
+custodia.
+
+No se admite una transición silenciosa por cambio de formulario.
+
+---
+
+#### 33. Receptor propuesto
+
+El receptor propuesto es una contraparte del handoff.
+
+Se fija:
+
+```text
+PROPOSED RECEIVER
+!=
+CURRENT CUSTODIAN
+```
+
+La UI, una selección de empleado o una referencia de destino no sustituyen la
+aceptación.
+
+---
+
+#### 34. Silencio o timeout
+
+Se preserva:
+
+```text
+NO RESPONSE
+!=
+ACCEPTED CUSTODY
+```
+
+Timeout, desconexión, cierre del navegador o falta de respuesta dejan el
+resultado pendiente o desconocido según evidencia; nunca fabrican aceptación.
+
+---
+
+#### 35. Rechazo
+
+Si el receptor rechaza el handoff:
+
+- el receptor no se vuelve custodio actual;
+- el préstamo no se activa por ese intento;
+- la custodia previa o intermedia permanece;
+- se conserva motivo y evidencia;
+- cualquier movimiento físico ya ocurrido requiere reconciliación separada.
+
+---
+
+#### 36. Atomicidad de aceptación
+
+Una aceptación de cambio de custodia debe conservar como un solo resultado
+lógico:
+
+```text
+SOURCE CUSTODY ENDS
+IFF
+TARGET CUSTODY BECOMES EFFECTIVE
+```
+
+No se acepta un estado final con:
+
+```text
+ZERO CURRENT CUSTODIANS
+```
+
+ni con:
+
+```text
+TWO CURRENT CUSTODIANS
+```
+
+para el mismo alcance exclusivo.
+
+---
+
+#### 37. Préstamo individual
+
+Para una identidad individual:
+
+- se presta la identidad exacta;
+- no se sustituye por otra instancia equivalente;
+- condición de salida queda vinculada a esa identidad;
+- devolución debe resolver esa misma identidad;
+- un cambio de QR o placa no crea otro préstamo;
+- pérdida o hallazgo preservan el identificador original.
+
+---
+
+#### 38. Préstamo por cantidad
+
+Para un reutilizable por cantidad:
+
+- la cantidad prestada se separa como scope cuantificado;
+- no se crean expedientes por pieza;
+- la suma de scopes activos no supera la existencia autoritativa;
+- condición puede conservarse por buckets;
+- devolución puede ser parcial;
+- faltante y daño se expresan cuantitativamente.
+
+---
+
+#### 39. Entrega parcial
+
+Si una intención por cantidad permite entregar menos que lo solicitado:
+
+```text
+REQUESTED QUANTITY
+!=
+ACCEPTED LOAN QUANTITY
+```
+
+La cantidad efectiva debe quedar explícita y aceptada.
+
+No se presenta como entregada la porción que nunca cambió de custodia.
+
+---
+
+#### 40. No solapamiento de scopes
+
+Para control por cantidad:
+
+```text
+SUM(ACTIVE CUSTODY SCOPES)
+<=
+AUTHORITATIVE PHYSICAL QUANTITY
+```
+
+y ningún mismo tramo cuantitativo puede pertenecer simultáneamente a dos scopes
+exclusivos de custodia.
+
+---
+
+#### 41. Condición de salida
+
+Todo préstamo o transferencia que requiera inspección de handoff debe conservar
+la condición conocida al origen.
+
+La condición de salida no se sustituye por la condición observada al retorno.
+
+Ambas forman parte de la historia.
+
+---
+
+#### 42. Incidentes abiertos
+
+Un handoff no puede borrar incidentes abiertos de daño, faltante, pérdida,
+hallazgo o recuperación.
+
+La operación debe:
+
+- conservarlos;
+- bloquear si son incompatibles con la transición;
+- o relacionarlos explícitamente con el nuevo estado.
+
+---
+
+#### 43. Movimiento durante préstamo
+
+El préstamo no es un movimiento de ubicación.
+
+Se fija:
+
+```text
+LOAN
+!=
+PHYSICAL TRANSFER
+```
+
+Pueden ocurrir juntos, pero ubicación y custodia conservan sus eventos y
+revisiones.
+
+---
+
+#### 44. Tenencia por tercero
+
+La tenencia por tercero debe quedar como custodia explícita cuando ese tercero
+es responsable del control físico.
+
+No se infiere desde:
+
+- una nota;
+- una dirección;
+- un proveedor;
+- una orden;
+- un documento adjunto.
+
+---
+
+#### 45. Expediente de devolución
+
+Una devolución debe poder conservar:
+
+- préstamo u obligación origen;
+- sujeto o scope;
+- cantidad presentada;
+- identidad exacta cuando corresponda;
+- custodio que entrega;
+- receptor;
+- fecha;
+- condición observada;
+- ubicación;
+- incidentes;
+- discrepancias;
+- evidencia;
+- aceptación;
+- correlación;
+- idempotencia;
+- revisión;
+- saldo de obligación posterior.
+
+---
+
+#### 46. Inicio de devolución
+
+Iniciar una devolución no cambia custodia por sí solo.
+
+```text
+RETURN INITIATED
+!=
+RETURN ACCEPTED
+```
+
+El custodio vigente continúa siendo responsable hasta la transición efectiva.
+
+---
+
+#### 47. Aceptación de devolución
+
+Cuando la recepción exige aceptación:
+
+```text
+RETURN PRESENTED
++
+RECEIVER ACCEPTED
+→
+RETURN EFFECTIVE
+```
+
+La aceptación debe conservar qué identidad o cantidad se recibió y su condición
+observada.
+
+---
+
+#### 48. Devolución parcial
+
+Para cantidad:
+
+```text
+OPEN RETURN QUANTITY BEFORE = Q
+RETURNED AND ACCEPTED = R
+0 < R <= Q
+OPEN RETURN QUANTITY AFTER = Q - R
+```
+
+La devolución parcial no cierra el préstamo si queda obligación abierta.
+
+---
+
+#### 49. Conservación cuantitativa de devolución
+
+Todo préstamo por cantidad debe poder reconciliar:
+
+```text
+ORIGINAL ACCEPTED LOAN QUANTITY
+=
+ACCEPTED RETURNED QUANTITY
++
+OPEN RETURN QUANTITY
++
+AUTHORIZED RESOLVED EXCEPTION QUANTITY
+```
+
+Ningún componente puede duplicarse entre términos.
+
+---
+
+#### 50. Identidad incorrecta
+
+Devolver una identidad diferente de la prestada no cierra la obligación de la
+identidad original.
+
+El sujeto presentado puede abrir una investigación propia, pero no se usa como
+sustituto silencioso.
+
+---
+
+#### 51. Exceso de devolución
+
+Si la cantidad presentada supera la obligación abierta:
+
+```text
+RETURNED QUANTITY > OPEN OBLIGATION
+→
+RECONCILIATION REQUIRED
+```
+
+El exceso no incrementa existencia ni crea propiedad automáticamente.
+
+---
+
+#### 52. Daño al retorno
+
+Una devolución puede registrar daño observado.
+
+Se preserva:
+
+```text
+RETURN ACCEPTED
+!=
+NO DAMAGE
+```
+
+y:
+
+```text
+DAMAGE OBSERVED
+!=
+RETURN REJECTED
+```
+
+salvo que una política específica exija rechazo.
+
+El incidente y la aceptación son decisiones separadas.
+
+---
+
+#### 53. Faltante al retorno
+
+Una devolución parcial o incompleta puede generar faltante.
+
+Se preserva:
+
+```text
+MISSING AT RETURN
+!=
+LOSS CONFIRMED
+```
+
+El faltante abre investigación y mantiene la obligación correspondiente hasta
+su resolución.
+
+---
+
+#### 54. Retorno tardío
+
+Superar el vencimiento no confirma pérdida.
+
+```text
+OVERDUE
+!=
+LOST
+```
+
+El atraso puede generar escalamiento o excepción, pero la pérdida sigue
+requiriendo investigación y decisión autorizada.
+
+---
+
+#### 55. Cierre de préstamo
+
+Antes de cerrar deben estar reconciliados:
+
+- todas las identidades;
+- cantidades;
+- retornos parciales;
+- excepciones;
+- condición de retorno;
+- incidentes materiales;
+- custodia final;
+- obligación de retorno;
+- evidencia requerida.
+
+Un comentario de “devuelto” no basta.
+
+---
+
+#### 56. Transferencia directa de custodia
+
+Una transferencia directa puede cambiar responsable sin crear un préstamo.
+
+Se fija:
+
+```text
+DIRECT CUSTODY TRANSFER
+→
+NO RETURN OBLIGATION BY DEFAULT
+```
+
+Si la operación requiere retorno, debe modelarse como préstamo u obligación
+explícita.
+
+---
+
+#### 57. Origen y destino de custodia
+
+Todo cambio debe conservar:
+
+- custodio anterior;
+- receptor propuesto;
+- custodio nuevo aceptado;
+- instante efectivo;
+- sujeto o scope;
+- cantidad;
+- causa;
+- condición relevante;
+- ubicación;
+- evidencia;
+- revisión.
+
+---
+
+#### 58. Cambio de custodia sin movimiento
+
+Es válido:
+
+```text
+SAME LOCATION
++
+NEW ACCEPTED CUSTODIAN
+→
+CUSTODY CHANGED
+```
+
+La ubicación permanece intacta.
+
+---
+
+#### 59. Movimiento sin cambio de custodia
+
+Es válido:
+
+```text
+NEW LOCATION
++
+SAME CUSTODIAN
+→
+LOCATION CHANGED
+```
+
+No se crea una transferencia de custodia ficticia.
+
+---
+
+#### 60. Tránsito
+
+El tránsito es un estado o fase física que puede requerir una cadena explícita
+de custodia.
+
+Se fija:
+
+```text
+IN TRANSIT
+!=
+DESTINATION CUSTODY ACCEPTED
+```
+
+---
+
+#### 61. Custodio transportador
+
+Un conductor, transportador o tercero solo se convierte en custodio cuando el
+handoff correspondiente ha sido aceptado según política.
+
+```text
+DRIVER ASSIGNED
+!=
+DRIVER CUSTODY ACCEPTED
+```
+
+---
+
+#### 62. Receptor de destino
+
+La llegada física a una sede o LOC no convierte automáticamente al receptor en
+custodio.
+
+```text
+DESTINATION LOCATION CONFIRMED
+!=
+DESTINATION CUSTODY ACCEPTED
+```
+
+---
+
+#### 63. Cadena de custodia
+
+Una operación multi-tramo debe poder reconstruir:
+
+```text
+SOURCE
+→
+INTERMEDIATE CUSTODIAN 1
+→
+INTERMEDIATE CUSTODIAN 2
+→
+DESTINATION
+```
+
+Cada transición efectiva conserva su propia aceptación y vigencia.
+
+No se saltan intermediarios que tuvieron responsabilidad real.
+
+---
+
+#### 64. Rechazo en tránsito
+
+Si un destino rechaza una recepción después de tránsito físico:
+
+- no se le asigna custodia;
+- el custodio actual permanece identificado;
+- el sujeto no desaparece de la cadena;
+- la ubicación observada se conserva;
+- se abre la resolución operativa correspondiente.
+
+---
+
+#### 65. Cancelación de handoff
+
+Un handoff pendiente puede cancelarse solo si todavía no produjo la transición
+efectiva que se pretende cancelar.
+
+Una aceptación ya comprometida se corrige mediante un nuevo evento, no borrando
+el anterior.
+
+---
+
+#### 66. Expiración de propuesta
+
+Una propuesta de handoff puede expirar según política.
+
+La expiración:
+
+- no cambia custodia;
+- no cambia propiedad;
+- no mueve ubicación;
+- conserva el intento;
+- conserva quién propuso;
+- conserva el motivo de expiración.
+
+---
+
+#### 67. Un solo custodio actual
+
+Para un alcance exclusivo se exige:
+
+```text
+CURRENT CUSTODIAN COUNT <= 1
+```
+
+Una aceptación nueva cierra la vigencia anterior de forma reconciliable.
+
+---
+
+#### 68. Transición sin vacío final
+
+El sistema no puede aceptar como estado final una transferencia donde el
+custodio anterior dejó de ser vigente pero el nuevo nunca fue aceptado.
+
+Si existe custodia intermedia, debe quedar explícita.
+
+---
+
+#### 69. Revisión de custodia
+
+Toda transición autoritativa valida una revisión esperada:
+
+```text
+EXPECTED CUSTODY REVISION
+=
+CURRENT CUSTODY REVISION
+```
+
+Tras commit válido:
+
+```text
+NEW CUSTODY REVISION > PRIOR CUSTODY REVISION
+```
+
+---
+
+#### 70. Idempotencia
+
+El mismo intento lógico no puede:
+
+- activar dos préstamos;
+- transferir custodia dos veces;
+- duplicar una devolución;
+- reducir dos veces una obligación;
+- duplicar movimientos;
+- duplicar aceptación;
+- duplicar evidencia;
+- incrementar dos veces la revisión.
+
+La misma clave debe recuperar el resultado ya decidido.
+
+---
+
+#### 71. Concurrencia
+
+Dos actores no pueden transferir simultáneamente el mismo alcance a custodios
+incompatibles.
+
+Antes de aceptar se revalidan:
+
+- sujeto;
+- cantidad;
+- custodia;
+- revisión;
+- préstamo abierto;
+- obligación de retorno;
+- condición;
+- incidentes;
+- ubicación;
+- autoridad.
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 72. Operación offline
+
+Una captura offline puede representar:
+
+- propuesta;
+- aceptación intentada;
+- devolución observada;
+- condición observada;
+- evidencia pendiente.
+
+No representa por sí sola un cambio autoritativo.
+
+```text
+OFFLINE INTENT
+!=
+COMMITTED CUSTODY
+```
+
+---
+
+#### 73. Resultado desconocido
+
+Ante timeout después de enviar una mutación, el cliente no debe crear otra
+operación equivalente con nueva identidad.
+
+Debe resolver la misma operación hasta conocer:
+
+```text
+ACCEPTED
+REJECTED
+UNKNOWN_REQUIRING_RECONCILIATION
+```
+
+---
+
+#### 74. Preservación de condición
+
+Cada handoff conserva al menos, cuando aplique:
+
+- condición conocida antes;
+- condición observada por quien entrega;
+- condición observada por quien recibe;
+- incidente abierto;
+- discrepancia entre observaciones;
+- decisión posterior que cambie condición.
+
+No se sobreescribe la observación de origen.
+
+---
+
+#### 75. Discrepancia de condición
+
+Si entrega y recepción difieren:
+
+```text
+SOURCE OBSERVATION
+!=
+RECEIVER OBSERVATION
+→
+DISCREPANCY CASE
+```
+
+La discrepancia no altera retrospectivamente ninguna observación.
+
+La aceptación de custodia y el tratamiento del daño permanecen separables.
+
+---
+
+#### 76. Pérdida, hallazgo y recuperación
+
+Un préstamo o transferencia consume el contrato de `NEXO-DOM-010`.
+
+Se preserva:
+
+- faltante no es pérdida;
+- hallazgo no es recuperación;
+- pérdida no elimina identidad;
+- recuperación utiliza identidad original;
+- transferencia no borra incidentes.
+
+---
+
+#### 77. Condición por cantidad
+
+Un scope cuantificado puede distribuir su cantidad por condición.
+
+Prestado, devuelto o transferido no se convierte en bucket de condición.
+
+Se preserva:
+
+```text
+CUSTODY DIMENSION
+!=
+CONDITION DIMENSION
+```
+
+---
+
+#### 78. Custodia parcial de grupos
+
+Un mismo grupo cuantificado puede tener porciones bajo custodios distintos si la
+política lo permite.
+
+Cada porción debe ser disjunta y reconciliable.
+
+No se usa un único `responsible_employee_id` escalar como prueba suficiente de
+un reparto parcial.
+
+---
+
+#### 79. Obligación de retorno por cantidad
+
+La obligación abierta debe soportar devolución parcial y excepciones sin
+fabricar identidades.
+
+Ejemplo conceptual:
+
+```text
+LOAN = 20
+RETURNED = 12
+OPEN = 6
+AUTHORIZED EXCEPTION = 2
+TOTAL = 20
+```
+
+---
+
+#### 80. LPN y contenido
+
+Se preserva:
+
+```text
+TRANSFER_CONTENT
+!=
+CUSTODY_TRANSFER
+```
+
+Mover contenido entre LPN no cambia custodio por inferencia.
+
+Asimismo, cambiar custodia no reempaqueta ni transfiere contenido
+automáticamente.
+
+---
+
+#### 81. Contenedores físicos
+
+Un contenedor físico retornable puede participar en préstamo, devolución y
+cambio de custodia con su identidad propia.
+
+La obligación de retorno del contenedor no se confunde con:
+
+- lifecycle del LPN;
+- contenido;
+- cierre del LPN;
+- recepción de mercancía.
+
+---
+
+#### 82. Kits
+
+Un `KIT_INSTANCE` se presta o transfiere por su instancia cuando corresponda.
+
+La operación no borra identidad ni condición de sus miembros.
+
+La completitud pertenece a `NEXO-DOM-014`.
+
+---
+
+#### 83. Repuestos
+
+Un repuesto no se convierte en activo prestado por estar temporalmente en manos
+de un técnico.
+
+Si existe custodia material de repuesto, se conserva conforme a su granularidad
+y owner sin cambiar la clase primaria.
+
+---
+
+#### 84. Remisiones
+
+Entrega o recepción dentro de una remisión puede correlacionar un handoff de
+custodia, pero no lo reemplaza cuando el contrato exige aceptación.
+
+Se fija:
+
+```text
+REMITTANCE RECEIVED
+!=
+CUSTODY ACCEPTED
+```
+
+salvo que la operación de recepción ejecute explícitamente ambos contratos de
+forma verificable.
+
+---
+
+#### 85. Conteos
+
+Un conteo puede revelar:
+
+- sujeto no observado;
+- sujeto hallado;
+- ubicación distinta;
+- condición distinta;
+- cantidad distinta.
+
+No inicia ni cierra un préstamo por inferencia.
+
+No transfiere custodia automáticamente.
+
+---
+
+#### 86. Mantenimiento y reparación
+
+Enviar un activo a mantenimiento puede requerir:
+
+- movimiento;
+- custodia de tercero;
+- condición;
+- orden de trabajo;
+- indisponibilidad.
+
+Esta tarea gobierna únicamente el handoff de custodia.
+
+Plan, diagnóstico, reparación, prueba y liberación pertenecen a
+`NEXO-DOM-012`, `NEXO-DOM-025` y `NEXO-DOM-026` según corresponda.
+
+---
+
+#### 87. Baja y disposición
+
+Un préstamo vencido, un faltante o una pérdida confirmada no ejecutan baja ni
+disposición.
+
+Esas decisiones pertenecen a `NEXO-DOM-013`.
+
+---
+
+#### 88. Efectos económicos
+
+Préstamo, devolución y transferencia de custodia no publican por sí solos:
+
+- gasto;
+- ingreso;
+- depreciación;
+- pérdida contable;
+- cobro;
+- indemnización;
+- efecto de seguro.
+
+Los owners económicos conservan esos efectos.
+
+---
+
+#### 89. Autorización
+
+Se segregan conceptualmente las capacidades de:
+
+```text
+PROPOSE HANDOFF
+AUTHORIZE LOAN
+ACCEPT CUSTODY
+REJECT CUSTODY
+INITIATE RETURN
+ACCEPT RETURN
+AMEND DUE DATE
+RESOLVE EXCEPTION
+```
+
+Poseer una no concede las demás.
+
+La familia `NEXO-AUTH` define permisos y contexto efectivos.
+
+---
+
+#### 90. Evidencia de handoff
+
+Según la política, la evidencia puede incluir:
+
+- aceptación autenticada;
+- firma;
+- escaneo;
+- fotografía;
+- documento;
+- lectura;
+- comprobante;
+- observación de condición;
+- referencia de movimiento;
+- actor y dispositivo.
+
+Se fija:
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+La evidencia no concede permiso.
+
+---
+
+#### 91. Auditoría mínima
+
+Toda operación autoritativa debe poder reconstruir:
+
+- operation id;
+- operation type;
+- subject id o quantity scope;
+- source custodian;
+- proposed target;
+- accepted target;
+- source y target location cuando correspondan;
+- cantidad y unidad;
+- condition before;
+- condition observed at handoff;
+- incidents;
+- return obligation;
+- due date y revisiones de plazo;
+- prior revision;
+- resulting revision;
+- actor;
+- accepter;
+- server time;
+- correlation;
+- idempotency;
+- result;
+- rejection or exception reason.
+
+---
+
+#### 92. Proyección actual
+
+La lectura “responsable actual” es una proyección del historial de custodia
+aceptada.
+
+No se convierte en la única historia autoritativa.
+
+```text
+CURRENT RESPONSIBLE
+=
+PROJECTION OF EFFECTIVE CUSTODY HISTORY
+```
+
+---
+
+#### 93. AS-IS de activos y grupos
+
+El AS-IS remoto conserva `responsible_employee_id` nullable tanto en
+`asset_items` como en `asset_groups`.
+
+La misma superficie conserva ubicación y responsable en el mismo registro.
+
+Esto es reutilizable como proyección actual, pero no demuestra por sí solo un
+expediente de custodia versionado.
+
+---
+
+#### 94. AS-IS de tipos de movimiento
+
+`asset_movements` admite vocabulario para:
+
+```text
+initial_location
+transfer
+loan
+return
+maintenance_out
+maintenance_in
+status_change
+adjustment
+```
+
+La presencia del enum o constraint no demuestra que cada lifecycle esté
+implementado de extremo a extremo.
+
+---
+
+#### 95. Brecha AS-IS de actualización directa
+
+La acción actual de actualización de ubicación de activos puede modificar en una
+misma edición:
+
+- sede;
+- área;
+- LOC;
+- posición;
+- `responsible_employee_id`.
+
+Después inserta por separado un movimiento `transfer`.
+
+No se demuestra en esa superficie:
+
+- aceptación del nuevo custodio;
+- historial de custodio anterior y nuevo como scopes versionados;
+- atomicidad transaccional entre proyección y movimiento;
+- idempotencia;
+- revisión esperada.
+
+La implementación futura deberá reconciliar esta brecha.
+
+---
+
+#### 96. Brecha AS-IS de historial legacy de transferencias
+
+`product_asset_transfer_events` conserva actualmente información a nivel de
+producto mediante:
+
+- fecha;
+- ubicación origen en texto;
+- ubicación destino en texto;
+- responsable en texto;
+- notas.
+
+No identifica de forma suficiente una identidad física o scope cuantitativo ni
+demuestra aceptación de custodia.
+
+Se clasifica como evidencia legacy a reconciliar, no como contrato objetivo.
+
+---
+
+#### 97. Snapshot remoto observado
+
+La consulta remota de solo lectura realizada durante el desarrollo observó:
+
+| Métrica | Resultado |
+| --- | ---: |
+| `asset_items` | 38 |
+| `asset_items` con `responsible_employee_id` | 0 |
+| `asset_items` con lifecycle `prestado` | 0 |
+| `asset_groups` | 128 |
+| `asset_groups` con `responsible_employee_id` | 0 |
+| `asset_groups` con lifecycle `prestado` | 0 |
+| movimientos `initial_location` | 166 |
+| movimientos `transfer` | 3 |
+| movimientos `loan` | 0 |
+| movimientos `return` | 0 |
+| filas `product_asset_transfer_events` | 0 |
+
+Los tres movimientos `transfer` observados no registran
+`responsible_employee_id`.
+
+Esta evidencia no prueba ausencia histórica fuera del snapshot consultado; sí
+demuestra que el ciclo objetivo no está materializado por los datos observados.
+
+---
+
+#### 98. Estado de adopción AS-IS
+
+La infraestructura actual se clasifica:
+
+```text
+PARTIAL REUSABLE FOUNDATION
+```
+
+porque existen:
+
+- sujetos individuales;
+- grupos por cantidad;
+- responsable escalar;
+- ubicación;
+- movimientos;
+- vocabulario `loan` y `return`;
+- superficie legacy de transferencias.
+
+Permanece incompleto el ciclo canónico de préstamo, obligación de retorno,
+aceptación, cadena de custodia, devolución parcial, revisión, idempotencia e
+historia no destructiva.
+
+---
+
+#### 99. Reconciliación futura del legacy
+
+La adopción física posterior deberá reconciliar como mínimo:
+
+1. `responsible_employee_id` actual;
+2. ubicación actual;
+3. `asset_movements`;
+4. movimientos `transfer`;
+5. vocabulario `loan` y `return`;
+6. lifecycle `prestado`;
+7. `product_asset_transfer_events`;
+8. préstamos o tenencias operativas fuera de un expediente canónico;
+9. scopes por cantidad;
+10. terceros responsables;
+11. obligaciones de retorno abiertas;
+12. condición de salida y retorno;
+13. incidentes abiertos;
+14. evidencia disponible.
+
+No se ejecuta backfill en esta tarea.
+
+---
+
+#### 100. Fallos fail-closed
+
+Una operación se rechaza o queda pendiente de reconciliación cuando:
+
+- el sujeto no existe;
+- la granularidad no está resuelta;
+- la cantidad supera el scope disponible;
+- hay doble representación;
+- la custodia actual no puede demostrarse;
+- falta autoridad;
+- la revisión es obsoleta;
+- el receptor no aceptó;
+- el resultado remoto es desconocido;
+- existe un conflicto de préstamo abierto;
+- la obligación de retorno no puede resolverse;
+- un incidente bloqueante hace incoherente el handoff;
+- una devolución intenta cerrar la identidad equivocada;
+- una captura offline contradice estado más reciente.
+
+El fallo no borra el estado anterior.
+
+---
+
+#### 101. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar:
+
+- expediente durable de préstamo;
+- obligación de retorno reconciliable;
+- identidad o scope de cantidad exactos;
+- aceptación explícita de cambio de custodia;
+- un solo custodio actual por scope exclusivo;
+- custodia intermedia explícita cuando exista;
+- devolución total y parcial;
+- condición de salida y retorno;
+- preservación de incidentes;
+- ubicación separada de custodia;
+- propiedad separada de custodia;
+- disponibilidad separada de devolución;
+- revisiones monotónicas;
+- idempotencia;
+- concurrencia;
+- resultado desconocido reconciliable;
+- captura offline no autoritativa;
+- auditoría;
+- autorización server-side;
+- ausencia de doble contabilización.
+
+---
+
+#### 102. Handoff hacia `NEXO-DOM-012`
+
+Esta tarea entrega:
+
+```text
+AUDITABLE LOAN AND RETURN DOSSIERS
++
+ACCEPTED CUSTODY HANDOFFS
++
+ONE CURRENT RESPONSIBLE PER CUSTODY SCOPE
++
+RETURN OBLIGATION RECONCILIATION
++
+IDENTITY OR QUANTITY-SCOPE CONSERVATION
++
+CONDITION AND INCIDENTS PRESERVED AT HANDOFF
++
+NO LOCATION, OWNERSHIP OR AVAILABILITY CONFLATION
++
+IDEMPOTENT VERSIONED HANDOFF HISTORY
+```
+
+`NEXO-DOM-012` deberá definir mantenimiento, reparación y disponibilidad sin
+reinterpretar custodia, sin convertir una devolución en liberación automática y
+sin cerrar incidentes por inferencia.
+
+---
+
+#### 103. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que préstamos, devoluciones,
+transferencias, tránsito y tenencia por tercero sean eventos auditables; que los
+cambios de custodia requieran aceptación; que los grupos por cantidad conserven
+cantidades prestadas y retornadas sin fabricar identidades; y que tránsito,
+conteos, condición, daño, pérdida y movimientos conserven atomicidad,
+idempotencia, evidencia e historia no destructiva.
+
+---
+
+#### 104. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, atomicidad,
+  idempotencia, concurrencia y operación offline;
+- `TREQ-NEXO-012`, para condición, daño, pérdida, devolución y transiciones
+  auditables no destructivas;
+- `TREQ-NEXO-013`, para préstamo, devolución, transferencia, tránsito, tenencia
+  por tercero y aceptación de transferencia de custodia;
+- `TREQ-NEXO-016`, para separar traslado, custodia, entrega, recepción, retorno
+  y cierre con aceptación explícita;
+- `TREQ-NEXO-043`, para cantidades prestadas, dañadas, perdidas y retornadas
+  sin identidad por unidad;
+- `TREQ-NEXO-047`, para comportamiento por clase, tránsito y ausencia de doble
+  contabilización;
+- `TREQ-NEXO-048`, para historia versionada, determinista, auditable e
+  idempotente durante transición legacy.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 105. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, cierre de `NEXO-DOM-010`, continuidad `010 → 011 → 012`, ruta normal, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, owner, contratos previos de custodia, granularidad y condición, 04A NEXO, `package.json`, validadores, `CAP-SCOPE-007`, `vento-nexo` actual y consultas remotas de solo lectura sobre activos, grupos, movimientos, transferencias legacy, responsables y lifecycle. |
+| OPERATIVA | NOT_EXECUTED | No se prestó, entregó, devolvió, transfirió ni reasignó ningún sujeto físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron custodias, responsables, ubicaciones, movimientos, préstamos, devoluciones, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 106. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Entrega, préstamo, devolución, transferencia física y cambio de custodia quedan separados.
+- [x] Custodia queda separada de propiedad.
+- [x] Custodia queda separada de ubicación.
+- [x] Custodio queda separado de usuario.
+- [x] Devolución queda separada de disponibilidad.
+- [x] Obligación de retorno queda separada de custodia.
+- [x] Se conserva identidad exacta para activos individuales.
+- [x] Se conserva scope cuantitativo sin fabricar identidades.
+- [x] Se define elegibilidad previa al handoff.
+- [x] Se define expediente mínimo de préstamo.
+- [x] Se define ciclo mínimo del préstamo.
+- [x] El préstamo activo exige aceptación de custodia.
+- [x] El receptor propuesto no se vuelve custodio por selección visual.
+- [x] Silencio o timeout no equivalen a aceptación.
+- [x] Un rechazo conserva la custodia previa o intermedia.
+- [x] Source-end y target-start forman un resultado lógico atómico.
+- [x] Se impiden cero o dos custodios finales para un scope exclusivo.
+- [x] El préstamo individual conserva la misma identidad.
+- [x] El préstamo por cantidad conserva cantidad y no individualiza piezas.
+- [x] Se soporta entrega parcial explícita.
+- [x] Scopes cuantitativos no se solapan.
+- [x] Condición de salida se preserva.
+- [x] Incidentes abiertos no se borran.
+- [x] Préstamo se separa de movimiento.
+- [x] Tenencia por tercero exige custodia explícita cuando corresponda.
+- [x] Se define expediente de devolución.
+- [x] Iniciar devolución no cambia custodia.
+- [x] Devolución aceptada conserva identidad, cantidad y condición.
+- [x] Se define devolución parcial.
+- [x] Se conserva ecuación de obligación por cantidad.
+- [x] Una identidad equivocada no cierra otro préstamo.
+- [x] Exceso de devolución abre reconciliación.
+- [x] Daño y aceptación de devolución permanecen separados.
+- [x] Faltante al retorno no confirma pérdida.
+- [x] Atraso no confirma pérdida.
+- [x] El cierre exige reconciliación completa.
+- [x] Transferencia directa de custodia no crea obligación de retorno por defecto.
+- [x] Puede cambiar custodia sin mover ubicación.
+- [x] Puede cambiar ubicación sin cambiar custodia.
+- [x] Tránsito no equivale a aceptación de destino.
+- [x] Conductor asignado no equivale a custodio aceptado.
+- [x] Se conserva cadena de custodia multi-tramo.
+- [x] Rechazo en destino no borra custodio actual.
+- [x] Cancelación no borra efectos ya aceptados.
+- [x] Expiración de propuesta no cambia custodia.
+- [x] Se exige un custodio actual como máximo por scope exclusivo.
+- [x] Se definen revisiones monotónicas.
+- [x] Se define idempotencia.
+- [x] Se define concurrencia fail-closed.
+- [x] Captura offline no equivale a custodia comprometida.
+- [x] Resultado desconocido exige reconciliación con la misma operación.
+- [x] Se preservan observaciones de condición de origen y destino.
+- [x] Discrepancia de condición no sobrescribe historia.
+- [x] Se consume el contrato de pérdida, hallazgo y recuperación.
+- [x] Condición y custodia siguen siendo dimensiones distintas.
+- [x] Custodia parcial por cantidad no depende de un único responsable escalar.
+- [x] `TRANSFER_CONTENT` permanece separado de `CUSTODY_TRANSFER`.
+- [x] Contenedor, LPN y obligación de retorno permanecen separados.
+- [x] Kits y repuestos conservan sus owners.
+- [x] Recepción de remisión no equivale automáticamente a aceptación de custodia.
+- [x] Conteos no cambian custodia.
+- [x] Mantenimiento conserva owner separado.
+- [x] Baja y efectos económicos permanecen fuera del contrato.
+- [x] Se segregan capacidades de proponer, autorizar, aceptar, devolver y resolver.
+- [x] Evidencia no equivale a autoridad.
+- [x] Se define auditoría mínima.
+- [x] Responsable actual se reconoce como proyección de historia.
+- [x] Se documenta la brecha AS-IS de `responsible_employee_id`.
+- [x] Se documenta el vocabulario AS-IS de movimientos.
+- [x] Se documenta la actualización directa y no atómica observada.
+- [x] Se documenta `product_asset_transfer_events` como superficie legacy.
+- [x] Se registra snapshot remoto.
+- [x] El AS-IS se clasifica como fundación parcial reutilizable.
+- [x] Se definen condiciones mínimas de materialización posterior.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-012`.
+
+---
+
+#### 107. Límites
+
+Esta tarea no:
+
+- crea préstamos reales;
+- entrega activos reales;
+- registra devoluciones reales;
+- cambia custodios reales;
+- cambia responsables reales;
+- mueve activos o grupos;
+- cambia ubicaciones;
+- modifica condiciones;
+- resuelve daño, faltante, pérdida o recuperación;
+- cierra obligaciones reales;
+- crea scopes de custodia;
+- asigna terceros;
+- modifica lifecycle;
+- cambia disponibilidad;
+- crea mantenimiento;
+- ejecuta reparación;
+- ejecuta baja, descarte, venta o reemplazo;
+- publica efectos económicos;
+- reclasifica productos;
+- cambia granularidad;
+- modifica `asset_items`;
+- modifica `asset_groups`;
+- modifica `asset_movements`;
+- modifica `product_asset_transfer_events`;
+- crea tablas, columnas, enums, constraints, índices, triggers o vistas;
+- crea RPC, RLS, Server Actions ni Route Handlers;
+- ejecuta migraciones o backfills;
+- modifica Supabase;
+- modifica `vento-nexo`;
+- implementa UI;
+- crea permisos;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-012`.
+
+---
+
+#### 108. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
+
 ### [ ] NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
 ### [ ] NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
 ### [ ] NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
