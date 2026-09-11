@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1165** |
+| Tareas aprobadas | **1166** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **431** |
+| Tareas no iniciadas | **430** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **72.99% (1165/1596)** |
+| Porcentaje de completamiento | **73.06% (1166/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-SIM-011 — Definir modo solo lectura** |
-| Tarea actual | **AUTH-SIM-012 — Validar navegación como rol simulado** |
+| Última tarea aprobada | **AUTH-SIM-012 — Validar navegación como rol simulado** |
+| Tarea actual | **AUTH-SIM-013 — Validar Server Actions como rol simulado** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-SIM-013 — Validar Server Actions como rol simulado** |
+| Siguiente tarea | **AUTH-SIM-014 — Probar en todas las aplicaciones** |
 | Bloque actual | **BLOQUES P Y Q — Dispositivos compartidos y simulación estricta** |
-| Progreso del bloque | **BLOQUES P Y Q: 27 de 30 aprobadas; AUTH-SIM-012 pendiente** |
+| Progreso del bloque | **BLOQUES P Y Q: 28 de 30 aprobadas; AUTH-SIM-013 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-SIM-012** |
+| Carril documental | **ACTIVO — AUTH-SIM-013** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-SIM-011` — Definir modo solo lectura |
-| Tarea actual | `AUTH-SIM-012` — Validar navegación como rol simulado — **NO INICIADA** |
-| Siguiente tarea | `AUTH-SIM-013` — Validar Server Actions como rol simulado |
+| Última aprobada | `AUTH-SIM-012` — Validar navegación como rol simulado |
+| Tarea actual | `AUTH-SIM-013` — Validar Server Actions como rol simulado — **NO INICIADA** |
+| Siguiente tarea | `AUTH-SIM-014` — Probar en todas las aplicaciones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 27 DE 30 APROBADAS — ACTUAL AUTH-SIM-012** |
+| CONTINUIDAD ACTIVA | **BLOQUES P Y Q: 28 DE 30 APROBADAS — ACTUAL AUTH-SIM-013** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-SIM-011 — Definir modo solo lectura
-        ↓
-TAREA ACTUAL
 AUTH-SIM-012 — Validar navegación como rol simulado
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-SIM-013 — Validar Server Actions como rol simulado
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-SIM-014 — Probar en todas las aplicaciones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES P Y Q — 27 de 30 tareas aprobadas
+BLOQUES P Y Q — 28 de 30 tareas aprobadas
 ```
