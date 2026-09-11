@@ -12708,7 +12708,1524 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante`
 
-### [ ] NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
+### ✅ NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
+**Tarea siguiente:** NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
+**Tipo de tarea:** documental; definición canónica del estado físico observable, condición, daño, faltante, pérdida, hallazgo y recuperación para activos individuales y reutilizables controlados por cantidad, con historia no destructiva, segregación de decisiones, reconciliación, idempotencia, concurrencia y fronteras con disponibilidad, custodia, conteos, mantenimiento, baja y efectos económicos bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un modelo único para describir la condición física y los incidentes de daño, faltante, pérdida, hallazgo y recuperación sin convertir observaciones en decisiones irreversibles, sin borrar historia y sin mezclar condición con ubicación, custodia, disponibilidad, lifecycle, propiedad o efecto económico.
+
+La regla raíz queda:
+
+```text
+PHYSICAL SUBJECT
++
+AUTHORITATIVE CONTROL GRANULARITY
++
+OBSERVATION
++
+EVIDENCE
++
+AUTHORIZED ASSESSMENT OR DECISION
+→
+VERSIONED PHYSICAL STATE
++
+AUDITABLE INCIDENT HISTORY
++
+RECONCILIABLE EFFECTS
+```
+
+Esta tarea define contrato de dominio. No modifica activos, grupos, stock, movimientos, datos, Supabase, aplicaciones ni despliegues.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. un modelo de estado físico compuesto por dimensiones independientes;
+2. una escala canónica de condición física;
+3. una representación explícita de condición desconocida;
+4. la separación entre condición y disponibilidad;
+5. la separación entre condición y lifecycle;
+6. la separación entre condición, ubicación y custodia;
+7. la separación entre daño y condición;
+8. la separación entre faltante y pérdida;
+9. la separación entre hallazgo y recuperación;
+10. el tratamiento por identidad individual;
+11. el tratamiento por cantidad sin fabricar identidades;
+12. un contrato de incidentes con historia no destructiva;
+13. un contrato de presencia y reconciliación;
+14. reglas de conteo como observación;
+15. conservación de cantidad ante daño;
+16. efecto autorizado ante pérdida confirmada;
+17. recuperación sin borrar el episodio anterior;
+18. segregación entre reportar, evaluar, decidir y ejecutar efectos;
+19. idempotencia y control de concurrencia;
+20. tratamiento fail-closed de datos ambiguos u offline;
+21. reconciliación con el AS-IS remoto;
+22. handoff exacto hacia `NEXO-DOM-011`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- las siete clases primarias de `NEXO-DOM-001`;
+- ubicación y relación sede, LOC, LPN y contenido de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad `INDIVIDUAL_IDENTITY` o `QUANTITY_CONTROLLED` de `NEXO-DOM-009`;
+- una sola representación autoritativa por existencia física;
+- conservación de cantidad e identidad;
+- la regla de que un conteo es observación y no ajuste;
+- la obligación de mantener condición, daño y pérdida como hechos auditables;
+- la prohibición de resolver diferencias borrando historia;
+- la segregación entre registrar daño y autorizar disposición o liberación;
+- el principio de que pérdida, baja, venta, descarte, reemplazo y efecto económico son responsabilidades distintas.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+CUÁL ES EL ESTADO FÍSICO OBSERVABLE DE UNA EXISTENCIA,
+QUÉ SIGNIFICA SU CONDICIÓN,
+CUÁNDO HAY DAÑO,
+CUÁNDO EXISTE SOLO UN FALTANTE,
+CUÁNDO UNA PÉRDIDA PUEDE CONSIDERARSE CONFIRMADA
+Y CÓMO SE REGISTRA UN HALLAZGO O RECUPERACIÓN
+SIN BORRAR LA HISTORIA?
+```
+
+No define el workflow completo de préstamo, mantenimiento, baja, conteo, repuestos ni efecto financiero.
+
+---
+
+#### 5. Estado físico compuesto
+
+Se prohíbe representar toda la situación de un activo o reutilizable mediante un único campo genérico de estado.
+
+El estado efectivo se compone, como mínimo, de dimensiones independientes:
+
+```text
+PHYSICAL STATE
+=
+LIFECYCLE
++
+PHYSICAL CONDITION
++
+PRESENCE / RECONCILIATION
++
+AVAILABILITY PROJECTION
++
+LOCATION
++
+CUSTODY
++
+OWNERSHIP
++
+OPEN INCIDENTS
+```
+
+Cada dimensión conserva owner, vigencia y evidencia propios.
+
+---
+
+#### 6. Separación obligatoria de dimensiones
+
+Se fijan las siguientes desigualdades:
+
+```text
+CONDITION != AVAILABILITY
+CONDITION != LIFECYCLE
+CONDITION != LOCATION
+CONDITION != CUSTODY
+CONDITION != OWNERSHIP
+CONDITION != ACCOUNTING STATUS
+MISSING != LOST
+FOUND != RECOVERED
+DAMAGED != DISPOSED
+UNLOCATED != LOST
+IN_TRANSIT != DAMAGED
+```
+
+Una transición en una dimensión no reescribe por inferencia las demás.
+
+---
+
+#### 7. Condición física
+
+`PHYSICAL_CONDITION` describe el estado material observado o evaluado del sujeto respecto de su integridad física.
+
+No expresa por sí sola:
+
+- si está disponible;
+- si está prestado;
+- si está en tránsito;
+- si está retirado;
+- quién responde por él;
+- dónde está;
+- quién lo posee;
+- si debe repararse;
+- si debe darse de baja;
+- si genera pérdida contable.
+
+---
+
+#### 8. Escala canónica de condición
+
+Se define la escala conceptual:
+
+```text
+NEW
+GOOD
+FAIR
+POOR
+CRITICAL
+UNKNOWN
+```
+
+La escala expresa condición física, no lifecycle ni disponibilidad.
+
+`UNKNOWN` es una declaración explícita de evidencia insuficiente y no equivale a `GOOD`.
+
+---
+
+#### 9. Correspondencia con valores legacy
+
+El AS-IS vigente utiliza:
+
+```text
+nuevo
+bueno
+regular
+malo
+critico
+```
+
+La correspondencia semántica objetivo queda:
+
+| Legacy observado | Condición canónica |
+| --- | --- |
+| `nuevo` | `NEW` |
+| `bueno` | `GOOD` |
+| `regular` | `FAIR` |
+| `malo` | `POOR` |
+| `critico` | `CRITICAL` |
+
+La correspondencia no autoriza migración ni reescritura física en esta tarea.
+
+---
+
+#### 10. `NEW`
+
+`NEW` significa que existe evidencia suficiente para considerar el sujeto nuevo o sin uso material bajo la política aplicable.
+
+No se infiere únicamente desde fecha de compra, fecha de creación del registro, apariencia visual o ausencia de mantenimientos.
+
+---
+
+#### 11. `GOOD`
+
+`GOOD` significa que no se ha identificado degradación material que afecte la condición física esperada para el propósito evaluado.
+
+No significa automáticamente:
+
+```text
+AVAILABLE = TRUE
+```
+
+Un activo en buena condición puede estar prestado, reservado, bloqueado, pendiente de inspección o indisponible por otra causa.
+
+---
+
+#### 12. `FAIR`
+
+`FAIR` significa degradación observable que no demuestra por sí sola una condición crítica ni una autorización de uso.
+
+La política aplicable decide si requiere seguimiento, inspección, restricción, mantenimiento u otra evaluación. La clasificación física no concede disponibilidad.
+
+---
+
+#### 13. `POOR`
+
+`POOR` significa degradación material relevante que exige una decisión operativa antes de asumir uso ordinario.
+
+No equivale automáticamente a `RETIRED`, `DISPOSED` ni `LOST`. El mantenimiento, reparación, baja o disposición conservan sus owners.
+
+---
+
+#### 14. `CRITICAL`
+
+`CRITICAL` significa que la condición observada presenta severidad suficiente para exigir tratamiento fail-closed respecto del uso ordinario hasta que el owner competente resuelva la acción aplicable.
+
+No autoriza por sí sola reparar, desechar, vender, reemplazar, ajustar costo ni cerrar custodia.
+
+---
+
+#### 15. `UNKNOWN`
+
+`UNKNOWN` se utiliza cuando no existe una observación válida y vigente para afirmar otra condición.
+
+Se prohíbe:
+
+```text
+NULL OR ABSENT CONDITION
+→
+ASSUME GOOD
+```
+
+Una condición desconocida conserva explícitamente la incertidumbre.
+
+---
+
+#### 16. Condición y disponibilidad
+
+Se fija:
+
+```text
+PHYSICAL CONDITION
+!=
+AVAILABILITY
+```
+
+La condición puede ser una entrada para decidir disponibilidad, pero no la sustituye. La política completa de mantenimiento, reparación y disponibilidad pertenece a `NEXO-DOM-012`.
+
+---
+
+#### 17. Condición y lifecycle
+
+Se fija:
+
+```text
+PHYSICAL CONDITION
+!=
+LIFECYCLE
+```
+
+Por ejemplo, `POOR` no implica `RETIRED`, `CRITICAL` no implica `DISPOSED`, `GOOD` no implica `ACTIVE` y `LOSS_CONFIRMED` no equivale a baja.
+
+El lifecycle conserva una decisión separada y trazable.
+
+---
+
+#### 18. Condición y ubicación
+
+Se fija:
+
+```text
+LOCATION
+!=
+CONDITION
+```
+
+Mover un sujeto no mejora ni empeora su condición por inferencia. No localizar un sujeto tampoco prueba deterioro.
+
+---
+
+#### 19. Condición y custodia
+
+Se fija:
+
+```text
+CUSTODY
+!=
+CONDITION
+```
+
+Un cambio de custodio no reinicia la condición. Una observación de daño tampoco termina automáticamente la custodia vigente.
+
+---
+
+#### 20. Condición, propiedad y costo
+
+La condición física no decide propiedad, titularidad, valor en libros, centro de costo, depreciación, pérdida económica ni reclamación de seguro.
+
+Los efectos económicos y contables permanecen en sus owners.
+
+---
+
+#### 21. Modelo de incidentes
+
+Daño, faltante, hallazgo y pérdida se modelan como hechos o casos auditables, no como texto que reemplaza silenciosamente el estado anterior.
+
+Un incidente conserva conceptualmente:
+
+```text
+INCIDENT ID
++
+INCIDENT TYPE
++
+SUBJECT
++
+OBSERVATION
++
+EVIDENCE
++
+CASE STATUS
++
+DECISION
++
+EFFECT REFERENCES
++
+HISTORY
+```
+
+---
+
+#### 22. Ciclo mínimo del caso
+
+Todo incidente sujeto a investigación debe poder distinguir:
+
+```text
+REPORTED
+UNDER_REVIEW
+RESOLVED
+VOIDED
+```
+
+El ciclo del caso no sustituye la condición del activo ni su lifecycle. `VOIDED` conserva la existencia del reporte y su razón de anulación.
+
+---
+
+#### 23. Daño
+
+`DAMAGE` es un hecho observado de deterioro, rotura, defecto o alteración material que puede afectar condición y requerir evaluación.
+
+Se fija:
+
+```text
+DAMAGE REPORT
+!=
+FINAL CONDITION DECISION
+```
+
+```text
+DAMAGE REPORT
+!=
+DISPOSITION AUTHORIZATION
+```
+
+---
+
+#### 24. Reporte de daño
+
+El reporte mínimo debe poder conservar sujeto afectado, granularidad, cantidad cuando corresponda, condición observada, motivo, actor reportante, fecha y hora, ubicación observada, custodia conocida, evidencia, correlación con el proceso de origen, idempotencia y revisión de la representación afectada.
+
+---
+
+#### 25. Evaluación de daño
+
+Una evaluación autorizada puede confirmar el daño, rechazarlo por evidencia insuficiente o error, actualizar condición, exigir mantenimiento, exigir inspección adicional, restringir temporalmente una operación mediante el owner aplicable o escalar a una decisión de baja o disposición.
+
+No ejecuta automáticamente esos workflows posteriores.
+
+---
+
+#### 26. Daño en identidad individual
+
+Para `INDIVIDUAL_IDENTITY`, el daño se relaciona con la identidad física exacta.
+
+Se conserva:
+
+```text
+ONE DAMAGE INCIDENT
+→
+ONE EXACT SUBJECT ID
+```
+
+salvo que un evento compuesto incluya explícitamente varios sujetos, cada uno con resultado individual trazable.
+
+---
+
+#### 27. Daño en reutilizable por cantidad
+
+Para `QUANTITY_CONTROLLED`, el daño se expresa mediante cantidad dentro del alcance afectado.
+
+No se crean identidades ficticias para las unidades dañadas.
+
+```text
+DAMAGED QUANTITY > 0
+DAMAGED QUANTITY <= AUTHORITATIVE QUANTITY IN SCOPE
+```
+
+La reclasificación de condición no crea ni destruye cantidad.
+
+---
+
+#### 28. Conservación de cantidad ante daño
+
+Cuando una cantidad pasa de una condición a otra:
+
+```text
+QUANTITY BEFORE = QUANTITY AFTER
+```
+
+salvo que exista además un movimiento o efecto autorizado por otro contrato. El daño por sí solo no reduce existencia.
+
+---
+
+#### 29. Daño no es descarte
+
+Se fija:
+
+```text
+DAMAGED
+!=
+DISPOSED
+```
+
+El sujeto dañado conserva identidad o cantidad e historia. La baja, descarte, venta o reemplazo pertenecen a `NEXO-DOM-013`.
+
+---
+
+#### 30. Daño no termina custodia
+
+Se fija:
+
+```text
+DAMAGE
+!=
+CUSTODY ENDED
+```
+
+La responsabilidad vigente se conserva hasta una transición de custodia válida según sus contratos.
+
+---
+
+#### 31. Faltante
+
+`MISSING` o faltante es una discrepancia entre lo que debía poder verificarse y lo que fue observado.
+
+```text
+EXPECTED
++
+NOT OBSERVED
+→
+MISSING OBSERVATION
+```
+
+No es prueba suficiente de pérdida definitiva.
+
+---
+
+#### 32. Faltante individual
+
+Para una identidad individual:
+
+```text
+EXPECTED IDENTITY
+NOT OBSERVED IN REQUIRED SCOPE
+→
+MISSING CASE
+```
+
+La identidad continúa existiendo. No se elimina, recicla ni reemplaza su identificador.
+
+---
+
+#### 33. Faltante por cantidad
+
+Para un reutilizable controlado por cantidad:
+
+```text
+EXPECTED QUANTITY > OBSERVED QUANTITY
+→
+MISSING QUANTITY = DIFFERENCE
+```
+
+El faltante es una diferencia a investigar. No se reduce automáticamente la cantidad autoritativa por registrar el conteo.
+
+---
+
+#### 34. Faltante no es pérdida
+
+Se fija:
+
+```text
+MISSING
+!=
+LOSS_CONFIRMED
+```
+
+Un faltante puede deberse a ubicación distinta, traslado no conciliado, préstamo abierto, conteo incompleto, error de identificación, error de alcance, dato desactualizado o pérdida real todavía no confirmada.
+
+La causa se investiga antes de concluir pérdida.
+
+---
+
+#### 35. No localizado no es perdido
+
+Se conserva:
+
+```text
+UNLOCATED
+!=
+LOST
+```
+
+La ausencia de una ubicación válida abre una necesidad de reconciliación; no autoriza declarar pérdida.
+
+---
+
+#### 36. En tránsito no es faltante
+
+Se conserva:
+
+```text
+IN_TRANSIT
+!=
+MISSING
+```
+
+cuando existe una transición de movimiento vigente y reconciliable que explica la ausencia del origen y todavía no confirma presencia en destino.
+
+El detalle del traslado y cambio de custodia pertenece a `NEXO-DOM-011`.
+
+---
+
+#### 37. Pérdida
+
+`LOSS_CONFIRMED` es una conclusión operativa autorizada posterior a evidencia e investigación suficiente de que una identidad o cantidad no puede ser reconciliada como presente, trasladada, prestada, encontrada o pendiente de conteo.
+
+```text
+MISSING REPORT
++
+INVESTIGATION
++
+AUTHORIZED DECISION
+→
+LOSS_CONFIRMED
+```
+
+No existe pérdida confirmada por simple ausencia visual.
+
+---
+
+#### 38. Confirmación de pérdida
+
+La decisión debe conservar incidente origen, sujeto o alcance, cantidad afectada, investigación, evidencia, actor que decide, autoridad aplicable, fecha efectiva, condición conocida previa, ubicación y custodia conocidas, referencias de movimientos, impacto físico solicitado, referencias económicas posteriores cuando existan, correlación, idempotencia y revisión esperada.
+
+---
+
+#### 39. La identidad perdida permanece
+
+Para un activo individual:
+
+```text
+LOSS_CONFIRMED
+!=
+DELETE IDENTITY
+```
+
+La identidad estable permanece resolvible para historia, custodia, documentos, garantía, seguro, mantenimientos, movimientos, incidentes, eventual hallazgo, decisiones económicas y baja posterior cuando corresponda.
+
+---
+
+#### 40. Pérdida y lifecycle
+
+La pérdida puede proyectarse como situación operacional de presencia, pero no debe fusionarse irreversiblemente con el lifecycle.
+
+Una pérdida confirmada puede ser seguida por hallazgo y recuperación sin recrear la identidad.
+
+---
+
+#### 41. Pérdida y custodia
+
+La confirmación de pérdida no borra por defecto quién tenía la custodia cuando se produjo el hecho. La responsabilidad histórica se conserva.
+
+Cualquier cierre o transferencia de responsabilidad debe quedar explícitamente resuelto por el owner de custodia.
+
+---
+
+#### 42. Pérdida por cantidad
+
+Para reutilizables controlados por cantidad, una pérdida confirmada se expresa como cantidad y conserva su alcance.
+
+Se prohíbe:
+
+```text
+MISSING QUANTITY
+→
+AUTO DECREMENT
+```
+
+El cambio de la existencia autoritativa requiere un efecto autorizado, correlacionado e idempotente.
+
+---
+
+#### 43. Pérdida y efecto económico
+
+Se fija:
+
+```text
+PHYSICAL LOSS CONFIRMED
+!=
+ACCOUNTING LOSS POSTED
+```
+
+La adquisición, reparación, pérdida y baja pueden emitir eventos financieros cuando corresponda bajo `NEXO-DOM-028` y los owners económicos. Esta tarea no publica efectos económicos.
+
+---
+
+#### 44. Hallazgo
+
+`FOUND` es una observación de presencia posterior a una discrepancia o en un lugar distinto al esperado.
+
+```text
+FOUND
+!=
+RECOVERED
+```
+
+Un hallazgo exige reconciliar identidad, ubicación, custodia, condición y casos abiertos antes de afirmar recuperación completa.
+
+---
+
+#### 45. Hallazgo después de faltante
+
+Si un sujeto faltante es hallado, se conserva el reporte original, se registra el hallazgo, se vinculan ambos hechos, se reconcilia ubicación, se evalúa condición cuando sea necesario y se resuelve el caso sin borrar el período de incertidumbre.
+
+---
+
+#### 46. Hallazgo después de pérdida confirmada
+
+Si una identidad previamente declarada perdida aparece:
+
+```text
+FOUND AFTER LOSS
+→
+RECOVERY REVIEW REQUIRED
+```
+
+No se crea una identidad nueva. Tampoco se reactiva automáticamente para uso.
+
+---
+
+#### 47. Recuperación
+
+`RECOVERY_CONFIRMED` es la resolución autorizada que reincorpora una identidad o cantidad hallada a una representación física reconciliada.
+
+Debe conservar relación con la pérdida o faltante anterior, identidad original o alcance de cantidad, ubicación de hallazgo, condición observada, custodia, fecha, actor, decisión, efectos compensatorios aplicables, revisión e idempotencia.
+
+---
+
+#### 48. Recuperación no borra pérdida
+
+Se fija:
+
+```text
+RECOVERY_CONFIRMED
+!=
+ERASE LOSS HISTORY
+```
+
+La historia debe poder responder cuándo se reportó el faltante, cuándo se confirmó la pérdida, quién decidió, cuánto tiempo permaneció sin reconciliar, cuándo fue hallado, en qué condición, cuándo se confirmó la recuperación y qué efectos fueron revertidos o compensados.
+
+---
+
+#### 49. Estado de presencia y reconciliación
+
+Se define la proyección conceptual:
+
+```text
+PRESENT_CONFIRMED
+NOT_OBSERVED
+LOSS_CONFIRMED
+PRESENT_RECONCILIATION_REQUIRED
+UNKNOWN
+```
+
+- `PRESENT_CONFIRMED`: presencia vigente demostrada en un alcance coherente.
+- `NOT_OBSERVED`: esperado pero no observado; investigación abierta.
+- `LOSS_CONFIRMED`: pérdida operativa autorizada.
+- `PRESENT_RECONCILIATION_REQUIRED`: sujeto hallado o reaparecido pero todavía requiere reconciliación.
+- `UNKNOWN`: evidencia insuficiente para afirmar cualquiera de los anteriores.
+
+Esta proyección no sustituye ubicación ni lifecycle.
+
+---
+
+#### 50. Conteo como observación
+
+Se conserva:
+
+```text
+COUNT
+→
+OBSERVATION
+```
+
+Nunca:
+
+```text
+COUNT
+→
+AUTOMATIC AUTHORITATIVE CORRECTION
+```
+
+Una sesión de conteo puede detectar condición, faltante, hallazgo o diferencia, pero no autoriza por sí sola baja, pérdida, ajuste o cambio de clase.
+
+---
+
+#### 51. Estados de conteo AS-IS
+
+La superficie física actual admite estados de línea:
+
+```text
+pending
+found
+missing
+found_elsewhere
+damaged
+extra
+not_applicable
+```
+
+Estos valores se clasifican como observaciones de conteo. No son, por sí solos, decisiones autoritativas sobre la existencia.
+
+---
+
+#### 52. `damaged` de conteo
+
+Una línea de conteo marcada `damaged` prueba únicamente que durante ese conteo se registró una observación de daño bajo la evidencia disponible.
+
+La implementación futura deberá correlacionarla con un incidente de daño antes de usarla como cambio autoritativo de condición.
+
+---
+
+#### 53. `missing` de conteo
+
+Una línea marcada `missing` registra no observación dentro del alcance del conteo.
+
+No puede convertir automáticamente:
+
+```text
+lifecycle_status = lost
+```
+
+ni reducir existencia autoritativa sin investigación y decisión.
+
+---
+
+#### 54. `found_elsewhere`
+
+`found_elsewhere` indica presencia observada en un lugar diferente del esperado.
+
+```text
+FOUND ELSEWHERE
+→
+LOCATION RECONCILIATION
+```
+
+No crea un nuevo activo. La identidad o cantidad original se conserva.
+
+---
+
+#### 55. `extra`
+
+`extra` es una observación de cantidad o identidad presente que no estaba incluida en la expectativa del conteo.
+
+No crea automáticamente alta de activo, aumento de saldo, propiedad, nueva clasificación ni nueva custodia. Debe investigarse su origen.
+
+---
+
+#### 56. Condición observada en conteo
+
+La condición capturada durante un conteo es una observación contextual.
+
+Si contradice la condición autoritativa vigente:
+
+```text
+OBSERVED CONDITION != CURRENT CONDITION
+→
+REVIEW REQUIRED
+```
+
+No se sobrescribe el historial de forma silenciosa.
+
+---
+
+#### 57. Reutilizables con condición mixta
+
+Un alcance `QUANTITY_CONTROLLED` puede contener unidades equivalentes con condiciones distintas.
+
+La representación canónica debe permitir cantidades por condición sin individualizar cada pieza.
+
+```text
+TOTAL PRESENT QUANTITY = 20
+GOOD = 14
+FAIR = 4
+POOR = 2
+SUM(CONDITION BUCKETS) = 20
+```
+
+Los buckets de condición son mutuamente excluyentes dentro del mismo snapshot.
+
+---
+
+#### 58. Condición desconocida por cantidad
+
+Cuando una parte del alcance no ha sido evaluada:
+
+```text
+UNKNOWN QUANTITY > 0
+```
+
+puede coexistir con otros buckets de condición. No se distribuye automáticamente entre `GOOD`, `FAIR`, `POOR` o `CRITICAL`.
+
+---
+
+#### 59. Daño por cantidad y buckets
+
+Una evaluación confirmada de daño puede mover una cantidad entre buckets de condición sin alterar el total físico representado.
+
+```text
+BEFORE:
+GOOD = 10
+POOR = 0
+
+CONFIRMED DAMAGE = 2
+
+AFTER:
+GOOD = 8
+POOR = 2
+
+TOTAL BEFORE = TOTAL AFTER = 10
+```
+
+La decisión de reparación o disposición sigue separada.
+
+---
+
+#### 60. Faltante no es bucket de condición
+
+Se fija:
+
+```text
+MISSING QUANTITY
+!=
+CONDITION BUCKET
+```
+
+La condición describe unidades presentes o materialmente evaluables. El faltante describe una diferencia de presencia.
+
+---
+
+#### 61. Pérdida no es bucket de condición
+
+Se fija:
+
+```text
+LOSS_CONFIRMED
+!=
+PHYSICAL CONDITION
+```
+
+Una unidad perdida puede haber tenido una condición conocida antes de desaparecer, pero la pérdida pertenece a presencia y reconciliación.
+
+---
+
+#### 62. Invariantes para identidad individual
+
+Para `INDIVIDUAL_IDENTITY`:
+
+1. la identidad no cambia por condición;
+2. un reporte no crea otra identidad;
+3. un faltante no elimina la identidad;
+4. una pérdida no recicla la identidad;
+5. un hallazgo recupera la identidad original;
+6. la condición vigente es una proyección de historia;
+7. lifecycle, custodia, ubicación y disponibilidad permanecen separados;
+8. todo cambio autoritativo conserva revisión y evidencia.
+
+---
+
+#### 63. Invariantes para control por cantidad
+
+Para `QUANTITY_CONTROLLED`:
+
+1. no se fabrican identidades por unidad;
+2. daño no crea ni destruye cantidad;
+3. condición puede distribuirse por buckets;
+4. faltante es diferencia, no reducción automática;
+5. pérdida confirmada requiere efecto autorizado;
+6. hallazgo y recuperación requieren reconciliación;
+7. cantidades no se duplican entre buckets de una misma dimensión;
+8. condición, presencia y custodia son ejes distintos;
+9. los cambios conservan alcance, unidad y revisión;
+10. los reintentos no duplican efectos.
+
+---
+
+#### 64. Brecha AS-IS: condición escalar de grupos
+
+El AS-IS conserva un único `condition_status` en cada `asset_group`.
+
+Ese campo es insuficiente para representar un grupo con condición mixta sin pérdida de información.
+
+La materialización futura deberá soportar distribución cuantitativa por condición o una representación equivalente que preserve el mismo contrato.
+
+---
+
+#### 65. Brecha AS-IS: pérdida dentro de lifecycle
+
+El AS-IS permite `perdido` dentro de `lifecycle_status` para activos y grupos.
+
+Esta tarea clasifica esa semántica como una proyección legacy que debe reconciliarse con el modelo objetivo:
+
+```text
+LOSS
+=
+AUDITABLE PRESENCE / INCIDENT DECISION
+```
+
+No es borrado irreversible de la identidad.
+
+---
+
+#### 66. Brecha AS-IS: actualización directa
+
+Las superficies actuales permiten actualizar directamente `condition_status` y, para grupos, `lifecycle_status`.
+
+La implementación objetivo deberá impedir que una edición de formulario reemplace la historia autoritativa sin razón, actor, revisión, evidencia cuando aplique y evento o transición correlacionada.
+
+---
+
+#### 67. Brecha AS-IS: mantenimiento y estado
+
+El código actual de activos puede modificar `equipment_status` y `lifecycle_status` como efecto del registro de mantenimiento.
+
+Esta tarea no redefine ese workflow, pero exige que la condición física no se derive automáticamente de esos campos ni se pierda la separación entre:
+
+```text
+MAINTENANCE STATUS
+EQUIPMENT STATUS
+LIFECYCLE
+PHYSICAL CONDITION
+AVAILABILITY
+```
+
+---
+
+#### 68. Snapshot remoto de condición
+
+La observación remota de solo lectura realizada durante el desarrollo registró:
+
+| Superficie | Valor observado | Filas |
+| --- | --- | ---: |
+| `asset_items.condition_status` | `bueno` | 38 |
+| `asset_items.equipment_status` | `operativo` | 38 |
+| `asset_items.lifecycle_status` | `activo` | 38 |
+| `asset_groups.condition_status` | `bueno` | 128 |
+| `asset_groups.lifecycle_status` | `activo` | 128 |
+
+La homogeneidad observada no demuestra que el ciclo de incidentes esté implementado o validado.
+
+---
+
+#### 69. Snapshot remoto de conteos y movimientos
+
+La misma observación remota registró:
+
+| Elemento | Filas |
+| --- | ---: |
+| sesiones de conteo de activos | 0 |
+| líneas de conteo de activos | 0 |
+| movimientos de activos o grupos | 169 |
+| movimientos `initial_location` | 166 |
+| movimientos `transfer` | 3 |
+
+No se observaron filas de conteo que demuestren ejecución real de `missing`, `damaged`, `found_elsewhere` o `extra`.
+
+---
+
+#### 70. Estado de adopción AS-IS
+
+La infraestructura actual se clasifica:
+
+```text
+PARTIAL REUSABLE FOUNDATION
+```
+
+porque existen campos de condición, campos de lifecycle, estados de conteo para faltante, daño y hallazgo en otra ubicación, movimientos, identidad individual y grupos por cantidad.
+
+Permanece incompleto el ciclo canónico de incidentes, decisiones, historia, reconciliación y efectos.
+
+---
+
+#### 71. Contrato de transición de condición
+
+Toda modificación autoritativa de condición debe poder reconstruirse como:
+
+```text
+SUBJECT
++
+PRIOR CONDITION
++
+OBSERVATION OR ASSESSMENT
++
+DECISION
++
+NEW CONDITION
++
+EFFECTIVE TIME
++
+ACTOR
++
+REASON
++
+EVIDENCE
++
+REVISION
+```
+
+El valor actual es una proyección; la historia no se destruye.
+
+---
+
+#### 72. Revisiones monotónicas
+
+Toda representación autoritativa afectada por una transición debe validar una revisión esperada.
+
+```text
+EXPECTED REVISION = CURRENT REVISION
+```
+
+y, tras commit válido:
+
+```text
+NEW REVISION > PRIOR REVISION
+```
+
+Un actor no puede sobrescribir silenciosamente un cambio concurrente.
+
+---
+
+#### 73. Idempotencia
+
+Toda operación con efecto debe usar una identidad de idempotencia suficiente para que un retry no duplique incidentes equivalentes, no cambie dos veces condición, no confirme dos veces pérdida, no reduzca dos veces una cantidad, no recupere dos veces, no duplique evidencia y no incremente revisiones dos veces por el mismo commit lógico.
+
+---
+
+#### 74. Concurrencia entre casos
+
+Dos casos abiertos sobre el mismo sujeto pueden coexistir solo cuando no produzcan efectos incompatibles.
+
+Antes de decidir, el servidor deberá revalidar revisión del sujeto, incidentes abiertos, presencia, condición, lifecycle, ubicación, custodia y efectos correlacionados.
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 75. Operación offline
+
+Una captura offline puede conservar una observación o intención pendiente.
+
+```text
+OFFLINE CAPTURE
+!=
+COMMITTED AUTHORITATIVE DECISION
+```
+
+Al sincronizar se revalidan revisión, identidad, cantidad, estado y autoridad. Un reporte tardío no puede sobrescribir un estado más reciente por last-write-wins.
+
+---
+
+#### 76. Evidencia
+
+La evidencia puede incluir, según el caso, fotografía, documento, lectura, conteo, escaneo, firma o aceptación, observación técnica, referencia de movimiento, reporte de tercero o resultado de inspección.
+
+Se fija:
+
+```text
+EVIDENCE
+!=
+DECISION
+```
+
+La evidencia sustenta una decisión; no la sustituye.
+
+---
+
+#### 77. Segregación de acciones
+
+Se distinguen capacidades separadas:
+
+```text
+REPORT
+ASSESS
+CONFIRM LOSS
+CONFIRM RECOVERY
+CHANGE CONDITION
+AUTHORIZE REPAIR
+AUTHORIZE DISPOSITION
+POST ECONOMIC EFFECT
+```
+
+Poseer permiso para una no concede las demás.
+
+En particular:
+
+```text
+REPORT DAMAGE
+!=
+AUTHORIZE DISPOSITION
+```
+
+```text
+COUNT
+!=
+CONFIRM LOSS
+```
+
+---
+
+#### 78. Validación server-side
+
+Toda mutación autoritativa futura deberá resolver en servidor actor efectivo, permiso, sede y alcance, sujeto exacto, granularidad aprobada, revisión, condición vigente, presencia vigente, incidentes abiertos, idempotencia, evidencia mínima requerida, restricciones de lifecycle y owner de la acción solicitada.
+
+Un payload de cliente no concede autoridad.
+
+---
+
+#### 79. Frescura de proyecciones
+
+Las proyecciones de condición, presencia y estado deben poder demostrar la revisión de la que derivan.
+
+Un cliente con snapshot obsoleto no puede confirmar pérdida, recuperación o cambio de condición sin revalidación.
+
+---
+
+#### 80. Matriz de hechos y efectos
+
+| Hecho o decisión | Efecto permitido por esta semántica | Efecto prohibido por inferencia |
+| --- | --- | --- |
+| observación `GOOD` | registrar o evaluar condición | declarar disponible |
+| observación de daño | abrir incidente | descartar o dar de baja |
+| faltante | abrir investigación | confirmar pérdida |
+| hallazgo | reconciliar | crear otra identidad |
+| pérdida confirmada | registrar conclusión y solicitar efecto autorizado | borrar identidad |
+| recuperación confirmada | reconciliar representación original | borrar pérdida histórica |
+| conteo con diferencia | conservar observación | ajustar automáticamente |
+| condición `CRITICAL` | bloquear uso ordinario hasta decisión aplicable | publicar baja económica |
+| cambio de ubicación | actualizar owner de ubicación | cambiar condición |
+| cambio de custodio | actualizar owner de custodia | cambiar propiedad |
+
+---
+
+#### 81. Aplicación por clase
+
+Esta tarea especializa principalmente `SERIALIZED_ASSET`, `REUSABLE_QUANTITY`, `PHYSICAL_CONTAINER` cuando exista identidad física y otros sujetos físicos cuando consuman condición o incidentes.
+
+No cambia la clase primaria. La semántica de condición debe aplicarse según la granularidad de cada clase.
+
+---
+
+#### 82. Stock, lote y LPN
+
+Para stock por cantidad, lotes y contenido de LPN se preservan las reglas vigentes de condición, cuarentena, daño, pérdida, vencimiento, liberación y trazabilidad.
+
+Esta tarea no redefine FEFO, vencimiento, frío ni condición dentro de LPN. `NEXO-DOM-023` conserva la trazabilidad interna detallada del LPN.
+
+---
+
+#### 83. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` con identidad individual puede tener condición, daño, faltante, pérdida, hallazgo y recuperación.
+
+El LPN asociado conserva identidad separada. Declarar perdido un contenedor no borra ni resuelve por inferencia el estado de un LPN o su contenido.
+
+---
+
+#### 84. Kits
+
+Un `KIT_INSTANCE` puede resultar incompleto por un miembro faltante o dañado, pero:
+
+```text
+KIT COMPLETENESS
+!=
+PHYSICAL CONDITION OF EVERY MEMBER
+```
+
+`NEXO-DOM-014` define kits y completitud. Esta tarea conserva únicamente la semántica del incidente físico de cada sujeto afectado.
+
+---
+
+#### 85. Repuestos
+
+Un `SPARE_PART` dañado o faltante conserva el modelo de inventario de repuesto.
+
+Daño o pérdida no lo convierte en activo individual. La instalación, compatibilidad y stock mínimo pertenecen a `NEXO-DOM-016` y `NEXO-DOM-025`.
+
+---
+
+#### 86. Mantenimiento y reparación
+
+Cuando un incidente de daño exige mantenimiento:
+
+```text
+DAMAGE INCIDENT
+→
+MAINTENANCE REQUIRED
+```
+
+puede ser una decisión de escalamiento.
+
+El plan, orden, diagnóstico, reparación, prueba y liberación pertenecen a `NEXO-DOM-012`, `NEXO-DOM-025` y `NEXO-DOM-026` según corresponda.
+
+---
+
+#### 87. Baja, descarte, venta o reemplazo
+
+Una condición deficiente o una pérdida confirmada puede originar evaluación de baja, descarte, venta o reemplazo. No la ejecuta.
+
+`NEXO-DOM-013` conserva solicitud, decisión, ejecución y cierre no destructivo.
+
+---
+
+#### 88. Frontera con préstamo y transferencia
+
+`NEXO-DOM-011` deberá consumir este contrato para que entrega, préstamo, devolución, transferencia y cambio de custodia conserven condición al origen, condición observada al destino o devolución, daños reportados durante el handoff, faltantes parciales, identidades no observadas, diferencias por cantidad, incidentes abiertos, aceptación o rechazo, responsabilidad temporal y evidencia.
+
+La transferencia no puede borrar un incidente abierto.
+
+---
+
+#### 89. Frontera económica
+
+Los efectos de pérdida, daño, reparación, baja o reemplazo sobre costo, valoración, seguro, gasto o activo contable pertenecen a owners económicos y a `NEXO-DOM-028` cuando aplique.
+
+NEXO conserva el hecho físico y sus referencias; no duplica el ledger económico.
+
+---
+
+#### 90. Errores y fail-closed
+
+La operación falla cerrada cuando el sujeto no existe, la granularidad no está resuelta, la revisión es obsoleta, la cantidad es negativa o supera el alcance, el incidente ya fue resuelto de forma incompatible, falta autoridad, una pérdida intenta confirmarse sin investigación requerida, una recuperación intenta crear otra identidad, un cambio de condición intenta borrar historia, una captura offline ya no es coherente o no puede demostrarse la representación autoritativa afectada.
+
+El fallo conserva el estado previo.
+
+---
+
+#### 91. Reconciliación futura del legacy
+
+La adopción física posterior deberá reconciliar al menos:
+
+1. `condition_status` de activos;
+2. `condition_status` de grupos;
+3. `equipment_status`;
+4. `lifecycle_status`;
+5. `count_status`;
+6. observaciones de condición en conteo;
+7. movimientos;
+8. mantenimientos;
+9. estados `perdido`;
+10. cambios directos históricos;
+11. cantidades esperadas;
+12. identidad individual frente a grupo;
+13. evidencia disponible;
+14. incidentes aún no representados.
+
+No se realiza backfill en esta tarea.
+
+---
+
+#### 92. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar historia de condición no destructiva, condición desconocida explícita, separación condición/disponibilidad/lifecycle, incidentes auditables, faltante distinto de pérdida, hallazgo distinto de recuperación, identidad estable tras pérdida y recuperación, buckets de condición por cantidad, no autoajuste desde conteo, no autopérdida desde `missing`, no autobaja desde daño, autorización server-side, revisiones monotónicas, idempotencia, concurrencia, operación offline reconciliable, no doble representación, evidencia y correlación con movimientos y owners posteriores.
+
+---
+
+#### 93. Handoff hacia `NEXO-DOM-011`
+
+Esta tarea entrega:
+
+```text
+CONDITION AS A VERSIONED PHYSICAL FACT
++
+CONDITION SEPARATE FROM AVAILABILITY AND LIFECYCLE
++
+DAMAGE AS AUDITABLE INCIDENT
++
+MISSING AS OBSERVATION, NOT LOSS
++
+LOSS AS AUTHORIZED OPERATIONAL CONCLUSION
++
+FOUND SEPARATE FROM RECOVERY
++
+IDENTITY OR QUANTITY-SCOPE EFFECTS
++
+NO DESTRUCTIVE STATUS OVERWRITE
+```
+
+`NEXO-DOM-011` deberá definir préstamo, devolución, transferencia y cambio de custodia preservando estos hechos antes, durante y después de cada handoff.
+
+---
+
+#### 94. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege de forma directa la separación de estados y componentes de inventario, las transiciones auditables de condición, daño y pérdida, la prohibición de sobrescritura destructiva, el tratamiento de conteos como observaciones, la separación entre faltante y ajuste, la persistencia de identidad e historia y la segregación entre reporte, decisión, reparación, disposición y efecto económico.
+
+---
+
+#### 95. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para estados y componentes diferenciados, conteo como observación, investigación de diferencias y ajuste autorizado;
+- `TREQ-NEXO-012`, para condición, cuarentena, daño, pérdida, disposición, liberación e historia no destructiva;
+- `TREQ-NEXO-013`, para condición y disponibilidad de activos, daño, pérdida, hallazgo y conteos como eventos auditables;
+- `TREQ-NEXO-014`, para daño, reparación y baja como transiciones no destructivas y segregadas;
+- `TREQ-NEXO-043`, para cantidades esperadas, observadas, utilizables, dañadas y perdidas en reutilizables y condición por identidad en activos;
+- `TREQ-NEXO-047`, para comportamiento por clase sin doble contabilización;
+- `TREQ-NEXO-048`, para transición legacy versionada, auditable e idempotente.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 96. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, cierre de `NEXO-DOM-009`, continuidad `009 → 010 → 011`, ruta normal, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, owner, handoff de granularidad, 04A NEXO, `package.json`, validadores, `CAP-SCOPE-006`, `CAP-SCOPE-007`, `vento-nexo` actual y consultas remotas de solo lectura sobre esquema y datos de activos, grupos, conteos y movimientos. |
+| OPERATIVA | NOT_EXECUTED | No se reportó, evaluó, confirmó, perdió, halló, recuperó, contó, reparó ni dispuso ningún sujeto físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron condición, lifecycle, activos, grupos, conteos, movimientos, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 97. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] El estado físico se modela como dimensiones separadas.
+- [x] Se define una escala de condición explícita.
+- [x] `UNKNOWN` no se interpreta como `GOOD`.
+- [x] Se mapean semánticamente los cinco valores legacy observados.
+- [x] Condición se separa de disponibilidad, lifecycle, ubicación, custodia, propiedad y costo.
+- [x] Daño se modela como incidente auditable y no autoriza disposición.
+- [x] Daño individual conserva identidad exacta.
+- [x] Daño por cantidad no fabrica identidades ni destruye cantidad.
+- [x] Daño no implica descarte ni termina custodia.
+- [x] Faltante se define como discrepancia y se separa de pérdida.
+- [x] Faltante individual conserva identidad.
+- [x] Faltante por cantidad no reduce existencia automáticamente.
+- [x] No localizado se separa de perdido.
+- [x] En tránsito se separa de faltante.
+- [x] Pérdida exige investigación y decisión autorizada.
+- [x] Una identidad perdida no se elimina ni se recicla.
+- [x] Pérdida se separa de lifecycle y del efecto económico.
+- [x] Hallazgo se separa de recuperación.
+- [x] Recuperación reutiliza la identidad original y conserva historia.
+- [x] Se define una proyección de presencia y reconciliación.
+- [x] Conteo permanece observación.
+- [x] `damaged`, `missing`, `found_elsewhere` y `extra` de conteo no producen efectos autoritativos automáticos.
+- [x] Grupos admiten condición mixta por cantidad.
+- [x] Faltante y pérdida no son buckets de condición.
+- [x] Se fijan invariantes por identidad individual y por cantidad.
+- [x] Se documenta la limitación del `condition_status` escalar de grupos.
+- [x] Se documenta la conflación legacy de `perdido` con lifecycle.
+- [x] Se documenta la brecha de sobrescritura directa.
+- [x] Se documenta la frontera con estados de mantenimiento.
+- [x] Se registra snapshot remoto de condición.
+- [x] Se registra que no existen sesiones ni líneas de conteo actuales.
+- [x] Se registra la distribución actual de movimientos.
+- [x] Se define historia versionada de condición.
+- [x] Se definen revisiones monotónicas, idempotencia, concurrencia y tratamiento offline.
+- [x] Evidencia se separa de decisión.
+- [x] Se segregan reportar, evaluar, confirmar, reparar y disponer.
+- [x] Se exige validación server-side.
+- [x] Se preservan fronteras con stock, LPN, contenedores, kits y repuestos.
+- [x] Se preservan owners de mantenimiento, baja y efectos económicos.
+- [x] Se entrega handoff exacto a `NEXO-DOM-011`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+
+---
+
+#### 98. Límites
+
+Esta tarea no:
+
+- modifica estados de condición reales;
+- cambia lifecycle reales;
+- modifica equipment status reales;
+- crea incidentes reales;
+- confirma pérdidas reales;
+- recupera activos reales;
+- ajusta cantidades;
+- ejecuta conteos;
+- cambia disponibilidad;
+- cambia ubicación;
+- cambia custodia;
+- resuelve préstamos o devoluciones;
+- crea mantenimientos;
+- repara activos;
+- ejecuta baja, descarte, venta o reemplazo;
+- publica efectos económicos;
+- reclasifica productos;
+- cambia granularidad;
+- modifica `asset_items`;
+- modifica `asset_groups`;
+- modifica `asset_count_sessions`;
+- modifica `asset_count_lines`;
+- modifica `asset_movements`;
+- modifica `asset_maintenance_records`;
+- crea tablas, columnas, enums, constraints, índices, triggers o vistas;
+- crea RPC, RLS, Server Actions ni Route Handlers;
+- ejecuta migraciones o backfills;
+- modifica Supabase;
+- modifica `vento-nexo`;
+- implementa UI;
+- crea permisos;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-011`.
+
+---
+
+#### 99. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia`
+
 ### [ ] NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
 ### [ ] NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
 ### [ ] NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo

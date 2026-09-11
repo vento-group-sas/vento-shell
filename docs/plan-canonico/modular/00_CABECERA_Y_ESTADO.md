@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1176** |
+| Tareas aprobadas | **1177** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **420** |
+| Tareas no iniciadas | **419** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **73.68% (1176/1596)** |
+| Porcentaje de completamiento | **73.75% (1177/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad** |
-| Tarea actual | **NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante** |
+| Última tarea aprobada | **NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante** |
+| Tarea actual | **NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia** |
+| Siguiente tarea | **NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 34 de 127 aprobadas; NEXO-DOM-010 pendiente** |
+| Progreso del bloque | **BLOQUE K: 35 de 127 aprobadas; NEXO-DOM-011 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-DOM-010** |
+| Carril documental | **ACTIVO — NEXO-DOM-011** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-009` — Separar activo individual y reutilizable controlado por cantidad |
-| Tarea actual | `NEXO-DOM-010` — Definir estado, condición, daño, pérdida y faltante — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia |
+| Última aprobada | `NEXO-DOM-010` — Definir estado, condición, daño, pérdida y faltante |
+| Tarea actual | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 34 DE 127 APROBADAS — ACTUAL NEXO-DOM-010** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 35 DE 127 APROBADAS — ACTUAL NEXO-DOM-011** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
-        ↓
-TAREA ACTUAL
 NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 34 de 127 tareas aprobadas
+BLOQUE K — 35 de 127 tareas aprobadas
 ```
