@@ -476,3 +476,70 @@ test('registro global falla cerrado si NO_EVALUADA no coincide con las tareas do
     /NO_EVALUADA desalineado con estado documental/u,
   );
 });
+
+test('STEP_GLOBAL_04 proyecta clasificación de adopción en el registro global', () => {
+  const approved = {
+    ...task('TEST-ADOPT-001', 'APROBADA'),
+    fileIndex: 0,
+    taskIndex: 0,
+  };
+  const pending = {
+    ...task('TEST-ADOPT-002', 'NO INICIADA'),
+    fileIndex: 0,
+    taskIndex: 1,
+  };
+  const taskMap = new Map([
+    [approved.id, approved],
+    [pending.id, pending],
+  ]);
+  const materialization = {
+    tasks: [
+      {
+        task_id: approved.id,
+        task_state: 'APROBADA',
+        adoption_classification: 'PARTIAL_DELTA',
+        mode: 'DEFINE_ONCE',
+        relation_state: 'UNMAPPED',
+        explicit_materialization: null,
+        materializing_unit_ids: [],
+        direct_instances: [],
+      },
+      {
+        task_id: pending.id,
+        task_state: 'NO_APROBADA',
+        adoption_classification: null,
+        mode: 'DEFINE_ONCE',
+        relation_state: 'UNMAPPED',
+        explicit_materialization: null,
+        materializing_unit_ids: [],
+        direct_instances: [],
+      },
+    ],
+  };
+  const stats = {
+    total: 2,
+    auth: 0,
+    approved: 1,
+    proposed: 0,
+    notStarted: 1,
+    rejected: 0,
+    completionPercentage: 50,
+  };
+  const markdown = buildRegistryMarkdown(
+    taskMap,
+    stats,
+    {
+      lastApproved: approved,
+      current: pending,
+      next: null,
+      handoff: null,
+      isComplete: false,
+    },
+    materialization,
+  );
+
+  assert.match(markdown, /Estado documental \| Estado físico \| Clasificación de adopción/u);
+  assert.match(markdown, /Resumen de reconciliación de adopción/u);
+  assert.match(markdown, /PARTIAL_DELTA \| \*\*1\*\*/u);
+  assert.match(markdown, /⚠️ SIN_TRAZABILIDAD_FISICA \| PARTIAL_DELTA/u);
+});

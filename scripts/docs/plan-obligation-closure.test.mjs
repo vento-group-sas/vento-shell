@@ -297,3 +297,20 @@ test('resumen físico cuenta todos los estados observados', () => {
   assert.equal(summary.counts.UNMAPPED, 1);
   assert.equal(summary.rows.length, 2);
 });
+
+test('STEP_GLOBAL_04 conserva la clasificación de adopción sin convertirla en materialización', () => {
+  const result = deriveTaskPhysicalProjection({
+    task_state: 'APROBADA',
+    adoption_classification: 'PARTIAL_DELTA',
+    relation_state: 'UNMAPPED',
+    explicit_materialization: null,
+    materializing_unit_ids: [],
+    direct_instances: [],
+  });
+
+  assert.equal(result.code, 'UNMAPPED');
+  assert.equal(result.display, '⚠️ SIN_TRAZABILIDAD_FISICA');
+  assert.equal(result.adoption_classification, 'PARTIAL_DELTA');
+  assert.deepEqual(result.materializer_refs, []);
+  assert.deepEqual(result.evidence_refs, []);
+});

@@ -44,6 +44,17 @@ export const TASK_PHYSICAL_STATE_CODES = Object.freeze({
   MATERIALIZED: 'MATERIALIZED',
 });
 
+export const ADOPTION_RECONCILIATION_CLASSIFICATION_CODES = Object.freeze([
+  'EXISTING_NEEDS_ADOPTION_EVIDENCE',
+  'PARTIAL_DELTA',
+  'NOT_IMPLEMENTED',
+  'CONTRADICTION',
+  'REUSE_VERIFIED',
+]);
+const ADOPTION_RECONCILIATION_CLASSIFICATION_SET = new Set(
+  ADOPTION_RECONCILIATION_CLASSIFICATION_CODES,
+);
+
 function fail(message) {
   throw new Error(message);
 }
@@ -114,6 +125,82 @@ function validateStaticMap(map) {
 
   if (!Array.isArray(map.relations)) errors.push('relations debe ser un arreglo.');
   return errors;
+}
+
+export function buildAdoptionReconciliationIndex(map, topologyResult = null) {
+  const config = map?.adoption_reconciliation ?? null;
+  const byTask = new Map();
+  const counts = Object.fromEntries(
+    ADOPTION_RECONCILIATION_CLASSIFICATION_CODES.map((code) => [code, 0]),
+  );
+
+  if (config === null) {
+    return { config: null, byTask, counts, classified_tasks: 0 };
+  }
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    fail('adoption_reconciliation debe ser un objeto.');
+  }
+  if (config.schema_version !== 1) fail('adoption_reconciliation.schema_version debe ser 1.');
+  if (config.authority !== 'STEP_GLOBAL_04') fail('adoption_reconciliation.authority debe ser STEP_GLOBAL_04.');
+  if (config.scope !== 'PRE_MATERIALIZATION_RECONCILIATION') {
+    fail('adoption_reconciliation.scope debe ser PRE_MATERIALIZATION_RECONCILIATION.');
+  }
+  if (config.classification_is_materialization_claim !== false) {
+    fail('adoption_reconciliation no puede declarar materialización.');
+  }
+  if (config.classification_is_task_to_unit_relation !== false) {
+    fail('adoption_reconciliation no puede declarar relaciones TASK -> UNIT.');
+  }
+  if (config.unknown_classification_behavior !== 'UNCLASSIFIED') {
+    fail('adoption_reconciliation.unknown_classification_behavior debe ser UNCLASSIFIED.');
+  }
+  const evidenceSources = Array.isArray(config.evidence_sources) ? config.evidence_sources : [];
+  const evidenceSourceIds = new Set();
+  for (const source of evidenceSources) {
+    const sourceId = String(source?.source_id ?? '').trim();
+    const reportFile = String(source?.report_file ?? '').trim();
+    const reportSha = String(source?.report_sha256 ?? '').trim();
+    if (!sourceId || evidenceSourceIds.has(sourceId)) {
+      fail('adoption_reconciliation.evidence_sources contiene source_id vacío o duplicado.');
+    }
+    if (!reportFile || !/^[a-f0-9]{64}$/u.test(reportSha)) {
+      fail(`adoption_reconciliation.evidence_sources inválida: ${sourceId}.`);
+    }
+    evidenceSourceIds.add(sourceId);
+  }
+
+  const classifications = Array.isArray(config.classifications) ? config.classifications : [];
+  for (const row of classifications) {
+    const taskId = String(row?.task_id ?? '').trim();
+    const classification = String(row?.classification ?? '').trim();
+    if (!/^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}$/u.test(taskId)) {
+      fail(`adoption_reconciliation contiene task_id inválida: ${taskId || 'EMPTY'}.`);
+    }
+    if (byTask.has(taskId)) fail(`adoption_reconciliation duplica ${taskId}.`);
+    if (!ADOPTION_RECONCILIATION_CLASSIFICATION_SET.has(classification)) {
+      fail(`adoption_reconciliation clasifica ${taskId} con valor inválido: ${classification || 'EMPTY'}.`);
+    }
+    const sourceRefs = uniqueSorted(row?.source_refs ?? []);
+    if (sourceRefs.length === 0 || sourceRefs.some((ref) => !evidenceSourceIds.has(ref))) {
+      fail(`adoption_reconciliation.source_refs inválida para ${taskId}.`);
+    }
+    const task = topologyResult?.inventory?.get(taskId) ?? null;
+    if (topologyResult && !task) fail(`adoption_reconciliation referencia tarea inexistente: ${taskId}.`);
+    if (task && !approvedTask(task)) fail(`adoption_reconciliation no puede clasificar tarea no aprobada: ${taskId}.`);
+    const topology = topologyResult?.topology?.get(taskId) ?? null;
+    if (topology && topology.mode !== 'PER_IMPLEMENTATION_UNIT') {
+      fail(`adoption_reconciliation solo admite PER_IMPLEMENTATION_UNIT: ${taskId} usa ${topology.mode}.`);
+    }
+    byTask.set(taskId, { classification, source_refs: sourceRefs });
+    counts[classification] += 1;
+  }
+
+  return {
+    config,
+    byTask,
+    counts,
+    classified_tasks: byTask.size,
+  };
 }
 
 export function readImplementationMaterializationMap(root = process.cwd()) {
@@ -276,6 +363,7 @@ export function validateImplementationMaterializationRelations(map, {
 
 export function deriveTaskPhysicalProjection(task) {
   const approved = String(task?.task_state ?? '').trim() === 'APROBADA';
+  const adoptionClassification = String(task?.adoption_classification ?? '').trim() || null;
   const directInstances = Array.isArray(task?.direct_instances) ? task.direct_instances : [];
   const verifiedWithEvidence = directInstances.filter(
     (instance) => instance.status === 'VERIFIED' && Number(instance.evidence_count ?? 0) > 0,
@@ -298,6 +386,7 @@ export function deriveTaskPhysicalProjection(task) {
     materializer_refs: materializerRefs,
     evidence_refs: evidenceRefs,
     source_refs: uniqueSorted(explicit?.source_refs ?? []),
+    adoption_classification: adoptionClassification,
   });
 
   if (!approved) {
@@ -421,6 +510,7 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
   if (relationErrors.length > 0) {
     fail(`implementation-materialization-map inválido:\n- ${relationErrors.join('\n- ')}`);
   }
+  const adoptionReconciliation = buildAdoptionReconciliationIndex(map, topologyResult);
 
   const explicitByTask = new Map(map.relations.map((relation) => [
     relation.task_id,
@@ -458,6 +548,8 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
       task_id: task.id,
       title: task.title,
       task_state: approvedTask(task) ? 'APROBADA' : 'NO_APROBADA',
+      adoption_classification: adoptionReconciliation.byTask.get(task.id)?.classification ?? null,
+      adoption_source_refs: adoptionReconciliation.byTask.get(task.id)?.source_refs ?? [],
       mode: topologyResult.topology.get(task.id)?.mode ?? null,
       execution_gate: topologyResult.topology.get(task.id)?.executionGate ?? null,
       explicit_materialization: explicit,
@@ -491,6 +583,8 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
       .filter((task) => task.relation_state !== 'UNMAPPED').length,
     explicit_relation_unit_references: map.relations
       .reduce((total, relation) => total + relation.implementation_unit_ids.length, 0),
+    adoption_classified_tasks: adoptionReconciliation.classified_tasks,
+    adoption_classification_counts: adoptionReconciliation.counts,
   };
 
   const report = {
@@ -505,8 +599,11 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
       explicit_cross_task_relation_requires_approved_task: true,
       verified_materialization_will_require_evidence: true,
       materialization_completion_claim: false,
+      adoption_classification_is_not_materialization_claim: true,
+      adoption_classification_is_not_task_to_unit_relation: true,
     },
     metrics,
+    adoption_reconciliation: adoptionReconciliation.config,
     known_units: [...knownUnits.values()],
     explicit_relations: map.relations,
     tasks,
@@ -516,6 +613,7 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
     model_id: report.model_id,
     invariants: report.invariants,
     metrics: report.metrics,
+    adoption_reconciliation: report.adoption_reconciliation,
     known_units: report.known_units,
     explicit_relations: report.explicit_relations,
     tasks: report.tasks,
@@ -534,6 +632,12 @@ export function assertImplementationMaterializationIndex(report) {
   }
   if (report?.invariants?.materialization_completion_claim !== false) {
     failures.push('NO_COMPLETION_CLAIM');
+  }
+  if (report?.invariants?.adoption_classification_is_not_materialization_claim !== true) {
+    failures.push('ADOPTION_NOT_MATERIALIZATION');
+  }
+  if (report?.invariants?.adoption_classification_is_not_task_to_unit_relation !== true) {
+    failures.push('ADOPTION_NOT_TASK_TO_UNIT');
   }
   if (report?.metrics?.canonical_tasks !== report?.tasks?.length) {
     failures.push('TASK_COVERAGE');
@@ -556,6 +660,8 @@ function printSummary(report) {
   console.log(
     `TASKS_WITH_ANY_RELATION: ${report.metrics.tasks_with_any_materialization_relation}`,
   );
+  console.log(`ADOPTION_CLASSIFIED_TASKS: ${report.metrics.adoption_classified_tasks}`);
+  console.log(`ADOPTION_CLASSIFICATION_COUNTS: ${JSON.stringify(report.metrics.adoption_classification_counts)}`);
   console.log('MATERIALIZATION_COMPLETION_CLAIM: NO');
   console.log(`FINGERPRINT_SHA256: ${report.fingerprint_sha256}`);
 }
