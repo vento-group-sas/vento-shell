@@ -8847,7 +8847,869 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido`
 
-### [ ] NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
+### ✅ NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
+**Tarea siguiente:** NEXO-DOM-008 — Definir custodia y responsable actual
+**Tipo de tarea:** documental; definición canónica de la jerarquía física sede → LOC → posición opcional → LPN → contenido, modos de ubicación, herencia espacial, stock no ubicado, tránsito, reconciliación y fronteras con movimientos, custodia, condición, contenedores y trazabilidad bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una relación física única y reconciliable entre sede, LOC, posición opcional, LPN y contenido, impidiendo que una misma existencia tenga varias ubicaciones autoritativas o cambie de lugar mediante sobrescritura sin movimiento correlacionado.
+
+```text
+SITE
+→ LOC
+→ OPTIONAL POSITION
+→ ROOT LPN OR LOOSE CONTENT
+→ NESTED LPN
+→ DIRECT CONTENT
+```
+
+La ubicación conocida, el tránsito y el stock temporalmente no ubicado se representan de forma explícita y mutuamente excluyente.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija:
+
+1. jerarquía `SITE → LOC → OPTIONAL POSITION`;
+2. diferencia entre ubicación y agrupación logística;
+3. ubicación directa frente a ubicación efectiva derivada;
+4. colocación de LPN raíz;
+5. ubicación efectiva de LPN anidados;
+6. ubicación directa de stock suelto;
+7. ubicación efectiva del contenido empacado;
+8. modos `LOCATED`, `IN_TRANSIT` y `UNLOCATED_TEMPORARY`;
+9. tratamiento controlado del stock no ubicado;
+10. coherencia territorial;
+11. invariantes de pack, unpack, anidamiento y movimiento;
+12. no doble ubicación ni doble contabilización;
+13. concurrencia, idempotencia y offline;
+14. auditoría y reconciliación;
+15. handoff a `NEXO-DOM-008`.
+
+No materializa tablas, RPC, RLS, UI, migraciones, movimientos ni datos.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Se preservan:
+
+- NEXO como propietario del estado físico y trazabilidad de inventario;
+- producto, presentación, existencia, lote, serial, LOC, posición, LPN y contenedor como conceptos distintos;
+- sede, LOC y posición opcional como jerarquía física;
+- stock no ubicado como excepción temporal controlada;
+- LPN como identidad logística de contenido y no como ubicación;
+- prohibición de contabilizar contenido LPN también como stock suelto;
+- ledger y proyecciones reconciliables;
+- mutaciones atómicas o idempotentes y compensables;
+- lifecycle LPN de `NEXO-DOM-003`;
+- contenido y pack/unpack de `NEXO-DOM-004`;
+- división, unión y transferencia de `NEXO-DOM-005`;
+- bosque LPN acíclico, máximo un padre activo y propiedad directa del contenido de `NEXO-DOM-006`.
+
+---
+
+#### 4. Sede
+
+La sede es el ámbito territorial físico superior.
+
+Una sede puede contener varios LOC, pero no sustituye un LOC ni constituye por sí sola una ubicación ordinaria completa de stock.
+
+---
+
+#### 5. LOC
+
+Un LOC es una ubicación física direccionable dentro de exactamente una sede.
+
+```text
+LOC ACTIVE SITE COUNT = 1
+```
+
+Su identidad permanece separada de producto, LPN, posición, contenedor, condición y custodio.
+
+---
+
+#### 6. Posición opcional
+
+Una posición es una subdivisión opcional de un LOC.
+
+```text
+POSITION
+→ EXACTLY ONE LOC
+→ EXACTLY ONE SITE THROUGH LOC
+```
+
+Un LOC puede operar sin posiciones. No se crean posiciones ficticias para completar una forma técnica.
+
+---
+
+#### 7. Coherencia territorial
+
+Toda colocación localizada debe satisfacer:
+
+```text
+PLACEMENT.SITE = PLACEMENT.LOC.SITE
+```
+
+y, cuando exista posición:
+
+```text
+PLACEMENT.POSITION.LOC = PLACEMENT.LOC
+```
+
+Una discrepancia bloquea la aceptación.
+
+---
+
+#### 8. LPN no es ubicación
+
+Se mantiene:
+
+```text
+LPN != LOC
+LPN != POSITION
+```
+
+El LPN puede estar ubicado, en tránsito o temporalmente no ubicado, pero nunca es el lugar físico.
+
+---
+
+#### 9. Contenedor físico no es ubicación
+
+Se mantiene:
+
+```text
+PHYSICAL_CONTAINER != LOC
+```
+
+Un contenedor identificado puede tener ubicación propia. Su vínculo con un LPN no lo convierte en LOC.
+
+---
+
+#### 10. Colocación autoritativa
+
+Cada sujeto locatable mantiene como máximo una colocación física autoritativa vigente.
+
+```text
+AUTHORITATIVE CURRENT PLACEMENT COUNT <= 1
+```
+
+La ausencia de LOC debe estar explicada por tránsito o excepción temporal cuando la existencia física siga pendiente de reconciliación.
+
+---
+
+#### 11. Modos de colocación
+
+Se fijan tres modos conceptuales mutuamente excluyentes:
+
+```text
+LOCATED
+IN_TRANSIT
+UNLOCATED_TEMPORARY
+```
+
+No son estados del lifecycle LPN ni sustituyen condición o disponibilidad.
+
+---
+
+#### 12. `LOCATED`
+
+`LOCATED` requiere sede, LOC y, cuando aplique, posición opcional coherente.
+
+La relación es vigente, auditable y reconciliable.
+
+---
+
+#### 13. `IN_TRANSIT`
+
+`IN_TRANSIT` representa existencia retirada autoritativamente del origen y todavía no confirmada en destino.
+
+Durante tránsito:
+
+- origen es referencia histórica;
+- destino es esperado;
+- ninguno es LOC actual confirmado;
+- el movimiento conserva su propia correlación y estado.
+
+---
+
+#### 14. `UNLOCATED_TEMPORARY`
+
+`UNLOCATED_TEMPORARY` representa una excepción en la que existe evidencia de existencia física pero todavía no puede atribuirse un LOC autoritativo y no existe un tránsito normal que explique la ausencia.
+
+No es una LOC.
+
+---
+
+#### 15. Exclusividad de modos
+
+Se prohíbe representar simultáneamente una misma existencia como:
+
+- ubicada y en tránsito;
+- ubicada y no ubicada;
+- en tránsito y no ubicada por la misma causa física.
+
+---
+
+#### 16. Stock suelto
+
+Contenido fuera de cualquier LPN autoritativo puede poseer ubicación directa con sede, LOC, posición opcional y dimensiones de existencia aplicables.
+
+El stock suelto no necesita un LPN ficticio.
+
+---
+
+#### 17. LPN raíz
+
+Un LPN raíz puede poseer colocación directa.
+
+Cuando está `LOCATED`, esa colocación determina la ubicación efectiva de su estructura LPN anidada.
+
+---
+
+#### 18. LPN hijo
+
+Un LPN con padre autoritativo vigente no mantiene una segunda colocación actual independiente que pueda contradecir al padre.
+
+```text
+NESTED CHILD EFFECTIVE PLACEMENT
+=
+ROOT LPN EFFECTIVE PLACEMENT
+```
+
+El hijo conserva historial de colocaciones anteriores, pero estas no vuelven a ser actuales por inferencia.
+
+---
+
+#### 19. Ubicación efectiva
+
+La ubicación efectiva puede provenir de:
+
+- colocación directa para stock suelto o LPN raíz;
+- herencia desde la raíz para LPN anidado;
+- herencia desde el LPN propietario directo para contenido empacado.
+
+La fuente de la ubicación efectiva debe quedar identificable.
+
+---
+
+#### 20. Contenido empacado
+
+El contenido empacado no conserva simultáneamente una colocación directa de stock suelto.
+
+```text
+DIRECT CONTENT EFFECTIVE PLACEMENT
+=
+OWNER LPN EFFECTIVE PLACEMENT
+```
+
+La membresía del contenido y la ubicación efectiva permanecen conceptos distintos.
+
+---
+
+#### 21. Contenido dentro de LPN anidado
+
+Para contenido directo de un LPN hijo:
+
+```text
+CONTENT
+→ DIRECT OWNER LPN
+→ ANCESTOR CHAIN
+→ ROOT LPN
+→ EFFECTIVE PLACEMENT
+```
+
+La proyección conserva siempre el LPN propietario directo.
+
+---
+
+#### 22. No doble ubicación
+
+La misma existencia no puede estar simultáneamente:
+
+- como stock suelto en un LOC;
+- como contenido directo de un LPN;
+- como contenido directo de otro LPN;
+- como contenido agregado del padre tratado como una nueva membresía.
+
+---
+
+#### 23. No doble contabilización
+
+La ubicación no crea saldo.
+
+```text
+ONE PHYSICAL EXISTENCE
+→ ONE AUTHORITATIVE ACCOUNTING REPRESENTATION
+```
+
+Mover, empacar, desempacar, anidar o proyectar nunca crea cantidad adicional.
+
+---
+
+#### 24. `PACK` y ubicación
+
+`PACK` no puede teletransportar contenido.
+
+Para una operación ordinaria, contenido fuente y LPN destino deben estar físicamente compatibles al confirmar.
+
+```text
+LOOSE DIRECT PLACEMENT ENDS
++
+LPN MEMBERSHIP STARTS
+```
+
+como una decisión reconciliable.
+
+---
+
+#### 25. `UNPACK` y ubicación
+
+Al desempacar sin traslado adicional:
+
+```text
+LPN MEMBERSHIP ENDS
++
+LOOSE DIRECT PLACEMENT STARTS
+AT CURRENT LPN EFFECTIVE PLACEMENT
+```
+
+Un destino diferente exige además el movimiento propietario correspondiente.
+
+---
+
+#### 26. Transferencia entre LPN
+
+`TRANSFER_CONTENT` no puede ocultar un traslado físico.
+
+Si LPN origen y destino no comparten una situación física compatible, la transferencia debe correlacionarse con el movimiento aplicable o fallar cerrada.
+
+---
+
+#### 27. Anidamiento
+
+`NEST_LPN`, `UNNEST_LPN` y `REPARENT_LPN` no sustituyen movimientos de ubicación.
+
+Al anidar ordinariamente, padre e hijo deben tener situación física compatible.
+
+Al desanidar sin traslado, el hijo adquiere una colocación directa compatible con su ubicación efectiva inmediatamente anterior.
+
+---
+
+#### 28. Jerarquía anidada coherente
+
+No se admite una estructura activa con raíz en una sede, hijo directamente ubicado en otra y contenido del hijo en una tercera.
+
+Todos los descendientes deben resolver a una situación física reconciliable con la raíz.
+
+---
+
+#### 29. Movimiento de LPN completo
+
+El movimiento físico de un LPN y todo su contenido pertenece a `NEXO-DOM-022`.
+
+Esta tarea entrega:
+
+```text
+ROOT LPN PLACEMENT CHANGE
+→ ALL ACTIVE DESCENDANTS AND THEIR CONTENT
+RESOLVE TO THE SAME NEW EFFECTIVE PHYSICAL SITUATION
+```
+
+sin duplicar movimientos por proyecciones derivadas.
+
+---
+
+#### 30. Cambio de sede
+
+Cambiar sede es una transición física, no una edición aislada de `site_id`.
+
+```text
+UPDATE SITE
+WITHOUT CORRELATED PHYSICAL TRANSITION
+=
+PROHIBITED
+```
+
+---
+
+#### 31. Cambio de LOC o posición
+
+Cambiar LOC, o posición cuando esta sea autoritativa, conserva origen, destino, actor, instante, causa, revisión y correlación.
+
+No se sobrescribe destructivamente la ubicación anterior.
+
+---
+
+#### 32. Sede sin LOC
+
+Conocer únicamente la sede no basta para presentar stock como ordinariamente ubicado.
+
+Debe resolverse como excepción temporal, estado transitorio propietario o dato inválido pendiente de reconciliación, según evidencia.
+
+---
+
+#### 33. Contrato de stock no ubicado
+
+Toda excepción temporal conserva como mínimo:
+
+- sujeto afectado;
+- sede conocida cuando exista evidencia;
+- causa;
+- origen del hecho;
+- instante de inicio;
+- responsable de resolver;
+- condición de salida;
+- política de antigüedad;
+- revisión;
+- correlación;
+- última evidencia disponible.
+
+No se crea una LOC ficticia denominada `UNLOCATED`.
+
+---
+
+#### 34. Antigüedad y disponibilidad
+
+El stock no ubicado no puede permanecer indefinidamente sin señalización.
+
+Debe poder distinguirse si continúa dentro o fuera de la ventana de resolución propietaria.
+
+Se fija:
+
+```text
+UNLOCATED != AVAILABLE
+```
+
+y tampoco constituye un punto determinista de picking.
+
+---
+
+#### 35. Tránsito y destino
+
+Mientras una existencia está en tránsito:
+
+```text
+SOURCE = HISTORICAL
+DESTINATION = EXPECTED
+CURRENT LOC = NONE
+```
+
+La confirmación del destino produce `LOCATED` solo después de la aceptación física requerida por el contrato propietario.
+
+---
+
+#### 36. Diferencias de recepción
+
+Una diferencia de cantidad, identidad, lote, serial, condición o ubicación no se oculta confirmando el destino esperado.
+
+La parte afectada conserva un estado reconciliable y evidencia propia.
+
+---
+
+#### 37. Activos, reutilizables y contenedores
+
+- `SERIALIZED_ASSET` conserva ubicación por identidad.
+- `REUSABLE_QUANTITY` conserva ubicación por cantidad cuando no existe identidad individual.
+- `PHYSICAL_CONTAINER` conserva ubicación por identidad cuando es individual.
+
+Ubicación no sustituye custodia, condición, disponibilidad ni mantenimiento.
+
+---
+
+#### 38. Retorno de contenedor
+
+```text
+RETURN OBLIGATION != CURRENT PLACEMENT
+```
+
+Esperar un retorno no ubica el contenedor.
+
+Un retorno confirmado debe producir o correlacionarse con la situación física resultante mediante el contrato propietario.
+
+---
+
+#### 39. Custodia
+
+Se fija:
+
+```text
+PLACEMENT != CUSTODY
+```
+
+Conocer sede, LOC o LPN no determina automáticamente quién responde por el objeto.
+
+La custodia y responsable actual pertenecen a `NEXO-DOM-008`.
+
+---
+
+#### 40. Condición
+
+También se mantiene:
+
+```text
+LOCATED != USABLE
+UNLOCATED != LOST
+IN_TRANSIT != DAMAGED
+```
+
+Condición, daño, pérdida y faltante pertenecen a `NEXO-DOM-010`.
+
+---
+
+#### 41. Conteo y hallazgo
+
+Un conteo es una observación, no una sobrescritura de ubicación.
+
+Si se encuentra una identidad en una LOC distinta:
+
+```text
+EXPECTED PLACEMENT
++
+OBSERVED PLACEMENT
++
+RECONCILIATION DECISION
+```
+
+deben coexistir hasta resolver el caso.
+
+---
+
+#### 42. Ledger y proyección
+
+Los hechos autoritativos explican los cambios físicos.
+
+Las proyecciones sirven para lectura eficiente, pero no son una fuente mutable independiente.
+
+```text
+PROJECTION UPDATE
+WITHOUT CORRELATED AUTHORITATIVE FACT
+=
+PROHIBITED
+```
+
+---
+
+#### 43. Forma conceptual mínima
+
+Una colocación localizada puede expresarse conceptualmente como:
+
+```ts
+type NexoLocatedPlacement = {
+  mode: "LOCATED";
+  site_id: string;
+  loc_id: string;
+  position_id: string | null;
+  placement_revision: number;
+};
+```
+
+Una situación de tránsito puede expresar movimiento, origen y destino esperados; una excepción temporal puede expresar sede conocida, causa, inicio y revisión. La forma física final pertenece a arquitectura.
+
+---
+
+#### 44. Concurrencia e idempotencia
+
+Toda mutación de colocación debe verificar revisión esperada o mecanismo equivalente.
+
+```text
+EXPECTED PLACEMENT REVISION
+=
+CURRENT PLACEMENT REVISION
+```
+
+Un retry de la misma intención no duplica colocación, movimiento, recepción, excepción ni revisión.
+
+---
+
+#### 45. Operación offline y respuestas tardías
+
+Una intención offline no es ubicación canónica hasta que el servidor la acepte.
+
+Al reconectar se revalidan revisión, autorización, lifecycle, membresía LPN, jerarquía, sede, LOC, posición, movimiento e idempotencia.
+
+Una respuesta tardía nunca devuelve una existencia a una ubicación anterior.
+
+---
+
+#### 46. Autorización
+
+Esta tarea define ubicación, no concede permisos.
+
+Toda mutación real revalida en servidor actor efectivo, sesión, alcance territorial, sede, LOC, operación, lifecycle, revisiones y bloqueos aplicables.
+
+Un código LOC, QR, LPN, URL o valor enviado por cliente no concede autoridad.
+
+---
+
+#### 47. Auditoría mínima
+
+Toda transición de colocación debe poder atribuir:
+
+- sujeto;
+- modo anterior y resultante;
+- sede, LOC y posición anteriores cuando apliquen;
+- sede, LOC y posición resultantes cuando apliquen;
+- movimiento o causa;
+- revisión anterior y resultante;
+- actor;
+- instante de servidor;
+- correlación;
+- idempotencia;
+- resultado.
+
+---
+
+#### 48. Estado físico AS-IS reconciliado
+
+La evidencia remota vigente demuestra superficies parciales:
+
+- existen referencias a `inventory_locations` e `inventory_location_positions`;
+- existe `inventory_lpns`;
+- la lectura LPN observable expone `id`, `code`, `site_id` y `created_at`;
+- esa lectura no demuestra LOC actual, posición, tránsito, excepción no ubicada ni herencia espacial;
+- `inventory_lpn_items` sigue siendo una superficie parcial;
+- el AS-IS no demuestra implementación completa de sede → LOC → LPN → contenido.
+
+Esta tarea no eleva esas superficies a certificación.
+
+---
+
+#### 49. Adopción física futura
+
+La implementación posterior debe impedir:
+
+- usar solo `site_id` del LPN como ubicación completa;
+- inventar LOC por defecto;
+- crear una LOC de no ubicados;
+- mantener ubicación directa contradictoria en LPN hijos;
+- duplicar ubicación directa de contenido empacado;
+- actualizar sede o LOC sin hecho correlacionado;
+- conservar contenido en origen durante tránsito;
+- confirmar destino antes de recepción;
+- convertir conteo en actualización destructiva;
+- perder historia al corregir ubicación;
+- crear dos colocaciones actuales;
+- usar contenedor o LPN como LOC;
+- ejecutar backfills irreversibles sin evidencia.
+
+---
+
+#### 50. Escenarios negativos obligatorios
+
+El contrato debe impedir, como mínimo:
+
+1. LOC perteneciente a dos sedes;
+2. posición perteneciente a otro LOC;
+3. LPN usado como ubicación;
+4. contenedor usado como LOC;
+5. sede sola presentada como ubicación ordinaria;
+6. LPN hijo con ubicación directa contradictoria;
+7. contenido empacado también como stock suelto;
+8. contenido descendiente contado como membresía adicional;
+9. ubicación y tránsito simultáneos;
+10. ubicación y excepción no ubicada simultáneas;
+11. cambio de sede sin movimiento;
+12. cambio de LOC sin historia;
+13. `PACK` que teletransporta;
+14. `UNPACK` que crea stock no ubicado sin causa;
+15. transferencia LPN que oculta traslado;
+16. anidamiento físicamente incompatible;
+17. stock no ubicado indefinido;
+18. stock no ubicado como pick determinista;
+19. tránsito disponible en origen y destino;
+20. recepción parcial presentada como total;
+21. conteo que sobrescribe ubicación;
+22. replay que duplica movimiento;
+23. offline presentado como confirmado;
+24. respuesta tardía que revierte ubicación;
+25. `site_id` parcial presentado como ubicación completa.
+
+---
+
+#### 51. Matriz de responsabilidades
+
+| Responsabilidad | Propietario contractual |
+| --- | --- |
+| propósito y tipos LPN | `NEXO-DOM-002` |
+| lifecycle LPN | `NEXO-DOM-003` |
+| contenido, pack y unpack | `NEXO-DOM-004` |
+| división, unión y transferencia | `NEXO-DOM-005` |
+| jerarquía LPN y retornables | `NEXO-DOM-006` |
+| sede, LOC, posición, LPN y contenido | `NEXO-DOM-007` |
+| custodia y responsable actual | `NEXO-DOM-008` |
+| condición, daño, pérdida y faltante | `NEXO-DOM-010` |
+| no doble contabilización | `NEXO-DOM-021` |
+| movimiento atómico de LPN y contenido | `NEXO-DOM-022` |
+| trazabilidad interna | `NEXO-DOM-023` |
+| capacidad y compatibilidad | `NEXO-DOM-024` |
+| autorización | familia `NEXO-AUTH` y autorización transversal |
+| persistencia, RLS, RPC y migraciones | arquitectura e implementación física propietarias |
+
+---
+
+#### 52. Handoff hacia `NEXO-DOM-008`
+
+Esta tarea entrega:
+
+```text
+ONE AUTHORITATIVE PHYSICAL PLACEMENT
++
+SITE/LOC/POSITION COHERENCE
++
+ROOT-LPN DIRECT PLACEMENT
++
+NESTED-LPN DERIVED PLACEMENT
++
+LPN-CONTENT DERIVED PLACEMENT
++
+TRANSIT WITHOUT DUAL LOCATION
++
+CONTROLLED TEMPORARY UNLOCATED STATE
+```
+
+`NEXO-DOM-008` deberá definir custodia y responsable actual sin inferirlos desde ubicación: una LOC no es custodio, conocer sede no identifica responsable, contenido dentro de LPN no hereda automáticamente custodia por la misma regla usada para ubicación, tránsito requiere custodia explícita conforme a su contrato y una obligación de retorno no determina responsable actual.
+
+---
+
+#### 53. Handoffs posteriores
+
+Quedan reservados:
+
+- `NEXO-DOM-010`: condición, daño, pérdida y faltante;
+- `NEXO-DOM-011`: préstamo, devolución, transferencia y cambio de custodia;
+- `NEXO-DOM-017`: auditoría, historial y evidencia;
+- `NEXO-DOM-019`: identidad permanente de contenedor e identidad LPN;
+- `NEXO-DOM-020`: continuidad o cierre del LPN respecto del contenedor;
+- `NEXO-DOM-021`: no doble contabilización;
+- `NEXO-DOM-022`: movimiento atómico del LPN y todo su contenido;
+- `NEXO-DOM-023`: lote, serial, vencimiento y condición dentro del LPN;
+- `NEXO-DOM-024`: capacidad, peso, volumen y compatibilidad.
+
+Esta tarea no desarrolla esos contratos.
+
+---
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige una fuente reconciliable para sede, LOC, posición, LPN y estado, impide doble contabilización, protege ubicación y trazabilidad y exige atomicidad, concurrencia e idempotencia. Esta tarea especializa esas obligaciones sin introducir una obligación independiente.
+
+---
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro, se reutiliza:
+
+- `TREQ-NEXO-004`, para ciclo LPN con ubicación auditable;
+- `TREQ-NEXO-011`, para fuente reconciliable de movimientos y proyecciones por sede, LOC, posición, lote, LPN y estado;
+- `TREQ-NEXO-012`, para ubicación, cantidad, condición, lote o serial y trazabilidad;
+- `TREQ-NEXO-013`, para ubicación como dimensión separada en identidades físicas;
+- `TREQ-NEXO-016`, para separar logística, LPN, custodia, entrega, recepción y retorno;
+- `TREQ-NEXO-047`, para tránsito y prohibición de duplicar saldo, instancia, contenedor o contenido LPN.
+
+Estas referencias son trazabilidad reutilizada y no cambios al registro.
+
+---
+
+#### 56. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, ruta, secuencia activa, owner, handoff de `NEXO-DOM-006`, topología, políticas, contrato de entrega, manifest, 04A NEXO, `package.json`, validadores, CAP-SCOPE de inventario y superficie LPN observable. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron ubicaciones, reubicaciones, tránsito, pack, unpack ni recepción sobre operación real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron LOC, posiciones, LPN, contenido, movimientos, datos, Supabase, código ni infraestructura. |
+
+---
+
+#### 57. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Sede, LOC, posición, LPN y contenido están separados.
+- [x] LOC pertenece a exactamente una sede.
+- [x] Posición pertenece a exactamente un LOC y es opcional.
+- [x] LPN y contenedor no se convierten en ubicación.
+- [x] Existe máximo una colocación autoritativa vigente.
+- [x] Se distinguen ubicado, tránsito y no ubicado temporal.
+- [x] Stock suelto usa ubicación directa.
+- [x] LPN raíz usa colocación directa.
+- [x] LPN hijo deriva ubicación desde la raíz.
+- [x] Contenido empacado deriva ubicación de su LPN.
+- [x] No existe doble ubicación ni doble contabilización.
+- [x] Pack, unpack, transferencias y anidamiento no teletransportan existencia.
+- [x] Cambio de sede o LOC exige transición correlacionada.
+- [x] Stock no ubicado es temporal, controlado y no disponible por inferencia.
+- [x] Tránsito no conserva origen ni destino como LOC actual.
+- [x] Conteo es observación.
+- [x] Ubicación, custodia y condición permanecen separadas.
+- [x] Se definen revisión, concurrencia, idempotencia y offline.
+- [x] El AS-IS parcial no se presenta como implementación completa.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-008`.
+
+---
+
+#### 58. Límites
+
+Esta tarea no:
+
+- crea o modifica sedes, LOC o posiciones;
+- crea tablas, columnas, constraints, índices, triggers, vistas, RPC ni RLS;
+- modifica `inventory_locations`, `inventory_location_positions`, `inventory_lpns` ni `inventory_lpn_items`;
+- crea movimientos ni mueve stock o LPN;
+- ejecuta pack o unpack;
+- cambia custodia;
+- define daño, pérdida, faltante o condición;
+- define capacidad, peso o volumen;
+- implementa reservas o FEFO completo;
+- crea contenedores;
+- modifica datos, Supabase o `vento-nexo`;
+- implementa UI o etiquetas;
+- ejecuta backfill;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-008`.
+
+---
+
+#### 59. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-006 — Definir LPN anidados y contenedores retornables`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-008 — Definir custodia y responsable actual`
+
 ### [ ] NEXO-DOM-008 — Definir custodia y responsable actual
 ### [ ] NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
 ### [ ] NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
