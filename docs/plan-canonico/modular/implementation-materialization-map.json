@@ -9,5 +9,883 @@
     "unknown_relation_behavior": "FAIL_CLOSED_AS_UNMAPPED",
     "direct_instance_materializes_own_task": true
   },
-  "relations": []
+  "relations": [],
+  "adoption_reconciliation": {
+    "schema_version": 1,
+    "authority": "STEP_GLOBAL_04",
+    "scope": "PRE_MATERIALIZATION_RECONCILIATION",
+    "classification_is_materialization_claim": false,
+    "classification_is_task_to_unit_relation": false,
+    "unknown_classification_behavior": "UNCLASSIFIED",
+    "evidence_sources": [
+      {
+        "source_id": "STEP_GLOBAL_04_V5",
+        "operation": "STEP_GLOBAL_04_PHYSICAL_ANCHOR_AND_BRANCH_LINEAGE_REVIEW_READ_ONLY_V5_DYNAMIC_SNAPSHOT_FILE_REPORT",
+        "report_file": "VENTO_STEP_GLOBAL_04_PHYSICAL_ANCHOR_AND_BRANCH_LINEAGE_REVIEW_DYNAMIC_REPORT__20260910T224241Z.txt",
+        "report_sha256": "58d4c2a6b74413f640de5ba0ddc5ea0bfa7f8c89ad59a20a62ae83b7c47f846b"
+      },
+      {
+        "source_id": "STEP_GLOBAL_04_V6",
+        "operation": "STEP_GLOBAL_04_TARGETED_UNRESOLVED_AND_INCREMENTAL_AUDIT_READ_ONLY_V6_FILE_REPORT",
+        "report_file": "VENTO_STEP_GLOBAL_04_TARGETED_UNRESOLVED_AND_INCREMENTAL_AUDIT_REPORT__20260910T232433Z.txt",
+        "report_sha256": "01f1d675d858d5dcb2287d2fc630a5bcb9673a38a5da1569efe8e153b2812a55"
+      }
+    ],
+    "classifications": [
+      {
+        "task_id": "ANIMA-AUTH-001",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-003",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-006",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-007",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-008",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-009",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-010",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-011",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-012",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-013",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-014",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-015",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-016",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-017",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-018",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-019",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "ANIMA-AUTH-020",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-007",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-008",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-009",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-010",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-011",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-012",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-013",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-014",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-015",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-DEV-016",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SIM-007",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SIM-008",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SIM-009",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-SIM-010",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-001",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-006",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-007",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-008",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-009",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-010",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-011",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-012",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-013",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-014",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-015",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-016",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-017",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-SRV-018",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-040",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-041",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-042",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-043",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-044",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-045",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-046",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-047",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-048",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-049",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-050",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "AUTH-UI-051",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-001",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-006",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-007",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-008",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-009",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-010",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-011",
+        "classification": "PARTIAL_DELTA",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-012",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-013",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-014",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-015",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-016",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-017",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-018",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-019",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-020",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-APP-021",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-AUTH-001",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-AUTH-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-AUTH-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-AUTH-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-AUTH-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-CTX-001",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-CTX-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-CTX-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-CTX-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-CTX-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-CTX-006",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-NATIVE-001",
+        "classification": "NOT_IMPLEMENTED",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "SHELL-NATIVE-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "SHELL-NATIVE-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V6"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-001",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-002",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-006",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-007",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-008",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-009",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-010",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-011",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-012",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-013",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-014",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-015",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-016",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-017",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-018",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-019",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-AUTH-020",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-CORE-003",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-CORE-004",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      },
+      {
+        "task_id": "VISO-CORE-005",
+        "classification": "EXISTING_NEEDS_ADOPTION_EVIDENCE",
+        "source_refs": [
+          "STEP_GLOBAL_04_V5"
+        ]
+      }
+    ]
+  }
 }
