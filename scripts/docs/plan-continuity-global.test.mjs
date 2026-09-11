@@ -10,6 +10,7 @@ import {
   resolveContinuity,
 } from './plan-continuity-global.mjs';
 import { resolveContinuityRoute } from './continuity-route.mjs';
+import { buildUnitDagReconciliationIndex } from './implementation-materialization.mjs';
 
 function task(id, state) {
   return {
@@ -542,4 +543,107 @@ test('STEP_GLOBAL_04 proyecta clasificación de adopción en el registro global'
   assert.match(markdown, /Resumen de reconciliación de adopción/u);
   assert.match(markdown, /PARTIAL_DELTA \| \*\*1\*\*/u);
   assert.match(markdown, /⚠️ SIN_TRAZABILIDAD_FISICA \| PARTIAL_DELTA/u);
+});
+
+test('STEP_GLOBAL_05 valida candidate DAG sin promover candidate keys a implementation_unit_id', () => {
+  const candidateA = 'V5_ANCHOR_BUNDLE:' + 'a'.repeat(64);
+  const candidateB = 'V6_STRUCTURAL_PATHSET:' + 'b'.repeat(64);
+  const adoptionReconciliation = {
+    byTask: new Map([
+      ['TEST-UNIT-001', { classification: 'EXISTING_NEEDS_ADOPTION_EVIDENCE' }],
+      ['TEST-UNIT-002', { classification: 'PARTIAL_DELTA' }],
+    ]),
+  };
+  const knownUnits = new Map([['physical-unit-001', { unit_id: 'physical-unit-001' }]]);
+  const map = {
+    unit_dag_reconciliation: {
+      schema_version: 1,
+      authority: 'STEP_GLOBAL_05',
+      scope: 'FROZEN_STEP_GLOBAL_04_ADOPTION_COHORT_CANDIDATE_DAG',
+      candidate_keys_are_implementation_unit_ids: false,
+      candidate_dag_is_materialization_claim: false,
+      candidate_dag_is_task_to_unit_relation: false,
+      candidate_keys_can_populate_relations: false,
+      physical_implementation_authorized: false,
+      physical_implementation_requires_known_canonical_unit: true,
+      known_unit_match_policy: 'EXACT_GATE_TARGET_PATH_OVERLAP_ONLY',
+      source_report: {
+        source_id: 'STEP_GLOBAL_05_V2',
+        operation: 'STEP_GLOBAL_05_UNIT_CANDIDATE_SYNTHESIS_READ_ONLY_V2',
+        report_file: 'report.txt',
+        report_sha256: 'c'.repeat(64),
+        shell_head: 'd'.repeat(40),
+      },
+      summary: {
+        adoption_tasks: 2,
+        candidate_tasks: 2,
+        candidate_nodes: 2,
+        candidate_edges: 1,
+        shared_candidate_clusters: 0,
+        cycle_components: 0,
+        unresolved_candidate_tasks: 0,
+        not_implemented_tasks: 0,
+        known_canonical_units_observed: 1,
+        known_unit_evidence_matches: 0,
+      },
+      known_canonical_units_observed: [{ unit_id: 'physical-unit-001' }],
+      known_unit_evidence_matches: [],
+      excluded_not_implemented_task_ids: [],
+      candidate_nodes: [
+        { candidate_key: candidateA, candidate_key_is_implementation_unit_id: false, task_ids: ['TEST-UNIT-001'], evidence_paths: ['vento-shell:a.ts'], known_unit_evidence_matches: [] },
+        { candidate_key: candidateB, candidate_key_is_implementation_unit_id: false, task_ids: ['TEST-UNIT-002'], evidence_paths: ['vento-shell:b.ts'], known_unit_evidence_matches: [] },
+      ],
+      candidate_edges: [{ from: candidateA, to: candidateB, task_edges: ['TEST-UNIT-001->TEST-UNIT-002'] }],
+      task_candidate_assignments: [
+        { task_id: 'TEST-UNIT-001', classification: 'EXISTING_NEEDS_ADOPTION_EVIDENCE', candidate_key: candidateA, candidate_key_is_implementation_unit_id: false },
+        { task_id: 'TEST-UNIT-002', classification: 'PARTIAL_DELTA', candidate_key: candidateB, candidate_key_is_implementation_unit_id: false },
+      ],
+    },
+  };
+
+  const result = buildUnitDagReconciliationIndex(map, { adoptionReconciliation, knownUnits });
+  assert.equal(result.metrics.candidate_nodes, 2);
+  assert.equal(result.metrics.candidate_edges, 1);
+  assert.equal(result.metrics.cycle_components, 0);
+
+  map.unit_dag_reconciliation.candidate_keys_are_implementation_unit_ids = true;
+  assert.throws(
+    () => buildUnitDagReconciliationIndex(map, { adoptionReconciliation, knownUnits }),
+    /candidate_keys_are_implementation_unit_ids debe ser false/u,
+  );
+});
+
+test('STEP_GLOBAL_05 proyecta resumen del candidate DAG en el registro global', () => {
+  const approved = {
+    ...task('TEST-DAG-001', 'APROBADA'),
+    fileIndex: 0,
+    taskIndex: 0,
+  };
+  const pending = {
+    ...task('TEST-DAG-002', 'NO INICIADA'),
+    fileIndex: 0,
+    taskIndex: 1,
+  };
+  const markdown = buildRegistryMarkdown(
+    new Map([[approved.id, approved], [pending.id, pending]]),
+    { total: 2, auth: 0, approved: 1, proposed: 0, notStarted: 1, rejected: 0, completionPercentage: 50 },
+    { lastApproved: approved, current: pending, next: null, handoff: null, isComplete: false },
+    {
+      unit_dag_reconciliation: {
+        summary: {
+          adoption_tasks: 122, candidate_tasks: 121, candidate_nodes: 103, candidate_edges: 8,
+          shared_candidate_clusters: 9, cycle_components: 0, not_implemented_tasks: 1,
+          known_canonical_units_observed: 1, known_unit_evidence_matches: 0,
+        },
+      },
+      tasks: [
+        { task_id: approved.id, task_state: 'APROBADA', mode: 'DEFINE_ONCE', relation_state: 'UNMAPPED', explicit_materialization: null, materializing_unit_ids: [], direct_instances: [] },
+        { task_id: pending.id, task_state: 'NO_APROBADA', mode: 'DEFINE_ONCE', relation_state: 'UNMAPPED', explicit_materialization: null, materializing_unit_ids: [], direct_instances: [] },
+      ],
+    },
+  );
+  assert.match(markdown, /Resumen de UNIT DAG candidato/u);
+  assert.ok(markdown.includes('| Clusters candidatos | **103** |'));
+  assert.ok(markdown.includes('| Dependencias candidatas | **8** |'));
+  assert.ok(markdown.includes('candidate keys NO son ') && markdown.includes('implementation_unit_id'));
 });

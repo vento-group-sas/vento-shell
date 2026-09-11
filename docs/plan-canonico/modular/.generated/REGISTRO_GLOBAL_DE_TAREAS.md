@@ -45,6 +45,22 @@
 | REUSE_VERIFIED | **0** |
 | Clasificadas por STEP_GLOBAL_04 | **122** |
 
+## Resumen de UNIT DAG candidato
+
+> Artefacto canónico de planificación de STEP_GLOBAL_05. Las candidate keys NO son `implementation_unit_id`, no crean relaciones TASK -> UNIT y no autorizan implementación física.
+
+| Métrica | Cantidad |
+| --- | ---: |
+| Tareas del cohort de adopción | **122** |
+| Tareas con candidate key | **121** |
+| Clusters candidatos | **103** |
+| Clusters compartidos | **9** |
+| Dependencias candidatas | **8** |
+| Componentes cíclicos | **0** |
+| Tareas NOT_IMPLEMENTED excluidas | **1** |
+| Unidades canónicas observadas | **1** |
+| Matches exactos candidate -> unidad canónica | **0** |
+
 ## Continuidad activa
 
 | Relación | Tarea | Estado |
