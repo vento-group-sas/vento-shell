@@ -15,7 +15,7 @@ const baseControl = {
   schema_version: 1,
   authorization_mode: 'EXPLICIT_PER_INSTANCE',
   automatic_authorization: false,
-  single_primary_action: true,
+  single_primary_action: false,
   instance_storage_mode: 'ONE_FILE_PER_INSTANCE',
   instance_records_directory: 'docs/plan-canonico/modular/implementation-instances',
   instance_history_mode: 'APPEND_ONLY_LEDGER',
@@ -457,4 +457,95 @@ test('deriva y materializa únicamente la siguiente TEMPLATE_PER_PACKAGE indicad
   assert.equal(result.primaryAction.target, 'SHELL-CI-021::GAP-PKG-001');
   assert.equal(result.physical.active.source, 'DERIVED_FROM_APPROVED_CONTRACT');
   assert.equal(result.physical.active.lifecycleMode, 'TEMPLATE_PER_PACKAGE');
+});
+
+// CORR-013 MULTI ACTIVE PHYSICAL PIPELINE
+test('expone multiples instancias fisicas gobernadas y conserva primaryAction solo como compatibilidad', () => {
+  const tasks = [
+    { id: 'SHELL-CI-020', title: 'Implementar package', marker: '✅', relativePath: 'ci.md' },
+    { id: 'SHELL-CI-022', title: 'Ejecutar piloto', marker: '✅', relativePath: 'ci.md' },
+  ];
+  const workTopology = {
+    ordered: tasks,
+    inventory: new Map(tasks.map((task) => [task.id, task])),
+    topology: new Map([
+      ['SHELL-CI-020', { taskId: 'SHELL-CI-020', mode: 'PER_IMPLEMENTATION_UNIT', instancePattern: '<task_id>::<implementation_unit_id>' }],
+      ['SHELL-CI-022', { taskId: 'SHELL-CI-022', mode: 'TEMPLATE_PER_PACKAGE', instancePattern: '<task_id>::<package_id>' }],
+    ]),
+    currentId: 'SHELL-CI-020',
+  };
+  const ci020 = {
+    instance_id: 'SHELL-CI-020::GAP-PKG-018',
+    task_id: 'SHELL-CI-020',
+    status: 'PENDING_AUTHORIZATION',
+    target_repositories: [],
+    authorized_changes: [],
+    validation_commands: [],
+    authorization: null,
+    evidence: [],
+  };
+  const ci022 = {
+    instance_id: 'SHELL-CI-022::GAP-PKG-001',
+    task_id: 'SHELL-CI-022',
+    status: 'PENDING_AUTHORIZATION',
+    target_repositories: [],
+    authorized_changes: [],
+    validation_commands: [],
+    authorization: null,
+    evidence: [],
+  };
+  const result = deriveImplementationControl({
+    control: { ...baseControl, instances: [ci022, ci020] },
+    workTopology,
+    packageExecution: {
+      active_physical: [{
+        package_id: 'GAP-PKG-001',
+        status: 'PILOT_RUNNING',
+        next_action: { type: 'CONTINUE_PHYSICAL_LIFECYCLE', target: 'SHELL-CI-022::GAP-PKG-001' },
+      }],
+      current: {
+        package_id: 'GAP-PKG-018',
+        next_action: { type: 'CONTINUE_PHYSICAL_LIFECYCLE', target: 'SHELL-CI-020::GAP-PKG-018' },
+      },
+    },
+    preflight: { task: { id: 'SHELL-CI-020', title: 'Implementar package', owner: 'ci.md' } },
+  });
+
+  assert.deepEqual(result.physical.actionableSet.map(({ instanceId }) => instanceId), [
+    'SHELL-CI-020::GAP-PKG-018',
+    'SHELL-CI-022::GAP-PKG-001',
+  ]);
+  assert.deepEqual(result.primaryActions.map(({ target }) => target), [
+    'SHELL-CI-020::GAP-PKG-018',
+    'SHELL-CI-022::GAP-PKG-001',
+  ]);
+  assert.equal(result.primaryAction.target, 'SHELL-CI-020::GAP-PKG-018');
+  assert.equal(result.physical.active.instanceId, 'SHELL-CI-020::GAP-PKG-018');
+  assert.equal(result.coordination.physicalConcurrency, 'GOVERNED_ACTIVE_SET');
+  assert.equal(result.mode, 'GOVERNED_ACTIVE_SET');
+});
+
+// CORR-013 V1R3 PENDING RECORD COMPATIBILITY
+test('materializa todos los borradores derived del actionableSet y conserva compatibilidad idempotente', () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-implementation-multi-instance-'));
+  const firstPath = 'docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json';
+  const secondPath = 'docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json';
+  const control = {
+    primaryAction: { type: 'AUTORIZAR_IMPLEMENTACION' },
+    physical: {
+      active: null,
+      actionableSet: [
+        { instanceId: 'SHELL-CI-020::GAP-PKG-018', taskId: 'SHELL-CI-020', status: 'READY_FOR_AUTHORIZATION', recordPath: firstPath, source: 'DERIVED_FROM_APPROVED_CONTRACT' },
+        { instanceId: 'SHELL-CI-022::GAP-PKG-001', taskId: 'SHELL-CI-022', status: 'READY_FOR_AUTHORIZATION', recordPath: secondPath, source: 'DERIVED_FROM_APPROVED_CONTRACT' },
+      ],
+    },
+  };
+  try {
+    assert.equal(ensurePendingImplementationRecord({ root, control }), true);
+    assert.equal(fs.existsSync(path.join(root, firstPath)), true);
+    assert.equal(fs.existsSync(path.join(root, secondPath)), true);
+    assert.equal(ensurePendingImplementationRecord({ root, control }), true);
+  } finally {
+    fs.rmSync(root, { recursive: true, force: true });
+  }
 });

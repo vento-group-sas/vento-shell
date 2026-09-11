@@ -3,7 +3,7 @@
   "policy_id": "CANONICAL-IMPLEMENTATION-CONTROL-001",
   "authorization_mode": "EXPLICIT_PER_INSTANCE",
   "automatic_authorization": false,
-  "single_primary_action": true,
+  "single_primary_action": false,
   "execution_operator_policy": {
     "default_operator": "HUMAN_USER",
     "interaction_mode": "CONTINUOUS_BATCH_UNTIL_EVIDENCE_GATE",

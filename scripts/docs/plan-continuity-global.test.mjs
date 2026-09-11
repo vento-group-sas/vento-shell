@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -646,4 +647,12 @@ test('STEP_GLOBAL_05 proyecta resumen del candidate DAG en el registro global', 
   assert.ok(markdown.includes('| Clusters candidatos | **103** |'));
   assert.ok(markdown.includes('| Dependencias candidatas | **8** |'));
   assert.ok(markdown.includes('candidate keys NO son ') && markdown.includes('implementation_unit_id'));
+});
+
+// CORR-013 CONTINUITY MULTI ACTIVE
+test('la continuidad proyecta el governed active set fisico y conserva primaryAction como compatibilidad', () => {
+  const source = fs.readFileSync('scripts/docs/plan-continuity-global.mjs', 'utf8');
+  assert.match(source, /physical.actionableSet/u);
+  assert.match(source, /physicalSet.map/u);
+  assert.match(source, /primaryAction.type/u);
 });

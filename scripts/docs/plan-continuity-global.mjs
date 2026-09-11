@@ -400,8 +400,9 @@ function updateProgressSection(section, taskMap, continuity, activeConfig, imple
   const activeRow = `| CONTINUIDAD ACTIVA | **${activeConfig.block_code}: ${activeStatus}** |`;
   const implementationPattern = /^\|\s*Implementación física\s*\|[^\n]*\|$/m;
   if (!implementationPattern.test(updated)) fail('no se encontró la fila Implementación física.');
-  const physical = implementationControl.physical.active
-    ? `**${implementationControl.physical.active.instanceId} — ${implementationControl.physical.active.status}**`
+  const physicalSet = implementationControl.physical.actionableSet ?? (implementationControl.physical.active ? [implementationControl.physical.active] : []);
+  const physical = physicalSet.length > 0
+    ? `**${physicalSet.map(({ instanceId, status }) => `${instanceId} — ${status}`).join(' | ')}**`
     : '**SIN INSTANCIA FÍSICA ACTIVA**';
   return updated.replace(implementationPattern, `${activeRow}\n| Implementación física | ${physical} |`);
 }
@@ -476,8 +477,8 @@ function updateHeader(header, manifest, taskMap, stats, continuity, activeConfig
   updated = replaceRow(
     updated,
     'Carril físico',
-    implementationControl.physical.active
-      ? `**${implementationControl.physical.active.status} — ${implementationControl.physical.active.instanceId}**`
+    (implementationControl.physical.actionableSet ?? (implementationControl.physical.active ? [implementationControl.physical.active] : [])).length > 0
+      ? `**${(implementationControl.physical.actionableSet ?? [implementationControl.physical.active]).map(({ instanceId, status }) => `${status} — ${instanceId}`).join(' | ')}**`
       : '**SIN INSTANCIA FÍSICA ACTIVA**',
   );
   updated = replaceRow(

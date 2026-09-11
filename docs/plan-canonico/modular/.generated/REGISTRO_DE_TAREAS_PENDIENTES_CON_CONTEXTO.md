@@ -8,22 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-013`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-019`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-013`
+### 1. Correcciones canónicas
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
-- **Edita solamente:**
-  - Ningún cambio autorizado todavía.
-- **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-019`
 
@@ -45,19 +36,22 @@
 - **Archivo propietario:** `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
 - **Regla:** si corre en paralelo con una corrección o un package, usar checkout independiente y serializar los cierres.
 
-### 4. Ejecuta la instancia física autorizada — `SHELL-CI-022::GAP-PKG-001`
+### 4. Instancias físicas gobernadas en curso
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Contrato:** Ejecutar cutover y piloto conforme al plan aprobado
-- **Acción exacta del control:** `AUTORIZAR_IMPLEMENTACIÓN`
-- **Registro:** `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json`
+- **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
+- `SHELL-CI-020::GAP-PKG-018` — `PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+  - Contrato: Implementar y desplegar cada paquete aprobado por E5
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json`
+- `SHELL-CI-022::GAP-PKG-001` — `PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+  - Contrato: Ejecutar cutover y piloto conforme al plan aprobado
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json`
 
 ## Panel de control — dos carriles
 
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | `SHELL-CI-020::GAP-PKG-018` | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-018` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -66,12 +60,12 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1177/1596 aprobadas** | **419** no aprobadas (0 propuesta, 0 rechazadas) | `NEXO-DOM-011` |
-| 🟧 **Implementación física conocida** | **98/100 VERIFIED** | **2** no terminales | `SHELL-CI-022::GAP-PKG-001` |
+| 🟧 **Implementación física conocida** | **98/100 VERIFIED** | **2** no terminales | `SHELL-CI-020::GAP-PKG-018` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Acción primaria del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-022::GAP-PKG-001`
+- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-018`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -81,8 +75,8 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **ACTUAL** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
-| 2 | PENDIENTE | `SHELL-CI-020::GAP-PKG-018` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | Sin bloqueo adicional declarado |
+| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-018` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 
 ## Modos de trabajo y materialización
 
