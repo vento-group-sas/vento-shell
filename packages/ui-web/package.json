@@ -1,6 +1,0 @@
-{
-  "name": "@vento/ui-web",
-  "private": true,
-  "type": "module",
-  "description": "Raiz privada de autoria para la implementacion visual web compartida de Vento OS."
-}

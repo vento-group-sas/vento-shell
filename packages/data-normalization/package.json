@@ -1,6 +1,0 @@
-{
-  "name": "@vento/data-normalization",
-  "private": true,
-  "type": "module",
-  "description": "Raiz privada de autoria para la fundacion compartida de normalizacion pura y determinista de Vento OS."
-}

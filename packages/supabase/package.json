@@ -1,6 +1,0 @@
-{
-  "name": "@vento/supabase",
-  "private": true,
-  "type": "module",
-  "description": "Raíz privada de autoría para el acceso técnico compartido a Supabase de Vento OS."
-}

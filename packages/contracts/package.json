@@ -1,7 +1,0 @@
-{
-  "name": "@vento/contracts",
-  "version": "1.0.0-alpha.1",
-  "private": true,
-  "type": "module",
-  "description": "Raíz de contratos estáticos compartidos y versionados de Vento OS."
-}
