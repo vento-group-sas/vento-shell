@@ -3707,7 +3707,1151 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar`
 
-### [ ] NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
+### ✅ NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN
+**Tarea siguiente:** NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
+**Tipo de tarea:** documental; definición canónica del ciclo de vida de una identidad LPN, sus estados, transiciones, precondiciones, idempotencia, concurrencia, anulación, reetiquetado, trazabilidad y fronteras de responsabilidad bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un único ciclo de vida canónico para cada LPN, de forma que creación, activación, cierre, anulación y reetiquetado tengan significado determinista, auditable e independiente de contenido, ubicación, contenedor físico, estado de una remisión, movimiento de inventario, custodia, lote o serial, purpose type, etiqueta física, pantalla o ruta técnica.
+
+La regla raíz queda:
+
+```text
+IDENTIDAD LPN ESTABLE
++
+UN ESTADO DE LIFECYCLE VIGENTE
++
+UNA REVISION DE LIFECYCLE
++
+TRANSICIONES AUTORIZADAS Y AUDITABLES
++
+IDEMPOTENCIA Y CONTROL DE CONCURRENCIA
+->
+CICLO LPN REPRODUCIBLE
+SIN BORRADO DE HISTORIA
+```
+
+La existencia de un LPN no implica por sí sola existencia disponible, movimiento, reserva, despacho, recepción, custodia, cierre de remisión ni efecto contable.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. exactamente cinco estados canónicos de lifecycle;
+2. la separación entre estado, purpose type y representación física;
+3. una máquina de estados cerrada;
+4. reglas de creación;
+5. reglas de activación;
+6. reglas de cierre normal;
+7. reglas de anulación antes y después de activación;
+8. reetiquetado como evento que preserva identidad;
+9. invariantes de identidad y código;
+10. reglas de cambio de purpose type dentro del lifecycle;
+11. idempotencia;
+12. concurrencia;
+13. comportamiento ante operación offline o respuesta tardía;
+14. auditoría mínima;
+15. fronteras con contenido, ubicación, custodia, contenedores y movimientos;
+16. handoff exacto hacia `NEXO-DOM-004`.
+
+No se materializa esquema, RPC, RLS, Server Action, Route Handler, UI, migración, backfill, etiqueta ni flujo físico.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- la identidad LPN aprobada en `NEXO-DOM-002`;
+- exactamente un purpose type vigente por LPN;
+- el catálogo cerrado de seis purpose types: `STORAGE`, `RECEIVING`, `TRANSFER`, `FULFILLMENT`, `PRODUCTION_STAGING` y `RETURN`;
+- la separación entre LPN y LOC;
+- la separación entre LPN y contenedor físico;
+- la separación entre LPN y clase primaria de inventario;
+- la separación entre LPN y lote, serial, remisión, viaje, bulto y movimiento;
+- la propiedad de NEXO sobre estado físico y trazabilidad de inventario;
+- la regla de no doble contabilización;
+- la obligación de idempotencia y reconciliación de movimientos;
+- la autorización server-side como condición para producir efectos reales;
+- la conservación de historia como requisito transversal.
+
+La tarea no crea un séptimo purpose type ni reinterpreta los seis existentes.
+
+---
+
+#### 4. Estado y purpose type son dimensiones distintas
+
+Se fija:
+
+```text
+LPN_PURPOSE_TYPE != LPN_LIFECYCLE_STATE
+```
+
+El purpose type responde para qué existe ahora la agrupación logística. El lifecycle responde en qué estado operativo y contractual está su identidad.
+
+Por tanto:
+
+```text
+TRANSFER != ACTIVE
+FULFILLMENT != CLOSED
+RETURN != VOID
+```
+
+Ningún consumidor podrá derivar lifecycle desde purpose type ni purpose type desde lifecycle.
+
+---
+
+#### 5. Identidad estable
+
+Cada LPN conserva una identidad canónica estable durante toda su historia.
+
+```text
+LPN_ID_CHANGES = 0
+LIFECYCLE_TRANSITION != NEW_LPN_ID
+RELABEL != NEW_LPN_ID
+PURPOSE_CHANGE != NEW_LPN_ID
+```
+
+Cerrar, anular o reetiquetar nunca borra ni recicla el identificador.
+
+---
+
+#### 6. Código visible e identidad
+
+El código visible de un LPN es una representación de su identidad, no la identidad misma. La forma AS-IS conocida `LPN-SEDE-AAMM-SEQ` se conserva como evidencia de implementación parcial, pero esta tarea no la convierte en contrato físico definitivo.
+
+Reglas:
+
+- el `lpn_id` es la identidad estable;
+- el código visible debe resolver a una sola identidad;
+- el código no podrá reasignarse a otra identidad después de ser emitido;
+- un cambio de etiqueta no crea otro LPN;
+- una reimpresión no habilita un LPN cerrado, cancelado o anulado;
+- una presentación de código obsoleta no concede autoridad.
+
+La sintaxis final, simbología, DPI, tamaño, hardware y protocolo de impresión pertenecen a sus tareas propietarias posteriores.
+
+---
+
+#### 7. Catálogo cerrado de estados
+
+Se fijan exactamente cinco estados canónicos:
+
+```text
+DRAFT
+ACTIVE
+CLOSED
+CANCELLED
+VOID
+```
+
+No forman parte del catálogo:
+
+```text
+CREATED
+RELABELED
+TEMPORARY
+PERSISTENT
+IN_TRANSIT
+RECEIVED
+DELIVERED
+EMPTY
+FULL
+DAMAGED
+QUARANTINED
+```
+
+Esos términos pueden representar eventos, temporalidad, estados de otros objetos, condición o propiedades derivadas, pero no estados adicionales del lifecycle LPN.
+
+---
+
+#### 8. Estado `DRAFT`
+
+`DRAFT` representa una identidad LPN creada pero todavía no habilitada para producir efectos operativos como agrupación logística activa.
+
+En `DRAFT`:
+
+- la identidad ya existe y no puede reutilizarse;
+- existe un purpose type vigente;
+- puede completarse la información necesaria para activación;
+- puede corregirse el purpose type bajo historial versionado;
+- puede prepararse contenido conforme al contrato posterior;
+- no se considera disponibilidad;
+- no ejecuta movimiento;
+- no transfiere custodia;
+- no confirma despacho ni recepción;
+- no sustituye una reserva;
+- no prueba ubicación física;
+- puede cancelarse antes de activación.
+
+`DRAFT` no es sinónimo de registro incompleto inválido. Es un estado explícito con restricciones propias.
+
+---
+
+#### 9. Estado `ACTIVE`
+
+`ACTIVE` representa una identidad LPN habilitada para participar en operaciones reales que hayan superado sus propios contratos de autorización, contenido, ubicación, compatibilidad, movimiento y custodia.
+
+Estar `ACTIVE` significa únicamente:
+
+```text
+LPN LIFECYCLE ALLOWS OPERATIONAL USE
+```
+
+No significa automáticamente:
+
+```text
+HAS_CONTENT
+HAS_STOCK
+AVAILABLE
+IN_TRANSIT
+AUTHORIZED_FOR_EVERY_ACTOR
+DELIVERED
+RECEIVED
+```
+
+Toda operación posterior debe revalidar sus propias precondiciones y permisos.
+
+---
+
+#### 10. Estado `CLOSED`
+
+`CLOSED` representa el fin normal del uso operativo de una identidad LPN.
+
+Un LPN cerrado:
+
+- conserva identidad;
+- conserva código e historia;
+- conserva purpose history;
+- conserva eventos;
+- conserva referencias históricas desde movimientos, remisiones, custodias y otros objetos;
+- no acepta nuevas operaciones ordinarias;
+- no vuelve a `ACTIVE`;
+- no puede reutilizarse como identidad de otra agrupación;
+- puede conservar evidencia de su contenido final conforme al contrato propietario;
+- puede ser reetiquetado únicamente cuando exista una necesidad documental o física legítima que no lo presente como activo.
+
+Cerrar no borra contenido, stock ni movimientos por sí solo.
+
+---
+
+#### 11. Estado `CANCELLED`
+
+`CANCELLED` representa una identidad creada en `DRAFT` que se abandona antes de su primera activación.
+
+Solo aplica cuando:
+
+```text
+CURRENT_STATE = DRAFT
+AND
+HAS_EVER_BEEN_ACTIVE = FALSE
+```
+
+La cancelación:
+
+- es terminal;
+- conserva la identidad;
+- conserva el motivo;
+- conserva actor y momento;
+- no ejecuta compensación de inventario porque no debió existir efecto operativo previo;
+- no habilita reutilización del código;
+- no permite activación posterior;
+- no se convierte en borrado.
+
+Si existiera un efecto real previo, el caso no puede resolverse fingiendo que nunca fue activado.
+
+---
+
+#### 12. Estado `VOID`
+
+`VOID` representa una anulación excepcional de una identidad que ya fue activa, o de un cierre que debe quedar invalidado sin borrar su historia.
+
+`VOID`:
+
+- es terminal;
+- conserva identidad e historia;
+- exige razón explícita;
+- exige actor autorizado;
+- exige reconciliación de efectos dependientes;
+- nunca elimina movimientos;
+- nunca elimina referencias;
+- nunca pone cantidades en cero por sí solo;
+- nunca revierte automáticamente remisiones, reservas, custodias o hechos económicos;
+- bloquea uso operativo posterior.
+
+La anulación no reescribe el pasado. Registra que la identidad deja de ser válida para uso futuro y que sus efectos previos deben permanecer reconciliables.
+
+---
+
+#### 13. `CREATED` es evento, no estado
+
+Crear un LPN produce:
+
+```text
+CREATE
+->
+NEW LPN IDENTITY
+->
+INITIAL STATE = DRAFT
+```
+
+La fecha de creación es un hecho histórico. El estado inicial es `DRAFT`.
+
+---
+
+#### 14. `RELABELED` es evento, no estado
+
+Reetiquetar produce una nueva emisión de representación física de la misma identidad.
+
+```text
+STATE BEFORE RELABEL = STATE AFTER RELABEL
+RELABELED != LIFECYCLE STATE
+```
+
+Una reetiquetación no abre, cierra, activa ni anula el LPN.
+
+---
+
+#### 15. Máquina de estados
+
+La máquina canónica queda:
+
+```text
+CREATE
+  |
+  v
+DRAFT
+  | \
+  |  \ ANNUL BEFORE FIRST ACTIVATION
+  |   \
+ACTIVATE v
+  |   CANCELLED
+  v
+ACTIVE
+  | \
+  |  \ ANNUL
+  |   \
+CLOSE  v
+  |   VOID
+  v
+CLOSED
+  |
+  | EXCEPTIONAL ANNULMENT
+  v
+VOID
+```
+
+`CANCELLED` y `VOID` son terminales. `CLOSED` es terminal para operación ordinaria y solo admite anulación excepcional o eventos no operativos expresamente permitidos.
+
+---
+
+#### 16. Matriz de transiciones
+
+| Estado actual | Operación | Estado resultante | Decisión |
+| --- | --- | --- | --- |
+| inexistente | crear | `DRAFT` | permitida con identidad nueva e idempotencia |
+| `DRAFT` | activar | `ACTIVE` | permitida si cumple precondiciones |
+| `DRAFT` | cerrar | — | prohibida; nunca estuvo activo |
+| `DRAFT` | anular | `CANCELLED` | permitida como cancelación preactivación |
+| `DRAFT` | reetiquetar | `DRAFT` | permitida si existe una emisión previa válida |
+| `ACTIVE` | activar | — | no crea otra transición |
+| `ACTIVE` | cerrar | `CLOSED` | permitida si se reconciliaron operaciones pendientes |
+| `ACTIVE` | anular | `VOID` | permitida de forma excepcional con reconciliación |
+| `ACTIVE` | reetiquetar | `ACTIVE` | permitida sin cambiar identidad ni estado |
+| `CLOSED` | activar | — | prohibida |
+| `CLOSED` | cerrar | — | no crea otra transición |
+| `CLOSED` | anular | `VOID` | excepcional; requiere justificar invalidez del cierre |
+| `CLOSED` | reetiquetar | `CLOSED` | solo para evidencia o necesidad controlada |
+| `CANCELLED` | activar | — | prohibida |
+| `CANCELLED` | cerrar | — | prohibida |
+| `CANCELLED` | reetiquetar | — | prohibida para uso operativo |
+| `VOID` | activar | — | prohibida |
+| `VOID` | cerrar | — | prohibida |
+| `VOID` | reetiquetar | — | prohibida para uso operativo |
+
+Una operación prohibida nunca se convierte silenciosamente en creación de una identidad nueva.
+
+---
+
+#### 17. Contrato de creación
+
+Crear un LPN requiere como mínimo:
+
+- identidad nueva;
+- código correlacionable;
+- sede o contexto inicial permitido por el contrato aplicable;
+- purpose type válido dentro de los seis valores aprobados;
+- actor efectivo;
+- contexto de autorización;
+- instante;
+- origen de la solicitud;
+- correlación;
+- clave o mecanismo de idempotencia;
+- revisión inicial.
+
+La creación produce exactamente una identidad y un único evento inicial.
+
+No produce por sí sola stock, movimiento, reserva, contenido, ubicación confirmada, custodia, remisión, transferencia, recepción ni disponibilidad.
+
+---
+
+#### 18. Idempotencia de creación
+
+Una reejecución de la misma intención de creación con la misma identidad de idempotencia debe resolver a la misma creación lógica.
+
+Se prohíbe:
+
+```text
+ONE USER INTENT -> TWO LPN IDENTITIES
+```
+
+Ante timeout o respuesta perdida, el cliente debe poder consultar o reintentar sin fabricar un segundo LPN. Una nueva intención real requiere una nueva clave de idempotencia y produce una nueva identidad.
+
+---
+
+#### 19. Precondiciones de activación
+
+La transición `DRAFT -> ACTIVE` exige, como mínimo:
+
+1. identidad LPN vigente;
+2. estado actual `DRAFT`;
+3. revisión esperada vigente;
+4. purpose type válido;
+5. autorización server-side;
+6. contexto territorial y operativo suficiente;
+7. ausencia de anulación o cancelación concurrente;
+8. satisfacción de las precondiciones de contenido aplicables;
+9. satisfacción de las precondiciones de ubicación y compatibilidad aplicables;
+10. ausencia de bloqueo de condición aplicable;
+11. correlación e idempotencia;
+12. registro auditable de la decisión.
+
+Si una precondición pertenece a una tarea posterior todavía no materializada, la implementación física futura debe fallar cerrada; esta definición documental no la considera satisfecha por inferencia.
+
+---
+
+#### 20. Activación no ejecuta otras operaciones
+
+```text
+LPN ACTIVE != INVENTORY MOVEMENT COMMITTED
+LPN ACTIVE != REMITTANCE DISPATCHED
+LPN ACTIVE != CUSTODY ACCEPTED
+LPN ACTIVE != CONTENT AVAILABLE
+```
+
+La activación habilita el lifecycle; cada efecto empresarial conserva su transición propietaria.
+
+---
+
+#### 21. Precondiciones de cierre
+
+La transición `ACTIVE -> CLOSED` exige demostrar que cerrar no ocultará trabajo operativo pendiente.
+
+Como mínimo debe verificarse:
+
+- estado actual `ACTIVE`;
+- revisión esperada vigente;
+- actor autorizado;
+- purpose type vigente conocido;
+- ausencia de movimientos abiertos incompatibles con cierre;
+- ausencia de transferencia de custodia pendiente que dependa del LPN;
+- ausencia de discrepancia no reconciliada que sería ocultada;
+- contenido final reconciliable conforme a su contrato;
+- referencias desde remisiones o procesos conservadas;
+- motivo o base de cierre;
+- correlación;
+- auditoría.
+
+El detalle de vaciado, empaque, desempaque, división, unión, anidamiento, ubicación y capacidad pertenece a sus tareas propietarias.
+
+---
+
+#### 22. Cierre normal no es borrado
+
+Cerrar produce `ACTIVE -> CLOSED` y conserva identidad, código, purpose history, lifecycle history, content history, location history, movement references, custody references y audit references.
+
+El estado `CLOSED` bloquea mutaciones operativas ordinarias sin destruir la capacidad de reconstruir lo ocurrido.
+
+---
+
+#### 23. Anulación antes de activación
+
+Cuando la identidad continúa en `DRAFT` y nunca estuvo activa:
+
+```text
+ANNUL -> CANCELLED
+```
+
+La operación requiere actor autorizado, estado actual `DRAFT`, razón, correlación, revisión vigente y ausencia de efecto real incompatible.
+
+Si se detecta que existieron efectos reales, el sistema no podrá degradar el caso a simple cancelación.
+
+---
+
+#### 24. Anulación de un LPN activo
+
+Cuando el estado actual es `ACTIVE`:
+
+```text
+ANNUL -> VOID
+```
+
+La anulación debe impedir efectos futuros, pero no puede borrar ni revertir silenciosamente efectos anteriores.
+
+Antes de completar la transición debe existir una salida reconciliable para contenido, ubicación, movimientos, reservas, custodias, remisiones, procesos dependientes y etiquetas vigentes.
+
+Cuando sea necesario compensar un efecto, la compensación pertenece al contrato del efecto original y conserva su propia evidencia.
+
+---
+
+#### 25. Anulación posterior al cierre
+
+`CLOSED -> VOID` se admite únicamente como excepción documentada cuando se demuestre que la identidad cerrada no debe seguir considerándose válida.
+
+No equivale a reabrir.
+
+Debe conservar cierre original, motivo de la anulación posterior, actor, instante, revisión, relaciones afectadas, reconciliaciones o compensaciones requeridas y evidencia suficiente.
+
+Si la corrección puede resolverse sin invalidar la identidad, se conserva `CLOSED` y se registra la corrección en el dominio propietario.
+
+---
+
+#### 26. Prohibición de reapertura
+
+No existe transición `CLOSED -> ACTIVE`, `CANCELLED -> ACTIVE` ni `VOID -> ACTIVE`.
+
+Si una operación posterior requiere una nueva agrupación logística, deberá utilizar una identidad LPN válida según el contrato aplicable, sin reciclar una identidad terminal.
+
+---
+
+#### 27. Reetiquetado
+
+Reetiquetar significa reemplazar o volver a emitir la representación física de la misma identidad.
+
+Casos legítimos incluyen etiqueta dañada, ilegible, perdida, cambio de soporte, reimpresión controlada o sustitución por una emisión corregida.
+
+La operación requiere identidad LPN existente, estado compatible, actor autorizado, motivo, referencia a la emisión anterior cuando exista, nueva revisión de etiqueta, instante, correlación y auditoría.
+
+No modifica automáticamente ninguna otra dimensión.
+
+---
+
+#### 28. Invariantes de reetiquetado
+
+```text
+RELABEL -> SAME LPN_ID
+RELABEL -> SAME LIFECYCLE STATE
+RELABEL -> SAME CONTENT
+RELABEL -> SAME INVENTORY BALANCE
+RELABEL -> SAME CUSTODY
+RELABEL -> SAME LOCATION
+```
+
+Un reetiquetado tampoco cambia purpose type por inferencia.
+
+---
+
+#### 29. Emisiones de etiqueta
+
+La implementación física futura deberá poder distinguir `LPN IDENTITY` de `LABEL ISSUANCE`.
+
+Una nueva emisión:
+
+- referencia el mismo LPN;
+- posee revisión o identidad de emisión suficiente;
+- conserva relación con la emisión reemplazada;
+- registra el motivo;
+- permite identificar cuál emisión es operativamente vigente;
+- evita que dos representaciones incompatibles parezcan identidades diferentes.
+
+La forma de almacenamiento físico de esta relación se reserva a arquitectura y servicios de impresión.
+
+---
+
+#### 30. Etiqueta perdida o comprometida
+
+Si una etiqueta se pierde, duplica o se sospecha comprometida:
+
+- el LPN no cambia de identidad;
+- se bloquea el uso de una emisión que deba retirarse;
+- se genera una emisión controlada cuando corresponda;
+- el estado del LPN solo cambia si una decisión separada lo exige;
+- escanear una emisión retirada nunca autoriza una acción;
+- toda acción posterior revalida estado y autorización en servidor.
+
+La etiqueta nunca funciona como credencial de autoridad.
+
+---
+
+#### 31. Cambio de purpose type dentro del lifecycle
+
+`NEXO-DOM-002` exige conservar historia si el purpose type cambia.
+
+Se decide:
+
+- en `DRAFT`, el purpose type puede corregirse antes de activación mediante una decisión versionada;
+- en `ACTIVE`, puede cambiar únicamente cuando la operación propietaria del propósito anterior está reconciliada y la nueva finalidad cumple sus precondiciones;
+- en `CLOSED`, `CANCELLED` y `VOID`, el purpose type histórico no se cambia;
+- ningún cambio de purpose type crea una identidad LPN nueva por sí solo;
+- ningún cambio de purpose type cambia el lifecycle state por sí solo.
+
+```text
+PURPOSE CHANGE != LIFECYCLE TRANSITION
+```
+
+---
+
+#### 32. Historia de purpose type
+
+Cada cambio permitido debe conservar valor anterior, valor nuevo, razón, actor, instante, revisión, proceso o contexto que libera el propósito anterior, proceso o contexto que requiere el nuevo y correlación.
+
+Queda prohibido sobrescribir el valor sin historia. En todo instante operativo existe exactamente un purpose type vigente.
+
+---
+
+#### 33. Estado actual y ledger de transiciones
+
+La implementación física futura deberá poder reconstruir el estado vigente a partir de una secuencia auditable o demostrar equivalencia contractual.
+
+```text
+CURRENT_STATE_COUNT = 1
+TRANSITION_HISTORY_DELETED = 0
+STATE_REVISION_MONOTONIC = TRUE
+```
+
+El estado actual podrá proyectarse para lectura eficiente, pero una proyección no sustituye la historia necesaria para auditoría y reconciliación.
+
+---
+
+#### 34. Forma conceptual mínima
+
+```ts
+type NexoLpnLifecycleState =
+  | "DRAFT"
+  | "ACTIVE"
+  | "CLOSED"
+  | "CANCELLED"
+  | "VOID";
+
+type NexoLpnLifecycleSnapshot = {
+  lpn_id: string;
+  lpn_code: string;
+  lifecycle_state: NexoLpnLifecycleState;
+  lifecycle_revision: number;
+  purpose_type:
+    | "STORAGE"
+    | "RECEIVING"
+    | "TRANSFER"
+    | "FULFILLMENT"
+    | "PRODUCTION_STAGING"
+    | "RETURN";
+  purpose_revision: number;
+};
+```
+
+Esta forma es contractual y no obliga a una tabla, enum, columna o API específicos.
+
+---
+
+#### 35. Registro mínimo de una transición
+
+Toda transición real deberá poder atribuirse, como mínimo, a:
+
+- `lpn_id`;
+- estado anterior;
+- estado resultante;
+- revisión anterior;
+- revisión resultante;
+- purpose type vigente;
+- actor efectivo;
+- contexto de autorización;
+- sede o contexto territorial aplicable;
+- sesión o dispositivo cuando sea material;
+- instante de servidor;
+- razón cuando aplique;
+- correlación;
+- idempotencia;
+- origen del comando;
+- evidencia o referencias de reconciliación cuando aplique.
+
+Los nombres físicos finales de campos pertenecen a arquitectura e implementación.
+
+---
+
+#### 36. Control de concurrencia
+
+Toda transición que pueda cambiar estado debe validar la revisión esperada.
+
+```text
+EXPECTED_REVISION = CURRENT_REVISION
+```
+
+Si dos actores intentan simultáneamente activar, cerrar, anular, cambiar purpose type o reetiquetar con efectos sobre la emisión vigente, solo una decisión podrá establecer la nueva revisión esperada.
+
+La segunda deberá revalidar el estado actualizado y no podrá sobrescribir la primera silenciosamente.
+
+---
+
+#### 37. Idempotencia de transiciones
+
+Una misma intención reintentada por timeout, red inestable o repetición del cliente:
+
+- no crea dos eventos equivalentes;
+- no incrementa dos veces la revisión;
+- no duplica etiqueta;
+- no duplica compensación;
+- no duplica movimiento;
+- no duplica efectos dependientes.
+
+El mismo identificador de idempotencia debe devolver o reconstruir el resultado de la primera aceptación. Una intención distinta usa una identidad de operación distinta.
+
+---
+
+#### 38. Solicitud sobre un estado ya alcanzado
+
+Una solicitud nueva que pretende repetir una transición ya alcanzada no crea historia falsa.
+
+`ACTIVE + ACTIVATE` y `CLOSED + CLOSE` no generan una segunda activación o un segundo cierre.
+
+Si se trata del replay de la misma operación, se devuelve el resultado idempotente. Si es una intención nueva incompatible con el estado vigente, se rechaza sin efecto.
+
+---
+
+#### 39. Respuestas tardías y orden
+
+Una respuesta tardía no puede retroceder el lifecycle.
+
+Si `CLIENT_REVISION < SERVER_REVISION`, la autoridad permanece en el servidor. La UI deberá refrescar o reconciliar antes de permitir otra transición.
+
+Nunca se acepta `CLOSED -> ACTIVE` porque una respuesta de activación antigua llegó después.
+
+---
+
+#### 40. Operación offline
+
+La captura offline puede conservar una intención pendiente cuando el contrato operativo lo permita, pero no puede declarar una transición como canónica antes de que el servidor la acepte.
+
+```text
+OFFLINE INTENT != CANONICAL LPN STATE
+```
+
+Al reconectar se recupera el estado vigente, se compara la revisión esperada, se revalida autorización y precondiciones, se aplica idempotencia, se acepta o rechaza la intención y se conserva evidencia del resultado.
+
+Una transición rechazada no se fuerza por antigüedad del registro offline.
+
+---
+
+#### 41. Autorización
+
+Esta tarea define qué transiciones existen, no quién recibe permisos concretos.
+
+Toda transición real requiere actor efectivo, sesión vigente, autorización server-side, alcance territorial aplicable, contexto operativo aplicable, ausencia de bloqueo superior y trazabilidad del actor que produce el efecto.
+
+La visibilidad de un botón, posesión de una etiqueta, acceso directo a una URL, un rol visual o un dato enviado por cliente no sustituyen la autorización.
+
+Los permisos exactos permanecen en la familia `NEXO-AUTH` y contratos transversales correspondientes.
+
+---
+
+#### 42. Separación de lifecycle y contenido
+
+Esta tarea solo establece cuándo el lifecycle permite operar. `NEXO-DOM-004` definirá qué puede contener un LPN, cómo se empaca, cómo se desempaca, cómo se representa contenido y qué invariantes mantiene el contenido.
+
+| Estado | Efecto sobre operaciones de contenido |
+| --- | --- |
+| `DRAFT` | preparación sin efecto operativo final, según contrato de contenido |
+| `ACTIVE` | puede participar en operaciones permitidas por contratos posteriores |
+| `CLOSED` | bloquea mutación operativa ordinaria |
+| `CANCELLED` | bloquea contenido operativo |
+| `VOID` | bloquea contenido operativo nuevo; exige preservar historia |
+
+El lifecycle no inventa contenido ni lo borra.
+
+---
+
+#### 43. Separación de lifecycle y ubicación
+
+```text
+ACTIVE != LOCATED
+CLOSED != UNLOCATED
+VOID != STOCK_REMOVED
+```
+
+La relación sede -> LOC -> LPN -> contenido pertenece a `NEXO-DOM-007`.
+
+---
+
+#### 44. Separación de lifecycle y custodia
+
+```text
+ACTIVATE != ACCEPT_CUSTODY
+CLOSE != RETURN_CUSTODY
+VOID != DELETE_CUSTODY_HISTORY
+```
+
+Custodia y responsable actual pertenecen a `NEXO-DOM-008`.
+
+---
+
+#### 45. Separación de lifecycle y movimiento
+
+Una transición del lifecycle no genera un movimiento de stock implícito.
+
+Se prohíbe:
+
+```text
+ACTIVATE LPN -> AUTO MOVE CONTENT
+CLOSE LPN -> AUTO ZERO CONTENT
+VOID LPN -> AUTO DELETE MOVEMENTS
+```
+
+Los movimientos, sus compensaciones y su atomicidad conservan sus contratos propietarios.
+
+---
+
+#### 46. Separación de lifecycle y contenedor físico
+
+Cerrar o anular un LPN no da de baja automáticamente un contenedor físico. Reetiquetar un LPN no cambia la identidad del contenedor.
+
+```text
+LPN LIFECYCLE != PHYSICAL CONTAINER LIFECYCLE
+```
+
+La relación avanzada entre ambos permanece reservada a `NEXO-DOM-019` a `NEXO-DOM-024`.
+
+---
+
+#### 47. Separación de lifecycle y remisión
+
+Un LPN `FULFILLMENT` puede participar en una remisión, pero su estado no sustituye el estado de la remisión.
+
+```text
+LPN ACTIVE != REMITTANCE IN TRANSIT
+LPN CLOSED != REMITTANCE COMPLETED
+LPN VOID != REMITTANCE CANCELLED
+```
+
+Cualquier correlación entre ambos objetos debe preservar identidades y transiciones independientes.
+
+---
+
+#### 48. Motivos y excepciones
+
+Requieren razón explícita, como mínimo:
+
+- cancelación de `DRAFT`;
+- anulación a `VOID`;
+- reetiquetado;
+- cambio de purpose type en `ACTIVE`;
+- corrección excepcional vinculada con un cierre.
+
+La razón no puede sustituir evidencia o autorización cuando estas sean requeridas.
+
+---
+
+#### 49. Manejo de fallos
+
+Una transición falla cerrada cuando no puede demostrar identidad, estado actual, revisión, autorización, precondiciones, idempotencia o integridad de referencias requeridas.
+
+Un fallo técnico no cambia el estado, no incrementa revisión, no crea un segundo LPN, no confirma un cierre, no confirma una anulación y no presenta una etiqueta nueva como vigente sin confirmación.
+
+---
+
+#### 50. Reconciliación del estado AS-IS
+
+La evidencia vigente conserva una implementación LPN parcial:
+
+- existe `inventory_lpns`;
+- existe un endpoint de lectura parcial;
+- la lectura observada proyecta identidad, código, sede y fecha de creación;
+- existe un formulario de creación no confirmado como flujo end-to-end;
+- la superficie `/inventory/lpns` no demuestra por sí sola un ciclo LPN funcional completo;
+- `inventory_lpns.container_type` mezcla una dimensión física con la identidad logística;
+- `inventory_lpn_items` no representa todavía todo el universo de contenido objetivo;
+- el ciclo completo no está materializado ni certificado.
+
+Esta tarea no interpreta esas superficies como prueba de lifecycle completo.
+
+---
+
+#### 51. Adopción física futura
+
+La implementación posterior deberá reconciliar el modelo actual contra este contrato sin borrar LPN existentes, reciclar códigos, fabricar estados históricos sin evidencia, inferir activaciones desde `created_at`, inferir cierre desde ausencia de contenido, inferir anulación desde una bandera visual, convertir `container_type` en estado, crear dos estados vigentes, perder referencias desde contenido o movimientos ni ejecutar backfill irreversible sin plan y evidencia.
+
+Toda transición física pertenece a la instancia y package correspondientes, fuera del alcance documental de esta tarea.
+
+---
+
+#### 52. Responsabilidades
+
+| Responsabilidad | Propietario contractual |
+| --- | --- |
+| identidad LPN y lifecycle | NEXO |
+| purpose types | `NEXO-DOM-002` |
+| contenido, empaque y desempaque | `NEXO-DOM-004` |
+| división, unión y transferencia de contenido | `NEXO-DOM-005` |
+| anidamiento y retornables | `NEXO-DOM-006` |
+| sede, LOC, LPN y contenido | `NEXO-DOM-007` |
+| custodia y responsable actual | `NEXO-DOM-008` |
+| impresión y etiquetas integradas | `NEXO-DOM-018` y contratos de impresión |
+| contenedor físico y relación avanzada LPN | `NEXO-DOM-019` a `NEXO-DOM-024` |
+| autoridad para transiciones | familia `NEXO-AUTH` y autorización transversal |
+| materialización de datos y servicios | arquitectura e implementación física propietarias |
+
+Una tarea consumidora no puede absorber la propiedad de otra por conveniencia de implementación.
+
+---
+
+#### 53. Matriz de purpose type y lifecycle
+
+Los seis purpose types pueden coexistir con estados del lifecycle sin crear estados especiales.
+
+| Purpose type | `DRAFT` | `ACTIVE` | `CLOSED` | `CANCELLED` | `VOID` |
+| --- | --- | --- | --- | --- | --- |
+| `STORAGE` | permitido | permitido | permitido | permitido | permitido |
+| `RECEIVING` | permitido | permitido | permitido | permitido | permitido |
+| `TRANSFER` | permitido | permitido | permitido | permitido | permitido |
+| `FULFILLMENT` | permitido | permitido | permitido | permitido | permitido |
+| `PRODUCTION_STAGING` | permitido | permitido | permitido | permitido | permitido |
+| `RETURN` | permitido | permitido | permitido | permitido | permitido |
+
+La tabla expresa compatibilidad taxonómica, no autorización de una transición concreta.
+
+---
+
+#### 54. Escenarios negativos obligatorios
+
+El contrato debe impedir, como mínimo:
+
+1. activar un LPN cancelado;
+2. activar un LPN anulado;
+3. reabrir un LPN cerrado;
+4. reutilizar un código de LPN;
+5. crear dos LPN por un retry;
+6. cerrar dos veces generando dos eventos;
+7. anular y activar concurrentemente sin control de revisión;
+8. cerrar mientras existe una operación incompatible pendiente;
+9. borrar historia al anular;
+10. poner stock en cero al cerrar;
+11. cambiar purpose type sin historia;
+12. usar `RELABELED` como lifecycle state;
+13. usar `container_type` como lifecycle state;
+14. usar estado de remisión como estado LPN;
+15. tratar etiqueta como credencial;
+16. emitir una nueva identidad al reetiquetar;
+17. considerar una intención offline como transición confirmada;
+18. aceptar una transición con revisión obsoleta;
+19. permitir mutación operativa en `VOID`;
+20. permitir mutación operativa ordinaria en `CLOSED`.
+
+---
+
+#### 55. Integridad histórica
+
+Nunca se elimina de la historia creación, primera activación, cambios de estado, cierre, cancelación, anulación, reetiquetados, cambios de purpose type, actor, razón, revisión ni correlaciones materiales.
+
+Una corrección posterior agrega información o una transición válida; no reescribe silenciosamente el evento original.
+
+---
+
+#### 56. Privacidad y minimización
+
+La auditoría del lifecycle conserva únicamente la información necesaria para atribución, autorización, integridad, reconciliación, investigación, soporte y cumplimiento.
+
+No se copian secretos, tokens, credenciales ni información personal innecesaria dentro de eventos LPN. Cuando una referencia a actor sea suficiente, no se duplica todo su perfil.
+
+---
+
+#### 57. Observabilidad
+
+La implementación futura deberá poder distinguir al menos creación, activación, cierre, anulación y reetiquetado aceptados o rechazados; replay idempotente; conflicto de revisión; rechazo por estado incompatible; rechazo por autorización; rechazo por precondición; intención offline pendiente y reconciliación posterior.
+
+La métrica no reemplaza la evidencia transaccional.
+
+---
+
+#### 58. Handoff hacia `NEXO-DOM-004`
+
+Esta tarea entrega a `NEXO-DOM-004`:
+
+```text
+IMMUTABLE LPN IDENTITY
++
+ONE CURRENT PURPOSE TYPE
++
+ONE CURRENT LIFECYCLE STATE
++
+MONOTONIC LIFECYCLE REVISION
++
+CLOSED STATE MACHINE
++
+NO IMPLICIT INVENTORY EFFECTS
+```
+
+`NEXO-DOM-004` deberá definir contenido, empaque y desempaque respetando estas reglas:
+
+- `DRAFT` puede preparar contenido sin presentar el LPN como operativo;
+- `ACTIVE` es el único estado ordinario que permite operaciones de contenido;
+- `CLOSED`, `CANCELLED` y `VOID` no aceptan contenido operativo nuevo;
+- ninguna operación de contenido cambia lifecycle por inferencia;
+- ninguna operación de contenido crea otra identidad LPN salvo que una tarea propietaria lo ordene expresamente;
+- todo contenido conserva trazabilidad hacia el mismo `lpn_id`.
+
+---
+
+#### 59. Handoffs posteriores
+
+Se conserva explícitamente:
+
+- `NEXO-DOM-005`: división, unión y transferencia de contenido;
+- `NEXO-DOM-006`: LPN anidados y contenedores retornables;
+- `NEXO-DOM-007`: relación sede -> LOC -> LPN -> contenido;
+- `NEXO-DOM-008`: custodia y responsable actual;
+- `NEXO-DOM-018`: integración de etiquetas;
+- `NEXO-DOM-019`: separación entre contenedor físico y LPN;
+- `NEXO-DOM-020`: continuidad o cierre de LPN respecto del contenedor;
+- `NEXO-DOM-021`: no doble contabilización;
+- `NEXO-DOM-022`: movimiento atómico del LPN y su contenido;
+- `NEXO-DOM-023`: trazabilidad interna;
+- `NEXO-DOM-024`: capacidad y compatibilidad.
+
+Esta tarea no desarrolla esos contratos.
+
+---
+
+#### 60. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro canónico vigente ya protege de forma explícita el ciclo LPN y los riesgos de doble contabilización, idempotencia, integración y trazabilidad que esta tarea especifica. La tarea detalla el contrato de dominio del owner ya registrado y no introduce una obligación de prueba independiente.
+
+---
+
+#### 61. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza, sin modificar, la cobertura existente:
+
+- `TREQ-NEXO-004`, propietario directo del ciclo de creación, contenido, ubicación, movimiento, custodia, cierre, anulación y reetiquetado;
+- `TREQ-NEXO-011`, que protege fuente canónica de movimientos, no doble contabilización, concurrencia e idempotencia;
+- `TREQ-NEXO-016`, que protege la separación entre LPN, remisión, viaje, contenedor, custodia y entrega;
+- `TREQ-NEXO-046`, que protege la separación entre LPN y contenedor físico;
+- `TREQ-NEXO-047`, que protege comportamiento de movimientos, conteos, reservas, custodias, remisiones y LPN sin duplicar saldo.
+
+Estas referencias son trazabilidad reutilizada y no una actualización del registro.
+
+---
+
+#### 62. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al archivo propietario y el build canónico corresponden al checkout local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron continuidad vigente, owner, tarea anterior aprobada, topología, contrato de entrega, políticas documentales, 04A NEXO, implementación LPN parcial y superficies de código observables en los repositorios canónicos. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó un ciclo LPN real en operación; la validación operativa permanece en sus owners físicos y de QA. |
+| FÍSICA | NOT_EXECUTED | No se creó, activó, cerró, anuló ni reetiquetó un LPN físico. |
+
+---
+
+#### 63. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Existe un catálogo cerrado de cinco estados.
+- [x] `DRAFT`, `ACTIVE`, `CLOSED`, `CANCELLED` y `VOID` están definidos.
+- [x] `CREATED` se trata como evento y no como estado.
+- [x] `RELABELED` se trata como evento y no como estado.
+- [x] El `lpn_id` permanece inmutable.
+- [x] El código visible no se reutiliza como nueva identidad.
+- [x] La creación produce `DRAFT`.
+- [x] La activación válida produce `ACTIVE`.
+- [x] El cierre normal produce `CLOSED`.
+- [x] La anulación preactivación produce `CANCELLED`.
+- [x] La anulación posterior a activación produce `VOID`.
+- [x] El cierre y la anulación conservan historia.
+- [x] El reetiquetado conserva identidad y estado.
+- [x] No existe reapertura desde estados terminales.
+- [x] El purpose type permanece separado del lifecycle.
+- [x] El cambio de purpose type conserva historia.
+- [x] Se define control de revisión para concurrencia.
+- [x] Se define idempotencia de creación y transiciones.
+- [x] La operación offline no se presenta como estado canónico antes del servidor.
+- [x] Las respuestas tardías no pueden retroceder el lifecycle.
+- [x] Activar, cerrar o anular no produce movimientos implícitos.
+- [x] Se preservan fronteras con contenido, ubicación, custodia, remisiones y contenedores.
+- [x] Se preserva la cobertura de pruebas existente sin duplicarla.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza cambio físico.
+- [x] La siguiente tarea recibe un handoff explícito y completo.
+
+---
+
+#### 64. Límites
+
+Esta tarea no:
+
+- define la estructura física final de tablas;
+- crea enums, constraints, índices, triggers, vistas, RPC o políticas RLS;
+- crea Server Actions ni Route Handlers;
+- modifica `inventory_lpns`;
+- modifica `inventory_lpn_items`;
+- implementa el formulario de creación;
+- monta una pantalla LPN;
+- crea etiquetas ni imprime;
+- define contenido, empaque o desempaque;
+- define división o unión;
+- define anidamiento;
+- define ubicación;
+- define custodia;
+- define capacidad, peso o volumen;
+- define la relación física completa con contenedores;
+- define permisos concretos;
+- ejecuta backfill;
+- migra estados legacy;
+- modifica Supabase;
+- modifica código;
+- modifica datos;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-004`.
+
+---
+
+#### 65. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-002 — Definir propósito y tipos canónicos de LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-003 — Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN`
+
 ### [ ] NEXO-DOM-004 — Definir contenido, empaque y desempaque de LPN
 ### [ ] NEXO-DOM-005 — Definir división, unión y transferencia de contenido
 ### [ ] NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
