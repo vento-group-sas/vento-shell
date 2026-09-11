@@ -203,6 +203,202 @@ export function buildAdoptionReconciliationIndex(map, topologyResult = null) {
   };
 }
 
+export function buildUnitDagReconciliationIndex(map, {
+  adoptionReconciliation = null,
+  knownUnits = new Map(),
+} = {}) {
+  const config = map?.unit_dag_reconciliation ?? null;
+  const emptyMetrics = {
+    adoption_tasks: 0,
+    candidate_tasks: 0,
+    candidate_nodes: 0,
+    candidate_edges: 0,
+    shared_candidate_clusters: 0,
+    cycle_components: 0,
+    unresolved_candidate_tasks: 0,
+    not_implemented_tasks: 0,
+    known_canonical_units_observed: 0,
+    known_unit_evidence_matches: 0,
+  };
+  if (config === null) {
+    return { config: null, byTask: new Map(), byCandidate: new Map(), metrics: emptyMetrics };
+  }
+  if (!config || typeof config !== 'object' || Array.isArray(config)) {
+    fail('unit_dag_reconciliation debe ser un objeto.');
+  }
+  if (config.schema_version !== 1) fail('unit_dag_reconciliation.schema_version debe ser 1.');
+  if (config.authority !== 'STEP_GLOBAL_05') fail('unit_dag_reconciliation.authority debe ser STEP_GLOBAL_05.');
+  if (config.scope !== 'FROZEN_STEP_GLOBAL_04_ADOPTION_COHORT_CANDIDATE_DAG') {
+    fail('unit_dag_reconciliation.scope inválido.');
+  }
+  for (const field of [
+    'candidate_keys_are_implementation_unit_ids',
+    'candidate_dag_is_materialization_claim',
+    'candidate_dag_is_task_to_unit_relation',
+    'candidate_keys_can_populate_relations',
+    'physical_implementation_authorized',
+  ]) {
+    if (config[field] !== false) fail(`unit_dag_reconciliation.${field} debe ser false.`);
+  }
+  if (config.physical_implementation_requires_known_canonical_unit !== true) {
+    fail('unit_dag_reconciliation debe exigir una implementation_unit canónica conocida antes de implementación física.');
+  }
+  if (config.known_unit_match_policy !== 'EXACT_GATE_TARGET_PATH_OVERLAP_ONLY') {
+    fail('unit_dag_reconciliation.known_unit_match_policy inválida.');
+  }
+  const source = config.source_report ?? null;
+  if (
+    !source
+    || source.source_id !== 'STEP_GLOBAL_05_V2'
+    || source.operation !== 'STEP_GLOBAL_05_UNIT_CANDIDATE_SYNTHESIS_READ_ONLY_V2'
+    || !String(source.report_file ?? '').trim()
+    || !/^[a-f0-9]{64}$/u.test(String(source.report_sha256 ?? ''))
+    || !/^[a-f0-9]{40}$/u.test(String(source.shell_head ?? ''))
+  ) {
+    fail('unit_dag_reconciliation.source_report inválido.');
+  }
+
+  const nodes = Array.isArray(config.candidate_nodes) ? config.candidate_nodes : [];
+  const edges = Array.isArray(config.candidate_edges) ? config.candidate_edges : [];
+  const assignments = Array.isArray(config.task_candidate_assignments)
+    ? config.task_candidate_assignments
+    : [];
+  const nodePattern = /^(?:V5_ANCHOR_BUNDLE|V6_STRUCTURAL_PATHSET):[a-f0-9]{64}$/u;
+  const taskPattern = /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}$/u;
+  const byCandidate = new Map();
+  const expectedTasksByCandidate = new Map();
+
+  for (const node of nodes) {
+    const candidateKey = String(node?.candidate_key ?? '').trim();
+    if (!nodePattern.test(candidateKey) || byCandidate.has(candidateKey)) {
+      fail(`unit_dag_reconciliation candidate_key inválida o duplicada: ${candidateKey || 'EMPTY'}.`);
+    }
+    if (node.candidate_key_is_implementation_unit_id !== false) {
+      fail(`unit_dag_reconciliation no puede promover ${candidateKey} a implementation_unit_id.`);
+    }
+    if (knownUnits.has(candidateKey) || normalizeMaterializationUnitId(candidateKey) !== null) {
+      fail(`unit_dag_reconciliation candidate_key ${candidateKey} no puede ser una identidad física válida.`);
+    }
+    const taskIds = uniqueSorted(node?.task_ids ?? []);
+    const evidencePaths = uniqueSorted(node?.evidence_paths ?? []);
+    if (taskIds.length === 0 || evidencePaths.length === 0) {
+      fail(`unit_dag_reconciliation candidate node incompleto: ${candidateKey}.`);
+    }
+    if ((node?.known_unit_evidence_matches ?? []).length !== 0) {
+      fail(`unit_dag_reconciliation ${candidateKey} no puede persistir matches a unidades canónicas en este cohort.`);
+    }
+    byCandidate.set(candidateKey, node);
+    expectedTasksByCandidate.set(candidateKey, taskIds);
+  }
+
+  const byTask = new Map();
+  const actualTasksByCandidate = new Map();
+  for (const row of assignments) {
+    const taskId = String(row?.task_id ?? '').trim();
+    const classification = String(row?.classification ?? '').trim();
+    if (!taskPattern.test(taskId) || byTask.has(taskId)) {
+      fail(`unit_dag_reconciliation task_id inválida o duplicada: ${taskId || 'EMPTY'}.`);
+    }
+    if (!ADOPTION_RECONCILIATION_CLASSIFICATION_SET.has(classification)) {
+      fail(`unit_dag_reconciliation clasificación inválida para ${taskId}: ${classification || 'EMPTY'}.`);
+    }
+    const adoption = adoptionReconciliation?.byTask?.get(taskId) ?? null;
+    if (adoptionReconciliation && (!adoption || adoption.classification !== classification)) {
+      fail(`unit_dag_reconciliation diverge de adoption_reconciliation para ${taskId}.`);
+    }
+    if (row.candidate_key_is_implementation_unit_id !== false) {
+      fail(`unit_dag_reconciliation ${taskId} no puede declarar candidate_key como implementation_unit_id.`);
+    }
+    if (classification === 'NOT_IMPLEMENTED') {
+      if (row.candidate_key !== null) fail(`unit_dag_reconciliation ${taskId} NOT_IMPLEMENTED no puede tener candidate_key.`);
+    } else {
+      const candidateKey = String(row?.candidate_key ?? '').trim();
+      if (!byCandidate.has(candidateKey)) fail(`unit_dag_reconciliation ${taskId} referencia candidate_key desconocida.`);
+      const members = actualTasksByCandidate.get(candidateKey) ?? [];
+      members.push(taskId);
+      actualTasksByCandidate.set(candidateKey, members);
+    }
+    byTask.set(taskId, row);
+  }
+
+  for (const [candidateKey, expected] of expectedTasksByCandidate) {
+    const actual = uniqueSorted(actualTasksByCandidate.get(candidateKey) ?? []);
+    if (stableJson(actual) !== stableJson(expected)) {
+      fail(`unit_dag_reconciliation membership inconsistente para ${candidateKey}.`);
+    }
+  }
+
+  const edgeKeys = new Set();
+  const adjacency = new Map([...byCandidate.keys()].map((key) => [key, []]));
+  const indegree = new Map([...byCandidate.keys()].map((key) => [key, 0]));
+  for (const edge of edges) {
+    const from = String(edge?.from ?? '').trim();
+    const to = String(edge?.to ?? '').trim();
+    const edgeKey = `${from}->${to}`;
+    if (!byCandidate.has(from) || !byCandidate.has(to) || from === to || edgeKeys.has(edgeKey)) {
+      fail(`unit_dag_reconciliation edge inválida: ${edgeKey}.`);
+    }
+    const taskEdges = uniqueSorted(edge?.task_edges ?? []);
+    if (taskEdges.length === 0) fail(`unit_dag_reconciliation edge sin task_edges: ${edgeKey}.`);
+    edgeKeys.add(edgeKey);
+    adjacency.get(from).push(to);
+    indegree.set(to, indegree.get(to) + 1);
+  }
+
+  const queue = [...indegree.entries()]
+    .filter(([, degree]) => degree === 0)
+    .map(([key]) => key)
+    .sort((left, right) => left.localeCompare(right, 'en'));
+  let visited = 0;
+  while (queue.length > 0) {
+    const current = queue.shift();
+    visited += 1;
+    for (const next of adjacency.get(current) ?? []) {
+      const degree = indegree.get(next) - 1;
+      indegree.set(next, degree);
+      if (degree === 0) {
+        queue.push(next);
+        queue.sort((left, right) => left.localeCompare(right, 'en'));
+      }
+    }
+  }
+  const cycleComponents = visited === byCandidate.size ? 0 : 1;
+  if (cycleComponents !== 0) fail('unit_dag_reconciliation candidate DAG contiene ciclo.');
+
+  const observedUnits = Array.isArray(config.known_canonical_units_observed)
+    ? config.known_canonical_units_observed
+    : [];
+  for (const unit of observedUnits) {
+    const unitId = normalizeMaterializationUnitId(unit?.unit_id);
+    if (!unitId || !knownUnits.has(unitId)) {
+      fail(`unit_dag_reconciliation unidad canónica observada desconocida: ${unit?.unit_id ?? 'EMPTY'}.`);
+    }
+  }
+  const knownMatches = Array.isArray(config.known_unit_evidence_matches)
+    ? config.known_unit_evidence_matches
+    : [];
+  if (knownMatches.length !== 0) {
+    fail('unit_dag_reconciliation no puede persistir matches a unidades canónicas para este cohort.');
+  }
+
+  const metrics = {
+    adoption_tasks: assignments.length,
+    candidate_tasks: assignments.filter((row) => row.candidate_key !== null).length,
+    candidate_nodes: nodes.length,
+    candidate_edges: edges.length,
+    shared_candidate_clusters: nodes.filter((node) => uniqueSorted(node?.task_ids ?? []).length > 1).length,
+    cycle_components: cycleComponents,
+    unresolved_candidate_tasks: 0,
+    not_implemented_tasks: assignments.filter((row) => row.classification === 'NOT_IMPLEMENTED').length,
+    known_canonical_units_observed: observedUnits.length,
+    known_unit_evidence_matches: knownMatches.length,
+  };
+  if (stableJson(metrics) !== stableJson(config.summary ?? {})) {
+    fail('unit_dag_reconciliation.summary no coincide con el contenido persistido.');
+  }
+  return { config, byTask, byCandidate, metrics };
+}
+
 export function readImplementationMaterializationMap(root = process.cwd()) {
   const filePath = path.join(root, ...IMPLEMENTATION_MATERIALIZATION_MAP_PATH.split('/'));
   if (!fs.existsSync(filePath)) {
@@ -511,6 +707,10 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
     fail(`implementation-materialization-map inválido:\n- ${relationErrors.join('\n- ')}`);
   }
   const adoptionReconciliation = buildAdoptionReconciliationIndex(map, topologyResult);
+  const unitDagReconciliation = buildUnitDagReconciliationIndex(map, {
+    adoptionReconciliation,
+    knownUnits,
+  });
 
   const explicitByTask = new Map(map.relations.map((relation) => [
     relation.task_id,
@@ -585,6 +785,12 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
       .reduce((total, relation) => total + relation.implementation_unit_ids.length, 0),
     adoption_classified_tasks: adoptionReconciliation.classified_tasks,
     adoption_classification_counts: adoptionReconciliation.counts,
+    unit_dag_candidate_tasks: unitDagReconciliation.metrics.candidate_tasks,
+    unit_dag_candidate_nodes: unitDagReconciliation.metrics.candidate_nodes,
+    unit_dag_candidate_edges: unitDagReconciliation.metrics.candidate_edges,
+    unit_dag_shared_candidate_clusters: unitDagReconciliation.metrics.shared_candidate_clusters,
+    unit_dag_cycle_components: unitDagReconciliation.metrics.cycle_components,
+    unit_dag_known_unit_evidence_matches: unitDagReconciliation.metrics.known_unit_evidence_matches,
   };
 
   const report = {
@@ -601,9 +807,14 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
       materialization_completion_claim: false,
       adoption_classification_is_not_materialization_claim: true,
       adoption_classification_is_not_task_to_unit_relation: true,
+      unit_dag_candidate_keys_are_not_implementation_unit_ids: true,
+      unit_dag_is_not_materialization_claim: true,
+      unit_dag_is_not_task_to_unit_relation: true,
+      unit_dag_does_not_authorize_physical_implementation: true,
     },
     metrics,
     adoption_reconciliation: adoptionReconciliation.config,
+    unit_dag_reconciliation: unitDagReconciliation.config,
     known_units: [...knownUnits.values()],
     explicit_relations: map.relations,
     tasks,
@@ -614,6 +825,7 @@ export function buildImplementationMaterializationIndex({ root = process.cwd() }
     invariants: report.invariants,
     metrics: report.metrics,
     adoption_reconciliation: report.adoption_reconciliation,
+    unit_dag_reconciliation: report.unit_dag_reconciliation,
     known_units: report.known_units,
     explicit_relations: report.explicit_relations,
     tasks: report.tasks,
@@ -639,6 +851,18 @@ export function assertImplementationMaterializationIndex(report) {
   if (report?.invariants?.adoption_classification_is_not_task_to_unit_relation !== true) {
     failures.push('ADOPTION_NOT_TASK_TO_UNIT');
   }
+  if (report?.invariants?.unit_dag_candidate_keys_are_not_implementation_unit_ids !== true) {
+    failures.push('UNIT_DAG_CANDIDATE_KEYS_NOT_IDENTITIES');
+  }
+  if (report?.invariants?.unit_dag_is_not_materialization_claim !== true) {
+    failures.push('UNIT_DAG_NOT_MATERIALIZATION');
+  }
+  if (report?.invariants?.unit_dag_is_not_task_to_unit_relation !== true) {
+    failures.push('UNIT_DAG_NOT_TASK_TO_UNIT');
+  }
+  if (report?.invariants?.unit_dag_does_not_authorize_physical_implementation !== true) {
+    failures.push('UNIT_DAG_NOT_PHYSICAL_AUTHORIZATION');
+  }
   if (report?.metrics?.canonical_tasks !== report?.tasks?.length) {
     failures.push('TASK_COVERAGE');
   }
@@ -662,6 +886,11 @@ function printSummary(report) {
   );
   console.log(`ADOPTION_CLASSIFIED_TASKS: ${report.metrics.adoption_classified_tasks}`);
   console.log(`ADOPTION_CLASSIFICATION_COUNTS: ${JSON.stringify(report.metrics.adoption_classification_counts)}`);
+  console.log(`UNIT_DAG_CANDIDATE_TASKS: ${report.metrics.unit_dag_candidate_tasks}`);
+  console.log(`UNIT_DAG_CANDIDATE_NODES: ${report.metrics.unit_dag_candidate_nodes}`);
+  console.log(`UNIT_DAG_CANDIDATE_EDGES: ${report.metrics.unit_dag_candidate_edges}`);
+  console.log(`UNIT_DAG_CYCLE_COMPONENTS: ${report.metrics.unit_dag_cycle_components}`);
+  console.log('UNIT_DAG_CANDIDATE_KEYS_ARE_IMPLEMENTATION_UNIT_IDS: NO');
   console.log('MATERIALIZATION_COMPLETION_CLAIM: NO');
   console.log(`FINGERPRINT_SHA256: ${report.fingerprint_sha256}`);
 }

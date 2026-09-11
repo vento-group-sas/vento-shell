@@ -548,6 +548,7 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     }
   }
   const adoptionClassified = Object.values(adoptionCounts).reduce((total, count) => total + count, 0);
+  const unitDagSummary = materializationReport?.unit_dag_reconciliation?.summary ?? null;
 
   if (physical.rows.length !== tasks.length) {
     fail(
@@ -612,6 +613,24 @@ export function buildRegistryMarkdown(taskMap, stats, continuity, materializatio
     `| CONTRADICTION | **${adoptionCounts.CONTRADICTION}** |`,
     `| REUSE_VERIFIED | **${adoptionCounts.REUSE_VERIFIED}** |`,
     `| Clasificadas por STEP_GLOBAL_04 | **${adoptionClassified}** |`,
+    ...(unitDagSummary ? [
+      '',
+      '## Resumen de UNIT DAG candidato',
+      '',
+      '> Artefacto canónico de planificación de STEP_GLOBAL_05. Las candidate keys NO son `implementation_unit_id`, no crean relaciones TASK -> UNIT y no autorizan implementación física.',
+      '',
+      '| Métrica | Cantidad |',
+      '| --- | ---: |',
+      `| Tareas del cohort de adopción | **${unitDagSummary.adoption_tasks}** |`,
+      `| Tareas con candidate key | **${unitDagSummary.candidate_tasks}** |`,
+      `| Clusters candidatos | **${unitDagSummary.candidate_nodes}** |`,
+      `| Clusters compartidos | **${unitDagSummary.shared_candidate_clusters}** |`,
+      `| Dependencias candidatas | **${unitDagSummary.candidate_edges}** |`,
+      `| Componentes cíclicos | **${unitDagSummary.cycle_components}** |`,
+      `| Tareas NOT_IMPLEMENTED excluidas | **${unitDagSummary.not_implemented_tasks}** |`,
+      `| Unidades canónicas observadas | **${unitDagSummary.known_canonical_units_observed}** |`,
+      `| Matches exactos candidate -> unidad canónica | **${unitDagSummary.known_unit_evidence_matches}** |`,
+    ] : []),
     '',
     '## Continuidad activa',
     '',
