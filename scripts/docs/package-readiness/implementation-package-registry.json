@@ -177,12 +177,12 @@
     {
       "package_id": "GAP-PKG-018",
       "source_kind": "CANONICAL_GAP_PACKAGE",
-      "status": "COMPILED",
+      "status": "READY_FOR_GATE",
       "status_scope": "DOCUMENTARY_READINESS",
       "detected_at": "2026-08-30T05:43:12.341Z",
-      "ready_for_gate_at": null,
-      "last_status_change_at": "2026-08-30T05:43:12.341Z",
-      "updated_at": "2026-08-30T05:43:12.341Z"
+      "ready_for_gate_at": "2026-09-11T19:27:20.527Z",
+      "last_status_change_at": "2026-09-11T19:27:20.527Z",
+      "updated_at": "2026-09-11T19:27:20.527Z"
     },
     {
       "package_id": "GAP-PKG-019",

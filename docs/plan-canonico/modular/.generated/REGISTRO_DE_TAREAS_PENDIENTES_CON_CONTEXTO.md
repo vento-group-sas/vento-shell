@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `MATURE_PACKAGE_GATE` sobre `GAP-PKG-018`.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-019`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,17 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-018`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-019`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-018`
-- **Posición topológica:** **5/189**; prioridad derivada, sin selección humana.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-019`
+- **Posición topológica:** **6/189**; prioridad derivada, sin selección humana.
 - **Estado efectivo:** `COMPILED`
-- **Acción exacta:** `MATURE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-018`
-- **Comando exacto:** `npm run docs:package:gate:status -- --package-id GAP-PKG-018`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json` — `READY_FOR_APPROVAL`
+- **Acción exacta:** `PREPARE_PACKAGE_GATE`
+- **Objetivo exacto:** `GAP-PKG-019`
+- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-019`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-019.json` — `NOT_PREPARED`
 - **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-018 debe completar identidad, unidades, evidencia y aprobación de gate.
+- **Por qué:** GAP-PKG-019 está dependency-eligible y no tiene expediente package-gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `NEXO-DOM-009`
@@ -48,7 +48,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-DOM-009` — Separar activo individual y reutilizable controlado por cantidad | `NEXO-DOM-010` — Definir estado, condición, daño, pérdida y faltante | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | SIN SIGUIENTE PROYECTADA | Una instancia física activa |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | `SHELL-CI-020::GAP-PKG-018` | Una instancia física activa |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -57,7 +57,7 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1175/1596 aprobadas** | **421** no aprobadas (0 propuesta, 0 rechazadas) | `NEXO-DOM-009` |
-| 🟧 **Implementación física conocida** | **98/99 VERIFIED** | **1** no terminales | `SHELL-CI-022::GAP-PKG-001` |
+| 🟧 **Implementación física conocida** | **98/100 VERIFIED** | **2** no terminales | `SHELL-CI-022::GAP-PKG-001` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
@@ -73,6 +73,7 @@
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
 | 1 | **ACTUAL** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | ACTUAL — AUTORIZAR_IMPLEMENTACION |
+| 2 | PENDIENTE | `SHELL-CI-020::GAP-PKG-018` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | Sin bloqueo adicional declarado |
 
 ## Modos de trabajo y materialización
 
