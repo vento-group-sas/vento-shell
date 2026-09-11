@@ -1915,5 +1915,2219 @@ La certificación de Server Actions no puede sustituirse por una prueba visual d
 `AUTH-SIM-013 — Validar Server Actions como rol simulado`
 
 
-### [ ] AUTH-SIM-013 — Validar Server Actions como rol simulado
+### ✅ AUTH-SIM-013 — Validar Server Actions como rol simulado
+
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-SIM-012 — Validar navegación como rol simulado
+**Tarea siguiente:** AUTH-SIM-014 — Probar en todas las aplicaciones
+**Tipo de tarea:** documental; contrato canónico de validación específica de Server Actions ante procedencia simulada, con materialización posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE Q — Simulación
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/Q_SIMULACION/03_VALIDACION_INTEGRAL_DE_SIMULACION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica Server Actions, helpers server, contratos compartidos, rutas, Route Handlers, RPC, RLS, Edge Functions, Supabase, migraciones, datos, sesiones, permisos, aplicaciones, colas, integraciones, despliegues ni configuración
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato verificable que deberá demostrar que una Server Action alcanzada desde una simulación nunca consume autoridad simulada como permiso real, nunca convierte `WOULD_ALLOW` en `ALLOW`, nunca produce un efecto empresarial por la procedencia de la preview y conserva una separación inequívoca entre el actor real, la sesión real, el escenario hipotético y cualquier operación real posterior.
+
+La regla raíz queda:
+
+```text
+SERVER ACTION
++
+SIMULATED ORIGIN
++
+REAL BUSINESS ACTION OR PROTECTED REAL READ
+=
+DENY BEFORE REAL EFFECT
+```
+
+Y simultáneamente:
+
+```text
+SIMULATED ROLE
+!=
+SERVER-SIDE AUTHORITY
+```
+
+```text
+WOULD_ALLOW
+!=
+ALLOW
+```
+
+```text
+SIMULATION RESULT
+-> executable = false
+```
+
+---
+
+#### 2. Pregunta contractual propietaria
+
+Esta tarea responde exclusivamente:
+
+```text
+COMO SE DEMUESTRA QUE UNA SERVER ACTION NO EJECUTA CON AUTORIDAD SIMULADA?
+```
+
+```text
+COMO SE DISTINGUE UNA ACCION EMPRESARIAL REAL DE UNA OPERACION PROPIA DEL LIFECYCLE O DE LA EVALUACION DE SIMULACION?
+```
+
+```text
+QUE DEBE OCURRIR SI UNA SERVER ACTION RECIBE FORM DATA, ARGUMENTOS, CACHE O CONTEXTO CLIENTE QUE INTENTAN PRESENTAR UN ROL SIMULADO COMO AUTORIDAD?
+```
+
+```text
+QUE EVIDENCIA DEBE PRODUCIR CADA UNIDAD FISICA PARA CERTIFICAR SERVER ACTIONS BAJO SIMULACION?
+```
+
+La prueba integral de todas las aplicaciones permanece reservada a `AUTH-SIM-014`.
+
+---
+
+#### 3. Handoff recibido de AUTH-SIM-012
+
+`AUTH-SIM-012` entrega una frontera de navegación ya cerrada:
+
+```text
+NAVIGATION MAY PRESERVE A SIMULATION
+BUT NEVER GRANTS REAL AUTHORITY
+```
+
+```text
+DESTINATION REQUEST WITH SIMULATED ORIGIN
+REMAINS NON-EXECUTABLE
+```
+
+```text
+ROUTER / URL / HISTORY
+ARE NOT AUTHORIZATION SOURCES
+```
+
+Por tanto, una Server Action alcanzada después de una ruta, redirect, deep link, tab, refresh, hard reload, back/forward o componente de preview no puede interpretar el cambio de superficie como salida de simulación ni como recuperación automática de autoridad real.
+
+---
+
+#### 4. Handoff recibido de AUTH-SIM-010 y AUTH-SIM-011
+
+`AUTH-SIM-010` conserva el enforcement autoritativo:
+
+```text
+SIMULATED ORIGIN
+-> REAL EXECUTION FORBIDDEN
+```
+
+`AUTH-SIM-011` conserva la experiencia read-only:
+
+```text
+SIMULATION PREVIEW
+-> READ-ONLY PRESENTATION
+-> ZERO REAL EFFECTS
+```
+
+Esta tarea no redefine esas dos decisiones.
+
+Su responsabilidad es demostrar específicamente que el boundary Server Action conserva ambas aunque el frontend falle, el control visual sea manipulado o la acción sea invocada por un camino alterno.
+
+---
+
+#### 5. Handoff recibido de AUTH-SIM-006 y AUTH-SRV-015
+
+La separación contractual vigente exige cuatro planos distintos:
+
+```text
+REAL_AUTHORITY_PLANE
+SIMULATED_EVALUATION_PLANE
+SIMULATION_PRESENTATION_PLANE
+SIMULATION_AUDIT_PLANE
+```
+
+Solo el plano real puede producir `ALLOW` ejecutable.
+
+`AUTH-SRV-015` conserva separados, entre otros:
+
+```text
+real_actor_id
+real_session_id
+real_base_role
+real_operational_role
+real_site_ids
+real_area_ids
+real_active_shift_id
+```
+
+frente a:
+
+```text
+simulated_subject_reference
+simulation_session_id
+simulated_base_role
+simulated_operational_role
+simulated_site_id
+simulated_area_id
+simulated_shift_reference
+```
+
+Una Server Action no puede completar campos reales faltantes usando su equivalente simulado.
+
+---
+
+#### 6. Contratos consumidos
+
+La tarea consume sin redefinir:
+
+- `AUTH-SIM-001..005`, para actor, rol y dimensiones hipotéticas del escenario;
+- `AUTH-SIM-006`, para separación entre autoridad real, evaluación simulada, presentación y auditoría;
+- `AUTH-SIM-007`, para aviso persistente y lifecycle visible;
+- `AUTH-SIM-008`, para inicio autoritativo;
+- `AUTH-SIM-009`, para terminales, salida y retorno a contexto real fresco;
+- `AUTH-SIM-010`, para bloqueo de ejecución, código de bloqueo y cero efectos;
+- `AUTH-SIM-011`, para modo read-only;
+- `AUTH-SIM-012`, para preservación de procedencia durante navegación;
+- `AUTH-SRV-001`, para identidad e inventario de superficies Server Action;
+- `AUTH-SRV-004..014`, para protección, autorización, territorio, contexto, estado y atribución de acciones de servidor;
+- `AUTH-SRV-015`, para separación y auditoría del rol simulado;
+- `AUTH-SRV-016..018`, para respuesta de error, helpers compartidos y prerrequisitos de acciones administrativas;
+- `AUTH-DB-013`, para persistencia y lifecycle de simulación;
+- el catálogo vigente de `simulation_requirement`;
+- los contratos vigentes de autorización, contexto, recursos, privacidad, auditoría, idempotencia, concurrencia y dispositivos compartidos.
+
+---
+
+#### 7. Topología y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+El marcador documental define una sola vez el contrato reutilizable.
+
+Cada futura materialización física se identifica por su `implementation_unit_id`, reconcilia las Server Actions realmente pertenecientes a esa unidad y produce evidencia propia después del gate E5 aplicable.
+
+Esta tarea no crea, autoriza ni ejecuta una instancia física.
+
+---
+
+#### 8. Resultado material
+
+Se definen cinco artefactos documentales vinculantes:
+
+1. `SIMULATION-SERVER-ACTION-EXECUTION-CONTRACT-001`, que fija el deny previo al efecto y la separación entre autoridad real y procedencia simulada;
+2. `SIMULATION-SERVER-ACTION-REQUEST-BOUNDARY-MATRIX-001`, que decide cómo se tratan argumentos, formularios, navegación, cache, reintentos y llamadas directas;
+3. `SIMULATION-SERVER-ACTION-EFFECT-MATRIX-001`, que separa mutaciones reales, lecturas protegidas, evaluación simulada, lifecycle de simulación y controles de sesión o recuperación propietarios;
+4. `SIMULATION-SERVER-ACTION-LIFECYCLE-MATRIX-001`, que fija comportamiento para `RESOLVING`, `ACTIVE`, `STALE`, `INVALID`, `EXIT_PENDING` y terminales persistidos;
+5. `SIMULATION-SERVER-ACTION-PHYSICAL-EVIDENCE-CONTRACT-001`, que define la evidencia mínima exigible por unidad física sin declarar implementación actual.
+
+Resumen:
+
+| Elemento | Cantidad |
+| --- | ---: |
+| Código público de ejecución simulada reutilizado | 1 |
+| Razón interna de enforcement reutilizada | 1 |
+| Estado HTTP aplicable reutilizado | 1, `403` |
+| Clases documentales de Server Action distinguidas | 4 |
+| Estados/lifecycle tratados explícitamente | 10 |
+| Familias de efecto real cubiertas | 12 |
+| Casos mínimos de prueba futura | 32 |
+| Aplicaciones certificadas físicamente por esta tarea | 0 |
+| Requisitos de prueba nuevos o modificados | 0 |
+
+---
+
+#### 9. Qué constituye una Server Action para esta validación
+
+La validación consume la identidad ya fijada por `AUTH-SRV-001`.
+
+Una superficie entra en el alcance cuando el inventario propietario la reconoce como Server Action por una directiva `"use server"` de módulo, función inline u otra identidad ya confirmada por el inventario canónico.
+
+No se promueve a Server Action una pieza únicamente por:
+
+- ejecutar en servidor;
+- ser `async`;
+- usar Supabase;
+- vivir en un archivo denominado `actions.ts`;
+- invocar una RPC;
+- ser Route Handler;
+- usar `service_role`;
+- ser helper server-only.
+
+Esas superficies conservan sus owners propios.
+
+---
+
+#### 10. Server Action protegida
+
+Una Server Action protegida es una Server Action cuyo resultado puede:
+
+- producir una mutación empresarial;
+- cambiar estado o lifecycle de una entidad real;
+- ejecutar una transición de proceso;
+- generar un efecto externo;
+- leer contenido protegido;
+- ampliar información del recurso;
+- generar un archivo protegido;
+- iniciar una operación asíncrona;
+- alterar sesión, configuración o seguridad bajo un contrato propietario.
+
+El hecho de ser Server Action no concede ni elimina autoridad.
+
+La naturaleza del efecto y el contrato de la capacidad determinan la protección.
+
+---
+
+#### 11. Cuatro clases documentales de acción
+
+Para evitar el error de bloquear o habilitar indiscriminadamente toda función `"use server"`, esta tarea distingue cuatro clases documentales. No son un nuevo enum físico obligatorio.
+
+| Clase documental | Propósito | Autoridad simulada como permiso | Efecto empresarial real |
+| --- | --- | --- | --- |
+| acción empresarial real | crear, modificar, eliminar, aprobar, publicar, cobrar, mover, recibir, completar o producir otro efecto de negocio | prohibida | prohibido cuando la procedencia es simulada |
+| lectura real protegida vía Server Action | devolver datos, archivos o detalle sometidos a autorización | prohibida | la lectura debe usar autoridad real independiente o denegarse |
+| control/evaluación propietaria de simulación | iniciar, revisar, evaluar o terminar el escenario mediante owner explícito | nunca se usa como permiso real | solo efectos internos de simulación/auditoría autorizados por su contrato; cero efectos empresariales |
+| control real de sesión o recuperación | autenticación, logout, reautenticación o recuperación bajo owner propio | nunca se usa como permiso | se decide por su contrato real independiente, no por el rol simulado |
+
+La clasificación evita asumir que una operación de lifecycle de simulación es una mutación empresarial autorizada por el rol simulado.
+
+---
+
+#### 12. Acción empresarial real con procedencia simulada
+
+Cuando una Server Action empresarial real recibe una solicitud cuya procedencia autoritativa sigue siendo simulada:
+
+```text
+DECISION = DENY
+PUBLIC_CODE = AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION
+HTTP_STATUS_WHEN_APPLICABLE = 403
+INTERNAL_REASON = SIMULATION_EXECUTION_FORBIDDEN
+executable = false
+BUSINESS_EFFECTS = 0
+```
+
+La sesión real se preserva cuando siga siendo válida.
+
+La preview puede continuar únicamente si su lifecycle y su owner permiten seguir mostrándola.
+
+---
+
+#### 13. Lectura protegida vía Server Action
+
+Una lectura protegida no se vuelve segura por ser read-only desde la perspectiva de persistencia.
+
+Si una Server Action intenta obtener datos protegidos usando el rol, sede, área, turno, permiso o sujeto simulados como autoridad, debe denegarse.
+
+Cuando una preview necesita datos reales que el actor ya puede leer, la lectura debe resolverse desde el plano real y bajo autoridad real independiente.
+
+Se mantiene:
+
+```text
+SIMULATED ROLE WOULD ALLOW DATA
++
+REAL ACTOR CANNOT READ DATA
+=
+DO NOT EXPOSE DATA
+```
+
+---
+
+#### 14. Operaciones propias de simulación
+
+Un control propietario de simulación puede modificar exclusivamente el estado, revisión, auditoría o evidencia del propio escenario cuando su contrato ya lo autorice.
+
+Ejemplos conceptuales:
+
+- iniciar una simulación;
+- crear una revisión del escenario;
+- calcular una evaluación hipotética;
+- registrar evidencia de la evaluación;
+- solicitar o confirmar la salida mediante el owner correspondiente.
+
+Estas operaciones no obtienen permiso del rol simulado.
+
+Utilizan la autoridad real del simulador y permanecen separadas del dominio empresarial observado.
+
+---
+
+#### 15. Evaluación simulada no ejecutable
+
+Una evaluación de simulación puede producir únicamente resultados hipotéticos:
+
+```text
+WOULD_ALLOW
+WOULD_DENY
+INDETERMINATE
+```
+
+Y conserva:
+
+```text
+executable = false
+```
+
+La función que calcula ese resultado no puede:
+
+- llamar después al writer real porque obtuvo `WOULD_ALLOW`;
+- devolver un token ejecutable;
+- devolver `ALLOW` como alias;
+- devolver `can_operate=true` como autoridad;
+- generar un grant temporal;
+- incorporar el rol simulado al contexto real.
+
+---
+
+#### 16. Controles reales de sesión y recuperación
+
+Una acción real de sesión o seguridad no queda automáticamente prohibida por existir una simulación.
+
+Su owner debe resolverla con la sesión y autoridad reales y nunca con el rol simulado.
+
+Esta tarea no redefine, por ejemplo, la política de logout, reautenticación, recuperación de cuenta o cierre de sesión.
+
+Sí exige que ninguno de esos controles atribuya autoridad al sujeto simulado ni transforme la simulación en una sesión autenticada distinta.
+
+---
+
+#### 17. Fuente autoritativa de procedencia simulada
+
+La Server Action no determina procedencia simulada exclusivamente desde datos controlables por cliente.
+
+La decisión debe reconstruirse desde una fuente server-side vigente y correlacionable con la sesión real y el lifecycle de simulación.
+
+No bastan por sí solos:
+
+- `simulation_id` en `FormData`;
+- un hidden input;
+- query param;
+- pathname;
+- hash;
+- referrer;
+- cookie aislada;
+- `localStorage`;
+- `sessionStorage`;
+- estado React;
+- prop;
+- rol visible;
+- `can_operate`;
+- un booleano de permiso;
+- un `WOULD_ALLOW` recibido del cliente.
+
+---
+
+#### 18. Omitir simulation_id no convierte la solicitud en real
+
+La ausencia de un identificador de simulación enviado por cliente no constituye prueba de procedencia real.
+
+Debe mantenerse:
+
+```text
+CLIENT OMITS SIMULATION REFERENCE
+!=
+SERVER PROVES REAL ORIGIN
+```
+
+Si el servidor conoce por fuentes autoritativas que la intención proviene de una preview vigente, la acción conserva procedencia simulada y el efecto real permanece bloqueado.
+
+---
+
+#### 19. simulation_id no es una credencial
+
+Cuando exista una referencia de simulación, esa referencia:
+
+- localiza o correlaciona un escenario;
+- no autentica;
+- no concede permisos;
+- no reemplaza la sesión real;
+- no es bearer token;
+- no amplía RLS;
+- no demuestra que el lifecycle siga vigente;
+- no convierte un resultado hipotético en ejecutable.
+
+La Server Action verifica el escenario mediante su owner.
+
+---
+
+#### 20. FormData y argumentos
+
+Todo argumento recibido por la Server Action se considera input no autoritativo hasta que el servidor lo valide contra fuentes propietarias.
+
+No pueden aceptarse como autoridad por venir en `FormData`, objeto serializado, argumento posicional o closure:
+
+- actor;
+- rol;
+- sede;
+- área;
+- turno;
+- check-in;
+- permiso;
+- recurso;
+- estado del recurso;
+- simulación;
+- resultado hipotético;
+- decisión de autorización.
+
+El input puede expresar intención. No prueba autoridad.
+
+---
+
+#### 21. Hidden inputs
+
+Un campo oculto no recibe más confianza que un campo visible.
+
+Un hidden input puede transportar una referencia necesaria para resolver el intento, pero no puede probar:
+
+- identidad del actor;
+- permiso efectivo;
+- rol real;
+- rol simulado válido;
+- territorio;
+- lifecycle;
+- `ALLOW`;
+- estado actual de una entidad.
+
+La manipulación del DOM no crea un bypass.
+
+---
+
+#### 22. Argumentos ligados y closures
+
+Un valor capturado o ligado al renderizar un Server Component no conserva autoridad indefinidamente.
+
+Si entre render y ejecución cambian:
+
+- actor;
+- sesión;
+- escenario;
+- revisión;
+- política;
+- permiso;
+- rol;
+- territorio;
+- recurso;
+- estado;
+- versión;
+
+la Server Action debe revalidar lo material antes del efecto.
+
+Una closure no convierte un snapshot en autorización vigente.
+
+---
+
+#### 23. Orden canónico del gate
+
+La secuencia mínima de una Server Action protegida queda:
+
+```text
+1. VALIDAR FORMA SEGURA DE LA INTENCION
+2. RESOLVER SESION Y PRINCIPAL REALES
+3. RESOLVER ACTOR REAL
+4. RESOLVER PROCEDENCIA Y LIFECYCLE DE SIMULACION
+5. RESOLVER CAPACIDAD, CLASIFICACION Y RECURSO NECESARIOS
+6. APLICAR PRECEDENCIA DE RAZONES
+7. BLOQUEAR SI LA INTENCION SIMULADA PRETENDE EFECTO O LECTURA REAL PROTEGIDA
+8. SOLO UNA SOLICITUD REAL FRESCA PUEDE CONTINUAR A AUTORIZACION EJECUTABLE
+9. REVALIDAR ANTES DEL EFECTO CUANDO EL CONTRATO LO EXIJA
+10. EJECUTAR O RECHAZAR
+11. AUDITAR EL RESULTADO CORRELACIONADO
+```
+
+Una validación estructural de forma puede preceder la autorización si no consulta ni revela datos protegidos y no produce efectos.
+
+---
+
+#### 24. Boundary previo al primer efecto
+
+El deny de simulación debe ocurrir antes del primer efecto empresarial.
+
+No es conforme:
+
+```text
+WRITE
+-> DETECT SIMULATION
+-> ROLLBACK BEST EFFORT
+```
+
+La regla es:
+
+```text
+DETECT / RESOLVE
+-> DENY
+-> ZERO BUSINESS EFFECTS
+```
+
+Un rollback posterior no sustituye el guard previo.
+
+---
+
+#### 25. Transacciones
+
+Abrir una transacción no autoriza a escribir dentro de ella antes de resolver la procedencia.
+
+La materialización física debe colocar el gate de simulación antes de toda mutación de negocio y antes de cualquier operación cuyo efecto no pueda deshacerse de forma total y demostrable.
+
+Una transacción abortada no compensa webhooks, jobs, locks, archivos, notificaciones o side effects que ya hayan salido del boundary transaccional.
+
+---
+
+#### 26. Llamadas RPC desde Server Actions
+
+Una Server Action no puede evadir el contrato delegando la escritura en una RPC.
+
+Si la acción recibe procedencia simulada:
+
+- no pasa rol simulado como rol real;
+- no pasa sede/área simuladas como contexto efectivo;
+- no invoca un writer confiando en que la RPC corregirá la autoridad después;
+- no utiliza una RPC legacy que trate `simulation_id` como habilitación.
+
+El boundary Server Action y el boundary RPC deben conservar semántica equivalente cuando ambos sean aplicables.
+
+---
+
+#### 27. Clientes privilegiados y service role
+
+Una credencial técnica privilegiada no sustituye autorización empresarial.
+
+Si una Server Action utiliza un cliente privilegiado:
+
+```text
+TECHNICAL CAPABILITY
+!=
+HUMAN AUTHORITY
+```
+
+La procedencia simulada debe resolverse antes del efecto y el actor real debe conservar atribución.
+
+El uso de `service_role` no puede transformar `WOULD_ALLOW` en permiso.
+
+---
+
+#### 28. RLS y Data API
+
+Una Server Action no puede usar claims, territorio o rol simulados para ampliar una política RLS.
+
+Si la lectura o escritura llega a la Data API:
+
+- el actor y contexto reales conservan el techo de autoridad;
+- el rol simulado permanece fuera de claims autoritativos;
+- una policy permisiva no repara una decisión de aplicación inválida;
+- una policy restrictiva no sustituye la validación de procedencia cuando el efecto requiere contexto adicional.
+
+---
+
+#### 29. Storage y uploads
+
+Una Server Action originada en preview no puede persistir archivos empresariales reales por autoridad simulada.
+
+No se permiten como consecuencia de esa procedencia:
+
+- uploads reales;
+- reemplazo de archivos;
+- borrado de objetos;
+- generación de evidencias empresariales falsas;
+- movimientos entre buckets con efecto de dominio.
+
+Una representación de upload dentro de `FULL_PREVIEW` permanece sintética o inerte conforme al owner.
+
+---
+
+#### 30. Exportaciones y generación de archivos
+
+Generar un archivo puede constituir lectura protegida o externalización de información.
+
+Una Server Action no usa el rol simulado para:
+
+- exportar datasets;
+- obtener adjuntos protegidos;
+- generar documentos con datos no autorizados al actor real;
+- producir reportes reales que impliquen un efecto empresarial o una exposición adicional.
+
+La autoridad de lectura se resuelve en el plano real.
+
+---
+
+#### 31. Impresión
+
+Una Server Action originada en preview no puede crear:
+
+- print jobs;
+- comandos BrowserPrint;
+- spooler entries;
+- instrucciones remotas a hardware;
+- estados empresariales que afirmen una impresión real.
+
+La preview puede mostrar una representación no ejecutable cuando el owner lo permita.
+
+---
+
+#### 32. Notificaciones
+
+Una Server Action simulada no envía notificaciones reales por:
+
+- email;
+- SMS;
+- push;
+- mensajería interna con efecto real;
+- alerta a terceros;
+- confirmación empresarial.
+
+La explicación hipotética no se convierte en dispatch.
+
+---
+
+#### 33. Webhooks e integraciones
+
+La procedencia simulada impide que una Server Action despache efectos externos.
+
+No se ejecutan por autoridad simulada:
+
+- webhooks;
+- llamadas de proveedor;
+- órdenes a servicios externos;
+- publicaciones externas;
+- movimientos financieros;
+- efectos logísticos;
+- comandos de hardware.
+
+El boundary debe proteger incluso cuando el sistema externo no soporte rollback.
+
+---
+
+#### 34. Jobs y colas
+
+No es válido sustituir una mutación inmediata por un job para aparentar cero efectos.
+
+Una Server Action originada en preview no puede encolar trabajo empresarial que posteriormente:
+
+- escriba datos;
+- envíe mensajes;
+- ejecute integraciones;
+- imprima;
+- procese pagos;
+- mueva inventario;
+- publique entidades;
+- cambie estados reales.
+
+La procedencia debe sobrevivir hasta el consumidor asíncrono cuando el contrato requiera evidencia, pero no como autoridad ejecutable.
+
+---
+
+#### 35. Outbox y eventos de dominio
+
+Un deny por simulación no crea un evento de dominio exitoso.
+
+Puede registrarse auditoría del intento bloqueado, pero no:
+
+- outbox ejecutable;
+- evento de negocio que represente éxito;
+- transición empresarial parcial;
+- side effect diferido.
+
+Auditar un deny no equivale a ejecutar la acción.
+
+---
+
+#### 36. Revalidate y cache de presentación
+
+Una operación de presentación como invalidar cache no puede utilizarse para ocultar o simular una mutación que no ocurrió.
+
+En el camino de deny:
+
+- no se presenta éxito;
+- no se refresca una entidad como si hubiera cambiado;
+- no se publica un estado optimista como real;
+- no se usa cache para conservar `ALLOW` o `WOULD_ALLOW` como autoridad.
+
+La estrategia física de cache pertenece al owner de cada unidad.
+
+---
+
+#### 37. Redirect posterior a Server Action
+
+Un redirect no convierte un deny en éxito ni elimina la causa de seguridad.
+
+La acción no puede:
+
+```text
+DENY
+-> REDIRECT A DESTINO APARENTEMENTE EXITOSO
+```
+
+sin preservar una respuesta segura y no engañosa.
+
+Tampoco puede redirigir a login como respuesta genérica cuando la sesión real sigue siendo válida y la causa correcta es ejecución no permitida en simulación.
+
+---
+
+#### 38. Invocación directa
+
+La protección no depende de que el control visual esté inerte.
+
+Una Server Action debe producir el mismo resultado seguro si el intento llega mediante:
+
+- submit normal;
+- progressive enhancement;
+- llamada desde un componente cliente;
+- llamada desde otro componente permitido por el framework;
+- formulario manipulado;
+- replay de una solicitud anterior;
+- ruta o render distinto al original.
+
+La UI es defensa de experiencia; el servidor es autoridad.
+
+---
+
+#### 39. Módulo use server e inline use server
+
+La semántica de simulación no cambia por el estilo de declaración.
+
+Una acción exportada desde módulo `"use server"` y una acción inline `"use server"` deben satisfacer la misma política cuando protejan el mismo tipo de efecto.
+
+No existe excepción por ubicación del código.
+
+---
+
+#### 40. Acción anidada o delegada
+
+Una Server Action no puede llamar a otro helper o writer y considerar que la segunda función ya no tiene procedencia simulada.
+
+La intención protegida conserva su origen y correlación hasta el boundary que decide el efecto.
+
+Delegar no limpia procedencia.
+
+---
+
+#### 41. Autenticación primero
+
+La ausencia de una sesión real válida conserva su reason owner específico.
+
+No se utiliza `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` para ocultar una falta de autenticación que impide resolver al actor real.
+
+La Server Action debe respetar la precedencia contractual vigente.
+
+---
+
+#### 42. Actor real obligatorio
+
+Cuando la acción exige actor humano, el sujeto simulado no llena un actor real ausente.
+
+Debe mantenerse:
+
+```text
+real_actor_id = unresolved
++
+simulated_subject_reference = known
+!=
+real_actor_id = simulated_subject_reference
+```
+
+La operación falla cerrada mediante el owner de razón aplicable.
+
+---
+
+#### 43. Rol real y rol simulado
+
+El rol simulado no reemplaza:
+
+- rol base real;
+- rol operativo real;
+- asignaciones reales;
+- grants reales;
+- denegaciones reales.
+
+Una Server Action no ejecuta con el rol que la pantalla está representando.
+
+---
+
+#### 44. Sede y área
+
+Sede y área simuladas son dimensiones de escenario.
+
+No se usan como cobertura territorial de una mutación real.
+
+Si una acción real posterior necesita sede o área, las resuelve de nuevo desde el contexto real y el recurso real.
+
+---
+
+#### 45. Turno y check-in
+
+Un turno o check-in hipotéticos no satisfacen prerrequisitos laborales de una acción real.
+
+Se mantiene:
+
+```text
+SIMULATED SHIFT
+!=
+ACTIVE REAL SHIFT
+```
+
+```text
+SIMULATED CHECKIN
+!=
+REAL CHECKIN
+```
+
+---
+
+#### 46. Dispositivo compartido
+
+En dispositivo compartido permanecen separados:
+
+```text
+TECHNICAL PRINCIPAL
+REAL HUMAN ACTOR
+DEVICE ACTOR SESSION
+SIMULATED SUBJECT OR ROLE
+```
+
+Una Server Action no utiliza la simulación para reemplazar una sesión de actor ausente ni utiliza el principal técnico como actor humano.
+
+---
+
+#### 47. Recurso y estado
+
+Un recurso referenciado desde una preview no conserva automáticamente su estado hasta el submit.
+
+Cuando una acción real fuera de simulación se intente posteriormente, debe revalidarse:
+
+- identidad del recurso;
+- existencia;
+- versionado;
+- estado actual;
+- transición;
+- territorio;
+- autorización.
+
+El resultado hipotético anterior no reserva el estado.
+
+---
+
+#### 48. FULL_PREVIEW
+
+`FULL_PREVIEW` permite una representación funcional no ejecutable.
+
+No cambia la regla Server Action:
+
+```text
+FULL_PREVIEW
++
+BUSINESS SERVER ACTION
+=
+NO REAL EXECUTION FROM PREVIEW
+```
+
+Un control puede mostrar hipotéticamente que la acción existiría, pero el submit real permanece bloqueado.
+
+---
+
+#### 49. DECISION_ONLY
+
+`DECISION_ONLY` permite únicamente la decisión hipotética y explicación autorizada.
+
+No habilita:
+
+- formulario operativo;
+- payload empresarial listo para submit;
+- contenido protegido por autoridad simulada;
+- Server Action de negocio.
+
+Si una llamada directa alcanza la Server Action, el servidor no confía en la ausencia o presencia del formulario para decidir.
+
+---
+
+#### 50. NOT_ALLOWED
+
+`NOT_ALLOWED` no obtiene una preview funcional ni una Server Action simulada alternativa.
+
+Se mantiene:
+
+```text
+NOT_ALLOWED
+-> NO SIMULATION PREVIEW FOR THAT CAPABILITY
+```
+
+Una llamada directa a la acción real sigue resolviendo autoridad real y no recibe permiso de la simulación.
+
+---
+
+#### 51. Clasificación ausente o desconocida
+
+Una capacidad sin `simulation_requirement` concluyente falla cerrada para preview.
+
+No se adopta `FULL_PREVIEW` como default.
+
+La falta de clasificación tampoco convierte una Server Action en una acción real autorizada.
+
+---
+
+#### 52. WOULD_ALLOW
+
+`WOULD_ALLOW` puede explicar que el escenario hipotético permitiría una capacidad.
+
+Nunca se consume como:
+
+- `authorized=true`;
+- `can_operate=true`;
+- grant;
+- claim;
+- token;
+- rol efectivo;
+- señal para omitir `requireAuthorization`;
+- autorización para llamar un writer.
+
+---
+
+#### 53. WOULD_DENY
+
+`WOULD_DENY` describe el escenario simulado.
+
+No significa que la cuenta real haya perdido permisos.
+
+Si el usuario intenta ejecutar desde la preview, la Server Action aplica la precedencia de razones vigente y no reutiliza `WOULD_DENY` como una decisión real cacheada.
+
+---
+
+#### 54. INDETERMINATE
+
+`INDETERMINATE` no se resuelve por optimismo.
+
+No puede transformarse en `ALLOW` para una Server Action.
+
+La causa estructurada del escenario se conserva bajo su owner y el efecto real permanece en cero.
+
+---
+
+#### 55. Código público de ejecución simulada
+
+Cuando existe una solicitud autenticada con procedencia simulada que efectivamente intenta una acción, lectura protegida o efecto real, el código público permanece:
+
+```text
+AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION
+```
+
+No se reemplaza por:
+
+- `AUTH_ERROR`;
+- `FORBIDDEN` genérico sin identidad;
+- `NO_PERMISSION`;
+- `INVALID_ROLE`;
+- `OUT_OF_SHIFT`;
+- mensaje libre de Supabase;
+- texto de excepción del framework.
+
+---
+
+#### 56. Razón interna
+
+La razón interna aplicable al intento de ejecución permanece:
+
+```text
+SIMULATION_EXECUTION_FORBIDDEN
+```
+
+No se expone al usuario como detalle de arquitectura cuando el contrato de mensaje seguro no lo permita.
+
+---
+
+#### 57. Estado HTTP
+
+En transportes HTTP aplicables el bloqueo conserva:
+
+```text
+403
+```
+
+La Server Action no degrada el error a una respuesta de éxito con un booleano ambiguo.
+
+La forma concreta de serialización pertenece al adapter físico, pero debe conservar la semántica canónica.
+
+---
+
+#### 58. Precedencia de razones
+
+No todo error ocurrido durante una simulación utiliza el código de ejecución simulada.
+
+Debe distinguirse:
+
+- sesión real ausente o inválida;
+- actor no resoluble;
+- solicitante no elegible;
+- escenario inválido antes de intento ejecutable;
+- clasificación no permitida;
+- fuente indisponible;
+- intento real de ejecución con procedencia simulada.
+
+Un escenario inválido sin intento real no se degrada automáticamente a `AUTH-ERR-016`.
+
+Una fuente autoritativa indisponible conserva el owner de error técnico vigente, incluido `AUTH-ERR-019` cuando corresponda.
+
+---
+
+#### 59. Error técnico
+
+Timeout, excepción, indisponibilidad de Auth, fallo de base de datos o incapacidad de leer una fuente autoritativa no se presentan falsamente como política de simulación.
+
+La Server Action falla cerrada, conserva cero efectos y usa el reason owner correspondiente.
+
+No existe fallback permisivo por error técnico.
+
+---
+
+#### 60. Validación de input y privacidad
+
+La validación de forma no puede utilizarse para enumerar recursos protegidos antes de resolver la autoridad necesaria.
+
+Un payload inválido puede rechazarse de manera segura sin revelar:
+
+- existencia de filas protegidas;
+- permisos internos;
+- roles elegibles;
+- territorio de terceros;
+- reason codes privados;
+- identificadores sensibles.
+
+---
+
+#### 61. Sesión real preservada
+
+El deny por ejecución simulada no implica logout.
+
+Si la sesión real continúa válida:
+
+```text
+DENY BUSINESS EFFECT
++
+PRESERVE REAL SESSION
+```
+
+La persona sigue siendo el actor real de la simulación.
+
+---
+
+#### 62. No autoejecución al salir
+
+Salir de simulación no ejecuta la Server Action que había sido intentada dentro de la preview.
+
+Debe mantenerse:
+
+```text
+EXIT SIMULATION
+!=
+RETRY REAL ACTION
+```
+
+Una acción real posterior requiere una intención nueva.
+
+---
+
+#### 63. Solicitud real posterior
+
+Después de un terminal confirmado, una operación real exige:
+
+1. contexto real fresco;
+2. request nueva;
+3. ausencia de procedencia simulada en la intención nueva;
+4. autorización real resuelta desde cero;
+5. recurso y estado revalidados;
+6. idempotencia real independiente.
+
+No se recicla el submit de preview.
+
+---
+
+#### 64. Idempotency keys
+
+Una clave idempotente perteneciente a simulación no se reutiliza para una mutación real.
+
+Se mantienen namespaces o propósitos separados.
+
+Un retry del request simulado sigue siendo simulado incluso si el lifecycle terminó después del primer intento.
+
+---
+
+#### 65. Doble submit
+
+Dos activaciones de un control de preview no producen un único efecto ni efectos duplicados.
+
+Cada intento converge a deny o a una respuesta equivalente segura conforme al owner, con cero efectos empresariales.
+
+La deduplicación no convierte uno de los intentos en real.
+
+---
+
+#### 66. Reintentos de red
+
+Un cliente, framework, proxy o usuario no puede convertir el retry en una solicitud real por omitir campos del escenario.
+
+La procedencia se reconstruye autoritativamente.
+
+No existe retry automático como operación empresarial real.
+
+---
+
+#### 67. Replay de una Server Action antigua
+
+Una request generada mientras la preview estaba vigente conserva su naturaleza histórica.
+
+Después de `COMPLETED`, `EXPIRED`, `REVOKED` o `INVALID` terminal:
+
+```text
+OLD SIMULATED REQUEST
+-> NO REAL EXECUTION
+```
+
+El terminal no reescribe el origen de la solicitud.
+
+---
+
+#### 68. Varias tabs
+
+Varias tabs no crean autoridad independiente.
+
+Si una tab mantiene un formulario de preview y otra termina o cambia el escenario, el submit tardío debe revalidar lifecycle, revisión y procedencia.
+
+Una tab stale no puede ejecutar con un `WOULD_ALLOW` anterior.
+
+---
+
+#### 69. Carrera con terminal
+
+Si el lifecycle llega a un terminal mientras una Server Action de preview está en vuelo, el resultado seguro no es ejecutar la acción como real.
+
+La request sigue originada en simulación.
+
+El terminal bloquea replay y exige una solicitud real nueva para cualquier operación posterior.
+
+---
+
+#### 70. Carrera con cambio de escenario
+
+Si cambia rol, sede, área, turno, check-in, permiso, recurso u otra dimensión material del escenario, una Server Action ligada a una revisión anterior no utiliza la nueva revisión para autorizarse.
+
+Se descarta o deniega conforme al owner.
+
+No se reasigna silenciosamente el request.
+
+---
+
+#### 71. Carrera con cambio de política
+
+Si cambia una fuente material de autorización o clasificación, una evaluación anterior queda stale.
+
+La Server Action no conserva:
+
+- `WOULD_ALLOW`;
+- clasificación antigua;
+- permisos simulados anteriores;
+- datos de cache;
+
+como base ejecutable.
+
+---
+
+#### 72. Respuesta tardía
+
+Una respuesta tardía de evaluación o navegación no puede reactivar un submit ya bloqueado.
+
+La Server Action y la UI deben converger con el estado autoritativo actual sin transformar una respuesta vieja en autorización.
+
+---
+
+#### 73. Offline
+
+Una acción de preview no se encola offline para ejecutarse después como mutación real.
+
+Al reconectar:
+
+- se resuelve de nuevo sesión;
+- actor;
+- lifecycle;
+- contexto;
+- autorización;
+- recurso;
+- intención.
+
+El payload simulado no se sincroniza como comando real.
+
+---
+
+#### 74. Cache
+
+Cache de página, RSC, resultado, contexto o autorización no crea autoridad para una Server Action.
+
+No puede:
+
+- ocultar que una solicitud es simulada;
+- conservar un `ALLOW` real incompatible con el estado actual;
+- promover `WOULD_ALLOW`;
+- mantener un escenario terminal como `ACTIVE`;
+- saltar revalidación previa al efecto.
+
+---
+
+#### 75. Navegación previa a la acción
+
+La Server Action debe producir el mismo resultado seguro si fue alcanzada después de:
+
+- navegación interna;
+- cambio de layout;
+- launcher;
+- handoff cross-app;
+- redirect cliente;
+- redirect servidor;
+- deep link;
+- URL directa;
+- refresh;
+- hard reload;
+- back/forward;
+- nueva tab;
+- nueva ventana.
+
+La ruta no determina autoridad.
+
+---
+
+#### 76. Cambio de actor
+
+Si cambia el actor real en una estación compartida, cualquier Server Action perteneciente a la preview anterior pierde validez.
+
+No se transfiere:
+
+- formulario;
+- payload;
+- rol simulado;
+- evaluación;
+- idempotency key;
+- permiso;
+- contexto.
+
+La nueva persona exige resolución nueva.
+
+---
+
+#### 77. Lifecycle RESOLVING
+
+Durante `RESOLVING` no existe base para ejecutar una acción real desde la preview.
+
+Una Server Action empresarial originada en esa superficie no utiliza el último escenario confirmado como fallback.
+
+El efecto permanece bloqueado.
+
+---
+
+#### 78. Lifecycle ACTIVE
+
+`ACTIVE` habilita evaluación y presentación conforme a `simulation_requirement`.
+
+No habilita ejecución empresarial.
+
+Una Server Action de negocio originada en la preview continúa no ejecutable.
+
+---
+
+#### 79. Lifecycle STALE
+
+`STALE` invalida el uso de la evaluación anterior para cualquier Server Action.
+
+No se conserva `WOULD_ALLOW` mientras se revalida.
+
+El efecto real permanece bloqueado.
+
+---
+
+#### 80. INVALID visible
+
+El estado visible `INVALID` durante limpieza o incompatibilidad no convierte la superficie en contexto real.
+
+Una Server Action originada en esa preview no obtiene un fallback real por ausencia del escenario visible.
+
+---
+
+#### 81. EXIT_PENDING
+
+Durante `EXIT_PENDING` la procedencia continúa siendo simulada hasta confirmación autoritativa.
+
+Los submits de preview siguen no ejecutables.
+
+No se anticipa el contexto real.
+
+---
+
+#### 82. Terminales persistidos
+
+`COMPLETED`, `EXPIRED`, `REVOKED` e `INVALID` terminal impiden reutilizar requests simuladas históricas.
+
+El terminal permite iniciar después un contexto real fresco, no convertir requests existentes en reales.
+
+---
+
+#### 83. Auditoría del deny
+
+La evidencia de un intento bloqueado debe poder correlacionar, cuando aplique:
+
+- principal real;
+- actor real;
+- sesión real;
+- Server Action identificada;
+- permiso/capacidad;
+- recurso o referencia segura;
+- simulación;
+- revisión;
+- procedencia;
+- lifecycle;
+- razón de bloqueo;
+- resultado no ejecutado;
+- timestamp;
+- correlation id o equivalente.
+
+La auditoría no concede autoridad.
+
+---
+
+#### 84. Auditoría de evaluación simulada
+
+La evidencia hipotética conserva por separado:
+
+- decisión real del actor cuando sea necesaria para usar la herramienta o leer datos;
+- escenario simulado;
+- resultado `WOULD_*` o `INDETERMINATE`;
+- versiones;
+- fingerprints;
+- razones.
+
+No se registra `WOULD_ALLOW` como autorización o ejecución real.
+
+---
+
+#### 85. Minimización de evidencia
+
+No se almacenan como evidencia ordinaria:
+
+- JWT completos;
+- access tokens;
+- refresh tokens;
+- cookies completas;
+- contraseñas;
+- PIN;
+- OTP;
+- service-role keys;
+- API keys;
+- payloads empresariales sensibles completos;
+- archivos personales innecesarios.
+
+Se conservan referencias y fingerprints mínimos.
+
+---
+
+#### 86. Inventario canónico de Server Actions consumido
+
+`AUTH-SRV-001` conserva un snapshot documental de doce repositorios reconciliados, seis con directiva Server Action detectada y 103 contenedores fuente relevantes en el corte histórico de ese inventario.
+
+Ese snapshot es identidad y evidencia histórica de inventario, no certificación actual de `AUTH-SIM-013`.
+
+Cada futura unidad debe reconciliar drift contra el código realmente asignado a la unidad antes de declarar cobertura.
+
+No se congela el conteo 103 como universo físico permanente.
+
+---
+
+#### 87. Estado físico actual en vento-shell
+
+En el `main` inspeccionado durante esta tarea se observa una Server Action inline en `src/app/page.tsx` denominada `signOutAction` que ejecuta cierre de sesión mediante Supabase y luego redirige al login.
+
+Esta observación demuestra una superficie `"use server"` actual en `vento-shell`.
+
+No demuestra cumplimiento ni incumplimiento de la política de simulación porque el logout es un control real de sesión cuyo comportamiento completo pertenece a su owner.
+
+Sí demuestra que las acciones de sesión no deben clasificarse automáticamente como acción empresarial autorizada o denegada por el rol simulado.
+
+---
+
+#### 88. Brecha física actual: EffectiveContext legacy
+
+`packages/os-context/src/types.ts` conserva un `EffectiveContext` que mezcla en la misma forma:
+
+```text
+source = simulation
+simulation_id
+is_simulation
+can_operate
+```
+
+junto con roles y contexto efectivos reales.
+
+Ese shape no se adopta como input autoritativo de Server Actions.
+
+Una materialización futura deberá separar procedencia, evaluación y autoridad antes de certificar un writer.
+
+---
+
+#### 89. Brecha física actual: helper booleano
+
+`packages/os-context/src/client.ts` conserva `hasEffectivePermission` con retorno booleano.
+
+Un booleano aislado no demuestra:
+
+- actor real;
+- sesión real;
+- procedencia;
+- lifecycle;
+- clasificación;
+- recurso;
+- razón;
+- versión;
+- `executable=false`;
+- cero efectos.
+
+No puede presentarse como evidencia suficiente de protección de una Server Action.
+
+---
+
+#### 90. Brecha física actual: RPC de simulación legacy
+
+El cliente compartido conserva helpers sobre:
+
+```text
+start_context_simulation_v1
+stop_context_simulation_v1
+```
+
+Su existencia no demuestra el contrato actual de cuatro planos ni la certificación de Server Actions.
+
+Una futura unidad debe reconciliar estos consumidores con los contracts propietarios sin utilizarlos como bypass de procedencia.
+
+---
+
+#### 91. Brecha física actual: requireAuthorization no certificado aquí
+
+El contrato documental exige un patrón compartido de `requireAuthorization`, pero esta tarea no observa una certificación física transversal de que todas las Server Actions asignadas a una unidad consuman un helper materializado y compatible con el contrato de simulación.
+
+Por tanto:
+
+```text
+DOCUMENTED HELPER CONTRACT
+!=
+PHYSICAL SERVER ACTION CERTIFICATION
+```
+
+La instancia futura debe aportar evidencia directa por superficie o por un boundary común que cubra de forma demostrable todas las superficies de la unidad.
+
+---
+
+#### 92. Brecha física actual: inventario histórico frente a código vigente
+
+El snapshot de `AUTH-SRV-001` pertenece a commits históricos explícitos de los repositorios inventariados.
+
+Una certificación futura no puede copiar esos conteos y asumir que el código no cambió.
+
+Debe reconciliar como mínimo:
+
+```text
+added
+removed
+renamed
+moved
+changed
+unchanged
+```
+
+para las Server Actions de la unidad.
+
+---
+
+#### 93. No reapertura de AUTH-SRV-001
+
+Esta tarea no modifica el inventario histórico aprobado de Server Actions.
+
+Consume su identidad y exige reconciliación de drift durante la materialización física.
+
+Un cambio de código futuro se registra en la evidencia de la unidad o en el owner canónico correspondiente sin reescribir silenciosamente el snapshot histórico.
+
+---
+
+#### 94. No reapertura de AUTH-SRV-015
+
+Esta tarea no redefine:
+
+- actor real;
+- sujeto simulado;
+- rol simulado;
+- identidad de simulación;
+- audit envelope;
+- cuatro planos;
+- evaluación hipotética.
+
+`AUTH-SRV-015` continúa siendo el contrato base de separación y evidencia server.
+
+`AUTH-SIM-013` especializa su aplicación a la frontera ejecutable de Server Actions.
+
+---
+
+#### 95. Frontera con Route Handlers
+
+Route Handlers conservan el mismo principio transversal de no aceptar autoridad simulada, pero su certificación física no se contabiliza como Server Action.
+
+Una acción no puede trasladar el writer a un Route Handler para eludir esta tarea.
+
+La paridad completa multicanal permanece en los owners transversales y pruebas integrales aplicables.
+
+---
+
+#### 96. Frontera con RPC y RLS
+
+La Server Action puede depender de RPC o RLS, pero esta tarea no convierte esas superficies en la misma identidad.
+
+La certificación Server Action demuestra que el entrypoint no presta autoridad simulada ni produce efecto por sí mismo.
+
+RPC y RLS conservan además sus controles y pruebas propias.
+
+---
+
+#### 97. Frontera con AUTH-SIM-014
+
+`AUTH-SIM-014` conserva la prueba integral en las aplicaciones canónicas.
+
+Esta tarea no declara:
+
+- que todas las aplicaciones tengan Server Actions;
+- que las aplicaciones sin Server Actions estén certificadas;
+- que Route Handlers, RPC, RLS, Edge Functions, Realtime, offline o procesos asíncronos estén certificados solo porque las Server Actions pasen;
+- que las diez aplicaciones estén listas productivamente.
+
+Entrega a `AUTH-SIM-014` una regla específica que deberá integrarse con los demás canales.
+
+---
+
+#### 98. Matriz de request boundary
+
+`SIMULATION-SERVER-ACTION-REQUEST-BOUNDARY-MATRIX-001`:
+
+| Entrada o camino | ¿Puede probar autoridad real? | Regla |
+| --- | --- | --- |
+| `FormData` | no | expresar intención; revalidar server-side |
+| hidden input | no | referencia solamente |
+| argumento serializado | no | revalidar campos materiales |
+| argumento ligado/closure | no | snapshot no equivale a autoridad vigente |
+| query param | no | no determina simulación ni permiso |
+| pathname | no | navegación no es autoridad |
+| cookie aislada | no | requiere contrato server-side completo |
+| `simulation_id` cliente | no | correlación, nunca credencial |
+| ausencia de `simulation_id` | no | no prueba origen real |
+| `WOULD_ALLOW` cliente | no | nunca convertir en `ALLOW` |
+| cache de autorización | no por sí sola | validar fingerprint y frescura |
+| real session vigente | necesaria cuando aplique | no basta sin permiso/contexto/recurso |
+| proyección autoritativa de procedencia | sí para clasificar origen | no concede permiso empresarial |
+| decisión real fresca `ALLOW` | sí dentro de su alcance | solo para solicitud real, no para request simulada |
+
+---
+
+#### 99. Matriz de efectos
+
+`SIMULATION-SERVER-ACTION-EFFECT-MATRIX-001`:
+
+| Efecto intentado desde procedencia simulada | Resultado |
+| --- | --- |
+| insert/update/delete empresarial | DENY antes del write |
+| transición de estado real | DENY |
+| creación de entidad real | DENY |
+| lectura protegida usando autoridad simulada | DENY |
+| upload real | DENY |
+| exportación protegida | DENY |
+| impresión real | DENY |
+| notificación real | DENY |
+| webhook/integración | DENY |
+| job/cola empresarial | no encolar |
+| outbox de éxito | no crear |
+| evaluación hipotética | permitida solo mediante owner de simulación y `executable=false` |
+| auditoría del deny | permitida como evidencia, sin evento empresarial de éxito |
+| lifecycle de simulación | únicamente mediante owner real de simulación, sin autoridad del rol simulado |
+| control real de sesión | resolver por owner de sesión y autoridad real, nunca por rol simulado |
+
+---
+
+#### 100. Matriz de lifecycle
+
+`SIMULATION-SERVER-ACTION-LIFECYCLE-MATRIX-001`:
+
+| Estado observado | Server Action empresarial originada en preview | Regla |
+| --- | --- | --- |
+| `RESOLVING` | no ejecutar | no usar escenario anterior |
+| `ACTIVE` | DENY | preview vigente sigue no ejecutable |
+| `STALE` | no ejecutar | revalidar; no usar `WOULD_ALLOW` stale |
+| `INVALID` visible | no ejecutar | no fallback a contexto real |
+| `EXIT_PENDING` | DENY | procedencia sigue simulada |
+| `COMPLETED` + request antigua | DENY replay | terminal no transforma origen |
+| `EXPIRED` + request antigua | DENY replay | no prolongar por cache |
+| `REVOKED` + request antigua | DENY replay | revocación prevalece |
+| `INVALID` terminal + request antigua | DENY replay | no restaurar sesión real desde request |
+| contexto real fresco + request nueva | evaluar autorización real | ya no usa evidencia simulada como permiso |
+
+---
+
+#### 101. Matriz de precedencia mínima
+
+| Condición concluyente | Resultado propietario |
+| --- | --- |
+| sesión real no válida | reason owner de sesión; no disfrazar como simulación |
+| actor real no resoluble | reason owner de identidad/contexto |
+| simulador no elegible | reason owner de elegibilidad |
+| escenario inválido sin intento real | reason owner del escenario/lifecycle |
+| capacidad `NOT_ALLOWED` | no preview; no fabricar writer simulado |
+| clasificación desconocida | fail-closed |
+| fuente autoritativa indisponible | error técnico propietario, incluyendo `AUTH-ERR-019` cuando aplique |
+| request autenticada simulada intenta acción/lectura protegida/efecto real | `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` |
+| request real fresca posterior | autorización real normal desde cero |
+
+---
+
+#### 102. Casos mínimos de prueba futura
+
+| Caso | Resultado esperado |
+| --- | --- |
+| `FULL_PREVIEW` + submit Guardar | deny, cero writes |
+| `FULL_PREVIEW` + `WOULD_ALLOW` | no writer real |
+| `DECISION_ONLY` + llamada directa | no operación real ni contenido protegido |
+| `NOT_ALLOWED` + llamada directa | ninguna autoridad por simulación |
+| clasificación desconocida | fail-closed |
+| `simulation_id` omitido | no convertir request de preview en real |
+| `simulation_id` manipulado | no conceder autoridad |
+| rol real enviado en hidden input | no confiar en cliente |
+| rol simulado enviado como rol efectivo | bloquear mezcla |
+| sede/área simuladas en payload | no usar como territorio real |
+| turno/check-in simulados | no satisfacer prerrequisitos reales |
+| request desde deep link | mismo deny si origen sigue simulado |
+| request tras redirect | mismo deny si origen sigue simulado |
+| request tras refresh | revalidar procedencia |
+| request tras hard reload | revalidar procedencia |
+| request desde segunda tab | revalidar lifecycle y revisión |
+| doble submit | cero efectos |
+| retry de red | cero efectos |
+| replay después de terminal | deny replay |
+| terminal concurrente | request simulada no se vuelve real |
+| cambio concurrente de escenario | request anterior no se reasigna |
+| cambio concurrente de política | evaluación stale no autoriza |
+| llamada a RPC writer | no bypass |
+| cliente privilegiado/service role | no sustituye actor/permiso real |
+| upload desde preview | no persistir archivo real |
+| export protegido | no generar archivo por autoridad simulada |
+| notificación | cero dispatch |
+| webhook | cero dispatch |
+| job/cola | no encolar efecto empresarial |
+| evaluación hipotética propietaria | `executable=false`, cero efectos empresariales |
+| salida de simulación propietaria | solo lifecycle; no autoejecutar acción previa |
+| contexto real fresco + request nueva | evaluar real desde cero |
+
+---
+
+#### 103. Evidencia mínima de una futura unidad
+
+Cada materialización de `AUTH-SIM-013` para un `implementation_unit_id` deberá demostrar, como mínimo:
+
+1. package y unidad propietaria identificados;
+2. gate E5 aplicable en `PASS`;
+3. snapshot de código y repositorio identificados;
+4. inventario exacto de Server Actions de la unidad reconciliado contra `AUTH-SRV-001`;
+5. Server Actions añadidas, retiradas, movidas o cambiadas registradas;
+6. clasificación de cada Server Action por efecto real, lectura protegida, simulación o sesión/recuperación propietaria;
+7. sesión real resuelta server-side;
+8. principal real resuelto;
+9. actor real resuelto cuando aplique;
+10. procedencia simulada resuelta server-side;
+11. lifecycle resuelto;
+12. revisión de escenario correlacionada;
+13. rol simulado separado del rol real;
+14. sede simulada separada de sede real;
+15. área simulada separada de área real;
+16. turno/check-in simulados separados de prerrequisitos reales;
+17. `simulation_id` cliente tratado como no autoritativo;
+18. ausencia de `simulation_id` sin bypass;
+19. `WOULD_ALLOW` no consumido como `ALLOW`;
+20. `WOULD_DENY` no consumido como decisión real;
+21. `INDETERMINATE` fail-closed;
+22. `FULL_PREVIEW` sin writer real;
+23. `DECISION_ONLY` sin writer ni lectura protegida por autoridad simulada;
+24. `NOT_ALLOWED` sin preview funcional;
+25. clasificación desconocida fail-closed;
+26. deny previo al primer efecto empresarial;
+27. código público correcto cuando aplique;
+28. `403` en transporte aplicable;
+29. razón interna correcta;
+30. `executable=false` preservado;
+31. sesión real preservada cuando corresponda;
+32. cero inserts/updates/deletes empresariales;
+33. cero transiciones de dominio;
+34. cero uploads reales;
+35. cero exportaciones protegidas;
+36. cero print jobs;
+37. cero notificaciones reales;
+38. cero webhooks/integraciones;
+39. cero jobs/colas empresariales;
+40. cero outbox de éxito;
+41. RPC llamada por la acción sin bypass;
+42. cliente privilegiado sin sustitución de autoridad;
+43. reintentos y doble submit con cero efectos;
+44. replay posterior a terminal bloqueado;
+45. carreras de lifecycle, escenario y política fail-closed;
+46. varias tabs convergentes;
+47. cambio de actor sin transferencia;
+48. auditoría correlacionada del deny;
+49. logs sin secretos;
+50. rollback sin reintroducir autoridad simulada;
+51. pruebas positivas de operación real fuera de simulación;
+52. pruebas negativas de ejecución desde simulación;
+53. evidencia local y CI de los guards;
+54. evidencia de staging u operativa cuando el package lo exija;
+55. cobertura suficiente para declarar cada Server Action de la unidad `PASS`, `FAIL` o no aplicable de manera explícita.
+
+---
+
+#### 104. Criterio de cobertura por unidad
+
+Una unidad no queda certificada porque una sola Server Action haya pasado.
+
+Debe cumplirse:
+
+```text
+SERVER_ACTIONS_EXPECTED_IN_UNIT
+=
+SERVER_ACTIONS_CLASSIFIED
+=
+SERVER_ACTIONS_WITH_EVIDENCE
+```
+
+con:
+
+```text
+MISSING = 0
+DUPLICATES = 0
+UNCLASSIFIED = 0
+```
+
+Toda exclusión debe tener owner y justificación verificable.
+
+---
+
+#### 105. Resultado por Server Action
+
+Cada Server Action inventariada en la unidad debe terminar con uno de estos resultados documentales de certificación física:
+
+```text
+PASS
+FAIL
+NOT_APPLICABLE
+```
+
+`NOT_APPLICABLE` exige que la función no pueda participar en la superficie de simulación evaluada o que su efecto pertenezca inequívocamente a otro control real independiente, con evidencia del owner.
+
+No se utiliza `UNKNOWN` como aprobación.
+
+---
+
+#### 106. Rollback de una futura unidad
+
+El rollback técnico no puede:
+
+- retirar el guard de procedencia simulada;
+- volver a aceptar `can_operate` como autoridad;
+- volver a aceptar un booleano simulado como permiso;
+- usar rol, sede, área, turno o check-in simulados en el contexto real;
+- reactivar un writer desde `FULL_PREVIEW`;
+- convertir `DECISION_ONLY` en formulario ejecutable;
+- permitir `NOT_ALLOWED` por fallback;
+- confiar en `simulation_id` cliente;
+- permitir bypass al omitir `simulation_id`;
+- reactivar replay de requests antiguas;
+- reutilizar idempotency keys simuladas para mutaciones reales;
+- mover el efecto a RPC, job, cola o webhook para evitar el guard;
+- degradar `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION` a éxito o error genérico;
+- borrar evidencia de intentos bloqueados necesaria para auditoría;
+- reejecutar automáticamente la operación al salir de simulación.
+
+---
+
+#### 107. Invariantes
+
+1. Una Server Action nunca obtiene autoridad del rol simulado.
+2. `WOULD_ALLOW` nunca equivale a `ALLOW`.
+3. Todo resultado simulado permanece `executable=false`.
+4. `simulation_id` no autentica.
+5. Omitir `simulation_id` no prueba origen real.
+6. `FormData` no es fuente de autoridad.
+7. Hidden inputs no son fuente de autoridad.
+8. Closures no conservan autorización indefinida.
+9. Pathname no es fuente de autoridad.
+10. Query params no son fuente de autoridad.
+11. Cache no es fuente de autoridad.
+12. Estado React no es fuente de autoridad.
+13. Rol visible no es fuente de autoridad.
+14. `can_operate` no se adopta como autoridad final.
+15. Un booleano de permiso no certifica procedencia ni lifecycle.
+16. El actor real permanece separado del sujeto simulado.
+17. La sesión real permanece separada de la sesión de simulación.
+18. El rol real permanece separado del rol simulado.
+19. La sede real permanece separada de la sede simulada.
+20. El área real permanece separada del área simulada.
+21. El turno real permanece separado del turno simulado.
+22. El check-in real permanece separado del check-in simulado.
+23. Un principal técnico no sustituye al actor humano.
+24. Un cliente privilegiado no sustituye autorización empresarial.
+25. La detección ocurre antes del primer efecto empresarial.
+26. Un rollback best-effort no sustituye el guard previo.
+27. Una transacción no autoriza efectos antes del guard.
+28. Una RPC no crea bypass.
+29. RLS no consume rol o territorio simulado como autoridad.
+30. `FULL_PREVIEW` no habilita writer real.
+31. `DECISION_ONLY` no habilita writer ni contenido protegido por autoridad simulada.
+32. `NOT_ALLOWED` no se degrada a read-only.
+33. Clasificación desconocida falla cerrado.
+34. Una lectura protegida por Server Action usa autoridad real independiente.
+35. Un upload real no se produce desde preview.
+36. Una exportación protegida no se produce por autoridad simulada.
+37. Una impresión real no se dispara desde preview.
+38. Una notificación real no se envía desde preview.
+39. Un webhook real no se despacha desde preview.
+40. Una integración real no se ejecuta desde preview.
+41. Un job empresarial no se encola desde preview.
+42. Una cola no difiere el bypass.
+43. Un outbox de éxito no se crea para un deny.
+44. Auditar el deny no equivale a ejecutar la acción.
+45. El código público de ejecución simulada permanece estable.
+46. El HTTP `403` se conserva cuando aplique.
+47. La razón interna de enforcement permanece distinguible.
+48. Error técnico no se presenta como política de simulación.
+49. Escenario inválido sin intento ejecutable no se degrada automáticamente a `AUTH-ERR-016`.
+50. La sesión real se preserva cuando sigue siendo válida.
+51. El deny no equivale a logout.
+52. Salir de simulación no autoejecuta una acción previa.
+53. Una acción real posterior exige request nueva.
+54. Una acción real posterior exige contexto real fresco.
+55. Idempotency keys simuladas no se reutilizan como reales.
+56. Doble submit no produce efecto.
+57. Retry no convierte request en real.
+58. Replay posterior a terminal permanece bloqueado.
+59. Una carrera con terminal no transforma la request.
+60. Un cambio de escenario invalida requests incompatibles.
+61. Un cambio de política invalida evaluaciones stale.
+62. Respuestas tardías no reactivan writers.
+63. Varias tabs no crean autoridad independiente.
+64. Cambio de actor no transfiere preview ni submit.
+65. `RESOLVING` no habilita por optimismo.
+66. `ACTIVE` mantiene no ejecutabilidad.
+67. `STALE` no reutiliza evaluación anterior.
+68. `INVALID` visible no degrada a contexto real.
+69. `EXIT_PENDING` sigue siendo simulación.
+70. Terminales no convierten requests antiguas en reales.
+71. La evaluación de simulación puede persistir únicamente evidencia propia autorizada.
+72. Lifecycle de simulación no es efecto empresarial autorizado por rol simulado.
+73. Controles reales de sesión conservan owner propio.
+74. La ubicación inline o de módulo no cambia la política.
+75. Delegar a helper no limpia procedencia.
+76. Navegación previa no cambia autoridad.
+77. Deep link no cambia autoridad.
+78. Redirect no cambia autoridad.
+79. Refresh no cambia autoridad.
+80. Hard reload no cambia autoridad.
+81. Back/forward no cambia autoridad.
+82. La certificación Server Action no certifica Route Handlers.
+83. La certificación Server Action no certifica RPC/RLS por sí sola.
+84. La certificación Server Action no certifica Edge Functions.
+85. La certificación Server Action no certifica procesos asíncronos por sí sola.
+86. El inventario histórico debe reconciliar drift por unidad.
+87. `EffectiveContext` legacy no se adopta como contrato final.
+88. `hasEffectivePermission` booleano no es evidencia suficiente.
+89. Helpers legacy de simulación no certifican el boundary.
+90. `AUTH-SRV-001` no se reabre.
+91. `AUTH-SRV-015` no se redefine.
+92. `AUTH-SIM-012` conserva navegación simulada.
+93. `AUTH-SIM-014` conserva prueba integral de aplicaciones.
+94. No se crean ni modifican requisitos de prueba.
+95. No se modifica 04A.
+96. No se ejecutan cambios físicos en esta tarea.
+
+---
+
+#### 108. Resultado documental
+
+La tarea deja cerrado documentalmente:
+
+1. significado de validación Server Action bajo simulación;
+2. diferencia entre acción empresarial, lectura protegida, control de simulación y control real de sesión;
+3. procedencia simulada autoritativa;
+4. prohibición de autoridad desde cliente;
+5. tratamiento de `simulation_id` presente y ausente;
+6. tratamiento de `FormData`, hidden inputs y argumentos ligados;
+7. orden del gate server-side;
+8. boundary previo al primer efecto;
+9. transacciones;
+10. RPC;
+11. clientes privilegiados;
+12. RLS/Data API;
+13. Storage/uploads;
+14. exportaciones;
+15. impresión;
+16. notificaciones;
+17. webhooks/integraciones;
+18. jobs/colas;
+19. outbox;
+20. cache y redirects;
+21. invocación directa;
+22. Server Actions inline y de módulo;
+23. autenticación y actor real;
+24. separación de roles y territorio;
+25. recursos y estado;
+26. `FULL_PREVIEW`;
+27. `DECISION_ONLY`;
+28. `NOT_ALLOWED`;
+29. clasificación desconocida;
+30. `WOULD_ALLOW`, `WOULD_DENY` e `INDETERMINATE`;
+31. código público, razón interna y `403`;
+32. precedencia de errores;
+33. sesión real preservada;
+34. salida y solicitud real posterior;
+35. idempotencia, doble submit y retries;
+36. replay y concurrencia;
+37. tabs, cambio de actor y lifecycle;
+38. auditoría y minimización;
+39. inventario Server Action como baseline histórico;
+40. brechas físicas actuales observadas;
+41. evidencia mínima por futura unidad;
+42. criterio de cobertura completa por unidad;
+43. rollback;
+44. handoff hacia la prueba integral de aplicaciones.
+
+---
+
+#### 109. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige separar autoridad real y simulada, mantener resultados hipotéticos no ejecutables, rechazar autoridad simulada en Server Actions y demás canales, bloquear antes de efectos, preservar el código de simulación, exigir solicitud real nueva después de salir, mantener paridad multicanal y reconciliar físicamente los consumers y helpers legacy. Esta tarea especializa la certificación de Server Actions sin crear una obligación verificable nueva ni cambiar owner, prioridad, modalidad, paquete, estado o relaciones del registro.
+
+---
+
+#### 110. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- cuatro planos separados de autoridad, evaluación, presentación y auditoría;
+- resultado simulado `executable=false`;
+- mutaciones y Server Actions sin autoridad simulada;
+- navegación de preview sin handlers reales;
+- sesión, tokens, cookies y cache con propósitos separados;
+- código público de ejecución no permitida en simulación;
+- bloqueo previo a filas, transacciones y efectos;
+- paridad entre Server Actions y demás canales;
+- solicitud real nueva después de salir;
+- clasificación 85 `FULL_PREVIEW`, 52 `DECISION_ONLY` y 3 `NOT_ALLOWED`;
+- diez aplicaciones canónicas y reconciliación física;
+- inventario y protección de acciones de servidor.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-119..128`, `TREQ-AUTH-279..288` y las obligaciones de Server Actions ya vinculadas a `AUTH-SRV-001..018`.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `AUTH-SIM-013`.
+
+---
+
+#### 111. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto de tarea fue preparado de forma independiente y todavía no ha sido incorporado al archivo propietario ni sometido al build documental del checkout del usuario |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron apertura de rama, preflight, formateador, task quality, delivery check, topología, TREQ ni batería global dentro del checkout local del usuario |
+| REMOTA | `PASS` | se verificaron en solo lectura el cierre de `AUTH-SIM-012` en `main`, continuidad hacia `AUTH-SIM-013`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas de formato y desarrollo, contrato de entrega, handoff completo de `AUTH-SIM-012`, contratos de `AUTH-SRV-001` y `AUTH-SRV-015`, cobertura 04A vigente y estado físico actual de `src/app/page.tsx` y `packages/os-context` |
+| OPERATIVA | `NOT_EXECUTED` | no se invocó una Server Action como rol simulado en un entorno desplegado durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron Server Actions, helpers, contratos, aplicaciones, RPC, RLS, Supabase, datos, sesiones, configuración, colas, integraciones ni despliegues |
+
+---
+
+#### 112. Criterios de aceptación
+
+- [x] Se define la certificación específica de Server Actions ante procedencia simulada.
+- [x] Se consume el handoff exacto de `AUTH-SIM-012`.
+- [x] Se conserva navegación separada de autoridad.
+- [x] Se conserva el enforcement de `AUTH-SIM-010`.
+- [x] Se conserva read-only de `AUTH-SIM-011`.
+- [x] Se conserva salida y contexto real fresco de `AUTH-SIM-009`.
+- [x] Se conserva separación de cuatro planos de `AUTH-SIM-006` y `AUTH-SRV-015`.
+- [x] Se conserva `PER_IMPLEMENTATION_UNIT`.
+- [x] Se conserva `POST_E5_PACKAGE`.
+- [x] Se define qué Server Actions entran en el alcance.
+- [x] Se distinguen acciones empresariales, lecturas protegidas, controles de simulación y controles de sesión.
+- [x] Una acción empresarial con procedencia simulada queda bloqueada antes del efecto.
+- [x] Una lectura protegida no usa autoridad simulada.
+- [x] Lifecycle/evaluación de simulación no se confunden con efecto empresarial.
+- [x] Un control de sesión no usa rol simulado como autoridad.
+- [x] `simulation_id` cliente no autentica.
+- [x] Omitir `simulation_id` no produce bypass.
+- [x] `FormData` no es autoridad.
+- [x] Hidden inputs no son autoridad.
+- [x] Closures no conservan autorización indefinidamente.
+- [x] Se define orden del gate server-side.
+- [x] Se exige deny antes del primer efecto empresarial.
+- [x] Una transacción no sustituye el guard previo.
+- [x] RPC no crea bypass.
+- [x] `service_role` no crea autoridad humana.
+- [x] RLS no consume contexto simulado como autoridad.
+- [x] Uploads reales permanecen bloqueados desde preview.
+- [x] Exportaciones protegidas permanecen bloqueadas.
+- [x] Impresión real permanece bloqueada.
+- [x] Notificaciones reales permanecen bloqueadas.
+- [x] Webhooks e integraciones permanecen bloqueados.
+- [x] Jobs y colas no difieren la ejecución.
+- [x] Outbox de éxito no se crea para un deny.
+- [x] Redirect no transforma deny en éxito.
+- [x] Invocación directa no crea bypass.
+- [x] Inline y módulo `use server` conservan la misma política.
+- [x] Delegar a helper no limpia procedencia.
+- [x] Actor real no se reemplaza por sujeto simulado.
+- [x] Rol simulado no reemplaza rol real.
+- [x] Sede y área simuladas no reemplazan territorio real.
+- [x] Turno y check-in simulados no satisfacen prerrequisitos reales.
+- [x] Dispositivo compartido no sustituye al actor humano.
+- [x] Recurso y estado se revalidan para una operación real posterior.
+- [x] `FULL_PREVIEW` no habilita writer.
+- [x] `DECISION_ONLY` no habilita writer ni contenido protegido.
+- [x] `NOT_ALLOWED` no se degrada a preview.
+- [x] Clasificación desconocida falla cerrado.
+- [x] `WOULD_ALLOW` no equivale a `ALLOW`.
+- [x] `WOULD_DENY` no se registra como decisión real.
+- [x] `INDETERMINATE` no se resuelve por optimismo.
+- [x] Se conserva `AUTH_ACTION_NOT_ALLOWED_IN_SIMULATION`.
+- [x] Se conserva `SIMULATION_EXECUTION_FORBIDDEN`.
+- [x] Se conserva `403` cuando aplique.
+- [x] Se respeta precedencia de reasons.
+- [x] Error técnico no se presenta como bloqueo de simulación.
+- [x] Sesión real puede preservarse.
+- [x] Deny no equivale a logout.
+- [x] Salida no autoejecuta acción previa.
+- [x] Operación real posterior exige request nueva.
+- [x] Idempotency keys simuladas no se reutilizan.
+- [x] Doble submit produce cero efectos.
+- [x] Retry produce cero efectos.
+- [x] Replay posterior a terminal queda bloqueado.
+- [x] Carreras de terminal, escenario y política fallan cerrado.
+- [x] Varias tabs revalidan.
+- [x] Cambio de actor no transfiere submit.
+- [x] `RESOLVING` no habilita.
+- [x] `ACTIVE` permanece no ejecutable.
+- [x] `STALE` no reutiliza evaluación.
+- [x] `INVALID` visible no crea fallback real.
+- [x] `EXIT_PENDING` mantiene procedencia simulada.
+- [x] Terminales no convierten requests antiguas en reales.
+- [x] Se define auditoría correlacionada y minimizada.
+- [x] Se consume el snapshot histórico de `AUTH-SRV-001` sin tratarlo como inventario físico permanente.
+- [x] Se registra la Server Action actual observada en `vento-shell` sin inferir cumplimiento.
+- [x] Se registra `EffectiveContext` legacy como brecha de separación.
+- [x] Se registra `hasEffectivePermission` booleano como evidencia insuficiente.
+- [x] Se registran helpers legacy de simulación sin tratarlos como certificación.
+- [x] No se reabre `AUTH-SRV-001`.
+- [x] No se redefine `AUTH-SRV-015`.
+- [x] Route Handlers, RPC y RLS conservan identidad propia.
+- [x] `AUTH-SIM-014` conserva la prueba integral de aplicaciones.
+- [x] Se define evidencia mínima por futura unidad.
+- [x] Se exige cobertura sin faltantes, duplicados ni no clasificados.
+- [x] Se define rollback fail-closed.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se ejecutan cambios físicos.
+- [x] `AUTH-SIM-014` permanece reservada.
+
+---
+
+#### 113. Límites
+
+Esta tarea no:
+
+- modifica Server Actions;
+- crea Server Actions;
+- modifica `src/app/page.tsx`;
+- modifica `packages/os-context`;
+- materializa `requireAuthorization`;
+- cambia `EffectiveContext`;
+- cambia `hasEffectivePermission`;
+- modifica RPC legacy de simulación;
+- modifica rutas;
+- modifica router;
+- modifica middleware;
+- modifica layouts;
+- modifica componentes;
+- modifica `SimulatedRoleNotice`;
+- modifica Route Handlers;
+- modifica RPC;
+- modifica RLS;
+- modifica Edge Functions;
+- modifica Realtime;
+- modifica Storage;
+- modifica Supabase;
+- crea migraciones;
+- cambia grants;
+- cambia sesiones;
+- cambia roles;
+- cambia permisos;
+- cambia `simulation_requirement`;
+- reclasifica los 140 permisos;
+- modifica `AUTH-DB-013`;
+- redefine `AUTH-SRV-015`;
+- reescribe el inventario histórico de `AUTH-SRV-001`;
+- ejecuta una simulación real;
+- invoca una Server Action desplegada;
+- certifica una aplicación completa;
+- ejecuta la prueba integral de `AUTH-SIM-014`;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A.
+
+---
+
+#### 114. Handoff exacto hacia AUTH-SIM-014
+
+`AUTH-SIM-013` entrega a `AUTH-SIM-014` un boundary Server Action ya especificado:
+
+```text
+SIMULATED ORIGIN
++
+BUSINESS SERVER ACTION
+=
+DENY BEFORE EFFECT
+```
+
+```text
+SERVER ACTION
+MUST RESOLVE REAL AUTHORITY
+INDEPENDENTLY OF SIMULATED ROLE
+```
+
+```text
+PASSING SERVER ACTION TESTS
+!=
+FULL APPLICATION CERTIFICATION
+```
+
+`AUTH-SIM-014` deberá integrar esta evidencia con navegación, UI read-only, Route Handlers, RPC/PostgREST, RLS/Data API, Edge Functions, Realtime, offline, procesos asíncronos y demás canales aplicables a cada aplicación, sin inferir cobertura integral a partir de una sola superficie.
+
+---
+
+#### 115. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-SIM-012 — Validar navegación como rol simulado`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-SIM-013 — Validar Server Actions como rol simulado`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-SIM-014 — Probar en todas las aplicaciones`
+
+
 ### [ ] AUTH-SIM-014 — Probar en todas las aplicaciones
