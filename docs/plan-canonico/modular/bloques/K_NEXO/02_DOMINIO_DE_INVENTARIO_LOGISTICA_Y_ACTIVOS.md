@@ -9710,7 +9710,1478 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-008 — Definir custodia y responsable actual`
 
-### [ ] NEXO-DOM-008 — Definir custodia y responsable actual
+### ✅ NEXO-DOM-008 — Definir custodia y responsable actual
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
+**Tarea siguiente:** NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
+**Tipo de tarea:** documental; definición canónica de custodia, responsable actual, alcance de custodia, aceptación, vigencia, granularidad por clase, reconciliación, concurrencia, idempotencia y fronteras con ubicación, uso, propiedad, condición, movimientos, LPN, préstamos y retornos bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué significa custodia dentro de NEXO y cómo se determina el responsable
+actual de una identidad o alcance físico sin confundir tenencia con ubicación,
+propiedad, uso, autorización, condición, mantenimiento, transporte, lifecycle
+de LPN o pertenencia a una agrupación logística.
+
+La regla raíz queda:
+
+```text
+PHYSICAL SUBJECT OR QUANTIFIED CUSTODY SCOPE
++
+EXPLICIT CUSTODY RESPONSIBILITY
++
+ACCEPTED EFFECTIVE HOLDER
++
+ONE CURRENT RESPONSIBLE PER ACTIVE CUSTODY SCOPE
++
+AUDITABLE HISTORY
+→
+RECONCILIABLE CURRENT CUSTODY
+```
+
+Una ubicación puede conocerse sin conocer custodio. Un custodio puede cambiar
+sin cambiar ubicación. Ninguna inferencia sustituye una aceptación cuando el
+cambio de responsabilidad la requiere.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. definición de custodia;
+2. definición de responsable actual;
+3. separación entre custodia, propiedad, uso, ubicación y autorización;
+4. concepto de `CUSTODY_SCOPE`;
+5. unicidad de responsable por alcance activo;
+6. granularidad de custodia por clase primaria;
+7. custodia individual frente a custodia por cantidad;
+8. custodia de LPN sin propagación automática a contenido o descendientes;
+9. propuesta de entrega frente a aceptación efectiva;
+10. commit point de una nueva custodia aceptada;
+11. tratamiento de tránsito;
+12. tratamiento de custodia desconocida o disputada;
+13. conservación de responsabilidad durante fallos, pérdida o daño;
+14. relación con devolución y obligación de retorno;
+15. revisión monotónica, concurrencia e idempotencia;
+16. operación offline y respuestas tardías;
+17. auditoría y reconciliación;
+18. fronteras con `NEXO-DOM-009`, `NEXO-DOM-010` y `NEXO-DOM-011`;
+19. handoff exacto a `NEXO-DOM-009`.
+
+No se materializan tablas, columnas, enums, constraints, RPC, RLS, Server
+Actions, Route Handlers, UI, migraciones, asignaciones reales ni movimientos.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- las siete clases primarias de control de `NEXO-DOM-001`;
+- ubicación, custodia, condición y disponibilidad como dimensiones distintas;
+- `CONSUMABLE` y `QUANTITY_STOCK` sin custodia individual ordinaria;
+- `REUSABLE_QUANTITY` con custodia por grupo o expediente;
+- `SERIALIZED_ASSET` con custodia individual;
+- `SPARE_PART` sin custodia individual ordinaria antes de instalación salvo
+  pieza serializada o alcance explícito;
+- `KIT` con custodia por instancia;
+- `PHYSICAL_CONTAINER` con custodia individual o por expediente;
+- LPN como identidad logística y no como custodio;
+- lifecycle LPN independiente de custodia;
+- `PACK` y `UNPACK` independientes de aceptación o retorno de custodia;
+- `TRANSFER_CONTENT` independiente de transferencia de custodia;
+- jerarquía LPN sin propagación automática de custodia;
+- obligación de retorno separada de custodia;
+- una única colocación física autoritativa de `NEXO-DOM-007`;
+- ubicación y custodia como dimensiones independientes;
+- transferencia de custodia con aceptación cuando corresponda;
+- conservación de custodio anterior, custodio nuevo, actor, fecha, causa y
+  evidencia en movimientos que afecten responsabilidad.
+
+---
+
+#### 4. Definición de custodia
+
+Custodia es la responsabilidad operativa vigente de tenencia, salvaguarda,
+entrega, devolución o reconciliación de un sujeto físico o alcance cuantificado
+mientras dicha responsabilidad se encuentre efectiva.
+
+Custodia responde:
+
+```text
+WHO IS CURRENTLY ACCOUNTABLE
+FOR PHYSICAL HOLDING OR CONTROL
+OF THIS CUSTODY SCOPE?
+```
+
+No responde quién es dueño, quién puede usarlo, quién pagó, quién lo mantiene,
+quién lo registró ni dónde se encuentra.
+
+---
+
+#### 5. Responsable actual
+
+El responsable actual de custodia es la referencia vigente que resulta de la
+última relación de custodia aceptada y no sustituida para un alcance concreto.
+
+Se fija:
+
+```text
+CURRENT RESPONSIBLE
+=
+EFFECTIVE ACCEPTED CUSTODIAN
+FOR CURRENT CUSTODY SCOPE
+```
+
+cuando la evidencia permite resolverlo.
+
+Un nombre mostrado en UI, un actor reciente o una ubicación no son fuentes
+suficientes por sí solos.
+
+---
+
+#### 6. Responsable actual no es un campo libre
+
+El responsable actual no puede mantenerse como texto mutable sin historia.
+
+Toda proyección de responsable actual debe poder resolverse hacia:
+
+- el alcance de custodia;
+- la referencia del custodio;
+- la decisión que hizo efectiva la custodia;
+- el instante efectivo;
+- la revisión vigente;
+- la evidencia y contexto necesarios.
+
+Una corrección no borra la relación anterior.
+
+---
+
+#### 7. `CUSTODY_SCOPE`
+
+`CUSTODY_SCOPE` es el conjunto físico exacto sobre el cual se atribuye una
+responsabilidad de custodia.
+
+Puede corresponder, según la clase:
+
+- a una identidad física individual;
+- a una instancia de kit;
+- a un LPN;
+- a un contenedor físico;
+- a una cantidad explícita dentro de un grupo reutilizable;
+- a otro sujeto cuya política de control permita custodia.
+
+El alcance no se infiere desde el producto maestro.
+
+---
+
+#### 8. Unicidad por alcance
+
+Para cada alcance de custodia activo se exige:
+
+```text
+ACTIVE CURRENT RESPONSIBLE COUNT = 1
+```
+
+No se admiten dos responsables actuales equivalentes para la misma porción o
+identidad física en el mismo instante.
+
+Participantes, supervisores, usuarios, transportadores auxiliares o testigos no
+crean una segunda custodia actual.
+
+---
+
+#### 9. Custodia por cantidad
+
+Cuando el control es por cantidad, una misma identidad maestra puede tener
+varios alcances de custodia simultáneos únicamente si representan porciones
+físicas no superpuestas y reconciliables.
+
+Ejemplo conceptual:
+
+```text
+REUSABLE GROUP = 30 UNITS
+
+SCOPE A = 10 UNITS
+SCOPE B = 20 UNITS
+
+A + B = 30
+OVERLAP = 0
+```
+
+La custodia por cantidad nunca fabrica identidades individuales para cada
+unidad.
+
+---
+
+#### 10. Custodia individual
+
+Cuando la clase exige identidad física individual, el alcance de custodia
+referencia esa identidad exacta.
+
+Se fija:
+
+```text
+ONE SERIALIZED IDENTITY
+→
+AT MOST ONE CURRENT CUSTODY SCOPE
+→
+ONE CURRENT RESPONSIBLE
+```
+
+No se sustituye la identidad por una cantidad agregada.
+
+---
+
+#### 11. Clase `CONSUMABLE`
+
+`CONSUMABLE` no posee custodia individual ordinaria.
+
+Puede existir responsabilidad operativa sobre un lote, entrega, área o
+existencia por cantidad conforme a procesos propietarios, pero esta tarea no
+convierte cada unidad consumible en un expediente individual de custodia.
+
+---
+
+#### 12. Clase `QUANTITY_STOCK`
+
+`QUANTITY_STOCK` tampoco posee custodia individual ordinaria.
+
+La responsabilidad sobre stock por cantidad puede asociarse a un alcance
+operativo o proceso cuando sea necesario, pero no se crean custodios unitarios
+para existencia fungible sin una identidad física individual aprobada.
+
+---
+
+#### 13. Clase `REUSABLE_QUANTITY`
+
+`REUSABLE_QUANTITY` utiliza custodia por grupo, expediente o porción
+cuantificada.
+
+Debe conservar como mínimo:
+
+- identidad del grupo o sujeto;
+- cantidad bajo responsabilidad;
+- unidad aplicable;
+- alcance físico reconciliable;
+- responsable actual;
+- revisión;
+- inicio efectivo;
+- evidencia de aceptación cuando corresponda.
+
+La suma de alcances no puede exceder la existencia autoritativa disponible para
+esa representación.
+
+---
+
+#### 14. Clase `SERIALIZED_ASSET`
+
+`SERIALIZED_ASSET` utiliza custodia individual.
+
+La relación conserva la identidad estable del activo y no se deriva de:
+
+- ubicación;
+- usuario;
+- propietario;
+- centro de costo;
+- mantenimiento;
+- QR;
+- modelo de producto.
+
+El custodio puede coincidir con alguna de esas referencias por decisión
+explícita, pero no por equivalencia conceptual.
+
+---
+
+#### 15. Clase `SPARE_PART`
+
+Un `SPARE_PART` controlado como cantidad no exige custodia individual ordinaria
+antes de instalación.
+
+Una pieza serializada o un alcance físico explícito puede requerir custodia
+individual cuando su política lo determine.
+
+La instalación, consumo, devolución o disposición no se deciden por la custodia
+sola.
+
+---
+
+#### 16. Clase `KIT`
+
+La custodia de un kit materializado se atribuye a su `KIT_INSTANCE`.
+
+El responsable del kit no se convierte automáticamente en custodio individual
+de todos sus componentes.
+
+Si un componente posee custodia individual propia, su relación conserva su
+propio contrato y debe permanecer coherente con el estado del kit.
+
+---
+
+#### 17. Clase `PHYSICAL_CONTAINER`
+
+Un contenedor identificado puede tener custodia individual.
+
+Cuando el control sea por expediente o una política explícita agrupe
+contenedores compatibles, la representación debe seguir permitiendo
+reconciliación sin duplicar identidades.
+
+Custodia del contenedor no equivale a custodia de su contenido.
+
+---
+
+#### 18. Custodia de LPN
+
+Un LPN puede ser sujeto de custodia logística explícita.
+
+Esa custodia expresa responsabilidad sobre la unidad logística identificada y
+su integridad operativa.
+
+Se fija:
+
+```text
+LPN CUSTODY
+!=
+AUTOMATIC CONTENT CUSTODY REWRITE
+```
+
+Aceptar un LPN no sobrescribe por inferencia la propiedad, usuario, custodio
+individual o historial de cada existencia contenida.
+
+---
+
+#### 19. LPN anidado
+
+Se conserva:
+
+```text
+PARENT LPN CUSTODY
+!=
+AUTOMATIC CHILD LPN CUSTODY
+```
+
+La jerarquía física puede permitir una proyección operacional de manejo conjunto,
+pero una relación padre-hijo no crea por sí sola una nueva aceptación de
+custodia sobre cada descendiente.
+
+Si un proceso requiere responsabilidad explícita sobre toda la jerarquía, debe
+definir el alcance sin fabricar múltiples aceptaciones implícitas.
+
+---
+
+#### 20. Contenido empacado
+
+`PACK` no transfiere custodia.
+
+```text
+PACK
+!=
+ACCEPT CUSTODY
+```
+
+El contenido puede cambiar de representación logística sin que cambie su
+responsable actual, salvo una decisión de custodia correlacionada y válida.
+
+---
+
+#### 21. Contenido desempacado
+
+`UNPACK` tampoco devuelve custodia.
+
+```text
+UNPACK
+!=
+RETURN CUSTODY
+```
+
+Desempacar puede conservar al mismo responsable aunque cambie la representación
+o ubicación física.
+
+---
+
+#### 22. Transferencia de contenido
+
+`TRANSFER_CONTENT` no transfiere custodia por inferencia.
+
+```text
+TRANSFER_CONTENT
+!=
+TRANSFER_CUSTODY
+```
+
+Cuando una intención empresarial requiera ambas, deben quedar correlacionadas
+pero cada una conserva su semántica y precondiciones.
+
+---
+
+#### 23. Ubicación
+
+Se mantiene:
+
+```text
+PLACEMENT != CUSTODY
+```
+
+Una sede, LOC o posición nunca es un custodio.
+
+Mover una identidad de LOC no cambia automáticamente responsable actual.
+
+Cambiar responsable tampoco mueve físicamente el objeto.
+
+---
+
+#### 24. Propiedad
+
+Se fija:
+
+```text
+CUSTODIAN != OWNER
+```
+
+La custodia atribuye tenencia o responsabilidad física. No transfiere propiedad
+legal, económica ni contable.
+
+Un propietario puede no tener custodia actual y un custodio puede no ser
+propietario.
+
+---
+
+#### 25. Uso
+
+Se fija:
+
+```text
+CUSTODIAN != USER
+```
+
+La persona autorizada a usar un recurso puede ser distinta de quien responde
+por su tenencia.
+
+Asignar uso no crea custodia por inferencia. Cambiar custodia tampoco concede
+permiso de uso.
+
+---
+
+#### 26. Autorización
+
+Se fija:
+
+```text
+CUSTODY != AUTHORIZATION
+```
+
+Ser custodio no concede automáticamente permisos de sistema para:
+
+- mover;
+- editar;
+- prestar;
+- devolver;
+- dar de baja;
+- ajustar;
+- transferir;
+- ver información sensible.
+
+La autorización permanece en NEXO-AUTH y contratos transversales.
+
+---
+
+#### 27. Actor de la operación
+
+El actor que ejecuta un comando no se convierte automáticamente en custodio.
+
+Se fija:
+
+```text
+COMMAND ACTOR
+!=
+NEW CUSTODIAN
+```
+
+El actor puede iniciar, confirmar, supervisar o registrar una operación y seguir
+siendo una referencia distinta del responsable actual.
+
+---
+
+#### 28. Dispositivo y sesión
+
+Un dispositivo compartido, navegador, estación, terminal o sesión nunca es
+custodio.
+
+La custodia se atribuye a la referencia empresarial autorizada que el contrato
+permita, no al equipo desde el que se capturó la decisión.
+
+---
+
+#### 29. Responsable de sede o área
+
+Ser responsable administrativo de una sede o área no convierte a esa referencia
+en custodio automático de todo lo físicamente ubicado allí.
+
+Puede validar, supervisar o reconciliar custodia conforme a autorización, pero
+cada relación de custodia mantiene su propio alcance.
+
+---
+
+#### 30. Responsable de mantenimiento
+
+El responsable de mantenimiento no se convierte en custodio por ejecutar,
+planear o aprobar una intervención.
+
+Cuando un activo se entrega físicamente a mantenimiento y el proceso requiere
+cambio de custodia, ese cambio necesita su propia decisión y evidencia.
+
+---
+
+#### 31. Centro de costo
+
+El centro de costo no determina custodio.
+
+```text
+COST CENTER
+!=
+CUSTODY
+```
+
+La dimensión económica permanece separada y bajo sus owners correspondientes.
+
+---
+
+#### 32. Propuesta de cambio
+
+Una intención de entregar un alcance a otro responsable no cambia por sí sola
+la custodia actual.
+
+Se fija:
+
+```text
+CUSTODY HANDOFF PROPOSED
+!=
+CUSTODY TRANSFERRED
+```
+
+Mientras no exista aceptación efectiva o resolución propietaria equivalente, el
+responsable actual anterior permanece vigente.
+
+---
+
+#### 33. Aceptación
+
+Cuando el proceso requiere aceptación del receptor, el cambio de responsable se
+hace efectivo únicamente después de una aceptación válida y server-side.
+
+Conceptualmente:
+
+```text
+PREVIOUS CUSTODIAN ACTIVE
++
+VALID HANDOFF
++
+AUTHORIZED RECIPIENT ACCEPTANCE
+→
+NEW CUSTODIAN ACTIVE
++
+PREVIOUS CUSTODY ENDED
+```
+
+No existe una ventana canónica con dos responsables actuales para el mismo
+alcance.
+
+---
+
+#### 34. Rechazo
+
+Un rechazo de la entrega no transfiere custodia.
+
+La relación previa continúa vigente salvo que otro contrato propietario haya
+establecido explícitamente una situación distinta y reconciliable.
+
+El rechazo conserva motivo y evidencia cuando sean materiales.
+
+---
+
+#### 35. Ausencia de respuesta
+
+Timeout, silencio, desconexión o ausencia de confirmación no equivalen a
+aceptación.
+
+```text
+NO RESPONSE
+!=
+ACCEPTED CUSTODY
+```
+
+El sistema debe conservar o resolver la responsabilidad previa antes de
+presentar otro custodio como actual.
+
+---
+
+#### 36. Transferencia detallada reservada
+
+Esta tarea fija la invariante de aceptación y responsable vigente.
+
+El ciclo completo de:
+
+- préstamo;
+- devolución;
+- transferencia;
+- cambio de custodia;
+- aceptación y cierre de esos flujos;
+
+pertenece a `NEXO-DOM-011`.
+
+`NEXO-DOM-008` no crea un workflow paralelo que compita con esa tarea.
+
+---
+
+#### 37. Tránsito
+
+`IN_TRANSIT` no determina por sí solo custodio.
+
+Se fija:
+
+```text
+IN_TRANSIT
+!=
+DRIVER CUSTODY
+```
+
+Un conductor, transportador u otro actor solo se convierte en responsable actual
+cuando la transferencia de custodia aplicable ha sido aceptada y registrada.
+
+El receptor de destino tampoco es custodio antes de la aceptación correspondiente.
+
+---
+
+#### 38. Cambio de vehículo o transportador
+
+Cambiar vehículo, ruta, viaje o conductor no reescribe automáticamente la
+custodia.
+
+Si el cambio físico implica transferencia real de responsabilidad, debe existir
+una decisión de custodia correlacionada bajo el proceso propietario.
+
+Vehículo y conductor tampoco son propietarios por inferencia.
+
+---
+
+#### 39. Recepción
+
+Registrar llegada física o ubicación de destino no sustituye la aceptación de
+custodia cuando esta sea requerida.
+
+Se fija:
+
+```text
+DESTINATION LOC CONFIRMED
+!=
+CUSTODY ACCEPTED
+```
+
+La recepción logística puede orquestar ambas decisiones, pero no las fusiona.
+
+---
+
+#### 40. Entrega
+
+Marcar una entrega como realizada no basta para cambiar custodio si el proceso
+exige aceptación del receptor.
+
+La evidencia debe poder distinguir:
+
+- entrega intentada;
+- entrega física observada;
+- aceptación del receptor;
+- custodia efectiva resultante.
+
+---
+
+#### 41. Obligación de retorno
+
+Se mantiene:
+
+```text
+RETURN OBLIGATION
+!=
+CUSTODY
+```
+
+Una obligación de retorno puede permanecer abierta con un responsable actual
+conocido, desconocido o en reconciliación.
+
+La obligación no determina quién tiene físicamente el objeto.
+
+---
+
+#### 42. Retorno confirmado
+
+Un retorno confirmado puede correlacionarse con una transferencia de custodia,
+pero no la reemplaza por inferencia cuando el contrato requiere aceptación.
+
+```text
+RETURN CONFIRMED
+!=
+AUTOMATIC CUSTODY ASSIGNMENT
+```
+
+El retorno, la ubicación resultante y la custodia resultante deben ser
+reconciliables.
+
+---
+
+#### 43. Condición
+
+Custodia y condición permanecen separadas.
+
+```text
+CUSTODIAN KNOWN
+!=
+CONDITION GOOD
+```
+
+```text
+DAMAGED
+!=
+CUSTODY ENDED
+```
+
+Daño, pérdida y faltante pertenecen a `NEXO-DOM-010`.
+
+---
+
+#### 44. Daño durante custodia
+
+Reportar daño no elimina ni transfiere al custodio.
+
+La relación vigente continúa siendo parte de la historia hasta que una decisión
+válida la sustituya o cierre conforme al proceso propietario.
+
+Responsabilidad económica por el daño no se infiere desde la mera custodia.
+
+---
+
+#### 45. Pérdida y faltante
+
+Una pérdida o faltante no permite borrar el responsable actual ni fabricar un
+nuevo custodio.
+
+Se debe conservar:
+
+```text
+LAST RESOLVED CUSTODY
++
+LOSS OR MISSING OBSERVATION
++
+RECONCILIATION CASE
+```
+
+hasta que el owner correspondiente resuelva el evento.
+
+`UNLOCATED_TEMPORARY` tampoco equivale automáticamente a pérdida.
+
+---
+
+#### 46. Custodia desconocida
+
+Cuando la evidencia no permite determinar de forma confiable un responsable
+actual, el sistema no selecciona uno por heurística.
+
+Se fija:
+
+```text
+UNKNOWN CUSTODY
+→
+PENDING RECONCILIATION
+→
+NO SILENT FALLBACK
+```
+
+La ausencia de responsable conocido es un estado de evidencia, no autorización
+para atribuir responsabilidad al responsable de sede, último usuario o creador.
+
+---
+
+#### 47. Custodia disputada
+
+Cuando dos evidencias materiales contradicen quién tiene la responsabilidad
+actual, la proyección no puede escoger silenciosamente una de ellas.
+
+Debe conservar:
+
+- última custodia aceptada conocida;
+- evidencia contradictoria;
+- alcance afectado;
+- estado pendiente de reconciliación;
+- owner de resolución;
+- trazabilidad de la decisión final.
+
+---
+
+#### 48. Alcance parcial y división por cantidad
+
+Para `REUSABLE_QUANTITY`, una entrega parcial puede dividir el alcance de
+custodia por cantidad sin convertir el grupo en activos serializados.
+
+Se exige conservación:
+
+```text
+TOTAL QUANTITY UNDER CUSTODY SCOPES
+<=
+AUTHORITATIVE PHYSICAL QUANTITY
+```
+
+y cero solapamiento entre porciones activas.
+
+La operación detallada de préstamo o transferencia permanece en
+`NEXO-DOM-011`.
+
+---
+
+#### 49. Reunificación de alcances
+
+Dos alcances por cantidad pueden reconciliarse bajo un mismo responsable cuando
+sus dimensiones físicas son compatibles y la suma conserva la existencia.
+
+La reunificación no crea cantidad, no borra historia y no transforma el grupo
+en una identidad individual.
+
+---
+
+#### 50. Kit y componentes
+
+El custodio de una instancia de kit responde por el alcance definido para el
+kit.
+
+Eso no borra custodias individuales previas de componentes que el dominio haya
+decidido conservar.
+
+Una implementación futura debe evitar dos responsabilidades incompatibles sobre
+la misma identidad física y preservar la completitud del kit como dimensión
+separada.
+
+---
+
+#### 51. LPN y contenido durante transporte
+
+La custodia de un LPN puede expresar responsabilidad logística por la unidad
+transportada.
+
+La aceptación de ese LPN no crea por sí sola nuevas relaciones individuales de
+custodia para todas las líneas de cantidad o identidades internas.
+
+Las proyecciones deben distinguir:
+
+```text
+LPN CUSTODY
+CONTENT MEMBERSHIP
+CONTENT-SPECIFIC CUSTODY WHEN APPLICABLE
+```
+
+sin presentar relaciones derivadas como aceptaciones independientes.
+
+---
+
+#### 52. Cierre de LPN
+
+Cerrar un LPN no devuelve custodia.
+
+```text
+CLOSE LPN
+!=
+RETURN CUSTODY
+```
+
+Antes del cierre deben quedar reconciliadas las transferencias de custodia que
+el lifecycle exige como precondición, pero la transición de lifecycle no
+ejecuta la transferencia.
+
+---
+
+#### 53. Anulación de LPN
+
+Anular un LPN no elimina historial de custodia.
+
+```text
+VOID LPN
+!=
+DELETE CUSTODY HISTORY
+```
+
+Toda responsabilidad pendiente o evidencia material sigue disponible para
+reconciliación.
+
+---
+
+#### 54. Reetiquetado
+
+Reetiquetar un LPN, activo, kit o contenedor no cambia custodio.
+
+```text
+RELABEL
+!=
+TRANSFER CUSTODY
+```
+
+Una nueva representación física conserva la identidad y la relación de
+responsabilidad vigente.
+
+---
+
+#### 55. Conteo
+
+Un conteo puede observar quién presenta o porta físicamente un objeto, pero no
+convierte esa observación en custodia canónica por sí sola.
+
+Cuando la observación contradice la custodia esperada:
+
+```text
+EXPECTED CUSTODY
++
+OBSERVED HOLDER
++
+RECONCILIATION DECISION
+```
+
+deben conservarse separadamente.
+
+---
+
+#### 56. Revisión de custodia
+
+Toda relación mutable de custodia debe poseer revisión monotónica o mecanismo
+equivalente.
+
+```text
+EXPECTED CUSTODY REVISION
+=
+CURRENT CUSTODY REVISION
+```
+
+Una aceptación válida cambia la revisión una sola vez.
+
+---
+
+#### 57. Concurrencia
+
+Dos receptores no pueden aceptar simultáneamente el mismo alcance como nueva
+custodia vigente.
+
+También deben fallar cerradas combinaciones incompatibles como:
+
+- devolución concurrente con préstamo;
+- entrega concurrente a dos receptores;
+- aceptación sobre una revisión ya sustituida;
+- cambio de cantidad bajo custodia mientras se acepta una entrega obsoleta.
+
+Solo una decisión compatible con la revisión actual puede establecer al nuevo
+responsable.
+
+---
+
+#### 58. Idempotencia
+
+Un retry de la misma aceptación, entrega o reconciliación:
+
+- no crea dos relaciones vigentes;
+- no finaliza dos veces la custodia previa;
+- no duplica cantidad;
+- no incrementa dos veces la revisión;
+- no duplica evidencia como dos decisiones independientes.
+
+La misma identidad de idempotencia recupera el resultado previamente aceptado.
+
+---
+
+#### 59. Operación offline
+
+Una aceptación capturada offline es intención pendiente y no custodia canónica.
+
+```text
+OFFLINE ACCEPTANCE
+!=
+CURRENT CUSTODY
+```
+
+Al reconectar se revalidan:
+
+- sujeto;
+- alcance;
+- cantidad o identidad;
+- custodio previo;
+- receptor;
+- revisión;
+- autorización;
+- ubicación y movimiento cuando sean materiales;
+- condición cuando sea material;
+- idempotencia;
+- cualquier bloqueo propietario.
+
+---
+
+#### 60. Respuestas tardías
+
+Una respuesta tardía no puede restaurar un custodio anterior.
+
+Si:
+
+```text
+CLIENT CUSTODY REVISION < SERVER CUSTODY REVISION
+```
+
+la autoridad permanece en el servidor y el cliente debe reconciliar antes de
+emitir una mutación dependiente.
+
+---
+
+#### 61. Autorización server-side
+
+Toda creación, aceptación, sustitución, liberación o reconciliación real de
+custodia requiere autorización server-side.
+
+No son autoridad:
+
+- un botón visible;
+- una URL;
+- un `site_id`;
+- un rol visual;
+- una etiqueta escaneada;
+- un actor declarado por cliente;
+- un nombre de custodio enviado en payload;
+- una sesión de dispositivo compartido.
+
+---
+
+#### 62. Evidencia mínima de una custodia vigente
+
+Una proyección de custodia vigente debe poder vincularse, como mínimo, con:
+
+- sujeto;
+- alcance;
+- cantidad cuando aplique;
+- responsable actual;
+- referencia de aceptación o decisión efectiva;
+- inicio efectivo;
+- revisión;
+- contexto operativo;
+- ubicación o movimiento correlacionados cuando sean materiales;
+- evidencia suficiente para reconstrucción.
+
+Los nombres físicos finales de campos pertenecen a arquitectura.
+
+---
+
+#### 63. Auditoría mínima de cambio
+
+Toda mutación de custodia debe poder atribuir:
+
+- alcance afectado;
+- custodio anterior;
+- custodio propuesto;
+- custodio resultante;
+- actor iniciador;
+- actor o referencia aceptante cuando aplique;
+- instante de propuesta;
+- instante efectivo;
+- razón o propósito;
+- cantidad o identidad exacta;
+- revisión anterior y resultante;
+- correlación;
+- idempotencia;
+- movimiento, viaje, préstamo, retorno u otro proceso relacionado cuando
+  aplique;
+- resultado aceptado, rechazado o pendiente de reconciliación.
+
+---
+
+#### 64. Privacidad y minimización
+
+La custodia conserva referencias suficientes para atribución y reconciliación,
+pero no duplica perfiles completos del trabajador o tercero cuando un
+identificador estable es suficiente.
+
+No se almacenan secretos, tokens, credenciales ni datos personales innecesarios
+en eventos de custodia.
+
+La exposición de datos del custodio sigue su contrato de autorización.
+
+---
+
+#### 65. Observabilidad
+
+La implementación futura debe poder distinguir al menos:
+
+- custodia vigente resuelta;
+- handoff propuesto;
+- aceptación exitosa;
+- rechazo;
+- aceptación obsoleta;
+- conflicto de revisión;
+- replay idempotente;
+- custodia desconocida;
+- custodia disputada;
+- diferencia de cantidad;
+- intento offline pendiente;
+- reconciliación posterior.
+
+Las métricas no sustituyen la evidencia autoritativa.
+
+---
+
+#### 66. Estado físico AS-IS reconciliado
+
+La evidencia vigente demuestra superficies físicas parciales para activos y
+grupos reutilizables, incluyendo `asset_items` y `asset_groups`, además de
+contratos documentales que distinguen custodio y usuario.
+
+Sin embargo, en las fuentes inspeccionadas no se confirmó una superficie
+canónica integral que materialice para todas las clases:
+
+- alcance de custodia;
+- responsable actual versionado;
+- aceptación;
+- revisión de custodia;
+- reconciliación de conflictos;
+- custodia LPN;
+- custodia por cantidad;
+- historial end-to-end de handoff.
+
+Por tanto, esta tarea no declara implementado ni certificado el ciclo físico de
+custodia.
+
+---
+
+#### 67. Adopción física futura
+
+La materialización posterior deberá impedir:
+
+- usar ubicación como custodio;
+- usar propietario como custodio por defecto;
+- usar usuario como custodio por defecto;
+- usar creador del registro como custodio;
+- usar responsable de sede como custodio universal;
+- usar conductor como custodio sin aceptación;
+- usar una sesión o dispositivo como custodio;
+- transferir custodia por `PACK`, `UNPACK` o `TRANSFER_CONTENT`;
+- propagar automáticamente custodia desde LPN padre a hijos;
+- propagar automáticamente custodia de LPN a todos sus contenidos;
+- borrar historial al cambiar responsable;
+- mantener dos responsables actuales sobre el mismo alcance;
+- fabricar identidades unitarias para custodia por cantidad;
+- aceptar una entrega offline como canónica antes de servidor;
+- usar last-write-wins frente a revisiones concurrentes;
+- inventar responsable cuando la evidencia es desconocida o contradictoria;
+- ejecutar backfills irreversibles sin evidencia y rollback propietarios.
+
+---
+
+#### 68. Escenarios negativos obligatorios
+
+El contrato debe impedir, como mínimo:
+
+1. LOC tratado como custodio;
+2. sede tratada como custodio;
+3. propietario tratado automáticamente como custodio;
+4. usuario tratado automáticamente como custodio;
+5. centro de costo tratado como custodio;
+6. responsable de mantenimiento tratado automáticamente como custodio;
+7. actor del comando convertido en custodio sin aceptación;
+8. dispositivo compartido registrado como custodio;
+9. dos responsables actuales para el mismo alcance;
+10. una identidad serializada con dos custodias vigentes;
+11. dos alcances por cantidad que se solapan;
+12. cantidad bajo custodia superior a la existencia física;
+13. reutilizables por cantidad convertidos en identidades individuales;
+14. `PACK` transfiriendo custodia;
+15. `UNPACK` devolviendo custodia;
+16. `TRANSFER_CONTENT` cambiando custodio por inferencia;
+17. LPN padre propagando custodia automáticamente a hijos;
+18. LPN propagando custodia individual a todo su contenido;
+19. tránsito convirtiendo conductor en custodio sin aceptación;
+20. destino convirtiéndose en custodio por estar previsto;
+21. ubicación de destino confirmando custodia automáticamente;
+22. obligación de retorno usada como responsable actual;
+23. retorno confirmado asignando custodia sin contrato;
+24. daño eliminando custodia;
+25. pérdida borrando al último custodio conocido;
+26. observación de conteo sobrescribiendo custodia;
+27. timeout interpretado como aceptación;
+28. aceptación offline presentada como vigente;
+29. retry duplicando una transferencia;
+30. respuesta tardía restaurando responsable anterior;
+31. responsable desconocido resuelto por fallback;
+32. conflicto de evidencia resuelto silenciosamente;
+33. reetiquetado cambiando custodio;
+34. cierre o anulación de LPN borrando historial de custodia.
+
+---
+
+#### 69. Matriz de granularidad de custodia
+
+| Clase o sujeto | Granularidad ordinaria | Responsable actual |
+| --- | --- | --- |
+| `CONSUMABLE` | no individual | no se fabrica custodia unitaria |
+| `QUANTITY_STOCK` | no individual | responsabilidad operacional por alcance cuando aplique |
+| `REUSABLE_QUANTITY` | grupo, expediente o porción cuantificada | uno por alcance no superpuesto |
+| `SERIALIZED_ASSET` | identidad física individual | uno por identidad |
+| `SPARE_PART` por cantidad | no individual ordinario | por alcance cuando aplique |
+| `SPARE_PART` serializado | identidad física individual | uno por identidad |
+| `KIT_INSTANCE` | instancia de kit | uno por instancia |
+| `PHYSICAL_CONTAINER` | identidad o expediente permitido | uno por alcance |
+| LPN | identidad logística | uno por alcance LPN cuando el proceso lo requiera |
+
+La matriz no concede permisos ni crea relaciones físicas.
+
+---
+
+#### 70. Matriz de separaciones obligatorias
+
+| Concepto | Responde | No equivale a |
+| --- | --- | --- |
+| ubicación | dónde está | custodia |
+| custodia | quién responde por la tenencia | propiedad, uso o autorización |
+| propiedad | a quién pertenece | custodia |
+| uso | quién puede o debe usar | custodia |
+| autorización | qué acción puede ejecutar | custodia |
+| mantenimiento | quién gobierna la intervención técnica | custodia |
+| condición | estado físico observado | custodia |
+| retorno | obligación o hecho de devolución | custodia |
+| LPN | agrupación logística | custodio |
+| dispositivo | superficie técnica | custodio |
+
+---
+
+#### 71. Matriz de responsabilidades contractuales
+
+| Responsabilidad | Propietario contractual |
+| --- | --- |
+| clasificación y granularidad física | `NEXO-DOM-001` |
+| propósito LPN | `NEXO-DOM-002` |
+| lifecycle LPN | `NEXO-DOM-003` |
+| contenido y pack/unpack | `NEXO-DOM-004` |
+| transferencia de contenido | `NEXO-DOM-005` |
+| anidamiento LPN y retornables | `NEXO-DOM-006` |
+| ubicación sede/LOC/LPN/contenido | `NEXO-DOM-007` |
+| custodia y responsable actual | `NEXO-DOM-008` |
+| individual frente a reutilizable por cantidad | `NEXO-DOM-009` |
+| condición, daño, pérdida y faltante | `NEXO-DOM-010` |
+| préstamo, devolución y cambio de custodia | `NEXO-DOM-011` |
+| auditoría, historial y evidencia | `NEXO-DOM-017` |
+| contenedor físico y vínculo LPN | `NEXO-DOM-019` y `NEXO-DOM-020` |
+| movimiento atómico LPN/contenido | `NEXO-DOM-022` |
+| autorización | familia `NEXO-AUTH` y autorización transversal |
+| persistencia, RPC, RLS y migraciones | arquitectura e implementación física propietarias |
+| propiedad y efecto económico | NUMERA y owners económicos correspondientes |
+| supervisión organizacional | VISO según sus contratos, sin convertirse en fuente de custodia NEXO |
+
+---
+
+#### 72. Handoff hacia `NEXO-DOM-009`
+
+Esta tarea entrega:
+
+```text
+CUSTODY AS TENURE RESPONSIBILITY
++
+ONE CURRENT RESPONSIBLE PER CUSTODY SCOPE
++
+INDIVIDUAL CUSTODY FOR IDENTIFIED SUBJECTS
++
+QUANTITY-SCOPE CUSTODY WITHOUT FABRICATED IDENTITIES
++
+EXPLICIT ACCEPTANCE WHEN REQUIRED
++
+LOCATION/USE/OWNERSHIP SEPARATION
++
+NO AUTOMATIC LPN CUSTODY PROPAGATION
+```
+
+`NEXO-DOM-009` deberá separar activo individual y reutilizable controlado por
+cantidad respetando que:
+
+- la necesidad de custodia individual puede ser evidencia de identidad física,
+  pero no se usa como única heurística de clasificación;
+- un reutilizable por cantidad conserva alcance y cantidad sin crear una
+  identidad por unidad;
+- un activo individual conserva exactamente una identidad física;
+- cambiar granularidad requiere transición propietaria y reconciliación;
+- custodia existente no autoriza doble representación entre `asset_items` y
+  grupos por cantidad.
+
+---
+
+#### 73. Handoffs posteriores
+
+Quedan reservados:
+
+- `NEXO-DOM-009`: activo individual frente a reutilizable por cantidad;
+- `NEXO-DOM-010`: condición, daño, pérdida y faltante;
+- `NEXO-DOM-011`: préstamo, devolución, transferencia y cambio de custodia;
+- `NEXO-DOM-017`: auditoría, historial y evidencia;
+- `NEXO-DOM-019`: identidad de contenedor físico frente a LPN;
+- `NEXO-DOM-020`: continuidad del LPN respecto del contenedor;
+- `NEXO-DOM-022`: movimiento atómico del LPN y contenido;
+- `NEXO-DOM-023`: trazabilidad interna.
+
+Esta tarea no desarrolla esos contratos.
+
+---
+
+#### 74. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege separación entre propiedad,
+ubicación, custodia y usuario; transferencia de custodia con aceptación;
+comportamiento individual o por cantidad; custodia de contenedores, kits y LPN;
+y no doble contabilización. Esta tarea especializa esas obligaciones sin crear
+una obligación de prueba independiente.
+
+---
+
+#### 75. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para separación de propiedad, ubicación, custodio, usuario y
+  otras dimensiones, y aceptación de transferencia de custodia;
+- `TREQ-NEXO-016`, para separar custodia de LPN, bulto, remisión, viaje,
+  entrega, recepción y retorno, con aceptación explícita;
+- `TREQ-NEXO-043`, para granularidad de reutilizables por cantidad frente a
+  activos serializados;
+- `TREQ-NEXO-045`, para responsabilidad de instancias de kit sin duplicar sus
+  componentes;
+- `TREQ-NEXO-046`, para custodia de contenedores físicos separada de LPN y
+  contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito de custodias según las siete
+  clases y sin duplicación física.
+
+Estas referencias son trazabilidad reutilizada y no cambios al registro.
+
+---
+
+#### 76. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, ruta, secuencia activa, owner, handoff de `NEXO-DOM-007`, topología, políticas, contrato de entrega, manifest, 04A NEXO, `package.json`, CAP-SCOPE de activos, matrices de comportamiento y superficies AS-IS de activos/grupos relevantes. |
+| OPERATIVA | NOT_EXECUTED | No se realizaron entregas, aceptaciones, préstamos, devoluciones ni transferencias reales de custodia. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, LPN, contenedores, custodios, datos, Supabase, código ni infraestructura. |
+
+---
+
+#### 77. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Custodia se define como responsabilidad de tenencia y reconciliación.
+- [x] Responsable actual se resuelve desde una custodia efectiva aceptada.
+- [x] Responsable actual no es texto libre sin historia.
+- [x] Se define `CUSTODY_SCOPE`.
+- [x] Existe un solo responsable actual por alcance activo.
+- [x] Los alcances por cantidad no se solapan.
+- [x] La custodia individual conserva identidad exacta.
+- [x] Se preserva granularidad de las siete clases.
+- [x] Consumibles y stock por cantidad no reciben custodia individual ficticia.
+- [x] Reutilizables usan grupo, expediente o porción cuantificada.
+- [x] Activos serializados usan identidad individual.
+- [x] Kits usan instancia.
+- [x] Contenedores conservan custodia separada de contenido.
+- [x] LPN puede ser sujeto de custodia sin reescribir su contenido.
+- [x] Jerarquía LPN no propaga custodia automáticamente.
+- [x] `PACK`, `UNPACK` y `TRANSFER_CONTENT` no transfieren custodia.
+- [x] Ubicación no crea custodia.
+- [x] Propiedad no equivale a custodia.
+- [x] Uso no equivale a custodia.
+- [x] Autorización no equivale a custodia.
+- [x] Actor del comando no equivale a custodio.
+- [x] Dispositivo no equivale a custodio.
+- [x] Responsable de sede no es custodio universal.
+- [x] Mantenimiento no crea custodia por inferencia.
+- [x] Handoff propuesto no cambia responsable actual.
+- [x] La aceptación requerida es el commit point de cambio de responsable.
+- [x] Rechazo, timeout y silencio no transfieren custodia.
+- [x] El workflow detallado permanece en `NEXO-DOM-011`.
+- [x] Tránsito no convierte conductor en custodio.
+- [x] Recepción de ubicación no sustituye aceptación.
+- [x] Retorno y custodia permanecen separados.
+- [x] Daño, pérdida y faltante no borran historia de custodia.
+- [x] Custodia desconocida falla cerrada sin heurística.
+- [x] Custodia disputada conserva evidencia contradictoria.
+- [x] Se definen revisión, concurrencia e idempotencia.
+- [x] Offline no equivale a custodia canónica.
+- [x] Respuestas tardías no restauran custodios anteriores.
+- [x] Se define auditoría mínima.
+- [x] El AS-IS parcial no se presenta como implementación completa.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-009`.
+
+---
+
+#### 78. Límites
+
+Esta tarea no:
+
+- crea ni modifica custodios reales;
+- presta ni devuelve activos;
+- transfiere custodia real;
+- crea tablas, columnas, enums, constraints, índices, triggers o vistas;
+- crea RPC, RLS, Server Actions ni Route Handlers;
+- modifica `asset_items` ni `asset_groups`;
+- modifica `inventory_lpns` ni contenido LPN;
+- modifica ubicaciones;
+- modifica movimientos;
+- modifica condición;
+- decide daño, pérdida o faltante;
+- cambia propietario;
+- cambia centro de costo;
+- define mantenimiento;
+- define flujo detallado de préstamo o devolución;
+- define lifecycle completo de transferencia de custodia;
+- cambia datos;
+- ejecuta backfill;
+- modifica Supabase;
+- modifica `vento-nexo`;
+- implementa UI;
+- crea permisos;
+- despliega;
+- crea una instancia física propia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-DOM-009`.
+
+---
+
+#### 79. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-008 — Definir custodia y responsable actual`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad`
+
 ### [ ] NEXO-DOM-009 — Separar activo individual y reutilizable controlado por cantidad
 ### [ ] NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante
 ### [ ] NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
