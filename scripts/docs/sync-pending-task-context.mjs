@@ -440,10 +440,15 @@ export function physicalLaneSummary(implementationControl, { limit = 12 } = {}) 
     : [];
   const terminal = new Set(['VERIFIED', 'DEFERRED']);
   const pending = instances.filter(({ status }) => !terminal.has(status));
-  const selected = implementationControl?.physical?.active ?? null;
-  const queue = selected
-    ? [selected, ...pending.filter(({ instanceId }) => instanceId !== selected.instanceId)]
-    : pending;
+  const compatibility = implementationControl?.physical?.active ?? null;
+  const actionable = Array.isArray(implementationControl?.physical?.actionableSet)
+    ? implementationControl.physical.actionableSet.filter(({ status }) => !terminal.has(status))
+    : compatibility ? [compatibility] : [];
+  const actionableIds = new Set(actionable.map(({ instanceId }) => instanceId));
+  const queue = [
+    ...actionable,
+    ...pending.filter(({ instanceId }) => !actionableIds.has(instanceId)),
+  ];
   const counts = {};
   for (const instance of instances) {
     counts[instance.status] = (counts[instance.status] ?? 0) + 1;
@@ -454,13 +459,13 @@ export function physicalLaneSummary(implementationControl, { limit = 12 } = {}) 
     deferred: counts.DEFERRED ?? 0,
     waiting: counts.WAITING_FOR_PREVIOUS_INSTANCE ?? 0,
     remaining: pending.length,
-    current: queue[0] ?? null,
-    next: queue[1] ?? null,
+    actionable,
+    current: compatibility ?? queue[0] ?? null,
+    next: queue.find(({ instanceId }) => instanceId !== (compatibility?.instanceId ?? queue[0]?.instanceId)) ?? null,
     queue: queue.slice(0, Math.max(1, Number(limit) || 12)),
     counts,
   };
 }
-
 function documentaryLaneSummary(tasks, implementationControl) {
   const currentId = implementationControl?.documentary?.taskId ?? tasks[0]?.id ?? null;
   const currentIndex = tasks.findIndex(({ id }) => id === currentId);
@@ -561,6 +566,7 @@ export function operationalActionSummary({
     packageCurrent,
     packageRecord,
     physical: physicalLaneSummary(implementationControl).current,
+    physicalSet: physicalLaneSummary(implementationControl).actionable,
   };
 }
 
@@ -681,7 +687,10 @@ function renderDocumentaryAction(action) {
 }
 
 function renderPhysicalAction(action) {
-  if (!action.physical) {
+  const physicalSet = Array.isArray(action.physicalSet)
+    ? action.physicalSet
+    : action.physical ? [action.physical] : [];
+  if (physicalSet.length === 0) {
     return [
       '### 4. Implementación física',
       '',
@@ -691,15 +700,16 @@ function renderPhysicalAction(action) {
     ];
   }
   return [
-    `### 4. Ejecuta la instancia física autorizada — \`${action.physical.instanceId}\``,
+    '### 4. Instancias físicas gobernadas en curso',
     '',
-    `- **Estado:** \`${action.physical.status}\``,
-    `- **Contrato:** ${laneCell(action.physical.taskTitle)}`,
-    `- **Acción exacta del control:** \`${implementationActionLabel(action.physical.status)}\``,
-    `- **Registro:** \`${action.physical.recordPath}\``,
+    '- **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.',
+    ...physicalSet.flatMap((physical) => [
+      `- \`${physical.instanceId}\` — \`${physical.status}\` — \`${implementationActionLabel(physical.status)}\``,
+      `  - Contrato: ${laneCell(physical.taskTitle)}` ,
+      `  - Registro: \`${physical.recordPath}\``,
+    ]),
   ];
 }
-
 function implementationActionLabel(status) {
   if (status === 'PENDING_AUTHORIZATION' || status === 'READY_FOR_AUTHORIZATION') return 'AUTORIZAR_IMPLEMENTACIÓN';
   if (status === 'BLOCKED' || status === 'WAITING_FOR_PREVIOUS_INSTANCE') return 'RESOLVER_BLOQUEO';
@@ -752,15 +762,16 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
   const documentaryCurrent = documentary.current;
   const documentaryNext = documentary.next;
   const coordination = implementationControl?.coordination ?? {};
+  const actionableIds = new Set(physical.actionable.map(({ instanceId }) => instanceId));
   const physicalRows = physical.queue.length > 0
     ? physical.queue.map((instance, index) => {
-      const isCurrent = index === 0 && physicalCurrent?.instanceId === instance.instanceId;
-      const condition = isCurrent
-        ? `ACTUAL — ${implementationControl.primaryAction.type}`
+      const isActionable = actionableIds.has(instance.instanceId);
+      const condition = isActionable
+        ? `EN_CURSO — ${implementationActionLabel(instance.status)}`
         : instance.blocker ?? (instance.status === 'READY_FOR_AUTHORIZATION'
           ? 'Elegible cuando corresponda'
           : 'Sin bloqueo adicional declarado');
-      return `| ${index + 1} | ${isCurrent ? '**ACTUAL**' : 'PENDIENTE'} | \`${laneCell(instance.instanceId)}\` | ${laneCell(instance.taskTitle)} | \`${laneCell(instance.status)}\` | ${laneCell(condition)} |`;
+      return `| ${index + 1} | ${isActionable ? '**EN CURSO**' : 'PENDIENTE'} | \`${laneCell(instance.instanceId)}\` | ${laneCell(instance.taskTitle)} | \`${laneCell(instance.status)}\` | ${laneCell(condition)} |`;
     })
     : ['| — | — | — | Sin instancia física pendiente conocida | — | — |'];
   return [
@@ -769,7 +780,7 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
     '| Carril | Estado | Trabajo actual | Siguiente | Regla |',
     '| --- | --- | --- | --- | --- |',
     `| 🟦 **DOCUMENTACIÓN** | \`${laneCell(implementationControl.documentary.state)}\` | ${documentaryCurrent ? `\`${laneCell(documentaryCurrent.id)}\` — ${laneCell(documentaryCurrent.title)}` : '—'} | ${documentaryNext ? `\`${laneCell(documentaryNext.id)}\` — ${laneCell(documentaryNext.title)}` : 'FIN DE RUTA'} | Una tarea documental activa |`,
-    `| 🟧 **IMPLEMENTACIÓN FÍSICA** | ${physicalCurrent ? `\`${laneCell(physicalCurrent.status)}\`` : '`SIN_INSTANCIA_ACTIVA`'} | ${physicalCurrent ? `\`${laneCell(physicalCurrent.instanceId)}\` — ${laneCell(physicalCurrent.taskTitle)}` : '—'} | ${physicalNext ? `\`${laneCell(physicalNext.instanceId)}\`` : 'SIN SIGUIENTE PROYECTADA'} | Una instancia física activa |`,
+    `| 🟧 **IMPLEMENTACIÓN FÍSICA** | ${physicalCurrent ? `\`${laneCell(physicalCurrent.status)}\`` : '`SIN_INSTANCIA_ACTIVA`'} | ${physicalCurrent ? `\`${laneCell(physicalCurrent.instanceId)}\` — ${laneCell(physicalCurrent.taskTitle)}` : '—'} | ${physicalNext ? `\`${laneCell(physicalNext.instanceId)}\`` : 'SIN SIGUIENTE PROYECTADA'} | Governed active set; prioridad ≠ exclusividad |`,
     '',
     `> Coordinación: \`${laneCell(coordination.mode ?? 'CONTROLLED_DUAL_LANE')}\`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el \`main\` más reciente antes de cerrar.`,
     '',
@@ -783,7 +794,7 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
     `- **Ruta documental activa:** \`${laneCell(active.route_id)}\``,
     `- **Etapa documental:** \`${laneCell(active.sequence_id)}\` — ${laneCell(active.block_title)}`,
     `- **Siguiente etapa documental:** \`${laneCell(active.handoff_sequence_id ?? 'NINGUNA')}\``,
-    `- **Acción primaria del control de instancias:** \`${laneCell(implementationControl.primaryAction.type)}\` — \`${laneCell(implementationControl.primaryAction.target)}\``,
+    `- **Puntero de compatibilidad del control de instancias:** \`${laneCell(implementationControl.primaryAction.type)}\` — \`${laneCell(implementationControl.primaryAction.target)}\``,
     `- **Instancias físicas en espera de predecesora:** **${physical.waiting}**`,
     `- **Cobertura documental de la ruta:** **${route.coverage_policy === 'ALL_CANONICAL_TASKS_EXACTLY_ONCE' ? 'todas las tareas, exactamente una vez' : laneCell(route.coverage_policy)}**`,
     '',

@@ -185,7 +185,7 @@ export function validateImplementationControl(control, workTopology) {
     errors.push('authorization_mode debe ser EXPLICIT_PER_INSTANCE.');
   }
   if (control?.automatic_authorization !== false) errors.push('automatic_authorization debe ser false.');
-  if (control?.single_primary_action !== true) errors.push('single_primary_action debe ser true.');
+  if (control?.single_primary_action !== false) errors.push('single_primary_action debe ser false.');
   if (control?.instance_storage_mode !== 'ONE_FILE_PER_INSTANCE') {
     errors.push('instance_storage_mode debe ser ONE_FILE_PER_INSTANCE.');
   }
@@ -507,59 +507,75 @@ export function deriveImplementationControl({
     )));
   }
 
-  const priority = [
+  const actionByStatus = new Map([
     ['IN_PROGRESS', 'EJECUTAR_IMPLEMENTACION'],
     ['IMPLEMENTED', 'EJECUTAR_IMPLEMENTACION'],
     ['AUTHORIZED', 'EJECUTAR_IMPLEMENTACION'],
     ['PENDING_AUTHORIZATION', 'AUTORIZAR_IMPLEMENTACION'],
     ['READY_FOR_AUTHORIZATION', 'AUTORIZAR_IMPLEMENTACION'],
     ['BLOCKED', 'RESOLVER_BLOQUEO'],
-  ];
-  let selected = null;
-  let actionType = null;
-  for (const [status, action] of priority) {
-    selected = instances.find((instance) => instance.status === status) ?? null;
-    if (selected) {
-      actionType = action;
-      break;
-    }
-  }
-
+  ]);
+  const statusRank = new Map([
+    ['IN_PROGRESS', 0],
+    ['IMPLEMENTED', 1],
+    ['AUTHORIZED', 2],
+    ['PENDING_AUTHORIZATION', 3],
+    ['READY_FOR_AUTHORIZATION', 4],
+    ['BLOCKED', 5],
+  ]);
+  const physicalStageRank = (instance) => {
+    const match = /^SHELL-CI-(02[0-4])::/u.exec(String(instance?.instanceId ?? ''));
+    return match ? Number(match[1]) - 20 : 100;
+  };
+  const actionableSet = instances
+    .filter((instance) => actionByStatus.has(instance.status))
+    .sort((left, right) => (
+      physicalStageRank(left) - physicalStageRank(right)
+      || (statusRank.get(left.status) ?? 99) - (statusRank.get(right.status) ?? 99)
+      || left.instanceId.localeCompare(right.instanceId, 'en')
+    ));
+  const actionForInstance = (instance) => {
+    const type = actionByStatus.get(instance.status);
+    return {
+      type,
+      target: instance.instanceId,
+      title: instance.taskTitle,
+      instruction: type === 'AUTORIZAR_IMPLEMENTACION'
+        ? `Definir y aprobar el alcance físico exacto de ${instance.instanceId}; la misma entrega puede dejar preparado el lote físico condicionado a guardar primero la autorización.`
+        : type === 'EJECUTAR_IMPLEMENTACION'
+          ? `Ejecutar la transacción humana continua de ${instance.instanceId} desde ${instance.status} hasta VERIFIED; detenerse solo ante bloqueo real o fallo.`
+          : `Guiar la resolución humana del bloqueo de ${instance.instanceId} sin ampliar el alcance.`,
+      why: instance.blocker ?? `${instance.taskId} tiene contrato aprobado y pertenece al governed active set físico.`,
+    };
+  };
+  const primaryActions = actionableSet.map(actionForInstance);
+  const compatibilitySelected = actionableSet[0] ?? null;
   const documentary = {
     taskId: preflight.task.id,
     taskTitle: preflight.task.title,
     actionType: 'DOCUMENTAR_TAREA',
     state: 'ACTIVO',
-    parallelWithPhysical: Boolean(selected),
+    parallelWithPhysical: actionableSet.length > 0,
     owner: preflight.task.owner,
   };
-  const primaryAction = packagePrerequisiteAction ?? (selected ? {
-    type: actionType,
-    target: selected.instanceId,
-    title: selected.taskTitle,
-    instruction: actionType === 'AUTORIZAR_IMPLEMENTACION'
-      ? `Definir y aprobar el alcance físico exacto de ${selected.instanceId}; la misma entrega puede dejar preparado el lote físico condicionado a guardar primero la autorización.`
-      : actionType === 'EJECUTAR_IMPLEMENTACION'
-        ? `Ejecutar la transacción humana continua de ${selected.instanceId} desde ${selected.status} hasta VERIFIED; detenerse solo ante bloqueo real o fallo.`
-        : `Guiar la resolución humana del bloqueo de ${selected.instanceId} sin ampliar el alcance.`,
-    why: selected.blocker ?? `${selected.taskId} tiene contrato aprobado y es la primera instancia física global sin verificar.`,
-  } : {
+  const primaryAction = primaryActions[0] ?? packagePrerequisiteAction ?? {
     type: documentary.actionType,
     target: documentary.taskId,
     title: documentary.taskTitle,
     instruction: `Desarrollar únicamente el contrato documental de ${documentary.taskId}; no iniciar su instancia física por inferencia.`,
-    why: 'No existe una instancia física autorizada, activa, pendiente de validación o lista para autorización.',
-  });
-
+    why: 'No existe una instancia física gobernada autorizada, activa, pendiente de validación o lista para autorización.',
+  };
   const modeByStatus = {
     IN_PROGRESS: 'GLOBAL_IMPLEMENTATION_ACTIVE',
     AUTHORIZED: 'GLOBAL_IMPLEMENTATION_AUTHORIZED',
     IMPLEMENTED: 'GLOBAL_VALIDATION_REQUIRED',
     BLOCKED: 'IMPLEMENTATION_BLOCKED',
   };
-  const mode = packagePrerequisiteAction
-    ? 'IMPLEMENTATION_BLOCKED'
-    : selected ? modeByStatus[selected.status] ?? 'GLOBAL_IMPLEMENTATION_READY' : 'DOCUMENTATION_ONLY';
+  const mode = compatibilitySelected
+    ? (actionableSet.length > 1 ? 'GOVERNED_ACTIVE_SET' : modeByStatus[compatibilitySelected.status] ?? 'GLOBAL_IMPLEMENTATION_READY')
+    : packagePrerequisiteAction
+      ? 'IMPLEMENTATION_BLOCKED'
+      : 'DOCUMENTATION_ONLY';
   const authorized = instances.filter(({ status }) => (
     ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(status)
   ));
@@ -583,18 +599,20 @@ export function deriveImplementationControl({
     },
     implementationAuthorized: authorized.length > 0,
     primaryAction,
+    primaryActions,
     coordination: {
       mode: 'CONTROLLED_DUAL_LANE',
       documentaryConcurrency: 'ONE_ACTIVE_TASK',
       physicalConcurrency: 'GOVERNED_ACTIVE_SET',
-      separateCheckoutsRequired: Boolean(selected),
+      separateCheckoutsRequired: actionableSet.length > 0,
       mergePolicy: 'SERIALIZED_CLOSE',
-      latestMainReconciliationRequired: Boolean(selected),
+      latestMainReconciliationRequired: actionableSet.length > 0,
       physicalContractFreeze: 'SOURCE_CONTRACT_SHA256',
     },
     documentary,
     physical: {
-      active: selected,
+      active: compatibilitySelected,
+      actionableSet,
       activeSet: instances.filter(({ status }) => ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(status)),
       activePackageSet: (packageExecution?.active_physical ?? []).map((entry) => ({
         packageId: entry.package_id,
@@ -621,6 +639,11 @@ export function deriveImplementationControl({
 
 export function renderCurrentWorkDirective(control) {
   const action = control.primaryAction;
+  const governedActionRows = (control.primaryActions ?? []).length > 0
+    ? control.primaryActions.map((entry) => (
+      `- \`${entry.type}\` -> \`${entry.target}\` — ${markdown(entry.title)}`
+    )).join('\n')
+    : '- NINGUNA';
   const physicalRows = control.physical.instances.length > 0
     ? control.physical.instances.map((instance) => (
       `| \`${instance.instanceId}\` | ${markdown(instance.taskTitle)} | ${instance.status} | ${markdown(instance.blocker)} |`
@@ -640,7 +663,7 @@ export function renderCurrentWorkDirective(control) {
 - **Objetivo exacto:** \`${action.target}\` — ${action.title}
 - **Instrucción:** ${action.instruction}
 - **Por qué:** ${action.why}
-- **Implementación física autorizada ahora:** ${allowed}
+- **Implementación física autorizada ahora:** ${allowed}\n- **Acciones físicas gobernadas:**\n${governedActionRows}
 
 ## Operador de ejecución
 
@@ -672,7 +695,7 @@ ${physicalRows}
 
 - **Modo:** \`${control.coordination.mode}\`
 - **Documentación:** máximo una tarea activa
-- **Implementación física:** máximo una instancia activa
+- **Implementación física:** governed active set; varias instancias independientes pueden permanecer en curso cuando sus dependencias y resource locks lo permiten
 - **Checkouts separados cuando ambos carriles están activos:** ${control.coordination.separateCheckoutsRequired ? 'SÍ' : 'NO NECESARIO'}
 - **Cierre:** serializado; solo un carril mergea a la vez
 - **Segundo carril en cerrar:** debe reconciliar el \`main\` más reciente antes de su validación y cierre final
@@ -680,7 +703,7 @@ ${physicalRows}
 
 ## Regla operativa
 
-1. El carril documental y el carril físico pueden avanzar en paralelo; cada carril conserva como máximo una unidad activa y usa un checkout independiente cuando ambos están activos.
+1. El carril documental conserva una sola tarea activa; el carril físico puede mantener un governed active set de instancias independientes, cada una en su checkout, sujeto a dependencias, autorización y resource locks.
 2. Aprobar un marcador documental crea elegibilidad, nunca autorización física automática.
 3. Código, migraciones, Supabase, despliegues o cambios remotos requieren una instancia explícitamente \`AUTHORIZED\`.
 4. \`AUTHORIZED\` habilita el trabajo físico, pero no concede al asistente permiso para escribirlo.
@@ -694,28 +717,34 @@ ${physicalRows}
 }
 
 export function ensurePendingImplementationRecord({ root, control, check = false }) {
-  const missingPendingRecord = control.primaryAction.type === 'AUTORIZAR_IMPLEMENTACION'
-    && control.physical.active?.source === 'DERIVED_FROM_APPROVED_CONTRACT';
-  if (!missingPendingRecord) return false;
-
-  const active = control.physical.active;
-  const recordPath = path.join(root, active.recordPath);
-  if (fs.existsSync(recordPath)) return true;
-  if (check) {
-    throw new Error(
-      `${active.recordPath} falta; ejecute docs:plan:build para crear automáticamente el borrador.`,
+  const actionableSet = Array.isArray(control.physical?.actionableSet)
+    && control.physical.actionableSet.length > 0
+    ? control.physical.actionableSet
+    : control.physical?.active ? [control.physical.active] : [];
+  const candidates = actionableSet.filter((instance) => (
+    instance?.source === 'DERIVED_FROM_APPROVED_CONTRACT'
+    && (instance.status === 'READY_FOR_AUTHORIZATION'
+      || (!instance.status && control.primaryAction?.type === 'AUTORIZAR_IMPLEMENTACION'))
+  ));
+  if (candidates.length === 0) return false;
+  for (const active of candidates) {
+    const recordPath = path.join(root, active.recordPath);
+    if (fs.existsSync(recordPath)) continue;
+    if (check) {
+      throw new Error(
+        `${active.recordPath} falta; ejecute docs:plan:build para crear automáticamente el borrador.`,
+      );
+    }
+    fs.mkdirSync(path.dirname(recordPath), { recursive: true });
+    fs.writeFileSync(
+      recordPath,
+      `${JSON.stringify(pendingInstanceRecord(active), null, 2)}\n`,
+      { encoding: 'utf8', flag: 'wx' },
     );
+    console.log(`[PLAN CANÓNICO] Borrador de instancia creado automáticamente: ${active.recordPath}.`);
   }
-  fs.mkdirSync(path.dirname(recordPath), { recursive: true });
-  fs.writeFileSync(
-    recordPath,
-    `${JSON.stringify(pendingInstanceRecord(active), null, 2)}\n`,
-    { encoding: 'utf8', flag: 'wx' },
-  );
-  console.log(`[PLAN CANÓNICO] Borrador de instancia creado automáticamente: ${active.recordPath}.`);
   return true;
 }
-
 export function writeImplementationControlArtifacts({
   root = process.cwd(),
   check = false,

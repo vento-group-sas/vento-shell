@@ -377,3 +377,21 @@ test('registro de pendientes prioriza la fundación sobre el package consumidor'
   assert.match(source, /Package consumidor bloqueado:.*`GAP-PKG-001`/u);
   assert.doesNotMatch(source, /Ejecuta el primary de la governed frontier — `GAP-PKG-001`/u);
 });
+
+// CORR-013 GOVERNED ACTIVE SET
+test('mantiene varias instancias fisicas EN CURSO sin colapsarlas a una sola ACTUAL', () => {
+  const ci020 = { instanceId: 'SHELL-CI-020::GAP-PKG-018', taskTitle: 'Implementar package', status: 'PENDING_AUTHORIZATION', recordPath: 'ci020.json' };
+  const ci022 = { instanceId: 'SHELL-CI-022::GAP-PKG-001', taskTitle: 'Ejecutar piloto', status: 'PENDING_AUTHORIZATION', recordPath: 'ci022.json' };
+  const summary = physicalLaneSummary({
+    primaryAction: { type: 'AUTORIZAR_IMPLEMENTACION', target: ci020.instanceId },
+    physical: {
+      active: ci020,
+      actionableSet: [ci020, ci022],
+      instances: [ci022, ci020],
+    },
+  });
+  assert.deepEqual(summary.actionable.map(({ instanceId }) => instanceId), [ci020.instanceId, ci022.instanceId]);
+  assert.deepEqual(summary.queue.map(({ instanceId }) => instanceId), [ci020.instanceId, ci022.instanceId]);
+  assert.equal(summary.current.instanceId, ci020.instanceId);
+  assert.equal(summary.next.instanceId, ci022.instanceId);
+});

@@ -87,6 +87,10 @@ function sourceContext(task) {
 
 function renderSelector(control) {
   const physical = control.physical.active;
+  const physicalSet = control.physical.actionableSet ?? (physical ? [physical] : []);
+  const physicalSetLabel = physicalSet.length > 0
+    ? physicalSet.map(({ instanceId, status }) => `${instanceId} — ${status}`).join('; ')
+    : 'SIN INSTANCIAS EN CURSO';
   return `VENTO OS — SELECTOR DE INICIADOR POR INTENCIÓN
 
 ESTE ARCHIVO YA NO CONTIENE EL PAYLOAD COMPLETO DE TRABAJO.
@@ -102,8 +106,9 @@ CARRIL DOCUMENTAL
 CARRIL FÍSICO
 
 - Archivo: ${IMPLEMENTATION_OUTPUT_PATH}
-- Instancia activa: ${physical ? `${physical.instanceId} — ${physical.status}` : 'SIN INSTANCIA ACTIVA'}
-- Úsalo para: autorizar, implementar, continuar o resolver una instancia física.
+- Puntero de compatibilidad: ${physical ? `${physical.instanceId} — ${physical.status}` : 'SIN INSTANCIA ACTIVA'}
+- Conjunto físico gobernado: ${physicalSetLabel}
+- Úsalo para: autorizar, implementar, continuar o resolver la instancia indicada por el puntero sin negar las demás instancias en curso.
 
 REGLA
 
@@ -182,8 +187,9 @@ COMANDOS DOCUMENTALES RESUELTOS PARA ESTA TAREA
 
 CARRIL FÍSICO — SOLO ESTADO INFORMATIVO
 
-- Instancia activa: ${physical ? physical.instanceId : 'NINGUNA'}
-- Estado físico: ${physical ? physical.status : 'SIN INSTANCIA ACTIVA'}
+- Puntero de compatibilidad: ${physical ? physical.instanceId : 'NINGUNA'}
+- Estado del puntero: ${physical ? physical.status : 'SIN INSTANCIA ACTIVA'}
+- Conjunto físico gobernado: ${(control.physical.actionableSet ?? (physical ? [physical] : [])).map(({ instanceId, status }) => `${instanceId} — ${status}`).join('; ') || 'NINGUNO'}
 - Contrato físico: ${physical ? `${physical.taskId} — ${physical.taskTitle}` : 'No aplica.'}
 - Acción física prioritaria global: ${physical ? `${control.primaryAction.type} ${control.primaryAction.target}` : 'NINGUNA'}
 - Alcance dentro de esta conversación: FUERA DE ALCANCE. NO DESARROLLAR, NO AUTORIZAR, NO EJECUTAR.
@@ -318,6 +324,9 @@ TRAZABILIDAD DEL INICIADOR
 `;
   }
 
+  const actionableSet = control.physical.actionableSet ?? [physical];
+  const actionableSetLabel = actionableSet.map(({ instanceId, status }) => `${instanceId} — ${status}`).join('; ');
+
   const task = workTopology.inventory.get(physical.taskId);
   if (!task) throw new Error(`no se encontró ${physical.taskId} en el inventario canónico.`);
   const lifecycle = workTopology.topology.get(task.id);
@@ -360,7 +369,7 @@ REGLA CRITICA DE CONTINUIDAD CONVERSACIONAL
 
 REGLA CRÍTICA DE ESTA CONVERSACIÓN
 
-Esta conversación trabaja EXCLUSIVAMENTE la instancia física ${physical.instanceId}.
+Esta conversación trabaja la instancia física ${physical.instanceId}, que es el puntero determinista de compatibilidad. El control global puede conservar otras instancias físicas independientes en curso.
 
 - La tarea documental actual puede avanzar en otro checkout, pero NO pertenece a esta conversación.
 - NO desarrolles la tarea documental actual desde este iniciador.
@@ -373,8 +382,9 @@ ACCIÓN FÍSICA ACTUAL
 - Objetivo exacto: ${control.primaryAction.target} — ${control.primaryAction.title}
 - Motivo: ${control.primaryAction.why}
 - Estado actual: ${physical.status}
-- Instancia: ${physical.instanceId}
-- Archivo exclusivo: ${recordPath}
+- Instancia del puntero: ${physical.instanceId}
+- Conjunto físico gobernado: ${actionableSetLabel}
+- Archivo exclusivo de esta instancia: ${recordPath}
 - Raíz local exacta del repositorio: ${repositoryRoot}
 
 CONTRATO PROPIETARIO DE LA INSTANCIA

@@ -233,3 +233,11 @@ test('la limpieza de Descargas es post-PASS, exacta y fail-closed', () => {
   assert.match(source, /DOWNLOAD_CLEANUP: FAIL/u);
   assert.match(source, /Nunca limpies Descargas de forma general/u);
 });
+
+// CORR-013 STARTER MULTI ACTIVE
+test('el iniciador fisico expone governed active set sin convertir el puntero en exclusividad global', () => {
+  const source = fs.readFileSync('scripts/docs/chatgpt-work-starter.mjs', 'utf8');
+  assert.match(source, /Conjunto físico gobernado/u);
+  assert.match(source, /puntero determinista de compatibilidad/u);
+  assert.match(source, /otras instancias físicas independientes en curso/u);
+});
