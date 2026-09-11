@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1172** |
+| Tareas aprobadas | **1173** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **424** |
+| Tareas no iniciadas | **423** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **73.43% (1172/1596)** |
+| Porcentaje de completamiento | **73.50% (1173/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-005 — Definir división, unión y transferencia de contenido** |
-| Tarea actual | **NEXO-DOM-006 — Definir LPN anidados y contenedores retornables** |
+| Última tarea aprobada | **NEXO-DOM-006 — Definir LPN anidados y contenedores retornables** |
+| Tarea actual | **NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido** |
+| Siguiente tarea | **NEXO-DOM-008 — Definir custodia y responsable actual** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 30 de 127 aprobadas; NEXO-DOM-006 pendiente** |
+| Progreso del bloque | **BLOQUE K: 31 de 127 aprobadas; NEXO-DOM-007 pendiente** |
 | Estado de implementación | **GLOBAL_IMPLEMENTATION_READY** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-DOM-006** |
+| Carril documental | **ACTIVO — NEXO-DOM-007** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-005` — Definir división, unión y transferencia de contenido |
-| Tarea actual | `NEXO-DOM-006` — Definir LPN anidados y contenedores retornables — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-007` — Definir relación sede → LOC → LPN → contenido |
+| Última aprobada | `NEXO-DOM-006` — Definir LPN anidados y contenedores retornables |
+| Tarea actual | `NEXO-DOM-007` — Definir relación sede → LOC → LPN → contenido — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-008` — Definir custodia y responsable actual |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 30 DE 127 APROBADAS — ACTUAL NEXO-DOM-006** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 31 DE 127 APROBADAS — ACTUAL NEXO-DOM-007** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-005 — Definir división, unión y transferencia de contenido
-        ↓
-TAREA ACTUAL
 NEXO-DOM-006 — Definir LPN anidados y contenedores retornables
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-007 — Definir relación sede → LOC → LPN → contenido
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-008 — Definir custodia y responsable actual
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 30 de 127 tareas aprobadas
+BLOQUE K — 31 de 127 tareas aprobadas
 ```
