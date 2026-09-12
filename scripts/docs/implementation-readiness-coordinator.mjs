@@ -2,6 +2,133 @@ import { fileURLToPath } from 'node:url';
 import path from 'node:path';
 
 import { deriveImplementationValidationInputs } from './implementation-validation-engine.mjs';
+import {
+  assessImplementationStateIntegrity,
+  IMPLEMENTATION_MUTATING_ENTRYPOINT,
+  IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID,
+} from './implementation-state-integrity.mjs';
+
+export const IMPLEMENTATION_OPERATIONAL_CONTRACT_ID = 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1';
+
+const INTEGRITY_LEDGER_STATUSES = new Set([
+  'PENDING_AUTHORIZATION',
+  'AUTHORIZED',
+  'IN_PROGRESS',
+  'IMPLEMENTED',
+  'VERIFIED',
+]);
+
+function projectIntegrityInstance({ root, instance, stateIntegrityAssessor }) {
+  if (!instance || typeof instance !== 'object') return { instance, integrity: null };
+  const record = instance.record ?? null;
+  const declared = String(record?.status ?? '').trim().toUpperCase();
+  if (!record || !INTEGRITY_LEDGER_STATUSES.has(declared)) {
+    return { instance, integrity: null };
+  }
+  const integrity = stateIntegrityAssessor({ root, instance: record });
+  const effectiveStatus = integrity.status_valid
+    ? integrity.declared_status
+    : integrity.highest_valid_status;
+  return {
+    instance: {
+      ...instance,
+      status: effectiveStatus,
+      declaredStatus: integrity.declared_status,
+      effectiveStatus,
+      stateIntegrity: integrity,
+    },
+    integrity,
+  };
+}
+
+export function buildUnifiedOperationalContract({
+  root = process.cwd(),
+  baseControl,
+  stateIntegrityAssessor = assessImplementationStateIntegrity,
+} = {}) {
+  if (!baseControl || typeof baseControl !== 'object') {
+    throw new Error('baseControl es obligatorio para el contrato operacional unificado.');
+  }
+  const physical = baseControl.physical ?? {};
+  const projectedById = new Map();
+  let activeIntegrity = null;
+  const relevantIds = new Set(
+    [physical.active, ...(physical.actionableSet ?? []), ...(physical.activeSet ?? []), ...(physical.authorized ?? [])]
+      .map((instance) => String(instance?.instanceId ?? instance?.record?.instance_id ?? '').trim())
+      .filter(Boolean),
+  );
+
+  const project = (instance) => {
+    if (!instance) return instance;
+    const id = String(instance.instanceId ?? instance.record?.instance_id ?? '').trim();
+    if (id && !relevantIds.has(id)) return instance;
+    if (id && projectedById.has(id)) return projectedById.get(id);
+    const projected = projectIntegrityInstance({ root, instance, stateIntegrityAssessor });
+    if (id) projectedById.set(id, projected.instance);
+    if (id && id === String(physical.active?.instanceId ?? '').trim()) {
+      activeIntegrity = projected.integrity;
+    }
+    return projected.instance;
+  };
+
+  const active = project(physical.active ?? null);
+  const instances = (physical.instances ?? []).map(project);
+  const remap = (values) => (values ?? []).map(project);
+  const projectedPhysical = {
+    ...physical,
+    active,
+    instances,
+    actionableSet: remap(physical.actionableSet),
+    activeSet: remap(physical.activeSet),
+    authorized: remap(physical.authorized),
+  };
+
+  let primaryAction = baseControl.primaryAction;
+  if (activeIntegrity && !activeIntegrity.status_valid && active) {
+    primaryAction = {
+      type: 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY',
+      target: active.instanceId,
+      title: 'Reconciliar estado fisico efectivo',
+      instruction: 'El ledger declara ' + activeIntegrity.declared_status + ', pero la integridad efectiva solo soporta ' + activeIntegrity.highest_valid_status + '. No ejecute start/preverify/finish directamente. Reconciliar evidencia/ledger segun ' + activeIntegrity.recovery_action + ' y volver a evaluar con ' + IMPLEMENTATION_MUTATING_ENTRYPOINT + '.',
+      why: 'STATE_INTEGRITY_VIOLATION: declared=' + activeIntegrity.declared_status + '; highest_valid=' + activeIntegrity.highest_valid_status + '.',
+      command: null,
+    };
+  }
+
+  const contract = Object.freeze({
+    schemaVersion: 1,
+    modelId: IMPLEMENTATION_OPERATIONAL_CONTRACT_ID,
+    stateIntegrityModelId: IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID,
+    mutatingEntrypoint: IMPLEMENTATION_MUTATING_ENTRYPOINT,
+    directLifecycleEntrypointsEnabled: false,
+    directLifecycleEntrypoints: Object.freeze([
+      'docs:implementation:start',
+      'docs:implementation:preverify',
+      'docs:implementation:finish',
+    ]),
+    active: activeIntegrity && active ? Object.freeze({
+      instanceId: active.instanceId,
+      declaredStatus: activeIntegrity.declared_status,
+      effectiveStatus: activeIntegrity.status_valid
+        ? activeIntegrity.declared_status
+        : activeIntegrity.highest_valid_status,
+      statusValid: activeIntegrity.status_valid,
+      recoverable: activeIntegrity.recoverable,
+      recoveryAction: activeIntegrity.recovery_action,
+      missingPrerequisites: Object.freeze([...(activeIntegrity.missing_prerequisites ?? [])]),
+      staleEvidence: Object.freeze([...(activeIntegrity.stale_evidence ?? [])]),
+    }) : null,
+  });
+
+  return Object.freeze({
+    baseControl: {
+      ...baseControl,
+      primaryAction,
+      physical: projectedPhysical,
+    },
+    contract,
+  });
+}
 
 function queueCandidate(registry) {
   const execution = registry?.package_execution ?? null;
@@ -146,13 +273,20 @@ export async function deriveCoordinatedImplementationStatus({
     root,
     dependencies: validationDependencies,
   });
-  const coordinated = coordinateImplementationStatus({
+  const operational = buildUnifiedOperationalContract({
+    root,
     baseControl: inputs.baseControl,
+    stateIntegrityAssessor:
+      validationDependencies.assessImplementationStateIntegrity ?? assessImplementationStateIntegrity,
+  });
+  const coordinated = coordinateImplementationStatus({
+    baseControl: operational.baseControl,
     registry: inputs.registry,
   });
   return {
     ...coordinated,
     validationEngine: inputs.validationEngine,
+    operationalContract: operational.contract,
   };
 }
 
@@ -179,6 +313,16 @@ function printStatus(status) {
     console.log(`PACKAGE_GATE: ${status.readinessCandidate.gateId}`);
     console.log(`PACKAGE_STATUS: ${status.readinessCandidate.status}`);
     console.log('PHYSICAL_AUTHORIZATION_REQUIRED: SI');
+  }
+
+  if (status.operationalContract) {
+    const contract = status.operationalContract;
+    console.log(`OPERATIONAL_CONTRACT: ${contract.modelId}`);
+    console.log(`MUTATING_ENTRYPOINT: ${contract.mutatingEntrypoint}`);
+    console.log(`DIRECT_LIFECYCLE_ENTRYPOINTS_ENABLED: ${contract.directLifecycleEntrypointsEnabled ? 'SI' : 'NO'}`);
+    console.log(`ACTIVE_DECLARED_STATUS: ${contract.active?.declaredStatus ?? 'NONE'}`);
+    console.log(`ACTIVE_EFFECTIVE_STATUS: ${contract.active?.effectiveStatus ?? 'NONE'}`);
+    console.log(`ACTIVE_STATE_INTEGRITY_VALID: ${contract.active ? (contract.active.statusValid ? 'SI' : 'NO') : 'N/A'}`);
   }
 
   if (status.validationEngine) {
