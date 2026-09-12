@@ -18872,7 +18872,1356 @@ Esta tarea no solicita, evalúa ni aprueba bajas reales; no vende, descarta, don
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
 
-### [ ] NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+### ✅ NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+**Tarea siguiente:** NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+**Tipo de tarea:** documental; definición canónica de kits y conjuntos físicos, separando definición versionada, instancia materializada, miembros reales, componentes obligatorios y opcionales, sustituciones, completitud, disponibilidad, ensamblaje, préstamo, devolución, desarme, LPN, custodia, condición, conteo, revisiones, idempotencia, concurrencia y reconciliación legacy bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para representar kits y conjuntos
+físicos sin crear saldo adicional, sin confundir la definición con una
+instancia real y sin convertir composición, préstamo, LPN, contenedor o
+sustitución en fuentes competidoras de identidad.
+
+La regla raíz queda:
+
+```text
+VERSIONED KIT DEFINITION
++
+MATERIALIZED KIT INSTANCE
++
+AUTHORITATIVE MEMBER ASSIGNMENTS
++
+REQUIRED / OPTIONAL COMPONENT RULES
++
+EXPLICIT SUBSTITUTION POLICY
++
+COMPLETENESS EVALUATION
++
+EXISTING MEMBER IDENTITIES OR QUANTITY SCOPES
+→
+RECONCILABLE KIT STATE
+WITHOUT DUPLICATED EXISTENCE
+```
+
+Esta tarea define semántica de dominio. No crea kits, componentes, tablas,
+movimientos, datos ni superficies físicas.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. `KIT` como una de las siete clases primarias ya aprobadas;
+2. `KIT_DEFINITION` separada de `KIT_INSTANCE`;
+3. versión de definición y fijación de versión por instancia;
+4. líneas de componente con obligatoriedad, cantidad y reglas de sustitución;
+5. miembros reales sin perder su clase primaria;
+6. membresía por identidad exacta o porción cuantificada;
+7. completitud estructural separada de condición y disponibilidad;
+8. componentes opcionales que no bloquean completitud;
+9. sustituciones explícitas y auditables;
+10. ensamblaje y desarme sin creación ni destrucción implícita de existencia;
+11. invariantes contra doble contabilización;
+12. préstamo, devolución y custodia por instancia;
+13. retorno con verificación de completitud;
+14. relación con LPN sin convertir el kit en LPN;
+15. relación con contenedor físico sin conflación;
+16. composición anidada solo cuando sea expresa y acíclica;
+17. revisiones, idempotencia, concurrencia y operación offline;
+18. consumo de los estados y eventos ya aprobados para `VPROC-0067`;
+19. reconciliación del AS-IS sin inventar una capacidad existente;
+20. handoff exacto hacia `NEXO-DOM-015`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- las siete clases primarias de `NEXO-DOM-001`;
+- la identidad logística LPN y sus reglas de contenido;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, faltante, pérdida, hallazgo y recuperación de
+  `NEXO-DOM-010`;
+- préstamo, devolución, transferencia y cambio de custodia de
+  `NEXO-DOM-011`;
+- mantenimiento y disponibilidad de `NEXO-DOM-012`;
+- retiro, disposición y reemplazo de `NEXO-DOM-013`;
+- `CAP-07.11`;
+- `VPROC-0067`;
+- la prohibición de doble representación de existencia.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+QUÉ ES UNA DEFINICIÓN DE KIT,
+QUÉ ES UNA INSTANCIA REAL,
+QUÉ MIEMBROS SATISFACEN CADA COMPONENTE,
+CUÁNDO LA INSTANCIA ESTÁ COMPLETA,
+QUÉ SUSTITUCIONES SON VÁLIDAS,
+CÓMO SE PRESTA Y DEVUELVE,
+CÓMO SE EMPACA EN LPN
+Y CÓMO SE DESARMA
+SIN DUPLICAR SALDO, IDENTIDAD, CUSTODIA O HISTORIA?
+```
+
+---
+
+#### 5. Clase primaria `KIT`
+
+`KIT` permanece como clase primaria canónica.
+
+No se crea una octava clase para “conjunto”, “bundle”, “combo”, “equipo” o
+“set”.
+
+El término empresarial `conjunto` puede describir un kit físico, pero la
+clasificación autoritativa sigue siendo `KIT`.
+
+---
+
+#### 6. Kit físico y combo comercial
+
+Se fija:
+
+```text
+PHYSICAL KIT
+!=
+COMMERCIAL COMBO
+```
+
+Un combo de venta, promoción o agrupación comercial no se convierte en objeto
+físico `KIT` únicamente por agrupar productos.
+
+Para existir como kit físico debe haber definición de composición, instancia
+materializada y miembros reales reconciliables.
+
+---
+
+#### 7. Kit y receta
+
+Se fija:
+
+```text
+KIT DEFINITION
+!=
+RECIPE
+```
+
+Una receta define transformación o elaboración.
+
+Un kit conserva componentes físicamente existentes y separables; ensamblarlos
+no implica consumirlos ni transformarlos por inferencia.
+
+---
+
+#### 8. Kit y especificación de componentes
+
+Una especificación técnica o lista de materiales puede ser referencia de una
+definición, pero no constituye por sí sola una instancia física.
+
+```text
+COMPONENT SPECIFICATION
+!=
+MATERIALIZED KIT INSTANCE
+```
+
+---
+
+#### 9. Definición e instancia
+
+Se preserva la separación aprobada:
+
+```text
+KIT_DEFINITION
+→ composición, cantidades, sustituciones y reglas
+
+KIT_INSTANCE
+→ conjunto real, estado, ubicación, responsable y completitud
+```
+
+Una definición puede existir sin ninguna instancia materializada.
+
+---
+
+#### 10. Identidad de definición
+
+Cada `KIT_DEFINITION` debe conservar una identidad estable distinta de cualquier
+producto, activo, LPN o instancia.
+
+La definición representa reglas reutilizables y no existencia física.
+
+---
+
+#### 11. Versionado de definición
+
+Toda modificación material de componentes, cantidades, obligatoriedad,
+sustituciones o reglas de completitud produce una nueva versión.
+
+Se fija:
+
+```text
+APPROVED DEFINITION VERSION
+!=
+MUTABLE IN PLACE
+```
+
+Las instancias existentes conservan la versión bajo la cual fueron constituidas
+hasta una transición explícita.
+
+---
+
+#### 12. Estados de definición
+
+La tarea consume los estados canónicos ya aprobados para `VPROC-0067`:
+
+```text
+KIT_DEFINITION_DRAFT
+DEFINITION_UNDER_REVIEW
+DEFINITION_APPROVED
+```
+
+`DEFINITION_APPROVED` autoriza usar esa versión como base de instancias; no
+demuestra que exista una instancia completa.
+
+---
+
+#### 13. Retiro de una definición
+
+Retirar una versión de definición impide utilizarla para nuevas instancias
+cuando la política lo determine.
+
+No borra instancias existentes, miembros, préstamos, devoluciones, evidencia ni
+historial.
+
+---
+
+#### 14. Regla de componente
+
+Cada línea o slot de componente debe poder expresar, como mínimo:
+
+- identidad estable dentro de la versión;
+- propósito o rol del componente;
+- obligatoriedad;
+- cantidad requerida;
+- unidad cuando aplique;
+- clases o sujetos elegibles;
+- regla de sustitución;
+- criterio de condición o disponibilidad cuando aplique.
+
+La línea de definición no posee físicamente el componente.
+
+---
+
+#### 15. Componentes obligatorios
+
+Un componente obligatorio debe quedar satisfecho para que exista completitud
+estructural positiva.
+
+```text
+REQUIRED COMPONENT UNSATISFIED
+→
+STRUCTURALLY INCOMPLETE
+```
+
+---
+
+#### 16. Componentes opcionales
+
+Un componente opcional puede estar presente o ausente sin bloquear la
+completitud estructural.
+
+Su presencia sigue siendo parte de la composición real y debe auditarse.
+
+---
+
+#### 17. Cantidad requerida
+
+Una línea puede exigir una cantidad superior a uno.
+
+Para miembros por cantidad:
+
+```text
+SATISFIED QUANTITY
+>=
+REQUIRED QUANTITY
+```
+
+solo dentro del scope asignado y sin tomar cantidad ya comprometida de forma
+incompatible.
+
+---
+
+#### 18. Miembros reales
+
+La instancia conserva miembros reales.
+
+Cada miembro sigue siendo autoritativamente su propia existencia:
+
+- identidad serializada;
+- porción cuantificada;
+- instancia de kit válida cuando una composición anidada esté permitida.
+
+La membresía no crea un nuevo producto ni duplica el miembro.
+
+---
+
+#### 19. Clases de los miembros
+
+Los componentes conservan su clase primaria.
+
+```text
+MEMBER OF KIT
+!=
+CLASS KIT
+```
+
+Un activo serializado continúa siendo activo; un reutilizable por cantidad
+continúa siendo reutilizable; un repuesto continúa siendo repuesto.
+
+---
+
+#### 20. Membresía serializada
+
+Cuando el componente exige identidad individual, la membresía referencia la
+identidad física exacta.
+
+No se satisface con otra unidad equivalente salvo que exista una sustitución
+válida y explícita.
+
+---
+
+#### 21. Membresía por cantidad
+
+Cuando la definición permite una clase controlada por cantidad, la membresía
+asigna una porción cuantificada reconciliable.
+
+```text
+ASSIGNED MEMBER QUANTITY > 0
+```
+
+La suma de asignaciones incompatibles no puede exceder la cantidad autoritativa
+disponible para ese alcance.
+
+---
+
+#### 22. Membresía de otra instancia de kit
+
+Una `KIT_INSTANCE` puede actuar como miembro únicamente cuando la definición lo
+permite expresamente.
+
+La relación conserva ambas identidades y no las fusiona.
+
+---
+
+#### 23. Composición acíclica
+
+Toda membresía entre kits debe permanecer acíclica.
+
+Se prohíbe:
+
+```text
+KIT A → KIT A
+KIT A → KIT B → KIT A
+```
+
+Una composición circular falla cerrada.
+
+---
+
+#### 24. Profundidad de composición
+
+La completitud de un kit anidado puede consumir la completitud de sus subkits.
+
+La implementación futura deberá recorrer la composición sin truncarla
+silenciosamente y con límites técnicos que no alteren la semántica.
+
+---
+
+#### 25. Instancia materializada
+
+`KIT_INSTANCE` representa una composición física real bajo una versión de
+definición.
+
+Debe conservar como mínimo:
+
+- identidad estable de instancia;
+- definición y versión;
+- estado;
+- ubicación;
+- responsable o scope de custodia;
+- miembros reales;
+- completitud vigente;
+- revisión;
+- historial.
+
+---
+
+#### 26. Identidad estable de instancia
+
+La instancia conserva identidad durante armado, asignación, préstamo, retorno,
+sustitución, desarme y cierre.
+
+```text
+REASSEMBLY
+!=
+NEW IDENTITY
+```
+
+cuando continúa siendo la misma instancia bajo la política aplicable.
+
+---
+
+#### 27. La instancia no crea saldo adicional
+
+La instancia representa composición, no nueva existencia equivalente.
+
+```text
+KIT INSTANCE
+!=
+ADDITIONAL MEMBER STOCK
+```
+
+Los componentes conservan sus existencias autoritativas.
+
+---
+
+#### 28. No doble contabilización
+
+Se prohíbe contabilizar simultáneamente el miembro real y la instancia como dos
+existencias equivalentes.
+
+La instancia puede ser unidad operacional para custodia, préstamo, LPN y
+completitud sin duplicar saldo ni valor.
+
+---
+
+#### 29. Armado
+
+El armado asigna miembros existentes a una instancia.
+
+```text
+ASSEMBLE KIT
+!=
+CREATE COMPONENT EXISTENCE
+```
+
+y:
+
+```text
+ASSEMBLE KIT
+!=
+CONSUME COMPONENT
+```
+
+salvo otro hecho propietario explícitamente autorizado.
+
+---
+
+#### 30. Estado `INSTANCE_ASSEMBLING`
+
+Se consume `VPROC-0067.INSTANCE_ASSEMBLING`.
+
+En este estado pueden existir miembros parciales, pero la instancia no se
+presenta como completa ni disponible.
+
+---
+
+#### 31. Verificación de completitud
+
+Se consume `VPROC-0067.COMPLETENESS_CHECK`.
+
+La evaluación utiliza:
+
+- versión de definición fijada por la instancia;
+- miembros autoritativos;
+- cantidades;
+- obligatoriedad;
+- sustituciones;
+- elegibilidad y condición aplicables;
+- revisiones vigentes.
+
+Un snapshot obsoleto no declara completitud.
+
+---
+
+#### 32. Completitud estructural
+
+La completitud estructural responde si todos los componentes obligatorios están
+satisfechos por miembros elegibles.
+
+```text
+STRUCTURALLY_COMPLETE
+IFF
+EVERY_REQUIRED_COMPONENT_IS_SATISFIED
+```
+
+Los componentes opcionales no bloquean esta decisión.
+
+---
+
+#### 33. Completitud y condición
+
+Se preserva:
+
+```text
+KIT COMPLETENESS
+!=
+PHYSICAL CONDITION OF EVERY MEMBER
+```
+
+Un kit puede contener todos sus miembros y aun estar no apto por daño,
+mantenimiento u otra condición.
+
+---
+
+#### 34. Completitud y disponibilidad
+
+Se fija:
+
+```text
+STRUCTURALLY_COMPLETE
+!=
+AVAILABLE
+```
+
+La disponibilidad consume además condición, mantenimiento, custodia, lifecycle,
+bloqueos e incidentes aplicables.
+
+---
+
+#### 35. Disponibilidad positiva
+
+`VPROC-0067.AVAILABLE` solo puede proyectarse cuando:
+
+- la definición aplicable está aprobada;
+- la instancia está estructuralmente completa;
+- sus miembros requeridos son elegibles;
+- no existe bloqueo vigente;
+- la política permite el uso.
+
+La completitud es necesaria, pero no siempre suficiente.
+
+---
+
+#### 36. Kit incompleto
+
+Un kit incompleto no se presenta como disponible.
+
+Debe poder identificarse exactamente qué componente obligatorio falta, su
+cantidad requerida, cantidad satisfecha, miembro rechazado cuando exista,
+razón y condición de salida.
+
+---
+
+#### 37. Componente extra
+
+Un miembro no requerido por la definición no se adopta silenciosamente como
+componente válido.
+
+Debe resolverse como opcional permitido, sustitución autorizada, exceso a
+reconciliar o miembro ajeno a retirar.
+
+---
+
+#### 38. No duplicar satisfacción
+
+La misma identidad física no puede satisfacer dos líneas exclusivas cuando eso
+duplique su capacidad material.
+
+Una porción cuantificada tampoco puede reutilizarse dos veces para el mismo
+requerimiento físico.
+
+---
+
+#### 39. Sustitución
+
+Una sustitución cambia qué miembro satisface una línea sin modificar
+retrospectivamente la definición ni borrar el miembro anterior.
+
+Conserva línea afectada, miembro esperado o criterio, miembro sustituto, razón,
+autoridad, vigencia cuando aplique, condición, evidencia y revisión.
+
+---
+
+#### 40. Sustitución autorizada
+
+Se fija:
+
+```text
+SIMILAR ITEM
+!=
+AUTHORIZED SUBSTITUTE
+```
+
+La equivalencia por nombre, categoría o apariencia no autoriza sustitución.
+
+La regla proviene de la definición o de una decisión autorizada que ésta
+permita.
+
+---
+
+#### 41. Sustitución y clase primaria
+
+Sustituir un componente no cambia la clase primaria de ninguno de los sujetos.
+
+Tampoco convierte una cantidad reutilizable en activo individual ni viceversa.
+
+---
+
+#### 42. Sustitución y reemplazo patrimonial
+
+Se preserva la frontera con `NEXO-DOM-013`:
+
+```text
+KIT MEMBER SUBSTITUTION
+!=
+ASSET REPLACEMENT
+```
+
+Son hechos diferentes y con owners diferentes.
+
+---
+
+#### 43. Desarme
+
+Desarmar una instancia termina membresías autoritativas sin destruir las
+existencias de los componentes.
+
+```text
+DISASSEMBLE KIT
+!=
+DISPOSE COMPONENTS
+```
+
+---
+
+#### 44. Cierre de ciclo
+
+`VPROC-0067.KIT_CYCLE_RECONCILED` conserva que composición, asignación, uso,
+retorno, condición, faltantes y sustituciones fueron reconciliados.
+
+El cierre no borra definición, instancia ni miembros históricos.
+
+---
+
+#### 45. Nuevo ciclo
+
+Después de un ciclo reconciliado, la misma instancia puede iniciar otro ciclo
+cuando la política lo permita.
+
+No se crea identidad nueva únicamente por rearmado.
+
+---
+
+#### 46. Asignación
+
+Se consume `VPROC-0067.ASSIGNED`.
+
+La asignación compromete la instancia a persona, área, actividad o viaje según
+el proceso, pero no cambia propiedad ni composición por inferencia.
+
+---
+
+#### 47. Uso
+
+Se consume `VPROC-0067.IN_USE`.
+
+El uso autorizado no consume automáticamente componentes reutilizables ni borra
+su custodia e historia.
+
+---
+
+#### 48. Custodia de la instancia
+
+La custodia se atribuye a `KIT_INSTANCE`.
+
+```text
+KIT CUSTODIAN
+!=
+AUTOMATIC CUSTODIAN OF EVERY MEMBER
+```
+
+Los componentes con custodia individual propia conservan su relación.
+
+---
+
+#### 49. Préstamo
+
+Un préstamo de kit consume el contrato de `NEXO-DOM-011`.
+
+El expediente referencia la instancia exacta, la composición entregada, la
+condición observada y la obligación de retorno.
+
+---
+
+#### 50. Retorno
+
+La devolución entra en `VPROC-0067.RETURN_UNDER_VERIFICATION`.
+
+Antes de nueva disponibilidad se revisan instancia, miembros esperados,
+miembros observados, sustituciones, condición, faltantes, daños, custodia y
+cantidades aplicables.
+
+---
+
+#### 51. Faltante al retorno
+
+Un miembro requerido no observado produce una diferencia de completitud y puede
+abrir el incidente correspondiente.
+
+```text
+MISSING MEMBER
+!=
+LOSS CONFIRMED
+```
+
+`NEXO-DOM-010` conserva la confirmación de pérdida.
+
+---
+
+#### 52. Daño al retorno
+
+Un miembro dañado no desaparece de la composición por inferencia.
+
+El incidente se conserva y una decisión posterior determina si sigue
+satisfaciendo la línea, exige sustitución, exige reparación o bloquea la
+instancia.
+
+---
+
+#### 53. Miembros opcionales al retorno
+
+La ausencia de un opcional no cambia por sí sola la completitud estructural.
+
+Puede generar incidente o restricción cuando la política concreta lo exija.
+
+---
+
+#### 54. Ubicación
+
+La instancia puede tener una ubicación operacional.
+
+La ubicación del kit no sobrescribe silenciosamente las ubicaciones
+individuales que deban conservarse para sus miembros.
+
+---
+
+#### 55. Movimiento
+
+Mover una instancia no crea componentes ni modifica la definición.
+
+Cuando los miembros se mueven con el kit, la operación conserva correlación
+suficiente para impedir presencia autoritativa simultánea en ubicaciones
+incompatibles.
+
+---
+
+#### 56. LPN
+
+Se preserva:
+
+```text
+KIT_INSTANCE
+!=
+LPN
+```
+
+Una instancia materializada puede viajar dentro de un LPN como forma de
+contenido `KIT_INSTANCE`.
+
+La definición abstracta nunca es contenido de LPN.
+
+---
+
+#### 57. Kit dentro de LPN
+
+Cuando un `KIT_INSTANCE` pertenece a un LPN, la composición permanece bajo el
+owner del kit.
+
+El LPN no reescribe definición, miembros, obligatoriedad, sustituciones ni
+completitud.
+
+---
+
+#### 58. No duplicar miembros en LPN
+
+La misma existencia no puede representarse simultáneamente como miembro del
+`KIT_INSTANCE` y como segunda línea autoritativa de contenido que duplique su
+presencia.
+
+Una vista de detalle puede proyectar miembros sin crear saldo adicional.
+
+---
+
+#### 59. Kit y contenedor físico
+
+Se fija:
+
+```text
+KIT_INSTANCE
+!=
+PHYSICAL_CONTAINER
+```
+
+Un recipiente que sea miembro del kit conserva su propia clase.
+
+El recipiente no convierte el kit en contenedor ni en LPN.
+
+---
+
+#### 60. Kit y reutilizable por cantidad
+
+Se preserva:
+
+```text
+REUSABLE_QUANTITY GROUP
+!=
+KIT_INSTANCE
+```
+
+Un grupo representa unidades equivalentes.
+
+Un kit representa composición, miembros y completitud.
+
+---
+
+#### 61. Kit y activo serializado
+
+Se fija:
+
+```text
+SERIALIZED_ASSET
+!=
+KIT_INSTANCE
+```
+
+Un kit puede contener activos serializados sin sustituir sus identidades.
+
+---
+
+#### 62. Kit y repuesto
+
+Un repuesto puede ser miembro cuando la definición lo permita, pero no se
+consume ni instala por entrar al kit.
+
+El dominio de repuestos conserva su owner.
+
+---
+
+#### 63. Kit y consumible
+
+Un consumible puede ser miembro cuando el contrato operativo lo permita.
+
+La membresía no cambia su semántica de consumo; el consumo requiere su propio
+hecho autorizado.
+
+---
+
+#### 64. Retiro o disposición
+
+Retirar o disponer una instancia de kit no propaga por inferencia baja,
+descarte, venta o disposición a sus miembros.
+
+Cada componente conserva su lifecycle y destino.
+
+---
+
+#### 65. Reemplazo de instancia
+
+Una nueva instancia que sustituye otra obtiene identidad propia.
+
+La instancia saliente conserva su historial y no transfiere su
+`kit_instance_id`.
+
+---
+
+#### 66. Conteo de kit
+
+Un conteo puede observar presencia de la instancia, miembros, cantidades,
+faltantes, extras, condición y ubicación.
+
+El conteo permanece observación y no modifica composición automáticamente.
+
+---
+
+#### 67. Handoff hacia conteos
+
+`NEXO-DOM-015` deberá contar una `KIT_INSTANCE` sin duplicar sus miembros y
+permitir verificación de composición cuando el alcance lo exija.
+
+Una diferencia observada no se transforma en ajuste automático.
+
+---
+
+#### 68. Revisión de definición
+
+Toda decisión de definición valida una revisión esperada.
+
+Dos editores no pueden aprobar concurrentemente versiones incompatibles bajo
+la misma revisión.
+
+---
+
+#### 69. Revisión de instancia
+
+Toda modificación autoritativa de membresía, sustitución o cierre valida la
+revisión vigente de la instancia.
+
+```text
+EXPECTED KIT REVISION
+=
+CURRENT KIT REVISION
+```
+
+---
+
+#### 70. Idempotencia
+
+El mismo intento lógico no puede crear dos definiciones equivalentes, crear dos
+instancias equivalentes, asignar dos veces el mismo miembro, descontar dos veces
+la misma porción, registrar dos veces una sustitución, cerrar dos veces una
+devolución ni desarmar dos veces la misma membresía.
+
+La misma clave recupera el resultado ya decidido.
+
+---
+
+#### 71. Concurrencia
+
+Antes de comprometer una mutación se revalidan definición y versión, instancia
+y revisión, miembros, cantidades, sustituciones, completitud, custodia,
+ubicación, condición, disponibilidad, préstamo abierto, LPN y autoridad.
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 72. Operación offline
+
+Una captura offline puede conservar intención de armado, observación de miembros
+o verificación de retorno.
+
+```text
+OFFLINE CAPTURE
+!=
+AUTHORITATIVE MEMBERSHIP CHANGE
+```
+
+La sincronización revalida versión, miembros, cantidad, revisión y autoridad.
+
+---
+
+#### 73. Resultado desconocido
+
+Ante timeout posterior a una mutación, el cliente reconcilia la misma operación.
+
+No crea una instancia, asignación o sustitución nueva para reintentar.
+
+---
+
+#### 74. Autorización
+
+Se segregan conceptualmente:
+
+```text
+CREATE_KIT_DEFINITION
+REVIEW_KIT_DEFINITION
+APPROVE_KIT_DEFINITION
+CREATE_KIT_INSTANCE
+ASSIGN_MEMBER
+REMOVE_MEMBER
+AUTHORIZE_SUBSTITUTION
+VERIFY_COMPLETENESS
+ASSIGN_OR_LOAN_KIT
+ACCEPT_KIT_RETURN
+DISASSEMBLE_KIT
+CLOSE_KIT_CYCLE
+```
+
+`NEXO-AUTH-024` y `NEXO-AUTH-025` conservan el detalle de autorización
+aplicable.
+
+Poseer una capacidad no concede las demás.
+
+---
+
+#### 75. Evidencia
+
+La evidencia puede incluir escaneo, código o serial, fotografía, checklist,
+firma o aceptación, condición observada, motivo de sustitución, resultado de
+completitud, referencia de préstamo, ubicación, actor e instante.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+---
+
+#### 76. Auditoría mínima
+
+Toda transición autoritativa futura debe poder reconstruir definición y versión,
+instancia, revisión previa y resultante, línea de componente, miembro anterior
+y nuevo, cantidad, obligatoriedad, sustitución, completitud antes y después,
+condición, ubicación, custodia, LPN cuando aplique, operación, actor, autoridad,
+instante de servidor, correlación, idempotencia, evidencia y excepción.
+
+---
+
+#### 77. Estados canónicos de `VPROC-0067`
+
+Se consumen exactamente:
+
+```text
+KIT_DEFINITION_DRAFT
+DEFINITION_UNDER_REVIEW
+DEFINITION_APPROVED
+INSTANCE_ASSEMBLING
+COMPLETENESS_CHECK
+AVAILABLE
+ASSIGNED
+IN_USE
+RETURN_UNDER_VERIFICATION
+KIT_CYCLE_RECONCILED
+```
+
+Esta tarea no crea un lifecycle competidor.
+
+---
+
+#### 78. Eventos canónicos de `VPROC-0067`
+
+Se conservan exactamente los seis eventos empresariales ya aprobados:
+
+```text
+VPROC-0067.EVT-001
+VPROC-0067.EVT-002
+VPROC-0067.EVT-003
+VPROC-0067.EVT-004
+VPROC-0067.EVT-005
+VPROC-0067.EVT-006
+```
+
+Corresponden al inicio de definición, revisión, aprobación, asignación, retorno
+en verificación y cierre reconciliado.
+
+No se inventan eventos empresariales adicionales.
+
+---
+
+#### 79. Estados internos y eventos empresariales
+
+Que un estado de proceso no tenga un evento empresarial dedicado no autoriza
+inventar un identificador local.
+
+La implementación física futura podrá registrar auditoría interna respetando el
+catálogo canónico.
+
+---
+
+#### 80. AS-IS de esquema remoto
+
+La inspección remota de solo lectura no encontró tablas o columnas gobernadas
+por nombres `kit`, `bundle` o `component` para esta capacidad.
+
+El único campo coincidente observado fue
+`catalog_item_option_recipe_effects.recipe_component_code`, perteneciente a
+semántica de receta y no a kits físicos.
+
+No se adopta como infraestructura de kits.
+
+---
+
+#### 81. AS-IS de perfiles de inventario
+
+El snapshot remoto de productos activos observó:
+
+| `product_type` | `inventory_kind` | filas |
+| --- | --- | ---: |
+| `insumo` | `ingredient` | 377 |
+| `venta` | `finished` | 285 |
+| `insumo` | `asset` | 209 |
+| `preparacion` | `finished` | 92 |
+| `venta` | `resale` | 27 |
+
+No existe un valor físico canónico `KIT` materializado en esa proyección
+legacy.
+
+---
+
+#### 82. AS-IS de aplicación
+
+La búsqueda dirigida en `vento-nexo` no identificó un workflow gobernado de
+definición, instancia, membresía y completitud.
+
+Las apariciones textuales aisladas de “kit” no demuestran una capacidad.
+
+```text
+TEXT OR LABEL CONTAINING KIT
+!=
+KIT DOMAIN IMPLEMENTATION
+```
+
+---
+
+#### 83. Estado de adopción AS-IS
+
+La capacidad se clasifica:
+
+```text
+BUILD
+```
+
+en coherencia con `CAP-07.11`.
+
+Los contratos generados de `VPROC-0067` constituyen diseño canónico compartido;
+no demuestran materialización física del dominio de kits.
+
+---
+
+#### 84. Reconciliación futura del legacy
+
+La materialización posterior deberá investigar y reconciliar, sin heurística:
+
+1. productos o activos usados operativamente como “kits”;
+2. conjuntos mantenidos en hojas, notas o procedimientos;
+3. placas o códigos con nombres que sugieran kit;
+4. grupos reutilizables que no sean kits;
+5. combos comerciales que no sean kits físicos;
+6. recetas o especificaciones que no sean kits;
+7. contenedores usados para transportar kits;
+8. miembros serializados;
+9. miembros por cantidad;
+10. préstamos o custodias existentes;
+11. faltantes y sustituciones históricas;
+12. composición real observada.
+
+No se ejecuta clasificación ni backfill en esta tarea.
+
+---
+
+#### 85. Fail-closed
+
+La operación futura falla cerrada cuando:
+
+- la definición no existe o no está aprobada;
+- la versión es ambigua;
+- la instancia no existe;
+- la revisión es obsoleta;
+- un miembro no existe;
+- la cantidad no alcanza;
+- existe doble asignación incompatible;
+- una sustitución no está permitida;
+- se detecta ciclo de composición;
+- no puede calcularse completitud;
+- el kit está incompleto para una operación que exige completitud;
+- el LPN produciría doble representación;
+- existe custodia o préstamo incompatible;
+- falta autoridad;
+- el resultado remoto es desconocido.
+
+El fallo conserva el estado previo.
+
+---
+
+#### 86. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar definiciones versionadas,
+aprobación de definición, instancias estables, líneas obligatorias y opcionales,
+membresías exactas, cantidades reconciliables, sustituciones autorizadas,
+prevención de ciclos, cálculo determinista de completitud, separación entre
+completitud, condición y disponibilidad, armado y desarme auditables, préstamo y
+retorno reconciliables, custodia, ubicación, integración LPN sin duplicación,
+conteo como observación, revisiones monotónicas, idempotencia, concurrencia,
+operación offline reconciliable, autorización server-side, evidencia y cero
+doble contabilización.
+
+---
+
+#### 87. Handoff hacia `NEXO-DOM-015`
+
+Esta tarea entrega:
+
+```text
+VERSIONED KIT DEFINITIONS
++
+STABLE KIT INSTANCES
++
+REQUIRED / OPTIONAL COMPONENT RULES
++
+AUTHORITATIVE MEMBER ASSIGNMENTS
++
+EXPLICIT AUDITABLE SUBSTITUTIONS
++
+DETERMINISTIC COMPLETENESS
++
+COMPLETENESS SEPARATE FROM CONDITION AND AVAILABILITY
++
+KIT INSTANCE SEPARATE FROM LPN AND PHYSICAL CONTAINER
++
+NO DUPLICATED MEMBER EXISTENCE
++
+IDEMPOTENT VERSIONED KIT HISTORY
+```
+
+`NEXO-DOM-015` deberá definir conteos de activos, reutilizables y contenedores
+consumiendo la instancia de kit como identidad operacional sin duplicar sus
+miembros y preservando la observación original antes de cualquier decisión de
+ajuste.
+
+---
+
+#### 88. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege directamente la separación entre
+definición e instancia, componentes, cantidades, sustituciones, completitud,
+identidad de la instancia, estado, ubicación, responsable, miembros reales,
+indisponibilidad por incompletitud, no doble contabilización y eventos
+auditables de composición.
+
+---
+
+#### 89. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para separar kit de activo, reutilizable, contenedor, LPN y
+  stock y preservar eventos, identidad y custodia;
+- `TREQ-NEXO-040`, para mantener `KIT` como una de las siete clases primarias;
+- `TREQ-NEXO-041`, para separar clase, producto, presentación, ubicación,
+  custodia, condición, LPN y kit;
+- `TREQ-NEXO-043`, para impedir doble representación entre cantidad e identidad;
+- `TREQ-NEXO-045`, como requisito propietario directo de definición, instancia,
+  componentes, sustituciones, completitud y eventos de kit;
+- `TREQ-NEXO-047`, para aplicar completitud como comportamiento de la clase
+  `KIT` sin duplicar saldo, instancia, contenido de LPN o valor.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 90. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, `previous_task_id = NEXO-DOM-013`, continuidad `013 → 014 → 015`, ruta normal, override `NEXO-DOM-001..038 → DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, archivo propietario, handoff de `NEXO-DOM-013`, `CAP-07.11`, 04A NEXO, `VPROC-0067`, catálogo de eventos, scripts aplicables, código `vento-nexo` y consultas remotas de solo lectura sobre esquema y perfiles de inventario. |
+| OPERATIVA | NOT_EXECUTED | No se definió, ensambló, prestó, devolvió, sustituyó, desarmó ni contó ningún kit físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron productos, activos, grupos, miembros, LPN, movimientos, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 91. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `KIT` permanece como clase primaria ya aprobada.
+- [x] “Conjunto” no crea una clase adicional.
+- [x] Kit físico se separa de combo comercial, receta y especificación.
+- [x] Definición se separa de instancia y se versiona.
+- [x] Una instancia conserva la versión que gobierna su composición.
+- [x] Se definen componentes obligatorios, opcionales y cantidades.
+- [x] Los miembros conservan su clase primaria.
+- [x] Se soporta identidad serializada y scope cuantificado.
+- [x] La composición anidada es expresa y acíclica.
+- [x] La instancia posee identidad estable.
+- [x] La instancia no crea saldo adicional.
+- [x] Armado no crea ni consume componentes por inferencia.
+- [x] Completitud exige todos los obligatorios.
+- [x] Opcionales no bloquean completitud estructural.
+- [x] Completitud se separa de condición y disponibilidad.
+- [x] Kit incompleto no se presenta como disponible.
+- [x] Se impide doble satisfacción de un componente.
+- [x] Sustitución es explícita, autorizada y auditable.
+- [x] Sustitución de miembro se separa de reemplazo patrimonial.
+- [x] Desarme no dispone componentes.
+- [x] Cierre no borra historia y rearmado no crea identidad por inferencia.
+- [x] Custodia del kit no se propaga automáticamente a miembros.
+- [x] Préstamo y devolución consumen `NEXO-DOM-011`.
+- [x] Faltante al retorno no confirma pérdida.
+- [x] Daño no elimina al miembro por inferencia.
+- [x] `KIT_INSTANCE` se separa de LPN y contenedor físico.
+- [x] La definición abstracta nunca es contenido de LPN.
+- [x] Se impide duplicar miembros como contenido autoritativo.
+- [x] Kit se separa de grupo reutilizable y activo serializado.
+- [x] Repuestos y consumibles conservan sus owners.
+- [x] Retiro o disposición del kit no se propaga a miembros.
+- [x] Reemplazo de instancia no reutiliza identidad.
+- [x] Conteo permanece observación.
+- [x] Se definen revisión, idempotencia, concurrencia y offline.
+- [x] Se segregan capacidades y evidencia de autoridad.
+- [x] Se consumen exactamente los estados aprobados de `VPROC-0067`.
+- [x] Se conservan exactamente los seis eventos aprobados de `VPROC-0067`.
+- [x] No se inventan eventos empresariales adicionales.
+- [x] Se documenta que el esquema remoto no materializa una superficie gobernada de kits.
+- [x] Se documentan los perfiles legacy observados.
+- [x] Se clasifica la capacidad como `BUILD`.
+- [x] Se define reconciliación futura sin heurística.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-015`.
+
+---
+
+#### 92. Límites
+
+Esta tarea no crea ni modifica definiciones o instancias reales; no asigna ni
+retira miembros; no ensambla, presta, devuelve, sustituye, desarma o cierra kits
+reales; no modifica productos, activos, reutilizables, repuestos, contenedores,
+LPN, movimientos, cantidades, ubicación, custodia, condición, disponibilidad o
+lifecycle; no clasifica automáticamente objetos legacy; no crea tablas,
+columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, Server
+Actions ni Route Handlers; no ejecuta migraciones ni backfills; no modifica
+Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no
+crea una instancia física propia; no crea ni modifica requisitos de prueba; no
+modifica el registro 04A; y no desarrolla `NEXO-DOM-015`.
+
+---
+
+#### 93. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
+
 ### [ ] NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
 ### [ ] NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
 ### [ ] NEXO-DOM-017 — Definir auditoría, historial y evidencia
