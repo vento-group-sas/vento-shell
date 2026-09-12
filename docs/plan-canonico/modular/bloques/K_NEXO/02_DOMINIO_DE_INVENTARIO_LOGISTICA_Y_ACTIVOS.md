@@ -16185,8 +16185,2693 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
 
-### [ ] NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
-### [ ] NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+### ✅ NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
+**Tarea siguiente:** NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+**Tipo de tarea:** documental; definición canónica de mantenimiento, reparación, prueba, liberación al servicio y disponibilidad para activos individuales y otros sujetos físicos aplicables, separando condición, lifecycle, custodia, ubicación, obligación de mantenimiento, ejecución técnica, resultado, evidencia, próxima obligación, revisiones, idempotencia y fronteras con repuestos, garantías, calibración, baja y efectos económicos bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para determinar cuándo un sujeto físico
+requiere mantenimiento o reparación, cómo se conserva la obligación y su
+ejecución, qué evidencia permite considerar terminado el trabajo y cuándo el
+sujeto puede volver a estar disponible para el uso previsto.
+
+La regla raíz queda:
+
+```text
+STABLE PHYSICAL SUBJECT
++
+VERSIONED MAINTENANCE OBLIGATION
++
+EXPLICIT TRIGGER
++
+AUDITABLE WORK EXECUTION
++
+RESULT AND REQUIRED TEST
++
+AUTHORIZED RELEASE WHEN APPLICABLE
++
+FRESH AVAILABILITY PROJECTION
+→
+RECONCILABLE SERVICE STATE
+```
+
+La tarea define semántica de dominio. No ejecuta mantenimiento, reparación,
+pruebas, liberación ni cambios físicos.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. mantenimiento separado de condición y lifecycle;
+2. reparación separada de daño e incidente;
+3. disponibilidad como proyección contextual;
+4. plan, obligación, disparador, trabajo, diagnóstico, resultado, prueba,
+   liberación y próxima obligación como hechos distintos;
+5. mantenimiento preventivo y correctivo sin conflación;
+6. indisponibilidad con causas explícitas;
+7. disponibilidad con evidencia positiva y frescura;
+8. mantenimiento por identidad individual o scope cuantificado;
+9. revisiones monotónicas, idempotencia, concurrencia y operación offline;
+10. reconciliación explícita del AS-IS;
+11. fronteras con repuestos, garantías, calibración, baja y efectos económicos;
+12. handoff exacto hacia `NEXO-DOM-013`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria de `NEXO-DOM-001`;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, pérdida, faltante, hallazgo y recuperación de
+  `NEXO-DOM-010`;
+- préstamo, devolución, transferencia y cambio de custodia de
+  `NEXO-DOM-011`;
+- una sola representación autoritativa por sujeto o scope;
+- historia no destructiva;
+- autorización server-side;
+- revisiones, idempotencia, concurrencia y reconciliación offline.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+QUÉ HECHO CREA UNA OBLIGACIÓN DE MANTENIMIENTO,
+CUÁNDO EL SUJETO DEBE BLOQUEARSE O RESTRINGIRSE,
+QUÉ SIGNIFICA QUE EL TRABAJO FUE EJECUTADO,
+QUÉ SIGNIFICA QUE FUE REPARADO,
+QUÉ PRUEBA O LIBERACIÓN EXIGE LA POLÍTICA,
+CUÁNDO PUEDE VOLVER A ESTAR DISPONIBLE
+Y CÓMO SE CONSERVA LA PRÓXIMA OBLIGACIÓN
+SIN BORRAR HISTORIA NI INFERIR ESTADOS?
+```
+
+---
+
+#### 5. Dimensiones separadas
+
+Se preservan como dimensiones independientes:
+
+```text
+CONDITION
+LIFECYCLE
+LOCATION
+CUSTODY
+OWNERSHIP
+MAINTENANCE OBLIGATION
+WORK EXECUTION
+SERVICEABILITY
+AVAILABILITY
+ECONOMIC TREATMENT
+```
+
+Cambiar una dimensión no autoriza reescribir las demás por inferencia.
+
+---
+
+#### 6. Condición y disponibilidad
+
+Se fija:
+
+```text
+GOOD CONDITION
+!=
+AVAILABLE
+```
+
+y:
+
+```text
+AVAILABLE
+!=
+GOOD CONDITION
+```
+
+Un sujeto en buena condición puede estar reservado, prestado, en tránsito,
+vencido de mantenimiento, bajo reparación, pendiente de prueba o pendiente de
+liberación.
+
+---
+
+#### 7. Disponibilidad como proyección
+
+La disponibilidad es una proyección derivada de hechos autoritativos.
+
+No puede reducirse a una bandera editable que oculte mantenimiento vencido,
+reparación abierta, condición bloqueante, custodia incompatible, lifecycle
+incompatible, prueba pendiente o liberación pendiente.
+
+---
+
+#### 8. Estados de disponibilidad
+
+La proyección debe poder distinguir al menos:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+La forma física futura puede variar, pero debe preservar esas decisiones y sus
+razones.
+
+---
+
+#### 9. Disponibilidad positiva
+
+`AVAILABLE` exige que, para el propósito y contexto consultados:
+
+- el sujeto exista y esté representado de forma autoritativa;
+- la política aplicable esté resuelta;
+- no exista bloqueo vigente;
+- las obligaciones condicionantes estén satisfechas;
+- la evidencia requerida esté vigente;
+- cualquier prueba o liberación obligatoria esté confirmada.
+
+No significa ausencia de obligaciones futuras.
+
+---
+
+#### 10. Disponibilidad restringida
+
+`RESTRICTED` significa que el sujeto puede utilizarse solo bajo alcance,
+condición o propósito explícitos.
+
+Toda restricción conserva razón, alcance, vigencia, política, autoridad,
+evidencia y condición de salida.
+
+---
+
+#### 11. Indisponibilidad
+
+`UNAVAILABLE` significa que existe al menos una causa vigente que impide el uso
+pretendido.
+
+La causa conserva su owner. La proyección referencia el hecho bloqueante y no
+lo duplica como fuente de verdad.
+
+---
+
+#### 12. Disponibilidad desconocida
+
+`UNKNOWN` significa que falta evidencia material para decidir.
+
+Se fija:
+
+```text
+UNKNOWN
+!=
+AVAILABLE
+```
+
+Las operaciones que exigen disponibilidad positiva fallan cerradas ante
+`UNKNOWN`.
+
+---
+
+#### 13. Razones de disponibilidad
+
+La proyección debe poder explicar, cuando corresponda:
+
+- obligación de mantenimiento próxima;
+- mantenimiento vencido;
+- mantenimiento activo;
+- reparación requerida o activa;
+- prueba pendiente o fallida;
+- liberación pendiente;
+- condición bloqueante;
+- préstamo o asignación incompatible con el uso consultado;
+- tránsito;
+- lifecycle bloqueante;
+- política o evidencia no resuelta.
+
+La implementación futura puede materializar estas razones sin alterar su
+semántica.
+
+---
+
+#### 14. Contexto de disponibilidad
+
+La disponibilidad se decide para un propósito y contexto concretos:
+
+```text
+AVAILABILITY
+=
+SUBJECT
++
+PURPOSE
++
+CONTEXT
++
+POLICY
++
+SOURCE REVISIONS
++
+DECISION
+```
+
+Un activo puede estar no disponible para asignación general y seguir
+disponible para inspección o traslado técnico autorizado.
+
+---
+
+#### 15. Frescura de disponibilidad
+
+Toda proyección debe poder demostrar las revisiones de las que deriva.
+
+Una lectura obsoleta de condición, mantenimiento, custodia, lifecycle,
+ubicación, prueba o liberación no demuestra disponibilidad vigente.
+
+---
+
+#### 16. Mantenimiento
+
+`MAINTENANCE` representa obligaciones y trabajos destinados a conservar,
+verificar o restaurar una aptitud técnica.
+
+No equivale a reparación y no equivale a disponibilidad.
+
+---
+
+#### 17. Reparación
+
+`REPAIR` es una intervención correctiva destinada a restaurar una función,
+condición o aptitud afectada.
+
+Se fija:
+
+```text
+MAINTENANCE MAY INCLUDE REPAIR
+REPAIR DOES NOT REPLACE MAINTENANCE HISTORY
+```
+
+---
+
+#### 18. Daño y reparación
+
+Se preserva:
+
+```text
+DAMAGE OBSERVED
+!=
+REPAIR STARTED
+```
+
+y:
+
+```text
+REPAIR COMPLETED
+!=
+DAMAGE INCIDENT DELETED
+```
+
+Un daño puede producir evaluación o solicitud de trabajo. El incidente original
+permanece auditable.
+
+---
+
+#### 19. Plan de mantenimiento
+
+Un plan define una regla versionada para generar o reconocer obligaciones
+futuras.
+
+Conceptualmente conserva sujeto o clase aplicable, versión, vigencia, tipo,
+disparador, frecuencia o umbral, procedimiento o referencia, evidencia
+requerida, prueba requerida, regla de liberación, owner y regla para la próxima
+obligación.
+
+---
+
+#### 20. Plan y obligación
+
+Se fija:
+
+```text
+MAINTENANCE PLAN
+!=
+MAINTENANCE OBLIGATION
+```
+
+El plan es la regla. La obligación es una instancia exigible producida o
+reconocida bajo una versión concreta.
+
+---
+
+#### 21. Versionado de plan
+
+Cambiar frecuencia, procedimiento, umbral, prueba o evidencia no reescribe
+obligaciones históricas.
+
+Toda obligación debe poder indicar la versión o fundamento que la originó.
+
+---
+
+#### 22. Disparadores
+
+La semántica admite disparadores por:
+
+```text
+DATE
+USAGE
+CYCLES
+METER
+CONDITION
+AUTHORIZED EVENT
+```
+
+La medición concreta permanece bajo el dominio que produce el dato.
+
+---
+
+#### 23. Disparador y trabajo
+
+Se fija:
+
+```text
+TRIGGER REACHED
+!=
+WORK STARTED
+```
+
+Alcanzar un disparador puede crear o volver exigible una obligación. No demuestra
+ejecución.
+
+---
+
+#### 24. Obligación de mantenimiento
+
+Toda obligación debe poder conservar identidad estable, sujeto, versión de plan
+o fundamento, tipo, disparador, fecha o umbral de exigibilidad, estado,
+criticidad cuando aplique, efecto sobre disponibilidad, trabajo relacionado,
+resultado, evidencia, resolución y próxima obligación relacionada.
+
+---
+
+#### 25. Estados de obligación
+
+La obligación debe distinguir al menos:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+La implementación puede usar otra representación física si conserva esos
+significados y su historia.
+
+---
+
+#### 26. Obligación próxima
+
+`UPCOMING` representa una obligación futura conocida que todavía no alcanzó el
+disparador.
+
+No bloquea por definición. La política decide si genera advertencia o
+restricción.
+
+---
+
+#### 27. Obligación exigible
+
+`DUE` significa que el disparador ya exige actuación.
+
+No significa que el trabajo haya comenzado.
+
+---
+
+#### 28. Obligación vencida
+
+`OVERDUE` significa que una obligación exigible superó su límite sin una
+satisfacción válida.
+
+La política define si bloquea o restringe. Un bloqueo crítico se aplica
+fail-closed.
+
+---
+
+#### 29. Obligación satisfecha
+
+`SATISFIED` exige resultado suficiente para la obligación concreta.
+
+Un comentario, una foto aislada o una fecha manual no bastan cuando la política
+requiere prueba, liberación o evidencia adicional.
+
+---
+
+#### 30. Cancelación de obligación
+
+`CANCELLED` conserva identidad, fundamento, motivo, actor, autoridad, instante,
+evidencia y revisión.
+
+Se fija:
+
+```text
+CANCELLED
+!=
+SATISFIED
+```
+
+---
+
+#### 31. Sustitución de obligación
+
+`SUPERSEDED` aplica cuando una obligación deja de gobernar por una transición
+versionada válida.
+
+La obligación sustituida permanece auditable.
+
+---
+
+#### 32. Excepción de mantenimiento
+
+`EXCEPTION` conserva un caso que no puede resolverse ordinariamente.
+
+Debe tener causa, owner, impacto sobre disponibilidad, acción requerida y
+condición exacta de salida.
+
+---
+
+#### 33. Trabajo de mantenimiento
+
+La ejecución material permanece separada de la obligación que la originó.
+
+Un mismo trabajo puede resolver varias obligaciones solo si la política lo
+permite y cada relación queda explícita.
+
+---
+
+#### 34. Orden de trabajo
+
+La orden de trabajo es distinta de plan, obligación, diagnóstico, ejecución,
+resultado, evidencia y liberación.
+
+`NEXO-DOM-030` conserva el workflow detallado de solicitudes y órdenes de
+trabajo aplicables.
+
+---
+
+#### 35. Diagnóstico
+
+El diagnóstico documenta la evaluación técnica que decide qué intervención es
+necesaria.
+
+Se fija:
+
+```text
+DAMAGE REPORT
+!=
+DIAGNOSIS
+
+DIAGNOSIS
+!=
+REPAIR COMPLETED
+```
+
+---
+
+#### 36. Planificación e inicio
+
+Se fija:
+
+```text
+MAINTENANCE PLANNED
+!=
+MAINTENANCE STARTED
+```
+
+Programar una fecha o crear una obligación no cambia por sí solo la realidad
+física del sujeto.
+
+---
+
+#### 37. Ejecución técnica
+
+La ejecución debe poder atribuir sujeto, trabajo, técnico o proveedor, inicio,
+fin, tareas ejecutadas, resultado, evidencia, desviaciones, incidentes y
+referencias a materiales o partes cuando correspondan.
+
+---
+
+#### 38. Trabajo completado
+
+Se fija:
+
+```text
+MAINTENANCE COMPLETED
+!=
+RELEASED TO SERVICE
+```
+
+Terminar actividades técnicas no demuestra por sí solo que el sujeto esté
+habilitado para volver al servicio.
+
+---
+
+#### 39. Prueba de retorno al servicio
+
+Cuando la política la exige, la prueba permanece como un hecho separado.
+
+Conceptualmente conserva criterio, procedimiento o versión, actor competente,
+instante, medición u observación, resultado, evidencia, trabajo relacionado y
+sujeto.
+
+---
+
+#### 40. Resultado de prueba
+
+La prueba distingue como mínimo:
+
+```text
+PASS
+FAIL
+INCONCLUSIVE
+```
+
+`FAIL` e `INCONCLUSIVE` no habilitan una liberación positiva.
+
+---
+
+#### 41. Liberación
+
+La liberación es la decisión autoritativa que permite volver al servicio cuando
+la política la exige.
+
+Se fija:
+
+```text
+WORK DONE
+!=
+RELEASED
+```
+
+Una prueba aprobada puede ser prerrequisito de liberación sin sustituirla.
+
+---
+
+#### 42. Prueba fallida
+
+Cuando una prueba requerida falla:
+
+- el sujeto permanece no disponible para el uso bloqueado;
+- la evidencia se conserva;
+- el trabajo anterior no se reescribe;
+- puede requerirse nuevo diagnóstico, reparación o trabajo;
+- la liberación no se infiere.
+
+---
+
+#### 43. Prueba inconclusa
+
+Se fija:
+
+```text
+INCONCLUSIVE TEST
+!=
+PASS
+```
+
+La ausencia de certeza mantiene el caso pendiente o bloqueado conforme a la
+política.
+
+---
+
+#### 44. Liberación y condición
+
+Se fija:
+
+```text
+RELEASED
+!=
+GOOD CONDITION
+```
+
+La condición cambia únicamente mediante su contrato propietario.
+
+---
+
+#### 45. Liberación y lifecycle
+
+Se fija:
+
+```text
+RELEASED
+!=
+LIFECYCLE ACTIVE
+```
+
+Ambas decisiones pueden ser orquestadas, pero conservan fuentes y evidencia
+distintas.
+
+---
+
+#### 46. Liberación y disponibilidad
+
+Se fija:
+
+```text
+RELEASED
+!=
+AVAILABLE
+```
+
+La disponibilidad final debe reevaluar los demás bloqueos vigentes.
+
+---
+
+#### 47. Próxima obligación
+
+El cierre válido de una obligación debe poder producir o recalcular la próxima
+obligación conforme a versión de plan, frecuencia, referencia temporal,
+medidor o uso cuando corresponda, resultado y política de reinicio del ciclo.
+
+No se deriva únicamente de una fecha escrita manualmente.
+
+---
+
+#### 48. Mantenimiento preventivo
+
+El preventivo atiende una obligación planificada o condicionada antes de una
+falla correctiva.
+
+No requiere inventar un daño previo. `NEXO-DOM-026` especializa su ciclo.
+
+---
+
+#### 49. Mantenimiento correctivo
+
+El correctivo responde a una falla, degradación, diagnóstico o condición que
+requiere intervención.
+
+No convierte automáticamente el incidente origen en resuelto.
+
+---
+
+#### 50. Inspección
+
+Una inspección puede satisfacer una obligación propia, generar hallazgos,
+generar mantenimiento adicional o bloquear disponibilidad.
+
+Inspeccionar no equivale a reparar.
+
+---
+
+#### 51. Limpieza técnica
+
+La limpieza técnica puede formar parte del mantenimiento cuando la política del
+sujeto la trate como requisito técnico.
+
+No sustituye los procesos generales de saneamiento de owners posteriores.
+
+---
+
+#### 52. Calibración
+
+La calibración se reconoce como control técnico. Magnitud, rango, tolerancia,
+patrón, certificado, vencimiento e impacto se especializan en `NEXO-DOM-026`
+y `NEXO-DOM-035`.
+
+Esta tarea conserva únicamente su efecto posible sobre obligación y
+disponibilidad.
+
+---
+
+#### 53. Garantía
+
+La existencia de garantía no demuestra mantenimiento realizado, reparación
+aprobada ni disponibilidad.
+
+La gestión especializada de garantía permanece en las tareas propietarias
+posteriores.
+
+---
+
+#### 54. Proveedor o técnico externo
+
+Un tercero puede ejecutar trabajo sin convertirse en propietario.
+
+Cuando recibe control físico del sujeto, la custodia y el handoff consumen
+`NEXO-DOM-011`.
+
+---
+
+#### 55. Salida a mantenimiento
+
+La salida física conserva por separado ubicación, custodia, trabajo,
+indisponibilidad, condición y evidencia de handoff.
+
+Se fija:
+
+```text
+MAINTENANCE OUT
+!=
+WORK STARTED
+```
+
+---
+
+#### 56. Retorno de mantenimiento
+
+El retorno físico desde un tercero no significa liberación:
+
+```text
+MAINTENANCE IN
+!=
+RELEASED TO SERVICE
+```
+
+Puede existir retorno con prueba o liberación pendientes.
+
+---
+
+#### 57. Reparación requerida
+
+Una decisión `REPAIR_REQUIRED` debe derivar de evidencia o diagnóstico
+autoritativo.
+
+No se infiere únicamente desde una etiqueta visual o comentario.
+
+---
+
+#### 58. Reparación activa
+
+Mientras una reparación bloqueante esté activa, la disponibilidad para el uso
+ordinario es `UNAVAILABLE`, salvo una política explícita que autorice un
+propósito restringido distinto.
+
+---
+
+#### 59. Reparación completada
+
+Una reparación completada conserva diagnóstico, trabajo ejecutado, técnico o
+proveedor, evidencia, partes relacionadas, resultado, prueba requerida y
+liberación pendiente o final.
+
+No borra estados ni incidentes anteriores.
+
+---
+
+#### 60. Repuestos
+
+Los repuestos continúan como inventario hasta una transición autorizada de
+reserva, retiro, instalación, devolución o disposición.
+
+Se fija:
+
+```text
+TEXT "PART REPLACED"
+!=
+INVENTORY CONSUMPTION
+```
+
+`NEXO-DOM-016` y `NEXO-DOM-025` conservan compatibilidad, reserva, consumo,
+instalación y costo asociado.
+
+---
+
+#### 61. Pieza retirada
+
+Una pieza retirada durante reparación debe tener un destino explícito cuando el
+contrato aplicable lo requiera.
+
+Esta tarea no define ese inventario detallado y prohíbe que la pieza desaparezca
+por una nota de mantenimiento.
+
+---
+
+#### 62. Costo informado
+
+El costo registrado en un expediente de mantenimiento es evidencia operativa.
+
+Se fija:
+
+```text
+REPORTED MAINTENANCE COST
+!=
+ACCOUNTING POSTING
+```
+
+Los efectos contables permanecen en sus owners económicos.
+
+---
+
+#### 63. Disponibilidad y préstamo
+
+Un sujeto prestado puede estar técnicamente apto y no estar disponible para el
+pool general.
+
+La proyección es contextual y no reescribe custodia.
+
+---
+
+#### 64. Disponibilidad y tránsito
+
+Un sujeto en tránsito no se presenta como disponible en origen ni confirmado en
+destino por inferencia.
+
+El owner de movimiento conserva la ubicación física.
+
+---
+
+#### 65. Disponibilidad y reserva
+
+Una reserva válida puede restringir disponibilidad general sin cambiar
+condición ni lifecycle.
+
+La reserva conserva owner, alcance y vigencia.
+
+---
+
+#### 66. Disponibilidad y condición bloqueante
+
+Una condición bloqueante puede producir `UNAVAILABLE`.
+
+La proyección referencia la condición vigente; no crea una fuente competidora.
+
+---
+
+#### 67. Mantenimiento vencido y disponibilidad
+
+Una obligación vencida aplica el efecto definido por política.
+
+Si la política es bloqueante:
+
+```text
+OVERDUE BLOCKING OBLIGATION
+→
+UNAVAILABLE
+```
+
+Si solo restringe, la razón y el alcance deben quedar explícitos.
+
+---
+
+#### 68. Ausencia de registros
+
+Se fija:
+
+```text
+NO MAINTENANCE RECORDS
+!=
+UP TO DATE
+```
+
+La ausencia puede significar que no aplica, que falta plan, que falta migración
+o que la evidencia es insuficiente.
+
+---
+
+#### 69. Fecha programada
+
+Se fija:
+
+```text
+SCHEDULED DATE EXISTS
+!=
+WORK PERFORMED
+```
+
+Una fecha programada representa planificación, no ejecución.
+
+---
+
+#### 70. Fecha ejecutada
+
+Se fija:
+
+```text
+PERFORMED DATE EXISTS
+!=
+RELEASED
+```
+
+La liberación depende de política, prueba y autoridad aplicables.
+
+---
+
+#### 71. Estado legacy `done`
+
+`done` puede demostrar que un registro fue marcado como terminado.
+
+No demuestra por sí solo diagnóstico válido, tareas completas, evidencia
+suficiente, prueba aprobada, liberación ni disponibilidad.
+
+---
+
+#### 72. Estado legacy `planned`
+
+`planned` representa planificación.
+
+Se fija:
+
+```text
+PLANNED
+!=
+IN MAINTENANCE
+```
+
+Un trabajo planificado no debe cambiar por sí solo la realidad física del
+sujeto.
+
+---
+
+#### 73. Estado legacy `overdue`
+
+`overdue` puede representar una obligación vencida, pero debe reconciliarse con
+la política y el disparador que la hicieron exigible.
+
+No sustituye un plan versionado.
+
+---
+
+#### 74. Estado legacy `cancelled`
+
+`cancelled` conserva la cancelación de un registro.
+
+No significa que la obligación original haya quedado satisfecha.
+
+---
+
+#### 75. `equipment_status` legacy
+
+El AS-IS conserva:
+
+```text
+operativo
+en_mantenimiento
+fuera_servicio
+baja
+```
+
+Este campo mezcla parcialmente aptitud, intervención técnica y lifecycle.
+
+La adopción futura debe reconciliarlo sin convertirlo en la fuente única de
+disponibilidad.
+
+---
+
+#### 76. `lifecycle_status` legacy
+
+El AS-IS conserva, entre otros:
+
+```text
+activo
+en_reparacion
+retirado
+```
+
+`en_reparacion` mezcla una actividad técnica con lifecycle.
+
+La transición futura debe separar ambas dimensiones sin borrar historia.
+
+---
+
+#### 77. `condition_status` legacy
+
+La condición permanece una dimensión independiente.
+
+Un mantenimiento terminado no fuerza `bueno`, y `bueno` no demuestra que el
+mantenimiento esté al día.
+
+---
+
+#### 78. Identidad individual
+
+Para `SERIALIZED_ASSET` y otros sujetos individualizados:
+
+- mantenimiento se relaciona con la identidad exacta;
+- reparación no cambia identidad;
+- reimpresión de QR no crea otra historia;
+- obligación y ejecución conservan la misma identidad física.
+
+---
+
+#### 79. Control por cantidad
+
+Para `REUSABLE_QUANTITY`, la política puede aplicar inspección o cuidado a un
+scope cuantificado.
+
+No se fabrican identidades por unidad. Las cantidades utilizable, restringida,
+no disponible o bajo intervención deben ser disjuntas y reconciliables.
+
+---
+
+#### 80. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` individual puede requerir inspección, mantenimiento,
+reparación, prueba y liberación.
+
+Su identidad permanece separada del LPN y del contenido.
+
+---
+
+#### 81. Kit
+
+Un `KIT_INSTANCE` puede estar técnicamente apto y no disponible por
+incompletitud.
+
+La completitud pertenece a `NEXO-DOM-014`. Esta tarea conserva únicamente el
+efecto de mantenimiento y liberación.
+
+---
+
+#### 82. Repuesto como clase
+
+Un `SPARE_PART` no adquiere lifecycle de activo por aparecer en un expediente
+de mantenimiento.
+
+Su inventario y compatibilidad conservan sus owners.
+
+---
+
+#### 83. Vehículos
+
+Los vehículos consumen este contrato para mantenimiento y disponibilidad.
+
+Kilometraje, combustible, documentos y reglas especializadas pertenecen a
+`NEXO-DOM-027`.
+
+---
+
+#### 84. Instalaciones
+
+Cuando el objeto principal es una instalación o componente fijo, el workflow
+detallado de planes, órdenes y liberación pertenece a `NEXO-DOM-029` y
+`NEXO-DOM-030`.
+
+Esta tarea conserva el principio compartido de no declarar disponibilidad sin
+evidencia suficiente.
+
+---
+
+#### 85. Mantenimiento por fecha
+
+Una obligación por fecha usa una referencia temporal versionada.
+
+Cambiar la frecuencia futura no altera retrospectivamente obligaciones ya
+generadas.
+
+---
+
+#### 86. Mantenimiento por uso o ciclos
+
+La obligación debe referenciar la lectura o contador que produjo el disparador.
+
+Una lectura desconocida no se reemplaza por cero para declarar cumplimiento.
+
+---
+
+#### 87. Mantenimiento por medidor
+
+Se fija:
+
+```text
+UNKNOWN METER
+!=
+NOT DUE
+```
+
+La política define si falta de lectura bloquea, restringe o abre una excepción.
+
+---
+
+#### 88. Mantenimiento por condición
+
+Una condición o incidente puede disparar evaluación o mantenimiento.
+
+Se fija:
+
+```text
+CONDITION TRIGGER
+!=
+WORK COMPLETED
+```
+
+---
+
+#### 89. Próxima fecha legacy
+
+`next_scheduled_date` es reutilizable como evidencia o dato transitorio.
+
+No sustituye plan, versión, frecuencia, disparador, cálculo ni obligación
+futura.
+
+---
+
+#### 90. Proveedor legacy
+
+`maintenance_provider` en texto puede conservar contexto histórico.
+
+No demuestra identidad canónica del tercero, autorización, custodia, garantía
+ni competencia técnica.
+
+---
+
+#### 91. Partes reemplazadas legacy
+
+`replaced_parts` en texto es evidencia narrativa.
+
+No demuestra movimientos de inventario ni instalación.
+
+---
+
+#### 92. Disponibilidad por cantidad
+
+Para scopes cuantificados se exige:
+
+```text
+AVAILABLE QUANTITY
++
+RESTRICTED QUANTITY
++
+UNAVAILABLE QUANTITY
+<=
+AUTHORITATIVE PHYSICAL QUANTITY
+```
+
+Los scopes son disjuntos y reconciliables.
+
+---
+
+#### 93. Disponibilidad individual
+
+Para identidad individual:
+
+```text
+ONE PHYSICAL IDENTITY
+→
+ONE CURRENT AVAILABILITY DECISION PER PURPOSE AND CONTEXT
+```
+
+No se admiten decisiones contradictorias para el mismo contexto y revisión.
+
+---
+
+#### 94. Política de bloqueo
+
+Toda regla que vuelva no disponible un sujeto debe ser trazable a política,
+versión, causa, fuente, vigencia, revisión y condición de salida.
+
+No se admiten bloqueos permanentes por una bandera sin procedencia.
+
+---
+
+#### 95. Liberación manual
+
+Una liberación manual solo es válida cuando la política la permite y conserva
+autoridad, razón, evidencia, alcance, instante y revisión.
+
+No borra pruebas fallidas anteriores.
+
+---
+
+#### 96. Override de disponibilidad
+
+Un override no cambia los hechos subyacentes.
+
+Debe expirar o tener condición de salida y no puede ocultar mantenimiento
+vencido, daño, prueba fallida o lifecycle incompatible.
+
+---
+
+#### 97. Concurrencia
+
+Antes de comprometer una transición se revalidan, según corresponda, identidad o
+scope, revisión de mantenimiento, obligación vigente, trabajo, condición,
+incidentes, custodia, lifecycle, prueba, liberación y política de
+disponibilidad.
+
+Una revisión obsoleta falla cerrada.
+
+---
+
+#### 98. Revisiones monotónicas
+
+Toda mutación autoritativa futura de obligación, trabajo, resultado, prueba o
+liberación debe avanzar una revisión aplicable.
+
+```text
+EXPECTED REVISION
+=
+CURRENT REVISION
+```
+
+debe cumplirse antes del commit.
+
+---
+
+#### 99. Idempotencia
+
+El mismo intento lógico no puede crear dos obligaciones equivalentes, abrir dos
+trabajos equivalentes, registrar dos veces la misma ejecución, satisfacer dos
+veces la misma obligación, duplicar prueba, duplicar liberación ni generar dos
+próximas obligaciones equivalentes.
+
+La misma identidad de idempotencia recupera el resultado ya decidido.
+
+---
+
+#### 100. Resultado desconocido
+
+Ante timeout posterior a una mutación, el cliente no repite con una identidad
+nueva.
+
+Debe resolver el mismo intento hasta conocer:
+
+```text
+ACCEPTED
+REJECTED
+UNKNOWN_REQUIRING_RECONCILIATION
+```
+
+---
+
+#### 101. Operación offline
+
+Una captura offline puede conservar observación, trabajo realizado, medición,
+evidencia y resultado técnico propuesto.
+
+No puede afirmar por sí sola liberación autoritativa ni disponibilidad final.
+
+---
+
+#### 102. Autorización
+
+Se segregan conceptualmente las capacidades de definir o asignar plan,
+reconocer obligación exigible, abrir trabajo, iniciar trabajo, registrar
+diagnóstico, registrar ejecución, registrar prueba, liberar al servicio,
+aplicar override y cancelar o sustituir una obligación.
+
+Poseer una capacidad no concede las demás. La familia `NEXO-AUTH` define
+permisos efectivos y contexto.
+
+---
+
+#### 103. Evidencia
+
+Según política, la evidencia puede incluir procedimiento, checklist, fotografía,
+documento, lectura, certificado, diagnóstico, trabajo, medición de prueba,
+firma, actor, tercero e instante.
+
+Se fija:
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+---
+
+#### 104. Auditoría mínima
+
+Toda transición autoritativa debe poder reconstruir sujeto o scope, clase,
+obligación, versión de plan o fundamento, disparador, trabajo, diagnóstico,
+ejecución, resultado, prueba, liberación, disponibilidad antes y después,
+razones, actor, autoridad, tercero cuando aplique, instante de servidor,
+revisión previa y resultante, correlación, idempotencia, evidencia y excepción.
+
+---
+
+#### 105. Eventos canónicos preservados
+
+Se conservan como hechos distintos:
+
+```text
+maintenance_due
+maintenance_work_order_opened
+maintenance_started
+maintenance_completed
+asset_released_to_service
+```
+
+Ninguno sustituye automáticamente al siguiente.
+
+---
+
+#### 106. Frontera con repuestos
+
+Los eventos `spare_part_reserved` y `spare_part_consumed` pueden relacionarse
+con mantenimiento.
+
+Su inventario, compatibilidad e impacto detallado pertenecen a
+`NEXO-DOM-016` y `NEXO-DOM-025`.
+
+---
+
+#### 107. Frontera con garantía
+
+`warranty_claim_opened` puede relacionarse con una reparación.
+
+No sustituye diagnóstico, trabajo, prueba, liberación ni disponibilidad.
+
+---
+
+#### 108. Frontera con `NEXO-DOM-013`
+
+Una reparación fallida, condición crítica o indisponibilidad prolongada puede
+originar evaluación de baja, descarte, venta o reemplazo.
+
+No ejecuta esas decisiones. `NEXO-DOM-013` conserva su lifecycle no
+destructivo.
+
+---
+
+#### 109. Frontera con `NEXO-DOM-025`
+
+`NEXO-DOM-025` deberá vincular repuestos realmente reservados y consumidos con
+el mantenimiento y el costo del activo.
+
+Esta tarea no crea movimientos de repuesto.
+
+---
+
+#### 110. Frontera con `NEXO-DOM-026`
+
+`NEXO-DOM-026` especializa inspecciones, mantenimiento preventivo, garantía y
+calibración.
+
+Esta tarea entrega la semántica compartida de obligación, trabajo, prueba,
+liberación y disponibilidad.
+
+---
+
+#### 111. Frontera con `NEXO-DOM-030`
+
+`NEXO-DOM-030` define el workflow detallado de planes, solicitudes, órdenes de
+trabajo, reparación, prueba, liberación y reapertura para instalaciones y
+trabajos aplicables.
+
+Esta tarea no adelanta ese workflow físico.
+
+---
+
+#### 112. AS-IS de `asset_maintenance_records`
+
+El AS-IS remoto conserva una tabla de mantenimiento con identidad de registro,
+activo individual o producto, estado, tipo, fechas programada y ejecutada,
+responsable, proveedor, trabajo realizado, indicador y texto de partes
+reemplazadas, costo informado, próxima fecha, notas y auditoría básica.
+
+Se clasifica como fundación parcial reutilizable.
+
+---
+
+#### 113. Vocabulario AS-IS de mantenimiento
+
+El AS-IS restringe `status` a:
+
+```text
+planned
+done
+cancelled
+overdue
+```
+
+y `maintenance_type` a:
+
+```text
+preventive
+corrective
+inspection
+calibration
+cleaning
+other
+```
+
+Estos valores son evidencia legacy y no sustituyen las dimensiones objetivo.
+
+---
+
+#### 114. Brecha AS-IS de planificación
+
+La acción inspeccionada puede, al registrar `planned`, actualizar además:
+
+```text
+equipment_status = en_mantenimiento
+lifecycle_status = en_reparacion
+```
+
+La transición mezcla planificación con intervención física.
+
+La implementación futura debe impedir esa equivalencia automática.
+
+---
+
+#### 115. Brecha AS-IS de finalización
+
+La misma acción puede, al registrar `done`, actualizar:
+
+```text
+equipment_status = operativo
+lifecycle_status = activo
+```
+
+No se observa en esa transición una prueba de retorno al servicio ni una
+liberación separada.
+
+La implementación futura debe reconciliar esta conflación.
+
+---
+
+#### 116. Brecha AS-IS de atomicidad
+
+El registro de mantenimiento y la actualización posterior del activo aparecen
+como mutaciones separadas en la superficie inspeccionada.
+
+No se demuestra atomicidad, compensación, idempotencia ni revisión compartida
+entre ambas.
+
+---
+
+#### 117. Brecha AS-IS de disponibilidad
+
+Las vistas actuales exponen `equipment_status`, `condition_status` y
+`lifecycle_status`, pero no una decisión canónica de disponibilidad con
+propósito, razón, política, frescura, revisiones fuente y liberación.
+
+La disponibilidad objetivo sigue sin materializar.
+
+---
+
+#### 118. Brecha AS-IS de resumen
+
+La superficie actual usa por defecto:
+
+```text
+Al día
+Sin pendientes registrados
+```
+
+cuando no encuentra obligaciones abiertas fechadas.
+
+Se fija:
+
+```text
+NO OPEN DATED RECORDS
+!=
+MAINTENANCE COMPLIANT
+```
+
+---
+
+#### 119. AS-IS legacy por producto
+
+Existe además `product_asset_maintenance_events`, a nivel de producto, con
+fechas, responsable en texto, proveedor, trabajo, partes reemplazadas y
+`planner_bucket`.
+
+No identifica suficientemente un trabajo completo sobre una identidad física
+concreta ni una liberación al servicio.
+
+---
+
+#### 120. Snapshot remoto observado
+
+La consulta remota de solo lectura realizada durante el desarrollo observó:
+
+| Métrica | Resultado |
+| --- | ---: |
+| activos individuales observados | 38 |
+| activos `operativo / activo / bueno` | 38 |
+| registros `asset_maintenance_records` | 0 |
+| registros `product_asset_maintenance_events` | 0 |
+| obligaciones explícitas observadas | 0 |
+| liberaciones al servicio observadas | 0 |
+
+La ausencia de registros no se interpreta como cumplimiento.
+
+---
+
+#### 121. Estado de adopción AS-IS
+
+La infraestructura actual se clasifica:
+
+```text
+PARTIAL REUSABLE FOUNDATION
+```
+
+Existen identidades físicas, condición, equipment status, lifecycle, tabla de
+mantenimiento, fechas, proveedor, trabajo, costo, próxima fecha y UI de
+resumen.
+
+Permanecen incompletos el plan versionado, obligación explícita, disparador
+auditable, diagnóstico estructurado, orden durable, prueba, liberación,
+disponibilidad contextual, revisión e idempotencia.
+
+---
+
+#### 122. Reconciliación futura del legacy
+
+La adopción física posterior deberá reconciliar como mínimo:
+
+1. `equipment_status`;
+2. `lifecycle_status`;
+3. `condition_status`;
+4. `asset_maintenance_records`;
+5. `product_asset_maintenance_events`;
+6. fechas programadas y ejecutadas;
+7. `next_scheduled_date`;
+8. proveedor y responsable legacy;
+9. `work_done`;
+10. partes reemplazadas en texto;
+11. costo informado;
+12. obligaciones reales aún no representadas;
+13. evidencia técnica;
+14. trabajos abiertos;
+15. activos realmente en reparación;
+16. liberaciones reales;
+17. disponibilidad operativa real.
+
+No se ejecuta backfill en esta tarea.
+
+---
+
+#### 123. Fail-closed
+
+Una decisión falla cerrada o queda `UNKNOWN` cuando el sujeto no existe, la
+granularidad no está resuelta, existe doble representación, no puede resolverse
+la política, la obligación aplicable es desconocida, falta una lectura
+requerida, la revisión es obsoleta, el trabajo no puede correlacionarse, falta
+prueba requerida, la prueba falló, falta liberación requerida, existe incidente
+bloqueante, el resultado remoto es desconocido, falta autoridad o una captura
+offline contradice estado más reciente.
+
+El fallo conserva la historia previa.
+
+---
+
+#### 124. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar plan versionado, obligaciones por
+disparador, vencimiento reconciliable, trabajo separado de obligación,
+diagnóstico separado de daño, ejecución auditable, proveedor o técnico
+trazable, repuestos vinculados por owners correctos, resultado, prueba,
+liberación, próxima obligación, disponibilidad contextual, razones de bloqueo,
+`UNKNOWN` fail-closed, identidad o cantidad preservadas, revisiones
+monotónicas, idempotencia, concurrencia, operación offline reconciliable,
+autorización server-side, evidencia, ausencia de doble representación, ausencia
+de liberación automática por `done` y ausencia de mantenimiento activo
+automático por `planned`.
+
+---
+
+#### 125. Handoff hacia `NEXO-DOM-013`
+
+Esta tarea entrega:
+
+```text
+VERSIONED MAINTENANCE OBLIGATIONS
++
+PLAN / OBLIGATION / WORK / RESULT SEPARATION
++
+REPAIR WITHOUT INCIDENT ERASURE
++
+TEST SEPARATE FROM WORK COMPLETION
++
+RELEASE SEPARATE FROM TEST AND AVAILABILITY
++
+CONTEXTUAL AVAILABILITY WITH REASON CODES
++
+UNKNOWN AVAILABILITY FAIL-CLOSED
++
+NEXT OBLIGATION PRESERVED
++
+IDEMPOTENT AUDITABLE MAINTENANCE HISTORY
+```
+
+`NEXO-DOM-013` deberá definir baja, descarte, venta o reemplazo sin convertir
+una condición crítica, reparación fallida o indisponibilidad en disposición
+automática y sin borrar identidad, mantenimiento, incidentes o liberaciones
+históricas.
+
+---
+
+#### 126. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege la separación entre condición,
+disponibilidad y lifecycle; exige separar plan, disparador, orden, diagnóstico,
+ejecución, repuestos, proveedor, indisponibilidad, costo, evidencia, prueba y
+liberación; exige conservar la próxima obligación; prohíbe liberar al servicio
+sin la prueba o decisión requerida; y conserva mantenimiento, reparación y
+disponibilidad por clase sin doble contabilización.
+
+---
+
+#### 127. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-012`, para condición y liberación no destructivas;
+- `TREQ-NEXO-013`, para identidad estable, condición, disponibilidad y
+  separación de dimensiones del activo;
+- `TREQ-NEXO-014`, para plan, disparador, orden, diagnóstico, ejecución,
+  repuestos, proveedor, indisponibilidad, costo, evidencia, prueba, liberación y
+  próxima obligación;
+- `TREQ-NEXO-015`, para mantenimiento y disponibilidad especializada de
+  vehículos;
+- `TREQ-NEXO-017`, para separación de plan, orden, ejecución, prueba y
+  liberación en instalaciones;
+- `TREQ-NEXO-043`, para disponibilidad y mantenimiento por identidad sin
+  duplicar grupos por cantidad;
+- `TREQ-NEXO-044`, para repuestos trazables y prohibición de sustituir
+  movimientos por texto;
+- `TREQ-NEXO-047`, para comportamiento por clase y ausencia de doble
+  representación.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 128. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell` después del cierre de `NEXO-DOM-011`, continuidad `011 → 012 → 013`, ruta normal, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, owner, handoff de `NEXO-DOM-011`, 04A NEXO, scripts aplicables, `CAP-SCOPE-007`, `vento-nexo` actual y consultas remotas de solo lectura sobre esquema, constraints, índices, vistas, activos y mantenimiento. |
+| OPERATIVA | NOT_EXECUTED | No se creó obligación, orden, mantenimiento, reparación, prueba, liberación ni cambio de disponibilidad sobre ningún sujeto físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, mantenimiento, ubicaciones, custodias, condición, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 129. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Mantenimiento se separa de condición y lifecycle.
+- [x] Reparación se separa de daño e incidente.
+- [x] Disponibilidad se define como proyección contextual.
+- [x] Se distinguen `AVAILABLE`, `RESTRICTED`, `UNAVAILABLE` y `UNKNOWN`.
+- [x] `UNKNOWN` falla cerrado donde se exige disponibilidad positiva.
+- [x] Disponibilidad conserva razones, contexto, política y frescura.
+- [x] Plan y obligación se separan y versionan.
+- [x] Se admiten disparadores por fecha, uso, ciclos, medidor, condición o evento autorizado.
+- [x] Disparador no equivale a trabajo iniciado.
+- [x] Se define lifecycle conceptual de la obligación.
+- [x] Cancelación no equivale a satisfacción.
+- [x] Orden de trabajo se mantiene separada de obligación y ejecución.
+- [x] Diagnóstico se separa del daño.
+- [x] Planificación no equivale a intervención física.
+- [x] Trabajo completado no equivale a liberación.
+- [x] Prueba y liberación son hechos separados.
+- [x] Prueba fallida o inconclusa no libera.
+- [x] Liberación se separa de condición, lifecycle y disponibilidad.
+- [x] Próxima obligación se deriva de política versionada.
+- [x] Preventivo, correctivo, inspección, limpieza técnica y calibración mantienen semántica diferenciada.
+- [x] Garantía no demuestra reparación ni disponibilidad.
+- [x] Custodia de tercero consume `NEXO-DOM-011`.
+- [x] Salida o retorno de mantenimiento no equivalen a inicio o liberación.
+- [x] Repuestos no se consumen mediante texto.
+- [x] Costo informado no equivale a efecto contable.
+- [x] Préstamo, tránsito y reserva pueden afectar disponibilidad sin cambiar condición.
+- [x] Ausencia de registros no demuestra cumplimiento.
+- [x] Fecha programada no demuestra ejecución.
+- [x] Fecha ejecutada no demuestra liberación.
+- [x] `done` no equivale a liberado.
+- [x] `planned` no equivale a mantenimiento activo.
+- [x] `overdue` requiere obligación y política.
+- [x] `cancelled` no equivale a obligación satisfecha.
+- [x] `equipment_status` no se adopta como disponibilidad canónica.
+- [x] `lifecycle_status` no absorbe reparación.
+- [x] `condition_status` no se deriva del cierre de mantenimiento.
+- [x] Mantenimiento individual conserva identidad.
+- [x] Control por cantidad no fabrica identidades.
+- [x] Contenedor físico conserva identidad separada de LPN.
+- [x] Kits, repuestos, vehículos e instalaciones conservan sus owners especializados.
+- [x] Medidor desconocido no equivale a obligación no vencida.
+- [x] Próxima fecha legacy no sustituye plan.
+- [x] Proveedor y partes en texto permanecen evidencia legacy.
+- [x] Disponibilidad por cantidad conserva scopes disjuntos.
+- [x] Todo bloqueo tiene causa, política y condición de salida.
+- [x] Override no reescribe hechos.
+- [x] Se definen concurrencia, revisiones monotónicas e idempotencia.
+- [x] Resultado desconocido exige reconciliación.
+- [x] Captura offline no libera al servicio.
+- [x] Evidencia no equivale a autoridad.
+- [x] Se define auditoría mínima.
+- [x] Se preservan eventos canónicos de mantenimiento y liberación.
+- [x] Se documenta `asset_maintenance_records`.
+- [x] Se documentan sus vocabularios legacy.
+- [x] Se documenta la conflación `planned → en_mantenimiento/en_reparacion`.
+- [x] Se documenta la conflación `done → operativo/activo`.
+- [x] Se documenta la falta de atomicidad demostrada.
+- [x] Se documenta la ausencia de proyección canónica de disponibilidad.
+- [x] Se documenta el resumen “Al día” sin evidencia positiva suficiente.
+- [x] Se documenta `product_asset_maintenance_events` como superficie legacy.
+- [x] Se registra snapshot remoto de solo lectura.
+- [x] El AS-IS se clasifica como fundación parcial reutilizable.
+- [x] Se definen condiciones mínimas de materialización posterior.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-013`.
+
+---
+
+#### 130. Límites
+
+Esta tarea no crea planes, obligaciones ni órdenes reales; no inicia ni ejecuta
+mantenimiento o reparación; no registra pruebas ni liberaciones reales; no
+cambia disponibilidad, equipment status, lifecycle, condición, ubicación o
+custodia; no registra préstamos; no reserva ni consume repuestos; no gestiona
+garantías o calibraciones reales; no ejecuta baja, descarte, venta o reemplazo;
+no modifica `asset_items`, `asset_groups`, `asset_maintenance_records` ni
+`product_asset_maintenance_events`; no crea tablas, columnas, enums,
+constraints, índices, triggers, vistas, RPC, RLS, Server Actions ni Route
+Handlers; no ejecuta migraciones o backfills; no modifica Supabase ni
+`vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea una
+instancia física propia; no crea ni modifica requisitos de prueba; no modifica
+el registro 04A; y no desarrolla `NEXO-DOM-013`.
+
+---
+
+#### 131. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`
+
+### ✅ NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
+**Tarea siguiente:** NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+**Tipo de tarea:** documental; definición canónica del retiro de servicio, baja, descarte, venta, reemplazo y disposición física de activos individuales, reutilizables controlados por cantidad y otros sujetos físicos aplicables, con solicitud, evaluación, autorización, ejecución, cierre no destructivo, conservación de identidad e historia, segregación de funciones, efecto económico separado, revisiones, idempotencia, concurrencia, operación offline y fronteras con custodia, ubicación, condición, mantenimiento, propiedad, NUMERA y kits bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para retirar un sujeto físico del servicio ordinario, decidir su destino, ejecutar una disposición física, registrar una venta o relacionar un reemplazo sin borrar identidad, historia, custodia, condición, mantenimiento, incidentes ni efectos económicos.
+
+La regla raíz queda:
+
+```text
+STABLE PHYSICAL SUBJECT
++
+EXPLICIT RETIREMENT REQUEST
++
+INDEPENDENT EVALUATION
++
+AUTHORIZED DECISION
++
+CONTROLLED PHYSICAL DISPOSITION
++
+SEPARATE ECONOMIC EFFECT
++
+NON-DESTRUCTIVE CLOSURE
+→
+AUDITABLE END-OF-SERVICE HISTORY
+```
+
+Esta tarea define semántica de dominio. No ejecuta baja, venta, descarte, reemplazo ni disposición real.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. baja como decisión de retiro del servicio y no como eliminación;
+2. disposición como destino físico ejecutado y no como sinónimo de baja;
+3. venta como método de disposición con handoff físico y efecto económico separados;
+4. reemplazo como relación entre identidades, nunca como reutilización de identidad;
+5. solicitud, evaluación, aprobación, ejecución, efecto económico y cierre como etapas distintas;
+6. condición crítica, reparación fallida o indisponibilidad como posibles disparadores de evaluación, nunca como baja automática;
+7. propiedad, custodia, ubicación y autoridad como precondiciones independientes;
+8. tratamiento para activos individualizados y scopes por cantidad;
+9. conservación de incidentes, mantenimiento, documentos y auditoría;
+10. segregación de funciones, revisiones monotónicas, idempotencia, concurrencia y operación offline fail-closed;
+11. reconciliación explícita del AS-IS;
+12. handoff hacia `NEXO-DOM-014`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria de `NEXO-DOM-001`;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, pérdida, faltante, hallazgo y recuperación de `NEXO-DOM-010`;
+- préstamo, devolución, transferencia y cambio de custodia de `NEXO-DOM-011`;
+- mantenimiento, reparación, prueba, liberación y disponibilidad de `NEXO-DOM-012`;
+- identidad estable, historia no destructiva, autorización server-side, revisiones, idempotencia y concurrencia.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+```text
+QUE HECHO ABRE UNA EVALUACION DE RETIRO,
+QUIEN PUEDE EVALUAR Y APROBAR,
+QUE SIGNIFICA DAR DE BAJA,
+QUE DESTINO FISICO SE EJECUTO,
+COMO SE DISTINGUEN DESCARTE, VENTA Y REEMPLAZO,
+QUE HECHO ECONOMICO SE EMITE,
+Y COMO SE CIERRA SIN BORRAR IDENTIDAD NI HISTORIA?
+```
+
+---
+
+#### 5. Dimensiones separadas
+
+Se preservan como dimensiones independientes:
+
+```text
+CONDITION
+AVAILABILITY
+LIFECYCLE
+LOCATION
+CUSTODY
+OWNERSHIP
+RETIREMENT CASE
+PHYSICAL DISPOSITION
+ECONOMIC TREATMENT
+REPLACEMENT RELATION
+```
+
+Una transición en una dimensión no autoriza reescribir las demás por inferencia.
+
+---
+
+#### 6. Baja
+
+`RETIREMENT` es la decisión autorizada de retirar un sujeto del servicio ordinario o de un alcance operativo definido.
+
+```text
+RETIREMENT
+!=
+DELETE
+```
+
+```text
+RETIREMENT APPROVED
+!=
+PHYSICAL DISPOSITION EXECUTED
+```
+
+La identidad y la historia permanecen después de la baja.
+
+---
+
+#### 7. Disposición física
+
+`PHYSICAL DISPOSITION` es la ejecución verificable del destino físico aprobado para el sujeto o scope. Debe conservar método, actor, fecha efectiva, autoridad, destino o contraparte cuando aplique y evidencia suficiente.
+
+La disposición puede representar descarte, venta, devolución a propietario, entrega a gestor autorizado u otro destino formalmente permitido.
+
+---
+
+#### 8. Baja y disposición no son equivalentes
+
+```text
+RETIREMENT DECISION
+!=
+DISPOSITION EXECUTION
+```
+
+Un caso puede estar aprobado y continuar pendiente de disposición. Marcar el lifecycle no demuestra que el objeto haya salido físicamente.
+
+---
+
+#### 9. Venta
+
+La venta es un método específico de disposición cuando la propiedad y la autoridad permiten transferir el sujeto a un tercero.
+
+```text
+SALE APPROVED
+!=
+PHYSICAL HANDOFF
+!=
+ECONOMIC SALE EVENT
+!=
+ACCOUNTING TREATMENT
+```
+
+Estos hechos permanecen correlacionados, pero no se sustituyen entre sí.
+
+---
+
+#### 10. Reemplazo
+
+El reemplazo vincula un sujeto saliente con uno o más sujetos entrantes sin fusionar identidades.
+
+```text
+REPLACEMENT
+!=
+IDENTITY REUSE
+```
+
+El sujeto entrante obtiene su propia identidad. El sujeto saliente conserva la suya y su propio expediente de disposición.
+
+---
+
+#### 11. Reemplazo no dispone automáticamente
+
+```text
+REPLACEMENT LINK CREATED
+!=
+OUTGOING SUBJECT DISPOSED
+```
+
+Registrar o comprar un reemplazo no cierra la baja del sujeto anterior ni autoriza reutilizar QR, serial, placa o código como nueva identidad.
+
+---
+
+#### 12. Disparadores que no deciden la baja
+
+Se preservan las siguientes separaciones:
+
+```text
+CRITICAL CONDITION
+!=
+RETIREMENT APPROVED
+```
+
+```text
+FAILED REPAIR
+!=
+RETIREMENT APPROVED
+```
+
+```text
+UNAVAILABLE
+!=
+RETIRED
+```
+
+```text
+LOST
+!=
+DISPOSED
+```
+
+Condición crítica, reparación fallida, indisponibilidad o pérdida pueden abrir evaluación, pero nunca ejecutan la decisión por sí solas.
+
+---
+
+#### 13. Solicitud de baja
+
+Una solicitud inicia un expediente y debe poder conservar sujeto o scope, solicitante, causa estructurada, contexto, evidencia, estado observado, criticidad, propuesta de destino cuando exista, revisión del sujeto e instante de servidor.
+
+```text
+RETIREMENT REQUESTED
+!=
+RETIREMENT APPROVED
+```
+
+---
+
+#### 14. Evaluación
+
+La evaluación determina si la propuesta es procedente y qué restricciones, evidencias o aprobaciones exige. Puede considerar condición, historial de mantenimiento, reparación, disponibilidad, seguridad, costo informado, propiedad, garantía, seguro, posibilidad de reutilización y necesidad de reemplazo.
+
+La evaluación no constituye aprobación.
+
+---
+
+#### 15. Aprobación y rechazo
+
+La aprobación autoriza el retiro bajo un alcance y destino permitidos. Debe conservar autoridad, política, sujeto o scope, decisión, motivo, condiciones, destino permitido, vigencia, evidencia y revisión esperada.
+
+El rechazo conserva causa, actor, autoridad, evidencia y revisión. Ninguna de las dos decisiones borra la solicitud.
+
+---
+
+#### 16. Estados conceptuales del expediente
+
+El expediente debe poder distinguir al menos:
+
+```text
+REQUESTED
+UNDER_EVALUATION
+APPROVED
+REJECTED
+EXECUTION_PENDING
+EXECUTED
+ECONOMIC_RECONCILIATION_PENDING
+CLOSED
+CANCELLED
+EXCEPTION
+```
+
+La forma física futura puede variar si conserva estos significados y sus transiciones.
+
+---
+
+#### 17. Ejecución pendiente y ejecutada
+
+`EXECUTION_PENDING` representa una baja aprobada cuyo destino físico todavía no fue confirmado. No puede mostrarse como vendido, descartado o dispuesto.
+
+`EXECUTED` representa disposición física confirmada con evidencia suficiente, pero no demuestra por sí sola conciliación económica.
+
+---
+
+#### 18. Conciliación económica y cierre
+
+`ECONOMIC_RECONCILIATION_PENDING` representa que el hecho físico existe pero el tratamiento económico requerido permanece pendiente.
+
+`CLOSED` exige que las obligaciones físicas, documentales y de integración que aplique la política estén reconciliadas. El cierre no elimina el expediente ni la identidad.
+
+---
+
+#### 19. Cancelación y excepción
+
+Cancelar conserva identidad, motivo, actor, autoridad, instante y evidencia. No revierte hechos físicos ya ejecutados.
+
+`EXCEPTION` conserva un caso que no puede completar el recorrido ordinario y debe indicar causa, owner, impacto, acción requerida y condición exacta de salida.
+
+---
+
+#### 20. Descarte
+
+El descarte debe identificar el sujeto o cantidad exactos, método o destino, actor, fecha efectiva y evidencia exigida.
+
+```text
+DISCARD
+!=
+DELETE RECORD
+```
+
+Un descarte no borra serial, QR histórico, mantenimiento, movimientos, custodias ni documentos referenciados.
+
+---
+
+#### 21. Venta física y económica
+
+La entrega física de una venta debe confirmar que el sujeto o scope entregado coincide con el aprobado y conservar contraparte cuando aplique, fecha, punto de handoff, condición, evidencia y autoridad.
+
+```text
+PHYSICAL SALE HANDOFF
+!=
+ACCOUNTING POSTING
+```
+
+NEXO emite el hecho físico. NUMERA determina el tratamiento económico conforme a sus contratos.
+
+---
+
+#### 22. Propiedad como precondición
+
+```text
+PHYSICAL CUSTODY
+!=
+OWNERSHIP
+```
+
+```text
+OWNERSHIP UNKNOWN
+→
+NO IRREVERSIBLE DISPOSITION
+```
+
+No se vende, dona, descarta o dispone como propio un sujeto cuya propiedad o autoridad de disposición no esté resuelta. Activos rentados, prestados, en comodato o de terceros no adquieren autorización de disposición por estar físicamente en Vento.
+
+---
+
+#### 23. Custodia como precondición
+
+La custodia activa debe reconciliarse antes de una disposición irreversible. El custodio no se convierte en aprobador por ser responsable actual.
+
+```text
+CUSTODIAN
+!=
+RETIREMENT APPROVER
+```
+
+Un préstamo o transferencia pendiente debe resolverse o quedar coordinado explícitamente antes de la disposición.
+
+---
+
+#### 24. Ubicación y salida física
+
+La ubicación al ejecutar disposición debe ser conocida o tratada mediante excepción controlada. La baja aprobada no modifica ubicación por inferencia.
+
+Una disposición que retira físicamente el sujeto debe correlacionarse con un hecho de salida o movimiento cuando el modelo propietario lo requiera. Un cambio de estado de lifecycle no demuestra salida física.
+
+---
+
+#### 25. Identidad, QR y reactivación
+
+La identidad canónica nunca se recicla después de la baja. Serial, placa, código y QR históricos permanecen ligados al expediente.
+
+Reutilizar una etiqueta o QR de un sujeto retirado para el reemplazo está prohibido.
+
+Una eventual reactivación, si alguna política futura la permite, debe ser una transición explícita y auditable; no se logra cambiando un campo de `retirado` a `activo`.
+
+---
+
+#### 26. Mantenimiento e incidentes históricos
+
+La baja no borra planes, obligaciones, trabajos, diagnósticos, pruebas ni liberaciones previas. Obligaciones futuras pueden cancelarse o supersederse únicamente con una relación trazable y razón explícita.
+
+Daño, pérdida, faltante, hallazgo o reparación fallida permanecen como hechos. La disposición puede cerrar un lifecycle sin borrar la causa que lo motivó.
+
+---
+
+#### 27. Garantía, seguro y documentos
+
+Una disposición puede afectar una reclamación, cobertura o derecho vigente. Esta tarea exige preservar referencias y no cerrar garantía o seguro por inferencia.
+
+Facturas, actas, fotografías, certificados, contratos, documentos de entrega y soportes de disposición permanecen sujetos a las políticas de acceso y retención correspondientes.
+
+---
+
+#### 28. Activos serializados
+
+Para `SERIALIZED_ASSET`, baja, disposición, venta y reemplazo se aplican a la identidad física exacta. No se sustituyen por cantidades agregadas ni se permite doble disposición de la misma identidad.
+
+---
+
+#### 29. Reutilizables por cantidad
+
+Para `REUSABLE_QUANTITY`, el expediente puede operar sobre un scope cuantificado sin fabricar identidades unitarias. Debe conservar cantidad autoritativa previa, cantidad propuesta, aprobada, ejecutada y remanente, unidad, ubicación o scope, condición aplicable y evidencia.
+
+```text
+EXECUTED DISPOSITION QUANTITY
+<=
+AUTHORITATIVE RECONCILED QUANTITY
+```
+
+La baja parcial debe producir un hecho trazable y conservar el remanente.
+
+---
+
+#### 30. Contenedor físico, LPN y contenido
+
+La disposición de un `PHYSICAL_CONTAINER` no dispone automáticamente un LPN asociado ni su contenido.
+
+```text
+PHYSICAL CONTAINER DISPOSED
+!=
+LPN DISPOSED
+!=
+LPN CONTENT DISPOSED
+```
+
+Todo contenido debe estar reconciliado antes de una disposición que afecte al contenedor físico.
+
+---
+
+#### 31. Kits y componentes
+
+La baja o disposición de una instancia de kit no implica automáticamente la disposición de sus componentes. `NEXO-DOM-014` define miembros, completitud y sustitución.
+
+Esta tarea prohíbe cascadas implícitas que eliminen identidades o cantidades de componentes.
+
+---
+
+#### 32. Repuestos y vehículos
+
+Un repuesto instalado, retirado o pendiente de disposición conserva su contrato de inventario; una nota de reparación no autoriza descarte.
+
+Los vehículos consumen estas reglas de retiro y disposición, mientras sus documentos, medidores y reglas especializadas permanecen en `NEXO-DOM-027` y `NEXO-DOM-028`.
+
+---
+
+#### 33. Relación de reemplazo
+
+Una relación de reemplazo debe poder conservar sujeto saliente, sujeto entrante, causa, decisión que autoriza el reemplazo, fecha, actor, evidencia, vínculo con adquisición cuando aplique, vínculo con disposición del saliente y revisión.
+
+La relación no copia historia del saliente al entrante.
+
+Para scopes por cantidad:
+
+```text
+DISPOSED QUANTITY
+!=
+REPLACEMENT RECEIVED QUANTITY
+```
+
+Ambos hechos se concilian, pero permanecen separados.
+
+---
+
+#### 34. Compra de reemplazo
+
+ORIGO puede originar la adquisición del reemplazo. La compra no constituye disposición del activo anterior y la recepción no reutiliza su identidad.
+
+La existencia de una orden, factura o activo entrante no cierra el expediente del saliente.
+
+---
+
+#### 35. Efecto económico
+
+NEXO produce hechos físicos de retiro, disposición, venta o pérdida. NUMERA decide, conforme a sus contratos, valor en libros, depreciación, pérdida, ingreso por venta, ganancia, impuesto y asiento.
+
+Esta tarea no define cálculos ni asientos.
+
+---
+
+#### 36. Pago y entrega no son equivalentes
+
+Una entrega física puede existir antes o después de la confirmación económica según el proceso aprobado. La falta de conciliación económica queda pendiente y visible.
+
+Un pago o comprobante no demuestra por sí solo que el activo fue entregado.
+
+---
+
+#### 37. Doble disposición y doble efecto
+
+Un sujeto individual no puede tener dos disposiciones irreversibles vigentes para la misma identidad.
+
+La misma disposición no puede generar dos hechos económicos por reintento. La implementación futura debe impedir doble venta, doble descarte, doble entrega y doble contabilización del mismo hecho.
+
+---
+
+#### 38. Segregación de funciones
+
+Se separan conceptualmente las capacidades de:
+
+```text
+REQUEST_RETIREMENT
+EVALUATE_RETIREMENT
+APPROVE_RETIREMENT
+REJECT_RETIREMENT
+EXECUTE_DISPOSITION
+CONFIRM_PHYSICAL_HANDOFF
+LINK_REPLACEMENT
+RECONCILE_ECONOMIC_EFFECT
+CLOSE_RETIREMENT_CASE
+```
+
+Poseer una no concede las demás. El custodio puede reportar o solicitar evaluación, pero no aprobar automáticamente su propia pérdida, baja o disposición.
+
+---
+
+#### 39. Autorización server-side
+
+Toda transición futura debe revalidar autoridad efectiva en servidor. Un botón visible, una URL, un QR o un rol nominal no constituyen autorización suficiente.
+
+La política puede exigir separación entre aprobador y ejecutor; cualquier excepción debe ser explícita, autorizada y auditable.
+
+---
+
+#### 40. Concurrencia y revisiones
+
+Antes de comprometer una transición se revalidan identidad o scope, revisión, lifecycle, condición, disponibilidad, ubicación, custodia, propiedad, préstamo o transferencia abiertos, mantenimiento relevante, disposición previa, expediente, autoridad y política.
+
+```text
+EXPECTED REVISION
+=
+CURRENT REVISION
+```
+
+debe cumplirse antes del commit. Una revisión obsoleta falla cerrada.
+
+---
+
+#### 41. Idempotencia y resultado desconocido
+
+El mismo intento lógico no puede crear dos solicitudes equivalentes, aprobar dos veces, ejecutar dos disposiciones, emitir dos handoffs de venta, crear dos reemplazos equivalentes ni emitir dos efectos económicos equivalentes.
+
+Ante timeout posterior a una mutación, se resuelve la misma identidad hasta conocer:
+
+```text
+ACCEPTED
+REJECTED
+UNKNOWN_REQUIRING_RECONCILIATION
+```
+
+---
+
+#### 42. Operación offline
+
+Una captura offline puede conservar propuesta, observación, evidencia o confirmación física pendiente.
+
+La pérdida de red no autoriza aprobar baja, ejecutar disposición irreversible, confirmar venta, cerrar el expediente ni publicar efecto económico. Las decisiones irreversibles requieren autoridad y estado vigentes.
+
+---
+
+#### 43. Evidencia y auditoría
+
+La evidencia exigida depende del método, pero el contrato debe poder relacionar solicitud, evaluación, aprobación o rechazo, condición, propiedad o autoridad, custodia, ubicación, documentos, fotografías con contexto, contraparte o gestor cuando aplique, acta o comprobante, fecha efectiva, actor, resultado físico, referencia económica y excepción.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+Toda transición autoritativa debe poder reconstruir sujeto o scope, clase, identidad, revisión previa y resultante, estado anterior, solicitud, evaluación, decisión, método, ejecución, ubicación, custodia, propiedad, condición, mantenimiento e incidentes relacionados, reemplazo, resultado físico, hecho económico emitido o pendiente, actor, autoridad, instante de servidor, correlación, idempotencia y evidencia.
+
+---
+
+#### 44. Eventos canónicos preservados
+
+Se conservan como hechos distintos los eventos ya reconocidos por el plan:
+
+```text
+asset_retirement_requested
+asset_retirement_approved
+asset_disposed
+```
+
+```text
+asset_retirement_requested
+!=
+asset_retirement_approved
+!=
+asset_disposed
+```
+
+La venta se expresa como contexto o método de disposición y el reemplazo como relación explícita. Esta tarea no inventa nombres de eventos canónicos adicionales.
+
+---
+
+#### 45. Fronteras con tareas posteriores
+
+- `NEXO-DOM-014` define kits, conjuntos, miembros y completitud; la disposición de un kit no se propaga a sus componentes.
+- `NEXO-DOM-015` define conteos; una diferencia de conteo puede abrir investigación, pero no baja automática.
+- `NEXO-DOM-016` define repuestos y compatibilidad; una pieza retirada conserva su efecto de inventario.
+- `NEXO-DOM-017` define auditoría e historial transversal y consume los hechos de retiro y disposición aquí definidos.
+- `NEXO-DOM-028` especializa costos y disponibilidad de vehículos y activos aplicables; no redefine identidad física.
+
+---
+
+#### 46. Fronteras con NUMERA y ORIGO
+
+NUMERA es owner del efecto económico autorizado. NEXO no calcula ni afirma por sí solo valor en libros, depreciación, ganancia, pérdida, impuestos o asientos.
+
+ORIGO puede originar compra de reemplazo, servicios de disposición o contratación de terceros según su contrato, pero no se convierte en fuente del lifecycle físico del activo.
+
+---
+
+#### 47. AS-IS de estados de activo
+
+El esquema remoto observado conserva en `asset_items`:
+
+```text
+equipment_status:
+operativo
+en_mantenimiento
+fuera_servicio
+baja
+```
+
+y:
+
+```text
+lifecycle_status:
+activo
+almacenado
+prestado
+en_reparacion
+retirado
+perdido
+```
+
+Estos valores son una fundación parcial de estados, no un expediente gobernado de disposición.
+
+---
+
+#### 48. AS-IS de grupos y movimientos
+
+`asset_groups` conserva `lifecycle_status` con posibilidad de `retirado`, pero no se observó un expediente separado de solicitud, evaluación, aprobación, disposición y conciliación económica.
+
+`asset_movements` admite actualmente:
+
+```text
+initial_location
+transfer
+loan
+return
+maintenance_out
+maintenance_in
+status_change
+adjustment
+```
+
+No se observó un tipo explícito de movimiento para venta, descarte, disposición o reemplazo.
+
+---
+
+#### 49. AS-IS de superficies específicas
+
+La consulta remota de solo lectura no encontró tablas cuyo nombre materializara un expediente específico de retirement, disposal, discard, replacement, asset sale o write-off.
+
+La aplicación actual reconoce el valor legacy `retirado`, pero la búsqueda del código vigente no identificó un workflow gobernado equivalente al contrato objetivo.
+
+```text
+LEGACY STATUS SUPPORT
+!=
+END-OF-SERVICE WORKFLOW COMPLETE
+```
+
+---
+
+#### 50. Snapshot remoto observado
+
+La consulta remota de solo lectura realizada durante el desarrollo observó:
+
+| Métrica | Resultado |
+| --- | ---: |
+| activos individuales observados | 38 |
+| activos individuales `operativo / activo` | 38 |
+| grupos reutilizables observados | 128 |
+| grupos `activo` | 128 |
+| sujetos observados actualmente en `baja` | 0 |
+| sujetos observados actualmente `retirado` | 0 |
+| tablas específicas de retiro/disposición detectadas por nombre | 0 |
+
+El snapshot describe el estado observado y no sustituye un inventario físico.
+
+---
+
+#### 51. Estados legacy insuficientes
+
+```text
+equipment_status = baja
+!=
+RETIREMENT DOSSIER COMPLETE
+```
+
+```text
+lifecycle_status = retirado
+!=
+PHYSICAL DISPOSITION EXECUTED
+```
+
+Un `status_change` genérico tampoco demuestra método de disposición, handoff a tercero, cantidad dispuesta ni correlación económica.
+
+---
+
+#### 52. Brechas AS-IS
+
+El AS-IS observado no materializa de forma evidente:
+
+- segregación durable entre solicitud, evaluación, aprobación y ejecución;
+- disposición física específica;
+- venta física y económica correlacionadas;
+- relación de reemplazo saliente/entrante;
+- conciliación exactamente una vez con el efecto económico;
+- bloqueo contra doble disposición;
+- expediente completo para scopes por cantidad.
+
+La infraestructura actual se clasifica:
+
+```text
+PARTIAL STATUS FOUNDATION
+```
+
+---
+
+#### 53. Reconciliación futura del legacy
+
+La adopción física posterior deberá reconciliar como mínimo `equipment_status`, `lifecycle_status`, `condition_status`, `ownership_status`, ubicación, custodia, préstamos y transferencias abiertos, mantenimiento, incidentes, documentos, movimientos, activos o scopes realmente retirados, destinos físicos, ventas históricas, descartes, reemplazos y efectos económicos correlacionados.
+
+No se ejecuta backfill en esta tarea.
+
+---
+
+#### 54. Fail-closed
+
+Una decisión falla cerrada o queda en excepción cuando el sujeto no existe, identidad o scope son ambiguos, existe doble representación, la revisión es obsoleta, la propiedad o autoridad de disposición es desconocida, existe custodia incompatible no reconciliada, hay préstamo o transferencia pendiente no resuelto, la ubicación necesaria es desconocida, la cantidad no reconcilia, ya existe disposición irreversible, falta aprobación o evidencia, el destino no está permitido, el resultado remoto es desconocido o falta autoridad.
+
+El fallo conserva el expediente y la historia previa.
+
+---
+
+#### 55. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar expediente durable, solicitud, evaluación, aprobación o rechazo, segregación de funciones, propiedad y autoridad resueltas, custodia y ubicación reconciliadas, identidad o cantidad exactas, método de disposición, ejecución física, evidencia, reemplazo correlacionado cuando aplique, hecho económico separado, conciliación, cierre no destructivo, revisiones monotónicas, idempotencia, concurrencia, operación offline fail-closed, autorización server-side, ausencia de doble disposición, ausencia de identidad reciclada y preservación de mantenimiento e incidentes.
+
+---
+
+#### 56. Handoff hacia `NEXO-DOM-014`
+
+Esta tarea entrega:
+
+```text
+NON-DESTRUCTIVE RETIREMENT CASES
++
+REQUEST / EVALUATION / APPROVAL / EXECUTION SEPARATION
++
+PHYSICAL DISPOSITION SEPARATE FROM ECONOMIC EFFECT
++
+SALE AS CONTROLLED DISPOSITION
++
+REPLACEMENT WITHOUT IDENTITY REUSE
++
+OWNERSHIP AND CUSTODY PRECONDITIONS
++
+QUANTITY-SCOPE CONSERVATION
++
+IDEMPOTENT AUDITABLE CLOSURE
+```
+
+`NEXO-DOM-014` deberá definir kits, conjuntos y validación de completitud sin tratar reemplazo como sustitución implícita de miembros y sin propagar baja o disposición del kit a sus componentes por inferencia.
+
+---
+
+#### 57. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que baja, venta, descarte y reemplazo sean transiciones no destructivas con solicitud, aprobación, ejecución y efecto económico separados; protege identidad, condición, disponibilidad, custodia e historia; y protege la integración física y económica entre NEXO, ORIGO y NUMERA sin efectos duplicados.
+
+---
+
+#### 58. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para identidad estable, ubicación, custodia, condición, disponibilidad y eventos no destructivos;
+- `TREQ-NEXO-014`, para baja, venta, descarte y reemplazo con segregación de solicitud, aprobación, ejecución y efecto económico;
+- `TREQ-NEXO-043`, para tratamiento diferenciado de activos serializados y reutilizables controlados por cantidad;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y ausencia de doble representación;
+- `TREQ-INTEGRATION-012`, para la cadena ORIGO → NEXO → NUMERA sobre adquisición, mantenimiento, repuestos, pérdida, venta y baja sin efectos duplicados.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 59. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell` después del cierre de `NEXO-DOM-012`, continuidad `012 → 013 → 014`, ruta normal, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, owner, handoff de `NEXO-DOM-012`, 04A NEXO, scripts aplicables, `CAP-SCOPE-007`, `vento-nexo` actual y consultas remotas de solo lectura sobre esquema, constraints, estados, movimientos y datos de activos. |
+| OPERATIVA | NOT_EXECUTED | No se solicitó, evaluó, aprobó, vendió, descartó, reemplazó ni dispuso ningún sujeto físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, lifecycle, condición, ubicación, custodia, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 60. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] baja se define como retiro y no eliminación;
+- [x] baja aprobada se separa de disposición física;
+- [x] venta separa aprobación, handoff y efecto económico;
+- [x] reemplazo no reutiliza identidad ni dispone automáticamente el sujeto saliente;
+- [x] condición crítica, reparación fallida, indisponibilidad y pérdida no producen baja automática;
+- [x] solicitud, evaluación, aprobación, ejecución, conciliación y cierre permanecen separados;
+- [x] propiedad, custodia y ubicación son precondiciones independientes;
+- [x] activos de terceros no se disponen como propios;
+- [x] custodio no se convierte en aprobador;
+- [x] identidad y QR históricos no se reciclan;
+- [x] mantenimiento, incidentes, garantía, seguro y documentos conservan historia;
+- [x] activos serializados usan identidad exacta;
+- [x] reutilizables por cantidad admiten baja parcial reconciliable;
+- [x] contenedor físico no dispone LPN ni contenido;
+- [x] kit no propaga disposición a componentes;
+- [x] NUMERA conserva el tratamiento económico;
+- [x] se impiden doble disposición y doble efecto económico;
+- [x] se segregan capacidades de solicitud, evaluación, aprobación, ejecución, handoff, reemplazo y cierre;
+- [x] se definen autorización server-side, concurrencia, revisión e idempotencia;
+- [x] operación offline no autoriza decisiones irreversibles;
+- [x] se preservan `asset_retirement_requested`, `asset_retirement_approved` y `asset_disposed` sin inventar eventos nuevos;
+- [x] se documentan `baja` y `retirado` como estados legacy insuficientes;
+- [x] se documenta la ausencia de movimiento explícito de disposición en `asset_movements`;
+- [x] se documenta la ausencia observada de tablas específicas de retiro/disposición;
+- [x] se documenta el snapshot remoto de 38 activos individuales y 128 grupos activos;
+- [x] el AS-IS se clasifica como fundación parcial de estados;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica el registro 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-DOM-014`.
+
+---
+
+#### 61. Límites
+
+Esta tarea no solicita, evalúa ni aprueba bajas reales; no vende, descarta, dona, devuelve, reemplaza ni dispone sujetos físicos; no cambia lifecycle, equipment status, condición, disponibilidad, ubicación, custodia o propiedad; no modifica cantidades; no ejecuta handoffs; no publica ventas; no calcula valor contable, depreciación, pérdida, ganancia, impuestos ni asientos; no modifica `asset_items`, `asset_groups`, `asset_movements` ni otras tablas; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, Server Actions ni Route Handlers; no ejecuta migraciones ni backfills; no modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea una instancia física propia; no crea ni modifica requisitos de prueba; no modifica el registro 04A; y no desarrolla `NEXO-DOM-014`.
+
+---
+
+#### 62. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
+
 ### [ ] NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
 ### [ ] NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
 ### [ ] NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
