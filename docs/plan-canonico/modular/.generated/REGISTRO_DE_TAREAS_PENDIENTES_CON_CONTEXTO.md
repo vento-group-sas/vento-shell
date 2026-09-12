@@ -8,13 +8,80 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-019`.
+> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-014`; este checkout ya pertenece a esa corrección.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Correcciones canónicas
+### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-014`
 
-- **Acción:** ninguna corrección abierta.
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO
+- **Edita solamente:**
+  - `CREATE` `scripts/docs/implementation-state-integrity.mjs`
+  - `CREATE` `scripts/docs/implementation-state-integrity.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-execution-coordinator.mjs`
+  - `MODIFY` `scripts/docs/implementation-execution-coordinator.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-branch-lifecycle.mjs`
+  - `MODIFY` `scripts/docs/implementation-branch-lifecycle.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-correction-guard.mjs`
+  - `MODIFY` `scripts/docs/implementation-correction-guard.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-work-package.mjs`
+  - `MODIFY` `scripts/docs/implementation-work-package.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-coordinator.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-coordinator.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-control.mjs`
+  - `MODIFY` `scripts/docs/implementation-control.test.mjs`
+  - `MODIFY` `scripts/docs/chatgpt-work-starter-readiness.mjs`
+  - `MODIFY` `scripts/docs/chatgpt-work-starter-readiness.test.mjs`
+  - `MODIFY` `scripts/docs/chatgpt-work-starter.mjs`
+  - `MODIFY` `scripts/docs/chatgpt-work-starter.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-artifacts.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-artifacts.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-validation-engine.mjs`
+  - `MODIFY` `scripts/docs/repair-working-copy.mjs`
+  - `MODIFY` `scripts/docs/repair-working-copy.test.mjs`
+  - `MODIFY` `scripts/docs/sync-pending-task-context.mjs`
+  - `MODIFY` `scripts/docs/sync-pending-task-context.test.mjs`
+  - `MODIFY` `docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md`
+  - `MODIFY` `package.json`
+  - `MODIFY` `scripts/docs/commit-scope-readiness.mjs`
+  - `MODIFY` `scripts/docs/commit-scope-readiness.test.mjs`
+  - `MODIFY` `scripts/docs/correction-branch-lifecycle.mjs`
+  - `MODIFY` `scripts/docs/correction-branch-lifecycle.test.mjs`
+  - `MODIFY` `.github/workflows/validate-canonical-plan.yml`
+- **Valida, en este orden:**
+  1. `node --check scripts/docs/commit-scope-readiness.mjs`
+  2. `node --test scripts/docs/commit-scope-readiness.test.mjs`
+  3. `node --check scripts/docs/correction-branch-lifecycle.mjs`
+  4. `node --test scripts/docs/correction-branch-lifecycle.test.mjs`
+  5. `node --check scripts/docs/implementation-state-integrity.mjs`
+  6. `node --test scripts/docs/implementation-state-integrity.test.mjs`
+  7. `node --check scripts/docs/implementation-execution-coordinator.mjs`
+  8. `node --test scripts/docs/implementation-execution-coordinator.test.mjs`
+  9. `node --check scripts/docs/implementation-branch-lifecycle.mjs`
+  10. `node --test scripts/docs/implementation-branch-lifecycle.test.mjs`
+  11. `node --test scripts/docs/implementation-correction-guard.test.mjs`
+  12. `node --test scripts/docs/implementation-work-package.test.mjs`
+  13. `node --test scripts/docs/implementation-readiness-coordinator.test.mjs`
+  14. `node --test scripts/docs/implementation-control.test.mjs`
+  15. `node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs`
+  16. `node --test scripts/docs/chatgpt-work-starter.test.mjs`
+  17. `node --test scripts/docs/implementation-readiness-artifacts.test.mjs`
+  18. `npm run docs:correction:check`
+  19. `npm run docs:correction:test`
+  20. `npm run docs:commit-scope:check -- --range origin/main...HEAD --correction-head-ref correction/deliv-pkg-015/corr-014`
+  21. `npm run docs:plan:build`
+  22. `npm run docs:plan:check`
+  23. `npm run docs:plan:test`
+  24. `npm run docs:treq:check`
+  25. `npm run docs:treq:test`
+  26. `npm run quality:lint:ratchet -- --base origin/main`
+  27. `npm test --silent`
+  28. `git --no-pager diff --check origin/main...HEAD`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-014`
+- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-019`
 
