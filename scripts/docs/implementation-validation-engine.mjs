@@ -814,6 +814,95 @@ export function validateCandidateValidationReceipt({
   });
 }
 
+export const IMPLEMENTATION_REPAIR_RECEIPT_ID = 'IMPLEMENTATION_REPAIR_RECEIPT_V1';
+
+export function createCandidateRepairReceipt({
+  instanceId,
+  candidateCommit,
+  inputRepositoryStateSha256,
+  outputRepositoryStateSha256,
+  toolchain = {},
+  repairExecuted = true,
+  repairedPaths = [],
+  repairedAt = new Date().toISOString(),
+} = {}) {
+  const normalizedInstanceId = String(instanceId ?? '').trim();
+  const commit = String(candidateCommit ?? '').trim().toLowerCase();
+  const inputState = String(inputRepositoryStateSha256 ?? '').trim().toLowerCase();
+  const outputState = String(outputRepositoryStateSha256 ?? '').trim().toLowerCase();
+  if (!normalizedInstanceId) throw new Error('instanceId es obligatorio para repair receipt.');
+  if (!/^[a-f0-9]{40}$/u.test(commit)) throw new Error('candidateCommit invalido para repair receipt.');
+  if (!/^[a-f0-9]{64}$/u.test(inputState) || !/^[a-f0-9]{64}$/u.test(outputState)) {
+    throw new Error('repair receipt exige fingerprints SHA-256 de entrada y salida.');
+  }
+  if (!String(repairedAt ?? '').trim() || !Number.isFinite(Date.parse(repairedAt))) {
+    throw new Error('repairedAt debe ser fecha ISO concreta.');
+  }
+  const runtime = normalizedToolchain(toolchain);
+  const payload = {
+    schemaVersion: 1,
+    engineId: IMPLEMENTATION_VALIDATION_ENGINE_ID,
+    phase: 'F3_DEDUPLICATION_CANDIDATE_RECEIPTS',
+    validatorId: IMPLEMENTATION_REPAIR_RECEIPT_ID,
+    reusePolicy: 'EXACT_REPAIRED_REPOSITORY_STATE_ONLY',
+    status: 'PASS',
+    instanceId: normalizedInstanceId,
+    candidateCommit: commit,
+    inputRepositoryStateSha256: inputState,
+    outputRepositoryStateSha256: outputState,
+    toolchainSha256: sha256(canonicalJson(runtime)),
+    toolchain: runtime,
+    repairExecuted: Boolean(repairExecuted),
+    repairedPaths: normalizedChangedPaths(repairedPaths),
+    repairedAt,
+  };
+  return deepFreeze({ ...payload, receiptSha256: sha256(canonicalJson(payload)) });
+}
+
+export function validateCandidateRepairReceipt({
+  receipt,
+  instanceId,
+  candidateCommit,
+  repositoryStateSha256,
+  toolchain = {},
+} = {}) {
+  if (!receipt || typeof receipt !== 'object' || Array.isArray(receipt)) {
+    return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_RECEIPT_MISSING' });
+  }
+  const normalizedInstanceId = String(instanceId ?? '').trim();
+  const commit = String(candidateCommit ?? '').trim().toLowerCase();
+  const state = String(repositoryStateSha256 ?? '').trim().toLowerCase();
+  const runtime = normalizedToolchain(toolchain);
+  if (!normalizedInstanceId || !/^[a-f0-9]{40}$/u.test(commit) || !/^[a-f0-9]{64}$/u.test(state)) {
+    return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_CURRENT_CONTEXT_INVALID' });
+  }
+  const required = {
+    schemaVersion: 1,
+    engineId: IMPLEMENTATION_VALIDATION_ENGINE_ID,
+    phase: 'F3_DEDUPLICATION_CANDIDATE_RECEIPTS',
+    validatorId: IMPLEMENTATION_REPAIR_RECEIPT_ID,
+    reusePolicy: 'EXACT_REPAIRED_REPOSITORY_STATE_ONLY',
+    status: 'PASS',
+  };
+  for (const [key, value] of Object.entries(required)) {
+    if (receipt[key] !== value) return deepFreeze({ status: 'MISS', reusable: false, reason: `REPAIR_IDENTITY_MISMATCH:${key}` });
+  }
+  if (receipt.instanceId !== normalizedInstanceId) return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_INSTANCE_MISMATCH' });
+  if (receipt.candidateCommit !== commit) return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_CANDIDATE_MISMATCH' });
+  if (receipt.outputRepositoryStateSha256 !== state) return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_FINGERPRINT_MISMATCH' });
+  if (receipt.toolchainSha256 !== sha256(canonicalJson(runtime)) || canonicalJson(receipt.toolchain ?? null) !== canonicalJson(runtime)) {
+    return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_TOOLCHAIN_MISMATCH' });
+  }
+  if (!String(receipt.repairedAt ?? '').trim() || !Number.isFinite(Date.parse(receipt.repairedAt))) {
+    return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_TIMESTAMP_INVALID' });
+  }
+  const { receiptSha256, ...payload } = receipt;
+  if (!/^[a-f0-9]{64}$/u.test(String(receiptSha256 ?? '')) || sha256(canonicalJson(payload)) !== receiptSha256) {
+    return deepFreeze({ status: 'MISS', reusable: false, reason: 'REPAIR_RECEIPT_INTEGRITY_MISMATCH' });
+  }
+  return deepFreeze({ status: 'PASS', reusable: true, reason: 'EXACT_REPAIRED_REPOSITORY_STATE_MATCH' });
+}
+
 export function createImplementationValidationContext({ registry } = {}) {
   if (!registry || typeof registry !== 'object' || Array.isArray(registry)) {
     throw new Error('implementation validation context exige registry.');

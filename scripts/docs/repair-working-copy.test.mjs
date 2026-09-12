@@ -13,6 +13,7 @@ import {
   normalizeRepoPath,
   normalizeUtf8Text,
   repairExpansionIsAllowed,
+  REPAIR_WORKING_COPY_POLICY,
   repairWorkingCopy,
 } from './repair-working-copy.mjs';
 
@@ -162,4 +163,12 @@ const AUTO_FIX = true;\r
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test('C4 declara quality repair como receipt-governed y no destructivo', () => {
+  assert.equal(REPAIR_WORKING_COPY_POLICY.orchestration, 'COORDINATOR_EXACT_CANDIDATE_RECEIPT');
+  assert.equal(REPAIR_WORKING_COPY_POLICY.idempotentByCandidateFingerprint, true);
+  assert.equal(REPAIR_WORKING_COPY_POLICY.destructiveGitOperations, false);
+  const source = fs.readFileSync('scripts/docs/repair-working-copy.mjs', 'utf8');
+  assert.doesNotMatch(source, /git\s+(?:reset|clean|stash)/u);
 });

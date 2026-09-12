@@ -11,6 +11,7 @@ import {
   preverifyImplementation,
 } from './implementation-branch-lifecycle.mjs';
 import { startImplementationGuarded } from './implementation-correction-guard.mjs';
+import { repairWorkingCopy } from './repair-working-copy.mjs';
 import {
   assessImplementationStateIntegrity,
   formatImplementationStateIntegrityViolation,
@@ -24,10 +25,12 @@ import { deriveCoordinatedImplementationStatus } from './implementation-readines
 import {
   assessSafeSelectiveExecution,
   buildShadowImpactPlan,
+  createCandidateRepairReceipt,
   createCandidateValidationReceipt,
   createSafeSelectiveValidationRecord,
   fingerprintCandidateRepositoryState,
   observeShadowImpact,
+  validateCandidateRepairReceipt,
   validateCandidateValidationReceipt,
   validateSafeSelectiveValidationRecord,
 } from './implementation-validation-engine.mjs';
@@ -47,6 +50,7 @@ const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
 const EVIDENCE_REQUEST_PATH = '.delivery/implementation-evidence-request.json';
+const IMPLEMENTATION_FINISH_LOCK_NAME = 'vento-implementation-finish.lock';
 const DERIVED_PROJECTIONS = new Set([
   'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
   'docs/plan-canonico/modular/active-sequence.json',
@@ -252,12 +256,6 @@ function branchChangedPaths(root) {
     .filter(Boolean);
 }
 
-function branchCommitCount(root) {
-  return Number(
-    git(['rev-list', '--count', `origin/${DEFAULT_BRANCH}..HEAD`], { cwd: root })
-      .stdout.trim(),
-  );
-}
 
 function writablePhysicalPaths(instance) {
   const ownLedger = instanceRecordRelativePath(instance.instance_id);
@@ -272,6 +270,156 @@ function writablePhysicalPaths(instance) {
   );
 }
 
+export function assessAuthorizedMaterialization({ instance, changedPaths = [] } = {}) {
+  const expected = [...writablePhysicalPaths(instance)].sort();
+  const observed = new Set((changedPaths ?? []).map((entry) => String(entry ?? '').replaceAll('\\', '/').trim()).filter(Boolean));
+  const missing = expected.filter((entry) => !observed.has(entry));
+  return Object.freeze({
+    ready: expected.length === 0 || missing.length === 0,
+    expectedPaths: Object.freeze(expected),
+    observedPaths: Object.freeze([...observed].sort()),
+    missingPaths: Object.freeze(missing),
+  });
+}
+
+export function evaluateCandidateRepairReceipt({ instance, request, candidateState } = {}) {
+  if (!instance || typeof instance !== 'object' || !candidateState || typeof candidateState !== 'object') {
+    return { status: 'MISS', reusable: false, reason: 'REPAIR_CONTEXT_MISSING' };
+  }
+  return validateCandidateRepairReceipt({
+    receipt: request?.validation_engine_repair_receipt ?? null,
+    instanceId: instance.instance_id,
+    candidateCommit: candidateState.candidateCommit,
+    repositoryStateSha256: candidateState.repositoryStateSha256,
+    toolchain: candidateState.toolchain,
+  });
+}
+
+function writeEvidenceState(root, state) {
+  const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
+  fs.mkdirSync(path.dirname(absolute), { recursive: true });
+  fs.writeFileSync(absolute, `${JSON.stringify(state, null, 2)}\n`, 'utf8');
+  return EVIDENCE_REQUEST_PATH;
+}
+
+function runCandidateRepairOnce(root, instance) {
+  const beforeState = candidateValidationState(root, instance);
+  const prior = readEvidenceRequest(root);
+  const reusable = evaluateCandidateRepairReceipt({ instance, request: prior, candidateState: beforeState });
+  if (reusable.status === 'PASS') {
+    return { status: 'REUSED_EXACT_CANDIDATE', receipt: prior.validation_engine_repair_receipt, result: null };
+  }
+
+  const dirtyBefore = worktreePaths(root);
+  let result = null;
+  if (dirtyBefore.length > 0) {
+    result = repairWorkingCopy({ root });
+    assertImplementationPaths(
+      [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
+      instance,
+      { root, baseRef: `origin/${DEFAULT_BRANCH}` },
+    );
+  }
+  const afterState = candidateValidationState(root, instance);
+  const receipt = createCandidateRepairReceipt({
+    instanceId: instance.instance_id,
+    candidateCommit: afterState.candidateCommit,
+    inputRepositoryStateSha256: beforeState.repositoryStateSha256,
+    outputRepositoryStateSha256: afterState.repositoryStateSha256,
+    toolchain: afterState.toolchain,
+    repairExecuted: dirtyBefore.length > 0,
+    repairedPaths: result?.after ?? [],
+  });
+  writeEvidenceState(root, {
+    ...(prior ?? {}),
+    schema_version: 1,
+    instance_id: instance.instance_id,
+    validation_engine_repair_receipt: receipt,
+  });
+  return {
+    status: dirtyBefore.length > 0 ? 'EXECUTED' : 'NOT_REQUIRED_CLEAN',
+    receipt,
+    result,
+  };
+}
+
+function commitAllowedWorktree(root, id, instance, message) {
+  const dirty = worktreePaths(root);
+  if (dirty.length === 0) return false;
+  assertImplementationPaths(
+    [...new Set([...branchChangedPaths(root), ...dirty])],
+    instance,
+    { root, baseRef: `origin/${DEFAULT_BRANCH}` },
+  );
+  git(['add', '--', ...dirty], { cwd: root });
+  npm(['run', '--silent', 'docs:commit-scope:check', '--', '--staged', '--instance-id', id], { cwd: root });
+  git(['diff', '--cached', '--check'], { cwd: root });
+  git(['commit', '-m', message], { cwd: root });
+  return true;
+}
+
+function sharedGitCommonDir(root) {
+  const raw = git(['rev-parse', '--git-common-dir'], { cwd: root }).stdout.trim();
+  return path.resolve(root, raw);
+}
+
+function processIsAlive(pid) {
+  if (!Number.isInteger(pid) || pid <= 0) return false;
+  try {
+    process.kill(pid, 0);
+    return true;
+  } catch (error) {
+    return error?.code === 'EPERM';
+  }
+}
+
+function acquireFinishLock(root, instanceId) {
+  const directory = path.join(sharedGitCommonDir(root), 'vento-locks');
+  fs.mkdirSync(directory, { recursive: true });
+  const lockPath = path.join(directory, IMPLEMENTATION_FINISH_LOCK_NAME);
+  if (fs.existsSync(lockPath)) {
+    let owner = null;
+    try { owner = JSON.parse(fs.readFileSync(lockPath, 'utf8')); } catch { owner = null; }
+    if (owner && processIsAlive(Number(owner.pid))) {
+      fail(`IMPLEMENTATION_FINISH_LOCK_ACTIVE owner_pid=${owner.pid} instance=${owner.instance_id ?? 'UNKNOWN'}`);
+    }
+    if (!owner) fail('IMPLEMENTATION_FINISH_LOCK_STALE_UNREADABLE');
+    fs.rmSync(lockPath, { force: true });
+  }
+  const owner = { pid: process.pid, instance_id: instanceId, acquired_at: new Date().toISOString() };
+  fs.writeFileSync(lockPath, `${JSON.stringify(owner)}\n`, { encoding: 'utf8', flag: 'wx' });
+  return { lockPath, owner };
+}
+
+async function withSerializedFinish(root, instanceId, operation) {
+  const lock = acquireFinishLock(root, instanceId);
+  try {
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+    return await operation();
+  } finally {
+    let current = null;
+    try { current = JSON.parse(fs.readFileSync(lock.lockPath, 'utf8')); } catch { current = null; }
+    if (current?.pid === lock.owner.pid && current?.instance_id === lock.owner.instance_id) {
+      fs.rmSync(lock.lockPath, { force: true });
+    }
+  }
+}
+
+export function buildMachineObservableExecutionEvidence({ request, observedAt = new Date().toISOString() } = {}) {
+  if (!request || typeof request !== 'object' || Array.isArray(request)) return null;
+  if ((request.target_environments ?? []).length > 0) return null;
+  if (!String(observedAt ?? '').trim() || !Number.isFinite(Date.parse(observedAt))) return null;
+  return {
+    ...request,
+    observed_at: observedAt,
+    environment_results: [],
+    operational_evidence: [
+      `MACHINE_OBSERVABLE_LOCAL_CANDIDATE:${request.candidate_commit}`,
+      `PREVERIFY_RECEIPT:${request.validation_engine_preverify_receipt?.receiptSha256 ?? 'UNKNOWN'}`,
+    ],
+  };
+}
+
 async function runCanonicalLifecycle(root, scriptName, instanceId) {
   if (scriptName === 'docs:implementation:start') {
     return startImplementationGuarded({ root, instanceId });
@@ -280,7 +428,7 @@ async function runCanonicalLifecycle(root, scriptName, instanceId) {
     return preverifyImplementation({ root, instanceId });
   }
   if (scriptName === 'docs:implementation:finish') {
-    return finishImplementation({ root, instanceId });
+    return withSerializedFinish(root, instanceId, () => finishImplementation({ root, instanceId }));
   }
   fail(`Lifecycle interno desconocido: ${scriptName}.`);
 }
@@ -471,11 +619,8 @@ function ensureCurrentMainContained(root, instance) {
 
   const dirty = worktreePaths(root);
   assertImplementationPaths(dirty, instance, { root, baseRef: `origin/${DEFAULT_BRANCH}` });
-
-  let stashed = false;
   if (dirty.length > 0) {
-    git(['stash', 'push', '--include-untracked', '-m', `accelerator-rebaseline:${instance.instance_id}`, '--', ...dirty], { cwd: root });
-    stashed = true;
+    fail(`MAIN_RECONCILIATION_DIRTY_WORKTREE:${instance.instance_id}; commit candidate checkpoint and rerun advance. Stash is forbidden.`);
   }
 
   const merge = git(['merge', '--no-edit', `origin/${DEFAULT_BRANCH}`], {
@@ -489,17 +634,10 @@ function ensureCurrentMainContained(root, instance) {
     }
   }
 
-  if (stashed) {
-    const applied = git(['stash', 'pop'], { cwd: root, allowFailure: true });
-    if (applied.status !== 0) {
-      fail(`STASH_REAPPLY_CONFLICT para ${instance.instance_id}. Worktree y stash preservados.`);
-    }
-  }
-
   npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
   npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
   git(['diff', '--check'], { cwd: root });
-  return 'REBASELINED';
+  return 'RECONCILED_LATEST_MAIN';
 }
 
 function pushCandidate(root, branch) {
@@ -609,6 +747,7 @@ function writeEvidenceRequest(
 ) {
   const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
+  const prior = readEvidenceRequest(root);
   const request = {
     schema_version: 1,
     instance_id: instance.instance_id,
@@ -623,6 +762,7 @@ function writeEvidenceRequest(
       evidence: [],
     })),
     operational_evidence: [],
+    validation_engine_repair_receipt: prior?.validation_engine_repair_receipt ?? null,
     validation_engine_preverify_receipt: preverifyReceipt,
     validation_engine_shadow_impact: shadowImpact,
     validation_engine_selective_validation: selectiveValidation,
@@ -734,16 +874,39 @@ export function validateExecutionEvidenceReceipt({
   return true;
 }
 
-async function materializeImplementation({ root, id, instance, certification = undefined }) {
+async function materializeImplementation({ root, id, certification = undefined }) {
   const branch = ensureImplementationBranch(root, id);
-  const rebaseline = ensureCurrentMainContained(root, instance);
   const refreshedBefore = resolveInstance(root, id).instance;
+
+  const materialization = assessAuthorizedMaterialization({
+    instance: refreshedBefore,
+    changedPaths: [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
+  });
+  if (!materialization.ready) {
+    fail(`MATERIALIZATION_INCOMPLETE:${id}; missing=${materialization.missingPaths.join(',')}`);
+  }
 
   assertImplementationPaths(
     [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
     refreshedBefore,
     { root, baseRef: `origin/${DEFAULT_BRANCH}` },
   );
+
+  const repairBeforeCheckpoint = runCandidateRepairOnce(root, refreshedBefore);
+  commitAllowedWorktree(root, id, resolveInstance(root, id).instance, `implementation(${id}): materialize`);
+
+  const rebaseline = ensureCurrentMainContained(root, resolveInstance(root, id).instance);
+  commitAllowedWorktree(root, id, resolveInstance(root, id).instance, `implementation(${id}): reconcile latest main`);
+
+  let finalCandidateInstance = resolveInstance(root, id).instance;
+  let repairFinal = runCandidateRepairOnce(root, finalCandidateInstance);
+  const repairCommitted = worktreePaths(root).length > 0
+    ? commitAllowedWorktree(root, id, finalCandidateInstance, `implementation(${id}): repair candidate`)
+    : false;
+  if (repairCommitted) {
+    finalCandidateInstance = resolveInstance(root, id).instance;
+    repairFinal = runCandidateRepairOnce(root, finalCandidateInstance);
+  }
 
   const validationChangedPaths = [...new Set([
     ...branchChangedPaths(root),
@@ -752,36 +915,23 @@ async function materializeImplementation({ root, id, instance, certification = u
   const validationRun = runValidationCommandsWithPolicy({
     root,
     changedPaths: validationChangedPaths,
-    validationCommands: refreshedBefore.validation_commands ?? [],
+    validationCommands: finalCandidateInstance.validation_commands ?? [],
     certification,
   });
 
-  const refreshedAfterValidation = resolveInstance(root, id).instance;
-  const dirty = worktreePaths(root);
-  assertImplementationPaths(
-    [...new Set([...branchChangedPaths(root), ...dirty])],
-    refreshedAfterValidation,
-    { root, baseRef: `origin/${DEFAULT_BRANCH}` },
-  );
-
-  const writable = writablePhysicalPaths(refreshedAfterValidation);
-  const physicalDirty = dirty.filter((entry) => writable.has(entry));
-  if (physicalDirty.length > 0) {
-    git(['add', '--', ...physicalDirty], { cwd: root });
-    npm([
-      'run', '--silent', 'docs:commit-scope:check', '--',
-      '--staged', '--instance-id', id,
-    ], { cwd: root });
-    git(['diff', '--cached', '--check'], { cwd: root });
-    git(['commit', '-m', `implementation(${id}): materialize`], { cwd: root });
-  }
-
-  const commits = branchCommitCount(root);
-  if (physicalDirty.length === 0 && commits === 0) {
-    console.log(`[ACCELERATOR] ${id}: etapa sin delta fisico; candidato = HEAD base.`);
-  }
-
   const candidateCommit = currentHead(root);
+  const candidateStateAfterValidation = candidateValidationState(root, finalCandidateInstance);
+  const repairReceiptValidation = validateCandidateRepairReceipt({
+    receipt: repairFinal.receipt,
+    instanceId: finalCandidateInstance.instance_id,
+    candidateCommit,
+    repositoryStateSha256: candidateStateAfterValidation.repositoryStateSha256,
+    toolchain: candidateStateAfterValidation.toolchain,
+  });
+  if (repairReceiptValidation.status !== 'PASS') {
+    fail(`REPAIR_RECEIPT_NOT_EXACT_FINAL_CANDIDATE:${repairReceiptValidation.reason}`);
+  }
+
   assertImplementationPaths(
     [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
     resolveInstance(root, id).instance,
@@ -817,8 +967,12 @@ async function materializeImplementation({ root, id, instance, certification = u
     candidateCommit,
     mrpStatus,
     rebaseline,
+    repairStatus: repairFinal.status,
+    repairReceipt: repairFinal.receipt,
+    initialRepairStatus: repairBeforeCheckpoint.status,
     shadowImpact: validationRun.shadowObservation,
     selectiveValidation,
+    materializationMode: 'MATERIALIZATION_AUTO_DETECTED',
   };
 }
 
@@ -928,15 +1082,10 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   if (!instanceId) {
     const action = coordinatedStatus.coordinatedPrimaryAction;
     printResult({
-      ESTADO: 'PASS',
-      OPERACION: 'IMPLEMENTATION_ACCELERATOR',
-      INSTANCE_ID: 'NONE',
-      EXECUTOR_STATE: 'PACKAGE_GATE',
-      NEXT_ACTION: action?.type ?? 'NONE',
-      TARGET: action?.target ?? 'NONE',
-      COMMAND: action?.command ?? 'NONE',
-      HUMAN_GATE: 'SI',
-      RESUMABLE: 'SI',
+      ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: 'NONE',
+      EXECUTOR_STATE: 'PACKAGE_GATE', NEXT_ACTION: action?.type ?? 'NONE',
+      TARGET: action?.target ?? 'NONE', COMMAND: action?.command ?? 'NONE',
+      HUMAN_GATE: 'SI', RESUMABLE: 'SI',
     });
     return;
   }
@@ -947,15 +1096,9 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
 
   if (state === 'AUTHORIZATION_GATE') {
     printResult({
-      ESTADO: 'PASS',
-      OPERACION: 'IMPLEMENTATION_ACCELERATOR',
-      INSTANCE_ID: instanceId,
-      STATUS: instance.status,
-      EXECUTOR_STATE: state,
-      NEXT_GATE: 'EXPLICIT_PHYSICAL_AUTHORIZATION',
-      HUMAN_GATE: 'SI',
-      MUTATIONS: 'NO',
-      RESUMABLE: 'SI',
+      ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
+      STATUS: instance.status, EXECUTOR_STATE: state, NEXT_GATE: 'EXPLICIT_PHYSICAL_AUTHORIZATION',
+      HUMAN_GATE: 'SI', MUTATIONS: 'NO', RESUMABLE: 'SI',
     });
     return;
   }
@@ -969,26 +1112,25 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
 
   let materializedResult = null;
   if (state === 'MATERIALIZATION_GATE') {
-    if (!materialized) {
+    ensureImplementationBranch(root, instanceId);
+    const materialization = assessAuthorizedMaterialization({
+      instance,
+      changedPaths: [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
+    });
+    if (!materialization.ready) {
       printResult({
-        ESTADO: 'PASS',
-        OPERACION: 'IMPLEMENTATION_ACCELERATOR',
-        INSTANCE_ID: instanceId,
-        STATUS: instance.status,
-        EXECUTOR_STATE: state,
-        EXPECTED_BRANCH: implementationBranchName(instanceId),
-        NEXT_GATE: 'MATERIALIZATION',
-        HUMAN_GATE: 'SI',
-        RESUMABLE: 'SI',
+        ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
+        STATUS: instance.status, EXECUTOR_STATE: state, EXPECTED_BRANCH: implementationBranchName(instanceId),
+        NEXT_GATE: 'MATERIALIZATION_REQUIRED', HUMAN_GATE: 'NO',
+        MISSING_AUTHORIZED_PATHS: materialization.missingPaths.join(',') || 'NONE',
+        LEGACY_MATERIALIZED_FLAG: materialized ? 'IGNORED' : 'NOT_PROVIDED',
+        SAME_COMMAND_RESUME: 'npm run docs:implementation:advance', RESUMABLE: 'SI',
       });
       return;
     }
 
     materializedResult = await materializeImplementation({
-      root,
-      id: instanceId,
-      instance,
-      certification: safeSelectiveCertification,
+      root, id: instanceId, certification: safeSelectiveCertification,
     });
     instance = materializedResult.instance;
     state = classifyExecutionState(instance);
@@ -996,40 +1138,56 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
 
   if (state === 'EVIDENCE_GATE') {
     ensureImplementationBranch(root, instanceId);
-    ensureCurrentMainContained(root, instance);
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
 
     if (!evidenceFile) {
-      await runCanonicalLifecycle(root, 'docs:implementation:preverify', instanceId);
+      const beforePreverify = resolveInstance(root, instanceId).instance;
+      const candidateStateBefore = candidateValidationState(root, beforePreverify);
+      const priorRequest = readEvidenceRequest(root);
+      const reusablePreverify = evaluateCandidatePreverifyReceipt({
+        instance: beforePreverify, request: priorRequest, candidateState: candidateStateBefore,
+      });
+      let preverifyMode = 'REUSED_EXACT_CANDIDATE';
+      if (reusablePreverify.status !== 'PASS') {
+        await runCanonicalLifecycle(root, 'docs:implementation:preverify', instanceId);
+        preverifyMode = 'EXECUTED';
+      }
       const refreshedAfterPreverify = resolveInstance(root, instanceId).instance;
       const candidateState = candidateValidationState(root, refreshedAfterPreverify);
       const candidateCommit = candidateState.candidateCommit;
       const preverifyReceipt = createCandidateValidationReceipt({
-        instanceId,
-        candidateCommit,
-        repositoryStateSha256: candidateState.repositoryStateSha256,
-        validationCommands: candidateState.validationCommands,
-        toolchain: candidateState.toolchain,
+        instanceId, candidateCommit, repositoryStateSha256: candidateState.repositoryStateSha256,
+        validationCommands: candidateState.validationCommands, toolchain: candidateState.toolchain,
       });
       const requestPath = writeEvidenceRequest(
-        root,
-        refreshedAfterPreverify,
-        candidateCommit,
-        preverifyReceipt,
-        materializedResult?.shadowImpact ?? null,
-        materializedResult?.selectiveValidation ?? null,
+        root, refreshedAfterPreverify, candidateCommit, preverifyReceipt,
+        materializedResult?.shadowImpact ?? priorRequest?.validation_engine_shadow_impact ?? null,
+        materializedResult?.selectiveValidation ?? priorRequest?.validation_engine_selective_validation ?? null,
         safeSelectiveCertification,
       );
+      const request = readEvidenceRequest(root);
+      const machineEvidence = buildMachineObservableExecutionEvidence({ request });
+      if (machineEvidence) {
+        writeEvidenceState(root, machineEvidence);
+        const sealed = await sealVerifiedEvidence({
+          root, id: instanceId, evidenceFile: requestPath, certification: safeSelectiveCertification,
+        });
+        await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
+        printResult({
+          ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE', INSTANCE_ID: instanceId,
+          CANDIDATE_SHA: sealed.candidateCommit, PREVERIFY: preverifyMode,
+          EVIDENCE_RECEIPT: 'MACHINE_OBSERVABLE_AUTO', VERIFIED: 'SI', FINISH: 'PASS',
+          MAIN_SYNC: '0/0', RESUMABLE: 'NO_NECESARIO',
+        });
+        return;
+      }
       printResult({
-        ESTADO: 'PASS',
-        OPERACION: 'IMPLEMENTATION_ACCELERATOR',
-        INSTANCE_ID: instanceId,
-        STATUS: 'IMPLEMENTED',
-        EXECUTOR_STATE: state,
-        CANDIDATE_SHA: candidateCommit,
-        REBASELINE: materializedResult?.rebaseline ?? 'CURRENT',
+        ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
+        STATUS: 'IMPLEMENTED', EXECUTOR_STATE: state, CANDIDATE_SHA: candidateCommit,
+        REBASELINE: materializedResult?.rebaseline ?? 'PRESERVED',
         MRP015_050: materializedResult?.mrpStatus ?? 'PRESERVED_OR_NO_APLICA',
-        PREVERIFY: 'PASS',
-        PREVERIFY_RECEIPT: 'RECORDED_EXACT_CANDIDATE',
+        QUALITY_REPAIR: materializedResult?.repairStatus ?? 'PRESERVED_OR_NOT_REQUIRED',
+        PREVERIFY: preverifyMode, PREVERIFY_RECEIPT: 'RECORDED_EXACT_CANDIDATE',
         SHADOW_IMPACT_SELECTION: materializedResult?.shadowImpact ? 'OBSERVED_FULL_SUITE' : 'F5_SELECTIVE_OR_NOT_OBSERVED_THIS_RUN',
         SHADOW_SELECTED: materializedResult?.shadowImpact?.selectedCommandCount ?? 'N/A',
         SHADOW_OMITTED: materializedResult?.shadowImpact?.omittedCommandCount ?? 'N/A',
@@ -1040,33 +1198,21 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         VALIDATION_NOT_APPLICABLE: materializedResult?.selectiveValidation?.notApplicableCommands?.length ?? 'N/A',
         FULL_FALLBACK_USED: materializedResult?.selectiveValidation?.fullFallbackUsed ?? 'N/A',
         VALIDATION_GATES_SKIPPED: 0,
-        EVIDENCE_REQUEST: requestPath,
-        NEXT_GATE: 'EXTERNAL_EVIDENCE',
-        HUMAN_GATE: 'SI',
-        RESUMABLE: 'SI',
+        EVIDENCE_REQUEST: requestPath, NEXT_GATE: 'EXTERNAL_EVIDENCE_REQUIRED',
+        HUMAN_GATE: 'SI', RESUMABLE: 'SI',
       });
       return;
     }
 
     const sealed = await sealVerifiedEvidence({
-      root,
-      id: instanceId,
-      evidenceFile,
-      certification: safeSelectiveCertification,
+      root, id: instanceId, evidenceFile, certification: safeSelectiveCertification,
     });
     await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
     printResult({
-      ESTADO: 'PASS',
-      OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE',
-      INSTANCE_ID: instanceId,
-      CANDIDATE_SHA: sealed.candidateCommit,
-      PREVERIFY: sealed.preverifyStatus,
-      EVIDENCE_RECEIPT: 'PASS',
-      VERIFIED: 'SI',
-      FINISH: 'PASS',
-      MAIN_SYNC: '0/0',
-      WORKTREE: 'CLEAN',
-      RESUMABLE: 'NO_NECESARIO',
+      ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE', INSTANCE_ID: instanceId,
+      CANDIDATE_SHA: sealed.candidateCommit, PREVERIFY: sealed.preverifyStatus,
+      EVIDENCE_RECEIPT: 'PASS', VERIFIED: 'SI', FINISH: 'PASS',
+      MAIN_SYNC: '0/0', WORKTREE: 'CLEAN', RESUMABLE: 'NO_NECESARIO',
     });
     return;
   }
@@ -1074,26 +1220,17 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   if (state === 'FINISH') {
     await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
     printResult({
-      ESTADO: 'PASS',
-      OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE',
-      INSTANCE_ID: instanceId,
-      VERIFIED: 'SI',
-      FINISH: 'PASS',
-      RESUMABLE: 'NO_NECESARIO',
+      ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE', INSTANCE_ID: instanceId,
+      VERIFIED: 'SI', FINISH: 'PASS', RESUMABLE: 'NO_NECESARIO',
     });
     return;
   }
 
   if (state === 'BLOCKED' || state === 'DEFERRED') {
     printResult({
-      ESTADO: 'PASS',
-      OPERACION: 'IMPLEMENTATION_ACCELERATOR',
-      INSTANCE_ID: instanceId,
-      STATUS: instance.status,
-      EXECUTOR_STATE: state,
-      BLOCKER: instance.blocker ?? 'NONE',
-      MUTATIONS: 'NO',
-      RESUMABLE: 'SI',
+      ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
+      STATUS: instance.status, EXECUTOR_STATE: state, BLOCKER: instance.blocker ?? 'NONE',
+      MUTATIONS: 'NO', RESUMABLE: 'SI',
     });
     return;
   }
