@@ -2,8 +2,14 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { spawnGitUtf8 } from './docs-runtime-primitives.mjs';
+import {
+  assertCorrectionPaths,
+  checkCorrectionScope,
+  resolveCorrectionFromHeadRef,
+} from './correction-control.mjs';
 
 export const PACKAGE_REGISTRY_PATH = 'scripts/docs/package-readiness/implementation-package-registry.json';
+export const CORRECTION_SCOPE_NATIVE_MARKER = 'CORRECTION_NATIVE_SCOPE_V1';
 
 function normalizePath(filePath) {
   return String(filePath ?? '').replaceAll('\\', '/').replace(/^\.\//u, '');
@@ -26,6 +32,15 @@ export function analyzeReadinessCommitScope(paths, baseAnalyzeCommitScope) {
   };
 }
 
+export function resolveReadinessScopeMode({ physical = false, correctionHeadRef = null } = {}) {
+  if (physical && correctionHeadRef) {
+    throw new Error('el alcance fisico y el alcance de correccion son mutuamente excluyentes.');
+  }
+  if (physical) return 'PHYSICAL';
+  if (correctionHeadRef) return 'CORRECTION';
+  return 'GENERIC';
+}
+
 function runGit(args) {
   const result = spawnGitUtf8(args, {
     cwd: process.cwd(),
@@ -43,8 +58,20 @@ function pathsForCommit(commit) {
     .filter(Boolean);
 }
 
+function baseRefFromRange(range) {
+  const raw = String(range ?? '').trim();
+  const match = /^(.+?)\.{2,3}(.+)$/u.exec(raw);
+  if (!match) throw new Error(`Rango Git invalido: ${raw || 'VACIO'}.`);
+  return match[1];
+}
+
 function parseArgs(argv) {
-  const args = { staged: false, range: null, physical: false };
+  const args = {
+    staged: false,
+    range: null,
+    physical: false,
+    correctionHeadRef: null,
+  };
   for (let index = 0; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--staged') args.staged = true;
@@ -56,16 +83,60 @@ function parseArgs(argv) {
       args.physical = true;
       index += 1;
       if (!argv[index]) throw new Error(`falta el valor de ${token}.`);
+    } else if (token === '--correction-head-ref') {
+      args.correctionHeadRef = argv[index + 1];
+      if (!args.correctionHeadRef) throw new Error('falta el valor de --correction-head-ref.');
+      index += 1;
     } else throw new Error(`argumento desconocido: ${token}.`);
   }
   if (args.staged && args.range) throw new Error('--staged y --range son mutuamente excluyentes.');
-  return args;
+  const mode = resolveReadinessScopeMode({
+    physical: args.physical,
+    correctionHeadRef: args.correctionHeadRef,
+  });
+  if (mode === 'CORRECTION' && !args.range) {
+    throw new Error('--correction-head-ref exige --range para conservar trazabilidad historica completa.');
+  }
+  return { ...args, mode };
+}
+
+function validateCorrectionRange(parsed) {
+  const root = process.cwd();
+  const record = resolveCorrectionFromHeadRef({ root, headRef: parsed.correctionHeadRef });
+  const baseRef = baseRefFromRange(parsed.range);
+  const registration = String(parsed.correctionHeadRef).startsWith('correction-register/');
+  const commits = runGit(['rev-list', '--reverse', parsed.range]).split(/\r?\n/u).filter(Boolean);
+
+  for (const commit of commits) {
+    const paths = pathsForCommit(commit);
+    assertCorrectionPaths(paths, record, { root, baseRef, registration });
+  }
+
+  const net = checkCorrectionScope({
+    root,
+    range: parsed.range,
+    headRef: parsed.correctionHeadRef,
+  });
+
+  console.log(
+    `OK: alcance de correccion ${record.correction_id}; ${commits.length} commit(s) historicos y ${net.paths.length} path(s) netos autorizados.`,
+  );
+  return [{
+    label: record.correction_id,
+    report: {
+      files: net.paths,
+      scopes: { CORRECTION_AUTHORIZED: net.paths },
+      errors: [],
+      warnings: [],
+    },
+  }];
 }
 
 export async function main(argv = process.argv.slice(2)) {
   const parsed = parseArgs(argv);
   const original = await import('./commit-scope.mjs');
-  if (parsed.physical) return original.main(argv);
+  if (parsed.mode === 'PHYSICAL') return original.main(argv);
+  if (parsed.mode === 'CORRECTION') return validateCorrectionRange(parsed);
 
   const reports = [];
   if (parsed.range) {
