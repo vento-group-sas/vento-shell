@@ -1,10 +1,165 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-018",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "VERIFIED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260829200745_auth_db_019_identity_links.sql",
+      "change": "EXECUTE_ONLY",
+      "scope": "Adopt the already VERIFIED AUTH-DB-019 identity_access foundation as read-only physical evidence. Do not modify this migration, Auth hosted objects, VITAL, legacy foreign keys, database schema or production."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/packages/GAP-PKG-018.sql",
+      "change": "CREATE",
+      "scope": "Create GAP-PKG-018 TP-DB-001 pgTAP adoption evidence over the existing identity_access foundation without schema, hosted Auth, VITAL, legacy foreign-key or production mutation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/contract.test.ts",
+      "change": "CREATE",
+      "scope": "Create package-specific contractual evidence for the eleven canonical GAP-PKG-018 TREQ contracts and identity source-of-truth boundaries."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/integration.test.ts",
+      "change": "CREATE",
+      "scope": "Create integration evidence for Auth-to-enterprise principal linkage and compatibility with the existing AccessContext resolver graph."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/security.test.ts",
+      "change": "CREATE",
+      "scope": "Create fail-closed security evidence for missing, ambiguous, inactive and conflicting identity mappings, minimum privilege and non-authoritative Auth metadata boundaries."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/e2e.test.ts",
+      "change": "CREATE",
+      "scope": "Create controlled end-to-end identity-resolution evidence without production, hosted Auth or VITAL mutation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/fixtures.json",
+      "change": "CREATE",
+      "scope": "Create deterministic TP-DB-001 fixtures mapping the eleven canonical GAP-PKG-018 TREQ requirements to reproducible identity-resolution scenarios."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json",
+      "change": "MODIFY",
+      "scope": "Record only authorization, lifecycle state, prerequisite evidence and consolidated evidence for SHELL-CI-020::GAP-PKG-018."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:start and docs:implementation:finish as the authoritative physical lifecycle without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run quality:repair exactly once after complete materialization and before IMPLEMENTED; do not modify the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate materialization against the exact authorized instance scope without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the existing clean local Supabase database harness without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-test-command-gate.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the canonical repository test facade through npm test without modifying the script."
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:db:test:clean",
+    "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-018.sql",
+    "node --test tests/packages/GAP-PKG-018/contract.test.ts",
+    "node --test tests/packages/GAP-PKG-018/integration.test.ts",
+    "node --test tests/packages/GAP-PKG-018/security.test.ts",
+    "node --test tests/packages/GAP-PKG-018/e2e.test.ts",
+    "npm test --silent"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-11T23:43:05.072Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a303cd9586719750cab6fc8954b78206485b3f5d694b79fa9ef676c8e26a51ca"
+  },
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-018 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO GAP-PKG-018",
+    "PHYSICAL_IDENTITY targets=7",
+    "IMPLEMENTATION_UNIT identity_access",
+    "ENV_PROFILE ENV-SUPABASE-LOCAL-CI-STAGING",
+    "AUTH-DB-019::GLOBAL VERIFIED",
+    "AUTH-DB-033::GLOBAL VERIFIED",
+    "PRODUCTION_AUTHORIZED false",
+    "SOURCE_CONTRACT docs/plan-canonico/modular/package-gate-instances/GAP-PKG-018.json SHA256 a303cd9586719750cab6fc8954b78206485b3f5d694b79fa9ef676c8e26a51ca"
+  ],
+  "evidence": [
+    "AUTHORIZATION SOURCE CONTRACT SHA256 a303cd9586719750cab6fc8954b78206485b3f5d694b79fa9ef676c8e26a51ca HISTORICAL_APPROVAL_FINGERPRINT",
+    "PACKAGE CONTRACT SEMANTIC SHA256 9065d93f388b1a2f1f01482c96785193dec4414d0694fe6371aa6a9c3a748f85 RUNTIME_GUARD",
+    "GAP018 TREQ ROWS SHA256 16e03e5ca66b2e9ed7b5122566e528251a96486fcb0c8ae9c160130ab3ab04dc RUNTIME_GUARD",
+    "TREQ_SET TREQ-SUPABASE-029 TREQ-SUPABASE-116 TREQ-SUPABASE-117 TREQ-SUPABASE-124 TREQ-SUPABASE-125 TREQ-SUPABASE-126 TREQ-SUPABASE-127 TREQ-SUPABASE-131 TREQ-SUPABASE-134 TREQ-SUPABASE-135 TREQ-SUPABASE-138",
+    "TREQ_CHANGES 0",
+    "04A_CHANGES 0",
+    "MATERIALIZATION GAP-PKG-018 six evidence artifacts created; AUTH-DB-019 adopted read-only",
+    "QUALITY_REPAIR PASS attempt=1",
+    "AUTH_DB_019_MIGRATION_SHA256 00d5aa79e7e0dccdc8b8c828a76190c9e351f73494995900ca3ce7df96d94c87 READ_ONLY",
+    "FILE_SHA256 supabase/tests/packages/GAP-PKG-018.sql a4ae95ca4a328f5576609676488b8c51f02b8820157b8a9671c769cc749d1e31",
+    "FILE_SHA256 tests/packages/GAP-PKG-018/contract.test.ts 2592c6275f68a2fdc85b683f328ab68ef6437a9d9ebe64e98ff707ccd72373d7",
+    "FILE_SHA256 tests/packages/GAP-PKG-018/integration.test.ts 45e30b15c2062db4cc9f0a93fd9541ee6b57510caefdfebc1b0af29ddf887cfe",
+    "FILE_SHA256 tests/packages/GAP-PKG-018/security.test.ts 7f6da4a5dc5093c4492282c18560ef5a87cbc30f7f313070ad022c731e4335b0",
+    "FILE_SHA256 tests/packages/GAP-PKG-018/e2e.test.ts fdbe39fb1dde89c9f2e01261487a957d23f31417a12f795ae0cfdec9083e149d",
+    "FILE_SHA256 tests/packages/GAP-PKG-018/fixtures.json 4ae7398beff1ba12ddd31686ea8211f217b2de09a9b5895dde43d0c87b244562",
+    "VALIDATION npm run supabase:db:test:clean PASS",
+    "VALIDATION npm exec -- supabase test db supabase/tests/packages/GAP-PKG-018.sql PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-018/contract.test.ts PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-018/integration.test.ts PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-018/security.test.ts PASS",
+    "VALIDATION node --test tests/packages/GAP-PKG-018/e2e.test.ts PASS",
+    "VALIDATION npm test --silent PASS",
+    "TREQ TREQ-SUPABASE-029 PASS",
+    "TREQ TREQ-SUPABASE-116 PASS",
+    "TREQ TREQ-SUPABASE-117 PASS",
+    "TREQ TREQ-SUPABASE-124 PASS",
+    "TREQ TREQ-SUPABASE-125 PASS",
+    "TREQ TREQ-SUPABASE-126 PASS",
+    "TREQ TREQ-SUPABASE-127 PASS",
+    "TREQ TREQ-SUPABASE-131 PASS",
+    "TREQ TREQ-SUPABASE-134 PASS",
+    "TREQ TREQ-SUPABASE-135 PASS",
+    "TREQ TREQ-SUPABASE-138 PASS",
+    "FINAL_PHYSICAL_BATTERY 7/7 PASS",
+    "AUTH_DB_019_FOUNDATION VERIFIED ADOPTED_WITHOUT_MODIFICATION",
+    "AUTH_DB_033_ACCESS_CONTEXT VERIFIED ALIGNED",
+    "REMOTE_MUTATIONS 0",
+    "PRODUCTION_MUTATIONS 0",
+    "MAIN_HEAD_OBSERVED_BEFORE_FINISH UNKNOWN OBSERVATIONAL_ONLY"
+  ],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }

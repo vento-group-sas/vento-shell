@@ -39,7 +39,7 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-020::GAP-PKG-018` — `PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+- `SHELL-CI-020::GAP-PKG-018` — `IN_PROGRESS` — `EJECUTAR_IMPLEMENTACIÓN`
   - Contrato: Implementar y desplegar cada paquete aprobado por E5
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json`
 - `SHELL-CI-022::GAP-PKG-001` — `PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
@@ -51,7 +51,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad | `NEXO-DOM-013` — Definir baja, descarte, venta o reemplazo | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-018` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `SHELL-CI-020::GAP-PKG-018` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -65,7 +65,7 @@
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-018`
+- **Puntero de compatibilidad del control de instancias:** `EJECUTAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-018`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -75,7 +75,7 @@
 
 | # | Posición | Instancia | Contrato | Estado | Condición |
 | ---: | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-018` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-018` | Implementar y desplegar cada paquete aprobado por E5 | `IN_PROGRESS` | EN_CURSO — EJECUTAR_IMPLEMENTACIÓN |
 | 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 
 ## Modos de trabajo y materialización
