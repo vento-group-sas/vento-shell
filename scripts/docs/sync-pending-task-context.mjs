@@ -434,6 +434,28 @@ export function orderPendingTasksByRoute(tasks, route) {
   return ordered;
 }
 
+// C6_PENDING_CONTEXT_EFFECTIVE_STATE
+export function physicalOperationalProjection(instance) {
+  if (!instance) return {
+    declaredStatus: null,
+    effectiveStatus: null,
+    integrityValid: null,
+    recoveryAction: null,
+    mutationCommand: null,
+  };
+  const integrityInvalid = instance.stateIntegrityRecoveryRequired === true
+    || instance.stateIntegrity?.status_valid === false;
+  return {
+    declaredStatus: instance.declaredStatus ?? instance.record?.status ?? instance.status ?? null,
+    effectiveStatus: instance.effectiveStatus ?? instance.status ?? null,
+    integrityValid: instance.stateIntegrity ? instance.stateIntegrity.status_valid === true : null,
+    recoveryAction: instance.recoveryAction ?? instance.stateIntegrity?.recovery_action ?? null,
+    mutationCommand: integrityInvalid
+      ? null
+      : `npm run docs:implementation:advance -- --instance-id ${instance.instanceId}`,
+  };
+}
+
 export function physicalLaneSummary(implementationControl, { limit = 12 } = {}) {
   const instances = Array.isArray(implementationControl?.physical?.instances)
     ? implementationControl.physical.instances
@@ -704,13 +726,21 @@ function renderPhysicalAction(action) {
     '',
     '- **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.',
     ...physicalSet.flatMap((physical) => [
-      `- \`${physical.instanceId}\` — \`${physical.status}\` — \`${implementationActionLabel(physical.status)}\``,
+      `- \`${physical.instanceId}\` — declared=\`${physicalOperationalProjection(physical).declaredStatus ?? 'NONE'}\` — effective=\`${physicalOperationalProjection(physical).effectiveStatus ?? 'NONE'}\` — \`${implementationActionLabel(physical)}\``,
       `  - Contrato: ${laneCell(physical.taskTitle)}` ,
+      `  - Integridad: \`${physicalOperationalProjection(physical).integrityValid == null ? 'N/A' : physicalOperationalProjection(physical).integrityValid ? 'VALID' : 'INVALID'}\``,
+      `  - Recovery: \`${physicalOperationalProjection(physical).recoveryAction ?? 'NONE'}\``,
+      `  - Comando mutante normal: \`${physicalOperationalProjection(physical).mutationCommand ?? 'NONE_UNTIL_INTEGRITY_RECONCILED'}\``,
       `  - Registro: \`${physical.recordPath}\``,
     ]),
   ];
 }
-function implementationActionLabel(status) {
+function implementationActionLabel(instanceOrStatus) {
+  const instance = instanceOrStatus && typeof instanceOrStatus === 'object' ? instanceOrStatus : null;
+  const status = instance ? instance.status : instanceOrStatus;
+  if (instance?.stateIntegrityRecoveryRequired === true || instance?.stateIntegrity?.status_valid === false) {
+    return 'RECONCILIAR_INTEGRIDAD_DE_ESTADO';
+  }
   if (status === 'PENDING_AUTHORIZATION' || status === 'READY_FOR_AUTHORIZATION') return 'AUTORIZAR_IMPLEMENTACIÓN';
   if (status === 'BLOCKED' || status === 'WAITING_FOR_PREVIOUS_INSTANCE') return 'RESOLVER_BLOQUEO';
   return 'EJECUTAR_IMPLEMENTACIÓN';
@@ -767,13 +797,14 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
     ? physical.queue.map((instance, index) => {
       const isActionable = actionableIds.has(instance.instanceId);
       const condition = isActionable
-        ? `EN_CURSO — ${implementationActionLabel(instance.status)}`
+        ? `EN_CURSO — ${implementationActionLabel(instance)}`
         : instance.blocker ?? (instance.status === 'READY_FOR_AUTHORIZATION'
           ? 'Elegible cuando corresponda'
           : 'Sin bloqueo adicional declarado');
-      return `| ${index + 1} | ${isActionable ? '**EN CURSO**' : 'PENDIENTE'} | \`${laneCell(instance.instanceId)}\` | ${laneCell(instance.taskTitle)} | \`${laneCell(instance.status)}\` | ${laneCell(condition)} |`;
+      const projection = physicalOperationalProjection(instance);
+      return `| ${index + 1} | ${isActionable ? '**EN CURSO**' : 'PENDIENTE'} | \`${laneCell(instance.instanceId)}\` | ${laneCell(instance.taskTitle)} | \`${laneCell(projection.declaredStatus)}\` | \`${laneCell(projection.effectiveStatus)}\` | ${laneCell(condition)} |`;
     })
-    : ['| — | — | — | Sin instancia física pendiente conocida | — | — |'];
+    : ['| — | — | — | Sin instancia física pendiente conocida | — | — | — |'];
   return [
     '## Panel de control — dos carriles',
     '',
@@ -795,6 +826,10 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
     `- **Etapa documental:** \`${laneCell(active.sequence_id)}\` — ${laneCell(active.block_title)}`,
     `- **Siguiente etapa documental:** \`${laneCell(active.handoff_sequence_id ?? 'NINGUNA')}\``,
     `- **Puntero de compatibilidad del control de instancias:** \`${laneCell(implementationControl.primaryAction.type)}\` — \`${laneCell(implementationControl.primaryAction.target)}\``,
+    `- **Entrada mutante normal:** \`docs:implementation:advance\``,
+    `- **Estado físico declarado:** \`${laneCell(physicalOperationalProjection(physicalCurrent).declaredStatus ?? 'NONE')}\``,
+    `- **Estado físico efectivo:** \`${laneCell(physicalOperationalProjection(physicalCurrent).effectiveStatus ?? 'NONE')}\``,
+    `- **Recovery físico:** \`${laneCell(physicalOperationalProjection(physicalCurrent).recoveryAction ?? 'NONE')}\``,
     `- **Instancias físicas en espera de predecesora:** **${physical.waiting}**`,
     `- **Cobertura documental de la ruta:** **${route.coverage_policy === 'ALL_CANONICAL_TASKS_EXACTLY_ONCE' ? 'todas las tareas, exactamente una vez' : laneCell(route.coverage_policy)}**`,
     '',
@@ -802,8 +837,8 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
     '',
     '> Muestra hasta 12 instancias físicas no terminales conocidas por el control. No crea autorizaciones ni materializa instancias futuras por inferencia.',
     '',
-    '| # | Posición | Instancia | Contrato | Estado | Condición |',
-    '| ---: | --- | --- | --- | --- | --- |',
+    '| # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |',
+    '| ---: | --- | --- | --- | --- | --- | --- |',
     ...physicalRows,
   ];
 }

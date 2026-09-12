@@ -139,3 +139,44 @@ test('markdown no introduce rutas ficticias ni afirma cierre de Entrega 2', () =
   assert.doesNotMatch(markdown, /\bRUTA\b|carpeta\/de\/ejemplo|C:\\ejemplo/iu);
   assert.doesNotMatch(markdown, /ENTREGA 2.*COMPLETA/iu);
 });
+
+// C5_WORK_PACKAGE_EFFECTIVE_STATE_RECOVERY
+test('work package no expone comandos mutantes cuando el ledger declarado excede el estado efectivo', () => {
+  const snapshot = coordinated({
+    targetStatus: 'VERIFIED',
+    targetValidationCommands: ['npm test --silent'],
+  });
+  const integrity = {
+    declared_status: 'VERIFIED',
+    highest_valid_status: 'IN_PROGRESS',
+    status_valid: false,
+    missing_prerequisites: ['LOCAL_VALIDATION_EVIDENCE_INCOMPLETE'],
+    stale_evidence: [],
+    next_legal_transition: 'MATERIALIZE_AND_VALIDATE',
+    recoverable: true,
+    recovery_action: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE',
+  };
+  snapshot.physical.active = {
+    ...snapshot.physical.active,
+    status: 'IN_PROGRESS',
+    declaredStatus: 'VERIFIED',
+    effectiveStatus: 'IN_PROGRESS',
+    stateIntegrity: integrity,
+  };
+  snapshot.physical.instances[0] = snapshot.physical.active;
+  snapshot.operationalContract = {
+    mutatingEntrypoint: 'docs:implementation:advance',
+    directLifecycleEntrypointsEnabled: false,
+  };
+
+  const model = buildImplementationWorkPackage({ coordinatedStatus: snapshot });
+  assert.equal(model.target.declared_status, 'VERIFIED');
+  assert.equal(model.target.status, 'IN_PROGRESS');
+  assert.equal(model.target.status_valid, false);
+  assert.equal(model.target.mutation_authorized, false);
+  assert.equal(model.operator_block.state_integrity_recovery_required, true);
+  assert.deepEqual(model.operator_block.commands_executable_now, []);
+  assert.equal(model.efficiency_baseline.comparison_status, 'STATE_INTEGRITY_RECOVERY_REQUIRED');
+  assert.equal(model.control_equivalence.mutating_entrypoint, 'docs:implementation:advance');
+  assert.equal(model.control_equivalence.direct_lifecycle_entrypoints_enabled, false);
+});

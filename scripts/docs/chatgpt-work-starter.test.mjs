@@ -6,6 +6,7 @@ import {
   actionResponseContract,
   buildChatgptWorkStarter,
   CHATGPT_STARTER_PATHS,
+  projectAdvanceOnlyImplementationSource,
 } from './chatgpt-work-starter.mjs';
 
 test('genera dos iniciadores separados por intención y un selector legacy mínimo', () => {
@@ -81,9 +82,9 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
     );
     assert.match(result.implementationSource, /REGISTRO ACTIVO EXACTO/u);
     assert.match(result.implementationSource, /HISTORIAL FÍSICO RESUMIDO/u);
-    assert.match(result.implementationSource, /docs:implementation:start/u);
-    assert.match(result.implementationSource, /quality:repair/u);
-    assert.match(result.implementationSource, /docs:implementation:finish/u);
+    assert.match(result.implementationSource, /docs:implementation:advance/u);
+    assert.doesNotMatch(result.implementationSource, /docs:implementation:(?:start|preverify|finish)/u);
+    assert.doesNotMatch(result.implementationSource, /npm run quality:repair/u);
     assert.match(result.implementationSource, /ENTREGA FÍSICA AUTOCONTENIDA OBLIGATORIA/u);
     assert.match(result.implementationSource, /MODO PREDETERMINADO DE IMPLEMENTACIÓN HUMANA/u);
     assert.match(result.implementationSource, /FLUJO RÁPIDO DE IMPLEMENTACIÓN FÍSICA/u);
@@ -210,11 +211,11 @@ test('el contrato físico conserva lifecycle, reparación y autorización explí
   assert.match(source, /GATE LOCAL PASS\/FAIL no constituye un gate conversacional/u);
   assert.match(source, /GATE LOCAL produce PASS, continúa inmediatamente/u);
   assert.match(source, /GATE LOCAL produce FAIL, detén únicamente la secuencia local/u);
-  assert.match(source, /docs:implementation:start -- --instance-id SHELL-CI-001::GLOBAL/u);
-  assert.match(source, /quality:repair/u);
+  assert.match(source, /docs:implementation:advance -- --instance-id SHELL-CI-001::GLOBAL/u);
+  assert.doesNotMatch(source, /docs:implementation:(?:start|preverify|finish)/u);
+  assert.doesNotMatch(source, /npm run quality:repair/u);
   assert.match(source, /READY_FOR_VALIDATION: SI/u);
   assert.match(source, /validation_commands/u);
-  assert.match(source, /docs:implementation:finish -- --instance-id SHELL-CI-001::GLOBAL/u);
   assert.match(source, /status AUTHORIZED/u);
   assert.match(source, /source_contract_sha256/u);
   assert.match(source, new RegExp('a{64}', 'u'));
@@ -240,4 +241,56 @@ test('el iniciador fisico expone governed active set sin convertir el puntero en
   assert.match(source, /Conjunto físico gobernado/u);
   assert.match(source, /puntero determinista de compatibilidad/u);
   assert.match(source, /otras instancias físicas independientes en curso/u);
+});
+
+// C6_STARTER_ADVANCE_ONLY_PROJECTION
+test('proyección física suprime entrypoints directos y repair manual', () => {
+  const projected = projectAdvanceOnlyImplementationSource(`
+npm run docs:implementation:start -- --instance-id SHELL-CI-001::GLOBAL
+npm run docs:implementation:preverify -- --instance-id SHELL-CI-001::GLOBAL
+npm run quality:repair
+npm run docs:implementation:finish -- --instance-id SHELL-CI-001::GLOBAL
+`);
+  assert.match(projected, /ADVANCE_ONLY_OPERATIONAL_PROJECTION_V1/u);
+  assert.match(projected, /docs:implementation:advance -- --instance-id SHELL-CI-001::GLOBAL/u);
+  assert.doesNotMatch(projected, /docs:implementation:(?:start|preverify|finish)/u);
+  assert.doesNotMatch(projected, /npm run quality:repair/u);
+});
+
+// C6_STARTER_INTEGRITY_RECOVERY_PROTOCOL_TEST
+test('recovery de integridad conserva protocolo físico y suprime comandos mutantes', () => {
+  const source = actionResponseContract({
+    primaryAction: {
+      type: 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY',
+      target: 'SHELL-CI-001::GLOBAL',
+    },
+    physical: {
+      active: {
+        instanceId: 'SHELL-CI-001::GLOBAL',
+        status: 'IN_PROGRESS',
+        declaredStatus: 'VERIFIED',
+        effectiveStatus: 'IN_PROGRESS',
+        stateIntegrityRecoveryRequired: true,
+        recoveryAction: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS',
+        stateIntegrity: { status_valid: false },
+        record: { status: 'VERIFIED' },
+        recordPath: 'docs/plan-canonico/modular/implementation-instances/SHELL-CI-001__GLOBAL.json',
+      },
+    },
+  }, 'a'.repeat(64));
+
+  assert.match(source, /STATE_INTEGRITY_RECOVERY_REQUIRED: TRUE/u);
+  assert.match(source, /MESSAGE_DELIVERY_CONTRACT: INLINE_VISIBLE_STEPS_ONLY/u);
+  assert.match(source, /Un MENSAJE significa exclusivamente el cuerpo visible/u);
+  assert.match(source, /MUTATION_SUPPRESSED_UNTIL_STATE_INTEGRITY_RECONCILED/u);
+  assert.doesNotMatch(source, /npm run docs:implementation:advance/u);
+  assert.doesNotMatch(source, /docs:implementation:(?:start|preverify|finish)/u);
+
+  const projectedRecovery = projectAdvanceOnlyImplementationSource([
+    'STATE_INTEGRITY_RECOVERY_REQUIRED: TRUE',
+    'npm run docs:implementation:start -- --instance-id SHELL-CI-001::GLOBAL',
+    'npm run docs:implementation:finish -- --instance-id SHELL-CI-001::GLOBAL',
+  ].join('\n'));
+  assert.match(projectedRecovery, /MUTATION_SUPPRESSED_UNTIL_STATE_INTEGRITY_RECONCILED/u);
+  assert.doesNotMatch(projectedRecovery, /npm run docs:implementation:advance/u);
 });

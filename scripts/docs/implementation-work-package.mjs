@@ -36,10 +36,22 @@ function packageIdFromInstanceId(instanceId) {
 
 function normalizedRecord(instance) {
   const record = instance?.record ?? instance ?? {};
+  const integrity = instance?.stateIntegrity ?? null;
+  const declaredStatus = String(
+    integrity?.declared_status ?? record.status ?? instance?.declaredStatus ?? instance?.status ?? '',
+  ).trim().toUpperCase();
+  const effectiveStatus = String(
+    instance?.effectiveStatus
+      ?? (integrity?.status_valid === false ? integrity.highest_valid_status : instance?.status)
+      ?? declaredStatus,
+  ).trim().toUpperCase();
   return {
     instance_id: String(record.instance_id ?? instance?.instanceId ?? '').trim(),
     task_id: String(record.task_id ?? instance?.taskId ?? '').trim(),
-    status: String(record.status ?? instance?.status ?? '').trim().toUpperCase(),
+    status: effectiveStatus,
+    declared_status: declaredStatus,
+    status_valid: integrity ? integrity.status_valid === true : true,
+    recovery_action: integrity?.recovery_action ?? null,
     target_repositories: normalizedArray(record.target_repositories ?? instance?.targetRepositories),
     authorized_changes: normalizedArray(record.authorized_changes ?? instance?.authorizedChanges),
     validation_commands: normalizedArray(record.validation_commands ?? instance?.validationCommands),
@@ -150,7 +162,7 @@ function acceleratorSequence(instanceId) {
 }
 
 function commandsExecutableNow(target) {
-  if (!target) return [];
+  if (!target || target.status_valid === false) return [];
   const sequence = acceleratorSequence(target.instance_id);
   if (target.status === 'AUTHORIZED') return [sequence[0]];
   if (target.status === 'IN_PROGRESS') return [sequence[1]];
@@ -167,6 +179,7 @@ function commandsExecutableNow(target) {
 
 function comparisonStatus(target) {
   if (!target) return 'NO_CURRENT_PHYSICAL_INSTANCE';
+  if (target.status_valid === false) return 'STATE_INTEGRITY_RECOVERY_REQUIRED';
   if (['PENDING_AUTHORIZATION', 'READY_FOR_AUTHORIZATION'].includes(target.status)) {
     return 'PENDING_EXPLICIT_INSTANCE_AUTHORIZATION';
   }
@@ -211,6 +224,9 @@ export function buildImplementationWorkPackage({
       instance_id: target.instance_id,
       task_id: target.task_id,
       status,
+      declared_status: target.declared_status,
+      status_valid: target.status_valid,
+      recovery_action: target.recovery_action,
       expected_branch: implementationBranchName(target.instance_id),
       blocker: target.blocker,
       target_repositories: target.target_repositories,
@@ -221,11 +237,13 @@ export function buildImplementationWorkPackage({
       validation_command_count: target.validation_commands.length,
       target_environments: target.target_environments,
       authorization_present: Boolean(target.authorization),
-      mutation_authorized: AUTHORIZED_STATUSES.has(status),
+      mutation_authorized: target?.status_valid !== false && AUTHORIZED_STATUSES.has(status),
       terminal: TERMINAL_STATUSES.has(status),
     } : null,
     operator_block: {
       authorization_required: Boolean(target && ['PENDING_AUTHORIZATION', 'READY_FOR_AUTHORIZATION'].includes(status)),
+      state_integrity_recovery_required: target?.status_valid === false,
+      recovery_action: target?.recovery_action ?? null,
       commands_executable_now: commandsExecutableNow(target),
       post_authorization_sequence: sequence,
       external_evidence_request_path: EVIDENCE_REQUEST_PATH,
@@ -270,6 +288,10 @@ export function buildImplementationWorkPackage({
     control_equivalence: {
       automatic_authorization: false,
       automatic_evidence_fabrication: false,
+      mutating_entrypoint: coordinatedStatus?.operationalContract?.mutatingEntrypoint
+        ?? 'docs:implementation:advance',
+      direct_lifecycle_entrypoints_enabled:
+        coordinatedStatus?.operationalContract?.directLifecycleEntrypointsEnabled ?? false,
       assistant_repository_writes: operatorPolicy.assistantRepositoryWrites ?? false,
       assistant_validation_execution: operatorPolicy.assistantValidationExecution ?? false,
       assistant_git_operations: operatorPolicy.assistantGitOperations ?? false,
@@ -307,7 +329,7 @@ export function renderImplementationWorkPackageMarkdown(model) {
   const validations = target?.validation_commands?.length > 0
     ? target.validation_commands.map((command) => `- \`${command}\``).join('\n')
     : '- Ninguna validacion fisica autorizada todavia.';
-  return `# VENTO Implementation Work Package\n\n- Model: \`${model.model_id}\`\n- Current package: \`${model.current_package ?? 'NONE'}\`\n- Target instance: \`${target?.instance_id ?? 'NONE'}\`\n- Target status: \`${target?.status ?? 'NONE'}\`\n- Comparison status: \`${model.efficiency_baseline.comparison_status}\`\n- Fingerprint: \`${model.fingerprint_sha256}\`\n\n## Alcance fisico exacto\n\n| Repo | Path | Change | Scope |\n| --- | --- | --- | --- |\n${changeRows}\n\n## Validaciones declaradas\n\n${validations}\n\n## Comandos ejecutables ahora\n\n${currentCommands}\n\n## Gates humanos preservados\n\n1. Autorizacion explicita de la instancia.\n2. Materializacion fisica dentro del alcance autorizado.\n3. Evidencia externa u operacional real.\n\n## Linea base representativa\n\n- Reference instance: \`${reference?.instance_id ?? 'NONE'}\`\n- Reference validations: ${reference?.validation_command_count ?? 'N/A'}\n- Reference evidence entries: ${reference?.evidence?.total_entries ?? 'N/A'}\n- Accelerated CLI invocations from AUTHORIZED to VERIFIED: ${model.efficiency_baseline.accelerated_cli_invocations_from_authorized_to_verified ?? 'N/A'}\n- Validation time comparison: \`${model.efficiency_baseline.validation_time_comparison_status}\`\n- Validation gates skipped: ${model.efficiency_baseline.validation_gates_skipped}\n\nEste artefacto deriva el trabajo operativo. No autoriza cambios, no fabrica evidencia y no altera el orden canonico.\n`;
+  return `# VENTO Implementation Work Package\n\n- Model: \`${model.model_id}\`\n- Current package: \`${model.current_package ?? 'NONE'}\`\n- Target instance: \`${target?.instance_id ?? 'NONE'}\`\n- Target declared status: \`${target?.declared_status ?? 'NONE'}\`\n- Target effective status: \`${target?.status ?? 'NONE'}\`\n- State integrity valid: \`${target ? (target.status_valid ? 'YES' : 'NO') : 'N/A'}\`\n- Recovery action: \`${target?.recovery_action ?? 'NONE'}\`\n- Comparison status: \`${model.efficiency_baseline.comparison_status}\`\n- Fingerprint: \`${model.fingerprint_sha256}\`\n\n## Alcance fisico exacto\n\n| Repo | Path | Change | Scope |\n| --- | --- | --- | --- |\n${changeRows}\n\n## Validaciones declaradas\n\n${validations}\n\n## Comandos ejecutables ahora\n\n${currentCommands}\n\n## Gates humanos preservados\n\n1. Autorizacion explicita de la instancia.\n2. Materializacion fisica dentro del alcance autorizado.\n3. Evidencia externa u operacional real.\n\n## Linea base representativa\n\n- Reference instance: \`${reference?.instance_id ?? 'NONE'}\`\n- Reference validations: ${reference?.validation_command_count ?? 'N/A'}\n- Reference evidence entries: ${reference?.evidence?.total_entries ?? 'N/A'}\n- Accelerated CLI invocations from AUTHORIZED to VERIFIED: ${model.efficiency_baseline.accelerated_cli_invocations_from_authorized_to_verified ?? 'N/A'}\n- Validation time comparison: \`${model.efficiency_baseline.validation_time_comparison_status}\`\n- Validation gates skipped: ${model.efficiency_baseline.validation_gates_skipped}\n\nEste artefacto deriva el trabajo operativo. No autoriza cambios, no fabrica evidencia y no altera el orden canonico.\n`;
 }
 
 function validateFingerprint(model) {

@@ -66,3 +66,10 @@ test('lifecycle reconcilia proyecciones derivadas sin ocultar cambios reales', (
         /detectó cambios locales reales fuera del alcance/u,
     );
 });
+
+test('publish de correccion usa commit-scope semantico de correction/*', () => {
+    const source = fs.readFileSync('scripts/docs/correction-branch-lifecycle.mjs', 'utf8');
+    assert.match(source, /docs:commit-scope:check/u);
+    assert.match(source, /--correction-head-ref/u);
+    assert.match(source, /origin\/\$\{DEFAULT_BRANCH\}\.\.HEAD/u);
+});

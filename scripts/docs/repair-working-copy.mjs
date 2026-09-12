@@ -5,6 +5,12 @@ import { fileURLToPath } from 'node:url';
 
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
+
+export const REPAIR_WORKING_COPY_POLICY = Object.freeze({
+  orchestration: 'COORDINATOR_EXACT_CANDIDATE_RECEIPT',
+  idempotentByCandidateFingerprint: true,
+  destructiveGitOperations: false,
+});
 const TEXT_EXTENSIONS = new Set([
   '.cjs',
   '.css',
@@ -259,6 +265,7 @@ export function repairWorkingCopy({ root = process.cwd() } = {}) {
   ]);
 
   return Object.freeze({
+    policy: REPAIR_WORKING_COPY_POLICY,
     before: Object.freeze(before),
     after: Object.freeze(after),
     normalizedFiles: Object.freeze([...normalizedFiles].sort()),

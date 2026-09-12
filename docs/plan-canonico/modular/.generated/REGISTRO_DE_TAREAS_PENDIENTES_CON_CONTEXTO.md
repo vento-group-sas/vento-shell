@@ -8,22 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-014`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-019`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-014`
+### 1. Correcciones canónicas
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
-- **Edita solamente:**
-  - Ningún cambio autorizado todavía.
-- **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-019`
 
@@ -48,11 +39,605 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-020::GAP-PKG-018` — `PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+- `SHELL-CI-020::GAP-PKG-001` — declared=`VERIFIED` — effective=`IN_PROGRESS` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
   - Contrato: Implementar y desplegar cada paquete aprobado por E5
+  - Integridad: `INVALID`
+  - Recovery: `RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-001.json`
+- `SHELL-CI-021::GAP-PKG-001` — declared=`VERIFIED` — effective=`AUTHORIZED` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Ejecutar y resolver el checklist de readiness aprobado
+  - Integridad: `INVALID`
+  - Recovery: `RECONCILE_DECLARED_STATUS_TO_AUTHORIZED_THEN_START_IMPLEMENTATION_BRANCH`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-001.json`
+- `SHELL-CON-001::GLOBAL` — declared=`VERIFIED` — effective=`AUTHORIZED` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear @vento/contracts
+  - Integridad: `INVALID`
+  - Recovery: `RECONCILE_DECLARED_STATUS_TO_AUTHORIZED_THEN_START_IMPLEMENTATION_BRANCH`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-001__GLOBAL.json`
+- `AUTH-DB-001::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Corregir tablas sin RLS identificadas en SUPA-AUD
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-001__GLOBAL.json`
+- `AUTH-DB-002::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Endurecer políticas RLS demasiado amplias aprobadas para corrección
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-002__GLOBAL.json`
+- `AUTH-DB-003::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Endurecer funciones SECURITY DEFINER aprobadas
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-003__GLOBAL.json`
+- `AUTH-DB-004::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Reducir grants innecesarios de authenticated
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-004__GLOBAL.json`
+- `AUTH-DB-005::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Revocar grants innecesarios de anon
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-005__GLOBAL.json`
+- `AUTH-DB-012::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar auditoría de cambios de permisos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-012__GLOBAL.json`
+- `AUTH-DB-013::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar auditoría de simulación
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-013__GLOBAL.json`
+- `AUTH-DB-014::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar auditoría de dispositivos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-014__GLOBAL.json`
+- `AUTH-DB-015::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Documentar y versionar todas las migraciones en vento-shell
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-015__GLOBAL.json`
+- `AUTH-DB-016::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear esquemas empresariales aprobados
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-016__GLOBAL.json`
+- `AUTH-DB-017::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Configurar esquemas expuestos y privilegios de Data API
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-017__GLOBAL.json`
+- `AUTH-DB-018::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Separar vistas y RPC expuestas de helpers internos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-018__GLOBAL.json`
+- `AUTH-DB-019::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar vínculos canónicos entre Auth e identidades empresariales
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-019__GLOBAL.json`
+- `AUTH-DB-027::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear harness de pruebas de esquema, integridad, RLS, RPC y migraciones
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-027__GLOBAL.json`
+- `AUTH-DB-028::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Establecer baseline y control de drift entre local, staging y producción
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-028__GLOBAL.json`
+- `AUTH-DB-029::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Validar respaldo, restauración y rollback antes del primer paquete
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-029__GLOBAL.json`
+- `AUTH-DB-032::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar persistencia canónica y vinculación de decisiones de autorización
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-032__GLOBAL.json`
+- `AUTH-DB-033::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar get_access_context canónico, sus resolvers privados y su proyección segura
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-033__GLOBAL.json`
+- `AUTH-DB-034::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar evaluate_authorization canónico, su núcleo de evaluación, resolvers de recurso y proyecciones seguras
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-034__GLOBAL.json`
+- `AUTH-DB-035::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Implementar token transaccional de frescura e invalidación del contexto
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-035__GLOBAL.json`
+- `AUTH-DB-036::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Materializar autoridad organizacional raíz para organization_id
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/AUTH-DB-036__GLOBAL.json`
+- `SHELL-CI-001::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear pruebas de paquetes compartidos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-001__GLOBAL.json`
+- `SHELL-CI-002::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear build independiente por paquete
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-002__GLOBAL.json`
+- `SHELL-CI-003::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear releases versionados
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-003__GLOBAL.json`
+- `SHELL-CI-004::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear changelog automático
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-004__GLOBAL.json`
+- `SHELL-CI-005::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear matriz de compatibilidad
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-005__GLOBAL.json`
+- `SHELL-CI-006::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear actualización de consumidores mediante PR
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-006__GLOBAL.json`
+- `SHELL-CI-007::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar NEXO antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-007__GLOBAL.json`
+- `SHELL-CI-008::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar FOGO antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-008__GLOBAL.json`
+- `SHELL-CI-009::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar ORIGO antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-009__GLOBAL.json`
+- `SHELL-CI-010::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar PULSO antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-010__GLOBAL.json`
+- `SHELL-CI-011::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar VISO antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-011__GLOBAL.json`
+- `SHELL-CI-012::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar NUMERA antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-012__GLOBAL.json`
+- `SHELL-CI-013::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar ANIMA antes de actualizar
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-013__GLOBAL.json`
+- `SHELL-CI-014::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Permitir rollback por repositorio
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-014__GLOBAL.json`
+- `SHELL-CI-015::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Evitar despliegue simultáneo obligatorio
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-015__GLOBAL.json`
+- `SHELL-CI-016::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Estandarizar un comando de pruebas automatizadas por repositorio
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-016__GLOBAL.json`
+- `SHELL-CI-017::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear verificador automático del Registro Canónico de Requisitos de Prueba
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-017__GLOBAL.json`
+- `SHELL-CI-018::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Bloquear merge o despliegue cuando fallen pruebas obligatorias
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-018__GLOBAL.json`
+- `SHELL-CI-019::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Publicar evidencia de pruebas por paquete y repositorio
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-019__GLOBAL.json`
+- `SHELL-CON-002::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar códigos de aplicaciones
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-002__GLOBAL.json`
+- `SHELL-CON-003::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar códigos de permisos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-003__GLOBAL.json`
+- `SHELL-CON-004::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar roles base
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-004__GLOBAL.json`
+- `SHELL-CON-005::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar roles operativos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-005__GLOBAL.json`
+- `SHELL-CON-006::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar scopes
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-006__GLOBAL.json`
+- `SHELL-CON-007::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar tipos de contexto
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-007__GLOBAL.json`
+- `SHELL-CON-008::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar códigos de error
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-008__GLOBAL.json`
+- `SHELL-CON-009::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar identificadores de procesos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-009__GLOBAL.json`
+- `SHELL-CON-010::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar estados de procesos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-010__GLOBAL.json`
+- `SHELL-CON-011::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar identificadores de pantallas
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-011__GLOBAL.json`
+- `SHELL-CON-012::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de acciones funcionales
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-012__GLOBAL.json`
+- `SHELL-CON-013::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de eventos empresariales
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-013__GLOBAL.json`
+- `SHELL-CON-014::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de traspasos entre aplicaciones
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-014__GLOBAL.json`
+- `SHELL-CON-015::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de tareas pendientes
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-015__GLOBAL.json`
+- `SHELL-CON-016::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de propiedad funcional
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-016__GLOBAL.json`
+- `SHELL-CON-017::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de principal técnico de integración
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-017__GLOBAL.json`
+- `SHELL-CON-018::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de referencia de credencial externa sin incluir el secreto
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-018__GLOBAL.json`
+- `SHELL-CON-019::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de evento externo recibido
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-019__GLOBAL.json`
+- `SHELL-CON-020::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato canónico de venta
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-020__GLOBAL.json`
+- `SHELL-CON-021::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato canónico de línea de venta
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-021__GLOBAL.json`
+- `SHELL-CON-022::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de mapeo de identificadores externos
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-022__GLOBAL.json`
+- `SHELL-CON-023::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de idempotencia y conciliación
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-023__GLOBAL.json`
+- `SHELL-CON-024::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear contrato de cuarentena, rechazo y compensación
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CON-024__GLOBAL.json`
+- `SHELL-DB-001::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear @vento/supabase
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-DB-001__GLOBAL.json`
+- `SHELL-DB-004::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Normalizar errores de Supabase
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-DB-004__GLOBAL.json`
+- `SHELL-DB-005::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Separar cliente server, browser y native
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-DB-005__GLOBAL.json`
+- `SHELL-NORM-001::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear `@vento/data-normalization`
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-001__GLOBAL.json`
+- `SHELL-NORM-002::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar tipos de campo normalizable
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-002__GLOBAL.json`
+- `SHELL-NORM-003::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar reglas de espacios, Unicode y capitalización
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-003__GLOBAL.json`
+- `SHELL-NORM-004::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar conectores y excepciones
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-004__GLOBAL.json`
+- `SHELL-NORM-005::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Centralizar diccionarios ortográficos versionados
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-005__GLOBAL.json`
+- `SHELL-NORM-006::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear normalización de búsqueda y comparación
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-006__GLOBAL.json`
+- `SHELL-NORM-007::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear previsualización de transformaciones
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-007__GLOBAL.json`
+- `SHELL-NORM-008::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear metadatos de versión y auditoría de reglas
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-008__GLOBAL.json`
+- `SHELL-NORM-009::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Probar idempotencia y conservación semántica
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-NORM-009__GLOBAL.json`
+- `SHELL-UI-001::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Crear @vento/ui-web
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-001__GLOBAL.json`
+- `SHELL-UI-002::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir Alert
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-002__GLOBAL.json`
+- `SHELL-UI-003::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir Button
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-003__GLOBAL.json`
+- `SHELL-UI-004::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir Card
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-004__GLOBAL.json`
+- `SHELL-UI-005::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir EmptyState
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-005__GLOBAL.json`
+- `SHELL-UI-006::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir indicador de contexto
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-006__GLOBAL.json`
+- `SHELL-UI-007::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir selector de sede
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-007__GLOBAL.json`
+- `SHELL-UI-008::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir selector de área
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-008__GLOBAL.json`
+- `SHELL-UI-009::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir aviso de rol simulado
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-009__GLOBAL.json`
+- `SHELL-UI-010::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Evaluar AppShell compartido
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-010__GLOBAL.json`
+- `SHELL-UI-011::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir navegación orientada a tareas
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-011__GLOBAL.json`
+- `SHELL-UI-012::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir línea de estados de proceso
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-012__GLOBAL.json`
+- `SHELL-UI-013::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir panel de acción principal
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-013__GLOBAL.json`
+- `SHELL-UI-014::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir confirmaciones de acciones sensibles
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-014__GLOBAL.json`
+- `SHELL-UI-015::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir diagnóstico de contexto
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-015__GLOBAL.json`
+- `SHELL-UI-016::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir estados de error recuperable
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-016__GLOBAL.json`
+- `SHELL-UI-017::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir patrón para tablet
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-017__GLOBAL.json`
+- `SHELL-UI-018::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir patrón para kiosco
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-018__GLOBAL.json`
+- `SHELL-UI-019::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir patrón de proceso interrumpido
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-019__GLOBAL.json`
+- `SHELL-UI-020::GLOBAL` — declared=`VERIFIED` — effective=`WAITING_FOR_PREVIOUS_INSTANCE` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
+  - Contrato: Compartir patrón de traspaso entre aplicaciones
+  - Integridad: `INVALID`
+  - Recovery: `WAIT_FOR_PREVIOUS_INSTANCE:SHELL-CON-001::GLOBAL`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-UI-020__GLOBAL.json`
+- `SHELL-CI-020::GAP-PKG-018` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+  - Contrato: Implementar y desplegar cada paquete aprobado por E5
+  - Integridad: `VALID`
+  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-020::GAP-PKG-018`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json`
-- `SHELL-CI-022::GAP-PKG-001` — `PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+- `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
   - Contrato: Ejecutar cutover y piloto conforme al plan aprobado
+  - Integridad: `VALID`
+  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-022::GAP-PKG-001`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json`
 
 ## Panel de control — dos carriles
@@ -60,7 +645,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-DOM-014` — Definir kits, conjuntos y validación de completitud | `NEXO-DOM-015` — Definir conteos de activos, reutilizables y contenedores | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-018` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `SHELL-CI-020::GAP-PKG-001` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-021::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -69,23 +654,37 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1180/1596 aprobadas** | **416** no aprobadas (0 propuesta, 0 rechazadas) | `NEXO-DOM-014` |
-| 🟧 **Implementación física conocida** | **98/100 VERIFIED** | **2** no terminales | `SHELL-CI-020::GAP-PKG-018` |
+| 🟧 **Implementación física conocida** | **0/100 VERIFIED** | **100** no terminales | `SHELL-CI-020::GAP-PKG-001` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-018`
-- **Instancias físicas en espera de predecesora:** **0**
+- **Puntero de compatibilidad del control de instancias:** `RECONCILE_IMPLEMENTATION_STATE_INTEGRITY` — `SHELL-CI-020::GAP-PKG-001`
+- **Entrada mutante normal:** `docs:implementation:advance`
+- **Estado físico declarado:** `VERIFIED`
+- **Estado físico efectivo:** `IN_PROGRESS`
+- **Recovery físico:** `RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
+- **Instancias físicas en espera de predecesora:** **95**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
 ### 🟧 Cola física visible
 
 > Muestra hasta 12 instancias físicas no terminales conocidas por el control. No crea autorizaciones ni materializa instancias futuras por inferencia.
 
-| # | Posición | Instancia | Contrato | Estado | Condición |
-| ---: | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-018` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
-| 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
+| ---: | --- | --- | --- | --- | --- | --- |
+| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-001` | Implementar y desplegar cada paquete aprobado por E5 | `VERIFIED` | `IN_PROGRESS` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 2 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-001` | Ejecutar y resolver el checklist de readiness aprobado | `VERIFIED` | `AUTHORIZED` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 3 | **EN CURSO** | `SHELL-CON-001::GLOBAL` | Crear @vento/contracts | `VERIFIED` | `AUTHORIZED` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 4 | **EN CURSO** | `AUTH-DB-001::GLOBAL` | Corregir tablas sin RLS identificadas en SUPA-AUD | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 5 | **EN CURSO** | `AUTH-DB-002::GLOBAL` | Endurecer políticas RLS demasiado amplias aprobadas para corrección | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 6 | **EN CURSO** | `AUTH-DB-003::GLOBAL` | Endurecer funciones SECURITY DEFINER aprobadas | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 7 | **EN CURSO** | `AUTH-DB-004::GLOBAL` | Reducir grants innecesarios de authenticated | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 8 | **EN CURSO** | `AUTH-DB-005::GLOBAL` | Revocar grants innecesarios de anon | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 9 | **EN CURSO** | `AUTH-DB-012::GLOBAL` | Implementar auditoría de cambios de permisos | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 10 | **EN CURSO** | `AUTH-DB-013::GLOBAL` | Implementar auditoría de simulación | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 11 | **EN CURSO** | `AUTH-DB-014::GLOBAL` | Implementar auditoría de dispositivos | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 12 | **EN CURSO** | `AUTH-DB-015::GLOBAL` | Documentar y versionar todas las migraciones en vento-shell | `VERIFIED` | `WAITING_FOR_PREVIOUS_INSTANCE` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
 
 ## Modos de trabajo y materialización
 

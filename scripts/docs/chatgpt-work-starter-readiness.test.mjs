@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildReadinessChatgptWorkStarter,
   injectReadinessIntoSources,
   renderReadinessStarterBlock,
   stableReadinessStarterProjection,
@@ -146,4 +147,48 @@ test('el starter diferencia CURRENT_PACKAGE de CURRENT_EXECUTABLE_WORK para fund
   assert.match(block, /CURRENT_EXECUTABLE_WORK: MRP015-000/u);
   assert.match(block, /CURRENT_EXECUTABLE_WORK_KIND: FOUNDATION_GATE/u);
   assert.match(block, /BLOCKED_CONSUMER_PACKAGE: NEXO-PACKAGE-001/u);
+});
+
+// C5_STARTER_UNIFIED_OPERATIONAL_CONTRACT
+test('starter proyecta advance como unica entrada mutante y distingue estado declarado de efectivo', () => {
+  const block = renderReadinessStarterBlock({
+    readiness: readiness(),
+    lane: 'PHYSICAL_IMPLEMENTATION',
+    coordinated: {
+      ...coordinated,
+      operationalContract: {
+        modelId: 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1',
+        stateIntegrityModelId: 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1',
+        mutatingEntrypoint: 'docs:implementation:advance',
+        directLifecycleEntrypointsEnabled: false,
+        active: {
+          instanceId: 'SHELL-CI-022::GAP-PKG-001',
+          declaredStatus: 'VERIFIED',
+          effectiveStatus: 'IN_PROGRESS',
+          statusValid: false,
+          recoveryAction: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS',
+        },
+      },
+    },
+  });
+
+  assert.match(block, /UNIFIED OPERATIONAL CONTRACT/u);
+  assert.match(block, /Mutating entrypoint: docs:implementation:advance/u);
+  assert.match(block, /Direct lifecycle entrypoints: DISABLED/u);
+  assert.match(block, /Declared status: VERIFIED/u);
+  assert.match(block, /Effective status: IN_PROGRESS/u);
+  assert.match(block, /State integrity valid: NO/u);
+
+  const built = buildReadinessChatgptWorkStarter({
+    root: '/repo',
+    readinessResult: readiness(),
+    baseResult,
+    baseControl: {
+      primaryAction: { type: 'DOCUMENTAR_TAREA', target: 'DOC-001' },
+      physical: { active: null, instances: [], actionableSet: [], activeSet: [], authorized: [] },
+    },
+  });
+  assert.match(built.implementationSource, /UNIFIED OPERATIONAL CONTRACT/u);
+  assert.match(built.implementationSource, /Mutating entrypoint: docs:implementation:advance/u);
+  assert.match(built.implementationSource, /Direct lifecycle entrypoints: DISABLED/u);
 });

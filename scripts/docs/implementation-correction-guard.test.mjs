@@ -43,12 +43,18 @@ test('guard bloquea únicamente cuando CORR declara la instancia o la tarea', ()
     );
 });
 
-test('package.json enruta docs:implementation:start por el guard de correcciones', () => {
+test('advance es la entrada mutante normal y start conserva un shim fail-closed', () => {
     const manifest = JSON.parse(fs.readFileSync('package.json', 'utf8'));
+    assert.equal(
+        manifest.scripts['docs:implementation:advance'],
+        'node scripts/docs/implementation-execution-coordinator.mjs advance',
+    );
     assert.equal(
         manifest.scripts['docs:implementation:start'],
         'node scripts/docs/implementation-correction-guard.mjs start',
     );
+    const guard = fs.readFileSync('scripts/docs/implementation-correction-guard.mjs', 'utf8');
+    assert.match(guard, /rejectDirectImplementationLifecycleEntry\('START'\)/u);
 });
 
 test('SHELL-CI-020 no puede iniciar mientras CURRENT_EXECUTABLE_WORK sea una fundación', () => {
