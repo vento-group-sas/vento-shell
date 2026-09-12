@@ -3,8 +3,10 @@ import fs from 'node:fs';
 import test from 'node:test';
 
 import {
+  IMPLEMENTATION_MUTATING_ENTRYPOINT,
   IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID,
   evaluateImplementationStateIntegrity,
+  rejectDirectImplementationLifecycleEntry,
 } from './implementation-state-integrity.mjs';
 
 const baseInstance = (status) => ({
@@ -146,4 +148,28 @@ test('coordinador y lifecycle imponen integridad antes de transiciones mutantes'
   assert.match(lifecycle, /assertLifecycleStateIntegrity\(root, instance, 'AUTHORIZED'\)/u);
   assert.match(lifecycle, /assertLifecycleStateIntegrity\(root, instance, 'IMPLEMENTED'\)/u);
   assert.match(lifecycle, /assertLifecycleStateIntegrity\(root, instance, 'VERIFIED'\)/u);
+});
+
+test('advance es la unica entrada mutante normal', () => {
+  assert.equal(IMPLEMENTATION_MUTATING_ENTRYPOINT, 'docs:implementation:advance');
+  for (const entry of ['START', 'PREVERIFY', 'FINISH']) {
+    assert.throws(
+      () => rejectDirectImplementationLifecycleEntry(entry),
+      new RegExp(`DIRECT_IMPLEMENTATION_ENTRY_DISABLED:${entry}`, 'u'),
+    );
+  }
+
+  const coordinator = fs.readFileSync('scripts/docs/implementation-execution-coordinator.mjs', 'utf8');
+  const lifecycle = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+  const guard = fs.readFileSync('scripts/docs/implementation-correction-guard.mjs', 'utf8');
+
+  assert.match(coordinator, /startImplementationGuarded/u);
+  assert.match(coordinator, /preverifyImplementation/u);
+  assert.match(coordinator, /finishImplementation/u);
+  assert.match(coordinator, /await runCanonicalLifecycle/u);
+  assert.doesNotMatch(coordinator, /npm\(\[\s*'run', '--silent', scriptName/u);
+  assert.match(guard, /rejectDirectImplementationLifecycleEntry\('START'\)/u);
+  assert.match(lifecycle, /rejectDirectImplementationLifecycleEntry\(args\.mode\)/u);
+  assert.match(lifecycle, /docs:implementation:advance -- --instance-id/u);
+  assert.doesNotMatch(lifecycle, /console\.log\('  npm run docs:implementation:start/u);
 });

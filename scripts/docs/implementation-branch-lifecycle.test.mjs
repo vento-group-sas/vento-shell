@@ -323,24 +323,40 @@ test('docs:plan:build materializa la siguiente instancia pendiente antes del cor
   assert.ok(finalControl > coreBuild);
 });
 
-test('package.json expone el lifecycle fisico protegido y docs:plan:test lo autocertifica', () => {
+test('package.json conserva shims legacy fail-closed y advance como unica entrada mutante normal', () => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const guardSource = fs.readFileSync('scripts/docs/implementation-correction-guard.mjs', 'utf8');
+  const lifecycleSource = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+
+  assert.equal(
+    packageJson.scripts['docs:implementation:advance'],
+    'node scripts/docs/implementation-execution-coordinator.mjs advance',
+  );
   assert.equal(
     packageJson.scripts['docs:implementation:start'],
     'node scripts/docs/implementation-correction-guard.mjs start',
   );
   assert.equal(
+    packageJson.scripts['docs:implementation:preverify'],
+    'node scripts/docs/implementation-branch-lifecycle.mjs preverify',
+  );
+  assert.equal(
     packageJson.scripts['docs:implementation:finish'],
     'node scripts/docs/implementation-branch-lifecycle.mjs finish',
   );
-  const guardCheck = guardSource.indexOf('assertImplementationStartNotBlocked({ instanceId: args.instanceId });');
-  const lifecycleDelegation = guardSource.indexOf(
-    'return startImplementation({ instanceId: args.instanceId });',
-    guardCheck,
-  );
-  assert.ok(guardCheck >= 0);
-  assert.ok(lifecycleDelegation > guardCheck);
+
+  const internalEntry = guardSource.indexOf('export function startImplementationGuarded');
+  const guardedCheck = guardSource.indexOf('assertImplementationStartNotBlocked({ root, instanceId });', internalEntry);
+  const internalDelegation = guardSource.indexOf('return startImplementation({ root, instanceId });', guardedCheck);
+  assert.ok(internalEntry >= 0);
+  assert.ok(guardedCheck > internalEntry);
+  assert.ok(internalDelegation > guardedCheck);
+
+  assert.match(guardSource, /rejectDirectImplementationLifecycleEntry\('START'\)/u);
+  assert.doesNotMatch(guardSource, /assertImplementationStartNotBlocked\(\{ instanceId: args\.instanceId \}\)/u);
+  assert.match(lifecycleSource, /rejectDirectImplementationLifecycleEntry\(args\.mode\)/u);
+  assert.match(lifecycleSource, /docs:implementation:advance -- --instance-id/u);
+
   assert.match(
     guardSource,
     /import \{ startImplementation \} from '\.\/implementation-branch-lifecycle\.mjs';/u,

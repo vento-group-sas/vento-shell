@@ -27,6 +27,7 @@ import {
 import {
   assessImplementationStateIntegrity,
   formatImplementationStateIntegrityViolation,
+  rejectDirectImplementationLifecycleEntry,
 } from './implementation-state-integrity.mjs';
 
 const DEFAULT_BRANCH = 'main';
@@ -1198,9 +1199,8 @@ function parseArgs(argv) {
 
 function usage() {
   console.log('Uso:');
-  console.log('  npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL');
-  console.log('  npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL');
-  console.log('  npm run docs:implementation:preverify -- --instance-id SHELL-CON-001::GLOBAL');
+  console.log('  npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL');
+  console.log('  start/preverify/finish directos son compatibilidad legacy y fallan cerrado.');
   console.log('');
   console.log('START exige registro AUTHORIZED, trata continuidad/formato documentales historicos como advisory, crea o recupera implementation/<task-id>/<instance-key>, cambia a IN_PROGRESS, ejecuta el preflight fisico estricto una sola vez y reconcilia derivados con docs:plan:build + docs:plan:check antes de permitir codigo.');
   console.log('FINISH exige VERIFIED, valida alcance exacto desde authorized_changes, admite solo proyecciones derivadas controladas, reanuda post-commit/post-PR/post-merge sin force-push, espera CI, mergea, sincroniza main y limpia la rama.');
@@ -1214,6 +1214,7 @@ async function main() {
   }
   if (!['start', 'preverify', 'finish'].includes(args.mode)) fail('Modo requerido: start, preverify o finish.');
   if (!args.instanceId) fail('Falta --instance-id.');
+  rejectDirectImplementationLifecycleEntry(args.mode);
 
   if (args.mode === 'start') startImplementation({ instanceId: args.instanceId });
   else if (args.mode === 'preverify') preverifyImplementation({ instanceId: args.instanceId });

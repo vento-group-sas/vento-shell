@@ -5,9 +5,12 @@ import { spawnSync } from 'node:child_process';
 
 import {
   assertImplementationPaths,
+  finishImplementation,
   implementationBranchName,
   normalizeInstanceId,
+  preverifyImplementation,
 } from './implementation-branch-lifecycle.mjs';
+import { startImplementationGuarded } from './implementation-correction-guard.mjs';
 import {
   assessImplementationStateIntegrity,
   formatImplementationStateIntegrityViolation,
@@ -269,10 +272,17 @@ function writablePhysicalPaths(instance) {
   );
 }
 
-function runCanonicalLifecycle(root, scriptName, instanceId) {
-  npm([
-    'run', '--silent', scriptName, '--', '--instance-id', instanceId,
-  ], { cwd: root, inherit: true });
+async function runCanonicalLifecycle(root, scriptName, instanceId) {
+  if (scriptName === 'docs:implementation:start') {
+    return startImplementationGuarded({ root, instanceId });
+  }
+  if (scriptName === 'docs:implementation:preverify') {
+    return preverifyImplementation({ root, instanceId });
+  }
+  if (scriptName === 'docs:implementation:finish') {
+    return finishImplementation({ root, instanceId });
+  }
+  fail(`Lifecycle interno desconocido: ${scriptName}.`);
 }
 
 function runValidationCommand(root, command) {
@@ -835,7 +845,7 @@ async function sealVerifiedEvidence({
     console.log(`[VALIDATION ENGINE] ${id}: PREVERIFY reutilizado por fingerprint exacto del candidato.`);
   } else {
     console.log(`[VALIDATION ENGINE] ${id}: PREVERIFY no reutilizable (${preverifyReceipt.reason}); se ejecuta completo.`);
-    runCanonicalLifecycle(root, 'docs:implementation:preverify', id);
+    await runCanonicalLifecycle(root, 'docs:implementation:preverify', id);
   }
 
   const candidateCommit = currentHead(root);
@@ -951,7 +961,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   }
 
   if (state === 'START') {
-    runCanonicalLifecycle(root, 'docs:implementation:start', instanceId);
+    await runCanonicalLifecycle(root, 'docs:implementation:start', instanceId);
     instance = resolveInstance(root, instanceId).instance;
     assertCoordinatorStateIntegrity(root, instance);
     state = classifyExecutionState(instance);
@@ -989,7 +999,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
     ensureCurrentMainContained(root, instance);
 
     if (!evidenceFile) {
-      runCanonicalLifecycle(root, 'docs:implementation:preverify', instanceId);
+      await runCanonicalLifecycle(root, 'docs:implementation:preverify', instanceId);
       const refreshedAfterPreverify = resolveInstance(root, instanceId).instance;
       const candidateState = candidateValidationState(root, refreshedAfterPreverify);
       const candidateCommit = candidateState.candidateCommit;
@@ -1044,7 +1054,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       evidenceFile,
       certification: safeSelectiveCertification,
     });
-    runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
+    await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
     printResult({
       ESTADO: 'PASS',
       OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE',
@@ -1062,7 +1072,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   }
 
   if (state === 'FINISH') {
-    runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
+    await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
     printResult({
       ESTADO: 'PASS',
       OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE',

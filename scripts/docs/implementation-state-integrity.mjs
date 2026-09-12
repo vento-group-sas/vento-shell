@@ -4,6 +4,15 @@ import { validateInPackageCandidateEvidence } from './package-readiness-scanner.
 
 export const IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID = 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1';
 
+export const IMPLEMENTATION_MUTATING_ENTRYPOINT = 'docs:implementation:advance';
+
+export function rejectDirectImplementationLifecycleEntry(entry) {
+  const normalized = String(entry ?? 'UNKNOWN').trim().toUpperCase() || 'UNKNOWN';
+  throw new Error(
+    `DIRECT_IMPLEMENTATION_ENTRY_DISABLED:${normalized}; use ${IMPLEMENTATION_MUTATING_ENTRYPOINT}.`,
+  );
+}
+
 const STATUS_ORDER = Object.freeze([
   'PENDING_AUTHORIZATION',
   'AUTHORIZED',
