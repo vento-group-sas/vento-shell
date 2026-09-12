@@ -24,6 +24,10 @@ import {
   scanPackageReadiness,
   validateInPackageCandidateEvidence,
 } from './package-readiness-scanner.mjs';
+import {
+  assessImplementationStateIntegrity,
+  formatImplementationStateIntegrityViolation,
+} from './implementation-state-integrity.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const IMPLEMENTATION_PREFIX = 'implementation/';
@@ -366,6 +370,14 @@ export function assertCi020PhysicalPrerequisitesForFinish({
   return true;
 }
 
+function assertLifecycleStateIntegrity(root, instance, expectedStatus) {
+  const integrity = assessImplementationStateIntegrity({ root, instance });
+  if (!integrity.status_valid || integrity.declared_status !== expectedStatus) {
+    fail(`STATE_INTEGRITY_VIOLATION | expected=${expectedStatus} | ${formatImplementationStateIntegrityViolation(instance.instance_id, integrity)}`);
+  }
+  return integrity;
+}
+
 function normalizeRepoPath(value) {
   return String(value ?? '').replaceAll('\\', '/').replace(/^\.\//u, '');
 }
@@ -674,6 +686,7 @@ function ensureBranchReadyForStart(root, branch) {
 
 export function startImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
+  assertLifecycleStateIntegrity(root, instance, 'AUTHORIZED');
   assertInstanceCanStart(instance);
 
   const recordPath = instanceRecordRelativePath(id);
@@ -968,6 +981,7 @@ function cleanupBranch(root, branch) {
 
 export function preverifyImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
+  assertLifecycleStateIntegrity(root, instance, 'IMPLEMENTED');
   if (instance.status !== 'IMPLEMENTED' || instance.authorization?.decision !== 'APPROVED') {
     fail(`${id}: PREVERIFY exige IMPLEMENTED y autorización APPROVED; no modifica el estado.`);
   }
@@ -986,6 +1000,7 @@ export function preverifyImplementation({ instanceId, root = ensureRepositoryRoo
 
 export async function finishImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
+  assertLifecycleStateIntegrity(root, instance, 'VERIFIED');
   assertInstanceCanFinish(instance);
 
   if (

@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-018",
@@ -18,12 +18,205 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.mjs",
+      "change": "CREATE",
+      "scope": "Crear el evaluador compartido de integridad de estados físicos y recuperación segura."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir invariantes, degradación lógica, evidencia stale, grandfathering y enforcement del evaluador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Imponer integridad antes de clasificar o mutar el lifecycle físico y evolucionar hacia advance como entrada normal única."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir enforcement, secuencia única, resumibilidad y regresiones del coordinador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Imponer integridad antes de start, preverify y finish y reconciliar cierre seguro."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir guards de integridad y cierre físico seguro."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "MODIFY",
+      "scope": "Alinear el guard de implementación con el coordinador y el contrato operativo corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir el guard corregido sin bypass del coordinador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.mjs",
+      "change": "MODIFY",
+      "scope": "Unificar el work package con el contrato operativo y el estado efectivo del motor."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir proyección del work package bajo el motor corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Alinear readiness con estado efectivo y continuidad física corregida."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir readiness bajo estados válidos, inválidos y recuperables."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.mjs",
+      "change": "MODIFY",
+      "scope": "Alinear validación de instancias con el contrato corregido sin aceptar evidencia genérica como fase válida."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir invariantes de control para estados físicos corregidos."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar el contrato operativo corregido en readiness del iniciador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir readiness del iniciador bajo el motor corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar la continuidad física corregida sin comandos mutantes competidores."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la proyección corregida del iniciador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "MODIFY",
+      "scope": "Alinear artefactos derivados de readiness con el estado efectivo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir artefactos de readiness bajo el estado efectivo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-validation-engine.mjs",
+      "change": "MODIFY",
+      "scope": "Reconciliar fingerprint y reutilización de validación con la política de reparación única por candidato."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "MODIFY",
+      "scope": "Hacer explícita la reparación única por fingerprint del candidato sin rebaseline por stash."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir idempotencia y reparación única por fingerprint."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/sync-pending-task-context.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar estado efectivo y recuperación sin tratar status bruto imposible como ejecutable."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/sync-pending-task-context.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir proyección de estados físicos inválidos y recuperables."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Unificar la guía con advance como flujo normal y la recuperación gobernada."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Registrar regresiones del motor de integridad y el contrato operativo corregido en la fachada canónica de pruebas."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-state-integrity.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+    "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+    "node --test scripts/docs/implementation-correction-guard.test.mjs",
+    "node --test scripts/docs/implementation-work-package.test.mjs",
+    "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+    "node --test scripts/docs/implementation-control.test.mjs",
+    "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+    "node --test scripts/docs/chatgpt-work-starter.test.mjs",
+    "node --test scripts/docs/implementation-readiness-artifacts.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "La correccion repara el motor documental de lifecycle fisico sin cambiar comportamiento funcional de negocio ni requisitos TREQ.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-12T02:41:18.643Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-12T02:02:43.517Z"
 }

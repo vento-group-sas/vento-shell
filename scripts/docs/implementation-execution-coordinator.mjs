@@ -9,6 +9,10 @@ import {
   normalizeInstanceId,
 } from './implementation-branch-lifecycle.mjs';
 import {
+  assessImplementationStateIntegrity,
+  formatImplementationStateIntegrityViolation,
+} from './implementation-state-integrity.mjs';
+import {
   instanceRecordRelativePath,
   loadImplementationControl,
   validateImplementationControl,
@@ -221,6 +225,14 @@ function resolveInstance(root, instanceId) {
   const instance = control.instances.find((entry) => entry.instance_id === id) ?? null;
   if (!instance) fail(`${id} no existe en implementation-instances.`);
   return { id, instance };
+}
+
+function assertCoordinatorStateIntegrity(root, instance, readiness = null) {
+  const integrity = assessImplementationStateIntegrity({ root, instance, readiness });
+  if (!integrity.status_valid) {
+    fail(`STATE_INTEGRITY_VIOLATION | ${formatImplementationStateIntegrityViolation(instance.instance_id, integrity)}`);
+  }
+  return integrity;
 }
 
 function writeInstance(root, instance) {
@@ -920,6 +932,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   }
 
   let { instance } = resolveInstance(root, instanceId);
+  assertCoordinatorStateIntegrity(root, instance);
   let state = classifyExecutionState(instance);
 
   if (state === 'AUTHORIZATION_GATE') {
@@ -940,6 +953,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   if (state === 'START') {
     runCanonicalLifecycle(root, 'docs:implementation:start', instanceId);
     instance = resolveInstance(root, instanceId).instance;
+    assertCoordinatorStateIntegrity(root, instance);
     state = classifyExecutionState(instance);
   }
 
