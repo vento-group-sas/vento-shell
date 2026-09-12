@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1178** |
+| Aprobadas | **1179** |
 | En propuesta | **0** |
-| No iniciadas | **418** |
+| No iniciadas | **417** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **73.81% (1178/1596)** |
+| Porcentaje de completamiento | **73.87% (1179/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **418** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1079** |
+| ⏸ NO_EVALUADA | **417** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1080** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-013` — Definir baja, descarte, venta o reemplazo | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-013` — Definir baja, descarte, venta o reemplazo | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-014` — Definir kits, conjuntos y validación de completitud | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -963,7 +963,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-009` | Separar activo individual y reutilizable controlado por cantidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-010` | Definir estado, condición, daño, pérdida y faltante | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-011` | Definir préstamo, devolución, transferencia y cambio de custodia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-012` | Definir mantenimiento, reparación y disponibilidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-012` | Definir mantenimiento, reparación y disponibilidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-013` | Definir baja, descarte, venta o reemplazo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-014` | Definir kits, conjuntos y validación de completitud | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-015` | Definir conteos de activos, reutilizables y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
