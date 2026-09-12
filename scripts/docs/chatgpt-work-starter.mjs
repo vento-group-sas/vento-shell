@@ -206,7 +206,52 @@ ${sourceContext(task)}
 `;
 }
 
-export function actionResponseContract(control, sourceContractHash) {
+// C6_ADVANCE_ONLY_STARTER_PROJECTION
+export const IMPLEMENTATION_OPERATIONAL_PROJECTION_ID = 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1';
+
+export function projectAdvanceOnlyImplementationSource(source) {
+  let projected = String(source ?? '');
+  for (const legacy of [
+    'docs:implementation:start',
+    'docs:implementation:preverify',
+    'docs:implementation:finish',
+  ]) projected = projected.replaceAll(legacy, 'docs:implementation:advance');
+  projected = projected
+    .replaceAll('npm run quality:repair', 'INTERNAL_QUALITY_REPAIR_BY_ADVANCE')
+    .replaceAll('`quality:repair`', '`INTERNAL_QUALITY_REPAIR_BY_ADVANCE`')
+    .replaceAll('quality:repair una vez', 'repair interno exacto por fingerprint dentro de advance')
+    .replaceAll(
+      'Ejecuta exactamente una vez INTERNAL_QUALITY_REPAIR_BY_ADVANCE antes de registrar IMPLEMENTED.',
+      'El coordinador ejecuta internamente repair exacto por fingerprint antes de registrar IMPLEMENTED.',
+    )
+    .replaceAll(
+      'Solo con INTERNAL_QUALITY_REPAIR_BY_ADVANCE PASS y READY_FOR_VALIDATION: SI registra IMPLEMENTED.',
+      'Solo con repair interno sellado PASS y READY_FOR_VALIDATION: SI el coordinador registra IMPLEMENTED.',
+    );
+  // C6_STARTER_INTEGRITY_RECOVERY_GLOBAL_COMMAND_SUPPRESSION
+  if (projected.includes('STATE_INTEGRITY_RECOVERY_REQUIRED: TRUE')) {
+    projected = projected
+      .split('\n')
+      .map((line) => (
+        line.includes('npm run docs:implementation:advance')
+          ? 'MUTATION_SUPPRESSED_UNTIL_STATE_INTEGRITY_RECONCILED'
+          : line
+      ))
+      .join('\n');
+  }
+  if (projected.includes('ADVANCE_ONLY_OPERATIONAL_PROJECTION_V1')) return projected;
+  return [
+    'ADVANCE_ONLY_OPERATIONAL_PROJECTION_V1',
+    '- Operational contract: VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1',
+    '- Normal mutating entrypoint: docs:implementation:advance',
+    '- Direct start/preverify/finish entrypoints: DISABLED',
+    '- Candidate repair: INTERNAL_BY_ADVANCE_EXACT_FINGERPRINT',
+    '',
+    projected,
+  ].join('\n');
+}
+
+function legacyActionResponseContract(control, sourceContractHash) {
   const physical = control.physical?.active ?? null;
   if (!physical) {
     return [
@@ -286,6 +331,38 @@ export function actionResponseContract(control, sourceContractHash) {
     `Continúa ${target} desde su estado real ${physical.status}; no reinicies automáticamente desde AUTHORIZED si ya existe evidencia de una fase posterior.`,
     'Si la instancia ya está IMPLEMENTED, entra directamente a la batería final; no repitas preflight ni materialización demostrada.',
   ].join('\n');
+}
+
+// C6_STARTER_INTEGRITY_RECOVERY_PRESERVES_PROTOCOL
+export function actionResponseContract(control, sourceContractHash) {
+  const physical = control?.physical?.active ?? null;
+  if (physical?.stateIntegrity?.status_valid === false || physical?.stateIntegrityRecoveryRequired === true) {
+    const recoveryOverlay = [
+      'STATE_INTEGRITY_RECOVERY_REQUIRED: TRUE',
+      `Instance: ${physical.instanceId}`,
+      `Declared status: ${physical.declaredStatus ?? physical.record?.status ?? physical.status}`,
+      `Effective status: ${physical.effectiveStatus ?? physical.status}`,
+      `Recovery action: ${physical.recoveryAction ?? physical.stateIntegrity?.recovery_action ?? 'MANUAL_RECONCILIATION_REQUIRED'}`,
+      'Mutating command before reconciliation: NONE',
+      'Do not run advance until the declared ledger and effective evidence are reconciled.',
+      'After reconciliation, resume only through the canonical docs:implementation:advance entrypoint for this instance.',
+    ].join('\n');
+    const projectedContract = projectAdvanceOnlyImplementationSource(
+      legacyActionResponseContract(control, sourceContractHash),
+    );
+    const recoverySafeContract = projectedContract
+      .split('\n')
+      .map((line) => (
+        line.includes('npm run docs:implementation:advance')
+          ? 'MUTATION_SUPPRESSED_UNTIL_STATE_INTEGRITY_RECONCILED'
+          : line
+      ))
+      .join('\n');
+    return [recoveryOverlay, '', recoverySafeContract].join('\n');
+  }
+  return projectAdvanceOnlyImplementationSource(
+    legacyActionResponseContract(control, sourceContractHash),
+  );
 }
 
 function renderImplementationWork({ control, workTopology, templateHash, repositoryRoot }) {
@@ -381,7 +458,10 @@ ACCIÓN FÍSICA ACTUAL
 - Acción: ${control.primaryAction.type}
 - Objetivo exacto: ${control.primaryAction.target} — ${control.primaryAction.title}
 - Motivo: ${control.primaryAction.why}
-- Estado actual: ${physical.status}
+- Estado declarado: ${physical.declaredStatus ?? physical.record?.status ?? physical.status}
+- Estado efectivo: ${physical.effectiveStatus ?? physical.status}
+- Integridad de estado: ${physical.stateIntegrity ? (physical.stateIntegrity.status_valid ? 'VALID' : 'INVALID') : 'N/A'}
+- Recovery action: ${physical.recoveryAction ?? physical.stateIntegrity?.recovery_action ?? 'NONE'}
 - Instancia del puntero: ${physical.instanceId}
 - Conjunto físico gobernado: ${actionableSetLabel}
 - Archivo exclusivo de esta instancia: ${recordPath}
@@ -479,7 +559,10 @@ function renderFromTemplate(template, currentWork, intent) {
   const scopedTemplate = intent === 'DOCUMENTATION'
     ? template.replace(documentationOnlyPattern, '$1')
     : template.replace(documentationOnlyPattern, '');
-  return scopedTemplate.replace(SLOT, currentWork).replace(/\n*$/u, '\n');
+  const rendered = scopedTemplate.replace(SLOT, currentWork).replace(/\n*$/u, '\n');
+  return intent === 'PHYSICAL_IMPLEMENTATION'
+    ? projectAdvanceOnlyImplementationSource(rendered)
+    : rendered;
 }
 
 export function buildChatgptWorkStarter({ root = process.cwd() } = {}) {

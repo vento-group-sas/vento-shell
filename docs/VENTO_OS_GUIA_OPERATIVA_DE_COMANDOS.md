@@ -17,12 +17,13 @@ En Vento OS existen **cuatro tipos de trabajo** y no deben mezclarse.
 | Tipo de trabajo | Rama | Comando principal |
 | --- | --- | --- |
 | Tarea canónica documental | `task/...` | `docs:task:start` / `docs:task:finish` |
-| Implementación física autorizada | `implementation/...` | `docs:implementation:start` / `docs:implementation:finish` |
+| Implementación física autorizada | `implementation/...` | `docs:implementation:advance` |
 | Cambio transversal de infraestructura | `infra/...` | `docs:infra:publish` |
 | Documentación operativa no canónica | `ops/...` | `docs:ops:publish` |
 
 ### Mapa mental
 
+<!-- C6_ADVANCE_ONLY_GUIDE_V1 -->
 ```text
 ¿Voy a desarrollar una tarea documental actual del Plan Canónico?
 |
@@ -31,13 +32,14 @@ En Vento OS existen **cuatro tipos de trabajo** y no deben mezclarse.
 |          APROBADO
 |          docs:task:finish
 |
-+-- NO --> ¿Voy a ejecutar una instancia física ya AUTHORIZED?
++-- NO --> ¿Voy a ejecutar o reanudar una instancia física?
            |
-           +-- SI --> docs:implementation:start
-           |          materialización
-           |          validation_commands
-           |          VERIFIED
-           |          docs:implementation:finish
+           +-- SI --> docs:implementation:advance
+           |          el coordinador deriva el estado efectivo
+           |          abre/reanuda lifecycle internamente
+           |          materializa/valida/repara según contrato
+           |          solicita evidencia externa solo cuando aplica
+           |          finaliza internamente cuando VERIFIED
            |
            +-- NO --> ¿Es una corrección transversal de scripts, CI, GitHub, tooling o política transversal?
                       |
@@ -123,120 +125,67 @@ NEXT_TASK_ALLOWED: SI
 
 ---
 
-## 2.3 Empezar una implementación física
+## 2.3 Avanzar o reanudar una implementación física
 
-Ejemplo real de instancia global:
+El único comando mutante normal del carril físico es:
 
 ```powershell
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
-Este comando se usa **solo después de que el registro de instancia esté `AUTHORIZED`**.
+`advance` es state-aware. No asume que el `status` declarado sea verdadero: primero evalúa integridad y usa el estado efectivo soportado por autorización, rama, candidato, validaciones y evidencia.
 
-Antes de escribir `PENDING_AUTHORIZATION -> AUTHORIZED`, el orden obligatorio es: detener primero el watcher, confirmar `main` limpio/actualizado/sincronizado `0/0`, guardar después `AUTHORIZED` y ejecutar inmediatamente `docs:implementation:start`. Nunca guardes `AUTHORIZED` con el watcher activo, porque el watcher puede reconstruir derivados versionados antes de que el lifecycle físico cree su rama.
-
-Una instancia física puede ejecutarse mucho después de que su tarea documental haya sido aprobada. Por eso el carril físico no obliga a que esa tarea histórica sea la tarea documental actual ni exige reformatearla para poder implementar. La continuidad documental adelantada, el formato histórico del marcador propietario y `active-sequence.json` pendiente de regeneración se tratan como **avisos documentales**, no como bloqueos físicos.
-
-Debe encargarse de:
+Su comportamiento normal es:
 
 ```text
-validar instancia AUTHORIZED
--> comprobar authorization APPROVED
--> comprobar que el único cambio local sea el registro de la instancia
--> verificar main 0/0
--> ejecutar readiness físico de solo lectura antes de crear la rama
--> clasificar continuidad/formato/active-sequence documentales como advisory
--> bloquear únicamente hallazgos físicos reales
--> PRE_BRANCH_READINESS: PASS
--> crear o recuperar implementation/shell-con-001/global
--> publicar upstream
--> cambiar la instancia a IN_PROGRESS
--> ejecutar una sola vez el preflight físico estricto
--> PREFLIGHT: PASS
--> ejecutar docs:plan:build una vez para reconciliar IN_PROGRESS y derivados
--> ejecutar docs:plan:check
--> git diff --check
--> START_DOCS_PLAN_BUILD: PASS_ONCE
--> START_DOCS_PLAN_CHECK: PASS
--> READY_TO_IMPLEMENT: SI
+PENDING_AUTHORIZATION
+-> HUMAN_GATE sin mutaciones
+
+AUTHORIZED
+-> apertura interna del lifecycle
+-> IN_PROGRESS
+
+IN_PROGRESS
+-> comprueba materialización autorizada
+-> repair interno exacto por fingerprint
+-> validation_commands gobernadas
+-> IMPLEMENTED
+
+IMPLEMENTED
+-> preverify interno
+-> evidencia local machine-observable: sella VERIFIED y finaliza internamente
+-> evidencia externa requerida: emite EVIDENCE_REQUEST y queda resumible
+
+VERIFIED
+-> finish interno
+-> main sincronizado y cierre
 ```
 
-Resultado esperado:
+Si la integridad es inválida, no se expone comando mutante: primero se ejecuta la `recovery_action` indicada por el contrato operativo. Un ledger declarado en una fase superior nunca autoriza saltar la fase efectiva.
 
-```text
-ESTADO: PASS
-OPERACION: IMPLEMENTATION_START
-INSTANCE_ID: SHELL-CON-001::GLOBAL
-PRE_BRANCH_READINESS: PASS
-INSTANCE_STATUS: IN_PROGRESS
-PREFLIGHT: PASS
-START_DOCS_PLAN_BUILD: PASS_ONCE
-START_DOCS_PLAN_CHECK: PASS
-DOCUMENTARY_LANE_FOR_PHYSICAL: ADVISORY_ONLY
-READY_TO_IMPLEMENT: SI
-```
+Los shims directos heredados `start`, `preverify` y `finish` permanecen **fail-closed como entradas normales**. Existen únicamente para invocación interna del coordinador y compatibilidad controlada; no se entregan como comandos de operación al usuario.
 
-### Regla crítica
+Cuando el resultado sea `MATERIALIZATION_REQUIRED`, materializa únicamente los `authorized_changes` faltantes y vuelve a ejecutar **el mismo comando `advance`**. No uses un flag manual para fingir materialización.
 
-No crees manualmente la rama física con `git switch -c` durante el flujo normal.
-
-No cambies manualmente `AUTHORIZED` a `IN_PROGRESS`: `docs:implementation:start` realiza esa transición.
-
-No ejecutes manualmente `docs:plan:build` después de reemplazar el registro `PENDING_AUTHORIZATION -> AUTHORIZED`: el propio `docs:implementation:start` lo ejecuta en la rama física, después de `IN_PROGRESS`, y deja cabecera y derivados coherentes antes de autorizar código.
-
-No reformatees ni reabras una tarea documental histórica solo para poder ejecutar su instancia física.
+Cuando toda la evidencia sea local y observable por máquina, `advance` puede continuar hasta VERIFIED y cierre sin gate conversacional adicional.
 
 ---
 
-## 2.4 Cerrar una implementación física
+## 2.4 Completar evidencia externa y cierre
 
-Cuando la instancia ya esté `VERIFIED` y conserve evidencia consolidada:
+Si `advance` devuelve `EXTERNAL_EVIDENCE_REQUIRED`, conserva `IMPLEMENTED`, obtiene la evidencia externa real solicitada y reanuda con:
 
 ```powershell
-npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL --evidence-file .delivery/evidence/receipt.json
 ```
 
-Debe encargarse de:
+El receipt debe corresponder al mismo candidato, comandos, ambiente y fingerprint exigidos por el motor. Si cambia el candidato, la evidencia anterior no se reutiliza.
 
-```text
-validar instancia VERIFIED
--> comprobar evidence
--> exigir rama implementation/shell-con-001/global
--> ejecutar docs:plan:build una sola vez y de forma convergente
--> docs:plan:check local
--> docs:plan:test local
--> docs:treq:check local
--> docs:treq:test local
--> quality:lint:ratchet local
--> validar paths de implementación
--> git diff --check
--> stage explícito del alcance detectado
--> docs:commit-scope:check --staged
--> commit
--> push
--> PR
--> esperar checks
--> merge del SHA validado
--> volver a main
--> main 0/0
--> worktree limpio
--> eliminar rama local y remota
--> READY_TO_RESTART_WATCHER: SI
-```
+Después de validar el receipt, el coordinador sella VERIFIED y ejecuta el cierre interno. El PASS final debe confirmar sincronización y worktree limpio según el lifecycle vigente.
 
-Resultado esperado:
+**No ejecutes repair manual por rutina.** La reparación gobernada pertenece a `advance`, se limita a un candidato exacto y no usa stash-based rebaseline.
 
-```text
-ESTADO: PASS
-OPERACION: IMPLEMENTATION_FINISH
-REQUIRED_CHECKS: PASS
-MERGE: PASS
-SYNC_MAIN: 0/0
-WORKTREE: CLEAN
-READY_TO_RESTART_WATCHER: SI
-```
-
-**El watcher solo se vuelve a encender después de `READY_TO_RESTART_WATCHER: SI`.**
+**No ejecutes entrada directa de start/preverify/finish.** El coordinador es la única fachada mutante normal.
 
 ---
 
@@ -252,13 +201,13 @@ La autoridad para estas reglas está en el código, los tests, los workflows y l
 | LC-002 | `docs:plan:build` crea la siguiente instancia y el cierre la confunde con scope ajeno. | Fuera de `authorized_changes` solo se aceptan proyecciones propias del lifecycle y como máximo un registro nuevo con forma exacta `PENDING_AUTHORIZATION`, arrays vacíos, `authorization: null` y `evidence: []`. | El lifecycle valida forma, identidad de ruta y cardinalidad; cualquier segundo borrador derivado falla cerrado. |
 | LC-003 | `commit-scope` bloquea una implementación válida porque mezcla categorías genéricas. | Los PR `implementation/*` usan validación instance-aware sobre el rango completo `base..head`. Las categorías genéricas continúan gobernando task/infra/ops, pero no sustituyen el contrato físico. | `commit-scope.test.mjs` y `validate-canonical-plan-workflow.test.mjs`. |
 | LC-004 | `gh pr checks --watch` cae por HTTP 499 o error transitorio. | El lifecycle usa polling corto y reintenta HTTP 408/425/429/499/5xx y errores transitorios de red; los fallos reales de checks siguen siendo fail-fast. | `task-branch-lifecycle.test.mjs` clasifica HTTP 499 como RETRY y 403 como ERROR. |
-| LC-005 | `finish` falla porque el commit ya existe y el worktree está limpio. | `docs:implementation:finish` conserva `RESUME_POST_COMMIT` y continúa desde el commit existente. | `implementation-branch-lifecycle.test.mjs`. |
-| LC-006 | El PR ya fue mergeado pero falló la sincronización o limpieza local. | `docs:implementation:finish` detecta el PR mergeado, verifica HEAD y merge commit en main y termina por `RESUME_POST_MERGE`. | Test estructural y verificación de ancestros Git antes de PASS. |
+| LC-005 | `finish` falla porque el commit ya existe y el worktree está limpio. | `docs:implementation:advance` conserva `RESUME_POST_COMMIT` y continúa desde el commit existente. | `implementation-branch-lifecycle.test.mjs`. |
+| LC-006 | El PR ya fue mergeado pero falló la sincronización o limpieza local. | `docs:implementation:advance` detecta el PR mergeado, verifica HEAD y merge commit en main y termina por `RESUME_POST_MERGE`. | Test estructural y verificación de ancestros Git antes de PASS. |
 | LC-007 | Un force-push deja `github.event.before` huérfano y CI responde `Invalid revision range`. | El lifecycle físico no usa force-push. En synchronize no físico, el workflow usa `github.event.before` solo si existe y es ancestro; de lo contrario cae de forma segura a `base..head`. | Workflow test con guard `git cat-file` + `git merge-base --is-ancestor`. |
 | LC-008 | Windows y Linux calculan SHA distintos por CRLF/LF o una carpeta nueva vuelve a EOL no gobernado. | Git aplica `* text=auto eol=lf`; el manifiesto de migraciones neutraliza únicamente CRLF de checkout a LF antes de SHA-256 y bytes. | `validate-eol-policy.test.mjs` y prueba `contenido canonico es estable entre checkout CRLF de Windows y LF de CI`. |
 | LC-009 | Node en Windows intenta `spawnSync npm.cmd` y retorna EINVAL. | Los lifecycles usan `resolveNpmInvocation`; para scripts Node conocidos se usa `process.execPath`. Está prohibido spawn/spawnSync directo sobre `npm.cmd`. | `task-branch-lifecycle.test.mjs` prueba resolución Windows y ausencia de spawn directo. |
 | LC-010 | Un comando inventa un alias npm inexistente al invertir los términos `local` y `sync` del nombre canónico. | `package.json` es autoridad única de nombres. La sincronización local vigente es `docs:plan:local-sync`. Los nombres prohibidos se describen semánticamente y nunca se copian literalmente dentro de la guía. | Starter canónico y tests rechazan aliases inventados; el validador operativo bloquea la presencia del literal prohibido. |
-| LC-011 | Se crea un recovery ad hoc y el recovery introduce otro fallo de parser, shell o estado. | El mecanismo normal de recuperación es volver a ejecutar `docs:implementation:finish`. No se crea recovery ad hoc para estados post-commit, post-push, post-PR o post-merge que el lifecycle pueda reanudar. | Starter canónico y esta guía; una carencia de reanudación obliga a corregir el lifecycle mediante `docs:infra:publish`. |
+| LC-011 | Se crea un recovery ad hoc y el recovery introduce otro fallo de parser, shell o estado. | El mecanismo normal de recuperación es volver a ejecutar `docs:implementation:advance`. No se crea recovery ad hoc para estados post-commit, post-push, post-PR o post-merge que el lifecycle pueda reanudar. | Starter canónico y esta guía; una carencia de reanudación obliga a corregir el lifecycle mediante `docs:infra:publish`. |
 | LC-012 | Una corrección parcial deja el worktree a medias si falla una validación. | Los aplicadores de hardening usados para esta corrección restauran bytes originales ante FAIL; la publicación oficial continúa siendo propiedad de los publishers del repositorio. | El aplicador imprime `ROLLBACK:PASS` en fallo de materialización y el publisher vuelve a validar antes del commit. |
 | LC-013 | Un descargable ejecutable contiene sintaxis válida en apariencia pero falla al lanzarse como stdin CommonJS, por ejemplo `return;` a nivel superior con `Illegal return statement`. | Todo materializador TXT ejecutado con `node --input-type=commonjs -` debe pasar primero `docs:delivery-exec:check -- --file <archivo> --mode stdin-commonjs`, que parsea con semántica CommonJS y falla antes de cualquier escritura. | `validate-executable-delivery.test.mjs` reproduce explícitamente `return;` top-level como FAIL y un return dentro de función como PASS. |
 | LC-014 | Reglas exclusivas del lifecycle fisico se insertan en la plantilla compartida y contaminan el iniciador documental; `chatgpt-work-starter.test.mjs` falla porque la plantilla comun deja de ser comun. | La plantilla compartida contiene solo reglas comunes; las reglas documentales viven en `DOCUMENTATION_PROTOCOL` y las fisicas en `IMPLEMENTATION_PROTOCOL`. Toda modificacion del generador debe pasar `chatgpt-work-starter.test.mjs` y la suite completa `docs:plan:test` antes de publicar. | `chatgpt-work-starter.test.mjs` protege la ausencia de comandos fisicos en la plantilla comun y `task-branch-lifecycle.test.mjs` verifica que `SCOPE_FISICO = authorized_changes` permanezca dentro de `IMPLEMENTATION_PROTOCOL`. |
@@ -269,7 +218,7 @@ La autoridad para estas reglas está en el código, los tests, los workflows y l
 ### Reglas operativas vinculantes
 
 1. Para una instancia física, `authorized_changes` decide escrituras permitidas. `EXECUTE_ONLY` nunca concede escritura.
-2. `docs:implementation:finish` es idempotente y reanudable. Ante interrupción, consulta estado real y vuelve a ejecutar el mismo lifecycle; no reconstruyas manualmente commit, push, PR o merge.
+2. `docs:implementation:advance` es idempotente y reanudable. Ante interrupción, consulta estado real y vuelve a ejecutar el mismo lifecycle; no reconstruyas manualmente commit, push, PR o merge.
 3. Nunca uses force-push para conseguir que pase un cierre físico.
 4. Nunca sustituyas un fallo de gate por un workaround manual. Si el gate está equivocado, se corrige como infraestructura y se agrega regresión.
 5. Las fundaciones PRE_E5 de SUPA-TRANS-015 solo pueden quedar PASS mediante `docs:package:foundation:record`; escribir manualmente `evidence_ref` o usar una cadena libre no constituye evidencia. El productor ejecuta los checks del gate, guarda solo metadatos/digests seguros y materializa evidencia estructurada con integridad SHA-256.
@@ -463,7 +412,7 @@ Solo después completa en el registro de instancia:
 - evidencia inicialmente vacía;
 - `status = AUTHORIZED`.
 
-No ejecutes ningún build manual entre `AUTHORIZED` y `docs:implementation:start`.
+No ejecutes ningún build manual entre `AUTHORIZED` y `docs:implementation:advance`.
 
 ## Paso C — Abre la instancia física
 
@@ -477,12 +426,12 @@ worktree limpio
 origin/main...HEAD = 0/0
 ```
 
-Si la instancia afecta varios repositorios, valida todos antes de crear la primera rama. `docs:implementation:start` controla esta condición dentro de `vento-shell`; los demás repositorios afectados se verifican por separado antes de continuar.
+Si la instancia afecta varios repositorios, valida todos antes de crear la primera rama. `docs:implementation:advance` controla esta condición dentro de `vento-shell`; los demás repositorios afectados se verifican por separado antes de continuar.
 
 Ejemplo:
 
 ```powershell
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
 El comando primero ejecuta readiness de solo lectura mientras la instancia sigue `AUTHORIZED`. La tarea documental actual puede ser otra: continuidad adelantada, formato histórico y `active-sequence.json` pendiente son avisos documentales en este carril. Solo puede crear o recuperar la rama cuando los bloqueos físicos reales estén en cero y termine con:
@@ -565,10 +514,10 @@ Consolida la evidencia en el registro de la instancia.
 ## Paso H — Cierre físico oficial
 
 ```powershell
-npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
-No ejecutes manualmente `docs:plan:build`, `docs:plan:check`, `docs:plan:test`, `docs:treq:check`, `docs:treq:test` ni `quality:lint:ratchet` como pasos de cierre: `docs:implementation:finish` los administra localmente antes de commit/push. Tampoco hagas manualmente commit, push, PR o merge que este comando ya administra.
+No ejecutes manualmente `docs:plan:build`, `docs:plan:check`, `docs:plan:test`, `docs:treq:check`, `docs:treq:test` ni `quality:lint:ratchet` como pasos de cierre: `docs:implementation:advance` los administra localmente antes de commit/push. Tampoco hagas manualmente commit, push, PR o merge que este comando ya administra.
 
 Solo después de:
 
@@ -710,7 +659,7 @@ npm run docs:task:preflight -- --task-id AUTH-SRV-004 --json
 
 ## Readiness y preflight físico
 
-`docs:implementation:start` ejecuta automáticamente el gate completo de apertura:
+`docs:implementation:advance` ejecuta automáticamente el gate completo de apertura:
 
 ```text
 1. readiness de solo lectura con la instancia todavía AUTHORIZED y antes de crear la rama
@@ -859,7 +808,7 @@ El comando debe recuperar o reutilizar la rama remota existente.
 Si la instancia sigue en estado compatible con apertura y la rama física existe, el lifecycle puede recuperarla o reutilizarla mediante:
 
 ```powershell
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
 No recrees manualmente `implementation/shell-con-001/global`.
@@ -901,7 +850,7 @@ git status --short
 
 No uses `git add -A`.
 
-## `docs:implementation:start` falla
+## `docs:implementation:advance` falla
 
 Comprueba especialmente:
 
@@ -911,7 +860,7 @@ Comprueba especialmente:
 - `main` 0/0;
 - `gh` autenticado.
 
-## `docs:implementation:finish` falla
+## `docs:implementation:advance` falla
 
 Comprueba especialmente:
 
@@ -973,7 +922,7 @@ git switch -c implementation/shell-con-001/global
 Usa:
 
 ```powershell
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
 ## Evita `git add -A`
@@ -1011,8 +960,7 @@ npm run docs:task:finish -- --help
 ## Lifecycle físico
 
 ```powershell
-npm run docs:implementation:start -- --help
-npm run docs:implementation:finish -- --help
+npm run docs:implementation:advance -- --help
 ```
 
 ## Cambios transversales
@@ -1035,8 +983,8 @@ npm run docs:ops:publish -- --help
 | --- | --- |
 | Voy a comenzar una tarea documental actual | `docs:task:start` |
 | La tarea documental quedó APROBADA | `docs:task:finish` |
-| Una instancia física ya quedó AUTHORIZED | `docs:implementation:start` |
-| La instancia física ya quedó VERIFIED | `docs:implementation:finish` |
+| Una instancia física ya quedó AUTHORIZED | `docs:implementation:advance` |
+| La instancia física ya quedó VERIFIED | `docs:implementation:advance` |
 | Cambié tooling/CI/scripts entre tareas | `docs:infra:publish` |
 | Cambié una guía Markdown directamente en `docs/` | `docs:ops:publish` |
 | Tengo scopes incompatibles al mismo tiempo | separar con stash selectivo y publicar cada scope con su lifecycle |
@@ -1092,7 +1040,7 @@ PENDING_AUTHORIZATION
 AUTHORIZED
    |
    v
-docs:implementation:start
+docs:implementation:advance
    |
    v
 implementation/<task>/<instance>
@@ -1113,7 +1061,7 @@ validation_commands
 VERIFIED
    |
    v
-docs:implementation:finish
+docs:implementation:advance
    |
    v
 PR + checks + merge
@@ -1176,7 +1124,7 @@ Supón que `SHELL-CON-001::GLOBAL` ya está `AUTHORIZED`.
 Primero confirma `main` limpio y `0/0` en todos los repositorios afectados. Después abres el lifecycle:
 
 ```powershell
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
 Después del PASS:
@@ -1204,7 +1152,7 @@ IMPLEMENTED
 Cierras:
 
 ```powershell
-npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 ```
 
 Solo cuando aparezca:
@@ -1246,11 +1194,8 @@ npm run docs:task:start -- --task-id AUTH-SRV-004
 ¿Cierro tarea documental aprobada?
 npm run docs:task:finish -- --task-id AUTH-SRV-004
 
-¿Abro implementación física autorizada?
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
-
-¿Cierro implementación física verificada?
-npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL
+¿Avanzo o reanudo implementación física?
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 
 ¿Publico corrección transversal?
 npm run docs:infra:publish -- --change-id docs-validator-fix
@@ -1272,9 +1217,9 @@ npm run docs:ops:publish -- --change-id guia-operativa-comandos
 7. **No se usa el lifecycle documental para ejecutar una instancia física.**
 8. **Una instancia física requiere autorización explícita antes de abrirse.**
 9. **Antes de cualquier rama física, todos los repositorios afectados deben estar en `main`, limpios y `0/0`.**
-10. **`docs:implementation:start` debe completar readiness antes de crear o recuperar la rama.**
+10. **`docs:implementation:advance` debe completar readiness antes de crear o recuperar la rama.**
 11. **Una tarea documental histórica no se reformatea ni se reabre como condición para ejecutar una instancia física ya aprobada y autorizada.**
-12. **El cambio `AUTHORIZED -> IN_PROGRESS` se reconcilia con un `docs:plan:build` automático dentro de `docs:implementation:start`, nunca manualmente en `main`.**
+12. **El cambio `AUTHORIZED -> IN_PROGRESS` se reconcilia con un `docs:plan:build` automático dentro de `docs:implementation:advance`, nunca manualmente en `main`.**
 13. **No se avanza de tarea hasta que el cierre correspondiente lo autorice.**
 14. **GitHub, no el chat, es la fuente compartida entre computadores.**
 15. **Un FAIL se diagnostica; no se reinicia todo automáticamente.**
@@ -1293,11 +1238,8 @@ npm run docs:task:start -- --task-id AUTH-SRV-004
 # 2. Cerrar tarea documental
 npm run docs:task:finish -- --task-id AUTH-SRV-004
 
-# 3. Empezar implementación física
-npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL
-
-# 4. Cerrar implementación física
-npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL
+# 3. Avanzar o reanudar implementación física
+npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL
 
 # 5. Publicar cambio transversal
 npm run docs:infra:publish -- --change-id docs-validator-fix

@@ -158,7 +158,8 @@ test('materializa automáticamente el archivo pendiente exacto una sola vez', ()
   }
 });
 
-test('AUTHORIZED, IN_PROGRESS e IMPLEMENTED comparten una sola acción física continua', () => {
+// C6_CONTROL_ADVANCE_ONLY_LEGACY_EXPECTATION_ALIGNED
+test('AUTHORIZED, IN_PROGRESS e IMPLEMENTED comparten una sola entrada mutante por advance', () => {
   for (const status of ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED']) {
     const result = deriveImplementationControl({
       control: { ...baseControl, instances: [scope(status)] },
@@ -167,7 +168,12 @@ test('AUTHORIZED, IN_PROGRESS e IMPLEMENTED comparten una sola acción física c
     assert.equal(result.primaryAction.type, 'EJECUTAR_IMPLEMENTACION');
     assert.equal(result.primaryAction.target, 'SHELL-CI-001::GLOBAL');
     assert.equal(result.implementationAuthorized, true);
-    assert.match(result.primaryAction.instruction, /transacción humana continua/u);
+    assert.equal(
+      result.primaryAction.command,
+      'npm run docs:implementation:advance -- --instance-id SHELL-CI-001::GLOBAL',
+    );
+    assert.match(result.primaryAction.instruction, /exclusivamente mediante docs:implementation:advance/u);
+    assert.match(result.primaryAction.instruction, /coordinador resuelve internamente start, preverify, repair y finish/u);
   }
 });
 
@@ -548,4 +554,40 @@ test('materializa todos los borradores derived del actionableSet y conserva comp
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+// C6_CONTROL_EFFECTIVE_STATE_RECOVERY
+test('control proyecta estado efectivo y suprime mutaciones cuando el ledger excede la evidencia', () => {
+  const invalid = scope('VERIFIED');
+  const result = deriveImplementationControl({
+    root: '/repo',
+    control: { ...baseControl, instances: [invalid] },
+    workTopology: topology(),
+    stateIntegrityAssessor: () => ({
+      declared_status: 'VERIFIED',
+      highest_valid_status: 'IN_PROGRESS',
+      status_valid: false,
+      missing_prerequisites: ['LOCAL_VALIDATION_EVIDENCE_INCOMPLETE'],
+      stale_evidence: [],
+      next_legal_transition: 'MATERIALIZE_AND_VALIDATE',
+      recoverable: true,
+      recovery_action: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE',
+    }),
+  });
+
+  assert.equal(result.physical.active.declaredStatus, 'VERIFIED');
+  assert.equal(result.physical.active.status, 'IN_PROGRESS');
+  assert.equal(result.physical.active.effectiveStatus, 'IN_PROGRESS');
+  assert.equal(result.physical.active.stateIntegrityRecoveryRequired, true);
+  assert.equal(result.primaryAction.type, 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY');
+  assert.equal(result.primaryAction.command, null);
+  assert.equal(result.implementationAuthorized, false);
+  assert.deepEqual(result.physical.authorized, []);
+
+  const directive = renderCurrentWorkDirective(result);
+  assert.match(directive, /Estado declarado/u);
+  assert.match(directive, /Estado efectivo/u);
+  assert.match(directive, /docs:implementation:advance/u);
+  assert.match(directive, /NINGUNO_HASTA_RECONCILIAR_O_AUTORIZAR/u);
+  assert.doesNotMatch(directive, /npm run docs:implementation:(?:start|preverify|finish)/u);
 });

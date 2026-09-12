@@ -10,6 +10,7 @@ import {
   parseProcessRelationships,
   parseScreens,
   prepareImplementationReadinessArtifacts,
+  readinessEffectiveOperationalProjection,
 } from './implementation-readiness-artifacts.mjs';
 import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 
@@ -175,4 +176,26 @@ test('el build y el check mantienen la preparación automática conectada', () =
     packageJson.scripts['docs:implementation:prepare'],
     'node scripts/docs/implementation-readiness-artifacts.mjs',
   );
+});
+
+// C6_READINESS_EFFECTIVE_PROJECTION_TEST
+test('readiness proyecta contrato operativo efectivo sin autorizar lifecycle directo', () => {
+  const projection = readinessEffectiveOperationalProjection({
+    physical: {
+      active: {
+        instanceId: 'SHELL-CI-022::GAP-PKG-001',
+        status: 'IN_PROGRESS',
+        declaredStatus: 'VERIFIED',
+        effectiveStatus: 'IN_PROGRESS',
+        recoveryAction: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS',
+        stateIntegrity: { status_valid: false },
+      },
+    },
+  });
+  assert.equal(projection.model_id, 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1');
+  assert.equal(projection.mutating_entrypoint, 'docs:implementation:advance');
+  assert.equal(projection.direct_lifecycle_entrypoints_enabled, false);
+  assert.equal(projection.declared_status, 'VERIFIED');
+  assert.equal(projection.effective_status, 'IN_PROGRESS');
+  assert.equal(projection.state_integrity_valid, false);
 });
