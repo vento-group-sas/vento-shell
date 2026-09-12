@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "VERIFIED",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-018",
@@ -183,9 +183,43 @@
       "path": "package.json",
       "change": "MODIFY",
       "scope": "Registrar regresiones del motor de integridad y el contrato operativo corregido en la fachada canónica de pruebas."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope-readiness.mjs",
+      "change": "MODIFY",
+      "scope": "Convertir commit-scope readiness en dispatcher nativo de correction/* con validacion por commit y validacion neta del correction scope."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope-readiness.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir el modo correction nativo, exclusividad de carriles y wiring del workflow canónico."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Hacer que publishBranchAndMerge use commit-scope semantico de la correccion en registro y cierre."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir que el lifecycle de correccion publica usando --correction-head-ref."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": ".github/workflows/validate-canonical-plan.yml",
+      "change": "MODIFY",
+      "scope": "Enrutar PR correction/* al gate semantico y evitar reinterpretar historia interna de PR ya validada en push de merge a main."
     }
   ],
   "validation_commands": [
+    "node --check scripts/docs/commit-scope-readiness.mjs",
+    "node --test scripts/docs/commit-scope-readiness.test.mjs",
+    "node --check scripts/docs/correction-branch-lifecycle.mjs",
+    "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
     "node --check scripts/docs/implementation-state-integrity.mjs",
     "node --test scripts/docs/implementation-state-integrity.test.mjs",
     "node --check scripts/docs/implementation-execution-coordinator.mjs",
@@ -200,12 +234,16 @@
     "node --test scripts/docs/chatgpt-work-starter.test.mjs",
     "node --test scripts/docs/implementation-readiness-artifacts.test.mjs",
     "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:commit-scope:check -- --range origin/main...HEAD --correction-head-ref correction/deliv-pkg-015/corr-014",
     "npm run docs:plan:build",
     "npm run docs:plan:check",
     "npm run docs:plan:test",
     "npm run docs:treq:check",
+    "npm run docs:treq:test",
     "npm run quality:lint:ratchet -- --base origin/main",
-    "git --no-pager diff --check"
+    "npm test --silent",
+    "git --no-pager diff --check origin/main...HEAD"
   ],
   "affected_treq_ids": [],
   "zero_treq_reason": "La correccion repara el motor documental de lifecycle fisico sin cambiar comportamiento funcional de negocio ni requisitos TREQ.",
@@ -331,6 +369,21 @@
       "treq_mutations": 0,
       "supabase_remote_mutations": 0,
       "production_mutations": 0
+    },
+    {
+      "type": "C7_NATIVE_CORRECTION_SCOPE_EXPANSION_AUTHORIZATION",
+      "approved_by": "VENTO_OWNER",
+      "approved_at": "2026-09-12T21:27:46.714Z",
+      "timezone": "America/Bogota",
+      "approval_statement": "Modificar las validaciones y el framework cuando sea necesario para un arreglo definitivo y no temporal.",
+      "scope_expansion_paths": [
+        "scripts/docs/commit-scope-readiness.mjs",
+        "scripts/docs/commit-scope-readiness.test.mjs",
+        "scripts/docs/correction-branch-lifecycle.mjs",
+        "scripts/docs/correction-branch-lifecycle.test.mjs",
+        ".github/workflows/validate-canonical-plan.yml"
+      ],
+      "reason": "El gate generico no modelaba correction/* como carril gobernado y producia falsos positivos locales y en validate-canonical-plan."
     }
   ],
   "opened_at": "2026-09-12T02:02:43.517Z"
