@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "IN_PROGRESS",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-018",
@@ -384,6 +384,171 @@
         ".github/workflows/validate-canonical-plan.yml"
       ],
       "reason": "El gate generico no modelaba correction/* como carril gobernado y producia falsos positivos locales y en validate-canonical-plan."
+    },
+    {
+      "type": "C7_FINAL_INTEGRAL_VALIDATION_V3_NATIVE_CORRECTION_SCOPE",
+      "candidate_commit": "e767decae902c8f90e9b0a0f901d7f25192012ca",
+      "origin_main_at_validation": "56c208b9cedbafbc65ca1f13b8d388550d9ced08",
+      "validated_at": "2026-09-12T22:03:43.868Z",
+      "validation_commands": [
+        "node --check scripts/docs/commit-scope-readiness.mjs",
+        "node --test scripts/docs/commit-scope-readiness.test.mjs",
+        "node --check scripts/docs/correction-branch-lifecycle.mjs",
+        "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+        "node --check scripts/docs/implementation-state-integrity.mjs",
+        "node --test scripts/docs/implementation-state-integrity.test.mjs",
+        "node --check scripts/docs/implementation-execution-coordinator.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+        "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+        "node --test scripts/docs/implementation-correction-guard.test.mjs",
+        "node --test scripts/docs/implementation-work-package.test.mjs",
+        "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+        "node --test scripts/docs/implementation-control.test.mjs",
+        "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+        "node --test scripts/docs/chatgpt-work-starter.test.mjs",
+        "node --test scripts/docs/implementation-readiness-artifacts.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:commit-scope:check -- --range origin/main...HEAD --correction-head-ref correction/deliv-pkg-015/corr-014",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "npm run quality:lint:ratchet -- --base origin/main",
+        "npm test --silent",
+        "git --no-pager diff --check origin/main...HEAD"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/commit-scope-readiness.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/commit-scope-readiness.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --check scripts/docs/correction-branch-lifecycle.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-state-integrity.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-state-integrity.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-execution-coordinator.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-correction-guard.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-work-package.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-control.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/chatgpt-work-starter.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-readiness-artifacts.test.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:commit-scope:check -- --range origin/main...HEAD --correction-head-ref correction/deliv-pkg-015/corr-014",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run quality:lint:ratchet -- --base origin/main",
+          "status": "PASS"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "git --no-pager diff --check origin/main...HEAD",
+          "status": "PASS"
+        }
+      ],
+      "correction_scope_check": "PASS_NATIVE_CORRECTION_MODE",
+      "root_cause": "GENERIC_COMMIT_SCOPE_DID_NOT_MODEL_CORRECTION_BRANCH_CONTEXT",
+      "definitive_fix": {
+        "commit_scope_readiness": "CORRECTION_NATIVE_SCOPE_V1",
+        "correction_lifecycle": "PUBLISH_USES_CORRECTION_HEAD_REF",
+        "validate_canonical_plan": "CORRECTION_PR_NATIVE_ROUTE",
+        "main_push": "MERGE_HISTORY_NOT_REINTERPRETED_AS_DIRECT_PUSH"
+      },
+      "prior_pr": 470,
+      "prior_pr_head": "e46c441348a3feb3caff92d4592e6584d1d8ca9f",
+      "prior_required_gate": "PASS",
+      "prior_validate_canonical_plan": "FAIL_GENERIC_SCOPE_FALSE_POSITIVE",
+      "treq_mutations": 0,
+      "supabase_remote_mutations": 0,
+      "production_mutations": 0
     }
   ],
   "opened_at": "2026-09-12T02:02:43.517Z"
