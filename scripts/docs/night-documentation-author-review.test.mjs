@@ -204,3 +204,25 @@ test('STOP del autor falla cerrado sin gastar reviews', async () => {
   assert.equal(summary.status, 'STOP');
   assert.equal(summary.model_calls, 1);
 });
+
+test('normaliza etiquetas abreviadas de Continuidad sin gastar otra llamada', () => {
+  const abbreviated = authorResponse();
+  abbreviated.task_markdown = abbreviated.task_markdown
+    .replace(
+      '**ÚLTIMA TAREA APROBADA**\nNEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4',
+      '- Última aprobada: NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4',
+    )
+    .replace(
+      '**TAREA ACTUAL APROBADA**\nNEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN',
+      '- Actual aprobada: NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN',
+    )
+    .replace(
+      '**SIGUIENTE TAREA RESERVADA**\nNEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN',
+      '- Siguiente reservada: NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN',
+    );
+
+  const result = validateCandidate(abbreviated, capsule);
+  assert.match(result.markdown, /^- ÚLTIMA TAREA APROBADA:/mu);
+  assert.match(result.markdown, /^- TAREA ACTUAL APROBADA:/mu);
+  assert.match(result.markdown, /^- SIGUIENTE TAREA RESERVADA:/mu);
+});
