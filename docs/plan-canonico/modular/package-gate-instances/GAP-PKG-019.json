@@ -1,0 +1,204 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-019",
+  "status": "APPROVED_FOR_IMPLEMENTATION",
+  "created_at": "2026-09-13T04:41:33.604Z",
+  "updated_at": "2026-09-13T13:42:47.250Z",
+  "canonical_snapshot": {
+    "repository_owner": "devVentoGroup/vento-shell",
+    "runtime_profile": "DATABASE_RPC_BOUNDARY",
+    "dominant_task_id": "SUPA-AUD-016",
+    "task_ids": [
+      "DATA-AUTH-002",
+      "DATA-DOM-006",
+      "DATA-INT-001",
+      "SUPA-AUD-016",
+      "SUPA-AUD-017",
+      "SUPA-TRANS-009",
+      "SUPA-TRANS-012"
+    ],
+    "missing_task_ids": []
+  },
+  "physical_identity": {
+    "targets": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
+        "symbol_or_surface": "app_private.reconcile_analytic_aggregate(jsonb); app_private.apply_small_population_disclosure(jsonb); api.get_governed_analytic_aggregate(jsonb)",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/packages/GAP-PKG-019.sql",
+        "symbol_or_surface": "GAP-PKG-019 TP-DB-001 pgTAP evidence for governed analytics, reconciliation and disclosure",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 canonical contract evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 source-to-aggregate reconciliation integration evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 small-population disclosure and drill-down authorization evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-019 governed analytics end-to-end evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-019/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-DB-001 fixtures for aggregate reconciliation and small-population disclosure",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/MIGRATION_MANIFEST.md",
+        "symbol_or_surface": "AUTH-DB-015 canonical migration manifest authority",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/migration-manifest.mjs",
+        "symbol_or_surface": "AUTH-DB-015 migration manifest generator",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/quality/supabase-db-harness.mjs",
+        "symbol_or_surface": "AUTH-DB-027 clean local DB replay and pgTAP harness",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/environment-drift.mjs",
+        "symbol_or_surface": "AUTH-DB-028 expected-versus-observed environment drift controller",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "scripts/supabase/recovery-drill.mjs",
+        "symbol_or_surface": "AUTH-DB-029 local recovery and rollback evidence controller",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql",
+        "symbol_or_surface": "AUTH-DB-034 app_private.evaluate_authorization(jsonb); api.get_safe_authorization_decision(jsonb)",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql",
+        "symbol_or_surface": "AUTH-DB-034 authorization evaluator regression evidence",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      }
+    ]
+  },
+  "implementation_units": [
+    {
+      "unit_id": "vento-shell:GAP-PKG-019:DB-RPC-001",
+      "repository": "vento-group-sas/vento-shell",
+      "change": "Create the GAP-PKG-019 package-specific governed analytics DB/RPC boundary: source-to-aggregate reconciliation, small-population disclosure enforcement, safe aggregate API and TP-DB-001 evidence; reuse existing VERIFIED migration, drift, recovery and authorization foundations without modifying them."
+    }
+  ],
+  "evidence_plan": {
+    "tests": [
+      {
+        "command": "npm run supabase:db:test:clean",
+        "expected_result": "PASS on governed clean local Supabase replay and canonical database harness."
+      },
+      {
+        "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql",
+        "expected_result": "PASS for GAP-PKG-019 reconciliation, disclosure and authorization assertions."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-019/contract.test.ts",
+        "expected_result": "PASS for GAP-PKG-019 canonical contract and result-shape guarantees."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-019/integration.test.ts",
+        "expected_result": "PASS for source facts to governed aggregate reconciliation and compatibility with reused foundations."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-019/security.test.ts",
+        "expected_result": "PASS for small-population disclosure suppression, drill-down authorization and fail-closed behavior."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-019/e2e.test.ts",
+        "expected_result": "PASS for governed analytics end-to-end behavior in local/CI staging-safe execution."
+      },
+      {
+        "command": "npm test --silent",
+        "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      }
+    ],
+    "observability": [
+      {
+        "signal": "app_private.reconcile_analytic_aggregate(jsonb) source/accepted/rejected/quarantine/materialized counters",
+        "expected_result": "Every governed aggregate exposes reproducible reconciliation totals against authoritative source facts."
+      },
+      {
+        "signal": "app_private.apply_small_population_disclosure(jsonb) disclosure decision and suppression reason",
+        "expected_result": "Small-population outputs are suppressed/fail-closed according to the package contract before any safe projection."
+      },
+      {
+        "signal": "app_private.evaluate_authorization(jsonb) + api.get_safe_authorization_decision(jsonb)",
+        "expected_result": "Existing AUTH-DB-034 authorization foundation remains the authoritative decision input and is not weakened."
+      },
+      {
+        "signal": "migration manifest + environment drift + recovery evidence",
+        "expected_result": "The new package migration is traceable, replayable, drift-audited and recoverable without production mutation."
+      }
+    ],
+    "acceptance_criteria": [
+      "H-CAP-COVER-005-009 reuses AUTH-DB-015/027/028/029 and adds package-specific reproducible evidence rather than duplicating migration governance.",
+      "H-CAP-SCOPE-017-024 is implemented by an exact planned CREATE runtime that reconciles authoritative source facts with the governed aggregate result.",
+      "H-CAP-SCOPE-017-029 reuses AUTH-DB-034 for authorization and creates explicit small-population disclosure enforcement; AGGREGATE authorization alone is not treated as suppression.",
+      "All seven CREATE targets are future implementation work reserved for SHELL-CI-020::GAP-PKG-019; their current absence is not a correction trigger.",
+      "The implementation unit remains a single DATABASE_RPC_BOUNDARY unit for GAP-PKG-019 and does not merge unrelated packages.",
+      "The six package-specific evidence artifacts plus clean local DB replay and canonical regression facade must pass before physical verification.",
+      "No remote Supabase or production mutation is authorized by this gate dossier.",
+      "Production remains unauthorized; the only remote deployment target declared by this dossier is STAGING project rcrxixmqhrndcervbllp under SUPA-TRANS-015 governance."
+    ],
+    "rollback_steps": [
+      "Before any remote migration apply, rollback consists of reverting only GAP-PKG-019 implementation-branch CREATE artifacts and rerunning the clean local DB harness; reused VERIFIED foundations remain unchanged.",
+      "If a future authorized migration has already been applied to a governed remote environment, never rewrite that historical migration; recover with a separately governed forward migration and recovery evidence.",
+      "If small-population disclosure or reconciliation tests fail, do not weaken acceptance criteria or authorization boundaries; keep the physical instance unverified and correct the package implementation within its approved CI020 scope.",
+      "After any rollback or forward recovery, rerun migration manifest, environment drift, recovery drill, GAP-PKG-019 package tests and the canonical regression facade before verification."
+    ]
+  },
+  "authorization": {
+    "decision": "APROBADO",
+    "approved_by": "usuario",
+    "approved_at": "2026-09-13T13:42:47.250Z",
+    "approval_ref": "APROBADO GATE WAVE 1",
+    "approval_statement": "APROBADO GATE WAVE 1: autoriza GAP-PKG-019 únicamente porque su dossier queda completo; los targets CREATE son trabajo físico futuro de SHELL-CI-020 y no evidencia preexistente. No autoriza Supabase remoto ni producción."
+  },
+  "deployment_environment": {
+    "canonical_task_id": "DELIV-PKG-019",
+    "rollout_profile": "TP-DB-001",
+    "environment_profile": "ENV-SUPABASE-LOCAL-CI-STAGING",
+    "targets": [
+      {
+        "environment_role": "STAGING",
+        "target_type": "SUPABASE_PROJECT_REF",
+        "target_id": "rcrxixmqhrndcervbllp",
+        "owner": "SUPA-TRANS-015"
+      }
+    ],
+    "production_authorized": false
+  }
+}
