@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 import {
@@ -169,4 +170,29 @@ test('tooling de cancelación preserva ledger y exige PENDING no bloqueante', ()
     assert.match(source, /authorized_changes/u);
     assert.match(source, /status: 'CANCELLED'/u);
     assert.match(source, /append-only/u);
+});
+
+
+test('correction-cancel CLI ejecuta --help de forma portable', () => {
+    const result = spawnSync(
+        process.execPath,
+        ['scripts/docs/correction-cancel.mjs', '--help'],
+        {
+            cwd: process.cwd(),
+            encoding: 'utf8',
+            windowsHide: true,
+            stdio: ['ignore', 'pipe', 'pipe'],
+        },
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /Uso: npm run docs:correction:cancel/u);
+
+    const source = fs.readFileSync('scripts/docs/correction-cancel.mjs', 'utf8');
+    assert.match(source, /fileURLToPath\(import\.meta\.url\)/u);
+    assert.doesNotMatch(
+        source,
+        /new URL\(import\.meta\.url\)\.pathname/u,
+        'la detección CLI no debe usar pathname URL crudo en Windows',
+    );
 });
