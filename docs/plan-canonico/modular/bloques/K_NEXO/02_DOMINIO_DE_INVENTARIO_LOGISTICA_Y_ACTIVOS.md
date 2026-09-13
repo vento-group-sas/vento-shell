@@ -22122,7 +22122,1313 @@ reservados a `NEXO-DOM-026`; y no desarrolla `NEXO-DOM-017`.
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-017 — Definir auditoría, historial y evidencia`
 
-### [ ] NEXO-DOM-017 — Definir auditoría, historial y evidencia
+### ✅ NEXO-DOM-017 — Definir auditoría, historial y evidencia
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+**Tarea siguiente:** NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+**Tipo de tarea:** documental; definición canónica transversal de auditoría, historia no destructiva y evidencia correlacionada para hechos de inventario, activos, reutilizables, repuestos, kits y contenedores gestionados por NEXO, preservando autoridad funcional, identidad, granularidad, revisiones, causalidad, idempotencia, operación offline, reconciliación legacy y frontera con el servicio transversal de evidencia bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único para que los hechos físicos y decisiones de NEXO puedan reconstruirse sin depender del valor actual de una fila, de una nota libre, de una fotografía aislada, de un documento suelto o de la memoria del operador.
+
+La regla raíz queda:
+
+```text
+AUTHORITATIVE DOMAIN FACT
++
+STABLE SUBJECT OR QUANTITY SCOPE
++
+PRIOR AND RESULTING REVISION
++
+EFFECTIVE AND RECORDED TIME
++
+REAL ACTOR OR TECHNICAL PRINCIPAL
++
+AUTHORITY CONTEXT
++
+CAUSE AND CORRELATION
++
+IDEMPOTENCY
++
+GOVERNED EVIDENCE REFERENCES WHEN REQUIRED
+→
+REPRODUCIBLE NON-DESTRUCTIVE HISTORY
+```
+
+La tarea define semántica documental. No materializa tablas, eventos, Storage, UI ni mutaciones físicas.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. separación entre estado actual, evento empresarial, registro de auditoría y evidencia;
+2. historia no destructiva y reproducible;
+3. identidad estable del sujeto o alcance cuantitativo afectado;
+4. conservación de estado o revisión previa y resultante;
+5. separación entre tiempo observado, efectivo y registrado;
+6. atribución de actor humano, principal técnico y contexto de autoridad;
+7. causa, correlación, causalidad e idempotencia;
+8. tratamiento de intentos rechazados o fallidos sin inventar efectos físicos;
+9. correcciones compensatorias o supersesiones sin borrar el hecho original;
+10. reglas para evidencia documental, fotográfica, técnica o de aceptación;
+11. frontera con `EVID-ARC-001` a `EVID-ARC-010`;
+12. reglas para historia de movimiento, custodia, condición, conteo, mantenimiento, repuestos, kits y disposición;
+13. reconciliación del historial legacy existente;
+14. consistencia ante concurrencia, reintentos y operación offline;
+15. criterios de reconstrucción de proyecciones actuales;
+16. handoff exacto hacia `NEXO-DOM-018`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria y granularidad física aprobadas en tareas anteriores de NEXO;
+- ubicación, custodia, préstamo, devolución y transferencia;
+- condición, daño, faltante, pérdida, hallazgo y recuperación;
+- mantenimiento, reparación y liberación;
+- baja, venta, descarte y reemplazo;
+- kits, miembros, sustitución y completitud;
+- conteos, observaciones, diferencias, investigación y corrección;
+- repuestos, compatibilidad, reserva, consumo, instalación y pieza retirada;
+- movimientos de inventario, LPN y conciliación ya gobernados por sus tareas propietarias;
+- procesos y eventos empresariales `VPROC-*` ya aprobados;
+- contratos transversales de evidencia `EVID-ARC-001` a `EVID-ARC-010`.
+
+Esta tarea no crea un lifecycle competidor ni renombra eventos existentes.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+CÓMO PUEDE NEXO DEMOSTRAR QUÉ OCURRIÓ,
+SOBRE QUÉ SUJETO O CANTIDAD,
+QUIÉN LO OBSERVÓ O EJECUTÓ,
+CON QUÉ AUTORIDAD,
+CUÁNDO FUE EFECTIVO Y CUÁNDO FUE REGISTRADO,
+QUÉ HECHO ANTERIOR LO CAUSÓ,
+QUÉ CAMBIÓ REALMENTE,
+QUÉ EVIDENCIA LO SUSTENTA
+Y CÓMO SE CORRIGE SIN BORRAR LA HISTORIA?
+```
+
+---
+
+#### 5. Estado actual no es historia
+
+Se fija:
+
+```text
+CURRENT STATE
+!=
+HISTORY
+```
+
+Campos actuales como condición, ubicación, custodio, lifecycle, disponibilidad o cantidad pueden ser proyecciones útiles, pero no sustituyen la secuencia de hechos que produjo su valor.
+
+---
+
+#### 6. Evento empresarial no es registro de auditoría
+
+Se fija:
+
+```text
+BUSINESS EVENT
+!=
+AUDIT RECORD
+```
+
+El evento empresarial afirma un hecho de dominio aceptado.
+
+El registro de auditoría explica quién, cómo, desde qué contexto y con qué resultado intentó, consultó o modificó una operación.
+
+Ambos deben poder correlacionarse cuando corresponda, pero uno no reemplaza al otro.
+
+---
+
+#### 7. Evidencia no es evento
+
+Se fija:
+
+```text
+EVIDENCE
+!=
+BUSINESS EVENT
+```
+
+Una foto, firma, documento, lectura, escaneo, comprobante o soporte puede sustentar un hecho. No crea por sí solo el movimiento, la custodia, la pérdida, la reparación, el consumo, la devolución, la baja ni otra transición.
+
+---
+
+#### 8. Evidencia no es decisión
+
+Se conserva:
+
+```text
+EVIDENCE
+!=
+DECISION
+```
+
+La evidencia puede justificar una decisión. La autoridad y el acto de decidir permanecen explícitos y auditables.
+
+---
+
+#### 9. Nota libre no es fuente de verdad
+
+Se fija:
+
+```text
+FREE TEXT
+!=
+AUTHORITATIVE DOMAIN EFFECT
+```
+
+Las notas describen contexto adicional. No sustituyen:
+
+- un movimiento;
+- una aceptación de custodia;
+- una confirmación de pérdida;
+- una corrección de conteo;
+- un consumo de repuesto;
+- una instalación;
+- una prueba de liberación;
+- una disposición.
+
+---
+
+#### 10. Archivo no es registro empresarial
+
+Se fija:
+
+```text
+FILE
+!=
+BUSINESS RECORD
+```
+
+Un archivo debe estar relacionado con el hecho, recurso o decisión que representa. El archivo aislado no se convierte en la fuente autoritativa del estado físico.
+
+---
+
+#### 11. Historia no destructiva
+
+Todo hecho aceptado que haya producido significado empresarial debe conservarse.
+
+Quedan prohibidos como estrategia de corrección:
+
+- borrar el evento original;
+- modificarlo para aparentar que nunca ocurrió;
+- reescribir el actor original;
+- cambiar retroactivamente la causa;
+- reemplazar una evidencia por otra sin conservar lineage;
+- alterar la revisión previa para hacer coincidir el estado actual.
+
+---
+
+#### 12. Corrección
+
+Una corrección autoritativa debe conservar:
+
+- hecho o registro corregido;
+- razón de corrección;
+- actor que corrige;
+- autoridad;
+- instante de corrección;
+- valor o efecto previo cuando aplique;
+- nuevo efecto;
+- correlación;
+- evidencia aplicable;
+- revisión resultante.
+
+La corrección crea historia adicional; no borra la anterior.
+
+---
+
+#### 13. Compensación
+
+Cuando un efecto ya fue aplicado y debe revertirse o compensarse, la operación posterior referencia la operación original.
+
+```text
+COMPENSATING EFFECT
+→
+REFERENCES ORIGINAL EFFECT
+```
+
+No se crea un efecto independiente sin lineage.
+
+---
+
+#### 14. Supersesión documental
+
+Cuando una evidencia o documento sea sustituido por otro, la relación de supersesión pertenece al contrato transversal de evidencia.
+
+El hecho empresarial original continúa existiendo aunque su soporte documental haya sido reemplazado, retenido o dejado sin vigencia.
+
+---
+
+#### 15. Identidad del sujeto
+
+Cada entrada de historia debe identificar inequívocamente el sujeto afectado según su granularidad canónica.
+
+Puede tratarse de:
+
+- una identidad individual;
+- un alcance controlado por cantidad;
+- una existencia o movimiento de inventario;
+- una instancia de kit;
+- un contenedor físico;
+- un LPN cuando el hecho pertenece a su dominio;
+- un caso, sesión, orden u obligación correlacionada.
+
+No se fabrican identidades por conveniencia de auditoría.
+
+---
+
+#### 16. Granularidad histórica
+
+La historia conserva la granularidad válida en el instante del hecho.
+
+Una reclasificación posterior no autoriza reinterpretar retroactivamente una operación como si hubiese ocurrido bajo la clasificación nueva.
+
+---
+
+#### 17. Clase actual no reescribe el pasado
+
+Se fija:
+
+```text
+CURRENT PRIMARY CLASS
+DOES NOT REWRITE
+HISTORICAL FACT MEANING
+```
+
+Toda transición de clasificación futura debe conservar vigencia y lineage suficientes para explicar bajo qué contrato ocurrió cada hecho histórico.
+
+---
+
+#### 18. Revisión previa y resultante
+
+Toda transición autoritativa debe ser reconciliable con una revisión previa y una revisión resultante cuando el sujeto o proyección sea versionada.
+
+```text
+EXPECTED REVISION = CURRENT REVISION
+```
+
+Después de un commit válido:
+
+```text
+RESULTING REVISION > PRIOR REVISION
+```
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 19. Historia y revisión
+
+La revisión actual no reemplaza el historial.
+
+Debe ser posible relacionar:
+
+```text
+REVISION N
+→ EVENT OR DECISION
+→ REVISION N+1
+```
+
+sin inferir cambios intermedios no registrados.
+
+---
+
+#### 20. Tiempo observado
+
+El tiempo observado representa cuándo un actor o dispositivo observó el hecho físico.
+
+Puede diferir del momento en que el sistema lo recibe.
+
+Un tiempo observado por el cliente no decide por sí solo el orden autoritativo.
+
+---
+
+#### 21. Tiempo efectivo
+
+El tiempo efectivo representa cuándo el efecto empresarial queda vigente.
+
+Cuando difiera del momento de captura, la diferencia debe ser explícita y autorizada por el contrato propietario.
+
+---
+
+#### 22. Tiempo registrado
+
+El tiempo registrado representa cuándo la plataforma aceptó y persistió la operación autoritativa.
+
+Se fija:
+
+```text
+OBSERVED TIME
+!=
+EFFECTIVE TIME
+!=
+RECORDED TIME
+```
+
+cuando existan diferencias reales.
+
+---
+
+#### 23. Reloj del servidor
+
+La autoridad temporal de commit no depende exclusivamente del reloj del cliente.
+
+Capturas con hora local incorrecta no pueden reordenar silenciosamente la historia aceptada.
+
+---
+
+#### 24. Actor humano
+
+Cuando una persona ejecuta, observa, acepta, aprueba o corrige una acción, la historia debe conservar su identidad efectiva según el modelo de autorización vigente.
+
+Una cuenta compartida o principal técnico no sustituye al actor humano cuando el contrato exige atribución individual.
+
+---
+
+#### 25. Principal técnico
+
+Cuando una operación se ejecuta mediante job, integración, dispositivo compartido o servicio, se conserva el principal técnico que realizó la llamada además del actor humano cuando exista.
+
+Se fija:
+
+```text
+TECHNICAL PRINCIPAL
+!=
+HUMAN ACTOR
+```
+
+---
+
+#### 26. Autoridad
+
+La historia debe permitir demostrar bajo qué capacidad, permiso o decisión autorizada se aceptó una mutación cuando el dominio lo exija.
+
+El registro histórico no concede autoridad retroactivamente.
+
+---
+
+#### 27. Contexto operacional
+
+Cuando sea material, el hecho conserva el contexto autorizado aplicable, por ejemplo:
+
+- sede;
+- área;
+- LOC o posición;
+- dispositivo o estación;
+- proceso u orden;
+- custodio o receptor;
+- fuente externa.
+
+El contexto se registra como parte del hecho; no se infiere después únicamente desde el estado actual.
+
+---
+
+#### 28. Razón
+
+Las operaciones que requieran justificación deben conservar un motivo estructurado suficiente y, cuando aplique, detalle libre adicional.
+
+El texto libre no sustituye un motivo gobernado cuando el dominio exige clasificación o autorización específica.
+
+---
+
+#### 29. Correlación
+
+Una operación que participa en un ciclo mayor debe conservar un identificador de correlación o vínculo estable hacia ese ciclo.
+
+Ejemplos de correlación ya gobernada incluyen:
+
+- orden de trabajo;
+- préstamo o devolución;
+- sesión de conteo;
+- remisión;
+- movimiento;
+- caso de daño o pérdida;
+- decisión de disposición;
+- compra o recepción;
+- kit y sus cambios.
+
+---
+
+#### 30. Causalidad
+
+Cuando un hecho deriva de otro debe conservar la relación causal suficiente para reconstruir la cadena.
+
+```text
+CAUSE
+→ EFFECT
+```
+
+no se sustituye por proximidad temporal.
+
+---
+
+#### 31. Idempotencia
+
+El mismo intento lógico con el mismo contenido no puede producir dos efectos empresariales.
+
+La repetición debe recuperar el resultado ya decidido.
+
+Una reutilización del mismo identificador de idempotencia con contenido lógico incompatible debe fallar cerrada.
+
+---
+
+#### 32. Reintentos técnicos
+
+Puede existir más de un intento técnico para un mismo hecho lógico.
+
+Se fija:
+
+```text
+MULTIPLE DELIVERY ATTEMPTS
+CAN MAP TO
+ONE BUSINESS EFFECT
+```
+
+Los intentos son auditables sin duplicar la historia empresarial.
+
+---
+
+#### 33. Resultado desconocido
+
+Ante timeout o pérdida de respuesta después de enviar una mutación, el cliente no inventa una nueva operación equivalente.
+
+Debe reconciliar la misma identidad lógica hasta conocer si el efecto fue:
+
+- aceptado;
+- rechazado;
+- no aplicado;
+- aún desconocido.
+
+---
+
+#### 34. Intento rechazado
+
+Una denegación de autorización o validación puede producir auditoría del intento, pero no un evento empresarial de efecto físico.
+
+```text
+DENIED ATTEMPT
+!=
+COMMITTED DOMAIN EFFECT
+```
+
+---
+
+#### 35. Fallo técnico
+
+Un error técnico antes del commit no debe aparecer como movimiento, transferencia, pérdida, consumo, reparación, disposición o corrección completados.
+
+La observabilidad del fallo permanece separada de la historia empresarial.
+
+---
+
+#### 36. Operación offline
+
+Una captura offline representa observación, intención o evidencia pendiente hasta que el servidor la valida.
+
+```text
+OFFLINE CAPTURE
+!=
+AUTHORITATIVE COMMIT
+```
+
+Al sincronizar deben revalidarse identidad, revisión, autoridad, estado, cantidades, restricciones y conflictos.
+
+---
+
+#### 37. Eventos fuera de orden
+
+Un evento recibido tarde no puede sobrescribir una revisión más reciente mediante last-write-wins.
+
+La reconciliación usa identidad lógica, causalidad, revisión y reglas del dominio propietario.
+
+---
+
+#### 38. Duplicados
+
+Dos registros que describen aparentemente el mismo hecho no se fusionan por nombre, hora aproximada o texto similar.
+
+La deduplicación requiere evidencia determinista de identidad o correlación.
+
+---
+
+#### 39. Proyección actual
+
+El estado actual debe tratarse como una proyección reconciliable de hechos aceptados y, cuando exista transición desde legacy, de un baseline explícitamente versionado.
+
+La proyección puede optimizar lecturas. No adquiere autoridad independiente de su historia.
+
+---
+
+#### 40. Reconstrucción
+
+Para los dominios materializados bajo este contrato, la implementación futura deberá demostrar que una revisión actual puede explicarse por:
+
+```text
+APPROVED BASELINE
++
+ACCEPTED DOMAIN HISTORY
++
+AUTHORIZED CORRECTIONS
+=
+CURRENT RECONCILED PROJECTION
+```
+
+---
+
+#### 41. Baseline legacy
+
+Cuando el sistema actual carezca de historia completa, la adopción no fabricará eventos pasados.
+
+Se permite establecer un baseline de transición con:
+
+- fuente legacy;
+- fecha de corte;
+- sujeto;
+- valor observado;
+- calidad o limitación de evidencia;
+- actor o proceso de reconciliación;
+- lineage hacia el registro original.
+
+El baseline no se presenta como historia que nunca fue observada.
+
+---
+
+#### 42. Historia de ubicación y movimiento
+
+Todo cambio físico de ubicación que produzca efecto autoritativo debe poder reconstruir:
+
+- sujeto o cantidad;
+- origen;
+- destino;
+- instante;
+- actor;
+- motivo;
+- correlación;
+- revisión;
+- evidencia requerida;
+- aceptación o resultado cuando aplique.
+
+Un `updated_at` de la fila actual no sustituye este historial.
+
+---
+
+#### 43. Historia de custodia
+
+Préstamo, devolución, transferencia y cadena de custodia preservan cada handoff efectivo.
+
+Debe poder conocerse:
+
+- custodio anterior;
+- receptor propuesto;
+- custodio efectivo;
+- aceptación;
+- obligación de retorno cuando exista;
+- condición observada;
+- excepciones;
+- cierre.
+
+---
+
+#### 44. Historia de condición
+
+Condición, daño, faltante, pérdida, hallazgo y recuperación conservan observación, evaluación y decisión como hechos distinguibles.
+
+Se preserva:
+
+```text
+OBSERVATION
+!=
+ASSESSMENT
+!=
+DECISION
+!=
+EFFECT
+```
+
+---
+
+#### 45. Faltante y pérdida
+
+Un faltante observado conserva su observación original aunque posteriormente se confirme pérdida o se encuentre el sujeto.
+
+```text
+MISSING OBSERVED
+→ INVESTIGATION
+→ LOSS CONFIRMED OR RECOVERY OR OTHER RESOLUTION
+```
+
+La resolución no borra el faltante histórico.
+
+---
+
+#### 46. Hallazgo y recuperación
+
+El hallazgo de un sujeto previamente faltante o perdido recupera la identidad original.
+
+La historia conserva tanto la pérdida o faltante como el hallazgo y la decisión de recuperación.
+
+No se crea una identidad nueva para ocultar la discontinuidad.
+
+---
+
+#### 47. Historia de conteo
+
+La observación de conteo permanece inmutable.
+
+Cualquier investigación, decisión y corrección posterior se relaciona con la observación sin editarla para hacerla coincidir con el resultado final.
+
+---
+
+#### 48. Historia de mantenimiento
+
+Mantenimiento y reparación conservan separadamente:
+
+- solicitud o disparador;
+- orden;
+- diagnóstico;
+- aprobación cuando aplique;
+- ejecución;
+- proveedor o técnico;
+- repuestos;
+- prueba;
+- liberación;
+- resultado;
+- evidencia.
+
+Una nota de trabajo realizado no resume ni reemplaza el ciclo completo.
+
+---
+
+#### 49. Historia de repuestos
+
+Reserva, liberación de reserva, consumo, instalación y pieza retirada se conservan como hechos correlacionables.
+
+Una descripción de `replaced_parts` no sustituye movimiento de stock ni lineage hacia la orden y el activo.
+
+---
+
+#### 50. Historia de disposición
+
+Solicitud, evaluación, aprobación, ejecución física y efecto económico permanecen distinguibles.
+
+Una baja o descarte no elimina la identidad ni su historia anterior.
+
+---
+
+#### 51. Historia de kits
+
+Ensamble, asignación de miembro, sustitución, verificación de completitud, devolución, desarme y cierre conservan el estado previo y resultante de la instancia.
+
+La historia del kit no borra la historia individual o cuantitativa de sus miembros.
+
+---
+
+#### 52. Historia de contenedores y LPN
+
+El contenedor físico y el LPN conservan identidades distintas.
+
+La historia futura de vínculo, movimiento, desvinculación o cierre debe permitir reconstruir ambas identidades sin convertir el contenedor en LPN ni duplicar contenido.
+
+La semántica detallada permanece en `NEXO-DOM-019` a `NEXO-DOM-024`.
+
+---
+
+#### 53. Historia de inventario ordinario
+
+Movimientos, reservas, consumos, traslados, remisiones, ajustes y conciliaciones conservan su ledger propietario.
+
+Esta tarea no crea un ledger alterno de inventario. Define el sobre mínimo de trazabilidad que sus hechos deben poder exponer o correlacionar.
+
+---
+
+#### 54. Registro de auditoría de lectura
+
+La consulta de información sensible o evidencia puede requerir registro de acceso según el contrato de seguridad y `EVID-ARC-008`.
+
+Esta tarea no convierte toda lectura ordinaria de NEXO en un evento empresarial.
+
+---
+
+#### 55. Registro de auditoría de modificación
+
+Las mutaciones autoritativas deben poder atribuirse al actor y contexto efectivo.
+
+El registro de auditoría de modificación no sustituye el evento empresarial ni su revisión.
+
+---
+
+#### 56. Acceso a evidencia
+
+El acceso a archivos o evidencia se rige por el modelo transversal de evidencia, autorización y privacidad.
+
+NEXO conserva la referencia de negocio. No redefine URLs firmadas, políticas de Storage ni mecanismos de entrega temporal.
+
+---
+
+#### 57. Integridad de evidencia
+
+Cuando una política exija integridad verificable, la evidencia deberá consumir los metadatos, referencias de versión, recurso y mecanismos definidos por `EVID-ARC-001` a `EVID-ARC-010`.
+
+NEXO no inventa un esquema criptográfico paralelo.
+
+---
+
+#### 58. Evidencia mínima
+
+Cada acción propietaria define qué evidencia es obligatoria.
+
+La regla transversal es:
+
+```text
+REQUIRED EVIDENCE MISSING
+→
+AUTHORITATIVE ACTION FAILS CLOSED
+```
+
+cuando el contrato de la acción exige evidencia antes del commit.
+
+---
+
+#### 59. Evidencia adicional
+
+Aportar evidencia adicional no concede autoridad que el actor no posee.
+
+```text
+MORE EVIDENCE
+!=
+MORE AUTHORITY
+```
+
+---
+
+#### 60. Evidencia posterior
+
+Puede vincularse evidencia posterior a un hecho cuando la política lo permita, pero la incorporación debe ser auditable.
+
+Agregar una foto o documento después del evento no cambia retroactivamente el hecho original ni su instante efectivo.
+
+---
+
+#### 61. Evidencia retirada o supersedida
+
+Cuando una evidencia deja de ser válida, se conserva el lineage según el servicio transversal.
+
+El evento empresarial no desaparece por la retirada del archivo; su estado probatorio puede cambiar sin reescribir el hecho.
+
+---
+
+#### 62. Evidencia y retención
+
+Retención, conservación legal, eliminación y disposición de archivos pertenecen a `EVID-ARC-009` y contratos transversales aplicables.
+
+Esta tarea no define políticas de borrado de Storage.
+
+---
+
+#### 63. Evidencia y contingencia
+
+Contingencia de Storage, recuperación de archivos y degradación del servicio pertenecen al owner transversal de evidencia y continuidad.
+
+NEXO debe poder distinguir evidencia pendiente, no disponible o no verificada sin fabricar un resultado físico.
+
+---
+
+#### 64. Historia consultable
+
+La implementación futura deberá permitir reconstruir, según autorización:
+
+- timeline por sujeto;
+- timeline por alcance cuantitativo;
+- correlación por proceso, caso, orden o sesión;
+- actor y principal técnico;
+- origen y destino;
+- cambios de condición y presencia;
+- custodias y handoffs;
+- conteos y correcciones;
+- mantenimiento y repuestos;
+- evidencia vinculada;
+- correcciones y compensaciones;
+- lineage legacy.
+
+Una UI particular no es la fuente de verdad de esta historia.
+
+---
+
+#### 65. Ordenamiento de timeline
+
+Una vista de timeline puede ordenar para lectura, pero debe preservar simultáneamente los tiempos relevantes y la revisión autoritativa.
+
+No se presenta un orden visual como prueba de causalidad cuando la relación causal no existe.
+
+---
+
+#### 66. Privacidad y mínimo acceso
+
+La auditoría puede contener actor, ubicación, documentos, costos, fotografías u otra información restringida.
+
+El acceso debe respetar autorización, propósito y mínimo privilegio. Poder operar sobre un activo no concede automáticamente acceso a toda evidencia histórica asociada.
+
+---
+
+#### 67. Segregación de capacidades
+
+Se distinguen al menos las capacidades conceptuales de:
+
+- ejecutar la acción empresarial;
+- consultar el estado actual;
+- consultar historia;
+- consultar evidencia;
+- agregar evidencia;
+- corregir un hecho;
+- aprobar una corrección;
+- exportar historial;
+- administrar retención o disposición documental.
+
+La capacidad para una no concede las demás.
+
+---
+
+#### 68. Exportación
+
+Una exportación de historia o evidencia es una operación de acceso y distribución, no una mutación del hecho original.
+
+Debe respetar autorización, clasificación, propósito, minimización y auditoría aplicables.
+
+---
+
+#### 69. AS-IS de identidad y estado
+
+El esquema remoto contiene `asset_items` y `asset_groups` con estado actual, condición, lifecycle, ubicación, responsable y campos de atribución y timestamps.
+
+Estos campos constituyen una base reutilizable para proyecciones y atribución básica, pero no demuestran por sí solos la historia completa de cada cambio.
+
+---
+
+#### 70. AS-IS de movimientos
+
+La observación remota de solo lectura registra:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `asset_movements` | 169 |
+| movimientos `initial_location` | 166 |
+| movimientos `transfer` | 3 |
+
+Los 169 registros observados conservan `created_by` no nulo. En el snapshot inspeccionado, `responsible_employee_id` está vacío en esos movimientos.
+
+La historia existente se preserva como evidencia operativa útil, pero no se declara equivalente al contrato completo de custodia, aceptación, condición o causalidad.
+
+---
+
+#### 71. AS-IS de activos y grupos
+
+La observación remota registra:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `asset_items` | 38 |
+| `asset_groups` | 128 |
+
+Estas identidades y grupos deben conservarse durante cualquier adopción futura. La ausencia de historia suficiente no autoriza recrearlos ni renumerarlos.
+
+---
+
+#### 72. AS-IS de documentos, mantenimiento y conteos
+
+En el ambiente inspeccionado se observaron:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `asset_documents` | 0 |
+| `asset_maintenance_records` | 0 |
+| `asset_count_sessions` | 0 |
+| `asset_count_lines` | 0 |
+| `product_asset_transfer_events` | 0 |
+| `product_asset_maintenance_events` | 0 |
+
+La estructura existe, pero no se usa como evidencia de operación real donde el conteo es cero.
+
+---
+
+#### 73. AS-IS de aplicación
+
+La aplicación NEXO actual:
+
+- crea movimientos al registrar activos o grupos;
+- inserta movimientos al transferir ubicación;
+- consulta el historial de `asset_movements` en la ficha de activo;
+- consulta superficies de documentos y mantenimiento;
+- mantiene campos actuales de condición, equipo y lifecycle.
+
+Estas superficies se reutilizan donde correspondan, pero no constituyen por sí solas un historial empresarial completo.
+
+---
+
+#### 74. Brecha de actualización directa
+
+La existencia de `updated_by` y `updated_at` demuestra atribución parcial de una modificación, no qué valores cambiaron, por qué cambiaron, qué revisión previa existía ni qué evento empresarial produjo el cambio.
+
+Se fija:
+
+```text
+UPDATED_BY + UPDATED_AT
+!=
+COMPLETE AUDIT HISTORY
+```
+
+---
+
+#### 75. Brecha de movimiento legacy
+
+Un registro `asset_movements` prueba un movimiento registrado bajo el esquema existente.
+
+No prueba por inferencia:
+
+- aceptación de custodia;
+- autoridad completa;
+- condición antes y después;
+- causalidad con otro proceso;
+- evidencia requerida;
+- resultado de un préstamo o devolución.
+
+Esas relaciones deben reconciliarse únicamente cuando exista evidencia determinista.
+
+---
+
+#### 76. Estado de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan identidades, timestamps, actor de creación, movimientos, superficies de documentos, mantenimiento y conteos existentes. Debe completarse el contrato de historia, revisión, causalidad, evidencia y reconciliación sin borrar registros legacy.
+
+---
+
+#### 77. Reconciliación legacy
+
+La adopción física futura deberá construir un inventario de fuentes históricas y clasificar cada una como:
+
+- hecho empresarial directamente demostrable;
+- baseline de transición;
+- evidencia auxiliar;
+- proyección actual;
+- registro técnico;
+- dato insuficiente que requiere revisión.
+
+No se promueve automáticamente una fila legacy a evento canónico por compartir nombre o timestamp.
+
+---
+
+#### 78. Lineage de movimientos existentes
+
+Los `asset_movements` existentes deben conservar su identidad original o referencia estable durante la transición.
+
+Cuando puedan vincularse determinísticamente con un hecho canónico futuro, el lineage se registra. Cuando no pueda demostrarse, permanecen como historia legacy sin atribuciones inventadas.
+
+---
+
+#### 79. Lineage de valores actuales
+
+Para campos actuales sin historia completa, la transición puede crear un baseline explícito con su fuente y fecha de corte.
+
+No se generan artificialmente secuencias de cambios pasados para explicar un valor actual.
+
+---
+
+#### 80. Fail-closed
+
+Una mutación futura falla cerrada cuando sea material y no pueda resolverse:
+
+- sujeto o alcance;
+- clase o granularidad;
+- revisión esperada;
+- actor o principal;
+- autoridad;
+- idempotencia;
+- correlación requerida;
+- causa requerida;
+- estado previo;
+- cantidad o unidad;
+- evidencia obligatoria;
+- conflicto concurrente;
+- resultado previo de un retry;
+- lineage necesario para una corrección.
+
+El fallo no elimina hechos ya aceptados.
+
+---
+
+#### 81. Condiciones mínimas de materialización futura
+
+La implementación posterior deberá demostrar:
+
+- una fuente autoritativa o correlacionable de historia por dominio;
+- no destrucción de eventos aceptados;
+- revisiones monotónicas cuando apliquen;
+- tiempos observado, efectivo y registrado cuando sean distintos;
+- actor y principal técnico atribuibles;
+- autoridad revalidada server-side;
+- idempotencia;
+- causalidad y correlación;
+- correcciones y compensaciones con lineage;
+- proyecciones actuales reconciliables;
+- soporte de operación offline sin last-write-wins;
+- evidencia referenciada mediante el contrato transversal;
+- protección de información sensible;
+- adopción de movimientos legacy sin fabricar historia;
+- pruebas de reconstrucción y ausencia de doble efecto.
+
+---
+
+#### 82. Frontera con procesos `VPROC-*`
+
+Los procesos y seis eventos empresariales definidos por los contratos de procesos continúan siendo propietarios de sus identidades y significado.
+
+Esta tarea no agrega `VPROC-*`, no renombra eventos y no amplía por inferencia el catálogo generado. Define únicamente los invariantes de historia y auditoría que los hechos NEXO deben conservar o exponer.
+
+---
+
+#### 83. Frontera con `EVID-ARC-001` a `EVID-ARC-010`
+
+El servicio transversal conserva propiedad de:
+
+- inventario de evidencia por proceso;
+- propiedad funcional documental;
+- clasificación;
+- metadatos de archivo;
+- carga, sustitución y anulación documental;
+- validación de archivo;
+- acceso temporal;
+- auditoría de consulta y modificación documental;
+- retención y eliminación;
+- contingencia de Storage.
+
+NEXO conserva la relación empresarial entre evidencia y hecho físico. No duplica el servicio transversal.
+
+---
+
+#### 84. Frontera con autorización
+
+Los owners de autorización deciden quién puede ejecutar, consultar, corregir, aprobar, exportar o acceder a evidencia.
+
+Esta tarea exige atribución y separación de capacidades, pero no crea permisos ni políticas RLS.
+
+---
+
+#### 85. Frontera con base de datos
+
+La forma física de tablas, constraints, funciones, RLS, triggers, outbox, particionado, índices, retención y migración pertenece a arquitectura e implementación física posteriores.
+
+Esta tarea exige comportamiento observable, no una tabla específica llamada auditoría o eventos.
+
+---
+
+#### 86. Frontera con analítica
+
+La historia de auditoría no es automáticamente una tabla de hechos analítica.
+
+Los consumidores de datos pueden derivar métricas autorizadas sin reescribir ni alterar la fuente de verdad operativa.
+
+---
+
+#### 87. Frontera con costos y NUMERA
+
+Los efectos económicos permanecen propiedad de NUMERA o del dominio económico aprobado.
+
+NEXO conserva referencias a los hechos físicos que los originan; no reconstruye importes por inferencia desde notas o evidencia.
+
+---
+
+#### 88. Frontera con `NEXO-DOM-018`
+
+`NEXO-DOM-018` consume este contrato para integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4.
+
+Una etiqueta, QR o documento podrá referenciar una identidad o recurso histórico, pero no se convertirá en la fuente autoritativa del hecho físico.
+
+---
+
+#### 89. Handoff hacia `NEXO-DOM-018`
+
+Esta tarea entrega:
+
+```text
+STABLE DOMAIN SUBJECT
++
+NON-DESTRUCTIVE BUSINESS HISTORY
++
+REVISIONED CURRENT PROJECTION
++
+ACTOR AND TECHNICAL PRINCIPAL ATTRIBUTION
++
+AUTHORITY CONTEXT
++
+CORRELATION AND CAUSALITY
++
+IDEMPOTENT EFFECTS
++
+OBSERVED / EFFECTIVE / RECORDED TIME SEPARATION
++
+GOVERNED EVIDENCE REFERENCES
++
+CORRECTION AND COMPENSATION LINEAGE
++
+LEGACY BASELINE AND SOURCE LINEAGE
++
+EVIDENCE-SERVICE BOUNDARY
+```
+
+`NEXO-DOM-018` deberá integrar identificación e impresión sin usar una etiqueta, QR, fotografía, URL o documento como sustituto del recurso, evento o estado autoritativo.
+
+---
+
+#### 90. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige transiciones auditables, historia no destructiva, movimientos y proyecciones reconciliables, eventos de activos no basados en sobrescrituras, evidencia en mantenimiento y trazabilidad transversal de archivos. Esta tarea especializa y conecta esas obligaciones sin introducir una conducta observable nueva que requiera modificar el registro.
+
+---
+
+#### 91. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, idempotencia, compensación y conteo no destructivo;
+- `TREQ-NEXO-012`, para transiciones auditables de daño, pérdida, disposición y liberación que preservan existencia e historia;
+- `TREQ-NEXO-013`, para que préstamo, devolución, transferencia, conteo, daño, pérdida y hallazgo sean eventos auditables y no sobrescrituras;
+- `TREQ-NEXO-014`, para historia separada de mantenimiento, diagnóstico, ejecución, repuestos, evidencia, prueba y liberación;
+- `TREQ-NEXO-040` y `TREQ-NEXO-041`, para conservar identidad/clase y dimensiones separadas durante la reconstrucción histórica;
+- `TREQ-NEXO-043` a `TREQ-NEXO-047`, para granularidad, repuestos, kits, contenedores y comportamiento sin doble representación;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-004` y `TREQ-INTEGRATION-006`, para idempotencia, reconstrucción de cadenas técnicas y fuente empresarial única;
+- `TREQ-INTEGRATION-012`, para reconciliación correlacionada de activos, mantenimiento, repuestos y efectos entre dominios.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 92. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` posterior al cierre de `NEXO-DOM-016`, continuidad `016 → 017 → 018`, secuencia canónica activa, topología `DEFINE_ONCE` para `NEXO-DOM-001` a `NEXO-DOM-038`, políticas documental y de entrega, owner, handoff de `NEXO-DOM-016`, semántica aprobada de condición/custodia/conteo/repuestos, 04A NEXO, `EVID-ARC-001` a `EVID-ARC-010`, contratos de procesos existentes, código actual de `vento-nexo` y esquema/datos Supabase remotos en solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron movimientos, conteos, préstamos, mantenimientos, consumos, correcciones, exportaciones ni accesos operativos de evidencia. |
+| FÍSICA | NOT_EXECUTED | No se modificaron datos, Supabase, Storage, código, aplicaciones, infraestructura, paquetes ni despliegues. |
+
+---
+
+#### 93. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Estado actual e historia quedan separados.
+- [x] Evento empresarial y registro de auditoría quedan separados y correlacionables.
+- [x] Evidencia, evento, decisión y proyección quedan separados.
+- [x] Nota libre y archivo no se convierten en fuente de verdad.
+- [x] La historia aceptada es no destructiva.
+- [x] Correcciones y compensaciones conservan lineage.
+- [x] Se conserva identidad y granularidad históricas.
+- [x] La clasificación actual no reinterpreta el pasado.
+- [x] Se conservan revisión previa y resultante cuando aplican.
+- [x] Se distinguen tiempo observado, efectivo y registrado.
+- [x] Se distinguen actor humano y principal técnico.
+- [x] Se conserva contexto de autoridad.
+- [x] Se conservan razón, correlación y causalidad.
+- [x] La idempotencia impide doble efecto.
+- [x] Reintentos técnicos no duplican eventos empresariales.
+- [x] Resultados desconocidos exigen reconciliación.
+- [x] Intentos denegados no fabrican efectos físicos.
+- [x] Fallos técnicos no se presentan como hechos completados.
+- [x] Capturas offline no equivalen a commit autoritativo.
+- [x] Eventos tardíos no usan last-write-wins.
+- [x] La proyección actual es reconciliable con baseline e historia.
+- [x] El baseline legacy no fabrica eventos pasados.
+- [x] Se define historia de ubicación y movimiento.
+- [x] Se define historia de custodia y handoffs.
+- [x] Se define historia de condición, faltante, pérdida, hallazgo y recuperación.
+- [x] Conteo conserva observación original.
+- [x] Mantenimiento conserva solicitud, diagnóstico, ejecución, prueba y liberación.
+- [x] Repuestos conservan reserva, consumo, instalación y pieza retirada.
+- [x] Disposición no elimina historia anterior.
+- [x] Kits conservan historia separada de sus miembros.
+- [x] Contenedor físico y LPN permanecen distintos.
+- [x] No se crea un ledger alterno de inventario.
+- [x] Auditoría de lectura y modificación se separa de evento empresarial.
+- [x] Evidencia consume la frontera EVID-ARC.
+- [x] Evidencia obligatoria faltante falla cerrada.
+- [x] Evidencia adicional no concede autoridad.
+- [x] Evidencia posterior no cambia retroactivamente el hecho.
+- [x] Retención y Storage permanecen fuera de esta tarea.
+- [x] Historia consultable respeta autorización.
+- [x] Exportación no altera el hecho original.
+- [x] Se documentan 38 activos, 128 grupos y 169 movimientos remotos observados.
+- [x] Se documentan 166 movimientos `initial_location` y 3 `transfer`.
+- [x] Se documenta que documentos, mantenimiento, conteos y eventos legacy consultados tienen cero filas en el snapshot remoto.
+- [x] `updated_by` y `updated_at` no se declaran historial completo.
+- [x] Movimientos legacy no se promueven por inferencia a custodia o aceptación completas.
+- [x] La capacidad queda `REUSE_OR_REFACTOR`.
+- [x] La reconciliación legacy no usa heurísticas.
+- [x] No se crean identificadores `VPROC-*` nuevos.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-018`.
+
+---
+
+#### 94. Límites
+
+Esta tarea no modifica activos, grupos, inventario, ubicaciones, movimientos, custodia, préstamos, devoluciones, conteos, condición, daño, pérdida, hallazgo, mantenimiento, repuestos, kits, contenedores, LPN, etiquetas, documentos, costos ni evidencia real; no crea ni modifica tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, buckets, políticas de Storage, Server Actions, Route Handlers, contratos generados ni eventos `VPROC-*`; no ejecuta migraciones, backfills, reconciliaciones de datos, exportaciones ni mutaciones remotas; no modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea instancia física propia; no crea ni modifica requisitos de prueba; no modifica 04A; no redefine retención, URLs firmadas, validación de archivos ni contingencia de Storage; y no desarrolla `NEXO-DOM-018`.
+
+---
+
+#### 95. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-017 — Definir auditoría, historial y evidencia`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
+
 ### [ ] NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
 
 ### [ ] NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN

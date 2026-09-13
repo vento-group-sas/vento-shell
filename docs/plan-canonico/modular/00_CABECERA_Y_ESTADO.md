@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1183** |
+| Tareas aprobadas | **1184** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **413** |
+| Tareas no iniciadas | **412** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **74.12% (1183/1596)** |
+| Porcentaje de completamiento | **74.19% (1184/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo** |
-| Tarea actual | **NEXO-DOM-017 — Definir auditoría, historial y evidencia** |
+| Última tarea aprobada | **NEXO-DOM-017 — Definir auditoría, historial y evidencia** |
+| Tarea actual | **NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4** |
+| Siguiente tarea | **NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 41 de 127 aprobadas; NEXO-DOM-017 pendiente** |
+| Progreso del bloque | **BLOQUE K: 42 de 127 aprobadas; NEXO-DOM-018 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-020::GAP-PKG-018** |
-| Carril documental | **ACTIVO — NEXO-DOM-017** |
+| Carril documental | **ACTIVO — NEXO-DOM-018** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-020::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-016` — Definir repuestos, compatibilidad y stock mínimo |
-| Tarea actual | `NEXO-DOM-017` — Definir auditoría, historial y evidencia — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-018` — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 |
+| Última aprobada | `NEXO-DOM-017` — Definir auditoría, historial y evidencia |
+| Tarea actual | `NEXO-DOM-018` — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-019` — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 41 DE 127 APROBADAS — ACTUAL NEXO-DOM-017** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 42 DE 127 APROBADAS — ACTUAL NEXO-DOM-018** |
 | Implementación física | **SHELL-CI-020::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
-        ↓
-TAREA ACTUAL
 NEXO-DOM-017 — Definir auditoría, historial y evidencia
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 41 de 127 tareas aprobadas
+BLOQUE K — 42 de 127 tareas aprobadas
 ```
