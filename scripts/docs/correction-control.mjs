@@ -237,6 +237,12 @@ function validatePolicy(policy) {
     assertArrayOfUniqueStrings(policy?.statuses, 'statuses', { allowEmpty: false });
 }
 
+export function correctionStatusAllowsEmptyExecutionDeclarations(status) {
+    return ['PENDING_AUTHORIZATION', 'CANCELLED'].includes(
+        String(status ?? '').trim(),
+    );
+}
+
 function validateAuthorization(record) {
     if (['PENDING_AUTHORIZATION', 'CANCELLED'].includes(record.status)) {
         if (record.authorization !== null) fail(`${record.correction_id}: ${record.status} exige authorization=null.`);
@@ -275,7 +281,7 @@ function validateAuthorizedChanges(record) {
         if (seen.has(key)) fail(`${record.correction_id}: authorized_changes duplicado: ${key}.`);
         seen.add(key);
     }
-    if (!['PENDING_AUTHORIZATION', 'CANCELLED'].includes(record.status) && record.authorized_changes.length === 0) {
+    if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && record.authorized_changes.length === 0) {
         fail(`${record.correction_id}: ${record.status} exige authorized_changes no vacío.`);
     }
 }
@@ -286,7 +292,7 @@ function validateTreqDeclaration(record) {
     const zeroReason = record.zero_treq_reason === null ? '' : String(record.zero_treq_reason ?? '').trim();
     if (ids.length === 0) {
         if (zeroReason.length < 20) fail(`${record.correction_id}: cero TREQ exige zero_treq_reason concreto de al menos 20 caracteres.`);
-        if (!['PENDING_AUTHORIZATION', 'CANCELLED'].includes(record.status) && record.correction_type !== 'DOCUMENTARY') {
+        if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && record.correction_type !== 'DOCUMENTARY') {
             fail(`${record.correction_id}: toda corrección física autorizada exige affected_treq_ids no vacío.`);
         }
     } else if (record.zero_treq_reason !== null) {
@@ -377,7 +383,7 @@ function validateRecord(record, relativePath, { policy, workTopology, implementa
     }
 
     assertArrayOfUniqueStrings(record.target_repositories, `${correctionId}.target_repositories`);
-    if (record.status !== 'PENDING_AUTHORIZATION' && record.target_repositories.length === 0) {
+    if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && record.target_repositories.length === 0) {
         fail(`${correctionId}: ${record.status} exige target_repositories no vacío.`);
     }
     if (record.target_repositories.some((repo) => repo !== SHELL_REPOSITORY)) {
@@ -385,7 +391,7 @@ function validateRecord(record, relativePath, { policy, workTopology, implementa
     }
     validateAuthorizedChanges(record);
     assertArrayOfUniqueStrings(record.validation_commands, `${correctionId}.validation_commands`);
-    if (record.status !== 'PENDING_AUTHORIZATION' && record.validation_commands.length === 0) {
+    if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && record.validation_commands.length === 0) {
         fail(`${correctionId}: ${record.status} exige validation_commands no vacío.`);
     }
     validateAuthorization(record);
