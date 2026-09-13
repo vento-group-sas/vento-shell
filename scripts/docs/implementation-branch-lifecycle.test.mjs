@@ -8,6 +8,7 @@ import {
   assertInstanceCanFinish,
   assertInstanceCanStart,
   assertStartWorktree,
+  assertStartBranchFreshness,
   authorizedRecordMatchesPersistedMain,
   buildImplementationPrBody,
   classifyImplementationPath,
@@ -124,6 +125,22 @@ test('start valida AUTHORIZED persistido antes de crear o reanudar la rama fisic
   assert.ok(branchMutation > firstGuard);
   assert.ok(secondGuard > branchMutation);
   assert.ok(statusWrite > secondGuard);
+});
+
+test('start rechaza rama fisica existente que no contiene origin/main', () => {
+  assert.equal(assertStartBranchFreshness({
+    mainContained: true,
+    branch: 'implementation/shell-ci-020/gap-pkg-018',
+    syncRaw: '0\t1',
+  }), true);
+  assert.throws(
+    () => assertStartBranchFreshness({
+      mainContained: false,
+      branch: 'implementation/shell-ci-020/gap-pkg-018',
+      syncRaw: '81\t1',
+    }),
+    /IMPLEMENTATION_START_STALE_BRANCH/u,
+  );
 });
 
 test('finish crea commit con cambios y reanuda si el commit ya existe', () => {

@@ -657,6 +657,26 @@ function physicalReadiness(root, instanceId) {
   return report;
 }
 
+export function assertStartBranchFreshness({ mainContained, branch, syncRaw = 'UNKNOWN' } = {}) {
+  if (mainContained === true) return true;
+  fail(
+    `IMPLEMENTATION_START_STALE_BRANCH: ${branch ?? 'UNKNOWN'}; origin/${DEFAULT_BRANCH} no es ancestro; sync=${syncRaw}.`,
+  );
+}
+
+function ensureStartBranchContainsCurrentMain(root, ref, branch) {
+  const probe = git(['merge-base', '--is-ancestor', `origin/${DEFAULT_BRANCH}`, ref], {
+    cwd: root,
+    allowFailure: true,
+  });
+  const counts = syncCounts(root, `origin/${DEFAULT_BRANCH}`, ref);
+  assertStartBranchFreshness({
+    mainContained: probe.status === 0,
+    branch,
+    syncRaw: counts.raw,
+  });
+}
+
 function ensureBranchReadyForStart(root, branch) {
   const startingBranch = currentBranch(root);
   if (![DEFAULT_BRANCH, branch].includes(startingBranch)) {
@@ -674,6 +694,7 @@ function ensureBranchReadyForStart(root, branch) {
 
     if (remoteExists) {
       git(['fetch', 'origin', branch, '--quiet'], { cwd: root });
+      ensureStartBranchContainsCurrentMain(root, `origin/${branch}`, branch);
       if (localExists) {
         git(['switch', branch], { cwd: root });
         git(['branch', '--set-upstream-to', `origin/${branch}`, branch], { cwd: root });
@@ -689,6 +710,7 @@ function ensureBranchReadyForStart(root, branch) {
 
     if (localExists) {
       git(['switch', branch], { cwd: root });
+      ensureStartBranchContainsCurrentMain(root, 'HEAD', branch);
       git(['push', '-u', 'origin', branch], { cwd: root });
       return 'RESUMED_LOCAL';
     }
@@ -698,6 +720,7 @@ function ensureBranchReadyForStart(root, branch) {
     return 'CREATED';
   }
 
+  ensureStartBranchContainsCurrentMain(root, 'HEAD', branch);
   if (!remoteBranchExists(root, branch)) {
     git(['push', '-u', 'origin', branch], { cwd: root });
     return 'RESUMED_LOCAL';
