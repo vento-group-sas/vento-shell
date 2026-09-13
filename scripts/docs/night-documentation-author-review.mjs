@@ -328,8 +328,17 @@ export function validateCandidate(author, capsule) {
 
   if (changes.length === 0) {
     const derived = sectionBody(markdown, /^####\s+(?:\d+\.\s*)?Requisitos de prueba derivados.*$/imu);
-    if (/\bTREQ-[A-Z]+-\d{3,}\b/u.test(derived)) {
-      fail('tarea con cero cambios TREQ no puede mencionar IDs TREQ dentro de Requisitos de prueba derivados.');
+    if (!/NO GENERA REQUISITOS DE PRUEBA/iu.test(derived)) {
+      fail('tarea con cero cambios TREQ debe declarar literalmente NO GENERA REQUISITOS DE PRUEBA.');
+    }
+
+    const referencedIds = [...new Set(derived.match(/\bTREQ-[A-Z]+-\d{3,}\b/gu) ?? [])];
+    const unknownReferencedIds = referencedIds.filter((id) => !existingIds.has(id));
+    if (unknownReferencedIds.length > 0) {
+      fail(
+        'tarea con cero cambios TREQ solo puede citar requisitos existentes presentes en el contexto autorizado; '
+        + `IDs no autorizados: ${unknownReferencedIds.join(', ')}.`,
+      );
     }
   }
 
@@ -346,6 +355,7 @@ function authorInstructions() {
     'No autorices ni describas como ejecutados cambios físicos, migraciones, Supabase, código o despliegues.',
     'Si una decisión necesaria no está soportada por la cápsula, devuelve status STOP con la contradicción o carencia exacta.',
     'Si la tarea necesita crear/modificar TREQ, entrega cada fila semántica completa con las catorce columnas. Nunca alteres requisitos históricos por estilo.',
+    'Si treq_changes queda vacío, la sección Requisitos de prueba derivados debe declarar literalmente NO GENERA REQUISITOS DE PRUEBA. Puede citar como cobertura únicamente IDs TREQ ya existentes en capsule.registry.relevant_rows, dejando claro que son referencias históricas no modificadas.',
     'No incluyas instrucciones de descarga, reemplazo, terminal, rutas locales ni mensajes dirigidos al usuario dentro de task_markdown.',
     'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; no los abrevies ni parafrasees.',
     'En Evidencia de validación usa únicamente estados NOT_EXECUTED/NOT_APPLICABLE salvo evidencia real explícita en la cápsula.',
