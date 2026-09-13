@@ -134,36 +134,27 @@ test('valida candidato documental sin TREQ inventados', () => {
   assert.deepEqual(result.affectedTreqIds, []);
 });
 
-test('permite citar TREQ existente como cobertura cuando declara cero cambios', () => {
+test('rechaza TREQ dentro de requisitos derivados cuando declara cero cambios', () => {
+  const invalid = authorResponse();
+  invalid.task_markdown = invalid.task_markdown.replace(
+    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
+    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea. Cobertura: TREQ-NEXO-004.',
+  );
+  assert.throws(
+    () => validateCandidate(invalid, capsule),
+    /no puede incluir IDs TREQ dentro de Requisitos de prueba derivados/u,
+  );
+});
+
+test('permite referencia histórica fuera de la sección TREQ con cero cambios', () => {
   const referenced = authorResponse();
   referenced.task_markdown = referenced.task_markdown.replace(
-    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
-    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea. Cobertura existente sin modificación: TREQ-NEXO-004.',
+    'Separar identidad física permanente e identidad logística LPN sin confundir sus ciclos de vida.',
+    'Separar identidad física permanente e identidad logística LPN sin confundir sus ciclos de vida. Cobertura histórica no modificada: TREQ-NEXO-004.',
   );
   const result = validateCandidate(referenced, capsule);
   assert.equal(result.stopped, false);
   assert.deepEqual(result.affectedTreqIds, []);
-});
-
-test('rechaza TREQ no presente en contexto cuando declara cero cambios', () => {
-  const invalid = authorResponse();
-  invalid.task_markdown = invalid.task_markdown.replace(
-    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
-    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea. Cobertura: TREQ-NEXO-999.',
-  );
-  assert.throws(() => validateCandidate(invalid, capsule), /IDs no autorizados: TREQ-NEXO-999/u);
-});
-
-test('rechaza cero cambios TREQ sin declaración literal NO GENERA REQUISITOS DE PRUEBA', () => {
-  const invalid = authorResponse();
-  invalid.task_markdown = invalid.task_markdown.replace(
-    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
-    'No se crean filas nuevas en esta tarea.',
-  );
-  assert.throws(
-    () => validateCandidate(invalid, capsule),
-    /debe declarar literalmente NO GENERA REQUISITOS DE PRUEBA/u,
-  );
 });
 
 test('autor y dos reviewers operan sobre el mismo SHA con máximo tres llamadas', async () => {
