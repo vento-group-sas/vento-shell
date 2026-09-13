@@ -35,6 +35,7 @@ import {
   validateSafeSelectiveValidationRecord,
 } from './implementation-validation-engine.mjs';
 import {
+  instanceRequiresInPackageCandidateEvidence,
   recordInPackageCandidateEvidence,
   scanPackageReadiness,
   validateInPackageCandidateEvidence,
@@ -714,8 +715,11 @@ function maybeRecordCi020Candidate(root, instance) {
   const pkg = readiness.registry.packages.find(({ package_id: id }) => id === packageId) ?? null;
   if (pkg?.execution_requirements?.supabase_mutation_required !== true) return 'NO_APLICA';
 
-  const gate = readiness.contract?.physical_dependencies
-    ?.supabase_pre_e5_foundation?.in_package_candidate_gate ?? null;
+  const foundation = readiness.contract?.physical_dependencies
+    ?.supabase_pre_e5_foundation ?? null;
+  if (!instanceRequiresInPackageCandidateEvidence(instance, foundation)) return 'NO_APLICA';
+
+  const gate = foundation?.in_package_candidate_gate ?? null;
   const current = validateInPackageCandidateEvidence({
     root,
     packageId,
