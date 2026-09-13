@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1184** |
+| Aprobadas | **1185** |
 | En propuesta | **0** |
-| No iniciadas | **412** |
+| No iniciadas | **411** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **74.19% (1184/1596)** |
+| Porcentaje de completamiento | **74.25% (1185/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **412** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1085** |
+| ⏸ NO_EVALUADA | **411** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1086** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-017` — Definir auditoría, historial y evidencia | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-018` — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-019` — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-018` — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-019` — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-020` — Definir cuándo un contenedor conserva, cambia o cierra su LPN | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -969,7 +969,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-015` | Definir conteos de activos, reutilizables y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-016` | Definir repuestos, compatibilidad y stock mínimo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-017` | Definir auditoría, historial y evidencia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-018` | Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-018` | Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-019` | Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-020` | Definir cuándo un contenedor conserva, cambia o cierra su LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-021` | Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
