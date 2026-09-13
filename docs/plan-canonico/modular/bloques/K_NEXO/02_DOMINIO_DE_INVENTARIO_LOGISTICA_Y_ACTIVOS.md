@@ -20933,7 +20933,1195 @@ Esta tarea no abre ni modifica sesiones reales; no crea líneas; no escanea acti
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
 
-### [ ] NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+### ✅ NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+**Tarea siguiente:** NEXO-DOM-017 — Definir auditoría, historial y evidencia
+**Tipo de tarea:** documental; definición canónica de repuestos, compatibilidad técnica, reserva, consumo, instalación, pieza retirada, stock mínimo y fronteras NEXO–ORIGO, preservando identidad, movimientos, orden de trabajo, disponibilidad, concurrencia, idempotencia, operación offline y reconciliación legacy bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para que los repuestos de NEXO no sean
+texto de mantenimiento, stock genérico ni componentes instalados sin
+trazabilidad.
+
+La regla raíz queda:
+
+```text
+SPARE PART IDENTITY
++
+EXPLICIT COMPATIBILITY
++
+CANONICAL STOCK QUANTITY
++
+WORK ORDER CONTEXT
++
+RESERVATION BEFORE CONSUMPTION
++
+EXACTLY-ONCE STOCK EFFECT
++
+INSTALLED / REMOVED PART TRACEABILITY
++
+SITE-SCOPED MINIMUM STOCK POLICY
+→
+RECONCILABLE REPAIR MATERIAL FLOW
+```
+
+Esta tarea define el contrato documental. No reserva ni consume repuestos
+reales, no modifica stock y no crea infraestructura física.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. `SPARE_PART` como clase primaria ya aprobada;
+2. separación entre repuesto, activo serializado, consumible y stock ordinario;
+3. compatibilidad explícita y versionada;
+4. compatibilidad separada de disponibilidad;
+5. sustitutos autorizados separados de equivalencia por nombre;
+6. reserva de repuesto ligada a orden de trabajo y activo;
+7. reserva separada de consumo;
+8. consumo e instalación con un único efecto de inventario;
+9. pieza retirada conservada como hecho físico;
+10. retorno o liberación de reserva no utilizada;
+11. imposibilidad de representar simultáneamente la misma cantidad como disponible e instalada;
+12. stock mínimo por contexto operativo;
+13. stock mínimo expresado en unidad canónica;
+14. stock mínimo separado de compra automática;
+15. integración con ORIGO sin duplicar orden de compra ni recepción;
+16. frontera con costo del activo reservada a `NEXO-DOM-025`;
+17. consumo del proceso `VPROC-0030` sin crear un lifecycle competidor;
+18. revisiones, idempotencia, concurrencia y operación offline;
+19. reconciliación del AS-IS `replaced_parts` de texto libre;
+20. handoff exacto hacia `NEXO-DOM-017`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- la clasificación de `NEXO-DOM-001`;
+- ubicación y movimientos vigentes;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, pérdida y hallazgo de `NEXO-DOM-010`;
+- mantenimiento, reparación y disponibilidad de `NEXO-DOM-012`;
+- retiro, descarte, venta y reemplazo de `NEXO-DOM-013`;
+- conteos de `NEXO-DOM-015`;
+- `CAP-07.08`;
+- `VPROC-0030`;
+- contratos de inventario y abastecimiento ya aprobados;
+- fronteras NEXO, ORIGO y NUMERA.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+QUÉ ES UN REPUESTO,
+CON QUÉ ACTIVO O MODELO ES COMPATIBLE,
+CUÁNDO PUEDE RESERVARSE,
+CUÁNDO SE CONSUME,
+QUÉ SIGNIFICA INSTALARLO,
+QUÉ OCURRE CON LA PIEZA RETIRADA,
+QUÉ STOCK MÍNIMO DEBE VIGILARSE
+Y CÓMO SE SOLICITA REPOSICIÓN
+SIN DUPLICAR INVENTARIO, MANTENIMIENTO O COMPRA?
+```
+
+---
+
+#### 5. Clase primaria `SPARE_PART`
+
+`SPARE_PART` permanece como una de las siete clases primarias canónicas.
+
+Su pertenencia a mantenimiento no lo convierte en activo serializado ni en
+consumible operativo.
+
+```text
+SPARE_PART
+!=
+SERIALIZED_ASSET
+!=
+CONSUMABLE
+```
+
+---
+
+#### 6. Granularidad ordinaria del repuesto
+
+El comportamiento ordinario de `SPARE_PART` es control por cantidad.
+
+La identidad autoritativa permanece en el producto repuesto y sus dimensiones
+de existencia aplicables.
+
+Solo una política aprobada puede exigir identidad individual para un componente
+particular; la instalación no la crea por inferencia.
+
+---
+
+#### 7. Repuesto y componente instalado
+
+Se separan:
+
+```text
+SPARE PART IN INVENTORY
+!=
+COMPONENT INSTALLED IN ASSET
+```
+
+La instalación cambia la relación física del repuesto con el activo y produce
+el efecto de inventario correspondiente, pero no autoriza duplicar la misma
+cantidad como disponible e instalada.
+
+---
+
+#### 8. Texto de mantenimiento
+
+Se preserva la regla:
+
+```text
+TEXT "PART REPLACED"
+!=
+INVENTORY CONSUMPTION
+```
+
+`work_done`, `replaced_parts` o notas pueden describir la intervención, pero no
+sustituyen identidad de repuesto, reserva, movimiento, consumo, instalación ni
+pieza retirada.
+
+---
+
+#### 9. Compatibilidad
+
+La compatibilidad es una relación técnica explícita entre un repuesto y el
+alcance de activos o modelos en los que puede utilizarse.
+
+No se infiere únicamente desde:
+
+- nombre;
+- categoría;
+- marca;
+- proveedor;
+- coincidencia textual;
+- uso histórico no validado;
+- fotografía;
+- ubicación.
+
+---
+
+#### 10. Alcance de compatibilidad
+
+Una decisión de compatibilidad debe poder identificar de forma estable:
+
+- repuesto;
+- activo, tipo, modelo o alcance técnico objetivo;
+- decisión vigente;
+- fuente técnica;
+- versión;
+- fecha o vigencia cuando aplique;
+- restricciones;
+- actor responsable;
+- evidencia.
+
+La forma física futura puede variar, pero estas propiedades deben ser
+reproducibles.
+
+---
+
+#### 11. Compatibilidad positiva y negativa
+
+El sistema debe poder distinguir una compatibilidad demostrada de una
+incompatibilidad demostrada y de una compatibilidad aún no verificada.
+
+La ausencia de evidencia no se interpreta como compatibilidad positiva.
+
+---
+
+#### 12. Fail-closed de compatibilidad
+
+Cuando la política del activo o repuesto exige comprobación técnica, una
+compatibilidad desconocida o contradictoria bloquea la instalación hasta
+resolverla o aprobar una excepción trazable.
+
+No se admite un fallback silencioso por semejanza.
+
+---
+
+#### 13. Fuente de compatibilidad
+
+La evidencia de compatibilidad puede provenir, según el caso, de:
+
+- especificación de fabricante;
+- manual técnico;
+- catálogo técnico aprobado;
+- referencia OEM o equivalente validada;
+- decisión de ingeniería o mantenimiento autorizada;
+- validación técnica controlada.
+
+La fuente se conserva para poder reproducir la decisión.
+
+---
+
+#### 14. Compatibilidad versionada
+
+Cambiar una regla de compatibilidad no reescribe instalaciones históricas.
+
+Una versión nueva conserva qué regla regía cuando el repuesto fue autorizado e
+instalado.
+
+---
+
+#### 15. Sustituto de repuesto
+
+Se fija:
+
+```text
+SIMILAR PART
+!=
+AUTHORIZED SUBSTITUTE
+```
+
+Un sustituto requiere compatibilidad explícita y, cuando la política lo exija,
+aprobación adicional.
+
+---
+
+#### 16. Sustitución y orden de trabajo
+
+Toda sustitución aplicada durante una reparación conserva la orden de trabajo,
+el activo, el repuesto originalmente previsto, el repuesto utilizado, la causa
+y la autoridad correspondiente.
+
+La sustitución no modifica retrospectivamente la especificación técnica.
+
+---
+
+#### 17. Orden de trabajo obligatoria
+
+La reserva y el consumo de repuestos para reparación se correlacionan con una
+orden de trabajo y un activo identificable.
+
+Se fija:
+
+```text
+SPARE PART RESERVATION
+WITHOUT WORK ORDER CONTEXT
+→
+NOT AUTHORIZED FOR REPAIR CONSUMPTION
+```
+
+Las excepciones operativas futuras deberán conservar un expediente equivalente
+y trazable.
+
+---
+
+#### 18. Diagnóstico antes de selección definitiva
+
+El diagnóstico puede proponer repuestos y cantidades requeridas.
+
+Una propuesta diagnóstica no reserva, consume ni compra automáticamente.
+
+---
+
+#### 19. Reserva
+
+La reserva compromete cantidad existente para una orden o necesidad aprobada.
+
+Se fija:
+
+```text
+RESERVED
+!=
+CONSUMED
+```
+
+Reservar reduce disponibilidad utilizable según el contrato de inventario, pero
+no constituye todavía instalación ni salida definitiva.
+
+---
+
+#### 20. Reserva exactamente una vez
+
+La misma solicitud lógica de reserva no puede bloquear la cantidad dos veces por
+retry, timeout o repetición de interfaz.
+
+La clave idempotente debe recuperar el resultado ya decidido.
+
+---
+
+#### 21. Sobreasignación prohibida
+
+Dos órdenes concurrentes no pueden reservar la misma cantidad disponible de
+forma incompatible.
+
+La decisión de reserva revalida existencia, disponibilidad y revisión vigente
+en el servidor antes de comprometer el efecto.
+
+---
+
+#### 22. Liberación de reserva
+
+Una reserva no utilizada se libera explícitamente.
+
+La liberación no se modela como consumo negativo ni borra la historia de que la
+cantidad estuvo comprometida.
+
+---
+
+#### 23. Consumo
+
+El consumo representa el efecto físico de inventario cuando el repuesto deja de
+ser existencia disponible por la intervención autorizada.
+
+Debe quedar correlacionado con:
+
+- orden de trabajo;
+- activo;
+- repuesto;
+- cantidad;
+- unidad;
+- ubicación de origen;
+- reserva cuando exista;
+- actor;
+- instante;
+- evidencia;
+- operación idempotente.
+
+---
+
+#### 24. Consumo exactamente una vez
+
+Un mismo hecho de instalación o consumo no puede descontar stock más de una vez.
+
+Una respuesta perdida o timeout exige reconciliar la operación original antes
+de reintentar.
+
+---
+
+#### 25. Instalación
+
+Instalar un repuesto vincula el componente utilizado con el activo y la orden.
+
+Se fija:
+
+```text
+INSTALLATION
+REQUIRES
+TRACEABLE STOCK EFFECT
+```
+
+Una instalación sin efecto físico reconciliable queda incompleta.
+
+---
+
+#### 26. Reserva y consumo no son instalación
+
+Se conservan tres hechos diferentes:
+
+```text
+RESERVATION
+CONSUMPTION
+INSTALLATION
+```
+
+Pueden formar parte de la misma reparación, pero ninguno sustituye a los otros.
+
+---
+
+#### 27. Pieza retirada
+
+Cuando una instalación reemplaza una pieza existente, la pieza retirada conserva
+un hecho físico separado.
+
+Debe poder reconstruirse:
+
+- de qué activo se retiró;
+- qué función o posición ocupaba;
+- causa;
+- condición observada;
+- repuesto instalado en su lugar cuando aplique;
+- destino posterior.
+
+---
+
+#### 28. Destino de pieza retirada
+
+La pieza retirada no se devuelve automáticamente a stock ni se descarta por
+inferir que fue reemplazada.
+
+Su destino puede requerir, según evidencia y política:
+
+- evaluación;
+- reparación;
+- garantía;
+- retorno a proveedor;
+- reincorporación a stock;
+- cuarentena;
+- disposición controlada.
+
+Cada destino conserva su owner contractual.
+
+---
+
+#### 29. Reincorporación a stock
+
+Una pieza retirada solo puede volver a stock cuando una decisión autorizada
+demuestre que sigue siendo utilizable y determine su clasificación, cantidad,
+ubicación y condición.
+
+No se incrementa saldo por el simple acto de retirarla del activo.
+
+---
+
+#### 30. Frontera con baja y disposición
+
+La disposición definitiva de una pieza retirada consume las reglas de retiro y
+disposición aplicables.
+
+Esta tarea no redefine la segregación económica o patrimonial ya aprobada.
+
+---
+
+#### 31. Stock mínimo
+
+El stock mínimo es una política de vigilancia y reposición aplicada al repuesto
+en un contexto operativo determinado.
+
+Se fija:
+
+```text
+MINIMUM STOCK THRESHOLD
+!=
+CURRENT STOCK
+!=
+AVAILABLE STOCK
+```
+
+El umbral no modifica existencias.
+
+---
+
+#### 32. Alcance del stock mínimo
+
+El stock mínimo puede variar por sede o contexto autorizado.
+
+No existe un valor global obligatorio para todos los sitios por el solo hecho
+de compartir producto.
+
+---
+
+#### 33. Unidad del stock mínimo
+
+La comparación canónica se realiza en la unidad base de stock aplicable.
+
+Cuando el usuario configure el umbral mediante una unidad de compra, la
+conversión aprobada debe conservar:
+
+- cantidad de compra;
+- unidad de compra;
+- factor hacia unidad base;
+- resultado normalizado.
+
+No se mezclan unidades silenciosamente.
+
+---
+
+#### 34. Umbral y presentación de compra
+
+Una presentación de compra puede facilitar configuración o reposición, pero no
+se convierte en la unidad canónica de existencia por inferencia.
+
+---
+
+#### 35. Stock mínimo y disponibilidad
+
+La evaluación de umbral utiliza la disponibilidad canónica aplicable y no una
+cantidad bruta escogida ad hoc por la interfaz.
+
+Reservas, bloqueos o estados que reduzcan disponibilidad deben conservar su
+semántica propia.
+
+---
+
+#### 36. Cruce del umbral
+
+Cruzar el stock mínimo produce una señal o necesidad de reposición.
+
+Se fija:
+
+```text
+BELOW MINIMUM STOCK
+!=
+PURCHASE ORDER
+```
+
+La compra requiere el proceso propietario de ORIGO.
+
+---
+
+#### 37. Reposición y ORIGO
+
+NEXO produce la necesidad física y el contexto de inventario.
+
+ORIGO conserva la solicitud, abastecimiento, proveedor, orden de compra,
+condiciones comerciales y recepción empresarial que le correspondan.
+
+NEXO no crea una orden de compra paralela.
+
+---
+
+#### 38. Recepción de repuestos
+
+Una compra o recepción de ORIGO no incrementa stock dos veces.
+
+La entrada física a NEXO utiliza el contrato correlacionado de recepción y
+movimiento ya aprobado.
+
+---
+
+#### 39. Servicio externo y compra de repuesto
+
+Se separan:
+
+```text
+EXTERNAL REPAIR SERVICE
+!=
+SPARE PART PURCHASE
+```
+
+Una misma orden puede requerir ambos, pero proveedor de servicio y producto
+repuesto conservan identidades y efectos diferentes.
+
+---
+
+#### 40. Costo informado
+
+La reparación puede conservar costo informado o referencia económica como
+parte del expediente.
+
+Esta tarea no convierte NEXO en fuente contable ni desarrolla el costo acumulado
+del activo.
+
+---
+
+#### 41. Frontera con `NEXO-DOM-025`
+
+`NEXO-DOM-016` define el contrato físico y lógico de repuesto, compatibilidad,
+reserva, consumo, instalación y stock mínimo.
+
+`NEXO-DOM-025` queda propietario de vincular los repuestos consumidos con el
+mantenimiento y el costo del activo.
+
+Esta tarea entrega los identificadores y correlaciones necesarios, pero no
+absorbe la valoración posterior.
+
+---
+
+#### 42. Frontera con `NEXO-DOM-026`
+
+`NEXO-DOM-026` conserva inspecciones, mantenimiento preventivo, garantía y
+calibración.
+
+Esta tarea no redefine periodicidades, garantía, reclamaciones ni calibración;
+solo preserva que un repuesto usado en esos ciclos mantenga inventario y
+compatibilidad correctos.
+
+---
+
+#### 43. Frontera con `NEXO-DOM-017`
+
+`NEXO-DOM-017` definirá auditoría, historial y evidencia transversal.
+
+Esta tarea establece qué hechos de repuesto deben ser reconstruibles para que
+ese contrato pueda consumirlos.
+
+---
+
+#### 44. VPROC-0030
+
+La tarea consume el proceso canónico:
+
+`VPROC-0030 — Gestionar mantenimiento, reparación, garantía, repuesto y disposición de activos`.
+
+No crea un proceso competidor para repuestos.
+
+---
+
+#### 45. Estados canónicos de `VPROC-0030`
+
+Se consumen los estados ya aprobados:
+
+```text
+MAINTENANCE_REQUESTED
+UNDER_TRIAGE
+DIAGNOSIS_IN_PROGRESS
+WORK_PENDING_APPROVAL
+PARTS_OR_SERVICE_PENDING
+IN_REPAIR
+TESTING
+RELEASE_PENDING
+MAINTENANCE_CASE_CLOSED
+```
+
+La disponibilidad de repuesto puede condicionar `PARTS_OR_SERVICE_PENDING`,
+pero no altera el lifecycle por inferencia.
+
+---
+
+#### 46. Eventos empresariales de `VPROC-0030`
+
+Se conservan exactamente los seis eventos empresariales ya aprobados:
+
+```text
+VPROC-0030.EVT-001
+VPROC-0030.EVT-002
+VPROC-0030.EVT-003
+VPROC-0030.EVT-004
+VPROC-0030.EVT-005
+VPROC-0030.EVT-006
+```
+
+Esta tarea no inventa identificadores adicionales para diagnóstico, espera de
+repuesto o liberación.
+
+---
+
+#### 47. Eventos de capacidad existentes
+
+El vocabulario canónico de capacidad ya reconoce, entre otros:
+
+```text
+spare_part_reserved
+spare_part_consumed
+```
+
+Estas identidades se preservan como hechos de negocio existentes y no se
+sustituyen por comentarios de mantenimiento.
+
+---
+
+#### 48. Mantenimiento y disponibilidad
+
+La falta de un repuesto puede mantener el activo indisponible o pendiente de
+reparación según la política aplicable.
+
+La llegada del repuesto no devuelve por sí sola el activo a servicio.
+
+---
+
+#### 49. Prueba y liberación
+
+Después de la reparación, `TESTING` y `RELEASE_PENDING` conservan su significado.
+
+Se fija:
+
+```text
+PART INSTALLED
+!=
+ASSET RELEASED TO SERVICE
+```
+
+La política del activo determina la prueba o liberación requerida.
+
+---
+
+#### 50. Reserva durante indisponibilidad
+
+La indisponibilidad del activo no libera automáticamente repuestos ya
+reservados.
+
+Cancelar o cambiar el trabajo requiere resolver explícitamente sus reservas.
+
+---
+
+#### 51. Cancelación de trabajo
+
+Si una orden se cancela antes del consumo, las reservas pendientes se liberan o
+reconcilian expresamente.
+
+No quedan cantidades huérfanas ni se registran consumos ficticios para cerrar
+el expediente.
+
+---
+
+#### 52. Corrección de consumo
+
+Un consumo incorrecto no se arregla sobrescribiendo la cantidad original.
+
+La corrección utiliza un evento o movimiento compensatorio trazable que preserve
+antes, después, causa, actor y correlación.
+
+---
+
+#### 53. Concurrencia
+
+Antes de reservar o consumir se revalidan, según corresponda:
+
+- orden de trabajo;
+- activo;
+- repuesto;
+- compatibilidad;
+- cantidad;
+- unidad;
+- existencia;
+- disponibilidad;
+- reserva previa;
+- ubicación;
+- revisión;
+- autoridad.
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 54. Idempotencia
+
+La misma intención lógica no puede:
+
+- crear dos reservas;
+- liberar dos veces una reserva;
+- consumir dos veces la misma cantidad;
+- instalar dos veces el mismo efecto;
+- registrar dos veces la pieza retirada;
+- emitir dos señales de reposición equivalentes con efectos duplicados.
+
+La misma clave recupera el resultado ya decidido.
+
+---
+
+#### 55. Operación offline
+
+Offline puede capturar diagnóstico, necesidad, evidencia o intención.
+
+Se fija:
+
+```text
+OFFLINE INTENT
+!=
+AUTHORITATIVE RESERVATION OR CONSUMPTION
+```
+
+Al sincronizar se revalidan disponibilidad, revisión, compatibilidad y
+autoridad.
+
+---
+
+#### 56. Resultado remoto desconocido
+
+Ante timeout posterior a reserva o consumo, el cliente reconcilia la misma
+operación antes de emitir otra.
+
+El estado desconocido no autoriza repetir el efecto físico.
+
+---
+
+#### 57. Autorización conceptual
+
+Se separan conceptualmente las capacidades de:
+
+```text
+DEFINE_SPARE_COMPATIBILITY
+REVIEW_SPARE_COMPATIBILITY
+CONFIGURE_MINIMUM_STOCK
+REQUEST_SPARE_PART
+RESERVE_SPARE_PART
+RELEASE_SPARE_RESERVATION
+AUTHORIZE_SUBSTITUTE
+CONSUME_SPARE_PART
+CONFIRM_INSTALLATION
+RECORD_REMOVED_PART
+RECONCILE_SPARE_EFFECT
+```
+
+Las tareas de autorización posteriores conservan la definición concreta de
+permisos. Poseer una capacidad no concede las demás.
+
+---
+
+#### 58. Evidencia
+
+La evidencia puede incluir, según operación:
+
+- referencia técnica;
+- manual o especificación;
+- escaneo de repuesto;
+- fotografía;
+- cantidad;
+- unidad;
+- ubicación;
+- orden de trabajo;
+- activo;
+- pieza retirada;
+- proveedor;
+- actor;
+- prueba técnica;
+- observación de condición.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+---
+
+#### 59. Auditoría mínima
+
+Toda materialización futura debe poder reconstruir:
+
+- identidad de repuesto;
+- clase;
+- orden de trabajo;
+- activo;
+- compatibilidad y versión;
+- cantidad solicitada;
+- cantidad reservada;
+- cantidad consumida;
+- unidad;
+- ubicación;
+- movimiento;
+- instalación;
+- pieza retirada;
+- destino de pieza retirada;
+- stock mínimo y scope cuando aplique;
+- actor;
+- autoridad;
+- instante de servidor;
+- correlación;
+- idempotencia;
+- evidencia;
+- corrección o excepción.
+
+---
+
+#### 60. AS-IS de mantenimiento
+
+La infraestructura remota contiene `asset_maintenance_records` con, entre otros,
+los campos de estado, tipo de mantenimiento, proveedor, trabajo realizado,
+`parts_replaced`, `replaced_parts`, costo y próxima fecha.
+
+También existe la superficie legacy `product_asset_maintenance_events` con
+campos similares a nivel producto.
+
+Estas estructuras constituyen base reutilizable, no el contrato final de
+repuestos.
+
+---
+
+#### 61. AS-IS de texto libre
+
+`asset_maintenance_records.replaced_parts` y
+`product_asset_maintenance_events.replaced_parts` son texto.
+
+El AS-IS puede describir piezas reemplazadas, pero no demuestra una relación
+canónica entre repuesto, orden de trabajo, reserva, movimiento, instalación y
+pieza retirada.
+
+---
+
+#### 62. AS-IS de aplicación NEXO
+
+La aplicación actual consulta e inserta `asset_maintenance_records` y muestra
+`parts_replaced`, `replaced_parts` y costo en la ficha del activo.
+
+La búsqueda dirigida no identificó un workflow gobernado de reserva, consumo e
+instalación de `SPARE_PART` por identidad canónica.
+
+---
+
+#### 63. AS-IS de stock mínimo
+
+`product_site_settings` ya expone infraestructura reutilizable para:
+
+- `min_stock_qty`;
+- `min_stock_input_mode`;
+- `min_stock_purchase_qty`;
+- `min_stock_purchase_unit_code`;
+- `min_stock_purchase_to_base_factor`.
+
+La aplicación NEXO consume estos campos en catálogo y configuración de productos.
+
+---
+
+#### 64. Límite del stock mínimo legacy
+
+La existencia de `min_stock_qty` no demuestra por sí sola una política completa
+de repuestos.
+
+Falta demostrar que el umbral se aplique con clase `SPARE_PART`, disponibilidad
+canónica, compatibilidad, reserva, señal de reposición y frontera ORIGO sin
+duplicar efectos.
+
+---
+
+#### 65. AS-IS remoto observado
+
+El catálogo remoto de tablas reporta sin filas actuales las superficies
+`asset_maintenance_records`, `product_asset_maintenance_events` y
+`product_site_settings` en el ambiente inspeccionado.
+
+Por tanto, esta tarea no reinterpreta hechos operativos históricos existentes.
+
+---
+
+#### 66. Estado de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan mantenimiento y configuración de mínimo actuales, pero deben
+reconciliarse con identidad `SPARE_PART`, compatibilidad, reserva, consumo,
+instalación, pieza retirada y contratos ORIGO/NEXO.
+
+---
+
+#### 67. Reconciliación futura del legacy
+
+La materialización posterior deberá investigar y reconciliar, sin heurística:
+
+1. productos usados actualmente como repuestos;
+2. registros de mantenimiento con `parts_replaced = true`;
+3. texto histórico de `replaced_parts`;
+4. repuestos descritos solo en notas;
+5. stock actual de productos candidatos;
+6. mínimos por sede;
+7. unidades y conversiones de compra;
+8. proveedores y presentaciones de compra;
+9. activos y modelos objetivo;
+10. compatibilidad técnica disponible;
+11. reservas o apartados manuales existentes;
+12. piezas retiradas y su destino conocido.
+
+No se ejecuta clasificación, migración ni backfill en esta tarea.
+
+---
+
+#### 68. Fail-closed
+
+La operación futura falla cerrada cuando:
+
+- el repuesto no tiene identidad canónica;
+- la clase primaria es ambigua;
+- la orden o activo no existen;
+- la compatibilidad requerida no está resuelta;
+- la cantidad o unidad son inválidas;
+- la disponibilidad es insuficiente;
+- existe sobreasignación concurrente;
+- la revisión es obsoleta;
+- una sustitución no está autorizada;
+- el consumo ya pudo haberse aplicado y no se ha reconciliado;
+- una instalación carece de movimiento correlacionado;
+- falta autoridad;
+- el resultado remoto es desconocido.
+
+El fallo conserva los hechos ya aceptados.
+
+---
+
+#### 69. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar:
+
+- clase `SPARE_PART` autoritativa;
+- compatibilidad versionada;
+- sustitutos gobernados;
+- orden de trabajo correlacionada;
+- reserva atómica;
+- liberación de reserva;
+- consumo exactamente una vez;
+- instalación correlacionada;
+- pieza retirada trazable;
+- unidad y cantidad canónicas;
+- mínimo por scope;
+- señal de reposición sin compra automática;
+- integración ORIGO sin duplicación;
+- revisiones monotónicas;
+- idempotencia;
+- concurrencia;
+- offline reconciliable;
+- autorización server-side;
+- evidencia;
+- reconciliación de excepciones.
+
+---
+
+#### 70. Handoff hacia `NEXO-DOM-017`
+
+Esta tarea entrega:
+
+```text
+CANONICAL SPARE PART IDENTITY
++
+VERSIONED COMPATIBILITY
++
+WORK-ORDER-BOUND RESERVATION
++
+RESERVATION SEPARATE FROM CONSUMPTION
++
+EXACTLY-ONCE STOCK EFFECT
++
+INSTALLATION AND REMOVED-PART TRACEABILITY
++
+SITE-SCOPED MINIMUM STOCK POLICY
++
+ORIGO REPLENISHMENT BOUNDARY
++
+NON-DESTRUCTIVE CORRECTIONS
++
+IDEMPOTENT RECONCILIABLE HISTORY
+```
+
+`NEXO-DOM-017` deberá definir auditoría, historial y evidencia consumiendo estos
+hechos sin convertir notas, fotografías o documentos en sustitutos de los
+eventos de inventario.
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige clase de repuesto, reserva y
+consumo ligados a activo y orden, compatibilidad, pieza retirada, movimiento de
+stock, no doble representación, mantenimiento con prueba y liberación e
+integración correlacionada entre abastecimiento, NEXO y efecto económico.
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-014`, para separar orden, diagnóstico, ejecución, repuestos,
+  proveedor, indisponibilidad, costo informado, prueba y liberación;
+- `TREQ-NEXO-040`, para conservar `SPARE_PART` como clase primaria única;
+- `TREQ-NEXO-041`, para separar clase de producto, presentación, unidad,
+  ubicación, condición y costo;
+- `TREQ-NEXO-044`, como requisito propietario directo de reserva, consumo,
+  instalación, pieza retirada, compatibilidad y no doble representación;
+- `TREQ-NEXO-047`, para aplicar comportamiento por cantidad a repuestos sin
+  duplicar saldo;
+- `TREQ-INTEGRATION-012`, para correlacionar compra o servicio, mantenimiento,
+  repuestos y efectos físicos/económicos entre ORIGO, NEXO y NUMERA.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos locales contra el checkout del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, continuidad `015 → 016 → 017`, ruta activa, override `NEXO-DOM-001..038 → DEFINE_ONCE`, políticas documental y de entrega, owner, handoffs previos, `CAP-07.08`, 04A NEXO e INTEGRATION, proceso `VPROC-0030`, eventos existentes, código actual de mantenimiento y mínimos en `vento-nexo`, y esquema Supabase remoto de solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se reservó, consumió, instaló, retiró, compró ni repuso ningún repuesto real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron productos, stock, activos, órdenes, mantenimiento, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 74. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `SPARE_PART` permanece como clase primaria.
+- [x] Repuesto se separa de activo serializado y consumible.
+- [x] La granularidad ordinaria permanece por cantidad.
+- [x] Stock e instalación se separan.
+- [x] Texto de pieza reemplazada no equivale a movimiento.
+- [x] Compatibilidad es explícita y versionada.
+- [x] Compatibilidad no se infiere por nombre o categoría.
+- [x] Compatibilidad desconocida falla cerrada cuando es obligatoria.
+- [x] Sustituto autorizado se separa de similaridad.
+- [x] Diagnóstico no reserva ni compra automáticamente.
+- [x] Reserva exige contexto de orden y activo.
+- [x] Reserva se separa de consumo.
+- [x] Liberación de reserva conserva historia.
+- [x] Se impide sobreasignación concurrente.
+- [x] Consumo produce efecto físico exactamente una vez.
+- [x] Instalación exige efecto de inventario correlacionado.
+- [x] Pieza retirada conserva identidad o scope y destino trazable.
+- [x] Pieza retirada no vuelve a stock por inferencia.
+- [x] Stock mínimo se separa de stock actual y disponible.
+- [x] Stock mínimo puede variar por sede o contexto.
+- [x] Umbral utiliza unidad canónica y conversiones aprobadas.
+- [x] Cruce de mínimo no crea compra automática.
+- [x] ORIGO conserva abastecimiento y compra.
+- [x] NEXO conserva hecho físico e inventario.
+- [x] Servicio externo se separa de compra de repuesto.
+- [x] `NEXO-DOM-025` conserva costo del activo.
+- [x] `NEXO-DOM-026` conserva preventivo, garantía y calibración.
+- [x] Se consume `VPROC-0030` sin lifecycle competidor.
+- [x] Se conservan exactamente seis eventos empresariales de `VPROC-0030`.
+- [x] Se preservan `spare_part_reserved` y `spare_part_consumed` existentes.
+- [x] Instalación no equivale a liberación del activo.
+- [x] Cancelación reconcilia reservas.
+- [x] Correcciones son no destructivas.
+- [x] Se definen idempotencia, concurrencia y offline.
+- [x] Se segregan capacidades conceptuales.
+- [x] Se documenta el AS-IS de mantenimiento y texto libre.
+- [x] Se documenta la infraestructura `min_stock_*` reutilizable.
+- [x] La capacidad queda `REUSE_OR_REFACTOR`.
+- [x] Se define reconciliación futura sin heurística.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-017`.
+
+---
+
+#### 75. Límites
+
+Esta tarea no crea ni reclasifica repuestos reales; no modifica productos,
+stock, reservas, órdenes de trabajo, activos, ubicaciones, mantenimiento,
+proveedores, compras, recepciones, costos, piezas retiradas ni mínimos; no crea
+tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS,
+Server Actions ni Route Handlers; no ejecuta migraciones ni backfills; no
+modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no
+despliega; no crea instancia física propia; no crea ni modifica requisitos de
+prueba; no modifica el registro 04A; no desarrolla el costo del activo reservado
+a `NEXO-DOM-025`; no desarrolla inspección, preventivo, garantía o calibración
+reservados a `NEXO-DOM-026`; y no desarrolla `NEXO-DOM-017`.
+
+---
+
+#### 76. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-017 — Definir auditoría, historial y evidencia`
+
 ### [ ] NEXO-DOM-017 — Definir auditoría, historial y evidencia
 ### [ ] NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
 
