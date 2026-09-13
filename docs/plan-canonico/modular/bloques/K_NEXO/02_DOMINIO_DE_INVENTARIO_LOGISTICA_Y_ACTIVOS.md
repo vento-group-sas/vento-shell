@@ -24603,7 +24603,1131 @@ Esta tarea no imprime ni reimprime etiquetas o documentos; no modifica LOC, LPN,
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
 
-### [ ] NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+### ✅ NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+**Tarea siguiente:** NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+**Tipo de tarea:** documental; definición canónica de identidad y relación entre contenedor físico individual y LPN, separando existencia física permanente, identidad logística estable durante su ciclo, duración temporal o persistente, vínculo directo, historia, etiquetado, ubicación, custodia, condición y contenido sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-12
+
+---
+
+#### 1. Propósito
+
+Definir una frontera inequívoca entre el objeto físico reutilizable que existe en el mundo real y la identidad logística LPN que NEXO utiliza para agrupar, identificar, mover y reconciliar contenido.
+
+El contrato evita que un código visible, una fila legacy, un tipo de empaque o un LPN termine funcionando simultáneamente como identidad del contenedor, identidad logística y representación de stock.
+
+---
+
+#### 2. Resultado canónico
+
+La separación queda expresada así:
+
+```text
+PHYSICAL_CONTAINER
+= identidad permanente del objeto fisico individual
+
+LPN
+= identidad logistica estable durante su propio ciclo
+  con politica temporal o persistente
+
+DIRECT CONTAINER-LPN BINDING
+= relacion explicita y auditable entre ambas identidades
+
+PHYSICAL_CONTAINER != LPN != LABEL != CONTENT
+```
+
+La relación puede existir o no existir. Ninguno de sus extremos depende del otro para conservar identidad.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin reabrir:
+
+- la clasificación primaria de inventario y la clase `PHYSICAL_CONTAINER`;
+- el propósito y los tipos canónicos de LPN;
+- el ciclo de vida de LPN;
+- contenido, empaque y desempaque;
+- división, unión y transferencia entre LPN;
+- anidamiento de LPN;
+- relación sede → LOC → LPN → contenido;
+- custodia y responsable actual;
+- condición, daño, pérdida y faltante;
+- conteos de activos, reutilizables y contenedores;
+- historia no destructiva y evidencia;
+- integración de etiquetas e impresión con BLOQUE E4.
+
+No reabre sus decisiones ya aprobadas.
+
+---
+
+#### 4. Frontera principal de identidad
+
+Un `PHYSICAL_CONTAINER` representa una cosa física individual rastreable.
+
+Un `LPN` representa una identidad logística.
+
+Que ambos estén asociados durante una operación no los convierte en la misma entidad.
+
+---
+
+#### 5. Definición de `PHYSICAL_CONTAINER`
+
+Es un recipiente físico permanente o retornable cuya unidad individual requiere identidad propia.
+
+Su identidad debe poder sobrevivir a:
+
+- cambio o pérdida de etiqueta;
+- reemplazo del QR o código visible;
+- cambio, cierre o ausencia de LPN;
+- vaciado de contenido;
+- cambio de LOC;
+- cambio de sede cuando esté autorizado;
+- cambio de custodio;
+- mantenimiento;
+- daño;
+- recuperación;
+- indisponibilidad temporal;
+- nuevos ciclos operativos.
+
+---
+
+#### 6. Permanencia del contenedor físico
+
+La permanencia significa continuidad de la identidad del objeto físico, no disponibilidad perpetua ni imposibilidad de retiro.
+
+Mientras el mismo objeto físico exista como recurso rastreado, conserva su identidad aunque cambien estado, ubicación, custodio, etiqueta o asociación logística.
+
+La baja o disposición futura deberá preservar su historia y no habilita reutilización silenciosa de la misma identidad para otro objeto físico.
+
+---
+
+#### 7. Definición de `LPN`
+
+El LPN es una identidad logística única que representa una unidad de manejo, agrupación o seguimiento dentro de su ciclo aprobado.
+
+El LPN conserva identidad propia frente a:
+
+- su etiqueta visible;
+- el contenedor físico asociado;
+- el contenido;
+- la ubicación;
+- el purpose type;
+- el estado logístico;
+- el documento que lo originó.
+
+---
+
+#### 8. Estabilidad de identidad del LPN
+
+Mientras un LPN continúe vigente, reimprimirlo, moverlo, cambiar su etiqueta o vincularlo con un contenedor no crea otro LPN.
+
+La identidad del LPN cambia únicamente mediante una transición de ciclo expresamente autorizada por su contrato, nunca por inferencia visual o por mutar atributos auxiliares.
+
+---
+
+#### 9. LPN temporal
+
+Un LPN temporal está destinado a un ciclo logístico acotado.
+
+`TEMPORAL` describe la política de duración de la identidad logística; no significa que el identificador pueda mutar durante ese ciclo ni que sea un alias del contenedor físico.
+
+La regla exacta que decide cuándo ese LPN debe cerrarse o sustituirse pertenece a `NEXO-DOM-020`.
+
+---
+
+#### 10. LPN persistente
+
+Un LPN persistente puede conservarse a través de más de un uso operativo cuando la política aprobada lo permita.
+
+`PERSISTENTE` no convierte el LPN en la identidad permanente del recipiente físico.
+
+Incluso cuando el mismo contenedor y el mismo LPN se mantengan asociados durante un periodo prolongado, ambas identidades continúan separadas.
+
+---
+
+#### 11. Regla de no aliasing
+
+Queda prohibido tratar como equivalentes:
+
+```text
+physical_container_id = lpn_id
+container_code = lpn_code
+container_qr = lpn_qr
+container_label = lpn_identity
+container_type = physical_container_identity
+```
+
+Un sistema puede mostrar ambos identificadores juntos, pero no sustituir uno por el otro.
+
+---
+
+#### 12. Existencia independiente del contenedor
+
+Un `PHYSICAL_CONTAINER` puede existir sin LPN activo.
+
+Ejemplos válidos conceptualmente incluyen:
+
+- contenedor vacío almacenado;
+- contenedor en inspección;
+- contenedor en mantenimiento;
+- contenedor en espera de asignación;
+- contenedor recuperado después de cerrar su LPN previo.
+
+La ausencia de LPN no elimina ni suspende su identidad física.
+
+---
+
+#### 13. Existencia independiente del LPN
+
+Un LPN puede existir sin contenedor físico individual asociado.
+
+Puede representar una unidad logística cuyo soporte físico:
+
+- sea desechable;
+- no requiera identidad individual;
+- sea virtual o lógico dentro del flujo aprobado;
+- todavía no tenga contenedor asignado;
+- utilice otra forma de empaque sin clasificación `PHYSICAL_CONTAINER`.
+
+---
+
+#### 14. Vínculo directo contenedor–LPN
+
+La asociación entre un contenedor individual y un LPN se modela como relación explícita, no como identidad compartida.
+
+El vínculo directo deberá poder expresar al menos:
+
+- identidad del contenedor físico;
+- identidad del LPN;
+- inicio de vigencia;
+- fin de vigencia cuando exista;
+- motivo o contexto empresarial;
+- actor o principal técnico responsable de la operación;
+- contexto de autoridad;
+- correlación e idempotencia;
+- evidencia y lineage de auditoría cuando apliquen.
+
+---
+
+#### 15. Vínculo activo
+
+Un vínculo activo significa únicamente que ese LPN está directamente asociado a ese contenedor en el periodo vigente.
+
+No significa que:
+
+- el contenedor sea el LPN;
+- todo contenido histórico del LPN pertenezca al contenedor para siempre;
+- el contenedor deba conservar ese LPN en el siguiente ciclo;
+- el LPN deba cerrarse al vaciarse;
+- el vínculo autorice movimiento o custodia.
+
+---
+
+#### 16. Cardinalidad del vínculo directo
+
+Para evitar aliasing y ambigüedad de identidad:
+
+- un contenedor físico individual no puede tener simultáneamente más de un LPN como vínculo directo de identidad logística;
+- un LPN no puede tener simultáneamente más de un contenedor físico individual como vínculo directo de identidad física;
+- una segunda asociación directa exige resolver primero la vigencia de la asociación previa conforme al ciclo aprobado.
+
+Esta cardinalidad se aplica al vínculo directo de identidad y no al contenido anidado.
+
+---
+
+#### 17. Anidamiento de LPN no equivale a vínculo directo
+
+La existencia de LPN hijos dentro de otro LPN o dentro de una unidad de manejo no crea múltiples identidades directas para el mismo contenedor físico.
+
+Se separan:
+
+```text
+DIRECT CONTAINER-LPN BINDING
+!=
+LPN PARENT-CHILD RELATION
+!=
+LPN CONTENT MEMBERSHIP
+```
+
+El anidamiento continúa bajo el contrato ya aprobado para LPN anidados.
+
+---
+
+#### 18. Historia del vínculo
+
+Vincular y desvincular no sobrescribe la historia previa.
+
+Cada periodo de asociación debe quedar reconstruible como intervalo o secuencia de eventos, de forma que pueda determinarse qué contenedor y qué LPN estuvieron asociados en una fecha determinada.
+
+---
+
+#### 19. Nueva asociación posterior
+
+Si el mismo contenedor se asocia posteriormente con otro LPN, la relación anterior permanece en la historia.
+
+Si el mismo LPN se asocia posteriormente con otro contenedor cuando la política lo permita, la relación previa permanece igualmente trazable.
+
+Esta tarea define la preservación de identidad e historia; `NEXO-DOM-020` decidirá la política que permite conservar, cambiar o cerrar el LPN.
+
+---
+
+#### 20. Diferencia entre vínculo y contenido
+
+El vínculo contenedor–LPN no es una tabla de contenido.
+
+La relación responde:
+
+```text
+¿QUE CONTENEDOR FISICO SOPORTA DIRECTAMENTE ESTE LPN?
+```
+
+El contenido del LPN responde por separado:
+
+```text
+¿QUE EXISTENCIA LOGISTICA ESTA DENTRO DEL LPN?
+```
+
+---
+
+#### 21. Prohibición de doble saldo por vínculo
+
+Crear o cerrar el vínculo entre contenedor y LPN no crea, duplica, consume ni mueve inventario por sí mismo.
+
+El contenedor físico conserva su propia identidad de recurso y el contenido permanece representado por el contrato de inventario/LPN correspondiente.
+
+La prohibición integral de doble contabilización entre existencia suelta y existencia contenida permanece en `NEXO-DOM-021`.
+
+---
+
+#### 22. Frontera con movimiento atómico
+
+La asociación no concede por sí sola semántica de movimiento.
+
+La regla que determina cómo se mueve un LPN junto con todo su contenido corresponde a `NEXO-DOM-022`.
+
+Esta tarea solo exige que cualquier movimiento futuro preserve la diferencia entre contenedor, LPN y contenido.
+
+---
+
+#### 23. Frontera con lote, serial, vencimiento y condición del contenido
+
+Lote, serial, vencimiento y condición de la existencia dentro del LPN permanecen propiedades de su contenido y de las identidades correspondientes.
+
+No se copian al contenedor físico como si describieran al recipiente.
+
+La trazabilidad interna pertenece a `NEXO-DOM-023`.
+
+---
+
+#### 24. Frontera con capacidad y compatibilidad
+
+Capacidad, peso, volumen y compatibilidad del contenedor son atributos o reglas del recurso físico y su uso.
+
+Su definición completa pertenece a `NEXO-DOM-024`.
+
+Esta tarea solo establece que esos atributos nunca deben almacenarse como sustituto de identidad del LPN.
+
+---
+
+#### 25. Frontera con `NEXO-DOM-020`
+
+`NEXO-DOM-019` no decide en qué eventos concretos:
+
+- el contenedor conserva el LPN;
+- el contenedor recibe otro LPN;
+- el LPN se cierra;
+- el LPN se reutiliza;
+- el LPN se anula;
+- el vínculo se renueva para un nuevo ciclo.
+
+Esas reglas pertenecen exclusivamente a `NEXO-DOM-020`.
+
+---
+
+#### 26. Contenedor retornable individual
+
+Un contenedor retornable con trazabilidad por unidad se clasifica como `PHYSICAL_CONTAINER` y conserva identidad propia durante salida, tenencia externa, retorno, inspección y nuevos usos.
+
+Su carácter retornable no convierte automáticamente su LPN en persistente.
+
+---
+
+#### 27. Reutilizable por cantidad
+
+Un recipiente genérico que no requiere identidad individual continúa bajo `REUSABLE_QUANTITY`.
+
+No debe fabricarse una entidad `PHYSICAL_CONTAINER` por cada unidad solo para poder etiquetarla o contarla.
+
+La promoción futura a identidad individual requiere una transición explícita y versionada conforme a la clasificación canónica.
+
+---
+
+#### 28. Empaque desechable
+
+Una bolsa, caja, envoltura u otro empaque desechable no se clasifica como `PHYSICAL_CONTAINER` únicamente porque pueda portar un LPN o una etiqueta.
+
+Puede soportar físicamente una unidad logística sin adquirir identidad de activo o retornable permanente.
+
+---
+
+#### 29. Frontera con `KIT_INSTANCE`
+
+Un kit conserva identidad y composición conforme al contrato de kits.
+
+El kit no se convierte en contenedor por contener componentes y un contenedor no se convierte en kit por portar artículos.
+
+Un kit puede estar dentro de un LPN o relacionarse con logística sin perder su identidad propia.
+
+---
+
+#### 30. Frontera con activo serializado
+
+Un contenedor físico individual es una clase con comportamiento de identidad exacta, pero no se convierte automáticamente en `SERIALIZED_ASSET`.
+
+La clasificación responde al propósito operativo canónico y no a que ambos tengan código, QR, custodio o historial.
+
+---
+
+#### 31. Frontera con LOC
+
+LOC identifica una ubicación física operativa.
+
+Contenedor y LPN pueden referenciar ubicación conforme a sus contratos, pero:
+
+```text
+LOC != PHYSICAL_CONTAINER != LPN
+```
+
+Cambiar de LOC no cambia por sí mismo ninguna de las dos identidades.
+
+---
+
+#### 32. Etiqueta del contenedor físico
+
+Una etiqueta de contenedor representa o resuelve la identidad del `PHYSICAL_CONTAINER`.
+
+Su sustitución, deterioro o reimpresión no crea un contenedor nuevo.
+
+La trazabilidad deberá permitir diferenciar el identificador canónico del recurso y la representación física vigente.
+
+---
+
+#### 33. Etiqueta del LPN
+
+Una etiqueta de LPN representa o resuelve la identidad del LPN.
+
+No representa el `purpose_type`, el `container_type`, el contenido ni la identidad permanente del contenedor físico.
+
+Reetiquetar conserva el LPN mientras el ciclo aprobado indique que sigue siendo la misma identidad logística.
+
+---
+
+#### 34. Código, QR y barcode
+
+QR, DataMatrix, Code128 u otra simbología son medios de resolución.
+
+El valor codificado debe permitir llegar a la identidad correcta sin convertir la simbología en fuente de verdad.
+
+Un código ilegible genera una necesidad de identificación o reetiquetado; no demuestra desaparición del objeto ni cierre del LPN.
+
+---
+
+#### 35. Etiqueta perdida o dañada
+
+La pérdida de una etiqueta no equivale a:
+
+- pérdida del contenedor;
+- pérdida del LPN;
+- anulación;
+- cierre;
+- disposición;
+- creación de reemplazo.
+
+La recuperación de identidad se resuelve mediante atributos y evidencia autorizados y termina, cuando corresponda, en una nueva representación de la misma identidad.
+
+---
+
+#### 36. Representación visible frente a identidad autoritativa
+
+La UI puede mostrar un único rótulo operativo que combine datos del contenedor y del LPN, pero el modelo debe conservar ambos identificadores por separado.
+
+Una vista compuesta nunca habilita una escritura que confunda sus fuentes.
+
+---
+
+#### 37. Purpose type del LPN
+
+El purpose type expresa el propósito del LPN.
+
+No determina:
+
+- la identidad del LPN;
+- la identidad del contenedor;
+- la persistencia del contenedor;
+- la permanencia del vínculo.
+
+Cambiar una representación visible no puede transformar por inferencia un propósito en otro.
+
+---
+
+#### 38. `container_type` legacy
+
+El campo legacy `inventory_lpns.container_type` se interpreta únicamente como clasificación histórica asociada a la fila LPN existente.
+
+Valores como `box`, `pallet`, `bag`, `tray`, `bin` u `other` no constituyen por sí mismos identidad de un contenedor físico individual.
+
+Ese campo no podrá reutilizarse como `physical_container_id` ni como prueba de existencia de un `PHYSICAL_CONTAINER`.
+
+---
+
+#### 39. `label` legacy
+
+El campo legacy `inventory_lpns.label` no es identidad de contenedor físico ni sustituye `inventory_lpns.id` o `code` como identidad lógica vigente del LPN.
+
+Su contenido deberá reconciliarse como representación o metadata legacy antes de cualquier adopción física futura.
+
+---
+
+#### 40. `status` legacy
+
+Los estados legacy `active`, `empty`, `consumed` y `damaged` no deben reutilizarse para inferir estado del contenedor físico.
+
+Estado del LPN, condición del contenedor, disponibilidad del contenedor y estado de contenido son ejes diferentes.
+
+---
+
+#### 41. Estado del contenedor físico
+
+El contenedor deberá conservar por separado, cuando el modelo propietario lo materialice:
+
+- condición física;
+- disponibilidad;
+- ubicación;
+- custodia;
+- estado de retorno cuando aplique.
+
+Ninguno de esos ejes sustituye su identidad permanente.
+
+---
+
+#### 42. Estado del LPN
+
+El LPN conserva su ciclo de vida logístico ya definido.
+
+Esta tarea no amplía ni reemplaza ese lifecycle; únicamente prohíbe proyectarlo sobre el contenedor como si ambos compartieran estado.
+
+---
+
+#### 43. Estado del vínculo
+
+El vínculo directo requiere distinguir como mínimo:
+
+- inexistente;
+- vigente;
+- finalizado.
+
+La causa concreta que inicia o termina la relación debe conservarse sin inventar un lifecycle paralelo al del LPN o al del contenedor.
+
+---
+
+#### 44. Inicio del vínculo
+
+Crear una asociación debe ser una operación explícita e idempotente.
+
+Debe comprobar que las identidades existen y que la nueva asociación no contradice otra asociación directa vigente.
+
+La operación no crea ni renombra ninguno de los recursos.
+
+---
+
+#### 45. Fin del vínculo
+
+Finalizar una asociación no elimina ninguno de los extremos.
+
+Debe conservar:
+
+- la identidad anterior;
+- el periodo de vigencia;
+- la razón;
+- el actor o principal técnico;
+- la correlación con el hecho empresarial;
+- evidencia cuando sea requerida.
+
+---
+
+#### 46. Re-vinculación
+
+Una re-vinculación se representa como finalización o transición controlada del vínculo anterior y creación del vínculo resultante, nunca como sobrescritura silenciosa del identificador del contenedor o del LPN.
+
+Las condiciones empresariales que permiten esa transición serán cerradas en `NEXO-DOM-020`.
+
+---
+
+#### 47. Idempotencia
+
+La misma intención empresarial repetida con la misma clave idempotente debe producir un único efecto de vínculo o desvínculo.
+
+Un retry técnico no puede generar varios periodos activos equivalentes ni terminar dos veces la misma relación.
+
+---
+
+#### 48. Concurrencia
+
+Dos operaciones concurrentes que pretendan asociar el mismo contenedor a LPN distintos, o el mismo LPN a contenedores distintos, no pueden resolverse mediante last-write-wins silencioso.
+
+La materialización futura deberá serializar, rechazar o reconciliar el conflicto de forma auditable.
+
+---
+
+#### 49. Resultado desconocido
+
+Si una solicitud de vínculo o desvínculo pierde confirmación después de enviarse, el cliente no asume éxito ni vuelve a ejecutar con una nueva intención.
+
+Debe consultar o reconciliar el resultado usando identidad e idempotencia antes de reintentar.
+
+---
+
+#### 50. Operación offline
+
+Una captura offline puede registrar intención o evidencia, pero no declara autoritativamente un nuevo vínculo activo mientras no haya reconciliación con la fuente canónica.
+
+Conflictos detectados al reconectar fallan cerrados y no reemplazan automáticamente la relación vigente.
+
+---
+
+#### 51. Tiempo
+
+La historia deberá distinguir cuando aplique:
+
+- momento efectivo del vínculo;
+- momento observado o capturado;
+- momento registrado en el sistema.
+
+Un evento tardío no puede reescribir silenciosamente la historia posterior.
+
+---
+
+#### 52. Actor y principal técnico
+
+Las transiciones deberán poder atribuirse al actor humano efectivo y, cuando aplique, al dispositivo, servicio o principal técnico que ejecutó la acción.
+
+Un dispositivo compartido no se convierte en custodio ni actor empresarial por ser quien escanea.
+
+---
+
+#### 53. Autoridad
+
+Ver, imprimir o escanear un identificador no concede autoridad para:
+
+- vincular;
+- desvincular;
+- mover;
+- cerrar;
+- anular;
+- cambiar custodia;
+- cambiar condición.
+
+La autorización permanece en las familias de autorización propietarias.
+
+---
+
+#### 54. Ubicación
+
+La ubicación actual del contenedor y la del LPN deben ser reconciliables cuando estén vinculados, pero son proyecciones sobre identidades distintas.
+
+Una diferencia detectada no autoriza corregir una de ellas por sobrescritura sin el hecho empresarial correspondiente.
+
+---
+
+#### 55. Custodia
+
+La custodia del contenedor y la custodia del LPN pueden estar correlacionadas durante un handoff, pero no se fusionan como un único atributo.
+
+La aceptación de custodia deberá conservar el objeto exacto que fue aceptado.
+
+---
+
+#### 56. Condición
+
+Daño, suciedad, mantenimiento o restricción física del contenedor no equivalen automáticamente a daño del LPN ni de su contenido.
+
+De forma recíproca, un LPN marcado con una condición logística no cambia automáticamente la condición material del contenedor.
+
+---
+
+#### 57. Contenedor vacío
+
+Un contenedor vacío puede conservar identidad y disponibilidad separadas del estado del LPN.
+
+Que un LPN quede sin contenido no decide por sí mismo si debe cerrarse, conservarse o cambiarse; esa decisión corresponde a `NEXO-DOM-020`.
+
+---
+
+#### 58. Contenedor dañado o perdido
+
+Daño o pérdida física afectan la condición y disponibilidad del contenedor identificado.
+
+No crean automáticamente un LPN nuevo ni autorizan eliminar la historia del LPN previamente asociado.
+
+Las decisiones de baja, recuperación o disposición conservan sus contratos propietarios.
+
+---
+
+#### 59. LPN cerrado o anulado
+
+Cerrar o anular un LPN no elimina el `PHYSICAL_CONTAINER` asociado.
+
+La relación deberá reflejar la consecuencia correspondiente sin borrar el periodo histórico durante el cual existió la asociación.
+
+La regla concreta de permanencia o cambio es propiedad de `NEXO-DOM-020`.
+
+---
+
+#### 60. Búsqueda y resolución
+
+Una búsqueda podrá aceptar código de LPN, código de contenedor, QR u otros identificadores aprobados, pero el resultado debe declarar qué tipo de identidad resolvió.
+
+Queda prohibido devolver un único objeto ambiguo denominado `container` cuando la fuente no distingue contenedor físico y LPN.
+
+---
+
+#### 61. Escaneo
+
+El escaneo deberá producir primero una resolución de identidad tipada.
+
+Solo después de conocer si el código pertenece a un LPN, contenedor, LOC, activo u otro recurso puede continuar la acción empresarial autorizada.
+
+---
+
+#### 62. Lectura compuesta
+
+Una proyección de consulta puede mostrar conjuntamente:
+
+- contenedor;
+- LPN activo;
+- ubicación;
+- custodia;
+- contenido resumido;
+- condición;
+- estado logístico.
+
+La proyección es derivada y no se convierte en fuente maestra de ninguno de esos dominios.
+
+---
+
+#### 63. Escrituras
+
+Las escrituras futuras deberán dirigirse al propietario de cada hecho:
+
+- identidad y condición del contenedor → recurso físico;
+- lifecycle del LPN → LPN;
+- asociación → relación explícita;
+- contenido → membresía/contenido LPN;
+- ubicación → movimiento o hecho de ubicación correspondiente;
+- custodia → evento de custodia correspondiente.
+
+No se autoriza un endpoint monolítico que sobreescriba todos los ejes sin causalidad.
+
+---
+
+#### 64. AS-IS de `inventory_lpns`
+
+El esquema remoto observado mantiene `inventory_lpns` con:
+
+- `id` UUID como clave primaria;
+- `site_id`;
+- `code` único;
+- `location_id` opcional;
+- `status` legacy;
+- `container_type` legacy;
+- `notes`;
+- timestamps;
+- `created_by`;
+- `label`.
+
+No contiene `physical_container_id`, `parent_lpn_id` ni un historial de vínculo contenedor–LPN.
+
+---
+
+#### 65. Restricciones AS-IS observadas
+
+En el esquema remoto observado:
+
+- `inventory_lpns.code` tiene unicidad;
+- `status` admite `active`, `empty`, `consumed` o `damaged`;
+- `container_type` admite `box`, `pallet`, `bag`, `tray`, `bin` u `other`;
+- `location_id` referencia `inventory_locations`;
+- `site_id` referencia `sites`;
+- `created_by` referencia `employees`.
+
+Estas restricciones prueban existencia de un modelo LPN legacy, no existencia de identidad `PHYSICAL_CONTAINER`.
+
+---
+
+#### 66. Snapshot remoto observado
+
+La lectura remota de solo lectura mostró:
+
+```text
+inventory_locations: 12
+inventory_lpns: 0
+inventory_lpn_items: 0
+asset_items: 38
+```
+
+No existen filas LPN actuales que esta tarea deba reinterpretar o reclasificar.
+
+---
+
+#### 67. Ausencia de entidad de contenedor físico
+
+En el esquema público remoto no se observaron tablas cuyo nombre materialice explícitamente:
+
+- `physical_container`;
+- binding contenedor–LPN;
+- historial de binding LPN;
+- identidad física individual de contenedor.
+
+La ausencia se registra como brecha de materialización, no como permiso para reutilizar `inventory_lpns` como contenedor físico.
+
+---
+
+#### 68. AS-IS de código LPN
+
+El código actual de `vento-nexo` conserva componentes y endpoint de LPN.
+
+El formulario conocido construye una vista previa `LPN-SEDE-AAMM-SEQ` y el endpoint consulta `inventory_lpns` por `id`, `code`, `site_id` y `created_at`.
+
+Ese soporte confirma capacidad parcial de LPN, pero no implementa la separación objetivo con contenedor físico.
+
+---
+
+#### 69. Superficie LPN actual
+
+La auditoría canónica previa clasificó la superficie LPN como parcial: existe capacidad técnica, pero no se demuestra una experiencia integral y consumida para el ciclo canónico completo.
+
+Por tanto, la existencia del componente o la tabla no se interpreta como cierre del contrato.
+
+---
+
+#### 70. Tratamiento del AS-IS
+
+El tratamiento resultante es:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutiliza la identidad lógica LPN existente donde sea compatible.
+
+Debe refactorizarse cualquier semántica que trate la fila LPN o `container_type` como sustituto de un contenedor físico permanente.
+
+---
+
+#### 71. Forma conceptual objetivo
+
+La materialización futura deberá poder representar conceptualmente al menos:
+
+```text
+PHYSICAL_CONTAINER
+- stable identity
+- classification
+- condition
+- availability
+- location
+- custody
+- lifecycle history
+
+LPN
+- stable identity for its lifecycle
+- duration policy: TEMPORAL or PERSISTENT
+- purpose
+- logistics state
+- location
+- content references
+
+DIRECT_BINDING
+- physical_container_id
+- lpn_id
+- valid_from
+- valid_to nullable
+- reason/context
+- actor/principal
+- authority context
+- correlation/idempotency
+```
+
+Los nombres físicos de tablas, columnas, constraints, RPC o tipos no se fijan en esta tarea.
+
+---
+
+#### 72. Integridad de una futura materialización
+
+La arquitectura futura deberá impedir como mínimo:
+
+- aliasar IDs de contenedor y LPN;
+- dos bindings directos activos incompatibles;
+- borrar historia al re-vincular;
+- crear saldo por vincular;
+- inferir contenedor desde `container_type`;
+- inferir identidad desde label;
+- transformar un reusable por cantidad en contenedor individual sin transición;
+- crear LPN nuevo por reimpresión.
+
+---
+
+#### 73. Migraciones
+
+Esta tarea no crea migraciones ni decide estrategia de backfill.
+
+La futura adopción deberá realizarse desde `vento-shell`, respetar los datos legacy observados, validar compatibilidad y mantener rollback y reconciliación.
+
+---
+
+#### 74. Backfill
+
+No se autoriza fabricar contenedores físicos a partir de filas LPN, `container_type`, notas, etiquetas, nombres, ubicaciones ni categorías.
+
+Una futura migración solo podrá crear identidades físicas cuando exista evidencia suficiente para una unidad real individual.
+
+---
+
+#### 75. Cero LPN remotos y migración
+
+El snapshot actual con cero filas LPN reduce el riesgo de reinterpretación de instancias existentes, pero no autoriza modificar esquema ni asumir que siempre permanecerá vacío.
+
+Toda implementación deberá volver a observar el estado real antes de ejecutar cambios.
+
+---
+
+#### 76. Relación con BLOQUE E4
+
+La integración de impresión aprobada continúa vigente:
+
+- etiquetas y códigos son representaciones;
+- reimpresión no crea identidad;
+- el trabajo de impresión no gobierna el lifecycle del recurso;
+- una etiqueta LPN debe resolver a identidad LPN;
+- una etiqueta de contenedor debe resolver a identidad de contenedor cuando exista esa salida autorizada.
+
+Esta tarea no crea una nueva identidad `IMP-*` ni modifica contratos de impresión.
+
+---
+
+#### 77. Relación con evidencia
+
+Fotos, firmas, lecturas, documentos o capturas pueden respaldar identificación, vínculo, custodia, condición o resolución de conflicto.
+
+No sustituyen el recurso ni el vínculo autoritativo.
+
+La evidencia conserva la frontera transversal aprobada y no concede autoridad por existir.
+
+---
+
+#### 78. Compatibilidad con consumidores
+
+Todo consumidor futuro deberá distinguir al menos:
+
+- `lpn_id` cuando opera sobre identidad logística;
+- `physical_container_id` cuando opera sobre el recurso físico;
+- ambos cuando consume un vínculo;
+- ninguno por inferencia cuando solo dispone de texto o etiqueta no resuelta.
+
+Una API legacy que exponga solo `container_type` no demuestra esta compatibilidad.
+
+---
+
+#### 79. Casos canónicos de decisión
+
+| Caso | Contenedor físico | LPN | Resultado |
+| --- | --- | --- | --- |
+| Recipiente retornable individual vacío | existe | puede no existir | identidad física se conserva |
+| LPN sobre empaque desechable | no requerido | existe | LPN válido sin `PHYSICAL_CONTAINER` |
+| Contenedor individual con LPN temporal | existe | existe | dos identidades + vínculo temporal |
+| Contenedor individual con LPN persistente | existe | existe | dos identidades + vínculo persistente |
+| Reimpresión de etiqueta LPN | sin cambio | mismo LPN | no crea identidad |
+| Reimpresión de etiqueta de contenedor | mismo contenedor | sin efecto | no crea identidad |
+| Cierre del LPN | mismo contenedor | cambia estado/ciclo | no elimina contenedor |
+| Cambio de contenedor para un LPN | relación controlada | mismo LPN si política lo permite | preservar vínculo anterior |
+| Nuevo LPN para mismo contenedor | mismo contenedor | nueva identidad logística autorizada | preservar vínculo anterior |
+| Recipiente genérico por cantidad | no se individualiza | puede existir LPN | continúa `REUSABLE_QUANTITY` |
+
+---
+
+#### 80. Fallos que deben cerrar de forma segura
+
+Deben bloquear la mutación afectada:
+
+- identificador ambiguo;
+- código que resuelve a más de un tipo de recurso;
+- contenedor inexistente;
+- LPN inexistente;
+- segundo binding directo incompatible;
+- resultado previo desconocido;
+- sesión humana ausente cuando es requerida;
+- autoridad insuficiente;
+- conflicto offline;
+- intento de inferir identidad física desde `container_type` o label.
+
+---
+
+#### 81. Hallazgos diferidos con propietario
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe entidad física materializada de contenedor | No | arquitectura E3/E5 y paquete de implementación propietario | esquema y contratos materializados con validación de identidad separada |
+| No existe historial materializado de binding contenedor–LPN | No | arquitectura E3/E5 y paquete de implementación propietario | relación versionada/auditable implementada y probada |
+| `container_type` vive en `inventory_lpns` | No | transición de datos/arquitectura propietaria | compatibilidad definida sin promover el campo a identidad física |
+| No está decidido cuándo conservar, cambiar o cerrar el LPN | No | `NEXO-DOM-020` | matriz de eventos y política de continuidad aprobada |
+| No está cerrada la no doble contabilización suelto/LPN | No | `NEXO-DOM-021` | contrato específico aprobado |
+| No está cerrada la atomicidad de mover LPN y contenido | No | `NEXO-DOM-022` | contrato específico aprobado |
+| No está cerrada la trazabilidad interna de lote/serial/condición | No | `NEXO-DOM-023` | contrato específico aprobado |
+| No están cerradas capacidad, peso, volumen y compatibilidad | No | `NEXO-DOM-024` | contrato específico aprobado |
+
+Ninguno de estos pendientes se absorbe en esta tarea.
+
+---
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege separación entre contenedor físico, LPN y stock, identidad estable, lifecycle LPN, ausencia de doble representación, historia y comportamiento por clase. Esta tarea materializa la frontera documental requerida sin introducir una obligación observable nueva fuera de esa cobertura.
+
+---
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para el ciclo autorizado y auditable del LPN y su reetiquetado sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables donde LPN y stock no se duplican;
+- `TREQ-NEXO-013`, para separar contenedor físico, LPN, activo, reusable, kit y stock y preservar identidad ante reimpresión;
+- `TREQ-NEXO-041`, para impedir que clase, categoría, estado o LPN se confundan entre sí;
+- `TREQ-NEXO-046`, como cobertura directa de identidad de contenedor separada del LPN y vínculo temporal o persistente;
+- `TREQ-NEXO-047`, para exigir identidad exacta de contenedores y ausencia de duplicación entre contenedor, LPN y contenido;
+- `TREQ-NEXO-016`, para conservar separación entre LPN, bulto, contenedor, custodia y flujo logístico.
+
+Estas referencias constituyen trazabilidad vigente y no representan una actualización del registro.
+
+---
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación y normalización de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la elaboración del artefacto. |
+| REMOTA | PASS | Se verificaron `main`, continuidad `018 → 019 → 020`, topología `DEFINE_ONCE`, políticas documental y de entrega, owner vigente, contratos previos de LPN/activos/etiquetas, 04A NEXO, código LPN actual de `vento-nexo` y esquema/datos remotos de Supabase en solo lectura. El snapshot observado mostró 12 LOC, 0 LPN, 0 ítems LPN y 38 activos; `inventory_lpns` conserva `code` único, `status` y `container_type` legacy y no se observó entidad o binding de `PHYSICAL_CONTAINER`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, vincularon, movieron, cerraron, anularon, reetiquetaron ni inspeccionaron LPN o contenedores reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, datos, Supabase, migraciones, RLS, aplicaciones, infraestructura, paquetes ni despliegues. |
+
+---
+
+#### 85. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `PHYSICAL_CONTAINER` y LPN son identidades diferentes.
+- [x] La identidad física permanece aunque cambie o desaparezca el LPN.
+- [x] El LPN conserva estabilidad durante su propio lifecycle.
+- [x] Temporal y persistente describen política de duración del LPN sin convertirlo en contenedor.
+- [x] Un contenedor puede existir sin LPN.
+- [x] Un LPN puede existir sin contenedor individual.
+- [x] El vínculo directo es explícito y auditable.
+- [x] La historia de vínculos no se sobrescribe.
+- [x] La relación directa impide asociaciones activas incompatibles.
+- [x] Anidamiento LPN y vínculo directo quedan separados.
+- [x] Contenido LPN y vínculo contenedor–LPN quedan separados.
+- [x] Vincular no crea saldo ni duplica inventario.
+- [x] Reutilizable por cantidad no se convierte artificialmente en contenedor individual.
+- [x] Empaque desechable no se convierte artificialmente en contenedor físico.
+- [x] Kit, activo, LOC, contenedor, LPN y etiqueta permanecen separados.
+- [x] QR y barcode son medios de resolución, no fuente de verdad.
+- [x] Reimpresión no crea identidad nueva.
+- [x] `purpose_type` no sustituye identidad LPN.
+- [x] `container_type` legacy no sustituye identidad física.
+- [x] `label` legacy no sustituye identidad.
+- [x] estado LPN y condición física quedan separados.
+- [x] la tarea no absorbe reglas reservadas a `NEXO-DOM-020` a `NEXO-DOM-024`.
+- [x] AS-IS se clasifica `REUSE_OR_REFACTOR`.
+- [x] se documenta que existen 0 LPN y 0 ítems LPN en el snapshot remoto observado.
+- [x] se documenta ausencia observada de entidad/binding físico de contenedor.
+- [x] no se crean identificadores `VPROC-*` nuevos.
+- [x] no se crean ni modifican requisitos de prueba.
+- [x] no se modifica 04A.
+- [x] no se autoriza materialización física.
+- [x] se entrega handoff exacto a `NEXO-DOM-020`.
+
+---
+
+#### 86. Límites
+
+Esta tarea no crea contenedores, LPN, contenido, movimientos, vínculos, ubicaciones, custodias, etiquetas ni documentos reales; no modifica `inventory_lpns`, `inventory_lpn_items`, activos, stock ni datos remotos; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, migraciones, backfills ni tipos generados; no modifica `vento-nexo`; no implementa UI o scanner; no imprime; no cambia E4; no crea permisos; no despliega; no crea instancia física propia; no decide la política de conservar/cambiar/cerrar LPN; no redefine doble contabilización, movimiento atómico, trazabilidad interna ni capacidad/compatibilidad; no crea ni modifica requisitos de prueba; y no modifica 04A.
+
+---
+
+#### 87. Handoff hacia `NEXO-DOM-020`
+
+Esta tarea entrega exactamente:
+
+```text
+PERMANENT PHYSICAL CONTAINER IDENTITY
++
+SEPARATE LPN IDENTITY
++
+TEMPORAL OR PERSISTENT LPN DURATION POLICY AXIS
++
+EXPLICIT DIRECT CONTAINER-LPN BINDING
++
+ONE ACTIVE DIRECT IDENTITY BINDING PER ENDPOINT
++
+NON-DESTRUCTIVE BINDING HISTORY
++
+LABEL AS REPRESENTATION ONLY
++
+PURPOSE AND CONTAINER TYPE AS NON-IDENTITY ATTRIBUTES
++
+BINDING WITHOUT STOCK DUPLICATION
++
+IDEMPOTENT AND CONCURRENCY-SAFE LINK / UNLINK
++
+AS-IS REUSE_OR_REFACTOR BOUNDARY
+```
+
+`NEXO-DOM-020` deberá definir, usando esta separación como invariante, cuándo un contenedor conserva el LPN vigente, cuándo exige otro LPN y cuándo el LPN se cierra, sin fusionar identidades ni borrar la historia del vínculo.
+
+---
+
+#### 88. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
+
 ### [ ] NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
 ### [ ] NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
 ### [ ] NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
