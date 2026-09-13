@@ -7,7 +7,6 @@ import test from 'node:test';
 import {
   authorSchema,
   candidateStructuralMetrics,
-  normalizeValidationEvidenceTable,
   reviewerSchema,
   runAuthorReview,
   selectModels,
