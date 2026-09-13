@@ -68,11 +68,13 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
   assert.ok(qualityIndex > formatCheckIndex);
   assert.match(result.documentationSource, /docs:task:finish -- --task-id/u);
   assert.match(result.documentationSource, /NEXT_TASK_ALLOWED: SI/u);
+  assert.match(result.documentationSource, /AUTORIZACIÓN DOCUMENTAL NOCTURNA/u);
   assert.doesNotMatch(result.documentationSource, /DOCUMENTATION_ONLY/u);
 
   assert.match(result.implementationSource, /INTENT_LOCK: PHYSICAL_IMPLEMENTATION/u);
   assert.match(result.implementationSource, /CONVERSATION_LANE: PHYSICAL/u);
   assert.match(result.implementationSource, /DO_NOT_SWITCH_LANES: TRUE/u);
+  assert.doesNotMatch(result.implementationSource, /AUTORIZACIÓN DOCUMENTAL NOCTURNA/u);
   assert.match(result.implementationSource, /CARRIL DOCUMENTAL — SOLO ESTADO INFORMATIVO|NO EXISTE UNA INSTANCIA FÍSICA ACTIVA/u);
 
   if (result.control.physical.active) {
@@ -137,6 +139,7 @@ test('el iniciador documental no incrusta el bloque completo de la tarea anterio
   assert.doesNotMatch(source, /CONTEXTO CANÓNICO INMEDIATO — TAREA ANTERIOR APROBADA/u);
   assert.doesNotMatch(source, /sourceContext\(task, workTopology, emptyDraft\)/u);
   assert.match(source, /sourceContext\(task\)/u);
+  assert.match(source, /NIGHT_DOCUMENTATION_GOVERNANCE/u);
 });
 
 test('la plantilla compartida contiene solo reglas comunes y una ranura', () => {
