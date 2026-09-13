@@ -20222,7 +20222,717 @@ modifica el registro 04A; y no desarrolla `NEXO-DOM-015`.
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
 
-### [ ] NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+### ✅ NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+**Tarea siguiente:** NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+**Tipo de tarea:** documental; definición canónica de sesiones de conteo, población y corte, observaciones, diferencias, investigación, decisión, corrección y reconciliación para activos serializados, reutilizables controlados por cantidad, contenedores físicos e instancias de kit, preservando granularidad, condición, ubicación, custodia, historia, idempotencia, concurrencia y operación offline bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único para contar objetos físicos de NEXO sin convertir la observación en ajuste, sin cambiar la granularidad de control y sin borrar la diferencia entre lo esperado, lo observado, lo investigado y lo finalmente corregido.
+
+```text
+COUNT SCOPE
++
+FROZEN EXPECTED POPULATION
++
+CUT MOMENT
++
+PHYSICAL OBSERVATIONS
++
+DIFFERENCE CLASSIFICATION
++
+INVESTIGATION
++
+AUTHORIZED DECISION
++
+SEPARATE COMPENSATING EFFECT
+→
+RECONCILED COUNT
+WITHOUT DESTRUCTIVE OVERWRITE
+```
+
+Esta tarea define semántica documental. No abre sesiones reales, no corrige saldos y no materializa estructuras físicas.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos: identidad estable de sesión, alcance y corte, población esperada, observación independiente, granularidad por clase, separación presencia/cantidad/ubicación/condición, diferencias, investigación, decisión autorizada, efecto compensatorio separado, cierre reconciliado, idempotencia, concurrencia, offline y consumo del lifecycle de `VPROC-0026`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+La tarea consume sin redefinir las clases de `NEXO-DOM-001`, ubicación de `NEXO-DOM-007`, custodia de `NEXO-DOM-008`, granularidad de `NEXO-DOM-009`, condición y pérdida de `NEXO-DOM-010`, préstamo y transferencia de `NEXO-DOM-011`, disponibilidad de `NEXO-DOM-012`, retiro de `NEXO-DOM-013`, kits de `NEXO-DOM-014`, `CAP-07.05`, `VPROC-0026`, movimientos, LOC y reconciliación vigentes.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+```text
+QUÉ SE ESPERABA EN EL CORTE,
+QUÉ SE OBSERVÓ FÍSICAMENTE,
+EN QUÉ GRANULARIDAD,
+DÓNDE Y EN QUÉ CONDICIÓN,
+QUÉ DIFERENCIA RESULTÓ,
+QUÉ SE INVESTIGÓ,
+QUÉ SE DECIDIÓ
+Y QUÉ EFECTO SE AUTORIZÓ
+SIN CONVERTIR EL CONTEO EN UNA EDICIÓN DE EXISTENCIA?
+```
+
+---
+
+#### 5. Sujetos directos
+
+La tarea define conteo para `SERIALIZED_ASSET`, `REUSABLE_QUANTITY`, `PHYSICAL_CONTAINER` y `KIT_INSTANCE`. `KIT_INSTANCE` se incorpora por el handoff aprobado de `NEXO-DOM-014`. Los miembros del kit no se duplican por contar la instancia.
+
+---
+
+#### 6. Frontera con inventario ordinario
+
+El conteo por cantidad de consumibles, stock y repuestos conserva sus contratos generales. Esta tarea no absorbe la definición de repuestos reservada a `NEXO-DOM-016`.
+
+---
+
+#### 7. Conteo no es ajuste
+
+```text
+COUNT OBSERVATION
+!=
+INVENTORY OR ASSET ADJUSTMENT
+```
+Una observación no modifica por sí sola cantidad autoritativa, lifecycle, condición, ubicación, custodia, disponibilidad, propiedad, membresía de kit o contenido LPN.
+
+---
+
+#### 8. Sesión de conteo
+
+La sesión conserva `count_session_id`, alcance, población de sujetos, momento de corte, responsable, estado de proceso, revisión, inicio, cierre o cancelación, evidencia y trazabilidad.
+
+---
+
+#### 9. Identidad estable de sesión
+
+La identidad permanece estable durante captura, investigación, decisión y reconciliación. Reintentar una interfaz no crea otra sesión para el mismo intento lógico.
+
+---
+
+#### 10. Alcance
+
+El alcance puede restringirse por sede, área, LOC o posición. Define qué sujetos deben observarse; no concede propiedad, custodia ni autoridad de ajuste.
+
+---
+
+#### 11. Momento de corte
+
+```text
+EXPECTED AT CUT
+OBSERVED DURING CAPTURE
+CURRENT STATE AFTER CUT
+```
+El estado posterior no reescribe retrospectivamente qué se esperaba al abrir el conteo.
+
+---
+
+#### 12. Población esperada
+
+La sesión conserva una población esperada derivada de las fuentes autoritativas en el corte. Cada sujeto conserva la identidad o scope cuantificado necesario para explicar su inclusión.
+
+---
+
+#### 13. Snapshot y fuente viva
+
+El snapshot esperado permite comparación estable, mientras la fuente viva continúa evolucionando por movimientos autorizados. Movimientos posteriores al corte se correlacionan durante investigación.
+
+---
+
+#### 14. Observación original
+
+La captura original conserva sujeto, cantidad, ubicación, condición, actor, instante, método y evidencia. Correcciones posteriores no la sustituyen silenciosamente.
+
+---
+
+#### 15. Granularidad preservada
+
+```text
+COUNT SERIALIZED_ASSET
+→ EXACT IDENTITY
+
+COUNT REUSABLE_QUANTITY
+→ QUANTITY SCOPE
+
+COUNT PHYSICAL_CONTAINER
+→ EXACT CONTAINER IDENTITY
+
+COUNT KIT_INSTANCE
+→ EXACT KIT INSTANCE
+```
+El conteo no fabrica identidades individuales para explicar diferencias de cantidad.
+
+---
+
+#### 16. Activo serializado
+
+Se cuenta por identidad exacta. La observación conserva presencia, ubicación, condición e identificación. La presencia ordinaria de una identidad es uno o cero, sin convertirla en saldo fungible.
+
+---
+
+#### 17. Reutilizable controlado por cantidad
+
+Conserva `EXPECTED QUANTITY`, `OBSERVED QUANTITY` y `DIFFERENCE QUANTITY` dentro del scope autoritativo, sin fabricar IDs por unidad.
+
+---
+
+#### 18. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` individual se cuenta por identidad exacta. Un recipiente genérico sin identidad individual permanece `REUSABLE_QUANTITY` y se cuenta por cantidad.
+
+---
+
+#### 19. Instancia de kit
+
+Una `KIT_INSTANCE` se cuenta como identidad operacional exacta. Observar la instancia no duplica las existencias de sus miembros.
+
+---
+
+#### 20. Verificación de composición de kit
+
+Cuando el alcance lo exige puede verificarse composición bajo `NEXO-DOM-014`.
+
+```text
+COUNT KIT INSTANCE
++
+OPTIONAL COMPOSITION VERIFICATION
+!=
+SECOND COUNT OF THE SAME MEMBER EXISTENCE
+```
+
+---
+
+#### 21. LPN fuera del sujeto físico
+
+Un LPN conserva identidad logística y no se convierte en activo, kit o contenedor físico por ser escaneado. El conteo de contenido LPN permanece bajo sus contratos propietarios.
+
+---
+
+#### 22. Ejes independientes de observación
+
+Cada captura separa, según aplique: progreso, presencia, cantidad, ubicación, condición, identificación y evidencia. No se reduce todo a un único estado ambiguo.
+
+---
+
+#### 23. Presencia
+
+Para identidades exactas debe distinguirse conceptualmente entre observado como esperado, no observado, observado en otra ubicación e identidad inesperada.
+
+---
+
+#### 24. Cantidad
+
+La comparación cuantitativa conserva si observado es igual, menor o mayor al esperado y preserva el delta numérico.
+
+---
+
+#### 25. Ubicación
+
+La ubicación observada se registra independientemente de la esperada. Encontrar un sujeto en otro lugar no modifica automáticamente la ubicación autoritativa.
+
+---
+
+#### 26. Condición
+
+```text
+COUNT PRESENCE RESULT
+!=
+PHYSICAL CONDITION
+```
+La condición consume `NEXO-DOM-010`. Un sujeto puede estar presente y dañado simultáneamente.
+
+---
+
+#### 27. Captura pendiente
+
+Pendiente significa observación aún no completada. No equivale a faltante ni a cero observado.
+
+---
+
+#### 28. No aplica
+
+Solo se usa con razón trazable cuando el sujeto no pertenecía realmente al alcance o existe una corrección de población justificada. No oculta diferencias.
+
+---
+
+#### 29. Faltante
+
+```text
+NOT OBSERVED
+!=
+LOSS CONFIRMED
+```
+No observar un sujeto esperado produce diferencia; la pérdida requiere el proceso propietario de `NEXO-DOM-010`.
+
+---
+
+#### 30. Hallazgo en otra ubicación
+
+Conserva ubicación esperada, ubicación observada, instante, actor y evidencia. Puede abrir investigación o movimiento posterior, nunca cambio silencioso.
+
+---
+
+#### 31. Sujeto inesperado
+
+Una identidad o cantidad no incluida en la población esperada se registra como hallazgo inesperado. No crea automáticamente saldo, grupo, kit, contenedor, ubicación o custodia.
+
+---
+
+#### 32. Daño observado
+
+El daño observado puede generar o correlacionar el hecho de condición correspondiente. No elimina la presencia ni convierte el conteo en baja, pérdida, reparación o disposición.
+
+---
+
+#### 33. Duplicado de captura
+
+La misma identidad exacta no puede contarse dos veces dentro del mismo scope compatible por escaneos repetidos. Un retry resuelve la captura existente.
+
+---
+
+#### 34. Identificación por código o QR
+
+```text
+SCAN
+!=
+COUNT DECISION
+```
+Código, QR, serial o placa son mecanismos de identificación. La identidad resuelta se valida server-side contra sesión, scope y clase.
+
+---
+
+#### 35. Cantidad y unidad
+
+Las cantidades se capturan usando la unidad canónica aplicable. Una presentación visual no cambia silenciosamente la unidad del conteo.
+
+---
+
+#### 36. Precisión
+
+La precisión respeta la naturaleza de la unidad. No se aceptan fracciones imposibles para unidades discretas ni redondeos silenciosos.
+
+---
+
+#### 37. Reutilizables y condición agregada
+
+Cuando aplique, las cantidades por condición deben sumar la cantidad observada reconciliable. Missing o pérdida confirmada no son buckets de condición.
+
+---
+
+#### 38. Esperado distinto de disponible
+
+La existencia esperada para conteo no equivale necesariamente a disponibilidad. Puede estar prestada, dañada, bloqueada o en tránsito.
+
+---
+
+#### 39. Custodia y conteo
+
+La custodia ayuda a explicar dónde debería estar un sujeto, pero no sustituye la observación ni concede autocorrección al capturador.
+
+---
+
+#### 40. Movimientos alrededor del corte
+
+La investigación correlaciona movimientos anteriores y posteriores al corte. Un traslado legítimo posterior puede explicar una diferencia sin que ésta sea error de inventario.
+
+---
+
+#### 41. Diferencia
+
+La diferencia conserva sujeto, expectativa, observación, delta, ubicación, condición, corte, evidencia y revisión. Es un hecho derivado, no una decisión.
+
+---
+
+#### 42. Investigación
+
+Puede revisar movimientos, préstamo, devolución, custodia, traslado, recepción, LPN, kit, ubicación, condición, identificación, sesiones simultáneas, eventos posteriores al corte y evidencia física.
+
+---
+
+#### 43. Diferencia explicada sin ajuste
+
+Una diferencia puede quedar explicada sin corrección de existencia. La observación original permanece intacta.
+
+---
+
+#### 44. Decisión de ajuste
+
+Solo después de investigación puede existir una decisión autorizada de ajustar o no, con actor, razón, alcance, evidencia y revisión.
+
+---
+
+#### 45. Ajuste separado
+
+```text
+APPROVED ADJUSTMENT DECISION
+→
+SEPARATE COMPENSATING MOVEMENT OR EFFECT
+```
+La decisión no modifica por sí sola el saldo.
+
+---
+
+#### 46. Ajuste de identidad
+
+Una diferencia de identidad serializada o contenedor no crea ni borra esa identidad. Puede requerir corrección de ubicación, investigación de pérdida u otra acción propietaria.
+
+---
+
+#### 47. Ajuste de cantidad
+
+Para `REUSABLE_QUANTITY`, una corrección autorizada modifica la proyección mediante un movimiento o efecto compensatorio correlacionado. No sobrescribe el snapshot.
+
+---
+
+#### 48. Kit y diferencia
+
+Una diferencia de `KIT_INSTANCE` puede ser instancia no observada, inesperada, ubicación distinta, composición incompleta, miembro inesperado o condición. Cada resultado conserva su owner.
+
+---
+
+#### 49. Conteo conciliado
+
+La sesión queda reconciliada cuando observaciones, diferencias, investigaciones, decisiones y efectos autorizados aplicables pueden explicarse entre sí. Cerrar no implica que toda diferencia fuera error de inventario.
+
+---
+
+#### 50. Cancelación
+
+Cancelar conserva sesión, capturas y razón. No produce ajustes ni borra historia.
+
+---
+
+#### 51. Inmutabilidad histórica
+
+Después del cierre, las observaciones originales no se editan destructivamente. Toda corrección posterior referencia la sesión y el hecho original.
+
+---
+
+#### 52. Sesiones simultáneas
+
+Scopes superpuestos requieren control explícito. Una misma observación no puede satisfacer dos sesiones como un único hecho cuando sus cortes o propósitos difieren.
+
+---
+
+#### 53. Revisión de sesión
+
+```text
+EXPECTED COUNT REVISION
+=
+CURRENT COUNT REVISION
+```
+Toda transición gobernada valida la revisión esperada.
+
+---
+
+#### 54. Idempotencia
+
+El mismo intento lógico no abre dos sesiones, duplica líneas, repite escaneos, repite observaciones, aprueba dos veces un ajuste, emite dos efectos compensatorios ni cierra dos veces la misma transición.
+
+---
+
+#### 55. Concurrencia
+
+Antes de aceptar captura o decisión se revalidan sesión, revisión, scope, sujeto, clase, corte, observaciones existentes, movimientos concurrentes, custodia, ubicación, kit y autoridad.
+
+---
+
+#### 56. Operación offline
+
+```text
+OFFLINE COUNT CAPTURE
+!=
+AUTHORIZED ADJUSTMENT
+```
+La sincronización revalida sesión, sujeto, corte, duplicados, revisión y autoridad.
+
+---
+
+#### 57. Resultado remoto desconocido
+
+Ante timeout posterior a una captura o decisión se reconcilia la misma operación. No se crea otra observación o ajuste para reintentar.
+
+---
+
+#### 58. Autorización
+
+Se separan `OPEN_COUNT_SESSION`, `CAPTURE_COUNT`, `CLOSE_CAPTURE`, `REVIEW_DIFFERENCE`, `INVESTIGATE_DIFFERENCE`, `RECOMMEND_ADJUSTMENT`, `APPROVE_ADJUSTMENT`, `EXECUTE_COMPENSATING_EFFECT`, `RECONCILE_COUNT` y `CANCEL_COUNT`. `NEXO-AUTH-027` conserva el detalle de autorización.
+
+---
+
+#### 59. Evidencia
+
+Escaneo, fotografía, identificación visual, serial, QR, cantidad, condición, ubicación, notas y referencias de movimiento pueden ser evidencia.
+
+```text
+EVIDENCE
+!=
+ADJUSTMENT AUTHORITY
+```
+
+---
+
+#### 60. Auditoría mínima
+
+Toda sesión futura debe reconstruir sesión y revisión, alcance, corte, población esperada, sujeto, clase, expectativa, observación, delta, ubicaciones, condición, actor, instante, evidencia, investigación, decisión, autoridad, movimiento compensatorio, correlación, idempotencia y cierre o cancelación.
+
+---
+
+#### 61. Estados canónicos de `VPROC-0026`
+
+Se consumen exactamente:
+
+```text
+COUNT_SESSION_OPENED
+IN_CAPTURE
+CAPTURE_COMPLETE
+DIFFERENCES_DETECTED
+UNDER_INVESTIGATION
+ADJUSTMENT_DECISION_PENDING
+ADJUSTMENT_APPROVED
+RECONCILIATION_PENDING
+COUNT_RECONCILED
+```
+No se crea lifecycle competidor.
+
+---
+
+#### 62. Eventos canónicos de `VPROC-0026`
+
+Se conservan exactamente los seis eventos empresariales aprobados:
+
+```text
+VPROC-0026.EVT-001
+VPROC-0026.EVT-002
+VPROC-0026.EVT-003
+VPROC-0026.EVT-004
+VPROC-0026.EVT-005
+VPROC-0026.EVT-006
+```
+No se inventan eventos empresariales adicionales.
+
+---
+
+#### 63. AS-IS de sesiones
+
+La implementación actual ya posee `asset_count_sessions`, scopes `site`, `area`, `loc`, `position`, estados legacy `open`, `closed`, `cancelled`, actores de inicio/cierre, timestamps y notas. Es base reutilizable, no lifecycle completo de `VPROC-0026`.
+
+---
+
+#### 64. AS-IS de líneas
+
+`asset_count_lines` conserva sujeto item/group, cantidad esperada y contada, estado, ubicación esperada y hallada, condición, QR, actor, instante y notas. Es base reutilizable, no contrato final.
+
+---
+
+#### 65. AS-IS de sujetos permitidos
+
+El constraint remoto exige exactamente uno entre `asset_item_id` y `asset_group_id`. La forma actual no representa de manera propietaria `PHYSICAL_CONTAINER` ni `KIT_INSTANCE`.
+
+---
+
+#### 66. AS-IS de estados de línea
+
+El esquema admite `pending`, `found`, `missing`, `found_elsewhere`, `damaged`, `extra`, `not_applicable`. No se adoptan como una única dimensión canónica porque `damaged` expresa condición mientras otros valores expresan presencia o ubicación.
+
+---
+
+#### 67. AS-IS de población
+
+Al abrir sesión, la aplicación actual toma activos individuales y grupos activos del scope y crea líneas con expectativa. Es una base útil de snapshot limitada a dos representaciones.
+
+---
+
+#### 68. AS-IS de cierre
+
+La aplicación actual bloquea el cierre solo si existen líneas `pending`; luego permite `closed`. No exige materialmente investigación, decisión, efecto compensatorio y reconciliación cuando hay diferencias.
+
+---
+
+#### 69. AS-IS de extras
+
+El detalle actual no inserta una línea nueva; opera sobre líneas sembradas. Aunque existe `extra`, no se demuestra un ciclo integral para un sujeto inesperado fuera de la población.
+
+---
+
+#### 70. AS-IS remoto sin historial operativo
+
+La inspección remota de solo lectura observó `asset_count_sessions = 0` y `asset_count_lines = 0`. No hay sesiones reales que deban reinterpretarse en esta tarea documental.
+
+---
+
+#### 71. AS-IS de contenedor
+
+La coincidencia remota `inventory_lpns.container_type` no constituye identidad canónica `PHYSICAL_CONTAINER` y no resuelve conteo de contenedores físicos.
+
+---
+
+#### 72. Estado de adopción
+
+La capacidad queda `REUSE_OR_REFACTOR` conforme a `CAP-07.05`: se reutilizan sesiones, líneas, scopes y captura, pero deben reconciliarse granularidad, contenedores, kits y lifecycle de investigación/ajuste.
+
+---
+
+#### 73. Reconciliación futura
+
+La materialización posterior deberá reconciliar sesiones legacy, líneas item/group, scope y corte, población, estados legacy, condición separada, extras reales, kits, contenedores, duplicados, superposición de sesiones, investigación, decisión, movimiento compensatorio y cierre reconciliado. No se ejecuta migración ni backfill aquí.
+
+---
+
+#### 74. Fail-closed
+
+Falla cerrado si sesión, scope, corte, sujeto o clase son inválidos o ambiguos; si hay duplicación, unidad incompatible, conflicto concurrente, diferencia sin investigar, ajuste sin autoridad, efecto no correlacionable o resultado remoto desconocido. Los hechos aceptados previamente se conservan.
+
+---
+
+#### 75. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar sesiones versionadas, scope y corte reproducibles, población congelada, soporte de los cuatro sujetos, observaciones inmutables, ejes separados, captura de extras, prevención de duplicados, kits sin doble conteo, investigación, decisión, efecto compensatorio, idempotencia, concurrencia, offline, autorización server-side, evidencia y cierre reconciliado.
+
+---
+
+#### 76. Handoff hacia `NEXO-DOM-016`
+
+```text
+FROZEN COUNT BASELINE
++
+IDENTITY OR QUANTITY-SCOPE OBSERVATION
++
+KIT INSTANCE COUNT WITHOUT MEMBER DUPLICATION
++
+PHYSICAL CONTAINER IDENTITY COUNT
++
+PRESENCE / QUANTITY / LOCATION / CONDITION SEPARATION
++
+DIFFERENCE BEFORE INVESTIGATION
++
+INVESTIGATION BEFORE DECISION
++
+DECISION BEFORE COMPENSATING EFFECT
++
+IMMUTABLE ORIGINAL OBSERVATION
++
+IDEMPOTENT RECONCILED CLOSURE
+```
+
+`NEXO-DOM-016` deberá definir repuestos, compatibilidad y stock mínimo sin tratar una diferencia de conteo como prueba automática de consumo, instalación, incompatibilidad o necesidad de reposición.
+
+---
+
+#### 77. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige observación original sin ajuste automático, diferencias por identidad o cantidad, granularidad específica, no doble representación y comportamiento de conteo para activos, reutilizables, kits y contenedores.
+
+---
+
+#### 78. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para conteo como observación, investigación y ajuste autorizado mediante efecto compensatorio;
+- `TREQ-NEXO-013`, que referencia directamente esta tarea y prohíbe ajuste automático;
+- `TREQ-NEXO-043`, para cantidad esperada/observada de reutilizables e identidad exacta de activos;
+- `TREQ-NEXO-045`, que referencia esta tarea para kits y miembros;
+- `TREQ-NEXO-046`, para identidad estable de contenedores físicos separada de LPN;
+- `TREQ-NEXO-047`, para comportamiento de conteo por clase sin duplicar saldo, instancia, kit, contenedor o valor.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 79. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, `previous_task_id = NEXO-DOM-014`, continuidad `014 → 015 → 016`, ruta normal, override `NEXO-DOM-001..038 → DEFINE_ONCE`, políticas, contrato de entrega, manifest, owner, handoff de `NEXO-DOM-014`, `CAP-07.05`, 04A NEXO, `VPROC-0026`, eventos, `package.json`, código actual de conteos en `vento-nexo` y consultas Supabase de solo lectura sobre esquema, constraints y cardinalidad. |
+| OPERATIVA | NOT_EXECUTED | No se abrió, capturó, investigó, ajustó, canceló ni reconcilió ninguna sesión real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, kits, contenedores, LPN, movimientos, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 80. Criterios de aceptación
+
+- [x] Sesión, scope, corte y población quedan definidos.
+- [x] Observación se separa de estado autoritativo.
+- [x] Activo y contenedor se cuentan por identidad exacta.
+- [x] Reutilizable se cuenta por cantidad.
+- [x] Kit se cuenta sin duplicar miembros.
+- [x] Presencia, cantidad, ubicación y condición están separadas.
+- [x] Pendiente no equivale a faltante.
+- [x] Faltante no equivale a pérdida.
+- [x] Daño no sustituye presencia.
+- [x] Hallazgo en otra ubicación no mueve automáticamente.
+- [x] Extra no crea existencia automáticamente.
+- [x] Duplicados no incrementan conteo.
+- [x] Diferencia, investigación, decisión y efecto son etapas distintas.
+- [x] Cierre conserva observaciones.
+- [x] Cancelación conserva historia.
+- [x] Se definen revisión, idempotencia, concurrencia y offline.
+- [x] Se consume exactamente `VPROC-0026`.
+- [x] Se conservan sus seis eventos aprobados.
+- [x] Se documenta el AS-IS de sesiones y líneas.
+- [x] Se documenta item XOR group.
+- [x] Se documenta ausencia de kit/container en el shape actual.
+- [x] Se documenta la conflación de `damaged` dentro de `count_status`.
+- [x] Se documenta el cierre AS-IS sin investigación obligatoria.
+- [x] Se documenta la limitación para extras.
+- [x] Se documentan 0 sesiones y 0 líneas remotas.
+- [x] La capacidad queda `REUSE_OR_REFACTOR`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff a `NEXO-DOM-016`.
+
+---
+
+#### 81. Límites
+
+Esta tarea no abre ni modifica sesiones reales; no crea líneas; no escanea activos; no corrige cantidades; no mueve activos, reutilizables, kits o contenedores; no cambia condición, ubicación, custodia, disponibilidad, lifecycle, propiedad o membresía; no ejecuta ajustes ni movimientos compensatorios; no clasifica objetos legacy; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, Server Actions ni Route Handlers; no ejecuta migraciones ni backfills; no modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea instancia física propia; no crea ni modifica requisitos de prueba; no modifica 04A; y no desarrolla `NEXO-DOM-016`.
+
+---
+
+#### 82. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
+
 ### [ ] NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
 ### [ ] NEXO-DOM-017 — Definir auditoría, historial y evidencia
 ### [ ] NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
