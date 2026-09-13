@@ -25728,7 +25728,793 @@ AS-IS REUSE_OR_REFACTOR BOUNDARY
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
 
-### [ ] NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+### ✅ NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+**Tarea siguiente:** NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+**Tipo de tarea:** DOCUMENTACIÓN CANÓNICA DE DOMINIO
+**Bloque:** K_NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma determinista cuándo la relación entre un contenedor físico y un LPN activo debe conservar el mismo LPN, cuándo debe terminar el ciclo actual y comenzar uno nuevo, cuándo procede cerrar o cancelar el LPN vigente y cuándo la decisión debe quedar bloqueada hasta reconciliar el estado operativo.
+
+La tarea consume la separación de identidades aprobada en `NEXO-DOM-019` y el lifecycle LPN ya definido, sin volver a fusionar recipiente, contenido, ubicación, custodia, proceso o etiqueta con la identidad logística.
+
+---
+
+#### 2. Alcance y límites
+
+Esta tarea define exclusivamente reglas de continuidad del LPN respecto de:
+
+- continuidad de la misma unidad logística;
+- continuidad del contenido y propósito operativo;
+- continuidad del proceso o documento que lo gobierna;
+- cambio de contenedor físico;
+- cambio de ubicación, sede o custodia;
+- vaciado, cierre, devolución o reutilización del contenedor;
+- división y consolidación;
+- daño, pérdida o sustitución del contenedor;
+- cierre, cancelación o creación de un ciclo LPN posterior;
+- idempotencia, concurrencia y operación diferida;
+- evidencia y condiciones de bloqueo.
+
+No materializa esquema, migración, RPC, RLS, UI, Server Action, Route Handler, jobs, etiquetas, movimientos de inventario ni backfills.
+
+---
+
+#### 3. Entradas canónicas
+
+La decisión consume como mínimo:
+
+1. identidad permanente del contenedor físico cuando exista;
+2. identidad estable del LPN vigente;
+3. estado lifecycle del LPN;
+4. modo de vínculo `TEMPORARY` o `PERSISTENT`;
+5. vínculo directo activo entre contenedor y LPN;
+6. sede y LOC efectivos;
+7. contexto de contenido;
+8. contexto del proceso o documento;
+9. custodia vigente;
+10. movimientos en curso;
+11. discrepancias abiertas;
+12. comandos offline o reintentos pendientes;
+13. intención empresarial autorizada;
+14. evidencia necesaria para confirmar continuidad o terminación.
+
+Ninguna entrada aislada decide el resultado.
+
+---
+
+#### 4. Frontera heredada de NEXO-DOM-019
+
+Se preservan estas reglas:
+
+- `PHYSICAL_CONTAINER` y LPN son identidades diferentes;
+- cualquiera puede existir sin la otra;
+- su vínculo es explícito, historizable y no equivale a identidad compartida;
+- un contenedor físico no puede mantener simultáneamente dos vínculos directos activos incompatibles;
+- el LPN no hereda automáticamente la identidad del recipiente;
+- vincular o desvincular no produce por sí mismo movimiento de stock;
+- `TEMPORARY` y `PERSISTENT` expresan política de continuidad del vínculo, no mutabilidad del identificador LPN.
+
+---
+
+#### 5. Frontera heredada del lifecycle LPN
+
+El lifecycle objetivo conserva los estados:
+
+- `DRAFT`;
+- `ACTIVE`;
+- `CLOSED`;
+- `CANCELLED`.
+
+`CLOSED` y `CANCELLED` son terminales. Un LPN terminal no se reactiva para representar un ciclo posterior. Si existe un nuevo ciclo logístico, este usa una identidad LPN nueva.
+
+---
+
+#### 6. Regla raíz de decisión
+
+```text
+PHYSICAL CONTAINER ID
++
+CURRENT LPN ID
++
+LPN LIFECYCLE STATE
++
+LINK MODE
++
+ACTIVE BINDING
++
+LOGISTICS UNIT CONTINUITY
++
+CONTENT CONTINUITY
++
+PROCESS CONTINUITY
++
+SITE / LOC / CUSTODY CONTEXT
++
+OPEN MOVEMENT / DISCREPANCY / OFFLINE STATE
++
+AUTHORIZED INTENT
+=
+PRESERVE CURRENT LPN
+OR ROTATE TO NEW LPN
+OR CLOSE CURRENT LPN
+OR CANCEL CURRENT LPN
+OR HOLD CURRENT STATE
+```
+
+El resultado se determina por continuidad empresarial demostrable y no por similitud física o conveniencia de interfaz.
+
+---
+
+#### 7. Resultados canónicos
+
+| Resultado | Significado |
+| --- | --- |
+| `PRESERVE_CURRENT_LPN` | continúa la misma unidad logística bajo la misma identidad LPN |
+| `ROTATE_TO_NEW_LPN` | termina el uso del LPN actual conforme a lifecycle y comienza otro LPN independiente |
+| `CLOSE_CURRENT_LPN` | el ciclo válido del LPN actual terminó y puede cerrarse |
+| `CANCEL_CURRENT_LPN` | el ciclo se invalida sin efectos efectivos incompatibles con cancelación |
+| `HOLD_CURRENT_STATE` | falta reconciliación o evidencia suficiente para tomar una decisión terminal o de rotación |
+
+`ROTATE_TO_NEW_LPN` nunca significa modificar en sitio el identificador del LPN existente.
+
+---
+
+#### 8. Preservación del LPN
+
+Se conserva el LPN cuando sigue existiendo la misma unidad logística y la operación no crea una frontera empresarial nueva.
+
+La conservación puede coexistir con cambios de ubicación, sede, custodio, etiqueta, recipiente físico, composición permitida del contenido, etapa del mismo proceso o documento correlacionado, siempre que la identidad logística siga siendo la misma y los cambios sean trazables.
+
+---
+
+#### 9. Rotación a un LPN nuevo
+
+La rotación se usa cuando el mismo contenedor físico pasa a representar una unidad logística nueva o cuando la unidad anterior debe terminar y la siguiente no puede conservar la identidad vigente.
+
+La rotación exige:
+
+1. resolver el estado del LPN anterior;
+2. cerrar o cancelar el anterior únicamente si cumple sus precondiciones;
+3. terminar el vínculo directo anterior cuando aplique;
+4. crear una identidad LPN nueva;
+5. activar el nuevo LPN según lifecycle;
+6. establecer el nuevo vínculo explícito;
+7. conservar historia entre ambos ciclos sin tratarlos como una misma identidad.
+
+---
+
+#### 10. Cierre del LPN
+
+Cerrar significa que el LPN cumplió un ciclo efectivo y ya no debe aceptar nuevos cambios de contenido, movimiento o reetiquetado operativo.
+
+El cierre requiere que no existan movimientos en vuelo, discrepancias pendientes, contenido interno no reconciliado, consumidores posteriores que todavía dependan del mismo LPN activo ni comandos offline o respuestas tardías sin procesar.
+
+El contenedor físico puede continuar existiendo y permanecer disponible para otro ciclo.
+
+---
+
+#### 11. Cancelación del LPN
+
+La cancelación representa un ciclo que no debe continuar y que no produjo efectos empresariales incompatibles con la anulación.
+
+Un `DRAFT` puede cancelarse cuando no existe efecto efectivo. Un `ACTIVE` solo puede cancelarse bajo las condiciones restrictivas ya aprobadas por el lifecycle. Si hubo movimiento, contenido efectivo, contabilización o dependencia posterior, la operación debe reconciliar esos efectos y terminar por cierre, no por cancelación destructiva.
+
+---
+
+#### 12. Estado HOLD
+
+`HOLD_CURRENT_STATE` es obligatorio cuando no puede demostrarse de forma segura si corresponde preservar, rotar, cerrar o cancelar.
+
+Aplica ante movimiento en curso, discrepancia de contenido o ubicación, lectura conflictiva, operación offline pendiente, respuesta tardía no reconciliada, vínculo concurrente incompatible, pérdida del contenedor con contenido no conciliado, evidencia insuficiente de continuidad o dependencia externa todavía abierta.
+
+`HOLD_CURRENT_STATE` no altera identidad, contenido ni stock.
+
+---
+
+#### 13. Continuidad de la unidad logística
+
+Existe continuidad cuando el conjunto sigue representando el mismo objeto operativo rastreable, aunque cambien ubicación, custodio o recipiente físico.
+
+No existe continuidad cuando comienza una carga empresarial independiente, se inicia una operación no relacionada, el contenido anterior se cerró y el contenedor se reutiliza para otra finalidad, una división crea una unidad independiente o una consolidación crea una unidad resultante distinta.
+
+---
+
+#### 14. Continuidad de contenido
+
+El contenido ayuda a determinar continuidad, pero no es por sí solo la identidad del LPN.
+
+Cambios parciales pueden conservar el LPN si pertenecen al mismo ciclo y están autorizados. Un contenido completamente diferente después del cierre del ciclo anterior no hereda el LPN solo porque use el mismo recipiente. Una diferencia no reconciliada impide decisiones terminales.
+
+---
+
+#### 15. Continuidad de proceso
+
+El mismo LPN puede atravesar varias etapas del mismo proceso sin cambiar de identidad.
+
+El cambio de estado del proceso no obliga a rotar el LPN. La rotación aparece cuando la frontera empresarial crea una unidad logística nueva, no simplemente porque cambie el nombre de una etapa.
+
+---
+
+#### 16. Política TEMPORARY
+
+Un vínculo `TEMPORARY` se diseña para terminar en una frontera operativa definida.
+
+La frontera no autoriza cierre automático si el LPN mantiene movimientos, contenido, discrepancias o consumidores pendientes.
+
+Al alcanzar la frontera:
+
+- si el ciclo está reconciliado, puede cerrarse;
+- si el ciclo no tuvo efectos y lifecycle permite cancelación, puede cancelarse;
+- si existe continuidad empresarial explícita, se evalúa esa continuidad antes de terminarlo;
+- si hay incertidumbre, queda en `HOLD_CURRENT_STATE`.
+
+---
+
+#### 17. Política PERSISTENT
+
+`PERSISTENT` permite mantener el mismo vínculo mientras continúe la misma unidad logística bajo una política que admite continuidad prolongada.
+
+No significa que el contenedor tenga un único LPN para toda su vida. Cuando un contenedor termina un ciclo y comienza una carga empresarial independiente, el LPN anterior no se reutiliza: se cierra cuando corresponda y se crea uno nuevo.
+
+---
+
+#### 18. Cambio de LOC
+
+Mover el mismo LPN a otro LOC conserva el LPN. La ubicación cambia mediante la operación de movimiento correspondiente.
+
+No se crea un LPN nuevo por el solo hecho de cambiar de LOC. La coherencia transaccional del movimiento queda reservada a `NEXO-DOM-022`.
+
+---
+
+#### 19. Cambio de sede
+
+Un traslado entre sedes puede conservar el LPN si sigue siendo la misma unidad logística y el movimiento está autorizado y trazable.
+
+La salida de una sede y entrada en otra no crean automáticamente dos LPN. Durante tránsito, la misma existencia no debe aparecer disponible simultáneamente en origen y destino.
+
+---
+
+#### 20. Cambio de custodia
+
+El cambio de custodio no cambia por sí solo el LPN. La custodia se registra como hecho distinto.
+
+Si la transferencia exige aceptación, la identidad LPN se conserva mientras se resuelve la aceptación, salvo que otra regla de ciclo obligue a terminarla.
+
+---
+
+#### 21. Reetiquetado
+
+La sustitución de QR, barcode o impresión física conserva el LPN.
+
+Reetiquetar no crea una identidad LPN nueva. Una etiqueta ilegible es un problema de representación y evidencia, no un final de ciclo.
+
+---
+
+#### 22. Sustitución del contenedor físico
+
+Si la misma unidad logística pasa de un contenedor físico a otro, el LPN puede conservarse cuando se demuestre continuidad exacta del objeto logístico.
+
+La sustitución exige identificar LPN, contenedor saliente y entrante; verificar ausencia de vínculos incompatibles; desvincular el saliente; vincular el entrante; preservar el mismo LPN y auditar actor, motivo, evidencia y momento efectivo.
+
+La sustitución del recipiente no crea stock nuevo.
+
+---
+
+#### 23. Sustitución sin continuidad demostrable
+
+Si no puede demostrarse que la unidad logística es exactamente la misma, la sustitución no puede conservar silenciosamente el LPN.
+
+El resultado queda en `HOLD_CURRENT_STATE` hasta reconciliar. Si se confirma una unidad logística nueva, se usa `ROTATE_TO_NEW_LPN`.
+
+---
+
+#### 24. División
+
+Una división no duplica la misma identidad LPN en dos unidades independientes.
+
+La parte residual que conserva inequívocamente la unidad original puede mantener el LPN. Cada nueva unidad independiente recibe un LPN propio. El contenido se distribuye mediante operaciones trazables y nunca se clona un vínculo directo activo del mismo LPN hacia dos contenedores.
+
+---
+
+#### 25. Consolidación
+
+Al consolidar varias unidades, cada LPN fuente conserva historia hasta quedar reconciliado.
+
+Los LPN fuente se cierran únicamente cuando cumplen precondiciones. La unidad resultante usa un LPN objetivo explícito y, si constituye una unidad empresarial nueva, recibe una identidad LPN nueva.
+
+---
+
+#### 26. Vaciado
+
+Vaciado físico no equivale automáticamente a cierre.
+
+Un LPN vacío puede seguir activo si el mismo ciclo requiere contenido posterior, existe una operación en curso, el proceso todavía depende de su identidad o la política admite continuidad. Si el vaciado coincide con fin de ciclo y no hay pendientes, puede proceder el cierre.
+
+---
+
+#### 27. Fin de ciclo
+
+El fin de ciclo existe cuando el propósito del LPN fue satisfecho, el contenido quedó conciliado, no hay movimiento en curso, no quedan discrepancias abiertas, no existe consumidor posterior que requiera el LPN activo y no queda trabajo offline pendiente.
+
+Ese conjunto habilita `CLOSE_CURRENT_LPN`.
+
+---
+
+#### 28. Retorno de contenedor reutilizable
+
+El retorno del contenedor físico y el lifecycle del LPN son procesos diferentes.
+
+El contenedor puede regresar vacío después de que su LPN anterior haya cerrado. El retorno no revive el LPN anterior. Cuando el recipiente vuelva a utilizarse para un ciclo empresarial independiente, recibe un LPN nuevo si el proceso requiere LPN.
+
+---
+
+#### 29. Reutilización independiente
+
+La misma caja, canastilla, bandeja, pallet u otro contenedor identificable puede participar en muchos ciclos.
+
+Cada ciclo independiente conserva su propio LPN. La identidad física del contenedor permanece estable y la historia debe permitir reconstruir qué LPN estuvo vinculado al contenedor en cada intervalo.
+
+---
+
+#### 30. Daño del contenedor
+
+El daño del contenedor no cambia automáticamente el estado del LPN.
+
+Si el contenido y la unidad logística pueden trasladarse de forma segura a un contenedor sustituto, el LPN puede conservarse mediante re-vinculación explícita. Si el daño crea discrepancia o impide demostrar continuidad, el resultado es `HOLD_CURRENT_STATE`.
+
+---
+
+#### 31. Pérdida y hallazgo
+
+La pérdida del contenedor no permite cerrar ni cancelar automáticamente el LPN si su contenido o efectos siguen sin reconciliar.
+
+Deben preservarse última identidad LPN conocida, último vínculo, ubicación, contenido esperado, custodia, evidencia y discrepancia.
+
+Un hallazgo posterior no crea un LPN nuevo por sí solo. Si el LPN original sigue activo y continúa la misma unidad, puede preservarse. Si ya es terminal, no se reactiva.
+
+---
+
+#### 32. LPN anidados
+
+Parent LPN y child LPN mantienen identidades separadas.
+
+Cambiar o cerrar el parent no cambia automáticamente el child. La continuidad de cada LPN se decide sobre su propia unidad logística, contenido, proceso y estado. Las reglas de anidamiento no pueden crear ciclos.
+
+---
+
+#### 33. Cambio de parent LPN
+
+Mover un child LPN de un parent a otro conserva el child si su propia unidad logística no cambia.
+
+El parent nuevo no sustituye la identidad del child. El cambio se trata como relación logística explícita y no como rotación automática.
+
+---
+
+#### 34. Estados terminales
+
+Un LPN `CLOSED` o `CANCELLED`:
+
+- no vuelve a `ACTIVE`;
+- no recibe contenido nuevo;
+- no se mueve como LPN activo;
+- no se reetiqueta como si continuara operativo;
+- no se vincula a un nuevo contenedor para un ciclo posterior.
+
+Un nuevo ciclo exige una nueva identidad LPN.
+
+---
+
+#### 35. Atomicidad conceptual de la rotación
+
+La rotación debe materializarse posteriormente como una operación coherente que no deje simultáneamente dos vínculos directos incompatibles, el LPN anterior activo después de cierre confirmado, el nuevo LPN activo sin contexto suficiente ni contenido duplicado entre ciclos.
+
+La implementación física de esa atomicidad no pertenece a esta tarea.
+
+---
+
+#### 36. Idempotencia
+
+Toda futura operación que materialice preservar, rotar, cerrar o cancelar deberá aceptar una clave de idempotencia o equivalente verificable.
+
+Repetir la misma intención no puede crear varios LPN nuevos, cerrar dos veces, duplicar vínculos, duplicar movimientos, duplicar contenido ni alterar dos veces la misma revisión.
+
+---
+
+#### 37. Concurrencia
+
+La operación futura deberá comparar como mínimo LPN esperado, estado esperado, contenedor esperado, vínculo esperado y revisión esperada.
+
+Si el estado cambió desde que el actor tomó la decisión, la operación debe fallar cerrada o exigir reconciliación. No se acepta last-write-wins silencioso para lifecycle o binding.
+
+---
+
+#### 38. Operación offline y respuestas tardías
+
+Una intención capturada offline no adquiere prioridad sobre un cambio ya confirmado en servidor.
+
+Al sincronizar se revalidan identidad, estado lifecycle, vínculo y continuidad. La operación se ejecuta idempotentemente o produce conflicto explícito.
+
+Un timeout no prueba que una operación no ocurrió. Antes de reintentar creación, rotación o cierre debe comprobarse el estado efectivo.
+
+---
+
+#### 39. Auditoría mínima
+
+Cada decisión materializada posteriormente deberá conservar, según aplique:
+
+- actor e intención;
+- LPN anterior;
+- contenedor anterior y posterior;
+- vínculo anterior y posterior;
+- estado anterior y posterior;
+- motivo;
+- política de continuidad;
+- proceso o documento;
+- evidencia;
+- momento efectivo;
+- idempotencia;
+- resultado;
+- error o conflicto.
+
+---
+
+#### 40. Autorización
+
+Lectura, escaneo o posesión física del contenedor no conceden autoridad para cerrar, cancelar o rotar un LPN.
+
+La acción futura debe validar capacidad empresarial y contexto de actor en servidor. La autorización de lifecycle y la autorización de movimiento pueden ser distintas.
+
+---
+
+#### 41. Separación respecto de inventario y contenido
+
+La decisión de continuidad del LPN no es un movimiento de inventario.
+
+Preservar, cerrar, cancelar o rotar no modifica saldos por sí solo. Rotar tampoco copia contenido automáticamente. Los efectos sobre existencia deben derivar de movimientos o compensaciones correlacionados y auditables.
+
+---
+
+#### 42. Separación respecto del contenedor
+
+Cerrar el LPN no cierra el contenedor físico. Cancelar el LPN no elimina el contenedor. Rotar el LPN no crea un contenedor. Retirar un contenedor no elimina el historial LPN.
+
+La disponibilidad y condición del contenedor son dimensiones distintas.
+
+---
+
+#### 43. Conteos y discrepancias
+
+Un conteo puede detectar que LPN, contenedor, ubicación o contenido no coinciden con lo esperado.
+
+El conteo es observación. La diferencia se investiga antes de usarla como razón para cerrar, cancelar, rotar o compensar.
+
+---
+
+#### 44. Remisiones y tránsito
+
+Una remisión, envío o viaje puede usar LPN como unidad rastreable.
+
+Mientras el proceso dependa del mismo LPN para despacho, tránsito o recepción, esa dependencia participa en la decisión de continuidad. Una recepción incompleta o discrepante impide cierre automático. La remisión no se convierte en identidad LPN.
+
+---
+
+#### 45. Código, QR y barcode
+
+Código, QR o barcode resuelven una identidad; no la sustituyen.
+
+La lectura de un código no cambia lifecycle ni binding por sí sola. La definición operativa de lectura y movimiento mediante código pertenece a `NEXO-DOM-021`.
+
+---
+
+#### 46. Shape conceptual de decisión
+
+| Campo conceptual | Regla |
+| --- | --- |
+| `physical_container_id` | identidad física, opcional si el LPN no usa contenedor individualizado |
+| `current_lpn_id` | identidad LPN evaluada |
+| `current_lpn_state` | estado lifecycle vigente |
+| `binding_revision` | revisión del vínculo usada para concurrencia |
+| `link_mode` | `TEMPORARY` o `PERSISTENT` |
+| `trigger_kind` | hecho que provoca reevaluación |
+| `same_logistics_unit` | continuidad demostrada de la unidad |
+| `same_content_context` | continuidad o cambio reconciliado del contenido |
+| `same_process_context` | continuidad del proceso |
+| `open_movement` | bloqueo por movimiento en curso |
+| `open_discrepancy` | bloqueo por diferencia no resuelta |
+| `pending_offline_command` | bloqueo por sincronización pendiente |
+| `decision` | uno de los cinco resultados canónicos |
+| `reason` | motivo auditable |
+| `effective_at` | momento efectivo |
+| `next_lpn_id` | solo cuando existe rotación materializada |
+| `evidence_refs` | referencias de evidencia |
+| `idempotency_key` | protección contra reejecución |
+
+Este shape es contractual; no prescribe una tabla física concreta.
+
+---
+
+#### 47. Matriz principal de decisión
+
+| Situación | Resultado esperado |
+| --- | --- |
+| reimpresión o nueva etiqueta del mismo LPN | `PRESERVE_CURRENT_LPN` |
+| movimiento de LOC de la misma unidad | `PRESERVE_CURRENT_LPN` |
+| traslado de sede de la misma unidad | `PRESERVE_CURRENT_LPN` |
+| cambio de custodia de la misma unidad | `PRESERVE_CURRENT_LPN` |
+| cambio permitido de contenido dentro del mismo ciclo | `PRESERVE_CURRENT_LPN` |
+| cambio de recipiente con continuidad exacta demostrada | `PRESERVE_CURRENT_LPN` con re-vinculación explícita |
+| fin de ciclo reconciliado | `CLOSE_CURRENT_LPN` |
+| borrador abandonado sin efectos | `CANCEL_CURRENT_LPN` |
+| activo anulable sin efectos y lifecycle compatible | `CANCEL_CURRENT_LPN` |
+| contenedor reutilizado para carga independiente | `ROTATE_TO_NEW_LPN` |
+| LPN terminal y comienzo de nuevo ciclo | `ROTATE_TO_NEW_LPN` |
+| división que crea una unidad nueva | nuevo LPN para la nueva unidad |
+| consolidación que crea una unidad resultante nueva | nuevo LPN para la unidad resultante |
+| discrepancia abierta | `HOLD_CURRENT_STATE` |
+| movimiento en vuelo | `HOLD_CURRENT_STATE` |
+| comando offline pendiente relevante | `HOLD_CURRENT_STATE` |
+| pérdida o daño con contenido no reconciliado | `HOLD_CURRENT_STATE` |
+
+---
+
+#### 48. Señales que no fuerzan rotación
+
+No bastan por sí solas para cambiar LPN:
+
+- cambio de LOC;
+- cambio de sede;
+- cambio de custodio;
+- cambio de etiqueta;
+- cambio de recipiente;
+- vaciado temporal;
+- cambio de etapa;
+- cambio de documento asociado;
+- nueva lectura por código;
+- diferencia todavía no investigada.
+
+---
+
+#### 49. Señales de nuevo ciclo
+
+Justifican evaluar `ROTATE_TO_NEW_LPN`:
+
+- carga nueva e independiente con ciclo anterior resuelto;
+- proceso empresarial no relacionado y sin continuidad explícita;
+- reutilización posterior del mismo contenedor con ciclo anterior terminal;
+- división que crea unidad independiente;
+- consolidación que crea unidad resultante nueva;
+- frontera temporal alcanzada con cierre elegible;
+- sustitución cuya reconciliación confirma una unidad nueva.
+
+Ninguna señal habilita mutación in-place del LPN anterior.
+
+---
+
+#### 50. Estado remoto observado de Supabase
+
+El estado remoto verificable presenta:
+
+- `inventory_lpns` existente;
+- `inventory_lpn_items` existente;
+- cero filas observadas en ambas superficies;
+- `inventory_lpns.code` con unicidad;
+- `inventory_lpns.status` limitado a valores legacy `active`, `empty`, `consumed`, `damaged`;
+- `inventory_lpns.container_type` limitado a `box`, `pallet`, `bag`, `tray`, `bin`, `other`;
+- ausencia de tabla dedicada de contenedores físicos entre las superficies `lpn/container` observadas;
+- ausencia de columna `physical_container_id`;
+- ausencia de historial explícito de binding contenedor-LPN en esas superficies.
+
+Este estado es evidencia de un modelo parcial, no una autorización para reinterpretarlo.
+
+---
+
+#### 51. Estado observable de vento-nexo
+
+La aplicación observable mantiene capacidad LPN parcial:
+
+- existe formulario de creación con formato visible `LPN-SEDE-AAMM-SEQ`;
+- existe un GET de LPN que proyecta `id`, `code`, `site_id` y `created_at`;
+- no se observó consumidor de `inventory_lpn_items` en la búsqueda realizada;
+- no se observó uso de `physical_container_id`;
+- no se observó consumo de `container_type` en el código consultado;
+- no se observó materialización del contrato de continuidad definido aquí.
+
+La clasificación permanece `REUSE_OR_REFACTOR`.
+
+---
+
+#### 52. Brechas físicas registradas
+
+Para materializar el contrato en una etapa autorizada faltan, como mínimo:
+
+1. identidad física separada de contenedor;
+2. historial explícito del vínculo contenedor-LPN;
+3. lifecycle objetivo alineado con `DRAFT/ACTIVE/CLOSED/CANCELLED`;
+4. operación idempotente de vínculo y re-vínculo;
+5. cierre y cancelación bajo precondiciones;
+6. rotación a LPN nuevo sin mutar identidad previa;
+7. control de concurrencia;
+8. reconciliación offline;
+9. auditoría de decisiones;
+10. consumidores UI/API alineados;
+11. pruebas de no duplicación de stock;
+12. compatibilidad con movimiento y contenido.
+
+Estas brechas no se resuelven físicamente en esta tarea.
+
+---
+
+#### 53. Reconciliación legacy futura
+
+Una materialización posterior deberá tratar el modelo existente como legado parcial.
+
+En particular:
+
+- `container_type` no puede convertirse silenciosamente en identidad física;
+- `damaged` como estado legacy de LPN no debe confundirse con condición del contenedor;
+- `empty` y `consumed` no sustituyen por sí solos a `CLOSED`;
+- la existencia de `inventory_lpn_items` no demuestra un contrato completo de contenido;
+- todo cambio deberá conservar historia, evidencia, idempotencia y posibilidad de reconciliación.
+
+La observación de cero filas LPN reduce el riesgo actual de reinterpretación, pero no sustituye una migración gobernada.
+
+---
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea desarrolla reglas ya cubiertas por requisitos vigentes y no altera el registro canónico de requisitos de prueba.
+
+---
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+La cobertura existente reutilizada, sin modificarla, incluye:
+
+- `TREQ-NEXO-004` para lifecycle completo de LPN;
+- `TREQ-NEXO-011` para movimientos, proyecciones e idempotencia de inventario;
+- `TREQ-NEXO-013` para identidad separada de activos y contenedores físicos;
+- `TREQ-NEXO-016` para logística, LPN, contenedores, custodia y cierre;
+- `TREQ-NEXO-041` para separación de clase, rol y representación;
+- `TREQ-NEXO-046` para la frontera `PHYSICAL_CONTAINER` y LPN, incluidos vínculos temporales o persistentes;
+- `TREQ-NEXO-047` para impedir doble contabilización entre clases, LPN, contenedores y contenido.
+
+Esta enumeración es trazabilidad de cobertura, no una actualización de 04A.
+
+---
+
+#### 56. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al checkout y build canónico corresponden al ciclo local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores sobre el checkout local durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron en fuentes remotas continuidad vigente, topología `DEFINE_ONCE`, owner, tarea anterior aprobada, lifecycle LPN, separación contenedor-LPN, 04A vigente, esquema remoto LPN y superficies observables de `vento-nexo`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó un ciclo real de empaque, traslado, sustitución, cierre o reutilización. |
+| FÍSICA | NOT_APPLICABLE | La tarea es documental y no autoriza cambios físicos. |
+
+---
+
+#### 57. Criterios de aceptación
+
+- [x] Distingue preservar, rotar, cerrar, cancelar y mantener en espera.
+- [x] Prohíbe mutar el identificador de un LPN para representar un ciclo nuevo.
+- [x] Conserva la identidad permanente del contenedor físico.
+- [x] Impide que `PERSISTENT` signifique LPN perpetuo del contenedor.
+- [x] Define la política `TEMPORARY`.
+- [x] Define continuidad de unidad, contenido y proceso.
+- [x] Cubre cambios de LOC, sede, custodio y etiqueta.
+- [x] Cubre sustitución de contenedor, división y consolidación.
+- [x] Cubre vaciado, fin de ciclo, retorno, daño, pérdida y hallazgo.
+- [x] Conserva reglas para LPN anidados y estados terminales.
+- [x] Exige idempotencia, concurrencia y reconciliación offline.
+- [x] Separa lifecycle de movimientos, saldos y contenido.
+- [x] Registra el AS-IS remoto sin reinterpretarlo.
+- [x] Conserva cero cambios de requisitos.
+- [x] No autoriza cambios físicos.
+
+---
+
+#### 58. Handoffs propietarios
+
+| Responsabilidad posterior | Propietario | Condición de salida |
+| --- | --- | --- |
+| lectura y movimiento por código | `NEXO-DOM-021` | resolver identificación y acción por código sin mutar identidad indebidamente |
+| movimiento atómico de LPN y contenido | `NEXO-DOM-022` | definir transacción, concurrencia e idempotencia de movimiento |
+| lote, serial y condición dentro de LPN | `NEXO-DOM-023` | conservar trazabilidad aplicable durante contenido y movimiento |
+| capacidad y compatibilidad | `NEXO-DOM-024` | validar límites físicos antes de empaque o vínculo incompatible |
+| materialización física | carril físico autorizado posterior | existir alcance aprobado, gate y evidencia antes de modificar producto o Supabase |
+
+No se crea un owner documental nuevo.
+
+---
+
+#### 59. Consistencia del minibloque
+
+```text
+NEXO-DOM-019
+separa permanentemente PHYSICAL_CONTAINER de LPN
+        |
+        v
+NEXO-DOM-020
+decide PRESERVE / ROTATE / CLOSE / CANCEL / HOLD
+        |
+        v
+NEXO-DOM-021
+resuelve lectura y movimiento mediante codigo respetando la decision
+        |
+        v
+NEXO-DOM-022
+define movimiento atomico de LPN y contenido
+        |
+        v
+NEXO-DOM-023
+preserva lote, serial y condicion
+        |
+        v
+NEXO-DOM-024
+aplica capacidad y compatibilidad
+```
+
+No se absorbe trabajo reservado a las tareas posteriores.
+
+---
+
+#### 60. Handoff contractual hacia NEXO-DOM-021
+
+```text
+STABLE LPN IDENTITY
++
+LPN LIFECYCLE STATE
++
+OPTIONAL PHYSICAL CONTAINER ID
++
+ACTIVE BINDING REVISION
++
+CONTINUITY DECISION
++
+CURRENT SITE / LOC
++
+CURRENT CUSTODY
++
+HOLD REASONS
++
+IDEMPOTENCY / CONCURRENCY EXPECTATION
+=
+CODE-BASED IDENTIFICATION AND MOVEMENT MUST PRESERVE THESE INVARIANTS
+```
+
+`NEXO-DOM-021` puede definir cómo una lectura resuelve identidad y habilita una acción autorizada. No puede convertir el escaneo en autoridad implícita para rotar, cerrar, cancelar o reactivar un LPN.
+
+---
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
+
 ### [ ] NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
 ### [ ] NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
 ### [ ] NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
