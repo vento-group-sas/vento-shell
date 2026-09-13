@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "CANCELLED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -19,8 +19,11 @@
   "authorized_changes": [],
   "validation_commands": [],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "zero_treq_reason": "Cancelación de registro creado por clasificación falsa; no hubo TREQ ni trabajo correctivo autorizado.",
   "authorization": null,
   "evidence": [],
-  "opened_at": "2026-09-13T12:34:06.583Z"
+  "opened_at": "2026-09-13T12:34:06.583Z",
+  "cancelled_at": "2026-09-13T14:23:45.047Z",
+  "cancelled_by": "VENTO_OWNER",
+  "cancellation_reason": "FALSE_CORRECTION_CLASSIFICATION: GAP-PKG-019 missing CREATE targets are implementation work reserved for package gate and SHELL-CI-020."
 }
