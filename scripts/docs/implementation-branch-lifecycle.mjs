@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn, spawnSync } from 'node:child_process';
+import { isDeepStrictEqual } from 'node:util';
 
 import {
   classifyPrChecksProbe,
@@ -515,12 +516,36 @@ export function assertImplementationPaths(paths, instance, options = {}) {
 
 export function assertStartWorktree(paths, recordPath) {
   const normalized = [...new Set((paths ?? []).map((entry) => String(entry).replaceAll('\\', '/')))].sort();
-  if (normalized.length !== 1 || normalized[0] !== recordPath) {
-    fail(
-      `docs:implementation:start exige que el unico cambio local sea ${recordPath}; cambios actuales: ${normalized.join(', ') || 'NINGUNO'}.`,
-    );
+  if (normalized.length === 0) return true;
+  if (normalized.length === 1 && normalized[0] === recordPath) return true;
+  fail(
+    `docs:implementation:start solo admite worktree limpio o que el unico cambio local sea ${recordPath}; cambios actuales: ${normalized.join(', ') || 'NINGUNO'}.`,
+  );
+}
+
+export function authorizedRecordMatchesPersistedMain(instance, persisted) {
+  return Boolean(
+    instance
+    && persisted
+    && instance.status === 'AUTHORIZED'
+    && persisted.status === 'AUTHORIZED'
+    && instance.authorization?.decision === 'APPROVED'
+    && persisted.authorization?.decision === 'APPROVED'
+    && isDeepStrictEqual(instance, persisted)
+  );
+}
+
+function authorizedRecordPersistedOnMain(root, recordPath, instance) {
+  const result = git(['show', `origin/${DEFAULT_BRANCH}:${recordPath}`], {
+    cwd: root,
+    allowFailure: true,
+  });
+  if (result.status !== 0 || !result.stdout.trim()) return false;
+  try {
+    return authorizedRecordMatchesPersistedMain(instance, JSON.parse(result.stdout));
+  } catch {
+    return false;
   }
-  return true;
 }
 
 export function resolveImplementationFinishMode({
@@ -695,10 +720,19 @@ export function startImplementation({ instanceId, root = ensureRepositoryRoot() 
 
   ensureGhReady(root);
   git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+  const persistedAuthorization = authorizedRecordPersistedOnMain(root, recordPath, instance);
+  const startPaths = worktreePaths(root);
+  if (startPaths.length === 0 && !persistedAuthorization) {
+    fail(`docs:implementation:start con worktree limpio exige AUTHORIZED exacto persistido en origin/${DEFAULT_BRANCH}:${recordPath}.`);
+  }
   assertStartWorktree(worktreePaths(root), recordPath);
 
   const readiness = physicalReadiness(root, id);
   const branchMode = ensureBranchReadyForStart(root, branch);
+  const postBranchPaths = worktreePaths(root);
+  if (postBranchPaths.length === 0 && !persistedAuthorization) {
+    fail(`docs:implementation:start perdio el ledger AUTHORIZED local antes de transicionar ${id}.`);
+  }
   assertStartWorktree(worktreePaths(root), recordPath);
 
   writeInstanceStatus(root, id, 'IN_PROGRESS');
@@ -715,6 +749,7 @@ export function startImplementation({ instanceId, root = ensureRepositoryRoot() 
     TASK_ID: instance.task_id,
     BRANCH: branch,
     BRANCH_MODE: branchMode,
+    START_AUTHORIZATION_SOURCE: persistedAuthorization ? 'ORIGIN_MAIN' : 'LOCAL_LEDGER',
     PRE_BRANCH_READINESS: readinessBlockers(readiness, id).length === 0 ? 'PASS' : 'FAIL',
     INSTANCE_STATUS: 'IN_PROGRESS',
     PREFLIGHT: 'PASS',
