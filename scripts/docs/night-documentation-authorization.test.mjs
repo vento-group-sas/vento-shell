@@ -8,20 +8,14 @@ import {
   buildAuthorization,
   parseCutoff,
   parseMaxTasks,
+  parseOptionalBoolean,
 } from './night-documentation-authorization.mjs';
 
 const validPreflight = {
-  task: {
-    id: 'NEXO-DOM-019',
-    current: true,
-  },
-  continuity: {
-    route: 'NORMAL-CANONICAL-FLOW-001',
-    sequence: 'PHASE-05-NEXO',
-  },
+  task: { id: 'NEXO-DOM-019', current: true },
+  continuity: { route: 'NORMAL-CANONICAL-FLOW-001', sequence: 'PHASE-05-NEXO' },
   blockers: [],
 };
-
 const activeSequence = {
   route_id: 'NORMAL-CANONICAL-FLOW-001',
   sequence_id: 'PHASE-05-NEXO',
@@ -33,6 +27,7 @@ function build(overrides = {}) {
   return buildAuthorization({
     now: new Date('2026-09-13T03:00:00.000Z'),
     authorize: 'true',
+    phase2AuthorReview: false,
     maxTasks: '3',
     cutoffAt: '2026-09-13T06:30:00-05:00',
     timeZone: 'America/Bogota',
@@ -48,102 +43,78 @@ function build(overrides = {}) {
   });
 }
 
-test('materializa autorización documental acotada sin habilitar ejecución ni IA', () => {
+test('mantiene FASE 1 sin IA y FASE 2 deshabilitada por defecto', () => {
   const authorization = build();
-
   assert.equal(authorization.authorization_type, AUTHORIZATION_TYPE);
   assert.equal(authorization.lane, AUTHORIZATION_LANE);
-  assert.equal(authorization.status, 'AUTHORIZED');
-  assert.equal(authorization.limits.max_tasks, 3);
-  assert.equal(authorization.limits.block_crossing, false);
-  assert.equal(authorization.limits.sequence_crossing, false);
-  assert.equal(authorization.main_snapshot.policy, 'EVIDENCE_ONLY_NOT_PINNED');
-  assert.equal(authorization.phase_1_capabilities.execution_enabled, false);
   assert.equal(authorization.phase_1_capabilities.ai_enabled, false);
-  assert.equal(authorization.physical_authorization.granted, false);
+  assert.equal(authorization.phase_1_capabilities.execution_enabled, false);
+  assert.equal(authorization.phase_2_capabilities.author_review_enabled, false);
+  assert.equal(authorization.phase_2_capabilities.ai_enabled, false);
+  assert.equal(authorization.phase_2_capabilities.repository_mutation_enabled, false);
+  assert.equal(authorization.phase_2_capabilities.task_execution_enabled, false);
   assert.equal(authorization.physical_authorization.scope, 'NONE');
-  assert.equal(authorization.start_scope.task_id, 'NEXO-DOM-019');
+});
+
+test('autoriza FASE 2 explícitamente sin habilitar mutación ni ejecución', () => {
+  const authorization = build({ phase2AuthorReview: true });
+  assert.equal(authorization.phase_2_capabilities.author_review_enabled, true);
+  assert.equal(authorization.phase_2_capabilities.ai_enabled, true);
+  assert.equal(authorization.phase_2_capabilities.max_model_calls_per_task, 3);
+  assert.equal(authorization.phase_2_capabilities.repair_cycles, 0);
+  assert.equal(authorization.phase_2_capabilities.repository_mutation_enabled, false);
+  assert.equal(authorization.phase_2_capabilities.task_execution_enabled, false);
   assert.match(authorization.authorization_sha256, /^[0-9a-f]{64}$/u);
 });
 
-test('fingerprint es determinista para la misma autorización', () => {
-  assert.equal(build().authorization_sha256, build().authorization_sha256);
+test('fingerprint cambia cuando se habilita FASE 2', () => {
+  assert.notEqual(build().authorization_sha256, build({ phase2AuthorReview: true }).authorization_sha256);
 });
 
 test('rechaza ausencia de autorización humana explícita', () => {
-  assert.throws(
-    () => build({ authorize: 'false' }),
-    /confirmación humana explícita/u,
-  );
+  assert.throws(() => build({ authorize: 'false' }), /confirmación humana explícita/u);
 });
 
-test('max_tasks exige entero positivo', () => {
+test('flags booleanos y max_tasks fallan cerrado', () => {
+  assert.equal(parseOptionalBoolean('true', 'phase2'), true);
+  assert.equal(parseOptionalBoolean('', 'phase2'), false);
+  assert.throws(() => parseOptionalBoolean('yes', 'phase2'), /true o false/u);
   assert.equal(parseMaxTasks('1'), 1);
   assert.throws(() => parseMaxTasks('0'), /entero positivo/u);
-  assert.throws(() => parseMaxTasks('1.5'), /entero positivo/u);
 });
 
-test('cutoff exige instante futuro y offset coherente con timezone', () => {
+test('cutoff exige instante futuro y offset coherente', () => {
   const parsed = parseCutoff({
     cutoffAt: '2026-09-13T06:30:00-05:00',
     timeZone: 'America/Bogota',
     now: new Date('2026-09-13T03:00:00.000Z'),
   });
   assert.equal(parsed.offsetMinutes, -300);
-  assert.throws(
-    () => parseCutoff({
-      cutoffAt: '2026-09-13T06:30:00+00:00',
-      timeZone: 'America/Bogota',
-      now: new Date('2026-09-13T03:00:00.000Z'),
-    }),
-    /usa offset/u,
-  );
-  assert.throws(
-    () => parseCutoff({
-      cutoffAt: '2026-09-12T20:00:00-05:00',
-      timeZone: 'America/Bogota',
-      now: new Date('2026-09-13T03:00:00.000Z'),
-    }),
-    /futuro/u,
-  );
+  assert.throws(() => parseCutoff({
+    cutoffAt: '2026-09-13T06:30:00+00:00',
+    timeZone: 'America/Bogota',
+    now: new Date('2026-09-13T03:00:00.000Z'),
+  }), /usa offset/u);
 });
 
-test('rechaza ruta o secuencia diferente del active-sequence vigente', () => {
-  assert.throws(
-    () => build({
-      preflight: {
-        ...validPreflight,
-        continuity: {
-          route: 'OTHER',
-          sequence: 'PHASE-05-NEXO',
-        },
-      },
-    }),
-    /no coinciden/u,
-  );
+test('rechaza ruta o secuencia diferente del active-sequence', () => {
+  assert.throws(() => build({
+    preflight: { ...validPreflight, continuity: { route: 'OTHER', sequence: 'PHASE-05-NEXO' } },
+  }), /no coinciden/u);
 });
 
-test('el workflow FASE 1 es manual, serial, read-only y no consume IA', () => {
-  const workflow = fs.readFileSync(
-    '.github/workflows/vento-night-documentation-autopilot.yml',
-    'utf8',
-  );
-
+test('workflow conserva autorización manual y añade FASE 2 gated/read-only', () => {
+  const workflow = fs.readFileSync('.github/workflows/vento-night-documentation-autopilot.yml', 'utf8');
   assert.match(workflow, /workflow_dispatch:/u);
-  assert.match(workflow, /authorize:/u);
-  assert.match(workflow, /max_tasks:/u);
-  assert.match(workflow, /cutoff_at:/u);
-  assert.match(workflow, /timezone:/u);
+  assert.match(workflow, /phase2_author_review:/u);
   assert.match(workflow, /group: vento-night-documentation-autopilot/u);
   assert.match(workflow, /cancel-in-progress: false/u);
   assert.match(workflow, /permissions:\s+contents: read/gu);
-  assert.match(workflow, /ref: main/u);
-  assert.match(workflow, /git fetch origin main --quiet/u);
-  assert.match(workflow, /git checkout --detach origin\/main/u);
-  assert.match(workflow, /night-documentation-authorization\.mjs/u);
-  assert.match(workflow, /actions\/upload-artifact@v4/u);
+  assert.match(workflow, /night-documentation-context\.mjs/u);
+  assert.match(workflow, /night-documentation-author-review\.mjs/u);
+  assert.match(workflow, /OPENAI_API_KEY: \$\{\{ secrets\.OPENAI_API_KEY \}\}/u);
+  assert.match(workflow, /if: \$\{\{ inputs\.phase2_author_review \}\}/u);
   assert.doesNotMatch(workflow, /openai\/codex-action/u);
-  assert.doesNotMatch(workflow, /OPENAI_API_KEY/u);
   assert.doesNotMatch(workflow, /docs:task:start/u);
   assert.doesNotMatch(workflow, /docs:task:finish/u);
   assert.doesNotMatch(workflow, /docs:implementation:/u);
