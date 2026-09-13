@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1187** |
+| Aprobadas | **1188** |
 | En propuesta | **0** |
-| No iniciadas | **409** |
+| No iniciadas | **408** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **74.37% (1187/1596)** |
+| Porcentaje de completamiento | **74.44% (1188/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **409** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1088** |
+| ⏸ NO_EVALUADA | **408** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1089** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-020` — Definir cuándo un contenedor conserva, cambia o cierra su LPN | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-021` — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-021` — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -972,7 +972,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-018` | Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-019` | Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-020` | Definir cuándo un contenedor conserva, cambia o cierra su LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-021` | Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-021` | Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-022` | Definir que mover un LPN mueve atómicamente todo su contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-023` | Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-024` | Definir capacidad, peso, volumen y compatibilidad de contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
