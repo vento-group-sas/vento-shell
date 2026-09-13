@@ -22,6 +22,7 @@ import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 import { syncLocalDerivedArtifacts } from './sync-local-derived-artifacts.mjs';
 import {
   assertPackagePhysicalDependenciesReady,
+  instanceRequiresInPackageCandidateEvidence,
   scanPackageReadiness,
   validateInPackageCandidateEvidence,
 } from './package-readiness-scanner.mjs';
@@ -355,9 +356,13 @@ export function assertCi020PhysicalPrerequisitesForFinish({
   });
 
   const pkg = readiness?.registry?.packages?.find(({ package_id: id }) => id === packageId) ?? null;
-  if (pkg?.execution_requirements?.supabase_mutation_required === true) {
-    const gate = readiness?.contract?.physical_dependencies
-      ?.supabase_pre_e5_foundation?.in_package_candidate_gate ?? null;
+  const foundation = readiness?.contract?.physical_dependencies
+    ?.supabase_pre_e5_foundation ?? null;
+  if (
+    pkg?.execution_requirements?.supabase_mutation_required === true
+    && instanceRequiresInPackageCandidateEvidence(instance, foundation)
+  ) {
+    const gate = foundation?.in_package_candidate_gate ?? null;
     const candidate = validateInPackageCandidateEvidence({
       root,
       packageId,

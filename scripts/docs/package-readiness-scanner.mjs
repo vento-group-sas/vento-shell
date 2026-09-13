@@ -2017,6 +2017,14 @@ export function targetRequiresSupabaseFoundation(relativePath, foundation) {
     .some((prefix) => normalized.startsWith(String(prefix)));
 }
 
+export function instanceRequiresInPackageCandidateEvidence(instance, foundation) {
+  return (instance?.authorized_changes ?? []).some((entry) => (
+    String(entry?.repo ?? '').trim() === SHELL_REPOSITORY
+    && String(entry?.change ?? '').trim().toUpperCase() !== 'EXECUTE_ONLY'
+    && targetRequiresSupabaseFoundation(entry?.path, foundation)
+  ));
+}
+
 export function derivePackageExecutionRequirements({ contract, packageGate = null } = {}) {
   const foundation = contract?.physical_dependencies?.supabase_pre_e5_foundation ?? null;
   const targets = Array.isArray(packageGate?.physical_identity?.targets)
