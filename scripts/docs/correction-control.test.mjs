@@ -16,6 +16,7 @@ import {
     loadValidatedCorrectionControl,
     nextCorrectionId,
     normalizeCorrectionId,
+    openCorrections,
 } from './correction-control.mjs';
 
 test('correction-control oficial es válido', () => {
@@ -146,4 +147,26 @@ test('package registry persistente es proyección derivada de corrección', () =
     );
     assert.equal(classified.length, 1);
     assert.equal(classified[0].kind, 'DERIVED_PROJECTION');
+});
+
+
+test('CANCELLED es terminal y no cuenta como corrección abierta', () => {
+    const control = {
+        records: [{
+            record: {
+                correction_id: 'DELIV-PKG-014::CORR-001',
+                status: 'CANCELLED',
+            },
+        }],
+    };
+    assert.equal(openCorrections(control).length, 0);
+});
+
+test('tooling de cancelación preserva ledger y exige PENDING no bloqueante', () => {
+    const source = fs.readFileSync('scripts/docs/correction-cancel.mjs', 'utf8');
+    assert.match(source, /PENDING_AUTHORIZATION/u);
+    assert.match(source, /blocking !== false/u);
+    assert.match(source, /authorized_changes/u);
+    assert.match(source, /status: 'CANCELLED'/u);
+    assert.match(source, /append-only/u);
 });
