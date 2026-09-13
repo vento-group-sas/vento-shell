@@ -238,8 +238,8 @@ function validatePolicy(policy) {
 }
 
 function validateAuthorization(record) {
-    if (record.status === 'PENDING_AUTHORIZATION') {
-        if (record.authorization !== null) fail(`${record.correction_id}: PENDING_AUTHORIZATION exige authorization=null.`);
+    if (['PENDING_AUTHORIZATION', 'CANCELLED'].includes(record.status)) {
+        if (record.authorization !== null) fail(`${record.correction_id}: ${record.status} exige authorization=null.`);
         return;
     }
     if (!record.authorization || typeof record.authorization !== 'object' || Array.isArray(record.authorization)) {
@@ -275,7 +275,7 @@ function validateAuthorizedChanges(record) {
         if (seen.has(key)) fail(`${record.correction_id}: authorized_changes duplicado: ${key}.`);
         seen.add(key);
     }
-    if (record.status !== 'PENDING_AUTHORIZATION' && record.authorized_changes.length === 0) {
+    if (!['PENDING_AUTHORIZATION', 'CANCELLED'].includes(record.status) && record.authorized_changes.length === 0) {
         fail(`${record.correction_id}: ${record.status} exige authorized_changes no vacío.`);
     }
 }
@@ -286,11 +286,35 @@ function validateTreqDeclaration(record) {
     const zeroReason = record.zero_treq_reason === null ? '' : String(record.zero_treq_reason ?? '').trim();
     if (ids.length === 0) {
         if (zeroReason.length < 20) fail(`${record.correction_id}: cero TREQ exige zero_treq_reason concreto de al menos 20 caracteres.`);
-        if (record.status !== 'PENDING_AUTHORIZATION' && record.correction_type !== 'DOCUMENTARY') {
+        if (!['PENDING_AUTHORIZATION', 'CANCELLED'].includes(record.status) && record.correction_type !== 'DOCUMENTARY') {
             fail(`${record.correction_id}: toda corrección física autorizada exige affected_treq_ids no vacío.`);
         }
     } else if (record.zero_treq_reason !== null) {
         fail(`${record.correction_id}: zero_treq_reason debe ser null cuando existen TREQ afectados.`);
+    }
+}
+
+function validateCancellation(record) {
+    if (record.status !== 'CANCELLED') return;
+
+    if (record.blocking !== false) fail(`${record.correction_id}: CANCELLED exige blocking=false.`);
+    if (!Array.isArray(record.blocked_targets) || record.blocked_targets.length !== 0) {
+        fail(`${record.correction_id}: CANCELLED exige blocked_targets vacío.`);
+    }
+    if (record.authorization !== null) fail(`${record.correction_id}: CANCELLED exige authorization=null.`);
+    if (!Array.isArray(record.authorized_changes) || record.authorized_changes.length !== 0) {
+        fail(`${record.correction_id}: CANCELLED exige authorized_changes vacío.`);
+    }
+    if (!Array.isArray(record.validation_commands) || record.validation_commands.length !== 0) {
+        fail(`${record.correction_id}: CANCELLED exige validation_commands vacío.`);
+    }
+    if (!Array.isArray(record.evidence) || record.evidence.length !== 0) {
+        fail(`${record.correction_id}: CANCELLED exige evidence vacío.`);
+    }
+    if (!String(record.cancelled_at ?? '').trim()) fail(`${record.correction_id}: CANCELLED exige cancelled_at.`);
+    if (!String(record.cancelled_by ?? '').trim()) fail(`${record.correction_id}: CANCELLED exige cancelled_by.`);
+    if (String(record.cancellation_reason ?? '').trim().length < 20) {
+        fail(`${record.correction_id}: CANCELLED exige cancellation_reason concreto.`);
     }
 }
 
@@ -365,6 +389,7 @@ function validateRecord(record, relativePath, { policy, workTopology, implementa
         fail(`${correctionId}: ${record.status} exige validation_commands no vacío.`);
     }
     validateAuthorization(record);
+    validateCancellation(record);
     validateTreqDeclaration(record);
     if (!Array.isArray(record.evidence)) fail(`${correctionId}: evidence debe ser array.`);
     if (record.status === 'PENDING_AUTHORIZATION' && record.evidence.length !== 0) fail(`${correctionId}: PENDING_AUTHORIZATION exige evidence=[].`);

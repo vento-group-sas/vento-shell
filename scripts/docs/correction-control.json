@@ -1,61 +1,63 @@
 {
-    "schema_version": 1,
-    "policy_id": "VENTO_CANONICAL_CORRECTION_LIFECYCLE_V1",
-    "contract_sha256": "76fabbbd2ba54dac503848b801430a96e268ad4eadae45778744eb3150c765d8",
-    "authorization_mode": "EXPLICIT_PER_CORRECTION",
-    "automatic_authorization": false,
-    "history_mode": "APPEND_ONLY_LEDGER",
-    "verified_corrections_immutable": true,
-    "max_open_corrections_per_task": 1,
-    "semantic_change_forbidden": true,
-    "records_directory": "docs/plan-canonico/modular/correction-instances",
-    "required_remote_gate": "VENTO Required Gate",
-    "block_release": "VERIFIED_ON_MAIN",
-    "supabase_historical_migrations_immutable": true,
-    "supabase_physical_corrections_require_forward_migration": true,
-    "correction_types": [
-        "DOCUMENTARY",
-        "PHYSICAL",
-        "DOCUMENTARY_AND_PHYSICAL"
-    ],
-    "reason_codes": [
-        "CONTRACT_NON_CONFORMANCE",
-        "IMPLEMENTATION_DEFECT",
-        "REGRESSION_GAP",
-        "DOCUMENTARY_CONTRADICTION",
-        "ARITHMETIC_OR_DATA_CORRECTION",
-        "SECURITY_NON_CONFORMANCE"
-    ],
-    "statuses": [
-        "PENDING_AUTHORIZATION",
-        "AUTHORIZED",
-        "IN_PROGRESS",
-        "BLOCKED",
-        "IMPLEMENTED",
-        "VERIFIED",
-        "DEFERRED"
-    ],
-    "branch_prefix": "correction/",
-    "registration_branch_prefix": "correction-register/",
-    "correction_id_pattern": "<TASK-ID>::CORR-<NNN>",
-    "pre_merge_physical_corrections": {
-        "mode": "PINNED_IMPLEMENTATION_PR",
-        "registration": "PENDING_AUTHORIZATION_ON_MAIN",
-        "integration": "IMPLEMENTATION_AND_CORRECTION_IN_ONE_PR",
-        "historical_instance": "IMMUTABLE",
-        "validation": "FRESH_CANDIDATE_AND_REQUIRED_ENVIRONMENTS"
-    },
-    "rules": [
-        "A correction restores conformity with an already approved contract or decision and cannot introduce new capability or expand semantic scope.",
-        "The historical approved task identity and any VERIFIED implementation instance remain immutable.",
-        "Every correction uses a monotonic CORR-NNN identity per target task and a separate append-only correction ledger.",
-        "A PENDING_AUTHORIZATION correction is registered on main through correction-register/* before corrective work starts.",
-        "Only explicitly listed blocked_targets are blocked, and release occurs only after VERIFIED_ON_MAIN.",
-        "The correction work branch is correction/<task-id>/corr-<nnn> and authorized_changes is deny-by-default.",
-        "Baseline task and implementation identities must remain current or the lifecycle fails STALE_TARGET.",
-        "A physical correction may target a VERIFIED snapshot in an open same-repository implementation PR pinned by exact SHA while main still holds its unverified record. Registration on main preserves both identities; correction/* integrates the original snapshot and a separately authorized corrective delta in one protected PR.",
-        "Physical corrections require fresh validation evidence and affected TREQ identifiers before VERIFIED.",
-        "Applied Supabase migrations are immutable; physical database corrections use a new forward migration from vento-shell.",
-        "Every correction PR targets main, waits for VENTO Required Gate, and merges only the exact validated head commit."
-    ]
+  "schema_version": 1,
+  "policy_id": "VENTO_CANONICAL_CORRECTION_LIFECYCLE_V1",
+  "contract_sha256": "76fabbbd2ba54dac503848b801430a96e268ad4eadae45778744eb3150c765d8",
+  "authorization_mode": "EXPLICIT_PER_CORRECTION",
+  "automatic_authorization": false,
+  "history_mode": "APPEND_ONLY_LEDGER",
+  "verified_corrections_immutable": true,
+  "max_open_corrections_per_task": 1,
+  "semantic_change_forbidden": true,
+  "records_directory": "docs/plan-canonico/modular/correction-instances",
+  "required_remote_gate": "VENTO Required Gate",
+  "block_release": "VERIFIED_ON_MAIN",
+  "supabase_historical_migrations_immutable": true,
+  "supabase_physical_corrections_require_forward_migration": true,
+  "correction_types": [
+    "DOCUMENTARY",
+    "PHYSICAL",
+    "DOCUMENTARY_AND_PHYSICAL"
+  ],
+  "reason_codes": [
+    "CONTRACT_NON_CONFORMANCE",
+    "IMPLEMENTATION_DEFECT",
+    "REGRESSION_GAP",
+    "DOCUMENTARY_CONTRADICTION",
+    "ARITHMETIC_OR_DATA_CORRECTION",
+    "SECURITY_NON_CONFORMANCE"
+  ],
+  "statuses": [
+    "PENDING_AUTHORIZATION",
+    "AUTHORIZED",
+    "IN_PROGRESS",
+    "BLOCKED",
+    "IMPLEMENTED",
+    "VERIFIED",
+    "DEFERRED",
+    "CANCELLED"
+  ],
+  "branch_prefix": "correction/",
+  "registration_branch_prefix": "correction-register/",
+  "correction_id_pattern": "<TASK-ID>::CORR-<NNN>",
+  "pre_merge_physical_corrections": {
+    "mode": "PINNED_IMPLEMENTATION_PR",
+    "registration": "PENDING_AUTHORIZATION_ON_MAIN",
+    "integration": "IMPLEMENTATION_AND_CORRECTION_IN_ONE_PR",
+    "historical_instance": "IMMUTABLE",
+    "validation": "FRESH_CANDIDATE_AND_REQUIRED_ENVIRONMENTS"
+  },
+  "rules": [
+    "A correction restores conformity with an already approved contract or decision and cannot introduce new capability or expand semantic scope.",
+    "The historical approved task identity and any VERIFIED implementation instance remain immutable.",
+    "Every correction uses a monotonic CORR-NNN identity per target task and a separate append-only correction ledger.",
+    "A PENDING_AUTHORIZATION correction is registered on main through correction-register/* before corrective work starts.",
+    "Only explicitly listed blocked_targets are blocked, and release occurs only after VERIFIED_ON_MAIN.",
+    "The correction work branch is correction/<task-id>/corr-<nnn> and authorized_changes is deny-by-default.",
+    "Baseline task and implementation identities must remain current or the lifecycle fails STALE_TARGET.",
+    "A physical correction may target a VERIFIED snapshot in an open same-repository implementation PR pinned by exact SHA while main still holds its unverified record. Registration on main preserves both identities; correction/* integrates the original snapshot and a separately authorized corrective delta in one protected PR.",
+    "Physical corrections require fresh validation evidence and affected TREQ identifiers before VERIFIED.",
+    "Applied Supabase migrations are immutable; physical database corrections use a new forward migration from vento-shell.",
+    "Every correction PR targets main, waits for VENTO Required Gate, and merges only the exact validated head commit.",
+    "A registered PENDING_AUTHORIZATION correction that is nonblocking and has no authorization, authorized changes, validation commands or evidence may be terminally CANCELLED when it was created by false correction classification; the append-only ledger record remains preserved."
+  ]
 }

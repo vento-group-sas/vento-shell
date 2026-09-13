@@ -120,7 +120,8 @@
     "docs:plan:obligations:test": "node --test scripts/docs/plan-obligation-closure.test.mjs",
     "docs:implementation:work-package": "node scripts/docs/implementation-work-package.mjs --write",
     "docs:implementation:work-package:check": "node scripts/docs/implementation-work-package.mjs --check",
-    "docs:implementation:work-package:test": "node --test scripts/docs/implementation-work-package.test.mjs"
+    "docs:implementation:work-package:test": "node --test scripts/docs/implementation-work-package.test.mjs",
+    "docs:correction:cancel": "node scripts/docs/correction-cancel.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",
