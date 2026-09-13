@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "correction_id": "DELIV-PKG-014::CORR-001",
+  "task_id": "DELIV-PKG-014",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "CONTRACT_NON_CONFORMANCE",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": false,
+  "blocked_targets": [],
+  "baseline": {
+    "main_commit": "db7aa129c58bf83fe281b816ba1e27082e67f8bf",
+    "target_task_path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+    "target_task_sha256": "eed7c3ab426cc0aeb98a87decd434bad29f22934701cf392872893bc325d6b1c",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-09-13T12:34:06.583Z"
+}
