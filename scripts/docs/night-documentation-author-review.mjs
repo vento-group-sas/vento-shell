@@ -243,6 +243,86 @@ function normalizeContinuityLabels(markdown) {
   }).join('\n');
 }
 
+function normalizeZeroTreqDerivedReferences(markdown, existingIds) {
+  const normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n');
+  const headingPattern = /^####\s+(?:\d+\.\s*)?Requisitos de prueba derivados.*$/imu;
+  const heading = headingPattern.exec(normalized);
+  if (!heading) return normalized;
+
+  const bodyStart = heading.index + heading[0].length;
+  const rest = normalized.slice(bodyStart);
+  const nextHeadingOffset = rest.search(/^####\s+/mu);
+  const sectionEnd = nextHeadingOffset >= 0
+    ? bodyStart + nextHeadingOffset
+    : normalized.length;
+
+  const body = normalized.slice(bodyStart, sectionEnd).trim();
+  const paragraphs = body
+    .split(/\n{2,}/u)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  const referenceParagraphs = paragraphs.filter(
+    (entry) => /\bTREQ-[A-Z]+-\d{3,}\b/u.test(entry),
+  );
+  if (referenceParagraphs.length === 0) return normalized;
+
+  const referencedIds = [...new Set(
+    referenceParagraphs.flatMap(
+      (entry) => entry.match(/\bTREQ-[A-Z]+-\d{3,}\b/gu) ?? [],
+    ),
+  )].sort();
+
+  const unknown = referencedIds.filter((id) => !existingIds.has(id));
+  if (unknown.length > 0) {
+    fail(
+      'referencia TREQ histórica no autorizada en Requisitos de prueba derivados: '
+      + unknown.join(', '),
+    );
+  }
+
+  const keptParagraphs = paragraphs.filter(
+    (entry) => !/\bTREQ-[A-Z]+-\d{3,}\b/u.test(entry),
+  );
+
+  if (
+    !keptParagraphs.some(
+      (entry) => /NO GENERA REQUISITOS DE PRUEBA/iu.test(entry),
+    )
+  ) {
+    keptParagraphs.unshift('NO GENERA REQUISITOS DE PRUEBA');
+  }
+
+  let prefix = normalized.slice(0, heading.index).replace(/\s+$/u, '');
+  const separator = /\n---$/u.test(prefix);
+  if (separator) {
+    prefix = prefix.replace(/\n---$/u, '').replace(/\s+$/u, '');
+  }
+
+  const historicalBlock = [
+    '**Referencias históricas no modificadas:**',
+    '',
+    ...referenceParagraphs,
+  ].join('\n');
+
+  const beforeDerived = [
+    prefix,
+    historicalBlock,
+    separator ? '---' : null,
+  ].filter(Boolean).join('\n\n');
+
+  const suffix = normalized.slice(sectionEnd).replace(/^\s*/u, '');
+  const rebuilt = [
+    beforeDerived,
+    heading[0],
+    '',
+    keptParagraphs.join('\n\n'),
+    suffix,
+  ].filter((entry) => entry !== '').join('\n');
+
+  return `${rebuilt.replace(/\s+$/u, '')}\n`;
+}
+
 export function validateCandidate(author, capsule) {
   if (author?.status === 'STOP') {
     if (!String(author.stop_reason ?? '').trim()) fail('autor devolvió STOP sin stop_reason.');
@@ -250,7 +330,20 @@ export function validateCandidate(author, capsule) {
   }
   if (author?.status !== 'CANDIDATE') fail(`estado de autor inválido: ${author?.status ?? 'VACÍO'}.`);
 
-  const markdown = normalizeContinuityLabels(author.task_markdown).trim();
+  const changes = Array.isArray(author.treq_changes) ? author.treq_changes : [];
+  const affected = Array.isArray(author.affected_treq_ids) ? author.affected_treq_ids : [];
+  const existingIds = new Set(
+    (capsule.registry.relevant_rows ?? [])
+      .map((row) => row.match(/`(TREQ-[A-Z]+-\d{3,})`/u)?.[1])
+      .filter(Boolean),
+  );
+
+  const continuityNormalized = normalizeContinuityLabels(author.task_markdown);
+  const markdown = (
+    changes.length === 0
+      ? normalizeZeroTreqDerivedReferences(continuityNormalized, existingIds)
+      : continuityNormalized
+  ).trim();
   const taskId = capsule.current.id;
   const exactHeading = `### ✅ ${taskId} — ${capsule.current.title}`;
   if (!markdown.startsWith(exactHeading)) fail(`candidato no inicia con el título canónico exacto: ${exactHeading}.`);
@@ -297,18 +390,10 @@ export function validateCandidate(author, capsule) {
     fail('Continuidad no contiene anterior, actual y siguiente exactos.');
   }
 
-  const changes = Array.isArray(author.treq_changes) ? author.treq_changes : [];
-  const affected = Array.isArray(author.affected_treq_ids) ? author.affected_treq_ids : [];
   const changeIds = changes.map(({ id }) => id);
   if (JSON.stringify([...new Set(affected)].sort()) !== JSON.stringify([...new Set(changeIds)].sort())) {
     fail('affected_treq_ids no coincide con los IDs de treq_changes.');
   }
-
-  const existingIds = new Set(
-    (capsule.registry.relevant_rows ?? [])
-      .map((row) => row.match(/`(TREQ-[A-Z]+-\d{3,})`/u)?.[1])
-      .filter(Boolean),
-  );
   let nextCreate = Number(capsule.registry.max_numeric_id) + 1;
   for (const change of changes) {
     if (change.id !== change.row?.id) fail(`TREQ ${change.id} no coincide con row.id.`);

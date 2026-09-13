@@ -134,15 +134,45 @@ test('valida candidato documental sin TREQ inventados', () => {
   assert.deepEqual(result.affectedTreqIds, []);
 });
 
-test('rechaza TREQ dentro de requisitos derivados cuando declara cero cambios', () => {
+test('reubica referencia TREQ histórica fuera de derivados antes de calcular el SHA', () => {
+  const historical = authorResponse();
+  historical.task_markdown = historical.task_markdown.replace(
+    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
+    [
+      'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
+      '',
+      'La cobertura histórica existente `TREQ-NEXO-004` permanece sin modificación.',
+    ].join('\n'),
+  );
+
+  const result = validateCandidate(historical, capsule);
+  const derived = result.markdown.match(
+    /^####\s+2\.\s+Requisitos de prueba derivados\s*$([\s\S]*?)(?=^####\s+3\.)/mu,
+  )?.[1] ?? '';
+
+  assert.doesNotMatch(derived, /TREQ-NEXO-004/u);
+  assert.match(
+    result.markdown,
+    /\*\*Referencias históricas no modificadas:\*\*[\s\S]*TREQ-NEXO-004[\s\S]*#### 2\. Requisitos de prueba derivados/u,
+  );
+  assert.equal(result.candidateSha, sha256(result.markdown));
+  assert.deepEqual(result.affectedTreqIds, []);
+});
+
+test('rechaza referencia TREQ histórica desconocida durante normalización', () => {
   const invalid = authorResponse();
   invalid.task_markdown = invalid.task_markdown.replace(
     'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
-    'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea. Cobertura: TREQ-NEXO-004.',
+    [
+      'NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.',
+      '',
+      'Cobertura histórica: TREQ-NEXO-999.',
+    ].join('\n'),
   );
+
   assert.throws(
     () => validateCandidate(invalid, capsule),
-    /no puede incluir IDs TREQ dentro de Requisitos de prueba derivados/u,
+    /referencia TREQ histórica no autorizada.*TREQ-NEXO-999/u,
   );
 });
 
