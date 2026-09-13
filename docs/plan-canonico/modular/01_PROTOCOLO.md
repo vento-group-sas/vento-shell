@@ -17,8 +17,8 @@
 
    La `Siguiente tarea` permanece reservada y no podrá iniciarse hasta que:
 
-   - la tarea actual haya sido aprobada explícitamente;
-   - el usuario solicite expresamente continuar;
+   - la tarea actual haya sido aprobada explícitamente o haya satisfecho el cierre delegado de una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` válida conforme al punto 4.9;
+   - el usuario solicite expresamente continuar o exista una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` vigente que permita continuar dentro de sus límites;
    - se compruebe que no existe una etapa contractual intermedia.
 
 3. No iniciar una ejecución física por inferencia desde la tarea documental actual. El marcador documental y la instancia física son capas distintas: la tarea actual gobierna continuidad de documentación; la cardinalidad física se obtiene de `mode`; y el momento permitido se obtiene de `execution_gate` en `task-work-topology.json`. Toda ejecución física conserva autorización explícita por instancia. `UNREVIEWED` nunca autoriza ni relaja trabajo. Los cambios remotos, migraciones, Supabase, despliegues, secretos y datos conservan además sus gates técnicos propietarios.
@@ -63,8 +63,9 @@
    validadores documentales que reconocen tareas materializadas mediante el
    marcador `### ✅`.
 
-   Sin embargo, el archivo no se considerará canónicamente aprobado hasta que
-   el usuario lo revise y responda explícitamente:
+   Fuera de una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` válida conforme al punto
+   4.9, el archivo no se considerará canónicamente aprobado hasta que el
+   usuario lo revise y responda explícitamente:
 
    **APROBADO**
 
@@ -77,7 +78,7 @@
    - si el usuario solicita correcciones sustantivas, se regenerará el mismo
      archivo `*_APROBADA_PARA_REEMPLAZAR.md` con las correcciones;
    - una aprobación expresa no autoriza avanzar automáticamente a la tarea
-     siguiente.
+     siguiente fuera de una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` vigente.
 
    #### 4.2. Alcance exacto del archivo de tarea
 
@@ -205,7 +206,10 @@
      remota anterior.
 
    No se realizará ninguna escritura en GitHub sin autorización explícita del
-   usuario.
+   usuario. Una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` válida conforme al punto 4.9
+   constituye autorización explícita únicamente para las operaciones
+   documentales de Git y GitHub enumeradas en ese punto y mientras permanezca
+   vigente.
 
    #### 4.6. Validación obligatoria contra los scripts del repositorio
 
@@ -284,7 +288,15 @@
    CONTINUACIÓN SOLO CUANDO EL USUARIO LA SOLICITE
    ```
 
-   Antes de que el usuario diga **APROBADO**:
+   Este flujo continúa siendo el modo manual predeterminado. La única
+   excepción es una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` válida conforme al
+   punto 4.9. Esa autorización delega únicamente los gates conversacionales de
+   aprobación y continuidad para las tareas que satisfagan íntegramente sus
+   condiciones; no elimina validadores, revisión, lifecycle, TREQ, checks ni
+   límites de alcance.
+
+   Fuera de una autorización nocturna vigente, antes de que el usuario diga
+   **APROBADO**:
 
    - no se tratarán las decisiones como canónicas;
    - no se actualizará conceptualmente la última tarea aprobada;
@@ -292,7 +304,7 @@
    - no se implementará código;
    - no se escribirá en GitHub.
 
-   Después de **APROBADO**:
+   En modo manual, después de **APROBADO**:
 
    - no será obligatorio regenerar el archivo si no hubo correcciones;
    - la tarea quedará aprobada para su incorporación local o remota;
@@ -314,7 +326,8 @@
    - entregar una tarea sin el `04A` completo cuando cambien requisitos;
    - crear archivos paralelos para evitar reemplazar `04A`;
    - editar derivados para ocultar inconsistencias de las fuentes;
-   - continuar automáticamente después de una aprobación.
+   - continuar automáticamente después de una aprobación fuera del alcance
+     de una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` vigente.
 
    La entrega se considerará completa únicamente cuando el usuario pueda:
 
@@ -324,6 +337,106 @@
    4. ejecutar los scripts sin reconstrucciones manuales;
    5. revisar el resumen final;
    6. aprobar o solicitar correcciones.
+
+   #### 4.9. Autorización Documental Nocturna
+
+   La `AUTORIZACIÓN DOCUMENTAL NOCTURNA` es una excepción temporal, explícita,
+   acotada y fail-closed al gate conversacional tarea por tarea. Existe para
+   permitir que un ejecutor documental desatendido procese una secuencia corta
+   de tareas mientras el usuario no está presente sin ampliar el carril físico.
+
+   El modo manual continúa siendo el comportamiento predeterminado. La mera
+   existencia de este punto no activa un turno nocturno y no autoriza a ningún
+   agente a continuar por inferencia. Cada turno requiere una autorización
+   humana explícita y nueva.
+
+   Al activarse un turno, el ejecutor deberá fijar y conservar como mínimo:
+
+   - el carril `DOCUMENTATION`;
+   - un máximo explícito de tareas;
+   - una hora límite explícita con zona horaria;
+   - `cruce de bloque = NO` para la primera versión del autopiloto.
+
+   `main` es dinámico durante el turno. Antes de cada unidad documental el
+   ejecutor deberá sincronizarse mediante fast-forward con el `origin/main`
+   vigente, registrar el SHA observado como evidencia de esa unidad, regenerar
+   el iniciador documental y volver a resolver ruta, secuencia, bloque y tarea
+   actual. Un cambio válido de `main` producido por otra documentación o
+   implementación concurrente no invalida por sí solo el turno.
+
+   La autorización nocturna permite exclusivamente, para tareas documentales
+   elegibles y dentro de esos límites:
+
+   - abrir o reanudar la rama documental de la tarea mediante el lifecycle
+     canónico;
+   - desarrollar únicamente la tarea documental actual y su registro 04A
+     cuando corresponda;
+   - crear commits documentales, publicar la rama, crear o actualizar el PR,
+     esperar checks y mergear únicamente el SHA que fue validado;
+   - limpiar la rama después del merge cuando el lifecycle lo considere seguro;
+   - regenerar el iniciador documental desde el nuevo `main` y reevaluar la
+     continuidad antes de considerar otra tarea.
+
+   No autoriza:
+
+   - implementación física, instancias, packages ni autorizaciones físicas;
+   - código de producto, migraciones, datos, Supabase remoto o despliegues;
+   - secretos, credenciales o mutaciones de ambientes;
+   - cambios transversales de infraestructura, workflows, scripts de lifecycle
+     o políticas distintas de la propia tarea documental;
+   - selección manual de una tarea distinta de la continuidad vigente;
+   - cruce de bloque o secuencia en la primera versión.
+
+   Una tarea queda cubierta por el cierre delegado del turno únicamente cuando:
+
+   1. era la tarea documental actual después de regenerar y verificar el
+      iniciador contra `main`;
+   2. permanece dentro del mismo bloque y secuencia autorizados al iniciar el
+      turno;
+   3. no exige una decisión empresarial nueva, una aclaración humana ni resolver
+      una contradicción entre fuentes canónicas;
+   4. no autoriza ni materializa cambios físicos;
+   5. el formato, calidad, entrega, validadores de dominio y batería global
+      aplicables terminan en PASS;
+   6. cualquier cambio TREQ conserva un 04A completo, válido y trazable;
+   7. dos revisiones independientes terminan en PASS sobre el mismo SHA
+      candidato y ninguna modificación ocurre entre ambas revisiones;
+   8. el PR conserva el mismo SHA revisado, sus checks obligatorios terminan en
+      PASS y el merge se ejecuta únicamente sobre ese SHA;
+   9. el cierre documental termina con `NEXT_TASK_ALLOWED: SI`.
+
+   Solo después de cumplir simultáneamente esas condiciones, la autorización
+   nocturna sustituye para esa tarea la palabra `APROBADO` individual y la
+   solicitud conversacional de continuar. La autorización previa del turno se
+   considera la delegación humana explícita de ambos gates, no una aprobación
+   anticipada del contenido todavía inexistente.
+
+   El turno deberá detenerse inmediatamente, sin intentar ampliar alcance ni
+   resolver por inferencia, cuando ocurra cualquiera de estas condiciones:
+
+   - se alcanza el máximo de tareas o la hora límite;
+   - la siguiente tarea pertenece a otro bloque o secuencia;
+   - aparece una contradicción canónica o una decisión empresarial no resuelta;
+   - falla una revisión, un validador, TREQ, un check, el lifecycle o el merge;
+   - el trabajo requiere código, datos, Supabase, secretos, despliegue o alcance
+     físico;
+   - `main` cambia mientras una tarea está abierta y el lifecycle, el PR o los
+     checks no pueden revalidar de forma segura el candidato contra la nueva
+     base;
+   - una dependencia externa impide demostrar el gate requerido.
+
+   El ejecutor nunca fuerza `main`, nunca hace force-push y nunca descarta
+   trabajo concurrente. Entre tareas siempre vuelve a resolver el estado remoto
+   vigente; si otra conversación avanzó la documentación o la implementación,
+   consume ese nuevo estado como base en vez de exigir un SHA histórico.
+
+   Un turno detenido conserva la evidencia y no inicia otra tarea. Nunca aplica
+   reparaciones fuera del alcance documental de la tarea que falló.
+
+   Este punto define únicamente la gobernanza de la FASE 0 del autopiloto. No
+   convierte por sí mismo el repositorio en un ejecutor nocturno. La ejecución
+   automática permanecerá deshabilitada hasta que una fase posterior implemente
+   y valide el mecanismo machine-readable que materializa esta autorización.
 
 
 5. Toda tarea nueva se entregará por defecto como:
@@ -350,12 +463,13 @@
    `*_APROBADA_PARA_REEMPLAZAR.md` expresan que el artefacto está completo y
    listo para reemplazo. No sustituyen la confirmación canónica del usuario.
 
-6. La aprobación canónica conceptual solo ocurrirá cuando el usuario diga
-   explícitamente:
+6. La aprobación canónica conceptual ocurrirá mediante una de estas dos vías:
 
-   **APROBADO**
+   - modo manual: el usuario diga explícitamente **APROBADO**;
+   - modo nocturno: la tarea satisfaga íntegramente el cierre delegado del
+     punto 4.9 dentro de una `AUTORIZACIÓN DOCUMENTAL NOCTURNA` vigente.
 
-   Antes de esa instrucción:
+   En modo manual, antes de esa instrucción:
 
    - se conservarán el marcador `✅` y el estado `APROBADA` del artefacto
      preparado;
@@ -383,8 +497,9 @@
    La versión aprobada deberá conservar íntegramente las decisiones
    aceptadas y no incluir tareas adicionales.
 
-8. No avanzar a la tarea siguiente hasta que el usuario lo solicite
-   expresamente.
+8. En modo manual, no avanzar a la tarea siguiente hasta que el usuario lo
+   solicite expresamente. La única excepción es una `AUTORIZACIÓN DOCUMENTAL
+   NOCTURNA` vigente conforme al punto 4.9.
 
    Cuando el usuario solicite la siguiente tarea, deberá entregarse
    nuevamente como un archivo `.md` independiente siguiendo el punto 4.

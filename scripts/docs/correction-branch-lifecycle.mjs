@@ -541,7 +541,7 @@ function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commit
     }
     const commits = Number(git(['rev-list', '--count', `origin/${DEFAULT_BRANCH}..HEAD`], { cwd: root }).stdout.trim());
     if (!Number.isFinite(commits) || commits <= 0) fail(`${branch} no contiene commits nuevos respecto de origin/${DEFAULT_BRANCH}.`);
-    npm(['run', '--silent', 'docs:commit-scope:check', '--', '--range', `origin/${DEFAULT_BRANCH}..HEAD`], { cwd: root });
+    npm(['run', '--silent', 'docs:commit-scope:check', '--', '--range', `origin/${DEFAULT_BRANCH}..HEAD`, '--correction-head-ref', branch], { cwd: root });
     git(['push', '-u', 'origin', branch], { cwd: root });
     const sync = syncCounts(root, `origin/${branch}`, 'HEAD');
     if (sync.behind !== 0 || sync.ahead !== 0) fail(`Push incompleto de ${branch}: ${sync.raw}.`);

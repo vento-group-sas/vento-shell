@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import fs from 'node:fs';
+import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 import {
@@ -13,9 +14,11 @@ import {
     correctionIdFromHeadRef,
     correctionRecordRelativePath,
     correctionRegistrationBranchName,
+    correctionStatusAllowsEmptyExecutionDeclarations,
     loadValidatedCorrectionControl,
     nextCorrectionId,
     normalizeCorrectionId,
+    openCorrections,
 } from './correction-control.mjs';
 
 test('correction-control oficial es válido', () => {
@@ -146,4 +149,70 @@ test('package registry persistente es proyección derivada de corrección', () =
     );
     assert.equal(classified.length, 1);
     assert.equal(classified[0].kind, 'DERIVED_PROJECTION');
+});
+
+
+test('CANCELLED es terminal y no cuenta como corrección abierta', () => {
+    const control = {
+        records: [{
+            record: {
+                correction_id: 'DELIV-PKG-014::CORR-001',
+                status: 'CANCELLED',
+            },
+        }],
+    };
+    assert.equal(openCorrections(control).length, 0);
+});
+
+test('tooling de cancelación preserva ledger y exige PENDING no bloqueante', () => {
+    const source = fs.readFileSync('scripts/docs/correction-cancel.mjs', 'utf8');
+    assert.match(source, /PENDING_AUTHORIZATION/u);
+    assert.match(source, /blocking !== false/u);
+    assert.match(source, /authorized_changes/u);
+    assert.match(source, /status: 'CANCELLED'/u);
+    assert.match(source, /append-only/u);
+});
+
+
+test('correction-cancel CLI ejecuta --help de forma portable', () => {
+    const result = spawnSync(
+        process.execPath,
+        ['scripts/docs/correction-cancel.mjs', '--help'],
+        {
+            cwd: process.cwd(),
+            encoding: 'utf8',
+            windowsHide: true,
+            stdio: ['ignore', 'pipe', 'pipe'],
+        },
+    );
+
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    assert.match(result.stdout, /Uso: npm run docs:correction:cancel/u);
+
+    const source = fs.readFileSync('scripts/docs/correction-cancel.mjs', 'utf8');
+    assert.match(source, /fileURLToPath\(import\.meta\.url\)/u);
+    assert.doesNotMatch(
+        source,
+        /new URL\(import\.meta\.url\)\.pathname/u,
+        'la detección CLI no debe usar pathname URL crudo en Windows',
+    );
+});
+
+
+test('PENDING_AUTHORIZATION y CANCELLED permiten declaraciones operativas vacías', () => {
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('PENDING_AUTHORIZATION'), true);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('CANCELLED'), true);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('AUTHORIZED'), false);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('IN_PROGRESS'), false);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('VERIFIED'), false);
+
+    const source = fs.readFileSync('scripts/docs/correction-control.mjs', 'utf8');
+    assert.doesNotMatch(
+        source,
+        /record\.status !== 'PENDING_AUTHORIZATION' && record\.target_repositories\.length === 0/u,
+    );
+    assert.doesNotMatch(
+        source,
+        /record\.status !== 'PENDING_AUTHORIZATION' && record\.validation_commands\.length === 0/u,
+    );
 });

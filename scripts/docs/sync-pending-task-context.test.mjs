@@ -9,6 +9,7 @@ import {
   parseTaskScopeContracts,
   pendingTaskExecutionContext,
   physicalLaneSummary,
+  physicalOperationalProjection,
   renderDualLaneOverview,
   renderOperationalActionCenter,
   validationProfileForTask,
@@ -394,4 +395,41 @@ test('mantiene varias instancias fisicas EN CURSO sin colapsarlas a una sola ACT
   assert.deepEqual(summary.queue.map(({ instanceId }) => instanceId), [ci020.instanceId, ci022.instanceId]);
   assert.equal(summary.current.instanceId, ci020.instanceId);
   assert.equal(summary.next.instanceId, ci022.instanceId);
+});
+
+// C6_PENDING_CONTEXT_EFFECTIVE_PROJECTION_TEST
+test('contexto pendiente distingue estado declarado, efectivo y recovery sin comando mutante inválido', () => {
+  const invalid = {
+    instanceId: 'SHELL-CI-022::GAP-PKG-001',
+    taskTitle: 'Validar despliegue',
+    recordPath: 'instance.json',
+    status: 'IN_PROGRESS',
+    declaredStatus: 'VERIFIED',
+    effectiveStatus: 'IN_PROGRESS',
+    stateIntegrityRecoveryRequired: true,
+    recoveryAction: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS',
+    stateIntegrity: { status_valid: false },
+  };
+  const projection = physicalOperationalProjection(invalid);
+  assert.equal(projection.declaredStatus, 'VERIFIED');
+  assert.equal(projection.effectiveStatus, 'IN_PROGRESS');
+  assert.equal(projection.integrityValid, false);
+  assert.equal(projection.mutationCommand, null);
+
+  const implementationControl = {
+    documentary: { state: 'ACTIVO', taskId: 'DOC-001' },
+    primaryAction: { type: 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY', target: invalid.instanceId },
+    physical: { active: invalid, actionableSet: [invalid], instances: [invalid] },
+  };
+  const source = renderOperationalActionCenter(
+    [{ id: 'DOC-001', title: 'Documento', relativePath: 'doc.md' }],
+    implementationControl,
+    { records: [] },
+    { registry: { package_execution: null, packages: [] } },
+  ).join('\n');
+  assert.match(source, /declared=`VERIFIED`/u);
+  assert.match(source, /effective=`IN_PROGRESS`/u);
+  assert.match(source, /RECONCILIAR_INTEGRIDAD_DE_ESTADO/u);
+  assert.match(source, /NONE_UNTIL_INTEGRITY_RECONCILED/u);
+  assert.doesNotMatch(source, /npm run docs:implementation:(?:start|preverify|finish)/u);
 });

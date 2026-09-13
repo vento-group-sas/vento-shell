@@ -330,6 +330,26 @@ ${rows.map((row) => `| ${markdown(row.code)} — ${markdown(row.name)} | \`${row
 `;
 }
 
+// C6_READINESS_EFFECTIVE_OPERATIONAL_PROJECTION
+export function readinessEffectiveOperationalProjection(control) {
+  const active = control?.physical?.active ?? null;
+  return {
+    model_id: 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1',
+    mutating_entrypoint: 'docs:implementation:advance',
+    direct_lifecycle_entrypoints_enabled: false,
+    active_instance_id: active?.instanceId ?? null,
+    declared_status: active?.declaredStatus ?? active?.record?.status ?? active?.status ?? null,
+    effective_status: active?.effectiveStatus ?? active?.status ?? null,
+    state_integrity_valid: active?.stateIntegrity ? active.stateIntegrity.status_valid === true : null,
+    recovery_action: active?.recoveryAction ?? active?.stateIntegrity?.recovery_action ?? null,
+  };
+}
+
+function renderEffectiveOperationalProjection(control) {
+  const projection = readinessEffectiveOperationalProjection(control);
+  return `## Contrato operativo físico efectivo\n\n- **Modelo:** \`${projection.model_id}\`\n- **Entrada mutante normal:** \`${projection.mutating_entrypoint}\`\n- **Entradas directas start/preverify/finish:** \`${projection.direct_lifecycle_entrypoints_enabled ? 'ENABLED' : 'DISABLED'}\`\n- **Instancia activa:** \`${projection.active_instance_id ?? 'NONE'}\`\n- **Estado declarado:** \`${projection.declared_status ?? 'NONE'}\`\n- **Estado efectivo:** \`${projection.effective_status ?? 'NONE'}\`\n- **Integridad válida:** \`${projection.state_integrity_valid == null ? 'N/A' : projection.state_integrity_valid ? 'YES' : 'NO'}\`\n- **Recovery action:** \`${projection.recovery_action ?? 'NONE'}\``;
+}
+
 function renderHandoff({ semantic, current, previous, references, status, lifecycle, dependencies, control }) {
   const inherited = previous ? sectionBullets(previous.block, 'Decisiones (?:vinculantes|consolidadas)', 12) : [];
   const limits = sectionBullets(current.block, 'Límites', 20);
@@ -345,6 +365,8 @@ function renderHandoff({ semantic, current, previous, references, status, lifecy
 > documental actual. La acción operativa vinculante es
 > \`${control.primaryAction.type} ${control.primaryAction.target}\`; este archivo no
 > autoriza por sí mismo código, datos, despliegues ni evidencia física.
+
+${renderEffectiveOperationalProjection(control)}
 
 ## Identidad y estado documental
 
@@ -422,6 +444,8 @@ function renderProgress(progress, relativeProgressPath, control) {
 > generador nunca los avanza. La acción principal actual es
 > \`${control.primaryAction.type} ${control.primaryAction.target}\`. El registro editable se conserva en
 > \`${relativeProgressPath.replaceAll('\\', '/')}\`.
+
+${renderEffectiveOperationalProjection(control)}
 
 | Corte | Estado | Repositorios objetivo | Evidencia local | Notas |
 | --- | --- | --- | --- | --- |

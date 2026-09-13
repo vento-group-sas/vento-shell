@@ -2,6 +2,7 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { startImplementation } from './implementation-branch-lifecycle.mjs';
+import { rejectDirectImplementationLifecycleEntry } from './implementation-state-integrity.mjs';
 import { scanPackageReadiness } from './package-readiness-scanner.mjs';
 import { loadImplementationControl } from './implementation-control.mjs';
 import {
@@ -136,6 +137,11 @@ export function assertImplementationStartNotBlocked({ root = process.cwd(), inst
     return instance;
 }
 
+export function startImplementationGuarded({ root = process.cwd(), instanceId } = {}) {
+    assertImplementationStartNotBlocked({ root, instanceId });
+    return startImplementation({ root, instanceId });
+}
+
 
 function parseArgs(argv) {
     const args = { mode: null, instanceId: null };
@@ -157,8 +163,7 @@ export function main(argv = process.argv.slice(2)) {
     const args = parseArgs(argv);
     if (args.mode !== 'start') fail(`modo desconocido: ${args.mode || 'VACÍO'}.`);
     if (!args.instanceId) fail('start exige --instance-id.');
-    assertImplementationStartNotBlocked({ instanceId: args.instanceId });
-    return startImplementation({ instanceId: args.instanceId });
+    rejectDirectImplementationLifecycleEntry('START');
 }
 
 const isCli = process.argv[1]

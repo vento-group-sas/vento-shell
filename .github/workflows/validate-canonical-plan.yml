@@ -36,7 +36,7 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Clasificar alcance para fast lane documental y fisico
+      - name: Clasificar alcance para fast lane documental, fisico y correccion
         id: scope
         if: github.event_name == 'pull_request'
         shell: bash
@@ -48,6 +48,7 @@ jobs:
           mapfile -t changed < <(git diff --name-only "$BASE_SHA...$HEAD_SHA")
           canonical_docs_only=true
           implementation_pr=false
+          correction_pr=false
 
           if [ "${#changed[@]}" -eq 0 ]; then
             canonical_docs_only=false
@@ -68,10 +69,16 @@ jobs:
             implementation_pr=true
           fi
 
+          if [[ "${HEAD_REF:-}" == correction/* || "${HEAD_REF:-}" == correction-register/* ]]; then
+            correction_pr=true
+          fi
+
           echo "canonical_docs_only=$canonical_docs_only" >> "$GITHUB_OUTPUT"
           echo "implementation_pr=$implementation_pr" >> "$GITHUB_OUTPUT"
+          echo "correction_pr=$correction_pr" >> "$GITHUB_OUTPUT"
           printf 'canonical_docs_only=%s\n' "$canonical_docs_only"
           printf 'implementation_pr=%s\n' "$implementation_pr"
+          printf 'correction_pr=%s\n' "$correction_pr"
 
       - name: Configurar Node.js
         uses: actions/setup-node@v4
@@ -91,12 +98,21 @@ jobs:
           HEAD_REF: ${{ github.head_ref }}
         run: npm run docs:commit-scope:check -- --range "$BASE_SHA..$HEAD_SHA" --implementation-head-ref "$HEAD_REF"
 
+      - name: Verificar alcance autorizado de correccion
+        if: github.event_name == 'pull_request' && steps.scope.outputs.correction_pr == 'true'
+        shell: bash
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+          HEAD_REF: ${{ github.head_ref }}
+        run: npm run docs:commit-scope:check -- --range "$BASE_SHA..$HEAD_SHA" --correction-head-ref "$HEAD_REF"
+
       - name: Verificar aislamiento de commits en pull request inicial
-        if: github.event_name == 'pull_request' && github.event.action != 'synchronize' && steps.scope.outputs.implementation_pr != 'true'
+        if: github.event_name == 'pull_request' && github.event.action != 'synchronize' && steps.scope.outputs.implementation_pr != 'true' && steps.scope.outputs.correction_pr != 'true'
         run: npm run docs:commit-scope:check -- --range "${{ github.event.pull_request.base.sha }}..${{ github.event.pull_request.head.sha }}"
 
       - name: Verificar aislamiento de commits incorporados por el push actual
-        if: github.event_name == 'pull_request' && github.event.action == 'synchronize' && steps.scope.outputs.implementation_pr != 'true'
+        if: github.event_name == 'pull_request' && github.event.action == 'synchronize' && steps.scope.outputs.implementation_pr != 'true' && steps.scope.outputs.correction_pr != 'true'
         shell: bash
         env:
           BEFORE_SHA: ${{ github.event.before }}
@@ -110,9 +126,30 @@ jobs:
           fi
           npm run docs:commit-scope:check -- --range "$RANGE"
 
-      - name: Verificar aislamiento de commits en push
+      - name: Verificar aislamiento de commits en push directo
         if: github.event_name == 'push'
-        run: npm run docs:commit-scope:check -- --range "${{ github.event.before }}..${{ github.sha }}"
+        shell: bash
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          HEAD_SHA: ${{ github.sha }}
+        run: |
+          mapfile -t first_parent_new < <(git rev-list --first-parent "$BEFORE_SHA..$HEAD_SHA")
+          only_merge_commits=true
+          if [ "${#first_parent_new[@]}" -eq 0 ]; then
+            only_merge_commits=false
+          fi
+          for commit in "${first_parent_new[@]}"; do
+            parent_count=$(git rev-list --parents -n 1 "$commit" | awk '{print NF-1}')
+            if [ "$parent_count" -lt 2 ]; then
+              only_merge_commits=false
+              break
+            fi
+          done
+          if [ "$only_merge_commits" = true ]; then
+            echo "Push a main compuesto solo por merge commits; el aislamiento por commit ya fue validado en el PR."
+            exit 0
+          fi
+          npm run docs:commit-scope:check -- --range "$BEFORE_SHA..$HEAD_SHA"
 
       - name: Impedir nueva deuda de lint en pull request
         if: github.event_name == 'pull_request' && steps.scope.outputs.canonical_docs_only != 'true'

@@ -3,6 +3,7 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawn, spawnSync } from 'node:child_process';
+import { isDeepStrictEqual } from 'node:util';
 
 import {
   classifyPrChecksProbe,
@@ -24,6 +25,11 @@ import {
   scanPackageReadiness,
   validateInPackageCandidateEvidence,
 } from './package-readiness-scanner.mjs';
+import {
+  assessImplementationStateIntegrity,
+  formatImplementationStateIntegrityViolation,
+  rejectDirectImplementationLifecycleEntry,
+} from './implementation-state-integrity.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const IMPLEMENTATION_PREFIX = 'implementation/';
@@ -366,6 +372,14 @@ export function assertCi020PhysicalPrerequisitesForFinish({
   return true;
 }
 
+function assertLifecycleStateIntegrity(root, instance, expectedStatus) {
+  const integrity = assessImplementationStateIntegrity({ root, instance });
+  if (!integrity.status_valid || integrity.declared_status !== expectedStatus) {
+    fail(`STATE_INTEGRITY_VIOLATION | expected=${expectedStatus} | ${formatImplementationStateIntegrityViolation(instance.instance_id, integrity)}`);
+  }
+  return integrity;
+}
+
 function normalizeRepoPath(value) {
   return String(value ?? '').replaceAll('\\', '/').replace(/^\.\//u, '');
 }
@@ -502,12 +516,36 @@ export function assertImplementationPaths(paths, instance, options = {}) {
 
 export function assertStartWorktree(paths, recordPath) {
   const normalized = [...new Set((paths ?? []).map((entry) => String(entry).replaceAll('\\', '/')))].sort();
-  if (normalized.length !== 1 || normalized[0] !== recordPath) {
-    fail(
-      `docs:implementation:start exige que el unico cambio local sea ${recordPath}; cambios actuales: ${normalized.join(', ') || 'NINGUNO'}.`,
-    );
+  if (normalized.length === 0) return true;
+  if (normalized.length === 1 && normalized[0] === recordPath) return true;
+  fail(
+    `docs:implementation:start solo admite worktree limpio o que el unico cambio local sea ${recordPath}; cambios actuales: ${normalized.join(', ') || 'NINGUNO'}.`,
+  );
+}
+
+export function authorizedRecordMatchesPersistedMain(instance, persisted) {
+  return Boolean(
+    instance
+    && persisted
+    && instance.status === 'AUTHORIZED'
+    && persisted.status === 'AUTHORIZED'
+    && instance.authorization?.decision === 'APPROVED'
+    && persisted.authorization?.decision === 'APPROVED'
+    && isDeepStrictEqual(instance, persisted)
+  );
+}
+
+function authorizedRecordPersistedOnMain(root, recordPath, instance) {
+  const result = git(['show', `origin/${DEFAULT_BRANCH}:${recordPath}`], {
+    cwd: root,
+    allowFailure: true,
+  });
+  if (result.status !== 0 || !result.stdout.trim()) return false;
+  try {
+    return authorizedRecordMatchesPersistedMain(instance, JSON.parse(result.stdout));
+  } catch {
+    return false;
   }
-  return true;
 }
 
 export function resolveImplementationFinishMode({
@@ -674,6 +712,7 @@ function ensureBranchReadyForStart(root, branch) {
 
 export function startImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
+  assertLifecycleStateIntegrity(root, instance, 'AUTHORIZED');
   assertInstanceCanStart(instance);
 
   const recordPath = instanceRecordRelativePath(id);
@@ -681,10 +720,19 @@ export function startImplementation({ instanceId, root = ensureRepositoryRoot() 
 
   ensureGhReady(root);
   git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+  const persistedAuthorization = authorizedRecordPersistedOnMain(root, recordPath, instance);
+  const startPaths = worktreePaths(root);
+  if (startPaths.length === 0 && !persistedAuthorization) {
+    fail(`docs:implementation:start con worktree limpio exige AUTHORIZED exacto persistido en origin/${DEFAULT_BRANCH}:${recordPath}.`);
+  }
   assertStartWorktree(worktreePaths(root), recordPath);
 
   const readiness = physicalReadiness(root, id);
   const branchMode = ensureBranchReadyForStart(root, branch);
+  const postBranchPaths = worktreePaths(root);
+  if (postBranchPaths.length === 0 && !persistedAuthorization) {
+    fail(`docs:implementation:start perdio el ledger AUTHORIZED local antes de transicionar ${id}.`);
+  }
   assertStartWorktree(worktreePaths(root), recordPath);
 
   writeInstanceStatus(root, id, 'IN_PROGRESS');
@@ -701,6 +749,7 @@ export function startImplementation({ instanceId, root = ensureRepositoryRoot() 
     TASK_ID: instance.task_id,
     BRANCH: branch,
     BRANCH_MODE: branchMode,
+    START_AUTHORIZATION_SOURCE: persistedAuthorization ? 'ORIGIN_MAIN' : 'LOCAL_LEDGER',
     PRE_BRANCH_READINESS: readinessBlockers(readiness, id).length === 0 ? 'PASS' : 'FAIL',
     INSTANCE_STATUS: 'IN_PROGRESS',
     PREFLIGHT: 'PASS',
@@ -968,6 +1017,7 @@ function cleanupBranch(root, branch) {
 
 export function preverifyImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
+  assertLifecycleStateIntegrity(root, instance, 'IMPLEMENTED');
   if (instance.status !== 'IMPLEMENTED' || instance.authorization?.decision !== 'APPROVED') {
     fail(`${id}: PREVERIFY exige IMPLEMENTED y autorización APPROVED; no modifica el estado.`);
   }
@@ -986,6 +1036,7 @@ export function preverifyImplementation({ instanceId, root = ensureRepositoryRoo
 
 export async function finishImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
+  assertLifecycleStateIntegrity(root, instance, 'VERIFIED');
   assertInstanceCanFinish(instance);
 
   if (
@@ -1183,9 +1234,8 @@ function parseArgs(argv) {
 
 function usage() {
   console.log('Uso:');
-  console.log('  npm run docs:implementation:start -- --instance-id SHELL-CON-001::GLOBAL');
-  console.log('  npm run docs:implementation:finish -- --instance-id SHELL-CON-001::GLOBAL');
-  console.log('  npm run docs:implementation:preverify -- --instance-id SHELL-CON-001::GLOBAL');
+  console.log('  npm run docs:implementation:advance -- --instance-id SHELL-CON-001::GLOBAL');
+  console.log('  start/preverify/finish directos son compatibilidad legacy y fallan cerrado.');
   console.log('');
   console.log('START exige registro AUTHORIZED, trata continuidad/formato documentales historicos como advisory, crea o recupera implementation/<task-id>/<instance-key>, cambia a IN_PROGRESS, ejecuta el preflight fisico estricto una sola vez y reconcilia derivados con docs:plan:build + docs:plan:check antes de permitir codigo.');
   console.log('FINISH exige VERIFIED, valida alcance exacto desde authorized_changes, admite solo proyecciones derivadas controladas, reanuda post-commit/post-PR/post-merge sin force-push, espera CI, mergea, sincroniza main y limpia la rama.');
@@ -1199,6 +1249,7 @@ async function main() {
   }
   if (!['start', 'preverify', 'finish'].includes(args.mode)) fail('Modo requerido: start, preverify o finish.');
   if (!args.instanceId) fail('Falta --instance-id.');
+  rejectDirectImplementationLifecycleEntry(args.mode);
 
   if (args.mode === 'start') startImplementation({ instanceId: args.instanceId });
   else if (args.mode === 'preverify') preverifyImplementation({ instanceId: args.instanceId });

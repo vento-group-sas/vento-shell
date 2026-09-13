@@ -16185,18 +16185,12733 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
 
-### [ ] NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
-### [ ] NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
-### [ ] NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
-### [ ] NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
-### [ ] NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
-### [ ] NEXO-DOM-017 — Definir auditoría, historial y evidencia
-### [ ] NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+### ✅ NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
 
-### [ ] NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
-### [ ] NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
-### [ ] NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
-### [ ] NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
+**Tarea siguiente:** NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+**Tipo de tarea:** documental; definición canónica de mantenimiento, reparación, prueba, liberación al servicio y disponibilidad para activos individuales y otros sujetos físicos aplicables, separando condición, lifecycle, custodia, ubicación, obligación de mantenimiento, ejecución técnica, resultado, evidencia, próxima obligación, revisiones, idempotencia y fronteras con repuestos, garantías, calibración, baja y efectos económicos bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para determinar cuándo un sujeto físico
+requiere mantenimiento o reparación, cómo se conserva la obligación y su
+ejecución, qué evidencia permite considerar terminado el trabajo y cuándo el
+sujeto puede volver a estar disponible para el uso previsto.
+
+La regla raíz queda:
+
+```text
+STABLE PHYSICAL SUBJECT
++
+VERSIONED MAINTENANCE OBLIGATION
++
+EXPLICIT TRIGGER
++
+AUDITABLE WORK EXECUTION
++
+RESULT AND REQUIRED TEST
++
+AUTHORIZED RELEASE WHEN APPLICABLE
++
+FRESH AVAILABILITY PROJECTION
+→
+RECONCILABLE SERVICE STATE
+```
+
+La tarea define semántica de dominio. No ejecuta mantenimiento, reparación,
+pruebas, liberación ni cambios físicos.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. mantenimiento separado de condición y lifecycle;
+2. reparación separada de daño e incidente;
+3. disponibilidad como proyección contextual;
+4. plan, obligación, disparador, trabajo, diagnóstico, resultado, prueba,
+   liberación y próxima obligación como hechos distintos;
+5. mantenimiento preventivo y correctivo sin conflación;
+6. indisponibilidad con causas explícitas;
+7. disponibilidad con evidencia positiva y frescura;
+8. mantenimiento por identidad individual o scope cuantificado;
+9. revisiones monotónicas, idempotencia, concurrencia y operación offline;
+10. reconciliación explícita del AS-IS;
+11. fronteras con repuestos, garantías, calibración, baja y efectos económicos;
+12. handoff exacto hacia `NEXO-DOM-013`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria de `NEXO-DOM-001`;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, pérdida, faltante, hallazgo y recuperación de
+  `NEXO-DOM-010`;
+- préstamo, devolución, transferencia y cambio de custodia de
+  `NEXO-DOM-011`;
+- una sola representación autoritativa por sujeto o scope;
+- historia no destructiva;
+- autorización server-side;
+- revisiones, idempotencia, concurrencia y reconciliación offline.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+QUÉ HECHO CREA UNA OBLIGACIÓN DE MANTENIMIENTO,
+CUÁNDO EL SUJETO DEBE BLOQUEARSE O RESTRINGIRSE,
+QUÉ SIGNIFICA QUE EL TRABAJO FUE EJECUTADO,
+QUÉ SIGNIFICA QUE FUE REPARADO,
+QUÉ PRUEBA O LIBERACIÓN EXIGE LA POLÍTICA,
+CUÁNDO PUEDE VOLVER A ESTAR DISPONIBLE
+Y CÓMO SE CONSERVA LA PRÓXIMA OBLIGACIÓN
+SIN BORRAR HISTORIA NI INFERIR ESTADOS?
+```
+
+---
+
+#### 5. Dimensiones separadas
+
+Se preservan como dimensiones independientes:
+
+```text
+CONDITION
+LIFECYCLE
+LOCATION
+CUSTODY
+OWNERSHIP
+MAINTENANCE OBLIGATION
+WORK EXECUTION
+SERVICEABILITY
+AVAILABILITY
+ECONOMIC TREATMENT
+```
+
+Cambiar una dimensión no autoriza reescribir las demás por inferencia.
+
+---
+
+#### 6. Condición y disponibilidad
+
+Se fija:
+
+```text
+GOOD CONDITION
+!=
+AVAILABLE
+```
+
+y:
+
+```text
+AVAILABLE
+!=
+GOOD CONDITION
+```
+
+Un sujeto en buena condición puede estar reservado, prestado, en tránsito,
+vencido de mantenimiento, bajo reparación, pendiente de prueba o pendiente de
+liberación.
+
+---
+
+#### 7. Disponibilidad como proyección
+
+La disponibilidad es una proyección derivada de hechos autoritativos.
+
+No puede reducirse a una bandera editable que oculte mantenimiento vencido,
+reparación abierta, condición bloqueante, custodia incompatible, lifecycle
+incompatible, prueba pendiente o liberación pendiente.
+
+---
+
+#### 8. Estados de disponibilidad
+
+La proyección debe poder distinguir al menos:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+La forma física futura puede variar, pero debe preservar esas decisiones y sus
+razones.
+
+---
+
+#### 9. Disponibilidad positiva
+
+`AVAILABLE` exige que, para el propósito y contexto consultados:
+
+- el sujeto exista y esté representado de forma autoritativa;
+- la política aplicable esté resuelta;
+- no exista bloqueo vigente;
+- las obligaciones condicionantes estén satisfechas;
+- la evidencia requerida esté vigente;
+- cualquier prueba o liberación obligatoria esté confirmada.
+
+No significa ausencia de obligaciones futuras.
+
+---
+
+#### 10. Disponibilidad restringida
+
+`RESTRICTED` significa que el sujeto puede utilizarse solo bajo alcance,
+condición o propósito explícitos.
+
+Toda restricción conserva razón, alcance, vigencia, política, autoridad,
+evidencia y condición de salida.
+
+---
+
+#### 11. Indisponibilidad
+
+`UNAVAILABLE` significa que existe al menos una causa vigente que impide el uso
+pretendido.
+
+La causa conserva su owner. La proyección referencia el hecho bloqueante y no
+lo duplica como fuente de verdad.
+
+---
+
+#### 12. Disponibilidad desconocida
+
+`UNKNOWN` significa que falta evidencia material para decidir.
+
+Se fija:
+
+```text
+UNKNOWN
+!=
+AVAILABLE
+```
+
+Las operaciones que exigen disponibilidad positiva fallan cerradas ante
+`UNKNOWN`.
+
+---
+
+#### 13. Razones de disponibilidad
+
+La proyección debe poder explicar, cuando corresponda:
+
+- obligación de mantenimiento próxima;
+- mantenimiento vencido;
+- mantenimiento activo;
+- reparación requerida o activa;
+- prueba pendiente o fallida;
+- liberación pendiente;
+- condición bloqueante;
+- préstamo o asignación incompatible con el uso consultado;
+- tránsito;
+- lifecycle bloqueante;
+- política o evidencia no resuelta.
+
+La implementación futura puede materializar estas razones sin alterar su
+semántica.
+
+---
+
+#### 14. Contexto de disponibilidad
+
+La disponibilidad se decide para un propósito y contexto concretos:
+
+```text
+AVAILABILITY
+=
+SUBJECT
++
+PURPOSE
++
+CONTEXT
++
+POLICY
++
+SOURCE REVISIONS
++
+DECISION
+```
+
+Un activo puede estar no disponible para asignación general y seguir
+disponible para inspección o traslado técnico autorizado.
+
+---
+
+#### 15. Frescura de disponibilidad
+
+Toda proyección debe poder demostrar las revisiones de las que deriva.
+
+Una lectura obsoleta de condición, mantenimiento, custodia, lifecycle,
+ubicación, prueba o liberación no demuestra disponibilidad vigente.
+
+---
+
+#### 16. Mantenimiento
+
+`MAINTENANCE` representa obligaciones y trabajos destinados a conservar,
+verificar o restaurar una aptitud técnica.
+
+No equivale a reparación y no equivale a disponibilidad.
+
+---
+
+#### 17. Reparación
+
+`REPAIR` es una intervención correctiva destinada a restaurar una función,
+condición o aptitud afectada.
+
+Se fija:
+
+```text
+MAINTENANCE MAY INCLUDE REPAIR
+REPAIR DOES NOT REPLACE MAINTENANCE HISTORY
+```
+
+---
+
+#### 18. Daño y reparación
+
+Se preserva:
+
+```text
+DAMAGE OBSERVED
+!=
+REPAIR STARTED
+```
+
+y:
+
+```text
+REPAIR COMPLETED
+!=
+DAMAGE INCIDENT DELETED
+```
+
+Un daño puede producir evaluación o solicitud de trabajo. El incidente original
+permanece auditable.
+
+---
+
+#### 19. Plan de mantenimiento
+
+Un plan define una regla versionada para generar o reconocer obligaciones
+futuras.
+
+Conceptualmente conserva sujeto o clase aplicable, versión, vigencia, tipo,
+disparador, frecuencia o umbral, procedimiento o referencia, evidencia
+requerida, prueba requerida, regla de liberación, owner y regla para la próxima
+obligación.
+
+---
+
+#### 20. Plan y obligación
+
+Se fija:
+
+```text
+MAINTENANCE PLAN
+!=
+MAINTENANCE OBLIGATION
+```
+
+El plan es la regla. La obligación es una instancia exigible producida o
+reconocida bajo una versión concreta.
+
+---
+
+#### 21. Versionado de plan
+
+Cambiar frecuencia, procedimiento, umbral, prueba o evidencia no reescribe
+obligaciones históricas.
+
+Toda obligación debe poder indicar la versión o fundamento que la originó.
+
+---
+
+#### 22. Disparadores
+
+La semántica admite disparadores por:
+
+```text
+DATE
+USAGE
+CYCLES
+METER
+CONDITION
+AUTHORIZED EVENT
+```
+
+La medición concreta permanece bajo el dominio que produce el dato.
+
+---
+
+#### 23. Disparador y trabajo
+
+Se fija:
+
+```text
+TRIGGER REACHED
+!=
+WORK STARTED
+```
+
+Alcanzar un disparador puede crear o volver exigible una obligación. No demuestra
+ejecución.
+
+---
+
+#### 24. Obligación de mantenimiento
+
+Toda obligación debe poder conservar identidad estable, sujeto, versión de plan
+o fundamento, tipo, disparador, fecha o umbral de exigibilidad, estado,
+criticidad cuando aplique, efecto sobre disponibilidad, trabajo relacionado,
+resultado, evidencia, resolución y próxima obligación relacionada.
+
+---
+
+#### 25. Estados de obligación
+
+La obligación debe distinguir al menos:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+La implementación puede usar otra representación física si conserva esos
+significados y su historia.
+
+---
+
+#### 26. Obligación próxima
+
+`UPCOMING` representa una obligación futura conocida que todavía no alcanzó el
+disparador.
+
+No bloquea por definición. La política decide si genera advertencia o
+restricción.
+
+---
+
+#### 27. Obligación exigible
+
+`DUE` significa que el disparador ya exige actuación.
+
+No significa que el trabajo haya comenzado.
+
+---
+
+#### 28. Obligación vencida
+
+`OVERDUE` significa que una obligación exigible superó su límite sin una
+satisfacción válida.
+
+La política define si bloquea o restringe. Un bloqueo crítico se aplica
+fail-closed.
+
+---
+
+#### 29. Obligación satisfecha
+
+`SATISFIED` exige resultado suficiente para la obligación concreta.
+
+Un comentario, una foto aislada o una fecha manual no bastan cuando la política
+requiere prueba, liberación o evidencia adicional.
+
+---
+
+#### 30. Cancelación de obligación
+
+`CANCELLED` conserva identidad, fundamento, motivo, actor, autoridad, instante,
+evidencia y revisión.
+
+Se fija:
+
+```text
+CANCELLED
+!=
+SATISFIED
+```
+
+---
+
+#### 31. Sustitución de obligación
+
+`SUPERSEDED` aplica cuando una obligación deja de gobernar por una transición
+versionada válida.
+
+La obligación sustituida permanece auditable.
+
+---
+
+#### 32. Excepción de mantenimiento
+
+`EXCEPTION` conserva un caso que no puede resolverse ordinariamente.
+
+Debe tener causa, owner, impacto sobre disponibilidad, acción requerida y
+condición exacta de salida.
+
+---
+
+#### 33. Trabajo de mantenimiento
+
+La ejecución material permanece separada de la obligación que la originó.
+
+Un mismo trabajo puede resolver varias obligaciones solo si la política lo
+permite y cada relación queda explícita.
+
+---
+
+#### 34. Orden de trabajo
+
+La orden de trabajo es distinta de plan, obligación, diagnóstico, ejecución,
+resultado, evidencia y liberación.
+
+`NEXO-DOM-030` conserva el workflow detallado de solicitudes y órdenes de
+trabajo aplicables.
+
+---
+
+#### 35. Diagnóstico
+
+El diagnóstico documenta la evaluación técnica que decide qué intervención es
+necesaria.
+
+Se fija:
+
+```text
+DAMAGE REPORT
+!=
+DIAGNOSIS
+
+DIAGNOSIS
+!=
+REPAIR COMPLETED
+```
+
+---
+
+#### 36. Planificación e inicio
+
+Se fija:
+
+```text
+MAINTENANCE PLANNED
+!=
+MAINTENANCE STARTED
+```
+
+Programar una fecha o crear una obligación no cambia por sí solo la realidad
+física del sujeto.
+
+---
+
+#### 37. Ejecución técnica
+
+La ejecución debe poder atribuir sujeto, trabajo, técnico o proveedor, inicio,
+fin, tareas ejecutadas, resultado, evidencia, desviaciones, incidentes y
+referencias a materiales o partes cuando correspondan.
+
+---
+
+#### 38. Trabajo completado
+
+Se fija:
+
+```text
+MAINTENANCE COMPLETED
+!=
+RELEASED TO SERVICE
+```
+
+Terminar actividades técnicas no demuestra por sí solo que el sujeto esté
+habilitado para volver al servicio.
+
+---
+
+#### 39. Prueba de retorno al servicio
+
+Cuando la política la exige, la prueba permanece como un hecho separado.
+
+Conceptualmente conserva criterio, procedimiento o versión, actor competente,
+instante, medición u observación, resultado, evidencia, trabajo relacionado y
+sujeto.
+
+---
+
+#### 40. Resultado de prueba
+
+La prueba distingue como mínimo:
+
+```text
+PASS
+FAIL
+INCONCLUSIVE
+```
+
+`FAIL` e `INCONCLUSIVE` no habilitan una liberación positiva.
+
+---
+
+#### 41. Liberación
+
+La liberación es la decisión autoritativa que permite volver al servicio cuando
+la política la exige.
+
+Se fija:
+
+```text
+WORK DONE
+!=
+RELEASED
+```
+
+Una prueba aprobada puede ser prerrequisito de liberación sin sustituirla.
+
+---
+
+#### 42. Prueba fallida
+
+Cuando una prueba requerida falla:
+
+- el sujeto permanece no disponible para el uso bloqueado;
+- la evidencia se conserva;
+- el trabajo anterior no se reescribe;
+- puede requerirse nuevo diagnóstico, reparación o trabajo;
+- la liberación no se infiere.
+
+---
+
+#### 43. Prueba inconclusa
+
+Se fija:
+
+```text
+INCONCLUSIVE TEST
+!=
+PASS
+```
+
+La ausencia de certeza mantiene el caso pendiente o bloqueado conforme a la
+política.
+
+---
+
+#### 44. Liberación y condición
+
+Se fija:
+
+```text
+RELEASED
+!=
+GOOD CONDITION
+```
+
+La condición cambia únicamente mediante su contrato propietario.
+
+---
+
+#### 45. Liberación y lifecycle
+
+Se fija:
+
+```text
+RELEASED
+!=
+LIFECYCLE ACTIVE
+```
+
+Ambas decisiones pueden ser orquestadas, pero conservan fuentes y evidencia
+distintas.
+
+---
+
+#### 46. Liberación y disponibilidad
+
+Se fija:
+
+```text
+RELEASED
+!=
+AVAILABLE
+```
+
+La disponibilidad final debe reevaluar los demás bloqueos vigentes.
+
+---
+
+#### 47. Próxima obligación
+
+El cierre válido de una obligación debe poder producir o recalcular la próxima
+obligación conforme a versión de plan, frecuencia, referencia temporal,
+medidor o uso cuando corresponda, resultado y política de reinicio del ciclo.
+
+No se deriva únicamente de una fecha escrita manualmente.
+
+---
+
+#### 48. Mantenimiento preventivo
+
+El preventivo atiende una obligación planificada o condicionada antes de una
+falla correctiva.
+
+No requiere inventar un daño previo. `NEXO-DOM-026` especializa su ciclo.
+
+---
+
+#### 49. Mantenimiento correctivo
+
+El correctivo responde a una falla, degradación, diagnóstico o condición que
+requiere intervención.
+
+No convierte automáticamente el incidente origen en resuelto.
+
+---
+
+#### 50. Inspección
+
+Una inspección puede satisfacer una obligación propia, generar hallazgos,
+generar mantenimiento adicional o bloquear disponibilidad.
+
+Inspeccionar no equivale a reparar.
+
+---
+
+#### 51. Limpieza técnica
+
+La limpieza técnica puede formar parte del mantenimiento cuando la política del
+sujeto la trate como requisito técnico.
+
+No sustituye los procesos generales de saneamiento de owners posteriores.
+
+---
+
+#### 52. Calibración
+
+La calibración se reconoce como control técnico. Magnitud, rango, tolerancia,
+patrón, certificado, vencimiento e impacto se especializan en `NEXO-DOM-026`
+y `NEXO-DOM-035`.
+
+Esta tarea conserva únicamente su efecto posible sobre obligación y
+disponibilidad.
+
+---
+
+#### 53. Garantía
+
+La existencia de garantía no demuestra mantenimiento realizado, reparación
+aprobada ni disponibilidad.
+
+La gestión especializada de garantía permanece en las tareas propietarias
+posteriores.
+
+---
+
+#### 54. Proveedor o técnico externo
+
+Un tercero puede ejecutar trabajo sin convertirse en propietario.
+
+Cuando recibe control físico del sujeto, la custodia y el handoff consumen
+`NEXO-DOM-011`.
+
+---
+
+#### 55. Salida a mantenimiento
+
+La salida física conserva por separado ubicación, custodia, trabajo,
+indisponibilidad, condición y evidencia de handoff.
+
+Se fija:
+
+```text
+MAINTENANCE OUT
+!=
+WORK STARTED
+```
+
+---
+
+#### 56. Retorno de mantenimiento
+
+El retorno físico desde un tercero no significa liberación:
+
+```text
+MAINTENANCE IN
+!=
+RELEASED TO SERVICE
+```
+
+Puede existir retorno con prueba o liberación pendientes.
+
+---
+
+#### 57. Reparación requerida
+
+Una decisión `REPAIR_REQUIRED` debe derivar de evidencia o diagnóstico
+autoritativo.
+
+No se infiere únicamente desde una etiqueta visual o comentario.
+
+---
+
+#### 58. Reparación activa
+
+Mientras una reparación bloqueante esté activa, la disponibilidad para el uso
+ordinario es `UNAVAILABLE`, salvo una política explícita que autorice un
+propósito restringido distinto.
+
+---
+
+#### 59. Reparación completada
+
+Una reparación completada conserva diagnóstico, trabajo ejecutado, técnico o
+proveedor, evidencia, partes relacionadas, resultado, prueba requerida y
+liberación pendiente o final.
+
+No borra estados ni incidentes anteriores.
+
+---
+
+#### 60. Repuestos
+
+Los repuestos continúan como inventario hasta una transición autorizada de
+reserva, retiro, instalación, devolución o disposición.
+
+Se fija:
+
+```text
+TEXT "PART REPLACED"
+!=
+INVENTORY CONSUMPTION
+```
+
+`NEXO-DOM-016` y `NEXO-DOM-025` conservan compatibilidad, reserva, consumo,
+instalación y costo asociado.
+
+---
+
+#### 61. Pieza retirada
+
+Una pieza retirada durante reparación debe tener un destino explícito cuando el
+contrato aplicable lo requiera.
+
+Esta tarea no define ese inventario detallado y prohíbe que la pieza desaparezca
+por una nota de mantenimiento.
+
+---
+
+#### 62. Costo informado
+
+El costo registrado en un expediente de mantenimiento es evidencia operativa.
+
+Se fija:
+
+```text
+REPORTED MAINTENANCE COST
+!=
+ACCOUNTING POSTING
+```
+
+Los efectos contables permanecen en sus owners económicos.
+
+---
+
+#### 63. Disponibilidad y préstamo
+
+Un sujeto prestado puede estar técnicamente apto y no estar disponible para el
+pool general.
+
+La proyección es contextual y no reescribe custodia.
+
+---
+
+#### 64. Disponibilidad y tránsito
+
+Un sujeto en tránsito no se presenta como disponible en origen ni confirmado en
+destino por inferencia.
+
+El owner de movimiento conserva la ubicación física.
+
+---
+
+#### 65. Disponibilidad y reserva
+
+Una reserva válida puede restringir disponibilidad general sin cambiar
+condición ni lifecycle.
+
+La reserva conserva owner, alcance y vigencia.
+
+---
+
+#### 66. Disponibilidad y condición bloqueante
+
+Una condición bloqueante puede producir `UNAVAILABLE`.
+
+La proyección referencia la condición vigente; no crea una fuente competidora.
+
+---
+
+#### 67. Mantenimiento vencido y disponibilidad
+
+Una obligación vencida aplica el efecto definido por política.
+
+Si la política es bloqueante:
+
+```text
+OVERDUE BLOCKING OBLIGATION
+→
+UNAVAILABLE
+```
+
+Si solo restringe, la razón y el alcance deben quedar explícitos.
+
+---
+
+#### 68. Ausencia de registros
+
+Se fija:
+
+```text
+NO MAINTENANCE RECORDS
+!=
+UP TO DATE
+```
+
+La ausencia puede significar que no aplica, que falta plan, que falta migración
+o que la evidencia es insuficiente.
+
+---
+
+#### 69. Fecha programada
+
+Se fija:
+
+```text
+SCHEDULED DATE EXISTS
+!=
+WORK PERFORMED
+```
+
+Una fecha programada representa planificación, no ejecución.
+
+---
+
+#### 70. Fecha ejecutada
+
+Se fija:
+
+```text
+PERFORMED DATE EXISTS
+!=
+RELEASED
+```
+
+La liberación depende de política, prueba y autoridad aplicables.
+
+---
+
+#### 71. Estado legacy `done`
+
+`done` puede demostrar que un registro fue marcado como terminado.
+
+No demuestra por sí solo diagnóstico válido, tareas completas, evidencia
+suficiente, prueba aprobada, liberación ni disponibilidad.
+
+---
+
+#### 72. Estado legacy `planned`
+
+`planned` representa planificación.
+
+Se fija:
+
+```text
+PLANNED
+!=
+IN MAINTENANCE
+```
+
+Un trabajo planificado no debe cambiar por sí solo la realidad física del
+sujeto.
+
+---
+
+#### 73. Estado legacy `overdue`
+
+`overdue` puede representar una obligación vencida, pero debe reconciliarse con
+la política y el disparador que la hicieron exigible.
+
+No sustituye un plan versionado.
+
+---
+
+#### 74. Estado legacy `cancelled`
+
+`cancelled` conserva la cancelación de un registro.
+
+No significa que la obligación original haya quedado satisfecha.
+
+---
+
+#### 75. `equipment_status` legacy
+
+El AS-IS conserva:
+
+```text
+operativo
+en_mantenimiento
+fuera_servicio
+baja
+```
+
+Este campo mezcla parcialmente aptitud, intervención técnica y lifecycle.
+
+La adopción futura debe reconciliarlo sin convertirlo en la fuente única de
+disponibilidad.
+
+---
+
+#### 76. `lifecycle_status` legacy
+
+El AS-IS conserva, entre otros:
+
+```text
+activo
+en_reparacion
+retirado
+```
+
+`en_reparacion` mezcla una actividad técnica con lifecycle.
+
+La transición futura debe separar ambas dimensiones sin borrar historia.
+
+---
+
+#### 77. `condition_status` legacy
+
+La condición permanece una dimensión independiente.
+
+Un mantenimiento terminado no fuerza `bueno`, y `bueno` no demuestra que el
+mantenimiento esté al día.
+
+---
+
+#### 78. Identidad individual
+
+Para `SERIALIZED_ASSET` y otros sujetos individualizados:
+
+- mantenimiento se relaciona con la identidad exacta;
+- reparación no cambia identidad;
+- reimpresión de QR no crea otra historia;
+- obligación y ejecución conservan la misma identidad física.
+
+---
+
+#### 79. Control por cantidad
+
+Para `REUSABLE_QUANTITY`, la política puede aplicar inspección o cuidado a un
+scope cuantificado.
+
+No se fabrican identidades por unidad. Las cantidades utilizable, restringida,
+no disponible o bajo intervención deben ser disjuntas y reconciliables.
+
+---
+
+#### 80. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` individual puede requerir inspección, mantenimiento,
+reparación, prueba y liberación.
+
+Su identidad permanece separada del LPN y del contenido.
+
+---
+
+#### 81. Kit
+
+Un `KIT_INSTANCE` puede estar técnicamente apto y no disponible por
+incompletitud.
+
+La completitud pertenece a `NEXO-DOM-014`. Esta tarea conserva únicamente el
+efecto de mantenimiento y liberación.
+
+---
+
+#### 82. Repuesto como clase
+
+Un `SPARE_PART` no adquiere lifecycle de activo por aparecer en un expediente
+de mantenimiento.
+
+Su inventario y compatibilidad conservan sus owners.
+
+---
+
+#### 83. Vehículos
+
+Los vehículos consumen este contrato para mantenimiento y disponibilidad.
+
+Kilometraje, combustible, documentos y reglas especializadas pertenecen a
+`NEXO-DOM-027`.
+
+---
+
+#### 84. Instalaciones
+
+Cuando el objeto principal es una instalación o componente fijo, el workflow
+detallado de planes, órdenes y liberación pertenece a `NEXO-DOM-029` y
+`NEXO-DOM-030`.
+
+Esta tarea conserva el principio compartido de no declarar disponibilidad sin
+evidencia suficiente.
+
+---
+
+#### 85. Mantenimiento por fecha
+
+Una obligación por fecha usa una referencia temporal versionada.
+
+Cambiar la frecuencia futura no altera retrospectivamente obligaciones ya
+generadas.
+
+---
+
+#### 86. Mantenimiento por uso o ciclos
+
+La obligación debe referenciar la lectura o contador que produjo el disparador.
+
+Una lectura desconocida no se reemplaza por cero para declarar cumplimiento.
+
+---
+
+#### 87. Mantenimiento por medidor
+
+Se fija:
+
+```text
+UNKNOWN METER
+!=
+NOT DUE
+```
+
+La política define si falta de lectura bloquea, restringe o abre una excepción.
+
+---
+
+#### 88. Mantenimiento por condición
+
+Una condición o incidente puede disparar evaluación o mantenimiento.
+
+Se fija:
+
+```text
+CONDITION TRIGGER
+!=
+WORK COMPLETED
+```
+
+---
+
+#### 89. Próxima fecha legacy
+
+`next_scheduled_date` es reutilizable como evidencia o dato transitorio.
+
+No sustituye plan, versión, frecuencia, disparador, cálculo ni obligación
+futura.
+
+---
+
+#### 90. Proveedor legacy
+
+`maintenance_provider` en texto puede conservar contexto histórico.
+
+No demuestra identidad canónica del tercero, autorización, custodia, garantía
+ni competencia técnica.
+
+---
+
+#### 91. Partes reemplazadas legacy
+
+`replaced_parts` en texto es evidencia narrativa.
+
+No demuestra movimientos de inventario ni instalación.
+
+---
+
+#### 92. Disponibilidad por cantidad
+
+Para scopes cuantificados se exige:
+
+```text
+AVAILABLE QUANTITY
++
+RESTRICTED QUANTITY
++
+UNAVAILABLE QUANTITY
+<=
+AUTHORITATIVE PHYSICAL QUANTITY
+```
+
+Los scopes son disjuntos y reconciliables.
+
+---
+
+#### 93. Disponibilidad individual
+
+Para identidad individual:
+
+```text
+ONE PHYSICAL IDENTITY
+→
+ONE CURRENT AVAILABILITY DECISION PER PURPOSE AND CONTEXT
+```
+
+No se admiten decisiones contradictorias para el mismo contexto y revisión.
+
+---
+
+#### 94. Política de bloqueo
+
+Toda regla que vuelva no disponible un sujeto debe ser trazable a política,
+versión, causa, fuente, vigencia, revisión y condición de salida.
+
+No se admiten bloqueos permanentes por una bandera sin procedencia.
+
+---
+
+#### 95. Liberación manual
+
+Una liberación manual solo es válida cuando la política la permite y conserva
+autoridad, razón, evidencia, alcance, instante y revisión.
+
+No borra pruebas fallidas anteriores.
+
+---
+
+#### 96. Override de disponibilidad
+
+Un override no cambia los hechos subyacentes.
+
+Debe expirar o tener condición de salida y no puede ocultar mantenimiento
+vencido, daño, prueba fallida o lifecycle incompatible.
+
+---
+
+#### 97. Concurrencia
+
+Antes de comprometer una transición se revalidan, según corresponda, identidad o
+scope, revisión de mantenimiento, obligación vigente, trabajo, condición,
+incidentes, custodia, lifecycle, prueba, liberación y política de
+disponibilidad.
+
+Una revisión obsoleta falla cerrada.
+
+---
+
+#### 98. Revisiones monotónicas
+
+Toda mutación autoritativa futura de obligación, trabajo, resultado, prueba o
+liberación debe avanzar una revisión aplicable.
+
+```text
+EXPECTED REVISION
+=
+CURRENT REVISION
+```
+
+debe cumplirse antes del commit.
+
+---
+
+#### 99. Idempotencia
+
+El mismo intento lógico no puede crear dos obligaciones equivalentes, abrir dos
+trabajos equivalentes, registrar dos veces la misma ejecución, satisfacer dos
+veces la misma obligación, duplicar prueba, duplicar liberación ni generar dos
+próximas obligaciones equivalentes.
+
+La misma identidad de idempotencia recupera el resultado ya decidido.
+
+---
+
+#### 100. Resultado desconocido
+
+Ante timeout posterior a una mutación, el cliente no repite con una identidad
+nueva.
+
+Debe resolver el mismo intento hasta conocer:
+
+```text
+ACCEPTED
+REJECTED
+UNKNOWN_REQUIRING_RECONCILIATION
+```
+
+---
+
+#### 101. Operación offline
+
+Una captura offline puede conservar observación, trabajo realizado, medición,
+evidencia y resultado técnico propuesto.
+
+No puede afirmar por sí sola liberación autoritativa ni disponibilidad final.
+
+---
+
+#### 102. Autorización
+
+Se segregan conceptualmente las capacidades de definir o asignar plan,
+reconocer obligación exigible, abrir trabajo, iniciar trabajo, registrar
+diagnóstico, registrar ejecución, registrar prueba, liberar al servicio,
+aplicar override y cancelar o sustituir una obligación.
+
+Poseer una capacidad no concede las demás. La familia `NEXO-AUTH` define
+permisos efectivos y contexto.
+
+---
+
+#### 103. Evidencia
+
+Según política, la evidencia puede incluir procedimiento, checklist, fotografía,
+documento, lectura, certificado, diagnóstico, trabajo, medición de prueba,
+firma, actor, tercero e instante.
+
+Se fija:
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+---
+
+#### 104. Auditoría mínima
+
+Toda transición autoritativa debe poder reconstruir sujeto o scope, clase,
+obligación, versión de plan o fundamento, disparador, trabajo, diagnóstico,
+ejecución, resultado, prueba, liberación, disponibilidad antes y después,
+razones, actor, autoridad, tercero cuando aplique, instante de servidor,
+revisión previa y resultante, correlación, idempotencia, evidencia y excepción.
+
+---
+
+#### 105. Eventos canónicos preservados
+
+Se conservan como hechos distintos:
+
+```text
+maintenance_due
+maintenance_work_order_opened
+maintenance_started
+maintenance_completed
+asset_released_to_service
+```
+
+Ninguno sustituye automáticamente al siguiente.
+
+---
+
+#### 106. Frontera con repuestos
+
+Los eventos `spare_part_reserved` y `spare_part_consumed` pueden relacionarse
+con mantenimiento.
+
+Su inventario, compatibilidad e impacto detallado pertenecen a
+`NEXO-DOM-016` y `NEXO-DOM-025`.
+
+---
+
+#### 107. Frontera con garantía
+
+`warranty_claim_opened` puede relacionarse con una reparación.
+
+No sustituye diagnóstico, trabajo, prueba, liberación ni disponibilidad.
+
+---
+
+#### 108. Frontera con `NEXO-DOM-013`
+
+Una reparación fallida, condición crítica o indisponibilidad prolongada puede
+originar evaluación de baja, descarte, venta o reemplazo.
+
+No ejecuta esas decisiones. `NEXO-DOM-013` conserva su lifecycle no
+destructivo.
+
+---
+
+#### 109. Frontera con `NEXO-DOM-025`
+
+`NEXO-DOM-025` deberá vincular repuestos realmente reservados y consumidos con
+el mantenimiento y el costo del activo.
+
+Esta tarea no crea movimientos de repuesto.
+
+---
+
+#### 110. Frontera con `NEXO-DOM-026`
+
+`NEXO-DOM-026` especializa inspecciones, mantenimiento preventivo, garantía y
+calibración.
+
+Esta tarea entrega la semántica compartida de obligación, trabajo, prueba,
+liberación y disponibilidad.
+
+---
+
+#### 111. Frontera con `NEXO-DOM-030`
+
+`NEXO-DOM-030` define el workflow detallado de planes, solicitudes, órdenes de
+trabajo, reparación, prueba, liberación y reapertura para instalaciones y
+trabajos aplicables.
+
+Esta tarea no adelanta ese workflow físico.
+
+---
+
+#### 112. AS-IS de `asset_maintenance_records`
+
+El AS-IS remoto conserva una tabla de mantenimiento con identidad de registro,
+activo individual o producto, estado, tipo, fechas programada y ejecutada,
+responsable, proveedor, trabajo realizado, indicador y texto de partes
+reemplazadas, costo informado, próxima fecha, notas y auditoría básica.
+
+Se clasifica como fundación parcial reutilizable.
+
+---
+
+#### 113. Vocabulario AS-IS de mantenimiento
+
+El AS-IS restringe `status` a:
+
+```text
+planned
+done
+cancelled
+overdue
+```
+
+y `maintenance_type` a:
+
+```text
+preventive
+corrective
+inspection
+calibration
+cleaning
+other
+```
+
+Estos valores son evidencia legacy y no sustituyen las dimensiones objetivo.
+
+---
+
+#### 114. Brecha AS-IS de planificación
+
+La acción inspeccionada puede, al registrar `planned`, actualizar además:
+
+```text
+equipment_status = en_mantenimiento
+lifecycle_status = en_reparacion
+```
+
+La transición mezcla planificación con intervención física.
+
+La implementación futura debe impedir esa equivalencia automática.
+
+---
+
+#### 115. Brecha AS-IS de finalización
+
+La misma acción puede, al registrar `done`, actualizar:
+
+```text
+equipment_status = operativo
+lifecycle_status = activo
+```
+
+No se observa en esa transición una prueba de retorno al servicio ni una
+liberación separada.
+
+La implementación futura debe reconciliar esta conflación.
+
+---
+
+#### 116. Brecha AS-IS de atomicidad
+
+El registro de mantenimiento y la actualización posterior del activo aparecen
+como mutaciones separadas en la superficie inspeccionada.
+
+No se demuestra atomicidad, compensación, idempotencia ni revisión compartida
+entre ambas.
+
+---
+
+#### 117. Brecha AS-IS de disponibilidad
+
+Las vistas actuales exponen `equipment_status`, `condition_status` y
+`lifecycle_status`, pero no una decisión canónica de disponibilidad con
+propósito, razón, política, frescura, revisiones fuente y liberación.
+
+La disponibilidad objetivo sigue sin materializar.
+
+---
+
+#### 118. Brecha AS-IS de resumen
+
+La superficie actual usa por defecto:
+
+```text
+Al día
+Sin pendientes registrados
+```
+
+cuando no encuentra obligaciones abiertas fechadas.
+
+Se fija:
+
+```text
+NO OPEN DATED RECORDS
+!=
+MAINTENANCE COMPLIANT
+```
+
+---
+
+#### 119. AS-IS legacy por producto
+
+Existe además `product_asset_maintenance_events`, a nivel de producto, con
+fechas, responsable en texto, proveedor, trabajo, partes reemplazadas y
+`planner_bucket`.
+
+No identifica suficientemente un trabajo completo sobre una identidad física
+concreta ni una liberación al servicio.
+
+---
+
+#### 120. Snapshot remoto observado
+
+La consulta remota de solo lectura realizada durante el desarrollo observó:
+
+| Métrica | Resultado |
+| --- | ---: |
+| activos individuales observados | 38 |
+| activos `operativo / activo / bueno` | 38 |
+| registros `asset_maintenance_records` | 0 |
+| registros `product_asset_maintenance_events` | 0 |
+| obligaciones explícitas observadas | 0 |
+| liberaciones al servicio observadas | 0 |
+
+La ausencia de registros no se interpreta como cumplimiento.
+
+---
+
+#### 121. Estado de adopción AS-IS
+
+La infraestructura actual se clasifica:
+
+```text
+PARTIAL REUSABLE FOUNDATION
+```
+
+Existen identidades físicas, condición, equipment status, lifecycle, tabla de
+mantenimiento, fechas, proveedor, trabajo, costo, próxima fecha y UI de
+resumen.
+
+Permanecen incompletos el plan versionado, obligación explícita, disparador
+auditable, diagnóstico estructurado, orden durable, prueba, liberación,
+disponibilidad contextual, revisión e idempotencia.
+
+---
+
+#### 122. Reconciliación futura del legacy
+
+La adopción física posterior deberá reconciliar como mínimo:
+
+1. `equipment_status`;
+2. `lifecycle_status`;
+3. `condition_status`;
+4. `asset_maintenance_records`;
+5. `product_asset_maintenance_events`;
+6. fechas programadas y ejecutadas;
+7. `next_scheduled_date`;
+8. proveedor y responsable legacy;
+9. `work_done`;
+10. partes reemplazadas en texto;
+11. costo informado;
+12. obligaciones reales aún no representadas;
+13. evidencia técnica;
+14. trabajos abiertos;
+15. activos realmente en reparación;
+16. liberaciones reales;
+17. disponibilidad operativa real.
+
+No se ejecuta backfill en esta tarea.
+
+---
+
+#### 123. Fail-closed
+
+Una decisión falla cerrada o queda `UNKNOWN` cuando el sujeto no existe, la
+granularidad no está resuelta, existe doble representación, no puede resolverse
+la política, la obligación aplicable es desconocida, falta una lectura
+requerida, la revisión es obsoleta, el trabajo no puede correlacionarse, falta
+prueba requerida, la prueba falló, falta liberación requerida, existe incidente
+bloqueante, el resultado remoto es desconocido, falta autoridad o una captura
+offline contradice estado más reciente.
+
+El fallo conserva la historia previa.
+
+---
+
+#### 124. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar plan versionado, obligaciones por
+disparador, vencimiento reconciliable, trabajo separado de obligación,
+diagnóstico separado de daño, ejecución auditable, proveedor o técnico
+trazable, repuestos vinculados por owners correctos, resultado, prueba,
+liberación, próxima obligación, disponibilidad contextual, razones de bloqueo,
+`UNKNOWN` fail-closed, identidad o cantidad preservadas, revisiones
+monotónicas, idempotencia, concurrencia, operación offline reconciliable,
+autorización server-side, evidencia, ausencia de doble representación, ausencia
+de liberación automática por `done` y ausencia de mantenimiento activo
+automático por `planned`.
+
+---
+
+#### 125. Handoff hacia `NEXO-DOM-013`
+
+Esta tarea entrega:
+
+```text
+VERSIONED MAINTENANCE OBLIGATIONS
++
+PLAN / OBLIGATION / WORK / RESULT SEPARATION
++
+REPAIR WITHOUT INCIDENT ERASURE
++
+TEST SEPARATE FROM WORK COMPLETION
++
+RELEASE SEPARATE FROM TEST AND AVAILABILITY
++
+CONTEXTUAL AVAILABILITY WITH REASON CODES
++
+UNKNOWN AVAILABILITY FAIL-CLOSED
++
+NEXT OBLIGATION PRESERVED
++
+IDEMPOTENT AUDITABLE MAINTENANCE HISTORY
+```
+
+`NEXO-DOM-013` deberá definir baja, descarte, venta o reemplazo sin convertir
+una condición crítica, reparación fallida o indisponibilidad en disposición
+automática y sin borrar identidad, mantenimiento, incidentes o liberaciones
+históricas.
+
+---
+
+#### 126. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege la separación entre condición,
+disponibilidad y lifecycle; exige separar plan, disparador, orden, diagnóstico,
+ejecución, repuestos, proveedor, indisponibilidad, costo, evidencia, prueba y
+liberación; exige conservar la próxima obligación; prohíbe liberar al servicio
+sin la prueba o decisión requerida; y conserva mantenimiento, reparación y
+disponibilidad por clase sin doble contabilización.
+
+---
+
+#### 127. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-012`, para condición y liberación no destructivas;
+- `TREQ-NEXO-013`, para identidad estable, condición, disponibilidad y
+  separación de dimensiones del activo;
+- `TREQ-NEXO-014`, para plan, disparador, orden, diagnóstico, ejecución,
+  repuestos, proveedor, indisponibilidad, costo, evidencia, prueba, liberación y
+  próxima obligación;
+- `TREQ-NEXO-015`, para mantenimiento y disponibilidad especializada de
+  vehículos;
+- `TREQ-NEXO-017`, para separación de plan, orden, ejecución, prueba y
+  liberación en instalaciones;
+- `TREQ-NEXO-043`, para disponibilidad y mantenimiento por identidad sin
+  duplicar grupos por cantidad;
+- `TREQ-NEXO-044`, para repuestos trazables y prohibición de sustituir
+  movimientos por texto;
+- `TREQ-NEXO-047`, para comportamiento por clase y ausencia de doble
+  representación.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 128. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell` después del cierre de `NEXO-DOM-011`, continuidad `011 → 012 → 013`, ruta normal, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, owner, handoff de `NEXO-DOM-011`, 04A NEXO, scripts aplicables, `CAP-SCOPE-007`, `vento-nexo` actual y consultas remotas de solo lectura sobre esquema, constraints, índices, vistas, activos y mantenimiento. |
+| OPERATIVA | NOT_EXECUTED | No se creó obligación, orden, mantenimiento, reparación, prueba, liberación ni cambio de disponibilidad sobre ningún sujeto físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, mantenimiento, ubicaciones, custodias, condición, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 129. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Mantenimiento se separa de condición y lifecycle.
+- [x] Reparación se separa de daño e incidente.
+- [x] Disponibilidad se define como proyección contextual.
+- [x] Se distinguen `AVAILABLE`, `RESTRICTED`, `UNAVAILABLE` y `UNKNOWN`.
+- [x] `UNKNOWN` falla cerrado donde se exige disponibilidad positiva.
+- [x] Disponibilidad conserva razones, contexto, política y frescura.
+- [x] Plan y obligación se separan y versionan.
+- [x] Se admiten disparadores por fecha, uso, ciclos, medidor, condición o evento autorizado.
+- [x] Disparador no equivale a trabajo iniciado.
+- [x] Se define lifecycle conceptual de la obligación.
+- [x] Cancelación no equivale a satisfacción.
+- [x] Orden de trabajo se mantiene separada de obligación y ejecución.
+- [x] Diagnóstico se separa del daño.
+- [x] Planificación no equivale a intervención física.
+- [x] Trabajo completado no equivale a liberación.
+- [x] Prueba y liberación son hechos separados.
+- [x] Prueba fallida o inconclusa no libera.
+- [x] Liberación se separa de condición, lifecycle y disponibilidad.
+- [x] Próxima obligación se deriva de política versionada.
+- [x] Preventivo, correctivo, inspección, limpieza técnica y calibración mantienen semántica diferenciada.
+- [x] Garantía no demuestra reparación ni disponibilidad.
+- [x] Custodia de tercero consume `NEXO-DOM-011`.
+- [x] Salida o retorno de mantenimiento no equivalen a inicio o liberación.
+- [x] Repuestos no se consumen mediante texto.
+- [x] Costo informado no equivale a efecto contable.
+- [x] Préstamo, tránsito y reserva pueden afectar disponibilidad sin cambiar condición.
+- [x] Ausencia de registros no demuestra cumplimiento.
+- [x] Fecha programada no demuestra ejecución.
+- [x] Fecha ejecutada no demuestra liberación.
+- [x] `done` no equivale a liberado.
+- [x] `planned` no equivale a mantenimiento activo.
+- [x] `overdue` requiere obligación y política.
+- [x] `cancelled` no equivale a obligación satisfecha.
+- [x] `equipment_status` no se adopta como disponibilidad canónica.
+- [x] `lifecycle_status` no absorbe reparación.
+- [x] `condition_status` no se deriva del cierre de mantenimiento.
+- [x] Mantenimiento individual conserva identidad.
+- [x] Control por cantidad no fabrica identidades.
+- [x] Contenedor físico conserva identidad separada de LPN.
+- [x] Kits, repuestos, vehículos e instalaciones conservan sus owners especializados.
+- [x] Medidor desconocido no equivale a obligación no vencida.
+- [x] Próxima fecha legacy no sustituye plan.
+- [x] Proveedor y partes en texto permanecen evidencia legacy.
+- [x] Disponibilidad por cantidad conserva scopes disjuntos.
+- [x] Todo bloqueo tiene causa, política y condición de salida.
+- [x] Override no reescribe hechos.
+- [x] Se definen concurrencia, revisiones monotónicas e idempotencia.
+- [x] Resultado desconocido exige reconciliación.
+- [x] Captura offline no libera al servicio.
+- [x] Evidencia no equivale a autoridad.
+- [x] Se define auditoría mínima.
+- [x] Se preservan eventos canónicos de mantenimiento y liberación.
+- [x] Se documenta `asset_maintenance_records`.
+- [x] Se documentan sus vocabularios legacy.
+- [x] Se documenta la conflación `planned → en_mantenimiento/en_reparacion`.
+- [x] Se documenta la conflación `done → operativo/activo`.
+- [x] Se documenta la falta de atomicidad demostrada.
+- [x] Se documenta la ausencia de proyección canónica de disponibilidad.
+- [x] Se documenta el resumen “Al día” sin evidencia positiva suficiente.
+- [x] Se documenta `product_asset_maintenance_events` como superficie legacy.
+- [x] Se registra snapshot remoto de solo lectura.
+- [x] El AS-IS se clasifica como fundación parcial reutilizable.
+- [x] Se definen condiciones mínimas de materialización posterior.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-013`.
+
+---
+
+#### 130. Límites
+
+Esta tarea no crea planes, obligaciones ni órdenes reales; no inicia ni ejecuta
+mantenimiento o reparación; no registra pruebas ni liberaciones reales; no
+cambia disponibilidad, equipment status, lifecycle, condición, ubicación o
+custodia; no registra préstamos; no reserva ni consume repuestos; no gestiona
+garantías o calibraciones reales; no ejecuta baja, descarte, venta o reemplazo;
+no modifica `asset_items`, `asset_groups`, `asset_maintenance_records` ni
+`product_asset_maintenance_events`; no crea tablas, columnas, enums,
+constraints, índices, triggers, vistas, RPC, RLS, Server Actions ni Route
+Handlers; no ejecuta migraciones o backfills; no modifica Supabase ni
+`vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea una
+instancia física propia; no crea ni modifica requisitos de prueba; no modifica
+el registro 04A; y no desarrolla `NEXO-DOM-013`.
+
+---
+
+#### 131. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`
+
+### ✅ NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
+**Tarea siguiente:** NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+**Tipo de tarea:** documental; definición canónica del retiro de servicio, baja, descarte, venta, reemplazo y disposición física de activos individuales, reutilizables controlados por cantidad y otros sujetos físicos aplicables, con solicitud, evaluación, autorización, ejecución, cierre no destructivo, conservación de identidad e historia, segregación de funciones, efecto económico separado, revisiones, idempotencia, concurrencia, operación offline y fronteras con custodia, ubicación, condición, mantenimiento, propiedad, NUMERA y kits bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para retirar un sujeto físico del servicio ordinario, decidir su destino, ejecutar una disposición física, registrar una venta o relacionar un reemplazo sin borrar identidad, historia, custodia, condición, mantenimiento, incidentes ni efectos económicos.
+
+La regla raíz queda:
+
+```text
+STABLE PHYSICAL SUBJECT
++
+EXPLICIT RETIREMENT REQUEST
++
+INDEPENDENT EVALUATION
++
+AUTHORIZED DECISION
++
+CONTROLLED PHYSICAL DISPOSITION
++
+SEPARATE ECONOMIC EFFECT
++
+NON-DESTRUCTIVE CLOSURE
+→
+AUDITABLE END-OF-SERVICE HISTORY
+```
+
+Esta tarea define semántica de dominio. No ejecuta baja, venta, descarte, reemplazo ni disposición real.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. baja como decisión de retiro del servicio y no como eliminación;
+2. disposición como destino físico ejecutado y no como sinónimo de baja;
+3. venta como método de disposición con handoff físico y efecto económico separados;
+4. reemplazo como relación entre identidades, nunca como reutilización de identidad;
+5. solicitud, evaluación, aprobación, ejecución, efecto económico y cierre como etapas distintas;
+6. condición crítica, reparación fallida o indisponibilidad como posibles disparadores de evaluación, nunca como baja automática;
+7. propiedad, custodia, ubicación y autoridad como precondiciones independientes;
+8. tratamiento para activos individualizados y scopes por cantidad;
+9. conservación de incidentes, mantenimiento, documentos y auditoría;
+10. segregación de funciones, revisiones monotónicas, idempotencia, concurrencia y operación offline fail-closed;
+11. reconciliación explícita del AS-IS;
+12. handoff hacia `NEXO-DOM-014`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria de `NEXO-DOM-001`;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, pérdida, faltante, hallazgo y recuperación de `NEXO-DOM-010`;
+- préstamo, devolución, transferencia y cambio de custodia de `NEXO-DOM-011`;
+- mantenimiento, reparación, prueba, liberación y disponibilidad de `NEXO-DOM-012`;
+- identidad estable, historia no destructiva, autorización server-side, revisiones, idempotencia y concurrencia.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+```text
+QUE HECHO ABRE UNA EVALUACION DE RETIRO,
+QUIEN PUEDE EVALUAR Y APROBAR,
+QUE SIGNIFICA DAR DE BAJA,
+QUE DESTINO FISICO SE EJECUTO,
+COMO SE DISTINGUEN DESCARTE, VENTA Y REEMPLAZO,
+QUE HECHO ECONOMICO SE EMITE,
+Y COMO SE CIERRA SIN BORRAR IDENTIDAD NI HISTORIA?
+```
+
+---
+
+#### 5. Dimensiones separadas
+
+Se preservan como dimensiones independientes:
+
+```text
+CONDITION
+AVAILABILITY
+LIFECYCLE
+LOCATION
+CUSTODY
+OWNERSHIP
+RETIREMENT CASE
+PHYSICAL DISPOSITION
+ECONOMIC TREATMENT
+REPLACEMENT RELATION
+```
+
+Una transición en una dimensión no autoriza reescribir las demás por inferencia.
+
+---
+
+#### 6. Baja
+
+`RETIREMENT` es la decisión autorizada de retirar un sujeto del servicio ordinario o de un alcance operativo definido.
+
+```text
+RETIREMENT
+!=
+DELETE
+```
+
+```text
+RETIREMENT APPROVED
+!=
+PHYSICAL DISPOSITION EXECUTED
+```
+
+La identidad y la historia permanecen después de la baja.
+
+---
+
+#### 7. Disposición física
+
+`PHYSICAL DISPOSITION` es la ejecución verificable del destino físico aprobado para el sujeto o scope. Debe conservar método, actor, fecha efectiva, autoridad, destino o contraparte cuando aplique y evidencia suficiente.
+
+La disposición puede representar descarte, venta, devolución a propietario, entrega a gestor autorizado u otro destino formalmente permitido.
+
+---
+
+#### 8. Baja y disposición no son equivalentes
+
+```text
+RETIREMENT DECISION
+!=
+DISPOSITION EXECUTION
+```
+
+Un caso puede estar aprobado y continuar pendiente de disposición. Marcar el lifecycle no demuestra que el objeto haya salido físicamente.
+
+---
+
+#### 9. Venta
+
+La venta es un método específico de disposición cuando la propiedad y la autoridad permiten transferir el sujeto a un tercero.
+
+```text
+SALE APPROVED
+!=
+PHYSICAL HANDOFF
+!=
+ECONOMIC SALE EVENT
+!=
+ACCOUNTING TREATMENT
+```
+
+Estos hechos permanecen correlacionados, pero no se sustituyen entre sí.
+
+---
+
+#### 10. Reemplazo
+
+El reemplazo vincula un sujeto saliente con uno o más sujetos entrantes sin fusionar identidades.
+
+```text
+REPLACEMENT
+!=
+IDENTITY REUSE
+```
+
+El sujeto entrante obtiene su propia identidad. El sujeto saliente conserva la suya y su propio expediente de disposición.
+
+---
+
+#### 11. Reemplazo no dispone automáticamente
+
+```text
+REPLACEMENT LINK CREATED
+!=
+OUTGOING SUBJECT DISPOSED
+```
+
+Registrar o comprar un reemplazo no cierra la baja del sujeto anterior ni autoriza reutilizar QR, serial, placa o código como nueva identidad.
+
+---
+
+#### 12. Disparadores que no deciden la baja
+
+Se preservan las siguientes separaciones:
+
+```text
+CRITICAL CONDITION
+!=
+RETIREMENT APPROVED
+```
+
+```text
+FAILED REPAIR
+!=
+RETIREMENT APPROVED
+```
+
+```text
+UNAVAILABLE
+!=
+RETIRED
+```
+
+```text
+LOST
+!=
+DISPOSED
+```
+
+Condición crítica, reparación fallida, indisponibilidad o pérdida pueden abrir evaluación, pero nunca ejecutan la decisión por sí solas.
+
+---
+
+#### 13. Solicitud de baja
+
+Una solicitud inicia un expediente y debe poder conservar sujeto o scope, solicitante, causa estructurada, contexto, evidencia, estado observado, criticidad, propuesta de destino cuando exista, revisión del sujeto e instante de servidor.
+
+```text
+RETIREMENT REQUESTED
+!=
+RETIREMENT APPROVED
+```
+
+---
+
+#### 14. Evaluación
+
+La evaluación determina si la propuesta es procedente y qué restricciones, evidencias o aprobaciones exige. Puede considerar condición, historial de mantenimiento, reparación, disponibilidad, seguridad, costo informado, propiedad, garantía, seguro, posibilidad de reutilización y necesidad de reemplazo.
+
+La evaluación no constituye aprobación.
+
+---
+
+#### 15. Aprobación y rechazo
+
+La aprobación autoriza el retiro bajo un alcance y destino permitidos. Debe conservar autoridad, política, sujeto o scope, decisión, motivo, condiciones, destino permitido, vigencia, evidencia y revisión esperada.
+
+El rechazo conserva causa, actor, autoridad, evidencia y revisión. Ninguna de las dos decisiones borra la solicitud.
+
+---
+
+#### 16. Estados conceptuales del expediente
+
+El expediente debe poder distinguir al menos:
+
+```text
+REQUESTED
+UNDER_EVALUATION
+APPROVED
+REJECTED
+EXECUTION_PENDING
+EXECUTED
+ECONOMIC_RECONCILIATION_PENDING
+CLOSED
+CANCELLED
+EXCEPTION
+```
+
+La forma física futura puede variar si conserva estos significados y sus transiciones.
+
+---
+
+#### 17. Ejecución pendiente y ejecutada
+
+`EXECUTION_PENDING` representa una baja aprobada cuyo destino físico todavía no fue confirmado. No puede mostrarse como vendido, descartado o dispuesto.
+
+`EXECUTED` representa disposición física confirmada con evidencia suficiente, pero no demuestra por sí sola conciliación económica.
+
+---
+
+#### 18. Conciliación económica y cierre
+
+`ECONOMIC_RECONCILIATION_PENDING` representa que el hecho físico existe pero el tratamiento económico requerido permanece pendiente.
+
+`CLOSED` exige que las obligaciones físicas, documentales y de integración que aplique la política estén reconciliadas. El cierre no elimina el expediente ni la identidad.
+
+---
+
+#### 19. Cancelación y excepción
+
+Cancelar conserva identidad, motivo, actor, autoridad, instante y evidencia. No revierte hechos físicos ya ejecutados.
+
+`EXCEPTION` conserva un caso que no puede completar el recorrido ordinario y debe indicar causa, owner, impacto, acción requerida y condición exacta de salida.
+
+---
+
+#### 20. Descarte
+
+El descarte debe identificar el sujeto o cantidad exactos, método o destino, actor, fecha efectiva y evidencia exigida.
+
+```text
+DISCARD
+!=
+DELETE RECORD
+```
+
+Un descarte no borra serial, QR histórico, mantenimiento, movimientos, custodias ni documentos referenciados.
+
+---
+
+#### 21. Venta física y económica
+
+La entrega física de una venta debe confirmar que el sujeto o scope entregado coincide con el aprobado y conservar contraparte cuando aplique, fecha, punto de handoff, condición, evidencia y autoridad.
+
+```text
+PHYSICAL SALE HANDOFF
+!=
+ACCOUNTING POSTING
+```
+
+NEXO emite el hecho físico. NUMERA determina el tratamiento económico conforme a sus contratos.
+
+---
+
+#### 22. Propiedad como precondición
+
+```text
+PHYSICAL CUSTODY
+!=
+OWNERSHIP
+```
+
+```text
+OWNERSHIP UNKNOWN
+→
+NO IRREVERSIBLE DISPOSITION
+```
+
+No se vende, dona, descarta o dispone como propio un sujeto cuya propiedad o autoridad de disposición no esté resuelta. Activos rentados, prestados, en comodato o de terceros no adquieren autorización de disposición por estar físicamente en Vento.
+
+---
+
+#### 23. Custodia como precondición
+
+La custodia activa debe reconciliarse antes de una disposición irreversible. El custodio no se convierte en aprobador por ser responsable actual.
+
+```text
+CUSTODIAN
+!=
+RETIREMENT APPROVER
+```
+
+Un préstamo o transferencia pendiente debe resolverse o quedar coordinado explícitamente antes de la disposición.
+
+---
+
+#### 24. Ubicación y salida física
+
+La ubicación al ejecutar disposición debe ser conocida o tratada mediante excepción controlada. La baja aprobada no modifica ubicación por inferencia.
+
+Una disposición que retira físicamente el sujeto debe correlacionarse con un hecho de salida o movimiento cuando el modelo propietario lo requiera. Un cambio de estado de lifecycle no demuestra salida física.
+
+---
+
+#### 25. Identidad, QR y reactivación
+
+La identidad canónica nunca se recicla después de la baja. Serial, placa, código y QR históricos permanecen ligados al expediente.
+
+Reutilizar una etiqueta o QR de un sujeto retirado para el reemplazo está prohibido.
+
+Una eventual reactivación, si alguna política futura la permite, debe ser una transición explícita y auditable; no se logra cambiando un campo de `retirado` a `activo`.
+
+---
+
+#### 26. Mantenimiento e incidentes históricos
+
+La baja no borra planes, obligaciones, trabajos, diagnósticos, pruebas ni liberaciones previas. Obligaciones futuras pueden cancelarse o supersederse únicamente con una relación trazable y razón explícita.
+
+Daño, pérdida, faltante, hallazgo o reparación fallida permanecen como hechos. La disposición puede cerrar un lifecycle sin borrar la causa que lo motivó.
+
+---
+
+#### 27. Garantía, seguro y documentos
+
+Una disposición puede afectar una reclamación, cobertura o derecho vigente. Esta tarea exige preservar referencias y no cerrar garantía o seguro por inferencia.
+
+Facturas, actas, fotografías, certificados, contratos, documentos de entrega y soportes de disposición permanecen sujetos a las políticas de acceso y retención correspondientes.
+
+---
+
+#### 28. Activos serializados
+
+Para `SERIALIZED_ASSET`, baja, disposición, venta y reemplazo se aplican a la identidad física exacta. No se sustituyen por cantidades agregadas ni se permite doble disposición de la misma identidad.
+
+---
+
+#### 29. Reutilizables por cantidad
+
+Para `REUSABLE_QUANTITY`, el expediente puede operar sobre un scope cuantificado sin fabricar identidades unitarias. Debe conservar cantidad autoritativa previa, cantidad propuesta, aprobada, ejecutada y remanente, unidad, ubicación o scope, condición aplicable y evidencia.
+
+```text
+EXECUTED DISPOSITION QUANTITY
+<=
+AUTHORITATIVE RECONCILED QUANTITY
+```
+
+La baja parcial debe producir un hecho trazable y conservar el remanente.
+
+---
+
+#### 30. Contenedor físico, LPN y contenido
+
+La disposición de un `PHYSICAL_CONTAINER` no dispone automáticamente un LPN asociado ni su contenido.
+
+```text
+PHYSICAL CONTAINER DISPOSED
+!=
+LPN DISPOSED
+!=
+LPN CONTENT DISPOSED
+```
+
+Todo contenido debe estar reconciliado antes de una disposición que afecte al contenedor físico.
+
+---
+
+#### 31. Kits y componentes
+
+La baja o disposición de una instancia de kit no implica automáticamente la disposición de sus componentes. `NEXO-DOM-014` define miembros, completitud y sustitución.
+
+Esta tarea prohíbe cascadas implícitas que eliminen identidades o cantidades de componentes.
+
+---
+
+#### 32. Repuestos y vehículos
+
+Un repuesto instalado, retirado o pendiente de disposición conserva su contrato de inventario; una nota de reparación no autoriza descarte.
+
+Los vehículos consumen estas reglas de retiro y disposición, mientras sus documentos, medidores y reglas especializadas permanecen en `NEXO-DOM-027` y `NEXO-DOM-028`.
+
+---
+
+#### 33. Relación de reemplazo
+
+Una relación de reemplazo debe poder conservar sujeto saliente, sujeto entrante, causa, decisión que autoriza el reemplazo, fecha, actor, evidencia, vínculo con adquisición cuando aplique, vínculo con disposición del saliente y revisión.
+
+La relación no copia historia del saliente al entrante.
+
+Para scopes por cantidad:
+
+```text
+DISPOSED QUANTITY
+!=
+REPLACEMENT RECEIVED QUANTITY
+```
+
+Ambos hechos se concilian, pero permanecen separados.
+
+---
+
+#### 34. Compra de reemplazo
+
+ORIGO puede originar la adquisición del reemplazo. La compra no constituye disposición del activo anterior y la recepción no reutiliza su identidad.
+
+La existencia de una orden, factura o activo entrante no cierra el expediente del saliente.
+
+---
+
+#### 35. Efecto económico
+
+NEXO produce hechos físicos de retiro, disposición, venta o pérdida. NUMERA decide, conforme a sus contratos, valor en libros, depreciación, pérdida, ingreso por venta, ganancia, impuesto y asiento.
+
+Esta tarea no define cálculos ni asientos.
+
+---
+
+#### 36. Pago y entrega no son equivalentes
+
+Una entrega física puede existir antes o después de la confirmación económica según el proceso aprobado. La falta de conciliación económica queda pendiente y visible.
+
+Un pago o comprobante no demuestra por sí solo que el activo fue entregado.
+
+---
+
+#### 37. Doble disposición y doble efecto
+
+Un sujeto individual no puede tener dos disposiciones irreversibles vigentes para la misma identidad.
+
+La misma disposición no puede generar dos hechos económicos por reintento. La implementación futura debe impedir doble venta, doble descarte, doble entrega y doble contabilización del mismo hecho.
+
+---
+
+#### 38. Segregación de funciones
+
+Se separan conceptualmente las capacidades de:
+
+```text
+REQUEST_RETIREMENT
+EVALUATE_RETIREMENT
+APPROVE_RETIREMENT
+REJECT_RETIREMENT
+EXECUTE_DISPOSITION
+CONFIRM_PHYSICAL_HANDOFF
+LINK_REPLACEMENT
+RECONCILE_ECONOMIC_EFFECT
+CLOSE_RETIREMENT_CASE
+```
+
+Poseer una no concede las demás. El custodio puede reportar o solicitar evaluación, pero no aprobar automáticamente su propia pérdida, baja o disposición.
+
+---
+
+#### 39. Autorización server-side
+
+Toda transición futura debe revalidar autoridad efectiva en servidor. Un botón visible, una URL, un QR o un rol nominal no constituyen autorización suficiente.
+
+La política puede exigir separación entre aprobador y ejecutor; cualquier excepción debe ser explícita, autorizada y auditable.
+
+---
+
+#### 40. Concurrencia y revisiones
+
+Antes de comprometer una transición se revalidan identidad o scope, revisión, lifecycle, condición, disponibilidad, ubicación, custodia, propiedad, préstamo o transferencia abiertos, mantenimiento relevante, disposición previa, expediente, autoridad y política.
+
+```text
+EXPECTED REVISION
+=
+CURRENT REVISION
+```
+
+debe cumplirse antes del commit. Una revisión obsoleta falla cerrada.
+
+---
+
+#### 41. Idempotencia y resultado desconocido
+
+El mismo intento lógico no puede crear dos solicitudes equivalentes, aprobar dos veces, ejecutar dos disposiciones, emitir dos handoffs de venta, crear dos reemplazos equivalentes ni emitir dos efectos económicos equivalentes.
+
+Ante timeout posterior a una mutación, se resuelve la misma identidad hasta conocer:
+
+```text
+ACCEPTED
+REJECTED
+UNKNOWN_REQUIRING_RECONCILIATION
+```
+
+---
+
+#### 42. Operación offline
+
+Una captura offline puede conservar propuesta, observación, evidencia o confirmación física pendiente.
+
+La pérdida de red no autoriza aprobar baja, ejecutar disposición irreversible, confirmar venta, cerrar el expediente ni publicar efecto económico. Las decisiones irreversibles requieren autoridad y estado vigentes.
+
+---
+
+#### 43. Evidencia y auditoría
+
+La evidencia exigida depende del método, pero el contrato debe poder relacionar solicitud, evaluación, aprobación o rechazo, condición, propiedad o autoridad, custodia, ubicación, documentos, fotografías con contexto, contraparte o gestor cuando aplique, acta o comprobante, fecha efectiva, actor, resultado físico, referencia económica y excepción.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+Toda transición autoritativa debe poder reconstruir sujeto o scope, clase, identidad, revisión previa y resultante, estado anterior, solicitud, evaluación, decisión, método, ejecución, ubicación, custodia, propiedad, condición, mantenimiento e incidentes relacionados, reemplazo, resultado físico, hecho económico emitido o pendiente, actor, autoridad, instante de servidor, correlación, idempotencia y evidencia.
+
+---
+
+#### 44. Eventos canónicos preservados
+
+Se conservan como hechos distintos los eventos ya reconocidos por el plan:
+
+```text
+asset_retirement_requested
+asset_retirement_approved
+asset_disposed
+```
+
+```text
+asset_retirement_requested
+!=
+asset_retirement_approved
+!=
+asset_disposed
+```
+
+La venta se expresa como contexto o método de disposición y el reemplazo como relación explícita. Esta tarea no inventa nombres de eventos canónicos adicionales.
+
+---
+
+#### 45. Fronteras con tareas posteriores
+
+- `NEXO-DOM-014` define kits, conjuntos, miembros y completitud; la disposición de un kit no se propaga a sus componentes.
+- `NEXO-DOM-015` define conteos; una diferencia de conteo puede abrir investigación, pero no baja automática.
+- `NEXO-DOM-016` define repuestos y compatibilidad; una pieza retirada conserva su efecto de inventario.
+- `NEXO-DOM-017` define auditoría e historial transversal y consume los hechos de retiro y disposición aquí definidos.
+- `NEXO-DOM-028` especializa costos y disponibilidad de vehículos y activos aplicables; no redefine identidad física.
+
+---
+
+#### 46. Fronteras con NUMERA y ORIGO
+
+NUMERA es owner del efecto económico autorizado. NEXO no calcula ni afirma por sí solo valor en libros, depreciación, ganancia, pérdida, impuestos o asientos.
+
+ORIGO puede originar compra de reemplazo, servicios de disposición o contratación de terceros según su contrato, pero no se convierte en fuente del lifecycle físico del activo.
+
+---
+
+#### 47. AS-IS de estados de activo
+
+El esquema remoto observado conserva en `asset_items`:
+
+```text
+equipment_status:
+operativo
+en_mantenimiento
+fuera_servicio
+baja
+```
+
+y:
+
+```text
+lifecycle_status:
+activo
+almacenado
+prestado
+en_reparacion
+retirado
+perdido
+```
+
+Estos valores son una fundación parcial de estados, no un expediente gobernado de disposición.
+
+---
+
+#### 48. AS-IS de grupos y movimientos
+
+`asset_groups` conserva `lifecycle_status` con posibilidad de `retirado`, pero no se observó un expediente separado de solicitud, evaluación, aprobación, disposición y conciliación económica.
+
+`asset_movements` admite actualmente:
+
+```text
+initial_location
+transfer
+loan
+return
+maintenance_out
+maintenance_in
+status_change
+adjustment
+```
+
+No se observó un tipo explícito de movimiento para venta, descarte, disposición o reemplazo.
+
+---
+
+#### 49. AS-IS de superficies específicas
+
+La consulta remota de solo lectura no encontró tablas cuyo nombre materializara un expediente específico de retirement, disposal, discard, replacement, asset sale o write-off.
+
+La aplicación actual reconoce el valor legacy `retirado`, pero la búsqueda del código vigente no identificó un workflow gobernado equivalente al contrato objetivo.
+
+```text
+LEGACY STATUS SUPPORT
+!=
+END-OF-SERVICE WORKFLOW COMPLETE
+```
+
+---
+
+#### 50. Snapshot remoto observado
+
+La consulta remota de solo lectura realizada durante el desarrollo observó:
+
+| Métrica | Resultado |
+| --- | ---: |
+| activos individuales observados | 38 |
+| activos individuales `operativo / activo` | 38 |
+| grupos reutilizables observados | 128 |
+| grupos `activo` | 128 |
+| sujetos observados actualmente en `baja` | 0 |
+| sujetos observados actualmente `retirado` | 0 |
+| tablas específicas de retiro/disposición detectadas por nombre | 0 |
+
+El snapshot describe el estado observado y no sustituye un inventario físico.
+
+---
+
+#### 51. Estados legacy insuficientes
+
+```text
+equipment_status = baja
+!=
+RETIREMENT DOSSIER COMPLETE
+```
+
+```text
+lifecycle_status = retirado
+!=
+PHYSICAL DISPOSITION EXECUTED
+```
+
+Un `status_change` genérico tampoco demuestra método de disposición, handoff a tercero, cantidad dispuesta ni correlación económica.
+
+---
+
+#### 52. Brechas AS-IS
+
+El AS-IS observado no materializa de forma evidente:
+
+- segregación durable entre solicitud, evaluación, aprobación y ejecución;
+- disposición física específica;
+- venta física y económica correlacionadas;
+- relación de reemplazo saliente/entrante;
+- conciliación exactamente una vez con el efecto económico;
+- bloqueo contra doble disposición;
+- expediente completo para scopes por cantidad.
+
+La infraestructura actual se clasifica:
+
+```text
+PARTIAL STATUS FOUNDATION
+```
+
+---
+
+#### 53. Reconciliación futura del legacy
+
+La adopción física posterior deberá reconciliar como mínimo `equipment_status`, `lifecycle_status`, `condition_status`, `ownership_status`, ubicación, custodia, préstamos y transferencias abiertos, mantenimiento, incidentes, documentos, movimientos, activos o scopes realmente retirados, destinos físicos, ventas históricas, descartes, reemplazos y efectos económicos correlacionados.
+
+No se ejecuta backfill en esta tarea.
+
+---
+
+#### 54. Fail-closed
+
+Una decisión falla cerrada o queda en excepción cuando el sujeto no existe, identidad o scope son ambiguos, existe doble representación, la revisión es obsoleta, la propiedad o autoridad de disposición es desconocida, existe custodia incompatible no reconciliada, hay préstamo o transferencia pendiente no resuelto, la ubicación necesaria es desconocida, la cantidad no reconcilia, ya existe disposición irreversible, falta aprobación o evidencia, el destino no está permitido, el resultado remoto es desconocido o falta autoridad.
+
+El fallo conserva el expediente y la historia previa.
+
+---
+
+#### 55. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar expediente durable, solicitud, evaluación, aprobación o rechazo, segregación de funciones, propiedad y autoridad resueltas, custodia y ubicación reconciliadas, identidad o cantidad exactas, método de disposición, ejecución física, evidencia, reemplazo correlacionado cuando aplique, hecho económico separado, conciliación, cierre no destructivo, revisiones monotónicas, idempotencia, concurrencia, operación offline fail-closed, autorización server-side, ausencia de doble disposición, ausencia de identidad reciclada y preservación de mantenimiento e incidentes.
+
+---
+
+#### 56. Handoff hacia `NEXO-DOM-014`
+
+Esta tarea entrega:
+
+```text
+NON-DESTRUCTIVE RETIREMENT CASES
++
+REQUEST / EVALUATION / APPROVAL / EXECUTION SEPARATION
++
+PHYSICAL DISPOSITION SEPARATE FROM ECONOMIC EFFECT
++
+SALE AS CONTROLLED DISPOSITION
++
+REPLACEMENT WITHOUT IDENTITY REUSE
++
+OWNERSHIP AND CUSTODY PRECONDITIONS
++
+QUANTITY-SCOPE CONSERVATION
++
+IDEMPOTENT AUDITABLE CLOSURE
+```
+
+`NEXO-DOM-014` deberá definir kits, conjuntos y validación de completitud sin tratar reemplazo como sustitución implícita de miembros y sin propagar baja o disposición del kit a sus componentes por inferencia.
+
+---
+
+#### 57. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que baja, venta, descarte y reemplazo sean transiciones no destructivas con solicitud, aprobación, ejecución y efecto económico separados; protege identidad, condición, disponibilidad, custodia e historia; y protege la integración física y económica entre NEXO, ORIGO y NUMERA sin efectos duplicados.
+
+---
+
+#### 58. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para identidad estable, ubicación, custodia, condición, disponibilidad y eventos no destructivos;
+- `TREQ-NEXO-014`, para baja, venta, descarte y reemplazo con segregación de solicitud, aprobación, ejecución y efecto económico;
+- `TREQ-NEXO-043`, para tratamiento diferenciado de activos serializados y reutilizables controlados por cantidad;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y ausencia de doble representación;
+- `TREQ-INTEGRATION-012`, para la cadena ORIGO → NEXO → NUMERA sobre adquisición, mantenimiento, repuestos, pérdida, venta y baja sin efectos duplicados.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 59. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell` después del cierre de `NEXO-DOM-012`, continuidad `012 → 013 → 014`, ruta normal, topología `DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, owner, handoff de `NEXO-DOM-012`, 04A NEXO, scripts aplicables, `CAP-SCOPE-007`, `vento-nexo` actual y consultas remotas de solo lectura sobre esquema, constraints, estados, movimientos y datos de activos. |
+| OPERATIVA | NOT_EXECUTED | No se solicitó, evaluó, aprobó, vendió, descartó, reemplazó ni dispuso ningún sujeto físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, lifecycle, condición, ubicación, custodia, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 60. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] baja se define como retiro y no eliminación;
+- [x] baja aprobada se separa de disposición física;
+- [x] venta separa aprobación, handoff y efecto económico;
+- [x] reemplazo no reutiliza identidad ni dispone automáticamente el sujeto saliente;
+- [x] condición crítica, reparación fallida, indisponibilidad y pérdida no producen baja automática;
+- [x] solicitud, evaluación, aprobación, ejecución, conciliación y cierre permanecen separados;
+- [x] propiedad, custodia y ubicación son precondiciones independientes;
+- [x] activos de terceros no se disponen como propios;
+- [x] custodio no se convierte en aprobador;
+- [x] identidad y QR históricos no se reciclan;
+- [x] mantenimiento, incidentes, garantía, seguro y documentos conservan historia;
+- [x] activos serializados usan identidad exacta;
+- [x] reutilizables por cantidad admiten baja parcial reconciliable;
+- [x] contenedor físico no dispone LPN ni contenido;
+- [x] kit no propaga disposición a componentes;
+- [x] NUMERA conserva el tratamiento económico;
+- [x] se impiden doble disposición y doble efecto económico;
+- [x] se segregan capacidades de solicitud, evaluación, aprobación, ejecución, handoff, reemplazo y cierre;
+- [x] se definen autorización server-side, concurrencia, revisión e idempotencia;
+- [x] operación offline no autoriza decisiones irreversibles;
+- [x] se preservan `asset_retirement_requested`, `asset_retirement_approved` y `asset_disposed` sin inventar eventos nuevos;
+- [x] se documentan `baja` y `retirado` como estados legacy insuficientes;
+- [x] se documenta la ausencia de movimiento explícito de disposición en `asset_movements`;
+- [x] se documenta la ausencia observada de tablas específicas de retiro/disposición;
+- [x] se documenta el snapshot remoto de 38 activos individuales y 128 grupos activos;
+- [x] el AS-IS se clasifica como fundación parcial de estados;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica el registro 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-DOM-014`.
+
+---
+
+#### 61. Límites
+
+Esta tarea no solicita, evalúa ni aprueba bajas reales; no vende, descarta, dona, devuelve, reemplaza ni dispone sujetos físicos; no cambia lifecycle, equipment status, condición, disponibilidad, ubicación, custodia o propiedad; no modifica cantidades; no ejecuta handoffs; no publica ventas; no calcula valor contable, depreciación, pérdida, ganancia, impuestos ni asientos; no modifica `asset_items`, `asset_groups`, `asset_movements` ni otras tablas; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, Server Actions ni Route Handlers; no ejecuta migraciones ni backfills; no modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea una instancia física propia; no crea ni modifica requisitos de prueba; no modifica el registro 04A; y no desarrolla `NEXO-DOM-014`.
+
+---
+
+#### 62. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
+
+### ✅ NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+**Tarea siguiente:** NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+**Tipo de tarea:** documental; definición canónica de kits y conjuntos físicos, separando definición versionada, instancia materializada, miembros reales, componentes obligatorios y opcionales, sustituciones, completitud, disponibilidad, ensamblaje, préstamo, devolución, desarme, LPN, custodia, condición, conteo, revisiones, idempotencia, concurrencia y reconciliación legacy bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para representar kits y conjuntos
+físicos sin crear saldo adicional, sin confundir la definición con una
+instancia real y sin convertir composición, préstamo, LPN, contenedor o
+sustitución en fuentes competidoras de identidad.
+
+La regla raíz queda:
+
+```text
+VERSIONED KIT DEFINITION
++
+MATERIALIZED KIT INSTANCE
++
+AUTHORITATIVE MEMBER ASSIGNMENTS
++
+REQUIRED / OPTIONAL COMPONENT RULES
++
+EXPLICIT SUBSTITUTION POLICY
++
+COMPLETENESS EVALUATION
++
+EXISTING MEMBER IDENTITIES OR QUANTITY SCOPES
+→
+RECONCILABLE KIT STATE
+WITHOUT DUPLICATED EXISTENCE
+```
+
+Esta tarea define semántica de dominio. No crea kits, componentes, tablas,
+movimientos, datos ni superficies físicas.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. `KIT` como una de las siete clases primarias ya aprobadas;
+2. `KIT_DEFINITION` separada de `KIT_INSTANCE`;
+3. versión de definición y fijación de versión por instancia;
+4. líneas de componente con obligatoriedad, cantidad y reglas de sustitución;
+5. miembros reales sin perder su clase primaria;
+6. membresía por identidad exacta o porción cuantificada;
+7. completitud estructural separada de condición y disponibilidad;
+8. componentes opcionales que no bloquean completitud;
+9. sustituciones explícitas y auditables;
+10. ensamblaje y desarme sin creación ni destrucción implícita de existencia;
+11. invariantes contra doble contabilización;
+12. préstamo, devolución y custodia por instancia;
+13. retorno con verificación de completitud;
+14. relación con LPN sin convertir el kit en LPN;
+15. relación con contenedor físico sin conflación;
+16. composición anidada solo cuando sea expresa y acíclica;
+17. revisiones, idempotencia, concurrencia y operación offline;
+18. consumo de los estados y eventos ya aprobados para `VPROC-0067`;
+19. reconciliación del AS-IS sin inventar una capacidad existente;
+20. handoff exacto hacia `NEXO-DOM-015`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- las siete clases primarias de `NEXO-DOM-001`;
+- la identidad logística LPN y sus reglas de contenido;
+- ubicación física de `NEXO-DOM-007`;
+- custodia y responsable actual de `NEXO-DOM-008`;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, faltante, pérdida, hallazgo y recuperación de
+  `NEXO-DOM-010`;
+- préstamo, devolución, transferencia y cambio de custodia de
+  `NEXO-DOM-011`;
+- mantenimiento y disponibilidad de `NEXO-DOM-012`;
+- retiro, disposición y reemplazo de `NEXO-DOM-013`;
+- `CAP-07.11`;
+- `VPROC-0067`;
+- la prohibición de doble representación de existencia.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+QUÉ ES UNA DEFINICIÓN DE KIT,
+QUÉ ES UNA INSTANCIA REAL,
+QUÉ MIEMBROS SATISFACEN CADA COMPONENTE,
+CUÁNDO LA INSTANCIA ESTÁ COMPLETA,
+QUÉ SUSTITUCIONES SON VÁLIDAS,
+CÓMO SE PRESTA Y DEVUELVE,
+CÓMO SE EMPACA EN LPN
+Y CÓMO SE DESARMA
+SIN DUPLICAR SALDO, IDENTIDAD, CUSTODIA O HISTORIA?
+```
+
+---
+
+#### 5. Clase primaria `KIT`
+
+`KIT` permanece como clase primaria canónica.
+
+No se crea una octava clase para “conjunto”, “bundle”, “combo”, “equipo” o
+“set”.
+
+El término empresarial `conjunto` puede describir un kit físico, pero la
+clasificación autoritativa sigue siendo `KIT`.
+
+---
+
+#### 6. Kit físico y combo comercial
+
+Se fija:
+
+```text
+PHYSICAL KIT
+!=
+COMMERCIAL COMBO
+```
+
+Un combo de venta, promoción o agrupación comercial no se convierte en objeto
+físico `KIT` únicamente por agrupar productos.
+
+Para existir como kit físico debe haber definición de composición, instancia
+materializada y miembros reales reconciliables.
+
+---
+
+#### 7. Kit y receta
+
+Se fija:
+
+```text
+KIT DEFINITION
+!=
+RECIPE
+```
+
+Una receta define transformación o elaboración.
+
+Un kit conserva componentes físicamente existentes y separables; ensamblarlos
+no implica consumirlos ni transformarlos por inferencia.
+
+---
+
+#### 8. Kit y especificación de componentes
+
+Una especificación técnica o lista de materiales puede ser referencia de una
+definición, pero no constituye por sí sola una instancia física.
+
+```text
+COMPONENT SPECIFICATION
+!=
+MATERIALIZED KIT INSTANCE
+```
+
+---
+
+#### 9. Definición e instancia
+
+Se preserva la separación aprobada:
+
+```text
+KIT_DEFINITION
+→ composición, cantidades, sustituciones y reglas
+
+KIT_INSTANCE
+→ conjunto real, estado, ubicación, responsable y completitud
+```
+
+Una definición puede existir sin ninguna instancia materializada.
+
+---
+
+#### 10. Identidad de definición
+
+Cada `KIT_DEFINITION` debe conservar una identidad estable distinta de cualquier
+producto, activo, LPN o instancia.
+
+La definición representa reglas reutilizables y no existencia física.
+
+---
+
+#### 11. Versionado de definición
+
+Toda modificación material de componentes, cantidades, obligatoriedad,
+sustituciones o reglas de completitud produce una nueva versión.
+
+Se fija:
+
+```text
+APPROVED DEFINITION VERSION
+!=
+MUTABLE IN PLACE
+```
+
+Las instancias existentes conservan la versión bajo la cual fueron constituidas
+hasta una transición explícita.
+
+---
+
+#### 12. Estados de definición
+
+La tarea consume los estados canónicos ya aprobados para `VPROC-0067`:
+
+```text
+KIT_DEFINITION_DRAFT
+DEFINITION_UNDER_REVIEW
+DEFINITION_APPROVED
+```
+
+`DEFINITION_APPROVED` autoriza usar esa versión como base de instancias; no
+demuestra que exista una instancia completa.
+
+---
+
+#### 13. Retiro de una definición
+
+Retirar una versión de definición impide utilizarla para nuevas instancias
+cuando la política lo determine.
+
+No borra instancias existentes, miembros, préstamos, devoluciones, evidencia ni
+historial.
+
+---
+
+#### 14. Regla de componente
+
+Cada línea o slot de componente debe poder expresar, como mínimo:
+
+- identidad estable dentro de la versión;
+- propósito o rol del componente;
+- obligatoriedad;
+- cantidad requerida;
+- unidad cuando aplique;
+- clases o sujetos elegibles;
+- regla de sustitución;
+- criterio de condición o disponibilidad cuando aplique.
+
+La línea de definición no posee físicamente el componente.
+
+---
+
+#### 15. Componentes obligatorios
+
+Un componente obligatorio debe quedar satisfecho para que exista completitud
+estructural positiva.
+
+```text
+REQUIRED COMPONENT UNSATISFIED
+→
+STRUCTURALLY INCOMPLETE
+```
+
+---
+
+#### 16. Componentes opcionales
+
+Un componente opcional puede estar presente o ausente sin bloquear la
+completitud estructural.
+
+Su presencia sigue siendo parte de la composición real y debe auditarse.
+
+---
+
+#### 17. Cantidad requerida
+
+Una línea puede exigir una cantidad superior a uno.
+
+Para miembros por cantidad:
+
+```text
+SATISFIED QUANTITY
+>=
+REQUIRED QUANTITY
+```
+
+solo dentro del scope asignado y sin tomar cantidad ya comprometida de forma
+incompatible.
+
+---
+
+#### 18. Miembros reales
+
+La instancia conserva miembros reales.
+
+Cada miembro sigue siendo autoritativamente su propia existencia:
+
+- identidad serializada;
+- porción cuantificada;
+- instancia de kit válida cuando una composición anidada esté permitida.
+
+La membresía no crea un nuevo producto ni duplica el miembro.
+
+---
+
+#### 19. Clases de los miembros
+
+Los componentes conservan su clase primaria.
+
+```text
+MEMBER OF KIT
+!=
+CLASS KIT
+```
+
+Un activo serializado continúa siendo activo; un reutilizable por cantidad
+continúa siendo reutilizable; un repuesto continúa siendo repuesto.
+
+---
+
+#### 20. Membresía serializada
+
+Cuando el componente exige identidad individual, la membresía referencia la
+identidad física exacta.
+
+No se satisface con otra unidad equivalente salvo que exista una sustitución
+válida y explícita.
+
+---
+
+#### 21. Membresía por cantidad
+
+Cuando la definición permite una clase controlada por cantidad, la membresía
+asigna una porción cuantificada reconciliable.
+
+```text
+ASSIGNED MEMBER QUANTITY > 0
+```
+
+La suma de asignaciones incompatibles no puede exceder la cantidad autoritativa
+disponible para ese alcance.
+
+---
+
+#### 22. Membresía de otra instancia de kit
+
+Una `KIT_INSTANCE` puede actuar como miembro únicamente cuando la definición lo
+permite expresamente.
+
+La relación conserva ambas identidades y no las fusiona.
+
+---
+
+#### 23. Composición acíclica
+
+Toda membresía entre kits debe permanecer acíclica.
+
+Se prohíbe:
+
+```text
+KIT A → KIT A
+KIT A → KIT B → KIT A
+```
+
+Una composición circular falla cerrada.
+
+---
+
+#### 24. Profundidad de composición
+
+La completitud de un kit anidado puede consumir la completitud de sus subkits.
+
+La implementación futura deberá recorrer la composición sin truncarla
+silenciosamente y con límites técnicos que no alteren la semántica.
+
+---
+
+#### 25. Instancia materializada
+
+`KIT_INSTANCE` representa una composición física real bajo una versión de
+definición.
+
+Debe conservar como mínimo:
+
+- identidad estable de instancia;
+- definición y versión;
+- estado;
+- ubicación;
+- responsable o scope de custodia;
+- miembros reales;
+- completitud vigente;
+- revisión;
+- historial.
+
+---
+
+#### 26. Identidad estable de instancia
+
+La instancia conserva identidad durante armado, asignación, préstamo, retorno,
+sustitución, desarme y cierre.
+
+```text
+REASSEMBLY
+!=
+NEW IDENTITY
+```
+
+cuando continúa siendo la misma instancia bajo la política aplicable.
+
+---
+
+#### 27. La instancia no crea saldo adicional
+
+La instancia representa composición, no nueva existencia equivalente.
+
+```text
+KIT INSTANCE
+!=
+ADDITIONAL MEMBER STOCK
+```
+
+Los componentes conservan sus existencias autoritativas.
+
+---
+
+#### 28. No doble contabilización
+
+Se prohíbe contabilizar simultáneamente el miembro real y la instancia como dos
+existencias equivalentes.
+
+La instancia puede ser unidad operacional para custodia, préstamo, LPN y
+completitud sin duplicar saldo ni valor.
+
+---
+
+#### 29. Armado
+
+El armado asigna miembros existentes a una instancia.
+
+```text
+ASSEMBLE KIT
+!=
+CREATE COMPONENT EXISTENCE
+```
+
+y:
+
+```text
+ASSEMBLE KIT
+!=
+CONSUME COMPONENT
+```
+
+salvo otro hecho propietario explícitamente autorizado.
+
+---
+
+#### 30. Estado `INSTANCE_ASSEMBLING`
+
+Se consume `VPROC-0067.INSTANCE_ASSEMBLING`.
+
+En este estado pueden existir miembros parciales, pero la instancia no se
+presenta como completa ni disponible.
+
+---
+
+#### 31. Verificación de completitud
+
+Se consume `VPROC-0067.COMPLETENESS_CHECK`.
+
+La evaluación utiliza:
+
+- versión de definición fijada por la instancia;
+- miembros autoritativos;
+- cantidades;
+- obligatoriedad;
+- sustituciones;
+- elegibilidad y condición aplicables;
+- revisiones vigentes.
+
+Un snapshot obsoleto no declara completitud.
+
+---
+
+#### 32. Completitud estructural
+
+La completitud estructural responde si todos los componentes obligatorios están
+satisfechos por miembros elegibles.
+
+```text
+STRUCTURALLY_COMPLETE
+IFF
+EVERY_REQUIRED_COMPONENT_IS_SATISFIED
+```
+
+Los componentes opcionales no bloquean esta decisión.
+
+---
+
+#### 33. Completitud y condición
+
+Se preserva:
+
+```text
+KIT COMPLETENESS
+!=
+PHYSICAL CONDITION OF EVERY MEMBER
+```
+
+Un kit puede contener todos sus miembros y aun estar no apto por daño,
+mantenimiento u otra condición.
+
+---
+
+#### 34. Completitud y disponibilidad
+
+Se fija:
+
+```text
+STRUCTURALLY_COMPLETE
+!=
+AVAILABLE
+```
+
+La disponibilidad consume además condición, mantenimiento, custodia, lifecycle,
+bloqueos e incidentes aplicables.
+
+---
+
+#### 35. Disponibilidad positiva
+
+`VPROC-0067.AVAILABLE` solo puede proyectarse cuando:
+
+- la definición aplicable está aprobada;
+- la instancia está estructuralmente completa;
+- sus miembros requeridos son elegibles;
+- no existe bloqueo vigente;
+- la política permite el uso.
+
+La completitud es necesaria, pero no siempre suficiente.
+
+---
+
+#### 36. Kit incompleto
+
+Un kit incompleto no se presenta como disponible.
+
+Debe poder identificarse exactamente qué componente obligatorio falta, su
+cantidad requerida, cantidad satisfecha, miembro rechazado cuando exista,
+razón y condición de salida.
+
+---
+
+#### 37. Componente extra
+
+Un miembro no requerido por la definición no se adopta silenciosamente como
+componente válido.
+
+Debe resolverse como opcional permitido, sustitución autorizada, exceso a
+reconciliar o miembro ajeno a retirar.
+
+---
+
+#### 38. No duplicar satisfacción
+
+La misma identidad física no puede satisfacer dos líneas exclusivas cuando eso
+duplique su capacidad material.
+
+Una porción cuantificada tampoco puede reutilizarse dos veces para el mismo
+requerimiento físico.
+
+---
+
+#### 39. Sustitución
+
+Una sustitución cambia qué miembro satisface una línea sin modificar
+retrospectivamente la definición ni borrar el miembro anterior.
+
+Conserva línea afectada, miembro esperado o criterio, miembro sustituto, razón,
+autoridad, vigencia cuando aplique, condición, evidencia y revisión.
+
+---
+
+#### 40. Sustitución autorizada
+
+Se fija:
+
+```text
+SIMILAR ITEM
+!=
+AUTHORIZED SUBSTITUTE
+```
+
+La equivalencia por nombre, categoría o apariencia no autoriza sustitución.
+
+La regla proviene de la definición o de una decisión autorizada que ésta
+permita.
+
+---
+
+#### 41. Sustitución y clase primaria
+
+Sustituir un componente no cambia la clase primaria de ninguno de los sujetos.
+
+Tampoco convierte una cantidad reutilizable en activo individual ni viceversa.
+
+---
+
+#### 42. Sustitución y reemplazo patrimonial
+
+Se preserva la frontera con `NEXO-DOM-013`:
+
+```text
+KIT MEMBER SUBSTITUTION
+!=
+ASSET REPLACEMENT
+```
+
+Son hechos diferentes y con owners diferentes.
+
+---
+
+#### 43. Desarme
+
+Desarmar una instancia termina membresías autoritativas sin destruir las
+existencias de los componentes.
+
+```text
+DISASSEMBLE KIT
+!=
+DISPOSE COMPONENTS
+```
+
+---
+
+#### 44. Cierre de ciclo
+
+`VPROC-0067.KIT_CYCLE_RECONCILED` conserva que composición, asignación, uso,
+retorno, condición, faltantes y sustituciones fueron reconciliados.
+
+El cierre no borra definición, instancia ni miembros históricos.
+
+---
+
+#### 45. Nuevo ciclo
+
+Después de un ciclo reconciliado, la misma instancia puede iniciar otro ciclo
+cuando la política lo permita.
+
+No se crea identidad nueva únicamente por rearmado.
+
+---
+
+#### 46. Asignación
+
+Se consume `VPROC-0067.ASSIGNED`.
+
+La asignación compromete la instancia a persona, área, actividad o viaje según
+el proceso, pero no cambia propiedad ni composición por inferencia.
+
+---
+
+#### 47. Uso
+
+Se consume `VPROC-0067.IN_USE`.
+
+El uso autorizado no consume automáticamente componentes reutilizables ni borra
+su custodia e historia.
+
+---
+
+#### 48. Custodia de la instancia
+
+La custodia se atribuye a `KIT_INSTANCE`.
+
+```text
+KIT CUSTODIAN
+!=
+AUTOMATIC CUSTODIAN OF EVERY MEMBER
+```
+
+Los componentes con custodia individual propia conservan su relación.
+
+---
+
+#### 49. Préstamo
+
+Un préstamo de kit consume el contrato de `NEXO-DOM-011`.
+
+El expediente referencia la instancia exacta, la composición entregada, la
+condición observada y la obligación de retorno.
+
+---
+
+#### 50. Retorno
+
+La devolución entra en `VPROC-0067.RETURN_UNDER_VERIFICATION`.
+
+Antes de nueva disponibilidad se revisan instancia, miembros esperados,
+miembros observados, sustituciones, condición, faltantes, daños, custodia y
+cantidades aplicables.
+
+---
+
+#### 51. Faltante al retorno
+
+Un miembro requerido no observado produce una diferencia de completitud y puede
+abrir el incidente correspondiente.
+
+```text
+MISSING MEMBER
+!=
+LOSS CONFIRMED
+```
+
+`NEXO-DOM-010` conserva la confirmación de pérdida.
+
+---
+
+#### 52. Daño al retorno
+
+Un miembro dañado no desaparece de la composición por inferencia.
+
+El incidente se conserva y una decisión posterior determina si sigue
+satisfaciendo la línea, exige sustitución, exige reparación o bloquea la
+instancia.
+
+---
+
+#### 53. Miembros opcionales al retorno
+
+La ausencia de un opcional no cambia por sí sola la completitud estructural.
+
+Puede generar incidente o restricción cuando la política concreta lo exija.
+
+---
+
+#### 54. Ubicación
+
+La instancia puede tener una ubicación operacional.
+
+La ubicación del kit no sobrescribe silenciosamente las ubicaciones
+individuales que deban conservarse para sus miembros.
+
+---
+
+#### 55. Movimiento
+
+Mover una instancia no crea componentes ni modifica la definición.
+
+Cuando los miembros se mueven con el kit, la operación conserva correlación
+suficiente para impedir presencia autoritativa simultánea en ubicaciones
+incompatibles.
+
+---
+
+#### 56. LPN
+
+Se preserva:
+
+```text
+KIT_INSTANCE
+!=
+LPN
+```
+
+Una instancia materializada puede viajar dentro de un LPN como forma de
+contenido `KIT_INSTANCE`.
+
+La definición abstracta nunca es contenido de LPN.
+
+---
+
+#### 57. Kit dentro de LPN
+
+Cuando un `KIT_INSTANCE` pertenece a un LPN, la composición permanece bajo el
+owner del kit.
+
+El LPN no reescribe definición, miembros, obligatoriedad, sustituciones ni
+completitud.
+
+---
+
+#### 58. No duplicar miembros en LPN
+
+La misma existencia no puede representarse simultáneamente como miembro del
+`KIT_INSTANCE` y como segunda línea autoritativa de contenido que duplique su
+presencia.
+
+Una vista de detalle puede proyectar miembros sin crear saldo adicional.
+
+---
+
+#### 59. Kit y contenedor físico
+
+Se fija:
+
+```text
+KIT_INSTANCE
+!=
+PHYSICAL_CONTAINER
+```
+
+Un recipiente que sea miembro del kit conserva su propia clase.
+
+El recipiente no convierte el kit en contenedor ni en LPN.
+
+---
+
+#### 60. Kit y reutilizable por cantidad
+
+Se preserva:
+
+```text
+REUSABLE_QUANTITY GROUP
+!=
+KIT_INSTANCE
+```
+
+Un grupo representa unidades equivalentes.
+
+Un kit representa composición, miembros y completitud.
+
+---
+
+#### 61. Kit y activo serializado
+
+Se fija:
+
+```text
+SERIALIZED_ASSET
+!=
+KIT_INSTANCE
+```
+
+Un kit puede contener activos serializados sin sustituir sus identidades.
+
+---
+
+#### 62. Kit y repuesto
+
+Un repuesto puede ser miembro cuando la definición lo permita, pero no se
+consume ni instala por entrar al kit.
+
+El dominio de repuestos conserva su owner.
+
+---
+
+#### 63. Kit y consumible
+
+Un consumible puede ser miembro cuando el contrato operativo lo permita.
+
+La membresía no cambia su semántica de consumo; el consumo requiere su propio
+hecho autorizado.
+
+---
+
+#### 64. Retiro o disposición
+
+Retirar o disponer una instancia de kit no propaga por inferencia baja,
+descarte, venta o disposición a sus miembros.
+
+Cada componente conserva su lifecycle y destino.
+
+---
+
+#### 65. Reemplazo de instancia
+
+Una nueva instancia que sustituye otra obtiene identidad propia.
+
+La instancia saliente conserva su historial y no transfiere su
+`kit_instance_id`.
+
+---
+
+#### 66. Conteo de kit
+
+Un conteo puede observar presencia de la instancia, miembros, cantidades,
+faltantes, extras, condición y ubicación.
+
+El conteo permanece observación y no modifica composición automáticamente.
+
+---
+
+#### 67. Handoff hacia conteos
+
+`NEXO-DOM-015` deberá contar una `KIT_INSTANCE` sin duplicar sus miembros y
+permitir verificación de composición cuando el alcance lo exija.
+
+Una diferencia observada no se transforma en ajuste automático.
+
+---
+
+#### 68. Revisión de definición
+
+Toda decisión de definición valida una revisión esperada.
+
+Dos editores no pueden aprobar concurrentemente versiones incompatibles bajo
+la misma revisión.
+
+---
+
+#### 69. Revisión de instancia
+
+Toda modificación autoritativa de membresía, sustitución o cierre valida la
+revisión vigente de la instancia.
+
+```text
+EXPECTED KIT REVISION
+=
+CURRENT KIT REVISION
+```
+
+---
+
+#### 70. Idempotencia
+
+El mismo intento lógico no puede crear dos definiciones equivalentes, crear dos
+instancias equivalentes, asignar dos veces el mismo miembro, descontar dos veces
+la misma porción, registrar dos veces una sustitución, cerrar dos veces una
+devolución ni desarmar dos veces la misma membresía.
+
+La misma clave recupera el resultado ya decidido.
+
+---
+
+#### 71. Concurrencia
+
+Antes de comprometer una mutación se revalidan definición y versión, instancia
+y revisión, miembros, cantidades, sustituciones, completitud, custodia,
+ubicación, condición, disponibilidad, préstamo abierto, LPN y autoridad.
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 72. Operación offline
+
+Una captura offline puede conservar intención de armado, observación de miembros
+o verificación de retorno.
+
+```text
+OFFLINE CAPTURE
+!=
+AUTHORITATIVE MEMBERSHIP CHANGE
+```
+
+La sincronización revalida versión, miembros, cantidad, revisión y autoridad.
+
+---
+
+#### 73. Resultado desconocido
+
+Ante timeout posterior a una mutación, el cliente reconcilia la misma operación.
+
+No crea una instancia, asignación o sustitución nueva para reintentar.
+
+---
+
+#### 74. Autorización
+
+Se segregan conceptualmente:
+
+```text
+CREATE_KIT_DEFINITION
+REVIEW_KIT_DEFINITION
+APPROVE_KIT_DEFINITION
+CREATE_KIT_INSTANCE
+ASSIGN_MEMBER
+REMOVE_MEMBER
+AUTHORIZE_SUBSTITUTION
+VERIFY_COMPLETENESS
+ASSIGN_OR_LOAN_KIT
+ACCEPT_KIT_RETURN
+DISASSEMBLE_KIT
+CLOSE_KIT_CYCLE
+```
+
+`NEXO-AUTH-024` y `NEXO-AUTH-025` conservan el detalle de autorización
+aplicable.
+
+Poseer una capacidad no concede las demás.
+
+---
+
+#### 75. Evidencia
+
+La evidencia puede incluir escaneo, código o serial, fotografía, checklist,
+firma o aceptación, condición observada, motivo de sustitución, resultado de
+completitud, referencia de préstamo, ubicación, actor e instante.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+---
+
+#### 76. Auditoría mínima
+
+Toda transición autoritativa futura debe poder reconstruir definición y versión,
+instancia, revisión previa y resultante, línea de componente, miembro anterior
+y nuevo, cantidad, obligatoriedad, sustitución, completitud antes y después,
+condición, ubicación, custodia, LPN cuando aplique, operación, actor, autoridad,
+instante de servidor, correlación, idempotencia, evidencia y excepción.
+
+---
+
+#### 77. Estados canónicos de `VPROC-0067`
+
+Se consumen exactamente:
+
+```text
+KIT_DEFINITION_DRAFT
+DEFINITION_UNDER_REVIEW
+DEFINITION_APPROVED
+INSTANCE_ASSEMBLING
+COMPLETENESS_CHECK
+AVAILABLE
+ASSIGNED
+IN_USE
+RETURN_UNDER_VERIFICATION
+KIT_CYCLE_RECONCILED
+```
+
+Esta tarea no crea un lifecycle competidor.
+
+---
+
+#### 78. Eventos canónicos de `VPROC-0067`
+
+Se conservan exactamente los seis eventos empresariales ya aprobados:
+
+```text
+VPROC-0067.EVT-001
+VPROC-0067.EVT-002
+VPROC-0067.EVT-003
+VPROC-0067.EVT-004
+VPROC-0067.EVT-005
+VPROC-0067.EVT-006
+```
+
+Corresponden al inicio de definición, revisión, aprobación, asignación, retorno
+en verificación y cierre reconciliado.
+
+No se inventan eventos empresariales adicionales.
+
+---
+
+#### 79. Estados internos y eventos empresariales
+
+Que un estado de proceso no tenga un evento empresarial dedicado no autoriza
+inventar un identificador local.
+
+La implementación física futura podrá registrar auditoría interna respetando el
+catálogo canónico.
+
+---
+
+#### 80. AS-IS de esquema remoto
+
+La inspección remota de solo lectura no encontró tablas o columnas gobernadas
+por nombres `kit`, `bundle` o `component` para esta capacidad.
+
+El único campo coincidente observado fue
+`catalog_item_option_recipe_effects.recipe_component_code`, perteneciente a
+semántica de receta y no a kits físicos.
+
+No se adopta como infraestructura de kits.
+
+---
+
+#### 81. AS-IS de perfiles de inventario
+
+El snapshot remoto de productos activos observó:
+
+| `product_type` | `inventory_kind` | filas |
+| --- | --- | ---: |
+| `insumo` | `ingredient` | 377 |
+| `venta` | `finished` | 285 |
+| `insumo` | `asset` | 209 |
+| `preparacion` | `finished` | 92 |
+| `venta` | `resale` | 27 |
+
+No existe un valor físico canónico `KIT` materializado en esa proyección
+legacy.
+
+---
+
+#### 82. AS-IS de aplicación
+
+La búsqueda dirigida en `vento-nexo` no identificó un workflow gobernado de
+definición, instancia, membresía y completitud.
+
+Las apariciones textuales aisladas de “kit” no demuestran una capacidad.
+
+```text
+TEXT OR LABEL CONTAINING KIT
+!=
+KIT DOMAIN IMPLEMENTATION
+```
+
+---
+
+#### 83. Estado de adopción AS-IS
+
+La capacidad se clasifica:
+
+```text
+BUILD
+```
+
+en coherencia con `CAP-07.11`.
+
+Los contratos generados de `VPROC-0067` constituyen diseño canónico compartido;
+no demuestran materialización física del dominio de kits.
+
+---
+
+#### 84. Reconciliación futura del legacy
+
+La materialización posterior deberá investigar y reconciliar, sin heurística:
+
+1. productos o activos usados operativamente como “kits”;
+2. conjuntos mantenidos en hojas, notas o procedimientos;
+3. placas o códigos con nombres que sugieran kit;
+4. grupos reutilizables que no sean kits;
+5. combos comerciales que no sean kits físicos;
+6. recetas o especificaciones que no sean kits;
+7. contenedores usados para transportar kits;
+8. miembros serializados;
+9. miembros por cantidad;
+10. préstamos o custodias existentes;
+11. faltantes y sustituciones históricas;
+12. composición real observada.
+
+No se ejecuta clasificación ni backfill en esta tarea.
+
+---
+
+#### 85. Fail-closed
+
+La operación futura falla cerrada cuando:
+
+- la definición no existe o no está aprobada;
+- la versión es ambigua;
+- la instancia no existe;
+- la revisión es obsoleta;
+- un miembro no existe;
+- la cantidad no alcanza;
+- existe doble asignación incompatible;
+- una sustitución no está permitida;
+- se detecta ciclo de composición;
+- no puede calcularse completitud;
+- el kit está incompleto para una operación que exige completitud;
+- el LPN produciría doble representación;
+- existe custodia o préstamo incompatible;
+- falta autoridad;
+- el resultado remoto es desconocido.
+
+El fallo conserva el estado previo.
+
+---
+
+#### 86. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar definiciones versionadas,
+aprobación de definición, instancias estables, líneas obligatorias y opcionales,
+membresías exactas, cantidades reconciliables, sustituciones autorizadas,
+prevención de ciclos, cálculo determinista de completitud, separación entre
+completitud, condición y disponibilidad, armado y desarme auditables, préstamo y
+retorno reconciliables, custodia, ubicación, integración LPN sin duplicación,
+conteo como observación, revisiones monotónicas, idempotencia, concurrencia,
+operación offline reconciliable, autorización server-side, evidencia y cero
+doble contabilización.
+
+---
+
+#### 87. Handoff hacia `NEXO-DOM-015`
+
+Esta tarea entrega:
+
+```text
+VERSIONED KIT DEFINITIONS
++
+STABLE KIT INSTANCES
++
+REQUIRED / OPTIONAL COMPONENT RULES
++
+AUTHORITATIVE MEMBER ASSIGNMENTS
++
+EXPLICIT AUDITABLE SUBSTITUTIONS
++
+DETERMINISTIC COMPLETENESS
++
+COMPLETENESS SEPARATE FROM CONDITION AND AVAILABILITY
++
+KIT INSTANCE SEPARATE FROM LPN AND PHYSICAL CONTAINER
++
+NO DUPLICATED MEMBER EXISTENCE
++
+IDEMPOTENT VERSIONED KIT HISTORY
+```
+
+`NEXO-DOM-015` deberá definir conteos de activos, reutilizables y contenedores
+consumiendo la instancia de kit como identidad operacional sin duplicar sus
+miembros y preservando la observación original antes de cualquier decisión de
+ajuste.
+
+---
+
+#### 88. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege directamente la separación entre
+definición e instancia, componentes, cantidades, sustituciones, completitud,
+identidad de la instancia, estado, ubicación, responsable, miembros reales,
+indisponibilidad por incompletitud, no doble contabilización y eventos
+auditables de composición.
+
+---
+
+#### 89. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para separar kit de activo, reutilizable, contenedor, LPN y
+  stock y preservar eventos, identidad y custodia;
+- `TREQ-NEXO-040`, para mantener `KIT` como una de las siete clases primarias;
+- `TREQ-NEXO-041`, para separar clase, producto, presentación, ubicación,
+  custodia, condición, LPN y kit;
+- `TREQ-NEXO-043`, para impedir doble representación entre cantidad e identidad;
+- `TREQ-NEXO-045`, como requisito propietario directo de definición, instancia,
+  componentes, sustituciones, completitud y eventos de kit;
+- `TREQ-NEXO-047`, para aplicar completitud como comportamiento de la clase
+  `KIT` sin duplicar saldo, instancia, contenido de LPN o valor.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 90. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, `previous_task_id = NEXO-DOM-013`, continuidad `013 → 014 → 015`, ruta normal, override `NEXO-DOM-001..038 → DEFINE_ONCE`, políticas de formato y desarrollo, contrato de entrega, manifest, archivo propietario, handoff de `NEXO-DOM-013`, `CAP-07.11`, 04A NEXO, `VPROC-0067`, catálogo de eventos, scripts aplicables, código `vento-nexo` y consultas remotas de solo lectura sobre esquema y perfiles de inventario. |
+| OPERATIVA | NOT_EXECUTED | No se definió, ensambló, prestó, devolvió, sustituyó, desarmó ni contó ningún kit físico real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron productos, activos, grupos, miembros, LPN, movimientos, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 91. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `KIT` permanece como clase primaria ya aprobada.
+- [x] “Conjunto” no crea una clase adicional.
+- [x] Kit físico se separa de combo comercial, receta y especificación.
+- [x] Definición se separa de instancia y se versiona.
+- [x] Una instancia conserva la versión que gobierna su composición.
+- [x] Se definen componentes obligatorios, opcionales y cantidades.
+- [x] Los miembros conservan su clase primaria.
+- [x] Se soporta identidad serializada y scope cuantificado.
+- [x] La composición anidada es expresa y acíclica.
+- [x] La instancia posee identidad estable.
+- [x] La instancia no crea saldo adicional.
+- [x] Armado no crea ni consume componentes por inferencia.
+- [x] Completitud exige todos los obligatorios.
+- [x] Opcionales no bloquean completitud estructural.
+- [x] Completitud se separa de condición y disponibilidad.
+- [x] Kit incompleto no se presenta como disponible.
+- [x] Se impide doble satisfacción de un componente.
+- [x] Sustitución es explícita, autorizada y auditable.
+- [x] Sustitución de miembro se separa de reemplazo patrimonial.
+- [x] Desarme no dispone componentes.
+- [x] Cierre no borra historia y rearmado no crea identidad por inferencia.
+- [x] Custodia del kit no se propaga automáticamente a miembros.
+- [x] Préstamo y devolución consumen `NEXO-DOM-011`.
+- [x] Faltante al retorno no confirma pérdida.
+- [x] Daño no elimina al miembro por inferencia.
+- [x] `KIT_INSTANCE` se separa de LPN y contenedor físico.
+- [x] La definición abstracta nunca es contenido de LPN.
+- [x] Se impide duplicar miembros como contenido autoritativo.
+- [x] Kit se separa de grupo reutilizable y activo serializado.
+- [x] Repuestos y consumibles conservan sus owners.
+- [x] Retiro o disposición del kit no se propaga a miembros.
+- [x] Reemplazo de instancia no reutiliza identidad.
+- [x] Conteo permanece observación.
+- [x] Se definen revisión, idempotencia, concurrencia y offline.
+- [x] Se segregan capacidades y evidencia de autoridad.
+- [x] Se consumen exactamente los estados aprobados de `VPROC-0067`.
+- [x] Se conservan exactamente los seis eventos aprobados de `VPROC-0067`.
+- [x] No se inventan eventos empresariales adicionales.
+- [x] Se documenta que el esquema remoto no materializa una superficie gobernada de kits.
+- [x] Se documentan los perfiles legacy observados.
+- [x] Se clasifica la capacidad como `BUILD`.
+- [x] Se define reconciliación futura sin heurística.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-015`.
+
+---
+
+#### 92. Límites
+
+Esta tarea no crea ni modifica definiciones o instancias reales; no asigna ni
+retira miembros; no ensambla, presta, devuelve, sustituye, desarma o cierra kits
+reales; no modifica productos, activos, reutilizables, repuestos, contenedores,
+LPN, movimientos, cantidades, ubicación, custodia, condición, disponibilidad o
+lifecycle; no clasifica automáticamente objetos legacy; no crea tablas,
+columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, Server
+Actions ni Route Handlers; no ejecuta migraciones ni backfills; no modifica
+Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no
+crea una instancia física propia; no crea ni modifica requisitos de prueba; no
+modifica el registro 04A; y no desarrolla `NEXO-DOM-015`.
+
+---
+
+#### 93. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
+
+### ✅ NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud
+**Tarea siguiente:** NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+**Tipo de tarea:** documental; definición canónica de sesiones de conteo, población y corte, observaciones, diferencias, investigación, decisión, corrección y reconciliación para activos serializados, reutilizables controlados por cantidad, contenedores físicos e instancias de kit, preservando granularidad, condición, ubicación, custodia, historia, idempotencia, concurrencia y operación offline bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único para contar objetos físicos de NEXO sin convertir la observación en ajuste, sin cambiar la granularidad de control y sin borrar la diferencia entre lo esperado, lo observado, lo investigado y lo finalmente corregido.
+
+```text
+COUNT SCOPE
++
+FROZEN EXPECTED POPULATION
++
+CUT MOMENT
++
+PHYSICAL OBSERVATIONS
++
+DIFFERENCE CLASSIFICATION
++
+INVESTIGATION
++
+AUTHORIZED DECISION
++
+SEPARATE COMPENSATING EFFECT
+→
+RECONCILED COUNT
+WITHOUT DESTRUCTIVE OVERWRITE
+```
+
+Esta tarea define semántica documental. No abre sesiones reales, no corrige saldos y no materializa estructuras físicas.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos: identidad estable de sesión, alcance y corte, población esperada, observación independiente, granularidad por clase, separación presencia/cantidad/ubicación/condición, diferencias, investigación, decisión autorizada, efecto compensatorio separado, cierre reconciliado, idempotencia, concurrencia, offline y consumo del lifecycle de `VPROC-0026`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+La tarea consume sin redefinir las clases de `NEXO-DOM-001`, ubicación de `NEXO-DOM-007`, custodia de `NEXO-DOM-008`, granularidad de `NEXO-DOM-009`, condición y pérdida de `NEXO-DOM-010`, préstamo y transferencia de `NEXO-DOM-011`, disponibilidad de `NEXO-DOM-012`, retiro de `NEXO-DOM-013`, kits de `NEXO-DOM-014`, `CAP-07.05`, `VPROC-0026`, movimientos, LOC y reconciliación vigentes.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+```text
+QUÉ SE ESPERABA EN EL CORTE,
+QUÉ SE OBSERVÓ FÍSICAMENTE,
+EN QUÉ GRANULARIDAD,
+DÓNDE Y EN QUÉ CONDICIÓN,
+QUÉ DIFERENCIA RESULTÓ,
+QUÉ SE INVESTIGÓ,
+QUÉ SE DECIDIÓ
+Y QUÉ EFECTO SE AUTORIZÓ
+SIN CONVERTIR EL CONTEO EN UNA EDICIÓN DE EXISTENCIA?
+```
+
+---
+
+#### 5. Sujetos directos
+
+La tarea define conteo para `SERIALIZED_ASSET`, `REUSABLE_QUANTITY`, `PHYSICAL_CONTAINER` y `KIT_INSTANCE`. `KIT_INSTANCE` se incorpora por el handoff aprobado de `NEXO-DOM-014`. Los miembros del kit no se duplican por contar la instancia.
+
+---
+
+#### 6. Frontera con inventario ordinario
+
+El conteo por cantidad de consumibles, stock y repuestos conserva sus contratos generales. Esta tarea no absorbe la definición de repuestos reservada a `NEXO-DOM-016`.
+
+---
+
+#### 7. Conteo no es ajuste
+
+```text
+COUNT OBSERVATION
+!=
+INVENTORY OR ASSET ADJUSTMENT
+```
+Una observación no modifica por sí sola cantidad autoritativa, lifecycle, condición, ubicación, custodia, disponibilidad, propiedad, membresía de kit o contenido LPN.
+
+---
+
+#### 8. Sesión de conteo
+
+La sesión conserva `count_session_id`, alcance, población de sujetos, momento de corte, responsable, estado de proceso, revisión, inicio, cierre o cancelación, evidencia y trazabilidad.
+
+---
+
+#### 9. Identidad estable de sesión
+
+La identidad permanece estable durante captura, investigación, decisión y reconciliación. Reintentar una interfaz no crea otra sesión para el mismo intento lógico.
+
+---
+
+#### 10. Alcance
+
+El alcance puede restringirse por sede, área, LOC o posición. Define qué sujetos deben observarse; no concede propiedad, custodia ni autoridad de ajuste.
+
+---
+
+#### 11. Momento de corte
+
+```text
+EXPECTED AT CUT
+OBSERVED DURING CAPTURE
+CURRENT STATE AFTER CUT
+```
+El estado posterior no reescribe retrospectivamente qué se esperaba al abrir el conteo.
+
+---
+
+#### 12. Población esperada
+
+La sesión conserva una población esperada derivada de las fuentes autoritativas en el corte. Cada sujeto conserva la identidad o scope cuantificado necesario para explicar su inclusión.
+
+---
+
+#### 13. Snapshot y fuente viva
+
+El snapshot esperado permite comparación estable, mientras la fuente viva continúa evolucionando por movimientos autorizados. Movimientos posteriores al corte se correlacionan durante investigación.
+
+---
+
+#### 14. Observación original
+
+La captura original conserva sujeto, cantidad, ubicación, condición, actor, instante, método y evidencia. Correcciones posteriores no la sustituyen silenciosamente.
+
+---
+
+#### 15. Granularidad preservada
+
+```text
+COUNT SERIALIZED_ASSET
+→ EXACT IDENTITY
+
+COUNT REUSABLE_QUANTITY
+→ QUANTITY SCOPE
+
+COUNT PHYSICAL_CONTAINER
+→ EXACT CONTAINER IDENTITY
+
+COUNT KIT_INSTANCE
+→ EXACT KIT INSTANCE
+```
+El conteo no fabrica identidades individuales para explicar diferencias de cantidad.
+
+---
+
+#### 16. Activo serializado
+
+Se cuenta por identidad exacta. La observación conserva presencia, ubicación, condición e identificación. La presencia ordinaria de una identidad es uno o cero, sin convertirla en saldo fungible.
+
+---
+
+#### 17. Reutilizable controlado por cantidad
+
+Conserva `EXPECTED QUANTITY`, `OBSERVED QUANTITY` y `DIFFERENCE QUANTITY` dentro del scope autoritativo, sin fabricar IDs por unidad.
+
+---
+
+#### 18. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` individual se cuenta por identidad exacta. Un recipiente genérico sin identidad individual permanece `REUSABLE_QUANTITY` y se cuenta por cantidad.
+
+---
+
+#### 19. Instancia de kit
+
+Una `KIT_INSTANCE` se cuenta como identidad operacional exacta. Observar la instancia no duplica las existencias de sus miembros.
+
+---
+
+#### 20. Verificación de composición de kit
+
+Cuando el alcance lo exige puede verificarse composición bajo `NEXO-DOM-014`.
+
+```text
+COUNT KIT INSTANCE
++
+OPTIONAL COMPOSITION VERIFICATION
+!=
+SECOND COUNT OF THE SAME MEMBER EXISTENCE
+```
+
+---
+
+#### 21. LPN fuera del sujeto físico
+
+Un LPN conserva identidad logística y no se convierte en activo, kit o contenedor físico por ser escaneado. El conteo de contenido LPN permanece bajo sus contratos propietarios.
+
+---
+
+#### 22. Ejes independientes de observación
+
+Cada captura separa, según aplique: progreso, presencia, cantidad, ubicación, condición, identificación y evidencia. No se reduce todo a un único estado ambiguo.
+
+---
+
+#### 23. Presencia
+
+Para identidades exactas debe distinguirse conceptualmente entre observado como esperado, no observado, observado en otra ubicación e identidad inesperada.
+
+---
+
+#### 24. Cantidad
+
+La comparación cuantitativa conserva si observado es igual, menor o mayor al esperado y preserva el delta numérico.
+
+---
+
+#### 25. Ubicación
+
+La ubicación observada se registra independientemente de la esperada. Encontrar un sujeto en otro lugar no modifica automáticamente la ubicación autoritativa.
+
+---
+
+#### 26. Condición
+
+```text
+COUNT PRESENCE RESULT
+!=
+PHYSICAL CONDITION
+```
+La condición consume `NEXO-DOM-010`. Un sujeto puede estar presente y dañado simultáneamente.
+
+---
+
+#### 27. Captura pendiente
+
+Pendiente significa observación aún no completada. No equivale a faltante ni a cero observado.
+
+---
+
+#### 28. No aplica
+
+Solo se usa con razón trazable cuando el sujeto no pertenecía realmente al alcance o existe una corrección de población justificada. No oculta diferencias.
+
+---
+
+#### 29. Faltante
+
+```text
+NOT OBSERVED
+!=
+LOSS CONFIRMED
+```
+No observar un sujeto esperado produce diferencia; la pérdida requiere el proceso propietario de `NEXO-DOM-010`.
+
+---
+
+#### 30. Hallazgo en otra ubicación
+
+Conserva ubicación esperada, ubicación observada, instante, actor y evidencia. Puede abrir investigación o movimiento posterior, nunca cambio silencioso.
+
+---
+
+#### 31. Sujeto inesperado
+
+Una identidad o cantidad no incluida en la población esperada se registra como hallazgo inesperado. No crea automáticamente saldo, grupo, kit, contenedor, ubicación o custodia.
+
+---
+
+#### 32. Daño observado
+
+El daño observado puede generar o correlacionar el hecho de condición correspondiente. No elimina la presencia ni convierte el conteo en baja, pérdida, reparación o disposición.
+
+---
+
+#### 33. Duplicado de captura
+
+La misma identidad exacta no puede contarse dos veces dentro del mismo scope compatible por escaneos repetidos. Un retry resuelve la captura existente.
+
+---
+
+#### 34. Identificación por código o QR
+
+```text
+SCAN
+!=
+COUNT DECISION
+```
+Código, QR, serial o placa son mecanismos de identificación. La identidad resuelta se valida server-side contra sesión, scope y clase.
+
+---
+
+#### 35. Cantidad y unidad
+
+Las cantidades se capturan usando la unidad canónica aplicable. Una presentación visual no cambia silenciosamente la unidad del conteo.
+
+---
+
+#### 36. Precisión
+
+La precisión respeta la naturaleza de la unidad. No se aceptan fracciones imposibles para unidades discretas ni redondeos silenciosos.
+
+---
+
+#### 37. Reutilizables y condición agregada
+
+Cuando aplique, las cantidades por condición deben sumar la cantidad observada reconciliable. Missing o pérdida confirmada no son buckets de condición.
+
+---
+
+#### 38. Esperado distinto de disponible
+
+La existencia esperada para conteo no equivale necesariamente a disponibilidad. Puede estar prestada, dañada, bloqueada o en tránsito.
+
+---
+
+#### 39. Custodia y conteo
+
+La custodia ayuda a explicar dónde debería estar un sujeto, pero no sustituye la observación ni concede autocorrección al capturador.
+
+---
+
+#### 40. Movimientos alrededor del corte
+
+La investigación correlaciona movimientos anteriores y posteriores al corte. Un traslado legítimo posterior puede explicar una diferencia sin que ésta sea error de inventario.
+
+---
+
+#### 41. Diferencia
+
+La diferencia conserva sujeto, expectativa, observación, delta, ubicación, condición, corte, evidencia y revisión. Es un hecho derivado, no una decisión.
+
+---
+
+#### 42. Investigación
+
+Puede revisar movimientos, préstamo, devolución, custodia, traslado, recepción, LPN, kit, ubicación, condición, identificación, sesiones simultáneas, eventos posteriores al corte y evidencia física.
+
+---
+
+#### 43. Diferencia explicada sin ajuste
+
+Una diferencia puede quedar explicada sin corrección de existencia. La observación original permanece intacta.
+
+---
+
+#### 44. Decisión de ajuste
+
+Solo después de investigación puede existir una decisión autorizada de ajustar o no, con actor, razón, alcance, evidencia y revisión.
+
+---
+
+#### 45. Ajuste separado
+
+```text
+APPROVED ADJUSTMENT DECISION
+→
+SEPARATE COMPENSATING MOVEMENT OR EFFECT
+```
+La decisión no modifica por sí sola el saldo.
+
+---
+
+#### 46. Ajuste de identidad
+
+Una diferencia de identidad serializada o contenedor no crea ni borra esa identidad. Puede requerir corrección de ubicación, investigación de pérdida u otra acción propietaria.
+
+---
+
+#### 47. Ajuste de cantidad
+
+Para `REUSABLE_QUANTITY`, una corrección autorizada modifica la proyección mediante un movimiento o efecto compensatorio correlacionado. No sobrescribe el snapshot.
+
+---
+
+#### 48. Kit y diferencia
+
+Una diferencia de `KIT_INSTANCE` puede ser instancia no observada, inesperada, ubicación distinta, composición incompleta, miembro inesperado o condición. Cada resultado conserva su owner.
+
+---
+
+#### 49. Conteo conciliado
+
+La sesión queda reconciliada cuando observaciones, diferencias, investigaciones, decisiones y efectos autorizados aplicables pueden explicarse entre sí. Cerrar no implica que toda diferencia fuera error de inventario.
+
+---
+
+#### 50. Cancelación
+
+Cancelar conserva sesión, capturas y razón. No produce ajustes ni borra historia.
+
+---
+
+#### 51. Inmutabilidad histórica
+
+Después del cierre, las observaciones originales no se editan destructivamente. Toda corrección posterior referencia la sesión y el hecho original.
+
+---
+
+#### 52. Sesiones simultáneas
+
+Scopes superpuestos requieren control explícito. Una misma observación no puede satisfacer dos sesiones como un único hecho cuando sus cortes o propósitos difieren.
+
+---
+
+#### 53. Revisión de sesión
+
+```text
+EXPECTED COUNT REVISION
+=
+CURRENT COUNT REVISION
+```
+Toda transición gobernada valida la revisión esperada.
+
+---
+
+#### 54. Idempotencia
+
+El mismo intento lógico no abre dos sesiones, duplica líneas, repite escaneos, repite observaciones, aprueba dos veces un ajuste, emite dos efectos compensatorios ni cierra dos veces la misma transición.
+
+---
+
+#### 55. Concurrencia
+
+Antes de aceptar captura o decisión se revalidan sesión, revisión, scope, sujeto, clase, corte, observaciones existentes, movimientos concurrentes, custodia, ubicación, kit y autoridad.
+
+---
+
+#### 56. Operación offline
+
+```text
+OFFLINE COUNT CAPTURE
+!=
+AUTHORIZED ADJUSTMENT
+```
+La sincronización revalida sesión, sujeto, corte, duplicados, revisión y autoridad.
+
+---
+
+#### 57. Resultado remoto desconocido
+
+Ante timeout posterior a una captura o decisión se reconcilia la misma operación. No se crea otra observación o ajuste para reintentar.
+
+---
+
+#### 58. Autorización
+
+Se separan `OPEN_COUNT_SESSION`, `CAPTURE_COUNT`, `CLOSE_CAPTURE`, `REVIEW_DIFFERENCE`, `INVESTIGATE_DIFFERENCE`, `RECOMMEND_ADJUSTMENT`, `APPROVE_ADJUSTMENT`, `EXECUTE_COMPENSATING_EFFECT`, `RECONCILE_COUNT` y `CANCEL_COUNT`. `NEXO-AUTH-027` conserva el detalle de autorización.
+
+---
+
+#### 59. Evidencia
+
+Escaneo, fotografía, identificación visual, serial, QR, cantidad, condición, ubicación, notas y referencias de movimiento pueden ser evidencia.
+
+```text
+EVIDENCE
+!=
+ADJUSTMENT AUTHORITY
+```
+
+---
+
+#### 60. Auditoría mínima
+
+Toda sesión futura debe reconstruir sesión y revisión, alcance, corte, población esperada, sujeto, clase, expectativa, observación, delta, ubicaciones, condición, actor, instante, evidencia, investigación, decisión, autoridad, movimiento compensatorio, correlación, idempotencia y cierre o cancelación.
+
+---
+
+#### 61. Estados canónicos de `VPROC-0026`
+
+Se consumen exactamente:
+
+```text
+COUNT_SESSION_OPENED
+IN_CAPTURE
+CAPTURE_COMPLETE
+DIFFERENCES_DETECTED
+UNDER_INVESTIGATION
+ADJUSTMENT_DECISION_PENDING
+ADJUSTMENT_APPROVED
+RECONCILIATION_PENDING
+COUNT_RECONCILED
+```
+No se crea lifecycle competidor.
+
+---
+
+#### 62. Eventos canónicos de `VPROC-0026`
+
+Se conservan exactamente los seis eventos empresariales aprobados:
+
+```text
+VPROC-0026.EVT-001
+VPROC-0026.EVT-002
+VPROC-0026.EVT-003
+VPROC-0026.EVT-004
+VPROC-0026.EVT-005
+VPROC-0026.EVT-006
+```
+No se inventan eventos empresariales adicionales.
+
+---
+
+#### 63. AS-IS de sesiones
+
+La implementación actual ya posee `asset_count_sessions`, scopes `site`, `area`, `loc`, `position`, estados legacy `open`, `closed`, `cancelled`, actores de inicio/cierre, timestamps y notas. Es base reutilizable, no lifecycle completo de `VPROC-0026`.
+
+---
+
+#### 64. AS-IS de líneas
+
+`asset_count_lines` conserva sujeto item/group, cantidad esperada y contada, estado, ubicación esperada y hallada, condición, QR, actor, instante y notas. Es base reutilizable, no contrato final.
+
+---
+
+#### 65. AS-IS de sujetos permitidos
+
+El constraint remoto exige exactamente uno entre `asset_item_id` y `asset_group_id`. La forma actual no representa de manera propietaria `PHYSICAL_CONTAINER` ni `KIT_INSTANCE`.
+
+---
+
+#### 66. AS-IS de estados de línea
+
+El esquema admite `pending`, `found`, `missing`, `found_elsewhere`, `damaged`, `extra`, `not_applicable`. No se adoptan como una única dimensión canónica porque `damaged` expresa condición mientras otros valores expresan presencia o ubicación.
+
+---
+
+#### 67. AS-IS de población
+
+Al abrir sesión, la aplicación actual toma activos individuales y grupos activos del scope y crea líneas con expectativa. Es una base útil de snapshot limitada a dos representaciones.
+
+---
+
+#### 68. AS-IS de cierre
+
+La aplicación actual bloquea el cierre solo si existen líneas `pending`; luego permite `closed`. No exige materialmente investigación, decisión, efecto compensatorio y reconciliación cuando hay diferencias.
+
+---
+
+#### 69. AS-IS de extras
+
+El detalle actual no inserta una línea nueva; opera sobre líneas sembradas. Aunque existe `extra`, no se demuestra un ciclo integral para un sujeto inesperado fuera de la población.
+
+---
+
+#### 70. AS-IS remoto sin historial operativo
+
+La inspección remota de solo lectura observó `asset_count_sessions = 0` y `asset_count_lines = 0`. No hay sesiones reales que deban reinterpretarse en esta tarea documental.
+
+---
+
+#### 71. AS-IS de contenedor
+
+La coincidencia remota `inventory_lpns.container_type` no constituye identidad canónica `PHYSICAL_CONTAINER` y no resuelve conteo de contenedores físicos.
+
+---
+
+#### 72. Estado de adopción
+
+La capacidad queda `REUSE_OR_REFACTOR` conforme a `CAP-07.05`: se reutilizan sesiones, líneas, scopes y captura, pero deben reconciliarse granularidad, contenedores, kits y lifecycle de investigación/ajuste.
+
+---
+
+#### 73. Reconciliación futura
+
+La materialización posterior deberá reconciliar sesiones legacy, líneas item/group, scope y corte, población, estados legacy, condición separada, extras reales, kits, contenedores, duplicados, superposición de sesiones, investigación, decisión, movimiento compensatorio y cierre reconciliado. No se ejecuta migración ni backfill aquí.
+
+---
+
+#### 74. Fail-closed
+
+Falla cerrado si sesión, scope, corte, sujeto o clase son inválidos o ambiguos; si hay duplicación, unidad incompatible, conflicto concurrente, diferencia sin investigar, ajuste sin autoridad, efecto no correlacionable o resultado remoto desconocido. Los hechos aceptados previamente se conservan.
+
+---
+
+#### 75. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar sesiones versionadas, scope y corte reproducibles, población congelada, soporte de los cuatro sujetos, observaciones inmutables, ejes separados, captura de extras, prevención de duplicados, kits sin doble conteo, investigación, decisión, efecto compensatorio, idempotencia, concurrencia, offline, autorización server-side, evidencia y cierre reconciliado.
+
+---
+
+#### 76. Handoff hacia `NEXO-DOM-016`
+
+```text
+FROZEN COUNT BASELINE
++
+IDENTITY OR QUANTITY-SCOPE OBSERVATION
++
+KIT INSTANCE COUNT WITHOUT MEMBER DUPLICATION
++
+PHYSICAL CONTAINER IDENTITY COUNT
++
+PRESENCE / QUANTITY / LOCATION / CONDITION SEPARATION
++
+DIFFERENCE BEFORE INVESTIGATION
++
+INVESTIGATION BEFORE DECISION
++
+DECISION BEFORE COMPENSATING EFFECT
++
+IMMUTABLE ORIGINAL OBSERVATION
++
+IDEMPOTENT RECONCILED CLOSURE
+```
+
+`NEXO-DOM-016` deberá definir repuestos, compatibilidad y stock mínimo sin tratar una diferencia de conteo como prueba automática de consumo, instalación, incompatibilidad o necesidad de reposición.
+
+---
+
+#### 77. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige observación original sin ajuste automático, diferencias por identidad o cantidad, granularidad específica, no doble representación y comportamiento de conteo para activos, reutilizables, kits y contenedores.
+
+---
+
+#### 78. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para conteo como observación, investigación y ajuste autorizado mediante efecto compensatorio;
+- `TREQ-NEXO-013`, que referencia directamente esta tarea y prohíbe ajuste automático;
+- `TREQ-NEXO-043`, para cantidad esperada/observada de reutilizables e identidad exacta de activos;
+- `TREQ-NEXO-045`, que referencia esta tarea para kits y miembros;
+- `TREQ-NEXO-046`, para identidad estable de contenedores físicos separada de LPN;
+- `TREQ-NEXO-047`, para comportamiento de conteo por clase sin duplicar saldo, instancia, kit, contenedor o valor.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 79. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, `previous_task_id = NEXO-DOM-014`, continuidad `014 → 015 → 016`, ruta normal, override `NEXO-DOM-001..038 → DEFINE_ONCE`, políticas, contrato de entrega, manifest, owner, handoff de `NEXO-DOM-014`, `CAP-07.05`, 04A NEXO, `VPROC-0026`, eventos, `package.json`, código actual de conteos en `vento-nexo` y consultas Supabase de solo lectura sobre esquema, constraints y cardinalidad. |
+| OPERATIVA | NOT_EXECUTED | No se abrió, capturó, investigó, ajustó, canceló ni reconcilió ninguna sesión real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron activos, grupos, kits, contenedores, LPN, movimientos, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 80. Criterios de aceptación
+
+- [x] Sesión, scope, corte y población quedan definidos.
+- [x] Observación se separa de estado autoritativo.
+- [x] Activo y contenedor se cuentan por identidad exacta.
+- [x] Reutilizable se cuenta por cantidad.
+- [x] Kit se cuenta sin duplicar miembros.
+- [x] Presencia, cantidad, ubicación y condición están separadas.
+- [x] Pendiente no equivale a faltante.
+- [x] Faltante no equivale a pérdida.
+- [x] Daño no sustituye presencia.
+- [x] Hallazgo en otra ubicación no mueve automáticamente.
+- [x] Extra no crea existencia automáticamente.
+- [x] Duplicados no incrementan conteo.
+- [x] Diferencia, investigación, decisión y efecto son etapas distintas.
+- [x] Cierre conserva observaciones.
+- [x] Cancelación conserva historia.
+- [x] Se definen revisión, idempotencia, concurrencia y offline.
+- [x] Se consume exactamente `VPROC-0026`.
+- [x] Se conservan sus seis eventos aprobados.
+- [x] Se documenta el AS-IS de sesiones y líneas.
+- [x] Se documenta item XOR group.
+- [x] Se documenta ausencia de kit/container en el shape actual.
+- [x] Se documenta la conflación de `damaged` dentro de `count_status`.
+- [x] Se documenta el cierre AS-IS sin investigación obligatoria.
+- [x] Se documenta la limitación para extras.
+- [x] Se documentan 0 sesiones y 0 líneas remotas.
+- [x] La capacidad queda `REUSE_OR_REFACTOR`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff a `NEXO-DOM-016`.
+
+---
+
+#### 81. Límites
+
+Esta tarea no abre ni modifica sesiones reales; no crea líneas; no escanea activos; no corrige cantidades; no mueve activos, reutilizables, kits o contenedores; no cambia condición, ubicación, custodia, disponibilidad, lifecycle, propiedad o membresía; no ejecuta ajustes ni movimientos compensatorios; no clasifica objetos legacy; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, Server Actions ni Route Handlers; no ejecuta migraciones ni backfills; no modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea instancia física propia; no crea ni modifica requisitos de prueba; no modifica 04A; y no desarrolla `NEXO-DOM-016`.
+
+---
+
+#### 82. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-014 — Definir kits, conjuntos y validación de completitud`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
+
+### ✅ NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores
+**Tarea siguiente:** NEXO-DOM-017 — Definir auditoría, historial y evidencia
+**Tipo de tarea:** documental; definición canónica de repuestos, compatibilidad técnica, reserva, consumo, instalación, pieza retirada, stock mínimo y fronteras NEXO–ORIGO, preservando identidad, movimientos, orden de trabajo, disponibilidad, concurrencia, idempotencia, operación offline y reconciliación legacy bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para que los repuestos de NEXO no sean
+texto de mantenimiento, stock genérico ni componentes instalados sin
+trazabilidad.
+
+La regla raíz queda:
+
+```text
+SPARE PART IDENTITY
++
+EXPLICIT COMPATIBILITY
++
+CANONICAL STOCK QUANTITY
++
+WORK ORDER CONTEXT
++
+RESERVATION BEFORE CONSUMPTION
++
+EXACTLY-ONCE STOCK EFFECT
++
+INSTALLED / REMOVED PART TRACEABILITY
++
+SITE-SCOPED MINIMUM STOCK POLICY
+→
+RECONCILABLE REPAIR MATERIAL FLOW
+```
+
+Esta tarea define el contrato documental. No reserva ni consume repuestos
+reales, no modifica stock y no crea infraestructura física.
+
+---
+
+#### 2. Resultado canónico
+
+Quedan definidos documentalmente:
+
+1. `SPARE_PART` como clase primaria ya aprobada;
+2. separación entre repuesto, activo serializado, consumible y stock ordinario;
+3. compatibilidad explícita y versionada;
+4. compatibilidad separada de disponibilidad;
+5. sustitutos autorizados separados de equivalencia por nombre;
+6. reserva de repuesto ligada a orden de trabajo y activo;
+7. reserva separada de consumo;
+8. consumo e instalación con un único efecto de inventario;
+9. pieza retirada conservada como hecho físico;
+10. retorno o liberación de reserva no utilizada;
+11. imposibilidad de representar simultáneamente la misma cantidad como disponible e instalada;
+12. stock mínimo por contexto operativo;
+13. stock mínimo expresado en unidad canónica;
+14. stock mínimo separado de compra automática;
+15. integración con ORIGO sin duplicar orden de compra ni recepción;
+16. frontera con costo del activo reservada a `NEXO-DOM-025`;
+17. consumo del proceso `VPROC-0030` sin crear un lifecycle competidor;
+18. revisiones, idempotencia, concurrencia y operación offline;
+19. reconciliación del AS-IS `replaced_parts` de texto libre;
+20. handoff exacto hacia `NEXO-DOM-017`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- la clasificación de `NEXO-DOM-001`;
+- ubicación y movimientos vigentes;
+- granularidad individual o por cantidad de `NEXO-DOM-009`;
+- condición, daño, pérdida y hallazgo de `NEXO-DOM-010`;
+- mantenimiento, reparación y disponibilidad de `NEXO-DOM-012`;
+- retiro, descarte, venta y reemplazo de `NEXO-DOM-013`;
+- conteos de `NEXO-DOM-015`;
+- `CAP-07.08`;
+- `VPROC-0030`;
+- contratos de inventario y abastecimiento ya aprobados;
+- fronteras NEXO, ORIGO y NUMERA.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+QUÉ ES UN REPUESTO,
+CON QUÉ ACTIVO O MODELO ES COMPATIBLE,
+CUÁNDO PUEDE RESERVARSE,
+CUÁNDO SE CONSUME,
+QUÉ SIGNIFICA INSTALARLO,
+QUÉ OCURRE CON LA PIEZA RETIRADA,
+QUÉ STOCK MÍNIMO DEBE VIGILARSE
+Y CÓMO SE SOLICITA REPOSICIÓN
+SIN DUPLICAR INVENTARIO, MANTENIMIENTO O COMPRA?
+```
+
+---
+
+#### 5. Clase primaria `SPARE_PART`
+
+`SPARE_PART` permanece como una de las siete clases primarias canónicas.
+
+Su pertenencia a mantenimiento no lo convierte en activo serializado ni en
+consumible operativo.
+
+```text
+SPARE_PART
+!=
+SERIALIZED_ASSET
+!=
+CONSUMABLE
+```
+
+---
+
+#### 6. Granularidad ordinaria del repuesto
+
+El comportamiento ordinario de `SPARE_PART` es control por cantidad.
+
+La identidad autoritativa permanece en el producto repuesto y sus dimensiones
+de existencia aplicables.
+
+Solo una política aprobada puede exigir identidad individual para un componente
+particular; la instalación no la crea por inferencia.
+
+---
+
+#### 7. Repuesto y componente instalado
+
+Se separan:
+
+```text
+SPARE PART IN INVENTORY
+!=
+COMPONENT INSTALLED IN ASSET
+```
+
+La instalación cambia la relación física del repuesto con el activo y produce
+el efecto de inventario correspondiente, pero no autoriza duplicar la misma
+cantidad como disponible e instalada.
+
+---
+
+#### 8. Texto de mantenimiento
+
+Se preserva la regla:
+
+```text
+TEXT "PART REPLACED"
+!=
+INVENTORY CONSUMPTION
+```
+
+`work_done`, `replaced_parts` o notas pueden describir la intervención, pero no
+sustituyen identidad de repuesto, reserva, movimiento, consumo, instalación ni
+pieza retirada.
+
+---
+
+#### 9. Compatibilidad
+
+La compatibilidad es una relación técnica explícita entre un repuesto y el
+alcance de activos o modelos en los que puede utilizarse.
+
+No se infiere únicamente desde:
+
+- nombre;
+- categoría;
+- marca;
+- proveedor;
+- coincidencia textual;
+- uso histórico no validado;
+- fotografía;
+- ubicación.
+
+---
+
+#### 10. Alcance de compatibilidad
+
+Una decisión de compatibilidad debe poder identificar de forma estable:
+
+- repuesto;
+- activo, tipo, modelo o alcance técnico objetivo;
+- decisión vigente;
+- fuente técnica;
+- versión;
+- fecha o vigencia cuando aplique;
+- restricciones;
+- actor responsable;
+- evidencia.
+
+La forma física futura puede variar, pero estas propiedades deben ser
+reproducibles.
+
+---
+
+#### 11. Compatibilidad positiva y negativa
+
+El sistema debe poder distinguir una compatibilidad demostrada de una
+incompatibilidad demostrada y de una compatibilidad aún no verificada.
+
+La ausencia de evidencia no se interpreta como compatibilidad positiva.
+
+---
+
+#### 12. Fail-closed de compatibilidad
+
+Cuando la política del activo o repuesto exige comprobación técnica, una
+compatibilidad desconocida o contradictoria bloquea la instalación hasta
+resolverla o aprobar una excepción trazable.
+
+No se admite un fallback silencioso por semejanza.
+
+---
+
+#### 13. Fuente de compatibilidad
+
+La evidencia de compatibilidad puede provenir, según el caso, de:
+
+- especificación de fabricante;
+- manual técnico;
+- catálogo técnico aprobado;
+- referencia OEM o equivalente validada;
+- decisión de ingeniería o mantenimiento autorizada;
+- validación técnica controlada.
+
+La fuente se conserva para poder reproducir la decisión.
+
+---
+
+#### 14. Compatibilidad versionada
+
+Cambiar una regla de compatibilidad no reescribe instalaciones históricas.
+
+Una versión nueva conserva qué regla regía cuando el repuesto fue autorizado e
+instalado.
+
+---
+
+#### 15. Sustituto de repuesto
+
+Se fija:
+
+```text
+SIMILAR PART
+!=
+AUTHORIZED SUBSTITUTE
+```
+
+Un sustituto requiere compatibilidad explícita y, cuando la política lo exija,
+aprobación adicional.
+
+---
+
+#### 16. Sustitución y orden de trabajo
+
+Toda sustitución aplicada durante una reparación conserva la orden de trabajo,
+el activo, el repuesto originalmente previsto, el repuesto utilizado, la causa
+y la autoridad correspondiente.
+
+La sustitución no modifica retrospectivamente la especificación técnica.
+
+---
+
+#### 17. Orden de trabajo obligatoria
+
+La reserva y el consumo de repuestos para reparación se correlacionan con una
+orden de trabajo y un activo identificable.
+
+Se fija:
+
+```text
+SPARE PART RESERVATION
+WITHOUT WORK ORDER CONTEXT
+→
+NOT AUTHORIZED FOR REPAIR CONSUMPTION
+```
+
+Las excepciones operativas futuras deberán conservar un expediente equivalente
+y trazable.
+
+---
+
+#### 18. Diagnóstico antes de selección definitiva
+
+El diagnóstico puede proponer repuestos y cantidades requeridas.
+
+Una propuesta diagnóstica no reserva, consume ni compra automáticamente.
+
+---
+
+#### 19. Reserva
+
+La reserva compromete cantidad existente para una orden o necesidad aprobada.
+
+Se fija:
+
+```text
+RESERVED
+!=
+CONSUMED
+```
+
+Reservar reduce disponibilidad utilizable según el contrato de inventario, pero
+no constituye todavía instalación ni salida definitiva.
+
+---
+
+#### 20. Reserva exactamente una vez
+
+La misma solicitud lógica de reserva no puede bloquear la cantidad dos veces por
+retry, timeout o repetición de interfaz.
+
+La clave idempotente debe recuperar el resultado ya decidido.
+
+---
+
+#### 21. Sobreasignación prohibida
+
+Dos órdenes concurrentes no pueden reservar la misma cantidad disponible de
+forma incompatible.
+
+La decisión de reserva revalida existencia, disponibilidad y revisión vigente
+en el servidor antes de comprometer el efecto.
+
+---
+
+#### 22. Liberación de reserva
+
+Una reserva no utilizada se libera explícitamente.
+
+La liberación no se modela como consumo negativo ni borra la historia de que la
+cantidad estuvo comprometida.
+
+---
+
+#### 23. Consumo
+
+El consumo representa el efecto físico de inventario cuando el repuesto deja de
+ser existencia disponible por la intervención autorizada.
+
+Debe quedar correlacionado con:
+
+- orden de trabajo;
+- activo;
+- repuesto;
+- cantidad;
+- unidad;
+- ubicación de origen;
+- reserva cuando exista;
+- actor;
+- instante;
+- evidencia;
+- operación idempotente.
+
+---
+
+#### 24. Consumo exactamente una vez
+
+Un mismo hecho de instalación o consumo no puede descontar stock más de una vez.
+
+Una respuesta perdida o timeout exige reconciliar la operación original antes
+de reintentar.
+
+---
+
+#### 25. Instalación
+
+Instalar un repuesto vincula el componente utilizado con el activo y la orden.
+
+Se fija:
+
+```text
+INSTALLATION
+REQUIRES
+TRACEABLE STOCK EFFECT
+```
+
+Una instalación sin efecto físico reconciliable queda incompleta.
+
+---
+
+#### 26. Reserva y consumo no son instalación
+
+Se conservan tres hechos diferentes:
+
+```text
+RESERVATION
+CONSUMPTION
+INSTALLATION
+```
+
+Pueden formar parte de la misma reparación, pero ninguno sustituye a los otros.
+
+---
+
+#### 27. Pieza retirada
+
+Cuando una instalación reemplaza una pieza existente, la pieza retirada conserva
+un hecho físico separado.
+
+Debe poder reconstruirse:
+
+- de qué activo se retiró;
+- qué función o posición ocupaba;
+- causa;
+- condición observada;
+- repuesto instalado en su lugar cuando aplique;
+- destino posterior.
+
+---
+
+#### 28. Destino de pieza retirada
+
+La pieza retirada no se devuelve automáticamente a stock ni se descarta por
+inferir que fue reemplazada.
+
+Su destino puede requerir, según evidencia y política:
+
+- evaluación;
+- reparación;
+- garantía;
+- retorno a proveedor;
+- reincorporación a stock;
+- cuarentena;
+- disposición controlada.
+
+Cada destino conserva su owner contractual.
+
+---
+
+#### 29. Reincorporación a stock
+
+Una pieza retirada solo puede volver a stock cuando una decisión autorizada
+demuestre que sigue siendo utilizable y determine su clasificación, cantidad,
+ubicación y condición.
+
+No se incrementa saldo por el simple acto de retirarla del activo.
+
+---
+
+#### 30. Frontera con baja y disposición
+
+La disposición definitiva de una pieza retirada consume las reglas de retiro y
+disposición aplicables.
+
+Esta tarea no redefine la segregación económica o patrimonial ya aprobada.
+
+---
+
+#### 31. Stock mínimo
+
+El stock mínimo es una política de vigilancia y reposición aplicada al repuesto
+en un contexto operativo determinado.
+
+Se fija:
+
+```text
+MINIMUM STOCK THRESHOLD
+!=
+CURRENT STOCK
+!=
+AVAILABLE STOCK
+```
+
+El umbral no modifica existencias.
+
+---
+
+#### 32. Alcance del stock mínimo
+
+El stock mínimo puede variar por sede o contexto autorizado.
+
+No existe un valor global obligatorio para todos los sitios por el solo hecho
+de compartir producto.
+
+---
+
+#### 33. Unidad del stock mínimo
+
+La comparación canónica se realiza en la unidad base de stock aplicable.
+
+Cuando el usuario configure el umbral mediante una unidad de compra, la
+conversión aprobada debe conservar:
+
+- cantidad de compra;
+- unidad de compra;
+- factor hacia unidad base;
+- resultado normalizado.
+
+No se mezclan unidades silenciosamente.
+
+---
+
+#### 34. Umbral y presentación de compra
+
+Una presentación de compra puede facilitar configuración o reposición, pero no
+se convierte en la unidad canónica de existencia por inferencia.
+
+---
+
+#### 35. Stock mínimo y disponibilidad
+
+La evaluación de umbral utiliza la disponibilidad canónica aplicable y no una
+cantidad bruta escogida ad hoc por la interfaz.
+
+Reservas, bloqueos o estados que reduzcan disponibilidad deben conservar su
+semántica propia.
+
+---
+
+#### 36. Cruce del umbral
+
+Cruzar el stock mínimo produce una señal o necesidad de reposición.
+
+Se fija:
+
+```text
+BELOW MINIMUM STOCK
+!=
+PURCHASE ORDER
+```
+
+La compra requiere el proceso propietario de ORIGO.
+
+---
+
+#### 37. Reposición y ORIGO
+
+NEXO produce la necesidad física y el contexto de inventario.
+
+ORIGO conserva la solicitud, abastecimiento, proveedor, orden de compra,
+condiciones comerciales y recepción empresarial que le correspondan.
+
+NEXO no crea una orden de compra paralela.
+
+---
+
+#### 38. Recepción de repuestos
+
+Una compra o recepción de ORIGO no incrementa stock dos veces.
+
+La entrada física a NEXO utiliza el contrato correlacionado de recepción y
+movimiento ya aprobado.
+
+---
+
+#### 39. Servicio externo y compra de repuesto
+
+Se separan:
+
+```text
+EXTERNAL REPAIR SERVICE
+!=
+SPARE PART PURCHASE
+```
+
+Una misma orden puede requerir ambos, pero proveedor de servicio y producto
+repuesto conservan identidades y efectos diferentes.
+
+---
+
+#### 40. Costo informado
+
+La reparación puede conservar costo informado o referencia económica como
+parte del expediente.
+
+Esta tarea no convierte NEXO en fuente contable ni desarrolla el costo acumulado
+del activo.
+
+---
+
+#### 41. Frontera con `NEXO-DOM-025`
+
+`NEXO-DOM-016` define el contrato físico y lógico de repuesto, compatibilidad,
+reserva, consumo, instalación y stock mínimo.
+
+`NEXO-DOM-025` queda propietario de vincular los repuestos consumidos con el
+mantenimiento y el costo del activo.
+
+Esta tarea entrega los identificadores y correlaciones necesarios, pero no
+absorbe la valoración posterior.
+
+---
+
+#### 42. Frontera con `NEXO-DOM-026`
+
+`NEXO-DOM-026` conserva inspecciones, mantenimiento preventivo, garantía y
+calibración.
+
+Esta tarea no redefine periodicidades, garantía, reclamaciones ni calibración;
+solo preserva que un repuesto usado en esos ciclos mantenga inventario y
+compatibilidad correctos.
+
+---
+
+#### 43. Frontera con `NEXO-DOM-017`
+
+`NEXO-DOM-017` definirá auditoría, historial y evidencia transversal.
+
+Esta tarea establece qué hechos de repuesto deben ser reconstruibles para que
+ese contrato pueda consumirlos.
+
+---
+
+#### 44. VPROC-0030
+
+La tarea consume el proceso canónico:
+
+`VPROC-0030 — Gestionar mantenimiento, reparación, garantía, repuesto y disposición de activos`.
+
+No crea un proceso competidor para repuestos.
+
+---
+
+#### 45. Estados canónicos de `VPROC-0030`
+
+Se consumen los estados ya aprobados:
+
+```text
+MAINTENANCE_REQUESTED
+UNDER_TRIAGE
+DIAGNOSIS_IN_PROGRESS
+WORK_PENDING_APPROVAL
+PARTS_OR_SERVICE_PENDING
+IN_REPAIR
+TESTING
+RELEASE_PENDING
+MAINTENANCE_CASE_CLOSED
+```
+
+La disponibilidad de repuesto puede condicionar `PARTS_OR_SERVICE_PENDING`,
+pero no altera el lifecycle por inferencia.
+
+---
+
+#### 46. Eventos empresariales de `VPROC-0030`
+
+Se conservan exactamente los seis eventos empresariales ya aprobados:
+
+```text
+VPROC-0030.EVT-001
+VPROC-0030.EVT-002
+VPROC-0030.EVT-003
+VPROC-0030.EVT-004
+VPROC-0030.EVT-005
+VPROC-0030.EVT-006
+```
+
+Esta tarea no inventa identificadores adicionales para diagnóstico, espera de
+repuesto o liberación.
+
+---
+
+#### 47. Eventos de capacidad existentes
+
+El vocabulario canónico de capacidad ya reconoce, entre otros:
+
+```text
+spare_part_reserved
+spare_part_consumed
+```
+
+Estas identidades se preservan como hechos de negocio existentes y no se
+sustituyen por comentarios de mantenimiento.
+
+---
+
+#### 48. Mantenimiento y disponibilidad
+
+La falta de un repuesto puede mantener el activo indisponible o pendiente de
+reparación según la política aplicable.
+
+La llegada del repuesto no devuelve por sí sola el activo a servicio.
+
+---
+
+#### 49. Prueba y liberación
+
+Después de la reparación, `TESTING` y `RELEASE_PENDING` conservan su significado.
+
+Se fija:
+
+```text
+PART INSTALLED
+!=
+ASSET RELEASED TO SERVICE
+```
+
+La política del activo determina la prueba o liberación requerida.
+
+---
+
+#### 50. Reserva durante indisponibilidad
+
+La indisponibilidad del activo no libera automáticamente repuestos ya
+reservados.
+
+Cancelar o cambiar el trabajo requiere resolver explícitamente sus reservas.
+
+---
+
+#### 51. Cancelación de trabajo
+
+Si una orden se cancela antes del consumo, las reservas pendientes se liberan o
+reconcilian expresamente.
+
+No quedan cantidades huérfanas ni se registran consumos ficticios para cerrar
+el expediente.
+
+---
+
+#### 52. Corrección de consumo
+
+Un consumo incorrecto no se arregla sobrescribiendo la cantidad original.
+
+La corrección utiliza un evento o movimiento compensatorio trazable que preserve
+antes, después, causa, actor y correlación.
+
+---
+
+#### 53. Concurrencia
+
+Antes de reservar o consumir se revalidan, según corresponda:
+
+- orden de trabajo;
+- activo;
+- repuesto;
+- compatibilidad;
+- cantidad;
+- unidad;
+- existencia;
+- disponibilidad;
+- reserva previa;
+- ubicación;
+- revisión;
+- autoridad.
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 54. Idempotencia
+
+La misma intención lógica no puede:
+
+- crear dos reservas;
+- liberar dos veces una reserva;
+- consumir dos veces la misma cantidad;
+- instalar dos veces el mismo efecto;
+- registrar dos veces la pieza retirada;
+- emitir dos señales de reposición equivalentes con efectos duplicados.
+
+La misma clave recupera el resultado ya decidido.
+
+---
+
+#### 55. Operación offline
+
+Offline puede capturar diagnóstico, necesidad, evidencia o intención.
+
+Se fija:
+
+```text
+OFFLINE INTENT
+!=
+AUTHORITATIVE RESERVATION OR CONSUMPTION
+```
+
+Al sincronizar se revalidan disponibilidad, revisión, compatibilidad y
+autoridad.
+
+---
+
+#### 56. Resultado remoto desconocido
+
+Ante timeout posterior a reserva o consumo, el cliente reconcilia la misma
+operación antes de emitir otra.
+
+El estado desconocido no autoriza repetir el efecto físico.
+
+---
+
+#### 57. Autorización conceptual
+
+Se separan conceptualmente las capacidades de:
+
+```text
+DEFINE_SPARE_COMPATIBILITY
+REVIEW_SPARE_COMPATIBILITY
+CONFIGURE_MINIMUM_STOCK
+REQUEST_SPARE_PART
+RESERVE_SPARE_PART
+RELEASE_SPARE_RESERVATION
+AUTHORIZE_SUBSTITUTE
+CONSUME_SPARE_PART
+CONFIRM_INSTALLATION
+RECORD_REMOVED_PART
+RECONCILE_SPARE_EFFECT
+```
+
+Las tareas de autorización posteriores conservan la definición concreta de
+permisos. Poseer una capacidad no concede las demás.
+
+---
+
+#### 58. Evidencia
+
+La evidencia puede incluir, según operación:
+
+- referencia técnica;
+- manual o especificación;
+- escaneo de repuesto;
+- fotografía;
+- cantidad;
+- unidad;
+- ubicación;
+- orden de trabajo;
+- activo;
+- pieza retirada;
+- proveedor;
+- actor;
+- prueba técnica;
+- observación de condición.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+---
+
+#### 59. Auditoría mínima
+
+Toda materialización futura debe poder reconstruir:
+
+- identidad de repuesto;
+- clase;
+- orden de trabajo;
+- activo;
+- compatibilidad y versión;
+- cantidad solicitada;
+- cantidad reservada;
+- cantidad consumida;
+- unidad;
+- ubicación;
+- movimiento;
+- instalación;
+- pieza retirada;
+- destino de pieza retirada;
+- stock mínimo y scope cuando aplique;
+- actor;
+- autoridad;
+- instante de servidor;
+- correlación;
+- idempotencia;
+- evidencia;
+- corrección o excepción.
+
+---
+
+#### 60. AS-IS de mantenimiento
+
+La infraestructura remota contiene `asset_maintenance_records` con, entre otros,
+los campos de estado, tipo de mantenimiento, proveedor, trabajo realizado,
+`parts_replaced`, `replaced_parts`, costo y próxima fecha.
+
+También existe la superficie legacy `product_asset_maintenance_events` con
+campos similares a nivel producto.
+
+Estas estructuras constituyen base reutilizable, no el contrato final de
+repuestos.
+
+---
+
+#### 61. AS-IS de texto libre
+
+`asset_maintenance_records.replaced_parts` y
+`product_asset_maintenance_events.replaced_parts` son texto.
+
+El AS-IS puede describir piezas reemplazadas, pero no demuestra una relación
+canónica entre repuesto, orden de trabajo, reserva, movimiento, instalación y
+pieza retirada.
+
+---
+
+#### 62. AS-IS de aplicación NEXO
+
+La aplicación actual consulta e inserta `asset_maintenance_records` y muestra
+`parts_replaced`, `replaced_parts` y costo en la ficha del activo.
+
+La búsqueda dirigida no identificó un workflow gobernado de reserva, consumo e
+instalación de `SPARE_PART` por identidad canónica.
+
+---
+
+#### 63. AS-IS de stock mínimo
+
+`product_site_settings` ya expone infraestructura reutilizable para:
+
+- `min_stock_qty`;
+- `min_stock_input_mode`;
+- `min_stock_purchase_qty`;
+- `min_stock_purchase_unit_code`;
+- `min_stock_purchase_to_base_factor`.
+
+La aplicación NEXO consume estos campos en catálogo y configuración de productos.
+
+---
+
+#### 64. Límite del stock mínimo legacy
+
+La existencia de `min_stock_qty` no demuestra por sí sola una política completa
+de repuestos.
+
+Falta demostrar que el umbral se aplique con clase `SPARE_PART`, disponibilidad
+canónica, compatibilidad, reserva, señal de reposición y frontera ORIGO sin
+duplicar efectos.
+
+---
+
+#### 65. AS-IS remoto observado
+
+El catálogo remoto de tablas reporta sin filas actuales las superficies
+`asset_maintenance_records`, `product_asset_maintenance_events` y
+`product_site_settings` en el ambiente inspeccionado.
+
+Por tanto, esta tarea no reinterpreta hechos operativos históricos existentes.
+
+---
+
+#### 66. Estado de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan mantenimiento y configuración de mínimo actuales, pero deben
+reconciliarse con identidad `SPARE_PART`, compatibilidad, reserva, consumo,
+instalación, pieza retirada y contratos ORIGO/NEXO.
+
+---
+
+#### 67. Reconciliación futura del legacy
+
+La materialización posterior deberá investigar y reconciliar, sin heurística:
+
+1. productos usados actualmente como repuestos;
+2. registros de mantenimiento con `parts_replaced = true`;
+3. texto histórico de `replaced_parts`;
+4. repuestos descritos solo en notas;
+5. stock actual de productos candidatos;
+6. mínimos por sede;
+7. unidades y conversiones de compra;
+8. proveedores y presentaciones de compra;
+9. activos y modelos objetivo;
+10. compatibilidad técnica disponible;
+11. reservas o apartados manuales existentes;
+12. piezas retiradas y su destino conocido.
+
+No se ejecuta clasificación, migración ni backfill en esta tarea.
+
+---
+
+#### 68. Fail-closed
+
+La operación futura falla cerrada cuando:
+
+- el repuesto no tiene identidad canónica;
+- la clase primaria es ambigua;
+- la orden o activo no existen;
+- la compatibilidad requerida no está resuelta;
+- la cantidad o unidad son inválidas;
+- la disponibilidad es insuficiente;
+- existe sobreasignación concurrente;
+- la revisión es obsoleta;
+- una sustitución no está autorizada;
+- el consumo ya pudo haberse aplicado y no se ha reconciliado;
+- una instalación carece de movimiento correlacionado;
+- falta autoridad;
+- el resultado remoto es desconocido.
+
+El fallo conserva los hechos ya aceptados.
+
+---
+
+#### 69. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar:
+
+- clase `SPARE_PART` autoritativa;
+- compatibilidad versionada;
+- sustitutos gobernados;
+- orden de trabajo correlacionada;
+- reserva atómica;
+- liberación de reserva;
+- consumo exactamente una vez;
+- instalación correlacionada;
+- pieza retirada trazable;
+- unidad y cantidad canónicas;
+- mínimo por scope;
+- señal de reposición sin compra automática;
+- integración ORIGO sin duplicación;
+- revisiones monotónicas;
+- idempotencia;
+- concurrencia;
+- offline reconciliable;
+- autorización server-side;
+- evidencia;
+- reconciliación de excepciones.
+
+---
+
+#### 70. Handoff hacia `NEXO-DOM-017`
+
+Esta tarea entrega:
+
+```text
+CANONICAL SPARE PART IDENTITY
++
+VERSIONED COMPATIBILITY
++
+WORK-ORDER-BOUND RESERVATION
++
+RESERVATION SEPARATE FROM CONSUMPTION
++
+EXACTLY-ONCE STOCK EFFECT
++
+INSTALLATION AND REMOVED-PART TRACEABILITY
++
+SITE-SCOPED MINIMUM STOCK POLICY
++
+ORIGO REPLENISHMENT BOUNDARY
++
+NON-DESTRUCTIVE CORRECTIONS
++
+IDEMPOTENT RECONCILIABLE HISTORY
+```
+
+`NEXO-DOM-017` deberá definir auditoría, historial y evidencia consumiendo estos
+hechos sin convertir notas, fotografías o documentos en sustitutos de los
+eventos de inventario.
+
+---
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige clase de repuesto, reserva y
+consumo ligados a activo y orden, compatibilidad, pieza retirada, movimiento de
+stock, no doble representación, mantenimiento con prueba y liberación e
+integración correlacionada entre abastecimiento, NEXO y efecto económico.
+
+---
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-014`, para separar orden, diagnóstico, ejecución, repuestos,
+  proveedor, indisponibilidad, costo informado, prueba y liberación;
+- `TREQ-NEXO-040`, para conservar `SPARE_PART` como clase primaria única;
+- `TREQ-NEXO-041`, para separar clase de producto, presentación, unidad,
+  ubicación, condición y costo;
+- `TREQ-NEXO-044`, como requisito propietario directo de reserva, consumo,
+  instalación, pieza retirada, compatibilidad y no doble representación;
+- `TREQ-NEXO-047`, para aplicar comportamiento por cantidad a repuestos sin
+  duplicar saldo;
+- `TREQ-INTEGRATION-012`, para correlacionar compra o servicio, mantenimiento,
+  repuestos y efectos físicos/económicos entre ORIGO, NEXO y NUMERA.
+
+Estas referencias son trazabilidad vigente y no representan cambios al
+registro.
+
+---
+
+#### 73. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos locales contra el checkout del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` en `vento-shell`, continuidad `015 → 016 → 017`, ruta activa, override `NEXO-DOM-001..038 → DEFINE_ONCE`, políticas documental y de entrega, owner, handoffs previos, `CAP-07.08`, 04A NEXO e INTEGRATION, proceso `VPROC-0030`, eventos existentes, código actual de mantenimiento y mínimos en `vento-nexo`, y esquema Supabase remoto de solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se reservó, consumió, instaló, retiró, compró ni repuso ningún repuesto real. |
+| FÍSICA | NOT_EXECUTED | No se modificaron productos, stock, activos, órdenes, mantenimiento, datos, Supabase, código, aplicaciones ni infraestructura. |
+
+---
+
+#### 74. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `SPARE_PART` permanece como clase primaria.
+- [x] Repuesto se separa de activo serializado y consumible.
+- [x] La granularidad ordinaria permanece por cantidad.
+- [x] Stock e instalación se separan.
+- [x] Texto de pieza reemplazada no equivale a movimiento.
+- [x] Compatibilidad es explícita y versionada.
+- [x] Compatibilidad no se infiere por nombre o categoría.
+- [x] Compatibilidad desconocida falla cerrada cuando es obligatoria.
+- [x] Sustituto autorizado se separa de similaridad.
+- [x] Diagnóstico no reserva ni compra automáticamente.
+- [x] Reserva exige contexto de orden y activo.
+- [x] Reserva se separa de consumo.
+- [x] Liberación de reserva conserva historia.
+- [x] Se impide sobreasignación concurrente.
+- [x] Consumo produce efecto físico exactamente una vez.
+- [x] Instalación exige efecto de inventario correlacionado.
+- [x] Pieza retirada conserva identidad o scope y destino trazable.
+- [x] Pieza retirada no vuelve a stock por inferencia.
+- [x] Stock mínimo se separa de stock actual y disponible.
+- [x] Stock mínimo puede variar por sede o contexto.
+- [x] Umbral utiliza unidad canónica y conversiones aprobadas.
+- [x] Cruce de mínimo no crea compra automática.
+- [x] ORIGO conserva abastecimiento y compra.
+- [x] NEXO conserva hecho físico e inventario.
+- [x] Servicio externo se separa de compra de repuesto.
+- [x] `NEXO-DOM-025` conserva costo del activo.
+- [x] `NEXO-DOM-026` conserva preventivo, garantía y calibración.
+- [x] Se consume `VPROC-0030` sin lifecycle competidor.
+- [x] Se conservan exactamente seis eventos empresariales de `VPROC-0030`.
+- [x] Se preservan `spare_part_reserved` y `spare_part_consumed` existentes.
+- [x] Instalación no equivale a liberación del activo.
+- [x] Cancelación reconcilia reservas.
+- [x] Correcciones son no destructivas.
+- [x] Se definen idempotencia, concurrencia y offline.
+- [x] Se segregan capacidades conceptuales.
+- [x] Se documenta el AS-IS de mantenimiento y texto libre.
+- [x] Se documenta la infraestructura `min_stock_*` reutilizable.
+- [x] La capacidad queda `REUSE_OR_REFACTOR`.
+- [x] Se define reconciliación futura sin heurística.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-017`.
+
+---
+
+#### 75. Límites
+
+Esta tarea no crea ni reclasifica repuestos reales; no modifica productos,
+stock, reservas, órdenes de trabajo, activos, ubicaciones, mantenimiento,
+proveedores, compras, recepciones, costos, piezas retiradas ni mínimos; no crea
+tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS,
+Server Actions ni Route Handlers; no ejecuta migraciones ni backfills; no
+modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no
+despliega; no crea instancia física propia; no crea ni modifica requisitos de
+prueba; no modifica el registro 04A; no desarrolla el costo del activo reservado
+a `NEXO-DOM-025`; no desarrolla inspección, preventivo, garantía o calibración
+reservados a `NEXO-DOM-026`; y no desarrolla `NEXO-DOM-017`.
+
+---
+
+#### 76. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-015 — Definir conteos de activos, reutilizables y contenedores`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-017 — Definir auditoría, historial y evidencia`
+
+### ✅ NEXO-DOM-017 — Definir auditoría, historial y evidencia
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo
+**Tarea siguiente:** NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+**Tipo de tarea:** documental; definición canónica transversal de auditoría, historia no destructiva y evidencia correlacionada para hechos de inventario, activos, reutilizables, repuestos, kits y contenedores gestionados por NEXO, preservando autoridad funcional, identidad, granularidad, revisiones, causalidad, idempotencia, operación offline, reconciliación legacy y frontera con el servicio transversal de evidencia bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único para que los hechos físicos y decisiones de NEXO puedan reconstruirse sin depender del valor actual de una fila, de una nota libre, de una fotografía aislada, de un documento suelto o de la memoria del operador.
+
+La regla raíz queda:
+
+```text
+AUTHORITATIVE DOMAIN FACT
++
+STABLE SUBJECT OR QUANTITY SCOPE
++
+PRIOR AND RESULTING REVISION
++
+EFFECTIVE AND RECORDED TIME
++
+REAL ACTOR OR TECHNICAL PRINCIPAL
++
+AUTHORITY CONTEXT
++
+CAUSE AND CORRELATION
++
+IDEMPOTENCY
++
+GOVERNED EVIDENCE REFERENCES WHEN REQUIRED
+→
+REPRODUCIBLE NON-DESTRUCTIVE HISTORY
+```
+
+La tarea define semántica documental. No materializa tablas, eventos, Storage, UI ni mutaciones físicas.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija documentalmente:
+
+1. separación entre estado actual, evento empresarial, registro de auditoría y evidencia;
+2. historia no destructiva y reproducible;
+3. identidad estable del sujeto o alcance cuantitativo afectado;
+4. conservación de estado o revisión previa y resultante;
+5. separación entre tiempo observado, efectivo y registrado;
+6. atribución de actor humano, principal técnico y contexto de autoridad;
+7. causa, correlación, causalidad e idempotencia;
+8. tratamiento de intentos rechazados o fallidos sin inventar efectos físicos;
+9. correcciones compensatorias o supersesiones sin borrar el hecho original;
+10. reglas para evidencia documental, fotográfica, técnica o de aceptación;
+11. frontera con `EVID-ARC-001` a `EVID-ARC-010`;
+12. reglas para historia de movimiento, custodia, condición, conteo, mantenimiento, repuestos, kits y disposición;
+13. reconciliación del historial legacy existente;
+14. consistencia ante concurrencia, reintentos y operación offline;
+15. criterios de reconstrucción de proyecciones actuales;
+16. handoff exacto hacia `NEXO-DOM-018`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- clasificación primaria y granularidad física aprobadas en tareas anteriores de NEXO;
+- ubicación, custodia, préstamo, devolución y transferencia;
+- condición, daño, faltante, pérdida, hallazgo y recuperación;
+- mantenimiento, reparación y liberación;
+- baja, venta, descarte y reemplazo;
+- kits, miembros, sustitución y completitud;
+- conteos, observaciones, diferencias, investigación y corrección;
+- repuestos, compatibilidad, reserva, consumo, instalación y pieza retirada;
+- movimientos de inventario, LPN y conciliación ya gobernados por sus tareas propietarias;
+- procesos y eventos empresariales `VPROC-*` ya aprobados;
+- contratos transversales de evidencia `EVID-ARC-001` a `EVID-ARC-010`.
+
+Esta tarea no crea un lifecycle competidor ni renombra eventos existentes.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+CÓMO PUEDE NEXO DEMOSTRAR QUÉ OCURRIÓ,
+SOBRE QUÉ SUJETO O CANTIDAD,
+QUIÉN LO OBSERVÓ O EJECUTÓ,
+CON QUÉ AUTORIDAD,
+CUÁNDO FUE EFECTIVO Y CUÁNDO FUE REGISTRADO,
+QUÉ HECHO ANTERIOR LO CAUSÓ,
+QUÉ CAMBIÓ REALMENTE,
+QUÉ EVIDENCIA LO SUSTENTA
+Y CÓMO SE CORRIGE SIN BORRAR LA HISTORIA?
+```
+
+---
+
+#### 5. Estado actual no es historia
+
+Se fija:
+
+```text
+CURRENT STATE
+!=
+HISTORY
+```
+
+Campos actuales como condición, ubicación, custodio, lifecycle, disponibilidad o cantidad pueden ser proyecciones útiles, pero no sustituyen la secuencia de hechos que produjo su valor.
+
+---
+
+#### 6. Evento empresarial no es registro de auditoría
+
+Se fija:
+
+```text
+BUSINESS EVENT
+!=
+AUDIT RECORD
+```
+
+El evento empresarial afirma un hecho de dominio aceptado.
+
+El registro de auditoría explica quién, cómo, desde qué contexto y con qué resultado intentó, consultó o modificó una operación.
+
+Ambos deben poder correlacionarse cuando corresponda, pero uno no reemplaza al otro.
+
+---
+
+#### 7. Evidencia no es evento
+
+Se fija:
+
+```text
+EVIDENCE
+!=
+BUSINESS EVENT
+```
+
+Una foto, firma, documento, lectura, escaneo, comprobante o soporte puede sustentar un hecho. No crea por sí solo el movimiento, la custodia, la pérdida, la reparación, el consumo, la devolución, la baja ni otra transición.
+
+---
+
+#### 8. Evidencia no es decisión
+
+Se conserva:
+
+```text
+EVIDENCE
+!=
+DECISION
+```
+
+La evidencia puede justificar una decisión. La autoridad y el acto de decidir permanecen explícitos y auditables.
+
+---
+
+#### 9. Nota libre no es fuente de verdad
+
+Se fija:
+
+```text
+FREE TEXT
+!=
+AUTHORITATIVE DOMAIN EFFECT
+```
+
+Las notas describen contexto adicional. No sustituyen:
+
+- un movimiento;
+- una aceptación de custodia;
+- una confirmación de pérdida;
+- una corrección de conteo;
+- un consumo de repuesto;
+- una instalación;
+- una prueba de liberación;
+- una disposición.
+
+---
+
+#### 10. Archivo no es registro empresarial
+
+Se fija:
+
+```text
+FILE
+!=
+BUSINESS RECORD
+```
+
+Un archivo debe estar relacionado con el hecho, recurso o decisión que representa. El archivo aislado no se convierte en la fuente autoritativa del estado físico.
+
+---
+
+#### 11. Historia no destructiva
+
+Todo hecho aceptado que haya producido significado empresarial debe conservarse.
+
+Quedan prohibidos como estrategia de corrección:
+
+- borrar el evento original;
+- modificarlo para aparentar que nunca ocurrió;
+- reescribir el actor original;
+- cambiar retroactivamente la causa;
+- reemplazar una evidencia por otra sin conservar lineage;
+- alterar la revisión previa para hacer coincidir el estado actual.
+
+---
+
+#### 12. Corrección
+
+Una corrección autoritativa debe conservar:
+
+- hecho o registro corregido;
+- razón de corrección;
+- actor que corrige;
+- autoridad;
+- instante de corrección;
+- valor o efecto previo cuando aplique;
+- nuevo efecto;
+- correlación;
+- evidencia aplicable;
+- revisión resultante.
+
+La corrección crea historia adicional; no borra la anterior.
+
+---
+
+#### 13. Compensación
+
+Cuando un efecto ya fue aplicado y debe revertirse o compensarse, la operación posterior referencia la operación original.
+
+```text
+COMPENSATING EFFECT
+→
+REFERENCES ORIGINAL EFFECT
+```
+
+No se crea un efecto independiente sin lineage.
+
+---
+
+#### 14. Supersesión documental
+
+Cuando una evidencia o documento sea sustituido por otro, la relación de supersesión pertenece al contrato transversal de evidencia.
+
+El hecho empresarial original continúa existiendo aunque su soporte documental haya sido reemplazado, retenido o dejado sin vigencia.
+
+---
+
+#### 15. Identidad del sujeto
+
+Cada entrada de historia debe identificar inequívocamente el sujeto afectado según su granularidad canónica.
+
+Puede tratarse de:
+
+- una identidad individual;
+- un alcance controlado por cantidad;
+- una existencia o movimiento de inventario;
+- una instancia de kit;
+- un contenedor físico;
+- un LPN cuando el hecho pertenece a su dominio;
+- un caso, sesión, orden u obligación correlacionada.
+
+No se fabrican identidades por conveniencia de auditoría.
+
+---
+
+#### 16. Granularidad histórica
+
+La historia conserva la granularidad válida en el instante del hecho.
+
+Una reclasificación posterior no autoriza reinterpretar retroactivamente una operación como si hubiese ocurrido bajo la clasificación nueva.
+
+---
+
+#### 17. Clase actual no reescribe el pasado
+
+Se fija:
+
+```text
+CURRENT PRIMARY CLASS
+DOES NOT REWRITE
+HISTORICAL FACT MEANING
+```
+
+Toda transición de clasificación futura debe conservar vigencia y lineage suficientes para explicar bajo qué contrato ocurrió cada hecho histórico.
+
+---
+
+#### 18. Revisión previa y resultante
+
+Toda transición autoritativa debe ser reconciliable con una revisión previa y una revisión resultante cuando el sujeto o proyección sea versionada.
+
+```text
+EXPECTED REVISION = CURRENT REVISION
+```
+
+Después de un commit válido:
+
+```text
+RESULTING REVISION > PRIOR REVISION
+```
+
+Una decisión obsoleta falla cerrada.
+
+---
+
+#### 19. Historia y revisión
+
+La revisión actual no reemplaza el historial.
+
+Debe ser posible relacionar:
+
+```text
+REVISION N
+→ EVENT OR DECISION
+→ REVISION N+1
+```
+
+sin inferir cambios intermedios no registrados.
+
+---
+
+#### 20. Tiempo observado
+
+El tiempo observado representa cuándo un actor o dispositivo observó el hecho físico.
+
+Puede diferir del momento en que el sistema lo recibe.
+
+Un tiempo observado por el cliente no decide por sí solo el orden autoritativo.
+
+---
+
+#### 21. Tiempo efectivo
+
+El tiempo efectivo representa cuándo el efecto empresarial queda vigente.
+
+Cuando difiera del momento de captura, la diferencia debe ser explícita y autorizada por el contrato propietario.
+
+---
+
+#### 22. Tiempo registrado
+
+El tiempo registrado representa cuándo la plataforma aceptó y persistió la operación autoritativa.
+
+Se fija:
+
+```text
+OBSERVED TIME
+!=
+EFFECTIVE TIME
+!=
+RECORDED TIME
+```
+
+cuando existan diferencias reales.
+
+---
+
+#### 23. Reloj del servidor
+
+La autoridad temporal de commit no depende exclusivamente del reloj del cliente.
+
+Capturas con hora local incorrecta no pueden reordenar silenciosamente la historia aceptada.
+
+---
+
+#### 24. Actor humano
+
+Cuando una persona ejecuta, observa, acepta, aprueba o corrige una acción, la historia debe conservar su identidad efectiva según el modelo de autorización vigente.
+
+Una cuenta compartida o principal técnico no sustituye al actor humano cuando el contrato exige atribución individual.
+
+---
+
+#### 25. Principal técnico
+
+Cuando una operación se ejecuta mediante job, integración, dispositivo compartido o servicio, se conserva el principal técnico que realizó la llamada además del actor humano cuando exista.
+
+Se fija:
+
+```text
+TECHNICAL PRINCIPAL
+!=
+HUMAN ACTOR
+```
+
+---
+
+#### 26. Autoridad
+
+La historia debe permitir demostrar bajo qué capacidad, permiso o decisión autorizada se aceptó una mutación cuando el dominio lo exija.
+
+El registro histórico no concede autoridad retroactivamente.
+
+---
+
+#### 27. Contexto operacional
+
+Cuando sea material, el hecho conserva el contexto autorizado aplicable, por ejemplo:
+
+- sede;
+- área;
+- LOC o posición;
+- dispositivo o estación;
+- proceso u orden;
+- custodio o receptor;
+- fuente externa.
+
+El contexto se registra como parte del hecho; no se infiere después únicamente desde el estado actual.
+
+---
+
+#### 28. Razón
+
+Las operaciones que requieran justificación deben conservar un motivo estructurado suficiente y, cuando aplique, detalle libre adicional.
+
+El texto libre no sustituye un motivo gobernado cuando el dominio exige clasificación o autorización específica.
+
+---
+
+#### 29. Correlación
+
+Una operación que participa en un ciclo mayor debe conservar un identificador de correlación o vínculo estable hacia ese ciclo.
+
+Ejemplos de correlación ya gobernada incluyen:
+
+- orden de trabajo;
+- préstamo o devolución;
+- sesión de conteo;
+- remisión;
+- movimiento;
+- caso de daño o pérdida;
+- decisión de disposición;
+- compra o recepción;
+- kit y sus cambios.
+
+---
+
+#### 30. Causalidad
+
+Cuando un hecho deriva de otro debe conservar la relación causal suficiente para reconstruir la cadena.
+
+```text
+CAUSE
+→ EFFECT
+```
+
+no se sustituye por proximidad temporal.
+
+---
+
+#### 31. Idempotencia
+
+El mismo intento lógico con el mismo contenido no puede producir dos efectos empresariales.
+
+La repetición debe recuperar el resultado ya decidido.
+
+Una reutilización del mismo identificador de idempotencia con contenido lógico incompatible debe fallar cerrada.
+
+---
+
+#### 32. Reintentos técnicos
+
+Puede existir más de un intento técnico para un mismo hecho lógico.
+
+Se fija:
+
+```text
+MULTIPLE DELIVERY ATTEMPTS
+CAN MAP TO
+ONE BUSINESS EFFECT
+```
+
+Los intentos son auditables sin duplicar la historia empresarial.
+
+---
+
+#### 33. Resultado desconocido
+
+Ante timeout o pérdida de respuesta después de enviar una mutación, el cliente no inventa una nueva operación equivalente.
+
+Debe reconciliar la misma identidad lógica hasta conocer si el efecto fue:
+
+- aceptado;
+- rechazado;
+- no aplicado;
+- aún desconocido.
+
+---
+
+#### 34. Intento rechazado
+
+Una denegación de autorización o validación puede producir auditoría del intento, pero no un evento empresarial de efecto físico.
+
+```text
+DENIED ATTEMPT
+!=
+COMMITTED DOMAIN EFFECT
+```
+
+---
+
+#### 35. Fallo técnico
+
+Un error técnico antes del commit no debe aparecer como movimiento, transferencia, pérdida, consumo, reparación, disposición o corrección completados.
+
+La observabilidad del fallo permanece separada de la historia empresarial.
+
+---
+
+#### 36. Operación offline
+
+Una captura offline representa observación, intención o evidencia pendiente hasta que el servidor la valida.
+
+```text
+OFFLINE CAPTURE
+!=
+AUTHORITATIVE COMMIT
+```
+
+Al sincronizar deben revalidarse identidad, revisión, autoridad, estado, cantidades, restricciones y conflictos.
+
+---
+
+#### 37. Eventos fuera de orden
+
+Un evento recibido tarde no puede sobrescribir una revisión más reciente mediante last-write-wins.
+
+La reconciliación usa identidad lógica, causalidad, revisión y reglas del dominio propietario.
+
+---
+
+#### 38. Duplicados
+
+Dos registros que describen aparentemente el mismo hecho no se fusionan por nombre, hora aproximada o texto similar.
+
+La deduplicación requiere evidencia determinista de identidad o correlación.
+
+---
+
+#### 39. Proyección actual
+
+El estado actual debe tratarse como una proyección reconciliable de hechos aceptados y, cuando exista transición desde legacy, de un baseline explícitamente versionado.
+
+La proyección puede optimizar lecturas. No adquiere autoridad independiente de su historia.
+
+---
+
+#### 40. Reconstrucción
+
+Para los dominios materializados bajo este contrato, la implementación futura deberá demostrar que una revisión actual puede explicarse por:
+
+```text
+APPROVED BASELINE
++
+ACCEPTED DOMAIN HISTORY
++
+AUTHORIZED CORRECTIONS
+=
+CURRENT RECONCILED PROJECTION
+```
+
+---
+
+#### 41. Baseline legacy
+
+Cuando el sistema actual carezca de historia completa, la adopción no fabricará eventos pasados.
+
+Se permite establecer un baseline de transición con:
+
+- fuente legacy;
+- fecha de corte;
+- sujeto;
+- valor observado;
+- calidad o limitación de evidencia;
+- actor o proceso de reconciliación;
+- lineage hacia el registro original.
+
+El baseline no se presenta como historia que nunca fue observada.
+
+---
+
+#### 42. Historia de ubicación y movimiento
+
+Todo cambio físico de ubicación que produzca efecto autoritativo debe poder reconstruir:
+
+- sujeto o cantidad;
+- origen;
+- destino;
+- instante;
+- actor;
+- motivo;
+- correlación;
+- revisión;
+- evidencia requerida;
+- aceptación o resultado cuando aplique.
+
+Un `updated_at` de la fila actual no sustituye este historial.
+
+---
+
+#### 43. Historia de custodia
+
+Préstamo, devolución, transferencia y cadena de custodia preservan cada handoff efectivo.
+
+Debe poder conocerse:
+
+- custodio anterior;
+- receptor propuesto;
+- custodio efectivo;
+- aceptación;
+- obligación de retorno cuando exista;
+- condición observada;
+- excepciones;
+- cierre.
+
+---
+
+#### 44. Historia de condición
+
+Condición, daño, faltante, pérdida, hallazgo y recuperación conservan observación, evaluación y decisión como hechos distinguibles.
+
+Se preserva:
+
+```text
+OBSERVATION
+!=
+ASSESSMENT
+!=
+DECISION
+!=
+EFFECT
+```
+
+---
+
+#### 45. Faltante y pérdida
+
+Un faltante observado conserva su observación original aunque posteriormente se confirme pérdida o se encuentre el sujeto.
+
+```text
+MISSING OBSERVED
+→ INVESTIGATION
+→ LOSS CONFIRMED OR RECOVERY OR OTHER RESOLUTION
+```
+
+La resolución no borra el faltante histórico.
+
+---
+
+#### 46. Hallazgo y recuperación
+
+El hallazgo de un sujeto previamente faltante o perdido recupera la identidad original.
+
+La historia conserva tanto la pérdida o faltante como el hallazgo y la decisión de recuperación.
+
+No se crea una identidad nueva para ocultar la discontinuidad.
+
+---
+
+#### 47. Historia de conteo
+
+La observación de conteo permanece inmutable.
+
+Cualquier investigación, decisión y corrección posterior se relaciona con la observación sin editarla para hacerla coincidir con el resultado final.
+
+---
+
+#### 48. Historia de mantenimiento
+
+Mantenimiento y reparación conservan separadamente:
+
+- solicitud o disparador;
+- orden;
+- diagnóstico;
+- aprobación cuando aplique;
+- ejecución;
+- proveedor o técnico;
+- repuestos;
+- prueba;
+- liberación;
+- resultado;
+- evidencia.
+
+Una nota de trabajo realizado no resume ni reemplaza el ciclo completo.
+
+---
+
+#### 49. Historia de repuestos
+
+Reserva, liberación de reserva, consumo, instalación y pieza retirada se conservan como hechos correlacionables.
+
+Una descripción de `replaced_parts` no sustituye movimiento de stock ni lineage hacia la orden y el activo.
+
+---
+
+#### 50. Historia de disposición
+
+Solicitud, evaluación, aprobación, ejecución física y efecto económico permanecen distinguibles.
+
+Una baja o descarte no elimina la identidad ni su historia anterior.
+
+---
+
+#### 51. Historia de kits
+
+Ensamble, asignación de miembro, sustitución, verificación de completitud, devolución, desarme y cierre conservan el estado previo y resultante de la instancia.
+
+La historia del kit no borra la historia individual o cuantitativa de sus miembros.
+
+---
+
+#### 52. Historia de contenedores y LPN
+
+El contenedor físico y el LPN conservan identidades distintas.
+
+La historia futura de vínculo, movimiento, desvinculación o cierre debe permitir reconstruir ambas identidades sin convertir el contenedor en LPN ni duplicar contenido.
+
+La semántica detallada permanece en `NEXO-DOM-019` a `NEXO-DOM-024`.
+
+---
+
+#### 53. Historia de inventario ordinario
+
+Movimientos, reservas, consumos, traslados, remisiones, ajustes y conciliaciones conservan su ledger propietario.
+
+Esta tarea no crea un ledger alterno de inventario. Define el sobre mínimo de trazabilidad que sus hechos deben poder exponer o correlacionar.
+
+---
+
+#### 54. Registro de auditoría de lectura
+
+La consulta de información sensible o evidencia puede requerir registro de acceso según el contrato de seguridad y `EVID-ARC-008`.
+
+Esta tarea no convierte toda lectura ordinaria de NEXO en un evento empresarial.
+
+---
+
+#### 55. Registro de auditoría de modificación
+
+Las mutaciones autoritativas deben poder atribuirse al actor y contexto efectivo.
+
+El registro de auditoría de modificación no sustituye el evento empresarial ni su revisión.
+
+---
+
+#### 56. Acceso a evidencia
+
+El acceso a archivos o evidencia se rige por el modelo transversal de evidencia, autorización y privacidad.
+
+NEXO conserva la referencia de negocio. No redefine URLs firmadas, políticas de Storage ni mecanismos de entrega temporal.
+
+---
+
+#### 57. Integridad de evidencia
+
+Cuando una política exija integridad verificable, la evidencia deberá consumir los metadatos, referencias de versión, recurso y mecanismos definidos por `EVID-ARC-001` a `EVID-ARC-010`.
+
+NEXO no inventa un esquema criptográfico paralelo.
+
+---
+
+#### 58. Evidencia mínima
+
+Cada acción propietaria define qué evidencia es obligatoria.
+
+La regla transversal es:
+
+```text
+REQUIRED EVIDENCE MISSING
+→
+AUTHORITATIVE ACTION FAILS CLOSED
+```
+
+cuando el contrato de la acción exige evidencia antes del commit.
+
+---
+
+#### 59. Evidencia adicional
+
+Aportar evidencia adicional no concede autoridad que el actor no posee.
+
+```text
+MORE EVIDENCE
+!=
+MORE AUTHORITY
+```
+
+---
+
+#### 60. Evidencia posterior
+
+Puede vincularse evidencia posterior a un hecho cuando la política lo permita, pero la incorporación debe ser auditable.
+
+Agregar una foto o documento después del evento no cambia retroactivamente el hecho original ni su instante efectivo.
+
+---
+
+#### 61. Evidencia retirada o supersedida
+
+Cuando una evidencia deja de ser válida, se conserva el lineage según el servicio transversal.
+
+El evento empresarial no desaparece por la retirada del archivo; su estado probatorio puede cambiar sin reescribir el hecho.
+
+---
+
+#### 62. Evidencia y retención
+
+Retención, conservación legal, eliminación y disposición de archivos pertenecen a `EVID-ARC-009` y contratos transversales aplicables.
+
+Esta tarea no define políticas de borrado de Storage.
+
+---
+
+#### 63. Evidencia y contingencia
+
+Contingencia de Storage, recuperación de archivos y degradación del servicio pertenecen al owner transversal de evidencia y continuidad.
+
+NEXO debe poder distinguir evidencia pendiente, no disponible o no verificada sin fabricar un resultado físico.
+
+---
+
+#### 64. Historia consultable
+
+La implementación futura deberá permitir reconstruir, según autorización:
+
+- timeline por sujeto;
+- timeline por alcance cuantitativo;
+- correlación por proceso, caso, orden o sesión;
+- actor y principal técnico;
+- origen y destino;
+- cambios de condición y presencia;
+- custodias y handoffs;
+- conteos y correcciones;
+- mantenimiento y repuestos;
+- evidencia vinculada;
+- correcciones y compensaciones;
+- lineage legacy.
+
+Una UI particular no es la fuente de verdad de esta historia.
+
+---
+
+#### 65. Ordenamiento de timeline
+
+Una vista de timeline puede ordenar para lectura, pero debe preservar simultáneamente los tiempos relevantes y la revisión autoritativa.
+
+No se presenta un orden visual como prueba de causalidad cuando la relación causal no existe.
+
+---
+
+#### 66. Privacidad y mínimo acceso
+
+La auditoría puede contener actor, ubicación, documentos, costos, fotografías u otra información restringida.
+
+El acceso debe respetar autorización, propósito y mínimo privilegio. Poder operar sobre un activo no concede automáticamente acceso a toda evidencia histórica asociada.
+
+---
+
+#### 67. Segregación de capacidades
+
+Se distinguen al menos las capacidades conceptuales de:
+
+- ejecutar la acción empresarial;
+- consultar el estado actual;
+- consultar historia;
+- consultar evidencia;
+- agregar evidencia;
+- corregir un hecho;
+- aprobar una corrección;
+- exportar historial;
+- administrar retención o disposición documental.
+
+La capacidad para una no concede las demás.
+
+---
+
+#### 68. Exportación
+
+Una exportación de historia o evidencia es una operación de acceso y distribución, no una mutación del hecho original.
+
+Debe respetar autorización, clasificación, propósito, minimización y auditoría aplicables.
+
+---
+
+#### 69. AS-IS de identidad y estado
+
+El esquema remoto contiene `asset_items` y `asset_groups` con estado actual, condición, lifecycle, ubicación, responsable y campos de atribución y timestamps.
+
+Estos campos constituyen una base reutilizable para proyecciones y atribución básica, pero no demuestran por sí solos la historia completa de cada cambio.
+
+---
+
+#### 70. AS-IS de movimientos
+
+La observación remota de solo lectura registra:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `asset_movements` | 169 |
+| movimientos `initial_location` | 166 |
+| movimientos `transfer` | 3 |
+
+Los 169 registros observados conservan `created_by` no nulo. En el snapshot inspeccionado, `responsible_employee_id` está vacío en esos movimientos.
+
+La historia existente se preserva como evidencia operativa útil, pero no se declara equivalente al contrato completo de custodia, aceptación, condición o causalidad.
+
+---
+
+#### 71. AS-IS de activos y grupos
+
+La observación remota registra:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `asset_items` | 38 |
+| `asset_groups` | 128 |
+
+Estas identidades y grupos deben conservarse durante cualquier adopción futura. La ausencia de historia suficiente no autoriza recrearlos ni renumerarlos.
+
+---
+
+#### 72. AS-IS de documentos, mantenimiento y conteos
+
+En el ambiente inspeccionado se observaron:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `asset_documents` | 0 |
+| `asset_maintenance_records` | 0 |
+| `asset_count_sessions` | 0 |
+| `asset_count_lines` | 0 |
+| `product_asset_transfer_events` | 0 |
+| `product_asset_maintenance_events` | 0 |
+
+La estructura existe, pero no se usa como evidencia de operación real donde el conteo es cero.
+
+---
+
+#### 73. AS-IS de aplicación
+
+La aplicación NEXO actual:
+
+- crea movimientos al registrar activos o grupos;
+- inserta movimientos al transferir ubicación;
+- consulta el historial de `asset_movements` en la ficha de activo;
+- consulta superficies de documentos y mantenimiento;
+- mantiene campos actuales de condición, equipo y lifecycle.
+
+Estas superficies se reutilizan donde correspondan, pero no constituyen por sí solas un historial empresarial completo.
+
+---
+
+#### 74. Brecha de actualización directa
+
+La existencia de `updated_by` y `updated_at` demuestra atribución parcial de una modificación, no qué valores cambiaron, por qué cambiaron, qué revisión previa existía ni qué evento empresarial produjo el cambio.
+
+Se fija:
+
+```text
+UPDATED_BY + UPDATED_AT
+!=
+COMPLETE AUDIT HISTORY
+```
+
+---
+
+#### 75. Brecha de movimiento legacy
+
+Un registro `asset_movements` prueba un movimiento registrado bajo el esquema existente.
+
+No prueba por inferencia:
+
+- aceptación de custodia;
+- autoridad completa;
+- condición antes y después;
+- causalidad con otro proceso;
+- evidencia requerida;
+- resultado de un préstamo o devolución.
+
+Esas relaciones deben reconciliarse únicamente cuando exista evidencia determinista.
+
+---
+
+#### 76. Estado de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan identidades, timestamps, actor de creación, movimientos, superficies de documentos, mantenimiento y conteos existentes. Debe completarse el contrato de historia, revisión, causalidad, evidencia y reconciliación sin borrar registros legacy.
+
+---
+
+#### 77. Reconciliación legacy
+
+La adopción física futura deberá construir un inventario de fuentes históricas y clasificar cada una como:
+
+- hecho empresarial directamente demostrable;
+- baseline de transición;
+- evidencia auxiliar;
+- proyección actual;
+- registro técnico;
+- dato insuficiente que requiere revisión.
+
+No se promueve automáticamente una fila legacy a evento canónico por compartir nombre o timestamp.
+
+---
+
+#### 78. Lineage de movimientos existentes
+
+Los `asset_movements` existentes deben conservar su identidad original o referencia estable durante la transición.
+
+Cuando puedan vincularse determinísticamente con un hecho canónico futuro, el lineage se registra. Cuando no pueda demostrarse, permanecen como historia legacy sin atribuciones inventadas.
+
+---
+
+#### 79. Lineage de valores actuales
+
+Para campos actuales sin historia completa, la transición puede crear un baseline explícito con su fuente y fecha de corte.
+
+No se generan artificialmente secuencias de cambios pasados para explicar un valor actual.
+
+---
+
+#### 80. Fail-closed
+
+Una mutación futura falla cerrada cuando sea material y no pueda resolverse:
+
+- sujeto o alcance;
+- clase o granularidad;
+- revisión esperada;
+- actor o principal;
+- autoridad;
+- idempotencia;
+- correlación requerida;
+- causa requerida;
+- estado previo;
+- cantidad o unidad;
+- evidencia obligatoria;
+- conflicto concurrente;
+- resultado previo de un retry;
+- lineage necesario para una corrección.
+
+El fallo no elimina hechos ya aceptados.
+
+---
+
+#### 81. Condiciones mínimas de materialización futura
+
+La implementación posterior deberá demostrar:
+
+- una fuente autoritativa o correlacionable de historia por dominio;
+- no destrucción de eventos aceptados;
+- revisiones monotónicas cuando apliquen;
+- tiempos observado, efectivo y registrado cuando sean distintos;
+- actor y principal técnico atribuibles;
+- autoridad revalidada server-side;
+- idempotencia;
+- causalidad y correlación;
+- correcciones y compensaciones con lineage;
+- proyecciones actuales reconciliables;
+- soporte de operación offline sin last-write-wins;
+- evidencia referenciada mediante el contrato transversal;
+- protección de información sensible;
+- adopción de movimientos legacy sin fabricar historia;
+- pruebas de reconstrucción y ausencia de doble efecto.
+
+---
+
+#### 82. Frontera con procesos `VPROC-*`
+
+Los procesos y seis eventos empresariales definidos por los contratos de procesos continúan siendo propietarios de sus identidades y significado.
+
+Esta tarea no agrega `VPROC-*`, no renombra eventos y no amplía por inferencia el catálogo generado. Define únicamente los invariantes de historia y auditoría que los hechos NEXO deben conservar o exponer.
+
+---
+
+#### 83. Frontera con `EVID-ARC-001` a `EVID-ARC-010`
+
+El servicio transversal conserva propiedad de:
+
+- inventario de evidencia por proceso;
+- propiedad funcional documental;
+- clasificación;
+- metadatos de archivo;
+- carga, sustitución y anulación documental;
+- validación de archivo;
+- acceso temporal;
+- auditoría de consulta y modificación documental;
+- retención y eliminación;
+- contingencia de Storage.
+
+NEXO conserva la relación empresarial entre evidencia y hecho físico. No duplica el servicio transversal.
+
+---
+
+#### 84. Frontera con autorización
+
+Los owners de autorización deciden quién puede ejecutar, consultar, corregir, aprobar, exportar o acceder a evidencia.
+
+Esta tarea exige atribución y separación de capacidades, pero no crea permisos ni políticas RLS.
+
+---
+
+#### 85. Frontera con base de datos
+
+La forma física de tablas, constraints, funciones, RLS, triggers, outbox, particionado, índices, retención y migración pertenece a arquitectura e implementación física posteriores.
+
+Esta tarea exige comportamiento observable, no una tabla específica llamada auditoría o eventos.
+
+---
+
+#### 86. Frontera con analítica
+
+La historia de auditoría no es automáticamente una tabla de hechos analítica.
+
+Los consumidores de datos pueden derivar métricas autorizadas sin reescribir ni alterar la fuente de verdad operativa.
+
+---
+
+#### 87. Frontera con costos y NUMERA
+
+Los efectos económicos permanecen propiedad de NUMERA o del dominio económico aprobado.
+
+NEXO conserva referencias a los hechos físicos que los originan; no reconstruye importes por inferencia desde notas o evidencia.
+
+---
+
+#### 88. Frontera con `NEXO-DOM-018`
+
+`NEXO-DOM-018` consume este contrato para integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4.
+
+Una etiqueta, QR o documento podrá referenciar una identidad o recurso histórico, pero no se convertirá en la fuente autoritativa del hecho físico.
+
+---
+
+#### 89. Handoff hacia `NEXO-DOM-018`
+
+Esta tarea entrega:
+
+```text
+STABLE DOMAIN SUBJECT
++
+NON-DESTRUCTIVE BUSINESS HISTORY
++
+REVISIONED CURRENT PROJECTION
++
+ACTOR AND TECHNICAL PRINCIPAL ATTRIBUTION
++
+AUTHORITY CONTEXT
++
+CORRELATION AND CAUSALITY
++
+IDEMPOTENT EFFECTS
++
+OBSERVED / EFFECTIVE / RECORDED TIME SEPARATION
++
+GOVERNED EVIDENCE REFERENCES
++
+CORRECTION AND COMPENSATION LINEAGE
++
+LEGACY BASELINE AND SOURCE LINEAGE
++
+EVIDENCE-SERVICE BOUNDARY
+```
+
+`NEXO-DOM-018` deberá integrar identificación e impresión sin usar una etiqueta, QR, fotografía, URL o documento como sustituto del recurso, evento o estado autoritativo.
+
+---
+
+#### 90. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige transiciones auditables, historia no destructiva, movimientos y proyecciones reconciliables, eventos de activos no basados en sobrescrituras, evidencia en mantenimiento y trazabilidad transversal de archivos. Esta tarea especializa y conecta esas obligaciones sin introducir una conducta observable nueva que requiera modificar el registro.
+
+---
+
+#### 91. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, idempotencia, compensación y conteo no destructivo;
+- `TREQ-NEXO-012`, para transiciones auditables de daño, pérdida, disposición y liberación que preservan existencia e historia;
+- `TREQ-NEXO-013`, para que préstamo, devolución, transferencia, conteo, daño, pérdida y hallazgo sean eventos auditables y no sobrescrituras;
+- `TREQ-NEXO-014`, para historia separada de mantenimiento, diagnóstico, ejecución, repuestos, evidencia, prueba y liberación;
+- `TREQ-NEXO-040` y `TREQ-NEXO-041`, para conservar identidad/clase y dimensiones separadas durante la reconstrucción histórica;
+- `TREQ-NEXO-043` a `TREQ-NEXO-047`, para granularidad, repuestos, kits, contenedores y comportamiento sin doble representación;
+- `TREQ-INTEGRATION-003`, `TREQ-INTEGRATION-004` y `TREQ-INTEGRATION-006`, para idempotencia, reconstrucción de cadenas técnicas y fuente empresarial única;
+- `TREQ-INTEGRATION-012`, para reconciliación correlacionada de activos, mantenimiento, repuestos y efectos entre dominios.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 92. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main` posterior al cierre de `NEXO-DOM-016`, continuidad `016 → 017 → 018`, secuencia canónica activa, topología `DEFINE_ONCE` para `NEXO-DOM-001` a `NEXO-DOM-038`, políticas documental y de entrega, owner, handoff de `NEXO-DOM-016`, semántica aprobada de condición/custodia/conteo/repuestos, 04A NEXO, `EVID-ARC-001` a `EVID-ARC-010`, contratos de procesos existentes, código actual de `vento-nexo` y esquema/datos Supabase remotos en solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron movimientos, conteos, préstamos, mantenimientos, consumos, correcciones, exportaciones ni accesos operativos de evidencia. |
+| FÍSICA | NOT_EXECUTED | No se modificaron datos, Supabase, Storage, código, aplicaciones, infraestructura, paquetes ni despliegues. |
+
+---
+
+#### 93. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Estado actual e historia quedan separados.
+- [x] Evento empresarial y registro de auditoría quedan separados y correlacionables.
+- [x] Evidencia, evento, decisión y proyección quedan separados.
+- [x] Nota libre y archivo no se convierten en fuente de verdad.
+- [x] La historia aceptada es no destructiva.
+- [x] Correcciones y compensaciones conservan lineage.
+- [x] Se conserva identidad y granularidad históricas.
+- [x] La clasificación actual no reinterpreta el pasado.
+- [x] Se conservan revisión previa y resultante cuando aplican.
+- [x] Se distinguen tiempo observado, efectivo y registrado.
+- [x] Se distinguen actor humano y principal técnico.
+- [x] Se conserva contexto de autoridad.
+- [x] Se conservan razón, correlación y causalidad.
+- [x] La idempotencia impide doble efecto.
+- [x] Reintentos técnicos no duplican eventos empresariales.
+- [x] Resultados desconocidos exigen reconciliación.
+- [x] Intentos denegados no fabrican efectos físicos.
+- [x] Fallos técnicos no se presentan como hechos completados.
+- [x] Capturas offline no equivalen a commit autoritativo.
+- [x] Eventos tardíos no usan last-write-wins.
+- [x] La proyección actual es reconciliable con baseline e historia.
+- [x] El baseline legacy no fabrica eventos pasados.
+- [x] Se define historia de ubicación y movimiento.
+- [x] Se define historia de custodia y handoffs.
+- [x] Se define historia de condición, faltante, pérdida, hallazgo y recuperación.
+- [x] Conteo conserva observación original.
+- [x] Mantenimiento conserva solicitud, diagnóstico, ejecución, prueba y liberación.
+- [x] Repuestos conservan reserva, consumo, instalación y pieza retirada.
+- [x] Disposición no elimina historia anterior.
+- [x] Kits conservan historia separada de sus miembros.
+- [x] Contenedor físico y LPN permanecen distintos.
+- [x] No se crea un ledger alterno de inventario.
+- [x] Auditoría de lectura y modificación se separa de evento empresarial.
+- [x] Evidencia consume la frontera EVID-ARC.
+- [x] Evidencia obligatoria faltante falla cerrada.
+- [x] Evidencia adicional no concede autoridad.
+- [x] Evidencia posterior no cambia retroactivamente el hecho.
+- [x] Retención y Storage permanecen fuera de esta tarea.
+- [x] Historia consultable respeta autorización.
+- [x] Exportación no altera el hecho original.
+- [x] Se documentan 38 activos, 128 grupos y 169 movimientos remotos observados.
+- [x] Se documentan 166 movimientos `initial_location` y 3 `transfer`.
+- [x] Se documenta que documentos, mantenimiento, conteos y eventos legacy consultados tienen cero filas en el snapshot remoto.
+- [x] `updated_by` y `updated_at` no se declaran historial completo.
+- [x] Movimientos legacy no se promueven por inferencia a custodia o aceptación completas.
+- [x] La capacidad queda `REUSE_OR_REFACTOR`.
+- [x] La reconciliación legacy no usa heurísticas.
+- [x] No se crean identificadores `VPROC-*` nuevos.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica el registro 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff exacto a `NEXO-DOM-018`.
+
+---
+
+#### 94. Límites
+
+Esta tarea no modifica activos, grupos, inventario, ubicaciones, movimientos, custodia, préstamos, devoluciones, conteos, condición, daño, pérdida, hallazgo, mantenimiento, repuestos, kits, contenedores, LPN, etiquetas, documentos, costos ni evidencia real; no crea ni modifica tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, buckets, políticas de Storage, Server Actions, Route Handlers, contratos generados ni eventos `VPROC-*`; no ejecuta migraciones, backfills, reconciliaciones de datos, exportaciones ni mutaciones remotas; no modifica Supabase ni `vento-nexo`; no implementa UI; no crea permisos; no despliega; no crea instancia física propia; no crea ni modifica requisitos de prueba; no modifica 04A; no redefine retención, URLs firmadas, validación de archivos ni contingencia de Storage; y no desarrolla `NEXO-DOM-018`.
+
+---
+
+#### 95. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-017 — Definir auditoría, historial y evidencia`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
+
+### ✅ NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-017 — Definir auditoría, historial y evidencia
+**Tarea siguiente:** NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+**Tipo de tarea:** documental; definición canónica de integración entre identidades y hechos autoritativos de NEXO y los contratos transversales de impresión, archivos, documentos y evidencia de BLOQUE E4, preservando identidad estable, versión, snapshot, idempotencia, reimpresión no destructiva, autorización, auditoría y fronteras de propiedad bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NEXO integra identificadores visibles, etiquetas, códigos escaneables y documentos con los servicios transversales de BLOQUE E4 sin convertir una representación impresa, un QR, un código de barras, una URL o un archivo en la fuente autoritativa del recurso físico o del hecho empresarial.
+
+La integración debe permitir identificar, imprimir, reimprimir, consultar y evidenciar LOC, LPN, activos y documentos conservando la identidad y la historia definidas por NEXO, mientras BLOQUE E4 conserva la propiedad de plantillas, trabajos de impresión, enrutamiento, dispositivos, confirmaciones, archivos y evidencia.
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-018` deja definido:
+
+1. el contrato común entre recurso NEXO y representación E4;
+2. la separación entre identidad autoritativa y etiqueta física;
+3. la integración de LOC con la salida canónica de impresión correspondiente;
+4. la integración de activos con sus salidas canónicas de identificación y estado técnico;
+5. la integración de documentos NEXO con las identidades `IMP-DOC-*` ya aprobadas;
+6. la frontera explícita para LPN ante la ausencia de una salida E4 dedicada;
+7. las reglas de QR, código de barras, escaneo y resolución de identidad;
+8. las reglas de versión, snapshot, reimpresión, copia y etiqueta dañada;
+9. la relación entre impresión, evidencia y hecho empresarial;
+10. la adopción del contrato de idempotencia de E4;
+11. la separación de autorización de dominio y autorización del servicio transversal;
+12. el tratamiento de fallos, reintentos, resultado desconocido y operación offline;
+13. la reconciliación del código legacy de impresión existente en NEXO;
+14. el handoff exacto hacia `NEXO-DOM-019`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- identidad, código y lifecycle de LOC definidos por NEXO;
+- identidad y lifecycle de LPN definidos por NEXO;
+- identidad estable de activo individual y su código visible;
+- condición, disponibilidad, custodia, conteo, mantenimiento y repuestos ya definidos;
+- historia empresarial no destructiva de `NEXO-DOM-017`;
+- catálogo de salidas imprimibles de `PRINT-ARC-003`;
+- propiedad funcional de `PRINT-ARC-004`;
+- plantillas, versiones, perfiles físicos y contratos de datos de `PRINT-ARC-005`;
+- contrato de trabajo de impresión de `PRINT-ARC-006`;
+- enrutamiento, dispositivo, heartbeat, idempotencia, reintentos, confirmación, cancelación y reimpresión definidos por `PRINT-ARC-007` a `PRINT-ARC-014`;
+- autorización, privacidad y operación offline de `PRINT-ARC-015` a `PRINT-ARC-017`;
+- adaptadores, monitoreo, diagnóstico y piloto físico de `PRINT-ARC-018` a `PRINT-ARC-020`;
+- frontera de documentos y evidencia de `EVID-ARC-001` a `EVID-ARC-010`.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+COMO PUEDE NEXO REPRESENTAR FISICAMENTE
+UN LOC, UN LPN, UN ACTIVO O UN DOCUMENTO
+MEDIANTE ETIQUETAS, CODIGOS O SALIDAS IMPRESAS
+SIN CREAR UNA SEGUNDA IDENTIDAD,
+SIN CONVERTIR EL PAPEL O EL ARCHIVO EN FUENTE DE VERDAD
+Y SIN DUPLICAR LOS SERVICIOS TRANSVERSALES DE BLOQUE E4?
+```
+
+---
+
+#### 5. Regla raíz
+
+```text
+AUTHORITATIVE NEXO RESOURCE
++
+STABLE RESOURCE IDENTITY
++
+CURRENT REVISION OR DOCUMENT SNAPSHOT
++
+APPROVED E4 OUTPUT IDENTITY
++
+E4 PRINT OR EVIDENCE CONTRACT
++
+IDEMPOTENT REQUEST
++
+AUTHORIZED CONTEXT
+→
+TRACEABLE REPRESENTATION
+WITHOUT CREATING OR MUTATING THE DOMAIN RESOURCE
+```
+
+La representación puede cambiar; la identidad empresarial no cambia por ese hecho.
+
+---
+
+#### 6. Separación entre recurso y representación
+
+Se fija:
+
+```text
+RESOURCE != LABEL
+RESOURCE != QR
+RESOURCE != BARCODE
+RESOURCE != PRINT JOB
+RESOURCE != PDF
+RESOURCE != FILE
+RESOURCE != PRINTED COPY
+```
+
+Una representación apunta al recurso o snapshot autorizado. No lo reemplaza.
+
+---
+
+#### 7. Identidad estable
+
+Toda salida NEXO que represente un recurso debe conservar una referencia estable al sujeto autoritativo.
+
+La reimpresión, sustitución física de etiqueta, cambio de papel, cambio de impresora, cambio de plantilla o cambio de canal no crea una identidad NEXO nueva.
+
+---
+
+#### 8. Etiqueta visible
+
+Una etiqueta es una representación material de información autorizada en un instante y versión determinados.
+
+No es:
+
+- el LOC;
+- el LPN;
+- el activo;
+- el contenedor físico;
+- el movimiento;
+- la custodia;
+- la condición;
+- el documento empresarial original.
+
+---
+
+#### 9. QR y código de barras
+
+Un QR, Data Matrix o código de barras transporta una referencia resoluble, no autoridad.
+
+El payload debe permitir llegar al sujeto o snapshot correcto y ser validado por el consumidor autorizado.
+
+```text
+SCANNED CODE
+→
+RESOLVE CANONICAL RESOURCE
+→
+REVALIDATE CURRENT AUTHORITY AND STATE
+```
+
+Nunca:
+
+```text
+SCANNED CODE
+→
+TRUST EMBEDDED STATE AS CURRENT TRUTH
+```
+
+---
+
+#### 10. Escaneo y efecto empresarial
+
+Escanear una etiqueta no ejecuta por sí solo:
+
+- movimiento;
+- cambio de ubicación;
+- cambio de custodia;
+- apertura o cierre de LPN;
+- aceptación de entrega;
+- ajuste de inventario;
+- mantenimiento;
+- baja;
+- consumo de repuesto.
+
+El escaneo identifica el sujeto para una acción posterior autorizada.
+
+---
+
+#### 11. Impresión y efecto empresarial
+
+Se fija:
+
+```text
+PRINT REQUESTED != BUSINESS EFFECT
+PRINT SENT != BUSINESS EFFECT
+PRINTED VERIFIED != BUSINESS EFFECT
+```
+
+La impresión confirma una representación. El efecto empresarial pertenece al owner del proceso correspondiente.
+
+---
+
+#### 12. Propiedad de BLOQUE E4
+
+BLOQUE E4 conserva la propiedad de:
+
+- identidad `IMP-*` de la salida imprimible;
+- template y versión;
+- perfil físico;
+- contrato de datos imprimibles;
+- contrato de trabajo de impresión;
+- enrutamiento;
+- dispositivo principal y fallback;
+- heartbeat y estado del dispositivo;
+- idempotencia de impresión;
+- reintentos;
+- confirmación;
+- cancelación y reimpresión;
+- autorización específica del servicio de impresión;
+- privacidad del output;
+- adaptadores y conectividad;
+- monitoreo y diagnóstico;
+- piloto físico.
+
+NEXO no crea una implementación paralela de estos servicios.
+
+---
+
+#### 13. Propiedad de NEXO
+
+NEXO conserva la propiedad de:
+
+- identidad del LOC;
+- identidad del LPN;
+- identidad del activo;
+- relación entre activo y su estado de dominio;
+- hechos de inventario y logística;
+- movimientos y custodia;
+- conteos y diferencias;
+- mantenimiento y disponibilidad;
+- documentos empresariales cuyo owner funcional es NEXO;
+- autorización de dominio para solicitar una representación de esos recursos.
+
+---
+
+#### 14. Frontera con EVID
+
+Los contratos `EVID-ARC-*` gobiernan archivo, evidencia, integridad, metadatos, acceso, auditoría documental, retención y contingencia de Storage.
+
+NEXO conserva únicamente referencias gobernadas a la evidencia relacionada con sus hechos.
+
+```text
+FILE OR EVIDENCE REF
+!=
+DOMAIN EVENT
+```
+
+---
+
+#### 15. LOC: salida canónica
+
+La representación imprimible canónica de una ubicación NEXO consume:
+
+```text
+IMP-LBL-08
+```
+
+`IMP-LBL-08` representa una etiqueta de ubicación, estante, contenedor o zona bajo propiedad funcional de NEXO.
+
+---
+
+#### 16. LOC: identidad y datos
+
+La integración de LOC debe conservar como mínimo la relación con:
+
+- `ubicacion_id`;
+- `ubicacion_codigo`;
+- nombre visible;
+- tipo de ubicación;
+- sede;
+- capacidad o restricción cuando aplique;
+- estado vigente;
+- versión o revisión de la representación.
+
+Los nombres visibles pueden cambiar sin cambiar `ubicacion_id`.
+
+---
+
+#### 17. LOC: código visible
+
+El código de LOC es una clave operativa legible, pero no reemplaza el identificador estable.
+
+Si el código cambia mediante una transición autorizada, la historia debe permitir reconstruir qué código estuvo vigente en cada período.
+
+---
+
+#### 18. LOC: reimpresión
+
+Reimprimir un LOC:
+
+- conserva la identidad del LOC;
+- conserva la historia previa;
+- no crea una ubicación nueva;
+- no mueve inventario;
+- no cambia capacidad;
+- no cambia estado;
+- registra un nuevo intento o copia de impresión según E4.
+
+---
+
+#### 19. LOC: etiqueta obsoleta
+
+Una etiqueta física antigua puede quedar materialmente presente después de un cambio de código, estado o layout.
+
+El consumidor debe resolver el recurso y validar vigencia antes de actuar. La existencia física de una etiqueta no garantiza vigencia.
+
+---
+
+#### 20. LPN: identidad autoritativa
+
+La etiqueta de un LPN debe representar la identidad del LPN.
+
+Se preserva:
+
+```text
+LPN LABEL
+→
+LPN IDENTITY
+```
+
+No:
+
+```text
+LPN LABEL
+→
+PURPOSE TYPE AS IDENTITY
+```
+
+Cambiar la etiqueta visible no cambia el purpose type ni crea otro LPN.
+
+---
+
+#### 21. LPN: brecha de catálogo E4
+
+El catálogo `PRINT-ARC-003` vigente no contiene una identidad `IMP-*` dedicada explícitamente a una etiqueta genérica de LPN.
+
+Esta ausencia se trata como una brecha contractual de integración, no como permiso para inventar una identidad imprimible dentro de NEXO.
+
+---
+
+#### 22. LPN: prohibición de sustituciones silenciosas
+
+Queda prohibido usar por inferencia:
+
+- `IMP-LBL-08` como etiqueta genérica de LPN, porque una ubicación y un LPN son identidades distintas;
+- `IMP-LBL-09` como etiqueta genérica de LPN, porque artículo/SKU y LPN son identidades distintas;
+- `IMP-LBL-12` como etiqueta genérica de LPN, porque activo y LPN son identidades distintas.
+
+---
+
+#### 23. LPN y `IMP-LBL-10`
+
+`IMP-LBL-10` puede representar un LPN únicamente cuando el caso empresarial exacto cumple el significado aprobado de:
+
+```text
+BULTO PARA TRASLADO, REMISION O DESPACHO
+```
+
+y cuando los datos requeridos por la salida corresponden efectivamente al movimiento autorizado.
+
+Ese uso contextual no convierte `IMP-LBL-10` en la etiqueta genérica de todo LPN.
+
+---
+
+#### 24. LPN genérico: fail-closed
+
+Mientras no exista una identidad de salida E4 aprobada que cubra de forma exacta la etiqueta genérica de LPN, la materialización futura debe fallar cerrada para ese output.
+
+No se crea en esta tarea un nuevo identificador `IMP-*`.
+
+La condición de salida es una reconciliación explícita del catálogo propietario de impresión de BLOQUE E4.
+
+---
+
+#### 25. LPN: reimpresión
+
+Una futura reimpresión de etiqueta LPN deberá:
+
+- conservar `lpn_id`;
+- conservar el código autoritativo vigente;
+- conservar la relación con el recurso original;
+- registrar motivo y actor cuando la política lo exija;
+- no duplicar contenido;
+- no duplicar saldo;
+- no crear otro LPN;
+- no cambiar estado ni ubicación por inferencia.
+
+---
+
+#### 26. LPN: etiqueta dañada
+
+Una etiqueta dañada es una incidencia de representación.
+
+```text
+DAMAGED LABEL
+!=
+DAMAGED LPN
+```
+
+No confirma daño de contenido, contenedor físico ni existencia.
+
+---
+
+#### 27. Frontera con `NEXO-DOM-019`
+
+Esta tarea no decide cuándo el LPN coincide físicamente con un contenedor permanente ni cuándo ambas identidades se separan.
+
+`NEXO-DOM-019` conserva la propiedad de esa distinción.
+
+La integración de impresión únicamente exige que una etiqueta futura no colapse esas identidades por conveniencia visual.
+
+---
+
+#### 28. Activo: salida de identificación
+
+La etiqueta de identidad de activo consume:
+
+```text
+IMP-LBL-12
+```
+
+La salida representa la identidad canónica del activo o equipo bajo propiedad NEXO.
+
+---
+
+#### 29. Activo: datos de identificación
+
+La representación consume el snapshot autorizado de:
+
+- `activo_id`;
+- código de activo;
+- nombre;
+- categoría aplicable;
+- serial cuando exista;
+- sede;
+- ubicación;
+- estado visible permitido;
+- versión o revisión de representación.
+
+La etiqueta no puede fabricar un serial o placa ausente.
+
+---
+
+#### 30. Activo: estado técnico
+
+La salida:
+
+```text
+IMP-LBL-13
+```
+
+representa mantenimiento, inspección o restricción operativa del activo.
+
+Se mantiene separada de la etiqueta de identidad.
+
+```text
+ASSET ID LABEL != MAINTENANCE STATUS LABEL
+```
+
+---
+
+#### 31. Activo: reimpresión
+
+Reimprimir `IMP-LBL-12` o `IMP-LBL-13` no:
+
+- crea otro activo;
+- cambia código;
+- cambia serial;
+- cambia ubicación;
+- cambia condición;
+- cambia disponibilidad;
+- abre o cierra mantenimiento.
+
+---
+
+#### 32. Activo: QR existente
+
+El AS-IS contiene `qr_token` en activos.
+
+Ese token puede participar en resolución de identidad, pero no debe tratarse como sustituto de `asset_item_id` ni como prueba de vigencia, custodia o condición.
+
+---
+
+#### 33. Documentos NEXO integrados con E4
+
+Las identidades de salida convencional de propiedad funcional NEXO relevantes para este dominio son:
+
+```text
+IMP-DOC-01
+IMP-DOC-02
+IMP-DOC-03
+IMP-DOC-04
+IMP-DOC-11
+IMP-DOC-12
+IMP-DOC-13
+IMP-DOC-16
+```
+
+No se crean identidades documentales paralelas.
+
+---
+
+#### 34. `IMP-DOC-01`
+
+`IMP-DOC-01 — Remisión o nota de despacho` representa una salida física del hecho logístico autorizado.
+
+El documento no sustituye la remisión canónica ni su lifecycle.
+
+---
+
+#### 35. `IMP-DOC-02`
+
+`IMP-DOC-02 — Manifiesto de traslado interno` representa un snapshot autorizado de origen, destino, contenido y responsables.
+
+Imprimirlo no ejecuta el traslado.
+
+---
+
+#### 36. `IMP-DOC-03`
+
+`IMP-DOC-03 — Hoja de conteo de inventario` representa el universo o snapshot de una sesión de conteo.
+
+La cantidad escrita o capturada posteriormente requiere su flujo de observación autoritativo; el papel no ajusta saldos.
+
+---
+
+#### 37. `IMP-DOC-04`
+
+`IMP-DOC-04 — Reporte de diferencias o ajustes de inventario` documenta diferencias, investigación y decisión aplicable.
+
+La impresión no constituye autorización de ajuste ni movimiento compensatorio.
+
+---
+
+#### 38. `IMP-DOC-11`
+
+`IMP-DOC-11 — Orden de mantenimiento` representa solicitud, autorización y estado de intervención según su snapshot.
+
+El documento impreso no libera el activo ni confirma ejecución técnica.
+
+---
+
+#### 39. `IMP-DOC-12`
+
+`IMP-DOC-12 — Acta de entrega, devolución o traslado de activo` representa hechos de custodia, condición y ubicación vinculados a su expediente.
+
+Una firma o copia impresa puede ser evidencia, pero el cambio autoritativo debe permanecer correlacionado con el evento NEXO correspondiente.
+
+---
+
+#### 40. `IMP-DOC-13`
+
+`IMP-DOC-13 — Reporte de incidente o soporte técnico` representa el caso técnico y su estado.
+
+Una copia impresa o archivo asociado no sustituye diagnóstico, decisión ni cierre.
+
+---
+
+#### 41. `IMP-DOC-16`
+
+`IMP-DOC-16 — Resumen de indicadores operativos o gerenciales` representa un snapshot de información autorizada con fecha de corte.
+
+No crea una segunda fuente de métricas ni altera los datos fuente.
+
+---
+
+#### 42. Documento empresarial frente a salida imprimible
+
+Se fija:
+
+```text
+BUSINESS RECORD
+!=
+PRINTABLE OUTPUT IDENTITY
+!=
+PRINT JOB
+!=
+PRINTED COPY
+!=
+STORED FILE
+```
+
+Cada capa conserva identidad y lifecycle propios.
+
+---
+
+#### 43. Snapshot documental
+
+Los documentos convencionales de E4 consumen el perfil de idempotencia:
+
+```text
+IDP-DOCUMENT-SNAPSHOT
+```
+
+La clave conceptual preserva:
+
+```text
+document_or_report_id + snapshot_version
+```
+
+Una nueva copia del mismo snapshot no crea una nueva versión empresarial.
+
+---
+
+#### 44. Idempotencia de etiquetas
+
+Las etiquetas de recurso consumen:
+
+```text
+IDP-RESOURCE-VERSION
+```
+
+La clave conceptual preserva:
+
+```text
+resource_type + resource_id + resource_version
+```
+
+La deduplicación de impresión no cambia la identidad del recurso.
+
+---
+
+#### 45. Copia y slot de impresión
+
+E4 distingue el recurso o snapshot del destino lógico y `copy_slot_id`.
+
+Por tanto, múltiples copias autorizadas pueden existir sin confundirse con múltiples recursos empresariales.
+
+---
+
+#### 46. Reimpresión
+
+Toda reimpresión debe distinguir:
+
+- recurso o documento representado;
+- versión o snapshot;
+- motivo;
+- actor;
+- destino lógico;
+- copia o slot;
+- trabajo de impresión previo cuando aplique;
+- resultado del nuevo intento.
+
+La reimpresión no modifica retrospectivamente el primer intento.
+
+---
+
+#### 47. Sustitución de etiqueta
+
+Cuando una etiqueta física se sustituye por daño, ilegibilidad o desgaste:
+
+```text
+OLD REPRESENTATION
+→
+SUPERSEDED OR REPLACED PHYSICAL COPY
+
+CANONICAL RESOURCE IDENTITY
+→
+UNCHANGED
+```
+
+La implementación podrá registrar la copia reemplazada sin retirar la historia del recurso.
+
+---
+
+#### 48. Duplicados físicos
+
+Dos etiquetas físicas legibles pueden existir accidentalmente para el mismo recurso.
+
+La resolución debe converger a una sola identidad NEXO. La presencia de dos etiquetas no crea dos existencias.
+
+---
+
+#### 49. Enrutamiento
+
+NEXO no selecciona por su cuenta una impresora fuera de las reglas de E4.
+
+El output solicita una identidad de salida y contexto autorizado; E4 resuelve destino, dispositivo, alternativas y bloqueo.
+
+---
+
+#### 50. Dispositivo y heartbeat
+
+El estado de una impresora pertenece al servicio transversal de impresión.
+
+Un recurso NEXO puede existir y ser válido aunque no exista una impresora disponible.
+
+```text
+RESOURCE VALID
++
+NO PRINT DEVICE AVAILABLE
+→
+PRINT BLOCKED
+RESOURCE UNCHANGED
+```
+
+---
+
+#### 51. Estado físico actual de impresión de etiquetas
+
+El contrato E4 vigente mantiene el objetivo central de etiquetas asociado a la Zebra ZD230 y documenta esa capacidad como bloqueada mientras el dispositivo permanece almacenado y sin canal operativo.
+
+Esta condición no bloquea la aprobación documental de la integración, pero sí impide declarar impresión física disponible.
+
+---
+
+#### 52. Confirmación de impresión
+
+La confirmación del servicio de impresión demuestra el resultado del trabajo de impresión conforme al contrato E4.
+
+No demuestra:
+
+- entrega física al usuario final;
+- lectura exitosa futura;
+- recepción empresarial;
+- cierre del proceso de negocio.
+
+---
+
+#### 53. Error de impresión
+
+Un fallo de impresión:
+
+- conserva el recurso NEXO;
+- conserva la solicitud y su identidad;
+- conserva error y estado del trabajo;
+- permite reintento según E4;
+- no autoriza crear una segunda operación empresarial equivalente.
+
+---
+
+#### 54. Resultado desconocido
+
+Si el cliente desconoce si el dispositivo recibió el trabajo, no debe generar un nuevo recurso ni asumir que la impresión falló.
+
+Debe reconciliar el mismo trabajo o scope de idempotencia hasta conocer el resultado permitido por E4.
+
+---
+
+#### 55. Operación offline
+
+Una solicitud offline puede conservar intención, recurso y snapshot de referencia.
+
+No debe confiar en un estado de dominio embebido que ya pueda estar obsoleto.
+
+Antes de materializar un output sensible se revalida vigencia, autorización y revisión aplicables.
+
+---
+
+#### 56. Autorización de dominio y autorización de impresión
+
+Se distinguen dos decisiones:
+
+```text
+MAY REPRESENT NEXO RESOURCE
+```
+
+y:
+
+```text
+MAY CREATE OR REPRINT E4 OUTPUT
+```
+
+Poseer una no concede automáticamente la otra.
+
+---
+
+#### 57. Privacidad y minimización
+
+La salida física debe contener únicamente los campos aprobados por su template y contexto.
+
+Un QR o código no debe exponer información sensible innecesaria cuando una referencia opaca resoluble sea suficiente.
+
+---
+
+#### 58. Evidencia de emisión
+
+La creación, envío o confirmación de una salida puede producir evidencia técnica o documental de que una representación fue solicitada o emitida.
+
+Se mantiene:
+
+```text
+PRINT EVIDENCE
+!=
+BUSINESS DECISION
+```
+
+---
+
+#### 59. Auditoría
+
+La integración debe permitir correlacionar:
+
+- sujeto NEXO;
+- versión o snapshot;
+- output `IMP-*`;
+- template/version;
+- trabajo de impresión;
+- actor y principal técnico;
+- autorización;
+- destino;
+- dispositivo resuelto;
+- timestamps relevantes;
+- resultado;
+- motivo de reimpresión o cancelación;
+- evidencia asociada.
+
+La auditoría no sustituye el evento empresarial original.
+
+---
+
+#### 60. AS-IS de impresión NEXO
+
+La aplicación NEXO actual contiene una superficie de impresión basada en BrowserPrint, generación ZPL, detección de dispositivos, preview y layouts.
+
+Existe base reutilizable para integración, pero no constituye por sí sola el contrato objetivo E4.
+
+---
+
+#### 61. Presets AS-IS
+
+El código actual materializa presets locales para:
+
+```text
+LOC_50x70_QR
+SKU_32x25_3UP
+PROD_50x30
+ASSET_50x30_QR
+```
+
+No se observó un preset dedicado a LPN ni un preset de documentos convencionales dentro de esa superficie.
+
+---
+
+#### 62. Divergencia de perfiles físicos
+
+Los tamaños legacy actuales de LOC y activo no se promueven a contrato canónico.
+
+BLOQUE E4 ya define perfiles propios para `IMP-LBL-08` y `IMP-LBL-12`.
+
+La implementación futura debe adoptar o reconciliar los perfiles E4 aprobados en vez de preservar un tamaño local por compatibilidad accidental.
+
+---
+
+#### 63. AS-IS centrado en LOC
+
+La superficie actual carga LOC mediante su API y varias rutas de preview/layout codifican explícitamente semántica `LOC` para QR/Data Matrix.
+
+Ese diseño es reutilizable como infraestructura, pero debe generalizarse bajo contratos tipados de recurso antes de servir LPN, activos y documentos de forma canónica.
+
+---
+
+#### 64. Cola legacy local
+
+La superficie actual conserva la cola de impresión en `localStorage` del navegador y envía ZPL mediante BrowserPrint.
+
+Ese mecanismo no demuestra por sí solo:
+
+- trabajo durable server-side;
+- reintento durable;
+- deduplicación global;
+- reconciliación multiestación;
+- auditoría completa del lifecycle del trabajo.
+
+Los contratos E4 conservan la autoridad sobre esas garantías.
+
+---
+
+#### 65. AS-IS de LPN
+
+La aplicación contiene creación y consulta de LPN, y la base remota contiene la superficie `inventory_lpns` con identidad, código, ubicación, estado y un campo legacy de etiqueta.
+
+No se observó una integración de impresión dedicada a LPN.
+
+El campo legacy de etiqueta no constituye por sí mismo una identidad `IMP-*` ni un contrato de impresión E4.
+
+---
+
+#### 66. AS-IS remoto observado
+
+El ambiente remoto inspeccionado registró:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `inventory_locations` | 12 |
+| `inventory_lpns` | 0 |
+| `asset_items` | 38 |
+| `asset_documents` | 0 |
+
+Existe por tanto material real para reconciliar LOC y activos; no existen filas LPN o documentos de activos en el snapshot remoto que obliguen a reinterpretar impresiones históricas.
+
+---
+
+#### 67. Estado de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan BrowserPrint, generación ZPL, detección de dispositivos, preview, layouts, LOC existentes, activos existentes y APIs actuales.
+
+Debe refactorizarse la semántica local para consumir las identidades y garantías E4 sin mantener contratos paralelos.
+
+---
+
+#### 68. Reconciliación futura del legacy
+
+La materialización posterior deberá reconciliar explícitamente:
+
+1. presets locales frente a `IMP-*` y perfiles E4;
+2. códigos y QR actuales de LOC;
+3. layouts guardados;
+4. queue local del navegador;
+5. estado de trabajos no durable;
+6. referencias de activo actuales;
+7. `qr_token` de activos;
+8. LPN legacy y su campo de etiqueta;
+9. plantillas o ZPL creados fuera del catálogo E4;
+10. copias físicas existentes que puedan quedar obsoletas;
+11. impresiones históricas sin correlación durable cuando existan;
+12. permisos y superficies de impresión actuales.
+
+No se ejecuta backfill ni mutación en esta tarea.
+
+---
+
+#### 69. Matriz de integración
+
+| Sujeto NEXO | Salida E4 consumida | Regla |
+| --- | --- | --- |
+| LOC | `IMP-LBL-08` | representa ubicación; reimpresión conserva identidad |
+| LPN genérico | ninguna identidad E4 exacta vigente | fail-closed hasta reconciliación del catálogo |
+| LPN como bulto de traslado/remisión/despacho | `IMP-LBL-10` | solo cuando cumple exactamente ese contexto |
+| activo: identidad | `IMP-LBL-12` | representa activo, no lo crea ni modifica |
+| activo: estado técnico | `IMP-LBL-13` | separado de identidad y lifecycle del mantenimiento |
+| remisión | `IMP-DOC-01` | snapshot documental, no movimiento |
+| traslado interno | `IMP-DOC-02` | snapshot documental, no traslado |
+| conteo | `IMP-DOC-03` | soporte de conteo, no observación autoritativa por sí mismo |
+| diferencia/ajuste | `IMP-DOC-04` | soporte, no autorización ni compensación |
+| mantenimiento | `IMP-DOC-11` | orden representada, no ejecución ni liberación |
+| entrega/devolución/traslado de activo | `IMP-DOC-12` | evidencia correlacionada, no fuente única de custodia |
+| incidente técnico | `IMP-DOC-13` | snapshot del caso, no diagnóstico o cierre por sí solo |
+| indicadores | `IMP-DOC-16` | snapshot con corte, no fuente de métricas |
+
+---
+
+#### 70. Invariantes
+
+La implementación futura debe preservar:
+
+1. una identidad NEXO por recurso autoritativo;
+2. cero identidades NEXO creadas por reimpresión;
+3. cero movimientos creados por escaneo aislado;
+4. cero efectos empresariales creados por confirmación de impresión;
+5. una relación explícita entre output y recurso/snapshot;
+6. template y versión gobernados por E4;
+7. idempotencia gobernada por E4;
+8. autorización server-side;
+9. historia no destructiva;
+10. evidencia separada de decisión;
+11. LPN y LOC no intercambiables;
+12. LPN y contenedor físico no colapsados;
+13. fallos de impresión sin mutación del recurso;
+14. reintentos sin duplicación empresarial.
+
+---
+
+#### 71. Concurrencia
+
+Dos reimpresiones concurrentes no pueden crear dos recursos empresariales ni cambiar dos veces una revisión de dominio.
+
+La política de copias e idempotencia de E4 gobierna la salida; NEXO únicamente valida el recurso y snapshot que se representa.
+
+---
+
+#### 72. Fail-closed
+
+La solicitud futura falla cerrada cuando:
+
+- el recurso NEXO no existe;
+- la identidad no es resoluble;
+- la revisión requerida está obsoleta;
+- el output `IMP-*` no corresponde al tipo de recurso;
+- falta template/version aprobados;
+- falta autorización;
+- el LPN requiere etiqueta genérica y no existe binding E4 exacto;
+- el dispositivo o destino no cumple el gate E4;
+- el resultado previo es desconocido y no se ha reconciliado;
+- una copia solicitada excede la política aplicable;
+- el payload pretende producir un efecto de dominio mediante impresión.
+
+El fallo no modifica el recurso NEXO.
+
+---
+
+#### 73. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar:
+
+- binding explícito `NEXO resource type → IMP-*`;
+- template/version E4;
+- perfil físico E4;
+- payload derivado de fuente autoritativa;
+- recurso y revisión revalidados;
+- autorización de dominio y de impresión;
+- idempotencia;
+- destino y dispositivo resueltos por E4;
+- estado de dispositivo válido;
+- confirmación y error durables;
+- reimpresión trazable;
+- evidencia correlacionada;
+- reconciliación de output LPN antes de habilitarlo;
+- compatibilidad con escaneo sin autoridad implícita;
+- pruebas físicas cuando correspondan.
+
+---
+
+#### 74. Handoff hacia `NEXO-DOM-019`
+
+Esta tarea entrega:
+
+```text
+DOMAIN RESOURCE != PHYSICAL REPRESENTATION
++
+LABEL DOES NOT CREATE IDENTITY
++
+LPN LABEL RESOLVES LPN IDENTITY
++
+LOC AND LPN REMAIN DISTINCT
++
+ASSET IDENTITY SURVIVES RELABELING
++
+E4 OWNS PRINT OUTPUT AND JOB LIFECYCLE
++
+NEXO OWNS DOMAIN IDENTITY AND BUSINESS EFFECTS
++
+DOCUMENT OUTPUT != BUSINESS RECORD
++
+EVIDENCE != DECISION
++
+REPRINT != NEW RESOURCE
+```
+
+`NEXO-DOM-019` deberá separar contenedor físico y LPN sin utilizar la etiqueta, el código visible o el soporte físico como prueba de que ambas identidades son equivalentes.
+
+---
+
+#### 75. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige identidad estable ante impresión y reimpresión, ciclo auditable de LPN y reetiquetado, correspondencia física de impresión, lifecycle durable del trabajo de impresión, no duplicación, historia no destructiva y separación entre evidencia y fuente empresarial. Esta tarea integra esos contratos sin crear una conducta observable nueva que requiera modificar el registro.
+
+---
+
+#### 76. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-003`, para correspondencia entre preview, plantilla, ZPL, DPI, dimensiones, códigos y muestra física;
+- `TREQ-NEXO-004`, para ciclo completo y auditable de LPN, incluido reetiquetado sin doble contabilización;
+- `TREQ-NEXO-005`, para lifecycle durable del trabajo de impresión, error, reintento, dispositivo e identificación suficiente contra pérdida o duplicación;
+- `TREQ-NEXO-011`, para impedir que una representación produzca saldos o movimientos sin efecto correlacionado;
+- `TREQ-NEXO-013`, para identidad estable de activos y prohibición de crear identidad nueva por reimpresión o sustitución de etiqueta;
+- `TREQ-INTEGRATION-003`, para idempotencia transversal;
+- `TREQ-INTEGRATION-004` y `TREQ-INTEGRATION-006`, para correlación y fuente empresarial única;
+- cobertura transversal vigente de EVID para procedencia, integridad y separación entre archivo, evidencia y registro empresarial.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 77. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main`, continuidad `017 → 018 → 019`, topología `DEFINE_ONCE`, owner, handoff de `NEXO-DOM-017`, catálogo y contratos PRINT-ARC/EVID-ARC, 04A NEXO, código actual de impresión en `vento-nexo` y esquema/datos remotos de LOC, LPN, activos y documentos en solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se imprimieron, escanearon, reimprimieron, sustituyeron ni anularon etiquetas o documentos reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron impresoras, etiquetas, datos, Supabase, Storage, código, aplicaciones, infraestructura, paquetes ni despliegues. |
+
+---
+
+#### 78. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] recurso y representación quedan separados;
+- [x] QR/código no concede autoridad;
+- [x] escaneo no ejecuta efecto empresarial por sí solo;
+- [x] impresión no ejecuta efecto empresarial;
+- [x] BLOQUE E4 conserva ownership del servicio de impresión;
+- [x] NEXO conserva ownership del recurso y hechos físicos;
+- [x] LOC consume `IMP-LBL-08`;
+- [x] reimpresión LOC conserva identidad;
+- [x] LPN conserva identidad propia;
+- [x] se documenta que no existe output E4 dedicado a LPN genérico;
+- [x] no se inventa un identificador `IMP-*`;
+- [x] `IMP-LBL-10` queda limitado al contexto real de bulto de traslado/remisión/despacho;
+- [x] LPN genérico falla cerrado hasta reconciliación E4;
+- [x] etiqueta dañada no equivale a LPN dañado;
+- [x] activo consume `IMP-LBL-12` para identidad;
+- [x] activo consume `IMP-LBL-13` para estado técnico cuando aplica;
+- [x] reimpresión de activo no cambia identidad ni estado;
+- [x] se integran ocho documentos NEXO ya catalogados por E4;
+- [x] documento imprimible y registro empresarial quedan separados;
+- [x] etiquetas consumen `IDP-RESOURCE-VERSION`;
+- [x] documentos consumen `IDP-DOCUMENT-SNAPSHOT`;
+- [x] copia y recurso quedan separados;
+- [x] reimpresión conserva historia;
+- [x] duplicados físicos no duplican existencia;
+- [x] enrutamiento y dispositivo permanecen en E4;
+- [x] la indisponibilidad de impresora no invalida el recurso;
+- [x] la Zebra almacenada no se presenta como impresión física disponible;
+- [x] error de impresión no modifica el dominio;
+- [x] resultado desconocido exige reconciliación;
+- [x] offline no confía en estado embebido obsoleto;
+- [x] autorización de dominio y de impresión quedan separadas;
+- [x] se preserva minimización de datos;
+- [x] evidencia de impresión no equivale a decisión;
+- [x] se documenta el AS-IS BrowserPrint/ZPL;
+- [x] se documentan presets legacy;
+- [x] se documenta divergencia frente a perfiles E4;
+- [x] se documenta dependencia local de LOC en el código actual;
+- [x] se documenta queue legacy en navegador;
+- [x] se documenta LPN sin integración de impresión dedicada;
+- [x] se documentan 12 LOC, 0 LPN, 38 activos y 0 documentos de activo observados remotamente;
+- [x] la capacidad queda `REUSE_OR_REFACTOR`;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-DOM-019`.
+
+---
+
+#### 79. Límites
+
+Esta tarea no imprime ni reimprime etiquetas o documentos; no modifica LOC, LPN, activos, documentos, movimientos, custodia, conteos, mantenimiento, remisiones, layouts, templates, perfiles, trabajos de impresión, colas, dispositivos ni datos; no crea identificadores `IMP-*`; no modifica `PRINT-ARC-*` ni `EVID-ARC-*`; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, buckets, políticas de Storage, Server Actions ni Route Handlers; no ejecuta migraciones, backfills ni mutaciones remotas; no modifica Supabase ni `vento-nexo`; no implementa UI; no despliega; no crea instancia física propia; no crea ni modifica requisitos de prueba; no modifica 04A; no define la identidad permanente del contenedor físico frente al LPN; y no desarrolla `NEXO-DOM-019`.
+
+---
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-017 — Definir auditoría, historial y evidencia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
+
+### ✅ NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+**Tarea siguiente:** NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+**Tipo de tarea:** documental; definición canónica de identidad y relación entre contenedor físico individual y LPN, separando existencia física permanente, identidad logística estable durante su ciclo, duración temporal o persistente, vínculo directo, historia, etiquetado, ubicación, custodia, condición y contenido sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+**Fecha de corte:** 2026-09-12
+
+---
+
+#### 1. Propósito
+
+Definir una frontera inequívoca entre el objeto físico reutilizable que existe en el mundo real y la identidad logística LPN que NEXO utiliza para agrupar, identificar, mover y reconciliar contenido.
+
+El contrato evita que un código visible, una fila legacy, un tipo de empaque o un LPN termine funcionando simultáneamente como identidad del contenedor, identidad logística y representación de stock.
+
+---
+
+#### 2. Resultado canónico
+
+La separación queda expresada así:
+
+```text
+PHYSICAL_CONTAINER
+= identidad permanente del objeto fisico individual
+
+LPN
+= identidad logistica estable durante su propio ciclo
+  con politica temporal o persistente
+
+DIRECT CONTAINER-LPN BINDING
+= relacion explicita y auditable entre ambas identidades
+
+PHYSICAL_CONTAINER != LPN != LABEL != CONTENT
+```
+
+La relación puede existir o no existir. Ninguno de sus extremos depende del otro para conservar identidad.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin reabrir:
+
+- la clasificación primaria de inventario y la clase `PHYSICAL_CONTAINER`;
+- el propósito y los tipos canónicos de LPN;
+- el ciclo de vida de LPN;
+- contenido, empaque y desempaque;
+- división, unión y transferencia entre LPN;
+- anidamiento de LPN;
+- relación sede → LOC → LPN → contenido;
+- custodia y responsable actual;
+- condición, daño, pérdida y faltante;
+- conteos de activos, reutilizables y contenedores;
+- historia no destructiva y evidencia;
+- integración de etiquetas e impresión con BLOQUE E4.
+
+No reabre sus decisiones ya aprobadas.
+
+---
+
+#### 4. Frontera principal de identidad
+
+Un `PHYSICAL_CONTAINER` representa una cosa física individual rastreable.
+
+Un `LPN` representa una identidad logística.
+
+Que ambos estén asociados durante una operación no los convierte en la misma entidad.
+
+---
+
+#### 5. Definición de `PHYSICAL_CONTAINER`
+
+Es un recipiente físico permanente o retornable cuya unidad individual requiere identidad propia.
+
+Su identidad debe poder sobrevivir a:
+
+- cambio o pérdida de etiqueta;
+- reemplazo del QR o código visible;
+- cambio, cierre o ausencia de LPN;
+- vaciado de contenido;
+- cambio de LOC;
+- cambio de sede cuando esté autorizado;
+- cambio de custodio;
+- mantenimiento;
+- daño;
+- recuperación;
+- indisponibilidad temporal;
+- nuevos ciclos operativos.
+
+---
+
+#### 6. Permanencia del contenedor físico
+
+La permanencia significa continuidad de la identidad del objeto físico, no disponibilidad perpetua ni imposibilidad de retiro.
+
+Mientras el mismo objeto físico exista como recurso rastreado, conserva su identidad aunque cambien estado, ubicación, custodio, etiqueta o asociación logística.
+
+La baja o disposición futura deberá preservar su historia y no habilita reutilización silenciosa de la misma identidad para otro objeto físico.
+
+---
+
+#### 7. Definición de `LPN`
+
+El LPN es una identidad logística única que representa una unidad de manejo, agrupación o seguimiento dentro de su ciclo aprobado.
+
+El LPN conserva identidad propia frente a:
+
+- su etiqueta visible;
+- el contenedor físico asociado;
+- el contenido;
+- la ubicación;
+- el purpose type;
+- el estado logístico;
+- el documento que lo originó.
+
+---
+
+#### 8. Estabilidad de identidad del LPN
+
+Mientras un LPN continúe vigente, reimprimirlo, moverlo, cambiar su etiqueta o vincularlo con un contenedor no crea otro LPN.
+
+La identidad del LPN cambia únicamente mediante una transición de ciclo expresamente autorizada por su contrato, nunca por inferencia visual o por mutar atributos auxiliares.
+
+---
+
+#### 9. LPN temporal
+
+Un LPN temporal está destinado a un ciclo logístico acotado.
+
+`TEMPORAL` describe la política de duración de la identidad logística; no significa que el identificador pueda mutar durante ese ciclo ni que sea un alias del contenedor físico.
+
+La regla exacta que decide cuándo ese LPN debe cerrarse o sustituirse pertenece a `NEXO-DOM-020`.
+
+---
+
+#### 10. LPN persistente
+
+Un LPN persistente puede conservarse a través de más de un uso operativo cuando la política aprobada lo permita.
+
+`PERSISTENTE` no convierte el LPN en la identidad permanente del recipiente físico.
+
+Incluso cuando el mismo contenedor y el mismo LPN se mantengan asociados durante un periodo prolongado, ambas identidades continúan separadas.
+
+---
+
+#### 11. Regla de no aliasing
+
+Queda prohibido tratar como equivalentes:
+
+```text
+physical_container_id = lpn_id
+container_code = lpn_code
+container_qr = lpn_qr
+container_label = lpn_identity
+container_type = physical_container_identity
+```
+
+Un sistema puede mostrar ambos identificadores juntos, pero no sustituir uno por el otro.
+
+---
+
+#### 12. Existencia independiente del contenedor
+
+Un `PHYSICAL_CONTAINER` puede existir sin LPN activo.
+
+Ejemplos válidos conceptualmente incluyen:
+
+- contenedor vacío almacenado;
+- contenedor en inspección;
+- contenedor en mantenimiento;
+- contenedor en espera de asignación;
+- contenedor recuperado después de cerrar su LPN previo.
+
+La ausencia de LPN no elimina ni suspende su identidad física.
+
+---
+
+#### 13. Existencia independiente del LPN
+
+Un LPN puede existir sin contenedor físico individual asociado.
+
+Puede representar una unidad logística cuyo soporte físico:
+
+- sea desechable;
+- no requiera identidad individual;
+- sea virtual o lógico dentro del flujo aprobado;
+- todavía no tenga contenedor asignado;
+- utilice otra forma de empaque sin clasificación `PHYSICAL_CONTAINER`.
+
+---
+
+#### 14. Vínculo directo contenedor–LPN
+
+La asociación entre un contenedor individual y un LPN se modela como relación explícita, no como identidad compartida.
+
+El vínculo directo deberá poder expresar al menos:
+
+- identidad del contenedor físico;
+- identidad del LPN;
+- inicio de vigencia;
+- fin de vigencia cuando exista;
+- motivo o contexto empresarial;
+- actor o principal técnico responsable de la operación;
+- contexto de autoridad;
+- correlación e idempotencia;
+- evidencia y lineage de auditoría cuando apliquen.
+
+---
+
+#### 15. Vínculo activo
+
+Un vínculo activo significa únicamente que ese LPN está directamente asociado a ese contenedor en el periodo vigente.
+
+No significa que:
+
+- el contenedor sea el LPN;
+- todo contenido histórico del LPN pertenezca al contenedor para siempre;
+- el contenedor deba conservar ese LPN en el siguiente ciclo;
+- el LPN deba cerrarse al vaciarse;
+- el vínculo autorice movimiento o custodia.
+
+---
+
+#### 16. Cardinalidad del vínculo directo
+
+Para evitar aliasing y ambigüedad de identidad:
+
+- un contenedor físico individual no puede tener simultáneamente más de un LPN como vínculo directo de identidad logística;
+- un LPN no puede tener simultáneamente más de un contenedor físico individual como vínculo directo de identidad física;
+- una segunda asociación directa exige resolver primero la vigencia de la asociación previa conforme al ciclo aprobado.
+
+Esta cardinalidad se aplica al vínculo directo de identidad y no al contenido anidado.
+
+---
+
+#### 17. Anidamiento de LPN no equivale a vínculo directo
+
+La existencia de LPN hijos dentro de otro LPN o dentro de una unidad de manejo no crea múltiples identidades directas para el mismo contenedor físico.
+
+Se separan:
+
+```text
+DIRECT CONTAINER-LPN BINDING
+!=
+LPN PARENT-CHILD RELATION
+!=
+LPN CONTENT MEMBERSHIP
+```
+
+El anidamiento continúa bajo el contrato ya aprobado para LPN anidados.
+
+---
+
+#### 18. Historia del vínculo
+
+Vincular y desvincular no sobrescribe la historia previa.
+
+Cada periodo de asociación debe quedar reconstruible como intervalo o secuencia de eventos, de forma que pueda determinarse qué contenedor y qué LPN estuvieron asociados en una fecha determinada.
+
+---
+
+#### 19. Nueva asociación posterior
+
+Si el mismo contenedor se asocia posteriormente con otro LPN, la relación anterior permanece en la historia.
+
+Si el mismo LPN se asocia posteriormente con otro contenedor cuando la política lo permita, la relación previa permanece igualmente trazable.
+
+Esta tarea define la preservación de identidad e historia; `NEXO-DOM-020` decidirá la política que permite conservar, cambiar o cerrar el LPN.
+
+---
+
+#### 20. Diferencia entre vínculo y contenido
+
+El vínculo contenedor–LPN no es una tabla de contenido.
+
+La relación responde:
+
+```text
+¿QUE CONTENEDOR FISICO SOPORTA DIRECTAMENTE ESTE LPN?
+```
+
+El contenido del LPN responde por separado:
+
+```text
+¿QUE EXISTENCIA LOGISTICA ESTA DENTRO DEL LPN?
+```
+
+---
+
+#### 21. Prohibición de doble saldo por vínculo
+
+Crear o cerrar el vínculo entre contenedor y LPN no crea, duplica, consume ni mueve inventario por sí mismo.
+
+El contenedor físico conserva su propia identidad de recurso y el contenido permanece representado por el contrato de inventario/LPN correspondiente.
+
+La prohibición integral de doble contabilización entre existencia suelta y existencia contenida permanece en `NEXO-DOM-021`.
+
+---
+
+#### 22. Frontera con movimiento atómico
+
+La asociación no concede por sí sola semántica de movimiento.
+
+La regla que determina cómo se mueve un LPN junto con todo su contenido corresponde a `NEXO-DOM-022`.
+
+Esta tarea solo exige que cualquier movimiento futuro preserve la diferencia entre contenedor, LPN y contenido.
+
+---
+
+#### 23. Frontera con lote, serial, vencimiento y condición del contenido
+
+Lote, serial, vencimiento y condición de la existencia dentro del LPN permanecen propiedades de su contenido y de las identidades correspondientes.
+
+No se copian al contenedor físico como si describieran al recipiente.
+
+La trazabilidad interna pertenece a `NEXO-DOM-023`.
+
+---
+
+#### 24. Frontera con capacidad y compatibilidad
+
+Capacidad, peso, volumen y compatibilidad del contenedor son atributos o reglas del recurso físico y su uso.
+
+Su definición completa pertenece a `NEXO-DOM-024`.
+
+Esta tarea solo establece que esos atributos nunca deben almacenarse como sustituto de identidad del LPN.
+
+---
+
+#### 25. Frontera con `NEXO-DOM-020`
+
+`NEXO-DOM-019` no decide en qué eventos concretos:
+
+- el contenedor conserva el LPN;
+- el contenedor recibe otro LPN;
+- el LPN se cierra;
+- el LPN se reutiliza;
+- el LPN se anula;
+- el vínculo se renueva para un nuevo ciclo.
+
+Esas reglas pertenecen exclusivamente a `NEXO-DOM-020`.
+
+---
+
+#### 26. Contenedor retornable individual
+
+Un contenedor retornable con trazabilidad por unidad se clasifica como `PHYSICAL_CONTAINER` y conserva identidad propia durante salida, tenencia externa, retorno, inspección y nuevos usos.
+
+Su carácter retornable no convierte automáticamente su LPN en persistente.
+
+---
+
+#### 27. Reutilizable por cantidad
+
+Un recipiente genérico que no requiere identidad individual continúa bajo `REUSABLE_QUANTITY`.
+
+No debe fabricarse una entidad `PHYSICAL_CONTAINER` por cada unidad solo para poder etiquetarla o contarla.
+
+La promoción futura a identidad individual requiere una transición explícita y versionada conforme a la clasificación canónica.
+
+---
+
+#### 28. Empaque desechable
+
+Una bolsa, caja, envoltura u otro empaque desechable no se clasifica como `PHYSICAL_CONTAINER` únicamente porque pueda portar un LPN o una etiqueta.
+
+Puede soportar físicamente una unidad logística sin adquirir identidad de activo o retornable permanente.
+
+---
+
+#### 29. Frontera con `KIT_INSTANCE`
+
+Un kit conserva identidad y composición conforme al contrato de kits.
+
+El kit no se convierte en contenedor por contener componentes y un contenedor no se convierte en kit por portar artículos.
+
+Un kit puede estar dentro de un LPN o relacionarse con logística sin perder su identidad propia.
+
+---
+
+#### 30. Frontera con activo serializado
+
+Un contenedor físico individual es una clase con comportamiento de identidad exacta, pero no se convierte automáticamente en `SERIALIZED_ASSET`.
+
+La clasificación responde al propósito operativo canónico y no a que ambos tengan código, QR, custodio o historial.
+
+---
+
+#### 31. Frontera con LOC
+
+LOC identifica una ubicación física operativa.
+
+Contenedor y LPN pueden referenciar ubicación conforme a sus contratos, pero:
+
+```text
+LOC != PHYSICAL_CONTAINER != LPN
+```
+
+Cambiar de LOC no cambia por sí mismo ninguna de las dos identidades.
+
+---
+
+#### 32. Etiqueta del contenedor físico
+
+Una etiqueta de contenedor representa o resuelve la identidad del `PHYSICAL_CONTAINER`.
+
+Su sustitución, deterioro o reimpresión no crea un contenedor nuevo.
+
+La trazabilidad deberá permitir diferenciar el identificador canónico del recurso y la representación física vigente.
+
+---
+
+#### 33. Etiqueta del LPN
+
+Una etiqueta de LPN representa o resuelve la identidad del LPN.
+
+No representa el `purpose_type`, el `container_type`, el contenido ni la identidad permanente del contenedor físico.
+
+Reetiquetar conserva el LPN mientras el ciclo aprobado indique que sigue siendo la misma identidad logística.
+
+---
+
+#### 34. Código, QR y barcode
+
+QR, DataMatrix, Code128 u otra simbología son medios de resolución.
+
+El valor codificado debe permitir llegar a la identidad correcta sin convertir la simbología en fuente de verdad.
+
+Un código ilegible genera una necesidad de identificación o reetiquetado; no demuestra desaparición del objeto ni cierre del LPN.
+
+---
+
+#### 35. Etiqueta perdida o dañada
+
+La pérdida de una etiqueta no equivale a:
+
+- pérdida del contenedor;
+- pérdida del LPN;
+- anulación;
+- cierre;
+- disposición;
+- creación de reemplazo.
+
+La recuperación de identidad se resuelve mediante atributos y evidencia autorizados y termina, cuando corresponda, en una nueva representación de la misma identidad.
+
+---
+
+#### 36. Representación visible frente a identidad autoritativa
+
+La UI puede mostrar un único rótulo operativo que combine datos del contenedor y del LPN, pero el modelo debe conservar ambos identificadores por separado.
+
+Una vista compuesta nunca habilita una escritura que confunda sus fuentes.
+
+---
+
+#### 37. Purpose type del LPN
+
+El purpose type expresa el propósito del LPN.
+
+No determina:
+
+- la identidad del LPN;
+- la identidad del contenedor;
+- la persistencia del contenedor;
+- la permanencia del vínculo.
+
+Cambiar una representación visible no puede transformar por inferencia un propósito en otro.
+
+---
+
+#### 38. `container_type` legacy
+
+El campo legacy `inventory_lpns.container_type` se interpreta únicamente como clasificación histórica asociada a la fila LPN existente.
+
+Valores como `box`, `pallet`, `bag`, `tray`, `bin` u `other` no constituyen por sí mismos identidad de un contenedor físico individual.
+
+Ese campo no podrá reutilizarse como `physical_container_id` ni como prueba de existencia de un `PHYSICAL_CONTAINER`.
+
+---
+
+#### 39. `label` legacy
+
+El campo legacy `inventory_lpns.label` no es identidad de contenedor físico ni sustituye `inventory_lpns.id` o `code` como identidad lógica vigente del LPN.
+
+Su contenido deberá reconciliarse como representación o metadata legacy antes de cualquier adopción física futura.
+
+---
+
+#### 40. `status` legacy
+
+Los estados legacy `active`, `empty`, `consumed` y `damaged` no deben reutilizarse para inferir estado del contenedor físico.
+
+Estado del LPN, condición del contenedor, disponibilidad del contenedor y estado de contenido son ejes diferentes.
+
+---
+
+#### 41. Estado del contenedor físico
+
+El contenedor deberá conservar por separado, cuando el modelo propietario lo materialice:
+
+- condición física;
+- disponibilidad;
+- ubicación;
+- custodia;
+- estado de retorno cuando aplique.
+
+Ninguno de esos ejes sustituye su identidad permanente.
+
+---
+
+#### 42. Estado del LPN
+
+El LPN conserva su ciclo de vida logístico ya definido.
+
+Esta tarea no amplía ni reemplaza ese lifecycle; únicamente prohíbe proyectarlo sobre el contenedor como si ambos compartieran estado.
+
+---
+
+#### 43. Estado del vínculo
+
+El vínculo directo requiere distinguir como mínimo:
+
+- inexistente;
+- vigente;
+- finalizado.
+
+La causa concreta que inicia o termina la relación debe conservarse sin inventar un lifecycle paralelo al del LPN o al del contenedor.
+
+---
+
+#### 44. Inicio del vínculo
+
+Crear una asociación debe ser una operación explícita e idempotente.
+
+Debe comprobar que las identidades existen y que la nueva asociación no contradice otra asociación directa vigente.
+
+La operación no crea ni renombra ninguno de los recursos.
+
+---
+
+#### 45. Fin del vínculo
+
+Finalizar una asociación no elimina ninguno de los extremos.
+
+Debe conservar:
+
+- la identidad anterior;
+- el periodo de vigencia;
+- la razón;
+- el actor o principal técnico;
+- la correlación con el hecho empresarial;
+- evidencia cuando sea requerida.
+
+---
+
+#### 46. Re-vinculación
+
+Una re-vinculación se representa como finalización o transición controlada del vínculo anterior y creación del vínculo resultante, nunca como sobrescritura silenciosa del identificador del contenedor o del LPN.
+
+Las condiciones empresariales que permiten esa transición serán cerradas en `NEXO-DOM-020`.
+
+---
+
+#### 47. Idempotencia
+
+La misma intención empresarial repetida con la misma clave idempotente debe producir un único efecto de vínculo o desvínculo.
+
+Un retry técnico no puede generar varios periodos activos equivalentes ni terminar dos veces la misma relación.
+
+---
+
+#### 48. Concurrencia
+
+Dos operaciones concurrentes que pretendan asociar el mismo contenedor a LPN distintos, o el mismo LPN a contenedores distintos, no pueden resolverse mediante last-write-wins silencioso.
+
+La materialización futura deberá serializar, rechazar o reconciliar el conflicto de forma auditable.
+
+---
+
+#### 49. Resultado desconocido
+
+Si una solicitud de vínculo o desvínculo pierde confirmación después de enviarse, el cliente no asume éxito ni vuelve a ejecutar con una nueva intención.
+
+Debe consultar o reconciliar el resultado usando identidad e idempotencia antes de reintentar.
+
+---
+
+#### 50. Operación offline
+
+Una captura offline puede registrar intención o evidencia, pero no declara autoritativamente un nuevo vínculo activo mientras no haya reconciliación con la fuente canónica.
+
+Conflictos detectados al reconectar fallan cerrados y no reemplazan automáticamente la relación vigente.
+
+---
+
+#### 51. Tiempo
+
+La historia deberá distinguir cuando aplique:
+
+- momento efectivo del vínculo;
+- momento observado o capturado;
+- momento registrado en el sistema.
+
+Un evento tardío no puede reescribir silenciosamente la historia posterior.
+
+---
+
+#### 52. Actor y principal técnico
+
+Las transiciones deberán poder atribuirse al actor humano efectivo y, cuando aplique, al dispositivo, servicio o principal técnico que ejecutó la acción.
+
+Un dispositivo compartido no se convierte en custodio ni actor empresarial por ser quien escanea.
+
+---
+
+#### 53. Autoridad
+
+Ver, imprimir o escanear un identificador no concede autoridad para:
+
+- vincular;
+- desvincular;
+- mover;
+- cerrar;
+- anular;
+- cambiar custodia;
+- cambiar condición.
+
+La autorización permanece en las familias de autorización propietarias.
+
+---
+
+#### 54. Ubicación
+
+La ubicación actual del contenedor y la del LPN deben ser reconciliables cuando estén vinculados, pero son proyecciones sobre identidades distintas.
+
+Una diferencia detectada no autoriza corregir una de ellas por sobrescritura sin el hecho empresarial correspondiente.
+
+---
+
+#### 55. Custodia
+
+La custodia del contenedor y la custodia del LPN pueden estar correlacionadas durante un handoff, pero no se fusionan como un único atributo.
+
+La aceptación de custodia deberá conservar el objeto exacto que fue aceptado.
+
+---
+
+#### 56. Condición
+
+Daño, suciedad, mantenimiento o restricción física del contenedor no equivalen automáticamente a daño del LPN ni de su contenido.
+
+De forma recíproca, un LPN marcado con una condición logística no cambia automáticamente la condición material del contenedor.
+
+---
+
+#### 57. Contenedor vacío
+
+Un contenedor vacío puede conservar identidad y disponibilidad separadas del estado del LPN.
+
+Que un LPN quede sin contenido no decide por sí mismo si debe cerrarse, conservarse o cambiarse; esa decisión corresponde a `NEXO-DOM-020`.
+
+---
+
+#### 58. Contenedor dañado o perdido
+
+Daño o pérdida física afectan la condición y disponibilidad del contenedor identificado.
+
+No crean automáticamente un LPN nuevo ni autorizan eliminar la historia del LPN previamente asociado.
+
+Las decisiones de baja, recuperación o disposición conservan sus contratos propietarios.
+
+---
+
+#### 59. LPN cerrado o anulado
+
+Cerrar o anular un LPN no elimina el `PHYSICAL_CONTAINER` asociado.
+
+La relación deberá reflejar la consecuencia correspondiente sin borrar el periodo histórico durante el cual existió la asociación.
+
+La regla concreta de permanencia o cambio es propiedad de `NEXO-DOM-020`.
+
+---
+
+#### 60. Búsqueda y resolución
+
+Una búsqueda podrá aceptar código de LPN, código de contenedor, QR u otros identificadores aprobados, pero el resultado debe declarar qué tipo de identidad resolvió.
+
+Queda prohibido devolver un único objeto ambiguo denominado `container` cuando la fuente no distingue contenedor físico y LPN.
+
+---
+
+#### 61. Escaneo
+
+El escaneo deberá producir primero una resolución de identidad tipada.
+
+Solo después de conocer si el código pertenece a un LPN, contenedor, LOC, activo u otro recurso puede continuar la acción empresarial autorizada.
+
+---
+
+#### 62. Lectura compuesta
+
+Una proyección de consulta puede mostrar conjuntamente:
+
+- contenedor;
+- LPN activo;
+- ubicación;
+- custodia;
+- contenido resumido;
+- condición;
+- estado logístico.
+
+La proyección es derivada y no se convierte en fuente maestra de ninguno de esos dominios.
+
+---
+
+#### 63. Escrituras
+
+Las escrituras futuras deberán dirigirse al propietario de cada hecho:
+
+- identidad y condición del contenedor → recurso físico;
+- lifecycle del LPN → LPN;
+- asociación → relación explícita;
+- contenido → membresía/contenido LPN;
+- ubicación → movimiento o hecho de ubicación correspondiente;
+- custodia → evento de custodia correspondiente.
+
+No se autoriza un endpoint monolítico que sobreescriba todos los ejes sin causalidad.
+
+---
+
+#### 64. AS-IS de `inventory_lpns`
+
+El esquema remoto observado mantiene `inventory_lpns` con:
+
+- `id` UUID como clave primaria;
+- `site_id`;
+- `code` único;
+- `location_id` opcional;
+- `status` legacy;
+- `container_type` legacy;
+- `notes`;
+- timestamps;
+- `created_by`;
+- `label`.
+
+No contiene `physical_container_id`, `parent_lpn_id` ni un historial de vínculo contenedor–LPN.
+
+---
+
+#### 65. Restricciones AS-IS observadas
+
+En el esquema remoto observado:
+
+- `inventory_lpns.code` tiene unicidad;
+- `status` admite `active`, `empty`, `consumed` o `damaged`;
+- `container_type` admite `box`, `pallet`, `bag`, `tray`, `bin` u `other`;
+- `location_id` referencia `inventory_locations`;
+- `site_id` referencia `sites`;
+- `created_by` referencia `employees`.
+
+Estas restricciones prueban existencia de un modelo LPN legacy, no existencia de identidad `PHYSICAL_CONTAINER`.
+
+---
+
+#### 66. Snapshot remoto observado
+
+La lectura remota de solo lectura mostró:
+
+```text
+inventory_locations: 12
+inventory_lpns: 0
+inventory_lpn_items: 0
+asset_items: 38
+```
+
+No existen filas LPN actuales que esta tarea deba reinterpretar o reclasificar.
+
+---
+
+#### 67. Ausencia de entidad de contenedor físico
+
+En el esquema público remoto no se observaron tablas cuyo nombre materialice explícitamente:
+
+- `physical_container`;
+- binding contenedor–LPN;
+- historial de binding LPN;
+- identidad física individual de contenedor.
+
+La ausencia se registra como brecha de materialización, no como permiso para reutilizar `inventory_lpns` como contenedor físico.
+
+---
+
+#### 68. AS-IS de código LPN
+
+El código actual de `vento-nexo` conserva componentes y endpoint de LPN.
+
+El formulario conocido construye una vista previa `LPN-SEDE-AAMM-SEQ` y el endpoint consulta `inventory_lpns` por `id`, `code`, `site_id` y `created_at`.
+
+Ese soporte confirma capacidad parcial de LPN, pero no implementa la separación objetivo con contenedor físico.
+
+---
+
+#### 69. Superficie LPN actual
+
+La auditoría canónica previa clasificó la superficie LPN como parcial: existe capacidad técnica, pero no se demuestra una experiencia integral y consumida para el ciclo canónico completo.
+
+Por tanto, la existencia del componente o la tabla no se interpreta como cierre del contrato.
+
+---
+
+#### 70. Tratamiento del AS-IS
+
+El tratamiento resultante es:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutiliza la identidad lógica LPN existente donde sea compatible.
+
+Debe refactorizarse cualquier semántica que trate la fila LPN o `container_type` como sustituto de un contenedor físico permanente.
+
+---
+
+#### 71. Forma conceptual objetivo
+
+La materialización futura deberá poder representar conceptualmente al menos:
+
+```text
+PHYSICAL_CONTAINER
+- stable identity
+- classification
+- condition
+- availability
+- location
+- custody
+- lifecycle history
+
+LPN
+- stable identity for its lifecycle
+- duration policy: TEMPORAL or PERSISTENT
+- purpose
+- logistics state
+- location
+- content references
+
+DIRECT_BINDING
+- physical_container_id
+- lpn_id
+- valid_from
+- valid_to nullable
+- reason/context
+- actor/principal
+- authority context
+- correlation/idempotency
+```
+
+Los nombres físicos de tablas, columnas, constraints, RPC o tipos no se fijan en esta tarea.
+
+---
+
+#### 72. Integridad de una futura materialización
+
+La arquitectura futura deberá impedir como mínimo:
+
+- aliasar IDs de contenedor y LPN;
+- dos bindings directos activos incompatibles;
+- borrar historia al re-vincular;
+- crear saldo por vincular;
+- inferir contenedor desde `container_type`;
+- inferir identidad desde label;
+- transformar un reusable por cantidad en contenedor individual sin transición;
+- crear LPN nuevo por reimpresión.
+
+---
+
+#### 73. Migraciones
+
+Esta tarea no crea migraciones ni decide estrategia de backfill.
+
+La futura adopción deberá realizarse desde `vento-shell`, respetar los datos legacy observados, validar compatibilidad y mantener rollback y reconciliación.
+
+---
+
+#### 74. Backfill
+
+No se autoriza fabricar contenedores físicos a partir de filas LPN, `container_type`, notas, etiquetas, nombres, ubicaciones ni categorías.
+
+Una futura migración solo podrá crear identidades físicas cuando exista evidencia suficiente para una unidad real individual.
+
+---
+
+#### 75. Cero LPN remotos y migración
+
+El snapshot actual con cero filas LPN reduce el riesgo de reinterpretación de instancias existentes, pero no autoriza modificar esquema ni asumir que siempre permanecerá vacío.
+
+Toda implementación deberá volver a observar el estado real antes de ejecutar cambios.
+
+---
+
+#### 76. Relación con BLOQUE E4
+
+La integración de impresión aprobada continúa vigente:
+
+- etiquetas y códigos son representaciones;
+- reimpresión no crea identidad;
+- el trabajo de impresión no gobierna el lifecycle del recurso;
+- una etiqueta LPN debe resolver a identidad LPN;
+- una etiqueta de contenedor debe resolver a identidad de contenedor cuando exista esa salida autorizada.
+
+Esta tarea no crea una nueva identidad `IMP-*` ni modifica contratos de impresión.
+
+---
+
+#### 77. Relación con evidencia
+
+Fotos, firmas, lecturas, documentos o capturas pueden respaldar identificación, vínculo, custodia, condición o resolución de conflicto.
+
+No sustituyen el recurso ni el vínculo autoritativo.
+
+La evidencia conserva la frontera transversal aprobada y no concede autoridad por existir.
+
+---
+
+#### 78. Compatibilidad con consumidores
+
+Todo consumidor futuro deberá distinguir al menos:
+
+- `lpn_id` cuando opera sobre identidad logística;
+- `physical_container_id` cuando opera sobre el recurso físico;
+- ambos cuando consume un vínculo;
+- ninguno por inferencia cuando solo dispone de texto o etiqueta no resuelta.
+
+Una API legacy que exponga solo `container_type` no demuestra esta compatibilidad.
+
+---
+
+#### 79. Casos canónicos de decisión
+
+| Caso | Contenedor físico | LPN | Resultado |
+| --- | --- | --- | --- |
+| Recipiente retornable individual vacío | existe | puede no existir | identidad física se conserva |
+| LPN sobre empaque desechable | no requerido | existe | LPN válido sin `PHYSICAL_CONTAINER` |
+| Contenedor individual con LPN temporal | existe | existe | dos identidades + vínculo temporal |
+| Contenedor individual con LPN persistente | existe | existe | dos identidades + vínculo persistente |
+| Reimpresión de etiqueta LPN | sin cambio | mismo LPN | no crea identidad |
+| Reimpresión de etiqueta de contenedor | mismo contenedor | sin efecto | no crea identidad |
+| Cierre del LPN | mismo contenedor | cambia estado/ciclo | no elimina contenedor |
+| Cambio de contenedor para un LPN | relación controlada | mismo LPN si política lo permite | preservar vínculo anterior |
+| Nuevo LPN para mismo contenedor | mismo contenedor | nueva identidad logística autorizada | preservar vínculo anterior |
+| Recipiente genérico por cantidad | no se individualiza | puede existir LPN | continúa `REUSABLE_QUANTITY` |
+
+---
+
+#### 80. Fallos que deben cerrar de forma segura
+
+Deben bloquear la mutación afectada:
+
+- identificador ambiguo;
+- código que resuelve a más de un tipo de recurso;
+- contenedor inexistente;
+- LPN inexistente;
+- segundo binding directo incompatible;
+- resultado previo desconocido;
+- sesión humana ausente cuando es requerida;
+- autoridad insuficiente;
+- conflicto offline;
+- intento de inferir identidad física desde `container_type` o label.
+
+---
+
+#### 81. Hallazgos diferidos con propietario
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe entidad física materializada de contenedor | No | arquitectura E3/E5 y paquete de implementación propietario | esquema y contratos materializados con validación de identidad separada |
+| No existe historial materializado de binding contenedor–LPN | No | arquitectura E3/E5 y paquete de implementación propietario | relación versionada/auditable implementada y probada |
+| `container_type` vive en `inventory_lpns` | No | transición de datos/arquitectura propietaria | compatibilidad definida sin promover el campo a identidad física |
+| No está decidido cuándo conservar, cambiar o cerrar el LPN | No | `NEXO-DOM-020` | matriz de eventos y política de continuidad aprobada |
+| No está cerrada la no doble contabilización suelto/LPN | No | `NEXO-DOM-021` | contrato específico aprobado |
+| No está cerrada la atomicidad de mover LPN y contenido | No | `NEXO-DOM-022` | contrato específico aprobado |
+| No está cerrada la trazabilidad interna de lote/serial/condición | No | `NEXO-DOM-023` | contrato específico aprobado |
+| No están cerradas capacidad, peso, volumen y compatibilidad | No | `NEXO-DOM-024` | contrato específico aprobado |
+
+Ninguno de estos pendientes se absorbe en esta tarea.
+
+---
+
+#### 82. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege separación entre contenedor físico, LPN y stock, identidad estable, lifecycle LPN, ausencia de doble representación, historia y comportamiento por clase. Esta tarea materializa la frontera documental requerida sin introducir una obligación observable nueva fuera de esa cobertura.
+
+---
+
+#### 83. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para el ciclo autorizado y auditable del LPN y su reetiquetado sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables donde LPN y stock no se duplican;
+- `TREQ-NEXO-013`, para separar contenedor físico, LPN, activo, reusable, kit y stock y preservar identidad ante reimpresión;
+- `TREQ-NEXO-041`, para impedir que clase, categoría, estado o LPN se confundan entre sí;
+- `TREQ-NEXO-046`, como cobertura directa de identidad de contenedor separada del LPN y vínculo temporal o persistente;
+- `TREQ-NEXO-047`, para exigir identidad exacta de contenedores y ausencia de duplicación entre contenedor, LPN y contenido;
+- `TREQ-NEXO-016`, para conservar separación entre LPN, bulto, contenedor, custodia y flujo logístico.
+
+Estas referencias constituyen trazabilidad vigente y no representan una actualización del registro.
+
+---
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación y normalización de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la elaboración del artefacto. |
+| REMOTA | PASS | Se verificaron `main`, continuidad `018 → 019 → 020`, topología `DEFINE_ONCE`, políticas documental y de entrega, owner vigente, contratos previos de LPN/activos/etiquetas, 04A NEXO, código LPN actual de `vento-nexo` y esquema/datos remotos de Supabase en solo lectura. El snapshot observado mostró 12 LOC, 0 LPN, 0 ítems LPN y 38 activos; `inventory_lpns` conserva `code` único, `status` y `container_type` legacy y no se observó entidad o binding de `PHYSICAL_CONTAINER`. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, vincularon, movieron, cerraron, anularon, reetiquetaron ni inspeccionaron LPN o contenedores reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron código, datos, Supabase, migraciones, RLS, aplicaciones, infraestructura, paquetes ni despliegues. |
+
+---
+
+#### 85. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `PHYSICAL_CONTAINER` y LPN son identidades diferentes.
+- [x] La identidad física permanece aunque cambie o desaparezca el LPN.
+- [x] El LPN conserva estabilidad durante su propio lifecycle.
+- [x] Temporal y persistente describen política de duración del LPN sin convertirlo en contenedor.
+- [x] Un contenedor puede existir sin LPN.
+- [x] Un LPN puede existir sin contenedor individual.
+- [x] El vínculo directo es explícito y auditable.
+- [x] La historia de vínculos no se sobrescribe.
+- [x] La relación directa impide asociaciones activas incompatibles.
+- [x] Anidamiento LPN y vínculo directo quedan separados.
+- [x] Contenido LPN y vínculo contenedor–LPN quedan separados.
+- [x] Vincular no crea saldo ni duplica inventario.
+- [x] Reutilizable por cantidad no se convierte artificialmente en contenedor individual.
+- [x] Empaque desechable no se convierte artificialmente en contenedor físico.
+- [x] Kit, activo, LOC, contenedor, LPN y etiqueta permanecen separados.
+- [x] QR y barcode son medios de resolución, no fuente de verdad.
+- [x] Reimpresión no crea identidad nueva.
+- [x] `purpose_type` no sustituye identidad LPN.
+- [x] `container_type` legacy no sustituye identidad física.
+- [x] `label` legacy no sustituye identidad.
+- [x] estado LPN y condición física quedan separados.
+- [x] la tarea no absorbe reglas reservadas a `NEXO-DOM-020` a `NEXO-DOM-024`.
+- [x] AS-IS se clasifica `REUSE_OR_REFACTOR`.
+- [x] se documenta que existen 0 LPN y 0 ítems LPN en el snapshot remoto observado.
+- [x] se documenta ausencia observada de entidad/binding físico de contenedor.
+- [x] no se crean identificadores `VPROC-*` nuevos.
+- [x] no se crean ni modifican requisitos de prueba.
+- [x] no se modifica 04A.
+- [x] no se autoriza materialización física.
+- [x] se entrega handoff exacto a `NEXO-DOM-020`.
+
+---
+
+#### 86. Límites
+
+Esta tarea no crea contenedores, LPN, contenido, movimientos, vínculos, ubicaciones, custodias, etiquetas ni documentos reales; no modifica `inventory_lpns`, `inventory_lpn_items`, activos, stock ni datos remotos; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, migraciones, backfills ni tipos generados; no modifica `vento-nexo`; no implementa UI o scanner; no imprime; no cambia E4; no crea permisos; no despliega; no crea instancia física propia; no decide la política de conservar/cambiar/cerrar LPN; no redefine doble contabilización, movimiento atómico, trazabilidad interna ni capacidad/compatibilidad; no crea ni modifica requisitos de prueba; y no modifica 04A.
+
+---
+
+#### 87. Handoff hacia `NEXO-DOM-020`
+
+Esta tarea entrega exactamente:
+
+```text
+PERMANENT PHYSICAL CONTAINER IDENTITY
++
+SEPARATE LPN IDENTITY
++
+TEMPORAL OR PERSISTENT LPN DURATION POLICY AXIS
++
+EXPLICIT DIRECT CONTAINER-LPN BINDING
++
+ONE ACTIVE DIRECT IDENTITY BINDING PER ENDPOINT
++
+NON-DESTRUCTIVE BINDING HISTORY
++
+LABEL AS REPRESENTATION ONLY
++
+PURPOSE AND CONTAINER TYPE AS NON-IDENTITY ATTRIBUTES
++
+BINDING WITHOUT STOCK DUPLICATION
++
+IDEMPOTENT AND CONCURRENCY-SAFE LINK / UNLINK
++
+AS-IS REUSE_OR_REFACTOR BOUNDARY
+```
+
+`NEXO-DOM-020` deberá definir, usando esta separación como invariante, cuándo un contenedor conserva el LPN vigente, cuándo exige otro LPN y cuándo el LPN se cierra, sin fusionar identidades ni borrar la historia del vínculo.
+
+---
+
+#### 88. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
+
+### ✅ NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+**Tarea siguiente:** NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+**Tipo de tarea:** DOCUMENTACIÓN CANÓNICA DE DOMINIO
+**Bloque:** K_NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma determinista cuándo la relación entre un contenedor físico y un LPN activo debe conservar el mismo LPN, cuándo debe terminar el ciclo actual y comenzar uno nuevo, cuándo procede cerrar o cancelar el LPN vigente y cuándo la decisión debe quedar bloqueada hasta reconciliar el estado operativo.
+
+La tarea consume la separación de identidades aprobada en `NEXO-DOM-019` y el lifecycle LPN ya definido, sin volver a fusionar recipiente, contenido, ubicación, custodia, proceso o etiqueta con la identidad logística.
+
+---
+
+#### 2. Alcance y límites
+
+Esta tarea define exclusivamente reglas de continuidad del LPN respecto de:
+
+- continuidad de la misma unidad logística;
+- continuidad del contenido y propósito operativo;
+- continuidad del proceso o documento que lo gobierna;
+- cambio de contenedor físico;
+- cambio de ubicación, sede o custodia;
+- vaciado, cierre, devolución o reutilización del contenedor;
+- división y consolidación;
+- daño, pérdida o sustitución del contenedor;
+- cierre, cancelación o creación de un ciclo LPN posterior;
+- idempotencia, concurrencia y operación diferida;
+- evidencia y condiciones de bloqueo.
+
+No materializa esquema, migración, RPC, RLS, UI, Server Action, Route Handler, jobs, etiquetas, movimientos de inventario ni backfills.
+
+---
+
+#### 3. Entradas canónicas
+
+La decisión consume como mínimo:
+
+1. identidad permanente del contenedor físico cuando exista;
+2. identidad estable del LPN vigente;
+3. estado lifecycle del LPN;
+4. modo de vínculo `TEMPORARY` o `PERSISTENT`;
+5. vínculo directo activo entre contenedor y LPN;
+6. sede y LOC efectivos;
+7. contexto de contenido;
+8. contexto del proceso o documento;
+9. custodia vigente;
+10. movimientos en curso;
+11. discrepancias abiertas;
+12. comandos offline o reintentos pendientes;
+13. intención empresarial autorizada;
+14. evidencia necesaria para confirmar continuidad o terminación.
+
+Ninguna entrada aislada decide el resultado.
+
+---
+
+#### 4. Frontera heredada de NEXO-DOM-019
+
+Se preservan estas reglas:
+
+- `PHYSICAL_CONTAINER` y LPN son identidades diferentes;
+- cualquiera puede existir sin la otra;
+- su vínculo es explícito, historizable y no equivale a identidad compartida;
+- un contenedor físico no puede mantener simultáneamente dos vínculos directos activos incompatibles;
+- el LPN no hereda automáticamente la identidad del recipiente;
+- vincular o desvincular no produce por sí mismo movimiento de stock;
+- `TEMPORARY` y `PERSISTENT` expresan política de continuidad del vínculo, no mutabilidad del identificador LPN.
+
+---
+
+#### 5. Frontera heredada del lifecycle LPN
+
+El lifecycle objetivo conserva los estados:
+
+- `DRAFT`;
+- `ACTIVE`;
+- `CLOSED`;
+- `CANCELLED`.
+
+`CLOSED` y `CANCELLED` son terminales. Un LPN terminal no se reactiva para representar un ciclo posterior. Si existe un nuevo ciclo logístico, este usa una identidad LPN nueva.
+
+---
+
+#### 6. Regla raíz de decisión
+
+```text
+PHYSICAL CONTAINER ID
++
+CURRENT LPN ID
++
+LPN LIFECYCLE STATE
++
+LINK MODE
++
+ACTIVE BINDING
++
+LOGISTICS UNIT CONTINUITY
++
+CONTENT CONTINUITY
++
+PROCESS CONTINUITY
++
+SITE / LOC / CUSTODY CONTEXT
++
+OPEN MOVEMENT / DISCREPANCY / OFFLINE STATE
++
+AUTHORIZED INTENT
+=
+PRESERVE CURRENT LPN
+OR ROTATE TO NEW LPN
+OR CLOSE CURRENT LPN
+OR CANCEL CURRENT LPN
+OR HOLD CURRENT STATE
+```
+
+El resultado se determina por continuidad empresarial demostrable y no por similitud física o conveniencia de interfaz.
+
+---
+
+#### 7. Resultados canónicos
+
+| Resultado | Significado |
+| --- | --- |
+| `PRESERVE_CURRENT_LPN` | continúa la misma unidad logística bajo la misma identidad LPN |
+| `ROTATE_TO_NEW_LPN` | termina el uso del LPN actual conforme a lifecycle y comienza otro LPN independiente |
+| `CLOSE_CURRENT_LPN` | el ciclo válido del LPN actual terminó y puede cerrarse |
+| `CANCEL_CURRENT_LPN` | el ciclo se invalida sin efectos efectivos incompatibles con cancelación |
+| `HOLD_CURRENT_STATE` | falta reconciliación o evidencia suficiente para tomar una decisión terminal o de rotación |
+
+`ROTATE_TO_NEW_LPN` nunca significa modificar en sitio el identificador del LPN existente.
+
+---
+
+#### 8. Preservación del LPN
+
+Se conserva el LPN cuando sigue existiendo la misma unidad logística y la operación no crea una frontera empresarial nueva.
+
+La conservación puede coexistir con cambios de ubicación, sede, custodio, etiqueta, recipiente físico, composición permitida del contenido, etapa del mismo proceso o documento correlacionado, siempre que la identidad logística siga siendo la misma y los cambios sean trazables.
+
+---
+
+#### 9. Rotación a un LPN nuevo
+
+La rotación se usa cuando el mismo contenedor físico pasa a representar una unidad logística nueva o cuando la unidad anterior debe terminar y la siguiente no puede conservar la identidad vigente.
+
+La rotación exige:
+
+1. resolver el estado del LPN anterior;
+2. cerrar o cancelar el anterior únicamente si cumple sus precondiciones;
+3. terminar el vínculo directo anterior cuando aplique;
+4. crear una identidad LPN nueva;
+5. activar el nuevo LPN según lifecycle;
+6. establecer el nuevo vínculo explícito;
+7. conservar historia entre ambos ciclos sin tratarlos como una misma identidad.
+
+---
+
+#### 10. Cierre del LPN
+
+Cerrar significa que el LPN cumplió un ciclo efectivo y ya no debe aceptar nuevos cambios de contenido, movimiento o reetiquetado operativo.
+
+El cierre requiere que no existan movimientos en vuelo, discrepancias pendientes, contenido interno no reconciliado, consumidores posteriores que todavía dependan del mismo LPN activo ni comandos offline o respuestas tardías sin procesar.
+
+El contenedor físico puede continuar existiendo y permanecer disponible para otro ciclo.
+
+---
+
+#### 11. Cancelación del LPN
+
+La cancelación representa un ciclo que no debe continuar y que no produjo efectos empresariales incompatibles con la anulación.
+
+Un `DRAFT` puede cancelarse cuando no existe efecto efectivo. Un `ACTIVE` solo puede cancelarse bajo las condiciones restrictivas ya aprobadas por el lifecycle. Si hubo movimiento, contenido efectivo, contabilización o dependencia posterior, la operación debe reconciliar esos efectos y terminar por cierre, no por cancelación destructiva.
+
+---
+
+#### 12. Estado HOLD
+
+`HOLD_CURRENT_STATE` es obligatorio cuando no puede demostrarse de forma segura si corresponde preservar, rotar, cerrar o cancelar.
+
+Aplica ante movimiento en curso, discrepancia de contenido o ubicación, lectura conflictiva, operación offline pendiente, respuesta tardía no reconciliada, vínculo concurrente incompatible, pérdida del contenedor con contenido no conciliado, evidencia insuficiente de continuidad o dependencia externa todavía abierta.
+
+`HOLD_CURRENT_STATE` no altera identidad, contenido ni stock.
+
+---
+
+#### 13. Continuidad de la unidad logística
+
+Existe continuidad cuando el conjunto sigue representando el mismo objeto operativo rastreable, aunque cambien ubicación, custodio o recipiente físico.
+
+No existe continuidad cuando comienza una carga empresarial independiente, se inicia una operación no relacionada, el contenido anterior se cerró y el contenedor se reutiliza para otra finalidad, una división crea una unidad independiente o una consolidación crea una unidad resultante distinta.
+
+---
+
+#### 14. Continuidad de contenido
+
+El contenido ayuda a determinar continuidad, pero no es por sí solo la identidad del LPN.
+
+Cambios parciales pueden conservar el LPN si pertenecen al mismo ciclo y están autorizados. Un contenido completamente diferente después del cierre del ciclo anterior no hereda el LPN solo porque use el mismo recipiente. Una diferencia no reconciliada impide decisiones terminales.
+
+---
+
+#### 15. Continuidad de proceso
+
+El mismo LPN puede atravesar varias etapas del mismo proceso sin cambiar de identidad.
+
+El cambio de estado del proceso no obliga a rotar el LPN. La rotación aparece cuando la frontera empresarial crea una unidad logística nueva, no simplemente porque cambie el nombre de una etapa.
+
+---
+
+#### 16. Política TEMPORARY
+
+Un vínculo `TEMPORARY` se diseña para terminar en una frontera operativa definida.
+
+La frontera no autoriza cierre automático si el LPN mantiene movimientos, contenido, discrepancias o consumidores pendientes.
+
+Al alcanzar la frontera:
+
+- si el ciclo está reconciliado, puede cerrarse;
+- si el ciclo no tuvo efectos y lifecycle permite cancelación, puede cancelarse;
+- si existe continuidad empresarial explícita, se evalúa esa continuidad antes de terminarlo;
+- si hay incertidumbre, queda en `HOLD_CURRENT_STATE`.
+
+---
+
+#### 17. Política PERSISTENT
+
+`PERSISTENT` permite mantener el mismo vínculo mientras continúe la misma unidad logística bajo una política que admite continuidad prolongada.
+
+No significa que el contenedor tenga un único LPN para toda su vida. Cuando un contenedor termina un ciclo y comienza una carga empresarial independiente, el LPN anterior no se reutiliza: se cierra cuando corresponda y se crea uno nuevo.
+
+---
+
+#### 18. Cambio de LOC
+
+Mover el mismo LPN a otro LOC conserva el LPN. La ubicación cambia mediante la operación de movimiento correspondiente.
+
+No se crea un LPN nuevo por el solo hecho de cambiar de LOC. La coherencia transaccional del movimiento queda reservada a `NEXO-DOM-022`.
+
+---
+
+#### 19. Cambio de sede
+
+Un traslado entre sedes puede conservar el LPN si sigue siendo la misma unidad logística y el movimiento está autorizado y trazable.
+
+La salida de una sede y entrada en otra no crean automáticamente dos LPN. Durante tránsito, la misma existencia no debe aparecer disponible simultáneamente en origen y destino.
+
+---
+
+#### 20. Cambio de custodia
+
+El cambio de custodio no cambia por sí solo el LPN. La custodia se registra como hecho distinto.
+
+Si la transferencia exige aceptación, la identidad LPN se conserva mientras se resuelve la aceptación, salvo que otra regla de ciclo obligue a terminarla.
+
+---
+
+#### 21. Reetiquetado
+
+La sustitución de QR, barcode o impresión física conserva el LPN.
+
+Reetiquetar no crea una identidad LPN nueva. Una etiqueta ilegible es un problema de representación y evidencia, no un final de ciclo.
+
+---
+
+#### 22. Sustitución del contenedor físico
+
+Si la misma unidad logística pasa de un contenedor físico a otro, el LPN puede conservarse cuando se demuestre continuidad exacta del objeto logístico.
+
+La sustitución exige identificar LPN, contenedor saliente y entrante; verificar ausencia de vínculos incompatibles; desvincular el saliente; vincular el entrante; preservar el mismo LPN y auditar actor, motivo, evidencia y momento efectivo.
+
+La sustitución del recipiente no crea stock nuevo.
+
+---
+
+#### 23. Sustitución sin continuidad demostrable
+
+Si no puede demostrarse que la unidad logística es exactamente la misma, la sustitución no puede conservar silenciosamente el LPN.
+
+El resultado queda en `HOLD_CURRENT_STATE` hasta reconciliar. Si se confirma una unidad logística nueva, se usa `ROTATE_TO_NEW_LPN`.
+
+---
+
+#### 24. División
+
+Una división no duplica la misma identidad LPN en dos unidades independientes.
+
+La parte residual que conserva inequívocamente la unidad original puede mantener el LPN. Cada nueva unidad independiente recibe un LPN propio. El contenido se distribuye mediante operaciones trazables y nunca se clona un vínculo directo activo del mismo LPN hacia dos contenedores.
+
+---
+
+#### 25. Consolidación
+
+Al consolidar varias unidades, cada LPN fuente conserva historia hasta quedar reconciliado.
+
+Los LPN fuente se cierran únicamente cuando cumplen precondiciones. La unidad resultante usa un LPN objetivo explícito y, si constituye una unidad empresarial nueva, recibe una identidad LPN nueva.
+
+---
+
+#### 26. Vaciado
+
+Vaciado físico no equivale automáticamente a cierre.
+
+Un LPN vacío puede seguir activo si el mismo ciclo requiere contenido posterior, existe una operación en curso, el proceso todavía depende de su identidad o la política admite continuidad. Si el vaciado coincide con fin de ciclo y no hay pendientes, puede proceder el cierre.
+
+---
+
+#### 27. Fin de ciclo
+
+El fin de ciclo existe cuando el propósito del LPN fue satisfecho, el contenido quedó conciliado, no hay movimiento en curso, no quedan discrepancias abiertas, no existe consumidor posterior que requiera el LPN activo y no queda trabajo offline pendiente.
+
+Ese conjunto habilita `CLOSE_CURRENT_LPN`.
+
+---
+
+#### 28. Retorno de contenedor reutilizable
+
+El retorno del contenedor físico y el lifecycle del LPN son procesos diferentes.
+
+El contenedor puede regresar vacío después de que su LPN anterior haya cerrado. El retorno no revive el LPN anterior. Cuando el recipiente vuelva a utilizarse para un ciclo empresarial independiente, recibe un LPN nuevo si el proceso requiere LPN.
+
+---
+
+#### 29. Reutilización independiente
+
+La misma caja, canastilla, bandeja, pallet u otro contenedor identificable puede participar en muchos ciclos.
+
+Cada ciclo independiente conserva su propio LPN. La identidad física del contenedor permanece estable y la historia debe permitir reconstruir qué LPN estuvo vinculado al contenedor en cada intervalo.
+
+---
+
+#### 30. Daño del contenedor
+
+El daño del contenedor no cambia automáticamente el estado del LPN.
+
+Si el contenido y la unidad logística pueden trasladarse de forma segura a un contenedor sustituto, el LPN puede conservarse mediante re-vinculación explícita. Si el daño crea discrepancia o impide demostrar continuidad, el resultado es `HOLD_CURRENT_STATE`.
+
+---
+
+#### 31. Pérdida y hallazgo
+
+La pérdida del contenedor no permite cerrar ni cancelar automáticamente el LPN si su contenido o efectos siguen sin reconciliar.
+
+Deben preservarse última identidad LPN conocida, último vínculo, ubicación, contenido esperado, custodia, evidencia y discrepancia.
+
+Un hallazgo posterior no crea un LPN nuevo por sí solo. Si el LPN original sigue activo y continúa la misma unidad, puede preservarse. Si ya es terminal, no se reactiva.
+
+---
+
+#### 32. LPN anidados
+
+Parent LPN y child LPN mantienen identidades separadas.
+
+Cambiar o cerrar el parent no cambia automáticamente el child. La continuidad de cada LPN se decide sobre su propia unidad logística, contenido, proceso y estado. Las reglas de anidamiento no pueden crear ciclos.
+
+---
+
+#### 33. Cambio de parent LPN
+
+Mover un child LPN de un parent a otro conserva el child si su propia unidad logística no cambia.
+
+El parent nuevo no sustituye la identidad del child. El cambio se trata como relación logística explícita y no como rotación automática.
+
+---
+
+#### 34. Estados terminales
+
+Un LPN `CLOSED` o `CANCELLED`:
+
+- no vuelve a `ACTIVE`;
+- no recibe contenido nuevo;
+- no se mueve como LPN activo;
+- no se reetiqueta como si continuara operativo;
+- no se vincula a un nuevo contenedor para un ciclo posterior.
+
+Un nuevo ciclo exige una nueva identidad LPN.
+
+---
+
+#### 35. Atomicidad conceptual de la rotación
+
+La rotación debe materializarse posteriormente como una operación coherente que no deje simultáneamente dos vínculos directos incompatibles, el LPN anterior activo después de cierre confirmado, el nuevo LPN activo sin contexto suficiente ni contenido duplicado entre ciclos.
+
+La implementación física de esa atomicidad no pertenece a esta tarea.
+
+---
+
+#### 36. Idempotencia
+
+Toda futura operación que materialice preservar, rotar, cerrar o cancelar deberá aceptar una clave de idempotencia o equivalente verificable.
+
+Repetir la misma intención no puede crear varios LPN nuevos, cerrar dos veces, duplicar vínculos, duplicar movimientos, duplicar contenido ni alterar dos veces la misma revisión.
+
+---
+
+#### 37. Concurrencia
+
+La operación futura deberá comparar como mínimo LPN esperado, estado esperado, contenedor esperado, vínculo esperado y revisión esperada.
+
+Si el estado cambió desde que el actor tomó la decisión, la operación debe fallar cerrada o exigir reconciliación. No se acepta last-write-wins silencioso para lifecycle o binding.
+
+---
+
+#### 38. Operación offline y respuestas tardías
+
+Una intención capturada offline no adquiere prioridad sobre un cambio ya confirmado en servidor.
+
+Al sincronizar se revalidan identidad, estado lifecycle, vínculo y continuidad. La operación se ejecuta idempotentemente o produce conflicto explícito.
+
+Un timeout no prueba que una operación no ocurrió. Antes de reintentar creación, rotación o cierre debe comprobarse el estado efectivo.
+
+---
+
+#### 39. Auditoría mínima
+
+Cada decisión materializada posteriormente deberá conservar, según aplique:
+
+- actor e intención;
+- LPN anterior;
+- contenedor anterior y posterior;
+- vínculo anterior y posterior;
+- estado anterior y posterior;
+- motivo;
+- política de continuidad;
+- proceso o documento;
+- evidencia;
+- momento efectivo;
+- idempotencia;
+- resultado;
+- error o conflicto.
+
+---
+
+#### 40. Autorización
+
+Lectura, escaneo o posesión física del contenedor no conceden autoridad para cerrar, cancelar o rotar un LPN.
+
+La acción futura debe validar capacidad empresarial y contexto de actor en servidor. La autorización de lifecycle y la autorización de movimiento pueden ser distintas.
+
+---
+
+#### 41. Separación respecto de inventario y contenido
+
+La decisión de continuidad del LPN no es un movimiento de inventario.
+
+Preservar, cerrar, cancelar o rotar no modifica saldos por sí solo. Rotar tampoco copia contenido automáticamente. Los efectos sobre existencia deben derivar de movimientos o compensaciones correlacionados y auditables.
+
+---
+
+#### 42. Separación respecto del contenedor
+
+Cerrar el LPN no cierra el contenedor físico. Cancelar el LPN no elimina el contenedor. Rotar el LPN no crea un contenedor. Retirar un contenedor no elimina el historial LPN.
+
+La disponibilidad y condición del contenedor son dimensiones distintas.
+
+---
+
+#### 43. Conteos y discrepancias
+
+Un conteo puede detectar que LPN, contenedor, ubicación o contenido no coinciden con lo esperado.
+
+El conteo es observación. La diferencia se investiga antes de usarla como razón para cerrar, cancelar, rotar o compensar.
+
+---
+
+#### 44. Remisiones y tránsito
+
+Una remisión, envío o viaje puede usar LPN como unidad rastreable.
+
+Mientras el proceso dependa del mismo LPN para despacho, tránsito o recepción, esa dependencia participa en la decisión de continuidad. Una recepción incompleta o discrepante impide cierre automático. La remisión no se convierte en identidad LPN.
+
+---
+
+#### 45. Código, QR y barcode
+
+Código, QR o barcode resuelven una identidad; no la sustituyen.
+
+La lectura de un código no cambia lifecycle ni binding por sí sola. La definición operativa de lectura y movimiento mediante código pertenece a `NEXO-DOM-021`.
+
+---
+
+#### 46. Shape conceptual de decisión
+
+| Campo conceptual | Regla |
+| --- | --- |
+| `physical_container_id` | identidad física, opcional si el LPN no usa contenedor individualizado |
+| `current_lpn_id` | identidad LPN evaluada |
+| `current_lpn_state` | estado lifecycle vigente |
+| `binding_revision` | revisión del vínculo usada para concurrencia |
+| `link_mode` | `TEMPORARY` o `PERSISTENT` |
+| `trigger_kind` | hecho que provoca reevaluación |
+| `same_logistics_unit` | continuidad demostrada de la unidad |
+| `same_content_context` | continuidad o cambio reconciliado del contenido |
+| `same_process_context` | continuidad del proceso |
+| `open_movement` | bloqueo por movimiento en curso |
+| `open_discrepancy` | bloqueo por diferencia no resuelta |
+| `pending_offline_command` | bloqueo por sincronización pendiente |
+| `decision` | uno de los cinco resultados canónicos |
+| `reason` | motivo auditable |
+| `effective_at` | momento efectivo |
+| `next_lpn_id` | solo cuando existe rotación materializada |
+| `evidence_refs` | referencias de evidencia |
+| `idempotency_key` | protección contra reejecución |
+
+Este shape es contractual; no prescribe una tabla física concreta.
+
+---
+
+#### 47. Matriz principal de decisión
+
+| Situación | Resultado esperado |
+| --- | --- |
+| reimpresión o nueva etiqueta del mismo LPN | `PRESERVE_CURRENT_LPN` |
+| movimiento de LOC de la misma unidad | `PRESERVE_CURRENT_LPN` |
+| traslado de sede de la misma unidad | `PRESERVE_CURRENT_LPN` |
+| cambio de custodia de la misma unidad | `PRESERVE_CURRENT_LPN` |
+| cambio permitido de contenido dentro del mismo ciclo | `PRESERVE_CURRENT_LPN` |
+| cambio de recipiente con continuidad exacta demostrada | `PRESERVE_CURRENT_LPN` con re-vinculación explícita |
+| fin de ciclo reconciliado | `CLOSE_CURRENT_LPN` |
+| borrador abandonado sin efectos | `CANCEL_CURRENT_LPN` |
+| activo anulable sin efectos y lifecycle compatible | `CANCEL_CURRENT_LPN` |
+| contenedor reutilizado para carga independiente | `ROTATE_TO_NEW_LPN` |
+| LPN terminal y comienzo de nuevo ciclo | `ROTATE_TO_NEW_LPN` |
+| división que crea una unidad nueva | nuevo LPN para la nueva unidad |
+| consolidación que crea una unidad resultante nueva | nuevo LPN para la unidad resultante |
+| discrepancia abierta | `HOLD_CURRENT_STATE` |
+| movimiento en vuelo | `HOLD_CURRENT_STATE` |
+| comando offline pendiente relevante | `HOLD_CURRENT_STATE` |
+| pérdida o daño con contenido no reconciliado | `HOLD_CURRENT_STATE` |
+
+---
+
+#### 48. Señales que no fuerzan rotación
+
+No bastan por sí solas para cambiar LPN:
+
+- cambio de LOC;
+- cambio de sede;
+- cambio de custodio;
+- cambio de etiqueta;
+- cambio de recipiente;
+- vaciado temporal;
+- cambio de etapa;
+- cambio de documento asociado;
+- nueva lectura por código;
+- diferencia todavía no investigada.
+
+---
+
+#### 49. Señales de nuevo ciclo
+
+Justifican evaluar `ROTATE_TO_NEW_LPN`:
+
+- carga nueva e independiente con ciclo anterior resuelto;
+- proceso empresarial no relacionado y sin continuidad explícita;
+- reutilización posterior del mismo contenedor con ciclo anterior terminal;
+- división que crea unidad independiente;
+- consolidación que crea unidad resultante nueva;
+- frontera temporal alcanzada con cierre elegible;
+- sustitución cuya reconciliación confirma una unidad nueva.
+
+Ninguna señal habilita mutación in-place del LPN anterior.
+
+---
+
+#### 50. Estado remoto observado de Supabase
+
+El estado remoto verificable presenta:
+
+- `inventory_lpns` existente;
+- `inventory_lpn_items` existente;
+- cero filas observadas en ambas superficies;
+- `inventory_lpns.code` con unicidad;
+- `inventory_lpns.status` limitado a valores legacy `active`, `empty`, `consumed`, `damaged`;
+- `inventory_lpns.container_type` limitado a `box`, `pallet`, `bag`, `tray`, `bin`, `other`;
+- ausencia de tabla dedicada de contenedores físicos entre las superficies `lpn/container` observadas;
+- ausencia de columna `physical_container_id`;
+- ausencia de historial explícito de binding contenedor-LPN en esas superficies.
+
+Este estado es evidencia de un modelo parcial, no una autorización para reinterpretarlo.
+
+---
+
+#### 51. Estado observable de vento-nexo
+
+La aplicación observable mantiene capacidad LPN parcial:
+
+- existe formulario de creación con formato visible `LPN-SEDE-AAMM-SEQ`;
+- existe un GET de LPN que proyecta `id`, `code`, `site_id` y `created_at`;
+- no se observó consumidor de `inventory_lpn_items` en la búsqueda realizada;
+- no se observó uso de `physical_container_id`;
+- no se observó consumo de `container_type` en el código consultado;
+- no se observó materialización del contrato de continuidad definido aquí.
+
+La clasificación permanece `REUSE_OR_REFACTOR`.
+
+---
+
+#### 52. Brechas físicas registradas
+
+Para materializar el contrato en una etapa autorizada faltan, como mínimo:
+
+1. identidad física separada de contenedor;
+2. historial explícito del vínculo contenedor-LPN;
+3. lifecycle objetivo alineado con `DRAFT/ACTIVE/CLOSED/CANCELLED`;
+4. operación idempotente de vínculo y re-vínculo;
+5. cierre y cancelación bajo precondiciones;
+6. rotación a LPN nuevo sin mutar identidad previa;
+7. control de concurrencia;
+8. reconciliación offline;
+9. auditoría de decisiones;
+10. consumidores UI/API alineados;
+11. pruebas de no duplicación de stock;
+12. compatibilidad con movimiento y contenido.
+
+Estas brechas no se resuelven físicamente en esta tarea.
+
+---
+
+#### 53. Reconciliación legacy futura
+
+Una materialización posterior deberá tratar el modelo existente como legado parcial.
+
+En particular:
+
+- `container_type` no puede convertirse silenciosamente en identidad física;
+- `damaged` como estado legacy de LPN no debe confundirse con condición del contenedor;
+- `empty` y `consumed` no sustituyen por sí solos a `CLOSED`;
+- la existencia de `inventory_lpn_items` no demuestra un contrato completo de contenido;
+- todo cambio deberá conservar historia, evidencia, idempotencia y posibilidad de reconciliación.
+
+La observación de cero filas LPN reduce el riesgo actual de reinterpretación, pero no sustituye una migración gobernada.
+
+---
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La tarea desarrolla reglas ya cubiertas por requisitos vigentes y no altera el registro canónico de requisitos de prueba.
+
+---
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+La cobertura existente reutilizada, sin modificarla, incluye:
+
+- `TREQ-NEXO-004` para lifecycle completo de LPN;
+- `TREQ-NEXO-011` para movimientos, proyecciones e idempotencia de inventario;
+- `TREQ-NEXO-013` para identidad separada de activos y contenedores físicos;
+- `TREQ-NEXO-016` para logística, LPN, contenedores, custodia y cierre;
+- `TREQ-NEXO-041` para separación de clase, rol y representación;
+- `TREQ-NEXO-046` para la frontera `PHYSICAL_CONTAINER` y LPN, incluidos vínculos temporales o persistentes;
+- `TREQ-NEXO-047` para impedir doble contabilización entre clases, LPN, contenedores y contenido.
+
+Esta enumeración es trazabilidad de cobertura, no una actualización de 04A.
+
+---
+
+#### 56. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al checkout y build canónico corresponden al ciclo local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores sobre el checkout local durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron en fuentes remotas continuidad vigente, topología `DEFINE_ONCE`, owner, tarea anterior aprobada, lifecycle LPN, separación contenedor-LPN, 04A vigente, esquema remoto LPN y superficies observables de `vento-nexo`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó un ciclo real de empaque, traslado, sustitución, cierre o reutilización. |
+| FÍSICA | NOT_APPLICABLE | La tarea es documental y no autoriza cambios físicos. |
+
+---
+
+#### 57. Criterios de aceptación
+
+- [x] Distingue preservar, rotar, cerrar, cancelar y mantener en espera.
+- [x] Prohíbe mutar el identificador de un LPN para representar un ciclo nuevo.
+- [x] Conserva la identidad permanente del contenedor físico.
+- [x] Impide que `PERSISTENT` signifique LPN perpetuo del contenedor.
+- [x] Define la política `TEMPORARY`.
+- [x] Define continuidad de unidad, contenido y proceso.
+- [x] Cubre cambios de LOC, sede, custodio y etiqueta.
+- [x] Cubre sustitución de contenedor, división y consolidación.
+- [x] Cubre vaciado, fin de ciclo, retorno, daño, pérdida y hallazgo.
+- [x] Conserva reglas para LPN anidados y estados terminales.
+- [x] Exige idempotencia, concurrencia y reconciliación offline.
+- [x] Separa lifecycle de movimientos, saldos y contenido.
+- [x] Registra el AS-IS remoto sin reinterpretarlo.
+- [x] Conserva cero cambios de requisitos.
+- [x] No autoriza cambios físicos.
+
+---
+
+#### 58. Handoffs propietarios
+
+| Responsabilidad posterior | Propietario | Condición de salida |
+| --- | --- | --- |
+| lectura y movimiento por código | `NEXO-DOM-021` | resolver identificación y acción por código sin mutar identidad indebidamente |
+| movimiento atómico de LPN y contenido | `NEXO-DOM-022` | definir transacción, concurrencia e idempotencia de movimiento |
+| lote, serial y condición dentro de LPN | `NEXO-DOM-023` | conservar trazabilidad aplicable durante contenido y movimiento |
+| capacidad y compatibilidad | `NEXO-DOM-024` | validar límites físicos antes de empaque o vínculo incompatible |
+| materialización física | carril físico autorizado posterior | existir alcance aprobado, gate y evidencia antes de modificar producto o Supabase |
+
+No se crea un owner documental nuevo.
+
+---
+
+#### 59. Consistencia del minibloque
+
+```text
+NEXO-DOM-019
+separa permanentemente PHYSICAL_CONTAINER de LPN
+        |
+        v
+NEXO-DOM-020
+decide PRESERVE / ROTATE / CLOSE / CANCEL / HOLD
+        |
+        v
+NEXO-DOM-021
+resuelve lectura y movimiento mediante codigo respetando la decision
+        |
+        v
+NEXO-DOM-022
+define movimiento atomico de LPN y contenido
+        |
+        v
+NEXO-DOM-023
+preserva lote, serial y condicion
+        |
+        v
+NEXO-DOM-024
+aplica capacidad y compatibilidad
+```
+
+No se absorbe trabajo reservado a las tareas posteriores.
+
+---
+
+#### 60. Handoff contractual hacia NEXO-DOM-021
+
+```text
+STABLE LPN IDENTITY
++
+LPN LIFECYCLE STATE
++
+OPTIONAL PHYSICAL CONTAINER ID
++
+ACTIVE BINDING REVISION
++
+CONTINUITY DECISION
++
+CURRENT SITE / LOC
++
+CURRENT CUSTODY
++
+HOLD REASONS
++
+IDEMPOTENCY / CONCURRENCY EXPECTATION
+=
+CODE-BASED IDENTIFICATION AND MOVEMENT MUST PRESERVE THESE INVARIANTS
+```
+
+`NEXO-DOM-021` puede definir cómo una lectura resuelve identidad y habilita una acción autorizada. No puede convertir el escaneo en autoridad implícita para rotar, cerrar, cancelar o reactivar un LPN.
+
+---
+
+#### 61. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
+
+### ✅ NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+**Tarea siguiente:** NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+**Tipo de tarea:** documental; definición canónica de representación autoritativa única para existencia suelta y contenido LPN, exclusividad contable, proyecciones derivadas, transiciones PACK/UNPACK, idempotencia, concurrencia, reconciliación y fronteras con movimiento bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una única regla contable y de inventario para impedir que una misma existencia física sea representada simultáneamente como saldo suelto ubicado directamente en un LOC y como contenido directo de un LPN.
+
+La tarea congela la exclusividad entre representación autoritativa y proyección derivada, preserva los contratos aprobados de contenido, ubicación, anidamiento y lifecycle LPN, y entrega a `NEXO-DOM-022` la invariante que deberá mantenerse cuando un LPN completo cambie de ubicación.
+
+---
+
+#### 2. Regla raíz
+
+Se fija:
+
+```text
+ONE PHYSICAL EXISTENCE
+→ EXACTLY ONE AUTHORITATIVE ACCOUNTING REPRESENTATION
+```
+
+Para existencia que puede estar empacada:
+
+```text
+DIRECT LOOSE REPRESENTATION
+XOR
+DIRECT LPN MEMBERSHIP
+```
+
+Nunca:
+
+```text
+DIRECT LOOSE REPRESENTATION
++
+DIRECT LPN MEMBERSHIP
+=
+TWO AUTHORITATIVE BALANCES
+```
+
+Una proyección agregada puede mostrar la misma existencia dentro del total físico de un LOC o sede, pero esa proyección no constituye una segunda representación autoritativa.
+
+---
+
+#### 3. Alcance
+
+Esta tarea define:
+
+1. sujeto de exclusividad;
+2. representación suelta directa;
+3. membresía LPN directa;
+4. proyección agregada por LOC y sede;
+5. reglas de PACK;
+6. reglas de UNPACK;
+7. transferencia entre LPN sin saldo suelto ficticio;
+8. anidamiento sin conteo repetido;
+9. tránsito y ubicación efectiva;
+10. reservas, condición y disponibilidad sin duplicar existencia;
+11. conteos y reconciliación;
+12. costo y valoración sin duplicar valor;
+13. idempotencia;
+14. concurrencia;
+15. operación offline y respuestas tardías;
+16. auditoría;
+17. reconciliación del modelo físico parcial existente;
+18. handoff exacto hacia `NEXO-DOM-022`.
+
+No materializa esquema, SQL, RPC, trigger, RLS, UI, migración, backfill ni movimiento real.
+
+---
+
+#### 4. Entradas canónicas preservadas
+
+La tarea consume sin redefinir:
+
+- las siete clases primarias de control aprobadas en `NEXO-DOM-001`;
+- LPN como identidad logística y no como existencia adicional;
+- lifecycle LPN aprobado en `NEXO-DOM-003`;
+- contenido, PACK y UNPACK aprobados en `NEXO-DOM-004`;
+- división, unión y transferencia de contenido aprobadas en `NEXO-DOM-005`;
+- LPN anidados y propiedad directa del contenido aprobados en `NEXO-DOM-006`;
+- relación sede → LOC → LPN → contenido aprobada en `NEXO-DOM-007`;
+- identidad física del contenedor separada del LPN aprobada en `NEXO-DOM-019`;
+- continuidad, rotación y cierre de LPN aprobados en `NEXO-DOM-020`;
+- ledger y proyecciones reconciliables;
+- movimientos idempotentes o compensables;
+- autorización server-side para toda mutación con efecto real.
+
+---
+
+#### 5. LPN no crea existencia
+
+Se mantiene:
+
+```text
+LPN != STOCK
+LPN != QUANTITY
+LPN != INVENTORY BALANCE
+```
+
+Crear un LPN produce una identidad logística.
+
+Agregar contenido a un LPN cambia la representación o membresía de una existencia ya existente; no crea una segunda existencia.
+
+Cerrar, cancelar, rotar o reetiquetar un LPN tampoco crea ni elimina saldo por sí solo.
+
+---
+
+#### 6. Sujeto de exclusividad
+
+La exclusividad se evalúa sobre la unidad física o slice canónico que el dominio considere indivisible para contabilización.
+
+Para cantidad, el sujeto conserva las dimensiones aplicables, entre ellas:
+
+- producto o identidad maestra;
+- unidad canónica de stock;
+- lote cuando aplique;
+- vencimiento cuando aplique;
+- condición cuando aplique;
+- presentación cuando forme parte de la identidad de existencia;
+- demás dimensiones canónicas necesarias para impedir mezcla indebida.
+
+Para objetos individualizados, el sujeto es la identidad física exacta.
+
+No se deduplica solo por nombre de producto.
+
+---
+
+#### 7. Representación suelta directa
+
+`DIRECT_LOOSE_REPRESENTATION` significa que la existencia está controlada directamente fuera de un LPN.
+
+Puede conservar:
+
+- sede;
+- LOC;
+- posición opcional;
+- cantidad o identidad;
+- lote;
+- vencimiento;
+- condición;
+- reserva;
+- demás dimensiones aplicables.
+
+La representación suelta es autoritativa únicamente mientras la misma existencia no tenga membresía LPN directa vigente.
+
+---
+
+#### 8. Membresía LPN directa
+
+`DIRECT_LPN_MEMBERSHIP` significa que la existencia está contenida directamente por exactamente un LPN propietario vigente.
+
+Se mantiene:
+
+```text
+DIRECT OWNER LPN COUNT <= 1
+```
+
+La membresía conserva las dimensiones necesarias del contenido y hereda su ubicación efectiva desde el LPN propietario conforme a `NEXO-DOM-007`.
+
+No conserva simultáneamente una colocación autoritativa suelta.
+
+---
+
+#### 9. Exclusividad de representación
+
+Para cualquier existencia controlada:
+
+```text
+AUTHORITATIVE_LOOSE_COUNT
++
+AUTHORITATIVE_DIRECT_LPN_MEMBERSHIP_COUNT
+=
+1
+```
+
+cuando la existencia esté físicamente presente y reconciliada.
+
+Durante una transición en curso, la implementación futura deberá representar el cambio mediante un hecho o transacción correlacionada, no mediante dos saldos vigentes.
+
+---
+
+#### 10. Proyección derivada no es saldo adicional
+
+Una vista o proyección puede responder:
+
+- total físico por LOC;
+- total físico por sede;
+- total suelto;
+- total contenido;
+- total por LPN;
+- disponibilidad;
+- tránsito.
+
+La proyección no se convierte en fuente mutable independiente.
+
+Se fija:
+
+```text
+DERIVED PROJECTION
+!=
+SECOND AUTHORITATIVE BALANCE
+```
+
+---
+
+#### 11. Total físico por LOC
+
+Cuando un LPN está localizado en un LOC, el total físico del LOC puede incluir su contenido como información derivada.
+
+La forma conceptual es:
+
+```text
+TOTAL_PHYSICAL_AT_LOC
+=
+DIRECT_LOOSE_AT_LOC
++
+DIRECT_CONTENT_OF_ROOT_LPNS_EFFECTIVELY_AT_LOC
+```
+
+con deduplicación de descendientes y sin sumar nuevamente rollups de parent LPN.
+
+El resultado es una proyección de lectura, no una autorización para crear filas sueltas adicionales.
+
+---
+
+#### 12. Total físico por sede
+
+El total físico por sede deriva de las representaciones autoritativas vigentes y de la ubicación efectiva.
+
+No se obtiene sumando dos agregados que ya contengan la misma existencia.
+
+Debe poder explicarse qué parte está:
+
+- suelta;
+- dentro de LPN;
+- en tránsito;
+- no ubicada temporalmente;
+- reservada;
+- bloqueada por condición.
+
+---
+
+#### 13. Totales contables y físicos
+
+La misma existencia puede aparecer en diferentes vistas analíticas sin duplicarse económicamente.
+
+Por ejemplo:
+
+```text
+SITE TOTAL VIEW
+LOC TOTAL VIEW
+LPN CONTENT VIEW
+```
+
+pueden referirse al mismo sujeto.
+
+La cardinalidad de vistas no altera la cardinalidad de existencia.
+
+---
+
+#### 14. Regla de PACK
+
+`PACK` transforma representación; no crea cantidad.
+
+La invariante es:
+
+```text
+LOOSE DIRECT REPRESENTATION ENDS
++
+DIRECT LPN MEMBERSHIP STARTS
+=
+SAME PHYSICAL EXISTENCE
+```
+
+Para cantidad `q`:
+
+```text
+LOOSE(q) -> LPN(q)
+NET ENTERPRISE EXISTENCE DELTA = 0
+```
+
+El movimiento de representación debe conservar la misma cantidad canónica después de conversiones autorizadas.
+
+---
+
+#### 15. PACK parcial
+
+Empacar parte de una cantidad divide el slice de forma controlada.
+
+Para `q_total = q_pack + q_remaining`:
+
+```text
+BEFORE
+LOOSE(q_total)
+
+AFTER
+LOOSE(q_remaining)
++
+LPN(q_pack)
+```
+
+La suma física permanece `q_total`.
+
+La parte empacada y la parte residual quedan distinguibles por sus representaciones autoritativas.
+
+---
+
+#### 16. PACK completo
+
+Cuando toda la existencia suelta aplicable se empaca:
+
+```text
+LOOSE(q) -> 0
+LPN(q) -> q
+```
+
+No puede quedar una fila, proyección o reserva interpretada como segundo saldo suelto autoritativo por la misma cantidad.
+
+---
+
+#### 17. Precondición espacial de PACK
+
+PACK no oculta un traslado.
+
+Contenido fuente y LPN destino deben ser físicamente compatibles al confirmar la operación ordinaria.
+
+Si requieren ubicaciones diferentes, el movimiento propietario debe existir o la operación falla cerrada.
+
+Esta tarea no define la transacción física de traslado.
+
+---
+
+#### 18. Regla de UNPACK
+
+`UNPACK` transforma en sentido inverso:
+
+```text
+DIRECT LPN MEMBERSHIP ENDS
++
+LOOSE DIRECT REPRESENTATION STARTS
+AT THE LPN EFFECTIVE PLACEMENT
+```
+
+Para cantidad `q`:
+
+```text
+LPN(q) -> LOOSE(q)
+NET ENTERPRISE EXISTENCE DELTA = 0
+```
+
+Un destino físico diferente exige además el movimiento correspondiente.
+
+---
+
+#### 19. UNPACK parcial
+
+Cuando solo se desempaca parte del contenido:
+
+```text
+BEFORE
+LPN(q_total)
+
+AFTER
+LPN(q_remaining)
++
+LOOSE(q_unpack)
+```
+
+Se conserva:
+
+```text
+q_total = q_remaining + q_unpack
+```
+
+No se crea una tercera copia por conservar historia.
+
+---
+
+#### 20. Transferencia entre LPN
+
+Transferir contenido de un LPN a otro no requiere un saldo suelto intermedio ficticio.
+
+La invariante es:
+
+```text
+SOURCE DIRECT MEMBERSHIP ENDS
++
+TARGET DIRECT MEMBERSHIP STARTS
+=
+SAME PHYSICAL EXISTENCE
+```
+
+Si la transferencia implica traslado físico adicional, debe correlacionarse con el movimiento aplicable.
+
+---
+
+#### 21. División de contenido
+
+Dividir contenido no duplica existencia.
+
+Cada fragmento resultante conserva una representación autoritativa propia y las cantidades resultantes suman exactamente la cantidad fuente, dentro de tolerancias canónicas de medición.
+
+La historia del origen no se cuenta como saldo vigente.
+
+---
+
+#### 22. Unión de contenido
+
+Unir slices compatibles crea una representación resultante reconciliada.
+
+Las representaciones fuente dejan de ser autoritativas cuando la unión se confirma.
+
+La suma histórica de fuentes y resultado no puede utilizarse como total vigente.
+
+---
+
+#### 23. LPN anidados
+
+Un LPN hijo conserva su propio contenido directo.
+
+El parent puede mostrar un rollup de descendientes, pero no adquiere una segunda membresía directa sobre el mismo contenido.
+
+Se fija:
+
+```text
+PARENT AGGREGATE CONTENT
+=
+DERIVED ROLLUP
+```
+
+y nunca:
+
+```text
+CHILD DIRECT CONTENT
++
+SAME CONTENT AS PARENT DIRECT CONTENT
+```
+
+---
+
+#### 24. Propietario directo del contenido
+
+Para cada contenido contenido:
+
+```text
+CONTENT
+→ EXACTLY ONE DIRECT OWNER LPN
+→ OPTIONAL ANCESTOR CHAIN
+```
+
+Los ancestros aportan contexto y ubicación efectiva.
+
+No multiplican saldo ni membresía.
+
+---
+
+#### 25. Movimiento de un LPN
+
+Mover un LPN no desempaca su contenido.
+
+Por tanto, el movimiento de ubicación del LPN no transforma contenido contenido en saldo suelto.
+
+La representación sigue siendo:
+
+```text
+DIRECT LPN MEMBERSHIP
+```
+
+mientras cambia su ubicación efectiva a través del propietario.
+
+La atomicidad física completa de ese movimiento pertenece a `NEXO-DOM-022`.
+
+---
+
+#### 26. Tránsito
+
+Durante tránsito del LPN:
+
+- el contenido permanece dentro del LPN;
+- no vuelve a saldo suelto en origen;
+- no aparece como saldo suelto confirmado en destino;
+- la ubicación efectiva sigue el contrato de tránsito;
+- el contenido no se duplica para mostrar origen y destino simultáneamente.
+
+---
+
+#### 27. Recepción
+
+Recibir un LPN no implica UNPACK.
+
+La recepción puede cambiar estado o ubicación del LPN manteniendo su contenido contenido.
+
+Solo una operación de UNPACK autorizada cambia la representación del contenido a suelta.
+
+---
+
+#### 28. Despacho
+
+Despachar un LPN no convierte su contenido en una salida individual suelta.
+
+La salida física y el tránsito deben conservar el LPN como unidad rastreable cuando ese sea el contrato del proceso.
+
+El contenido continúa representado una sola vez.
+
+---
+
+#### 29. Reserva
+
+Reservar existencia no crea una segunda cantidad.
+
+Se fija:
+
+```text
+RESERVED QUANTITY
+IS A COMPONENT OR STATE OF THE SAME EXISTENCE
+```
+
+Una reserva debe apuntar a la representación autoritativa aplicable o a un scope que pueda resolverse sin duplicar el sujeto.
+
+---
+
+#### 30. Disponibilidad
+
+Se mantiene:
+
+```text
+PHYSICAL QUANTITY != AVAILABLE QUANTITY
+```
+
+La disponibilidad puede descontar reservas, cuarentena, daño, vencimiento, tránsito u otras restricciones.
+
+Ninguna de esas dimensiones crea otra existencia.
+
+---
+
+#### 31. Condición
+
+Cambiar condición no mueve automáticamente una existencia entre representación suelta y LPN.
+
+Un contenido dañado puede seguir dentro del LPN.
+
+Una existencia suelta en cuarentena puede seguir suelta.
+
+Condición y contención son dimensiones distintas.
+
+---
+
+#### 32. Lote y vencimiento
+
+Lote y vencimiento viajan con el contenido cuando la política los exige.
+
+PACK o UNPACK no pueden perderlos ni usar su ausencia para fusionar slices incompatibles.
+
+Dos cantidades con dimensiones incompatibles no se unen solo porque compartan `product_id`.
+
+---
+
+#### 33. Serial e identidad exacta
+
+Una identidad serializada no puede existir simultáneamente:
+
+- como objeto suelto autoritativo;
+- como miembro directo de un LPN;
+- como miembro directo de otro LPN.
+
+La exclusividad se evalúa por identidad exacta.
+
+---
+
+#### 34. Reutilizables por cantidad
+
+Para `REUSABLE_QUANTITY`, la exclusividad se evalúa por cantidad y dimensiones de condición aplicables.
+
+Empacar una cantidad reutilizable no crea unidades adicionales ni cambia su obligación de retorno.
+
+---
+
+#### 35. Contenedores físicos como contenido
+
+Un `PHYSICAL_CONTAINER` individual puede ser transportado o, si el contrato lo permite, formar parte del contenido de una unidad logística.
+
+Su identidad física sigue siendo distinta del LPN.
+
+El hecho de que un contenedor esté asociado o contenido no crea otra identidad patrimonial.
+
+---
+
+#### 36. Kits
+
+Una instancia de kit no constituye saldo adicional a la suma de sus miembros cuando el contrato de kit define que los componentes conservan sus propias existencias.
+
+Si el kit se empaca, su identidad de composición y la representación física de sus miembros deben conservar la regla de no duplicación aprobada.
+
+Esta tarea no redefine composición de kit.
+
+---
+
+#### 37. Conteo físico
+
+El conteo observa.
+
+Puede contar por separado:
+
+- stock suelto;
+- contenido LPN;
+- LPN;
+- contenedores;
+- activos.
+
+La consolidación de resultados debe respetar la identidad de cada sujeto y no sumar dos observaciones del mismo sujeto como dos existencias.
+
+---
+
+#### 38. Conteo de un LOC
+
+Un conteo de LOC debe poder distinguir:
+
+```text
+LOOSE DIRECT OBSERVATION
+vs
+LPN OBSERVATION
+vs
+LPN CONTENT OBSERVATION
+```
+
+Si el total del LOC se calcula desde ambas clases, el contenido LPN se incorpora una sola vez.
+
+Contar el LPN y además cada línea de contenido no convierte la identidad LPN en una cantidad adicional de producto.
+
+---
+
+#### 39. Diferencia de conteo
+
+Una diferencia de conteo no se corrige creando una copia suelta de contenido LPN.
+
+Primero se investiga si la discrepancia corresponde a:
+
+- ubicación;
+- membresía;
+- cantidad;
+- identidad;
+- condición;
+- movimiento no confirmado;
+- error de captura.
+
+El ajuste autorizado utiliza el movimiento o compensación propietaria.
+
+---
+
+#### 40. Ledger
+
+El ledger autoritativo debe poder explicar cada cambio de cantidad o identidad.
+
+Una mutación de proyección sin hecho correlacionado no crea verdad.
+
+Se mantiene:
+
+```text
+PROJECTION UPDATE
+WITHOUT AUTHORITATIVE FACT
+=
+INVALID STATE
+```
+
+---
+
+#### 41. Proyecciones write-through
+
+Si una implementación futura mantiene proyecciones materializadas, toda actualización debe derivar de la misma operación autoritativa.
+
+No se permite que PACK:
+
+1. inserte contenido LPN;
+2. y deje intacto un saldo suelto autoritativo de la misma cantidad;
+
+ni que UNPACK haga lo inverso.
+
+---
+
+#### 42. Proyección aggregate-only
+
+Una tabla o vista podrá contener un total que incluya existencia suelta y contenida únicamente si su semántica es explícitamente agregada y derivada.
+
+Ese total:
+
+- no se interpreta como stock suelto;
+- no se vuelve a sumar con contenido LPN;
+- no se usa como segunda fuente de movimientos;
+- debe poder reconciliarse con las representaciones autoritativas.
+
+---
+
+#### 43. Prohibición de semántica ambigua
+
+Una superficie denominada genéricamente `stock` no basta para decidir si representa:
+
+- suelto directo;
+- total físico;
+- disponible;
+- proyectado;
+- contenido;
+- valor contable.
+
+La materialización futura debe declarar su semántica.
+
+Ante ambigüedad, se falla cerrada y se reconcilia antes de habilitar escritura.
+
+---
+
+#### 44. Costo por unidad en contenido LPN
+
+Registrar costo como metadato de una línea LPN no crea una segunda valorización de la existencia.
+
+El valor económico consolidado se calcula una sola vez por existencia autoritativa.
+
+No se suma valor suelto más valor LPN cuando ambos representan la misma cantidad histórica o proyectada.
+
+---
+
+#### 45. Inventario por sitio
+
+Una proyección por sitio puede contener existencia suelta y contenida.
+
+Debe estar definida como agregado derivado o como fuente autoritativa con reglas que impidan volver a sumar representaciones detalladas.
+
+La implementación física elegirá una sola arquitectura coherente.
+
+Esta tarea no prescribe una tabla concreta.
+
+---
+
+#### 46. Reintentos
+
+Toda operación futura de PACK, UNPACK o transferencia deberá ser idempotente.
+
+Repetir la misma intención no puede:
+
+- volver a restar saldo suelto;
+- volver a insertar contenido;
+- duplicar membresía;
+- duplicar movimiento;
+- duplicar valor;
+- duplicar auditoría efectiva.
+
+---
+
+#### 47. Clave de idempotencia
+
+La materialización futura debe conservar una identidad de operación o equivalente reproducible que permita reconocer un reintento.
+
+El mismo comando lógico produce el mismo resultado efectivo.
+
+Un comando diferente no reutiliza accidentalmente la identidad de otro.
+
+---
+
+#### 48. Concurrencia
+
+PACK y UNPACK deberán validar el estado esperado antes de producir efectos.
+
+Como mínimo deberá poder detectarse:
+
+- cantidad esperada;
+- representación esperada;
+- LPN esperado;
+- revisión esperada;
+- ubicación compatible;
+- estado lifecycle permitido.
+
+Un conflicto concurrente falla cerrado o exige reconciliación.
+
+---
+
+#### 49. Prohibición de last-write-wins silencioso
+
+No se admite que dos operaciones concurrentes concluyan ambas desde la misma cantidad fuente.
+
+Ejemplo prohibido:
+
+```text
+PACK A reads LOOSE 10
+PACK B reads LOOSE 10
+A packs 10
+B packs 10
+RESULT = 20 contained from 10 physical
+```
+
+La implementación deberá impedirlo mediante el mecanismo de concurrencia propietario.
+
+---
+
+#### 50. Operación offline
+
+Una intención offline no reserva por sí sola una cantidad en servidor.
+
+Al sincronizar debe revalidarse:
+
+- representación actual;
+- cantidad actual;
+- LPN;
+- ubicación;
+- lifecycle;
+- revisión;
+- autorización.
+
+Si la precondición cambió, la operación produce conflicto explícito y no una segunda copia.
+
+---
+
+#### 51. Respuesta tardía
+
+Un timeout no prueba que PACK o UNPACK haya fallado.
+
+Antes de reintentar, el consumidor debe reconciliar por identidad de operación y estado efectivo.
+
+La respuesta tardía no puede producir una segunda aplicación.
+
+---
+
+#### 52. Fallo parcial
+
+Un fallo que pudiera haber aplicado solo una parte de la transición debe quedar detectable.
+
+El sistema futuro deberá:
+
+- impedir publicación de un estado definitivamente duplicado;
+- conservar evidencia de la operación;
+- reconciliar antes de nuevas mutaciones incompatibles;
+- compensar mediante el mecanismo propietario cuando corresponda.
+
+Esta tarea no prescribe la tecnología transaccional.
+
+---
+
+#### 53. Estado de reconciliación
+
+Cuando no puede demostrarse la exclusividad:
+
+```text
+UNKNOWN REPRESENTATION
+→ BLOCK MUTATION
+→ RECONCILE
+```
+
+No se elige arbitrariamente entre saldo suelto y contenido LPN.
+
+No se elimina una representación solo para hacer cuadrar cifras sin evidencia.
+
+---
+
+#### 54. Migración y adopción futura
+
+La adopción de LPN sobre stock existente debe ser explícita.
+
+No se permite:
+
+1. crear líneas LPN para cantidades ya contabilizadas;
+2. conservar esas cantidades simultáneamente como sueltas autoritativas;
+3. declarar éxito porque los totales generales siguen pareciendo correctos.
+
+Cada adopción debe demostrar transición de representación y paridad antes y después.
+
+---
+
+#### 55. Regla de paridad
+
+Para una transición legítima:
+
+```text
+ENTERPRISE PHYSICAL EXISTENCE BEFORE
+=
+ENTERPRISE PHYSICAL EXISTENCE AFTER
+```
+
+excepto cuando el mismo hecho empresarial incluya una entrada, salida, consumo, producción, merma o ajuste autorizado distinto de PACK/UNPACK.
+
+PACK y UNPACK puros tienen delta neto cero.
+
+---
+
+#### 56. Paridad por dimensión
+
+La paridad deberá comprobar las dimensiones aplicables.
+
+No basta comparar un total bruto de producto si la transición perdió:
+
+- lote;
+- vencimiento;
+- condición;
+- serial;
+- unidad;
+- ubicación efectiva;
+- identidad propietaria.
+
+---
+
+#### 57. Auditoría mínima
+
+Toda futura transición entre suelto y LPN deberá poder reconstruir:
+
+- actor;
+- sujeto;
+- cantidad o identidad;
+- unidad canónica;
+- dimensiones de existencia;
+- representación anterior;
+- representación posterior;
+- LPN;
+- sede y ubicación efectiva;
+- operación causal;
+- timestamp efectivo;
+- idempotencia;
+- revisión;
+- resultado;
+- conflicto o compensación cuando exista.
+
+---
+
+#### 58. Autorización
+
+Lectura de un LPN, posesión de un dispositivo o acceso a una pantalla no concede autoridad para transformar representación.
+
+La acción futura debe validar en servidor:
+
+- actor efectivo;
+- contexto;
+- permiso o capacidad;
+- alcance territorial;
+- operación solicitada.
+
+La autorización no se deriva del cliente.
+
+---
+
+#### 59. AS-IS remoto observado
+
+El estado remoto verificable de `vento-os-dev` presenta:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `inventory_stock_by_location` | 218 |
+| `inventory_lpn_items` | 0 |
+| `inventory_lpns` | 0 |
+| `inventory_movements` | 803 |
+
+Por tanto, no existe doble contabilización LPN observable en las filas actuales porque no existen LPN ni líneas de contenido observadas.
+
+Esto no demuestra que el modelo esté protegido para adopción futura.
+
+---
+
+#### 60. Estructura física parcial observada
+
+`inventory_stock_by_location` conserva:
+
+```text
+PRIMARY KEY (location_id, product_id)
+current_qty
+```
+
+`inventory_lpn_items` conserva, entre otros:
+
+```text
+id
+lpn_id
+product_id
+quantity
+unit
+lot_number
+expiry_date
+cost_per_unit
+```
+
+No existe constraint observado que exprese la exclusividad entre saldo suelto y contenido LPN.
+
+La ausencia de esa protección constituye brecha física, no permiso para inferir una solución SQL dentro de esta tarea.
+
+---
+
+#### 61. Ledger físico observado
+
+`inventory_movements` existe y contiene filas observadas.
+
+En las columnas inspeccionadas no existe una identidad LPN directa.
+
+Múltiples funciones actuales referencian `inventory_stock_by_location`, mientras no se observó en la inspección remota una función que referencie `inventory_lpn_items`.
+
+Esto confirma una adopción LPN todavía parcial.
+
+---
+
+#### 62. Consumidores de aplicación observados
+
+En `vento-nexo` se observaron múltiples consumidores de `inventory_stock_by_location`, entre ellos superficies de:
+
+- ajuste;
+- traslados;
+- retiro;
+- stock;
+- entradas;
+- conteo inicial;
+- LOC;
+- remisiones.
+
+No se localizó consumidor de aplicación para `inventory_lpn_items` en la búsqueda remota realizada.
+
+La aplicación actual no demuestra una transición operativa suelto ↔ LPN.
+
+---
+
+#### 63. Clasificación AS-IS
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Razones:
+
+- existen ledger, LOC y proyecciones de stock reutilizables;
+- existe infraestructura LPN parcial;
+- no existe adopción funcional de contenido LPN;
+- no existe exclusividad física expresada entre ambas representaciones;
+- los consumidores actuales dependen ampliamente de `inventory_stock_by_location`;
+- una implementación futura deberá preservar compatibilidad o migrar consumidores de forma gobernada.
+
+---
+
+#### 64. Regla de no reinterpretación silenciosa
+
+No se autoriza declarar que las 218 filas actuales son una nueva semántica física sin migración y evidencia.
+
+Tampoco se autoriza declarar que `inventory_stock_by_location` será necesariamente saldo suelto final o agregado final únicamente por su nombre actual.
+
+La implementación posterior debe elegir y documentar una arquitectura que satisfaga este contrato.
+
+---
+
+#### 65. Arquitecturas físicas compatibles
+
+Este contrato admite más de una materialización si preserva invariantes.
+
+Ejemplos conceptuales compatibles:
+
+1. saldo suelto autoritativo separado de membresía LPN y agregados derivados;
+2. ledger autoritativo único con proyecciones diferenciadas para suelto y contenido;
+3. otra forma equivalente que demuestre exclusividad, paridad, idempotencia y reconciliación.
+
+La tarea no selecciona tecnología ni tablas finales.
+
+---
+
+#### 66. Arquitecturas incompatibles
+
+Son incompatibles:
+
+- dos tablas mutables independientes cuyos totales se suman sin deduplicación;
+- PACK que solo inserta `inventory_lpn_items`;
+- UNPACK que solo incrementa stock suelto;
+- parent LPN que materializa como propio todo el contenido child además de conservar el child;
+- vistas agregadas usadas de nuevo como fuente de saldo;
+- movimientos que actualizan una proyección sin hecho autoritativo;
+- reintentos capaces de duplicar cantidad.
+
+---
+
+#### 67. Handoff hacia NEXO-DOM-022
+
+`NEXO-DOM-022` recibe estas invariantes cerradas:
+
+```text
+CONTENT INSIDE LPN
+=
+ONE AUTHORITATIVE LPN MEMBERSHIP
+
+LPN MOVEMENT
+!=
+UNPACK
+
+ROOT LPN PLACEMENT CHANGE
+→
+CONTENT EFFECTIVE PLACEMENT CHANGES
+
+NET CONTENT QUANTITY DELTA
+=
+0
+```
+
+La siguiente tarea deberá definir cómo mover el LPN y todo su contenido atómicamente sin crear saldo suelto en origen, saldo suelto en destino ni movimientos duplicados por cada proyección derivada.
+
+---
+
+#### 68. Fronteras con tareas posteriores
+
+Esta tarea no absorbe:
+
+- atomicidad del movimiento completo de LPN y contenido, propiedad de `NEXO-DOM-022`;
+- trazabilidad detallada de lote, serial, vencimiento y condición dentro del LPN, propiedad de `NEXO-DOM-023`;
+- capacidad, peso, volumen y compatibilidad, propiedad de `NEXO-DOM-024`;
+- implementación física, propiedad de paquetes e instancias autorizadas posteriores.
+
+Las fronteras permanecen explícitas.
+
+---
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Justificación: la prohibición de doble contabilización entre existencia suelta y contenido LPN ya está protegida de forma explícita por requisitos vigentes. Esta tarea especializa el contrato documental y sus invariantes sin cambiar prioridad, modalidad, propietario, paquete, estado ni relación de esos requisitos.
+
+---
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro 04A, se reutiliza:
+
+- `TREQ-NEXO-004`, para lifecycle LPN ejecutable sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, incluyendo la prohibición explícita de contabilizar una cantidad a la vez como stock suelto y contenido LPN;
+- `TREQ-NEXO-016`, para separación logística entre LPN, contenedores, remisiones, viajes y custodia;
+- `TREQ-NEXO-046`, para separación entre contenedor físico, LPN y contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y prohibición de duplicar saldo, instancia, kit, contenedor, contenido LPN o valor.
+
+Esta sección documenta trazabilidad de cobertura y no representa una actualización del registro.
+
+---
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al checkout, normalización y build canónico corresponden al ciclo local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, owner, topología `DEFINE_ONCE`, contrato de entrega, políticas de tarea, 04A NEXO, tareas LPN aprobadas, auditoría LPN, esquema remoto, conteos remotos y consumidores de `vento-nexo`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó PACK, UNPACK, transferencia, traslado o conteo real. |
+| FÍSICA | NOT_APPLICABLE | La tarea no autoriza cambios de código, Supabase, datos ni aplicaciones. |
+
+---
+
+#### 72. Criterios de aceptación
+
+- [x] Se fija una sola representación autoritativa por existencia.
+- [x] Se separa saldo suelto directo de membresía LPN directa.
+- [x] Se define la proyección agregada como derivada.
+- [x] Se impide que LPN cree existencia adicional.
+- [x] Se define PACK con delta neto cero.
+- [x] Se define PACK parcial y completo.
+- [x] Se define UNPACK con delta neto cero.
+- [x] Se define UNPACK parcial.
+- [x] Se prohíbe saldo suelto intermedio ficticio en transferencia entre LPN.
+- [x] Se preserva propiedad directa del contenido en LPN anidados.
+- [x] Se prohíbe contar rollup del parent como nueva membresía.
+- [x] Se preserva contenido durante movimiento de LPN.
+- [x] Se preserva contenido durante tránsito, recepción y despacho.
+- [x] Se separan reserva, disponibilidad y condición de existencia.
+- [x] Se preservan lote, vencimiento y serial como dimensiones.
+- [x] Se cubren reutilizables, contenedores y kits sin duplicar identidad.
+- [x] Se define conteo sin duplicación.
+- [x] Se define ledger y proyecciones.
+- [x] Se impide valor económico duplicado.
+- [x] Se exige idempotencia.
+- [x] Se exige control de concurrencia.
+- [x] Se cubre offline y respuesta tardía.
+- [x] Se cubre fallo parcial y reconciliación.
+- [x] Se define paridad antes/después.
+- [x] Se exige auditoría y autorización.
+- [x] Se registra AS-IS remoto sin reinterpretarlo.
+- [x] Se clasifica la capacidad `REUSE_OR_REFACTOR`.
+- [x] Se conserva cero cambios de TREQ.
+- [x] Se conserva `DEFINE_ONCE`.
+- [x] No se autoriza cambio físico.
+- [x] Se entrega handoff exacto a `NEXO-DOM-022`.
+
+---
+
+#### 73. Límites
+
+Esta tarea no:
+
+- crea tablas;
+- crea columnas;
+- crea constraints;
+- crea triggers;
+- crea funciones;
+- modifica RPC;
+- modifica RLS;
+- modifica grants;
+- modifica tipos TypeScript;
+- crea migraciones;
+- ejecuta backfill;
+- modifica filas remotas;
+- crea LPN;
+- crea contenido LPN;
+- mueve inventario;
+- modifica `inventory_stock_by_location`;
+- modifica `inventory_lpn_items`;
+- modifica `inventory_movements`;
+- modifica `vento-nexo`;
+- cambia consumidores existentes;
+- selecciona una arquitectura SQL final;
+- define movimiento atómico completo de LPN;
+- redefine lote, serial, vencimiento o condición;
+- redefine capacidad o compatibilidad;
+- crea eventos empresariales nuevos;
+- crea o modifica requisitos de prueba;
+- modifica el registro 04A;
+- crea instancia física propia.
+
+---
+
+#### 74. Riesgos controlados
+
+| Riesgo | Control documental |
+| --- | --- |
+| insertar contenido y dejar saldo suelto | exclusividad autoritativa |
+| desempacar e incrementar sin retirar membresía | transición inversa obligatoria |
+| reintento duplica PACK | idempotencia |
+| dos PACK consumen la misma cantidad | concurrencia fail-closed |
+| child y parent cuentan el mismo contenido | direct owner único + rollup derivado |
+| mover LPN crea stock en destino | movimiento conserva membresía |
+| tránsito aparece en origen y destino | ubicación efectiva única |
+| total por LOC vuelve a sumarse con LPN | proyección agregada no autoritativa |
+| costo de línea LPN duplica valorización | valor por existencia única |
+| adopción LPN duplica stock legacy | paridad y migración gobernada |
+| nombre de tabla se interpreta como semántica final | prohibición de reinterpretación silenciosa |
+| fallo parcial deja estado ambiguo | bloqueo y reconciliación |
+
+---
+
+#### 75. Pendientes con propietario existente
+
+| Pendiente | Propietario | Condición de salida |
+| --- | --- | --- |
+| movimiento atómico de LPN y contenido | `NEXO-DOM-022` | definir transición física completa sin duplicación |
+| trazabilidad interna de lote, serial, vencimiento y condición | `NEXO-DOM-023` | preservar dimensiones dentro de LPN |
+| capacidad, peso, volumen y compatibilidad | `NEXO-DOM-024` | validar composición física antes de operaciones incompatibles |
+| materialización de modelo y protección física | packages e instancias autorizadas posteriores | implementar y validar el contrato sin invadir esta tarea documental |
+| migración de consumidores legacy | package propietario autorizado | demostrar paridad, compatibilidad y rollback antes de adopción |
+
+No se crea un owner nuevo.
+
+---
+
+#### 76. Consistencia del minibloque
+
+La secuencia queda:
+
+```text
+NEXO-DOM-020
+define continuidad, rotación y cierre de la identidad LPN
+        |
+        v
+NEXO-DOM-021
+congela una sola representación autoritativa de existencia
+        |
+        v
+NEXO-DOM-022
+mueve el LPN y todo su contenido atómicamente
+        |
+        v
+NEXO-DOM-023
+preserva lote, serial, vencimiento y condición
+        |
+        v
+NEXO-DOM-024
+aplica capacidad, peso, volumen y compatibilidad
+```
+
+Cada tarea conserva su frontera.
+
+---
+
+#### 77. Invariantes finales
+
+1. una existencia física tiene una sola representación autoritativa vigente;
+2. LPN no crea saldo;
+3. saldo suelto directo y membresía LPN directa son excluyentes;
+4. una proyección agregada no es un segundo saldo;
+5. el contenido tiene como máximo un LPN propietario directo;
+6. un parent LPN no duplica contenido de sus hijos;
+7. PACK puro tiene delta neto cero;
+8. UNPACK puro tiene delta neto cero;
+9. transferencia entre LPN no crea saldo suelto ficticio;
+10. mover un LPN no desempaca;
+11. tránsito no duplica origen y destino;
+12. reserva no crea existencia;
+13. condición no crea existencia;
+14. conteo no crea existencia;
+15. historial no es saldo vigente;
+16. costo de una representación no crea segundo valor;
+17. retry no repite efectos;
+18. concurrencia no consume dos veces la misma fuente;
+19. offline revalida antes de aplicar;
+20. ambigüedad de representación bloquea mutación;
+21. adopción LPN demuestra paridad;
+22. implementación física debe conservar estas invariantes sin importar la arquitectura elegida.
+
+---
+
+#### 78. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido`
+
+### ✅ NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+**Tarea siguiente:** NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
+**Tipo de tarea:** documental; definición canónica del movimiento de una unidad logística LPN como transición atómica de su cierre completo de contenido, ubicación efectiva y trazabilidad, con preservación de identidades, dimensiones de existencia, exclusividad de representación, idempotencia, concurrencia, operación offline, auditoría y fronteras con contenedor físico, tránsito, custodia y lifecycle bajo topología `DEFINE_ONCE`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de manera única, verificable y reutilizable que el movimiento legítimo de un LPN no es una edición aislada de la ubicación de su cabecera: es una transición logística única que desplaza atómicamente la totalidad de su contenido autoritativo y, cuando exista, toda su estructura LPN descendiente.
+
+La regla evita que una unidad logística se divida implícitamente durante un traslado, que parte de sus existencias continúe proyectándose en el origen o que una actualización incompleta convierta el mismo contenido en disponible en dos contextos físicos.
+
+```text
+MOVE LPN
+=
+ONE AUTHORIZED LOGISTICS INTENT
++
+ONE RECONCILIABLE MEMBERSHIP CLOSURE
++
+ONE EFFECTIVE-PLACEMENT TRANSITION
++
+ONE CONSISTENT RESULT FOR EVERY INCLUDED SUBJECT
++
+ONE AUDITABLE OUTCOME
+```
+
+Y, en particular:
+
+```text
+MOVE ROOT LPN
+→ MOVE ALL DESCENDANT LPN
+→ MOVE ALL DIRECT CONTENT OF EACH INCLUDED LPN
+→ PRESERVE EACH SUBJECT IDENTITY
+→ NEVER CREATE A SECOND AUTHORITATIVE LOCATION OR BALANCE
+```
+
+Esta tarea especifica solamente el contrato de dominio. No materializa tablas, columnas, migraciones, RPC, políticas RLS, UI, Server Actions, Route Handlers, dispositivos, escáneres, etiquetas, trabajos de impresión, integraciones, datos, movimientos físicos reales ni despliegues.
+
+---
+
+#### 2. Decisiones canónicas consumidas
+
+Esta definición consume sin reabrir los contratos aprobados que establecen:
+
+- que un LPN es una identidad logística y no una LOC, producto, lote, movimiento, remisión ni contenedor físico;
+- que la identidad LPN conserva su estabilidad a través de transiciones de lifecycle permitidas;
+- que empaque, desempaque y transferencia transforman representación o membresía sin crear existencia;
+- que un contenido posee una única representación contable autoritativa: suelta directa o como membresía directa de un LPN, nunca ambas;
+- que un LPN hijo conserva un único padre activo como máximo y que su ubicación efectiva procede de su cadena de ancestros hasta el LPN raíz;
+- que sede, LOC, posición opcional, LPN y contenido son conceptos diferentes y que ubicación conocida, tránsito y no ubicación temporal son modos explícitos;
+- que la identidad física de un contenedor, cuando existe, es independiente del LPN y de su contenido;
+- que una transición logística debe ser idempotente, auditable, protegida contra concurrencia y reconciliable ante resultado incierto.
+
+La presente tarea concreta la consecuencia de esos contratos para el movimiento de una unidad logística completa. No sustituye sus reglas específicas.
+
+---
+
+#### 3. Alcance
+
+El contrato cubre:
+
+- la definición del conjunto que se mueve con un LPN;
+- la condición de atomicidad lógica de una transición de movimiento;
+- movimientos directos entre colocaciones compatibles;
+- inicio y finalización de tránsito como límites de conjunto completos;
+- conservación de identidad, cantidad, lote, serial, condición, vencimiento y demás dimensiones de existencia aplicables;
+- comportamiento ante LPN anidados, contenido directo, contenido serializado, cantidad reutilizable y kits;
+- interacción limitada con lifecycle, custodia, reserva, conteo, contenedor físico y proyecciones;
+- idempotencia, concurrencia, operación offline, respuesta tardía, conflicto y reconciliación;
+- evidencia mínima, AS-IS observable, brechas y criterios de aceptación documental.
+
+---
+
+#### 4. Límites de alcance material
+
+Esta tarea no decide:
+
+- qué persona, rol o política concreta puede autorizar cada clase de traslado; solo exige autorización efectiva conforme al contrato propietario;
+- la capacidad, compatibilidad, temperatura u otras restricciones específicas de una LOC, un producto o un contenedor; solo exige que las restricciones aplicables estén satisfechas antes de aceptar el movimiento;
+- la creación, cierre, anulación, reetiquetado o rotación de un LPN;
+- el empaque, desempaque, división, unión o transferencia selectiva de contenido;
+- la creación, baja, mantenimiento, retorno o movimiento autónomo de un contenedor físico;
+- la confirmación de un despacho, una recepción, una remisión, un manifiesto o una transferencia de custodia;
+- la implementación física futura de los mecanismos que harán cumplir el contrato.
+
+Un proceso que necesite cualquiera de esas decisiones debe correlacionarlas explícitamente con sus contratos propietarios; no puede asumirlas como efectos implícitos de `MOVE_LPN`.
+
+---
+
+#### 5. Vocabulario operativo
+
+Para esta tarea:
+
+- **LPN objetivo**: identidad logística cuya colocación se pretende cambiar.
+- **LPN raíz móvil**: LPN objetivo que no tiene padre LPN autoritativo vigente al momento de validar la operación.
+- **cierre de movimiento**: conjunto completo de LPN y contenido sujeto a una misma transición.
+- **contenido directo**: existencia cuya membresía autoritativa pertenece directamente a un LPN concreto.
+- **contenido efectivo**: contenido directo del LPN objetivo más el contenido directo de cada LPN descendiente incluido en su estructura vigente.
+- **colocación de origen**: ubicación o modo logístico efectivo vigente antes de la transición.
+- **colocación de destino**: ubicación o modo logístico efectivo resultante de una transición aceptada.
+- **sujeto incluido**: LPN o contenido que integra el cierre de movimiento y, por ello, no puede recibir un resultado divergente.
+- **movimiento parcial**: resultado en el que solo una fracción del cierre cambia de contexto efectivo; está prohibido para un `MOVE_LPN` aceptado.
+
+Estas expresiones definen semántica de dominio; no implican nombres de tablas, campos, endpoints ni comandos implementados.
+
+---
+
+#### 6. Regla raíz de totalidad
+
+Se fija la siguiente invariante:
+
+```text
+ACCEPTED MOVE OF ROOT LPN
+=
+MOVE OF ITS COMPLETE CURRENT CLOSURE
+```
+
+Para un LPN raíz `R`, su cierre se expresa conceptualmente así:
+
+```text
+CLOSURE(R)
+=
+{R}
++
+ALL DESCENDANT LPN OF R WITH ACTIVE ANCESTOR CHAIN
++
+ALL DIRECT CONTENT OF EVERY INCLUDED LPN
+```
+
+No es válido aceptar un movimiento que deje un hijo anidado, una línea de contenido directa o una identidad serializada incluida en una colocación efectiva anterior mientras el LPN raíz ya aparece en el destino.
+
+La completitud se determina sobre la estructura y membresía autoritativas validadas, no sobre una lista visible, caché local, resultado parcial de escaneo o proyección de interfaz.
+
+---
+
+#### 7. El LPN no mueve una cantidad abstracta
+
+El LPN no es una etiqueta que autorice a recrear sus saldos en otro lugar. El movimiento conserva los mismos sujetos de dominio:
+
+```text
+SAME LPN IDs
++
+SAME CONTENT IDs OR CANONICAL QUANTITIES
++
+SAME EXISTENCE DIMENSIONS
++
+NEW EFFECTIVE PLACEMENT
+```
+
+Por tanto:
+
+```text
+MOVE LPN
+!= PACK
+!= UNPACK
+!= TRANSFER_CONTENT
+!= SPLIT_CONTENT
+!= MERGE_CONTENT
+!= INVENTORY ADJUSTMENT
+!= NEW INVENTORY
+```
+
+La operación traslada una unidad logística existente. No desagrega su contenido para volver a empacarlo en el destino, no convierte el contenido en existencia suelta por conveniencia y no autoriza que los sujetos incluidos sean sustituidos por equivalentes aparentes.
+
+---
+
+#### 8. Identidad del conjunto antes y después
+
+Para todo movimiento aceptado:
+
+```text
+LPN_CLOSURE_BEFORE = LPN_CLOSURE_AFTER
+CONTENT_CLOSURE_BEFORE = CONTENT_CLOSURE_AFTER
+```
+
+La igualdad es por identidad exacta cuando el contenido es serializado, activo individual, kit instancia u otro sujeto individualizable. Para existencia por cantidad, la igualdad exige preservar la cantidad canónica y el conjunto completo de dimensiones que hacen distinguible esa existencia.
+
+```text
+NET_ENTERPRISE_EXISTENCE_DELTA = 0
+NET_AUTHORITATIVE_CONTENT_DELTA = 0
+```
+
+Una diferencia física descubierta posteriormente no se corrige reinterpretando retrospectivamente el movimiento como parcial. Debe seguir el contrato de conteo, investigación, ajuste o reconciliación que corresponda.
+
+---
+
+#### 9. Exclusividad de representación durante el movimiento
+
+La exclusividad aprobada para existencia suelta y contenido LPN continúa vigente en cada fase del movimiento.
+
+```text
+DIRECT LPN MEMBERSHIP BEFORE
+→ DIRECT LPN MEMBERSHIP DURING
+→ DIRECT LPN MEMBERSHIP AFTER
+```
+
+Un contenido incluido no pasa a ser saldo suelto solo porque el LPN esté en tránsito, no tenga una LOC efectiva o se encuentre pendiente de confirmación. La ausencia temporal de una colocación final no autoriza una segunda representación de disponibilidad.
+
+En particular, están prohibidas estas derivaciones:
+
+```text
+LPN IN TRANSIT → CONTENT AVAILABLE AS LOOSE AT ORIGIN
+LPN MOVED → CONTENT ALSO AVAILABLE AT DESTINATION AS LOOSE
+LPN MOVED → CONTENT RE-ADDED AS NEW LPN MEMBERSHIP
+```
+
+Una proyección puede mostrar el contenido por la sede, LOC o tránsito efectivos del LPN, pero esa proyección no crea una membresía ni un saldo adicional.
+
+---
+
+#### 10. Colocación directa y colocación efectiva
+
+El contrato diferencia la colocación directa del LPN raíz y la colocación efectiva de los sujetos descendientes.
+
+```text
+ROOT LPN DIRECT PLACEMENT
+→ ROOT LPN EFFECTIVE PLACEMENT
+→ DESCENDANT LPN EFFECTIVE PLACEMENT
+→ DIRECT CONTENT EFFECTIVE PLACEMENT
+```
+
+Cuando un LPN raíz se mueve, cambia su colocación directa autorizada y, como consecuencia única de la misma decisión, cambia la colocación efectiva de cada LPN descendiente y de cada contenido incluido.
+
+El hijo anidado no recibe una segunda colocación actual independiente para simular que fue movido. Su resultado deriva de la misma cadena estructural vigente y conserva su identidad y relación de parentesco.
+
+---
+
+#### 11. LPN raíz como sujeto ordinario de movimiento
+
+Un `MOVE_LPN` ordinario exige que el LPN objetivo sea raíz al momento de la validación. Esto evita contradicción con la regla de que un LPN hijo hereda su colocación efectiva de su ancestro.
+
+```text
+ACTIVE_PARENT_COUNT(LPN_TARGET) = 0
+→ LPN_TARGET IS ELIGIBLE AS ROOT MOVE SUBJECT
+```
+
+La ausencia de contenido no impide por sí sola que un LPN raíz se mueva: el cierre puede contener únicamente su identidad LPN. Sin embargo, el movimiento de un LPN vacío tampoco cierra, anula, rota ni altera su lifecycle automáticamente.
+
+---
+
+#### 12. LPN hijo no adquiere ubicación independiente
+
+Si el LPN objetivo tiene un padre autoritativo vigente, no puede aceptarse un `MOVE_LPN` que le asigne una colocación efectiva distinta conservando a la vez el mismo vínculo de anidamiento.
+
+```text
+CHILD WITH ACTIVE PARENT
++
+INDEPENDENT DESTINATION
+=
+DENY UNTIL STRUCTURAL RELATION IS RESOLVED
+```
+
+Separar un hijo de su padre requiere primero o de manera correlacionada una transición estructural autorizada de desanidamiento o reparentado bajo el contrato de LPN anidados. Esa transición no puede ocultarse como edición de ubicación del hijo.
+
+Después de que el hijo sea raíz de forma válida, su movimiento se rige por este contrato y comprende su propio cierre completo.
+
+---
+
+#### 13. Atomicidad conceptual
+
+Atomicidad significa que el resultado observable de una intención aceptada no puede situar sujetos incluidos en resultados incompatibles.
+
+```text
+ALL INCLUDED SUBJECTS AT ORIGIN
+OR
+ALL INCLUDED SUBJECTS IN THE SAME RESULTING MODE
+```
+
+Para una relocalización directa aceptada:
+
+```text
+ALL INCLUDED SUBJECTS
+: ORIGIN_EFFECTIVE_PLACEMENT
+→ DESTINATION_EFFECTIVE_PLACEMENT
+```
+
+Para el inicio autorizado de tránsito:
+
+```text
+ALL INCLUDED SUBJECTS
+: ORIGIN_EFFECTIVE_PLACEMENT
+→ IN_TRANSIT UNDER SAME MOVEMENT CONTEXT
+```
+
+Para la finalización autorizada de tránsito:
+
+```text
+ALL INCLUDED SUBJECTS
+: SAME IN_TRANSIT CONTEXT
+→ DESTINATION_EFFECTIVE_PLACEMENT
+```
+
+La atomicidad es una propiedad del cambio de estado lógico y de su evidencia; no afirma que todos los objetos físicos se desplacen instantáneamente en el espacio.
+
+---
+
+#### 14. No existe éxito parcial
+
+Si una precondición no permite demostrar el cierre completo, si un sujeto incluido no puede recibir el resultado requerido o si el resultado de la intención queda incierto, la intención no puede registrarse como `MOVE_LPN` exitoso.
+
+```text
+ONE SUBJECT UNRESOLVED
+→ WHOLE MOVE NOT CONFIRMED AS COMPLETED
+```
+
+No son resultados aceptables:
+
+- mover la cabecera LPN y dejar contenido en origen;
+- mover únicamente contenido por cantidad y omitir identidades serializadas;
+- mover el padre y conservar hijos con una ubicación efectiva independiente previa;
+- confirmar destino para una parte y tránsito para otra parte del mismo cierre;
+- descontar origen sin resultado de destino o tránsito reconciliable;
+- completar el movimiento y dejar pendientes sin clasificar como si fueran parte de un cierre correcto.
+
+La recuperación debe declarar conflicto, resultado desconocido o estado de reconciliación, no éxito parcial.
+
+---
+
+#### 15. Precondiciones mínimas de un movimiento directo
+
+Antes de aceptar una transición directa entre colocaciones conocidas se debe poder demostrar, como mínimo:
+
+1. existencia del LPN objetivo;
+2. identidad inequívoca del LPN objetivo;
+3. condición de LPN raíz o resolución estructural previa conforme al contrato aplicable;
+4. lifecycle que admita movimiento operativo;
+5. colocación de origen esperada y compatible con la intención;
+6. destino identificado dentro del contrato de ubicación aplicable;
+7. cierre de movimiento completo y reconstruible;
+8. revisión esperada del LPN objetivo y de las relaciones que determinan el cierre;
+9. integridad de las membresías directas incluidas;
+10. ausencia de conflicto, bloqueo o reconciliación que impida mutar alguno de los sujetos;
+11. cumplimiento de restricciones aplicables de autorización, capacidad, condición, lote, vencimiento, compatibilidad y territorio;
+12. actor, principal técnico, correlación e identidad de intención;
+13. mecanismo de idempotencia;
+14. evidencia mínima apta para reconstruir el resultado.
+
+La falta de una precondición materializada no se satisface mediante inferencia desde una etiqueta, pantalla, último escaneo o apariencia física.
+
+---
+
+#### 16. Autorización
+
+La autorización se evalúa sobre la operación y el contexto efectivos, no solo sobre el código visible del LPN.
+
+Como mínimo, una futura materialización deberá poder vincular la decisión con:
+
+- actor efectivo y principal técnico cuando sean distintos;
+- LPN objetivo y cierre que se intenta mover;
+- origen, destino o contexto de tránsito;
+- sede y territorio aplicables;
+- propósito de la operación y documento causal cuando exista;
+- reglas de condición, reserva, custodia, lifecycle y excepción aplicables;
+- instante efectivo, correlación e identidad idempotente.
+
+Un escaneo, deep link, etiqueta, código QR o barcode puede ayudar a resolver una identidad dentro de una sesión, pero no constituye por sí mismo autorización para mover la unidad logística.
+
+---
+
+#### 17. Efectos permitidos de una relocalización directa
+
+Cuando un movimiento directo es aceptado, sus únicos efectos de dominio propios son:
+
+- conservar la identidad del LPN raíz;
+- conservar la jerarquía LPN incluida;
+- conservar la membresía directa de contenido de cada LPN incluido;
+- sustituir de modo coherente la colocación efectiva de todo el cierre;
+- conservar cantidades, identidades y dimensiones de existencia;
+- registrar una transición y su evidencia correlacionable;
+- actualizar proyecciones derivadas de ubicación sin convertirlas en nuevas fuentes de verdad;
+- invalidar la expectativa de revisión anterior para prevenir una mutación concurrente incompatible.
+
+El resultado no necesita ni permite recrear una línea de contenido, una identidad serializada, un LPN descendiente o un saldo suelto para expresar el traslado.
+
+---
+
+#### 18. Efectos expresamente prohibidos
+
+Un `MOVE_LPN` puro no produce por sí solo:
+
+```text
+NEW LPN
+NEW CONTENT
+NEW INVENTORY
+PACK
+UNPACK
+TRANSFER_CONTENT
+SPLIT_CONTENT
+MERGE_CONTENT
+LIFECYCLE TRANSITION
+CONTAINER BINDING CHANGE
+CUSTODY TRANSFER
+RESERVATION RELEASE
+COUNT ADJUSTMENT
+COST OR VALUATION CHANGE
+```
+
+Un proceso empresarial puede requerir acciones de esa lista alrededor de un movimiento. En tal caso, cada una conserva su intención, autorización, invariantes y evidencia propias. El resultado no puede presentarlas como efectos automáticos del traslado para evitar sus controles.
+
+---
+
+#### 19. Contenido por cantidad
+
+Para contenido representado por cantidad, el movimiento preserva la cantidad canónica de cada partición de existencia incluida.
+
+```text
+SUM QUANTITY BY FULL EXISTENCE DIMENSIONS BEFORE
+=
+SUM QUANTITY BY SAME DIMENSIONS AFTER
+```
+
+No se permite que una proyección de destino agrupe cantidades con lote, condición, presentación, vencimiento u otra dimensión distinta y luego afirme que el movimiento fue conservativo. La agrupación visual no reemplaza las dimensiones autoritativas que permitan reconciliar origen y destino.
+
+No se autoriza saldo negativo, disponibilidad adicional ni compensación implícita por redondeo como consecuencia de mover el LPN.
+
+---
+
+#### 20. Contenido serializado, activos y kits
+
+Para `SERIALIZED_IDENTITY`, activo individual, contenedor tratado como contenido solo si otro contrato así lo estableciera, o `KIT_INSTANCE`, el cierre se conserva por identidad exacta.
+
+```text
+SERIAL OR INSTANCE IN CLOSURE BEFORE
+→ SAME SERIAL OR INSTANCE IN CLOSURE AFTER
+```
+
+Una lista resumida de producto, cantidad o modelo no puede sustituir la verificación de las identidades que el contenido exige conservar. Dos seriales o dos kits no se fusionan por compartir LPN, origen y destino.
+
+La completitud del kit se preserva conforme a su contrato propietario. Mover un LPN tampoco habilita a declarar completo un kit cuya condición ya estuviera pendiente o bloqueada.
+
+---
+
+#### 21. Lotes, vencimiento y condición
+
+El movimiento no borra ni altera lote, batch, origen, fecha relevante, vencimiento, estado de liberación, condición, cuarentena, daño, pérdida o decisión aplicable al contenido incluido.
+
+```text
+MOVE LOCATION CONTEXT
+!= CHANGE TRACEABILITY OR QUALITY STATE
+```
+
+Una existencia no liberada, vencida, dañada o en cuarentena no se convierte en disponible por haber llegado a una nueva LOC. Si una restricción de condición impide el traslado, la decisión debe fallar cerrada o seguir el flujo de excepción autorizado, sin degradar la trazabilidad.
+
+---
+
+#### 22. LPN anidados y totalidad recursiva
+
+El anidamiento no convierte a un LPN hijo en línea ordinaria de contenido; sin embargo, su contenido efectivo sí integra el cierre de movimiento del LPN raíz.
+
+```text
+MOVE ROOT
+→ MOVE CHILD LPN AS SAME LOGISTICS UNIT
+→ MOVE GRANDCHILD LPN AS SAME LOGISTICS UNIT
+→ MOVE DIRECT CONTENT OWNED BY EACH NODE
+```
+
+La relación padre-hijo no se crea, termina ni reemplaza por el movimiento. El movimiento conserva el bosque LPN vigente, evita ciclos y no modifica la propiedad directa de cada contenido.
+
+Una proyección puede presentar la jerarquía completa como una sola carga, pero debe conservar cuál LPN es propietario directo de cada contenido.
+
+---
+
+#### 23. Cierre congelado y cambios concurrentes de membresía
+
+El cierre que se va a mover debe ser validado contra revisiones y relaciones vigentes. Una mutación concurrente que agregue, retire, transfiera, anide, desanide o reparentice contenido o LPN después de la lectura inicial invalida la expectativa de la operación.
+
+```text
+EXPECTED CLOSURE REVISION != CURRENT CLOSURE REVISION
+→ CONFLICT OR RECONCILIATION
+```
+
+No se admite resolver el conflicto moviendo una versión vieja del conjunto y aceptando que el cambio concurrente “alcance” después. Si ambas intenciones deben ocurrir, su orden y resultado deben ser explícitos, serializables y auditables.
+
+---
+
+#### 24. Mismo origen y mismo destino
+
+Una intención cuyo origen y destino efectivos sean idénticos no debe producir un nuevo traslado material ficticio.
+
+El sistema futuro podrá reconocerla como repetición idempotente de una operación ya aceptada cuando conserve la misma identidad de intención y el mismo resultado. Si es una intención nueva sin efecto espacial, no puede generar ledger engañoso, cambio artificial de custodia, revisión de contenido o evidencia que aparente desplazamiento físico.
+
+La equivalencia se determina por la colocación canónica aplicable, no por diferencias de representación, nombre visible o metadato no autoritativo.
+
+---
+
+#### 25. Movimiento entre LOC de una misma sede
+
+Un cambio de LOC dentro de la misma sede sigue siendo un movimiento de conjunto completo.
+
+```text
+SITE SAME
++
+LOC CHANGES
+→ ALL INCLUDED SUBJECTS CHANGE EFFECTIVE LOC TOGETHER
+```
+
+La coincidencia de sede no permite actualizar solo la cabecera del LPN o solo una proyección agregada. Las restricciones de posición, capacidad, condición, reserva y autorización continúan aplicando cuando correspondan.
+
+El contenido no queda simultáneamente disponible en la LOC anterior y en la nueva LOC durante una operación confirmada.
+
+---
+
+#### 26. Movimiento entre sedes
+
+Un movimiento entre sedes conserva la misma regla de totalidad, pero no presupone que el traslado físico haya sido recibido al instante.
+
+```text
+ORIGIN SITE
+→ COMPLETE CLOSURE IN TRANSIT
+→ DESTINATION SITE
+```
+
+El paso por tránsito, el despacho, la recepción, la remisión, el manifiesto, el vehículo, la ruta, el sello y la custodia conservan contratos propios. Esta tarea únicamente prohíbe que alguno de esos procesos fragmente implícitamente el cierre LPN o use el movimiento para duplicar disponibilidad entre sedes.
+
+---
+
+#### 27. Inicio de tránsito
+
+Cuando el proceso autorizado inicia tránsito, el LPN raíz y todos los sujetos incluidos abandonan en conjunto la colocación efectiva de origen y pasan al mismo contexto de tránsito correlacionado.
+
+```text
+ALL CLOSURE SUBJECTS
+: LOCATED AT ORIGIN
+→ IN_TRANSIT UNDER ONE CAUSAL MOVEMENT
+```
+
+Durante tránsito, el contenido sigue perteneciendo a sus LPN propietarios directos. No se convierte en existencia suelta del origen, existencia disponible del destino ni saldo sin ubicación que pueda ser apropiado por una operación ajena.
+
+El tránsito no confirma por sí mismo recepción, entrega, liberación, devolución, cierre de remisión ni transferencia de custodia.
+
+---
+
+#### 28. Finalización de tránsito
+
+La llegada o recepción autorizada solo puede cambiar el cierre completo que corresponda al mismo contexto de tránsito aún vigente.
+
+```text
+SAME COMPLETE CLOSURE IN TRANSIT
+→ SAME COMPLETE CLOSURE AT CONFIRMED DESTINATION
+```
+
+No se permite recibir parcialmente un LPN como operación exitosa de este contrato. Si la evidencia física informa faltantes, daños, sustituciones o discrepancias, el movimiento no se reescribe como una recepción parcial silenciosa: se conserva el hecho conocido y se abre la investigación, excepción o reconciliación pertinente.
+
+---
+
+#### 29. Estado desconocido y ausencia temporal de ubicación
+
+Si no se puede determinar si el LPN completo salió de origen, ingresó a tránsito o llegó a destino, el resultado no puede inferirse desde el último estado visible.
+
+```text
+OUTCOME UNKNOWN
+→ NO SECOND MOVE
+→ NO ASSUMED AVAILABILITY
+→ RECONCILE USING EVIDENCE
+```
+
+`UNLOCATED_TEMPORARY`, cuando exista bajo el contrato de ubicación, no es autorización para repartir el cierre entre ubicaciones conocidas ni para liberar su contenido como saldo suelto. Conserva el carácter excepcional, explícito y controlado que le corresponde.
+
+---
+
+#### 30. Lifecycle LPN
+
+El movimiento exige un lifecycle que admita operación logística conforme al contrato de lifecycle LPN. En el caso ordinario, el LPN debe estar `ACTIVE`; `DRAFT` no adquiere membresía autoritativa mediante un movimiento real, y estados cerrados, cancelados o anulados bloquean nuevas operaciones logísticas ordinarias.
+
+```text
+MOVE LPN
+!= ACTIVATE
+!= CLOSE
+!= ANNUL
+!= RELABEL
+```
+
+Mover un LPN vacío no lo cierra. Mover un LPN con contenido tampoco prolonga, corrige ni reemplaza una transición lifecycle que estuviera pendiente o inválida.
+
+---
+
+#### 31. Reserva y disponibilidad
+
+La reserva es un eje distinto de colocación. Un movimiento no crea, consume, libera, transfiere ni reasigna una reserva por inferencia.
+
+Antes de mover, deben validarse las restricciones que una reserva vigente imponga sobre los sujetos incluidos. Si la reserva impide su desplazamiento, la operación falla cerrada o requiere la decisión autorizada por el contrato de reserva.
+
+La disponibilidad derivada deberá reflejar el nuevo contexto efectivo solo después de una transición confirmada, sin volver disponible en origen un contenido que conserva membresía LPN y sin anticipar disponibilidad en destino durante tránsito.
+
+---
+
+#### 32. Custodia
+
+Ubicación y custodia no son sinónimos. Que todo el cierre LPN cambie de LOC o entre en tránsito no implica por sí mismo que cambie el custodio responsable.
+
+```text
+MOVE LPN
+!= CUSTODY TRANSFER
+```
+
+Cuando un flujo exija cambio de custodia, debe existir aceptación explícita y evidencia propia conforme al contrato de custodia. El movimiento podrá correlacionarse con esa transferencia, pero no puede suplantarla ni afirmar su éxito sin sus precondiciones.
+
+---
+
+#### 33. Contenedor físico vinculado
+
+Un contenedor físico identificado conserva identidad, condición, disponibilidad, ubicación, custodia y ciclo propios, separados del LPN. Por ello:
+
+```text
+ACTIVE CONTAINER-LPN BINDING
+!= PROOF THAT CONTAINER MOVED
+```
+
+Si el movimiento físico del contenedor y el LPN debe ser conjunto, esa correlación debe demostrarse y auditarse sin fusionar ambas identidades. Esta tarea no autoriza a mover, crear, desvincular, cerrar, retornar o sustituir un contenedor físico solo por el hecho de mover el LPN.
+
+Tampoco permite interpretar `container_type`, `label` o `status` legacy de un LPN como evidencia suficiente de identidad o movimiento de un contenedor físico individual.
+
+---
+
+#### 34. Capacidad y compatibilidad
+
+El destino debe ser compatible con la totalidad del cierre, no solamente con la cabecera LPN. Cuando existan reglas aplicables de capacidad, condición, producto, lote, temperatura, seguridad, territorio, posición o tipo de operación, deben evaluarse contra el conjunto que efectivamente se desplaza.
+
+No es válido aceptar el movimiento por capacidad aparente del LPN y luego dejar fuera una parte incompatible de su contenido. La incompatibilidad de cualquier sujeto incluido bloquea la confirmación del movimiento completo hasta que exista una resolución autorizada que no contradiga este contrato.
+
+---
+
+#### 35. Conteos y discrepancias
+
+Un conteo es una observación y no una autorización retrospectiva para editar el cierre de un movimiento aceptado. Si al contar origen, tránsito o destino aparece una diferencia:
+
+- se preserva el movimiento y la evidencia disponible;
+- se identifica el sujeto, dimensión o cantidad discrepante;
+- se impiden mutaciones que agraven la incertidumbre cuando corresponda;
+- se investiga la diferencia bajo el contrato aplicable;
+- cualquier ajuste posterior conserva decisión autorizada y movimiento compensatorio propio.
+
+No se elimina una membresía, un hijo LPN o una cantidad para “hacer cuadrar” el conteo sin evidencia de una transición legítima.
+
+---
+
+#### 36. Ledger y proyecciones
+
+La fuente canónica futura de movimientos debe permitir reconstruir el cambio de colocación de la unidad logística completa. Las proyecciones por sede, LOC, posición, LPN, producto, lote, condición o tránsito son derivadas y reconciliables.
+
+```text
+AUTHORITATIVE MOVE FACT
+→ LOCATION AND AVAILABILITY PROJECTIONS
+```
+
+Nunca a la inversa:
+
+```text
+EDITED PROJECTION
+→ ASSUMED COMPLETE LPN MOVE
+```
+
+Una proyección write-through no puede actualizar por separado padre, hijo y contenido de manera que produzca una ventana lógica de doble ubicación. Una proyección aggregate-only tampoco puede ocultar el LPN propietario directo o la relación que explica el saldo mostrado.
+
+---
+
+#### 37. Idempotencia
+
+Una misma intención empresarial repetida con la misma identidad idempotente debe producir un único resultado efectivo sobre el cierre completo.
+
+```text
+SAME LOGICAL MOVE
++
+SAME IDEMPOTENCY ID
+→ SAME RESULT
+→ NO SECOND MOVEMENT
+→ NO DUPLICATED LEDGER EFFECT
+```
+
+La identidad debe estar ligada de manera suficiente al LPN raíz, origen esperado, destino o contexto de tránsito, cierre esperado, actor o contexto autorizado y propósito causal para impedir que una intención distinta reutilice accidentalmente el resultado de otra.
+
+Un reintento nunca puede mover de nuevo una parte que ya cambió de contexto ni crear una segunda prueba de llegada.
+
+---
+
+#### 38. Concurrencia
+
+El movimiento debe validar revisiones o mecanismos equivalentes que cubran, como mínimo:
+
+- LPN raíz objetivo;
+- relación de ancestros y descendientes incluida;
+- membresías directas de contenido incluidas;
+- origen o estado de tránsito esperado;
+- lifecycle aplicable;
+- restricciones que bloqueen mutación;
+- reserva, custodia o autorización cuando afecten la elegibilidad.
+
+```text
+EXPECTED STATE != CURRENT STATE
+→ REJECT, RETRY WITH NEW READ, OR RECONCILE
+```
+
+No se permite resolución silenciosa last-write-wins entre dos movimientos del mismo LPN, un movimiento y un cambio de membresía, o un movimiento y una modificación estructural de la jerarquía.
+
+---
+
+#### 39. Operación offline
+
+Una intención creada sin conexión no reserva por sí sola el LPN, su contenido, la LOC de destino ni la capacidad del destino. Al sincronizar, deberá revalidarse el cierre actual, origen, destino, lifecycle, revisiones, restricciones, autorización y resultado de operaciones previas.
+
+```text
+OFFLINE INTENT
+→ REVALIDATE AT ACCEPTANCE TIME
+→ ACCEPT COMPLETE MOVE OR REPORT EXPLICIT CONFLICT
+```
+
+Si el cierre o cualquier precondición cambió, el cliente no puede seleccionar unilateralmente un subconjunto actual para completar la intención antigua. Debe informar el conflicto sin fabricar un segundo movimiento ni degradar la evidencia de la intención original.
+
+---
+
+#### 40. Respuesta tardía y confirmación perdida
+
+Si el solicitante pierde la confirmación luego de enviar una operación, no asume fracaso ni emite una nueva intención con otra clave. Debe resolver el resultado mediante la identidad idempotente, correlación y evidencia del movimiento.
+
+Mientras el resultado permanezca incierto:
+
+```text
+NO ASSUMED ORIGIN AVAILABILITY
+NO ASSUMED DESTINATION AVAILABILITY
+NO NEW COMPETING MOVE
+```
+
+Una respuesta tardía solo puede confirmar el resultado que corresponda a la intención original. No habilita sobrescribir cambios posteriores ni convertir una condición incierta en éxito parcial.
+
+---
+
+#### 41. Fallos y compensación
+
+Un fallo técnico, de integración o de proyección no autoriza una compensación destructiva. El contrato exige distinguir entre:
+
+- intención no aceptada;
+- intención aceptada sin confirmación recibida por el solicitante;
+- hecho canónico confirmado con proyección pendiente;
+- resultado material desconocido que exige reconciliación.
+
+La compensación, si procede, debe ser una decisión explícita, autorizada, idempotente y auditable que respete el cierre completo. No se compensa un movimiento completo moviendo selectivamente un hijo, una línea o una cantidad salvo que exista un contrato posterior que autorice y evidencie una nueva operación empresarial distinta.
+
+---
+
+#### 42. Estado de reconciliación
+
+Cuando no pueda demostrarse la totalidad, el origen, el destino, la composición o el resultado de un movimiento, debe prevalecer el bloqueo controlado:
+
+```text
+UNKNOWN MOVE OR UNKNOWN CLOSURE
+→ BLOCK CONFLICTING MUTATIONS
+→ PRESERVE EVIDENCE
+→ RECONCILE
+```
+
+La reconciliación deberá poder identificar la intención, el LPN raíz, los sujetos conocidos, las revisiones, el último contexto comprobable, la evidencia disponible y la decisión posterior. No elige arbitrariamente entre dos ubicaciones ni elimina sujetos del cierre para simplificar el caso.
+
+---
+
+#### 43. Auditoría mínima
+
+Toda futura transición de movimiento LPN deberá poder reconstruir al menos:
+
+- identidad de la operación, correlación e idempotencia;
+- actor efectivo y principal técnico, cuando sean distintos;
+- LPN raíz objetivo y su propósito vigente;
+- origen esperado y origen validado;
+- destino solicitado y destino confirmado, o contexto de tránsito;
+- sede, LOC y posición cuando apliquen;
+- estado lifecycle y revisiones evaluadas;
+- cierre LPN incluido y relación estructural pertinente;
+- contenido directo incluido por identidad o por cantidad y dimensiones canónicas;
+- restricciones, reservas, custodias o excepciones evaluadas;
+- instante de intención, aceptación y resultado efectivo cuando sean distinguibles;
+- resultado, conflicto, fallo, reconciliación o compensación;
+- referencias causales a documentos, procesos o evidencia externa cuando existan.
+
+La evidencia debe permitir demostrar que el contenido no fue convertido en una segunda existencia durante el traslado.
+
+---
+
+#### 44. Matriz de resultado por tipo de contexto
+
+| Contexto validado | Resultado admisible para el cierre completo | Resultado prohibido |
+| --- | --- | --- |
+| LOC origen y LOC destino compatibles | Todo el cierre pasa a la misma colocación efectiva de destino | Cabecera en destino y contenido en origen |
+| LOC origen hacia tránsito autorizado | Todo el cierre queda en un único contexto de tránsito | Parte disponible en origen y parte en tránsito |
+| Tránsito vigente hacia recepción autorizada | Todo el mismo cierre queda en destino confirmado | Recepción parcial presentada como movimiento completo |
+| LPN raíz vacío | Se mueve solo la identidad LPN y su estructura vacía | Cierre o rotación implícitos |
+| LPN raíz con descendientes | Se mueve toda la jerarquía y contenido efectivo | Mover solo el padre o solo hijos seleccionados |
+| LPN con padre activo | Se rechaza movimiento independiente hasta resolver estructura | Asignar al hijo una ubicación contradictoria con el padre |
+| Resultado incierto | Bloqueo y reconciliación | Reintentar como nueva intención o asumir éxito |
+
+---
+
+#### 45. Matriz de tratamiento de sujetos incluidos
+
+| Sujeto | Se conserva | Efecto legítimo del movimiento | Efecto que no produce |
+| --- | --- | --- | --- |
+| LPN raíz | identidad, lifecycle y propósito | cambio de colocación directa o modo logístico | nuevo LPN, cierre o reetiquetado |
+| LPN descendiente | identidad, padre y contenido directo | cambio de colocación efectiva derivada | ubicación independiente contradictoria |
+| Contenido por cantidad | cantidad y dimensiones de existencia | cambio de contexto efectivo derivado | saldo suelto adicional |
+| Identidad serializada o activo | identidad exacta y trazabilidad | cambio de contexto efectivo derivado | fusión, sustitución o duplicación |
+| Kit instancia | identidad y completitud conocida | cambio de contexto efectivo derivado | recomposición implícita |
+| Contenedor físico vinculado | identidad y ciclo separados | solo correlación explícita si otro contrato lo confirma | movimiento, retorno o desvínculo automático |
+
+---
+
+#### 46. Escenarios límite
+
+Los siguientes escenarios se resuelven de forma determinista:
+
+- **contenido agregado mientras se prepara el movimiento:** el cambio de revisión invalida el cierre esperado; no se mueve una lista antigua como si fuera completa.
+- **contenido retirado durante la preparación:** el movimiento no confirma una composición que ya no es actual; debe revalidarse o resolver conflicto.
+- **hijo anidado escaneado como objetivo:** el escaneo puede resolver su identidad, pero no autoriza movimiento independiente mientras tenga padre activo.
+- **LPN vacío:** puede cambiar de colocación si las demás precondiciones son válidas; no desencadena lifecycle.
+- **LPN con condición o bloqueo pendiente:** no se omite el bloqueo porque el conjunto sea grande o porque el destino esté disponible.
+- **mismo comando recibido dos veces:** se resuelve por idempotencia, no por un segundo traslado.
+- **dos operadores mueven el mismo LPN:** una sola intención puede aceptar el estado esperado; la otra debe recibir conflicto o resultado idempotente si es la misma intención.
+- **evidencia física contradice la proyección:** se conserva el conflicto y se reconcilia; no se sobrescribe la historia para hacer que ambas parezcan coincidentes.
+
+---
+
+#### 47. Prohibición de descomposición implícita
+
+Está prohibido implementar o interpretar un movimiento LPN como la secuencia independiente siguiente:
+
+```text
+UNPACK ALL CONTENT
+→ MOVE LOOSE STOCK
+→ PACK AGAIN AT DESTINATION
+```
+
+Esa secuencia altera representación, abre ventanas de doble contabilización o pérdida y hace imposible demostrar que el mismo conjunto se movió como unidad logística.
+
+También está prohibido sustituirlo por múltiples movimientos individuales no correlacionados que después se agrupen visualmente. Si una operación necesita separar contenido, debe usar la decisión de transferencia, división, unión, empaque o desempaque que corresponda antes o después del movimiento, con sus propias precondiciones y sin fingir que fue el mismo movimiento atómico de LPN.
+
+---
+
+#### 48. Frontera con transferencia de contenido
+
+`TRANSFER_CONTENT` cambia la membresía directa entre LPN. `MOVE_LPN` conserva todas las membresías directas y cambia el contexto efectivo de su cierre.
+
+```text
+TRANSFER_CONTENT
+= SAME CONTENT, DIFFERENT DIRECT OWNER LPN
+
+MOVE_LPN
+= SAME DIRECT OWNERS, DIFFERENT EFFECTIVE PLACEMENT
+```
+
+No puede usarse una transferencia para simular que una parte del LPN se movió mientras otra parte se quedó, ni puede usarse un movimiento LPN para transferir propiedad directa de contenido al LPN de destino. Cuando ambas operaciones sean necesarias, su secuencia y causalidad deben ser explícitas.
+
+---
+
+#### 49. Frontera con PACK y UNPACK
+
+`PACK` y `UNPACK` cambian la representación autoritativa entre existencia suelta y membresía LPN. `MOVE_LPN` no la cambia.
+
+```text
+MOVE LPN
+PRESERVES DIRECT LPN MEMBERSHIP
+```
+
+Antes de mover, un flujo puede requerir empaquetar existencia legítimamente. Después de mover, puede requerir desempacarla en la colocación efectiva del LPN. Cada operación conserva su propio control de cantidad, representación, revisión, autorización e idempotencia.
+
+Nunca se permite tratar el movimiento como pretexto para desempacar implícitamente en origen o empacar implícitamente en destino.
+
+---
+
+#### 50. Frontera con contenedores físicos y retornos
+
+El movimiento de una unidad logística LPN y la gestión de un contenedor físico retornable son procesos relacionados pero no equivalentes. La existencia de un vínculo activo puede requerir validaciones adicionales en una futura materialización, pero no permite inferir:
+
+```text
+MOVE LPN = MOVE PHYSICAL CONTAINER
+MOVE LPN = RETURN CONTAINER
+MOVE LPN = CONTAINER AVAILABLE
+```
+
+Si existe un evento físico conjunto, su auditoría debe preservar la identidad LPN, identidad del contenedor, vínculo aplicable, ubicaciones, custodias y resultados separados. El LPN no absorbe el ciclo de retorno del contenedor, ni el contenedor redefine el cierre de contenido LPN.
+
+---
+
+#### 51. AS-IS remoto observado
+
+La cápsula conserva evidencia de una superficie LPN parcial y de información legacy asociada a `inventory_lpns`, incluyendo campos históricos de clasificación, etiqueta y estado. También conserva la ausencia observada de una entidad independiente materializada para contenedor físico.
+
+Esas observaciones no demuestran un mecanismo funcional que calcule el cierre LPN, proteja su revisión, aplique movimiento atómico o reconcilie resultados inciertos. Por tanto, no se reinterpretan como cumplimiento de este contrato ni como autorización para inferir semántica completa desde datos legacy.
+
+---
+
+#### 52. Clasificación AS-IS
+
+El estado observable se clasifica como:
+
+```text
+PARTIAL LPN DATA SURFACE
+!= COMPLETE ATOMIC LPN MOVEMENT CAPABILITY
+```
+
+La existencia de una fila, código, etiqueta, endpoint o representación de LPN no prueba por sí misma:
+
+- que todo contenido sea identificable como cierre;
+- que la jerarquía anidada sea coherente;
+- que origen y destino sean exclusivos;
+- que tránsito sea reconciliable;
+- que se prevenga doble contabilización;
+- que concurrencia, reintento u offline sean seguros;
+- que contenedor físico y LPN permanezcan separados.
+
+---
+
+#### 53. Brechas registradas
+
+La brecha principal entre el contrato y el AS-IS es que la cápsula no aporta evidencia de una materialización que haga cumplir el movimiento completo de una unidad LPN con control de cierre, revisión, idempotencia, autorización, tránsito, auditoría y reconciliación.
+
+También permanece sin evidencia ejecutada la integración física entre ubicación, contenido LPN, estructura anidada, contenedor físico, custodia, reserva, remisión y dispositivos de captura. Estas brechas se conservan como condiciones de implementación futura; no se cubren con documentación declarativa ni con cambios físicos autorizados por esta tarea.
+
+---
+
+#### 54. Riesgos controlados
+
+Este contrato controla especialmente los riesgos de:
+
+- doble contabilización entre contenido del LPN y existencia suelta o proyectada;
+- contenido del mismo LPN disponible simultáneamente en origen y destino;
+- padre LPN movido con hijos o contenido aparentemente abandonados;
+- recepción parcial presentada como movimiento íntegro;
+- mezcla o pérdida de seriales, kits, lotes, condición o vencimiento;
+- edición concurrente de estructura o membresía durante el traslado;
+- reintento offline que produzca segundo movimiento;
+- respuesta tardía que sobrescriba un resultado posterior;
+- custodia, reserva o contenedor físico inferidos desde una simple actualización de ubicación;
+- corrección destructiva de discrepancias para hacer coincidir proyecciones.
+
+---
+
+#### 55. Handoffs contractuales
+
+Esta tarea entrega a consumidores posteriores las siguientes reglas reutilizables:
+
+1. todo movimiento de LPN raíz opera sobre el cierre completo actual, no sobre una selección visual;
+2. todo LPN descendiente conserva ubicación efectiva derivada y no puede moverse independientemente sin resolver su estructura;
+3. el movimiento conserva identidades, membresías directas, cantidad y dimensiones de existencia;
+4. tránsito se modela como contexto único para todo el cierre, sin disponibilidad duplicada;
+5. resultado incierto, conflicto de revisión o evidencia incompleta bloquean éxito parcial y exigen reconciliación;
+6. contenedor físico, lifecycle, reserva, custodia, despacho y recepción permanecen separados aunque puedan correlacionarse;
+7. una materialización futura deberá tratar la completitud del cierre, la idempotencia y la concurrencia como requisitos de integridad y no como optimizaciones opcionales.
+
+---
+
+#### 56. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA
+
+---
+
+#### 57. Cobertura de prueba vigente reutilizada
+
+No se modifica cobertura histórica. La cápsula vincula esta tarea con cobertura planificada ya existente para integridad de inventario, separación entre contenido LPN y existencia suelta, comportamiento por clase y separación de contenedor físico; dicha cobertura permanece en el registro canónico sin alteración por esta tarea documental.
+
+---
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se aporta resultado explícito de `npm run docs:plan:build` para este candidato. |
+| LOCAL | NOT_EXECUTED | No se aporta resultado explícito de `npm run docs:plan:check`, `npm run docs:plan:test`, `npm run docs:treq:check`, `npm run docs:treq:test` ni `git diff --check`. |
+| REMOTA | NOT_APPLICABLE | La tarea define contrato documental bajo `DEFINE_ONCE` y no autoriza instancia física remota. |
+| OPERATIVA | NOT_EXECUTED | La cápsula no aporta evidencia de ejecución operativa, tránsito, recepción, conteo ni movimiento físico de un LPN. |
+| FÍSICA | NOT_APPLICABLE | Esta tarea no ejecuta ni autoriza cambios físicos, dispositivos, contenedores, inventario, migraciones o despliegues. |
+
+---
+
+#### 59. Criterios de aceptación
+
+La tarea queda correctamente definida cuando se cumple todo lo siguiente:
+
+1. el contrato declara inequívocamente que mover un LPN raíz mueve su cierre completo de LPN descendientes y contenido efectivo;
+2. el cierre conserva identidad, cantidad, membresía directa y dimensiones de existencia sin crear saldo, LPN ni representación nueva;
+3. el contrato impide que un LPN hijo reciba ubicación independiente mientras conserve padre activo;
+4. origen, destino y tránsito se expresan como resultados exclusivos y coherentes para todos los sujetos incluidos;
+5. no se admite éxito parcial ante fallo, discrepancia, cambio concurrente o resultado incierto;
+6. idempotencia, revisión, concurrencia, offline y respuesta tardía previenen duplicación o pérdida de intención;
+7. lifecycle, reserva, custodia, contenedor físico, transferencia de contenido y empaque conservan fronteras explícitas;
+8. auditoría y proyecciones permiten reconstruir el hecho sin convertir una vista derivada en fuente autoritativa;
+9. las observaciones AS-IS se tratan como evidencia parcial y no como implementación demostrada;
+10. no se afirma ejecución, validación aprobatoria, cambio físico ni materialización técnica.
+
+---
+
+#### 60. Límites
+
+Esta definición no certifica que la infraestructura actual cumpla el contrato. Tampoco define el diseño técnico que garantizará transacciones, bloqueo, versionado, ledger, política de acceso, esquema de eventos, interfaz offline, sincronización, impresión, escaneo, integración de flota o evidencia física.
+
+El contrato tampoco convierte cualquier agrupación visual, caja, bulto, shipment, remisión, pallet, etiqueta o contenedor en LPN. La identidad logística y el cierre se determinan por relaciones autoritativas aprobadas, no por semejanza operacional o física.
+
+---
+
+#### 61. Consistencia del minibloque
+
+La regla de movimiento atómico queda alineada con los contratos previos de identidad LPN, lifecycle, contenido, transferencia, anidamiento, ubicación, separación de contenedor físico, continuidad de LPN y exclusividad contable.
+
+```text
+ONE LPN CLOSURE
++
+ONE AUTHORITATIVE REPRESENTATION PER CONTENT SUBJECT
++
+ONE EFFECTIVE PLACEMENT MODE
++
+ONE CONSISTENT TRANSITION RESULT
+=
+RECONCILIABLE LPN MOVEMENT
+```
+
+Nada en esta tarea permite que una transición de ubicación eluda los invariantes de contenido, jerarquía, lifecycle o contabilidad previamente aprobados.
+
+---
+
+#### 62. Invariantes finales
+
+```text
+MOVE ROOT LPN
+→ MOVE COMPLETE CURRENT CLOSURE
+
+MOVE COMPLETE CLOSURE
+→ PRESERVE SUBJECT IDENTITIES AND DIRECT OWNERS
+
+MOVE LPN
+→ ZERO INVENTORY CREATION
+→ ZERO INVENTORY DESTRUCTION
+→ ZERO DUPLICATE AUTHORITATIVE LOCATION
+
+LPN CHILD WITH ACTIVE PARENT
+→ NO INDEPENDENT EFFECTIVE PLACEMENT
+
+UNKNOWN RESULT OR INCOMPLETE EVIDENCE
+→ NO SUCCESSFUL PARTIAL MOVE
+→ RECONCILIATION REQUIRED
+
+MOVE LPN
+!= MOVE CONTAINER
+!= CUSTODY TRANSFER
+!= LIFECYCLE CHANGE
+!= CONTENT TRANSFER
+```
+
+**ÚLTIMA TAREA APROBADA:** `NEXO-DOM-021` — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN.
+
+**TAREA ACTUAL APROBADA:** `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido.
+
+**SIGUIENTE TAREA RESERVADA:** `NEXO-DOM-023` — título no suministrado en la cápsula.
+
+---
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN`
+
 ### [ ] NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
 ### [ ] NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
 ### [ ] NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo

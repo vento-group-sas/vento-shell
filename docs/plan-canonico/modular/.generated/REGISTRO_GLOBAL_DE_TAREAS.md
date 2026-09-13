@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1178** |
+| Aprobadas | **1189** |
 | En propuesta | **0** |
-| No iniciadas | **418** |
+| No iniciadas | **407** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **73.81% (1178/1596)** |
+| Porcentaje de completamiento | **74.50% (1189/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **418** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1079** |
+| ⏸ NO_EVALUADA | **407** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1090** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-013` — Definir baja, descarte, venta o reemplazo | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-024` — Definir capacidad, peso, volumen y compatibilidad de contenido | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -963,17 +963,17 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-009` | Separar activo individual y reutilizable controlado por cantidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-010` | Definir estado, condición, daño, pérdida y faltante | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-011` | Definir préstamo, devolución, transferencia y cambio de custodia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-012` | Definir mantenimiento, reparación y disponibilidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-013` | Definir baja, descarte, venta o reemplazo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-014` | Definir kits, conjuntos y validación de completitud | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-015` | Definir conteos de activos, reutilizables y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-016` | Definir repuestos, compatibilidad y stock mínimo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-017` | Definir auditoría, historial y evidencia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-018` | Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-019` | Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-020` | Definir cuándo un contenedor conserva, cambia o cierra su LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-021` | Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-022` | Definir que mover un LPN mueve atómicamente todo su contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-012` | Definir mantenimiento, reparación y disponibilidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-013` | Definir baja, descarte, venta o reemplazo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-014` | Definir kits, conjuntos y validación de completitud | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-015` | Definir conteos de activos, reutilizables y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-016` | Definir repuestos, compatibilidad y stock mínimo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-017` | Definir auditoría, historial y evidencia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-018` | Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-019` | Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-020` | Definir cuándo un contenedor conserva, cambia o cierra su LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-021` | Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-022` | Definir que mover un LPN mueve atómicamente todo su contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-023` | Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-024` | Definir capacidad, peso, volumen y compatibilidad de contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-025` | Vincular repuestos consumidos con mantenimiento y costo del activo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |

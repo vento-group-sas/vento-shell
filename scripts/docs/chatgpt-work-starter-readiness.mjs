@@ -3,7 +3,10 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 import { scanPackageReadiness } from './package-readiness-scanner.mjs';
-import { coordinateImplementationStatus } from './implementation-readiness-coordinator.mjs';
+import {
+  buildUnifiedOperationalContract,
+  coordinateImplementationStatus,
+} from './implementation-readiness-coordinator.mjs';
 import { buildChatgptWorkStarter as buildBaseChatgptWorkStarter } from './chatgpt-work-starter.mjs';
 
 const TEMPLATE_PATH = 'docs/plan-canonico/modular/chatgpt-work-starter-template.txt';
@@ -123,7 +126,7 @@ export function renderReadinessStarterBlock({ readiness, lane, coordinated = nul
   const laneRule = lane === 'DOCUMENTATION'
     ? 'Conservar esta conversación en DOCUMENTATION. NO cambiar de carril; informar primary, waiting y active physical.'
     : lane === 'PHYSICAL_IMPLEMENTATION'
-      ? 'Ejecutar únicamente el primary derivado o una instancia exacta ya ACTIVE_PHYSICAL/AUTHORIZED; IMPLEMENTATION_READY no equivale a AUTHORIZED.'
+      ? 'Ejecutar únicamente el primary derivado o una instancia exacta ya ACTIVE_PHYSICAL/AUTHORIZED; IMPLEMENTATION_READY no equivale a AUTHORIZED. La única entrada mutante normal es docs:implementation:advance; start/preverify/finish directos permanecen deshabilitados.'
       : 'Nunca elegir packages por intuición: consumir primary, authorization frontier y active physical set derivados.';
   const candidateBlock = candidate
     ? `\nPACKAGE IMPLEMENTABLE DETECTED
@@ -142,8 +145,23 @@ export function renderReadinessStarterBlock({ readiness, lane, coordinated = nul
 - No implementation instance is authorized by this projection.`
     : '';
   const readinessProjection = stableReadinessStarterProjection(readiness.block);
+  const operational = coordinated?.operationalContract ?? null;
+  const activeOperational = operational?.active ?? null;
+  const operationalBlock = `UNIFIED OPERATIONAL CONTRACT
+- Model: ${operational?.modelId ?? 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1'}
+- State integrity model: ${operational?.stateIntegrityModelId ?? 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1'}
+- Mutating entrypoint: ${operational?.mutatingEntrypoint ?? 'docs:implementation:advance'}
+- Direct lifecycle entrypoints: ${operational?.directLifecycleEntrypointsEnabled === true ? 'ENABLED' : 'DISABLED'}
+- Active instance: ${activeOperational?.instanceId ?? 'NONE'}
+- Declared status: ${activeOperational?.declaredStatus ?? 'NONE'}
+- Effective status: ${activeOperational?.effectiveStatus ?? 'NONE'}
+- State integrity valid: ${activeOperational ? (activeOperational.statusValid ? 'YES' : 'NO') : 'N/A'}
+- Recovery action: ${activeOperational?.recoveryAction ?? 'NONE'}`;
 
   return `PACKAGE READINESS SCANNER — OBLIGATORIO
+
+${operationalBlock}
+
 
 Antes de determinar la siguiente acción y después del cierre de cada tarea, el estado debe haber pasado por PACKAGE READINESS SCAN.
 Toda condición PASS exige evidencia trazable. Evidencia ausente produce UNKNOWN para el gate afectado; no autoriza ejecución ni concede un bypass.
@@ -266,8 +284,8 @@ PACKAGE EXECUTION GOVERNED FRONTIER
 - PHYSICAL_AUTHORIZATION_REQUIRED: ${candidate ? 'TRUE' : 'AS_PROJECTED_PER_INSTANCE'}
 
 ${candidate
-    ? 'No ejecutes docs:implementation:start ni crees AUTHORIZED hasta APROBADO humano del alcance exacto.'
-    : 'No selecciones packages manualmente. Sigue el primary o la instancia física exacta proyectada.'}
+    ? 'No crees AUTHORIZED hasta APROBADO humano del alcance exacto. Después usa exclusivamente docs:implementation:advance; start/preverify/finish directos están deshabilitados.'
+    : 'No selecciones packages manualmente. Sigue el primary o la instancia física exacta proyectada mediante docs:implementation:advance cuando exista una transición mutante.'}
 
 ${renderReadinessStarterBlock({ readiness, lane: 'PHYSICAL_IMPLEMENTATION' })}`;
 
@@ -317,10 +335,17 @@ export function buildReadinessChatgptWorkStarter({
     },
     physical: { active: null, activeSet: [] },
   };
-  const coordinated = coordinateImplementationStatus({
+  const operational = buildUnifiedOperationalContract({
+    root: repositoryRoot,
     baseControl: control,
-    registry: readiness.registry,
   });
+  const coordinated = {
+    ...coordinateImplementationStatus({
+      baseControl: operational.baseControl,
+      registry: readiness.registry,
+    }),
+    operationalContract: operational.contract,
+  };
 
   return injectReadinessIntoSources({
     baseResult: resolvedBase,

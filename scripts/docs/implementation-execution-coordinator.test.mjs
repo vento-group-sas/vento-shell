@@ -6,7 +6,10 @@ import { spawnSync } from 'node:child_process';
 import test from 'node:test';
 
 import {
+  assessAuthorizedMaterialization,
+  buildMachineObservableExecutionEvidence,
   candidateValidationState,
+  evaluateCandidateRepairReceipt,
   classifyExecutionState,
   evaluateCandidatePreverifyReceipt,
   resolveExecutorInstanceId,
@@ -17,12 +20,14 @@ import {
 import {
   assessSafeSelectiveExecution,
   buildShadowImpactPlan,
+  createCandidateRepairReceipt,
   createCandidateValidationReceipt,
   createSafeSelectiveValidationRecord,
   deriveSafeSelectiveCertification,
   fingerprintCandidateRepositoryState,
   IMPLEMENTATION_SAFE_SELECTIVE_CERTIFICATION,
   observeShadowImpact,
+  validateCandidateRepairReceipt,
   validateCandidateValidationReceipt,
   validateSafeSelectiveValidationRecord,
 } from './implementation-validation-engine.mjs';
@@ -930,4 +935,103 @@ test('F5 rechaza certificacion manipulada aunque declare CERTIFIED', () => {
   assert.equal(decision.candidateEligible, true);
   assert.equal(decision.selectiveExecution, false);
   assert.equal(decision.reason, 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING');
+});
+
+test('C4 detecta materializacion por paths autorizados sin --materialized', () => {
+  const instance = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-002',
+    authorized_changes: [
+      { repo: 'vento-group-sas/vento-shell', path: 'tests/packages/GAP-PKG-002/a.ts', change: 'CREATE' },
+      { repo: 'vento-group-sas/vento-shell', path: 'tests/packages/GAP-PKG-002/b.ts', change: 'MODIFY' },
+      { repo: 'vento-group-sas/vento-shell', path: 'scripts/docs/implementation-branch-lifecycle.mjs', change: 'EXECUTE_ONLY' },
+    ],
+  };
+  const ready = assessAuthorizedMaterialization({
+    instance,
+    changedPaths: ['tests/packages/GAP-PKG-002/a.ts', 'tests/packages/GAP-PKG-002/b.ts'],
+  });
+  assert.equal(ready.ready, true);
+  assert.deepEqual(ready.missingPaths, []);
+  const pending = assessAuthorizedMaterialization({ instance, changedPaths: ['tests/packages/GAP-PKG-002/a.ts'] });
+  assert.equal(pending.ready, false);
+  assert.deepEqual(pending.missingPaths, ['tests/packages/GAP-PKG-002/b.ts']);
+});
+
+test('C4 repair receipt reutiliza solo fingerprint exacto del candidato reparado', () => {
+  const receipt = createCandidateRepairReceipt({
+    instanceId: 'SHELL-CI-021::GAP-PKG-002',
+    candidateCommit: 'a'.repeat(40),
+    inputRepositoryStateSha256: '1'.repeat(64),
+    outputRepositoryStateSha256: '2'.repeat(64),
+    toolchain: { nodeVersion: 'v24.19.0', platform: 'win32', arch: 'x64' },
+    repairExecuted: true,
+    repairedPaths: ['tests/packages/GAP-PKG-002/a.ts'],
+    repairedAt: '2026-09-12T05:00:00Z',
+  });
+  const exact = validateCandidateRepairReceipt({
+    receipt, instanceId: 'SHELL-CI-021::GAP-PKG-002', candidateCommit: 'a'.repeat(40),
+    repositoryStateSha256: '2'.repeat(64),
+    toolchain: { nodeVersion: 'v24.19.0', platform: 'win32', arch: 'x64' },
+  });
+  assert.equal(exact.status, 'PASS');
+  const changed = validateCandidateRepairReceipt({
+    receipt, instanceId: 'SHELL-CI-021::GAP-PKG-002', candidateCommit: 'a'.repeat(40),
+    repositoryStateSha256: '3'.repeat(64),
+    toolchain: { nodeVersion: 'v24.19.0', platform: 'win32', arch: 'x64' },
+  });
+  assert.equal(changed.status, 'MISS');
+  const wrapper = evaluateCandidateRepairReceipt({
+    instance: { instance_id: 'SHELL-CI-021::GAP-PKG-002' },
+    request: { validation_engine_repair_receipt: receipt },
+    candidateState: {
+      candidateCommit: 'a'.repeat(40), repositoryStateSha256: '2'.repeat(64),
+      toolchain: { nodeVersion: 'v24.19.0', platform: 'win32', arch: 'x64' },
+    },
+  });
+  assert.equal(wrapper.status, 'PASS');
+});
+
+test('C4 auto-sella evidencia solo cuando no existe target externo', () => {
+  const request = {
+    schema_version: 1,
+    instance_id: 'SHELL-CI-021::GAP-PKG-002',
+    candidate_commit: 'b'.repeat(40),
+    observed_at: null,
+    validation_commands: ['npm test'],
+    results: [{ command: 'npm test', status: 'PASS' }],
+    target_environments: [],
+    environment_results: [],
+    operational_evidence: [],
+    validation_engine_preverify_receipt: { receiptSha256: 'c'.repeat(64) },
+  };
+  const auto = buildMachineObservableExecutionEvidence({ request, observedAt: '2026-09-12T06:00:00Z' });
+  assert.equal(auto.observed_at, '2026-09-12T06:00:00Z');
+  assert.equal(auto.operational_evidence.length, 2);
+  assert.equal(validateExecutionEvidenceReceipt({
+    instance: { instance_id: request.instance_id, validation_commands: ['npm test'], target_environments: [] },
+    receipt: auto, candidateCommit: request.candidate_commit,
+  }), true);
+  assert.equal(buildMachineObservableExecutionEvidence({
+    request: { ...request, target_environments: [{ environment_role: 'STAGING' }] },
+  }), null);
+});
+
+test('C4 elimina stash, elimina gate --materialized y serializa finish contra git-common-dir', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /git\(\['stash'/u);
+  assert.doesNotMatch(source, /if \(!materialized\)/u);
+  assert.match(source, /MATERIALIZATION_REQUIRED/u);
+  assert.match(source, /LEGACY_MATERIALIZED_FLAG/u);
+  assert.match(source, /MAIN_RECONCILIATION_DIRTY_WORKTREE/u);
+  assert.match(source, /--git-common-dir/u);
+  assert.match(source, /IMPLEMENTATION_FINISH_LOCK_ACTIVE/u);
+  assert.match(source, /EXTERNAL_EVIDENCE_REQUIRED/u);
+  const repair = source.indexOf('const repairBeforeCheckpoint = runCandidateRepairOnce');
+  const mainReconcile = source.indexOf('const rebaseline = ensureCurrentMainContained', repair);
+  const validation = source.indexOf('const validationRun = runValidationCommandsWithPolicy', mainReconcile);
+  const mrp = source.indexOf('const mrpStatus = maybeRecordCi020Candidate', validation);
+  const implemented = source.indexOf("status: 'IMPLEMENTED'", mrp);
+  assert.ok(repair >= 0 && mainReconcile > repair && validation > mainReconcile);
+  assert.ok(mrp > validation && implemented > mrp);
+  assert.match(source, /REPAIR_RECEIPT_NOT_EXACT_FINAL_CANDIDATE/u);
 });

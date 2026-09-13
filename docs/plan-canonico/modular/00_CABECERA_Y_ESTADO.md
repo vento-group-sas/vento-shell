@@ -20,33 +20,33 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1178** |
+| Tareas aprobadas | **1189** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **418** |
+| Tareas no iniciadas | **407** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **73.81% (1178/1596)** |
+| Porcentaje de completamiento | **74.50% (1189/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia** |
-| Tarea actual | **NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad** |
+| Última tarea aprobada | **NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido** |
+| Tarea actual | **NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo** |
+| Siguiente tarea | **NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 36 de 127 aprobadas; NEXO-DOM-012 pendiente** |
+| Progreso del bloque | **BLOQUE K: 47 de 127 aprobadas; NEXO-DOM-023 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **EJECUTAR_IMPLEMENTACION — SHELL-CI-020::GAP-PKG-018** |
-| Carril documental | **ACTIVO — NEXO-DOM-012** |
-| Carril físico | **IN_PROGRESS — SHELL-CI-020::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
+| Carril documental | **ACTIVO — NEXO-DOM-023** |
+| Carril físico | **AUTHORIZED — SHELL-CI-020::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **SHELL-CI-020::GAP-PKG-018** |
 
 ### Continuidad inmediata
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-011` — Definir préstamo, devolución, transferencia y cambio de custodia |
-| Tarea actual | `NEXO-DOM-012` — Definir mantenimiento, reparación y disponibilidad — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-013` — Definir baja, descarte, venta o reemplazo |
+| Última aprobada | `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido |
+| Tarea actual | `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-024` — Definir capacidad, peso, volumen y compatibilidad de contenido |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,8 +59,8 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 36 DE 127 APROBADAS — ACTUAL NEXO-DOM-012** |
-| Implementación física | **SHELL-CI-020::GAP-PKG-018 — IN_PROGRESS | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 47 DE 127 APROBADAS — ACTUAL NEXO-DOM-023** |
+| Implementación física | **SHELL-CI-020::GAP-PKG-018 — AUTHORIZED | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
 
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia
+NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
         ↓
 TAREA ACTUAL
-NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad
+NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
         ↓
 SIGUIENTE TAREA RESERVADA
-NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo
+NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
         ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 36 de 127 tareas aprobadas
+BLOQUE K — 47 de 127 tareas aprobadas
 ```

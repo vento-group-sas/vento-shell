@@ -1,0 +1,236 @@
+name: VENTO Night Documentation Authorization
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorize:
+        description: Confirmar autorización humana explícita para este turno documental nocturno
+        required: true
+        default: false
+        type: boolean
+      phase2_author_review:
+        description: Habilitar candidato documental + dos revisiones IA read-only para cada unidad autorizada
+        required: true
+        default: false
+        type: boolean
+      phase3_closure_preflight:
+        description: Habilitar plan de cierre read-only y compatibilidad con lifecycle sobre el candidato revisado
+        required: true
+        default: false
+        type: boolean
+      max_tasks:
+        description: Máximo explícito de tareas documentales autorizadas para el turno
+        required: true
+        type: string
+      cutoff_at:
+        description: Hora límite absoluta ISO-8601 con offset, por ejemplo 2026-09-13T06:30:00-05:00
+        required: true
+        type: string
+      timezone:
+        description: Zona horaria IANA que debe corresponder al offset de cutoff_at
+        required: true
+        default: America/Bogota
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vento-night-documentation-autopilot
+  cancel-in-progress: false
+
+env:
+  CI: "1"
+  FORCE_COLOR: "0"
+  NO_COLOR: "1"
+
+jobs:
+  authorize:
+    name: Materializar autorización documental nocturna
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      authorization_status: ${{ steps.authorization.outputs.authorization_status }}
+      authorization_sha256: ${{ steps.authorization.outputs.authorization_sha256 }}
+      task_id: ${{ steps.authorization.outputs.task_id }}
+      route_id: ${{ steps.authorization.outputs.route_id }}
+      sequence_id: ${{ steps.authorization.outputs.sequence_id }}
+      block_code: ${{ steps.authorization.outputs.block_code }}
+      execution_enabled: ${{ steps.authorization.outputs.execution_enabled }}
+      phase2_author_review_enabled: ${{ steps.authorization.outputs.phase2_author_review_enabled }}
+      phase3_closure_preflight_enabled: ${{ steps.authorization.outputs.phase3_closure_preflight_enabled }}
+    steps:
+      - name: Descargar main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.19.0
+
+      - name: Resolver el main vigente
+        shell: bash
+        run: |
+          git fetch origin main --quiet
+          git checkout --detach origin/main
+
+      - name: Regenerar iniciador documental
+        run: node scripts/docs/chatgpt-work-starter.mjs
+
+      - name: Materializar autorización machine-readable
+        id: authorization
+        env:
+          NIGHT_AUTHORIZATION_GRANTED: ${{ inputs.authorize }}
+          NIGHT_PHASE2_AUTHOR_REVIEW: ${{ inputs.phase2_author_review }}
+          NIGHT_PHASE3_CLOSURE_PREFLIGHT: ${{ inputs.phase3_closure_preflight }}
+          NIGHT_MAX_TASKS: ${{ inputs.max_tasks }}
+          NIGHT_CUTOFF_AT: ${{ inputs.cutoff_at }}
+          NIGHT_TIMEZONE: ${{ inputs.timezone }}
+          NIGHT_AUTHORIZATION_OUTPUT: ${{ runner.temp }}/vento-night-documentation/authorization.json
+        run: node scripts/docs/night-documentation-authorization.mjs
+
+      - name: Verificar que autorización no modificó el repositorio
+        shell: bash
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
+
+      - name: Publicar evidencia de autorización
+        uses: actions/upload-artifact@v4
+        with:
+          name: vento-night-documentation-authorization-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/authorization.json
+          if-no-files-found: error
+          retention-days: 7
+
+  author_review:
+    name: Construir candidato y doble revisión documental
+    if: ${{ inputs.phase2_author_review }}
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Descargar main para la unidad documental
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.19.0
+
+      - name: Resolver main dinámico inmediatamente antes de la unidad
+        shell: bash
+        run: |
+          git fetch origin main --quiet
+          git checkout --detach origin/main
+
+      - name: Descargar autorización de este turno
+        uses: actions/download-artifact@v4
+        with:
+          name: vento-night-documentation-authorization-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/authorization
+
+      - name: Regenerar iniciador documental sobre main vigente
+        run: node scripts/docs/chatgpt-work-starter.mjs
+
+      - name: Construir cápsula canónica mínima
+        env:
+          NIGHT_AUTHORIZATION_PATH: ${{ runner.temp }}/vento-night-documentation/authorization/authorization.json
+          NIGHT_CONTEXT_OUTPUT: ${{ runner.temp }}/vento-night-documentation/phase2/context-capsule.json
+        run: node scripts/docs/night-documentation-context.mjs
+
+      - name: Autor documental y dos revisiones independientes
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NIGHT_CONTEXT_PATH: ${{ runner.temp }}/vento-night-documentation/phase2/context-capsule.json
+          NIGHT_PHASE2_OUTPUT_DIR: ${{ runner.temp }}/vento-night-documentation/phase2
+        run: node scripts/docs/night-documentation-author-review.mjs
+
+      - name: Verificar que FASE 2 no modificó el repositorio
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
+
+      - name: Publicar evidencia FASE 2
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vento-night-documentation-phase2-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/phase2
+          if-no-files-found: warn
+          retention-days: 7
+
+  closure_preflight:
+    name: Verificar cierre documental sin mutar repositorio
+    if: ${{ inputs.phase3_closure_preflight }}
+    needs:
+      - authorize
+      - author_review
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Descargar main para preflight de cierre
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.19.0
+
+      - name: Resolver main dinámico antes del preflight de cierre
+        shell: bash
+        run: |
+          git fetch origin main --quiet
+          git checkout --detach origin/main
+
+      - name: Descargar autorización de este turno
+        uses: actions/download-artifact@v4
+        with:
+          name: vento-night-documentation-authorization-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/authorization
+
+      - name: Descargar evidencia FASE 2 del mismo turno
+        uses: actions/download-artifact@v4
+        with:
+          name: vento-night-documentation-phase2-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/phase2
+
+      - name: Regenerar iniciador documental sobre main vigente
+        run: node scripts/docs/chatgpt-work-starter.mjs
+
+      - name: Materializar plan de cierre read-only
+        env:
+          NIGHT_AUTHORIZATION_PATH: ${{ runner.temp }}/vento-night-documentation/authorization/authorization.json
+          NIGHT_PHASE2_DIR: ${{ runner.temp }}/vento-night-documentation/phase2
+          NIGHT_PHASE3_OUTPUT_DIR: ${{ runner.temp }}/vento-night-documentation/phase3
+        run: node scripts/docs/night-documentation-closure.mjs
+
+      - name: Verificar que FASE 3 no modificó el repositorio
+        if: ${{ always() }}
+        shell: bash
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
+
+      - name: Publicar evidencia FASE 3
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vento-night-documentation-phase3-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/phase3
+          if-no-files-found: warn
+          retention-days: 7

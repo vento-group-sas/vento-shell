@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildUnifiedOperationalContract,
   coordinateImplementationStatus,
   deriveCoordinatedImplementationStatus,
 } from './implementation-readiness-coordinator.mjs';
@@ -303,4 +304,51 @@ test('un package físico activo no monopoliza un primary independiente de la gov
   assert.equal(result.coordinationSource, 'PACKAGE_EXECUTION_GOVERNED_FRONTIER_WITH_ACTIVE_SET');
   assert.equal(result.coordinatedPrimaryAction.target, 'GAP-PKG-002');
   assert.equal(result.coordinatedPrimaryAction.type, 'PREPARE_PACKAGE_GATE');
+});
+
+// C5_UNIFIED_OPERATIONAL_CONTRACT_INVALID_DECLARED_STATUS
+test('contrato operacional degrada un estado declarado imposible y bloquea lifecycle directo', () => {
+  const record = {
+    instance_id: 'SHELL-CI-022::GAP-PKG-001',
+    task_id: 'SHELL-CI-022',
+    status: 'VERIFIED',
+  };
+  const active = {
+    instanceId: record.instance_id,
+    status: record.status,
+    record,
+  };
+  const projected = buildUnifiedOperationalContract({
+    root: '/repo',
+    baseControl: {
+      primaryAction: { type: 'EJECUTAR_IMPLEMENTACION', target: record.instance_id },
+      physical: {
+        active,
+        instances: [active],
+        actionableSet: [active],
+        activeSet: [active],
+        authorized: [active],
+      },
+    },
+    stateIntegrityAssessor: () => ({
+      declared_status: 'VERIFIED',
+      highest_valid_status: 'IN_PROGRESS',
+      status_valid: false,
+      missing_prerequisites: ['LOCAL_VALIDATION_EVIDENCE_INCOMPLETE'],
+      stale_evidence: [],
+      next_legal_transition: 'MATERIALIZE_AND_VALIDATE',
+      recoverable: true,
+      recovery_action: 'RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE',
+    }),
+  });
+
+  assert.equal(projected.baseControl.physical.active.status, 'IN_PROGRESS');
+  assert.equal(projected.baseControl.physical.active.declaredStatus, 'VERIFIED');
+  assert.equal(projected.baseControl.physical.active.stateIntegrity.status_valid, false);
+  assert.equal(projected.baseControl.primaryAction.type, 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY');
+  assert.equal(projected.baseControl.primaryAction.command, null);
+  assert.equal(projected.contract.mutatingEntrypoint, 'docs:implementation:advance');
+  assert.equal(projected.contract.directLifecycleEntrypointsEnabled, false);
+  assert.equal(projected.contract.active.effectiveStatus, 'IN_PROGRESS');
+  assert.equal(projected.contract.active.statusValid, false);
 });

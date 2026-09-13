@@ -8,6 +8,7 @@ import {
   assertInstanceCanFinish,
   assertInstanceCanStart,
   assertStartWorktree,
+  authorizedRecordMatchesPersistedMain,
   buildImplementationPrBody,
   classifyImplementationPath,
   implementationBranchName,
@@ -76,17 +77,53 @@ test('finish exige VERIFIED y evidence consolidada', () => {
   );
 });
 
-test('start solo admite el registro fisico AUTHORIZED como cambio local previo', () => {
+test('start admite ledger AUTHORIZED local y worktree limpio sujeto a persistencia remota exacta', () => {
   const record = 'docs/plan-canonico/modular/implementation-instances/SHELL-CON-001__GLOBAL.json';
   assert.equal(assertStartWorktree([record], record), true);
+  assert.equal(assertStartWorktree([], record), true);
   assert.throws(
     () => assertStartWorktree([record, 'package.json'], record),
-    /unico cambio local/u,
+    /solo admite worktree limpio/u,
   );
-  assert.throws(
-    () => assertStartWorktree([], record),
-    /unico cambio local/u,
+});
+
+test('start solo confia en AUTHORIZED persistido cuando el ledger remoto coincide exactamente', () => {
+  const instance = {
+    instance_id: 'SHELL-CON-001::GLOBAL',
+    task_id: 'SHELL-CON-001',
+    status: 'AUTHORIZED',
+    target_repositories: ['vento-group-sas/vento-shell'],
+    authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: 'x.ts', change: 'CREATE' }],
+    validation_commands: ['npm test'],
+    authorization: { decision: 'APPROVED' },
+    evidence: [],
+  };
+  const persisted = JSON.parse(JSON.stringify(instance));
+  assert.equal(authorizedRecordMatchesPersistedMain(instance, persisted), true);
+  persisted.validation_commands = ['npm run different'];
+  assert.equal(authorizedRecordMatchesPersistedMain(instance, persisted), false);
+  persisted.validation_commands = ['npm test'];
+  persisted.authorization.decision = 'REJECTED';
+  assert.equal(authorizedRecordMatchesPersistedMain(instance, persisted), false);
+});
+
+test('start valida AUTHORIZED persistido antes de crear o reanudar la rama fisica', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+  const start = source.indexOf('export function startImplementation');
+  const persisted = source.indexOf(
+    'const persistedAuthorization = authorizedRecordPersistedOnMain(root, recordPath, instance);',
+    start,
   );
+  const firstGuard = source.indexOf('assertStartWorktree(worktreePaths(root), recordPath);', persisted);
+  const branchMutation = source.indexOf('const branchMode = ensureBranchReadyForStart(root, branch);', firstGuard);
+  const secondGuard = source.indexOf('assertStartWorktree(worktreePaths(root), recordPath);', branchMutation);
+  const statusWrite = source.indexOf("writeInstanceStatus(root, id, 'IN_PROGRESS')", secondGuard);
+  assert.ok(start >= 0);
+  assert.ok(persisted > start);
+  assert.ok(firstGuard > persisted);
+  assert.ok(branchMutation > firstGuard);
+  assert.ok(secondGuard > branchMutation);
+  assert.ok(statusWrite > secondGuard);
 });
 
 test('finish crea commit con cambios y reanuda si el commit ya existe', () => {
@@ -323,24 +360,40 @@ test('docs:plan:build materializa la siguiente instancia pendiente antes del cor
   assert.ok(finalControl > coreBuild);
 });
 
-test('package.json expone el lifecycle fisico protegido y docs:plan:test lo autocertifica', () => {
+test('package.json conserva shims legacy fail-closed y advance como unica entrada mutante normal', () => {
   const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
   const guardSource = fs.readFileSync('scripts/docs/implementation-correction-guard.mjs', 'utf8');
+  const lifecycleSource = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+
+  assert.equal(
+    packageJson.scripts['docs:implementation:advance'],
+    'node scripts/docs/implementation-execution-coordinator.mjs advance',
+  );
   assert.equal(
     packageJson.scripts['docs:implementation:start'],
     'node scripts/docs/implementation-correction-guard.mjs start',
   );
   assert.equal(
+    packageJson.scripts['docs:implementation:preverify'],
+    'node scripts/docs/implementation-branch-lifecycle.mjs preverify',
+  );
+  assert.equal(
     packageJson.scripts['docs:implementation:finish'],
     'node scripts/docs/implementation-branch-lifecycle.mjs finish',
   );
-  const guardCheck = guardSource.indexOf('assertImplementationStartNotBlocked({ instanceId: args.instanceId });');
-  const lifecycleDelegation = guardSource.indexOf(
-    'return startImplementation({ instanceId: args.instanceId });',
-    guardCheck,
-  );
-  assert.ok(guardCheck >= 0);
-  assert.ok(lifecycleDelegation > guardCheck);
+
+  const internalEntry = guardSource.indexOf('export function startImplementationGuarded');
+  const guardedCheck = guardSource.indexOf('assertImplementationStartNotBlocked({ root, instanceId });', internalEntry);
+  const internalDelegation = guardSource.indexOf('return startImplementation({ root, instanceId });', guardedCheck);
+  assert.ok(internalEntry >= 0);
+  assert.ok(guardedCheck > internalEntry);
+  assert.ok(internalDelegation > guardedCheck);
+
+  assert.match(guardSource, /rejectDirectImplementationLifecycleEntry\('START'\)/u);
+  assert.doesNotMatch(guardSource, /assertImplementationStartNotBlocked\(\{ instanceId: args\.instanceId \}\)/u);
+  assert.match(lifecycleSource, /rejectDirectImplementationLifecycleEntry\(args\.mode\)/u);
+  assert.match(lifecycleSource, /docs:implementation:advance -- --instance-id/u);
+
   assert.match(
     guardSource,
     /import \{ startImplementation \} from '\.\/implementation-branch-lifecycle\.mjs';/u,

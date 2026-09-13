@@ -4,6 +4,7 @@ import { fileURLToPath } from 'node:url';
 
 import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 import { scanPackageReadiness } from './package-readiness-scanner.mjs';
+import { assessImplementationStateIntegrity, IMPLEMENTATION_MUTATING_ENTRYPOINT } from './implementation-state-integrity.mjs';
 
 const CONTROL_PATH = 'docs/plan-canonico/modular/implementation-control.json';
 const INSTANCE_RECORDS_DIRECTORY = 'docs/plan-canonico/modular/implementation-instances';
@@ -340,12 +341,57 @@ export function validateImplementationControl(control, workTopology) {
   return control;
 }
 
+// C6_EFFECTIVE_STATE_PROJECTION
+const EFFECTIVE_STATE_PROJECTABLE_STATUSES = new Set([
+  'PENDING_AUTHORIZATION',
+  'AUTHORIZED',
+  'IN_PROGRESS',
+  'IMPLEMENTED',
+  'VERIFIED',
+]);
+
+export function projectImplementationControlEffectiveState({
+  root = process.cwd(),
+  instance,
+  stateIntegrityAssessor = assessImplementationStateIntegrity,
+} = {}) {
+  if (!instance || typeof instance !== 'object') return instance;
+  const record = instance.record ?? null;
+  const declaredStatus = String(record?.status ?? instance.status ?? '').trim().toUpperCase();
+  const fallbackStatus = String(instance.status ?? declaredStatus).trim().toUpperCase();
+  if (!record || !EFFECTIVE_STATE_PROJECTABLE_STATUSES.has(declaredStatus)
+    || typeof stateIntegrityAssessor !== 'function') {
+    return {
+      ...instance,
+      declaredStatus,
+      effectiveStatus: fallbackStatus,
+      stateIntegrity: null,
+      stateIntegrityRecoveryRequired: false,
+      recoveryAction: null,
+    };
+  }
+  const integrity = stateIntegrityAssessor({ root, instance: record });
+  const effectiveStatus = integrity.status_valid
+    ? integrity.declared_status
+    : integrity.highest_valid_status;
+  return {
+    ...instance,
+    status: effectiveStatus,
+    declaredStatus: integrity.declared_status,
+    effectiveStatus,
+    stateIntegrity: integrity,
+    stateIntegrityRecoveryRequired: integrity.status_valid === false,
+    recoveryAction: integrity.recovery_action ?? null,
+  };
+}
+
 export function deriveImplementationControl({
   root = process.cwd(),
   control: suppliedControl = null,
   workTopology: suppliedTopology = null,
   preflight: suppliedPreflight = null,
   packageExecution: suppliedPackageExecution = undefined,
+  stateIntegrityAssessor: suppliedStateIntegrityAssessor = undefined,
 } = {}) {
   const workTopology = suppliedTopology ?? resolveTaskWorkTopology({ root });
   const control = validateImplementationControl(
@@ -446,6 +492,17 @@ export function deriveImplementationControl({
       };
     });
   const instances = [...globalCandidates, ...packageCandidates, ...explicitOther];
+  const stateIntegrityAssessor = suppliedStateIntegrityAssessor === null
+    ? null
+    : suppliedStateIntegrityAssessor
+      ?? (suppliedControl ? null : assessImplementationStateIntegrity);
+  for (const instance of instances) {
+    Object.assign(instance, projectImplementationControlEffectiveState({
+      root,
+      instance,
+      stateIntegrityAssessor,
+    }));
+  }
   const currentPackageWork = packageExecution?.current_work ?? packageExecution?.current?.current_work ?? null;
   let packagePrerequisiteAction = null;
 
@@ -456,8 +513,31 @@ export function deriveImplementationControl({
       ? instances.find(({ instanceId }) => instanceId === consumerInstanceId) ?? null
       : null;
 
+    // C6_PERSISTED_TOPOLOGICAL_INTEGRITY_RECOVERY
     if (consumerInstance && ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(consumerInstance.status)) {
-      fail([`${consumerInstanceId} no puede estar ${consumerInstance.status} mientras ${currentPackageWork.id} sigue pendiente.`]);
+      const blockedStatus = currentPackageWork.kind === 'FOUNDATION_GATE'
+        ? 'WAITING_FOR_FOUNDATION_PREREQUISITE'
+        : 'WAITING_FOR_PHYSICAL_PREREQUISITE';
+      const blocker = `${consumerPackageId} debe cerrar primero ${currentPackageWork.id}${currentPackageWork.gate_id ? ` / ${currentPackageWork.gate_id}` : ''}.`;
+      if (suppliedControl) {
+        fail([`${consumerInstanceId} no puede estar ${consumerInstance.status} mientras ${currentPackageWork.id} sigue pendiente.`]);
+      }
+      const recoveryAction = `WAIT_FOR_${currentPackageWork.kind}:${currentPackageWork.id}`;
+      consumerInstance.declaredStatus = consumerInstance.declaredStatus
+        ?? consumerInstance.record?.status
+        ?? consumerInstance.status;
+      consumerInstance.status = blockedStatus;
+      consumerInstance.effectiveStatus = blockedStatus;
+      consumerInstance.stateIntegrityRecoveryRequired = true;
+      consumerInstance.recoveryAction = recoveryAction;
+      consumerInstance.blocker = blocker;
+      consumerInstance.stateIntegrity = {
+        ...(consumerInstance.stateIntegrity ?? {}),
+        status_valid: false,
+        topology_valid: false,
+        topology_blocker: currentPackageWork.id,
+        recovery_action: recoveryAction,
+      };
     }
 
     if (consumerInstance && ['PENDING_AUTHORIZATION', 'READY_FOR_AUTHORIZATION'].includes(consumerInstance.status)) {
@@ -502,9 +582,28 @@ export function deriveImplementationControl({
     && instance.instanceId !== unfinishedGlobal.instanceId
   ));
   if (illegalParallel.length > 0) {
-    fail(illegalParallel.map((instance) => (
-      `${instance.instanceId} no puede estar ${instance.status} antes de verificar ${unfinishedGlobal.instanceId}.`
-    )));
+    if (suppliedControl) {
+      fail(illegalParallel.map((instance) => (
+        `${instance.instanceId} no puede estar ${instance.status} antes de verificar ${unfinishedGlobal.instanceId}.`
+      )));
+    }
+    for (const instance of illegalParallel) {
+      const blocker = `Debe verificarse primero ${unfinishedGlobal.instanceId}.`;
+      const recoveryAction = `WAIT_FOR_PREVIOUS_INSTANCE:${unfinishedGlobal.instanceId}`;
+      instance.declaredStatus = instance.declaredStatus ?? instance.record?.status ?? instance.status;
+      instance.status = 'WAITING_FOR_PREVIOUS_INSTANCE';
+      instance.effectiveStatus = 'WAITING_FOR_PREVIOUS_INSTANCE';
+      instance.stateIntegrityRecoveryRequired = true;
+      instance.recoveryAction = recoveryAction;
+      instance.blocker = blocker;
+      instance.stateIntegrity = {
+        ...(instance.stateIntegrity ?? {}),
+        status_valid: false,
+        topology_valid: false,
+        topology_blocker: unfinishedGlobal.instanceId,
+        recovery_action: recoveryAction,
+      };
+    }
   }
 
   const actionByStatus = new Map([
@@ -528,24 +627,35 @@ export function deriveImplementationControl({
     return match ? Number(match[1]) - 20 : 100;
   };
   const actionableSet = instances
-    .filter((instance) => actionByStatus.has(instance.status))
+    .filter((instance) => instance.stateIntegrityRecoveryRequired || actionByStatus.has(instance.status))
     .sort((left, right) => (
-      physicalStageRank(left) - physicalStageRank(right)
+      Number(right.stateIntegrityRecoveryRequired) - Number(left.stateIntegrityRecoveryRequired)
+      || physicalStageRank(left) - physicalStageRank(right)
       || (statusRank.get(left.status) ?? 99) - (statusRank.get(right.status) ?? 99)
       || left.instanceId.localeCompare(right.instanceId, 'en')
     ));
   const actionForInstance = (instance) => {
-    const type = actionByStatus.get(instance.status);
+    const integrityRecovery = instance.stateIntegrityRecoveryRequired === true;
+    const type = integrityRecovery
+      ? 'RECONCILE_IMPLEMENTATION_STATE_INTEGRITY'
+      : actionByStatus.get(instance.status);
     return {
       type,
       target: instance.instanceId,
       title: instance.taskTitle,
-      instruction: type === 'AUTORIZAR_IMPLEMENTACION'
-        ? `Definir y aprobar el alcance físico exacto de ${instance.instanceId}; la misma entrega puede dejar preparado el lote físico condicionado a guardar primero la autorización.`
-        : type === 'EJECUTAR_IMPLEMENTACION'
-          ? `Ejecutar la transacción humana continua de ${instance.instanceId} desde ${instance.status} hasta VERIFIED; detenerse solo ante bloqueo real o fallo.`
-          : `Guiar la resolución humana del bloqueo de ${instance.instanceId} sin ampliar el alcance.`,
-      why: instance.blocker ?? `${instance.taskId} tiene contrato aprobado y pertenece al governed active set físico.`,
+      instruction: integrityRecovery
+        ? `El ledger declara ${instance.declaredStatus}, pero la evidencia efectiva solo soporta ${instance.effectiveStatus}. Reconciliar según ${instance.recoveryAction ?? 'MANUAL_RECONCILIATION_REQUIRED'} antes de cualquier mutación.`
+        : type === 'AUTORIZAR_IMPLEMENTACION'
+          ? `Definir y aprobar el alcance físico exacto de ${instance.instanceId}; la misma entrega puede dejar preparado el lote físico condicionado a guardar primero la autorización.`
+          : type === 'EJECUTAR_IMPLEMENTACION'
+            ? `Reanudar ${instance.instanceId} desde ${instance.status} exclusivamente mediante ${IMPLEMENTATION_MUTATING_ENTRYPOINT}; el coordinador resuelve internamente start, preverify, repair y finish.`
+            : `Guiar la resolución humana del bloqueo de ${instance.instanceId} sin ampliar el alcance.`,
+      why: integrityRecovery
+        ? `STATE_INTEGRITY_VIOLATION: declared=${instance.declaredStatus}; effective=${instance.effectiveStatus}.`
+        : instance.blocker ?? `${instance.taskId} tiene contrato aprobado y pertenece al governed active set físico.`,
+      command: integrityRecovery || type !== 'EJECUTAR_IMPLEMENTACION'
+        ? null
+        : `npm run ${IMPLEMENTATION_MUTATING_ENTRYPOINT} -- --instance-id ${instance.instanceId}`,
     };
   };
   const primaryActions = actionableSet.map(actionForInstance);
@@ -572,12 +682,15 @@ export function deriveImplementationControl({
     BLOCKED: 'IMPLEMENTATION_BLOCKED',
   };
   const mode = compatibilitySelected
-    ? (actionableSet.length > 1 ? 'GOVERNED_ACTIVE_SET' : modeByStatus[compatibilitySelected.status] ?? 'GLOBAL_IMPLEMENTATION_READY')
+    ? (compatibilitySelected.stateIntegrityRecoveryRequired
+      ? 'STATE_INTEGRITY_RECOVERY_REQUIRED'
+      : actionableSet.length > 1 ? 'GOVERNED_ACTIVE_SET' : modeByStatus[compatibilitySelected.status] ?? 'GLOBAL_IMPLEMENTATION_READY')
     : packagePrerequisiteAction
       ? 'IMPLEMENTATION_BLOCKED'
       : 'DOCUMENTATION_ONLY';
-  const authorized = instances.filter(({ status }) => (
-    ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(status)
+  const authorized = instances.filter((instance) => (
+    instance.stateIntegrityRecoveryRequired !== true
+    && ['AUTHORIZED', 'IN_PROGRESS', 'IMPLEMENTED'].includes(instance.status)
   ));
 
   return {
@@ -641,14 +754,14 @@ export function renderCurrentWorkDirective(control) {
   const action = control.primaryAction;
   const governedActionRows = (control.primaryActions ?? []).length > 0
     ? control.primaryActions.map((entry) => (
-      `- \`${entry.type}\` -> \`${entry.target}\` — ${markdown(entry.title)}`
+      `- \`${entry.type}\` -> \`${entry.target}\` — ${markdown(entry.title)} — COMMAND=\`${entry.command ?? 'NONE'}\``
     )).join('\n')
     : '- NINGUNA';
   const physicalRows = control.physical.instances.length > 0
     ? control.physical.instances.map((instance) => (
-      `| \`${instance.instanceId}\` | ${markdown(instance.taskTitle)} | ${instance.status} | ${markdown(instance.blocker)} |`
+      `| \`${instance.instanceId}\` | ${markdown(instance.taskTitle)} | ${instance.declaredStatus ?? instance.record?.status ?? instance.status} | ${instance.effectiveStatus ?? instance.status} | ${instance.stateIntegrity ? (instance.stateIntegrity.status_valid ? 'VALID' : 'INVALID') : 'N/A'} | ${markdown(instance.recoveryAction ?? instance.blocker)} |`
     )).join('\n')
-    : '| — | — | SIN_INSTANCIAS | — |';
+    : '| — | — | — | SIN_INSTANCIAS | N/A | — |';
   const allowed = control.physical.authorized.length > 0
     ? control.physical.authorized.map(({ instanceId }) => `\`${instanceId}\``).join(', ')
     : 'NINGUNO';
@@ -663,6 +776,9 @@ export function renderCurrentWorkDirective(control) {
 - **Objetivo exacto:** \`${action.target}\` — ${action.title}
 - **Instrucción:** ${action.instruction}
 - **Por qué:** ${action.why}
+- **Entrada mutante normal:** \`${IMPLEMENTATION_MUTATING_ENTRYPOINT}\`
+- **Comando exacto:** \`${action.command ?? 'NINGUNO_HASTA_RECONCILIAR_O_AUTORIZAR'}\`
+- **Direct lifecycle entrypoints:** \`DISABLED_AS_NORMAL_ENTRYPOINTS\`
 - **Implementación física autorizada ahora:** ${allowed}\n- **Acciones físicas gobernadas:**\n${governedActionRows}
 
 ## Operador de ejecución
@@ -687,8 +803,8 @@ export function renderCurrentWorkDirective(control) {
 
 ## Carril físico
 
-| Instancia | Contrato | Estado | Bloqueo o condición |
-| --- | --- | --- | --- |
+| Instancia | Contrato | Estado declarado | Estado efectivo | Integridad | Recovery / bloqueo |
+| --- | --- | --- | --- | --- | --- |
 ${physicalRows}
 
 ## Coordinación de carriles
@@ -707,9 +823,9 @@ ${physicalRows}
 2. Aprobar un marcador documental crea elegibilidad, nunca autorización física automática.
 3. Código, migraciones, Supabase, despliegues o cambios remotos requieren una instancia explícitamente \`AUTHORIZED\`.
 4. \`AUTHORIZED\` habilita el trabajo físico, pero no concede al asistente permiso para escribirlo.
-5. La entrega reúne todos los artefactos deterministas y un lote local continuo; el usuario ejecuta primero el preflight estricto y solo aplica el código si ese preflight termina correctamente.
-6. Un preflight estricto con código de salida 0 no crea un gate conversacional. Un fallo sí detiene el lote y exige evidencia antes de continuar.
-7. Después de materializar todos los cambios, se usa una sola transacción final fail-fast. Antes de consolidar VERIFIED, ejecutar docs:implementation:preverify con --instance-id para comprobar lint sobre todo el PR y el worktree, incluso después del commit. Si toda la evidencia exigida es local, PASS permite consolidar evidence y pasar a VERIFIED. Si el contrato exige evidencia remota sobre código publicado, la instancia permanece IMPLEMENTED mientras se realiza el commit/push de materialización y se valida el SHA remoto; solo con PASS remoto puede pasar a VERIFIED.
+5. La única entrada mutante normal del carril físico es \`docs:implementation:advance\`; el coordinador abre o reanuda el lifecycle según el estado efectivo y nunca por el status bruto imposible.
+6. Un PASS local continúa por el mismo coordinador; solo FAIL, autorización humana pendiente o evidencia externa real producen una pausa.
+7. \`start\`, \`preverify\` y \`finish\` permanecen fail-closed como entradas directas normales y solo pueden ser invocados internamente por el coordinador; repair y validación se sellan por fingerprint exacto del candidato.
 8. La siguiente instancia global espera la verificación de la anterior; no se concilia trabajo duplicado al final.
 9. Los cierres y merges de los dos carriles se serializan. El segundo carril debe incorporar el \`main\` resultante del primero y repetir las validaciones finales sobre esa base.
 10. “Haz la acción principal” inicia la guía manual continua del carril correspondiente; nunca autoriza escrituras automáticas ni suspende el otro carril.
