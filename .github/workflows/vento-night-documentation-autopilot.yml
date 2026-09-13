@@ -1,0 +1,94 @@
+name: VENTO Night Documentation Authorization
+
+on:
+  workflow_dispatch:
+    inputs:
+      authorize:
+        description: Confirmar autorización humana explícita para este turno documental nocturno
+        required: true
+        default: false
+        type: boolean
+      max_tasks:
+        description: Máximo explícito de tareas documentales autorizadas para el turno
+        required: true
+        type: string
+      cutoff_at:
+        description: Hora límite absoluta ISO-8601 con offset, por ejemplo 2026-09-13T06:30:00-05:00
+        required: true
+        type: string
+      timezone:
+        description: Zona horaria IANA que debe corresponder al offset de cutoff_at
+        required: true
+        default: America/Bogota
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: vento-night-documentation-autopilot
+  cancel-in-progress: false
+
+env:
+  CI: "1"
+  FORCE_COLOR: "0"
+  NO_COLOR: "1"
+
+jobs:
+  authorize:
+    name: Materializar autorización documental nocturna
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    outputs:
+      authorization_status: ${{ steps.authorization.outputs.authorization_status }}
+      authorization_sha256: ${{ steps.authorization.outputs.authorization_sha256 }}
+      task_id: ${{ steps.authorization.outputs.task_id }}
+      route_id: ${{ steps.authorization.outputs.route_id }}
+      sequence_id: ${{ steps.authorization.outputs.sequence_id }}
+      block_code: ${{ steps.authorization.outputs.block_code }}
+      execution_enabled: ${{ steps.authorization.outputs.execution_enabled }}
+    steps:
+      - name: Descargar main
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.19.0
+
+      - name: Resolver el main vigente
+        shell: bash
+        run: |
+          git fetch origin main --quiet
+          git checkout --detach origin/main
+
+      - name: Regenerar iniciador documental
+        run: node scripts/docs/chatgpt-work-starter.mjs
+
+      - name: Materializar autorización machine-readable
+        id: authorization
+        env:
+          NIGHT_AUTHORIZATION_GRANTED: ${{ inputs.authorize }}
+          NIGHT_MAX_TASKS: ${{ inputs.max_tasks }}
+          NIGHT_CUTOFF_AT: ${{ inputs.cutoff_at }}
+          NIGHT_TIMEZONE: ${{ inputs.timezone }}
+          NIGHT_AUTHORIZATION_OUTPUT: ${{ runner.temp }}/vento-night-documentation/authorization.json
+        run: node scripts/docs/night-documentation-authorization.mjs
+
+      - name: Verificar que FASE 1 no modificó el repositorio
+        shell: bash
+        run: |
+          git diff --exit-code
+          test -z "$(git status --porcelain=v1 --untracked-files=no)"
+
+      - name: Publicar evidencia de autorización
+        uses: actions/upload-artifact@v4
+        with:
+          name: vento-night-documentation-authorization-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/authorization.json
+          if-no-files-found: error
+          retention-days: 7
