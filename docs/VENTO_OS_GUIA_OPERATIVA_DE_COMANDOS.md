@@ -187,6 +187,8 @@ Después de validar el receipt, el coordinador sella VERIFIED y ejecuta el cierr
 
 **No ejecutes entrada directa de start/preverify/finish.** El coordinador es la única fachada mutante normal.
 
+**`docs:implementation:finish` existe únicamente como shim interno del lifecycle; no es una entrada normal para el operador.**
+
 ---
 
 ## 2.4.1 RESILIENCIA DEL LIFECYCLE Y GATES
@@ -214,6 +216,38 @@ La autoridad para estas reglas está en el código, los tests, los workflows y l
 | LC-015 | Un repair intenta acomodar su cambio reescribiendo el test contractual que habia detectado el defecto, o devuelve solo `node --test failed` sin el diagnostico concreto. | El test propietario se trata como contrato: primero se corrige la implementacion. Solo se modifica el test cuando cambia deliberadamente el contrato y la razon queda versionada. Los materializadores capturan y devuelven el nombre del paso y el diagnostico exacto del test antes de rollback. | El repair V5 conserva `chatgpt-work-starter.test.mjs`, modifica solo el test transversal agregado por el hardening y exige `docs:plan:test` completo antes de `READY_FOR_INFRA_PUBLISH: SI`. |
 | LC-016 | La documentacion de la plantilla compartida repite literalmente el token estructural de la ranura y crea una segunda ranura accidental; el generador deja de poder resolver una unica insercion. | La ranura estructural de trabajo debe existir exactamente una vez. El token reservado de la ranura no se cita literalmente dentro del texto comun y la cardinalidad se valida antes de los tests. | `chatgpt-work-starter.test.mjs` conserva la asercion de cardinalidad y el hardening transversal duplica esa proteccion antes de publicar. |
 | LC-017 | Un ejemplo negativo dentro de documentación operativa reproduce literalmente un identificador que el propio validador prohíbe y activa el guard aunque el texto pretendiera explicar un error histórico. | Los identificadores y nombres prohibidos se documentan por significado, patrón o descripción, nunca copiando el literal vetado. La guía candidata se valida con `validateOperationalGuideResilience` antes de declararse lista para publicar. | `task-branch-lifecycle.test.mjs` prueba el rechazo del literal prohibido y `docs:ops:publish` ejecuta el mismo validador sobre el archivo real. |
+| LC-018 | Se abre una `CORR-*` solo porque un archivo, migración, RPC, función, policy, test, componente, servicio o `implementation_unit_id` todavía no existe aunque el package aprobado exige crearlo. | Clasificar primero `DEFECTO_DEL_CONTRATO` vs `IMPLEMENTATION_WORK`. Si el contrato aprobado ya exige la capacidad y el artefacto falta porque debe construirse, se registra como `CREATE`/`MODIFY`/`REUSE` en el package gate y se materializa en `SHELL-CI-020`; no se abre corrección. `EXACT_PHYSICAL_IDENTITY` puede ser futura y planificada, no implica `ALREADY_IMPLEMENTED`. Solo procede `CORR-*` si el contrato aprobado mismo es incorrecto, contradictorio o requiere cambio semántico de scope/owner/routing/cardinalidad/gate. | El gate `GAP-PKG-019` en main usa targets `CREAR` futuros y reserva su materialización física para `SHELL-CI-020`; esta guía convierte esa clasificación en regla operativa permanente. |
+
+## Regla permanente: trabajo físico pendiente no es corrección
+
+**ID:** `IMPLEMENTATION-NO-FALSE-CORRECTION-V1`
+
+Antes de proponer cualquier `CORR-*`, el operador o agente debe responder:
+
+> **¿Lo que falta demuestra que el contrato aprobado está equivocado, o es trabajo físico que el package aprobado espera que nosotros creemos?**
+
+Si es trabajo físico pendiente dentro del scope aprobado:
+
+```text
+CREATE / MODIFY / REUSE / RETIRE
+-> package gate
+-> SHELL-CI-020
+-> implementación física
+-> NO CORRECTION
+```
+
+Aplican de forma explícita estas reglas:
+
+1. Un target `CREATE` **no tiene que existir** antes de quedar identificado en el package gate.
+2. `EXACT_PHYSICAL_IDENTITY` significa repo + ruta futura exacta + operación + símbolo/superficie cuando aplique; **no significa que el artefacto ya esté implementado**.
+3. La ausencia de migración, RPC, función, policy, test, componente, servicio, evidencia package-specific o `implementation_unit_id` que el package debe crear **no es por sí sola una contradicción**.
+4. Reutilizar una foundation compatible se expresa como `REUSE` / `ADOPTAR_SIN_MODIFICAR`; el delta restante sigue siendo implementación del package.
+5. Solo se abre `CORR-*` cuando el **contrato ya aprobado** debe cambiar o restaurarse por contradicción real, owner/routing/scope/cardinalidad/gate incorrecto, decisión aprobada imposible o expansión semántica fuera del scope aprobado.
+6. Nunca se usa una corrección como sustituto de trabajo que pertenece naturalmente a `SHELL-CI-020`.
+
+Esta regla debe preservarse en los iniciadores dinámicos y en cualquier automatización/agente que opere el lifecycle de packages.
+
+---
 
 ### Reglas operativas vinculantes
 
