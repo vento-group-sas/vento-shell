@@ -14,6 +14,7 @@ import {
     correctionIdFromHeadRef,
     correctionRecordRelativePath,
     correctionRegistrationBranchName,
+    correctionStatusAllowsEmptyExecutionDeclarations,
     loadValidatedCorrectionControl,
     nextCorrectionId,
     normalizeCorrectionId,
@@ -194,5 +195,24 @@ test('correction-cancel CLI ejecuta --help de forma portable', () => {
         source,
         /new URL\(import\.meta\.url\)\.pathname/u,
         'la detección CLI no debe usar pathname URL crudo en Windows',
+    );
+});
+
+
+test('PENDING_AUTHORIZATION y CANCELLED permiten declaraciones operativas vacías', () => {
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('PENDING_AUTHORIZATION'), true);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('CANCELLED'), true);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('AUTHORIZED'), false);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('IN_PROGRESS'), false);
+    assert.equal(correctionStatusAllowsEmptyExecutionDeclarations('VERIFIED'), false);
+
+    const source = fs.readFileSync('scripts/docs/correction-control.mjs', 'utf8');
+    assert.doesNotMatch(
+        source,
+        /record\.status !== 'PENDING_AUTHORIZATION' && record\.target_repositories\.length === 0/u,
+    );
+    assert.doesNotMatch(
+        source,
+        /record\.status !== 'PENDING_AUTHORIZATION' && record\.validation_commands\.length === 0/u,
     );
 });
