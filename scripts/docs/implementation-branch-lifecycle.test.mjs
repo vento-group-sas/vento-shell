@@ -8,6 +8,7 @@ import {
   assertInstanceCanFinish,
   assertInstanceCanStart,
   assertStartWorktree,
+  authorizedRecordMatchesPersistedMain,
   buildImplementationPrBody,
   classifyImplementationPath,
   implementationBranchName,
@@ -76,17 +77,53 @@ test('finish exige VERIFIED y evidence consolidada', () => {
   );
 });
 
-test('start solo admite el registro fisico AUTHORIZED como cambio local previo', () => {
+test('start admite ledger AUTHORIZED local y worktree limpio sujeto a persistencia remota exacta', () => {
   const record = 'docs/plan-canonico/modular/implementation-instances/SHELL-CON-001__GLOBAL.json';
   assert.equal(assertStartWorktree([record], record), true);
+  assert.equal(assertStartWorktree([], record), true);
   assert.throws(
     () => assertStartWorktree([record, 'package.json'], record),
-    /unico cambio local/u,
+    /solo admite worktree limpio/u,
   );
-  assert.throws(
-    () => assertStartWorktree([], record),
-    /unico cambio local/u,
+});
+
+test('start solo confia en AUTHORIZED persistido cuando el ledger remoto coincide exactamente', () => {
+  const instance = {
+    instance_id: 'SHELL-CON-001::GLOBAL',
+    task_id: 'SHELL-CON-001',
+    status: 'AUTHORIZED',
+    target_repositories: ['vento-group-sas/vento-shell'],
+    authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: 'x.ts', change: 'CREATE' }],
+    validation_commands: ['npm test'],
+    authorization: { decision: 'APPROVED' },
+    evidence: [],
+  };
+  const persisted = JSON.parse(JSON.stringify(instance));
+  assert.equal(authorizedRecordMatchesPersistedMain(instance, persisted), true);
+  persisted.validation_commands = ['npm run different'];
+  assert.equal(authorizedRecordMatchesPersistedMain(instance, persisted), false);
+  persisted.validation_commands = ['npm test'];
+  persisted.authorization.decision = 'REJECTED';
+  assert.equal(authorizedRecordMatchesPersistedMain(instance, persisted), false);
+});
+
+test('start valida AUTHORIZED persistido antes de crear o reanudar la rama fisica', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+  const start = source.indexOf('export function startImplementation');
+  const persisted = source.indexOf(
+    'const persistedAuthorization = authorizedRecordPersistedOnMain(root, recordPath, instance);',
+    start,
   );
+  const firstGuard = source.indexOf('assertStartWorktree(worktreePaths(root), recordPath);', persisted);
+  const branchMutation = source.indexOf('const branchMode = ensureBranchReadyForStart(root, branch);', firstGuard);
+  const secondGuard = source.indexOf('assertStartWorktree(worktreePaths(root), recordPath);', branchMutation);
+  const statusWrite = source.indexOf("writeInstanceStatus(root, id, 'IN_PROGRESS')", secondGuard);
+  assert.ok(start >= 0);
+  assert.ok(persisted > start);
+  assert.ok(firstGuard > persisted);
+  assert.ok(branchMutation > firstGuard);
+  assert.ok(secondGuard > branchMutation);
+  assert.ok(statusWrite > secondGuard);
 });
 
 test('finish crea commit con cambios y reanuda si el commit ya existe', () => {
