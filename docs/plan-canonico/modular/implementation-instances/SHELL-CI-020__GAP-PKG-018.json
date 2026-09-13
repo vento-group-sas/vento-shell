@@ -1,10 +1,130 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-018",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "AUTHORIZED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260829200745_auth_db_019_identity_links.sql",
+      "change": "EXECUTE_ONLY",
+      "scope": "Adopt and verify the already VERIFIED AUTH-DB-019 identity_access foundation without modifying or rewriting the historical migration."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/packages/GAP-PKG-018.sql",
+      "change": "CREATE",
+      "scope": "Create GAP-PKG-018 TP-DB-001 pgTAP adoption evidence for identity_access only; no schema, migration, RLS, grant, RPC, hosted Auth, VITAL or production mutation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/contract.test.ts",
+      "change": "CREATE",
+      "scope": "Create contractual evidence for the canonical GAP-PKG-018 identity source-of-truth and package boundaries."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/integration.test.ts",
+      "change": "CREATE",
+      "scope": "Create deterministic Auth-to-enterprise identity linkage and AUTH-DB-033 AccessContext compatibility evidence without modifying either foundation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/security.test.ts",
+      "change": "CREATE",
+      "scope": "Create fail-closed identity resolution, minimum-privilege and non-authoritative Auth metadata security evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/e2e.test.ts",
+      "change": "CREATE",
+      "scope": "Create controlled end-to-end identity resolution evidence using governed local or CI execution only; no production mutation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-018/fixtures.json",
+      "change": "CREATE",
+      "scope": "Create deterministic synthetic identity fixtures for worker, client and device linkage, including missing, ambiguous, inactive and conflicting mappings; never include real secrets or personal production data."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json",
+      "change": "MODIFY",
+      "scope": "Record only the explicit authorization, lifecycle state and consolidated evidence for SHELL-CI-020::GAP-PKG-018."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:advance as the normal physical lifecycle coordinator without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the governed implementation branch lifecycle without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the governed candidate repair stage without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate physical commit scope without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the governed clean local Supabase replay and pgTAP harness without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-test-command-gate.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the canonical repository regression facade through npm test without modifying the script."
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:db:test:clean",
+    "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-018.sql",
+    "node --test tests/packages/GAP-PKG-018/contract.test.ts",
+    "node --test tests/packages/GAP-PKG-018/integration.test.ts",
+    "node --test tests/packages/GAP-PKG-018/security.test.ts",
+    "node --test tests/packages/GAP-PKG-018/e2e.test.ts",
+    "npm test --silent"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-13T14:08:00-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO CI020 GAP-PKG-018",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-018 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO GAP-PKG-018",
+    "E5_GATE E5-GATE-008::GAP-PKG-018 PASS",
+    "FOUNDATION AUTH-DB-019::GLOBAL VERIFIED",
+    "DEPENDENCY AUTH-DB-033::GLOBAL VERIFIED",
+    "PHYSICAL_IDENTITY targets=7",
+    "IMPLEMENTATION_UNIT identity_access",
+    "ENV_PROFILE ENV-SUPABASE-LOCAL-CI-STAGING"
+  ],
+  "evidence": [],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }
