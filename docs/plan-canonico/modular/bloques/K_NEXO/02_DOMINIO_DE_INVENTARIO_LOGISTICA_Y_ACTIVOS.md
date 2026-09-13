@@ -26515,7 +26515,1331 @@ CODE-BASED IDENTIFICATION AND MOVEMENT MUST PRESERVE THESE INVARIANTS
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
 
-### [ ] NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+### ✅ NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
+**Tarea siguiente:** NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+**Tipo de tarea:** documental; definición canónica de representación autoritativa única para existencia suelta y contenido LPN, exclusividad contable, proyecciones derivadas, transiciones PACK/UNPACK, idempotencia, concurrencia, reconciliación y fronteras con movimiento bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una única regla contable y de inventario para impedir que una misma existencia física sea representada simultáneamente como saldo suelto ubicado directamente en un LOC y como contenido directo de un LPN.
+
+La tarea congela la exclusividad entre representación autoritativa y proyección derivada, preserva los contratos aprobados de contenido, ubicación, anidamiento y lifecycle LPN, y entrega a `NEXO-DOM-022` la invariante que deberá mantenerse cuando un LPN completo cambie de ubicación.
+
+---
+
+#### 2. Regla raíz
+
+Se fija:
+
+```text
+ONE PHYSICAL EXISTENCE
+→ EXACTLY ONE AUTHORITATIVE ACCOUNTING REPRESENTATION
+```
+
+Para existencia que puede estar empacada:
+
+```text
+DIRECT LOOSE REPRESENTATION
+XOR
+DIRECT LPN MEMBERSHIP
+```
+
+Nunca:
+
+```text
+DIRECT LOOSE REPRESENTATION
++
+DIRECT LPN MEMBERSHIP
+=
+TWO AUTHORITATIVE BALANCES
+```
+
+Una proyección agregada puede mostrar la misma existencia dentro del total físico de un LOC o sede, pero esa proyección no constituye una segunda representación autoritativa.
+
+---
+
+#### 3. Alcance
+
+Esta tarea define:
+
+1. sujeto de exclusividad;
+2. representación suelta directa;
+3. membresía LPN directa;
+4. proyección agregada por LOC y sede;
+5. reglas de PACK;
+6. reglas de UNPACK;
+7. transferencia entre LPN sin saldo suelto ficticio;
+8. anidamiento sin conteo repetido;
+9. tránsito y ubicación efectiva;
+10. reservas, condición y disponibilidad sin duplicar existencia;
+11. conteos y reconciliación;
+12. costo y valoración sin duplicar valor;
+13. idempotencia;
+14. concurrencia;
+15. operación offline y respuestas tardías;
+16. auditoría;
+17. reconciliación del modelo físico parcial existente;
+18. handoff exacto hacia `NEXO-DOM-022`.
+
+No materializa esquema, SQL, RPC, trigger, RLS, UI, migración, backfill ni movimiento real.
+
+---
+
+#### 4. Entradas canónicas preservadas
+
+La tarea consume sin redefinir:
+
+- las siete clases primarias de control aprobadas en `NEXO-DOM-001`;
+- LPN como identidad logística y no como existencia adicional;
+- lifecycle LPN aprobado en `NEXO-DOM-003`;
+- contenido, PACK y UNPACK aprobados en `NEXO-DOM-004`;
+- división, unión y transferencia de contenido aprobadas en `NEXO-DOM-005`;
+- LPN anidados y propiedad directa del contenido aprobados en `NEXO-DOM-006`;
+- relación sede → LOC → LPN → contenido aprobada en `NEXO-DOM-007`;
+- identidad física del contenedor separada del LPN aprobada en `NEXO-DOM-019`;
+- continuidad, rotación y cierre de LPN aprobados en `NEXO-DOM-020`;
+- ledger y proyecciones reconciliables;
+- movimientos idempotentes o compensables;
+- autorización server-side para toda mutación con efecto real.
+
+---
+
+#### 5. LPN no crea existencia
+
+Se mantiene:
+
+```text
+LPN != STOCK
+LPN != QUANTITY
+LPN != INVENTORY BALANCE
+```
+
+Crear un LPN produce una identidad logística.
+
+Agregar contenido a un LPN cambia la representación o membresía de una existencia ya existente; no crea una segunda existencia.
+
+Cerrar, cancelar, rotar o reetiquetar un LPN tampoco crea ni elimina saldo por sí solo.
+
+---
+
+#### 6. Sujeto de exclusividad
+
+La exclusividad se evalúa sobre la unidad física o slice canónico que el dominio considere indivisible para contabilización.
+
+Para cantidad, el sujeto conserva las dimensiones aplicables, entre ellas:
+
+- producto o identidad maestra;
+- unidad canónica de stock;
+- lote cuando aplique;
+- vencimiento cuando aplique;
+- condición cuando aplique;
+- presentación cuando forme parte de la identidad de existencia;
+- demás dimensiones canónicas necesarias para impedir mezcla indebida.
+
+Para objetos individualizados, el sujeto es la identidad física exacta.
+
+No se deduplica solo por nombre de producto.
+
+---
+
+#### 7. Representación suelta directa
+
+`DIRECT_LOOSE_REPRESENTATION` significa que la existencia está controlada directamente fuera de un LPN.
+
+Puede conservar:
+
+- sede;
+- LOC;
+- posición opcional;
+- cantidad o identidad;
+- lote;
+- vencimiento;
+- condición;
+- reserva;
+- demás dimensiones aplicables.
+
+La representación suelta es autoritativa únicamente mientras la misma existencia no tenga membresía LPN directa vigente.
+
+---
+
+#### 8. Membresía LPN directa
+
+`DIRECT_LPN_MEMBERSHIP` significa que la existencia está contenida directamente por exactamente un LPN propietario vigente.
+
+Se mantiene:
+
+```text
+DIRECT OWNER LPN COUNT <= 1
+```
+
+La membresía conserva las dimensiones necesarias del contenido y hereda su ubicación efectiva desde el LPN propietario conforme a `NEXO-DOM-007`.
+
+No conserva simultáneamente una colocación autoritativa suelta.
+
+---
+
+#### 9. Exclusividad de representación
+
+Para cualquier existencia controlada:
+
+```text
+AUTHORITATIVE_LOOSE_COUNT
++
+AUTHORITATIVE_DIRECT_LPN_MEMBERSHIP_COUNT
+=
+1
+```
+
+cuando la existencia esté físicamente presente y reconciliada.
+
+Durante una transición en curso, la implementación futura deberá representar el cambio mediante un hecho o transacción correlacionada, no mediante dos saldos vigentes.
+
+---
+
+#### 10. Proyección derivada no es saldo adicional
+
+Una vista o proyección puede responder:
+
+- total físico por LOC;
+- total físico por sede;
+- total suelto;
+- total contenido;
+- total por LPN;
+- disponibilidad;
+- tránsito.
+
+La proyección no se convierte en fuente mutable independiente.
+
+Se fija:
+
+```text
+DERIVED PROJECTION
+!=
+SECOND AUTHORITATIVE BALANCE
+```
+
+---
+
+#### 11. Total físico por LOC
+
+Cuando un LPN está localizado en un LOC, el total físico del LOC puede incluir su contenido como información derivada.
+
+La forma conceptual es:
+
+```text
+TOTAL_PHYSICAL_AT_LOC
+=
+DIRECT_LOOSE_AT_LOC
++
+DIRECT_CONTENT_OF_ROOT_LPNS_EFFECTIVELY_AT_LOC
+```
+
+con deduplicación de descendientes y sin sumar nuevamente rollups de parent LPN.
+
+El resultado es una proyección de lectura, no una autorización para crear filas sueltas adicionales.
+
+---
+
+#### 12. Total físico por sede
+
+El total físico por sede deriva de las representaciones autoritativas vigentes y de la ubicación efectiva.
+
+No se obtiene sumando dos agregados que ya contengan la misma existencia.
+
+Debe poder explicarse qué parte está:
+
+- suelta;
+- dentro de LPN;
+- en tránsito;
+- no ubicada temporalmente;
+- reservada;
+- bloqueada por condición.
+
+---
+
+#### 13. Totales contables y físicos
+
+La misma existencia puede aparecer en diferentes vistas analíticas sin duplicarse económicamente.
+
+Por ejemplo:
+
+```text
+SITE TOTAL VIEW
+LOC TOTAL VIEW
+LPN CONTENT VIEW
+```
+
+pueden referirse al mismo sujeto.
+
+La cardinalidad de vistas no altera la cardinalidad de existencia.
+
+---
+
+#### 14. Regla de PACK
+
+`PACK` transforma representación; no crea cantidad.
+
+La invariante es:
+
+```text
+LOOSE DIRECT REPRESENTATION ENDS
++
+DIRECT LPN MEMBERSHIP STARTS
+=
+SAME PHYSICAL EXISTENCE
+```
+
+Para cantidad `q`:
+
+```text
+LOOSE(q) -> LPN(q)
+NET ENTERPRISE EXISTENCE DELTA = 0
+```
+
+El movimiento de representación debe conservar la misma cantidad canónica después de conversiones autorizadas.
+
+---
+
+#### 15. PACK parcial
+
+Empacar parte de una cantidad divide el slice de forma controlada.
+
+Para `q_total = q_pack + q_remaining`:
+
+```text
+BEFORE
+LOOSE(q_total)
+
+AFTER
+LOOSE(q_remaining)
++
+LPN(q_pack)
+```
+
+La suma física permanece `q_total`.
+
+La parte empacada y la parte residual quedan distinguibles por sus representaciones autoritativas.
+
+---
+
+#### 16. PACK completo
+
+Cuando toda la existencia suelta aplicable se empaca:
+
+```text
+LOOSE(q) -> 0
+LPN(q) -> q
+```
+
+No puede quedar una fila, proyección o reserva interpretada como segundo saldo suelto autoritativo por la misma cantidad.
+
+---
+
+#### 17. Precondición espacial de PACK
+
+PACK no oculta un traslado.
+
+Contenido fuente y LPN destino deben ser físicamente compatibles al confirmar la operación ordinaria.
+
+Si requieren ubicaciones diferentes, el movimiento propietario debe existir o la operación falla cerrada.
+
+Esta tarea no define la transacción física de traslado.
+
+---
+
+#### 18. Regla de UNPACK
+
+`UNPACK` transforma en sentido inverso:
+
+```text
+DIRECT LPN MEMBERSHIP ENDS
++
+LOOSE DIRECT REPRESENTATION STARTS
+AT THE LPN EFFECTIVE PLACEMENT
+```
+
+Para cantidad `q`:
+
+```text
+LPN(q) -> LOOSE(q)
+NET ENTERPRISE EXISTENCE DELTA = 0
+```
+
+Un destino físico diferente exige además el movimiento correspondiente.
+
+---
+
+#### 19. UNPACK parcial
+
+Cuando solo se desempaca parte del contenido:
+
+```text
+BEFORE
+LPN(q_total)
+
+AFTER
+LPN(q_remaining)
++
+LOOSE(q_unpack)
+```
+
+Se conserva:
+
+```text
+q_total = q_remaining + q_unpack
+```
+
+No se crea una tercera copia por conservar historia.
+
+---
+
+#### 20. Transferencia entre LPN
+
+Transferir contenido de un LPN a otro no requiere un saldo suelto intermedio ficticio.
+
+La invariante es:
+
+```text
+SOURCE DIRECT MEMBERSHIP ENDS
++
+TARGET DIRECT MEMBERSHIP STARTS
+=
+SAME PHYSICAL EXISTENCE
+```
+
+Si la transferencia implica traslado físico adicional, debe correlacionarse con el movimiento aplicable.
+
+---
+
+#### 21. División de contenido
+
+Dividir contenido no duplica existencia.
+
+Cada fragmento resultante conserva una representación autoritativa propia y las cantidades resultantes suman exactamente la cantidad fuente, dentro de tolerancias canónicas de medición.
+
+La historia del origen no se cuenta como saldo vigente.
+
+---
+
+#### 22. Unión de contenido
+
+Unir slices compatibles crea una representación resultante reconciliada.
+
+Las representaciones fuente dejan de ser autoritativas cuando la unión se confirma.
+
+La suma histórica de fuentes y resultado no puede utilizarse como total vigente.
+
+---
+
+#### 23. LPN anidados
+
+Un LPN hijo conserva su propio contenido directo.
+
+El parent puede mostrar un rollup de descendientes, pero no adquiere una segunda membresía directa sobre el mismo contenido.
+
+Se fija:
+
+```text
+PARENT AGGREGATE CONTENT
+=
+DERIVED ROLLUP
+```
+
+y nunca:
+
+```text
+CHILD DIRECT CONTENT
++
+SAME CONTENT AS PARENT DIRECT CONTENT
+```
+
+---
+
+#### 24. Propietario directo del contenido
+
+Para cada contenido contenido:
+
+```text
+CONTENT
+→ EXACTLY ONE DIRECT OWNER LPN
+→ OPTIONAL ANCESTOR CHAIN
+```
+
+Los ancestros aportan contexto y ubicación efectiva.
+
+No multiplican saldo ni membresía.
+
+---
+
+#### 25. Movimiento de un LPN
+
+Mover un LPN no desempaca su contenido.
+
+Por tanto, el movimiento de ubicación del LPN no transforma contenido contenido en saldo suelto.
+
+La representación sigue siendo:
+
+```text
+DIRECT LPN MEMBERSHIP
+```
+
+mientras cambia su ubicación efectiva a través del propietario.
+
+La atomicidad física completa de ese movimiento pertenece a `NEXO-DOM-022`.
+
+---
+
+#### 26. Tránsito
+
+Durante tránsito del LPN:
+
+- el contenido permanece dentro del LPN;
+- no vuelve a saldo suelto en origen;
+- no aparece como saldo suelto confirmado en destino;
+- la ubicación efectiva sigue el contrato de tránsito;
+- el contenido no se duplica para mostrar origen y destino simultáneamente.
+
+---
+
+#### 27. Recepción
+
+Recibir un LPN no implica UNPACK.
+
+La recepción puede cambiar estado o ubicación del LPN manteniendo su contenido contenido.
+
+Solo una operación de UNPACK autorizada cambia la representación del contenido a suelta.
+
+---
+
+#### 28. Despacho
+
+Despachar un LPN no convierte su contenido en una salida individual suelta.
+
+La salida física y el tránsito deben conservar el LPN como unidad rastreable cuando ese sea el contrato del proceso.
+
+El contenido continúa representado una sola vez.
+
+---
+
+#### 29. Reserva
+
+Reservar existencia no crea una segunda cantidad.
+
+Se fija:
+
+```text
+RESERVED QUANTITY
+IS A COMPONENT OR STATE OF THE SAME EXISTENCE
+```
+
+Una reserva debe apuntar a la representación autoritativa aplicable o a un scope que pueda resolverse sin duplicar el sujeto.
+
+---
+
+#### 30. Disponibilidad
+
+Se mantiene:
+
+```text
+PHYSICAL QUANTITY != AVAILABLE QUANTITY
+```
+
+La disponibilidad puede descontar reservas, cuarentena, daño, vencimiento, tránsito u otras restricciones.
+
+Ninguna de esas dimensiones crea otra existencia.
+
+---
+
+#### 31. Condición
+
+Cambiar condición no mueve automáticamente una existencia entre representación suelta y LPN.
+
+Un contenido dañado puede seguir dentro del LPN.
+
+Una existencia suelta en cuarentena puede seguir suelta.
+
+Condición y contención son dimensiones distintas.
+
+---
+
+#### 32. Lote y vencimiento
+
+Lote y vencimiento viajan con el contenido cuando la política los exige.
+
+PACK o UNPACK no pueden perderlos ni usar su ausencia para fusionar slices incompatibles.
+
+Dos cantidades con dimensiones incompatibles no se unen solo porque compartan `product_id`.
+
+---
+
+#### 33. Serial e identidad exacta
+
+Una identidad serializada no puede existir simultáneamente:
+
+- como objeto suelto autoritativo;
+- como miembro directo de un LPN;
+- como miembro directo de otro LPN.
+
+La exclusividad se evalúa por identidad exacta.
+
+---
+
+#### 34. Reutilizables por cantidad
+
+Para `REUSABLE_QUANTITY`, la exclusividad se evalúa por cantidad y dimensiones de condición aplicables.
+
+Empacar una cantidad reutilizable no crea unidades adicionales ni cambia su obligación de retorno.
+
+---
+
+#### 35. Contenedores físicos como contenido
+
+Un `PHYSICAL_CONTAINER` individual puede ser transportado o, si el contrato lo permite, formar parte del contenido de una unidad logística.
+
+Su identidad física sigue siendo distinta del LPN.
+
+El hecho de que un contenedor esté asociado o contenido no crea otra identidad patrimonial.
+
+---
+
+#### 36. Kits
+
+Una instancia de kit no constituye saldo adicional a la suma de sus miembros cuando el contrato de kit define que los componentes conservan sus propias existencias.
+
+Si el kit se empaca, su identidad de composición y la representación física de sus miembros deben conservar la regla de no duplicación aprobada.
+
+Esta tarea no redefine composición de kit.
+
+---
+
+#### 37. Conteo físico
+
+El conteo observa.
+
+Puede contar por separado:
+
+- stock suelto;
+- contenido LPN;
+- LPN;
+- contenedores;
+- activos.
+
+La consolidación de resultados debe respetar la identidad de cada sujeto y no sumar dos observaciones del mismo sujeto como dos existencias.
+
+---
+
+#### 38. Conteo de un LOC
+
+Un conteo de LOC debe poder distinguir:
+
+```text
+LOOSE DIRECT OBSERVATION
+vs
+LPN OBSERVATION
+vs
+LPN CONTENT OBSERVATION
+```
+
+Si el total del LOC se calcula desde ambas clases, el contenido LPN se incorpora una sola vez.
+
+Contar el LPN y además cada línea de contenido no convierte la identidad LPN en una cantidad adicional de producto.
+
+---
+
+#### 39. Diferencia de conteo
+
+Una diferencia de conteo no se corrige creando una copia suelta de contenido LPN.
+
+Primero se investiga si la discrepancia corresponde a:
+
+- ubicación;
+- membresía;
+- cantidad;
+- identidad;
+- condición;
+- movimiento no confirmado;
+- error de captura.
+
+El ajuste autorizado utiliza el movimiento o compensación propietaria.
+
+---
+
+#### 40. Ledger
+
+El ledger autoritativo debe poder explicar cada cambio de cantidad o identidad.
+
+Una mutación de proyección sin hecho correlacionado no crea verdad.
+
+Se mantiene:
+
+```text
+PROJECTION UPDATE
+WITHOUT AUTHORITATIVE FACT
+=
+INVALID STATE
+```
+
+---
+
+#### 41. Proyecciones write-through
+
+Si una implementación futura mantiene proyecciones materializadas, toda actualización debe derivar de la misma operación autoritativa.
+
+No se permite que PACK:
+
+1. inserte contenido LPN;
+2. y deje intacto un saldo suelto autoritativo de la misma cantidad;
+
+ni que UNPACK haga lo inverso.
+
+---
+
+#### 42. Proyección aggregate-only
+
+Una tabla o vista podrá contener un total que incluya existencia suelta y contenida únicamente si su semántica es explícitamente agregada y derivada.
+
+Ese total:
+
+- no se interpreta como stock suelto;
+- no se vuelve a sumar con contenido LPN;
+- no se usa como segunda fuente de movimientos;
+- debe poder reconciliarse con las representaciones autoritativas.
+
+---
+
+#### 43. Prohibición de semántica ambigua
+
+Una superficie denominada genéricamente `stock` no basta para decidir si representa:
+
+- suelto directo;
+- total físico;
+- disponible;
+- proyectado;
+- contenido;
+- valor contable.
+
+La materialización futura debe declarar su semántica.
+
+Ante ambigüedad, se falla cerrada y se reconcilia antes de habilitar escritura.
+
+---
+
+#### 44. Costo por unidad en contenido LPN
+
+Registrar costo como metadato de una línea LPN no crea una segunda valorización de la existencia.
+
+El valor económico consolidado se calcula una sola vez por existencia autoritativa.
+
+No se suma valor suelto más valor LPN cuando ambos representan la misma cantidad histórica o proyectada.
+
+---
+
+#### 45. Inventario por sitio
+
+Una proyección por sitio puede contener existencia suelta y contenida.
+
+Debe estar definida como agregado derivado o como fuente autoritativa con reglas que impidan volver a sumar representaciones detalladas.
+
+La implementación física elegirá una sola arquitectura coherente.
+
+Esta tarea no prescribe una tabla concreta.
+
+---
+
+#### 46. Reintentos
+
+Toda operación futura de PACK, UNPACK o transferencia deberá ser idempotente.
+
+Repetir la misma intención no puede:
+
+- volver a restar saldo suelto;
+- volver a insertar contenido;
+- duplicar membresía;
+- duplicar movimiento;
+- duplicar valor;
+- duplicar auditoría efectiva.
+
+---
+
+#### 47. Clave de idempotencia
+
+La materialización futura debe conservar una identidad de operación o equivalente reproducible que permita reconocer un reintento.
+
+El mismo comando lógico produce el mismo resultado efectivo.
+
+Un comando diferente no reutiliza accidentalmente la identidad de otro.
+
+---
+
+#### 48. Concurrencia
+
+PACK y UNPACK deberán validar el estado esperado antes de producir efectos.
+
+Como mínimo deberá poder detectarse:
+
+- cantidad esperada;
+- representación esperada;
+- LPN esperado;
+- revisión esperada;
+- ubicación compatible;
+- estado lifecycle permitido.
+
+Un conflicto concurrente falla cerrado o exige reconciliación.
+
+---
+
+#### 49. Prohibición de last-write-wins silencioso
+
+No se admite que dos operaciones concurrentes concluyan ambas desde la misma cantidad fuente.
+
+Ejemplo prohibido:
+
+```text
+PACK A reads LOOSE 10
+PACK B reads LOOSE 10
+A packs 10
+B packs 10
+RESULT = 20 contained from 10 physical
+```
+
+La implementación deberá impedirlo mediante el mecanismo de concurrencia propietario.
+
+---
+
+#### 50. Operación offline
+
+Una intención offline no reserva por sí sola una cantidad en servidor.
+
+Al sincronizar debe revalidarse:
+
+- representación actual;
+- cantidad actual;
+- LPN;
+- ubicación;
+- lifecycle;
+- revisión;
+- autorización.
+
+Si la precondición cambió, la operación produce conflicto explícito y no una segunda copia.
+
+---
+
+#### 51. Respuesta tardía
+
+Un timeout no prueba que PACK o UNPACK haya fallado.
+
+Antes de reintentar, el consumidor debe reconciliar por identidad de operación y estado efectivo.
+
+La respuesta tardía no puede producir una segunda aplicación.
+
+---
+
+#### 52. Fallo parcial
+
+Un fallo que pudiera haber aplicado solo una parte de la transición debe quedar detectable.
+
+El sistema futuro deberá:
+
+- impedir publicación de un estado definitivamente duplicado;
+- conservar evidencia de la operación;
+- reconciliar antes de nuevas mutaciones incompatibles;
+- compensar mediante el mecanismo propietario cuando corresponda.
+
+Esta tarea no prescribe la tecnología transaccional.
+
+---
+
+#### 53. Estado de reconciliación
+
+Cuando no puede demostrarse la exclusividad:
+
+```text
+UNKNOWN REPRESENTATION
+→ BLOCK MUTATION
+→ RECONCILE
+```
+
+No se elige arbitrariamente entre saldo suelto y contenido LPN.
+
+No se elimina una representación solo para hacer cuadrar cifras sin evidencia.
+
+---
+
+#### 54. Migración y adopción futura
+
+La adopción de LPN sobre stock existente debe ser explícita.
+
+No se permite:
+
+1. crear líneas LPN para cantidades ya contabilizadas;
+2. conservar esas cantidades simultáneamente como sueltas autoritativas;
+3. declarar éxito porque los totales generales siguen pareciendo correctos.
+
+Cada adopción debe demostrar transición de representación y paridad antes y después.
+
+---
+
+#### 55. Regla de paridad
+
+Para una transición legítima:
+
+```text
+ENTERPRISE PHYSICAL EXISTENCE BEFORE
+=
+ENTERPRISE PHYSICAL EXISTENCE AFTER
+```
+
+excepto cuando el mismo hecho empresarial incluya una entrada, salida, consumo, producción, merma o ajuste autorizado distinto de PACK/UNPACK.
+
+PACK y UNPACK puros tienen delta neto cero.
+
+---
+
+#### 56. Paridad por dimensión
+
+La paridad deberá comprobar las dimensiones aplicables.
+
+No basta comparar un total bruto de producto si la transición perdió:
+
+- lote;
+- vencimiento;
+- condición;
+- serial;
+- unidad;
+- ubicación efectiva;
+- identidad propietaria.
+
+---
+
+#### 57. Auditoría mínima
+
+Toda futura transición entre suelto y LPN deberá poder reconstruir:
+
+- actor;
+- sujeto;
+- cantidad o identidad;
+- unidad canónica;
+- dimensiones de existencia;
+- representación anterior;
+- representación posterior;
+- LPN;
+- sede y ubicación efectiva;
+- operación causal;
+- timestamp efectivo;
+- idempotencia;
+- revisión;
+- resultado;
+- conflicto o compensación cuando exista.
+
+---
+
+#### 58. Autorización
+
+Lectura de un LPN, posesión de un dispositivo o acceso a una pantalla no concede autoridad para transformar representación.
+
+La acción futura debe validar en servidor:
+
+- actor efectivo;
+- contexto;
+- permiso o capacidad;
+- alcance territorial;
+- operación solicitada.
+
+La autorización no se deriva del cliente.
+
+---
+
+#### 59. AS-IS remoto observado
+
+El estado remoto verificable de `vento-os-dev` presenta:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `inventory_stock_by_location` | 218 |
+| `inventory_lpn_items` | 0 |
+| `inventory_lpns` | 0 |
+| `inventory_movements` | 803 |
+
+Por tanto, no existe doble contabilización LPN observable en las filas actuales porque no existen LPN ni líneas de contenido observadas.
+
+Esto no demuestra que el modelo esté protegido para adopción futura.
+
+---
+
+#### 60. Estructura física parcial observada
+
+`inventory_stock_by_location` conserva:
+
+```text
+PRIMARY KEY (location_id, product_id)
+current_qty
+```
+
+`inventory_lpn_items` conserva, entre otros:
+
+```text
+id
+lpn_id
+product_id
+quantity
+unit
+lot_number
+expiry_date
+cost_per_unit
+```
+
+No existe constraint observado que exprese la exclusividad entre saldo suelto y contenido LPN.
+
+La ausencia de esa protección constituye brecha física, no permiso para inferir una solución SQL dentro de esta tarea.
+
+---
+
+#### 61. Ledger físico observado
+
+`inventory_movements` existe y contiene filas observadas.
+
+En las columnas inspeccionadas no existe una identidad LPN directa.
+
+Múltiples funciones actuales referencian `inventory_stock_by_location`, mientras no se observó en la inspección remota una función que referencie `inventory_lpn_items`.
+
+Esto confirma una adopción LPN todavía parcial.
+
+---
+
+#### 62. Consumidores de aplicación observados
+
+En `vento-nexo` se observaron múltiples consumidores de `inventory_stock_by_location`, entre ellos superficies de:
+
+- ajuste;
+- traslados;
+- retiro;
+- stock;
+- entradas;
+- conteo inicial;
+- LOC;
+- remisiones.
+
+No se localizó consumidor de aplicación para `inventory_lpn_items` en la búsqueda remota realizada.
+
+La aplicación actual no demuestra una transición operativa suelto ↔ LPN.
+
+---
+
+#### 63. Clasificación AS-IS
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Razones:
+
+- existen ledger, LOC y proyecciones de stock reutilizables;
+- existe infraestructura LPN parcial;
+- no existe adopción funcional de contenido LPN;
+- no existe exclusividad física expresada entre ambas representaciones;
+- los consumidores actuales dependen ampliamente de `inventory_stock_by_location`;
+- una implementación futura deberá preservar compatibilidad o migrar consumidores de forma gobernada.
+
+---
+
+#### 64. Regla de no reinterpretación silenciosa
+
+No se autoriza declarar que las 218 filas actuales son una nueva semántica física sin migración y evidencia.
+
+Tampoco se autoriza declarar que `inventory_stock_by_location` será necesariamente saldo suelto final o agregado final únicamente por su nombre actual.
+
+La implementación posterior debe elegir y documentar una arquitectura que satisfaga este contrato.
+
+---
+
+#### 65. Arquitecturas físicas compatibles
+
+Este contrato admite más de una materialización si preserva invariantes.
+
+Ejemplos conceptuales compatibles:
+
+1. saldo suelto autoritativo separado de membresía LPN y agregados derivados;
+2. ledger autoritativo único con proyecciones diferenciadas para suelto y contenido;
+3. otra forma equivalente que demuestre exclusividad, paridad, idempotencia y reconciliación.
+
+La tarea no selecciona tecnología ni tablas finales.
+
+---
+
+#### 66. Arquitecturas incompatibles
+
+Son incompatibles:
+
+- dos tablas mutables independientes cuyos totales se suman sin deduplicación;
+- PACK que solo inserta `inventory_lpn_items`;
+- UNPACK que solo incrementa stock suelto;
+- parent LPN que materializa como propio todo el contenido child además de conservar el child;
+- vistas agregadas usadas de nuevo como fuente de saldo;
+- movimientos que actualizan una proyección sin hecho autoritativo;
+- reintentos capaces de duplicar cantidad.
+
+---
+
+#### 67. Handoff hacia NEXO-DOM-022
+
+`NEXO-DOM-022` recibe estas invariantes cerradas:
+
+```text
+CONTENT INSIDE LPN
+=
+ONE AUTHORITATIVE LPN MEMBERSHIP
+
+LPN MOVEMENT
+!=
+UNPACK
+
+ROOT LPN PLACEMENT CHANGE
+→
+CONTENT EFFECTIVE PLACEMENT CHANGES
+
+NET CONTENT QUANTITY DELTA
+=
+0
+```
+
+La siguiente tarea deberá definir cómo mover el LPN y todo su contenido atómicamente sin crear saldo suelto en origen, saldo suelto en destino ni movimientos duplicados por cada proyección derivada.
+
+---
+
+#### 68. Fronteras con tareas posteriores
+
+Esta tarea no absorbe:
+
+- atomicidad del movimiento completo de LPN y contenido, propiedad de `NEXO-DOM-022`;
+- trazabilidad detallada de lote, serial, vencimiento y condición dentro del LPN, propiedad de `NEXO-DOM-023`;
+- capacidad, peso, volumen y compatibilidad, propiedad de `NEXO-DOM-024`;
+- implementación física, propiedad de paquetes e instancias autorizadas posteriores.
+
+Las fronteras permanecen explícitas.
+
+---
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+Justificación: la prohibición de doble contabilización entre existencia suelta y contenido LPN ya está protegida de forma explícita por requisitos vigentes. Esta tarea especializa el contrato documental y sus invariantes sin cambiar prioridad, modalidad, propietario, paquete, estado ni relación de esos requisitos.
+
+---
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro 04A, se reutiliza:
+
+- `TREQ-NEXO-004`, para lifecycle LPN ejecutable sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, incluyendo la prohibición explícita de contabilizar una cantidad a la vez como stock suelto y contenido LPN;
+- `TREQ-NEXO-016`, para separación logística entre LPN, contenedores, remisiones, viajes y custodia;
+- `TREQ-NEXO-046`, para separación entre contenedor físico, LPN y contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y prohibición de duplicar saldo, instancia, kit, contenedor, contenido LPN o valor.
+
+Esta sección documenta trazabilidad de cobertura y no representa una actualización del registro.
+
+---
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al checkout, normalización y build canónico corresponden al ciclo local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron scripts sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, owner, topología `DEFINE_ONCE`, contrato de entrega, políticas de tarea, 04A NEXO, tareas LPN aprobadas, auditoría LPN, esquema remoto, conteos remotos y consumidores de `vento-nexo`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó PACK, UNPACK, transferencia, traslado o conteo real. |
+| FÍSICA | NOT_APPLICABLE | La tarea no autoriza cambios de código, Supabase, datos ni aplicaciones. |
+
+---
+
+#### 72. Criterios de aceptación
+
+- [x] Se fija una sola representación autoritativa por existencia.
+- [x] Se separa saldo suelto directo de membresía LPN directa.
+- [x] Se define la proyección agregada como derivada.
+- [x] Se impide que LPN cree existencia adicional.
+- [x] Se define PACK con delta neto cero.
+- [x] Se define PACK parcial y completo.
+- [x] Se define UNPACK con delta neto cero.
+- [x] Se define UNPACK parcial.
+- [x] Se prohíbe saldo suelto intermedio ficticio en transferencia entre LPN.
+- [x] Se preserva propiedad directa del contenido en LPN anidados.
+- [x] Se prohíbe contar rollup del parent como nueva membresía.
+- [x] Se preserva contenido durante movimiento de LPN.
+- [x] Se preserva contenido durante tránsito, recepción y despacho.
+- [x] Se separan reserva, disponibilidad y condición de existencia.
+- [x] Se preservan lote, vencimiento y serial como dimensiones.
+- [x] Se cubren reutilizables, contenedores y kits sin duplicar identidad.
+- [x] Se define conteo sin duplicación.
+- [x] Se define ledger y proyecciones.
+- [x] Se impide valor económico duplicado.
+- [x] Se exige idempotencia.
+- [x] Se exige control de concurrencia.
+- [x] Se cubre offline y respuesta tardía.
+- [x] Se cubre fallo parcial y reconciliación.
+- [x] Se define paridad antes/después.
+- [x] Se exige auditoría y autorización.
+- [x] Se registra AS-IS remoto sin reinterpretarlo.
+- [x] Se clasifica la capacidad `REUSE_OR_REFACTOR`.
+- [x] Se conserva cero cambios de TREQ.
+- [x] Se conserva `DEFINE_ONCE`.
+- [x] No se autoriza cambio físico.
+- [x] Se entrega handoff exacto a `NEXO-DOM-022`.
+
+---
+
+#### 73. Límites
+
+Esta tarea no:
+
+- crea tablas;
+- crea columnas;
+- crea constraints;
+- crea triggers;
+- crea funciones;
+- modifica RPC;
+- modifica RLS;
+- modifica grants;
+- modifica tipos TypeScript;
+- crea migraciones;
+- ejecuta backfill;
+- modifica filas remotas;
+- crea LPN;
+- crea contenido LPN;
+- mueve inventario;
+- modifica `inventory_stock_by_location`;
+- modifica `inventory_lpn_items`;
+- modifica `inventory_movements`;
+- modifica `vento-nexo`;
+- cambia consumidores existentes;
+- selecciona una arquitectura SQL final;
+- define movimiento atómico completo de LPN;
+- redefine lote, serial, vencimiento o condición;
+- redefine capacidad o compatibilidad;
+- crea eventos empresariales nuevos;
+- crea o modifica requisitos de prueba;
+- modifica el registro 04A;
+- crea instancia física propia.
+
+---
+
+#### 74. Riesgos controlados
+
+| Riesgo | Control documental |
+| --- | --- |
+| insertar contenido y dejar saldo suelto | exclusividad autoritativa |
+| desempacar e incrementar sin retirar membresía | transición inversa obligatoria |
+| reintento duplica PACK | idempotencia |
+| dos PACK consumen la misma cantidad | concurrencia fail-closed |
+| child y parent cuentan el mismo contenido | direct owner único + rollup derivado |
+| mover LPN crea stock en destino | movimiento conserva membresía |
+| tránsito aparece en origen y destino | ubicación efectiva única |
+| total por LOC vuelve a sumarse con LPN | proyección agregada no autoritativa |
+| costo de línea LPN duplica valorización | valor por existencia única |
+| adopción LPN duplica stock legacy | paridad y migración gobernada |
+| nombre de tabla se interpreta como semántica final | prohibición de reinterpretación silenciosa |
+| fallo parcial deja estado ambiguo | bloqueo y reconciliación |
+
+---
+
+#### 75. Pendientes con propietario existente
+
+| Pendiente | Propietario | Condición de salida |
+| --- | --- | --- |
+| movimiento atómico de LPN y contenido | `NEXO-DOM-022` | definir transición física completa sin duplicación |
+| trazabilidad interna de lote, serial, vencimiento y condición | `NEXO-DOM-023` | preservar dimensiones dentro de LPN |
+| capacidad, peso, volumen y compatibilidad | `NEXO-DOM-024` | validar composición física antes de operaciones incompatibles |
+| materialización de modelo y protección física | packages e instancias autorizadas posteriores | implementar y validar el contrato sin invadir esta tarea documental |
+| migración de consumidores legacy | package propietario autorizado | demostrar paridad, compatibilidad y rollback antes de adopción |
+
+No se crea un owner nuevo.
+
+---
+
+#### 76. Consistencia del minibloque
+
+La secuencia queda:
+
+```text
+NEXO-DOM-020
+define continuidad, rotación y cierre de la identidad LPN
+        |
+        v
+NEXO-DOM-021
+congela una sola representación autoritativa de existencia
+        |
+        v
+NEXO-DOM-022
+mueve el LPN y todo su contenido atómicamente
+        |
+        v
+NEXO-DOM-023
+preserva lote, serial, vencimiento y condición
+        |
+        v
+NEXO-DOM-024
+aplica capacidad, peso, volumen y compatibilidad
+```
+
+Cada tarea conserva su frontera.
+
+---
+
+#### 77. Invariantes finales
+
+1. una existencia física tiene una sola representación autoritativa vigente;
+2. LPN no crea saldo;
+3. saldo suelto directo y membresía LPN directa son excluyentes;
+4. una proyección agregada no es un segundo saldo;
+5. el contenido tiene como máximo un LPN propietario directo;
+6. un parent LPN no duplica contenido de sus hijos;
+7. PACK puro tiene delta neto cero;
+8. UNPACK puro tiene delta neto cero;
+9. transferencia entre LPN no crea saldo suelto ficticio;
+10. mover un LPN no desempaca;
+11. tránsito no duplica origen y destino;
+12. reserva no crea existencia;
+13. condición no crea existencia;
+14. conteo no crea existencia;
+15. historial no es saldo vigente;
+16. costo de una representación no crea segundo valor;
+17. retry no repite efectos;
+18. concurrencia no consume dos veces la misma fuente;
+19. offline revalida antes de aplicar;
+20. ambigüedad de representación bloquea mutación;
+21. adopción LPN demuestra paridad;
+22. implementación física debe conservar estas invariantes sin importar la arquitectura elegida.
+
+---
+
+#### 78. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido`
+
 ### [ ] NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
 ### [ ] NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
 ### [ ] NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
