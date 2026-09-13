@@ -6,11 +6,13 @@ import test from 'node:test';
 
 import {
   authorSchema,
+  candidateStructuralMetrics,
   reviewerSchema,
   runAuthorReview,
   selectModels,
   sha256,
   validateCandidate,
+  validateStructuralParity,
 } from './night-documentation-author-review.mjs';
 
 const capsule = {
@@ -271,4 +273,36 @@ test('normaliza etiquetas abreviadas de Continuidad sin gastar otra llamada', ()
   assert.match(result.markdown, /^- ÚLTIMA TAREA APROBADA:/mu);
   assert.match(result.markdown, /^- TAREA ACTUAL APROBADA:/mu);
   assert.match(result.markdown, /^- SIGUIENTE TAREA RESERVADA:/mu);
+});
+
+test('rechaza candidato materialmente superficial frente al baseline del mismo owner', () => {
+  const strictCapsule = {
+    ...capsule,
+    structural_baseline: {
+      enforced: true,
+      policy: 'DYNAMIC_SAME_OWNER_PREDECESSOR_PARITY',
+      references: [
+        { id: 'NEXO-DOM-021', section_count: 78, character_count: 70000 },
+        { id: 'NEXO-DOM-020', section_count: 61, character_count: 60000 },
+        { id: 'NEXO-DOM-019', section_count: 72, character_count: 65000 },
+      ],
+      quality_floor: {
+        min_section_count: 46,
+        min_character_count: 30000,
+      },
+    },
+  };
+
+  const metrics = candidateStructuralMetrics(taskMarkdown);
+  assert.ok(metrics.section_count < 46);
+
+  assert.throws(
+    () => validateStructuralParity(taskMarkdown, strictCapsule),
+    /STRUCTURAL_PARITY_FAIL/u,
+  );
+
+  assert.throws(
+    () => validateCandidate(authorResponse(), strictCapsule),
+    /STRUCTURAL_PARITY_FAIL/u,
+  );
 });

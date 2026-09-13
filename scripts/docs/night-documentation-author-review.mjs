@@ -323,6 +323,65 @@ function normalizeZeroTreqDerivedReferences(markdown, existingIds) {
   return `${rebuilt.replace(/\s+$/u, '')}\n`;
 }
 
+export function candidateStructuralMetrics(markdown) {
+  const normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n').trim();
+  const lines = normalized ? normalized.split('\n') : [];
+  const headings = [...normalized.matchAll(/^####\s+(.+)$/gmu)]
+    .map((match) => match[1].trim());
+  const fenceCount = lines.filter((line) => line.trimStart().startsWith('```')).length;
+  return {
+    section_count: headings.length,
+    character_count: normalized.length,
+    line_count: lines.length,
+    table_row_count: lines.filter((line) => /^\s*\|.*\|\s*$/u.test(line)).length,
+    code_block_count: Math.floor(fenceCount / 2),
+    section_titles: headings,
+  };
+}
+
+export function validateStructuralParity(markdown, capsule) {
+  const metrics = candidateStructuralMetrics(markdown);
+  const baseline = capsule?.structural_baseline;
+
+  if (!baseline?.enforced || !baseline?.quality_floor) {
+    return metrics;
+  }
+
+  const floor = baseline.quality_floor;
+  const failures = [];
+
+  if (metrics.section_count < Number(floor.min_section_count ?? 0)) {
+    failures.push(
+      'sections ' + metrics.section_count + ' < ' + floor.min_section_count,
+    );
+  }
+
+  if (metrics.character_count < Number(floor.min_character_count ?? 0)) {
+    failures.push(
+      'characters ' + metrics.character_count + ' < ' + floor.min_character_count,
+    );
+  }
+
+  if (failures.length > 0) {
+    const refs = (baseline.references ?? [])
+      .map(
+        ({ id, section_count, character_count }) =>
+          id + ':' + section_count + 's/' + character_count + 'c',
+      )
+      .join(', ');
+
+    fail(
+      'STRUCTURAL_PARITY_FAIL: '
+      + failures.join('; ')
+      + '. Baseline same-owner: '
+      + (refs || 'SIN_REFERENCIAS')
+      + '. Los grupos mínimos de secciones no sustituyen la profundidad canónica.',
+    );
+  }
+
+  return metrics;
+}
+
 export function validateCandidate(author, capsule) {
   if (author?.status === 'STOP') {
     if (!String(author.stop_reason ?? '').trim()) fail('autor devolvió STOP sin stop_reason.');
@@ -425,8 +484,16 @@ export function validateCandidate(author, capsule) {
     }
   }
 
+  const structuralMetrics = validateStructuralParity(markdown, capsule);
   const candidateSha = sha256(`${markdown}\n`);
-  return { stopped: false, markdown: `${markdown}\n`, candidateSha, affectedTreqIds: affected, treqChanges: changes };
+  return {
+    stopped: false,
+    markdown: `${markdown}\n`,
+    candidateSha,
+    affectedTreqIds: affected,
+    treqChanges: changes,
+    structuralMetrics,
+  };
 }
 
 function authorInstructions() {
@@ -434,6 +501,9 @@ function authorInstructions() {
     'Eres el autor documental canónico de VENTO OS para UNA sola tarea.',
     'Trabaja exclusivamente con la cápsula suministrada; no uses conocimiento externo ni inventes hechos.',
     'Desarrolla la tarea de forma sustantiva, completa, verificable y coherente con contratos aprobados relacionados.',
+    'Los required_section_groups son apenas el mínimo sintáctico. Nunca reduzcas una tarea sustantiva a ese scaffold.',
+    'Usa structural_baseline como referencia obligatoria de profundidad: compara outlines, métricas y excerpts de los predecesores aprobados del mismo owner antes de redactar.',
+    'Para tareas SUBSTANTIVE o COMPLEX cubre con detalle todas las dimensiones aplicables soportadas por la cápsula: resultado material o contrato, invariantes, matrices o escenarios, estados y transiciones, fallos y edge cases, idempotencia, concurrencia, offline, autorización, auditoría, AS-IS, brechas, riesgos, handoffs, criterios, límites y continuidad. Si no existe soporte canónico suficiente para alcanzar la profundidad exigida sin inventar, devuelve STOP.',
     'El artefacto debe quedar preformateado como APROBADA, pero esta salida sigue siendo un candidato y no modifica el repositorio.',
     'No autorices ni describas como ejecutados cambios físicos, migraciones, Supabase, código o despliegues.',
     'Si una decisión necesaria no está soportada por la cápsula, devuelve status STOP con la contradicción o carencia exacta.',
@@ -452,6 +522,8 @@ function reviewerInstructions(kind) {
     'Evalúa únicamente contra la cápsula canónica y el candidato recibidos.',
     'PASS exige ausencia de BLOCKER. Si falta evidencia para decidir, usa STOP; no inventes.',
     'Debes devolver exactamente el candidate_sha256 suministrado.',
+    'Compara obligatoriamente el candidato contra capsule.structural_baseline. PASS está prohibido si el candidato es materialmente más superficial que los predecesores aprobados comparables del mismo owner sin una justificación canónica explícita.',
+    'Los required_section_groups son un mínimo de integridad, no una señal de completitud documental.',
   ];
   if (kind === 1) {
     common.push('Prioridad: fidelidad canónica, cobertura del propósito, formato, ownership, continuidad, TREQ y criterios verificables.');
@@ -583,6 +655,9 @@ export async function runAuthorReview({ capsule, apiKey, outputDir, call = callS
     usage,
     totals,
     affected_treq_ids: validated.affectedTreqIds,
+    structural_metrics: validated.structuralMetrics,
+    structural_baseline_policy: capsule.structural_baseline?.policy ?? null,
+    structural_parity_enforced: capsule.structural_baseline?.enforced === true,
     repository_mutation: false,
     task_execution_enabled: false,
     physical_authorization: 'NONE',
