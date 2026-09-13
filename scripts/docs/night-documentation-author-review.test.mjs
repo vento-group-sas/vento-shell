@@ -12,6 +12,7 @@ import {
   selectModels,
   sha256,
   validateCandidate,
+  validateCanonicalEvidenceTable,
   validateStructuralParity,
 } from './night-documentation-author-review.mjs';
 
@@ -61,13 +62,13 @@ NO GENERA REQUISITOS DE PRUEBA nuevos o modificados en esta tarea.
 
 #### 3. Evidencia de validación
 
-| Clase | Estado |
-| --- | --- |
-| BUILD | NOT_EXECUTED |
-| LOCAL | NOT_EXECUTED |
-| REMOTA | NOT_EXECUTED |
-| OPERATIVA | NOT_EXECUTED |
-| FÍSICA | NOT_APPLICABLE |
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No ejecutado. |
+| LOCAL | NOT_EXECUTED | No ejecutado. |
+| REMOTA | NOT_EXECUTED | No ejecutado. |
+| OPERATIVA | NOT_EXECUTED | No ejecutado. |
+| FÍSICA | NOT_APPLICABLE | No aplica. |
 
 #### 4. Criterios de aceptación
 
@@ -304,5 +305,70 @@ test('rechaza candidato materialmente superficial frente al baseline del mismo o
   assert.throws(
     () => validateCandidate(authorResponse(), strictCapsule),
     /STRUCTURAL_PARITY_FAIL/u,
+  );
+});
+
+test('normaliza tabla de evidencia de cuatro columnas al contrato canónico antes del SHA', () => {
+  const expanded = authorResponse();
+  expanded.task_markdown = expanded.task_markdown.replace(
+    [
+      '| Clase | Estado | Evidencia |',
+      '| --- | --- | --- |',
+      '| BUILD | NOT_EXECUTED | No ejecutado. |',
+      '| LOCAL | NOT_EXECUTED | No ejecutado. |',
+      '| REMOTA | NOT_EXECUTED | No ejecutado. |',
+      '| OPERATIVA | NOT_EXECUTED | No ejecutado. |',
+      '| FÍSICA | NOT_APPLICABLE | No aplica. |',
+    ].join('\n'),
+    [
+      '| Clase | Alcance de validación | Estado | Evidencia |',
+      '| --- | --- | --- | --- |',
+      '| BUILD | construcción de documentación canónica | `NOT_EXECUTED` | No ejecutado. |',
+      '| LOCAL | estructura y referencias | `NOT_EXECUTED` | No ejecutado. |',
+      '| REMOTA | integración remota | `NOT_EXECUTED` | No ejecutado. |',
+      '| OPERATIVA | operación real | `NOT_EXECUTED` | No ejecutado. |',
+      '| FÍSICA | traslado físico | `NOT_APPLICABLE` | No aplica. |',
+    ].join('\n'),
+  );
+
+  const result = validateCandidate(expanded, capsule);
+  assert.match(result.markdown, /\| Clase \| Estado \| Evidencia \|/u);
+  assert.doesNotMatch(result.markdown, /\| Clase \| Alcance de validación \| Estado \| Evidencia \|/u);
+  assert.match(
+    result.markdown,
+    /\| BUILD \| NOT_EXECUTED \| Alcance de validación: construcción de documentación canónica — No ejecutado\. \|/u,
+  );
+
+  const rows = validateCanonicalEvidenceTable(result.markdown, capsule);
+  assert.equal(rows.length, 5);
+  assert.equal(rows[0].status, 'NOT_EXECUTED');
+});
+
+test('rechaza tabla de evidencia que no puede normalizarse al contrato Clase Estado Evidencia', () => {
+  const invalid = authorResponse();
+  invalid.task_markdown = invalid.task_markdown.replace(
+    [
+      '| Clase | Estado | Evidencia |',
+      '| --- | --- | --- |',
+      '| BUILD | NOT_EXECUTED | No ejecutado. |',
+      '| LOCAL | NOT_EXECUTED | No ejecutado. |',
+      '| REMOTA | NOT_EXECUTED | No ejecutado. |',
+      '| OPERATIVA | NOT_EXECUTED | No ejecutado. |',
+      '| FÍSICA | NOT_APPLICABLE | No aplica. |',
+    ].join('\n'),
+    [
+      '| Clase | Estado |',
+      '| --- | --- |',
+      '| BUILD | NOT_EXECUTED |',
+      '| LOCAL | NOT_EXECUTED |',
+      '| REMOTA | NOT_EXECUTED |',
+      '| OPERATIVA | NOT_EXECUTED |',
+      '| FÍSICA | NOT_APPLICABLE |',
+    ].join('\n'),
+  );
+
+  assert.throws(
+    () => validateCandidate(invalid, capsule),
+    /EVIDENCE_TABLE_CONTRACT_INVALID/u,
   );
 });
