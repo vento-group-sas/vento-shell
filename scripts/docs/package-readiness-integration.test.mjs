@@ -2,7 +2,11 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs';
 import test from 'node:test';
 
-import { scanPackageReadiness, validateFoundationEvidenceRef } from './package-readiness-scanner.mjs';
+import {
+  instanceRequiresInPackageCandidateEvidence,
+  scanPackageReadiness,
+  validateFoundationEvidenceRef,
+} from './package-readiness-scanner.mjs';
 
 const packageJson = JSON.parse(fs.readFileSync('package.json', 'utf8'));
 const buildSource = fs.readFileSync('scripts/docs/build-plan-canonico.mjs', 'utf8');
@@ -11,10 +15,76 @@ const scannerSource = fs.readFileSync('scripts/docs/package-readiness-scanner.mj
 const starterSource = fs.readFileSync('scripts/docs/chatgpt-work-starter-readiness.mjs', 'utf8');
 const packageGateLifecycleSource = fs.readFileSync('scripts/docs/package-gate-lifecycle.mjs', 'utf8');
 const lifecycleSource = fs.readFileSync('scripts/docs/task-branch-lifecycle-readiness.mjs', 'utf8');
+const implementationCoordinatorSource = fs.readFileSync('scripts/docs/implementation-execution-coordinator.mjs', 'utf8');
+const implementationBranchLifecycleSource = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
 const index = JSON.parse(fs.readFileSync(
   'scripts/docs/package-readiness/implementation-capability-index.json',
   'utf8',
 ));
+
+test('MRP015-050 aplica solo a superficies Supabase mutables de la instancia fisica', () => {
+  const contract = JSON.parse(fs.readFileSync(
+    'scripts/docs/package-readiness/package-readiness-contract.json',
+    'utf8',
+  ));
+  const foundation = contract.physical_dependencies.supabase_pre_e5_foundation;
+  const adoptionOnly = {
+    authorized_changes: [
+      {
+        repo: 'vento-group-sas/vento-shell',
+        path: 'supabase/migrations/20260829200745_auth_db_019_identity_links.sql',
+        change: 'EXECUTE_ONLY',
+      },
+      {
+        repo: 'vento-group-sas/vento-shell',
+        path: 'supabase/tests/packages/GAP-PKG-018.sql',
+        change: 'CREATE',
+      },
+      {
+        repo: 'vento-group-sas/vento-shell',
+        path: 'tests/packages/GAP-PKG-018/contract.test.ts',
+        change: 'CREATE',
+      },
+    ],
+  };
+
+  assert.equal(
+    instanceRequiresInPackageCandidateEvidence(adoptionOnly, foundation),
+    false,
+  );
+  assert.equal(
+    instanceRequiresInPackageCandidateEvidence({
+      authorized_changes: [
+        ...adoptionOnly.authorized_changes,
+        {
+          repo: 'vento-group-sas/vento-shell',
+          path: 'supabase/migrations/20990101000000_mutable.sql',
+          change: 'CREATE',
+        },
+      ],
+    }, foundation),
+    true,
+  );
+
+  const coordinatorStart = implementationCoordinatorSource.indexOf('function maybeRecordCi020Candidate');
+  const coordinatorEnd = implementationCoordinatorSource.indexOf('function writeEvidenceRequest', coordinatorStart);
+  const coordinatorBlock = implementationCoordinatorSource.slice(coordinatorStart, coordinatorEnd);
+  assert.match(coordinatorBlock, /instanceRequiresInPackageCandidateEvidence\(instance, foundation\)/u);
+  assert.ok(
+    coordinatorBlock.indexOf('instanceRequiresInPackageCandidateEvidence')
+      < coordinatorBlock.indexOf('recordInPackageCandidateEvidence'),
+  );
+
+  const finishStart = implementationBranchLifecycleSource.indexOf(
+    'export function assertCi020PhysicalPrerequisitesForFinish',
+  );
+  const finishEnd = implementationBranchLifecycleSource.indexOf(
+    'function assertLifecycleStateIntegrity',
+    finishStart,
+  );
+  const finishBlock = implementationBranchLifecycleSource.slice(finishStart, finishEnd);
+  assert.match(finishBlock, /instanceRequiresInPackageCandidateEvidence\(instance, foundation\)/u);
+});
 
 test('build ejecuta scanner fail-closed antes de generar iniciadores readiness', () => {
   const scan = buildSource.indexOf("scanPackageReadiness({ root, write: true, trigger: 'plan-build' })");
