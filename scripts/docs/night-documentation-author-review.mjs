@@ -3,6 +3,8 @@ import fs from 'node:fs';
 import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
+import { extractValidationEvidence } from './task-semantic-contract.mjs';
+
 const RESPONSES_URL = 'https://api.openai.com/v1/responses';
 const MAX_MODEL_CALLS = 3;
 const TREQ_COLUMNS = [
@@ -323,6 +325,153 @@ function normalizeZeroTreqDerivedReferences(markdown, existingIds) {
   return `${rebuilt.replace(/\s+$/u, '')}\n`;
 }
 
+function tableCells(line) {
+  return String(line ?? '')
+    .split('|')
+    .slice(1, -1)
+    .map((cell) => cell.trim().replace(/^`|`$/gu, ''));
+}
+
+function escapeTableCell(value) {
+  return String(value ?? '')
+    .replace(/\r?\n/gu, ' ')
+    .replaceAll('|', '\\|')
+    .replace(/\s+/gu, ' ')
+    .trim();
+}
+
+export function normalizeValidationEvidenceTable(markdown) {
+  const normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n');
+  const headingPattern = /^####\s+(?:\d+\.\s*)?Evidencia de validación.*$/imu;
+  const heading = headingPattern.exec(normalized);
+  if (!heading) return normalized;
+
+  const bodyStart = heading.index + heading[0].length;
+  const rest = normalized.slice(bodyStart);
+  const nextHeadingOffset = rest.search(/^####\s+/mu);
+  const sectionEnd = nextHeadingOffset >= 0
+    ? bodyStart + nextHeadingOffset
+    : normalized.length;
+
+  const section = normalized.slice(bodyStart, sectionEnd);
+  const lines = section.split('\n');
+  const headerIndex = lines.findIndex((line) => /^\s*\|/u.test(line) && tableCells(line)[0] === 'Clase');
+  if (headerIndex < 0) return normalized;
+
+  const headers = tableCells(lines[headerIndex]);
+  const classIndex = headers.indexOf('Clase');
+  const statusIndex = headers.indexOf('Estado');
+  const evidenceIndex = headers.indexOf('Evidencia');
+
+  if (classIndex < 0 || statusIndex < 0 || evidenceIndex < 0) {
+    return normalized;
+  }
+
+  let lastTableIndex = headerIndex + 1;
+  while (lastTableIndex + 1 < lines.length && /^\s*\|/u.test(lines[lastTableIndex + 1])) {
+    lastTableIndex += 1;
+  }
+
+  const canonicalRows = [
+    '| Clase | Estado | Evidencia |',
+    '| --- | --- | --- |',
+  ];
+
+  for (let index = headerIndex + 2; index <= lastTableIndex; index += 1) {
+    const cells = tableCells(lines[index]);
+    if (cells.length < headers.length || /^-+$/u.test(cells[classIndex] ?? '')) continue;
+
+    const evidenceParts = [];
+    headers.forEach((label, cellIndex) => {
+      if ([classIndex, statusIndex, evidenceIndex].includes(cellIndex)) return;
+      const value = cells[cellIndex]?.trim();
+      if (value) evidenceParts.push(`${label}: ${value}`);
+    });
+
+    const directEvidence = cells[evidenceIndex]?.trim();
+    if (directEvidence) evidenceParts.push(directEvidence);
+
+    canonicalRows.push(
+      `| ${escapeTableCell(cells[classIndex])} | ${escapeTableCell(cells[statusIndex])} | ${escapeTableCell(evidenceParts.join(' — '))} |`,
+    );
+  }
+
+  const rebuiltSection = [
+    ...lines.slice(0, headerIndex),
+    ...canonicalRows,
+    ...lines.slice(lastTableIndex + 1),
+  ].join('\n');
+
+  return normalized.slice(0, bodyStart) + rebuiltSection + normalized.slice(sectionEnd);
+}
+
+export function validateCanonicalEvidenceTable(markdown, capsule) {
+  const source = sectionBody(
+    markdown,
+    /^####\s+(?:\d+\.\s*)?Evidencia de validación.*$/imu,
+  );
+
+  if (!source) fail('candidato carece de Evidencia de validación.');
+
+  if (!/^\|\s*Clase\s*\|\s*Estado\s*\|\s*Evidencia\s*\|\s*$/mu.test(source)) {
+    fail('EVIDENCE_TABLE_CONTRACT_INVALID: la tabla debe usar exactamente Clase | Estado | Evidencia.');
+  }
+
+  const policy = capsule?.drafting_contract?.task_development_policy ?? {};
+  const requiredClasses = policy.required_evidence_classes ?? [
+    'BUILD',
+    'LOCAL',
+    'REMOTA',
+    'OPERATIVA',
+    'FÍSICA',
+  ];
+  const allowedStatuses = new Set(
+    policy.allowed_evidence_statuses ?? [
+      'PASS',
+      'FAIL',
+      'NOT_EXECUTED',
+      'NOT_APPLICABLE',
+    ],
+  );
+
+  const rows = extractValidationEvidence(markdown);
+  if (rows.length !== requiredClasses.length) {
+    fail(
+      `EVIDENCE_TABLE_CONTRACT_INVALID: se esperaban ${requiredClasses.length} filas y se resolvieron ${rows.length}.`,
+    );
+  }
+
+  const byClass = new Map();
+  for (const row of rows) {
+    if (!requiredClasses.includes(row.class)) {
+      fail(`EVIDENCE_TABLE_CONTRACT_INVALID: clase no permitida ${row.class}.`);
+    }
+    if (byClass.has(row.class)) {
+      fail(`EVIDENCE_TABLE_CONTRACT_INVALID: clase duplicada ${row.class}.`);
+    }
+    if (!allowedStatuses.has(row.status)) {
+      fail(`EVIDENCE_TABLE_CONTRACT_INVALID: ${row.class} usa estado ${row.status}.`);
+    }
+    if (!['NOT_EXECUTED', 'NOT_APPLICABLE'].includes(row.status)) {
+      fail(
+        `EVIDENCE_TABLE_CONTRACT_INVALID: FASE 2 read-only no puede declarar ${row.status} en ${row.class}.`,
+      );
+    }
+    if (!String(row.evidence ?? '').trim()) {
+      fail(`EVIDENCE_TABLE_CONTRACT_INVALID: ${row.class} carece de evidencia explicativa.`);
+    }
+    byClass.set(row.class, row);
+  }
+
+  for (const evidenceClass of requiredClasses) {
+    if (!byClass.has(evidenceClass)) {
+      fail(`EVIDENCE_TABLE_CONTRACT_INVALID: falta ${evidenceClass}.`);
+    }
+  }
+
+  return rows;
+}
+
 export function candidateStructuralMetrics(markdown) {
   const normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n').trim();
   const lines = normalized ? normalized.split('\n') : [];
@@ -398,11 +547,12 @@ export function validateCandidate(author, capsule) {
   );
 
   const continuityNormalized = normalizeContinuityLabels(author.task_markdown);
-  const markdown = (
+  const treqNormalized = (
     changes.length === 0
       ? normalizeZeroTreqDerivedReferences(continuityNormalized, existingIds)
       : continuityNormalized
-  ).trim();
+  );
+  const markdown = normalizeValidationEvidenceTable(treqNormalized).trim();
   const taskId = capsule.current.id;
   const exactHeading = `### ✅ ${taskId} — ${capsule.current.title}`;
   if (!markdown.startsWith(exactHeading)) fail(`candidato no inicia con el título canónico exacto: ${exactHeading}.`);
@@ -439,9 +589,7 @@ export function validateCandidate(author, capsule) {
   ];
   for (const pattern of requiredSections) if (!pattern.test(markdown)) fail(`candidato carece de sección obligatoria: ${pattern}.`);
 
-  for (const evidenceClass of ['BUILD', 'LOCAL', 'REMOTA', 'OPERATIVA', 'FÍSICA']) {
-    if (!new RegExp(`\\b${evidenceClass}\\b`, 'u').test(markdown)) fail(`evidencia no contiene clase ${evidenceClass}.`);
-  }
+  validateCanonicalEvidenceTable(markdown, capsule);
   for (const label of ['ÚLTIMA TAREA APROBADA', 'TAREA ACTUAL APROBADA', 'SIGUIENTE TAREA RESERVADA']) {
     if (!markdown.includes(label)) fail(`Continuidad carece de ${label}.`);
   }
@@ -511,6 +659,7 @@ function authorInstructions() {
     'Si treq_changes queda vacío, la sección Requisitos de prueba derivados debe declarar literalmente NO GENERA REQUISITOS DE PRUEBA y no debe contener ningún ID TREQ. Si necesitas citar cobertura histórica existente, hazlo fuera de esa sección y aclara que no se modifica.',
     'No incluyas instrucciones de descarga, reemplazo, terminal, rutas locales ni mensajes dirigidos al usuario dentro de task_markdown.',
     'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; no los abrevies ni parafrasees.',
+    'En Evidencia de validación usa exactamente una tabla Markdown de tres columnas: Clase | Estado | Evidencia; no insertes columnas entre Clase y Estado.',
     'En Evidencia de validación usa únicamente estados NOT_EXECUTED/NOT_APPLICABLE salvo evidencia real explícita en la cápsula.',
   ].join('\n');
 }
@@ -524,6 +673,7 @@ function reviewerInstructions(kind) {
     'Debes devolver exactamente el candidate_sha256 suministrado.',
     'Compara obligatoriamente el candidato contra capsule.structural_baseline. PASS está prohibido si el candidato es materialmente más superficial que los predecesores aprobados comparables del mismo owner sin una justificación canónica explícita.',
     'Los required_section_groups son un mínimo de integridad, no una señal de completitud documental.',
+    'La tabla Evidencia de validación debe cumplir exactamente Clase | Estado | Evidencia; cualquier columna insertada antes de Estado es BLOCKER.',
   ];
   if (kind === 1) {
     common.push('Prioridad: fidelidad canónica, cobertura del propósito, formato, ownership, continuidad, TREQ y criterios verificables.');
