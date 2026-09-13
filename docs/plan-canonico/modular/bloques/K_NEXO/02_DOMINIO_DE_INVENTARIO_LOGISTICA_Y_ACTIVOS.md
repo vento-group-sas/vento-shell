@@ -23429,7 +23429,1179 @@ Esta tarea no modifica activos, grupos, inventario, ubicaciones, movimientos, cu
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
 
-### [ ] NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+### ✅ NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-017 — Definir auditoría, historial y evidencia
+**Tarea siguiente:** NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
+**Tipo de tarea:** documental; definición canónica de integración entre identidades y hechos autoritativos de NEXO y los contratos transversales de impresión, archivos, documentos y evidencia de BLOQUE E4, preservando identidad estable, versión, snapshot, idempotencia, reimpresión no destructiva, autorización, auditoría y fronteras de propiedad bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NEXO integra identificadores visibles, etiquetas, códigos escaneables y documentos con los servicios transversales de BLOQUE E4 sin convertir una representación impresa, un QR, un código de barras, una URL o un archivo en la fuente autoritativa del recurso físico o del hecho empresarial.
+
+La integración debe permitir identificar, imprimir, reimprimir, consultar y evidenciar LOC, LPN, activos y documentos conservando la identidad y la historia definidas por NEXO, mientras BLOQUE E4 conserva la propiedad de plantillas, trabajos de impresión, enrutamiento, dispositivos, confirmaciones, archivos y evidencia.
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-018` deja definido:
+
+1. el contrato común entre recurso NEXO y representación E4;
+2. la separación entre identidad autoritativa y etiqueta física;
+3. la integración de LOC con la salida canónica de impresión correspondiente;
+4. la integración de activos con sus salidas canónicas de identificación y estado técnico;
+5. la integración de documentos NEXO con las identidades `IMP-DOC-*` ya aprobadas;
+6. la frontera explícita para LPN ante la ausencia de una salida E4 dedicada;
+7. las reglas de QR, código de barras, escaneo y resolución de identidad;
+8. las reglas de versión, snapshot, reimpresión, copia y etiqueta dañada;
+9. la relación entre impresión, evidencia y hecho empresarial;
+10. la adopción del contrato de idempotencia de E4;
+11. la separación de autorización de dominio y autorización del servicio transversal;
+12. el tratamiento de fallos, reintentos, resultado desconocido y operación offline;
+13. la reconciliación del código legacy de impresión existente en NEXO;
+14. el handoff exacto hacia `NEXO-DOM-019`.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- identidad, código y lifecycle de LOC definidos por NEXO;
+- identidad y lifecycle de LPN definidos por NEXO;
+- identidad estable de activo individual y su código visible;
+- condición, disponibilidad, custodia, conteo, mantenimiento y repuestos ya definidos;
+- historia empresarial no destructiva de `NEXO-DOM-017`;
+- catálogo de salidas imprimibles de `PRINT-ARC-003`;
+- propiedad funcional de `PRINT-ARC-004`;
+- plantillas, versiones, perfiles físicos y contratos de datos de `PRINT-ARC-005`;
+- contrato de trabajo de impresión de `PRINT-ARC-006`;
+- enrutamiento, dispositivo, heartbeat, idempotencia, reintentos, confirmación, cancelación y reimpresión definidos por `PRINT-ARC-007` a `PRINT-ARC-014`;
+- autorización, privacidad y operación offline de `PRINT-ARC-015` a `PRINT-ARC-017`;
+- adaptadores, monitoreo, diagnóstico y piloto físico de `PRINT-ARC-018` a `PRINT-ARC-020`;
+- frontera de documentos y evidencia de `EVID-ARC-001` a `EVID-ARC-010`.
+
+---
+
+#### 4. Pregunta contractual propietaria
+
+Esta tarea responde:
+
+```text
+COMO PUEDE NEXO REPRESENTAR FISICAMENTE
+UN LOC, UN LPN, UN ACTIVO O UN DOCUMENTO
+MEDIANTE ETIQUETAS, CODIGOS O SALIDAS IMPRESAS
+SIN CREAR UNA SEGUNDA IDENTIDAD,
+SIN CONVERTIR EL PAPEL O EL ARCHIVO EN FUENTE DE VERDAD
+Y SIN DUPLICAR LOS SERVICIOS TRANSVERSALES DE BLOQUE E4?
+```
+
+---
+
+#### 5. Regla raíz
+
+```text
+AUTHORITATIVE NEXO RESOURCE
++
+STABLE RESOURCE IDENTITY
++
+CURRENT REVISION OR DOCUMENT SNAPSHOT
++
+APPROVED E4 OUTPUT IDENTITY
++
+E4 PRINT OR EVIDENCE CONTRACT
++
+IDEMPOTENT REQUEST
++
+AUTHORIZED CONTEXT
+→
+TRACEABLE REPRESENTATION
+WITHOUT CREATING OR MUTATING THE DOMAIN RESOURCE
+```
+
+La representación puede cambiar; la identidad empresarial no cambia por ese hecho.
+
+---
+
+#### 6. Separación entre recurso y representación
+
+Se fija:
+
+```text
+RESOURCE != LABEL
+RESOURCE != QR
+RESOURCE != BARCODE
+RESOURCE != PRINT JOB
+RESOURCE != PDF
+RESOURCE != FILE
+RESOURCE != PRINTED COPY
+```
+
+Una representación apunta al recurso o snapshot autorizado. No lo reemplaza.
+
+---
+
+#### 7. Identidad estable
+
+Toda salida NEXO que represente un recurso debe conservar una referencia estable al sujeto autoritativo.
+
+La reimpresión, sustitución física de etiqueta, cambio de papel, cambio de impresora, cambio de plantilla o cambio de canal no crea una identidad NEXO nueva.
+
+---
+
+#### 8. Etiqueta visible
+
+Una etiqueta es una representación material de información autorizada en un instante y versión determinados.
+
+No es:
+
+- el LOC;
+- el LPN;
+- el activo;
+- el contenedor físico;
+- el movimiento;
+- la custodia;
+- la condición;
+- el documento empresarial original.
+
+---
+
+#### 9. QR y código de barras
+
+Un QR, Data Matrix o código de barras transporta una referencia resoluble, no autoridad.
+
+El payload debe permitir llegar al sujeto o snapshot correcto y ser validado por el consumidor autorizado.
+
+```text
+SCANNED CODE
+→
+RESOLVE CANONICAL RESOURCE
+→
+REVALIDATE CURRENT AUTHORITY AND STATE
+```
+
+Nunca:
+
+```text
+SCANNED CODE
+→
+TRUST EMBEDDED STATE AS CURRENT TRUTH
+```
+
+---
+
+#### 10. Escaneo y efecto empresarial
+
+Escanear una etiqueta no ejecuta por sí solo:
+
+- movimiento;
+- cambio de ubicación;
+- cambio de custodia;
+- apertura o cierre de LPN;
+- aceptación de entrega;
+- ajuste de inventario;
+- mantenimiento;
+- baja;
+- consumo de repuesto.
+
+El escaneo identifica el sujeto para una acción posterior autorizada.
+
+---
+
+#### 11. Impresión y efecto empresarial
+
+Se fija:
+
+```text
+PRINT REQUESTED != BUSINESS EFFECT
+PRINT SENT != BUSINESS EFFECT
+PRINTED VERIFIED != BUSINESS EFFECT
+```
+
+La impresión confirma una representación. El efecto empresarial pertenece al owner del proceso correspondiente.
+
+---
+
+#### 12. Propiedad de BLOQUE E4
+
+BLOQUE E4 conserva la propiedad de:
+
+- identidad `IMP-*` de la salida imprimible;
+- template y versión;
+- perfil físico;
+- contrato de datos imprimibles;
+- contrato de trabajo de impresión;
+- enrutamiento;
+- dispositivo principal y fallback;
+- heartbeat y estado del dispositivo;
+- idempotencia de impresión;
+- reintentos;
+- confirmación;
+- cancelación y reimpresión;
+- autorización específica del servicio de impresión;
+- privacidad del output;
+- adaptadores y conectividad;
+- monitoreo y diagnóstico;
+- piloto físico.
+
+NEXO no crea una implementación paralela de estos servicios.
+
+---
+
+#### 13. Propiedad de NEXO
+
+NEXO conserva la propiedad de:
+
+- identidad del LOC;
+- identidad del LPN;
+- identidad del activo;
+- relación entre activo y su estado de dominio;
+- hechos de inventario y logística;
+- movimientos y custodia;
+- conteos y diferencias;
+- mantenimiento y disponibilidad;
+- documentos empresariales cuyo owner funcional es NEXO;
+- autorización de dominio para solicitar una representación de esos recursos.
+
+---
+
+#### 14. Frontera con EVID
+
+Los contratos `EVID-ARC-*` gobiernan archivo, evidencia, integridad, metadatos, acceso, auditoría documental, retención y contingencia de Storage.
+
+NEXO conserva únicamente referencias gobernadas a la evidencia relacionada con sus hechos.
+
+```text
+FILE OR EVIDENCE REF
+!=
+DOMAIN EVENT
+```
+
+---
+
+#### 15. LOC: salida canónica
+
+La representación imprimible canónica de una ubicación NEXO consume:
+
+```text
+IMP-LBL-08
+```
+
+`IMP-LBL-08` representa una etiqueta de ubicación, estante, contenedor o zona bajo propiedad funcional de NEXO.
+
+---
+
+#### 16. LOC: identidad y datos
+
+La integración de LOC debe conservar como mínimo la relación con:
+
+- `ubicacion_id`;
+- `ubicacion_codigo`;
+- nombre visible;
+- tipo de ubicación;
+- sede;
+- capacidad o restricción cuando aplique;
+- estado vigente;
+- versión o revisión de la representación.
+
+Los nombres visibles pueden cambiar sin cambiar `ubicacion_id`.
+
+---
+
+#### 17. LOC: código visible
+
+El código de LOC es una clave operativa legible, pero no reemplaza el identificador estable.
+
+Si el código cambia mediante una transición autorizada, la historia debe permitir reconstruir qué código estuvo vigente en cada período.
+
+---
+
+#### 18. LOC: reimpresión
+
+Reimprimir un LOC:
+
+- conserva la identidad del LOC;
+- conserva la historia previa;
+- no crea una ubicación nueva;
+- no mueve inventario;
+- no cambia capacidad;
+- no cambia estado;
+- registra un nuevo intento o copia de impresión según E4.
+
+---
+
+#### 19. LOC: etiqueta obsoleta
+
+Una etiqueta física antigua puede quedar materialmente presente después de un cambio de código, estado o layout.
+
+El consumidor debe resolver el recurso y validar vigencia antes de actuar. La existencia física de una etiqueta no garantiza vigencia.
+
+---
+
+#### 20. LPN: identidad autoritativa
+
+La etiqueta de un LPN debe representar la identidad del LPN.
+
+Se preserva:
+
+```text
+LPN LABEL
+→
+LPN IDENTITY
+```
+
+No:
+
+```text
+LPN LABEL
+→
+PURPOSE TYPE AS IDENTITY
+```
+
+Cambiar la etiqueta visible no cambia el purpose type ni crea otro LPN.
+
+---
+
+#### 21. LPN: brecha de catálogo E4
+
+El catálogo `PRINT-ARC-003` vigente no contiene una identidad `IMP-*` dedicada explícitamente a una etiqueta genérica de LPN.
+
+Esta ausencia se trata como una brecha contractual de integración, no como permiso para inventar una identidad imprimible dentro de NEXO.
+
+---
+
+#### 22. LPN: prohibición de sustituciones silenciosas
+
+Queda prohibido usar por inferencia:
+
+- `IMP-LBL-08` como etiqueta genérica de LPN, porque una ubicación y un LPN son identidades distintas;
+- `IMP-LBL-09` como etiqueta genérica de LPN, porque artículo/SKU y LPN son identidades distintas;
+- `IMP-LBL-12` como etiqueta genérica de LPN, porque activo y LPN son identidades distintas.
+
+---
+
+#### 23. LPN y `IMP-LBL-10`
+
+`IMP-LBL-10` puede representar un LPN únicamente cuando el caso empresarial exacto cumple el significado aprobado de:
+
+```text
+BULTO PARA TRASLADO, REMISION O DESPACHO
+```
+
+y cuando los datos requeridos por la salida corresponden efectivamente al movimiento autorizado.
+
+Ese uso contextual no convierte `IMP-LBL-10` en la etiqueta genérica de todo LPN.
+
+---
+
+#### 24. LPN genérico: fail-closed
+
+Mientras no exista una identidad de salida E4 aprobada que cubra de forma exacta la etiqueta genérica de LPN, la materialización futura debe fallar cerrada para ese output.
+
+No se crea en esta tarea un nuevo identificador `IMP-*`.
+
+La condición de salida es una reconciliación explícita del catálogo propietario de impresión de BLOQUE E4.
+
+---
+
+#### 25. LPN: reimpresión
+
+Una futura reimpresión de etiqueta LPN deberá:
+
+- conservar `lpn_id`;
+- conservar el código autoritativo vigente;
+- conservar la relación con el recurso original;
+- registrar motivo y actor cuando la política lo exija;
+- no duplicar contenido;
+- no duplicar saldo;
+- no crear otro LPN;
+- no cambiar estado ni ubicación por inferencia.
+
+---
+
+#### 26. LPN: etiqueta dañada
+
+Una etiqueta dañada es una incidencia de representación.
+
+```text
+DAMAGED LABEL
+!=
+DAMAGED LPN
+```
+
+No confirma daño de contenido, contenedor físico ni existencia.
+
+---
+
+#### 27. Frontera con `NEXO-DOM-019`
+
+Esta tarea no decide cuándo el LPN coincide físicamente con un contenedor permanente ni cuándo ambas identidades se separan.
+
+`NEXO-DOM-019` conserva la propiedad de esa distinción.
+
+La integración de impresión únicamente exige que una etiqueta futura no colapse esas identidades por conveniencia visual.
+
+---
+
+#### 28. Activo: salida de identificación
+
+La etiqueta de identidad de activo consume:
+
+```text
+IMP-LBL-12
+```
+
+La salida representa la identidad canónica del activo o equipo bajo propiedad NEXO.
+
+---
+
+#### 29. Activo: datos de identificación
+
+La representación consume el snapshot autorizado de:
+
+- `activo_id`;
+- código de activo;
+- nombre;
+- categoría aplicable;
+- serial cuando exista;
+- sede;
+- ubicación;
+- estado visible permitido;
+- versión o revisión de representación.
+
+La etiqueta no puede fabricar un serial o placa ausente.
+
+---
+
+#### 30. Activo: estado técnico
+
+La salida:
+
+```text
+IMP-LBL-13
+```
+
+representa mantenimiento, inspección o restricción operativa del activo.
+
+Se mantiene separada de la etiqueta de identidad.
+
+```text
+ASSET ID LABEL != MAINTENANCE STATUS LABEL
+```
+
+---
+
+#### 31. Activo: reimpresión
+
+Reimprimir `IMP-LBL-12` o `IMP-LBL-13` no:
+
+- crea otro activo;
+- cambia código;
+- cambia serial;
+- cambia ubicación;
+- cambia condición;
+- cambia disponibilidad;
+- abre o cierra mantenimiento.
+
+---
+
+#### 32. Activo: QR existente
+
+El AS-IS contiene `qr_token` en activos.
+
+Ese token puede participar en resolución de identidad, pero no debe tratarse como sustituto de `asset_item_id` ni como prueba de vigencia, custodia o condición.
+
+---
+
+#### 33. Documentos NEXO integrados con E4
+
+Las identidades de salida convencional de propiedad funcional NEXO relevantes para este dominio son:
+
+```text
+IMP-DOC-01
+IMP-DOC-02
+IMP-DOC-03
+IMP-DOC-04
+IMP-DOC-11
+IMP-DOC-12
+IMP-DOC-13
+IMP-DOC-16
+```
+
+No se crean identidades documentales paralelas.
+
+---
+
+#### 34. `IMP-DOC-01`
+
+`IMP-DOC-01 — Remisión o nota de despacho` representa una salida física del hecho logístico autorizado.
+
+El documento no sustituye la remisión canónica ni su lifecycle.
+
+---
+
+#### 35. `IMP-DOC-02`
+
+`IMP-DOC-02 — Manifiesto de traslado interno` representa un snapshot autorizado de origen, destino, contenido y responsables.
+
+Imprimirlo no ejecuta el traslado.
+
+---
+
+#### 36. `IMP-DOC-03`
+
+`IMP-DOC-03 — Hoja de conteo de inventario` representa el universo o snapshot de una sesión de conteo.
+
+La cantidad escrita o capturada posteriormente requiere su flujo de observación autoritativo; el papel no ajusta saldos.
+
+---
+
+#### 37. `IMP-DOC-04`
+
+`IMP-DOC-04 — Reporte de diferencias o ajustes de inventario` documenta diferencias, investigación y decisión aplicable.
+
+La impresión no constituye autorización de ajuste ni movimiento compensatorio.
+
+---
+
+#### 38. `IMP-DOC-11`
+
+`IMP-DOC-11 — Orden de mantenimiento` representa solicitud, autorización y estado de intervención según su snapshot.
+
+El documento impreso no libera el activo ni confirma ejecución técnica.
+
+---
+
+#### 39. `IMP-DOC-12`
+
+`IMP-DOC-12 — Acta de entrega, devolución o traslado de activo` representa hechos de custodia, condición y ubicación vinculados a su expediente.
+
+Una firma o copia impresa puede ser evidencia, pero el cambio autoritativo debe permanecer correlacionado con el evento NEXO correspondiente.
+
+---
+
+#### 40. `IMP-DOC-13`
+
+`IMP-DOC-13 — Reporte de incidente o soporte técnico` representa el caso técnico y su estado.
+
+Una copia impresa o archivo asociado no sustituye diagnóstico, decisión ni cierre.
+
+---
+
+#### 41. `IMP-DOC-16`
+
+`IMP-DOC-16 — Resumen de indicadores operativos o gerenciales` representa un snapshot de información autorizada con fecha de corte.
+
+No crea una segunda fuente de métricas ni altera los datos fuente.
+
+---
+
+#### 42. Documento empresarial frente a salida imprimible
+
+Se fija:
+
+```text
+BUSINESS RECORD
+!=
+PRINTABLE OUTPUT IDENTITY
+!=
+PRINT JOB
+!=
+PRINTED COPY
+!=
+STORED FILE
+```
+
+Cada capa conserva identidad y lifecycle propios.
+
+---
+
+#### 43. Snapshot documental
+
+Los documentos convencionales de E4 consumen el perfil de idempotencia:
+
+```text
+IDP-DOCUMENT-SNAPSHOT
+```
+
+La clave conceptual preserva:
+
+```text
+document_or_report_id + snapshot_version
+```
+
+Una nueva copia del mismo snapshot no crea una nueva versión empresarial.
+
+---
+
+#### 44. Idempotencia de etiquetas
+
+Las etiquetas de recurso consumen:
+
+```text
+IDP-RESOURCE-VERSION
+```
+
+La clave conceptual preserva:
+
+```text
+resource_type + resource_id + resource_version
+```
+
+La deduplicación de impresión no cambia la identidad del recurso.
+
+---
+
+#### 45. Copia y slot de impresión
+
+E4 distingue el recurso o snapshot del destino lógico y `copy_slot_id`.
+
+Por tanto, múltiples copias autorizadas pueden existir sin confundirse con múltiples recursos empresariales.
+
+---
+
+#### 46. Reimpresión
+
+Toda reimpresión debe distinguir:
+
+- recurso o documento representado;
+- versión o snapshot;
+- motivo;
+- actor;
+- destino lógico;
+- copia o slot;
+- trabajo de impresión previo cuando aplique;
+- resultado del nuevo intento.
+
+La reimpresión no modifica retrospectivamente el primer intento.
+
+---
+
+#### 47. Sustitución de etiqueta
+
+Cuando una etiqueta física se sustituye por daño, ilegibilidad o desgaste:
+
+```text
+OLD REPRESENTATION
+→
+SUPERSEDED OR REPLACED PHYSICAL COPY
+
+CANONICAL RESOURCE IDENTITY
+→
+UNCHANGED
+```
+
+La implementación podrá registrar la copia reemplazada sin retirar la historia del recurso.
+
+---
+
+#### 48. Duplicados físicos
+
+Dos etiquetas físicas legibles pueden existir accidentalmente para el mismo recurso.
+
+La resolución debe converger a una sola identidad NEXO. La presencia de dos etiquetas no crea dos existencias.
+
+---
+
+#### 49. Enrutamiento
+
+NEXO no selecciona por su cuenta una impresora fuera de las reglas de E4.
+
+El output solicita una identidad de salida y contexto autorizado; E4 resuelve destino, dispositivo, alternativas y bloqueo.
+
+---
+
+#### 50. Dispositivo y heartbeat
+
+El estado de una impresora pertenece al servicio transversal de impresión.
+
+Un recurso NEXO puede existir y ser válido aunque no exista una impresora disponible.
+
+```text
+RESOURCE VALID
++
+NO PRINT DEVICE AVAILABLE
+→
+PRINT BLOCKED
+RESOURCE UNCHANGED
+```
+
+---
+
+#### 51. Estado físico actual de impresión de etiquetas
+
+El contrato E4 vigente mantiene el objetivo central de etiquetas asociado a la Zebra ZD230 y documenta esa capacidad como bloqueada mientras el dispositivo permanece almacenado y sin canal operativo.
+
+Esta condición no bloquea la aprobación documental de la integración, pero sí impide declarar impresión física disponible.
+
+---
+
+#### 52. Confirmación de impresión
+
+La confirmación del servicio de impresión demuestra el resultado del trabajo de impresión conforme al contrato E4.
+
+No demuestra:
+
+- entrega física al usuario final;
+- lectura exitosa futura;
+- recepción empresarial;
+- cierre del proceso de negocio.
+
+---
+
+#### 53. Error de impresión
+
+Un fallo de impresión:
+
+- conserva el recurso NEXO;
+- conserva la solicitud y su identidad;
+- conserva error y estado del trabajo;
+- permite reintento según E4;
+- no autoriza crear una segunda operación empresarial equivalente.
+
+---
+
+#### 54. Resultado desconocido
+
+Si el cliente desconoce si el dispositivo recibió el trabajo, no debe generar un nuevo recurso ni asumir que la impresión falló.
+
+Debe reconciliar el mismo trabajo o scope de idempotencia hasta conocer el resultado permitido por E4.
+
+---
+
+#### 55. Operación offline
+
+Una solicitud offline puede conservar intención, recurso y snapshot de referencia.
+
+No debe confiar en un estado de dominio embebido que ya pueda estar obsoleto.
+
+Antes de materializar un output sensible se revalida vigencia, autorización y revisión aplicables.
+
+---
+
+#### 56. Autorización de dominio y autorización de impresión
+
+Se distinguen dos decisiones:
+
+```text
+MAY REPRESENT NEXO RESOURCE
+```
+
+y:
+
+```text
+MAY CREATE OR REPRINT E4 OUTPUT
+```
+
+Poseer una no concede automáticamente la otra.
+
+---
+
+#### 57. Privacidad y minimización
+
+La salida física debe contener únicamente los campos aprobados por su template y contexto.
+
+Un QR o código no debe exponer información sensible innecesaria cuando una referencia opaca resoluble sea suficiente.
+
+---
+
+#### 58. Evidencia de emisión
+
+La creación, envío o confirmación de una salida puede producir evidencia técnica o documental de que una representación fue solicitada o emitida.
+
+Se mantiene:
+
+```text
+PRINT EVIDENCE
+!=
+BUSINESS DECISION
+```
+
+---
+
+#### 59. Auditoría
+
+La integración debe permitir correlacionar:
+
+- sujeto NEXO;
+- versión o snapshot;
+- output `IMP-*`;
+- template/version;
+- trabajo de impresión;
+- actor y principal técnico;
+- autorización;
+- destino;
+- dispositivo resuelto;
+- timestamps relevantes;
+- resultado;
+- motivo de reimpresión o cancelación;
+- evidencia asociada.
+
+La auditoría no sustituye el evento empresarial original.
+
+---
+
+#### 60. AS-IS de impresión NEXO
+
+La aplicación NEXO actual contiene una superficie de impresión basada en BrowserPrint, generación ZPL, detección de dispositivos, preview y layouts.
+
+Existe base reutilizable para integración, pero no constituye por sí sola el contrato objetivo E4.
+
+---
+
+#### 61. Presets AS-IS
+
+El código actual materializa presets locales para:
+
+```text
+LOC_50x70_QR
+SKU_32x25_3UP
+PROD_50x30
+ASSET_50x30_QR
+```
+
+No se observó un preset dedicado a LPN ni un preset de documentos convencionales dentro de esa superficie.
+
+---
+
+#### 62. Divergencia de perfiles físicos
+
+Los tamaños legacy actuales de LOC y activo no se promueven a contrato canónico.
+
+BLOQUE E4 ya define perfiles propios para `IMP-LBL-08` y `IMP-LBL-12`.
+
+La implementación futura debe adoptar o reconciliar los perfiles E4 aprobados en vez de preservar un tamaño local por compatibilidad accidental.
+
+---
+
+#### 63. AS-IS centrado en LOC
+
+La superficie actual carga LOC mediante su API y varias rutas de preview/layout codifican explícitamente semántica `LOC` para QR/Data Matrix.
+
+Ese diseño es reutilizable como infraestructura, pero debe generalizarse bajo contratos tipados de recurso antes de servir LPN, activos y documentos de forma canónica.
+
+---
+
+#### 64. Cola legacy local
+
+La superficie actual conserva la cola de impresión en `localStorage` del navegador y envía ZPL mediante BrowserPrint.
+
+Ese mecanismo no demuestra por sí solo:
+
+- trabajo durable server-side;
+- reintento durable;
+- deduplicación global;
+- reconciliación multiestación;
+- auditoría completa del lifecycle del trabajo.
+
+Los contratos E4 conservan la autoridad sobre esas garantías.
+
+---
+
+#### 65. AS-IS de LPN
+
+La aplicación contiene creación y consulta de LPN, y la base remota contiene la superficie `inventory_lpns` con identidad, código, ubicación, estado y un campo legacy de etiqueta.
+
+No se observó una integración de impresión dedicada a LPN.
+
+El campo legacy de etiqueta no constituye por sí mismo una identidad `IMP-*` ni un contrato de impresión E4.
+
+---
+
+#### 66. AS-IS remoto observado
+
+El ambiente remoto inspeccionado registró:
+
+| Superficie | Filas observadas |
+| --- | ---: |
+| `inventory_locations` | 12 |
+| `inventory_lpns` | 0 |
+| `asset_items` | 38 |
+| `asset_documents` | 0 |
+
+Existe por tanto material real para reconciliar LOC y activos; no existen filas LPN o documentos de activos en el snapshot remoto que obliguen a reinterpretar impresiones históricas.
+
+---
+
+#### 67. Estado de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan BrowserPrint, generación ZPL, detección de dispositivos, preview, layouts, LOC existentes, activos existentes y APIs actuales.
+
+Debe refactorizarse la semántica local para consumir las identidades y garantías E4 sin mantener contratos paralelos.
+
+---
+
+#### 68. Reconciliación futura del legacy
+
+La materialización posterior deberá reconciliar explícitamente:
+
+1. presets locales frente a `IMP-*` y perfiles E4;
+2. códigos y QR actuales de LOC;
+3. layouts guardados;
+4. queue local del navegador;
+5. estado de trabajos no durable;
+6. referencias de activo actuales;
+7. `qr_token` de activos;
+8. LPN legacy y su campo de etiqueta;
+9. plantillas o ZPL creados fuera del catálogo E4;
+10. copias físicas existentes que puedan quedar obsoletas;
+11. impresiones históricas sin correlación durable cuando existan;
+12. permisos y superficies de impresión actuales.
+
+No se ejecuta backfill ni mutación en esta tarea.
+
+---
+
+#### 69. Matriz de integración
+
+| Sujeto NEXO | Salida E4 consumida | Regla |
+| --- | --- | --- |
+| LOC | `IMP-LBL-08` | representa ubicación; reimpresión conserva identidad |
+| LPN genérico | ninguna identidad E4 exacta vigente | fail-closed hasta reconciliación del catálogo |
+| LPN como bulto de traslado/remisión/despacho | `IMP-LBL-10` | solo cuando cumple exactamente ese contexto |
+| activo: identidad | `IMP-LBL-12` | representa activo, no lo crea ni modifica |
+| activo: estado técnico | `IMP-LBL-13` | separado de identidad y lifecycle del mantenimiento |
+| remisión | `IMP-DOC-01` | snapshot documental, no movimiento |
+| traslado interno | `IMP-DOC-02` | snapshot documental, no traslado |
+| conteo | `IMP-DOC-03` | soporte de conteo, no observación autoritativa por sí mismo |
+| diferencia/ajuste | `IMP-DOC-04` | soporte, no autorización ni compensación |
+| mantenimiento | `IMP-DOC-11` | orden representada, no ejecución ni liberación |
+| entrega/devolución/traslado de activo | `IMP-DOC-12` | evidencia correlacionada, no fuente única de custodia |
+| incidente técnico | `IMP-DOC-13` | snapshot del caso, no diagnóstico o cierre por sí solo |
+| indicadores | `IMP-DOC-16` | snapshot con corte, no fuente de métricas |
+
+---
+
+#### 70. Invariantes
+
+La implementación futura debe preservar:
+
+1. una identidad NEXO por recurso autoritativo;
+2. cero identidades NEXO creadas por reimpresión;
+3. cero movimientos creados por escaneo aislado;
+4. cero efectos empresariales creados por confirmación de impresión;
+5. una relación explícita entre output y recurso/snapshot;
+6. template y versión gobernados por E4;
+7. idempotencia gobernada por E4;
+8. autorización server-side;
+9. historia no destructiva;
+10. evidencia separada de decisión;
+11. LPN y LOC no intercambiables;
+12. LPN y contenedor físico no colapsados;
+13. fallos de impresión sin mutación del recurso;
+14. reintentos sin duplicación empresarial.
+
+---
+
+#### 71. Concurrencia
+
+Dos reimpresiones concurrentes no pueden crear dos recursos empresariales ni cambiar dos veces una revisión de dominio.
+
+La política de copias e idempotencia de E4 gobierna la salida; NEXO únicamente valida el recurso y snapshot que se representa.
+
+---
+
+#### 72. Fail-closed
+
+La solicitud futura falla cerrada cuando:
+
+- el recurso NEXO no existe;
+- la identidad no es resoluble;
+- la revisión requerida está obsoleta;
+- el output `IMP-*` no corresponde al tipo de recurso;
+- falta template/version aprobados;
+- falta autorización;
+- el LPN requiere etiqueta genérica y no existe binding E4 exacto;
+- el dispositivo o destino no cumple el gate E4;
+- el resultado previo es desconocido y no se ha reconciliado;
+- una copia solicitada excede la política aplicable;
+- el payload pretende producir un efecto de dominio mediante impresión.
+
+El fallo no modifica el recurso NEXO.
+
+---
+
+#### 73. Condiciones mínimas de materialización física futura
+
+La implementación posterior deberá demostrar:
+
+- binding explícito `NEXO resource type → IMP-*`;
+- template/version E4;
+- perfil físico E4;
+- payload derivado de fuente autoritativa;
+- recurso y revisión revalidados;
+- autorización de dominio y de impresión;
+- idempotencia;
+- destino y dispositivo resueltos por E4;
+- estado de dispositivo válido;
+- confirmación y error durables;
+- reimpresión trazable;
+- evidencia correlacionada;
+- reconciliación de output LPN antes de habilitarlo;
+- compatibilidad con escaneo sin autoridad implícita;
+- pruebas físicas cuando correspondan.
+
+---
+
+#### 74. Handoff hacia `NEXO-DOM-019`
+
+Esta tarea entrega:
+
+```text
+DOMAIN RESOURCE != PHYSICAL REPRESENTATION
++
+LABEL DOES NOT CREATE IDENTITY
++
+LPN LABEL RESOLVES LPN IDENTITY
++
+LOC AND LPN REMAIN DISTINCT
++
+ASSET IDENTITY SURVIVES RELABELING
++
+E4 OWNS PRINT OUTPUT AND JOB LIFECYCLE
++
+NEXO OWNS DOMAIN IDENTITY AND BUSINESS EFFECTS
++
+DOCUMENT OUTPUT != BUSINESS RECORD
++
+EVIDENCE != DECISION
++
+REPRINT != NEW RESOURCE
+```
+
+`NEXO-DOM-019` deberá separar contenedor físico y LPN sin utilizar la etiqueta, el código visible o el soporte físico como prueba de que ambas identidades son equivalentes.
+
+---
+
+#### 75. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige identidad estable ante impresión y reimpresión, ciclo auditable de LPN y reetiquetado, correspondencia física de impresión, lifecycle durable del trabajo de impresión, no duplicación, historia no destructiva y separación entre evidencia y fuente empresarial. Esta tarea integra esos contratos sin crear una conducta observable nueva que requiera modificar el registro.
+
+---
+
+#### 76. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-003`, para correspondencia entre preview, plantilla, ZPL, DPI, dimensiones, códigos y muestra física;
+- `TREQ-NEXO-004`, para ciclo completo y auditable de LPN, incluido reetiquetado sin doble contabilización;
+- `TREQ-NEXO-005`, para lifecycle durable del trabajo de impresión, error, reintento, dispositivo e identificación suficiente contra pérdida o duplicación;
+- `TREQ-NEXO-011`, para impedir que una representación produzca saldos o movimientos sin efecto correlacionado;
+- `TREQ-NEXO-013`, para identidad estable de activos y prohibición de crear identidad nueva por reimpresión o sustitución de etiqueta;
+- `TREQ-INTEGRATION-003`, para idempotencia transversal;
+- `TREQ-INTEGRATION-004` y `TREQ-INTEGRATION-006`, para correlación y fuente empresarial única;
+- cobertura transversal vigente de EVID para procedencia, integridad y separación entre archivo, evidencia y registro empresarial.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+---
+
+#### 77. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron `main`, continuidad `017 → 018 → 019`, topología `DEFINE_ONCE`, owner, handoff de `NEXO-DOM-017`, catálogo y contratos PRINT-ARC/EVID-ARC, 04A NEXO, código actual de impresión en `vento-nexo` y esquema/datos remotos de LOC, LPN, activos y documentos en solo lectura. |
+| OPERATIVA | NOT_EXECUTED | No se imprimieron, escanearon, reimprimieron, sustituyeron ni anularon etiquetas o documentos reales. |
+| FÍSICA | NOT_EXECUTED | No se modificaron impresoras, etiquetas, datos, Supabase, Storage, código, aplicaciones, infraestructura, paquetes ni despliegues. |
+
+---
+
+#### 78. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] recurso y representación quedan separados;
+- [x] QR/código no concede autoridad;
+- [x] escaneo no ejecuta efecto empresarial por sí solo;
+- [x] impresión no ejecuta efecto empresarial;
+- [x] BLOQUE E4 conserva ownership del servicio de impresión;
+- [x] NEXO conserva ownership del recurso y hechos físicos;
+- [x] LOC consume `IMP-LBL-08`;
+- [x] reimpresión LOC conserva identidad;
+- [x] LPN conserva identidad propia;
+- [x] se documenta que no existe output E4 dedicado a LPN genérico;
+- [x] no se inventa un identificador `IMP-*`;
+- [x] `IMP-LBL-10` queda limitado al contexto real de bulto de traslado/remisión/despacho;
+- [x] LPN genérico falla cerrado hasta reconciliación E4;
+- [x] etiqueta dañada no equivale a LPN dañado;
+- [x] activo consume `IMP-LBL-12` para identidad;
+- [x] activo consume `IMP-LBL-13` para estado técnico cuando aplica;
+- [x] reimpresión de activo no cambia identidad ni estado;
+- [x] se integran ocho documentos NEXO ya catalogados por E4;
+- [x] documento imprimible y registro empresarial quedan separados;
+- [x] etiquetas consumen `IDP-RESOURCE-VERSION`;
+- [x] documentos consumen `IDP-DOCUMENT-SNAPSHOT`;
+- [x] copia y recurso quedan separados;
+- [x] reimpresión conserva historia;
+- [x] duplicados físicos no duplican existencia;
+- [x] enrutamiento y dispositivo permanecen en E4;
+- [x] la indisponibilidad de impresora no invalida el recurso;
+- [x] la Zebra almacenada no se presenta como impresión física disponible;
+- [x] error de impresión no modifica el dominio;
+- [x] resultado desconocido exige reconciliación;
+- [x] offline no confía en estado embebido obsoleto;
+- [x] autorización de dominio y de impresión quedan separadas;
+- [x] se preserva minimización de datos;
+- [x] evidencia de impresión no equivale a decisión;
+- [x] se documenta el AS-IS BrowserPrint/ZPL;
+- [x] se documentan presets legacy;
+- [x] se documenta divergencia frente a perfiles E4;
+- [x] se documenta dependencia local de LOC en el código actual;
+- [x] se documenta queue legacy en navegador;
+- [x] se documenta LPN sin integración de impresión dedicada;
+- [x] se documentan 12 LOC, 0 LPN, 38 activos y 0 documentos de activo observados remotamente;
+- [x] la capacidad queda `REUSE_OR_REFACTOR`;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-DOM-019`.
+
+---
+
+#### 79. Límites
+
+Esta tarea no imprime ni reimprime etiquetas o documentos; no modifica LOC, LPN, activos, documentos, movimientos, custodia, conteos, mantenimiento, remisiones, layouts, templates, perfiles, trabajos de impresión, colas, dispositivos ni datos; no crea identificadores `IMP-*`; no modifica `PRINT-ARC-*` ni `EVID-ARC-*`; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, buckets, políticas de Storage, Server Actions ni Route Handlers; no ejecuta migraciones, backfills ni mutaciones remotas; no modifica Supabase ni `vento-nexo`; no implementa UI; no despliega; no crea instancia física propia; no crea ni modifica requisitos de prueba; no modifica 04A; no define la identidad permanente del contenedor físico frente al LPN; y no desarrolla `NEXO-DOM-019`.
+
+---
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-017 — Definir auditoría, historial y evidencia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`
 
 ### [ ] NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN
 ### [ ] NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN
