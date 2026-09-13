@@ -131,6 +131,7 @@ export function buildAuthorization({
   now = new Date(),
   authorize,
   phase2AuthorReview = false,
+  phase3ClosurePreflight = false,
   maxTasks,
   cutoffAt,
   timeZone,
@@ -147,6 +148,12 @@ export function buildAuthorization({
   const authorReviewEnabled = typeof phase2AuthorReview === 'boolean'
     ? phase2AuthorReview
     : parseOptionalBoolean(phase2AuthorReview, 'phase2_author_review');
+  const closurePreflightEnabled = typeof phase3ClosurePreflight === 'boolean'
+    ? phase3ClosurePreflight
+    : parseOptionalBoolean(phase3ClosurePreflight, 'phase3_closure_preflight');
+  if (closurePreflightEnabled && !authorReviewEnabled) {
+    fail('FASE 3 closure preflight exige FASE 2 author/review habilitada en el mismo turno.');
+  }
   const taskLimit = parseMaxTasks(maxTasks);
   const cutoff = parseCutoff({ cutoffAt, timeZone, now });
 
@@ -223,6 +230,17 @@ export function buildAuthorization({
         'MATERIALIZE_AUTHOR_REVIEW_EVIDENCE',
       ] : [],
     },
+    phase_3_capabilities: {
+      closure_preflight_enabled: closurePreflightEnabled,
+      repository_mutation_enabled: false,
+      task_execution_enabled: false,
+      allowed_operations: closurePreflightEnabled ? [
+        'VERIFY_REVIEWED_CANDIDATE_SHA',
+        'SIMULATE_EXACT_TASK_REPLACEMENT_IN_MEMORY',
+        'VERIFY_TASK_LIFECYCLE_COMPATIBILITY',
+        'MATERIALIZE_CLOSURE_PLAN_EVIDENCE',
+      ] : [],
+    },
     stop_policy: 'FAIL_CLOSED',
   };
 
@@ -252,6 +270,7 @@ function writeGithubOutput(filePath, authorization) {
     `block_code=${authorization.start_scope.block_code}`,
     `execution_enabled=${authorization.phase_1_capabilities.execution_enabled}`,
     `phase2_author_review_enabled=${authorization.phase_2_capabilities.author_review_enabled}`,
+    `phase3_closure_preflight_enabled=${authorization.phase_3_capabilities.closure_preflight_enabled}`,
     '',
   ].join('\n'), 'utf8');
 }
@@ -277,6 +296,8 @@ function writeSummary(filePath, authorization) {
     `- Phase 2 max model calls per task: ${authorization.phase_2_capabilities.max_model_calls_per_task}`,
     `- Repository mutation enabled in Phase 2: ${authorization.phase_2_capabilities.repository_mutation_enabled}`,
     `- Task execution enabled in Phase 2: ${authorization.phase_2_capabilities.task_execution_enabled}`,
+    `- Phase 3 closure preflight enabled: ${authorization.phase_3_capabilities.closure_preflight_enabled}`,
+    `- Repository mutation enabled in Phase 3: ${authorization.phase_3_capabilities.repository_mutation_enabled}`,
     `- Physical authorization: ${authorization.physical_authorization.scope}`,
     `- Authorization SHA-256: ${authorization.authorization_sha256}`,
     '',
@@ -302,6 +323,7 @@ export async function runFromEnvironment({ root = process.cwd(), env = process.e
     now,
     authorize: env.NIGHT_AUTHORIZATION_GRANTED,
     phase2AuthorReview: env.NIGHT_PHASE2_AUTHOR_REVIEW,
+    phase3ClosurePreflight: env.NIGHT_PHASE3_CLOSURE_PREFLIGHT,
     maxTasks: env.NIGHT_MAX_TASKS,
     cutoffAt: env.NIGHT_CUTOFF_AT,
     timeZone: env.NIGHT_TIMEZONE,
@@ -338,6 +360,9 @@ export async function runFromEnvironment({ root = process.cwd(), env = process.e
   console.log('MAIN_SHA_POLICY: EVIDENCE_ONLY_NOT_PINNED');
   console.log('PHASE_1_AI_ENABLED: NO');
   console.log(`PHASE_2_AUTHOR_REVIEW_ENABLED: ${authorization.phase_2_capabilities.author_review_enabled ? 'SI' : 'NO'}`);
+  console.log(`PHASE_3_CLOSURE_PREFLIGHT_ENABLED: ${authorization.phase_3_capabilities.closure_preflight_enabled ? 'SI' : 'NO'}`);
+  console.log('PHASE_3_REPOSITORY_MUTATION_ENABLED: NO');
+  console.log('PHASE_3_TASK_EXECUTION_ENABLED: NO');
   console.log(`PHASE_2_AI_ENABLED: ${authorization.phase_2_capabilities.ai_enabled ? 'SI' : 'NO'}`);
   console.log('TASK_EXECUTION_ENABLED: NO');
   console.log('REPOSITORY_MUTATION_ENABLED: NO');
