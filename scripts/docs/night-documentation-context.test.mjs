@@ -2,8 +2,10 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  buildStructuralBaseline,
   classifyComplexity,
   compactTaskBlock,
+  taskStructureProfile,
   titleKeywords,
   validateAuthorizationForPhase2,
 } from './night-documentation-context.mjs';
@@ -80,4 +82,41 @@ test('FASE 2 exige autorización explícita, no física, vigente y dentro del mi
     activeSequence: { block_code: 'BLOQUE L' },
     now: new Date('2026-09-13T05:00:00.000Z'),
   }), /cruzó de bloque/u);
+});
+
+test('baseline estructural toma los tres predecesores aprobados inmediatos del mismo owner', () => {
+  const owner = 'bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md';
+  const makeBlock = (id, count) => [
+    `### ✅ ${id} — Referencia`,
+    '**Estado:** APROBADA',
+    ...Array.from(
+      { length: count },
+      (_, index) => `#### ${index + 1}. Sección ${index + 1}\nContenido sustantivo ${'x'.repeat(250)}`,
+    ),
+  ].join('\n\n');
+
+  const tasks = [
+    { id: 'NEXO-DOM-018', title: 'Externa', state: 'APROBADA', marker: '✅', relativePath: 'otro.md', block: makeBlock('NEXO-DOM-018', 90) },
+    { id: 'NEXO-DOM-019', title: 'Referencia 19', state: 'APROBADA', marker: '✅', relativePath: owner, block: makeBlock('NEXO-DOM-019', 50) },
+    { id: 'NEXO-DOM-020', title: 'Referencia 20', state: 'APROBADA', marker: '✅', relativePath: owner, block: makeBlock('NEXO-DOM-020', 60) },
+    { id: 'NEXO-DOM-021', title: 'Referencia 21', state: 'APROBADA', marker: '✅', relativePath: owner, block: makeBlock('NEXO-DOM-021', 70) },
+    { id: 'NEXO-DOM-022', title: 'Actual', state: 'NO INICIADA', marker: '[ ]', relativePath: owner, block: '### [ ] NEXO-DOM-022 — Actual' },
+  ];
+
+  const inventory = new Map(tasks.map((task) => [task.id, task]));
+  const baseline = buildStructuralBaseline(
+    inventory,
+    tasks.at(-1),
+    { complexity: 'SUBSTANTIVE' },
+  );
+
+  assert.equal(baseline.enforced, true);
+  assert.deepEqual(
+    baseline.references.map(({ id }) => id),
+    ['NEXO-DOM-021', 'NEXO-DOM-020', 'NEXO-DOM-019'],
+  );
+  assert.equal(baseline.medians.section_count, 60);
+  assert.equal(baseline.quality_floor.min_section_count, 39);
+  assert.ok(baseline.quality_floor.min_character_count >= 18000);
+  assert.equal(taskStructureProfile(tasks[3]).section_count, 70);
 });

@@ -14,9 +14,15 @@ const DEVELOPMENT_POLICY_PATH = `${BASE_DIR}/task-development-policy.json`;
 const ACTIVE_SEQUENCE_PATH = `${BASE_DIR}/active-sequence.json`;
 const REGISTRY_DIR = `${BASE_DIR}/bloques/E1_DESCUBRIMIENTO_OPERATIVO`;
 const CAPSULE_SCHEMA_VERSION = 1;
-const MAX_CAPSULE_CHARS = 90000;
+const MAX_CAPSULE_CHARS = 115000;
 const MAX_RELATED_TASKS = 6;
-const MAX_TASK_EXCERPT_CHARS = 8500;
+const MAX_TASK_EXCERPT_CHARS = 6000;
+const STRUCTURAL_REFERENCE_COUNT = 3;
+const STRUCTURAL_REFERENCE_EXCERPT_CHARS = 4500;
+const STRUCTURAL_SECTION_RATIO = 0.65;
+const STRUCTURAL_CHARACTER_RATIO = 0.50;
+const STRUCTURAL_MIN_SECTIONS = 20;
+const STRUCTURAL_MIN_CHARACTERS = 18000;
 const STOP_WORDS = new Set([
   'a','al','con','como','cuando','de','del','e','el','en','entre','es','la','las','lo','los','o','para','por','que','se','sin','su','sus','un','una','y',
   'definir','separar','integrar','vincular','resolver','prohibir','emitir','todo','toda','todos','todas',
@@ -107,6 +113,110 @@ export function compactTaskBlock(block, keywords, maxChars = MAX_TASK_EXCERPT_CH
   const combined = [...new Set(parts)].join('\n\n').trim();
   if (combined.length <= maxChars) return combined;
   return `${combined.slice(0, maxChars)}\n...[EXCERPT_TRUNCATED]`;
+}
+
+function sectionTitles(block) {
+  return [...String(block ?? '').replace(/\r\n?/gu, '\n').matchAll(/^####\s+(.+)$/gmu)]
+    .map((match) => match[1].trim());
+}
+
+function median(values) {
+  const sorted = [...values].filter(Number.isFinite).sort((a, b) => a - b);
+  if (sorted.length === 0) return 0;
+  const middle = Math.floor(sorted.length / 2);
+  return sorted.length % 2 === 1
+    ? sorted[middle]
+    : (sorted[middle - 1] + sorted[middle]) / 2;
+}
+
+function structuralReferenceExcerpt(block, maxChars = STRUCTURAL_REFERENCE_EXCERPT_CHARS) {
+  const normalized = String(block ?? '').replace(/\r\n?/gu, '\n');
+  const sections = normalized.split(/(?=^####\s+)/gmu);
+  const keep = /resultado|artefact|matriz|escenario|contrato|regla|invariante|estado remoto|snapshot|as-is|legacy|brecha|reconciliaci[oó]n|riesgo|handoff|pendiente|propietario|auditor[ií]a|autorizaci[oó]n|idempotencia|concurrencia|offline|criterio|l[ií]mite|continuidad/iu;
+  const selected = sections
+    .filter((section) => keep.test(section.split('\n')[0] ?? ''))
+    .slice(0, 14)
+    .join('\n');
+  const combined = [metadataHead(normalized), selected]
+    .map((entry) => entry.trim())
+    .filter(Boolean)
+    .join('\n\n');
+  if (combined.length <= maxChars) return combined;
+  return combined.slice(0, maxChars) + '\n...[STRUCTURAL_REFERENCE_TRUNCATED]';
+}
+
+export function taskStructureProfile(task) {
+  const block = String(task?.block ?? '').replace(/\r\n?/gu, '\n').trim();
+  const lines = block ? block.split('\n') : [];
+  const headings = sectionTitles(block);
+  const fenceCount = lines.filter((line) => line.trimStart().startsWith('```')).length;
+  return {
+    id: task?.id ?? null,
+    title: task?.title ?? null,
+    owner: task?.relativePath ?? null,
+    section_count: headings.length,
+    character_count: block.length,
+    line_count: lines.length,
+    table_row_count: lines.filter((line) => /^\s*\|.*\|\s*$/u.test(line)).length,
+    code_block_count: Math.floor(fenceCount / 2),
+    section_titles: headings,
+    excerpt: structuralReferenceExcerpt(block),
+  };
+}
+
+export function buildStructuralBaseline(inventory, current, { complexity = 'SUBSTANTIVE' } = {}) {
+  const ordered = [...inventory.values()];
+  const currentIndex = ordered.findIndex((task) => task.id === current.id);
+  if (currentIndex < 0) {
+    return {
+      enforced: false,
+      reason: 'CURRENT_NOT_IN_CANONICAL_INVENTORY',
+      references: [],
+      quality_floor: null,
+    };
+  }
+
+  const references = [];
+  for (
+    let index = currentIndex - 1;
+    index >= 0 && references.length < STRUCTURAL_REFERENCE_COUNT;
+    index -= 1
+  ) {
+    const task = ordered[index];
+    if (task.relativePath !== current.relativePath) continue;
+    if (!taskStateApproved(task)) continue;
+    references.push(taskStructureProfile(task));
+  }
+
+  const enforced = complexity !== 'ROUTINE' && references.length >= 2;
+  const sectionMedian = median(references.map(({ section_count }) => section_count));
+  const characterMedian = median(references.map(({ character_count }) => character_count));
+
+  return {
+    enforced,
+    policy: 'DYNAMIC_SAME_OWNER_PREDECESSOR_PARITY',
+    reference_count: references.length,
+    references,
+    medians: {
+      section_count: sectionMedian,
+      character_count: characterMedian,
+    },
+    quality_floor: enforced ? {
+      min_section_count: Math.max(
+        STRUCTURAL_MIN_SECTIONS,
+        Math.floor(sectionMedian * STRUCTURAL_SECTION_RATIO),
+      ),
+      min_character_count: Math.max(
+        STRUCTURAL_MIN_CHARACTERS,
+        Math.floor(characterMedian * STRUCTURAL_CHARACTER_RATIO),
+      ),
+      section_ratio: STRUCTURAL_SECTION_RATIO,
+      character_ratio: STRUCTURAL_CHARACTER_RATIO,
+    } : null,
+    rule: enforced
+      ? 'El candidato no puede ser materialmente mas superficial que sus predecesores aprobados del mismo owner sin devolver STOP.'
+      : 'Baseline informativo; no hay suficientes predecesores comparables para enforcement.',
+  };
 }
 
 export function classifyComplexity({ task, relatedCount = 0 } = {}) {
@@ -251,6 +361,7 @@ export function buildContextCapsule({ root = process.cwd(), authorization, now =
   const formatPolicy = readJson(root, FORMAT_POLICY_PATH);
   const developmentPolicy = readJson(root, DEVELOPMENT_POLICY_PATH);
   const complexity = classifyComplexity({ task: current, relatedCount: related.length });
+  const structuralBaseline = buildStructuralBaseline(inventory, current, { complexity });
 
   const capsule = {
     schema_version: CAPSULE_SCHEMA_VERSION,
@@ -286,6 +397,7 @@ export function buildContextCapsule({ root = process.cwd(), authorization, now =
       validators: preflight.validators,
     },
     complexity,
+    structural_baseline: structuralBaseline,
     drafting_contract: {
       task_artifact: contract.task_artifact,
       registry_artifact: contract.registry_artifact,
@@ -298,6 +410,7 @@ export function buildContextCapsule({ root = process.cwd(), authorization, now =
         'Si faltan hechos canónicos necesarios para una decisión, devolver STOP en vez de inferir.',
         'Los cambios TREQ deben expresarse como filas semánticas completas de catorce columnas; nunca modificar historial ajeno.',
         'La continuidad debe conservar última aprobada, actual aprobada y siguiente reservada.',
+        'Los required_section_groups son un mínimo sintáctico, no un objetivo de profundidad; structural_baseline gobierna la paridad mínima con tareas aprobadas vecinas del mismo owner.',
       ],
     },
     related_approved_tasks: related.map(({ task, score }) => ({
