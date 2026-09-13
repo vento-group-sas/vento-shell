@@ -222,6 +222,27 @@ function sectionBody(markdown, headingPattern) {
   return (end >= 0 ? rest.slice(0, end) : rest).trim();
 }
 
+function normalizeContinuityLabels(markdown) {
+  const lines = String(markdown ?? '').replace(/\r\n?/gu, '\n').split('\n');
+  let inContinuity = false;
+
+  return lines.map((line) => {
+    if (/^####\s+(?:\d+\.\s*)?Continuidad\b/iu.test(line)) {
+      inContinuity = true;
+      return line;
+    }
+    if (inContinuity && /^####\s+/u.test(line)) {
+      inContinuity = false;
+    }
+    if (!inContinuity) return line;
+
+    return line
+      .replace(/Última(?:\s+tarea)?\s+aprobada/iu, 'ÚLTIMA TAREA APROBADA')
+      .replace(/(?:Tarea\s+)?actual\s+aprobada/iu, 'TAREA ACTUAL APROBADA')
+      .replace(/Siguiente(?:\s+tarea)?\s+reservada/iu, 'SIGUIENTE TAREA RESERVADA');
+  }).join('\n');
+}
+
 export function validateCandidate(author, capsule) {
   if (author?.status === 'STOP') {
     if (!String(author.stop_reason ?? '').trim()) fail('autor devolvió STOP sin stop_reason.');
@@ -229,7 +250,7 @@ export function validateCandidate(author, capsule) {
   }
   if (author?.status !== 'CANDIDATE') fail(`estado de autor inválido: ${author?.status ?? 'VACÍO'}.`);
 
-  const markdown = String(author.task_markdown ?? '').replace(/\r\n?/gu, '\n').trim();
+  const markdown = normalizeContinuityLabels(author.task_markdown).trim();
   const taskId = capsule.current.id;
   const exactHeading = `### ✅ ${taskId} — ${capsule.current.title}`;
   if (!markdown.startsWith(exactHeading)) fail(`candidato no inicia con el título canónico exacto: ${exactHeading}.`);
@@ -326,6 +347,7 @@ function authorInstructions() {
     'Si una decisión necesaria no está soportada por la cápsula, devuelve status STOP con la contradicción o carencia exacta.',
     'Si la tarea necesita crear/modificar TREQ, entrega cada fila semántica completa con las catorce columnas. Nunca alteres requisitos históricos por estilo.',
     'No incluyas instrucciones de descarga, reemplazo, terminal, rutas locales ni mensajes dirigidos al usuario dentro de task_markdown.',
+    'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; no los abrevies ni parafrasees.',
     'En Evidencia de validación usa únicamente estados NOT_EXECUTED/NOT_APPLICABLE salvo evidencia real explícita en la cápsula.',
   ].join('\n');
 }
@@ -476,6 +498,47 @@ export async function runAuthorReview({ capsule, apiKey, outputDir, call = callS
   return summary;
 }
 
+function inferFailureStage(outputDir, taskId) {
+  const author = path.join(outputDir, 'author-response.json');
+  const candidate = path.join(outputDir, `${taskId}_APROBADA_PARA_REEMPLAZAR.md`);
+  const reviewer1 = path.join(outputDir, 'reviewer-1.json');
+  const reviewer2 = path.join(outputDir, 'reviewer-2.json');
+
+  if (!fs.existsSync(author)) return 'AUTHOR_CALL';
+  if (!fs.existsSync(candidate)) return 'AUTHOR_LOCAL_VALIDATION';
+  if (!fs.existsSync(reviewer1) || !fs.existsSync(reviewer2)) return 'REVIEW_CALL';
+  return 'REVIEW_VALIDATION';
+}
+
+function materializeUnhandledFailureSummary(error) {
+  const contextPath = String(process.env.NIGHT_CONTEXT_PATH ?? '').trim();
+  const outputDir = String(process.env.NIGHT_PHASE2_OUTPUT_DIR ?? '').trim();
+  if (!contextPath || !outputDir || !fs.existsSync(contextPath)) return;
+
+  const summaryPath = path.join(outputDir, 'phase2-summary.json');
+  if (fs.existsSync(summaryPath)) return;
+
+  const capsule = readJson(contextPath, 'context-capsule.json');
+  const models = selectModels(capsule.complexity);
+  const stage = inferFailureStage(outputDir, capsule.current.id);
+  const modelCalls = stage === 'AUTHOR_CALL' || stage === 'AUTHOR_LOCAL_VALIDATION' ? 1 : 3;
+
+  writeJson(summaryPath, {
+    status: 'FAIL',
+    stage,
+    task_id: capsule.current.id,
+    complexity: capsule.complexity,
+    context_sha256: capsule.capsule_sha256,
+    reason: error instanceof Error ? error.message : String(error),
+    model_calls: modelCalls,
+    max_model_calls: MAX_MODEL_CALLS,
+    models,
+    repository_mutation: false,
+    task_execution_enabled: false,
+    physical_authorization: 'NONE',
+  });
+}
+
 async function main() {
   const contextPath = String(process.env.NIGHT_CONTEXT_PATH ?? '').trim();
   const outputDir = String(process.env.NIGHT_PHASE2_OUTPUT_DIR ?? '').trim();
@@ -512,6 +575,11 @@ const invokedDirectly = process.argv[1]
 
 if (invokedDirectly) {
   main().catch((error) => {
+    try {
+      materializeUnhandledFailureSummary(error);
+    } catch (summaryError) {
+      console.error(`FAILURE_SUMMARY_ERROR: ${summaryError instanceof Error ? summaryError.message : String(summaryError)}`);
+    }
     console.error('=== RESULTADO PARA CHATGPT ===');
     console.error('ESTADO: FAIL');
     console.error('OPERACION: NIGHT_DOCUMENTATION_AUTHOR_REVIEW');
