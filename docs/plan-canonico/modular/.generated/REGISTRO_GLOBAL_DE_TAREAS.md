@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1181** |
+| Aprobadas | **1182** |
 | En propuesta | **0** |
-| No iniciadas | **415** |
+| No iniciadas | **414** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **74.00% (1181/1596)** |
+| Porcentaje de completamiento | **74.06% (1182/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **415** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1082** |
+| ⏸ NO_EVALUADA | **414** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1083** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-014` — Definir kits, conjuntos y validación de completitud | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-015` — Definir conteos de activos, reutilizables y contenedores | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-016` — Definir repuestos, compatibilidad y stock mínimo | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-015` — Definir conteos de activos, reutilizables y contenedores | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-016` — Definir repuestos, compatibilidad y stock mínimo | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-017` — Definir auditoría, historial y evidencia | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -966,7 +966,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-012` | Definir mantenimiento, reparación y disponibilidad | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-013` | Definir baja, descarte, venta o reemplazo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-014` | Definir kits, conjuntos y validación de completitud | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-015` | Definir conteos de activos, reutilizables y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-015` | Definir conteos de activos, reutilizables y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-016` | Definir repuestos, compatibilidad y stock mínimo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-017` | Definir auditoría, historial y evidencia | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-018` | Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4 | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
