@@ -25,17 +25,17 @@
 - **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-019`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-025`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-019`
-- **Posición topológica:** **6/189**; prioridad derivada, sin selección humana.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-025`
+- **Posición topológica:** **7/189**; prioridad derivada, sin selección humana.
 - **Estado efectivo:** `COMPILED`
 - **Acción exacta:** `PREPARE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-019`
-- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-019`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-019.json` — `NOT_PREPARED`
+- **Objetivo exacto:** `GAP-PKG-025`
+- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-025`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-025.json` — `NOT_PREPARED`
 - **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-019 está dependency-eligible y no tiene expediente package-gate.
+- **Por qué:** GAP-PKG-025 está dependency-eligible y no tiene expediente package-gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `NEXO-DOM-019`
