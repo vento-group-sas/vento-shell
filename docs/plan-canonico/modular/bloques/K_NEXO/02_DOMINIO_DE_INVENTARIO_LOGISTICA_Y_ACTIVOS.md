@@ -27840,7 +27840,1078 @@ Cada tarea conserva su frontera.
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido`
 
-### [ ] NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+### ✅ NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
+**Tarea siguiente:** NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
+**Tipo de tarea:** documental; definición canónica del movimiento de una unidad logística LPN como transición atómica de su cierre completo de contenido, ubicación efectiva y trazabilidad, con preservación de identidades, dimensiones de existencia, exclusividad de representación, idempotencia, concurrencia, operación offline, auditoría y fronteras con contenedor físico, tránsito, custodia y lifecycle bajo topología `DEFINE_ONCE`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de manera única, verificable y reutilizable que el movimiento legítimo de un LPN no es una edición aislada de la ubicación de su cabecera: es una transición logística única que desplaza atómicamente la totalidad de su contenido autoritativo y, cuando exista, toda su estructura LPN descendiente.
+
+La regla evita que una unidad logística se divida implícitamente durante un traslado, que parte de sus existencias continúe proyectándose en el origen o que una actualización incompleta convierta el mismo contenido en disponible en dos contextos físicos.
+
+```text
+MOVE LPN
+=
+ONE AUTHORIZED LOGISTICS INTENT
++
+ONE RECONCILIABLE MEMBERSHIP CLOSURE
++
+ONE EFFECTIVE-PLACEMENT TRANSITION
++
+ONE CONSISTENT RESULT FOR EVERY INCLUDED SUBJECT
++
+ONE AUDITABLE OUTCOME
+```
+
+Y, en particular:
+
+```text
+MOVE ROOT LPN
+→ MOVE ALL DESCENDANT LPN
+→ MOVE ALL DIRECT CONTENT OF EACH INCLUDED LPN
+→ PRESERVE EACH SUBJECT IDENTITY
+→ NEVER CREATE A SECOND AUTHORITATIVE LOCATION OR BALANCE
+```
+
+Esta tarea especifica solamente el contrato de dominio. No materializa tablas, columnas, migraciones, RPC, políticas RLS, UI, Server Actions, Route Handlers, dispositivos, escáneres, etiquetas, trabajos de impresión, integraciones, datos, movimientos físicos reales ni despliegues.
+
+---
+
+#### 2. Decisiones canónicas consumidas
+
+Esta definición consume sin reabrir los contratos aprobados que establecen:
+
+- que un LPN es una identidad logística y no una LOC, producto, lote, movimiento, remisión ni contenedor físico;
+- que la identidad LPN conserva su estabilidad a través de transiciones de lifecycle permitidas;
+- que empaque, desempaque y transferencia transforman representación o membresía sin crear existencia;
+- que un contenido posee una única representación contable autoritativa: suelta directa o como membresía directa de un LPN, nunca ambas;
+- que un LPN hijo conserva un único padre activo como máximo y que su ubicación efectiva procede de su cadena de ancestros hasta el LPN raíz;
+- que sede, LOC, posición opcional, LPN y contenido son conceptos diferentes y que ubicación conocida, tránsito y no ubicación temporal son modos explícitos;
+- que la identidad física de un contenedor, cuando existe, es independiente del LPN y de su contenido;
+- que una transición logística debe ser idempotente, auditable, protegida contra concurrencia y reconciliable ante resultado incierto.
+
+La presente tarea concreta la consecuencia de esos contratos para el movimiento de una unidad logística completa. No sustituye sus reglas específicas.
+
+---
+
+#### 3. Alcance
+
+El contrato cubre:
+
+- la definición del conjunto que se mueve con un LPN;
+- la condición de atomicidad lógica de una transición de movimiento;
+- movimientos directos entre colocaciones compatibles;
+- inicio y finalización de tránsito como límites de conjunto completos;
+- conservación de identidad, cantidad, lote, serial, condición, vencimiento y demás dimensiones de existencia aplicables;
+- comportamiento ante LPN anidados, contenido directo, contenido serializado, cantidad reutilizable y kits;
+- interacción limitada con lifecycle, custodia, reserva, conteo, contenedor físico y proyecciones;
+- idempotencia, concurrencia, operación offline, respuesta tardía, conflicto y reconciliación;
+- evidencia mínima, AS-IS observable, brechas y criterios de aceptación documental.
+
+---
+
+#### 4. Límites de alcance material
+
+Esta tarea no decide:
+
+- qué persona, rol o política concreta puede autorizar cada clase de traslado; solo exige autorización efectiva conforme al contrato propietario;
+- la capacidad, compatibilidad, temperatura u otras restricciones específicas de una LOC, un producto o un contenedor; solo exige que las restricciones aplicables estén satisfechas antes de aceptar el movimiento;
+- la creación, cierre, anulación, reetiquetado o rotación de un LPN;
+- el empaque, desempaque, división, unión o transferencia selectiva de contenido;
+- la creación, baja, mantenimiento, retorno o movimiento autónomo de un contenedor físico;
+- la confirmación de un despacho, una recepción, una remisión, un manifiesto o una transferencia de custodia;
+- la implementación física futura de los mecanismos que harán cumplir el contrato.
+
+Un proceso que necesite cualquiera de esas decisiones debe correlacionarlas explícitamente con sus contratos propietarios; no puede asumirlas como efectos implícitos de `MOVE_LPN`.
+
+---
+
+#### 5. Vocabulario operativo
+
+Para esta tarea:
+
+- **LPN objetivo**: identidad logística cuya colocación se pretende cambiar.
+- **LPN raíz móvil**: LPN objetivo que no tiene padre LPN autoritativo vigente al momento de validar la operación.
+- **cierre de movimiento**: conjunto completo de LPN y contenido sujeto a una misma transición.
+- **contenido directo**: existencia cuya membresía autoritativa pertenece directamente a un LPN concreto.
+- **contenido efectivo**: contenido directo del LPN objetivo más el contenido directo de cada LPN descendiente incluido en su estructura vigente.
+- **colocación de origen**: ubicación o modo logístico efectivo vigente antes de la transición.
+- **colocación de destino**: ubicación o modo logístico efectivo resultante de una transición aceptada.
+- **sujeto incluido**: LPN o contenido que integra el cierre de movimiento y, por ello, no puede recibir un resultado divergente.
+- **movimiento parcial**: resultado en el que solo una fracción del cierre cambia de contexto efectivo; está prohibido para un `MOVE_LPN` aceptado.
+
+Estas expresiones definen semántica de dominio; no implican nombres de tablas, campos, endpoints ni comandos implementados.
+
+---
+
+#### 6. Regla raíz de totalidad
+
+Se fija la siguiente invariante:
+
+```text
+ACCEPTED MOVE OF ROOT LPN
+=
+MOVE OF ITS COMPLETE CURRENT CLOSURE
+```
+
+Para un LPN raíz `R`, su cierre se expresa conceptualmente así:
+
+```text
+CLOSURE(R)
+=
+{R}
++
+ALL DESCENDANT LPN OF R WITH ACTIVE ANCESTOR CHAIN
++
+ALL DIRECT CONTENT OF EVERY INCLUDED LPN
+```
+
+No es válido aceptar un movimiento que deje un hijo anidado, una línea de contenido directa o una identidad serializada incluida en una colocación efectiva anterior mientras el LPN raíz ya aparece en el destino.
+
+La completitud se determina sobre la estructura y membresía autoritativas validadas, no sobre una lista visible, caché local, resultado parcial de escaneo o proyección de interfaz.
+
+---
+
+#### 7. El LPN no mueve una cantidad abstracta
+
+El LPN no es una etiqueta que autorice a recrear sus saldos en otro lugar. El movimiento conserva los mismos sujetos de dominio:
+
+```text
+SAME LPN IDs
++
+SAME CONTENT IDs OR CANONICAL QUANTITIES
++
+SAME EXISTENCE DIMENSIONS
++
+NEW EFFECTIVE PLACEMENT
+```
+
+Por tanto:
+
+```text
+MOVE LPN
+!= PACK
+!= UNPACK
+!= TRANSFER_CONTENT
+!= SPLIT_CONTENT
+!= MERGE_CONTENT
+!= INVENTORY ADJUSTMENT
+!= NEW INVENTORY
+```
+
+La operación traslada una unidad logística existente. No desagrega su contenido para volver a empacarlo en el destino, no convierte el contenido en existencia suelta por conveniencia y no autoriza que los sujetos incluidos sean sustituidos por equivalentes aparentes.
+
+---
+
+#### 8. Identidad del conjunto antes y después
+
+Para todo movimiento aceptado:
+
+```text
+LPN_CLOSURE_BEFORE = LPN_CLOSURE_AFTER
+CONTENT_CLOSURE_BEFORE = CONTENT_CLOSURE_AFTER
+```
+
+La igualdad es por identidad exacta cuando el contenido es serializado, activo individual, kit instancia u otro sujeto individualizable. Para existencia por cantidad, la igualdad exige preservar la cantidad canónica y el conjunto completo de dimensiones que hacen distinguible esa existencia.
+
+```text
+NET_ENTERPRISE_EXISTENCE_DELTA = 0
+NET_AUTHORITATIVE_CONTENT_DELTA = 0
+```
+
+Una diferencia física descubierta posteriormente no se corrige reinterpretando retrospectivamente el movimiento como parcial. Debe seguir el contrato de conteo, investigación, ajuste o reconciliación que corresponda.
+
+---
+
+#### 9. Exclusividad de representación durante el movimiento
+
+La exclusividad aprobada para existencia suelta y contenido LPN continúa vigente en cada fase del movimiento.
+
+```text
+DIRECT LPN MEMBERSHIP BEFORE
+→ DIRECT LPN MEMBERSHIP DURING
+→ DIRECT LPN MEMBERSHIP AFTER
+```
+
+Un contenido incluido no pasa a ser saldo suelto solo porque el LPN esté en tránsito, no tenga una LOC efectiva o se encuentre pendiente de confirmación. La ausencia temporal de una colocación final no autoriza una segunda representación de disponibilidad.
+
+En particular, están prohibidas estas derivaciones:
+
+```text
+LPN IN TRANSIT → CONTENT AVAILABLE AS LOOSE AT ORIGIN
+LPN MOVED → CONTENT ALSO AVAILABLE AT DESTINATION AS LOOSE
+LPN MOVED → CONTENT RE-ADDED AS NEW LPN MEMBERSHIP
+```
+
+Una proyección puede mostrar el contenido por la sede, LOC o tránsito efectivos del LPN, pero esa proyección no crea una membresía ni un saldo adicional.
+
+---
+
+#### 10. Colocación directa y colocación efectiva
+
+El contrato diferencia la colocación directa del LPN raíz y la colocación efectiva de los sujetos descendientes.
+
+```text
+ROOT LPN DIRECT PLACEMENT
+→ ROOT LPN EFFECTIVE PLACEMENT
+→ DESCENDANT LPN EFFECTIVE PLACEMENT
+→ DIRECT CONTENT EFFECTIVE PLACEMENT
+```
+
+Cuando un LPN raíz se mueve, cambia su colocación directa autorizada y, como consecuencia única de la misma decisión, cambia la colocación efectiva de cada LPN descendiente y de cada contenido incluido.
+
+El hijo anidado no recibe una segunda colocación actual independiente para simular que fue movido. Su resultado deriva de la misma cadena estructural vigente y conserva su identidad y relación de parentesco.
+
+---
+
+#### 11. LPN raíz como sujeto ordinario de movimiento
+
+Un `MOVE_LPN` ordinario exige que el LPN objetivo sea raíz al momento de la validación. Esto evita contradicción con la regla de que un LPN hijo hereda su colocación efectiva de su ancestro.
+
+```text
+ACTIVE_PARENT_COUNT(LPN_TARGET) = 0
+→ LPN_TARGET IS ELIGIBLE AS ROOT MOVE SUBJECT
+```
+
+La ausencia de contenido no impide por sí sola que un LPN raíz se mueva: el cierre puede contener únicamente su identidad LPN. Sin embargo, el movimiento de un LPN vacío tampoco cierra, anula, rota ni altera su lifecycle automáticamente.
+
+---
+
+#### 12. LPN hijo no adquiere ubicación independiente
+
+Si el LPN objetivo tiene un padre autoritativo vigente, no puede aceptarse un `MOVE_LPN` que le asigne una colocación efectiva distinta conservando a la vez el mismo vínculo de anidamiento.
+
+```text
+CHILD WITH ACTIVE PARENT
++
+INDEPENDENT DESTINATION
+=
+DENY UNTIL STRUCTURAL RELATION IS RESOLVED
+```
+
+Separar un hijo de su padre requiere primero o de manera correlacionada una transición estructural autorizada de desanidamiento o reparentado bajo el contrato de LPN anidados. Esa transición no puede ocultarse como edición de ubicación del hijo.
+
+Después de que el hijo sea raíz de forma válida, su movimiento se rige por este contrato y comprende su propio cierre completo.
+
+---
+
+#### 13. Atomicidad conceptual
+
+Atomicidad significa que el resultado observable de una intención aceptada no puede situar sujetos incluidos en resultados incompatibles.
+
+```text
+ALL INCLUDED SUBJECTS AT ORIGIN
+OR
+ALL INCLUDED SUBJECTS IN THE SAME RESULTING MODE
+```
+
+Para una relocalización directa aceptada:
+
+```text
+ALL INCLUDED SUBJECTS
+: ORIGIN_EFFECTIVE_PLACEMENT
+→ DESTINATION_EFFECTIVE_PLACEMENT
+```
+
+Para el inicio autorizado de tránsito:
+
+```text
+ALL INCLUDED SUBJECTS
+: ORIGIN_EFFECTIVE_PLACEMENT
+→ IN_TRANSIT UNDER SAME MOVEMENT CONTEXT
+```
+
+Para la finalización autorizada de tránsito:
+
+```text
+ALL INCLUDED SUBJECTS
+: SAME IN_TRANSIT CONTEXT
+→ DESTINATION_EFFECTIVE_PLACEMENT
+```
+
+La atomicidad es una propiedad del cambio de estado lógico y de su evidencia; no afirma que todos los objetos físicos se desplacen instantáneamente en el espacio.
+
+---
+
+#### 14. No existe éxito parcial
+
+Si una precondición no permite demostrar el cierre completo, si un sujeto incluido no puede recibir el resultado requerido o si el resultado de la intención queda incierto, la intención no puede registrarse como `MOVE_LPN` exitoso.
+
+```text
+ONE SUBJECT UNRESOLVED
+→ WHOLE MOVE NOT CONFIRMED AS COMPLETED
+```
+
+No son resultados aceptables:
+
+- mover la cabecera LPN y dejar contenido en origen;
+- mover únicamente contenido por cantidad y omitir identidades serializadas;
+- mover el padre y conservar hijos con una ubicación efectiva independiente previa;
+- confirmar destino para una parte y tránsito para otra parte del mismo cierre;
+- descontar origen sin resultado de destino o tránsito reconciliable;
+- completar el movimiento y dejar pendientes sin clasificar como si fueran parte de un cierre correcto.
+
+La recuperación debe declarar conflicto, resultado desconocido o estado de reconciliación, no éxito parcial.
+
+---
+
+#### 15. Precondiciones mínimas de un movimiento directo
+
+Antes de aceptar una transición directa entre colocaciones conocidas se debe poder demostrar, como mínimo:
+
+1. existencia del LPN objetivo;
+2. identidad inequívoca del LPN objetivo;
+3. condición de LPN raíz o resolución estructural previa conforme al contrato aplicable;
+4. lifecycle que admita movimiento operativo;
+5. colocación de origen esperada y compatible con la intención;
+6. destino identificado dentro del contrato de ubicación aplicable;
+7. cierre de movimiento completo y reconstruible;
+8. revisión esperada del LPN objetivo y de las relaciones que determinan el cierre;
+9. integridad de las membresías directas incluidas;
+10. ausencia de conflicto, bloqueo o reconciliación que impida mutar alguno de los sujetos;
+11. cumplimiento de restricciones aplicables de autorización, capacidad, condición, lote, vencimiento, compatibilidad y territorio;
+12. actor, principal técnico, correlación e identidad de intención;
+13. mecanismo de idempotencia;
+14. evidencia mínima apta para reconstruir el resultado.
+
+La falta de una precondición materializada no se satisface mediante inferencia desde una etiqueta, pantalla, último escaneo o apariencia física.
+
+---
+
+#### 16. Autorización
+
+La autorización se evalúa sobre la operación y el contexto efectivos, no solo sobre el código visible del LPN.
+
+Como mínimo, una futura materialización deberá poder vincular la decisión con:
+
+- actor efectivo y principal técnico cuando sean distintos;
+- LPN objetivo y cierre que se intenta mover;
+- origen, destino o contexto de tránsito;
+- sede y territorio aplicables;
+- propósito de la operación y documento causal cuando exista;
+- reglas de condición, reserva, custodia, lifecycle y excepción aplicables;
+- instante efectivo, correlación e identidad idempotente.
+
+Un escaneo, deep link, etiqueta, código QR o barcode puede ayudar a resolver una identidad dentro de una sesión, pero no constituye por sí mismo autorización para mover la unidad logística.
+
+---
+
+#### 17. Efectos permitidos de una relocalización directa
+
+Cuando un movimiento directo es aceptado, sus únicos efectos de dominio propios son:
+
+- conservar la identidad del LPN raíz;
+- conservar la jerarquía LPN incluida;
+- conservar la membresía directa de contenido de cada LPN incluido;
+- sustituir de modo coherente la colocación efectiva de todo el cierre;
+- conservar cantidades, identidades y dimensiones de existencia;
+- registrar una transición y su evidencia correlacionable;
+- actualizar proyecciones derivadas de ubicación sin convertirlas en nuevas fuentes de verdad;
+- invalidar la expectativa de revisión anterior para prevenir una mutación concurrente incompatible.
+
+El resultado no necesita ni permite recrear una línea de contenido, una identidad serializada, un LPN descendiente o un saldo suelto para expresar el traslado.
+
+---
+
+#### 18. Efectos expresamente prohibidos
+
+Un `MOVE_LPN` puro no produce por sí solo:
+
+```text
+NEW LPN
+NEW CONTENT
+NEW INVENTORY
+PACK
+UNPACK
+TRANSFER_CONTENT
+SPLIT_CONTENT
+MERGE_CONTENT
+LIFECYCLE TRANSITION
+CONTAINER BINDING CHANGE
+CUSTODY TRANSFER
+RESERVATION RELEASE
+COUNT ADJUSTMENT
+COST OR VALUATION CHANGE
+```
+
+Un proceso empresarial puede requerir acciones de esa lista alrededor de un movimiento. En tal caso, cada una conserva su intención, autorización, invariantes y evidencia propias. El resultado no puede presentarlas como efectos automáticos del traslado para evitar sus controles.
+
+---
+
+#### 19. Contenido por cantidad
+
+Para contenido representado por cantidad, el movimiento preserva la cantidad canónica de cada partición de existencia incluida.
+
+```text
+SUM QUANTITY BY FULL EXISTENCE DIMENSIONS BEFORE
+=
+SUM QUANTITY BY SAME DIMENSIONS AFTER
+```
+
+No se permite que una proyección de destino agrupe cantidades con lote, condición, presentación, vencimiento u otra dimensión distinta y luego afirme que el movimiento fue conservativo. La agrupación visual no reemplaza las dimensiones autoritativas que permitan reconciliar origen y destino.
+
+No se autoriza saldo negativo, disponibilidad adicional ni compensación implícita por redondeo como consecuencia de mover el LPN.
+
+---
+
+#### 20. Contenido serializado, activos y kits
+
+Para `SERIALIZED_IDENTITY`, activo individual, contenedor tratado como contenido solo si otro contrato así lo estableciera, o `KIT_INSTANCE`, el cierre se conserva por identidad exacta.
+
+```text
+SERIAL OR INSTANCE IN CLOSURE BEFORE
+→ SAME SERIAL OR INSTANCE IN CLOSURE AFTER
+```
+
+Una lista resumida de producto, cantidad o modelo no puede sustituir la verificación de las identidades que el contenido exige conservar. Dos seriales o dos kits no se fusionan por compartir LPN, origen y destino.
+
+La completitud del kit se preserva conforme a su contrato propietario. Mover un LPN tampoco habilita a declarar completo un kit cuya condición ya estuviera pendiente o bloqueada.
+
+---
+
+#### 21. Lotes, vencimiento y condición
+
+El movimiento no borra ni altera lote, batch, origen, fecha relevante, vencimiento, estado de liberación, condición, cuarentena, daño, pérdida o decisión aplicable al contenido incluido.
+
+```text
+MOVE LOCATION CONTEXT
+!= CHANGE TRACEABILITY OR QUALITY STATE
+```
+
+Una existencia no liberada, vencida, dañada o en cuarentena no se convierte en disponible por haber llegado a una nueva LOC. Si una restricción de condición impide el traslado, la decisión debe fallar cerrada o seguir el flujo de excepción autorizado, sin degradar la trazabilidad.
+
+---
+
+#### 22. LPN anidados y totalidad recursiva
+
+El anidamiento no convierte a un LPN hijo en línea ordinaria de contenido; sin embargo, su contenido efectivo sí integra el cierre de movimiento del LPN raíz.
+
+```text
+MOVE ROOT
+→ MOVE CHILD LPN AS SAME LOGISTICS UNIT
+→ MOVE GRANDCHILD LPN AS SAME LOGISTICS UNIT
+→ MOVE DIRECT CONTENT OWNED BY EACH NODE
+```
+
+La relación padre-hijo no se crea, termina ni reemplaza por el movimiento. El movimiento conserva el bosque LPN vigente, evita ciclos y no modifica la propiedad directa de cada contenido.
+
+Una proyección puede presentar la jerarquía completa como una sola carga, pero debe conservar cuál LPN es propietario directo de cada contenido.
+
+---
+
+#### 23. Cierre congelado y cambios concurrentes de membresía
+
+El cierre que se va a mover debe ser validado contra revisiones y relaciones vigentes. Una mutación concurrente que agregue, retire, transfiera, anide, desanide o reparentice contenido o LPN después de la lectura inicial invalida la expectativa de la operación.
+
+```text
+EXPECTED CLOSURE REVISION != CURRENT CLOSURE REVISION
+→ CONFLICT OR RECONCILIATION
+```
+
+No se admite resolver el conflicto moviendo una versión vieja del conjunto y aceptando que el cambio concurrente “alcance” después. Si ambas intenciones deben ocurrir, su orden y resultado deben ser explícitos, serializables y auditables.
+
+---
+
+#### 24. Mismo origen y mismo destino
+
+Una intención cuyo origen y destino efectivos sean idénticos no debe producir un nuevo traslado material ficticio.
+
+El sistema futuro podrá reconocerla como repetición idempotente de una operación ya aceptada cuando conserve la misma identidad de intención y el mismo resultado. Si es una intención nueva sin efecto espacial, no puede generar ledger engañoso, cambio artificial de custodia, revisión de contenido o evidencia que aparente desplazamiento físico.
+
+La equivalencia se determina por la colocación canónica aplicable, no por diferencias de representación, nombre visible o metadato no autoritativo.
+
+---
+
+#### 25. Movimiento entre LOC de una misma sede
+
+Un cambio de LOC dentro de la misma sede sigue siendo un movimiento de conjunto completo.
+
+```text
+SITE SAME
++
+LOC CHANGES
+→ ALL INCLUDED SUBJECTS CHANGE EFFECTIVE LOC TOGETHER
+```
+
+La coincidencia de sede no permite actualizar solo la cabecera del LPN o solo una proyección agregada. Las restricciones de posición, capacidad, condición, reserva y autorización continúan aplicando cuando correspondan.
+
+El contenido no queda simultáneamente disponible en la LOC anterior y en la nueva LOC durante una operación confirmada.
+
+---
+
+#### 26. Movimiento entre sedes
+
+Un movimiento entre sedes conserva la misma regla de totalidad, pero no presupone que el traslado físico haya sido recibido al instante.
+
+```text
+ORIGIN SITE
+→ COMPLETE CLOSURE IN TRANSIT
+→ DESTINATION SITE
+```
+
+El paso por tránsito, el despacho, la recepción, la remisión, el manifiesto, el vehículo, la ruta, el sello y la custodia conservan contratos propios. Esta tarea únicamente prohíbe que alguno de esos procesos fragmente implícitamente el cierre LPN o use el movimiento para duplicar disponibilidad entre sedes.
+
+---
+
+#### 27. Inicio de tránsito
+
+Cuando el proceso autorizado inicia tránsito, el LPN raíz y todos los sujetos incluidos abandonan en conjunto la colocación efectiva de origen y pasan al mismo contexto de tránsito correlacionado.
+
+```text
+ALL CLOSURE SUBJECTS
+: LOCATED AT ORIGIN
+→ IN_TRANSIT UNDER ONE CAUSAL MOVEMENT
+```
+
+Durante tránsito, el contenido sigue perteneciendo a sus LPN propietarios directos. No se convierte en existencia suelta del origen, existencia disponible del destino ni saldo sin ubicación que pueda ser apropiado por una operación ajena.
+
+El tránsito no confirma por sí mismo recepción, entrega, liberación, devolución, cierre de remisión ni transferencia de custodia.
+
+---
+
+#### 28. Finalización de tránsito
+
+La llegada o recepción autorizada solo puede cambiar el cierre completo que corresponda al mismo contexto de tránsito aún vigente.
+
+```text
+SAME COMPLETE CLOSURE IN TRANSIT
+→ SAME COMPLETE CLOSURE AT CONFIRMED DESTINATION
+```
+
+No se permite recibir parcialmente un LPN como operación exitosa de este contrato. Si la evidencia física informa faltantes, daños, sustituciones o discrepancias, el movimiento no se reescribe como una recepción parcial silenciosa: se conserva el hecho conocido y se abre la investigación, excepción o reconciliación pertinente.
+
+---
+
+#### 29. Estado desconocido y ausencia temporal de ubicación
+
+Si no se puede determinar si el LPN completo salió de origen, ingresó a tránsito o llegó a destino, el resultado no puede inferirse desde el último estado visible.
+
+```text
+OUTCOME UNKNOWN
+→ NO SECOND MOVE
+→ NO ASSUMED AVAILABILITY
+→ RECONCILE USING EVIDENCE
+```
+
+`UNLOCATED_TEMPORARY`, cuando exista bajo el contrato de ubicación, no es autorización para repartir el cierre entre ubicaciones conocidas ni para liberar su contenido como saldo suelto. Conserva el carácter excepcional, explícito y controlado que le corresponde.
+
+---
+
+#### 30. Lifecycle LPN
+
+El movimiento exige un lifecycle que admita operación logística conforme al contrato de lifecycle LPN. En el caso ordinario, el LPN debe estar `ACTIVE`; `DRAFT` no adquiere membresía autoritativa mediante un movimiento real, y estados cerrados, cancelados o anulados bloquean nuevas operaciones logísticas ordinarias.
+
+```text
+MOVE LPN
+!= ACTIVATE
+!= CLOSE
+!= ANNUL
+!= RELABEL
+```
+
+Mover un LPN vacío no lo cierra. Mover un LPN con contenido tampoco prolonga, corrige ni reemplaza una transición lifecycle que estuviera pendiente o inválida.
+
+---
+
+#### 31. Reserva y disponibilidad
+
+La reserva es un eje distinto de colocación. Un movimiento no crea, consume, libera, transfiere ni reasigna una reserva por inferencia.
+
+Antes de mover, deben validarse las restricciones que una reserva vigente imponga sobre los sujetos incluidos. Si la reserva impide su desplazamiento, la operación falla cerrada o requiere la decisión autorizada por el contrato de reserva.
+
+La disponibilidad derivada deberá reflejar el nuevo contexto efectivo solo después de una transición confirmada, sin volver disponible en origen un contenido que conserva membresía LPN y sin anticipar disponibilidad en destino durante tránsito.
+
+---
+
+#### 32. Custodia
+
+Ubicación y custodia no son sinónimos. Que todo el cierre LPN cambie de LOC o entre en tránsito no implica por sí mismo que cambie el custodio responsable.
+
+```text
+MOVE LPN
+!= CUSTODY TRANSFER
+```
+
+Cuando un flujo exija cambio de custodia, debe existir aceptación explícita y evidencia propia conforme al contrato de custodia. El movimiento podrá correlacionarse con esa transferencia, pero no puede suplantarla ni afirmar su éxito sin sus precondiciones.
+
+---
+
+#### 33. Contenedor físico vinculado
+
+Un contenedor físico identificado conserva identidad, condición, disponibilidad, ubicación, custodia y ciclo propios, separados del LPN. Por ello:
+
+```text
+ACTIVE CONTAINER-LPN BINDING
+!= PROOF THAT CONTAINER MOVED
+```
+
+Si el movimiento físico del contenedor y el LPN debe ser conjunto, esa correlación debe demostrarse y auditarse sin fusionar ambas identidades. Esta tarea no autoriza a mover, crear, desvincular, cerrar, retornar o sustituir un contenedor físico solo por el hecho de mover el LPN.
+
+Tampoco permite interpretar `container_type`, `label` o `status` legacy de un LPN como evidencia suficiente de identidad o movimiento de un contenedor físico individual.
+
+---
+
+#### 34. Capacidad y compatibilidad
+
+El destino debe ser compatible con la totalidad del cierre, no solamente con la cabecera LPN. Cuando existan reglas aplicables de capacidad, condición, producto, lote, temperatura, seguridad, territorio, posición o tipo de operación, deben evaluarse contra el conjunto que efectivamente se desplaza.
+
+No es válido aceptar el movimiento por capacidad aparente del LPN y luego dejar fuera una parte incompatible de su contenido. La incompatibilidad de cualquier sujeto incluido bloquea la confirmación del movimiento completo hasta que exista una resolución autorizada que no contradiga este contrato.
+
+---
+
+#### 35. Conteos y discrepancias
+
+Un conteo es una observación y no una autorización retrospectiva para editar el cierre de un movimiento aceptado. Si al contar origen, tránsito o destino aparece una diferencia:
+
+- se preserva el movimiento y la evidencia disponible;
+- se identifica el sujeto, dimensión o cantidad discrepante;
+- se impiden mutaciones que agraven la incertidumbre cuando corresponda;
+- se investiga la diferencia bajo el contrato aplicable;
+- cualquier ajuste posterior conserva decisión autorizada y movimiento compensatorio propio.
+
+No se elimina una membresía, un hijo LPN o una cantidad para “hacer cuadrar” el conteo sin evidencia de una transición legítima.
+
+---
+
+#### 36. Ledger y proyecciones
+
+La fuente canónica futura de movimientos debe permitir reconstruir el cambio de colocación de la unidad logística completa. Las proyecciones por sede, LOC, posición, LPN, producto, lote, condición o tránsito son derivadas y reconciliables.
+
+```text
+AUTHORITATIVE MOVE FACT
+→ LOCATION AND AVAILABILITY PROJECTIONS
+```
+
+Nunca a la inversa:
+
+```text
+EDITED PROJECTION
+→ ASSUMED COMPLETE LPN MOVE
+```
+
+Una proyección write-through no puede actualizar por separado padre, hijo y contenido de manera que produzca una ventana lógica de doble ubicación. Una proyección aggregate-only tampoco puede ocultar el LPN propietario directo o la relación que explica el saldo mostrado.
+
+---
+
+#### 37. Idempotencia
+
+Una misma intención empresarial repetida con la misma identidad idempotente debe producir un único resultado efectivo sobre el cierre completo.
+
+```text
+SAME LOGICAL MOVE
++
+SAME IDEMPOTENCY ID
+→ SAME RESULT
+→ NO SECOND MOVEMENT
+→ NO DUPLICATED LEDGER EFFECT
+```
+
+La identidad debe estar ligada de manera suficiente al LPN raíz, origen esperado, destino o contexto de tránsito, cierre esperado, actor o contexto autorizado y propósito causal para impedir que una intención distinta reutilice accidentalmente el resultado de otra.
+
+Un reintento nunca puede mover de nuevo una parte que ya cambió de contexto ni crear una segunda prueba de llegada.
+
+---
+
+#### 38. Concurrencia
+
+El movimiento debe validar revisiones o mecanismos equivalentes que cubran, como mínimo:
+
+- LPN raíz objetivo;
+- relación de ancestros y descendientes incluida;
+- membresías directas de contenido incluidas;
+- origen o estado de tránsito esperado;
+- lifecycle aplicable;
+- restricciones que bloqueen mutación;
+- reserva, custodia o autorización cuando afecten la elegibilidad.
+
+```text
+EXPECTED STATE != CURRENT STATE
+→ REJECT, RETRY WITH NEW READ, OR RECONCILE
+```
+
+No se permite resolución silenciosa last-write-wins entre dos movimientos del mismo LPN, un movimiento y un cambio de membresía, o un movimiento y una modificación estructural de la jerarquía.
+
+---
+
+#### 39. Operación offline
+
+Una intención creada sin conexión no reserva por sí sola el LPN, su contenido, la LOC de destino ni la capacidad del destino. Al sincronizar, deberá revalidarse el cierre actual, origen, destino, lifecycle, revisiones, restricciones, autorización y resultado de operaciones previas.
+
+```text
+OFFLINE INTENT
+→ REVALIDATE AT ACCEPTANCE TIME
+→ ACCEPT COMPLETE MOVE OR REPORT EXPLICIT CONFLICT
+```
+
+Si el cierre o cualquier precondición cambió, el cliente no puede seleccionar unilateralmente un subconjunto actual para completar la intención antigua. Debe informar el conflicto sin fabricar un segundo movimiento ni degradar la evidencia de la intención original.
+
+---
+
+#### 40. Respuesta tardía y confirmación perdida
+
+Si el solicitante pierde la confirmación luego de enviar una operación, no asume fracaso ni emite una nueva intención con otra clave. Debe resolver el resultado mediante la identidad idempotente, correlación y evidencia del movimiento.
+
+Mientras el resultado permanezca incierto:
+
+```text
+NO ASSUMED ORIGIN AVAILABILITY
+NO ASSUMED DESTINATION AVAILABILITY
+NO NEW COMPETING MOVE
+```
+
+Una respuesta tardía solo puede confirmar el resultado que corresponda a la intención original. No habilita sobrescribir cambios posteriores ni convertir una condición incierta en éxito parcial.
+
+---
+
+#### 41. Fallos y compensación
+
+Un fallo técnico, de integración o de proyección no autoriza una compensación destructiva. El contrato exige distinguir entre:
+
+- intención no aceptada;
+- intención aceptada sin confirmación recibida por el solicitante;
+- hecho canónico confirmado con proyección pendiente;
+- resultado material desconocido que exige reconciliación.
+
+La compensación, si procede, debe ser una decisión explícita, autorizada, idempotente y auditable que respete el cierre completo. No se compensa un movimiento completo moviendo selectivamente un hijo, una línea o una cantidad salvo que exista un contrato posterior que autorice y evidencie una nueva operación empresarial distinta.
+
+---
+
+#### 42. Estado de reconciliación
+
+Cuando no pueda demostrarse la totalidad, el origen, el destino, la composición o el resultado de un movimiento, debe prevalecer el bloqueo controlado:
+
+```text
+UNKNOWN MOVE OR UNKNOWN CLOSURE
+→ BLOCK CONFLICTING MUTATIONS
+→ PRESERVE EVIDENCE
+→ RECONCILE
+```
+
+La reconciliación deberá poder identificar la intención, el LPN raíz, los sujetos conocidos, las revisiones, el último contexto comprobable, la evidencia disponible y la decisión posterior. No elige arbitrariamente entre dos ubicaciones ni elimina sujetos del cierre para simplificar el caso.
+
+---
+
+#### 43. Auditoría mínima
+
+Toda futura transición de movimiento LPN deberá poder reconstruir al menos:
+
+- identidad de la operación, correlación e idempotencia;
+- actor efectivo y principal técnico, cuando sean distintos;
+- LPN raíz objetivo y su propósito vigente;
+- origen esperado y origen validado;
+- destino solicitado y destino confirmado, o contexto de tránsito;
+- sede, LOC y posición cuando apliquen;
+- estado lifecycle y revisiones evaluadas;
+- cierre LPN incluido y relación estructural pertinente;
+- contenido directo incluido por identidad o por cantidad y dimensiones canónicas;
+- restricciones, reservas, custodias o excepciones evaluadas;
+- instante de intención, aceptación y resultado efectivo cuando sean distinguibles;
+- resultado, conflicto, fallo, reconciliación o compensación;
+- referencias causales a documentos, procesos o evidencia externa cuando existan.
+
+La evidencia debe permitir demostrar que el contenido no fue convertido en una segunda existencia durante el traslado.
+
+---
+
+#### 44. Matriz de resultado por tipo de contexto
+
+| Contexto validado | Resultado admisible para el cierre completo | Resultado prohibido |
+| --- | --- | --- |
+| LOC origen y LOC destino compatibles | Todo el cierre pasa a la misma colocación efectiva de destino | Cabecera en destino y contenido en origen |
+| LOC origen hacia tránsito autorizado | Todo el cierre queda en un único contexto de tránsito | Parte disponible en origen y parte en tránsito |
+| Tránsito vigente hacia recepción autorizada | Todo el mismo cierre queda en destino confirmado | Recepción parcial presentada como movimiento completo |
+| LPN raíz vacío | Se mueve solo la identidad LPN y su estructura vacía | Cierre o rotación implícitos |
+| LPN raíz con descendientes | Se mueve toda la jerarquía y contenido efectivo | Mover solo el padre o solo hijos seleccionados |
+| LPN con padre activo | Se rechaza movimiento independiente hasta resolver estructura | Asignar al hijo una ubicación contradictoria con el padre |
+| Resultado incierto | Bloqueo y reconciliación | Reintentar como nueva intención o asumir éxito |
+
+---
+
+#### 45. Matriz de tratamiento de sujetos incluidos
+
+| Sujeto | Se conserva | Efecto legítimo del movimiento | Efecto que no produce |
+| --- | --- | --- | --- |
+| LPN raíz | identidad, lifecycle y propósito | cambio de colocación directa o modo logístico | nuevo LPN, cierre o reetiquetado |
+| LPN descendiente | identidad, padre y contenido directo | cambio de colocación efectiva derivada | ubicación independiente contradictoria |
+| Contenido por cantidad | cantidad y dimensiones de existencia | cambio de contexto efectivo derivado | saldo suelto adicional |
+| Identidad serializada o activo | identidad exacta y trazabilidad | cambio de contexto efectivo derivado | fusión, sustitución o duplicación |
+| Kit instancia | identidad y completitud conocida | cambio de contexto efectivo derivado | recomposición implícita |
+| Contenedor físico vinculado | identidad y ciclo separados | solo correlación explícita si otro contrato lo confirma | movimiento, retorno o desvínculo automático |
+
+---
+
+#### 46. Escenarios límite
+
+Los siguientes escenarios se resuelven de forma determinista:
+
+- **contenido agregado mientras se prepara el movimiento:** el cambio de revisión invalida el cierre esperado; no se mueve una lista antigua como si fuera completa.
+- **contenido retirado durante la preparación:** el movimiento no confirma una composición que ya no es actual; debe revalidarse o resolver conflicto.
+- **hijo anidado escaneado como objetivo:** el escaneo puede resolver su identidad, pero no autoriza movimiento independiente mientras tenga padre activo.
+- **LPN vacío:** puede cambiar de colocación si las demás precondiciones son válidas; no desencadena lifecycle.
+- **LPN con condición o bloqueo pendiente:** no se omite el bloqueo porque el conjunto sea grande o porque el destino esté disponible.
+- **mismo comando recibido dos veces:** se resuelve por idempotencia, no por un segundo traslado.
+- **dos operadores mueven el mismo LPN:** una sola intención puede aceptar el estado esperado; la otra debe recibir conflicto o resultado idempotente si es la misma intención.
+- **evidencia física contradice la proyección:** se conserva el conflicto y se reconcilia; no se sobrescribe la historia para hacer que ambas parezcan coincidentes.
+
+---
+
+#### 47. Prohibición de descomposición implícita
+
+Está prohibido implementar o interpretar un movimiento LPN como la secuencia independiente siguiente:
+
+```text
+UNPACK ALL CONTENT
+→ MOVE LOOSE STOCK
+→ PACK AGAIN AT DESTINATION
+```
+
+Esa secuencia altera representación, abre ventanas de doble contabilización o pérdida y hace imposible demostrar que el mismo conjunto se movió como unidad logística.
+
+También está prohibido sustituirlo por múltiples movimientos individuales no correlacionados que después se agrupen visualmente. Si una operación necesita separar contenido, debe usar la decisión de transferencia, división, unión, empaque o desempaque que corresponda antes o después del movimiento, con sus propias precondiciones y sin fingir que fue el mismo movimiento atómico de LPN.
+
+---
+
+#### 48. Frontera con transferencia de contenido
+
+`TRANSFER_CONTENT` cambia la membresía directa entre LPN. `MOVE_LPN` conserva todas las membresías directas y cambia el contexto efectivo de su cierre.
+
+```text
+TRANSFER_CONTENT
+= SAME CONTENT, DIFFERENT DIRECT OWNER LPN
+
+MOVE_LPN
+= SAME DIRECT OWNERS, DIFFERENT EFFECTIVE PLACEMENT
+```
+
+No puede usarse una transferencia para simular que una parte del LPN se movió mientras otra parte se quedó, ni puede usarse un movimiento LPN para transferir propiedad directa de contenido al LPN de destino. Cuando ambas operaciones sean necesarias, su secuencia y causalidad deben ser explícitas.
+
+---
+
+#### 49. Frontera con PACK y UNPACK
+
+`PACK` y `UNPACK` cambian la representación autoritativa entre existencia suelta y membresía LPN. `MOVE_LPN` no la cambia.
+
+```text
+MOVE LPN
+PRESERVES DIRECT LPN MEMBERSHIP
+```
+
+Antes de mover, un flujo puede requerir empaquetar existencia legítimamente. Después de mover, puede requerir desempacarla en la colocación efectiva del LPN. Cada operación conserva su propio control de cantidad, representación, revisión, autorización e idempotencia.
+
+Nunca se permite tratar el movimiento como pretexto para desempacar implícitamente en origen o empacar implícitamente en destino.
+
+---
+
+#### 50. Frontera con contenedores físicos y retornos
+
+El movimiento de una unidad logística LPN y la gestión de un contenedor físico retornable son procesos relacionados pero no equivalentes. La existencia de un vínculo activo puede requerir validaciones adicionales en una futura materialización, pero no permite inferir:
+
+```text
+MOVE LPN = MOVE PHYSICAL CONTAINER
+MOVE LPN = RETURN CONTAINER
+MOVE LPN = CONTAINER AVAILABLE
+```
+
+Si existe un evento físico conjunto, su auditoría debe preservar la identidad LPN, identidad del contenedor, vínculo aplicable, ubicaciones, custodias y resultados separados. El LPN no absorbe el ciclo de retorno del contenedor, ni el contenedor redefine el cierre de contenido LPN.
+
+---
+
+#### 51. AS-IS remoto observado
+
+La cápsula conserva evidencia de una superficie LPN parcial y de información legacy asociada a `inventory_lpns`, incluyendo campos históricos de clasificación, etiqueta y estado. También conserva la ausencia observada de una entidad independiente materializada para contenedor físico.
+
+Esas observaciones no demuestran un mecanismo funcional que calcule el cierre LPN, proteja su revisión, aplique movimiento atómico o reconcilie resultados inciertos. Por tanto, no se reinterpretan como cumplimiento de este contrato ni como autorización para inferir semántica completa desde datos legacy.
+
+---
+
+#### 52. Clasificación AS-IS
+
+El estado observable se clasifica como:
+
+```text
+PARTIAL LPN DATA SURFACE
+!= COMPLETE ATOMIC LPN MOVEMENT CAPABILITY
+```
+
+La existencia de una fila, código, etiqueta, endpoint o representación de LPN no prueba por sí misma:
+
+- que todo contenido sea identificable como cierre;
+- que la jerarquía anidada sea coherente;
+- que origen y destino sean exclusivos;
+- que tránsito sea reconciliable;
+- que se prevenga doble contabilización;
+- que concurrencia, reintento u offline sean seguros;
+- que contenedor físico y LPN permanezcan separados.
+
+---
+
+#### 53. Brechas registradas
+
+La brecha principal entre el contrato y el AS-IS es que la cápsula no aporta evidencia de una materialización que haga cumplir el movimiento completo de una unidad LPN con control de cierre, revisión, idempotencia, autorización, tránsito, auditoría y reconciliación.
+
+También permanece sin evidencia ejecutada la integración física entre ubicación, contenido LPN, estructura anidada, contenedor físico, custodia, reserva, remisión y dispositivos de captura. Estas brechas se conservan como condiciones de implementación futura; no se cubren con documentación declarativa ni con cambios físicos autorizados por esta tarea.
+
+---
+
+#### 54. Riesgos controlados
+
+Este contrato controla especialmente los riesgos de:
+
+- doble contabilización entre contenido del LPN y existencia suelta o proyectada;
+- contenido del mismo LPN disponible simultáneamente en origen y destino;
+- padre LPN movido con hijos o contenido aparentemente abandonados;
+- recepción parcial presentada como movimiento íntegro;
+- mezcla o pérdida de seriales, kits, lotes, condición o vencimiento;
+- edición concurrente de estructura o membresía durante el traslado;
+- reintento offline que produzca segundo movimiento;
+- respuesta tardía que sobrescriba un resultado posterior;
+- custodia, reserva o contenedor físico inferidos desde una simple actualización de ubicación;
+- corrección destructiva de discrepancias para hacer coincidir proyecciones.
+
+---
+
+#### 55. Handoffs contractuales
+
+Esta tarea entrega a consumidores posteriores las siguientes reglas reutilizables:
+
+1. todo movimiento de LPN raíz opera sobre el cierre completo actual, no sobre una selección visual;
+2. todo LPN descendiente conserva ubicación efectiva derivada y no puede moverse independientemente sin resolver su estructura;
+3. el movimiento conserva identidades, membresías directas, cantidad y dimensiones de existencia;
+4. tránsito se modela como contexto único para todo el cierre, sin disponibilidad duplicada;
+5. resultado incierto, conflicto de revisión o evidencia incompleta bloquean éxito parcial y exigen reconciliación;
+6. contenedor físico, lifecycle, reserva, custodia, despacho y recepción permanecen separados aunque puedan correlacionarse;
+7. una materialización futura deberá tratar la completitud del cierre, la idempotencia y la concurrencia como requisitos de integridad y no como optimizaciones opcionales.
+
+---
+
+#### 56. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA
+
+---
+
+#### 57. Cobertura de prueba vigente reutilizada
+
+No se modifica cobertura histórica. La cápsula vincula esta tarea con cobertura planificada ya existente para integridad de inventario, separación entre contenido LPN y existencia suelta, comportamiento por clase y separación de contenedor físico; dicha cobertura permanece en el registro canónico sin alteración por esta tarea documental.
+
+---
+
+#### 58. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se aporta resultado explícito de `npm run docs:plan:build` para este candidato. |
+| LOCAL | NOT_EXECUTED | No se aporta resultado explícito de `npm run docs:plan:check`, `npm run docs:plan:test`, `npm run docs:treq:check`, `npm run docs:treq:test` ni `git diff --check`. |
+| REMOTA | NOT_APPLICABLE | La tarea define contrato documental bajo `DEFINE_ONCE` y no autoriza instancia física remota. |
+| OPERATIVA | NOT_EXECUTED | La cápsula no aporta evidencia de ejecución operativa, tránsito, recepción, conteo ni movimiento físico de un LPN. |
+| FÍSICA | NOT_APPLICABLE | Esta tarea no ejecuta ni autoriza cambios físicos, dispositivos, contenedores, inventario, migraciones o despliegues. |
+
+---
+
+#### 59. Criterios de aceptación
+
+La tarea queda correctamente definida cuando se cumple todo lo siguiente:
+
+1. el contrato declara inequívocamente que mover un LPN raíz mueve su cierre completo de LPN descendientes y contenido efectivo;
+2. el cierre conserva identidad, cantidad, membresía directa y dimensiones de existencia sin crear saldo, LPN ni representación nueva;
+3. el contrato impide que un LPN hijo reciba ubicación independiente mientras conserve padre activo;
+4. origen, destino y tránsito se expresan como resultados exclusivos y coherentes para todos los sujetos incluidos;
+5. no se admite éxito parcial ante fallo, discrepancia, cambio concurrente o resultado incierto;
+6. idempotencia, revisión, concurrencia, offline y respuesta tardía previenen duplicación o pérdida de intención;
+7. lifecycle, reserva, custodia, contenedor físico, transferencia de contenido y empaque conservan fronteras explícitas;
+8. auditoría y proyecciones permiten reconstruir el hecho sin convertir una vista derivada en fuente autoritativa;
+9. las observaciones AS-IS se tratan como evidencia parcial y no como implementación demostrada;
+10. no se afirma ejecución, validación aprobatoria, cambio físico ni materialización técnica.
+
+---
+
+#### 60. Límites
+
+Esta definición no certifica que la infraestructura actual cumpla el contrato. Tampoco define el diseño técnico que garantizará transacciones, bloqueo, versionado, ledger, política de acceso, esquema de eventos, interfaz offline, sincronización, impresión, escaneo, integración de flota o evidencia física.
+
+El contrato tampoco convierte cualquier agrupación visual, caja, bulto, shipment, remisión, pallet, etiqueta o contenedor en LPN. La identidad logística y el cierre se determinan por relaciones autoritativas aprobadas, no por semejanza operacional o física.
+
+---
+
+#### 61. Consistencia del minibloque
+
+La regla de movimiento atómico queda alineada con los contratos previos de identidad LPN, lifecycle, contenido, transferencia, anidamiento, ubicación, separación de contenedor físico, continuidad de LPN y exclusividad contable.
+
+```text
+ONE LPN CLOSURE
++
+ONE AUTHORITATIVE REPRESENTATION PER CONTENT SUBJECT
++
+ONE EFFECTIVE PLACEMENT MODE
++
+ONE CONSISTENT TRANSITION RESULT
+=
+RECONCILIABLE LPN MOVEMENT
+```
+
+Nada en esta tarea permite que una transición de ubicación eluda los invariantes de contenido, jerarquía, lifecycle o contabilidad previamente aprobados.
+
+---
+
+#### 62. Invariantes finales
+
+```text
+MOVE ROOT LPN
+→ MOVE COMPLETE CURRENT CLOSURE
+
+MOVE COMPLETE CLOSURE
+→ PRESERVE SUBJECT IDENTITIES AND DIRECT OWNERS
+
+MOVE LPN
+→ ZERO INVENTORY CREATION
+→ ZERO INVENTORY DESTRUCTION
+→ ZERO DUPLICATE AUTHORITATIVE LOCATION
+
+LPN CHILD WITH ACTIVE PARENT
+→ NO INDEPENDENT EFFECTIVE PLACEMENT
+
+UNKNOWN RESULT OR INCOMPLETE EVIDENCE
+→ NO SUCCESSFUL PARTIAL MOVE
+→ RECONCILIATION REQUIRED
+
+MOVE LPN
+!= MOVE CONTAINER
+!= CUSTODY TRANSFER
+!= LIFECYCLE CHANGE
+!= CONTENT TRANSFER
+```
+
+**ÚLTIMA TAREA APROBADA:** `NEXO-DOM-021` — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN.
+
+**TAREA ACTUAL APROBADA:** `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido.
+
+**SIGUIENTE TAREA RESERVADA:** `NEXO-DOM-023` — título no suministrado en la cápsula.
+
+---
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN`
+
 ### [ ] NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
 ### [ ] NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
 ### [ ] NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo

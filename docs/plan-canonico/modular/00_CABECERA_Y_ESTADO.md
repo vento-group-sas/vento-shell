@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1188** |
+| Tareas aprobadas | **1189** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **408** |
+| Tareas no iniciadas | **407** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **74.44% (1188/1596)** |
+| Porcentaje de completamiento | **74.50% (1189/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN** |
-| Tarea actual | **NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido** |
+| Última tarea aprobada | **NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido** |
+| Tarea actual | **NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN** |
+| Siguiente tarea | **NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 46 de 127 aprobadas; NEXO-DOM-022 pendiente** |
+| Progreso del bloque | **BLOQUE K: 47 de 127 aprobadas; NEXO-DOM-023 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-020::GAP-PKG-018** |
-| Carril documental | **ACTIVO — NEXO-DOM-022** |
+| Carril documental | **ACTIVO — NEXO-DOM-023** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-020::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-021` — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN |
-| Tarea actual | `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN |
+| Última aprobada | `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido |
+| Tarea actual | `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-024` — Definir capacidad, peso, volumen y compatibilidad de contenido |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 46 DE 127 APROBADAS — ACTUAL NEXO-DOM-022** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 47 DE 127 APROBADAS — ACTUAL NEXO-DOM-023** |
 | Implementación física | **SHELL-CI-020::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-021 — Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN
-        ↓
-TAREA ACTUAL
 NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 46 de 127 tareas aprobadas
+BLOQUE K — 47 de 127 tareas aprobadas
 ```
