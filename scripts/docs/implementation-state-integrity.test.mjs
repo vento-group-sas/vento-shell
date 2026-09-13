@@ -97,17 +97,50 @@ test('separa evidencia stale de prerrequisitos faltantes', () => {
   assert.ok(result.missing_prerequisites.includes('LOCAL_VALIDATION_MISSING:node --test x.test.mjs'));
 });
 
-test('VERIFIED historico inmutable puede conservarse por grandfathering', () => {
+// CORR015_HISTORICAL_VERIFIED_TERMINAL_REGRESSION
+test('VERIFIED historico exacto en main es terminal aunque no exista lifecycle activo', () => {
   const facts = validFacts();
+  facts.implementation_branch_present = false;
+  facts.local_validation_complete = false;
+  facts.local_validation_missing = ['LOCAL_VALIDATION_EVIDENCE_INCOMPLETE'];
   facts.verification_evidence_present = false;
   facts.verification_receipt_valid = false;
+  facts.verification_missing = ['VERIFICATION_EVIDENCE_MISSING'];
+  facts.stale_evidence = ['LEGACY_ACTIVE_EVIDENCE_MUST_NOT_REOPEN_HISTORY'];
   facts.grandfathered_verified = true;
+
   const result = evaluateImplementationStateIntegrity({
     instance: baseInstance('VERIFIED'),
     facts,
   });
+
+  assert.equal(result.declared_status, 'VERIFIED');
   assert.equal(result.highest_valid_status, 'VERIFIED');
   assert.equal(result.status_valid, true);
+  assert.deepEqual(result.missing_prerequisites, []);
+  assert.deepEqual(result.stale_evidence, []);
+  assert.equal(result.next_legal_transition, 'NONE');
+  assert.equal(result.recoverable, false);
+  assert.equal(result.recovery_action, 'NONE');
+});
+
+test('VERIFIED divergente conserva fail closed y no recibe terminal historico', () => {
+  const facts = validFacts();
+  facts.implementation_branch_present = false;
+  facts.local_validation_complete = false;
+  facts.local_validation_missing = ['LOCAL_VALIDATION_EVIDENCE_INCOMPLETE'];
+  facts.verification_evidence_present = false;
+  facts.verification_receipt_valid = false;
+  facts.grandfathered_verified = false;
+
+  const result = evaluateImplementationStateIntegrity({
+    instance: baseInstance('VERIFIED'),
+    facts,
+  });
+
+  assert.equal(result.highest_valid_status, 'AUTHORIZED');
+  assert.equal(result.status_valid, false);
+  assert.ok(result.missing_prerequisites.includes('IMPLEMENTATION_BRANCH_MISSING'));
 });
 
 test('evidencia posterior no salta la transicion del estado declarado', () => {

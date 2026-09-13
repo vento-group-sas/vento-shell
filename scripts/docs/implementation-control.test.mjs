@@ -591,3 +591,48 @@ test('control proyecta estado efectivo y suprime mutaciones cuando el ledger exc
   assert.match(directive, /NINGUNO_HASTA_RECONCILIAR_O_AUTORIZAR/u);
   assert.doesNotMatch(directive, /npm run docs:implementation:(?:start|preverify|finish)/u);
 });
+
+
+// CORR015_GLOBAL_CASCADE_REGRESSION
+test('VERIFIED historico terminal no se convierte en unfinishedGlobal ni bloquea la siguiente instancia', () => {
+  const historical = scope('VERIFIED', 'SHELL-CI-001');
+
+  const terminalAssessor = ({ instance }) => {
+    if (instance?.status === 'VERIFIED') {
+      return {
+        declared_status: 'VERIFIED',
+        highest_valid_status: 'VERIFIED',
+        status_valid: true,
+        missing_prerequisites: [],
+        stale_evidence: [],
+        next_legal_transition: 'NONE',
+        recoverable: false,
+        recovery_action: 'NONE',
+      };
+    }
+    throw new Error('El assessor de regresion solo debe recibir el ledger VERIFIED historico.');
+  };
+
+  const result = deriveImplementationControl({
+    control: { ...baseControl, instances: [historical] },
+    workTopology: topology(),
+    stateIntegrityAssessor: terminalAssessor,
+  });
+
+  const first = result.physical.instances.find(
+    ({ instanceId }) => instanceId === 'SHELL-CI-001::GLOBAL',
+  );
+  const second = result.physical.instances.find(
+    ({ instanceId }) => instanceId === 'SHELL-CI-002::GLOBAL',
+  );
+
+  assert.ok(first);
+  assert.ok(second);
+  assert.equal(first.declaredStatus, 'VERIFIED');
+  assert.equal(first.effectiveStatus, 'VERIFIED');
+  assert.equal(first.status, 'VERIFIED');
+  assert.equal(first.stateIntegrityRecoveryRequired, false);
+  assert.notEqual(second.status, 'WAITING_FOR_PREVIOUS_INSTANCE');
+  assert.equal(result.primaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
+  assert.equal(result.primaryAction.target, 'SHELL-CI-002::GLOBAL');
+});

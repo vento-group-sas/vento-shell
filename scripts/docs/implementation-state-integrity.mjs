@@ -213,6 +213,32 @@ export function deriveImplementationStateFacts({
   historicalVerified = null,
 } = {}) {
   const id = normalizedId(instance?.instance_id);
+
+  // CORR015_HISTORICAL_VERIFIED_TERMINAL_FACTS
+  // A ledger VERIFIED exactamente persistido en origin/main ya es terminal.
+  // No debe volver a depender de rama, candidate, validaciones activas ni gates efimeros.
+  const grandfathered = historicalVerified == null
+    ? isGrandfatheredHistoricalVerified({ root, instance })
+    : Boolean(historicalVerified);
+
+  if (grandfathered) {
+    return {
+      authorization_valid: authorizationValid(instance),
+      implementation_branch_present: false,
+      candidate_commit: null,
+      local_validation_complete: true,
+      local_validation_missing: [],
+      candidate_gate_required: false,
+      candidate_gate_pass: true,
+      candidate_gate_detail: 'HISTORICAL_VERIFIED_TERMINAL',
+      verification_evidence_present: false,
+      verification_receipt_valid: true,
+      grandfathered_verified: true,
+      stale_evidence: [],
+      verification_missing: [],
+    };
+  }
+
   const branch = implementationBranch(id);
   const localRef = branch ? `refs/heads/${branch}` : null;
   const remoteRef = branch ? `refs/remotes/origin/${branch}` : null;
@@ -253,10 +279,6 @@ export function deriveImplementationStateFacts({
     instance,
     detectedCandidate,
   );
-  const grandfathered = historicalVerified == null
-    ? isGrandfatheredHistoricalVerified({ root, instance })
-    : Boolean(historicalVerified);
-
   return {
     authorization_valid: authorizationValid(instance),
     implementation_branch_present: detectedBranch,
@@ -268,7 +290,7 @@ export function deriveImplementationStateFacts({
     candidate_gate_detail: gateDetail,
     verification_evidence_present: Boolean(verification.evidence),
     verification_receipt_valid: verificationReceipt.valid,
-    grandfathered_verified: grandfathered,
+    grandfathered_verified: false,
     stale_evidence: unique([...localValidation.stale, ...verification.stale, ...verificationReceipt.stale]),
     verification_missing: unique(verificationReceipt.missing),
   };
@@ -297,6 +319,21 @@ export function evaluateImplementationStateIntegrity({ instance, facts = {} } = 
       next_legal_transition: 'NONE',
       recoverable: false,
       recovery_action: 'MANUAL_RECONCILIATION_REQUIRED',
+    };
+  }
+
+  // CORR015_HISTORICAL_VERIFIED_TERMINAL_EVALUATION
+  // Este caso se resuelve antes de reconstruir el lifecycle activo.
+  if (declared === 'VERIFIED' && facts.grandfathered_verified === true) {
+    return {
+      declared_status: 'VERIFIED',
+      highest_valid_status: 'VERIFIED',
+      status_valid: true,
+      missing_prerequisites: [],
+      stale_evidence: [],
+      next_legal_transition: 'NONE',
+      recoverable: false,
+      recovery_action: 'NONE',
     };
   }
 

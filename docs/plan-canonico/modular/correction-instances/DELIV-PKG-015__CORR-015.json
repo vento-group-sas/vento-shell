@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-018",
@@ -18,12 +18,157 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.mjs",
+      "change": "MODIFY",
+      "scope": "Hacer que un ledger declared=VERIFIED exactamente persistido en origin/main sea terminal historico antes de exigir rama, candidate, validaciones activas o gates efimeros. Mantener fail-closed para registros divergentes y VERIFIED activos no mergeados."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.test.mjs",
+      "change": "MODIFY",
+      "scope": "Agregar regresiones de terminal historico sin rama/evidencia activa y conservar fail-closed para VERIFIED divergente."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Agregar regresion de cascada global para demostrar que un VERIFIED historico terminal no se convierte en unfinishedGlobal ni bloquea instancias posteriores."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-state-integrity.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --test scripts/docs/implementation-control.test.mjs",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "npm test --silent",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
+  "zero_treq_reason": "La correccion repara la interpretacion del lifecycle historico y sus regresiones; no cambia capacidad funcional, datos de negocio ni requisitos TREQ.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-13T01:39:50.156Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO, PERO QUE EL INICIADOR REFLEJE ESTA CORRECCIÓN Y EL PLAN DE BATCH QUE ESTABAMOS SIGUIENDO, OSEA AMBAS COSAS PERO PRIMERO CORRIGIENDO ESTE PROBLEMA, OSEA NO PERDAMOS NINGÚN PLAN",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORR015_AUTHORIZATION_CONTEXT_V1",
+      "status": "APPROVED",
+      "objective": "HISTORICAL_VERIFIED_TERMINAL_SEMANTICS",
+      "batch_plan_preserved": true,
+      "package_review_state": {
+        "batch_1": "IMPORTED_PASS_10",
+        "batch_2": "SEMANTIC_PASS_10_IMPORT_PENDING",
+        "next_after_correction": "IMPORT_BATCH_2_WITH_PER_PACKAGE_FINGERPRINT_GUARD"
+      },
+      "remote_mutations": false
+    },
+    {
+      "type": "CORR015_HISTORICAL_VERIFIED_TERMINAL_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-13T02:04:57.863Z",
+      "state_model": "VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1",
+      "semantics": {
+        "exact_verified_on_origin_main": "TERMINAL",
+        "active_branch_required_for_historical_terminal": false,
+        "active_candidate_required_for_historical_terminal": false,
+        "active_validation_required_for_historical_terminal": false,
+        "divergent_verified_record": "FAIL_CLOSED",
+        "active_unmerged_verified": "NORMAL_FINISH_LIFECYCLE"
+      },
+      "system_projection": {
+        "verified_count": 98,
+        "required_ids": "SHELL-CI-020::GAP-PKG-001,SHELL-CI-021::GAP-PKG-001,SHELL-CON-001::GLOBAL",
+        "false_waiting_verified": 0
+      },
+      "validation_results": [
+        {
+          "command": "node --check scripts/docs/implementation-state-integrity.mjs",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "node --test scripts/docs/implementation-state-integrity.test.mjs",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "node --test scripts/docs/implementation-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:implementation:check",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm run quality:lint:ratchet -- --base origin/main",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS",
+          "exit_code": 0
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0
+        }
+      ],
+      "historical_ledgers_mutated": false,
+      "package_review_plan_preserved": true,
+      "supabase_remote_mutations": false,
+      "production_mutations": false
+    }
+  ],
   "opened_at": "2026-09-13T01:12:45.527Z"
 }
