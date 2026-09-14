@@ -29897,7 +29897,1067 @@ CONFLICT OR CONTRADICTION
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido`
 
-### [ ] NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
+### ✅ NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
+**Tarea siguiente:** NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo
+**Tipo de tarea:** documental; definición canónica de capacidad logística, peso, volumen, ocupación y compatibilidad de contenido para LPN, contenedores físicos y LOC, con evaluación explícita, preservación de identidad y trazabilidad, bloqueo ante información no verificable, idempotencia, concurrencia, operación offline, auditoría y reconciliación bajo topología `DEFINE_ONCE`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único, reutilizable y verificable para decidir si un contenido, un LPN o una estructura LPN puede ocupar un LPN, un contenedor físico o un LOC sin exceder una capacidad aplicable ni introducir una combinación de contenido incompatible.
+
+La decisión no reduce capacidad a una cifra visible ni compatibilidad a una coincidencia por nombre. Debe considerar el sujeto completo que pretende ocupar el destino, sus atributos físicos aplicables, su cierre estructural cuando corresponda, la política vigente del destino y las restricciones de condición, seguridad, acceso y uso que resulten aplicables.
+
+La regla raíz queda:
+
+```text
+AUTHORIZED PLACEMENT OR MEMBERSHIP CHANGE
++
+IDENTIFIABLE SUBJECT AND EFFECTIVE CLOSURE
++
+VERIFIABLE WEIGHT, VOLUME AND OTHER APPLICABLE OCCUPANCY
++
+VERSIONED DESTINATION CAPACITY POLICY
++
+EXPLICIT COMPATIBILITY DECISION
+→
+ACCEPTED ONLY WHEN ALL APPLICABLE CONSTRAINTS HOLD
+```
+
+Y, de manera complementaria:
+
+```text
+MISSING OR UNVERIFIABLE REQUIRED CAPACITY INPUT
+OR
+MISSING OR UNVERIFIABLE REQUIRED COMPATIBILITY POLICY
+→
+DENY OR RECONCILE
+```
+
+Esta tarea define el contrato de dominio. No materializa tablas, columnas, unidades, conversiones, sensores, APIs, RPC, RLS, UI, escáneres, dispositivos, etiquetas, migraciones, datos, integraciones, movimientos físicos reales ni despliegues.
+
+---
+
+#### 2. Decisiones canónicas consumidas
+
+Esta definición consume, sin reabrir, los contratos aprobados que establecen que:
+
+- las siete clases primarias de control distinguen, entre otros, contenido por cantidad, identidades serializadas, kits y contenedores físicos;
+- un LPN es una identidad logística y no una LOC, un producto, una cantidad genérica ni un contenedor físico;
+- la existencia física posee exactamente una representación contable autoritativa, suelta o como contenido directo de LPN, sin doble contabilización;
+- un LPN raíz transfiere atómicamente su cierre de LPN descendientes y contenido directo cuando se mueve;
+- el contenido conserva lote, serial, fechas, origen, liberación y condición aplicables al empacar, desempacar, transferir, dividir, unir o mover;
+- la ubicación efectiva de contenido dentro de LPN procede de su propietario directo y de la cadena de ancestros hasta su LPN raíz;
+- el contenedor físico conserva identidad, condición, ubicación, custodia, disponibilidad y ciclo de retorno independientes del LPN y de su contenido;
+- la elegibilidad de un LOC o posición depende de una política explícita que incluye, cuando corresponda, capacidad, ocupación, compatibilidad de producto, condición, lote, presentación, LPN, acceso y flags operativos.
+
+La presente tarea concreta cómo se evalúan peso, volumen, ocupación y compatibilidad dentro de esas fronteras. No sustituye el contrato de producto, unidad de medida, condición, cadena de frío, ubicación, custodia, movimiento, conteo ni lifecycle.
+
+---
+
+#### 3. Alcance
+
+El contrato aplica a una decisión futura que pretenda:
+
+- empacar contenido suelto en un LPN;
+- transferir contenido entre LPN;
+- anidar o reubicar una estructura LPN cuando su contrato estructural lo permita;
+- colocar un LPN raíz o contenido suelto en un LOC o posición;
+- vincular operativamente un LPN con un contenedor físico cuando el vínculo esté permitido por su contrato propietario;
+- aceptar una combinación de contenido dentro de un LPN, contenedor físico o LOC sujeto a reglas de mezcla;
+- reevaluar una ocupación ya registrada ante una corrección autorizada de atributos físicos o una revisión de política.
+
+La decisión puede resultar en aceptación, denegación explícita o necesidad de reconciliación. No admite una aceptación implícita basada solo en que el destino pudo ser escaneado, existe en una lista o estuvo ocupado antes.
+
+---
+
+#### 4. Límites de alcance material
+
+Esta tarea no decide:
+
+- los valores numéricos concretos de peso máximo, volumen máximo, carga máxima, dimensiones físicas, tolerancias, factores de seguridad ni umbrales de ocupación;
+- la taxonomía completa de productos, presentaciones, unidades, conversiones, redondeos o precisión metrológica;
+- las reglas particulares de temperatura, humedad, cadena de frío, materiales peligrosos, saneamiento, separación alimentaria o seguridad industrial;
+- qué actor, rol o permiso concreto puede autorizar una excepción, una política o una colocación;
+- la creación, modificación, cierre, anulación o reetiquetado de LPN;
+- la creación, baja, mantenimiento, retorno o traslado autónomo de un contenedor físico;
+- el conteo físico, la observación de una discrepancia, el ajuste de inventario o la valoración económica;
+- el diseño de una pantalla, algoritmo de recomendación, lector, balanza, sensor, etiqueta, integración o mecanismo de cálculo físico;
+- la implementación o ejecución de una migración, backfill, validación de datos, cambio de Supabase, código o despliegue.
+
+Una materialización posterior deberá obtener esos valores y mecanismos de sus contratos propietarios. No puede inventarlos localmente para hacer que una operación parezca admisible.
+
+---
+
+#### 5. Vocabulario operativo
+
+Para esta tarea:
+
+- **capacidad** es el límite aplicable y verificable que restringe una dimensión de ocupación de un destino;
+- **ocupación** es el uso atribuible al contenido o estructura que ya está aceptada como presente en el destino;
+- **peso** es la dimensión de masa o carga declarada, medida o derivada conforme al contrato de datos y unidades aplicable;
+- **volumen** es la dimensión espacial declarada, medida o derivada conforme al contrato de datos y unidades aplicable;
+- **sujeto entrante** es el contenido, LPN raíz, estructura LPN o vínculo cuya aceptación se evalúa;
+- **cierre entrante** es el conjunto completo de sujetos incluidos por una estructura LPN, sin contar dos veces sus descendientes o contenido;
+- **destino** es el LPN, contenedor físico, LOC o posición sobre el que existe una política aplicable;
+- **compatibilidad** es el resultado explícito de evaluar si un sujeto puede coexistir u ocupar ese destino bajo la política vigente;
+- **política aplicable** es la versión identificable de restricciones que gobierna el destino y el propósito de la operación;
+- **desconocido** expresa falta de evidencia suficiente; no equivale a cero, vacío, compatible ni sin límite.
+
+---
+
+#### 6. Regla raíz de elegibilidad física
+
+Se fija la siguiente invariante:
+
+```text
+ELIGIBLE DESTINATION
+=
+ACTIVE AND AUTHORIZED CONTEXT
++
+COMPATIBLE SUBJECT
++
+NO EXCEEDED APPLICABLE CAPACITY
++
+VERIFIABLE REQUIRED INPUTS
+```
+
+Por tanto:
+
+```text
+ELIGIBLE DESTINATION
+!=
+FIRST DESTINATION FOUND
+```
+
+```text
+ELIGIBLE DESTINATION
+!=
+DESTINATION USED SUCCESSFULLY IN A PRIOR OPERATION
+```
+
+```text
+ELIGIBLE DESTINATION
+!=
+DESTINATION WITH A DISPLAYED REMAINING VALUE
+```
+
+La aceptación exige evaluar la situación efectiva al instante de decisión contra la política aplicable. Una recomendación, orden visual, memoria de operador o dato almacenado localmente no reemplaza dicha evaluación.
+
+---
+
+#### 7. Capacidad no es identidad ni saldo
+
+La capacidad describe una restricción de ubicación o contención; no crea ni transforma el sujeto físico evaluado.
+
+Se mantiene:
+
+```text
+CAPACITY CHECK
+!=
+INVENTORY MOVEMENT
+```
+
+```text
+CAPACITY CHECK
+!=
+CREATION OF INVENTORY
+```
+
+```text
+CAPACITY CHECK
+!=
+CHANGE OF LPN IDENTITY
+```
+
+Aceptar una ocupación puede ser una precondición de una transición logística correlacionada, pero no sustituye el movimiento, la membresía LPN, el vínculo de contenedor, la reserva, la custodia ni la actualización de condición que correspondan bajo contratos separados.
+
+---
+
+#### 8. Peso y volumen son dimensiones distintas
+
+Peso y volumen se evalúan como dimensiones independientes siempre que ambas sean aplicables. Una disponibilidad suficiente en una dimensión no demuestra disponibilidad en la otra.
+
+```text
+WEIGHT_FITS
+AND
+VOLUME_FITS
+→
+PHYSICAL DIMENSION CHECK PASSES
+```
+
+```text
+WEIGHT_FITS
+AND NOT VOLUME_FITS
+→
+DENY
+```
+
+```text
+VOLUME_FITS
+AND NOT WEIGHT_FITS
+→
+DENY
+```
+
+Ninguna de estas dimensiones autoriza por sí misma la combinación: también deben satisfacerse compatibilidad, condición, política de destino, estado y autorización aplicables.
+
+---
+
+#### 9. Capacidad multidimensional
+
+Un destino puede estar sujeto a más de una dimensión de capacidad. Además de peso y volumen, una política propietaria puede establecer otras restricciones físicas u operativas. Esta tarea no enumera ni asigna valores a tales restricciones.
+
+La regla de evaluación es:
+
+```text
+ALL APPLICABLE DIMENSIONS MUST PASS
+```
+
+Una dimensión no aplicable debe estar expresamente fuera del alcance de la política aplicable. No puede omitirse porque todavía no exista valor, porque el usuario no lo haya proporcionado o porque una interfaz no la muestre.
+
+---
+
+#### 10. Límite, ocupación y remanente
+
+Para cada dimensión aplicable `d`, la decisión debe poder distinguir conceptualmente:
+
+```text
+LIMIT(d)
+OCCUPIED(d)
+INCOMING(d)
+REMAINING(d)
+```
+
+La condición de admisibilidad es:
+
+```text
+OCCUPIED(d) + INCOMING(d) <= LIMIT(d)
+```
+
+cuando la política aplicable defina un límite para `d`.
+
+`REMAINING(d)` es una proyección derivada de la política y de la ocupación autoritativas. No es una fuente de verdad independiente, no puede editarse para aceptar contenido y no constituye una reserva automática de capacidad.
+
+---
+
+#### 11. Cero, ausencia y desconocido
+
+Se prohíbe colapsar estados semánticamente distintos:
+
+```text
+ZERO WEIGHT OR VOLUME
+!=
+UNKNOWN WEIGHT OR VOLUME
+```
+
+```text
+NO LIMIT APPLIES
+!=
+LIMIT IS UNKNOWN
+```
+
+```text
+EMPTY DESTINATION
+!=
+COMPATIBLE DESTINATION
+```
+
+Un valor cero solo es utilizable cuando es un dato válido para el sujeto y la dimensión correspondiente. Un dato ausente, ilegible, no convertible, contradictorio o no atribuible al sujeto exigido permanece `UNKNOWN` y bloquea la aceptación cuando esa dimensión es requerida.
+
+---
+
+#### 12. Fuente de atributos físicos
+
+El contrato admite que los atributos de peso y volumen requeridos procedan de una fuente autorizada por su dominio propietario, pero exige que una futura decisión pueda identificar la procedencia y vigencia del valor usado.
+
+No es válido aceptar contenido apoyándose en:
+
+- una cifra visual no vinculada con el sujeto efectivo;
+- una cifra de otro producto, lote, serial, presentación o composición;
+- una estimación local que no tenga estado ni fuente identificables;
+- una suma que cuente la misma existencia en más de una representación;
+- un valor histórico reemplazado sin poder reconstruir qué dato gobernó la decisión.
+
+La selección de fuente, medición, calibración, conversión y corrección pertenece al contrato propietario correspondiente; esta tarea exige que su resultado sea verificable antes de usarlo.
+
+---
+
+#### 13. Comparabilidad de unidades
+
+Una evaluación numérica solo es válida si límite, ocupación y sujeto entrante son comparables en la dimensión evaluada.
+
+```text
+COMPARABLE INPUTS
+→
+CAPACITY ARITHMETIC MAY BE EVALUATED
+```
+
+```text
+NONCOMPARABLE OR UNVERIFIABLE UNITS
+→
+DENY OR RECONCILE
+```
+
+Esta tarea no define unidades canónicas, factores, redondeos ni conversiones. Una futura materialización deberá consumir el contrato aprobado de unidades y conversiones antes de sumar o comparar valores. No puede tratar dos números como comparables solo porque ambos se denominen peso o volumen.
+
+---
+
+#### 14. Sujeto de la evaluación
+
+La evaluación recae sobre el sujeto que realmente ingresará, permanecerá o cambiará de destino. La granularidad depende de la operación:
+
+- una cantidad trazable se evalúa por la cantidad y sus dimensiones aplicables;
+- una identidad serializada se evalúa por esa identidad exacta;
+- un kit se evalúa conforme a su completitud y contenido efectivos;
+- un LPN raíz se evalúa por su cierre estructural efectivo;
+- un vínculo de LPN con contenedor físico se evalúa sin confundir las identidades independientes.
+
+No es válido sustituir el sujeto efectivo por un encabezado genérico, una agrupación visual, una categoría de producto o una lista parcial de escaneos.
+
+---
+
+#### 15. Cierre de una estructura LPN
+
+Cuando la operación reciba o coloque un LPN raíz, el sujeto físico evaluado comprende su cierre actual completo:
+
+```text
+ROOT LPN
++
+ALL ACTIVE DESCENDANT LPN
++
+ALL DIRECT CONTENT OF EACH INCLUDED LPN
+```
+
+La evaluación debe evitar dos errores opuestos:
+
+```text
+PARTIAL CLOSURE
+→
+UNDERSTATED OCCUPANCY
+```
+
+```text
+ANCESTOR PLUS DESCENDANT DOUBLE SUM
+→
+OVERSTATED OCCUPANCY
+```
+
+El LPN hijo no adquiere una capacidad autónoma que habilite ignorar la capacidad del destino efectivo de su raíz. Sus atributos pueden ser relevantes para compatibilidad, pero no deben duplicarse como una segunda ocupación del mismo conjunto físico.
+
+---
+
+#### 16. Contenido mixto
+
+Un mismo LPN, contenedor físico o LOC puede contener sujetos con atributos distintos cuando su política lo permita. La heterogeneidad no autoriza a reemplazar atributos individuales por una ficha genérica del LPN.
+
+```text
+MIXED CONTENT
+→
+EVALUATE COMPLETE APPLICABLE SET
+```
+
+Para compatibilidad y restricciones de condición, la decisión debe considerar cada dimensión aplicable de cada sujeto incluido, o una agregación autorizada que demuestre preservar las restricciones de todos. Una suma de peso o volumen no prueba por sí sola que el contenido mixto pueda coexistir.
+
+---
+
+#### 17. Compatibilidad es una decisión explícita
+
+Se fija:
+
+```text
+COMPATIBLE
+=
+EXPLICIT POSITIVE RESULT AGAINST APPLICABLE POLICY
+```
+
+No son equivalentes a compatibilidad:
+
+- no haber detectado todavía una incompatibilidad;
+- que dos sujetos tengan nombre, categoría, presentación o apariencia similares;
+- que ambos cupieran por peso y volumen;
+- que hayan coexistido antes bajo otra política, otro destino o otra condición;
+- que el destino esté vacío;
+- que un operador tenga acceso técnico a la acción.
+
+La política debe gobernar la coexistencia y la ocupación. La interfaz puede explicar una decisión, pero no crea compatibilidad por mostrar una sugerencia.
+
+---
+
+#### 18. Dimensiones de compatibilidad aplicables
+
+La compatibilidad puede depender de atributos del sujeto, del destino y del contexto. Conforme a los contratos consumidos, pueden ser relevantes producto permitido, condición, lote, presentación, LPN, acceso, equipo, flags operativos y restricciones de ubicación o seguridad aplicables.
+
+La presente tarea no afirma que todas esas dimensiones apliquen siempre ni fija sus reglas particulares. Exige que la política aplicable indique cuáles gobiernan la decisión y que la ausencia de una dimensión requerida no se convierta en aceptación silenciosa.
+
+---
+
+#### 19. Condición, liberación y vencimiento
+
+Capacidad física no convierte contenido no disponible en contenido elegible. La condición, liberación, vencimiento y demás dimensiones de trazabilidad conservan su contrato propio durante cualquier evaluación.
+
+```text
+FITS BY WEIGHT AND VOLUME
+!=
+RELEASED OR USABLE CONTENT
+```
+
+```text
+COMPATIBLE PLACEMENT
+!=
+AUTHORIZATION TO CHANGE CONDITION
+```
+
+Una operación no puede usar el traslado a un destino con capacidad disponible para liberar, descontaminar, rehabilitar, vencer, disponer o modificar por inferencia la condición del contenido.
+
+---
+
+#### 20. LOC, LPN y contenedor físico
+
+Los destinos conservan semánticas distintas:
+
+```text
+LOC != LPN
+LPN != PHYSICAL_CONTAINER
+PHYSICAL_CONTAINER != LOC
+```
+
+Un LOC o posición puede tener restricciones de capacidad y compatibilidad como lugar físico. Un LPN puede tener restricciones de contenido y ocupación logística. Un contenedor físico puede tener capacidad y condición propias sin absorber la identidad del LPN que se le vincule.
+
+La evaluación debe registrar qué destino y qué política se evaluaron. No es correcto trasladar automáticamente el límite de un tipo de destino a otro ni asumir que los tres comparten una sola capacidad.
+
+---
+
+#### 21. Vínculo con contenedor físico
+
+Si un LPN se vincula con un contenedor físico conforme a su contrato propietario, la evaluación debe preservar ambas identidades y distinguir sus restricciones.
+
+```text
+LPN CAPACITY CHECK
+!=
+PHYSICAL CONTAINER CAPACITY CHECK
+```
+
+El resultado puede requerir que ambas verificaciones pasen cuando las dos políticas sean aplicables. La aceptación de una no corrige, reemplaza ni oculta el resultado de la otra. Desvincular, cerrar, mover o anular una identidad tampoco borra la historia de las decisiones de capacidad y compatibilidad que afectaron el vínculo.
+
+---
+
+#### 22. Ocupación autoritativa
+
+La ocupación se calcula desde la representación física autoritativa y la estructura vigente, no desde una proyección de interfaz, un cache, una lista de resultados o una suma manual no reconciliada.
+
+Se preserva:
+
+```text
+ONE PHYSICAL EXISTENCE
+→
+ONE CONTRIBUTION TO APPLICABLE OCCUPANCY
+```
+
+Una existencia contenida en LPN no vuelve a aportar una segunda ocupación como stock suelto. El contenido dentro de un LPN anidado no se suma de nuevo por aparecer en sus ancestros. Una proyección agregada puede informar ocupación, pero no se vuelve una fuente competidora del cierre autoritativo.
+
+---
+
+#### 23. Operaciones que cambian ocupación
+
+Una operación solo modifica ocupación cuando cambia de manera legítima el sujeto presente en un destino o el alcance efectivo del destino. Entre otras, pueden requerir reevaluación el empaque, desempaque, transferencia de contenido, anidamiento permitido, movimiento de LPN raíz, colocación de stock suelto y vínculo aplicable con contenedor físico.
+
+La comprobación de capacidad no sustituye la transición causal. Toda variación de ocupación debe quedar correlacionada con la misma operación que cambió la representación, membresía, estructura o colocación efectiva del sujeto.
+
+---
+
+#### 24. Operaciones que no cambian ocupación
+
+Una visualización, búsqueda, recomendación, consulta de disponibilidad, lectura de etiqueta o previsualización no modifica la ocupación ni reserva capacidad por sí misma.
+
+```text
+READ OR RECOMMENDATION
+!=
+CAPACITY RESERVATION
+```
+
+Una futura política puede definir reservas explícitas si otro contrato las autoriza, pero esta tarea no las crea ni permite inferirlas desde un cálculo mostrado. Antes de aceptar la operación final, la evaluación deberá volver a comprobar la ocupación efectiva y la política vigente.
+
+---
+
+#### 25. Transición de aceptación
+
+Conceptualmente, una operación que requiere capacidad recorre los siguientes estados de decisión:
+
+```text
+PROPOSED
+→ CONTEXT_RESOLVED
+→ INPUTS_VERIFIED
+→ POLICY_RESOLVED
+→ CAPACITY_AND_COMPATIBILITY_EVALUATED
+→ ACCEPTED OR DENIED OR RECONCILIATION_REQUIRED
+```
+
+`ACCEPTED` solo puede ocurrir cuando las precondiciones aplicables se verifican sobre un estado consistente. `DENIED` no modifica ocupación ni membresía. `RECONCILIATION_REQUIRED` conserva la incertidumbre para tratamiento controlado y no autoriza escoger una interpretación favorable.
+
+---
+
+#### 26. No existe aceptación parcial silenciosa
+
+Cuando una intención empresarial solicita colocar, empacar, transferir o mover un alcance definido, la capacidad y compatibilidad se evalúan para ese alcance completo.
+
+```text
+REQUESTED COMPLETE SCOPE FAILS
+→
+WHOLE REQUEST IS NOT ACCEPTED AS IF COMPLETE
+```
+
+Una aceptación parcial solo es posible si otra operación o contrato define explícitamente una nueva intención con alcance reducido, identidad, cantidades, autorización, correlación y resultado auditables. No se permite recortar cantidades, excluir seriales, omitir descendientes o dejar contenido fuera del destino sin expresarlo como otra decisión válida.
+
+---
+
+#### 27. Regla de `PACK`
+
+`PACK` conserva la existencia y trazabilidad del contenido, pero debe verificar que el LPN destino pueda admitir el alcance que entra.
+
+```text
+LOOSE CONTENT
+→
+SAME CONTENT WITH DIRECT OWNER LPN
+```
+
+La evaluación considera el contenido entrante y la ocupación actual del LPN, sin contar simultáneamente la representación suelta que termina y la membresía que inicia. Si el LPN está vinculado con un contenedor físico o posee ubicación en un LOC con restricciones aplicables, las evaluaciones requeridas deben correlacionarse sin duplicar el mismo contenido.
+
+---
+
+#### 28. Regla de `UNPACK`
+
+`UNPACK` libera membresía directa de LPN y crea la representación suelta equivalente en la colocación efectiva permitida por el contrato de ubicación.
+
+```text
+LPN DIRECT CONTENT
+→
+SAME CONTENT AS LOOSE DIRECT REPRESENTATION
+```
+
+La operación debe validar la capacidad y compatibilidad del destino efectivo de la representación suelta cuando esas reglas apliquen. No puede desempaquetar a un destino no verificable para evitar una restricción del LPN origen, ni asumir que el contenido es compatible solo porque antes era compatible dentro del LPN.
+
+---
+
+#### 29. Regla de transferencia de contenido
+
+Una transferencia entre LPN es una única intención atómica de cambio de membresía. Debe validar el LPN destino contra su ocupación y compatibilidad efectivas para la parte exacta que ingresa.
+
+```text
+SOURCE LPN DECREASE
++
+TARGET LPN INCREASE
++
+SAME TRACEABLE CONTENT
++
+TARGET ELIGIBILITY PASSES
+→
+ACCEPTED TRANSFER
+```
+
+La reducción de ocupación del origen y el aumento del destino pertenecen al mismo hecho correlacionado. No se permite aceptar primero un desempaque independiente para eludir capacidad y empaquetar después bajo otra interpretación.
+
+---
+
+#### 30. Regla de movimiento de LPN
+
+Mover un LPN raíz desplaza atómicamente su cierre completo. Antes de aceptar el destino, la evaluación debe incluir el cierre físico completo y la capacidad, ocupación y compatibilidad aplicables al LOC, posición, contenedor u otro destino efectivo.
+
+```text
+MOVE ROOT LPN
+→
+EVALUATE COMPLETE CURRENT CLOSURE AT DESTINATION
+```
+
+No es válido aceptar el movimiento usando solo el peso, volumen o compatibilidad de la cabecera LPN si existen descendientes o contenido que puedan alterar la decisión. El movimiento no cambia por sí mismo peso, volumen, condición, liberación, lote, serial u origen.
+
+---
+
+#### 31. LPN anidados
+
+El anidamiento no crea una segunda masa, volumen u ocupación para el mismo contenido. La estructura debe evaluarse conforme al cierre efectivo y a los destinos que gobiernen cada relación aplicable.
+
+```text
+NESTED CONTENT
+→
+COUNT ONCE IN ITS EFFECTIVE PHYSICAL CLOSURE
+```
+
+Un hijo no puede declararse compatible o con capacidad disponible de forma que contradiga la política del padre, del contenedor físico vinculado o del LOC efectivo cuando dichas políticas sean aplicables. Resolver una contradicción requiere cambiar la relación estructural bajo su contrato, no editar una proyección de ocupación.
+
+---
+
+#### 32. Contenido serializado, por cantidad y kits
+
+Las formas de contenido preservan su granularidad:
+
+- una identidad serializada conserva evaluación atribuible a su identidad exacta;
+- el contenido por cantidad conserva la cantidad canónica y sus dimensiones aplicables;
+- un kit conserva las reglas de completitud que le correspondan;
+- un contenedor físico no se degrada a una línea ordinaria de contenido para evitar sus reglas propias.
+
+No se admite fusionar identidades serializadas para disminuir artificialmente el número de sujetos, ni dividir una cantidad solo en la interfaz para hacerla caber si la transición de inventario correspondiente no fue autorizada.
+
+---
+
+#### 33. Capacidad y disponibilidad son distintas
+
+Una capacidad remanente no equivale a disponibilidad logística, inventariable ni comercial.
+
+```text
+REMAINING CAPACITY
+!=
+AVAILABLE INVENTORY
+```
+
+```text
+AVAILABLE INVENTORY
+!=
+AUTHORIZED DESTINATION CAPACITY
+```
+
+La reserva, liberación, custodia, lifecycle, condición, tránsito y acceso pueden bloquear una operación aunque exista capacidad. A la inversa, contenido disponible no puede ocupar un destino cuya capacidad o compatibilidad no se haya demostrado.
+
+---
+
+#### 34. Tránsito y ubicación temporalmente no verificable
+
+El tránsito y la ausencia temporal de ubicación conocida tienen semántica explícita bajo los contratos de ubicación y movimiento. No autorizan inventar un destino con capacidad infinita ni omitir las restricciones que aún sean aplicables.
+
+Si una operación necesita determinar capacidad de una ubicación, contenedor o LPN que no puede resolverse de forma autoritativa, el resultado es `RECONCILIATION_REQUIRED` o denegación según la operación. No se debe convertir el sujeto en stock libre, compatible por defecto o sin ocupación para continuar el flujo.
+
+---
+
+#### 35. Autorización
+
+La autorización se evalúa sobre la operación y el contexto efectivos, no sobre una cifra de peso, un código de LPN o el acceso a una pantalla.
+
+Como mínimo, una futura decisión deberá poder vincularse con:
+
+- actor efectivo y principal técnico cuando sean distintos;
+- sujeto y alcance completo evaluados;
+- destino, cadena estructural, sede, LOC, posición, tránsito o contenedor aplicables;
+- propósito operacional y documento causal cuando exista;
+- política y revisión usadas para capacidad y compatibilidad;
+- condición, liberación, custodia, lifecycle y reserva relevantes;
+- instante efectivo, correlación, revisión esperada e identidad idempotente;
+- decisión de aceptación, denegación, excepción autorizada o reconciliación.
+
+Una excepción solo es válida si un contrato propietario la autoriza y la decisión puede reconstruirse. La existencia de una capacidad técnica no concede permiso para rebasar una restricción.
+
+---
+
+#### 36. Atomicidad conceptual
+
+Una aceptación que altere representación, membresía, estructura o ubicación debe preservar una sola decisión coherente:
+
+```text
+VALIDATE EFFECTIVE STATE
++
+VALIDATE CAPACITY AND COMPATIBILITY
++
+APPLY LOGISTICS TRANSITION
++
+RECORD ONE OUTCOME
+```
+
+No es admisible observar una ocupación aprobada sin transición logística correlacionada, ni una transición aceptada que deje sin resultado reconstruible la validación de destino. Si la materialización no puede sostener la coherencia requerida, deberá rechazar o conservar el caso para reconciliación, sin fabricar un éxito parcial.
+
+---
+
+#### 37. Idempotencia
+
+Una misma intención empresarial repetida con la misma identidad idempotente debe producir el mismo resultado efectivo y no duplicar ocupación, peso, volumen, membresía ni vínculo.
+
+```text
+SAME ACCEPTED INTENT RETRIED
+→
+SAME RECORDED OUTCOME
+→
+NO SECOND INCOMING OCCUPANCY
+```
+
+La identidad idempotente debe estar ligada al alcance, origen, destino y operación que se intentan decidir. No puede reutilizarse para una intención diferente y no debe convertir una corrección posterior de política o atributos en repetición del hecho anterior.
+
+---
+
+#### 38. Concurrencia
+
+Dos operaciones simultáneas no pueden basarse ambas en el mismo remanente si su aceptación conjunta supera una restricción aplicable.
+
+Antes de aceptar, una futura materialización deberá poder detectar cambios relevantes en:
+
+- ocupación efectiva del destino;
+- cierre, membresía o estructura del sujeto entrante;
+- peso, volumen u otros atributos requeridos;
+- política de capacidad o compatibilidad aplicable;
+- condición, lifecycle, ubicación, custodia, reserva y autorización;
+- revisión esperada e identidad de operación.
+
+```text
+STALE OR CONFLICTING PRECONDITION
+→
+DENY OR RECONCILIATION_REQUIRED
+```
+
+No se permite una resolución silenciosa de último escritor que oculte sobrecapacidad o mezcla no autorizada.
+
+---
+
+#### 39. Operación offline
+
+Una intención creada fuera de línea puede conservar su contexto observado, pero no reserva por sí sola capacidad autoritativa en el destino.
+
+Al sincronizar se deben revalidar estado, sujeto, cierre, atributos requeridos, ocupación, política, compatibilidad, autorización y revisión aplicables. Si algo cambió, la intención no puede aceptarse usando la capacidad calculada localmente.
+
+```text
+OFFLINE OBSERVATION
+!=
+ONLINE ACCEPTANCE
+```
+
+El conflicto debe ser explícito y trazable. No se debe reintentar convirtiendo un dato desconocido en cero, descartando contenido del cierre ni enviando automáticamente el sujeto al primer destino disponible.
+
+---
+
+#### 40. Respuesta tardía y confirmación perdida
+
+La falta de respuesta al cliente no demuestra ni fracaso ni aceptación. Una futura materialización deberá permitir consultar el resultado idempotente de la intención y distinguir, como mínimo:
+
+```text
+ACCEPTED
+DENIED
+RECONCILIATION_REQUIRED
+OUTCOME_NOT_YET_KNOWN
+```
+
+Mientras el resultado sea desconocido no se debe aplicar una segunda ocupación, cambiar manualmente el remanente mostrado ni asumir que el contenido puede colocarse en otro destino. La resolución posterior debe conservar la correlación y la evidencia de la decisión original.
+
+---
+
+#### 41. Fallos y compensación
+
+Un fallo de lectura, conversión, política, autorización, concurrencia, transporte o persistencia no autoriza una corrección destructiva de ocupación.
+
+Si otro contrato permite una compensación, esta debe ser una nueva operación autorizada, idempotente, trazable y evaluada contra el estado vigente. No se compensa borrando el primer resultado, alterando una proyección de remanente o restando peso y volumen sin correlación con la existencia que realmente salió del destino.
+
+---
+
+#### 42. Estado de reconciliación
+
+Cuando no pueda demostrarse qué sujeto ocupa un destino, cuál es su cierre, qué atributos físicos aplican, qué política gobernó o si una decisión se confirmó, se fija:
+
+```text
+CAPACITY OR COMPATIBILITY UNCERTAINTY
+→
+RECONCILIATION_REQUIRED
+→
+BLOCK FURTHER AFFECTED MUTATION
+```
+
+La reconciliación debe preservar datos y evidencia disponibles. No debe elegir un peso, volumen, ocupación, límite o compatibilidad por conveniencia para liberar una operación pendiente. La observación física y toda eventual corrección pertenecen a sus contratos propietarios.
+
+---
+
+#### 43. Auditoría mínima
+
+Toda decisión futura de capacidad o compatibilidad deberá poder reconstruir, cuando aplique:
+
+- actor, principal técnico y contexto de autorización;
+- operación, correlación e identidad idempotente;
+- sujeto, cantidad o identidad exacta y cierre estructural evaluado;
+- origen y destino efectivos;
+- sede, LOC, posición, LPN y contenedor físico aplicables;
+- atributos de peso, volumen y demás dimensiones usadas, con su procedencia y vigencia identificables;
+- ocupación y límite evaluados por dimensión aplicable;
+- política y revisión de compatibilidad y capacidad utilizadas;
+- dimensiones de trazabilidad, condición, liberación y lifecycle relevantes;
+- precondiciones, revisión esperada, resultado y razón de denegación o reconciliación;
+- transición logística correlacionada cuando haya sido aceptada;
+- instante efectivo y orden de registro disponible.
+
+La auditoría no sustituye los contratos de evidencia metrológica o física; preserva la trazabilidad de la decisión de dominio.
+
+---
+
+#### 44. Matriz canónica de decisiones
+
+Los resultados mínimos se fijan así:
+
+```text
+POLICY APPLIES + ALL REQUIRED INPUTS VERIFIED + ALL DIMENSIONS FIT + COMPATIBLE
+→ ACCEPT
+
+POLICY APPLIES + VERIFIED INPUTS + ANY DIMENSION EXCEEDED
+→ DENY
+
+POLICY APPLIES + VERIFIED INPUTS + ANY COMPATIBILITY RULE FAILS
+→ DENY
+
+REQUIRED INPUT OR COMPARABILITY UNKNOWN
+→ DENY OR RECONCILIATION_REQUIRED
+
+APPLICABLE POLICY OR DESTINATION CONTEXT UNKNOWN
+→ DENY OR RECONCILIATION_REQUIRED
+
+STALE REVISION, CHANGED OCCUPANCY OR CONCURRENT STRUCTURE CHANGE
+→ DENY OR RECONCILIATION_REQUIRED
+
+REPEATED SAME ACCEPTED INTENT
+→ RETURN RECORDED OUTCOME WITHOUT NEW OCCUPANCY
+```
+
+La selección entre denegación y reconciliación debe ser gobernada por el contrato propietario de la operación. Ningún caso incierto puede registrarse como aceptación.
+
+---
+
+#### 45. Escenarios límite
+
+El contrato controla, como mínimo, los siguientes casos:
+
+- contenido con peso conocido y volumen requerido desconocido: no se acepta cuando el volumen sea aplicable;
+- destino vacío sin política verificable: no se presume compatible ni ilimitado;
+- dos operaciones concurrentes que individualmente cabrían, pero juntas exceden el límite: no pueden ambas aceptarse con el mismo estado base;
+- LPN raíz con hijo y contenido no visible en una lista parcial: la evaluación comprende el cierre completo;
+- contenido transferido entre LPN: se evalúa el incremento exacto del destino y no una doble representación temporal;
+- contenido desempacado: el destino suelto debe ser elegible bajo su propia política aplicable;
+- contenedor físico vinculado con LPN: se preservan dos identidades y sus restricciones separadas;
+- dato local offline que indica remanente: se revalida antes de aceptar;
+- política cambiada desde una previsualización: la acción final no usa la decisión obsoleta;
+- respuesta de aceptación perdida: se consulta el resultado correlacionado y no se repite la ocupación;
+- contenido con condición o liberación no apta: no se vuelve apto porque físicamente quepa;
+- unidad no comparable: no se suman ni comparan valores hasta que el contrato de unidades permita hacerlo.
+
+---
+
+#### 46. AS-IS remoto observado
+
+La cápsula no aporta una inspección remota específica de tablas, rutas, componentes, funciones, datos, dispositivos, sensores, políticas físicas o implementación de capacidad, peso, volumen y compatibilidad para esta tarea.
+
+Sí aporta referencias documentales de cobertura planificada para capacidad, ocupación, compatibilidad de LOC, LPN y contenedores físicos, y evidencia de que la implementación y ejecución de los requisitos relevantes permanecen pendientes. Esa información no demuestra una instancia física existente ni permite inferir su comportamiento real.
+
+---
+
+#### 47. Clasificación AS-IS
+
+Con la evidencia disponible, la capacidad queda clasificada documentalmente como:
+
+```text
+CONTRACTUAL REQUIREMENT IDENTIFIED
++
+NO DIRECT IMPLEMENTATION EVIDENCE IN CAPSULE
+→
+NO PHYSICAL INSTANCE ASSERTED
+```
+
+No se clasifica una arquitectura, cálculo, conversión, mecanismo de concurrencia, modelo de ocupación ni política de mezcla como existente, reutilizable o correcta sin evidencia directa adicional.
+
+---
+
+#### 48. Brechas registradas
+
+La cápsula permite identificar las siguientes brechas de definición futura sin afirmar su implementación:
+
+- falta de valores y unidades propietarias verificables para límites y atributos físicos;
+- falta de una representación física demostrada de política versionada por destino;
+- falta de evidencia de cálculo autoritativo de ocupación que evite doble conteo de estructuras LPN;
+- falta de evidencia de controles que combinen capacidad y compatibilidad con condición, trazabilidad, acceso y estado;
+- falta de evidencia de resolución idempotente, concurrente y offline de la decisión;
+- falta de evidencia física y operativa ejecutada para la cobertura planificada.
+
+Estas brechas no autorizan una implementación informal ni convierten el contrato en cambio físico aprobado.
+
+---
+
+#### 49. Riesgos controlados
+
+Este contrato controla los riesgos de:
+
+- sobrecapacidad por sumar operaciones concurrentes contra un mismo remanente;
+- subestimación de carga por ignorar contenido anidado o contenido mixto;
+- doble conteo por sumar contenido directo y sus proyecciones ancestrales;
+- mezcla de contenido incompatible por semejanza, vacío del destino o regla implícita;
+- aceptación de datos no comparables, ausentes o provenientes de otro sujeto;
+- uso de capacidad disponible para eludir condición, liberación, custodia o lifecycle;
+- confusión entre LPN, contenedor físico y LOC;
+- duplicación de ocupación por reintentos o confirmación perdida;
+- aceptación offline basada en un estado ya vencido;
+- reconciliación destructiva que pierda evidencia de incertidumbre.
+
+---
+
+#### 50. Handoffs contractuales
+
+La continuidad hacia contratos propietarios exige:
+
+- el contrato de producto, presentación, unidades y conversiones para definir atributos comparables sin inventar factores;
+- el contrato de condición, liberación, lote, vencimiento y cadena de frío para definir restricciones materiales específicas;
+- el contrato de sede, LOC, posición y movimiento para determinar colocación efectiva y transiciones físicas;
+- el contrato de lifecycle, contenido, transferencia y anidamiento LPN para determinar cierre, membresía y alcance de operación;
+- el contrato de contenedores físicos para determinar vínculo, condición, identidad y capacidad propias;
+- el contrato de autorización para permisos, excepciones, territorio y segregación de capacidades;
+- el contrato de auditoría y evidencia para conservar hechos, fuentes, resultados y eventual observación física;
+- la tarea siguiente `NEXO-DOM-025` para la continuidad reservada del bloque, sin anticipar ni decidir su materia.
+
+Ningún consumidor debe repetir esta definición como una instancia local: bajo `DEFINE_ONCE`, reutiliza el contrato aprobado y correlaciona los contratos propietarios que materialicen sus dependencias.
+
+---
+
+#### 51. Cobertura de prueba vigente reutilizada
+
+La cobertura histórica del registro canónico ya contempla, sin modificación por esta tarea, la separación de identidad y capacidad de contenedores físicos, la elegibilidad de LOC con capacidad, ocupación y política versionada, la trazabilidad de contenido LPN y la conservación de comportamiento por clase de inventario.
+
+Esta tarea consume ese marco como cobertura planificada existente. No crea, modifica, reasigna ni declara ejecutado ningún requisito de prueba histórico.
+
+---
+
+#### 52. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea consolida un contrato documental reutilizable dentro de cobertura histórica ya planificada, sin introducir una obligación de prueba nueva o modificar una fila existente.
+
+---
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La cápsula enumera validadores documentales, pero no aporta resultado de ejecución para este candidato. |
+| LOCAL | NOT_EXECUTED | La cápsula no aporta validación local ejecutada de esta tarea. |
+| REMOTA | NOT_EXECUTED | La cápsula no aporta inspección remota ejecutada y específica de capacidad, peso, volumen o compatibilidad. |
+| OPERATIVA | NOT_EXECUTED | No se aporta evidencia de operación física, medición, colocación o reconciliación ejecutada. |
+| FÍSICA | NOT_APPLICABLE | La tarea es documental bajo `NO_PHYSICAL_INSTANCE` y no autoriza cambios físicos. |
+
+---
+
+#### 54. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Capacidad, ocupación, peso, volumen y compatibilidad se definen como conceptos distintos y verificables.
+- [x] Peso y volumen se evalúan independientemente cuando ambos son aplicables.
+- [x] Una dimensión aplicable desconocida o no comparable no se interpreta como cero ni como admisible.
+- [x] Límite, ocupación, sujeto entrante y remanente se distinguen sin convertir el remanente en fuente de verdad.
+- [x] La política de destino y su revisión deben poder identificarse para toda aceptación futura.
+- [x] Compatibilidad exige un resultado positivo explícito y no se infiere de vacío, similitud, capacidad remanente o experiencia previa.
+- [x] El cierre completo de un LPN raíz se evalúa sin omitir ni duplicar descendientes o contenido.
+- [x] La representación suelta y la membresía LPN no generan doble ocupación.
+- [x] `PACK`, `UNPACK`, transferencia y movimiento conservan identidad, trazabilidad y operación correlacionada.
+- [x] LPN, LOC y contenedor físico conservan identidades y capacidades conceptualmente separadas.
+- [x] Condición, liberación, vencimiento, custodia, reserva y lifecycle no se sustituyen por capacidad disponible.
+- [x] Se definen estados de aceptación, denegación y reconciliación sin éxito incierto implícito.
+- [x] Se definen atomicidad conceptual, idempotencia, concurrencia, offline, respuesta tardía, fallos y compensación.
+- [x] La auditoría mínima permite reconstruir sujeto, política, atributos, ocupación, resultado y correlación.
+- [x] Se documenta la ausencia de evidencia AS-IS directa sin inferir una implementación.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se autoriza ni describe como ejecutado un cambio físico.
+- [x] La definición se entrega como contrato reutilizable bajo `DEFINE_ONCE`.
+
+---
+
+#### 55. Límites
+
+Esta tarea no crea ni modifica LPN, contenido, cantidades, seriales, lotes, condiciones, ubicaciones, LOC, posiciones, contenedores físicos, custodias, reservas, movimientos, remisiones, conteos, activos, productos, presentaciones, unidades, conversiones, políticas, pesos, volúmenes, lecturas, sensores, reglas de temperatura, límites ni compatibilidades reales; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, funciones, RPC, RLS, APIs, Server Actions, Route Handlers, interfaces, escáneres, balanzas, integraciones ni paquetes; no ejecuta migraciones, backfills, validaciones físicas, cambios de Supabase, código o despliegues; no modifica el registro de requisitos de prueba; y no desarrolla la materia reservada para `NEXO-DOM-025`.
+
+---
+
+#### 56. Consistencia del minibloque
+
+La definición preserva las siguientes separaciones obligatorias:
+
+```text
+CAPACITY != INVENTORY BALANCE
+WEIGHT != VOLUME
+COMPATIBILITY != AVAILABLE SPACE
+LPN != LOC
+LPN != PHYSICAL CONTAINER
+PHYSICAL CONTAINER != LPN CONTENT
+RECOMMENDATION != ACCEPTANCE
+OFFLINE OBSERVATION != AUTHORITATIVE DECISION
+UNKNOWN != ZERO
+UNKNOWN != COMPATIBLE
+```
+
+También conserva que una operación logística modifica representación, estructura o colocación solo mediante su contrato causal, y que la evaluación de capacidad y compatibilidad funciona como precondición verificable, no como sustituto de dicha transición.
+
+---
+
+#### 57. Invariantes finales
+
+```text
+ACCEPTED OCCUPANCY
+→
+ALL APPLICABLE CAPACITY DIMENSIONS PASS
+```
+
+```text
+ACCEPTED COEXISTENCE
+→
+EXPLICIT COMPATIBILITY POLICY PASSES
+```
+
+```text
+REQUIRED DATA UNKNOWN OR NONCOMPARABLE
+→
+NO IMPLIED ACCEPTANCE
+```
+
+```text
+ONE PHYSICAL SUBJECT IN ONE EFFECTIVE CLOSURE
+→
+COUNTED ONCE FOR APPLICABLE OCCUPANCY
+```
+
+```text
+RETRY OF SAME ACCEPTED INTENT
+→
+NO SECOND CAPACITY CONSUMPTION
+```
+
+```text
+CONFLICT, STALE STATE OR UNCERTAIN OUTCOME
+→
+DENY OR RECONCILIATION_REQUIRED
+```
+
+```text
+CAPACITY AND COMPATIBILITY CHECK
+→
+DOES NOT CHANGE IDENTITY, TRACEABILITY, CONDITION OR INVENTORY BY ITSELF
+```
+
+---
+
+#### 58. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo`
+
 ### [ ] NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo
 ### [ ] NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
 ### [ ] NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota

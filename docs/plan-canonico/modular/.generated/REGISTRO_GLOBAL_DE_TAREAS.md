@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1190** |
+| Aprobadas | **1191** |
 | En propuesta | **0** |
-| No iniciadas | **406** |
+| No iniciadas | **405** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **74.56% (1190/1596)** |
+| Porcentaje de completamiento | **74.62% (1191/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **406** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1091** |
+| ⏸ NO_EVALUADA | **405** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1092** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-024` — Definir capacidad, peso, volumen y compatibilidad de contenido | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-025` — Vincular repuestos consumidos con mantenimiento y costo del activo | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-024` — Definir capacidad, peso, volumen y compatibilidad de contenido | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-025` — Vincular repuestos consumidos con mantenimiento y costo del activo | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-026` — Definir inspecciones, mantenimiento preventivo, garantía y calibración | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -975,7 +975,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-021` | Prohibir doble contabilización entre existencia suelta en LOC y existencia contenida en LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-022` | Definir que mover un LPN mueve atómicamente todo su contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-023` | Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-024` | Definir capacidad, peso, volumen y compatibilidad de contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-024` | Definir capacidad, peso, volumen y compatibilidad de contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-025` | Vincular repuestos consumidos con mantenimiento y costo del activo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-026` | Definir inspecciones, mantenimiento preventivo, garantía y calibración | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-027` | Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
