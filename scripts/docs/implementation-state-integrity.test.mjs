@@ -6,7 +6,9 @@ import {
   IMPLEMENTATION_MUTATING_ENTRYPOINT,
   IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID,
   evaluateImplementationStateIntegrity,
+  isVerifiedResumeDeltaAllowed,
   rejectDirectImplementationLifecycleEntry,
+  verifiedLedgerTransitionCompatible,
 } from './implementation-state-integrity.mjs';
 
 const baseInstance = (status) => ({
@@ -205,4 +207,73 @@ test('advance es la unica entrada mutante normal', () => {
   assert.match(lifecycle, /rejectDirectImplementationLifecycleEntry\(args\.mode\)/u);
   assert.match(lifecycle, /docs:implementation:advance -- --instance-id/u);
   assert.doesNotMatch(lifecycle, /console\.log\('  npm run docs:implementation:start/u);
+});
+
+
+test('resume VERIFIED conserva candidato sellado solo con delta de lifecycle derivado', () => {
+  const instanceId = 'SHELL-CI-020::GAP-PKG-018';
+  const ownLedger = 'docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-018.json';
+  const pendingPath = 'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json';
+  const pending = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    task_id: 'SHELL-CI-021',
+    status: 'PENDING_AUTHORIZATION',
+    target_repositories: [],
+    authorized_changes: [],
+    validation_commands: [],
+    authorization: null,
+    evidence: [],
+  };
+
+  assert.equal(isVerifiedResumeDeltaAllowed({
+    instanceId,
+    changedPaths: [
+      ownLedger,
+      'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
+      pendingPath,
+    ],
+    pendingRecords: { [pendingPath]: pending },
+  }), true);
+
+  assert.equal(isVerifiedResumeDeltaAllowed({
+    instanceId,
+    changedPaths: [ownLedger, 'src/app/page.tsx'],
+    pendingRecords: {},
+  }), false);
+
+  assert.equal(isVerifiedResumeDeltaAllowed({
+    instanceId,
+    changedPaths: [ownLedger, pendingPath],
+    pendingRecords: {
+      [pendingPath]: { ...pending, authorized_changes: [{ path: 'x' }] },
+    },
+  }), false);
+});
+
+test('resume VERIFIED solo permite cambiar status y evidence del ledger sellado', () => {
+  const candidateLedger = baseInstance('IN_PROGRESS');
+  const verifiedLedger = {
+    ...candidateLedger,
+    status: 'VERIFIED',
+    evidence: [{
+      type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
+      candidate_commit: 'a'.repeat(40),
+    }],
+  };
+
+  assert.equal(verifiedLedgerTransitionCompatible({
+    candidateLedger,
+    verifiedLedger,
+    instance: verifiedLedger,
+  }), true);
+
+  const mutated = {
+    ...verifiedLedger,
+    validation_commands: ['node --test other.test.mjs'],
+  };
+  assert.equal(verifiedLedgerTransitionCompatible({
+    candidateLedger,
+    verifiedLedger: mutated,
+    instance: mutated,
+  }), false);
 });

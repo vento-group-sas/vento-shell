@@ -37,6 +37,14 @@ const NEXT_BY_STATUS = Object.freeze({
 });
 const LOCAL_VALIDATION_PATTERN = /^LOCAL_VALIDATION candidate=([0-9a-f]{40}) command=(.*) status=(PASS|NOT_APPLICABLE)$/u;
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
+const VERIFIED_RESUME_DERIVED_PATHS = new Set([
+  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
+  'docs/plan-canonico/modular/active-sequence.json',
+  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
+  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
+  'scripts/docs/package-readiness/implementation-package-registry.json',
+]);
+const IMPLEMENTATION_INSTANCE_DIRECTORY = 'docs/plan-canonico/modular/implementation-instances/';
 
 function unique(values) {
   return [...new Set(values.map((value) => String(value)).filter(Boolean))];
@@ -91,6 +99,117 @@ function gitRefCommit(root, ref) {
   return result.status === 0 && SHA_PATTERN.test(result.stdout.toLowerCase())
     ? result.stdout.toLowerCase()
     : null;
+}
+
+function normalizeRepoPath(value) {
+  return String(value ?? '').replaceAll('\\', '/').replace(/^\.\//u, '');
+}
+
+function pristinePendingImplementationRecord(record, instanceKey) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
+  const expectedKeys = [
+    'instance_id',
+    'task_id',
+    'status',
+    'target_repositories',
+    'authorized_changes',
+    'validation_commands',
+    'authorization',
+    'evidence',
+  ].sort();
+  if (JSON.stringify(Object.keys(record).sort()) !== JSON.stringify(expectedKeys)) return false;
+  const [taskId, recordKey] = normalizedId(record.instance_id).split('::');
+  if (!taskId || !recordKey || record.task_id !== taskId || recordKey !== instanceKey) return false;
+  return record.status === 'PENDING_AUTHORIZATION'
+    && Array.isArray(record.target_repositories) && record.target_repositories.length === 0
+    && Array.isArray(record.authorized_changes) && record.authorized_changes.length === 0
+    && Array.isArray(record.validation_commands) && record.validation_commands.length === 0
+    && record.authorization === null
+    && Array.isArray(record.evidence) && record.evidence.length === 0;
+}
+
+export function isVerifiedResumeDeltaAllowed({
+  instanceId,
+  changedPaths = [],
+  pendingRecords = {},
+} = {}) {
+  const id = normalizedId(instanceId);
+  const ownLedger = instanceRecordPath(id);
+  const instanceKey = id.split('::')[1] ?? '';
+  if (!ownLedger || !instanceKey) return false;
+
+  for (const rawPath of changedPaths) {
+    const relativePath = normalizeRepoPath(rawPath);
+    if (!relativePath) return false;
+    if (relativePath === ownLedger || VERIFIED_RESUME_DERIVED_PATHS.has(relativePath)) continue;
+    if (relativePath.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)) {
+      if (!pristinePendingImplementationRecord(pendingRecords[relativePath], instanceKey)) return false;
+      continue;
+    }
+    return false;
+  }
+  return true;
+}
+
+function lifecycleContract(record) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+  const keys = Object.keys(record).filter((key) => key !== 'status' && key !== 'evidence').sort();
+  return JSON.stringify(Object.fromEntries(keys.map((key) => [key, record[key]])));
+}
+
+export function verifiedLedgerTransitionCompatible({
+  candidateLedger,
+  verifiedLedger,
+  instance,
+} = {}) {
+  if (!candidateLedger || !verifiedLedger || !instance) return false;
+  if (verifiedLedger.status !== 'VERIFIED') return false;
+  if (JSON.stringify(verifiedLedger) !== JSON.stringify(instance)) return false;
+  const candidateContract = lifecycleContract(candidateLedger);
+  const verifiedContract = lifecycleContract(verifiedLedger);
+  return Boolean(candidateContract && verifiedContract && candidateContract === verifiedContract);
+}
+
+function verificationEvidenceCandidates(instance) {
+  return unique((instance?.evidence ?? [])
+    .filter((entry) => (
+      entry && typeof entry === 'object' && !Array.isArray(entry)
+      && entry.type === 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1'
+    ))
+    .map((entry) => String(entry.candidate_commit ?? '').toLowerCase())
+    .filter((entry) => SHA_PATTERN.test(entry)));
+}
+
+function resolveVerifiedResumeCandidate({ root, instance, branchTip }) {
+  if (instance?.status !== 'VERIFIED' || !SHA_PATTERN.test(String(branchTip ?? '').toLowerCase())) return null;
+  const ownLedger = instanceRecordPath(instance.instance_id);
+  if (!ownLedger) return null;
+  const tipLedger = readGitJson(root, branchTip, ownLedger);
+  if (!tipLedger || JSON.stringify(tipLedger) !== JSON.stringify(instance)) return null;
+
+  for (const candidate of verificationEvidenceCandidates(instance)) {
+    if (!gitRefExists(root, candidate)) continue;
+    if (runGit(root, ['merge-base', '--is-ancestor', candidate, branchTip]).status !== 0) continue;
+    const candidateLedger = readGitJson(root, candidate, ownLedger);
+    if (!verifiedLedgerTransitionCompatible({ candidateLedger, verifiedLedger: tipLedger, instance })) continue;
+
+    const delta = runGit(root, ['diff', '--name-only', `${candidate}..${branchTip}`]);
+    if (delta.status !== 0) continue;
+    const changedPaths = delta.stdout.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
+    const pendingRecords = {};
+    for (const relativePath of changedPaths) {
+      const normalized = normalizeRepoPath(relativePath);
+      if (normalized !== ownLedger && normalized.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)) {
+        pendingRecords[normalized] = readGitJson(root, branchTip, normalized);
+      }
+    }
+    if (isVerifiedResumeDeltaAllowed({
+      instanceId: instance.instance_id,
+      changedPaths,
+      pendingRecords,
+    })) return candidate;
+  }
+  return null;
 }
 
 function authorizationValid(instance) {
@@ -248,11 +367,17 @@ export function deriveImplementationStateFacts({
       || (remoteRef && gitRefExists(root, remoteRef)),
     )
     : Boolean(branchPresent);
-  const detectedCandidate = String(candidateCommit ?? (
+  const detectedTip = String(
     (remoteRef && gitRefCommit(root, remoteRef))
     || (localRef && gitRefCommit(root, localRef))
     || ''
-  )).toLowerCase();
+  ).toLowerCase();
+  const verifiedResumeCandidate = candidateCommit == null
+    ? resolveVerifiedResumeCandidate({ root, instance, branchTip: detectedTip })
+    : null;
+  const detectedCandidate = String(
+    candidateCommit ?? verifiedResumeCandidate ?? detectedTip ?? ''
+  ).toLowerCase();
   const localValidation = parseLocalValidationEvidence(instance, detectedCandidate || null);
   const packageId = packageIdFromInstance(instance);
   const candidateGate = candidateGateRequirement(readiness, packageId);
