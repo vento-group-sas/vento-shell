@@ -372,3 +372,27 @@ test('rechaza tabla de evidencia que no puede normalizarse al contrato Clase Est
     /EVIDENCE_TABLE_CONTRACT_INVALID/u,
   );
 });
+
+test('normaliza trailing whitespace antes del candidate SHA y de las revisiones', () => {
+  const dirty = authorResponse();
+  dirty.task_markdown = dirty.task_markdown
+    .replace(
+      '**ÚLTIMA TAREA APROBADA**\n',
+      '**ÚLTIMA TAREA APROBADA**  \n',
+    )
+    .replace(
+      '**TAREA ACTUAL APROBADA**\n',
+      '**TAREA ACTUAL APROBADA** \t\n',
+    )
+    .replace(
+      '| BUILD | NOT_EXECUTED | No ejecutado. |',
+      '| BUILD | NOT_EXECUTED | No ejecutado. |   ',
+    );
+
+  const result = validateCandidate(dirty, capsule);
+
+  assert.doesNotMatch(result.markdown, /[ \t]+$/mu);
+  assert.equal(result.candidateSha, sha256(result.markdown));
+  assert.match(result.markdown, /\*\*ÚLTIMA TAREA APROBADA\*\*\n/u);
+  assert.match(result.markdown, /\*\*TAREA ACTUAL APROBADA\*\*\n/u);
+});
