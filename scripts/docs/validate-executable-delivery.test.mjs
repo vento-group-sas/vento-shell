@@ -1,7 +1,10 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
 
-import { validateExecutableSource } from './validate-executable-delivery.mjs';
+import {
+  canonicalRepositoryText,
+  validateExecutableSource,
+} from './validate-executable-delivery.mjs';
 
 test('stdin-commonjs rechaza return ilegal a nivel superior', () => {
   assert.throws(
@@ -59,5 +62,65 @@ test('LC-009 permite ejecutar npm mediante resolveNpmInvocation canonico', () =>
     { mode: 'stdin-commonjs', filename: 'portable-npm.txt' },
   );
   assert.equal(report.mode, 'stdin-commonjs');
-  assert.deepEqual([...report.policies], ['LC-009']);
+  assert.equal(report.policies.includes('LC-009'), true);
+});
+
+test('downloaded executor rechaza docs:implementation:advance por npm aunque use resolveNpmInvocation', () => {
+  const source = [
+    "const { spawnSync } = require('node:child_process');",
+    "const invocation = resolveNpmInvocation();",
+    "spawnSync(invocation.command, [...invocation.prefixArgs, 'run', 'docs:implementation:advance']);",
+  ].join('\n');
+  assert.throws(
+    () => validateExecutableSource(
+      source,
+      { mode: 'stdin-commonjs', filename: 'stale-branch-lifecycle.txt' },
+    ),
+    /EXECUTABLE_POLICY_FAIL:CURRENT_MAIN_COORDINATOR_REQUIRED/u,
+  );
+});
+
+test('downloaded executor permite current-main coordinator via process.execPath', () => {
+  const source = [
+    "const { spawnSync } = require('node:child_process');",
+    "const coordinatorPath = path.join(publishedRoot, 'scripts', 'docs', 'implementation-execution-coordinator.mjs');",
+    "spawnSync(process.execPath, [coordinatorPath, 'advance', '--instance-id', instanceId], { cwd: physicalRoot });",
+  ].join('\n');
+  const report = validateExecutableSource(
+    source,
+    { mode: 'stdin-commonjs', filename: 'current-main-coordinator.txt' },
+  );
+  assert.equal(report.policies.includes('CURRENT_MAIN_COORDINATOR'), true);
+  assert.equal(report.policies.includes('CANONICAL_TEXT_WRITE'), true);
+});
+
+test('downloaded executor rechaza escritura de texto cruda', () => {
+  const source = [
+    "const fs = require('node:fs');",
+    "fs.writeFileSync('tracked.txt', 'value', 'utf8');",
+  ].join('\n');
+  assert.throws(
+    () => validateExecutableSource(
+      source,
+      { mode: 'stdin-commonjs', filename: 'raw-write.txt' },
+    ),
+    /EXECUTABLE_POLICY_FAIL:CANONICAL_TEXT_WRITE_REQUIRED/u,
+  );
+});
+
+test('canonicalRepositoryText fuerza LF y exactamente un salto final', () => {
+  const cr = String.fromCharCode(13);
+  const lf = String.fromCharCode(10);
+  assert.equal(
+    canonicalRepositoryText('alpha' + cr + lf + cr + lf),
+    'alpha' + lf,
+  );
+  assert.equal(
+    canonicalRepositoryText('alpha' + lf + lf),
+    'alpha' + lf,
+  );
+  assert.equal(
+    canonicalRepositoryText('alpha   ' + lf + lf),
+    'alpha' + lf,
+  );
 });
