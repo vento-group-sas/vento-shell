@@ -31,6 +31,20 @@ import {
   formatImplementationStateIntegrityViolation,
   rejectDirectImplementationLifecycleEntry,
 } from './implementation-state-integrity.mjs';
+import { runImplementationDoctor } from './implementation-doctor.mjs';
+import {
+  classifyImplementationIntegrationImpact,
+} from './implementation-integration-impact.mjs';
+import {
+  createImplementationIntegrationIdentity,
+  markImplementationIntegrationChecksPass,
+  markImplementationIntegrationCleaned,
+  markImplementationIntegrationMerged,
+  refreshImplementationIntegrationContext,
+} from './implementation-integration-model.mjs';
+import {
+  resolveImplementationIntegrationLoopStep,
+} from './implementation-integration-loop.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const IMPLEMENTATION_PREFIX = 'implementation/';
@@ -743,6 +757,14 @@ export function startImplementation({ instanceId, root = ensureRepositoryRoot() 
   assertLifecycleStateIntegrity(root, instance, 'AUTHORIZED');
   assertInstanceCanStart(instance);
 
+  const startDoctor = assertImplementationDoctorReady(
+    runImplementationDoctor({ root, instanceId: id }),
+    id,
+  );
+  if (startDoctor.assessment.next_action === 'STOP_AND_REPAIR_PREFLIGHT') {
+    throw new Error(`${id}: implementation doctor bloqueo START.`);
+  }
+
   const recordPath = instanceRecordRelativePath(id);
   const branch = implementationBranchName(id);
 
@@ -1062,6 +1084,171 @@ export function preverifyImplementation({ instanceId, root = ensureRepositoryRoo
   });
 }
 
+const INTEGRATION_STABILITY_ATTEMPTS = 6;
+
+function assertImplementationDoctorReady(report, instanceId) {
+  if (!report || report.model_id !== 'VENTO-IMPLEMENTATION-DOCTOR-V1') {
+    fail(`${instanceId}: IMPLEMENTATION_DOCTOR_INVALID.`);
+  }
+  if (report.assessment?.status !== 'PASS') {
+    fail(
+      `${instanceId}: IMPLEMENTATION_DOCTOR_BLOCKED:${(report.assessment?.blockers ?? []).join(',') || 'UNKNOWN'}.`,
+    );
+  }
+  return report;
+}
+
+function sealedImplementationCandidate(instance) {
+  const entries = [...(Array.isArray(instance?.evidence) ? instance.evidence : [])].reverse();
+  const receipt = entries.find((entry) => (
+    entry
+    && typeof entry === 'object'
+    && !Array.isArray(entry)
+    && entry.type === 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1'
+  )) ?? null;
+  const candidate = String(receipt?.candidate_commit ?? '').trim().toLowerCase();
+  if (!/^[0-9a-f]{40}$/u.test(candidate)) {
+    fail(`${instance?.instance_id ?? 'INSTANCE'}: VERIFIED no conserva candidate_commit sellado.`);
+  }
+  return candidate;
+}
+
+function readJsonAtGitRef(root, ref, relativePath) {
+  const probe = git(['show', `${ref}:${relativePath}`], {
+    cwd: root,
+    allowFailure: true,
+  });
+  if (probe.status !== 0 || !probe.stdout) return null;
+  try {
+    return JSON.parse(probe.stdout);
+  } catch {
+    return null;
+  }
+}
+
+function mainAdvanceImpact({ root, instance, fromRef, toRef }) {
+  const changedPaths = git(['diff', '--name-only', `${fromRef}..${toRef}`], { cwd: root })
+    .stdout.split(/\r?\n/u)
+    .map((entry) => entry.trim())
+    .filter(Boolean);
+
+  const pristinePendingInstancePaths = [];
+  for (const relativePath of changedPaths) {
+    if (!relativePath.startsWith('docs/plan-canonico/modular/implementation-instances/')) continue;
+    const record = readJsonAtGitRef(root, toRef, relativePath);
+    if (record && isPristinePendingInstanceRecord(record, relativePath)) {
+      pristinePendingInstancePaths.push(relativePath);
+    }
+  }
+
+  const packageTouched = changedPaths.includes('package.json');
+  const packageJsonBefore = packageTouched ? readJsonAtGitRef(root, fromRef, 'package.json') : null;
+  const packageJsonAfter = packageTouched ? readJsonAtGitRef(root, toRef, 'package.json') : null;
+
+  return classifyImplementationIntegrationImpact({
+    instance,
+    changedPaths,
+    pristinePendingInstancePaths,
+    packageJsonBefore,
+    packageJsonAfter,
+  });
+}
+
+function originMainContainedInHead(root) {
+  return git(
+    ['merge-base', '--is-ancestor', `origin/${DEFAULT_BRANCH}`, 'HEAD'],
+    { cwd: root, allowFailure: true },
+  ).status === 0;
+}
+
+function integrateCurrentMain({ root, id, instance }) {
+  const mainSha = git(['rev-parse', `origin/${DEFAULT_BRANCH}`], { cwd: root }).stdout.trim().toLowerCase();
+  if (originMainContainedInHead(root)) {
+    return {
+      mainSha,
+      integrated: false,
+      impactDecision: 'NO_BASE_DELTA',
+      impactPaths: [],
+    };
+  }
+
+  if (worktreePaths(root).length > 0) {
+    fail(`${id}: integration requiere worktree limpio antes de incorporar origin/${DEFAULT_BRANCH}.`);
+  }
+
+  const mergeBase = git(
+    ['merge-base', 'HEAD', `origin/${DEFAULT_BRANCH}`],
+    { cwd: root },
+  ).stdout.trim();
+  if (!mergeBase) fail(`${id}: no se pudo resolver merge-base para integration.`);
+
+  const impact = mainAdvanceImpact({
+    root,
+    instance,
+    fromRef: mergeBase,
+    toRef: `origin/${DEFAULT_BRANCH}`,
+  });
+  if (impact.decision !== 'REUSE_PHYSICAL_EVIDENCE') {
+    fail(
+      `${id}: INTEGRATION_REQUIRES_PHYSICAL_REVALIDATION:${impact.material_paths.join(',') || 'UNKNOWN'}.`,
+    );
+  }
+
+  const mergeProbe = git(
+    ['merge-tree', '--write-tree', 'HEAD', `origin/${DEFAULT_BRANCH}`],
+    { cwd: root, allowFailure: true },
+  );
+  if (mergeProbe.status !== 0) {
+    fail(
+      `${id}: INTEGRATION_MERGE_CONFLICT:${mergeProbe.stderr || mergeProbe.stdout || 'UNKNOWN'}.`,
+    );
+  }
+
+  git(['merge', '--no-ff', '--no-edit', `origin/${DEFAULT_BRANCH}`], { cwd: root });
+
+  return {
+    mainSha,
+    integrated: true,
+    impactDecision: impact.decision,
+    impactPaths: impact.changed_paths,
+  };
+}
+
+function assertRemoteBranchCanFastForward(root, branch) {
+  if (!remoteBranchExists(root, branch)) return;
+  git(['fetch', 'origin', branch, '--quiet'], { cwd: root });
+  const remoteSync = syncCounts(root, `origin/${branch}`, 'HEAD');
+  if (remoteSync.behind !== 0) {
+    fail(
+      `origin/${branch} contiene commits que el HEAD local no tiene; integration detenida: ${remoteSync.raw}.`,
+    );
+  }
+}
+
+function integrationRuntimeStep({
+  identity,
+  originMainSha,
+  branchHeadSha,
+  prHeadSha,
+  mainContainedInBranch,
+  checksRegistered,
+  checksComplete,
+  checksPassed,
+  checksHeadSha,
+}) {
+  return resolveImplementationIntegrationLoopStep({
+    identity,
+    originMainSha,
+    branchHeadSha,
+    prHeadSha,
+    mainContainedInBranch,
+    checksRegistered,
+    checksComplete,
+    checksPassed,
+    checksHeadSha,
+  });
+}
+
 export async function finishImplementation({ instanceId, root = ensureRepositoryRoot() }) {
   const { id, instance } = resolveInstance(root, instanceId);
   assertLifecycleStateIntegrity(root, instance, 'VERIFIED');
@@ -1081,9 +1268,9 @@ export async function finishImplementation({ instanceId, root = ensureRepository
   }
 
   const branch = implementationBranchName(id);
+  const candidateSha = sealedImplementationCandidate(instance);
 
   ensureGhReady(root);
-  git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
 
   const mergedPr = findMergedPrForBranch(root, branch);
   if (mergedPr) {
@@ -1091,87 +1278,236 @@ export async function finishImplementation({ instanceId, root = ensureRepository
     return;
   }
 
+  const doctor = assertImplementationDoctorReady(
+    runImplementationDoctor({ root, instanceId: id }),
+    id,
+  );
+
+  git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
   const branchMode = ensureFinishBranch(root, branch);
 
-  npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
-  npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
-
-  await Promise.all([
-    npmAsync(['run', '--silent', 'docs:plan:test'], { cwd: root }),
-    npmAsync(['run', '--silent', 'docs:treq:check'], { cwd: root }),
-    npmAsync(['run', '--silent', 'docs:treq:test'], { cwd: root }),
-    npmAsync(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`], { cwd: root }),
-  ]);
-
-  const dirty = worktreePaths(root);
-  const preCommitBranchCommits = Number(
-    git(['rev-list', '--count', `origin/${DEFAULT_BRANCH}..HEAD`], { cwd: root }).stdout.trim(),
-  );
-  const finishMode = resolveImplementationFinishMode({
-    dirtyPaths: dirty,
-    branchCommits: preCommitBranchCommits,
-  });
-
-  if (finishMode === 'CREATE_COMMIT') {
-    assertImplementationPaths(dirty, instance, { root, baseRef: `origin/${DEFAULT_BRANCH}` });
-
+  const initialDirty = worktreePaths(root);
+  if (initialDirty.length > 0) {
+    assertImplementationPaths(initialDirty, instance, {
+      root,
+      baseRef: `origin/${DEFAULT_BRANCH}`,
+    });
     git(['diff', '--check'], { cwd: root });
-    git(['add', '--', ...dirty], { cwd: root });
-    npm(['run', '--silent', 'docs:commit-scope:check', '--', '--staged', '--instance-id', id], { cwd: root });
+    git(['add', '--', ...initialDirty], { cwd: root });
+    npm([
+      'run', '--silent', 'docs:commit-scope:check', '--',
+      '--staged', '--instance-id', id,
+    ], { cwd: root });
     git(['diff', '--cached', '--check'], { cwd: root });
-
-    const staged = git(['diff', '--cached', '--name-only', '--diff-filter=ACMRD'], { cwd: root })
-      .stdout.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
-    assertImplementationPaths(staged, instance, { root, baseRef: `origin/${DEFAULT_BRANCH}` });
-    if (staged.length === 0) fail('No hay archivos staged para cerrar la implementacion.');
-
-    git(['commit', '-m', `implementation(${id}): verify`], { cwd: root });
+    git(['commit', '-m', `implementation(${id}): seal verified lifecycle state`], { cwd: root });
   }
 
-  const branchCommits = Number(
-    git(['rev-list', '--count', `origin/${DEFAULT_BRANCH}..HEAD`], { cwd: root }).stdout.trim(),
-  );
-  if (!Number.isFinite(branchCommits) || branchCommits <= 0) {
-    fail(`${branch} no contiene commits nuevos respecto de origin/${DEFAULT_BRANCH}.`);
-  }
+  const lifecycleHeadSha = currentHead(root);
+  let finalIdentity = null;
+  let finalHeadSha = null;
+  let finalPrNumber = null;
+  let finalRegisteredCheckCount = 0;
+  let finalCompletedCheckCount = 0;
+  let finalChangedPaths = [];
+  let finalFinishMode = initialDirty.length > 0 ? 'CREATE_COMMIT' : 'RESUME_POST_COMMIT';
+  let finalIntegrationImpact = 'NO_BASE_DELTA';
+  let merged = null;
+  let integrationAttempts = 0;
 
-  const changedPaths = git(['diff', '--name-only', `origin/${DEFAULT_BRANCH}...HEAD`], { cwd: root })
-    .stdout.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
-  assertImplementationPaths(changedPaths, instance, { root, baseRef: `origin/${DEFAULT_BRANCH}` });
+  for (let attempt = 1; attempt <= INTEGRATION_STABILITY_ATTEMPTS; attempt += 1) {
+    integrationAttempts = attempt;
 
-  if (remoteBranchExists(root, branch)) {
-    git(['fetch', 'origin', branch, '--quiet'], { cwd: root });
-    const remoteSync = syncCounts(root, `origin/${branch}`, 'HEAD');
-    if (remoteSync.behind !== 0) {
-      fail(`origin/${branch} contiene commits que el HEAD local no tiene; cierre detenido sin force-push: ${remoteSync.raw}.`);
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+
+    assertImplementationDoctorReady(
+      runImplementationDoctor({ root, instanceId: id }),
+      id,
+    );
+
+    const integration = integrateCurrentMain({ root, id, instance });
+    finalIntegrationImpact = integration.impactDecision;
+
+    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
+
+    await Promise.all([
+      npmAsync(['run', '--silent', 'docs:plan:test'], { cwd: root }),
+      npmAsync(['run', '--silent', 'docs:treq:check'], { cwd: root }),
+      npmAsync(['run', '--silent', 'docs:treq:test'], { cwd: root }),
+      npmAsync(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`], { cwd: root }),
+    ]);
+
+    const dirty = worktreePaths(root);
+    const preCommitBranchCommits = Number(
+      git(
+        ['rev-list', '--count', `origin/${DEFAULT_BRANCH}..HEAD`],
+        { cwd: root },
+      ).stdout.trim(),
+    );
+    const finishMode = resolveImplementationFinishMode({
+      dirtyPaths: dirty,
+      branchCommits: preCommitBranchCommits,
+    });
+    finalFinishMode = finishMode;
+
+    if (finishMode === 'CREATE_COMMIT') {
+      assertImplementationPaths(dirty, instance, {
+        root,
+        baseRef: `origin/${DEFAULT_BRANCH}`,
+      });
+
+      git(['diff', '--check'], { cwd: root });
+      git(['add', '--', ...dirty], { cwd: root });
+      npm([
+        'run', '--silent', 'docs:commit-scope:check', '--',
+        '--staged', '--instance-id', id,
+      ], { cwd: root });
+      git(['diff', '--cached', '--check'], { cwd: root });
+
+      const staged = git(
+        ['diff', '--cached', '--name-only', '--diff-filter=ACMRD'],
+        { cwd: root },
+      ).stdout.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
+      assertImplementationPaths(staged, instance, {
+        root,
+        baseRef: `origin/${DEFAULT_BRANCH}`,
+      });
+      if (staged.length === 0) fail('No hay archivos staged para cerrar la implementacion.');
+
+      git([
+        'commit', '-m',
+        `implementation(${id}): reconcile integration projections`,
+      ], { cwd: root });
     }
+
+    if (worktreePaths(root).length > 0) {
+      fail(`${id}: integration validations dejaron worktree sucio.`);
+    }
+
+    const branchCommits = Number(
+      git(
+        ['rev-list', '--count', `origin/${DEFAULT_BRANCH}..HEAD`],
+        { cwd: root },
+      ).stdout.trim(),
+    );
+    if (!Number.isFinite(branchCommits) || branchCommits <= 0) {
+      fail(`${branch} no contiene commits nuevos respecto de origin/${DEFAULT_BRANCH}.`);
+    }
+
+    const changedPaths = git(
+      ['diff', '--name-only', `origin/${DEFAULT_BRANCH}...HEAD`],
+      { cwd: root },
+    ).stdout.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
+    assertImplementationPaths(changedPaths, instance, {
+      root,
+      baseRef: `origin/${DEFAULT_BRANCH}`,
+    });
+    finalChangedPaths = changedPaths;
+
+    assertRemoteBranchCanFastForward(root, branch);
+
+    git(['push', '-u', 'origin', branch], { cwd: root });
+    const branchSync = syncCounts(root, `origin/${branch}`, 'HEAD');
+    if (branchSync.behind !== 0 || branchSync.ahead !== 0) {
+      fail(`Push incompleto de ${branch}: ${branchSync.raw}.`);
+    }
+
+    const headSha = currentHead(root);
+    finalHeadSha = headSha;
+
+    let identity = createImplementationIntegrationIdentity({
+      instanceId: id,
+      candidateSha,
+      lifecycleHeadSha,
+      integrationBaseSha: integration.mainSha,
+    });
+    identity = refreshImplementationIntegrationContext(identity, {
+      integrationBaseSha: integration.mainSha,
+      integrationSha: headSha,
+    });
+
+    const prNumber = createOrUpdatePr(root, id, branch, changedPaths);
+    finalPrNumber = prNumber;
+
+    let prState = readOpenPrState(root, prNumber);
+    ensureOpenPrIdentity(prState, prNumber, headSha);
+
+    const registeredCheckCount = waitForPrChecksToRegister(root, prNumber);
+    const completedCheckCount = waitForPrChecksToComplete(root, prNumber);
+    finalRegisteredCheckCount = registeredCheckCount;
+    finalCompletedCheckCount = completedCheckCount;
+
+    prState = readOpenPrState(root, prNumber);
+    ensureOpenPrIdentity(prState, prNumber, headSha);
+
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+    const postCheckMainSha = git(
+      ['rev-parse', `origin/${DEFAULT_BRANCH}`],
+      { cwd: root },
+    ).stdout.trim().toLowerCase();
+    const mainContained = originMainContainedInHead(root);
+
+    let loopStep = integrationRuntimeStep({
+      identity,
+      originMainSha: postCheckMainSha,
+      branchHeadSha: currentHead(root),
+      prHeadSha: prState.headRefOid,
+      mainContainedInBranch: mainContained,
+      checksRegistered: registeredCheckCount > 0,
+      checksComplete: completedCheckCount > 0,
+      checksPassed: true,
+      checksHeadSha: headSha,
+    });
+
+    if (loopStep.action === 'REINTEGRATE_MAIN') {
+      continue;
+    }
+
+    if (loopStep.action !== 'CONFIRM_MERGE') {
+      fail(
+        `${id}: INTEGRATION_LOOP_UNEXPECTED_BEFORE_SEAL:${loopStep.action}.`,
+      );
+    }
+
+    identity = markImplementationIntegrationChecksPass(identity, {
+      integrationSha: headSha,
+    });
+
+    loopStep = integrationRuntimeStep({
+      identity,
+      originMainSha: postCheckMainSha,
+      branchHeadSha: currentHead(root),
+      prHeadSha: prState.headRefOid,
+      mainContainedInBranch: mainContained,
+      checksRegistered: registeredCheckCount > 0,
+      checksComplete: completedCheckCount > 0,
+      checksPassed: true,
+      checksHeadSha: headSha,
+    });
+
+    if (loopStep.action !== 'MERGE_EXACT_SHA') {
+      fail(`${id}: INTEGRATION_NOT_READY_FOR_MERGE:${loopStep.action}.`);
+    }
+
+    gh([
+      'pr', 'merge', String(prNumber),
+      '--merge',
+      '--match-head-commit', headSha,
+    ], { cwd: root });
+
+    merged = waitForPrMerged(root, prNumber, headSha);
+    identity = markImplementationIntegrationMerged(identity, {
+      mergedSha: merged.mergeCommitSha,
+    });
+    finalIdentity = identity;
+    break;
   }
 
-  git(['push', '-u', 'origin', branch], { cwd: root });
-  const branchSync = syncCounts(root, `origin/${branch}`, 'HEAD');
-  if (branchSync.behind !== 0 || branchSync.ahead !== 0) {
-    fail(`Push incompleto de ${branch}: ${branchSync.raw}.`);
+  if (!merged || !finalIdentity || !finalHeadSha || !finalPrNumber) {
+    fail(
+      `${id}: INTEGRATION_STABILITY_EXHAUSTED:${INTEGRATION_STABILITY_ATTEMPTS}.`,
+    );
   }
-
-  const headSha = currentHead(root);
-  const prNumber = createOrUpdatePr(root, id, branch, changedPaths);
-
-  let prState = readOpenPrState(root, prNumber);
-  ensureOpenPrIdentity(prState, prNumber, headSha);
-
-  const registeredCheckCount = waitForPrChecksToRegister(root, prNumber);
-  const completedCheckCount = waitForPrChecksToComplete(root, prNumber);
-
-  prState = readOpenPrState(root, prNumber);
-  ensureOpenPrIdentity(prState, prNumber, headSha);
-
-  gh([
-    'pr', 'merge', String(prNumber),
-    '--merge',
-    '--match-head-commit', headSha,
-  ], { cwd: root });
-
-  const merged = waitForPrMerged(root, prNumber, headSha);
 
   git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
   git(['switch', DEFAULT_BRANCH], { cwd: root });
@@ -1185,11 +1521,11 @@ export async function finishImplementation({ instanceId, root = ensureRepository
   }
 
   const validatedHeadInMain = git(
-    ['merge-base', '--is-ancestor', headSha, 'HEAD'],
+    ['merge-base', '--is-ancestor', finalHeadSha, 'HEAD'],
     { cwd: root, allowFailure: true },
   );
   if (validatedHeadInMain.status !== 0) {
-    fail(`El HEAD validado ${headSha} no quedo contenido en main.`);
+    fail(`El HEAD validado ${finalHeadSha} no quedo contenido en main.`);
   }
 
   const mergeCommitInMain = git(
@@ -1201,12 +1537,18 @@ export async function finishImplementation({ instanceId, root = ensureRepository
   }
 
   const cleanup = cleanupBranch(root, branch);
+  finalIdentity = markImplementationIntegrationCleaned(finalIdentity);
+
   if (worktreePaths(root).length > 0) fail('El worktree final no quedo limpio.');
 
   const finalSync = syncCounts(root, `origin/${DEFAULT_BRANCH}`, 'HEAD');
   if (finalSync.behind !== 0 || finalSync.ahead !== 0) {
     fail(`main perdio sincronizacion al final: ${finalSync.raw}.`);
   }
+
+  const finishMode = finalFinishMode;
+  const registeredCheckCount = finalRegisteredCheckCount;
+  const completedCheckCount = finalCompletedCheckCount;
 
   printResult({
     ESTADO: 'PASS',
@@ -1216,17 +1558,25 @@ export async function finishImplementation({ instanceId, root = ensureRepository
     BRANCH: branch,
     BRANCH_MODE: branchMode,
     FINISH_MODE: finishMode,
-    FILES: changedPaths.length,
+    FILES: finalChangedPaths.length,
     PHYSICAL_VALIDATIONS: 'REUSED_FROM_VERIFIED_EVIDENCE',
-    DOCS_PLAN_BUILD: 'PASS_ONCE',
-    DOCS_PLAN_CHECK: 'PASS_LOCAL_BEFORE_COMMIT',
-    DOCS_PLAN_TEST: 'PASS_LOCAL_BEFORE_COMMIT',
-    DOCS_TREQ_CHECK: 'PASS_LOCAL_BEFORE_COMMIT',
-    DOCS_TREQ_TEST: 'PASS_LOCAL_BEFORE_COMMIT',
-    LINT_RATCHET: 'PASS_LOCAL_BEFORE_COMMIT',
+    CANDIDATE_SHA: candidateSha,
+    LIFECYCLE_HEAD_SHA: lifecycleHeadSha,
+    INTEGRATION_BASE_SHA: finalIdentity.integration_base_sha,
+    INTEGRATION_SHA: finalIdentity.integration_sha,
+    MERGED_SHA: finalIdentity.merged_sha,
+    INTEGRATION_ATTEMPTS: integrationAttempts,
+    INTEGRATION_IMPACT: finalIntegrationImpact,
+    DOCTOR_INITIAL_NEXT_ACTION: doctor.assessment.next_action,
+    DOCS_PLAN_BUILD: 'PASS_PER_INTEGRATION_ATTEMPT',
+    DOCS_PLAN_CHECK: 'PASS_PER_INTEGRATION_ATTEMPT',
+    DOCS_PLAN_TEST: 'PASS_PER_INTEGRATION_ATTEMPT',
+    DOCS_TREQ_CHECK: 'PASS_PER_INTEGRATION_ATTEMPT',
+    DOCS_TREQ_TEST: 'PASS_PER_INTEGRATION_ATTEMPT',
+    LINT_RATCHET: 'PASS_PER_INTEGRATION_ATTEMPT',
     LOCAL_DERIVED_SYNC: 'PASS_AFTER_MERGE',
-    HEAD_VALIDATED: headSha,
-    PR: prNumber,
+    HEAD_VALIDATED: finalHeadSha,
+    PR: finalPrNumber,
     CHECKS_REGISTERED: registeredCheckCount,
     CHECKS_COMPLETED: completedCheckCount,
     REQUIRED_CHECKS: 'PASS',
@@ -1237,6 +1587,7 @@ export async function finishImplementation({ instanceId, root = ensureRepository
     WORKTREE: 'CLEAN',
     LOCAL_BRANCH: cleanup.local,
     REMOTE_BRANCH: cleanup.remote,
+    INTEGRATION_STATE: finalIdentity.phase,
     READY_TO_RESTART_WATCHER: 'SI',
   });
 }
