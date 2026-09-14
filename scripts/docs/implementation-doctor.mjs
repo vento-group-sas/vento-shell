@@ -156,11 +156,15 @@ export function evaluateImplementationDoctorProbes({
   if (!probePass(probes.branch_protection_readable)) block('BRANCH_PROTECTION_UNREADABLE');
   if (!probePass(probes.required_main_check_present)) block(`REQUIRED_CHECK_MISSING:${requirements.required_main_check}`);
 
-  const allowedBranches = instance.status === 'AUTHORIZED'
+  const allowedBranches = ['AUTHORIZED', 'VERIFIED'].includes(instance.status)
     ? new Set(['main', requirements.expected_branch])
     : new Set([requirements.expected_branch]);
   if (!allowedBranches.has(String(probes.current_branch ?? ''))) {
     block(`CURRENT_BRANCH_INVALID:${probes.current_branch ?? 'DETACHED'}`);
+  }
+  if (instance.status === 'VERIFIED' && probes.current_branch === 'main') {
+    if (!probes.remote_branch_sha) block('REMOTE_IMPLEMENTATION_BRANCH_MISSING');
+    else advise('FINISH_WILL_RESUME_REMOTE_IMPLEMENTATION_BRANCH');
   }
 
   const blockedWorktree = worktreeClassifications.filter(

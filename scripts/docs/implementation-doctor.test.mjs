@@ -287,3 +287,21 @@ test('PR abierto debe apuntar a la rama remota actual', () => {
   assert.equal(report.status, 'BLOCKED');
   assert.ok(report.blockers.includes('OPEN_PR_HEAD_DOES_NOT_MATCH_REMOTE_BRANCH'));
 });
+
+test('VERIFIED puede reanudar FINISH desde main si existe la rama remota', () => {
+  const instance = gap018Instance('VERIFIED');
+  const requirements = deriveImplementationDoctorRequirements({ instance, foundation });
+  const report = evaluateImplementationDoctorProbes({
+    instance,
+    requirements,
+    probes: healthyProbes({
+      current_branch: 'main',
+      local_head_sha: 'b'.repeat(40),
+      remote_main_sha: 'b'.repeat(40),
+      remote_branch_sha: 'a'.repeat(40),
+      main_ancestor_of_local_head: true,
+    }),
+  });
+  assert.equal(report.status, 'PASS');
+  assert.ok(report.advisories.includes('FINISH_WILL_RESUME_REMOTE_IMPLEMENTATION_BRANCH'));
+});
