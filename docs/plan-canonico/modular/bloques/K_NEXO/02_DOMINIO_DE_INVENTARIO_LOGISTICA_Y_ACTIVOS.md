@@ -28912,7 +28912,991 @@ MOVE LPN
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN`
 
-### [ ] NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
+### ✅ NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido
+**Tarea siguiente:** NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
+**Tipo de tarea:** documental; definición canónica de la trazabilidad de lote, batch, serial, fecha relevante, vencimiento, liberación, origen y condición de cada existencia dentro de un LPN, con preservación dimensional durante empaque, desempaque, transferencia, división, unión, anidamiento y movimiento, bajo topología `DEFINE_ONCE`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo un LPN conserva y expone la trazabilidad propia de cada existencia que contiene, sin convertir al LPN en sustituto de lote, batch, serial, vencimiento, condición, liberación, origen, ubicación, disponibilidad ni identidad física individual.
+
+La regla raíz queda:
+
+```text
+LPN CONTENT MEMBERSHIP
++
+ORIGINAL TRACEABILITY DIMENSIONS
++
+AUTHORITATIVE DIRECT OWNER
++
+AUDITABLE TRANSITIONS
+=
+TRACEABILITY PRESERVED WITHOUT IDENTITY COLLAPSE
+```
+
+Empacar una existencia dentro de un LPN agrega contexto logístico. No borra, resume de forma destructiva, fabrica, sustituye ni vuelve opcional la trazabilidad que corresponde al contenido.
+
+---
+
+#### 2. Decisiones canónicas consumidas
+
+Esta tarea consume sin reabrir las siguientes decisiones aprobadas:
+
+- un LPN es una identidad logística distinta de producto, lote, serial, ubicación y contenedor físico;
+- el contenido mantiene identidad y existencia separadas de la identidad LPN;
+- una existencia física posee exactamente una representación contable autoritativa directa: suelta o como contenido directo de un LPN;
+- un LPN padre organiza LPN hijos sin apropiarse de sus contenidos directos;
+- la ubicación efectiva de contenido dentro de un LPN deriva de la cadena estructural y no crea una segunda ubicación actual;
+- el movimiento de un LPN raíz comprende atómicamente su cierre vigente completo, incluidos LPN anidados y contenidos directos;
+- lifecycle, ubicación, custodia, reserva, disponibilidad, condición y contenedor físico son dimensiones separadas;
+- una condición, daño, faltante, pérdida, hallazgo o recuperación no borra la historia de la identidad o cantidad afectada.
+
+En particular, esta definición prolonga la exigencia ya fijada para el movimiento atómico: lote, vencimiento y condición de contenido incluido no cambian por el solo hecho de relocalizar su LPN.
+
+---
+
+#### 3. Alcance
+
+Esta tarea fija el contrato de dominio para:
+
+- trazabilidad de lote y batch cuando correspondan al contenido;
+- identidad serializada exacta cuando corresponda;
+- fecha relevante, vencimiento o vida útil cuando correspondan;
+- origen trazable;
+- estado de liberación aplicable;
+- condición vigente e historia de cambios de condición;
+- cantidad canónica asociada a cada combinación trazable;
+- preservación de tales dimensiones en transiciones de contenido y de LPN;
+- tratamiento de información desconocida, ausente, contradictoria o no reconciliada;
+- idempotencia, concurrencia, operación offline, autorización y auditoría de futuras materializaciones.
+
+El contrato se aplica tanto al contenido directo de un LPN raíz como al contenido directo de un LPN hijo incluido en una cadena de anidamiento válida.
+
+---
+
+#### 4. Límites de alcance material
+
+Esta tarea no decide:
+
+- la taxonomía completa de productos, presentaciones, UOM, factores ni precisión de conversión;
+- la política concreta de vida útil, las reglas particulares de FEFO, los rangos de temperatura o las reglas de frío de un producto o LOC;
+- qué roles específicos autorizan liberar, bloquear, disponer, ajustar o cambiar una condición;
+- el diseño de una interfaz, pantalla, escáner, etiqueta, adapter, API, tabla, evento, RPC, RLS, migración o proyección física;
+- la creación de stock, su consumo, producción, merma, ajuste, baja económica o costo histórico;
+- el conteo físico, su evidencia de observación ni la decisión posterior sobre una discrepancia;
+- la transferencia de custodia, recepción, despacho, remisión, manifiesto o confirmación de tránsito;
+- la definición de compatibilidad, capacidad, temperatura o seguridad física de un contenedor o LOC.
+
+Una futura materialización que requiera cualquiera de esas decisiones debe correlacionarla explícitamente con su contrato propietario. No puede simularla alterando una dimensión de trazabilidad dentro de un LPN.
+
+---
+
+#### 5. Vocabulario operativo
+
+Para este contrato:
+
+- `LPN`: identidad logística de una agrupación controlada de contenido; no es una dimensión de trazabilidad del producto.
+- `contenido directo`: cantidad o identidad cuyo propietario logístico inmediato es exactamente un LPN determinado.
+- `lote`: agrupación trazable aplicable a una existencia, conservada como dimensión distinta de producto y LPN.
+- `batch`: referencia de batch cuando el contexto aplicable la distingue de lote; no se asume equivalencia ni sustitución silenciosa.
+- `serial`: identificador de una identidad individual exacta cuando la clase de existencia exige granularidad individual.
+- `fecha relevante`: fecha trazable aplicable al contenido, sin presuponer que toda fecha tiene la misma semántica operativa.
+- `vencimiento o vida útil`: dimensión temporal aplicable que limita o califica la elegibilidad conforme a la política propietaria.
+- `origen`: referencia trazable de procedencia que acompaña al contenido sin reemplazar su lote, serial o LPN.
+- `liberación`: estado aplicable que participa en la elegibilidad y no equivale a condición, disponibilidad, ubicación o custodia.
+- `condición`: estado físico observable o evaluado de la existencia; permanece separado de liberación y de disponibilidad.
+- `tupla trazable`: combinación de dimensiones que identifica el alcance exacto de una cantidad controlada o de una identidad individual.
+
+---
+
+#### 6. Regla raíz de preservación
+
+Se fija la siguiente invariante:
+
+```text
+PACKED CONTENT TRACEABILITY AFTER
+=
+SAME APPLICABLE CONTENT TRACEABILITY BEFORE
+```
+
+Para una operación que únicamente cambia membresía, estructura o ubicación logística:
+
+```text
+LOT
++ BATCH WHEN APPLICABLE
++ SERIAL WHEN APPLICABLE
++ RELEVANT DATE WHEN APPLICABLE
++ EXPIRY OR SHELF LIFE WHEN APPLICABLE
++ ORIGIN
++ RELEASE STATE
++ CONDITION
+= PRESERVED
+```
+
+La operación puede cambiar el propietario logístico directo, la cadena de ancestros o la colocación efectiva cuando su contrato lo permite. No puede usar esos cambios para reducir el contenido a una referencia LPN genérica.
+
+---
+
+#### 7. El LPN no absorbe la identidad del contenido
+
+Se conserva:
+
+```text
+LPN_ID
+!= LOT
+!= BATCH
+!= SERIAL
+!= ORIGIN
+!= EXPIRY
+!= CONDITION
+```
+
+Un mismo LPN puede contener contenido de más de una tupla trazable si las demás reglas aplicables lo permiten. Esa coexistencia no autoriza a representar todas las unidades como si compartieran un único lote, serial, vencimiento, condición o estado de liberación.
+
+A la inversa, que varias existencias compartan una misma tupla trazable no las convierte en una identidad LPN ni permite inferir que pertenecen al mismo LPN.
+
+---
+
+#### 8. Sujeto directo de la trazabilidad
+
+La trazabilidad pertenece al sujeto de existencia contenido, no a una visualización agregada del LPN.
+
+```text
+DIRECT CONTENT SUBJECT
+→ APPLICABLE TRACEABILITY TUPLE
+→ DIRECT OWNER LPN
+→ OPTIONAL ANCESTOR CHAIN
+→ ROOT LPN
+→ EFFECTIVE PLACEMENT
+```
+
+La cadena LPN aporta contexto logístico y espacial. El sujeto directo conserva el lote, serial, origen, fechas, liberación y condición que le correspondan. Los ancestros no duplican ni reemplazan esos atributos.
+
+---
+
+#### 9. Granularidad trazable para cantidades
+
+Para contenido controlado por cantidad, la cantidad autoritativa debe poder correlacionarse con su tupla trazable aplicable.
+
+```text
+QUANTITY
+→ PRODUCT OR SUBJECT CONTEXT
++ LOT WHEN APPLICABLE
++ BATCH WHEN APPLICABLE
++ RELEVANT DATE WHEN APPLICABLE
++ EXPIRY WHEN APPLICABLE
++ ORIGIN
++ RELEASE STATE
++ CONDITION
++ DIRECT OWNER LPN
+```
+
+No es válido sumar cantidades de tuplas distintas y después afirmar que el total conserva una trazabilidad única sin conservar la partición que explica el total.
+
+---
+
+#### 10. Granularidad trazable para identidad individual
+
+Para una `INDIVIDUAL_IDENTITY`, la identidad exacta no se sustituye por una cantidad arbitraria ni por un resumen de LPN.
+
+```text
+ONE SERIALIZED IDENTITY
+→ ONE EXACT SUBJECT
+→ ONE APPLICABLE TRACEABILITY CONTEXT
+→ ONE DIRECT OWNER LPN AT A TIME
+```
+
+Una operación válida puede cambiar la membresía directa de la misma identidad conforme a su contrato. No puede crear una segunda identidad serializada, reasignar su serial a otro sujeto ni ocultar el serial bajo una línea agregada para evitar un conflicto.
+
+---
+
+#### 11. Lote
+
+Cuando el contenido está sujeto a lote, el lote debe permanecer correlacionable con la cantidad o identidad exacta dentro del LPN.
+
+Empaque, desempaque, transferencia de contenido, división, unión, anidamiento, desanidamiento, reparentado y movimiento no autorizan a:
+
+- eliminar el lote de una existencia que lo requiere;
+- reemplazarlo por el código del LPN;
+- heredar el lote de otro contenido por proximidad física;
+- seleccionar arbitrariamente uno de varios lotes presentes en el mismo LPN;
+- fusionar cantidades de lotes diferentes como un único saldo trazable.
+
+La existencia de varios lotes dentro del mismo LPN exige que cada alcance conserve su propia relación con lote y cantidad.
+
+---
+
+#### 12. Batch distinto de lote cuando el contexto lo exige
+
+`batch` se conserva como dimensión explícita cuando el contexto aplicable la distingue del lote. El LPN no decide si ambas referencias son equivalentes.
+
+```text
+LOT VALUE PRESENT
+!= PROOF THAT BATCH IS THE SAME VALUE
+```
+
+Una futura implementación puede presentar una experiencia conjunta de captura o consulta solo si conserva la distinción semántica y la política propietaria permite esa presentación. La ausencia de una dimensión no puede completarse copiando el valor de otra.
+
+---
+
+#### 13. Serial e identidad exacta
+
+La trazabilidad serializada exige conservar la identidad individual durante toda la pertenencia al LPN.
+
+```text
+SERIALIZED CONTENT IN LPN
+→ SAME PHYSICAL IDENTITY
+→ SAME SERIAL WHEN APPLICABLE
+→ SAME AUDITABLE HISTORY
+```
+
+El serial no se comparte entre dos identidades activas por efecto de un `PACK`, `UNPACK`, `TRANSFER_CONTENT` o `MOVE_LPN`. Si la identidad o serial observados contradicen el estado autoritativo, la mutación queda bloqueada hasta reconciliación; no se corrige seleccionando otro serial disponible ni creando un duplicado.
+
+---
+
+#### 14. Fecha relevante
+
+Toda fecha relevante que aplique al contenido debe permanecer asociada a su alcance exacto. El contrato no presume un único tipo de fecha ni permite que una fecha visible en el LPN se convierta en evidencia de que aplica a todos los contenidos.
+
+```text
+RELEVANT DATE
+→ CONTENT SCOPE
+→ APPLICABILITY AND SOURCE CONTEXT
+```
+
+Cambiar de LPN, de padre LPN, de LOC efectivo o de sede no reescribe una fecha ya trazable. Si una corrección autorizada de dato fuente fuera necesaria, debe preservar la historia, la razón, el actor, el instante y la correlación; no puede presentarse como un movimiento logístico ordinario.
+
+---
+
+#### 15. Vencimiento y vida útil
+
+Cuando corresponde vencimiento o vida útil, esa dimensión se conserva por contenido o tupla trazable, no como propiedad global implícita del LPN.
+
+Se mantiene:
+
+```text
+LPN CONTAINS EXPIRED CONTENT
+!= LPN ITSELF EXPIRES
+```
+
+Y también:
+
+```text
+LPN CONTAINS SOME USABLE CONTENT
+!= ALL CONTENT IS USABLE
+```
+
+La fecha vencida, cercana a vencer, desconocida o no aplicable debe conservar el significado que la política propietaria asigne. El LPN no puede eliminar esa distinción mediante una etiqueta resumida o una cantidad consolidada.
+
+---
+
+#### 16. Origen
+
+El origen trazable acompaña a la existencia o identidad individual contenida y no se reemplaza por el origen operativo del LPN, de su movimiento, de su contenedor físico o de su ubicación actual.
+
+```text
+CONTENT ORIGIN
+!= LPN CREATION CONTEXT
+!= LPN MOVEMENT ORIGIN
+!= CURRENT LOC
+```
+
+Un LPN puede reunir contenido con orígenes distintos cuando una operación autorizada lo permita, pero la proyección debe poder distinguir los alcances. El traslado posterior del conjunto conserva el origen histórico de cada contenido.
+
+---
+
+#### 17. Estado de liberación
+
+El estado de liberación participa en la trazabilidad y elegibilidad de la existencia, pero no es sinónimo de condición física ni de disponibilidad total.
+
+```text
+RELEASED
+!= GOOD CONDITION BY ITSELF
+!= AVAILABLE BY ITSELF
+
+NOT RELEASED
+!= NONEXISTENT
+```
+
+Una existencia no liberada continúa siendo existente y trazable. Empacarla, moverla o anidarla no la libera. Una lectura faltante o fuera de rango tampoco produce liberación ni descarte automático; genera el caso pendiente que corresponda a la política aplicable.
+
+---
+
+#### 18. Condición dentro del LPN
+
+La condición permanece asociada al contenido en su granularidad autoritativa. Un LPN puede contener contenido con condiciones diferentes sin que una condición del contenedor, una condición de otro artículo o una marca visual global sustituya la condición de cada sujeto.
+
+```text
+CONTENT CONDITION
+!= LPN LIFECYCLE
+!= LPN LOCATION MODE
+!= CUSTODY
+!= RELEASE STATE
+!= AVAILABILITY
+```
+
+Una condición que exige bloqueo, cuarentena, evaluación, contingencia, liberación o disposición conserva esa consecuencia según el contrato propietario. El LPN no constituye una excepción que permita retirar, consumir o transferir contenido no elegible.
+
+---
+
+#### 19. Tupla mínima de trazabilidad
+
+Para cada contenido, la futura materialización debe poder reconstruir la tupla aplicable sin depender de inferencias de interfaz:
+
+```text
+SUBJECT OR PRODUCT CONTEXT
++ QUANTITY OR EXACT IDENTITY
++ LOT WHEN APPLICABLE
++ BATCH WHEN APPLICABLE
++ SERIAL WHEN APPLICABLE
++ RELEVANT DATE WHEN APPLICABLE
++ EXPIRY OR SHELF LIFE WHEN APPLICABLE
++ ORIGIN
++ RELEASE STATE
++ CONDITION
++ DIRECT OWNER LPN
++ EFFECTIVE PLACEMENT CONTEXT
++ REVISION AND CORRELATION
+```
+
+Esta lista expresa atributos de dominio y trazabilidad. No prescribe nombres de columnas, estructuras físicas ni mecanismos de persistencia.
+
+---
+
+#### 20. Aplicable, no aplicable y desconocido
+
+Una dimensión puede ser aplicable, no aplicable o desconocida. Estos estados no se intercambian.
+
+```text
+NOT_APPLICABLE
+!= UNKNOWN
+
+UNKNOWN
+!= OMITTED
+
+PRESENT
+!= VERIFIED BY MERE DISPLAY
+```
+
+Cuando una dimensión requerida para aceptar una mutación no puede demostrarse, el sistema futuro debe fallar cerrado o llevar el caso a reconciliación conforme al contrato aplicable. No puede convertir lo desconocido en no aplicable solo para completar un flujo.
+
+---
+
+#### 21. Ausencia de valor no es valor genérico
+
+Un lote vacío no significa automáticamente “lote genérico”; una fecha ausente no significa automáticamente “sin vencimiento”; un serial ilegible no autoriza tratar la identidad como controlada por cantidad; una condición no observada no es una condición favorable.
+
+La futura representación debe conservar el significado de ausencia, no observación, no aplicabilidad o contradicción cuando el dominio los distinga. Las decisiones de liberación, disposición, consumo o ajuste no se infieren desde un valor faltante.
+
+---
+
+#### 22. Contenido mixto dentro de un mismo LPN
+
+El LPN puede funcionar como unidad logística para contenido heterogéneo sin perder la separación de sus dimensiones.
+
+```text
+ONE LPN
+→ MANY DIRECT CONTENT SCOPES
+→ EACH WITH ITS OWN APPLICABLE TRACEABILITY
+```
+
+Por tanto, una vista que muestre el LPN como un conjunto puede calcular resúmenes derivados, pero debe conservar la posibilidad de volver a los sujetos o tuplas que soportan cada resumen. Un total del LPN no es evidencia de homogeneidad de lote, serial, vencimiento, condición u origen.
+
+---
+
+#### 23. Prohibición de homogeneidad inferida
+
+No se permite concluir que todo el contenido de un LPN comparte una dimensión porque:
+
+- el LPN tenga una sola etiqueta visible;
+- el contenido esté en una misma LOC efectiva;
+- el contenido se haya movido en un único comando;
+- el contenido pertenezca al mismo producto;
+- un primer escaneo haya identificado una tupla válida;
+- una proyección agregada muestre un solo total;
+- una pantalla no muestre las dimensiones desagregadas.
+
+La homogeneidad debe estar demostrada por la composición autoritativa vigente, no por conveniencia operativa.
+
+---
+
+#### 24. Proyección derivada no crea una segunda fuente de verdad
+
+Una proyección puede resumir el contenido por lote, condición, vencimiento, estado de liberación, producto o LPN. Esa proyección no constituye una segunda membresía ni un nuevo saldo autoritativo.
+
+```text
+DERIVED LPN SUMMARY
+!= INDEPENDENT INVENTORY BALANCE
+```
+
+Cuando un resumen no pueda explicarse mediante contenidos directos y sus tuplas trazables, debe tratarse como inconsistente. No puede ser usado para autorizar una mutación, liberar contenido ni ocultar una diferencia de detalle.
+
+---
+
+#### 25. Regla de `PACK`
+
+`PACK` transforma la representación logística de una existencia elegible; no transforma sus dimensiones de trazabilidad.
+
+```text
+LOOSE TRACEABLE CONTENT
+→ SAME TRACEABLE CONTENT WITH DIRECT OWNER LPN
+```
+
+En un `PACK` puro se conservan cantidad o identidad exacta, lote, batch, serial, fecha relevante, vencimiento, origen, liberación y condición aplicables. La membresía LPN empieza y la representación suelta directa termina para exactamente el mismo alcance físico.
+
+---
+
+#### 26. Regla de `UNPACK`
+
+`UNPACK` es la transformación inversa de representación y debe preservar la misma tupla trazable.
+
+```text
+LPN DIRECT CONTENT
+→ SAME TRACEABLE CONTENT AS LOOSE DIRECT REPRESENTATION
+```
+
+No es válido desempacar una cantidad agregada y luego asignarle un lote, condición, vencimiento u origen seleccionado por defecto. La existencia resultante debe conservar el detalle que poseía como contenido LPN, en la colocación efectiva aplicable al momento de la transición.
+
+---
+
+#### 27. Transferencia de contenido entre LPN
+
+`TRANSFER_CONTENT` puede cambiar el propietario LPN directo solo para el alcance trazable validado.
+
+```text
+SOURCE LPN / TRACEABILITY TUPLE X
+→ TARGET LPN / SAME TRACEABILITY TUPLE X
+```
+
+La transferencia no autoriza fusionar `X` con una tupla distinta ya presente en destino. Si la operación pretende mover solo una parte de una cantidad, la partición resultante debe conservar cantidades canónicas reconciliables y la misma trazabilidad aplicable en ambos alcances.
+
+---
+
+#### 28. División de contenido
+
+Una división de contenido preserva la trazabilidad del alcance de origen en cada porción resultante, salvo que exista un hecho causal separado y autorizado que modifique una dimensión con evidencia.
+
+```text
+TRACEABLE QUANTITY Q
+→ Q1 + Q2 + ... + Qn
+WHERE SUM(Qi) = Q
+AND EACH Qi RETAINS APPLICABLE SOURCE TRACEABILITY
+```
+
+La división no crea un serial nuevo, no elimina un lote, no recalcula un vencimiento, no libera una porción por inferencia y no convierte una condición en favorable.
+
+---
+
+#### 29. Unión de contenido
+
+Una unión solo puede producir una proyección conjunta si conserva la partición de las tuplas que la componen.
+
+```text
+TUPLE A + TUPLE B
+→ MAY SHARE LOGISTICS CONTEXT
+BUT A != B UNLESS ALL RELEVANT DIMENSIONS MATCH
+```
+
+No se permite convertir dos lotes, dos condiciones, dos vencimientos, dos orígenes o dos identidades serializadas en una única tupla mediante un `MERGE_CONTENT`. La unión logística no reescribe la historia ni autoriza una agregación destructiva.
+
+---
+
+#### 30. LPN anidados
+
+Un LPN padre no se convierte en propietario directo de los lotes, seriales o condiciones de los contenidos de un LPN hijo.
+
+```text
+CHILD DIRECT CONTENT
+→ CHILD LPN DIRECT OWNER
+→ PARENT LPN CONTEXT
+```
+
+Las consultas desde el LPN raíz pueden incluir el cierre completo para fines de trazabilidad, pero deben conservar qué LPN posee directamente cada contenido y cuál es su cadena de ancestros. Una lectura del padre no autoriza a editar o trasladar selectivamente contenido del hijo fuera de los contratos estructurales aplicables.
+
+---
+
+#### 31. Movimiento atómico del LPN
+
+Cuando se acepta un `MOVE_LPN` sobre un LPN raíz, la trazabilidad de todo el cierre incluido se conserva junto con la totalidad del conjunto.
+
+```text
+ACCEPTED MOVE OF ROOT LPN
+→ SAME CONTENT CLOSURE
+→ SAME APPLICABLE TRACEABILITY PER INCLUDED SUBJECT
+→ NEW EFFECTIVE PLACEMENT OR TRANSIT CONTEXT
+```
+
+El movimiento modifica únicamente el contexto espacial o de tránsito que su contrato permite. No reetiqueta lotes, seriales, fechas, origen, liberación o condición. Tampoco permite éxito parcial en el que una parte de la trazabilidad del cierre quede en origen o resulte indeterminada.
+
+---
+
+#### 32. Tránsito, ubicación y trazabilidad
+
+El tránsito y la ubicación efectiva son contexto del contenido, no sustitutos de su trazabilidad intrínseca.
+
+```text
+IN_TRANSIT
+!= UNKNOWN LOT
+!= UNKNOWN SERIAL
+!= CONDITION CHANGE
+!= RELEASE CHANGE
+```
+
+La ausencia temporal de una LOC efectiva durante tránsito no borra el vínculo de cada contenido con su lote, serial, origen, fechas, estado de liberación y condición. Si la identidad o composición del cierre no puede demostrarse, el proceso requiere reconciliación antes de afirmar un movimiento íntegro.
+
+---
+
+#### 33. Reserva, disponibilidad y FEFO
+
+La elegibilidad de una existencia se evalúa sobre su alcance trazable real, no sobre el hecho de que esté dentro de un LPN.
+
+```text
+FEFO SELECTION
+→ ONLY RELEASED AND USABLE EXISTENCE
+→ WITH APPLICABLE EXPIRY OR SHELF-LIFE CONTEXT
+```
+
+La disponibilidad utilizable deriva del estado autorizado y puede estar afectada por reservas, bloqueos, cuarentena, asignaciones, vencimiento e identidad no elegible. Un saldo visible de LPN no autoriza retiro, consumo, transferencia o despacho de contenido cuya tupla no sea elegible.
+
+---
+
+#### 34. Condición, cuarentena y disposición
+
+Una transición de condición aplicable al contenido debe ser auditable y preservar la identidad o cantidad, lote, serial, fechas y origen afectados.
+
+```text
+CONDITION TRANSITION
+≠ DELETE CONTENT
+≠ DELETE COST HISTORY
+≠ ERASE LOT OR SERIAL
+```
+
+Cuarentena, daño, pérdida, vencimiento, devolución, disposición y liberación son decisiones o transiciones separadas y trazables. No se producen automáticamente por haber empacado, desempacado, movido o reubicado un LPN.
+
+---
+
+#### 35. Lifecycle LPN y trazabilidad de contenido
+
+El lifecycle del LPN permanece separado de las dimensiones de contenido.
+
+```text
+RELABEL LPN
+→ SAME CONTENT TRACEABILITY
+
+CLOSE OR VOID LPN
+!= DELETE CONTENT HISTORY
+```
+
+Reetiquetar no modifica serial, lote, vencimiento, condición, origen o liberación. Cerrar, anular o rotar un LPN requiere la salida reconciliable que corresponda para sus contenidos, pero no puede eliminar la historia de las dimensiones trazables ni reciclarlas bajo una identidad LPN nueva.
+
+---
+
+#### 36. Contenedor físico separado
+
+Un contenedor físico vinculado a un LPN conserva identidad, condición y lifecycle separados del contenido trazable.
+
+```text
+PHYSICAL CONTAINER CONDITION
+!= CONTENT CONDITION
+
+CONTAINER ID
+!= CONTENT LOT OR SERIAL
+```
+
+El daño, retorno, pérdida o sustitución de un contenedor no determina por inferencia el lote, serial, vencimiento, condición, liberación u origen de los contenidos. Cualquier impacto sobre esos contenidos requiere observación, evidencia y decisión bajo sus contratos propietarios.
+
+---
+
+#### 37. Autorización
+
+La futura decisión de crear o modificar una relación de contenido trazable deberá evaluarse sobre el contexto efectivo y no solo sobre un código escaneado.
+
+Como mínimo, la decisión debe poder vincularse con:
+
+- actor efectivo y principal técnico cuando sean distintos;
+- sujeto o alcance trazable afectado;
+- LPN origen, destino o cadena estructural cuando aplique;
+- sitio, LOC, tránsito y territorio aplicables;
+- propósito de la operación y documento causal cuando exista;
+- condición, liberación, reserva, vencimiento, lifecycle y custodia relevantes;
+- instante efectivo, correlación, revisión e identidad idempotente.
+
+Un código LPN, QR, barcode, serial o etiqueta puede ayudar a resolver una identidad en una sesión. No concede por sí solo autoridad para cambiar contenido, condición, liberación o elegibilidad.
+
+---
+
+#### 38. Atomicidad conceptual
+
+Una mutación aceptada sobre contenido trazable debe preservar de forma coherente la identidad, cantidad, membresía y dimensiones aplicables.
+
+```text
+ACCEPTED TRACEABILITY-AFFECTING OPERATION
+=
+ONE RECONSTRUCTIBLE BEFORE/AFTER TRANSITION
+```
+
+No existe éxito válido en el que cambie el LPN directo pero se pierda el lote; cambie la cantidad pero no pueda asignarse a una condición; se mueva una identidad serializada pero quede simultáneamente disponible como una cantidad genérica; o se actualice la proyección sin la historia causal correspondiente.
+
+---
+
+#### 39. Idempotencia
+
+La futura materialización debe conservar una identidad de operación o mecanismo equivalente que distinga un reintento de una nueva intención empresarial.
+
+```text
+SAME LOGICAL COMMAND
++ SAME IDEMPOTENCY ID
+→ SAME EFFECTIVE TRACEABILITY RESULT
+```
+
+Repetir una operación ya aceptada no puede duplicar una membresía, una cantidad, un serial, un cambio de condición, una liberación, un evento de vencimiento ni una partición de lote. Una intención diferente no puede reutilizar la identidad idempotente de otra operación para obtener un resultado ajeno.
+
+---
+
+#### 40. Concurrencia
+
+Antes de aceptar una mutación futura, debe poder validarse el estado esperado del alcance trazable.
+
+Como mínimo, la verificación debe poder detectar conflicto sobre:
+
+- sujeto, cantidad o serial esperados;
+- tupla de lote, batch, fecha, vencimiento, origen, liberación y condición aplicable;
+- LPN propietario directo y cadena estructural esperados;
+- representación suelta o contenida esperada;
+- ubicación o tránsito compatible;
+- lifecycle, reserva, bloqueo y revisión esperados.
+
+No se permite una política silenciosa de último escritor que conserve solo la última condición, lote o ubicación visible y descarte el conflicto anterior.
+
+---
+
+#### 41. Operación offline
+
+Una intención creada offline no reserva ni altera por sí sola el estado autoritativo remoto. Al sincronizar debe revalidarse el alcance trazable efectivo.
+
+```text
+OFFLINE INTENT
+→ REVALIDATE BEFORE ACCEPTANCE
+→ ACCEPT, REJECT OR RECONCILE EXPLICITLY
+```
+
+La revalidación incluye identidad o cantidad, membresía LPN, lote, serial cuando aplique, vencimiento, condición, liberación, representación, revisión, ubicación o tránsito, autorización e idempotencia. Si cualquiera de las precondiciones relevantes cambió, la intención no puede sobrescribir el estado remoto ni producir una segunda copia de la existencia.
+
+---
+
+#### 42. Respuesta tardía y confirmación perdida
+
+Una respuesta tardía no permite inferir que la operación falló ni que debe ejecutarse otra vez. La futura materialización debe poder resolver el resultado por correlación, identidad idempotente y evidencia autoritativa.
+
+```text
+UNKNOWN CLIENT OUTCOME
+→ QUERY OR RECONCILE AUTHORITATIVE RESULT
+→ DO NOT DUPLICATE MUTATION
+```
+
+Hasta resolverlo, no se debe asumir que un lote sigue en el LPN anterior, que un serial está libre, que una condición no cambió o que una cantidad puede procesarse nuevamente.
+
+---
+
+#### 43. Fallos y compensación
+
+Un fallo previo a la aceptación no debe dejar una membresía parcial ni una proyección que afirme una tupla distinta de la historia. Un fallo posterior a un efecto aceptado requiere reconocimiento o compensación explícita, correlacionada e idempotente conforme al contrato del efecto original.
+
+La compensación no borra el hecho anterior ni puede reemplazar sus dimensiones trazables por valores genéricos. Debe identificar el alcance afectado, el resultado previo, la razón, el actor, el instante y el efecto compensatorio autorizado.
+
+---
+
+#### 44. Estado de reconciliación
+
+Cuando no puede demostrarse la consistencia entre contenido, cantidad o identidad, LPN directo y dimensiones trazables, se aplica:
+
+```text
+TRACEABILITY UNKNOWN OR CONTRADICTORY
+→ BLOCK AFFECTED MUTATION
+→ RECONCILE WITH EVIDENCE
+```
+
+No se elige un lote, serial, vencimiento, condición, origen o estado de liberación para hacer cuadrar una proyección. Tampoco se descarta una dimensión porque un lector, caché o interfaz no la muestre.
+
+---
+
+#### 45. Auditoría mínima
+
+Toda futura transición de contenido LPN que afecte o dependa de trazabilidad debe poder reconstruir:
+
+- actor efectivo y principal técnico cuando aplique;
+- sujeto, producto o identidad individual afectados;
+- cantidad y unidad canónica cuando aplique;
+- lote, batch, serial, fecha relevante, vencimiento, origen, liberación y condición aplicables antes y después;
+- LPN propietario directo previo y posterior;
+- cadena de ancestros y colocación efectiva o tránsito cuando aplique;
+- operación causal, propósito y documento relacionado cuando exista;
+- instante efectivo, correlación, identidad idempotente y revisiones;
+- autorización evaluada;
+- resultado aceptado, rechazado, conflictivo o pendiente de reconciliación;
+- evidencia de observación, evaluación o decisión cuando corresponda.
+
+La auditoría debe permitir explicar el cambio sin reconstruirlo desde una etiqueta actual o desde una proyección agregada mutable.
+
+---
+
+#### 46. Matriz canónica de resultados
+
+La decisión futura se rige por la siguiente matriz conceptual:
+
+```text
+CASO: PACK O UNPACK PURO CON TUPLA COMPLETA Y ELEGIBLE
+RESULTADO: ACEPTABLE; CAMBIA SOLO LA REPRESENTACIÓN Y MEMBRESÍA
+
+CASO: TRANSFERENCIA ENTRE LPN CON MISMA TUPLA Y ALCANCE VALIDADO
+RESULTADO: ACEPTABLE; CAMBIA SOLO EL PROPIETARIO LPN DIRECTO
+
+CASO: DIVISIÓN DE CANTIDAD TRAZABLE
+RESULTADO: ACEPTABLE; CADA PORCIÓN CONSERVA LA TUPLA APLICABLE Y LA SUMA SE RECONCILIA
+
+CASO: UNIÓN DE CONTENIDOS DE TUPLAS DISTINTAS
+RESULTADO: PUEDE COMPARTIR CONTEXTO LOGÍSTICO; DEBE CONSERVAR PARTICIONES DISTINTAS
+
+CASO: MOVIMIENTO DEL LPN RAÍZ
+RESULTADO: ACEPTABLE SOLO COMO CIERRE COMPLETO; PRESERVA TODAS LAS TUPLAS INCLUIDAS
+
+CASO: SERIAL YA ASOCIADO A OTRO ESTADO AUTORITATIVO
+RESULTADO: RECHAZAR O RECONCILIAR; NUNCA DUPLICAR
+
+CASO: LOTE, VENCIMIENTO, CONDICIÓN O LIBERACIÓN DESCONOCIDOS CUANDO SON REQUERIDOS
+RESULTADO: BLOQUEAR O RECONCILIAR SEGÚN POLÍTICA; NUNCA INFERIR FAVORABLE
+
+CASO: REINTENTO CON MISMA IDENTIDAD IDEMPOTENTE
+RESULTADO: DEVOLVER EL MISMO RESULTADO EFECTIVO; NUNCA REPETIR EL EFECTO
+```
+
+---
+
+#### 47. Escenarios límite
+
+Este contrato cubre expresamente los siguientes bordes:
+
+- un LPN con el mismo producto en varios lotes;
+- un LPN con cantidades de condición diferente;
+- un LPN con contenido liberado y no liberado;
+- un LPN con contenido de vencimientos distintos;
+- una identidad serializada incluida en una cadena de LPN anidados;
+- una cantidad dividida entre dos LPN sin perder lote, origen o condición;
+- un movimiento que recibe confirmación tardía;
+- una intención offline cuyo LPN, condición o revisión cambió antes de sincronizar;
+- una lectura faltante o fuera de rango que no decide liberación ni descarte;
+- una proyección resumida que no puede demostrar el detalle que afirma;
+- un contenedor físico dañado sin evidencia suficiente de afectación del contenido;
+- una discrepancia entre condición observada y condición autoritativa.
+
+En todos los casos, la falta de demostración bloquea la inferencia favorable y dirige el caso a la reconciliación o al contrato decisor aplicable.
+
+---
+
+#### 48. AS-IS remoto observado
+
+La cápsula registra que la implementación y ejecución asociadas a la cobertura histórica pertinente permanecen planificadas o pendientes, sin resultado de ejecución. También registra la existencia de contexto AS-IS parcial en contratos precedentes, pero no aporta para esta tarea un inventario técnico verificable de tablas, columnas, APIs, UI, lectores, sensores, migraciones, políticas o datos de producción.
+
+Por ello, este documento no afirma que exista una materialización física completa, parcial o ausente de la tupla trazable. Define únicamente el contrato canónico que una materialización futura deberá satisfacer.
+
+---
+
+#### 49. Clasificación AS-IS
+
+Con la evidencia suministrada, la clasificación es:
+
+```text
+CANONICAL DOMAIN CONTRACT: DEFINED BY THIS TASK
+PHYSICAL IMPLEMENTATION STATUS: NOT DETERMINABLE FROM THIS TASK EVIDENCE
+EXECUTION EVIDENCE: NOT PROVIDED
+```
+
+No se interpreta el hecho de que exista cobertura planificada como prueba de que el dominio ya persiste correctamente lote, serial, vencimiento, liberación, origen y condición dentro de LPN.
+
+---
+
+#### 50. Brechas registradas
+
+La cápsula vincula la protección de trazabilidad de lotes, condiciones y contenido LPN con cobertura histórica y con brechas de paquetes ya registradas. Esas referencias no se modifican en esta tarea.
+
+La brecha material que este contrato impide normalizar es la pérdida, sustitución, consolidación destructiva o inferencia de dimensiones trazables cuando una existencia pasa a estar contenida en un LPN o se mueve con él. La priorización, el paquete físico, la solución técnica y la ejecución permanecen fuera del alcance documental actual.
+
+---
+
+#### 51. Riesgos controlados
+
+Este contrato controla, como mínimo, los riesgos de:
+
+- consumo de producto vencido o no liberado;
+- pérdida de origen, lote o batch al empacar o mover;
+- serial duplicado, oculto o reasignado;
+- condición mezclada con liberación, disponibilidad o lifecycle;
+- cadena de frío o evidencia temporal no demostrable convertida en aprobación automática;
+- cantidades consolidadas sin partición por tupla trazable;
+- doble contabilización entre existencia suelta y contenido LPN;
+- movimiento parcial de un cierre LPN con trazabilidad incompleta;
+- autorización concedida por el solo escaneo de una etiqueta;
+- reintento, concurrencia u operación offline que duplique o sobrescriba el detalle;
+- disposición, liberación o descarte realizados sin evidencia ni contrato decisor.
+
+---
+
+#### 52. Handoffs contractuales
+
+Este contrato entrega a consumidores posteriores una regla reutilizable: toda operación sobre contenido o cierre LPN debe preservar las dimensiones trazables aplicables por sujeto o por tupla, o fallar cerrada y reconciliar.
+
+Recibe de contratos propietarios:
+
+- clasificación y granularidad de la existencia;
+- lifecycle LPN;
+- contenido, empaque, desempaque, división, unión y transferencia;
+- grafo de LPN anidados;
+- ubicación efectiva, tránsito y movimiento atómico;
+- condición, daño, pérdida, hallazgo y recuperación;
+- reglas de autorización, disponibilidad, reserva, FEFO, frío, disposición y decisiones económicas cuando correspondan.
+
+No delega a consumidores la posibilidad de reinterpretar, completar o borrar dimensiones de trazabilidad por conveniencia de pantalla, proceso o implementación.
+
+---
+
+#### 53. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA
+
+---
+
+#### 54. Cobertura de prueba vigente reutilizada
+
+La cobertura histórica `TREQ-NEXO-012` ya vincula expresamente la preservación de lote, serial, origen, fecha relevante, liberación, vencimiento, cantidad y condición dentro de LPN, así como su conservación al empacar, mover, dividir, unir o desempacar.
+
+Esta tarea no crea ni modifica esa cobertura histórica. Su contenido documental precisa el contrato de dominio reutilizable que dicha cobertura protege.
+
+---
+
+#### 55. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La cápsula no aporta resultado real de compilación o validación documental ejecutada para este candidato. |
+| LOCAL | NOT_EXECUTED | La cápsula no aporta resultado real de validación local para este candidato. |
+| REMOTA | NOT_EXECUTED | La cápsula registra cobertura e implementación planificadas o pendientes, sin resultado remoto de ejecución. |
+| OPERATIVA | NOT_EXECUTED | No se aporta evidencia de operación física, escaneo, movimiento, liberación, reconciliación o piloto ejecutados. |
+| FÍSICA | NOT_APPLICABLE | La tarea es una definición documental bajo `DEFINE_ONCE` y no autoriza una instancia física. |
+
+---
+
+#### 56. Criterios de aceptación
+
+La tarea queda aceptable cuando el contrato deja inequívocamente establecido que:
+
+1. el LPN no sustituye lote, batch, serial, origen, fecha relevante, vencimiento, liberación ni condición;
+2. cada contenido conserva la trazabilidad aplicable en su granularidad de cantidad o identidad individual;
+3. contenido heterogéneo puede compartir un LPN sin que sus tuplas se fusionen destructivamente;
+4. `PACK`, `UNPACK`, transferencia, división, unión, anidamiento y movimiento preservan el alcance trazable o fallan cerrados;
+5. el movimiento atómico de un LPN conserva el detalle del cierre completo incluido;
+6. lote, vencimiento, liberación, condición, ubicación, custodia y lifecycle continúan siendo dimensiones separadas;
+7. valores desconocidos, faltantes o contradictorios no se convierten en valores favorables por inferencia;
+8. reintentos, concurrencia, offline y respuestas tardías no duplican ni sobrescriben trazabilidad;
+9. toda futura materialización puede auditar el antes, después, actor, correlación, revisión, autorización y evidencia del alcance afectado;
+10. no se afirma ninguna implementación física, migración, prueba ejecutada o despliegue no evidenciados.
+
+---
+
+#### 57. Límites
+
+Este documento es un contrato canónico de dominio y no constituye:
+
+- una autorización de cambio físico;
+- una especificación de esquema o persistencia;
+- una política clínica, sanitaria, de inocuidad, temperatura o disposición;
+- una decisión de autorización concreta;
+- una autorización de liberar o consumir inventario;
+- una prueba de que el AS-IS cumple el contrato;
+- una certificación operativa, de auditoría o de cadena de frío;
+- una sustitución de los contratos propietarios de movimiento, conteo, custodia, lifecycle, disponibilidad o condición.
+
+Cualquier futura implementación debe cumplir este contrato y los contratos propietarios relacionados sin declarar equivalencia entre dimensiones separadas.
+
+---
+
+#### 58. Consistencia del minibloque
+
+La secuencia inmediata queda consistente:
+
+```text
+NEXO-DOM-021
+→ una existencia posee una sola representación contable autoritativa
+
+NEXO-DOM-022
+→ mover un LPN mueve atómicamente todo su cierre vigente
+
+NEXO-DOM-023
+→ cada contenido incluido conserva su lote, serial, fechas, origen, liberación y condición aplicables
+```
+
+Así, la totalidad física definida para el movimiento no pierde el detalle de trazabilidad que identifica y califica a cada existencia incluida.
+
+---
+
+#### 59. Invariantes finales
+
+Se fijan como invariantes finales:
+
+```text
+ONE CONTENT SUBJECT
+→ ONE DIRECT LPN OWNER AT MOST
+→ ONE APPLICABLE TRACEABILITY CONTEXT
+
+LPN MEMBERSHIP CHANGE
+!= TRACEABILITY DELETION OR SUBSTITUTION
+
+LPN MOVEMENT
+!= LOT, SERIAL, EXPIRY, ORIGIN, RELEASE OR CONDITION CHANGE
+
+MIXED CONTENT IN ONE LPN
+!= ONE HOMOGENEOUS TRACEABILITY TUPLE
+
+UNKNOWN REQUIRED TRACEABILITY
+→ NO FAVORABLE INFERENCE
+→ BLOCK OR RECONCILE
+
+SAME IDEMPOTENT INTENT
+→ SAME EFFECTIVE RESULT
+
+CONFLICT OR CONTRADICTION
+→ NO SILENT LAST-WRITE-WINS
+```
+
+**ÚLTIMA TAREA APROBADA:** `NEXO-DOM-022` — Definir que mover un LPN mueve atómicamente todo su contenido.
+
+**TAREA ACTUAL APROBADA:** `NEXO-DOM-023` — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN.
+
+**SIGUIENTE TAREA RESERVADA:** `NEXO-DOM-024`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-022 — Definir que mover un LPN mueve atómicamente todo su contenido`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-023 — Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido`
+
 ### [ ] NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
 ### [ ] NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo
 ### [ ] NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
