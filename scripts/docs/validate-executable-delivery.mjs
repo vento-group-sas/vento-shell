@@ -11,6 +11,30 @@ function fail(message) {
   throw error;
 }
 
+export function validateExecutablePolicy(source) {
+  const text = String(source ?? '');
+
+  // LC-009: downloaded stdin-CommonJS executors must never embed npm.cmd.
+  // They must consume the repository's canonical resolveNpmInvocation helper.
+  if (/['"`]npm\.cmd['"`]/iu.test(text)) {
+    fail(
+      'EXECUTABLE_POLICY_FAIL:LC-009:DIRECT_NPM_CMD_LITERAL_FORBIDDEN:'
+      + 'use canonical resolveNpmInvocation',
+    );
+  }
+
+  if (
+    /\b(?:spawn|spawnSync|execFile|execFileSync)\s*\(\s*['"`]npm['"`]/iu.test(text)
+  ) {
+    fail(
+      'EXECUTABLE_POLICY_FAIL:LC-009:DIRECT_NPM_PROCESS_FORBIDDEN:'
+      + 'use canonical resolveNpmInvocation',
+    );
+  }
+
+  return true;
+}
+
 export function validateExecutableSource(source, {
   mode = 'stdin-commonjs',
   filename = 'downloaded-executable.txt',
@@ -30,9 +54,12 @@ export function validateExecutableSource(source, {
     }
   }
 
+  validateExecutablePolicy(text);
+
   return Object.freeze({
     mode: normalizedMode,
     bytes: Buffer.byteLength(text, 'utf8'),
+    policies: Object.freeze(['LC-009']),
   });
 }
 
@@ -67,6 +94,7 @@ function main() {
   console.log('[EXECUTABLE DELIVERY] PASS');
   console.log(`[EXECUTABLE DELIVERY] MODE ${report.mode}`);
   console.log(`[EXECUTABLE DELIVERY] BYTES ${report.bytes}`);
+  console.log('[EXECUTABLE DELIVERY] LC-009 PASS');
 }
 
 const isCli = process.argv[1]
