@@ -340,6 +340,14 @@ function escapeTableCell(value) {
     .trim();
 }
 
+function normalizeCandidateWhitespace(markdown) {
+  return String(markdown ?? '')
+    .replace(/\r\n?/gu, '\n')
+    .split('\n')
+    .map((line) => line.replace(/[ \t]+$/gu, ''))
+    .join('\n');
+}
+
 export function normalizeValidationEvidenceTable(markdown) {
   const normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n');
   const headingPattern = /^####\s+(?:\d+\.\s*)?Evidencia de validación.*$/imu;
@@ -552,7 +560,10 @@ export function validateCandidate(author, capsule) {
       ? normalizeZeroTreqDerivedReferences(continuityNormalized, existingIds)
       : continuityNormalized
   );
-  const markdown = normalizeValidationEvidenceTable(treqNormalized).trim();
+  const markdown = normalizeCandidateWhitespace(
+    normalizeValidationEvidenceTable(treqNormalized),
+  ).trim();
+  if (/[ \t]+$/mu.test(markdown)) fail('CANDIDATE_TRAILING_WHITESPACE: normalización incompleta.');
   const taskId = capsule.current.id;
   const exactHeading = `### ✅ ${taskId} — ${capsule.current.title}`;
   if (!markdown.startsWith(exactHeading)) fail(`candidato no inicia con el título canónico exacto: ${exactHeading}.`);
@@ -661,6 +672,7 @@ function authorInstructions() {
     'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; no los abrevies ni parafrasees.',
     'En Evidencia de validación usa exactamente una tabla Markdown de tres columnas: Clase | Estado | Evidencia; no insertes columnas entre Clase y Estado.',
     'En Evidencia de validación usa únicamente estados NOT_EXECUTED/NOT_APPLICABLE salvo evidencia real explícita en la cápsula.',
+    'No uses espacios ni tabs al final de ninguna línea; el candidato debe ser compatible con git diff --check antes de calcular su SHA.',
   ].join('\n');
 }
 
