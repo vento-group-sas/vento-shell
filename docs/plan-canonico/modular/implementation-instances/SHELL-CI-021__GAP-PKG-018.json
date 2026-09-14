@@ -1,10 +1,96 @@
 {
   "instance_id": "SHELL-CI-021::GAP-PKG-018",
   "task_id": "SHELL-CI-021",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "AUTHORIZED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json",
+      "change": "MODIFY",
+      "scope": "Record only the explicit authorization, lifecycle state, READY-GATE-001..015 observed evidence, readiness decisions, blockers, owners, freshness metadata and the final pilot-entry decision for SHELL-CI-021::GAP-PKG-018. Do not modify SHELL-CI-020, SHELL-CI-022 or any global canonical task marker."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:advance as the normal physical lifecycle coordinator without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-correction-guard.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:start through the canonical correction guard; do not edit the guard."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the canonical physical start/finish lifecycle; do not edit lifecycle code."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/canonical-task-preflight.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Execute the physical preflight required by the lifecycle; do not edit the preflight."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate the already approved GAP-PKG-018 package gate; do not mutate the package gate."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the canonical package readiness consistency check only; do not use it as a substitute for READY-GATE-001..015 evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate that GAP-PKG-018 retains the current physical turn; do not alter package execution policy."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-artifacts.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate implementation-readiness derived artifacts through the existing check command; do not edit the validator."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:package:gate:check -- --package-id GAP-PKG-018",
+    "npm run docs:package:readiness:check -- --package GAP-PKG-018",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-14T19:11:27.173Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [],
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-018 APPROVED_FOR_IMPLEMENTATION",
+    "SHELL-CI-020::GAP-PKG-018 VERIFIED",
+    "CI020 EXECUTION_EVIDENCE candidate=dc9939b2827de8d3f6630a6b31595cde68e1b818 status=PASS",
+    "MAIN_BASE_AT_AUTHORIZATION f72cd871315553ec9bc82b552fad3c90a2d3e774",
+    "TARGET_ENVIRONMENT STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp owner=SUPA-TRANS-015",
+    "READY_GATE_SET READY-GATE-001..015",
+    "PACKAGE_SCOPE identity_access adoption-only; production unauthorized"
+  ],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }
