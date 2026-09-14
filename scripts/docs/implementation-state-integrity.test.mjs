@@ -277,3 +277,21 @@ test('resume VERIFIED solo permite cambiar status y evidence del ledger sellado'
     instance: mutated,
   }), false);
 });
+
+test('resume VERIFIED usa el clasificador de impacto para aceptar integration tooling gobernado', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-state-integrity.mjs', 'utf8');
+  const resolver = source.indexOf('function resolveVerifiedResumeCandidate');
+  const classifier = source.indexOf('classifyImplementationIntegrationImpact({', resolver);
+  const packageBefore = source.indexOf("readGitJson(root, candidate, 'package.json')", resolver);
+  const packageAfter = source.indexOf("readGitJson(root, branchTip, 'package.json')", resolver);
+  const reuse = source.indexOf("impact.decision === 'REUSE_PHYSICAL_EVIDENCE'", resolver);
+  assert.match(
+    source,
+    /import \{ classifyImplementationIntegrationImpact \} from '\.\/implementation-integration-impact\.mjs';/u,
+  );
+  assert.ok(resolver >= 0);
+  assert.ok(classifier > resolver);
+  assert.ok(packageBefore > resolver);
+  assert.ok(packageAfter > packageBefore);
+  assert.ok(reuse > classifier);
+});

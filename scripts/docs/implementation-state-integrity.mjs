@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process';
 
 import { validateInPackageCandidateEvidence } from './package-readiness-scanner.mjs';
+import { classifyImplementationIntegrationImpact } from './implementation-integration-impact.mjs';
 
 export const IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID = 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1';
 
@@ -203,11 +204,31 @@ function resolveVerifiedResumeCandidate({ root, instance, branchTip }) {
         pendingRecords[normalized] = readGitJson(root, branchTip, normalized);
       }
     }
-    if (isVerifiedResumeDeltaAllowed({
-      instanceId: instance.instance_id,
-      changedPaths,
-      pendingRecords,
-    })) return candidate;
+
+    const resumePaths = changedPaths
+      .map(normalizeRepoPath)
+      .filter((relativePath) => relativePath && relativePath !== ownLedger);
+    const instanceKey = normalizedId(instance.instance_id).split('::')[1] ?? '';
+    const pristinePendingInstancePaths = resumePaths.filter((relativePath) => (
+      relativePath.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)
+      && pristinePendingImplementationRecord(pendingRecords[relativePath], instanceKey)
+    ));
+    const packageTouched = resumePaths.includes('package.json');
+    const packageJsonBefore = packageTouched
+      ? readGitJson(root, candidate, 'package.json')
+      : null;
+    const packageJsonAfter = packageTouched
+      ? readGitJson(root, branchTip, 'package.json')
+      : null;
+
+    const impact = classifyImplementationIntegrationImpact({
+      instance,
+      changedPaths: resumePaths,
+      pristinePendingInstancePaths,
+      packageJsonBefore,
+      packageJsonAfter,
+    });
+    if (impact.decision === 'REUSE_PHYSICAL_EVIDENCE') return candidate;
   }
   return null;
 }

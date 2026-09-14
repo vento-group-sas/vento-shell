@@ -588,3 +588,47 @@ test('el lifecycle permite únicamente el ledger propio sin exigirlo en authoriz
     'OTHER',
   );
 });
+
+test('start ejecuta implementation doctor antes de mutar la rama fisica', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+  const start = source.indexOf('export function startImplementation');
+  const doctor = source.indexOf('runImplementationDoctor({ root, instanceId: id })', start);
+  const branchMutation = source.indexOf('ensureBranchReadyForStart(root, branch)', start);
+  const statusMutation = source.indexOf("writeInstanceStatus(root, id, 'IN_PROGRESS')", start);
+  assert.ok(start >= 0);
+  assert.ok(doctor > start);
+  assert.ok(branchMutation > doctor);
+  assert.ok(statusMutation > branchMutation);
+});
+
+test('finish usa integration loop estable y vuelve a consultar main despues de checks', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+  const finish = source.indexOf('export async function finishImplementation');
+  const finishEnd = source.indexOf('function parseArgs', finish);
+  const finishSource = source.slice(finish, finishEnd);
+  const doctor = finishSource.indexOf('runImplementationDoctor({ root, instanceId: id })');
+  const impact = finishSource.indexOf('integrateCurrentMain({ root, id, instance })');
+  const push = finishSource.indexOf("git(['push', '-u', 'origin', branch]");
+  const checks = finishSource.indexOf('waitForPrChecksToComplete(root, prNumber)', push);
+  const postCheckFetch = finishSource.indexOf(
+    "git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet']",
+    checks,
+  );
+  const loopStep = finishSource.indexOf('integrationRuntimeStep({', postCheckFetch);
+  const reintegrate = finishSource.indexOf("loopStep.action === 'REINTEGRATE_MAIN'", loopStep);
+  const seal = finishSource.indexOf('markImplementationIntegrationChecksPass', reintegrate);
+  const exactMerge = finishSource.indexOf("'--match-head-commit', headSha", seal);
+  assert.ok(doctor >= 0);
+  assert.ok(impact > doctor);
+  assert.ok(push > impact);
+  assert.ok(checks > push);
+  assert.ok(postCheckFetch > checks);
+  assert.ok(loopStep > postCheckFetch);
+  assert.ok(reintegrate > loopStep);
+  assert.ok(seal > reintegrate);
+  assert.ok(exactMerge > seal);
+  assert.match(finishSource, /INTEGRATION_STABILITY_ATTEMPTS/u);
+  assert.match(source, /INTEGRATION_REQUIRES_PHYSICAL_REVALIDATION/u);
+  assert.match(source, /'merge-tree', '--write-tree'/u);
+  assert.doesNotMatch(finishSource, /--admin/u);
+});
