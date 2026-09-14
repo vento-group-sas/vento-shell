@@ -34,10 +34,10 @@
 | Siguiente tarea | **NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido** |
 | Bloque actual | **BLOQUE K — NEXO** |
 | Progreso del bloque | **BLOQUE K: 47 de 127 aprobadas; NEXO-DOM-023 pendiente** |
-| Estado de implementación | **STATE_INTEGRITY_RECOVERY_REQUIRED** |
-| Acción principal obligatoria | **RECONCILE_IMPLEMENTATION_STATE_INTEGRITY — SHELL-CI-020::GAP-PKG-018** |
+| Estado de implementación | **GOVERNED_ACTIVE_SET** |
+| Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-021::GAP-PKG-018** |
 | Carril documental | **ACTIVO — NEXO-DOM-023** |
-| Carril físico | **IN_PROGRESS — SHELL-CI-020::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
+| Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-021::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001** |
 | Alcance físico autorizado | **NINGUNO** |
 
 ### Continuidad inmediata
@@ -60,7 +60,7 @@
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
 | CONTINUIDAD ACTIVA | **BLOQUE K: 47 DE 127 APROBADAS — ACTUAL NEXO-DOM-023** |
-| Implementación física | **SHELL-CI-020::GAP-PKG-018 — IN_PROGRESS | SHELL-CI-021::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
+| Implementación física | **SHELL-CI-021::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
 
