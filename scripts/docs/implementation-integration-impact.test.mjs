@@ -91,6 +91,13 @@ test('reconoce tooling de lifecycle de integracion como no fisico', () => {
     ),
     false,
   );
+  for (const relativePath of [
+    'scripts/docs/implementation-validation-engine.mjs',
+    'scripts/quality/lint-ratchet.mjs',
+    'scripts/supabase/environment-drift.mjs',
+  ]) {
+    assert.equal(isImplementationIntegrationLifecyclePath(relativePath), true);
+  }
 });
 
 test('derivados y tooling de integracion reutilizan evidencia fisica', () => {

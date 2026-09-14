@@ -24,8 +24,14 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/docs/implementation-execution-coordinator.test.mjs',
   'scripts/docs/implementation-state-integrity.mjs',
   'scripts/docs/implementation-state-integrity.test.mjs',
+  'scripts/docs/implementation-validation-engine.mjs',
+  'scripts/docs/implementation-validation-engine.test.mjs',
   'scripts/docs/task-branch-lifecycle.mjs',
   'scripts/docs/task-branch-lifecycle.test.mjs',
+  'scripts/quality/lint-ratchet.mjs',
+  'scripts/quality/lint-ratchet.test.mjs',
+  'scripts/supabase/environment-drift.mjs',
+  'scripts/supabase/environment-drift.test.mjs',
 ]);
 
 function fail(message) {

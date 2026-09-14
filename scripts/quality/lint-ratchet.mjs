@@ -59,6 +59,32 @@ function run(command, args, { allowLintExit = false, root = process.cwd() } = {}
   return result.stdout;
 }
 
+export function parseLintJsonOutput({
+  stdout,
+  stderr = '',
+  eslintCli = null,
+} = {}) {
+  const output = String(stdout ?? '').trim();
+  const detail = String(stderr ?? '').trim();
+  if (!output) {
+    throw new Error(
+      detail
+        ? `ESLINT_JSON_OUTPUT_EMPTY:${detail}`
+        : `ESLINT_JSON_OUTPUT_EMPTY:${eslintCli ?? 'UNKNOWN_ESLINT_CLI'}`,
+    );
+  }
+  let parsed;
+  try {
+    parsed = JSON.parse(output);
+  } catch (error) {
+    throw new Error(
+      `ESLINT_JSON_OUTPUT_INVALID:${error instanceof Error ? error.message : String(error)}`,
+    );
+  }
+  if (!Array.isArray(parsed)) throw new Error('ESLINT_JSON_OUTPUT_NOT_ARRAY');
+  return parsed;
+}
+
 export function changedFiles(args, { root = process.cwd() } = {}) {
   const range = args.range ?? process.env.QUALITY_DIFF_RANGE;
   if (args.base && (range || args.staged)) throw new Error('--base no admite --range, QUALITY_DIFF_RANGE ni --staged.');
@@ -101,8 +127,28 @@ export function main(argv = process.argv.slice(2)) {
     throw new Error('la baseline de lint no contiene una política soportada.');
   }
   const eslintCli = path.resolve('node_modules/eslint/bin/eslint.js');
-  const output = run(process.execPath, [eslintCli, '.', '--ignore-pattern', '.delivery/**', '--format', 'json'], { allowLintExit: true });
-  const actualIssues = summarizeLintResults(JSON.parse(output));
+  if (!fs.existsSync(eslintCli)) {
+    throw new Error(`ESLINT_CLI_MISSING:${eslintCli}; execute npm ci en este worktree.`);
+  }
+  const lint = spawnSync(
+    process.execPath,
+    [eslintCli, '.', '--ignore-pattern', '.delivery/**', '--format', 'json'],
+    {
+      cwd: process.cwd(),
+      encoding: 'utf8',
+      maxBuffer: 64 * 1024 * 1024,
+      windowsHide: true,
+    },
+  );
+  if (lint.error) throw lint.error;
+  if (![0, 1].includes(lint.status)) {
+    throw new Error(String(lint.stderr ?? '').trim() || `ESLint terminó con ${lint.status}.`);
+  }
+  const actualIssues = summarizeLintResults(parseLintJsonOutput({
+    stdout: lint.stdout,
+    stderr: lint.stderr,
+    eslintCli,
+  }));
   const files = changedFiles(args);
   const result = evaluateLintRatchet({ baseline, actualIssues, changedFiles: files });
   const errors = [];
