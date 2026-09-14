@@ -1,0 +1,340 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-018",
+  "implementation_unit": "identity_access",
+  "treq_ids": [
+    "TREQ-SUPABASE-029",
+    "TREQ-SUPABASE-116",
+    "TREQ-SUPABASE-117",
+    "TREQ-SUPABASE-124",
+    "TREQ-SUPABASE-125",
+    "TREQ-SUPABASE-126",
+    "TREQ-SUPABASE-127",
+    "TREQ-SUPABASE-131",
+    "TREQ-SUPABASE-134",
+    "TREQ-SUPABASE-135",
+    "TREQ-SUPABASE-138"
+  ],
+  "requirements": [
+    {
+      "id": "TREQ-SUPABASE-029",
+      "oracle": "Auth remains a managed authentication boundary; identity_access links to technical Auth subjects without creating foreign keys into managed Auth internals.",
+      "scenarios": [
+        "active_employee"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-116",
+      "oracle": "Authenticator remains NOINHERIT and can SET the expected API roles without accumulating their privileges.",
+      "scenarios": [
+        "active_employee"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-117",
+      "oracle": "service_role remains backend-only and receives no direct schema/table access to identity_access.",
+      "scenarios": [
+        "active_service"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-124",
+      "oracle": "Auth account identity is a replaceable technical credential reference and never the enterprise identity itself.",
+      "scenarios": [
+        "active_employee",
+        "active_customer"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-125",
+      "oracle": "A technical Auth subject may be linked through explicit governed identity kinds; ambiguous resolution fails closed instead of imposing an accidental global one-to-one identity rule.",
+      "scenarios": [
+        "multi_kind_requires_kind",
+        "ambiguous_same_kind"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-126",
+      "oracle": "Session/AAL observations do not activate or revive enterprise identity links; inactive links remain denied.",
+      "scenarios": [
+        "revoked_with_session"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-127",
+      "oracle": "An inactive/suspended workforce identity cannot resolve to an active enterprise context.",
+      "scenarios": [
+        "suspended_employee"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-131",
+      "oracle": "An active HUMAN_USER to EMPLOYEE link resolves an employee identity without deriving site, area or permission from Auth metadata.",
+      "scenarios": [
+        "active_employee"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-134",
+      "oracle": "A STAFF_INVITATION origin is accepted only as an explicit governed HUMAN_USER to EMPLOYEE link; client metadata cannot replace it.",
+      "scenarios": [
+        "invitation_employee"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-135",
+      "oracle": "Subject class is explicit: HUMAN_USER, SHARED_DEVICE and SERVICE map only to their approved enterprise identity kinds.",
+      "scenarios": [
+        "active_employee",
+        "active_device",
+        "active_service"
+      ]
+    },
+    {
+      "id": "TREQ-SUPABASE-138",
+      "oracle": "Historical inventory counts remain evidence/baseline only and never become authorization or automatic backfill.",
+      "scenarios": [
+        "baseline_not_authority"
+      ]
+    }
+  ],
+  "baseline_observations": {
+    "auth_accounts": 73,
+    "auth_identities": 73,
+    "sessions_aal1": 174,
+    "refresh_tokens_total": 6371,
+    "refresh_tokens_revoked": 6199,
+    "refresh_tokens_active_observed": 172,
+    "employee_links_observed": 56,
+    "inactive_users_observed": 16,
+    "inactive_user_unrevoked_tokens_observed": 45,
+    "invitations_observed": 28,
+    "policy": "OBSERVATION_ONLY_NOT_AUTHORITY_NOT_BACKFILL"
+  },
+  "links": [
+    {
+      "id": "link-employee-1",
+      "auth_subject_id": "auth-employee-1",
+      "principal_id": "principal-human-1",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-1",
+      "link_state": "ACTIVE",
+      "link_origin": "LEGACY_MIGRATION"
+    },
+    {
+      "id": "link-customer-1",
+      "auth_subject_id": "auth-customer-1",
+      "principal_id": "principal-human-2",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "CUSTOMER",
+      "enterprise_identity_id": "customer-1",
+      "link_state": "ACTIVE",
+      "link_origin": "CUSTOMER_SELF_ENROLLMENT"
+    },
+    {
+      "id": "link-device-1",
+      "auth_subject_id": "auth-device-1",
+      "principal_id": "principal-device-1",
+      "principal_kind": "SHARED_DEVICE",
+      "enterprise_identity_kind": "DEVICE",
+      "enterprise_identity_id": "device-1",
+      "link_state": "ACTIVE",
+      "link_origin": "ADMIN_DEVICE_PROVISIONING"
+    },
+    {
+      "id": "link-service-1",
+      "auth_subject_id": "auth-service-1",
+      "principal_id": "principal-service-1",
+      "principal_kind": "SERVICE",
+      "enterprise_identity_kind": "SYSTEM_ACTOR",
+      "enterprise_identity_id": "system-actor-1",
+      "link_state": "ACTIVE",
+      "link_origin": "MANUAL_RECONCILIATION"
+    },
+    {
+      "id": "link-multikind-employee",
+      "auth_subject_id": "auth-multikind-1",
+      "principal_id": "principal-human-3",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-2",
+      "link_state": "ACTIVE",
+      "link_origin": "VERIFIED_IDENTITY_CLAIM"
+    },
+    {
+      "id": "link-multikind-customer",
+      "auth_subject_id": "auth-multikind-1",
+      "principal_id": "principal-human-3",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "CUSTOMER",
+      "enterprise_identity_id": "customer-2",
+      "link_state": "ACTIVE",
+      "link_origin": "VERIFIED_IDENTITY_CLAIM"
+    },
+    {
+      "id": "link-ambiguous-a",
+      "auth_subject_id": "auth-ambiguous-1",
+      "principal_id": "principal-human-4",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-3",
+      "link_state": "ACTIVE",
+      "link_origin": "MANUAL_RECONCILIATION"
+    },
+    {
+      "id": "link-ambiguous-b",
+      "auth_subject_id": "auth-ambiguous-1",
+      "principal_id": "principal-human-5",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-4",
+      "link_state": "ACTIVE",
+      "link_origin": "MANUAL_RECONCILIATION"
+    },
+    {
+      "id": "link-revoked",
+      "auth_subject_id": "auth-revoked-1",
+      "principal_id": "principal-human-6",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-5",
+      "link_state": "REVOKED",
+      "link_origin": "LEGACY_MIGRATION"
+    },
+    {
+      "id": "link-suspended",
+      "auth_subject_id": "auth-suspended-1",
+      "principal_id": "principal-human-7",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-6",
+      "link_state": "SUSPENDED",
+      "link_origin": "LEGACY_MIGRATION"
+    },
+    {
+      "id": "link-invitation",
+      "auth_subject_id": "auth-invited-1",
+      "principal_id": "principal-human-8",
+      "principal_kind": "HUMAN_USER",
+      "enterprise_identity_kind": "EMPLOYEE",
+      "enterprise_identity_id": "employee-7",
+      "link_state": "ACTIVE",
+      "link_origin": "STAFF_INVITATION"
+    }
+  ],
+  "scenarios": [
+    {
+      "id": "active_employee",
+      "auth_subject_id": "auth-employee-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "raw_user_meta_data": {
+        "role": "owner",
+        "site_id": "untrusted-site"
+      },
+      "expected_status": 200,
+      "expected_identity_kind": "EMPLOYEE",
+      "expected_identity_id": "employee-1"
+    },
+    {
+      "id": "active_customer",
+      "auth_subject_id": "auth-customer-1",
+      "requested_identity_kind": "CUSTOMER",
+      "raw_user_meta_data": {
+        "role": "owner"
+      },
+      "expected_status": 200,
+      "expected_identity_kind": "CUSTOMER",
+      "expected_identity_id": "customer-1"
+    },
+    {
+      "id": "active_device",
+      "auth_subject_id": "auth-device-1",
+      "requested_identity_kind": "DEVICE",
+      "raw_user_meta_data": {
+        "role": "owner"
+      },
+      "expected_status": 200,
+      "expected_identity_kind": "DEVICE",
+      "expected_identity_id": "device-1"
+    },
+    {
+      "id": "active_service",
+      "auth_subject_id": "auth-service-1",
+      "requested_identity_kind": "SYSTEM_ACTOR",
+      "raw_user_meta_data": {
+        "role": "owner"
+      },
+      "expected_status": 200,
+      "expected_identity_kind": "SYSTEM_ACTOR",
+      "expected_identity_id": "system-actor-1"
+    },
+    {
+      "id": "multi_kind_requires_kind",
+      "auth_subject_id": "auth-multikind-1",
+      "requested_identity_kind": null,
+      "raw_user_meta_data": {},
+      "expected_status": 409,
+      "expected_error": "AMBIGUOUS_IDENTITY_LINK"
+    },
+    {
+      "id": "multi_kind_employee_selected",
+      "auth_subject_id": "auth-multikind-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "raw_user_meta_data": {},
+      "expected_status": 200,
+      "expected_identity_kind": "EMPLOYEE",
+      "expected_identity_id": "employee-2"
+    },
+    {
+      "id": "ambiguous_same_kind",
+      "auth_subject_id": "auth-ambiguous-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "raw_user_meta_data": {},
+      "expected_status": 409,
+      "expected_error": "AMBIGUOUS_IDENTITY_LINK"
+    },
+    {
+      "id": "revoked_with_session",
+      "auth_subject_id": "auth-revoked-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "session_aal": "aal1",
+      "raw_user_meta_data": {
+        "role": "owner"
+      },
+      "expected_status": 403,
+      "expected_error": "NO_ACTIVE_IDENTITY_LINK"
+    },
+    {
+      "id": "suspended_employee",
+      "auth_subject_id": "auth-suspended-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "raw_user_meta_data": {},
+      "expected_status": 403,
+      "expected_error": "NO_ACTIVE_IDENTITY_LINK"
+    },
+    {
+      "id": "invitation_employee",
+      "auth_subject_id": "auth-invited-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "raw_user_meta_data": {
+        "site_id": "untrusted-site"
+      },
+      "expected_status": 200,
+      "expected_identity_kind": "EMPLOYEE",
+      "expected_identity_id": "employee-7"
+    },
+    {
+      "id": "baseline_not_authority",
+      "auth_subject_id": "auth-missing-1",
+      "requested_identity_kind": "EMPLOYEE",
+      "baseline_accounts_observed": 73,
+      "raw_user_meta_data": {
+        "role": "owner"
+      },
+      "expected_status": 403,
+      "expected_error": "NO_ACTIVE_IDENTITY_LINK"
+    }
+  ],
+  "source_contract_policy": "SEMANTIC_RUNTIME_GUARD_NO_RAW_FILE_PIN"
+}
