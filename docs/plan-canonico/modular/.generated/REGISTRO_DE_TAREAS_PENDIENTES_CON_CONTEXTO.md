@@ -39,10 +39,10 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-021::GAP-PKG-018` — declared=`AUTHORIZED` — effective=`AUTHORIZED` — `EJECUTAR_IMPLEMENTACIÓN`
+- `SHELL-CI-021::GAP-PKG-018` — declared=`IN_PROGRESS` — effective=`IN_PROGRESS` — `EJECUTAR_IMPLEMENTACIÓN`
   - Contrato: Ejecutar y resolver el checklist de readiness aprobado
   - Integridad: `VALID`
-  - Recovery: `START_IMPLEMENTATION_BRANCH`
+  - Recovery: `MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
   - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-021::GAP-PKG-018`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json`
 - `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
@@ -57,7 +57,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-DOM-025` — Vincular repuestos consumidos con mantenimiento y costo del activo | `NEXO-DOM-026` — Definir inspecciones, mantenimiento preventivo, garantía y calibración | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `AUTHORIZED` | `SHELL-CI-021::GAP-PKG-018` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `SHELL-CI-021::GAP-PKG-018` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -73,9 +73,9 @@
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
 - **Puntero de compatibilidad del control de instancias:** `EJECUTAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-018`
 - **Entrada mutante normal:** `docs:implementation:advance`
-- **Estado físico declarado:** `AUTHORIZED`
-- **Estado físico efectivo:** `AUTHORIZED`
-- **Recovery físico:** `START_IMPLEMENTATION_BRANCH`
+- **Estado físico declarado:** `IN_PROGRESS`
+- **Estado físico efectivo:** `IN_PROGRESS`
+- **Recovery físico:** `MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -85,7 +85,7 @@
 
 | # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-018` | Ejecutar y resolver el checklist de readiness aprobado | `AUTHORIZED` | `AUTHORIZED` | EN_CURSO — EJECUTAR_IMPLEMENTACIÓN |
+| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-018` | Ejecutar y resolver el checklist de readiness aprobado | `IN_PROGRESS` | `IN_PROGRESS` | EN_CURSO — EJECUTAR_IMPLEMENTACIÓN |
 | 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 
 ## Modos de trabajo y materialización

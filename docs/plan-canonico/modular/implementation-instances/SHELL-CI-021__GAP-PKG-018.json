@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-021::GAP-PKG-018",
   "task_id": "SHELL-CI-021",
-  "status": "AUTHORIZED",
+  "status": "IN_PROGRESS",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
