@@ -2,6 +2,10 @@ import { spawnSync } from 'node:child_process';
 
 import { validateInPackageCandidateEvidence } from './package-readiness-scanner.mjs';
 import { classifyImplementationIntegrationImpact } from './implementation-integration-impact.mjs';
+import {
+  assessImplementationCandidateLifecycleDelta,
+  resolveValidationCandidateAnchor,
+} from './implementation-integration-model.mjs';
 
 export const IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID = 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1';
 
@@ -233,6 +237,98 @@ function resolveVerifiedResumeCandidate({ root, instance, branchTip }) {
   return null;
 }
 
+function activeImplementationWorktreePaths(root, instanceId) {
+  const branch = implementationBranch(instanceId);
+  if (!branch) return [];
+  const current = runGit(root, ['branch', '--show-current']);
+  if (current.status !== 0 || current.stdout !== branch) return [];
+  const status = runGit(root, ['status', '--porcelain=v1', '--untracked-files=all']);
+  if (status.status !== 0) return [];
+  return status.stdout.split(/\r?\n/u)
+    .filter(Boolean)
+    .map((line) => normalizeRepoPath(line.slice(3).trim()))
+    .filter(Boolean);
+}
+
+export function resolveImplementationCandidateLifecycle({
+  root = process.cwd(),
+  instance,
+  branchTip = null,
+} = {}) {
+  const anchor = resolveValidationCandidateAnchor(instance);
+  const branch = implementationBranch(instance?.instance_id);
+  const detectedTip = String(
+    branchTip
+    ?? (branch && gitRefCommit(root, `refs/remotes/origin/${branch}`))
+    ?? (branch && gitRefCommit(root, `refs/heads/${branch}`))
+    ?? ''
+  ).toLowerCase();
+
+  if (anchor.status !== 'PASS') {
+    return Object.freeze({
+      status: anchor.status,
+      candidate_commit: null,
+      lifecycle_head_commit: detectedTip || null,
+      decision: 'REVALIDATE_PHYSICAL',
+      reason: anchor.reason,
+      changed_paths: Object.freeze([]),
+    });
+  }
+  if (!SHA_PATTERN.test(detectedTip)) {
+    return Object.freeze({
+      status: 'INVALID',
+      candidate_commit: anchor.candidate_sha,
+      lifecycle_head_commit: null,
+      decision: 'REVALIDATE_PHYSICAL',
+      reason: 'LIFECYCLE_HEAD_MISSING',
+      changed_paths: Object.freeze([]),
+    });
+  }
+  if (!gitRefExists(root, anchor.candidate_sha)) {
+    return Object.freeze({
+      status: 'INVALID',
+      candidate_commit: anchor.candidate_sha,
+      lifecycle_head_commit: detectedTip,
+      decision: 'REVALIDATE_PHYSICAL',
+      reason: 'CANDIDATE_REF_MISSING',
+      changed_paths: Object.freeze([]),
+    });
+  }
+
+  const ownLedger = instanceRecordPath(instance.instance_id);
+  const candidateLedger = readGitJson(root, anchor.candidate_sha, ownLedger);
+  const ancestor = runGit(
+    root,
+    ['merge-base', '--is-ancestor', anchor.candidate_sha, detectedTip],
+  ).status === 0;
+  const delta = runGit(root, ['diff', '--name-only', `${anchor.candidate_sha}..${detectedTip}`]);
+  const committedPaths = delta.status === 0
+    ? delta.stdout.split(/\r?\n/u).map(normalizeRepoPath).filter(Boolean)
+    : [];
+  const changedPaths = unique([
+    ...committedPaths,
+    ...activeImplementationWorktreePaths(root, instance.instance_id),
+  ]);
+
+  const assessment = assessImplementationCandidateLifecycleDelta({
+    instance,
+    candidateLedger,
+    lifecycleLedger: instance,
+    changedPaths,
+    candidateIsAncestor: ancestor,
+  });
+
+  return Object.freeze({
+    status: assessment.decision === 'REUSE_PHYSICAL_EVIDENCE' ? 'PASS' : 'INVALID',
+    candidate_commit: anchor.candidate_sha,
+    lifecycle_head_commit: detectedTip,
+    decision: assessment.decision,
+    reason: assessment.reason,
+    changed_paths: assessment.changed_paths,
+    model_id: assessment.model_id,
+  });
+}
+
 function authorizationValid(instance) {
   return instance?.authorization?.decision === 'APPROVED'
     && Array.isArray(instance?.target_repositories)
@@ -393,13 +489,22 @@ export function deriveImplementationStateFacts({
     || (localRef && gitRefCommit(root, localRef))
     || ''
   ).toLowerCase();
+  const candidateLifecycle = candidateCommit == null
+    ? resolveImplementationCandidateLifecycle({ root, instance, branchTip: detectedTip })
+    : null;
   const verifiedResumeCandidate = candidateCommit == null
     ? resolveVerifiedResumeCandidate({ root, instance, branchTip: detectedTip })
     : null;
+  const lifecycleCandidate = candidateLifecycle?.status === 'PASS'
+    ? candidateLifecycle.candidate_commit
+    : null;
   const detectedCandidate = String(
-    candidateCommit ?? verifiedResumeCandidate ?? detectedTip ?? ''
+    candidateCommit ?? lifecycleCandidate ?? verifiedResumeCandidate ?? detectedTip ?? ''
   ).toLowerCase();
   const localValidation = parseLocalValidationEvidence(instance, detectedCandidate || null);
+  const candidateLifecycleStale = candidateLifecycle?.status === 'INVALID'
+    ? [`CANDIDATE_LIFECYCLE_DELTA_UNSAFE:${candidateLifecycle.reason}`]
+    : [];
   const packageId = packageIdFromInstance(instance);
   const candidateGate = candidateGateRequirement(readiness, packageId);
   let gatePass = true;
@@ -437,7 +542,14 @@ export function deriveImplementationStateFacts({
     verification_evidence_present: Boolean(verification.evidence),
     verification_receipt_valid: verificationReceipt.valid,
     grandfathered_verified: false,
-    stale_evidence: unique([...localValidation.stale, ...verification.stale, ...verificationReceipt.stale]),
+    candidate_lifecycle_head_commit: candidateLifecycle?.lifecycle_head_commit ?? detectedTip ?? null,
+    candidate_lifecycle_decision: candidateLifecycle?.decision ?? null,
+    stale_evidence: unique([
+      ...candidateLifecycleStale,
+      ...localValidation.stale,
+      ...verification.stale,
+      ...verificationReceipt.stale,
+    ]),
     verification_missing: unique(verificationReceipt.missing),
   };
 }

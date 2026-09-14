@@ -10,6 +10,170 @@ export const IMPLEMENTATION_INTEGRATION_PHASES = Object.freeze([
 ]);
 
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
+
+export const IMPLEMENTATION_CANDIDATE_LIFECYCLE_MODEL_ID =
+  'VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1';
+
+const CANDIDATE_LIFECYCLE_DERIVED_PATHS = new Set([
+  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
+  'docs/plan-canonico/modular/active-sequence.json',
+  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
+  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
+  'scripts/docs/package-readiness/implementation-package-registry.json',
+]);
+const LOCAL_VALIDATION_EVIDENCE_PATTERN =
+  /^LOCAL_VALIDATION candidate=([0-9a-f]{40}) command=(.*) status=(PASS|NOT_APPLICABLE)$/u;
+
+function normalizeLifecyclePath(value) {
+  return String(value ?? '').trim().replaceAll('\\', '/').replace(/^\.\/+/u, '');
+}
+
+function candidateLifecycleLedgerPath(instanceId) {
+  const [taskId, instanceKey] = String(instanceId ?? '').trim().split('::');
+  if (!taskId || !instanceKey) return null;
+  return `docs/plan-canonico/modular/implementation-instances/${taskId}__${instanceKey}.json`;
+}
+
+function candidateLifecycleContract(record) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return null;
+  const keys = Object.keys(record)
+    .filter((key) => key !== 'status' && key !== 'evidence')
+    .sort();
+  return JSON.stringify(Object.fromEntries(keys.map((key) => [key, record[key]])));
+}
+
+export function resolveValidationCandidateAnchor(instance) {
+  const commands = Array.isArray(instance?.validation_commands)
+    ? instance.validation_commands.map((entry) => String(entry ?? '').trim()).filter(Boolean)
+    : [];
+  if (commands.length === 0) {
+    return Object.freeze({
+      status: 'MISS',
+      candidate_sha: null,
+      reason: 'VALIDATION_COMMANDS_EMPTY',
+      missing_commands: [],
+      mixed_commands: [],
+    });
+  }
+
+  const candidatesByCommand = new Map(commands.map((command) => [command, new Set()]));
+  for (const entry of instance?.evidence ?? []) {
+    if (typeof entry !== 'string') continue;
+    const match = LOCAL_VALIDATION_EVIDENCE_PATTERN.exec(entry.trim());
+    if (!match) continue;
+    const [, candidateSha, command] = match;
+    if (!candidatesByCommand.has(command)) continue;
+    candidatesByCommand.get(command).add(candidateSha);
+  }
+
+  const missingCommands = commands.filter(
+    (command) => (candidatesByCommand.get(command)?.size ?? 0) === 0,
+  );
+  const mixedCommands = commands.filter(
+    (command) => (candidatesByCommand.get(command)?.size ?? 0) > 1,
+  );
+  if (missingCommands.length > 0) {
+    return Object.freeze({
+      status: 'MISS',
+      candidate_sha: null,
+      reason: 'LOCAL_VALIDATION_INCOMPLETE',
+      missing_commands: Object.freeze(missingCommands),
+      mixed_commands: Object.freeze(mixedCommands),
+    });
+  }
+  if (mixedCommands.length > 0) {
+    return Object.freeze({
+      status: 'INVALID',
+      candidate_sha: null,
+      reason: 'LOCAL_VALIDATION_MIXED_CANDIDATES_PER_COMMAND',
+      missing_commands: Object.freeze([]),
+      mixed_commands: Object.freeze(mixedCommands),
+    });
+  }
+
+  const candidateShas = [...new Set(
+    commands.flatMap((command) => [...(candidatesByCommand.get(command) ?? [])]),
+  )].sort();
+  if (candidateShas.length !== 1 || !SHA_PATTERN.test(candidateShas[0])) {
+    return Object.freeze({
+      status: 'INVALID',
+      candidate_sha: null,
+      reason: 'LOCAL_VALIDATION_MIXED_CANDIDATES',
+      missing_commands: Object.freeze([]),
+      mixed_commands: Object.freeze([]),
+    });
+  }
+
+  return Object.freeze({
+    status: 'PASS',
+    candidate_sha: candidateShas[0],
+    reason: 'LOCAL_VALIDATION_SINGLE_CANDIDATE',
+    missing_commands: Object.freeze([]),
+    mixed_commands: Object.freeze([]),
+  });
+}
+
+export function assessImplementationCandidateLifecycleDelta({
+  instance,
+  candidateLedger,
+  lifecycleLedger,
+  changedPaths = [],
+  candidateIsAncestor = true,
+} = {}) {
+  const instanceId = normalizeInstanceId(instance?.instance_id);
+  const ownLedger = candidateLifecycleLedgerPath(instanceId);
+  const changed = [...new Set(
+    (Array.isArray(changedPaths) ? changedPaths : [])
+      .map(normalizeLifecyclePath)
+      .filter(Boolean),
+  )].sort();
+
+  const safePaths = [];
+  const materialPaths = [];
+  const reasons = [];
+
+  if (candidateIsAncestor !== true) reasons.push('CANDIDATE_NOT_ANCESTOR_OF_LIFECYCLE_HEAD');
+  if (!candidateLedger || typeof candidateLedger !== 'object' || Array.isArray(candidateLedger)) {
+    reasons.push('CANDIDATE_LEDGER_MISSING');
+  }
+  if (!lifecycleLedger || typeof lifecycleLedger !== 'object' || Array.isArray(lifecycleLedger)) {
+    reasons.push('LIFECYCLE_LEDGER_MISSING');
+  }
+
+  const candidateContract = candidateLifecycleContract(candidateLedger);
+  const lifecycleContract = candidateLifecycleContract(lifecycleLedger);
+  if (candidateContract && lifecycleContract && candidateContract !== lifecycleContract) {
+    reasons.push('LIFECYCLE_CONTRACT_CHANGED');
+  }
+  if (lifecycleLedger && JSON.stringify(lifecycleLedger) !== JSON.stringify(instance)) {
+    reasons.push('LIFECYCLE_LEDGER_NOT_CURRENT_INSTANCE');
+  }
+
+  for (const relativePath of changed) {
+    if (relativePath === ownLedger || CANDIDATE_LIFECYCLE_DERIVED_PATHS.has(relativePath)) {
+      safePaths.push(relativePath);
+    } else {
+      materialPaths.push(relativePath);
+    }
+  }
+  if (materialPaths.length > 0) reasons.push('MATERIAL_PATH_CHANGED');
+
+  const decision = reasons.length === 0
+    ? 'REUSE_PHYSICAL_EVIDENCE'
+    : 'REVALIDATE_PHYSICAL';
+
+  return Object.freeze({
+    model_id: IMPLEMENTATION_CANDIDATE_LIFECYCLE_MODEL_ID,
+    instance_id: instanceId,
+    decision,
+    reason: reasons.join(',') || 'SAFE_LIFECYCLE_METADATA_ONLY',
+    candidate_is_ancestor: candidateIsAncestor === true,
+    changed_paths: Object.freeze(changed),
+    safe_paths: Object.freeze(safePaths.sort()),
+    material_paths: Object.freeze(materialPaths.sort()),
+  });
+}
+
 const PHASE_RANK = new Map(
   IMPLEMENTATION_INTEGRATION_PHASES.map((phase, index) => [phase, index]),
 );

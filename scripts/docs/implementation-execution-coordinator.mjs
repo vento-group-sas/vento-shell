@@ -15,6 +15,7 @@ import { repairWorkingCopy } from './repair-working-copy.mjs';
 import {
   assessImplementationStateIntegrity,
   formatImplementationStateIntegrityViolation,
+  resolveImplementationCandidateLifecycle,
 } from './implementation-state-integrity.mjs';
 import {
   instanceRecordRelativePath,
@@ -142,7 +143,15 @@ function worktreePaths(root) {
 }
 
 export function candidateValidationState(root, instance) {
-  const candidateCommit = currentHead(root).toLowerCase();
+  const lifecycleHeadCommit = currentHead(root).toLowerCase();
+  const candidateLifecycle = resolveImplementationCandidateLifecycle({
+    root,
+    instance,
+    branchTip: lifecycleHeadCommit,
+  });
+  const candidateCommit = candidateLifecycle.status === 'PASS'
+    ? candidateLifecycle.candidate_commit
+    : lifecycleHeadCommit;
   const gitStatus = git(['status', '--porcelain=v1', '--untracked-files=all'], { cwd: root }).stdout;
   const trackedDiff = git(['diff', '--binary', 'HEAD', '--'], { cwd: root }).stdout;
   const untrackedPaths = git(['ls-files', '--others', '--exclude-standard'], { cwd: root }).stdout
@@ -164,12 +173,15 @@ export function candidateValidationState(root, instance) {
   }));
   const repositoryStateSha256 = fingerprintCandidateRepositoryState({
     candidateCommit,
+    lifecycleHeadCommit,
     gitStatus,
     trackedDiff,
     untrackedFiles,
   });
   return {
     candidateCommit,
+    lifecycleHeadCommit,
+    candidateLifecycle,
     repositoryStateSha256,
     validationCommands: [...(instance.validation_commands ?? [])],
     toolchain: {
@@ -191,6 +203,7 @@ export function evaluateCandidatePreverifyReceipt({ instance, request, candidate
     receipt: request?.validation_engine_preverify_receipt ?? null,
     instanceId: instance.instance_id,
     candidateCommit: candidateState.candidateCommit,
+    lifecycleHeadCommit: candidateState.lifecycleHeadCommit,
     repositoryStateSha256: candidateState.repositoryStateSha256,
     validationCommands: candidateState.validationCommands,
     toolchain: candidateState.toolchain,
@@ -752,10 +765,31 @@ function writeEvidenceRequest(
   const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
   const prior = readEvidenceRequest(root);
+  const lifecycle = resolveImplementationCandidateLifecycle({
+    root,
+    instance,
+    branchTip: currentHead(root).toLowerCase(),
+  });
+  if (
+    lifecycle.status !== 'PASS'
+    || lifecycle.decision !== 'REUSE_PHYSICAL_EVIDENCE'
+    || lifecycle.candidate_commit !== candidateCommit
+  ) {
+    fail(
+      `EVIDENCE_REQUEST_CANDIDATE_LIFECYCLE_INVALID:${lifecycle.reason ?? lifecycle.status}`,
+    );
+  }
   const request = {
     schema_version: 1,
     instance_id: instance.instance_id,
     candidate_commit: candidateCommit,
+    lifecycle_head_commit: lifecycle.lifecycle_head_commit,
+    candidate_lifecycle: {
+      model_id: lifecycle.model_id,
+      decision: lifecycle.decision,
+      reason: lifecycle.reason,
+      changed_paths: [...(lifecycle.changed_paths ?? [])],
+    },
     observed_at: null,
     validation_commands: [...(instance.validation_commands ?? [])],
     results: validationResultStatuses(instance, selectiveValidation, certification),
@@ -807,6 +841,7 @@ export function validateExecutionEvidenceReceipt({
   instance,
   receipt,
   candidateCommit,
+  lifecycleHeadCommit = candidateCommit,
   certification = undefined,
 } = {}) {
   if (!instance || typeof instance !== 'object') fail('Instancia obligatoria para validar evidencia.');
@@ -818,6 +853,20 @@ export function validateExecutionEvidenceReceipt({
   if (!/^[a-f0-9]{40}$/u.test(String(candidateCommit ?? ''))) fail('candidateCommit invalido.');
   if (receipt.candidate_commit !== candidateCommit) {
     fail(`Evidence receipt no corresponde al candidato ${candidateCommit}.`);
+  }
+  if (!/^[a-f0-9]{40}$/u.test(String(lifecycleHeadCommit ?? ''))) {
+    fail('lifecycleHeadCommit invalido.');
+  }
+  if (receipt.lifecycle_head_commit !== lifecycleHeadCommit) {
+    fail(`Evidence receipt no corresponde al lifecycle head ${lifecycleHeadCommit}.`);
+  }
+  if (candidateCommit !== lifecycleHeadCommit) {
+    if (
+      receipt.candidate_lifecycle?.decision !== 'REUSE_PHYSICAL_EVIDENCE'
+      || receipt.candidate_lifecycle?.model_id !== 'VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1'
+    ) {
+      fail('Evidence receipt no conserva prueba candidate/lifecycle reutilizable.');
+    }
   }
   if (!String(receipt.observed_at ?? '').trim() || !Number.isFinite(Date.parse(receipt.observed_at))) {
     fail('Evidence receipt exige observed_at ISO concreto.');
@@ -966,9 +1015,23 @@ async function materializeImplementation({ root, id, certification = undefined }
   npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
   git(['diff', '--check'], { cwd: root });
 
+  const lifecycleCheckpointCommitted = commitAllowedWorktree(
+    root,
+    id,
+    resolveInstance(root, id).instance,
+    `implementation(${id}): checkpoint implemented state`,
+  );
+  if (!lifecycleCheckpointCommitted) {
+    fail(`IMPLEMENTED_LIFECYCLE_CHECKPOINT_MISSING:${id}`);
+  }
+  pushCandidate(root, branch);
+  const lifecycleHeadCommit = currentHead(root).toLowerCase();
+
   return {
     instance: resolveInstance(root, id).instance,
     candidateCommit,
+    lifecycleHeadCommit,
+    lifecycleCheckpoint: 'COMMITTED',
     mrpStatus,
     rebaseline,
     repairStatus: repairFinal.status,
@@ -1006,7 +1069,12 @@ async function sealVerifiedEvidence({
     await runCanonicalLifecycle(root, 'docs:implementation:preverify', id);
   }
 
-  const candidateCommit = currentHead(root);
+  const finalCandidateState = candidateValidationState(
+    root,
+    resolveInstance(root, id).instance,
+  );
+  const candidateCommit = finalCandidateState.candidateCommit;
+  const lifecycleHeadCommit = finalCandidateState.lifecycleHeadCommit;
   const absoluteEvidence = path.resolve(root, evidenceFile);
   if (!fs.existsSync(absoluteEvidence)) fail(`No existe evidence-file: ${evidenceFile}`);
 
@@ -1022,6 +1090,7 @@ async function sealVerifiedEvidence({
     instance: refreshed,
     receipt,
     candidateCommit,
+    lifecycleHeadCommit,
     certification,
   });
 
@@ -1044,7 +1113,7 @@ async function sealVerifiedEvidence({
   npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
   npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
   git(['diff', '--check'], { cwd: root });
-  return { candidateCommit, preverifyStatus };
+  return { candidateCommit, lifecycleHeadCommit, preverifyStatus };
 }
 
 async function printStatus({ root, explicitInstanceId }) {
@@ -1160,8 +1229,12 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       const candidateState = candidateValidationState(root, refreshedAfterPreverify);
       const candidateCommit = candidateState.candidateCommit;
       const preverifyReceipt = createCandidateValidationReceipt({
-        instanceId, candidateCommit, repositoryStateSha256: candidateState.repositoryStateSha256,
-        validationCommands: candidateState.validationCommands, toolchain: candidateState.toolchain,
+        instanceId,
+        candidateCommit,
+        lifecycleHeadCommit: candidateState.lifecycleHeadCommit,
+        repositoryStateSha256: candidateState.repositoryStateSha256,
+        validationCommands: candidateState.validationCommands,
+        toolchain: candidateState.toolchain,
       });
       const requestPath = writeEvidenceRequest(
         root, refreshedAfterPreverify, candidateCommit, preverifyReceipt,
@@ -1188,6 +1261,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       printResult({
         ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
         STATUS: 'IMPLEMENTED', EXECUTOR_STATE: state, CANDIDATE_SHA: candidateCommit,
+        LIFECYCLE_HEAD_SHA: candidateState.lifecycleHeadCommit,
         REBASELINE: materializedResult?.rebaseline ?? 'PRESERVED',
         MRP015_050: materializedResult?.mrpStatus ?? 'PRESERVED_OR_NO_APLICA',
         QUALITY_REPAIR: materializedResult?.repairStatus ?? 'PRESERVED_OR_NOT_REQUIRED',

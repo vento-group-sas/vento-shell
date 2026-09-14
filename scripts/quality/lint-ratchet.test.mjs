@@ -5,7 +5,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { execFileSync } from 'node:child_process';
 
-import { changedFiles, evaluateLintRatchet, summarizeLintResults } from './lint-ratchet.mjs';
+import {
+  changedFiles,
+  evaluateLintRatchet,
+  parseLintJsonOutput,
+  summarizeLintResults,
+} from './lint-ratchet.mjs';
 
 test('base incluye deuda del archivo ya commiteado, cambios locales y archivos nuevos', (t) => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-lint-range-'));
@@ -72,4 +77,25 @@ test('rechaza aumentos y cualquier hallazgo en un archivo tocado', () => {
 test('excluye evidencia local .delivery del universo ESLint del ratchet', () => {
   const source = fs.readFileSync(new URL('./lint-ratchet.mjs', import.meta.url), 'utf8');
   assert.ok(source.includes("[eslintCli, '.', '--ignore-pattern', '.delivery/**', '--format', 'json']"));
+});
+
+test('reporta stdout JSON vacio con stderr real en vez de Unexpected end of JSON', () => {
+  assert.throws(
+    () => parseLintJsonOutput({
+      stdout: '',
+      stderr: 'Cannot find module eslint',
+      eslintCli: 'node_modules/eslint/bin/eslint.js',
+    }),
+    /ESLINT_JSON_OUTPUT_EMPTY:Cannot find module eslint/u,
+  );
+  assert.throws(
+    () => parseLintJsonOutput({ stdout: '{', stderr: '' }),
+    /ESLINT_JSON_OUTPUT_INVALID/u,
+  );
+});
+
+test('lint ratchet valida existencia del CLI antes de parsear JSON', () => {
+  const source = fs.readFileSync(new URL('./lint-ratchet.mjs', import.meta.url), 'utf8');
+  assert.match(source, /ESLINT_CLI_MISSING/u);
+  assert.match(source, /parseLintJsonOutput/u);
 });

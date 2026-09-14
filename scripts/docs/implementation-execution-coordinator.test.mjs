@@ -88,6 +88,7 @@ test('evidence receipt exige candidato, comandos y ambiente exactos', () => {
     schema_version: 1,
     instance_id: instance.instance_id,
     candidate_commit: candidateCommit,
+    lifecycle_head_commit: candidateCommit,
     observed_at: '2026-09-07T20:00:00Z',
     validation_commands: ['npm test'],
     results: [{ command: 'npm test', status: 'PASS' }],
@@ -312,7 +313,9 @@ test('F3 integra receipt en evidence-request, mantiene fallback y no toca gates 
   assert.match(source, /if \(preverifyReceipt\.status === 'PASS'\)/u);
   assert.match(source, /PREVERIFY no reutilizable .* se ejecuta completo/u);
   assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:preverify', id\)/u);
-  assert.match(source, /validateExecutionEvidenceReceipt\(\{\s*instance: refreshed,\s*receipt,\s*candidateCommit,\s*certification,\s*\}\)/u);
+  assert.match(source, /validateExecutionEvidenceReceipt\(\{\s*instance: refreshed,\s*receipt,\s*candidateCommit,\s*lifecycleHeadCommit,\s*certification,\s*\}\)/u);
+  assert.match(source, /checkpoint implemented state/u);
+  assert.match(source, /lifecycle_head_commit/u);
   assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:finish', instanceId\)/u);
 
   const sealStart = source.indexOf('async function sealVerifiedEvidence');
@@ -839,7 +842,9 @@ test('F5 integra record en evidence request y no toca remote, authorization, pre
   assert.match(source, /status: notApplicable\.has\(command\) \? 'NOT_APPLICABLE' : 'PASS'/u);
   assert.match(source, /validateSafeSelectiveValidationRecord\(\{/u);
   assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:preverify', id\)/u);
-  assert.match(source, /validateExecutionEvidenceReceipt\(\{\s*instance: refreshed,\s*receipt,\s*candidateCommit,\s*certification,\s*\}\)/u);
+  assert.match(source, /validateExecutionEvidenceReceipt\(\{\s*instance: refreshed,\s*receipt,\s*candidateCommit,\s*lifecycleHeadCommit,\s*certification,\s*\}\)/u);
+  assert.match(source, /checkpoint implemented state/u);
+  assert.match(source, /lifecycle_head_commit/u);
   assert.match(source, /runCanonicalLifecycle\(root, 'docs:implementation:finish', instanceId\)/u);
   assert.match(source, /SAFE_SELECTIVE: safeSelective\?\.classification \?\? 'NONE'/u);
 });
@@ -889,6 +894,7 @@ test('F5 evidence receipt acepta NOT_APPLICABLE solo con record selectivo certif
     schema_version: 1,
     instance_id: instance.instance_id,
     candidate_commit: candidateCommit,
+    lifecycle_head_commit: candidateCommit,
     observed_at: '2026-09-08T03:30:00Z',
     validation_commands: instance.validation_commands,
     results: [
@@ -996,6 +1002,7 @@ test('C4 auto-sella evidencia solo cuando no existe target externo', () => {
     schema_version: 1,
     instance_id: 'SHELL-CI-021::GAP-PKG-002',
     candidate_commit: 'b'.repeat(40),
+    lifecycle_head_commit: 'b'.repeat(40),
     observed_at: null,
     validation_commands: ['npm test'],
     results: [{ command: 'npm test', status: 'PASS' }],
@@ -1034,4 +1041,31 @@ test('C4 elimina stash, elimina gate --materialized y serializa finish contra gi
   assert.ok(repair >= 0 && mainReconcile > repair && validation > mainReconcile);
   assert.ok(mrp > validation && implemented > mrp);
   assert.match(source, /REPAIR_RECEIPT_NOT_EXACT_FINAL_CANDIDATE/u);
+});
+
+test('F3 invalida receipt si cambia lifecycle head aunque candidate permanezca', () => {
+  const instanceId = 'SHELL-CI-021::GAP-PKG-018';
+  const candidateCommit = 'a'.repeat(40);
+  const lifecycleHeadCommit = 'b'.repeat(40);
+  const repositoryStateSha256 = fingerprintCandidateRepositoryState({
+    candidateCommit,
+    lifecycleHeadCommit,
+  });
+  const receipt = createCandidateValidationReceipt({
+    instanceId,
+    candidateCommit,
+    lifecycleHeadCommit,
+    repositoryStateSha256,
+    validationCommands: ['npm test'],
+  });
+  const changed = validateCandidateValidationReceipt({
+    receipt,
+    instanceId,
+    candidateCommit,
+    lifecycleHeadCommit: 'c'.repeat(40),
+    repositoryStateSha256,
+    validationCommands: ['npm test'],
+  });
+  assert.equal(changed.status, 'MISS');
+  assert.equal(changed.reason, 'FINGERPRINT_MISMATCH:lifecycleHeadCommit');
 });

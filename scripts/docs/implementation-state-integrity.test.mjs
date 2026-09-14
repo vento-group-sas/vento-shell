@@ -1,12 +1,17 @@
 import assert from 'node:assert/strict';
+import { spawnSync } from 'node:child_process';
 import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
 import test from 'node:test';
 
 import {
   IMPLEMENTATION_MUTATING_ENTRYPOINT,
   IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID,
+  deriveImplementationStateFacts,
   evaluateImplementationStateIntegrity,
   isVerifiedResumeDeltaAllowed,
+  resolveImplementationCandidateLifecycle,
   rejectDirectImplementationLifecycleEntry,
   verifiedLedgerTransitionCompatible,
 } from './implementation-state-integrity.mjs';
@@ -294,4 +299,95 @@ test('resume VERIFIED usa el clasificador de impacto para aceptar integration to
   assert.ok(packageBefore > resolver);
   assert.ok(packageAfter > packageBefore);
   assert.ok(reuse > classifier);
+});
+
+test('checkpoint lifecycle conserva IMPLEMENTED sin revalidar candidato fisico', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-candidate-lifecycle-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = (...args) => {
+    const result = spawnSync('git', args, {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    return String(result.stdout ?? '').trim();
+  };
+  git('init', '-b', 'main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.invalid');
+  git('switch', '-c', 'implementation/shell-ci-021/gap-pkg-018');
+
+  const ledgerPath = path.join(
+    root,
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json',
+  );
+  const headerPath = path.join(root, 'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md');
+  fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    task_id: 'SHELL-CI-021',
+    status: 'IN_PROGRESS',
+    target_repositories: ['vento-group-sas/vento-shell'],
+    authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: 'ledger', change: 'MODIFY' }],
+    validation_commands: ['node --test x.test.mjs'],
+    authorization: { decision: 'APPROVED' },
+    evidence: [],
+    target_environments: [{ environment_role: 'STAGING', target_id: 'staging', target_type: 'SUPABASE_PROJECT_REF', owner: 'OWNER' }],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(candidateLedger, null, 2)}\n`);
+  fs.writeFileSync(headerPath, 'candidate\n');
+  git('add', '.');
+  git('commit', '-m', 'candidate');
+  const candidate = git('rev-parse', 'HEAD');
+
+  const implemented = {
+    ...candidateLedger,
+    status: 'IMPLEMENTED',
+    evidence: [
+      `LOCAL_VALIDATION candidate=${candidate} command=node --test x.test.mjs status=PASS`,
+    ],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(implemented, null, 2)}\n`);
+  fs.writeFileSync(headerPath, 'lifecycle\n');
+  git('add', '.');
+  git('commit', '-m', 'lifecycle checkpoint');
+  const lifecycle = git('rev-parse', 'HEAD');
+
+  const identity = resolveImplementationCandidateLifecycle({
+    root,
+    instance: implemented,
+    branchTip: lifecycle,
+  });
+  assert.equal(identity.status, 'PASS');
+  assert.equal(identity.candidate_commit, candidate);
+  assert.equal(identity.lifecycle_head_commit, lifecycle);
+  assert.equal(identity.decision, 'REUSE_PHYSICAL_EVIDENCE');
+
+  const facts = deriveImplementationStateFacts({
+    root,
+    instance: implemented,
+    readiness: null,
+    branchPresent: true,
+    candidateGateStatus: 'PASS',
+    historicalVerified: false,
+  });
+  assert.equal(facts.candidate_commit, candidate);
+  assert.equal(facts.local_validation_complete, true);
+  const integrity = evaluateImplementationStateIntegrity({ instance: implemented, facts });
+  assert.equal(integrity.status_valid, true);
+  assert.equal(integrity.highest_valid_status, 'IMPLEMENTED');
+
+  fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'src', 'product.ts'), 'export const changed = true;\n');
+  git('add', '.');
+  git('commit', '-m', 'material delta');
+  const unsafe = resolveImplementationCandidateLifecycle({
+    root,
+    instance: implemented,
+    branchTip: git('rev-parse', 'HEAD'),
+  });
+  assert.equal(unsafe.status, 'INVALID');
+  assert.equal(unsafe.decision, 'REVALIDATE_PHYSICAL');
 });
