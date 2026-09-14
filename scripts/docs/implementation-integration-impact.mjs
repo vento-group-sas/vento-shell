@@ -7,6 +7,7 @@ export const IMPLEMENTATION_INTEGRATION_EVIDENCE_DECISIONS = Object.freeze([
 ]);
 
 const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
+const IMPLEMENTATION_DOCTOR_SCRIPT = 'node scripts/docs/implementation-doctor.mjs';
 
 const DERIVED_INTEGRATION_PATHS = new Set([
   'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
@@ -97,23 +98,46 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
   const afterCopy = structuredClone(after);
   const beforePlanTest = String(beforeCopy?.scripts?.['docs:plan:test'] ?? '');
   const afterPlanTest = String(afterCopy?.scripts?.['docs:plan:test'] ?? '');
+  const beforeDoctor = String(beforeCopy?.scripts?.['docs:implementation:doctor'] ?? '');
+  const afterDoctor = String(afterCopy?.scripts?.['docs:implementation:doctor'] ?? '');
 
-  if (beforeCopy.scripts) delete beforeCopy.scripts['docs:plan:test'];
-  if (afterCopy.scripts) delete afterCopy.scripts['docs:plan:test'];
+  if (beforeCopy.scripts) {
+    delete beforeCopy.scripts['docs:plan:test'];
+    delete beforeCopy.scripts['docs:implementation:doctor'];
+  }
+  if (afterCopy.scripts) {
+    delete afterCopy.scripts['docs:plan:test'];
+    delete afterCopy.scripts['docs:implementation:doctor'];
+  }
 
   if (stableJson(beforeCopy) !== stableJson(afterCopy)) {
     return Object.freeze({
       safe: false,
       reason: 'PACKAGE_JSON_NON_INTEGRATION_SURFACE_CHANGED',
       added_tests: [],
+      doctor_script: afterDoctor || null,
+    });
+  }
+
+  const doctorScriptSafe = beforeDoctor === afterDoctor
+    || (!beforeDoctor && afterDoctor === IMPLEMENTATION_DOCTOR_SCRIPT);
+  if (!doctorScriptSafe) {
+    return Object.freeze({
+      safe: false,
+      reason: 'PACKAGE_JSON_IMPLEMENTATION_DOCTOR_SCRIPT_CHANGED_UNSAFELY',
+      added_tests: [],
+      doctor_script: afterDoctor || null,
     });
   }
 
   if (beforePlanTest === afterPlanTest) {
     return Object.freeze({
       safe: true,
-      reason: 'PACKAGE_JSON_UNCHANGED_OUTSIDE_INTEGRATION',
+      reason: beforeDoctor === afterDoctor
+        ? 'PACKAGE_JSON_UNCHANGED_OUTSIDE_INTEGRATION'
+        : 'PACKAGE_JSON_ADDITIVE_IMPLEMENTATION_DOCTOR_ONLY',
       added_tests: [],
+      doctor_script: afterDoctor || null,
     });
   }
 
@@ -135,6 +159,7 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
       safe: false,
       reason: 'PACKAGE_JSON_DOCS_PLAN_TEST_REMOVED_OR_REORDERED',
       added_tests: added,
+      doctor_script: afterDoctor || null,
     });
   }
 
@@ -146,6 +171,7 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
       safe: false,
       reason: `PACKAGE_JSON_DOCS_PLAN_TEST_UNSAFE_ADDITION:${unsafeAdded.join(',')}`,
       added_tests: added,
+      doctor_script: afterDoctor || null,
     });
   }
 
@@ -153,6 +179,7 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
     safe: true,
     reason: 'PACKAGE_JSON_ADDITIVE_IMPLEMENTATION_TESTS_ONLY',
     added_tests: added,
+    doctor_script: afterDoctor || null,
   });
 }
 

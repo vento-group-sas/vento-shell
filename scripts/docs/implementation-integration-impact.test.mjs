@@ -60,7 +60,8 @@ const packageAfterSafe = {
   name: 'vento-shell',
   scripts: {
     test: 'node scripts/quality/repository-test-command-gate.mjs run-shell',
-    'docs:plan:test': 'node --test scripts/docs/implementation-state-integrity.test.mjs scripts/docs/implementation-integration-model.test.mjs scripts/docs/implementation-integration-loop.test.mjs scripts/docs/implementation-integration-impact.test.mjs scripts/docs/implementation-execution-coordinator.test.mjs',
+    'docs:implementation:doctor': 'node scripts/docs/implementation-doctor.mjs',
+    'docs:plan:test': 'node --test scripts/docs/implementation-state-integrity.test.mjs scripts/docs/implementation-integration-model.test.mjs scripts/docs/implementation-integration-loop.test.mjs scripts/docs/implementation-integration-impact.test.mjs scripts/docs/implementation-doctor.test.mjs scripts/docs/implementation-execution-coordinator.test.mjs',
   },
   dependencies: { next: '16.1.1' },
 };
@@ -80,6 +81,12 @@ test('reconoce tooling de lifecycle de integracion como no fisico', () => {
   );
   assert.equal(
     isImplementationIntegrationLifecyclePath(
+      'scripts/docs/implementation-doctor.mjs',
+    ),
+    true,
+  );
+  assert.equal(
+    isImplementationIntegrationLifecyclePath(
       'scripts/quality/supabase-db-harness.mjs',
     ),
     false,
@@ -94,6 +101,7 @@ test('derivados y tooling de integracion reutilizan evidencia fisica', () => {
       'scripts/docs/implementation-state-integrity.mjs',
       'scripts/docs/implementation-integration-model.mjs',
       'scripts/docs/implementation-integration-loop.test.mjs',
+      'scripts/docs/implementation-doctor.mjs',
     ],
   });
   assert.equal(impact.model_id, IMPLEMENTATION_INTEGRATION_IMPACT_MODEL_ID);
@@ -170,7 +178,7 @@ test('otro ledger solo es seguro con prueba explicita de pending pristino', () =
   assert.equal(safe.decision, 'REUSE_PHYSICAL_EVIDENCE');
 });
 
-test('package.json solo puede reutilizar evidencia con prueba semantica aditiva', () => {
+test('package.json permite solo doctor exacto y tests de implementacion aditivos', () => {
   const semantic = assessPackageJsonIntegrationImpact({
     before: packageBefore,
     after: packageAfterSafe,
@@ -179,6 +187,10 @@ test('package.json solo puede reutilizar evidencia con prueba semantica aditiva'
   assert.equal(
     semantic.reason,
     'PACKAGE_JSON_ADDITIVE_IMPLEMENTATION_TESTS_ONLY',
+  );
+  assert.equal(
+    semantic.doctor_script,
+    'node scripts/docs/implementation-doctor.mjs',
   );
 
   const impact = classifyImplementationIntegrationImpact({
@@ -190,7 +202,17 @@ test('package.json solo puede reutilizar evidencia con prueba semantica aditiva'
   assert.equal(impact.decision, 'REUSE_PHYSICAL_EVIDENCE');
 });
 
-test('package.json cambiando test o dependencias exige revalidacion', () => {
+test('package.json doctor alterado, test cambiado o dependencia cambiada exige revalidacion', () => {
+  const badDoctor = structuredClone(packageAfterSafe);
+  badDoctor.scripts['docs:implementation:doctor'] = 'node scripts/docs/other-doctor.mjs';
+  assert.equal(
+    assessPackageJsonIntegrationImpact({
+      before: packageBefore,
+      after: badDoctor,
+    }).safe,
+    false,
+  );
+
   const changedTest = structuredClone(packageAfterSafe);
   changedTest.scripts.test = 'node different-runner.mjs';
   assert.equal(
@@ -227,6 +249,8 @@ test('delta esperado del hardening es reutilizable sin repetir pruebas fisicas',
       'scripts/docs/implementation-integration-loop.test.mjs',
       'scripts/docs/implementation-integration-impact.mjs',
       'scripts/docs/implementation-integration-impact.test.mjs',
+      'scripts/docs/implementation-doctor.mjs',
+      'scripts/docs/implementation-doctor.test.mjs',
     ],
     packageJsonBefore: packageBefore,
     packageJsonAfter: packageAfterSafe,
