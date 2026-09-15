@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1193** |
+| Tareas aprobadas | **1194** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **403** |
+| Tareas no iniciadas | **402** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **74.75% (1193/1596)** |
+| Porcentaje de completamiento | **74.81% (1194/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración** |
-| Tarea actual | **NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota** |
+| Última tarea aprobada | **NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota** |
+| Tarea actual | **NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda** |
+| Siguiente tarea | **NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 51 de 127 aprobadas; NEXO-DOM-027 pendiente** |
+| Progreso del bloque | **BLOQUE K: 52 de 127 aprobadas; NEXO-DOM-028 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-DOM-027** |
+| Carril documental | **ACTIVO — NEXO-DOM-028** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-026` — Definir inspecciones, mantenimiento preventivo, garantía y calibración |
-| Tarea actual | `NEXO-DOM-027` — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-028` — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda |
+| Última aprobada | `NEXO-DOM-027` — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota |
+| Tarea actual | `NEXO-DOM-028` — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-029` — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 51 DE 127 APROBADAS — ACTUAL NEXO-DOM-027** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 52 DE 127 APROBADAS — ACTUAL NEXO-DOM-028** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
-        ↓
-TAREA ACTUAL
 NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 51 de 127 tareas aprobadas
+BLOQUE K — 52 de 127 tareas aprobadas
 ```
