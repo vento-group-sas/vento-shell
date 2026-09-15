@@ -132,6 +132,7 @@ export function buildAuthorization({
   authorize,
   phase2AuthorReview = false,
   phase3ClosurePreflight = false,
+  phase6Execute = false,
   maxTasks,
   cutoffAt,
   timeZone,
@@ -154,6 +155,12 @@ export function buildAuthorization({
   if (closurePreflightEnabled && !authorReviewEnabled) {
     fail('FASE 3 closure preflight exige FASE 2 author/review habilitada en el mismo turno.');
   }
+  const phase6Enabled = typeof phase6Execute === 'boolean'
+    ? phase6Execute
+    : parseOptionalBoolean(phase6Execute, 'phase6_execute');
+  if (phase6Enabled && (!authorReviewEnabled || !closurePreflightEnabled)) {
+    fail('FASE 6 execute exige FASE 2 author/review y FASE 3 closure preflight habilitadas.');
+  }
   const taskLimit = parseMaxTasks(maxTasks);
   const cutoff = parseCutoff({ cutoffAt, timeZone, now });
 
@@ -173,7 +180,7 @@ export function buildAuthorization({
   if (!activeSequence?.block_code) fail('active-sequence no contiene block_code.');
 
   const authorization = {
-    schema_version: 2,
+    schema_version: 3,
     authorization_type: AUTHORIZATION_TYPE,
     status: 'AUTHORIZED',
     authorization_identity: `github:${repository}:${runId}:${runAttempt}`,
@@ -241,6 +248,27 @@ export function buildAuthorization({
         'MATERIALIZE_CLOSURE_PLAN_EVIDENCE',
       ] : [],
     },
+    phase_6_capabilities: {
+      execute_turn_enabled: phase6Enabled,
+      repository_mutation_enabled: phase6Enabled,
+      task_execution_enabled: phase6Enabled,
+      github_mutation_enabled: phase6Enabled,
+      allowed_operations: phase6Enabled ? [
+        'SYNC_MAIN_FAST_FORWARD',
+        'REGENERATE_DOCUMENTATION_STARTER',
+        'RESOLVE_CURRENT_DOCUMENTATION_TASK',
+        'RUN_AUTHOR_AND_DOUBLE_REVIEW',
+        'RUN_CLOSURE_PREFLIGHT',
+        'OPEN_CANONICAL_TASK_BRANCH',
+        'REPLACE_EXACT_SINGLE_TASK_BLOCK',
+        'RUN_CANONICAL_DOCUMENTATION_VALIDATORS',
+        'COMMIT_PUSH_CREATE_OR_UPDATE_PR',
+        'WAIT_REQUIRED_CHECKS',
+        'MERGE_VALIDATED_HEAD_ONLY',
+        'CLEAN_MERGED_TASK_BRANCH',
+        'REEVALUATE_CONTINUITY_AFTER_MERGE',
+      ] : [],
+    },
     stop_policy: 'FAIL_CLOSED',
   };
 
@@ -271,6 +299,7 @@ function writeGithubOutput(filePath, authorization) {
     `execution_enabled=${authorization.phase_1_capabilities.execution_enabled}`,
     `phase2_author_review_enabled=${authorization.phase_2_capabilities.author_review_enabled}`,
     `phase3_closure_preflight_enabled=${authorization.phase_3_capabilities.closure_preflight_enabled}`,
+    `phase6_execute_enabled=${authorization.phase_6_capabilities.execute_turn_enabled}`,
     '',
   ].join('\n'), 'utf8');
 }
@@ -298,6 +327,8 @@ function writeSummary(filePath, authorization) {
     `- Task execution enabled in Phase 2: ${authorization.phase_2_capabilities.task_execution_enabled}`,
     `- Phase 3 closure preflight enabled: ${authorization.phase_3_capabilities.closure_preflight_enabled}`,
     `- Repository mutation enabled in Phase 3: ${authorization.phase_3_capabilities.repository_mutation_enabled}`,
+    `- Phase 6 configurable turn enabled: ${authorization.phase_6_capabilities.execute_turn_enabled}`,
+    `- Phase 6 GitHub mutation enabled: ${authorization.phase_6_capabilities.github_mutation_enabled}`,
     `- Physical authorization: ${authorization.physical_authorization.scope}`,
     `- Authorization SHA-256: ${authorization.authorization_sha256}`,
     '',
@@ -324,6 +355,7 @@ export async function runFromEnvironment({ root = process.cwd(), env = process.e
     authorize: env.NIGHT_AUTHORIZATION_GRANTED,
     phase2AuthorReview: env.NIGHT_PHASE2_AUTHOR_REVIEW,
     phase3ClosurePreflight: env.NIGHT_PHASE3_CLOSURE_PREFLIGHT,
+    phase6Execute: env.NIGHT_PHASE6_EXECUTE,
     maxTasks: env.NIGHT_MAX_TASKS,
     cutoffAt: env.NIGHT_CUTOFF_AT,
     timeZone: env.NIGHT_TIMEZONE,
