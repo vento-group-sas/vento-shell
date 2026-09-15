@@ -18,6 +18,11 @@ on:
         required: true
         default: false
         type: boolean
+      phase6_execute:
+        description: Ejecutar el turno documental configurable con mutación Git/GitHub gobernada
+        required: true
+        default: false
+        type: boolean
       max_tasks:
         description: Máximo explícito de tareas documentales autorizadas para el turno
         required: true
@@ -59,6 +64,7 @@ jobs:
       execution_enabled: ${{ steps.authorization.outputs.execution_enabled }}
       phase2_author_review_enabled: ${{ steps.authorization.outputs.phase2_author_review_enabled }}
       phase3_closure_preflight_enabled: ${{ steps.authorization.outputs.phase3_closure_preflight_enabled }}
+      phase6_execute_enabled: ${{ steps.authorization.outputs.phase6_execute_enabled }}
     steps:
       - name: Descargar main
         uses: actions/checkout@v4
@@ -87,6 +93,7 @@ jobs:
           NIGHT_AUTHORIZATION_GRANTED: ${{ inputs.authorize }}
           NIGHT_PHASE2_AUTHOR_REVIEW: ${{ inputs.phase2_author_review }}
           NIGHT_PHASE3_CLOSURE_PREFLIGHT: ${{ inputs.phase3_closure_preflight }}
+          NIGHT_PHASE6_EXECUTE: ${{ inputs.phase6_execute }}
           NIGHT_MAX_TASKS: ${{ inputs.max_tasks }}
           NIGHT_CUTOFF_AT: ${{ inputs.cutoff_at }}
           NIGHT_TIMEZONE: ${{ inputs.timezone }}
@@ -109,7 +116,7 @@ jobs:
 
   author_review:
     name: Construir candidato y doble revisión documental
-    if: ${{ inputs.phase2_author_review }}
+    if: ${{ inputs.phase2_author_review && !inputs.phase6_execute }}
     needs: authorize
     runs-on: ubuntu-latest
     timeout-minutes: 30
@@ -172,7 +179,7 @@ jobs:
 
   closure_preflight:
     name: Verificar cierre documental sin mutar repositorio
-    if: ${{ inputs.phase3_closure_preflight }}
+    if: ${{ inputs.phase3_closure_preflight && !inputs.phase6_execute }}
     needs:
       - authorize
       - author_review
@@ -232,5 +239,63 @@ jobs:
         with:
           name: vento-night-documentation-phase3-${{ github.run_id }}
           path: ${{ runner.temp }}/vento-night-documentation/phase3
+          if-no-files-found: warn
+          retention-days: 7
+
+  execute_turn:
+    name: Ejecutar turno documental configurable
+    if: ${{ inputs.phase6_execute }}
+    needs: authorize
+    runs-on: ubuntu-latest
+    timeout-minutes: 360
+    permissions:
+      contents: write
+      pull-requests: write
+      checks: read
+      actions: read
+    steps:
+      - name: Descargar main para el turno configurable
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Configurar Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24.19.0
+
+      - name: Verificar token GitHub del autopiloto
+        env:
+          GH_TOKEN: ${{ secrets.VENTO_AUTOPILOT_GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          test -n "$GH_TOKEN" || { echo "VENTO_AUTOPILOT_GITHUB_TOKEN_MISSING"; exit 1; }
+          gh auth status
+          gh auth setup-git
+          git config user.name "VENTO Documentation Autopilot"
+          git config user.email "vento-documentation-autopilot@users.noreply.github.com"
+
+      - name: Descargar autorización del turno
+        uses: actions/download-artifact@v4
+        with:
+          name: vento-night-documentation-authorization-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/authorization
+
+      - name: Ejecutar loop documental configurable
+        env:
+          GH_TOKEN: ${{ secrets.VENTO_AUTOPILOT_GITHUB_TOKEN }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          NIGHT_AUTHORIZATION_PATH: ${{ runner.temp }}/vento-night-documentation/authorization/authorization.json
+          NIGHT_TURN_OUTPUT_DIR: ${{ runner.temp }}/vento-night-documentation/turn
+        run: npm run docs:night:turn
+
+      - name: Publicar evidencia completa del turno
+        if: ${{ always() }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: vento-night-documentation-turn-${{ github.run_id }}
+          path: ${{ runner.temp }}/vento-night-documentation/turn
           if-no-files-found: warn
           retention-days: 7
