@@ -40679,6 +40679,7 @@ Una lectura de servicio, consumo o interrupción no se modela como captura de pl
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias`
+
 ### ✅ NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
 
 **Estado:** APROBADA
@@ -42605,7 +42606,1765 @@ Una lectura, verificación de servicio o alerta no se convierte en inspección f
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas`
-### [ ] NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
+
+### ✅ NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
+**Tarea siguiente:** NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
+**Tipo de tarea:** documental; definición canónica de inspecciones físicas locativas mediante programas y plantillas versionadas, obligaciones, ejecuciones reproducibles, respuestas, evidencia, hallazgos, contención, acciones correctivas, handoffs, verificación de eficacia, impacto sobre condición y disponibilidad y cierre, separando explícitamente la condición locativa del cumplimiento y riesgo laboral gobernados por VISO/SST y sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna inspecciones físicas de instalaciones, espacios, componentes fijos y otros sujetos locativos aplicables, de forma versionada, reproducible y auditable, sin confundir una inspección locativa con una inspección de cumplimiento, higiene, inocuidad, seguridad y salud en el trabajo, riesgo laboral, mantenimiento, metrología o novedad.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+PROGRAMA DE INSPECCIÓN VERSIONADO
++
+PLANTILLA Y REVISIÓN VERSIONADAS
++
+OBLIGACIÓN O DISPARADOR
++
+EJECUCIÓN AUTORIZADA
++
+RESPUESTAS EVIDENCIABLES
++
+HALLAZGOS
++
+CONTENCIÓN CUANDO APLIQUE
++
+ACCIÓN CORRECTIVA O HANDOFF
++
+VERIFICACIÓN DE EFICACIA
++
+IMPACTO EXPLÍCITO SOBRE CONDICIÓN Y DISPONIBILIDAD
++
+CIERRE AUTORIZADO
+→
+INSPECCIÓN FÍSICA REPRODUCIBLE Y AUDITABLE
+```
+
+No:
+
+```text
+INSPECCIÓN PROGRAMADA = INSPECCIÓN EJECUTADA
+```
+
+No:
+
+```text
+RESPUESTA = HALLAZGO = ACCIÓN = CIERRE
+```
+
+No:
+
+```text
+INSPECCIÓN LOCATIVA = INSPECCIÓN SST O DE CUMPLIMIENTO
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-034` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. adopta los sujetos locativos estables de `NEXO-DOM-029`;
+2. reutiliza condición y disponibilidad sin convertirlas en estados de inspección;
+3. reutiliza de `NEXO-DOM-026` la separación entre obligación técnica, ejecución, resultado, verificación y disponibilidad;
+4. define programa de inspección física versionado;
+5. define plantilla de inspección y revisión inmutable para cada ejecución histórica;
+6. define aplicabilidad, frecuencia, disparadores, competencia requerida y evidencia mínima;
+7. define obligación de inspección separada de la ejecución;
+8. define ejecución con snapshot inequívoco de plantilla, revisión, alcance, sujeto, inspector y momento;
+9. define respuestas estructuradas sin imponer un vocabulario universal incompatible;
+10. distingue respuesta, omisión, no aplicabilidad, evidencia y hallazgo;
+11. define criterios versionados para producir hallazgos;
+12. define hallazgo con origen, sujeto, evidencia, clasificación aplicable y trazabilidad;
+13. define contención como control inmediato temporal separado de la acción correctiva;
+14. define acciones correctivas con owner, responsable, condición de salida y evidencia;
+15. conserva handoffs hacia mantenimiento, saneamiento, plagas, servicios, metrología, acceso físico, obras, novedades y SST sin duplicar el hecho fuente;
+16. separa trabajo ejecutado de verificación de eficacia;
+17. define reinspección como nueva ejecución relacionada y no como edición retroactiva;
+18. separa finalización de la ejecución de cierre de hallazgos y acciones;
+19. define impacto trazable sobre condición y disponibilidad cuando una regla lo autorice;
+20. fija la frontera entre NEXO y VISO/SST para impedir expedientes competidores;
+21. clasifica la validación física actual de LOC como base parcial reutilizable y no como contrato final;
+22. preserva idempotencia, concurrencia, captura offline, corrección no destructiva y reconciliación de resultado desconocido;
+23. no crea ni modifica requisitos de prueba porque la conducta está cubierta por requisitos canónicos vigentes;
+24. no autoriza código, tablas, migraciones, RLS, RPC, UI, datos, Supabase, backfills, inspecciones reales ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.07 — Inspeccionar condiciones`;
+- `CAP-SCOPE-003`, para la frontera con inspecciones obligatorias, SST, riesgo laboral, cumplimiento y acciones correctivas;
+- `NEXO-DOM-017`, para auditoría, historial y evidencia;
+- `NEXO-DOM-026`, para la semántica de inspección técnica de activos y sujetos físicos aplicables;
+- `NEXO-DOM-029`, para identidad locativa, jerarquía, condición, criticidad y disponibilidad;
+- `NEXO-DOM-030`, para órdenes de trabajo, reparación, prueba, liberación y cierre;
+- `NEXO-DOM-031`, para saneamiento, desviaciones, verificación y liberación;
+- `NEXO-DOM-032`, para evidencia, proveedor, restricciones, acciones, liberación e idempotencia offline;
+- `NEXO-DOM-033`, para observaciones, alertas, contingencias, disponibilidad y handoffs;
+- `VPROC-0055`, como ciclo general de instalaciones;
+- `NEXO-AUTH-031` y `NEXO-AUTH-032`, como owners posteriores de autorización y segregación;
+- `NEXO-UX-046`, como owner posterior de experiencia para inspecciones, calibración, servicios, medidores y alertas;
+- el registro canónico de requisitos de prueba vigente;
+- la superficie remota observable de validación física de LOC en `vento-nexo`.
+
+Esta tarea define inspección física locativa. No redefine inspección de cumplimiento, SST, mantenimiento, metrología ni experiencia final.
+
+---
+
+#### 4. Decisión de cobertura de `CAP-13.07`
+
+La capacidad conserva:
+
+```text
+CAP-13.07
+INSPECCIONAR CONDICIONES
+```
+
+con tratamiento:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+y propiedad objetivo:
+
+```text
+NEXO + VISO/SST
+```
+
+La interpretación canónica queda:
+
+```text
+CONDICIÓN FÍSICA Y APTITUD OPERATIVA
+→ NEXO
+
+OBLIGACIÓN, PELIGRO LABORAL Y CUMPLIMIENTO
+→ VISO/SST
+```
+
+La observación física puede ser compartida mediante referencia y evidencia, pero no mediante dos copias editables que compitan por la verdad.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. una validación de LOC podía confundirse con inspección integral de instalación;
+2. una inspección física locativa podía duplicarse con una inspección SST o de cumplimiento;
+3. no existía contrato completo de programa y plantilla versionada para instalaciones;
+4. una plantilla podía editarse retroactivamente sin conservar la versión usada;
+5. una inspección programada podía confundirse con una inspección ejecutada;
+6. una respuesta negativa podía convertirse automáticamente en hallazgo sin criterio versionado;
+7. una fotografía podía tratarse como resultado o cierre;
+8. una omisión podía quedar indistinguible de una respuesta conforme;
+9. un hallazgo podía quedar como texto sin owner ni acción;
+10. una acción podía cerrarse sin verificar eficacia;
+11. un hallazgo crítico podía cambiar disponibilidad sin regla ni autoridad explícitas;
+12. una contención inmediata podía confundirse con solución definitiva;
+13. una orden de trabajo podía hacer desaparecer el hallazgo de origen;
+14. una reinspección podía sobrescribir la inspección fallida previa;
+15. acciones de saneamiento, plagas, servicios, metrología, obras o SST podían duplicarse dentro de inspecciones;
+16. captura offline o reintentos podían duplicar ejecuciones, respuestas, fotos, hallazgos, acciones o cierres;
+17. una fuente histórica no confirmada podía convertirse en backfill inventado;
+18. la superficie actual de validación LOC podía declararse erróneamente como cobertura completa de instalaciones.
+
+---
+
+#### 6. Ámbito de inspección física
+
+El contrato aplica a inspecciones cuyo objeto principal sea comprobar condición física o aptitud operativa de sujetos locativos autorizados.
+
+Puede incluir, según política:
+
+- instalación;
+- espacio;
+- zona física;
+- componente fijo;
+- red de servicio;
+- punto de servicio;
+- LOC cuando la inspección sea específicamente logística;
+- activo relacionado cuando la inspección locativa necesite observar su interacción con el espacio sin apropiarse del expediente técnico del activo.
+
+El alcance exacto queda fijado por programa, plantilla y revisión.
+
+---
+
+#### 7. Componentes conceptuales
+
+El expediente distingue al menos:
+
+```text
+FACILITY_INSPECTION_PROGRAM
+FACILITY_INSPECTION_TEMPLATE
+FACILITY_INSPECTION_OBLIGATION
+FACILITY_INSPECTION_EXECUTION
+FACILITY_INSPECTION_RESPONSE
+FACILITY_INSPECTION_FINDING
+FACILITY_INSPECTION_CONTAINMENT
+FACILITY_CORRECTIVE_ACTION
+FACILITY_ACTION_VERIFICATION
+FACILITY_INSPECTION_CLOSURE
+```
+
+La materialización física futura podrá usar nombres técnicos distintos, pero no podrá colapsar estos conceptos cuando su separación sea material para auditoría, autorización, disponibilidad, integración o cierre.
+
+---
+
+#### 8. Inspección locativa frente a SST y cumplimiento
+
+Se preserva:
+
+```text
+LOCATIVE PHYSICAL INSPECTION
+!=
+SST / COMPLIANCE INSPECTION
+```
+
+NEXO responde por condición física y aptitud operativa del sujeto locativo.
+
+VISO/SST conserva:
+
+- obligación SST;
+- peligro laboral;
+- riesgo laboral;
+- cumplimiento;
+- requisito legal o normativo;
+- programa SST;
+- decisiones preventivas;
+- aceptación de cumplimiento.
+
+La coincidencia de un lugar físico no fusiona los expedientes.
+
+---
+
+#### 9. Propiedad de dominio
+
+La propiedad queda separada:
+
+| Concepto | Propiedad canónica |
+| --- | --- |
+| identidad locativa | NEXO, reutilizando estructura compartida |
+| condición física locativa | NEXO |
+| plantilla de inspección locativa | NEXO |
+| ejecución de inspección locativa | NEXO |
+| hallazgo físico locativo | NEXO |
+| obligación SST o de cumplimiento | VISO/SST |
+| interpretación de peligro o riesgo laboral | VISO/SST |
+| acción de reparación | mantenimiento propietario |
+| acción de saneamiento | `NEXO-DOM-031` |
+| acción de plagas | `NEXO-DOM-032` |
+| acción de servicios | `NEXO-DOM-033` |
+| acción metrológica | `NEXO-DOM-035` |
+| obra o adecuación | `NEXO-DOM-037` |
+| novedad locativa general | `NEXO-DOM-038` |
+
+La inspección puede originar handoffs, pero no absorbe el dominio receptor.
+
+---
+
+#### 10. Sujeto inspeccionado
+
+Toda ejecución debe referenciar un sujeto estable y autoritativo.
+
+Se prohíbe usar como única identidad:
+
+- nombre libre;
+- descripción de fotografía;
+- nombre de área;
+- código visible no resuelto;
+- texto de hallazgo.
+
+Cuando la inspección cubra varios sujetos, debe conservarse el alcance y la relación de cada respuesta o hallazgo con su sujeto aplicable.
+
+---
+
+#### 11. Programa de inspección
+
+`FACILITY_INSPECTION_PROGRAM` define qué inspecciones deben existir para un alcance determinado.
+
+Debe poder conservar:
+
+- identidad estable;
+- versión;
+- vigencia;
+- propósito;
+- owner;
+- sujetos o reglas de aplicabilidad;
+- frecuencia o disparadores;
+- plantilla y revisión aplicable;
+- competencia requerida;
+- evidencia mínima;
+- criterios de escalamiento;
+- criterio de disponibilidad cuando aplique;
+- regla de cierre;
+- regla para próxima obligación.
+
+Un programa no demuestra que una inspección haya sido ejecutada.
+
+---
+
+#### 12. Versionado del programa
+
+Una modificación material crea nueva revisión o transición equivalente.
+
+Cambios materiales incluyen, cuando apliquen:
+
+- sujetos cubiertos;
+- frecuencia;
+- disparadores;
+- plantilla;
+- competencia;
+- evidencia requerida;
+- criterios de hallazgo;
+- severidad;
+- escalamiento;
+- bloqueo de disponibilidad;
+- regla de cierre.
+
+La nueva revisión no reescribe ejecuciones históricas.
+
+---
+
+#### 13. Plantilla de inspección
+
+`FACILITY_INSPECTION_TEMPLATE` define la estructura verificable de una inspección.
+
+Debe permitir reconstruir qué debía comprobarse, cómo debía responderse y qué evidencia o consecuencia correspondía.
+
+La plantilla no es la ejecución.
+
+Se preserva:
+
+```text
+TEMPLATE
+!=
+EXECUTION
+```
+
+---
+
+#### 14. Contenido mínimo de plantilla
+
+Cada revisión de plantilla deberá poder declarar, cuando corresponda:
+
+- propósito;
+- fundamento o política;
+- objeto o clase de sujeto inspeccionado;
+- frecuencia o relación con programa;
+- alcance territorial;
+- competencia requerida;
+- preguntas o puntos de control;
+- contrato de respuesta;
+- evidencia obligatoria;
+- criterio de hallazgo;
+- clasificación o severidad aplicable;
+- regla de escalamiento;
+- regla de contención cuando exista;
+- regla de disponibilidad cuando exista;
+- regla de acción;
+- regla de cierre.
+
+Esta tarea no inventa contenido técnico específico que deba provenir de una política competente.
+
+---
+
+#### 15. Revisión de plantilla
+
+Toda ejecución conserva la revisión exacta usada.
+
+Se prohíbe:
+
+```text
+EDIT CURRENT TEMPLATE
+→
+PAST INSPECTIONS APPEAR TO USE NEW CONTENT
+```
+
+La historia deberá permitir reconstruir:
+
+- plantilla;
+- revisión;
+- vigencia;
+- preguntas;
+- criterios;
+- evidencia esperada;
+- reglas aplicables en la fecha efectiva.
+
+---
+
+#### 16. Aplicabilidad
+
+La aplicabilidad de una plantilla puede depender de hechos aprobados como:
+
+- tipo de sujeto;
+- uso;
+- criticidad;
+- condición;
+- servicio;
+- zona;
+- actividad;
+- política;
+- evento;
+- obligación de inspección.
+
+No se deriva únicamente del nombre visible del lugar.
+
+Toda exclusión material debe ser explicable.
+
+---
+
+#### 17. Obligación de inspección
+
+`FACILITY_INSPECTION_OBLIGATION` representa una exigencia concreta generada por programa, fecha, evento, condición o decisión autorizada.
+
+Debe poder conservar:
+
+- programa y revisión;
+- plantilla y revisión;
+- sujeto;
+- alcance;
+- disparador;
+- ventana o vencimiento;
+- responsable;
+- competencia requerida;
+- evidencia esperada;
+- regla de satisfacción.
+
+La obligación no es la ejecución.
+
+---
+
+#### 18. Estados de obligación
+
+Cuando resulte compatible se reutiliza la semántica ya aprobada:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+No se crea una máquina paralela únicamente para inspecciones locativas.
+
+`OVERDUE` no equivale a `FAIL`.
+
+`SATISFIED` exige una ejecución válida conforme a la política aplicable.
+
+---
+
+#### 19. Programada y ejecutada son distintas
+
+Se preserva:
+
+```text
+SCHEDULED INSPECTION
+!=
+EXECUTED INSPECTION
+```
+
+Programar:
+
+- no demuestra presencia del inspector;
+- no produce respuestas;
+- no genera evidencia;
+- no demuestra condición;
+- no satisface automáticamente la obligación.
+
+Reprogramar conserva la obligación original, el motivo y la nueva ventana cuando corresponda.
+
+---
+
+#### 20. Disparadores extraordinarios
+
+Una inspección puede originarse por un disparador extraordinario, por ejemplo un hallazgo, novedad, obra, reparación, cambio de uso, falla, servicio o evento autorizado.
+
+La tarea no inventa una lista universal de disparadores.
+
+El hecho de origen debe quedar correlacionado.
+
+Se preserva:
+
+```text
+TRIGGER
+!=
+INSPECTION EXECUTION
+```
+
+---
+
+#### 21. Competencia e inspector
+
+La plantilla o política puede exigir una competencia determinada.
+
+La ejecución debe conservar:
+
+- inspector;
+- rol o capacidad aplicable cuando deba demostrarse;
+- fuente de autoridad;
+- momento;
+- alcance.
+
+Esta tarea no inventa certificaciones profesionales ni requisitos regulatorios.
+
+Cuando una fuente competente los exija, su vigencia debe poder comprobarse.
+
+---
+
+#### 22. Ejecución de inspección
+
+`FACILITY_INSPECTION_EXECUTION` registra el hecho de inspección.
+
+Debe poder conservar:
+
+- identidad estable;
+- obligación de origen cuando exista;
+- programa y revisión;
+- plantilla y revisión;
+- sujeto y alcance;
+- inspector;
+- inicio y fin efectivos;
+- respuestas;
+- omisiones justificadas;
+- evidencia;
+- hallazgos;
+- contenciones;
+- acciones generadas;
+- revisión o aprobación cuando corresponda;
+- resultado;
+- pendientes.
+
+---
+
+#### 23. Snapshot de alcance
+
+La ejecución debe conservar el alcance efectivo aplicable en el momento de inspección.
+
+Cambios posteriores en:
+
+- jerarquía;
+- nombre;
+- uso;
+- programa;
+- plantilla;
+- criticidad;
+- responsable
+
+no reescriben el snapshot histórico.
+
+La referencia a identidad estable permite enlazar el estado vigente sin destruir la historia.
+
+---
+
+#### 24. Respuesta de inspección
+
+`FACILITY_INSPECTION_RESPONSE` representa el resultado de un punto de control.
+
+Debe poder conservar:
+
+- ejecución;
+- punto de control y revisión;
+- sujeto cuando corresponda;
+- respuesta;
+- unidad o formato cuando aplique;
+- observación;
+- evidencia;
+- actor;
+- momento;
+- calidad o limitación conocida.
+
+La plantilla determina el contrato de respuesta.
+
+---
+
+#### 25. No aplicable, no observado y omisión
+
+No se permiten equivalencias silenciosas como:
+
+```text
+NOT_APPLICABLE = COMPLIANT
+```
+
+o:
+
+```text
+NOT_OBSERVED = PASS
+```
+
+o:
+
+```text
+OMITTED = NO FINDING
+```
+
+Cuando un punto no pueda evaluarse, debe conservarse la causa y la política determina si la ejecución puede cerrarse, requiere excepción o debe repetirse.
+
+---
+
+#### 26. Evidencia
+
+La evidencia soporta una respuesta, observación, hallazgo, contención, acción o verificación.
+
+Puede incluir, según aplicabilidad:
+
+- fotografía;
+- documento;
+- lectura;
+- firma;
+- observación estructurada;
+- referencia de orden;
+- certificado;
+- otra evidencia gobernada.
+
+Se preserva:
+
+```text
+PHOTO
+!=
+INSPECTION RESULT
+!=
+FINDING
+!=
+CLOSURE
+```
+
+---
+
+#### 27. Criterio de hallazgo
+
+El criterio que convierte observaciones o respuestas en hallazgo debe provenir de plantilla, política o decisión autorizada.
+
+La tarea no inventa umbrales universales.
+
+El criterio debe ser versionable cuando su cambio altere el significado de la inspección.
+
+---
+
+#### 28. Hallazgo
+
+`FACILITY_INSPECTION_FINDING` representa una condición identificada que requiere aceptación, seguimiento, contención, acción, handoff o cierre explícito.
+
+Debe poder conservar:
+
+- identidad;
+- inspección de origen;
+- sujeto;
+- punto de control o respuestas relacionadas;
+- descripción;
+- evidencia;
+- criterio aplicado;
+- clasificación o severidad cuando exista;
+- impacto;
+- owner de evaluación;
+- decisión;
+- contención relacionada;
+- acciones derivadas;
+- estado de resolución.
+
+---
+
+#### 29. Respuesta y hallazgo son distintos
+
+Se preserva:
+
+```text
+RESPONSE
+!=
+FINDING
+```
+
+Una respuesta puede:
+
+- ser conforme;
+- ser no conforme sin producir un hallazgo independiente si la política lo trata de otra forma;
+- producir uno o varios hallazgos;
+- requerir revisión antes de concluir.
+
+Un hallazgo puede apoyarse en varias respuestas y evidencias.
+
+---
+
+#### 30. Severidad y clasificación
+
+La severidad o clasificación de un hallazgo debe provenir de una política o plantilla aprobada.
+
+Esta tarea no define una escala universal.
+
+Cuando exista severidad, debe conservar:
+
+- versión de criterio;
+- resultado;
+- motivo;
+- impacto;
+- actor o mecanismo autorizado.
+
+Una etiqueta severa no sustituye la evidencia.
+
+---
+
+#### 31. Hallazgo crítico
+
+Un hallazgo crítico puede producir, según política:
+
+- contención inmediata;
+- restricción;
+- indisponibilidad;
+- mantenimiento;
+- obra;
+- escalamiento;
+- notificación;
+- nueva inspección.
+
+Pero se preserva:
+
+```text
+CRITICAL FINDING
+!=
+AUTOMATIC GLOBAL UNAVAILABILITY
+```
+
+El efecto sobre disponibilidad requiere alcance, regla y autoridad explícitos.
+
+---
+
+#### 32. Contención
+
+`FACILITY_INSPECTION_CONTAINMENT` es una medida inmediata destinada a limitar exposición, daño o uso mientras se resuelve el hallazgo.
+
+Debe conservar:
+
+- origen;
+- sujeto;
+- alcance;
+- motivo;
+- actor;
+- inicio;
+- medida aplicada;
+- evidencia;
+- restricciones;
+- condición de salida;
+- estado.
+
+Se preserva:
+
+```text
+CONTAINMENT
+!=
+CORRECTIVE ACTION COMPLETED
+```
+
+---
+
+#### 33. Acción correctiva
+
+`FACILITY_CORRECTIVE_ACTION` representa una obligación concreta para resolver o controlar un hallazgo.
+
+Debe poder conservar:
+
+- identidad;
+- hallazgo de origen;
+- sujeto;
+- acción requerida;
+- owner;
+- responsable;
+- prioridad cuando exista fuente aprobada;
+- fecha o condición objetivo;
+- evidencia requerida;
+- dependencias;
+- estado;
+- resultado;
+- verificación;
+- cierre.
+
+No se permiten acciones narrativas sin owner ni condición de salida.
+
+---
+
+#### 34. Owner de la acción
+
+El owner se determina por el objeto principal y la naturaleza del trabajo, no por la pantalla donde se detectó el hallazgo.
+
+La inspección conserva el hallazgo.
+
+El dominio receptor conserva la ejecución de su trabajo.
+
+Esta separación evita expedientes competidores.
+
+---
+
+#### 35. Handoffs de acción
+
+Los handoffs preservan el origen:
+
+| Trabajo principal requerido | Owner canónico |
+| --- | --- |
+| reparación o mantenimiento locativo | `NEXO-DOM-030` |
+| saneamiento | `NEXO-DOM-031` |
+| plagas | `NEXO-DOM-032` |
+| servicio, medidor o interrupción | `NEXO-DOM-033` |
+| metrología | `NEXO-DOM-035` |
+| llave o acceso físico | `NEXO-DOM-036` |
+| obra o adecuación | `NEXO-DOM-037` |
+| novedad locativa general | `NEXO-DOM-038` |
+| obligación, peligro o riesgo laboral | VISO/SST |
+
+El handoff no elimina el hallazgo original.
+
+---
+
+#### 36. Relación con orden de trabajo
+
+Cuando un hallazgo requiere trabajo técnico:
+
+```text
+FINDING
+→
+CORRECTIVE ACTION
+→
+WORK ORDER
+```
+
+es una relación posible, no una equivalencia.
+
+Se preserva:
+
+```text
+WORK ORDER CREATED
+!=
+FINDING RESOLVED
+```
+
+La acción espera el resultado del trabajo y la verificación requerida antes de cerrar.
+
+---
+
+#### 37. Ejecución de acción
+
+La ejecución de una acción debe conservar:
+
+- acción;
+- ejecutor;
+- momento;
+- trabajo realizado;
+- evidencia;
+- resultado declarado;
+- pendientes;
+- referencias a órdenes o dominios relacionados.
+
+Marcar una acción como realizada no demuestra eficacia.
+
+---
+
+#### 38. Verificación de eficacia
+
+`FACILITY_ACTION_VERIFICATION` determina si el resultado requerido fue realmente conseguido.
+
+Debe poder conservar:
+
+- acción;
+- hallazgo;
+- sujeto;
+- criterio;
+- evidencia;
+- verificador;
+- momento;
+- resultado;
+- necesidad de repetición o escalamiento.
+
+Se preserva:
+
+```text
+ACTION DONE
+!=
+EFFECTIVENESS VERIFIED
+!=
+ACTION CLOSED
+```
+
+---
+
+#### 39. Reinspección
+
+Una reinspección es una nueva ejecución relacionada con una inspección, hallazgo o acción previa.
+
+Debe conservar:
+
+- identidad propia;
+- plantilla y revisión aplicable;
+- relación con origen;
+- nuevo momento;
+- nuevas respuestas;
+- nueva evidencia;
+- nuevo resultado.
+
+No se edita la inspección anterior para aparentar que siempre fue conforme.
+
+---
+
+#### 40. Ejecución terminada y expediente resuelto
+
+Se preserva:
+
+```text
+INSPECTION EXECUTION COMPLETED
+!=
+FINDINGS RESOLVED
+!=
+ACTIONS VERIFIED
+!=
+CASE CLOSED
+```
+
+Una ejecución puede terminar con hallazgos y acciones abiertos.
+
+La finalización de captura no es cierre del riesgo operacional.
+
+---
+
+#### 41. Criterios mínimos de cierre de ejecución
+
+La ejecución puede considerarse reconciliada cuando, según política:
+
+1. los puntos de control esperados tienen respuesta o excepción explícita;
+2. las omisiones están justificadas;
+3. la evidencia requerida está presente o exceptuada;
+4. los hallazgos quedaron registrados;
+5. las contenciones requeridas quedaron registradas;
+6. las acciones requeridas tienen owner;
+7. los handoffs están correlacionados;
+8. el resultado quedó resuelto;
+9. restricciones y disponibilidad quedaron explícitas cuando corresponda;
+10. revisión o aprobación requerida quedó registrada.
+
+El cierre de acciones derivadas puede continuar después de la ejecución.
+
+---
+
+#### 42. Observación de condición
+
+Una inspección puede producir una observación de condición del sujeto locativo.
+
+La actualización debe conservar:
+
+- sujeto;
+- condición observada;
+- inspección;
+- momento;
+- actor o fuente;
+- evidencia;
+- condición previa conocida;
+- política aplicada.
+
+No se sobrescribe silenciosamente la historia de condición.
+
+---
+
+#### 43. Disponibilidad
+
+Una inspección puede contribuir a la proyección:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+cuando una política autoritativa lo determine.
+
+Toda restricción o indisponibilidad debe conservar:
+
+- sujeto;
+- alcance;
+- causa;
+- hallazgo;
+- regla;
+- momento;
+- autoridad;
+- condición de salida.
+
+---
+
+#### 44. Inspección aprobada y disponibilidad son distintas
+
+Se preserva:
+
+```text
+INSPECTION PASS
+!=
+GLOBAL AVAILABILITY
+```
+
+Un sujeto puede aprobar una inspección física y seguir restringido por:
+
+- saneamiento;
+- plagas;
+- servicios;
+- mantenimiento;
+- metrología;
+- obra;
+- acceso;
+- seguridad;
+- otra obligación vigente.
+
+La disponibilidad global conserva todas sus razones.
+
+---
+
+#### 45. Frontera con mantenimiento
+
+`NEXO-DOM-030` conserva plan, solicitud, orden de trabajo, reparación, prueba y liberación.
+
+La inspección detecta y documenta.
+
+El mantenimiento ejecuta el trabajo cuando corresponda.
+
+Se preserva:
+
+```text
+INSPECTION FINDING
+!=
+MAINTENANCE WORK
+```
+
+---
+
+#### 46. Frontera con saneamiento
+
+`NEXO-DOM-031` conserva procedimientos, químicos, ejecución, verificación, desviaciones y liberación sanitaria.
+
+Una inspección puede detectar una condición que requiera saneamiento.
+
+La acción de saneamiento conserva su expediente propietario y referencia al hallazgo.
+
+---
+
+#### 47. Frontera con plagas
+
+`NEXO-DOM-032` conserva programa, mapa, dispositivos, visitas, capturas, hallazgos especializados, acciones y certificados.
+
+Una inspección física general puede observar evidencia relacionada con plagas sin convertirse en visita especializada de control de plagas.
+
+---
+
+#### 48. Frontera con servicios
+
+`NEXO-DOM-033` conserva servicio, medidor, lectura, consumo, calidad, interrupción, alerta y contingencia.
+
+Una inspección puede comprobar condición física observable de un punto de servicio.
+
+No convierte una lectura o alerta de servicio en checklist locativo.
+
+---
+
+#### 49. Frontera con metrología
+
+`NEXO-DOM-035` conserva magnitud, rango, tolerancia, patrón, método, calibración, verificación, certificado e impacto fuera de tolerancia.
+
+Se preserva:
+
+```text
+PHYSICAL INSPECTION
+!=
+METROLOGICAL VERIFICATION
+```
+
+Una inspección puede detectar ausencia, daño, vencimiento visible o necesidad de revisión, pero no declara conformidad metrológica sin el expediente propietario.
+
+---
+
+#### 50. Frontera con acceso, obras y novedades
+
+`NEXO-DOM-036` conserva llaves y acceso físico.
+
+`NEXO-DOM-037` conserva obras y adecuaciones.
+
+`NEXO-DOM-038` conserva novedades locativas.
+
+Una inspección puede originar handoff a estos dominios, conservando siempre el hallazgo de origen y evitando un segundo expediente editable sobre el mismo trabajo.
+
+---
+
+#### 51. Frontera con SST
+
+La inspección locativa verifica condición física y aptitud operativa.
+
+VISO/SST conserva la evaluación de:
+
+- obligación laboral;
+- peligro;
+- exposición;
+- riesgo laboral;
+- cumplimiento SST;
+- acción preventiva propietaria;
+- eficacia de controles SST.
+
+NEXO no determina por sí solo que Vento cumple una obligación SST.
+
+---
+
+#### 52. Observación compartida
+
+Una misma observación física puede ser relevante para NEXO y SST.
+
+La regla es:
+
+```text
+ONE SOURCE OBSERVATION
++
+EXPLICIT CROSS-DOMAIN REFERENCES
+```
+
+No:
+
+```text
+TWO EDITABLE COPIES OF THE SAME OBSERVATION
+```
+
+Cada dominio conserva su decisión propia sobre esa observación.
+
+---
+
+#### 53. Inspección obligatoria SST y plantilla locativa
+
+Las plantillas SST pueden compartir patrones estructurales como versión, evidencia, hallazgo y acción.
+
+Eso no autoriza que NEXO se apropie de:
+
+- fundamento legal;
+- criterio de cumplimiento;
+- peligro laboral;
+- severidad SST;
+- decisión preventiva.
+
+La compatibilidad estructural no fusiona ownership.
+
+---
+
+#### 54. Acciones SST
+
+Cuando el hallazgo requiere una acción SST propietaria, el handoff debe conservar:
+
+- inspección locativa de origen;
+- observación;
+- evidencia permitida;
+- sujeto;
+- momento;
+- relación con la acción SST.
+
+El cierre de la acción SST no reescribe la inspección física.
+
+La verificación física de una reparación puede seguir perteneciendo a NEXO.
+
+---
+
+#### 55. Frontera con inspección técnica de activos
+
+`NEXO-DOM-026` conserva obligación y resultado de inspecciones técnicas de activos y otros sujetos físicos aplicables dentro de maintenance/serviceability.
+
+`NEXO-DOM-034` conserva la especialización completa de inspección física general de instalaciones mediante plantillas versionadas, hallazgos y acciones correctivas.
+
+El objeto principal decide el expediente propietario.
+
+---
+
+#### 56. AS-IS observable de validación LOC
+
+La superficie remota observable de `vento-nexo` incluye una validación física de LOC que ya captura, entre otros:
+
+- LOC seleccionado;
+- verificación de código;
+- descripción física;
+- dimensiones;
+- capacidad;
+- ambiente;
+- temperatura y humedad;
+- accesibilidad;
+- equipos disponibles;
+- estantería;
+- condición superficial;
+- incidencias;
+- acciones requeridas;
+- notas del auditor;
+- fotografías;
+- estado de validación.
+
+La superficie inserta registros de validación relacionados con `inventory_locations`.
+
+Por tanto, existe una base física real para reutilizar.
+
+---
+
+#### 57. Límites del AS-IS
+
+La superficie observable no demuestra por sí sola el contrato objetivo completo porque, en el código inspeccionado:
+
+- está centrada en LOC;
+- no se observó identidad de programa de inspección;
+- no se observó revisión de plantilla asociada a cada ejecución;
+- incidencias se capturan como colección textual;
+- acciones requeridas se capturan como texto;
+- no se observó lifecycle estructurado de hallazgo y acción correctiva;
+- no se observó verificación de eficacia;
+- no se observó handoff explícito por owner;
+- no se observó cobertura integral de todos los sujetos locativos;
+- no se observó frontera explícita con SST dentro de esa superficie.
+
+Esta lectura es una clasificación del código consultado, no una afirmación de ausencia absoluta fuera de las superficies inspeccionadas.
+
+---
+
+#### 58. Estrategia de adopción
+
+La estrategia canónica queda:
+
+```text
+REUSE OR REFACTOR CURRENT LOC PHYSICAL VALIDATION
++
+GENERALIZE TO STABLE LOCATIVE SUBJECTS
++
+ADD VERSIONED PROGRAM / TEMPLATE CONTRACT
++
+STRUCTURE FINDINGS / CONTAINMENT / ACTIONS
++
+PRESERVE SST BOUNDARY
+```
+
+Se reutiliza donde sea compatible:
+
+- selección locativa;
+- evidencia;
+- auditor;
+- condición;
+- dimensiones;
+- capacidad;
+- ambiente;
+- fotografías;
+- notas;
+- resultado de validación.
+
+Se refactoriza o construye donde falte:
+
+- programa;
+- plantilla y revisión;
+- obligación;
+- criterios versionados;
+- respuestas estructuradas;
+- hallazgos;
+- contención;
+- acciones;
+- handoffs;
+- verificación;
+- cierre;
+- idempotencia offline.
+
+---
+
+#### 59. Fuente histórica no confirmada
+
+La fuente actual o histórica completa de inspecciones de seguridad y salud permanece pendiente de confirmación en el registro vivo correspondiente.
+
+Por tanto:
+
+- no se asume que la superficie de LOC contiene toda la historia;
+- no se asume que un proveedor, archivo o sistema externo es fuente maestra;
+- no se diseña backfill desde una fuente no confirmada;
+- la definición objetivo puede cerrarse sin inventar historia.
+
+Esta limitación no bloquea el contrato documental.
+
+---
+
+#### 60. Reconciliación histórica
+
+Una materialización futura solo migrará hechos demostrados.
+
+No se permite inventar retrospectivamente:
+
+- plantilla;
+- revisión;
+- inspector;
+- respuesta;
+- evidencia;
+- hallazgo;
+- severidad;
+- contención;
+- acción;
+- verificación;
+- cierre;
+- efecto sobre disponibilidad.
+
+Los registros legacy incompletos conservan su limitación explícita.
+
+---
+
+#### 61. Idempotencia
+
+Toda mutación material deberá poder usar una identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra ejecución;
+- otra respuesta;
+- otra fotografía lógica;
+- otro hallazgo;
+- otra contención;
+- otra acción;
+- otra verificación;
+- otro cierre.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+---
+
+#### 62. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos ejecuciones incompatibles satisfaciendo la misma obligación sin relación explícita;
+- dos revisiones de plantilla aplicadas simultáneamente a una única ejecución;
+- respuestas finales contradictorias sin resolución;
+- cierre mientras faltan puntos obligatorios;
+- cierre de acción mientras la verificación bloqueante permanece pendiente;
+- disponibilidad favorable mientras existe un bloqueo vigente;
+- edición de un hallazgo que ya originó efectos sin conservar corrección.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según la materialización autorizada.
+
+---
+
+#### 63. Captura offline
+
+La operación de campo podrá capturar información offline cuando la arquitectura autorizada lo permita.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+INSPECTION RECONCILED
+!=
+ACTION CLOSED
+```
+
+La sincronización debe preservar:
+
+- operación;
+- plantilla y revisión;
+- sujeto;
+- momento efectivo;
+- respuestas;
+- evidencia;
+- hallazgos;
+- acciones.
+
+Reintentar no duplica efectos.
+
+---
+
+#### 64. Resultado desconocido
+
+Ante timeout, pérdida de conectividad o respuesta ambigua después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de crear otra ejecución, respuesta, evidencia, hallazgo, acción o cierre.
+
+La incertidumbre de transporte no justifica otro expediente.
+
+---
+
+#### 65. Corrección no destructiva
+
+Los errores se corrigen sin borrar historia material.
+
+No se sobrescriben silenciosamente:
+
+- plantilla o revisión;
+- sujeto;
+- inspector;
+- respuesta;
+- evidencia;
+- hallazgo;
+- severidad;
+- acción;
+- verificador;
+- timestamps materiales.
+
+La vista vigente puede proyectar el resultado corregido conservando el antes, motivo, actor y efecto.
+
+---
+
+#### 66. Historia y trazabilidad
+
+Debe ser posible reconstruir:
+
+- qué debía inspeccionarse;
+- con qué revisión;
+- quién inspeccionó;
+- qué sujeto fue observado;
+- qué respondió;
+- qué evidencia existía;
+- qué hallazgo surgió;
+- qué contención se aplicó;
+- qué acción se abrió;
+- a qué dominio se transfirió;
+- qué trabajo se ejecutó;
+- quién verificó;
+- qué condición y disponibilidad resultaron;
+- cuándo y por qué cerró.
+
+La auditoría no depende de texto libre aislado.
+
+---
+
+#### 67. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- obligaciones próximas;
+- obligaciones vencidas;
+- inspecciones ejecutadas;
+- cobertura de puntos de control;
+- puntos omitidos;
+- inspecciones inconclusas;
+- hallazgos abiertos;
+- hallazgos por sujeto y plantilla;
+- hallazgos repetidos;
+- contenciones vigentes;
+- acciones abiertas;
+- acciones vencidas;
+- acciones por owner;
+- tiempo hasta contención;
+- tiempo hasta acción;
+- tiempo hasta verificación;
+- eficacia fallida;
+- reinspecciones;
+- restricciones activas;
+- cierres pendientes.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 68. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| inspección está agendada | obligación o agenda; no ejecución |
+| se actualiza plantilla antes de ejecutar | usar revisión vigente conforme a la regla aplicable; no reescribir historia |
+| se actualiza plantilla después de ejecutar | la ejecución conserva su revisión original |
+| punto de control no aplica | registrar no aplicabilidad conforme a plantilla; no convertirlo en conforme |
+| punto no pudo observarse | registrar causa; la política decide si bloquea cierre |
+| se adjunta fotografía | evidencia; no resultado automático |
+| respuesta incumple criterio | producir o someter a decisión el hallazgo según regla |
+| hallazgo requiere cierre inmediato de zona | aplicar contención/restricción con regla y autoridad |
+| hallazgo requiere reparación | handoff a mantenimiento conservando origen |
+| hallazgo requiere limpieza | handoff a saneamiento conservando origen |
+| hallazgo requiere análisis SST | handoff a VISO/SST sin duplicar la observación |
+| orden de trabajo termina | acción aún requiere verificación si la política lo exige |
+| verificación falla | mantener o reabrir acción y registrar resultado |
+| reinspección pasa | nueva ejecución; no borrar la inspección previa |
+| inspección pasa | no garantiza disponibilidad global |
+| captura offline se reenvía | reconciliar por identidad; no duplicar |
+| fuente histórica no está confirmada | no inventar backfill |
+
+---
+
+#### 69. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. programa y plantilla son distintos;
+2. plantilla y ejecución son distintas;
+3. revisión vigente y revisión histórica son distintas;
+4. obligación y ejecución son distintas;
+5. inspección agendada y ejecutada son distintas;
+6. respuesta y hallazgo son distintos;
+7. evidencia y resultado son distintos;
+8. fotografía y cierre son distintos;
+9. hallazgo y acción son distintos;
+10. contención y solución definitiva son distintas;
+11. acción realizada y eficacia verificada son distintas;
+12. inspección terminada y acciones cerradas son distintas;
+13. reinspección no edita la inspección original;
+14. condición y disponibilidad son distintas;
+15. inspección aprobada y disponibilidad global son distintas;
+16. inspección locativa y cumplimiento SST son distintos;
+17. una observación compartida no se duplica como dos fuentes maestras;
+18. el handoff conserva el hallazgo de origen;
+19. una orden de trabajo no cierra por sí sola el hallazgo;
+20. una acción no queda sin owner ni condición de salida;
+21. captura offline no equivale a aceptación del servidor;
+22. reintentos no duplican efectos;
+23. correcciones no destruyen historia;
+24. fuentes históricas no confirmadas no se convierten en hechos.
+
+---
+
+#### 70. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver sujetos desde identidades autoritativas;
+- fijar plantilla y revisión antes de aceptar la ejecución;
+- validar competencia cuando la política lo requiera;
+- no confiar en severidad, cierre o disponibilidad enviados por cliente sin revalidación aplicable;
+- preservar actor y fuente;
+- validar que el owner de acción corresponda al trabajo;
+- impedir cierre con puntos o acciones bloqueantes pendientes;
+- impedir disponibilidad incompatible con restricciones vigentes;
+- aplicar idempotencia;
+- preservar evidencia sin ampliar acceso;
+- impedir que visibilidad de UI equivalga a permiso;
+- mantener separadas decisiones locativas y SST.
+
+La autorización detallada permanece en sus tareas propietarias.
+
+---
+
+#### 71. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- almacenamiento de evidencia;
+- plantillas y revisiones;
+- programación;
+- captura móvil;
+- operación offline;
+- integración con mantenimiento y SST;
+- UI;
+- migración controlada;
+- pruebas automatizadas;
+- validación operativa.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 72. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| validación LOC actual es parcial y específica | no | implementación NEXO posterior | adopción/refactor contra contrato aprobado |
+| fuente histórica completa de inspecciones SST no está confirmada | no | investigación o fuente propietaria correspondiente | evidencia suficiente antes de backfill |
+| plantillas reales por sede o riesgo no están materializadas | no | implementación y owners de política | revisiones aprobadas y migradas sin inventar historia |
+| autorización fina de crear, ejecutar, verificar y cerrar está pendiente | no | `NEXO-AUTH-031` y `NEXO-AUTH-032` | permisos y segregación materializados |
+| experiencia de inspecciones está pendiente | no | `NEXO-UX-046` | UI validada contra contrato |
+| metrología detallada continúa pendiente | no | `NEXO-DOM-035` | contrato metrológico aprobado y materializado posteriormente |
+| acciones SST conservan lifecycle propio | no | VISO/SST | integración sin fuente competidora |
+
+Ningún riesgo residual autoriza inventar plantillas, fuentes históricas, severidades ni owners.
+
+---
+
+#### 73. Vocabularios y reglas no inventados
+
+Esta tarea no fija sin fuente competente:
+
+- escalas universales de severidad;
+- umbrales de condición;
+- frecuencias universales;
+- listas regulatorias;
+- competencias profesionales;
+- tiempos máximos de corrección;
+- evidencia obligatoria universal;
+- reglas automáticas de indisponibilidad;
+- criterios SST.
+
+Cada valor material deberá provenir de programa, plantilla, política o autoridad propietaria.
+
+---
+
+#### 74. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- ejecuta inspecciones reales;
+- crea programas o plantillas productivas;
+- cambia disponibilidad real;
+- abre órdenes de trabajo reales;
+- ejecuta saneamiento, plagas, mantenimiento o servicios;
+- crea acciones SST reales;
+- determina cumplimiento normativo;
+- declara riesgos laborales;
+- define control metrológico de `NEXO-DOM-035`;
+- entrega llaves o credenciales físicas;
+- ejecuta obras;
+- cierra novedades locativas;
+- diseña la experiencia final de `NEXO-UX-046`;
+- ejecuta backfill;
+- inventa historia;
+- modifica el registro de requisitos de prueba;
+- autoriza materialización física.
+
+---
+
+#### 75. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya cubre inspecciones físicas mediante programa o plan, objeto y lugar, responsable, ejecución, evidencia, resultado, desviación, contención, verificación, disponibilidad y cierre;
+- la cobertura vigente ya exige identidad, condición, disponibilidad e historial de sujetos locativos;
+- la cobertura transversal SST ya protege inspecciones y acciones contra duplicación, conserva correlación de origen y exige evidencia y verificación de eficacia para el cierre;
+- la cobertura de instalaciones ya separa hallazgo, acción y cierre entre NEXO y otros dominios;
+- esta tarea desarrolla el contrato documental necesario para obligaciones ya registradas y no introduce una obligación verificable nueva fuera de ellas.
+
+---
+
+#### 76. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-017`, para identidad estable, condición, disponibilidad, responsable, historial y frontera locativa;
+- `TREQ-NEXO-018`, para inspecciones físicas, plan, lugar, responsable, ejecución, evidencia, desviación, contención, verificación, disponibilidad, cierre e idempotencia offline;
+- `TREQ-INTEGRATION-008`, para propiedad única del ciclo SST, no duplicación de inspecciones, acciones y evidencia, correlación de origen y verificación de eficacia;
+- `TREQ-INTEGRATION-018`, para coordinación entre NEXO, VISO/SST y otros owners, y separación de hallazgo, acción y cierre;
+- `TREQ-SUPABASE-002`, para integridad, concurrencia e idempotencia persistente cuando exista materialización física.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye actualización de 04A.
+
+---
+
+#### 77. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | se verificaron continuidad vigente después de `NEXO-DOM-033`, protocolo, contrato de entrega, manifest, rutas, topología, políticas de formato y desarrollo, owner, handoffs de `NEXO-DOM-026` y `NEXO-DOM-033`, `CAP-SCOPE-003`, `CAP-SCOPE-013`, 04A NEXO, 04A INTEGRATION, package scripts, preflight y validadores; en `vento-nexo` se observó una superficie física de validación LOC parcial |
+| OPERATIVA | NOT_APPLICABLE | no se ejecutan inspecciones, contenciones, acciones, handoffs, verificaciones ni cambios de disponibilidad reales durante la definición documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` están cubiertas por override `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 78. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] se preservan sujetos locativos estables;
+- [x] programa, plantilla, revisión, obligación y ejecución son distintos;
+- [x] cada ejecución conserva plantilla y revisión exactas;
+- [x] la plantilla puede expresar propósito, política, alcance, competencia, puntos de control, respuestas, evidencia, hallazgos, severidad, escalamiento y cierre;
+- [x] la programación no se confunde con ejecución;
+- [x] respuestas, omisiones, no aplicabilidad y evidencia permanecen distinguibles;
+- [x] una respuesta no se convierte automáticamente en hallazgo sin criterio;
+- [x] hallazgo conserva origen, sujeto, evidencia y decisión;
+- [x] severidad no se inventa ni sustituye evidencia;
+- [x] hallazgo crítico solo afecta disponibilidad mediante regla y autoridad;
+- [x] contención y acción correctiva permanecen separadas;
+- [x] toda acción tiene owner, responsable y condición de salida;
+- [x] handoffs preservan el hallazgo original;
+- [x] orden de trabajo no equivale a resolución;
+- [x] acción realizada no equivale a eficacia verificada;
+- [x] reinspección crea nueva ejecución;
+- [x] ejecución finalizada no equivale a acciones cerradas;
+- [x] condición y disponibilidad permanecen separadas;
+- [x] inspección aprobada no garantiza disponibilidad global;
+- [x] inspección locativa permanece separada de SST y cumplimiento;
+- [x] una observación compartida no crea fuentes maestras competidoras;
+- [x] inspección técnica de activos conserva frontera con `NEXO-DOM-026`;
+- [x] mantenimiento, saneamiento, plagas, servicios, metrología, acceso, obras y novedades conservan sus owners;
+- [x] la validación LOC actual se clasifica `REUSE_OR_REFACTOR`, no como contrato final;
+- [x] no se inventa backfill desde una fuente histórica no confirmada;
+- [x] se cubren idempotencia, concurrencia, offline, resultado desconocido y corrección;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 79. Handoff hacia `NEXO-DOM-035`
+
+`NEXO-DOM-034` entrega a `NEXO-DOM-035`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+VERSIONED INSPECTION PROGRAM
++
+VERSIONED INSPECTION TEMPLATE
++
+REPRODUCIBLE INSPECTION EXECUTION
++
+STRUCTURED RESPONSES AND EVIDENCE
++
+FINDING / CONTAINMENT / ACTION SEPARATION
++
+CROSS-DOMAIN HANDOFF WITH ORIGIN PRESERVED
++
+EFFECTIVENESS VERIFICATION
++
+CONDITION / AVAILABILITY IMPACT
++
+IDEMPOTENT OFFLINE FIELD CAPTURE
+```
+
+`NEXO-DOM-035` podrá reutilizar identidad, evidencia, inspección, hallazgo, acción, disponibilidad e idempotencia cuando sean compatibles, pero deberá definir de forma propia magnitud, rango, tolerancia, patrón, método, calibración, verificación, certificados, vencimientos e impacto fuera de tolerancia.
+
+Una inspección física general no se convierte en calibración o verificación metrológica solo para reutilizar el mismo expediente.
+
+---
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto`
+
 ### [ ] NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
 ### [ ] NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
 ### [ ] NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
