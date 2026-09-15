@@ -119,3 +119,92 @@ test('production_authorized=false rechaza un destino PRODUCTION', () => {
   assert.equal(assessment.valid, false);
   assert.match(assessment.errors.join(' '), /production_authorized=false/u);
 });
+
+test('una migración nueva exige autorizar la regeneración del manifiesto', () => {
+  const base = completeRecord();
+  const invalid = completeRecord({
+    physical_identity: {
+      targets: [
+        {
+          repository: 'vento-group-sas/vento-shell',
+          path: 'supabase/migrations/20260915000000_test.sql',
+          symbol_or_surface: 'api.test()',
+          operation: 'CREAR',
+        },
+        {
+          repository: 'vento-group-sas/vento-shell',
+          path: 'supabase/MIGRATION_MANIFEST.md',
+          symbol_or_surface: 'AUTH-DB-015 manifest',
+          operation: 'ADOPTAR_SIN_MODIFICAR',
+        },
+      ],
+    },
+    evidence_plan: {
+      ...base.evidence_plan,
+      tests: [{ command: 'npm run supabase:db:test:clean', expected_result: 'PASS' }],
+    },
+  });
+  const assessment = assessPackageGateRecord(invalid, { policy, taskPrerequisites: { remaining: 0 } });
+  assert.equal(assessment.valid, false);
+  assert.equal(assessment.sections.physical_identity, false);
+  assert.match(assessment.errors.join(' '), /MIGRATION_MANIFEST\.md no declara operation MODIFICAR/u);
+});
+
+test('una migración nueva exige un validador que compruebe el manifiesto', () => {
+  const base = completeRecord();
+  const invalid = completeRecord({
+    physical_identity: {
+      targets: [
+        {
+          repository: 'vento-group-sas/vento-shell',
+          path: 'supabase/migrations/20260915000000_test.sql',
+          symbol_or_surface: 'api.test()',
+          operation: 'CREAR',
+        },
+        {
+          repository: 'vento-group-sas/vento-shell',
+          path: 'supabase/MIGRATION_MANIFEST.md',
+          symbol_or_surface: 'AUTH-DB-015 manifest',
+          operation: 'MODIFICAR',
+        },
+      ],
+    },
+    evidence_plan: {
+      ...base.evidence_plan,
+      tests: [{ command: 'npm test', expected_result: 'PASS' }],
+    },
+  });
+  const assessment = assessPackageGateRecord(invalid, { policy, taskPrerequisites: { remaining: 0 } });
+  assert.equal(assessment.valid, false);
+  assert.equal(assessment.sections.evidence_plan, false);
+  assert.match(assessment.errors.join(' '), /debe validar el manifiesto/u);
+});
+
+test('una migración nueva coherente reutiliza el clean replay como único check de manifiesto', () => {
+  const base = completeRecord();
+  const coherent = completeRecord({
+    physical_identity: {
+      targets: [
+        {
+          repository: 'vento-group-sas/vento-shell',
+          path: 'supabase/migrations/20260915000000_test.sql',
+          symbol_or_surface: 'api.test()',
+          operation: 'CREAR',
+        },
+        {
+          repository: 'vento-group-sas/vento-shell',
+          path: 'supabase/MIGRATION_MANIFEST.md',
+          symbol_or_surface: 'AUTH-DB-015 manifest',
+          operation: 'MODIFICAR',
+        },
+      ],
+    },
+    evidence_plan: {
+      ...base.evidence_plan,
+      tests: [{ command: 'npm run supabase:db:test:clean', expected_result: 'PASS' }],
+    },
+  });
+  const assessment = assessPackageGateRecord(coherent, { policy, taskPrerequisites: { remaining: 0 } });
+  assert.equal(assessment.valid, true);
+  assert.equal(assessment.dossier_complete, true);
+});

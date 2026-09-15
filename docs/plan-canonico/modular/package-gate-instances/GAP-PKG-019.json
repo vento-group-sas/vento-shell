@@ -3,7 +3,7 @@
   "package_id": "GAP-PKG-019",
   "status": "APPROVED_FOR_IMPLEMENTATION",
   "created_at": "2026-09-13T04:41:33.604Z",
-  "updated_at": "2026-09-13T13:42:47.250Z",
+  "updated_at": "2026-09-15T22:40:38.671Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "DATABASE_RPC_BOUNDARY",
@@ -67,7 +67,7 @@
         "repository": "vento-group-sas/vento-shell",
         "path": "supabase/MIGRATION_MANIFEST.md",
         "symbol_or_surface": "AUTH-DB-015 canonical migration manifest authority",
-        "operation": "ADOPTAR_SIN_MODIFICAR"
+        "operation": "MODIFICAR"
       },
       {
         "repository": "vento-group-sas/vento-shell",
