@@ -38985,7 +38985,1700 @@ El expediente de plagas no se modela como una rutina de saneamiento solo para re
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados`
 
-### [ ] NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
+### ✅ NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
+**Tarea siguiente:** NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
+**Tipo de tarea:** documental; definición canónica del control de plagas mediante programa y mapa versionados, puntos y dispositivos identificados, proveedor y habilitaciones, visitas planificadas y ejecutadas, productos y fichas, capturas, tendencias, hallazgos, acciones, restricciones, reingreso, liberación, certificados, informes y vencimientos, preservando el expediente interno de NEXO aunque la ejecución especializada sea externa y sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna el control de plagas de Vento Group sin convertir al proveedor externo en fuente maestra del estado interno de las instalaciones y sin confundir programa, mapa, dispositivo, visita, observación, tendencia, hallazgo, acción, restricción, liberación, informe ni certificado.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+PROGRAMA DE CONTROL VERSIONADO
++
+MAPA VERSIONADO
++
+PUNTOS Y DISPOSITIVOS IDENTIFICADOS
++
+PROVEEDOR Y HABILITACIONES VIGENTES CUANDO APLIQUE
++
+VISITA PLANIFICADA
++
+EJECUCIÓN OBSERVABLE
++
+CAPTURAS Y EVIDENCIA
++
+HALLAZGOS
++
+ACCIONES
++
+RESTRICCIONES Y REINGRESO CUANDO APLIQUE
++
+LIBERACIÓN AUTORIZADA
++
+INFORMES Y CERTIFICADOS TRAZABLES
+→
+CONTROL DE PLAGAS REPRODUCIBLE Y AUDITABLE
+```
+
+No:
+
+```text
+VISITA PROGRAMADA = VISITA EJECUTADA
+```
+
+No:
+
+```text
+INFORME DEL PROVEEDOR = ACEPTACIÓN INTERNA = LIBERACIÓN
+```
+
+No:
+
+```text
+CAPTURA = TENDENCIA = HALLAZGO = ACCIÓN CERRADA
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-032` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. adopta la identidad locativa estable de `NEXO-DOM-029`;
+2. reutiliza de `NEXO-DOM-031` evidencia, desviación, idempotencia, operación offline y semántica de liberación cuando son compatibles;
+3. define un programa de control de plagas versionado con alcance, responsable, proveedor aplicable, dispositivos, frecuencias, visitas, evidencia y criterios de seguimiento;
+4. define un mapa versionado que referencia sujetos locativos, puntos y dispositivos sin convertirse en una jerarquía física paralela;
+5. define identidad interna estable para puntos y dispositivos incluso cuando el proveedor utilice códigos externos;
+6. conserva instalación, traslado, reemplazo, retiro y vigencia de dispositivos sin sobrescribir historia;
+7. separa visita planificada de visita efectivamente ejecutada;
+8. conserva proveedor y habilitaciones como referencias vigentes sin conceder al proveedor autoridad sobre disponibilidad interna;
+9. distingue producto declarado, ficha aplicable, producto de inventario interno y material suministrado por tercero;
+10. conserva capturas y observaciones como hechos fuente;
+11. define tendencias como proyecciones derivadas y no como sustitutos de las capturas;
+12. define hallazgos como conclusiones trazables vinculadas a evidencia;
+13. define acciones correctivas o preventivas con owner, condición de salida y relación causal;
+14. conserva restricciones, tiempos de reingreso y liberación cuando resulten aplicables;
+15. separa visita terminada, acción resuelta, certificado recibido y expediente cerrado;
+16. conserva certificados, informes y vencimientos con origen, vigencia y relación al expediente;
+17. mantiene la ejecución especializada externa separada del gobierno interno de NEXO;
+18. preserva fronteras con saneamiento, mantenimiento, inspecciones, obras, novedades, compras, finanzas y autorización;
+19. define idempotencia, concurrencia, offline y reconciliación de resultados desconocidos;
+20. no crea ni modifica requisitos de prueba porque la conducta está cubierta por requisitos canónicos vigentes;
+21. no autoriza tablas, migraciones, RLS, RPC, Server Actions, UI, datos, Supabase, integraciones reales, paquetes ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.05 — Controlar plagas`;
+- `NEXO-DOM-029`, para identidad, jerarquía, relaciones, condición y disponibilidad de instalaciones y espacios;
+- `NEXO-DOM-030`, para reglas transversales de expediente, evidencia, aceptación, liberación, cierre y reapertura;
+- `NEXO-DOM-031`, para programa versionado, evidencia, desviaciones, restricciones, liberación e idempotencia offline;
+- `VPROC-0055`, como proceso canónico que mantiene instalaciones aptas, seguras y operativas mediante limpieza, inspección, mantenimiento, control de plagas, servicios y cierre de novedades;
+- `NEXO-AUTH-031` y `NEXO-AUTH-032`, como owners posteriores de autorización y segregación;
+- `NEXO-UX-045`, como owner posterior de experiencia para limpieza, saneamiento, plagas y evidencia por área;
+- `INT-EXT-001` a `INT-EXT-020`, como ámbito propietario de integración externa;
+- el registro canónico de requisitos de prueba vigente;
+- la ausencia de evidencia remota suficiente para declarar ya implementado un expediente especializado de control de plagas en `vento-nexo`.
+
+Esta tarea define el contrato del dominio. No diseña endpoints, webhooks, credenciales, adaptadores ni portales del proveedor.
+
+---
+
+#### 4. Decisión de cobertura
+
+`CAP-13.05` conserva tratamiento:
+
+```text
+INTEGRATE_EXTERNAL
+```
+
+con propiedad objetivo:
+
+```text
+NEXO + PROVEEDOR ESPECIALIZADO
+```
+
+La interpretación canónica es:
+
+```text
+EJECUCIÓN ESPECIALIZADA PUEDE SER EXTERNA
++
+EXPEDIENTE, ACCIONES, RESTRICCIONES,
+CONDICIÓN Y DISPONIBILIDAD SIGUEN SIENDO INTERNOS
+```
+
+El tercero aporta ejecución y evidencia dentro del alcance autorizado.
+
+El tercero no se convierte en maestro de instalación, disponibilidad, acción interna, aceptación técnica ni cierre empresarial.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. no existía expediente interno completo de programa, mapa, dispositivos, visitas, hallazgos y acciones;
+2. un mapa del proveedor podía convertirse de hecho en la única fuente de ubicación de dispositivos;
+3. los códigos del proveedor podían reemplazar la identidad interna estable;
+4. una visita programada podía confundirse con una visita realizada;
+5. una visita realizada podía darse por cerrada sin conciliar todos sus dispositivos y evidencia;
+6. capturas, tendencias y hallazgos podían mezclarse como un mismo dato;
+7. un hallazgo podía quedar sin acción, owner o condición de salida;
+8. una acción podía marcarse cerrada únicamente porque llegó un informe;
+9. restricciones o tiempos de reingreso podían quedar fuera del estado operativo interno;
+10. un certificado podía tratarse como liberación automática;
+11. vigencias o vencimientos podían depender solo de documentos externos sin trazabilidad;
+12. reintentos, captura offline o respuestas ambiguas podían duplicar visitas, observaciones, evidencia o cierres;
+13. la contratación comercial podía confundirse con aceptación técnica;
+14. el proveedor podía mantener una copia editable competidora del expediente interno;
+15. control de plagas podía absorber indebidamente saneamiento, mantenimiento u obras;
+16. una acción derivada podía perder el vínculo causal con visita, dispositivo o hallazgo.
+
+---
+
+#### 6. Ámbito del contrato
+
+El contrato aplica al gobierno interno del control de plagas en sujetos físicos ya reconocidos por la jerarquía locativa canónica.
+
+El alcance puede relacionar:
+
+- instalaciones;
+- espacios;
+- zonas físicas;
+- áreas operativas;
+- puntos específicos de monitoreo o control;
+- componentes fijos cuando exista relación material;
+- otros sujetos locativos expresamente autorizados por la política propietaria.
+
+El programa no crea una segunda jerarquía territorial.
+
+Todo punto y dispositivo debe referenciar un sujeto locativo autoritativo.
+
+---
+
+#### 7. Componentes conceptuales
+
+El expediente distingue al menos:
+
+```text
+PEST_CONTROL_PROGRAM
+PEST_CONTROL_MAP
+PEST_CONTROL_POINT
+PEST_CONTROL_DEVICE
+PROVIDER_QUALIFICATION
+PEST_CONTROL_VISIT
+PEST_CAPTURE
+PEST_TREND
+PEST_FINDING
+PEST_ACTION
+PEST_RESTRICTION
+PEST_RELEASE
+PEST_REPORT
+PEST_CERTIFICATE
+PEST_CONTROL_CLOSURE
+```
+
+La materialización física futura podrá usar nombres técnicos distintos, pero no podrá colapsar estos conceptos cuando su separación sea material para auditoría, integración, seguridad, disponibilidad o conciliación.
+
+---
+
+#### 8. Programa de control de plagas
+
+`PEST_CONTROL_PROGRAM` es la regla versionada que gobierna el alcance del control de plagas para uno o más sujetos autorizados.
+
+Debe poder conservar:
+
+- identidad estable;
+- versión;
+- vigencia;
+- alcance locativo;
+- responsable interno;
+- proveedor cuando aplique;
+- referencia a habilitaciones aplicables cuando correspondan;
+- puntos y dispositivos incluidos;
+- frecuencia o regla de visitas;
+- evidencia mínima;
+- productos o reglas de producto cuando apliquen;
+- reglas de seguimiento;
+- criterios para generar acciones;
+- restricciones aplicables;
+- criterio o autoridad de liberación cuando corresponda;
+- documentos esperados;
+- regla para la siguiente obligación o visita.
+
+No se infiere un programa desde un contrato comercial o una próxima fecha aislada.
+
+---
+
+#### 9. Versionado del programa
+
+Una modificación material del alcance del programa deberá preservar revisión.
+
+Cambios materiales incluyen, cuando correspondan:
+
+- sujetos cubiertos;
+- puntos;
+- estrategia de monitoreo;
+- dispositivos requeridos;
+- frecuencia;
+- proveedor;
+- requisitos de habilitación;
+- evidencia mínima;
+- producto o regla de producto;
+- método de captura;
+- criterio de hallazgo;
+- regla de acción;
+- restricción;
+- liberación;
+- documentos requeridos.
+
+La revisión nueva no reescribe visitas, capturas, hallazgos, acciones, restricciones, liberaciones ni certificados históricos.
+
+---
+
+#### 10. Mapa de control de plagas
+
+`PEST_CONTROL_MAP` es una proyección versionada de puntos y dispositivos sobre la referencia locativa vigente.
+
+Debe poder identificar:
+
+- versión;
+- vigencia;
+- sede o alcance;
+- sujeto locativo;
+- punto interno;
+- dispositivo relacionado;
+- código visible cuando exista;
+- estado de relación;
+- fecha efectiva;
+- referencias de ubicación suficientes para reproducir la posición.
+
+El mapa no sustituye la jerarquía locativa de `NEXO-DOM-029`.
+
+---
+
+#### 11. Mapa y realidad física
+
+Se preserva:
+
+```text
+MAP
+!=
+PHYSICAL HIERARCHY
+!=
+DEVICE
+```
+
+El mapa es una representación.
+
+El punto es una identidad de monitoreo o control dentro del programa.
+
+El dispositivo es el elemento físico relacionado con ese punto cuando exista.
+
+Modificar el mapa no mueve por sí solo un dispositivo físico.
+
+Mover un dispositivo requiere un hecho efectivo trazable.
+
+---
+
+#### 12. Versionado del mapa
+
+Cambiar la distribución de puntos o dispositivos debe preservar la versión previa cuando ya exista evidencia producida contra ella.
+
+Toda visita deberá poder reconstruir qué mapa era aplicable en su fecha efectiva.
+
+No se reasignan retroactivamente capturas históricas a la ubicación actual de un dispositivo trasladado.
+
+---
+
+#### 13. Punto de control
+
+`PEST_CONTROL_POINT` es una identidad interna estable para un lugar de monitoreo o control definido por el programa.
+
+Debe poder conservar:
+
+- identificador interno;
+- sujeto locativo;
+- referencia espacial;
+- propósito;
+- vigencia;
+- dispositivo actual cuando aplique;
+- código externo relacionado cuando exista;
+- historial de cambios.
+
+Un punto no crea una nueva instalación ni una nueva zona territorial por defecto.
+
+---
+
+#### 14. Dispositivo
+
+`PEST_CONTROL_DEVICE` representa un elemento físico utilizado para monitoreo o control cuando el programa lo requiera.
+
+Debe poder conservar:
+
+- identidad interna estable;
+- clase o tipo declarado sin imponer una taxonomía universal en esta tarea;
+- código visible interno cuando exista;
+- código del proveedor cuando exista;
+- punto actual;
+- sujeto locativo;
+- fecha de instalación;
+- historial de traslado;
+- historial de reemplazo;
+- fecha de retiro;
+- estado operacional;
+- proveedor cuando aplique;
+- evidencia relevante;
+- observaciones o restricciones aplicables.
+
+---
+
+#### 15. Identidad interna y código del proveedor
+
+Se preserva:
+
+```text
+INTERNAL DEVICE ID
+!=
+PROVIDER DEVICE CODE
+```
+
+Un código asignado por un proveedor puede cambiar, duplicarse entre proveedores o desaparecer al cambiar de contrato.
+
+Por tanto:
+
+- NEXO conserva identidad interna estable;
+- el código externo se trata como referencia;
+- una migración de proveedor no reescribe historia;
+- una visita histórica conserva el código externo observado y la identidad interna relacionada.
+
+---
+
+#### 16. Alta de punto o dispositivo
+
+El alta deberá poder conservar:
+
+- programa y revisión;
+- sujeto;
+- ubicación;
+- fecha efectiva;
+- actor o fuente;
+- proveedor cuando aplique;
+- evidencia;
+- motivo o decisión de inclusión.
+
+Crear un registro digital no demuestra instalación física.
+
+Cuando el programa exija instalación efectiva deberá existir evidencia o confirmación apropiada.
+
+---
+
+#### 17. Traslado
+
+El traslado de un punto lógico o dispositivo físico debe conservar:
+
+- origen;
+- destino;
+- fecha efectiva;
+- motivo;
+- actor;
+- evidencia;
+- mapa anterior;
+- mapa resultante.
+
+Se preserva:
+
+```text
+RELOCATION
+!=
+EDIT CURRENT LOCATION WITHOUT HISTORY
+```
+
+---
+
+#### 18. Reemplazo
+
+Reemplazar un dispositivo no implica que el dispositivo anterior nunca existió.
+
+Debe preservarse:
+
+- identidad anterior;
+- identidad nueva;
+- motivo;
+- fecha;
+- punto;
+- evidencia;
+- continuidad de capturas;
+- efecto sobre el mapa.
+
+No se reutiliza silenciosamente la identidad del dispositivo retirado para el reemplazo.
+
+---
+
+#### 19. Retiro
+
+El retiro conserva:
+
+- dispositivo;
+- punto;
+- fecha;
+- motivo;
+- actor o fuente;
+- evidencia;
+- estado resultante del punto;
+- necesidad de reemplazo cuando corresponda.
+
+Un dispositivo retirado no se elimina para limpiar el mapa histórico.
+
+---
+
+#### 20. Proveedor especializado
+
+El proveedor especializado puede ejecutar actividades autorizadas y aportar evidencia.
+
+NEXO conserva como autoridad interna:
+
+- programa;
+- mapa;
+- puntos;
+- dispositivos;
+- visita esperada;
+- aceptación de evidencia;
+- hallazgos internos;
+- acciones;
+- restricciones;
+- liberación;
+- condición;
+- disponibilidad;
+- cierre.
+
+Se preserva:
+
+```text
+EXTERNAL EXECUTION
+!=
+INTERNAL AUTHORITY
+```
+
+---
+
+#### 21. Habilitaciones del proveedor
+
+Cuando una política, contrato o requisito aplicable exija una habilitación, competencia o documento vigente del proveedor, el expediente debe poder conservar:
+
+- tipo de requisito;
+- proveedor;
+- documento o referencia;
+- emisor o fuente cuando corresponda;
+- vigencia;
+- evidencia;
+- estado de revisión;
+- alcance.
+
+Esta tarea no inventa una lista universal de licencias ni requisitos regulatorios.
+
+La fuente competente determina qué habilitación aplica.
+
+---
+
+#### 22. Vigencia de habilitaciones
+
+Una habilitación vencida no se vuelve vigente por existir una visita programada.
+
+Si la política exige vigencia para ejecutar:
+
+```text
+REQUIRED QUALIFICATION NOT VALID
+→
+NO AUTHORIZED EXECUTION
+```
+
+salvo excepción formalmente autorizada por la política propietaria.
+
+La excepción conserva motivo, autoridad, vigencia y condición de salida.
+
+---
+
+#### 23. Frontera con contratación
+
+La contratación, cotización, orden comercial y recepción empresarial pertenecen al dominio propietario de compras y abastecimiento cuando correspondan.
+
+NEXO conserva el expediente técnico y operativo.
+
+Se preserva:
+
+```text
+CONTRACT ACTIVE
+!=
+VISIT EXECUTED
+!=
+TECHNICAL ACCEPTANCE
+```
+
+Un proveedor contratado no se considera ejecutado ni aceptado por existir una orden comercial.
+
+---
+
+#### 24. Visita planificada
+
+Una visita planificada debe poder conservar:
+
+- identidad estable;
+- programa y revisión;
+- mapa o revisión aplicable;
+- proveedor;
+- ventana esperada;
+- alcance;
+- puntos y dispositivos esperados;
+- productos o actividades previstas cuando apliquen;
+- evidencia requerida;
+- restricciones previstas;
+- documentos esperados.
+
+La planificación no demuestra presencia del proveedor ni trabajo realizado.
+
+---
+
+#### 25. Visita ejecutada
+
+`PEST_CONTROL_VISIT` registra el hecho de ejecución.
+
+Debe poder conservar:
+
+- visita planificada de origen cuando exista;
+- programa y revisión;
+- mapa o revisión aplicable;
+- sujeto y alcance;
+- proveedor;
+- técnicos o ejecutores declarados cuando corresponda;
+- inicio y fin reales;
+- puntos y dispositivos atendidos;
+- productos declarados cuando apliquen;
+- evidencia;
+- capturas;
+- incidencias;
+- restricciones informadas;
+- documentos entregados;
+- resultado informado.
+
+---
+
+#### 26. Visita programada y ejecutada son distintas
+
+Se preserva:
+
+```text
+SCHEDULED VISIT
+!=
+EXECUTED VISIT
+```
+
+Reprogramar conserva la obligación original, motivo y nueva ventana.
+
+Cancelar una visita no satisface automáticamente una obligación.
+
+Registrar un documento del proveedor no crea retroactivamente una visita si el hecho no puede demostrarse.
+
+---
+
+#### 27. Cobertura de la visita
+
+La implementación futura deberá poder reconciliar lo esperado contra lo ejecutado.
+
+Debe ser posible determinar:
+
+- puntos esperados;
+- puntos atendidos;
+- puntos omitidos;
+- dispositivos esperados;
+- dispositivos inspeccionados o intervenidos;
+- dispositivos no localizados;
+- nuevos dispositivos detectados;
+- cambios de ubicación;
+- evidencia faltante.
+
+Una visita no se considera completa solo porque tenga hora de cierre.
+
+---
+
+#### 28. Productos y fichas
+
+Cuando la visita use o declare productos, el expediente debe poder relacionar:
+
+- identidad del producto cuando exista fuente interna autoritativa;
+- nombre declarado por el proveedor;
+- ficha aplicable;
+- lote cuando esté disponible y sea requerido por política;
+- cantidad o aplicación cuando corresponda;
+- restricciones;
+- fuente de la información.
+
+Esta tarea no crea una taxonomía universal de productos para plagas.
+
+---
+
+#### 29. Producto del proveedor e inventario interno
+
+Se preserva:
+
+```text
+PROVIDER-SUPPLIED PRODUCT
+!=
+VENTO INVENTORY CONSUMPTION
+```
+
+Si el proveedor suministra y utiliza su propio producto, NEXO conserva la declaración y evidencia necesarias sin fabricar un movimiento de inventario de Vento.
+
+Si Vento entrega o consume un producto gobernado por su inventario, el efecto deberá correlacionarse con el contrato canónico de inventario.
+
+---
+
+#### 30. Fichas y restricciones
+
+Una ficha, documento técnico o condición de uso puede gobernar restricciones de aplicación, reingreso o liberación cuando la política competente lo determine.
+
+NEXO conserva la referencia utilizada.
+
+La tarea no interpreta ni sustituye instrucciones técnicas de una ficha.
+
+Una ficha externa no se transforma en política interna sin revisión cuando tal revisión sea requerida.
+
+---
+
+#### 31. Captura
+
+`PEST_CAPTURE` representa una observación o medición fuente asociada a un punto, dispositivo, visita o período.
+
+Debe poder conservar, según aplicabilidad:
+
+- identidad estable;
+- visita;
+- punto;
+- dispositivo;
+- momento;
+- observador o fuente;
+- tipo de observación;
+- valor o conteo cuando exista;
+- unidad o forma de expresión cuando aplique;
+- evidencia;
+- observaciones;
+- calidad o limitación conocida.
+
+Esta tarea no inventa unidades ni escalas universales de captura.
+
+---
+
+#### 32. Captura y hallazgo son distintos
+
+Se preserva:
+
+```text
+CAPTURE
+!=
+FINDING
+```
+
+La captura es un hecho observado.
+
+El hallazgo es una conclusión o condición identificada a partir de una o más capturas, evidencia, inspección o criterio aplicable.
+
+Una captura aislada no se convierte automáticamente en hallazgo crítico sin una regla propietaria.
+
+---
+
+#### 33. Tendencia
+
+`PEST_TREND` es una proyección derivada de capturas históricas comparables.
+
+Debe conservar:
+
+- población de datos fuente;
+- período;
+- sujeto, punto o alcance;
+- método o regla;
+- resultado;
+- momento de cálculo;
+- versión cuando el cálculo sea material.
+
+Se preserva:
+
+```text
+TREND
+!=
+SOURCE CAPTURE
+```
+
+Una tendencia puede recalcularse; las capturas fuente no se reescriben.
+
+---
+
+#### 34. Uso de tendencias
+
+Una tendencia puede apoyar:
+
+- revisión de frecuencia;
+- reubicación de puntos;
+- revisión de dispositivo;
+- nueva visita;
+- hallazgo;
+- acción;
+- escalamiento.
+
+La tarea no fija umbrales universales de tendencia.
+
+Todo umbral material debe provenir de una política, procedimiento o criterio aprobado.
+
+---
+
+#### 35. Hallazgo
+
+`PEST_FINDING` representa una condición identificada que requiere aceptación, seguimiento, acción o cierre explícito.
+
+Debe poder conservar:
+
+- identidad;
+- visita o fuente;
+- sujeto;
+- punto o dispositivo;
+- evidencia;
+- capturas relacionadas;
+- tendencia relacionada cuando aplique;
+- descripción;
+- clasificación o severidad cuando exista fuente aprobada;
+- impacto informado;
+- responsable de evaluación;
+- decisión;
+- acciones derivadas;
+- estado de resolución.
+
+---
+
+#### 36. Hallazgo no equivale a acción
+
+Se preserva:
+
+```text
+FINDING
+!=
+ACTION
+```
+
+Un hallazgo puede producir cero, una o varias acciones conforme a la decisión autorizada.
+
+Una acción puede resolver varios hallazgos únicamente cuando la relación causal quede explícita y la política lo permita.
+
+Cerrar una acción no borra el hallazgo.
+
+---
+
+#### 37. Acción
+
+`PEST_ACTION` es una obligación concreta derivada de programa, visita, hallazgo, tendencia o incumplimiento.
+
+Debe poder conservar:
+
+- identidad;
+- origen;
+- sujeto;
+- alcance;
+- owner;
+- responsable;
+- prioridad cuando exista fuente aprobada;
+- acción requerida;
+- fecha o condición objetivo;
+- evidencia requerida;
+- dependencias;
+- estado;
+- resolución;
+- verificación;
+- cierre.
+
+No se dejan acciones narrativas sin owner ni condición de salida.
+
+---
+
+#### 38. Tipos de acción y owner
+
+La acción conserva el owner del trabajo que realmente debe realizarse.
+
+Puede permanecer dentro de control de plagas o hacer handoff a otro dominio.
+
+Ejemplos de frontera:
+
+- ajuste de programa o dispositivo → control de plagas;
+- limpieza o saneamiento operacional → `NEXO-DOM-031`;
+- reparación de componente fijo → `NEXO-DOM-030`;
+- obra o adecuación material → `NEXO-DOM-037`;
+- novedad locativa general → `NEXO-DOM-038`;
+- compra o contratación → dominio propietario de abastecimiento;
+- condición SST → dominio propietario de SST.
+
+El handoff conserva el hallazgo de origen.
+
+---
+
+#### 39. Acción externa
+
+Una acción asignada al proveedor externo no concede acceso irrestricto ni autoridad de cierre interno.
+
+Debe conservar:
+
+- alcance autorizado;
+- proveedor;
+- instrucción o referencia;
+- fecha;
+- evidencia;
+- resultado declarado;
+- revisión interna requerida;
+- pendientes.
+
+Se preserva:
+
+```text
+PROVIDER MARKED DONE
+!=
+INTERNAL ACTION CLOSED
+```
+
+---
+
+#### 40. Restricción
+
+`PEST_RESTRICTION` conserva una limitación temporal o condicional de uso derivada de una intervención, producto, hallazgo o condición.
+
+Debe poder indicar:
+
+- sujeto y alcance;
+- origen;
+- motivo;
+- inicio;
+- regla o momento de finalización;
+- restricciones de acceso o uso;
+- evidencia;
+- autoridad;
+- condición de salida.
+
+La restricción no se borra al recibir un certificado.
+
+---
+
+#### 41. Tiempo de reingreso
+
+Cuando exista un tiempo o condición de reingreso aplicable, debe provenir de la fuente competente y conservarse como dato trazable del expediente.
+
+La tarea no inventa tiempos estándar.
+
+Se preserva:
+
+```text
+VISIT FINISHED
+!=
+REENTRY ALLOWED
+```
+
+La finalización de la visita no habilita automáticamente el espacio.
+
+---
+
+#### 42. Liberación
+
+`PEST_RELEASE` es la decisión autorizada sobre la aptitud del alcance para volver al uso desde la perspectiva del control de plagas.
+
+Debe poder conservar:
+
+- sujeto;
+- restricción relacionada;
+- visita;
+- hallazgos relevantes;
+- acciones bloqueantes;
+- evidencia;
+- condición de reingreso;
+- decisión;
+- autoridad;
+- momento;
+- restricciones residuales;
+- pendientes.
+
+---
+
+#### 43. Liberación y disponibilidad
+
+Se preserva:
+
+```text
+PEST RELEASE
+!=
+GLOBAL AVAILABILITY
+```
+
+Un espacio liberado desde control de plagas puede seguir `RESTRICTED` o `UNAVAILABLE` por saneamiento, mantenimiento, servicios, obra, seguridad u otra causa.
+
+Una restricción bloqueante de plagas impide proyectar disponibilidad incompatible mientras permanezca vigente.
+
+---
+
+#### 44. Certificado
+
+`PEST_CERTIFICATE` representa un documento emitido por una fuente identificada y relacionado con una actividad o período.
+
+Debe poder conservar:
+
+- identificador interno;
+- proveedor o emisor;
+- referencia externa;
+- tipo documental;
+- fecha de emisión;
+- alcance;
+- visita o servicio relacionado;
+- vigencia o vencimiento cuando existan;
+- archivo o evidencia;
+- estado de revisión;
+- observaciones.
+
+---
+
+#### 45. Certificado no equivale a ejecución ni liberación
+
+Se preserva:
+
+```text
+CERTIFICATE RECEIVED
+!=
+VISIT EXECUTED
+!=
+TECHNICAL ACCEPTANCE
+!=
+RELEASE
+```
+
+Un certificado puede ser evidencia.
+
+No sustituye capturas, hallazgos, acciones, restricciones ni aceptación cuando éstos sean requeridos.
+
+---
+
+#### 46. Informe
+
+`PEST_REPORT` conserva el contenido documental de una visita, período, análisis o servicio.
+
+Debe poder relacionarse con:
+
+- proveedor;
+- visita;
+- puntos y dispositivos;
+- capturas;
+- hallazgos;
+- recomendaciones;
+- acciones;
+- restricciones;
+- certificados.
+
+Un informe puede declarar hechos externos, pero los hechos internos relevantes deben quedar correlacionados en el expediente de NEXO.
+
+---
+
+#### 47. Vencimientos
+
+Los documentos o habilitaciones que tengan vigencia deben conservar su vencimiento explícito.
+
+Se preserva:
+
+```text
+DOCUMENT EXISTS
+!=
+DOCUMENT VALID NOW
+```
+
+No se infiere una vigencia cuando la fuente no la declara.
+
+El vencimiento puede generar una obligación, alerta o bloqueo si una política propietaria así lo establece.
+
+---
+
+#### 48. Cierre de visita y cierre de expediente
+
+La visita puede terminar mientras permanecen hallazgos o acciones abiertos.
+
+Se preserva:
+
+```text
+VISIT COMPLETED
+!=
+FINDINGS RESOLVED
+!=
+ACTIONS CLOSED
+!=
+PROGRAM CASE CLOSED
+```
+
+La visita representa una ejecución puntual.
+
+El expediente conserva continuidad hasta resolver o transferir los pendientes exigibles.
+
+---
+
+#### 49. Criterios mínimos de cierre
+
+El cierre aplicable exige, según corresponda:
+
+1. visita reconciliada contra alcance esperado;
+2. puntos y dispositivos con resultado conocido o excepción explícita;
+3. capturas preservadas;
+4. hallazgos registrados;
+5. acciones creadas cuando correspondan;
+6. acciones bloqueantes resueltas, excepcionadas o transferidas;
+7. restricciones resueltas o vigentes de forma explícita;
+8. liberación resuelta cuando aplique;
+9. documentos esperados recibidos o excepción trazable;
+10. proveedor y evidencia correlacionados;
+11. pendientes con owner y condición de salida;
+12. autoridad de cierre.
+
+Una firma, factura, certificado o comentario aislado no satisface estos criterios por sí solo.
+
+---
+
+#### 50. Reapertura
+
+Un hallazgo, acción o expediente cerrado puede reabrirse cuando un hecho nuevo demuestre necesidad adicional.
+
+La reapertura conserva:
+
+- referencia al cierre anterior;
+- causa;
+- evidencia;
+- actor o fuente;
+- momento;
+- estado resultante;
+- nueva acción o visita cuando corresponda.
+
+Se preserva:
+
+```text
+REOPEN
+!=
+DELETE PREVIOUS CLOSURE
+```
+
+---
+
+#### 51. Corrección
+
+Los errores de identificación, ubicación, captura, documento o relación se corrigen de forma trazable.
+
+No se sobrescriben silenciosamente:
+
+- punto;
+- dispositivo;
+- visita;
+- proveedor;
+- captura;
+- hallazgo;
+- acción;
+- restricción;
+- liberación;
+- certificado;
+- actor;
+- timestamps materiales.
+
+La vista actual puede proyectar el valor corregido sin destruir el historial.
+
+---
+
+#### 52. Frontera con saneamiento
+
+`NEXO-DOM-031` conserva programas, procedimientos, químicos, ejecución, verificación y liberación de limpieza y saneamiento.
+
+Control de plagas conserva programa, mapa, dispositivos, visitas, capturas, hallazgos, acciones, restricciones y documentos especializados.
+
+Se preserva:
+
+```text
+SANITATION EXECUTION
+!=
+PEST CONTROL VISIT
+```
+
+Una acción de plagas puede originar saneamiento sin absorber su expediente.
+
+---
+
+#### 53. Frontera con mantenimiento
+
+`NEXO-DOM-030` conserva mantenimiento y reparación.
+
+Un hallazgo de plagas puede originar una reparación cuando exista una causa física que lo requiera.
+
+La reparación conserva referencia al hallazgo original.
+
+No se mantiene una acción competidora en control de plagas cuando el trabajo primario pertenece a mantenimiento, salvo seguimiento explícito de eficacia.
+
+---
+
+#### 54. Frontera con inspecciones
+
+`NEXO-DOM-034` conserva inspecciones físicas generales y hallazgos locativos.
+
+La visita de control de plagas evalúa el programa especializado.
+
+Se preserva:
+
+```text
+PEST CONTROL VISIT
+!=
+GENERAL FACILITY INSPECTION
+```
+
+Un hallazgo puede cruzar de un expediente a otro mediante relación explícita.
+
+---
+
+#### 55. Frontera con obras y novedades
+
+`NEXO-DOM-037` conserva obras y adecuaciones.
+
+`NEXO-DOM-038` conserva novedades locativas, contención, escalamiento, resolución y cierre.
+
+Una condición estructural detectada por control de plagas puede producir handoff a obra o novedad sin convertir la visita en un expediente de construcción.
+
+---
+
+#### 56. Frontera con ORIGO y NUMERA
+
+ORIGO conserva contratación, compra y recepción empresarial cuando correspondan.
+
+NUMERA conserva clasificación y reconocimiento económico según sus contratos propietarios.
+
+NEXO conserva:
+
+- necesidad técnica u operacional;
+- proveedor relacionado;
+- visita;
+- evidencia;
+- aceptación técnica;
+- hallazgos;
+- acciones;
+- restricciones;
+- liberación;
+- cierre técnico.
+
+Se preserva:
+
+```text
+INVOICE PAID
+!=
+SERVICE ACCEPTED
+!=
+PEST ACTION CLOSED
+```
+
+---
+
+#### 57. Integración externa
+
+La integración con proveedor externo deberá conservar contratos versionados, correlación, idempotencia y evidencia conforme a los owners transversales.
+
+Esta tarea no selecciona:
+
+- API;
+- webhook;
+- archivo;
+- portal;
+- correo;
+- protocolo;
+- autenticación;
+- formato de intercambio;
+- frecuencia técnica de sincronización.
+
+Esas decisiones pertenecen a los contratos de integración y a la materialización física autorizada.
+
+---
+
+#### 58. Idempotencia
+
+Toda mutación material debe poder usar una identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra visita;
+- otra captura;
+- otro hallazgo;
+- otra acción;
+- otra restricción;
+- otra liberación;
+- otro certificado lógico;
+- otro cierre.
+
+El mismo identificador con contenido materialmente distinto produce conflicto, revisión o evento explícito; no sobrescribe el primer efecto.
+
+---
+
+#### 59. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos ubicaciones efectivas simultáneas incompatibles para el mismo dispositivo;
+- dos visitas incompatibles cerrando la misma obligación;
+- doble captura del mismo hecho por reintento;
+- hallazgos finales contradictorios sin resolución;
+- acción cerrada mientras existe evidencia bloqueante;
+- liberación con restricción bloqueante vigente;
+- cierre simultáneo con una reapertura;
+- reemplazo de dispositivo sin reconciliar identidad anterior.
+
+Se requiere control de versión, compare-and-set, bloqueo o mecanismo equivalente según la materialización autorizada.
+
+---
+
+#### 60. Captura offline
+
+La operación de campo podrá capturar información offline cuando la arquitectura autorizada lo permita.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+VISIT RECONCILED
+!=
+ACTION CLOSED
+!=
+RELEASED
+```
+
+La sincronización debe ser idempotente.
+
+Fotos, firmas, capturas, dispositivos y documentos no se duplican por reintento.
+
+---
+
+#### 61. Resultado desconocido
+
+Ante timeout, pérdida de conectividad o respuesta ambigua después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de crear otra visita, captura, hallazgo, acción o liberación.
+
+La incertidumbre de transporte no justifica otro expediente.
+
+---
+
+#### 62. Evidencia externa
+
+Todo dato o documento recibido de un tercero conserva fuente y correlación.
+
+Debe ser posible distinguir:
+
+```text
+PROVIDER ASSERTION
+!=
+INTERNAL VERIFIED FACT
+```
+
+La implementación futura no promoverá automáticamente una afirmación externa a hecho interno cuando se requiera revisión o aceptación.
+
+---
+
+#### 63. AS-IS observable
+
+La revisión remota disponible de `vento-nexo` no aportó evidencia suficiente de un módulo dedicado de control de plagas mediante búsquedas de conceptos asociados a plagas o fumigación.
+
+Esa ausencia de evidencia no se usa para afirmar que ningún dato histórico exista fuera del código inspeccionado.
+
+Sí permite concluir que no existe evidencia remota suficiente para considerar resuelto el contrato objetivo de:
+
+- programa;
+- mapa;
+- puntos;
+- dispositivos;
+- visitas;
+- capturas;
+- tendencias;
+- hallazgos;
+- acciones;
+- restricciones;
+- liberación;
+- certificados.
+
+Por tanto, esta tarea no adopta un workflow AS-IS como cierre de `CAP-13.05`.
+
+---
+
+#### 64. Estrategia de adopción
+
+La estrategia canónica queda:
+
+```text
+REUSE LOCATIVE / EVIDENCE / AUTHORIZATION FOUNDATIONS
++
+INTEGRATE SPECIALIZED EXTERNAL EXECUTION
++
+BUILD INTERNAL PEST CONTROL CASE MODEL
+```
+
+Se reutiliza donde sea compatible:
+
+- identidad locativa;
+- evidencia;
+- disponibilidad;
+- catálogo documental;
+- actores;
+- proveedores;
+- idempotencia;
+- operación offline;
+- autorización;
+- cierre y reapertura.
+
+Se construye o refactoriza donde falte:
+
+- programa;
+- mapa;
+- puntos;
+- dispositivos;
+- lifecycle físico de dispositivos;
+- visitas;
+- capturas;
+- tendencias;
+- hallazgos;
+- acciones;
+- restricciones;
+- liberación;
+- documentos especializados.
+
+No se autoriza implementación en esta tarea.
+
+---
+
+#### 65. Reconciliación histórica
+
+Una materialización futura que migre historia no podrá inferir hechos ausentes.
+
+No se permite inventar retrospectivamente:
+
+- ubicación histórica de un dispositivo;
+- visita no demostrada;
+- captura no registrada;
+- tendencia sin datos fuente;
+- hallazgo no documentado;
+- acción no registrada;
+- restricción;
+- liberación;
+- aceptación interna;
+- vigencia documental;
+- habilitación del proveedor.
+
+Los registros incompletos conservan su limitación explícita.
+
+---
+
+#### 66. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- puntos activos por sujeto;
+- dispositivos activos por punto;
+- dispositivos no localizados;
+- visitas próximas;
+- visitas vencidas;
+- visitas ejecutadas;
+- cobertura de puntos por visita;
+- capturas por punto y período;
+- tendencias reproducibles;
+- hallazgos abiertos;
+- acciones abiertas y vencidas;
+- reincidencia por sujeto o punto;
+- restricciones vigentes;
+- liberaciones pendientes;
+- certificados o habilitaciones próximos a vencer cuando exista vigencia;
+- acciones transferidas a otros owners.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 67. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| visita prevista para la próxima semana | planificación; no ejecución |
+| proveedor reprograma | conservar visita original y nueva ventana; no satisfacción |
+| dispositivo cambia de punto | traslado versionado; no edición destructiva |
+| proveedor cambia código del dispositivo | conservar ID interno y registrar nueva referencia externa |
+| dispositivo no se encuentra durante visita | evidencia de excepción o hallazgo; no borrarlo del mapa histórico |
+| aparece un nuevo punto sugerido por proveedor | propuesta o decisión pendiente; no mutar mapa sin revisión efectiva |
+| se registra una captura | hecho fuente; no hallazgo automático |
+| varias capturas muestran tendencia | proyección derivada; conservar datos fuente |
+| hallazgo requiere sellar una abertura | handoff a mantenimiento u obra según objeto principal |
+| hallazgo requiere limpieza | handoff a `NEXO-DOM-031` |
+| proveedor marca una acción terminada | resultado externo; requiere cierre interno cuando corresponda |
+| visita usa producto del proveedor | conservar declaración y ficha; no inventar consumo de inventario Vento |
+| Vento suministra producto gobernado por inventario | correlacionar efecto de inventario |
+| termina la aplicación pero existe reingreso pendiente | mantener restricción; no liberar |
+| llega certificado | evidencia documental; no liberación automática |
+| factura pagada | hecho económico; no aceptación técnica |
+| timeout después de capturar dispositivo | reconciliar antes de reintentar |
+
+---
+
+#### 68. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. programa y visita son distintos;
+2. mapa y jerarquía física son distintos;
+3. punto y dispositivo son distintos;
+4. identidad interna y código externo son distintos;
+5. ubicación actual no reescribe ubicación histórica;
+6. visita planificada y ejecutada son distintas;
+7. captura y hallazgo son distintos;
+8. captura y tendencia son distintos;
+9. hallazgo y acción son distintos;
+10. acción externa terminada y acción interna cerrada son distintas;
+11. informe y certificado son distintos;
+12. certificado y aceptación son distintos;
+13. certificado y liberación son distintos;
+14. final de visita y permiso de reingreso son distintos;
+15. liberación de plagas y disponibilidad global son distintas;
+16. producto del proveedor no genera inventario Vento por defecto;
+17. contratación comercial y aceptación técnica son distintas;
+18. hallazgo transferido conserva origen;
+19. repetición de una intención idempotente no duplica efectos;
+20. resultado desconocido se reconcilia antes de reintentar;
+21. cierre no borra hallazgos ni acciones históricas;
+22. proveedor externo no se convierte en autoridad interna del expediente.
+
+---
+
+#### 69. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver sujetos y dispositivos desde identidades autoritativas;
+- validar proveedor y alcance autorizado;
+- no confiar en estado, ubicación, cierre o liberación enviados por cliente sin revalidación;
+- preservar actor o fuente;
+- aplicar idempotencia;
+- conservar historial de mapa y dispositivos;
+- separar afirmaciones externas de aceptación interna;
+- impedir liberación con restricciones bloqueantes;
+- impedir cierre con acciones bloqueantes no resueltas;
+- impedir que visibilidad de UI equivalga a permiso;
+- evitar exposición de credenciales o secretos del proveedor en evidencia documental.
+
+La autorización detallada permanece en sus tareas propietarias.
+
+---
+
+#### 70. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- almacenamiento de evidencia;
+- mapa y UI;
+- captura móvil u offline;
+- adaptadores de proveedor;
+- colas o webhooks;
+- migración de historia;
+- pruebas automatizadas;
+- validación operacional.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 71. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- configura proveedores reales;
+- crea usuarios, credenciales o secretos;
+- llama APIs externas;
+- programa visitas reales;
+- mueve dispositivos reales;
+- aplica productos;
+- autoriza reingresos reales;
+- emite certificados;
+- ejecuta control de plagas;
+- contrata proveedores;
+- reconoce costos o pagos;
+- define requisitos regulatorios específicos no declarados por su fuente competente;
+- inventa especies, categorías, umbrales, frecuencias, tiempos de reingreso o tipos de dispositivo universales;
+- define autorización detallada;
+- define la experiencia de `NEXO-UX-045`;
+- define servicios y medidores de `NEXO-DOM-033`;
+- define inspecciones físicas generales de `NEXO-DOM-034`;
+- define metrología de `NEXO-DOM-035`;
+- define acceso físico de `NEXO-DOM-036`;
+- define obras de `NEXO-DOM-037`;
+- define novedades locativas de `NEXO-DOM-038`;
+- autoriza materialización física.
+
+---
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya incluye plagas dentro del contrato transversal de instalaciones;
+- la cobertura existente ya exige programa o plan, objeto y lugar, responsable, ejecución, evidencia, resultado, desviación, contención, verificación, disponibilidad y cierre;
+- la cobertura de integración existente ya separa solicitud, orden, visita, servicio, certificado, factura, pago, hallazgo, acción y cierre;
+- la cobertura existente ya exige idempotencia para reintentos, archivos, webhooks y operación offline;
+- esta tarea desarrolla el contrato de dominio necesario para satisfacer obligaciones ya registradas y no introduce una obligación verificable nueva fuera de ellas.
+
+---
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-018`, para plagas, programa o plan, lugar, ejecución, evidencia, desviación, contención, verificación, disponibilidad, cierre e idempotencia offline;
+- `TREQ-INTEGRATION-018`, para coordinación entre NEXO, ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos, y para separar visita, servicio, certificado, factura, hallazgo, acción y cierre;
+- `TREQ-NEXO-017`, para sujetos locativos, condición, disponibilidad, evidencia y cierre;
+- `TREQ-SUPABASE-002`, para integridad persistente e idempotencia cuando exista materialización;
+- los requisitos transversales aplicables de integración externa y evidencia cuando se materialice la relación con proveedor.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye actualización de 04A.
+
+---
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | `main` con cierre de `NEXO-DOM-031`, continuidad, ruta, topología, contrato de entrega, políticas de formato y desarrollo, owner, handoff de 031, `CAP-SCOPE-013`, 04A NEXO, 04A INTEGRATION, `package.json`, preflight y validadores documentales fueron inspeccionados; la búsqueda remota en `vento-nexo` no aportó evidencia suficiente de un módulo dedicado de plagas |
+| OPERATIVA | NOT_APPLICABLE | no se ejecutan visitas, dispositivos, productos, restricciones ni liberaciones reales durante la definición documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` están cubiertas por override `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 75. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] el control de plagas conserva programa versionado;
+- [x] existe mapa versionado separado de la jerarquía locativa;
+- [x] puntos y dispositivos tienen identidad diferenciada;
+- [x] el código del proveedor no sustituye identidad interna;
+- [x] traslados, reemplazos y retiros preservan historia;
+- [x] proveedor y habilitaciones pueden conservar vigencia y evidencia sin inventar una taxonomía regulatoria;
+- [x] visita programada y ejecutada son distintas;
+- [x] la visita reconcilia puntos y dispositivos esperados contra atendidos;
+- [x] productos y fichas pueden quedar correlacionados sin crear inventario ficticio;
+- [x] producto del proveedor y consumo de inventario Vento son distintos;
+- [x] capturas son hechos fuente;
+- [x] tendencias son proyecciones reproducibles;
+- [x] capturas, tendencias y hallazgos no se colapsan;
+- [x] hallazgo y acción son distintos;
+- [x] toda acción diferida conserva owner y condición de salida;
+- [x] acciones transferidas preservan el hallazgo original;
+- [x] restricciones y tiempos de reingreso quedan trazables cuando aplican;
+- [x] visita terminada no equivale a reingreso autorizado;
+- [x] liberación de plagas no equivale a disponibilidad general;
+- [x] certificado, informe, ejecución, aceptación y liberación son distintos;
+- [x] documentos con vigencia preservan vencimiento cuando la fuente lo declare;
+- [x] visita completada no equivale a hallazgos y acciones resueltos;
+- [x] contratación, pago y aceptación técnica permanecen separados;
+- [x] ejecución externa no convierte al proveedor en autoridad interna;
+- [x] saneamiento, mantenimiento, inspección, obra y novedad mantienen sus owners;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] el AS-IS remoto no se declara suficiente sin evidencia;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 76. Handoff hacia `NEXO-DOM-033`
+
+`NEXO-DOM-032` entrega a `NEXO-DOM-033`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+VERSIONED FACILITY PROGRAM SEMANTICS
++
+LOCATION-BOUND POINTS
++
+VERSIONED MAP PROJECTION
++
+EXTERNAL-PROVIDER / INTERNAL-AUTHORITY SEPARATION
++
+SCHEDULED / EXECUTED VISIT SEPARATION
++
+SOURCE CAPTURE / DERIVED TREND SEPARATION
++
+FINDING / ACTION / RESTRICTION MODEL
++
+REENTRY AND RELEASE SEMANTICS
++
+TRACEABLE REPORTS / CERTIFICATES / EXPIRY
++
+IDEMPOTENT OFFLINE FIELD CAPTURE
+```
+
+`NEXO-DOM-033` podrá reutilizar identidad locativa, evidencia, programa versionado, restricciones, disponibilidad, idempotencia y reglas de integración cuando sean compatibles, pero deberá definir de forma propia servicios, puntos de servicio, medidores, lecturas, consumos, interrupciones, alertas y contingencias.
+
+Una lectura de servicio, consumo o interrupción no se modela como captura de plagas solo para reutilizar este expediente.
+
+---
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias`
 ### [ ] NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
 ### [ ] NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
 ### [ ] NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
