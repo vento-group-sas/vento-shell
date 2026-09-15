@@ -35937,7 +35937,1613 @@ PRIMARY SUBJECT RULE
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación`
-### [ ] NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
+### ✅ NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
+**Tarea siguiente:** NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
+**Tipo de tarea:** documental; definición canónica del ciclo locativo de mantenimiento, desde plan versionado, obligación y solicitud hasta orden de trabajo, diagnóstico, ejecución, reparación, prueba, liberación, cierre y reapertura, preservando la frontera con mantenimiento de activos, compras, repuestos, costos, inspecciones, calibración, saneamiento, obras y novedades sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna el mantenimiento de instalaciones, espacios, componentes fijos y puntos de servicio sin confundir planificación, necesidad, autorización, trabajo técnico, resultado, prueba, liberación, disponibilidad ni cierre administrativo.
+
+La regla raíz queda:
+
+```text
+SUJETO FÍSICO ESTABLE
++
+POLÍTICA Y PLAN VERSIONADOS
++
+OBLIGACIÓN O NECESIDAD TRAZABLE
++
+SOLICITUD Y TRIAGE
++
+ORDEN DE TRABAJO AUTORIZADA
++
+DIAGNÓSTICO
++
+EJECUCIÓN TÉCNICA
++
+EVIDENCIA
++
+PRUEBA CUANDO APLIQUE
++
+LIBERACIÓN AUTORIZADA
++
+CIERRE RECONCILIADO
+→
+MANTENIMIENTO LOCATIVO REPRODUCIBLE
+```
+
+No:
+
+```text
+PLANIFICADO = INICIADO
+```
+
+No:
+
+```text
+TRABAJO TERMINADO = PRUEBA APROBADA = LIBERADO = DISPONIBLE = CERRADO
+```
+
+No:
+
+```text
+FACTURA O FOTO = MANTENIMIENTO CERRADO
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-030` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. reutiliza la separación ya aprobada entre plan de mantenimiento y obligación exigible;
+2. extiende esa semántica a instalaciones, espacios, componentes fijos y puntos de servicio entregados por `NEXO-DOM-029`;
+3. define un plan locativo versionado con sujeto, criticidad, tipo, disparador, frecuencia o umbral, ventana, procedimiento, recursos, evidencia, prueba y regla de liberación;
+4. distingue mantenimiento preventivo, predictivo, reglamentario, correctivo y atención de emergencia sin convertir una obra de adecuación en mantenimiento ordinario;
+5. define la solicitud de mantenimiento como captura de una necesidad, no como autorización ni ejecución;
+6. define triage como clasificación y priorización de la solicitud sin borrar la observación original;
+7. define una orden de trabajo estable y versionable, separada de solicitud, obligación, diagnóstico, ejecución, prueba, liberación y cierre;
+8. define diagnóstico como hecho técnico que identifica causa, alcance o hipótesis sin equivaler a reparación;
+9. define ejecución como registro de trabajo realmente realizado, con actor, momento, procedimiento, materiales, repuestos, proveedor y evidencia cuando corresponda;
+10. conserva la integración de repuestos con inventario y evita describir piezas reemplazadas únicamente como texto libre;
+11. separa contratación o compra externa en ORIGO del gobierno técnico y cierre de la intervención en NEXO;
+12. separa costo informado o hecho económico de reconocimiento financiero en NUMERA;
+13. define prueba posterior a la intervención como hecho independiente y trazable;
+14. define liberación como decisión autorizada sobre aptitud para un propósito, distinta de finalización técnica y cierre administrativo;
+15. preserva `AVAILABLE`, `RESTRICTED`, `UNAVAILABLE` y `UNKNOWN` como proyección de disponibilidad y no como estados de orden de trabajo;
+16. define cierre como reconciliación del expediente y no como consecuencia automática de una factura, fotografía, fecha o comentario;
+17. define reapertura, corrección y supersesión sin sobrescribir historia;
+18. establece idempotencia, concurrencia, operación offline y reconciliación de resultado desconocido;
+19. reconcilia el AS-IS de mantenimiento de activos como capacidad parcial reutilizable, no como workflow final locativo;
+20. no crea ni modifica requisitos de prueba porque la conducta ya está protegida por requisitos canónicos vigentes;
+21. no autoriza tablas, migraciones, RLS, RPC, Server Actions, UI, backfills, datos, Supabase, paquetes ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-007`, para mantenimiento de activos, repuestos, garantía y condición;
+- `CAP-SCOPE-013`, especialmente `CAP-13.02 — Planear mantenimiento` y `CAP-13.03 — Solicitar y ejecutar reparaciones`;
+- `NEXO-DOM-010`, para condición física, daño, pérdida y faltante;
+- `NEXO-DOM-012`, para semántica común de mantenimiento, obligación, reparación, prueba, liberación y disponibilidad;
+- `NEXO-DOM-016`, para repuestos y compatibilidad;
+- `NEXO-DOM-017`, para auditoría, historial y evidencia;
+- `NEXO-DOM-025`, para vínculo causal entre repuesto, orden de trabajo, sujeto intervenido y costo informado;
+- `NEXO-DOM-026`, para mantenimiento preventivo, garantía e inspección técnica de activos;
+- `NEXO-DOM-028`, para emisión de hechos empresariales con relevancia financiera sin escritura contable directa;
+- `NEXO-DOM-029`, para identidad, jerarquía, criticidad, condición y disponibilidad de sujetos locativos;
+- la jerarquía de sede, área, LOC y activos ya aprobada;
+- el registro canónico de requisitos de prueba vigente;
+- la implementación remota observable de NEXO para mantenimiento de activos.
+
+Esta tarea especializa el workflow locativo. No redefine la identidad de activos ni sustituye la semántica común ya aprobada.
+
+---
+
+#### 4. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. no existía un plan locativo versionado con criticidad, frecuencia, ventana, responsable, recursos y evidencia;
+2. solicitud, orden de trabajo, ejecución, prueba, liberación y cierre podían colapsarse en un solo registro o estado;
+3. mantenimiento de activo y mantenimiento de instalación podían competir por el mismo hecho;
+4. programar mantenimiento podía interpretarse como intervención ya iniciada;
+5. marcar un trabajo como terminado podía devolver automáticamente el sujeto a disponible sin prueba ni autoridad de liberación;
+6. una factura, fotografía o comentario podía ser usado como sustituto de verificación técnica;
+7. mantenimiento planificado, correctivo, emergencia y obra de adecuación podían tratarse como la misma clase de intervención;
+8. piezas o materiales reemplazados podían quedar únicamente en texto sin efecto de inventario correlacionado;
+9. contratación de proveedor y cierre técnico podían confundirse;
+10. el costo de mantenimiento podía confundirse con reconocimiento contable;
+11. reintentos, captura offline o concurrencia podían duplicar solicitudes, órdenes, ejecuciones o cierres;
+12. una reapertura podía destruir o reescribir el cierre anterior.
+
+---
+
+#### 5. Ámbito del contrato
+
+El contrato aplica cuando el objeto principal de la intervención sea uno de los sujetos locativos canónicos aplicables:
+
+```text
+PHYSICAL_FACILITY
+PHYSICAL_SPACE
+FIXED_COMPONENT
+SERVICE_NETWORK
+SERVICE_POINT
+```
+
+También puede ser consumido por otros sujetos físicos cuando una tarea propietaria lo referencia expresamente, pero no cambia su owner de dominio.
+
+Cada expediente de mantenimiento deberá identificar un objeto principal estable antes de poder autorizar trabajo.
+
+---
+
+#### 6. Regla del objeto principal
+
+La frontera queda:
+
+```text
+ONE PHYSICAL INTERVENTION
+→
+ONE PRINCIPAL SUBJECT
+```
+
+El objeto principal determina dónde vive el expediente técnico primario.
+
+Si el trabajo se realiza sobre un activo individual que conserva identidad propia, el owner sigue siendo el ciclo de activos.
+
+Si el trabajo se realiza sobre la instalación, espacio, componente fijo o punto de servicio como objeto principal, el owner del expediente locativo es este contrato.
+
+Una misma reparación no podrá existir como dos expedientes primarios competidores.
+
+Relaciones secundarias con otros sujetos se conservan mediante referencias explícitas.
+
+---
+
+#### 7. Frontera con mantenimiento de activos
+
+Se preserva:
+
+```text
+ASSET MAINTENANCE
+!=
+FACILITY MAINTENANCE
+```
+
+La distinción no depende únicamente de si el elemento está atornillado, empotrado o temporalmente inmóvil.
+
+Se evalúan:
+
+- identidad individual independiente;
+- posibilidad de traslado o sustitución;
+- lifecycle propio;
+- custodia propia;
+- garantía o serial propio;
+- relación con inventario y repuestos;
+- objeto principal de la intervención.
+
+Un activo instalado dentro de una instalación continúa siendo activo cuando conserva identidad individual propia.
+
+Un componente fijo no se duplica como activo solo para poder mantenerlo.
+
+---
+
+#### 8. Componentes conceptuales del expediente
+
+El expediente canónico distingue al menos:
+
+```text
+MAINTENANCE_PLAN
+MAINTENANCE_OBLIGATION
+MAINTENANCE_REQUEST
+WORK_ORDER
+DIAGNOSIS
+WORK_EXECUTION
+TEST_RESULT
+RELEASE_DECISION
+CLOSURE_RECORD
+REOPEN_RECORD
+```
+
+La forma física futura podrá usar nombres técnicos distintos, pero no podrá colapsar estos conceptos cuando su separación sea material para auditoría, autorización o seguridad.
+
+---
+
+#### 9. Plan de mantenimiento
+
+`MAINTENANCE_PLAN` es la regla versionada que define cómo se gobierna una familia de obligaciones para un sujeto o clase de sujetos autorizada.
+
+Debe poder conservar:
+
+- identidad estable del plan;
+- versión;
+- estado de vigencia;
+- sujeto o alcance exacto;
+- tipo de mantenimiento;
+- criticidad consumida o regla de criticidad;
+- disparador;
+- frecuencia, umbral o condición aplicable;
+- ventana permitida;
+- tolerancia cuando exista;
+- procedimiento y versión del procedimiento;
+- capacidades o especialidad requerida;
+- recursos y herramientas requeridos cuando aplique;
+- materiales o repuestos previstos cuando aplique;
+- evidencia mínima;
+- prueba requerida o declaración explícita de no aplicabilidad;
+- autoridad o regla de liberación;
+- efecto esperado sobre disponibilidad;
+- owner del plan;
+- regla para calcular la siguiente obligación.
+
+No se infiere un plan desde la existencia de una fecha futura aislada.
+
+---
+
+#### 10. Versionado del plan
+
+Modificar frecuencia, procedimiento, tolerancia, prueba, ventana, recursos, evidencia o criterio de liberación crea una nueva revisión efectiva cuando el cambio altera una obligación futura.
+
+Una revisión nueva no reescribe:
+
+- obligaciones ya satisfechas;
+- obligaciones históricas vencidas;
+- ejecuciones realizadas;
+- pruebas;
+- liberaciones;
+- cierres.
+
+Las obligaciones futuras deben indicar qué versión del plan las originó.
+
+---
+
+#### 11. Tipos de mantenimiento
+
+La clasificación conceptual mínima distingue:
+
+```text
+PREVENTIVE
+PREDICTIVE
+REGULATORY
+CORRECTIVE
+EMERGENCY
+```
+
+Reglas:
+
+1. `PREVENTIVE` se origina por política anticipada antes de una falla confirmada.
+2. `PREDICTIVE` se origina por tendencia, medición, condición o indicador autorizado.
+3. `REGULATORY` responde a una obligación normativa, contractual o certificable aplicable.
+4. `CORRECTIVE` responde a una condición, falla o defecto identificado.
+5. `EMERGENCY` permite priorización y contención inmediata, pero no elimina autorización, evidencia, prueba ni liberación que resulten obligatorias.
+
+Una obra que modifica, amplía o adecua materialmente la instalación permanece reservada a `NEXO-DOM-037` aunque nazca de una solicitud de mantenimiento.
+
+---
+
+#### 12. Plan y obligación son distintos
+
+Se preserva:
+
+```text
+MAINTENANCE_PLAN
+!=
+MAINTENANCE_OBLIGATION
+```
+
+El plan es una regla reusable y versionada.
+
+La obligación es una ocurrencia exigible asociada a un sujeto, plan o disparador concreto.
+
+Una obligación debe conservar al menos:
+
+- identidad estable;
+- sujeto principal;
+- plan y versión cuando exista;
+- origen del disparador;
+- fecha o umbral de exigibilidad;
+- ventana;
+- criticidad o efecto aplicable;
+- estado;
+- relación con solicitudes y órdenes;
+- resolución;
+- evidencia de satisfacción o excepción.
+
+---
+
+#### 13. Estados de la obligación
+
+Se reutilizan los estados canónicos ya aprobados:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+Reglas:
+
+- `UPCOMING` no autoriza trabajo por sí solo;
+- `DUE` no significa trabajo iniciado;
+- `OVERDUE` no significa falla física;
+- `SATISFIED` exige una resolución válida según la política;
+- `CANCELLED` no equivale a satisfacción;
+- `SUPERSEDED` conserva el vínculo con la obligación que la reemplaza;
+- `EXCEPTION` requiere motivo, autoridad, vigencia y condición de salida.
+
+---
+
+#### 14. Disparadores
+
+Una obligación o solicitud podrá originarse por:
+
+- fecha o calendario;
+- horas de uso;
+- ciclos;
+- lectura de medidor;
+- condición física;
+- hallazgo de inspección;
+- evento o novedad autorizada;
+- recomendación técnica aprobada;
+- obligación reglamentaria o contractual;
+- falla reportada;
+- pérdida de disponibilidad;
+- señal predictiva autorizada.
+
+Se preserva:
+
+```text
+TRIGGERED
+!=
+STARTED
+```
+
+El disparador genera necesidad u obligación; no demuestra intervención física.
+
+---
+
+#### 15. Vencimiento y disponibilidad
+
+Una obligación vencida conserva su estado y su efecto definido por política.
+
+Cuando sea bloqueante:
+
+```text
+OVERDUE BLOCKING OBLIGATION
+→
+UNAVAILABLE
+```
+
+Cuando sea restrictiva:
+
+```text
+OVERDUE RESTRICTIVE OBLIGATION
+→
+RESTRICTED
+```
+
+La razón debe permanecer trazable.
+
+Modificar la próxima fecha no elimina una obligación vencida histórica.
+
+---
+
+#### 16. Solicitud de mantenimiento
+
+`MAINTENANCE_REQUEST` captura una necesidad reportada o detectada.
+
+Debe conservar al menos:
+
+- identidad estable;
+- sujeto principal propuesto;
+- reportante o fuente;
+- momento;
+- descripción del síntoma o necesidad;
+- severidad o urgencia observada cuando aplique;
+- condición reportada;
+- evidencia inicial;
+- impacto operativo informado;
+- relación con obligación, inspección, novedad o evento de origen cuando exista;
+- resultado de triage;
+- decisión posterior.
+
+La solicitud no equivale a diagnóstico, autorización, orden de trabajo ni reparación.
+
+---
+
+#### 17. Triage
+
+El triage clasifica la solicitud sin destruir su contenido original.
+
+Debe poder decidir:
+
+- sujeto principal confirmado;
+- tipo de atención;
+- prioridad;
+- necesidad de contención;
+- necesidad de diagnóstico previo;
+- si existe obligación relacionada;
+- si corresponde al dominio de activos, instalaciones, saneamiento, servicios, calibración, obras u otro owner;
+- si se requiere compra o contratación externa;
+- si se requiere escalamiento;
+- si la solicitud es duplicada de un expediente ya abierto.
+
+Un triage que cambie el owner conserva referencia al reporte original.
+
+---
+
+#### 18. Estados conceptuales de la solicitud
+
+La solicitud debe distinguir al menos:
+
+```text
+OPEN
+TRIAGED
+APPROVED
+REJECTED
+CANCELLED
+CONVERTED_TO_WORK_ORDER
+```
+
+`REJECTED` requiere motivo.
+
+`CANCELLED` requiere causa y actor autorizado.
+
+`CONVERTED_TO_WORK_ORDER` conserva la referencia a la orden resultante y no borra la solicitud.
+
+Una solicitud duplicada se relaciona con el expediente autoritativo; no se elimina para ocultar el duplicado.
+
+---
+
+#### 19. Autorización de trabajo
+
+La autorización para ejecutar trabajo es una decisión distinta del triage y de la planificación.
+
+Debe poder validar, según aplique:
+
+- sujeto correcto;
+- alcance;
+- prioridad;
+- impacto sobre operación;
+- ventana;
+- competencias requeridas;
+- recursos;
+- repuestos o materiales;
+- proveedor externo;
+- permisos físicos o de seguridad aplicables;
+- presupuesto o referencia de compra cuando la política lo exija;
+- condición de disponibilidad previa;
+- prueba y liberación requeridas.
+
+La existencia de presupuesto no sustituye autorización técnica.
+
+---
+
+#### 20. Orden de trabajo
+
+`WORK_ORDER` es el mandato técnico autorizado para realizar una intervención definida sobre un sujeto principal.
+
+Debe conservar al menos:
+
+- identidad estable;
+- revisión vigente;
+- sujeto principal;
+- solicitud de origen cuando exista;
+- obligación o plan relacionados cuando existan;
+- diagnóstico de referencia cuando exista;
+- alcance autorizado;
+- tipo de mantenimiento;
+- prioridad;
+- ventana programada;
+- responsable técnico;
+- proveedor cuando aplique;
+- procedimiento o instrucciones;
+- recursos;
+- repuestos y materiales planificados;
+- impacto esperado sobre disponibilidad;
+- prueba requerida;
+- autoridad de liberación;
+- estado;
+- motivo de cancelación, bloqueo o supersesión cuando aplique.
+
+---
+
+#### 21. Orden, obligación y ejecución son distintos
+
+Se preserva:
+
+```text
+MAINTENANCE_OBLIGATION
+!=
+WORK_ORDER
+!=
+WORK_EXECUTION
+```
+
+Una orden puede originarse en una obligación planificada o en una solicitud correctiva.
+
+Una misma orden puede resolver varias obligaciones únicamente cuando la política lo permita, el sujeto principal sea compatible y cada relación quede explícita.
+
+Una obligación no se marca satisfecha únicamente porque exista una orden.
+
+---
+
+#### 22. Revisión de la orden
+
+Cambios materiales de alcance, sujeto principal, procedimiento, proveedor, prueba requerida o criterio de liberación deberán conservar revisión o decisión equivalente.
+
+La revisión anterior no se sobrescribe cuando ya produjo:
+
+- autorización;
+- reserva de recursos;
+- ejecución;
+- evidencia;
+- efecto de disponibilidad.
+
+Solo una revisión efectiva puede gobernar una ejecución nueva para el mismo momento.
+
+---
+
+#### 23. Estados conceptuales de la orden
+
+La orden debe poder distinguir al menos:
+
+```text
+DRAFT
+AUTHORIZED
+SCHEDULED
+IN_PROGRESS
+BLOCKED
+AWAITING_TEST
+AWAITING_RELEASE
+CLOSED
+CANCELLED
+SUPERSEDED
+```
+
+Reglas:
+
+- `DRAFT` no autoriza trabajo;
+- `AUTHORIZED` no significa iniciado;
+- `SCHEDULED` no significa iniciado;
+- `IN_PROGRESS` requiere evidencia de inicio efectivo;
+- `BLOCKED` conserva causa y condición de salida;
+- `AWAITING_TEST` no permite declarar liberación;
+- `AWAITING_RELEASE` conserva resultado de prueba pero aún no declara disponibilidad;
+- `CLOSED` exige las condiciones de cierre aplicables;
+- `CANCELLED` no satisface automáticamente obligaciones;
+- `SUPERSEDED` preserva relación con la revisión u orden sucesora.
+
+---
+
+#### 24. Diagnóstico
+
+`DIAGNOSIS` es una conclusión técnica o hipótesis controlada sobre causa, condición y alcance.
+
+Debe conservar, cuando aplique:
+
+- sujeto evaluado;
+- síntoma o hallazgo de origen;
+- condición observada;
+- causa o hipótesis;
+- método de diagnóstico;
+- actor técnico;
+- evidencia;
+- momento;
+- recomendación;
+- necesidad de repuesto, proveedor, parada o prueba;
+- nivel de certeza o necesidad de diagnóstico adicional cuando corresponda.
+
+Se preserva:
+
+```text
+DIAGNOSIS
+!=
+REPAIR
+```
+
+Un diagnóstico puede terminar sin intervención, pero su cierre debe conservar la decisión resultante.
+
+---
+
+#### 25. Ejecución técnica
+
+`WORK_EXECUTION` registra trabajo realmente realizado.
+
+Debe poder conservar:
+
+- orden vigente;
+- sujeto principal;
+- inicio real;
+- fin real;
+- técnico o proveedor;
+- procedimiento ejecutado;
+- desviaciones del procedimiento autorizado;
+- tareas realizadas;
+- repuestos y materiales efectivamente utilizados;
+- componentes retirados, instalados o ajustados cuando aplique;
+- lecturas o mediciones técnicas cuando sean evidencia de la intervención;
+- condición antes y después;
+- evidencia;
+- incidencias;
+- resultado técnico informado;
+- necesidad de prueba, retrabajo o escalamiento.
+
+Una fecha `performed_date` aislada no demuestra esta ejecución completa.
+
+---
+
+#### 26. Trabajo parcial y bloqueo
+
+Una ejecución puede quedar parcial o bloqueada por:
+
+- repuesto faltante;
+- proveedor pendiente;
+- acceso no disponible;
+- condición insegura;
+- diagnóstico inconcluso;
+- alcance adicional no autorizado;
+- dependencia de otra intervención;
+- indisponibilidad operativa de ventana;
+- evidencia insuficiente.
+
+El bloqueo no se resuelve cerrando la orden.
+
+Debe conservar owner, causa, momento y condición exacta de salida.
+
+---
+
+#### 27. Repuestos y materiales
+
+Cuando la intervención use repuestos inventariables, se conserva la regla:
+
+```text
+TEXT DESCRIPTION OF REPLACED PART
+!=
+INVENTORY CONSUMPTION
+```
+
+La reserva, salida, consumo, devolución o instalación deberá correlacionarse con:
+
+- orden de trabajo;
+- sujeto intervenido;
+- producto o repuesto canónico;
+- cantidad y unidad;
+- lote, serial o identidad cuando corresponda;
+- movimiento de inventario;
+- actor y momento;
+- resultado de la instalación.
+
+`NEXO-DOM-025` conserva el contrato causal y económico detallado de repuestos.
+
+---
+
+#### 28. Material no inventariable y consumibles
+
+Cuando se utilicen materiales no controlados individualmente, la orden puede registrar consumo técnico informado sin fabricar una existencia ficticia.
+
+La política deberá decidir qué materiales requieren movimiento de inventario y cuáles solo evidencia de uso.
+
+No se admite crear un texto libre para evadir un repuesto que sí está gobernado por inventario.
+
+---
+
+#### 29. Proveedor o técnico externo
+
+La ejecución por tercero no cambia la propiedad del expediente técnico.
+
+NEXO conserva:
+
+- sujeto intervenido;
+- necesidad;
+- diagnóstico técnico aplicable;
+- orden de trabajo;
+- alcance esperado;
+- ejecución reportada;
+- evidencia;
+- prueba;
+- liberación;
+- cierre técnico.
+
+El proveedor puede aportar documentos, diagnóstico, ejecución y evidencia, pero no se convierte en fuente autoritativa de disponibilidad interna por el solo hecho de emitir un informe o factura.
+
+---
+
+#### 30. Frontera con ORIGO
+
+ORIGO conserva, cuando corresponda:
+
+- solicitud o necesidad de compra derivada;
+- proveedor comercial;
+- cotización;
+- orden de compra o contratación;
+- condiciones comerciales;
+- recepción empresarial del bien o servicio;
+- soporte comercial.
+
+NEXO conserva:
+
+- necesidad técnica;
+- sujeto;
+- diagnóstico;
+- alcance técnico;
+- orden de trabajo;
+- aceptación técnica;
+- prueba;
+- liberación;
+- cierre técnico.
+
+Se preserva:
+
+```text
+PURCHASE OR SERVICE RECEIPT
+!=
+TECHNICAL ACCEPTANCE
+!=
+RELEASE
+```
+
+---
+
+#### 31. Frontera financiera
+
+El costo informado durante la intervención es un dato operacional de referencia cuando tiene fuente autorizada.
+
+NEXO no decide:
+
+- cuenta contable;
+- capitalización;
+- gasto contable;
+- depreciación;
+- deterioro;
+- impuesto;
+- período contable;
+- centro de costo contable definitivo;
+- valor en libros.
+
+Los hechos empresariales de reparación o mantenimiento con relevancia financiera se correlacionan con el contrato aprobado de `NEXO-DOM-028` y son clasificados o reconocidos por NUMERA.
+
+La corrección económica no borra la intervención técnica.
+
+---
+
+#### 32. Garantía y cobertura
+
+Cuando una intervención esté cubierta por garantía, seguro o contrato de servicio:
+
+- se conserva la referencia a la cobertura;
+- se registra la decisión de aplicabilidad;
+- se relaciona reclamación o autorización externa cuando exista;
+- se conserva proveedor y resultado;
+- se mantiene el mismo estándar de prueba y liberación requerido por la política técnica.
+
+Se preserva:
+
+```text
+WARRANTY COVERED
+!=
+REPAIR COMPLETED
+!=
+RELEASED
+```
+
+---
+
+#### 33. Prueba posterior
+
+`TEST_RESULT` es un hecho separado de la ejecución.
+
+Debe conservar, cuando aplique:
+
+- orden y ejecución evaluadas;
+- sujeto;
+- prueba requerida;
+- método o procedimiento;
+- criterio de aceptación;
+- actor competente;
+- momento;
+- evidencia;
+- resultado;
+- desviaciones;
+- observaciones;
+- necesidad de retrabajo.
+
+Una prueba puede ser `NOT_APPLICABLE` únicamente cuando la política vigente lo permita y la justificación quede trazable.
+
+---
+
+#### 34. Prueba fallida o inconclusa
+
+Se fija:
+
+```text
+FAILED TEST
+→
+NO RELEASE
+```
+
+```text
+INCONCLUSIVE TEST
+→
+NO RELEASE WHEN POSITIVE RELEASE IS REQUIRED
+```
+
+Una prueba fallida deberá conducir a retrabajo, nueva orden, revisión autorizada, escalamiento o decisión de mantener indisponibilidad según corresponda.
+
+No se cambia el criterio de aceptación retrospectivamente para convertir un fallo en PASS.
+
+---
+
+#### 35. Liberación
+
+`RELEASE_DECISION` es la decisión autorizada que determina si el sujeto puede volver a un propósito operativo determinado.
+
+Debe conservar:
+
+- sujeto;
+- propósito o alcance de uso;
+- orden y ejecución relacionadas;
+- prueba o justificación de no aplicabilidad;
+- condición resultante;
+- restricciones residuales;
+- decisión;
+- autoridad;
+- momento;
+- evidencia;
+- próxima obligación cuando corresponda.
+
+La liberación puede resultar en:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+según la política y la evidencia, sin convertir esos resultados en estados de la orden.
+
+---
+
+#### 36. Trabajo completado no equivale a liberación
+
+Se preserva:
+
+```text
+WORK COMPLETED
+!=
+TEST PASSED
+!=
+RELEASED
+```
+
+La ejecución puede estar técnicamente terminada y el sujeto continuar `UNAVAILABLE` o `RESTRICTED` mientras falte prueba, documentación, verificación o autoridad de liberación.
+
+La interfaz o implementación futura no podrá cambiar a `AVAILABLE` únicamente porque el actor marque la ejecución como terminada.
+
+---
+
+#### 37. Liberación y cierre son distintos
+
+Se preserva:
+
+```text
+RELEASE_DECISION
+!=
+CLOSURE_RECORD
+```
+
+La liberación responde si el sujeto puede utilizarse.
+
+El cierre responde si el expediente quedó reconciliado y administrativamente concluido.
+
+Puede existir un sujeto liberado con expediente todavía pendiente de cierre documental, siempre que la política lo permita y no falte evidencia bloqueante.
+
+Puede existir un expediente cerrado con el sujeto todavía `UNAVAILABLE` cuando el resultado final sea no reparable, escalado, transferido a obra, baja u otro owner; el cierre deberá conservar esa razón y handoff.
+
+---
+
+#### 38. Criterios mínimos de cierre
+
+Una orden no puede considerarse cerrada únicamente por:
+
+- factura recibida;
+- fotografía cargada;
+- comentario agregado;
+- fecha de ejecución diligenciada;
+- proveedor marcado como terminado;
+- costo registrado;
+- cambio manual de estado.
+
+El cierre exige, según aplicabilidad:
+
+1. alcance ejecutado o resolución explícita;
+2. ejecución registrada;
+3. repuestos y movimientos reconciliados;
+4. diagnóstico final o causa documentada cuando aplique;
+5. prueba requerida resuelta;
+6. liberación resuelta;
+7. condición y disponibilidad resultantes coherentes;
+8. evidencia mínima completa;
+9. costos operacionales informados con fuente cuando existan;
+10. pendientes derivados con owner y condición de salida;
+11. obligaciones satisfechas, supersedidas o excepcionadas de forma explícita;
+12. autoridad de cierre.
+
+---
+
+#### 39. Reapertura
+
+`REOPEN_RECORD` conserva que un expediente previamente cerrado volvió a requerir acción.
+
+La reapertura exige:
+
+- referencia al cierre original;
+- motivo;
+- actor autorizado;
+- momento;
+- evidencia o hecho disparador;
+- estado resultante;
+- nueva orden o revisión cuando corresponda.
+
+Se preserva:
+
+```text
+REOPEN
+!=
+DELETE PREVIOUS CLOSURE
+```
+
+---
+
+#### 40. Corrección y supersesión
+
+Los errores administrativos o técnicos se corrigen mediante revisión, corrección o supersesión trazable.
+
+No se permite sobrescribir silenciosamente:
+
+- diagnóstico;
+- ejecución;
+- repuestos consumidos;
+- prueba;
+- liberación;
+- cierre;
+- actor;
+- timestamps materiales.
+
+La vista vigente puede proyectar el resultado corregido, pero la historia conserva el antes y el después.
+
+---
+
+#### 41. Emergencia
+
+Una emergencia permite acelerar triage, autorización y ejecución según una política preaprobada.
+
+No permite omitir de forma retrospectiva:
+
+- sujeto principal;
+- actor;
+- trabajo realizado;
+- materiales críticos;
+- evidencia mínima;
+- prueba requerida;
+- decisión de liberación;
+- justificación de excepción.
+
+Si la contención temporal no resuelve la causa, el expediente conserva una obligación o intervención posterior.
+
+---
+
+#### 42. Frontera con obras y adecuaciones
+
+`NEXO-DOM-037` conserva la obra o adecuación cuando el resultado esperado sea modificar materialmente la instalación mediante construcción, ampliación, redistribución, montaje mayor o adecuación aprobada.
+
+Una solicitud iniciada como mantenimiento podrá ser transferida a obra durante triage o diagnóstico.
+
+El traspaso conserva:
+
+- solicitud original;
+- sujeto;
+- hallazgo;
+- contención;
+- motivo del cambio de owner;
+- expediente de obra resultante.
+
+No se mantiene una orden de reparación competidora abierta salvo una contención temporal explícita.
+
+---
+
+#### 43. Frontera con inspecciones físicas
+
+`NEXO-DOM-034` conserva plantillas versionadas, ejecución de inspecciones físicas generales, hallazgos y acciones correctivas.
+
+Un hallazgo puede crear una solicitud u obligación de mantenimiento.
+
+Se preserva:
+
+```text
+INSPECTION FINDING
+!=
+MAINTENANCE EXECUTION
+```
+
+La orden de mantenimiento referencia el hallazgo de origen sin duplicarlo como diagnóstico inventado.
+
+---
+
+#### 44. Frontera con control metrológico
+
+`NEXO-DOM-035` conserva control metrológico, calibración, verificación, tolerancias, certificados e impacto.
+
+Una calibración podrá relacionarse con una orden técnica, pero su conformidad metrológica no se reduce a un estado genérico de mantenimiento.
+
+Se preserva:
+
+```text
+CALIBRATION PERFORMED
+!=
+METROLOGICAL CONFORMITY
+```
+
+---
+
+#### 45. Frontera con limpieza y saneamiento
+
+`NEXO-DOM-031` conserva limpieza y saneamiento operacional por área, superficie y equipo fijo, incluidos procedimientos, frecuencias, químicos, ejecución, verificación y liberación sanitaria.
+
+Una limpieza técnica ejecutada como parte inseparable de una reparación puede permanecer dentro de la orden de mantenimiento.
+
+Un programa rutinario de saneamiento no se modela como mantenimiento para reutilizar la misma pantalla o tabla.
+
+---
+
+#### 46. Frontera con servicios y novedades
+
+`NEXO-DOM-033` conserva servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias.
+
+`NEXO-DOM-038` conserva novedades locativas, severidad, contención, escalamiento, resolución y cierre.
+
+Una interrupción o novedad puede originar mantenimiento, pero el hecho de origen conserva su identidad y owner.
+
+---
+
+#### 47. Prioridad y criticidad
+
+La prioridad de una intervención puede consumir:
+
+- criticidad del sujeto;
+- impacto operativo;
+- severidad de falla;
+- riesgo;
+- disponibilidad;
+- obligación vencida;
+- ventana operacional;
+- dependencia de otros espacios o componentes.
+
+No se inventa un ranking numérico universal en esta tarea.
+
+La implementación futura deberá conservar la fuente de la prioridad y permitir distinguir criticidad permanente de urgencia circunstancial.
+
+---
+
+#### 48. Ventanas y programación
+
+Programar una orden debe considerar, cuando aplique:
+
+- ventana permitida por plan;
+- disponibilidad del espacio;
+- interferencia con producción, venta, almacenamiento o atención;
+- técnico o proveedor;
+- recursos;
+- repuestos;
+- dependencias;
+- necesidad de cierre parcial o total;
+- contingencia.
+
+Se preserva:
+
+```text
+SCHEDULED
+!=
+STARTED
+```
+
+Una reprogramación conserva motivo, revisión y efecto sobre el vencimiento de la obligación.
+
+---
+
+#### 49. Evidencia mínima
+
+La evidencia se define por política y criticidad, pero el expediente debe poder conservar:
+
+- reporte original;
+- diagnóstico;
+- fotografías o documentos cuando apliquen;
+- actor técnico;
+- proveedor;
+- fechas reales;
+- procedimiento o revisión;
+- materiales y repuestos;
+- antes y después;
+- lecturas o mediciones relevantes;
+- resultado;
+- prueba;
+- firma, aprobación o decisión cuando aplique;
+- liberación;
+- cierre;
+- correcciones posteriores.
+
+La evidencia respalda un hecho; no reemplaza el hecho estructurado.
+
+---
+
+#### 50. Autorización y segregación
+
+Las capacidades para:
+
+- reportar;
+- clasificar;
+- aprobar;
+- autorizar trabajo;
+- ejecutar;
+- registrar repuestos;
+- probar;
+- liberar;
+- cerrar;
+- reabrir;
+- corregir;
+
+son separables.
+
+La autorización de servidor y las tareas `NEXO-AUTH-*` definirán quién puede ejercer cada capacidad y bajo qué contexto.
+
+Esta tarea no concede permisos por rol visual ni por estar asignado al área.
+
+---
+
+#### 51. Idempotencia
+
+Toda mutación material deberá poder usar una identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención con el mismo contenido no produce:
+
+- una segunda solicitud;
+- una segunda orden;
+- una segunda ejecución;
+- otro consumo de repuesto;
+- otra prueba;
+- otra liberación;
+- otro cierre.
+
+El mismo identificador con contenido materialmente diferente produce conflicto o revisión explícita; no sobrescribe el primer efecto.
+
+---
+
+#### 52. Concurrencia
+
+La implementación futura deberá impedir que dos actores incompatibles:
+
+- autoricen revisiones divergentes de una misma orden;
+- consuman dos veces el mismo repuesto;
+- cierren mientras existe una ejecución no reconciliada;
+- liberen con pruebas contradictorias;
+- reabran y cierren simultáneamente sin orden causal.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según la materialización física aprobada.
+
+---
+
+#### 53. Operación offline
+
+La captura offline puede registrar intención o evidencia pendiente, pero no inventa autoridad ni resultado final.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+EXECUTED
+!=
+RELEASED
+```
+
+La sincronización deberá ser idempotente y conservar la identidad de la operación original.
+
+Un cierre o liberación que exija autoridad online queda pendiente hasta confirmación válida.
+
+---
+
+#### 54. Resultado desconocido
+
+Ante timeout, pérdida de conectividad o respuesta ambigua después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por la identidad estable de operación o expediente antes de repetir una acción con efectos materiales.
+
+No se crea otra orden o ejecución para resolver incertidumbre de transporte.
+
+---
+
+#### 55. AS-IS observable de NEXO
+
+El AS-IS remoto demuestra capacidad parcial para mantenimiento de activos mediante registros que incluyen, entre otros:
+
+- estado de mantenimiento;
+- tipo;
+- fecha programada;
+- fecha realizada;
+- proveedor;
+- trabajo realizado;
+- piezas reemplazadas;
+- costo;
+- próxima fecha;
+- notas.
+
+También existe lógica que, para el mantenimiento de activos observado, puede cambiar estados del activo cuando el registro se marca como planificado o terminado.
+
+Ese comportamiento demuestra una base reutilizable, pero no demuestra el workflow locativo objetivo definido en esta tarea.
+
+---
+
+#### 56. Brechas del AS-IS
+
+La implementación observada no demuestra de forma integral:
+
+1. plan versionado separado de obligación;
+2. obligación con lifecycle propio;
+3. solicitud y triage separados;
+4. orden de trabajo estable y revisable;
+5. diagnóstico estructurado;
+6. ejecución separada de estado genérico;
+7. repuestos correlacionados obligatoriamente con movimientos de inventario;
+8. prueba independiente;
+9. liberación independiente;
+10. cierre y reapertura auditables;
+11. mantenimiento locativo sobre los sujetos de `NEXO-DOM-029`;
+12. prevención de duplicados offline y por reintentos;
+13. segregación completa de capacidades;
+14. frontera técnica con compra, factura y reconocimiento financiero.
+
+Por tanto, el AS-IS se clasifica como base parcial y no como cierre de `CAP-13.02` y `CAP-13.03`.
+
+---
+
+#### 57. Estrategia de adopción
+
+La estrategia canónica es:
+
+```text
+REUSE_OR_REFACTOR
++
+BUILD MISSING LOCATIVE WORKFLOW
+```
+
+Se reutiliza donde sea compatible:
+
+- identidad de activos y sujetos físicos existentes;
+- historial de mantenimiento recuperable;
+- proveedores y datos técnicos cuando su fuente sea válida;
+- campos de programación que puedan migrarse sin pérdida semántica;
+- integración de inventario ya aprobada.
+
+Se construye o refactoriza donde falte:
+
+- planes versionados;
+- obligaciones;
+- solicitudes;
+- triage;
+- órdenes;
+- diagnósticos;
+- ejecución estructurada;
+- pruebas;
+- liberaciones;
+- cierres y reaperturas;
+- soporte locativo de instalaciones y componentes fijos.
+
+Ninguna migración se autoriza en esta tarea.
+
+---
+
+#### 58. Reconciliación de datos históricos
+
+Cuando una materialización futura migre mantenimiento histórico deberá clasificar cada registro por evidencia disponible.
+
+No se permite inferir retrospectivamente:
+
+- una prueba que nunca fue registrada;
+- una liberación que nunca fue decidida;
+- un diagnóstico que no existe;
+- un consumo de repuesto sin movimiento o evidencia suficiente;
+- una autoridad de cierre ausente.
+
+Los datos incompletos conservan su limitación explícita.
+
+Un registro legacy `done` puede significar trabajo reportado como terminado; no se promueve automáticamente a prueba aprobada, liberación ni cierre plenamente certificado.
+
+---
+
+#### 59. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- obligaciones próximas;
+- obligaciones vencidas;
+- cumplimiento de preventivos;
+- solicitudes abiertas por antigüedad;
+- tiempo de triage;
+- tiempo hasta autorización;
+- tiempo de indisponibilidad;
+- tiempo de ejecución;
+- trabajos bloqueados y causa;
+- retrabajos;
+- pruebas fallidas;
+- liberaciones rechazadas o restringidas;
+- reincidencia por sujeto o causa;
+- consumo de repuestos por intervención;
+- costo operacional informado por intervención;
+- órdenes abiertas por proveedor;
+- cierres reabiertos.
+
+Las métricas no sustituyen los hechos fuente.
+
+---
+
+#### 60. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| preventivo programado para la semana siguiente | obligación o programación; no trabajo iniciado |
+| falla reportada en un componente fijo | solicitud correctiva; triage antes de orden salvo emergencia gobernada |
+| proveedor envía cotización | evidencia comercial; no reparación ejecutada |
+| proveedor termina trabajo | ejecución reportada; todavía requiere prueba/liberación cuando aplique |
+| factura recibida | soporte económico/comercial; no cierre técnico |
+| pieza reemplazada inventariable | consumo correlacionado con orden y sujeto |
+| prueba técnica aprobada | habilita evaluación de liberación; no la sustituye |
+| trabajo completado con prueba fallida | no liberar; retrabajo o escalamiento |
+| componente reparado pero espacio sigue bloqueado por otra causa | componente puede liberar; espacio conserva disponibilidad resultante por sus razones vigentes |
+| solicitud resulta ser obra | handoff a `NEXO-DOM-037`; no crear reparación competidora |
+| solicitud resulta ser saneamiento rutinario | handoff a `NEXO-DOM-031` |
+| timeout después de guardar ejecución | reconciliar por identidad antes de reintentar |
+| registro legacy `done` sin prueba | conservar como ejecución histórica incompleta; no inventar liberación |
+
+---
+
+#### 61. Invariantes
+
+La implementación física futura deberá preservar todos estos invariantes:
+
+1. cada expediente tiene sujeto principal estable;
+2. plan y obligación son distintos;
+3. solicitud y orden son distintas;
+4. obligación y orden son distintas;
+5. orden y ejecución son distintas;
+6. diagnóstico y reparación son distintos;
+7. programación y comienzo real son distintos;
+8. trabajo completado y prueba son distintos;
+9. prueba y liberación son distintas;
+10. liberación y cierre son distintos;
+11. factura y cierre técnico son distintos;
+12. compra y aceptación técnica son distintas;
+13. condición y disponibilidad son distintas;
+14. disponibilidad y estado de la orden son distintos;
+15. cancelación no equivale a satisfacción;
+16. reapertura no borra cierre anterior;
+17. repuesto inventariable consumido tiene movimiento correlacionado;
+18. una reparación tiene un expediente técnico primario;
+19. un resultado desconocido se reconcilia antes de repetir side effects;
+20. ningún cambio histórico se destruye para simplificar el estado vigente.
+
+---
+
+#### 62. Seguridad e integridad
+
+El contrato exige que una implementación futura:
+
+- autorice mutaciones sensibles en servidor;
+- valide el sujeto y contexto contra datos autoritativos;
+- no confíe en IDs, estado o permisos enviados por cliente sin revalidación;
+- preserve actor efectivo y motivo;
+- aplique idempotencia en mutaciones repetibles;
+- mantenga historial de correcciones;
+- no permita liberar sin la autoridad requerida;
+- no permita cerrar omitiendo verificaciones bloqueantes;
+- no permita que una UI convierta visibilidad en permiso.
+
+La definición detallada de permisos pertenece a las tareas de autorización propietarias.
+
+---
+
+#### 63. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- colas o sincronización offline;
+- pantallas;
+- integraciones ORIGO/NUMERA;
+- migración de registros legacy;
+- pruebas automatizadas y operativas.
+
+Esos cambios solo se ejecutan dentro de sus tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 64. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- migra `asset_maintenance_records`;
+- cambia estados de activos reales;
+- crea órdenes reales;
+- compra repuestos;
+- contrata proveedores;
+- ejecuta reparaciones;
+- reconoce gastos o activos contables;
+- define el programa completo de limpieza y saneamiento de `NEXO-DOM-031`;
+- define control de plagas de `NEXO-DOM-032`;
+- define servicios y medidores de `NEXO-DOM-033`;
+- define inspecciones generales de `NEXO-DOM-034`;
+- define control metrológico de `NEXO-DOM-035`;
+- define llaves y acceso físico de `NEXO-DOM-036`;
+- define obras y adecuaciones de `NEXO-DOM-037`;
+- define el expediente general de novedades locativas de `NEXO-DOM-038`;
+- concede permisos de autorización;
+- inventa niveles de criticidad, SLA, frecuencias o umbrales no aprobados por su política propietaria.
+
+---
+
+#### 65. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya protege la separación entre plan, disparador, orden, diagnóstico, ejecución, repuestos, proveedor, costo informado, evidencia, prueba y liberación para mantenimiento físico;
+- la cobertura locativa vigente ya exige identidad estable, plan, solicitud, orden de trabajo, ejecución, prueba, liberación, cierre y reapertura separados;
+- los workflows especializados posteriores ya están cubiertos por requisitos existentes;
+- esta tarea desarrolla el contrato de dominio necesario para satisfacer esa cobertura y no introduce una obligación verificable nueva fuera de ella.
+
+---
+
+#### 66. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura ya existente sin modificar el registro:
+
+- `TREQ-NEXO-014`, para separación del ciclo de mantenimiento, repuestos, prueba y liberación;
+- `TREQ-NEXO-017`, para instalaciones, planes, solicitudes, órdenes, ejecución, prueba, liberación, cierre y reapertura;
+- `TREQ-NEXO-018`, para los workflows locativos especializados posteriores;
+- `TREQ-INTEGRATION-018`, para coordinación con dominios y proveedores externos;
+- `TREQ-NEXO-013`, para identidad, historial y evidencia de activos cuando la intervención relacione un activo;
+- `TREQ-SUPABASE-002`, para integridad e idempotencia de efectos persistentes cuando se materialice físicamente.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye actualización de 04A.
+
+---
+
+#### 67. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea es `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción y batería documental se ejecutan sobre el checkout del repositorio mediante el lifecycle canónico |
+| REMOTA | PASS | continuidad, tarea anterior, tarea siguiente, topología, owner, cobertura de pruebas, contratos previos y AS-IS remoto fueron inspeccionados |
+| OPERATIVA | NOT_APPLICABLE | no se ejecutan mantenimientos, solicitudes u órdenes reales durante la tarea documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` usan `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 68. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] el objeto principal impide reparaciones competidoras entre activo e instalación;
+- [x] el plan queda separado de la obligación;
+- [x] el plan queda versionado;
+- [x] se distinguen preventivo, predictivo, reglamentario, correctivo y emergencia;
+- [x] la obra de adecuación permanece separada;
+- [x] el disparador no equivale a trabajo iniciado;
+- [x] se preservan los estados canónicos de obligación;
+- [x] solicitud y triage quedan definidos;
+- [x] solicitud no equivale a orden;
+- [x] orden no equivale a ejecución;
+- [x] diagnóstico no equivale a reparación;
+- [x] programación no equivale a inicio real;
+- [x] repuestos inventariables requieren correlación con movimientos;
+- [x] contratación externa no equivale a aceptación técnica;
+- [x] costo operacional no equivale a reconocimiento contable;
+- [x] garantía no equivale a reparación ni liberación;
+- [x] prueba queda separada de ejecución;
+- [x] prueba fallida o inconclusa no libera cuando se exige resultado positivo;
+- [x] trabajo completado no equivale a liberación;
+- [x] liberación queda separada de cierre;
+- [x] cierre no depende de factura, foto o comentario aislados;
+- [x] reapertura conserva el cierre anterior;
+- [x] correcciones no destruyen historia;
+- [x] emergencia no elimina trazabilidad ni evidencia obligatoria;
+- [x] saneamiento, plagas, servicios, inspecciones, metrología, accesos, obras y novedades conservan sus owners posteriores;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] el AS-IS se clasifica como base parcial reutilizable y no como workflow final;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 69. Handoff hacia `NEXO-DOM-031`
+
+`NEXO-DOM-030` entrega a `NEXO-DOM-031`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+VERSIONED MAINTENANCE SEMANTICS
++
+SEPARATE PLAN / OBLIGATION / REQUEST / WORK ORDER
++
+EXECUTION AND EVIDENCE MODEL
++
+TEST AND RELEASE SEPARATION
++
+AVAILABILITY PROJECTION
++
+AUDITABLE CLOSURE AND REOPEN
+```
+
+`NEXO-DOM-031` podrá reutilizar las mismas reglas transversales de identidad, evidencia, autorización, idempotencia y liberación cuando sean compatibles, pero deberá definir de forma propia el programa de limpieza y saneamiento, sus procedimientos, frecuencias, químicos, ejecución, verificación y liberación sanitaria.
+
+No se convierte saneamiento rutinario en una orden de mantenimiento solo para reutilizar este workflow.
+
+---
+
+#### 70. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación`
 ### [ ] NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
 ### [ ] NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
 ### [ ] NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
