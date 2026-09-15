@@ -22,7 +22,6 @@ import {
 import {
   assertPackageGateRecordsValid,
   assessPackageGateRecord,
-  assessPackagePhysicalPreflight,
   packageGateRecordRelativePath,
   readPackageGatePolicy,
 } from './package-gate-control.mjs';
@@ -293,8 +292,8 @@ function parseArgs(argv) {
     values[key] = value;
     i += 1;
   }
-  if (!['start', 'prepare', 'status', 'check', 'approve', 'finish', 'handoff', 'preflight'].includes(command)) {
-    fail('Use start, prepare, status, check, approve, finish, handoff o preflight.');
+  if (!['start', 'prepare', 'status', 'check', 'approve', 'finish', 'handoff'].includes(command)) {
+    fail('Use start, prepare, status, check, approve, finish o handoff.');
   }
   return { command, ...values };
 }
@@ -444,11 +443,11 @@ export function finishPackageGate({
   const admission = (execution?.physical_admission ?? [])
     .find(({ package_id: packageId }) => packageId === id) ?? null;
   const primary = execution?.current ?? null;
-  const shouldMaterializeHandoff = admission?.status === 'ADMISSIBLE'
+  const handoff = (
+    admission?.status === 'ADMISSIBLE'
     && primary?.package_id === id
-    && primary?.next_action?.type === 'MATERIALIZE_PHYSICAL_HANDOFF';
-  if (shouldMaterializeHandoff) assertPackagePhysicalHandoffReady({ root, packageId: id });
-  const handoff = shouldMaterializeHandoff
+    && primary?.next_action?.type === 'MATERIALIZE_PHYSICAL_HANDOFF'
+  )
     ? materializePendingPhysicalHandoff(root, id, synchronized)
     : null;
 
@@ -512,7 +511,6 @@ export function handoffPackageImplementation({
     );
   }
 
-  assertPackagePhysicalHandoffReady({ root, packageId: id });
   const handoff = materializePendingPhysicalHandoff(root, id, synchronized);
   const refreshed = scanPackageReadiness({
     root,
@@ -558,34 +556,6 @@ function print(result) {
   console.log(`VALID: ${result.assessment.valid ? 'YES' : 'NO'}`);
 }
 
-export function inspectPackagePhysicalHandoffPreflight({
-  root = process.cwd(),
-  packageId,
-} = {}) {
-  const gate = inspectPackageGate({ root, packageId });
-  return {
-    package_id: gate.record.package_id,
-    status: gate.assessment.status,
-    ...assessPackagePhysicalPreflight(gate.record),
-  };
-}
-
-function assertPackagePhysicalHandoffReady({ root, packageId }) {
-  const preflight = inspectPackagePhysicalHandoffPreflight({ root, packageId });
-  if (!preflight.valid) {
-    fail(`PACKAGE_HANDOFF_PRECHECK: ${preflight.errors.join('; ')}`);
-  }
-  return preflight;
-}
-
-function printPhysicalPreflight(result) {
-  console.log(`PACKAGE: ${result.package_id}`);
-  console.log(`STATUS: ${result.status}`);
-  console.log(`PHYSICAL_PREFLIGHT_APPLIES: ${result.applies ? 'YES' : 'NO'}`);
-  console.log(`PHYSICAL_PREFLIGHT: ${result.valid ? 'PASS' : 'BLOCKED'}`);
-  for (const error of result.errors) console.log(`- ${error}`);
-}
-
 function main() {
   const args = parseArgs(process.argv.slice(2));
   if (args.command === 'check' && !args.package_id) {
@@ -622,13 +592,6 @@ function main() {
     const result = inspectPackageGate({ packageId: args.package_id });
     print(result);
     if (!result.assessment.valid) fail(result.assessment.errors.join('; '));
-    return;
-  }
-
-  if (args.command === 'preflight') {
-    const result = inspectPackagePhysicalHandoffPreflight({ packageId: args.package_id });
-    printPhysicalPreflight(result);
-    if (!result.valid) fail(result.errors.join('; '));
     return;
   }
 

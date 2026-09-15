@@ -3,7 +3,6 @@ import test from 'node:test';
 
 import {
   assessPackageGateRecord,
-  assessPackagePhysicalPreflight,
   packageGateRecordRelativePath,
 } from './package-gate-control.mjs';
 
@@ -119,64 +118,4 @@ test('production_authorized=false rechaza un destino PRODUCTION', () => {
   const assessment = assessPackageGateRecord(invalid, { policy, taskPrerequisites: { remaining: 0 } });
   assert.equal(assessment.valid, false);
   assert.match(assessment.errors.join(' '), /production_authorized=false/u);
-});
-
-test('el preflight físico DB/RPC exige las decisiones que evitan una implementación por ensayo y error', () => {
-  const assessment = assessPackagePhysicalPreflight(completeRecord({
-    canonical_snapshot: { runtime_profile: 'DATABASE_RPC_BOUNDARY' },
-  }));
-  assert.equal(assessment.applies, true);
-  assert.equal(assessment.valid, false);
-  assert.match(assessment.errors.join(' '), /physical_contract/u);
-});
-
-test('el preflight físico DB/RPC acepta un contrato reproducible y fail-closed', () => {
-  const assessment = assessPackagePhysicalPreflight(completeRecord({
-    canonical_snapshot: { runtime_profile: 'DATABASE_RPC_BOUNDARY' },
-    physical_contract: {
-      schema_version: 1,
-      contract_version: 'GAP-PKG-061-DB-RPC-001',
-      source_facts: [{
-        contract_ref: 'DATA-DOM-006',
-        authoritative_surface: 'app_private.source_fact',
-        owner: 'VENTO_OWNER',
-        grain: 'one fact per source event',
-        cutoff_rule: 'stable source cut-off',
-      }],
-      request: {
-        schema_ref: 'request-v1',
-        required_inputs: ['scope', 'cutoff'],
-        invalid_input_behavior: 'DENY',
-      },
-      safe_result: {
-        schema_ref: 'result-v1',
-        allowed_fields: ['aggregate'],
-        identifier_exposure_policy: 'NO_RAW_IDENTIFIERS',
-      },
-      reconciliation: {
-        oracle: 'source-to-output count oracle',
-        invariant: 'source equals accepted plus rejected plus quarantine',
-        counters: ['source', 'accepted', 'rejected', 'quarantine', 'materialized'],
-      },
-      disclosure: {
-        policy_ref: 'DATA-DISCLOSURE-PROTECTION-CONTRACT-001',
-        rule_version: 'v1',
-        unresolved_behavior: 'SUPPRESS',
-        complementary_suppression: true,
-        sequential_query_protection: 'block reconstructive requests',
-      },
-      authorization: {
-        decision_surface: 'api.get_safe_authorization_decision(jsonb)',
-        denied_behavior: 'DENY',
-        unresolved_behavior: 'DENY',
-      },
-      fixtures: {
-        path: 'tests/packages/GAP-PKG-061/fixtures.json',
-        scenario_ids: ['allowed-safe-aggregate'],
-      },
-    },
-  }));
-  assert.equal(assessment.applies, true);
-  assert.equal(assessment.valid, true);
-  assert.deepEqual(assessment.errors, []);
 });
