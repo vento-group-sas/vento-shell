@@ -18,14 +18,29 @@ const DERIVED_INTEGRATION_PATHS = new Set([
 ]);
 
 const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
+  'docs/plan-canonico/modular/task-development-policy.json',
+  'scripts/docs/canonical-task-preflight.mjs',
+  'scripts/docs/docs-runtime-primitives.mjs',
+  'scripts/docs/docs-runtime-primitives.test.mjs',
   'scripts/docs/implementation-branch-lifecycle.mjs',
   'scripts/docs/implementation-branch-lifecycle.test.mjs',
   'scripts/docs/implementation-execution-coordinator.mjs',
   'scripts/docs/implementation-execution-coordinator.test.mjs',
   'scripts/docs/implementation-state-integrity.mjs',
   'scripts/docs/implementation-state-integrity.test.mjs',
+  'scripts/docs/implementation-validation-engine.mjs',
+  'scripts/docs/implementation-validation-engine.test.mjs',
+  'scripts/docs/validate-executable-delivery.mjs',
+  'scripts/docs/validate-executable-delivery.test.mjs',
   'scripts/docs/task-branch-lifecycle.mjs',
   'scripts/docs/task-branch-lifecycle.test.mjs',
+  'scripts/docs/package-review-factory.mjs',
+  'scripts/docs/task-semantic-contract.mjs',
+  'scripts/docs/task-semantic-contract.test.mjs',
+  'scripts/quality/lint-ratchet.mjs',
+  'scripts/quality/lint-ratchet.test.mjs',
+  'scripts/supabase/environment-drift.mjs',
+  'scripts/supabase/environment-drift.test.mjs',
 ]);
 
 function fail(message) {

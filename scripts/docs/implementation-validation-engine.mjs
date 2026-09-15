@@ -661,13 +661,18 @@ function normalizedToolchain(toolchain = {}) {
 
 export function fingerprintCandidateRepositoryState({
   candidateCommit,
+  lifecycleHeadCommit = candidateCommit,
   gitStatus = '',
   trackedDiff = '',
   untrackedFiles = [],
 } = {}) {
   const commit = String(candidateCommit ?? '').trim().toLowerCase();
+  const lifecycleHead = String(lifecycleHeadCommit ?? '').trim().toLowerCase();
   if (!/^[a-f0-9]{40}$/u.test(commit)) {
     throw new Error(`candidateCommit inválido para fingerprint: ${candidateCommit ?? 'EMPTY'}.`);
+  }
+  if (!/^[a-f0-9]{40}$/u.test(lifecycleHead)) {
+    throw new Error(`lifecycleHeadCommit inválido para fingerprint: ${lifecycleHeadCommit ?? 'EMPTY'}.`);
   }
   const normalizedUntracked = (Array.isArray(untrackedFiles) ? untrackedFiles : [])
     .map((entry) => ({
@@ -679,6 +684,7 @@ export function fingerprintCandidateRepositoryState({
 
   return sha256(canonicalJson({
     candidateCommit: commit,
+    lifecycleHeadCommit: lifecycleHead,
     gitStatus: String(gitStatus ?? ''),
     trackedDiff: String(trackedDiff ?? ''),
     untrackedFiles: normalizedUntracked,
@@ -688,21 +694,25 @@ export function fingerprintCandidateRepositoryState({
 function candidateReceiptIdentity({
   instanceId,
   candidateCommit,
+  lifecycleHeadCommit = candidateCommit,
   repositoryStateSha256,
   validationCommands,
   toolchain,
 } = {}) {
   const normalizedInstanceId = String(instanceId ?? '').trim();
   const normalizedCommit = String(candidateCommit ?? '').trim().toLowerCase();
+  const normalizedLifecycleHead = String(lifecycleHeadCommit ?? '').trim().toLowerCase();
   const normalizedState = String(repositoryStateSha256 ?? '').trim().toLowerCase();
   if (!normalizedInstanceId) throw new Error('instanceId es obligatorio para candidate receipt.');
   if (!/^[a-f0-9]{40}$/u.test(normalizedCommit)) throw new Error('candidateCommit inválido para candidate receipt.');
+  if (!/^[a-f0-9]{40}$/u.test(normalizedLifecycleHead)) throw new Error('lifecycleHeadCommit inválido para candidate receipt.');
   if (!/^[a-f0-9]{64}$/u.test(normalizedState)) throw new Error('repositoryStateSha256 inválido para candidate receipt.');
   const commands = normalizedValidationCommands(validationCommands);
   const normalizedRuntime = normalizedToolchain(toolchain);
   return {
     instanceId: normalizedInstanceId,
     candidateCommit: normalizedCommit,
+    lifecycleHeadCommit: normalizedLifecycleHead,
     repositoryStateSha256: normalizedState,
     validationCommandsSha256: sha256(canonicalJson(commands)),
     toolchainSha256: sha256(canonicalJson(normalizedRuntime)),
@@ -713,6 +723,7 @@ function candidateReceiptIdentity({
 export function createCandidateValidationReceipt({
   instanceId,
   candidateCommit,
+  lifecycleHeadCommit = candidateCommit,
   repositoryStateSha256,
   validationCommands = [],
   toolchain = {},
@@ -721,6 +732,7 @@ export function createCandidateValidationReceipt({
   const identity = candidateReceiptIdentity({
     instanceId,
     candidateCommit,
+    lifecycleHeadCommit,
     repositoryStateSha256,
     validationCommands,
     toolchain,
@@ -748,6 +760,7 @@ export function validateCandidateValidationReceipt({
   receipt,
   instanceId,
   candidateCommit,
+  lifecycleHeadCommit = candidateCommit,
   repositoryStateSha256,
   validationCommands = [],
   toolchain = {},
@@ -760,6 +773,7 @@ export function validateCandidateValidationReceipt({
     expected = candidateReceiptIdentity({
       instanceId,
       candidateCommit,
+      lifecycleHeadCommit,
       repositoryStateSha256,
       validationCommands,
       toolchain,
@@ -788,6 +802,7 @@ export function validateCandidateValidationReceipt({
   for (const key of [
     'instanceId',
     'candidateCommit',
+    'lifecycleHeadCommit',
     'repositoryStateSha256',
     'validationCommandsSha256',
     'toolchainSha256',

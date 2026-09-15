@@ -22,6 +22,7 @@ import {
   observeRemoteEnvironment,
   parseRemoteFunctionMultipart,
   parseToml,
+  resolveImplementationCandidateForDrift,
   sha256,
   stableStringify,
   validateAllowlist,
@@ -1773,4 +1774,74 @@ test('MRP015-040 STAGING secret policy override keeps dormant external integrati
     fallbackResult.drifts.some((row) => row.surface === 'edge_secrets.required_name' && row.identity === 'EXTERNAL_SECRET'),
     true,
   );
+});
+
+test('drift remoto ancla candidate fisico y separa lifecycle head', () => {
+  withTempRoot((root) => {
+    const git = (...args) => {
+      const result = spawnSync('git', args, {
+        cwd: root,
+        encoding: 'utf8',
+        windowsHide: true,
+        stdio: ['ignore', 'pipe', 'pipe'],
+      });
+      assert.equal(result.status, 0, result.stderr || result.stdout);
+      return String(result.stdout ?? '').trim();
+    };
+    git('init', '-b', 'main');
+    git('config', 'user.name', 'Test');
+    git('config', 'user.email', 'test@example.invalid');
+    git('switch', '-c', 'implementation/shell-ci-021/gap-pkg-018');
+
+    const ledgerRelative =
+      'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json';
+    const ledgerPath = path.join(root, ...ledgerRelative.split('/'));
+    const headerPath = path.join(root, 'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md');
+    fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
+    const candidateLedger = {
+      instance_id: 'SHELL-CI-021::GAP-PKG-018',
+      task_id: 'SHELL-CI-021',
+      status: 'IN_PROGRESS',
+      validation_commands: ['check:a'],
+      authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: ledgerRelative, change: 'MODIFY' }],
+      target_environments: [{ environment_role: 'STAGING', target_id: 'staging' }],
+      evidence: [],
+    };
+    fs.writeFileSync(ledgerPath, `${JSON.stringify(candidateLedger, null, 2)}\n`);
+    fs.writeFileSync(headerPath, 'candidate\n');
+    git('add', '.');
+    git('commit', '-m', 'candidate');
+    const candidate = git('rev-parse', 'HEAD');
+
+    const implemented = {
+      ...candidateLedger,
+      status: 'IMPLEMENTED',
+      evidence: [`LOCAL_VALIDATION candidate=${candidate} command=check:a status=PASS`],
+    };
+    fs.writeFileSync(ledgerPath, `${JSON.stringify(implemented, null, 2)}\n`);
+    fs.writeFileSync(headerPath, 'lifecycle\n');
+    git('add', '.');
+    git('commit', '-m', 'lifecycle');
+    const lifecycle = git('rev-parse', 'HEAD');
+
+    const context = resolveImplementationCandidateForDrift({
+      root,
+      instanceId: 'SHELL-CI-021::GAP-PKG-018',
+    });
+    assert.equal(context.candidate_sha, candidate);
+    assert.equal(context.lifecycle_head_sha, lifecycle);
+    assert.equal(context.decision, 'REUSE_PHYSICAL_EVIDENCE');
+
+    fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+    fs.writeFileSync(path.join(root, 'src', 'product.ts'), 'export const changed = true;\n');
+    git('add', '.');
+    git('commit', '-m', 'product delta');
+    assert.throws(
+      () => resolveImplementationCandidateForDrift({
+        root,
+        instanceId: 'SHELL-CI-021::GAP-PKG-018',
+      }),
+      /IMPLEMENTATION_CANDIDATE_LIFECYCLE_UNSAFE/u,
+    );
+  });
 });

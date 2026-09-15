@@ -2,8 +2,11 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  IMPLEMENTATION_CANDIDATE_LIFECYCLE_MODEL_ID,
   IMPLEMENTATION_INTEGRATION_MODEL_ID,
+  assessImplementationCandidateLifecycleDelta,
   createImplementationIntegrationIdentity,
+  resolveValidationCandidateAnchor,
   implementationIntegrationDrift,
   markImplementationIntegrationChecksPass,
   markImplementationIntegrationCleaned,
@@ -142,4 +145,121 @@ test('modelo falla cerrado ante hashes o fases invalidas', () => {
     }),
     /MERGED_SHA_MISSING/u,
   );
+});
+
+test('candidate/lifecycle resuelve un unico candidato desde todas las validaciones', () => {
+  const candidate = '2'.repeat(40);
+  const instance = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    validation_commands: ['check:a', 'check:b'],
+    evidence: [
+      `LOCAL_VALIDATION candidate=${candidate} command=check:a status=PASS`,
+      `LOCAL_VALIDATION candidate=${candidate} command=check:b status=NOT_APPLICABLE`,
+    ],
+  };
+  assert.deepEqual(resolveValidationCandidateAnchor(instance), {
+    status: 'PASS',
+    candidate_sha: candidate,
+    reason: 'LOCAL_VALIDATION_SINGLE_CANDIDATE',
+    missing_commands: [],
+    mixed_commands: [],
+  });
+
+  const mixed = structuredClone(instance);
+  mixed.evidence[1] = `LOCAL_VALIDATION candidate=${'3'.repeat(40)} command=check:b status=PASS`;
+  assert.equal(resolveValidationCandidateAnchor(mixed).status, 'INVALID');
+});
+
+test('candidate/lifecycle permite checkpoint de metadata y bloquea delta fisico', () => {
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    task_id: 'SHELL-CI-021',
+    status: 'IN_PROGRESS',
+    validation_commands: ['check:a'],
+    authorized_changes: [{ path: 'ledger', change: 'MODIFY' }],
+    target_environments: [{ environment_role: 'STAGING', target_id: 'staging' }],
+    evidence: [],
+  };
+  const lifecycleLedger = {
+    ...candidateLedger,
+    status: 'IMPLEMENTED',
+    evidence: [`LOCAL_VALIDATION candidate=${'2'.repeat(40)} command=check:a status=PASS`],
+  };
+
+  const safe = assessImplementationCandidateLifecycleDelta({
+    instance: lifecycleLedger,
+    candidateLedger,
+    lifecycleLedger,
+    changedPaths: [
+      'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json',
+      'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
+    ],
+    candidateIsAncestor: true,
+  });
+  assert.equal(safe.model_id, IMPLEMENTATION_CANDIDATE_LIFECYCLE_MODEL_ID);
+  assert.equal(safe.decision, 'REUSE_PHYSICAL_EVIDENCE');
+
+  const physical = assessImplementationCandidateLifecycleDelta({
+    instance: lifecycleLedger,
+    candidateLedger,
+    lifecycleLedger,
+    changedPaths: ['src/product.ts'],
+    candidateIsAncestor: true,
+  });
+  assert.equal(physical.decision, 'REVALIDATE_PHYSICAL');
+
+  const changedCommands = structuredClone(lifecycleLedger);
+  changedCommands.validation_commands = ['check:a', 'check:new'];
+  const contract = assessImplementationCandidateLifecycleDelta({
+    instance: changedCommands,
+    candidateLedger,
+    lifecycleLedger: changedCommands,
+    changedPaths: [
+      'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json',
+    ],
+    candidateIsAncestor: true,
+  });
+  assert.equal(contract.decision, 'REVALIDATE_PHYSICAL');
+  assert.match(contract.reason, /LIFECYCLE_CONTRACT_CHANGED/u);
+});
+
+test('candidate/lifecycle acepta pending pristino solo con certificacion explicita', () => {
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    task_id: 'SHELL-CI-021',
+    status: 'IN_PROGRESS',
+    validation_commands: ['check:a'],
+    authorized_changes: [{ path: 'ledger', change: 'MODIFY' }],
+    target_environments: [{ environment_role: 'STAGING', target_id: 'staging' }],
+    evidence: [],
+  };
+  const lifecycleLedger = {
+    ...candidateLedger,
+    status: 'VERIFIED',
+    evidence: [
+      `LOCAL_VALIDATION candidate=${'2'.repeat(40)} command=check:a status=PASS`,
+    ],
+  };
+  const pendingPath =
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-018.json';
+
+  const blocked = assessImplementationCandidateLifecycleDelta({
+    instance: lifecycleLedger,
+    candidateLedger,
+    lifecycleLedger,
+    changedPaths: [pendingPath],
+    candidateIsAncestor: true,
+  });
+  assert.equal(blocked.decision, 'REVALIDATE_PHYSICAL');
+
+  const safe = assessImplementationCandidateLifecycleDelta({
+    instance: lifecycleLedger,
+    candidateLedger,
+    lifecycleLedger,
+    changedPaths: [pendingPath],
+    pristinePendingInstancePaths: [pendingPath],
+    candidateIsAncestor: true,
+  });
+  assert.equal(safe.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(safe.material_paths, []);
 });

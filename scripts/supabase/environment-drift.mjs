@@ -6,6 +6,11 @@ import { fileURLToPath } from 'node:url';
 
 import { checkManifest } from './migration-manifest.mjs';
 import { resolveNpmInvocation, runHarness } from '../quality/supabase-db-harness.mjs';
+import {
+  assessImplementationCandidateLifecycleDelta,
+  resolveValidationCandidateAnchor,
+} from '../docs/implementation-integration-model.mjs';
+import { parseGitPorcelainV1Paths } from '../docs/docs-runtime-primitives.mjs';
 
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
@@ -600,21 +605,108 @@ export function inventoryEdgeFunctions({ root = repoRootFromModule(), configSect
   });
 }
 
-function gitCandidate(root) {
-  const head = git(root, ['rev-parse', 'HEAD']).stdout.trim();
+function implementationInstanceRelativePath(instanceId) {
+  const [taskId, instanceKey] = String(instanceId ?? '').trim().split('::');
+  if (!taskId || !instanceKey) fail('IMPLEMENTATION_INSTANCE_ID_INVALID', instanceId ?? 'EMPTY');
+  return `docs/plan-canonico/modular/implementation-instances/${taskId}__${instanceKey}.json`;
+}
+
+function readGitJsonAtRef(root, ref, relativePath) {
+  const result = git(root, ['show', `${ref}:${relativePath}`], { allowFailure: true });
+  if (result.status !== 0 || !result.stdout.trim()) return null;
+  try {
+    return JSON.parse(result.stdout);
+  } catch {
+    return null;
+  }
+}
+
+export function resolveImplementationCandidateForDrift({
+  root = repoRootFromModule(),
+  instanceId,
+} = {}) {
+  const relativePath = implementationInstanceRelativePath(instanceId);
+  const absolutePath = path.join(root, ...relativePath.split('/'));
+  if (!fs.existsSync(absolutePath)) fail('IMPLEMENTATION_INSTANCE_MISSING', relativePath);
+  const instance = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+  if (instance?.instance_id !== instanceId) {
+    fail('IMPLEMENTATION_INSTANCE_ID_MISMATCH', instance?.instance_id ?? 'NONE');
+  }
+
+  const [taskId, instanceKey] = instanceId.split('::');
+  const expectedBranch = `implementation/${taskId.toLowerCase()}/${instanceKey.toLowerCase()}`;
+  const currentBranch = git(root, ['branch', '--show-current'], { allowFailure: true }).stdout.trim();
+  if (currentBranch !== expectedBranch) {
+    fail('IMPLEMENTATION_BRANCH_MISMATCH', `${currentBranch || 'DETACHED'}!=${expectedBranch}`);
+  }
+
+  const status = git(root, ['status', '--porcelain=v1', '--untracked-files=all']).stdout;
+  if (status.trim()) {
+    fail('IMPLEMENTATION_LIFECYCLE_HEAD_DIRTY', String(status.split(/\r?\n/u).filter(Boolean).length));
+  }
+
+  const anchor = resolveValidationCandidateAnchor(instance);
+  if (anchor.status !== 'PASS') {
+    fail('IMPLEMENTATION_CANDIDATE_ANCHOR_INVALID', anchor.reason);
+  }
+
+  const lifecycleHeadSha = git(root, ['rev-parse', 'HEAD']).stdout.trim().toLowerCase();
+  const ancestor = git(
+    root,
+    ['merge-base', '--is-ancestor', anchor.candidate_sha, lifecycleHeadSha],
+    { allowFailure: true },
+  ).status === 0;
+  const candidateLedger = readGitJsonAtRef(root, anchor.candidate_sha, relativePath);
+  const delta = git(
+    root,
+    ['diff', '--name-only', `${anchor.candidate_sha}..${lifecycleHeadSha}`],
+    { allowFailure: true },
+  );
+  if (delta.status !== 0) fail('IMPLEMENTATION_CANDIDATE_DELTA_UNREADABLE');
+  const changedPaths = delta.stdout
+    .split(/\r?\n/u)
+    .map(normalizeRepoPath)
+    .filter(Boolean);
+
+  const assessment = assessImplementationCandidateLifecycleDelta({
+    instance,
+    candidateLedger,
+    lifecycleLedger: instance,
+    changedPaths,
+    candidateIsAncestor: ancestor,
+  });
+  if (assessment.decision !== 'REUSE_PHYSICAL_EVIDENCE') {
+    fail('IMPLEMENTATION_CANDIDATE_LIFECYCLE_UNSAFE', assessment.reason);
+  }
+
+  return {
+    instance_id: instanceId,
+    candidate_sha: anchor.candidate_sha,
+    lifecycle_head_sha: lifecycleHeadSha,
+    decision: assessment.decision,
+    model_id: assessment.model_id,
+    changed_paths: [...assessment.changed_paths],
+  };
+}
+
+function gitCandidate(root, implementationContext = null) {
+  const head = git(root, ['rev-parse', 'HEAD']).stdout.trim().toLowerCase();
   const branch = git(root, ['branch', '--show-current'], { allowFailure: true }).stdout.trim() || 'DETACHED';
   const status = git(root, ['status', '--porcelain=v1', '--untracked-files=all']).stdout;
-  const dirtyPaths = status.split(/\r?\n/u)
-    .map((line) => line.slice(3).trim())
-    .filter(Boolean)
+  const dirtyPaths = parseGitPorcelainV1Paths(status)
     .map(normalizeRepoPath)
     .sort((left, right) => left.localeCompare(right, 'en'));
   return {
-    commit_sha: head,
+    commit_sha: implementationContext?.candidate_sha ?? head,
     branch,
     clean: dirtyPaths.length === 0,
     dirty_paths_digest: dirtyPaths.length === 0 ? null : sha256(dirtyPaths.join('\n')),
     dirty_path_count: dirtyPaths.length,
+    ...(implementationContext ? {
+      lifecycle_head_sha: implementationContext.lifecycle_head_sha,
+      candidate_lifecycle_model_id: implementationContext.model_id,
+      candidate_lifecycle_decision: implementationContext.decision,
+    } : {}),
   };
 }
 
@@ -917,7 +1009,10 @@ function expectedConfigContract(sections) {
   };
 }
 
-export function buildExpectedBaseline({ root = repoRootFromModule() } = {}) {
+export function buildExpectedBaseline({
+  root = repoRootFromModule(),
+  instanceId = null,
+} = {}) {
   const manifest = checkManifest({ root });
   const configPath = path.join(root, ...CONFIG_RELATIVE.split('/'));
   const manifestPath = path.join(root, ...MANIFEST_RELATIVE.split('/'));
@@ -926,7 +1021,10 @@ export function buildExpectedBaseline({ root = repoRootFromModule() } = {}) {
   const configSections = parseToml(configSource);
   const edgeFunctions = inventoryEdgeFunctions({ root, configSections });
   const hostedResources = readHostedResourceBaseline(root);
-  const candidate = gitCandidate(root);
+  const implementationContext = instanceId
+    ? resolveImplementationCandidateForDrift({ root, instanceId })
+    : null;
+  const candidate = gitCandidate(root, implementationContext);
   const secretNames = [...new Set(edgeFunctions.flatMap((entry) => entry.referenced_secret_names))]
     .sort((left, right) => left.localeCompare(right, 'en'));
   const stagingContract = hostedResources.environment_contracts.STAGING;
@@ -1982,6 +2080,7 @@ export function compareRemote({ expected, localObserved = null, remoteObserved, 
       expected_digest: expected?.expected_digest ?? null,
       observed_digest: remoteObserved?.observed_digest ?? null,
       candidate_sha: expected?.candidate?.commit_sha ?? null,
+      lifecycle_head_sha: expected?.candidate?.lifecycle_head_sha ?? expected?.candidate?.commit_sha ?? null,
       drifts: applied,
       certification: certificationFor(environment, applied),
     };
@@ -2348,6 +2447,7 @@ function parseArgs(argv) {
     projectRef: null,
     owner: null,
     scope: 'full',
+    instanceId: null,
     allowlist: null,
     output: null,
     strict: false,
@@ -2355,7 +2455,7 @@ function parseArgs(argv) {
   for (let index = 1; index < argv.length; index += 1) {
     const token = argv[index];
     if (token === '--strict') args.strict = true;
-    else if (['--environment-role', '--project-ref', '--owner', '--scope', '--allowlist', '--output'].includes(token)) {
+    else if (['--environment-role', '--project-ref', '--owner', '--scope', '--instance-id', '--allowlist', '--output'].includes(token)) {
       const value = argv[index + 1];
       if (!value || value.startsWith('--')) fail('ARGUMENT_VALUE_MISSING', token);
       const key = {
@@ -2363,6 +2463,7 @@ function parseArgs(argv) {
         '--project-ref': 'projectRef',
         '--owner': 'owner',
         '--scope': 'scope',
+        '--instance-id': 'instanceId',
         '--allowlist': 'allowlist',
         '--output': 'output',
       }[token];
@@ -2465,6 +2566,7 @@ export function printControllerResult({ mode, result, output = null, strict = fa
   console.log(`ENVIRONMENT_ROLE: ${safeAscii(result?.environment_role ?? 'EXPECTED').toUpperCase()}`);
   console.log(`REMOTE_SCOPE: ${safeAscii(result?.remote_scope ?? 'N/A').toUpperCase()}`);
   console.log(`CANDIDATE_SHA: ${safeAscii(result?.candidate_sha ?? result?.candidate?.commit_sha ?? 'N/A')}`);
+  console.log(`LIFECYCLE_HEAD_SHA: ${safeAscii(result?.lifecycle_head_sha ?? result?.candidate?.lifecycle_head_sha ?? 'N/A')}`);
   console.log(`EXPECTED_DIGEST: ${safeAscii(result?.expected_digest ?? 'N/A')}`);
   console.log(`OBSERVED_DIGEST: ${safeAscii(result?.observed_digest ?? 'N/A')}`);
   console.log(`DRIFT_TOTAL: ${(result?.drifts ?? []).length}`);
@@ -2526,7 +2628,7 @@ async function main() {
   try {
     args = parseArgs(process.argv.slice(2));
     validatePackageScripts(JSON.parse(fs.readFileSync(path.join(root, 'package.json'), 'utf8')));
-    const expected = buildExpectedBaseline({ root });
+    const expected = buildExpectedBaseline({ root, instanceId: args.instanceId });
     const allowlist = loadAllowlist(root, args.allowlist);
 
     if (args.mode === 'expected') {

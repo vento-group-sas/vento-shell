@@ -4,6 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
+import { parseGitPorcelainV1Paths } from './docs-runtime-primitives.mjs';
+
 const DEFAULT_BRANCH = 'main';
 const TASK_PREFIX = 'task/';
 const INFRA_PREFIX = 'infra/';
@@ -516,17 +518,7 @@ function currentHead(root) {
   return git(['rev-parse', 'HEAD'], { cwd: root }).stdout.trim();
 }
 
-export function parsePorcelainPaths(source) {
-  const paths = [];
-  for (const line of String(source ?? '').split(/\r?\n/u)) {
-    if (!line.trim()) continue;
-    const payload = line.length >= 4 ? line.slice(3).trim() : line.trim();
-    const candidate = payload.includes(' -> ') ? payload.split(' -> ').at(-1) : payload;
-    const normalized = String(candidate ?? '').replace(/^"|"$/gu, '').replaceAll('\\', '/');
-    if (normalized) paths.push(normalized);
-  }
-  return [...new Set(paths)].sort((left, right) => left.localeCompare(right, 'en'));
-}
+export const parsePorcelainPaths = parseGitPorcelainV1Paths;
 
 function worktreePaths(root) {
   return parsePorcelainPaths(

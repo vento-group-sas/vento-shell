@@ -13,7 +13,6 @@ const FINDING_CODES = new Set([
   'PRESENTATION',
   'HEADER_FIELD_MISSING',
   'OWNER_FILE_MISMATCH',
-  'OWNER_REPOSITORY_MISSING',
   'PHYSICAL_SCOPE_CONTRADICTION',
   'SECTION_MISSING',
   'UNRESOLVED_PLACEHOLDER',
@@ -184,7 +183,6 @@ export function validateTaskSemanticContract({
   ownerRelativePath,
   inventory,
   policy,
-  root = process.cwd(),
 }) {
   const findings = [];
   const approved = task.state === 'APROBADA';
@@ -212,12 +210,6 @@ export function validateTaskSemanticContract({
   const declaredOwner = metadata.get('Archivo propietario');
   if (declaredOwner && declaredOwner.replaceAll('\\', '/') !== `docs/plan-canonico/modular/${ownerRelativePath}`) {
     add('OWNER_FILE_MISMATCH', `Archivo propietario no coincide con ${ownerRelativePath}.`);
-  }
-  const repositoryOwner = metadata.get('Repositorio propietario');
-  if (repositoryOwner?.startsWith('vento-group-sas/')) {
-    const repositoryName = repositoryOwner.split('/').at(-1);
-    const repositoryPath = path.join(path.dirname(root), repositoryName);
-    if (!fs.existsSync(repositoryPath)) add('OWNER_REPOSITORY_MISSING', `no existe el repositorio propietario ${repositoryOwner}.`);
   }
   if (physicalContradiction(metadata)) {
     add(

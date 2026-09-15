@@ -4,6 +4,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
+import { parseGitPorcelainV1Paths } from './docs-runtime-primitives.mjs';
+
 import {
   parsePackageTaskRouting,
   scanPackageReadiness,
@@ -463,14 +465,10 @@ function currentBranch(root) {
 }
 
 function worktreeDirtyPaths(root) {
-  return git(
+  return parseGitPorcelainV1Paths(git(
     ['status', '--porcelain=v1', '--untracked-files=all'],
     { cwd: root },
-  ).stdout
-    .split(/\r?\n/u)
-    .filter(Boolean)
-    .map((line) => normalizePath(line.length >= 4 ? line.slice(3).trim().split(' -> ').at(-1) : line.trim()))
-    .filter(Boolean)
+  ).stdout)
     .filter((entry) => !entry.startsWith('.delivery/'))
     .filter((entry) => !REVIEW_TOOLING_PATHS.has(entry));
 }
