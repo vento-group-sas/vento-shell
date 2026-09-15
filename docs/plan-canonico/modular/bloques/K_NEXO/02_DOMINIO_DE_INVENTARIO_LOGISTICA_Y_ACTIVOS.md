@@ -44365,7 +44365,1968 @@ Una inspección física general no se convierte en calibración o verificación 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto`
 
-### [ ] NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
+### ✅ NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
+**Tarea siguiente:** NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
+**Tipo de tarea:** documental; definición canónica del control metrológico para equipos e instrumentos aplicables mediante perfil versionado, magnitud, unidad, rango, resolución, tolerancia, criterio de aceptación, método, patrón o referencia trazable, calibración, verificación, ajuste, certificados, vencimientos, restricciones, evaluación de impacto fuera de tolerancia y liberación técnica, reutilizando el ciclo de mantenimiento aprobado sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna el control metrológico de equipos e instrumentos cuando una política, criticidad, proceso, obligación o uso de medición requiera demostrar aptitud, trazabilidad y efecto sobre decisiones operativas.
+
+La regla raíz queda:
+
+```text
+SUJETO DE MEDICIÓN ESTABLE
++
+PERFIL METROLÓGICO VERSIONADO
++
+MAGNITUD / UNIDAD / RANGO / RESOLUCIÓN
++
+TOLERANCIA Y CRITERIO DE ACEPTACIÓN
++
+MÉTODO VERSIONADO
++
+PATRÓN O REFERENCIA TRAZABLE
++
+OBLIGACIÓN VIGENTE
++
+EJECUCIÓN AUTORIZADA
++
+RESULTADOS
++
+DECISIÓN DE CONFORMIDAD
++
+CERTIFICADO Y EVIDENCIA
++
+AJUSTE / SELLO / RESTRICCIÓN CUANDO APLIQUE
++
+PRÓXIMA OBLIGACIÓN
++
+EVALUACIÓN DE IMPACTO CUANDO EXISTA FUERA DE TOLERANCIA
++
+ACEPTACIÓN TÉCNICA Y LIBERACIÓN
+→
+CONTROL METROLÓGICO REPRODUCIBLE Y AUDITABLE
+```
+
+Se preserva expresamente:
+
+```text
+CALIBRADO
+!=
+VERIFICADO
+!=
+AJUSTADO
+!=
+FUERA DE TOLERANCIA
+!=
+NO APTO
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-035` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. identifica el sujeto de medición mediante una identidad física estable;
+2. define aplicabilidad del control metrológico sin asumir que todo equipo o medidor está sujeto al mismo régimen;
+3. define un perfil metrológico versionado por sujeto o clase aplicable;
+4. conserva magnitud, unidad, rango y resolución;
+5. conserva tolerancia y criterio de aceptación como conceptos explícitos y versionables;
+6. conserva método, patrón o referencia y trazabilidad aplicable;
+7. conserva laboratorio, proveedor o responsable sin convertirlo en autoridad interna automática;
+8. reutiliza la semántica de obligación técnica de `NEXO-DOM-026`;
+9. separa calibración, verificación y ajuste;
+10. separa ejecución, resultados y decisión de conformidad;
+11. separa certificado, resultado y aceptación técnica;
+12. separa vencimiento de obligación de un resultado fuera de tolerancia;
+13. define restricciones, sellos y estado de uso cuando correspondan;
+14. define próxima obligación sin sobrescribir el historial;
+15. define evaluación de impacto ante resultados fuera de tolerancia;
+16. exige delimitar la ventana potencialmente afectada sin declarar automáticamente inválidas todas las mediciones previas;
+17. exige localizar mediciones, producción, lotes, controles de calidad, recepciones, decisiones o registros potencialmente afectados cuando existan;
+18. define disposición, acción correctiva, reevaluación y cierre del impacto;
+19. conserva handoffs hacia mantenimiento, FOGO, ORIGO, servicios, información y otros owners sin duplicar el hecho metrológico;
+20. define efecto explícito sobre serviceability y disponibilidad cuando la política lo autorice;
+21. preserva idempotencia, concurrencia, operación offline, resultado desconocido y corrección no destructiva;
+22. clasifica el AS-IS observable como base parcial `REUSE_OR_REFACTOR`;
+23. no crea ni modifica requisitos de prueba porque la conducta ya está cubierta por requisitos canónicos vigentes;
+24. no autoriza tablas, migraciones, RLS, RPC, UI, datos, Supabase, calibraciones reales, cambios físicos ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.08 — Calibrar equipos`;
+- `NEXO-DOM-013`, para identidad, condición, ubicación, custodia y disponibilidad del activo;
+- `NEXO-DOM-014`, para documentos, garantía, mantenimiento y evidencia cuando apliquen;
+- `NEXO-DOM-017`, para auditoría e historial;
+- `NEXO-DOM-026`, para obligación técnica, calibración como especialización, vencimiento, resultado, serviceability y próxima obligación;
+- `NEXO-DOM-029`, para sujetos locativos y puntos de servicio cuando un instrumento esté asociado a instalaciones;
+- `NEXO-DOM-030`, para reparación, prueba y liberación cuando exista intervención técnica;
+- `NEXO-DOM-033`, para medidores de servicios, lecturas y consumos;
+- `NEXO-DOM-034`, para plantillas, hallazgos, acciones, evidencia, verificación de eficacia y handoffs;
+- `CAP-SCOPE-008`, para impactos que alcancen producción, calidad, lotes o decisiones productivas;
+- `CAP-SCOPE-016`, para documentos, evidencia y registros afectados;
+- el registro canónico de requisitos de prueba vigente;
+- la implementación remota observable de activos, mantenimiento y documentos en `vento-nexo`.
+
+Esta tarea especializa metrología. No redefine mantenimiento general, producción, calidad, recepción, servicios ni gobierno documental.
+
+---
+
+#### 4. Decisión de cobertura de `CAP-13.08`
+
+La capacidad conserva:
+
+```text
+CAP-13.08
+CALIBRAR EQUIPOS
+```
+
+con tratamiento:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+y propiedad objetivo:
+
+```text
+NEXO + PROVEEDOR ESPECIALIZADO CUANDO APLIQUE
+```
+
+El objetivo no es registrar únicamente una fecha de calibración.
+
+El contrato exige gobernar:
+
+```text
+CONTROL METROLÓGICO
++
+PATRONES O REFERENCIAS
++
+TOLERANCIAS
++
+CERTIFICADOS
++
+VENCIMIENTOS
++
+FUERA DE TOLERANCIA
++
+EVALUACIÓN DE IMPACTO
+```
+
+NEXO conserva verdad técnica interna y aceptación.
+
+El proveedor especializado conserva únicamente la ejecución o afirmación externa que le corresponda.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. mantenimiento de activos podía registrar una calibración sin constituir control metrológico completo;
+2. no existía maestro suficiente de magnitud, rango, resolución, tolerancia, método, patrón, laboratorio, certificado y próxima obligación;
+3. una calibración podía reducirse a un tipo de mantenimiento y una fecha;
+4. un certificado podía confundirse con resultado o aceptación;
+5. calibración ejecutada podía considerarse automáticamente conforme;
+6. verificación y calibración podían colapsarse;
+7. ajuste podía confundirse con calibración o reparación;
+8. vencimiento podía confundirse con resultado fuera de tolerancia;
+9. un resultado fuera de tolerancia podía quedar sin ventana de impacto;
+10. mediciones históricas potencialmente afectadas podían ignorarse o invalidarse indiscriminadamente;
+11. lotes, producción, controles de calidad, recepciones o decisiones relacionadas podían quedar sin evaluación;
+12. un instrumento podía volver a disponible sin resolver restricciones, impacto o liberación;
+13. la próxima fecha podía editarse sin conservar la obligación previa;
+14. reintentos o captura offline podían duplicar ejecuciones, certificados o evaluaciones;
+15. resultados externos podían convertirse en verdad interna sin aceptación técnica;
+16. correcciones podían sobrescribir resultados o decisiones históricas;
+17. código de tolerancias de inventario podía interpretarse erróneamente como control metrológico completo.
+
+---
+
+#### 6. Ámbito del control metrológico
+
+El contrato aplica únicamente a sujetos cuya medición requiera control metrológico conforme a una política, proceso, criticidad, contrato, fabricante, obligación o decisión técnica aprobada.
+
+Puede incluir, según aplicabilidad:
+
+- instrumentos;
+- equipos de medición;
+- sensores con función de medición material;
+- medidores;
+- equipos productivos con medición relevante;
+- equipos usados para recepción o control;
+- equipos utilizados para calidad;
+- otros sujetos físicos autorizados.
+
+La pertenencia a una categoría de activo no activa por sí sola control metrológico.
+
+---
+
+#### 7. Sujeto metrológico
+
+Todo expediente debe resolver una identidad física estable.
+
+Se preserva:
+
+```text
+METROLOGICAL SUBJECT
+!=
+MODEL
+!=
+SERIAL
+!=
+CERTIFICATE NUMBER
+!=
+PROVIDER CODE
+```
+
+El serial puede ser evidencia de identidad física, pero la historia interna no depende únicamente de un identificador externo mutable.
+
+---
+
+#### 8. Instrumento y equipo
+
+Esta tarea no impone una taxonomía universal entre instrumento, equipo, sensor o medidor.
+
+Lo obligatorio es que el sujeto:
+
+- tenga identidad estable;
+- tenga clase o uso comprensible;
+- pueda vincularse a un perfil metrológico;
+- conserve historial;
+- pueda relacionarse con las mediciones y decisiones que dependen de él.
+
+La clasificación exacta deberá provenir de una fuente propietaria autorizada.
+
+---
+
+#### 9. Aplicabilidad metrológica
+
+La aplicabilidad debe ser explícita y trazable.
+
+Puede depender, según fuente aprobada, de:
+
+- criticidad;
+- uso;
+- proceso;
+- magnitud;
+- fabricante;
+- obligación contractual;
+- obligación técnica;
+- calidad;
+- recepción;
+- política empresarial;
+- normativa aplicable;
+- decisión técnica.
+
+Se prohíbe inferir control metrológico únicamente porque un activo tenga una fecha o un documento.
+
+---
+
+#### 10. Perfil metrológico
+
+`METROLOGICAL_PROFILE` representa la definición técnica versionada bajo la cual un sujeto debe controlarse.
+
+Debe poder conservar, según aplicabilidad:
+
+- identidad;
+- versión;
+- vigencia;
+- sujeto o regla de aplicabilidad;
+- magnitud;
+- unidad;
+- rango;
+- resolución;
+- tolerancia;
+- criterio de aceptación;
+- método;
+- patrón o referencia requerido;
+- requisitos de trazabilidad;
+- competencia o laboratorio requerido;
+- evidencia requerida;
+- frecuencia o disparador;
+- regla de vencimiento;
+- efecto sobre serviceability;
+- regla de próxima obligación.
+
+La denominación es conceptual y no prescribe nombre de tabla.
+
+---
+
+#### 11. Versionado del perfil
+
+Una modificación material crea una nueva revisión o transición equivalente.
+
+Son materiales, cuando apliquen, cambios en:
+
+- magnitud;
+- unidad;
+- rango;
+- resolución;
+- tolerancia;
+- criterio de aceptación;
+- método;
+- patrón o referencia;
+- trazabilidad exigida;
+- frecuencia;
+- evidencia;
+- regla de disponibilidad.
+
+Una revisión nueva no reinterpreta silenciosamente ejecuciones históricas.
+
+---
+
+#### 12. Magnitud
+
+La magnitud medida debe quedar declarada cuando sea material al control.
+
+No se permite asumir que dos resultados son comparables únicamente por provenir del mismo instrumento.
+
+Un sujeto puede requerir más de una característica metrológica cuando una fuente autorizada lo determine.
+
+Cada característica conserva su contexto y criterio.
+
+---
+
+#### 13. Unidad
+
+La unidad debe ser explícita cuando el resultado la requiera.
+
+Se prohíbe:
+
+```text
+SAME NUMBER
+=
+SAME MEASUREMENT
+```
+
+sin considerar unidad, escala, rango, método y contexto.
+
+Las conversiones futuras deberán utilizar contratos de unidades aprobados y trazables.
+
+---
+
+#### 14. Rango
+
+El rango define el alcance técnico dentro del cual aplica un perfil, método o resultado.
+
+La existencia de un instrumento no demuestra que toda medición realizada con él esté dentro del rango controlado.
+
+Cuando una ejecución cubra solo una parte del rango, esa limitación debe quedar explícita.
+
+---
+
+#### 15. Resolución
+
+La resolución se conserva separada de tolerancia y exactitud o desempeño esperado.
+
+Se preserva:
+
+```text
+RESOLUTION
+!=
+TOLERANCE
+!=
+ACCEPTANCE CRITERION
+```
+
+La tarea no inventa valores numéricos.
+
+---
+
+#### 16. Tolerancia
+
+La tolerancia debe provenir de una fuente autorizada y quedar vinculada a la revisión del perfil o criterio aplicable.
+
+Debe ser posible saber:
+
+- qué tolerancia se usó;
+- para qué magnitud;
+- en qué rango;
+- bajo qué método;
+- durante qué vigencia;
+- con qué criterio se evaluó.
+
+Editar la tolerancia vigente no cambia el criterio histórico de una ejecución ya realizada.
+
+---
+
+#### 17. Criterio de aceptación
+
+El criterio de aceptación determina cómo se evalúa el resultado.
+
+Se preserva:
+
+```text
+RAW RESULT
+!=
+ACCEPTANCE CRITERION
+!=
+CONFORMITY DECISION
+```
+
+El criterio puede depender de varios valores o condiciones.
+
+Esta tarea no inventa fórmula, incertidumbre, margen de seguridad o regla regulatoria que no esté respaldada por una fuente competente.
+
+---
+
+#### 18. Método
+
+El método utilizado debe quedar identificado y versionado cuando sea material.
+
+Debe ser posible responder:
+
+- qué procedimiento se usó;
+- qué revisión estaba vigente;
+- qué magnitud y rango cubría;
+- qué patrón o referencia requería;
+- qué resultados debía producir;
+- qué criterio debía evaluarse.
+
+Un cambio de método no reescribe ejecuciones previas.
+
+---
+
+#### 19. Patrón o referencia
+
+Todo patrón o referencia material debe conservar identidad suficiente para demostrar cuál fue utilizado.
+
+Debe poder relacionarse, según aplicabilidad, con:
+
+- tipo;
+- identificación;
+- alcance;
+- vigencia;
+- evidencia;
+- trazabilidad;
+- certificado o soporte;
+- responsable.
+
+La tarea no inventa autoridades externas ni jerarquías metrológicas específicas.
+
+---
+
+#### 20. Trazabilidad del patrón
+
+La afirmación de trazabilidad debe quedar soportada por la evidencia y alcance aplicables.
+
+Se preserva:
+
+```text
+STANDARD IDENTIFIED
+!=
+TRACEABILITY DEMONSTRATED
+```
+
+Un nombre de patrón o certificado aislado no demuestra por sí solo que la ejecución utilizó una referencia válida dentro de su vigencia y alcance.
+
+---
+
+#### 21. Vigencia del patrón o referencia
+
+Cuando la vigencia sea necesaria, debe evaluarse en el momento efectivo de la ejecución.
+
+Se preserva:
+
+```text
+CURRENTLY VALID
+!=
+VALID AT EXECUTION TIME
+```
+
+La historia debe poder demostrar qué se conocía y qué era aplicable en la fecha efectiva.
+
+---
+
+#### 22. Laboratorio, proveedor o responsable
+
+La ejecución puede ser interna o externa según política.
+
+Cuando exista laboratorio o proveedor, deben conservarse, según aplicabilidad:
+
+- identidad;
+- alcance de servicio;
+- referencia contractual;
+- habilitación o competencia exigida;
+- vigencia;
+- ejecutor;
+- evidencia;
+- resultado;
+- documentos entregados.
+
+La contratación no demuestra conformidad técnica.
+
+---
+
+#### 23. Afirmación externa y aceptación interna
+
+Se preserva:
+
+```text
+PROVIDER ASSERTION
+!=
+NEXO TECHNICAL ACCEPTANCE
+```
+
+Un proveedor puede reportar ejecución y resultados.
+
+NEXO conserva la aceptación técnica y el efecto sobre condición, serviceability o disponibilidad conforme al contrato canónico.
+
+---
+
+#### 24. Obligación metrológica
+
+La obligación metrológica reutiliza la semántica aprobada en `NEXO-DOM-026`.
+
+Debe poder conservar:
+
+- sujeto;
+- perfil y revisión;
+- tipo de control requerido;
+- disparador;
+- vencimiento;
+- responsable;
+- proveedor cuando aplique;
+- evidencia requerida;
+- criterio de satisfacción;
+- consecuencia por vencimiento;
+- próxima obligación.
+
+La obligación no es la ejecución.
+
+---
+
+#### 25. Estados de obligación
+
+Se reutilizan, cuando resulten aplicables, los estados:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+No se crea una máquina paralela únicamente para metrología.
+
+`OVERDUE` no significa `OUT_OF_TOLERANCE`.
+
+`SATISFIED` exige evidencia y resultado compatibles con la política.
+
+---
+
+#### 26. Vencimiento
+
+El vencimiento expresa que una obligación alcanzó o superó su límite temporal o por uso.
+
+Se preserva:
+
+```text
+OVERDUE
+!=
+OUT_OF_TOLERANCE
+```
+
+Un instrumento vencido puede tener resultado metrológico previamente conforme, pero su uso actual puede quedar restringido por política.
+
+Un instrumento fuera de tolerancia puede encontrarse todavía dentro de una vigencia temporal.
+
+---
+
+#### 27. Consecuencia del vencimiento
+
+Cuando una política defina la obligación como bloqueante, el vencimiento puede producir:
+
+- restricción;
+- indisponibilidad;
+- obligación de control;
+- excepción controlada;
+- otra consecuencia autorizada.
+
+La causa debe permanecer explícita.
+
+No se elimina cambiando manualmente la próxima fecha.
+
+---
+
+#### 28. Calibración
+
+La calibración es una ejecución metrológica asociada a un sujeto, método, patrón o referencia y resultados observables.
+
+Debe conservar al menos:
+
+- obligación cuando exista;
+- sujeto;
+- perfil y revisión;
+- fecha efectiva;
+- ejecutor;
+- método;
+- patrón o referencia;
+- magnitud;
+- rango cubierto;
+- resultados;
+- evidencia;
+- certificado cuando aplique;
+- ajustes realizados cuando existan;
+- restricciones;
+- decisión posterior;
+- próxima obligación.
+
+Registrar `calibration` como tipo de mantenimiento no satisface por sí solo este contrato.
+
+---
+
+#### 29. Calibración no equivale a conformidad
+
+Se preserva:
+
+```text
+CALIBRATION EXECUTED
+!=
+CONFORMITY VERIFIED
+```
+
+Una calibración puede producir resultados que posteriormente requieran evaluación contra tolerancia y criterio de aceptación.
+
+La ejecución por sí sola no autoriza retorno a servicio.
+
+---
+
+#### 30. Verificación
+
+La verificación evalúa, conforme al contrato aplicable, si un resultado, condición o característica satisface un criterio.
+
+Debe poder conservar:
+
+- sujeto;
+- origen;
+- criterio;
+- revisión;
+- evidencia;
+- resultado evaluado;
+- evaluador;
+- momento;
+- decisión;
+- restricciones;
+- siguiente acción.
+
+Puede existir verificación asociada a una calibración o en otro punto autorizado del ciclo.
+
+---
+
+#### 31. Calibración y verificación son distintas
+
+Se preserva:
+
+```text
+CALIBRATED
+!=
+VERIFIED
+```
+
+El sistema no debe inferir que una calibración está verificada únicamente porque:
+
+- existe una fecha;
+- existe un proveedor;
+- existe un certificado;
+- el mantenimiento está marcado como terminado.
+
+La decisión debe conservar su evidencia y criterio.
+
+---
+
+#### 32. Ajuste
+
+Un ajuste es una intervención que modifica una configuración, condición o respuesta del sujeto.
+
+Debe conservar, cuando aplique:
+
+- sujeto;
+- motivo;
+- estado previo;
+- actor;
+- momento;
+- intervención;
+- evidencia;
+- estado posterior;
+- necesidad de nueva calibración o verificación;
+- restricciones.
+
+Se preserva:
+
+```text
+ADJUSTMENT
+!=
+CALIBRATION
+!=
+VERIFICATION
+```
+
+---
+
+#### 33. Ajuste previo y posterior
+
+Cuando exista resultado antes y después de un ajuste, ambos deben conservarse.
+
+No se sobrescribe el resultado inicial para aparentar conformidad histórica.
+
+Debe ser posible reconstruir:
+
+```text
+AS FOUND
+→
+ADJUSTMENT
+→
+AS LEFT
+```
+
+cuando el método o la fuente competente utilice una distinción equivalente.
+
+La terminología exacta futura deberá respetar la fuente técnica aprobada.
+
+---
+
+#### 34. Reparación
+
+La reparación pertenece al ciclo de mantenimiento cuando existe una intervención correctiva.
+
+Se preserva:
+
+```text
+REPAIR
+!=
+ADJUSTMENT
+!=
+CALIBRATION
+```
+
+Una reparación puede requerir calibración o verificación posterior.
+
+La calibración no sustituye el expediente de reparación.
+
+---
+
+#### 35. Sellos
+
+Cuando el control use sellos o mecanismos equivalentes, debe conservarse:
+
+- sujeto;
+- identificación o referencia;
+- estado;
+- actor;
+- momento;
+- motivo de aplicación o retiro;
+- evidencia;
+- relación con la ejecución.
+
+La presencia de un sello no demuestra conformidad vigente.
+
+---
+
+#### 36. Restricciones de uso
+
+Una política o resultado puede imponer restricciones.
+
+Toda restricción material debe conservar:
+
+- sujeto;
+- origen;
+- alcance;
+- motivo;
+- vigencia;
+- autoridad;
+- condición de salida;
+- evidencia.
+
+Se preserva:
+
+```text
+RESTRICTED
+!=
+UNAVAILABLE
+```
+
+salvo que la política aplicable declare lo contrario para un caso concreto.
+
+---
+
+#### 37. Resultado metrológico
+
+El resultado debe conservar la información necesaria para interpretar qué se observó.
+
+Según el método puede incluir uno o varios valores, puntos, condiciones o conclusiones.
+
+La tarea no prescribe un shape universal de resultados.
+
+Todo resultado debe permanecer relacionado con:
+
+- sujeto;
+- ejecución;
+- método;
+- magnitud;
+- unidad;
+- rango o punto aplicable;
+- patrón o referencia;
+- momento;
+- fuente.
+
+---
+
+#### 38. Resultado informado y resultado aceptado
+
+Se preserva:
+
+```text
+REPORTED RESULT
+!=
+ACCEPTED RESULT
+```
+
+El valor informado por un proveedor conserva su fuente.
+
+La aceptación interna no altera el payload original ni lo reemplaza por una copia editable.
+
+---
+
+#### 39. Decisión de conformidad
+
+La conformidad es una decisión evaluada contra el criterio aplicable.
+
+Debe conservar:
+
+- resultado evaluado;
+- criterio y revisión;
+- tolerancia aplicable;
+- actor o mecanismo autorizado;
+- decisión;
+- justificación;
+- momento;
+- restricciones;
+- acciones.
+
+La tarea no inventa un catálogo universal de estados más allá de las distinciones canónicas exigidas.
+
+---
+
+#### 40. Fuera de tolerancia
+
+Un resultado fuera de tolerancia es un hecho técnico que exige tratamiento explícito.
+
+Se preserva:
+
+```text
+OUT_OF_TOLERANCE
+!=
+NO_APTO AUTOMÁTICO PARA TODO USO
+```
+
+La consecuencia depende de:
+
+- política;
+- magnitud;
+- rango;
+- criticidad;
+- uso;
+- alcance;
+- evidencia;
+- evaluación de impacto.
+
+No obstante, el sistema debe impedir una liberación incompatible con restricciones activas.
+
+---
+
+#### 41. No apto
+
+`NO APTO` representa una decisión de uso o serviceability, no una medición.
+
+Debe ser explicable mediante:
+
+- sujeto;
+- causa;
+- resultado;
+- criterio;
+- política;
+- alcance;
+- momento;
+- autoridad;
+- condición de salida.
+
+Se preserva:
+
+```text
+OUT_OF_TOLERANCE
+!=
+NOT_FIT_DECISION
+```
+
+---
+
+#### 42. Certificado
+
+El certificado es evidencia documental correlacionada con una ejecución o resultado metrológico.
+
+Debe poder conservar, según aplicabilidad:
+
+- identidad documental;
+- sujeto;
+- ejecución;
+- emisor;
+- identificador externo;
+- fecha;
+- vigencia o vencimiento cuando exista;
+- alcance;
+- documento;
+- relación con resultados;
+- estado documental.
+
+El archivo no sustituye el hecho técnico.
+
+---
+
+#### 43. Certificado, resultado y aceptación
+
+Se preserva:
+
+```text
+CERTIFICATE FILE
+!=
+METROLOGICAL RESULT
+!=
+NEXO TECHNICAL ACCEPTANCE
+```
+
+Una calibración sin certificado cuando éste sea requerido permanece incompleta.
+
+Un certificado recibido no demuestra aceptación interna ni disponibilidad.
+
+---
+
+#### 44. Vigencia documental y próxima obligación
+
+Se preserva:
+
+```text
+CERTIFICATE VALIDITY
+!=
+NEXT METROLOGICAL OBLIGATION
+```
+
+Cuando ambas fechas existan pueden coincidir o diferir conforme a la fuente competente.
+
+No se deriva una desde la otra sin una regla aprobada.
+
+---
+
+#### 45. Próxima obligación
+
+La próxima obligación deriva de:
+
+```text
+PROFILE VERSION
++
+EFFECTIVE TRIGGER
++
+VALID EXECUTION OR REFERENCE FACT
++
+APPROVED RECURRENCE RULE
+```
+
+No se obtiene sobrescribiendo manualmente un campo de fecha para eliminar un vencimiento.
+
+---
+
+#### 46. Cambio de perfil y obligaciones abiertas
+
+Cuando cambia un perfil metrológico, debe definirse el tratamiento de:
+
+- obligaciones futuras;
+- obligaciones emitidas;
+- trabajos abiertos;
+- ejecuciones en revisión;
+- excepciones;
+- próxima obligación.
+
+El cambio no reevalúa historia aprobada sin una transición explícita.
+
+---
+
+#### 47. Evaluación de impacto
+
+Cuando exista un resultado fuera de tolerancia que pueda afectar hechos anteriores, debe abrirse una evaluación de impacto trazable.
+
+`METROLOGICAL_IMPACT_ASSESSMENT` debe poder conservar:
+
+- evento de origen;
+- sujeto;
+- perfil y revisión;
+- resultado;
+- criterio;
+- alcance potencial;
+- ventana temporal;
+- base para definir la ventana;
+- hechos potencialmente afectados;
+- owners involucrados;
+- evidencia;
+- decisiones;
+- acciones;
+- resultado;
+- verificación;
+- cierre.
+
+---
+
+#### 48. Ventana potencialmente afectada
+
+La evaluación debe identificar el período durante el cual el instrumento pudo producir mediciones inválidas o no confiables.
+
+Se preserva:
+
+```text
+POTENTIALLY AFFECTED WINDOW
+!=
+PROVEN INVALID WINDOW
+```
+
+La ventana debe tener una base explicable.
+
+No se inventan fechas solo para cerrar el expediente.
+
+---
+
+#### 49. Punto de inicio de la ventana
+
+El inicio puede depender, según evidencia, de hechos como:
+
+- última verificación conforme;
+- última calibración aceptada;
+- intervención;
+- evento de falla;
+- evidencia de desviación;
+- otro punto técnico autorizado.
+
+Esta tarea no fija una regla universal.
+
+Debe conservarse la razón de la selección.
+
+---
+
+#### 50. Medición potencialmente afectada
+
+Una medición queda relacionada con la evaluación cuando:
+
+- fue producida por el sujeto o cadena aplicable;
+- ocurrió dentro del alcance potencial;
+- es material para la decisión investigada.
+
+Se preserva:
+
+```text
+POTENTIALLY AFFECTED
+!=
+CONFIRMED INVALID
+```
+
+No se sobrescribe la medición original.
+
+---
+
+#### 51. Producción y lotes potencialmente afectados
+
+Cuando una medición haya sido usada en producción o control de calidad, la evaluación debe poder localizar las referencias relacionadas.
+
+Esto puede incluir:
+
+- proceso;
+- ejecución productiva;
+- lote;
+- control de calidad;
+- decisión de aceptación;
+- evidencia relacionada.
+
+FOGO y los owners de calidad conservan las decisiones productivas que les correspondan.
+
+NEXO conserva el hecho metrológico.
+
+---
+
+#### 52. Recepciones potencialmente afectadas
+
+Cuando una medición haya sustentado recepción, inspección o aceptación de bienes o servicios, la evaluación debe conservar las referencias necesarias para revisar el efecto.
+
+Se preserva el hecho original.
+
+El owner de recepción conserva la decisión de recepción.
+
+La metrología no reescribe el expediente de compra o recepción.
+
+---
+
+#### 53. Decisiones y registros potencialmente afectados
+
+La evaluación puede alcanzar decisiones o registros cuya validez dependa materialmente de una medición.
+
+Debe conservar:
+
+- referencia;
+- relación con la medición;
+- motivo de revisión;
+- owner;
+- decisión resultante;
+- evidencia.
+
+No se declara afectado un registro solo por coincidencia temporal.
+
+---
+
+#### 54. Impacto confirmado, descartado o indeterminado
+
+La evaluación debe poder expresar su conclusión sin inventar una taxonomía física fija.
+
+Como mínimo debe distinguir semánticamente:
+
+- impacto demostrado;
+- impacto descartado con evidencia;
+- impacto no resoluble con la evidencia disponible.
+
+Un resultado indeterminado no se convierte en “sin impacto”.
+
+---
+
+#### 55. Contención ante fuera de tolerancia
+
+Mientras se evalúa el impacto, puede requerirse contención.
+
+La contención puede incluir, según política:
+
+- restricción del sujeto;
+- bloqueo de uso;
+- identificación de registros;
+- retención de decisión;
+- revisión adicional;
+- otra medida autorizada.
+
+Se preserva:
+
+```text
+CONTAINMENT
+!=
+IMPACT RESOLVED
+```
+
+---
+
+#### 56. Acción correctiva metrológica
+
+Una acción correctiva puede originarse por:
+
+- fuera de tolerancia;
+- patrón inválido;
+- método incorrecto;
+- certificado insuficiente;
+- vencimiento;
+- falla de trazabilidad;
+- error de datos;
+- otra condición demostrada.
+
+Debe conservar owner, responsable, condición de salida, evidencia y verificación.
+
+---
+
+#### 57. Handoff a mantenimiento
+
+Cuando el sujeto requiera intervención física:
+
+```text
+METROLOGICAL FINDING
+→
+CORRECTIVE ACTION
+→
+MAINTENANCE WORK
+```
+
+La orden de mantenimiento no reemplaza el hallazgo ni la evaluación de impacto.
+
+Después de la intervención puede ser necesaria nueva calibración o verificación.
+
+---
+
+#### 58. Handoff a FOGO y calidad
+
+Cuando una medición potencialmente afectada haya intervenido en producción, calidad o inocuidad, el handoff debe conservar:
+
+- evaluación metrológica de origen;
+- mediciones relacionadas;
+- intervalo o alcance;
+- productos o lotes relacionados cuando estén demostrados;
+- evidencia;
+- decisión pendiente.
+
+FOGO o el owner de calidad conserva la decisión sobre producción, lote o liberación.
+
+---
+
+#### 59. Handoff a ORIGO y recepción
+
+Cuando el impacto alcance una recepción o aceptación de abastecimiento, debe mantenerse la correlación con el expediente propietario.
+
+ORIGO conserva contratación y recepción empresarial cuando corresponda.
+
+NEXO conserva condición física, aceptación técnica y metrología.
+
+La evaluación no crea una segunda recepción.
+
+---
+
+#### 60. Frontera con servicios y medidores
+
+`NEXO-DOM-033` conserva medidor, lectura, consumo, calidad e interrupción de servicios.
+
+`NEXO-DOM-035` conserva control metrológico cuando un medidor o instrumento esté sujeto a él.
+
+Se preserva:
+
+```text
+METER READING
+!=
+METROLOGICAL CONFORMITY
+```
+
+Una lectura puede existir aunque la conformidad metrológica esté vencida, restringida o pendiente de evaluación.
+
+---
+
+#### 61. Frontera con inspecciones físicas
+
+`NEXO-DOM-034` conserva inspecciones físicas generales, plantillas, hallazgos, acciones y verificación de eficacia.
+
+Una inspección puede detectar daño visible, vencimiento o ausencia de evidencia.
+
+No declara calibración o verificación metrológica por sí sola.
+
+---
+
+#### 62. Frontera con gobierno documental
+
+Los certificados, informes y evidencias consumen el gobierno documental aplicable.
+
+La existencia del archivo no determina:
+
+- conformidad;
+- aceptación;
+- serviceability;
+- disponibilidad;
+- impacto.
+
+La metrología conserva el significado técnico.
+
+El dominio documental conserva integridad, acceso, versión, retención y lifecycle del objeto documental.
+
+---
+
+#### 63. Frontera con efectos económicos
+
+La calibración puede producir contratación, servicio, factura o costo.
+
+Se preserva:
+
+```text
+TECHNICAL ACCEPTANCE
+!=
+INVOICE
+!=
+PAYMENT
+!=
+COST
+```
+
+NEXO no se convierte en ledger económico.
+
+Los owners financieros conservan sus hechos y decisiones.
+
+---
+
+#### 64. Aceptación técnica
+
+La aceptación técnica debe evaluar que la ejecución y evidencia cumplen el contrato aplicable.
+
+Debe poder conservar:
+
+- sujeto;
+- obligación;
+- perfil;
+- ejecución;
+- resultados;
+- certificado;
+- restricciones;
+- evaluación;
+- actor;
+- momento;
+- decisión.
+
+La aceptación técnica no equivale a pago ni a disponibilidad global.
+
+---
+
+#### 65. Liberación técnica
+
+Cuando la política lo requiera, la liberación confirma que el sujeto puede volver al uso permitido bajo las condiciones aprobadas.
+
+Se preserva:
+
+```text
+CALIBRATION COMPLETED
+!=
+TECHNICALLY RELEASED
+```
+
+y:
+
+```text
+TECHNICALLY RELEASED
+!=
+GLOBALLY AVAILABLE
+```
+
+Otros bloqueos pueden permanecer vigentes.
+
+---
+
+#### 66. Disponibilidad
+
+La disponibilidad puede quedar afectada por:
+
+- obligación bloqueante vencida;
+- fuera de tolerancia;
+- verificación fallida;
+- certificado requerido ausente;
+- trazabilidad insuficiente;
+- evaluación de impacto abierta;
+- restricción activa;
+- reparación pendiente;
+- liberación pendiente.
+
+La causa debe ser explicable y no se reduce a un único booleano sin contexto.
+
+---
+
+#### 67. Reincorporación al servicio
+
+El retorno al servicio debe requerir, cuando corresponda:
+
+- intervención terminada;
+- nueva ejecución metrológica;
+- resultados disponibles;
+- verificación conforme;
+- certificado requerido;
+- restricciones resueltas o explícitas;
+- impacto evaluado;
+- acciones bloqueantes resueltas;
+- aceptación técnica;
+- liberación.
+
+No se libera por el solo hecho de cambiar una fecha o cargar un archivo.
+
+---
+
+#### 68. Recalibración
+
+Una recalibración es una nueva ejecución relacionada con un historial previo.
+
+Debe conservar:
+
+- identidad propia;
+- obligación o disparador;
+- perfil y revisión;
+- relación con ejecución anterior;
+- nuevos resultados;
+- nueva evidencia;
+- nueva decisión.
+
+No se edita la ejecución anterior para reemplazarla.
+
+---
+
+#### 69. Corrección de resultado
+
+Si un dato de resultado fue capturado incorrectamente, la corrección debe conservar:
+
+- dato original;
+- dato corregido;
+- motivo;
+- actor;
+- evidencia;
+- momento;
+- efectos derivados que requieren reconciliación.
+
+La corrección no puede utilizarse para ocultar un fuera de tolerancia real.
+
+---
+
+#### 70. Idempotencia
+
+Toda mutación material deberá poder usar identidad estable o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra obligación;
+- otra calibración;
+- otra verificación;
+- otro ajuste;
+- otro certificado lógico;
+- otra restricción;
+- otra evaluación de impacto;
+- otra aceptación;
+- otra liberación.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+---
+
+#### 71. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos ejecuciones incompatibles satisfaciendo la misma obligación sin relación explícita;
+- modificación del perfil mientras una ejecución lo usa sin conservar revisión;
+- liberación mientras existe restricción bloqueante;
+- cierre de impacto mientras existen referencias pendientes;
+- corrección silenciosa de resultados ya usados;
+- aceptación simultánea de decisiones incompatibles;
+- doble creación de próxima obligación por reintento.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según materialización.
+
+---
+
+#### 72. Operación offline
+
+La captura offline puede conservar observaciones o evidencia cuando una arquitectura autorizada lo permita.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+METROLOGICALLY VERIFIED
+!=
+TECHNICALLY RELEASED
+```
+
+La sincronización revalida identidad, perfil, revisión, obligación, duplicidad, autoridad y vigencia.
+
+No se duplican resultados, certificados, fotos, firmas o cierres por reintento.
+
+---
+
+#### 73. Resultado desconocido
+
+Ante timeout o pérdida de conectividad después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de crear otra ejecución, verificación, certificado, impacto o liberación.
+
+La incertidumbre de transporte no autoriza duplicar el expediente.
+
+---
+
+#### 74. Historia y correcciones
+
+No se sobrescriben silenciosamente:
+
+- identidad del sujeto;
+- perfil;
+- magnitud;
+- unidad;
+- rango;
+- resolución;
+- tolerancia;
+- criterio;
+- método;
+- patrón;
+- resultado;
+- certificado;
+- ajuste;
+- restricción;
+- impacto;
+- aceptación;
+- timestamps materiales.
+
+La vista vigente puede proyectar el resultado corregido conservando la historia.
+
+---
+
+#### 75. Reconciliación histórica
+
+Una migración futura solo promoverá hechos demostrados.
+
+No se permite inventar retrospectivamente:
+
+- magnitud;
+- rango;
+- resolución;
+- tolerancia;
+- método;
+- patrón;
+- trazabilidad;
+- laboratorio;
+- resultado;
+- certificado;
+- fuera de tolerancia;
+- impacto;
+- aceptación;
+- liberación.
+
+Los registros legacy incompletos conservan su limitación explícita.
+
+---
+
+#### 76. AS-IS observable
+
+La revisión remota de `vento-nexo` aporta evidencia parcial reutilizable:
+
+- `calibration` aparece como tipo de mantenimiento de activos;
+- los activos disponen de superficie documental;
+- `certificate` aparece como tipo documental;
+- mantenimiento y documentos pueden aportar identidad, fechas, proveedor, evidencia y contexto.
+
+Sin embargo, las superficies inspeccionadas no demostraron un contrato integral que cubra conjuntamente:
+
+- perfil metrológico versionado;
+- magnitud;
+- unidad;
+- rango;
+- resolución;
+- tolerancia metrológica;
+- criterio de aceptación;
+- método;
+- patrón y trazabilidad;
+- decisión separada de verificación;
+- evaluación de impacto fuera de tolerancia;
+- localización sistemática de mediciones o decisiones potencialmente afectadas.
+
+La ausencia de evidencia en las búsquedas no demuestra inexistencia absoluta fuera de las superficies inspeccionadas.
+
+---
+
+#### 77. Tolerancias operativas existentes no equivalen a metrología
+
+El código actual puede utilizar conceptos de tolerancia para cantidades, unidades, inventario u otras operaciones.
+
+Se preserva:
+
+```text
+OPERATIONAL QUANTITY TOLERANCE
+!=
+METROLOGICAL TOLERANCE
+```
+
+Una tolerancia operacional no puede reutilizarse como criterio metrológico sin demostrar equivalencia de magnitud, método, rango, fuente y propósito.
+
+---
+
+#### 78. Estrategia de adopción
+
+La estrategia queda:
+
+```text
+REUSE ASSET / MAINTENANCE / DOCUMENT EVIDENCE
++
+REFACTOR CALIBRATION FROM GENERIC MAINTENANCE TYPE
++
+BUILD VERSIONED METROLOGICAL CONTROL CONTRACT
++
+BUILD OUT-OF-TOLERANCE IMPACT TRACEABILITY
+```
+
+Se reutiliza donde sea compatible:
+
+- identidad física;
+- mantenimiento;
+- proveedor;
+- fechas;
+- evidencia;
+- documentos;
+- serviceability;
+- disponibilidad;
+- auditoría.
+
+Se construye o refactoriza donde falte:
+
+- perfil metrológico;
+- magnitud;
+- rango;
+- resolución;
+- tolerancia;
+- criterio;
+- método;
+- patrón;
+- trazabilidad;
+- ejecución metrológica;
+- verificación;
+- ajuste;
+- aceptación;
+- impacto;
+- handoffs;
+- liberación.
+
+---
+
+#### 79. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- sujetos bajo control metrológico;
+- obligaciones próximas;
+- obligaciones vencidas;
+- ejecuciones realizadas;
+- verificaciones pendientes;
+- certificados requeridos ausentes;
+- certificados vencidos cuando aplique;
+- sujetos restringidos;
+- sujetos no aptos;
+- resultados fuera de tolerancia;
+- evaluaciones de impacto abiertas;
+- mediciones potencialmente afectadas;
+- procesos, lotes, recepciones, decisiones o registros bajo revisión;
+- acciones correctivas abiertas;
+- tiempo hasta aceptación;
+- tiempo hasta liberación;
+- reincidencias por sujeto, método o proveedor.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 80. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| un activo tiene tipo de mantenimiento `calibration` | evidencia parcial; no control metrológico integral |
+| llega la fecha límite sin ejecución | obligación vencida; no fuera de tolerancia |
+| se ejecuta calibración | ejecución registrada; no conformidad automática |
+| existe certificado | evidencia documental; no aceptación automática |
+| proveedor dice “conforme” | afirmación externa; NEXO conserva aceptación técnica |
+| resultado supera tolerancia | fuera de tolerancia; abrir tratamiento e impacto cuando aplique |
+| el resultado está fuera de tolerancia | no invalidar automáticamente toda historia previa |
+| se identifica última verificación conforme | puede aportar base para delimitar ventana, según evidencia |
+| se ajusta el instrumento | conservar antes/ajuste/después; evaluar necesidad de nuevo control |
+| se repara el instrumento | mantenimiento; después puede requerir calibración o verificación |
+| se carga un certificado nuevo | no borrar certificado ni resultados anteriores |
+| un medidor de servicio tiene lectura | lectura operacional; no prueba de conformidad metrológica |
+| inspección física detecta certificado vencido | hallazgo y handoff; no verificación metrológica |
+| impacto alcanza un lote | FOGO o owner de calidad decide sobre el lote; NEXO conserva origen metrológico |
+| impacto alcanza recepción | owner de recepción decide; metrología no crea segunda recepción |
+| timeout después de guardar resultado | reconciliar antes de reintentar |
+| fuente legacy carece de tolerancia | conservar dato incompleto; no inventar valor |
+
+---
+
+#### 81. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. sujeto y certificado son distintos;
+2. perfil y ejecución son distintos;
+3. perfil vigente y revisión histórica son distintos;
+4. magnitud, unidad, rango y resolución son dimensiones explícitas;
+5. resolución y tolerancia son distintas;
+6. tolerancia y criterio de aceptación son distintos;
+7. método y resultado son distintos;
+8. patrón identificado y trazabilidad demostrada son distintos;
+9. obligación y ejecución son distintas;
+10. vencimiento y fuera de tolerancia son distintos;
+11. calibración y verificación son distintas;
+12. ajuste y calibración son distintos;
+13. reparación y ajuste son distintos;
+14. ejecución y conformidad son distintas;
+15. certificado y resultado son distintos;
+16. resultado informado y resultado aceptado son distintos;
+17. fuera de tolerancia y decisión de no apto son distintos;
+18. ventana potencialmente afectada y medición inválida demostrada son distintas;
+19. contención y resolución de impacto son distintas;
+20. aceptación técnica y pago son distintos;
+21. liberación técnica y disponibilidad global son distintas;
+22. una lectura de servicio y conformidad metrológica son distintas;
+23. una inspección física y una verificación metrológica son distintas;
+24. reintentos no duplican efectos;
+25. correcciones no destruyen historia.
+
+---
+
+#### 82. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver sujetos desde identidades autoritativas;
+- fijar perfil y revisión antes de aceptar una ejecución;
+- validar magnitud, unidad, rango y criterio contra el perfil aplicable;
+- preservar método, patrón y fuente;
+- no confiar en conformidad, restricciones o liberación enviados por cliente sin revalidación;
+- impedir liberación con bloqueos vigentes;
+- impedir cierre de impacto con referencias bloqueantes pendientes;
+- preservar el resultado externo original;
+- preservar evidencia sin ampliar acceso;
+- aplicar idempotencia;
+- impedir doble aceptación;
+- impedir que una UI convierta visibilidad en permiso;
+- conservar segregación entre proveedor, técnico, verificador y autoridad cuando la política lo exija.
+
+La autorización detallada permanece en sus tareas propietarias.
+
+---
+
+#### 83. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- almacenamiento documental;
+- integración con proveedores;
+- perfiles y revisiones;
+- obligaciones;
+- captura de resultados;
+- evaluación de impacto;
+- eventos;
+- colas;
+- operación offline;
+- UI;
+- migración controlada;
+- pruebas automatizadas;
+- validación técnica y operativa.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 84. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `calibration` existe hoy como tipo genérico de mantenimiento | no | implementación NEXO posterior | separar expediente metrológico sin perder historia |
+| no se demostró maestro metrológico integral en el AS-IS observado | no | implementación NEXO posterior | materializar perfil, obligaciones, resultados y decisiones |
+| perfiles reales, tolerancias y métodos no están definidos aquí | no | owner técnico competente | cargar únicamente fuentes aprobadas durante implementación/adopción |
+| proveedores o laboratorios reales no se seleccionan aquí | no | contratación y owner técnico | proveedor autorizado con evidencia aplicable |
+| historia legacy puede carecer de patrón, rango o tolerancia | no | migración posterior | perfilado y clasificación sin inventar valores |
+| impactos productivos requieren decisión de otros dominios | no | FOGO/calidad y owners correspondientes | handoffs correlacionados y decisión propietaria |
+| autorización fina permanece pendiente | no | `NEXO-AUTH-031` y `NEXO-AUTH-032` | permisos y segregación materializados |
+| experiencia final permanece pendiente | no | `NEXO-UX-046` | UI validada contra contrato |
+
+Ningún riesgo residual autoriza inventar especificaciones metrológicas.
+
+---
+
+#### 85. Vocabularios y valores no inventados
+
+Esta tarea no fija sin fuente competente:
+
+- magnitudes concretas por activo;
+- unidades obligatorias;
+- rangos;
+- resoluciones;
+- tolerancias numéricas;
+- incertidumbres;
+- criterios de aceptación;
+- métodos;
+- patrones;
+- laboratorios;
+- frecuencias;
+- periodos de vigencia;
+- competencias;
+- reglas regulatorias;
+- severidades;
+- disposición de lotes;
+- tiempos máximos de acción.
+
+El sistema debe conservar esos valores cuando existan; esta tarea no los fabrica.
+
+---
+
+#### 86. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- registra equipos reales;
+- define perfiles productivos;
+- ejecuta calibraciones o verificaciones;
+- ajusta o repara equipos;
+- coloca o retira sellos reales;
+- selecciona laboratorios;
+- emite certificados;
+- decide cumplimiento normativo;
+- invalida mediciones históricas reales;
+- bloquea producción real;
+- cambia lotes reales;
+- modifica recepciones;
+- cambia disponibilidad real;
+- ejecuta backfill;
+- inventa tolerancias o métodos;
+- modifica el registro de requisitos de prueba;
+- autoriza materialización física.
+
+---
+
+#### 87. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la cobertura vigente ya exige que calibración conserve plan u obligación, objeto, responsable, ejecución, evidencia, resultado, desviación, verificación, disponibilidad y cierre;
+- la cobertura vigente ya exige explícitamente magnitud, rango, tolerancia, patrón, método, certificado, vencimiento y evaluación de impacto fuera de tolerancia;
+- la cobertura de mantenimiento ya protege versión, próxima obligación, prueba y liberación;
+- la cobertura de integración ya exige coordinación entre NEXO y otros owners, separa certificado, servicio, factura, pago, hallazgo, acción y cierre, y detecta calibración sin certificado;
+- esta tarea desarrolla el contrato de dominio requerido por obligaciones ya registradas y no introduce una obligación verificable nueva fuera de ellas.
+
+---
+
+#### 88. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-014`, para mantenimiento, calibración, versión, próxima obligación, evidencia, prueba y liberación;
+- `TREQ-NEXO-017`, para identidad, condición, disponibilidad e historial de sujetos físicos relacionados;
+- `TREQ-NEXO-018`, para calibración, magnitud, rango, tolerancia, patrón, método, certificado, vencimiento, impacto fuera de tolerancia, verificación, disponibilidad, cierre e idempotencia offline;
+- `TREQ-INTEGRATION-018`, para coordinación con ORIGO, NUMERA, VISO/SST, FOGO y proveedores, aceptación técnica de NEXO y detección de calibración sin certificado;
+- `TREQ-SUPABASE-002`, para integridad, concurrencia e idempotencia persistente cuando exista materialización física.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye actualización de 04A.
+
+---
+
+#### 89. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | se verificaron continuidad vigente después de `NEXO-DOM-034`, protocolo, contrato de entrega, manifest, rutas, topología, políticas documentales, owner, handoff de `NEXO-DOM-034`, frontera de `NEXO-DOM-026`, `CAP-SCOPE-013`, 04A NEXO, 04A INTEGRATION, package scripts, preflight y validadores; en `vento-nexo` se observó `calibration` como tipo de mantenimiento y `certificate` como tipo documental, sin evidencia suficiente de un control metrológico integral |
+| OPERATIVA | NOT_APPLICABLE | no se ejecutan calibraciones, verificaciones, ajustes, restricciones, evaluaciones de impacto ni liberaciones reales durante la definición documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` están cubiertas por override `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 90. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] el sujeto metrológico conserva identidad estable;
+- [x] aplicabilidad de control metrológico es explícita;
+- [x] existe contrato de perfil versionado;
+- [x] magnitud, unidad, rango y resolución quedan representados;
+- [x] tolerancia y criterio de aceptación permanecen separados;
+- [x] método conserva revisión;
+- [x] patrón o referencia y trazabilidad permanecen demostrables;
+- [x] laboratorio o proveedor no se convierte automáticamente en autoridad interna;
+- [x] obligación y ejecución permanecen separadas;
+- [x] vencimiento y fuera de tolerancia permanecen separados;
+- [x] calibración, verificación y ajuste permanecen separados;
+- [x] reparación y calibración permanecen separadas;
+- [x] resultado, conformidad y aceptación permanecen separados;
+- [x] certificado, resultado y aceptación permanecen separados;
+- [x] vigencia documental y próxima obligación permanecen separadas;
+- [x] sellos y restricciones pueden conservarse cuando apliquen;
+- [x] fuera de tolerancia activa tratamiento explícito;
+- [x] la ventana de impacto no se confunde con invalidez demostrada;
+- [x] mediciones potencialmente afectadas no se sobrescriben;
+- [x] producción, lotes, calidad, recepciones, decisiones y registros pueden correlacionarse cuando exista evidencia;
+- [x] los dominios receptores conservan sus decisiones propietarias;
+- [x] contención y resolución de impacto son distintas;
+- [x] la reincorporación exige los gates técnicos aplicables;
+- [x] recalibración crea nueva ejecución;
+- [x] correcciones no destruyen historia;
+- [x] medidor de servicio y conformidad metrológica permanecen separados;
+- [x] inspección física y verificación metrológica permanecen separadas;
+- [x] AS-IS se clasifica `REUSE_OR_REFACTOR`, no como cobertura integral;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 91. Handoff hacia `NEXO-DOM-036`
+
+`NEXO-DOM-035` entrega a `NEXO-DOM-036`:
+
+```text
+STABLE PHYSICAL SUBJECTS
++
+VERSIONED TECHNICAL OBLIGATIONS
++
+EVIDENCE / RESULT / ACCEPTANCE SEPARATION
++
+RESTRICTION / RELEASE SEMANTICS
++
+NON-DESTRUCTIVE HISTORY
++
+IDEMPOTENT OFFLINE FIELD CAPTURE
++
+EXTERNAL PROVIDER / INTERNAL AUTHORITY SEPARATION
++
+CONDITION / AVAILABILITY IMPACT
+```
+
+`NEXO-DOM-036` podrá reutilizar identidad física, evidencia, vigencia, restricción, custodia, historial, idempotencia y autoridad cuando sean compatibles, pero deberá definir de forma propia llaves, credenciales físicas, zonas, custodios, entrega, devolución, revocación e incidencias.
+
+Una credencial o medio de acceso físico no se modela como certificado metrológico ni como obligación de calibración solo para reutilizar el mismo expediente.
+
+---
+
+#### 92. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias`
+
 ### [ ] NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
 ### [ ] NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
 ### [ ] NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre
