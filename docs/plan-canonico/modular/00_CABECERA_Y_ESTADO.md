@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1195** |
+| Tareas aprobadas | **1196** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **401** |
+| Tareas no iniciadas | **400** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **74.87% (1195/1596)** |
+| Porcentaje de completamiento | **74.94% (1196/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda** |
-| Tarea actual | **NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición** |
+| Última tarea aprobada | **NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición** |
+| Tarea actual | **NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación** |
+| Siguiente tarea | **NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 53 de 127 aprobadas; NEXO-DOM-029 pendiente** |
+| Progreso del bloque | **BLOQUE K: 54 de 127 aprobadas; NEXO-DOM-030 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-DOM-029** |
+| Carril documental | **ACTIVO — NEXO-DOM-030** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-028` — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda |
-| Tarea actual | `NEXO-DOM-029` — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición — **NO INICIADA** |
-| Siguiente tarea | `NEXO-DOM-030` — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación |
+| Última aprobada | `NEXO-DOM-029` — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición |
+| Tarea actual | `NEXO-DOM-030` — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación — **NO INICIADA** |
+| Siguiente tarea | `NEXO-DOM-031` — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 53 DE 127 APROBADAS — ACTUAL NEXO-DOM-029** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 54 DE 127 APROBADAS — ACTUAL NEXO-DOM-030** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
-        ↓
-TAREA ACTUAL
 NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 53 de 127 tareas aprobadas
+BLOQUE K — 54 de 127 tareas aprobadas
 ```

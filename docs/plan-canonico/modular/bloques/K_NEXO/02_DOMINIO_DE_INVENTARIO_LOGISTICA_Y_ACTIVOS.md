@@ -34825,7 +34825,1118 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición`
 
-### [ ] NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
+### ✅ NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
+**Tarea siguiente:** NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
+**Tipo de tarea:** documental; definición canónica de identidad, jerarquía, relaciones, condición, criticidad, disponibilidad y fronteras para instalaciones, espacios, componentes fijos y puntos de servicio, reutilizando el contexto territorial y locativo vigente sin crear identidades competidoras ni materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO representa de forma estable y no ambigua la realidad física de una instalación y su estructura interna, sin confundirla con la estructura organizacional, con las ubicaciones logísticas de inventario ni con activos móviles o serializados.
+
+La regla raíz queda:
+
+```text
+CONTEXTO TERRITORIAL CANÓNICO
++
+IDENTIDAD FÍSICA ESTABLE
++
+JERARQUÍA LOCATIVA EXPLÍCITA
++
+RELACIONES TIPADAS
++
+CONDICIÓN OBSERVADA
++
+CRITICIDAD
++
+DISPONIBILIDAD PROYECTADA
++
+RESPONSABILIDAD E HISTORIA
+→
+SUJETO LOCATIVO RECONCILIABLE
+```
+
+No:
+
+```text
+SEDE = INSTALACIÓN = ÁREA = ESPACIO = LOC = ACTIVO
+```
+
+No:
+
+```text
+NOMBRE DEL LUGAR
+→
+IDENTIDAD
+```
+
+No:
+
+```text
+PRESENCIA EN INVENTARIO
+→
+INSTALACIÓN DISPONIBLE
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-029` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. conserva `PHYSICAL_FACILITY`, `OPERATIONAL_SITE`, `ORGANIZATIONAL_AREA`, `PHYSICAL_ZONE` y `WORKSTATION` como conceptos ya aprobados por la estructura empresarial y territorial;
+2. impide que NEXO cree copias competidoras de empresa, sede, área o instalación física compartida;
+3. define `PHYSICAL_SPACE` como nodo locativo físico gobernado por NEXO dentro de una instalación;
+4. define `FIXED_COMPONENT` como sujeto físico unido de forma estable a una instalación o espacio y cuya intervención se gobierna por su objeto principal;
+5. define `SERVICE_NETWORK` como estructura física de distribución o conexión necesaria para ordenar puntos de servicio sin apropiarse todavía de lecturas, consumos o contratos;
+6. define `SERVICE_POINT` como punto físico estable donde un servicio se entrega, mide, controla, conecta o interrumpe;
+7. establece una jerarquía física explícita capaz de representar pisos, zonas, cuartos, redes, puntos de servicio y componentes fijos;
+8. separa `ORGANIZATIONAL_AREA` de `PHYSICAL_SPACE`;
+9. separa `LOC` de espacio físico general y conserva LOC como identidad logística de inventario;
+10. separa componente fijo de activo individual o equipo móvil;
+11. conserva identidad estable, código, vigencia, relaciones, responsable, criticidad, condición, disponibilidad e historia para cada sujeto aplicable;
+12. reutiliza la escala canónica de condición física ya aprobada y evita una segunda taxonomía incompatible;
+13. reutiliza la proyección canónica de disponibilidad y mantiene condición, lifecycle y disponibilidad como dimensiones distintas;
+14. define reglas de cambio, traslado, reparentado, división, fusión, sustitución y retiro sin sobrescribir historia;
+15. fija el objeto principal como frontera para impedir órdenes de reparación competidoras entre activo e instalación;
+16. entrega a `NEXO-DOM-030` sujetos locativos inequívocos sobre los cuales podrán existir planes, solicitudes y órdenes de trabajo;
+17. reserva limpieza y saneamiento, plagas, servicios y medidores, inspecciones, metrología, accesos físicos, obras y novedades a sus tareas propietarias posteriores;
+18. reconcilia el AS-IS observable de `inventory_locations`, `inventory_location_positions` y `asset_items` como base parcial reutilizable, no como modelo final de instalaciones;
+19. no crea ni modifica requisitos de prueba porque la conducta ya está protegida por requisitos canónicos vigentes;
+20. no autoriza tablas, migraciones, RLS, RPC, Server Actions, UI, backfills, datos, Supabase ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-001`, para la separación entre estructura empresarial, instalación física, sede operativa, área organizacional, zona física y estación de trabajo;
+- `CAP-SCOPE-007`, para identidad física, condición, mantenimiento y activos;
+- `CAP-SCOPE-013`, especialmente `CAP-13.01 — Inventariar espacios e instalaciones`;
+- `NEXO-DOM-010`, para condición física;
+- `NEXO-DOM-012`, para mantenimiento, reparación y disponibilidad;
+- `NEXO-DOM-017`, para auditoría, historial y evidencia;
+- `NEXO-DOM-026`, para inspecciones, mantenimiento preventivo, garantía y calibración de activos;
+- `NEXO-DOM-028`, para frontera entre hechos físicos y efectos económicos;
+- los contratos vigentes de sede, área, LOC, posición, activo, custodia y contexto territorial;
+- el registro canónico de requisitos de prueba vigente;
+- la implementación remota observable de NEXO para ubicaciones y activos.
+
+La tarea especializa instalaciones. No redefine el catálogo empresarial ni el contrato de activos ya aprobado.
+
+---
+
+#### 4. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. sede, área, espacio, LOC, instalación fija, componente y activo podían representar accidentalmente la misma realidad física;
+2. no existía una jerarquía locativa canónica para pisos, zonas, cuartos, redes, puntos de servicio y componentes fijos;
+3. mantenimiento de activo y mantenimiento de instalación podían competir por el mismo hecho;
+4. la existencia de `site_id`, `area_id`, `location_id` o `location_position_id` podía confundirse con un modelo integral de instalaciones;
+5. condición, disponibilidad y lifecycle podían colapsarse en un único estado;
+6. renombrar, mover o reorganizar un espacio podía borrar historia;
+7. un LOC podía terminar representando cualquier espacio físico aunque su propósito sea logístico;
+8. un componente fijo podía terminar duplicado como activo sin relación explícita;
+9. un punto de servicio podía existir únicamente como texto dentro de una orden, factura o inspección;
+10. las tareas posteriores podían crear identidades locales incompatibles para mantenimiento, saneamiento, plagas, servicios, inspecciones, calibración, accesos, obras o novedades.
+
+---
+
+#### 5. Frontera con la estructura empresarial y territorial
+
+Se preserva la taxonomía empresarial aprobada:
+
+```text
+PHYSICAL_FACILITY
+!=
+OPERATIONAL_SITE
+!=
+ORGANIZATIONAL_AREA
+!=
+PHYSICAL_ZONE
+!=
+WORKSTATION
+```
+
+Reglas:
+
+1. `PHYSICAL_FACILITY` representa el inmueble o espacio físico identificable aprobado por la estructura organizacional compartida.
+2. `OPERATIONAL_SITE` continúa siendo el contexto territorial primario desde el cual se ejecutan capacidades y se asigna autoridad.
+3. `ORGANIZATIONAL_AREA` continúa siendo una unidad funcional y no se convierte en habitación, piso o zona física.
+4. `PHYSICAL_ZONE` continúa siendo una subdivisión espacial y no concede por sí sola autorización o propiedad de proceso.
+5. `WORKSTATION` continúa siendo un punto concreto de ejecución y no se convierte automáticamente en área, espacio, LOC o componente fijo.
+6. NEXO consume esas identidades mediante referencias estables; no crea un segundo catálogo de sedes o áreas.
+7. una instalación física podrá alojar más de un contexto operativo cuando el contrato territorial lo permita.
+8. compartir nombre, dirección o responsable no fusiona identidades.
+
+---
+
+#### 6. Propiedad de dominio
+
+La propiedad queda separada:
+
+| Concepto | Propiedad canónica |
+| --- | --- |
+| empresa, marca, establecimiento y estructura organizacional | contrato organizacional compartido |
+| `PHYSICAL_FACILITY` y `OPERATIONAL_SITE` | estructura territorial compartida |
+| `ORGANIZATIONAL_AREA` | estructura organizacional compartida |
+| topología física interna de instalación | NEXO |
+| `PHYSICAL_SPACE` | NEXO |
+| `FIXED_COMPONENT` | NEXO |
+| `SERVICE_NETWORK` | NEXO para identidad y topología física |
+| `SERVICE_POINT` | NEXO para identidad y topología física |
+| LOC y posiciones de inventario | NEXO inventario |
+| activos individuales y reutilizables | NEXO activos |
+| efecto económico de mantenimiento, obra o pérdida | NUMERA cuando corresponda |
+| compra o contratación externa | ORIGO cuando corresponda |
+
+NEXO puede relacionar sujetos compartidos, pero no apropiarse de su verdad empresarial.
+
+---
+
+#### 7. Sujetos locativos canónicos
+
+Para este contrato se distinguen cinco clases conceptuales de sujeto locativo:
+
+```text
+PHYSICAL_FACILITY
+PHYSICAL_SPACE
+FIXED_COMPONENT
+SERVICE_NETWORK
+SERVICE_POINT
+```
+
+`PHYSICAL_FACILITY` se reutiliza desde la estructura compartida.
+
+Los otros cuatro conceptos especializan la topología operativa de NEXO.
+
+Una implementación física futura podrá elegir nombres técnicos distintos, pero deberá preservar estas diferencias semánticas.
+
+---
+
+#### 8. `PHYSICAL_FACILITY`
+
+Una `PHYSICAL_FACILITY` es la instalación física estable que actúa como ancla de la topología locativa.
+
+Debe conservar, directamente o por referencia compartida:
+
+- identidad estable;
+- código canónico;
+- nombre vigente;
+- vigencia;
+- relación territorial con sede o sedes aplicables;
+- evidencia o fuente de validación cuando corresponda;
+- historial de cambios;
+- relación con sus espacios físicos.
+
+NEXO no crea una nueva instalación para cada área, LOC, activo, piso o cuarto.
+
+---
+
+#### 9. `PHYSICAL_SPACE`
+
+`PHYSICAL_SPACE` representa una subdivisión física estable dentro de una instalación.
+
+Debe poder representar, como mínimo, los conceptos locativos requeridos por la cobertura aprobada:
+
+- piso;
+- zona física;
+- cuarto;
+- espacio técnico u otra subdivisión física controlada cuando exista evidencia suficiente.
+
+Cada espacio conserva:
+
+- identidad estable;
+- código independiente del nombre visible;
+- instalación de pertenencia;
+- padre físico cuando exista;
+- clasificación espacial controlada;
+- vigencia;
+- criticidad cuando aplique;
+- condición;
+- disponibilidad;
+- responsable operativo cuando aplique;
+- referencias documentales o gráficas cuando existan;
+- historial.
+
+Un espacio no se crea únicamente porque exista un nombre en una pantalla o comentario.
+
+---
+
+#### 10. Jerarquía física
+
+La jerarquía física base queda:
+
+```text
+PHYSICAL_FACILITY
+    |
+    +-- PHYSICAL_SPACE
+          |
+          +-- PHYSICAL_SPACE
+          |     |
+          |     +-- FIXED_COMPONENT
+          |     +-- SERVICE_POINT
+          |
+          +-- FIXED_COMPONENT
+          +-- SERVICE_POINT
+```
+
+`SERVICE_NETWORK` puede cruzar varios espacios y por ello no se fuerza a una jerarquía estrictamente arbórea.
+
+La representación completa es un grafo gobernado con una jerarquía espacial principal y relaciones tipadas adicionales.
+
+---
+
+#### 11. Regla de padre físico
+
+Cada `PHYSICAL_SPACE` activo debe poseer un único padre físico principal cuando no sea raíz inmediata de la instalación.
+
+Se prohíbe:
+
+```text
+SAME SPACE
+→
+TWO ACTIVE PHYSICAL PARENTS
+```
+
+Las relaciones funcionales con áreas, estaciones, LOC, activos o servicios no crean padres físicos adicionales.
+
+Un cambio de padre conserva vigencia e historia; no reescribe el pasado.
+
+---
+
+#### 12. Área organizacional frente a espacio físico
+
+Se fija:
+
+```text
+ORGANIZATIONAL_AREA
+!=
+PHYSICAL_SPACE
+```
+
+Una misma área funcional puede operar en varios espacios.
+
+Un mismo espacio puede alojar sucesivamente áreas distintas o, cuando el modelo operativo lo autorice, servir a más de una función sin cambiar su identidad física.
+
+La relación deberá conservar vigencia y semántica explícita.
+
+Nunca se deduce identidad física desde el nombre del área.
+
+---
+
+#### 13. LOC frente a espacio físico
+
+Se fija:
+
+```text
+LOC
+!=
+PHYSICAL_SPACE
+```
+
+LOC conserva su propósito de ubicación logística para inventario.
+
+Reglas:
+
+1. un espacio físico puede existir sin LOC;
+2. un espacio físico puede contener cero, uno o varios LOC cuando el diseño logístico lo requiera;
+3. un LOC debe poder anclarse a un espacio físico o instalación de forma explícita;
+4. una posición de LOC sigue siendo una subdivisión logística del LOC, no un cuarto, piso o zona física general;
+5. desactivar un LOC no elimina el espacio físico;
+6. cambiar la función logística de un espacio no cambia automáticamente la identidad del espacio;
+7. un activo puede tener ubicación física y relación logística sin convertir ambas dimensiones en una sola identidad.
+
+---
+
+#### 14. Reconciliación del AS-IS de LOC
+
+La implementación remota observada ya contiene estructuras parciales útiles:
+
+```text
+inventory_locations
+- id
+- site_id
+- area_id
+- code
+- zone
+- description
+- location_type
+- is_active
+
+inventory_location_positions
+- id
+- site_id
+- location_id
+- code
+- name
+- kind
+- is_active
+```
+
+Esas estructuras demuestran cobertura de ubicación logística, pero no constituyen por sí solas una jerarquía integral de instalaciones.
+
+La adopción objetivo es:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+No:
+
+```text
+LEGACY LOC TABLES
+→
+ASSUME FACILITY MODEL COMPLETE
+```
+
+---
+
+#### 15. `FIXED_COMPONENT`
+
+`FIXED_COMPONENT` representa un componente físico cuya identidad operativa depende principalmente de su integración estable con una instalación o espacio.
+
+Reglas:
+
+1. conserva identidad propia cuando requiere historial, inspección, mantenimiento, reparación, reemplazo o evidencia individual;
+2. debe vincularse a una instalación o espacio físico vigente;
+3. su condición no se infiere de la condición del espacio;
+4. su disponibilidad no se infiere únicamente de presencia;
+5. reemplazar el componente no borra el componente anterior ni su historial;
+6. una pieza fungible utilizada para repararlo no se convierte por ello en componente fijo permanente;
+7. un equipo individual móvil o serializado no se reclasifica como componente fijo solo porque esté temporalmente instalado.
+
+---
+
+#### 16. Componente fijo frente a activo
+
+Se fija:
+
+```text
+FIXED_COMPONENT
+!=
+SERIALIZED_ASSET
+```
+
+Puede existir relación entre ambos cuando un equipo individual se instala físicamente dentro de una infraestructura.
+
+Cuando exista una misma realidad física con expediente de activo y función fija:
+
+- se conserva una identidad física principal;
+- la relación entre expediente de activo y topología locativa queda explícita;
+- no se crean dos reparaciones competidoras;
+- el objeto principal de la intervención decide el workflow aplicable;
+- el costo o tratamiento contable no decide por sí solo la clase física.
+
+---
+
+#### 17. Regla del objeto principal
+
+Toda intervención posterior deberá identificar un único objeto principal:
+
+```text
+PRIMARY SUBJECT
+=
+FACILITY
+OR SPACE
+OR FIXED COMPONENT
+OR SERVICE NETWORK
+OR SERVICE POINT
+OR ASSET
+```
+
+La intervención puede afectar sujetos relacionados, pero una sola intención no crea dos órdenes propietarias sobre el mismo trabajo.
+
+Ejemplos conceptuales:
+
+```text
+REPAIR FIXED INFRASTRUCTURE
+→ LOCATIVE SUBJECT
+```
+
+```text
+REPAIR MOBILE OR INDIVIDUALLY MANAGED EQUIPMENT
+→ ASSET SUBJECT
+```
+
+La clasificación concreta se resuelve por identidad y relación aprobadas, no por texto libre.
+
+---
+
+#### 18. `SERVICE_NETWORK`
+
+`SERVICE_NETWORK` representa la estructura física que conecta o distribuye un servicio dentro de una instalación cuando esa estructura necesita identidad y trazabilidad propias.
+
+Esta tarea gobierna únicamente:
+
+- identidad;
+- pertenencia a instalación;
+- relación con espacios;
+- relación con puntos de servicio;
+- condición;
+- criticidad;
+- disponibilidad estructural;
+- historial.
+
+No gobierna todavía consumo, lectura, contrato, tarifa, alerta o conciliación económica.
+
+---
+
+#### 19. `SERVICE_POINT`
+
+`SERVICE_POINT` es un punto físico estable de conexión, entrega, medición, control o interrupción de un servicio.
+
+Debe conservar:
+
+- identidad estable;
+- código;
+- instalación;
+- espacio cuando aplique;
+- red o servicio relacionado cuando aplique;
+- criticidad;
+- condición;
+- disponibilidad;
+- responsable cuando aplique;
+- historial.
+
+La ausencia de medidor no impide que exista un punto de servicio.
+
+Un medidor futuro se relaciona con el punto; no sustituye su identidad.
+
+---
+
+#### 20. Frontera con servicios y medidores
+
+`NEXO-DOM-033` conserva:
+
+- servicio;
+- medidor;
+- lectura;
+- consumo;
+- interrupción;
+- alerta;
+- contingencia.
+
+`NEXO-DOM-029` entrega únicamente la identidad física y topología sobre la que esos hechos podrán operar.
+
+```text
+SERVICE POINT IDENTITY
+!=
+METER
+!=
+READING
+!=
+CONSUMPTION
+```
+
+---
+
+#### 21. Identidad estable
+
+Todo sujeto locativo controlado por este contrato deberá poder conservar:
+
+```text
+stable_id
+canonical_code
+subject_type
+display_name
+facility_ref
+primary_parent_ref
+valid_from
+valid_to
+status
+criticality
+condition
+availability
+responsible_ref
+history
+```
+
+Los nombres físicos futuros de tablas o columnas pueden variar; los invariantes no.
+
+`display_name` nunca es clave de integración.
+
+`canonical_code` puede cambiar únicamente mediante una decisión controlada que preserve aliases o historia cuando sea necesario.
+
+---
+
+#### 22. Relaciones tipadas
+
+Las relaciones deberán declarar su semántica. Como mínimo se distinguen conceptualmente:
+
+- pertenencia física de un espacio a una instalación;
+- contención física entre espacios;
+- fijación de un componente a una instalación o espacio;
+- ubicación de un punto de servicio;
+- pertenencia de un punto a una red;
+- cobertura de una red sobre espacios;
+- ocupación de una instalación por una sede operativa;
+- asignación funcional de área organizacional a espacio;
+- anclaje de LOC a espacio;
+- ubicación de activo en espacio o LOC;
+- relación entre componente fijo y activo individual cuando aplique;
+- sustitución o sucesión histórica.
+
+Compartir identificadores contextuales no sustituye una relación explícita.
+
+---
+
+#### 23. Cardinalidades e invariantes
+
+Se fijan los siguientes invariantes:
+
+1. una identidad locativa activa no puede duplicarse por nombre alterno;
+2. un espacio tiene una única instalación raíz vigente;
+3. un espacio no tiene dos padres físicos principales vigentes;
+4. un componente fijo tiene una ubicación física principal vigente;
+5. un punto de servicio tiene una ubicación física principal vigente;
+6. un LOC conserva una identidad logística distinta de su espacio ancla;
+7. un activo conserva una identidad distinta de su espacio y LOC;
+8. una relación histórica cerrada no se elimina por crear una relación nueva;
+9. una identidad retirada puede seguir siendo referenciada por hechos históricos;
+10. una sustitución crea relación de sucesión y no muta destructivamente la identidad anterior.
+
+---
+
+#### 24. Condición física reutilizada
+
+La condición locativa reutiliza la escala canónica ya aprobada:
+
+```text
+NEW
+GOOD
+FAIR
+POOR
+CRITICAL
+UNKNOWN
+```
+
+No se crea una segunda escala de condición para instalaciones.
+
+`UNKNOWN` significa evidencia insuficiente y no equivale a `GOOD`.
+
+La condición expresa estado físico observado y no reemplaza lifecycle, disponibilidad, limpieza, cumplimiento, mantenimiento ni criticidad.
+
+---
+
+#### 25. Observación de condición
+
+Toda actualización de condición deberá conservar, cuando corresponda:
+
+- sujeto evaluado;
+- condición observada;
+- momento efectivo;
+- actor o fuente;
+- evidencia;
+- contexto de observación;
+- condición anterior conocida;
+- corrección o supersesión posterior.
+
+No se permite editar el valor vigente destruyendo la observación anterior cuando la historia sea material.
+
+---
+
+#### 26. Condición frente a disponibilidad
+
+Se preserva:
+
+```text
+PHYSICAL CONDITION
+!=
+AVAILABILITY
+```
+
+La disponibilidad reutiliza la proyección canónica:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+Una condición puede causar indisponibilidad o restricción cuando una política vigente así lo determine, pero la disponibilidad debe conservar su razón.
+
+`GOOD` no significa automáticamente `AVAILABLE`.
+
+`CRITICAL` no equivale automáticamente a retiro.
+
+---
+
+#### 27. Disponibilidad contextual
+
+La disponibilidad locativa es una proyección contextual y debe poder conservar:
+
+- sujeto;
+- propósito o uso evaluado;
+- resultado;
+- razones vigentes;
+- hechos bloqueantes;
+- política aplicada;
+- momento de evaluación;
+- frescura de evidencia.
+
+La disponibilidad puede depender de condición, mantenimiento, inspección, saneamiento, servicio, obra, novedad u otra obligación aprobada.
+
+Esta tarea no crea esos workflows; únicamente exige que sus resultados puedan proyectarse sin sobrescribir la identidad locativa.
+
+---
+
+#### 28. Propagación de condición y disponibilidad
+
+No se admite una propagación implícita como:
+
+```text
+ONE CHILD = CRITICAL
+→
+WHOLE FACILITY = CRITICAL
+```
+
+ni:
+
+```text
+ONE COMPONENT = UNAVAILABLE
+→
+WHOLE SPACE = UNAVAILABLE
+```
+
+La propagación requiere una regla explícita basada en criticidad, dependencia, alcance y propósito.
+
+Un componente crítico puede bloquear un espacio o instalación cuando la política lo determine; la razón debe quedar trazable.
+
+---
+
+#### 29. Criticidad
+
+La criticidad es una dimensión independiente de condición y disponibilidad.
+
+Se conserva como clasificación gobernada que permite decidir prioridad, bloqueo, frecuencia de inspección, mantenimiento, contingencia y escalamiento.
+
+Esta tarea no inventa niveles numéricos ni nombres de criticidad que no estén aprobados por una política propietaria.
+
+Se exige únicamente que:
+
+- sea explícita cuando aplique;
+- tenga vigencia;
+- conserve fuente o criterio;
+- no se derive únicamente del valor económico;
+- no sea sustituida por condición.
+
+---
+
+#### 30. Responsable
+
+Todo sujeto que requiera operación o atención deberá poder relacionarse con un responsable vigente.
+
+Se separan:
+
+```text
+RESPONSABLE OPERATIVO
+!=
+CUSTODIO DE ACTIVO
+!=
+PROPIETARIO JURÍDICO
+!=
+APROBADOR
+!=
+TÉCNICO O PROVEEDOR
+```
+
+El responsable podrá ser una función, área o identidad autorizada según el contrato propietario.
+
+La ausencia de una persona nominal no autoriza inventar una asignación.
+
+---
+
+#### 31. Vigencia e historia
+
+Cada identidad y relación deberá soportar vigencia temporal suficiente para reconstruir el estado histórico.
+
+Renombrar no crea automáticamente una nueva identidad.
+
+Mover o reparentar conserva la identidad cuando el sujeto físico sigue siendo el mismo.
+
+Reemplazar físicamente un componente individual crea la sucesión correspondiente cuando la política exige identidad individual.
+
+La historia deberá permitir responder:
+
+- qué existía;
+- dónde estaba;
+- de qué instalación dependía;
+- qué relación tenía con áreas, LOC, activos y servicios;
+- cuál era su condición;
+- cuál era su disponibilidad;
+- quién era responsable;
+- qué cambio ocurrió;
+- cuándo y por qué.
+
+---
+
+#### 32. División y fusión de espacios
+
+Una división o fusión física no se resuelve sobrescribiendo dimensiones y nombre de un único registro.
+
+Cuando cambia materialmente la realidad espacial:
+
+- se conserva la identidad histórica previa;
+- se crean las nuevas identidades necesarias;
+- se registra la relación de sucesión;
+- se cierran vigencias incompatibles;
+- se reubican relaciones futuras mediante acciones explícitas;
+- los hechos históricos continúan apuntando al sujeto original.
+
+No se migran hechos antiguos para aparentar que el nuevo espacio siempre existió.
+
+---
+
+#### 33. Planos, documentos y evidencia espacial
+
+Planos, fotografías, certificados y documentos pueden aportar evidencia o representación de una instalación.
+
+No sustituyen la identidad canónica del sujeto.
+
+Una referencia gráfica deberá poder relacionarse con la instalación, espacio, componente o punto aplicable sin crear un nuevo sujeto por archivo.
+
+La vigencia del documento y la vigencia del sujeto permanecen separadas.
+
+---
+
+#### 34. Relación con activos
+
+La implementación remota observada de activos ya usa, entre otros:
+
+```text
+site_id
+area_id
+location_id
+location_position_id
+responsible_employee_id
+```
+
+Ese modelo confirma que activo y ubicación ya poseen vínculos parciales.
+
+`NEXO-DOM-029` exige que la evolución futura pueda relacionar el activo con la topología física sin:
+
+- duplicar el activo;
+- convertir el espacio en activo;
+- convertir LOC en instalación;
+- perder ubicación histórica;
+- crear una segunda fuente de responsable.
+
+---
+
+#### 35. Relación con mantenimiento locativo
+
+`NEXO-DOM-030` será propietaria de:
+
+- plan;
+- frecuencia;
+- disparador;
+- solicitud;
+- triage;
+- orden de trabajo;
+- diagnóstico;
+- ejecución;
+- prueba;
+- liberación;
+- reapertura;
+- cierre.
+
+Esta tarea entrega el sujeto inequívoco sobre el cual esas obligaciones actuarán.
+
+No se anticipa aquí el workflow detallado de mantenimiento.
+
+---
+
+#### 36. Relación con limpieza y saneamiento
+
+`NEXO-DOM-031` especializa:
+
+- procedimiento;
+- frecuencia;
+- químico;
+- concentración;
+- ejecución;
+- verificación;
+- desviación;
+- liberación.
+
+Esta tarea entrega instalación, espacio y componente aplicables.
+
+```text
+CONDITION GOOD
+!=
+CLEAN
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+---
+
+#### 37. Relación con control de plagas
+
+`NEXO-DOM-032` especializa mapa, dispositivos, visitas, hallazgos, acciones y certificados.
+
+Esta tarea entrega la topología estable sobre la que podrán ubicarse dispositivos y hallazgos.
+
+Un dispositivo de control de plagas no se convierte por ello en `SERVICE_POINT`.
+
+---
+
+#### 38. Relación con inspecciones físicas
+
+`NEXO-DOM-034` especializa plantillas versionadas, ejecuciones, hallazgos y acciones correctivas.
+
+Esta tarea entrega el sujeto inspeccionable y su condición vigente.
+
+Un hallazgo de inspección puede actualizar o cuestionar condición, pero no sobrescribe silenciosamente la historia previa.
+
+---
+
+#### 39. Relación con control metrológico
+
+`NEXO-DOM-035` especializa control metrológico, calibración, verificación, tolerancias, certificados e impacto.
+
+Un instrumento instalado puede relacionarse con un activo, componente fijo o punto de servicio según su identidad real.
+
+Esta tarea no decide la conformidad metrológica.
+
+---
+
+#### 40. Relación con acceso físico
+
+`NEXO-DOM-036` especializa llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias.
+
+Esta tarea entrega espacios y zonas físicas estables para definir alcance de acceso.
+
+```text
+PHYSICAL ACCESS ZONE
+!=
+DIGITAL AUTHORIZATION SCOPE
+```
+
+---
+
+#### 41. Relación con obras y adecuaciones
+
+`NEXO-DOM-037` especializa obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía.
+
+Una obra puede modificar topología, pero la modificación locativa no se considera efectiva hasta existir una decisión de cierre que determine qué identidades continúan, se retiran, se reemplazan, se dividen o se crean.
+
+---
+
+#### 42. Relación con novedades locativas
+
+`NEXO-DOM-038` especializa novedades locativas, severidad, contención, escalamiento, resolución y cierre.
+
+Una novedad referencia sujetos de esta tarea; no crea identidades locativas mediante texto libre.
+
+La resolución de una novedad puede producir una actualización autorizada de condición o disponibilidad sin borrar el incidente original.
+
+---
+
+#### 43. Idempotencia y concurrencia
+
+La futura materialización deberá impedir que reintentos o concurrencia produzcan:
+
+- dos espacios para la misma intención de alta;
+- dos componentes por el mismo registro físico;
+- relaciones padres incompatibles;
+- doble traslado;
+- dos observaciones vigentes creadas por un mismo evento lógico;
+- dos cierres para una misma relación temporal;
+- pérdida de la intención después de timeout o resultado desconocido.
+
+Una misma operación lógica reintentada deberá recuperar el resultado previo o producir un no-op permitido.
+
+Esta tarea define la obligación; no implementa el mecanismo físico.
+
+---
+
+#### 44. Operación offline
+
+Una captura offline de inspección, condición o novedad futura no autoriza crear silenciosamente nuevas identidades locativas.
+
+Las intenciones offline deberán conservar identidad de operación y reconciliarse antes de producir un efecto duplicado.
+
+Los hechos capturados posteriormente no reescriben el momento efectivo original cuando este sea conocido y válido.
+
+---
+
+#### 45. Límites
+
+Esta tarea no:
+
+- crea tablas, vistas, funciones, RPC, triggers, RLS o migraciones;
+- modifica datos de sedes, áreas, LOC, posiciones o activos;
+- decide nombres físicos de tablas;
+- diseña pantallas;
+- ejecuta mantenimiento;
+- crea solicitudes u órdenes de trabajo;
+- define frecuencias de mantenimiento;
+- digitaliza limpieza o saneamiento;
+- integra proveedor de plagas;
+- registra lecturas o consumos de servicios;
+- calibra equipos;
+- entrega llaves o credenciales;
+- ejecuta obras;
+- cierra novedades locativas;
+- modifica efectos financieros;
+- cambia permisos o autorización digital;
+- crea una nueva taxonomía empresarial;
+- autoriza implementación física.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** **0**
+
+**Requisitos modificados:** **0**
+
+**Requisitos diferidos:** **0**
+
+**Requisitos obsoletos:** **0**
+
+Justificación:
+
+La identidad locativa, jerarquía, relación con activos y LOC, condición, disponibilidad, mantenimiento, evidencia e integración ya están cubiertas por requisitos canónicos vigentes creados durante el cierre de cobertura empresarial. Esta tarea especializa y materializa documentalmente esas reglas sin ampliar el universo de riesgos protegido.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Esta sección registra trazabilidad y no modifica el registro de requisitos.
+
+- `TREQ-NEXO-017`: identidad estable, jerarquía, sede, área, relación con LOC y activos, criticidad, condición, disponibilidad, responsable, historial y frontera de mantenimiento locativo;
+- `TREQ-NEXO-018`: continuidad hacia saneamiento, servicios, inspección, calibración, acceso físico, obras y novedades;
+- `TREQ-INTEGRATION-018`: coordinación con dominios consumidores y proveedores externos;
+- `TREQ-NEXO-013`: identidad y trazabilidad de activos cuando exista relación con sujetos locativos;
+- `TREQ-NEXO-014`: mantenimiento y liberación de activos para preservar la frontera con mantenimiento locativo;
+- `TREQ-SUPABASE-002`: integridad, concurrencia e idempotencia cuando el contrato sea materializado físicamente.
+
+No se modifica ninguna fila del registro.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La tarea es documental y no se ha ejecutado la batería del checkout local sobre el reemplazo prospectivo. |
+| LOCAL | NOT_EXECUTED | El artefacto aún no ha sido insertado en el archivo propietario del checkout local. |
+| REMOTA | PASS | Revisión de `main` de vento-shell y vento-nexo: continuidad NEXO-DOM-029 vigente; topología DEFINE_ONCE; requisitos existentes; LOC, posiciones y activos parciales observados; no se demostró una jerarquía integral dedicada de instalaciones en las superficies inspeccionadas. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron pruebas con instalaciones, espacios, servicios o mantenimiento reales. |
+| FÍSICA | NOT_APPLICABLE | La topología canónica de NEXO-DOM-001 a NEXO-DOM-038 es DEFINE_ONCE y no crea instancia física propia. |
+
+---
+
+#### 49. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] `PHYSICAL_FACILITY` permanece separado de `OPERATIONAL_SITE`.
+- [x] `ORGANIZATIONAL_AREA` permanece separado de `PHYSICAL_SPACE`.
+- [x] LOC permanece separado de espacio físico general.
+- [x] posición de LOC permanece separada de habitación, piso o zona física.
+- [x] `FIXED_COMPONENT` permanece separado de `SERIALIZED_ASSET`.
+- [x] `SERVICE_POINT` permanece separado de medidor, lectura y consumo.
+- [x] se define una jerarquía capaz de representar pisos, zonas y cuartos.
+- [x] se admite una topología de servicios que cruza espacios sin forzarla a un árbol inválido.
+- [x] cada sujeto locativo conserva identidad estable, código, vigencia e historia.
+- [x] se preservan relaciones tipadas y vigentes.
+- [x] se define un único padre físico principal para cada espacio no raíz.
+- [x] se evita duplicar sedes, áreas o instalaciones compartidas dentro de NEXO.
+- [x] condición reutiliza `NEW`, `GOOD`, `FAIR`, `POOR`, `CRITICAL` y `UNKNOWN`.
+- [x] disponibilidad reutiliza `AVAILABLE`, `RESTRICTED`, `UNAVAILABLE` y `UNKNOWN`.
+- [x] condición, disponibilidad, lifecycle y criticidad permanecen separadas.
+- [x] `UNKNOWN` no se interpreta como estado favorable.
+- [x] propagación de condición o indisponibilidad requiere política explícita.
+- [x] el objeto principal determina la frontera entre intervención locativa e intervención de activo.
+- [x] el AS-IS de LOC, posiciones y activos se clasifica como base parcial `REUSE_OR_REFACTOR`.
+- [x] renombre, reparentado, división, fusión, sustitución y retiro conservan historia.
+- [x] se preserva frontera con `NEXO-DOM-030` a `NEXO-DOM-038`.
+- [x] se preserva el handoff de experiencia hacia `NEXO-UX-043` sin diseñar UI en esta tarea.
+- [x] no se crean ni modifican requisitos de prueba.
+- [x] no se modifica 04A.
+- [x] no se autoriza materialización física.
+
+---
+
+#### 50. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe materialización completa de la topología locativa | no | paquetes físicos posteriores | esquema, migración y consumidores aprobados y validados |
+| LOC legacy no está reconciliado individualmente con espacios físicos | no | implementación NEXO correspondiente | crosswalk y migración controlada por paquete |
+| mantenimiento locativo no tiene workflow materializado | no | NEXO-DOM-030 y su implementación posterior | ciclo plan-solicitud-orden-ejecución-prueba-liberación validado |
+| saneamiento y plagas no tienen ciclo materializado | no | NEXO-DOM-031 y NEXO-DOM-032 | contratos y superficies correspondientes validados |
+| servicios y medidores no tienen ciclo materializado | no | NEXO-DOM-033 | identidad de servicio, medidores y lecturas implementada y conciliada |
+| inspecciones y metrología no están materializadas integralmente | no | NEXO-DOM-034 y NEXO-DOM-035 | contratos y evidencia implementados |
+| acceso físico, obras y novedades continúan pendientes | no | NEXO-DOM-036 a NEXO-DOM-038 | tareas propietarias e implementación correspondiente cerradas |
+
+Ningún riesgo residual autoriza crear una segunda fuente de identidad.
+
+---
+
+#### 51. Handoff hacia `NEXO-DOM-030`
+
+`NEXO-DOM-029` entrega a `NEXO-DOM-030`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+PHYSICAL HIERARCHY
++
+RELATION TO SITE / AREA / LOC / ASSET
++
+FIXED COMPONENT IDENTITY
++
+SERVICE NETWORK AND POINT IDENTITY
++
+CRITICALITY
++
+CURRENT CONDITION
++
+AVAILABILITY PROJECTION
++
+RESPONSIBLE PARTY
++
+HISTORY
++
+PRIMARY SUBJECT RULE
+```
+
+`NEXO-DOM-030` deberá construir sobre este handoff y no recrear una segunda jerarquía locativa.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación`
 ### [ ] NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
 ### [ ] NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
 ### [ ] NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
