@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process';
 import { fileURLToPath } from 'node:url';
 
 import { serializeActiveSequence } from './continuity-route.mjs';
+import { parseGitPorcelainV1Paths } from './docs-runtime-primitives.mjs';
 import { readAndResolveExecutionRoute } from './execution-route.mjs';
 import {
   instanceRecordRelativePath,
@@ -72,23 +73,8 @@ function expectedPhysicalDirtyPathSet(physicalRecordPath) {
   return new Set([physicalRecordPath].filter(Boolean));
 }
 
-function normalizeGitPath(value) {
-  return String(value ?? '')
-    .trim()
-    .replace(/^"|"$/gu, '')
-    .replaceAll('\\', '/');
-}
-
 export function parseWorktreePaths(source) {
-  const paths = [];
-  for (const line of String(source ?? '').split(/\r?\n/gu)) {
-    if (!line.trim()) continue;
-    const payload = line.length >= 4 ? line.slice(3).trim() : line.trim();
-    const candidate = payload.includes(' -> ') ? payload.split(' -> ').at(-1) : payload;
-    const normalized = normalizeGitPath(candidate);
-    if (normalized) paths.push(normalized);
-  }
-  return [...new Set(paths)].sort((left, right) => left.localeCompare(right, 'en'));
+  return parseGitPorcelainV1Paths(source);
 }
 
 export function validatorsForPath(relativePath) {

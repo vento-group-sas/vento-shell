@@ -18,6 +18,10 @@ const DERIVED_INTEGRATION_PATHS = new Set([
 ]);
 
 const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
+  'docs/plan-canonico/modular/task-development-policy.json',
+  'scripts/docs/canonical-task-preflight.mjs',
+  'scripts/docs/docs-runtime-primitives.mjs',
+  'scripts/docs/docs-runtime-primitives.test.mjs',
   'scripts/docs/implementation-branch-lifecycle.mjs',
   'scripts/docs/implementation-branch-lifecycle.test.mjs',
   'scripts/docs/implementation-execution-coordinator.mjs',
@@ -30,6 +34,9 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/docs/validate-executable-delivery.test.mjs',
   'scripts/docs/task-branch-lifecycle.mjs',
   'scripts/docs/task-branch-lifecycle.test.mjs',
+  'scripts/docs/package-review-factory.mjs',
+  'scripts/docs/task-semantic-contract.mjs',
+  'scripts/docs/task-semantic-contract.test.mjs',
   'scripts/quality/lint-ratchet.mjs',
   'scripts/quality/lint-ratchet.test.mjs',
   'scripts/supabase/environment-drift.mjs',

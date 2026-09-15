@@ -44,7 +44,6 @@ const policy = {
     'EMPTY_DRAFT',
     'PRESENTATION',
     'OWNER_FILE_MISMATCH',
-    'OWNER_REPOSITORY_MISSING',
     'PHYSICAL_SCOPE_CONTRADICTION',
     'UNRESOLVED_PLACEHOLDER',
     'UNKNOWN_TASK_REFERENCE',
@@ -433,4 +432,23 @@ test('inventario canónico preserva files sobre auxiliary_files para el mismo ta
   } finally {
     fs.rmSync(root, { recursive: true, force: true });
   }
+});
+
+test('repositorio propietario no depende del layout local', () => {
+  const isolatedRoot = path.join(os.tmpdir(), 'vento-semantic-isolated', 'arbitrary-worktree-name');
+  const result = validateTaskSemanticContract({
+    block: validBlock,
+    task: { id: 'TEST-SEM-011', state: 'APROBADA' },
+    ownerRelativePath: 'bloques/X/test.md',
+    inventory,
+    policy,
+    root: isolatedRoot,
+  });
+  assert.deepEqual(result.errors, []);
+});
+
+test('contrato semantico no puede reintroducir dependencia de carpeta hermana', () => {
+  const source = fs.readFileSync('scripts/docs/task-semantic-contract.mjs', 'utf8');
+  assert.doesNotMatch(source, /path\.join\(path\.dirname\(root\),\s*repositoryName\)/u);
+  assert.doesNotMatch(source, /OWNER_REPOSITORY_MISSING/u);
 });

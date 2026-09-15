@@ -285,3 +285,24 @@ test('assert de reutilizacion falla cerrado ante impacto material', () => {
     /PHYSICAL_EVIDENCE_REUSE_BLOCKED/u,
   );
 });
+
+test('hardening de Git machine output reutiliza evidencia fisica', () => {
+  const paths = [
+    'scripts/docs/docs-runtime-primitives.mjs',
+    'scripts/docs/docs-runtime-primitives.test.mjs',
+    'scripts/docs/canonical-task-preflight.mjs',
+    'scripts/docs/package-review-factory.mjs',
+    'scripts/docs/implementation-doctor.mjs',
+    'scripts/docs/task-branch-lifecycle.mjs',
+    'scripts/supabase/environment-drift.mjs',
+    'scripts/docs/task-semantic-contract.mjs',
+    'scripts/docs/task-semantic-contract.test.mjs',
+    'docs/plan-canonico/modular/task-development-policy.json',
+  ];
+  const impact = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: paths,
+  });
+  assert.equal(impact.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(impact.material_paths, []);
+});

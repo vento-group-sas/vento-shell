@@ -10,6 +10,7 @@ import {
   assessImplementationCandidateLifecycleDelta,
   resolveValidationCandidateAnchor,
 } from '../docs/implementation-integration-model.mjs';
+import { parseGitPorcelainV1Paths } from '../docs/docs-runtime-primitives.mjs';
 
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
@@ -692,9 +693,7 @@ function gitCandidate(root, implementationContext = null) {
   const head = git(root, ['rev-parse', 'HEAD']).stdout.trim().toLowerCase();
   const branch = git(root, ['branch', '--show-current'], { allowFailure: true }).stdout.trim() || 'DETACHED';
   const status = git(root, ['status', '--porcelain=v1', '--untracked-files=all']).stdout;
-  const dirtyPaths = status.split(/\r?\n/u)
-    .map((line) => line.slice(3).trim())
-    .filter(Boolean)
+  const dirtyPaths = parseGitPorcelainV1Paths(status)
     .map(normalizeRepoPath)
     .sort((left, right) => left.localeCompare(right, 'en'));
   return {

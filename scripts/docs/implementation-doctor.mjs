@@ -3,6 +3,8 @@ import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
 
+import { parseGitPorcelainV1Paths } from './docs-runtime-primitives.mjs';
+
 import {
   READINESS_PATHS,
   instanceRequiresInPackageCandidateEvidence,
@@ -252,7 +254,7 @@ function run(command, args, { cwd, allowFailure = false } = {}) {
     fail(`${command} unavailable: ${result.error.message}`);
   }
   const status = Number.isInteger(result.status) ? result.status : 1;
-  const stdout = String(result.stdout ?? '').trim();
+  const stdout = String(result.stdout ?? '').trimEnd();
   const stderr = String(result.stderr ?? '').trim();
   if (status !== 0 && !allowFailure) {
     fail(stderr || stdout || `${command} failed`);
@@ -266,14 +268,6 @@ function commandProbe(command, args, cwd) {
     ok: result.status === 0,
     status: result.status,
     detail: (result.stdout || result.stderr).split(/\r?\n/u)[0] || null,
-  });
-}
-
-function parsePorcelainPaths(source) {
-  return String(source ?? '').split(/\r?\n/u).filter(Boolean).map((line) => {
-    const payload = line.slice(3).trim();
-    const arrow = payload.lastIndexOf(' -> ');
-    return normalizeRepoPath(arrow >= 0 ? payload.slice(arrow + 4) : payload);
   });
 }
 
@@ -399,7 +393,7 @@ export function runImplementationDoctor({
     cwd: resolvedRoot,
     allowFailure: true,
   });
-  const worktreePaths = worktree.status === 0 ? parsePorcelainPaths(worktree.stdout) : [];
+  const worktreePaths = worktree.status === 0 ? parseGitPorcelainV1Paths(worktree.stdout) : [];
   const worktreeClassifications = worktreePaths.map((relativePath) => ({
     path: relativePath,
     classification: classifyDoctorWorktreePath({

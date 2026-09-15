@@ -48,6 +48,21 @@ export function validateExecutablePolicy(source) {
     );
   }
 
+  // LC-010: downloaded executors must never create filesystem links. On
+  // Windows, removing a disposable git worktree that contains a junction can
+  // traverse the junction and delete files in the external target. Dependency
+  // isolation belongs in reviewed repository tooling, not in an stdin script.
+  if (
+    /\b(?:fs\.)?(?:promises\.)?symlink(?:Sync)?\s*\(/iu.test(text)
+    || /mklink(?:\.exe)?/iu.test(text)
+    || /New-Item[^\r\n]*-ItemType[\s'"`]*(?:SymbolicLink|Junction|HardLink)/iu.test(text)
+  ) {
+    fail(
+      'EXECUTABLE_POLICY_FAIL:LC-010:FILESYSTEM_LINK_FORBIDDEN:'
+      + 'use an independently provisioned validation directory',
+    );
+  }
+
   // Downloaded executors must not route a physical implementation through
   // the branch-local npm facade. An implementation branch can intentionally
   // lag main while current-main tooling carries lifecycle hardening.
@@ -94,7 +109,7 @@ export function validateExecutableSource(source, {
   return Object.freeze({
     mode: normalizedMode,
     bytes: Buffer.byteLength(text, 'utf8'),
-    policies: Object.freeze(['LC-009', 'CURRENT_MAIN_COORDINATOR', 'CANONICAL_TEXT_WRITE']),
+    policies: Object.freeze(['LC-009', 'LC-010', 'CURRENT_MAIN_COORDINATOR', 'CANONICAL_TEXT_WRITE']),
   });
 }
 
@@ -130,6 +145,7 @@ function main() {
   console.log(`[EXECUTABLE DELIVERY] MODE ${report.mode}`);
   console.log(`[EXECUTABLE DELIVERY] BYTES ${report.bytes}`);
   console.log('[EXECUTABLE DELIVERY] LC-009 PASS');
+  console.log('[EXECUTABLE DELIVERY] LC-010 PASS');
   console.log('[EXECUTABLE DELIVERY] CURRENT_MAIN_COORDINATOR PASS');
   console.log('[EXECUTABLE DELIVERY] CANONICAL_TEXT_WRITE PASS');
 }

@@ -24,6 +24,22 @@ export function spawnGitUtf8(args, {
   return spawnSync('git', args, options);
 }
 
+export function parseGitPorcelainV1Paths(source) {
+  const paths = [];
+  for (const rawLine of String(source ?? '').split(/\r?\n/u)) {
+    if (!rawLine) continue;
+    const line = rawLine.endsWith('\r') ? rawLine.slice(0, -1) : rawLine;
+    if (line.length < 3) continue;
+    const payload = line.slice(3);
+    const candidate = payload.includes(' -> ') ? payload.split(' -> ').at(-1) : payload;
+    const normalized = String(candidate ?? '')
+      .replace(/^"|"$/gu, '')
+      .replaceAll('\\', '/');
+    if (normalized) paths.push(normalized);
+  }
+  return [...new Set(paths)].sort((left, right) => left.localeCompare(right, 'en'));
+}
+
 export function writePrettyJson(filePath, value) {
   fs.mkdirSync(path.dirname(filePath), { recursive: true });
   fs.writeFileSync(filePath, `${JSON.stringify(value, null, 2)}\n`, 'utf8');
