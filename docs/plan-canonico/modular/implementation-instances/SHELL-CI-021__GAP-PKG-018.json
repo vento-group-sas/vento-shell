@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-021::GAP-PKG-018",
   "task_id": "SHELL-CI-021",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -79,7 +79,269 @@
     "LOCAL_VALIDATION candidate=cc7f6b335b0643c7cbabb134e5335a37143c41c9 command=npm run docs:package:gate:check -- --package-id GAP-PKG-018 status=PASS",
     "LOCAL_VALIDATION candidate=cc7f6b335b0643c7cbabb134e5335a37143c41c9 command=npm run docs:package:readiness:check -- --package GAP-PKG-018 status=PASS",
     "LOCAL_VALIDATION candidate=cc7f6b335b0643c7cbabb134e5335a37143c41c9 command=npm run docs:package:execution:check status=PASS",
-    "LOCAL_VALIDATION candidate=cc7f6b335b0643c7cbabb134e5335a37143c41c9 command=npm run docs:implementation:check status=PASS"
+    "LOCAL_VALIDATION candidate=cc7f6b335b0643c7cbabb134e5335a37143c41c9 command=npm run docs:implementation:check status=PASS",
+    {
+      "type": "IMPLEMENTATION_EXECUTION_EVIDENCE_V1",
+      "schema_version": 1,
+      "instance_id": "SHELL-CI-021::GAP-PKG-018",
+      "candidate_commit": "cc7f6b335b0643c7cbabb134e5335a37143c41c9",
+      "lifecycle_head_commit": "25cb5dc0bc2e2c269098d9cc581bb13cb768949c",
+      "candidate_lifecycle": {
+        "model_id": "VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1",
+        "decision": "REUSE_PHYSICAL_EVIDENCE",
+        "reason": "SAFE_LIFECYCLE_METADATA_ONLY",
+        "changed_paths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json"
+        ]
+      },
+      "observed_at": "2026-09-14T23:23:08.901Z",
+      "validation_commands": [
+        "npm run docs:package:gate:check -- --package-id GAP-PKG-018",
+        "npm run docs:package:readiness:check -- --package GAP-PKG-018",
+        "npm run docs:package:execution:check",
+        "npm run docs:implementation:check"
+      ],
+      "results": [
+        {
+          "command": "npm run docs:package:gate:check -- --package-id GAP-PKG-018",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:package:readiness:check -- --package GAP-PKG-018",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:package:execution:check",
+          "status": "PASS"
+        },
+        {
+          "command": "npm run docs:implementation:check",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        }
+      ],
+      "environment_results": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015",
+          "status": "PASS",
+          "evidence": [
+            ".delivery/SHELL-CI-021__GAP-PKG-018__staging-drift.json",
+            ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/readiness-assessment.json",
+            ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gate-015/eb6194325975da2485c6/READY-GATE-015.json",
+            ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gate-015/eb6194325975da2485c6/pilot-entry-decision-manifest.json"
+          ]
+        }
+      ],
+      "operational_evidence": [
+        "READY_GATES_001_014:.delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/readiness-assessment.json:sha256=618af575247612703a53b4f52a8452b36c17277d9405795eca87b7b8b5dd6352",
+        "READY_GATE_015:.delivery/SHELL-CI-021__GAP-PKG-018__ready-gate-015/eb6194325975da2485c6/READY-GATE-015.json",
+        "PILOT_ENTRY_AUTHORITY:OWN-DAT:DEMONSTRATED",
+        "PILOT_ENTRY_AUTHORITY_STATEMENT:APROBADO READY-GATE-015 GAP-PKG-018 COMO OWN-DAT",
+        "PILOT_ENTRY_DECISION:APROBAR_ENTRADA",
+        "PILOT_EXECUTION:NOT_EXECUTED",
+        "CI022:NOT_STARTED_NOT_AUTHORIZED_BY_THIS_EVENT"
+      ],
+      "validation_engine_repair_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_REPAIR_RECEIPT_V1",
+        "reusePolicy": "EXACT_REPAIRED_REPOSITORY_STATE_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-021::GAP-PKG-018",
+        "candidateCommit": "cc7f6b335b0643c7cbabb134e5335a37143c41c9",
+        "inputRepositoryStateSha256": "cfa377eae2ca169cc31f1e4591603695ada82b2e8d4399b30e7609e01a18fc55",
+        "outputRepositoryStateSha256": "cfa377eae2ca169cc31f1e4591603695ada82b2e8d4399b30e7609e01a18fc55",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "repairExecuted": false,
+        "repairedPaths": [],
+        "repairedAt": "2026-09-14T19:29:21.229Z",
+        "receiptSha256": "f30ee343430f5358afc29f9958fa20e00d9c89f17db2c7e24d8912614ca9ed1a"
+      },
+      "validation_engine_preverify_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_PREVERIFY_V1",
+        "reusePolicy": "EXACT_CANDIDATE_FINGERPRINT_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-021::GAP-PKG-018",
+        "candidateCommit": "cc7f6b335b0643c7cbabb134e5335a37143c41c9",
+        "lifecycleHeadCommit": "25cb5dc0bc2e2c269098d9cc581bb13cb768949c",
+        "repositoryStateSha256": "817b410120a14ce2368735bf8a48dcbb3ae005fde5621b24f2637be9738fc1d8",
+        "validationCommandsSha256": "056ff2f6bbddc286dfebb4af06a1e912755d87a154cfcde47dca6300c24d16cb",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "validatedAt": "2026-09-14T22:20:31.261Z",
+        "receiptSha256": "823e086568435221a9cd9db0a922ed052715905a35409824db836433a0f2d22d"
+      },
+      "validation_engine_shadow_impact": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F4_SHADOW_IMPACT_SELECTION",
+        "selectorId": "IMPLEMENTATION_SHADOW_IMPACT_SELECTOR_V1",
+        "planSha256": "28741c581bad66d18cfc1741d44dc2523f723f2d93276e6c0bb11c213df4af0a",
+        "executionMode": "FULL_SUITE_SHADOW_ONLY",
+        "selectiveExecution": false,
+        "fullSuiteExecuted": true,
+        "validationGatesSkipped": 0,
+        "fullSuiteStatus": "PASS",
+        "fullCommandCount": 4,
+        "selectedCommandCount": 2,
+        "omittedCommandCount": 2,
+        "potentialReductionPercent": 50,
+        "observedFailureCount": 0,
+        "observedFalseNegativeCount": 0,
+        "observedFalseNegatives": [],
+        "eligibleForSelectiveExecution": false,
+        "observationSha256": "b23c7eca2caa10bf74582fa7c803f6f11a4e7259b130fd2d717f6a0db2ae0b84"
+      },
+      "validation_engine_selective_validation": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F5_SAFE_SELECTIVE_VALIDATION",
+        "policyId": "PACKAGE_LOCAL_CLOSED_SCOPE_V1",
+        "candidateCommit": "cc7f6b335b0643c7cbabb134e5335a37143c41c9",
+        "planSha256": "28741c581bad66d18cfc1741d44dc2523f723f2d93276e6c0bb11c213df4af0a",
+        "decisionSha256": "92ecdaf5e4df962b02f044775ffa05d360e907cc09167a8e9f7b97b637bf10f8",
+        "changedPaths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json"
+        ],
+        "validationCommands": [
+          "npm run docs:package:gate:check -- --package-id GAP-PKG-018",
+          "npm run docs:package:readiness:check -- --package GAP-PKG-018",
+          "npm run docs:package:execution:check",
+          "npm run docs:implementation:check"
+        ],
+        "executionMode": "FULL_FALLBACK",
+        "selectiveExecution": false,
+        "fullFallbackUsed": true,
+        "fullFallbackAvailable": true,
+        "validationGatesSkipped": 0,
+        "reason": "FULL_FALLBACK_CROSS_CUTTING_PATH:docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+        "packageId": null,
+        "candidateEligible": false,
+        "candidateReason": "CROSS_CUTTING_PATH:docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+        "potentialNotApplicableCommandCount": 0,
+        "certificationStatus": "PENDING_REAL_SHADOW_EVIDENCE",
+        "certificationSha256": "7963d1a6d6f43381b564eed43009f88f109aff0257c59d950a03b43d87fbfffe",
+        "certificationMinimumOmissionBearingSamples": 5,
+        "certificationMinimumDistinctPackages": 3,
+        "certificationObservedOmissionBearingSamples": 0,
+        "certificationObservedDistinctPackages": 0,
+        "certificationObservedFalseNegatives": 0,
+        "executedCommands": [
+          "npm run docs:package:gate:check -- --package-id GAP-PKG-018",
+          "npm run docs:package:readiness:check -- --package GAP-PKG-018",
+          "npm run docs:package:execution:check",
+          "npm run docs:implementation:check"
+        ],
+        "notApplicableCommands": [],
+        "results": [
+          {
+            "command": "npm run docs:package:gate:check -- --package-id GAP-PKG-018",
+            "status": "PASS"
+          },
+          {
+            "command": "npm run docs:package:readiness:check -- --package GAP-PKG-018",
+            "status": "PASS"
+          },
+          {
+            "command": "npm run docs:package:execution:check",
+            "status": "PASS"
+          },
+          {
+            "command": "npm run docs:implementation:check",
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "recordSha256": "1dbd46cb3f95222174f931a70ec8196a276dcb971cd2d1f88e1c295547197dba"
+      },
+      "readiness_assessment_ref": ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/readiness-assessment.json",
+      "readiness_assessment_sha256": "618af575247612703a53b4f52a8452b36c17277d9405795eca87b7b8b5dd6352",
+      "ready_gate_015": {
+        "schema_version": 1,
+        "instance_id": "SHELL-CI-021::GAP-PKG-018",
+        "package_id": "GAP-PKG-018",
+        "gate_id": "READY-GATE-015",
+        "title": "Autoridad final de entrada a piloto",
+        "candidate_ref": "cc7f6b335b0643c7cbabb134e5335a37143c41c9",
+        "lifecycle_head_ref": "25cb5dc0bc2e2c269098d9cc581bb13cb768949c",
+        "environment_ref": {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        },
+        "scope_ref": "identity_access adoption-only; package physical delta is evidence-only; production unauthorized",
+        "gate_result": "PASS",
+        "gate_evaluated_at": "2026-09-14T23:23:08.901Z",
+        "freshness_state": "VIGENTE",
+        "consistency_state": "CONSISTENTE",
+        "required_entry_gate_set_ref": ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/readiness-assessment.json",
+        "readiness_assessment_sha256": "618af575247612703a53b4f52a8452b36c17277d9405795eca87b7b8b5dd6352",
+        "pilot_entry_authority": {
+          "decision_owner": "OWN-DAT",
+          "authority_status": "DEMONSTRATED",
+          "actor_kind": "HUMAN_USER",
+          "approval_statement": "APROBADO READY-GATE-015 GAP-PKG-018 COMO OWN-DAT",
+          "authority_scope": "GAP-PKG-018"
+        },
+        "pilot_entry_decision": "APROBAR_ENTRADA",
+        "decision_basis": [
+          "READY-GATE-001..014 materializados y reconciliados: PASS=4, FAIL=0, BLOQUEADO=0, NO_APLICA=10.",
+          "STAGING certificado sin drift para el mismo package, candidate, lifecycle head, ambiente y alcance autorizado.",
+          "OWN-DAT ejercio de forma explicita la autoridad final para GAP-PKG-018.",
+          "APROBAR_ENTRADA es una decision de readiness; CI021 no ejecuta cutover ni piloto."
+        ],
+        "execution_boundary": {
+          "ci021_scope": "READINESS_ONLY",
+          "pilot_executed": false,
+          "ci022_started": false,
+          "owner_instruction": "No iniciar ningun piloto ahora; la ejecucion de piloto queda fuera de CI021 y requiere una autorizacion posterior separada."
+        },
+        "gate_evidence_refs": [
+          ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/readiness-assessment.json",
+          ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/baseline-manifest.json",
+          ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gates-001-014/a99fcd5208c2eaecef58/risk-readiness-manifest.json",
+          ".delivery/SHELL-CI-021__GAP-PKG-018__staging-drift.json"
+        ],
+        "blocking_reason": null
+      },
+      "pilot_entry_authority": {
+        "decision_owner": "OWN-DAT",
+        "authority_status": "DEMONSTRATED",
+        "actor_kind": "HUMAN_USER",
+        "approval_statement": "APROBADO READY-GATE-015 GAP-PKG-018 COMO OWN-DAT",
+        "authority_scope": "GAP-PKG-018"
+      },
+      "pilot_entry_decision": "APROBAR_ENTRADA",
+      "pilot_entry_decision_manifest_ref": ".delivery/SHELL-CI-021__GAP-PKG-018__ready-gate-015/eb6194325975da2485c6/pilot-entry-decision-manifest.json"
+    }
   ],
   "prerequisite_evidence": [
     "PACKAGE_GATE GAP-PKG-018 APPROVED_FOR_IMPLEMENTATION",

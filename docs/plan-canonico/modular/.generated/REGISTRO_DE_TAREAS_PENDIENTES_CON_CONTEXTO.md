@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-030`.
+> **Prioridad del checkout actual:** ejecutar `MATERIALIZE_PHYSICAL_HANDOFF` sobre `SHELL-CI-020::GAP-PKG-019`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,17 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-030`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-019`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-030`
-- **Posición topológica:** **8/189**; prioridad derivada, sin selección humana.
-- **Estado efectivo:** `COMPILED`
-- **Acción exacta:** `PREPARE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-030`
-- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-030`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-030.json` — `NOT_PREPARED`
-- **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-030 está dependency-eligible y no tiene expediente package-gate.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-019`
+- **Posición topológica:** **6/189**; prioridad derivada, sin selección humana.
+- **Estado efectivo:** `IMPLEMENTATION_READY`
+- **Acción exacta:** `MATERIALIZE_PHYSICAL_HANDOFF`
+- **Objetivo exacto:** `SHELL-CI-020::GAP-PKG-019`
+- **Comando exacto:** `npm run docs:package:handoff -- --package-id GAP-PKG-019`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-019.json` — `APPROVED_FOR_IMPLEMENTATION`
+- **Gates:** **6/6 PASS**; faltan **0**.
+- **Por qué:** GAP-PKG-019 completó dossier, gate y dependencias; su handoff físico solo puede materializarse con admisión de recursos ADMISSIBLE.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `NEXO-DOM-025`
@@ -39,11 +39,11 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-021::GAP-PKG-018` — declared=`IMPLEMENTED` — effective=`IMPLEMENTED` — `EJECUTAR_IMPLEMENTACIÓN`
+- `SHELL-CI-021::GAP-PKG-018` — declared=`VERIFIED` — effective=`IN_PROGRESS` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
   - Contrato: Ejecutar y resolver el checklist de readiness aprobado
-  - Integridad: `VALID`
-  - Recovery: `PREVERIFY_AND_SEAL_VERIFICATION_EVIDENCE`
-  - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-021::GAP-PKG-018`
+  - Integridad: `INVALID`
+  - Recovery: `RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
+  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json`
 - `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
   - Contrato: Ejecutar cutover y piloto conforme al plan aprobado
@@ -51,13 +51,19 @@
   - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
   - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-022::GAP-PKG-001`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-001.json`
+- `SHELL-CI-022::GAP-PKG-018` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+  - Contrato: Ejecutar cutover y piloto conforme al plan aprobado
+  - Integridad: `VALID`
+  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-022::GAP-PKG-018`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-018.json`
 
 ## Panel de control — dos carriles
 
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-DOM-025` — Vincular repuestos consumidos con mantenimiento y costo del activo | `NEXO-DOM-026` — Definir inspecciones, mantenimiento preventivo, garantía y calibración | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IMPLEMENTED` | `SHELL-CI-021::GAP-PKG-018` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `SHELL-CI-021::GAP-PKG-018` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -66,16 +72,16 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1191/1596 aprobadas** | **405** no aprobadas (0 propuesta, 0 rechazadas) | `NEXO-DOM-025` |
-| 🟧 **Implementación física conocida** | **99/101 VERIFIED** | **2** no terminales | `SHELL-CI-021::GAP-PKG-018` |
+| 🟧 **Implementación física conocida** | **99/102 VERIFIED** | **3** no terminales | `SHELL-CI-021::GAP-PKG-018` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Puntero de compatibilidad del control de instancias:** `EJECUTAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-018`
+- **Puntero de compatibilidad del control de instancias:** `RECONCILE_IMPLEMENTATION_STATE_INTEGRITY` — `SHELL-CI-021::GAP-PKG-018`
 - **Entrada mutante normal:** `docs:implementation:advance`
-- **Estado físico declarado:** `IMPLEMENTED`
-- **Estado físico efectivo:** `IMPLEMENTED`
-- **Recovery físico:** `PREVERIFY_AND_SEAL_VERIFICATION_EVIDENCE`
+- **Estado físico declarado:** `VERIFIED`
+- **Estado físico efectivo:** `IN_PROGRESS`
+- **Recovery físico:** `RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -85,8 +91,9 @@
 
 | # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-018` | Ejecutar y resolver el checklist de readiness aprobado | `IMPLEMENTED` | `IMPLEMENTED` | EN_CURSO — EJECUTAR_IMPLEMENTACIÓN |
+| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-018` | Ejecutar y resolver el checklist de readiness aprobado | `VERIFIED` | `IN_PROGRESS` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
 | 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 3 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-018` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 
 ## Modos de trabajo y materialización
 
