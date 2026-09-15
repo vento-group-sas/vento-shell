@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1199** |
+| Aprobadas | **1200** |
 | En propuesta | **0** |
-| No iniciadas | **397** |
+| No iniciadas | **396** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **75.13% (1199/1596)** |
+| Porcentaje de completamiento | **75.19% (1200/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **397** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1100** |
+| ⏸ NO_EVALUADA | **396** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1101** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-032` — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-033` — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-034` — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-033` — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-034` — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-035` — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -984,7 +984,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-030` | Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-031` | Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-032` | Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-033` | Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-033` | Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-034` | Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-035` | Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-036` | Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |

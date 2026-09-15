@@ -40679,7 +40679,1932 @@ Una lectura de servicio, consumo o interrupción no se modela como captura de pl
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias`
-### [ ] NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
+### ✅ NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
+**Tarea siguiente:** NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
+**Tipo de tarea:** documental; definición canónica del dominio de agua, energía, gas y otros servicios mediante contratos y referencias operativas, puntos de servicio, redes, medidores, lecturas, consumos, calidad, interrupciones, alertas, contingencias, aceptación técnica y conciliación con costos, preservando la propiedad económica de NUMERA y sin crear materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO representa y gobierna operacionalmente agua, energía, gas y otros servicios asociados a instalaciones, sin confundir identidad física, contrato o referencia comercial, punto de servicio, medidor, lectura, consumo, calidad, interrupción, alerta, contingencia, factura, costo ni disponibilidad.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+RED Y PUNTO DE SERVICIO ESTABLES
++
+SERVICIO Y RELACIÓN OPERATIVA VIGENTES
++
+MEDIDOR IDENTIFICADO CUANDO APLIQUE
++
+LECTURAS TRAZABLES
++
+CONSUMO REPRODUCIBLE
++
+INTERRUPCIONES Y CALIDAD OBSERVABLES
++
+ALERTAS CON POLÍTICA Y EVIDENCIA
++
+CONTINGENCIAS CONTROLADAS
++
+ACEPTACIÓN TÉCNICA
++
+CONCILIACIÓN CON FACTURA Y COSTO
+→
+SERVICIO OPERACIONAL RECONCILIABLE
+```
+
+No:
+
+```text
+SERVICE_POINT = METER = READING = CONSUMPTION
+```
+
+No:
+
+```text
+FACTURA = CONSUMO MEDIDO = COSTO RECONCILIADO
+```
+
+No:
+
+```text
+ALERTA = INTERRUPCIÓN = INCIDENTE = CONTINGENCIA
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-033` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. adopta `SERVICE_NETWORK` y `SERVICE_POINT` desde `NEXO-DOM-029` como identidades físicas autoritativas;
+2. impide que un medidor sustituya la identidad del punto de servicio;
+3. define la relación operacional de un servicio con instalación, red, punto, proveedor y referencias contractuales aplicables;
+4. separa el contrato o referencia comercial del estado operacional del servicio;
+5. define identidad estable y ciclo histórico de medidores;
+6. separa código interno, serial físico, identificador del proveedor y referencia de cuenta;
+7. define lectura como hecho fuente trazable;
+8. distingue lectura medida, lectura estimada y dato informado por proveedor cuando la fuente lo permita;
+9. distingue lectura acumulativa, lectura de intervalo y cantidad facturada sin imponer una tecnología universal;
+10. define consumo como hecho derivado o informado cuya fuente y método deben permanecer explícitos;
+11. prohíbe convertir una lectura ausente en consumo cero;
+12. preserva unidades, factores y transformaciones de forma reproducible;
+13. define continuidad ante reemplazo, reinicio, rollover, cambio de escala o cambio de medidor;
+14. evita doble contabilización entre medidor principal, submedidores y proyecciones agregadas;
+15. separa calidad del servicio de cantidad consumida;
+16. define interrupciones planificadas, no planificadas, detectadas, reportadas y confirmadas sin colapsarlas;
+17. conserva inicio, fin, alcance, causa informada, causa verificada, proveedor, evidencia e impacto de una interrupción;
+18. define alertas como decisiones derivadas de políticas versionadas y no como sustitutos del hecho fuente;
+19. define contingencias mediante plan, activación, medidas, responsables, restricciones, evidencia, salida y reconciliación;
+20. separa servicio restaurado de disponibilidad global de la instalación;
+21. define conciliación entre consumo medido, consumo facturado, factura, aceptación técnica y costo sin convertir NEXO en ledger económico;
+22. mantiene a NUMERA como propietario de compromiso, gasto, costo y reconocimiento económico;
+23. mantiene a ORIGO como propietario de contratación y recepción empresarial cuando corresponda;
+24. conserva correlación con producción, falla, mantenimiento, factura y costo sin inventar causalidad;
+25. preserva fronteras con inspección, metrología, mantenimiento, obras, novedades y continuidad;
+26. define idempotencia, concurrencia, captura offline y reconciliación de resultado desconocido;
+27. clasifica el AS-IS remoto como evidencia insuficiente para declarar resuelto el ciclo integral de servicios;
+28. no crea ni modifica requisitos de prueba porque la conducta ya está cubierta por requisitos canónicos vigentes;
+29. no autoriza tablas, migraciones, RLS, RPC, Server Actions, UI, datos, Supabase, proveedores reales ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.06 — Controlar agua, energía, gas y servicios`;
+- `NEXO-DOM-029`, para instalación, espacio, `SERVICE_NETWORK`, `SERVICE_POINT`, condición, criticidad y disponibilidad;
+- `NEXO-DOM-030`, para solicitud, trabajo técnico, prueba, liberación, cierre y reapertura cuando una falla de servicio produzca mantenimiento;
+- `NEXO-DOM-031`, para restricciones y liberación sanitaria cuando una contingencia afecte saneamiento;
+- `NEXO-DOM-032`, para reglas reutilizables de evidencia, proveedor externo, restricción, liberación, idempotencia y captura offline;
+- `VPROC-0055`, para el ciclo general de instalaciones que incluye servicios, verificación, liberación y cierre;
+- `NUMERA-DOM-002` y `NUMERA-DOM-005`, como owners posteriores de obligaciones, gastos y hechos económicos relacionados;
+- `NEXO-AUTH-031` y `NEXO-AUTH-032`, como owners posteriores de autorización y segregación;
+- `NEXO-UX-046`, como owner posterior de experiencia para servicios, medidores y alertas;
+- el registro canónico de requisitos de prueba vigente;
+- la implementación remota observable de NEXO.
+
+Esta tarea especializa servicios. No redefine la jerarquía locativa, la contabilidad, la contratación, la metrología ni la continuidad empresarial.
+
+---
+
+#### 4. Decisión de cobertura de `CAP-13.06`
+
+La capacidad canónica conserva:
+
+```text
+CAP-13.06
+CONTROLAR AGUA, ENERGÍA, GAS Y SERVICIOS
+```
+
+con tratamiento:
+
+```text
+BUILD
+```
+
+y propiedad objetivo:
+
+```text
+NEXO + NUMERA
+```
+
+El resultado exigido es:
+
+```text
+CONTRATOS / REFERENCIAS
++
+PUNTOS DE SERVICIO
++
+MEDIDORES
++
+LECTURAS
++
+CONSUMOS
++
+INTERRUPCIONES
++
+ALERTAS
++
+CONTINGENCIAS
++
+CONCILIACIÓN DE COSTO
+```
+
+NEXO conserva verdad operacional y técnica.
+
+NUMERA conserva verdad económica.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. no existía ciclo canónico para servicios, medidores, contratos, lecturas, interrupciones, calidad o contingencias;
+2. un punto de servicio podía existir solo como texto dentro de factura o mantenimiento;
+3. un medidor podía convertirse de hecho en identidad del punto físico;
+4. serial, cuenta del proveedor, medidor y punto podían confundirse;
+5. una lectura podía sobrescribirse sin conservar fuente ni corrección;
+6. una lectura estimada podía presentarse como medida;
+7. una lectura ausente podía interpretarse como cero;
+8. un reemplazo o reinicio de medidor podía producir consumo negativo o discontinuidad silenciosa;
+9. medidor principal y submedidor podían duplicar consumo agregado;
+10. consumo calculado podía perder el método y las lecturas fuente;
+11. consumo facturado podía confundirse con consumo medido;
+12. un consumo anómalo podía quedar sin correlación con sede, producción, falla, factura y costo;
+13. una interrupción reportada podía considerarse confirmada sin evidencia;
+14. restauración informada por proveedor podía considerarse disponibilidad interna sin verificación;
+15. una alerta podía cerrarse sin acción o sin condición de salida;
+16. una contingencia podía activarse o finalizar sin responsable, evidencia ni reconciliación;
+17. una factura pagada podía considerarse aceptación técnica;
+18. un costo agregado podía reescribir hechos operacionales;
+19. captura offline o reintentos podían duplicar lecturas, interrupciones o cierres;
+20. el proveedor podía convertirse en fuente interna competidora de la condición del servicio.
+
+---
+
+#### 6. Ámbito de servicios
+
+El contrato aplica a servicios físicos u operacionales asociados a una instalación y a sus puntos de servicio canónicos.
+
+Incluye explícitamente el alcance aprobado de:
+
+- agua;
+- energía;
+- gas;
+- otros servicios cuya identidad y tratamiento hayan sido autorizados por una fuente propietaria.
+
+Esta tarea no crea una enumeración universal cerrada de servicios.
+
+La incorporación de otro servicio exige identidad, owner y semántica compatibles con este contrato.
+
+---
+
+#### 7. Frontera entre servicio y sujeto físico
+
+Se preserva:
+
+```text
+SERVICE
+!=
+SERVICE_NETWORK
+!=
+SERVICE_POINT
+```
+
+El servicio describe la capacidad suministrada.
+
+La red representa infraestructura física de distribución o conexión cuando requiere identidad propia.
+
+El punto de servicio representa el lugar físico estable de entrega, medición, control, conexión o interrupción.
+
+La existencia de un contrato o medidor no crea por sí sola un nuevo punto físico.
+
+---
+
+#### 8. `SERVICE_NETWORK`
+
+`SERVICE_NETWORK` continúa siendo una identidad física definida por `NEXO-DOM-029`.
+
+`NEXO-DOM-033` puede relacionarla con:
+
+- servicio;
+- proveedor;
+- contrato o referencia operacional;
+- puntos;
+- medidores;
+- interrupciones;
+- alertas;
+- contingencias.
+
+Esta tarea no reabre la topología ni crea redes a partir de cada factura o lectura.
+
+---
+
+#### 9. `SERVICE_POINT`
+
+`SERVICE_POINT` continúa siendo el punto físico estable donde un servicio puede entregarse, medirse, controlarse, conectarse o interrumpirse.
+
+Debe permanecer identificable aunque:
+
+- no tenga medidor;
+- cambie el medidor;
+- cambie el proveedor;
+- cambie la referencia de cuenta;
+- exista una interrupción;
+- el servicio esté temporalmente inactivo.
+
+Se preserva:
+
+```text
+SERVICE POINT IDENTITY
+!=
+METER
+```
+
+---
+
+#### 10. Relación operacional de servicio
+
+La relación operacional entre servicio y punto debe poder conservar, según aplicabilidad:
+
+- servicio;
+- punto;
+- red;
+- instalación;
+- proveedor;
+- vigencia;
+- estado operacional;
+- referencia contractual aplicable;
+- referencia de cuenta del proveedor cuando exista;
+- condiciones técnicas relevantes;
+- responsable interno;
+- criticidad;
+- evidencia;
+- historial.
+
+Una referencia externa no reemplaza la identidad interna.
+
+---
+
+#### 11. Contrato comercial y proyección operacional
+
+Cuando exista contrato comercial o acuerdo de suministro, el ciclo contractual propietario permanece fuera de NEXO cuando corresponda.
+
+NEXO conserva únicamente la proyección operacional necesaria para operar el servicio, por ejemplo:
+
+- proveedor vigente;
+- servicio y punto cubiertos;
+- referencia del contrato;
+- vigencia observable;
+- condiciones técnicas relevantes;
+- nivel o condición operativa que afecte uso;
+- referencia de cuenta o suministro;
+- evidencia.
+
+Se preserva:
+
+```text
+COMMERCIAL CONTRACT
+!=
+OPERATIONAL SERVICE STATE
+```
+
+---
+
+#### 12. Frontera con ORIGO
+
+ORIGO conserva, cuando corresponda:
+
+- necesidad de compra o contratación;
+- solicitud empresarial;
+- cotización;
+- selección;
+- orden o contrato comercial;
+- recepción empresarial;
+- proveedor y documentación comercial.
+
+NEXO conserva:
+
+- necesidad técnica;
+- punto;
+- servicio;
+- medidor;
+- lectura;
+- consumo;
+- interrupción;
+- aceptación técnica;
+- disponibilidad;
+- evidencia;
+- cierre operacional.
+
+La existencia de un contrato aprobado no demuestra suministro conforme.
+
+---
+
+#### 13. Frontera con NUMERA
+
+NUMERA conserva:
+
+- obligación;
+- compromiso;
+- gasto;
+- costo;
+- moneda;
+- impuestos;
+- documento económico;
+- pago;
+- periodo económico;
+- reconocimiento;
+- conciliación financiera.
+
+NEXO aporta hechos operacionales trazables.
+
+Se preserva:
+
+```text
+MEASURED CONSUMPTION
+!=
+BILLED QUANTITY
+!=
+INVOICE AMOUNT
+!=
+RECOGNIZED COST
+```
+
+---
+
+#### 14. Medidor
+
+Un medidor representa un dispositivo o instrumento asociado a uno o más hechos de medición dentro de un alcance autorizado.
+
+Debe poder conservar, según corresponda:
+
+- identidad interna estable;
+- servicio;
+- punto de servicio;
+- serial o identidad física;
+- referencia o código del proveedor;
+- fabricante o modelo cuando exista una fuente autorizada;
+- unidad o magnitud aplicable;
+- fecha efectiva de instalación;
+- fecha efectiva de retiro;
+- estado;
+- factor o configuración material cuando aplique;
+- relación con control metrológico cuando aplique;
+- historial.
+
+---
+
+#### 15. Identidades de medidor separadas
+
+Se preserva:
+
+```text
+INTERNAL METER ID
+!=
+PHYSICAL SERIAL
+!=
+PROVIDER METER ID
+!=
+SERVICE ACCOUNT
+```
+
+Los identificadores externos pueden cambiar.
+
+La identidad interna permite preservar continuidad histórica.
+
+No se usa la cuenta del proveedor como clave primaria de la realidad física.
+
+---
+
+#### 16. Medidor y punto de servicio
+
+La ausencia de medidor no elimina el punto de servicio.
+
+Un punto puede:
+
+- carecer de medición propia;
+- depender de un medidor aguas arriba;
+- usar medición compartida;
+- relacionarse con submedición;
+- cambiar de medidor.
+
+Toda relación material deberá ser explícita y vigente.
+
+---
+
+#### 17. Medición principal y submedición
+
+Cuando existan medidores principales y submedidores, la relación deberá permitir distinguir:
+
+- alcance de cada medidor;
+- relación de agregación;
+- período comparable;
+- unidad;
+- posible consumo no submedido;
+- límites del cálculo.
+
+Se prohíbe sumar indiscriminadamente principal y submedidores como si fueran consumos independientes.
+
+---
+
+#### 18. Alta e instalación de medidor
+
+El alta digital de un medidor no demuestra instalación física.
+
+Cuando se requiera instalación efectiva, deberá poder conservarse:
+
+- punto;
+- medidor;
+- fecha efectiva;
+- actor o fuente;
+- lectura inicial cuando exista;
+- evidencia;
+- condición;
+- configuración material aplicable.
+
+La lectura inicial no se inventa cuando no fue observada.
+
+---
+
+#### 19. Reemplazo de medidor
+
+El reemplazo debe conservar:
+
+- medidor anterior;
+- medidor nuevo;
+- punto;
+- fecha efectiva;
+- última lectura válida anterior cuando exista;
+- primera lectura válida nueva cuando exista;
+- motivo;
+- actor o fuente;
+- evidencia;
+- efecto sobre continuidad de consumo.
+
+Se preserva:
+
+```text
+METER REPLACEMENT
+!=
+EDIT SERIAL ON EXISTING HISTORY
+```
+
+---
+
+#### 20. Reinicio, rollover y cambio de escala
+
+Cuando un medidor pueda reiniciar, reiniciarse, desbordar su rango o cambiar una escala material, el expediente debe conservar el evento o evidencia que permita reconciliar la serie.
+
+No se permite concluir automáticamente:
+
+```text
+CURRENT_READING < PREVIOUS_READING
+→
+NEGATIVE CONSUMPTION
+```
+
+Antes debe resolverse si existió:
+
+- reemplazo;
+- reinicio;
+- rollover;
+- corrección;
+- error;
+- cambio de escala;
+- lectura no comparable.
+
+---
+
+#### 21. Retiro de medidor
+
+Retirar un medidor no elimina su historia.
+
+El retiro debe poder conservar:
+
+- fecha;
+- motivo;
+- lectura final cuando exista;
+- actor o fuente;
+- evidencia;
+- medidor sucesor cuando exista;
+- estado resultante del punto.
+
+Las lecturas históricas siguen referenciando el medidor original.
+
+---
+
+#### 22. Lectura
+
+Una lectura es un hecho fuente asociado a un medidor o mecanismo de medición autorizado.
+
+Debe poder conservar:
+
+- identidad estable;
+- medidor o fuente;
+- servicio;
+- punto;
+- momento efectivo;
+- momento de captura o recepción cuando sea distinto;
+- valor;
+- unidad;
+- origen;
+- actor o principal técnico cuando corresponda;
+- evidencia;
+- condición de calidad;
+- corrección o supersesión cuando exista.
+
+---
+
+#### 23. Lectura no equivale a consumo
+
+Se preserva:
+
+```text
+READING
+!=
+CONSUMPTION
+```
+
+Una lectura puede ser acumulativa, intervalar u otra representación admitida por el dispositivo o fuente.
+
+El consumo debe indicar cómo se obtuvo.
+
+No se calcula consumo por diferencia cuando las lecturas no sean semánticamente comparables.
+
+---
+
+#### 24. Fuente de lectura
+
+La fuente de una lectura debe quedar explícita.
+
+Puede provenir, según la arquitectura autorizada, de:
+
+- captura manual;
+- dispositivo;
+- integración;
+- proveedor;
+- archivo;
+- otra fuente aprobada.
+
+Esta lista no crea por sí sola un catálogo físico ni selecciona tecnología.
+
+La fuente declarada no otorga automáticamente confianza suficiente.
+
+---
+
+#### 25. Lectura medida y estimada
+
+Cuando exista estimación, deberá distinguirse de una medición observada.
+
+Se preserva:
+
+```text
+MEASURED
+!=
+ESTIMATED
+```
+
+Una estimación debe conservar:
+
+- motivo;
+- método o fuente;
+- período;
+- datos de entrada cuando existan;
+- autoridad o política aplicable;
+- posibilidad de reconciliación posterior.
+
+Una lectura real posterior no borra la estimación utilizada históricamente.
+
+---
+
+#### 26. Lectura informada por proveedor
+
+Un valor informado por proveedor conserva su procedencia.
+
+Se preserva:
+
+```text
+PROVIDER READING
+!=
+INTERNAL VERIFIED READING
+```
+
+cuando la política requiera verificación interna.
+
+La recepción de una factura no promueve silenciosamente su lectura a observación física de NEXO.
+
+---
+
+#### 27. Lectura ausente
+
+Una lectura ausente no se representa como cero.
+
+Se preserva:
+
+```text
+NO READING
+!=
+ZERO READING
+```
+
+La ausencia debe poder producir:
+
+- estado desconocido;
+- obligación de captura;
+- estimación controlada cuando se autorice;
+- alerta;
+- excepción;
+- reconciliación posterior.
+
+La decisión exacta pertenece a la política aplicable.
+
+---
+
+#### 28. Unidad y magnitud
+
+Toda lectura y consumo debe conservar la unidad o forma de expresión necesaria para reproducir su significado.
+
+La tarea no inventa una unidad universal para agua, energía, gas u otros servicios.
+
+Las conversiones deben usar contratos de unidades aprobados y factores trazables.
+
+Nunca se mezcla una serie con unidades incompatibles sin conversión explícita.
+
+---
+
+#### 29. Corrección de lectura
+
+Una lectura incorrecta se corrige sin destruir la observación original.
+
+La corrección deberá conservar, según aplicabilidad:
+
+- lectura original;
+- lectura corregida;
+- motivo;
+- actor;
+- evidencia;
+- momento;
+- efectos derivados que requieren reconciliación.
+
+Una corrección puede obligar a recalcular consumos o alertas, pero no borra las versiones históricas materialmente usadas.
+
+---
+
+#### 30. Consumo
+
+Consumo representa una cantidad atribuida a un servicio, alcance y período.
+
+Debe poder conservar:
+
+- servicio;
+- punto o alcance;
+- medidor o conjunto de fuentes;
+- período;
+- cantidad;
+- unidad;
+- método;
+- lecturas fuente;
+- calidad;
+- revisión;
+- momento de cálculo;
+- origen cuando el consumo no sea calculado internamente.
+
+---
+
+#### 31. Consumo derivado
+
+Cuando el consumo se derive de lecturas, el resultado deberá ser reproducible.
+
+Debe ser posible reconstruir:
+
+- lectura inicial;
+- lectura final;
+- eventos intermedios relevantes;
+- medidor;
+- período;
+- unidad;
+- factor;
+- reemplazo, rollover o corrección aplicable;
+- regla utilizada.
+
+Se preserva:
+
+```text
+DERIVED CONSUMPTION
+!=
+SOURCE READING
+```
+
+---
+
+#### 32. Consumo informado o facturado
+
+Una cantidad informada por proveedor o factura se conserva como hecho de esa fuente.
+
+Se preserva:
+
+```text
+MEASURED CONSUMPTION
+!=
+PROVIDER-REPORTED CONSUMPTION
+!=
+BILLED QUANTITY
+```
+
+Las diferencias se concilian.
+
+No se reescribe el consumo medido para igualarlo a la factura.
+
+---
+
+#### 33. Agregación de consumo
+
+Los agregados por sede, instalación, espacio, servicio o período deben derivarse de hechos reconciliables y evitar doble conteo.
+
+Una agregación debe declarar:
+
+- población de origen;
+- período;
+- unidad;
+- método;
+- exclusiones;
+- tratamiento de submedidores;
+- tratamiento de datos faltantes;
+- revisión.
+
+El agregado no se convierte en nueva fuente editable.
+
+---
+
+#### 34. Consumo y producción
+
+La correlación con producción podrá utilizar hechos de FOGO para análisis operacional.
+
+Se preserva:
+
+```text
+CORRELATION
+!=
+CAUSATION
+```
+
+Un aumento de consumo coincidente con producción no demuestra por sí solo causa productiva.
+
+La correlación conserva período, fuente y limitaciones.
+
+---
+
+#### 35. Consumo y falla
+
+Un consumo anómalo puede relacionarse con:
+
+- fuga;
+- falla;
+- mantenimiento;
+- cambio de operación;
+- cambio de ocupación;
+- producción;
+- error de lectura;
+- cambio de medidor;
+- causa aún desconocida.
+
+No se asigna causa definitiva sin evidencia.
+
+Cuando se requiera reparación, el handoff conserva la observación original.
+
+---
+
+#### 36. Calidad del servicio
+
+La calidad del servicio es una dimensión separada de cantidad consumida.
+
+Puede conservar observaciones o mediciones aplicables a la fuente y servicio.
+
+Esta tarea no inventa:
+
+- umbrales regulatorios;
+- rangos universales;
+- frecuencias;
+- pruebas;
+- parámetros técnicos.
+
+Esos valores provienen de la fuente competente, procedimiento o política aprobada.
+
+---
+
+#### 37. Observación de calidad
+
+Toda observación de calidad material deberá poder conservar:
+
+- servicio;
+- punto;
+- momento;
+- parámetro;
+- valor o resultado cuando exista;
+- unidad cuando aplique;
+- método;
+- fuente;
+- evidencia;
+- criterio aplicable;
+- resultado de evaluación.
+
+La observación no se convierte automáticamente en inspección física general.
+
+---
+
+#### 38. Interrupción
+
+Una interrupción representa indisponibilidad total o parcial del servicio para un alcance definido.
+
+Debe poder conservar:
+
+- identidad;
+- servicio;
+- puntos o alcance;
+- inicio conocido o estimado;
+- fin conocido o estimado;
+- fuente;
+- estado de confirmación;
+- causa informada;
+- causa verificada cuando exista;
+- proveedor;
+- referencia externa;
+- impacto;
+- restricciones;
+- evidencia;
+- acciones;
+- contingencia relacionada;
+- restauración.
+
+---
+
+#### 39. Reporte de interrupción y hecho confirmado
+
+Se preserva:
+
+```text
+INTERRUPTION REPORTED
+!=
+INTERRUPTION CONFIRMED
+```
+
+Un reporte puede provenir de persona, sensor, proveedor u otra fuente.
+
+La confirmación debe quedar explícita cuando sea material para decisiones.
+
+No se descarta el reporte original al confirmarlo o rechazarlo.
+
+---
+
+#### 40. Interrupción planificada y no planificada
+
+La planificación de una interrupción debe permanecer separada del hecho efectivo.
+
+Se preserva:
+
+```text
+PLANNED INTERRUPTION
+!=
+ACTUAL INTERRUPTION
+```
+
+Una ventana anunciada no demuestra que el corte ocurrió.
+
+Una interrupción real fuera de la ventana conserva el hecho efectivo y su relación con la planificación cuando corresponda.
+
+---
+
+#### 41. Inicio y fin inciertos
+
+Cuando el inicio o fin exactos no puedan conocerse, el registro debe preservar la incertidumbre en lugar de fabricar precisión.
+
+La tarea no obliga a inventar timestamps.
+
+Debe diferenciarse, cuando sea material:
+
+- momento observado;
+- momento informado por proveedor;
+- momento estimado;
+- momento confirmado.
+
+---
+
+#### 42. Restauración
+
+Restauración significa que el servicio vuelve a una condición operacional declarada.
+
+Debe poder conservar:
+
+- interrupción;
+- alcance;
+- momento;
+- fuente;
+- evidencia;
+- condición de servicio;
+- restricciones residuales;
+- verificación cuando corresponda.
+
+Se preserva:
+
+```text
+PROVIDER SAYS RESTORED
+!=
+INTERNAL SERVICE ACCEPTED
+```
+
+cuando la política requiera aceptación interna.
+
+---
+
+#### 43. Servicio restaurado y disponibilidad global
+
+Se preserva:
+
+```text
+SERVICE RESTORED
+!=
+FACILITY AVAILABLE
+```
+
+La instalación puede seguir restringida por mantenimiento, saneamiento, plagas, obra, acceso, seguridad o novedad.
+
+Una interrupción crítica puede contribuir a `RESTRICTED` o `UNAVAILABLE`, pero la proyección global conserva todas sus razones.
+
+---
+
+#### 44. Alerta
+
+Una alerta es una señal operativa derivada de un hecho, ausencia, patrón o regla.
+
+No es por sí sola:
+
+- lectura;
+- consumo;
+- interrupción;
+- hallazgo;
+- acción;
+- incidente;
+- contingencia.
+
+Se preserva:
+
+```text
+ALERT
+!=
+SOURCE FACT
+```
+
+---
+
+#### 45. Política de alerta
+
+Toda alerta material deberá poder reconstruir la política o regla que la generó.
+
+Debe conservar, según aplicabilidad:
+
+- regla o versión;
+- servicio;
+- punto;
+- período;
+- hechos fuente;
+- criterio;
+- resultado;
+- momento;
+- owner;
+- estado;
+- acción o resolución.
+
+La tarea no inventa umbrales universales.
+
+---
+
+#### 46. Consumo anómalo
+
+Una anomalía de consumo exige contexto suficiente para evitar falsos positivos.
+
+La evaluación puede considerar, según fuentes disponibles:
+
+- historia comparable;
+- sede;
+- punto;
+- período;
+- horario;
+- producción;
+- ocupación u operación;
+- mantenimiento;
+- falla;
+- reemplazo de medidor;
+- datos faltantes;
+- factura;
+- costo.
+
+La anomalía no demuestra por sí sola fuga, fraude o error.
+
+---
+
+#### 47. Alerta y acción
+
+Toda alerta que requiera acción debe conservar:
+
+- owner;
+- acción esperada;
+- condición de salida;
+- prioridad cuando exista criterio aprobado;
+- evidencia;
+- relación con el hecho fuente;
+- cierre o transferencia.
+
+Una alerta no queda resuelta únicamente porque dejó de mostrarse en una bandeja.
+
+---
+
+#### 48. Alertas duplicadas
+
+La misma condición lógica no debe producir alertas duplicadas por reintento, reprocesamiento o sincronización.
+
+La implementación futura deberá permitir:
+
+- clave estable;
+- agrupación;
+- actualización;
+- cierre;
+- reapertura;
+- correlación con hechos posteriores.
+
+Una nueva ocurrencia material puede producir una nueva alerta conforme a la política vigente.
+
+---
+
+#### 49. Contingencia
+
+Una contingencia es una respuesta operacional controlada ante degradación o pérdida de un servicio.
+
+Debe poder conservar:
+
+- plan aplicable;
+- evento de origen;
+- alcance;
+- autoridad de activación;
+- momento;
+- responsables;
+- acciones;
+- recursos alternativos;
+- restricciones;
+- evidencia;
+- condición de continuidad mínima;
+- condición de salida;
+- desactivación;
+- reconciliación final.
+
+---
+
+#### 50. Plan y activación de contingencia
+
+Se preserva:
+
+```text
+CONTINGENCY PLAN
+!=
+CONTINGENCY ACTIVATED
+```
+
+Un plan puede existir sin estar activo.
+
+La activación requiere un hecho o decisión trazable.
+
+La desactivación no borra el período durante el cual la contingencia estuvo vigente.
+
+---
+
+#### 51. Suministro alternativo
+
+Cuando exista suministro alternativo, éste debe conservar su identidad y limitaciones.
+
+Puede incluir una fuente, equipo, proveedor, reserva u otro mecanismo aprobado.
+
+Esta tarea no define tecnologías específicas.
+
+Se debe poder distinguir:
+
+```text
+PRIMARY SERVICE
+!=
+ALTERNATIVE SUPPLY
+```
+
+y reconciliar la transición entre ambos cuando afecte medición, consumo o costo.
+
+---
+
+#### 52. Restricciones durante contingencia
+
+La contingencia puede imponer restricciones de uso o capacidad.
+
+Toda restricción material debe conservar:
+
+- servicio;
+- alcance;
+- motivo;
+- vigencia;
+- autoridad;
+- condición de salida;
+- evidencia.
+
+Una restricción activa puede afectar disponibilidad aunque exista suministro parcial.
+
+---
+
+#### 53. Salida de contingencia
+
+La salida exige demostrar, según la política aplicable:
+
+- servicio estabilizado;
+- restauración;
+- verificación;
+- restricciones resueltas o explícitamente mantenidas;
+- consumos o lecturas pendientes reconciliados;
+- acciones abiertas transferidas;
+- disponibilidad revaluada;
+- evidencia;
+- autoridad.
+
+Se preserva:
+
+```text
+PRIMARY SERVICE RETURNED
+!=
+CONTINGENCY CLOSED
+```
+
+---
+
+#### 54. Conciliación operativa con factura
+
+NEXO deberá poder correlacionar el período y alcance operacional con el documento facturado cuando exista.
+
+La conciliación puede comparar:
+
+- servicio;
+- cuenta;
+- punto o conjunto de puntos;
+- período;
+- cantidad medida;
+- cantidad informada;
+- cantidad facturada;
+- unidad;
+- días o ventana;
+- incidencias;
+- interrupciones;
+- estimaciones;
+- observaciones.
+
+La factura no reescribe las lecturas.
+
+---
+
+#### 55. Diferencia medida frente a facturada
+
+Toda diferencia material debe quedar visible y resoluble.
+
+La diferencia puede originar:
+
+- revisión de lectura;
+- revisión de cuenta;
+- revisión de período;
+- revisión de factor;
+- revisión de medidor;
+- aclaración con proveedor;
+- disputa económica;
+- corrección operacional.
+
+No se corrige silenciosamente el valor medido para eliminar la diferencia.
+
+---
+
+#### 56. Conciliación de costo
+
+NEXO entrega a NUMERA hechos operacionales y aceptación técnica suficientes para correlación.
+
+NUMERA conserva:
+
+- monto;
+- reconocimiento;
+- costo;
+- centro;
+- periodo;
+- presupuesto;
+- clasificación;
+- pago.
+
+Se preserva:
+
+```text
+OPERATIONAL ACCEPTANCE
+!=
+ECONOMIC RECOGNITION
+```
+
+La conciliación de costo no convierte NEXO en sistema contable.
+
+---
+
+#### 57. Consumo anómalo y costo
+
+Una anomalía de consumo puede relacionarse con costo anómalo, pero ambos hechos conservan fuentes distintas.
+
+Debe poder responderse:
+
+- qué consumo se observó;
+- qué cantidad facturó el proveedor;
+- qué factura lo soporta;
+- qué costo reconoció NUMERA;
+- qué diferencia existe;
+- qué investigación o acción permanece abierta.
+
+No se deriva automáticamente fraude, fuga o error contable desde una diferencia aislada.
+
+---
+
+#### 58. Frontera con mantenimiento
+
+Cuando servicio, red, punto o medidor requieran intervención técnica, `NEXO-DOM-030` conserva el ciclo de mantenimiento correspondiente.
+
+La relación debe preservar el evento de origen.
+
+Se preserva:
+
+```text
+SERVICE INTERRUPTION
+!=
+MAINTENANCE WORK ORDER
+```
+
+Una interrupción puede causar una orden; la orden no reemplaza la interrupción.
+
+---
+
+#### 59. Frontera con inspecciones
+
+`NEXO-DOM-034` conserva inspecciones físicas generales, plantillas, hallazgos y acciones correctivas.
+
+Una lectura o verificación de un servicio no se convierte automáticamente en inspección de instalación.
+
+Un hallazgo de inspección puede afectar servicio o disparar lectura extraordinaria mediante relación explícita.
+
+---
+
+#### 60. Frontera con metrología
+
+`NEXO-DOM-035` conserva control metrológico, calibración, tolerancias, certificados e impacto.
+
+`NEXO-DOM-033` conserva el medidor como fuente operacional y debe poder saber si una condición metrológica afecta la validez de lecturas.
+
+Se preserva:
+
+```text
+METER READING
+!=
+METROLOGICAL CONFORMITY
+```
+
+Esta tarea no define patrones, tolerancias ni procedimientos de calibración.
+
+---
+
+#### 61. Frontera con obras
+
+`NEXO-DOM-037` conserva obras, adecuaciones, permisos y recepción.
+
+Una obra puede:
+
+- crear o retirar un punto;
+- modificar red;
+- reemplazar medidor;
+- producir interrupción;
+- activar contingencia.
+
+El cambio locativo efectivo se registra por su owner; 033 conserva los hechos de servicio relacionados.
+
+---
+
+#### 62. Frontera con novedades
+
+`NEXO-DOM-038` conserva el expediente general de novedad locativa.
+
+Una alerta o interrupción puede abrir o relacionarse con una novedad cuando la política lo requiera.
+
+Se preserva:
+
+```text
+SERVICE ALERT
+!=
+FACILITY INCIDENT CASE
+```
+
+La correlación evita duplicar el mismo hecho en expedientes competidores.
+
+---
+
+#### 63. Frontera con continuidad empresarial
+
+Las contingencias de servicio pueden alimentar continuidad operativa cuando su impacto supere el manejo local.
+
+Esta tarea conserva hechos, restricciones y estado del servicio.
+
+El dominio de continuidad conserva escenarios, respuesta empresarial, recuperación y gobierno transversal que le correspondan.
+
+No se convierte cada interrupción local en incidente de continuidad empresarial.
+
+---
+
+#### 64. Proveedor externo
+
+Un proveedor puede aportar:
+
+- lecturas;
+- avisos;
+- interrupciones;
+- restauraciones;
+- documentos;
+- facturas;
+- datos de cuenta;
+- soporte;
+- evidencia.
+
+Se preserva:
+
+```text
+PROVIDER ASSERTION
+!=
+INTERNAL TECHNICAL ACCEPTANCE
+```
+
+cuando la política exija revisión interna.
+
+---
+
+#### 65. Integración externa
+
+La materialización futura podrá consumir APIs, archivos, portales, telemetría u otros medios mediante contratos propietarios.
+
+Esta tarea no selecciona:
+
+- endpoint;
+- webhook;
+- protocolo;
+- formato;
+- autenticación;
+- frecuencia técnica;
+- broker;
+- cola;
+- dispositivo;
+- fabricante.
+
+La semántica empresarial debe permanecer independiente del transporte.
+
+---
+
+#### 66. Idempotencia
+
+Toda mutación material debe poder usar una identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra lectura;
+- otro consumo;
+- otra interrupción;
+- otra alerta;
+- otra activación de contingencia;
+- otro cierre;
+- otro hecho de aceptación.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+---
+
+#### 67. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos medidores activos incompatibles ocupando el mismo rol sin relación explícita;
+- dos lecturas finales incompatibles para la misma fuente y momento sin resolución;
+- doble consumo por reprocesamiento;
+- cierre de interrupción mientras una restauración incompatible permanece abierta;
+- doble activación de contingencia por el mismo evento;
+- cierre de alerta mientras una acción bloqueante permanece sin resolver;
+- actualización silenciosa de una lectura usada por una conciliación económica.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según la materialización autorizada.
+
+---
+
+#### 68. Captura offline
+
+La captura offline puede conservar lecturas, observaciones y evidencia pendiente.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+READING RECONCILED
+!=
+CONSUMPTION FINAL
+```
+
+La sincronización deberá preservar identidad y momento efectivo.
+
+No se duplican lecturas, fotos, firmas, alertas ni cierres por reintento.
+
+---
+
+#### 69. Resultado desconocido
+
+Ante timeout o pérdida de conectividad después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de crear otra lectura, interrupción, alerta, contingencia o cierre.
+
+La incertidumbre de transporte no se resuelve duplicando el expediente.
+
+---
+
+#### 70. Historia y correcciones
+
+No se sobrescriben silenciosamente:
+
+- identidad de servicio;
+- punto;
+- medidor;
+- serial;
+- referencia externa;
+- lectura;
+- unidad;
+- consumo;
+- período;
+- interrupción;
+- causa;
+- alerta;
+- contingencia;
+- aceptación;
+- timestamps materiales.
+
+La vista vigente puede proyectar el resultado corregido mientras la historia conserva antes y después.
+
+---
+
+#### 71. Reconciliación histórica
+
+Una migración futura solo promoverá hechos demostrados.
+
+No se permite inventar retrospectivamente:
+
+- medidor;
+- serial;
+- lectura;
+- unidad;
+- valor;
+- consumo;
+- período;
+- causa de interrupción;
+- restauración;
+- alerta;
+- contingencia;
+- aceptación técnica;
+- correlación de factura;
+- costo.
+
+Los datos heredados incompletos conservan su limitación explícita.
+
+---
+
+#### 72. AS-IS observable
+
+La revisión remota de `vento-nexo` disponible para esta tarea no aportó evidencia suficiente, mediante búsquedas de conceptos de servicios y medición en español e inglés, de un workflow dedicado que cubra integralmente:
+
+- contratos o referencias operacionales de servicio;
+- puntos de servicio;
+- medidores;
+- lecturas;
+- consumo;
+- calidad;
+- interrupciones;
+- alertas;
+- contingencias;
+- conciliación con factura y costo.
+
+La ausencia de resultados de búsqueda no demuestra ausencia absoluta de datos fuera de las superficies inspeccionadas.
+
+Sí impide declarar resuelto el contrato objetivo únicamente con el AS-IS observado.
+
+---
+
+#### 73. Estrategia de adopción
+
+La estrategia canónica queda:
+
+```text
+REUSE STABLE LOCATIVE SERVICE POINTS
++
+BUILD SERVICE / METER / READING / CONSUMPTION CONTRACT
++
+CORRELATE OPERATIONS WITH NUMERA
+```
+
+Se reutiliza donde sea compatible:
+
+- instalación;
+- espacio;
+- red;
+- punto;
+- condición;
+- criticidad;
+- disponibilidad;
+- responsable;
+- evidencia;
+- proveedor;
+- idempotencia;
+- captura offline;
+- cierre y reapertura.
+
+Se construye o refactoriza donde falte:
+
+- relación operacional de servicio;
+- proyección contractual;
+- medidor;
+- serie de lecturas;
+- consumo reproducible;
+- interrupciones;
+- calidad;
+- alertas;
+- contingencias;
+- conciliación medida-factura-costo.
+
+---
+
+#### 74. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- puntos de servicio activos;
+- puntos sin medición cuando la política espere medidor;
+- medidores activos y reemplazados;
+- lecturas esperadas;
+- lecturas recibidas;
+- lecturas faltantes;
+- lecturas estimadas;
+- consumos por servicio, punto, instalación y período;
+- diferencias entre consumo medido e informado;
+- diferencias entre cantidad medida y facturada;
+- consumos anómalos;
+- alertas abiertas;
+- interrupciones;
+- duración observable de interrupciones;
+- tiempo entre restauración y aceptación;
+- contingencias activadas;
+- tiempo de contingencia;
+- restricciones vigentes;
+- conciliaciones de costo pendientes.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 75. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| punto existe sin medidor | conservar punto; no inventar medidor |
+| proveedor cambia número de cuenta | actualizar referencia con historia; no cambiar punto |
+| se reemplaza medidor | nueva identidad de medidor y continuidad explícita |
+| lectura actual menor a anterior | investigar reemplazo, reinicio, rollover, corrección o error antes de calcular |
+| lectura faltante | ausencia; no cero |
+| proveedor estima una lectura | conservar como estimada y con fuente |
+| llega lectura real posterior | reconciliar; no borrar la estimación históricamente usada |
+| medidor principal y submedidores existen | aplicar relación de agregación; evitar doble conteo |
+| factura reporta más consumo que la serie medida | diferencia abierta; no editar lecturas para hacerla coincidir |
+| consumo aumenta junto con producción | correlación; no causalidad automática |
+| consumo anómalo coincide con fuga confirmada | relacionar falla y acción sin perder serie de consumo |
+| proveedor anuncia corte futuro | interrupción planificada; no corte efectivo |
+| usuario reporta falta de servicio | reporte; no confirmación automática |
+| proveedor dice servicio restaurado | afirmación externa; verificar cuando la política lo requiera |
+| servicio vuelve pero área sigue cerrada por obra | servicio restaurado; disponibilidad global sigue restringida |
+| alerta deja de superar umbral | evaluar resolución conforme a política; no borrar historial |
+| contingencia activa suministro alternativo | registrar activación, restricciones y consumo/costo relacionado |
+| factura pagada | hecho económico; no aceptación técnica |
+| timeout después de guardar lectura | reconciliar antes de reintentar |
+
+---
+
+#### 76. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. servicio, red y punto son conceptos distintos;
+2. punto y medidor son distintos;
+3. medidor interno, serial, código de proveedor y cuenta son distintos;
+4. lectura y consumo son distintos;
+5. lectura medida y estimada son distintas;
+6. ausencia de lectura y lectura cero son distintas;
+7. consumo medido y cantidad facturada son distintos;
+8. cantidad facturada y costo reconocido son distintos;
+9. reemplazo de medidor no reescribe historia;
+10. rollover o reinicio no produce consumo negativo silencioso;
+11. principal y submedidores no se suman sin una regla explícita;
+12. calidad del servicio y cantidad consumida son distintas;
+13. reporte de interrupción y confirmación son distintos;
+14. interrupción planificada y efectiva son distintas;
+15. restauración externa y aceptación interna son distintas;
+16. servicio restaurado y disponibilidad global son distintos;
+17. alerta y hecho fuente son distintos;
+18. alerta y acción son distintas;
+19. plan de contingencia y activación son distintos;
+20. retorno de servicio y cierre de contingencia son distintos;
+21. contrato comercial y estado operacional son distintos;
+22. factura, pago y aceptación técnica son distintos;
+23. correlación de consumo con producción o falla no implica causalidad;
+24. reintentos no duplican efectos;
+25. historia material no se destruye para simplificar el estado vigente.
+
+---
+
+#### 77. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver punto y medidor desde identidades autoritativas;
+- validar servicio, unidad y relación vigente;
+- preservar fuente de lectura;
+- no confiar en valores, factores, estados o cierres enviados por cliente sin validación aplicable;
+- preservar actor o principal técnico;
+- impedir doble contabilización;
+- impedir cierre con restricciones o acciones bloqueantes sin resolver;
+- aplicar idempotencia;
+- preservar historial de correcciones;
+- proteger referencias contractuales y documentos según su sensibilidad;
+- impedir que una UI convierta visibilidad en permiso.
+
+La autorización detallada permanece en sus tareas propietarias.
+
+---
+
+#### 78. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- constraints e índices;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- ingestión manual o automatizada;
+- integración de proveedores;
+- almacenamiento de evidencia;
+- series temporales;
+- alertas;
+- colas;
+- sincronización offline;
+- UI;
+- backfill;
+- migración controlada;
+- pruebas automatizadas;
+- validación operativa y financiera.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 79. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- registra servicios reales;
+- crea contratos reales;
+- crea puntos físicos;
+- instala o retira medidores;
+- captura lecturas reales;
+- calcula consumos productivos;
+- crea alertas reales;
+- activa contingencias reales;
+- modifica facturas o pagos;
+- reconoce costos;
+- selecciona proveedores;
+- fija tarifas;
+- fija unidades universales;
+- fija umbrales de anomalía;
+- fija parámetros regulatorios;
+- define control metrológico de `NEXO-DOM-035`;
+- define inspecciones de `NEXO-DOM-034`;
+- define obras de `NEXO-DOM-037`;
+- define novedades locativas de `NEXO-DOM-038`;
+- define autorización detallada;
+- define la experiencia de `NEXO-UX-046`;
+- autoriza materialización física.
+
+---
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya incluye servicios dentro del contrato transversal de instalaciones y exige programa o plan, objeto y lugar, responsable, ejecución, evidencia, resultado, desviación, contención, verificación, disponibilidad y cierre;
+- el registro vigente ya protege la captura offline idempotente y prohíbe duplicar lecturas, evidencia o cierres;
+- la cobertura de integración vigente ya separa servicio, certificado, factura, pago, aceptación, costo y cierre entre NEXO, ORIGO, NUMERA y terceros;
+- la cobertura económica vigente ya exige trazabilidad de hechos económicos y costos hasta sus fuentes;
+- esta tarea desarrolla el contrato de dominio requerido por obligaciones ya registradas y no introduce una obligación verificable nueva fuera de ellas.
+
+---
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-018`, para servicios, lugar, responsable, ejecución, evidencia, desviación, contención, verificación, disponibilidad, cierre y lecturas offline idempotentes;
+- `TREQ-NEXO-017`, para identidad estable de instalaciones, espacios, componentes y puntos de servicio;
+- `TREQ-INTEGRATION-018`, para coordinación entre NEXO, ORIGO, NUMERA, VISO/SST, FOGO, continuidad y proveedores, y para separar servicio, factura, pago, aceptación y cierre;
+- `TREQ-NUMERA-001`, para reconciliación de costos y reportes con hechos y documentos fuente;
+- `TREQ-NUMERA-002`, para identidad, fuente, documento, periodo, monto, estado y evidencia de hechos económicos;
+- `TREQ-NUMERA-004`, para método, entradas, versión, vigencia, periodo y fuente de costos;
+- `TREQ-SUPABASE-002`, para integridad e idempotencia persistente cuando exista materialización física.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye actualización de 04A.
+
+---
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | `main` con cierre de `NEXO-DOM-032`, continuidad, ruta, topología, contrato de entrega, políticas documentales, handoff de `NEXO-DOM-032`, `NEXO-DOM-029`, `CAP-SCOPE-013`, `VPROC-0055`, 04A NEXO, 04A INTEGRATION, 04A NUMERA, `package.json`, preflight, formatter y delivery validator fueron inspeccionados; búsquedas remotas en `vento-nexo` no aportaron evidencia suficiente de un workflow dedicado integral de servicios y medidores |
+| OPERATIVA | NOT_APPLICABLE | no se ejecutan servicios, lecturas, interrupciones, alertas, contingencias, facturas ni costos reales durante la definición documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` están cubiertas por override `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 83. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] servicio, red y punto permanecen separados;
+- [x] punto y medidor permanecen separados;
+- [x] identidad interna, serial, identificador del proveedor y cuenta permanecen separados;
+- [x] el punto puede existir sin medidor;
+- [x] alta, reemplazo y retiro de medidor preservan historia;
+- [x] reinicio, rollover y cambio de escala no producen consumo incorrecto silencioso;
+- [x] lectura conserva fuente, tiempo, unidad, evidencia y calidad;
+- [x] lectura y consumo son distintos;
+- [x] lectura medida y estimada son distintas;
+- [x] lectura ausente no se interpreta como cero;
+- [x] consumo derivado conserva método y lecturas fuente;
+- [x] consumo medido, consumo informado y cantidad facturada son distintos;
+- [x] agregación evita doble conteo entre principal y submedición;
+- [x] calidad del servicio permanece separada de cantidad;
+- [x] interrupción reportada y confirmada son distintas;
+- [x] interrupción planificada y efectiva son distintas;
+- [x] incertidumbre temporal no se reemplaza por timestamps inventados;
+- [x] restauración del proveedor y aceptación interna son distintas cuando aplica;
+- [x] servicio restaurado y disponibilidad global son distintos;
+- [x] alerta conserva política, hechos fuente, owner y condición de salida;
+- [x] alerta no se confunde con interrupción, incidente o contingencia;
+- [x] contingencia conserva plan, activación, medidas, restricciones, salida y reconciliación;
+- [x] suministro alternativo permanece distinguible del servicio primario;
+- [x] factura no reescribe lecturas ni consumos;
+- [x] diferencia medida-facturada puede investigarse;
+- [x] NEXO conserva aceptación técnica y NUMERA efectos económicos;
+- [x] contratación empresarial y estado operacional son distintos;
+- [x] anomalías pueden correlacionarse con sede, producción, falla, factura y costo sin inventar causalidad;
+- [x] inspección, metrología, mantenimiento, obras, novedades y continuidad conservan sus owners;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] el AS-IS remoto no se declara suficiente sin evidencia;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 84. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe materialización integral del dominio de servicios | no | implementación NEXO correspondiente | esquema, acciones, consumidores y pruebas autorizados por paquete |
+| series históricas pueden ser incompletas o heterogéneas | no | implementación/migración NEXO | perfilado, crosswalk, calidad y reglas de migración aprobadas |
+| no existe fuente automatizada universal de lecturas | no | integración física posterior | cada fuente aprobada con contrato, autenticación, idempotencia y evidencia |
+| política concreta de umbrales y anomalías no está fijada aquí | no | operación/owners de política | regla versionada aprobada por servicio y alcance |
+| control metrológico no está materializado integralmente | no | `NEXO-DOM-035` y su implementación | validez metrológica y efecto sobre lecturas resueltos |
+| inspección física permanece separada | no | `NEXO-DOM-034` | contrato de inspecciones aprobado y posteriormente materializado |
+| costo económico final pertenece a NUMERA | no | NUMERA | hechos operacionales correlacionados y conciliación económica implementada |
+| contingencia empresarial transversal pertenece a continuidad | no | dominio de continuidad | handoff y reglas de recuperación correspondientes materializados |
+
+Ningún riesgo residual autoriza crear una fuente paralela de lecturas, costo o disponibilidad.
+
+---
+
+#### 85. Handoff hacia `NEXO-DOM-034`
+
+`NEXO-DOM-033` entrega a `NEXO-DOM-034`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+SERVICE NETWORK / SERVICE POINT IDENTITY
++
+METER IDENTITY AND LIFECYCLE
++
+TRACEABLE READINGS
++
+REPRODUCIBLE CONSUMPTION
++
+SERVICE QUALITY OBSERVATIONS
++
+INTERRUPTION / RESTORATION HISTORY
++
+ALERT SOURCE AND POLICY TRACEABILITY
++
+CONTINGENCY / RESTRICTION / EXIT SEMANTICS
++
+SERVICE AVAILABILITY IMPACT
++
+OPERATIONAL / ECONOMIC SEPARATION
++
+IDEMPOTENT OFFLINE FIELD CAPTURE
+```
+
+`NEXO-DOM-034` podrá reutilizar sujetos locativos, evidencia, disponibilidad, observaciones, acciones y handoffs cuando sean compatibles, pero deberá definir de forma propia inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas.
+
+Una lectura, verificación de servicio o alerta no se convierte en inspección física general solo para reutilizar el mismo expediente.
+
+---
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas`
 ### [ ] NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
 ### [ ] NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
 ### [ ] NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
