@@ -30958,7 +30958,1017 @@ DOES NOT CHANGE IDENTITY, TRACEABILITY, CONDITION OR INVENTORY BY ITSELF
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo`
 
-### [ ] NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo
+### ✅ NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido
+**Tarea siguiente:** NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
+**Tipo de tarea:** documental; definición canónica del vínculo causal, trazable y no destructivo entre repuesto reservado, consumido e instalado, mantenimiento u orden de trabajo, sujeto físico intervenido y costo informado o valoración del activo, con separación de hechos físicos, técnicos, económicos y contables bajo topología `DEFINE_ONCE`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir un contrato único y verificable para vincular el consumo físico de un repuesto con la intervención de mantenimiento que lo requiere, con el sujeto físico exacto sobre el cual se realiza la intervención y con la información de costo que resulte material, sin convertir una nota de mantenimiento, una cantidad de inventario, una factura, un proveedor, un costo informado o una proyección económica en sustitutos unos de otros.
+
+La regla raíz queda:
+
+```text
+AUTHORIZED MAINTENANCE CONTEXT
++
+EXACT PHYSICAL SUBJECT
++
+RESERVED AND CONSUMED SPARE PART SCOPE
++
+TRACEABLE INSTALLATION OR OTHER AUTHORIZED MATERIAL USE
++
+COST SNAPSHOT WHEN ECONOMICALLY APPLICABLE
++
+SEPARATE VALUATION AND ACCOUNTING HANDOFFS
++
+AUDITABLE CAUSAL CORRELATION
+→
+RECONCILABLE MAINTENANCE MATERIAL AND ASSET COST HISTORY
+```
+
+Por tanto:
+
+```text
+PARTS MENTIONED IN TEXT
+!=
+SPARE PART CONSUMPTION
+```
+
+```text
+SPARE PART CONSUMPTION
+!=
+INSTALLATION CONFIRMED
+```
+
+```text
+INSTALLATION CONFIRMED
+!=
+MAINTENANCE RELEASE
+```
+
+```text
+COST INFORMED
+!=
+ACCOUNTING POSTING
+```
+
+```text
+ASSET COST PROJECTION
+!=
+AUTHORITY TO CHANGE STOCK QUANTITY
+```
+
+La tarea define semántica documental reutilizable. No consume repuestos reales, no modifica existencias, no ejecuta órdenes, no determina valores monetarios, no registra asientos, no modifica el costo histórico de activos ni autoriza infraestructura física.
+
+---
+
+#### 2. Decisiones canónicas consumidas
+
+Este contrato especializa, sin reemplazar, las decisiones ya aprobadas que la cápsula identifica como relevantes:
+
+- `NEXO-DOM-001` conserva la clase primaria `SPARE_PART`, distingue activo individual, repuesto, stock y contenedor, y prohíbe que una misma realidad física quede doblemente representada.
+- `NEXO-DOM-009` conserva la frontera entre identidad individual y control por cantidad; un costo o un mantenimiento no fabrican identidad individual donde la política no la exige.
+- `NEXO-DOM-010` mantiene separados condición, daño, pérdida y faltante; el consumo de una pieza no borra ni resuelve por inferencia esos hechos.
+- `NEXO-DOM-011` conserva custodia, transferencia y aceptación como dimensiones propias; instalar o consumir un repuesto no reescribe custodia sin una transición aplicable.
+- `NEXO-DOM-012` separa plan, disparador, orden, diagnóstico, ejecución, evidencia, prueba, liberación, disponibilidad y costo informado.
+- `NEXO-DOM-016` exige compatibilidad explícita, reserva antes de consumo, efecto físico exactamente una vez, trazabilidad de pieza retirada y frontera NEXO–ORIGO.
+- `NEXO-DOM-024` exige capacidad, compatibilidad y verificabilidad aplicables a la colocación logística del repuesto, sin confundir admisibilidad física con consumo o costo.
+- `CAP-SCOPE-007` exige relacionar reparación con diagnóstico, mano de obra, proveedor, repuestos, costo, indisponibilidad y prueba de retorno al servicio sin conflar existencia física, responsabilidad ni costo.
+
+Este documento no reabre dichas decisiones. Cuando una regla consumida sea más específica que una formulación general de esta tarea, prevalece el contrato propietario de la dimensión específica.
+
+---
+
+#### 3. Alcance
+
+La tarea establece el contrato de correlación para los siguientes hechos conceptuales cuando sean aplicables a una intervención:
+
+- sujeto físico mantenible o reparable;
+- obligación, orden o contexto autorizado de mantenimiento;
+- diagnóstico o necesidad técnica, sin convertirlo en consumo automático;
+- reserva de un repuesto y su liberación cuando el uso no ocurra;
+- consumo de un alcance de inventario de repuesto;
+- instalación de la pieza consumida cuando la intervención lo exija;
+- pieza retirada y su destino trazable cuando una pieza existente sea retirada;
+- trabajo de tercero, mano de obra, servicio, documento o proveedor como información separada;
+- costo informado y su snapshot causal cuando corresponda;
+- proyección de valoración y eventual handoff económico separados del hecho físico;
+- corrección, reversa o reconciliación no destructivas;
+- idempotencia, concurrencia, operación offline, confirmación tardía, autorización y auditoría.
+
+El contrato aplica tanto si el mantenimiento es correctivo como si deriva de una inspección, limpieza técnica, calibración u otra intervención admitida por el owner de mantenimiento. No presupone que toda intervención consuma repuestos ni que todo repuesto consumido sea instalable como componente individual.
+
+---
+
+#### 4. Límites de alcance material
+
+Esta tarea no decide:
+
+- qué activo, instalación, vehículo, equipo, contenedor u otro sujeto real requiere mantenimiento;
+- qué clase específica de mantenimiento, diagnóstico, procedimiento, prueba o liberación aplica a un caso real;
+- la política concreta de compatibilidad, equivalencia, sustitución, unidad, conversión, vida útil, condición o capacidad de un repuesto;
+- el precio concreto, moneda, impuesto, proveedor, factor de conversión, método de valoración o regla contable aplicable a una organización;
+- si un costo concreto debe capitalizarse, reconocerse como gasto, distribuirse, depreciarse, amortizarse, provisionarse o rechazarse;
+- la aprobación económica, fiscal, presupuestal, contable o de compras requerida para un caso;
+- la emisión, aprobación, recepción, conciliación o pago de una compra, factura, nota crédito, garantía o reclamación;
+- el detalle de roles, permisos, segregación de funciones o límites monetarios concretos;
+- la implementación de tablas, eventos, constraints, RLS, API, interfaz, integración, migración, backfill, cálculo, proyección, automatización, Supabase, código o despliegue.
+
+Una materialización posterior deberá obtener esos valores, autoridades y mecanismos desde sus contratos propietarios. No puede inventarlos localmente para aceptar una instalación, derivar un costo o cerrar una reconciliación.
+
+---
+
+#### 5. Vocabulario operativo
+
+`SUBJECT` es el sujeto físico exacto objeto de la intervención. Puede ser una identidad individual o un alcance controlado por cantidad solamente cuando el contrato de mantenimiento y la política aplicable admitan esa granularidad.
+
+`MAINTENANCE_CONTEXT` es el expediente causal autorizado que vincula la intervención con plan, obligación, orden, diagnóstico, ejecución o resultado según corresponda. No es un comentario libre.
+
+`SPARE_PART_SCOPE` es el alcance trazable del repuesto reservado, consumido o liberado. Conserva la granularidad que corresponda a existencia, lote, serial, condición, ubicación y demás dimensiones aplicables.
+
+`CONSUMPTION` es el hecho físico de que un alcance de repuesto deja de permanecer como existencia disponible o reservada y se aplica al uso autorizado. No es sinónimo de compra, costo, instalación ni texto.
+
+`INSTALLATION` es el hecho técnico, cuando aplica, de que la pieza consumida queda incorporada o utilizada en el `SUBJECT` conforme a la intervención. No es sinónimo de que el sujeto quedó disponible.
+
+`REMOVED_PART` es la pieza o alcance retirado desde el sujeto intervenido. Mantiene identidad o alcance y destino trazable; no se presume desechado, devuelto a stock ni reparable.
+
+`COST_SNAPSHOT` es la captura inmutable de la información económica aplicable a una línea o hecho causal. Conserva fuente, política y factor aplicables cuando existan. No sustituye el documento comercial ni constituye un asiento por sí mismo.
+
+`VALUATION_PROJECTION` es una consecuencia económica derivada y deduplicable del hecho causal autorizado. No puede recrear, duplicar, alterar ni compensar silenciosamente el movimiento físico.
+
+---
+
+#### 6. Regla raíz de correlación causal
+
+Se fija la siguiente invariante:
+
+```text
+ACCEPTED SPARE PART CONSUMPTION
+→
+ONE AUTHORIZED MAINTENANCE CONTEXT
++ ONE IDENTIFIED SUBJECT
++ ONE CONSUMED SPARE PART SCOPE
++ ONE CAUSAL CORRELATION
+```
+
+Cuando el consumo derive en instalación:
+
+```text
+INSTALLED PART
+→
+PREVIOUSLY OR ATOMICALLY CORRELATED CONSUMPTION
++ SAME MAINTENANCE CONTEXT
++ SAME SUBJECT
+```
+
+Cuando exista información económica aplicable:
+
+```text
+COST SNAPSHOT
+→
+REFERENCES THE SAME CAUSAL CORRELATION
+WITHOUT REWRITING THE PHYSICAL FACT
+```
+
+La correlación identifica la relación entre hechos; no absorbe los hechos en un único estado genérico. Debe poder reconstruirse qué se reservó, qué se consumió, qué se instaló, qué se retiró, qué costo se informó y qué proyección ulterior fue solicitada o completada.
+
+---
+
+#### 7. Un repuesto no es texto de mantenimiento
+
+Se prohíbe aceptar como consumo trazable cualquiera de las siguientes sustituciones:
+
+```text
+FREE TEXT PART NAME
+!=
+SPARE_PART_SCOPE
+```
+
+```text
+WORK ORDER COMMENT
+!=
+INVENTORY MOVEMENT
+```
+
+```text
+PHOTO OR INVOICE ATTACHMENT
+!=
+CONSUMPTION CONFIRMATION
+```
+
+```text
+TECHNICIAN DECLARATION
+!=
+STOCK EFFECT
+```
+
+Un comentario, diagnóstico, fotografía, referencia comercial, descripción de proveedor o adjunto puede conservarse como evidencia contextual. Sin embargo, no modifica saldo, no identifica por inferencia una existencia exacta, no prueba que la pieza sea compatible y no autoriza una valoración económica.
+
+Cuando la evidencia legacy solo describa una pieza en texto, el caso queda como información histórica no correlacionada hasta que una reconciliación autorizada determine su alcance, fuente y resultado. No debe fabricarse un consumo retrospectivo mediante coincidencia de nombres.
+
+---
+
+#### 8. Consumo no equivale a instalación
+
+El repuesto puede consumirse en una intervención sin quedar instalado como componente durable del sujeto, por ejemplo cuando su utilización sea material para el trabajo pero la política no exija una relación de componente instalado. A la inversa, una instalación válida no puede carecer de un efecto de inventario correlacionado cuando la pieza provenga de stock controlado.
+
+Se conserva:
+
+```text
+CONSUMED PART
+MAY OR MAY NOT
+→ INSTALLED COMPONENT RELATION
+```
+
+```text
+INSTALLED STOCK-CONTROLLED PART
+→
+CONSUMPTION REQUIRED
+```
+
+La diferencia debe ser explícita. Una proyección de mantenimiento no puede mostrar toda pieza consumida como componente permanente, y una proyección de inventario no puede mantener como disponible una pieza que ya fue consumida para una instalación aceptada.
+
+---
+
+#### 9. Instalación no equivale a liberación
+
+La presencia de un repuesto instalado no demuestra que la reparación haya sido completada con resultado satisfactorio ni que el sujeto esté disponible para su uso previsto.
+
+```text
+PART INSTALLED
+!=
+TEST PASSED
+```
+
+```text
+TEST PASSED
+!=
+AUTHORIZED RELEASE WHEN REQUIRED
+```
+
+```text
+PART INSTALLED
+!=
+AVAILABLE SUBJECT
+```
+
+La prueba, el resultado técnico, la liberación y la disponibilidad continúan bajo el contrato de mantenimiento. El vínculo de costo no puede usarse para adelantar la liberación ni para ocultar una prueba fallida, inconclusa o ausente.
+
+---
+
+#### 10. Identidad y granularidad del sujeto intervenido
+
+El `SUBJECT` debe resolverse con la granularidad que permita atribuir la intervención sin crear una segunda representación de la realidad física.
+
+Para un activo individualizado, la correlación se vincula con su identidad estable y no con una etiqueta, serial de fabricante, modelo, ubicación o nombre de familia usados como sustituto.
+
+Para un sujeto controlado por cantidad, la correlación debe conservar el alcance cuantificado y disjunto que la política admita. No transforma por sí misma cada unidad en activo individual.
+
+Para un contenedor físico, su identidad permanece distinta del LPN y del contenido. Un repuesto usado para reparar el contenedor no se atribuye al LPN que eventualmente transporta.
+
+Para una instalación, vehículo u otro sujeto especializado, esta tarea conserva únicamente la necesidad de identidad y causalidad; la definición especializada de su ciclo de vida permanece con su owner correspondiente.
+
+---
+
+#### 11. Granularidad del repuesto
+
+La granularidad del `SPARE_PART_SCOPE` permanece gobernada por su clase y trazabilidad aplicables.
+
+```text
+SPARE_PART CONTROLLED BY QUANTITY
+→
+CONSUMPTION OF A QUANTIFIED NON-OVERLAPPING SCOPE
+```
+
+```text
+SPARE_PART WITH REQUIRED INDIVIDUAL IDENTITY
+→
+CONSUMPTION OF THE EXACT IDENTITY
+```
+
+El consumo no permite agregar alcances heterogéneos y luego atribuirles un único costo o una única instalación sin preservar sus dimensiones aplicables. Si lote, serial, condición, vencimiento, ubicación o reserva son exigibles para el repuesto, la correlación debe conservarlos; su ausencia no se rellena con el identificador del activo ni con el texto de la orden.
+
+---
+
+#### 12. Reserva previa y liberación de reserva
+
+Se conserva la regla consumida de que el repuesto se reserva antes de consumo cuando la operación requiera reserva.
+
+```text
+ELIGIBLE SPARE PART SCOPE
+→ RESERVATION
+→ CONSUMPTION OR AUTHORIZED RESERVATION RELEASE
+```
+
+La reserva referencia el contexto de mantenimiento y el sujeto aplicable, pero no demuestra ejecución, instalación ni costo final. El diagnóstico, la planificación, la intención del técnico o la existencia de una orden no descuentan stock automáticamente.
+
+Si la intervención no usa la pieza, la liberación de reserva conserva relación con la reserva original y no se presenta como consumo negativo ficticio. Si una reserva caduca, se disputa o resulta inválida por cambio concurrente, se conserva el estado y la causa de resolución; no se reutiliza en silencio para otro trabajo.
+
+---
+
+#### 13. Precondiciones mínimas para consumo
+
+Una futura aceptación de consumo debe poder demostrar, como mínimo:
+
+- `MAINTENANCE_CONTEXT` identificable y vigente para el hecho que se intenta registrar;
+- `SUBJECT` resuelto con granularidad permitida;
+- `SPARE_PART_SCOPE` identificable, disponible o reservado según la política aplicable;
+- compatibilidad técnica verificable cuando sea obligatoria;
+- autorización efectiva del actor y contexto;
+- cantidad o identidad exacta que se consumirá;
+- causalidad que no colisione con una correlación aceptada incompatible;
+- identidad idempotente de la intención;
+- revisión o fotografía autoritativa suficiente para detectar concurrencia material.
+
+La falta de cualquiera de los datos obligatorios bloquea el consumo o lo deja pendiente de reconciliación según el contrato de captura aplicable. No se admite un valor por defecto para hacer que el inventario parezca conciliado.
+
+---
+
+#### 14. Compatibilidad, sustitución y diagnóstico
+
+La compatibilidad se consume desde el contrato de repuestos. No se infiere por nombre similar, coincidencia textual, categoría, apariencia, disponibilidad, proveedor habitual o uso histórico.
+
+```text
+AVAILABLE PART
+!=
+COMPATIBLE PART
+```
+
+```text
+DIAGNOSIS SUGGESTION
+!=
+AUTHORIZED SUBSTITUTION
+```
+
+```text
+HIGHER PRICE OR LOWER PRICE
+!=
+TECHNICAL COMPATIBILITY
+```
+
+Un sustituto autorizado se distingue de una pieza simplemente parecida. La correlación debe conservar qué pieza se consumió efectivamente, qué regla o decisión habilitó su uso cuando corresponda y a qué sujeto se aplicó. Una corrección de compatibilidad posterior no reescribe el hecho histórico; abre una corrección, investigación o disposición trazable bajo el contrato propietario.
+
+---
+
+#### 15. Pieza retirada
+
+Cuando la intervención retira una pieza existente, el hecho debe mantenerse separado del consumo de la pieza entrante.
+
+```text
+REMOVED PART
+!=
+AUTOMATIC DISPOSAL
+```
+
+```text
+REMOVED PART
+!=
+AUTOMATIC RETURN TO STOCK
+```
+
+```text
+REMOVED PART
+!=
+THE NEWLY CONSUMED PART
+```
+
+La pieza retirada conserva identidad exacta o alcance cuantificado, condición conocida o desconocida, origen como componente retirado, sujeto de procedencia, contexto de intervención y destino trazable cuando estos datos sean aplicables. Sus destinos posibles no se presumen por esta tarea; reparación, cuarentena, devolución, inspección, disposición u otro tratamiento requieren sus transiciones autorizadas.
+
+---
+
+#### 16. Costo informado como dimensión separada
+
+El costo informado de una intervención es una dimensión económica contextual. Puede incluir, cuando las políticas propietarias lo dispongan, información atribuible a repuesto, mano de obra, servicio externo, logística u otro componente económico; este documento no define su composición ni método.
+
+Se fija:
+
+```text
+MAINTENANCE COST INFORMATION
+≠
+STOCK QUANTITY
+≠
+TECHNICAL RESULT
+≠
+AVAILABILITY
+≠
+ACCOUNTING ENTRY
+```
+
+La presencia de costo no permite cambiar la cantidad consumida. La ausencia de costo confirmado no permite deshacer una instalación o repetir un consumo que ya fue aceptado. La proyección económica deberá poder quedarse pendiente de manera recuperable sin crear un segundo hecho físico.
+
+---
+
+#### 17. Snapshot de costo y no reescritura histórica
+
+Cuando una línea o correlación requiera `COST_SNAPSHOT`, debe preservar el valor y el contexto económico que la política autorizada determine en el instante causal pertinente.
+
+La cápsula exige que costo, moneda, impuestos, fuente y factor de conversión, cuando apliquen, persistan como snapshot por línea, y que un cambio posterior de proveedor, precio o política no reescriba el asiento histórico. En consecuencia:
+
+```text
+LATER PRICE CHANGE
+!=
+HISTORICAL COST REWRITE
+```
+
+```text
+LATER POLICY CHANGE
+!=
+HISTORICAL CONSUMPTION REWRITE
+```
+
+```text
+COST CORRECTION
+!=
+SECOND QUANTITY CONSUMPTION
+```
+
+El snapshot referencia la misma correlación causal, identifica su fuente y revisión aplicables cuando existan y conserva si el valor es informado, derivado, pendiente, disputado o corregido. Este contrato no declara qué fuente prevalece en cada caso concreto.
+
+---
+
+#### 18. Frontera entre costo de repuesto y costo del activo
+
+El costo atribuible al repuesto consumido, la información de costo de la intervención y una eventual proyección de costo del activo son capas distintas.
+
+```text
+SPARE PART COST SNAPSHOT
+→ MAY FEED
+MAINTENANCE COST INFORMATION
+→ MAY FEED
+ASSET COST PROJECTION
+```
+
+Las flechas expresan causalidad posible y trazable, no autorización automática ni identidad entre valores. El activo no adopta un nuevo valor histórico por el mero hecho de que exista una pieza consumida, una factura o una orden cerrada. De igual modo, una eventual proyección del activo no puede reemplazar la conservación del costo de la línea de repuesto ni modificar el saldo de inventario.
+
+La determinación de si existe efecto económico, cómo se clasifica y qué owner lo confirma queda fuera de esta tarea. El contrato exige solamente que cualquier efecto posterior conserve referencia hacia el hecho físico y económico causal, sin producir una fuente competidora.
+
+---
+
+#### 19. Frontera con ORIGO y con valoración
+
+NEXO conserva el hecho físico de reserva, consumo, instalación, pieza retirada y su correlación con mantenimiento. El abastecimiento, compra, proveedor comercial, recepción económica y demás decisiones de ORIGO permanecen separados conforme a sus owners.
+
+La valoración y cualquier efecto contable son consumidores de correlaciones autorizadas; no autorizan el consumo original y no deben obligar a un técnico u operador físico a ingresar costo libre sin necesidad funcional y autorización aplicable.
+
+```text
+PROCUREMENT DOCUMENT
+!=
+PHYSICAL INSTALLATION EVIDENCE
+```
+
+```text
+PHYSICAL CONSUMPTION
+!=
+PROCUREMENT APPROVAL
+```
+
+```text
+VALUATION FAILURE
+!=
+PHYSICAL CONSUMPTION FAILURE
+```
+
+Si falla una proyección de costo después de aceptarse el consumo físico, el consumidor económico queda pendiente y deduplicable. Reparar ese consumidor no crea otro consumo, otra reserva ni otra instalación.
+
+---
+
+#### 20. Estados conceptuales de la correlación
+
+La correlación puede expresar estados conceptuales sin reducir los ciclos de vida propietarios de la reserva, orden, mantenimiento o valoración:
+
+```text
+DRAFT
+→ PENDING_VERIFICATION
+→ RESERVED
+→ CONSUMPTION_ACCEPTED
+→ INSTALLATION_RECORDED WHEN APPLICABLE
+→ ECONOMIC_HANDOFF_PENDING WHEN APPLICABLE
+→ ECONOMIC_HANDOFF_RECORDED WHEN CONFIRMED
+```
+
+También puede terminar en:
+
+```text
+RESERVATION_RELEASED
+REJECTED
+CONFLICTED
+RECONCILIATION_REQUIRED
+CORRECTED_BY_SUCCESSOR_FACT
+```
+
+No existe una transición implícita desde `DRAFT`, `PENDING_VERIFICATION`, `REJECTED`, `CONFLICTED` o `RECONCILIATION_REQUIRED` a consumo aceptado. `ECONOMIC_HANDOFF_RECORDED` tampoco demuestra liberación técnica del sujeto.
+
+---
+
+#### 21. Transiciones permitidas y prohibidas
+
+Se permiten conceptualmente las siguientes transiciones, siempre que se satisfagan sus precondiciones propietarias:
+
+```text
+RESERVED → CONSUMPTION_ACCEPTED
+RESERVED → RESERVATION_RELEASED
+CONSUMPTION_ACCEPTED → INSTALLATION_RECORDED
+CONSUMPTION_ACCEPTED → ECONOMIC_HANDOFF_PENDING
+ECONOMIC_HANDOFF_PENDING → ECONOMIC_HANDOFF_RECORDED
+```
+
+Se prohíben las siguientes equivalencias o atajos:
+
+```text
+WORK_ORDER_CREATED → CONSUMPTION_ACCEPTED
+```
+
+```text
+COST_RECEIVED → CONSUMPTION_ACCEPTED
+```
+
+```text
+INSTALLATION_RECORDED → SUBJECT_RELEASED
+```
+
+```text
+ECONOMIC_HANDOFF_RECORDED → TECHNICAL_RESULT_ACCEPTED
+```
+
+```text
+CORRECTION → DELETE ORIGINAL FACT
+```
+
+Toda corrección debe ser un hecho sucesor correlacionado que conserve el antecedente, motivo, actor, autoridad, instante, alcance y efecto autorizado.
+
+---
+
+#### 22. Atomicidad conceptual
+
+La aceptación del consumo debe preservar una sola decisión causal entre el alcance de repuesto, el contexto de mantenimiento y el sujeto intervenido.
+
+```text
+ACCEPTED CONSUMPTION
+=
+ONE EFFECTIVE STOCK EFFECT
++
+ONE CORRELATION
++
+NO SIMULTANEOUS AVAILABLE REPRESENTATION
+```
+
+Cuando instalación y consumo se acepten como una misma intención empresarial, la futura materialización debe evitar el estado visible en que la pieza aparezca instalada mientras permanece como stock disponible o reservado sin resolución. Cuando se registren como hechos separados, cada uno debe conservar referencias verificables y un estado intermedio explícito.
+
+La atomicidad conceptual no prescribe transacción técnica, base de datos ni mecanismo de implementación.
+
+---
+
+#### 23. Idempotencia
+
+Una repetición de la misma intención empresarial no puede multiplicar consumo, instalación, costo snapshot ni handoff económico.
+
+La identidad idempotente debe poder correlacionar como mínimo:
+
+- intención y tipo de operación;
+- `MAINTENANCE_CONTEXT`;
+- `SUBJECT`;
+- `SPARE_PART_SCOPE` y cantidad o identidad exacta;
+- actor y contexto efectivos cuando sean relevantes;
+- correlación causal solicitada;
+- revisión o instante de decisión;
+- resultado previamente conocido, si existe.
+
+```text
+SAME ACCEPTED INTENT
+→ SAME RESULT
+→ NO SECOND STOCK EFFECT
+→ NO SECOND COST PROJECTION REQUEST
+```
+
+Una nueva intervención, una nueva cantidad, otro sujeto, otra pieza, una corrección autorizada o una nueva causalidad no deben reutilizar la identidad de una intención anterior para ocultar un hecho distinto.
+
+---
+
+#### 24. Concurrencia
+
+La decisión debe detectar conflictos materiales entre operaciones que compiten por el mismo alcance de repuesto, la misma reserva, el mismo sujeto intervenido o la misma correlación económica.
+
+Ejemplos de conflicto incluyen:
+
+- dos consumos que exceden el alcance disponible o reservado;
+- un consumo y una liberación de la misma reserva;
+- una instalación que referencia un consumo corregido, rechazado o aún no aceptado;
+- dos instalaciones incompatibles sobre el mismo punto o sujeto cuando la política no las admita;
+- una modificación de orden, diagnóstico, compatibilidad o disposición que invalida una precondición crítica;
+- una corrección de costo que intenta mutar el snapshot histórico en lugar de producir un sucesor.
+
+La interfaz, caché, lectura offline, disponibilidad mostrada o comentario del técnico no constituyen arbitraje de concurrencia. La evaluación se realiza contra hechos y revisiones autoritativos disponibles al momento de aceptación.
+
+---
+
+#### 25. Operación offline
+
+Una captura offline puede registrar una intención, evidencia y observación local, pero no afirma por sí misma que la reserva sigue vigente, que el repuesto continúa disponible, que el sujeto admite la instalación o que el costo fue aceptado.
+
+```text
+OFFLINE CAPTURE
+!=
+AUTHORITATIVE CONSUMPTION ACCEPTANCE
+```
+
+La sincronización debe conservar identidad idempotente, instante observado, actor, dispositivo o principal técnico cuando aplique, sujeto, contexto, alcance de repuesto y evidencia disponible. Si el estado autoritativo ya no permite la intención, el resultado debe conservarse como rechazado, conflictuado o pendiente de reconciliación; no se sustituye silenciosamente la pieza, cantidad, sujeto u orden.
+
+Una captura offline tampoco libera un activo al servicio ni confirma una proyección de costo.
+
+---
+
+#### 26. Respuesta tardía y confirmación perdida
+
+Ante timeout, desconexión o respuesta perdida después de enviar una intención, el emisor no puede asumir ni fracaso ni éxito y emitir un segundo consumo.
+
+El resultado debe consultarse o reconciliarse usando la identidad idempotente y la correlación causal. Los resultados admisibles incluyen aceptación ya registrada, rechazo ya registrado, conflicto, estado pendiente o ausencia verificable de recepción. Una respuesta tardía no puede aplicar una segunda vez el efecto físico ni solicitar por duplicado la valoración.
+
+```text
+UNKNOWN ACKNOWLEDGMENT
+→ QUERY OR RECONCILIATION
+NOT → RETRY AS NEW CONSUMPTION
+```
+
+---
+
+#### 27. Fallos y compensación
+
+El contrato distingue fallo previo a aceptación de fallo posterior a un hecho aceptado.
+
+Si falla una precondición antes de la aceptación, no existe consumo válido. La reserva puede permanecer según su lifecycle propietario, liberarse de forma autorizada o requerir revisión.
+
+Si un consumo fue aceptado pero falla el registro de instalación, la correlación conserva el consumo y queda pendiente de resolver el hecho técnico; no se reingresa automáticamente el repuesto ni se afirma instalación.
+
+Si la instalación fue registrada pero falla un consumidor económico, el hecho técnico y el hecho físico permanecen preservados, con handoff económico pendiente y deduplicable.
+
+Si se descubre un error material, la compensación es una sucesión explícita de hechos autorizados. No se borra ni reescribe el consumo, la instalación, la pieza retirada, la fuente de costo ni la evidencia original.
+
+---
+
+#### 28. Reconciliación
+
+`RECONCILIATION_REQUIRED` aplica cuando la evidencia disponible no permite resolver de manera segura la relación entre mantenimiento, repuesto, sujeto o costo.
+
+Casos típicos incluyen:
+
+- texto histórico que menciona una pieza sin identificar alcance de stock;
+- consumo físico conocido sin orden o sujeto verificable;
+- pieza instalada observada sin correlación de consumo suficiente;
+- repuesto retirado sin destino conocido;
+- costo informado sin fuente, moneda, factor o causalidad exigibles;
+- conflicto entre inventario, expediente de mantenimiento y evidencia documental;
+- aceptación incierta por operación offline o respuesta perdida.
+
+La reconciliación conserva los hechos contradictorios, la razón de incertidumbre, las fuentes consultadas, el alcance afectado y la condición de salida. No utiliza heurística de texto, precio, fecha o proveedor para inventar una coincidencia.
+
+---
+
+#### 29. Autorización
+
+La autorización se evalúa sobre la operación efectiva y no sobre el mero acceso a una orden, activo, código de barra, serial, QR, documento o pantalla.
+
+Como mínimo, una futura decisión deberá poder vincularse con:
+
+- actor efectivo y principal técnico cuando sean distintos;
+- propósito de la operación;
+- `MAINTENANCE_CONTEXT`, `SUBJECT` y `SPARE_PART_SCOPE`;
+- sitio, LOC, tránsito, territorio y custodia aplicables;
+- condición, disponibilidad, lifecycle, reserva, compatibilidad y excepción relevantes;
+- monto, fuente o decisión económica cuando la acción trate un snapshot o handoff de costo;
+- instante efectivo, correlación, revisión e identidad idempotente.
+
+La capacidad de registrar un diagnóstico no equivale necesariamente a consumir stock. La capacidad de registrar un consumo no equivale a modificar el costo del activo. La capacidad de adjuntar una factura no equivale a reconocer un efecto económico.
+
+---
+
+#### 30. Segregación de capacidades conceptuales
+
+Se mantienen separadas, incluso si una futura interfaz las presenta correlacionadas, las siguientes capacidades:
+
+```text
+DIAGNOSE NEED
+RESERVE PART
+CONSUME PART
+RECORD INSTALLATION
+RECORD REMOVED PART
+RECORD TECHNICAL RESULT
+RELEASE SUBJECT
+PROVIDE COST INFORMATION
+AUTHORIZE ECONOMIC TREATMENT
+POST OR ACKNOWLEDGE ECONOMIC EFFECT
+```
+
+Una persona, servicio o integración podría recibir más de una capacidad solamente si el contrato de autorización aplicable lo permite. Esta tarea no presupone esa acumulación. La segregación impide que una sola actualización genérica de “mantenimiento completado” o “costo actualizado” oculte hechos que requieren controles distintos.
+
+---
+
+#### 31. Auditoría mínima
+
+Todo hecho aceptado, rechazado, liberado, corregido o puesto en reconciliación debe poder reconstruirse con evidencia suficiente. Como mínimo, la auditoría debe poder retener:
+
+- identidad de la correlación y del hecho sucesor cuando exista;
+- tipo de hecho y resultado;
+- `MAINTENANCE_CONTEXT` y `SUBJECT`;
+- alcance de repuesto, cantidad, identidad, trazabilidad y colocación aplicables;
+- reserva antecedente y resolución, cuando aplique;
+- instalación, pieza retirada y destino declarados, cuando apliquen;
+- actor efectivo, principal técnico, autorización y propósito cuando correspondan;
+- instante observado, instante de aceptación y fuente de captura;
+- política, compatibilidad, revisión y excepción aplicables;
+- snapshot de costo, fuente, moneda, impuestos y factor de conversión cuando sean aplicables;
+- estado de proyección u handoff económico;
+- identidad idempotente, conflicto, error, corrección y evidencia adjunta o referenciada.
+
+La auditoría no autoriza exposición indiscriminada de costo, documentos, datos personales o información sensible. Acceso a evidencia y acceso a capacidad de modificación siguen siendo decisiones separadas.
+
+---
+
+#### 32. Matriz canónica de decisiones
+
+| Decisión o situación | Resultado contractual | Prohibición o continuidad |
+| --- | --- | --- |
+| Diagnóstico propone una pieza | Puede iniciar evaluación o reserva autorizada | No consume stock ni modifica costo por sí solo |
+| Reserva válida para orden y sujeto | Conserva alcance reservado y causalidad | No prueba instalación ni ejecución |
+| Consumo aceptado | Genera un único efecto físico y correlación | No mantiene el mismo alcance como disponible |
+| Instalación de pieza de stock | Referencia consumo y contexto autorizados | No sustituye prueba ni liberación |
+| Pieza retirada | Conserva origen y destino trazable | No se desecha ni retorna a stock por inferencia |
+| Costo informado disponible | Se asocia como snapshot causal cuando aplica | No equivale a asiento ni altera cantidad |
+| Falla de valoración posterior | Mantiene consumidor económico pendiente | No repite consumo ni instalación |
+| Cambio posterior de precio o proveedor | Conserva el hecho histórico y puede originar corrección autorizada | No reescribe snapshot histórico |
+| Captura offline | Conserva intención y evidencia para evaluación | No afirma aceptación autoritativa |
+| Conflicto de reserva o alcance | Rechaza o exige reconciliación explícita | No elige una pieza alternativa silenciosamente |
+
+---
+
+#### 33. Escenarios límite
+
+**Pieza reservada pero no utilizada.** La reserva se libera mediante su transición autorizada. No se registra un consumo y devolución ficticios para simular el resultado.
+
+**Cantidad parcial utilizada.** Se conserva la cantidad exacta consumida y el remanente reservado o liberado conforme a la política. No se consume el total reservado por comodidad documental.
+
+**Dos piezas consumidas para un mismo sujeto.** Cada alcance conserva su propia correlación de línea y puede contribuir a una relación común con la intervención sin perder identidad ni costo snapshot individual aplicable.
+
+**Una pieza usada en más de un sujeto.** No es admisible si la naturaleza física, granularidad o política no permite división verificable. Una línea agregada no autoriza asignación múltiple opaca.
+
+**Pieza instalada y retirada durante la misma intervención.** Ambos hechos se conservan con orden causal y razón explícitos. El cierre de la orden no elimina el historial transitorio.
+
+**Pieza nueva instalada sin costo disponible.** El consumo e instalación pueden conservarse si sus contratos físicos y técnicos se satisfacen; el costo queda pendiente, desconocido o no aplicable según la política, sin imputación inventada.
+
+**Costo disponible sin consumo verificable.** Se conserva como evidencia económica no correlacionada o se exige reconciliación. No crea consumo retrospectivo.
+
+---
+
+#### 34. Capacidad, ubicación y tránsito del repuesto
+
+El contrato de capacidad y compatibilidad logística permanece aplicable mientras el repuesto sea existencia en una LOC, LPN, contenedor físico o tránsito. Su consumo no se acepta solamente porque el repuesto aparezca en una lista de la orden; debe poder resolverse el alcance físico admisible y verificable.
+
+```text
+DISPLAYED PART LOCATION
+!=
+AUTHORITATIVE CONSUMABLE SCOPE
+```
+
+Si la ubicación, el tránsito, la condición, la liberación, la disponibilidad o la capacidad necesaria para resolver el alcance son desconocidos, la operación falla cerrada donde la política exige verificación positiva. No se usa la correlación de mantenimiento para reparar un problema logístico no resuelto.
+
+---
+
+#### 35. Condición, disponibilidad y lifecycle
+
+La condición de la pieza, la condición del sujeto, la disponibilidad del sujeto y el lifecycle de la orden o del activo no son campos intercambiables.
+
+```text
+CONSUMED PART
+!=
+SUBJECT CONDITION UPDATE
+```
+
+```text
+PART INSTALLATION
+!=
+SUBJECT AVAILABILITY UPDATE
+```
+
+```text
+WORK ORDER CLOSED
+!=
+ECONOMIC HANDOFF COMPLETE
+```
+
+Una intervención puede dejar al sujeto restringido, no disponible, pendiente de prueba, en condición desconocida o sujeto a liberación posterior aunque el repuesto ya haya sido consumido. A su vez, el costo puede permanecer pendiente aunque el sujeto haya sido liberado conforme a una política técnica distinta.
+
+---
+
+#### 36. AS-IS remoto observado
+
+La cápsula no aporta evidencia operativa ejecutada ni una observación remota específica que demuestre una implementación física actual de la correlación completa entre consumo de repuesto, instalación, mantenimiento y costo del activo.
+
+Sí aporta evidencia documental de que el contrato vigente reconoce como brecha que las piezas reemplazadas en texto no bastan, que los repuestos requieren reserva y consumo correlacionados, que la instalación debe emitir movimiento de stock y que costo, fuente y factor aplicables requieren snapshots no reescribibles. Esta tarea no convierte dichas reglas planificadas en evidencia de ejecución.
+
+---
+
+#### 37. Clasificación AS-IS
+
+La capacidad se clasifica documentalmente como `DEFINED_TARGET_NOT_PHYSICALLY_EVIDENCED` dentro de esta cápsula:
+
+- existe semántica canónica previa de repuestos, mantenimiento y separación de costo;
+- existe cobertura de prueba planificada relevante;
+- no se acredita ejecución de implementación, migración, integración, proyección económica ni validación operativa;
+- no se acredita que datos históricos de piezas, costos u órdenes estén reconciliados.
+
+La clasificación es una delimitación de evidencia, no una afirmación de ausencia absoluta en sistemas externos.
+
+---
+
+#### 38. Brechas registradas
+
+Permanecen abiertas para una futura materialización, sin ser resueltas físicamente por esta tarea:
+
+- mecanismo propietario para correlacionar de modo durable reserva, consumo, instalación, pieza retirada y expediente de mantenimiento;
+- modelo autorizado de snapshot de costo por línea y de sus fuentes económicas;
+- consumidor de valoración que procese hechos físicos una sola vez y mantenga pendientes recuperables;
+- autoridad y segregación concreta entre intervención técnica, inventario y tratamiento económico;
+- estrategia de reconciliación de registros históricos con texto libre, datos incompletos o evidencia contradictoria;
+- implementación de controles de concurrencia, idempotencia, offline y auditoría;
+- definición propietaria del tratamiento contable o económico posterior.
+
+Ninguna brecha se cierra declarando como implementado este contrato documental.
+
+---
+
+#### 39. Riesgos controlados
+
+Este contrato controla especialmente los siguientes riesgos:
+
+- repuesto mencionado en una orden pero no descontado de inventario;
+- mismo repuesto visible como disponible e instalado simultáneamente;
+- consumo duplicado por reintento, conexión perdida o proyección económica fallida;
+- instalación atribuida al activo, orden o alcance equivocados;
+- pieza retirada perdida sin destino ni condición trazables;
+- sustitución técnica inferida por nombre, precio o disponibilidad;
+- costo libre, sensible o inconsistente expuesto o modificado sin necesidad funcional;
+- cambio posterior de proveedor, precio o política que reescribe historia;
+- costo o factura utilizados como prueba falsa de reparación, prueba o liberación;
+- corrección destructiva que borra evidencia de consumo o instalación;
+- conciliación legacy basada en heurística de texto;
+- cierre técnico o económico que oculta una discrepancia física pendiente.
+
+---
+
+#### 40. Handoffs contractuales
+
+La continuidad de este contrato requiere los siguientes handoffs explícitos:
+
+- hacia el owner de mantenimiento: la correlación conserva repuesto, instalación, pieza retirada y costo informado sin decidir resultado técnico ni liberación;
+- hacia el owner de repuestos: la reserva, disponibilidad, compatibilidad, consumo y trazabilidad de stock continúan siendo sus dimensiones propietarias;
+- hacia el owner de valoración o NUMERA: se entregan hechos causales, snapshots y estados deduplicables, no una autorización implícita de contabilización;
+- hacia ORIGO: compra, proveedor, documento comercial y fuente económica se consumen como referencias aplicables sin convertir NEXO en owner de abastecimiento;
+- hacia autorización: capacidades técnicas, de inventario y económicas permanecen segregadas y deben materializarse con contexto efectivo;
+- hacia la tarea siguiente NEXO-DOM-026: este contrato no desarrolla preventivo, garantía, inspección o calibración, pero conserva el vínculo de repuesto y costo cuando una de esas intervenciones los requiera.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Fuera de esta sección de requisitos derivados, la cápsula identifica cobertura histórica relevante para mantenimiento, repuestos, inventario, costo, idempotencia e integración. En particular, la cobertura ya planificada exige separar mantenimiento, ejecución, repuestos, costo informado, prueba y liberación; exige que instalación y consumo no dejen doble representación; y exige que la valoración se separe del derecho a cambiar cantidad y deduplique consumidores.
+
+Esta tarea reutiliza esa cobertura como fundamento contractual y no altera ninguna fila histórica del registro.
+
+---
+
+#### 42. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya protege la separación entre mantenimiento, repuestos, costo informado, inventario y valoración; esta tarea precisa la correlación causal y las fronteras entre esos hechos sin crear una obligación de prueba independiente.
+
+---
+
+#### 43. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La cápsula enumera validadores documentales, pero no aporta resultado de ejecución para este candidato. |
+| LOCAL | NOT_EXECUTED | No se aporta evidencia de validación local ejecutada. |
+| REMOTA | NOT_EXECUTED | No se aporta evidencia remota ejecutada de correlación entre repuesto, mantenimiento y costo. |
+| OPERATIVA | NOT_EXECUTED | No se aporta prueba operativa controlada de consumo, instalación, costo o reconciliación. |
+| FÍSICA | NOT_APPLICABLE | La tarea es documental y su topología establece `NO_PHYSICAL_INSTANCE`; no autoriza cambios físicos. |
+
+---
+
+#### 44. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] Se define una correlación causal única entre repuesto consumido, contexto de mantenimiento y sujeto intervenido.
+- [x] Se separan diagnóstico, reserva, consumo, instalación, pieza retirada, resultado técnico, liberación y costo.
+- [x] Texto, fotografía, factura o comentario no sustituyen consumo trazable.
+- [x] Consumo e instalación se distinguen sin permitir instalación de stock sin consumo correlacionado.
+- [x] Instalación no equivale a prueba, liberación ni disponibilidad.
+- [x] La granularidad del repuesto conserva cantidad o identidad exacta según política aplicable.
+- [x] La compatibilidad se mantiene explícita y no se infiere por similitud o precio.
+- [x] La reserva se distingue de consumo y su liberación conserva historia.
+- [x] La pieza retirada conserva procedencia y destino trazables.
+- [x] El costo informado se separa de cantidad, resultado técnico y asiento contable.
+- [x] El snapshot económico no se reescribe por cambios posteriores de precio, proveedor o política.
+- [x] Corrección solo de costo no crea una segunda disminución de cantidad.
+- [x] Una falla de valoración mantiene un consumidor pendiente sin repetir el hecho físico.
+- [x] Se definen estados, transiciones y prohibiciones de atajos conceptuales.
+- [x] Se definen atomicidad conceptual, idempotencia y concurrencia.
+- [x] La captura offline no se confunde con aceptación autoritativa.
+- [x] Respuesta tardía o confirmación perdida no generan consumo duplicado.
+- [x] Fallos y correcciones preservan hechos originales y exigen sucesores auditables.
+- [x] La reconciliación prohíbe heurísticas para inventar consumo o costo histórico.
+- [x] La autorización considera contexto físico, técnico y económico efectivo.
+- [x] Se documentan AS-IS, brechas, riesgos y handoffs sin afirmar implementación.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se autoriza materialización física.
+
+---
+
+#### 45. Límites
+
+Esta tarea no crea, reclasifica, reserva, consume, instala, devuelve, desecha ni ajusta repuestos reales; no crea, modifica, ejecuta, cierra, libera ni reabre órdenes o mantenimientos; no modifica activos, instalaciones, vehículos, contenedores, LPN, ubicaciones, custodias, condiciones, disponibilidad ni lifecycle; no calcula, publica, capitaliza, contabiliza, distribuye ni corrige costos reales; no modifica compras, proveedores, facturas, impuestos, monedas, conversiones, presupuestos, garantías, seguros ni reclamaciones; no crea tablas, columnas, enums, constraints, índices, triggers, vistas, RPC, RLS, APIs, interfaces, automatizaciones, integraciones, migraciones, backfills, código, paquetes, Supabase ni despliegues; no modifica el registro de requisitos de prueba; no demuestra evidencia operativa; y no desarrolla el alcance reservado para NEXO-DOM-026.
+
+---
+
+#### 46. Invariantes finales
+
+```text
+ONE ACCEPTED CONSUMPTION
+→ ONE AND ONLY ONE PHYSICAL STOCK EFFECT
+```
+
+```text
+ONE INSTALLED STOCK-CONTROLLED PART
+→ ONE TRACEABLE CONSUMPTION CORRELATION
+```
+
+```text
+ONE MAINTENANCE CORRELATION
+→ ONE IDENTIFIED SUBJECT
++ ONE IDENTIFIED MAINTENANCE CONTEXT
+```
+
+```text
+HISTORICAL COST SNAPSHOT
+IS IMMUTABLE
+```
+
+```text
+ECONOMIC CORRECTION
+→ ZERO IMPLICIT QUANTITY LEGS
+```
+
+```text
+VALUATION CONSUMER FAILURE
+→ PENDING RECONCILIATION
+NOT → REPEATED PHYSICAL CONSUMPTION
+```
+
+```text
+UNKNOWN OR CONFLICTED REQUIRED FACT
+→ DENY OR RECONCILIATION_REQUIRED
+NOT → SILENT DEFAULT
+```
+
+```text
+DOCUMENTARY CONTRACT APPROVAL
+!=
+PHYSICAL IMPLEMENTATION OR OPERATIVE CERTIFICATION
+```
+
+---
+
+#### 47. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-024 — Definir capacidad, peso, volumen y compatibilidad de contenido`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración`
+
 ### [ ] NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
 ### [ ] NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
 ### [ ] NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
