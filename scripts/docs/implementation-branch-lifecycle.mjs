@@ -2,7 +2,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
-import { spawn, spawnSync } from 'node:child_process';
+import { spawnSync } from 'node:child_process';
 import { isDeepStrictEqual } from 'node:util';
 
 import {
@@ -119,55 +119,6 @@ function run(command, args, {
   return { status, stdout, stderr };
 }
 
-function runAsync(command, args, {
-  cwd = process.cwd(),
-  env = process.env,
-} = {}) {
-  return new Promise((resolve, reject) => {
-    const child = spawn(command, args, {
-      cwd,
-      windowsHide: true,
-      env,
-      stdio: ['ignore', 'pipe', 'pipe'],
-    });
-
-    let stdout = '';
-    let stderr = '';
-
-    child.stdout.setEncoding('utf8');
-    child.stderr.setEncoding('utf8');
-    child.stdout.on('data', (chunk) => {
-      stdout += chunk;
-    });
-    child.stderr.on('data', (chunk) => {
-      stderr += chunk;
-    });
-
-    child.on('error', (error) => {
-      const next = new Error(`${command} no disponible: ${error.message}`);
-      next.exitCode = 1;
-      reject(next);
-    });
-
-    child.on('close', (code) => {
-      const status = Number.isInteger(code) ? code : 1;
-      const normalizedStdout = stdout.trimEnd();
-      const normalizedStderr = stderr.trimEnd();
-
-      if (status !== 0) {
-        const error = new Error(
-          normalizedStderr || normalizedStdout || `${command} ${args.join(' ')} fallo.`,
-        );
-        error.exitCode = status;
-        reject(error);
-        return;
-      }
-
-      resolve({ status, stdout: normalizedStdout, stderr: normalizedStderr });
-    });
-  });
-}
-
 function git(args, options = {}) {
   return run('git', args, options);
 }
@@ -227,11 +178,6 @@ function gh(args, options = {}) {
 function npm(args, options = {}) {
   const invocation = resolveNpmInvocation();
   return run(invocation.command, [...invocation.prefixArgs, ...args], options);
-}
-
-function npmAsync(args, options = {}) {
-  const invocation = resolveNpmInvocation();
-  return runAsync(invocation.command, [...invocation.prefixArgs, ...args], options);
 }
 
 function sleep(milliseconds) {
@@ -1378,13 +1324,9 @@ export async function finishImplementation({ instanceId, root = ensureRepository
 
     npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
     npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
-
-    await Promise.all([
-      npmAsync(['run', '--silent', 'docs:plan:test'], { cwd: root }),
-      npmAsync(['run', '--silent', 'docs:treq:check'], { cwd: root }),
-      npmAsync(['run', '--silent', 'docs:treq:test'], { cwd: root }),
-      npmAsync(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`], { cwd: root }),
-    ]);
+    // El alcance físico bloquea cambios a tooling y TREQ; validation_commands ya
+    // validó el candidato exacto y los checks hosted vuelven a verificar el PR.
+    // No duplicar aquí suites globales ajenas al alcance autorizado.
 
     const dirty = worktreePaths(root);
     const preCommitBranchCommits = Number(
@@ -1619,12 +1561,10 @@ export async function finishImplementation({ instanceId, root = ensureRepository
     INTEGRATION_ATTEMPTS: integrationAttempts,
     INTEGRATION_IMPACT: finalIntegrationImpact,
     DOCTOR_INITIAL_NEXT_ACTION: doctor.assessment.next_action,
+    LOCAL_VALIDATION_STRATEGY: 'SCOPE_ENFORCED_FAST_LANE',
     DOCS_PLAN_BUILD: 'PASS_PER_INTEGRATION_ATTEMPT',
     DOCS_PLAN_CHECK: 'PASS_PER_INTEGRATION_ATTEMPT',
-    DOCS_PLAN_TEST: 'PASS_PER_INTEGRATION_ATTEMPT',
-    DOCS_TREQ_CHECK: 'PASS_PER_INTEGRATION_ATTEMPT',
-    DOCS_TREQ_TEST: 'PASS_PER_INTEGRATION_ATTEMPT',
-    LINT_RATCHET: 'PASS_PER_INTEGRATION_ATTEMPT',
+    LOCAL_GLOBAL_SUITES: 'NOT_RUN_SCOPE_ENFORCED_AND_HOSTED_GATES_REQUIRED',
     LOCAL_DERIVED_SYNC: 'PASS_AFTER_MERGE',
     HEAD_VALIDATED: finalHeadSha,
     PR: finalPrNumber,
