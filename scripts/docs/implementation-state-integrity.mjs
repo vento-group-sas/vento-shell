@@ -1,4 +1,6 @@
 import { spawnSync } from 'node:child_process';
+import fs from 'node:fs';
+import path from 'node:path';
 
 import { validateInPackageCandidateEvidence } from './package-readiness-scanner.mjs';
 import { classifyImplementationIntegrationImpact } from './implementation-integration-impact.mjs';
@@ -90,6 +92,17 @@ function readGitJson(root, ref, relativePath) {
   if (result.status !== 0 || !result.stdout) return null;
   try {
     return JSON.parse(result.stdout);
+  } catch {
+    return null;
+  }
+}
+
+function readWorktreeJson(root, relativePath) {
+  const normalized = normalizeRepoPath(relativePath);
+  if (!normalized) return null;
+  const absolute = path.join(root, ...normalized.split('/'));
+  try {
+    return JSON.parse(fs.readFileSync(absolute, 'utf8'));
   } catch {
     return null;
   }
@@ -242,12 +255,17 @@ function activeImplementationWorktreePaths(root, instanceId) {
   if (!branch) return [];
   const current = runGit(root, ['branch', '--show-current']);
   if (current.status !== 0 || current.stdout !== branch) return [];
-  const status = runGit(root, ['status', '--porcelain=v1', '--untracked-files=all']);
-  if (status.status !== 0) return [];
-  return status.stdout.split(/\r?\n/u)
-    .filter(Boolean)
-    .map((line) => normalizeRepoPath(line.slice(3).trim()))
-    .filter(Boolean);
+
+  const unstaged = runGit(root, ['diff', '--name-only']);
+  const staged = runGit(root, ['diff', '--cached', '--name-only']);
+  const untracked = runGit(root, ['ls-files', '--others', '--exclude-standard']);
+  if (unstaged.status !== 0 || staged.status !== 0 || untracked.status !== 0) return [];
+
+  return unique([
+    ...unstaged.stdout.split(/\r?\n/u),
+    ...staged.stdout.split(/\r?\n/u),
+    ...untracked.stdout.split(/\r?\n/u),
+  ].map(normalizeRepoPath).filter(Boolean));
 }
 
 export function resolveImplementationCandidateLifecycle({
@@ -305,16 +323,37 @@ export function resolveImplementationCandidateLifecycle({
   const committedPaths = delta.status === 0
     ? delta.stdout.split(/\r?\n/u).map(normalizeRepoPath).filter(Boolean)
     : [];
+  const worktreePaths = activeImplementationWorktreePaths(root, instance.instance_id);
   const changedPaths = unique([
     ...committedPaths,
-    ...activeImplementationWorktreePaths(root, instance.instance_id),
+    ...worktreePaths,
   ]);
+  const worktreePathSet = new Set(worktreePaths.map(normalizeRepoPath));
+  const instanceKey = normalizedId(instance.instance_id).split('::')[1] ?? '';
+  const pristinePendingInstancePaths = [];
+  for (const relativePath of changedPaths) {
+    const normalized = normalizeRepoPath(relativePath);
+    if (
+      !normalized
+      || normalized === ownLedger
+      || !normalized.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)
+    ) {
+      continue;
+    }
+    const pendingRecord = worktreePathSet.has(normalized)
+      ? readWorktreeJson(root, normalized)
+      : readGitJson(root, detectedTip, normalized);
+    if (pristinePendingImplementationRecord(pendingRecord, instanceKey)) {
+      pristinePendingInstancePaths.push(normalized);
+    }
+  }
 
   const assessment = assessImplementationCandidateLifecycleDelta({
     instance,
     candidateLedger,
     lifecycleLedger: instance,
     changedPaths,
+    pristinePendingInstancePaths,
     candidateIsAncestor: ancestor,
   });
 

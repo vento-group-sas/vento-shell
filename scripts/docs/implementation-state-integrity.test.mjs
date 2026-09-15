@@ -391,3 +391,129 @@ test('checkpoint lifecycle conserva IMPLEMENTED sin revalidar candidato fisico',
   assert.equal(unsafe.status, 'INVALID');
   assert.equal(unsafe.decision, 'REVALIDATE_PHYSICAL');
 });
+
+test('VERIFIED dirty resume acepta siguiente instancia pending pristina sin degradar candidato', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-verified-pending-resume-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = (...args) => {
+    const result = spawnSync('git', args, {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    return String(result.stdout ?? '').trim();
+  };
+  git('init', '-b', 'main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.invalid');
+  git('switch', '-c', 'implementation/shell-ci-021/gap-pkg-018');
+
+  const ledgerPath = path.join(
+    root,
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-018.json',
+  );
+  const pendingPath = path.join(
+    root,
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-018.json',
+  );
+  const headerPath = path.join(root, 'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md');
+  fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
+
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    task_id: 'SHELL-CI-021',
+    status: 'IN_PROGRESS',
+    target_repositories: ['vento-group-sas/vento-shell'],
+    authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: 'ledger', change: 'MODIFY' }],
+    validation_commands: ['node --test x.test.mjs'],
+    authorization: { decision: 'APPROVED' },
+    evidence: [],
+    target_environments: [],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(candidateLedger, null, 2)}\n`);
+  fs.writeFileSync(headerPath, 'candidate\n');
+  git('add', '.');
+  git('commit', '-m', 'candidate');
+  const candidate = git('rev-parse', 'HEAD');
+
+  const implemented = {
+    ...candidateLedger,
+    status: 'IMPLEMENTED',
+    evidence: [
+      `LOCAL_VALIDATION candidate=${candidate} command=node --test x.test.mjs status=PASS`,
+    ],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(implemented, null, 2)}\n`);
+  fs.writeFileSync(headerPath, 'lifecycle\n');
+  git('add', '.');
+  git('commit', '-m', 'implemented lifecycle');
+  const lifecycle = git('rev-parse', 'HEAD');
+
+  const verified = {
+    ...implemented,
+    status: 'VERIFIED',
+    evidence: [
+      ...implemented.evidence,
+      {
+        type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
+        candidate_commit: candidate,
+        validation_commands: ['node --test x.test.mjs'],
+        results: [{ command: 'node --test x.test.mjs', status: 'PASS' }],
+        target_environments: [],
+        environment_results: [],
+      },
+    ],
+  };
+  const pending = {
+    instance_id: 'SHELL-CI-022::GAP-PKG-018',
+    task_id: 'SHELL-CI-022',
+    status: 'PENDING_AUTHORIZATION',
+    target_repositories: [],
+    authorized_changes: [],
+    validation_commands: [],
+    authorization: null,
+    evidence: [],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(verified, null, 2)}\n`);
+  fs.writeFileSync(headerPath, 'verified\n');
+  fs.writeFileSync(pendingPath, `${JSON.stringify(pending, null, 2)}\n`);
+
+  const identity = resolveImplementationCandidateLifecycle({
+    root,
+    instance: verified,
+    branchTip: lifecycle,
+  });
+  assert.equal(identity.status, 'PASS', JSON.stringify(identity));
+  assert.equal(identity.candidate_commit, candidate);
+  assert.equal(identity.lifecycle_head_commit, lifecycle);
+  assert.equal(identity.decision, 'REUSE_PHYSICAL_EVIDENCE');
+
+  const facts = deriveImplementationStateFacts({
+    root,
+    instance: verified,
+    readiness: null,
+    branchPresent: true,
+    candidateGateStatus: 'PASS',
+    historicalVerified: false,
+  });
+  assert.equal(facts.candidate_commit, candidate);
+  assert.equal(facts.local_validation_complete, true);
+  assert.equal(facts.verification_receipt_valid, true);
+  const integrity = evaluateImplementationStateIntegrity({ instance: verified, facts });
+  assert.equal(integrity.status_valid, true);
+  assert.equal(integrity.highest_valid_status, 'VERIFIED');
+
+  fs.writeFileSync(
+    pendingPath,
+    `${JSON.stringify({ ...pending, authorized_changes: [{ path: 'unexpected' }] }, null, 2)}\n`,
+  );
+  const unsafe = resolveImplementationCandidateLifecycle({
+    root,
+    instance: verified,
+    branchTip: lifecycle,
+  });
+  assert.equal(unsafe.status, 'INVALID', JSON.stringify(unsafe));
+  assert.equal(unsafe.decision, 'REVALIDATE_PHYSICAL');
+});
