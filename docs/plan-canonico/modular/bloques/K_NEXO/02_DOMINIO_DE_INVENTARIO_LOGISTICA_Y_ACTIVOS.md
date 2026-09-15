@@ -35937,6 +35937,7 @@ PRIMARY SUBJECT RULE
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación`
+
 ### ✅ NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
 
 **Estado:** APROBADA
@@ -37544,7 +37545,1446 @@ No se convierte saneamiento rutinario en una orden de mantenimiento solo para re
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación`
-### [ ] NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
+
+### ✅ NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
+**Tarea siguiente:** NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
+**Tipo de tarea:** documental; definición canónica del programa maestro de limpieza y saneamiento, sus procedimientos versionados, frecuencias y disparadores, ejecución trazable, uso de químicos, verificación, desviaciones, repetición y liberación sanitaria por sujeto locativo aplicable, sin convertir la rutina de saneamiento en mantenimiento ni crear materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna la limpieza y el saneamiento operacional de instalaciones, espacios, superficies y equipos fijos aplicables, preservando una relación verificable entre programa, procedimiento, frecuencia, obligación, ejecución real, químicos usados, evidencia, verificación, desviaciones y liberación sanitaria.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+PROGRAMA MAESTRO VERSIONADO
++
+PROCEDIMIENTO VIGENTE
++
+FRECUENCIA O DISPARADOR
++
+OBLIGACIÓN TRAZABLE
++
+EJECUCIÓN REAL
++
+PRODUCTO / LOTE / CONCENTRACIÓN / TIEMPO DE CONTACTO
++
+EVIDENCIA
++
+VERIFICACIÓN
++
+RESOLUCIÓN DE DESVIACIONES
++
+LIBERACIÓN SANITARIA CUANDO APLIQUE
+→
+SANEAMIENTO REPRODUCIBLE Y AUDITABLE
+```
+
+No:
+
+```text
+PROGRAMADO = EJECUTADO
+```
+
+No:
+
+```text
+LIMPIADO = VERIFICADO = LIBERADO
+```
+
+No:
+
+```text
+FOTO = EVIDENCIA SUFICIENTE = LIBERACIÓN
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-031` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. adopta los sujetos locativos estables entregados por `NEXO-DOM-029`;
+2. reutiliza de `NEXO-DOM-030` las reglas transversales de identidad, obligación, evidencia, autorización, idempotencia, liberación, cierre y reapertura cuando son compatibles;
+3. define un programa maestro versionado por espacio, superficie, equipo fijo o alcance autorizado;
+4. separa programa, procedimiento, obligación, ejecución, verificación, liberación y cierre del registro;
+5. conserva frecuencia y disparadores extraordinarios sin inventar valores universales;
+6. conserva responsable y sustituto definidos por la política aplicable;
+7. exige que el procedimiento identifique producto, lote, concentración, tiempo de contacto, herramientas, elementos de protección y controles de contaminación cruzada cuando correspondan;
+8. integra químicos con catálogo e inventario sin crear una fuente de producto paralela;
+9. registra la ejecución real con actor, momento, procedimiento, producto, lote, concentración, evidencia y resultado;
+10. permite verificación visual, instrumental o microbiológica cuando la política o procedimiento la exijan;
+11. separa resultado de ejecución, resultado de verificación y decisión de liberación;
+12. define desviación, contención, repetición y escalamiento sin sobrescribir la ejecución original;
+13. conserva la disponibilidad del sujeto como proyección distinta del estado de la rutina;
+14. impide liberar un área mediante una fotografía, comentario, check visual o marca de ejecución aislada cuando falte la verificación requerida;
+15. preserva integración con inventario para consumo de químicos y suministros controlados;
+16. mantiene separadas limpieza rutinaria, limpieza técnica de mantenimiento, control de plagas, inspecciones, servicios, metrología, acceso físico, obras y novedades;
+17. define idempotencia, concurrencia, captura offline y reconciliación ante resultado desconocido;
+18. clasifica el AS-IS visible de NEXO como soporte parcial, no como workflow final de saneamiento;
+19. no crea ni modifica requisitos de prueba porque la conducta ya está cubierta por requisitos canónicos vigentes;
+20. no autoriza tablas, migraciones, RLS, RPC, Server Actions, UI, datos, Supabase, paquetes ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.04 — Gestionar limpieza y saneamiento`;
+- `NEXO-DOM-029`, para identidad, jerarquía, condición, criticidad, disponibilidad y relaciones locativas;
+- `NEXO-DOM-030`, para semántica transversal de plan, obligación, ejecución, evidencia, verificación, liberación, cierre y reapertura;
+- `CAP-SCOPE-004`, `CAP-SCOPE-006` y `CAP-SCOPE-016`, en lo aplicable a catálogo, inventario, consumibles, trazabilidad y controles de productos;
+- la jerarquía vigente de sede, área, LOC, instalación, espacio, componente fijo y activo;
+- el registro canónico de requisitos de prueba vigente;
+- la implementación remota observable de NEXO para mantenimiento de activos;
+- las tareas posteriores ya reservadas para plagas, servicios, inspecciones, metrología, acceso físico, obras y novedades.
+
+Esta tarea especializa limpieza y saneamiento. No redefine identidad locativa, mantenimiento general, catálogo, inventario ni autorización.
+
+---
+
+#### 4. Brechas que se cierran
+
+Se cierran específicamente las brechas por las cuales:
+
+1. no existía un programa maestro de limpieza y saneamiento por área, superficie, equipo fijo y riesgo;
+2. la ejecución no conservaba de forma canónica actor, hora, producto, concentración, lote, evidencia y verificación;
+3. los químicos, fichas, incompatibilidades, diluciones y consumos no estaban integrados de forma suficiente con catálogo e inventario;
+4. una rutina programada podía confundirse con una ejecución realizada;
+5. una ejecución podía confundirse con una verificación;
+6. una verificación podía confundirse con una liberación;
+7. una fotografía o check aislado podía utilizarse como sustituto de evidencia estructurada;
+8. un cambio de procedimiento o frecuencia podía reescribir historia si no existía versionado;
+9. una desviación podía ocultarse mediante repetición sin conservar el primer resultado;
+10. una falla de sincronización podía duplicar ejecuciones, evidencias, verificaciones o cierres;
+11. una limpieza rutinaria podía modelarse como mantenimiento solo para reutilizar la misma estructura;
+12. una superficie o equipo fijo podía duplicarse como identidad locativa únicamente para poder asignarle una rutina.
+
+---
+
+#### 5. Ámbito del contrato
+
+El contrato aplica a rutinas de limpieza y saneamiento operacional cuyo alcance se vincule a un sujeto físico o locativo estable ya gobernado.
+
+Puede abarcar, según el programa aprobado:
+
+- instalaciones;
+- espacios;
+- áreas operativas;
+- superficies dentro de un espacio;
+- componentes fijos;
+- equipos fijos cuando el objeto principal de la rutina sea su condición higiénica operacional y no una intervención técnica de mantenimiento;
+- otros alcances físicos expresamente vinculados por la política propietaria.
+
+Una superficie de trabajo o alcance de limpieza no crea por sí sola una identidad locativa competidora. Cuando no exista identidad canónica propia, se registra como subalcance del sujeto estable que la contiene.
+
+---
+
+#### 6. Frontera con mantenimiento
+
+Se preserva:
+
+```text
+ROUTINE SANITATION
+!=
+MAINTENANCE WORK ORDER
+```
+
+La limpieza o saneamiento rutinarios pertenecen a este contrato.
+
+Una limpieza técnica inseparable de una reparación puede permanecer dentro de la orden de mantenimiento cuando su propósito principal sea técnico y no la ejecución de una rutina sanitaria periódica.
+
+La decisión usa objeto principal y propósito de la intervención; no depende del nombre de la pantalla ni de reutilizar una tabla existente.
+
+---
+
+#### 7. Componentes conceptuales
+
+El expediente canónico distingue al menos:
+
+```text
+SANITATION_MASTER_PROGRAM
+SANITATION_PROCEDURE
+SANITATION_OBLIGATION
+SANITATION_EXECUTION
+SANITATION_VERIFICATION
+SANITARY_RELEASE
+SANITATION_DEVIATION
+SANITATION_CLOSURE
+```
+
+La forma física futura podrá usar nombres técnicos distintos, pero no podrá colapsar estos conceptos cuando su separación sea material para auditoría, autorización, disponibilidad o seguridad sanitaria.
+
+---
+
+#### 8. Programa maestro de limpieza y saneamiento
+
+`SANITATION_MASTER_PROGRAM` es la regla versionada que organiza qué debe limpiarse o sanearse, mediante qué procedimiento, con qué frecuencia o disparador, quién es responsable y qué verificación y liberación aplican.
+
+Debe poder conservar:
+
+- identidad estable;
+- versión;
+- vigencia;
+- sujeto o alcance;
+- clasificación o contexto de riesgo cuando exista una fuente aprobada;
+- procedimiento vigente;
+- frecuencia;
+- disparadores extraordinarios;
+- responsable;
+- sustituto;
+- ventana operacional cuando aplique;
+- productos autorizados o reglas para resolverlos;
+- evidencia mínima;
+- verificación requerida;
+- regla de repetición ante desviación;
+- criterio o autoridad de liberación cuando aplique;
+- regla para producir la siguiente obligación.
+
+Una fecha futura aislada no constituye un programa maestro.
+
+---
+
+#### 9. Versionado del programa
+
+Modificar materialmente cualquiera de estas propiedades exige una nueva revisión efectiva o mecanismo equivalente:
+
+- alcance;
+- procedimiento;
+- frecuencia;
+- disparador extraordinario;
+- responsable o regla de asignación;
+- producto o regla de producto;
+- concentración;
+- tiempo de contacto;
+- método de verificación;
+- evidencia mínima;
+- criterio de aceptación;
+- regla de liberación.
+
+La nueva revisión no reescribe ejecuciones, verificaciones, desviaciones, liberaciones ni cierres históricos.
+
+Toda obligación o ejecución debe poder reproducir qué revisión la gobernó.
+
+---
+
+#### 10. Alcance por sujeto y subalcance
+
+Cada obligación debe resolver un sujeto estable y, cuando sea necesario, un subalcance físico explícito.
+
+Se preserva:
+
+```text
+SUBALCANCE DE LIMPIEZA
+!=
+NUEVA IDENTIDAD LOCATIVA AUTOMÁTICA
+```
+
+Ejemplos de subalcance pueden incluir una superficie, cara, sector o conjunto operacional definido por un procedimiento, siempre vinculado a un sujeto autoritativo.
+
+No se crea una segunda jerarquía física para administrar rutinas.
+
+---
+
+#### 11. Riesgo y criticidad
+
+El programa puede consumir riesgo, criticidad, condición o disponibilidad desde fuentes propietarias para decidir frecuencia, método, evidencia o bloqueo.
+
+Esta tarea no inventa:
+
+- una matriz universal de riesgo;
+- niveles numéricos de criticidad;
+- frecuencias estándar;
+- concentraciones predeterminadas;
+- umbrales microbiológicos;
+- tiempos de contacto universales.
+
+Los valores concretos pertenecen al procedimiento, política, ficha, requisito técnico o fuente competente aplicable.
+
+---
+
+#### 12. Procedimiento vigente
+
+`SANITATION_PROCEDURE` define cómo debe realizarse una rutina bajo una revisión concreta.
+
+Debe poder declarar, según aplicabilidad:
+
+- objeto y alcance;
+- preparación previa;
+- secuencia de pasos;
+- producto o clase de producto autorizada;
+- lote que deberá capturarse en ejecución cuando aplique;
+- concentración objetivo o regla para determinarla;
+- método de dilución cuando aplique;
+- tiempo de contacto cuando aplique;
+- herramientas requeridas;
+- elementos de protección requeridos;
+- controles de contaminación cruzada;
+- condiciones previas y posteriores;
+- evidencia requerida;
+- método de verificación;
+- criterio de aceptación;
+- acción ante desviación;
+- condición de liberación.
+
+---
+
+#### 13. Versionado del procedimiento
+
+Cambiar un parámetro material del procedimiento no reescribe la revisión anterior.
+
+La ejecución conserva la revisión utilizada.
+
+Se preserva:
+
+```text
+CURRENT PROCEDURE
+!=
+PROCEDURE USED BY HISTORICAL EXECUTION
+```
+
+Una auditoría debe poder reconstruir qué instrucciones eran vigentes en el momento de la ejecución.
+
+---
+
+#### 14. Secuencia y pasos
+
+Cuando el procedimiento dependa del orden de acciones, la implementación futura deberá conservar esa secuencia o una representación equivalente.
+
+No se considera demostrado un procedimiento porque exista únicamente:
+
+- un nombre;
+- un comentario;
+- un checklist sin revisión;
+- una fotografía final;
+- una plantilla sin vínculo a la ejecución.
+
+La evidencia de pasos puede variar según el riesgo y el procedimiento; esta tarea no exige capturar una fotografía por cada paso.
+
+---
+
+#### 15. Frecuencia
+
+La frecuencia pertenece al programa y no se infiere desde costumbre no versionada.
+
+Puede representarse mediante calendario, intervalo, turno, evento operacional u otra regla aprobada.
+
+Se preserva:
+
+```text
+FREQUENCY DEFINED
+!=
+OBLIGATION GENERATED
+!=
+EXECUTION COMPLETED
+```
+
+Modificar la frecuencia no borra obligaciones vencidas ni ejecuciones históricas.
+
+---
+
+#### 16. Disparadores extraordinarios
+
+Además de la frecuencia ordinaria, el programa puede declarar disparadores extraordinarios cuando exista una política propietaria.
+
+Pueden originarse, según corresponda, por:
+
+- incidente o derrame;
+- cambio de condición;
+- uso extraordinario del espacio;
+- contaminación o sospecha informada;
+- intervención de mantenimiento;
+- reapertura después de cierre temporal;
+- hallazgo de inspección;
+- otro evento autorizado.
+
+El disparador crea o exige una obligación; no demuestra que la limpieza haya ocurrido.
+
+---
+
+#### 17. Obligación de saneamiento
+
+`SANITATION_OBLIGATION` es una ocurrencia exigible generada por programa, frecuencia o disparador.
+
+Debe conservar:
+
+- identidad estable;
+- programa y revisión;
+- procedimiento y revisión;
+- sujeto y subalcance;
+- origen;
+- ventana o momento exigible;
+- responsable;
+- estado;
+- relación con ejecución;
+- resolución;
+- evidencia de satisfacción, cancelación, supersesión o excepción.
+
+El programa es la regla; la obligación es una ocurrencia.
+
+---
+
+#### 18. Estados de obligación reutilizados
+
+Se reutiliza la semántica transversal ya aprobada:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+Reglas:
+
+- `UPCOMING` no significa ejecutado;
+- `DUE` no significa iniciado;
+- `OVERDUE` no demuestra contaminación;
+- `SATISFIED` exige la resolución requerida por la política;
+- `CANCELLED` no equivale a satisfacción;
+- `SUPERSEDED` conserva la relación con la obligación sucesora;
+- `EXCEPTION` exige motivo, autoridad, vigencia y condición de salida.
+
+---
+
+#### 19. Programación y ejecución son distintas
+
+Se preserva:
+
+```text
+SCHEDULED
+!=
+STARTED
+!=
+COMPLETED
+```
+
+Asignar una hora, responsable o turno no produce evidencia de ejecución.
+
+Una reprogramación conserva razón y efecto sobre la obligación original.
+
+---
+
+#### 20. Responsable y sustituto
+
+El programa identifica responsable y sustituto o una regla autoritativa para resolverlos.
+
+La asignación debe preservar:
+
+- identidad del actor o equipo responsable;
+- vigencia;
+- contexto de sede o área cuando aplique;
+- sustitución autorizada;
+- ejecución real por el actor efectivo.
+
+El responsable planificado puede ser distinto del ejecutor efectivo; ambos hechos deben conservarse cuando difieran.
+
+---
+
+#### 21. Identidad del químico
+
+Un químico utilizado en limpieza o saneamiento deberá resolverse contra el catálogo o fuente maestra autorizada cuando el producto esté gobernado por inventario.
+
+Se preserva:
+
+```text
+DISPLAY NAME
+!=
+CANONICAL PRODUCT IDENTITY
+```
+
+No se crea una lista local de químicos como fuente competidora para evitar el catálogo.
+
+---
+
+#### 22. Fichas y condiciones de uso
+
+El contrato debe poder relacionar la identidad del producto con la ficha, instrucciones, restricciones o documentación técnica vigente que gobierne su uso cuando corresponda.
+
+La tarea no redefine la fuente propietaria de esas fichas ni sustituye requisitos legales o técnicos aplicables.
+
+Una ficha vencida, ausente o incompatible no se corrige escribiendo manualmente parámetros distintos en la ejecución.
+
+---
+
+#### 23. Compatibilidades e incompatibilidades
+
+Cuando una combinación producto-superficie, producto-producto o producto-procedimiento tenga una regla de compatibilidad aplicable, la resolución debe ocurrir antes de ejecutar o liberar.
+
+Se preserva:
+
+```text
+PRODUCT AVAILABLE IN STOCK
+!=
+PRODUCT AUTHORIZED FOR THIS PROCEDURE
+```
+
+La disponibilidad de inventario no concede compatibilidad técnica.
+
+---
+
+#### 24. Dilución y concentración
+
+La concentración usada debe ser un hecho verificable de la ejecución cuando el procedimiento la controle.
+
+Debe poder conservar:
+
+- concentración objetivo o regla;
+- concentración ejecutada cuando aplique;
+- método de preparación o dilución cuando sea material;
+- unidad o forma de expresión;
+- desviación cuando el resultado no corresponda con la regla vigente;
+- evidencia o medición cuando la política la exija.
+
+No se inventan conversiones o unidades locales incompatibles con el catálogo y el contrato de unidades.
+
+---
+
+#### 25. Lote
+
+Cuando el producto esté gobernado por lote o el procedimiento exija trazabilidad de lote, la ejecución deberá conservar el lote efectivamente utilizado.
+
+Se preserva:
+
+```text
+PRODUCT IDENTITY
+!=
+LOT USED
+```
+
+Un lote informado no sustituye el movimiento de inventario cuando éste sea obligatorio.
+
+---
+
+#### 26. Tiempo de contacto
+
+Cuando el procedimiento exija tiempo de contacto, éste forma parte de la ejecución y de su verificación.
+
+La implementación futura deberá poder distinguir:
+
+- valor requerido;
+- valor realizado o evidencia equivalente cuando aplique;
+- desviación;
+- decisión de repetición o rechazo.
+
+No se presume cumplimiento únicamente porque se utilizó el producto correcto.
+
+---
+
+#### 27. Herramientas y elementos de protección
+
+El procedimiento puede declarar herramientas y elementos de protección requeridos.
+
+Su obligatoriedad concreta depende de la política y procedimiento vigentes.
+
+La ejecución debe poder registrar desviaciones materiales que afecten validez o seguridad.
+
+Esta tarea no redefine inventario de EPP ni autorización laboral.
+
+---
+
+#### 28. Contaminación cruzada
+
+El procedimiento debe poder representar controles de contaminación cruzada cuando sean aplicables.
+
+Esos controles pueden depender de:
+
+- espacio;
+- superficie;
+- equipo fijo;
+- producto;
+- herramienta;
+- secuencia;
+- uso anterior o posterior;
+- condición operacional.
+
+La ausencia de un control requerido es una desviación; no se oculta marcando la rutina como completa.
+
+---
+
+#### 29. Ejecución de limpieza o saneamiento
+
+`SANITATION_EXECUTION` registra lo que realmente ocurrió.
+
+Debe poder conservar:
+
+- obligación;
+- programa y revisión;
+- procedimiento y revisión;
+- sujeto y subalcance;
+- actor efectivo;
+- inicio y fin reales cuando correspondan;
+- producto;
+- lote;
+- concentración;
+- tiempo de contacto cuando aplique;
+- herramientas o recursos materiales cuando sean relevantes;
+- pasos o controles materiales;
+- evidencia;
+- incidencias;
+- desviaciones;
+- resultado informado;
+- necesidad de repetición o escalamiento.
+
+Un timestamp de finalización aislado no demuestra una ejecución conforme.
+
+---
+
+#### 30. Ejecución parcial
+
+Una rutina puede quedar incompleta o parcialmente ejecutada.
+
+Las causas deberán conservar owner y condición de salida, por ejemplo:
+
+- producto no disponible;
+- producto incorrecto;
+- concentración no conforme;
+- acceso al área no disponible;
+- intervención operacional que impide completar;
+- herramienta requerida no disponible;
+- evidencia insuficiente;
+- condición insegura;
+- contaminación cruzada identificada;
+- necesidad de escalar a mantenimiento, plagas, inspección u otro owner.
+
+No se resuelve una ejecución parcial cerrándola como satisfactoria.
+
+---
+
+#### 31. Evidencia
+
+La evidencia respalda hechos estructurados y no los reemplaza.
+
+El expediente debe poder conservar, según la política:
+
+- actor;
+- fechas y horas reales;
+- procedimiento y revisión;
+- producto y lote;
+- concentración;
+- tiempo de contacto;
+- fotografías;
+- lecturas o mediciones;
+- checklist estructurado;
+- firma o confirmación;
+- observaciones;
+- resultado;
+- verificación;
+- decisión de liberación.
+
+Se preserva:
+
+```text
+PHOTO
+!=
+EXECUTION
+!=
+VERIFICATION
+```
+
+---
+
+#### 32. Verificación
+
+`SANITATION_VERIFICATION` evalúa si la ejecución satisface el criterio aplicable.
+
+Debe conservar:
+
+- ejecución evaluada;
+- sujeto y subalcance;
+- procedimiento y criterio aplicables;
+- método;
+- actor verificador cuando la política lo requiera;
+- momento;
+- evidencia;
+- resultado;
+- desviaciones;
+- acción resultante.
+
+La verificación no reescribe la ejecución.
+
+---
+
+#### 33. Métodos de verificación
+
+El método puede ser, según la política o procedimiento vigente:
+
+```text
+VISUAL
+INSTRUMENTAL
+MICROBIOLOGICAL
+```
+
+La lista expresa las categorías ya reconocidas por el contrato de capacidad; no obliga a utilizar las tres en toda rutina.
+
+La tarea no inventa límites, instrumentos, métodos analíticos ni criterios microbiológicos.
+
+---
+
+#### 34. Limpieza, verificación y liberación son distintas
+
+Se preserva de forma obligatoria:
+
+```text
+CLEANED
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+Una ejecución puede estar terminada y permanecer pendiente de verificación.
+
+Una verificación puede estar completada y todavía requerir una decisión autorizada de liberación.
+
+La interfaz futura no podrá convertir una sola casilla en los tres hechos.
+
+---
+
+#### 35. Resultado de verificación
+
+El resultado debe distinguir suficiente información para decidir si:
+
+- el criterio se satisface;
+- existe una desviación;
+- el resultado es inconcluso;
+- la verificación no aplica conforme a la política vigente.
+
+Cuando un resultado sea fallido o inconcluso y la política exija conformidad positiva:
+
+```text
+NO SANITARY RELEASE
+```
+
+No se cambia retrospectivamente el criterio para convertir un fallo en conformidad.
+
+---
+
+#### 36. Liberación sanitaria
+
+`SANITARY_RELEASE` es la decisión autorizada de que el alcance puede volver al uso definido desde la perspectiva gobernada por esta rutina.
+
+Debe poder conservar:
+
+- sujeto y subalcance;
+- ejecución;
+- verificación o justificación de no aplicabilidad;
+- condición resultante;
+- restricciones residuales;
+- decisión;
+- autoridad;
+- momento;
+- evidencia;
+- pendientes derivados.
+
+Se preserva:
+
+```text
+VERIFICATION PASSED
+!=
+RELEASE DECISION
+```
+
+cuando la política exija una autoridad de liberación separada.
+
+---
+
+#### 37. Liberación y disponibilidad
+
+La liberación sanitaria puede afectar la disponibilidad del sujeto, pero no sustituye la proyección general de disponibilidad.
+
+Se preserva:
+
+```text
+SANITARY RELEASE
+!=
+GLOBAL AVAILABILITY PROJECTION
+```
+
+Un espacio sanitariamente liberado puede seguir `RESTRICTED` o `UNAVAILABLE` por mantenimiento, servicios, acceso, obras, seguridad u otra causa vigente.
+
+Un espacio no debe mostrarse disponible cuando exista una restricción sanitaria bloqueante sin resolver.
+
+---
+
+#### 38. Desviación
+
+`SANITATION_DEVIATION` conserva cualquier incumplimiento material frente al programa, procedimiento o criterio.
+
+Debe poder registrar:
+
+- origen;
+- obligación o ejecución relacionada;
+- sujeto;
+- regla incumplida;
+- severidad o impacto cuando exista fuente aprobada;
+- contención;
+- responsable;
+- acción;
+- condición de salida;
+- evidencia;
+- cierre o escalamiento.
+
+La desviación no se borra cuando se repite la rutina.
+
+---
+
+#### 39. Repetición
+
+Una repetición o nueva limpieza es una ejecución nueva relacionada con la anterior.
+
+Se preserva:
+
+```text
+REPEAT EXECUTION
+!=
+EDIT FAILED EXECUTION
+```
+
+La primera ejecución, su verificación y su desviación permanecen auditables.
+
+La repetición indica qué obligación o desviación pretende resolver.
+
+---
+
+#### 40. Contención
+
+Cuando exista riesgo o condición que impida utilizar el alcance mientras se corrige la desviación, la contención deberá quedar explícita.
+
+Puede afectar disponibilidad, acceso o uso operacional conforme a la política propietaria.
+
+La contención no equivale a resolución definitiva.
+
+---
+
+#### 41. Consumo de químicos y materiales
+
+Cuando el químico o consumible esté gobernado por inventario, el uso deberá correlacionarse con el contrato canónico de inventario.
+
+La correlación debe poder conservar:
+
+- producto;
+- presentación o unidad aplicable;
+- lote cuando corresponda;
+- cantidad;
+- movimiento o efecto de inventario;
+- ejecución;
+- sujeto;
+- actor y momento.
+
+Se preserva:
+
+```text
+PRODUCT MENTIONED IN PROCEDURE
+!=
+INVENTORY CONSUMED
+```
+
+---
+
+#### 42. Materiales no gobernados por inventario
+
+No todo implemento utilizado necesita fabricar una existencia física.
+
+La política de catálogo e inventario determina qué elementos producen saldo, consumo o trazabilidad por lote.
+
+Esta tarea no crea stock ficticio para completar el expediente.
+
+Tampoco permite usar texto libre para evadir el consumo de un producto que sí está gobernado por inventario.
+
+---
+
+#### 43. Integración con catálogo e inventario
+
+La solución futura deberá resolver químicos y consumibles desde las fuentes canónicas vigentes.
+
+NEXO conserva el hecho operacional de uso dentro de la ejecución.
+
+El catálogo conserva identidad y propiedades maestras que le correspondan.
+
+El inventario conserva existencias y movimientos.
+
+La tarea de saneamiento no crea un catálogo paralelo ni edita saldos directamente.
+
+---
+
+#### 44. Compras y abastecimiento
+
+Una necesidad de producto puede originar abastecimiento o compra mediante el dominio propietario.
+
+Se preserva:
+
+```text
+PURCHASED
+!=
+AVAILABLE FOR USE
+!=
+USED IN EXECUTION
+```
+
+La compra no demuestra disponibilidad física, compatibilidad con el procedimiento ni consumo.
+
+---
+
+#### 45. Ejecución por tercero
+
+Cuando un tercero ejecute limpieza o saneamiento, NEXO conserva el expediente interno y la relación con el sujeto, procedimiento, ejecución, evidencia, verificación y liberación.
+
+El proveedor puede aportar evidencia y resultados.
+
+Una factura, certificado comercial o reporte del proveedor no sustituye automáticamente la verificación o liberación interna requerida.
+
+La contratación comercial permanece en su dominio propietario.
+
+---
+
+#### 46. Frontera con control de plagas
+
+`NEXO-DOM-032` conserva:
+
+- programa de control de plagas;
+- mapa;
+- dispositivos;
+- visitas;
+- hallazgos;
+- acciones;
+- certificados;
+- integración con proveedor especializado.
+
+Una rutina de saneamiento puede relacionarse con un hallazgo o acción de plagas, pero no absorbe su expediente.
+
+Se preserva:
+
+```text
+SANITATION EXECUTION
+!=
+PEST CONTROL VISIT
+```
+
+---
+
+#### 47. Frontera con mantenimiento
+
+`NEXO-DOM-030` conserva planes de mantenimiento, solicitudes, órdenes, diagnóstico, reparación, prueba, liberación y cierre técnico.
+
+Una rutina de saneamiento no crea una orden de mantenimiento por conveniencia de implementación.
+
+Una limpieza técnica inseparable de una reparación puede permanecer como evidencia o paso dentro de esa reparación cuando el objeto principal continúe siendo técnico.
+
+---
+
+#### 48. Frontera con inspecciones físicas
+
+`NEXO-DOM-034` conserva plantillas versionadas, inspecciones físicas generales, hallazgos y acciones correctivas.
+
+La verificación de una rutina de saneamiento evalúa esa ejecución concreta.
+
+No se convierte toda verificación sanitaria en una inspección locativa general.
+
+Un hallazgo de inspección puede disparar una obligación extraordinaria sin perder su expediente original.
+
+---
+
+#### 49. Frontera con control metrológico
+
+`NEXO-DOM-035` conserva calibración, verificación metrológica, tolerancias, certificados e impacto.
+
+Si una rutina usa un instrumento cuya conformidad es necesaria para validar una medición, la evidencia debe poder relacionar el instrumento o condición de validez según la política propietaria.
+
+Esta tarea no redefine calibración ni certificados metrológicos.
+
+---
+
+#### 50. Frontera con servicios, acceso, obras y novedades
+
+`NEXO-DOM-033` conserva servicios y contingencias.
+
+`NEXO-DOM-036` conserva llaves, credenciales físicas, zonas y custodia.
+
+`NEXO-DOM-037` conserva obras, permisos, afectación, cierres temporales y recepción.
+
+`NEXO-DOM-038` conserva novedades locativas, severidad, contención, escalamiento, resolución y cierre.
+
+Una rutina puede ser bloqueada o disparada por esos expedientes, pero no los sustituye.
+
+---
+
+#### 51. Autorización y segregación
+
+Las capacidades para:
+
+- definir o revisar programa;
+- definir o revisar procedimiento;
+- programar;
+- ejecutar;
+- registrar producto y parámetros;
+- verificar;
+- aceptar una excepción;
+- liberar;
+- cerrar;
+- corregir;
+- reabrir;
+
+son separables.
+
+`NEXO-AUTH-031` y `NEXO-AUTH-032` conservan la definición detallada de permisos y segregación.
+
+Esta tarea no concede permisos por rol visual, pertenencia al área ni visibilidad de la pantalla.
+
+---
+
+#### 52. Idempotencia
+
+Toda mutación material deberá admitir identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra obligación;
+- otra ejecución;
+- otro consumo;
+- otra evidencia duplicada;
+- otra verificación;
+- otra liberación;
+- otro cierre.
+
+Un mismo identificador con contenido materialmente diferente produce conflicto o revisión explícita; no sobrescribe el efecto anterior.
+
+---
+
+#### 53. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos ejecuciones incompatibles satisfaciendo la misma obligación sin relación explícita;
+- doble consumo del mismo evento operativo;
+- dos verificaciones finales incompatibles sin resolución;
+- liberación mientras existe una verificación bloqueante;
+- edición silenciosa del procedimiento usado por una ejecución en curso;
+- cierre mientras persisten desviaciones bloqueantes no resueltas.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según la materialización autorizada.
+
+---
+
+#### 54. Captura offline
+
+La captura offline puede conservar intención o evidencia pendiente, pero no inventa aceptación del servidor ni autoridad.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+EXECUTED
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+La sincronización deberá ser idempotente y conservar la identidad original.
+
+Una liberación que exija autoridad online permanece pendiente hasta confirmación válida.
+
+---
+
+#### 55. Resultado desconocido
+
+Ante timeout, pérdida de conectividad o respuesta ambigua después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de repetir una ejecución, consumo, verificación, liberación o cierre.
+
+La incertidumbre de transporte no se resuelve creando otro expediente.
+
+---
+
+#### 56. Corrección, reapertura e historia
+
+Los errores se corrigen mediante corrección, revisión, supersesión o reapertura trazable según el hecho.
+
+No se sobrescriben silenciosamente:
+
+- actor;
+- producto;
+- lote;
+- concentración;
+- timestamps materiales;
+- procedimiento;
+- ejecución;
+- evidencia;
+- verificación;
+- desviación;
+- liberación.
+
+La vista vigente puede proyectar el resultado corregido, pero la historia conserva el antes y el después.
+
+---
+
+#### 57. AS-IS observable de NEXO
+
+En las superficies remotas inspeccionadas de NEXO existe una opción `cleaning` dentro del mantenimiento de activos.
+
+Ese soporte demuestra que el concepto de limpieza aparece en el AS-IS, pero no demuestra un programa maestro de saneamiento con:
+
+- sujetos locativos propios;
+- programa y procedimiento versionados;
+- obligaciones;
+- producto, lote, concentración y tiempo de contacto;
+- controles de contaminación cruzada;
+- ejecución estructurada;
+- verificación visual, instrumental o microbiológica;
+- desviaciones y repetición;
+- liberación sanitaria separada.
+
+La implementación actual no se adopta como contrato final únicamente porque permita clasificar un mantenimiento como `cleaning`.
+
+---
+
+#### 58. Estrategia de adopción
+
+La estrategia canónica queda:
+
+```text
+REUSE SHARED PHYSICAL AND INVENTORY FOUNDATIONS
++
+BUILD DEDICATED SANITATION DOMAIN CONTRACT
+```
+
+Se reutiliza donde sea compatible:
+
+- identidad locativa;
+- catálogo;
+- inventario;
+- lotes;
+- actores;
+- evidencia;
+- disponibilidad;
+- idempotencia;
+- mecanismos de autorización;
+- patrones de cierre y reapertura.
+
+Se construye o refactoriza donde falte:
+
+- programa maestro;
+- procedimientos versionados;
+- obligaciones de saneamiento;
+- ejecución específica;
+- parámetros de químicos;
+- verificación;
+- desviaciones;
+- repetición;
+- liberación sanitaria.
+
+No se transforma el workflow de mantenimiento en saneamiento únicamente cambiando una etiqueta.
+
+---
+
+#### 59. Reconciliación de historia
+
+Si una materialización futura migra registros históricos, solo promoverá hechos demostrados por evidencia.
+
+No se permite inferir retrospectivamente:
+
+- una concentración no registrada;
+- un lote no registrado;
+- un tiempo de contacto no registrado;
+- una verificación inexistente;
+- una liberación inexistente;
+- un actor no identificable;
+- un consumo de inventario no correlacionado.
+
+Los registros incompletos conservan su limitación explícita.
+
+---
+
+#### 60. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- obligaciones próximas;
+- obligaciones vencidas;
+- cumplimiento por programa, sede, área o sujeto;
+- ejecuciones realizadas;
+- ejecuciones repetidas;
+- verificaciones fallidas o inconclusas;
+- tiempo entre ejecución y verificación;
+- tiempo entre verificación y liberación;
+- desviaciones abiertas;
+- causas de repetición;
+- consumos de químicos gobernados por inventario;
+- liberaciones pendientes;
+- rutinas extraordinarias por disparador.
+
+Las métricas son proyecciones de hechos; no sustituyen los registros fuente.
+
+---
+
+#### 61. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| rutina programada para más tarde | obligación programada; no ejecución |
+| actor marca inicio | ejecución iniciada; no limpieza completada |
+| se completa el procedimiento | ejecución reportada; no verificación automática |
+| foto final cargada | evidencia; no verificación ni liberación por sí sola |
+| producto correcto con concentración incorrecta | desviación; evaluar repetición y no liberar cuando sea bloqueante |
+| lote requerido no identificado | evidencia incompleta; no inventar lote |
+| verificación visual requerida y conforme | verificación resuelta según ese criterio; evaluar liberación |
+| verificación instrumental requerida y fallida | desviación; no liberar cuando la conformidad positiva sea obligatoria |
+| rutina repetida por fallo | nueva ejecución relacionada; la anterior permanece |
+| químico inventariable utilizado | correlacionar consumo con ejecución |
+| limpieza técnica dentro de reparación | permanece en mantenimiento si el objeto principal es técnico |
+| rutina sanitaria periódica | permanece en saneamiento; no crear orden de mantenimiento |
+| hallazgo de plagas | handoff a `NEXO-DOM-032`; conservar relación |
+| timeout después de guardar ejecución | reconciliar antes de reintentar |
+| espacio sanitariamente liberado pero cerrado por obra | disponibilidad general sigue restringida por la obra |
+
+---
+
+#### 62. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. un programa conserva identidad y versión;
+2. programa y obligación son distintos;
+3. procedimiento y ejecución son distintos;
+4. programación y ejecución son distintas;
+5. ejecución y verificación son distintas;
+6. verificación y liberación son distintas;
+7. liberación sanitaria y disponibilidad general son distintas;
+8. una superficie no crea identidad locativa competidora por defecto;
+9. el actor planificado y el actor ejecutor pueden diferir sin perder trazabilidad;
+10. producto y lote son dimensiones distintas;
+11. producto disponible no significa producto autorizado;
+12. procedimiento vigente no reescribe procedimiento histórico;
+13. una desviación no se borra mediante repetición;
+14. una repetición es una nueva ejecución relacionada;
+15. una fotografía es evidencia y no sustituye hechos estructurados;
+16. un consumo inventariable requiere efecto de inventario correlacionado;
+17. limpieza rutinaria no se convierte en mantenimiento;
+18. plagas no se convierten en saneamiento rutinario;
+19. resultado desconocido se reconcilia antes de repetir efectos;
+20. ningún dato histórico material se destruye para simplificar el estado actual.
+
+---
+
+#### 63. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver sujeto, programa y procedimiento desde fuentes autoritativas;
+- no confiar en IDs, estado, concentración, resultado o permiso enviados por cliente sin validación aplicable;
+- preservar actor efectivo;
+- preservar revisión de programa y procedimiento;
+- impedir liberación con verificación bloqueante;
+- impedir cierre omitiendo desviaciones requeridas;
+- aplicar idempotencia;
+- preservar historia de correcciones;
+- impedir que una UI convierta visibilidad en permiso.
+
+La autorización detallada permanece en las tareas propietarias.
+
+---
+
+#### 64. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- agregados o tablas;
+- constraints e índices;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- integración con catálogo e inventario;
+- sincronización offline;
+- evidencia;
+- pantallas;
+- backfill o migración controlada;
+- pruebas automatizadas y operativas.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 65. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- crea datos de programas o procedimientos reales;
+- modifica inventario;
+- consume químicos reales;
+- ejecuta rutinas reales;
+- fija frecuencias empresariales concretas;
+- fija concentraciones concretas;
+- fija tiempos de contacto concretos;
+- inventa umbrales microbiológicos;
+- define autorización detallada;
+- define la experiencia de usuario de `NEXO-UX-045`;
+- define el expediente de plagas de `NEXO-DOM-032`;
+- define servicios y medidores de `NEXO-DOM-033`;
+- define inspecciones físicas generales de `NEXO-DOM-034`;
+- define control metrológico de `NEXO-DOM-035`;
+- define acceso físico de `NEXO-DOM-036`;
+- define obras de `NEXO-DOM-037`;
+- define novedades locativas de `NEXO-DOM-038`;
+- convierte la limpieza rutinaria en mantenimiento;
+- crea una nueva jerarquía locativa;
+- reconoce efectos contables;
+- autoriza materialización física.
+
+---
+
+#### 66. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya exige programa o plan, objeto y lugar, responsable, ejecución, evidencia, resultado, desviación, contención, verificación, disponibilidad y cierre para limpieza y saneamiento;
+- el registro vigente ya exige que limpio, verificado y liberado sean estados distintos;
+- la cobertura vigente ya exige captura offline idempotente sin duplicar ejecuciones, evidencia o cierres;
+- esta tarea desarrolla el contrato necesario para satisfacer esa cobertura y no introduce una obligación verificable nueva fuera de ella.
+
+---
+
+#### 67. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura ya existente sin modificar el registro:
+
+- `TREQ-NEXO-018`, para saneamiento, ejecución, evidencia, desviación, contención, verificación, disponibilidad, cierre e idempotencia offline;
+- `TREQ-NEXO-017`, para sujetos locativos, planes, ejecución, liberación, cierre e historial;
+- `TREQ-NEXO-014`, cuando una limpieza técnica forme parte de mantenimiento;
+- `TREQ-SUPABASE-002`, para integridad e idempotencia persistente cuando exista materialización física;
+- `TREQ-INTEGRATION-018`, cuando el workflow requiera coordinación transversal o proveedores.
+
+Esta enumeración es trazabilidad de cobertura existente y no constituye actualización de 04A.
+
+---
+
+#### 68. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea es `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | continuidad, tarea anterior, siguiente reservada, topología, contrato de entrega, políticas documentales, cobertura 04A, `CAP-SCOPE-013`, handoff de `NEXO-DOM-030` y AS-IS remoto fueron inspeccionados |
+| OPERATIVA | NOT_APPLICABLE | no se ejecutan rutinas, químicos, verificaciones ni liberaciones reales durante la tarea documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` usan `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 69. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] existe contrato de programa maestro de limpieza y saneamiento;
+- [x] el programa queda versionado;
+- [x] el procedimiento queda versionado;
+- [x] sujeto y subalcance no crean identidades competidoras;
+- [x] se conservan frecuencia y disparadores extraordinarios;
+- [x] responsable y sustituto quedan gobernados;
+- [x] producto, lote, concentración y tiempo de contacto quedan modelados cuando aplican;
+- [x] herramientas y elementos de protección pueden formar parte del procedimiento;
+- [x] controles de contaminación cruzada quedan representados;
+- [x] programa y obligación son distintos;
+- [x] programación y ejecución son distintas;
+- [x] ejecución y verificación son distintas;
+- [x] verificación y liberación son distintas;
+- [x] limpio, verificado y liberado no se colapsan;
+- [x] verificación visual, instrumental o microbiológica puede expresarse cuando aplica;
+- [x] desviación y repetición preservan historia;
+- [x] una repetición no sobrescribe una ejecución fallida;
+- [x] liberación sanitaria no sustituye disponibilidad general;
+- [x] químicos y consumibles se integran con catálogo e inventario sin fuente paralela;
+- [x] consumo inventariable se correlaciona con ejecución;
+- [x] rutina sanitaria no se convierte en mantenimiento;
+- [x] plagas, servicios, inspecciones, metrología, accesos, obras y novedades conservan sus owners;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] AS-IS se clasifica como soporte parcial y no como workflow final;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 70. Handoff hacia `NEXO-DOM-032`
+
+`NEXO-DOM-031` entrega a `NEXO-DOM-032`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+SANITATION MASTER PROGRAM SEMANTICS
++
+VERSIONED PROCEDURES
++
+SCHEDULE / TRIGGER / OBLIGATION SEPARATION
++
+TRACEABLE CHEMICAL USAGE
++
+EXECUTION AND EVIDENCE MODEL
++
+VERIFICATION AND DEVIATION MODEL
++
+SANITARY RELEASE SEMANTICS
++
+IDEMPOTENT OFFLINE CAPTURE
+```
+
+`NEXO-DOM-032` podrá reutilizar identidad locativa, evidencia, idempotencia, desviación y reglas transversales de liberación cuando sean compatibles, pero deberá definir de forma propia el control de plagas, su mapa, dispositivos, visitas, hallazgos, acciones y certificados, incluida la frontera con proveedor especializado.
+
+El expediente de plagas no se modela como una rutina de saneamiento solo para reutilizar este contrato.
+
+---
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados`
+
 ### [ ] NEXO-DOM-032 — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados
 ### [ ] NEXO-DOM-033 — Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias
 ### [ ] NEXO-DOM-034 — Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas
