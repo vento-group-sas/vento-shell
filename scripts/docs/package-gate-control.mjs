@@ -20,6 +20,42 @@ function completeObjects(values, required) {
     && values.every((value) => value && required.every((key) => nonEmpty(value[key])));
 }
 
+const MIGRATION_WRITE_OPERATIONS = new Set(['CREAR', 'MODIFICAR', 'ELIMINAR', 'CREATE', 'MODIFY', 'DELETE']);
+const MANIFEST_WRITE_OPERATIONS = new Set(['MODIFICAR', 'MODIFY']);
+const MANIFEST_VALIDATION_COMMANDS = new Set([
+  'npm run supabase:migrations:manifest:check',
+  'npm run supabase:db:test:clean',
+]);
+
+function normalizedPhysicalPath(value) {
+  return String(value ?? '').trim().replaceAll('\\', '/');
+}
+
+function normalizedOperation(value) {
+  return String(value ?? '').trim().toUpperCase();
+}
+
+function assessMigrationManifestCoherence(record) {
+  const targets = Array.isArray(record?.physical_identity?.targets)
+    ? record.physical_identity.targets
+    : [];
+  const writesMigration = targets.some((target) => (
+    normalizedPhysicalPath(target?.path).startsWith('supabase/migrations/')
+    && MIGRATION_WRITE_OPERATIONS.has(normalizedOperation(target?.operation))
+  ));
+  if (!writesMigration) return { targetComplete: true, validationComplete: true };
+
+  const manifestTarget = targets.find((target) => (
+    normalizedPhysicalPath(target?.path) === 'supabase/MIGRATION_MANIFEST.md'
+  ));
+  const targetComplete = Boolean(manifestTarget)
+    && MANIFEST_WRITE_OPERATIONS.has(normalizedOperation(manifestTarget.operation));
+  const validationComplete = (record?.evidence_plan?.tests ?? []).some((entry) => (
+    MANIFEST_VALIDATION_COMMANDS.has(String(entry?.command ?? '').trim())
+  ));
+  return { targetComplete, validationComplete };
+}
+
 function completeDeploymentEnvironment(value) {
   return Boolean(value)
     && typeof value === 'object'
@@ -75,7 +111,16 @@ export function assessPackageGateRecord(record, { taskPrerequisites = null, poli
   if (!policy.statuses.includes(record?.status)) errors.push(`status no permitido: ${record?.status ?? 'EMPTY'}`);
   if (!nonEmpty(record?.created_at) || !nonEmpty(record?.updated_at)) errors.push('created_at y updated_at son obligatorios');
 
-  const identityComplete = completeObjects(record?.physical_identity?.targets, ['repository', 'path', 'symbol_or_surface', 'operation']);
+  const manifestCoherence = assessMigrationManifestCoherence(record);
+  if (!manifestCoherence.targetComplete) {
+    errors.push('physical_identity crea, modifica o elimina una migración pero supabase/MIGRATION_MANIFEST.md no declara operation MODIFICAR');
+  }
+  if (!manifestCoherence.validationComplete) {
+    errors.push('evidence_plan.tests debe validar el manifiesto mediante supabase:migrations:manifest:check o supabase:db:test:clean cuando cambia una migración');
+  }
+
+  const identityComplete = completeObjects(record?.physical_identity?.targets, ['repository', 'path', 'symbol_or_surface', 'operation'])
+    && manifestCoherence.targetComplete;
   const unitsComplete = completeObjects(record?.implementation_units, ['unit_id', 'repository', 'change']);
   const testsComplete = completeObjects(record?.evidence_plan?.tests, ['command', 'expected_result']);
   const observabilityComplete = completeObjects(record?.evidence_plan?.observability, ['signal', 'expected_result']);
@@ -101,7 +146,11 @@ export function assessPackageGateRecord(record, { taskPrerequisites = null, poli
       errors.push('deployment_environment no puede incluir PRODUCTION cuando production_authorized=false');
     }
   }
-  const evidenceComplete = testsComplete && observabilityComplete && acceptanceComplete && rollbackComplete;
+  const evidenceComplete = testsComplete
+    && manifestCoherence.validationComplete
+    && observabilityComplete
+    && acceptanceComplete
+    && rollbackComplete;
   const tasksComplete = taskPrerequisites ? taskPrerequisites.remaining === 0 : true;
   const authorization = record?.authorization ?? {};
   const approved = authorization.decision === policy.approval_word
