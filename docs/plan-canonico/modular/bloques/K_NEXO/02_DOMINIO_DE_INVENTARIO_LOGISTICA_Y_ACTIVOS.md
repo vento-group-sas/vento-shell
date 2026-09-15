@@ -33874,7 +33874,957 @@ PHYSICAL IMPLEMENTATION OR OPERATIVE CERTIFICATION
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda`
 
-### [ ] NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
+### ✅ NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
+**Tarea siguiente:** NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
+**Tipo de tarea:** documental; definición canónica del contrato por el cual NEXO emite hechos empresariales con relevancia financiera derivados de adquisición, reparación, pérdida y baja de activos cuando corresponda, preservando propiedad operativa, frontera con ORIGO y NUMERA, correlación, idempotencia, corrección, evidencia y no duplicación bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** ESPECIFICADO_NO_MATERIALIZADO
+**Cambios físicos autorizados:** ninguno durante esta tarea
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico mediante el cual los hechos operativos de activos gobernados por NEXO que tengan relevancia financiera puedan producir un handoff económico trazable hacia NUMERA sin convertir a NEXO en libro contable, sin duplicar los hechos de compra de ORIGO y sin confundir estado físico, costo observado, obligación económica, reconocimiento contable, pago o conciliación.
+
+La tarea cierra la brecha según la cual adquisición, mantenimiento o reparación, pérdida y baja todavía podían quedar registradas físicamente sin una relación inequívoca con el efecto económico correspondiente, o podían provocar efectos económicos duplicados si ORIGO, NEXO y NUMERA interpretaban por separado el mismo hecho.
+
+---
+
+#### 2. Resultado canónico
+
+Queda definido un único principio de integración:
+
+```text
+HECHO OPERATIVO PROPIETARIO
+→ IDENTIDAD Y EVIDENCIA DEL HECHO
+→ EVALUACIÓN DE RELEVANCIA FINANCIERA
+→ HANDOFF ECONÓMICO CANÓNICO
+→ NUMERA / VPROC-0051
+→ CLASIFICACIÓN, VALIDACIÓN, RECONOCIMIENTO Y CONCILIACIÓN
+```
+
+No:
+
+```text
+CAMBIO DE ESTADO DEL ACTIVO
+→ ASIENTO CONTABLE DIRECTO DESDE NEXO
+```
+
+No:
+
+```text
+FACTURA O COMPRA EN ORIGO
++
+RECEPCIÓN O ALTA EN NEXO
+→ DOS EFECTOS ECONÓMICOS INDEPENDIENTES PARA EL MISMO HECHO
+```
+
+No:
+
+```text
+BAJA FÍSICA
+=
+BAJA CONTABLE AUTOMÁTICA
+```
+
+No:
+
+```text
+PÉRDIDA REPORTADA
+=
+PÉRDIDA FINANCIERA RECONOCIDA
+```
+
+---
+
+#### 3. Fuentes y contratos preservados
+
+Esta tarea consume y conserva, sin reabrirlos:
+
+- `CAP-SCOPE-007`, especialmente la brecha que exige conciliar adquisición, mantenimiento, pérdida y baja entre ORIGO, NEXO y NUMERA;
+- `CAP-SCOPE-012`, para la separación entre hecho empresarial, evento económico, clasificación financiera, contabilización y conciliación;
+- `INT-PROC-004`, que confirma a NUMERA como propietaria de `VPROC-0051` y del hecho económico derivado, no del hecho operativo fuente;
+- `NEXO-DOM-013`, para baja, venta, descarte y reemplazo no destructivos;
+- `NEXO-DOM-025` y `NEXO-DOM-026`, para repuestos, costo informado, mantenimiento, reparación, prueba y liberación;
+- `NEXO-DOM-027`, para vehículos, kilometraje, combustible, disponibilidad y mantenimiento de flota;
+- `ORIGO-UX-014` y `ORIGO-UX-015`, como propietarias de trabajo posterior sobre adquisición y recepción que esta tarea no absorbe;
+- el contrato transversal de eventos entre aplicaciones para identidad, correlación, causación, idempotencia, versiones, reintentos y resultados recuperables;
+- el registro financiero en estado de revisión hasta que NUMERA lo clasifique, valide, registre o rechace;
+- la prohibición de que una aplicación operativa escriba directamente libros contables;
+- la preservación de historia mediante correcciones, reversos o compensaciones y no mediante sobrescritura destructiva.
+
+Ninguna decisión de esta tarea reemplaza el proceso de compra de ORIGO, el ledger físico de NEXO ni el proceso financiero propietario de NUMERA.
+
+---
+
+#### 4. Frontera de propiedad
+
+La propiedad funcional queda separada así:
+
+| Hecho o decisión | Propietario canónico | Regla |
+| --- | --- | --- |
+| necesidad, orden y compra | ORIGO | gobierna el proceso de abastecimiento y la relación con proveedor |
+| recepción comercial y documental | ORIGO | decide aceptación comercial conforme al proceso propietario |
+| identidad y estado físico del activo | NEXO | gobierna activo, ubicación, custodia, condición y ciclo operativo |
+| mantenimiento y reparación física | NEXO | gobierna orden, ejecución, evidencia, prueba y liberación |
+| pérdida física confirmada | NEXO | conserva investigación, decisión operativa y estado físico |
+| baja o disposición física | NEXO | conserva solicitud, aprobación aplicable, ejecución y cierre físico |
+| hecho económico derivado | NUMERA | recibe el handoff y gobierna VPROC-0051 |
+| clasificación contable | NUMERA | decide naturaleza, tratamiento, cuentas y periodo contable |
+| contabilización y conciliación | NUMERA | registra, revierte, ajusta y concilia |
+| pago o movimiento financiero | NUMERA o proceso financiero propietario | no se infiere desde el estado del activo |
+
+NEXO podrá aportar datos económicos observados y referencias de origen, pero no decidirá cuentas, depreciación, capitalización, deterioro, reconocimiento fiscal, periodo contable definitivo ni tratamiento tributario.
+
+---
+
+#### 5. Principio cardinal del hecho fuente
+
+Todo efecto financiero deberá poder volver al hecho empresarial propietario que lo originó.
+
+La relación mínima será:
+
+```text
+ACTIVO
+→ HECHO OPERATIVO
+→ REFERENCIA FUENTE
+→ EVENTO / HANDOFF ECONÓMICO
+→ REGISTRO FINANCIERO DERIVADO
+```
+
+El evento económico no sustituye el hecho fuente y el hecho fuente no se considera contabilizado por el solo hecho de haber sido emitido.
+
+---
+
+#### 6. Familias semánticas cubiertas
+
+NEXO-DOM-028 cubre cuatro familias documentales de hechos con posible relevancia financiera:
+
+1. adquisición de un activo;
+2. reparación o mantenimiento con efecto económico;
+3. pérdida confirmada de un activo;
+4. baja, disposición, venta o retiro físico de un activo.
+
+Estas familias son categorías semánticas del contrato. Esta tarea no crea enums físicos, tablas, tópicos, RPC, colas ni identificadores técnicos nuevos.
+
+---
+
+#### 7. Matriz de disparadores y fronteras
+
+| Familia | Disparador operativo mínimo | NEXO conserva | NEXO no afirma | Destino |
+| --- | --- | --- | --- | --- |
+| adquisición | incorporación física o control operativo confirmado con identidad estable y procedencia conocida | activo, modo de incorporación, recepción o referencia de origen, fecha del hecho, propiedad/custodia aplicable, evidencia | capitalización, cuenta, vida útil contable, impuesto, obligación definitiva | NUMERA mediante ingreso financiero canónico |
+| reparación | trabajo ejecutado y aceptado con costo observado o referencias económicas relevantes | activo, orden, diagnóstico, ejecución, proveedor/técnico, repuestos, costo informado, documentos, prueba | gasto/capitalización, cuenta, depreciación, deducibilidad | NUMERA mediante ingreso financiero canónico |
+| pérdida | pérdida confirmada por autoridad y proceso aplicables, no simple reporte o ausencia | activo, investigación, custodia, condición, decisión, evidencia, fecha efectiva | deterioro, castigo contable, valor recuperable, responsabilidad financiera | NUMERA mediante ingreso financiero canónico |
+| baja | disposición física ejecutada y cerrada conforme a la decisión autorizada | activo, modalidad, autorización, ejecución, destino, evidencia, fecha, referencias de venta o descarte cuando existan | baja contable definitiva, ganancia/pérdida, impuesto, ingreso reconocido | NUMERA mediante ingreso financiero canónico |
+
+---
+
+#### 8. Adquisición de activo
+
+La creación de un registro maestro no constituye por sí sola un hecho económico.
+
+La familia adquisición solo podrá originarse cuando exista un hecho empresarial suficientemente confirmado, por ejemplo:
+
+- recepción aceptada de un activo comprado;
+- incorporación de un activo proveniente de una adquisición ya identificada;
+- alta bajo una modalidad no ordinaria que conserve su procedencia y naturaleza;
+- incorporación derivada de una sustitución, siempre como identidad nueva cuando físicamente corresponda.
+
+La emisión deberá distinguir como mínimo:
+
+- identidad estable del activo;
+- modalidad y procedencia;
+- referencia a compra, recepción, documento o hecho fuente cuando exista;
+- fecha del hecho operativo;
+- empresa, sede, área o centro de responsabilidad operativo cuando aplique;
+- propietario y nivel de evidencia de propiedad;
+- custodio cuando aplique;
+- importe y moneda únicamente cuando hayan sido observados en una fuente autorizada;
+- documentos y evidencia;
+- correlación con ORIGO cuando la adquisición derive de compra.
+
+---
+
+#### 9. Adquisiciones que no permiten inferencia contable
+
+La incorporación física de un activo no autoriza a NEXO a asumir que existe una compra capitalizable.
+
+Deben permanecer distinguibles, entre otros:
+
+- compra;
+- préstamo;
+- comodato;
+- arrendamiento;
+- activo de tercero bajo custodia;
+- donación;
+- traslado interno;
+- devolución a operación;
+- reactivación;
+- sustitución.
+
+Una transferencia entre sedes no es una adquisición nueva. Una devolución desde mantenimiento no es una adquisición. Recibir físicamente un activo de tercero no convierte a Vento Group en propietario.
+
+---
+
+#### 10. Reparación y mantenimiento con relevancia financiera
+
+Planificar, programar o abrir mantenimiento no produce por sí mismo un evento financiero.
+
+El handoff económico podrá originarse cuando exista un hecho suficientemente consolidado que permita distinguir:
+
+- orden de trabajo;
+- activo intervenido;
+- tipo de intervención;
+- ejecución efectivamente realizada;
+- proveedor o técnico;
+- repuestos reservados y consumidos;
+- servicios externos;
+- costo informado o referencias económicas observadas;
+- documentos;
+- indisponibilidad;
+- evidencia;
+- prueba y liberación cuando correspondan.
+
+La reparación conserva su verdad operativa en NEXO. NUMERA decide si el efecto se trata como gasto, mayor valor, reparación capitalizable, reclamación, recuperación, deterioro u otra clasificación autorizada.
+
+---
+
+#### 11. Prevención de doble costo en reparación
+
+Los componentes económicos de una reparación deberán ser correlacionables y no sumarse dos veces.
+
+Como mínimo se distinguirán:
+
+```text
+REPUESTO CONSUMIDO DESDE INVENTARIO
+SERVICIO EXTERNO
+MANO DE OBRA EXTERNA
+MANO DE OBRA INTERNA CUANDO EXISTA POLÍTICA DE COSTEO
+TRANSPORTE U OTRO COSTO ASOCIADO
+GARANTÍA / SEGURO / RECUPERACIÓN
+```
+
+Si ORIGO ya representa la compra del repuesto o servicio, NEXO no emitirá una segunda compra. NEXO emitirá o referenciará el hecho operativo de consumo o reparación que permita a NUMERA reconciliar el efecto sin duplicar el documento fuente.
+
+---
+
+#### 12. Garantía y reparación sin costo directo
+
+Una reparación cubierta por garantía podrá tener costo observado cero para Vento Group y aun así conservar:
+
+- trabajo realizado;
+- proveedor;
+- garantía aplicada;
+- documentos;
+- repuestos;
+- evidencia;
+- indisponibilidad;
+- resultado;
+- referencia a reclamación cuando exista.
+
+La ausencia de desembolso no autoriza a eliminar el hecho operativo. Tampoco autoriza a NEXO a inventar un valor económico.
+
+---
+
+#### 13. Pérdida
+
+Un reporte de faltante, daño, ausencia o no localización no constituye automáticamente una pérdida confirmada.
+
+La secuencia deberá permitir:
+
+```text
+HALLAZGO O REPORTE
+→ INVESTIGACIÓN
+→ VERIFICACIÓN DE CUSTODIA Y ÚLTIMA UBICACIÓN
+→ DECISIÓN AUTORIZADA
+→ PÉRDIDA CONFIRMADA O CASO CERRADO SIN PÉRDIDA
+```
+
+Solo una pérdida confirmada conforme a la autoridad y evidencia aplicables podrá originar el handoff económico correspondiente.
+
+---
+
+#### 14. Pérdida y recuperación posterior
+
+Si un activo declarado perdido es recuperado posteriormente:
+
+- no se borra la pérdida histórica;
+- no se elimina el evento económico emitido;
+- se registra el hecho de recuperación;
+- se emite la corrección, reverso o compensación correspondiente cuando proceda;
+- NUMERA determina el efecto financiero final;
+- NEXO conserva la continuidad física, condición, custodia y disponibilidad resultantes.
+
+---
+
+#### 15. Baja, descarte, venta y retiro físico
+
+La solicitud de baja no equivale a baja ejecutada.
+
+La aprobación de una baja no equivale a disposición física ejecutada.
+
+El handoff económico de baja requiere un hecho físico suficientemente concluido, con:
+
+- activo;
+- decisión o autorización aplicable;
+- modalidad de disposición;
+- fecha efectiva;
+- actor ejecutor;
+- destino o tercero cuando corresponda;
+- evidencia;
+- documentos;
+- condición final;
+- referencias económicas observadas;
+- relación con venta, seguro, recuperación o reclamación cuando exista.
+
+---
+
+#### 16. Venta de un activo dado de baja
+
+La venta física de un activo y el ingreso económico asociado son hechos correlacionados, no una única escritura desde NEXO.
+
+NEXO conserva:
+
+- identidad del activo;
+- decisión de disposición;
+- salida física;
+- tercero o destino permitido;
+- evidencia;
+- referencia al documento o proceso comercial/financiero.
+
+NUMERA conserva:
+
+- reconocimiento del ingreso;
+- valor en libros;
+- resultado de la disposición;
+- impuestos;
+- cuentas;
+- periodo;
+- conciliación.
+
+NEXO no calcula ganancia o pérdida contable por la venta.
+
+---
+
+#### 17. Reemplazo
+
+Reemplazar un activo no se modelará como una mutación que transforme la identidad anterior en la nueva.
+
+La regla será:
+
+```text
+ACTIVO ANTERIOR
+→ BAJA / PÉRDIDA / DEVOLUCIÓN / DISPOSICIÓN SEGÚN CORRESPONDA
+
+ACTIVO NUEVO
+→ ADQUISICIÓN / INCORPORACIÓN SEGÚN CORRESPONDA
+```
+
+Ambos hechos podrán quedar correlacionados mediante una referencia de reemplazo, pero conservarán identidades, evidencias y efectos económicos independientes.
+
+---
+
+#### 18. Hechos que no generan handoff económico por sí solos
+
+No generan por sí solos un evento financiero:
+
+- creación de borrador de activo;
+- cambio de nombre o descripción;
+- impresión o reimpresión de QR;
+- traslado interno;
+- cambio de LOC;
+- cambio de custodio;
+- asignación de usuario;
+- conteo sin diferencia confirmada;
+- reporte de pérdida aún no resuelto;
+- solicitud de mantenimiento;
+- mantenimiento programado pero no ejecutado;
+- cotización;
+- diagnóstico sin efecto económico consolidado;
+- solicitud de baja;
+- aprobación de baja todavía no ejecutada;
+- cambio de disponibilidad;
+- inspección sin intervención ni costo relevante;
+- lectura de kilometraje;
+- checklist de vehículo;
+- cambio de conductor.
+
+Un hecho podrá relacionarse con costos posteriores sin ser por ello el disparador económico autoritativo.
+
+---
+
+#### 19. Identidad del hecho económico derivado
+
+Toda emisión deberá conservar una identidad que permita distinguir:
+
+- el hecho empresarial fuente;
+- la emisión concreta;
+- la operación lógica reintentable;
+- la versión del recurso;
+- la correlación entre aplicaciones;
+- la causación;
+- el resultado downstream cuando exista.
+
+La materialización futura reutilizará el sobre transversal ya aprobado para eventos entre aplicaciones y el contrato económico de integración; no creará una segunda convención paralela exclusiva de activos.
+
+---
+
+#### 20. Sobre transversal reutilizado
+
+Cuando corresponda al contrato físico futuro, se preservarán las identidades ya aprobadas, entre ellas:
+
+```text
+event_id
+event_definition_id
+event_type
+event_version
+process_id
+process_instance_id
+request_id
+idempotency_key
+source_command_id
+correlation_id
+causation_id
+aggregate_version
+```
+
+Esta tarea no asigna nuevos valores de `event_definition_id` ni materializa nuevos enums. La implementación deberá mapear las familias documentales de esta tarea al catálogo canónico vigente en el paquete físico que corresponda.
+
+---
+
+#### 21. Referencias mínimas de linaje
+
+El handoff de NEXO deberá poder relacionar, según el caso:
+
+- `asset_id` o identidad canónica equivalente;
+- hecho fuente y versión;
+- orden de compra;
+- recepción;
+- orden de mantenimiento;
+- reparación;
+- repuestos consumidos;
+- proveedor o técnico;
+- caso de pérdida;
+- decisión de baja;
+- disposición;
+- documento;
+- evidencia;
+- sede o área;
+- actor;
+- referencia de vehículo cuando el activo sea parte de flota;
+- evento previo corregido o compensado.
+
+Las referencias deberán usar identidades canónicas, no nombres libres utilizados como sustituto de identidad.
+
+---
+
+#### 22. Datos monetarios
+
+NEXO podrá transmitir datos monetarios únicamente cuando provengan de un hecho o documento autorizado y puedan conservar su procedencia.
+
+Cuando existan deberán distinguirse, como mínimo:
+
+- importe original;
+- moneda;
+- fuente del importe;
+- documento o referencia;
+- concepto operativo;
+- fecha del hecho.
+
+NEXO no inventará:
+
+- tipo de cambio;
+- cuenta;
+- valor en libros;
+- depreciación;
+- deterioro;
+- impuesto;
+- deducibilidad;
+- valor residual;
+- vida útil contable;
+- centro de costo contable definitivo;
+- periodo contable definitivo.
+
+---
+
+#### 23. Documentos y evidencia
+
+El evento no duplicará documentos binarios.
+
+Conservará referencias a documentos y evidencia gobernados por sus servicios propietarios, por ejemplo:
+
+- factura o soporte de compra;
+- recepción;
+- orden de trabajo;
+- cotización;
+- factura de reparación;
+- diagnóstico;
+- fotografías;
+- acta;
+- denuncia o soporte de pérdida;
+- aprobación de baja;
+- comprobante de disposición;
+- soporte de venta;
+- garantía o reclamación.
+
+El acceso a la evidencia seguirá autorización, retención y minimización aplicables.
+
+---
+
+#### 24. Relación con ORIGO
+
+Cuando el hecho derive de compra o servicio adquirido:
+
+1. ORIGO conserva compra, proveedor, orden, recepción y documento según su proceso.
+2. NEXO conserva el efecto físico sobre el activo.
+3. La correlación deberá permitir demostrar que ambos representan partes del mismo caso empresarial.
+4. NEXO no volverá a emitir una compra ya representada por ORIGO.
+5. ORIGO no modificará el estado físico propietario de NEXO.
+6. NUMERA reconciliará las referencias sin tratar cada aplicación como una transacción independiente.
+
+---
+
+#### 25. Relación con NUMERA
+
+NUMERA consume el handoff económico y conserva la autoridad sobre:
+
+- admisión financiera;
+- clasificación;
+- validación;
+- estado `pending_review` cuando corresponda;
+- reconocimiento;
+- contabilización;
+- cuentas;
+- periodo;
+- reversos;
+- ajustes;
+- conciliación;
+- cierre financiero.
+
+La recepción del evento no obliga a NUMERA a contabilizarlo. Un evento incompleto, contradictorio, duplicado o no elegible podrá quedar pendiente, rechazado o sujeto a conciliación conforme a sus contratos.
+
+---
+
+#### 26. Relación con el estado físico
+
+Un cambio financiero nunca podrá reescribir silenciosamente:
+
+- identidad del activo;
+- propietario;
+- custodio;
+- ubicación;
+- condición;
+- disponibilidad;
+- mantenimiento;
+- historial de pérdida;
+- estado de baja;
+- evidencia física.
+
+Una corrección contable no modifica por inferencia el hecho operativo original.
+
+---
+
+#### 27. Momento de emisión
+
+La emisión se produce cuando:
+
+1. el hecho fuente alcanzó la condición empresarial definida para esa familia;
+2. la identidad del activo y del hecho está resuelta;
+3. la versión fuente es conocida;
+4. las referencias obligatorias disponibles están correlacionadas;
+5. la autoridad operativa aplicable ha confirmado el hecho;
+6. la emisión no duplica una intención ya registrada;
+7. existe suficiente información para que NUMERA decida, incluso si la clasificación final sigue pendiente.
+
+No se exige que NEXO conozca de antemano el tratamiento contable definitivo.
+
+---
+
+#### 28. Idempotencia
+
+La misma intención lógica y la misma versión del mismo hecho fuente no podrán producir múltiples efectos económicos independientes.
+
+Debe preservarse:
+
+```text
+MISMA IDENTIDAD FUENTE
++
+MISMA VERSIÓN
++
+MISMA INTENCIÓN
+→ MISMO RESULTADO RECUPERABLE O NO-OP AUTORIZADO
+```
+
+Si la misma clave llega con contenido materialmente diferente, deberá producir conflicto o conciliación, no una segunda aplicación silenciosa.
+
+---
+
+#### 29. Duplicado con identificadores de emisión distintos
+
+Si un defecto provoca dos emisiones con identificadores diferentes para el mismo hecho fuente, NUMERA no debe aplicar ambas ciegamente.
+
+La equivalencia secundaria podrá apoyarse en:
+
+- identidad del activo;
+- identidad y tipo del hecho fuente;
+- versión;
+- documento;
+- proceso;
+- correlación;
+- causación;
+- fecha efectiva;
+- importe y moneda cuando existan.
+
+El caso se concilia sin eliminar la historia de la emisión defectuosa.
+
+---
+
+#### 30. Concurrencia
+
+Dos actores o procesos no podrán confirmar simultáneamente versiones incompatibles del mismo hecho para generar efectos económicos contradictorios.
+
+La materialización futura deberá revalidar:
+
+- versión vigente;
+- estado;
+- autoridad;
+- existencia de emisión previa;
+- claves idempotentes;
+- relaciones de reemplazo o corrección;
+- bloqueos o precondiciones de la transición propietaria.
+
+Una respuesta obsoleta no autoriza una emisión nueva.
+
+---
+
+#### 31. Eventos fuera de orden
+
+Cuando NUMERA reciba hechos relacionados fuera del orden esperado:
+
+- conserva cada identidad;
+- no inventa estados previos;
+- no fuerza cierre;
+- no interpreta la llegada de un evento posterior como prueba de un evento anterior faltante;
+- mantiene pendiente la conciliación necesaria;
+- aplica correcciones solo mediante hechos explícitos.
+
+La llegada tardía de una compra, reparación, recuperación o baja no habilita sobrescritura destructiva.
+
+---
+
+#### 32. Correcciones, reversos y compensaciones
+
+Un dato incorrecto ya emitido se corrige mediante una nueva decisión trazable.
+
+Según el caso se utilizará:
+
+- corrección de fuente;
+- nueva versión;
+- reverso;
+- compensación;
+- anulación;
+- recuperación;
+- reclasificación downstream.
+
+Nunca:
+
+```text
+EDITAR EL EVENTO HISTÓRICO
+→ HACER QUE PAREZCA QUE EL HECHO ORIGINAL NUNCA OCURRIÓ
+```
+
+---
+
+#### 33. Resultado desconocido y reintento
+
+Si NEXO no puede determinar si la emisión fue aceptada:
+
+1. no crea inmediatamente otra intención;
+2. consulta o reconcilia la intención original;
+3. reutiliza la misma identidad reintentable;
+4. recupera el resultado cuando exista;
+5. solo permite una nueva intención cuando se demuestre que representa un hecho nuevo o una corrección autorizada.
+
+Un timeout no equivale a fallo empresarial definitivo.
+
+---
+
+#### 34. Operación offline
+
+La captura offline podrá conservar el hecho operativo cuando el flujo propietario lo permita, pero no afirmará que NUMERA recibió, clasificó o contabilizó el efecto.
+
+Al reconectar:
+
+- se revalida identidad;
+- se revalida versión;
+- se revalida autoridad;
+- se reconcilia emisión previa;
+- se evita duplicación;
+- se distingue dato capturado de resultado confirmado.
+
+---
+
+#### 35. Autorización y segregación
+
+La capacidad para registrar o confirmar el hecho operativo no concede capacidad financiera.
+
+Deben permanecer separadas:
+
+```text
+REGISTRAR HECHO OPERATIVO
+CONFIRMAR / APROBAR HECHO FÍSICO CUANDO APLIQUE
+EMITIR HANDOFF ECONÓMICO
+REVISAR HECHO FINANCIERO
+CLASIFICAR
+CONTABILIZAR
+CONCILIAR
+REVERSAR
+```
+
+La implementación futura deberá resolver permisos y contexto en servidor; los datos del cliente no serán autoridad suficiente.
+
+---
+
+#### 36. Casos de adquisición
+
+| Caso | Hecho NEXO | Handoff económico |
+| --- | --- | --- |
+| compra recibida y activo incorporado | alta física con referencia a compra/recepción | sí, si corresponde y sin duplicar el hecho económico de recepción ya emitido |
+| activo prestado por tercero | alta de custodia/uso | no se presume compra ni capitalización |
+| transferencia entre sedes | movimiento/custodia | no es adquisición |
+| activo donado | incorporación con procedencia | puede requerir evaluación financiera; NEXO no valora por inferencia |
+| reemplazo | baja del anterior + alta del nuevo | dos hechos correlacionados cuando correspondan |
+
+---
+
+#### 37. Casos de reparación
+
+| Caso | Hecho NEXO | Handoff económico |
+| --- | --- | --- |
+| mantenimiento programado | obligación futura | no |
+| diagnóstico | observación técnica | no por sí solo |
+| reparación interna sin costo atribuible aprobado | ejecución técnica | no se inventa importe |
+| reparación con repuestos consumidos | ejecución + consumo | sí cuando exista efecto económico a reconciliar, sin duplicar consumo |
+| reparación externa facturada | ejecución + documento/referencia | sí, correlacionada con ORIGO cuando aplique |
+| garantía | ejecución + reclamación/garantía | conserva referencia; no presume gasto |
+
+---
+
+#### 38. Casos de pérdida
+
+| Caso | Hecho NEXO | Handoff económico |
+| --- | --- | --- |
+| activo no localizado | incidente/hallazgo | no |
+| investigación abierta | caso pendiente | no |
+| pérdida confirmada | decisión operativa | sí, sujeto a NUMERA |
+| recuperación posterior | recuperación | corrección o compensación cuando corresponda |
+| daño reparable | condición + reparación | no se modela como pérdida total |
+
+---
+
+#### 39. Casos de baja
+
+| Caso | Hecho NEXO | Handoff económico |
+| --- | --- | --- |
+| solicitud de baja | solicitud | no |
+| aprobación sin ejecución | decisión pendiente de efecto físico | no |
+| descarte ejecutado | disposición física | sí cuando corresponda |
+| venta ejecutada | disposición física + referencia comercial | sí, sin que NEXO reconozca ingreso |
+| devolución a propietario tercero | salida de custodia | no se presume baja contable propia |
+| reemplazo | baja anterior + adquisición nueva | efectos separados y correlacionados |
+
+---
+
+#### 40. Flota
+
+Los vehículos permanecen sujetos a las decisiones aprobadas de NEXO-DOM-027.
+
+En particular:
+
+- compra de combustible;
+- carga física de combustible;
+- consumo estimado;
+- mantenimiento de vehículo;
+- gasto;
+- costo contable
+
+son hechos distintos.
+
+NEXO-DOM-028 solo gobierna el handoff económico cuando exista un hecho financiero relevante. No convierte kilometraje, checklist o asignación de conductor en eventos financieros.
+
+---
+
+#### 41. Invariantes
+
+Deben mantenerse siempre:
+
+1. un hecho físico tiene un propietario operativo único;
+2. un evento económico derivado conserva referencia al hecho fuente;
+3. un evento emitido no significa evento contabilizado;
+4. NEXO no escribe libros contables;
+5. ORIGO no modifica el estado físico del activo;
+6. NUMERA no reescribe el hecho operativo fuente;
+7. la misma intención no produce dos efectos económicos;
+8. una corrección no borra historia;
+9. reemplazo conserva dos identidades de activo cuando físicamente existen dos activos;
+10. transferencia interna no se convierte en adquisición;
+11. pérdida reportada no se convierte en pérdida confirmada;
+12. aprobación de baja no se convierte en disposición ejecutada;
+13. reparación planificada no se convierte en costo realizado;
+14. un importe sin procedencia no se promueve a dato financiero autoritativo;
+15. una referencia documental no sustituye evidencia operativa cuando esta sea obligatoria.
+
+---
+
+#### 42. Handoff a implementación futura
+
+La materialización física posterior deberá reutilizar:
+
+- el contrato de eventos entre aplicaciones vigente;
+- el ingreso económico propietario de NUMERA;
+- las identidades canónicas de activos;
+- las referencias de ORIGO;
+- los servicios transversales de evidencia;
+- la política de autorización;
+- idempotencia, correlación, causación y versionado aprobados;
+- migraciones y cambios Supabase versionados exclusivamente desde vento-shell.
+
+No se autoriza crear un canal financiero exclusivo de NEXO que compita con los contratos compartidos.
+
+---
+
+#### 43. Estado físico y brecha residual
+
+Esta tarea deja especificado el contrato pero no declara materialización física.
+
+La existencia actual de superficies de activos, mantenimiento, compras o costos no demuestra por sí sola:
+
+- emisión end-to-end del handoff económico;
+- deduplicación entre ORIGO y NEXO;
+- reconciliación en NUMERA;
+- reintento recuperable;
+- corrección o reverso;
+- cobertura de pérdida y baja;
+- evidencia operativa del ciclo completo.
+
+La implementación y su certificación corresponden al paquete físico autorizado que consuma este contrato.
+
+---
+
+#### 44. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+La conducta requerida ya está cubierta por el registro vigente. Esta tarea desarrolla y hace explícito el contrato sin crear una obligación de prueba paralela.
+
+---
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Se conserva como trazabilidad, sin modificar el registro:
+
+- `TREQ-NEXO-013`, para identidad estable, propiedad, custodia, condición e historia del activo;
+- `TREQ-NEXO-014`, para mantenimiento, reparación, repuestos, garantías, baja, venta, descarte, reemplazo y efecto económico separado;
+- `TREQ-NEXO-015`, para vehículos, mantenimiento, kilometraje, combustible y separación de hechos;
+- `TREQ-NEXO-016`, para logística, cierre y conciliación operativa;
+- `TREQ-NUMERA-001`, para ingreso financiero en revisión, idempotencia, correcciones y preservación de historia;
+- `TREQ-INTEGRATION-012`, para ingreso financiero canónico desde fuentes operativas sin escritura directa de libros;
+- `TREQ-INTEGRATION-016`, para sincronización de estados y eventos con ownership, idempotencia y evidencia.
+
+Estas referencias son cobertura heredada y no representan requisitos afectados por la entrega.
+
+---
+
+#### 46. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | Tarea DEFINE_ONCE exclusivamente documental; no autoriza build de producto ni materialización física. |
+| LOCAL | NOT_EXECUTED | La normalización, quality, delivery y batería documental se ejecutan sobre el checkout después de insertar el artefacto. |
+| REMOTA | PASS | La continuidad vigente sitúa NEXO-DOM-028 después de NEXO-DOM-027; CAP-SCOPE-007 asigna a esta tarea la brecha ORIGO-NEXO-NUMERA y los contratos vigentes ya definen ingreso económico, ownership e idempotencia. |
+| OPERATIVA | NOT_APPLICABLE | No se ejecutan adquisiciones, reparaciones, pérdidas, bajas ni asientos reales durante esta definición documental. |
+| FÍSICA | NOT_APPLICABLE | La topología aplicable es DEFINE_ONCE y no existe instancia física propia para esta tarea. |
+
+---
+
+#### 47. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+1. adquisición, reparación, pérdida y baja tienen disparadores empresariales diferenciados;
+2. NEXO conserva la propiedad del hecho físico y no adopta propiedad contable;
+3. ORIGO conserva compra y recepción comercial sin duplicarse en NEXO;
+4. NUMERA conserva VPROC-0051, clasificación, reconocimiento, contabilización y conciliación;
+5. cada handoff económico puede volver al activo, hecho fuente, versión y evidencia;
+6. creación de maestro, traslado, custodia, checklist, lectura y mantenimiento planificado no se tratan como eventos financieros por inferencia;
+7. reemplazo se descompone en hechos del activo anterior y del activo nuevo;
+8. reparación evita doble costo entre compra, repuesto, servicio y consumo;
+9. pérdida exige confirmación y permite recuperación posterior sin borrar historia;
+10. baja exige efecto físico y no se confunde con solicitud o aprobación;
+11. venta de activo no hace que NEXO reconozca ingreso ni resultado contable;
+12. la misma intención es idempotente;
+13. duplicados, concurrencia, eventos fuera de orden y resultado desconocido tienen tratamiento fail-closed y reconciliable;
+14. correcciones, reversos y compensaciones preservan historia;
+15. datos monetarios sin procedencia no son autoridad;
+16. el contrato reutiliza el sobre transversal y el ingreso financiero canónico;
+17. no se crea un canal financiero paralelo para NEXO;
+18. no se crean ni modifican requisitos de prueba porque la cobertura vigente es suficiente;
+19. no se autorizan código, datos, Supabase, despliegues ni efectos empresariales reales.
+
+---
+
+#### 48. Límites
+
+Esta tarea no:
+
+- crea tablas, columnas, vistas, funciones, RPC, triggers, buckets, políticas RLS, Edge Functions, colas o cron;
+- modifica Supabase;
+- ejecuta migraciones;
+- crea enums físicos ni nuevos identificadores de evento;
+- define cuentas contables;
+- define plan de cuentas;
+- define vida útil contable;
+- define métodos de depreciación;
+- determina deterioro o valor recuperable;
+- define reglas fiscales o tributarias;
+- contabiliza activos;
+- registra pagos;
+- modifica compras o recepciones reales;
+- modifica activos reales;
+- confirma pérdidas reales;
+- ejecuta bajas, ventas o descartes;
+- ejecuta reparaciones;
+- cambia costos históricos;
+- reemplaza decisiones de ORIGO o NUMERA;
+- crea una segunda fuente de verdad financiera;
+- autoriza implementación física.
+
+---
+
+#### 49. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición`
+
 ### [ ] NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
 ### [ ] NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
 ### [ ] NEXO-DOM-031 — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación
