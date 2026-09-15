@@ -31969,7 +31969,868 @@ PHYSICAL IMPLEMENTATION OR OPERATIVE CERTIFICATION
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración`
 
-### [ ] NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
+### ✅ NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo
+**Tarea siguiente:** NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
+**Tipo de tarea:** documental; especialización canónica de inspecciones técnicas, mantenimiento preventivo, garantías y calibración para activos y sujetos físicos aplicables, consumiendo la semántica común de obligación, trabajo, prueba, liberación y disponibilidad sin invadir control metrológico detallado, flota, instalaciones ni efectos contables
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Especializar el contrato aprobado de mantenimiento para que inspecciones técnicas, mantenimiento preventivo, garantías y calibración tengan reglas reproducibles, versionadas y auditables sobre un sujeto físico estable.
+
+La regla raíz queda:
+
+```text
+STABLE PHYSICAL SUBJECT
++
+VERSIONED TECHNICAL POLICY
++
+EXPLICIT TRIGGER
++
+DUE OBLIGATION
++
+AUTHORIZED EXECUTION
++
+EVIDENCE
++
+RESULT
++
+TEST OR VERIFICATION WHEN REQUIRED
++
+RELEASE DECISION WHEN REQUIRED
++
+NEXT OBLIGATION
+=
+TRACEABLE SERVICEABILITY CONTROL
+```
+
+Esta tarea consume la semántica compartida aprobada en `NEXO-DOM-012` y el vínculo entre repuestos, mantenimiento y costo informado aprobado en `NEXO-DOM-025`.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija:
+
+1. especialización de inspección, preventivo, garantía y calibración;
+2. política versionada y obligación concreta;
+3. disparadores y vencimientos;
+4. ejecución y resultado;
+5. prueba, verificación y liberación cuando apliquen;
+6. próxima obligación;
+7. garantía y reclamación separadas;
+8. calibración como gate técnico de serviceability;
+9. idempotencia, concurrencia, offline y corrección;
+10. reconciliación del AS-IS;
+11. fronteras exactas con flota, instalaciones, inspección física general, metrología y contabilidad.
+
+No se materializa ningún cambio físico.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Se preservan sin reabrir:
+
+- identidad estable del sujeto físico;
+- clase primaria;
+- condición;
+- lifecycle;
+- ubicación;
+- custodia;
+- ownership;
+- disponibilidad;
+- mantenimiento y reparación;
+- prueba y liberación;
+- historial no destructivo;
+- repuestos y compatibilidad;
+- costo informado separado del efecto contable;
+- evidencia gobernada;
+- autorización;
+- idempotencia;
+- concurrencia;
+- operación offline.
+
+---
+
+#### 4. Dimensiones independientes
+
+Se mantiene:
+
+```text
+CONDITION
+!=
+LIFECYCLE
+!=
+LOCATION
+!=
+CUSTODY
+!=
+OWNERSHIP
+!=
+TECHNICAL OBLIGATION
+!=
+WORK EXECUTION
+!=
+SERVICEABILITY
+!=
+AVAILABILITY
+!=
+ECONOMIC TREATMENT
+```
+
+Una garantía vigente no demuestra disponibilidad y una calibración vencida no cambia por sí sola propiedad, ubicación o custodia.
+
+---
+
+#### 5. Especializaciones técnicas
+
+Esta tarea reconoce conceptualmente:
+
+```text
+TECHNICAL_INSPECTION
+PREVENTIVE_MAINTENANCE
+WARRANTY_CONTROL
+CALIBRATION_OBLIGATION
+```
+
+Los literales expresan semántica documental y no prescriben un enum físico.
+
+---
+
+#### 6. Política y obligación
+
+Se fija:
+
+```text
+TECHNICAL POLICY
+!=
+TECHNICAL OBLIGATION
+```
+
+La política define cómo se generan obligaciones. La obligación representa una exigencia concreta bajo una versión específica.
+
+Editar una política no reescribe obligaciones históricas.
+
+---
+
+#### 7. Política versionada
+
+Una política debe conservar, cuando aplique:
+
+- identidad;
+- especialización;
+- alcance;
+- versión;
+- vigencia;
+- aplicabilidad;
+- disparador;
+- frecuencia o regla de vencimiento;
+- anticipación o tolerancia;
+- condición bloqueante;
+- procedimiento o referencia;
+- evidencia requerida;
+- criterio de resultado;
+- regla de próxima obligación;
+- autoridad de aprobación.
+
+---
+
+#### 8. Aplicabilidad
+
+La aplicabilidad se resuelve desde hechos aprobados como modelo, tipo técnico, criticidad, fabricante, uso, condición, obligación contractual, regulación o política empresarial.
+
+No se asigna por nombre libre del activo.
+
+---
+
+#### 9. Disparadores
+
+Una obligación puede originarse por calendario, tiempo transcurrido, uso acumulado, contador, condición, evento, intervención previa, fabricante, proveedor, contrato, regulación o decisión técnica autorizada.
+
+El disparador efectivo debe quedar identificado.
+
+---
+
+#### 10. Disparador no es trabajo
+
+Se fija:
+
+```text
+TRIGGER
+!=
+WORK START
+```
+
+Alcanzar fecha o umbral crea o vuelve exigible una obligación. No demuestra inicio de trabajo ni salida efectiva de servicio.
+
+---
+
+#### 11. Estados de obligación heredados
+
+Se preservan los estados de `NEXO-DOM-012`:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+No se crea una máquina paralela incompatible.
+
+---
+
+#### 12. UPCOMING y DUE
+
+`UPCOMING` indica obligación existente todavía fuera de su ventana exigible.
+
+`DUE` indica que la obligación está dentro de la ventana exigible.
+
+La política define recordatorio, programación, restricción o bloqueo.
+
+---
+
+#### 13. OVERDUE
+
+`OVERDUE` significa que una obligación exigible superó su límite sin satisfacción válida.
+
+Se mantiene:
+
+```text
+OVERDUE
+!=
+FAILED INSPECTION
+!=
+BROKEN ASSET
+```
+
+---
+
+#### 14. Vencimiento bloqueante
+
+Cuando la política define una obligación como bloqueante:
+
+```text
+OVERDUE BLOCKING OBLIGATION
+→
+UNAVAILABLE OR RESTRICTED AS DEFINED BY POLICY
+```
+
+La causa debe permanecer explícita y no se elimina editando una fecha histórica.
+
+---
+
+#### 15. SATISFIED
+
+Una obligación solo se satisface con resultado válido conforme a política.
+
+Programar trabajo, escribir una nota o adjuntar un archivo sin correlación no constituye satisfacción.
+
+---
+
+#### 16. CANCELLED, SUPERSEDED y EXCEPTION
+
+`CANCELLED` conserva motivo y autoridad.
+
+`SUPERSEDED` conserva la sustitución y lineage.
+
+`EXCEPTION` conserva autoridad, motivo, alcance, vigencia, controles compensatorios y condición de salida.
+
+Ninguno equivale silenciosamente a `SATISFIED`.
+
+---
+
+#### 17. Próxima obligación
+
+La próxima obligación deriva de:
+
+```text
+POLICY VERSION
++
+EFFECTIVE TRIGGER
++
+VALID COMPLETION OR REFERENCE FACT
++
+APPROVED RECURRENCE RULE
+```
+
+No se obtiene sobrescribiendo manualmente una fecha.
+
+---
+
+#### 18. Cambio de política
+
+Una nueva versión debe declarar el tratamiento de obligaciones futuras, obligaciones emitidas, trabajos abiertos, excepciones y próxima obligación.
+
+No se recalcula retrospectivamente historia aprobada sin transición explícita.
+
+---
+
+#### 19. Inspección técnica
+
+Una inspección técnica comprueba una condición o requisito mediante un alcance definido y produce observaciones, hallazgos y resultado.
+
+No equivale a reparación, mantenimiento preventivo, calibración, liberación, garantía ni disponibilidad.
+
+---
+
+#### 20. Obligación de inspección
+
+La obligación de inspección debe identificar:
+
+- sujeto;
+- alcance;
+- referencia al procedimiento;
+- vencimiento;
+- capacidad o responsable requerido;
+- evidencia;
+- criterio de resultado.
+
+La programación no modifica serviceability por sí sola salvo política expresa.
+
+---
+
+#### 21. Resultado de inspección
+
+Conceptualmente debe poder distinguir:
+
+```text
+PASS
+PASS_WITH_OBSERVATIONS
+FAIL
+INCONCLUSIVE
+```
+
+Una implementación puede usar otro catálogo si conserva equivalencia semántica.
+
+---
+
+#### 22. Hallazgo de inspección
+
+Un hallazgo conserva observación, clasificación o severidad aplicable, evidencia, actor, momento, inspección de origen y acción posterior cuando corresponda.
+
+La especialización completa de plantillas y acciones correctivas de inspección física general pertenece a `NEXO-DOM-034`.
+
+---
+
+#### 23. Inspección fallida o inconclusa
+
+Una inspección fallida puede bloquear, restringir, originar reparación o exigir nueva verificación según política.
+
+`INCONCLUSIVE` no equivale a `PASS`.
+
+Si la política exige resultado positivo, la liberación permanece bloqueada.
+
+---
+
+#### 24. Mantenimiento preventivo
+
+El mantenimiento preventivo es trabajo planificado para reducir probabilidad de falla, degradación o incumplimiento antes de una avería correctiva.
+
+Debe originarse en política versionada y obligación exigible.
+
+No puede reducirse a una fecha editable.
+
+---
+
+#### 25. Preventivo programado e iniciado
+
+La programación se vincula con una obligación concreta.
+
+Iniciar trabajo es un hecho distinto y puede afectar disponibilidad o custodia sin reescribir condición, lifecycle, garantía ni obligación.
+
+---
+
+#### 26. Preventivo completado
+
+Se conserva:
+
+```text
+WORK COMPLETED
+!=
+RELEASED FOR SERVICE
+```
+
+El trabajo puede estar terminado y requerir prueba, inspección o liberación posterior.
+
+---
+
+#### 27. Prueba posterior
+
+Cuando la política exige prueba posterior, su resultado es un hecho separado.
+
+Una prueba fallida o inconclusa no habilita liberación.
+
+---
+
+#### 28. Liberación
+
+La liberación confirma que un actor autorizado acepta el retorno al servicio bajo la evidencia exigida.
+
+No se infiere únicamente porque el registro diga `done`, exista fecha de realización, se pague una factura, el proveedor devuelva el activo o se cargue una fotografía.
+
+---
+
+#### 29. Múltiples obligaciones
+
+Un sujeto puede mantener simultáneamente obligaciones de preventivo, inspección, calibración y garantía documental.
+
+Cada una conserva identidad y estado propios.
+
+Satisfacer una no satisface las demás.
+
+---
+
+#### 30. Dependencias entre obligaciones
+
+Una obligación puede depender de otra para permitir liberación.
+
+La dependencia debe ser explícita y no se infiere solo por orden cronológico.
+
+---
+
+#### 31. Garantía como cobertura
+
+La garantía conserva, cuando aplique:
+
+- sujeto o alcance;
+- proveedor, fabricante o garante;
+- vigencia;
+- términos;
+- cobertura;
+- exclusiones;
+- condiciones;
+- documentos;
+- referencia contractual o de compra;
+- estado;
+- evidencia de origen.
+
+---
+
+#### 32. Fecha resumen de garantía
+
+Se fija:
+
+```text
+WARRANTY SUMMARY DATE
+!=
+WARRANTY CONTRACT
+```
+
+Un campo de fecha puede ser una proyección útil, pero no demuestra cobertura, exclusiones, aceptación, reclamación ni resultado.
+
+---
+
+#### 33. Documento de garantía
+
+Se mantiene:
+
+```text
+WARRANTY DOCUMENT
+!=
+VALID WARRANTY
+```
+
+El archivo es evidencia. La vigencia y aplicabilidad requieren contexto y reglas.
+
+---
+
+#### 34. Reclamación de garantía
+
+Una reclamación es un proceso relacionado pero separado del mantenimiento.
+
+Debe conservar cobertura invocada, sujeto, problema, fecha, reclamante, garante, evidencia, decisión, motivo y resultado.
+
+---
+
+#### 35. Garantía no sustituye mantenimiento
+
+Abrir una reclamación no satisface un preventivo.
+
+Aceptar cobertura no demuestra reparación.
+
+Cerrar una reclamación no demuestra serviceability.
+
+---
+
+#### 36. Garantía expirada
+
+La expiración no borra cobertura histórica, reclamaciones iniciadas válidamente, documentos, reparaciones ni decisiones.
+
+Solo cambia aplicabilidad futura según contrato.
+
+---
+
+#### 37. Garantía, repuestos y costo
+
+Si una reparación bajo garantía usa repuestos, el repuesto conserva movimiento de inventario y vínculo con mantenimiento conforme a `NEXO-DOM-025`.
+
+Costo informado, costo cubierto por garantía y efecto contable permanecen separados.
+
+Los eventos financieros posteriores pertenecen a `NEXO-DOM-028`.
+
+---
+
+#### 38. Obligación de calibración
+
+La obligación de calibración conserva como mínimo:
+
+- sujeto exacto;
+- política;
+- versión;
+- disparador;
+- vencimiento;
+- responsable o proveedor;
+- evidencia requerida;
+- resultado;
+- certificado o referencia cuando aplique;
+- efecto sobre serviceability;
+- próxima obligación.
+
+---
+
+#### 39. Calibración vencida
+
+Cuando una calibración obligatoria es bloqueante:
+
+```text
+REQUIRED CALIBRATION OVERDUE
++
+BLOCKING POLICY
+→
+UNAVAILABLE
+```
+
+No se libera cambiando manualmente la próxima fecha.
+
+---
+
+#### 40. Calibración ejecutada
+
+Registrar ejecución no demuestra automáticamente conformidad.
+
+La obligación se satisface solo con el resultado y evidencia exigidos.
+
+---
+
+#### 41. Calibración fallida
+
+Un resultado fallido conserva el hecho, impide liberación cuando la política lo exige y origina evaluación o acción técnica.
+
+El detalle del fuera de tolerancia pertenece a `NEXO-DOM-035`.
+
+---
+
+#### 42. Certificado
+
+Se fija:
+
+```text
+CERTIFICATE FILE
+!=
+CALIBRATION RESULT
+```
+
+El certificado es evidencia y debe estar correlacionado con sujeto, ejecución y resultado.
+
+---
+
+#### 43. Frontera con NEXO-DOM-035
+
+`NEXO-DOM-035` conserva el control metrológico detallado: magnitud, rango, tolerancia, patrón o referencia, método, verificación, certificado e impacto fuera de tolerancia.
+
+Esta tarea conserva obligación, vencimiento, ejecución y efecto sobre serviceability.
+
+---
+
+#### 44. Frontera con NEXO-DOM-034
+
+`NEXO-DOM-034` conserva plantillas versionadas, hallazgos y acciones correctivas para inspecciones físicas generales.
+
+Esta tarea conserva la obligación técnica del activo y su resultado en relación con mantenimiento y disponibilidad.
+
+---
+
+#### 45. Frontera con NEXO-DOM-030
+
+`NEXO-DOM-030` conserva planes, solicitudes, órdenes de trabajo, reparación, prueba y liberación de instalaciones y componentes fijos.
+
+El objeto principal intervenido determina el dominio propietario.
+
+---
+
+#### 46. Frontera con NEXO-DOM-027
+
+`NEXO-DOM-027` especializa propiedad del vehículo, checklist de flota, kilometraje, combustible y mantenimiento de flota.
+
+Los vehículos consumen estas invariantes sin convertirlas en un único estado de vehículo.
+
+---
+
+#### 47. Evidencia
+
+La evidencia puede incluir lectura, checklist, informe, fotografía, certificado, documento de fabricante, orden o referencia de trabajo, prueba, firma, referencia de repuesto o decisión de garantía.
+
+La evidencia soporta el hecho; no lo sustituye.
+
+---
+
+#### 48. Idempotencia
+
+La materialización futura debe impedir que un reintento cree dos obligaciones, inspecciones, mantenimientos, reclamaciones, calibraciones, liberaciones o próximas obligaciones.
+
+La misma intención lógica produce un único efecto empresarial.
+
+---
+
+#### 49. Concurrencia
+
+Antes de modificar obligación o liberar un sujeto se revalidan sujeto, obligación, versión, estado esperado, política, trabajo, resultado y bloqueos vigentes.
+
+Un conflicto incompatible falla cerrado o exige reconciliación.
+
+---
+
+#### 50. Operación offline y respuesta tardía
+
+Una captura offline no es confirmación autoritativa.
+
+Al sincronizar se revalidan identidad, obligación, versión, vigencia, estado, duplicidad y autoridad.
+
+Un timeout no demuestra que la operación falló; antes de reintentar se reconcilia por identidad e idempotencia.
+
+---
+
+#### 51. Corrección no destructiva
+
+Corregir fecha, responsable, resultado o evidencia no elimina la versión previa cuando ya produjo significado empresarial.
+
+La historia debe reconstruir qué se conocía y qué se corrigió.
+
+---
+
+#### 52. Disponibilidad
+
+La disponibilidad es una proyección derivada y puede quedar bloqueada por mantenimiento activo, obligación crítica vencida, inspección fallida, calibración vencida o fallida, condición insegura, prueba pendiente o liberación pendiente.
+
+La causa debe ser explicable.
+
+---
+
+#### 53. AS-IS remoto observado
+
+El estado remoto verificable presenta:
+
+| Superficie | Filas observadas | Hecho relevante |
+| --- | ---: | --- |
+| `asset_items` | 38 | existe `warranty_until`; no se observaron fechas informadas |
+| `asset_maintenance_records` | 0 | no existen ejecuciones observadas |
+| `product_asset_maintenance_events` | 0 | no existen eventos observados |
+| `product_asset_profiles` | 210 | ninguna fila observada tiene ciclo habilitado ni meses configurados |
+| `asset_documents` | 0 | no existe evidencia documental observada |
+
+La sola presencia de esquema no demuestra operación real.
+
+---
+
+#### 54. AS-IS de mantenimiento individual
+
+`asset_maintenance_records` distingue tipos legacy `preventive`, `corrective`, `inspection`, `calibration`, `cleaning`, `other` y estados `planned`, `done`, `cancelled`, `overdue`.
+
+También conserva fechas, proveedor, trabajo, piezas reemplazadas, costo informado y próxima fecha.
+
+La superficie es reutilizable como capacidad parcial, no como contrato objetivo completo.
+
+---
+
+#### 55. Brecha planned/done
+
+El código observable actual mezcla:
+
+```text
+planned
+→
+en_mantenimiento + en_reparacion
+```
+
+y:
+
+```text
+done
+→
+operativo + activo
+```
+
+Eso colapsa programación con inicio y trabajo completado con prueba/liberación.
+
+El contrato objetivo exige separar esos hechos.
+
+---
+
+#### 56. Ciclo simple de catálogo
+
+`product_asset_profiles` conserva ciclo habilitado, meses y fecha ancla.
+
+Puede reutilizarse como dato candidato, pero no equivale a política versionada completa porque no expresa excepciones, evidencia, criticidad, resultado, prueba, liberación ni supersesión.
+
+---
+
+#### 57. Superficie paralela legacy
+
+`product_asset_maintenance_events` constituye una superficie por producto distinta del historial individual.
+
+No se adopta como fuente competidora.
+
+Una materialización futura debe clasificarla y reconciliarla con evidencia.
+
+---
+
+#### 58. Garantía y documentos legacy
+
+`asset_items.warranty_until` puede conservarse como proyección resumen.
+
+`asset_documents` admite `warranty`, `maintenance_report` y `certificate` como evidencia.
+
+Ninguna de esas superficies constituye por sí sola un ciclo completo de garantía o calibración.
+
+---
+
+#### 59. Clasificación de adopción
+
+La clasificación queda:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan identidad de activo, condición, disponibilidad, mantenimiento parcial, documentos, configuración de ciclo, proveedor, costo informado y fechas.
+
+Se refactorizan o reconcilian estado de obligación, separación programación/inicio, prueba, liberación, garantía estructurada, reclamaciones, calibración gobernada, próxima obligación versionada y fuentes paralelas.
+
+---
+
+#### 60. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+
+La cobertura existente ya protege mantenimiento, preventivo, inspección, calibración, garantía, evidencia, prueba, liberación y disponibilidad.
+
+---
+
+#### 61. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente de:
+
+- `TREQ-NEXO-012`, para condición y trazabilidad;
+- `TREQ-NEXO-013`, para identidad e historia de activos;
+- `TREQ-NEXO-014`, para mantenimiento, preventivo, inspección, calibración, garantía, prueba y liberación;
+- `TREQ-NEXO-018`, para inspección, calibración, evidencia, desviación, verificación y disponibilidad;
+- `TREQ-NEXO-044`, para repuestos y mantenimiento correlacionado;
+- `TREQ-INTEGRATION-012`, para integración ya cubierta.
+
+Esta enumeración es trazabilidad y no modifica el registro.
+
+---
+
+#### 62. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al checkout y el build canónico corresponden al ciclo local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores sobre el checkout local del usuario durante la elaboración documental. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, archivo propietario, topología `DEFINE_ONCE`, tareas base, 04A NEXO, validadores, esquema remoto y consumidores actuales de `vento-nexo`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron inspecciones, mantenimientos, reclamaciones ni calibraciones reales. |
+| FÍSICA | NOT_APPLICABLE | La tarea no autoriza cambios de código, datos, Supabase, despliegues ni intervención física. |
+
+---
+
+#### 63. Criterios de aceptación
+
+- [x] Se especializan inspección, preventivo, garantía y calibración.
+- [x] Se preserva la semántica de `NEXO-DOM-012`.
+- [x] Se preserva el vínculo de repuestos de `NEXO-DOM-025`.
+- [x] Política y obligación permanecen separadas.
+- [x] Disparador y trabajo permanecen separados.
+- [x] Se conservan los estados heredados de obligación.
+- [x] Próxima obligación deriva de política versionada.
+- [x] Inspección no equivale a mantenimiento.
+- [x] Preventivo completado no equivale a liberación.
+- [x] Prueba y liberación permanecen separadas.
+- [x] Garantía se separa de documento, reclamación y reparación.
+- [x] Calibración ejecutada no equivale automáticamente a conformidad.
+- [x] Calibración vencida puede bloquear según política.
+- [x] Se preservan fronteras de `NEXO-DOM-027`, `NEXO-DOM-030`, `NEXO-DOM-034` y `NEXO-DOM-035`.
+- [x] Se cubren idempotencia, concurrencia, offline y corrección.
+- [x] Se registra AS-IS sin reinterpretación destructiva.
+- [x] Se clasifica adopción `REUSE_OR_REFACTOR`.
+- [x] No se crean ni modifican requisitos.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+
+---
+
+#### 64. Límites
+
+Esta tarea no implementa mantenimiento, crea tablas, crea migraciones, modifica Supabase, modifica `vento-nexo`, crea obligaciones reales, ejecuta inspecciones, abre reclamaciones, ejecuta calibraciones, define kilometraje o combustible, define órdenes de trabajo de instalaciones, define plantillas completas de inspección física general, define control metrológico detallado, emite hechos contables, cambia disponibilidad real, ejecuta backfill, modifica 04A ni crea instancia física propia.
+
+---
+
+#### 65. Handoff hacia NEXO-DOM-027
+
+`NEXO-DOM-027` recibe:
+
+```text
+STABLE PHYSICAL SUBJECT
++
+VERSIONED TECHNICAL POLICY
++
+DUE / OVERDUE OBLIGATION
++
+AUTHORIZED EXECUTION
++
+EVIDENCE AND RESULT
++
+TEST / RELEASE SEPARATION
++
+WARRANTY COVERAGE / CLAIM SEPARATION
++
+CALIBRATION SERVICEABILITY GATE
++
+NEXT OBLIGATION
+```
+
+La siguiente tarea podrá añadir propiedad vehicular, checklist, kilometraje, combustible y mantenimiento de flota sin colapsar esas dimensiones.
+
+---
+
+#### 66. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota`
+
 ### [ ] NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
 ### [ ] NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
 ### [ ] NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición

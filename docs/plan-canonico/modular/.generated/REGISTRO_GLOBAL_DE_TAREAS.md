@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1192** |
+| Aprobadas | **1193** |
 | En propuesta | **0** |
-| No iniciadas | **404** |
+| No iniciadas | **403** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **74.69% (1192/1596)** |
+| Porcentaje de completamiento | **74.75% (1193/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **404** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1093** |
+| ⏸ NO_EVALUADA | **403** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1094** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-025` — Vincular repuestos consumidos con mantenimiento y costo del activo | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-026` — Definir inspecciones, mantenimiento preventivo, garantía y calibración | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-027` — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-026` — Definir inspecciones, mantenimiento preventivo, garantía y calibración | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-027` — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-028` — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -977,7 +977,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-023` | Definir trazabilidad de lote, serial, vencimiento y condición dentro del LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-024` | Definir capacidad, peso, volumen y compatibilidad de contenido | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-025` | Vincular repuestos consumidos con mantenimiento y costo del activo | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-026` | Definir inspecciones, mantenimiento preventivo, garantía y calibración | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-026` | Definir inspecciones, mantenimiento preventivo, garantía y calibración | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-027` | Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-028` | Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-029` | Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
