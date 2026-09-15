@@ -298,7 +298,7 @@ test('start abre carril fisico antes de reconciliar derivados versionados y no e
   assert.match(source, /DOCUMENTARY_LANE_FOR_PHYSICAL: 'ADVISORY_ONLY'/u);
 });
 
-test('finish conserva validadores, reanuda post-commit y usa polling reintentable antes del merge', () => {
+test('finish usa fast lane físico, reanuda post-commit y exige polling hosted antes del merge', () => {
   const source = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
   const finish = source.indexOf('export async function finishImplementation');
   const finishEnd = source.indexOf('function parseArgs', finish);
@@ -306,12 +306,8 @@ test('finish conserva validadores, reanuda post-commit y usa polling reintentabl
   const verified = source.indexOf('assertInstanceCanFinish(instance);', finish);
   const build = source.indexOf("npm(['run', '--silent', 'docs:plan:build']", verified);
   const planCheck = source.indexOf("npm(['run', '--silent', 'docs:plan:check']", build);
-  const parallel = source.indexOf('await Promise.all([', planCheck);
-  const planTest = source.indexOf("npmAsync(['run', '--silent', 'docs:plan:test']", parallel);
-  const treqCheck = source.indexOf("npmAsync(['run', '--silent', 'docs:treq:check']", parallel);
-  const treqTest = source.indexOf("npmAsync(['run', '--silent', 'docs:treq:test']", parallel);
-  const lint = source.indexOf("npmAsync(['run', '--silent', 'quality:lint:ratchet', '--', '--base', `origin/${DEFAULT_BRANCH}`]", parallel);
-  const dirty = source.indexOf('const dirty = worktreePaths(root);', parallel);
+  const fastLane = source.indexOf('LOCAL_VALIDATION_STRATEGY: \'SCOPE_ENFORCED_FAST_LANE\'', planCheck);
+  const dirty = source.indexOf('const dirty = worktreePaths(root);', planCheck);
   const finishMode = source.indexOf('const finishMode = resolveImplementationFinishMode({', dirty);
   const commitScope = source.indexOf("'docs:commit-scope:check'", finishMode);
   const instanceScope = source.indexOf("'--instance-id', id", commitScope);
@@ -331,11 +327,11 @@ test('finish conserva validadores, reanuda post-commit y usa polling reintentabl
   assert.ok(verified > finish);
   assert.ok(build > verified);
   assert.ok(planCheck > build);
-  assert.ok(parallel > planCheck);
-  assert.ok(planTest > parallel && planTest < dirty);
-  assert.ok(treqCheck > parallel && treqCheck < dirty);
-  assert.ok(treqTest > parallel && treqTest < dirty);
-  assert.ok(lint > parallel && lint < dirty);
+  assert.equal(finishSource.includes("npmAsync(['run', '--silent', 'docs:plan:test']"), false);
+  assert.equal(finishSource.includes("npmAsync(['run', '--silent', 'docs:treq:check']"), false);
+  assert.equal(finishSource.includes("npmAsync(['run', '--silent', 'docs:treq:test']"), false);
+  assert.equal(finishSource.includes("npmAsync(['run', '--silent', 'quality:lint:ratchet'"), false);
+  assert.ok(fastLane > planCheck && fastLane > dirty);
   assert.ok(finishMode > dirty);
   assert.ok(commitScope > finishMode);
   assert.ok(instanceScope > commitScope);
@@ -355,7 +351,7 @@ test('finish conserva validadores, reanuda post-commit y usa polling reintentabl
   assert.equal(source.includes('classifyTaskPath'), false);
   assert.match(source, /RESUME_POST_MERGE/u);
   assert.match(source, /derivedPending\.length > 1/u);
-  assert.match(source, /import \{ spawn, spawnSync \} from 'node:child_process';/u);
+  assert.match(source, /import \{ spawnSync \} from 'node:child_process';/u);
   assert.match(source, /const CHECK_REGISTRATION_ATTEMPTS = 60;/u);
   assert.match(source, /const CHECK_REGISTRATION_INTERVAL_MS = 2000;/u);
   assert.match(source, /const MERGE_CONFIRM_ATTEMPTS = 60;/u);
@@ -367,6 +363,7 @@ test('finish conserva validadores, reanuda post-commit y usa polling reintentabl
 
 test('CI usa fast lane en PR fisico sin duplicar suites cubiertas por Required Gate', () => {
   const source = fs.readFileSync('.github/workflows/validate-canonical-plan.yml', 'utf8');
+  const requiredGate = fs.readFileSync('.github/workflows/vento-required-gate.yml', 'utf8');
 
   assert.match(source, /implementation_pr=false/u);
   assert.match(source, /\$\{HEAD_REF:-\}" == implementation\/\*/u);
@@ -380,6 +377,8 @@ test('CI usa fast lane en PR fisico sin duplicar suites cubiertas por Required G
   assert.equal(planChecks.length, 1);
   assert.equal(source.includes('run: npm run docs:delivery:check'), false);
   assert.match(source, /npm ci --prefer-offline --no-audit --no-fund/u);
+  assert.match(requiredGate, /run: npm test --silent/u);
+  assert.match(requiredGate, /validate-treq-registry\.mjs --json --baseline-file .*--require-baseline/u);
 });
 
 test('docs:plan:build materializa la siguiente instancia pendiente antes del core build', () => {
