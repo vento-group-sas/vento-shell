@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1196** |
+| Aprobadas | **1197** |
 | En propuesta | **0** |
-| No iniciadas | **400** |
+| No iniciadas | **399** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **74.94% (1196/1596)** |
+| Porcentaje de completamiento | **75.00% (1197/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **400** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1097** |
+| ⏸ NO_EVALUADA | **399** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1098** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-029` — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-030` — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-031` — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-030` — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-031` — Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-DOM-032` — Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -981,7 +981,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-027` | Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-028` | Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-029` | Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-030` | Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-030` | Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-031` | Definir limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-032` | Definir control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-033` | Definir servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
