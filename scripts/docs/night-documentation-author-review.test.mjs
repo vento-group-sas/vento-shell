@@ -8,6 +8,7 @@ import {
   authorSchema,
   candidateStructuralMetrics,
   normalizeCandidateIdentityMetadata,
+  reviewerPresentationContract,
   reviewerSchema,
   runAuthorReview,
   selectModels,
@@ -172,6 +173,32 @@ test('normaliza metadata identitaria decorada antes del SHA y evita el fallo pro
   );
 });
 
+test('contrato de reviewer define exactamente backticks y terminación de Continuidad', () => {
+  const contract = reviewerPresentationContract();
+  assert.equal(contract.deterministic_validator, 'validateTaskPresentation');
+  assert.equal(contract.deterministic_result, 'PASS_BEFORE_REVIEW');
+  assert.equal(contract.header_identity_value_format, 'DIRECT_TEXT_NO_BACKTICKS_NO_STATUS_SUFFIX');
+  assert.equal(contract.continuity_value_format, 'INLINE_CODE_REQUIRED');
+  assert.equal(
+    contract.continuity_terminal_rule,
+    'NO_CONTENT_AFTER_INLINE_CODE_VALUE_OF_SIGUIENTE_TAREA_RESERVADA',
+  );
+
+  const result = validateCandidate(authorResponse(), capsule);
+  assert.match(
+    result.markdown,
+    /\*\*ÚLTIMA TAREA APROBADA\*\*\n`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`/u,
+  );
+  assert.match(
+    result.markdown,
+    /\*\*TAREA ACTUAL APROBADA\*\*\n`NEXO-DOM-019 — Separar identidad permanente del contenedor físico e identidad temporal o persistente del LPN`/u,
+  );
+  assert.match(
+    result.markdown,
+    /\*\*SIGUIENTE TAREA RESERVADA\*\*\n`NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN`\s*$/u,
+  );
+});
+
 test('reubica referencia TREQ histórica fuera de derivados antes de calcular el SHA', () => {
   const historical = authorResponse();
   historical.task_markdown = historical.task_markdown.replace(
@@ -228,6 +255,8 @@ test('permite referencia histórica fuera de la sección TREQ con cero cambios',
 test('autor y dos reviewers operan sobre el mismo SHA con máximo tres llamadas', async () => {
   const outputDir = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-phase2-review-'));
   const calls = [];
+  const reviewerPayloads = [];
+  const reviewerInstructionsSeen = [];
   let candidateSha = null;
   const fakeCall = async (options) => {
     calls.push(options.schemaName);
@@ -236,6 +265,8 @@ test('autor y dos reviewers operan sobre el mismo SHA con máximo tres llamadas'
       candidateSha = validateCandidate(parsed, capsule).candidateSha;
       return { parsed, response: apiEnvelope('resp-author', 100, 200) };
     }
+    reviewerPayloads.push(JSON.parse(options.input));
+    reviewerInstructionsSeen.push(options.instructions);
     return {
       parsed: {
         verdict: 'PASS',
@@ -252,6 +283,21 @@ test('autor y dos reviewers operan sobre el mismo SHA con máximo tres llamadas'
   assert.equal(summary.model_calls, 3);
   assert.equal(summary.same_candidate_sha, true);
   assert.equal(summary.candidate_sha256, candidateSha);
+  assert.equal(reviewerPayloads.length, 2);
+  assert.equal(reviewerInstructionsSeen.length, 2);
+  for (const payload of reviewerPayloads) {
+    assert.equal(payload.presentation_contract.deterministic_result, 'PASS_BEFORE_REVIEW');
+    assert.equal(payload.presentation_contract.continuity_value_format, 'INLINE_CODE_REQUIRED');
+    assert.equal(
+      payload.presentation_contract.continuity_terminal_rule,
+      'NO_CONTENT_AFTER_INLINE_CODE_VALUE_OF_SIGUIENTE_TAREA_RESERVADA',
+    );
+  }
+  for (const instructions of reviewerInstructionsSeen) {
+    assert.match(instructions, /backticks son obligatorios y correctos/u);
+    assert.match(instructions, /NO constituyen BLOCKER/u);
+    assert.match(instructions, /último contenido válido de Continuidad es ese valor, NO el rótulo/u);
+  }
   assert.deepEqual(calls.sort(), [
     'vento_documentation_candidate_v1',
     'vento_documentation_reviewer1_v1',
