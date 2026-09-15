@@ -263,6 +263,14 @@ test('package lifecycle sincroniza readiness persistente antes de checks dependi
     "synchronizePackageReadiness(root, 'package-handoff-precheck');",
     handoffStart,
   );
+  const handoffPhysicalPreflight = packageGateLifecycleSource.indexOf(
+    'assertPackagePhysicalHandoffReady({ root, packageId: id });',
+    handoffStart,
+  );
+  const handoffMaterialize = packageGateLifecycleSource.indexOf(
+    'materializePendingPhysicalHandoff(root, id, synchronized)',
+    handoffStart,
+  );
   const handoffExecutionCheck = packageGateLifecycleSource.indexOf(
     "npm(['run', 'docs:package:execution:check']",
     handoffStart,
@@ -275,6 +283,8 @@ test('package lifecycle sincroniza readiness persistente antes de checks dependi
   assert.ok(finishHandoff > finishSync);
   assert.ok(finishExecutionCheck > finishHandoff);
   assert.ok(handoffSync > handoffStart);
+  assert.ok(handoffPhysicalPreflight > handoffSync);
+  assert.ok(handoffMaterialize > handoffPhysicalPreflight);
   assert.ok(handoffExecutionCheck > handoffSync);
 });
 

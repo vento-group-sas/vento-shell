@@ -20,6 +20,10 @@ function completeObjects(values, required) {
     && values.every((value) => value && required.every((key) => nonEmpty(value[key])));
 }
 
+function completeStringArray(value) {
+  return Array.isArray(value) && value.length > 0 && value.every(nonEmpty);
+}
+
 function completeDeploymentEnvironment(value) {
   return Boolean(value)
     && typeof value === 'object'
@@ -65,6 +69,74 @@ export function readPackageGatePolicy(root = process.cwd()) {
 export function packageGateRecordRelativePath(packageId, policy) {
   if (!/^GAP-PKG-\d{3}$/u.test(String(packageId ?? ''))) fail(`package_id inválido para lifecycle: ${packageId ?? 'EMPTY'}.`);
   return `${policy.instance_directory}/${packageId}.json`;
+}
+
+// Kept separate from documentary readiness: a dossier can be approved while an
+// executable DB/RPC contract still lacks decisions needed for safe materialization.
+export function assessPackagePhysicalPreflight(record) {
+  const runtimeProfile = String(record?.canonical_snapshot?.runtime_profile ?? '').trim();
+  if (runtimeProfile !== 'DATABASE_RPC_BOUNDARY') {
+    return { applies: false, valid: true, errors: [] };
+  }
+
+  const errors = [];
+  const suppliedContract = record?.physical_contract;
+  const contract = suppliedContract && typeof suppliedContract === 'object' && !Array.isArray(suppliedContract)
+    ? suppliedContract
+    : {};
+  if (contract !== suppliedContract) {
+    errors.push('physical_contract es obligatorio para DATABASE_RPC_BOUNDARY antes del handoff físico');
+  }
+
+  if (contract.schema_version !== 1) errors.push('physical_contract.schema_version debe ser 1');
+  if (!nonEmpty(contract.contract_version)) errors.push('physical_contract.contract_version es obligatorio');
+  if (!completeObjects(contract.source_facts, [
+    'contract_ref', 'authoritative_surface', 'owner', 'grain', 'cutoff_rule',
+  ])) {
+    errors.push('physical_contract.source_facts debe declarar fuente, superficie autoritativa, owner, grano y corte');
+  }
+
+  const request = contract.request;
+  if (!request || !nonEmpty(request.schema_ref) || !completeStringArray(request.required_inputs)
+    || !nonEmpty(request.invalid_input_behavior)) {
+    errors.push('physical_contract.request debe declarar schema_ref, inputs obligatorios y rechazo de entrada inválida');
+  }
+
+  const result = contract.safe_result;
+  if (!result || !nonEmpty(result.schema_ref) || !completeStringArray(result.allowed_fields)
+    || !nonEmpty(result.identifier_exposure_policy)) {
+    errors.push('physical_contract.safe_result debe declarar schema_ref, campos permitidos y política de identificadores');
+  }
+
+  const reconciliation = contract.reconciliation;
+  const requiredCounters = ['source', 'accepted', 'rejected', 'quarantine', 'materialized'];
+  if (!reconciliation || !nonEmpty(reconciliation.oracle) || !nonEmpty(reconciliation.invariant)
+    || !Array.isArray(reconciliation.counters)
+    || requiredCounters.some((counter) => !reconciliation.counters.includes(counter))) {
+    errors.push('physical_contract.reconciliation debe declarar oracle, invariante y contadores source/accepted/rejected/quarantine/materialized');
+  }
+
+  const disclosure = contract.disclosure;
+  if (!disclosure || !nonEmpty(disclosure.policy_ref) || !nonEmpty(disclosure.rule_version)
+    || disclosure.unresolved_behavior !== 'SUPPRESS'
+    || disclosure.complementary_suppression !== true
+    || !nonEmpty(disclosure.sequential_query_protection)) {
+    errors.push('physical_contract.disclosure debe declarar política versionada, SUPPRESS ante regla no resuelta, supresión complementaria y protección de consultas sucesivas');
+  }
+
+  const authorization = contract.authorization;
+  if (!authorization || !nonEmpty(authorization.decision_surface)
+    || authorization.denied_behavior !== 'DENY'
+    || authorization.unresolved_behavior !== 'DENY') {
+    errors.push('physical_contract.authorization debe declarar superficie de decisión y DENY ante denegación o decisión no resuelta');
+  }
+
+  const fixtures = contract.fixtures;
+  if (!fixtures || !nonEmpty(fixtures.path) || !completeStringArray(fixtures.scenario_ids)) {
+    errors.push('physical_contract.fixtures debe declarar path y escenarios deterministas');
+  }
+
+  return { applies: true, valid: errors.length === 0, errors };
 }
 
 export function assessPackageGateRecord(record, { taskPrerequisites = null, policy, relativePath = null } = {}) {

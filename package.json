@@ -82,6 +82,7 @@
     "docs:package:gate:status": "node scripts/docs/package-gate-lifecycle.mjs status",
     "docs:package:gate:check": "node scripts/docs/package-gate-lifecycle.mjs check",
     "docs:package:gate:approve": "node scripts/docs/package-gate-lifecycle.mjs approve",
+    "docs:package:preflight": "node scripts/docs/package-gate-lifecycle.mjs preflight",
     "docs:package:finish": "node scripts/docs/package-gate-lifecycle.mjs finish",
     "docs:package:handoff": "node scripts/docs/package-gate-lifecycle.mjs handoff",
     "docs:package:execution:status": "node scripts/docs/package-execution-control.mjs status",
