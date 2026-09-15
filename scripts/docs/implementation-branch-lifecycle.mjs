@@ -250,6 +250,55 @@ function currentBranch(root) {
   return git(['branch', '--show-current'], { cwd: root }).stdout.trim();
 }
 
+function normalizeWorktreePath(value) {
+  return path.resolve(String(value ?? ''))
+    .replaceAll('\\', '/')
+    .toLowerCase();
+}
+
+export function defaultBranchOccupiedByAnotherWorktree(
+  worktreePorcelain,
+  root,
+  branch = DEFAULT_BRANCH,
+) {
+  const expectedBranch = `branch refs/heads/${branch}`;
+  const currentRoot = normalizeWorktreePath(root);
+  let worktreeRoot = '';
+
+  for (const rawLine of String(worktreePorcelain ?? '').split(/\r?\n/u)) {
+    const line = rawLine.trim();
+    if (line.startsWith('worktree ')) {
+      worktreeRoot = line.slice('worktree '.length).trim();
+      continue;
+    }
+    if (line === expectedBranch) {
+      return normalizeWorktreePath(worktreeRoot) !== currentRoot;
+    }
+  }
+  return false;
+}
+
+function switchToSynchronizedDefaultBranch(root) {
+  if (currentBranch(root) === DEFAULT_BRANCH) return 'MAIN';
+  if (worktreePaths(root).length > 0) {
+    fail('No se puede preparar el checkout final con worktree sucio.');
+  }
+
+  const worktrees = git(['worktree', 'list', '--porcelain'], { cwd: root }).stdout;
+  if (!defaultBranchOccupiedByAnotherWorktree(worktrees, root)) {
+    git(['switch', DEFAULT_BRANCH], { cwd: root });
+    return 'MAIN';
+  }
+
+  git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+  git(['switch', '--detach', `origin/${DEFAULT_BRANCH}`], { cwd: root });
+  const remoteHead = git(['rev-parse', `origin/${DEFAULT_BRANCH}`], { cwd: root }).stdout.trim();
+  if (currentHead(root) !== remoteHead) {
+    fail(`No se pudo sincronizar el checkout detached con origin/${DEFAULT_BRANCH}.`);
+  }
+  return 'DETACHED_ORIGIN_MAIN';
+}
+
 function currentHead(root) {
   return git(['rev-parse', 'HEAD'], { cwd: root }).stdout.trim();
 }
@@ -933,11 +982,10 @@ function finalizeMergedImplementation({ root, id, instance, branch, mergedPr }) 
     fail('PR merged previo no conserva identidad suficiente para reanudar el cierre.');
   }
 
-  if (currentBranch(root) !== DEFAULT_BRANCH) {
-    if (worktreePaths(root).length > 0) fail('No se puede finalizar merge previo con worktree sucio.');
-    git(['switch', DEFAULT_BRANCH], { cwd: root });
+  const mainCheckout = switchToSynchronizedDefaultBranch(root);
+  if (mainCheckout === 'MAIN') {
+    git(['pull', '--ff-only', 'origin', DEFAULT_BRANCH], { cwd: root });
   }
-  git(['pull', '--ff-only', 'origin', DEFAULT_BRANCH], { cwd: root });
   syncLocalDerivedArtifacts({ root, quiet: true });
 
   if (worktreePaths(root).length > 0) fail('main no quedo limpio al reanudar un merge ya completado.');
@@ -973,6 +1021,7 @@ function finalizeMergedImplementation({ root, id, instance, branch, mergedPr }) 
     MERGE: 'PASS',
     MERGE_COMMIT: mergeCommitSha,
     MAIN_HEAD: currentHead(root),
+    MAIN_CHECKOUT: mainCheckout,
     SYNC_MAIN: '0/0',
     WORKTREE: 'CLEAN',
     LOCAL_BRANCH: cleanup.local,
@@ -1510,8 +1559,10 @@ export async function finishImplementation({ instanceId, root = ensureRepository
   }
 
   git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
-  git(['switch', DEFAULT_BRANCH], { cwd: root });
-  git(['pull', '--ff-only', 'origin', DEFAULT_BRANCH], { cwd: root });
+  const mainCheckout = switchToSynchronizedDefaultBranch(root);
+  if (mainCheckout === 'MAIN') {
+    git(['pull', '--ff-only', 'origin', DEFAULT_BRANCH], { cwd: root });
+  }
   syncLocalDerivedArtifacts({ root, quiet: true });
 
   if (worktreePaths(root).length > 0) fail('main no quedo limpio despues del merge.');
@@ -1583,6 +1634,7 @@ export async function finishImplementation({ instanceId, root = ensureRepository
     MERGE: 'PASS',
     MERGE_COMMIT: merged.mergeCommitSha,
     MAIN_HEAD: currentHead(root),
+    MAIN_CHECKOUT: mainCheckout,
     SYNC_MAIN: '0/0',
     WORKTREE: 'CLEAN',
     LOCAL_BRANCH: cleanup.local,

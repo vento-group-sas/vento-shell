@@ -12,6 +12,7 @@ import {
   authorizedRecordMatchesPersistedMain,
   buildImplementationPrBody,
   classifyImplementationPath,
+  defaultBranchOccupiedByAnotherWorktree,
   implementationBranchName,
   isPristinePendingInstanceRecord,
   normalizeInstanceId,
@@ -36,6 +37,23 @@ test('rechaza instance_id inseguros o sin cardinalidad fisica', () => {
   assert.throws(() => normalizeInstanceId('SHELL-CON-001'), /INSTANCE_ID invalido/u);
   assert.throws(() => normalizeInstanceId('../main::GLOBAL'), /INSTANCE_ID invalido/u);
   assert.throws(() => normalizeInstanceId('SHELL-CON-001::../GLOBAL'), /INSTANCE_ID invalido/u);
+});
+
+test('detecta main ocupada por otro worktree antes del cierre', () => {
+  const porcelain = [
+    'worktree C:/repo/physical',
+    'HEAD 1111111111111111111111111111111111111111',
+    'branch refs/heads/implementation/shell-ci-021/gap-pkg-018',
+    '',
+    'worktree C:/repo/hardening',
+    'HEAD 2222222222222222222222222222222222222222',
+    'branch refs/heads/main',
+    '',
+  ].join('\n');
+
+  assert.equal(defaultBranchOccupiedByAnotherWorktree(porcelain, 'C:/repo/physical'), true);
+  assert.equal(defaultBranchOccupiedByAnotherWorktree(porcelain, 'C:/repo/hardening'), false);
+  assert.equal(defaultBranchOccupiedByAnotherWorktree('', 'C:/repo/physical'), false);
 });
 
 test('start exige AUTHORIZED con decision humana aprobada', () => {
