@@ -21,6 +21,8 @@ const CANDIDATE_LIFECYCLE_DERIVED_PATHS = new Set([
   'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
   'scripts/docs/package-readiness/implementation-package-registry.json',
 ]);
+const IMPLEMENTATION_INSTANCE_DIRECTORY =
+  'docs/plan-canonico/modular/implementation-instances/';
 const LOCAL_VALIDATION_EVIDENCE_PATTERN =
   /^LOCAL_VALIDATION candidate=([0-9a-f]{40}) command=(.*) status=(PASS|NOT_APPLICABLE)$/u;
 
@@ -118,6 +120,7 @@ export function assessImplementationCandidateLifecycleDelta({
   candidateLedger,
   lifecycleLedger,
   changedPaths = [],
+  pristinePendingInstancePaths = [],
   candidateIsAncestor = true,
 } = {}) {
   const instanceId = normalizeInstanceId(instance?.instance_id);
@@ -127,6 +130,11 @@ export function assessImplementationCandidateLifecycleDelta({
       .map(normalizeLifecyclePath)
       .filter(Boolean),
   )].sort();
+  const pristinePending = new Set(
+    (Array.isArray(pristinePendingInstancePaths) ? pristinePendingInstancePaths : [])
+      .map(normalizeLifecyclePath)
+      .filter(Boolean),
+  );
 
   const safePaths = [];
   const materialPaths = [];
@@ -151,6 +159,11 @@ export function assessImplementationCandidateLifecycleDelta({
 
   for (const relativePath of changed) {
     if (relativePath === ownLedger || CANDIDATE_LIFECYCLE_DERIVED_PATHS.has(relativePath)) {
+      safePaths.push(relativePath);
+    } else if (
+      relativePath.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)
+      && pristinePending.has(relativePath)
+    ) {
       safePaths.push(relativePath);
     } else {
       materialPaths.push(relativePath);

@@ -26,6 +26,8 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/docs/implementation-state-integrity.test.mjs',
   'scripts/docs/implementation-validation-engine.mjs',
   'scripts/docs/implementation-validation-engine.test.mjs',
+  'scripts/docs/validate-executable-delivery.mjs',
+  'scripts/docs/validate-executable-delivery.test.mjs',
   'scripts/docs/task-branch-lifecycle.mjs',
   'scripts/docs/task-branch-lifecycle.test.mjs',
   'scripts/quality/lint-ratchet.mjs',

@@ -93,6 +93,8 @@ test('reconoce tooling de lifecycle de integracion como no fisico', () => {
   );
   for (const relativePath of [
     'scripts/docs/implementation-validation-engine.mjs',
+    'scripts/docs/validate-executable-delivery.mjs',
+    'scripts/docs/validate-executable-delivery.test.mjs',
     'scripts/quality/lint-ratchet.mjs',
     'scripts/supabase/environment-drift.mjs',
   ]) {

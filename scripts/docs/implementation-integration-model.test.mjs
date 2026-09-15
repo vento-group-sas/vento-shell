@@ -222,3 +222,44 @@ test('candidate/lifecycle permite checkpoint de metadata y bloquea delta fisico'
   assert.equal(contract.decision, 'REVALIDATE_PHYSICAL');
   assert.match(contract.reason, /LIFECYCLE_CONTRACT_CHANGED/u);
 });
+
+test('candidate/lifecycle acepta pending pristino solo con certificacion explicita', () => {
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-021::GAP-PKG-018',
+    task_id: 'SHELL-CI-021',
+    status: 'IN_PROGRESS',
+    validation_commands: ['check:a'],
+    authorized_changes: [{ path: 'ledger', change: 'MODIFY' }],
+    target_environments: [{ environment_role: 'STAGING', target_id: 'staging' }],
+    evidence: [],
+  };
+  const lifecycleLedger = {
+    ...candidateLedger,
+    status: 'VERIFIED',
+    evidence: [
+      `LOCAL_VALIDATION candidate=${'2'.repeat(40)} command=check:a status=PASS`,
+    ],
+  };
+  const pendingPath =
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-022__GAP-PKG-018.json';
+
+  const blocked = assessImplementationCandidateLifecycleDelta({
+    instance: lifecycleLedger,
+    candidateLedger,
+    lifecycleLedger,
+    changedPaths: [pendingPath],
+    candidateIsAncestor: true,
+  });
+  assert.equal(blocked.decision, 'REVALIDATE_PHYSICAL');
+
+  const safe = assessImplementationCandidateLifecycleDelta({
+    instance: lifecycleLedger,
+    candidateLedger,
+    lifecycleLedger,
+    changedPaths: [pendingPath],
+    pristinePendingInstancePaths: [pendingPath],
+    candidateIsAncestor: true,
+  });
+  assert.equal(safe.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(safe.material_paths, []);
+});
