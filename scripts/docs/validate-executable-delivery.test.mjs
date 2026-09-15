@@ -65,6 +65,38 @@ test('LC-009 permite ejecutar npm mediante resolveNpmInvocation canonico', () =>
   assert.equal(report.policies.includes('LC-009'), true);
 });
 
+test('LC-010 rechaza junction de node_modules dentro de worktree temporal', () => {
+  const source = [
+    "const fs = require('node:fs');",
+    "const rootNodeModules = path.join(root, 'node_modules');",
+    "const tempNodeModules = path.join(tempRoot, 'node_modules');",
+    "fs.symlinkSync(rootNodeModules, tempNodeModules, 'junction');",
+    "git(root, ['worktree', 'remove', '--force', tempRoot]);",
+  ].join('\n');
+  assert.throws(
+    () => validateExecutableSource(
+      source,
+      { mode: 'stdin-commonjs', filename: 'unsafe-worktree-junction.txt' },
+    ),
+    /EXECUTABLE_POLICY_FAIL:LC-010:FILESYSTEM_LINK_FORBIDDEN/u,
+  );
+});
+
+test('LC-010 rechaza creacion de junction mediante PowerShell o mklink', () => {
+  for (const source of [
+    "spawnSync('cmd.exe', ['/c', 'mklink', '/J', target, source]);",
+    "spawnSync('powershell.exe', ['-Command', 'New-Item -ItemType Junction']);",
+  ]) {
+    assert.throws(
+      () => validateExecutableSource(
+        source,
+        { mode: 'stdin-commonjs', filename: 'unsafe-filesystem-link.txt' },
+      ),
+      /EXECUTABLE_POLICY_FAIL:LC-010:FILESYSTEM_LINK_FORBIDDEN/u,
+    );
+  }
+});
+
 test('downloaded executor rechaza docs:implementation:advance por npm aunque use resolveNpmInvocation', () => {
   const source = [
     "const { spawnSync } = require('node:child_process');",
