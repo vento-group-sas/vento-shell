@@ -744,11 +744,27 @@ function authorInstructions() {
     'Si treq_changes queda vacío, la sección Requisitos de prueba derivados debe declarar literalmente NO GENERA REQUISITOS DE PRUEBA y no debe contener ningún ID TREQ. Si necesitas citar cobertura histórica existente, hazlo fuera de esa sección y aclara que no se modifica.',
     'No incluyas instrucciones de descarga, reemplazo, terminal, rutas locales ni mensajes dirigidos al usuario dentro de task_markdown.',
     'En cabecera, Tarea anterior y Tarea siguiente deben ser identidad directa sin backticks y sin sufijos de estado como APROBADA o RESERVADA; no mezcles identidad con estado.',
-    'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; cada valor va en la línea siguiente en código inline y Continuidad debe ser la sección final.',
+    'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; cada uno de sus tres valores va en la línea siguiente en código inline (backticks). Los backticks de los valores de Continuidad son obligatorios y correctos. Continuidad debe ser la sección final y debe terminar inmediatamente después del valor en código inline de SIGUIENTE TAREA RESERVADA, sin contenido posterior.',
     'En Evidencia de validación usa exactamente una tabla Markdown de tres columnas: Clase | Estado | Evidencia; no insertes columnas entre Clase y Estado.',
     'En Evidencia de validación usa únicamente estados NOT_EXECUTED/NOT_APPLICABLE salvo evidencia real explícita en la cápsula.',
     'No uses espacios ni tabs al final de ninguna línea; el candidato debe ser compatible con git diff --check antes de calcular su SHA.',
   ].join('\n');
+}
+
+
+export function reviewerPresentationContract() {
+  return {
+    deterministic_validator: 'validateTaskPresentation',
+    deterministic_result: 'PASS_BEFORE_REVIEW',
+    header_identity_value_format: 'DIRECT_TEXT_NO_BACKTICKS_NO_STATUS_SUFFIX',
+    continuity_label_order: [
+      'ÚLTIMA TAREA APROBADA',
+      'TAREA ACTUAL APROBADA',
+      'SIGUIENTE TAREA RESERVADA',
+    ],
+    continuity_value_format: 'INLINE_CODE_REQUIRED',
+    continuity_terminal_rule: 'NO_CONTENT_AFTER_INLINE_CODE_VALUE_OF_SIGUIENTE_TAREA_RESERVADA',
+  };
 }
 
 function reviewerInstructions(kind) {
@@ -761,7 +777,10 @@ function reviewerInstructions(kind) {
     'Compara obligatoriamente el candidato contra capsule.structural_baseline. PASS está prohibido si el candidato es materialmente más superficial que los predecesores aprobados comparables del mismo owner sin una justificación canónica explícita.',
     'Los required_section_groups son un mínimo de integridad, no una señal de completitud documental.',
     'La tabla Evidencia de validación debe cumplir exactamente Clase | Estado | Evidencia; cualquier columna insertada antes de Estado es BLOCKER.',
-    'La cabecera Tarea anterior/Tarea siguiente debe usar identidad directa sin backticks ni sufijos de estado; Continuidad debe reflejar exactamente esas identidades y terminar en SIGUIENTE TAREA RESERVADA. Cualquier desviación es BLOCKER.',
+    'La presentación sintáctica del candidato ya pasó validateTaskPresentation antes de esta revisión. Usa presentation_contract del input como autoridad exacta y no inventes una sintaxis alternativa.',
+    'La cabecera Tarea anterior/Tarea siguiente debe usar identidad directa sin backticks ni sufijos de estado.',
+    'En Continuidad, los tres valores deben estar en código inline (backticks) en la línea inmediatamente posterior a cada rótulo. Esos backticks son obligatorios y correctos; NO constituyen BLOCKER.',
+    'La regla terminal significa que no puede existir contenido después del valor en código inline de SIGUIENTE TAREA RESERVADA. El último contenido válido de Continuidad es ese valor, NO el rótulo SIGUIENTE TAREA RESERVADA.',
   ];
   if (kind === 1) {
     common.push('Prioridad: fidelidad canónica, cobertura del propósito, formato, ownership, continuidad, TREQ y criterios verificables.');
@@ -774,6 +793,7 @@ function reviewerInstructions(kind) {
 function reviewerInput(capsule, candidate, author, candidateSha) {
   return JSON.stringify({
     capsule,
+    presentation_contract: reviewerPresentationContract(),
     candidate_sha256: candidateSha,
     task_markdown: candidate,
     treq_changes: author.treq_changes,
