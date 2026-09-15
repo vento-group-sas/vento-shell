@@ -7,6 +7,7 @@ import test from 'node:test';
 import {
   authorSchema,
   candidateStructuralMetrics,
+  normalizeCandidateIdentityMetadata,
   reviewerSchema,
   runAuthorReview,
   selectModels,
@@ -133,8 +134,42 @@ test('valida candidato documental sin TREQ inventados', () => {
   const result = validateCandidate(authorResponse(), capsule);
   assert.equal(result.stopped, false);
   assert.match(result.candidateSha, /^[0-9a-f]{64}$/u);
-  assert.equal(result.candidateSha, sha256(`${taskMarkdown.trim()}\n`));
+  assert.equal(result.candidateSha, sha256(result.markdown));
   assert.deepEqual(result.affectedTreqIds, []);
+});
+
+test('normaliza metadata identitaria decorada antes del SHA y evita el fallo prospectivo FASE 6', () => {
+  const decorated = authorResponse();
+  decorated.task_markdown = decorated.task_markdown
+    .replace(
+      '**Tarea anterior:** NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4',
+      '**Tarea anterior:** `NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4` — APROBADA',
+    )
+    .replace(
+      '**Tarea siguiente:** NEXO-DOM-020 — Definir cuándo un contenedor conserva, cambia o cierra su LPN',
+      '**Tarea siguiente:** `NEXO-DOM-020` — RESERVADA',
+    );
+
+  const identityOnly = normalizeCandidateIdentityMetadata(decorated.task_markdown, capsule);
+  assert.match(
+    identityOnly,
+    /^\*\*Tarea anterior:\*\* NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4$/mu,
+  );
+  assert.match(identityOnly, /^\*\*Tarea siguiente:\*\* NEXO-DOM-020$/mu);
+  assert.doesNotMatch(identityOnly, /Tarea anterior:.*APROBADA/mu);
+  assert.doesNotMatch(identityOnly, /Tarea siguiente:.*RESERVADA/mu);
+
+  const result = validateCandidate(decorated, capsule);
+  assert.equal(result.stopped, false);
+  assert.equal(result.candidateSha, sha256(result.markdown));
+  assert.match(
+    result.markdown,
+    /\*\*ÚLTIMA TAREA APROBADA\*\*\n`NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`/u,
+  );
+  assert.match(
+    result.markdown,
+    /\*\*SIGUIENTE TAREA RESERVADA\*\*\n`NEXO-DOM-020(?: — [^\n`]+)?`\s*$/u,
+  );
 });
 
 test('reubica referencia TREQ histórica fuera de derivados antes de calcular el SHA', () => {
@@ -198,7 +233,7 @@ test('autor y dos reviewers operan sobre el mismo SHA con máximo tres llamadas'
     calls.push(options.schemaName);
     if (options.schemaName === 'vento_documentation_candidate_v1') {
       const parsed = authorResponse();
-      candidateSha = sha256(`${parsed.task_markdown.trim()}\n`);
+      candidateSha = validateCandidate(parsed, capsule).candidateSha;
       return { parsed, response: apiEnvelope('resp-author', 100, 200) };
     }
     return {

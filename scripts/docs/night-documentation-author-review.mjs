@@ -4,6 +4,8 @@ import path from 'node:path';
 import { pathToFileURL } from 'node:url';
 
 import { extractValidationEvidence } from './task-semantic-contract.mjs';
+import { formatTaskBlock, validateTaskPresentation } from './format-canonical-task.mjs';
+import { readPendingTaskTitleAuthority } from './pending-task-title-authority.mjs';
 
 const RESPONSES_URL = 'https://api.openai.com/v1/responses';
 const MAX_MODEL_CALLS = 3;
@@ -348,6 +350,78 @@ function normalizeCandidateWhitespace(markdown) {
     .join('\n');
 }
 
+const IDENTITY_STATUS_SUFFIX = /(?:\s+[—-]\s+)(?:APROBADA|RESERVADA|NO INICIADA|PROPUESTA PARA APROBACIÓN|RECHAZADA)\s*$/iu;
+
+function normalizeCandidateIdentityValue(value, expectedId, label) {
+  let normalized = String(value ?? '').trim();
+
+  const inline = normalized.match(
+    /^`([^`\n]+)`(?:\s+[—-]\s+(?:APROBADA|RESERVADA|NO INICIADA|PROPUESTA PARA APROBACIÓN|RECHAZADA))?\s*$/iu,
+  );
+  if (inline) {
+    normalized = inline[1].trim();
+  } else {
+    normalized = normalized.replace(IDENTITY_STATUS_SUFFIX, '').trim();
+    const plainInline = normalized.match(/^`([^`\n]+)`$/u);
+    if (plainInline) normalized = plainInline[1].trim();
+  }
+
+  if (!expectedId) fail(`${label} carece de identificador esperado en la cápsula.`);
+  const allowed = new RegExp(
+    `^${escapeRegExp(expectedId)}(?:\\s+[—-]\\s+.+)?$`,
+    'u',
+  );
+  if (!allowed.test(normalized)) {
+    fail(`${label} debe identificar ${expectedId} sin estado decorativo ni código inline.`);
+  }
+
+  return normalized;
+}
+
+export function normalizeCandidateIdentityMetadata(markdown, capsule) {
+  let normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n');
+  const identities = [
+    ['Tarea anterior', capsule?.current?.previous_id],
+    ['Tarea siguiente', capsule?.current?.next_id],
+  ];
+
+  for (const [label, expectedId] of identities) {
+    const pattern = new RegExp(
+      `^(\\*\\*${escapeRegExp(label)}:\\*\\*\\s*)(.+)$`,
+      'mu',
+    );
+    const match = normalized.match(pattern);
+    if (!match) continue;
+    const value = normalizeCandidateIdentityValue(match[2], expectedId, label);
+    normalized = normalized.replace(pattern, (_full, prefix) => `${prefix}${value}`);
+  }
+
+  return normalized;
+}
+
+function normalizeCandidatePresentation(markdown, capsule) {
+  const identityNormalized = normalizeCandidateIdentityMetadata(markdown, capsule);
+  const canonicalTitles = readPendingTaskTitleAuthority(process.cwd());
+
+  let formatted;
+  try {
+    formatted = formatTaskBlock(identityNormalized, { canonicalTitles });
+  } catch (error) {
+    fail(
+      `CANDIDATE_PRESENTATION_FORMAT_FAIL: ${
+        error instanceof Error ? error.message : String(error)
+      }`,
+    );
+  }
+
+  const presentationErrors = validateTaskPresentation(formatted, { canonicalTitles });
+  if (presentationErrors.length > 0) {
+    fail(`CANDIDATE_PRESENTATION_INVALID: ${presentationErrors.join(' | ')}`);
+  }
+
+  return formatted;
+}
+
 export function normalizeValidationEvidenceTable(markdown) {
   const normalized = String(markdown ?? '').replace(/\r\n?/gu, '\n');
   const headingPattern = /^####\s+(?:\d+\.\s*)?Evidencia de validación.*$/imu;
@@ -560,9 +634,9 @@ export function validateCandidate(author, capsule) {
       ? normalizeZeroTreqDerivedReferences(continuityNormalized, existingIds)
       : continuityNormalized
   );
-  const markdown = normalizeCandidateWhitespace(
-    normalizeValidationEvidenceTable(treqNormalized),
-  ).trim();
+  const evidenceNormalized = normalizeValidationEvidenceTable(treqNormalized);
+  const presentationNormalized = normalizeCandidatePresentation(evidenceNormalized, capsule);
+  const markdown = normalizeCandidateWhitespace(presentationNormalized).trim();
   if (/[ \t]+$/mu.test(markdown)) fail('CANDIDATE_TRAILING_WHITESPACE: normalización incompleta.');
   const taskId = capsule.current.id;
   const exactHeading = `### ✅ ${taskId} — ${capsule.current.title}`;
@@ -669,7 +743,8 @@ function authorInstructions() {
     'Si la tarea necesita crear/modificar TREQ, entrega cada fila semántica completa con las catorce columnas. Nunca alteres requisitos históricos por estilo.',
     'Si treq_changes queda vacío, la sección Requisitos de prueba derivados debe declarar literalmente NO GENERA REQUISITOS DE PRUEBA y no debe contener ningún ID TREQ. Si necesitas citar cobertura histórica existente, hazlo fuera de esa sección y aclara que no se modifica.',
     'No incluyas instrucciones de descarga, reemplazo, terminal, rutas locales ni mensajes dirigidos al usuario dentro de task_markdown.',
-    'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; no los abrevies ni parafrasees.',
+    'En cabecera, Tarea anterior y Tarea siguiente deben ser identidad directa sin backticks y sin sufijos de estado como APROBADA o RESERVADA; no mezcles identidad con estado.',
+    'En la sección Continuidad usa literalmente los rótulos ÚLTIMA TAREA APROBADA, TAREA ACTUAL APROBADA y SIGUIENTE TAREA RESERVADA; cada valor va en la línea siguiente en código inline y Continuidad debe ser la sección final.',
     'En Evidencia de validación usa exactamente una tabla Markdown de tres columnas: Clase | Estado | Evidencia; no insertes columnas entre Clase y Estado.',
     'En Evidencia de validación usa únicamente estados NOT_EXECUTED/NOT_APPLICABLE salvo evidencia real explícita en la cápsula.',
     'No uses espacios ni tabs al final de ninguna línea; el candidato debe ser compatible con git diff --check antes de calcular su SHA.',
@@ -686,6 +761,7 @@ function reviewerInstructions(kind) {
     'Compara obligatoriamente el candidato contra capsule.structural_baseline. PASS está prohibido si el candidato es materialmente más superficial que los predecesores aprobados comparables del mismo owner sin una justificación canónica explícita.',
     'Los required_section_groups son un mínimo de integridad, no una señal de completitud documental.',
     'La tabla Evidencia de validación debe cumplir exactamente Clase | Estado | Evidencia; cualquier columna insertada antes de Estado es BLOCKER.',
+    'La cabecera Tarea anterior/Tarea siguiente debe usar identidad directa sin backticks ni sufijos de estado; Continuidad debe reflejar exactamente esas identidades y terminar en SIGUIENTE TAREA RESERVADA. Cualquier desviación es BLOCKER.',
   ];
   if (kind === 1) {
     common.push('Prioridad: fidelidad canónica, cobertura del propósito, formato, ownership, continuidad, TREQ y criterios verificables.');
