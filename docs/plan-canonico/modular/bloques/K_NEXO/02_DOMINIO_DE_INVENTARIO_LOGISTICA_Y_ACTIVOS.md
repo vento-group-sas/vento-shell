@@ -32831,7 +32831,1049 @@ La siguiente tarea podrá añadir propiedad vehicular, checklist, kilometraje, c
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota`
 
-### [ ] NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
+### ✅ NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración
+**Tarea siguiente:** NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
+**Tipo de tarea:** documental; especialización canónica de flota para vehículos y equipos de transporte, resolviendo identidad, propiedad, custodia, conductor asignado, documentos, cobertura, checklist, kilometraje, combustible, mantenimiento y disponibilidad, y preservando las fronteras con logística, inventario, autorización y efectos económicos bajo topología DEFINE_ONCE
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico de flota para que todo vehículo o equipo de transporte administrado por VENTO conserve identidad física estable, propiedad demostrable, custodia, conductor asignado por vigencia, documentos, cobertura, condición, disponibilidad, checklist, medidor, combustible y mantenimiento sin colapsar esos hechos en un único estado.
+
+La regla raíz queda:
+
+```text
+STABLE VEHICLE IDENTITY
++
+OWNERSHIP WITH EVIDENCE
++
+CURRENT CUSTODY
++
+TIME-BOUNDED DRIVER ASSIGNMENT
++
+VALID DOCUMENTS AND COVERAGE
++
+VERSIONED CHECKLIST POLICY
++
+MONOTONIC METER HISTORY
++
+TRACEABLE FUEL EVENTS
++
+MAINTENANCE OBLIGATIONS
++
+EXPLICIT AVAILABILITY DECISION
+=
+TRACEABLE FLEET CONTROL
+```
+
+La tarea consume la semántica común de activos, mantenimiento, inspección, garantía, repuestos, custodia y disponibilidad ya aprobada, y la especializa para flota sin autorizar materialización física.
+
+---
+
+#### 2. Resultado canónico
+
+La tarea fija:
+
+1. identidad estable del vehículo o equipo de transporte;
+2. separación entre propietario, custodio y conductor;
+3. propiedad sustentada por evidencia y vigencia;
+4. asignación de conductor acotada por vigencia y contexto;
+5. documentos y cobertura como obligaciones verificables;
+6. checklist versionado previo, periódico o asociado a una operación cuando corresponda;
+7. kilometraje u otro medidor con historial monotónico;
+8. corrección auditada de lecturas y cambio de medidor;
+9. separación entre compra de combustible, carga física y consumo estimado;
+10. trazabilidad de cada carga de combustible;
+11. relación entre medidor, combustible, rendimiento y anomalías;
+12. mantenimiento de flota por fecha, uso, medidor, condición o evento;
+13. disponibilidad derivada de bloqueos explícitos;
+14. integración con viaje, ruta y cierre logístico sin duplicar su propiedad funcional;
+15. idempotencia, concurrencia, offline y corrección no destructiva;
+16. fronteras con ORIGO, NUMERA, VISO/ANIMA, logística y la tarea siguiente.
+
+No se materializa ningún cambio físico. Esta tarea no autoriza materialización física.
+
+---
+
+#### 3. Entradas canónicas preservadas
+
+Se preservan sin reabrir:
+
+- identidad estable del sujeto físico;
+- clase primaria y separación entre vehículo, activo, stock, repuesto, kit, contenedor y LPN;
+- propiedad con nivel de evidencia;
+- ubicación;
+- custodia;
+- usuario o responsable cuando aplique;
+- condición;
+- disponibilidad;
+- documentos;
+- historial no destructivo;
+- mantenimiento y reparación;
+- inspección;
+- prueba y liberación;
+- garantía o cobertura;
+- repuestos correlacionados con mantenimiento;
+- costo informado separado del efecto económico;
+- autorización;
+- idempotencia;
+- concurrencia;
+- operación offline;
+- cadena de custodia logística;
+- viaje, ruta y parada como conceptos distintos del vehículo.
+
+---
+
+#### 4. Dimensiones independientes
+
+Se mantiene:
+
+```text
+VEHICLE IDENTITY
+!=
+OWNERSHIP
+!=
+CUSTODY
+!=
+DRIVER ASSIGNMENT
+!=
+LOCATION
+!=
+CONDITION
+!=
+AVAILABILITY
+!=
+DOCUMENT VALIDITY
+!=
+COVERAGE
+!=
+CHECKLIST RESULT
+!=
+METER READING
+!=
+FUEL EVENT
+!=
+MAINTENANCE OBLIGATION
+!=
+TRIP OR ROUTE
+!=
+ECONOMIC TREATMENT
+```
+
+Una misma persona puede coincidir en más de un rol únicamente cuando exista autoridad y contexto válidos, pero la coincidencia no fusiona los hechos.
+
+---
+
+#### 5. Identidad del vehículo o equipo
+
+Cada vehículo o equipo de transporte debe conservar una identidad física estable independiente de:
+
+- placa visible;
+- serial;
+- nombre operativo;
+- conductor;
+- custodio;
+- sede;
+- ruta;
+- estado actual;
+- proveedor;
+- documento;
+- mantenimiento;
+- lectura de medidor.
+
+Cambiar placa, etiqueta, custodio, sede, conductor o estado no crea por sí solo una identidad nueva.
+
+---
+
+#### 6. Placa, serial y códigos
+
+Placa, serial y códigos operativos son identificadores o atributos del sujeto, no sustitutos de la identidad estable.
+
+Cuando alguno cambie legítimamente, debe conservarse historial, vigencia, motivo, autoridad y evidencia aplicable.
+
+Una reimpresión de etiqueta o QR no crea un vehículo nuevo.
+
+---
+
+#### 7. Propiedad del vehículo
+
+La propiedad debe conservar como mínimo:
+
+- sujeto;
+- propietario;
+- tipo o base de propiedad aprobada;
+- evidencia;
+- vigencia cuando aplique;
+- fuente;
+- autoridad que la valida;
+- historial de cambios.
+
+Se fija:
+
+```text
+CURRENT DRIVER
+!=
+CURRENT CUSTODIAN
+!=
+OWNER
+```
+
+Conducir, custodiar, utilizar o recibir temporalmente el vehículo no transfiere propiedad.
+
+---
+
+#### 8. Propiedad desconocida o contradictoria
+
+Cuando la propiedad requerida esté ausente, contradictoria o no sustentada:
+
+```text
+UNKNOWN OR CONFLICTED OWNERSHIP
+→
+RECONCILIATION_REQUIRED
+```
+
+No se infiere propiedad desde:
+
+- quien conduce;
+- quien tiene llaves;
+- sede actual;
+- responsable visible;
+- factura aislada sin correlación;
+- nombre de proveedor;
+- comentario libre.
+
+La política decide si la contradicción bloquea disponibilidad o únicamente determinadas operaciones.
+
+---
+
+#### 9. Custodia
+
+La custodia conserva el responsable físico vigente del vehículo.
+
+Una transferencia de custodia requiere hechos explícitos de entrega y aceptación cuando la política aplicable lo exija.
+
+La asignación de un conductor o la creación de un viaje no sustituyen la aceptación de custodia.
+
+---
+
+#### 10. Conductor asignado
+
+La asignación de conductor debe conservar:
+
+- vehículo;
+- actor;
+- función aplicable;
+- inicio de vigencia;
+- fin de vigencia cuando corresponda;
+- operación, turno o contexto relacionado cuando aplique;
+- autoridad;
+- estado;
+- motivo de sustitución o terminación.
+
+La asignación administrativa no demuestra custodia aceptada ni inicio de tránsito.
+
+---
+
+#### 11. Conductor y aptitud operativa
+
+La asignación logística consume la aptitud, turno, check-in y autorización que correspondan desde sus fuentes propietarias.
+
+NEXO no crea turno ni habilitación laboral por el solo hecho de asignar un vehículo.
+
+Una asignación incompatible con restricciones vigentes debe fallar cerrada.
+
+---
+
+#### 12. Documentos y cobertura
+
+Los documentos y coberturas aplicables se gobiernan como obligaciones separadas de la identidad del vehículo.
+
+Cada obligación documental debe poder conservar:
+
+- sujeto;
+- tipo;
+- referencia;
+- versión o vigencia;
+- fecha de inicio cuando aplique;
+- fecha de vencimiento cuando aplique;
+- emisor o fuente;
+- evidencia;
+- estado;
+- autoridad de validación;
+- condición de bloqueo.
+
+Se fija:
+
+```text
+DOCUMENT FILE
+!=
+VALID DOCUMENT
+```
+
+La existencia de un archivo no demuestra vigencia ni aplicabilidad.
+
+---
+
+#### 13. Vencimiento documental
+
+Cuando una política declare un documento o cobertura como bloqueante:
+
+```text
+REQUIRED DOCUMENT INVALID OR OVERDUE
++
+BLOCKING POLICY
+→
+UNAVAILABLE OR RESTRICTED
+```
+
+Editar una fecha no elimina el vencimiento histórico ni los efectos ya producidos.
+
+---
+
+#### 14. Checklist de flota
+
+El checklist es una observación estructurada sobre el vehículo bajo una plantilla y versión determinadas.
+
+Debe conservar, cuando aplique:
+
+- vehículo;
+- plantilla y versión;
+- propósito;
+- actor;
+- contexto;
+- fecha observada;
+- fecha de servidor;
+- ítems evaluados;
+- respuesta u observación por ítem;
+- evidencia requerida;
+- hallazgos;
+- resultado;
+- bloqueo resultante;
+- firma o attestation cuando la política lo exija.
+
+---
+
+#### 15. Checklist no es mantenimiento
+
+Se fija:
+
+```text
+CHECKLIST COMPLETED
+!=
+MAINTENANCE COMPLETED
+```
+
+```text
+CHECKLIST PASS
+!=
+GENERAL VEHICLE AVAILABILITY
+```
+
+El checklist puede detectar una condición que abra mantenimiento, inspección, incidente o bloqueo, pero no sustituye esos expedientes.
+
+---
+
+#### 16. Plantilla versionada
+
+Una plantilla de checklist debe ser versionada.
+
+Una versión nueva no reescribe checklists históricos.
+
+Cada ejecución conserva la versión efectivamente utilizada y el significado de sus ítems en ese momento.
+
+---
+
+#### 17. Resultado del checklist
+
+La implementación futura deberá distinguir al menos la semántica equivalente a:
+
+```text
+PASS
+PASS_WITH_OBSERVATIONS
+FAIL
+INCONCLUSIVE
+```
+
+La forma física podrá variar si conserva equivalencia semántica.
+
+`INCONCLUSIVE` no equivale a `PASS`.
+
+---
+
+#### 18. Hallazgos y bloqueos del checklist
+
+Un hallazgo conserva relación con:
+
+- vehículo;
+- checklist;
+- ítem;
+- observación;
+- severidad o clasificación cuando aplique;
+- evidencia;
+- actor;
+- momento;
+- acción posterior;
+- condición de salida.
+
+Un hallazgo crítico puede bloquear disponibilidad según política sin modificar silenciosamente condición, propiedad o custodia.
+
+---
+
+#### 19. Kilometraje u otro medidor
+
+El kilometraje u otro medidor aplicable se conserva como una secuencia de lecturas, no como un único campo editable sin historia.
+
+Cada lectura debe conservar:
+
+- vehículo;
+- tipo de medidor;
+- valor;
+- unidad;
+- momento observado;
+- momento de servidor;
+- actor;
+- fuente;
+- contexto;
+- evidencia cuando aplique;
+- referencia al hecho relacionado cuando exista.
+
+---
+
+#### 20. Monotonicidad
+
+Se fija:
+
+```text
+ACCEPTED CURRENT METER
+>=
+PREVIOUS ACCEPTED METER
+```
+
+Una lectura inferior no puede aceptarse silenciosamente.
+
+Debe resolverse mediante corrección auditada o cambio documentado de medidor.
+
+---
+
+#### 21. Corrección de lectura
+
+Una lectura incorrecta ya aceptada no se elimina sin rastro.
+
+La corrección conserva:
+
+- lectura original;
+- lectura corregida;
+- motivo;
+- evidencia;
+- actor;
+- autoridad;
+- fecha;
+- relación de supersesión.
+
+Los consumidores deben resolver la lectura efectiva sin perder la historia.
+
+---
+
+#### 22. Cambio de medidor
+
+Un reemplazo o reinicio legítimo de medidor debe conservar:
+
+- medidor anterior;
+- última lectura válida;
+- medidor nuevo;
+- lectura inicial;
+- fecha efectiva;
+- motivo;
+- evidencia;
+- actor y autoridad;
+- regla de continuidad para mantenimiento y analítica.
+
+El nuevo valor no invalida el uso acumulado histórico.
+
+---
+
+#### 23. Combustible: hechos separados
+
+Se fija:
+
+```text
+FUEL PURCHASE
+!=
+PHYSICAL FUEL LOAD
+!=
+ESTIMATED FUEL CONSUMPTION
+```
+
+Una factura no demuestra que el combustible fue cargado a un vehículo.
+
+Una carga no demuestra consumo exacto.
+
+Un consumo estimado no constituye compra ni movimiento físico independiente.
+
+---
+
+#### 24. Carga física de combustible
+
+Cada carga debe conservar como mínimo:
+
+- vehículo;
+- cantidad;
+- unidad;
+- lectura de medidor asociada;
+- estación o proveedor;
+- documento o referencia cuando aplique;
+- actor;
+- fecha observada;
+- fecha de servidor;
+- contexto u operación relacionada cuando exista;
+- evidencia requerida por política.
+
+La unidad debe ser interpretable y reconciliable; no se mezclan unidades sin conversión aprobada.
+
+---
+
+#### 25. Compra y fuente económica
+
+ORIGO y otras fuentes propietarias conservan compra, proveedor y documento comercial cuando corresponda.
+
+NEXO conserva el hecho físico de carga y su correlación con vehículo y medidor.
+
+NUMERA consume los hechos necesarios para valoración o efecto económico sin convertir la contabilización en prueba del evento físico.
+
+---
+
+#### 26. Consumo y rendimiento
+
+El rendimiento puede derivarse de lecturas y cargas correlacionadas, pero debe distinguir:
+
+```text
+OBSERVED INPUT
+!=
+DERIVED CONSUMPTION
+!=
+EXPECTED PERFORMANCE
+!=
+ANOMALY
+```
+
+Una desviación no se corrige reescribiendo lecturas o cargas históricas.
+
+La política define tolerancias, agregación y tratamiento de datos insuficientes.
+
+---
+
+#### 27. Datos insuficientes
+
+Cuando falte una lectura necesaria, una carga esté sin correlación o existan valores contradictorios:
+
+```text
+INSUFFICIENT OR CONFLICTED FLEET DATA
+→
+UNKNOWN / RECONCILIATION_REQUIRED
+```
+
+No se inventa consumo cero, rendimiento normal ni lectura intermedia.
+
+---
+
+#### 28. Mantenimiento de flota
+
+Los vehículos consumen el contrato de mantenimiento ya aprobado.
+
+La obligación puede originarse por:
+
+- fecha;
+- tiempo transcurrido;
+- kilometraje u otro medidor;
+- condición;
+- checklist;
+- inspección;
+- evento;
+- fabricante o proveedor;
+- política empresarial.
+
+Se mantiene:
+
+```text
+MAINTENANCE DUE
+!=
+WORK STARTED
+!=
+WORK COMPLETED
+!=
+TEST PASSED
+!=
+RELEASED
+```
+
+---
+
+#### 29. Mantenimiento por medidor
+
+Una política basada en kilometraje u otro medidor debe conservar:
+
+- versión de política;
+- lectura de referencia;
+- umbral;
+- unidad;
+- próxima obligación;
+- tolerancia o anticipación cuando aplique;
+- condición bloqueante;
+- tratamiento ante corrección o cambio de medidor.
+
+Cambiar la política no reescribe obligaciones históricas.
+
+---
+
+#### 30. Mantenimiento y combustible
+
+Combustible y mantenimiento pueden correlacionarse para análisis o diagnóstico, pero ninguno sustituye al otro.
+
+Una carga anómala no abre automáticamente una reparación sin regla o decisión aplicable.
+
+Un mantenimiento completado no corrige lecturas o cargas previas.
+
+---
+
+#### 31. Disponibilidad de flota
+
+La disponibilidad es una decisión derivada y explicable.
+
+Puede quedar bloqueada o restringida por:
+
+- condición insegura;
+- checklist fallido o inconcluso cuando la política lo exija;
+- mantenimiento vencido;
+- mantenimiento activo;
+- prueba pendiente;
+- liberación pendiente;
+- documento inválido o vencido;
+- cobertura requerida inválida;
+- restricción de capacidad o uso;
+- bloqueo autorizado vigente;
+- conflicto de datos que la política considere crítico.
+
+---
+
+#### 32. Presencia no equivale a disponibilidad
+
+Se fija:
+
+```text
+VEHICLE PRESENT
+!=
+VEHICLE AVAILABLE
+```
+
+La ubicación conocida, un conductor asignado o la existencia de una llave no demuestran disponibilidad.
+
+---
+
+#### 33. Capacidad y restricciones
+
+El expediente de vehículo puede conservar capacidad y restricciones necesarias para decidir compatibilidad con una operación.
+
+La asignación logística debe consumir esos hechos vigentes y fallar cerrada ante incompatibilidad.
+
+La tarea no diseña el proceso completo de planificación de rutas ni el contenido de la carga.
+
+---
+
+#### 34. Frontera con logística
+
+NEXO flota conserva el vehículo y sus hechos especializados.
+
+El proceso logístico conserva necesidad de transporte, plan, viaje, parada, shipment, remisión, carga, custodia de transporte, entrega y cierre.
+
+Se fija:
+
+```text
+VEHICLE
+!=
+TRIP
+!=
+ROUTE PLAN
+!=
+SHIPMENT
+!=
+REMISSION
+```
+
+Asignar un vehículo a un viaje no cambia propiedad ni historial del vehículo.
+
+---
+
+#### 35. Cierre de viaje y flota
+
+El cierre logístico puede consumir y reconciliar:
+
+- vehículo;
+- conductor;
+- lectura inicial y final cuando correspondan;
+- combustible informado;
+- documentos;
+- incidencias;
+- custodias;
+- retornos y pendientes.
+
+El cierre del viaje no modifica silenciosamente una lectura, una carga de combustible, un documento o una obligación de mantenimiento.
+
+Las discrepancias se remiten al expediente propietario correspondiente.
+
+---
+
+#### 36. Relación con remisiones
+
+Una remisión o shipment puede referenciar el vehículo utilizado, pero no se convierte en fuente de verdad de identidad, propiedad, documentos, medidor, combustible o mantenimiento.
+
+El vehículo tampoco se convierte en propietario del estado de la remisión.
+
+---
+
+#### 37. Idempotencia
+
+La materialización futura debe impedir duplicados para una misma intención lógica de:
+
+- asignación de conductor;
+- transferencia de custodia;
+- checklist;
+- lectura de medidor;
+- corrección de lectura;
+- cambio de medidor;
+- carga de combustible;
+- obligación de mantenimiento;
+- bloqueo o liberación de disponibilidad.
+
+Un reintento con la misma intención y payload no debe producir un segundo hecho empresarial.
+
+---
+
+#### 38. Concurrencia
+
+Antes de aceptar una mutación sensible se revalidan sujeto, versión, estado esperado, autoridad, asignación, lectura vigente, política y bloqueos aplicables.
+
+Una actualización incompatible debe fallar cerrada o exigir reconciliación.
+
+No se permite que dos lecturas concurrentes, dos conductores vigentes incompatibles o dos decisiones de disponibilidad contradictorias se acepten silenciosamente.
+
+---
+
+#### 39. Operación offline y respuesta desconocida
+
+Una captura offline es una propuesta pendiente de reconciliación.
+
+Al sincronizar se revalidan:
+
+- identidad;
+- actor;
+- versión;
+- vigencia;
+- lectura previa;
+- duplicidad;
+- política;
+- bloqueo;
+- autoridad.
+
+Un timeout no demuestra que el comando falló; antes de reintentar se reconcilia por intención e identidad.
+
+---
+
+#### 40. Corrección no destructiva
+
+Corregir propiedad, asignación, checklist, documento, lectura, combustible o disponibilidad no borra el hecho previo cuando ya produjo significado empresarial.
+
+La historia debe permitir reconstruir:
+
+- qué se observó;
+- qué se aceptó;
+- qué se corrigió;
+- quién lo corrigió;
+- por qué;
+- qué efectos quedaron vigentes.
+
+---
+
+#### 41. Autorización
+
+Las capacidades de consulta y mutación se resuelven con actor efectivo, función, territorio, contexto, recurso, estado y permiso vigentes.
+
+El nombre del rol, la URL, la placa, el vehículo visible, el dispositivo o la posesión física de llaves no conceden por sí solos autoridad.
+
+Las acciones sensibles deben conservar segregación entre operación, supervisión y efectos económicos cuando aplique.
+
+---
+
+#### 42. AS-IS remoto observado
+
+La revisión remota del repositorio `vento-nexo` confirma superficies genéricas de activos bajo `src/app/inventory/assets/` y consumo de `asset_items` y proyecciones asociadas.
+
+La búsqueda sobre el branch por términos específicos de flota no localizó una superficie dedicada identificable para vehículo, flota, kilometraje, odómetro o combustible.
+
+La evidencia disponible permite concluir únicamente:
+
+- existe una fundación genérica de activos reutilizable;
+- no se demuestra desde la inspección realizada un ciclo integral especializado de flota;
+- la ausencia de coincidencias de búsqueda no prueba por sí sola ausencia absoluta de cualquier dato externo o no indexado;
+- la tarea documental no convierte esta observación en certificación física.
+
+---
+
+#### 43. Clasificación AS-IS
+
+La capacidad especializada de `CAP-07.12` y `CAP-07.13` conserva la clasificación canónica:
+
+```text
+BUILD
+```
+
+Debe construirse sobre contratos compartidos de activos, mantenimiento, documentos, custodia, autorización, integración y evidencia sin crear una fuente paralela.
+
+---
+
+#### 44. Brechas abiertas
+
+Permanecen para materialización posterior:
+
+- expediente especializado de vehículo o equipo de transporte;
+- ownership vehicular verificable y reconciliable;
+- asignación de conductor con vigencia;
+- obligaciones documentales y cobertura con bloqueos;
+- plantilla y ejecución de checklist de flota;
+- ledger de lecturas monotónicas;
+- corrección auditada y cambio de medidor;
+- eventos de carga de combustible;
+- correlación con compras sin fusionar hechos;
+- rendimiento y detección de anomalías;
+- mantenimiento por medidor;
+- decisión explicable de disponibilidad;
+- integración con viaje y cierre logístico;
+- controles de concurrencia, idempotencia, offline y reconciliación;
+- estrategia de adopción y backfill de cualquier dato legacy aplicable.
+
+Ninguna brecha se cierra mediante esta definición documental.
+
+---
+
+#### 45. Riesgos controlados
+
+Este contrato controla especialmente:
+
+- conductor tratado como propietario;
+- vehículo presente tratado como disponible;
+- documentos vencidos sin bloqueo;
+- checklist registrado como mantenimiento;
+- checklist fallido ignorado;
+- kilometraje decreciente aceptado silenciosamente;
+- cambio de medidor interpretado como reducción de uso acumulado;
+- factura de combustible tratada como carga física;
+- carga física tratada como consumo exacto;
+- duplicación de cargas por reintento;
+- rendimiento calculado con datos faltantes como si fuera concluyente;
+- mantenimiento vencido por corrección destructiva de fecha o medidor;
+- viaje usado como fuente de verdad del vehículo;
+- asignación administrativa usada como transferencia de custodia;
+- cierre de viaje reescribiendo hechos de flota;
+- efecto financiero usado como prueba del hecho físico;
+- operación offline generando lecturas o cargas duplicadas.
+
+---
+
+#### 46. Handoffs contractuales
+
+La tarea entrega las siguientes fronteras:
+
+- hacia logística: identidad, disponibilidad, capacidad, restricciones, conductor y estado de flota consumibles sin ceder propiedad del viaje;
+- hacia ORIGO: referencias de compra o proveedor necesarias para conciliación de combustible y mantenimiento sin ceder el hecho físico;
+- hacia NUMERA: hechos causales y referencias económicas sin definir asientos ni valoración final;
+- hacia VISO/ANIMA y autorización: turno, aptitud y actor efectivo consumidos sin convertir NEXO en owner laboral;
+- hacia mantenimiento: medidor, checklist y bloqueos como disparadores o evidencia sin colapsar ejecución, prueba y liberación;
+- hacia la tarea siguiente: hechos físicos y causales preparados para eventos financieros posteriores sin emitirlos aquí.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro canónico ya contiene cobertura explícita para identidad y propiedad de activos, mantenimiento, flota, kilometraje, combustible, disponibilidad e integración logística. Esta tarea desarrolla el contrato documental que dicha cobertura exige sin alterar sus reglas, propietarios ni relaciones.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro 04A, esta tarea reutiliza como trazabilidad la cobertura vigente de:
+
+- `TREQ-NEXO-013`, para identidad de activos, propiedad, custodia, condición, disponibilidad y documentos;
+- `TREQ-NEXO-014`, para mantenimiento, reparación, garantía, evidencia, prueba y liberación;
+- `TREQ-NEXO-015`, para vehículo, propietario, conductor, documentos, medidor, combustible, mantenimiento y disponibilidad;
+- `TREQ-NEXO-016`, para asignación logística, viaje, custodia y cierre con kilometraje y combustible;
+- `TREQ-INTEGRATION-012`, para integración ya registrada;
+- `TREQ-AUTH-017`, para autorización relacionada ya registrada;
+- `TREQ-NUMERA-001`, para la frontera económica ya registrada.
+
+Esta enumeración es trazabilidad y no constituye creación ni modificación de requisitos.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La incorporación al checkout, el formateo canónico y la batería global corresponden al ciclo local posterior. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores sobre el checkout local del usuario durante la elaboración de este artefacto. |
+| REMOTA | PASS | Se verificaron `main`, continuidad, archivo propietario, topología `DEFINE_ONCE`, políticas de tarea, `package.json`, 04A NEXO, `CAP-SCOPE-007`, `CAP-SCOPE-011` y el código indexado de `vento-nexo`; existe fundación genérica de activos y no se demostró una superficie especializada integral de flota. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron checklist, lecturas, cargas, mantenimientos, asignaciones ni viajes reales. |
+| FÍSICA | NOT_APPLICABLE | La tarea es documental y no autoriza cambios en código, datos, Supabase, despliegues ni operación física. |
+
+---
+
+#### 50. Criterios de aceptación
+
+- [x] Se define identidad estable de vehículo o equipo de transporte.
+- [x] Propiedad, custodia y conductor permanecen separados.
+- [x] La propiedad exige evidencia y no se infiere por posesión o conducción.
+- [x] La asignación de conductor conserva vigencia y contexto.
+- [x] Documentos y cobertura se modelan como obligaciones verificables.
+- [x] Archivo documental y vigencia documental permanecen separados.
+- [x] Se define checklist estructurado y versionado.
+- [x] Checklist, mantenimiento y disponibilidad permanecen separados.
+- [x] Se define semántica de resultados de checklist y hallazgos.
+- [x] Se define historial de kilometraje u otro medidor.
+- [x] Se exige monotonicidad.
+- [x] Lectura inferior exige corrección auditada o cambio de medidor.
+- [x] Cambio de medidor conserva continuidad de uso acumulado.
+- [x] Compra, carga y consumo estimado de combustible permanecen separados.
+- [x] Cada carga conserva vehículo, cantidad, unidad, lectura, proveedor o estación, documento, actor y fecha.
+- [x] Datos insuficientes no producen rendimiento ficticio.
+- [x] Mantenimiento por fecha y medidor consume el contrato aprobado.
+- [x] Disponibilidad se deriva de bloqueos explícitos.
+- [x] Presencia del vehículo no equivale a disponibilidad.
+- [x] Vehículo, viaje, ruta, shipment y remisión permanecen separados.
+- [x] El cierre logístico consume hechos de flota sin reescribirlos.
+- [x] Se cubren idempotencia, concurrencia, offline y corrección.
+- [x] Se documenta AS-IS remoto sin afirmar certificación física.
+- [x] Se preserva la clasificación canónica `BUILD` para la especialización de flota.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+
+---
+
+#### 51. Límites
+
+Esta tarea no crea ni modifica vehículos reales; no cambia propietarios, custodios, conductores, ubicaciones, placas, seriales, documentos, coberturas, checklist, lecturas, combustible, mantenimiento o disponibilidad reales; no crea rutas, viajes, paradas, asignaciones logísticas, remisiones, shipments, geolocalización, peajes ni entregas; no compra combustible ni registra cargas reales; no calcula costos, depreciación, asientos, impuestos o liquidaciones; no ejecuta mantenimiento, inspección, prueba ni liberación; no crea tablas, columnas, enums, índices, constraints, triggers, vistas, RPC, RLS, Storage, Edge Functions, cron, colas, migraciones, backfills, código, paquetes, Supabase ni despliegues; no modifica 04A; no altera `TREQ-*`; no ejecuta validación física u operativa; y no desarrolla el alcance económico reservado a `NEXO-DOM-028`.
+
+---
+
+#### 52. Invariantes finales
+
+```text
+ONE VEHICLE
+→
+ONE STABLE PHYSICAL IDENTITY
+```
+
+```text
+DRIVER
+!=
+CUSTODIAN
+!=
+OWNER
+```
+
+```text
+DOCUMENT FILE
+!=
+VALID DOCUMENT
+```
+
+```text
+CHECKLIST COMPLETED
+!=
+MAINTENANCE COMPLETED
+!=
+VEHICLE AVAILABLE
+```
+
+```text
+ACCEPTED CURRENT METER
+>=
+PREVIOUS ACCEPTED METER
+```
+
+```text
+LOWER METER READING
+→
+AUDITED CORRECTION OR DOCUMENTED METER CHANGE
+```
+
+```text
+FUEL PURCHASE
+!=
+PHYSICAL FUEL LOAD
+!=
+ESTIMATED FUEL CONSUMPTION
+```
+
+```text
+VEHICLE PRESENT
+!=
+VEHICLE AVAILABLE
+```
+
+```text
+VEHICLE
+!=
+TRIP
+!=
+ROUTE PLAN
+!=
+SHIPMENT
+!=
+REMISSION
+```
+
+```text
+UNKNOWN OR CONFLICTED REQUIRED FACT
+→
+DENY OR RECONCILIATION_REQUIRED
+NOT → SILENT DEFAULT
+```
+
+```text
+DOCUMENTARY CONTRACT APPROVAL
+!=
+PHYSICAL IMPLEMENTATION OR OPERATIVE CERTIFICATION
+```
+
+---
+
+#### 53. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-027 — Resolver propiedad de vehículos, checklist, kilometraje, combustible y mantenimiento de flota`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda`
+
 ### [ ] NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda
 ### [ ] NEXO-DOM-029 — Definir jerarquía canónica de instalaciones, espacios, componentes fijos, puntos de servicio y condición
 ### [ ] NEXO-DOM-030 — Definir planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación
