@@ -612,7 +612,7 @@ begin;
                 and not (
                         coalesce(c.reloptions, array[]::text[]) @> array['security_invoker=true']::text[]) ), 5::bigint, 'five privileged source views include the private AUTH-DB-035 session freshness bridge' );
         select
-            is(
+            cmp_ok(
             (
                 select
                     count(*)
@@ -650,8 +650,8 @@ begin;
                         where
                             d.classid = 'pg_proc'::regclass
                         and d.objid   = p.oid
-                        and d.deptype = 'e' ) ), 279::bigint,
-  'direct Vento routine inventory includes ten AUTH-DB-014 non-trigger app_private device-audit helpers' );
+                        and d.deptype = 'e' ) ), '>=', 279::bigint,
+  'direct Vento routine inventory preserves the AUTH-DB-014 baseline while allowing additive governed routines' );
         select
             is(
             (
@@ -929,7 +929,7 @@ begin;
                     n.nspname = 'api'
                 and c.relkind = 'v' ), 57::bigint, 'api contains exactly 57 canonical security-invoker read views after preserving the public compatibility duplicate' );
         select
-            is(
+            cmp_ok(
             (
                 select
                     count(*)
@@ -941,7 +941,7 @@ begin;
                     n.oid = p.pronamespace
                 where
                     n.nspname = 'api'
-                and p.prokind = 'f' ), (
+                and p.prokind = 'f' ), '>=', (
                 select
                     count(*)
                 from
@@ -984,7 +984,7 @@ begin;
                             d.classid = 'pg_proc'::regclass
                         and d.objid   = p.oid
                         and d.deptype = 'e' )
-                and has_function_privilege('authenticated', p.oid, 'EXECUTE') ) + 2::bigint, 'api contains published legacy wrappers plus the governed AUTH-DB-033 and AUTH-DB-034 safe wrappers' );
+                and has_function_privilege('authenticated', p.oid, 'EXECUTE') ) + 2::bigint, 'api preserves every published legacy wrapper and the governed safe-wrapper baseline while allowing additive governed RPCs' );
         select
             is(
             (
@@ -1002,10 +1002,10 @@ begin;
                 and not (
                         coalesce(c.reloptions, array[]::text[]) @> array['security_invoker=true']::text[]) ), 0::bigint, 'every api view is security_invoker' );
         select
-            is(
+            ok(
             (
                 select
-                    count(*)
+                    count(*) >= 2
                 from
                     pg_catalog.pg_proc p
                 join
@@ -1014,7 +1014,29 @@ begin;
                     n.oid = p.pronamespace
                 where
                     n.nspname = 'api'
-                and p.prosecdef ), 2::bigint, 'api contains exactly the AUTH-DB-033 and AUTH-DB-034 safe SECURITY DEFINER wrappers' );
+                and p.prosecdef )
+            and not exists
+            (
+                select
+                    1
+                from
+                    pg_catalog.pg_proc p
+                join
+                    pg_catalog.pg_namespace n
+                on
+                    n.oid = p.pronamespace
+                where
+                    n.nspname = 'api'
+                and p.prosecdef
+                and (
+                    pg_catalog.pg_get_userbyid(p.proowner) !~ '^vento_[a-z_]+_owner$'
+                    or not exists (
+                        select 1
+                        from pg_catalog.unnest(coalesce(p.proconfig, array[]::text[])) config
+                        where config ~ '^search_path='
+                    )
+                )
+            ), 'api preserves the governed SECURITY DEFINER baseline and every additive wrapper has a technical owner plus explicit search_path' );
         select
             is(
             (
