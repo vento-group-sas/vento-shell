@@ -3,7 +3,7 @@ begin;
 
 create extension if not exists pgtap with schema extensions;
 
-select plan(38);
+select plan(39);
 
 create or replace function pg_temp.gap019_reconciliation(
   p_source numeric default 100,
@@ -215,7 +215,7 @@ select is(
       'app_private.apply_small_population_disclosure(jsonb)'::regprocedure,
       'api.get_governed_analytic_aggregate(jsonb)'::regprocedure
     )
-      and p.proconfig @> array['search_path=']
+      and p.proconfig @> array['search_path=""']
   ),
   3::bigint,
   '10 all three functions use an empty search_path'
@@ -258,40 +258,46 @@ select is(
   '15 runtime roles have zero direct execution across private helpers'
 );
 
+select ok(
+  not pg_catalog.has_schema_privilege('vento_authorization_owner', 'app_private', 'CREATE')
+  and not pg_catalog.has_schema_privilege('vento_authorization_owner', 'api', 'CREATE'),
+  '16 temporary schema creation capability is revoked after installation'
+);
+
 select is(
   app_private.reconcile_analytic_aggregate(pg_temp.gap019_reconciliation()) ->> 'status',
   'RECONCILED',
-  '16 exact source equation reconciles'
+  '17 exact source equation reconciles'
 );
 
 select is(
   app_private.reconcile_analytic_aggregate(pg_temp.gap019_reconciliation()) #>> '{counters,accounted}',
   '100',
-  '17 accounted counter is reproducible'
+  '18 accounted counter is reproducible'
 );
 
 select is(
   app_private.reconcile_analytic_aggregate(pg_temp.gap019_reconciliation()) ->> 'source_difference',
   '0',
-  '18 exact source difference is zero'
+  '19 exact source difference is zero'
 );
 
 select is(
   app_private.reconcile_analytic_aggregate(pg_temp.gap019_reconciliation()) ->> 'materialization_difference',
   '0',
-  '19 exact materialization difference is zero'
+  '20 exact materialization difference is zero'
 );
 
 select is(
   app_private.reconcile_analytic_aggregate(pg_temp.gap019_reconciliation(p_excluded => 1)) ->> 'status',
   'DIFFERENCE',
-  '20 unaccounted source fact is a difference'
+  '21 unaccounted source fact is a difference'
 );
 
 select is(
   app_private.reconcile_analytic_aggregate(pg_temp.gap019_reconciliation(p_materialized => 85)) ->> 'status',
   'DIFFERENCE',
-  '21 accepted fact not materialized is a difference'
+  '22 accepted fact not materialized is a difference'
 );
 
 select is(
@@ -299,7 +305,7 @@ select is(
     pg_temp.gap019_reconciliation(0, 0, 0, 0, 0, 0, 0)
   ) ->> 'status',
   'RECONCILED',
-  '22 explicit zero is distinct from missing and reconciles'
+  '23 explicit zero is distinct from missing and reconciles'
 );
 
 select throws_ok(
@@ -310,37 +316,37 @@ select throws_ok(
   $$,
   '22023',
   'GAP_PKG_019_RECONCILIATION_COUNTER_INVALID',
-  '23 invalid counter fails closed'
+  '24 invalid counter fails closed'
 );
 
 select is(
   pg_temp.gap019_disclosure() ->> 'mode',
   'AGREGADO',
-  '24 governed sensitive aggregate is publishable'
+  '25 governed sensitive aggregate is publishable'
 );
 
 select is(
   pg_temp.gap019_disclosure() -> 'value',
   '86.4'::jsonb,
-  '25 publishable aggregate retains only its governed value'
+  '26 publishable aggregate retains only its governed value'
 );
 
 select is(
   pg_temp.gap019_disclosure(p_population => 4) ->> 'mode',
   'SUPRIMIDO',
-  '26 small population is suppressed'
+  '27 small population is suppressed'
 );
 
 select is(
   pg_temp.gap019_disclosure(p_population => 4) -> 'value',
   'null'::jsonb,
-  '27 suppressed population does not leak its value'
+  '28 suppressed population does not leak its value'
 );
 
 select is(
   pg_temp.gap019_disclosure(p_rule => 'null'::jsonb) ->> 'reason_code',
   'DISCLOSURE_RULE_UNRESOLVED',
-  '28 missing disclosure rule suppresses fail closed'
+  '29 missing disclosure rule suppresses fail closed'
 );
 
 select is(
@@ -351,7 +357,7 @@ select is(
     )
   ) ->> 'mode',
   'DENEGADO',
-  '29 AUTH-DB-034 denial outranks disclosure'
+  '30 AUTH-DB-034 denial outranks disclosure'
 );
 
 select is(
@@ -363,7 +369,7 @@ select is(
     )
   ) ->> 'reason_code',
   'AGGREGATE_AUTHORIZATION_REQUIRED',
-  '30 detail authorization cannot substitute aggregate authorization'
+  '31 detail authorization cannot substitute aggregate authorization'
 );
 
 select is(
@@ -371,7 +377,7 @@ select is(
     p_context => pg_temp.gap019_context(p_comparison => true)
   ) ->> 'reason_code',
   'COMPARISON_REQUIRES_INDEPENDENT_EVALUATION',
-  '31 comparison requires independent disclosure evaluation'
+  '32 comparison requires independent disclosure evaluation'
 );
 
 select is(
@@ -379,7 +385,7 @@ select is(
     p_rule => pg_temp.gap019_rule(p_complementary => true)
   ) ->> 'reason_code',
   'COMPLEMENTARY_SUPPRESSION_REQUIRED',
-  '32 complementary reconstruction risk suppresses'
+  '33 complementary reconstruction risk suppresses'
 );
 
 select is(
@@ -387,7 +393,7 @@ select is(
     p_rule => pg_temp.gap019_rule(p_successive => true)
   ) ->> 'reason_code',
   'SUCCESSIVE_QUERY_GUARD_REQUIRED',
-  '33 uncertified successive-query protection suppresses'
+  '34 uncertified successive-query protection suppresses'
 );
 
 select is(
@@ -395,7 +401,7 @@ select is(
     p_context => pg_temp.gap019_context(p_drill_down => true)
   ) ->> 'drill_down_allowed',
   'false',
-  '34 aggregate authorization alone does not grant drill-down'
+  '35 aggregate authorization alone does not grant drill-down'
 );
 
 select is(
@@ -403,7 +409,7 @@ select is(
     p_context => pg_temp.gap019_context(p_drill_down => true)
   ) ->> 'drill_down_reason_code',
   'DISTINCT_DETAIL_AUTHORIZATION_REQUIRED',
-  '35 missing detail authorization has an explicit reason'
+  '36 missing detail authorization has an explicit reason'
 );
 
 select is(
@@ -416,13 +422,13 @@ select is(
     )
   ) ->> 'drill_down_allowed',
   'true',
-  '36 distinct non-aggregate detail decision grants drill-down'
+  '37 distinct non-aggregate detail decision grants drill-down'
 );
 
 select is(
   pg_temp.gap019_disclosure(p_population => 4) -> 'dimensions',
   '[]'::jsonb,
-  '37 suppressed cell does not leak quasi-identifier dimensions'
+  '38 suppressed cell does not leak quasi-identifier dimensions'
 );
 
 select throws_ok(
@@ -431,7 +437,7 @@ select throws_ok(
   $$,
   '28000',
   'GAP_PKG_019_AUTHENTICATED_PRINCIPAL_REQUIRED',
-  '38 API rejects a missing authenticated JWT principal before evaluation'
+  '39 API rejects a missing authenticated JWT principal before evaluation'
 );
 
 select * from finish();

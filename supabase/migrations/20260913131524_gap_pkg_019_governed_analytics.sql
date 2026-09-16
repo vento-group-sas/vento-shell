@@ -5,6 +5,41 @@
 
 begin;
 
+do $gap_pkg_019_preconditions$
+begin
+  if not exists (
+    select 1
+    from pg_catalog.pg_roles
+    where rolname = 'vento_authorization_owner'
+      and not rolcanlogin
+      and not rolinherit
+      and not rolsuper
+      and not rolcreatedb
+      and not rolcreaterole
+      and not rolreplication
+      and not rolbypassrls
+  ) then
+    raise exception 'GAP_PKG_019_AUTHORIZATION_OWNER_MISSING_OR_INVALID';
+  end if;
+
+  if pg_catalog.to_regnamespace('app_private') is null
+     or pg_catalog.to_regnamespace('api') is null
+     or pg_catalog.to_regprocedure(
+       'app_private.evaluate_authorization(jsonb)'
+     ) is null
+     or pg_catalog.to_regprocedure(
+       'app_private.project_safe_authorization_decision(jsonb)'
+     ) is null then
+    raise exception 'GAP_PKG_019_AUTHORIZATION_FOUNDATION_MISSING';
+  end if;
+end
+$gap_pkg_019_preconditions$;
+
+-- Temporary DDL capability is scoped to this transaction and revoked below.
+grant usage, create
+on schema app_private, api
+to vento_authorization_owner;
+
 set local role vento_authorization_owner;
 
 create or replace function
@@ -521,6 +556,11 @@ to authenticated;
 
 reset role;
 
+-- Restore the authorization owner to default-deny schema creation.
+revoke create
+on schema app_private, api
+from vento_authorization_owner;
+
 do $gap_pkg_019_installation_guard$
 begin
   if pg_catalog.to_regprocedure(
@@ -564,6 +604,16 @@ begin
        'authenticated',
        'app_private.apply_small_population_disclosure(jsonb)',
        'EXECUTE'
+     )
+     or pg_catalog.has_schema_privilege(
+       'vento_authorization_owner',
+       'app_private',
+       'CREATE'
+     )
+     or pg_catalog.has_schema_privilege(
+       'vento_authorization_owner',
+       'api',
+       'CREATE'
      ) then
     raise exception 'GAP_PKG_019_FUNCTION_PRIVILEGE_INVALID';
   end if;
