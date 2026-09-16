@@ -45,6 +45,11 @@ import {
 import {
   resolveImplementationIntegrationLoopStep,
 } from './implementation-integration-loop.mjs';
+import {
+  isImplementationDerivedProjection,
+  normalizeImplementationPath,
+  resolveImplementationAuthorization,
+} from './implementation-path-policy.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const IMPLEMENTATION_PREFIX = 'implementation/';
@@ -57,14 +62,6 @@ const MERGE_CONFIRM_INTERVAL_MS = 2000;
 const GITHUB_TRANSPORT_ATTEMPTS = 20;
 const GITHUB_TRANSPORT_INTERVAL_MS = 2000;
 const GITHUB_TRANSIENT_MARKER = 'GITHUB_TRANSIENT_UNAVAILABLE';
-const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
-const DERIVED_IMPLEMENTATION_PROJECTIONS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-  'scripts/docs/package-readiness/implementation-package-registry.json',
-]);
 
 function fail(message, code = 1) {
   const error = new Error(message);
@@ -396,21 +393,7 @@ function assertLifecycleStateIntegrity(root, instance, expectedStatus) {
 }
 
 function normalizeRepoPath(value) {
-  return String(value ?? '').replaceAll('\\', '/').replace(/^\.\//u, '');
-}
-
-function authorizedImplementationScope(instance) {
-  const writable = new Set();
-  const executeOnly = new Set();
-  for (const entry of instance?.authorized_changes ?? []) {
-    if (String(entry?.repo ?? '').trim() !== SHELL_REPOSITORY) continue;
-    const relativePath = normalizeRepoPath(entry?.path);
-    if (!relativePath) continue;
-    const change = String(entry?.change ?? '').trim().toUpperCase();
-    if (change === 'EXECUTE_ONLY') executeOnly.add(relativePath);
-    else writable.add(relativePath);
-  }
-  return { writable, executeOnly };
+  return normalizeImplementationPath(value);
 }
 
 export function isPristinePendingInstanceRecord(record, filePath) {
@@ -485,10 +468,10 @@ export function classifyImplementationPath(filePath, instance, {
   const ownRecordPath = instanceRecordRelativePath(instance?.instance_id);
   if (normalized === ownRecordPath) return 'OWN_INSTANCE_LEDGER';
 
-  const scope = authorizedImplementationScope(instance);
-  if (scope.writable.has(normalized)) return 'AUTHORIZED';
-  if (scope.executeOnly.has(normalized)) return 'EXECUTE_ONLY';
-  if (DERIVED_IMPLEMENTATION_PROJECTIONS.has(normalized)) return 'DERIVED_PROJECTION';
+  const authorization = resolveImplementationAuthorization(instance, normalized);
+  if (authorization?.classification === 'WRITABLE') return 'AUTHORIZED';
+  if (authorization?.classification === 'EXECUTE_ONLY') return 'EXECUTE_ONLY';
+  if (isImplementationDerivedProjection(normalized)) return 'DERIVED_PROJECTION';
 
   if (root) {
     const candidate = pendingInstanceCandidate(root, normalized, baseRef);

@@ -1,3 +1,8 @@
+import {
+  isImplementationDerivedProjection,
+  normalizeImplementationPath,
+} from './implementation-path-policy.mjs';
+
 export const IMPLEMENTATION_INTEGRATION_MODEL_ID = 'VENTO-IMPLEMENTATION-INTEGRATION-V1';
 
 export const IMPLEMENTATION_INTEGRATION_PHASES = Object.freeze([
@@ -14,20 +19,13 @@ const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 export const IMPLEMENTATION_CANDIDATE_LIFECYCLE_MODEL_ID =
   'VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1';
 
-const CANDIDATE_LIFECYCLE_DERIVED_PATHS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-  'scripts/docs/package-readiness/implementation-package-registry.json',
-]);
 const IMPLEMENTATION_INSTANCE_DIRECTORY =
   'docs/plan-canonico/modular/implementation-instances/';
 const LOCAL_VALIDATION_EVIDENCE_PATTERN =
   /^LOCAL_VALIDATION candidate=([0-9a-f]{40}) command=(.*) status=(PASS|NOT_APPLICABLE)$/u;
 
 function normalizeLifecyclePath(value) {
-  return String(value ?? '').trim().replaceAll('\\', '/').replace(/^\.\/+/u, '');
+  return normalizeImplementationPath(value);
 }
 
 function candidateLifecycleLedgerPath(instanceId) {
@@ -158,7 +156,7 @@ export function assessImplementationCandidateLifecycleDelta({
   }
 
   for (const relativePath of changed) {
-    if (relativePath === ownLedger || CANDIDATE_LIFECYCLE_DERIVED_PATHS.has(relativePath)) {
+    if (relativePath === ownLedger || isImplementationDerivedProjection(relativePath)) {
       safePaths.push(relativePath);
     } else if (
       relativePath.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)
