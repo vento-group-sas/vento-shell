@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-019",
   "task_id": "SHELL-CI-020",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -157,7 +157,34 @@
     "IMPLEMENTATION_UNIT vento-shell:GAP-PKG-019:DB-RPC-001",
     "ENV_PROFILE ENV-SUPABASE-LOCAL-CI-STAGING"
   ],
-  "evidence": [],
+  "evidence": [
+    {
+      "schema_version": 1,
+      "evidence_type": "MRP015_050_CANDIDATE_READY",
+      "foundation_id": "MRP015-050",
+      "gate_id": "CANDIDATE_READY",
+      "owner_task": "SUPA-TRANS-015",
+      "phase": "AFTER_LOCAL_MATERIALIZATION_BEFORE_REMOTE_DEPLOY",
+      "package_id": "GAP-PKG-019",
+      "instance_id": "SHELL-CI-020::GAP-PKG-019",
+      "recorded_at": "2026-09-16T03:50:42.472Z",
+      "candidate_head_sha": "41c0ec97257e6f0716723a8e2f19a62f33dabc34",
+      "authorized_scope_sha256": "20356ddbcfa23031d085ed8c82828a83beae32c47898199184cc9a2b4959ee56",
+      "candidate_scope_sha256": "e4c8fd14889ae1cf924328f4841c06f997acbceabd73841641a8d33634ce9696",
+      "candidate_file_count": 1,
+      "status": "PASS",
+      "remote_mutations": false,
+      "secret_values_in_evidence": false,
+      "payload_sha256": "c4c043ac47f4ed5b7970b1db65236ec13fc3c0bcb129fad9dd9c86862706a6c6"
+    },
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm run supabase:db:test:clean status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/contract.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/integration.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/security.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/e2e.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm test --silent status=PASS"
+  ],
   "target_environments": [
     {
       "environment_role": "STAGING",
