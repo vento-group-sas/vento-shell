@@ -1,10 +1,284 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-019",
   "task_id": "SHELL-CI-020",
-  "status": "PENDING_AUTHORIZATION",
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "authorization": null,
-  "evidence": []
+  "status": "VERIFIED",
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
+      "change": "CREATE",
+      "scope": "Create the GAP-PKG-019 governed analytics DB/RPC boundary with source-to-aggregate reconciliation, small-population disclosure enforcement and a safe aggregate projection; no remote apply or production mutation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/MIGRATION_MANIFEST.md",
+      "change": "MODIFY",
+      "scope": "Regenerate only the canonical AUTH-DB-015 migration inventory row and summary required by the new GAP-PKG-019 migration."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/packages/GAP-PKG-019.sql",
+      "change": "CREATE",
+      "scope": "Create GAP-PKG-019 TP-DB-001 pgTAP evidence for reconciliation, disclosure, authorization reuse and safe API exposure."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-019/contract.test.ts",
+      "change": "CREATE",
+      "scope": "Create contractual evidence for the canonical GAP-PKG-019 physical identity, function signatures and result shapes."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-019/integration.test.ts",
+      "change": "CREATE",
+      "scope": "Create deterministic source-to-aggregate reconciliation and reused-foundation integration evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-019/security.test.ts",
+      "change": "CREATE",
+      "scope": "Create fail-closed disclosure, complementary suppression, reconstruction protection and drill-down reauthorization evidence."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-019/e2e.test.ts",
+      "change": "CREATE",
+      "scope": "Create governed analytics end-to-end evidence using local or CI-safe execution only."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "tests/packages/GAP-PKG-019/fixtures.json",
+      "change": "CREATE",
+      "scope": "Create deterministic synthetic fixtures for reconciliation and disclosure; never include production data or secrets."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-019.json",
+      "change": "MODIFY",
+      "scope": "Record only the explicit authorization, lifecycle state and consolidated evidence for SHELL-CI-020::GAP-PKG-019."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/migration-manifest.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the VERIFIED AUTH-DB-015 manifest generator and checker without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/supabase-db-harness.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the VERIFIED AUTH-DB-027 clean local Supabase replay and pgTAP harness without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Reuse the VERIFIED AUTH-DB-028 environment drift controller without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/recovery-drill.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Reuse the VERIFIED AUTH-DB-029 recovery controller without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260901062557_auth_db_034_authorization_evaluator.sql",
+      "change": "EXECUTE_ONLY",
+      "scope": "Adopt and call the VERIFIED AUTH-DB-034 authorization evaluator without rewriting its historical migration."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/tests/database/043_auth_db_034_authorization_evaluator.test.sql",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the existing AUTH-DB-034 authorization regression evidence without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use docs:implementation:advance as the only mutating lifecycle entrypoint without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the governed implementation branch lifecycle without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Use the fingerprint-bound candidate repair stage without modifying it."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/commit-scope.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validate physical commit scope without modifying the script."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/quality/repository-test-command-gate.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Run the canonical repository regression facade through npm test without modifying it."
+    }
+  ],
+  "validation_commands": [
+    "npm run supabase:db:test:clean",
+    "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql",
+    "node --test tests/packages/GAP-PKG-019/contract.test.ts",
+    "node --test tests/packages/GAP-PKG-019/integration.test.ts",
+    "node --test tests/packages/GAP-PKG-019/security.test.ts",
+    "node --test tests/packages/GAP-PKG-019/e2e.test.ts",
+    "npm test --silent"
+  ],
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-15T17:58:07.316-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO CI020 GAP-PKG-019",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "prerequisite_evidence": [
+    "PACKAGE_GATE GAP-PKG-019 APPROVED_FOR_IMPLEMENTATION",
+    "PACKAGE_GATE_AUTHORIZATION APROBADO GATE WAVE 1",
+    "E5_GATE E5-GATE-008::GAP-PKG-019 PASS",
+    "FOUNDATION AUTH-DB-015::GLOBAL VERIFIED",
+    "FOUNDATION AUTH-DB-027::GLOBAL VERIFIED",
+    "FOUNDATION AUTH-DB-028::GLOBAL VERIFIED",
+    "FOUNDATION AUTH-DB-029::GLOBAL VERIFIED",
+    "FOUNDATION AUTH-DB-034::GLOBAL VERIFIED",
+    "PHYSICAL_IDENTITY targets=14 create=7 modify=1 adopt_without_modify=6",
+    "IMPLEMENTATION_UNIT vento-shell:GAP-PKG-019:DB-RPC-001",
+    "ENV_PROFILE ENV-SUPABASE-LOCAL-CI-STAGING"
+  ],
+  "evidence": [
+    {
+      "schema_version": 1,
+      "evidence_type": "MRP015_050_CANDIDATE_READY",
+      "foundation_id": "MRP015-050",
+      "gate_id": "CANDIDATE_READY",
+      "owner_task": "SUPA-TRANS-015",
+      "phase": "AFTER_LOCAL_MATERIALIZATION_BEFORE_REMOTE_DEPLOY",
+      "package_id": "GAP-PKG-019",
+      "instance_id": "SHELL-CI-020::GAP-PKG-019",
+      "recorded_at": "2026-09-16T03:50:42.472Z",
+      "candidate_head_sha": "41c0ec97257e6f0716723a8e2f19a62f33dabc34",
+      "authorized_scope_sha256": "20356ddbcfa23031d085ed8c82828a83beae32c47898199184cc9a2b4959ee56",
+      "candidate_scope_sha256": "e4c8fd14889ae1cf924328f4841c06f997acbceabd73841641a8d33634ce9696",
+      "candidate_file_count": 1,
+      "status": "PASS",
+      "remote_mutations": false,
+      "secret_values_in_evidence": false,
+      "payload_sha256": "c4c043ac47f4ed5b7970b1db65236ec13fc3c0bcb129fad9dd9c86862706a6c6"
+    },
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm run supabase:db:test:clean status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/contract.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/integration.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/security.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=node --test tests/packages/GAP-PKG-019/e2e.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm test --silent status=PASS",
+    {
+      "type": "IMPLEMENTATION_EXECUTION_EVIDENCE_V1",
+      "schema_version": 1,
+      "instance_id": "SHELL-CI-020::GAP-PKG-019",
+      "candidate_commit": "41c0ec97257e6f0716723a8e2f19a62f33dabc34",
+      "lifecycle_head_commit": "05e6378619aea27b27a77f8517ad8b84fe68215c",
+      "candidate_lifecycle": {
+        "model_id": "VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1",
+        "decision": "REUSE_PHYSICAL_EVIDENCE",
+        "reason": "SAFE_LIFECYCLE_METADATA_ONLY",
+        "changed_paths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-019.json"
+        ]
+      },
+      "observed_at": "2026-09-15T22:57:20.2774038-05:00",
+      "validation_commands": [
+        "npm run supabase:db:test:clean",
+        "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql",
+        "node --test tests/packages/GAP-PKG-019/contract.test.ts",
+        "node --test tests/packages/GAP-PKG-019/integration.test.ts",
+        "node --test tests/packages/GAP-PKG-019/security.test.ts",
+        "node --test tests/packages/GAP-PKG-019/e2e.test.ts",
+        "npm test --silent"
+      ],
+      "results": [
+        {
+          "command": "npm run supabase:db:test:clean",
+          "status": "PASS"
+        },
+        {
+          "command": "npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-019/contract.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-019/integration.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-019/security.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-019/e2e.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015"
+        }
+      ],
+      "environment_results": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "SUPABASE_PROJECT_REF",
+          "target_id": "rcrxixmqhrndcervbllp",
+          "owner": "SUPA-TRANS-015",
+          "status": "PASS",
+          "evidence": [
+            "TARGET_BINDING STAGING SUPABASE_PROJECT_REF rcrxixmqhrndcervbllp owner=SUPA-TRANS-015 candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34",
+            "CI020_SCOPE GAP-PKG-019 materializes a forward migration and candidate evidence only; remote apply and production mutation are explicitly prohibited; staging deployment remains reserved for SHELL-CI-021",
+            "MRP015_050 candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 status=RECORDED remote_mutations=false",
+            "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm run supabase:db:test:clean status=PASS migrations=22 pgtap_files=24 assertions=1905",
+            "LOCAL_VALIDATION candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 command=npm exec -- supabase test db supabase/tests/packages/GAP-PKG-019.sql status=PASS assertions=39",
+            "PREVERIFY candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 lifecycle_head=05e6378619aea27b27a77f8517ad8b84fe68215c status=PASS"
+          ]
+        }
+      ],
+      "operational_evidence": [
+        "IMPLEMENTATION_PREVERIFY candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 lifecycle_head=05e6378619aea27b27a77f8517ad8b84fe68215c status=PASS ready_to_consolidate_verified_evidence=SI",
+        "VALIDATION_FULL_FALLBACK candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 executed=7 not_applicable=0 skipped=0 shadow_false_negatives=0",
+        "MRP015_050 candidate=41c0ec97257e6f0716723a8e2f19a62f33dabc34 status=RECORDED remote_mutations=false",
+        "HUMAN_GATE VENTO_OWNER approval=APROBADO SECURITY DEFINER GAP-PKG-019"
+      ]
+    }
+  ],
+  "target_environments": [
+    {
+      "environment_role": "STAGING",
+      "target_type": "SUPABASE_PROJECT_REF",
+      "target_id": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015"
+    }
+  ]
 }

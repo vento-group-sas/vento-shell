@@ -1,0 +1,364 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-019",
+  "implementation_unit": "vento-shell:GAP-PKG-019:DB-RPC-001",
+  "task_ids": [
+    "DATA-AUTH-002",
+    "DATA-DOM-006",
+    "DATA-INT-001",
+    "SUPA-AUD-016",
+    "SUPA-AUD-017",
+    "SUPA-TRANS-009",
+    "SUPA-TRANS-012"
+  ],
+  "reconciliation_base": {
+    "contract_version": "1.0.0",
+    "source": {
+      "source_id": "canonical-sales-events",
+      "source_version": "2026-09-13",
+      "schema_version": "3.2.0",
+      "period_start": "2026-09-01",
+      "period_end": "2026-09-07",
+      "cutoff_at": "2026-09-08T05:00:00.000Z",
+      "source_count": 100
+    },
+    "processing": {
+      "transformation_id": "sales-kpi-weekly",
+      "transformation_version": "1.4.0",
+      "accepted_count": 86,
+      "rejected_count": 4,
+      "quarantine_count": 3,
+      "duplicate_count": 5,
+      "excluded_count": 2,
+      "materialized_count": 86
+    },
+    "lineage": {
+      "input_fingerprint": "sha256:aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "result_fingerprint": "sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+    }
+  },
+  "reconciliation_scenarios": [
+    {
+      "id": "exact_reconciliation",
+      "source": {},
+      "processing": {},
+      "expected_status": "RECONCILED",
+      "expected_source_difference": 0,
+      "expected_materialization_difference": 0
+    },
+    {
+      "id": "unaccounted_source_fact",
+      "source": {},
+      "processing": {
+        "excluded_count": 1
+      },
+      "expected_status": "DIFFERENCE",
+      "expected_source_difference": 1,
+      "expected_materialization_difference": 0
+    },
+    {
+      "id": "accepted_fact_not_materialized",
+      "source": {},
+      "processing": {
+        "materialized_count": 85
+      },
+      "expected_status": "DIFFERENCE",
+      "expected_source_difference": 0,
+      "expected_materialization_difference": 1
+    },
+    {
+      "id": "explicit_zero_population",
+      "source": {
+        "source_count": 0
+      },
+      "processing": {
+        "accepted_count": 0,
+        "rejected_count": 0,
+        "quarantine_count": 0,
+        "duplicate_count": 0,
+        "excluded_count": 0,
+        "materialized_count": 0
+      },
+      "expected_status": "RECONCILED",
+      "expected_source_difference": 0,
+      "expected_materialization_difference": 0
+    }
+  ],
+  "authorization_decisions": {
+    "aggregate_allow": {
+      "contract_family": "vento.authorization.response-contracts",
+      "contract_name": "AuthorizationDecision",
+      "contract_version": "1.0.0",
+      "decision_id": "01900000-0000-0000-0000-000000000001",
+      "final_decision": "ALLOW",
+      "request": {
+        "operation_kind": "READ"
+      },
+      "resource": {
+        "request_mode": "AGGREGATE"
+      }
+    },
+    "aggregate_export_allow": {
+      "contract_family": "vento.authorization.response-contracts",
+      "contract_name": "AuthorizationDecision",
+      "contract_version": "1.0.0",
+      "decision_id": "01900000-0000-0000-0000-000000000002",
+      "final_decision": "ALLOW",
+      "request": {
+        "operation_kind": "EXPORT"
+      },
+      "resource": {
+        "request_mode": "AGGREGATE"
+      }
+    },
+    "aggregate_deny": {
+      "contract_family": "vento.authorization.response-contracts",
+      "contract_name": "AuthorizationDecision",
+      "contract_version": "1.0.0",
+      "decision_id": "01900000-0000-0000-0000-000000000003",
+      "final_decision": "DENY",
+      "request": {
+        "operation_kind": "READ"
+      },
+      "resource": {
+        "request_mode": "AGGREGATE"
+      }
+    },
+    "detail_allow": {
+      "contract_family": "vento.authorization.response-contracts",
+      "contract_name": "AuthorizationDecision",
+      "contract_version": "1.0.0",
+      "decision_id": "01900000-0000-0000-0000-000000000004",
+      "final_decision": "ALLOW",
+      "request": {
+        "operation_kind": "READ"
+      },
+      "resource": {
+        "request_mode": "COLLECTION"
+      }
+    }
+  },
+  "aggregate_base": {
+    "metric_id": "sales.fulfillment_rate",
+    "metric_family": "sales",
+    "classification": "S2",
+    "value": 86.4,
+    "population_count": 12,
+    "dimensions": [
+      "site_id",
+      "week"
+    ]
+  },
+  "disclosure_rule_base": {
+    "contract_version": "1.0.0",
+    "rule_id": "DISC-SALES-FULFILLMENT-001",
+    "rule_version": "2.1.0",
+    "status": "ACTIVE",
+    "purpose": "OPERATIONS_REVIEW",
+    "metric_family": "sales",
+    "metric_id": "sales.fulfillment_rate",
+    "classification_version": "CLASS-3.0.0",
+    "policy_version": "PRIVACY-4.2.0",
+    "allowed_dimensions": [
+      "site_id",
+      "week"
+    ],
+    "minimum_population": 5,
+    "primary_suppression_enabled": true,
+    "complementary_suppression_required": false,
+    "successive_query_protection_required": false,
+    "allow_comparison": false,
+    "allow_export": false,
+    "allow_drill_down": true
+  },
+  "request_context_base": {
+    "purpose": "OPERATIONS_REVIEW",
+    "comparison_requested": false,
+    "export_requested": false,
+    "drill_down_requested": false
+  },
+  "disclosure_scenarios": [
+    {
+      "id": "publish_governed_sensitive_aggregate",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {},
+      "context": {},
+      "expected_mode": "AGREGADO",
+      "expected_reason": null,
+      "expected_value": 86.4,
+      "expected_drill_down": false
+    },
+    {
+      "id": "suppress_small_population",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {
+        "population_count": 4
+      },
+      "rule": {},
+      "context": {},
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "SMALL_POPULATION",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "suppress_missing_rule",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": null,
+      "context": {},
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "DISCLOSURE_RULE_UNRESOLVED",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "deny_without_authorization",
+      "authorization": "aggregate_deny",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {},
+      "context": {},
+      "expected_mode": "DENEGADO",
+      "expected_reason": "AUTHORIZATION_DENIED",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "deny_non_aggregate_authorization",
+      "authorization": "detail_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {},
+      "context": {},
+      "expected_mode": "DENEGADO",
+      "expected_reason": "AGGREGATE_AUTHORIZATION_REQUIRED",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "suppress_comparison_for_independent_evaluation",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {},
+      "context": {
+        "comparison_requested": true
+      },
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "COMPARISON_REQUIRES_INDEPENDENT_EVALUATION",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "suppress_complementary_reconstruction_risk",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {
+        "complementary_suppression_required": true
+      },
+      "context": {},
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "COMPLEMENTARY_SUPPRESSION_REQUIRED",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "suppress_successive_query_risk",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {
+        "successive_query_protection_required": true
+      },
+      "context": {},
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "SUCCESSIVE_QUERY_GUARD_REQUIRED",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "deny_export_without_export_authorization",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {
+        "allow_export": true
+      },
+      "context": {
+        "export_requested": true
+      },
+      "expected_mode": "DENEGADO",
+      "expected_reason": "EXPORT_AUTHORIZATION_REQUIRED",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "suppress_export_disallowed_by_rule",
+      "authorization": "aggregate_export_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {},
+      "context": {
+        "export_requested": true
+      },
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "EXPORT_NOT_DISCLOSABLE",
+      "expected_value": null,
+      "expected_drill_down": false
+    },
+    {
+      "id": "aggregate_authorization_does_not_grant_drill_down",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {},
+      "rule": {},
+      "context": {
+        "drill_down_requested": true
+      },
+      "expected_mode": "AGREGADO",
+      "expected_reason": null,
+      "expected_value": 86.4,
+      "expected_drill_down": false,
+      "expected_drill_reason": "DISTINCT_DETAIL_AUTHORIZATION_REQUIRED"
+    },
+    {
+      "id": "distinct_detail_authorization_grants_drill_down",
+      "authorization": "aggregate_allow",
+      "detail_authorization": "detail_allow",
+      "aggregate": {},
+      "rule": {},
+      "context": {
+        "drill_down_requested": true
+      },
+      "expected_mode": "AGREGADO",
+      "expected_reason": null,
+      "expected_value": 86.4,
+      "expected_drill_down": true,
+      "expected_drill_reason": null
+    },
+    {
+      "id": "suppress_unapproved_dimension",
+      "authorization": "aggregate_allow",
+      "detail_authorization": null,
+      "aggregate": {
+        "dimensions": [
+          "employee_id",
+          "week"
+        ]
+      },
+      "rule": {},
+      "context": {},
+      "expected_mode": "SUPRIMIDO",
+      "expected_reason": "DIMENSION_NOT_DISCLOSABLE",
+      "expected_value": null,
+      "expected_drill_down": false
+    }
+  ],
+  "source_contract_policy": "SEMANTIC_RUNTIME_GUARD_NO_RAW_FILE_PIN"
+}
