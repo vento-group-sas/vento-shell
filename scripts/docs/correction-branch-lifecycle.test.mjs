@@ -197,14 +197,14 @@ test('VERIFIED se sella y publica solo después de evidencia PASS', () => {
 });
 
 test('replaceCorrectionEvidence es idempotente por identidad', async () => {
-    const module = await import('./correction-branch-lifecycle.mjs');
+    const lifecycleModule = await import('./correction-branch-lifecycle.mjs');
     const record = {
         evidence: [
             { type: 'X', status: 'OLD' },
             { type: 'Y', status: 'PASS' },
         ],
     };
-    const next = module.replaceCorrectionEvidence(record, { type: 'X', status: 'PASS' });
+    const next = lifecycleModule.replaceCorrectionEvidence(record, { type: 'X', status: 'PASS' });
     assert.deepEqual(next.evidence, [
         { type: 'Y', status: 'PASS' },
         { type: 'X', status: 'PASS' },

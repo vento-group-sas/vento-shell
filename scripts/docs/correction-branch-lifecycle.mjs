@@ -56,7 +56,6 @@ const MERGE_CONFIRM_INTERVAL_MS = 2000;
 const GITHUB_TRANSPORT_ATTEMPTS = 20;
 const GITHUB_TRANSPORT_INTERVAL_MS = 2000;
 const GITHUB_TRANSIENT_MARKER = 'GITHUB_TRANSIENT_UNAVAILABLE';
-const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
 
 function fail(message, code = 1) {
     const error = new Error(message);
@@ -1233,7 +1232,7 @@ export function advanceCorrection({ root = ensureRepositoryRoot(), correctionId 
     }
 
     if (record.status === 'IMPLEMENTED') {
-        const preValidation = checkpointCorrection({
+        checkpointCorrection({
             root,
             correctionId: id,
             label: 'pre validation candidate',
