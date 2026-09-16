@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1203** |
+| Aprobadas | **1204** |
 | En propuesta | **0** |
-| No iniciadas | **393** |
+| No iniciadas | **392** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **75.38% (1203/1596)** |
+| Porcentaje de completamiento | **75.44% (1204/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **393** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1104** |
+| ⏸ NO_EVALUADA | **392** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1105** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-036` — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias | ✅ APROBADA |
-| Tarea actual | `NEXO-DOM-037` — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-DOM-038` — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-DOM-037` — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía | ✅ APROBADA |
+| Tarea actual | `NEXO-DOM-038` — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-001` — Separar configuración administrativa de operación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -988,7 +988,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-034` | Definir inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-035` | Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-036` | Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-037` | Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-037` | Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-DOM-038` | Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-021` | Auditar permisos actuales de LPN, activos y contenedores | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-022` | Proteger creación, actualización, cierre, anulación y reetiquetado de LPN | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
