@@ -377,6 +377,7 @@ export function assertCi020PhysicalPrerequisitesForFinish({
       packageId,
       instance,
       gate,
+      currentHeadSha: sealedImplementationCandidate(instance),
     });
     if (candidate.status !== 'PASS') {
       fail(`IMPLEMENTATION_FINISH_PREREQUISITES: ${packageId} bloqueado por MRP015-050/CANDIDATE_READY; ${candidate.detail}`);
