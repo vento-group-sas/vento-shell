@@ -114,6 +114,15 @@
     "approval_statement": "APROBADO DELIV-PKG-015::CORR-016",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-16T23:15:34.843Z",
+      "candidate_head_before": "3843f1af2e7b4df7c4ad2978d26030a81427963e",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-16T19:29:49.589Z"
 }
