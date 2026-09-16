@@ -56,3 +56,12 @@ test('docs:plan:build sincroniza el iniciador de correcciones antes del check gl
     assert.match(source, /import\('\.\/correction-starter\.mjs'\)/u);
     assert.match(source, /writeCorrectionStarter\(\{ root \}\)/u);
 });
+
+test('iniciador usa advance como entrada state-aware de continuidad', () => {
+    const source = fs.readFileSync('scripts/docs/correction-starter.mjs', 'utf8');
+    assert.match(source, /docs:correction:advance/u);
+    assert.match(source, /entrada normal para continuar una corrección activa/u);
+    assert.match(source, /state-aware/u);
+    assert.match(source, /quality:repair exactamente una vez/u);
+    assert.match(source, /sella VERIFIED solo con PASS completo/u);
+});

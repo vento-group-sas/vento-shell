@@ -126,7 +126,8 @@
     "docs:night:turn": "node scripts/docs/night-documentation-turn.mjs",
     "docs:correction:authorize": "node scripts/docs/correction-branch-lifecycle.mjs authorize",
     "docs:correction:checkpoint": "node scripts/docs/correction-branch-lifecycle.mjs checkpoint",
-    "docs:correction:supabase:deploy": "node scripts/docs/correction-supabase-deploy.mjs"
+    "docs:correction:supabase:deploy": "node scripts/docs/correction-supabase-deploy.mjs",
+    "docs:correction:advance": "node scripts/docs/correction-branch-lifecycle.mjs advance"
   },
   "dependencies": {
     "@supabase/ssr": "^0.8.0",

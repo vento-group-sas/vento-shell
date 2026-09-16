@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -75,6 +76,7 @@ function run(command, args, {
         windowsHide: true,
         env,
         stdio: inherit ? 'inherit' : ['ignore', 'pipe', 'pipe'],
+        maxBuffer: 64 * 1024 * 1024,
     });
     if (result.error) {
         if (allowFailure) return { status: 1, stdout: '', stderr: result.error.message };
@@ -377,6 +379,202 @@ function normalizeDirtyTextEol(root) {
         normalized.push(relativePath);
     }
     return normalized.sort((left, right) => left.localeCompare(right, 'en'));
+}
+
+function evidenceIdentity(entry) {
+    return String(entry?.type ?? entry?.evidence_type ?? '').trim();
+}
+
+export function replaceCorrectionEvidence(record, evidence) {
+    const identity = evidenceIdentity(evidence);
+    if (!identity) fail('CORRECTION_EVIDENCE_IDENTITY_REQUIRED');
+    return {
+        ...record,
+        evidence: [
+            ...(record.evidence ?? []).filter((entry) => evidenceIdentity(entry) !== identity),
+            evidence,
+        ],
+    };
+}
+
+function correctionEvidence(record, identity) {
+    return (record.evidence ?? []).find((entry) => evidenceIdentity(entry) === identity) ?? null;
+}
+
+function sha256Text(value) {
+    return crypto.createHash('sha256').update(String(value ?? ''), 'utf8').digest('hex');
+}
+
+function runAuthorizedValidationCommand(root, command) {
+    const exact = String(command ?? '').trim();
+    if (!exact) fail('VALIDATION_COMMAND_EMPTY');
+    if (process.platform === 'win32') {
+        return run(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', exact], {
+            cwd: root,
+            allowFailure: true,
+        });
+    }
+    return run('/bin/sh', ['-lc', exact], {
+        cwd: root,
+        allowFailure: true,
+    });
+}
+
+function qualityRepairEvidenceStatus(record) {
+    return correctionEvidence(record, 'CORRECTION_QUALITY_REPAIR_V1');
+}
+
+function ensureQualityRepairExactlyOnce(root, record) {
+    const existing = qualityRepairEvidenceStatus(record);
+    if (existing?.status === 'PASS') {
+        return { record, reused: true, evidence: existing };
+    }
+    if (existing) {
+        fail(
+            `${record.correction_id}: QUALITY_REPAIR_PREVIOUS_${String(existing.status ?? 'UNKNOWN').toUpperCase()}; `
+            + 'no se repite automáticamente una ejecución cuyo resultado no quedó PASS.',
+        );
+    }
+
+    const armedEvidence = {
+        type: 'CORRECTION_QUALITY_REPAIR_V1',
+        status: 'STARTED',
+        command: 'npm run quality:repair',
+        started_at: new Date().toISOString(),
+        candidate_head_before: currentHead(root),
+        automatic_retry_forbidden: true,
+    };
+    writeRecord(root, replaceCorrectionEvidence(record, armedEvidence));
+    checkpointCorrection({
+        root,
+        correctionId: record.correction_id,
+        label: 'arm governed quality repair exactly once',
+    });
+
+    const executionHead = currentHead(root);
+    const result = npm(['run', 'quality:repair'], {
+        cwd: root,
+        allowFailure: true,
+    });
+    const stdout = String(result.stdout ?? '');
+    const stderr = String(result.stderr ?? '');
+
+    const completedEvidence = {
+        ...armedEvidence,
+        status: result.status === 0 ? 'PASS' : 'FAIL',
+        completed_at: new Date().toISOString(),
+        execution_candidate_head: executionHead,
+        exit_code: result.status,
+        stdout_sha256: sha256Text(stdout),
+        stderr_sha256: sha256Text(stderr),
+    };
+    const next = replaceCorrectionEvidence(readRecord(root, record.correction_id), completedEvidence);
+    writeRecord(root, next);
+
+    if (result.status !== 0) {
+        fail(
+            `${record.correction_id}: quality:repair falló con exit ${result.status}; `
+            + `${(stderr || stdout || 'sin diagnóstico').replace(/[\r\n]+/gu, ' | ')}`,
+            result.status,
+        );
+    }
+
+    checkpointCorrection({
+        root,
+        correctionId: record.correction_id,
+        label: 'record governed quality repair PASS',
+    });
+    return {
+        record: readRecord(root, record.correction_id),
+        reused: false,
+        evidence: completedEvidence,
+    };
+}
+
+function runCorrectionValidations(root, record) {
+    const candidateHead = currentHead(root);
+    const results = [];
+    for (const command of record.validation_commands) {
+        const result = runAuthorizedValidationCommand(root, command);
+        const stdout = String(result.stdout ?? '');
+        const stderr = String(result.stderr ?? '');
+        results.push({
+            command,
+            status: result.status === 0 ? 'PASS' : 'FAIL',
+            exit_code: result.status,
+            stdout_sha256: sha256Text(stdout),
+            stderr_sha256: sha256Text(stderr),
+        });
+        if (result.status !== 0) {
+            return {
+                status: 'FAIL',
+                candidateHead,
+                results,
+                failure: (stderr || stdout || `exit ${result.status}`).replace(/[\r\n]+/gu, ' | '),
+                exitCode: result.status,
+            };
+        }
+    }
+    return {
+        status: 'PASS',
+        candidateHead,
+        results,
+        failure: null,
+        exitCode: 0,
+    };
+}
+
+function sealVerifiedCorrection(root, record, validationEvidence) {
+    const verifiedEvidence = {
+        type: 'CORRECTION_VERIFICATION_V1',
+        status: 'PASS',
+        observed_at: new Date().toISOString(),
+        validated_candidate_head: validationEvidence.candidate_head,
+        validation_evidence_type: validationEvidence.type,
+        lifecycle_model: 'VENTO-CORRECTION-LIFECYCLE-V1',
+        lifecycle_decision: 'SAFE_CORRECTION_METADATA_ONLY',
+        remote_mutations: false,
+    };
+    const next = replaceCorrectionEvidence({
+        ...record,
+        status: 'VERIFIED',
+        verified_at: new Date().toISOString(),
+    }, verifiedEvidence);
+    writeRecord(root, next);
+
+    npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+    normalizeDirtyTextEol(root);
+    validateEolPolicy({ root });
+    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
+    git(['diff', '--check'], { cwd: root });
+
+    const sealed = readRecord(root, record.correction_id);
+    const scope = assertActiveCorrectionScope(root, sealed);
+    if (scope.dirty.length > 0) {
+        commitDirtyByLane(
+            root,
+            scope.dirty,
+            `correction(${record.correction_id}): seal VERIFIED`,
+        );
+    }
+    if (worktreePaths(root).length > 0) {
+        fail(
+            `${record.correction_id}: VERIFIED seal dejó worktree dirty: `
+            + worktreePaths(root).join(', '),
+        );
+    }
+    const branch = correctionBranchName(record.correction_id);
+    git(['push', '-u', 'origin', branch], { cwd: root });
+    const sync = syncCounts(root, `origin/${branch}`, 'HEAD');
+    if (sync.behind !== 0 || sync.ahead !== 0) {
+        fail(`${record.correction_id}: VERIFIED push incompleto: ${sync.raw}.`);
+    }
+    return {
+        record: sealed,
+        head: currentHead(root),
+    };
 }
 
 function branchChangedPaths(root) {
@@ -986,6 +1184,117 @@ export function recordCorrectionCandidate({ root = ensureRepositoryRoot(), corre
     return next;
 }
 
+
+export function advanceCorrection({ root = ensureRepositoryRoot(), correctionId } = {}) {
+    const id = normalizeCorrectionId(correctionId);
+    let record = readRecord(root, id);
+
+    if (record.status === 'PENDING_AUTHORIZATION') {
+        fail(`${id}: HUMAN_GATE; la corrección requiere autorización explícita antes de advance.`);
+    }
+    if (['BLOCKED', 'DEFERRED'].includes(record.status)) {
+        fail(`${id}: estado ${record.status}; resuelva el bloqueo o reanudación antes de advance.`);
+    }
+
+    if (record.status === 'AUTHORIZED') {
+        if (currentBranch(root) !== DEFAULT_BRANCH) {
+            fail(`${id}: AUTHORIZED advance debe comenzar desde main.`);
+        }
+        startCorrection({ root, correctionId: id });
+        record = readRecord(root, id);
+    }
+
+    if (record.status === 'IN_PROGRESS') {
+        if (currentBranch(root) !== correctionBranchName(id)) {
+            fail(`${id}: IN_PROGRESS advance debe ejecutarse desde ${correctionBranchName(id)}.`);
+        }
+
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'pre quality repair',
+        });
+
+        const repair = ensureQualityRepairExactlyOnce(root, readRecord(root, id));
+        record = repair.record;
+
+        const implemented = {
+            ...record,
+            status: 'IMPLEMENTED',
+            implemented_at: new Date().toISOString(),
+        };
+        writeRecord(root, implemented);
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'transition to IMPLEMENTED',
+        });
+        record = readRecord(root, id);
+    }
+
+    if (record.status === 'IMPLEMENTED') {
+        const preValidation = checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'pre validation candidate',
+        });
+        record = readRecord(root, id);
+
+        const validation = runCorrectionValidations(root, record);
+        const validationEvidence = {
+            type: 'CORRECTION_VALIDATION_V1',
+            status: validation.status,
+            observed_at: new Date().toISOString(),
+            candidate_head: validation.candidateHead,
+            commands: [...record.validation_commands],
+            results: validation.results,
+            ordered_fail_fast: true,
+        };
+        writeRecord(
+            root,
+            replaceCorrectionEvidence(readRecord(root, id), validationEvidence),
+        );
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'record correction validation evidence',
+        });
+
+        if (validation.status !== 'PASS') {
+            fail(
+                `${id}: VALIDATION_FAILED: ${validation.failure}`,
+                validation.exitCode,
+            );
+        }
+
+        const sealed = sealVerifiedCorrection(
+            root,
+            readRecord(root, id),
+            validationEvidence,
+        );
+        record = sealed.record;
+
+        printResult({
+            ESTADO: 'PASS',
+            OPERACION: 'CORRECTION_ADVANCE_VERIFY',
+            CORRECTION_ID: id,
+            STATUS: 'VERIFIED',
+            VALIDATED_CANDIDATE_HEAD: validation.candidateHead,
+            VERIFIED_LIFECYCLE_HEAD: sealed.head,
+            QUALITY_REPAIR: 'PASS_EXACTLY_ONCE',
+            VALIDATIONS: 'PASS',
+            WORKTREE: 'CLEAN',
+            REMOTE_BRANCH_SYNC: '0/0',
+        });
+    }
+
+    if (record.status === 'VERIFIED') {
+        return finishCorrection({ root, correctionId: id });
+    }
+
+    fail(`${id}: advance terminó en estado no manejado ${record.status}.`);
+}
+
 export function finishCorrection({ root = ensureRepositoryRoot(), correctionId } = {}) {
     const id = normalizeCorrectionId(correctionId);
     const branch = correctionBranchName(id);
@@ -1187,6 +1496,10 @@ export function main(argv = process.argv.slice(2)) {
             correctionId: args.correctionId,
             label: args.label ?? 'checkpoint',
         });
+    }
+    if (args.mode === 'advance') {
+        if (!args.correctionId) fail('advance exige --correction-id.');
+        return advanceCorrection({ correctionId: args.correctionId });
     }
     if (args.mode === 'finish') {
         if (!args.correctionId) fail('finish exige --correction-id.');

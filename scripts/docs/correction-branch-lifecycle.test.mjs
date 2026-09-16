@@ -155,3 +155,58 @@ test('checkpoint nativo valida scope, commitea, publica y exige CLEAN', () => {
     assert.match(source, /CHECKPOINT_LEFT_DIRTY/u);
     assert.match(source, /OPERACION: 'CORRECTION_CHECKPOINT'/u);
 });
+
+test('advance es la entrada state-aware para completar una corrección', () => {
+    const source = fs.readFileSync('scripts/docs/correction-branch-lifecycle.mjs', 'utf8');
+    assert.match(source, /export function advanceCorrection/u);
+    assert.match(source, /HUMAN_GATE/u);
+    assert.match(source, /pre quality repair/u);
+    assert.match(source, /transition to IMPLEMENTED/u);
+    assert.match(source, /CORRECTION_VALIDATION_V1/u);
+    assert.match(source, /CORRECTION_ADVANCE_VERIFY/u);
+    assert.match(source, /finishCorrection/u);
+});
+
+test('quality repair queda gobernado exactamente una vez por evidencia persistente', () => {
+    const source = fs.readFileSync('scripts/docs/correction-branch-lifecycle.mjs', 'utf8');
+    assert.match(source, /CORRECTION_QUALITY_REPAIR_V1/u);
+    assert.match(source, /status: 'STARTED'/u);
+    assert.match(source, /automatic_retry_forbidden: true/u);
+    assert.match(source, /QUALITY_REPAIR_PREVIOUS_/u);
+    assert.match(source, /npm\(\['run', 'quality:repair'\]/u);
+    assert.match(source, /status: result\.status === 0 \? 'PASS' : 'FAIL'/u);
+});
+
+test('validaciones de corrección respetan orden fail-fast y registran hashes', () => {
+    const source = fs.readFileSync('scripts/docs/correction-branch-lifecycle.mjs', 'utf8');
+    assert.match(source, /runCorrectionValidations/u);
+    assert.match(source, /for \(const command of record\.validation_commands\)/u);
+    assert.match(source, /ordered_fail_fast: true/u);
+    assert.match(source, /stdout_sha256/u);
+    assert.match(source, /stderr_sha256/u);
+    assert.match(source, /VALIDATION_FAILED/u);
+});
+
+test('VERIFIED se sella y publica solo después de evidencia PASS', () => {
+    const source = fs.readFileSync('scripts/docs/correction-branch-lifecycle.mjs', 'utf8');
+    assert.match(source, /sealVerifiedCorrection/u);
+    assert.match(source, /CORRECTION_VERIFICATION_V1/u);
+    assert.match(source, /status: 'VERIFIED'/u);
+    assert.match(source, /SAFE_CORRECTION_METADATA_ONLY/u);
+    assert.match(source, /VERIFIED push incompleto/u);
+});
+
+test('replaceCorrectionEvidence es idempotente por identidad', async () => {
+    const module = await import('./correction-branch-lifecycle.mjs');
+    const record = {
+        evidence: [
+            { type: 'X', status: 'OLD' },
+            { type: 'Y', status: 'PASS' },
+        ],
+    };
+    const next = module.replaceCorrectionEvidence(record, { type: 'X', status: 'PASS' });
+    assert.deepEqual(next.evidence, [
+        { type: 'Y', status: 'PASS' },
+        { type: 'X', status: 'PASS' },
+    ]);
+});
