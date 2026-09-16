@@ -5,7 +5,7 @@
   "target_instance_id": "SHELL-CI-020::GAP-PKG-019",
   "correction_type": "PHYSICAL",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021::GAP-PKG-019"
@@ -17,12 +17,41 @@
     "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-019.json",
     "target_instance_record_sha256": "cd6046b0f12c4f9e2acffeeaf079ebdc937220c4ed315672a036f50370509acf"
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY"
+    }
+  ],
+  "validation_commands": [
+    "npm exec -- supabase db push --linked --dry-run",
+    "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict"
+  ],
+  "affected_treq_ids": [
+    "TREQ-SUPABASE-008"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-16T13:55:50-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-020::CORR-002",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [
+    "REMOTE_DEPLOY STAGING project_ref=rcrxixmqhrndcervbllp migration=20260913131524_gap_pkg_019_governed_analytics.sql status=APPLIED",
+    "REMOTE_DEPLOY_POSTCHECK supabase_db_push_dry_run status=PASS result=REMOTE_DATABASE_UP_TO_DATE",
+    "REMOTE_DEPLOY_PRODUCTION_MUTATIONS=0"
+  ],
   "opened_at": "2026-09-16T18:23:22.957Z"
 }

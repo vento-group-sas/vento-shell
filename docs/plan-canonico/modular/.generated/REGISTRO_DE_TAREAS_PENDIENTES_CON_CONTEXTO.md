@@ -12,17 +12,19 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `SHELL-CI-020::CORR-002`
+### 1. Termina la corrección abierta — `SHELL-CI-020::CORR-002`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO SHELL-CI-020::CORR-002
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `EXECUTE_ONLY` `supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql`
+  - `EXECUTE_ONLY` `scripts/supabase/environment-drift.mjs`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `npm exec -- supabase db push --linked --dry-run`
+  2. `npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id SHELL-CI-020::CORR-002`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-030`
