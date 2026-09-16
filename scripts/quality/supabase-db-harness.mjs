@@ -170,12 +170,36 @@ function safeAscii(value) {
         .replace(/[^\x20-\x7E\r\n]/gu, '?');
 }
 
-function outputTail(result, maxLines = 10) {
-    return safeAscii([result?.stdout, result?.stderr].filter(Boolean).join('\n'))
+export function summarizeFailureOutput(result, {
+    maxDiagnosticLines = 24,
+    maxTailLines = 10,
+} = {}) {
+    const lines = safeAscii([result?.stdout, result?.stderr].filter(Boolean).join('\n'))
         .split(/\r?\n/u)
         .map((line) => line.trim())
-        .filter(Boolean)
-        .slice(-maxLines)
+        .filter(Boolean);
+    if (lines.length === 0) return '';
+
+    const diagnosticPattern = /(?:\bnot ok\b|failed test|\bhave:\s*|\bwant:\s*|\bgot:\s*|\bexpected:\s*|\berror\b|sqlstate|failed \d+\/\d+ subtests)/iu;
+    const diagnosticIndexes = lines
+        .map((line, index) => diagnosticPattern.test(line) ? index : -1)
+        .filter((index) => index >= 0);
+
+    const selected = new Set();
+    for (const index of diagnosticIndexes) {
+        for (let cursor = Math.max(0, index - 1); cursor <= Math.min(lines.length - 1, index + 2); cursor += 1) {
+            selected.add(cursor);
+            if (selected.size >= maxDiagnosticLines) break;
+        }
+        if (selected.size >= maxDiagnosticLines) break;
+    }
+    for (let index = Math.max(0, lines.length - maxTailLines); index < lines.length; index += 1) {
+        selected.add(index);
+    }
+
+    return [...selected]
+        .sort((left, right) => left - right)
+        .map((index) => lines[index])
         .join(' | ')
         .replace(/\s+/gu, ' ')
         .trim();
@@ -256,19 +280,19 @@ export function runHarness({
     }
     if (selectedMode === 'clean' && status.status !== 0) {
         const start = runSupabase(['start'], { allowFailure: true });
-        if (start.status !== 0) fail(`LOCAL_SUPABASE_START_FAILED:${outputTail(start) || `exit=${start.status}`}`);
+        if (start.status !== 0) fail(`LOCAL_SUPABASE_START_FAILED:${summarizeFailureOutput(start) || `exit=${start.status}`}`);
         status = runSupabase(['status'], { allowFailure: true });
         if (status.status !== 0) fail('LOCAL_SUPABASE_STACK_NOT_READY_AFTER_START');
     }
 
     if (selectedMode === 'clean') {
         const reset = runSupabase(['db', 'reset'], { allowFailure: true });
-        if (reset.status !== 0) fail(`LOCAL_DB_RESET_FAILED:${outputTail(reset) || `exit=${reset.status}`}`);
+        if (reset.status !== 0) fail(`LOCAL_DB_RESET_FAILED:${summarizeFailureOutput(reset) || `exit=${reset.status}`}`);
     }
 
     const testResult = runSupabase(['test', 'db'], { allowFailure: true });
     if (testResult.status !== 0) {
-        fail(`PGTAP_FAILED:${outputTail(testResult) || `exit=${testResult.status}`}`);
+        fail(`PGTAP_FAILED:${summarizeFailureOutput(testResult) || `exit=${testResult.status}`}`);
     }
     const pgTap = parsePgProveSummary(`${testResult.stdout}\n${testResult.stderr}`);
     if (pgTap.files < tests.files.length) {

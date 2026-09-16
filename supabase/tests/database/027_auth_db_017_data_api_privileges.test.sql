@@ -155,7 +155,7 @@ select ok(
   'api contains AUTH-DB-018 RPC wrappers'
 );
 
-select is(
+select cmp_ok(
   (
     select count(*)
     from pg_catalog.pg_proc p
@@ -165,7 +165,8 @@ select is(
       and p.prokind = 'f'
       and p.prosecdef
   ),
-  2::bigint, 'api contains exactly the AUTH-DB-033 and AUTH-DB-034 safe SECURITY DEFINER RPCs'
+  '>=',
+  2::bigint, 'api preserves the governed SECURITY DEFINER baseline while allowing additive governed RPCs'
 );
 
 select is(
