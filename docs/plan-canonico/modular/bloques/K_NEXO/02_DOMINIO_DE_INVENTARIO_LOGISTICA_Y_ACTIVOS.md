@@ -46327,6 +46327,6295 @@ Una credencial o medio de acceso físico no se modela como certificado metrológ
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias`
 
-### [ ] NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
-### [ ] NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
-### [ ] NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre
+### ✅ NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto
+**Tarea siguiente:** NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
+**Tipo de tarea:** documental; definición canónica del control de acceso físico mediante zonas y puntos físicos estables, inventario de llaves y otros medios físicos, alcance autorizado, custodia, entrega, aceptación, vigencia, devolución, revocación, recuperación, incidencias, restricciones y cierre, manteniendo una frontera estricta con identidad, sesión, rol, permiso y autorización digital de SHELL y sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna llaves, controles, tarjetas, códigos y otros medios de acceso físico, su relación con espacios o zonas físicas, su custodia y su ciclo de entrega, devolución, revocación, recuperación e incidencias.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+ZONA O ALCANCE FÍSICO IDENTIFICADO
++
+PUNTO O MECANISMO FÍSICO CUANDO APLIQUE
++
+MEDIO DE ACCESO FÍSICO IDENTIFICADO
++
+DECISIÓN DE ALCANCE FÍSICO
++
+CUSTODIA
++
+ENTREGA Y ACEPTACIÓN
++
+VIGENCIA
++
+DEVOLUCIÓN O REVOCACIÓN
++
+RECUPERACIÓN CUANDO APLIQUE
++
+INCIDENCIA / CONTENCIÓN / RESOLUCIÓN
++
+VERIFICACIÓN Y CIERRE
+→
+ACCESO FÍSICO RECONCILIABLE Y AUDITABLE
+```
+
+Se preserva expresamente:
+
+```text
+ACCESO FÍSICO
+!=
+AUTORIZACIÓN DIGITAL
+```
+
+y:
+
+```text
+POSESIÓN DEL MEDIO
+!=
+DERECHO VIGENTE DE ACCESO
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-036` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. consume la identidad locativa estable de `NEXO-DOM-029`;
+2. define zona o alcance físico de acceso sin duplicar espacios, instalaciones, LOC ni áreas organizacionales;
+3. define puntos o mecanismos físicos de acceso cuando necesiten identidad operativa;
+4. define medio de acceso físico con identidad suficiente para inventario y trazabilidad;
+5. contempla llaves, controles, tarjetas y códigos físicos sin convertir la lista en una taxonomía cerrada universal;
+6. define relación entre medio físico y zona, punto o alcance permitido;
+7. define decisión de alcance físico como hecho empresarial separado del permiso digital de aplicación;
+8. define custodio vigente y cadena de custodia;
+9. define entrega, aceptación y vigencia como hechos distintos;
+10. define devolución, revocación y recuperación como hechos distintos;
+11. define expiración sin confundirla con recuperación física;
+12. define pérdida, hurto, daño, copia no autorizada, poseedor desconocido y no devolución como incidencias distinguibles;
+13. define contención y recuperación sin confundirlas con resolución definitiva;
+14. conserva reemplazo, duplicado, copia controlada, retiro y destrucción sin borrar identidad histórica;
+15. define acceso temporal y permanente como diferencias de vigencia, sin imponer categorías universales no sustentadas;
+16. permite acceso de trabajadores, responsables, terceros o contratistas mediante referencias a identidades propietarias, sin crear usuarios internos amplios por necesidad física;
+17. preserva la frontera con `VPROC-0011` para retiro laboral y recuperación de elementos;
+18. preserva la frontera con NEXO-AUTH para proteger acciones sensibles;
+19. preserva la frontera con SHELL: SHELL no es maestro de llaves, cerraduras ni medios físicos;
+20. define restricciones sobre zona o medio cuando una incidencia lo requiera;
+21. define cierre verificable de incidencias y custodias;
+22. preserva idempotencia, concurrencia, captura offline, resultado desconocido y corrección no destructiva;
+23. clasifica el AS-IS observable de zonas logísticas como base locativa parcial, no como control de acceso físico completo;
+24. no crea ni modifica requisitos de prueba porque la conducta ya está cubierta por requisitos canónicos vigentes;
+25. no autoriza cerraduras, tarjetas, códigos, entregas, revocaciones, datos, migraciones, Supabase, UI ni despliegues reales.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.09 — Gestionar llaves, acceso físico y seguridad`;
+- `CAP-SCOPE-001`, para estructura empresarial, instalaciones y separación de responsabilidades;
+- `CAP-SCOPE-015`, para la frontera con identidad, tecnología y autorización digital;
+- `NEXO-DOM-017`, para auditoría, evidencia e historial;
+- `NEXO-DOM-029`, para instalación, espacio, zona física, identidad, condición y disponibilidad;
+- `NEXO-DOM-030`, para intervención física cuando un mecanismo requiera mantenimiento;
+- `NEXO-DOM-034`, para hallazgos, acciones, evidencia y verificación;
+- `NEXO-DOM-035`, para vigencia, restricciones, evidencia, aceptación, liberación e historia no destructiva reutilizables cuando sean compatibles;
+- `VPROC-0011`, para retiro laboral, revocación coordinada y recepción de llaves o elementos;
+- `VPROC-0055`, para el ciclo general de instalaciones cuando una incidencia de acceso produzca una novedad física;
+- `NEXO-AUTH-031` y `NEXO-AUTH-032`, como propietarios posteriores de protección y segregación de acciones;
+- `NEXO-UX-047`, como propietario posterior de experiencia relacionada;
+- el registro canónico de requisitos de prueba vigente;
+- la superficie remota observable de zonas y ubicaciones en `vento-nexo`.
+
+Esta tarea define dominio de acceso físico. No redefine autenticación, sesión, roles, permisos digitales, identidad laboral, mantenimiento general ni obras.
+
+---
+
+#### 4. Decisión de cobertura de `CAP-13.09`
+
+La capacidad conserva:
+
+```text
+CAP-13.09
+GESTIONAR LLAVES, ACCESO FÍSICO Y SEGURIDAD
+```
+
+con tratamiento:
+
+```text
+BUILD
+```
+
+y propiedad objetivo:
+
+```text
+NEXO + VISO
+```
+
+La decisión canónica exige construir:
+
+```text
+INVENTARIO
++
+CUSTODIA
++
+ENTREGA
++
+DEVOLUCIÓN
++
+VIGENCIA
++
+ZONAS
++
+INCIDENCIAS
++
+CIERRE
+```
+
+sin mezclar esos hechos con autorización digital.
+
+NEXO conserva el inventario, la custodia y el expediente operativo del medio físico.
+
+VISO conserva las decisiones de seguridad, riesgo, cumplimiento o gestión de personas que le correspondan.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran específicamente:
+
+1. `H-CAP-SCOPE-013-021`, porque llaves, controles, tarjetas y códigos físicos no tenían inventario, custodia, vigencia, devolución y revocación canónicos;
+2. `H-CAP-SCOPE-013-022`, porque acceso físico y autorización digital podían confundirse;
+3. la posibilidad de tratar una llave como si fuera un permiso de aplicación;
+4. la posibilidad de tratar una tarjeta física como si fuera una cuenta digital;
+5. la ausencia de una relación explícita entre medio físico y zona o alcance autorizado;
+6. la ausencia de una cadena de custodia material;
+7. la entrega sin aceptación trazable;
+8. la devolución sin verificación del elemento;
+9. la revocación digital aparente sin recuperación o neutralización física;
+10. la recuperación física sin revocar un alcance todavía vigente;
+11. la expiración sin seguimiento de devolución;
+12. la pérdida o hurto sin contención;
+13. la sustitución destructiva del medio original;
+14. el poseedor desconocido sin incidencia abierta;
+15. la copia no autorizada sin tratamiento explícito;
+16. el acceso temporal de terceros confundido con creación de un usuario interno amplio;
+17. el retiro laboral cerrado mientras persisten medios físicos pendientes;
+18. el uso de zonas logísticas del AS-IS como si fueran automáticamente zonas de seguridad física.
+
+---
+
+#### 6. Propiedad de dominio
+
+La propiedad queda separada:
+
+| Concepto | Propiedad canónica |
+| --- | --- |
+| identidad laboral y ciclo de persona | VISO o contrato de personas propietario |
+| instalación y topología física interna | NEXO |
+| zona o alcance físico de acceso | NEXO sobre sujetos locativos vigentes |
+| llave, control, tarjeta u otro medio físico | NEXO |
+| cadena de custodia física | NEXO |
+| decisión operativa de alcance físico | NEXO + autoridad competente |
+| riesgo, seguridad y cumplimiento | VISO cuando corresponda |
+| autenticación, sesión, rol y permiso digital | SHELL y contratos de autorización correspondientes |
+| protección de acciones sensibles NEXO | `NEXO-AUTH-031` y `NEXO-AUTH-032` |
+| mantenimiento de cerradura o mecanismo | ciclo propietario de mantenimiento |
+| obra o adecuación del acceso | `NEXO-DOM-037` |
+| novedad locativa general | `NEXO-DOM-038` |
+
+La coincidencia de una persona, zona o identificador no fusiona los dominios.
+
+---
+
+#### 7. Frontera absoluta con autorización digital
+
+Se preserva:
+
+```text
+PHYSICAL_ACCESS_SCOPE
+!=
+DIGITAL_AUTHORIZATION_SCOPE
+```
+
+y:
+
+```text
+PHYSICAL_ACCESS_MEDIUM
+!=
+ACCOUNT
+!=
+SESSION
+!=
+ROLE
+!=
+PERMISSION
+```
+
+Un actor puede tener permiso digital para registrar una entrega sin tener acceso físico a la zona.
+
+Un actor puede tener acceso físico autorizado a una zona sin recibir un rol digital amplio.
+
+La implementación futura deberá resolver ambas decisiones por sus contratos propietarios.
+
+---
+
+#### 8. SHELL no gobierna llaves ni cerraduras
+
+SHELL puede aportar identidad, autenticación y autorización digital para acciones de software.
+
+SHELL no se convierte en fuente maestra de:
+
+- llaves;
+- controles;
+- tarjetas físicas;
+- códigos de acceso físico;
+- cerraduras;
+- custodias;
+- entregas;
+- devoluciones;
+- recuperación física;
+- incidencias físicas.
+
+La referencia a una identidad SHELL no cambia la propiedad del hecho físico.
+
+---
+
+#### 9. Sujeto locativo estable
+
+Todo alcance de acceso debe referenciar sujetos físicos autoritativos.
+
+Puede utilizar, según aplicabilidad:
+
+- instalación;
+- espacio físico;
+- zona física;
+- punto físico;
+- componente fijo;
+- otro sujeto locativo autorizado.
+
+No se permite utilizar únicamente:
+
+- nombre libre;
+- descripción narrativa;
+- nombre de área organizacional;
+- código visual no resuelto;
+- nombre de una pantalla.
+
+---
+
+#### 10. Zona física
+
+La zona física se consume desde la topología locativa vigente.
+
+Se preserva:
+
+```text
+PHYSICAL_ZONE
+!=
+ORGANIZATIONAL_AREA
+!=
+LOC
+!=
+DIGITAL_AUTHORIZATION_SCOPE
+```
+
+La coincidencia de nombre no demuestra equivalencia.
+
+Una zona de acceso puede abarcar uno o varios sujetos físicos únicamente cuando una regla autorizada lo defina de forma explícita.
+
+---
+
+#### 11. Zona logística frente a zona de acceso
+
+El AS-IS de NEXO ya utiliza el atributo `zone` dentro de ubicaciones logísticas.
+
+Se preserva:
+
+```text
+INVENTORY LOCATION ZONE
+!=
+PHYSICAL SECURITY ZONE
+```
+
+Una zona logística podrá relacionarse con una zona física cuando exista equivalencia demostrada.
+
+No se migra por similitud de nombre.
+
+---
+
+#### 12. Punto físico de acceso
+
+Cuando sea necesario identificar el punto concreto por el que se controla entrada o salida, el contrato admite un `PHYSICAL_ACCESS_POINT` conceptual.
+
+Debe poder conservar:
+
+- identidad;
+- instalación;
+- espacio o zona;
+- descripción controlada;
+- mecanismo relacionado cuando aplique;
+- condición;
+- disponibilidad;
+- vigencia;
+- historial.
+
+El nombre técnico futuro puede variar.
+
+---
+
+#### 13. Punto de acceso y mecanismo son distintos
+
+Se preserva:
+
+```text
+ACCESS_POINT
+!=
+LOCK_OR_MECHANISM
+```
+
+Un punto físico puede cambiar de cerradura, lector o mecanismo sin perder necesariamente su identidad espacial.
+
+Un mecanismo puede ser reparado o reemplazado sin reescribir los hechos históricos del punto.
+
+---
+
+#### 14. Mecanismo físico
+
+Un mecanismo físico puede incluir, según la realidad operativa:
+
+- cerradura;
+- lector;
+- receptor;
+- dispositivo de control;
+- otro mecanismo que materialice una decisión física de acceso.
+
+Esta tarea no inventa un catálogo universal ni obliga a instrumentación electrónica.
+
+Cuando un mecanismo requiera mantenimiento, la intervención pertenece al ciclo propietario correspondiente.
+
+---
+
+#### 15. Medio de acceso físico
+
+`PHYSICAL_ACCESS_MEDIUM` representa un elemento o secreto físico-operativo que habilita materialmente un acceso.
+
+La cobertura canónica incluye explícitamente:
+
+- llave;
+- control;
+- tarjeta;
+- código físico.
+
+La implementación podrá admitir otras clases únicamente con fuente competente.
+
+El medio conserva identidad o referencia controlada suficiente para auditoría.
+
+---
+
+#### 16. Medio físico y persona son distintos
+
+Se preserva:
+
+```text
+ACCESS_MEDIUM
+!=
+HOLDER
+```
+
+El medio puede:
+
+- estar sin asignar;
+- estar bajo custodia de una función;
+- estar temporalmente entregado;
+- estar devuelto;
+- estar perdido;
+- estar retirado.
+
+Cambiar de custodio no cambia automáticamente la identidad del medio.
+
+---
+
+#### 17. Identidad del medio
+
+Cuando el medio sea individualmente controlable, debe poder conservar:
+
+- identidad estable;
+- tipo;
+- código o marca interna;
+- referencia externa cuando exista;
+- estado físico conocido;
+- vigencia;
+- alcance compatible;
+- custodio vigente;
+- historial;
+- evidencia asociada.
+
+No se usa el nombre del custodio como identidad del medio.
+
+---
+
+#### 18. Medios no individualizables
+
+Cuando un medio no permita identidad física individual suficiente, el contrato debe conservar al menos la identidad lógica controlada de la obligación o secreto y su ciclo de vigencia.
+
+La ausencia de serial no autoriza una custodia anónima.
+
+La política propietaria determinará el nivel de granularidad necesario.
+
+---
+
+#### 19. Llaves y copias
+
+Una llave original y una copia controlada no deben convertirse silenciosamente en el mismo objeto histórico cuando ambas requieran custodia individual.
+
+Debe poder conservarse:
+
+- relación de origen o duplicación;
+- fecha;
+- motivo;
+- autoridad;
+- responsable;
+- custodio;
+- vigencia;
+- estado.
+
+La tarea no inventa jerarquías de llave maestra ni reglas de duplicación no aprobadas.
+
+---
+
+#### 20. Controles y dispositivos portátiles
+
+Un control físico o dispositivo equivalente conserva su expediente de acceso aunque también pueda ser un activo físico.
+
+Se preserva:
+
+```text
+ASSET IDENTITY
+!=
+ACCESS AUTHORITY
+```
+
+La relación con el catálogo de activos puede reutilizar identidad y condición.
+
+El acceso concedido por el dispositivo se gobierna por este contrato.
+
+---
+
+#### 21. Tarjeta física
+
+Una tarjeta física puede relacionarse con una identidad laboral o externa.
+
+Se preserva:
+
+```text
+CARD
+!=
+PERSON
+!=
+DIGITAL ACCOUNT
+```
+
+La tarjeta puede ser reemplazada, revocada, recuperada o destruida sin eliminar la identidad de la persona.
+
+---
+
+#### 22. Código físico
+
+Cuando exista un código que habilite acceso físico, el contrato debe conservar su ciclo sin exponer innecesariamente el valor sensible.
+
+Debe poder demostrarse:
+
+- a qué alcance aplica;
+- quién puede administrarlo;
+- cuándo entra en vigencia;
+- cuándo expira o es revocado;
+- qué evento obliga a rotarlo;
+- qué incidencia lo compromete.
+
+La evidencia y la auditoría no requieren divulgar el secreto a actores no autorizados.
+
+---
+
+#### 23. Código físico y credencial digital
+
+Se preserva:
+
+```text
+PHYSICAL_ACCESS_CODE
+!=
+PASSWORD
+!=
+PIN DE APLICACIÓN
+!=
+TOKEN
+```
+
+Compartir formato numérico o alfanumérico no fusiona significado, owner, vigencia ni tratamiento.
+
+---
+
+#### 24. Alcance físico
+
+`PHYSICAL_ACCESS_SCOPE` representa el conjunto físico autorizado.
+
+Debe poder resolverse mediante referencias a sujetos estables y no únicamente por texto.
+
+Puede expresar, cuando sea necesario:
+
+- instalación;
+- espacio;
+- zona;
+- punto de acceso;
+- conjunto explícito de sujetos.
+
+El contrato no inventa una jerarquía automática de permisos por parentesco físico.
+
+---
+
+#### 25. Alcance explícito y herencia
+
+No se admite una herencia silenciosa como:
+
+```text
+ACCESS TO FACILITY
+→
+ACCESS TO EVERY CHILD SPACE
+```
+
+ni:
+
+```text
+ACCESS TO ONE ZONE
+→
+ACCESS TO ALL ADJACENT ZONES
+```
+
+Cualquier herencia o propagación requiere política explícita y auditable.
+
+---
+
+#### 26. Decisión de alcance físico
+
+La decisión que habilita acceso físico debe poder conservar:
+
+- sujeto beneficiario;
+- alcance;
+- propósito;
+- autoridad;
+- fundamento;
+- inicio;
+- fin o condición de salida;
+- restricciones;
+- medio asociado cuando aplique;
+- estado;
+- evidencia.
+
+La existencia de la decisión no demuestra que el medio haya sido entregado.
+
+---
+
+#### 27. Decisión y entrega son distintas
+
+Se preserva:
+
+```text
+PHYSICAL ACCESS APPROVED
+!=
+ACCESS MEDIUM DELIVERED
+```
+
+Una aprobación puede quedar pendiente de:
+
+- disponibilidad del medio;
+- identificación del receptor;
+- aceptación;
+- condición previa;
+- evidencia;
+- otro gate autorizado.
+
+---
+
+#### 28. Entrega y aceptación son distintas
+
+Se preserva:
+
+```text
+DELIVERED
+!=
+ACCEPTED
+```
+
+Cuando la política exija aceptación, debe poder conservar:
+
+- receptor;
+- medio;
+- alcance;
+- momento;
+- condición;
+- evidencia;
+- reservas o restricciones.
+
+Una fotografía o firma aislada no reemplaza la relación estructurada.
+
+---
+
+#### 29. Custodia
+
+La custodia representa responsabilidad material sobre un medio físico o secreto operativo.
+
+Debe poder conservar:
+
+- medio;
+- custodio;
+- inicio;
+- origen;
+- propósito;
+- alcance;
+- condición de entrega;
+- evidencia;
+- restricciones;
+- condición de salida;
+- estado.
+
+Custodio no significa propietario jurídico.
+
+---
+
+#### 30. Custodio y usuario son distintos
+
+Se preserva:
+
+```text
+CUSTODIAN
+!=
+AUTHORIZED USER
+```
+
+Un responsable puede custodiar un conjunto de llaves para entregas controladas sin estar autorizado a usar todos los accesos.
+
+Un usuario autorizado puede recibir temporalmente un medio cuyo custodio administrativo siga siendo otra función, si la política lo permite.
+
+La relación debe quedar explícita.
+
+---
+
+#### 31. Custodia individual
+
+Cuando un medio se entrega de forma personal, la cadena debe identificar inequívocamente al receptor.
+
+No se permite dejar como único custodio:
+
+- un nombre libre;
+- un cargo textual sin identidad;
+- una sede;
+- un comentario.
+
+La ausencia temporal de integración de identidad debe conservar una limitación explícita y no crear una persona ficticia.
+
+---
+
+#### 32. Custodia funcional o compartida
+
+Cuando una llave o medio pertenezca a una custodia compartida, el contrato debe diferenciar:
+
+- custodio estable del conjunto;
+- retiro temporal;
+- receptor temporal;
+- momento de salida;
+- momento de retorno;
+- evidencia;
+- pendientes.
+
+La custodia compartida no autoriza anonimato del retiro cuando la política exige trazabilidad.
+
+---
+
+#### 33. Transferencia de custodia
+
+Toda transferencia material debe conservar:
+
+```text
+FROM
++
+TO
++
+MEDIUM
++
+EFFECTIVE TIME
++
+PURPOSE
++
+EVIDENCE
++
+ACCEPTANCE WHEN REQUIRED
+```
+
+Cerrar la custodia anterior y abrir la nueva deben formar una transición reconciliable.
+
+No se admiten dos custodias exclusivas simultáneas para el mismo medio.
+
+---
+
+#### 34. Vigencia
+
+La vigencia del acceso y la vigencia del medio son dimensiones relacionadas pero distintas.
+
+Se preserva:
+
+```text
+MEDIUM VALIDITY
+!=
+ACCESS GRANT VALIDITY
+```
+
+Un medio físicamente funcional puede estar revocado.
+
+Una decisión de acceso vigente puede requerir reemplazar un medio dañado.
+
+---
+
+#### 35. Inicio de vigencia
+
+El inicio debe provenir de un hecho autorizativo o condición aprobada.
+
+La entrega anticipada no activa automáticamente acceso antes de la fecha autorizada.
+
+La activación no puede inferirse solamente de que el medio esté en posesión del receptor.
+
+---
+
+#### 36. Fin de vigencia
+
+El fin puede producirse por:
+
+- fecha;
+- condición;
+- terminación de necesidad;
+- retiro laboral;
+- cambio de función;
+- cambio de zona;
+- incidencia;
+- decisión de autoridad;
+- otra causa aprobada.
+
+La causa debe quedar registrada.
+
+---
+
+#### 37. Expiración
+
+Se preserva:
+
+```text
+EXPIRED
+!=
+RETURNED
+!=
+RECOVERED
+```
+
+La expiración elimina o limita vigencia según política.
+
+No demuestra que el medio haya sido recuperado.
+
+Un medio expirado no devuelto debe seguir visible como pendiente material.
+
+---
+
+#### 38. Devolución
+
+La devolución es el hecho por el cual el tenedor entrega el medio al custodio o receptor autorizado.
+
+Debe conservar:
+
+- medio;
+- tenedor anterior;
+- receptor;
+- momento;
+- condición física;
+- evidencia;
+- incidencias detectadas;
+- resultado.
+
+La devolución no borra la historia de asignación.
+
+---
+
+#### 39. Verificación de devolución
+
+Cuando corresponda, la devolución debe verificar:
+
+- identidad del medio;
+- integridad o condición;
+- completitud;
+- relación con el alcance;
+- pendientes;
+- necesidad de bloqueo, reparación o retiro.
+
+Recibir un objeto físicamente no equivale automáticamente a cerrar el expediente.
+
+---
+
+#### 40. Revocación
+
+La revocación es la decisión que retira la autorización física o invalida el uso del medio para el alcance correspondiente.
+
+Se preserva:
+
+```text
+REVOKED
+!=
+RETURNED
+```
+
+Una revocación puede ocurrir antes de recuperar el medio.
+
+Una devolución puede ocurrir antes de completar todas las revocaciones necesarias.
+
+---
+
+#### 41. Recuperación
+
+La recuperación representa obtención efectiva de un medio que estaba fuera de custodia controlada o pendiente de devolución.
+
+Debe conservar:
+
+- medio;
+- origen;
+- recuperador;
+- momento;
+- condición;
+- evidencia;
+- decisión posterior.
+
+La recuperación no reactiva automáticamente el acceso.
+
+---
+
+#### 42. Devolución y recuperación
+
+Se preserva:
+
+```text
+EXPECTED RETURN
+!=
+RECOVERY AFTER INCIDENT
+```
+
+La primera cumple un ciclo previsto.
+
+La segunda responde a pérdida de control, incumplimiento o incidencia.
+
+Ambas preservan el historial completo.
+
+---
+
+#### 43. Retiro del medio
+
+Un medio puede retirarse de servicio por:
+
+- daño;
+- obsolescencia;
+- reemplazo;
+- compromiso;
+- cambio de mecanismo;
+- decisión de seguridad;
+- otra causa autorizada.
+
+El retiro conserva identidad histórica y no elimina custodias o incidencias previas.
+
+---
+
+#### 44. Destrucción o neutralización
+
+Cuando un medio retirado deba destruirse o neutralizarse, debe conservarse evidencia suficiente del hecho.
+
+La tarea no prescribe el método físico.
+
+Se preserva:
+
+```text
+MARKED RETIRED
+!=
+PHYSICALLY DESTROYED OR NEUTRALIZED
+```
+
+cuando esa diferencia sea material.
+
+---
+
+#### 45. Reemplazo
+
+Un reemplazo crea una relación explícita entre medio anterior y nuevo cuando el historial sea material.
+
+Se preserva:
+
+```text
+REPLACEMENT
+!=
+EDIT ORIGINAL IDENTITY
+```
+
+El reemplazo no borra el motivo ni la incidencia que lo originó.
+
+---
+
+#### 46. Incidencia de acceso físico
+
+`PHYSICAL_ACCESS_INCIDENT` representa una pérdida de control, condición anómala o evento que requiere evaluación y cierre.
+
+Debe poder conservar:
+
+- identidad;
+- medio o alcance afectado;
+- sujeto físico;
+- reportante;
+- momento conocido;
+- descripción;
+- evidencia;
+- clasificación aplicable;
+- contención;
+- acciones;
+- responsables;
+- estado;
+- verificación;
+- cierre.
+
+---
+
+#### 47. Tipos de incidencia no exhaustivos
+
+El contrato debe ser capaz de representar, cuando existan:
+
+- pérdida;
+- hurto;
+- daño;
+- no devolución;
+- copia o duplicación no autorizada;
+- poseedor desconocido;
+- uso fuera de alcance;
+- vigencia incorrecta;
+- medio entregado al sujeto equivocado;
+- mecanismo comprometido;
+- otro evento autorizado.
+
+La lista no impone taxonomía universal ni severidad automática.
+
+---
+
+#### 48. Pérdida
+
+La pérdida requiere preservar, según aplicabilidad:
+
+- último custodio conocido;
+- último momento controlado;
+- alcance potencial;
+- medio;
+- evidencia;
+- contención;
+- búsqueda o recuperación;
+- decisión de revocación;
+- necesidad de cambio de mecanismo;
+- cierre.
+
+Se preserva:
+
+```text
+LOST
+!=
+REVOKED
+```
+
+---
+
+#### 49. Hurto
+
+El hurto conserva el hecho reportado y las decisiones posteriores sin convertir automáticamente una afirmación en conclusión jurídica.
+
+El expediente puede requerir evidencia adicional según política.
+
+La prioridad operacional es controlar el riesgo físico y preservar trazabilidad.
+
+---
+
+#### 50. Medio dañado
+
+Un medio dañado puede:
+
+- seguir bajo custodia;
+- quedar restringido;
+- ser retirado;
+- requerir reemplazo;
+- requerir mantenimiento cuando corresponda.
+
+Daño no equivale a revocación, aunque pueda producirla por decisión autorizada.
+
+---
+
+#### 51. No devolución
+
+La no devolución debe permanecer visible aunque la autorización ya haya expirado.
+
+Debe poder conservar:
+
+- obligación de devolución;
+- vencimiento;
+- tenedor esperado;
+- medio;
+- intentos o acciones de recuperación;
+- restricción;
+- escalamiento;
+- resultado.
+
+Cerrar el vínculo laboral no elimina el pendiente.
+
+---
+
+#### 52. Copia o duplicación no autorizada
+
+Cuando exista evidencia de una copia o duplicación no autorizada:
+
+- se conserva el medio o alcance comprometido;
+- se evalúa qué accesos pueden quedar expuestos;
+- se define contención;
+- se determina necesidad de revocación o cambio físico;
+- se conserva evidencia y decisión.
+
+No se presume automáticamente que todo acceso relacionado fue utilizado.
+
+---
+
+#### 53. Poseedor desconocido
+
+Si el sistema no puede determinar quién tiene un medio controlado, el estado no se convierte en “disponible”.
+
+Debe abrirse o correlacionarse una incidencia y conservar:
+
+- último custodio conocido;
+- último movimiento;
+- alcance;
+- evidencia;
+- acciones de reconciliación;
+- resultado.
+
+`UNKNOWN` no equivale a condición favorable.
+
+---
+
+#### 54. Uso fuera de alcance
+
+La posesión de un medio no legitima uso fuera del alcance autorizado.
+
+Cuando exista evidencia de uso indebido, el expediente conserva:
+
+- sujeto;
+- medio;
+- alcance esperado;
+- hecho observado;
+- fuente;
+- acción;
+- owner;
+- resultado.
+
+La interpretación disciplinaria o laboral pertenece al dominio competente.
+
+---
+
+#### 55. Contención
+
+La contención busca limitar exposición mientras se resuelve la incidencia.
+
+Puede incluir, según política:
+
+- revocación;
+- restricción;
+- recuperación;
+- cambio temporal de custodia;
+- bloqueo del medio;
+- sustitución;
+- restricción de zona;
+- intervención física;
+- otra medida autorizada.
+
+Se preserva:
+
+```text
+CONTAINMENT
+!=
+INCIDENT RESOLVED
+```
+
+---
+
+#### 56. Cambio de cerradura o mecanismo
+
+Cuando una incidencia requiera modificar físicamente una cerradura, lector u otro mecanismo:
+
+- 036 conserva el origen de acceso y la incidencia;
+- el trabajo físico se entrega al ciclo propietario de mantenimiento u obra;
+- el resultado vuelve correlacionado al expediente de acceso.
+
+Se preserva:
+
+```text
+ACCESS INCIDENT
+!=
+MAINTENANCE WORK
+!=
+WORKS PROJECT
+```
+
+---
+
+#### 57. Handoff a mantenimiento
+
+Cuando el mecanismo físico requiere reparación o reemplazo técnico ordinario, el handoff conserva:
+
+- punto o mecanismo;
+- incidencia;
+- motivo;
+- restricción vigente;
+- evidencia;
+- condición esperada de salida.
+
+Crear una orden no resuelve por sí sola la incidencia de acceso.
+
+---
+
+#### 58. Handoff a obras
+
+`NEXO-DOM-037` conserva obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía.
+
+Una modificación estructural de accesos puede requerir 037.
+
+La incidencia de 036 permanece como origen cuando corresponda.
+
+---
+
+#### 59. Handoff a novedades locativas
+
+`NEXO-DOM-038` conserva novedades locativas generales.
+
+Una incidencia de acceso puede producir una novedad más amplia cuando afecte instalación, operación o condición.
+
+No se duplican dos fuentes editables del mismo hecho.
+
+---
+
+#### 60. Frontera con VISO y seguridad
+
+VISO conserva, cuando corresponda:
+
+- evaluación de riesgo;
+- obligación de seguridad;
+- política organizacional;
+- decisiones relacionadas con personas;
+- cumplimiento;
+- retiro laboral;
+- otra interpretación de seguridad que no pertenezca al inventario físico.
+
+NEXO conserva el hecho de acceso físico y su custodia.
+
+---
+
+#### 61. Retiro laboral
+
+`VPROC-0011` puede originar obligaciones de devolución o revocación.
+
+Se preserva:
+
+```text
+EMPLOYMENT CLOSED
+!=
+PHYSICAL ACCESS FULLY RECONCILED
+```
+
+El expediente de retiro puede depender de que NEXO confirme:
+
+- medios esperados;
+- medios devueltos;
+- medios pendientes;
+- accesos revocados;
+- incidencias abiertas.
+
+NEXO no se apropia del lifecycle laboral.
+
+---
+
+#### 62. Cambio de cargo o función
+
+Un cambio organizacional puede modificar el alcance físico requerido.
+
+El cambio no reescribe la historia.
+
+Debe poder determinarse:
+
+- alcance anterior;
+- fecha efectiva;
+- nueva necesidad;
+- medios existentes;
+- medios a devolver;
+- revocaciones;
+- nuevas entregas.
+
+El rol digital no se usa como sustituto automático del análisis físico.
+
+---
+
+#### 63. Terceros y contratistas
+
+Un tercero o contratista puede requerir acceso físico temporal sin convertirse por ello en un usuario interno amplio.
+
+El expediente debe poder referenciar:
+
+- identidad externa autorizada;
+- empresa o proveedor cuando corresponda;
+- responsable interno;
+- alcance;
+- vigencia;
+- medio;
+- custodia;
+- entrega;
+- devolución;
+- incidencias.
+
+La identidad y autorización digital externa permanecen en sus contratos propietarios.
+
+---
+
+#### 64. Visitantes
+
+Cuando una política contemple medios de acceso para visitantes, el contrato podrá aplicar la misma separación entre:
+
+- identidad declarada;
+- alcance;
+- vigencia;
+- medio;
+- custodio;
+- entrega;
+- devolución.
+
+Esta tarea no inventa una política de visitantes ni requisitos documentales específicos.
+
+---
+
+#### 65. Acceso de emergencia
+
+La existencia de una contingencia no autoriza omitir trazabilidad cuando sea material.
+
+Un acceso de emergencia puede requerir:
+
+- autoridad;
+- motivo;
+- alcance;
+- momento;
+- medio;
+- custodio;
+- evidencia posterior;
+- regularización.
+
+La tarea no impone un procedimiento universal de emergencia.
+
+---
+
+#### 66. Acceso excepcional
+
+Una excepción debe conservar:
+
+- regla ordinaria;
+- excepción aplicada;
+- autoridad;
+- fundamento;
+- alcance;
+- vigencia;
+- restricciones;
+- evidencia;
+- condición de salida.
+
+La excepción no cambia silenciosamente la política base.
+
+---
+
+#### 67. Restricción de zona
+
+Una zona puede quedar temporalmente restringida por:
+
+- obra;
+- mantenimiento;
+- incidente;
+- saneamiento;
+- riesgo;
+- servicio;
+- otra causa autorizada.
+
+El acceso físico debe considerar restricciones vigentes sin apropiarse de la fuente de cada restricción.
+
+---
+
+#### 68. Disponibilidad y acceso
+
+Se preserva:
+
+```text
+ZONE AVAILABLE
+!=
+PERSON AUTHORIZED TO ENTER
+```
+
+y:
+
+```text
+PERSON AUTHORIZED
+!=
+ZONE AVAILABLE
+```
+
+Disponibilidad del espacio y autorización física son decisiones distintas que deben reconciliarse cuando interactúan.
+
+---
+
+#### 69. Evidencia
+
+La evidencia puede soportar:
+
+- entrega;
+- aceptación;
+- devolución;
+- recuperación;
+- condición;
+- incidencia;
+- contención;
+- verificación;
+- cierre.
+
+Una fotografía, firma o documento no sustituye por sí solo el hecho estructurado.
+
+La política de información gobierna acceso, retención y tratamiento documental.
+
+---
+
+#### 70. Historial no destructivo
+
+No se sobrescriben silenciosamente:
+
+- identidad del medio;
+- alcance;
+- custodio;
+- beneficiario;
+- vigencia;
+- entrega;
+- devolución;
+- revocación;
+- incidencia;
+- condición;
+- restricciones;
+- timestamps materiales.
+
+La vista vigente puede proyectar el estado actual conservando la historia.
+
+---
+
+#### 71. Corrección
+
+Si un registro fue capturado incorrectamente, la corrección debe conservar:
+
+- valor anterior;
+- valor corregido;
+- motivo;
+- actor;
+- momento;
+- evidencia;
+- efectos que requieran reconciliación.
+
+No se usa una corrección para ocultar una pérdida, no devolución o acceso indebido real.
+
+---
+
+#### 72. Idempotencia
+
+Toda mutación material deberá poder usar identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra entrega;
+- otra custodia;
+- otra devolución;
+- otra revocación;
+- otra recuperación;
+- otra incidencia;
+- otro cierre.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+---
+
+#### 73. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos custodias exclusivas simultáneas del mismo medio;
+- entrega incompatible mientras existe una entrega activa;
+- devolución duplicada;
+- revocación contradictoria;
+- cierre mientras existe recuperación bloqueante;
+- asignación de un medio retirado;
+- vigencias incompatibles;
+- cierre de incidencia con contención o acción obligatoria pendiente.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según materialización.
+
+---
+
+#### 74. Captura offline
+
+La captura offline puede registrar hechos de campo cuando la arquitectura autorizada lo permita.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+CUSTODY RECONCILED
+!=
+ACCESS REVOKED
+```
+
+La sincronización debe revalidar identidad, vigencia, autoridad, conflicto y duplicidad.
+
+Un reintento no duplica firmas, entregas, devoluciones, incidencias o cierres.
+
+---
+
+#### 75. Resultado desconocido
+
+Ante timeout o pérdida de conectividad después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de crear otra transferencia, devolución, revocación o incidencia.
+
+La incertidumbre de transporte no justifica otro expediente.
+
+---
+
+#### 76. Reconciliación histórica
+
+Una materialización futura solo migrará hechos demostrados.
+
+No se permite inventar retrospectivamente:
+
+- identidad de medio;
+- custodio;
+- entrega;
+- aceptación;
+- zona;
+- alcance;
+- vigencia;
+- devolución;
+- revocación;
+- pérdida;
+- recuperación;
+- incidencia;
+- firma;
+- cierre.
+
+Los registros legacy incompletos conservan su limitación explícita.
+
+---
+
+#### 77. AS-IS observable de zonas
+
+La superficie remota observable de `vento-nexo` contiene ubicaciones de inventario con, entre otros, `site_id`, `area_id`, `code`, `zone` y `description`.
+
+También existen superficies que consultan ubicaciones agrupadas o filtradas por `zone`.
+
+Esto aporta una base parcial para referencia locativa.
+
+No demuestra por sí solo una zona de seguridad física ni un lifecycle de acceso.
+
+---
+
+#### 78. AS-IS observable de acceso físico
+
+Las búsquedas remotas inspeccionadas en `vento-nexo` no aportaron evidencia suficiente de una superficie dedicada que modele conjuntamente:
+
+- inventario de llaves;
+- controles;
+- tarjetas físicas;
+- códigos físicos;
+- zonas de acceso;
+- custodios;
+- entregas;
+- devoluciones;
+- revocaciones;
+- incidencias;
+- recuperación;
+- cierre.
+
+Esta conclusión se limita a las superficies inspeccionadas y no afirma inexistencia absoluta fuera de ellas.
+
+---
+
+#### 79. Estrategia de adopción
+
+La estrategia canónica queda:
+
+```text
+REUSE STABLE LOCATIVE IDENTITY
++
+REUSE COMPATIBLE EVIDENCE / HISTORY / CUSTODY PATTERNS
++
+DO NOT RECLASSIFY INVENTORY ZONES AS SECURITY ZONES
++
+BUILD PHYSICAL ACCESS DOMAIN CONTRACT
++
+KEEP DIGITAL AUTHORIZATION SEPARATE
+```
+
+Se reutiliza donde sea compatible:
+
+- sede;
+- instalación;
+- espacio;
+- zona física;
+- identidad de persona o tercero por referencia;
+- evidencia;
+- historial;
+- condición;
+- restricciones;
+- idempotencia.
+
+Se construye donde falte:
+
+- medio de acceso;
+- alcance físico;
+- custodia específica;
+- entrega;
+- aceptación;
+- devolución;
+- revocación;
+- recuperación;
+- incidencias;
+- conciliación.
+
+---
+
+#### 80. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- medios controlados;
+- medios activos;
+- medios sin custodio reconciliado;
+- custodias vigentes;
+- entregas abiertas;
+- devoluciones pendientes;
+- accesos próximos a vencer;
+- accesos vencidos;
+- medios revocados no recuperados;
+- medios perdidos o hurtados;
+- medios dañados;
+- incidencias abiertas;
+- incidencias por zona;
+- tiempo hasta contención;
+- tiempo hasta recuperación;
+- tiempo hasta cierre;
+- reemplazos;
+- duplicaciones controladas;
+- excepciones vigentes.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 81. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| existe una zona en `inventory_locations` | referencia logística parcial; no zona de seguridad automática |
+| se aprueba acceso a una zona | decisión de alcance; no demuestra entrega |
+| se entrega una llave | transferencia física; no crea permiso digital |
+| se asigna un rol digital | no entrega llave ni acceso físico |
+| una tarjeta está en poder de una persona | posesión; se debe verificar vigencia y alcance |
+| el acceso expira | acceso no vigente; el medio puede seguir pendiente de devolución |
+| el medio se devuelve | hecho material; no sustituye una revocación pendiente |
+| se revoca el acceso | decisión; puede quedar recuperación pendiente |
+| se pierde una llave | incidencia; requiere contención y decisión |
+| se recupera una llave perdida | recuperación; no reactiva acceso automáticamente |
+| se crea una copia controlada | identidad o relación explícita; no sobrescribir original |
+| aparece una copia no autorizada | incidencia; evaluar alcance comprometido |
+| termina un vínculo laboral | VISO cierra persona; NEXO debe reconciliar medios físicos |
+| contratista requiere entrar temporalmente | acceso físico limitado; no usuario interno amplio por defecto |
+| cerradura debe cambiarse | handoff a mantenimiento u obra; 036 conserva incidencia |
+| captura offline se reenvía | reconciliar; no duplicar transferencia o devolución |
+
+---
+
+#### 82. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. acceso físico y autorización digital son distintos;
+2. zona física y alcance digital son distintos;
+3. zona logística y zona de seguridad no se asumen equivalentes;
+4. medio y persona son distintos;
+5. medio y punto de acceso son distintos;
+6. punto de acceso y mecanismo físico son distintos;
+7. custodia y propiedad son distintas;
+8. custodia y autorización son distintas;
+9. aprobación y entrega son distintas;
+10. entrega y aceptación son distintas;
+11. posesión y derecho vigente son distintos;
+12. vigencia del medio y vigencia del acceso son distintas;
+13. expiración, devolución y recuperación son distintas;
+14. devolución y revocación son distintas;
+15. revocación y recuperación son distintas;
+16. pérdida y revocación son distintas;
+17. medio devuelto no significa expediente totalmente cerrado;
+18. copia controlada y original conservan relación sin destrucción histórica;
+19. incidente y mantenimiento son distintos;
+20. incidente y obra son distintos;
+21. retiro laboral y reconciliación física son distintos;
+22. tercero con acceso físico no se convierte por ello en usuario interno amplio;
+23. captura offline no equivale a aceptación del servidor;
+24. reintentos no duplican efectos;
+25. correcciones no destruyen historia.
+
+---
+
+#### 83. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar en servidor las mutaciones sensibles;
+- resolver sujetos físicos desde identidades autoritativas;
+- resolver personas y terceros desde fuentes propietarias;
+- revalidar alcance y vigencia;
+- impedir doble custodia exclusiva;
+- impedir asignar medios retirados o comprometidos;
+- impedir cerrar devoluciones o incidencias con bloqueos pendientes;
+- preservar actor y fuente;
+- preservar segregación entre solicitud, aprobación, entrega, devolución, revocación y verificación cuando la política lo exija;
+- proteger valores sensibles de códigos físicos;
+- no confiar en alcance, estado o cierre enviados por cliente sin validación;
+- aplicar idempotencia;
+- conservar evidencia sin ampliar acceso;
+- impedir que visibilidad de UI equivalga a autorización;
+- mantener separadas decisiones físicas y digitales.
+
+La autorización fina permanece en las tareas propietarias.
+
+---
+
+#### 84. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- almacenamiento de evidencia;
+- referencias de zona y punto;
+- inventario de medios;
+- lifecycle de custodia;
+- integración con personas y terceros;
+- captura móvil;
+- operación offline;
+- UI;
+- migración controlada;
+- pruebas automatizadas;
+- validación operativa.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 85. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no se demostró AS-IS integral de acceso físico | no | implementación NEXO posterior | materializar inventario, custodia y lifecycle contra contrato aprobado |
+| zonas logísticas actuales no prueban zonas de seguridad | no | implementación NEXO posterior | crosswalk explícito o creación de referencia física autorizada |
+| política concreta de quién accede a cada zona no se define aquí | no | NEXO + VISO y autoridad competente | políticas aprobadas y versionadas |
+| protección fina de acciones está pendiente | no | `NEXO-AUTH-031` y `NEXO-AUTH-032` | autorización y segregación materializadas |
+| experiencia final está pendiente | no | `NEXO-UX-047` | UI validada contra contrato |
+| terceros externos requieren identidad y acceso mínimo | no | owners de identidad externa e integración | contrato externo aprobado sin ampliar usuario interno |
+| cambios físicos de cerradura pueden requerir trabajo | no | mantenimiento o `NEXO-DOM-037` | trabajo correlacionado, verificado y cerrado |
+| incidentes amplios pueden requerir novedad locativa | no | `NEXO-DOM-038` | handoff correlacionado y cierre propietario |
+
+Ningún riesgo residual autoriza fusionar acceso físico con autorización digital.
+
+---
+
+#### 86. Vocabularios y valores no inventados
+
+Esta tarea no fija sin fuente competente:
+
+- clases universales de zona;
+- jerarquías de llave maestra;
+- tipos obligatorios de cerradura;
+- tecnologías de tarjeta;
+- proveedores de control de acceso;
+- duraciones estándar;
+- horarios universales;
+- severidades;
+- umbrales de escalamiento;
+- requisitos de firma;
+- evidencias universales;
+- tiempos máximos de devolución;
+- métodos físicos de destrucción;
+- códigos reales;
+- personas autorizadas reales.
+
+Cada valor material deberá provenir de política, identidad, instalación o autoridad propietaria.
+
+---
+
+#### 87. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- inventaría llaves reales;
+- emite tarjetas reales;
+- crea códigos reales;
+- cambia cerraduras;
+- entrega o recibe medios reales;
+- revoca accesos reales;
+- modifica permisos digitales;
+- modifica cuentas, sesiones o roles;
+- define política disciplinaria;
+- cierra retiros laborales;
+- ejecuta mantenimiento;
+- ejecuta obras;
+- crea usuarios externos;
+- registra incidentes reales;
+- modifica disponibilidad real;
+- ejecuta backfill;
+- inventa historia;
+- modifica el registro de requisitos de prueba;
+- autoriza materialización física.
+
+---
+
+#### 88. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la cobertura vigente ya exige que llaves y acceso físico conserven plan u objeto, lugar, responsable, ejecución, evidencia, desviación, verificación, disponibilidad y cierre;
+- la cobertura vigente ya exige expresamente custodia, vigencia, devolución y revocación de medios de acceso físico independientes de SHELL;
+- la cobertura de instalaciones ya exige identidad estable, jerarquía, condición, disponibilidad e historial;
+- la cobertura transversal ya protege coordinación entre dominios, proveedores, restricciones, evidencia e idempotencia;
+- esta tarea desarrolla el contrato documental requerido por obligaciones ya registradas y no introduce una obligación verificable nueva fuera de ellas.
+
+---
+
+#### 89. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-017`, para identidad estable, jerarquía, condición, disponibilidad, responsable e historial de sujetos locativos;
+- `TREQ-NEXO-018`, para llaves, acceso físico, custodia, vigencia, devolución, revocación, evidencia, verificación, disponibilidad, cierre e idempotencia offline;
+- `TREQ-INTEGRATION-018`, para coordinación de instalaciones con VISO, proveedores y otros owners, restricciones vigentes e idempotencia;
+- `TREQ-SUPABASE-002`, para integridad, concurrencia e idempotencia persistente cuando exista materialización física.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye actualización de 04A.
+
+---
+
+#### 90. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | se verificaron continuidad vigente después de `NEXO-DOM-035`, protocolo, contrato de entrega, manifest, rutas de continuidad, topología, políticas documentales, owner, handoffs de `NEXO-DOM-029` y `NEXO-DOM-035`, `CAP-SCOPE-013`, 04A NEXO, 04A INTEGRATION, scripts de preflight, formato, calidad y entrega, y el AS-IS remoto de zonas y ubicaciones en `vento-nexo`; las búsquedas inspeccionadas no demostraron un lifecycle integral dedicado de acceso físico |
+| OPERATIVA | NOT_APPLICABLE | no se entregan llaves, tarjetas, controles, códigos, accesos, devoluciones, revocaciones, recuperaciones ni incidencias reales durante la definición documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` están cubiertas por override `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 91. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] el acceso físico permanece separado de autorización digital;
+- [x] SHELL no se convierte en maestro de llaves, cerraduras o custodias;
+- [x] zona física permanece separada de área, LOC y alcance digital;
+- [x] zona logística actual no se promueve automáticamente a zona de seguridad;
+- [x] punto de acceso y mecanismo permanecen separados;
+- [x] medio de acceso y persona permanecen separados;
+- [x] llave, control, tarjeta y código físico pueden tener lifecycle trazable;
+- [x] códigos físicos no se confunden con contraseñas o tokens;
+- [x] alcance físico se resuelve sobre sujetos estables;
+- [x] herencia de acceso no se inventa;
+- [x] decisión de alcance y entrega permanecen separadas;
+- [x] entrega y aceptación permanecen separadas;
+- [x] custodia y autorización permanecen separadas;
+- [x] transferencia conserva origen, destino, medio, momento y evidencia;
+- [x] vigencia del medio y del acceso permanecen separadas;
+- [x] expiración, devolución, revocación y recuperación permanecen separadas;
+- [x] no devolución continúa visible tras expiración;
+- [x] reemplazo no sobrescribe identidad anterior;
+- [x] pérdida, hurto, daño, copia no autorizada y poseedor desconocido pueden tratarse como incidencias;
+- [x] contención y resolución permanecen separadas;
+- [x] cambio físico de mecanismo conserva handoff a mantenimiento u obra;
+- [x] VISO conserva riesgo, personas y cumplimiento cuando corresponda;
+- [x] retiro laboral no equivale a reconciliación física completa;
+- [x] terceros pueden recibir acceso físico limitado sin convertirse por defecto en usuarios internos amplios;
+- [x] disponibilidad de zona y autorización de persona permanecen separadas;
+- [x] historia y correcciones son no destructivas;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 92. Handoff hacia `NEXO-DOM-037`
+
+`NEXO-DOM-036` entrega a `NEXO-DOM-037`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+PHYSICAL ACCESS ZONES AND POINTS
++
+ACCESS MEDIUM IDENTITY
++
+PHYSICAL ACCESS SCOPE
++
+CUSTODY / DELIVERY / ACCEPTANCE
++
+VIGENCY / RETURN / REVOCATION / RECOVERY
++
+INCIDENT / CONTAINMENT / CLOSURE
++
+RESTRICTION AND AVAILABILITY BOUNDARY
++
+EXTERNAL-PARTY ACCESS BOUNDARY
++
+NON-DESTRUCTIVE HISTORY
++
+IDEMPOTENT OFFLINE FIELD CAPTURE
+```
+
+`NEXO-DOM-037` podrá consumir zonas, restricciones, medios e incidencias cuando una obra afecte accesos físicos, pero deberá definir de forma propia solicitud, alcance, presupuesto, aprobación, contratista, permisos, cronograma, afectación operativa, recepción y garantía.
+
+Un acceso físico concedido a un contratista no se convierte en permiso de obra ni en aprobación del proyecto.
+
+---
+
+#### 93. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-035 — Definir control metrológico, calibración, verificación, tolerancias, certificados e impacto`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía`
+
+### ✅ NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias
+**Tarea siguiente:** NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre
+**Tipo de tarea:** documental; definición canónica del expediente de obras y adecuaciones para instalaciones mediante solicitud, alcance versionado, estimación y referencia presupuestal, aprobación, contratación, permisos, contratistas, cronograma, afectación operativa, ejecución, cambios, verificación, recepción técnica, liberación, cierre y garantía, coordinando NEXO con ORIGO, NUMERA, VISO/SST, continuidad y terceros sin materialización física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de dominio mediante el cual NEXO gobierna el expediente técnico y operativo de obras y adecuaciones sobre instalaciones, espacios, componentes fijos, redes, puntos de servicio u otros sujetos locativos autorizados, preservando las fronteras con contratación, finanzas, seguridad, continuidad y proveedores externos.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+SOLICITUD TRAZABLE
++
+ALCANCE VERSIONADO
++
+ESTIMACIÓN Y REFERENCIA PRESUPUESTAL
++
+APROBACIONES APLICABLES
++
+CONTRATACIÓN CORRELACIONADA
++
+CONTRATISTA IDENTIFICADO
++
+PERMISOS Y PRERREQUISITOS VIGENTES
++
+CRONOGRAMA VERSIONADO
++
+EVALUACIÓN DE AFECTACIÓN OPERATIVA
++
+RESTRICCIONES Y CONTINGENCIAS
++
+EJECUCIÓN TRAZABLE
++
+CAMBIOS CONTROLADOS
++
+VERIFICACIÓN
++
+RECEPCIÓN TÉCNICA
++
+LIBERACIÓN
++
+CIERRE
++
+GARANTÍA Y SEGUIMIENTO
++→
+OBRA O ADECUACIÓN RECONCILIABLE Y AUDITABLE
+```
+
+Se preserva expresamente:
+
+```text
+OBRA APROBADA
+!=
+COMPRA APROBADA
+!=
+PRESUPUESTO APROBADO
+!=
+PERMISO VIGENTE
+!=
+ACCESO FÍSICO CONCEDIDO
+```
+
+y:
+
+```text
+EJECUCIÓN TERMINADA
+!=
+RECEPCIÓN TÉCNICA
+!=
+LIBERACIÓN OPERATIVA
+!=
+CIERRE ECONÓMICO
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-037` deja definido un único contrato documental con los siguientes resultados materiales:
+
+1. consume identidades locativas estables de `NEXO-DOM-029`;
+2. reutiliza la frontera de mantenimiento, prueba y liberación de `NEXO-DOM-030` sin convertir toda reparación en obra;
+3. reutiliza inspecciones, hallazgos, acciones y evidencia de `NEXO-DOM-034` cuando sean compatibles;
+4. consume de `NEXO-DOM-036` zonas, restricciones, accesos físicos e incidencias relacionadas con contratistas;
+5. define una solicitud de obra o adecuación separada de contratación y de orden de compra;
+6. define un alcance técnico versionado y no destructivo;
+7. separa estimación técnica, oferta comercial, presupuesto autorizado, compromiso y costo real;
+8. separa aprobación técnica, aprobación comercial y autorización económica;
+9. define contratista por referencia a la identidad empresarial propietaria sin duplicar el maestro de proveedores;
+10. separa contratación de ejecución física;
+11. define permisos y prerrequisitos con identidad, alcance y vigencia;
+12. separa permiso de obra de acceso físico del contratista;
+13. define cronograma versionado y ejecución real como hechos distintos;
+14. define evaluación explícita de afectación operativa antes de iniciar;
+15. cubre cierres temporales, restricciones, áreas fuera de servicio, recorridos alternos y liberación posterior;
+16. correlaciona interrupciones de servicios cuando una obra las produzca sin apropiarse del dominio de servicios;
+17. define ejecución, avance y evidencia sin convertir el porcentaje informado en verdad técnica automática;
+18. define control de cambios para alcance, cronograma, costo informado, permisos y afectación;
+19. separa desviación, hallazgo, incidencia y cambio aprobado;
+20. define verificación, pruebas y criterios de recepción técnica;
+21. separa recepción técnica de recepción empresarial de bienes o servicios;
+22. define recepción parcial y pendientes sin cierre ficticio;
+23. define liberación operativa separada de recepción y cierre;
+24. define cierre técnico con evidencia y reconciliación de pendientes;
+25. define garantía técnica por referencia a condiciones contractuales vigentes sin inventar duración;
+26. define reclamo o atención bajo garantía separado de mantenimiento ordinario;
+27. preserva ownership de ORIGO para contratación y recepción empresarial;
+28. preserva ownership de NUMERA para compromisos, gasto y costo;
+29. preserva ownership de VISO/SST para riesgos, cumplimiento y controles de seguridad cuando correspondan;
+30. preserva ownership de continuidad para contingencias transversales cuando el impacto lo requiera;
+31. preserva integración de terceros sin convertirlos en autoridad interna ni usuarios amplios;
+32. exige historia no destructiva e idempotencia;
+33. contempla captura offline y resultado desconocido;
+34. clasifica el AS-IS observable como base locativa parcial y no como ciclo integral de obras;
+35. no crea ni modifica requisitos de prueba porque la conducta ya está cubierta por requisitos canónicos vigentes;
+36. no autoriza obras reales, contratación, compras, pagos, migraciones, datos, Supabase, UI ni despliegues.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.10 — Gestionar obras y adecuaciones`;
+- `CAP-SCOPE-005`, para abastecimiento, contratación, proveedor y recepción empresarial;
+- `CAP-SCOPE-012`, para compromisos, obligaciones, gasto, costo y presupuesto;
+- `CAP-SCOPE-016`, para documentos, evidencia y terceros;
+- `CAP-SCOPE-018`, para continuidad, restricciones, degradación y retorno a operación;
+- `NEXO-DOM-017`, para auditoría e historial;
+- `NEXO-DOM-029`, para identidad locativa, jerarquía, condición y disponibilidad;
+- `NEXO-DOM-030`, para mantenimiento, orden de trabajo, prueba y liberación;
+- `NEXO-DOM-033`, para servicios, interrupciones y contingencias cuando una obra los afecte;
+- `NEXO-DOM-034`, para inspecciones, hallazgos, acciones y verificación;
+- `NEXO-DOM-036`, para zonas, acceso físico, contratistas, restricciones e incidencias de acceso;
+- `NEXO-AUTH-031` y `NEXO-AUTH-032`, como propietarios posteriores de autorización y segregación;
+- `NEXO-UX-047`, como propietario posterior de experiencia aplicable;
+- `ORIGO-UX-014`, para recepción empresarial cuando corresponda;
+- `NUMERA-DOM-005`, para obligaciones y efectos económicos aplicables;
+- el proceso transversal de instalaciones `VPROC-0055`;
+- el registro canónico de requisitos de prueba vigente;
+- la implementación remota observable de ubicaciones y zonas en `vento-nexo`.
+
+Esta tarea especializa obras y adecuaciones. No redefine compras, contabilidad, SST, gobierno documental, identidad externa, mantenimiento general ni novedades locativas.
+
+---
+
+#### 4. Decisión de cobertura de `CAP-13.10`
+
+La capacidad conserva:
+
+```text
+CAP-13.10
+GESTIONAR OBRAS Y ADECUACIONES
+```
+
+con tratamiento:
+
+```text
+BUILD
+```
+
+y propiedad objetivo:
+
+```text
+NEXO + ORIGO + NUMERA
+```
+
+El resultado exigido es construir:
+
+```text
+SOLICITUD
++
+ALCANCE
++
+PRESUPUESTO
++
+APROBACIÓN
++
+CONTRATISTA
++
+PERMISOS
++
+CRONOGRAMA
++
+AFECTACIÓN OPERATIVA
++
+RECEPCIÓN
++
+CIERRE
+```
+
+con fronteras de propiedad explícitas.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran o desarrollan específicamente las brechas por las cuales:
+
+1. las obras y adecuaciones podían carecer de expediente integral de alcance, aprobación, contratista, permisos, afectación y recepción;
+2. no existía un control canónico suficiente de cierres temporales, áreas fuera de servicio, recorridos alternos y liberación posterior;
+3. una contratación podía interpretarse como autorización técnica para intervenir;
+4. una factura podía interpretarse como cierre técnico;
+5. ORIGO podía quedar indebidamente como autoridad sobre estado físico o liberación;
+6. NUMERA podía confundirse con aprobador técnico de reparación o liberación;
+7. la operación móvil u offline podía duplicar fotos, firmas, ejecuciones o cierres;
+8. el contratista podía recibir acceso físico y ser tratado erróneamente como si ya tuviera permiso de obra;
+9. una modificación de alcance podía sobrescribir el alcance aprobado;
+10. una reprogramación podía borrar el cronograma anterior;
+11. una interrupción operativa podía quedar sin sujeto, vigencia ni condición de salida;
+12. una recepción parcial podía cerrar indebidamente toda la obra;
+13. pendientes posteriores a ejecución podían perderse al marcar “terminado”;
+14. una garantía podía quedar reducida a una fecha sin alcance, origen contractual ni seguimiento;
+15. un defecto de garantía podía perder relación con la obra de origen;
+16. costo informado, presupuesto, compromiso y costo real podían confundirse;
+17. evidencia de proveedor podía convertirse en aceptación interna automática;
+18. cierre técnico y cierre económico podían colapsarse en un único estado.
+
+---
+
+#### 6. Propiedad de dominio
+
+La propiedad queda separada:
+
+| Concepto | Propiedad canónica |
+| --- | --- |
+| sujeto locativo, condición y disponibilidad | NEXO |
+| solicitud técnica y expediente de obra | NEXO |
+| alcance técnico y sus revisiones | NEXO |
+| afectación operativa, restricciones y liberación locativa | NEXO |
+| proveedor o contratista empresarial | ORIGO |
+| contratación, orden o instrumento comercial | ORIGO |
+| recepción empresarial de bienes o servicios | ORIGO |
+| obligación, compromiso, gasto y costo | NUMERA |
+| presupuesto financiero y control económico | NUMERA según contrato aplicable |
+| riesgo, cumplimiento y controles SST | VISO/SST |
+| acceso físico temporal o permanente | NEXO según `NEXO-DOM-036` |
+| documentos y evidencia | dominio de información aplicable |
+| continuidad transversal | dominio de continuidad cuando corresponda |
+| ejecución material autorizada | contratista o ejecutor bajo alcance aprobado |
+| aceptación técnica y liberación física | NEXO |
+
+Ningún owner sustituye los hechos propietarios de otro dominio.
+
+---
+
+#### 7. Expediente de obra o adecuación
+
+`FACILITY_WORK_CASE` es la denominación conceptual para el expediente técnico y operativo.
+
+Debe poder conservar, según aplicabilidad:
+
+- identidad estable;
+- sujeto o sujetos locativos;
+- origen;
+- solicitante;
+- propósito;
+- alcance vigente;
+- revisiones;
+- estado de planificación;
+- aprobaciones;
+- referencias comerciales;
+- contratista;
+- permisos;
+- cronograma;
+- afectaciones;
+- restricciones;
+- ejecución;
+- evidencia;
+- cambios;
+- verificaciones;
+- recepción técnica;
+- liberación;
+- cierre;
+- garantía;
+- incidencias relacionadas;
+- historial.
+
+La denominación no prescribe tabla, agregado o endpoint físico.
+
+---
+
+#### 8. Obra y adecuación
+
+La tarea no impone una taxonomía universal entre obra, adecuación, intervención menor, reforma o proyecto.
+
+La clasificación concreta deberá provenir de una política competente.
+
+Lo obligatorio es que una intervención material sobre una instalación tenga:
+
+- objeto físico inequívoco;
+- alcance;
+- autoridad;
+- evidencia;
+- control de cambios;
+- recepción;
+- condición de salida.
+
+---
+
+#### 9. Obra frente a mantenimiento
+
+Se preserva:
+
+```text
+FACILITY WORK
+!=
+MAINTENANCE WORK ORDER
+```
+
+Una intervención puede originarse en mantenimiento, pero no toda orden de mantenimiento se convierte en obra.
+
+La decisión depende de alcance, objeto, complejidad, contratación, permisos, afectación y política aplicable.
+
+No se crean dos expedientes técnicos competidores para la misma ejecución.
+
+---
+
+#### 10. Obra frente a novedad locativa
+
+Se preserva:
+
+```text
+FACILITY WORK
+!=
+FACILITY ISSUE
+```
+
+Una novedad puede originar una obra.
+
+Una obra puede generar una novedad.
+
+El expediente de `NEXO-DOM-038` conserva severidad, contención y resolución de la novedad cuando corresponda.
+
+El expediente de 037 conserva la intervención planificada y su resultado.
+
+---
+
+#### 11. Solicitud de obra
+
+La solicitud representa la necesidad declarada de evaluar una intervención.
+
+Debe poder conservar:
+
+- identidad;
+- origen;
+- sujeto físico;
+- solicitante;
+- motivo;
+- necesidad;
+- prioridad informada;
+- evidencia;
+- fecha efectiva;
+- restricciones conocidas;
+- relaciones con hallazgos, novedades o mantenimiento cuando existan.
+
+La solicitud no es aprobación.
+
+---
+
+#### 12. Solicitud y proyecto son distintos
+
+Se preserva:
+
+```text
+REQUEST
+!=
+APPROVED WORK CASE
+```
+
+Una solicitud puede:
+
+- ser evaluada;
+- requerir aclaración;
+- ser rechazada;
+- ser absorbida por mantenimiento;
+- convertirse en una obra aprobada;
+- quedar supersedida por otra decisión.
+
+La historia se conserva.
+
+---
+
+#### 13. Origen de la solicitud
+
+El origen puede ser, cuando exista evidencia:
+
+- inspección;
+- mantenimiento;
+- novedad;
+- requerimiento operativo;
+- cumplimiento;
+- continuidad;
+- mejora;
+- cambio de uso;
+- decisión empresarial;
+- otro origen autorizado.
+
+El origen no determina automáticamente el owner del expediente.
+
+---
+
+#### 14. Sujeto principal
+
+Toda obra debe resolver un sujeto físico principal.
+
+Puede corresponder a:
+
+- instalación;
+- espacio;
+- componente fijo;
+- red de servicio;
+- punto de servicio;
+- otro sujeto locativo autorizado.
+
+La obra puede afectar sujetos relacionados sin duplicar el expediente principal.
+
+---
+
+#### 15. Alcance técnico
+
+El alcance describe qué se pretende intervenir y qué resultado técnico se espera.
+
+Debe poder conservar:
+
+- versión;
+- sujeto;
+- objetivo;
+- inclusiones;
+- exclusiones;
+- entregables técnicos;
+- criterios de aceptación;
+- restricciones;
+- interfaces afectadas;
+- dependencias;
+- evidencia de aprobación.
+
+El alcance no se reduce a una descripción libre mutable.
+
+---
+
+#### 16. Línea base de alcance
+
+Una revisión aprobada establece una línea base técnica vigente.
+
+Se preserva:
+
+```text
+CURRENT SCOPE
+!=
+HISTORICAL SCOPE REVISION
+```
+
+Las revisiones anteriores permanecen disponibles para explicar decisiones, cotizaciones, ejecución y diferencias.
+
+---
+
+#### 17. Cambio de alcance
+
+Un cambio material de alcance debe producir una revisión controlada.
+
+Debe conservar:
+
+- revisión anterior;
+- cambio propuesto;
+- motivo;
+- impacto técnico;
+- impacto operativo;
+- impacto temporal;
+- impacto económico informado;
+- permisos afectados;
+- aprobaciones requeridas;
+- decisión.
+
+No se edita retrospectivamente la línea base usada por una ejecución anterior.
+
+---
+
+#### 18. Especificación y diseño
+
+Cuando la obra requiera especificaciones, planos, memorias, diseños u otros soportes técnicos, el expediente debe relacionarlos con:
+
+- revisión;
+- alcance;
+- autor o fuente;
+- vigencia;
+- aprobación cuando corresponda;
+- ejecución que los utilizó.
+
+El documento no sustituye la decisión ni el hecho físico.
+
+---
+
+#### 19. Estimación técnica
+
+La estimación técnica puede expresar recursos, cantidades, tiempos o costo informado para soportar una decisión.
+
+Se preserva:
+
+```text
+TECHNICAL ESTIMATE
+!=
+COMMERCIAL OFFER
+!=
+APPROVED BUDGET
+!=
+COMMITTED SPEND
+!=
+ACTUAL COST
+```
+
+NEXO puede conservar referencias necesarias para decisión y conciliación, sin convertirse en ledger financiero.
+
+---
+
+#### 20. Presupuesto
+
+La capacidad exige una dimensión presupuestal, pero su verdad económica pertenece a NUMERA conforme al contrato financiero vigente.
+
+El expediente técnico debe poder referenciar:
+
+- presupuesto o escenario autorizado;
+- versión;
+- entidad o centro aplicable;
+- monto o límite cuando corresponda;
+- vigencia;
+- decisión;
+- fuente económica.
+
+NEXO no mantiene un presupuesto editable competidor.
+
+---
+
+#### 21. Aprobación técnica
+
+La aprobación técnica determina que el alcance propuesto es apto para seguir el ciclo definido, sujeto a demás gates.
+
+Debe conservar:
+
+- alcance y revisión;
+- sujeto;
+- criterios;
+- actor o autoridad;
+- momento;
+- decisión;
+- condiciones;
+- evidencia.
+
+No equivale a contratación ni disponibilidad presupuestal.
+
+---
+
+#### 22. Aprobación comercial
+
+La aprobación comercial pertenece al ciclo de contratación de ORIGO cuando aplique.
+
+Se preserva:
+
+```text
+TECHNICAL APPROVAL
+!=
+COMMERCIAL APPROVAL
+```
+
+Una obra técnicamente viable puede no estar contratada.
+
+Una compra aprobada puede no estar técnicamente liberada para iniciar.
+
+---
+
+#### 23. Autorización económica
+
+La autorización económica y el registro de compromiso pertenecen al dominio financiero aplicable.
+
+Se preserva:
+
+```text
+FINANCIAL AUTHORIZATION
+!=
+TECHNICAL APPROVAL
+```
+
+La disponibilidad de fondos no demuestra que el alcance, permisos o condiciones operativas estén listos.
+
+---
+
+#### 24. Autorización para iniciar
+
+El inicio efectivo debe depender de que todos los gates aplicables estén resueltos.
+
+Puede requerir, según política:
+
+- alcance aprobado;
+- contratación vigente;
+- permisos;
+- acceso;
+- controles SST;
+- restricciones operativas;
+- recursos;
+- ventana autorizada;
+- contingencia;
+- comunicación;
+- otros prerrequisitos demostrados.
+
+La tarea no inventa un conjunto universal obligatorio para todos los casos.
+
+---
+
+#### 25. Contratación
+
+ORIGO conserva contratación empresarial cuando exista proveedor o contratista externo.
+
+El expediente NEXO debe correlacionar, sin duplicar:
+
+- proveedor o contratista;
+- referencia comercial;
+- alcance contratado;
+- revisión;
+- fechas;
+- estado comercial necesario;
+- evidencia disponible para operación.
+
+La contratación no declara conformidad técnica.
+
+---
+
+#### 26. Contratista
+
+El contratista debe referenciar una identidad empresarial autorizada cuando exista.
+
+Se preserva:
+
+```text
+CONTRACTOR
+!=
+INTERNAL EMPLOYEE
+!=
+SYSTEM USER
+```
+
+La identidad del contratista no se crea como texto libre competidor si ORIGO ya posee el maestro aplicable.
+
+---
+
+#### 27. Personal del contratista
+
+Cuando sea necesario conocer personas externas que ejecutarán una obra, sus identidades deben provenir del contrato externo o de identidad aplicable.
+
+El expediente puede relacionarlas con:
+
+- contratista;
+- obra;
+- vigencia;
+- función declarada;
+- acceso;
+- evidencia;
+- cumplimiento requerido.
+
+No se crean cuentas internas amplias solo para registrar ejecución.
+
+---
+
+#### 28. Acceso físico del contratista
+
+`NEXO-DOM-036` conserva acceso físico.
+
+Se preserva:
+
+```text
+PHYSICAL ACCESS GRANTED
+!=
+WORK AUTHORIZED
+```
+
+Un contratista puede estar habilitado para entrar a una zona y todavía no tener autorización para ejecutar.
+
+Una obra aprobada puede requerir además la entrega controlada de un medio de acceso.
+
+---
+
+#### 29. Permiso
+
+`WORK_PERMIT` se usa aquí como concepto general de una autorización o permiso exigible para una ejecución determinada.
+
+Debe poder conservar, según aplicabilidad:
+
+- identidad;
+- tipo o fuente;
+- emisor;
+- sujeto;
+- alcance;
+- obra;
+- revisión;
+- inicio;
+- expiración;
+- condiciones;
+- evidencia;
+- estado;
+- autoridad.
+
+La tarea no define categorías legales universales.
+
+---
+
+#### 30. Permiso interno y permiso externo
+
+Se preserva:
+
+```text
+INTERNAL WORK AUTHORIZATION
+!=
+EXTERNAL OR REGULATORY PERMIT
+```
+
+Cuando ambos sean exigibles, cada uno conserva identidad, autoridad y vigencia propias.
+
+Uno no sustituye al otro.
+
+---
+
+#### 31. Permiso y contrato son distintos
+
+Se preserva:
+
+```text
+CONTRACT SIGNED
+!=
+PERMIT VALID
+```
+
+La contratación de un servicio no garantiza que el ejecutor pueda iniciar una intervención física.
+
+---
+
+#### 32. Vigencia del permiso
+
+La vigencia debe evaluarse en el momento efectivo de ejecución.
+
+Se preserva:
+
+```text
+VALID TODAY
+!=
+VALID AT EXECUTION TIME
+```
+
+Un cambio de cronograma puede obligar a revalidar un permiso.
+
+---
+
+#### 33. Permiso vencido o insuficiente
+
+Cuando un permiso requerido esté ausente, vencido o fuera de alcance, la ejecución incompatible no debe presentarse como autorizada.
+
+La consecuencia concreta depende de la política propietaria.
+
+El expediente conserva la causa y condición de salida.
+
+---
+
+#### 34. Cronograma
+
+El cronograma es una proyección versionada del trabajo esperado.
+
+Debe poder conservar:
+
+- revisión;
+- ventanas;
+- hitos;
+- dependencias;
+- restricciones;
+- recursos relevantes;
+- afectaciones;
+- responsable;
+- fecha de publicación;
+- motivo de cambio.
+
+El cronograma no es evidencia de ejecución.
+
+---
+
+#### 35. Cronograma y ejecución real
+
+Se preserva:
+
+```text
+PLANNED
+!=
+STARTED
+!=
+EXECUTED
+```
+
+Las fechas reales se registran como hechos.
+
+Una desviación del cronograma no reescribe la planificación original.
+
+---
+
+#### 36. Reprogramación
+
+Una reprogramación material debe conservar:
+
+- versión anterior;
+- nueva versión;
+- motivo;
+- actor;
+- efecto sobre permisos;
+- efecto sobre accesos;
+- efecto operativo;
+- efecto contractual cuando corresponda.
+
+No se desplaza silenciosamente una fecha.
+
+---
+
+#### 37. Hitos
+
+Los hitos pueden representar puntos de control cuando la obra los necesite.
+
+Cada hito debe poder relacionarse con:
+
+- alcance;
+- criterio;
+- fecha prevista;
+- fecha efectiva;
+- evidencia;
+- resultado;
+- decisión asociada.
+
+La tarea no impone una cantidad ni nomenclatura universal.
+
+---
+
+#### 38. Prerrequisitos de inicio
+
+Antes de registrar el comienzo de una ejecución debe poder demostrarse que los prerrequisitos bloqueantes aplicables fueron evaluados.
+
+El expediente debe responder:
+
+- qué gate aplicaba;
+- con qué evidencia;
+- quién lo decidió;
+- cuándo;
+- sobre qué revisión del alcance;
+- con qué restricciones.
+
+El simple estado “aprobado” no sustituye esa evidencia.
+
+---
+
+#### 39. Movilización
+
+La movilización de contratista, materiales o equipos no equivale al inicio técnico de la obra cuando la política los trate como hitos separados.
+
+Debe conservarse la fecha efectiva y el contexto cuando sea material.
+
+---
+
+#### 40. Evaluación de afectación operativa
+
+Toda obra con capacidad de afectar operación debe evaluar el impacto antes del inicio.
+
+Debe poder considerar, según aplicabilidad:
+
+- instalación;
+- espacios;
+- procesos;
+- acceso;
+- inventario;
+- producción;
+- atención;
+- servicios;
+- seguridad;
+- tránsito interno;
+- horarios;
+- continuidad;
+- otros sujetos dependientes.
+
+La evaluación produce decisiones trazables, no una nota libre sin owner.
+
+---
+
+#### 41. Sujetos afectados
+
+Cada afectación material debe relacionarse con sujetos estables.
+
+Se prohíbe depender únicamente de frases como “zona de trabajo” o “área afectada” sin identidad resoluble cuando el modelo disponga de ella.
+
+El alcance físico puede abarcar más de un sujeto, pero cada relación debe ser explícita.
+
+---
+
+#### 42. Cierre temporal
+
+Un cierre temporal representa indisponibilidad o restricción durante una vigencia determinada.
+
+Se preserva:
+
+```text
+TEMPORARILY CLOSED
+!=
+RETIRED
+!=
+DELETED
+```
+
+El sujeto continúa existiendo y conserva historia.
+
+---
+
+#### 43. Área fuera de servicio
+
+Cuando una obra deje temporalmente un sujeto fuera de servicio, el expediente debe conservar:
+
+- sujeto;
+- causa;
+- obra;
+- inicio;
+- alcance;
+- restricciones;
+- dependencias;
+- condición de salida;
+- responsable;
+- evidencia.
+
+La indisponibilidad no se elimina cambiando únicamente una fecha.
+
+---
+
+#### 44. Restricción parcial
+
+Una obra puede restringir un uso sin volver indisponible todo el sujeto.
+
+Se preserva:
+
+```text
+RESTRICTED
+!=
+UNAVAILABLE
+```
+
+La proyección de disponibilidad debe conservar propósito y razón.
+
+---
+
+#### 45. Recorridos alternos
+
+Cuando la afectación interrumpa una circulación o flujo interno, el expediente podrá relacionar un recorrido alterno aprobado.
+
+Debe conservar:
+
+- origen de la restricción;
+- sujetos afectados;
+- vigencia;
+- condición de uso;
+- autoridad;
+- condición de salida.
+
+No se inventa una topología de tránsito nueva dentro de esta tarea.
+
+---
+
+#### 46. Interrupción de servicios
+
+Cuando una obra produzca una interrupción de agua, energía, gas u otro servicio:
+
+```text
+WORK-CAUSED INTERRUPTION
+→
+CORRELATION WITH SERVICE DOMAIN
+```
+
+`NEXO-DOM-033` conserva el hecho de servicio, interrupción, restauración y contingencia.
+
+037 conserva que la obra fue causa, contexto o dependencia.
+
+---
+
+#### 47. Afectación de acceso físico
+
+Cuando una obra cierre un punto o cambie temporalmente accesos:
+
+- 037 conserva la afectación de obra;
+- 036 conserva las decisiones y medios de acceso físico;
+- las restricciones deben converger sin fuentes competidoras.
+
+Modificar una cerradura o punto puede requerir además mantenimiento o una decisión locativa posterior.
+
+---
+
+#### 48. Afectación de inventario
+
+Una obra puede requerir despejar, proteger o trasladar inventario.
+
+Se preserva:
+
+```text
+WORK PLAN
+!=
+INVENTORY MOVEMENT
+```
+
+Todo movimiento real pertenece al contrato de inventario y requiere su hecho propietario.
+
+La obra solo conserva la necesidad, restricción y correlación.
+
+---
+
+#### 49. Afectación de producción u operación
+
+Cuando la obra afecte producción, preparación, servicio al cliente u otra operación propietaria, el expediente debe emitir o conservar el handoff correspondiente.
+
+NEXO no decide unilateralmente la disposición de lotes, pedidos o producción.
+
+La restricción locativa y su vigencia sí permanecen en NEXO.
+
+Si el impacto supera una afectación local y requiere degradación, modo alterno, contingencia o recuperación transversal, se entrega al dominio de continuidad.
+
+Se preserva:
+
+```text
+LOCAL WORK RESTRICTION
+!=
+BUSINESS CONTINUITY INCIDENT
+```
+
+La escalada depende de reglas propietarias.
+
+---
+
+#### 51. Comunicación operativa
+
+Cuando una restricción requiera informar a actores afectados, el expediente debe conservar que la comunicación fue requerida y su correlación.
+
+El canal, contenido, audiencia y proveedor de mensajería pertenecen a los contratos correspondientes.
+
+Una notificación emitida no demuestra por sí sola que el área esté segura o liberada.
+
+---
+
+#### 52. Inicio efectivo
+
+El inicio efectivo es un hecho que debe conservar:
+
+- obra;
+- revisión de alcance;
+- ejecutor;
+- momento;
+- sujetos;
+- permisos vigentes;
+- restricciones activas;
+- evidencia;
+- contexto autorizado.
+
+El inicio no se deriva únicamente del cronograma.
+
+---
+
+#### 53. Ejecución
+
+La ejecución debe poder conservar eventos y evidencia suficiente para reconstruir qué se hizo.
+
+Según aplicabilidad puede incluir:
+
+- actividad;
+- sujeto;
+- ejecutor;
+- momento;
+- avance;
+- materiales o referencias;
+- condición observada;
+- evidencia;
+- desviaciones;
+- bloqueos;
+- resultado.
+
+La tarea no prescribe granularidad física universal.
+
+---
+
+#### 54. Avance
+
+El avance informado es una observación o proyección.
+
+Se preserva:
+
+```text
+REPORTED PROGRESS
+!=
+VERIFIED COMPLETION
+```
+
+Un porcentaje informado no habilita recepción o liberación sin los gates correspondientes.
+
+---
+
+#### 55. Evidencia de ejecución
+
+La evidencia debe relacionarse con hechos concretos.
+
+Puede incluir, según política:
+
+- fotografías;
+- actas;
+- planos;
+- reportes;
+- mediciones;
+- firmas;
+- documentos del contratista;
+- otras evidencias autorizadas.
+
+Su clasificación, acceso, retención y conservación pertenecen al gobierno de información.
+
+---
+
+#### 56. Afirmación del contratista
+
+Se preserva:
+
+```text
+CONTRACTOR ASSERTION
+!=
+NEXO TECHNICAL VERIFICATION
+```
+
+El contratista puede declarar actividad ejecutada o terminada.
+
+NEXO conserva la verificación y aceptación técnica internas.
+
+---
+
+#### 57. Desviación
+
+Una desviación representa diferencia entre ejecución observada y alcance, método, condición, cronograma o criterio aplicable.
+
+Debe conservar:
+
+- origen;
+- sujeto;
+- revisión de referencia;
+- observación;
+- impacto;
+- responsable;
+- contención;
+- decisión;
+- evidencia;
+- cierre.
+
+No toda desviación implica cambio aprobado.
+
+---
+
+#### 58. Hallazgo
+
+Un hallazgo puede provenir de inspección, verificación o ejecución.
+
+Se preserva:
+
+```text
+FINDING
+!=
+APPROVED CHANGE
+```
+
+El hallazgo puede originar una acción, corrección, cambio, novedad o rechazo.
+
+---
+
+#### 59. Incidencia durante la obra
+
+Una incidencia operacional o locativa ocurrida durante la obra conserva identidad propia cuando la política lo requiera.
+
+037 mantiene la correlación con el expediente de obra.
+
+`NEXO-DOM-038` conserva el tratamiento de novedad locativa cuando corresponda.
+
+---
+
+#### 60. Solicitud de cambio
+
+Una solicitud de cambio propone modificar una línea base.
+
+Debe poder conservar:
+
+- obra;
+- revisión vigente;
+- proponente;
+- motivo;
+- cambio;
+- impactos;
+- evidencia;
+- decisión.
+
+No se ejecuta como cambio aprobado por el solo hecho de existir.
+
+---
+
+#### 61. Cambio aprobado
+
+Un cambio material aprobado debe producir una nueva revisión o transición equivalente.
+
+Puede afectar:
+
+- alcance;
+- cronograma;
+- contratista;
+- permisos;
+- afectación;
+- estimación;
+- condición de recepción.
+
+La nueva revisión no reescribe decisiones previas.
+
+---
+
+#### 62. Cambio de costo informado
+
+Cuando un cambio produzca impacto económico, NEXO conserva la referencia técnica y NUMERA/ORIGO conservan los hechos económicos o comerciales aplicables.
+
+Se preserva:
+
+```text
+TECHNICAL COST IMPACT
+!=
+APPROVED BUDGET CHANGE
+!=
+COMMERCIAL AMENDMENT
+!=
+ACTUAL COST
+```
+
+---
+
+#### 63. Cambio urgente
+
+Una situación urgente puede requerir una vía expedita si una política competente la autoriza.
+
+Debe conservar al menos:
+
+- causa;
+- autoridad;
+- alcance;
+- límites;
+- vigencia;
+- acciones;
+- regularización requerida;
+- evidencia.
+
+La urgencia no elimina trazabilidad ni permisos no exceptuados por la autoridad competente.
+
+---
+
+#### 64. Condición inesperada
+
+Cuando la ejecución encuentre una condición física no prevista:
+
+- se conserva el hecho observado;
+- se evalúa seguridad e impacto;
+- se detiene o restringe lo necesario conforme a política;
+- se decide si requiere cambio;
+- se preserva evidencia.
+
+No se modifica silenciosamente el alcance para absorberla.
+
+---
+
+#### 65. Seguridad y SST
+
+VISO/SST conserva evaluación de riesgo, cumplimiento y controles de seguridad que le correspondan.
+
+NEXO conserva la condición física, restricciones y efectos sobre instalación.
+
+Se preserva:
+
+```text
+TECHNICAL WORK APPROVAL
+!=
+SST CLEARANCE
+```
+
+cuando ambos sean exigibles.
+
+---
+
+#### 66. Verificación
+
+La verificación evalúa si la ejecución satisface los criterios técnicos aplicables.
+
+Debe poder conservar:
+
+- alcance y revisión;
+- sujeto;
+- criterio;
+- evidencia;
+- ejecutor o verificador;
+- momento;
+- resultado;
+- desviaciones;
+- pendientes;
+- decisión.
+
+La evidencia del contratista no sustituye la verificación interna.
+
+---
+
+#### 67. Prueba
+
+Cuando el resultado de la obra requiera prueba funcional o técnica antes de liberar, esa prueba debe conservar:
+
+- sujeto;
+- método o criterio aplicable;
+- ejecución;
+- resultado;
+- evidencia;
+- actor;
+- momento;
+- decisión.
+
+Terminar trabajos físicos no equivale a superar pruebas.
+
+---
+
+#### 68. Recepción técnica
+
+La recepción técnica representa la decisión de NEXO sobre el resultado físico entregado.
+
+Debe poder conservar:
+
+- obra;
+- alcance y revisión;
+- sujetos;
+- entregables;
+- verificaciones;
+- pruebas;
+- pendientes;
+- reservas;
+- actor;
+- momento;
+- decisión;
+- evidencia.
+
+Se preserva:
+
+```text
+WORK FINISHED
+!=
+TECHNICALLY RECEIVED
+```
+
+---
+
+#### 69. Recepción empresarial
+
+ORIGO conserva la recepción empresarial de bienes o servicios cuando corresponda.
+
+Se preserva:
+
+```text
+BUSINESS RECEIPT
+!=
+TECHNICAL RECEIPT
+```
+
+Ambas pueden correlacionarse.
+
+Ninguna se infiere automáticamente de la otra.
+
+---
+
+#### 70. Compra de servicio
+
+Cuando la obra se contrate como servicio:
+
+- ORIGO conserva compra, orden o contrato y recepción empresarial;
+- NEXO conserva ejecución y aceptación técnica;
+- NUMERA conserva obligación y costo.
+
+La compra de un servicio no crea inventario por defecto.
+
+---
+
+#### 71. Recepción parcial
+
+Una obra puede admitir recepción parcial cuando una política o alcance lo permita.
+
+Debe conservar:
+
+- parte recibida;
+- criterio;
+- alcance residual;
+- pendientes;
+- restricciones;
+- responsabilidad;
+- evidencia.
+
+Se preserva:
+
+```text
+PARTIAL ACCEPTANCE
+!=
+FULL CLOSURE
+```
+
+---
+
+#### 72. Pendientes de recepción
+
+Los pendientes posteriores a ejecución deben permanecer identificados.
+
+Cada pendiente debe poder conservar:
+
+- origen;
+- sujeto;
+- descripción;
+- responsable;
+- condición de salida;
+- fecha objetivo cuando exista;
+- evidencia;
+- impacto sobre liberación;
+- estado.
+
+No se cierran por una nota genérica de “aceptado con observaciones”.
+
+---
+
+#### 73. Rechazo técnico
+
+Cuando el resultado no satisfaga criterios bloqueantes, la recepción puede ser rechazada o condicionada conforme a política.
+
+Debe preservarse:
+
+- criterio incumplido;
+- evidencia;
+- alcance afectado;
+- acción requerida;
+- responsable;
+- nueva verificación.
+
+El rechazo técnico no ejecuta por sí solo una acción financiera.
+
+---
+
+#### 74. Liberación operativa
+
+La liberación confirma que el sujeto puede volver al uso permitido bajo las condiciones aprobadas.
+
+Se preserva:
+
+```text
+TECHNICALLY RECEIVED
+!=
+OPERATIONALLY RELEASED
+```
+
+Puede haber restricciones, pruebas, contingencias o bloqueos pendientes después de una recepción técnica.
+
+---
+
+#### 75. Liberación de cierre temporal
+
+Un cierre temporal solo termina cuando exista decisión de liberación suficiente para el uso aplicable.
+
+Debe poder considerar:
+
+- obra terminada;
+- pruebas;
+- pendientes bloqueantes;
+- accesos;
+- servicios;
+- limpieza;
+- seguridad;
+- condición;
+- restricciones residuales.
+
+Cambiar la fecha final del cronograma no libera el área.
+
+---
+
+#### 76. Disponibilidad posterior
+
+La disponibilidad posterior debe proyectarse desde hechos vigentes.
+
+Se preserva:
+
+```text
+WORK CLOSED
+!=
+GLOBALLY AVAILABLE
+```
+
+Otros bloqueos independientes pueden continuar activos.
+
+La razón de disponibilidad o restricción debe permanecer explicable.
+
+---
+
+#### 77. Cierre técnico
+
+El cierre técnico exige, según aplicabilidad:
+
+- alcance ejecutado o disposición explícita;
+- cambios aprobados reconciliados;
+- evidencia;
+- verificaciones;
+- pruebas;
+- recepción;
+- pendientes resueltos o formalmente transferidos;
+- restricciones tratadas;
+- liberación cuando corresponda;
+- documentación requerida;
+- garantía registrada cuando aplique.
+
+Una factura no cierra técnicamente la obra.
+
+---
+
+#### 78. Cierre económico
+
+El cierre económico pertenece al dominio financiero o comercial aplicable.
+
+Se preserva:
+
+```text
+TECHNICAL CLOSURE
+!=
+FINANCIAL CLOSURE
+```
+
+Una obra puede estar técnicamente cerrada y mantener obligaciones económicas legítimas.
+
+Una factura pagada no demuestra cierre técnico.
+
+---
+
+#### 79. Cierre contractual
+
+El cierre del contrato o servicio pertenece a ORIGO cuando corresponda.
+
+Debe correlacionarse con la evidencia técnica necesaria sin convertir ORIGO en autoridad física.
+
+NEXO puede aportar aceptación técnica.
+
+---
+
+#### 80. Garantía
+
+La garantía representa cobertura contractual o técnica posterior a la recepción, cuando exista una fuente válida.
+
+Debe poder conservar, según aplicabilidad:
+
+- obra;
+- contratista o proveedor;
+- referencia contractual;
+- alcance cubierto;
+- exclusiones declaradas;
+- inicio;
+- fin o regla de vigencia;
+- evidencia;
+- responsable;
+- estado.
+
+La tarea no inventa duración, cobertura ni condiciones legales.
+
+---
+
+#### 81. Inicio de garantía
+
+El inicio de garantía debe provenir de la fuente contractual o política competente.
+
+Se preserva:
+
+```text
+TECHNICAL RECEIPT DATE
+!=
+WARRANTY START DATE
+```
+
+salvo que la fuente aplicable declare esa equivalencia.
+
+No se deriva una fecha sin regla autorizada.
+
+---
+
+#### 82. Garantía y mantenimiento
+
+Se preserva:
+
+```text
+WARRANTY
+!=
+MAINTENANCE PLAN
+```
+
+Un defecto cubierto puede generar una atención de garantía.
+
+Un mantenimiento ordinario no se reclasifica como garantía por ocurrir dentro de la vigencia temporal.
+
+---
+
+#### 83. Reclamo de garantía
+
+Cuando se detecte un defecto potencialmente cubierto, el expediente debe poder correlacionar:
+
+- obra de origen;
+- elemento afectado;
+- observación;
+- evidencia;
+- fecha;
+- cobertura aplicable;
+- proveedor;
+- decisión;
+- acción;
+- resultado.
+
+ORIGO conserva el instrumento comercial; NEXO conserva la evaluación física y técnica.
+
+---
+
+#### 84. Defecto durante garantía
+
+Se preserva:
+
+```text
+DEFECT OBSERVED
+!=
+WARRANTY COVERAGE CONFIRMED
+```
+
+La observación técnica y la aceptación de cobertura son decisiones distintas.
+
+El defecto puede requerir contención o mantenimiento mientras se resuelve la cobertura.
+
+---
+
+#### 85. Atención bajo garantía
+
+La ejecución de una corrección bajo garantía debe conservar una identidad propia y relación con:
+
+- obra;
+- reclamo;
+- contratista;
+- alcance;
+- ejecución;
+- evidencia;
+- verificación;
+- recepción;
+- liberación.
+
+No se edita el expediente original para aparentar que el defecto nunca existió.
+
+---
+
+#### 86. Cierre de garantía
+
+El cierre de un reclamo de garantía exige resultado y evidencia.
+
+No implica necesariamente que finalice toda vigencia de garantía restante.
+
+La vigencia general y el expediente de cada reclamo permanecen separados.
+
+---
+
+#### 87. Frontera con ORIGO
+
+ORIGO conserva:
+
+- proveedor;
+- oferta;
+- negociación;
+- contrato;
+- orden;
+- revisión comercial;
+- recepción empresarial;
+- documentos comerciales aplicables.
+
+NEXO conserva:
+
+- necesidad física;
+- alcance técnico;
+- condición;
+- ejecución;
+- verificación;
+- recepción técnica;
+- liberación.
+
+Se prohíbe que una recepción de ORIGO cambie por sí sola el estado físico de la instalación.
+
+---
+
+#### 88. Frontera con NUMERA
+
+NUMERA conserva:
+
+- compromiso;
+- obligación;
+- gasto;
+- costo;
+- periodo;
+- centro;
+- conciliación;
+- otros hechos financieros aplicables.
+
+NEXO conserva referencias económicas necesarias para explicar la obra, pero no registra un ledger competidor.
+
+Se prohíbe que una aprobación financiera declare conformidad técnica.
+
+---
+
+#### 89. Factura y pago
+
+Se preserva:
+
+```text
+INVOICE
+!=
+TECHNICAL ACCEPTANCE
+!=
+PAYMENT
+!=
+COST
+```
+
+Una factura puede existir antes o después de decisiones técnicas según el contrato comercial.
+
+La integración deberá detectar incompatibilidades relevantes sin fusionar estados.
+
+---
+
+#### 90. Conciliación transversal
+
+El expediente debe permitir detectar, cuando corresponda:
+
+- obra sin solicitud;
+- ejecución sin alcance vigente;
+- ejecución sin permiso requerido;
+- contratista sin referencia comercial;
+- contratación sin expediente técnico;
+- servicio facturado sin aceptación técnica requerida;
+- recepción empresarial sin evidencia técnica esperada;
+- costo sin origen;
+- obra cerrada con pendiente bloqueante;
+- área liberada con restricción vigente;
+- garantía sin obra de origen;
+- reclamo sin resolución;
+- proveedor con cierre pendiente.
+
+La conciliación no cambia automáticamente el hecho propietario.
+
+---
+
+#### 91. Idempotencia
+
+Toda mutación material deberá poder usar identidad estable o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otra solicitud;
+- otra revisión de alcance;
+- otra aprobación;
+- otro permiso;
+- otro inicio;
+- otra recepción;
+- otra liberación;
+- otro cierre;
+- otro reclamo de garantía.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+---
+
+#### 92. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos revisiones vigentes incompatibles del alcance;
+- ejecución contra una revisión supersedida;
+- recepción mientras existe un cambio bloqueante sin resolver;
+- liberación con restricción bloqueante;
+- cierre con pendientes incompatibles;
+- doble recepción por reintento;
+- doble registro de un mismo hito;
+- cambios contradictorios aprobados simultáneamente;
+- reapertura que destruya el cierre anterior.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según materialización.
+
+---
+
+#### 93. Operación offline
+
+La captura offline puede registrar hechos de campo cuando una arquitectura autorizada lo permita.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+TECHNICALLY VERIFIED
+!=
+RELEASED
+```
+
+La sincronización debe revalidar:
+
+- obra;
+- revisión;
+- sujeto;
+- autoridad;
+- vigencia;
+- permisos;
+- conflicto;
+- duplicidad.
+
+No se duplican fotos, firmas, ejecuciones, recepciones o cierres por reintento.
+
+---
+
+#### 94. Resultado desconocido
+
+Ante timeout o pérdida de conectividad después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por identidad estable antes de crear otra ejecución, recepción, liberación o cierre.
+
+La incertidumbre de transporte no autoriza duplicar el expediente.
+
+---
+
+#### 95. Historia y correcciones
+
+No se sobrescriben silenciosamente:
+
+- solicitud;
+- alcance;
+- revisiones;
+- estimaciones;
+- aprobaciones;
+- contratista;
+- permisos;
+- cronogramas;
+- afectaciones;
+- restricciones;
+- ejecuciones;
+- evidencias;
+- cambios;
+- verificaciones;
+- recepciones;
+- liberaciones;
+- cierres;
+- garantías;
+- timestamps materiales.
+
+La vista vigente puede proyectar el estado actual conservando la historia.
+
+---
+
+#### 96. Reconciliación histórica
+
+Una materialización futura solo promoverá hechos demostrados.
+
+No se permite inventar retrospectivamente:
+
+- alcance aprobado;
+- presupuesto;
+- contratista;
+- permiso;
+- cronograma;
+- cierre temporal;
+- recorrido alterno;
+- ejecución;
+- aceptación;
+- recepción;
+- liberación;
+- garantía;
+- firma;
+- cierre.
+
+Los registros legacy incompletos conservan su limitación explícita.
+
+---
+
+#### 97. AS-IS observable
+
+La revisión remota de `vento-nexo` aporta una base locativa parcial:
+
+- existen ubicaciones de inventario relacionadas con sede y zona;
+- existen superficies que consultan y agrupan ubicaciones por zona;
+- esa estructura puede aportar contexto de sede y referencia espacial donde exista equivalencia demostrada.
+
+Las búsquedas remotas inspeccionadas no aportaron evidencia suficiente de una superficie dedicada que modele conjuntamente:
+
+- expediente de obra;
+- alcance versionado;
+- aprobación técnica;
+- contratista;
+- permiso;
+- cronograma;
+- afectación operativa;
+- cierre temporal;
+- recepción técnica;
+- liberación;
+- garantía.
+
+La ausencia de evidencia en las superficies inspeccionadas no demuestra inexistencia absoluta fuera de ellas.
+
+---
+
+#### 98. Estrategia de adopción
+
+La estrategia queda:
+
+```text
+REUSE STABLE LOCATIVE IDENTITY
++
+REUSE COMPATIBLE MAINTENANCE / INSPECTION / ACCESS / EVIDENCE CONTRACTS
++
+KEEP ORIGO AS COMMERCIAL OWNER
++
+KEEP NUMERA AS ECONOMIC OWNER
++
+BUILD FACILITY WORK DOMAIN CONTRACT
++
+BUILD OPERATIONAL IMPACT / TECHNICAL RECEIPT / WARRANTY TRACEABILITY
+```
+
+No se promueve una tabla o pantalla existente a “sistema de obras” sin demostrar equivalencia.
+
+---
+
+#### 99. Métricas mínimas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- solicitudes abiertas;
+- obras en evaluación;
+- obras aprobadas;
+- obras bloqueadas por prerrequisitos;
+- obras con permisos próximos a vencer;
+- obras en ejecución;
+- obras con desviaciones;
+- cambios pendientes;
+- sujetos temporalmente restringidos;
+- sujetos fuera de servicio;
+- recepciones parciales;
+- pendientes de recepción;
+- tiempo desde solicitud hasta aprobación;
+- tiempo desde inicio hasta recepción;
+- tiempo desde recepción hasta liberación;
+- obras cerradas;
+- garantías vigentes según fuente;
+- reclamos de garantía abiertos;
+- reincidencias por sujeto, contratista o tipo de intervención cuando el dato sea válido.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 100. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| existe una solicitud | necesidad registrada; no obra aprobada |
+| alcance técnico aprobado | no implica contratación ni presupuesto autorizado |
+| ORIGO emite una orden | contratación comercial; no autorización técnica automática |
+| NUMERA registra compromiso | hecho económico; no conformidad técnica |
+| contratista tiene acceso físico | puede entrar según alcance; no permiso de obra |
+| existe permiso vigente | gate aplicable satisfecho; no demuestra que todos los demás gates pasen |
+| cambia el cronograma | nueva revisión; revalidar permisos y afectaciones aplicables |
+| una zona queda cerrada temporalmente | restricción con vigencia; no retiro permanente |
+| la obra interrumpe un servicio | correlacionar con dominio de servicios |
+| se mueve inventario por la obra | movimiento de inventario propietario; no efecto implícito del expediente |
+| contratista informa 100 % | avance informado; no recepción técnica |
+| se termina la ejecución | pendiente de verificación y recepción cuando apliquen |
+| ORIGO recibe el servicio | recepción empresarial; no recepción técnica automática |
+| NEXO recibe técnicamente | no cierre económico automático |
+| factura pagada | no cierre técnico automático |
+| quedan pendientes menores | recepción parcial o condicionada según política; no ocultarlos |
+| área técnicamente recibida | puede seguir restringida por otro bloqueo |
+| aparece defecto dentro de vigencia | defecto observado; cobertura de garantía requiere decisión |
+| se corrige defecto en garantía | nueva ejecución correlacionada; no editar historia |
+| timeout después de recepción | reconciliar antes de repetir |
+| legado carece de permiso o alcance | conservar incompletitud; no inventar |
+
+---
+
+#### 101. Invariantes
+
+La implementación física futura deberá preservar:
+
+1. solicitud y obra aprobada son distintas;
+2. obra y mantenimiento son distintos;
+3. obra y novedad locativa son distintas;
+4. sujeto físico y área organizacional son distintos;
+5. alcance y revisión de alcance son distintos;
+6. alcance técnico y contrato comercial son distintos;
+7. estimación, oferta, presupuesto, compromiso y costo real son distintos;
+8. aprobación técnica, comercial y económica son distintas;
+9. contratista y usuario interno son distintos;
+10. acceso físico y permiso de obra son distintos;
+11. contrato y permiso son distintos;
+12. cronograma y ejecución real son distintos;
+13. avance informado y terminación verificada son distintos;
+14. cierre temporal y retiro son distintos;
+15. restricción y indisponibilidad son distintas;
+16. afectación de obra y movimiento de inventario son distintos;
+17. afirmación del contratista y verificación NEXO son distintas;
+18. hallazgo y cambio aprobado son distintos;
+19. ejecución terminada y recepción técnica son distintas;
+20. recepción técnica y recepción empresarial son distintas;
+21. recepción parcial y cierre total son distintos;
+22. recepción técnica y liberación operativa son distintas;
+23. cierre técnico, contractual y económico son distintos;
+24. factura, pago y aceptación técnica son distintos;
+25. garantía y mantenimiento son distintos;
+26. defecto observado y cobertura confirmada son distintos;
+27. reintentos no duplican efectos;
+28. correcciones no destruyen historia.
+
+---
+
+#### 102. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver sujetos locativos desde identidades autoritativas;
+- resolver proveedor o contratista desde fuentes propietarias;
+- fijar revisión de alcance antes de ejecutar;
+- revalidar permisos y vigencias;
+- impedir ejecución incompatible con bloqueos vigentes;
+- preservar segregación entre solicitar, aprobar, contratar, ejecutar, verificar, recibir, liberar, cerrar y reabrir;
+- impedir que una UI convierta visibilidad en permiso;
+- impedir que una orden comercial modifique estado físico sin decisión técnica;
+- impedir que un costo o pago libere una instalación;
+- preservar evidencia original de terceros;
+- conservar fuente y actor;
+- aplicar idempotencia;
+- controlar concurrencia;
+- preservar restricciones;
+- proteger documentos conforme a clasificación;
+- no confiar en cierre, aceptación o disponibilidad enviados por cliente sin revalidación.
+
+La autorización fina permanece en sus tareas propietarias.
+
+---
+
+#### 103. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- almacenamiento de evidencia;
+- eventos;
+- integración con ORIGO;
+- integración con NUMERA;
+- integración con VISO/SST;
+- integración con continuidad;
+- integración con terceros;
+- colas;
+- captura móvil;
+- operación offline;
+- UI;
+- migración controlada;
+- pruebas automatizadas;
+- validación técnica, operativa y financiera.
+
+Esos cambios solo se ejecutan dentro de tareas, unidades o paquetes físicos autorizados.
+
+---
+
+#### 104. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no se demostró un ciclo integral de obras en el AS-IS remoto | no | implementación NEXO posterior | materializar expediente y validarlo contra este contrato |
+| topología locativa actual es parcial | no | implementación NEXO posterior | reconciliar sujetos físicos sin duplicar identidades |
+| selección y contratación real de contratistas no se define aquí | no | ORIGO | proceso comercial aprobado y correlacionado |
+| presupuesto, compromiso y costo reales no se definen aquí | no | NUMERA | hechos económicos materializados y reconciliados |
+| permisos concretos dependen de fuente competente | no | owner de cumplimiento aplicable | catálogo o política aprobada con vigencia y autoridad |
+| riesgo SST y controles específicos no se definen aquí | no | VISO/SST | reglas y evidencias propietarias |
+| acceso externo fino continúa sujeto a autorización | no | `NEXO-AUTH-031` y `NEXO-AUTH-032` | segregación y permisos materializados |
+| clasificación y retención documental permanecen en gobierno de información | no | dominio de información | política aplicada a evidencia de obra |
+| impactos transversales pueden exigir continuidad | no | dominio de continuidad | contingencia y retorno a servicio gobernados |
+| tratamiento integral de novedades queda pendiente | no | `NEXO-DOM-038` | contrato de severidad, contención, escalamiento, resolución y cierre aprobado |
+| experiencia final de obras queda pendiente | no | `NEXO-UX-047` | UI validada contra contrato |
+
+Ningún riesgo residual autoriza fusionar contratación, finanzas o seguridad con la aceptación técnica de NEXO.
+
+---
+
+#### 105. Vocabularios y valores no inventados
+
+Esta tarea no fija sin fuente competente:
+
+- categorías jurídicas de obra;
+- clases universales de permiso;
+- autoridades regulatorias;
+- montos;
+- presupuestos reales;
+- umbrales de aprobación;
+- contratistas;
+- tarifas;
+- cronogramas reales;
+- duraciones;
+- porcentajes de avance;
+- severidades;
+- seguros;
+- pólizas;
+- retenciones;
+- anticipos;
+- multas;
+- garantías bancarias;
+- duraciones de garantía;
+- exclusiones de garantía;
+- criterios SST concretos;
+- métodos constructivos;
+- materiales;
+- especificaciones de ingeniería;
+- personas aprobadoras reales;
+- horarios de intervención.
+
+El sistema deberá conservar esos valores cuando existan en una fuente propietaria; esta tarea no los fabrica.
+
+---
+
+#### 106. Límites
+
+Esta tarea no:
+
+- crea ni modifica código productivo;
+- crea migraciones;
+- modifica Supabase;
+- crea tablas, vistas, RPC, triggers, RLS o grants;
+- solicita obras reales;
+- aprueba obras reales;
+- contrata proveedores;
+- emite órdenes de compra;
+- crea obligaciones económicas;
+- registra pagos;
+- modifica presupuestos;
+- ejecuta trabajos físicos;
+- cierra espacios reales;
+- mueve inventario real;
+- interrumpe servicios;
+- entrega accesos;
+- emite permisos reales;
+- registra personal externo real;
+- modifica estados SST reales;
+- recibe servicios reales;
+- libera instalaciones reales;
+- crea reclamos reales de garantía;
+- modifica contratos;
+- ejecuta backfill;
+- inventa historia;
+- modifica el registro de requisitos de prueba;
+- autoriza materialización física.
+
+---
+
+#### 107. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la cobertura vigente ya exige que obras y novedades conserven plan u objeto, lugar, responsable, ejecución, evidencia, resultado, desviación, contención, verificación, disponibilidad y cierre;
+- la cobertura vigente ya exige que obras y cierres temporales conserven permisos, afectación y recepción;
+- la cobertura vigente ya separa contratación y recepción empresarial de ORIGO, aceptación técnica y disponibilidad de NEXO, y compromiso, gasto y costo de NUMERA;
+- la cobertura vigente ya protege compras de servicios, proveedores, aprobación, evidencia y conciliación;
+- la cobertura vigente ya exige idempotencia para operación offline y evita doble orden, evidencia, costo o cierre;
+- esta tarea desarrolla el contrato documental requerido por obligaciones ya registradas y no introduce una obligación verificable nueva fuera de ellas.
+
+---
+
+#### 108. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-017`, para identidad locativa, plan, solicitud, orden, ejecución, prueba, liberación, cierre y reapertura sin cierre ficticio por factura, fotografía o comentario;
+- `TREQ-NEXO-018`, para obras, permisos, afectación, recepción, cierre temporal, evidencia, verificación, disponibilidad e idempotencia offline;
+- `TREQ-ORIGO-004`, para necesidad, solicitud, aprobación, orden, revisión, segregación y control de cambios comerciales;
+- `TREQ-ORIGO-005`, para identidad del proveedor, contrato, documentos, condiciones y vigencia cuando un contratista sea gestionado comercialmente por ORIGO;
+- `TREQ-NUMERA-001`, para reconciliación de gasto y costo con hechos y documentos fuente;
+- `TREQ-NUMERA-002`, para identidad, fuente, correlación, tercero, centro, monto, estado y evidencia de hechos económicos;
+- `TREQ-NUMERA-004`, para presupuesto, costo, método, versión, vigencia, entidad, centro, periodo y fuente;
+- `TREQ-INTEGRATION-010`, para correlación de compras y servicios entre ORIGO, NEXO y NUMERA sin doble recepción ni doble costo;
+- `TREQ-INTEGRATION-018`, para coordinación de instalaciones con ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos, preservando ownership, restricciones, evidencia e idempotencia.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye actualización de 04A.
+
+---
+
+#### 109. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la inserción, normalización y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | se verificaron `main` posterior a `NEXO-DOM-036`, protocolo, contrato de entrega, manifest, continuidad, ejecución, topología, políticas de formato y desarrollo, owner, handoff de 036, `CAP-SCOPE-013`, 04A NEXO, ORIGO, NUMERA e INTEGRATION, package scripts, preflight, formatter, quality y validador de entrega; en `vento-nexo` se observó infraestructura locativa por sede y zona, mientras las búsquedas inspeccionadas no demostraron un ciclo integral dedicado de obras y adecuaciones |
+| OPERATIVA | NOT_APPLICABLE | no se solicitan, aprueban, contratan, ejecutan, reciben, liberan ni garantizan obras reales durante la definición documental |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-001` a `NEXO-DOM-038` están cubiertas por override `DEFINE_ONCE` y no crean instancia física propia |
+
+---
+
+#### 110. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] existe un expediente conceptual único de obra o adecuación;
+- [x] solicitud y obra aprobada permanecen separadas;
+- [x] sujeto locativo principal es estable;
+- [x] alcance es versionado y no destructivo;
+- [x] estimación, oferta, presupuesto, compromiso y costo real permanecen separados;
+- [x] aprobación técnica, comercial y económica permanecen separadas;
+- [x] ORIGO conserva proveedor, contratación y recepción empresarial;
+- [x] NUMERA conserva compromiso, gasto y costo;
+- [x] NEXO conserva aceptación técnica, condición, disponibilidad y liberación;
+- [x] contratista no se convierte en usuario interno por defecto;
+- [x] acceso físico y permiso de obra permanecen separados;
+- [x] permiso interno y permiso externo permanecen separados;
+- [x] cronograma y ejecución real permanecen separados;
+- [x] reprogramación conserva historia;
+- [x] afectación operativa identifica sujetos estables;
+- [x] cierre temporal no se confunde con retiro;
+- [x] restricción y disponibilidad permanecen separadas;
+- [x] recorridos alternos y condiciones de salida pueden conservarse;
+- [x] interrupciones de servicios se correlacionan con su dominio propietario;
+- [x] movimientos de inventario no son efectos implícitos de la obra;
+- [x] afirmación del contratista y verificación interna permanecen separadas;
+- [x] desviación, hallazgo y cambio aprobado permanecen separados;
+- [x] cambios materiales crean revisión;
+- [x] ejecución terminada no equivale a recepción;
+- [x] recepción técnica y empresarial permanecen separadas;
+- [x] recepción parcial no cierra toda la obra;
+- [x] pendientes conservan owner y condición de salida;
+- [x] recepción técnica y liberación operativa permanecen separadas;
+- [x] cierre técnico, contractual y económico permanecen separados;
+- [x] garantía conserva origen contractual y no inventa duración;
+- [x] defecto observado y cobertura confirmada permanecen separados;
+- [x] atención de garantía conserva relación con obra y reclamo;
+- [x] historia y correcciones son no destructivas;
+- [x] se cubren idempotencia, concurrencia, offline y resultado desconocido;
+- [x] AS-IS se clasifica como base parcial y no como ciclo integral;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 111. Handoff hacia `NEXO-DOM-038`
+
+`NEXO-DOM-037` entrega a `NEXO-DOM-038`:
+
+```text
+STABLE LOCATIVE SUBJECTS
++
+FACILITY WORK CASE IDENTITY
++
+VERSIONED SCOPE
++
+CONTRACTOR / PERMIT / SCHEDULE REFERENCES
++
+OPERATIONAL IMPACT
++
+TEMPORARY CLOSURES AND RESTRICTIONS
++
+EXECUTION EVIDENCE
++
+DEVIATIONS / FINDINGS / CHANGES
++
+TECHNICAL VERIFICATION
++
+TECHNICAL RECEIPT
++
+OPERATIONAL RELEASE
++
+RESIDUAL PENDING ITEMS
++
+WARRANTY / DEFECT CORRELATION
++
+NON-DESTRUCTIVE HISTORY
++
+IDEMPOTENT OFFLINE FIELD CAPTURE
+```
+
+`NEXO-DOM-038` deberá definir de forma propia la novedad locativa, severidad, contención, escalamiento, responsable, relación con trabajo, resolución, verificación, cierre y reapertura.
+
+Una desviación o defecto de obra no se convierte automáticamente en una novedad locativa independiente; la creación del expediente de novedad requiere la regla propietaria correspondiente.
+
+---
+
+#### 50. Frontera con continuidad operativa
+
+---
+
+#### 112. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-036 — Definir llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre`
+
+### ✅ NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
+**Tarea siguiente:** NEXO-AUTH-001 — Separar configuración administrativa de operación
+**Tipo de tarea:** documental; definición canónica del expediente de novedad locativa, severidad, contención, escalamiento, resolución, verificación, liberación, cierre y reapertura, con reconciliación final del mini-bloque NEXO-DOM y sin instancia física propia bajo topología DEFINE_ONCE
+**Bloque:** K — NEXO
+**Repositorio propietario:** vento-group-sas/vento-shell
+**Archivo propietario:** docs/plan-canonico/modular/bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md
+**Estado físico resultante:** NO_PHYSICAL_INSTANCE
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato mediante el cual NEXO registra, clasifica, contiene, escala, resuelve, verifica, libera, cierra y, cuando corresponda, reabre novedades locativas relacionadas con instalaciones, espacios, componentes fijos, redes, puntos de servicio y otros sujetos físicos gobernados por el dominio.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+REPORTE O DETECCIÓN DE NOVEDAD
++
+OBSERVACIÓN ORIGINAL PRESERVADA
++
+TRIAGE
++
+EVALUACIÓN DE SEVERIDAD
++
+CONTENCIÓN CUANDO CORRESPONDA
++
+RESPONSABLE DEL CASO
++
+DECISIÓN DE ESCALAMIENTO O HANDOFF
++
+TRABAJO O ACCIÓN RELACIONADA CUANDO CORRESPONDA
++
+RESULTADO DE RESOLUCIÓN
++
+VERIFICACIÓN
++
+LIBERACIÓN CUANDO APLIQUE
++
+CIERRE
++
+REAPERTURA O RECURRENCIA TRAZABLE
+→
+NOVEDAD LOCATIVA RECONCILIABLE Y AUDITABLE
+```
+
+Se preserva expresamente:
+
+```text
+NOVEDAD
+!=
+ORDEN DE TRABAJO
+!=
+MANTENIMIENTO
+!=
+OBRA
+!=
+INCIDENTE SST
+```
+
+y:
+
+```text
+CONTENCIÓN
+!=
+RESOLUCIÓN
+!=
+VERIFICACIÓN
+!=
+LIBERACIÓN
+!=
+CIERRE
+```
+
+---
+
+#### 2. Resultado canónico
+
+`NEXO-DOM-038` deja definido un único contrato documental con los siguientes resultados:
+
+1. consume identidad locativa estable de `NEXO-DOM-029`;
+2. consume planes, solicitudes, órdenes, reparación, prueba y liberación de `NEXO-DOM-030` sin convertir la novedad en orden de trabajo;
+3. consume limpieza y saneamiento de `NEXO-DOM-031` cuando una novedad derive hacia ese ciclo;
+4. consume control de plagas de `NEXO-DOM-032` cuando corresponda;
+5. consume servicios, interrupciones y contingencias de `NEXO-DOM-033`;
+6. consume inspecciones, hallazgos y acciones correctivas de `NEXO-DOM-034`;
+7. consume calibración y control metrológico de `NEXO-DOM-035`;
+8. consume acceso físico e incidencias de `NEXO-DOM-036`;
+9. consume obras, cierres temporales, restricciones, recepción, liberación y garantía de `NEXO-DOM-037`;
+10. define identidad estable del caso de novedad locativa;
+11. preserva reporte original separado de hechos verificados;
+12. define triage y decisión de severidad;
+13. mantiene severidad separada de prioridad, disponibilidad y nivel de escalamiento;
+14. define contención como control temporal distinto de resolución;
+15. define responsable del caso separado de ejecutor, verificador, autoridad de liberación y autoridad de cierre;
+16. define escalamiento y handoff sin destruir el ownership del caso original;
+17. define relación explícita con acciones, inspecciones, órdenes de trabajo, mantenimiento u obras cuando correspondan;
+18. reutiliza el proceso `VPROC-0055` sin crear una máquina de estados competidora;
+19. define resolución como resultado verificable y no como comentario de cierre;
+20. define verificación separada de resolución;
+21. define liberación separada de verificación;
+22. define cierre sujeto a reconciliación de restricciones, pendientes y evidencia;
+23. define reapertura no destructiva;
+24. distingue reapertura de una recurrencia que requiera un caso nuevo;
+25. define relación con cierres temporales y áreas fuera de servicio;
+26. define relación con rutas alternativas y restricciones cuando correspondan;
+27. preserva frontera con SST;
+28. preserva frontera con continuidad operativa;
+29. preserva frontera con ORIGO y NUMERA;
+30. preserva evidencia y documentos bajo su gobierno propietario;
+31. exige idempotencia para captura móvil y offline;
+32. exige reconciliación ante resultado desconocido;
+33. define métricas derivables desde hechos fuente;
+34. reconcilia las responsabilidades de `NEXO-DOM-029` a `NEXO-DOM-038`;
+35. cierra documentalmente el mini-bloque de dominio sin cerrar el BLOQUE K completo;
+36. entrega un handoff explícito hacia `NEXO-AUTH-001`;
+37. no crea ni modifica requisitos de prueba porque la cobertura vigente ya protege estas obligaciones;
+38. no autoriza código, datos, Supabase, UI, despliegues ni ejecución física.
+
+---
+
+#### 3. Base canónica consumida
+
+La tarea consume y preserva:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.11 — Registrar y cerrar novedades`;
+- `CAP-SCOPE-018`, para continuidad y degradación cuando el impacto exceda el dominio locativo;
+- `CAP-SCOPE-016`, para documentos y evidencia;
+- `NEXO-DOM-017`, para historial y evidencia;
+- `NEXO-DOM-029` a `NEXO-DOM-037`, como contratos locativos y de instalaciones ya aprobados;
+- `NEXO-AUTH-031` y `NEXO-AUTH-032`, como propietarios posteriores de autorización y segregación;
+- `NEXO-UX-043` a `NEXO-UX-048`, como propietarios posteriores de experiencia;
+- `VPROC-0055`, como proceso canónico de gestión de casos de instalaciones;
+- la cobertura canónica vigente de pruebas para instalaciones y novedades;
+- la implementación remota observable de ubicaciones y zonas en NEXO.
+
+La tarea especializa novedades locativas. No redefine mantenimiento, limpieza, plagas, servicios, inspecciones, calibración, acceso físico, obras, SST, continuidad, compras, finanzas ni gobierno de información.
+
+---
+
+#### 4. Decisión de cobertura de `CAP-13.11`
+
+La capacidad conserva:
+
+```text
+CAP-13.11
+REGISTRAR Y CERRAR NOVEDADES
+```
+
+con tratamiento:
+
+```text
+BUILD
+```
+
+y propiedad objetivo:
+
+```text
+NEXO
+```
+
+El resultado exigido es un expediente único de novedad locativa con:
+
+```text
+SEVERIDAD
++
+CONTENCIÓN
++
+RESPONSABLE
++
+RELACIÓN CON ORDEN DE TRABAJO
++
+VERIFICACIÓN
++
+CIERRE
+```
+
+sin fusionar esos conceptos.
+
+---
+
+#### 5. Brechas que se cierran
+
+Se cierran o desarrollan específicamente las brechas por las cuales:
+
+1. una novedad podía quedar como comentario, chat, fotografía o nota sin expediente estable;
+2. un área fuera de servicio podía quedar sin vigencia, causa o condición de liberación;
+3. un cierre temporal podía confundirse con retiro permanente;
+4. una ruta alternativa podía existir sin correlación con la causa locativa;
+5. una contención podía presentarse falsamente como resolución;
+6. una resolución podía declararse sin verificación;
+7. una verificación podía confundirse con liberación;
+8. una orden de trabajo cerrada podía cerrar automáticamente una novedad todavía activa;
+9. una obra recibida podía ocultar pendientes locativos;
+10. una fotografía podía operar como cierre sin decisión;
+11. una factura podía confundirse con cierre técnico;
+12. una novedad podía perder responsable durante un escalamiento;
+13. una novedad podía ser duplicada por captura offline o reintento;
+14. un mismo reporte podía crear más de un caso;
+15. una reapertura podía destruir el cierre anterior;
+16. una recurrencia podía sobrescribir el caso previo;
+17. severidad y prioridad podían colapsarse en un único campo ambiguo;
+18. disponibilidad del sujeto podía inferirse incorrectamente desde la severidad;
+19. el nivel de escalamiento podía inferirse incorrectamente desde la severidad;
+20. una incidencia SST podía duplicarse como novedad locativa sin correlación explícita;
+21. una interrupción de servicio podía duplicarse como caso locativo independiente sin necesidad;
+22. una incidencia de acceso físico podía perder su owner especializado;
+23. una acción de mantenimiento podía convertirse en fuente competidora del estado de la novedad;
+24. no estaba certificada la segregación entre reportar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir.
+
+---
+
+#### 6. Propiedad del expediente
+
+NEXO conserva el expediente de novedad locativa.
+
+Debe mantener:
+
+- identidad del caso;
+- sujeto locativo principal;
+- reporte u observación original;
+- triage;
+- severidad;
+- contención;
+- condición;
+- disponibilidad locativa proyectada;
+- responsable del caso;
+- escalamiento;
+- relaciones con trabajos y acciones;
+- verificación;
+- liberación;
+- cierre;
+- reapertura;
+- historial.
+
+Los dominios especializados conservan sus propios hechos y decisiones.
+
+---
+
+#### 7. Identidad estable de la novedad
+
+Toda novedad material debe tener identidad estable.
+
+La identidad debe permitir:
+
+- reintento idempotente;
+- captura offline;
+- correlación con evidencia;
+- correlación con sujeto físico;
+- relación con orden de trabajo;
+- relación con obra;
+- relación con inspección;
+- relación con interrupción de servicio;
+- relación con acceso físico;
+- cierre;
+- reapertura;
+- análisis de recurrencia.
+
+La identidad no se deriva únicamente de texto libre, fotografía o timestamp.
+
+---
+
+#### 8. Sujeto locativo
+
+Toda novedad debe resolver un sujeto físico principal cuando la información disponible lo permita.
+
+Puede corresponder a:
+
+- instalación;
+- espacio;
+- componente fijo;
+- red de servicio;
+- punto de servicio;
+- otro sujeto locativo autorizado.
+
+Una novedad puede afectar sujetos relacionados, pero no crea duplicados innecesarios del mismo caso.
+
+---
+
+#### 9. Reporte y detección
+
+Una novedad puede originarse por:
+
+- reporte humano;
+- inspección;
+- mantenimiento;
+- limpieza;
+- plagas;
+- servicio;
+- medición;
+- acceso físico;
+- obra;
+- garantía;
+- señal técnica;
+- otro origen autorizado.
+
+El origen se conserva como hecho.
+
+---
+
+#### 10. Reporte frente a hecho verificado
+
+Se preserva:
+
+```text
+REPORT
+!=
+VERIFIED FACT
+```
+
+El reporte original conserva:
+
+- fuente;
+- actor o emisor cuando aplique;
+- momento;
+- descripción original;
+- sujeto declarado;
+- evidencia original;
+- canal;
+- correlación disponible.
+
+La clasificación posterior no reescribe la afirmación original.
+
+---
+
+#### 11. Detección automática
+
+Cuando una señal automática origine una novedad, debe conservar:
+
+- fuente técnica;
+- identificador;
+- momento;
+- sujeto;
+- valor o condición observada;
+- regla o umbral propietario cuando exista;
+- evidencia disponible.
+
+La señal no decide por sí sola severidad, causa raíz o cierre.
+
+---
+
+#### 12. Triage
+
+El triage determina el tratamiento inicial del caso.
+
+Debe poder resolver:
+
+- sujeto;
+- categoría propietaria cuando exista;
+- severidad vigente;
+- impacto;
+- riesgo observado;
+- disponibilidad;
+- contención requerida;
+- responsable;
+- handoff;
+- necesidad de trabajo;
+- necesidad de escalamiento.
+
+El triage no equivale a resolución.
+
+---
+
+#### 13. Proceso `VPROC-0055`
+
+La novedad locativa reutiliza el proceso canónico de instalaciones:
+
+```text
+FACILITY_CASE_OPENED
+→
+TRIAGED
+→
+WORK_PLANNED
+→
+RESOURCES_PENDING
+→
+IN_EXECUTION
+→
+VERIFICATION_PENDING
+→
+RELEASE_PENDING
+→
+FACILITY_CASE_CLOSED
+```
+
+No todas las novedades deben recorrer materialmente cada estado si el contrato del proceso permite una transición válida distinta.
+
+Esta tarea no crea estados paralelos que compitan con `VPROC-0055`.
+
+---
+
+#### 14. Apertura del caso
+
+Abrir el caso demuestra únicamente que existe un sujeto o lugar identificado y una necesidad, novedad, inspección u obligación pendiente.
+
+Se preserva:
+
+```text
+CASE OPEN
+!=
+WORK REQUIRED
+!=
+RESTRICTION REQUIRED
+!=
+ISSUE RESOLVED
+```
+
+---
+
+#### 15. Clasificación del caso
+
+El estado de triage debe poder explicar:
+
+- qué se observó;
+- sobre qué sujeto;
+- qué impacto existe;
+- qué decisión de severidad rige;
+- qué contención aplica;
+- quién responde;
+- qué handoff se requiere.
+
+Una categoría no sustituye esos hechos.
+
+---
+
+#### 16. Severidad
+
+La severidad representa una decisión versionada sobre la importancia material del caso conforme a la política vigente.
+
+Debe poder conservar:
+
+- código de severidad definido por la política propietaria;
+- versión o referencia de política;
+- fundamentos;
+- impacto;
+- riesgo;
+- sujetos afectados;
+- evaluador;
+- momento;
+- vigencia o revisión.
+
+Esta tarea no inventa una taxonomía de severidad.
+
+---
+
+#### 17. Severidad frente a prioridad
+
+Se preserva:
+
+```text
+SEVERITY
+!=
+PRIORITY
+```
+
+La severidad representa impacto o riesgo conforme a política.
+
+La prioridad representa orden o urgencia de atención conforme a planificación.
+
+Un caso puede requerir una prioridad distinta sin alterar falsamente su severidad.
+
+---
+
+#### 18. Severidad frente a disponibilidad
+
+Se preserva:
+
+```text
+SEVERITY
+!=
+AVAILABILITY
+```
+
+La disponibilidad depende del sujeto, propósito, restricciones vigentes y hechos operativos.
+
+Una severidad determinada no permite inferir automáticamente que todo el sujeto está disponible o indisponible.
+
+---
+
+#### 19. Severidad frente a escalamiento
+
+Se preserva:
+
+```text
+SEVERITY
+!=
+ESCALATION LEVEL
+```
+
+La política puede relacionarlos, pero la equivalencia no se presume.
+
+El escalamiento depende de owner, capacidad de respuesta, riesgo, impacto y reglas competentes.
+
+---
+
+#### 20. Revisión de severidad
+
+La severidad puede cambiar ante nueva evidencia.
+
+Cada revisión conserva:
+
+- decisión previa;
+- decisión nueva;
+- motivo;
+- evidencia;
+- actor;
+- momento.
+
+No se sobreescribe retrospectivamente la clasificación utilizada en decisiones anteriores.
+
+---
+
+#### 21. Contención
+
+La contención es una medida temporal destinada a limitar exposición, daño o impacto mientras se alcanza una resolución.
+
+Puede relacionarse, según corresponda, con:
+
+- cierre temporal;
+- restricción parcial;
+- aislamiento;
+- bloqueo de uso;
+- ruta alternativa;
+- suspensión de acceso;
+- contingencia de servicio;
+- otro control autorizado.
+
+La contención no demuestra que la causa esté resuelta.
+
+---
+
+#### 22. Alcance de la contención
+
+Toda contención material debe poder conservar:
+
+- novedad;
+- sujeto;
+- alcance;
+- inicio;
+- responsable;
+- motivo;
+- condición de salida;
+- evidencia;
+- restricciones;
+- relaciones con otros dominios.
+
+No se admite una contención indefinida sin owner ni condición de salida.
+
+---
+
+#### 23. Contención frente a reparación
+
+Se preserva:
+
+```text
+CONTAINMENT
+!=
+REPAIR
+```
+
+Una reparación puede resolver una causa.
+
+Una contención puede existir antes, durante o después de una reparación mientras permanezca un riesgo o restricción.
+
+---
+
+#### 24. Contención frente a resolución
+
+Se preserva:
+
+```text
+CONTAINED
+!=
+RESOLVED
+```
+
+La reducción temporal del impacto no cierra el caso.
+
+---
+
+#### 25. Restricción de uso
+
+Una novedad puede producir una restricción de uso sin dejar indisponible todo el sujeto.
+
+La restricción debe preservar:
+
+- propósito afectado;
+- razón;
+- alcance;
+- vigencia;
+- autoridad;
+- condición de salida.
+
+Se preserva:
+
+```text
+RESTRICTED
+!=
+UNAVAILABLE
+```
+
+---
+
+#### 26. Área fuera de servicio
+
+Cuando una novedad deje un sujeto fuera de servicio, deben conservarse:
+
+- sujeto;
+- causa;
+- inicio;
+- alcance;
+- dependencias;
+- contención;
+- responsable;
+- condición de salida;
+- evidencia.
+
+Se preserva:
+
+```text
+OUT_OF_SERVICE
+!=
+RETIRED
+!=
+DELETED
+```
+
+---
+
+#### 27. Cierre temporal
+
+Un cierre temporal mantiene la identidad del sujeto y del caso.
+
+Debe ser reversible mediante una decisión de liberación.
+
+No se cierra modificando únicamente una fecha prevista.
+
+---
+
+#### 28. Ruta alternativa
+
+Cuando la novedad interrumpa circulación o acceso, puede relacionarse una ruta alternativa aprobada.
+
+Debe conservar:
+
+- origen de la restricción;
+- sujetos;
+- vigencia;
+- condición;
+- autoridad;
+- condición de salida.
+
+La novedad no inventa una topología física paralela.
+
+---
+
+#### 29. Responsable del caso
+
+Cada novedad abierta debe tener un responsable del caso conforme a la política aplicable.
+
+El responsable gobierna seguimiento y reconciliación del expediente.
+
+No se presume que sea la misma persona que reporta, ejecuta, verifica, libera o cierra.
+
+---
+
+#### 30. Responsable frente a ejecutor
+
+Se preserva:
+
+```text
+CASE OWNER
+!=
+EXECUTOR
+```
+
+El responsable mantiene la integridad del caso.
+
+El ejecutor realiza una acción o trabajo autorizado.
+
+---
+
+#### 31. Responsable frente a verificador
+
+Se preserva:
+
+```text
+CASE OWNER
+!=
+VERIFIER
+```
+
+La segregación concreta pertenece a autorización, pero el modelo de dominio mantiene roles conceptualmente distintos.
+
+---
+
+#### 32. Responsable frente a autoridad de liberación
+
+Se preserva:
+
+```text
+CASE OWNER
+!=
+RELEASE AUTHORITY
+```
+
+La capacidad de seguir un caso no concede autoridad para devolver un espacio o servicio a uso normal.
+
+---
+
+#### 33. Responsable frente a autoridad de cierre
+
+Se preserva:
+
+```text
+CASE OWNER
+!=
+CLOSURE AUTHORITY
+```
+
+La segregación concreta se materializará en las tareas de autorización propietarias.
+
+---
+
+#### 34. Escalamiento
+
+El escalamiento registra que el caso requiere atención, capacidad o autoridad adicional.
+
+Debe poder conservar:
+
+- origen;
+- motivo;
+- destinatario;
+- momento;
+- estado;
+- evidencia;
+- condición de retorno o handoff;
+- relación con el caso original.
+
+El escalamiento no borra el responsable histórico.
+
+---
+
+#### 35. Escalamiento frente a transferencia
+
+Se preserva:
+
+```text
+ESCALATED
+!=
+OWNERSHIP TRANSFERRED
+```
+
+Una novedad puede escalarse manteniendo owner NEXO.
+
+Una transferencia real de responsabilidad debe estar explícitamente gobernada.
+
+---
+
+#### 36. Handoff a mantenimiento
+
+Cuando el triage concluya que se requiere reparación o mantenimiento:
+
+```text
+FACILITY NOVELTY
+→
+LINKED MAINTENANCE REQUEST / WORK ORDER
+```
+
+`NEXO-DOM-030` conserva el ciclo del trabajo.
+
+038 conserva el caso, la causa del handoff, la relación y el resultado necesario para cerrar la novedad.
+
+---
+
+#### 37. Handoff a limpieza y saneamiento
+
+Cuando el tratamiento corresponda a limpieza o saneamiento:
+
+- 031 conserva procedimiento, ejecución y verificación especializada;
+- 038 conserva la novedad y su resolución correlacionada.
+
+No se duplican evidencias ni cierres.
+
+---
+
+#### 38. Handoff a control de plagas
+
+Cuando corresponda:
+
+- 032 conserva visita, dispositivo, hallazgo, acción y certificado;
+- 038 conserva el caso locativo y su condición de salida.
+
+El certificado por sí solo no cierra la novedad.
+
+---
+
+#### 39. Handoff a servicios
+
+Cuando el hecho sea una interrupción, fuga, corte o condición de servicio:
+
+- 033 conserva el contrato del servicio, medición, interrupción, restauración y contingencia;
+- 038 conserva la novedad cuando exista una condición locativa adicional que requiera expediente propio.
+
+No se crea un caso locativo duplicado por defecto.
+
+---
+
+#### 40. Handoff a inspección
+
+Un hallazgo de inspección puede originar una novedad.
+
+Se preserva:
+
+```text
+INSPECTION FINDING
+!=
+FACILITY NOVELTY
+```
+
+La relación entre ambos debe ser explícita.
+
+034 mantiene la inspección y su hallazgo; 038 mantiene el caso locativo cuando se abra.
+
+---
+
+#### 41. Handoff a control metrológico
+
+Una condición metrológica pertenece a 035.
+
+Puede originar una novedad locativa solo cuando exista un impacto físico o de disponibilidad que requiera un caso separado.
+
+No se duplica el expediente de calibración.
+
+---
+
+#### 42. Handoff a acceso físico
+
+Una incidencia de llave, tarjeta, código o acceso físico pertenece a 036.
+
+038 puede correlacionarla cuando afecte condición o disponibilidad locativa.
+
+El owner del medio de acceso no se traslada al expediente de novedad.
+
+---
+
+#### 43. Handoff a obras y adecuaciones
+
+Cuando la resolución requiere una obra o adecuación:
+
+- 037 conserva solicitud, alcance, contratista, permisos, cronograma, afectación, recepción y garantía;
+- 038 conserva la novedad, la relación con la obra y la condición necesaria para resolución y cierre.
+
+Se preserva:
+
+```text
+WORK CASE CLOSED
+!=
+FACILITY NOVELTY CLOSED
+```
+
+---
+
+#### 44. Frontera con SST
+
+Una condición locativa puede constituir además un riesgo o incidente SST.
+
+Se preserva:
+
+```text
+FACILITY NOVELTY
+!=
+SST INCIDENT
+```
+
+VISO/SST conserva evaluación, investigación, cumplimiento y controles preventivos de su dominio.
+
+NEXO conserva condición y disponibilidad física.
+
+---
+
+#### 45. Frontera con continuidad operativa
+
+Cuando el impacto exceda la gestión local y requiera degradación, operación alternativa, failover, evacuación operativa o recuperación transversal, el caso se correlaciona con continuidad.
+
+Se preserva:
+
+```text
+LOCAL FACILITY NOVELTY
+!=
+BUSINESS CONTINUITY INCIDENT
+```
+
+El caso NEXO permanece trazable aunque otra capa coordine la continuidad.
+
+---
+
+#### 46. Frontera con ORIGO
+
+ORIGO conserva proveedor, compra, contrato, orden y recepción empresarial.
+
+NEXO conserva condición, novedad, trabajo técnico relacionado, verificación, liberación y cierre locativo.
+
+Una orden comercial no resuelve una novedad.
+
+---
+
+#### 47. Frontera con NUMERA
+
+NUMERA conserva compromiso, gasto y costo.
+
+NEXO puede relacionar referencias económicas necesarias, pero no mantiene un ledger competidor.
+
+Un pago no resuelve ni cierra el caso.
+
+---
+
+#### 48. Evidencia
+
+La novedad debe poder relacionar evidencia con hechos específicos.
+
+Puede incluir, según política:
+
+- fotografías;
+- videos;
+- lecturas;
+- documentos;
+- actas;
+- firmas;
+- reportes;
+- croquis;
+- evidencia del proveedor;
+- otra evidencia autorizada.
+
+La evidencia pertenece al gobierno documental aplicable.
+
+---
+
+#### 49. Evidencia frente a decisión
+
+Se preserva:
+
+```text
+EVIDENCE
+!=
+DECISION
+```
+
+Una fotografía puede demostrar una observación.
+
+No decide por sí sola severidad, resolución, liberación o cierre.
+
+---
+
+#### 50. Evidencia de tercero
+
+Una afirmación de proveedor o tercero conserva fuente y autenticidad disponible.
+
+Se preserva:
+
+```text
+EXTERNAL ASSERTION
+!=
+NEXO VERIFICATION
+```
+
+NEXO revalida el resultado que deba aceptar técnicamente.
+
+---
+
+#### 51. Planificación de trabajo
+
+Cuando el caso requiera trabajo, `WORK_PLANNED` expresa que existe alcance, procedimiento, recursos, ventana y criterio de aceptación conforme al proceso canónico.
+
+Se preserva:
+
+```text
+WORK PLANNED
+!=
+WORK STARTED
+```
+
+---
+
+#### 52. Recursos pendientes
+
+`RESOURCES_PENDING` puede representar espera por:
+
+- personal;
+- proveedor;
+- repuestos;
+- permisos;
+- acceso;
+- otro recurso necesario.
+
+La espera no cierra el caso ni elimina la contención.
+
+---
+
+#### 53. Ejecución
+
+`IN_EXECUTION` representa trabajo efectivo relacionado con el caso.
+
+El expediente debe poder correlacionar:
+
+- ejecutor;
+- sujeto;
+- acción;
+- momento;
+- evidencia;
+- resultado;
+- desviaciones;
+- restricciones.
+
+La ejecución no implica resolución verificada.
+
+---
+
+#### 54. Acción sin orden de trabajo
+
+No toda novedad exige una orden de trabajo.
+
+Una resolución simple puede quedar registrada sin crear mantenimiento ficticio cuando la política lo permita.
+
+Debe conservar evidencia y decisión suficientes.
+
+---
+
+#### 55. Resolución
+
+La resolución representa el resultado material mediante el cual la causa o condición tratada alcanza el estado aceptable definido por la política aplicable.
+
+Debe poder conservar:
+
+- caso;
+- sujeto;
+- acción o disposición;
+- responsable de ejecución;
+- resultado;
+- momento;
+- evidencia;
+- relación con trabajos;
+- restricciones residuales.
+
+La resolución no es un comentario narrativo de cierre.
+
+---
+
+#### 56. Resolución frente a verificación
+
+Se preserva:
+
+```text
+RESOLVED
+!=
+VERIFIED
+```
+
+La resolución es el resultado declarado o producido.
+
+La verificación confirma si ese resultado satisface el criterio aplicable.
+
+---
+
+#### 57. Verificación pendiente
+
+`VERIFICATION_PENDING` mantiene el caso abierto mientras se comprueba:
+
+- resultado;
+- condición;
+- evidencia;
+- corrección de desviaciones;
+- restricciones;
+- criterio de aceptación.
+
+No se libera automáticamente por finalizar la ejecución.
+
+---
+
+#### 58. Verificación
+
+La verificación debe poder conservar:
+
+- criterio;
+- sujeto;
+- evidencia;
+- actor;
+- momento;
+- resultado;
+- pendientes;
+- restricciones;
+- decisión.
+
+Cuando el resultado no sea aceptable, el caso continúa abierto o vuelve al tratamiento que corresponda.
+
+---
+
+#### 59. Liberación pendiente
+
+`RELEASE_PENDING` representa que el trabajo puede estar verificado, pero el sujeto o servicio todavía espera autorización para volver al uso permitido.
+
+Se preserva:
+
+```text
+VERIFIED
+!=
+RELEASED
+```
+
+---
+
+#### 60. Liberación
+
+La liberación confirma que el sujeto puede volver al uso permitido bajo las condiciones aprobadas.
+
+Debe reconciliar:
+
+- restricciones;
+- cierres temporales;
+- accesos;
+- servicios;
+- seguridad;
+- trabajos;
+- pendientes bloqueantes;
+- condición actual.
+
+Una fecha prevista no sustituye una liberación.
+
+---
+
+#### 61. Liberación parcial o condicionada
+
+Cuando la política permita un uso limitado, la liberación debe conservar:
+
+- propósito permitido;
+- propósito restringido;
+- vigencia;
+- condiciones;
+- owner;
+- evidencia.
+
+No se presenta como disponibilidad global plena.
+
+---
+
+#### 62. Cierre del caso
+
+El cierre canónico corresponde a `VPROC-0055.FACILITY_CASE_CLOSED`.
+
+El cierre exige, según aplicabilidad:
+
+- sujeto identificado;
+- triage vigente;
+- severidad reconciliada;
+- contenciones tratadas;
+- trabajos y acciones resueltos o transferidos legítimamente;
+- evidencia suficiente;
+- verificación;
+- liberación cuando corresponda;
+- restricciones reconciliadas;
+- responsable;
+- autoridad de cierre;
+- decisión y momento.
+
+---
+
+#### 63. Condición mínima de cierre
+
+Se preserva:
+
+```text
+WORK COMPLETED
++
+EVIDENCE
++
+VERIFICATION
++
+CORRECTIONS
++
+RELEASE WHEN REQUIRED
+→
+CASE CLOSURE CANDIDATE
+```
+
+La política de autorización determina quién puede materializar la decisión.
+
+---
+
+#### 64. Falsos cierres prohibidos
+
+No cierran por sí solos una novedad:
+
+- fotografía;
+- comentario;
+- factura;
+- pago;
+- visita;
+- orden emitida;
+- orden ejecutada sin verificación;
+- certificado aislado;
+- cambio de fecha;
+- desaparición visual del problema;
+- respuesta de proveedor;
+- cierre de un expediente relacionado.
+
+---
+
+#### 65. Cierre frente a condición permanente
+
+Se preserva:
+
+```text
+CASE CLOSED
+!=
+PERMANENTLY GOOD CONDITION
+```
+
+El cierre no sustituye mantenimiento futuro, inspecciones periódicas, monitoreo ni controles SST.
+
+---
+
+#### 66. Cierre frente a eliminación
+
+Se preserva:
+
+```text
+CLOSED
+!=
+DELETED
+```
+
+El caso permanece en historia.
+
+---
+
+#### 67. Reapertura
+
+Una reapertura crea una transición no destructiva sobre un caso cerrado cuando nueva evidencia invalida materialmente el supuesto de cierre o cuando la política propietaria determina que continúa el mismo caso.
+
+Debe conservar:
+
+- cierre previo;
+- motivo;
+- evidencia;
+- actor;
+- momento;
+- nueva condición;
+- nueva severidad cuando corresponda;
+- contención vigente.
+
+No se borra el cierre previo.
+
+---
+
+#### 68. Recurrencia
+
+Una nueva ocurrencia puede ser:
+
+- reapertura del mismo caso;
+- nuevo caso relacionado;
+- evento independiente.
+
+La política propietaria decide con base en identidad, causa, tiempo, sujeto y continuidad del problema.
+
+Se preserva la relación entre casos.
+
+---
+
+#### 69. Duplicado candidato
+
+Dos reportes similares pueden ser candidatos a duplicado.
+
+No se fusionan automáticamente solo por:
+
+- texto parecido;
+- fotografía similar;
+- proximidad temporal;
+- mismo sitio;
+- mismo usuario.
+
+La decisión de deduplicación requiere evidencia suficiente.
+
+---
+
+#### 70. Caso duplicado confirmado
+
+Cuando dos entradas representan el mismo hecho:
+
+- una identidad queda como caso autoritativo;
+- la otra conserva relación de duplicado;
+- evidencia y reportes no se pierden;
+- no se duplican contenciones, órdenes ni cierres.
+
+No se elimina historia.
+
+---
+
+#### 71. Idempotencia
+
+La misma intención con la misma identidad y contenido material no puede crear:
+
+- otro caso;
+- otro triage;
+- otra contención;
+- otra ejecución;
+- otra verificación;
+- otra liberación;
+- otro cierre;
+- otra reapertura.
+
+La misma identidad con contenido incompatible produce conflicto o revisión explícita.
+
+---
+
+#### 72. Captura offline
+
+La captura offline puede registrar:
+
+- reporte;
+- observación;
+- evidencia;
+- actualización permitida;
+- resultado de campo;
+
+cuando una arquitectura autorizada lo soporte.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+CASE RECONCILED
+```
+
+La sincronización revalida identidad, vigencia, permiso, versión y conflictos.
+
+---
+
+#### 73. Resultado desconocido
+
+Ante timeout o pérdida de respuesta:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+El cliente consulta por la identidad estable antes de intentar crear o cerrar de nuevo.
+
+La incertidumbre no autoriza duplicar el caso.
+
+---
+
+#### 74. Concurrencia
+
+La implementación futura deberá impedir, según el hecho:
+
+- dos cierres contradictorios;
+- cierre mientras existe una contención bloqueante;
+- liberación con restricción incompatible;
+- severidades vigentes contradictorias;
+- dos responsables vigentes incompatibles cuando la política exija uno;
+- reapertura que borre el cierre;
+- resolución contra una versión obsoleta del caso;
+- doble efecto de una misma captura offline.
+
+---
+
+#### 75. Correcciones
+
+Las correcciones no sobrescriben silenciosamente:
+
+- reporte original;
+- sujeto;
+- severidad;
+- contención;
+- responsable;
+- escalamiento;
+- relación con trabajos;
+- resolución;
+- verificación;
+- liberación;
+- cierre;
+- reapertura.
+
+Se conserva antes, después, motivo, actor y momento.
+
+---
+
+#### 76. Historial no destructivo
+
+La vista actual puede proyectar el estado vigente.
+
+La historia debe permitir reconstruir:
+
+- qué se reportó;
+- qué se verificó;
+- qué decisiones se tomaron;
+- qué contención existió;
+- qué trabajo se ejecutó;
+- qué restricciones rigieron;
+- quién verificó;
+- quién liberó;
+- quién cerró;
+- por qué se reabrió.
+
+---
+
+#### 77. Reconciliación histórica
+
+Una migración futura solo promoverá hechos demostrados.
+
+No se inventan retrospectivamente:
+
+- severidad;
+- contención;
+- responsable;
+- orden de trabajo;
+- resolución;
+- verificación;
+- liberación;
+- cierre;
+- reapertura;
+- firma;
+- causa raíz.
+
+Los registros incompletos conservan esa limitación.
+
+---
+
+#### 78. Disponibilidad del sujeto
+
+La disponibilidad se deriva de hechos vigentes.
+
+Una novedad puede afectar disponibilidad sin reemplazar el modelo locativo de `NEXO-DOM-029`.
+
+Se preserva la razón de cada restricción.
+
+---
+
+#### 79. Múltiples casos sobre el mismo sujeto
+
+Un sujeto puede tener múltiples casos independientes.
+
+La disponibilidad resultante debe considerar restricciones vigentes de todos los casos relevantes.
+
+Cerrar un caso no elimina bloqueos originados por otro.
+
+---
+
+#### 80. Escalamiento por dependencia
+
+Cuando la resolución dependa de otro dominio, el caso mantiene el vínculo hasta obtener el resultado necesario.
+
+No se marca como resuelto únicamente por crear el handoff.
+
+---
+
+#### 81. Pendiente transferido
+
+Un pendiente puede transferirse a otro expediente cuando:
+
+- el owner sea explícito;
+- exista identidad del destino;
+- la obligación transferida esté delimitada;
+- el caso pueda demostrar que el pendiente dejó de ser bloqueante conforme a política.
+
+La transferencia no equivale a desaparición del pendiente.
+
+---
+
+#### 82. Relación con garantía
+
+Un defecto potencialmente cubierto por garantía puede originar o mantener una novedad.
+
+037 conserva la garantía y su reclamo.
+
+038 conserva condición, contención, disponibilidad y cierre de la novedad.
+
+La cobertura de garantía no se presume.
+
+---
+
+#### 83. Relación con obras cerradas
+
+Una obra cerrada puede originar una nueva novedad si posteriormente aparece una condición locativa.
+
+La nueva observación no reescribe la recepción técnica de la obra.
+
+Se correlaciona con la obra y garantía cuando corresponda.
+
+---
+
+#### 84. Relación con mantenimiento cerrado
+
+Un mantenimiento cerrado puede ser antecedente de una novedad posterior.
+
+La novedad conserva su propia identidad.
+
+La recurrencia puede alimentar análisis de mantenimiento sin convertir ambos expedientes en uno.
+
+---
+
+#### 85. Relación con inspecciones
+
+Una novedad puede ser verificada posteriormente mediante inspección.
+
+La inspección conserva su identidad y plantilla.
+
+El caso conserva el resultado de la verificación correlacionada.
+
+---
+
+#### 86. Métricas futuras
+
+La materialización futura deberá poder calcular sin reinterpretación manual, al menos:
+
+- casos abiertos;
+- casos sin triage;
+- casos por código de severidad vigente;
+- contenciones activas;
+- casos con restricción;
+- casos fuera de servicio;
+- casos escalados;
+- casos pendientes de trabajo;
+- casos pendientes de recursos;
+- casos en ejecución;
+- casos pendientes de verificación;
+- casos pendientes de liberación;
+- casos cerrados;
+- casos reabiertos;
+- casos relacionados por recurrencia;
+- candidatos a duplicado;
+- tiempo desde reporte hasta triage;
+- tiempo desde triage hasta contención cuando aplique;
+- tiempo desde resolución hasta verificación;
+- tiempo desde verificación hasta liberación;
+- tiempo desde reporte hasta cierre;
+- capturas offline pendientes de reconciliación.
+
+Las métricas son proyecciones de hechos fuente.
+
+---
+
+#### 87. Casos de decisión
+
+| Escenario | Decisión canónica |
+| --- | --- |
+| un trabajador reporta una filtración | abrir o correlacionar caso; reporte no es hecho verificado |
+| dos personas reportan el mismo hecho | evaluar duplicidad; no crear doble efecto |
+| se restringe temporalmente un espacio | contención o restricción; no resolución |
+| se crea una orden de mantenimiento | handoff relacionado; la novedad sigue abierta |
+| mantenimiento termina | no cerrar novedad automáticamente |
+| una inspección confirma resultado | evidencia de verificación; todavía puede faltar liberación |
+| área vuelve a uso normal | liberación; no necesariamente cierre automático |
+| existe otra restricción independiente | el sujeto puede seguir no disponible |
+| proveedor envía una fotografía | evidencia externa; no verificación NEXO automática |
+| factura pagada | hecho económico; no resolución |
+| se abre una obra | caso relacionado; no transferencia silenciosa |
+| obra se recibe técnicamente | 037 puede cerrar la obra; 038 debe reconciliar la novedad |
+| aparece riesgo SST | correlacionar con VISO/SST sin duplicar autoridad |
+| interrupción de servicio explica el problema | correlacionar con 033; caso separado solo si aporta semántica locativa propia |
+| el problema desaparece temporalmente | no cerrar sin criterio verificable |
+| nueva evidencia contradice el cierre | evaluar reapertura |
+| mismo defecto ocurre meses después | decidir reapertura o nuevo caso según política; conservar relación |
+| captura offline se reintenta | idempotencia; no crear segundo caso |
+| timeout tras cerrar | consultar resultado antes de repetir cierre |
+
+---
+
+#### 88. Invariantes
+
+La implementación futura deberá preservar:
+
+1. novedad y orden de trabajo son distintas;
+2. novedad y mantenimiento son distintos;
+3. novedad y obra son distintas;
+4. novedad y hallazgo de inspección son distintos;
+5. novedad e incidente SST son distintos;
+6. novedad e interrupción de servicio son distintos;
+7. novedad e incidencia de acceso físico son distintos;
+8. reporte y hecho verificado son distintos;
+9. severidad y prioridad son distintas;
+10. severidad y disponibilidad son distintas;
+11. severidad y escalamiento son distintos;
+12. contención y reparación son distintas;
+13. contención y resolución son distintas;
+14. responsable y ejecutor son distintos;
+15. responsable y verificador son distintos;
+16. responsable y autoridad de liberación son distintos;
+17. escalamiento y transferencia son distintos;
+18. resolución y verificación son distintas;
+19. verificación y liberación son distintas;
+20. liberación y cierre son distintos;
+21. cierre y condición permanente son distintos;
+22. cierre y eliminación son distintos;
+23. cierre de un trabajo relacionado no cierra automáticamente la novedad;
+24. reapertura conserva el cierre anterior;
+25. recurrencia no siempre implica reapertura;
+26. captura offline no implica aceptación del servidor;
+27. reintento no duplica efectos;
+28. corrección no destruye historia.
+
+---
+
+#### 89. Seguridad e integridad
+
+La implementación futura deberá:
+
+- autorizar mutaciones sensibles en servidor;
+- resolver sujetos desde identidades autoritativas;
+- preservar el reporte original;
+- revalidar severidad y restricciones cuando cambie el contexto;
+- impedir cierre con contención bloqueante vigente;
+- impedir liberación con restricción incompatible;
+- impedir que una orden comercial o pago modifique el estado locativo;
+- impedir que una fotografía o comentario cierre el caso;
+- preservar segregación entre reportar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir;
+- impedir que visibilidad de UI se convierta en permiso;
+- preservar evidencia y fuente;
+- aplicar idempotencia;
+- controlar concurrencia;
+- manejar resultado desconocido mediante reconciliación;
+- preservar historia no destructiva;
+- impedir que un tercero se convierta en autoridad interna por aportar evidencia.
+
+La autorización fina pertenece a las tareas propietarias posteriores.
+
+---
+
+#### 90. Materialización física futura
+
+Esta tarea define contrato, no implementación.
+
+La materialización posterior podrá requerir:
+
+- tablas o agregados;
+- índices y constraints;
+- RLS;
+- acciones de servidor;
+- contratos compartidos;
+- Storage;
+- eventos;
+- colas;
+- captura móvil;
+- operación offline;
+- notificaciones;
+- bandejas;
+- UI;
+- integraciones;
+- migración;
+- pruebas automatizadas;
+- validación operativa;
+- validación física.
+
+Esos cambios solo se ejecutan dentro de unidades o paquetes autorizados.
+
+---
+
+#### 91. AS-IS observable
+
+La revisión remota de NEXO demuestra referencias locativas parciales:
+
+- ubicaciones vinculadas a sede;
+- relación con área;
+- código de ubicación;
+- zona;
+- descripción;
+- tipo de ubicación en algunas superficies;
+- uso de ubicaciones desde activos, conteos, configuración y remisiones.
+
+Las búsquedas remotas inspeccionadas no demostraron una superficie dedicada que modele conjuntamente:
+
+- identidad de novedad locativa;
+- triage;
+- severidad;
+- contención;
+- responsable;
+- escalamiento;
+- relación con orden de trabajo;
+- resolución;
+- verificación;
+- liberación;
+- cierre;
+- reapertura.
+
+La ausencia en las superficies inspeccionadas no demuestra inexistencia absoluta fuera de ellas.
+
+---
+
+#### 92. Estrategia de adopción
+
+La estrategia queda:
+
+```text
+REUSE STABLE LOCATIVE REFERENCES
++
+REUSE VPROC-0055
++
+REUSE SPECIALIZED FACILITY DOMAIN CONTRACTS
++
+BUILD FACILITY NOVELTY CASE CONTRACT
++
+KEEP AUTHORIZATION SEPARATE
++
+KEEP HISTORY AND OFFLINE IDEMPOTENT
+```
+
+No se promueve `inventory_locations` por sí sola a modelo integral de instalaciones o novedades.
+
+---
+
+#### 93. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe taxonomía de severidad concreta demostrada en estas fuentes | no | política NEXO propietaria | catálogo aprobado, versionado y consumido |
+| autorización fina de acciones permanece pendiente | no | `NEXO-AUTH-031`; `NEXO-AUTH-032` y tareas aplicables | permisos y segregación materializados |
+| experiencia de bandejas, detalle, alertas y cierre permanece pendiente | no | `NEXO-UX-048` y experiencia aplicable | UI validada contra contrato |
+| clasificación y retención documental permanecen fuera de esta tarea | no | gobierno de información | política aplicada |
+| continuidad transversal permanece en su dominio | no | continuidad operativa | reglas de escalamiento e integración materializadas |
+| SST conserva su propio expediente | no | VISO/SST | integración y handoff materializados |
+| AS-IS no demuestra ciclo integral de novedades | no | implementación NEXO posterior | materialización contra este contrato |
+| deduplicación histórica puede requerir conciliación | no | migración NEXO posterior | evidencia y reglas de reconciliación aprobadas |
+
+---
+
+#### 94. Valores no inventados
+
+Esta tarea no fija sin fuente competente:
+
+- nombres de severidad;
+- número de niveles de severidad;
+- colores;
+- SLA;
+- tiempos máximos;
+- prioridades;
+- categorías cerradas de novedad;
+- umbrales;
+- responsables reales;
+- reglas de guardia;
+- canales de alerta;
+- destinatarios;
+- proveedores;
+- costos;
+- permisos reales;
+- personas aprobadoras;
+- criterios SST concretos;
+- rutas físicas concretas;
+- condiciones regulatorias;
+- reglas legales de conservación.
+
+La implementación deberá consumir esos valores desde fuentes propietarias cuando existan.
+
+---
+
+#### 95. Reconciliación del mini-bloque `NEXO-DOM-029..038`
+
+La familia locativa queda distribuida sin solapamiento obligatorio:
+
+| Tarea | Responsabilidad propietaria |
+| --- | --- |
+| `NEXO-DOM-029` | jerarquía de instalaciones, espacios, componentes fijos, puntos de servicio, condición y disponibilidad |
+| `NEXO-DOM-030` | planes de mantenimiento, solicitudes, órdenes de trabajo, reparación, prueba y liberación |
+| `NEXO-DOM-031` | limpieza, saneamiento, procedimiento, frecuencia, químicos, verificación y liberación |
+| `NEXO-DOM-032` | plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados |
+| `NEXO-DOM-033` | servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias |
+| `NEXO-DOM-034` | inspecciones físicas, plantillas, hallazgos y acciones correctivas |
+| `NEXO-DOM-035` | control metrológico, calibración, tolerancias, certificados e impacto |
+| `NEXO-DOM-036` | llaves, credenciales físicas, zonas, custodia, entrega, devolución e incidencias |
+| `NEXO-DOM-037` | obras, adecuaciones, contratistas, permisos, afectación, recepción y garantía |
+| `NEXO-DOM-038` | novedades locativas, severidad, contención, escalamiento, resolución, verificación, cierre y reapertura |
+
+Cada tarea produce hechos propios y relaciones explícitas hacia las demás.
+
+---
+
+#### 96. Regla de objeto principal
+
+Cuando un hecho pueda pertenecer a más de un ciclo, el objeto principal y la decisión propietaria determinan qué expediente gobierna la ejecución.
+
+Se evita:
+
+- dos reparaciones competidoras;
+- dos cierres del mismo trabajo;
+- dos fuentes de disponibilidad;
+- dos propietarios de la misma evidencia de ejecución;
+- dos expedientes que pretendan controlar la misma intervención física.
+
+La novedad puede relacionar otros expedientes sin absorberlos.
+
+---
+
+#### 97. Regla de condición y disponibilidad
+
+`NEXO-DOM-029` conserva el modelo locativo de condición y disponibilidad.
+
+Los demás contratos emiten hechos que pueden afectarlo.
+
+038 no crea una segunda fuente de disponibilidad; conserva causa, restricción y decisión necesarias para explicar la proyección vigente.
+
+---
+
+#### 98. Regla de trabajo
+
+`NEXO-DOM-030` conserva el trabajo de mantenimiento y reparación.
+
+038 nunca representa una orden de trabajo usando solamente el caso de novedad.
+
+La relación es explícita y cardinalmente controlable.
+
+---
+
+#### 99. Regla de controles especializados
+
+Limpieza, plagas, servicios, inspección, metrología, acceso físico y obras mantienen sus contratos especializados.
+
+038 funciona como expediente locativo transversal cuando una condición requiere seguimiento de novedad.
+
+No sustituye los controles especializados.
+
+---
+
+#### 100. Regla de cierre transversal
+
+El cierre de cada expediente especializado solo produce su propia verdad.
+
+Para cerrar una novedad, 038 reconcilia los resultados relacionados que sean necesarios.
+
+Para liberar un sujeto, se consideran todas las restricciones relevantes, no solo la última acción ejecutada.
+
+---
+
+#### 101. Cierre del mini-bloque de dominio
+
+Con 038 queda documentalmente definido el dominio NEXO de esta familia desde `NEXO-DOM-001` hasta `NEXO-DOM-038`.
+
+El cierre del mini-bloque significa:
+
+- las responsabilidades de dominio están definidas;
+- los handoffs están identificados;
+- la autorización puede especializar permisos sin redefinir objetos de negocio;
+- la experiencia puede diseñar superficies contra contratos estables;
+- la materialización física permanece gobernada por su topología y packages.
+
+No significa que el BLOQUE K completo esté cerrado.
+
+---
+
+#### 102. Handoff hacia autorización
+
+El dominio entrega a autorización:
+
+```text
+STABLE DOMAIN IDENTITIES
++
+OWNED BUSINESS FACTS
++
+EXPLICIT ACTION BOUNDARIES
++
+NON-DESTRUCTIVE HISTORY
++
+SEPARATE REPORT / EXECUTE / VERIFY / RELEASE / CLOSE SEMANTICS
++
+SERVER-AUTHORIZATION REQUIREMENT
++
+NO IMPLIED AUTHORITY FROM UI VISIBILITY
+```
+
+`NEXO-AUTH-001` inicia la siguiente etapa documental con la separación entre configuración administrativa y operación.
+
+---
+
+#### 103. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la cobertura vigente ya exige identidad estable, condición, disponibilidad, responsable, historial, cierre y reapertura para instalaciones;
+- la cobertura vigente ya incluye novedades, desviación, contención, verificación, disponibilidad y cierre;
+- la cobertura vigente ya protege captura offline idempotente para impedir duplicación de ejecuciones, lecturas, fotos, firmas y cierres;
+- la cobertura vigente ya exige coordinación entre instalaciones, contratación, finanzas, SST, continuidad y terceros sin doble cierre;
+- esta tarea desarrolla el contrato documental de obligaciones ya registradas y no introduce una obligación verificable nueva fuera de esa cobertura.
+
+---
+
+#### 104. Cobertura de prueba vigente reutilizada
+
+La tarea consume cobertura existente sin modificar el registro:
+
+- `TREQ-NEXO-017`, para identidad locativa estable, condición, disponibilidad, responsable, historial, cierre y reapertura;
+- `TREQ-NEXO-018`, para novedades, desviación, contención, verificación, disponibilidad, cierre e idempotencia offline;
+- `TREQ-INTEGRATION-018`, para coordinación de eventos y documentos de instalaciones entre NEXO, ORIGO, NUMERA, VISO/SST, continuidad y terceros, preservando ownership y evitando doble cierre.
+
+Esta enumeración es trazabilidad de cobertura vigente y no constituye actualización del registro.
+
+---
+
+#### 105. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea usa topología `DEFINE_ONCE` y no materializa producto |
+| LOCAL | NOT_EXECUTED | la incorporación y batería documental se ejecutan posteriormente sobre el checkout mediante el lifecycle canónico |
+| REMOTA | PASS | se verificaron `main` posterior al cierre de `NEXO-DOM-037`, continuidad, topología, políticas, owner, handoff de 037, `CAP-13.11`, brechas aplicables, proceso `VPROC-0055`, cobertura 04A, scripts de validación y AS-IS remoto de NEXO |
+| OPERATIVA | NOT_APPLICABLE | no se reportan, contienen, escalan, resuelven, liberan ni cierran novedades reales durante esta definición |
+| FÍSICA | NOT_APPLICABLE | `NEXO-DOM-038` está cubierto por `DEFINE_ONCE` y no crea instancia física propia |
+
+---
+
+#### 106. Criterios de aceptación
+
+La tarea queda documentalmente satisfecha cuando:
+
+- [x] existe un expediente único de novedad locativa;
+- [x] el sujeto físico es estable;
+- [x] reporte y hecho verificado permanecen separados;
+- [x] el triage queda definido;
+- [x] severidad no se confunde con prioridad;
+- [x] severidad no se confunde con disponibilidad;
+- [x] severidad no se confunde con escalamiento;
+- [x] no se inventa una taxonomía de severidad;
+- [x] contención y resolución permanecen separadas;
+- [x] contención conserva condición de salida;
+- [x] restricción e indisponibilidad permanecen separadas;
+- [x] cierre temporal no se confunde con retiro;
+- [x] responsable, ejecutor, verificador, liberador y cerrador son conceptualmente distintos;
+- [x] escalamiento no implica transferencia silenciosa;
+- [x] mantenimiento conserva su expediente;
+- [x] limpieza conserva su expediente;
+- [x] plagas conserva su expediente;
+- [x] servicios conservan su expediente;
+- [x] inspecciones conservan su expediente;
+- [x] metrología conserva su expediente;
+- [x] acceso físico conserva su expediente;
+- [x] obras conservan su expediente;
+- [x] SST conserva su expediente;
+- [x] continuidad conserva su expediente;
+- [x] ORIGO conserva contratación;
+- [x] NUMERA conserva hechos económicos;
+- [x] `VPROC-0055` se reutiliza sin máquina paralela;
+- [x] resolución, verificación, liberación y cierre permanecen separados;
+- [x] falsos cierres por foto, comentario o factura están prohibidos;
+- [x] reapertura es no destructiva;
+- [x] recurrencia no se fuerza siempre a reapertura;
+- [x] duplicados conservan evidencia;
+- [x] captura offline es idempotente;
+- [x] resultado desconocido obliga a reconciliar;
+- [x] historia es no destructiva;
+- [x] el AS-IS se clasifica como parcial;
+- [x] `NEXO-DOM-029..038` queda reconciliado;
+- [x] el mini-bloque de dominio queda cerrado documentalmente;
+- [x] BLOQUE K permanece abierto hacia autorización y experiencia;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica el registro de requisitos;
+- [x] no se autoriza materialización física.
+
+---
+
+#### 107. Límites
+
+Esta tarea no:
+
+- crea código productivo;
+- crea tablas;
+- crea migraciones;
+- modifica Supabase;
+- crea RLS;
+- crea RPC;
+- crea triggers;
+- crea Server Actions;
+- crea UI;
+- reporta novedades reales;
+- contiene novedades reales;
+- modifica disponibilidad real;
+- cierra espacios reales;
+- crea órdenes de mantenimiento;
+- ejecuta reparaciones;
+- ejecuta limpieza;
+- ejecuta control de plagas;
+- interrumpe servicios;
+- ejecuta inspecciones;
+- ejecuta calibraciones;
+- entrega accesos;
+- ejecuta obras;
+- crea casos SST;
+- activa continuidad;
+- contrata proveedores;
+- registra costos;
+- define una taxonomía de severidad sin fuente;
+- inventa responsables;
+- inventa SLA;
+- migra historia;
+- modifica requisitos de prueba;
+- autoriza una instancia física;
+- cierra el BLOQUE K completo.
+
+---
+
+#### 108. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-001 — Separar configuración administrativa de operación`
