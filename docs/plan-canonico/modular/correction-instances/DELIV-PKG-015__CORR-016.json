@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,105 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Agregar autorización nativa, checkpoint automático limpio y wiring del lifecycle corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir autorización nativa, EOL, checkpoint, idempotencia y worktree limpio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-starter.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar los nuevos comandos nativos y eliminar instrucciones que requieran edición manual del ledger."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-starter.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la proyección operativa del lifecycle corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-supabase-deploy.mjs",
+      "change": "CREATE",
+      "scope": "Crear despliegue Supabase gobernado, exacto, resumible, con dry-run, evidencia, checkpoint y drift."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-supabase-deploy.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir dry-run exacto, rechazo de migraciones no autorizadas, resumibilidad y candidato limpio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Exponer las nuevas operaciones canónicas y registrar sus regresiones."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Documentar autorización, checkpoint y despliegue remoto como operaciones nativas."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Normalización UTF-8/LF canónica previa a validación cuando corresponda."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/validate-eol-policy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validación EOL fail-closed."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Certificación remota sobre candidato limpio e inmutable."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/correction-branch-lifecycle.mjs",
+    "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+    "node --check scripts/docs/correction-supabase-deploy.mjs",
+    "node --test scripts/docs/correction-supabase-deploy.test.mjs",
+    "node --test scripts/docs/correction-starter.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:eol:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "npm test --silent",
+    "git --no-pager diff --check origin/main...HEAD"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "La corrección repara exclusivamente la orquestación del lifecycle de correcciones, autorización, checkpoint, normalización EOL y despliegue Supabase gobernado; no cambia capacidad funcional ni requisitos de negocio.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-16T19:58:00.134Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO DELIV-PKG-015::CORR-016",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-16T19:29:49.589Z"
 }
