@@ -9,26 +9,25 @@ import {
   READINESS_PATHS,
   instanceRequiresInPackageCandidateEvidence,
 } from './package-readiness-scanner.mjs';
+import {
+  SHELL_REPOSITORY,
+  isImplementationDerivedProjection,
+  normalizeImplementationPath,
+  resolveImplementationAuthorization,
+} from './implementation-path-policy.mjs';
 
 export const IMPLEMENTATION_DOCTOR_MODEL_ID = 'VENTO-IMPLEMENTATION-DOCTOR-V1';
 export const REQUIRED_MAIN_CHECK = 'VENTO Required Gate';
-export const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
+export { SHELL_REPOSITORY } from './implementation-path-policy.mjs';
 
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
-const DERIVED_PATHS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-  'scripts/docs/package-readiness/implementation-package-registry.json',
-]);
 
 function fail(message) {
   throw new Error(message);
 }
 
 function normalizeRepoPath(value) {
-  return String(value ?? '').trim().replaceAll('\\', '/').replace(/^\.\/+/u, '');
+  return normalizeImplementationPath(value);
 }
 
 function normalizeInstanceId(value) {
@@ -53,12 +52,6 @@ function readJson(root, relativePath) {
   const absolute = path.join(root, ...relativePath.split('/'));
   if (!fs.existsSync(absolute)) fail(`DOCTOR_FILE_MISSING:${relativePath}`);
   return JSON.parse(fs.readFileSync(absolute, 'utf8'));
-}
-
-function scopeMatches(scopePath, changedPath) {
-  const scope = normalizeRepoPath(scopePath).replace(/\/+$/u, '');
-  const changed = normalizeRepoPath(changedPath);
-  return Boolean(scope && changed && (changed === scope || changed.startsWith(`${scope}/`)));
 }
 
 function isPristinePendingRecord(root, relativePath) {
@@ -93,15 +86,12 @@ export function classifyDoctorWorktreePath({ root, instance, relativePath } = {}
   const pathValue = normalizeRepoPath(relativePath);
   if (!pathValue) return 'INVALID';
   if (pathValue === instanceRecordPath(instance.instance_id)) return 'OWN_LEDGER';
-  if (DERIVED_PATHS.has(pathValue)) return 'DERIVED_PROJECTION';
+  if (isImplementationDerivedProjection(pathValue)) return 'DERIVED_PROJECTION';
   if (isPristinePendingRecord(root, pathValue)) return 'PRISTINE_PENDING_INSTANCE';
 
-  for (const entry of instance?.authorized_changes ?? []) {
-    if (String(entry?.repo ?? '').trim() !== SHELL_REPOSITORY) continue;
-    if (!scopeMatches(entry?.path, pathValue)) continue;
-    const change = String(entry?.change ?? '').trim().toUpperCase();
-    return change === 'EXECUTE_ONLY' ? 'EXECUTE_ONLY_MUTATION' : 'AUTHORIZED_WRITABLE';
-  }
+  const authorization = resolveImplementationAuthorization(instance, pathValue);
+  if (authorization?.classification === 'EXECUTE_ONLY') return 'EXECUTE_ONLY_MUTATION';
+  if (authorization?.classification === 'WRITABLE') return 'AUTHORIZED_WRITABLE';
   return 'UNEXPECTED';
 }
 

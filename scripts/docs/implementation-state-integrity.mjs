@@ -8,6 +8,10 @@ import {
   assessImplementationCandidateLifecycleDelta,
   resolveValidationCandidateAnchor,
 } from './implementation-integration-model.mjs';
+import {
+  isImplementationDerivedProjection,
+  normalizeImplementationPath,
+} from './implementation-path-policy.mjs';
 
 export const IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID = 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1';
 
@@ -44,13 +48,6 @@ const NEXT_BY_STATUS = Object.freeze({
 });
 const LOCAL_VALIDATION_PATTERN = /^LOCAL_VALIDATION candidate=([0-9a-f]{40}) command=(.*) status=(PASS|NOT_APPLICABLE)$/u;
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
-const VERIFIED_RESUME_DERIVED_PATHS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-  'scripts/docs/package-readiness/implementation-package-registry.json',
-]);
 const IMPLEMENTATION_INSTANCE_DIRECTORY = 'docs/plan-canonico/modular/implementation-instances/';
 
 function unique(values) {
@@ -120,7 +117,7 @@ function gitRefCommit(root, ref) {
 }
 
 function normalizeRepoPath(value) {
-  return String(value ?? '').replaceAll('\\', '/').replace(/^\.\//u, '');
+  return normalizeImplementationPath(value);
 }
 
 function pristinePendingImplementationRecord(record, instanceKey) {
@@ -159,7 +156,7 @@ export function isVerifiedResumeDeltaAllowed({
   for (const rawPath of changedPaths) {
     const relativePath = normalizeRepoPath(rawPath);
     if (!relativePath) return false;
-    if (relativePath === ownLedger || VERIFIED_RESUME_DERIVED_PATHS.has(relativePath)) continue;
+    if (relativePath === ownLedger || isImplementationDerivedProjection(relativePath)) continue;
     if (relativePath.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)) {
       if (!pristinePendingImplementationRecord(pendingRecords[relativePath], instanceKey)) return false;
       continue;

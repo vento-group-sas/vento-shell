@@ -46,20 +46,19 @@ import {
   parsePorcelainPaths,
   resolveNpmInvocation,
 } from './task-branch-lifecycle.mjs';
+import {
+  implementationAuthorizedChanges,
+  implementationPathMatchesScope,
+  isImplementationDerivedProjection,
+  normalizeImplementationPath,
+  prepareAuthorizedMaterializationDirectories,
+} from './implementation-path-policy.mjs';
 
 const DEFAULT_BRANCH = 'main';
-const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
 const EVIDENCE_REQUEST_PATH = '.delivery/implementation-evidence-request.json';
 const IMPLEMENTATION_FINISH_LOCK_NAME = 'vento-implementation-finish.lock';
-const DERIVED_PROJECTIONS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-  'scripts/docs/package-readiness/implementation-package-registry.json',
-]);
 const TRANSIENT_NETWORK_PATTERN = /(?:unexpected EOF|HTTP\s+(?:408|425|429|499|500|502|503|504)\b|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up|connection reset|temporarily unavailable|timed?\s*out|Something went wrong while executing your query)/iu;
 
 function fail(message, code = 1) {
@@ -274,20 +273,19 @@ function branchChangedPaths(root) {
 function writablePhysicalPaths(instance) {
   const ownLedger = instanceRecordRelativePath(instance.instance_id);
   return new Set(
-    (instance.authorized_changes ?? [])
-      .filter((entry) => (
-        String(entry?.repo ?? '').trim() === SHELL_REPOSITORY
-        && String(entry?.change ?? '').trim().toUpperCase() !== 'EXECUTE_ONLY'
-      ))
-      .map((entry) => String(entry?.path ?? '').replaceAll('\\', '/').trim())
-      .filter((entry) => entry && entry !== ownLedger),
+    implementationAuthorizedChanges(instance)
+      .filter((entry) => entry.change !== 'EXECUTE_ONLY' && entry.path !== ownLedger)
+      .map((entry) => entry.path),
   );
 }
 
 export function assessAuthorizedMaterialization({ instance, changedPaths = [] } = {}) {
   const expected = [...writablePhysicalPaths(instance)].sort();
-  const observed = new Set((changedPaths ?? []).map((entry) => String(entry ?? '').replaceAll('\\', '/').trim()).filter(Boolean));
-  const missing = expected.filter((entry) => !observed.has(entry));
+  const observed = new Set((changedPaths ?? [])
+    .map(normalizeImplementationPath)
+    .filter(Boolean));
+  const missing = expected.filter((scopePath) => ![...observed]
+    .some((observedPath) => implementationPathMatchesScope(scopePath, observedPath)));
   return Object.freeze({
     ready: expected.length === 0 || missing.length === 0,
     expectedPaths: Object.freeze(expected),
@@ -613,7 +611,7 @@ function autoResolveDerivedMergeConflicts(root) {
     .map((entry) => entry.trim())
     .filter(Boolean);
   if (conflicts.length === 0) return false;
-  const real = conflicts.filter((entry) => !DERIVED_PROJECTIONS.has(entry));
+  const real = conflicts.filter((entry) => !isImplementationDerivedProjection(entry));
   if (real.length > 0) {
     fail(`MERGE_CONFLICT real: ${real.join(', ')}. Worktree preservado.`);
   }
@@ -634,7 +632,13 @@ function ensureCurrentMainContained(root, instance) {
   const dirty = worktreePaths(root);
   assertImplementationPaths(dirty, instance, { root, baseRef: `origin/${DEFAULT_BRANCH}` });
   if (dirty.length > 0) {
-    fail(`MAIN_RECONCILIATION_DIRTY_WORKTREE:${instance.instance_id}; commit candidate checkpoint and rerun advance. Stash is forbidden.`);
+    const checkpointed = commitAllowedWorktree(
+      root,
+      instance.instance_id,
+      instance,
+      `implementation(${instance.instance_id}): checkpoint before main reconciliation`,
+    );
+    if (!checkpointed) fail(`MAIN_RECONCILIATION_CHECKPOINT_FAILED:${instance.instance_id}`);
   }
 
   const merge = git(['merge', '--no-edit', `origin/${DEFAULT_BRANCH}`], {
@@ -1186,6 +1190,10 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   let materializedResult = null;
   if (state === 'MATERIALIZATION_GATE') {
     ensureImplementationBranch(root, instanceId);
+    const workspacePreparation = prepareAuthorizedMaterializationDirectories({
+      root,
+      instance: resolveInstance(root, instanceId).instance,
+    });
     const materialization = assessAuthorizedMaterialization({
       instance,
       changedPaths: [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
@@ -1196,6 +1204,8 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         STATUS: instance.status, EXECUTOR_STATE: state, EXPECTED_BRANCH: implementationBranchName(instanceId),
         NEXT_GATE: 'MATERIALIZATION_REQUIRED', HUMAN_GATE: 'NO',
         MISSING_AUTHORIZED_PATHS: materialization.missingPaths.join(',') || 'NONE',
+        AUTHORIZED_DIRECTORIES_PREPARED: workspacePreparation.prepared.length,
+        AUTHORIZED_DIRECTORIES_CREATED: workspacePreparation.created.join(',') || 'NONE',
         LEGACY_MATERIALIZED_FLAG: materialized ? 'IGNORED' : 'NOT_PROVIDED',
         SAME_COMMAND_RESUME: 'npm run docs:implementation:advance', RESUMABLE: 'SI',
       });

@@ -1,3 +1,10 @@
+import {
+  implementationAuthorizedChanges,
+  implementationPathMatchesScope,
+  isImplementationDerivedProjection,
+  normalizeImplementationPath,
+} from './implementation-path-policy.mjs';
+
 export const IMPLEMENTATION_INTEGRATION_IMPACT_MODEL_ID =
   'VENTO-IMPLEMENTATION-INTEGRATION-IMPACT-V1';
 
@@ -6,16 +13,7 @@ export const IMPLEMENTATION_INTEGRATION_EVIDENCE_DECISIONS = Object.freeze([
   'REVALIDATE_PHYSICAL',
 ]);
 
-const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
 const IMPLEMENTATION_DOCTOR_SCRIPT = 'node scripts/docs/implementation-doctor.mjs';
-
-const DERIVED_INTEGRATION_PATHS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-  'scripts/docs/package-readiness/implementation-package-registry.json',
-]);
 
 const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'docs/plan-canonico/modular/task-development-policy.json',
@@ -26,6 +24,8 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/docs/implementation-branch-lifecycle.test.mjs',
   'scripts/docs/implementation-execution-coordinator.mjs',
   'scripts/docs/implementation-execution-coordinator.test.mjs',
+  'scripts/docs/implementation-path-policy.mjs',
+  'scripts/docs/implementation-path-policy.test.mjs',
   'scripts/docs/implementation-state-integrity.mjs',
   'scripts/docs/implementation-state-integrity.test.mjs',
   'scripts/docs/implementation-validation-engine.mjs',
@@ -48,7 +48,7 @@ function fail(message) {
 }
 
 function normalizeRepoPath(value) {
-  return String(value ?? '').trim().replaceAll('\\', '/').replace(/^\.\/+/u, '');
+  return normalizeImplementationPath(value);
 }
 
 function uniqueSorted(values) {
@@ -64,13 +64,6 @@ function stableJson(value) {
   return JSON.stringify(value);
 }
 
-function scopeMatches(scopePath, changedPath) {
-  const scope = normalizeRepoPath(scopePath).replace(/\/+$/u, '');
-  const changed = normalizeRepoPath(changedPath);
-  if (!scope || !changed) return false;
-  return changed === scope || changed.startsWith(`${scope}/`);
-}
-
 function ownLedgerPath(instance) {
   const [taskId, instanceKey] = String(instance?.instance_id ?? '').split('::');
   if (!taskId || !instanceKey) return null;
@@ -78,19 +71,10 @@ function ownLedgerPath(instance) {
 }
 
 function authorizedScope(instance) {
-  const writable = [];
-  const executeOnly = [];
-  for (const entry of instance?.authorized_changes ?? []) {
-    if (String(entry?.repo ?? '').trim() !== SHELL_REPOSITORY) continue;
-    const relativePath = normalizeRepoPath(entry?.path);
-    if (!relativePath) continue;
-    const change = String(entry?.change ?? '').trim().toUpperCase();
-    if (change === 'EXECUTE_ONLY') executeOnly.push(relativePath);
-    else writable.push(relativePath);
-  }
+  const changes = implementationAuthorizedChanges(instance);
   return {
-    writable: uniqueSorted(writable),
-    execute_only: uniqueSorted(executeOnly),
+    writable: uniqueSorted(changes.filter((entry) => entry.change !== 'EXECUTE_ONLY').map((entry) => entry.path)),
+    execute_only: uniqueSorted(changes.filter((entry) => entry.change === 'EXECUTE_ONLY').map((entry) => entry.path)),
   };
 }
 
@@ -235,7 +219,7 @@ export function classifyImplementationIntegrationImpact({
       continue;
     }
 
-    if (DERIVED_INTEGRATION_PATHS.has(relativePath)) {
+    if (isImplementationDerivedProjection(relativePath)) {
       classify(relativePath, 'DERIVED_PROJECTION', true);
       continue;
     }
@@ -270,13 +254,13 @@ export function classifyImplementationIntegrationImpact({
       continue;
     }
 
-    const writableMatch = scope.writable.find((entry) => scopeMatches(entry, relativePath));
+    const writableMatch = scope.writable.find((entry) => implementationPathMatchesScope(entry, relativePath));
     if (writableMatch) {
       classify(relativePath, `AUTHORIZED_WRITABLE_OVERLAP:${writableMatch}`, false);
       continue;
     }
 
-    const executeMatch = scope.execute_only.find((entry) => scopeMatches(entry, relativePath));
+    const executeMatch = scope.execute_only.find((entry) => implementationPathMatchesScope(entry, relativePath));
     if (executeMatch) {
       classify(relativePath, `AUTHORIZED_EXECUTE_ONLY_DEPENDENCY_CHANGED:${executeMatch}`, false);
       continue;

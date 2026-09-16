@@ -949,16 +949,27 @@ test('C4 detecta materializacion por paths autorizados sin --materialized', () =
     authorized_changes: [
       { repo: 'vento-group-sas/vento-shell', path: 'tests/packages/GAP-PKG-002/a.ts', change: 'CREATE' },
       { repo: 'vento-group-sas/vento-shell', path: 'tests/packages/GAP-PKG-002/b.ts', change: 'MODIFY' },
+      { repo: 'vento-group-sas/vento-shell', path: 'tests/packages/GAP-PKG-002/generated', change: 'CREATE' },
       { repo: 'vento-group-sas/vento-shell', path: 'scripts/docs/implementation-branch-lifecycle.mjs', change: 'EXECUTE_ONLY' },
     ],
   };
   const ready = assessAuthorizedMaterialization({
     instance,
-    changedPaths: ['tests/packages/GAP-PKG-002/a.ts', 'tests/packages/GAP-PKG-002/b.ts'],
+    changedPaths: [
+      'tests/packages/GAP-PKG-002/a.ts',
+      'tests/packages/GAP-PKG-002/b.ts',
+      'tests/packages/GAP-PKG-002/generated/contract.ts',
+    ],
   });
   assert.equal(ready.ready, true);
   assert.deepEqual(ready.missingPaths, []);
-  const pending = assessAuthorizedMaterialization({ instance, changedPaths: ['tests/packages/GAP-PKG-002/a.ts'] });
+  const pending = assessAuthorizedMaterialization({
+    instance,
+    changedPaths: [
+      'tests/packages/GAP-PKG-002/a.ts',
+      'tests/packages/GAP-PKG-002/generated/contract.ts',
+    ],
+  });
   assert.equal(pending.ready, false);
   assert.deepEqual(pending.missingPaths, ['tests/packages/GAP-PKG-002/b.ts']);
 });
@@ -1029,7 +1040,9 @@ test('C4 elimina stash, elimina gate --materialized y serializa finish contra gi
   assert.doesNotMatch(source, /if \(!materialized\)/u);
   assert.match(source, /MATERIALIZATION_REQUIRED/u);
   assert.match(source, /LEGACY_MATERIALIZED_FLAG/u);
-  assert.match(source, /MAIN_RECONCILIATION_DIRTY_WORKTREE/u);
+  assert.doesNotMatch(source, /MAIN_RECONCILIATION_DIRTY_WORKTREE/u);
+  assert.match(source, /checkpoint before main reconciliation/u);
+  assert.match(source, /prepareAuthorizedMaterializationDirectories/u);
   assert.match(source, /--git-common-dir/u);
   assert.match(source, /IMPLEMENTATION_FINISH_LOCK_ACTIVE/u);
   assert.match(source, /EXTERNAL_EVIDENCE_REQUIRED/u);

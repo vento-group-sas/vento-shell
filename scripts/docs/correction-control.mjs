@@ -12,6 +12,7 @@ import { parseTaskBlocks } from './format-canonical-task.mjs';
 import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 import { assertImplementationPaths, implementationBranchName } from './implementation-branch-lifecycle.mjs';
 import { READINESS_PATHS, validateInPackageCandidateEvidence, targetRequiresSupabaseFoundation } from './package-readiness-scanner.mjs';
+import { IMPLEMENTATION_DERIVED_PROJECTION_PATHS } from './implementation-path-policy.mjs';
 
 export const CORRECTION_POLICY_RELATIVE_PATH = 'scripts/docs/correction-control.json';
 export const CORRECTION_RECORDS_DIRECTORY = 'docs/plan-canonico/modular/correction-instances';
@@ -30,11 +31,7 @@ const GIT_MAX_BUFFER_BYTES = 64 * 1024 * 1024;
 const GIT_FAILURE_DIAGNOSTIC_LIMIT = 4000;
 export const DERIVED_CORRECTION_PROJECTIONS = new Set([
     CORRECTION_STARTER_PROJECTION,
-    'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-    'docs/plan-canonico/modular/active-sequence.json',
-    'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-    'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-    'scripts/docs/package-readiness/implementation-package-registry.json',
+    ...IMPLEMENTATION_DERIVED_PROJECTION_PATHS,
 ]);
 const OPEN_STATUSES = new Set([
     'PENDING_AUTHORIZATION',

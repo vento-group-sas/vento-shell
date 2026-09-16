@@ -10,6 +10,7 @@ import {
   normalizeInstanceId,
 } from './implementation-branch-lifecycle.mjs';
 import { instanceRecordRelativePath } from './implementation-control.mjs';
+import { isPlanDerivedProjection } from './implementation-path-policy.mjs';
 
 const TRANSVERSAL_PLAN_FILES = new Set([
   'docs/plan-canonico/modular/01_PROTOCOLO.md',
@@ -28,13 +29,6 @@ const TRANSVERSAL_PLAN_FILES = new Set([
   'docs/plan-canonico/modular/task-format-policy.json',
   'docs/plan-canonico/modular/task-work-topology.json',
 ]);
-const DERIVED_PLAN_PROJECTIONS = new Set([
-  'docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md',
-  'docs/plan-canonico/modular/active-sequence.json',
-  'docs/plan-canonico/modular/.generated/REGISTRO_GLOBAL_DE_TAREAS.md',
-  'docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md',
-]);
-
 const IMPLEMENTATION_INSTANCES_DIRECTORY = 'docs/plan-canonico/modular/implementation-instances';
 
 function loadImplementationInstance(root, instanceId) {
@@ -104,7 +98,7 @@ export function classifyCommitPath(filePath) {
   if (normalized.startsWith('docs/plan-canonico/modular/package-gate-instances/')) {
     return 'TRANSVERSAL';
   }
-  if (DERIVED_PLAN_PROJECTIONS.has(normalized)) return 'PROJECTION';
+  if (isPlanDerivedProjection(normalized)) return 'PROJECTION';
   if (/^docs\/[^/]+\.md$/u.test(normalized)) return 'OPERATIONS_DOC';
   if (
     normalized === '.gitattributes'
