@@ -201,6 +201,7 @@ Operaciones canónicas:
 - `docs:correction:register`: registra la corrección en main.
 - `docs:correction:authorize`: materializa la aprobación humana explícita y el alcance exacto.
 - `docs:correction:start`: abre la rama, normaliza EOL, valida, commitea, publica y debe terminar con worktree limpio.
+- `docs:correction:advance`: entrada state-aware normal después de la materialización; ejecuta quality:repair exactamente una vez, transiciona a IMPLEMENTED, ejecuta validation_commands fail-fast, sella VERIFIED y reanuda finish.
 - `docs:correction:checkpoint`: convierte cambios autorizados y proyecciones del lifecycle en un candidato Git limpio e inmutable antes de cualquier certificación externa.
 - `docs:correction:supabase:deploy`: ejecuta despliegues Supabase físicos autorizados de forma resumible.
 - `docs:correction:finish`: publica únicamente una corrección VERIFIED.
