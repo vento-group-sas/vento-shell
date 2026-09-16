@@ -568,6 +568,14 @@ test('finish de SHELL-CI-020 falla cerrado ante fundación pendiente', () => {
   assert.equal(assertCi020PhysicalPrerequisitesForFinish({ instance, readiness: ready }), true);
 });
 
+test('finish CI020 valida MRP015-050 contra el candidato fisico sellado y no contra HEAD de lifecycle', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-branch-lifecycle.mjs', 'utf8');
+  assert.match(
+    source,
+    /validateInPackageCandidateEvidence\(\{[\s\S]*?currentHeadSha:\s*sealedImplementationCandidate\(instance\)/u,
+  );
+});
+
 test('package registry persistente es proyección derivada física', () => {
   const instance = {
     instance_id: 'SHELL-CON-001::GLOBAL',
