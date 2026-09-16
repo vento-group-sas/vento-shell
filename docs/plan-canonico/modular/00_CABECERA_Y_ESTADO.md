@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1204** |
+| Tareas aprobadas | **1205** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **392** |
+| Tareas no iniciadas | **391** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **75.44% (1204/1596)** |
+| Porcentaje de completamiento | **75.50% (1205/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía** |
-| Tarea actual | **NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre** |
+| Última tarea aprobada | **NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre** |
+| Tarea actual | **NEXO-AUTH-001 — Separar configuración administrativa de operación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-AUTH-001 — Separar configuración administrativa de operación** |
+| Siguiente tarea | **NEXO-AUTH-002 — Corregir bypass administrativo de remisiones** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 62 de 127 aprobadas; NEXO-DOM-038 pendiente** |
+| Progreso del bloque | **BLOQUE K: 63 de 127 aprobadas; NEXO-AUTH-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-020::GAP-PKG-019** |
-| Carril documental | **ACTIVO — NEXO-DOM-038** |
+| Carril documental | **ACTIVO — NEXO-AUTH-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-020::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-DOM-037` — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía |
-| Tarea actual | `NEXO-DOM-038` — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre — **NO INICIADA** |
-| Siguiente tarea | `NEXO-AUTH-001` — Separar configuración administrativa de operación |
+| Última aprobada | `NEXO-DOM-038` — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre |
+| Tarea actual | `NEXO-AUTH-001` — Separar configuración administrativa de operación — **NO INICIADA** |
+| Siguiente tarea | `NEXO-AUTH-002` — Corregir bypass administrativo de remisiones |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 62 DE 127 APROBADAS — ACTUAL NEXO-DOM-038** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 63 DE 127 APROBADAS — ACTUAL NEXO-AUTH-001** |
 | Implementación física | **SHELL-CI-020::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-DOM-037 — Definir obras, adecuaciones, contratistas, permisos, afectación operativa, recepción y garantía
-        ↓
-TAREA ACTUAL
 NEXO-DOM-038 — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-AUTH-001 — Separar configuración administrativa de operación
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-AUTH-002 — Corregir bypass administrativo de remisiones
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 62 de 127 tareas aprobadas
+BLOQUE K — 63 de 127 tareas aprobadas
 ```
