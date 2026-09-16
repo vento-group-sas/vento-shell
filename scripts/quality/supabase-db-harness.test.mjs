@@ -13,6 +13,7 @@ import {
     parseConfiguredPostgresMajor,
     parsePgProveSummary,
     resolveNpmInvocation,
+    summarizeFailureOutput,
     validatePackageScripts,
 } from './supabase-db-harness.mjs';
 
@@ -117,6 +118,29 @@ test('parsea unicamente resumen pg_prove PASS con conteos', () => {
         { files: 5, tests: 20, pass: true },
     );
     assert.throws(() => parsePgProveSummary('Files=5, Tests=20\nResult: FAIL\n'), /PGTAP_SUMMARY_INVALID/u);
+});
+
+test('resume el diagnostico real antes de la cola y redacta secretos', () => {
+    const summary = summarizeFailureOutput({
+        stdout: [
+            'database/026_contract.test.sql ..',
+            '# Failed test 5: direct routine inventory',
+            '# have: 281',
+            '# want: 279',
+            ...Array.from({ length: 14 }, (_, index) => `noise-${index}`),
+            'Files=24, Tests=1905',
+            'Result: FAIL',
+        ].join('\n'),
+        stderr: 'ERROR SQLSTATE 42501 at postgresql://admin:secret@127.0.0.1:54322/postgres eyJabcdefghijklmnopqrstuvwxyz123456',
+    });
+
+    assert.match(summary, /Failed test 5/u);
+    assert.match(summary, /have: 281/u);
+    assert.match(summary, /want: 279/u);
+    assert.match(summary, /Result: FAIL/u);
+    assert.match(summary, /\[REDACTED_DB_URL\]/u);
+    assert.match(summary, /\[REDACTED_TOKEN\]/u);
+    assert.doesNotMatch(summary, /admin:secret/u);
 });
 
 test('package.json expone las tres entradas estables del harness', () => {
