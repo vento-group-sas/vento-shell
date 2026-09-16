@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1205** |
+| Aprobadas | **1206** |
 | En propuesta | **0** |
-| No iniciadas | **391** |
+| No iniciadas | **390** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **75.50% (1205/1596)** |
+| Porcentaje de completamiento | **75.56% (1206/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **391** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1106** |
+| ⏸ NO_EVALUADA | **390** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1107** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-DOM-038` — Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-001` — Separar configuración administrativa de operación | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-002` — Corregir bypass administrativo de remisiones | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-001` — Separar configuración administrativa de operación | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-002` — Corregir bypass administrativo de remisiones | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-003` — Corregir inventory.remissions.all_sites | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -932,7 +932,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | EXISTING_NEEDS_ADOPTION_EVIDENCE | `AUTH-SRV-016` | Normalizar errores de autorización | — | — | `bloques/J_ACCIONES_DE_SERVIDOR/03_AUDITORIA_ERRORES_Y_HELPERS_COMPARTIDOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | EXISTING_NEEDS_ADOPTION_EVIDENCE | `AUTH-SRV-017` | Crear helpers server compartidos | — | — | `bloques/J_ACCIONES_DE_SERVIDOR/03_AUDITORIA_ERRORES_Y_HELPERS_COMPARTIDOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | EXISTING_NEEDS_ADOPTION_EVIDENCE | `AUTH-SRV-018` | Revisar acciones administrativas sin turno | — | — | `bloques/J_ACCIONES_DE_SERVIDOR/03_AUDITORIA_ERRORES_Y_HELPERS_COMPARTIDOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-001` | Separar configuración administrativa de operación | — | — | `bloques/K_NEXO/00_INTRO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-001` | Separar configuración administrativa de operación | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-002` | Corregir bypass administrativo de remisiones | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-003` | Corregir inventory.remissions.all_sites | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-004` | Proteger creación de solicitudes | — | — | `bloques/K_NEXO/00_INTRO.md` |
