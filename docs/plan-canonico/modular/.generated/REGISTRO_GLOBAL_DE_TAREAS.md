@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1209** |
+| Aprobadas | **1210** |
 | En propuesta | **0** |
-| No iniciadas | **387** |
+| No iniciadas | **386** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **75.75% (1209/1596)** |
+| Porcentaje de completamiento | **75.81% (1210/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **387** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1110** |
+| ⏸ NO_EVALUADA | **386** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1111** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-004` — Proteger creación de solicitudes | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-005` — Proteger edición y cancelación | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-006` — Proteger preparación | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-005` — Proteger edición y cancelación | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-006` — Proteger preparación | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-007` — Proteger producción vinculada | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -936,7 +936,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-002` | Corregir bypass administrativo de remisiones | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-003` | Corregir inventory.remissions.all_sites | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-004` | Proteger creación de solicitudes | — | — | `bloques/K_NEXO/00_INTRO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-005` | Proteger edición y cancelación | — | — | `bloques/K_NEXO/00_INTRO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-005` | Proteger edición y cancelación | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-006` | Proteger preparación | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-007` | Proteger producción vinculada | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-008` | Proteger despacho | — | — | `bloques/K_NEXO/00_INTRO.md` |
