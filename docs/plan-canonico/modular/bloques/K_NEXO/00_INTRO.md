@@ -483,7 +483,709 @@ Esta tarea no modifica código, Supabase, migraciones, RLS, RPC, grants, catálo
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-002 — Corregir bypass administrativo de remisiones`
-### [ ] NEXO-AUTH-002 — Corregir bypass administrativo de remisiones
+### ✅ NEXO-AUTH-002 — Corregir bypass administrativo de remisiones
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-001 — Separar configuración administrativa de operación
+**Tarea siguiente:** NEXO-AUTH-003 — Corregir inventory.remissions.all_sites
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para eliminar el bypass administrativo de remisiones en el carril operativo, impedir que nombres de rol o permisos base satisfagan capacidades `OPERATIONAL_ONLY` y preservar separadamente las capacidades administrativas legítimas
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-002::<implementation_unit_id>` después de que `DELIV-PKG-025::<package_id>` asigne la unidad, el paquete propietario supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Eliminar como semántica válida cualquier bypass administrativo que permita a una identidad con rol base privilegiado ejecutar capacidades de remisiones clasificadas como operativas sin satisfacer el carril operativo completo.
+
+La regla objetivo queda:
+
+```text
+ROL ADMINISTRATIVO
++
+CAPACIDAD OPERATIONAL_ONLY
++
+SIN CONTEXTO OPERATIVO COMPLETO
+=
+DENY
+```
+
+La tarea preserva las capacidades administrativas legítimas de remisiones cuando el permiso canónico admita carril base.
+
+#### 2. Problema canónico
+
+El estado auditado contiene dos mecanismos capaces de convertir autoridad administrativa en autorización operativa:
+
+1. un bypass directo asociado a roles base privilegiados dentro de la resolución del contexto operativo;
+2. un bypass configurable mediante permiso base de aplicación.
+
+Ambos mecanismos son incompatibles con un permiso cuya modalidad sea `OPERATIONAL_ONLY` cuando evitan turno, check-in, rol operativo, territorio o permiso operativo exacto.
+
+#### 3. Evidencia AS-IS consolidada
+
+La auditoría canónica registra que el evaluador operativo puede aplicar `bypass_applied = true` antes de completar la evaluación operativa ordinaria.
+
+También registra que el bypass administrativo observado puede evitar:
+
+- turno activo;
+- check-in;
+- rol operativo;
+- fila en la matriz de permisos operativos;
+- permiso operativo concreto.
+
+La auditoría identifica además que la ruta de bypass puede devolver autorización incluso ante una cadena no vacía que no represente una capacidad canónica válida. Esa conducta no forma parte del modelo objetivo.
+
+#### 4. Bypass directo por nombre de rol
+
+El nombre del rol base no es una fuente suficiente de autorización final.
+
+Queda prohibida una regla equivalente a:
+
+```text
+role in {propietario, gerente_general}
+→ bypass_applied = true
+→ ALLOW operacional
+```
+
+La jerarquía humana o administrativa puede determinar qué permisos base existen en su matriz, pero no sustituye la modalidad del permiso solicitado.
+
+#### 5. Bypass por permiso administrativo
+
+Un permiso base de aplicación tampoco puede convertir una capacidad `OPERATIONAL_ONLY` en capacidad administrativa.
+
+La regla queda:
+
+```text
+BASE PERMISSION
+!=
+OPERATIONAL BYPASS
+```
+
+Cuando una política de aplicación declare un permiso de bypass, ese permiso solo podrá intervenir en decisiones cuyo contrato permita explícitamente carril base. No podrá omitir prerrequisitos de una capacidad exclusivamente operativa.
+
+#### 6. Caso NEXO actualmente asociado a bypass
+
+La configuración auditada de NEXO contiene una referencia de bypass basada en `inventory.remissions.all_sites`.
+
+Esta tarea no redefine el significado, alcance, catálogo, naming ni destino final de esa capacidad. Esa responsabilidad pertenece a `NEXO-AUTH-003`.
+
+Para `NEXO-AUTH-002` se fija únicamente una restricción:
+
+```text
+inventory.remissions.all_sites
+NO PUEDE
+convertir una capacidad OPERATIONAL_ONLY
+en una autorización base
+```
+
+#### 7. Modalidad autoritativa
+
+La modalidad canónica del permiso prevalece sobre:
+
+- nombre del rol;
+- ubicación de una fila en una matriz;
+- helper invocado primero;
+- presencia de un bypass;
+- selección de sede;
+- pantalla administrativa;
+- pantalla operativa;
+- comportamiento histórico del consumidor.
+
+Para remisiones, el evaluador debe consultar la modalidad vigente antes de decidir qué carril puede satisfacer la solicitud.
+
+#### 8. `nexo.inventory.remissions.request`
+
+`nexo.inventory.remissions.request` permanece clasificado como `OPERATIONAL_ONLY`.
+
+Por tanto:
+
+```text
+BASE_ALLOW
+→ IGNORAR PARA ESTA DECISIÓN
+```
+
+y:
+
+```text
+OPERATIONAL_ALLOW COMPLETO
+→ CANDIDATO A ALLOW
+```
+
+Un rol base administrativo no recibe esta capacidad por su jerarquía.
+
+#### 9. Roles administrativos privilegiados
+
+`propietario` y `gerente_general` conservan sus responsabilidades administrativas permanentes, pero el nombre del rol no los convierte en actores operativos.
+
+Para una acción `OPERATIONAL_ONLY`, ambos quedan sujetos a las mismas clases de prerrequisitos operativos que cualquier otro actor:
+
+- identidad efectiva válida;
+- turno publicado y vigente cuando aplique;
+- check-in cuando aplique;
+- rol operativo compatible;
+- sede y área compatibles;
+- permiso operativo exacto;
+- recurso válido;
+- ausencia de denegaciones.
+
+No se crea una excepción general por rango.
+
+#### 10. Otros roles base
+
+La misma regla aplica a `gerente`, `supervisor` y cualquier otro rol base.
+
+Una matriz base puede conceder capacidades `BASE_ONLY` o el componente base de modalidades híbridas cuando corresponda, pero no puede satisfacer por sí sola una capacidad `OPERATIONAL_ONLY`.
+
+#### 11. Capacidades administrativas legítimas de remisiones
+
+La corrección del bypass no elimina el carril base de las capacidades que sí lo admiten.
+
+Por ejemplo, una capacidad de consulta o actualización clasificada como `BASE_OR_OPERATIONAL` puede continuar autorizándose mediante un carril base completo cuando:
+
+- exista el permiso base exacto;
+- el scope sea compatible;
+- el recurso esté cubierto;
+- el estado permita la acción;
+- no exista una denegación aplicable.
+
+La eliminación del bypass no debe convertir todas las remisiones en funciones exclusivamente operativas.
+
+#### 12. No degradar administración por retirar el bypass
+
+Se prohíbe corregir el bypass imponiendo turno o check-in universal a toda acción de remisiones.
+
+La corrección debe preservar:
+
+```text
+BASE_OR_OPERATIONAL
+→ base completo OR operativo completo
+```
+
+y:
+
+```text
+OPERATIONAL_ONLY
+→ solo operativo completo
+```
+
+La seguridad se obtiene respetando la modalidad, no bloqueando indiscriminadamente el carril administrativo.
+
+#### 13. Validación de permiso exacto
+
+Antes de cualquier excepción o decisión positiva, el código solicitado debe corresponder a una capacidad canónica activa y resoluble.
+
+No se admite:
+
+```text
+texto no vacío
+→ permiso válido
+```
+
+Una clave inexistente, retirada, ambigua o no perteneciente al catálogo vigente produce `DENY` o error de configuración según el contrato transversal aplicable.
+
+#### 14. `bypass_applied`
+
+`bypass_applied` no constituye una fuente de autoridad.
+
+Si el campo se conserva temporalmente por compatibilidad, deberá interpretarse como evidencia diagnóstica de una ruta legacy o de transición, nunca como:
+
+- permiso;
+- modalidad;
+- scope;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- `ALLOW`.
+
+Un consumidor no podrá autorizar una acción únicamente porque el campo sea verdadero.
+
+#### 15. `can_operate`
+
+`can_operate` tampoco sustituye la evaluación del permiso exacto.
+
+Un contexto operativo utilizable indica que el actor puede participar en operación bajo determinadas condiciones; no significa que posea todas las capacidades operativas de NEXO.
+
+La decisión final exige la clave exacta y su matriz correspondiente.
+
+#### 16. Rol base y rol operativo
+
+Los dos roles permanecen separados:
+
+```text
+ROL BASE
+→ responsabilidad permanente
+
+ROL OPERATIVO
+→ función temporal del turno
+```
+
+Para una capacidad `OPERATIONAL_ONLY`, el rol base no se consulta como sustituto del rol operativo.
+
+Un administrador que además trabaja operativamente debe obtener la autorización desde su contexto operativo real.
+
+#### 17. Turno y check-in
+
+Cuando el contrato operativo de la aplicación exija turno y check-in, ningún bypass administrativo podrá omitirlos.
+
+La ausencia de cualquiera de esos elementos se conserva como causa de bloqueo propia y no se reclasifica como autorización administrativa.
+
+#### 18. Sede y área efectivas
+
+La sede y el área operativas deben proceder de fuentes autoritativas del contexto operativo.
+
+No se podrán fabricar desde:
+
+- `selected_site_id`;
+- cookie de navegación;
+- query string;
+- sede primaria;
+- última sede utilizada;
+- cobertura administrativa;
+- nombre del rol base.
+
+La especialización completa de sede y área efectivas permanece en `NEXO-AUTH-015`.
+
+#### 19. Scope
+
+El retiro del bypass no elimina los scopes.
+
+Un permiso operativo exacto sigue necesitando un scope compatible con la sede, área, tipo o recurso cuando el contrato así lo exija.
+
+Una coincidencia de permiso sin scope suficiente produce denegación.
+
+#### 20. Contrato de recurso
+
+La autorización de una remisión debe validar el recurso real afectado.
+
+Cuando el recurso relacione dos sedes, la autoridad sobre un extremo no concede automáticamente autoridad sobre el otro.
+
+Las comprobaciones de recurso no pueden ser sustituidas por el hecho de ser propietario, gerente o usuario con visibilidad multisede.
+
+#### 21. Servidor como frontera de autoridad
+
+La decisión efectiva se recalcula en servidor.
+
+UI, query params, formularios, rutas, estado de React, cookies de navegación y visibilidad de botones pueden expresar intención o navegación, pero no la autorización final.
+
+#### 22. Interfaz de remisiones
+
+La interfaz puede mostrar opciones distintas para administración y operación.
+
+Sin embargo:
+
+```text
+BOTÓN VISIBLE
+!=
+ALLOW
+```
+
+y:
+
+```text
+BOTÓN OCULTO
+!=
+DENY DE SERVIDOR
+```
+
+La interfaz debe proyectar la misma modalidad y razones que la frontera autoritativa, sin introducir un bypass propio.
+
+#### 23. Server Actions de remisiones
+
+Toda Server Action que produzca efectos debe validar la capacidad exacta y el carril compatible antes del primer efecto empresarial.
+
+Invocar un helper operativo no es suficiente si ese helper todavía incorpora un bypass administrativo incompatible con la modalidad.
+
+La protección especializada de creación, edición, cancelación y demás acciones se desarrolla en sus tareas propietarias posteriores.
+
+#### 24. RPC de autorización
+
+Una RPC de autorización operativa debe:
+
+1. resolver una clave canónica válida;
+2. identificar la modalidad;
+3. resolver el contexto operativo requerido;
+4. comprobar permiso operativo exacto;
+5. aplicar scope y recurso;
+6. respetar denegaciones;
+7. devolver razones reproducibles.
+
+No debe retornar `true` únicamente por pertenecer a una lista de roles privilegiados.
+
+#### 25. RLS y acceso a datos
+
+RLS, funciones `SECURITY DEFINER` y otras fronteras de datos deben producir una decisión compatible con la capa de aplicación.
+
+La eliminación del bypass en UI o Server Action no se considera suficiente si una RPC o política continúa concediendo la misma operación por una ruta más permisiva.
+
+#### 26. Llamadas directas
+
+El contrato debe sostenerse aunque el actor:
+
+- llame directamente la Server Action;
+- manipule el formulario;
+- altere la URL;
+- invoque una RPC;
+- reutilice una solicitud capturada;
+- omita la navegación prevista.
+
+La seguridad no depende del camino visual.
+
+#### 27. Dispositivos compartidos
+
+Un dispositivo compartido no hereda privilegios administrativos del principal técnico ni de quien configuró el equipo.
+
+Para una acción de remisiones `OPERATIONAL_ONLY`, la autoridad efectiva procede del actor humano identificado, su contexto operativo y los límites del dispositivo.
+
+La especialización pertenece a `NEXO-AUTH-016`.
+
+#### 28. Simulación y role override
+
+Una simulación o role override puede mostrar cómo respondería un contexto alternativo, pero no convierte ese resultado en autorización real.
+
+No se admite:
+
+```text
+SIMULATED ALLOW
+→ REAL OPERATION
+```
+
+La integración estricta se reserva a `NEXO-AUTH-017`.
+
+#### 29. Denegaciones
+
+Una denegación estructural, territorial, de recurso, dispositivo, estado o contexto no puede ser anulada por el bypass administrativo.
+
+Las razones permanecen separadas y auditables.
+
+Una incapacidad de resolver contexto no se convierte en `ALLOW` por jerarquía.
+
+#### 30. Fail closed
+
+Si no puede demostrarse:
+
+- clave canónica;
+- modalidad;
+- actor;
+- contexto requerido;
+- permiso;
+- scope;
+- territorio;
+- recurso;
+- estado;
+
+la operación no se ejecuta.
+
+El fallback seguro nunca es el bypass administrativo.
+
+#### 31. Fallo técnico frente a denegación
+
+Una indisponibilidad técnica del evaluador no se representa como permiso denegado estable ni como autorización.
+
+Debe conservarse la diferencia entre:
+
+```text
+DENY
+UNAVAILABLE
+INVALID_CONTEXT
+INVALID_PERMISSION
+```
+
+La experiencia posterior podrá mapear esos estados a mensajes seguros sin perder la causa interna.
+
+#### 32. Auditoría
+
+Cada decisión afectada por la eliminación del bypass deberá ser correlacionable, según aplicabilidad, con:
+
+- principal;
+- actor;
+- permiso;
+- modalidad;
+- carril;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- recurso;
+- decisión;
+- razones;
+- versión contractual;
+- timestamp.
+
+La auditoría registra también denegaciones.
+
+#### 33. Frescura y concurrencia
+
+Cambios de rol, permiso, turno, check-in, sede, área, dispositivo, modalidad o recurso invalidan decisiones afectadas.
+
+Una autorización calculada antes de un cambio relevante no puede reutilizarse para ejecutar después del cambio sin revalidación.
+
+#### 34. Offline y replay
+
+Una intención operativa capturada offline debe reautorizarse al sincronizar.
+
+Un replay no puede conservar el beneficio de un bypass administrativo retirado ni transformar una decisión histórica en autoridad vigente.
+
+#### 35. No hardcodear jerarquías
+
+La materialización objetivo no sustituirá una lista de roles privilegiados por otra lista equivalente.
+
+Se prohíbe que una nueva comparación como:
+
+```text
+if role is management
+```
+
+sea la fuente de `ALLOW` para remisiones operativas.
+
+La autoridad debe proceder de permiso, modalidad, contexto y recurso.
+
+#### 36. Estado actual de `propietario`
+
+El contrato canónico concede al rol base `propietario` diversas capacidades administrativas de NEXO, pero no le asigna `nexo.inventory.remissions.request` como capacidad base.
+
+Por tanto, la condición de propietario no basta para solicitar una remisión operativa.
+
+#### 37. Estado actual de `gerente_general`
+
+El contrato canónico aplica la misma frontera a `gerente_general`: la capacidad de solicitar remisiones no se concede desde su rol base.
+
+Si el mismo humano participa en una operación, debe resolver un carril operativo válido.
+
+#### 38. Lectura y actualización administrativa
+
+La corrección no revoca por inferencia capacidades de remisiones que el catálogo clasifique como `BASE_OR_OPERATIONAL`.
+
+`view` y `update`, cuando estén concedidas al rol y cubran el recurso, pueden continuar por carril base.
+
+La modalidad de cada clave sigue siendo la autoridad.
+
+#### 39. Solicitud operativa
+
+La solicitud de remisión permanece una acción operativa.
+
+Esta tarea elimina la excepción administrativa general; `NEXO-AUTH-004` conserva la protección completa de creación de solicitudes, incluyendo validaciones específicas de actor, contexto, área, productos, recurso y transición.
+
+#### 40. Frontera con `NEXO-AUTH-003`
+
+`NEXO-AUTH-003` conserva la definición y corrección específica de `inventory.remissions.all_sites`.
+
+Esta tarea no decide:
+
+- si la clave se conserva;
+- si se renombra;
+- qué scope final usa;
+- qué roles la reciben;
+- qué superficie la consume;
+- cómo migra el legado.
+
+Solo prohíbe usarla como bypass de capacidades incompatibles con carril base.
+
+#### 41. Fronteras `NEXO-AUTH-004..010`
+
+| Tarea | Responsabilidad reservada |
+| --- | --- |
+| `NEXO-AUTH-004` | proteger creación de solicitudes |
+| `NEXO-AUTH-005` | proteger edición y cancelación |
+| `NEXO-AUTH-006` | proteger preparación |
+| `NEXO-AUTH-007` | proteger producción vinculada |
+| `NEXO-AUTH-008` | proteger despacho |
+| `NEXO-AUTH-009` | proteger tránsito |
+| `NEXO-AUTH-010` | proteger recepción |
+
+`NEXO-AUTH-002` define la ausencia de bypass administrativo global; no reemplaza los contratos específicos de cada transición.
+
+#### 42. Fronteras `NEXO-AUTH-011..020`
+
+| Tarea | Responsabilidad reservada |
+| --- | --- |
+| `NEXO-AUTH-011` | ajustes de inventario |
+| `NEXO-AUTH-012` | conteos |
+| `NEXO-AUTH-013` | movimientos |
+| `NEXO-AUTH-014` | catálogo y configuraciones |
+| `NEXO-AUTH-015` | sede y área efectivas |
+| `NEXO-AUTH-016` | dispositivo compartido |
+| `NEXO-AUTH-017` | simulación estricta |
+| `NEXO-AUTH-018` | paquetes de `vento-shell` |
+| `NEXO-AUTH-019` | helpers duplicados |
+| `NEXO-AUTH-020` | pruebas integrales |
+
+Estas tareas consumen la regla anti-bypass sin ser absorbidas por ella.
+
+#### 43. Criterio de paridad entre evaluadores
+
+Para el mismo actor, permiso, modalidad, contexto y recurso:
+
+```text
+UI DECISION
+=
+SERVER ACTION DECISION
+=
+RPC DECISION
+=
+RLS / DATA DECISION
+```
+
+Las razones públicas pueden minimizarse, pero la decisión material no puede divergir.
+
+#### 44. Adopción física futura
+
+La corrección física deberá localizar todas las rutas que todavía conviertan autoridad administrativa en autorización operacional de remisiones.
+
+La adopción puede involucrar evaluadores compartidos, configuración de política y consumidores NEXO, pero cada cambio se asignará a una `implementation_unit_id` real antes de ejecutarse.
+
+No se inventan unidades desde esta definición.
+
+#### 45. Topología y gate
+
+La topología aplicable es:
+
+```text
+PER_IMPLEMENTATION_UNIT
+```
+
+La identidad física futura usa:
+
+```text
+NEXO-AUTH-002::<implementation_unit_id>
+```
+
+El gate temporal aplicable es:
+
+```text
+POST_E5_PACKAGE
+```
+
+Ninguna instancia física queda autorizada por esta tarea documental.
+
+#### 46. Compatibilidad transitoria
+
+Durante migración puede coexistir una ruta legacy con el evaluador corregido únicamente si la compatibilidad es explícita, observable y no amplía autoridad.
+
+Queda prohibido:
+
+- escoger el resultado más permisivo;
+- unir dos decisiones parciales para obtener `ALLOW`;
+- mantener el bypass como fallback silencioso;
+- conservar una ruta alternativa que acepte el rol base para la misma acción operativa.
+
+#### 47. Rollback
+
+El rollback de una futura materialización debe restaurar una versión conocida sin reintroducir un bypass universal.
+
+Cuando una reversión técnica requiera volver temporalmente a un evaluador anterior, la operación afectada deberá quedar bloqueada o protegida por una barrera equivalente hasta recuperar una versión compatible.
+
+Rollback no significa restaurar una escalación de privilegios conocida.
+
+#### 48. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- ya existe cobertura transversal para impedir autorización por listas locales de roles;
+- ya existe cobertura para separar capacidades administrativas y operativas;
+- ya existe cobertura para exigir contexto operativo, territorio y recurso;
+- ya existe cobertura para impedir bypass por URL, formulario, API o RPC;
+- ya existe cobertura de paridad entre evaluadores;
+- ya existe cobertura NEXO para jerarquía canónica de decisiones de remisiones.
+
+La tarea especializa esas obligaciones en el bypass administrativo de remisiones sin crear una obligación verificable nueva.
+
+#### 49. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-004`;
+- `TREQ-AUTH-008`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-010`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-015`;
+- `TREQ-NEXO-007`;
+- `TREQ-NEXO-009`.
+
+Estas referencias son trazabilidad de cobertura existente y no representan una actualización del registro.
+
+#### 50. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificó `vento-shell` main `5e09cea4f7a284e13f6789aa012028d4fbf691b3`, cierre de `NEXO-AUTH-001`, continuidad hacia `NEXO-AUTH-002`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas documentales, matrices canónicas, auditoría del bypass, 04A vigente y AS-IS de remisiones en `vento-nexo` main `250097e3f615e895dbcc7236c5262f72c406235a` |
+| OPERATIVA | NOT_APPLICABLE | no se modifica ni ejecuta una remisión real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-002::<implementation_unit_id>` |
+
+#### 51. Criterios de aceptación
+
+- [x] el rol base privilegiado deja de ser una fuente válida de bypass operacional;
+- [x] un permiso base no satisface una capacidad `OPERATIONAL_ONLY`;
+- [x] `nexo.inventory.remissions.request` conserva modalidad operativa;
+- [x] `propietario` no obtiene solicitud operativa por su nombre de rol;
+- [x] `gerente_general` no obtiene solicitud operativa por su nombre de rol;
+- [x] se exige clave canónica válida antes de autorizar;
+- [x] `bypass_applied` no constituye autoridad;
+- [x] `can_operate` no sustituye el permiso exacto;
+- [x] turno, check-in, rol operativo, sede y área no pueden omitirse cuando correspondan;
+- [x] scope y recurso siguen siendo obligatorios;
+- [x] las capacidades administrativas legítimas no quedan bloqueadas por exigir contexto operativo universal;
+- [x] UI, servidor, RPC y datos deben converger;
+- [x] `inventory.remissions.all_sites` queda reservado a `NEXO-AUTH-003`;
+- [x] creación queda reservada a `NEXO-AUTH-004`;
+- [x] las protecciones `NEXO-AUTH-005..020` conservan ownership;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT`;
+- [x] el gate futuro conserva `POST_E5_PACKAGE`;
+- [x] no se crea ni modifica requisito de prueba;
+- [x] no se autoriza cambio físico.
+
+#### 52. Límites
+
+Esta tarea no:
+
+- modifica código NEXO;
+- modifica funciones o RPC;
+- modifica Supabase;
+- modifica RLS;
+- modifica `app_operation_policies`;
+- elimina físicamente el bypass;
+- redefine `inventory.remissions.all_sites`;
+- cambia matrices de rol;
+- cambia el catálogo de permisos;
+- cambia scopes;
+- protege físicamente creación, edición, cancelación, preparación, producción, despacho, tránsito o recepción;
+- cambia dispositivos compartidos;
+- cambia simulación;
+- elimina helpers;
+- despliega;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el registro de requisitos.
+
+#### 53. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-001 — Separar configuración administrativa de operación`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-002 — Corregir bypass administrativo de remisiones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-003 — Corregir inventory.remissions.all_sites`
 ### [ ] NEXO-AUTH-003 — Corregir inventory.remissions.all_sites
 ### [ ] NEXO-AUTH-004 — Proteger creación de solicitudes
 ### [ ] NEXO-AUTH-005 — Proteger edición y cancelación

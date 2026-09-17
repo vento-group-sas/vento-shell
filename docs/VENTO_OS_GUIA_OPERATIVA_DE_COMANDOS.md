@@ -191,6 +191,36 @@ Después de validar el receipt, el coordinador sella VERIFIED y ejecuta el cierr
 
 ---
 
+## 2.4.0 Correcciones canónicas y checkpoint limpio
+
+Las correcciones usan un lifecycle propio y no deben materializarse editando manualmente sus registros JSON.
+
+Operaciones canónicas:
+
+- `docs:correction:prepare`: crea el registro PENDING_AUTHORIZATION.
+- `docs:correction:register`: registra la corrección en main.
+- `docs:correction:authorize`: materializa la aprobación humana explícita y el alcance exacto.
+- `docs:correction:start`: abre la rama, normaliza EOL, valida, commitea, publica y debe terminar con worktree limpio.
+- `docs:correction:advance`: entrada state-aware normal después de la materialización; ejecuta quality:repair exactamente una vez, transiciona a IMPLEMENTED, ejecuta validation_commands fail-fast, sella VERIFIED y reanuda finish.
+- `docs:correction:checkpoint`: convierte cambios autorizados y proyecciones del lifecycle en un candidato Git limpio e inmutable antes de cualquier certificación externa.
+- `docs:correction:supabase:deploy`: ejecuta despliegues Supabase físicos autorizados de forma resumible.
+- `docs:correction:finish`: publica únicamente una corrección VERIFIED.
+
+Reglas permanentes:
+
+1. Está prohibido editar directamente el JSON de una corrección para materializar una autorización.
+2. La normalización CRLF/LF y BOM pertenece al lifecycle.
+3. Ninguna certificación remota se ejecuta con worktree dirty.
+4. `environment-drift` permanece fail-closed; no se relaja `candidate.git_tree`.
+5. Un despliegue Supabase debe comprobar primero las migraciones pendientes mediante dry-run.
+6. Si la migración exacta ya está aplicada, el lifecycle continúa como `ALREADY_APPLIED` y no repite `db push`.
+7. Una migración pendiente distinta o adicional a la autorizada bloquea el despliegue antes de mutar remoto.
+8. PRODUCTION permanece bloqueado salvo un lifecycle que lo autorice explícitamente.
+9. Antes de pasar una corrección a IMPLEMENTED se ejecuta exactamente una vez `quality:repair`.
+10. El checkpoint debe terminar con rama remota sincronizada y `WORKTREE: CLEAN`.
+
+---
+
 ## 2.4.1 RESILIENCIA DEL LIFECYCLE Y GATES
 
 Esta sección registra protecciones permanentes del repositorio. No depende de memoria de ChatGPT, de una conversación concreta ni de un operador recordando un workaround.

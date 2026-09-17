@@ -1,0 +1,151 @@
+{
+  "schema_version": 1,
+  "correction_id": "SHELL-CI-020::CORR-002",
+  "task_id": "SHELL-CI-020",
+  "target_instance_id": "SHELL-CI-020::GAP-PKG-019",
+  "correction_type": "PHYSICAL",
+  "reason_code": "CONTRACT_NON_CONFORMANCE",
+  "status": "VERIFIED",
+  "blocking": true,
+  "blocked_targets": [
+    "SHELL-CI-021::GAP-PKG-019"
+  ],
+  "baseline": {
+    "main_commit": "5e09cea4f7a284e13f6789aa012028d4fbf691b3",
+    "target_task_path": "docs/plan-canonico/modular/bloques/T_CALIDAD_Y_DESPLIEGUE/04_DESPLIEGUE_PILOTO_Y_ESTABILIZACION.md",
+    "target_task_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a",
+    "target_instance_record_path": "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-019.json",
+    "target_instance_record_sha256": "cd6046b0f12c4f9e2acffeeaf079ebdc937220c4ed315672a036f50370509acf"
+  },
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql",
+      "change": "EXECUTE_ONLY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY"
+    }
+  ],
+  "validation_commands": [
+    "npm exec -- supabase db push --linked --dry-run",
+    "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict"
+  ],
+  "affected_treq_ids": [
+    "TREQ-SUPABASE-008"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-16T13:55:50-05:00",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO SHELL-CI-020::CORR-002",
+    "source_contract_sha256": "eb4fe6b71cfe548523b3a741955b53c766a10e7a47915e9aeb55f7a38076d95a"
+  },
+  "evidence": [
+    "REMOTE_DEPLOY STAGING project_ref=rcrxixmqhrndcervbllp migration=20260913131524_gap_pkg_019_governed_analytics.sql status=APPLIED",
+    "REMOTE_DEPLOY_POSTCHECK supabase_db_push_dry_run status=PASS result=REMOTE_DATABASE_UP_TO_DATE",
+    "REMOTE_DEPLOY_PRODUCTION_MUTATIONS=0",
+    {
+      "evidence_type": "CORRECTION_SUPABASE_DEPLOY_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-17T04:39:15.334Z",
+      "correction_id": "SHELL-CI-020::CORR-002",
+      "environment_role": "STAGING",
+      "project_ref": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015",
+      "scope": "full",
+      "migration": "20260913131524_gap_pkg_019_governed_analytics.sql",
+      "pre_deploy_candidate_head": "7cf3e4adf4376a8717c391574d80c37d4e6d657f",
+      "preflight_action": "ALREADY_APPLIED",
+      "remote_mutation_performed": false,
+      "post_push_remote_up_to_date": true,
+      "preflight_output_sha256": "a87d7c0f2298ab6780951df9d7f9f98a967b2ea31ce4f27f64f148d8e5bcc628",
+      "postflight_output_sha256": "a87d7c0f2298ab6780951df9d7f9f98a967b2ea31ce4f27f64f148d8e5bcc628",
+      "production_mutations": false
+    },
+    {
+      "evidence_type": "CORRECTION_REMOTE_DRIFT_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-17T04:45:13.697Z",
+      "correction_id": "SHELL-CI-020::CORR-002",
+      "environment_role": "STAGING",
+      "project_ref": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015",
+      "scope": "full",
+      "certified_candidate_head": "f8a8a85fea4db07213ce0668daa49ea12737f56a",
+      "lifecycle_model": "VENTO-CORRECTION-CANDIDATE-LIFECYCLE-V1",
+      "lifecycle_decision": "REUSE_PHYSICAL_EVIDENCE",
+      "lifecycle_reason": "SAFE_CORRECTION_METADATA_ONLY",
+      "evidence_file": ".delivery/SHELL-CI-020__CORR-002__staging-drift.json",
+      "evidence_file_sha256": "6d46ebd46b1bc2fb1c69527d5a1549db683248b754dbf79a7d42aff31bb104ba",
+      "remote_mutations_during_drift": false,
+      "production_mutations": false
+    },
+    {
+      "evidence_type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "execution_mode": "LEGACY_EQUIVALENCE_ADOPTION",
+      "executed_during_adoption": false,
+      "automatic_retry_forbidden": true,
+      "adopted_at": "2026-09-17T05:29:58.346Z",
+      "adopted_candidate_head": "0293455208433356c255fe75c6d8ead8090108ee",
+      "adoption_model": "VENTO-CORRECTION-QUALITY-REPAIR-LEGACY-ADOPTION-V1",
+      "adoption_reason": "PRE_GOVERNANCE_EXECUTE_ONLY_CORRECTION_WITH_CERTIFIED_PHYSICAL_EVIDENCE",
+      "legacy_baseline_main_commit": "5e09cea4f7a284e13f6789aa012028d4fbf691b3",
+      "governance_introduction_commit": "061ce3707f24028184955505456cd3b4b64c0085",
+      "source_evidence_types": [
+        "CORRECTION_SUPABASE_DEPLOY_V1",
+        "CORRECTION_REMOTE_DRIFT_V1"
+      ],
+      "source_evidence_sha256": "f4874d7970fae737d7b0d1628dcd0147fa1f263f3ab8bb6be0fa84514d140292"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-17T06:22:41.852Z",
+      "candidate_head": "f6f75c5bf224e98572e04c4b466e695b520a94d5",
+      "commands": [
+        "npm exec -- supabase db push --linked --dry-run",
+        "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict"
+      ],
+      "results": [
+        {
+          "command": "npm exec -- supabase db push --linked --dry-run",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "661d41e25755ca8a87c367ae6b70266426d6ff732ec53db9cbb0c9f6fec979ec",
+          "stderr_sha256": "cec1c423b9588e7955c5afa2a6e7b81a694ff1d679af0335a490fd5540ae78e0"
+        },
+        {
+          "command": "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "2c0bf746c89c270741aa610c26022c7ed5a17c3aeead5aa99de6095be54e4109",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-17T06:29:28.622Z",
+      "validated_candidate_head": "f6f75c5bf224e98572e04c4b466e695b520a94d5",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-16T18:23:22.957Z",
+  "implemented_at": "2026-09-17T05:41:52.589Z",
+  "verified_at": "2026-09-17T06:29:28.622Z"
+}
