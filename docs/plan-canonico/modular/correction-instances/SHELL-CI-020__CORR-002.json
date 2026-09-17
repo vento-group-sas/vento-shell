@@ -109,9 +109,9 @@
     },
     {
       "type": "CORRECTION_VALIDATION_V1",
-      "status": "FAIL",
-      "observed_at": "2026-09-17T05:52:37.047Z",
-      "candidate_head": "1a81fa9fcec369e6c5f641e6a13a36314e71924f",
+      "status": "PASS",
+      "observed_at": "2026-09-17T06:22:41.852Z",
+      "candidate_head": "f6f75c5bf224e98572e04c4b466e695b520a94d5",
       "commands": [
         "npm exec -- supabase db push --linked --dry-run",
         "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict"
@@ -126,9 +126,9 @@
         },
         {
           "command": "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict",
-          "status": "FAIL",
-          "exit_code": 1,
-          "stdout_sha256": "2221d123efaa9de5910e2ed47ca50263a8922705968cbb3c2f49d1f0dff3cd27",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "2c0bf746c89c270741aa610c26022c7ed5a17c3aeead5aa99de6095be54e4109",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         }
       ],
