@@ -1186,7 +1186,909 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-003 — Corregir inventory.remissions.all_sites`
-### [ ] NEXO-AUTH-003 — Corregir inventory.remissions.all_sites
+### ✅ NEXO-AUTH-003 — Corregir inventory.remissions.all_sites
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-002 — Corregir bypass administrativo de remisiones
+**Tarea siguiente:** NEXO-AUTH-004 — Proteger creación de solicitudes
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para retirar `inventory.remissions.all_sites` como permiso independiente y booleano de privilegio, converger su intención legítima en `nexo.inventory.remissions.view` y resolver la amplitud multisede o multiárea exclusivamente mediante scope, recurso y contexto canónicos
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-003::<implementation_unit_id>` después de que `DELIV-PKG-025::<package_id>` asigne la unidad, el paquete propietario supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Corregir la semántica de `inventory.remissions.all_sites` para que deje de representar una capacidad independiente, un bypass operativo, un selector global de sedes, un selector global de áreas o una condición especial de autorización.
+
+La decisión canónica es:
+
+```text
+LEGACY inventory.remissions.all_sites
+→ NO ES PERMISO CANÓNICO INDEPENDIENTE
+→ CONVERGE EN nexo.inventory.remissions.view
+→ LA AMPLITUD SE RESUELVE MEDIANTE SCOPE
+```
+
+La visibilidad transversal se obtiene de la capacidad exacta de consulta y del alcance concedido. No se obtiene de una clave paralela que codifique territorio dentro del nombre del permiso.
+
+#### 2. Problema que se resuelve
+
+El AS-IS mezcla en una misma clave legacy conceptos distintos:
+
+- permiso de consultar remisiones;
+- capacidad de consultar más de una sede;
+- capacidad de ignorar el filtro de área;
+- habilitación de una vista “Todas las sedes”;
+- selección manual de sede;
+- ramificación hacia helpers de autorización distintos;
+- bypass de prerrequisitos operativos.
+
+Esta mezcla viola la separación canónica entre:
+
+```text
+QUÉ PUEDE HACER
+DÓNDE PUEDE HACERLO
+EN QUÉ CARRIL
+SOBRE QUÉ RECURSO
+```
+
+#### 3. Decisión principal
+
+`inventory.remissions.all_sites` queda clasificado como identidad legacy de consulta y no como capacidad canónica activa.
+
+Su destino contractual es:
+
+```text
+nexo.inventory.remissions.all_sites
+→ nexo.inventory.remissions.view
+```
+
+La parte `all_sites` no se traslada al código canónico. Se expresa mediante el scope efectivo de `nexo.inventory.remissions.view`.
+
+#### 4. Regla de normalización heredada
+
+La normalización canónica ya agrupa bajo `nexo.inventory.remissions.view` las identidades legacy de consulta de remisiones, incluyendo:
+
+- `nexo.inventory.remissions`;
+- `nexo.inventory.remissions.all_sites`;
+- `nexo.inventory.remissions.view_dispatch`;
+- `nexo.inventory_remissions_id.view`;
+- `nexo.inventory_remissions.view`.
+
+Para `all_sites`, la regla específica es:
+
+```text
+all_sites
+→ se elimina del código
+→ se resolverá mediante alcance
+```
+
+Esta tarea especializa y hace consumible esa decisión dentro de NEXO.
+
+#### 5. Capacidad canónica sustituta
+
+La capacidad canónica es:
+
+```text
+nexo.inventory.remissions.view
+```
+
+Su modalidad permanece:
+
+```text
+BASE_OR_OPERATIONAL
+```
+
+Por tanto, la consulta puede ser satisfecha por un carril base completo o por un carril operativo completo, sin mezclar componentes incompletos de ambos.
+
+#### 6. Scope canónico de consulta
+
+`nexo.inventory.remissions.view` admite alcance base mediante:
+
+```text
+G
+AS
+SS
+AST
+TST
+AA
+SA
+AAT
+ATW
+```
+
+y alcance operativo mediante:
+
+```text
+CTX + relación legítima con un lado o función de la remisión
+```
+
+El máximo base permitido es `G(B)`.
+
+Esto significa que la consulta multisede existe, pero es una propiedad del grant y su scope, no una capacidad distinta.
+
+#### 7. Regla de territorio
+
+La amplitud de la consulta se obtiene así:
+
+```text
+PERMISO CANÓNICO EXACTO
++
+CARRIL VÁLIDO
++
+SCOPE CONCEDIDO
++
+RECURSO RESUELTO
++
+RELACIÓN AUTORIZADA
++
+DENEGACIONES
+=
+CONJUNTO VISIBLE
+```
+
+No se admite:
+
+```text
+all_sites = true
+→ consultar todo
+```
+
+#### 8. Visibilidad multisede
+
+La visibilidad multisede es una proyección del conjunto autorizado.
+
+Ejemplos contractuales:
+
+```text
+remissions.view + G(B)
+→ puede producir una colección de varias sedes ordinarias
+
+remissions.view + AS
+→ unión de sedes activamente asignadas
+
+remissions.view + SS
+→ una sede específica
+
+remissions.view + CTX
+→ recursos relacionados con el contexto operativo autorizado
+```
+
+No se crea un permiso paralelo para cada amplitud.
+
+#### 9. Visibilidad multiárea
+
+La amplitud de área se resuelve mediante el scope aprobado y el recurso, no mediante `all_sites`.
+
+Se separan obligatoriamente:
+
+```text
+MULTI_SITE_VISIBILITY
+!=
+ALL_AREA_VISIBILITY
+```
+
+Una capacidad que cubra varias sedes no recibe por inferencia todas las áreas de cada sede. El conjunto de áreas debe quedar incluido por el scope aplicable o por la relación operacional válida.
+
+#### 10. `canViewAll`
+
+Un booleano local llamado `canViewAll`, `allSites`, `canSeeAllAreas` o equivalente no constituye una fuente de autoridad.
+
+Puede existir como proyección derivada después de resolver una decisión completa, pero no podrá ser el insumo primario que:
+
+- seleccione el permiso a consultar;
+- amplíe sedes;
+- amplíe áreas;
+- cambie de carril;
+- omita contexto operativo;
+- conceda acciones de mutación.
+
+#### 11. Pantalla “Todas las sedes”
+
+La opción visual “Todas las sedes” podrá existir cuando el conjunto autorizado contenga más de una sede y la experiencia aprobada permita agregarlo.
+
+Su significado será:
+
+```text
+mostrar la unión ya autorizada
+```
+
+No:
+
+```text
+crear autoridad multisede
+```
+
+La ausencia de una sede seleccionada tampoco equivale automáticamente a alcance global.
+
+#### 12. Sede seleccionada
+
+`selected_site_id`, cookie, query string, preferencia administrativa o selector de UI puede reducir o enfocar la colección autorizada.
+
+No puede ampliarla.
+
+Regla:
+
+```text
+SELECCIÓN DE SEDE
+⊆
+SCOPE AUTORIZADO
+```
+
+Una sede enviada por cliente que quede fuera del scope produce denegación o conjunto vacío según el contrato de lectura; nunca amplía la concesión.
+
+#### 13. Área seleccionada
+
+Un `area_kind`, `area_id` o filtro equivalente enviado por interfaz puede reducir el conjunto autorizado.
+
+No puede convertir:
+
+- una sede autorizada en todas sus áreas;
+- un área autorizada en toda la sede;
+- una relación operativa en alcance administrativo;
+- una consulta en permiso de mutación.
+
+#### 14. Recurso canónico
+
+`nexo.inventory.remissions.view` protege un recurso `REMISSION` localizado por:
+
+```text
+remission_id
+```
+
+o por un filtro relacional autorizado.
+
+Su resolución territorial es:
+
+```text
+REMISSION_RELATION
+```
+
+que considera origen, destino, áreas, ruta y actores relacionados.
+
+#### 15. Lectura por relación legítima
+
+Una remisión puede ser visible cuando exista relación legítima del actor con:
+
+- creador o solicitante;
+- origen;
+- destino;
+- preparación;
+- transporte;
+- recepción;
+- coordinación autorizada.
+
+La relación permite evaluar la lectura; no produce propiedad total del recurso ni autoridad mutadora sobre todos sus lados.
+
+#### 16. Recurso multisede
+
+Una remisión relaciona al menos origen y destino y puede incorporar ruta, áreas y actores.
+
+Para lectura:
+
+```text
+RELACIÓN LEGÍTIMA CON UN LADO O FUNCIÓN
++
+SCOPE COMPATIBLE
+→ PUEDE AUTORIZAR LA LECTURA PERMITIDA
+```
+
+pero:
+
+```text
+VER UN LADO
+!=
+MUTAR EL OTRO LADO
+```
+
+Los campos o lados no autorizados deberán minimizarse u ocultarse cuando corresponda.
+
+#### 17. Colecciones y filtros
+
+Las listas de remisiones deben construirse en servidor desde el conjunto autorizado.
+
+Orden conceptual:
+
+1. resolver actor y carril;
+2. resolver `nexo.inventory.remissions.view`;
+3. resolver scope efectivo;
+4. resolver relaciones y territorios de las remisiones;
+5. construir el conjunto permitido;
+6. aplicar filtros solicitados;
+7. paginar, ordenar o agregar.
+
+No se consulta primero una colección global para filtrarla únicamente en cliente.
+
+#### 18. Paginación y agregados
+
+La paginación no puede reducir accidentalmente el conjunto autorizado antes de aplicar su frontera de seguridad.
+
+Los agregados multisede:
+
+- solo incluyen remisiones autorizadas;
+- no revelan conteos de territorios excluidos;
+- no permiten inferir sedes o áreas fuera del scope;
+- mantienen semántica equivalente a consultar individualmente los miembros permitidos.
+
+#### 19. Propietario
+
+Para `propietario`, la matriz canónica asigna `nexo.inventory.remissions.view` por carril base con alcance `G(B)`.
+
+Por tanto, su visibilidad transversal legítima procede de:
+
+```text
+remissions.view
++
+G(B)
+```
+
+No de `inventory.remissions.all_sites` ni del nombre del rol.
+
+#### 20. Gerente general
+
+Para `gerente_general`, la matriz canónica asigna también `nexo.inventory.remissions.view` por carril base con alcance `G(B)`.
+
+La misma regla aplica:
+
+```text
+PERMISO + SCOPE
+```
+
+no:
+
+```text
+ROL + all_sites
+```
+
+#### 21. Gerente
+
+Para `gerente`, `nexo.inventory.remissions.view` se limita mediante `AS-REL`.
+
+La lectura puede cubrir recursos relacionales que involucren sedes asignadas, pero la participación de una sede autorizada no concede autoridad general sobre sedes no asignadas.
+
+La amplitud se obtiene de sus asignaciones reales y del contrato de remisión.
+
+#### 22. Supervisor
+
+Para `supervisor`, la consulta también se limita mediante una relación territorial equivalente a `AS-REL` según su matriz.
+
+La existencia de una remisión con un extremo conocido no convierte al supervisor en actor multisede global.
+
+#### 23. Otros roles base
+
+Cada rol base recibe exactamente la concesión y scope aprobados por su matriz.
+
+La migración de `all_sites` no puede:
+
+- conceder `G(B)` por defecto;
+- copiar el alcance de propietario a otros roles;
+- inferir alcance desde jerarquía;
+- crear una nueva asignación porque el código legacy existía.
+
+#### 24. Carril operativo
+
+En carril operativo, `nexo.inventory.remissions.view` usa `CTX` más una relación legítima con un lado o función.
+
+El contexto operativo no hereda un `G(B)` del actor aunque el mismo humano posea además una concesión base global.
+
+Cada carril produce su propia decisión completa.
+
+#### 25. Dispositivos compartidos
+
+Un dispositivo compartido no obtiene visibilidad multisede porque exista `all_sites` en una matriz o catálogo legacy.
+
+La consulta efectiva debe intersectar:
+
+- actor humano efectivo;
+- permiso `nexo.inventory.remissions.view`;
+- scope del actor;
+- techo del dispositivo;
+- sede y área del contexto aplicable;
+- recurso y relación;
+- denegaciones.
+
+La especialización completa permanece en `NEXO-AUTH-016`.
+
+#### 26. Role override y simulación
+
+Un role override o simulación puede proyectar el resultado de otra matriz dentro de sus reglas, pero no reactiva `all_sites` como permiso activo.
+
+Toda proyección debe usar:
+
+```text
+nexo.inventory.remissions.view
++
+scope de la identidad simulada o proyectada
+```
+
+sin convertir la simulación en autoridad real.
+
+La integración estricta permanece en `NEXO-AUTH-017`.
+
+#### 27. Bypass administrativo
+
+`inventory.remissions.all_sites` no puede figurar como causa de bypass de una capacidad operativa.
+
+La configuración legacy:
+
+```text
+bypass_permission_code = inventory.remissions.all_sites
+```
+
+no forma parte del estado objetivo.
+
+Esta tarea no aprueba una clave sustituta de bypass. La eliminación general de la semántica de bypass pertenece a `NEXO-AUTH-002` y permanece vigente.
+
+#### 28. `app_operation_policies`
+
+Una futura materialización deberá retirar la dependencia de `inventory.remissions.all_sites` donde `app_operation_policies` u otra configuración la use como bypass.
+
+La política podrá continuar definiendo prerrequisitos operativos por aplicación o acción, pero no podrá utilizar una identidad legacy de lectura como permiso que elimina esos prerrequisitos.
+
+#### 29. Áreas operativas
+
+El helper de áreas de remisiones no debe interpretar `all_sites` como `canSeeAllAreas`.
+
+La decisión de áreas se obtiene de:
+
+- scope canónico aplicable;
+- contexto operativo cuando corresponda;
+- áreas habilitadas para remisiones;
+- territorio real del recurso;
+- límites del dispositivo;
+- denegaciones.
+
+No se deriva del nombre de una clave legacy.
+
+#### 30. Fulfillment y logística
+
+Una visibilidad amplia de remisiones o de sedes no concede automáticamente:
+
+- preparar;
+- producir;
+- despachar;
+- crear cargas;
+- registrar tránsito;
+- recibir.
+
+Cada acción conserva su permiso, modalidad, scope, recurso y estado propios.
+
+Los contratos específicos permanecen en `NEXO-AUTH-006` a `NEXO-AUTH-010`.
+
+#### 31. Prohibición de cambio de carril por visibilidad
+
+Se prohíbe una bifurcación equivalente a:
+
+```text
+canViewAll = true
+→ evaluar prepare/transit por carril base
+```
+
+La amplitud de una consulta no cambia la modalidad de una mutación.
+
+Una capacidad `OPERATIONAL_ONLY` continúa siendo operativa aunque el actor posea una consulta global por carril base.
+
+#### 32. Creación de solicitudes
+
+La visibilidad de todas las remisiones o de varias sedes no concede `nexo.inventory.remissions.request`.
+
+La creación mantiene:
+
+- permiso propio;
+- modalidad `OPERATIONAL_ONLY`;
+- lado solicitante;
+- ruta válida;
+- contexto y políticas aplicables.
+
+La protección completa queda reservada a `NEXO-AUTH-004`.
+
+#### 33. Edición y cancelación
+
+`nexo.inventory.remissions.view` no concede actualización ni cancelación.
+
+El reemplazo de `all_sites` no debe utilizarse para ampliar:
+
+- `update`;
+- edición propia pendiente;
+- cancelación;
+- reversa;
+- eliminación.
+
+La protección específica queda reservada a `NEXO-AUTH-005`.
+
+#### 34. Preparación
+
+La consulta multisede no concede preparación del lado de origen.
+
+`NEXO-AUTH-006` conserva la protección exacta de preparación y sus restricciones de sede, área, estado e inventario.
+
+#### 35. Producción vinculada
+
+La consulta multisede no concede ejecutar producción para satisfacer una remisión.
+
+La protección correspondiente permanece en `NEXO-AUTH-007`.
+
+#### 36. Despacho
+
+La consulta multisede no concede despachar ni iniciar tránsito.
+
+El permiso y la transición de despacho permanecen en `NEXO-AUTH-008`.
+
+#### 37. Tránsito
+
+La consulta multisede no concede registrar ni operar tránsito logístico.
+
+La protección correspondiente permanece en `NEXO-AUTH-009`.
+
+#### 38. Recepción
+
+La consulta multisede no concede recepción en destino.
+
+La protección correspondiente permanece en `NEXO-AUTH-010`.
+
+#### 39. Identidad legacy en código
+
+El estado objetivo exige cero consumidores de runtime que utilicen `inventory.remissions.all_sites` como permiso funcional.
+
+La identidad legacy podrá existir únicamente en una capa de compatibilidad o migración explícita mientras sea necesaria para transformar datos existentes, con trazabilidad y criterio de retiro.
+
+No podrá seguir apareciendo como nueva dependencia de aplicación.
+
+#### 40. Alias transitorio
+
+Si una versión de transición conserva un alias para `nexo.inventory.remissions.all_sites`, deberá cumplir simultáneamente:
+
+- apuntar directamente a `nexo.inventory.remissions.view`;
+- no ser un permiso activo independiente;
+- heredar íntegramente modalidad, scope y contrato del permiso canónico;
+- no ampliar territorio;
+- no convertir el scope legacy en `G(B)` por defecto;
+- no apuntar a otro alias;
+- registrar uso para migración;
+- declarar condición de retiro.
+
+El alias no es el estado final del consumidor.
+
+#### 41. Asignaciones legacy
+
+Una fila legacy que conceda `all_sites` no se convierte automáticamente en un grant global de `remissions.view`.
+
+La migración debe reconciliarla contra:
+
+- rol o empleado propietario de la fila;
+- matriz canónica vigente;
+- scope histórico verificable;
+- cobertura administrativa vigente;
+- límites de recurso;
+- denegaciones.
+
+Cuando no pueda demostrarse un mapeo equivalente sin ampliación, la migración falla cerrada y requiere decisión explícita dentro del owner canónico correspondiente.
+
+#### 42. Nuevas asignaciones
+
+Desde la materialización de este contrato queda prohibido crear nuevas asignaciones, excepciones, políticas o guards que utilicen:
+
+```text
+nexo.inventory.remissions.all_sites
+```
+
+o:
+
+```text
+inventory.remissions.all_sites
+```
+
+Los nuevos consumidores utilizan exclusivamente la clave canónica de consulta y su scope.
+
+#### 43. Observación AS-IS de consumidores
+
+En el estado remoto auditado se observó la cadena legacy en cinco superficies del repositorio NEXO:
+
+1. hub de remisiones;
+2. fulfillment — página;
+3. fulfillment — Server Actions;
+4. edición de remisión;
+5. helper de scope operativo de áreas.
+
+Este inventario es evidencia del AS-IS, no una lista cerrada de implementación futura. Cada `implementation_unit_id` deberá volver a inventariar consumidores y configuración contra su commit base antes de modificar.
+
+#### 44. Hub de remisiones AS-IS
+
+El hub actual usa `all_sites` para construir un `canViewAll` y puede interpretar ausencia de sede activa como vista “Todas las sedes”.
+
+También propaga el mismo booleano hacia la resolución de áreas.
+
+El estado objetivo reemplaza ambos usos por decisiones derivadas de `remissions.view` y scopes independientes de sede y área.
+
+#### 45. Fulfillment AS-IS
+
+La superficie de fulfillment usa `all_sites` para habilitar selección entre sedes y para escoger una rama distinta de autorización.
+
+En esa rama, capacidades de preparación y tránsito pueden terminar consultadas mediante autorización base.
+
+El estado objetivo prohíbe que la visibilidad multisede altere el carril exigido por las capacidades de mutación.
+
+#### 46. Helper de áreas AS-IS
+
+El helper observado declara `REMISSIONS_ALL_AREAS_PERMISSION` con el valor legacy `inventory.remissions.all_sites` y lo utiliza para producir `canSeeAllAreas`.
+
+Esta equivalencia queda retirada:
+
+```text
+ALL_SITES
+!=
+ALL_AREAS
+```
+
+La resolución de áreas consume contrato y contexto propios.
+
+#### 47. Edición AS-IS
+
+La superficie de edición conserva una declaración de `remissionsAllSites` en su mapa local de permisos.
+
+Toda dependencia residual, utilizada o muerta, debe eliminarse o reconciliarse durante la materialización para que una búsqueda estática no conserve la identidad legacy en consumidores de runtime.
+
+La autorización concreta de edición continúa perteneciendo a `NEXO-AUTH-005`.
+
+#### 48. Catálogo y contratos compartidos
+
+La fuente técnica canónica de permisos se mantiene en `vento-shell`.
+
+NEXO no deberá reconstruir mediante strings locales:
+
+- el código canónico;
+- su modalidad;
+- sus scopes admitidos;
+- su contrato de recurso;
+- aliases legacy;
+- estado de retiro.
+
+Los consumidores deberán migrar hacia contratos y tipos compartidos cuando la implementación propietaria lo materialice.
+
+#### 49. Versionado
+
+Retirar `all_sites` de consumidores o de proyecciones físicas debe respetar el versionado de catálogo y compatibilidad.
+
+No se edita silenciosamente una versión publicada para cambiar el significado de una clave.
+
+Una publicación que cambie aliases, proyección o compatibilidad debe conservar:
+
+- versión;
+- changelog;
+- checksum;
+- telemetría de alias cuando aplique;
+- relación con la versión sustituida;
+- estrategia de consumidores.
+
+#### 50. Migración de datos y configuración
+
+Si existen filas físicas en catálogos, matrices, excepciones, navegación, pantallas, políticas operativas u otras tablas que referencien `all_sites`, la implementación deberá clasificarlas antes de modificar:
+
+```text
+ACTIVE_CONSUMER
+LEGACY_ASSIGNMENT
+COMPATIBILITY_ALIAS
+STALE_REFERENCE
+INVALID_REFERENCE
+```
+
+Cada clase tiene salida explícita. No se realiza un reemplazo textual ciego que convierta cualquier uso en un grant global.
+
+#### 51. Compatibilidad
+
+Durante una ventana de compatibilidad, una solicitud que llegue con la identidad legacy puede resolverse solo mediante la equivalencia autorizada hacia `remissions.view` y el scope real del actor.
+
+No se conserva la semántica histórica de “ver todo” por el solo hecho de usar la clave antigua.
+
+El consumidor que dependa de esa semántica debe corregirse; no se amplía el contrato canónico para mantenerlo funcionando.
+
+#### 52. Fail closed
+
+Si un uso legacy no puede clasificarse o migrarse sin conocer:
+
+- actor;
+- matriz;
+- scope;
+- recurso;
+- carril;
+- finalidad;
+
+no se convierte automáticamente.
+
+La salida es bloqueo de esa migración o referencia hasta que exista evidencia suficiente.
+
+#### 53. Auditoría
+
+Las decisiones de consulta de remisiones deben ser reproducibles mediante:
+
+- principal;
+- actor efectivo;
+- permiso canónico;
+- carril;
+- scope;
+- sede o conjunto de sedes aplicable;
+- área o conjunto de áreas cuando corresponda;
+- recurso o filtro relacional;
+- decisión;
+- razones;
+- versión contractual;
+- timestamp.
+
+El uso de un alias legacy, mientras exista, debe quedar distinguible.
+
+#### 54. Frescura
+
+Cambios en:
+
+- asignaciones de sede;
+- cobertura administrativa;
+- grants;
+- scope;
+- turno;
+- check-in;
+- rol operativo;
+- estado del recurso;
+- ruta;
+- dispositivo;
+- catálogo;
+
+deben invalidar decisiones afectadas antes de reutilizar la colección o ejecutar una acción posterior.
+
+#### 55. Offline y caché
+
+Una colección cacheada de varias sedes no representa autoridad futura.
+
+Al refrescar o sincronizar:
+
+- se recalcula `remissions.view`;
+- se recalcula scope;
+- se filtran recursos ya no autorizados;
+- no se ejecutan mutaciones desde un snapshot de visibilidad;
+- un alias legacy no mantiene alcance antiguo.
+
+#### 56. Rollback
+
+Un rollback técnico de una futura materialización no podrá restaurar `all_sites` como bypass operativo ni como autoridad universal.
+
+Si la compatibilidad obliga temporalmente a reconocer la identidad legacy, debe conservarse el mapeo fail-closed hacia `remissions.view` y el scope canónico.
+
+Un rollback no justifica reintroducir semántica retirada.
+
+#### 57. Handoff a `NEXO-AUTH-004`
+
+`NEXO-AUTH-004` recibe:
+
+```text
+CANONICAL REMISSION VIEW PERMISSION
++
+SCOPE-BASED MULTI-SITE VISIBILITY
++
+SEPARATE SITE / AREA BREADTH
++
+NO all_sites BYPASS
++
+SERVER-SIDE AUTHORIZED COLLECTION
++
+LEGACY KEY RETIREMENT CONTRACT
+```
+
+Con ese handoff, la creación de solicitudes puede protegerse sin heredar una excepción multisede que altere su carril operativo.
+
+#### 58. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- ya existe cobertura para exigir identificadores de permiso vigentes y eliminar strings huérfanos o duplicados;
+- ya existe cobertura para impedir autorización mediante excepciones locales que ignoren scopes;
+- ya existe cobertura para separar capacidades administrativas y operativas;
+- ya existe cobertura territorial de sede y área;
+- ya existe cobertura contra bypass por URL, API, RPC o formulario;
+- ya existe cobertura de invalidación y trazabilidad;
+- ya existe cobertura NEXO para fallbacks legacy y jerarquía unificada de remisiones.
+
+La tarea especializa esas obligaciones en la identidad legacy `all_sites` sin crear una obligación verificable nueva.
+
+#### 59. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-002`;
+- `TREQ-AUTH-004`;
+- `TREQ-AUTH-008`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-015`;
+- `TREQ-NEXO-007`;
+- `TREQ-NEXO-009`.
+
+Estas referencias son trazabilidad de cobertura existente y no representan una actualización del registro.
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificó `main` vigente de `vento-shell`, cierre de `NEXO-AUTH-002`, continuidad hacia `NEXO-AUTH-003`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas documentales, normalización de catálogo, alcance y recurso de `remissions.view`, matrices, 04A vigente y consumidores AS-IS de `all_sites` en `vento-nexo` |
+| OPERATIVA | NOT_APPLICABLE | no se consulta, modifica ni ejecuta una remisión real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-003::<implementation_unit_id>` |
+
+#### 61. Criterios de aceptación
+
+- [x] `inventory.remissions.all_sites` queda clasificado como identidad legacy y no como permiso canónico independiente;
+- [x] la capacidad sustituta exacta es `nexo.inventory.remissions.view`;
+- [x] `all_sites` desaparece del contrato de consumidores de runtime;
+- [x] la amplitud multisede se expresa mediante scope;
+- [x] la amplitud multiárea se resuelve de forma independiente;
+- [x] “Todas las sedes” queda definida como proyección del conjunto autorizado;
+- [x] una sede o área seleccionada solo puede reducir, nunca ampliar, el conjunto permitido;
+- [x] `remissions.view` conserva modalidad `BASE_OR_OPERATIONAL`;
+- [x] el alcance base máximo permanece `G(B)` y no se deriva por nombre de rol;
+- [x] el carril operativo permanece `CTX` más relación legítima;
+- [x] la consulta multisede no concede mutaciones;
+- [x] la visibilidad amplia no cambia el carril de `request`, `prepare`, `dispatch`, tránsito o recepción;
+- [x] `all_sites` deja de equivaler a `canSeeAllAreas`;
+- [x] la configuración de bypass no puede continuar dependiendo de `all_sites`;
+- [x] un alias transitorio, si existe, no amplía capacidad ni scope;
+- [x] las asignaciones legacy se reconcilian contra matrices y scope sin promoción automática a global;
+- [x] no se permiten nuevas asignaciones con la identidad legacy;
+- [x] los cinco consumidores AS-IS observados quedan documentados como inventario no exhaustivo;
+- [x] `NEXO-AUTH-004` recibe el handoff sin absorberse su protección de creación;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT`;
+- [x] el gate futuro conserva `POST_E5_PACKAGE`;
+- [x] no se crea ni modifica requisito de prueba;
+- [x] no se autoriza cambio físico.
+
+#### 62. Límites
+
+Esta tarea no:
+
+- modifica código NEXO;
+- modifica paquetes de `vento-shell`;
+- modifica Supabase;
+- modifica migraciones;
+- modifica RLS;
+- modifica RPC;
+- modifica grants;
+- modifica `app_operation_policies`;
+- elimina físicamente `all_sites`;
+- crea o cambia físicamente aliases;
+- migra asignaciones;
+- cambia matrices canónicas ya aprobadas;
+- cambia la modalidad de `nexo.inventory.remissions.view`;
+- cambia scopes aprobados;
+- protege físicamente creación, edición, cancelación, preparación, producción, despacho, tránsito o recepción;
+- cambia shared devices;
+- cambia simulación;
+- despliega;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el registro de requisitos.
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-002 — Corregir bypass administrativo de remisiones`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-003 — Corregir inventory.remissions.all_sites`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-004 — Proteger creación de solicitudes`
 ### [ ] NEXO-AUTH-004 — Proteger creación de solicitudes
 ### [ ] NEXO-AUTH-005 — Proteger edición y cancelación
 ### [ ] NEXO-AUTH-006 — Proteger preparación
