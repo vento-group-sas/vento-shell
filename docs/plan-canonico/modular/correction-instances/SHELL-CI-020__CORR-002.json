@@ -87,6 +87,25 @@
       "evidence_file_sha256": "6d46ebd46b1bc2fb1c69527d5a1549db683248b754dbf79a7d42aff31bb104ba",
       "remote_mutations_during_drift": false,
       "production_mutations": false
+    },
+    {
+      "evidence_type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "execution_mode": "LEGACY_EQUIVALENCE_ADOPTION",
+      "executed_during_adoption": false,
+      "automatic_retry_forbidden": true,
+      "adopted_at": "2026-09-17T05:29:58.346Z",
+      "adopted_candidate_head": "0293455208433356c255fe75c6d8ead8090108ee",
+      "adoption_model": "VENTO-CORRECTION-QUALITY-REPAIR-LEGACY-ADOPTION-V1",
+      "adoption_reason": "PRE_GOVERNANCE_EXECUTE_ONLY_CORRECTION_WITH_CERTIFIED_PHYSICAL_EVIDENCE",
+      "legacy_baseline_main_commit": "5e09cea4f7a284e13f6789aa012028d4fbf691b3",
+      "governance_introduction_commit": "061ce3707f24028184955505456cd3b4b64c0085",
+      "source_evidence_types": [
+        "CORRECTION_SUPABASE_DEPLOY_V1",
+        "CORRECTION_REMOTE_DRIFT_V1"
+      ],
+      "source_evidence_sha256": "f4874d7970fae737d7b0d1628dcd0147fa1f263f3ab8bb6be0fa84514d140292"
     }
   ],
   "opened_at": "2026-09-16T18:23:22.957Z"
