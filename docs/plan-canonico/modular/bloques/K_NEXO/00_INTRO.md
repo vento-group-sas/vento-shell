@@ -3226,7 +3226,1200 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-005 — Proteger edición y cancelación`
-### [ ] NEXO-AUTH-005 — Proteger edición y cancelación
+### ✅ NEXO-AUTH-005 — Proteger edición y cancelación
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-004 — Proteger creación de solicitudes
+**Tarea siguiente:** NEXO-AUTH-006 — Proteger preparación
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger actualización, edición propia, cancelación, eliminación y reversa de remisiones mediante capacidades canónicas, predicados de estado, ownership, responsabilidad territorial, concurrencia, compensación y auditoría sin convertir acciones legacy en permisos independientes
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-005::<implementation_unit_id>` después de que `DELIV-PKG-025::<package_id>` asigne la unidad, el paquete propietario supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger todas las mutaciones de una remisión ya persistida que pertenezcan a edición o cancelación, separando con precisión:
+
+- actualización ordinaria;
+- edición propia en estado editable;
+- cancelación;
+- eliminación física;
+- reversa de una cancelación;
+- mutaciones atómicas reservadas a preparación, despacho, tránsito y recepción.
+
+La decisión canónica parte de dos capacidades activas:
+
+```text
+nexo.inventory.remissions.update
+nexo.inventory.remissions.cancel
+```
+
+Ninguna acción legacy, nombre de botón, ruta de interfaz, helper local o relación de autoría crea una tercera capacidad.
+
+#### 2. Problema que se resuelve
+
+Después de creada una remisión, su mutación queda condicionada por:
+
+- identidad del actor;
+- carril autorizante;
+- alcance;
+- relación con el recurso;
+- estado vigente;
+- lado responsable;
+- campos que se pretenden modificar;
+- versión observada;
+- efectos de inventario o custodia ya materializados;
+- necesidad de reautenticación;
+- evidencia antes y después.
+
+La protección debe impedir:
+
+- editar por mera visibilidad;
+- editar por ser creador cuando el estado ya no lo permite;
+- cancelar porque el actor tenga relación con cualquier extremo;
+- alterar origen, destino o cantidades mediante una edición genérica;
+- borrar historia empresarial bajo el nombre de eliminación;
+- ejecutar una reversa como simple variante de cancelación;
+- sobrescribir cambios concurrentes;
+- dejar cabecera y líneas en estados incompatibles;
+- compensar inventario de forma parcial;
+- usar permisos legacy que ya tienen equivalente canónico.
+
+#### 3. Capacidades canónicas exactas
+
+La actualización utiliza exclusivamente:
+
+```text
+nexo.inventory.remissions.update
+```
+
+La cancelación utiliza exclusivamente:
+
+```text
+nexo.inventory.remissions.cancel
+```
+
+No se crea una capacidad canónica independiente para:
+
+```text
+edit_own_pending
+delete
+reverse_cancel
+```
+
+Esos nombres describen especializaciones de estado, ownership o implementación que deben resolverse contra las capacidades y contratos vigentes.
+
+#### 4. Normalización de `edit_own_pending`
+
+La identidad legacy:
+
+```text
+nexo.inventory.remissions.edit_own_pending
+```
+
+converge en:
+
+```text
+nexo.inventory.remissions.update
+```
+
+Las condiciones:
+
+```text
+OWN
++
+ESTADO EDITABLE
+```
+
+pertenecen al contrato del recurso y no al nombre del permiso.
+
+El estado objetivo exige cero consumidores de runtime que utilicen `edit_own_pending` como permiso funcional independiente.
+
+#### 5. Modalidad de `remissions.update`
+
+`nexo.inventory.remissions.update` conserva:
+
+```text
+authorization_requirement = BASE_OR_OPERATIONAL
+```
+
+Por tanto existen dos evaluaciones completas e independientes:
+
+```text
+CARRIL BASE COMPLETO
+→ PUEDE AUTORIZAR
+
+CARRIL OPERATIVO COMPLETO
+→ PUEDE AUTORIZAR
+
+MEZCLA DE COMPONENTES DE AMBOS CARRILES
+→ NO AUTORIZA
+```
+
+La selección del carril no cambia la identidad del recurso ni los campos autorizados.
+
+#### 6. Modalidad de `remissions.cancel`
+
+`nexo.inventory.remissions.cancel` conserva:
+
+```text
+authorization_requirement = BASE_OR_OPERATIONAL
+```
+
+El carril base puede autorizar dentro de su cobertura administrativa.
+
+El carril operativo puede autorizar únicamente cuando exista una concesión operativa expresa y el actor sea responsable del lado aplicable al estado vigente.
+
+La autoría de la solicitud no crea automáticamente cancelación.
+
+#### 7. Prerrequisitos del carril base
+
+Para `update` y `cancel`, el carril base utiliza prerrequisito:
+
+```text
+N
+```
+
+No exige turno ni check-in.
+
+Sí exige:
+
+- actor base válido;
+- concesión exacta;
+- scope vigente;
+- recurso resuelto;
+- estado compatible;
+- campos autorizados;
+- reautenticación cuando el contrato aplicable la exija;
+- ausencia de denegaciones;
+- auditoría.
+
+`N` no equivale a autorización automática.
+
+#### 8. Prerrequisitos del carril operativo
+
+Para `update` y `cancel`, el carril operativo utiliza:
+
+```text
+T+C
+```
+
+Exige:
+
+- turno publicado y vigente;
+- check-in activo;
+- rol operativo efectivo;
+- sede compatible;
+- área cuando corresponda al rol o recurso;
+- concesión exacta;
+- scope operativo;
+- recurso y estado compatibles.
+
+Un rol base no sustituye estos requisitos cuando la decisión se intenta por carril operativo.
+
+#### 9. Clasificación de área
+
+La actualización y la cancelación pueden ser capacidades de nivel sede cuando el rol sea legítimamente de sede general.
+
+Eso no elimina una restricción de área existente en:
+
+- el turno;
+- la matriz del rol;
+- el dispositivo;
+- el recurso;
+- el scope;
+- la relación empresarial.
+
+Una acción de nivel sede no se transforma en autoridad sobre todas las áreas.
+
+#### 10. Scope de actualización
+
+La actualización utiliza el perfil:
+
+```text
+REM-UPDATE
+```
+
+Carril base:
+
+```text
+G / AS / SS / AST / TST / AA / SA / AAT / ATW
+```
+
+Carril operativo:
+
+```text
+CTX
+```
+
+Reglas:
+
+- `G` solo existe por carril base;
+- no existe global operativo;
+- cada cambio se limita a una remisión concreta;
+- la participación en un extremo no concede autoridad general sobre el otro;
+- cambiar territorio exige autorizar territorio vigente y territorio propuesto.
+
+#### 11. Scope de cancelación
+
+La cancelación utiliza:
+
+```text
+REM-CANCEL
+```
+
+Carril base:
+
+```text
+G / AS / SS / AST / TST / AA / SA / AAT / ATW
+```
+
+Carril operativo:
+
+```text
+CTX DEL LADO RESPONSABLE
+```
+
+Reglas:
+
+- no existe global operativo;
+- una relación de lectura no basta;
+- el lado responsable depende del estado;
+- OWN puede participar solo cuando el contrato permita cancelar una solicitud propia;
+- terceros requieren responsabilidad explícita.
+
+#### 12. Recurso protegido por actualización
+
+La actualización opera sobre:
+
+```text
+REMISSION
+```
+
+con localizador lógico:
+
+```text
+remission_id
++
+version
++
+cambios propuestos
+```
+
+El servidor debe volver a resolver la remisión existente y no confiar en una copia enviada por el cliente.
+
+#### 13. Recurso protegido por cancelación
+
+La cancelación opera sobre:
+
+```text
+REMISSION
+```
+
+con localizador lógico:
+
+```text
+remission_id
++
+motivo
+```
+
+El motivo forma parte de la intención empresarial y de la evidencia.
+
+Una acción sin motivo cuando este sea obligatorio no puede convertirse en cancelación válida mediante un valor predeterminado silencioso.
+
+#### 14. Ownership en actualización
+
+`OWN` aplica exclusivamente cuando:
+
+- la remisión fue creada por el actor efectivo; y
+- el estado permite edición propia; y
+- los campos pertenecen al lado solicitante; y
+- el scope sigue siendo compatible.
+
+OWN no autoriza:
+
+- preparar;
+- despachar;
+- recibir;
+- cancelar;
+- modificar custodia;
+- alterar inventario;
+- cambiar un lado que la matriz del rol prohíba.
+
+#### 15. Ownership en cancelación
+
+Ser creador de la solicitud no concede por sí mismo `remissions.cancel`.
+
+La cancelación propia requiere simultáneamente:
+
+- permiso de cancelación efectivo;
+- estado cancelable;
+- responsabilidad permitida por el contrato;
+- scope compatible;
+- motivo;
+- control de concurrencia;
+- controles de sensibilidad aplicables.
+
+Cuando la matriz del rol no concede cancelación, OWN no rellena la ausencia del permiso.
+
+#### 16. Responsabilidad sobre terceros
+
+Actualizar o cancelar una remisión creada por otro actor requiere una responsabilidad base u operativa explícita.
+
+No bastan:
+
+- misma sede;
+- misma área;
+- mismo rol;
+- acceso a NEXO;
+- capacidad de consultar remisiones;
+- participación histórica;
+- pertenecer a un grupo superior;
+- haber preparado o transportado el recurso.
+
+La responsabilidad se resuelve según la acción y el estado actuales.
+
+#### 17. Territorio vigente y territorio propuesto
+
+Una actualización que modifique una dimensión territorial debe validar ambos conjuntos:
+
+```text
+TERRITORIO VIGENTE
++
+TERRITORIO PROPUESTO
+```
+
+La autorización sobre el nuevo destino no borra la necesidad de estar autorizado sobre el estado vigente cuando el contrato lo exige.
+
+No se permite usar una actualización para trasladar silenciosamente una remisión fuera de la cobertura del actor.
+
+#### 18. Edición propia del lado solicitante
+
+Las matrices operativas de roles solicitantes conceden `remissions.update` únicamente sobre solicitudes propias y estados editables.
+
+En ese perfil:
+
+- el destino solicitante permanece ligado al contexto autorizado;
+- el origen no puede cambiarse por una edición propia genérica;
+- las cantidades y líneas solo cambian si el estado y contrato lo permiten;
+- las presentaciones y políticas vuelven a validarse;
+- el actor no adquiere permisos de preparación o logística.
+
+La edición propia es una especialización de `update`, no una capacidad paralela.
+
+#### 19. Actualización administrativa
+
+El carril base puede permitir correcciones administrativas según la matriz y el scope del actor.
+
+Una actualización administrativa puede comprender únicamente los campos que el contrato y el estado declaren editables.
+
+No puede utilizarse como sustituto de:
+
+- solicitud;
+- preparación;
+- despacho;
+- tránsito;
+- recepción;
+- cancelación;
+- reversa;
+- ajuste de inventario.
+
+#### 20. Actualización de gerencia operativa
+
+`gerencia_operativa` puede actualizar remisiones relacionadas con la sede activa dentro del perfil aprobado.
+
+La mutación se limita a:
+
+- prioridad;
+- programación;
+- observaciones;
+- datos operativos expresamente editables.
+
+No altera por `update` genérico:
+
+- cantidades bajo custodia;
+- origen o destino protegidos;
+- custodia;
+- inventario;
+- etapas cerradas.
+
+Una mutación de esas clases requiere su capacidad atómica correspondiente o se deniega.
+
+#### 21. Matriz completa de roles para actualización y cancelación
+
+| Rol canónico | Carril | `update` | `cancel` | Regla principal |
+| --- | --- | --- | --- | --- |
+| `propietario` | base | ASIGNAR | ASIGNAR | `G(B)` dentro de la organización ordinaria, sujeto a recurso, estado y denegaciones |
+| `gerente_general` | base | ASIGNAR | ASIGNAR | `G(B)` dentro de la organización ordinaria, sujeto a recurso, estado y denegaciones |
+| `gerente` | base | ASIGNAR | ASIGNAR | `AS-REL`; la participación de una sede no concede autoridad general sobre el otro extremo |
+| `supervisor` | base | ASIGNAR | NO ASIGNAR | correcciones ordinarias en campos y estados editables; cancelación reservada |
+| `auxiliar_administrativa` | base | ASIGNAR | NO ASIGNAR | metadatos y correcciones administrativas permitidas por estado |
+| `contador` | base | NO ASIGNAR | NO ASIGNAR | lectura financiera no concede mutación de remisiones |
+| `marketing` | base | NO ASIGNAR | NO ASIGNAR | dominio ajeno a la mutación de remisiones |
+| `cajero_satelite` | operativo | ASIGNAR | NO ASIGNAR | OWN, estado editable, lado solicitante y campos permitidos |
+| `barista_satelite` | operativo | ASIGNAR | NO ASIGNAR | OWN, estado editable, lado solicitante y campos permitidos |
+| `cocinero_satelite` | operativo | ASIGNAR | NO ASIGNAR | OWN, estado editable, lado solicitante y campos permitidos |
+| `servicio_salon` | operativo | ASIGNAR | NO ASIGNAR | OWN, estado editable, lado solicitante y campos permitidos |
+| `mostrador_satelite` | operativo | ASIGNAR | NO ASIGNAR | OWN, estado editable, lado solicitante y campos permitidos |
+| `operador_integral_satelite` | operativo | ASIGNAR | NO ASIGNAR | OWN, estado editable, lado solicitante y campos permitidos |
+| `produccion_cocina` | operativo | NO ASIGNAR | NO ASIGNAR | producción no obtiene edición general ni cancelación |
+| `produccion_panaderia` | operativo | NO ASIGNAR | NO ASIGNAR | producción no obtiene edición general ni cancelación |
+| `produccion_reposteria` | operativo | NO ASIGNAR | NO ASIGNAR | producción no obtiene edición general ni cancelación |
+| `bodeguero` | operativo | NO ASIGNAR | NO ASIGNAR | usa acciones atómicas de preparación y recepción, no edición general |
+| `conductor_logistica` | operativo | NO ASIGNAR | NO ASIGNAR | usa acciones atómicas de despacho y tránsito, no edición general |
+| `gerencia_operativa` | operativo | ASIGNAR | ASIGNAR | coordinación de sede; campos editables y cancelación por lado responsable y estado |
+
+Universo evaluado:
+
+```text
+ROLES BASE: 7
+ROLES OPERATIVOS: 12
+TOTAL: 19
+
+UPDATE ASIGNADO: 12
+UPDATE NO ASIGNADO: 7
+
+CANCEL ASIGNADO: 4
+CANCEL NO ASIGNADO: 15
+```
+
+Esta tarea no modifica las matrices.
+
+#### 22. Campos editables
+
+La autorización de `update` no equivale a autorización sobre todas las columnas.
+
+Toda materialización debe clasificar los campos como mínimo en:
+
+```text
+EDITABLES POR CARRIL BASE
+EDITABLES POR OWN OPERATIVO
+EDITABLES POR GERENCIA OPERATIVA
+RESERVADOS A TRANSICIONES ATÓMICAS
+INMUTABLES DESPUÉS DE CREACIÓN O ETAPA
+```
+
+Un campo no clasificado se deniega.
+
+#### 23. Líneas y cantidades
+
+Editar líneas o cantidades solo es válido cuando:
+
+- el estado lo permita;
+- el actor tenga `update`;
+- el perfil de edición aplicable lo permita;
+- producto, presentación, unidad y política sigan vigentes;
+- la ruta siga siendo compatible;
+- no exista custodia o efecto posterior que vuelva la edición destructiva.
+
+Si la mutación exige deshacer reservas, movimientos o producción, ya no es una edición ordinaria.
+
+#### 24. Productos, presentaciones y políticas
+
+Una edición que altere líneas debe reutilizar los contratos canónicos de:
+
+- producto;
+- disponibilidad por sede;
+- presentación;
+- UOM;
+- factor de conversión;
+- política de solicitud;
+- área solicitante;
+- ruta aplicable.
+
+No se acepta una línea porque haya sido válida en una versión anterior del recurso si sus dependencias cambiaron y el estado todavía exige revalidación.
+
+#### 25. Origen
+
+La edición propia de un solicitante no puede cambiar el origen mediante `update` genérico.
+
+Si una responsabilidad base o de coordinación futura admite cambiar origen:
+
+- debe autorizar territorio vigente y propuesto;
+- debe revalidar la relación origen-destino;
+- debe revalidar rutas y líneas;
+- debe conservar historial;
+- debe impedir efectos duplicados.
+
+La capacidad no nace del hecho de que el formulario exponga el campo.
+
+#### 26. Destino
+
+El destino solicitante no puede modificarse libremente.
+
+Cambiarlo transforma el territorio del recurso y exige, cuando el contrato lo admita:
+
+- autoridad sobre el recurso vigente;
+- autoridad sobre el territorio propuesto;
+- compatibilidad de actor y scope;
+- revalidación de ruta;
+- revalidación de líneas;
+- control de concurrencia;
+- auditoría antes/después.
+
+Para la edición OWN operativa ordinaria, el destino permanece fijo.
+
+#### 27. Metadatos
+
+Campos como fecha esperada, prioridad, programación u observaciones pueden ser editables únicamente cuando:
+
+- la matriz del actor los contemple;
+- el estado los permita;
+- no reescriban un evento histórico;
+- no alteren indirectamente una etapa protegida.
+
+Los nombres físicos concretos pertenecen a la materialización, no a este contrato global.
+
+#### 28. Predicado de estado de actualización
+
+Toda actualización exige un estado editable.
+
+La fuente del estado es el recurso persistido leído en servidor inmediatamente antes de la mutación.
+
+La lista física de estados puede evolucionar dentro del dominio, pero la regla permanece:
+
+```text
+ESTADO NO EDITABLE
+→ UPDATE DENY
+```
+
+Una interfaz antigua no puede conservar edición después de una transición concurrente.
+
+#### 29. Predicado de estado de cancelación
+
+Toda cancelación exige un estado cancelable.
+
+La decisión debe resolver además qué lado o actor es responsable en ese estado.
+
+Resultado:
+
+```text
+PERMISO CANCEL
++
+ESTADO CANCELABLE
++
+RESPONSABILIDAD VÁLIDA
++
+SCOPE VÁLIDO
+→ CANCELACIÓN POSIBLE
+```
+
+La ausencia de cualquiera produce denegación.
+
+#### 30. Lado responsable por estado
+
+La cancelación no utiliza la regla:
+
+```text
+AUTORIZADO EN ORIGEN
+O
+AUTORIZADO EN DESTINO
+→ CANCELAR
+```
+
+Utiliza:
+
+```text
+ESTADO ACTUAL
+→ DETERMINA RESPONSABILIDAD
+→ DETERMINA LADO AUTORIZANTE
+→ EVALÚA ACTOR Y SCOPE
+```
+
+Un actor autorizado sobre un extremo irrelevante para el estado no obtiene cancelación.
+
+#### 31. Motivo de cancelación
+
+La cancelación sensible debe conservar motivo obligatorio conforme al contrato de la acción.
+
+El motivo:
+
+- no es un campo de presentación;
+- forma parte del evento empresarial;
+- queda ligado al actor y a la versión del recurso;
+- debe sobrevivir a reintentos;
+- no puede quedar sustituido por texto genérico fabricado en cliente.
+
+#### 32. Cancelación y efectos previos
+
+Cancelar una remisión no revierte automáticamente:
+
+- reservas;
+- movimientos;
+- custodia;
+- producción;
+- despacho;
+- recepción;
+- otros efectos ya consolidados.
+
+Si el estado cancelable requiere compensaciones, estas deben ejecutarse bajo un contrato explícito, atómico e idempotente.
+
+No se marca `cancelled` primero para intentar reparar después sin un estado recuperable.
+
+#### 33. Idempotencia de cancelación
+
+Una intención de cancelación repetida sobre la misma versión y motivo no debe producir:
+
+- eventos duplicados;
+- compensaciones duplicadas;
+- doble movimiento;
+- múltiples auditorías contradictorias.
+
+El resultado debe poder reconocer una cancelación ya aplicada o una intención en curso.
+
+#### 34. Concurrencia de actualización
+
+La actualización ordinaria debe usar:
+
+- versión esperada;
+- `updated_at` confiable;
+- token de concurrencia equivalente.
+
+Una escritura contra una versión obsoleta se deniega o devuelve conflicto.
+
+No se permite último-escritor-gana sobre campos sensibles de una remisión.
+
+#### 35. Concurrencia de cancelación
+
+La cancelación debe bloquear o comparar versión antes de:
+
+- cambiar estado;
+- ejecutar compensaciones;
+- emitir eventos;
+- registrar efectos derivados.
+
+Dos actores no pueden cancelar y transicionar simultáneamente el mismo recurso con resultados incompatibles.
+
+#### 36. Atomicidad de actualización
+
+Cuando una edición modifica cabecera y líneas, ambas forman una unidad lógica.
+
+No es aceptable:
+
+```text
+CABECERA ACTUALIZADA
++
+LÍNEAS ELIMINADAS
++
+INSERCIÓN DE LÍNEAS FALLIDA
+→ ÉXITO
+```
+
+La materialización debe ser atómica o disponer de compensación explícita y estado recuperable.
+
+#### 37. Auditoría antes y después
+
+Toda actualización autorizada conserva como mínimo:
+
+- actor;
+- carril;
+- permiso;
+- scope;
+- recurso;
+- versión anterior;
+- campos autorizados cambiados;
+- versión posterior;
+- decisión;
+- razones;
+- timestamp.
+
+Para campos sensibles se registra evidencia reforzada sin exponer secretos.
+
+#### 38. Auditoría de cancelación
+
+La cancelación conserva además:
+
+- motivo;
+- estado previo;
+- lado responsable;
+- compensaciones requeridas;
+- compensaciones ejecutadas;
+- evento idempotente;
+- estado final;
+- evidencia de reautenticación cuando aplique.
+
+Una denegación también debe ser reproducible.
+
+#### 39. Sensibilidad y reautenticación
+
+`remissions.update` y `remissions.cancel` son mutaciones sensibles.
+
+En los perfiles operativos de edición propia ya aprobados, la actualización exige reautenticación fuerte.
+
+En dispositivo compartido ambas capacidades se clasifican como:
+
+```text
+STRONG
+```
+
+Un PIN ligero por sí solo no satisface `STRONG`.
+
+La reautenticación no sustituye permiso, contexto, scope, ownership, estado ni recurso.
+
+#### 40. Dispositivo compartido
+
+En dispositivo compartido, la decisión efectiva intersecta:
+
+- actor humano identificado;
+- sesión del dispositivo;
+- techo de permisos;
+- aplicación efectiva;
+- carril;
+- turno y check-in cuando corresponda;
+- sede y área;
+- recurso;
+- estado;
+- reautenticación fuerte;
+- denegaciones.
+
+El principal técnico no se convierte en editor o cancelador empresarial.
+
+#### 41. Simulación
+
+La simulación admite previsualización completa del resultado hipotético de `update` y `cancel`.
+
+La simulación:
+
+- no actualiza cabecera;
+- no reemplaza líneas;
+- no cambia estado;
+- no elimina filas;
+- no ejecuta compensaciones;
+- no llama una reversa con efectos reales;
+- no publica movimientos.
+
+El resultado simulado nunca se reutiliza como autorización real.
+
+#### 42. Interfaz
+
+La UI puede anticipar si una acción parece disponible, pero la frontera autoritativa reside en servidor.
+
+Los botones:
+
+```text
+Editar
+Cancelar
+Eliminar
+Revertir cancelación
+```
+
+no son permisos.
+
+Cada envío vuelve a resolver la identidad canónica y el contrato de recurso aplicable.
+
+#### 43. `delete` no es un permiso canónico
+
+El catálogo no define una capacidad:
+
+```text
+nexo.inventory.remissions.delete
+```
+
+Por tanto, una acción runtime llamada `delete` no puede obtener autoridad simplemente porque exista `remissions.cancel`.
+
+Para una remisión empresarial persistida, la destrucción física ordinaria no forma parte del contrato canónico de cancelación.
+
+Si un futuro modelo define un borrador no empresarial físicamente eliminable, deberá contar con un contrato explícito que determine su lifecycle y autorización antes de materializar esa capacidad.
+
+#### 44. Prohibición de degradar delete a cancel
+
+No se admite la secuencia semántica:
+
+```text
+INTENTAR BORRAR
++
+BORRADO FALLA POR TRAZABILIDAD
+→ CANCELAR AUTOMÁTICAMENTE
+```
+
+Eliminar y cancelar tienen efectos, evidencia y expectativas diferentes.
+
+Cuando la acción solicitada sea cancelación, debe ejecutarse como cancelación desde el inicio.
+
+Cuando una eliminación no esté autorizada por el catálogo, debe fallar cerrada.
+
+#### 45. Reversa de cancelación
+
+`reverse_cancel` no es una capacidad canónica independiente.
+
+Una reversa solo puede ejecutarse si:
+
+- el dominio la define como compensación válida de una cancelación;
+- el estado actual admite la reversa;
+- el actor conserva `remissions.cancel` dentro del scope correspondiente;
+- la responsabilidad por estado es válida;
+- existe reautenticación requerida;
+- se controlan versión e idempotencia;
+- todas las compensaciones de inventario o custodia son atómicas;
+- existe auditoría completa.
+
+La mera existencia de un RPC no concede autoridad.
+
+#### 46. Reversa e inventario
+
+Cuando una reversa afecta inventario:
+
+- cada movimiento compensatorio debe correlacionarse con el movimiento original;
+- no se borra la historia del movimiento original;
+- el reintento no duplica la compensación;
+- el estado final de la remisión y las proyecciones de inventario deben reconciliarse;
+- un fallo parcial produce un estado recuperable y evidencia.
+
+005 no redefine el modelo general de inventario.
+
+#### 47. Frontera con preparación
+
+`remissions.update` no concede:
+
+```text
+nexo.inventory.remissions.prepare
+```
+
+El bodeguero y otros actores de origen utilizan la capacidad atómica de preparación definida en `NEXO-AUTH-006`.
+
+Una edición genérica no puede modificar cantidades preparadas, reservas, faltantes, empaque o estado de preparación.
+
+#### 48. Frontera con producción vinculada
+
+Una actualización o cancelación no concede ejecutar producción para satisfacer una remisión.
+
+Los efectos productivos y sus compensaciones pertenecen a su contrato específico y a `NEXO-AUTH-007`.
+
+#### 49. Frontera con despacho, tránsito y recepción
+
+`update` y `cancel` no sustituyen:
+
+- despacho;
+- inicio de tránsito;
+- eventos de tránsito;
+- recepción;
+- aceptación de cantidades;
+- transferencia de custodia.
+
+Las transiciones correspondientes conservan ownership en `NEXO-AUTH-008` a `NEXO-AUTH-010`.
+
+#### 50. AS-IS remoto de edición
+
+En el repositorio NEXO auditado, la edición propia pendiente utiliza la identidad legacy:
+
+```text
+inventory.remissions.edit_own_pending
+```
+
+y un helper de autorización basado en role override.
+
+El flujo observado comprueba:
+
+- autoría;
+- estado físico `pending`;
+- sede destino;
+- permiso legacy.
+
+No utiliza la capacidad canónica `remissions.update` como fuente única de autoridad.
+
+#### 51. Brecha AS-IS de carril en edición
+
+El flujo de edición inspeccionado no usa la ruta operacional estricta usada por la creación para resolver turno, check-in y contexto antes de la mutación.
+
+La futura materialización debe:
+
+- seleccionar el carril correcto;
+- evaluar un carril completo;
+- no mezclar role override con contexto operativo real;
+- consumir la clave canónica `remissions.update`;
+- conservar OWN y estado como condiciones del recurso.
+
+#### 52. Brecha AS-IS de territorio en edición
+
+El flujo observado bloquea cambiar la sede destino, pero permite proponer y persistir un nuevo origen.
+
+Esto contradice el perfil de edición propia operativa aprobado, que no permite modificar el lado de origen.
+
+El estado objetivo exige:
+
+```text
+OWN OPERATIVO
+→ ORIGEN INMUTABLE POR EDICIÓN GENÉRICA
+→ DESTINO INMUTABLE POR EDICIÓN GENÉRICA
+```
+
+Cualquier cambio territorial admisible por otro carril se evalúa con autoridad sobre territorio vigente y propuesto.
+
+#### 53. Brecha AS-IS de atomicidad en edición
+
+El flujo observado realiza escrituras separadas:
+
+1. actualiza la cabecera;
+2. elimina líneas existentes;
+3. inserta líneas nuevas.
+
+No se observó en esa frontera una transacción única ni un control optimista explícito de versión.
+
+La futura materialización debe impedir una remisión con cabecera nueva y conjunto de líneas parcial o vacío por fallo intermedio.
+
+#### 54. AS-IS remoto de cancelación
+
+La Server Action observada evalúa `inventory.remissions.cancel` por:
+
+- origen;
+- destino;
+- evaluación global;
+
+y autoriza cuando cualquiera resulta verdadera.
+
+Después, la rama de cancelación cambia directamente el estado físico a `cancelled`.
+
+El estado objetivo sustituye esa combinación por:
+
+```text
+RESPONSIBLE_SIDE_BY_STATE
++
+SCOPE
++
+ESTADO CANCELABLE
++
+VERSIÓN
++
+MOTIVO
+```
+
+#### 55. Brecha AS-IS de motivo y concurrencia
+
+En la cancelación observada no se aprecia un motivo obligatorio en la escritura directa ni una condición de versión junto al identificador de la remisión.
+
+La materialización debe incorporar ambos elementos conforme al contrato canónico.
+
+Una comprobación previa de estado en memoria no protege contra una transición concurrente entre lectura y escritura.
+
+#### 56. Brecha AS-IS de eliminación
+
+El flujo observado contiene una acción `delete` que puede:
+
+- intentar borrar la cabecera;
+- borrar líneas y reintentar;
+- ante trazabilidad de movimientos, convertir el resultado en cancelación.
+
+Esta mezcla queda fuera del estado objetivo.
+
+La historia empresarial persistida no se destruye utilizando el permiso de cancelación.
+
+#### 57. Brecha AS-IS de reversa
+
+El flujo observado expone `reverse_cancel` y llama una RPC de reversa después de pasar por la frontera general de cancelación.
+
+El estado objetivo exige que la reversa:
+
+- resuelva su estado exacto;
+- demuestre responsabilidad;
+- aplique compensación idempotente;
+- preserve historia;
+- no dependa solo del booleano genérico `canCancel`.
+
+#### 58. Estrategia de materialización futura
+
+Cada `implementation_unit_id` vuelve a inventariar el commit base antes de modificar.
+
+La estrategia objetivo es:
+
+```text
+RETIRE LEGACY edit_own_pending
++
+USE CANONICAL remissions.update
++
+SEPARATE UPDATE FROM CANCEL
++
+RESOLVE RESPONSIBLE SIDE BY STATE
++
+WHITELIST FIELDS
++
+ENFORCE OWN ONLY WHERE ALLOWED
++
+ADD OPTIMISTIC CONCURRENCY
++
+MAKE HEADER/LINES UPDATE ATOMIC
++
+REQUIRE CANCELLATION REASON
++
+MAKE CANCELLATION AND COMPENSATION IDEMPOTENT
++
+REMOVE GENERIC HARD DELETE BEHAVIOR
++
+HARDEN REVERSAL CONTRACT
++
+ALIGN UI AND SERVER DECISIONS
+```
+
+Este marcador no presupone el nombre físico de una nueva RPC, tabla, función o constraint.
+
+#### 59. Contrato de unidad física
+
+La tarea global no modifica producto.
+
+Cada futura instancia:
+
+```text
+NEXO-AUTH-005::<implementation_unit_id>
+```
+
+solo puede existir cuando:
+
+- la unidad esté asignada por el contrato de paquetes;
+- exista `package_id` propietario;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias técnicas de la unidad estén disponibles;
+- exista autorización física explícita.
+
+Cada instancia declara consumidores, archivos, datos, migraciones, pruebas, evidencia y rollback de su unidad.
+
+#### 60. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- ya existe cobertura de permiso, contexto y alcance canónicos;
+- ya existe cobertura de paridad entre evaluadores;
+- ya existe cobertura de carril base y operativo;
+- ya existe cobertura territorial y de mutación server-side;
+- ya existe cobertura de segregación de funciones;
+- ya existe cobertura de dispositivo compartido y simulación;
+- ya existe cobertura de invalidación y auditoría;
+- ya existe cobertura de idempotencia y compensación de remisiones;
+- ya existe cobertura de coherencia de unidades y políticas;
+- ya existe cobertura de atomicidad de inventario y movimientos.
+
+005 especializa obligaciones vigentes en actualización y cancelación sin introducir una obligación verificable nueva.
+
+#### 61. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-002`;
+- `TREQ-AUTH-004`;
+- `TREQ-AUTH-008`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-010`;
+- `TREQ-AUTH-011`;
+- `TREQ-AUTH-012`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-015`;
+- `TREQ-NEXO-006`;
+- `TREQ-NEXO-007`;
+- `TREQ-NEXO-009`;
+- `TREQ-NEXO-010`;
+- `TREQ-NEXO-011`.
+
+Estas referencias documentan cobertura existente y no representan una modificación del registro.
+
+#### 62. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificó `main` vigente de `vento-shell`, cierre de `NEXO-AUTH-004`, continuidad hacia `NEXO-AUTH-005`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas documentales, normalización de `edit_own_pending`, modalidades, scopes, prerrequisitos, contrato de recurso, matrices base y operativas, 04A vigente y AS-IS de edición, cancelación, eliminación y reversa en `vento-nexo` |
+| OPERATIVA | NOT_APPLICABLE | no se edita, cancela, elimina ni revierte una remisión real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-005::<implementation_unit_id>` |
+
+#### 63. Criterios de aceptación
+
+- [x] `remissions.update` y `remissions.cancel` quedan como capacidades canónicas separadas;
+- [x] `edit_own_pending` converge en `remissions.update` y deja de ser permiso funcional independiente;
+- [x] `update` conserva `BASE_OR_OPERATIONAL`;
+- [x] `cancel` conserva `BASE_OR_OPERATIONAL`;
+- [x] los carriles se evalúan completos e independientes;
+- [x] el carril base no requiere turno ni check-in;
+- [x] el carril operativo exige `T+C`;
+- [x] `REM-UPDATE` conserva scope base y `CTX` operativo sin global operativo;
+- [x] `REM-CANCEL` resuelve el lado responsable por estado;
+- [x] OWN de actualización exige creador, estado editable y campos permitidos;
+- [x] OWN no concede cancelación automáticamente;
+- [x] terceros requieren responsabilidad explícita;
+- [x] se evalúan territorio vigente y propuesto cuando un cambio territorial sea admisible;
+- [x] la matriz de 19 roles conserva las decisiones ya aprobadas;
+- [x] la edición propia operativa no modifica origen ni destino por una edición genérica;
+- [x] actualización administrativa no sustituye transiciones atómicas;
+- [x] los campos deben clasificarse y denegarse por defecto;
+- [x] líneas, cantidades, presentaciones, políticas y rutas se revalidan cuando cambian;
+- [x] toda actualización exige estado editable;
+- [x] toda cancelación exige estado cancelable;
+- [x] cancelación exige motivo y lado responsable aplicable;
+- [x] cancelación no revierte inventario o custodia por inferencia;
+- [x] actualización usa concurrencia optimista;
+- [x] cancelación usa bloqueo o versión e idempotencia;
+- [x] actualización de cabecera y líneas es atómica o explícitamente compensable;
+- [x] update y cancel conservan auditoría antes/después;
+- [x] shared device exige `STRONG` para ambas capacidades;
+- [x] simulación no produce efectos;
+- [x] `delete` no se convierte en permiso por existir `cancel`;
+- [x] una eliminación fallida no se degrada automáticamente a cancelación;
+- [x] `reverse_cancel` no se trata como capacidad independiente ni como bypass;
+- [x] preparación permanece reservada a `NEXO-AUTH-006`;
+- [x] etapas posteriores permanecen en sus owners;
+- [x] las brechas AS-IS de permiso legacy, carril, territorio, atomicidad, motivo, concurrencia, delete y reversa quedan documentadas;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT`;
+- [x] el gate futuro conserva `POST_E5_PACKAGE`;
+- [x] no se crea ni modifica requisito de prueba;
+- [x] no se autoriza cambio físico.
+
+#### 64. Límites
+
+Esta tarea no:
+
+- modifica código NEXO;
+- modifica Server Actions;
+- modifica componentes;
+- crea una RPC;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- elimina físicamente claves legacy;
+- cambia matrices de rol;
+- cambia modalidad de permisos;
+- cambia scopes;
+- cambia prerrequisitos;
+- inventa nuevos estados de remisión;
+- redefine la máquina de estados completa;
+- prepara remisiones;
+- ejecuta producción vinculada;
+- despacha;
+- registra tránsito;
+- recibe;
+- ajusta inventario;
+- redefine el ledger de inventario;
+- cambia dispositivos compartidos;
+- cambia simulación;
+- migra paquetes compartidos;
+- elimina helpers fuera de la materialización asignada;
+- despliega;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el registro de requisitos.
+
+#### 65. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-004 — Proteger creación de solicitudes`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-005 — Proteger edición y cancelación`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-006 — Proteger preparación`
 ### [ ] NEXO-AUTH-006 — Proteger preparación
 ### [ ] NEXO-AUTH-007 — Proteger producción vinculada
 ### [ ] NEXO-AUTH-008 — Proteger despacho
