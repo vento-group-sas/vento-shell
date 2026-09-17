@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-038",
+  "status": "WAITING_DOCUMENTATION",
+  "created_at": "2026-09-17T18:43:46.642Z",
+  "updated_at": "2026-09-17T18:43:46.642Z",
+  "canonical_snapshot": {
+    "repository_owner": "devVentoGroup/vento-shell",
+    "runtime_profile": "DATABASE_RPC_BOUNDARY",
+    "dominant_task_id": "SUPA-AUD-019",
+    "task_ids": [
+      "NEXO-AUTH-030",
+      "NEXO-DOM-002",
+      "NEXO-DOM-007",
+      "NEXO-DOM-008",
+      "NEXO-DOM-010",
+      "NEXO-DOM-017",
+      "NEXO-DOM-019",
+      "NEXO-DOM-020",
+      "NEXO-DOM-023",
+      "NEXO-DOM-024",
+      "NEXO-UX-009",
+      "NEXO-UX-014",
+      "NEXO-UX-015",
+      "NEXO-UX-016",
+      "NEXO-UX-022",
+      "NEXO-UX-026",
+      "PROC-CAT-002",
+      "PROC-CAT-009",
+      "PROC-CAT-013",
+      "PROC-CAT-018",
+      "PULSO-UX-021",
+      "SUPA-AUD-019",
+      "SUPA-AUD-022",
+      "SUPA-TRANS-005",
+      "UX-QA-024"
+    ],
+    "missing_task_ids": [
+      "NEXO-AUTH-030",
+      "NEXO-UX-026",
+      "PULSO-UX-021",
+      "UX-QA-024"
+    ]
+  },
+  "physical_identity": {
+    "targets": []
+  },
+  "implementation_units": [],
+  "evidence_plan": {
+    "tests": [],
+    "observability": [],
+    "acceptance_criteria": [],
+    "rollback_steps": []
+  },
+  "authorization": {
+    "decision": "PENDING",
+    "approved_by": null,
+    "approved_at": null,
+    "approval_ref": null,
+    "approval_statement": null
+  }
+}

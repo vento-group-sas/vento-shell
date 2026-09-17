@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-038`.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-045`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,17 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-038`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-045`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-038`
-- **Posición topológica:** **13/189**; prioridad derivada, sin selección humana.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-045`
+- **Posición topológica:** **14/189**; prioridad derivada, sin selección humana.
 - **Estado efectivo:** `COMPILED`
 - **Acción exacta:** `PREPARE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-038`
-- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-038`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-038.json` — `NOT_PREPARED`
+- **Objetivo exacto:** `GAP-PKG-045`
+- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-045`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-045.json` — `NOT_PREPARED`
 - **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-038 está dependency-eligible y no tiene expediente package-gate.
+- **Por qué:** GAP-PKG-045 está dependency-eligible y no tiene expediente package-gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `NEXO-AUTH-005`
