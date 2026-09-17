@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,270 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Agregar autorización nativa, checkpoint automático limpio y wiring del lifecycle corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir autorización nativa, EOL, checkpoint, idempotencia y worktree limpio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-starter.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar los nuevos comandos nativos y eliminar instrucciones que requieran edición manual del ledger."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-starter.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la proyección operativa del lifecycle corregido."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-supabase-deploy.mjs",
+      "change": "CREATE",
+      "scope": "Crear despliegue Supabase gobernado, exacto, resumible, con dry-run, evidencia, checkpoint y drift."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-supabase-deploy.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir dry-run exacto, rechazo de migraciones no autorizadas, resumibilidad y candidato limpio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Exponer las nuevas operaciones canónicas y registrar sus regresiones."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Documentar autorización, checkpoint y despliegue remoto como operaciones nativas."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Normalización UTF-8/LF canónica previa a validación cuando corresponda."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/validate-eol-policy.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Validación EOL fail-closed."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/supabase/environment-drift.mjs",
+      "change": "EXECUTE_ONLY",
+      "scope": "Certificación remota sobre candidato limpio e inmutable."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/correction-branch-lifecycle.mjs",
+    "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+    "node --check scripts/docs/correction-supabase-deploy.mjs",
+    "node --test scripts/docs/correction-supabase-deploy.test.mjs",
+    "node --test scripts/docs/correction-starter.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:eol:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "npm test --silent",
+    "git --no-pager diff --check origin/main...HEAD"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-16T19:29:49.589Z"
+  "zero_treq_reason": "La corrección repara exclusivamente la orquestación del lifecycle de correcciones, autorización, checkpoint, normalización EOL y despliegue Supabase gobernado; no cambia capacidad funcional ni requisitos de negocio.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-16T19:58:00.134Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO DELIV-PKG-015::CORR-016",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-16T23:15:34.843Z",
+      "candidate_head_before": "3843f1af2e7b4df7c4ad2978d26030a81427963e",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-16T23:22:51.275Z",
+      "execution_candidate_head": "7d64cc21d5a6701e61f95ddf00fcb62cb409cf15",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-16T23:52:24.866Z",
+      "candidate_head": "eee171fbfbef6d495b05f8f475bb07d58d4076fe",
+      "commands": [
+        "node --check scripts/docs/correction-branch-lifecycle.mjs",
+        "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+        "node --check scripts/docs/correction-supabase-deploy.mjs",
+        "node --test scripts/docs/correction-supabase-deploy.test.mjs",
+        "node --test scripts/docs/correction-starter.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:eol:check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "npm run quality:lint:ratchet -- --base origin/main",
+        "npm test --silent",
+        "git --no-pager diff --check origin/main...HEAD"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/correction-branch-lifecycle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "1cbe5af6e3c34607c7db2da0c75d0b9084e4fdfd2db15295d740355489d9ab10",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/correction-supabase-deploy.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-supabase-deploy.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "64ac88f511210c42c80ff1874dd3653bc15b208269571f35306228b4c4054bde",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-starter.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0fd1bfba35163a6a4396fb40b746996d85e9bd26b02974861eafc00eb3eb5419",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "793fd044b3ea018cc189750fc35dcdedae72df71fce7ec4239211a74f1c5aa74",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "4e96eb58f673f154140c1eea8e466f6121ac46cbf9cf4ddc62ba63a7103c0c4f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:eol:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0bf7d7a091d3ce35acd35c8fb5609c81e2265c86bc7f563bfdcb37eb896c110c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b1051bbb16f96cb3021434f209f8c8ba31d90ac47a5db682391bbf8facc8625a",
+          "stderr_sha256": "6754fb13a104071f588da1ad5d439d1b77266784bb6ba0b7c4a066d00c2dee01"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "1494152284458ee31b490f239cda6a66fab485689d0630a9aa4036122a860132",
+          "stderr_sha256": "87d84b354413767f688cdaf7c9e235abbb9df6ffdd6eade717baaa716a6a8062"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "93065f60f58ac2a6af24280e2101e1469395289935ed41d129a55428b042489d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b38daa940413d06c60d14b686800c114058715cf7de15345b872cf7383d8408c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "20bbc035ac944aa673cefbfdbbb48f27b6d0b91c6c8bcf36431cfc424e10edab",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run quality:lint:ratchet -- --base origin/main",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "eb2a259c7f180d1ecba339f9936d98eef644677375146acdf5c2b70783e2afcf",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "6d82fd97762f32118fa31b0dea252fb30a8c730926f421e73b5a0375d1f4e416",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git --no-pager diff --check origin/main...HEAD",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-16T23:59:24.266Z",
+      "validated_candidate_head": "eee171fbfbef6d495b05f8f475bb07d58d4076fe",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-16T19:29:49.589Z",
+  "implemented_at": "2026-09-16T23:29:35.570Z",
+  "verified_at": "2026-09-16T23:59:24.266Z"
 }
