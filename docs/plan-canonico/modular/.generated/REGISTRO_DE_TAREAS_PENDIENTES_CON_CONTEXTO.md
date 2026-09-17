@@ -8,7 +8,7 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-045`.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-047`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
@@ -16,17 +16,17 @@
 
 - **Acción:** ninguna corrección abierta.
 
-### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-045`
+### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
 
-- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-045`
-- **Posición topológica:** **14/189**; prioridad derivada, sin selección humana.
+- **CURRENT_EXECUTABLE_WORK:** `GAP-PKG-047`
+- **Posición topológica:** **15/189**; prioridad derivada, sin selección humana.
 - **Estado efectivo:** `COMPILED`
 - **Acción exacta:** `PREPARE_PACKAGE_GATE`
-- **Objetivo exacto:** `GAP-PKG-045`
-- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-045`
-- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-045.json` — `NOT_PREPARED`
+- **Objetivo exacto:** `GAP-PKG-047`
+- **Comando exacto:** `npm run docs:package:start -- --package-id GAP-PKG-047`
+- **Expediente package-gate:** `docs/plan-canonico/modular/package-gate-instances/GAP-PKG-047.json` — `NOT_PREPARED`
 - **Gates:** **2/6 PASS**; faltan **4**.
-- **Por qué:** GAP-PKG-045 está dependency-eligible y no tiene expediente package-gate.
+- **Por qué:** GAP-PKG-047 está dependency-eligible y no tiene expediente package-gate.
 - **Regla:** preparar o aprobar el expediente no autoriza todavía código, migraciones, despliegues ni cambios remotos.
 
 ### 3. Continúa la documentación — `NEXO-AUTH-005`
@@ -39,6 +39,12 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
+- `SHELL-CI-020::GAP-PKG-045` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+  - Contrato: Implementar y desplegar cada paquete aprobado por E5
+  - Integridad: `VALID`
+  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-020::GAP-PKG-045`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-045.json`
 - `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
   - Contrato: Ejecutar cutover y piloto conforme al plan aprobado
   - Integridad: `VALID`
@@ -63,7 +69,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-AUTH-005` — Proteger edición y cancelación | `NEXO-AUTH-006` — Proteger preparación | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-022::GAP-PKG-001` — Ejecutar cutover y piloto conforme al plan aprobado | `SHELL-CI-022::GAP-PKG-018` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-020::GAP-PKG-045` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -72,12 +78,12 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1209/1596 aprobadas** | **387** no aprobadas (0 propuesta, 0 rechazadas) | `NEXO-AUTH-005` |
-| 🟧 **Implementación física conocida** | **102/105 VERIFIED** | **3** no terminales | `SHELL-CI-022::GAP-PKG-001` |
+| 🟧 **Implementación física conocida** | **102/106 VERIFIED** | **4** no terminales | `SHELL-CI-020::GAP-PKG-045` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-022::GAP-PKG-001`
+- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-020::GAP-PKG-045`
 - **Entrada mutante normal:** `docs:implementation:advance`
 - **Estado físico declarado:** `PENDING_AUTHORIZATION`
 - **Estado físico efectivo:** `PENDING_AUTHORIZATION`
@@ -91,9 +97,10 @@
 
 | # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
-| 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-018` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
-| 3 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-019` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-045` | Implementar y desplegar cada paquete aprobado por E5 | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 3 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-018` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 4 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-019` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 
 ## Modos de trabajo y materialización
 

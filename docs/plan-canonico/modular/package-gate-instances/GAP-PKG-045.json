@@ -1,0 +1,210 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-045",
+  "status": "APPROVED_FOR_IMPLEMENTATION",
+  "created_at": "2026-09-17T18:54:36.757Z",
+  "updated_at": "2026-09-17T21:55:35.556Z",
+  "canonical_snapshot": {
+    "repository_owner": "devVentoGroup/vento-shell",
+    "runtime_profile": "SHARED_RUNTIME_CONTRACT",
+    "dominant_task_id": "SHELL-CON-002",
+    "task_ids": [
+      "SHELL-AUD-001",
+      "SHELL-AUD-006",
+      "SHELL-AUD-009",
+      "SHELL-AUD-010",
+      "SHELL-CON-002"
+    ],
+    "missing_task_ids": []
+  },
+  "physical_identity": {
+    "targets": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/catalog/versions/1.0.0/applications.json",
+        "symbol_or_surface": "Canonical application catalog v1.0.0 with the ten approved AppCode identities",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/schemas/application.schema.json",
+        "symbol_or_surface": "Closed schema for Vento Authorization Application identity",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/scripts/generate-authorization-types.mjs",
+        "symbol_or_surface": "Deterministic application catalog to AppCode and application metadata generator",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+        "symbol_or_surface": "Application catalog, schema and generated-contract validator",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/generated/versions/1.0.0/catalog.types.ts",
+        "symbol_or_surface": "AppCode, ApplicationDefinition and ApplicationByCode application-contract surface",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/generated/versions/1.0.0/catalog.values.ts",
+        "symbol_or_surface": "APPLICATION_CODES, APPLICATIONS, APPLICATION_BY_CODE and isAppCode application-contract surface",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/generated/versions/1.0.0/index.ts",
+        "symbol_or_surface": "Versioned exports for the generated application-contract surface",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/unit.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 TP-SHARED-001 unit evidence for canonical application identity",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 contractual evidence for TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 integration evidence for canonical application catalog projections and destinations",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 fail-closed application identity and destination security evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 controlled end-to-end application identity evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/regression.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 regression evidence for legacy local application-list drift",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-SHARED-001 fixtures for the three canonical GAP-PKG-045 TREQ requirements",
+        "operation": "CREAR"
+      }
+    ]
+  },
+  "implementation_units": [
+    {
+      "unit_id": "SHELL-CON-002::GLOBAL",
+      "repository": "vento-group-sas/vento-shell",
+      "change": "Adopt the already VERIFIED SHELL-CON-002::GLOBAL application-identity foundation without modifying it, and materialize only GAP-PKG-045 package-specific TP-SHARED-001 evidence. If evidence proves a product or consumer delta is required, stop and re-mature the package gate with the exact physical target before making that delta."
+    }
+  ],
+  "evidence_plan": {
+    "tests": [
+      {
+        "command": "node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check",
+        "expected_result": "PASS with generated application contract artifacts fresh from the versioned catalog."
+      },
+      {
+        "command": "node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+        "expected_result": "PASS with exactly ten unique canonical applications and valid application schema and generated application surfaces."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-045/unit.test.ts",
+        "expected_result": "PASS for canonical AppCode membership, metadata and fail-closed unit assertions."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-045/contract.test.ts",
+        "expected_result": "PASS for explicit TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034 contract assertions."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-045/integration.test.ts",
+        "expected_result": "PASS for versioned catalog projection and governed destination integration assertions."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-045/security.test.ts",
+        "expected_result": "PASS for unknown, local-only, insecure or non-governed application identities and destinations failing closed."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-045/e2e.test.ts",
+        "expected_result": "PASS for controlled end-to-end application identity and destination scenarios in the package evidence harness."
+      },
+      {
+        "command": "node --test tests/packages/GAP-PKG-045/regression.test.ts",
+        "expected_result": "PASS for regression checks against reintroduction of divergent local application identity semantics."
+      },
+      {
+        "command": "npm test --silent",
+        "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      }
+    ],
+    "observability": [
+      {
+        "signal": "packages/contracts/authorization/catalog/versions/1.0.0/applications.json plus generated AppCode surface",
+        "expected_result": "Exactly ten canonical AppCode identities remain versioned, unique and reproducibly projected into generated TypeScript application contracts."
+      },
+      {
+        "signal": "SHELL-CON-002::GLOBAL verification boundary",
+        "expected_result": "The VERIFIED pre-E5 foundation and source contract SHA-256 remain unchanged while GAP-PKG-045 evidence is materialized."
+      },
+      {
+        "signal": "GAP-PKG-045 canonical TREQ evidence coverage",
+        "expected_result": "TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034 each have explicit deterministic package-specific assertions and fixtures."
+      },
+      {
+        "signal": "Product, consumer, Supabase and production mutation delta during evidence-only adoption",
+        "expected_result": "Zero unapproved product, consumer, Supabase or production mutations. Any required delta stops the package and forces exact gate re-maturation before change."
+      }
+    ],
+    "acceptance_criteria": [
+      "GAP-PKG-045 adopts the existing VERIFIED SHELL-CON-002::GLOBAL application-identity foundation and does not create a competing application catalog, AppCode universe or semantic source.",
+      "applications.json remains the versioned source for the ten canonical application identities; generated AppCode and application metadata remain reproducible from that source and hub/default remain non-canonical application identities.",
+      "The package-specific evidence explicitly covers TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034 with deterministic fixtures, expected results and fail-closed assertions.",
+      "The evidence must detect any current launcher, login metadata, AppSwitcher, navigation runtime or absolute destination that diverges from the canonical application contract; a proven consumer/product delta blocks verification and requires re-maturation with exact repository and path before modification.",
+      "No Supabase mutation is part of GAP-PKG-045 maturation or evidence-only adoption, and no database migration is created or changed by this package scope.",
+      "The seven reserved tests/packages/GAP-PKG-045 evidence artifacts are the only new physical evidence targets authorized by this dossier before a proven re-maturation need.",
+      "The existing SHELL-CON-002::GLOBAL foundation files remain byte-stable during package evidence materialization; later SHELL-CON-* additions that share generated files are not re-owned or reverted by GAP-PKG-045.",
+      "Production remains unauthorized. The declared execution environment is TP-SHARED-001 over ENV-WEB-CI-STAGING under OWN-OPS governance."
+    ],
+    "rollback_steps": [
+      "If package-specific evidence materialization fails, revert only the GAP-PKG-045 evidence files created by the authorized implementation instance; do not alter the already VERIFIED SHELL-CON-002::GLOBAL foundation.",
+      "If tests prove that a product, consumer or shared-contract delta is required, stop the implementation and re-mature GAP-PKG-045 with the exact repository, path, symbol or surface and operation before making that delta.",
+      "No database rollback is required for the dossier as currently scoped because Supabase mutation is explicitly outside the package and production is unauthorized.",
+      "After any evidence rollback, rerun generate-authorization-types --check, validate-authorization-catalog and the canonical regression facade to confirm the pre-package foundation remains unchanged."
+    ]
+  },
+  "authorization": {
+    "decision": "APROBADO",
+    "approved_by": "usuario",
+    "approved_at": "2026-09-17T21:55:35.556Z",
+    "approval_ref": "APROBADO",
+    "approval_statement": "APROBADO GAP-PKG-045"
+  },
+  "deployment_environment": {
+    "canonical_task_id": "DELIV-PKG-019",
+    "rollout_profile": "TP-SHARED-001",
+    "environment_profile": "ENV-WEB-CI-STAGING",
+    "targets": [
+      {
+        "environment_role": "STAGING",
+        "target_type": "ENVIRONMENT_PROFILE",
+        "target_id": "ENV-WEB-CI-STAGING",
+        "owner": "OWN-OPS"
+      }
+    ],
+    "production_authorized": false
+  }
+}
