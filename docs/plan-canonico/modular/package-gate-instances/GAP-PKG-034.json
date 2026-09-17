@@ -1,0 +1,51 @@
+{
+  "schema_version": 1,
+  "package_id": "GAP-PKG-034",
+  "status": "WAITING_DOCUMENTATION",
+  "created_at": "2026-09-17T18:11:38.308Z",
+  "updated_at": "2026-09-17T18:11:38.308Z",
+  "canonical_snapshot": {
+    "repository_owner": "devVentoGroup/vento-shell",
+    "runtime_profile": "SHARED_RUNTIME_CONTRACT",
+    "dominant_task_id": "SHELL-CON-016",
+    "task_ids": [
+      "DATA-NORM-AUD-004",
+      "INT-APP-010",
+      "INT-DB-008",
+      "NEXO-AUTH-014",
+      "OPS-REC-001",
+      "PASS-UX-001",
+      "PULSO-UX-021",
+      "SHELL-CON-001",
+      "SHELL-CON-016",
+      "SUPA-AUD-019",
+      "SUPA-TRANS-005",
+      "SUPA-TRANS-007",
+      "VISO-UX-017"
+    ],
+    "missing_task_ids": [
+      "NEXO-AUTH-014",
+      "OPS-REC-001",
+      "PASS-UX-001",
+      "PULSO-UX-021",
+      "VISO-UX-017"
+    ]
+  },
+  "physical_identity": {
+    "targets": []
+  },
+  "implementation_units": [],
+  "evidence_plan": {
+    "tests": [],
+    "observability": [],
+    "acceptance_criteria": [],
+    "rollback_steps": []
+  },
+  "authorization": {
+    "decision": "PENDING",
+    "approved_by": null,
+    "approved_at": null,
+    "approval_ref": null,
+    "approval_statement": null
+  }
+}
