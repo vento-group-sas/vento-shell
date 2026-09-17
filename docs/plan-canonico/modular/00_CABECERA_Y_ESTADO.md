@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1208** |
+| Tareas aprobadas | **1209** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **388** |
+| Tareas no iniciadas | **387** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **75.69% (1208/1596)** |
+| Porcentaje de completamiento | **75.75% (1209/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-AUTH-003 — Corregir inventory.remissions.all_sites** |
-| Tarea actual | **NEXO-AUTH-004 — Proteger creación de solicitudes** |
+| Última tarea aprobada | **NEXO-AUTH-004 — Proteger creación de solicitudes** |
+| Tarea actual | **NEXO-AUTH-005 — Proteger edición y cancelación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-AUTH-005 — Proteger edición y cancelación** |
+| Siguiente tarea | **NEXO-AUTH-006 — Proteger preparación** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 66 de 127 aprobadas; NEXO-AUTH-004 pendiente** |
+| Progreso del bloque | **BLOQUE K: 67 de 127 aprobadas; NEXO-AUTH-005 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-AUTH-004** |
+| Carril documental | **ACTIVO — NEXO-AUTH-005** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-AUTH-003` — Corregir inventory.remissions.all_sites |
-| Tarea actual | `NEXO-AUTH-004` — Proteger creación de solicitudes — **NO INICIADA** |
-| Siguiente tarea | `NEXO-AUTH-005` — Proteger edición y cancelación |
+| Última aprobada | `NEXO-AUTH-004` — Proteger creación de solicitudes |
+| Tarea actual | `NEXO-AUTH-005` — Proteger edición y cancelación — **NO INICIADA** |
+| Siguiente tarea | `NEXO-AUTH-006` — Proteger preparación |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 66 DE 127 APROBADAS — ACTUAL NEXO-AUTH-004** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 67 DE 127 APROBADAS — ACTUAL NEXO-AUTH-005** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-AUTH-003 — Corregir inventory.remissions.all_sites
-        ↓
-TAREA ACTUAL
 NEXO-AUTH-004 — Proteger creación de solicitudes
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-AUTH-005 — Proteger edición y cancelación
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-AUTH-006 — Proteger preparación
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 66 de 127 tareas aprobadas
+BLOQUE K — 67 de 127 tareas aprobadas
 ```

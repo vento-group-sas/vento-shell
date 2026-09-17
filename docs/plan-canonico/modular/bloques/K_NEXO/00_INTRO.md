@@ -2089,7 +2089,1143 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-004 — Proteger creación de solicitudes`
-### [ ] NEXO-AUTH-004 — Proteger creación de solicitudes
+### ✅ NEXO-AUTH-004 — Proteger creación de solicitudes
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-003 — Corregir inventory.remissions.all_sites
+**Tarea siguiente:** NEXO-AUTH-005 — Proteger edición y cancelación
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger la creación de solicitudes de remisión mediante `nexo.inventory.remissions.request`, exigir un carril operativo completo, resolver y validar el borrador del lado solicitante en servidor y garantizar una creación fail-closed, atómica, idempotente, auditable y recuperable
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-004::<implementation_unit_id>` después de que `DELIV-PKG-025::<package_id>` asigne la unidad, el paquete propietario supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger la creación de solicitudes de remisión para que solo una autorización operativa completa pueda producir una nueva solicitud empresarial y para que autorización, validación del borrador, persistencia de cabecera, líneas, ruta, tareas derivadas y evidencia formen una frontera coherente.
+
+La decisión objetivo es:
+
+```text
+ACTOR EFECTIVO
++ PERMISO nexo.inventory.remissions.request
++ CARRIL OPERATIVO VÁLIDO
++ TURNO VIGENTE
++ CHECK-IN ACTIVO
++ ROL OPERATIVO COMPATIBLE
++ SEDE SOLICITANTE AUTORIZADA
++ ÁREA CUANDO LA MATRIZ O EL ROL LA EXIJA
++ BORRADOR CANÓNICO RESUELTO
++ RUTA VÁLIDA
++ PRODUCTOS / PRESENTACIONES / POLÍTICAS VÁLIDOS
++ DENEGACIONES AUSENTES
+→ CREACIÓN AUTORIZABLE
+```
+
+Una interfaz visible, una sede seleccionada, un rol base, un helper genérico o una escritura parcial no sustituyen esta decisión.
+
+#### 2. Problema que se resuelve
+
+La creación de una remisión es una mutación empresarial que relaciona al menos:
+
+- actor solicitante;
+- sede solicitante o destino;
+- sede origen permitida;
+- área solicitante cuando aplique;
+- líneas de producto;
+- cantidades;
+- unidades o presentaciones;
+- políticas de solicitud;
+- ruta de abastecimiento;
+- tareas derivadas de fulfillment;
+- trazabilidad de la decisión.
+
+El estado AS-IS ya contiene controles útiles, pero la operación permanece distribuida entre varias comprobaciones y varias escrituras.
+
+La protección objetivo debe impedir simultáneamente:
+
+- creación por rol base o privilegio administrativo;
+- creación fuera de turno o sin check-in;
+- creación para una sede ajena;
+- manipulación de origen, destino, área, producto, cantidad, presentación o política;
+- uso de una ruta inexistente o incompatible;
+- creación duplicada por reintento;
+- cabecera huérfana si fallan líneas o tareas derivadas;
+- éxito aparente con una operación parcialmente materializada;
+- atribución al principal técnico de un dispositivo compartido;
+- autoridad derivada de simulación;
+- desalineación entre interfaz y servidor.
+
+#### 3. Decisión principal
+
+`nexo.inventory.remissions.request` es la única capacidad canónica que representa la creación de una solicitud de remisión.
+
+Su autorización no se deriva de:
+
+```text
+nexo.access
+nexo.inventory.remissions.view
+nexo.inventory.remissions.update
+inventory.remissions.all_sites
+can_operate
+rol base
+cobertura administrativa
+sede seleccionada
+sede primaria
+URL visible
+formulario visible
+botón habilitado
+```
+
+La creación se autoriza únicamente mediante la evaluación completa de la capacidad exacta.
+
+#### 4. Resultado contractual
+
+Quedan fijadas veinte obligaciones de creación:
+
+1. usar la clave canónica exacta;
+2. conservar modalidad `OPERATIONAL_ONLY`;
+3. exigir turno vigente;
+4. exigir check-in activo;
+5. resolver rol operativo efectivo;
+6. resolver sede solicitante desde contexto válido;
+7. exigir área cuando el rol, dispositivo o recurso la requiera;
+8. autorizar el lado solicitante;
+9. validar el origen permitido sin convertirlo en autoridad de stock;
+10. validar ruta;
+11. validar elegibilidad de productos;
+12. validar presentación, unidad y política;
+13. normalizar cantidades antes de persistir;
+14. construir un borrador de recurso canónico;
+15. revalidar en servidor inmediatamente antes del efecto;
+16. persistir la creación como una unidad lógica coherente;
+17. aplicar idempotencia a reintentos;
+18. atribuir el actor humano real;
+19. registrar evidencia correlacionable;
+20. fallar cerrado ante cualquier componente ausente, conflictivo o no autorizado.
+
+#### 5. Capacidad protegida exacta
+
+La identidad canónica es:
+
+```text
+nexo.inventory.remissions.request
+```
+
+No se crea una segunda clave local para:
+
+- crear;
+- solicitar;
+- solicitar multisede;
+- solicitar desde administración;
+- solicitar desde dispositivo;
+- solicitar en nombre de otro actor.
+
+Toda variante de experiencia consume la misma capacidad y cambia únicamente el contexto, el scope o el contrato del recurso cuando corresponda.
+
+#### 6. Modalidad `OPERATIONAL_ONLY`
+
+La capacidad conserva:
+
+```text
+authorization_requirement = OPERATIONAL_ONLY
+```
+
+Por tanto:
+
+```text
+CARRIL BASE
+→ NO APLICA
+
+CARRIL OPERATIVO COMPLETO
+→ ÚNICO CAMINO AUTORIZANTE
+```
+
+Una concesión administrativa, incluso global, no puede satisfacer esta capacidad.
+
+#### 7. Prerrequisito `T+C`
+
+La creación exige:
+
+```text
+TURNO VIGENTE
++
+CHECK-IN ACTIVO
+```
+
+El turno debe corresponder al actor efectivo, a una revisión publicada, a una ventana vigente, a una sede válida y a un rol operativo válido.
+
+El check-in debe corresponder al mismo actor, turno y sede, permanecer activo y no estar sustituido, expirado o cerrado.
+
+La ausencia de cualquiera de los dos produce denegación operativa.
+
+#### 8. Semántica de área `SITE_SUFFICIENT`
+
+La capacidad es de nivel `SITE_SUFFICIENT`.
+
+Esto significa que el permiso no exige universalmente un `active_area_id`, pero no elimina restricciones de área.
+
+Puede operar sin área únicamente cuando:
+
+- el rol operativo está habilitado a nivel general de sede; y
+- el recurso puede resolverse legítimamente a nivel de sede; y
+- el scope concedido lo permite; y
+- ninguna regla superior exige área.
+
+Si el rol operativo está restringido a un área, el turno y el contexto deben aportar un área compatible.
+
+`SITE_SUFFICIENT` nunca significa “todas las áreas”.
+
+#### 9. Matrices operativas vigentes
+
+La capacidad solo existe para un actor cuando su matriz operativa vigente la concede expresamente.
+
+La cobertura aprobada incluye, entre otras decisiones ya fijadas:
+
+| Rol operativo | Decisión para `request` | Límite principal |
+| --- | --- | --- |
+| `cajero_satelite` | ASIGNAR OPERATIVO | sede activa y área `cashier` |
+| `barista_satelite` | ASIGNAR OPERATIVO | sede activa y área `bar` |
+| `cocinero_satelite` | ASIGNAR OPERATIVO | sede activa y área `kitchen` |
+| `servicio_salon` | ASIGNAR OPERATIVO | sede activa y área `service` |
+| `mostrador_satelite` | ASIGNAR OPERATIVO | sede y área de Mostrador activas |
+| `operador_integral_satelite` | ASIGNAR OPERATIVO | sede integrada y área exacta cuando la configuración la exija |
+| `gerencia_operativa` | ASIGNAR OPERATIVO | sede o área activa bajo coordinación del turno |
+| `produccion_cocina` | NO ASIGNAR | producción no solicita remisiones por esta matriz |
+| `produccion_panaderia` | NO ASIGNAR | producción no solicita remisiones por esta matriz |
+| `produccion_reposteria` | NO ASIGNAR | producción no solicita remisiones por esta matriz |
+| `bodeguero` | NO ASIGNAR | atiende solicitudes; no solicita por terceros |
+| `conductor_logistica` | NO ASIGNAR | transporta; no solicita abastecimiento |
+
+Esta tarea no cambia esas matrices.
+
+#### 10. Prohibición de autorización administrativa
+
+No autorizan creación:
+
+- `propietario` por nombre de rol;
+- `gerente_general` por nombre de rol;
+- `gerente` por nombre de rol;
+- `supervisor` por nombre de rol;
+- cobertura administrativa;
+- scope base global;
+- permiso base de consulta;
+- `role override` administrativo;
+- pertenencia a una sede;
+- selección de sede en la interfaz.
+
+Un mismo humano puede poseer autoridad base y asumir un rol operativo, pero la creación se decide únicamente con el carril operativo.
+
+#### 11. Scope de solicitud
+
+El perfil canónico de la capacidad admite:
+
+```text
+AS
+SS
+AST
+AA
+SA
+AAT
+CTX
+```
+
+del lado solicitante, sujeto además al contexto operativo real.
+
+No admite como autoridad de creación:
+
+```text
+G
+TST
+ATW
+```
+
+La solicitud puede cruzar sedes como relación empresarial, pero no existe un “global operativo” para crear remisiones.
+
+#### 12. Lado solicitante
+
+La autorización mutadora se concentra en el lado solicitante o destino de la solicitud.
+
+La decisión debe demostrar que:
+
+- la sede solicitante pertenece al contexto permitido;
+- el actor puede solicitar para ese lado;
+- el área, cuando corresponda, es compatible;
+- el recurso propuesto conserva esa identidad territorial.
+
+El permiso no necesita autoridad de inventario sobre el origen para expresar una necesidad válida.
+
+#### 13. Origen permitido
+
+El origen es una relación que debe validarse, no una autoridad transferida al solicitante.
+
+La creación exige demostrar que:
+
+- el origen existe y está activo;
+- puede abastecer el tipo de solicitud correspondiente;
+- la relación solicitante-origen está permitida;
+- la ruta aplicable es válida;
+- las líneas pueden usar esa relación.
+
+La capacidad `request` no concede:
+
+- consultar todo el stock del origen;
+- reservar stock por sí sola;
+- preparar;
+- modificar ubicaciones;
+- despachar;
+- ejecutar producción.
+
+#### 14. Cruce de sedes
+
+Una solicitud legítima puede relacionar dos sedes.
+
+Esto no implica:
+
+```text
+AUTORIDAD EN DESTINO
++
+RELACIÓN CON ORIGEN
+=
+AUTORIDAD OPERATIVA SOBRE ORIGEN
+```
+
+El actor expresa la necesidad desde su lado autorizado. Las etapas posteriores vuelven a evaluar sus propios permisos y lados.
+
+#### 15. Borrador canónico de recurso
+
+Antes de persistir debe existir un borrador normalizado equivalente a:
+
+```text
+REMISSION DRAFT
+├── actor solicitante
+├── sede solicitante / destino
+├── área solicitante cuando aplique
+├── origen permitido
+├── líneas
+│   ├── producto
+│   ├── cantidad
+│   ├── unidad / presentación
+│   ├── política de solicitud
+│   └── área funcional cuando aplique
+├── ruta aplicable
+└── metadatos empresariales admitidos
+```
+
+Los nombres físicos de columnas pueden variar durante la materialización. La semántica no.
+
+#### 16. Entradas del cliente
+
+Todo valor enviado por formulario, URL, query string, componente, dispositivo o cliente es una propuesta que debe resolverse y validarse en servidor.
+
+Esto incluye:
+
+- `from_site_id`;
+- `to_site_id`;
+- área;
+- producto;
+- cantidad;
+- presentación;
+- UOM;
+- política;
+- fecha esperada;
+- notas;
+- ruta o preferencias relacionadas.
+
+Un identificador existente no demuestra por sí mismo que el actor pueda utilizarlo.
+
+#### 17. Actor efectivo
+
+La solicitud debe quedar atribuida al humano que realmente ejecuta la acción.
+
+La decisión distingue:
+
+```text
+PRINCIPAL DE SESIÓN
+ACTOR EFECTIVO
+ROL OPERATIVO
+SOLICITANTE EMPRESARIAL
+```
+
+Cuando coinciden, siguen siendo conceptos diferentes.
+
+Cuando no coinciden, la relación debe ser explícita y autorizada.
+
+#### 18. Sesión personal
+
+En una sesión personal:
+
+- el actor efectivo procede de la identidad laboral real;
+- el rol operativo procede del turno vigente;
+- la sede y área proceden del contexto operativo;
+- el permiso procede de la matriz o concesión operativa vigente;
+- la decisión se recalcula en servidor.
+
+No se usa `employees.role` como sustituto del rol operativo efectivo.
+
+#### 19. Dispositivo compartido
+
+En dispositivo compartido, la autoridad es la intersección entre:
+
+- límites del dispositivo;
+- aplicación efectiva;
+- actor humano identificado;
+- permiso efectivo del actor;
+- turno y check-in;
+- sede y área;
+- recurso;
+- denegaciones.
+
+El dispositivo no se convierte en solicitante humano.
+
+Cuando el mecanismo de firma del actor sea requerido, la persistencia y la evidencia deben conservar una correlación íntegra con la solicitud creada.
+
+#### 20. Role override
+
+Un override de presentación, diagnóstico o administración no puede fabricar un carril operativo para `request`.
+
+Si una herramienta autorizada proyecta otro rol, esa proyección no puede ejecutar una solicitud real con autoridad ficticia.
+
+La creación real exige el actor y contexto reales autorizantes.
+
+#### 21. Simulación
+
+La capacidad admite previsualización completa bajo el contrato de simulación, pero:
+
+```text
+SIMULACIÓN
+→ PUEDE MOSTRAR RESULTADO HIPOTÉTICO
+→ NO PERSISTE SOLICITUD
+→ NO PERSISTE LÍNEAS
+→ NO GENERA FULFILLMENT
+→ NO RESERVA INVENTARIO
+→ NO EMITE EFECTOS EMPRESARIALES
+```
+
+La simulación nunca se convierte en autoridad real.
+
+#### 22. Acceso a NEXO
+
+`nexo.access` permite entrar a la aplicación dentro de su contrato.
+
+No concede `nexo.inventory.remissions.request`.
+
+Una pantalla accesible con acción bloqueada es un estado válido cuando el actor puede entrar a NEXO pero no puede solicitar.
+
+#### 23. Visibilidad de interfaz
+
+La UI puede calcular una señal de disponibilidad para:
+
+- mostrar;
+- ocultar;
+- deshabilitar;
+- explicar un bloqueo;
+- dirigir al contexto correcto.
+
+Esa señal no autoriza la escritura.
+
+Una petición directa contra la Server Action debe producir la misma denegación que la UI habría mostrado.
+
+#### 24. Frontera server-side
+
+La decisión autorizante debe ejecutarse en servidor inmediatamente antes del efecto.
+
+La Server Action, API o RPC que materialice la solicitud no puede confiar exclusivamente en:
+
+- un booleano calculado por la página;
+- un campo oculto;
+- un `site_id` enviado por cliente;
+- un rol contenido en una cookie;
+- una ruta de navegación;
+- una validación ejecutada minutos antes;
+- un resultado cacheado.
+
+#### 25. Orden canónico de evaluación
+
+La frontera de creación sigue este orden lógico:
+
+1. autenticar principal;
+2. resolver actor efectivo;
+3. resolver sesión y dispositivo;
+4. resolver rol operativo;
+5. resolver turno y check-in;
+6. resolver sede y área efectivas;
+7. comprobar permiso exacto;
+8. construir borrador normalizado;
+9. resolver scope;
+10. validar sede solicitante;
+11. validar origen;
+12. validar ruta;
+13. validar productos, políticas, unidades y cantidades;
+14. aplicar denegaciones;
+15. registrar decisión autorizante;
+16. persistir la unidad de creación de forma coherente.
+
+Una validación posterior no repara una autorización faltante anterior.
+
+#### 26. Capacidad de la sede solicitante
+
+La sede solicitante debe estar habilitada para solicitar remisiones mediante la fuente canónica vigente.
+
+Un fallback legacy puede existir durante transición únicamente bajo su contrato de compatibilidad y no puede ampliar el conjunto de sedes solicitantes.
+
+La ausencia de configuración no se convierte silenciosamente en `true`.
+
+#### 27. Ruta de abastecimiento
+
+La ruta debe resolverse antes de considerar completa la creación.
+
+Como mínimo debe demostrarse:
+
+- relación válida entre origen y destino;
+- producto compatible;
+- área solicitante compatible cuando aplique;
+- origen habilitado;
+- configuración activa;
+- modalidad de abastecimiento válida;
+- datos obligatorios de la etapa siguiente disponibles o un estado empresarial explícito que represente la falta sin mentir sobre completitud.
+
+No se construye éxito final a partir de una ruta imposible.
+
+#### 28. Elegibilidad de producto
+
+Cada producto solicitado debe:
+
+- existir;
+- estar activo cuando el contrato lo exija;
+- estar habilitado para la sede solicitante;
+- admitir remisión;
+- admitir el área solicitante cuando corresponda;
+- conservar su perfil de inventario aplicable;
+- utilizar una política compatible.
+
+Una línea inválida bloquea o produce el resultado parcial expresamente aprobado por el contrato; no se descarta silenciosamente.
+
+#### 29. Política de solicitud
+
+Cuando una línea usa una política de solicitud, el servidor debe validar:
+
+- identidad de política;
+- producto relacionado;
+- vigencia;
+- unidad de solicitud;
+- unidad base;
+- factor de conversión;
+- mínimo;
+- step;
+- fraccionalidad;
+- perfil físico cuando corresponda.
+
+El cliente no puede enviar una política de otro producto para alterar cantidades o presentaciones.
+
+#### 30. Presentaciones y UOM
+
+Cuando la línea use presentación o perfil UOM, se valida:
+
+- pertenencia al producto;
+- estado activo;
+- unidad de entrada;
+- unidad de stock;
+- factor aplicable;
+- modalidad de medición;
+- compatibilidad con la operación.
+
+No se inventa un factor permisivo por ausencia de perfil canónico.
+
+#### 31. Cantidades
+
+Toda cantidad se normaliza antes de persistir.
+
+Deben rechazarse como mínimo:
+
+- cantidades no numéricas;
+- cantidades iguales o menores que cero;
+- cantidades que incumplan mínimo;
+- cantidades que incumplan step;
+- fracciones prohibidas;
+- conversiones incompatibles;
+- valores cuyo producto o política no pueda resolverse.
+
+La cantidad normalizada que autoriza el borrador debe ser la misma que persiste.
+
+#### 32. Área por línea
+
+Cuando una línea declare área funcional:
+
+- debe corresponder al contexto autorizado;
+- debe estar habilitada para remisiones;
+- debe ser compatible con el producto;
+- no puede ampliar el rol operativo;
+- no puede elegirse libremente para cruzar a otra área.
+
+Si el rol está restringido a un área, una línea de otra área se deniega.
+
+#### 33. Estado inicial
+
+La creación debe producir exclusivamente el estado inicial canónico del proceso de solicitud.
+
+Esta tarea no renombra ni redefine la máquina de estados de remisiones.
+
+Una representación física legacy como `pending` no autoriza a inventar una segunda semántica documental; la materialización deberá mapear el estado físico al contrato de dominio vigente.
+
+#### 34. Atomicidad de creación
+
+La solicitud empresarial se considera creada de forma íntegra únicamente cuando el conjunto obligatorio definido para la creación queda persistido coherentemente.
+
+La unidad lógica comprende, según el modelo físico vigente:
+
+- cabecera;
+- líneas;
+- relaciones de ruta necesarias;
+- tareas derivadas obligatorias;
+- correlación de actor y auditoría.
+
+No es aceptable declarar éxito final si solo existe la cabecera.
+
+#### 35. Idempotencia
+
+Toda creación debe aceptar una identidad estable de intención o mecanismo equivalente que permita reconocer reintentos de la misma solicitud.
+
+La idempotencia debe cubrir la unidad empresarial completa, no únicamente una inserción individual.
+
+Para una misma intención:
+
+```text
+PRIMER INTENTO CONFIRMADO
++
+REINTENTO EQUIVALENTE
+→ MISMA SOLICITUD EMPRESARIAL
+```
+
+No:
+
+```text
+→ DOS SOLICITUDES
+```
+
+#### 36. Doble clic y reintento
+
+Doble clic, retry HTTP, reconexión del navegador, repetición de Server Action o reenvío de una cola no pueden producir solicitudes duplicadas.
+
+El consumidor puede volver a consultar el resultado, pero no repetir ciegamente el efecto.
+
+#### 37. Resultado desconocido
+
+Si el cliente pierde la respuesta después de enviar la creación, el siguiente intento debe reconciliar primero la identidad de la intención.
+
+Un timeout o corte de red produce:
+
+```text
+RESULTADO DESCONOCIDO
+→ RECONCILIAR
+→ CONFIRMAR EXISTENTE O REINTENTAR DE FORMA SEGURA
+```
+
+No produce automáticamente una segunda solicitud.
+
+#### 38. Tareas derivadas de fulfillment
+
+Las tareas de fulfillment son derivadas de la solicitud y de sus rutas.
+
+Su generación debe conservar:
+
+- identidad de la línea origen;
+- producto;
+- origen;
+- destino;
+- área solicitante;
+- área preparadora cuando aplique;
+- modalidad de abastecimiento;
+- ubicaciones o referencias necesarias;
+- estado derivado coherente.
+
+La ausencia de una tarea obligatoria debe ser un resultado empresarial explícito o un fallo de la unidad de creación; no un éxito silencioso.
+
+#### 39. Efectos de inventario
+
+Crear una solicitud no equivale por sí solo a:
+
+- reservar stock;
+- descontar stock;
+- producir;
+- mover inventario;
+- despachar;
+- recibir.
+
+Si una configuración futura agrega efectos en la creación, esos efectos deberán pertenecer a un contrato explícito, atómico e idempotente y no podrán duplicar movimientos.
+
+#### 40. Auditoría
+
+Cada intento permitido o denegado debe conservar evidencia suficiente para reconstruir:
+
+- principal;
+- actor efectivo;
+- dispositivo cuando aplique;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- permiso;
+- scope;
+- borrador o correlación del recurso;
+- decisión;
+- razones;
+- versión contractual;
+- timestamp.
+
+Después del éxito se correlaciona además la identidad estable de la solicitud creada.
+
+#### 41. Denegaciones
+
+La creación falla cerrada ante:
+
+- sesión ausente;
+- actor no resoluble;
+- rol operativo no autorizado;
+- turno inválido;
+- check-in ausente;
+- sede incompatible;
+- área incompatible;
+- permiso ausente;
+- scope incompatible;
+- origen inválido;
+- ruta inválida;
+- producto inválido;
+- política inválida;
+- presentación inválida;
+- cantidad inválida;
+- dispositivo incompatible;
+- simulación;
+- conflicto estructural;
+- error técnico que impida demostrar una condición obligatoria.
+
+Los mensajes públicos no necesitan revelar cuál asignación, rol o territorio interno habría permitido la acción.
+
+#### 42. Corrección y compensación
+
+Si una implementación física no puede mantener toda la creación en una única transacción técnica, debe definir una estrategia explícita de compensación y reconciliación.
+
+No se admite:
+
+```text
+CABECERA CREADA
++
+LÍNEAS FALLIDAS
+→ ÉXITO
+```
+
+ni:
+
+```text
+CABECERA + LÍNEAS
++
+FULFILLMENT FALLIDO
+→ ÉXITO COMPLETO
+```
+
+La salida debe preservar un estado empresarial verdadero y recuperable.
+
+#### 43. Frescura
+
+La autorización se invalida cuando cambien, antes del efecto:
+
+- turno;
+- check-in;
+- rol operativo;
+- sede;
+- área;
+- grant;
+- scope;
+- estado de la sede;
+- políticas;
+- ruta;
+- producto;
+- presentación;
+- dispositivo;
+- denegaciones.
+
+Una decisión cacheada no sobrevive automáticamente a esos cambios.
+
+#### 44. Offline
+
+Una intención capturada offline no constituye una solicitud creada.
+
+Al sincronizar debe:
+
+1. recuperar actor e identidad de intención;
+2. reautorizar con contexto vigente;
+3. revalidar recurso y ruta;
+4. reconciliar idempotencia;
+5. persistir solo si todas las condiciones siguen siendo válidas.
+
+La autoridad que existía al capturar no se congela indefinidamente.
+
+#### 45. Concurrencia
+
+La creación debe ser segura frente a:
+
+- dos pestañas;
+- dos dispositivos;
+- dos reintentos;
+- actualización concurrente de políticas;
+- cambio de ruta;
+- cambio de turno;
+- cierre de check-in;
+- desactivación de sede o producto.
+
+Cuando una condición relevante cambie entre la validación y la escritura, la frontera debe revalidar o abortar.
+
+#### 46. AS-IS remoto inspeccionado
+
+En `vento-nexo` se observó una Server Action `createRemission` que ya realiza parte importante del contrato:
+
+- autentica usuario;
+- resuelve sesión operacional;
+- comprueba `inventory.remissions.request`;
+- consulta contexto operacional;
+- valida capacidad de la sede solicitante;
+- valida productos;
+- valida políticas;
+- valida UOM;
+- valida área;
+- exige firma de actor en dispositivo compartido;
+- crea cabecera, líneas y tareas derivadas.
+
+Esta tarea conserva esos controles válidos y define las brechas restantes.
+
+#### 47. Autorización AS-IS
+
+La Server Action observada usa:
+
+```text
+shared device
+→ checkOperationalSessionPermission
+
+sesión personal
+→ checkOperationalPermission
+```
+
+para `inventory.remissions.request`.
+
+Esa dirección es compatible con el contrato `OPERATIONAL_ONLY`.
+
+La futura materialización no debe degradarla a un helper base por conveniencia de UI, rol privilegiado o visibilidad multisede.
+
+#### 48. Validaciones AS-IS previas a persistencia
+
+Antes de crear la cabecera, el AS-IS ya valida:
+
+- origen y destino presentes;
+- contexto operativo;
+- permiso;
+- capacidad solicitante de la sede;
+- existencia de líneas válidas;
+- disponibilidad de productos para la sede;
+- compatibilidad de área;
+- firma del actor cuando el dispositivo compartido la requiere.
+
+También transforma cantidades y políticas antes de persistir.
+
+Esas validaciones se conservan como base, pero no sustituyen la validación íntegra de ruta ni la atomicidad.
+
+#### 49. Brecha AS-IS de atomicidad
+
+El flujo observado persiste primero:
+
+```text
+restock_requests
+```
+
+después:
+
+```text
+restock_request_items
+```
+
+y después:
+
+```text
+restock_item_fulfillments
+```
+
+mediante escrituras separadas.
+
+Un fallo posterior a la cabecera puede dejar una materialización parcial.
+
+El estado objetivo exige que esa secuencia se convierta en una unidad lógica atómica o compensable con resultado explícito y reconciliable.
+
+#### 50. Brecha AS-IS de resolución de ruta
+
+La resolución de `product_fulfillment_routes` observada ocurre después de insertar cabecera e ítems.
+
+Incluso existe una salida equivalente a:
+
+```text
+LA SOLICITUD SE CREÓ
++
+NO FUE POSIBLE RESOLVER SUS RUTAS
+```
+
+El estado objetivo debe resolver o clasificar la ruta antes del éxito final y evitar que un fallo técnico posterior produzca una solicitud presentada como completa cuando no lo está.
+
+#### 51. Brecha AS-IS de correlación de firma
+
+En dispositivo compartido, la firma del actor se obtiene antes de insertar la solicitud, pero su `targetId` se adjunta después de la cabecera.
+
+Si ese attachment falla, el AS-IS registra error y continúa.
+
+La futura materialización debe garantizar que la evidencia obligatoria conserve correlación íntegra con la solicitud o que la operación quede en un estado recuperable que no se declare plenamente cerrada.
+
+Esto no redefine el mecanismo de firma; exige consistencia de la evidencia.
+
+#### 52. Brecha AS-IS de interfaz
+
+La superficie de remisiones observada calcula disponibilidad de creación y otras señales de UI con helpers que no representan necesariamente la misma ruta operacional estricta utilizada por la Server Action.
+
+El estado objetivo exige:
+
+```text
+UI
+→ puede anticipar la decisión
+
+SERVER
+→ siempre recalcula la decisión autoritativa
+```
+
+La UI no puede habilitar una creación que el contrato sabe que será denegada por usar una evaluación de carril diferente.
+
+#### 53. Estrategia de materialización futura
+
+Cada `implementation_unit_id` deberá volver a inventariar el commit base y materializar únicamente las superficies que le hayan sido asignadas.
+
+La estrategia objetivo es:
+
+```text
+REUSE VALID SERVER-SIDE OPERATIONAL AUTH
++
+CENTRALIZE CANONICAL PERMISSION CONSUMPTION
++
+NORMALIZE RESOURCE DRAFT
++
+VALIDATE ROUTE BEFORE FINAL EFFECT
++
+MAKE CREATION ATOMIC OR EXPLICITLY COMPENSABLE
++
+ADD END-TO-END IDEMPOTENCY
++
+PRESERVE HUMAN ACTOR ATTRIBUTION
++
+ALIGN UI WITH SERVER DECISION
+```
+
+No se presupone en este marcador el nombre físico de una RPC, tabla, columna, constraint o archivo nuevo.
+
+#### 54. Contrato de unidad física
+
+La tarea global no modifica producto.
+
+Cada futura instancia:
+
+```text
+NEXO-AUTH-004::<implementation_unit_id>
+```
+
+solo puede existir cuando:
+
+- la unidad haya sido asignada por el contrato de paquetes;
+- exista `package_id` propietario;
+- `E5-GATE-008::<package_id>` haya pasado;
+- las dependencias técnicas de la unidad estén disponibles;
+- exista autorización física explícita.
+
+La instancia deberá declarar consumidores exactos, archivos, datos, migraciones, pruebas y rollback de su unidad.
+
+#### 55. Frontera con `NEXO-AUTH-005`
+
+`NEXO-AUTH-005` conserva:
+
+- edición;
+- edición propia pendiente;
+- cancelación;
+- eliminación;
+- reversa;
+- reglas de estado posteriores a la creación.
+
+Esta tarea solo protege la creación inicial.
+
+Una solicitud ya persistida se vuelve recurso existente y sus mutaciones posteriores salen del alcance de 004.
+
+#### 56. Frontera con `NEXO-AUTH-006` a `NEXO-AUTH-010`
+
+La creación no concede:
+
+- preparar;
+- ejecutar producción vinculada;
+- despachar;
+- registrar tránsito;
+- recibir.
+
+Cada etapa exige su permiso, lado, actor, contexto, estado y evidencia propios.
+
+La creación únicamente deja una solicitud válida para ser consumida por esas etapas.
+
+#### 57. Frontera con `NEXO-AUTH-015` a `NEXO-AUTH-020`
+
+Se conservan owners posteriores:
+
+- `NEXO-AUTH-015` integra el filtrado completo por sede y área efectivas;
+- `NEXO-AUTH-016` integra dispositivo compartido de forma global;
+- `NEXO-AUTH-017` integra simulación estricta;
+- `NEXO-AUTH-018` migra consumidores a paquetes compartidos de `vento-shell`;
+- `NEXO-AUTH-019` elimina helpers duplicados;
+- `NEXO-AUTH-020` ejecuta pruebas integrales de autorización NEXO.
+
+004 define qué debe proteger la creación; no absorbe esas especializaciones.
+
+#### 58. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- ya existe cobertura para exigir permiso, contexto y alcance canónicos;
+- ya existe cobertura para paridad entre evaluadores;
+- ya existe cobertura para separar carril base y operativo;
+- ya existe cobertura para turno, check-in, sede y área;
+- ya existe cobertura adversarial contra formulario, API o RPC manipulados;
+- ya existe cobertura de invalidación, reautorización y caché;
+- ya existe cobertura de auditoría correlacionable;
+- ya existe cobertura de identidad de actor en dispositivo compartido;
+- ya existe cobertura NEXO para idempotencia y doble contabilización de remisiones;
+- ya existe cobertura NEXO para jerarquía unificada de solicitud, preparación, despacho, tránsito y recepción.
+
+La tarea especializa obligaciones existentes en la creación de solicitudes sin introducir una obligación verificable nueva.
+
+#### 59. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-004`;
+- `TREQ-AUTH-008`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-011`;
+- `TREQ-AUTH-012`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-015`;
+- `TREQ-NEXO-006`;
+- `TREQ-NEXO-007`;
+- `TREQ-NEXO-009`;
+- `TREQ-NEXO-010`;
+- `TREQ-NEXO-011`.
+
+Estas referencias documentan cobertura heredada y no modifican filas del registro.
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificó `main` vigente de `vento-shell`, cierre de `NEXO-AUTH-003`, continuidad hacia `NEXO-AUTH-004`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas documentales, modalidad `OPERATIONAL_ONLY`, prerrequisito `T+C`, área `SITE_SUFFICIENT`, scope `REM-REQUEST`, contrato de recurso, matrices operativas, 04A vigente y AS-IS de `createRemission` en `vento-nexo` |
+| OPERATIVA | NOT_APPLICABLE | no se crea, modifica, cancela ni ejecuta una remisión real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-004::<implementation_unit_id>` |
+
+#### 61. Criterios de aceptación
+
+- [x] la capacidad protegida exacta es `nexo.inventory.remissions.request`;
+- [x] conserva modalidad `OPERATIONAL_ONLY`;
+- [x] no existe camino autorizante por carril base;
+- [x] exige turno vigente y check-in activo;
+- [x] `SITE_SUFFICIENT` no elimina restricciones de área del rol o recurso;
+- [x] la concesión procede de la matriz operativa vigente;
+- [x] roles sin concesión permanecen denegados;
+- [x] el scope se limita al lado solicitante y no crea global operativo;
+- [x] el origen se valida sin conceder autoridad de inventario sobre él;
+- [x] el cruce de sedes se trata como relación de solicitud;
+- [x] el borrador se resuelve y normaliza en servidor;
+- [x] entradas del cliente no se tratan como autoridad;
+- [x] sede solicitante y capacidad de sede se validan;
+- [x] ruta se valida antes del éxito final;
+- [x] productos, áreas, políticas, UOM y cantidades se validan;
+- [x] shared device conserva actor humano y límites del dispositivo;
+- [x] simulación no produce efectos;
+- [x] UI no sustituye autorización de servidor;
+- [x] la creación íntegra es atómica o explícitamente compensable;
+- [x] la idempotencia cubre la intención empresarial completa;
+- [x] reintentos y resultados desconocidos se reconcilian sin duplicación;
+- [x] fulfillment derivado no puede fallar silenciosamente después de declarar éxito;
+- [x] auditoría conserva principal, actor, contexto, permiso, recurso, decisión y razones;
+- [x] las brechas AS-IS de atomicidad, ruta, firma y paridad UI-servidor quedan documentadas;
+- [x] `NEXO-AUTH-005` conserva edición y cancelación;
+- [x] `NEXO-AUTH-006..010` conservan las etapas posteriores;
+- [x] `NEXO-AUTH-015..020` conservan sus responsabilidades;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT`;
+- [x] el gate futuro conserva `POST_E5_PACKAGE`;
+- [x] no se crea ni modifica requisito de prueba;
+- [x] no se autoriza cambio físico.
+
+#### 62. Límites
+
+Esta tarea no:
+
+- modifica código NEXO;
+- modifica componentes o Server Actions;
+- crea una RPC;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- modifica tablas;
+- define nombres físicos de columnas;
+- aplica una constraint;
+- cambia matrices de rol;
+- cambia `authorization_requirement`;
+- cambia prerrequisitos de turno o check-in;
+- cambia la clasificación de área;
+- cambia scopes;
+- cambia estados de remisión;
+- crea una nueva política de solicitud;
+- redefine UOM;
+- modifica rutas;
+- edita o cancela solicitudes ya creadas;
+- prepara remisiones;
+- ejecuta producción vinculada;
+- despacha;
+- registra tránsito;
+- recibe;
+- ejecuta movimientos de inventario;
+- cambia dispositivos compartidos;
+- cambia simulación;
+- migra consumidores;
+- elimina helpers;
+- ejecuta pruebas físicas;
+- despliega;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el registro de requisitos.
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-003 — Corregir inventory.remissions.all_sites`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-004 — Proteger creación de solicitudes`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-005 — Proteger edición y cancelación`
 ### [ ] NEXO-AUTH-005 — Proteger edición y cancelación
 ### [ ] NEXO-AUTH-006 — Proteger preparación
 ### [ ] NEXO-AUTH-007 — Proteger producción vinculada
