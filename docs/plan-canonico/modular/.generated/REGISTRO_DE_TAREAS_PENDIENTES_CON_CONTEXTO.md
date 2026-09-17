@@ -8,24 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `SHELL-CI-020::CORR-002`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-030`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `SHELL-CI-020::CORR-002`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO SHELL-CI-020::CORR-002
-- **Edita solamente:**
-  - `EXECUTE_ONLY` `supabase/migrations/20260913131524_gap_pkg_019_governed_analytics.sql`
-  - `EXECUTE_ONLY` `scripts/supabase/environment-drift.mjs`
-- **Valida, en este orden:**
-  1. `npm exec -- supabase db push --linked --dry-run`
-  2. `npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id SHELL-CI-020::CORR-002`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-030`
 
