@@ -1,3 +1,4 @@
+import crypto from 'node:crypto';
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -34,7 +35,16 @@ import {
 import { loadImplementationControl } from './implementation-control.mjs';
 import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 import { classifyCommitPath } from './commit-scope.mjs';
-import { assertPackagePhysicalDependenciesReady, buildInPackageCandidateEvidence, scanPackageReadiness } from './package-readiness-scanner.mjs';
+import {
+    isTextRepairCandidate,
+    normalizeUtf8Text,
+} from './repair-working-copy.mjs';
+import { validateEolPolicy } from './validate-eol-policy.mjs';
+import {
+    assertPackagePhysicalDependenciesReady,
+    buildInPackageCandidateEvidence,
+    scanPackageReadiness,
+} from './package-readiness-scanner.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
@@ -65,6 +75,7 @@ function run(command, args, {
         windowsHide: true,
         env,
         stdio: inherit ? 'inherit' : ['ignore', 'pipe', 'pipe'],
+        maxBuffer: 64 * 1024 * 1024,
     });
     if (result.error) {
         if (allowFailure) return { status: 1, stdout: '', stderr: result.error.message };
@@ -255,6 +266,21 @@ function readRecord(root, correctionId) {
     return JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
 }
 
+function readJsonObject(filePath, label) {
+    const absolutePath = path.resolve(filePath);
+    if (!fs.existsSync(absolutePath)) fail(`${label} no existe: ${absolutePath}.`);
+    let parsed = null;
+    try {
+        parsed = JSON.parse(fs.readFileSync(absolutePath, 'utf8'));
+    } catch {
+        fail(`${label} no contiene JSON válido.`);
+    }
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) {
+        fail(`${label} debe contener un objeto JSON.`);
+    }
+    return parsed;
+}
+
 function taskIsApproved(task) {
     return /\*\*Estado:\*\*\s*APROBADA\s*$/imu.test(task.block);
 }
@@ -281,6 +307,301 @@ function buildPendingRecord({ correctionId, taskId, type, reasonCode, targetInst
         evidence: [],
         opened_at: new Date().toISOString(),
     };
+}
+
+function normalizeScopeArray(value, label) {
+    if (!Array.isArray(value)) fail(`${label} debe ser array.`);
+    return value;
+}
+
+export function buildAuthorizedCorrectionRecord(record, {
+    scope,
+    approvalStatement,
+    approvedBy,
+    timezone,
+    approvedAt = new Date().toISOString(),
+} = {}) {
+    if (!record || typeof record !== 'object' || Array.isArray(record)) fail('AUTHORIZATION_RECORD_INVALID');
+    if (record.status !== 'PENDING_AUTHORIZATION') {
+        fail(`${record.correction_id}: authorize exige PENDING_AUTHORIZATION; estado ${record.status}.`);
+    }
+    if (!scope || typeof scope !== 'object' || Array.isArray(scope)) fail('AUTHORIZATION_SCOPE_INVALID');
+
+    const targetRepositories = normalizeScopeArray(scope.target_repositories, 'scope.target_repositories');
+    const authorizedChanges = normalizeScopeArray(scope.authorized_changes, 'scope.authorized_changes');
+    const validationCommands = normalizeScopeArray(scope.validation_commands, 'scope.validation_commands');
+    const affectedTreqIds = normalizeScopeArray(scope.affected_treq_ids ?? [], 'scope.affected_treq_ids');
+    const normalizedApprovalStatement = String(approvalStatement ?? '').trim();
+    const normalizedApprovedBy = String(approvedBy ?? '').trim();
+    const normalizedTimezone = String(timezone ?? '').trim();
+
+    if (!normalizedApprovalStatement) fail('approval_statement es obligatorio.');
+    if (!normalizedApprovedBy) fail('approved_by es obligatorio.');
+    if (!normalizedTimezone) fail('timezone es obligatorio.');
+    if (targetRepositories.length === 0) fail('scope.target_repositories no puede estar vacío.');
+    if (authorizedChanges.length === 0) fail('scope.authorized_changes no puede estar vacío.');
+    if (validationCommands.length === 0) fail('scope.validation_commands no puede estar vacío.');
+
+    const zeroTreqReason = affectedTreqIds.length > 0
+        ? null
+        : String(scope.zero_treq_reason ?? '').trim();
+
+    return {
+        ...record,
+        status: 'AUTHORIZED',
+        target_repositories: targetRepositories,
+        authorized_changes: authorizedChanges,
+        validation_commands: validationCommands,
+        affected_treq_ids: affectedTreqIds,
+        zero_treq_reason: zeroTreqReason,
+        authorization: {
+            decision: 'APPROVED',
+            approved_by: normalizedApprovedBy,
+            approved_at: approvedAt,
+            timezone: normalizedTimezone,
+            approval_statement: normalizedApprovalStatement,
+            source_contract_sha256: record.baseline.target_task_sha256,
+        },
+    };
+}
+
+function normalizeDirtyTextEol(root) {
+    const normalized = [];
+    for (const relativePath of worktreePaths(root)) {
+        if (!isTextRepairCandidate(relativePath)) continue;
+        const absolutePath = path.join(root, ...relativePath.split('/'));
+        if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) continue;
+        const source = fs.readFileSync(absolutePath);
+        const repaired = normalizeUtf8Text(source);
+        if (!repaired.changed) continue;
+        fs.writeFileSync(absolutePath, repaired.content, 'utf8');
+        normalized.push(relativePath);
+    }
+    return normalized.sort((left, right) => left.localeCompare(right, 'en'));
+}
+
+function evidenceIdentity(entry) {
+    return String(entry?.type ?? entry?.evidence_type ?? '').trim();
+}
+
+export function replaceCorrectionEvidence(record, evidence) {
+    const identity = evidenceIdentity(evidence);
+    if (!identity) fail('CORRECTION_EVIDENCE_IDENTITY_REQUIRED');
+    return {
+        ...record,
+        evidence: [
+            ...(record.evidence ?? []).filter((entry) => evidenceIdentity(entry) !== identity),
+            evidence,
+        ],
+    };
+}
+
+function correctionEvidence(record, identity) {
+    return (record.evidence ?? []).find((entry) => evidenceIdentity(entry) === identity) ?? null;
+}
+
+function sha256Text(value) {
+    return crypto.createHash('sha256').update(String(value ?? ''), 'utf8').digest('hex');
+}
+
+function runAuthorizedValidationCommand(root, command) {
+    const exact = String(command ?? '').trim();
+    if (!exact) fail('VALIDATION_COMMAND_EMPTY');
+    if (process.platform === 'win32') {
+        return run(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', exact], {
+            cwd: root,
+            allowFailure: true,
+        });
+    }
+    return run('/bin/sh', ['-lc', exact], {
+        cwd: root,
+        allowFailure: true,
+    });
+}
+
+function qualityRepairEvidenceStatus(record) {
+    return correctionEvidence(record, 'CORRECTION_QUALITY_REPAIR_V1');
+}
+
+function ensureQualityRepairExactlyOnce(root, record) {
+    const existing = qualityRepairEvidenceStatus(record);
+    if (existing?.status === 'PASS') {
+        return { record, reused: true, evidence: existing };
+    }
+    if (existing) {
+        fail(
+            `${record.correction_id}: QUALITY_REPAIR_PREVIOUS_${String(existing.status ?? 'UNKNOWN').toUpperCase()}; `
+            + 'no se repite automáticamente una ejecución cuyo resultado no quedó PASS.',
+        );
+    }
+
+    const armedEvidence = {
+        type: 'CORRECTION_QUALITY_REPAIR_V1',
+        status: 'STARTED',
+        command: 'npm run quality:repair',
+        started_at: new Date().toISOString(),
+        candidate_head_before: currentHead(root),
+        automatic_retry_forbidden: true,
+    };
+    writeRecord(root, replaceCorrectionEvidence(record, armedEvidence));
+    checkpointCorrection({
+        root,
+        correctionId: record.correction_id,
+        label: 'arm governed quality repair exactly once',
+    });
+
+    const executionHead = currentHead(root);
+    const result = npm(['run', 'quality:repair'], {
+        cwd: root,
+        allowFailure: true,
+    });
+    const stdout = String(result.stdout ?? '');
+    const stderr = String(result.stderr ?? '');
+
+    const completedEvidence = {
+        ...armedEvidence,
+        status: result.status === 0 ? 'PASS' : 'FAIL',
+        completed_at: new Date().toISOString(),
+        execution_candidate_head: executionHead,
+        exit_code: result.status,
+        stdout_sha256: sha256Text(stdout),
+        stderr_sha256: sha256Text(stderr),
+    };
+    const next = replaceCorrectionEvidence(readRecord(root, record.correction_id), completedEvidence);
+    writeRecord(root, next);
+
+    if (result.status !== 0) {
+        fail(
+            `${record.correction_id}: quality:repair falló con exit ${result.status}; `
+            + `${(stderr || stdout || 'sin diagnóstico').replace(/[\r\n]+/gu, ' | ')}`,
+            result.status,
+        );
+    }
+
+    checkpointCorrection({
+        root,
+        correctionId: record.correction_id,
+        label: 'record governed quality repair PASS',
+    });
+    return {
+        record: readRecord(root, record.correction_id),
+        reused: false,
+        evidence: completedEvidence,
+    };
+}
+
+function runCorrectionValidations(root, record) {
+    const candidateHead = currentHead(root);
+    const results = [];
+    for (const command of record.validation_commands) {
+        const result = runAuthorizedValidationCommand(root, command);
+        const stdout = String(result.stdout ?? '');
+        const stderr = String(result.stderr ?? '');
+        results.push({
+            command,
+            status: result.status === 0 ? 'PASS' : 'FAIL',
+            exit_code: result.status,
+            stdout_sha256: sha256Text(stdout),
+            stderr_sha256: sha256Text(stderr),
+        });
+        if (result.status !== 0) {
+            return {
+                status: 'FAIL',
+                candidateHead,
+                results,
+                failure: (stderr || stdout || `exit ${result.status}`).replace(/[\r\n]+/gu, ' | '),
+                exitCode: result.status,
+            };
+        }
+    }
+    return {
+        status: 'PASS',
+        candidateHead,
+        results,
+        failure: null,
+        exitCode: 0,
+    };
+}
+
+function sealVerifiedCorrection(root, record, validationEvidence) {
+    const verifiedEvidence = {
+        type: 'CORRECTION_VERIFICATION_V1',
+        status: 'PASS',
+        observed_at: new Date().toISOString(),
+        validated_candidate_head: validationEvidence.candidate_head,
+        validation_evidence_type: validationEvidence.type,
+        lifecycle_model: 'VENTO-CORRECTION-LIFECYCLE-V1',
+        lifecycle_decision: 'SAFE_CORRECTION_METADATA_ONLY',
+        remote_mutations: false,
+    };
+    const next = replaceCorrectionEvidence({
+        ...record,
+        status: 'VERIFIED',
+        verified_at: new Date().toISOString(),
+    }, verifiedEvidence);
+    writeRecord(root, next);
+
+    npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+    normalizeDirtyTextEol(root);
+    validateEolPolicy({ root });
+    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
+    git(['diff', '--check'], { cwd: root });
+
+    const sealed = readRecord(root, record.correction_id);
+    const scope = assertActiveCorrectionScope(root, sealed);
+    if (scope.dirty.length > 0) {
+        commitDirtyByLane(
+            root,
+            scope.dirty,
+            `correction(${record.correction_id}): seal VERIFIED`,
+        );
+    }
+    if (worktreePaths(root).length > 0) {
+        fail(
+            `${record.correction_id}: VERIFIED seal dejó worktree dirty: `
+            + worktreePaths(root).join(', '),
+        );
+    }
+    const branch = correctionBranchName(record.correction_id);
+    git(['push', '-u', 'origin', branch], { cwd: root });
+    const sync = syncCounts(root, `origin/${branch}`, 'HEAD');
+    if (sync.behind !== 0 || sync.ahead !== 0) {
+        fail(`${record.correction_id}: VERIFIED push incompleto: ${sync.raw}.`);
+    }
+    return {
+        record: sealed,
+        head: currentHead(root),
+    };
+}
+
+function branchChangedPaths(root) {
+    return git(['diff', '--name-only', '--diff-filter=ACMRD', `origin/${DEFAULT_BRANCH}...HEAD`], { cwd: root }).stdout
+        .split(/\r?\n/u)
+        .map((entry) => entry.trim())
+        .filter(Boolean);
+}
+
+function assertActiveCorrectionScope(root, record) {
+    const dirty = worktreePaths(root);
+    const branchPaths = branchChangedPaths(root);
+    const combined = [...new Set([...branchPaths, ...dirty])].sort();
+    if (record.integration) {
+        assertPreMergeCorrectionScope({
+            root,
+            record,
+            baseRef: `origin/${DEFAULT_BRANCH}`,
+            dirtyPaths: dirty,
+        });
+    } else {
+        assertCorrectionPaths(combined, record, {
+            root,
+            baseRef: `origin/${DEFAULT_BRANCH}`,
+            registration: false,
+        });
+    }
+    return { dirty, branchPaths, combined };
 }
 
 export function prepareCorrection({
@@ -532,6 +853,66 @@ function commitDirtyByLane(root, dirtyPaths, commitMessage) {
     return created;
 }
 
+export function checkpointCorrection({
+    root = ensureRepositoryRoot(),
+    correctionId,
+    label = 'checkpoint',
+} = {}) {
+    const id = normalizeCorrectionId(correctionId);
+    const expectedBranch = correctionBranchName(id);
+    ensureGhReady(root);
+    if (currentBranch(root) !== expectedBranch) {
+        fail(`CORRECTION_CHECKPOINT debe ejecutarse desde ${expectedBranch}.`);
+    }
+
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+    let record = readRecord(root, id);
+    if (!['IN_PROGRESS', 'IMPLEMENTED'].includes(record.status)) {
+        fail(`${id}: checkpoint exige IN_PROGRESS o IMPLEMENTED; estado ${record.status}.`);
+    }
+    assertBaselineCurrent({ root, record, ref: `origin/${DEFAULT_BRANCH}` });
+    assertPendingImplementationPr(root, record);
+
+    npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+    const normalizedEol = normalizeDirtyTextEol(root);
+
+    validateEolPolicy({ root });
+    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
+    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
+    git(['diff', '--check'], { cwd: root });
+
+    record = readRecord(root, id);
+    const scope = assertActiveCorrectionScope(root, record);
+    const createdCommits = scope.dirty.length > 0
+        ? commitDirtyByLane(root, scope.dirty, `correction(${id}): ${label}`)
+        : 0;
+
+    if (worktreePaths(root).length > 0) {
+        fail(`${id}: CHECKPOINT_LEFT_DIRTY ${worktreePaths(root).join(', ')}.`);
+    }
+
+    git(['push', '-u', 'origin', expectedBranch], { cwd: root });
+    const sync = syncCounts(root, `origin/${expectedBranch}`, 'HEAD');
+    if (sync.behind !== 0 || sync.ahead !== 0) {
+        fail(`${id}: checkpoint push incompleto: ${sync.raw}.`);
+    }
+
+    const head = currentHead(root);
+    printResult({
+        ESTADO: 'PASS',
+        OPERACION: 'CORRECTION_CHECKPOINT',
+        CORRECTION_ID: id,
+        STATUS: record.status,
+        CANDIDATE_HEAD: head,
+        NORMALIZED_EOL_FILES: normalizedEol.length,
+        COMMITS_CREATED: createdCommits,
+        WORKTREE: 'CLEAN',
+        REMOTE_BRANCH_SYNC: '0/0',
+    });
+    return { record, head, normalizedEol, createdCommits };
+}
+
 function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commitMessage, beforeMerge = () => {} }) {
     const dirty = worktreePaths(root);
     if (dirty.length > 0) {
@@ -625,6 +1006,60 @@ export function registerCorrection({ root = ensureRepositoryRoot(), correctionId
     return result;
 }
 
+export function authorizeCorrection({
+    root = ensureRepositoryRoot(),
+    correctionId,
+    scopeFile,
+    approvalStatement,
+    approvedBy,
+    timezone,
+} = {}) {
+    const id = normalizeCorrectionId(correctionId);
+    const recordPath = correctionRecordRelativePath(id);
+    ensureGhReady(root);
+
+    if (currentBranch(root) !== DEFAULT_BRANCH) fail('CORRECTION_AUTHORIZE debe comenzar desde main.');
+    git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+    const mainSync = syncCounts(root, `origin/${DEFAULT_BRANCH}`, 'HEAD');
+    if (mainSync.behind !== 0 || mainSync.ahead !== 0) {
+        fail(`main debe estar sincronizado 0/0 antes de autorizar la corrección: ${mainSync.raw}.`);
+    }
+    reconcileDerivedWorktree(root, [], 'CORRECTION_AUTHORIZE');
+
+    const record = readRecord(root, id);
+    assertBaselineCurrent({ root, record, ref: `origin/${DEFAULT_BRANCH}` });
+    assertPendingImplementationPr(root, record);
+    const scope = readJsonObject(scopeFile, 'scope-file');
+    const next = buildAuthorizedCorrectionRecord(record, {
+        scope,
+        approvalStatement,
+        approvedBy,
+        timezone,
+    });
+    writeRecord(root, next);
+    normalizeDirtyTextEol(root);
+    loadValidatedCorrectionControl({ root });
+    validateEolPolicy({ root });
+    git(['diff', '--check'], { cwd: root });
+
+    const dirty = worktreePaths(root);
+    if (JSON.stringify(dirty.sort()) !== JSON.stringify([recordPath])) {
+        fail(`${id}: authorize debe dejar únicamente ${recordPath} modificado; actuales: ${dirty.join(', ') || 'NINGUNO'}.`);
+    }
+
+    printResult({
+        ESTADO: 'PASS',
+        OPERACION: 'CORRECTION_AUTHORIZE',
+        CORRECTION_ID: id,
+        STATUS: 'AUTHORIZED',
+        APPROVAL_STATEMENT: next.authorization.approval_statement,
+        SOURCE_CONTRACT_SHA256: next.authorization.source_contract_sha256,
+        EOL_POLICY: 'PASS',
+        READY_TO_START: 'SI',
+    });
+    return next;
+}
+
 export function startCorrection({ root = ensureRepositoryRoot(), correctionId } = {}) {
     const id = normalizeCorrectionId(correctionId);
     const recordPath = correctionRecordRelativePath(id);
@@ -650,14 +1085,31 @@ export function startCorrection({ root = ensureRepositoryRoot(), correctionId } 
         git(['switch', '-c', branch], { cwd: root });
         git(['merge', '--no-ff', '--no-edit', record.integration.head_commit], { cwd: root });
     } else git(['switch', '-c', branch], { cwd: root });
-    git(['push', '-u', 'origin', branch], { cwd: root });
+
     const next = { ...record, status: 'IN_PROGRESS' };
     writeRecord(root, next);
     npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
-    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
     npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+    normalizeDirtyTextEol(root);
+    validateEolPolicy({ root });
+    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
     npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
     git(['diff', '--check'], { cwd: root });
+
+    const scope = assertActiveCorrectionScope(root, next);
+    if (scope.dirty.length > 0) {
+        commitDirtyByLane(root, scope.dirty, `correction(${id}): start`);
+    }
+    if (worktreePaths(root).length > 0) {
+        fail(`${id}: CORRECTION_START dejó worktree dirty: ${worktreePaths(root).join(', ')}.`);
+    }
+
+    git(['push', '-u', 'origin', branch], { cwd: root });
+    const sync = syncCounts(root, `origin/${branch}`, 'HEAD');
+    if (sync.behind !== 0 || sync.ahead !== 0) {
+        fail(`${id}: push inicial incompleto: ${sync.raw}.`);
+    }
+
     printResult({
         ESTADO: 'PASS',
         OPERACION: 'CORRECTION_START',
@@ -666,6 +1118,9 @@ export function startCorrection({ root = ensureRepositoryRoot(), correctionId } 
         BRANCH: branch,
         STATUS: 'IN_PROGRESS',
         BASELINE: 'CURRENT',
+        CANDIDATE_HEAD: currentHead(root),
+        WORKTREE: 'CLEAN',
+        REMOTE_BRANCH_SYNC: '0/0',
         READY_TO_CORRECT: 'SI',
     });
     return next;
@@ -728,6 +1183,117 @@ export function recordCorrectionCandidate({ root = ensureRepositoryRoot(), corre
     return next;
 }
 
+
+export function advanceCorrection({ root = ensureRepositoryRoot(), correctionId } = {}) {
+    const id = normalizeCorrectionId(correctionId);
+    let record = readRecord(root, id);
+
+    if (record.status === 'PENDING_AUTHORIZATION') {
+        fail(`${id}: HUMAN_GATE; la corrección requiere autorización explícita antes de advance.`);
+    }
+    if (['BLOCKED', 'DEFERRED'].includes(record.status)) {
+        fail(`${id}: estado ${record.status}; resuelva el bloqueo o reanudación antes de advance.`);
+    }
+
+    if (record.status === 'AUTHORIZED') {
+        if (currentBranch(root) !== DEFAULT_BRANCH) {
+            fail(`${id}: AUTHORIZED advance debe comenzar desde main.`);
+        }
+        startCorrection({ root, correctionId: id });
+        record = readRecord(root, id);
+    }
+
+    if (record.status === 'IN_PROGRESS') {
+        if (currentBranch(root) !== correctionBranchName(id)) {
+            fail(`${id}: IN_PROGRESS advance debe ejecutarse desde ${correctionBranchName(id)}.`);
+        }
+
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'pre quality repair',
+        });
+
+        const repair = ensureQualityRepairExactlyOnce(root, readRecord(root, id));
+        record = repair.record;
+
+        const implemented = {
+            ...record,
+            status: 'IMPLEMENTED',
+            implemented_at: new Date().toISOString(),
+        };
+        writeRecord(root, implemented);
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'transition to IMPLEMENTED',
+        });
+        record = readRecord(root, id);
+    }
+
+    if (record.status === 'IMPLEMENTED') {
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'pre validation candidate',
+        });
+        record = readRecord(root, id);
+
+        const validation = runCorrectionValidations(root, record);
+        const validationEvidence = {
+            type: 'CORRECTION_VALIDATION_V1',
+            status: validation.status,
+            observed_at: new Date().toISOString(),
+            candidate_head: validation.candidateHead,
+            commands: [...record.validation_commands],
+            results: validation.results,
+            ordered_fail_fast: true,
+        };
+        writeRecord(
+            root,
+            replaceCorrectionEvidence(readRecord(root, id), validationEvidence),
+        );
+        checkpointCorrection({
+            root,
+            correctionId: id,
+            label: 'record correction validation evidence',
+        });
+
+        if (validation.status !== 'PASS') {
+            fail(
+                `${id}: VALIDATION_FAILED: ${validation.failure}`,
+                validation.exitCode,
+            );
+        }
+
+        const sealed = sealVerifiedCorrection(
+            root,
+            readRecord(root, id),
+            validationEvidence,
+        );
+        record = sealed.record;
+
+        printResult({
+            ESTADO: 'PASS',
+            OPERACION: 'CORRECTION_ADVANCE_VERIFY',
+            CORRECTION_ID: id,
+            STATUS: 'VERIFIED',
+            VALIDATED_CANDIDATE_HEAD: validation.candidateHead,
+            VERIFIED_LIFECYCLE_HEAD: sealed.head,
+            QUALITY_REPAIR: 'PASS_EXACTLY_ONCE',
+            VALIDATIONS: 'PASS',
+            WORKTREE: 'CLEAN',
+            REMOTE_BRANCH_SYNC: '0/0',
+        });
+    }
+
+    if (record.status === 'VERIFIED') {
+        return finishCorrection({ root, correctionId: id });
+    }
+
+    fail(`${id}: advance terminó en estado no manejado ${record.status}.`);
+}
+
 export function finishCorrection({ root = ensureRepositoryRoot(), correctionId } = {}) {
     const id = normalizeCorrectionId(correctionId);
     const branch = correctionBranchName(id);
@@ -759,6 +1325,8 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
     const combinedPaths = [...new Set([...branchPaths, ...dirtyBeforeStage])].sort();
     assertScope(combinedPaths);
 
+    normalizeDirtyTextEol(root);
+    validateEolPolicy({ root });
     npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
     npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
     npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
@@ -824,6 +1392,11 @@ function parseArgs(argv) {
         blockedTargets: [],
         correctionId: null,
         implementationPr: null,
+        scopeFile: null,
+        approvalStatement: null,
+        approvedBy: null,
+        timezone: null,
+        label: null,
     };
     const tokens = [...argv];
     args.mode = tokens.shift() ?? null;
@@ -858,6 +1431,26 @@ function parseArgs(argv) {
             if (!value) fail('falta valor de --correction-id.');
             args.correctionId = value;
             index += 1;
+        } else if (token === '--scope-file') {
+            if (!value) fail('falta valor de --scope-file.');
+            args.scopeFile = value;
+            index += 1;
+        } else if (token === '--approval-statement') {
+            if (!value) fail('falta valor de --approval-statement.');
+            args.approvalStatement = value;
+            index += 1;
+        } else if (token === '--approved-by') {
+            if (!value) fail('falta valor de --approved-by.');
+            args.approvedBy = value;
+            index += 1;
+        } else if (token === '--timezone') {
+            if (!value) fail('falta valor de --timezone.');
+            args.timezone = value;
+            index += 1;
+        } else if (token === '--label') {
+            if (!value) fail('falta valor de --label.');
+            args.label = value;
+            index += 1;
         } else fail(`argumento desconocido: ${token}.`);
     }
     return args;
@@ -880,9 +1473,32 @@ export function main(argv = process.argv.slice(2)) {
         if (!args.correctionId) fail('register exige --correction-id.');
         return registerCorrection({ correctionId: args.correctionId });
     }
+    if (args.mode === 'authorize') {
+        for (const key of ['correctionId', 'scopeFile', 'approvalStatement', 'approvedBy', 'timezone']) {
+            if (!args[key]) fail(`authorize exige ${key}.`);
+        }
+        return authorizeCorrection({
+            correctionId: args.correctionId,
+            scopeFile: args.scopeFile,
+            approvalStatement: args.approvalStatement,
+            approvedBy: args.approvedBy,
+            timezone: args.timezone,
+        });
+    }
     if (args.mode === 'start') {
         if (!args.correctionId) fail('start exige --correction-id.');
         return startCorrection({ correctionId: args.correctionId });
+    }
+    if (args.mode === 'checkpoint') {
+        if (!args.correctionId) fail('checkpoint exige --correction-id.');
+        return checkpointCorrection({
+            correctionId: args.correctionId,
+            label: args.label ?? 'checkpoint',
+        });
+    }
+    if (args.mode === 'advance') {
+        if (!args.correctionId) fail('advance exige --correction-id.');
+        return advanceCorrection({ correctionId: args.correctionId });
     }
     if (args.mode === 'finish') {
         if (!args.correctionId) fail('finish exige --correction-id.');
