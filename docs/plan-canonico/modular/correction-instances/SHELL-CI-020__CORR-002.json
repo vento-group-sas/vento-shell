@@ -106,6 +106,33 @@
         "CORRECTION_REMOTE_DRIFT_V1"
       ],
       "source_evidence_sha256": "f4874d7970fae737d7b0d1628dcd0147fa1f263f3ab8bb6be0fa84514d140292"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "FAIL",
+      "observed_at": "2026-09-17T05:52:37.047Z",
+      "candidate_head": "1a81fa9fcec369e6c5f641e6a13a36314e71924f",
+      "commands": [
+        "npm exec -- supabase db push --linked --dry-run",
+        "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict"
+      ],
+      "results": [
+        {
+          "command": "npm exec -- supabase db push --linked --dry-run",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "661d41e25755ca8a87c367ae6b70266426d6ff732ec53db9cbb0c9f6fec979ec",
+          "stderr_sha256": "cec1c423b9588e7955c5afa2a6e7b81a694ff1d679af0335a490fd5540ae78e0"
+        },
+        {
+          "command": "npm run supabase:drift:remote -- --environment-role STAGING --project-ref rcrxixmqhrndcervbllp --owner SUPA-TRANS-015 --scope full --output .delivery/SHELL-CI-020__CORR-002__staging-drift.json --strict",
+          "status": "FAIL",
+          "exit_code": 1,
+          "stdout_sha256": "2221d123efaa9de5910e2ed47ca50263a8922705968cbb3c2f49d1f0dff3cd27",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-09-16T18:23:22.957Z",
