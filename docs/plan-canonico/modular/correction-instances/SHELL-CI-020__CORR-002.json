@@ -69,6 +69,24 @@
       "preflight_output_sha256": "a87d7c0f2298ab6780951df9d7f9f98a967b2ea31ce4f27f64f148d8e5bcc628",
       "postflight_output_sha256": "a87d7c0f2298ab6780951df9d7f9f98a967b2ea31ce4f27f64f148d8e5bcc628",
       "production_mutations": false
+    },
+    {
+      "evidence_type": "CORRECTION_REMOTE_DRIFT_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-17T04:45:13.697Z",
+      "correction_id": "SHELL-CI-020::CORR-002",
+      "environment_role": "STAGING",
+      "project_ref": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015",
+      "scope": "full",
+      "certified_candidate_head": "f8a8a85fea4db07213ce0668daa49ea12737f56a",
+      "lifecycle_model": "VENTO-CORRECTION-CANDIDATE-LIFECYCLE-V1",
+      "lifecycle_decision": "REUSE_PHYSICAL_EVIDENCE",
+      "lifecycle_reason": "SAFE_CORRECTION_METADATA_ONLY",
+      "evidence_file": ".delivery/SHELL-CI-020__CORR-002__staging-drift.json",
+      "evidence_file_sha256": "6d46ebd46b1bc2fb1c69527d5a1549db683248b754dbf79a7d42aff31bb104ba",
+      "remote_mutations_during_drift": false,
+      "production_mutations": false
     }
   ],
   "opened_at": "2026-09-16T18:23:22.957Z"
