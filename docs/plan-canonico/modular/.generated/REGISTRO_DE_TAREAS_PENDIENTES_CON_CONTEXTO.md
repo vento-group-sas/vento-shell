@@ -39,10 +39,10 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-021::GAP-PKG-019` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+- `SHELL-CI-021::GAP-PKG-019` — declared=`IMPLEMENTED` — effective=`IMPLEMENTED` — `EJECUTAR_IMPLEMENTACIÓN`
   - Contrato: Ejecutar y resolver el checklist de readiness aprobado
   - Integridad: `VALID`
-  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Recovery: `PREVERIFY_AND_SEAL_VERIFICATION_EVIDENCE`
   - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-021::GAP-PKG-019`
   - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-019.json`
 - `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
@@ -63,7 +63,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-AUTH-003` — Corregir inventory.remissions.all_sites | `NEXO-AUTH-004` — Proteger creación de solicitudes | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-021::GAP-PKG-019` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IMPLEMENTED` | `SHELL-CI-021::GAP-PKG-019` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -77,11 +77,11 @@
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-019`
+- **Puntero de compatibilidad del control de instancias:** `EJECUTAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-019`
 - **Entrada mutante normal:** `docs:implementation:advance`
-- **Estado físico declarado:** `PENDING_AUTHORIZATION`
-- **Estado físico efectivo:** `PENDING_AUTHORIZATION`
-- **Recovery físico:** `AWAIT_EXPLICIT_AUTHORIZATION`
+- **Estado físico declarado:** `IMPLEMENTED`
+- **Estado físico efectivo:** `IMPLEMENTED`
+- **Recovery físico:** `PREVERIFY_AND_SEAL_VERIFICATION_EVIDENCE`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -91,7 +91,7 @@
 
 | # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-019` | Ejecutar y resolver el checklist de readiness aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
+| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-019` | Ejecutar y resolver el checklist de readiness aprobado | `IMPLEMENTED` | `IMPLEMENTED` | EN_CURSO — EJECUTAR_IMPLEMENTACIÓN |
 | 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 | 3 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-018` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 
