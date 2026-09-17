@@ -8,46 +8,21 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-016`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** terminar `SHELL-CI-020::CORR-002`; este checkout ya pertenece a esa corrección.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `DELIV-PKG-015::CORR-016`
+### 1. Decide la corrección propuesta — `SHELL-CI-020::CORR-002`
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO DELIV-PKG-015::CORR-016
+- **Estado:** `PENDING_AUTHORIZATION`
+- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
+- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
+- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
 - **Edita solamente:**
-  - `MODIFY` `scripts/docs/correction-branch-lifecycle.mjs`
-  - `MODIFY` `scripts/docs/correction-branch-lifecycle.test.mjs`
-  - `MODIFY` `scripts/docs/correction-starter.mjs`
-  - `MODIFY` `scripts/docs/correction-starter.test.mjs`
-  - `CREATE` `scripts/docs/correction-supabase-deploy.mjs`
-  - `CREATE` `scripts/docs/correction-supabase-deploy.test.mjs`
-  - `MODIFY` `package.json`
-  - `MODIFY` `docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md`
-  - `EXECUTE_ONLY` `scripts/docs/repair-working-copy.mjs`
-  - `EXECUTE_ONLY` `scripts/docs/validate-eol-policy.mjs`
-  - `EXECUTE_ONLY` `scripts/supabase/environment-drift.mjs`
+  - Ningún cambio autorizado todavía.
 - **Valida, en este orden:**
-  1. `node --check scripts/docs/correction-branch-lifecycle.mjs`
-  2. `node --test scripts/docs/correction-branch-lifecycle.test.mjs`
-  3. `node --check scripts/docs/correction-supabase-deploy.mjs`
-  4. `node --test scripts/docs/correction-supabase-deploy.test.mjs`
-  5. `node --test scripts/docs/correction-starter.test.mjs`
-  6. `npm run docs:correction:check`
-  7. `npm run docs:correction:test`
-  8. `npm run docs:eol:check`
-  9. `npm run docs:plan:build`
-  10. `npm run docs:plan:check`
-  11. `npm run docs:plan:test`
-  12. `npm run docs:treq:check`
-  13. `npm run docs:treq:test`
-  14. `npm run quality:lint:ratchet -- --base origin/main`
-  15. `npm test --silent`
-  16. `git --no-pager diff --check origin/main...HEAD`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-016`
+  1. Ninguna validación autorizada todavía.
+- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-030`
