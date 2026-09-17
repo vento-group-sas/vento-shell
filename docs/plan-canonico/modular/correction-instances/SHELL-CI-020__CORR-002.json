@@ -51,7 +51,25 @@
   "evidence": [
     "REMOTE_DEPLOY STAGING project_ref=rcrxixmqhrndcervbllp migration=20260913131524_gap_pkg_019_governed_analytics.sql status=APPLIED",
     "REMOTE_DEPLOY_POSTCHECK supabase_db_push_dry_run status=PASS result=REMOTE_DATABASE_UP_TO_DATE",
-    "REMOTE_DEPLOY_PRODUCTION_MUTATIONS=0"
+    "REMOTE_DEPLOY_PRODUCTION_MUTATIONS=0",
+    {
+      "evidence_type": "CORRECTION_SUPABASE_DEPLOY_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-17T01:18:13.248Z",
+      "correction_id": "SHELL-CI-020::CORR-002",
+      "environment_role": "STAGING",
+      "project_ref": "rcrxixmqhrndcervbllp",
+      "owner": "SUPA-TRANS-015",
+      "scope": "full",
+      "migration": "20260913131524_gap_pkg_019_governed_analytics.sql",
+      "pre_deploy_candidate_head": "3f412a2c5fdaca237e29a9c5d1a9ec16eddc2d13",
+      "preflight_action": "ALREADY_APPLIED",
+      "remote_mutation_performed": false,
+      "post_push_remote_up_to_date": true,
+      "preflight_output_sha256": "a87d7c0f2298ab6780951df9d7f9f98a967b2ea31ce4f27f64f148d8e5bcc628",
+      "postflight_output_sha256": "a87d7c0f2298ab6780951df9d7f9f98a967b2ea31ce4f27f64f148d8e5bcc628",
+      "production_mutations": false
+    }
   ],
   "opened_at": "2026-09-16T18:23:22.957Z"
 }
