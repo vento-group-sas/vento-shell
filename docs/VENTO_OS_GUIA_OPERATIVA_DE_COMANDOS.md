@@ -1719,3 +1719,13 @@ Reglas obligatorias:
 5. `automatic_authorization` permanece `false`; ningún scanner, dossier ni orden de package autoriza por inferencia;
 6. gates históricos ya `APPROVED_FOR_IMPLEMENTATION` pueden conservar compatibilidad documental, pero un CI020 nuevo exige discovery explícito COMPLETE antes de autorización física.
 <!-- CORR-017-STANDARD-IMPLEMENTATION-LIFECYCLE:END -->
+
+<!-- CORR-018-MULTI-REPO-PHYSICAL-LIFECYCLE:START -->
+### CORR-018 — Lifecycle físico multi-repositorio
+
+Un `SHELL-CI-020::<package_id>` con más de un `target_repository` conserva una sola identidad de instancia y una sola autorización humana, pero materializa y valida cada repositorio en un checkout Git independiente. Cada repositorio conserva su propia rama física `implementation/<task-id>/<package-id>`, `base_commit`, `candidate_commit`, PR, checks y `merge_commit`; queda prohibido fabricar un SHA global.
+
+La ejecución falla cerrado si falta un checkout, si `origin` no coincide con el repositorio autorizado, si aparece un path fuera de `authorized_changes`, si falta cualquier target físico de cualquier repositorio o si un PR externo no queda `MERGED` con checks PASS. Los repositorios externos se publican de forma serializada antes del cierre del repositorio orquestador. El ledger de `vento-shell` conserva evidencia estructurada del bundle candidato y de los merges externos, y una reanudación reutiliza esa evidencia exacta en lugar de repetir merges ya confirmados.
+
+La compatibilidad single-repo permanece sin cambios y `automatic_authorization=false`.
+<!-- CORR-018-MULTI-REPO-PHYSICAL-LIFECYCLE:END -->
