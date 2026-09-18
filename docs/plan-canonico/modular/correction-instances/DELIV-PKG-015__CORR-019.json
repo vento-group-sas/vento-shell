@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,71 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-repository-bundle.mjs",
+      "change": "MODIFY",
+      "scope": "Corregir identidad del candidato orquestador: vento-shell debe usar el candidate_commit fisico gobernado, no el lifecycle HEAD, y reconciliar de forma fail-closed solo su fila stale."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-repository-bundle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Reproducir base -> candidato fisico -> commit de lifecycle y demostrar reconciliacion exclusiva de vento-shell con rechazo de drift externo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Construir el bundle despues de materializar el candidato fisico, reconciliar evidencia legacy stale en EVIDENCE_GATE y reutilizar la misma identidad en FINISH."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir orden materialize-before-bundle, recuperacion en EVIDENCE_GATE y semantica candidate/lifecycle estable hasta FINISH."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-path-policy.mjs",
+    "node --test scripts/docs/implementation-path-policy.test.mjs",
+    "node --check scripts/docs/implementation-repository-bundle.mjs",
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+    "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-state-integrity.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --check scripts/docs/implementation-work-package.mjs",
+    "node --test scripts/docs/implementation-work-package.test.mjs",
+    "node --check scripts/docs/package-readiness-scanner.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "node --test scripts/docs/package-readiness-integration.test.mjs",
+    "npm run docs:package:readiness:check",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm test --silent",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Correccion de tooling multi-repo para separar candidate fisico de lifecycle HEAD y recuperar evidencia stale sin cambiar semantica funcional, TREQ ni Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-18T22:26:56.944Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-18T22:15:26.640Z"
 }
