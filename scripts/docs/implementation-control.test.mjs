@@ -14,6 +14,7 @@ import {
 const baseControl = {
   schema_version: 1,
   authorization_mode: 'EXPLICIT_PER_INSTANCE',
+  authorization_entrypoint: 'docs:implementation:authorize',
   automatic_authorization: false,
   single_primary_action: false,
   instance_storage_mode: 'ONE_FILE_PER_INSTANCE',
@@ -635,4 +636,19 @@ test('VERIFIED historico terminal no se convierte en unfinishedGlobal ni bloquea
   assert.notEqual(second.status, 'WAITING_FOR_PREVIOUS_INSTANCE');
   assert.equal(result.primaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
   assert.equal(result.primaryAction.target, 'SHELL-CI-002::GLOBAL');
+});
+
+// CORR-017_NATIVE_AUTHORIZATION_ENTRYPOINT_TESTS
+test('PENDING_AUTHORIZATION expone el entrypoint nativo exacto', () => {
+  const draft = pendingInstanceRecord({ instanceId: 'SHELL-CI-001::GLOBAL', taskId: 'SHELL-CI-001' });
+  const result = deriveImplementationControl({ control: { ...baseControl, instances: [draft] }, workTopology: topology() });
+  assert.equal(result.authorizationEntrypoint, 'docs:implementation:authorize');
+  assert.equal(result.primaryAction.type, 'AUTORIZAR_IMPLEMENTACION');
+  assert.equal(result.primaryAction.command, 'npm run docs:implementation:authorize -- --instance-id SHELL-CI-001::GLOBAL --approved-by VENTO_OWNER --approval-statement "APROBADO SHELL-CI-001::GLOBAL" --timezone America/Bogota');
+});
+
+test('rechaza reintroducir autorización artesanal sin entrypoint nativo', () => {
+  const invalid = { ...baseControl };
+  delete invalid.authorization_entrypoint;
+  assert.throws(() => deriveImplementationControl({ control: invalid, workTopology: topology() }), /authorization_entrypoint/u);
 });

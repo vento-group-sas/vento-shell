@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,393 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Formalizar el lifecycle unico DISCOVER -> PACKAGE_GATE -> APPROVE -> FINISH -> IMPLEMENTATION_AUTHORIZE -> MATERIALIZE -> ADVANCE -> VERIFIED y exigir descubrimiento fisico completo antes de aprobacion."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Fijar el protocolo transversal de physical discovery obligatorio, re-maduracion gobernada y autorizacion fisica nativa por instancia."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Integrar el nuevo gate de descubrimiento y la autorizacion nativa sin alterar el governed frontier ni permitir seleccion manual de packages."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Documentar un unico flujo operativo para maduracion, re-maduracion, autorizacion y avance fisico."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/package-gate-policy.json",
+      "change": "MODIFY",
+      "scope": "Declarar physical discovery obligatorio para nuevas aprobaciones o re-maduraciones y preservar compatibilidad de gates historicos ya aprobados."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-control.json",
+      "change": "MODIFY",
+      "scope": "Declarar el entrypoint nativo unico de autorizacion fisica y mantener automatic_authorization=false."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Agregar docs:implementation:authorize y registrar las nuevas pruebas del lifecycle estandar dentro de la bateria canonica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-control.mjs",
+      "change": "MODIFY",
+      "scope": "Validar physical_discovery COMPLETE, busquedas trazables, cobertura exacta de physical_identity y cero findings sin resolver antes de READY_FOR_APPROVAL."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir discovery incompleto, findings no cubiertos, compatibilidad historica y dossier listo solo con discovery cerrado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Agregar maduracion por dossier-file y re-maduracion gobernada, inicializar physical_discovery y prohibir aprobacion si el discovery no esta completo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir mature/remature, preservacion de historia de aprobacion, discovery obligatorio y no autorizacion automatica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar docs:implementation:authorize como comando exacto para AUTHORIZE_PHYSICAL_IMPLEMENTATION sin cambiar el orden gobernado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir el comando nativo de autorizacion dentro del governed frontier y preservar fail-closed admission."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.mjs",
+      "change": "MODIFY",
+      "scope": "Validar la politica del entrypoint nativo de autorizacion y la forma normalizada del ledger AUTHORIZED."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la politica de autorizacion nativa y rechazo de configuraciones que reintroduzcan autorizacion artesanal o automatica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.mjs",
+      "change": "CREATE",
+      "scope": "Implementar docs:implementation:authorize: derivar target_repositories, authorized_changes, validation_commands, target_environments y prerequisite_evidence desde el package-gate aprobado; registrar aprobacion humana y modificar solo el ledger de la instancia."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir derivacion determinista, operaciones CREATE/MODIFY/DELETE/EXECUTE_ONLY, hashes contractuales, frontier, environment binding, discovery y fail-closed."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY",
+      "scope": "Exponer physical discovery y el comando nativo de autorizacion en la guia viva/readiness sin convertir el scanner en fuente de autorizacion."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir proyeccion de discovery y autorizacion nativa preservando las invariantes de readiness."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-integration.test.mjs",
+      "change": "MODIFY",
+      "scope": "Probar de extremo a extremo gate madurado con discovery, aprobacion humana, handoff PENDING_AUTHORIZATION y autorizacion nativa derivada."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.mjs",
+      "change": "MODIFY",
+      "scope": "Mostrar el entrypoint nativo exacto y prohibir instrucciones de edicion manual del ledger."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la accion exacta de autorizacion nativa en el iniciador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar AUTHORIZE_PHYSICAL_IMPLEMENTATION mediante el comando nativo y conservar el HUMAN_GATE antes de mutaciones."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir el entrypoint estandar y la separacion PENDING_AUTHORIZATION -> AUTHORIZED -> advance."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/package-gate-control.mjs",
+    "node --test scripts/docs/package-gate-control.test.mjs",
+    "node --check scripts/docs/package-gate-lifecycle.mjs",
+    "node --test scripts/docs/package-gate-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-authorization-lifecycle.mjs",
+    "node --test scripts/docs/implementation-authorization-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-control.mjs",
+    "node --test scripts/docs/implementation-control.test.mjs",
+    "node --check scripts/docs/package-execution-control.mjs",
+    "node --test scripts/docs/package-execution-control.test.mjs",
+    "node --test scripts/docs/package-readiness-integration.test.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+    "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm test --silent"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-18T00:55:01.041Z"
+  "zero_treq_reason": "Correccion transversal de governance y lifecycle; no modifica requisitos funcionales TREQ ni el Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-18T02:02:42.543Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO DELIV-PKG-015::CORR-017 ESTANDARIZAR LIFECYCLE DE IMPLEMENTACION",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-18T03:11:01.687Z",
+      "candidate_head_before": "319cf68d4e7c2998755280cb4ad618720e565a13",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-18T03:17:34.956Z",
+      "execution_candidate_head": "44e442e41746e17e610d928ef7c580921973096d",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T03:47:23.391Z",
+      "candidate_head": "aaf501fe4afcf6188d8ad12ba69011153b535bc2",
+      "commands": [
+        "node --check scripts/docs/package-gate-control.mjs",
+        "node --test scripts/docs/package-gate-control.test.mjs",
+        "node --check scripts/docs/package-gate-lifecycle.mjs",
+        "node --test scripts/docs/package-gate-lifecycle.test.mjs",
+        "node --check scripts/docs/implementation-authorization-lifecycle.mjs",
+        "node --test scripts/docs/implementation-authorization-lifecycle.test.mjs",
+        "node --check scripts/docs/implementation-control.mjs",
+        "node --test scripts/docs/implementation-control.test.mjs",
+        "node --check scripts/docs/package-execution-control.mjs",
+        "node --test scripts/docs/package-execution-control.test.mjs",
+        "node --test scripts/docs/package-readiness-integration.test.mjs",
+        "node --test scripts/docs/package-readiness-scanner.test.mjs",
+        "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+        "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+        "npm run docs:package:execution:check",
+        "npm run docs:implementation:check",
+        "npm run docs:correction:check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm test --silent"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/package-gate-control.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-gate-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b3c4f7566049ca92fc544723eef094d25d0599ecb71661d46ab1c437a7e0eb35",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/package-gate-lifecycle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-gate-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "9b6ceb1649c1cf05734f8b3888890f797a1287827ef6b58a5516f30ed149e9c8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-authorization-lifecycle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-authorization-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "4f17772a9fa81910346b23d7a3c4f989819ae2aa8806248db2dafc4850c5037e",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-control.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d7ed0fc9f684640f9d94e170b29329dbc1201aa2cbbfb6bfc56db09d94a0021c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/package-execution-control.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-execution-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "9870f416e3c85c9fdd6fd5d0ca932c6a21f12d021aac511b71a6d2f70dcfd817",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-readiness-integration.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0382437f218448fc57004799426bdf1a6c1a0f19a1e1c266fbcbee4ee7341d18",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-readiness-scanner.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "80e4bf443f779b60355229fb2f67f7480f324452f642d1fdb32d7dd8051b74d5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "47abe9109eaa0d7797a7567735c26c19eccf383340dc8f89c26a7895014f7614",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "6447d1c6e56e57bb3dcbb6546798c5c5f91a44b9640de512e05f89e97d5c4af8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:package:execution:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "352c115dc60560d53886c875158ecfe76c48719f1db600b6e2cac94671652688",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "cd62fa20de19e891972e96e40042cb06b7dfe220fc28f337b92ba1138b966cbf",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "941c4b6a4e2a422625ba4392a6a1d77f66f9d19e544d3a641e58e2fd197bbf9c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c17382e6fa2f2c8991b0928d7955c80b93ac863488c9309e182eace1faa58bff",
+          "stderr_sha256": "69c67217e88d806c251c1949a716ee39caa0b4c29e7eda57df116c6dc75c0a6b"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "209bf6c59fb9979e1769794e95b6a41ab2aa9699dd49244ed1aba669897bb78a",
+          "stderr_sha256": "17f1cd6f343c0a72992831671e6ab9797323751b4b75e8ea345fc9ad5f2d17be"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c9643d7cf06f09574726106c2add2bbde287ccdf3aa3524a9ce213118b7ea135",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0ee3517daeb98f47491bde225dd00c68b2f68a052a06fe2392254523ce86493d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T03:54:01.231Z",
+      "validated_candidate_head": "aaf501fe4afcf6188d8ad12ba69011153b535bc2",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-18T00:55:01.041Z",
+  "implemented_at": "2026-09-18T03:24:12.246Z",
+  "verified_at": "2026-09-18T03:54:01.231Z"
 }

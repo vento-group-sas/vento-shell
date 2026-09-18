@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import fs from 'node:fs';
 import test from 'node:test';
 
 import {
@@ -191,4 +192,12 @@ test('starter proyecta advance como unica entrada mutante y distingue estado dec
   assert.match(built.implementationSource, /UNIFIED OPERATIONAL CONTRACT/u);
   assert.match(built.implementationSource, /Mutating entrypoint: docs:implementation:advance/u);
   assert.match(built.implementationSource, /Direct lifecycle entrypoints: DISABLED/u);
+});
+
+// CORR-017_STARTER_NATIVE_AUTHORIZATION_TEST
+test('starter separa authorize de advance y exige physical discovery', () => {
+  const source = fs.readFileSync('scripts/docs/chatgpt-work-starter-readiness.mjs', 'utf8');
+  assert.match(source, /physical_discovery debe estar COMPLETE/u);
+  assert.match(source, /docs:implementation:authorize/u);
+  assert.match(source, /Authorization entrypoint/u);
 });

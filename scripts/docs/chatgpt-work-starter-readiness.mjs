@@ -79,6 +79,7 @@ function packageGateLifecycleBlock(readiness) {
   return `PACKAGE GATE LIFECYCLE — VALIDACIÓN OBLIGATORIA
 
 Cada package canónico usa un expediente autogenerado y versionado. El ingreso normal es docs:package:start, que abre o reanuda la rama exacta del primary derivado; no cree el JSON manualmente.
+Antes de READY_FOR_APPROVAL, physical_discovery debe estar COMPLETE, cubrir exactamente physical_identity.targets y conservar cero findings sin resolver. Si aparece un delta físico después de aprobación, use remature gobernado; no amplíe CI020 a mano.
 Los gates EVIDENCE_023, PHYSICAL_IDENTITY, IMPLEMENTATION_UNIT y FINAL_DECISION_025 solo pasan cuando el expediente está completo y contiene APROBADO humano explícito.
 La aprobación del expediente no autoriza implementación física. docs:package:finish puede publicar un gate ya madurado; el handoff PENDING_AUTHORIZATION solo se materializa cuando la admisión física es ADMISSIBLE.
 La prioridad se deriva automáticamente de dependencias explícitas, capa y package_id. Un WAITING conserva posición y evidencia, pero no monopoliza roots independientes.
@@ -126,7 +127,7 @@ export function renderReadinessStarterBlock({ readiness, lane, coordinated = nul
   const laneRule = lane === 'DOCUMENTATION'
     ? 'Conservar esta conversación en DOCUMENTATION. NO cambiar de carril; informar primary, waiting y active physical.'
     : lane === 'PHYSICAL_IMPLEMENTATION'
-      ? 'Ejecutar únicamente el primary derivado o una instancia exacta ya ACTIVE_PHYSICAL/AUTHORIZED; IMPLEMENTATION_READY no equivale a AUTHORIZED. La única entrada mutante normal es docs:implementation:advance; start/preverify/finish directos permanecen deshabilitados.'
+      ? 'Ejecutar únicamente el primary derivado o una instancia exacta ya ACTIVE_PHYSICAL/AUTHORIZED; IMPLEMENTATION_READY no equivale a AUTHORIZED. PENDING_AUTHORIZATION usa docs:implementation:authorize; desde AUTHORIZED la única entrada mutante normal es docs:implementation:advance. start/preverify/finish directos permanecen deshabilitados.'
       : 'Nunca elegir packages por intuición: consumir primary, authorization frontier y active physical set derivados.';
   const candidateBlock = candidate
     ? `\nPACKAGE IMPLEMENTABLE DETECTED
@@ -134,7 +135,8 @@ export function renderReadinessStarterBlock({ readiness, lane, coordinated = nul
 - Gate: ${candidate.gate_id} = PASS
 - Blockers: 0
 - Next execution: ${candidate.next_execution}
-- Physical authorization required: TRUE`
+- Physical authorization required: TRUE
+- Authorization command: ${readiness.registry?.package_execution?.authorization_frontier?.find(({ package_id: packageId }) => packageId === candidate.package_id)?.next_action?.command ?? readiness.registry?.package_execution?.current?.next_action?.command ?? 'NONE'}`
     : '';
   const coordinatedBlock = coordinated?.readinessCandidate
     ? `\nCOORDINATED PHYSICAL CANDIDATE
@@ -150,6 +152,7 @@ export function renderReadinessStarterBlock({ readiness, lane, coordinated = nul
   const operationalBlock = `UNIFIED OPERATIONAL CONTRACT
 - Model: ${operational?.modelId ?? 'VENTO-IMPLEMENTATION-OPERATIONAL-CONTRACT-V1'}
 - State integrity model: ${operational?.stateIntegrityModelId ?? 'VENTO-IMPLEMENTATION-STATE-INTEGRITY-V1'}
+- Authorization entrypoint: ${operational?.authorizationEntrypoint ?? 'docs:implementation:authorize'}
 - Mutating entrypoint: ${operational?.mutatingEntrypoint ?? 'docs:implementation:advance'}
 - Direct lifecycle entrypoints: ${operational?.directLifecycleEntrypointsEnabled === true ? 'ENABLED' : 'DISABLED'}
 - Active instance: ${activeOperational?.instanceId ?? 'NONE'}

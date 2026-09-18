@@ -123,7 +123,7 @@ function nextAction(pkg) {
       return {
         type: 'AUTHORIZE_PHYSICAL_IMPLEMENTATION',
         target: pkg.physical_entry_instance.instance_id,
-        command: 'npm run docs:implementation:status',
+        command: `npm run docs:implementation:authorize -- --instance-id ${pkg.physical_entry_instance.instance_id} --approved-by VENTO_OWNER --approval-statement "APROBADO ${pkg.physical_entry_instance.instance_id}" --timezone America/Bogota`,
         reason:
           `${packageId} ya tiene handoff PENDING_AUTHORIZATION y reserva su scope probado; `
           + 'falta autorización física humana explícita.',
@@ -530,10 +530,14 @@ export function assertPackageMutationAllowed({
 
   const frontierEntry = (execution?.frontier ?? [])
     .find(({ package_id: packageIdValue }) => packageIdValue === normalizedPackageId) ?? null;
+  const authorizationEntry = (execution?.authorization_frontier ?? [])
+    .find(({ package_id: packageIdValue }) => packageIdValue === normalizedPackageId) ?? null;
 
   const finishOnly = String(operation).includes('PACKAGE_FINISH') && frontierEntry;
+  const rematureOnly = String(operation).includes('PACKAGE_REMATURE') && authorizationEntry;
 
   if (finishOnly) return frontierEntry;
+  if (rematureOnly) return authorizationEntry;
 
   fail(
     `PACKAGE_OUTSIDE_GOVERNED_PRIMARY: ${operation} solo admite el primary frontier member `

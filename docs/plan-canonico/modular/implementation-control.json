@@ -28,5 +28,6 @@
     "IMPLEMENTED",
     "VERIFIED",
     "DEFERRED"
-  ]
+  ],
+  "authorization_entrypoint": "docs:implementation:authorize"
 }

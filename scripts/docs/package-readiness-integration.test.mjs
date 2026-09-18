@@ -515,3 +515,16 @@ test('integración conecta secuencia CI020..024, ledger propio y MRP015-050 pack
   assert.match(implementationLifecycleSource, /MRP015-050\/CANDIDATE_READY/u);
   assert.match(guardSource, /CONTINUE_PHYSICAL_LIFECYCLE/u);
 });
+
+// CORR-017_END_TO_END_STANDARD_SOURCE_ASSERTIONS
+test('lifecycle estándar integra discovery, autorización nativa y advance', () => {
+  const gate = fs.readFileSync('scripts/docs/package-gate-control.mjs', 'utf8');
+  const lifecycle = fs.readFileSync('scripts/docs/package-gate-lifecycle.mjs', 'utf8');
+  const authorization = fs.readFileSync('scripts/docs/implementation-authorization-lifecycle.mjs', 'utf8');
+  const control = fs.readFileSync('scripts/docs/implementation-control.mjs', 'utf8');
+  assert.match(gate, /physical_discovery/u);
+  assert.match(lifecycle, /rematurePackageGate/u);
+  assert.match(authorization, /IMPLEMENTATION_AUTHORIZE/u);
+  assert.match(control, /docs:implementation:authorize/u);
+  assert.match(control, /IMPLEMENTATION_MUTATING_ENTRYPOINT/u);
+});
