@@ -64,6 +64,15 @@
     "approval_statement": "APROBADO: autoriza NEXO-AUTH-008::CORR-001 exclusivamente para reconciliar NEXO-AUTH-008 y TREQ-NEXO-112/TREQ-NEXO-122 con vento.authorization@1.0.0 y sus datasets congelados; preservar las 140 PermissionKey activas; no crear capacidades nuevas; no reactivar dispatch, transit ni transit.view; no cambiar grants; no ejecutar cambios fisicos; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.",
     "source_contract_sha256": "cd822a2b4ff261f412bc747e5271f6574c87b185be9c6f6e8b7cfe02679e15d0"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-18T20:07:51.608Z",
+      "candidate_head_before": "38c73a241016c8febf31cae2487f4fefb8e2f700",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-18T19:33:43.099Z"
 }
