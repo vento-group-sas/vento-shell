@@ -12,11 +12,11 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Termina la corrección abierta — `NEXO-AUTH-008::CORR-001`
+### 1. Valida y cierra la corrección implementada — `NEXO-AUTH-008::CORR-001`
 
-- **Estado:** `IN_PROGRESS`
-- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
-- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Estado:** `IMPLEMENTED`
+- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
+- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
 - **Contrato autorizado:** APROBADO: autoriza NEXO-AUTH-008::CORR-001 exclusivamente para reconciliar NEXO-AUTH-008 y TREQ-NEXO-112/TREQ-NEXO-122 con vento.authorization@1.0.0 y sus datasets congelados; preservar las 140 PermissionKey activas; no crear capacidades nuevas; no reactivar dispatch, transit ni transit.view; no cambiar grants; no ejecutar cambios fisicos; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.
 - **Edita solamente:**
   - `MODIFY` `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
