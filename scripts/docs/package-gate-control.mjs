@@ -35,6 +35,69 @@ function normalizedOperation(value) {
   return String(value ?? '').trim().toUpperCase();
 }
 
+function physicalTargetKey(value) {
+  return [
+    String(value?.repository ?? '').trim(),
+    normalizedPhysicalPath(value?.path),
+    String(value?.symbol_or_surface ?? '').trim(),
+    normalizedOperation(value?.operation),
+  ].join('|');
+}
+
+function assessPhysicalDiscovery(record, policy) {
+  const config = policy?.physical_discovery_policy ?? null;
+  if (!config) return { complete: true, grandfathered: false, errors: [] };
+
+  const discovery = record?.physical_discovery ?? null;
+  const grandfathered = !discovery
+    && record?.status === 'APPROVED_FOR_IMPLEMENTATION'
+    && config.grandfather_approved_without_record === true;
+  if (!discovery) return { complete: grandfathered, grandfathered, errors: [] };
+
+  const searchesComplete = completeObjects(discovery.searches, ['repository', 'surface', 'method', 'evidence']);
+  const findingsComplete = completeObjects(
+    discovery.findings,
+    ['repository', 'path', 'symbol_or_surface', 'operation'],
+  );
+  const unresolved = Array.isArray(discovery.unresolved_findings)
+    ? discovery.unresolved_findings
+    : null;
+  const unresolvedComplete = unresolved !== null
+    && unresolved.length <= Number(config.unresolved_findings_allowed ?? 0);
+  const targets = Array.isArray(record?.physical_identity?.targets)
+    ? record.physical_identity.targets
+    : [];
+  const findingKeys = new Set((discovery.findings ?? []).map(physicalTargetKey));
+  const targetKeys = new Set(targets.map(physicalTargetKey));
+  const exactCoverage = config.exact_target_coverage_required !== true
+    || (
+      findingsComplete
+      && findingKeys.size === (discovery.findings ?? []).length
+      && targetKeys.size === targets.length
+      && findingKeys.size === targetKeys.size
+      && [...targetKeys].every((key) => findingKeys.has(key))
+    );
+  const complete = discovery.status === config.complete_status
+    && searchesComplete
+    && findingsComplete
+    && unresolvedComplete
+    && exactCoverage;
+  const errors = [];
+  if (discovery.status === config.complete_status && !searchesComplete) {
+    errors.push('physical_discovery COMPLETE exige searches trazables');
+  }
+  if (discovery.status === config.complete_status && !findingsComplete) {
+    errors.push('physical_discovery COMPLETE exige findings físicos completos');
+  }
+  if (discovery.status === config.complete_status && !unresolvedComplete) {
+    errors.push('physical_discovery COMPLETE exige cero findings sin resolver');
+  }
+  if (discovery.status === config.complete_status && !exactCoverage) {
+    errors.push('physical_discovery findings debe cubrir exactamente physical_identity.targets');
+  }
+  return { complete, grandfathered: false, errors };
+}
+
 function assessMigrationManifestCoherence(record) {
   const targets = Array.isArray(record?.physical_identity?.targets)
     ? record.physical_identity.targets
@@ -92,6 +155,16 @@ export function readPackageGatePolicy(root = process.cwd()) {
   if (policy.storage_mode !== 'ONE_FILE_PER_PACKAGE') errors.push('storage_mode debe ser ONE_FILE_PER_PACKAGE');
   if (policy.automatic_authorization !== false) errors.push('automatic_authorization debe ser false');
   if (policy.approval_word !== 'APROBADO') errors.push('approval_word debe ser APROBADO');
+  const discovery = policy.physical_discovery_policy;
+  if (!discovery || typeof discovery !== 'object' || Array.isArray(discovery)) {
+    errors.push('physical_discovery_policy es obligatorio');
+  } else {
+    if (discovery.required_for_new_approval !== true) errors.push('physical_discovery_policy.required_for_new_approval debe ser true');
+    if (discovery.complete_status !== 'COMPLETE') errors.push('physical_discovery_policy.complete_status debe ser COMPLETE');
+    if (discovery.grandfather_approved_without_record !== true) errors.push('physical_discovery_policy.grandfather_approved_without_record debe ser true');
+    if (discovery.exact_target_coverage_required !== true) errors.push('physical_discovery_policy.exact_target_coverage_required debe ser true');
+    if (discovery.unresolved_findings_allowed !== 0) errors.push('physical_discovery_policy.unresolved_findings_allowed debe ser 0');
+  }
   if (!nonEmpty(policy.instance_directory)) errors.push('instance_directory es obligatorio');
   if (!Array.isArray(policy.statuses) || !policy.statuses.includes('APPROVED_FOR_IMPLEMENTATION')) errors.push('statuses incompletos');
   if (errors.length) fail(`package-gate-policy.json inválido:\n- ${errors.join('\n- ')}`);
@@ -111,6 +184,8 @@ export function assessPackageGateRecord(record, { taskPrerequisites = null, poli
   if (!policy.statuses.includes(record?.status)) errors.push(`status no permitido: ${record?.status ?? 'EMPTY'}`);
   if (!nonEmpty(record?.created_at) || !nonEmpty(record?.updated_at)) errors.push('created_at y updated_at son obligatorios');
 
+  const physicalDiscovery = assessPhysicalDiscovery(record, policy);
+  errors.push(...physicalDiscovery.errors);
   const manifestCoherence = assessMigrationManifestCoherence(record);
   if (!manifestCoherence.targetComplete) {
     errors.push('physical_identity crea, modifica o elimina una migración pero supabase/MIGRATION_MANIFEST.md no declara operation MODIFICAR');
@@ -159,7 +234,11 @@ export function assessPackageGateRecord(record, { taskPrerequisites = null, poli
     && nonEmpty(authorization.approval_ref)
     && nonEmpty(authorization.approval_statement)
     && authorization.approval_statement.includes(policy.approval_word);
-  const dossierComplete = identityComplete && unitsComplete && deploymentEnvironmentComplete && evidenceComplete;
+  const dossierComplete = physicalDiscovery.complete
+    && identityComplete
+    && unitsComplete
+    && deploymentEnvironmentComplete
+    && evidenceComplete;
   const status = !tasksComplete
     ? 'WAITING_DOCUMENTATION'
     : !dossierComplete
@@ -189,12 +268,14 @@ export function assessPackageGateRecord(record, { taskPrerequisites = null, poli
     dossier_complete: dossierComplete,
     approval_complete: approved,
     sections: {
+      physical_discovery: physicalDiscovery.complete,
       physical_identity: identityComplete,
       implementation_units: unitsComplete,
       deployment_environment: deploymentEnvironmentComplete,
       evidence_plan: evidenceComplete,
     },
     deployment_environment: deploymentEnvironment,
+    physical_discovery: physicalDiscovery,
     gates,
   };
 }

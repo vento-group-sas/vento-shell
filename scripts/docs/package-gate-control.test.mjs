@@ -10,6 +10,13 @@ const policy = {
   instance_directory: 'docs/plan-canonico/modular/package-gate-instances',
   approval_word: 'APROBADO',
   statuses: ['WAITING_DOCUMENTATION', 'MATURATION_DRAFT', 'READY_FOR_APPROVAL', 'APPROVED_FOR_IMPLEMENTATION'],
+  physical_discovery_policy: {
+    required_for_new_approval: true,
+    complete_status: 'COMPLETE',
+    grandfather_approved_without_record: true,
+    exact_target_coverage_required: true,
+    unresolved_findings_allowed: 0,
+  },
 };
 
 function record(overrides = {}) {
@@ -19,6 +26,7 @@ function record(overrides = {}) {
     status: 'MATURATION_DRAFT',
     created_at: '2026-08-30T00:00:00.000Z',
     updated_at: '2026-08-30T00:00:00.000Z',
+    physical_discovery: { status: 'PENDING', searches: [], findings: [], unresolved_findings: [] },
     physical_identity: { targets: [] },
     implementation_units: [],
     evidence_plan: { tests: [], observability: [], acceptance_criteria: [], rollback_steps: [] },
@@ -28,9 +36,19 @@ function record(overrides = {}) {
 }
 
 function completeRecord(overrides = {}) {
+  const physicalIdentity = overrides.physical_identity ?? {
+    targets: [{ repository: 'vento-pass', path: 'src/profile.ts', symbol_or_surface: 'Profile', operation: 'create' }],
+  };
+  const physicalDiscovery = overrides.physical_discovery ?? {
+    status: 'COMPLETE',
+    searches: [{ repository: 'vento-pass', surface: 'package physical identity', method: 'CODE_SEARCH', evidence: 'completeRecord synthetic fixture' }],
+    findings: physicalIdentity.targets.map((target) => ({ ...target })),
+    unresolved_findings: [],
+  };
   return record({
     status: 'READY_FOR_APPROVAL',
-    physical_identity: { targets: [{ repository: 'vento-pass', path: 'src/profile.ts', symbol_or_surface: 'Profile', operation: 'create' }] },
+    physical_discovery: physicalDiscovery,
+    physical_identity: physicalIdentity,
     implementation_units: [{ unit_id: 'PASS-PROFILE-001', repository: 'vento-pass', change: 'Materializar perfil del cliente.' }],
     deployment_environment: {
       canonical_task_id: 'DELIV-PKG-019',
@@ -46,6 +64,8 @@ function completeRecord(overrides = {}) {
       rollback_steps: ['Revertir la unidad y conservar datos compatibles.'],
     },
     ...overrides,
+    physical_discovery: physicalDiscovery,
+    physical_identity: physicalIdentity,
   });
 }
 
@@ -207,4 +227,47 @@ test('una migración nueva coherente reutiliza el clean replay como único check
   const assessment = assessPackageGateRecord(coherent, { policy, taskPrerequisites: { remaining: 0 } });
   assert.equal(assessment.valid, true);
   assert.equal(assessment.dossier_complete, true);
+});
+
+// CORR-017_PHYSICAL_DISCOVERY_TESTS
+test('physical discovery incompleto mantiene el expediente en MATURATION_DRAFT', () => {
+  const incomplete = completeRecord({
+    physical_discovery: { status: 'PENDING', searches: [], findings: [], unresolved_findings: [] },
+  });
+  const assessment = assessPackageGateRecord(incomplete, { policy, taskPrerequisites: { remaining: 0 } });
+  assert.equal(assessment.status, 'MATURATION_DRAFT');
+  assert.equal(assessment.sections.physical_discovery, false);
+  assert.equal(assessment.dossier_complete, false);
+});
+
+test('physical discovery COMPLETE exige cobertura exacta y cero findings sin resolver', () => {
+  const incomplete = completeRecord({
+    physical_discovery: {
+      status: 'COMPLETE',
+      searches: [{ repository: 'vento-pass', surface: 'profile', method: 'CODE_SEARCH', evidence: 'src/profile.ts' }],
+      findings: [{ repository: 'vento-pass', path: 'src/other.ts', symbol_or_surface: 'Other', operation: 'create' }],
+      unresolved_findings: ['src/profile.ts'],
+    },
+  });
+  const assessment = assessPackageGateRecord(incomplete, { policy, taskPrerequisites: { remaining: 0 } });
+  assert.equal(assessment.valid, false);
+  assert.match(assessment.errors.join(' '), /cero findings sin resolver|cubrir exactamente/u);
+});
+
+test('un gate histórico ya APPROVED sin physical_discovery conserva compatibilidad', () => {
+  const historical = completeRecord({
+    status: 'APPROVED_FOR_IMPLEMENTATION',
+    authorization: {
+      decision: 'APROBADO',
+      approved_by: 'usuario',
+      approved_at: '2026-08-30T01:00:00.000Z',
+      approval_ref: 'historical',
+      approval_statement: 'APROBADO histórico.',
+    },
+  });
+  delete historical.physical_discovery;
+  const assessment = assessPackageGateRecord(historical, { policy, taskPrerequisites: { remaining: 0 } });
+  assert.equal(assessment.valid, true);
+  assert.equal(assessment.sections.physical_discovery, true);
+  assert.equal(assessment.physical_discovery.grandfathered, true);
 });

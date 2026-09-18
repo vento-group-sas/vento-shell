@@ -292,8 +292,8 @@ function parseArgs(argv) {
     values[key] = value;
     i += 1;
   }
-  if (!['start', 'prepare', 'status', 'check', 'approve', 'finish', 'handoff'].includes(command)) {
-    fail('Use start, prepare, status, check, approve, finish o handoff.');
+  if (!['start', 'prepare', 'mature', 'remature', 'status', 'check', 'approve', 'finish', 'handoff'].includes(command)) {
+    fail('Use start, prepare, mature, remature, status, check, approve, finish o handoff.');
   }
   return { command, ...values };
 }
@@ -316,6 +316,7 @@ function newRecord(pkg, now) {
       task_ids: pkg.task_prerequisites.tasks.map(({ task_id: taskId }) => taskId),
       missing_task_ids: pkg.task_prerequisites.missing_task_ids,
     },
+    physical_discovery: { status: 'PENDING', searches: [], findings: [], unresolved_findings: [] },
     physical_identity: { targets: [] },
     implementation_units: [],
     evidence_plan: { tests: [], observability: [], acceptance_criteria: [], rollback_steps: [] },
@@ -323,6 +324,102 @@ function newRecord(pkg, now) {
       decision: 'PENDING', approved_by: null, approved_at: null, approval_ref: null, approval_statement: null,
     },
   };
+}
+
+const PACKAGE_DOSSIER_KEYS = new Set([
+  'package_id',
+  'physical_discovery',
+  'physical_identity',
+  'implementation_units',
+  'deployment_environment',
+  'evidence_plan',
+]);
+
+function readDossierFile(dossierFile) {
+  if (!dossierFile) fail('mature/remature exige --dossier-file.');
+  const absolutePath = path.resolve(dossierFile);
+  if (!fs.existsSync(absolutePath) || !fs.statSync(absolutePath).isFile()) {
+    fail(`DOSSIER_FILE_NOT_FOUND: ${absolutePath}.`);
+  }
+  let dossier;
+  try { dossier = JSON.parse(fs.readFileSync(absolutePath, 'utf8')); }
+  catch (error) { fail(`DOSSIER_FILE_INVALID_JSON: ${error instanceof Error ? error.message : String(error)}.`); }
+  const unexpected = Object.keys(dossier).filter((key) => !PACKAGE_DOSSIER_KEYS.has(key));
+  if (unexpected.length > 0) fail(`DOSSIER_FILE_UNEXPECTED_KEYS: ${unexpected.join(', ')}.`);
+  return dossier;
+}
+
+export function applyPackageGateDossier(record, dossier, { packageId, remature = false, now = new Date().toISOString() } = {}) {
+  const id = normalizePackageId(packageId ?? record?.package_id);
+  if (!record || record.package_id !== id) fail(`PACKAGE_DOSSIER_RECORD_IDENTITY_MISMATCH: ${id}.`);
+  if (dossier?.package_id && normalizePackageId(dossier.package_id) !== id) {
+    fail(`PACKAGE_DOSSIER_IDENTITY_MISMATCH: ${dossier.package_id} != ${id}.`);
+  }
+  for (const key of ['physical_discovery', 'physical_identity', 'implementation_units', 'deployment_environment', 'evidence_plan']) {
+    if (!dossier || dossier[key] === undefined) fail(`PACKAGE_DOSSIER_MISSING_SECTION: ${key}.`);
+  }
+  const history = Array.isArray(record.authorization_history) ? [...record.authorization_history] : [];
+  if (remature && record.authorization?.decision === 'APROBADO') {
+    history.push({ ...record.authorization, superseded_at: now, superseded_by: 'REMATURE' });
+  }
+  return {
+    ...record,
+    status: 'MATURATION_DRAFT',
+    updated_at: now,
+    physical_discovery: dossier.physical_discovery,
+    physical_identity: dossier.physical_identity,
+    implementation_units: dossier.implementation_units,
+    deployment_environment: dossier.deployment_environment,
+    evidence_plan: dossier.evidence_plan,
+    ...(history.length > 0 ? { authorization_history: history } : {}),
+    authorization: {
+      decision: 'PENDING', approved_by: null, approved_at: null, approval_ref: null, approval_statement: null,
+    },
+  };
+}
+
+function writeMaturedRecord({ root, packageId, dossierFile, remature = false, now = new Date().toISOString() }) {
+  const id = normalizePackageId(packageId);
+  assertPackageBranch(root, id, remature ? 'PACKAGE_REMATURE' : 'PACKAGE_MATURE');
+  const { pkg } = assertPackageMutationScope(root, id, remature ? 'PACKAGE_REMATURE' : 'PACKAGE_MATURE');
+  const policy = readPackageGatePolicy(root);
+  const relativePath = packageGateRecordRelativePath(id, policy);
+  const filePath = abs(root, relativePath);
+  if (!fs.existsSync(filePath)) fail(`${relativePath} no existe; ejecute docs:package:start.`);
+  const current = JSON.parse(fs.readFileSync(filePath, 'utf8'));
+  if (remature && current.status !== 'APPROVED_FOR_IMPLEMENTATION') {
+    fail(`PACKAGE_REMATURE exige APPROVED_FOR_IMPLEMENTATION; estado actual: ${current.status}.`);
+  }
+  if (!remature && current.status === 'APPROVED_FOR_IMPLEMENTATION') {
+    fail('PACKAGE_MATURE no reabre un gate aprobado; use remature.');
+  }
+  const dossier = readDossierFile(dossierFile);
+  let record = applyPackageGateDossier(current, dossier, { packageId: id, remature, now });
+  const assessment = assessPackageGateRecord(record, { taskPrerequisites: pkg.task_prerequisites, policy, relativePath });
+  record = { ...record, status: assessment.status, updated_at: now };
+  fs.writeFileSync(filePath, stableJson(record), 'utf8');
+  synchronizePackageReadiness(root, remature ? 'package-gate-remature' : 'package-gate-mature');
+  return { relativePath, record, assessment: assessPackageGateRecord(record, { taskPrerequisites: pkg.task_prerequisites, policy, relativePath }) };
+}
+
+export function maturePackageGate({ root = process.cwd(), packageId, dossierFile, now = new Date().toISOString() } = {}) {
+  const id = normalizePackageId(packageId);
+  if (currentBranch(root) === DEFAULT_BRANCH) startPackageGate({ root, packageId: id, now });
+  return writeMaturedRecord({ root, packageId: id, dossierFile, remature: false, now });
+}
+
+export function rematurePackageGate({ root = process.cwd(), packageId, dossierFile, now = new Date().toISOString() } = {}) {
+  const id = normalizePackageId(packageId);
+  if (currentBranch(root) === DEFAULT_BRANCH) {
+    if (worktreePaths(root).length > 0) fail('PACKAGE_REMATURE exige worktree limpio.');
+    ensureMainSynchronized(root);
+    assertPackageMutationScope(root, id, 'PACKAGE_REMATURE');
+    const branch = packageGateBranchName(id);
+    checkoutPackageBranch(root, branch);
+    reconcileMainIntoPackageBranch(root);
+    assertPackageMutationScope(root, id, 'PACKAGE_REMATURE_POST_SYNC');
+  }
+  return writeMaturedRecord({ root, packageId: id, dossierFile, remature: true, now });
 }
 
 export function preparePackageGate({ root = process.cwd(), packageId, now = new Date().toISOString() }) {
@@ -585,6 +682,16 @@ function main() {
 
   if (args.command === 'prepare') {
     print(preparePackageGate({ packageId: args.package_id }));
+    return;
+  }
+
+  if (args.command === 'mature') {
+    print(maturePackageGate({ packageId: args.package_id, dossierFile: args.dossier_file }));
+    return;
+  }
+
+  if (args.command === 'remature') {
+    print(rematurePackageGate({ packageId: args.package_id, dossierFile: args.dossier_file }));
     return;
   }
 

@@ -370,3 +370,23 @@ test('rechaza ciclos y dependencias que contradicen capas', () => {
     /contradice el orden de capas/u,
   );
 });
+
+// CORR-017_NATIVE_AUTHORIZATION_TESTS
+test('PENDING_AUTHORIZATION proyecta el comando nativo de autorización física', () => {
+  const pending = pkg('GAP-PKG-001', 1, 'IMPLEMENTATION_READY', [], {
+    package_gate: { status: 'APPROVED_FOR_IMPLEMENTATION', approval_complete: true },
+    physical_entry_instance: { instance_id: 'SHELL-CI-020::GAP-PKG-001', status: 'PENDING_AUTHORIZATION' },
+  });
+  const result = deriveLinearPackageExecution({ packages: [pending] }, policy);
+  assert.equal(result.current.next_action.type, 'AUTHORIZE_PHYSICAL_IMPLEMENTATION');
+  assert.equal(result.current.next_action.command, 'npm run docs:implementation:authorize -- --instance-id SHELL-CI-020::GAP-PKG-001 --approved-by VENTO_OWNER --approval-statement "APROBADO SHELL-CI-020::GAP-PKG-001" --timezone America/Bogota');
+});
+
+test('PACKAGE_REMATURE solo admite el package reservado en authorization_frontier', () => {
+  const pending = pkg('GAP-PKG-001', 1, 'IMPLEMENTATION_READY', [], {
+    package_gate: { status: 'APPROVED_FOR_IMPLEMENTATION', approval_complete: true },
+    physical_entry_instance: { instance_id: 'SHELL-CI-020::GAP-PKG-001', status: 'PENDING_AUTHORIZATION' },
+  });
+  const result = deriveLinearPackageExecution({ packages: [pending] }, policy);
+  assert.doesNotThrow(() => assertPackageMutationAllowed({ execution: result, packageId: 'GAP-PKG-001', operation: 'PACKAGE_REMATURE', openOrderCorrections: [] }));
+});

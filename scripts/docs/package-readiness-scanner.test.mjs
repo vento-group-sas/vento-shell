@@ -1017,3 +1017,11 @@ test('CORR-011_ACCEPTANCE: observacion con drift nunca materializa MRP015-040 co
   assert.equal(validateFoundationEvidenceRef(gate, evidence).status, 'FAIL');
   assert.equal(validateFoundationEvidenceRef(gate, null).status, 'UNKNOWN');
 });
+
+// CORR-017_DISCOVERY_READINESS_PROJECTION_TEST
+test('readiness expone physical discovery y el comando nativo de autorización', () => {
+  const source = fs.readFileSync('scripts/docs/package-readiness-scanner.mjs', 'utf8');
+  assert.match(source, /Descubrimiento físico/u);
+  assert.match(source, /PHYSICAL_DISCOVERY/u);
+  assert.match(source, /AUTHORIZATION COMMAND/u);
+});

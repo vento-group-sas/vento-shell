@@ -29,7 +29,7 @@ const readyRegistry = {
       next_action: {
         type: 'AUTHORIZE_PHYSICAL_IMPLEMENTATION',
         target: 'SHELL-CI-020::NEXO-PACKAGE-001',
-        command: 'npm run docs:implementation:status',
+        command: 'npm run docs:implementation:authorize -- --instance-id SHELL-CI-020::NEXO-PACKAGE-001 --approved-by VENTO_OWNER --approval-statement "APROBADO SHELL-CI-020::NEXO-PACKAGE-001" --timezone America/Bogota',
         reason: 'Gate completo; falta autorización física humana.',
       },
     },
@@ -351,4 +351,12 @@ test('contrato operacional degrada un estado declarado imposible y bloquea lifec
   assert.equal(projected.contract.directLifecycleEntrypointsEnabled, false);
   assert.equal(projected.contract.active.effectiveStatus, 'IN_PROGRESS');
   assert.equal(projected.contract.active.statusValid, false);
+});
+
+// CORR-017_COORDINATOR_NATIVE_AUTHORIZATION_TEST
+test('contrato operacional expone entrypoint nativo de autorización separado de advance', () => {
+  const control = { ...baseControl(), authorizationEntrypoint: 'docs:implementation:authorize' };
+  const operational = buildUnifiedOperationalContract({ root: '/repo', baseControl: control, stateIntegrityAssessor: () => ({ status_valid: true, declared_status: 'PENDING_AUTHORIZATION', highest_valid_status: 'PENDING_AUTHORIZATION', recoverable: true, recovery_action: null, missing_prerequisites: [], stale_evidence: [] }) });
+  assert.equal(operational.contract.authorizationEntrypoint, 'docs:implementation:authorize');
+  assert.equal(operational.contract.mutatingEntrypoint, 'docs:implementation:advance');
 });

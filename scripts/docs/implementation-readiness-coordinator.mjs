@@ -99,6 +99,7 @@ export function buildUnifiedOperationalContract({
     schemaVersion: 1,
     modelId: IMPLEMENTATION_OPERATIONAL_CONTRACT_ID,
     stateIntegrityModelId: IMPLEMENTATION_STATE_INTEGRITY_MODEL_ID,
+    authorizationEntrypoint: baseControl.authorizationEntrypoint ?? 'docs:implementation:authorize',
     mutatingEntrypoint: IMPLEMENTATION_MUTATING_ENTRYPOINT,
     directLifecycleEntrypointsEnabled: false,
     directLifecycleEntrypoints: Object.freeze([
@@ -318,6 +319,7 @@ function printStatus(status) {
   if (status.operationalContract) {
     const contract = status.operationalContract;
     console.log(`OPERATIONAL_CONTRACT: ${contract.modelId}`);
+    console.log(`AUTHORIZATION_ENTRYPOINT: ${contract.authorizationEntrypoint}`);
     console.log(`MUTATING_ENTRYPOINT: ${contract.mutatingEntrypoint}`);
     console.log(`DIRECT_LIFECYCLE_ENTRYPOINTS_ENABLED: ${contract.directLifecycleEntrypointsEnabled ? 'SI' : 'NO'}`);
     console.log(`ACTIVE_DECLARED_STATUS: ${contract.active?.declaredStatus ?? 'NONE'}`);

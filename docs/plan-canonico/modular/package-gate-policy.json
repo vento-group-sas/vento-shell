@@ -17,5 +17,12 @@
     "IMPLEMENTATION_UNIT",
     "FINAL_DECISION_025"
   ],
-  "implementation_entry_task": "SHELL-CI-020"
+  "implementation_entry_task": "SHELL-CI-020",
+  "physical_discovery_policy": {
+    "required_for_new_approval": true,
+    "complete_status": "COMPLETE",
+    "grandfather_approved_without_record": true,
+    "exact_target_coverage_required": true,
+    "unresolved_findings_allowed": 0
+  }
 }

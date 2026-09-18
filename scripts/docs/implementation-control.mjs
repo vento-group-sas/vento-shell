@@ -186,6 +186,9 @@ export function validateImplementationControl(control, workTopology) {
     errors.push('authorization_mode debe ser EXPLICIT_PER_INSTANCE.');
   }
   if (control?.automatic_authorization !== false) errors.push('automatic_authorization debe ser false.');
+  if (control?.authorization_entrypoint !== 'docs:implementation:authorize') {
+    errors.push('authorization_entrypoint debe ser docs:implementation:authorize.');
+  }
   if (control?.single_primary_action !== false) errors.push('single_primary_action debe ser false.');
   if (control?.instance_storage_mode !== 'ONE_FILE_PER_INSTANCE') {
     errors.push('instance_storage_mode debe ser ONE_FILE_PER_INSTANCE.');
@@ -646,16 +649,20 @@ export function deriveImplementationControl({
       instruction: integrityRecovery
         ? `El ledger declara ${instance.declaredStatus}, pero la evidencia efectiva solo soporta ${instance.effectiveStatus}. Reconciliar según ${instance.recoveryAction ?? 'MANUAL_RECONCILIATION_REQUIRED'} antes de cualquier mutación.`
         : type === 'AUTORIZAR_IMPLEMENTACION'
-          ? `Definir y aprobar el alcance físico exacto de ${instance.instanceId}; la misma entrega puede dejar preparado el lote físico condicionado a guardar primero la autorización.`
+          ? `Autorizar ${instance.instanceId} exclusivamente mediante ${control.authorization_entrypoint}; el comando deriva scope y evidencia desde autoridades canónicas y conserva HUMAN_GATE explícito.`
           : type === 'EJECUTAR_IMPLEMENTACION'
             ? `Reanudar ${instance.instanceId} desde ${instance.status} exclusivamente mediante ${IMPLEMENTATION_MUTATING_ENTRYPOINT}; el coordinador resuelve internamente start, preverify, repair y finish.`
             : `Guiar la resolución humana del bloqueo de ${instance.instanceId} sin ampliar el alcance.`,
       why: integrityRecovery
         ? `STATE_INTEGRITY_VIOLATION: declared=${instance.declaredStatus}; effective=${instance.effectiveStatus}.`
         : instance.blocker ?? `${instance.taskId} tiene contrato aprobado y pertenece al governed active set físico.`,
-      command: integrityRecovery || type !== 'EJECUTAR_IMPLEMENTACION'
+      command: integrityRecovery
         ? null
-        : `npm run ${IMPLEMENTATION_MUTATING_ENTRYPOINT} -- --instance-id ${instance.instanceId}`,
+        : type === 'AUTORIZAR_IMPLEMENTACION'
+          ? `npm run ${control.authorization_entrypoint} -- --instance-id ${instance.instanceId} --approved-by VENTO_OWNER --approval-statement "APROBADO ${instance.instanceId}" --timezone America/Bogota`
+          : type === 'EJECUTAR_IMPLEMENTACION'
+            ? `npm run ${IMPLEMENTATION_MUTATING_ENTRYPOINT} -- --instance-id ${instance.instanceId}`
+            : null,
     };
   };
   const primaryActions = actionableSet.map(actionForInstance);
@@ -697,6 +704,7 @@ export function deriveImplementationControl({
     schemaVersion: 1,
     mode,
     authorizationMode: control.authorization_mode,
+    authorizationEntrypoint: control.authorization_entrypoint,
     executionOperatorPolicy: {
       defaultOperator: operatorPolicy.default_operator,
       interactionMode: operatorPolicy.interaction_mode,
