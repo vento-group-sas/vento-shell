@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "correction_id": "NEXO-AUTH-008::CORR-001",
+  "task_id": "NEXO-AUTH-008",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "DOCUMENTARY_CONTRADICTION",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": true,
+  "blocked_targets": [
+    "NEXO-AUTH-009"
+  ],
+  "baseline": {
+    "main_commit": "e83c9143daef36e136681ebadbce75bbe00b19ad",
+    "target_task_path": "docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md",
+    "target_task_sha256": "cd822a2b4ff261f412bc747e5271f6574c87b185be9c6f6e8b7cfe02679e15d0",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-09-18T19:33:43.099Z"
+}
