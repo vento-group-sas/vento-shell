@@ -38,10 +38,11 @@ export function implementationPathMatchesScope(scopePath, changedPath) {
   return Boolean(scope && changed && (changed === scope || changed.startsWith(`${scope}/`)));
 }
 
-export function implementationAuthorizedChanges(instance) {
+export function implementationAuthorizedChanges(instance, { repository = SHELL_REPOSITORY } = {}) {
   return Object.freeze((instance?.authorized_changes ?? [])
-    .filter((entry) => String(entry?.repo ?? '').trim() === SHELL_REPOSITORY)
+    .filter((entry) => repository === null || String(entry?.repo ?? '').trim() === repository)
     .map((entry) => Object.freeze({
+      repo: String(entry?.repo ?? '').trim(),
       path: normalizeImplementationPath(entry?.path),
       change: String(entry?.change ?? '').trim().toUpperCase(),
     }))
@@ -96,7 +97,7 @@ function directoryToPrepare({ absolute, change }) {
   return createDirectoryScope ? absolute : path.dirname(absolute);
 }
 
-export function prepareAuthorizedMaterializationDirectories({ root, instance } = {}) {
+export function prepareAuthorizedMaterializationDirectories({ root, instance, repository = SHELL_REPOSITORY } = {}) {
   if (!root) fail('AUTHORIZED_DIRECTORY_ROOT_MISSING');
   if (!instance || typeof instance !== 'object' || Array.isArray(instance)) {
     fail('AUTHORIZED_DIRECTORY_INSTANCE_INVALID');
@@ -105,7 +106,7 @@ export function prepareAuthorizedMaterializationDirectories({ root, instance } =
   const repositoryRoot = path.resolve(root);
   const created = [];
   const prepared = [];
-  for (const entry of implementationAuthorizedChanges(instance)) {
+  for (const entry of implementationAuthorizedChanges(instance, { repository })) {
     if (entry.change === 'EXECUTE_ONLY') continue;
     const resolved = safeAbsolutePath(repositoryRoot, entry.path);
     const directory = directoryToPrepare({ absolute: resolved.absolute, change: entry.change });

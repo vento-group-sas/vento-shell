@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,396 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Documentar que el lifecycle fisico de un package multi-repositorio conserva checkouts, commits, ramas, PR, validacion y evidencia independientes por repositorio, con una sola instancia CI020 y cierre serializado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Hacer explicita la ejecucion multi-repo fail-closed y la preservacion de repositorio orquestador distinto del conjunto de repositorios afectados."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Extender CORR-017 con la invariante multi-repo sin alterar governed frontier, autorizacion humana ni orden de packages."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Documentar el avance CI020 multi-repo con checkouts independientes, validacion y cierre serializado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Incorporar la nueva prueba del bundle multi-repo a la bateria documental permanente sin modificar dependencias."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-path-policy.mjs",
+      "change": "MODIFY",
+      "scope": "Dejar de descartar authorized_changes externos y exponer alcance autorizado agrupado por repositorio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-path-policy.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir autorizacion por repositorio, rechazo de repo no autorizado y compatibilidad single-repo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-repository-bundle.mjs",
+      "change": "CREATE",
+      "scope": "Implementar resolucion fail-closed de checkouts hermanos, estado Git por repositorio, ramas de implementacion, fingerprints y bundle de commits sin SHA global ficticio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-repository-bundle.test.mjs",
+      "change": "CREATE",
+      "scope": "Autocertificar bundle multi-repo, checkouts independientes, paths autorizados, ausencia de repositorios y determinismo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Orquestar materializacion, commit, push, validacion, evidencia y cierre por repositorio usando el bundle multi-repo, preservando una sola instancia CI020."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir START, MATERIALIZATION_GATE, IMPLEMENTED, evidencia y cierre para mas de un repositorio, incluyendo regresion del filtro SHELL_REPOSITORY."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Permitir cierre serializado de PR por repositorio y consolidar identidad de commits sin asumir un unico root Git."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir PR y merge serializado multi-repo, main protegido y compatibilidad single-repo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.mjs",
+      "change": "MODIFY",
+      "scope": "Validar integridad del candidato con bundle de repositorios y commits por repo en vez de un unico candidato implicito."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir drift, stale y recovery por repositorio dentro del mismo CI020."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.mjs",
+      "change": "MODIFY",
+      "scope": "Exponer checkouts, repositorios y secuencia multi-repo derivada sin conceder autorizacion adicional."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir work package multi-repo y conservar gates humanos."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY",
+      "scope": "Conservar target_repositories y evidencia por repo durante CI020 sin reducir readiness a vento-shell."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir readiness multi-repo y ausencia de evidencia por un repositorio obligatorio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-integration.test.mjs",
+      "change": "MODIFY",
+      "scope": "Probar de extremo a extremo package gate multi-repo -> authorize -> advance sin perdida de targets externos."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-path-policy.mjs",
+    "node --test scripts/docs/implementation-path-policy.test.mjs",
+    "node --check scripts/docs/implementation-repository-bundle.mjs",
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+    "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-state-integrity.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --check scripts/docs/implementation-work-package.mjs",
+    "node --test scripts/docs/implementation-work-package.test.mjs",
+    "node --check scripts/docs/package-readiness-scanner.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "node --test scripts/docs/package-readiness-integration.test.mjs",
+    "npm run docs:package:readiness:check",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm test --silent",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-18T17:23:55.823Z"
+  "zero_treq_reason": "Correccion transversal del lifecycle fisico multi-repo para restaurar conformidad con CI020 y E5; no modifica semantica funcional, TREQ ni Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-18T17:36:06.519Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-18T18:34:53.412Z",
+      "candidate_head_before": "b339e96ce214f75e3e4e3c6e2f4ac9ed9bf876f5",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-18T18:41:20.568Z",
+      "execution_candidate_head": "c8185bff238d8842e8acc9a7d0cebdc0c90fa48d",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T19:07:11.383Z",
+      "candidate_head": "8fc33b75670ed7a95e8600421f3e8786cd099fda",
+      "commands": [
+        "node --check scripts/docs/implementation-path-policy.mjs",
+        "node --test scripts/docs/implementation-path-policy.test.mjs",
+        "node --check scripts/docs/implementation-repository-bundle.mjs",
+        "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+        "node --check scripts/docs/implementation-execution-coordinator.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+        "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+        "node --check scripts/docs/implementation-state-integrity.mjs",
+        "node --test scripts/docs/implementation-state-integrity.test.mjs",
+        "node --check scripts/docs/implementation-work-package.mjs",
+        "node --test scripts/docs/implementation-work-package.test.mjs",
+        "node --check scripts/docs/package-readiness-scanner.mjs",
+        "node --test scripts/docs/package-readiness-scanner.test.mjs",
+        "node --test scripts/docs/package-readiness-integration.test.mjs",
+        "npm run docs:package:readiness:check",
+        "npm run docs:package:execution:check",
+        "npm run docs:implementation:check",
+        "npm run docs:correction:check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm test --silent",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/implementation-path-policy.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-path-policy.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "30a34ffb11ec80cd7ec2a831e7395c202c6c3fe422553f45703c5a0a135c30b6",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-repository-bundle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "a6ffb73cb83e59d53a8b14085dfd64022e15f5792101aa0e1e5f17d4966dcc7d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-execution-coordinator.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "47f04ec70b8a2314bda9031ef834a5f744c0b3cf99c1d0279833391f79261c50",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "be9d420cab5a260d457c7f1b4eefcc4866977f3d96e39954d2b311c62f722ea8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-state-integrity.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-state-integrity.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "9b044a5403182592ebc3b5690f86b060f59d7b24b94d10b0719a9152a65cd540",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-work-package.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-work-package.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "82db6e35a2718a60ab03de04cea6aa524d69206f3d0ac62986526ba2753e08cb",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/package-readiness-scanner.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-readiness-scanner.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "81aa555261d73cc3d3d7ad8c0c2acb8d904fe132ae412bddfb29897e15e4768e",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-readiness-integration.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "ba1c93e3c3236821083dfcea349f6c716c68145d18e880e2b147018a1c1c56db",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:package:readiness:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b56929e2ffa3d9c2a6a99c95923fc3b266537bc4b87190d7706026759a94c566",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:package:execution:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "352c115dc60560d53886c875158ecfe76c48719f1db600b6e2cac94671652688",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b3c93e651ae2f1144442b1f94b594e14d7439405fd03023d45000b01ebd5a848",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f947c9487902f210a757ceae0133938c42051ee0c9485a194054ebf1b5ceb25b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c8ea19412d7f2a1e35281e586bea4840757bb0539f44d1a00a384734cb736aec",
+          "stderr_sha256": "7a67506316fb27d544aefee9ef8a3c56e8267c1b5d3a7396ec423ffb7fa1d854"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "3c206de3a261089e223d8b40a537d04d98538eef6bd6ffd5de91608afd8b3f5e",
+          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f2a87f83b100805397f5aedb7689da03eca5ee7ff20fabfbd33ea0f7b8558726",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "137d8ccad64cc49113be9d24264e698bd88145724ae14faedd6e34134149b2b3",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T19:12:41.547Z",
+      "validated_candidate_head": "8fc33b75670ed7a95e8600421f3e8786cd099fda",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-18T17:23:55.823Z",
+  "implemented_at": "2026-09-18T18:47:45.208Z",
+  "verified_at": "2026-09-18T19:12:41.547Z"
 }

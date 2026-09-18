@@ -943,6 +943,15 @@ test('F5 rechaza certificacion manipulada aunque declare CERTIFIED', () => {
   assert.equal(decision.reason, 'FULL_FALLBACK_SHADOW_CERTIFICATION_PENDING');
 });
 
+test('CORR-018 coordinator integra bundle multi-repo sin reemplazar la ruta single-repo', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  assert.match(source, /buildImplementationRepositoryPlan/u);
+  assert.match(source, /assessRepositoryBundleMaterialization/u);
+  assert.match(source, /publishExternalRepositoryBundle/u);
+  assert.match(source, /IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE/u);
+  assert.match(source, /isMultiRepoInstance/u);
+});
+
 test('C4 detecta materializacion por paths autorizados sin --materialized', () => {
   const instance = {
     instance_id: 'SHELL-CI-021::GAP-PKG-002',
