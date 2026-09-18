@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -391,8 +391,19 @@
         }
       ],
       "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T03:54:01.231Z",
+      "validated_candidate_head": "aaf501fe4afcf6188d8ad12ba69011153b535bc2",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
     }
   ],
   "opened_at": "2026-09-18T00:55:01.041Z",
-  "implemented_at": "2026-09-18T03:24:12.246Z"
+  "implemented_at": "2026-09-18T03:24:12.246Z",
+  "verified_at": "2026-09-18T03:54:01.231Z"
 }
