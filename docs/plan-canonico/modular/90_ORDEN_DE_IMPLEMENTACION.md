@@ -992,3 +992,20 @@ Invariantes:
 - El auditor de throughput es diagnóstico y nunca concede autorización por sí mismo.
 
 <!-- CORR-012-GOVERNED-FRONTIER:END -->
+
+<!-- CORR-017-STANDARD-IMPLEMENTATION-LIFECYCLE:START -->
+### CORR-017 — Estándar único de lifecycle de implementación
+
+A partir de esta corrección, el flujo físico gobernado es único:
+
+`PHYSICAL_DISCOVERY -> PACKAGE_GATE -> HUMAN_APPROVAL -> PACKAGE_FINISH -> IMPLEMENTATION_AUTHORIZE -> IMPLEMENTATION_ADVANCE -> VERIFIED`.
+
+Reglas obligatorias:
+
+1. todo package nuevo o re-madurado debe declarar `physical_discovery.status = COMPLETE`, búsquedas trazables, cobertura exacta de `physical_identity.targets` y cero findings sin resolver antes de `READY_FOR_APPROVAL`;
+2. un delta físico descubierto después de la aprobación no amplía CI020: exige `remature` gobernado y nueva aprobación del package-gate;
+3. `PENDING_AUTHORIZATION` se transforma a `AUTHORIZED` exclusivamente mediante `docs:implementation:authorize`, con HUMAN_GATE explícito y derivación determinista desde autoridades canónicas;
+4. desde `AUTHORIZED`, la única entrada mutante normal continúa siendo `docs:implementation:advance`;
+5. `automatic_authorization` permanece `false`; ningún scanner, dossier ni orden de package autoriza por inferencia;
+6. gates históricos ya `APPROVED_FOR_IMPLEMENTATION` pueden conservar compatibilidad documental, pero un CI020 nuevo exige discovery explícito COMPLETE antes de autorización física.
+<!-- CORR-017-STANDARD-IMPLEMENTATION-LIFECYCLE:END -->
