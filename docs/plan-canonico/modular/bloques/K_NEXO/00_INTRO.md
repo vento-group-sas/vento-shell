@@ -5652,7 +5652,1008 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-007 — Proteger producción vinculada`
-### [ ] NEXO-AUTH-007 — Proteger producción vinculada
+### ✅ NEXO-AUTH-007 — Proteger producción vinculada
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-006 — Proteger preparación
+**Tarea siguiente:** NEXO-AUTH-008 — Proteger despacho
+**Tipo de tarea:** Contrato global de autorización con materialización condicional por unidad (`PER_IMPLEMENTATION_UNIT`) para proteger las acciones NEXO del vínculo entre remisiones y producción definido por `INT-PROD-005`, sin transferir autoridad productiva desde FOGO ni crear permisos canónicos nuevos
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; la materialización futura solo aplica a unidades pertenecientes a paquetes que incorporen el contrato `INT-PROD-005` y activen `PRODUCTION_LINK_IMPLEMENTATION`, después de `E5-GATE-008::<package_id> = PASS` y autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger la producción vinculada a remisiones sin convertir una necesidad logística en autoridad productiva y sin permitir que NEXO, FOGO o una interfaz mezclen responsabilidades empresariales.
+
+La regla raíz es:
+
+```text
+REMISION APROBADA O EN PREPARACION
++
+POLITICA DE CUMPLIMIENTO VIGENTE
++
+FALTANTE O NECESIDAD BAJO PEDIDO
++
+PRODUCTO Y UNIDAD RESOLUBLES
+→ NECESIDAD PRODUCTIVA CORRELACIONADA
+→ DECISION AUTORITATIVA DE FOGO
+→ EJECUCION, CALIDAD Y LIBERACION
+→ ASIGNACION AUTORITATIVA DE NEXO
+→ PREPARACION Y DESPACHO AUTORIZADOS
+→ RECEPCION Y CONCILIACION
+```
+
+Cada transición conserva identidad, versión, autorización, idempotencia y evidencia.
+
+#### 2. Frontera de propiedad
+
+La separación obligatoria es:
+
+```text
+NEXO SOLICITA O REGISTRA NECESIDAD
+FOGO DECIDE Y EJECUTA PRODUCCION
+NEXO ASIGNA Y MUEVE EXISTENCIA LIBERADA
+```
+
+NEXO no fabrica estados productivos. FOGO no modifica la intención logística de la remisión. SHELL gobierna los contratos compartidos y cualquier modificación VENTO de Supabase.
+
+#### 3. Hechos que permanecen distintos
+
+```text
+FALTANTE DETECTADO
+!= NECESIDAD PRODUCTIVA REGISTRADA
+!= NECESIDAD ACEPTADA
+!= PLAN LIBERADO
+!= ORDEN LISTA
+!= PRODUCCION EN CURSO
+!= PRODUCCION TERMINADA
+!= CALIDAD LIBERADA
+!= INVENTARIO INGRESADO
+!= CANTIDAD ASIGNADA
+!= CANTIDAD PREPARADA
+!= CANTIDAD DESPACHADA
+!= CANTIDAD RECIBIDA
+!= REMISION CONCILIADA
+```
+
+Ninguna transición puede inferir automáticamente la siguiente.
+
+#### 4. Alcance de autorización de 007
+
+007 protege exclusivamente las acciones NEXO que consumen el contrato de producción vinculada:
+
+- resolver si una línea puede activar tratamiento productivo;
+- registrar o proyectar la necesidad correlacionada cuando la transición NEXO aplicable esté autorizada;
+- consultar el reflejo de lotes productivos dentro del inventario autorizado;
+- consumir una decisión o liberación FOGO válida;
+- asignar salida liberada a la línea o fulfillment exactos;
+- conservar parcialidad y faltante;
+- cancelar o reconciliar el vínculo NEXO cuando el estado lo permita;
+- impedir doble asignación y doble efecto de inventario;
+- entregar el resultado autorizado a preparación o despacho.
+
+No protege las mutaciones propietarias de FOGO.
+
+#### 5. No se crea un permiso canónico nuevo
+
+El catálogo vigente no contiene una capacidad NEXO específica denominada `production_requirement`, `production_link` o equivalente.
+
+Por tanto:
+
+```text
+NEXO-AUTH-007
+!=
+NUEVO PERMISO IMPLICITO
+```
+
+La materialización compone permisos ya aprobados con predicados de recurso, territorio, estado, versión e integración.
+
+Si una implementación futura introduce una acción humana material que no pueda representarse por una capacidad canónica vigente, esa acción permanece denegada hasta que su tarea propietaria de catálogo apruebe la identidad correspondiente.
+
+#### 6. Capacidad NEXO de mutación vinculada
+
+Cuando la acción modifica el fulfillment o la preparación de una remisión por una necesidad o salida productiva, la capacidad NEXO aplicable permanece:
+
+```text
+nexo.inventory.remissions.prepare
+```
+
+Esta capacidad no autoriza ejecutar producción. Su autoridad se limita al recurso REMISSION, lado de origen, estado preparable y responsabilidad de preparación ya definidos.
+
+#### 7. Capacidad NEXO de consulta productiva
+
+La consulta del reflejo productivo en inventario utiliza:
+
+```text
+nexo.inventory.production_batches.view
+```
+
+Su semántica es exclusivamente de lectura. Permite consultar lotes productivos reflejados en inventario dentro del territorio autorizado.
+
+No concede crear o modificar lotes FOGO, decidir calidad, liberar producto, ejecutar receta, cambiar una orden productiva ni asignar salida a una remisión por sí sola.
+
+#### 8. Capacidades FOGO permanecen propietarias
+
+FOGO conserva sus capacidades canónicas, entre ellas las que correspondan a:
+
+```text
+fogo.production.batches.view
+fogo.production.batches.create
+fogo.production.orders.view
+```
+
+y las capacidades productivas posteriores definidas por sus tareas propietarias.
+
+007 no amplía, fusiona ni reemplaza esos permisos. La autorización de NEXO nunca sirve como permiso FOGO.
+
+#### 9. Carril operativo NEXO
+
+Para cualquier mutación NEXO vinculada a preparación:
+
+```text
+nexo.inventory.remissions.prepare
+→ OPERATIONAL_ONLY
+```
+
+El carril base no sustituye el carril operativo. La capacidad exige contexto compatible con sede, área, recurso y prerrequisitos aprobados.
+
+#### 10. Segregación entre bodeguero y producción
+
+El bodeguero conserva la preparación operativa de remisiones y la lectura del reflejo productivo en inventario cuando corresponde a la bodega activa.
+
+No recibe por ello autoridad para crear lotes FOGO.
+
+Los roles productivos ejecutan las capacidades FOGO que sus matrices les conceden. La lectura NEXO de lotes para trazabilidad no les concede preparación de remisiones cuando su matriz la deniega.
+
+#### 11. Supervisión y gerencia
+
+Los roles administrativos o de coordinación pueden disponer de lectura productiva según sus matrices.
+
+La lectura de órdenes FOGO, lotes FOGO, lotes reflejados en NEXO o estados de remisión no concede crear producción ni preparar una remisión.
+
+La visibilidad no se convierte en mutación.
+
+#### 12. Prohibición de autorización por existencia
+
+No autorizan una acción:
+
+```text
+remission_id existente
+batch_id existente
+producto visible
+lote visible
+ruta visible
+rol visible
+boton visible
+URL accesible
+stock cero
+nota de faltante
+```
+
+Cada mutación vuelve a resolver actor, permiso, contexto, recurso, estado, versiones y contrato aplicable.
+
+#### 13. Política de cumplimiento como autoridad de activación
+
+Una línea solo entra al tratamiento productivo cuando resuelve una política vigente compatible.
+
+Las políticas aprobadas son:
+
+```text
+STOCK_ONLY
+STOCK_THEN_PRODUCTION
+MAKE_TO_ORDER
+```
+
+El nombre, categoría o existencia momentánea del producto no sustituyen la política.
+
+#### 14. `STOCK_ONLY`
+
+`STOCK_ONLY` no activa producción.
+
+Ante insuficiencia:
+
+- el faltante permanece explícito;
+- puede existir decisión logística posterior;
+- no se crea una necesidad productiva por inferencia;
+- no se invoca FOGO como fallback automático.
+
+#### 15. `STOCK_THEN_PRODUCTION`
+
+`STOCK_THEN_PRODUCTION` puede activar producción únicamente por el saldo faltante confirmado.
+
+Debe preservarse cantidad cubierta por stock, cantidad abierta, versión de línea, política aplicada, unidad canónica, contexto territorial y causa del faltante.
+
+No se produce nuevamente una cantidad ya satisfecha.
+
+#### 16. `MAKE_TO_ORDER`
+
+`MAKE_TO_ORDER` puede generar necesidad de producción conforme a la política vigente aunque exista stock cero.
+
+No autoriza omitir calidad, inventar receta, asumir capacidad, crear lote sin permiso, considerar listo un resultado no liberado ni alterar la cantidad solicitada.
+
+#### 17. Fallos de resolución
+
+La activación falla cerrado cuando exista:
+
+```text
+PRODUCTION_POLICY_NOT_RESOLVED
+PRODUCTION_UOM_NOT_RESOLVED
+PRODUCTION_CONFIGURATION_INCOMPLETE
+PRODUCTION_LINK_UNAVAILABLE
+```
+
+Una lectura no concluyente no se transforma en autorización.
+
+#### 18. Identidad de la necesidad productiva
+
+La necesidad correlacionada conserva identidad estable:
+
+```text
+production_requirement_id
+remission_id
+remission_line_id
+remission_line_revision
+requirement_revision
+fulfillment_policy_id
+fulfillment_policy_version
+source_shortage_ref
+correlation_id
+causation_id
+idempotency_key
+```
+
+Esta identidad vincula procesos. No transfiere propiedad empresarial.
+
+#### 19. Inmutabilidad de revisiones
+
+Una revisión de necesidad no se sobrescribe.
+
+Un aumento, reducción, cancelación, reapertura o reasignación crea una transición o revisión posterior. La historia original permanece consultable y conciliable.
+
+#### 20. Idempotencia de la necesidad
+
+```text
+MISMA idempotency_key
++ MISMO CONTENIDO
+→ MISMO RESULTADO
+```
+
+```text
+MISMA idempotency_key
++ CONTENIDO DIFERENTE
+→ CONFLICTO
+```
+
+Un reintento técnico no crea una segunda necesidad.
+
+#### 21. Relación con línea de remisión
+
+Una necesidad no se vincula simultáneamente a dos líneas distintas.
+
+Una línea puede conservar varias revisiones o asignaciones productivas, pero su suma debe reconciliarse contra la cantidad abierta de la revisión vigente.
+
+No se oculta sobreasignación repartiendo cantidades entre múltiples vínculos.
+
+#### 22. Datos que NEXO puede aportar
+
+NEXO puede aportar como contexto de necesidad:
+
+- remisión y línea;
+- revisión;
+- sede y área de origen;
+- destino logístico;
+- producto;
+- presentación;
+- unidad canónica;
+- cantidad solicitada;
+- cantidad cubierta por stock;
+- cantidad abierta;
+- fecha requerida;
+- prioridad logística autorizada;
+- política de cumplimiento;
+- causa estructurada;
+- correlación;
+- idempotencia.
+
+Estos datos describen la necesidad.
+
+#### 23. Datos que NEXO no envía como autoridad productiva
+
+NEXO no decide como autoridad:
+
+- receta;
+- versión de receta;
+- rendimiento productivo definitivo;
+- lote;
+- orden de producción;
+- secuencia;
+- cantidad aceptada por FOGO;
+- fecha prometida por FOGO;
+- disponibilidad de materiales;
+- capacidad productiva;
+- disposición de calidad.
+
+Esos hechos pertenecen a FOGO o a sus fuentes autorizadas.
+
+#### 24. Decisión FOGO
+
+Una necesidad entregada a FOGO no equivale a aprobación.
+
+FOGO responde mediante una decisión versionada conforme al contrato `INT-PROD-005`.
+
+Entre los resultados aprobados están:
+
+```text
+ACCEPTED
+PARTIALLY_ACCEPTED
+REJECTED
+```
+
+NEXO consume el resultado; no lo fabrica.
+
+#### 25. Aceptación total
+
+`ACCEPTED` vincula la cantidad aceptada con la necesidad y conserva el saldo pendiente de satisfacción.
+
+No significa producción terminada, calidad liberada, stock ingresado, cantidad lista ni cantidad despachada.
+
+#### 26. Aceptación parcial
+
+`PARTIALLY_ACCEPTED` separa cantidad aceptada, cantidad no resuelta, versión de decisión y siguiente tratamiento.
+
+La parte no aceptada no desaparece de la remisión.
+
+#### 27. Rechazo productivo
+
+`REJECTED` conserva el faltante NEXO y permite únicamente decisiones posteriores autorizadas.
+
+No reduce la cantidad solicitada para hacer coincidir la remisión con la capacidad productiva.
+
+#### 28. Plan y orden
+
+La existencia de plan u orden FOGO vinculados permite seguimiento dentro del alcance autorizado.
+
+No permite a NEXO modificar prioridad productiva, cambiar receta, reasignar lote, iniciar producción o cerrar producción.
+
+#### 29. Ejecución y resultado
+
+Un evento de producción en curso puede actualizar una proyección de seguimiento, pero no incrementa `ready_base_qty` ni crea stock disponible.
+
+Un resultado reportado demuestra producción observada, no liberación de calidad.
+
+La ejecución terminada sigue separada de calidad liberada, inventario ingresado, asignación NEXO, preparación y despacho.
+
+#### 30. Calidad liberada
+
+Solo la cantidad expresamente liberada por la autoridad productiva y de calidad aplicable puede avanzar hacia el handoff de inventario.
+
+NEXO no decide la disposición de calidad. Una cantidad retenida, rechazada o pendiente no es asignable.
+
+#### 31. Evento productivo autoritativo
+
+Antes de consumir un evento productivo, NEXO valida según el contrato aplicable:
+
+- definición y versión del evento;
+- aplicación productora;
+- aggregate y versión;
+- actor o principal cuando corresponda;
+- sede y área;
+- correlación y causación;
+- request e idempotency key;
+- referencias de resultado y evidencia;
+- estado compatible.
+
+Un payload técnicamente válido pero sin autoridad empresarial permanece no consumible.
+
+#### 32. Productor de eventos
+
+FOGO emite los hechos productivos y de calidad que le pertenecen.
+
+NEXO emite únicamente movimientos propios, asignaciones, estados derivados y conciliaciones de inventario o remisión.
+
+NEXO no republica como propio un resultado productivo o de calidad.
+
+#### 33. Handoff de producto liberado
+
+El handoff hacia NEXO conserva como mínimo la semántica de:
+
+```text
+production_requirement_id
+requirement_revision
+remission_id
+remission_line_id
+product_id
+canonical_uom
+released_qty
+batch_ref
+quality_release_ref
+ready_location_ref
+event_id
+event_version
+correlation_id
+causation_id
+idempotency_key
+```
+
+Los nombres físicos pueden evolucionar. La semántica no.
+
+#### 34. Lectura de lote reflejado en NEXO
+
+`nexo.inventory.production_batches.view` permite consultar únicamente el lote reflejado en inventario dentro del alcance autorizado.
+
+Ese recurso no es la definición administrativa del lote FOGO. La vista NEXO no expande acceso a receta, secreto productivo o capacidad de mutación.
+
+#### 35. Asignación NEXO de salida liberada
+
+NEXO puede asignar a una línea o fulfillment únicamente cantidad:
+
+- liberada;
+- correlacionada;
+- del producto correcto;
+- en unidad conciliable;
+- no asignada previamente;
+- todavía necesaria;
+- territorialmente compatible;
+- disponible en el handoff correspondiente.
+
+La asignación se protege por la capacidad NEXO propietaria de la transición y los predicados del recurso.
+
+#### 36. Mutación de preparación vinculada
+
+Cuando la asignación forma parte de la preparación de la remisión, debe satisfacerse:
+
+```text
+nexo.inventory.remissions.prepare
++ ACTOR EFECTIVO
++ TURNO / CHECK-IN APLICABLES
++ SEDE ORIGEN
++ AREA PREPARADORA
++ FULFILLMENT
++ VERSIONES
++ SALIDA FOGO LIBERADA
++ CANTIDAD ABIERTA
+```
+
+Una lectura productiva no sustituye esta autorización.
+
+#### 37. Acción nueva no catalogada
+
+Si la implementación requiere una acción humana independiente para aprobar una necesidad productiva NEXO fuera de la preparación, 007 no inventa una clave técnica.
+
+El comportamiento permanece fail-closed hasta que una tarea propietaria del catálogo defina o confirme la capacidad, modalidad, scope, matrices y pruebas aplicables.
+
+#### 38. Salida a inventario
+
+Cuando la salida productiva ingresa primero como inventario:
+
+```text
+FOGO LIBERA
+→ NEXO REGISTRA EL EFECTO DE INVENTARIO
+→ NEXO ASIGNA CANTIDAD A LA REMISION
+```
+
+Ingreso y asignación son hechos separados e idempotentes. No se crea un segundo stock al asignar.
+
+#### 39. Cumplimiento directo
+
+`DIRECT_ORDER_FULFILLMENT` conserva una frontera distinta del stock libre.
+
+Debe demostrar producto, cantidad, lote, calidad liberada, ubicación o staging, transferencia de custodia aplicable, movimiento o receipt físico, correlación con la necesidad y asignación NEXO.
+
+No puede saltar de FOGO a remisión recibida.
+
+#### 40. Prohibiciones del cumplimiento directo
+
+`DIRECT_ORDER_FULFILLMENT` no permite:
+
+- omitir calidad;
+- despachar directamente desde FOGO sin el handoff NEXO aplicable;
+- usar salida no liberada;
+- ocultar lote, UOM o cantidad;
+- evitar movimiento o receipt;
+- marcar recepción destino;
+- cerrar la remisión por producción terminada.
+
+#### 41. Cantidad máxima asignable
+
+NEXO asigna como máximo:
+
+```text
+MIN(
+  released_unassigned_qty,
+  open_remission_qty,
+  physically_available_qty_when_applicable
+)
+```
+
+La cantidad excedente sigue la disposición aprobada fuera de esa línea.
+
+#### 42. Producción parcial
+
+La producción parcial conserva cantidad producida, cantidad liberada, cantidad asignada, cantidad preparada, cantidad pendiente, causa y siguiente responsable.
+
+Una parcialidad no marca la línea como completamente satisfecha.
+
+#### 43. Stock y producción simultáneos
+
+En `STOCK_THEN_PRODUCTION` pueden coexistir cantidad cubierta desde stock, saldo vinculado a producción, producción parcial liberada y saldo todavía pendiente.
+
+Cada fuente conserva identidad y evidencia. La suma se reconcilia contra la cantidad abierta.
+
+#### 44. Sustitución
+
+Una sustitución no se deriva automáticamente de una producción insuficiente.
+
+Requiere acción autorizada, causa estructurada, producto original, sustituto, cantidad, UOM, equivalencia, aceptación cuando corresponda, versiones y trazabilidad.
+
+La sustitución no reescribe una orden FOGO ya ejecutada.
+
+#### 45. Cancelación y producción en curso
+
+Cancelar una remisión no cancela producción automáticamente.
+
+Antes de entregar la necesidad a FOGO puede cerrarse el vínculo NEXO sin efecto productivo.
+
+Una necesidad ya entregada se cancela de forma idempotente y espera estado autoritativo.
+
+Si FOGO ya aceptó o ejecuta, FOGO conserva autoridad para decidir detener, continuar o redestinar según su contrato.
+
+#### 46. Resultado tardío
+
+Si una salida productiva llega después de que la línea quedó satisfecha o cancelada:
+
+- no se asigna automáticamente;
+- se reconcilia identidad y versión;
+- se deriva a disposición aprobada;
+- se preserva el hecho productivo.
+
+No se reabre la remisión por inferencia.
+
+#### 47. Timeout y evento fuera de orden
+
+Ante respuesta perdida:
+
+```text
+RECONCILIATION_REQUIRED
+```
+
+Antes de reenviar se consulta por identidad, versión e idempotency key.
+
+Un evento fuera de orden no retrocede silenciosamente el estado; se compara versión, se conserva o rechaza conforme al contrato y se abre conciliación si no puede demostrarse una transición segura.
+
+#### 48. Indisponibilidad
+
+Si FOGO está indisponible, la necesidad permanece pendiente y no se inventa aceptación, rechazo, fecha ni cantidad lista.
+
+Si NEXO está indisponible al liberar FOGO, el hecho productivo y el handoff permanecen pendientes sin duplicar publicación.
+
+La indisponibilidad técnica no es una decisión empresarial.
+
+#### 49. Segregación de acciones
+
+Se evalúan separadamente:
+
+- registrar necesidad;
+- entregar necesidad;
+- aceptar o rechazar;
+- publicar plan u orden;
+- crear lote;
+- ejecutar producción;
+- reportar resultado;
+- decidir calidad;
+- liberar salida;
+- ingresar efecto NEXO;
+- asignar a remisión;
+- preparar;
+- despachar;
+- cancelar necesidad;
+- sustituir;
+- conciliar.
+
+Una autorización en una fila no concede las demás.
+
+#### 50. Prohibición de autoaprobación cruzada
+
+Una misma acción no puede:
+
+- aprobar producción y autoasignar salida;
+- decidir calidad y registrar recepción logística;
+- alterar cantidad solicitada para ocultar faltante;
+- cerrar una diferencia sin receipt o causa;
+- utilizar identidad técnica como actor humano.
+
+#### 51. Identidad técnica no es actor humano
+
+Un service role, job, webhook o identidad técnica puede transportar un evento autorizado.
+
+No se registra como actor humano si no lo es.
+
+La evidencia conserva principal técnico, actor efectivo cuando exista, aplicación productora, causación, correlación y autoridad de origen.
+
+#### 52. Server-side y confianza cero en cliente
+
+IDs enviados por UI o integración se consideran datos no confiables hasta resolverlos en servidor.
+
+Incluye remisión, línea, necesidad, lote, orden, producto, sede, área, UOM, cantidades, ubicación, estado y versión.
+
+La autorización se ejecuta contra recursos reales y estados vigentes.
+
+#### 53. Frescura
+
+Antes de cada mutación NEXO se revalida, según aplique:
+
+- actor y rol;
+- turno y check-in;
+- permiso;
+- sede y área;
+- remisión y línea;
+- fulfillment;
+- revisión;
+- política;
+- necesidad;
+- decisión FOGO;
+- versión de evento;
+- cantidad abierta y asignada;
+- calidad;
+- disponibilidad;
+- denegaciones.
+
+Una pantalla abierta no congela autoridad.
+
+#### 54. Auditoría y evidencia
+
+La trazabilidad debe permitir reconstruir:
+
+```text
+REMISION Y REVISION
+→ LINEA Y CANTIDAD
+→ POLITICA
+→ STOCK Y FALTANTE
+→ NECESIDAD Y REVISION
+→ DECISION FOGO
+→ PLAN / ORDEN / LOTE
+→ RESULTADO
+→ CALIDAD
+→ SALIDA LIBERADA
+→ EFECTO NEXO
+→ ASIGNACION
+→ PREPARACION
+→ DESPACHO
+→ RECEPCION
+→ CONCILIACION
+```
+
+La evidencia conserva actor y principal, aplicación emisora, timestamps, versiones, cantidades, UOM, producto, sede, área, referencias productivas, calidad, movimiento, receipt, causa, reintentos, conflictos y compensaciones.
+
+No replica recetas, fórmulas, credenciales o secretos innecesarios.
+
+#### 55. Conciliación
+
+La conciliación detecta al menos:
+
+- necesidad sin decisión;
+- decisión sin necesidad;
+- revisión incompatible;
+- aceptación sin orden;
+- producción superior a aceptado;
+- resultado sin calidad;
+- liberación sin efecto NEXO;
+- efecto NEXO duplicado;
+- asignación duplicada;
+- preparado superior a asignado;
+- despacho superior a asignado;
+- producción posterior a cancelación;
+- estado avanzado sin evidencia.
+
+La conciliación no borra historia.
+
+#### 56. Efectos de inventario exactamente una vez
+
+Todo efecto de inventario derivado del vínculo productivo usa un contrato correlacionado e idempotente.
+
+No se permite:
+
+```text
+MISMO EVENTO FOGO
+→ DOS MOVIMIENTOS NEXO
+```
+
+ni:
+
+```text
+UN MOVIMIENTO NEXO
+→ SIN EVENTO / RECEIPT / CAUSA AUTORIZADA
+```
+
+#### 57. Compatibilidad con `NEXO-AUTH-006`
+
+006 protege la preparación y exige que la rama productiva solo cuente cantidad liberada, correlacionada, no consumida previamente y disponible en el LOC aplicable.
+
+007 protege la cadena que demuestra esa liberación y su asignación NEXO.
+
+007 no reabre el contrato de picks, preparación o ready ya aprobado en 006.
+
+#### 58. Frontera con `NEXO-AUTH-008`
+
+007 puede entregar cantidad productiva liberada y autorizadamente asignada al carril logístico.
+
+No puede crear shipment, confirmar salida, asignar custodio, cambiar a tránsito ni emitir un efecto propio de despacho.
+
+Esos efectos pertenecen a `NEXO-AUTH-008`.
+
+#### 59. AS-IS remoto de NEXO
+
+El código NEXO inspeccionado ya conserva en fulfillments:
+
+```text
+supply_mode
+production_execution_mode
+ready_location_id
+```
+
+y puede proyectar información de paquetes o lotes productivos.
+
+Esto constituye soporte parcial para enrutar preparación. No demuestra el contrato completo de necesidad productiva, decisión FOGO, calidad liberada, asignación y conciliación definido por `INT-PROD-005`.
+
+#### 60. AS-IS remoto de FOGO
+
+FOGO distingue actualmente modos de salida como:
+
+```text
+inventory_stock
+sellable_stock
+order_fulfillment
+```
+
+La superficie inspeccionada presenta `order_fulfillment` como flujo de pedido o entrega directa.
+
+No se observó en esa frontera una correlación canónica integral con `production_requirement_id`, revisión de línea, revisión de necesidad y referencia de liberación de calidad.
+
+Por tanto, el flujo existente no se declara equivalente al contrato de producción vinculada.
+
+#### 61. Brechas AS-IS
+
+La materialización futura debe cerrar sin reinterpretación silenciosa:
+
+1. ausencia de identidad integral del vínculo NEXO–FOGO;
+2. falta de demostración de decisión FOGO correlacionada por necesidad;
+3. separación insuficientemente demostrada entre producción terminada y calidad liberada;
+4. equivalencia no demostrada entre `order_fulfillment` y remisión NEXO;
+5. falta de evidencia integral de receipt y conciliación cruzada;
+6. riesgo de escrituras cruzadas si se usa una tabla compartida como autoridad de ambos dominios;
+7. necesidad de garantizar efecto de inventario y asignación exactamente una vez.
+
+Texto libre de faltante o un batch visible no cierran estas brechas.
+
+#### 62. Materialización condicional
+
+007 tiene topología:
+
+```text
+PER_IMPLEMENTATION_UNIT
+```
+
+y gate:
+
+```text
+POST_E5_PACKAGE
+```
+
+Además pertenece al grupo condicional:
+
+```text
+PRODUCTION_LINK_IMPLEMENTATION
+```
+
+La materialización solo aplica a unidades de un paquete cuyo alcance incorpore `INT-PROD-005` y requiera realmente producción vinculada.
+
+#### 63. Condición no equivale a autorización
+
+Que `PRODUCTION_LINK_IMPLEMENTATION` resulte aplicable no autoriza ejecutar 007.
+
+Cada instancia física:
+
+```text
+NEXO-AUTH-007::<implementation_unit_id>
+```
+
+requiere package propietario, unidad asignada, `E5-GATE-008::<package_id> = PASS`, dependencias técnicas disponibles, autorización física explícita y alcance exacto de consumidores, datos, contratos y rollback.
+
+#### 64. Estrategia de materialización futura
+
+```text
+KEEP NEXO / FOGO OWNERSHIP SEPARATE
++
+DO NOT INVENT A NEW PERMISSION
++
+AUTHORIZE NEXO MUTATIONS WITH EXISTING CANONICAL CAPABILITIES
++
+AUTHORIZE FOGO MUTATIONS IN FOGO
++
+VERSION PRODUCTION REQUIREMENT
++
+CORRELATE EVERY HANDOFF
++
+VALIDATE POLICY + UOM + OPEN QTY
++
+CONSUME ONLY AUTHORITATIVE FOGO DECISIONS
++
+SEPARATE FINISHED FROM QUALITY_RELEASED
++
+APPLY NEXO INVENTORY EFFECT EXACTLY ONCE
++
+ASSIGN RELEASED QTY AT MOST ONCE
++
+PRESERVE PARTIALS AND CANCELLATIONS
++
+RECONCILE TIMEOUTS AND LATE RESULTS
++
+AUDIT BOTH SIDES
+```
+
+No presupone nombres físicos nuevos de tabla, RPC, función o endpoint.
+
+#### 65. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el vínculo NEXO–FOGO ya posee contrato aprobado;
+- planificación y ejecución productivas ya poseen cobertura FOGO;
+- propiedad única y ausencia de doble fuente ya poseen cobertura de integración;
+- efectos de inventario exactamente una vez ya poseen cobertura de integración;
+- producción, calidad, inventario y cumplimiento como hechos distintos ya poseen cobertura de integración;
+- la rama productiva de preparación ya posee cobertura NEXO específica;
+- atomicidad, idempotencia, receipt y recuperación ya poseen cobertura NEXO;
+- el handoff de preparación a despacho ya posee cobertura NEXO;
+- faltantes, reemplazos, cantidades, receipts y obligaciones correlacionadas ya poseen cobertura NEXO.
+
+007 especializa esas obligaciones en la frontera de autorización de producción vinculada sin introducir una obligación verificable nueva.
+
+#### 66. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-FOGO-001`;
+- `TREQ-FOGO-003`;
+- `TREQ-INTEGRATION-006`;
+- `TREQ-INTEGRATION-011`;
+- `TREQ-INTEGRATION-013`;
+- `TREQ-INTEGRATION-067`;
+- `TREQ-INTEGRATION-102`;
+- `TREQ-NEXO-006`;
+- `TREQ-NEXO-010`;
+- `TREQ-NEXO-011`;
+- `TREQ-NEXO-105`;
+- `TREQ-NEXO-108`;
+- `TREQ-NEXO-109`;
+- `TREQ-NEXO-110`;
+- `TREQ-NEXO-269`.
+
+Estas referencias documentan cobertura existente y no representan una modificación del registro.
+
+#### 67. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificó `main` vigente de `vento-shell`, cierre de `NEXO-AUTH-006`, continuidad hacia `NEXO-AUTH-007`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, condición `PRODUCTION_LINK_IMPLEMENTATION`, `INT-PROD-005`, catálogo y contratos de recursos, matrices de roles, 04A vigente, `NEXO-UX-010` y AS-IS actual de `vento-nexo` y `vento-fogo` |
+| OPERATIVA | NOT_APPLICABLE | no se crea necesidad productiva, lote, decisión, liberación, asignación, movimiento, preparación ni despacho real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-007::<implementation_unit_id>` |
+
+#### 68. Criterios de aceptación
+
+- [x] NEXO, FOGO y SHELL conservan ownership separado;
+- [x] la remisión no crea producción aprobada;
+- [x] no se inventa un permiso NEXO nuevo;
+- [x] `nexo.inventory.production_batches.view` permanece solo lectura;
+- [x] las capacidades FOGO permanecen en FOGO;
+- [x] lectura administrativa o de supervisión no concede mutación;
+- [x] `STOCK_ONLY` no activa producción;
+- [x] `STOCK_THEN_PRODUCTION` activa únicamente el saldo confirmado;
+- [x] `MAKE_TO_ORDER` sigue la política vigente;
+- [x] fallos de política, UOM, configuración o lectura fallan cerrado;
+- [x] la necesidad posee identidad y revisión estables;
+- [x] reintentos no duplican necesidad;
+- [x] NEXO no envía receta, lote, secuencia o capacidad como autoridad;
+- [x] FOGO decide aceptación, planificación, ejecución, calidad y liberación;
+- [x] producción en curso no incrementa ready;
+- [x] producción terminada no equivale a calidad liberada;
+- [x] calidad liberada no equivale a stock ingresado;
+- [x] stock ingresado no equivale a cantidad asignada;
+- [x] asignación no equivale a preparación;
+- [x] preparación no equivale a despacho;
+- [x] FOGO es productor de sus eventos y NEXO de sus efectos derivados;
+- [x] el handoff conserva correlación, causación, versión e idempotencia;
+- [x] la lectura NEXO de lotes no expande acceso a FOGO;
+- [x] una acción material nueva sin permiso vigente queda denegada;
+- [x] ingreso de inventario y asignación son hechos separados;
+- [x] cumplimiento directo no evita calidad, custodia, movimiento o receipt;
+- [x] cantidad asignada no supera salida liberada ni cantidad abierta;
+- [x] producción parcial conserva saldo;
+- [x] stock y producción pueden coexistir sin doble conteo;
+- [x] sustitución exige autoridad y causa;
+- [x] cancelar remisión no cancela producción automáticamente;
+- [x] resultados tardíos se reconcilian;
+- [x] timeout se reconcilia antes de reintentar;
+- [x] indisponibilidad no fabrica decisiones;
+- [x] cada acción mantiene autorización separada;
+- [x] identidad técnica no sustituye actor humano;
+- [x] entradas de cliente no son autoridad;
+- [x] frescura se revalida antes de mutar;
+- [x] auditoría reconstruye la cadena completa;
+- [x] conciliación detecta efectos faltantes o duplicados;
+- [x] inventario derivado se aplica exactamente una vez;
+- [x] 007 consume la frontera de 006 sin reabrir preparación;
+- [x] 008 conserva despacho;
+- [x] el AS-IS no se declara equivalente al contrato futuro;
+- [x] materialización conserva `PER_IMPLEMENTATION_UNIT`;
+- [x] materialización conserva `POST_E5_PACKAGE`;
+- [x] materialización física permanece condicional a `INT-PROD-005`;
+- [x] no se crea ni modifica requisito de prueba;
+- [x] no se autoriza cambio físico.
+
+#### 69. Límites
+
+Esta tarea no:
+
+- modifica código NEXO;
+- modifica código FOGO;
+- modifica Server Actions;
+- modifica componentes;
+- crea permisos;
+- cambia matrices de rol;
+- cambia modalidades;
+- cambia scopes;
+- crea RPC;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- crea una necesidad productiva real;
+- crea una orden real;
+- crea un lote real;
+- ejecuta producción;
+- decide calidad;
+- libera producto;
+- mueve inventario;
+- asigna cantidad real;
+- prepara una remisión real;
+- despacha;
+- recibe;
+- modifica recetas;
+- modifica rutas productivas;
+- altera datos históricos;
+- habilita escrituras cruzadas;
+- activa integración externa;
+- despliega;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el registro de requisitos.
+
+#### 70. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-006 — Proteger preparación`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-007 — Proteger producción vinculada`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-008 — Proteger despacho`
 ### [ ] NEXO-AUTH-008 — Proteger despacho
 ### [ ] NEXO-AUTH-009 — Proteger tránsito
 ### [ ] NEXO-AUTH-010 — Proteger recepción
