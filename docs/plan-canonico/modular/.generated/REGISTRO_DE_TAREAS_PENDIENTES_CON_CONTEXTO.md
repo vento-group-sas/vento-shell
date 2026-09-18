@@ -12,17 +12,59 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-018`
+### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-018`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md`
+  - `MODIFY` `docs/plan-canonico/modular/01_PROTOCOLO.md`
+  - `MODIFY` `docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md`
+  - `MODIFY` `docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md`
+  - `MODIFY` `package.json`
+  - `MODIFY` `scripts/docs/implementation-path-policy.mjs`
+  - `MODIFY` `scripts/docs/implementation-path-policy.test.mjs`
+  - `CREATE` `scripts/docs/implementation-repository-bundle.mjs`
+  - `CREATE` `scripts/docs/implementation-repository-bundle.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-execution-coordinator.mjs`
+  - `MODIFY` `scripts/docs/implementation-execution-coordinator.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-branch-lifecycle.mjs`
+  - `MODIFY` `scripts/docs/implementation-branch-lifecycle.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-state-integrity.mjs`
+  - `MODIFY` `scripts/docs/implementation-state-integrity.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-work-package.mjs`
+  - `MODIFY` `scripts/docs/implementation-work-package.test.mjs`
+  - `MODIFY` `scripts/docs/package-readiness-scanner.mjs`
+  - `MODIFY` `scripts/docs/package-readiness-scanner.test.mjs`
+  - `MODIFY` `scripts/docs/package-readiness-integration.test.mjs`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `node --check scripts/docs/implementation-path-policy.mjs`
+  2. `node --test scripts/docs/implementation-path-policy.test.mjs`
+  3. `node --check scripts/docs/implementation-repository-bundle.mjs`
+  4. `node --test scripts/docs/implementation-repository-bundle.test.mjs`
+  5. `node --check scripts/docs/implementation-execution-coordinator.mjs`
+  6. `node --test scripts/docs/implementation-execution-coordinator.test.mjs`
+  7. `node --check scripts/docs/implementation-branch-lifecycle.mjs`
+  8. `node --test scripts/docs/implementation-branch-lifecycle.test.mjs`
+  9. `node --check scripts/docs/implementation-state-integrity.mjs`
+  10. `node --test scripts/docs/implementation-state-integrity.test.mjs`
+  11. `node --check scripts/docs/implementation-work-package.mjs`
+  12. `node --test scripts/docs/implementation-work-package.test.mjs`
+  13. `node --check scripts/docs/package-readiness-scanner.mjs`
+  14. `node --test scripts/docs/package-readiness-scanner.test.mjs`
+  15. `node --test scripts/docs/package-readiness-integration.test.mjs`
+  16. `npm run docs:package:readiness:check`
+  17. `npm run docs:package:execution:check`
+  18. `npm run docs:implementation:check`
+  19. `npm run docs:correction:check`
+  20. `npm run docs:plan:build`
+  21. `npm run docs:plan:check`
+  22. `npm run docs:plan:test`
+  23. `npm test --silent`
+  24. `git diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-018`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`

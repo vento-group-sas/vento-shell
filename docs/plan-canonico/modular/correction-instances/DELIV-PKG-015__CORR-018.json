@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,167 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Documentar que el lifecycle fisico de un package multi-repositorio conserva checkouts, commits, ramas, PR, validacion y evidencia independientes por repositorio, con una sola instancia CI020 y cierre serializado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Hacer explicita la ejecucion multi-repo fail-closed y la preservacion de repositorio orquestador distinto del conjunto de repositorios afectados."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Extender CORR-017 con la invariante multi-repo sin alterar governed frontier, autorizacion humana ni orden de packages."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Documentar el avance CI020 multi-repo con checkouts independientes, validacion y cierre serializado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Incorporar la nueva prueba del bundle multi-repo a la bateria documental permanente sin modificar dependencias."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-path-policy.mjs",
+      "change": "MODIFY",
+      "scope": "Dejar de descartar authorized_changes externos y exponer alcance autorizado agrupado por repositorio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-path-policy.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir autorizacion por repositorio, rechazo de repo no autorizado y compatibilidad single-repo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-repository-bundle.mjs",
+      "change": "CREATE",
+      "scope": "Implementar resolucion fail-closed de checkouts hermanos, estado Git por repositorio, ramas de implementacion, fingerprints y bundle de commits sin SHA global ficticio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-repository-bundle.test.mjs",
+      "change": "CREATE",
+      "scope": "Autocertificar bundle multi-repo, checkouts independientes, paths autorizados, ausencia de repositorios y determinismo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Orquestar materializacion, commit, push, validacion, evidencia y cierre por repositorio usando el bundle multi-repo, preservando una sola instancia CI020."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir START, MATERIALIZATION_GATE, IMPLEMENTED, evidencia y cierre para mas de un repositorio, incluyendo regresion del filtro SHELL_REPOSITORY."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Permitir cierre serializado de PR por repositorio y consolidar identidad de commits sin asumir un unico root Git."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir PR y merge serializado multi-repo, main protegido y compatibilidad single-repo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.mjs",
+      "change": "MODIFY",
+      "scope": "Validar integridad del candidato con bundle de repositorios y commits por repo en vez de un unico candidato implicito."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-state-integrity.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir drift, stale y recovery por repositorio dentro del mismo CI020."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.mjs",
+      "change": "MODIFY",
+      "scope": "Exponer checkouts, repositorios y secuencia multi-repo derivada sin conceder autorizacion adicional."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-work-package.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir work package multi-repo y conservar gates humanos."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY",
+      "scope": "Conservar target_repositories y evidencia por repo durante CI020 sin reducir readiness a vento-shell."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir readiness multi-repo y ausencia de evidencia por un repositorio obligatorio."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-integration.test.mjs",
+      "change": "MODIFY",
+      "scope": "Probar de extremo a extremo package gate multi-repo -> authorize -> advance sin perdida de targets externos."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-path-policy.mjs",
+    "node --test scripts/docs/implementation-path-policy.test.mjs",
+    "node --check scripts/docs/implementation-repository-bundle.mjs",
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-branch-lifecycle.mjs",
+    "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-state-integrity.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --check scripts/docs/implementation-work-package.mjs",
+    "node --test scripts/docs/implementation-work-package.test.mjs",
+    "node --check scripts/docs/package-readiness-scanner.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "node --test scripts/docs/package-readiness-integration.test.mjs",
+    "npm run docs:package:readiness:check",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm test --silent",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Correccion transversal del lifecycle fisico multi-repo para restaurar conformidad con CI020 y E5; no modifica semantica funcional, TREQ ni Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-18T17:36:06.519Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-18T17:23:55.823Z"
 }
