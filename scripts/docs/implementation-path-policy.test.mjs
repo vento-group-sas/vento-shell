@@ -10,6 +10,7 @@ import {
   isImplementationDerivedProjection,
   prepareAuthorizedMaterializationDirectories,
   resolveImplementationAuthorization,
+  implementationAuthorizedChanges,
 } from './implementation-path-policy.mjs';
 
 function instance(authorizedChanges) {
@@ -56,6 +57,16 @@ test('una autorizacion de directorio cubre sus hijos en todos los validadores', 
     ).classification,
     'EXECUTE_ONLY',
   );
+});
+
+test('conserva repositorio en authorized_changes y permite proyeccion explicita multi-repo', () => {
+  const record = { authorized_changes: [
+    { repo: 'vento-group-sas/vento-shell', path: 'src/app/page.tsx', change: 'MODIFY' },
+    { repo: 'vento-group-sas/vento-nexo', path: 'src/app/page.tsx', change: 'MODIFY' },
+  ] };
+  assert.deepEqual(implementationAuthorizedChanges(record).map((entry) => entry.repo), ['vento-group-sas/vento-shell']);
+  assert.deepEqual(implementationAuthorizedChanges(record, { repository: 'vento-group-sas/vento-nexo' }).map((entry) => entry.repo), ['vento-group-sas/vento-nexo']);
+  assert.equal(implementationAuthorizedChanges(record, { repository: null }).length, 2);
 });
 
 test('prepara automaticamente directorios para archivos y scopes CREATE', (context) => {

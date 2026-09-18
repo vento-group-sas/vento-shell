@@ -53,6 +53,23 @@ import {
   normalizeImplementationPath,
   prepareAuthorizedMaterializationDirectories,
 } from './implementation-path-policy.mjs';
+import {
+  IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE,
+  IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE,
+  assessRepositoryBundleMaterialization,
+  assertRepositoryBundleScope,
+  buildImplementationRepositoryPlan,
+  buildRepositoryBundleCandidateEvidence,
+  checkpointExternalRepositoryBundle,
+  collectRepositoryBundleChanges,
+  ensureExternalRepositoryBranches,
+  prepareRepositoryBundleDirectories,
+  publishExternalRepositoryBundle,
+  pushExternalRepositoryBundle,
+  repositoryBundleEvidence,
+  validatePublishedRepositoryBundleEvidence,
+  validateRepositoryBundleCandidateEvidence,
+} from './implementation-repository-bundle.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
@@ -709,6 +726,23 @@ function localValidationEvidence(
   );
 }
 
+function replaceStructuredEvidence(evidence, type, next) {
+  return [
+    ...(evidence ?? []).filter((entry) => !(entry && typeof entry === 'object' && !Array.isArray(entry) && entry.type === type)),
+    next,
+  ];
+}
+
+function isMultiRepoInstance(instance) {
+  return new Set(instance?.target_repositories ?? []).size > 1;
+}
+
+function persistBundleEvidence(root, instanceId, type, evidence) {
+  const current = resolveInstance(root, instanceId).instance;
+  writeInstance(root, { ...current, evidence: replaceStructuredEvidence(current.evidence, type, evidence) });
+  return resolveInstance(root, instanceId).instance;
+}
+
 function replaceLocalValidationEvidence(evidence, next) {
   return [
     ...(evidence ?? []).filter((entry) => !(
@@ -1183,6 +1217,10 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   if (state === 'START') {
     await runCanonicalLifecycle(root, 'docs:implementation:start', instanceId);
     instance = resolveInstance(root, instanceId).instance;
+    if (isMultiRepoInstance(instance)) {
+      const repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance });
+      ensureExternalRepositoryBranches({ plan: repositoryPlan });
+    }
     assertCoordinatorStateIntegrity(root, instance);
     state = classifyExecutionState(instance);
   }
@@ -1190,11 +1228,24 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   let materializedResult = null;
   if (state === 'MATERIALIZATION_GATE') {
     ensureImplementationBranch(root, instanceId);
-    const workspacePreparation = prepareAuthorizedMaterializationDirectories({
-      root,
-      instance: resolveInstance(root, instanceId).instance,
-    });
-    const materialization = assessAuthorizedMaterialization({
+    const currentInstance = resolveInstance(root, instanceId).instance;
+    let repositoryPlan = null;
+    let repositoryMaterialization = null;
+    let workspacePreparation = prepareAuthorizedMaterializationDirectories({ root, instance: currentInstance });
+    if (isMultiRepoInstance(currentInstance)) {
+      repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance: currentInstance });
+      ensureExternalRepositoryBranches({ plan: repositoryPlan });
+      workspacePreparation = { prepared: [], created: [] };
+      const prepared = prepareRepositoryBundleDirectories({ plan: repositoryPlan, instance: currentInstance });
+      for (const row of prepared) {
+        workspacePreparation.prepared.push(...row.prepared.map((p) => `${row.repository}:${p}`));
+        workspacePreparation.created.push(...row.created.map((p) => `${row.repository}:${p}`));
+      }
+      const bundleChanges = collectRepositoryBundleChanges({ plan: repositoryPlan });
+      assertRepositoryBundleScope({ instance: currentInstance, changes: bundleChanges });
+      repositoryMaterialization = assessRepositoryBundleMaterialization({ instance: currentInstance, changes: bundleChanges });
+    }
+    const materialization = repositoryMaterialization ?? assessAuthorizedMaterialization({
       instance,
       changedPaths: [...new Set([...branchChangedPaths(root), ...worktreePaths(root)])],
     });
@@ -1203,7 +1254,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
         STATUS: instance.status, EXECUTOR_STATE: state, EXPECTED_BRANCH: implementationBranchName(instanceId),
         NEXT_GATE: 'MATERIALIZATION_REQUIRED', HUMAN_GATE: 'NO',
-        MISSING_AUTHORIZED_PATHS: materialization.missingPaths.join(',') || 'NONE',
+        MISSING_AUTHORIZED_PATHS: (materialization.missingPaths ?? materialization.missing ?? []).join(',') || 'NONE',
         AUTHORIZED_DIRECTORIES_PREPARED: workspacePreparation.prepared.length,
         AUTHORIZED_DIRECTORIES_CREATED: workspacePreparation.created.join(',') || 'NONE',
         LEGACY_MATERIALIZED_FLAG: materialized ? 'IGNORED' : 'NOT_PROVIDED',
@@ -1212,15 +1263,30 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       return;
     }
 
+    if (repositoryPlan) {
+      checkpointExternalRepositoryBundle({ plan: repositoryPlan, instance: currentInstance });
+      const candidateBundle = buildRepositoryBundleCandidateEvidence({ plan: repositoryPlan });
+      persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE, candidateBundle);
+    }
     materializedResult = await materializeImplementation({
       root, id: instanceId, certification: safeSelectiveCertification,
     });
+    if (repositoryPlan) {
+      pushExternalRepositoryBundle({ plan: repositoryPlan });
+      const candidateBundle = repositoryBundleEvidence(resolveInstance(root, instanceId).instance, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE);
+      validateRepositoryBundleCandidateEvidence({ plan: repositoryPlan, evidence: candidateBundle });
+    }
     instance = materializedResult.instance;
     state = classifyExecutionState(instance);
   }
 
   if (state === 'EVIDENCE_GATE') {
     ensureImplementationBranch(root, instanceId);
+    if (isMultiRepoInstance(instance)) {
+      const repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance });
+      const candidateBundle = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE);
+      validateRepositoryBundleCandidateEvidence({ plan: repositoryPlan, evidence: candidateBundle });
+    }
     git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
 
     if (!evidenceFile) {
@@ -1306,6 +1372,18 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
   }
 
   if (state === 'FINISH') {
+    if (isMultiRepoInstance(instance)) {
+      const repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance });
+      let publishEvidence = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE);
+      if (publishEvidence) {
+        validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });
+      } else {
+        const candidateBundle = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE);
+        validateRepositoryBundleCandidateEvidence({ plan: repositoryPlan, evidence: candidateBundle });
+        publishEvidence = publishExternalRepositoryBundle({ plan: repositoryPlan });
+        instance = persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE, publishEvidence);
+      }
+    }
     await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
     printResult({
       ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE', INSTANCE_ID: instanceId,

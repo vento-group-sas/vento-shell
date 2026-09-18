@@ -56,7 +56,7 @@
     "docs:implementation:finish": "node scripts/docs/implementation-branch-lifecycle.mjs finish",
     "docs:implementation:preverify": "node scripts/docs/implementation-branch-lifecycle.mjs preverify",
     "docs:correction:check": "node scripts/docs/correction-control.mjs --check",
-    "docs:correction:test": "node --test scripts/docs/correction-control.test.mjs scripts/docs/correction-branch-lifecycle.test.mjs scripts/docs/pre-merge-correction.test.mjs scripts/docs/correction-starter.test.mjs scripts/docs/implementation-correction-guard.test.mjs scripts/docs/correction-supabase-deploy.test.mjs",
+    "docs:correction:test": "node --test scripts/docs/correction-control.test.mjs scripts/docs/correction-branch-lifecycle.test.mjs scripts/docs/pre-merge-correction.test.mjs scripts/docs/correction-starter.test.mjs scripts/docs/implementation-correction-guard.test.mjs scripts/docs/implementation-repository-bundle.test.mjs scripts/docs/correction-supabase-deploy.test.mjs",
     "docs:correction:scope:check": "node scripts/docs/correction-control.mjs scope-check",
     "docs:correction:prepare": "node scripts/docs/correction-branch-lifecycle.mjs prepare",
     "docs:correction:register": "node scripts/docs/correction-branch-lifecycle.mjs register",
