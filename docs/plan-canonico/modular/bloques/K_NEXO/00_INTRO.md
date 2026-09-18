@@ -6669,6 +6669,49 @@ Esta tarea no:
 
 ---
 
+#### 0. Reconciliacion contractual vinculante de autorizacion
+
+**CorrecciÃ³n aplicable:** `NEXO-AUTH-008::CORR-001`
+
+Esta correcciÃ³n restaura conformidad con la secuencia contractual posterior `AUTH-CAT-022` -> `AUTH-CAT-023` -> `AUTH-CAT-024`, el catÃ¡logo congelado `vento.authorization@1.0.0` y `operational-role-grants@1.0.0`. No crea capacidades nuevas y no reescribe el significado empresarial del despacho.
+
+Para autorizaciÃ³n, toda referencia de esta tarea a `nexo.inventory.remissions.dispatch` como `PermissionKey` activa queda sustituida por el contrato atÃ³mico vigente:
+
+```text
+ORIGEN PREPARA
+nexo.inventory.remissions.prepare
+        â†“
+ACTOR LOGÃSTICO ACEPTA CUSTODIA
+nexo.inventory.remissions.accept_custody
+        â†“
+DISPATCH_CONFIRMED
+hecho empresarial derivado y auditable; NO es PermissionKey
+        â†“
+ACTOR LOGÃSTICO INICIA TRÃNSITO
+nexo.inventory.remissions.start_transit
+        â†“
+ACTOR LOGÃSTICO REGISTRA HANDOFF EN DESTINO
+nexo.inventory.remissions.deliver
+        â†“
+DESTINO RECIBE
+nexo.inventory.remissions.receive
+```
+
+Reglas vinculantes de reconciliaciÃ³n:
+
+1. `nexo.inventory.remissions.dispatch` no pertenece al conjunto activo de 140 `PermissionKey`; quedÃ³ sustituido contractualmente y no admite nuevas asignaciones.
+2. `nexo.inventory.remissions.transit` y `nexo.transit.view` son cÃ³digos legacy y tampoco autorizan acciones runtime.
+3. No existe alias uno-a-muchos desde `dispatch` hacia sus reemplazos.
+4. Las acciones de preparaciÃ³n, carga, verificaciÃ³n, sello y entrega desde origen conservan la autoridad exacta que corresponda al lado de preparaciÃ³n; esta tarea no las convierte en una concesiÃ³n del conductor.
+5. `nexo.inventory.remissions.accept_custody` autoriza exclusivamente la aceptaciÃ³n de custodia por el actor logÃ­stico asignado sobre una remisiÃ³n preparada, asignada y versionada.
+6. `DISPATCH_CONFIRMED` se conserva como frontera empresarial y contable del despacho, no como permiso. Solo puede materializarse cuando las precondiciones de origen y la aceptaciÃ³n de custodia sean vÃ¡lidas; sus efectos de `shipped`, `transfer_out`, paquetes, receipt y outbox permanecen atÃ³micos e idempotentes.
+7. `DISPATCH_CONFIRMED` no inicia por sÃ­ mismo el journey ni concede progreso de ruta.
+8. `TRANSIT_STARTED` pertenece a `NEXO-AUTH-009` y exige `nexo.inventory.remissions.start_transit`; ese comando no vuelve a descontar inventario ni reconstruye el receipt de despacho.
+9. El handoff fÃ­sico en destino exige `nexo.inventory.remissions.deliver`; la recepciÃ³n sigue separada bajo `nexo.inventory.remissions.receive`.
+10. `conductor_logistica` conserva las concesiones atÃ³micas `accept_custody`, `start_transit` y `deliver` bajo sus contextos vigentes; dentro de esta tarea solo se consume `accept_custody` para la frontera de custodia y despacho.
+11. Toda frase posterior de esta tarea que denomine `dispatch` como permiso exacto se interpreta conforme a esta reconciliaciÃ³n; las invariantes de cantidades, sello, custodia, idempotencia, inventario, auditorÃ­a y handoff permanecen vigentes.
+12. Una acciÃ³n de trÃ¡nsito para la que el catÃ¡logo activo no tenga una clave mutadora exacta permanece `DEFAULT_DENY`; ninguna clave de lectura, nombre de rol, estado `in_transit` o permiso vecino puede ampliarla.
+
 #### 1. Propósito
 
 Proteger de extremo a extremo la autorización de despacho de remisiones para que una carga solo pueda salir cuando un actor humano autorizado opere sobre el shipment exacto, vigente, versionado, asignado y físicamente validado, satisfaga el contexto operacional aplicable y confirme mediante una frontera server-side atómica e idempotente la salida real, los efectos de inventario, la custodia y el handoff al tránsito.
