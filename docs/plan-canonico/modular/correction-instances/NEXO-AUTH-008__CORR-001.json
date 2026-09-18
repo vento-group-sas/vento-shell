@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "NEXO-AUTH-009"
@@ -184,8 +184,19 @@
         }
       ],
       "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T20:48:41.167Z",
+      "validated_candidate_head": "613d1c8a51a578ffefd00aaa0c2553a45026c775",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
     }
   ],
   "opened_at": "2026-09-18T19:33:43.099Z",
-  "implemented_at": "2026-09-18T20:21:07.411Z"
+  "implemented_at": "2026-09-18T20:21:07.411Z",
+  "verified_at": "2026-09-18T20:48:41.167Z"
 }
