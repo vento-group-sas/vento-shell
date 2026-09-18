@@ -212,6 +212,185 @@
       "exit_code": 0,
       "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-18T03:47:23.391Z",
+      "candidate_head": "aaf501fe4afcf6188d8ad12ba69011153b535bc2",
+      "commands": [
+        "node --check scripts/docs/package-gate-control.mjs",
+        "node --test scripts/docs/package-gate-control.test.mjs",
+        "node --check scripts/docs/package-gate-lifecycle.mjs",
+        "node --test scripts/docs/package-gate-lifecycle.test.mjs",
+        "node --check scripts/docs/implementation-authorization-lifecycle.mjs",
+        "node --test scripts/docs/implementation-authorization-lifecycle.test.mjs",
+        "node --check scripts/docs/implementation-control.mjs",
+        "node --test scripts/docs/implementation-control.test.mjs",
+        "node --check scripts/docs/package-execution-control.mjs",
+        "node --test scripts/docs/package-execution-control.test.mjs",
+        "node --test scripts/docs/package-readiness-integration.test.mjs",
+        "node --test scripts/docs/package-readiness-scanner.test.mjs",
+        "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+        "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+        "npm run docs:package:execution:check",
+        "npm run docs:implementation:check",
+        "npm run docs:correction:check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm test --silent"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/package-gate-control.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-gate-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b3c4f7566049ca92fc544723eef094d25d0599ecb71661d46ab1c437a7e0eb35",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/package-gate-lifecycle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-gate-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "9b6ceb1649c1cf05734f8b3888890f797a1287827ef6b58a5516f30ed149e9c8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-authorization-lifecycle.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-authorization-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "4f17772a9fa81910346b23d7a3c4f989819ae2aa8806248db2dafc4850c5037e",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-control.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d7ed0fc9f684640f9d94e170b29329dbc1201aa2cbbfb6bfc56db09d94a0021c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/package-execution-control.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-execution-control.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "9870f416e3c85c9fdd6fd5d0ca932c6a21f12d021aac511b71a6d2f70dcfd817",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-readiness-integration.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0382437f218448fc57004799426bdf1a6c1a0f19a1e1c266fbcbee4ee7341d18",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-readiness-scanner.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "80e4bf443f779b60355229fb2f67f7480f324452f642d1fdb32d7dd8051b74d5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "47abe9109eaa0d7797a7567735c26c19eccf383340dc8f89c26a7895014f7614",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "6447d1c6e56e57bb3dcbb6546798c5c5f91a44b9640de512e05f89e97d5c4af8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:package:execution:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "352c115dc60560d53886c875158ecfe76c48719f1db600b6e2cac94671652688",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "cd62fa20de19e891972e96e40042cb06b7dfe220fc28f337b92ba1138b966cbf",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "941c4b6a4e2a422625ba4392a6a1d77f66f9d19e544d3a641e58e2fd197bbf9c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c17382e6fa2f2c8991b0928d7955c80b93ac863488c9309e182eace1faa58bff",
+          "stderr_sha256": "69c67217e88d806c251c1949a716ee39caa0b4c29e7eda57df116c6dc75c0a6b"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "209bf6c59fb9979e1769794e95b6a41ab2aa9699dd49244ed1aba669897bb78a",
+          "stderr_sha256": "17f1cd6f343c0a72992831671e6ab9797323751b4b75e8ea345fc9ad5f2d17be"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c9643d7cf06f09574726106c2add2bbde287ccdf3aa3524a9ce213118b7ea135",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0ee3517daeb98f47491bde225dd00c68b2f68a052a06fe2392254523ce86493d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-09-18T00:55:01.041Z",
