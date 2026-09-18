@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -214,5 +214,6 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     }
   ],
-  "opened_at": "2026-09-18T00:55:01.041Z"
+  "opened_at": "2026-09-18T00:55:01.041Z",
+  "implemented_at": "2026-09-18T03:24:12.246Z"
 }
