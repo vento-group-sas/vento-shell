@@ -12,17 +12,60 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-017`
+### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-017`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO DELIV-PKG-015::CORR-017 ESTANDARIZAR LIFECYCLE DE IMPLEMENTACION
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md`
+  - `MODIFY` `docs/plan-canonico/modular/01_PROTOCOLO.md`
+  - `MODIFY` `docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md`
+  - `MODIFY` `docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md`
+  - `MODIFY` `docs/plan-canonico/modular/package-gate-policy.json`
+  - `MODIFY` `docs/plan-canonico/modular/implementation-control.json`
+  - `MODIFY` `package.json`
+  - `MODIFY` `scripts/docs/package-gate-control.mjs`
+  - `MODIFY` `scripts/docs/package-gate-control.test.mjs`
+  - `MODIFY` `scripts/docs/package-gate-lifecycle.mjs`
+  - `CREATE` `scripts/docs/package-gate-lifecycle.test.mjs`
+  - `MODIFY` `scripts/docs/package-execution-control.mjs`
+  - `MODIFY` `scripts/docs/package-execution-control.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-control.mjs`
+  - `MODIFY` `scripts/docs/implementation-control.test.mjs`
+  - `CREATE` `scripts/docs/implementation-authorization-lifecycle.mjs`
+  - `CREATE` `scripts/docs/implementation-authorization-lifecycle.test.mjs`
+  - `MODIFY` `scripts/docs/package-readiness-scanner.mjs`
+  - `MODIFY` `scripts/docs/package-readiness-scanner.test.mjs`
+  - `MODIFY` `scripts/docs/package-readiness-integration.test.mjs`
+  - `MODIFY` `scripts/docs/chatgpt-work-starter-readiness.mjs`
+  - `MODIFY` `scripts/docs/chatgpt-work-starter-readiness.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-coordinator.mjs`
+  - `MODIFY` `scripts/docs/implementation-readiness-coordinator.test.mjs`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `node --check scripts/docs/package-gate-control.mjs`
+  2. `node --test scripts/docs/package-gate-control.test.mjs`
+  3. `node --check scripts/docs/package-gate-lifecycle.mjs`
+  4. `node --test scripts/docs/package-gate-lifecycle.test.mjs`
+  5. `node --check scripts/docs/implementation-authorization-lifecycle.mjs`
+  6. `node --test scripts/docs/implementation-authorization-lifecycle.test.mjs`
+  7. `node --check scripts/docs/implementation-control.mjs`
+  8. `node --test scripts/docs/implementation-control.test.mjs`
+  9. `node --check scripts/docs/package-execution-control.mjs`
+  10. `node --test scripts/docs/package-execution-control.test.mjs`
+  11. `node --test scripts/docs/package-readiness-integration.test.mjs`
+  12. `node --test scripts/docs/package-readiness-scanner.test.mjs`
+  13. `node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs`
+  14. `node --test scripts/docs/implementation-readiness-coordinator.test.mjs`
+  15. `npm run docs:package:execution:check`
+  16. `npm run docs:implementation:check`
+  17. `npm run docs:correction:check`
+  18. `npm run docs:plan:build`
+  19. `npm run docs:plan:check`
+  20. `npm run docs:plan:test`
+  21. `npm test --silent`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-017`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`

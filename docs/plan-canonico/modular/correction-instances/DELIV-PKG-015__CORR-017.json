@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,188 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Formalizar el lifecycle unico DISCOVER -> PACKAGE_GATE -> APPROVE -> FINISH -> IMPLEMENTATION_AUTHORIZE -> MATERIALIZE -> ADVANCE -> VERIFIED y exigir descubrimiento fisico completo antes de aprobacion."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Fijar el protocolo transversal de physical discovery obligatorio, re-maduracion gobernada y autorizacion fisica nativa por instancia."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Integrar el nuevo gate de descubrimiento y la autorizacion nativa sin alterar el governed frontier ni permitir seleccion manual de packages."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/VENTO_OS_GUIA_OPERATIVA_DE_COMANDOS.md",
+      "change": "MODIFY",
+      "scope": "Documentar un unico flujo operativo para maduracion, re-maduracion, autorizacion y avance fisico."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/package-gate-policy.json",
+      "change": "MODIFY",
+      "scope": "Declarar physical discovery obligatorio para nuevas aprobaciones o re-maduraciones y preservar compatibilidad de gates historicos ya aprobados."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/implementation-control.json",
+      "change": "MODIFY",
+      "scope": "Declarar el entrypoint nativo unico de autorizacion fisica y mantener automatic_authorization=false."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Agregar docs:implementation:authorize y registrar las nuevas pruebas del lifecycle estandar dentro de la bateria canonica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-control.mjs",
+      "change": "MODIFY",
+      "scope": "Validar physical_discovery COMPLETE, busquedas trazables, cobertura exacta de physical_identity y cero findings sin resolver antes de READY_FOR_APPROVAL."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir discovery incompleto, findings no cubiertos, compatibilidad historica y dossier listo solo con discovery cerrado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Agregar maduracion por dossier-file y re-maduracion gobernada, inicializar physical_discovery y prohibir aprobacion si el discovery no esta completo."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-gate-lifecycle.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir mature/remature, preservacion de historia de aprobacion, discovery obligatorio y no autorizacion automatica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar docs:implementation:authorize como comando exacto para AUTHORIZE_PHYSICAL_IMPLEMENTATION sin cambiar el orden gobernado."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-execution-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir el comando nativo de autorizacion dentro del governed frontier y preservar fail-closed admission."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.mjs",
+      "change": "MODIFY",
+      "scope": "Validar la politica del entrypoint nativo de autorizacion y la forma normalizada del ledger AUTHORIZED."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-control.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la politica de autorizacion nativa y rechazo de configuraciones que reintroduzcan autorizacion artesanal o automatica."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.mjs",
+      "change": "CREATE",
+      "scope": "Implementar docs:implementation:authorize: derivar target_repositories, authorized_changes, validation_commands, target_environments y prerequisite_evidence desde el package-gate aprobado; registrar aprobacion humana y modificar solo el ledger de la instancia."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-authorization-lifecycle.test.mjs",
+      "change": "CREATE",
+      "scope": "Cubrir derivacion determinista, operaciones CREATE/MODIFY/DELETE/EXECUTE_ONLY, hashes contractuales, frontier, environment binding, discovery y fail-closed."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.mjs",
+      "change": "MODIFY",
+      "scope": "Exponer physical discovery y el comando nativo de autorizacion en la guia viva/readiness sin convertir el scanner en fuente de autorizacion."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-scanner.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir proyeccion de discovery y autorizacion nativa preservando las invariantes de readiness."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/package-readiness-integration.test.mjs",
+      "change": "MODIFY",
+      "scope": "Probar de extremo a extremo gate madurado con discovery, aprobacion humana, handoff PENDING_AUTHORIZATION y autorizacion nativa derivada."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.mjs",
+      "change": "MODIFY",
+      "scope": "Mostrar el entrypoint nativo exacto y prohibir instrucciones de edicion manual del ledger."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir la accion exacta de autorizacion nativa en el iniciador."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Proyectar AUTHORIZE_PHYSICAL_IMPLEMENTATION mediante el comando nativo y conservar el HUMAN_GATE antes de mutaciones."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cubrir el entrypoint estandar y la separacion PENDING_AUTHORIZATION -> AUTHORIZED -> advance."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/package-gate-control.mjs",
+    "node --test scripts/docs/package-gate-control.test.mjs",
+    "node --check scripts/docs/package-gate-lifecycle.mjs",
+    "node --test scripts/docs/package-gate-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-authorization-lifecycle.mjs",
+    "node --test scripts/docs/implementation-authorization-lifecycle.test.mjs",
+    "node --check scripts/docs/implementation-control.mjs",
+    "node --test scripts/docs/implementation-control.test.mjs",
+    "node --check scripts/docs/package-execution-control.mjs",
+    "node --test scripts/docs/package-execution-control.test.mjs",
+    "node --test scripts/docs/package-readiness-integration.test.mjs",
+    "node --test scripts/docs/package-readiness-scanner.test.mjs",
+    "node --test scripts/docs/chatgpt-work-starter-readiness.test.mjs",
+    "node --test scripts/docs/implementation-readiness-coordinator.test.mjs",
+    "npm run docs:package:execution:check",
+    "npm run docs:implementation:check",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm test --silent"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Correccion transversal de governance y lifecycle; no modifica requisitos funcionales TREQ ni el Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-18T02:02:42.543Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO DELIV-PKG-015::CORR-017 ESTANDARIZAR LIFECYCLE DE IMPLEMENTACION",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-18T00:55:01.041Z"
 }
