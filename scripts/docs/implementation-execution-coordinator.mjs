@@ -745,7 +745,7 @@ function persistBundleEvidence(root, instanceId, type, evidence) {
 }
 
 function resolveRepositoryBundleOrchestratorCandidate(root,instance){ const lifecycle=resolveImplementationCandidateLifecycle({root,instance,branchTip:currentHead(root).toLowerCase()}); if(lifecycle.status!=='PASS'||lifecycle.decision!=='REUSE_PHYSICAL_EVIDENCE'||!/^[a-f0-9]{40}$/u.test(String(lifecycle.candidate_commit??''))) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE_INVALID:${lifecycle.reason??lifecycle.status}`); return lifecycle.candidate_commit; }
-function ensureRepositoryBundleCandidateEvidence({root,instanceId,instance,repositoryPlan}={}){ let current=resolveInstance(root,instanceId).instance; const orchestratorCandidateCommit=resolveRepositoryBundleOrchestratorCandidate(root,current); let evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); if(!evidence) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_EVIDENCE_MISSING'); const reconciliation=reconcileRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit}); if(reconciliation.updated){ current=persistBundleEvidence(root,instanceId,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE,reconciliation.evidence); const committed=commitAllowedWorktree(root,instanceId,current,`implementation(${instanceId}): reconcile multi-repo candidate bundle`); if(!committed) fail(`IMPLEMENTATION_REPOSITORY_RECONCILIATION_CHECKPOINT_MISSING:${instanceId}`); pushCandidate(root,implementationBranchName(instanceId)); current=resolveInstance(root,instanceId).instance; evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); }
+function ensureRepositoryBundleCandidateEvidence({root,instanceId,repositoryPlan}={}){ let current=resolveInstance(root,instanceId).instance; const orchestratorCandidateCommit=resolveRepositoryBundleOrchestratorCandidate(root,current); let evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); if(!evidence) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_EVIDENCE_MISSING'); const reconciliation=reconcileRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit}); if(reconciliation.updated){ current=persistBundleEvidence(root,instanceId,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE,reconciliation.evidence); const committed=commitAllowedWorktree(root,instanceId,current,`implementation(${instanceId}): reconcile multi-repo candidate bundle`); if(!committed) fail(`IMPLEMENTATION_REPOSITORY_RECONCILIATION_CHECKPOINT_MISSING:${instanceId}`); pushCandidate(root,implementationBranchName(instanceId)); current=resolveInstance(root,instanceId).instance; evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); }
   validateRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit});
   pushExternalRepositoryBundle({plan:repositoryPlan});
   return {instance:current,evidence,orchestratorCandidateCommit,reconciled:reconciliation.updated}; }
@@ -1292,7 +1292,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       if (!bundleCheckpoint) fail(`IMPLEMENTATION_REPOSITORY_BUNDLE_CHECKPOINT_MISSING:${instanceId}`);
       pushCandidate(root, implementationBranchName(instanceId));
       const ensured = ensureRepositoryBundleCandidateEvidence({
-        root, instanceId, instance: resolveInstance(root, instanceId).instance, repositoryPlan,
+        root, instanceId, repositoryPlan,
       });
       instance = ensured.instance;
     }
@@ -1303,7 +1303,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
     ensureImplementationBranch(root, instanceId);
     if (isMultiRepoInstance(instance)) {
       const repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance });
-      const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, instance, repositoryPlan });
+      const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, repositoryPlan });
       instance = ensured.instance;
     }
     git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
@@ -1397,7 +1397,7 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       if (publishEvidence) {
         validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });
       } else {
-        const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, instance, repositoryPlan });
+        const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, repositoryPlan });
         instance = ensured.instance;
         publishEvidence = publishExternalRepositoryBundle({ plan: repositoryPlan });
         instance = persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE, publishEvidence);
