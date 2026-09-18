@@ -3,7 +3,7 @@
   "package_id": "GAP-PKG-045",
   "status": "APPROVED_FOR_IMPLEMENTATION",
   "created_at": "2026-09-17T18:54:36.757Z",
-  "updated_at": "2026-09-17T21:55:35.556Z",
+  "updated_at": "2026-09-18T04:56:27.933Z",
   "canonical_snapshot": {
     "repository_owner": "devVentoGroup/vento-shell",
     "runtime_profile": "SHARED_RUNTIME_CONTRACT",
@@ -102,6 +102,114 @@
         "path": "tests/packages/GAP-PKG-045/fixtures.json",
         "symbol_or_surface": "Deterministic TP-SHARED-001 fixtures for the three canonical GAP-PKG-045 TREQ requirements",
         "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "src/app/page.tsx",
+        "symbol_or_surface": "INTERNAL_APPS launcher, hub alias and central application-identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "src/app/login/page.tsx",
+        "symbol_or_surface": "APP_METADATA_BY_HOST, connected-app presentation and canonical application destination metadata",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "templates/app-shell-standard/src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "Template AppSwitcher static identity list, hub alias, lifecycle status and canonical destinations",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
       }
     ]
   },
@@ -109,7 +217,37 @@
     {
       "unit_id": "SHELL-CON-002::GLOBAL",
       "repository": "vento-group-sas/vento-shell",
-      "change": "Adopt the already VERIFIED SHELL-CON-002::GLOBAL application-identity foundation without modifying it, and materialize only GAP-PKG-045 package-specific TP-SHARED-001 evidence. If evidence proves a product or consumer delta is required, stop and re-mature the package gate with the exact physical target before making that delta."
+      "change": "Adopt the already VERIFIED SHELL-CON-002::GLOBAL canonical application-identity foundation without modifying its seven contract files."
+    },
+    {
+      "unit_id": "GAP-PKG-045::VENTO-SHELL-CONSUMERS",
+      "repository": "vento-group-sas/vento-shell",
+      "change": "Reconcile the central launcher, login metadata and AppShell template consumers to the canonical ten-AppCode contract, eliminating hub/default as application identities while preserving governed destinations and package evidence."
+    },
+    {
+      "unit_id": "GAP-PKG-045::NEXO-CONSUMERS",
+      "repository": "vento-group-sas/vento-nexo",
+      "change": "Reconcile runtime APP_ENTITY, APP_SWITCHER_ITEMS and AppSwitcher hub semantics to the canonical application contract without changing unrelated navigation, permissions or business behavior."
+    },
+    {
+      "unit_id": "GAP-PKG-045::FOGO-CONSUMERS",
+      "repository": "vento-group-sas/vento-fogo",
+      "change": "Reconcile runtime APP_ENTITY, APP_SWITCHER_ITEMS and AppSwitcher hub semantics to the canonical application contract without changing unrelated navigation, permissions or business behavior."
+    },
+    {
+      "unit_id": "GAP-PKG-045::ORIGO-CONSUMERS",
+      "repository": "vento-group-sas/vento-origo",
+      "change": "Reconcile runtime APP_ENTITY, APP_SWITCHER_ITEMS and AppSwitcher hub semantics to the canonical application contract without changing unrelated navigation, permissions or business behavior."
+    },
+    {
+      "unit_id": "GAP-PKG-045::PULSO-CONSUMERS",
+      "repository": "vento-group-sas/vento-pulso",
+      "change": "Reconcile runtime APP_ENTITY, APP_SWITCHER_ITEMS and AppSwitcher hub semantics to the canonical application contract without changing unrelated navigation, permissions or business behavior."
+    },
+    {
+      "unit_id": "GAP-PKG-045::VISO-CONSUMERS",
+      "repository": "vento-group-sas/vento-viso",
+      "change": "Reconcile runtime APP_ENTITY, APP_SWITCHER_ITEMS and AppSwitcher hub semantics to the canonical application contract without changing unrelated navigation, permissions or business behavior."
     }
   ],
   "evidence_plan": {
@@ -149,49 +287,98 @@
       {
         "command": "npm test --silent",
         "expected_result": "PASS for the canonical vento-shell regression facade with zero required failures."
+      },
+      {
+        "command": "npm --prefix ../vento-nexo test --silent",
+        "expected_result": "PASS for vento-nexo consumer baseline after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-nexo run typecheck --silent",
+        "expected_result": "PASS TypeScript validation for vento-nexo after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-fogo test --silent",
+        "expected_result": "PASS for vento-fogo consumer baseline after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-fogo run typecheck --silent",
+        "expected_result": "PASS TypeScript validation for vento-fogo after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-origo test --silent",
+        "expected_result": "PASS for vento-origo consumer baseline after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-origo run typecheck --silent",
+        "expected_result": "PASS TypeScript validation for vento-origo after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-pulso test --silent",
+        "expected_result": "PASS for vento-pulso consumer baseline after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-pulso run typecheck --silent",
+        "expected_result": "PASS TypeScript validation for vento-pulso after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-viso test --silent",
+        "expected_result": "PASS for vento-viso consumer baseline after canonical application-identity reconciliation."
+      },
+      {
+        "command": "npm --prefix ../vento-viso run typecheck --silent",
+        "expected_result": "PASS TypeScript validation for vento-viso after canonical application-identity reconciliation."
       }
     ],
     "observability": [
       {
-        "signal": "packages/contracts/authorization/catalog/versions/1.0.0/applications.json plus generated AppCode surface",
-        "expected_result": "Exactly ten canonical AppCode identities remain versioned, unique and reproducibly projected into generated TypeScript application contracts."
+        "signal": "Canonical applications.json plus generated AppCode surface",
+        "expected_result": "Exactly ten canonical identities remain versioned and reproducible: shell, anima, viso, nexo, fogo, origo, pulso, numera, aura and pass; hub/default remain non-canonical aliases or configuration values only."
+      },
+      {
+        "signal": "vento-shell launcher, login metadata and template AppSwitcher consumers",
+        "expected_result": "All three consumers project the canonical identity set and governed lifecycle semantics without local competing identity universes."
+      },
+      {
+        "signal": "NEXO, FOGO, ORIGO, PULSO and VISO runtime application-identity consumers",
+        "expected_result": "Each runtime repo consumes canonical AppCode semantics consistently across vento-shell.tsx, vento-chrome.tsx and app-switcher.tsx; hub/default are not treated as AppCode members and pass is not silently omitted."
       },
       {
         "signal": "SHELL-CON-002::GLOBAL verification boundary",
-        "expected_result": "The VERIFIED pre-E5 foundation and source contract SHA-256 remain unchanged while GAP-PKG-045 evidence is materialized."
+        "expected_result": "The seven VERIFIED canonical foundation files remain byte-stable while only discovered consumers and GAP-PKG-045 evidence targets change."
       },
       {
-        "signal": "GAP-PKG-045 canonical TREQ evidence coverage",
-        "expected_result": "TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034 each have explicit deterministic package-specific assertions and fixtures."
-      },
-      {
-        "signal": "Product, consumer, Supabase and production mutation delta during evidence-only adoption",
-        "expected_result": "Zero unapproved product, consumer, Supabase or production mutations. Any required delta stops the package and forces exact gate re-maturation before change."
+        "signal": "Product, Supabase and production mutation delta outside discovered identity consumers",
+        "expected_result": "Zero unrelated product, database, Supabase or production mutations; changes remain constrained to the exact physical targets in this dossier."
       }
     ],
     "acceptance_criteria": [
-      "GAP-PKG-045 adopts the existing VERIFIED SHELL-CON-002::GLOBAL application-identity foundation and does not create a competing application catalog, AppCode universe or semantic source.",
-      "applications.json remains the versioned source for the ten canonical application identities; generated AppCode and application metadata remain reproducible from that source and hub/default remain non-canonical application identities.",
-      "The package-specific evidence explicitly covers TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034 with deterministic fixtures, expected results and fail-closed assertions.",
-      "The evidence must detect any current launcher, login metadata, AppSwitcher, navigation runtime or absolute destination that diverges from the canonical application contract; a proven consumer/product delta blocks verification and requires re-maturation with exact repository and path before modification.",
-      "No Supabase mutation is part of GAP-PKG-045 maturation or evidence-only adoption, and no database migration is created or changed by this package scope.",
-      "The seven reserved tests/packages/GAP-PKG-045 evidence artifacts are the only new physical evidence targets authorized by this dossier before a proven re-maturation need.",
-      "The existing SHELL-CON-002::GLOBAL foundation files remain byte-stable during package evidence materialization; later SHELL-CON-* additions that share generated files are not re-owned or reverted by GAP-PKG-045.",
-      "Production remains unauthorized. The declared execution environment is TP-SHARED-001 over ENV-WEB-CI-STAGING under OWN-OPS governance."
+      "physical_discovery is COMPLETE, traceable, has zero unresolved findings and covers physical_identity.targets exactly 1:1.",
+      "applications.json remains the sole versioned source for the ten canonical application identities and generated AppCode surfaces remain reproducible from it.",
+      "hub and default are not treated as canonical AppCode identities in launcher, APP_ENTITY or AppSwitcher logic; shell is the canonical Vento OS application identity.",
+      "Vento Pass is not silently lost from canonical application identity projections merely because it is a customer/mobile-adjacent product; availability and destination behavior must be explicit and fail closed where no web destination is approved.",
+      "AURA catalog membership remains distinct from product availability; runtime presentation must not infer product readiness solely from lifecycle_status=active when canonical product-existence governance says the application is not currently available.",
+      "The central launcher, login metadata and AppShell template no longer maintain competing application identity lists that contradict the canonical contract.",
+      "NEXO, FOGO, ORIGO, PULSO and VISO runtime AppSwitcher/APP_ENTITY consumers no longer maintain competing application identity universes or hub/default AppCode aliases.",
+      "The existing SHELL-CON-002::GLOBAL foundation remains byte-stable and is adopted without modification.",
+      "TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034 retain explicit deterministic package-specific evidence in tests/packages/GAP-PKG-045.",
+      "All vento-shell package validations plus npm test and typecheck in each of the five runtime consumer repositories pass before CI020 can be VERIFIED.",
+      "No Supabase mutation or database migration is created or changed by GAP-PKG-045.",
+      "Production remains unauthorized; only governed staging-safe implementation and validation are permitted."
     ],
     "rollback_steps": [
-      "If package-specific evidence materialization fails, revert only the GAP-PKG-045 evidence files created by the authorized implementation instance; do not alter the already VERIFIED SHELL-CON-002::GLOBAL foundation.",
-      "If tests prove that a product, consumer or shared-contract delta is required, stop the implementation and re-mature GAP-PKG-045 with the exact repository, path, symbol or surface and operation before making that delta.",
-      "No database rollback is required for the dossier as currently scoped because Supabase mutation is explicitly outside the package and production is unauthorized.",
-      "After any evidence rollback, rerun generate-authorization-types --check, validate-authorization-catalog and the canonical regression facade to confirm the pre-package foundation remains unchanged."
+      "If implementation fails before publication, revert only GAP-PKG-045 consumer changes and package-specific evidence artifacts in their authorized repositories; do not modify or revert the VERIFIED SHELL-CON-002::GLOBAL foundation.",
+      "If any runtime consumer cannot be reconciled without a new undiscovered repository/path/surface, stop CI020 and re-mature again before making that new delta.",
+      "If a consumer regression appears, restore that repository consumer file to its pre-CI020 state and keep the package unverified until canonical identity semantics and repository tests pass.",
+      "No database rollback is required because Supabase/database mutation is outside this package scope.",
+      "After rollback, rerun canonical catalog generation/validation, all GAP-PKG-045 package tests and the affected consumer repository test/typecheck commands."
     ]
   },
   "authorization": {
     "decision": "APROBADO",
     "approved_by": "usuario",
-    "approved_at": "2026-09-17T21:55:35.556Z",
+    "approved_at": "2026-09-18T04:56:27.933Z",
     "approval_ref": "APROBADO",
-    "approval_statement": "APROBADO GAP-PKG-045"
+    "approval_statement": "APROBADO GAP-PKG-045 REMADURADO PHYSICAL_DISCOVERY COMPLETO"
   },
   "deployment_environment": {
     "canonical_task_id": "DELIV-PKG-019",
@@ -206,5 +393,276 @@
       }
     ],
     "production_authorized": false
-  }
+  },
+  "physical_discovery": {
+    "status": "COMPLETE",
+    "searches": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "canonical application catalog and generated AppCode contract",
+        "method": "direct file inspection plus repository code search",
+        "evidence": "applications.json defines exactly shell, anima, viso, nexo, fogo, origo, pulso, numera, aura and pass; hub/default are not canonical AppCode identities."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "central launcher, login metadata and template AppSwitcher",
+        "method": "direct file inspection plus searches for INTERNAL_APPS, APP_METADATA_BY_HOST, AppSwitcher, hub and canonical domains",
+        "evidence": "src/app/page.tsx exposes five launcher apps; src/app/login/page.tsx exposes seven host metadata entries and six visible chips; template AppSwitcher exposes seven local identities, uses hub instead of shell, omits pass/anima/numera as applicable and carries lifecycle-status drift."
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "surface": "runtime AppSwitcher and APP_ENTITY consumers",
+        "method": "organization code search plus direct inspection of vento-shell.tsx, vento-chrome.tsx and app-switcher.tsx",
+        "evidence": "runtime list has nine identities using hub, omits pass, marks aura soon; APP_ENTITY admits default and omits shell/pass; AppSwitcher special-cases hub."
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "surface": "runtime AppSwitcher and APP_ENTITY consumers",
+        "method": "organization code search plus direct inspection of vento-shell.tsx, vento-chrome.tsx and app-switcher.tsx",
+        "evidence": "runtime list has nine identities using hub, omits pass, marks aura soon; APP_ENTITY admits default and omits shell/pass; AppSwitcher special-cases hub."
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "surface": "runtime AppSwitcher and APP_ENTITY consumers",
+        "method": "organization code search plus direct inspection of vento-shell.tsx, vento-chrome.tsx and app-switcher.tsx",
+        "evidence": "runtime list has nine identities using hub, omits pass, marks aura soon; APP_ENTITY admits default and omits shell/pass; AppSwitcher special-cases hub."
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "surface": "runtime AppSwitcher and APP_ENTITY consumers",
+        "method": "organization code search plus direct inspection of vento-shell.tsx, vento-chrome.tsx and app-switcher.tsx",
+        "evidence": "runtime list has nine identities using hub, omits pass, marks aura soon; APP_ENTITY admits default and omits shell/pass; AppSwitcher special-cases hub."
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "surface": "runtime AppSwitcher and APP_ENTITY consumers",
+        "method": "organization code search plus direct inspection of vento-shell.tsx, vento-chrome.tsx and app-switcher.tsx",
+        "evidence": "runtime list has nine identities using hub, omits pass, marks aura soon; APP_ENTITY admits default and omits shell/pass; AppSwitcher special-cases hub."
+      },
+      {
+        "repository": "vento-group-sas",
+        "surface": "organization-wide APP_SWITCHER_ITEMS, NEXT_PUBLIC_VENTO_ENTITY, app.id === hub and canonical-domain references",
+        "method": "GitHub organization code search",
+        "evidence": "the five runtime application repositories above are the discovered AppSwitcher/APP_ENTITY consumers; no equivalent NUMERA runtime AppSwitcher consumer was returned by organization search."
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "surface": "reserved GAP-PKG-045 evidence artifacts",
+        "method": "approved gate dossier inspection",
+        "evidence": "seven tests/packages/GAP-PKG-045 CREATE targets remain the package-specific evidence set and are preserved in the rematured scope."
+      },
+      {
+        "repository": "vento-group-sas",
+        "surface": "consumer test commands for NEXO, FOGO, ORIGO, PULSO and VISO",
+        "method": "direct package.json inspection",
+        "evidence": "all five consumer repos expose npm test and npm run typecheck scripts; these commands are added to the package evidence plan."
+      }
+    ],
+    "findings": [
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/catalog/versions/1.0.0/applications.json",
+        "symbol_or_surface": "Canonical application catalog v1.0.0 with the ten approved AppCode identities",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/schemas/application.schema.json",
+        "symbol_or_surface": "Closed schema for Vento Authorization Application identity",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/scripts/generate-authorization-types.mjs",
+        "symbol_or_surface": "Deterministic application catalog to AppCode and application metadata generator",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+        "symbol_or_surface": "Application catalog, schema and generated-contract validator",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/generated/versions/1.0.0/catalog.types.ts",
+        "symbol_or_surface": "AppCode, ApplicationDefinition and ApplicationByCode application-contract surface",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/generated/versions/1.0.0/catalog.values.ts",
+        "symbol_or_surface": "APPLICATION_CODES, APPLICATIONS, APPLICATION_BY_CODE and isAppCode application-contract surface",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "packages/contracts/authorization/generated/versions/1.0.0/index.ts",
+        "symbol_or_surface": "Versioned exports for the generated application-contract surface",
+        "operation": "ADOPTAR_SIN_MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/unit.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 TP-SHARED-001 unit evidence for canonical application identity",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/contract.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 contractual evidence for TREQ-SHELL-003, TREQ-SHELL-028 and TREQ-SHELL-034",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/integration.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 integration evidence for canonical application catalog projections and destinations",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/security.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 fail-closed application identity and destination security evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/e2e.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 controlled end-to-end application identity evidence",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/regression.test.ts",
+        "symbol_or_surface": "GAP-PKG-045 regression evidence for legacy local application-list drift",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "tests/packages/GAP-PKG-045/fixtures.json",
+        "symbol_or_surface": "Deterministic TP-SHARED-001 fixtures for the three canonical GAP-PKG-045 TREQ requirements",
+        "operation": "CREAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "src/app/page.tsx",
+        "symbol_or_surface": "INTERNAL_APPS launcher, hub alias and central application-identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "src/app/login/page.tsx",
+        "symbol_or_surface": "APP_METADATA_BY_HOST, connected-app presentation and canonical application destination metadata",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-shell",
+        "path": "templates/app-shell-standard/src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "Template AppSwitcher static identity list, hub alias, lifecycle status and canonical destinations",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-nexo",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-fogo",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-origo",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-pulso",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/vento/standard/vento-shell.tsx",
+        "symbol_or_surface": "APP_ENTITY and APP_SWITCHER_ITEMS canonical application identity projection",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/vento/standard/vento-chrome.tsx",
+        "symbol_or_surface": "APP_ENTITY local application identity discriminator and shell destination semantics",
+        "operation": "MODIFICAR"
+      },
+      {
+        "repository": "vento-group-sas/vento-viso",
+        "path": "src/components/vento/standard/app-switcher.tsx",
+        "symbol_or_surface": "AppSwitcher hub identity special-case and canonical AppCode rendering semantics",
+        "operation": "MODIFICAR"
+      }
+    ],
+    "unresolved_findings": []
+  },
+  "authorization_history": [
+    {
+      "decision": "APROBADO",
+      "approved_by": "usuario",
+      "approved_at": "2026-09-17T21:55:35.556Z",
+      "approval_ref": "APROBADO",
+      "approval_statement": "APROBADO GAP-PKG-045",
+      "superseded_at": "2026-09-18T04:38:49.034Z",
+      "superseded_by": "REMATURE"
+    }
+  ]
 }
