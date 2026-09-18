@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "NEXO-AUTH-009"
@@ -17,12 +17,53 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
-  "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/04A_09_NEXO.md",
+      "change": "MODIFY"
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/repair-working-copy.mjs",
+      "change": "EXECUTE_ONLY"
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:task:format -- --file docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md --task-id NEXO-AUTH-008 --check",
+    "npm run docs:task:quality",
+    "npm run docs:work-topology:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:eol:check",
+    "git --no-pager diff --check"
+  ],
+  "affected_treq_ids": [
+    "TREQ-NEXO-112",
+    "TREQ-NEXO-122"
+  ],
+  "zero_treq_reason": null,
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-18T19:54:03.585Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza NEXO-AUTH-008::CORR-001 exclusivamente para reconciliar NEXO-AUTH-008 y TREQ-NEXO-112/TREQ-NEXO-122 con vento.authorization@1.0.0 y sus datasets congelados; preservar las 140 PermissionKey activas; no crear capacidades nuevas; no reactivar dispatch, transit ni transit.view; no cambiar grants; no ejecutar cambios fisicos; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.",
+    "source_contract_sha256": "cd822a2b4ff261f412bc747e5271f6574c87b185be9c6f6e8b7cfe02679e15d0"
+  },
   "evidence": [],
   "opened_at": "2026-09-18T19:33:43.099Z"
 }

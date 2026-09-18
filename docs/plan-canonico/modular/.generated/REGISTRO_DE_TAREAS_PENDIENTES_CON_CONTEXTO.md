@@ -12,17 +12,30 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `NEXO-AUTH-008::CORR-001`
+### 1. Termina la corrección abierta — `NEXO-AUTH-008::CORR-001`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO: autoriza NEXO-AUTH-008::CORR-001 exclusivamente para reconciliar NEXO-AUTH-008 y TREQ-NEXO-112/TREQ-NEXO-122 con vento.authorization@1.0.0 y sus datasets congelados; preservar las 140 PermissionKey activas; no crear capacidades nuevas; no reactivar dispatch, transit ni transit.view; no cambiar grants; no ejecutar cambios fisicos; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+  - `MODIFY` `docs/plan-canonico/modular/bloques/E1_DESCUBRIMIENTO_OPERATIVO/04A_09_NEXO.md`
+  - `EXECUTE_ONLY` `scripts/docs/repair-working-copy.mjs`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `npm run docs:task:format -- --file docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md --task-id NEXO-AUTH-008 --check`
+  2. `npm run docs:task:quality`
+  3. `npm run docs:work-topology:check`
+  4. `npm run docs:plan:build`
+  5. `npm run docs:plan:check`
+  6. `npm run docs:plan:test`
+  7. `npm run docs:treq:check`
+  8. `npm run docs:treq:test`
+  9. `npm run docs:correction:check`
+  10. `npm run docs:correction:test`
+  11. `npm run docs:eol:check`
+  12. `git --no-pager diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id NEXO-AUTH-008::CORR-001`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
