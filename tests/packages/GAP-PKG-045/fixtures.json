@@ -1,0 +1,51 @@
+{
+  "package_id": "GAP-PKG-045",
+  "treq_ids": [
+    "TREQ-SHELL-003",
+    "TREQ-SHELL-028",
+    "TREQ-SHELL-034"
+  ],
+  "canonical_app_codes": [
+    "shell",
+    "anima",
+    "viso",
+    "nexo",
+    "fogo",
+    "origo",
+    "pulso",
+    "numera",
+    "aura",
+    "pass"
+  ],
+  "web_destinations": {
+    "shell": "https://os.ventogroup.co",
+    "anima": "https://anima.ventogroup.co",
+    "viso": "https://viso.ventogroup.co",
+    "nexo": "https://nexo.ventogroup.co",
+    "fogo": "https://fogo.ventogroup.co",
+    "origo": "https://origo.ventogroup.co",
+    "pulso": "https://pulso.ventogroup.co",
+    "numera": "https://numera.ventogroup.co",
+    "aura": null,
+    "pass": null
+  },
+  "presentation_status": {
+    "shell": "active",
+    "anima": "active",
+    "viso": "active",
+    "nexo": "active",
+    "fogo": "active",
+    "origo": "active",
+    "pulso": "active",
+    "numera": "active",
+    "aura": "soon",
+    "pass": "soon"
+  },
+  "runtime_repositories": [
+    "vento-group-sas/vento-nexo",
+    "vento-group-sas/vento-fogo",
+    "vento-group-sas/vento-origo",
+    "vento-group-sas/vento-pulso",
+    "vento-group-sas/vento-viso"
+  ]
+}
