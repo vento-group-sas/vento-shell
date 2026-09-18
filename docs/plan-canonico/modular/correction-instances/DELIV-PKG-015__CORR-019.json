@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "VERIFIED",
+  "status": "IMPLEMENTED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -97,220 +97,22 @@
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
     {
-      "type": "CORRECTION_VALIDATION_V1",
+      "type": "CORRECTION_REVALIDATION_RECOVERY_V1",
       "status": "PASS",
-      "observed_at": "2026-09-18T23:18:46.173Z",
-      "candidate_head": "f5c25ebec4e52a0a7cc751b8184b190dd2d6f907",
-      "commands": [
-        "node --check scripts/docs/implementation-path-policy.mjs",
-        "node --test scripts/docs/implementation-path-policy.test.mjs",
-        "node --check scripts/docs/implementation-repository-bundle.mjs",
-        "node --test scripts/docs/implementation-repository-bundle.test.mjs",
-        "node --check scripts/docs/implementation-execution-coordinator.mjs",
-        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
-        "node --check scripts/docs/implementation-branch-lifecycle.mjs",
-        "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
-        "node --check scripts/docs/implementation-state-integrity.mjs",
-        "node --test scripts/docs/implementation-state-integrity.test.mjs",
-        "node --check scripts/docs/implementation-work-package.mjs",
-        "node --test scripts/docs/implementation-work-package.test.mjs",
-        "node --check scripts/docs/package-readiness-scanner.mjs",
-        "node --test scripts/docs/package-readiness-scanner.test.mjs",
-        "node --test scripts/docs/package-readiness-integration.test.mjs",
-        "npm run docs:package:readiness:check",
-        "npm run docs:package:execution:check",
-        "npm run docs:implementation:check",
-        "npm run docs:correction:check",
-        "npm run docs:plan:build",
-        "npm run docs:plan:check",
-        "npm run docs:plan:test",
-        "npm test --silent",
-        "git diff --check"
+      "observed_at": "2026-09-18T23:46:28.932Z",
+      "reason": "POST_VERIFIED_FINISH_LINT_RATCHET_REPAIR",
+      "previous_verified_head": "9b2311d4d5255dca14210e762888c1c27f0b5789",
+      "preserved_quality_repair_execution_head": "4494652f575f0de19f2c5620568248b8e0a1b1a5",
+      "invalidated_evidence_types": [
+        "CORRECTION_VALIDATION_V1",
+        "CORRECTION_VERIFICATION_V1"
       ],
-      "results": [
-        {
-          "command": "node --check scripts/docs/implementation-path-policy.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/implementation-path-policy.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "8ec0785af77ba37ad8409b947f2e6dde0c3b0ddd1652b945fc09db9d8c9c7b19",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --check scripts/docs/implementation-repository-bundle.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/implementation-repository-bundle.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "cf1d429026c4cb0ec9192130d7a8b5ca17f97c72d30ada33c2991558e63bba6e",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --check scripts/docs/implementation-execution-coordinator.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "59d57cbdcace7ecc72ac490c07aeb563fc40bddd33ace4fa27dc354b97781fb5",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --check scripts/docs/implementation-branch-lifecycle.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "53db3e1524caebb45e6850ff2f838420eb320d1b14c605926c64884001885bfa",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --check scripts/docs/implementation-state-integrity.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/implementation-state-integrity.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "8b63b89307ee7e383c04bd081ad8a3bc48b884c105e6d3ed59506e706f279965",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --check scripts/docs/implementation-work-package.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/implementation-work-package.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e835b2a2efb6ceb8769194a90aca741d8871c1e7fa7c26748000a5750901582d",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --check scripts/docs/package-readiness-scanner.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/package-readiness-scanner.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "2ecfbb585c29646440a505a0b6380d40656fa55c2abeab6e33ba05181de63d28",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "node --test scripts/docs/package-readiness-integration.test.mjs",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "54c96aaed31141c3a18a563bd44797a09313e0474c5f4913bcc099eede2de8b7",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "npm run docs:package:readiness:check",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "b56929e2ffa3d9c2a6a99c95923fc3b266537bc4b87190d7706026759a94c566",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "npm run docs:package:execution:check",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "352c115dc60560d53886c875158ecfe76c48719f1db600b6e2cac94671652688",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "npm run docs:implementation:check",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "b3c93e651ae2f1144442b1f94b594e14d7439405fd03023d45000b01ebd5a848",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "npm run docs:correction:check",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "be7042b09b0d6e204df551127a6882a0f56cd8cc3e8576632978370fa0c39bee",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "npm run docs:plan:build",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "143994434a4455b24150f651a427d0908136d700e6e0dabc1fe1b0326feefef4",
-          "stderr_sha256": "7a67506316fb27d544aefee9ef8a3c56e8267c1b5d3a7396ec423ffb7fa1d854"
-        },
-        {
-          "command": "npm run docs:plan:check",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "067374727148139864eff211b42dd2ba66b4a0f046651d1b61031ee12a479f85",
-          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
-        },
-        {
-          "command": "npm run docs:plan:test",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "3f1662ee9a10f6c6f2a69d418db4652b1c1d6809115dfe20253c970c16284bb5",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "npm test --silent",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "3d711bcf0e60c40af6b9fe4c45aeb68eaccf20e3b03411a773f2f850eac47bc3",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        },
-        {
-          "command": "git diff --check",
-          "status": "PASS",
-          "exit_code": 0,
-          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
-          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
-        }
-      ],
-      "ordered_fail_fast": true
-    },
-    {
-      "type": "CORRECTION_VERIFICATION_V1",
-      "status": "PASS",
-      "observed_at": "2026-09-18T23:25:18.503Z",
-      "validated_candidate_head": "f5c25ebec4e52a0a7cc751b8184b190dd2d6f907",
-      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
-      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
-      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
-      "remote_mutations": false
+      "repaired_path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "repaired_rule": "@typescript-eslint/no-unused-vars",
+      "repaired_symbol": "instance",
+      "requires_full_revalidation": true
     }
   ],
   "opened_at": "2026-09-18T22:15:26.640Z",
-  "implemented_at": "2026-09-18T22:58:40.548Z",
-  "verified_at": "2026-09-18T23:25:18.503Z"
+  "implemented_at": "2026-09-18T22:58:40.548Z"
 }
