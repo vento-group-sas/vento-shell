@@ -6654,7 +6654,1144 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-008 — Proteger despacho`
-### [ ] NEXO-AUTH-008 — Proteger despacho
+### ✅ NEXO-AUTH-008 — Proteger despacho
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-007 — Proteger producción vinculada
+**Tarea siguiente:** NEXO-AUTH-009 — Proteger tránsito
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger el despacho mediante `nexo.inventory.remissions.dispatch`, autorizar la carga y salida exactas, transferir custodia de forma explícita y producir un handoff inmutable al tránsito sin mezclar preparación, despacho, movimiento de inventario, recorrido ni recepción
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-008::<implementation_unit_id>` después de que `DELIV-PKG-025::<package_id>` asigne la unidad, el paquete propietario supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger de extremo a extremo la autorización de despacho de remisiones para que una carga solo pueda salir cuando un actor humano autorizado opere sobre el shipment exacto, vigente, versionado, asignado y físicamente validado, satisfaga el contexto operacional aplicable y confirme mediante una frontera server-side atómica e idempotente la salida real, los efectos de inventario, la custodia y el handoff al tránsito.
+
+La decisión objetivo es:
+
+```text
+ACTOR EFECTIVO
++ TURNO VIGENTE
++ CHECK-IN ACTIVO CUANDO APLIQUE
++ ROL OPERATIVO COMPATIBLE
++ PERMISO nexo.inventory.remissions.dispatch
++ SEDE ORIGEN EXACTA
++ SHIPMENT ELEGIBLE
++ FULFILLMENTS Y CANTIDADES VIGENTES
++ CARGA FISICA VERIFICADA
++ SELLO VIGENTE
++ ASIGNACION LOGISTICA VIGENTE
++ VEHICULO COMPATIBLE
++ CUSTODIA ACEPTADA
++ VERSIONES Y FINGERPRINT ESPERADOS
++ DENEGACIONES AUSENTES
+→ DESPACHO AUTORIZABLE
+```
+
+La autenticación, una pantalla visible, la selección de una sede, un nombre de rol, un shipment existente o un estado visual no sustituyen esta decisión.
+
+#### 2. Frontera empresarial
+
+Despachar no equivale a preparar ni a ejecutar el tránsito completo.
+
+La frontera canónica es:
+
+```text
+PREPARADO != CARGADO
+CARGADO != VALIDADO
+VALIDADO != SELLADO
+SELLADO != CUSTODIA ACEPTADA
+CUSTODIA ACEPTADA != DESPACHO CONFIRMADO
+DESPACHO CONFIRMADO != PROGRESO DE TRANSITO
+DESPACHO CONFIRMADO != RECEPCION
+```
+
+El despacho consume cantidad lista y produce una salida física autoritativa con inventario y custodia reconciliados. El tránsito posterior conserva su propio contrato y ownership.
+
+#### 3. Capacidad protegida exacta
+
+La identidad canónica única es:
+
+```text
+nexo.inventory.remissions.dispatch
+```
+
+No se crea otra capacidad para:
+
+- abrir la vista de despacho;
+- seleccionar cargas;
+- crear o consultar un shipment;
+- cargar físicamente;
+- sellar;
+- aceptar custodia;
+- confirmar salida;
+- publicar el efecto de inventario;
+- entregar el handoff al tránsito.
+
+Todas esas operaciones consumen la misma capacidad empresarial cuando constituyen parte del despacho y agregan predicados de recurso, estado, territorio y etapa.
+
+#### 4. Modalidad `OPERATIONAL_ONLY`
+
+La capacidad conserva:
+
+```text
+authorization_requirement = OPERATIONAL_ONLY
+```
+
+Por tanto:
+
+```text
+CARRIL BASE
+→ NO AUTORIZA
+
+CARRIL OPERATIVO COMPLETO
+→ UNICO CAMINO AUTORIZANTE
+```
+
+Una concesión administrativa, un perfil privilegiado, una simulación o una vista multisede no sustituyen el carril operativo.
+
+#### 5. Normalización de códigos legacy
+
+Los códigos legacy:
+
+```text
+nexo.inventory.remissions.transit
+nexo.transit.view
+```
+
+no son capacidades alternativas de despacho.
+
+La normalización aprobada converge en:
+
+```text
+nexo.inventory.remissions.dispatch
+```
+
+El término `transit` describe un estado o una etapa posterior y no concede autoridad para confirmar la salida. La presencia de código legacy debe tratarse como deuda de migración, no como permiso equivalente que pueda coexistir indefinidamente con el código canónico.
+
+#### 6. Prerrequisito `T+C`
+
+El despacho exige:
+
+```text
+TURNO VIGENTE
++
+CHECK-IN ACTIVO CUANDO CORRESPONDA
+```
+
+Ambos deben corresponder al actor efectivo y al contexto desde el cual se ejecuta la acción. La ausencia, expiración, sustitución o cierre de cualquiera de los prerrequisitos aplicables produce denegación antes de confirmar efectos empresariales.
+
+#### 7. Sede y área
+
+El despacho es una capacidad logística de nivel sede y segmento de recorrido. No exige universalmente un área interna activa.
+
+Un `conductor_logistica` puede operar con área interna ausente cuando:
+
+- el turno y check-in son válidos;
+- la sede de origen está resuelta;
+- el shipment pertenece al origen autorizado;
+- la asignación logística pertenece al actor;
+- el vehículo y el recurso son compatibles;
+- la autoridad territorial se limita al origen y segmento asignado.
+
+La ausencia de área no amplía el acceso a inventario general ni a otros shipments.
+
+#### 8. Scope `REM-ROUTE`
+
+El perfil de alcance es:
+
+```text
+REM-ROUTE
+```
+
+Autoriza exclusivamente sobre:
+
+- la sede origen exacta;
+- la remisión o shipment relacionado;
+- los fulfillments asignados a esa carga;
+- el segmento logístico asignado;
+- el vehículo y custodio previstos cuando correspondan.
+
+El cruce entre sedes puede existir por la operación logística, pero la autoridad mutadora de despacho permanece en el origen y en el shipment exacto. No concede recepción en destino.
+
+#### 9. Contrato de recurso
+
+El recurso empresarial protegido conserva tipo:
+
+```text
+REMISSION
+```
+
+con selector equivalente a:
+
+```text
+remission_id + asignacion / confirmacion logistica
+```
+
+La materialización puede utilizar `shipment_id` y fulfillments relacionados para ejecutar el despacho físico, pero esa identidad técnica no crea autoridad por sí sola.
+
+El territorio contractual del recurso es:
+
+```text
+ORIGIN_ROUTE
+```
+
+Esto limita la mutación a la sede de origen y al segmento logístico asignado; no concede autoridad sobre recepción en destino ni sobre rutas ajenas.
+
+La relación autorizante es:
+
+```text
+RESPONSABILIDAD DE DESPACHO / TRANSPORTE
+```
+
+con estado despachable, transición atómica e idempotente y auditoría reforzada.
+
+#### 10. Universo de roles vigente
+
+El universo evaluado conserva diecinueve roles canónicos:
+
+```text
+ROLES BASE: 7
+ROLES OPERATIVOS: 12
+TOTAL: 19
+```
+
+Resultado para `nexo.inventory.remissions.dispatch`:
+
+```text
+ASIGNAR OPERATIVO: 1
+NO ASIGNAR: 18
+```
+
+La única concesión ordinaria vigente pertenece a:
+
+```text
+conductor_logistica
+```
+
+Esta tarea no modifica la matriz.
+
+#### 11. Decisión para `conductor_logistica`
+
+`conductor_logistica` recibe `nexo.inventory.remissions.dispatch` bajo:
+
+```text
+CTX-DRV-DISPATCH
+```
+
+El contrato comprende aceptación explícita de custodia y confirmación de salida únicamente sobre una remisión preparada, cargada, validada y asignada al conductor.
+
+La concesión no permite:
+
+- modificar cantidades solicitadas;
+- preparar;
+- alterar picks;
+- cambiar producto o unidad;
+- recibir en destino;
+- cancelar;
+- aprobar diferencias;
+- operar shipments ajenos;
+- sustituir conductor o vehículo por decisión unilateral.
+
+#### 12. Roles que permanecen sin despacho
+
+No reciben `dispatch` por sus matrices:
+
+- propietario;
+- gerente_general;
+- gerente;
+- supervisor;
+- auxiliar_administrativa;
+- contador;
+- marketing;
+- cajero_satelite;
+- barista_satelite;
+- cocinero_satelite;
+- servicio_salon;
+- mostrador_satelite;
+- operador_integral_satelite;
+- produccion_cocina;
+- produccion_panaderia;
+- produccion_reposteria;
+- bodeguero;
+- gerencia_operativa.
+
+Preparar, coordinar, administrar, producir o recibir no se convierten en autoridad de despacho.
+
+#### 13. Prohibición de bypass
+
+No autorizan despacho:
+
+```text
+employees.role
+role override administrativo
+propietario
+gerente_general
+gerente
+supervisor
+gerencia_operativa
+bodeguero
+nexo.access
+remissions.view
+all_sites
+nexo.inventory.remissions.transit
+nexo.transit.view
+seleccion de sede
+URL
+boton visible
+shipment_id recibido del cliente
+estado in_transit
+```
+
+Si una misma persona debe despachar físicamente, debe asumir legítimamente el rol operativo autorizado y satisfacer el contexto completo.
+
+#### 14. Unidad autorizable
+
+La mutación final se autoriza sobre un shipment exacto y versionado, vinculado a sus remisiones, líneas y fulfillments.
+
+El servidor debe resolver como mínimo la semántica de:
+
+```text
+shipment
+shipment_version
+origin_site
+destination_site
+fulfillment allocations
+ready quantities
+allocated quantities
+loaded quantities
+manifest fingerprint
+seal
+assigned custodian
+assigned vehicle
+expected versions
+```
+
+Los nombres físicos concretos podrán evolucionar durante la materialización. La semántica no.
+
+#### 15. Admisión desde preparación
+
+Despacho consume exclusivamente cantidad lista y trazable entregada por preparación.
+
+El handoff de entrada debe demostrar por fulfillment:
+
+- cantidad `ready`;
+- cantidad ya `allocated`;
+- saldo listo no asignado;
+- versiones;
+- origen y destino;
+- staging o ubicación aplicable;
+- UOM;
+- lote, paquete o evidencia cuando corresponda;
+- excepciones abiertas.
+
+Preparación no puede escribir cantidad enviada, crear una salida real, descontar inventario, asignar custodia ni afirmar tránsito.
+
+#### 16. Invariante de asignación
+
+La disponibilidad para asignar se conserva como:
+
+```text
+available_to_allocate = ready_base_qty - allocated_base_qty
+```
+
+Debe cumplirse:
+
+```text
+available_to_allocate > 0
+```
+
+para una nueva asignación activa.
+
+La suma de líneas activas de shipment por fulfillment debe reconciliarse con `allocated_base_qty` y nunca superar `ready_base_qty`.
+
+#### 17. División y consolidación
+
+Un fulfillment puede dividirse entre varios shipments cuando exista saldo listo y la trazabilidad se conserve.
+
+Un shipment puede consolidar varias solicitudes únicamente cuando:
+
+- el origen es único;
+- el destino es único;
+- cada línea conserva `request_item_id` y `fulfillment_id`;
+- no existe sobreasignación;
+- la mezcla no rompe lote, UOM, calidad, cadena de frío, empaque o restricciones de transporte.
+
+La consolidación nunca elimina las identidades de origen.
+
+#### 18. Asignación concurrente
+
+La asignación debe controlar concurrencia mediante versiones, bloqueos o un mecanismo equivalente que impida:
+
+- reservar el mismo saldo en dos shipments;
+- superar cantidad lista;
+- reusar una línea ya despachada;
+- mezclar destinos incompatibles;
+- liberar una asignación después del despacho sin compensación.
+
+Un cliente con estado obsoleto no puede forzar éxito.
+
+#### 19. Carga física
+
+La carga debe reconciliar cada línea del shipment con la evidencia física disponible:
+
+- unidad preparada;
+- pick o fuente autorizada;
+- producto;
+- UOM;
+- cantidad base;
+- conteo auxiliar cuando aplique;
+- lote;
+- liberación de calidad;
+- paquete productivo cuando exista;
+- LOC, posición o staging aplicables.
+
+Seleccionar una línea no equivale a cargarla.
+
+#### 20. Cantidad real de despacho
+
+Cuando la política exija medición real al despacho, la cantidad observada debe revalidarse contra:
+
+- cantidad lista;
+- cantidad asignada;
+- modalidad de medición;
+- tolerancia vigente;
+- UOM y conversión;
+- evidencia física.
+
+Una medición diferente no puede sobrescribir silenciosamente lo preparado. La diferencia debe corregirse antes del sello o abrir una excepción estructurada.
+
+#### 21. Carga validada
+
+Una carga solo puede pasar a validada cuando:
+
+- todas las líneas obligatorias fueron verificadas;
+- las cantidades reconciliaron;
+- no existen faltantes bloqueantes;
+- los lotes y paquetes corresponden;
+- las restricciones de transporte se cumplen;
+- el vehículo es compatible cuando ya está asignado;
+- cualquier excepción no bloqueante está identificada.
+
+La validación no produce salida de inventario.
+
+#### 22. Sello
+
+El sellado debe crear una identidad versionada que inmovilice:
+
+- manifiesto;
+- fingerprint de carga;
+- evidencia;
+- vehículo previsto;
+- custodio previsto;
+- versión de shipment.
+
+El sello no descuenta inventario ni inicia tránsito.
+
+#### 23. Reapertura anterior al despacho
+
+Una reapertura posterior al sello y anterior al despacho debe:
+
+- conservar el sello histórico;
+- invalidar el fingerprint anterior;
+- invalidar cualquier aceptación de custodia asociada a la versión reabierta;
+- exigir motivo y autoridad;
+- incrementar versión;
+- devolver la carga a una etapa verificable.
+
+No se edita un shipment sellado como si nunca hubiera sido sellado.
+
+#### 24. Custodia
+
+La transferencia de custodia requiere declaraciones separadas de:
+
+```text
+ENTREGA DESDE EL ORIGEN
++
+ACEPTACION O RECHAZO DEL CUSTODIO
+```
+
+Debe conservar shipment, versión, sello, vehículo, actor de origen, custodio, momento y evidencia.
+
+Una asignación administrativa de conductor no equivale a aceptación de custodia.
+
+#### 25. Vehículo y asignación logística
+
+Antes de confirmar despacho deben revalidarse, cuando correspondan:
+
+- conductor asignado;
+- vigencia de asignación;
+- vehículo asignado;
+- disponibilidad;
+- capacidad;
+- condición;
+- documentos y bloqueos;
+- compatibilidad con la carga;
+- conflictos con otro trabajo activo.
+
+La presencia de una placa, etiqueta o vehículo visible no concede permiso.
+
+#### 26. Punto autoritativo de salida
+
+La única frontera que puede afirmar salida física es:
+
+```text
+DISPATCH_CONFIRMED
+```
+
+Antes de ese hecho:
+
+```text
+NO incrementar cantidad enviada
+NO crear transfer_out
+NO consumir paquete productivo
+NO afirmar salida real
+NO afirmar progreso de transito
+```
+
+El despacho confirmado constituye el punto de compromiso del shipment y habilita el handoff al carril de tránsito.
+
+#### 27. Efecto de inventario
+
+El efecto de inventario pertenece al mismo comando autoritativo de despacho.
+
+La confirmación debe evitar que existan estados como:
+
+```text
+SHIPMENT DESPACHADO SIN SALIDA DE INVENTARIO
+SALIDA DE INVENTARIO SIN SHIPMENT DESPACHADO
+DOBLE transfer_out
+CANTIDAD ENVIADA SIN MOVIMIENTO CORRELACIONADO
+```
+
+No se permite un escritor separado que publique la salida de forma eventual sin una estrategia transaccional o compensatoria aprobada.
+
+#### 28. Cantidad enviada
+
+`shipped` representa cantidad efectivamente despachada, no cantidad preparada ni seleccionada.
+
+La regla es:
+
+```text
+READY
+→ disponible para asignacion
+
+ALLOCATED
+→ comprometido a shipment, todavia no enviado
+
+DISPATCH_CONFIRMED
+→ cantidad efectivamente enviada
+```
+
+Copiar `prepared_quantity` a `shipped_quantity` durante preparación está prohibido.
+
+#### 29. Paquetes productivos
+
+Cuando una línea se apoya en un paquete productivo, su consumo logístico solo puede confirmarse en el mismo punto autoritativo de despacho y con correlación exacta.
+
+Un paquete:
+
+- preparado;
+- liberado;
+- asignado;
+- cargado;
+- sellado;
+
+no se considera enviado antes de `DISPATCH_CONFIRMED`.
+
+#### 30. Transacción de despacho
+
+El comando final debe revalidar y comprometer conjuntamente, según aplique:
+
+- actor y permiso;
+- shipment y versión;
+- sello;
+- custodia;
+- fulfillments;
+- asignaciones;
+- picks o unidades preparadas;
+- paquetes;
+- stock;
+- cantidades enviadas;
+- movimientos;
+- receipt;
+- outbox.
+
+Cualquier fallo bloqueante revierte el conjunto completo.
+
+#### 31. Validaciones de despacho
+
+El contrato reutiliza las treinta y cuatro validaciones `DSP-VAL-001` a `DSP-VAL-034` definidas por el flujo de despacho aprobado.
+
+La implementación no puede sustituir ese conjunto por una única comprobación de estado o sesión.
+
+Cada validación conserva el momento definido por el contrato de experiencia y debe ejecutarse nuevamente donde el cambio de estado, versión o actor pueda volver obsoleta una decisión anterior.
+
+#### 32. Intención e idempotencia
+
+La confirmación final utiliza una identidad estable equivalente a:
+
+```text
+dispatch_intent_id
+```
+
+junto con versiones esperadas y fingerprint de carga.
+
+Reglas:
+
+```text
+MISMA INTENCION + MISMO PAYLOAD
+→ MISMO RECEIPT
+
+MISMA INTENCION + PAYLOAD DISTINTO
+→ CONFLICTO
+
+TIMEOUT / DESCONEXION
+→ RECONCILIAR POR INTENCION ANTES DE REINTENTAR
+```
+
+Un reintento nunca crea un segundo despacho.
+
+#### 33. Receipt
+
+El receipt de despacho debe ser persistente e inmutable y permitir demostrar:
+
+- qué se despachó;
+- desde dónde;
+- hacia dónde;
+- qué shipment y versión;
+- qué actor confirmó;
+- qué custodio aceptó;
+- qué sello y vehículo aplicaron;
+- qué cantidades fueron enviadas;
+- qué movimientos fueron publicados;
+- qué fulfillments resultaron afectados;
+- qué paquetes o lotes quedaron correlacionados;
+- qué excepciones no bloqueantes permanecieron abiertas.
+
+La interfaz no es la fuente del receipt.
+
+#### 34. Resultado desconocido
+
+Un timeout, pérdida de conectividad o respuesta incompleta después de enviar la intención se clasifica como resultado desconocido, no como fallo seguro ni como éxito inferido.
+
+Antes de habilitar otra confirmación debe consultarse el estado de la intención y recuperar el receipt si la transacción ya fue aplicada.
+
+#### 35. Excepciones estructuradas
+
+Deben modelarse de forma estructurada, como mínimo, las familias ya aprobadas para:
+
+- faltante de carga;
+- sobrante;
+- unidad no encontrada;
+- daño;
+- quality hold;
+- vehículo incompatible;
+- ruptura de sello;
+- rechazo de custodia;
+- cambio de stock;
+- resultado desconocido.
+
+Cada excepción conserva etapa, cantidad afectada cuando aplique, evidencia, responsable, plazo, estado y resolución.
+
+#### 36. Diferencias antes del sello
+
+Antes del sello puede liberarse o corregirse una asignación mediante una transición versionada y auditable, siempre que no oculte el hecho observado.
+
+No se permite reducir silenciosamente la carga hasta obtener un estado aparentemente válido.
+
+#### 37. Diferencias después del sello
+
+Después del sello y antes del despacho, una diferencia que altere contenido, cantidad, vehículo o custodia exige reapertura formal.
+
+Modificar el manifiesto sin invalidar sello, fingerprint y aceptación de custodia está prohibido.
+
+#### 38. Correcciones posteriores al despacho
+
+Después de `DISPATCH_CONFIRMED`:
+
+- el receipt no se edita;
+- la cantidad original no se sobrescribe;
+- el movimiento original no se elimina para cuadrar saldos;
+- cualquier corrección usa excepción, decisión autorizada y efecto compensatorio cuando corresponda.
+
+El hecho despachado permanece auditable.
+
+#### 39. Handoff a tránsito
+
+El despacho produce un handoff versionado e inmutable que contiene como mínimo:
+
+- shipment;
+- receipt de despacho;
+- sello;
+- custodia;
+- vehículo;
+- cantidades efectivamente despachadas;
+- movimientos de inventario;
+- efectos sobre fulfillments;
+- referencias de paquetes y lotes;
+- excepciones no bloqueantes;
+- versión del handoff.
+
+El carril de tránsito consume ese resultado y no lo reconstruye.
+
+#### 40. Límite con `NEXO-AUTH-009`
+
+`NEXO-AUTH-008` termina cuando el despacho queda confirmado y existe un handoff válido para tránsito.
+
+No autoriza:
+
+- iniciar o repetir un journey;
+- registrar progreso de recorrido;
+- cambiar la siguiente parada;
+- afirmar llegada;
+- registrar geolocalización como autoridad;
+- completar una parada;
+- resolver una entrega fallida;
+- afirmar recepción.
+
+Esas decisiones pertenecen al contrato de tránsito y tareas posteriores.
+
+#### 41. Límite con preparación
+
+`NEXO-AUTH-006` conserva ownership sobre:
+
+- picks;
+- cantidad lista;
+- faltantes de preparación;
+- evidencia de preparación;
+- staging;
+- liberación del handoff listo.
+
+`NEXO-AUTH-008` no reabre ni reescribe la preparación para fabricar una carga despachable.
+
+#### 42. Límite con producción vinculada
+
+`NEXO-AUTH-007` conserva la frontera NEXO–FOGO y solo entrega cantidad productiva liberada y autorizadamente asignable al carril logístico.
+
+`NEXO-AUTH-008` no puede:
+
+- liberar calidad;
+- cerrar una orden productiva;
+- corregir rendimiento;
+- consumir producción no liberada;
+- reinterpretar `ready_location_id`.
+
+#### 43. Límite con recepción
+
+Despacho no confirma recepción en nombre del destino.
+
+El conductor o despachador no puede convertir:
+
+- salida;
+- llegada;
+- firma propia;
+- fotografía;
+- escaneo;
+- geolocalización;
+
+encima de una recepción válida.
+
+La recepción conserva actor, autoridad, evidencia y efecto de inventario propios.
+
+#### 44. Segregación de funciones
+
+La matriz ordinaria separa:
+
+```text
+BODEGUERO
+→ PREPARA
+
+CONDUCTOR_LOGISTICA
+→ DESPACHA / ACEPTA CUSTODIA
+
+RECEPTOR AUTORIZADO
+→ RECIBE
+```
+
+La misma persona no adquiere automáticamente las tres capacidades por estar físicamente presente en la operación.
+
+Una excepción futura debe ser explícita, acotada, trazable y autorizada; no se deriva de conveniencia operativa.
+
+#### 45. Dispositivo compartido
+
+Un dispositivo compartido puede servir como superficie operativa, pero no es actor ni custodio.
+
+Antes de una mutación debe existir una sesión humana atribuible y resolverse:
+
+- actor efectivo;
+- turno;
+- contexto;
+- permiso;
+- recurso;
+- versión.
+
+Un PIN, terminal, tablet, vehículo o sesión técnica no sustituye la identidad empresarial.
+
+#### 46. Simulación
+
+La simulación de rol puede previsualizar decisión o interfaz sin producir efectos.
+
+En simulación:
+
+```text
+NO crear shipment real
+NO asignar saldo real
+NO sellar
+NO aceptar custodia
+NO publicar transfer_out
+NO confirmar despacho
+NO producir receipt real
+```
+
+La simulación no mezcla permisos reales del usuario con el rol simulado para obtener una autorización mayor.
+
+#### 47. UI no autoritativa
+
+No autorizan por sí solos:
+
+- botón habilitado;
+- banner “listo para salir”;
+- contador de cargas;
+- enlace de conductor;
+- shipment visible;
+- estado local;
+- dato oculto del formulario;
+- sede de query string;
+- fingerprint calculado solo en cliente.
+
+Cada mutación revalida en servidor.
+
+#### 48. Coherencia entre capas
+
+La misma decisión de despacho debe ser coherente en:
+
+- interfaz;
+- Server Action o endpoint;
+- servicio de dominio;
+- RPC;
+- grants;
+- RLS;
+- transacción de base de datos.
+
+Una capa más permisiva que otra constituye una brecha de autorización, aunque la interfaz habitual no la exponga.
+
+#### 49. Denegación y concurrencia
+
+La frontera debe distinguir al menos semánticamente:
+
+- falta de permiso;
+- contexto operativo inválido;
+- recurso ajeno;
+- asignación ausente o vencida;
+- estado no despachable;
+- versión obsoleta;
+- fingerprint divergente;
+- sello inválido;
+- custodia no aceptada;
+- vehículo incompatible;
+- conflicto de concurrencia;
+- intención ya usada con payload distinto;
+- resultado desconocido pendiente de reconciliación.
+
+Ninguna de estas condiciones se convierte silenciosamente en éxito parcial.
+
+#### 50. Auditoría
+
+Cada transición material de despacho debe conservar actor, recurso, versión, sede, shipment, etapa, momento, decisión, resultado y correlación.
+
+Cuando existan asignación, vehículo, sello, custodia, intent, receipt, movimiento o excepción, sus identidades deben quedar correlacionadas con el mismo hecho empresarial.
+
+Una nota libre no sustituye campos estructurados de auditoría.
+
+#### 51. AS-IS remoto: permiso legacy
+
+El código inspeccionado de `vento-nexo` todavía utiliza:
+
+```text
+inventory.remissions.transit
+```
+
+como permiso operativo para superficies de fulfillment, detalle y conductor.
+
+También existe una excepción de role override que concede el código legacy al rol `conductor` por nombre.
+
+Esto contradice la capacidad canónica exacta de despacho y debe converger durante la futura materialización.
+
+#### 52. AS-IS remoto: cola de conductor amplia
+
+La superficie de conductor inspeccionada consulta shipments en estados:
+
+```text
+draft
+loading
+sealed
+in_transit
+```
+
+sin demostrar en esa frontera una asignación exacta del shipment al actor, un vehículo asignado, custodia aceptada o el permiso canónico `dispatch`.
+
+La futura materialización debe filtrar y autorizar por relación empresarial, no por autenticación y estado globales.
+
+#### 53. AS-IS remoto: salida directa a `in_transit`
+
+La acción inspeccionada de salida:
+
+- exige usuario autenticado;
+- lee `shipment_id`;
+- acepta `draft`, `loading` o `sealed`;
+- actualiza directamente el shipment a `in_transit`;
+- registra `departed_at` y `updated_by`.
+
+No demuestra en la misma frontera el contrato completo de permiso canónico, asignación, vehículo, sello válido, custodia bilateral, intención, receipt ni efectos atómicos de inventario.
+
+Ese comportamiento no satisface el estado objetivo.
+
+#### 54. AS-IS remoto: creación de shipment
+
+La acción inspeccionada para crear cargas desde fulfillments conserva validaciones útiles de origen, destino, estado y saldo listo.
+
+Sin embargo:
+
+- usa el permiso legacy de tránsito para autorizar la creación;
+- puede resolver permisos mediante el carril de role override en una vista multisede;
+- invoca la creación con `dispatch_run_id` ausente;
+- no materializa por sí sola el contrato completo de asignación de conductor, vehículo, sello y custodia.
+
+La creación de una carga no equivale a despacho confirmado.
+
+#### 55. AS-IS remoto: modelos coexistentes
+
+El repositorio conserva simultáneamente:
+
+- cantidades legacy `prepared_quantity` y `shipped_quantity`;
+- fulfillments con cantidades `ready` y `allocated`;
+- shipments físicos;
+- flujo legacy que puede pasar remisiones de `preparing` a `in_transit`;
+- flujo nuevo de shipment que también cambia directamente a `in_transit`.
+
+La futura materialización debe converger en una sola verdad de despacho y evitar escritores dobles.
+
+#### 56. Estrategia de materialización futura
+
+Cada unidad física deberá volver a inventariar su commit base antes de modificar.
+
+La estrategia objetivo es:
+
+```text
+USE CANONICAL DISPATCH PERMISSION
++ REMOVE LEGACY TRANSIT AUTHORIZATION FOR DISPATCH
++ AUTHORIZE EXACT SHIPMENT AND ASSIGNMENT
++ REVALIDATE OPERATIONAL CONTEXT
++ ALLOCATE ONLY READY BALANCE
++ VERIFY PHYSICAL LOAD
++ VERSION AND FREEZE MANIFEST
++ REQUIRE EXPLICIT CUSTODY ACCEPTANCE
++ CONFIRM DISPATCH ONCE
++ POST INVENTORY EFFECTS ATOMICALLY
++ PERSIST INTENT AND RECEIPT
++ EMIT IMMUTABLE TRANSIT HANDOFF
++ CONVERGE LEGACY AND SHIPMENT WRITERS
+```
+
+Este marcador no presupone nombres físicos nuevos de RPC, tabla, constraint o endpoint.
+
+#### 57. Contrato de unidad física
+
+La tarea global no modifica producto.
+
+Cada futura instancia:
+
+```text
+NEXO-AUTH-008::<implementation_unit_id>
+```
+
+solo puede existir cuando:
+
+1. `DELIV-PKG-025::<package_id>` haya asignado la unidad física;
+2. el paquete propietario haya superado `E5-GATE-008::<package_id>`;
+3. la instancia corresponda realmente a `NEXO-AUTH-008`;
+4. sus dependencias técnicas estén disponibles;
+5. exista autorización física explícita;
+6. el alcance no invada preparación, producción, tránsito o recepción.
+
+#### 58. Gate temporal
+
+La tarea pertenece a:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto, el contrato documental no habilita cambios físicos antes de E5 ni crea una instancia global única.
+
+#### 59. Supabase y ownership técnico
+
+Cualquier migración, RLS, grant, función, RPC, trigger, tipo generado, configuración o cambio de Supabase que la futura materialización requiera pertenece a `vento-group-sas/vento-shell`.
+
+La aplicación NEXO consume el contrato materializado; no crea migraciones VENTO fuera de `vento-shell`.
+
+La implementación futura deberá contemplar compatibilidad, rollback y consumidores antes de retirar caminos legacy.
+
+#### 60. Rollback de materialización futura
+
+Cada unidad física deberá definir un rollback proporcional que preserve hechos ya confirmados.
+
+Nunca se revierte un despacho real borrando:
+
+- receipt;
+- movimiento original;
+- historial de sello;
+- transferencia de custodia;
+- evidencia.
+
+Los cambios de código, schema o routing podrán revertirse mediante mecanismos técnicos compatibles; los hechos empresariales usan compensación y trazabilidad.
+
+#### 61. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea especializa autorización, denegación y materialización sobre cobertura ya vigente de despacho sin crear una obligación verificable nueva.
+
+#### 62. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-015`;
+- `TREQ-NEXO-006`;
+- `TREQ-NEXO-009`;
+- `TREQ-NEXO-010`;
+- `TREQ-NEXO-011`;
+- `TREQ-NEXO-012`;
+- `TREQ-NEXO-015`;
+- `TREQ-NEXO-016`;
+- `TREQ-NEXO-101`;
+- `TREQ-NEXO-107`;
+- `TREQ-NEXO-109`;
+- `TREQ-NEXO-110`;
+- `TREQ-NEXO-111`;
+- `TREQ-NEXO-112`;
+- `TREQ-NEXO-113`;
+- `TREQ-NEXO-114`;
+- `TREQ-NEXO-115`;
+- `TREQ-NEXO-116`;
+- `TREQ-NEXO-117`;
+- `TREQ-NEXO-118`;
+- `TREQ-NEXO-119`;
+- `TREQ-NEXO-120`.
+
+Estas referencias documentan cobertura heredada y no modifican filas del registro.
+
+#### 63. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificaron `main` vigente de `vento-shell`, cierre de `NEXO-AUTH-007`, continuidad hacia `NEXO-AUTH-008`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, catálogo y normalización del permiso `dispatch`, matrices de 19 roles, contratos de alcance/recurso/contexto, cobertura 04A existente y AS-IS vigente de `vento-nexo` para shipment, fulfillment, conductor y permisos legacy |
+| OPERATIVA | NOT_APPLICABLE | no se carga, sella, entrega custodia, despacha ni mueve inventario de una remisión real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-008::<implementation_unit_id>` |
+
+#### 64. Criterios de aceptación
+
+- [x] la capacidad protegida exacta es `nexo.inventory.remissions.dispatch`;
+- [x] `nexo.inventory.remissions.transit` y `nexo.transit.view` permanecen clasificados como códigos legacy y no como autoridad paralela;
+- [x] conserva modalidad `OPERATIONAL_ONLY`;
+- [x] el carril base no autoriza;
+- [x] exige turno vigente y check-in cuando corresponda;
+- [x] usa scope `REM-ROUTE`;
+- [x] el despacho puede operar a nivel sede y segmento sin exigir universalmente un área interna;
+- [x] solo `conductor_logistica` recibe concesión entre los 19 roles vigentes;
+- [x] bodeguero, gerencia operativa, producción, solicitantes y roles base permanecen sin `dispatch`;
+- [x] role override, `all_sites`, URL, botón, autenticación o shipment visible no sustituyen el permiso exacto;
+- [x] la unidad mutadora final es un shipment exacto, versionado y relacionado con fulfillments trazables;
+- [x] el despacho consume únicamente saldo ready disponible;
+- [x] la suma de asignaciones activas nunca supera `ready_base_qty`;
+- [x] un fulfillment puede dividirse y un shipment consolidar solicitudes sin perder origen, destino ni identidad;
+- [x] la carga física se reconcilia con producto, UOM, cantidad, lote, calidad y staging aplicables;
+- [x] las diferencias no se resuelven mediante ajuste silencioso;
+- [x] el sello inmoviliza manifiesto, fingerprint, evidencia, vehículo y custodio previsto;
+- [x] una reapertura conserva historia e invalida sello, fingerprint y aceptación obsoletos;
+- [x] la asignación de conductor no equivale a aceptación de custodia;
+- [x] vehículo y asignación logística se revalidan antes del despacho;
+- [x] `DISPATCH_CONFIRMED` es el único punto autoritativo de salida;
+- [x] cantidad enviada no se copia desde cantidad preparada;
+- [x] `transfer_out`, cantidad enviada, paquete productivo, shipment, receipt y outbox se comprometen de forma coherente;
+- [x] la confirmación ejecuta el conjunto `DSP-VAL-001` a `DSP-VAL-034`;
+- [x] existe intención idempotente y receipt persistente;
+- [x] timeout o desconexión se reconcilian antes de reintentar;
+- [x] excepciones de carga, sello, custodia, vehículo, stock y resultado desconocido son estructuradas;
+- [x] después del despacho el hecho original no se sobrescribe;
+- [x] el handoff a tránsito es versionado e inmutable;
+- [x] tránsito no vuelve a descontar inventario ni reconstruye el receipt;
+- [x] despacho no afirma progreso, llegada ni recepción;
+- [x] la frontera con preparación conserva ownership en `NEXO-AUTH-006`;
+- [x] la frontera productiva conserva ownership en `NEXO-AUTH-007` y FOGO;
+- [x] el tránsito posterior permanece reservado a `NEXO-AUTH-009`;
+- [x] la recepción conserva ownership posterior y no puede ser auto-confirmada por el conductor;
+- [x] la futura implementación debe retirar la autorización legacy de tránsito para despacho y converger escritores dobles;
+- [x] cualquier cambio Supabase futuro pertenece a `vento-shell`;
+- [x] la topología permanece `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 65. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia matrices de rol;
+- cambia modalidad de permisos;
+- cambia scope;
+- cambia prerrequisitos;
+- prepara una remisión real;
+- crea un shipment real;
+- asigna un conductor real;
+- asigna un vehículo real;
+- carga físicamente;
+- sella una carga real;
+- transfiere custodia real;
+- publica `transfer_out`;
+- modifica inventario real;
+- confirma un despacho real;
+- inicia o ejecuta tránsito real;
+- registra geolocalización;
+- confirma llegada;
+- recibe;
+- resuelve diferencias reales;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el registro de requisitos.
+
+#### 66. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-007 — Proteger producción vinculada`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-008 — Proteger despacho`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-009 — Proteger tránsito`
 ### [ ] NEXO-AUTH-009 — Proteger tránsito
 ### [ ] NEXO-AUTH-010 — Proteger recepción
 ### [ ] NEXO-AUTH-011 — Proteger ajustes de inventario
