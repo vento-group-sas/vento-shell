@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-045",
   "task_id": "SHELL-CI-020",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "target_repositories": [
     "vento-group-sas/vento-fogo",
     "vento-group-sas/vento-nexo",
@@ -369,7 +369,26 @@
           ]
         }
       ]
-    }
+    },
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node --test tests/packages/GAP-PKG-045/unit.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node --test tests/packages/GAP-PKG-045/contract.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node --test tests/packages/GAP-PKG-045/integration.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node --test tests/packages/GAP-PKG-045/security.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node --test tests/packages/GAP-PKG-045/e2e.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=node --test tests/packages/GAP-PKG-045/regression.test.ts status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-nexo test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-nexo run typecheck --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-fogo test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-fogo run typecheck --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-origo test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-origo run typecheck --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-pulso test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-pulso run typecheck --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-viso test --silent status=PASS",
+    "LOCAL_VALIDATION candidate=b538b37210003b56c966b132e80ad1b8d06b0e33 command=npm --prefix ../vento-viso run typecheck --silent status=PASS"
   ],
   "target_environments": [
     {
