@@ -199,6 +199,15 @@
     "approval_statement": "APROBADO DELIV-PKG-015::CORR-017 ESTANDARIZAR LIFECYCLE DE IMPLEMENTACION",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-18T03:11:01.687Z",
+      "candidate_head_before": "319cf68d4e7c2998755280cb4ad618720e565a13",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-18T00:55:01.041Z"
 }
