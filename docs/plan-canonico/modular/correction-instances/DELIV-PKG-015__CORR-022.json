@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,56 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Centralize the fail-closed VERIFIED correction integration record predicate so all implementation integration consumers use one canonical proof.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Consume and re-export the shared VERIFIED correction integration predicate without changing implementation finish semantics.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-state-integrity.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Supply proven VERIFIED correction record paths to verified-resume integration impact classification so verified physical candidates remain anchored after governance-only main integration.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-state-integrity.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add regression coverage proving a VERIFIED implementation remains effectively VERIFIED when its branch integrates a proven VERIFIED correction record and correction lifecycle tooling.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Lifecycle governance correction only; it restores verified candidate identity across proven correction integration and changes no product semantics, TREQ requirement, Supabase behavior, migration, consumer code or Registro 04A content.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-19T23:41:34.242Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "Analiza bien y dame la mejor solución y si es esa queda aprobado",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-19T23:31:18.739Z"
 }
