@@ -210,3 +210,13 @@ test('replaceCorrectionEvidence es idempotente por identidad', async () => {
         { type: 'X', status: 'PASS' },
     ]);
 });
+
+test('lifecycle de correccion gobierna publicacion multi-repo antes de VERIFIED', () => {
+    const source = fs.readFileSync('scripts/docs/correction-branch-lifecycle.mjs', 'utf8');
+    assert.match(source, /buildCorrectionRepositoryPlan/u);
+    assert.match(source, /ensureExternalCorrectionBranches/u);
+    assert.match(source, /checkpointExternalCorrectionBundle/u);
+    assert.match(source, /publishExternalCorrectionBundle/u);
+    assert.match(source, /validatePublishedCorrectionBundleEvidence/u);
+    assert.match(source, /correctionRepositoryPublishEvidence/u);
+});

@@ -18,6 +18,16 @@ export const CORRECTION_POLICY_RELATIVE_PATH = 'scripts/docs/correction-control.
 export const CORRECTION_RECORDS_DIRECTORY = 'docs/plan-canonico/modular/correction-instances';
 export const CORRECTION_STARTER_PROJECTION = '.delivery/INICIADOR_VENTO_CORRECCION.txt';
 export const SHELL_REPOSITORY = 'vento-group-sas/vento-shell';
+export const CORRECTION_REPOSITORIES = new Set([
+    'vento-group-sas/vento-shell',
+    'vento-group-sas/vento-nexo',
+    'vento-group-sas/vento-fogo',
+    'vento-group-sas/vento-origo',
+    'vento-group-sas/vento-pulso',
+    'vento-group-sas/vento-viso',
+    'vento-group-sas/vento-numera',
+    'vento-group-sas/vento-anima',
+]);
 
 const DEFAULT_BRANCH = 'main';
 const CORRECTION_PREFIX = 'correction/';
@@ -260,13 +270,14 @@ function validateAuthorization(record) {
     }
 }
 
-function validateAuthorizedChanges(record) {
+export function validateAuthorizedChanges(record) {
     if (!Array.isArray(record.authorized_changes)) fail(`${record.correction_id}: authorized_changes debe ser array.`);
     const seen = new Set();
     for (const [index, entry] of record.authorized_changes.entries()) {
         if (!entry || typeof entry !== 'object' || Array.isArray(entry)) fail(`${record.correction_id}: authorized_changes[${index}] inválido.`);
-        if (String(entry.repo ?? '').trim() !== SHELL_REPOSITORY) {
-            fail(`${record.correction_id}: V1 solo admite authorized_changes en ${SHELL_REPOSITORY}.`);
+        const repository = String(entry.repo ?? '').trim();
+        if (!CORRECTION_REPOSITORIES.has(repository)) {
+            fail(`${record.correction_id}: repositorio fuera del conjunto gobernado de correcciones: ${repository || 'VACIO'}.`);
         }
         const relativePath = normalizePath(entry.path);
         if (!relativePath) fail(`${record.correction_id}: authorized_changes[${index}].path vacío.`);
@@ -379,14 +390,33 @@ function validateRecord(record, relativePath, { policy, workTopology, implementa
         }
     }
 
-    assertArrayOfUniqueStrings(record.target_repositories, `${correctionId}.target_repositories`);
-    if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && record.target_repositories.length === 0) {
+    const targetRepositories = assertArrayOfUniqueStrings(
+        record.target_repositories,
+        `${correctionId}.target_repositories`,
+    );
+    if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && targetRepositories.length === 0) {
         fail(`${correctionId}: ${record.status} exige target_repositories no vacío.`);
     }
-    if (record.target_repositories.some((repo) => repo !== SHELL_REPOSITORY)) {
-        fail(`${correctionId}: V1 solo admite target_repositories=${SHELL_REPOSITORY}.`);
+    const unknownRepositories = targetRepositories.filter((repo) => !CORRECTION_REPOSITORIES.has(repo));
+    if (unknownRepositories.length > 0) {
+        fail(`${correctionId}: target_repositories fuera del conjunto gobernado: ${unknownRepositories.join(',')}.`);
     }
     validateAuthorizedChanges(record);
+    if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status)) {
+        const authorizedRepositories = [...new Set(
+            record.authorized_changes.map((entry) => String(entry.repo ?? '').trim()).filter(Boolean),
+        )].sort((left, right) => left.localeCompare(right, 'en'));
+        const expectedRepositories = [...targetRepositories].sort((left, right) => left.localeCompare(right, 'en'));
+        const missingRepositories = expectedRepositories.filter((repo) => !authorizedRepositories.includes(repo));
+        const extraRepositories = authorizedRepositories.filter((repo) => !expectedRepositories.includes(repo));
+        if (missingRepositories.length > 0 || extraRepositories.length > 0) {
+            fail(
+                `${correctionId}: target_repositories/authorized_changes inconsistente; `
+                + `missing=${missingRepositories.join(',') || 'NONE'}; `
+                + `extra=${extraRepositories.join(',') || 'NONE'}.`,
+            );
+        }
+    }
     assertArrayOfUniqueStrings(record.validation_commands, `${correctionId}.validation_commands`);
     if (!correctionStatusAllowsEmptyExecutionDeclarations(record.status) && record.validation_commands.length === 0) {
         fail(`${correctionId}: ${record.status} exige validation_commands no vacío.`);
