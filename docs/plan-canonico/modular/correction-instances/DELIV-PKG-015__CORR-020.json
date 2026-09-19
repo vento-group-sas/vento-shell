@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -209,8 +209,90 @@
         }
       ],
       "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_REPOSITORY_BUNDLE_PUBLISH_V1",
+      "model_id": "VENTO-CORRECTION-REPOSITORY-BUNDLE-V1",
+      "correction_id": "DELIV-PKG-015::CORR-020",
+      "published_at": "2026-09-19T19:02:23.823Z",
+      "repositories": [
+        {
+          "repository": "vento-group-sas/vento-anima",
+          "candidate_commit": "ff66ff54ebb140ef7e9db09e115d665faca961c6",
+          "pr": 2,
+          "merge_commit": "9843d202bf890ee00bdce24fd99d327a4e8a7365",
+          "merged_at": "2026-09-19T18:54:41Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-fogo",
+          "candidate_commit": "786522f0d1679bb7344c13e73dab7b85c6d9ab2f",
+          "pr": 2,
+          "merge_commit": "2edbc976812dfc3824d7c8c8ed5913b132cbe5e1",
+          "merged_at": "2026-09-19T18:55:55Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-nexo",
+          "candidate_commit": "53627921d56e1225f84958508a032f9a9479b26e",
+          "pr": 10,
+          "merge_commit": "f2777bf03ecea51854dbf2de462b789bd6222082",
+          "merged_at": "2026-09-19T18:57:41Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-numera",
+          "candidate_commit": "d38d9bbb9da0e2e0095a0425e3dfa2fa89260783",
+          "pr": 2,
+          "merge_commit": "c4d50282e30e46d0abb3d871f9604cf913ebbabd",
+          "merged_at": "2026-09-19T18:58:53Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-origo",
+          "candidate_commit": "7f3d5c477aa845e178c6b00a6034ce160e1a8e84",
+          "pr": 2,
+          "merge_commit": "4700ba1456a016079847bf3e64a4852413994f02",
+          "merged_at": "2026-09-19T18:59:58Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-pulso",
+          "candidate_commit": "2cbfa05fb236997e6534c6225bc83625e36386e0",
+          "pr": 4,
+          "merge_commit": "ebaf2aba86c2f5e7c32138a93313139c14e03b48",
+          "merged_at": "2026-09-19T19:01:09Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-viso",
+          "candidate_commit": "274cb6e9bdba4b66d11c17261e01fa50b6e5c33e",
+          "pr": 16,
+          "merge_commit": "dd7a471036b9aa540d282438f06be5350b4b08fd",
+          "merged_at": "2026-09-19T19:02:23Z",
+          "status": "MERGED",
+          "checks": 4
+        }
+      ]
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-19T19:02:29.033Z",
+      "validated_candidate_head": "34d738590cec4f067aa6cc9ec0cd0b7d7781c55d",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
     }
   ],
   "opened_at": "2026-09-19T16:42:32.200Z",
-  "implemented_at": "2026-09-19T17:37:35.058Z"
+  "implemented_at": "2026-09-19T17:37:35.058Z",
+  "verified_at": "2026-09-19T19:02:29.033Z"
 }

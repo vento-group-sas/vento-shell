@@ -8,39 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-020`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-047`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `DELIV-PKG-015::CORR-020`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO
-- **Edita solamente:**
-  - `EXECUTE_ONLY` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `CREATE` `.github/workflows/vento-required-gate.yml`
-  - `MODIFY` `.github/workflows/apply-guided-product-form.yml`
-- **Valida, en este orden:**
-  1. `node --test scripts/quality/required-gate.test.mjs`
-  2. `node scripts/quality/required-gate.mjs audit-workspaces --json`
-  3. `node --test scripts/quality/test-evidence-publisher.test.mjs`
-  4. `node scripts/quality/test-evidence-publisher.mjs self-certify --json`
-  5. `node --test scripts/docs/correction-repository-bundle.test.mjs`
-  6. `npm run docs:correction:check`
-  7. `npm run docs:correction:test`
-  8. `npm run docs:plan:check`
-  9. `npm run docs:plan:test`
-  10. `git diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-020`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
 
