@@ -13,6 +13,7 @@ import {
   classifyExecutionState,
   evaluateCandidatePreverifyReceipt,
   resolveExecutorInstanceId,
+  resolveImplementationRuntimeDecision,
   runValidationCommandsWithPolicy,
   runValidationCommandsWithShadow,
   validateExecutionEvidenceReceipt,
@@ -1110,4 +1111,24 @@ test('CORR-019 mantiene candidate fisico estable entre materializacion, EVIDENCE
   assert.match(bundleSource, /reconcileRepositoryBundleCandidateEvidence/u);
   assert.match(bundleSource, /IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_RECONCILIATION_UNSAFE/u);
   assert.match(bundleSource, /merge-base','--is-ancestor'/u);
+});
+
+test('runtime current-main pin es determinista', () => {
+  const main = 'a'.repeat(40);
+  const branch = 'b'.repeat(40);
+  assert.equal(resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: main }).action, 'CURRENT');
+  assert.equal(resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: branch }).action, 'REEXEC_MAIN');
+  assert.equal(resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: main, pinnedSha: main }).action, 'CURRENT_PINNED');
+  assert.throws(
+    () => resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: branch, pinnedSha: main }),
+    /IMPLEMENTATION_RUNTIME_PIN_MISMATCH/u,
+  );
+});
+
+test('accelerator stale branch reejecuta runtime exacto de main', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-execution-coordinator.mjs', 'utf8');
+  assert.match(source, /VENTO_IMPLEMENTATION_RUNTIME_SHA/u);
+  assert.match(source, /'worktree', 'add', '--detach'/u);
+  assert.match(source, /runtime.reexec/u);
+  assert.match(source, /stdio: 'inherit'/u);
 });

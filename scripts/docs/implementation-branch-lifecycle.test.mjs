@@ -14,6 +14,7 @@ import {
   classifyImplementationPath,
   defaultBranchOccupiedByAnotherWorktree,
   implementationBranchName,
+  isVerifiedCorrectionIntegrationRecord,
   isPristinePendingInstanceRecord,
   normalizeInstanceId,
   physicalLaneBlockers,
@@ -658,4 +659,21 @@ test('finish usa integration loop estable y vuelve a consultar main despues de c
   assert.match(source, /INTEGRATION_REQUIRES_PHYSICAL_REVALIDATION/u);
   assert.match(source, /'merge-tree', '--write-tree'/u);
   assert.doesNotMatch(finishSource, /--admin/u);
+});
+
+test('correction VERIFIED requiere identidad y evidencia PASS', () => {
+  const relativePath = 'docs/plan-canonico/modular/correction-instances/DELIV-PKG-015__CORR-020.json';
+  const record = {
+    correction_id: 'DELIV-PKG-015::CORR-020',
+    status: 'VERIFIED',
+    verified_at: '2026-09-19T19:02:29.033Z',
+    evidence: [{ type: 'CORRECTION_VERIFICATION_V1', status: 'PASS' }],
+  };
+  assert.equal(isVerifiedCorrectionIntegrationRecord(record, relativePath), true);
+  assert.equal(isVerifiedCorrectionIntegrationRecord({ ...record, status: 'IMPLEMENTED' }, relativePath), false);
+  assert.equal(isVerifiedCorrectionIntegrationRecord({ ...record, evidence: [] }, relativePath), false);
+  assert.equal(
+    isVerifiedCorrectionIntegrationRecord(record, 'docs/plan-canonico/modular/correction-instances/DELIV-PKG-015__CORR-019.json'),
+    false,
+  );
 });
