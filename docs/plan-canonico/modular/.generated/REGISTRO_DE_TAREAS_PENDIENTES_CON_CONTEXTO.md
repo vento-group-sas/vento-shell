@@ -12,11 +12,11 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-021`
+### 1. Valida y cierra la corrección implementada — `DELIV-PKG-015::CORR-021`
 
-- **Estado:** `IN_PROGRESS`
-- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
-- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Estado:** `IMPLEMENTED`
+- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
+- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
 - **Contrato autorizado:** APROBADO
 - **Edita solamente:**
   - `MODIFY` `scripts/docs/implementation-execution-coordinator.mjs`
