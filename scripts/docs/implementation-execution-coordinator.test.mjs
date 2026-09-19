@@ -1091,3 +1091,23 @@ test('F3 invalida receipt si cambia lifecycle head aunque candidate permanezca',
   assert.equal(changed.status, 'MISS');
   assert.equal(changed.reason, 'FINGERPRINT_MISMATCH:lifecycleHeadCommit');
 });
+
+test('CORR-019 mantiene candidate fisico estable entre materializacion, EVIDENCE_GATE y FINISH', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  const bundleSource = fs.readFileSync(new URL('./implementation-repository-bundle.mjs', import.meta.url), 'utf8');
+  const materialGate = source.indexOf("if (state === 'MATERIALIZATION_GATE')");
+  const materialize = source.indexOf('materializedResult = await materializeImplementation({', materialGate);
+  const bundleBuild = source.indexOf('buildRepositoryBundleCandidateEvidence({', materialize);
+  assert.ok(materialGate >= 0 && materialize > materialGate && bundleBuild > materialize);
+  assert.match(source, /orchestratorCandidateCommit:\s*materializedResult\.candidateCommit/u);
+  assert.match(source, /function ensureRepositoryBundleCandidateEvidence/u);
+  const evidenceGate = source.indexOf("if (state === 'EVIDENCE_GATE')");
+  const evidenceEnsure = source.indexOf('ensureRepositoryBundleCandidateEvidence({', evidenceGate);
+  assert.ok(evidenceGate >= 0 && evidenceEnsure > evidenceGate);
+  const finishGate = source.indexOf("if (state === 'FINISH')");
+  const finishEnsure = source.indexOf('ensureRepositoryBundleCandidateEvidence({', finishGate);
+  assert.ok(finishGate >= 0 && finishEnsure > finishGate);
+  assert.match(bundleSource, /reconcileRepositoryBundleCandidateEvidence/u);
+  assert.match(bundleSource, /IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_RECONCILIATION_UNSAFE/u);
+  assert.match(bundleSource, /merge-base','--is-ancestor'/u);
+});
