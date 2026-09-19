@@ -26,6 +26,8 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/docs/implementation-execution-coordinator.test.mjs',
   'scripts/docs/implementation-path-policy.mjs',
   'scripts/docs/implementation-path-policy.test.mjs',
+  'scripts/docs/implementation-repository-bundle.mjs',
+  'scripts/docs/implementation-repository-bundle.test.mjs',
   'scripts/docs/implementation-state-integrity.mjs',
   'scripts/docs/implementation-state-integrity.test.mjs',
   'scripts/docs/implementation-validation-engine.mjs',
@@ -41,6 +43,16 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/quality/lint-ratchet.test.mjs',
   'scripts/supabase/environment-drift.mjs',
   'scripts/supabase/environment-drift.test.mjs',
+]);
+
+const CORRECTION_INSTANCE_DIRECTORY = 'docs/plan-canonico/modular/correction-instances/';
+const CORRECTION_INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
+  'scripts/docs/correction-branch-lifecycle.mjs',
+  'scripts/docs/correction-branch-lifecycle.test.mjs',
+  'scripts/docs/correction-control.mjs',
+  'scripts/docs/correction-control.test.mjs',
+  'scripts/docs/correction-repository-bundle.mjs',
+  'scripts/docs/correction-repository-bundle.test.mjs',
 ]);
 
 function fail(message) {
@@ -85,6 +97,37 @@ export function isImplementationIntegrationLifecyclePath(filePath) {
     .test(relativePath);
 }
 
+export function isCorrectionIntegrationLifecyclePath(filePath) {
+  return CORRECTION_INTEGRATION_LIFECYCLE_EXACT_PATHS.has(normalizeRepoPath(filePath));
+}
+
+function assessAdditiveTestScript({ before, after, allowedPattern, label }) {
+  if (before === after) return Object.freeze({ safe: true, added: [] });
+  const beforeTokens = String(before ?? '').split(/\s+/u).filter(Boolean);
+  const afterTokens = String(after ?? '').split(/\s+/u).filter(Boolean);
+  let beforeIndex = 0;
+  const added = [];
+  for (const token of afterTokens) {
+    if (beforeIndex < beforeTokens.length && token === beforeTokens[beforeIndex]) {
+      beforeIndex += 1;
+      continue;
+    }
+    added.push(token);
+  }
+  if (beforeIndex !== beforeTokens.length) {
+    return Object.freeze({ safe: false, reason: `${label}_REMOVED_OR_REORDERED`, added });
+  }
+  const unsafeAdded = added.filter((token) => !allowedPattern.test(token));
+  if (unsafeAdded.length > 0) {
+    return Object.freeze({
+      safe: false,
+      reason: `${label}_UNSAFE_ADDITION:${unsafeAdded.join(',')}`,
+      added,
+    });
+  }
+  return Object.freeze({ safe: true, added });
+}
+
 export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
   if (!before || typeof before !== 'object' || Array.isArray(before)) {
     fail('PACKAGE_JSON_BEFORE_INVALID');
@@ -97,15 +140,19 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
   const afterCopy = structuredClone(after);
   const beforePlanTest = String(beforeCopy?.scripts?.['docs:plan:test'] ?? '');
   const afterPlanTest = String(afterCopy?.scripts?.['docs:plan:test'] ?? '');
+  const beforeCorrectionTest = String(beforeCopy?.scripts?.['docs:correction:test'] ?? '');
+  const afterCorrectionTest = String(afterCopy?.scripts?.['docs:correction:test'] ?? '');
   const beforeDoctor = String(beforeCopy?.scripts?.['docs:implementation:doctor'] ?? '');
   const afterDoctor = String(afterCopy?.scripts?.['docs:implementation:doctor'] ?? '');
 
   if (beforeCopy.scripts) {
     delete beforeCopy.scripts['docs:plan:test'];
+    delete beforeCopy.scripts['docs:correction:test'];
     delete beforeCopy.scripts['docs:implementation:doctor'];
   }
   if (afterCopy.scripts) {
     delete afterCopy.scripts['docs:plan:test'];
+    delete afterCopy.scripts['docs:correction:test'];
     delete afterCopy.scripts['docs:implementation:doctor'];
   }
 
@@ -129,7 +176,38 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
     });
   }
 
-  if (beforePlanTest === afterPlanTest) {
+  const planDelta = assessAdditiveTestScript({
+    before: beforePlanTest,
+    after: afterPlanTest,
+    allowedPattern: /^scripts\/docs\/(?:implementation|correction)-[A-Za-z0-9._/-]*\.test\.mjs$/u,
+    label: 'DOCS_PLAN_TEST',
+  });
+  if (!planDelta.safe) {
+    return Object.freeze({
+      safe: false,
+      reason: `PACKAGE_JSON_${planDelta.reason}`,
+      added_tests: planDelta.added,
+      doctor_script: afterDoctor || null,
+    });
+  }
+
+  const correctionDelta = assessAdditiveTestScript({
+    before: beforeCorrectionTest,
+    after: afterCorrectionTest,
+    allowedPattern: /^scripts\/docs\/correction-[A-Za-z0-9._/-]*\.test\.mjs$/u,
+    label: 'DOCS_CORRECTION_TEST',
+  });
+  if (!correctionDelta.safe) {
+    return Object.freeze({
+      safe: false,
+      reason: `PACKAGE_JSON_${correctionDelta.reason}`,
+      added_tests: [...planDelta.added, ...correctionDelta.added],
+      doctor_script: afterDoctor || null,
+    });
+  }
+
+  const addedTests = [...planDelta.added, ...correctionDelta.added];
+  if (addedTests.length === 0) {
     return Object.freeze({
       safe: true,
       reason: beforeDoctor === afterDoctor
@@ -140,44 +218,13 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
     });
   }
 
-  const beforeTokens = beforePlanTest.split(/\s+/u).filter(Boolean);
-  const afterTokens = afterPlanTest.split(/\s+/u).filter(Boolean);
-  let beforeIndex = 0;
-  const added = [];
-
-  for (const token of afterTokens) {
-    if (beforeIndex < beforeTokens.length && token === beforeTokens[beforeIndex]) {
-      beforeIndex += 1;
-      continue;
-    }
-    added.push(token);
-  }
-
-  if (beforeIndex !== beforeTokens.length) {
-    return Object.freeze({
-      safe: false,
-      reason: 'PACKAGE_JSON_DOCS_PLAN_TEST_REMOVED_OR_REORDERED',
-      added_tests: added,
-      doctor_script: afterDoctor || null,
-    });
-  }
-
-  const unsafeAdded = added.filter(
-    (token) => !/^scripts\/docs\/implementation-[A-Za-z0-9._/-]*\.test\.mjs$/u.test(token),
-  );
-  if (unsafeAdded.length > 0) {
-    return Object.freeze({
-      safe: false,
-      reason: `PACKAGE_JSON_DOCS_PLAN_TEST_UNSAFE_ADDITION:${unsafeAdded.join(',')}`,
-      added_tests: added,
-      doctor_script: afterDoctor || null,
-    });
-  }
-
+  const correctionAddition = addedTests.some((token) => /^scripts\/docs\/correction-/u.test(token));
   return Object.freeze({
     safe: true,
-    reason: 'PACKAGE_JSON_ADDITIVE_IMPLEMENTATION_TESTS_ONLY',
-    added_tests: added,
+    reason: correctionAddition
+      ? 'PACKAGE_JSON_ADDITIVE_LIFECYCLE_TESTS_ONLY'
+      : 'PACKAGE_JSON_ADDITIVE_IMPLEMENTATION_TESTS_ONLY',
+    added_tests: addedTests,
     doctor_script: afterDoctor || null,
   });
 }
@@ -186,6 +233,7 @@ export function classifyImplementationIntegrationImpact({
   instance,
   changedPaths = [],
   pristinePendingInstancePaths = [],
+  verifiedCorrectionRecordPaths = [],
   packageJsonBefore = null,
   packageJsonAfter = null,
 } = {}) {
@@ -198,19 +246,20 @@ export function classifyImplementationIntegrationImpact({
 
   const changed = uniqueSorted(changedPaths);
   const pristinePending = new Set(uniqueSorted(pristinePendingInstancePaths));
+  const verifiedCorrections = new Set(uniqueSorted(verifiedCorrectionRecordPaths));
   const ledger = ownLedgerPath(instance);
   const scope = authorizedScope(instance);
   const safe = [];
   const material = [];
   const classifications = [];
 
-  const classify = (path, classification, evidenceReuseSafe) => {
+  const classify = (pathValue, classification, evidenceReuseSafe) => {
     classifications.push(Object.freeze({
-      path,
+      path: pathValue,
       classification,
       evidence_reuse_safe: evidenceReuseSafe,
     }));
-    (evidenceReuseSafe ? safe : material).push(path);
+    (evidenceReuseSafe ? safe : material).push(pathValue);
   };
 
   for (const relativePath of changed) {
@@ -229,6 +278,20 @@ export function classifyImplementationIntegrationImpact({
       continue;
     }
 
+    if (isCorrectionIntegrationLifecyclePath(relativePath)) {
+      classify(relativePath, 'CORRECTION_LIFECYCLE_TOOLING', true);
+      continue;
+    }
+
+    if (relativePath.startsWith(CORRECTION_INSTANCE_DIRECTORY)) {
+      if (verifiedCorrections.has(relativePath)) {
+        classify(relativePath, 'VERIFIED_CORRECTION_METADATA', true);
+      } else {
+        classify(relativePath, 'CORRECTION_METADATA_NOT_VERIFIED', false);
+      }
+      continue;
+    }
+
     if (relativePath === 'package.json') {
       if (!packageJsonBefore || !packageJsonAfter) {
         classify(relativePath, 'PACKAGE_JSON_WITHOUT_SEMANTIC_PROOF', false);
@@ -238,11 +301,7 @@ export function classifyImplementationIntegrationImpact({
         before: packageJsonBefore,
         after: packageJsonAfter,
       });
-      classify(
-        relativePath,
-        packageImpact.reason,
-        packageImpact.safe,
-      );
+      classify(relativePath, packageImpact.reason, packageImpact.safe);
       continue;
     }
 

@@ -7,6 +7,7 @@ import {
   assertPhysicalEvidenceReusableForIntegration,
   classifyImplementationIntegrationImpact,
   isImplementationIntegrationLifecyclePath,
+  isCorrectionIntegrationLifecyclePath,
 } from './implementation-integration-impact.mjs';
 
 function instance() {
@@ -305,4 +306,46 @@ test('hardening de Git machine output reutiliza evidencia fisica', () => {
   });
   assert.equal(impact.decision, 'REUSE_PHYSICAL_EVIDENCE');
   assert.deepEqual(impact.material_paths, []);
+});
+
+test('governance-only correction delta reutiliza evidencia fisica', () => {
+  assert.equal(isCorrectionIntegrationLifecyclePath('scripts/docs/correction-control.mjs'), true);
+  assert.equal(isCorrectionIntegrationLifecyclePath('scripts/docs/correction-repository-bundle.test.mjs'), true);
+  assert.equal(isCorrectionIntegrationLifecyclePath('scripts/docs/correction-supabase-deploy.mjs'), false);
+  assert.equal(isImplementationIntegrationLifecyclePath('scripts/docs/implementation-repository-bundle.mjs'), true);
+
+  const correctionPath = 'docs/plan-canonico/modular/correction-instances/DELIV-PKG-015__CORR-020.json';
+  const blocked = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: [correctionPath],
+  });
+  assert.equal(blocked.decision, 'REVALIDATE_PHYSICAL');
+
+  const safe = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: [
+      correctionPath,
+      'scripts/docs/correction-control.mjs',
+      'scripts/docs/correction-repository-bundle.test.mjs',
+      'scripts/docs/implementation-repository-bundle.mjs',
+    ],
+    verifiedCorrectionRecordPaths: [correctionPath],
+  });
+  assert.equal(safe.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.equal(safe.material_paths.length, 0);
+});
+
+test('package.json admite solo tests lifecycle aditivos de correction', () => {
+  const before = structuredClone(packageBefore);
+  before.scripts['docs:correction:test'] = 'node --test scripts/docs/correction-control.test.mjs';
+  const after = structuredClone(before);
+  after.scripts['docs:plan:test'] += ' scripts/docs/correction-repository-bundle.test.mjs';
+  after.scripts['docs:correction:test'] += ' scripts/docs/correction-repository-bundle.test.mjs';
+  const semantic = assessPackageJsonIntegrationImpact({ before, after });
+  assert.equal(semantic.safe, true);
+  assert.equal(semantic.reason, 'PACKAGE_JSON_ADDITIVE_LIFECYCLE_TESTS_ONLY');
+
+  const bad = structuredClone(after);
+  bad.scripts['docs:correction:test'] += ' scripts/supabase/environment-drift.test.mjs';
+  assert.equal(assessPackageJsonIntegrationImpact({ before, after: bad }).safe, false);
 });
