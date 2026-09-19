@@ -5,7 +5,6 @@ import path from "node:path";
 const root = process.cwd();
 const fixtures = JSON.parse(fs.readFileSync(path.join(root, "tests/packages/GAP-PKG-045/fixtures.json"), "utf8"));
 const read = (...parts) => fs.readFileSync(path.join(root, ...parts), "utf8");
-const sibling = (name, ...parts) => fs.readFileSync(path.join(root, "..", name, ...parts), "utf8");
 
 test("canonical application catalog is exact and closed", () => {
   const catalog = JSON.parse(read("packages/contracts/authorization/catalog/versions/1.0.0/applications.json"));
