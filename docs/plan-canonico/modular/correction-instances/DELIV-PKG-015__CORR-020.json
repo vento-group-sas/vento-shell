@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,94 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell",
+    "vento-group-sas/vento-nexo",
+    "vento-group-sas/vento-fogo",
+    "vento-group-sas/vento-origo",
+    "vento-group-sas/vento-pulso",
+    "vento-group-sas/vento-viso",
+    "vento-group-sas/vento-numera",
+    "vento-group-sas/vento-anima"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "EXECUTE_ONLY",
+      "scope": "Conservar sin cambios el workflow propietario vigente en vento-shell y usarlo como fuente canonica para los consumidores."
+    },
+    {
+      "repo": "vento-group-sas/vento-nexo",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-fogo",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-origo",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-pulso",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-viso",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-numera",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-anima",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-viso",
+      "path": ".github/workflows/apply-guided-product-form.yml",
+      "change": "MODIFY",
+      "scope": "Eliminar el bypass historico de escritura directa a main y conservar el generador como validacion read-only en pull_request/workflow_dispatch."
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/quality/required-gate.test.mjs",
+    "node scripts/quality/required-gate.mjs audit-workspaces --json",
+    "node --test scripts/quality/test-evidence-publisher.test.mjs",
+    "node scripts/quality/test-evidence-publisher.mjs self-certify --json",
+    "node --test scripts/docs/correction-repository-bundle.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Restauracion de materializacion CI018/CI019 ya aprobada en workflows y bypass VISO; no modifica semantica funcional, TREQ ni Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-19T16:52:34.312Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-19T16:42:32.200Z"
 }

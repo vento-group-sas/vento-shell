@@ -12,17 +12,34 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-020`
+### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-020`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `EXECUTE_ONLY` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `CREATE` `.github/workflows/vento-required-gate.yml`
+  - `MODIFY` `.github/workflows/apply-guided-product-form.yml`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `node --test scripts/quality/required-gate.test.mjs`
+  2. `node scripts/quality/required-gate.mjs audit-workspaces --json`
+  3. `node --test scripts/quality/test-evidence-publisher.test.mjs`
+  4. `node scripts/quality/test-evidence-publisher.mjs self-certify --json`
+  5. `node --test scripts/docs/correction-repository-bundle.test.mjs`
+  6. `npm run docs:correction:check`
+  7. `npm run docs:correction:test`
+  8. `npm run docs:plan:check`
+  9. `npm run docs:plan:test`
+  10. `git diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-020`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
