@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -77,6 +78,8 @@ const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
 const EVIDENCE_REQUEST_PATH = '.delivery/implementation-evidence-request.json';
 const IMPLEMENTATION_FINISH_LOCK_NAME = 'vento-implementation-finish.lock';
+const IMPLEMENTATION_RUNTIME_SHA_ENV = 'VENTO_IMPLEMENTATION_RUNTIME_SHA';
+const IMPLEMENTATION_COORDINATOR_RELATIVE_PATH = 'scripts/docs/implementation-execution-coordinator.mjs';
 const TRANSIENT_NETWORK_PATTERN = /(?:unexpected EOF|HTTP\s+(?:408|425|429|499|500|502|503|504)\b|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up|connection reset|temporarily unavailable|timed?\s*out|Something went wrong while executing your query)/iu;
 
 function fail(message, code = 1) {
@@ -143,6 +146,103 @@ function ensureRepositoryRoot() {
   const root = git(['rev-parse', '--show-toplevel']).stdout.trim();
   if (!root) fail('No se pudo resolver la raiz Git.');
   return root;
+}
+
+function runtimeRepositoryRoot() {
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+}
+
+export function resolveImplementationRuntimeDecision({
+  mainSha,
+  runtimeSha,
+  pinnedSha = null,
+} = {}) {
+  const main = String(mainSha ?? '').trim().toLowerCase();
+  const runtime = String(runtimeSha ?? '').trim().toLowerCase();
+  const pinned = String(pinnedSha ?? '').trim().toLowerCase();
+  const shaPattern = /^[a-f0-9]{40}$/u;
+  if (!shaPattern.test(main)) fail(`IMPLEMENTATION_RUNTIME_MAIN_SHA_INVALID:${main || 'EMPTY'}`);
+  if (!shaPattern.test(runtime)) fail(`IMPLEMENTATION_RUNTIME_SHA_INVALID:${runtime || 'EMPTY'}`);
+  if (pinned) {
+    if (!shaPattern.test(pinned) || pinned !== main || runtime !== main) {
+      fail(`IMPLEMENTATION_RUNTIME_PIN_MISMATCH:PIN=${pinned || 'EMPTY'}:MAIN=${main}:RUNTIME=${runtime}`);
+    }
+    return Object.freeze({ action: 'CURRENT_PINNED', main_sha: main, runtime_sha: runtime, pinned_sha: pinned });
+  }
+  return Object.freeze({
+    action: runtime === main ? 'CURRENT' : 'REEXEC_MAIN',
+    main_sha: main,
+    runtime_sha: runtime,
+    pinned_sha: null,
+  });
+}
+
+function resolveImplementationRuntimeIdentity({ root = ensureRepositoryRoot(), env = process.env } = {}) {
+  git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+  const mainSha = git(['rev-parse', `origin/${DEFAULT_BRANCH}`], { cwd: root }).stdout.trim().toLowerCase();
+  const runtimeRoot = runtimeRepositoryRoot();
+  const runtimeSha = git(['rev-parse', 'HEAD'], { cwd: runtimeRoot }).stdout.trim().toLowerCase();
+  return Object.freeze({
+    ...resolveImplementationRuntimeDecision({
+      mainSha,
+      runtimeSha,
+      pinnedSha: env[IMPLEMENTATION_RUNTIME_SHA_ENV] ?? null,
+    }),
+    runtime_root: runtimeRoot,
+  });
+}
+
+function reexecWithCurrentMainRuntimeIfNeeded({
+  root = ensureRepositoryRoot(),
+  argv = process.argv.slice(2),
+  env = process.env,
+} = {}) {
+  const identity = resolveImplementationRuntimeIdentity({ root, env });
+  if (identity.action !== 'REEXEC_MAIN') {
+    return Object.freeze({ reexec: false, status: 0, identity });
+  }
+
+  const tempParent = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-implementation-runtime-'));
+  const runtimeRoot = path.join(tempParent, 'main-runtime');
+  let worktreeAdded = false;
+  try {
+    git(['worktree', 'add', '--detach', runtimeRoot, identity.main_sha], { cwd: root });
+    worktreeAdded = true;
+    const runtimeHead = git(['rev-parse', 'HEAD'], { cwd: runtimeRoot }).stdout.trim().toLowerCase();
+    if (runtimeHead !== identity.main_sha) {
+      fail(`IMPLEMENTATION_RUNTIME_WORKTREE_SHA_MISMATCH:EXPECTED=${identity.main_sha}:ACTUAL=${runtimeHead}`);
+    }
+    const runtimeScript = path.join(
+      runtimeRoot,
+      ...IMPLEMENTATION_COORDINATOR_RELATIVE_PATH.split('/'),
+    );
+    if (!fs.existsSync(runtimeScript)) {
+      fail(`IMPLEMENTATION_RUNTIME_COORDINATOR_MISSING:${runtimeScript}`);
+    }
+    console.log(
+      `[IMPLEMENTATION RUNTIME] REEXEC pin=${identity.main_sha} physical_head=${currentHead(root)}`,
+    );
+    const result = spawnSync(process.execPath, [runtimeScript, ...argv], {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+      env: { ...env, [IMPLEMENTATION_RUNTIME_SHA_ENV]: identity.main_sha },
+      stdio: 'inherit',
+    });
+    if (result.error) {
+      fail(`IMPLEMENTATION_RUNTIME_REEXEC_FAILED:${result.error.message}`);
+    }
+    return Object.freeze({
+      reexec: true,
+      status: Number.isInteger(result.status) ? result.status : 1,
+      identity,
+    });
+  } finally {
+    if (worktreeAdded) {
+      git(['worktree', 'remove', '--force', runtimeRoot], { cwd: root, allowFailure: true });
+    }
+    fs.rmSync(tempParent, { recursive: true, force: true });
+  }
 }
 
 function currentBranch(root) {
@@ -1476,7 +1576,15 @@ const isCli = process.argv[1]
 
 if (isCli) {
   try {
-    await main();
+    const runtime = reexecWithCurrentMainRuntimeIfNeeded({
+      root: ensureRepositoryRoot(),
+      argv: process.argv.slice(2),
+    });
+    if (runtime.reexec) {
+      process.exitCode = runtime.status;
+    } else {
+      await main();
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const shadowImpact = error && typeof error === 'object' ? error.shadowImpact ?? null : null;
