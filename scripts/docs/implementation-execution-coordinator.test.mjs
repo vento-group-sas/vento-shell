@@ -13,6 +13,7 @@ import {
   classifyExecutionState,
   evaluateCandidatePreverifyReceipt,
   resolveExecutorInstanceId,
+  resolveImplementationRuntimeDecision,
   runValidationCommandsWithPolicy,
   runValidationCommandsWithShadow,
   validateExecutionEvidenceReceipt,
@@ -1090,4 +1091,44 @@ test('F3 invalida receipt si cambia lifecycle head aunque candidate permanezca',
   });
   assert.equal(changed.status, 'MISS');
   assert.equal(changed.reason, 'FINGERPRINT_MISMATCH:lifecycleHeadCommit');
+});
+
+test('CORR-019 mantiene candidate fisico estable entre materializacion, EVIDENCE_GATE y FINISH', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  const bundleSource = fs.readFileSync(new URL('./implementation-repository-bundle.mjs', import.meta.url), 'utf8');
+  const materialGate = source.indexOf("if (state === 'MATERIALIZATION_GATE')");
+  const materialize = source.indexOf('materializedResult = await materializeImplementation({', materialGate);
+  const bundleBuild = source.indexOf('buildRepositoryBundleCandidateEvidence({', materialize);
+  assert.ok(materialGate >= 0 && materialize > materialGate && bundleBuild > materialize);
+  assert.match(source, /orchestratorCandidateCommit:\s*materializedResult\.candidateCommit/u);
+  assert.match(source, /function ensureRepositoryBundleCandidateEvidence/u);
+  const evidenceGate = source.indexOf("if (state === 'EVIDENCE_GATE')");
+  const evidenceEnsure = source.indexOf('ensureRepositoryBundleCandidateEvidence({', evidenceGate);
+  assert.ok(evidenceGate >= 0 && evidenceEnsure > evidenceGate);
+  const finishGate = source.indexOf("if (state === 'FINISH')");
+  const finishEnsure = source.indexOf('ensureRepositoryBundleCandidateEvidence({', finishGate);
+  assert.ok(finishGate >= 0 && finishEnsure > finishGate);
+  assert.match(bundleSource, /reconcileRepositoryBundleCandidateEvidence/u);
+  assert.match(bundleSource, /IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_RECONCILIATION_UNSAFE/u);
+  assert.match(bundleSource, /merge-base','--is-ancestor'/u);
+});
+
+test('runtime current-main pin es determinista', () => {
+  const main = 'a'.repeat(40);
+  const branch = 'b'.repeat(40);
+  assert.equal(resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: main }).action, 'CURRENT');
+  assert.equal(resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: branch }).action, 'REEXEC_MAIN');
+  assert.equal(resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: main, pinnedSha: main }).action, 'CURRENT_PINNED');
+  assert.throws(
+    () => resolveImplementationRuntimeDecision({ mainSha: main, runtimeSha: branch, pinnedSha: main }),
+    /IMPLEMENTATION_RUNTIME_PIN_MISMATCH/u,
+  );
+});
+
+test('accelerator stale branch reejecuta runtime exacto de main', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-execution-coordinator.mjs', 'utf8');
+  assert.match(source, /VENTO_IMPLEMENTATION_RUNTIME_SHA/u);
+  assert.match(source, /'worktree', 'add', '--detach'/u);
+  assert.match(source, /runtime.reexec/u);
+  assert.match(source, /stdio: 'inherit'/u);
 });

@@ -1105,6 +1105,21 @@ function readJsonAtGitRef(root, ref, relativePath) {
   }
 }
 
+export function isVerifiedCorrectionIntegrationRecord(record, relativePath) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
+  const id = String(record.correction_id ?? '').trim();
+  if (!/^[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3,4}::CORR-[0-9]{3}$/u.test(id)) return false;
+  const expectedPath = `docs/plan-canonico/modular/correction-instances/${id.replace('::', '__')}.json`;
+  if (normalizeImplementationPath(relativePath) !== expectedPath) return false;
+  if (record.status !== 'VERIFIED') return false;
+  if (!String(record.verified_at ?? '').trim() || !Number.isFinite(Date.parse(record.verified_at))) return false;
+  return (record.evidence ?? []).some((entry) => (
+    entry && typeof entry === 'object' && !Array.isArray(entry)
+    && entry.type === 'CORRECTION_VERIFICATION_V1'
+    && entry.status === 'PASS'
+  ));
+}
+
 function mainAdvanceImpact({ root, instance, fromRef, toRef }) {
   const changedPaths = git(['diff', '--name-only', `${fromRef}..${toRef}`], { cwd: root })
     .stdout.split(/\r?\n/u)
@@ -1112,11 +1127,20 @@ function mainAdvanceImpact({ root, instance, fromRef, toRef }) {
     .filter(Boolean);
 
   const pristinePendingInstancePaths = [];
+  const verifiedCorrectionRecordPaths = [];
   for (const relativePath of changedPaths) {
-    if (!relativePath.startsWith('docs/plan-canonico/modular/implementation-instances/')) continue;
-    const record = readJsonAtGitRef(root, toRef, relativePath);
-    if (record && isPristinePendingInstanceRecord(record, relativePath)) {
-      pristinePendingInstancePaths.push(relativePath);
+    if (relativePath.startsWith('docs/plan-canonico/modular/implementation-instances/')) {
+      const record = readJsonAtGitRef(root, toRef, relativePath);
+      if (record && isPristinePendingInstanceRecord(record, relativePath)) {
+        pristinePendingInstancePaths.push(relativePath);
+      }
+      continue;
+    }
+    if (relativePath.startsWith('docs/plan-canonico/modular/correction-instances/')) {
+      const record = readJsonAtGitRef(root, toRef, relativePath);
+      if (isVerifiedCorrectionIntegrationRecord(record, relativePath)) {
+        verifiedCorrectionRecordPaths.push(relativePath);
+      }
     }
   }
 
@@ -1128,6 +1152,7 @@ function mainAdvanceImpact({ root, instance, fromRef, toRef }) {
     instance,
     changedPaths,
     pristinePendingInstancePaths,
+    verifiedCorrectionRecordPaths,
     packageJsonBefore,
     packageJsonAfter,
   });

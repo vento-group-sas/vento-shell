@@ -1,4 +1,5 @@
 import fs from 'node:fs';
+import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
@@ -67,6 +68,7 @@ import {
   publishExternalRepositoryBundle,
   pushExternalRepositoryBundle,
   repositoryBundleEvidence,
+  reconcileRepositoryBundleCandidateEvidence,
   validatePublishedRepositoryBundleEvidence,
   validateRepositoryBundleCandidateEvidence,
 } from './implementation-repository-bundle.mjs';
@@ -76,6 +78,8 @@ const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
 const RESULT_END = '=== FIN RESULTADO PARA CHATGPT ===';
 const EVIDENCE_REQUEST_PATH = '.delivery/implementation-evidence-request.json';
 const IMPLEMENTATION_FINISH_LOCK_NAME = 'vento-implementation-finish.lock';
+const IMPLEMENTATION_RUNTIME_SHA_ENV = 'VENTO_IMPLEMENTATION_RUNTIME_SHA';
+const IMPLEMENTATION_COORDINATOR_RELATIVE_PATH = 'scripts/docs/implementation-execution-coordinator.mjs';
 const TRANSIENT_NETWORK_PATTERN = /(?:unexpected EOF|HTTP\s+(?:408|425|429|499|500|502|503|504)\b|ECONNRESET|ECONNREFUSED|ETIMEDOUT|EAI_AGAIN|ENETUNREACH|socket hang up|connection reset|temporarily unavailable|timed?\s*out|Something went wrong while executing your query)/iu;
 
 function fail(message, code = 1) {
@@ -142,6 +146,103 @@ function ensureRepositoryRoot() {
   const root = git(['rev-parse', '--show-toplevel']).stdout.trim();
   if (!root) fail('No se pudo resolver la raiz Git.');
   return root;
+}
+
+function runtimeRepositoryRoot() {
+  return path.resolve(path.dirname(fileURLToPath(import.meta.url)), '../..');
+}
+
+export function resolveImplementationRuntimeDecision({
+  mainSha,
+  runtimeSha,
+  pinnedSha = null,
+} = {}) {
+  const main = String(mainSha ?? '').trim().toLowerCase();
+  const runtime = String(runtimeSha ?? '').trim().toLowerCase();
+  const pinned = String(pinnedSha ?? '').trim().toLowerCase();
+  const shaPattern = /^[a-f0-9]{40}$/u;
+  if (!shaPattern.test(main)) fail(`IMPLEMENTATION_RUNTIME_MAIN_SHA_INVALID:${main || 'EMPTY'}`);
+  if (!shaPattern.test(runtime)) fail(`IMPLEMENTATION_RUNTIME_SHA_INVALID:${runtime || 'EMPTY'}`);
+  if (pinned) {
+    if (!shaPattern.test(pinned) || pinned !== main || runtime !== main) {
+      fail(`IMPLEMENTATION_RUNTIME_PIN_MISMATCH:PIN=${pinned || 'EMPTY'}:MAIN=${main}:RUNTIME=${runtime}`);
+    }
+    return Object.freeze({ action: 'CURRENT_PINNED', main_sha: main, runtime_sha: runtime, pinned_sha: pinned });
+  }
+  return Object.freeze({
+    action: runtime === main ? 'CURRENT' : 'REEXEC_MAIN',
+    main_sha: main,
+    runtime_sha: runtime,
+    pinned_sha: null,
+  });
+}
+
+function resolveImplementationRuntimeIdentity({ root = ensureRepositoryRoot(), env = process.env } = {}) {
+  git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
+  const mainSha = git(['rev-parse', `origin/${DEFAULT_BRANCH}`], { cwd: root }).stdout.trim().toLowerCase();
+  const runtimeRoot = runtimeRepositoryRoot();
+  const runtimeSha = git(['rev-parse', 'HEAD'], { cwd: runtimeRoot }).stdout.trim().toLowerCase();
+  return Object.freeze({
+    ...resolveImplementationRuntimeDecision({
+      mainSha,
+      runtimeSha,
+      pinnedSha: env[IMPLEMENTATION_RUNTIME_SHA_ENV] ?? null,
+    }),
+    runtime_root: runtimeRoot,
+  });
+}
+
+function reexecWithCurrentMainRuntimeIfNeeded({
+  root = ensureRepositoryRoot(),
+  argv = process.argv.slice(2),
+  env = process.env,
+} = {}) {
+  const identity = resolveImplementationRuntimeIdentity({ root, env });
+  if (identity.action !== 'REEXEC_MAIN') {
+    return Object.freeze({ reexec: false, status: 0, identity });
+  }
+
+  const tempParent = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-implementation-runtime-'));
+  const runtimeRoot = path.join(tempParent, 'main-runtime');
+  let worktreeAdded = false;
+  try {
+    git(['worktree', 'add', '--detach', runtimeRoot, identity.main_sha], { cwd: root });
+    worktreeAdded = true;
+    const runtimeHead = git(['rev-parse', 'HEAD'], { cwd: runtimeRoot }).stdout.trim().toLowerCase();
+    if (runtimeHead !== identity.main_sha) {
+      fail(`IMPLEMENTATION_RUNTIME_WORKTREE_SHA_MISMATCH:EXPECTED=${identity.main_sha}:ACTUAL=${runtimeHead}`);
+    }
+    const runtimeScript = path.join(
+      runtimeRoot,
+      ...IMPLEMENTATION_COORDINATOR_RELATIVE_PATH.split('/'),
+    );
+    if (!fs.existsSync(runtimeScript)) {
+      fail(`IMPLEMENTATION_RUNTIME_COORDINATOR_MISSING:${runtimeScript}`);
+    }
+    console.log(
+      `[IMPLEMENTATION RUNTIME] REEXEC pin=${identity.main_sha} physical_head=${currentHead(root)}`,
+    );
+    const result = spawnSync(process.execPath, [runtimeScript, ...argv], {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+      env: { ...env, [IMPLEMENTATION_RUNTIME_SHA_ENV]: identity.main_sha },
+      stdio: 'inherit',
+    });
+    if (result.error) {
+      fail(`IMPLEMENTATION_RUNTIME_REEXEC_FAILED:${result.error.message}`);
+    }
+    return Object.freeze({
+      reexec: true,
+      status: Number.isInteger(result.status) ? result.status : 1,
+      identity,
+    });
+  } finally {
+    if (worktreeAdded) {
+      git(['worktree', 'remove', '--force', runtimeRoot], { cwd: root, allowFailure: true });
+    }
+    fs.rmSync(tempParent, { recursive: true, force: true });
+  }
 }
 
 function currentBranch(root) {
@@ -743,6 +844,12 @@ function persistBundleEvidence(root, instanceId, type, evidence) {
   return resolveInstance(root, instanceId).instance;
 }
 
+function resolveRepositoryBundleOrchestratorCandidate(root,instance){ const lifecycle=resolveImplementationCandidateLifecycle({root,instance,branchTip:currentHead(root).toLowerCase()}); if(lifecycle.status!=='PASS'||lifecycle.decision!=='REUSE_PHYSICAL_EVIDENCE'||!/^[a-f0-9]{40}$/u.test(String(lifecycle.candidate_commit??''))) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE_INVALID:${lifecycle.reason??lifecycle.status}`); return lifecycle.candidate_commit; }
+function ensureRepositoryBundleCandidateEvidence({root,instanceId,repositoryPlan}={}){ let current=resolveInstance(root,instanceId).instance; const orchestratorCandidateCommit=resolveRepositoryBundleOrchestratorCandidate(root,current); let evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); if(!evidence) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_EVIDENCE_MISSING'); const reconciliation=reconcileRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit}); if(reconciliation.updated){ current=persistBundleEvidence(root,instanceId,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE,reconciliation.evidence); const committed=commitAllowedWorktree(root,instanceId,current,`implementation(${instanceId}): reconcile multi-repo candidate bundle`); if(!committed) fail(`IMPLEMENTATION_REPOSITORY_RECONCILIATION_CHECKPOINT_MISSING:${instanceId}`); pushCandidate(root,implementationBranchName(instanceId)); current=resolveInstance(root,instanceId).instance; evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); }
+  validateRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit});
+  pushExternalRepositoryBundle({plan:repositoryPlan});
+  return {instance:current,evidence,orchestratorCandidateCommit,reconciled:reconciliation.updated}; }
+
 function replaceLocalValidationEvidence(evidence, next) {
   return [
     ...(evidence ?? []).filter((entry) => !(
@@ -1258,25 +1365,37 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         AUTHORIZED_DIRECTORIES_PREPARED: workspacePreparation.prepared.length,
         AUTHORIZED_DIRECTORIES_CREATED: workspacePreparation.created.join(',') || 'NONE',
         LEGACY_MATERIALIZED_FLAG: materialized ? 'IGNORED' : 'NOT_PROVIDED',
-        SAME_COMMAND_RESUME: 'npm run docs:implementation:advance', RESUMABLE: 'SI',
+        SAME_COMMAND_RESUME: 'npm run ' + 'docs:implementation:' + 'advance', RESUMABLE: 'SI',
       });
       return;
     }
 
     if (repositoryPlan) {
       checkpointExternalRepositoryBundle({ plan: repositoryPlan, instance: currentInstance });
-      const candidateBundle = buildRepositoryBundleCandidateEvidence({ plan: repositoryPlan });
-      persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE, candidateBundle);
     }
     materializedResult = await materializeImplementation({
       root, id: instanceId, certification: safeSelectiveCertification,
     });
-    if (repositoryPlan) {
-      pushExternalRepositoryBundle({ plan: repositoryPlan });
-      const candidateBundle = repositoryBundleEvidence(resolveInstance(root, instanceId).instance, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE);
-      validateRepositoryBundleCandidateEvidence({ plan: repositoryPlan, evidence: candidateBundle });
-    }
     instance = materializedResult.instance;
+    if (repositoryPlan) {
+      const candidateBundle = buildRepositoryBundleCandidateEvidence({
+        plan: repositoryPlan,
+        orchestratorCandidateCommit: materializedResult.candidateCommit,
+      });
+      instance = persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE, candidateBundle);
+      const bundleCheckpoint = commitAllowedWorktree(
+        root,
+        instanceId,
+        instance,
+        `implementation(${instanceId}): record multi-repo candidate bundle`,
+      );
+      if (!bundleCheckpoint) fail(`IMPLEMENTATION_REPOSITORY_BUNDLE_CHECKPOINT_MISSING:${instanceId}`);
+      pushCandidate(root, implementationBranchName(instanceId));
+      const ensured = ensureRepositoryBundleCandidateEvidence({
+        root, instanceId, repositoryPlan,
+      });
+      instance = ensured.instance;
+    }
     state = classifyExecutionState(instance);
   }
 
@@ -1284,8 +1403,8 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
     ensureImplementationBranch(root, instanceId);
     if (isMultiRepoInstance(instance)) {
       const repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance });
-      const candidateBundle = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE);
-      validateRepositoryBundleCandidateEvidence({ plan: repositoryPlan, evidence: candidateBundle });
+      const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, repositoryPlan });
+      instance = ensured.instance;
     }
     git(['fetch', 'origin', DEFAULT_BRANCH, '--quiet'], { cwd: root });
 
@@ -1378,8 +1497,8 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
       if (publishEvidence) {
         validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });
       } else {
-        const candidateBundle = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE);
-        validateRepositoryBundleCandidateEvidence({ plan: repositoryPlan, evidence: candidateBundle });
+        const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, repositoryPlan });
+        instance = ensured.instance;
         publishEvidence = publishExternalRepositoryBundle({ plan: repositoryPlan });
         instance = persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE, publishEvidence);
       }
@@ -1457,7 +1576,15 @@ const isCli = process.argv[1]
 
 if (isCli) {
   try {
-    await main();
+    const runtime = reexecWithCurrentMainRuntimeIfNeeded({
+      root: ensureRepositoryRoot(),
+      argv: process.argv.slice(2),
+    });
+    if (runtime.reexec) {
+      process.exitCode = runtime.status;
+    } else {
+      await main();
+    }
   } catch (error) {
     const message = error instanceof Error ? error.message : String(error);
     const shadowImpact = error && typeof error === 'object' ? error.shadowImpact ?? null : null;
