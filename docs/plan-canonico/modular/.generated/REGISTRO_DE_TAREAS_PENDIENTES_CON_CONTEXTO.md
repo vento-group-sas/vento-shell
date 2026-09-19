@@ -39,12 +39,12 @@
 ### 4. Instancias físicas gobernadas en curso
 
 - **Regla:** cada instancia conserva autorización, checkout, resource locks y lifecycle propios; prioridad no significa exclusividad.
-- `SHELL-CI-020::GAP-PKG-045` — declared=`IMPLEMENTED` — effective=`IN_PROGRESS` — `RECONCILIAR_INTEGRIDAD_DE_ESTADO`
-  - Contrato: Implementar y desplegar cada paquete aprobado por E5
-  - Integridad: `INVALID`
-  - Recovery: `RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
-  - Comando mutante normal: `NONE_UNTIL_INTEGRITY_RECONCILED`
-  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-045.json`
+- `SHELL-CI-021::GAP-PKG-045` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
+  - Contrato: Ejecutar y resolver el checklist de readiness aprobado
+  - Integridad: `VALID`
+  - Recovery: `AWAIT_EXPLICIT_AUTHORIZATION`
+  - Comando mutante normal: `npm run docs:implementation:advance -- --instance-id SHELL-CI-021::GAP-PKG-045`
+  - Registro: `docs/plan-canonico/modular/implementation-instances/SHELL-CI-021__GAP-PKG-045.json`
 - `SHELL-CI-022::GAP-PKG-001` — declared=`PENDING_AUTHORIZATION` — effective=`PENDING_AUTHORIZATION` — `AUTORIZAR_IMPLEMENTACIÓN`
   - Contrato: Ejecutar cutover y piloto conforme al plan aprobado
   - Integridad: `VALID`
@@ -69,7 +69,7 @@
 | Carril | Estado | Trabajo actual | Siguiente | Regla |
 | --- | --- | --- | --- | --- |
 | 🟦 **DOCUMENTACIÓN** | `ACTIVO` | `NEXO-AUTH-009` — Proteger tránsito | `NEXO-AUTH-010` — Proteger recepción | Una tarea documental activa |
-| 🟧 **IMPLEMENTACIÓN FÍSICA** | `IN_PROGRESS` | `SHELL-CI-020::GAP-PKG-045` — Implementar y desplegar cada paquete aprobado por E5 | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
+| 🟧 **IMPLEMENTACIÓN FÍSICA** | `PENDING_AUTHORIZATION` | `SHELL-CI-021::GAP-PKG-045` — Ejecutar y resolver el checklist de readiness aprobado | `SHELL-CI-022::GAP-PKG-001` | Governed active set; prioridad ≠ exclusividad |
 
 > Coordinación: `CONTROLLED_DUAL_LANE`. Los carriles pueden avanzar en paralelo en checkouts independientes; los cierres se serializan y el segundo carril reconcilia el `main` más reciente antes de cerrar.
 
@@ -78,16 +78,16 @@
 | Carril | Completado | Pendiente / restante | Actual |
 | --- | ---: | ---: | --- |
 | 🟦 **Documentación** | **1213/1596 aprobadas** | **383** no aprobadas (0 propuesta, 0 rechazadas) | `NEXO-AUTH-009` |
-| 🟧 **Implementación física conocida** | **102/106 VERIFIED** | **4** no terminales | `SHELL-CI-020::GAP-PKG-045` |
+| 🟧 **Implementación física conocida** | **103/107 VERIFIED** | **4** no terminales | `SHELL-CI-021::GAP-PKG-045` |
 
 - **Ruta documental activa:** `NORMAL-CANONICAL-FLOW-001`
 - **Etapa documental:** `PHASE-05-NEXO` — NEXO
 - **Siguiente etapa documental:** `PHASE-06-FOGO-ORIGO`
-- **Puntero de compatibilidad del control de instancias:** `RECONCILE_IMPLEMENTATION_STATE_INTEGRITY` — `SHELL-CI-020::GAP-PKG-045`
+- **Puntero de compatibilidad del control de instancias:** `AUTORIZAR_IMPLEMENTACION` — `SHELL-CI-021::GAP-PKG-045`
 - **Entrada mutante normal:** `docs:implementation:advance`
-- **Estado físico declarado:** `IMPLEMENTED`
-- **Estado físico efectivo:** `IN_PROGRESS`
-- **Recovery físico:** `RECONCILE_DECLARED_STATUS_TO_IN_PROGRESS_THEN_MATERIALIZE_VALIDATE_AND_SEAL_CANDIDATE`
+- **Estado físico declarado:** `PENDING_AUTHORIZATION`
+- **Estado físico efectivo:** `PENDING_AUTHORIZATION`
+- **Recovery físico:** `AWAIT_EXPLICIT_AUTHORIZATION`
 - **Instancias físicas en espera de predecesora:** **0**
 - **Cobertura documental de la ruta:** **todas las tareas, exactamente una vez**
 
@@ -97,7 +97,7 @@
 
 | # | Posición | Instancia | Contrato | Estado declarado | Estado efectivo | Condición |
 | ---: | --- | --- | --- | --- | --- | --- |
-| 1 | **EN CURSO** | `SHELL-CI-020::GAP-PKG-045` | Implementar y desplegar cada paquete aprobado por E5 | `IMPLEMENTED` | `IN_PROGRESS` | EN_CURSO — RECONCILIAR_INTEGRIDAD_DE_ESTADO |
+| 1 | **EN CURSO** | `SHELL-CI-021::GAP-PKG-045` | Ejecutar y resolver el checklist de readiness aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 | 2 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-001` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 | 3 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-018` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |
 | 4 | **EN CURSO** | `SHELL-CI-022::GAP-PKG-019` | Ejecutar cutover y piloto conforme al plan aprobado | `PENDING_AUTHORIZATION` | `PENDING_AUTHORIZATION` | EN_CURSO — AUTORIZAR_IMPLEMENTACIÓN |

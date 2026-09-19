@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-020::GAP-PKG-045",
   "task_id": "SHELL-CI-020",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "target_repositories": [
     "vento-group-sas/vento-fogo",
     "vento-group-sas/vento-nexo",
@@ -402,6 +402,377 @@
           ]
         }
       ]
+    },
+    {
+      "type": "IMPLEMENTATION_EXECUTION_EVIDENCE_V1",
+      "schema_version": 1,
+      "instance_id": "SHELL-CI-020::GAP-PKG-045",
+      "candidate_commit": "a4b4b68739b6b5cdd4f07734d41f4eb366c22272",
+      "lifecycle_head_commit": "68011ec92dff49c0946122b7291c639c5741ba42",
+      "candidate_lifecycle": {
+        "model_id": "VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1",
+        "decision": "REUSE_PHYSICAL_EVIDENCE",
+        "reason": "SAFE_LIFECYCLE_METADATA_ONLY",
+        "changed_paths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-045.json"
+        ]
+      },
+      "observed_at": "2026-09-19T22:05:35.9957311Z",
+      "validation_commands": [
+        "node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check",
+        "node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+        "node --test tests/packages/GAP-PKG-045/unit.test.ts",
+        "node --test tests/packages/GAP-PKG-045/contract.test.ts",
+        "node --test tests/packages/GAP-PKG-045/integration.test.ts",
+        "node --test tests/packages/GAP-PKG-045/security.test.ts",
+        "node --test tests/packages/GAP-PKG-045/e2e.test.ts",
+        "node --test tests/packages/GAP-PKG-045/regression.test.ts",
+        "npm test --silent",
+        "npm --prefix ../vento-nexo test --silent",
+        "npm --prefix ../vento-nexo run typecheck --silent",
+        "npm --prefix ../vento-fogo test --silent",
+        "npm --prefix ../vento-fogo run typecheck --silent",
+        "npm --prefix ../vento-origo test --silent",
+        "npm --prefix ../vento-origo run typecheck --silent",
+        "npm --prefix ../vento-pulso test --silent",
+        "npm --prefix ../vento-pulso run typecheck --silent",
+        "npm --prefix ../vento-viso test --silent",
+        "npm --prefix ../vento-viso run typecheck --silent"
+      ],
+      "results": [
+        {
+          "command": "node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check",
+          "status": "PASS"
+        },
+        {
+          "command": "node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-045/unit.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-045/contract.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-045/integration.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-045/security.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-045/e2e.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "node --test tests/packages/GAP-PKG-045/regression.test.ts",
+          "status": "PASS"
+        },
+        {
+          "command": "npm test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-nexo test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-nexo run typecheck --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-fogo test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-fogo run typecheck --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-origo test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-origo run typecheck --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-pulso test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-pulso run typecheck --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-viso test --silent",
+          "status": "PASS"
+        },
+        {
+          "command": "npm --prefix ../vento-viso run typecheck --silent",
+          "status": "PASS"
+        }
+      ],
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "ENVIRONMENT_PROFILE",
+          "target_id": "ENV-WEB-CI-STAGING",
+          "owner": "OWN-OPS"
+        }
+      ],
+      "environment_results": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "ENVIRONMENT_PROFILE",
+          "target_id": "ENV-WEB-CI-STAGING",
+          "owner": "OWN-OPS",
+          "status": "PASS",
+          "evidence": [
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-shell candidate=a4b4b68739b6b5cdd4f07734d41f4eb366c22272 deployment=dpl_9t4k7ydJXTnQr4pEjSp2muZgF4yM url=https://vento-shell-85pymnhaf-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-nexo candidate=8b09100622e0113ceb7b383c460417e80d1035ec deployment=dpl_6bVTQA5GfhPUpANGD9VBJEkmrs13 url=https://vento-nexo-oqbp9dc5x-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-fogo candidate=8fe73d1b75587189af96a72c27111922de5e878e deployment=dpl_2fTnvLZRhMKKkVSzy3zuPpt3aZMa url=https://vento-fogo-hcsaaordh-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-origo candidate=d2f0bc3d56b31da141a052450d1d7ee971bb9e8d deployment=dpl_CF33YTYwgv7tejSxUScRoECpiq7W url=https://vento-origo-4iiwuhbrr-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-pulso candidate=da73c80e63aba5607e06be18bbf633a55690de22 deployment=dpl_DPX9VRvfrPEWhGbU4qBE6CDsh4px url=https://vento-pulso-ebwsrxci0-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-viso candidate=6ded846db875f34c03acf17778128ad2f8bbd5f4 deployment=dpl_BXRbAtWdhaPeU84d2ja4o15QXJo6 url=https://vento-viso-cm3wqkxuc-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "HTTP_CHECK repository=vento-group-sas/vento-shell result=307_REDIRECT_TO_CANONICAL_LOGIN",
+            "HTTP_CHECK repository=vento-group-sas/vento-nexo result=307_REDIRECT_TO_CANONICAL_LOGIN",
+            "HTTP_CHECK repository=vento-group-sas/vento-fogo result=302_VERCEL_SSO_PROTECTED",
+            "HTTP_CHECK repository=vento-group-sas/vento-origo result=302_VERCEL_SSO_PROTECTED",
+            "HTTP_CHECK repository=vento-group-sas/vento-pulso result=200_OK",
+            "HTTP_CHECK repository=vento-group-sas/vento-viso result=302_VERCEL_SSO_PROTECTED",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-shell deployment=dpl_9t4k7ydJXTnQr4pEjSp2muZgF4yM result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-nexo deployment=dpl_6bVTQA5GfhPUpANGD9VBJEkmrs13 result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-fogo deployment=dpl_2fTnvLZRhMKKkVSzy3zuPpt3aZMa result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-origo deployment=dpl_CF33YTYwgv7tejSxUScRoECpiq7W result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-pulso deployment=dpl_DPX9VRvfrPEWhGbU4qBE6CDsh4px result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-viso deployment=dpl_BXRbAtWdhaPeU84d2ja4o15QXJo6 result=NO_ERROR_OR_FATAL_LOGS window=2h"
+          ]
+        }
+      ],
+      "operational_evidence": [
+        "GAP-PKG-045 candidate lifecycle decision=REUSE_PHYSICAL_EVIDENCE physical_candidate=a4b4b68739b6b5cdd4f07734d41f4eb366c22272 lifecycle_head=68011ec92dff49c0946122b7291c639c5741ba42",
+        "LOCAL_VALIDATIONS candidate=a4b4b68739b6b5cdd4f07734d41f4eb366c22272 result=19/19_PASS_REUSED",
+        "IMPLEMENTATION_REPOSITORY_BUNDLE repositories=6 result=PASS_REUSED",
+        "VERCEL_PREVIEW_SET repositories=6 ready=6 production_requested=0 target_environment=ENV-WEB-CI-STAGING",
+        "VERCEL_RUNTIME_ERROR_SCAN deployments=6 error_or_fatal_logs=0 window=2h",
+        "HTTP_AVAILABILITY previews=6 shell=CANONICAL_LOGIN_REDIRECT nexo=CANONICAL_LOGIN_REDIRECT fogo=VERCEL_SSO_PROTECTED origo=VERCEL_SSO_PROTECTED pulso=200_OK viso=VERCEL_SSO_PROTECTED",
+        "PRODUCTION_AUTHORIZATION production_authorized=false production_deployments_requested=0",
+        "SUPABASE_MUTATIONS=0 DATABASE_MUTATIONS=0"
+      ],
+      "validation_engine_repair_receipt": null,
+      "validation_engine_preverify_receipt": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F3_DEDUPLICATION_CANDIDATE_RECEIPTS",
+        "validatorId": "IMPLEMENTATION_PREVERIFY_V1",
+        "reusePolicy": "EXACT_CANDIDATE_FINGERPRINT_ONLY",
+        "status": "PASS",
+        "instanceId": "SHELL-CI-020::GAP-PKG-045",
+        "candidateCommit": "a4b4b68739b6b5cdd4f07734d41f4eb366c22272",
+        "lifecycleHeadCommit": "68011ec92dff49c0946122b7291c639c5741ba42",
+        "repositoryStateSha256": "9298439d18fdc16b3d35c7ab6386169e0cb72deb5df6e39a596ff83d396a9bbc",
+        "validationCommandsSha256": "af5a76c4d5a8cce1a6d8c38c30c1a0e3f2fa827fb32e465dafd6186f17bbb095",
+        "toolchainSha256": "a1dd18c50eb5d5dd8f77c51f874a2a58cf32e3ef6db2f9249af1c50e086005c3",
+        "toolchain": {
+          "nodeVersion": "v24.19.0",
+          "platform": "win32",
+          "arch": "x64"
+        },
+        "validatedAt": "2026-09-19T21:34:19.508Z",
+        "receiptSha256": "58445305decfb8b5ed4b0dacc5972669de284a03fe302b8403ccf0511a38fac0"
+      },
+      "validation_engine_shadow_impact": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F4_SHADOW_IMPACT_SELECTION",
+        "selectorId": "IMPLEMENTATION_SHADOW_IMPACT_SELECTOR_V1",
+        "planSha256": "f7d6e79a2158c41429c7abfe6b16517a7400fd92c89917073350f28b24d7e62b",
+        "executionMode": "FULL_SUITE_SHADOW_ONLY",
+        "selectiveExecution": false,
+        "fullSuiteExecuted": true,
+        "validationGatesSkipped": 0,
+        "fullSuiteStatus": "PASS",
+        "fullCommandCount": 19,
+        "selectedCommandCount": 19,
+        "omittedCommandCount": 0,
+        "potentialReductionPercent": 0,
+        "observedFailureCount": 0,
+        "observedFalseNegativeCount": 0,
+        "observedFalseNegatives": [],
+        "eligibleForSelectiveExecution": false,
+        "observationSha256": "a17c3e7814b9deaf856c7bc49b3a5fb4d27f02dce4dfd63c5cc677cb78b61115"
+      },
+      "validation_engine_selective_validation": {
+        "schemaVersion": 1,
+        "engineId": "VENTO-IMPLEMENTATION-VALIDATION-ENGINE-V1",
+        "phase": "F5_SAFE_SELECTIVE_VALIDATION",
+        "policyId": "PACKAGE_LOCAL_CLOSED_SCOPE_V1",
+        "candidateCommit": "a4b4b68739b6b5cdd4f07734d41f4eb366c22272",
+        "planSha256": "f7d6e79a2158c41429c7abfe6b16517a7400fd92c89917073350f28b24d7e62b",
+        "decisionSha256": "447273d19bef4d73af68a1cb8bc6436bd83b1ca32c46154ce7e884e57cc5ed02",
+        "changedPaths": [
+          "docs/plan-canonico/modular/.generated/REGISTRO_DE_TAREAS_PENDIENTES_CON_CONTEXTO.md",
+          "docs/plan-canonico/modular/00_CABECERA_Y_ESTADO.md",
+          "docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-045.json",
+          "src/app/login/page.tsx",
+          "src/app/page.tsx",
+          "templates/app-shell-standard/src/components/vento/standard/app-switcher.tsx",
+          "tests/packages/GAP-PKG-045/contract.test.ts",
+          "tests/packages/GAP-PKG-045/e2e.test.ts",
+          "tests/packages/GAP-PKG-045/fixtures.json",
+          "tests/packages/GAP-PKG-045/integration.test.ts",
+          "tests/packages/GAP-PKG-045/regression.test.ts",
+          "tests/packages/GAP-PKG-045/security.test.ts",
+          "tests/packages/GAP-PKG-045/unit.test.ts"
+        ],
+        "validationCommands": [
+          "node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check",
+          "node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+          "node --test tests/packages/GAP-PKG-045/unit.test.ts",
+          "node --test tests/packages/GAP-PKG-045/contract.test.ts",
+          "node --test tests/packages/GAP-PKG-045/integration.test.ts",
+          "node --test tests/packages/GAP-PKG-045/security.test.ts",
+          "node --test tests/packages/GAP-PKG-045/e2e.test.ts",
+          "node --test tests/packages/GAP-PKG-045/regression.test.ts",
+          "npm test --silent",
+          "npm --prefix ../vento-nexo test --silent",
+          "npm --prefix ../vento-nexo run typecheck --silent",
+          "npm --prefix ../vento-fogo test --silent",
+          "npm --prefix ../vento-fogo run typecheck --silent",
+          "npm --prefix ../vento-origo test --silent",
+          "npm --prefix ../vento-origo run typecheck --silent",
+          "npm --prefix ../vento-pulso test --silent",
+          "npm --prefix ../vento-pulso run typecheck --silent",
+          "npm --prefix ../vento-viso test --silent",
+          "npm --prefix ../vento-viso run typecheck --silent"
+        ],
+        "executionMode": "FULL_FALLBACK",
+        "selectiveExecution": false,
+        "fullFallbackUsed": true,
+        "fullFallbackAvailable": true,
+        "validationGatesSkipped": 0,
+        "reason": "FULL_FALLBACK_NO_REDUCTION",
+        "packageId": null,
+        "candidateEligible": false,
+        "candidateReason": "NO_REDUCTION",
+        "potentialNotApplicableCommandCount": 0,
+        "certificationStatus": "PENDING_REAL_SHADOW_EVIDENCE",
+        "certificationSha256": "d0df0877f911aa1564d93fa0679d9630c8bd330b2d24912ece0b38c2c8954cc9",
+        "certificationMinimumOmissionBearingSamples": 5,
+        "certificationMinimumDistinctPackages": 3,
+        "certificationObservedOmissionBearingSamples": 2,
+        "certificationObservedDistinctPackages": 2,
+        "certificationObservedFalseNegatives": 0,
+        "executedCommands": [
+          "node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check",
+          "node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+          "node --test tests/packages/GAP-PKG-045/unit.test.ts",
+          "node --test tests/packages/GAP-PKG-045/contract.test.ts",
+          "node --test tests/packages/GAP-PKG-045/integration.test.ts",
+          "node --test tests/packages/GAP-PKG-045/security.test.ts",
+          "node --test tests/packages/GAP-PKG-045/e2e.test.ts",
+          "node --test tests/packages/GAP-PKG-045/regression.test.ts",
+          "npm test --silent",
+          "npm --prefix ../vento-nexo test --silent",
+          "npm --prefix ../vento-nexo run typecheck --silent",
+          "npm --prefix ../vento-fogo test --silent",
+          "npm --prefix ../vento-fogo run typecheck --silent",
+          "npm --prefix ../vento-origo test --silent",
+          "npm --prefix ../vento-origo run typecheck --silent",
+          "npm --prefix ../vento-pulso test --silent",
+          "npm --prefix ../vento-pulso run typecheck --silent",
+          "npm --prefix ../vento-viso test --silent",
+          "npm --prefix ../vento-viso run typecheck --silent"
+        ],
+        "notApplicableCommands": [],
+        "results": [
+          {
+            "command": "node packages/contracts/authorization/scripts/generate-authorization-types.mjs --check",
+            "status": "PASS"
+          },
+          {
+            "command": "node packages/contracts/authorization/scripts/validate-authorization-catalog.mjs",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-045/unit.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-045/contract.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-045/integration.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-045/security.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-045/e2e.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "node --test tests/packages/GAP-PKG-045/regression.test.ts",
+            "status": "PASS"
+          },
+          {
+            "command": "npm test --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-nexo test --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-nexo run typecheck --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-fogo test --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-fogo run typecheck --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-origo test --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-origo run typecheck --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-pulso test --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-pulso run typecheck --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-viso test --silent",
+            "status": "PASS"
+          },
+          {
+            "command": "npm --prefix ../vento-viso run typecheck --silent",
+            "status": "PASS"
+          }
+        ],
+        "status": "PASS",
+        "recordSha256": "6bcdd8a50b311bd21ab1b9fef323f627803d713d8b7a2a700ada24be1d8e952d"
+      }
     }
   ],
   "target_environments": [
