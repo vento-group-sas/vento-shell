@@ -45,6 +45,14 @@ import {
     buildInPackageCandidateEvidence,
     scanPackageReadiness,
 } from './package-readiness-scanner.mjs';
+import {
+    buildCorrectionRepositoryPlan,
+    checkpointExternalCorrectionBundle,
+    correctionRepositoryPublishEvidence,
+    ensureExternalCorrectionBranches,
+    publishExternalCorrectionBundle,
+    validatePublishedCorrectionBundleEvidence,
+} from './correction-repository-bundle.mjs';
 
 const DEFAULT_BRANCH = 'main';
 const RESULT_START = '=== RESULTADO PARA CHATGPT ===';
@@ -892,6 +900,9 @@ export function checkpointCorrection({
         fail(`${id}: CHECKPOINT_LEFT_DIRTY ${worktreePaths(root).join(', ')}.`);
     }
 
+    const repositoryPlan = buildCorrectionRepositoryPlan({ shellRoot: root, record });
+    const externalCheckpoint = checkpointExternalCorrectionBundle({ plan: repositoryPlan, record });
+
     git(['push', '-u', 'origin', expectedBranch], { cwd: root });
     const sync = syncCounts(root, `origin/${expectedBranch}`, 'HEAD');
     if (sync.behind !== 0 || sync.ahead !== 0) {
@@ -907,10 +918,11 @@ export function checkpointCorrection({
         CANDIDATE_HEAD: head,
         NORMALIZED_EOL_FILES: normalizedEol.length,
         COMMITS_CREATED: createdCommits,
+        EXTERNAL_REPOSITORIES: externalCheckpoint.length,
         WORKTREE: 'CLEAN',
         REMOTE_BRANCH_SYNC: '0/0',
     });
-    return { record, head, normalizedEol, createdCommits };
+    return { record, head, normalizedEol, createdCommits, externalCheckpoint };
 }
 
 function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commitMessage, beforeMerge = () => {} }) {
@@ -1079,6 +1091,8 @@ export function startCorrection({ root = ensureRepositoryRoot(), correctionId } 
     assertPendingImplementationPr(root, record);
     const branch = correctionBranchName(id);
     if (localBranchExists(root, branch) || remoteBranchExists(root, branch)) fail(`${branch} ya existe; reanude esa rama en vez de abrir otra.`);
+    const repositoryPlan = buildCorrectionRepositoryPlan({ shellRoot: root, record });
+    ensureExternalCorrectionBranches({ plan: repositoryPlan });
     if (record.integration) {
         assertRegisteredCorrectionOrigin({ root, record, baseRef: `origin/${DEFAULT_BRANCH}` });
         git(['fetch', 'origin', record.integration.head_ref, '--quiet'], { cwd: root });
@@ -1266,6 +1280,22 @@ export function advanceCorrection({ root = ensureRepositoryRoot(), correctionId 
             );
         }
 
+        let recordBeforeSeal = readRecord(root, id);
+        const repositoryPlan = buildCorrectionRepositoryPlan({ shellRoot: root, record: recordBeforeSeal });
+        const externalPublication = publishExternalCorrectionBundle({
+            plan: repositoryPlan,
+            record: recordBeforeSeal,
+        });
+        if (externalPublication.repositories.length > 0) {
+            recordBeforeSeal = replaceCorrectionEvidence(recordBeforeSeal, externalPublication);
+            writeRecord(root, recordBeforeSeal);
+            validatePublishedCorrectionBundleEvidence({
+                record: recordBeforeSeal,
+                evidence: externalPublication,
+                plan: repositoryPlan,
+            });
+        }
+
         const sealed = sealVerifiedCorrection(
             root,
             readRecord(root, id),
@@ -1303,6 +1333,12 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
     const record = readRecord(root, id);
     if (record.status !== 'VERIFIED') fail(`${id} debe estar VERIFIED antes de finish; estado ${record.status}.`);
     if (!Array.isArray(record.evidence) || record.evidence.length === 0) fail(`${id} no puede cerrarse sin evidence.`);
+    const repositoryPlan = buildCorrectionRepositoryPlan({ shellRoot: root, record });
+    validatePublishedCorrectionBundleEvidence({
+        record,
+        evidence: correctionRepositoryPublishEvidence(record),
+        plan: repositoryPlan,
+    });
     loadValidatedCorrectionControl({ root });
     assertBaselineCurrent({ root, record, ref: `origin/${DEFAULT_BRANCH}` });
     assertPendingImplementationPr(root, record);

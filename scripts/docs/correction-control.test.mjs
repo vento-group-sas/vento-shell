@@ -5,6 +5,7 @@ import test from 'node:test';
 
 import {
     CORRECTION_POLICY_RELATIVE_PATH,
+    CORRECTION_REPOSITORIES,
     CORRECTION_STARTER_PROJECTION,
     assertCorrectionPaths,
     blockingCorrectionsForTarget,
@@ -19,6 +20,7 @@ import {
     nextCorrectionId,
     normalizeCorrectionId,
     openCorrections,
+    validateAuthorizedChanges,
 } from './correction-control.mjs';
 
 test('correction-control oficial es válido', () => {
@@ -215,4 +217,34 @@ test('PENDING_AUTHORIZATION y CANCELLED permiten declaraciones operativas vacía
         source,
         /record\.status !== 'PENDING_AUTHORIZATION' && record\.validation_commands\.length === 0/u,
     );
+});
+
+test('correction-control admite exclusivamente los ocho repositorios gobernados', () => {
+    assert.deepEqual(
+        [...CORRECTION_REPOSITORIES].sort(),
+        [
+        "vento-group-sas/vento-anima",
+        "vento-group-sas/vento-fogo",
+        "vento-group-sas/vento-nexo",
+        "vento-group-sas/vento-numera",
+        "vento-group-sas/vento-origo",
+        "vento-group-sas/vento-pulso",
+        "vento-group-sas/vento-shell",
+        "vento-group-sas/vento-viso"
+].sort(),
+    );
+    assert.doesNotThrow(() => validateAuthorizedChanges({
+        correction_id: 'DELIV-PKG-015::CORR-020',
+        status: 'AUTHORIZED',
+        authorized_changes: [
+            { repo: 'vento-group-sas/vento-nexo', path: '.github/workflows/vento-required-gate.yml', change: 'MODIFY' },
+        ],
+    }));
+    assert.throws(() => validateAuthorizedChanges({
+        correction_id: 'DELIV-PKG-015::CORR-020',
+        status: 'AUTHORIZED',
+        authorized_changes: [
+            { repo: 'vento-group-sas/vento-wallet', path: '.github/workflows/vento-required-gate.yml', change: 'MODIFY' },
+        ],
+    }), /repositorio fuera del conjunto gobernado/u);
 });
