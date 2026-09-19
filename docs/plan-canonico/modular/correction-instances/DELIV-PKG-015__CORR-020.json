@@ -118,6 +118,97 @@
       "exit_code": 0,
       "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-19T17:55:52.427Z",
+      "candidate_head": "5e5ba8fc8dc701fb8dce4530fa4f35674cce3176",
+      "commands": [
+        "node --test scripts/quality/required-gate.test.mjs",
+        "node scripts/quality/required-gate.mjs audit-workspaces --json",
+        "node --test scripts/quality/test-evidence-publisher.test.mjs",
+        "node scripts/quality/test-evidence-publisher.mjs self-certify --json",
+        "node --test scripts/docs/correction-repository-bundle.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/quality/required-gate.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "13506578d980b083305de4d5f41b22f5c6f391eab232719238431056263336f3",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node scripts/quality/required-gate.mjs audit-workspaces --json",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "be6e3a29544996ed3e38387065078ab179b4e236935e0b69bbe776458ebba5ce",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/quality/test-evidence-publisher.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b11a057413d75ab32ccc8d1f05b6b7501fe2e3f344b67389ea6925a407736121",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node scripts/quality/test-evidence-publisher.mjs self-certify --json",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "3b53cbb901d27e8bcafee0a7fcdf8441a84339d0473190cae5064f31192aa2f5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "cb73b2dc55466978e1600d744bf5f120743d8d0d3d6c1cc6559224a7c5408945",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "45853f8ec6301ac7d0a87e315ff8f4c52825b40f516009cee6a8acee672c8213",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "00996d5cd2fdec8fc64f2ab7d78f0739693b06492a04823b8181c236cfa84cb1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "4e418f3ca03b9dd1dd4adb5cd9d0e1f26b8d938bb101f47188dcbc4f9564421a",
+          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "481dfdd27a7752517e4ec1b6536e947e9ac5376b285516ded65472ae1e73843e",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-09-19T16:42:32.200Z",
