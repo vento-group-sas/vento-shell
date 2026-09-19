@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,282 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell",
+    "vento-group-sas/vento-nexo",
+    "vento-group-sas/vento-fogo",
+    "vento-group-sas/vento-origo",
+    "vento-group-sas/vento-pulso",
+    "vento-group-sas/vento-viso",
+    "vento-group-sas/vento-numera",
+    "vento-group-sas/vento-anima"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "EXECUTE_ONLY",
+      "scope": "Conservar sin cambios el workflow propietario vigente en vento-shell y usarlo como fuente canonica para los consumidores."
+    },
+    {
+      "repo": "vento-group-sas/vento-nexo",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-fogo",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-origo",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-pulso",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-viso",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-numera",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-anima",
+      "path": ".github/workflows/vento-required-gate.yml",
+      "change": "CREATE",
+      "scope": "Restaurar en main la materializacion ya aprobada por SHELL-CI-018 y SHELL-CI-019 usando el workflow vigente de vento-shell, sin ampliar semantica."
+    },
+    {
+      "repo": "vento-group-sas/vento-viso",
+      "path": ".github/workflows/apply-guided-product-form.yml",
+      "change": "MODIFY",
+      "scope": "Eliminar el bypass historico de escritura directa a main y conservar el generador como validacion read-only en pull_request/workflow_dispatch."
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/quality/required-gate.test.mjs",
+    "node scripts/quality/required-gate.mjs audit-workspaces --json",
+    "node --test scripts/quality/test-evidence-publisher.test.mjs",
+    "node scripts/quality/test-evidence-publisher.mjs self-certify --json",
+    "node --test scripts/docs/correction-repository-bundle.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-19T16:42:32.200Z"
+  "zero_treq_reason": "Restauracion de materializacion CI018/CI019 ya aprobada en workflows y bypass VISO; no modifica semantica funcional, TREQ ni Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-19T16:52:34.312Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-19T17:25:46.911Z",
+      "candidate_head_before": "df0b0fdb834884b9c36008a3d660d498b1a9609e",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-19T17:31:45.818Z",
+      "execution_candidate_head": "84e2b49863d2240ca8fd68f17a31457f43ac5a1b",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-19T18:48:13.480Z",
+      "candidate_head": "34d738590cec4f067aa6cc9ec0cd0b7d7781c55d",
+      "commands": [
+        "node --test scripts/quality/required-gate.test.mjs",
+        "node scripts/quality/required-gate.mjs audit-workspaces --json",
+        "node --test scripts/quality/test-evidence-publisher.test.mjs",
+        "node scripts/quality/test-evidence-publisher.mjs self-certify --json",
+        "node --test scripts/docs/correction-repository-bundle.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/quality/required-gate.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "7986256f2391cd5499ac87e418c8b31bff27abced66871b24691064536432478",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node scripts/quality/required-gate.mjs audit-workspaces --json",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "be6e3a29544996ed3e38387065078ab179b4e236935e0b69bbe776458ebba5ce",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/quality/test-evidence-publisher.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "6619ade070fa1c29bfd76c4967307d9a99aa9a10a3ce4653b5fb8288086b06c2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node scripts/quality/test-evidence-publisher.mjs self-certify --json",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "3b53cbb901d27e8bcafee0a7fcdf8441a84339d0473190cae5064f31192aa2f5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "391c30749723a10f1bba343e69496f7ca767e2cbaad46345b40a8257de96a762",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "45853f8ec6301ac7d0a87e315ff8f4c52825b40f516009cee6a8acee672c8213",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "22d76c30de61d08e75c94db6368aea096f5f53b69c571ebdee9715201a915127",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "4e418f3ca03b9dd1dd4adb5cd9d0e1f26b8d938bb101f47188dcbc4f9564421a",
+          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "04858ea97d84e29c714dd5f6fe50c188a6c303d110c6e7db58f771563fd379bc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_REPOSITORY_BUNDLE_PUBLISH_V1",
+      "model_id": "VENTO-CORRECTION-REPOSITORY-BUNDLE-V1",
+      "correction_id": "DELIV-PKG-015::CORR-020",
+      "published_at": "2026-09-19T19:02:23.823Z",
+      "repositories": [
+        {
+          "repository": "vento-group-sas/vento-anima",
+          "candidate_commit": "ff66ff54ebb140ef7e9db09e115d665faca961c6",
+          "pr": 2,
+          "merge_commit": "9843d202bf890ee00bdce24fd99d327a4e8a7365",
+          "merged_at": "2026-09-19T18:54:41Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-fogo",
+          "candidate_commit": "786522f0d1679bb7344c13e73dab7b85c6d9ab2f",
+          "pr": 2,
+          "merge_commit": "2edbc976812dfc3824d7c8c8ed5913b132cbe5e1",
+          "merged_at": "2026-09-19T18:55:55Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-nexo",
+          "candidate_commit": "53627921d56e1225f84958508a032f9a9479b26e",
+          "pr": 10,
+          "merge_commit": "f2777bf03ecea51854dbf2de462b789bd6222082",
+          "merged_at": "2026-09-19T18:57:41Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-numera",
+          "candidate_commit": "d38d9bbb9da0e2e0095a0425e3dfa2fa89260783",
+          "pr": 2,
+          "merge_commit": "c4d50282e30e46d0abb3d871f9604cf913ebbabd",
+          "merged_at": "2026-09-19T18:58:53Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-origo",
+          "candidate_commit": "7f3d5c477aa845e178c6b00a6034ce160e1a8e84",
+          "pr": 2,
+          "merge_commit": "4700ba1456a016079847bf3e64a4852413994f02",
+          "merged_at": "2026-09-19T18:59:58Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-pulso",
+          "candidate_commit": "2cbfa05fb236997e6534c6225bc83625e36386e0",
+          "pr": 4,
+          "merge_commit": "ebaf2aba86c2f5e7c32138a93313139c14e03b48",
+          "merged_at": "2026-09-19T19:01:09Z",
+          "status": "MERGED",
+          "checks": 4
+        },
+        {
+          "repository": "vento-group-sas/vento-viso",
+          "candidate_commit": "274cb6e9bdba4b66d11c17261e01fa50b6e5c33e",
+          "pr": 16,
+          "merge_commit": "dd7a471036b9aa540d282438f06be5350b4b08fd",
+          "merged_at": "2026-09-19T19:02:23Z",
+          "status": "MERGED",
+          "checks": 4
+        }
+      ]
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-19T19:02:29.033Z",
+      "validated_candidate_head": "34d738590cec4f067aa6cc9ec0cd0b7d7781c55d",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-19T16:42:32.200Z",
+  "implemented_at": "2026-09-19T17:37:35.058Z",
+  "verified_at": "2026-09-19T19:02:29.033Z"
 }
