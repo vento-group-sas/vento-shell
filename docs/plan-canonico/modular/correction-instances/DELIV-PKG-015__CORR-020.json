@@ -122,8 +122,8 @@
     {
       "type": "CORRECTION_VALIDATION_V1",
       "status": "PASS",
-      "observed_at": "2026-09-19T17:55:52.427Z",
-      "candidate_head": "5e5ba8fc8dc701fb8dce4530fa4f35674cce3176",
+      "observed_at": "2026-09-19T18:48:13.480Z",
+      "candidate_head": "34d738590cec4f067aa6cc9ec0cd0b7d7781c55d",
       "commands": [
         "node --test scripts/quality/required-gate.test.mjs",
         "node scripts/quality/required-gate.mjs audit-workspaces --json",
@@ -141,7 +141,7 @@
           "command": "node --test scripts/quality/required-gate.test.mjs",
           "status": "PASS",
           "exit_code": 0,
-          "stdout_sha256": "13506578d980b083305de4d5f41b22f5c6f391eab232719238431056263336f3",
+          "stdout_sha256": "7986256f2391cd5499ac87e418c8b31bff27abced66871b24691064536432478",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
@@ -155,7 +155,7 @@
           "command": "node --test scripts/quality/test-evidence-publisher.test.mjs",
           "status": "PASS",
           "exit_code": 0,
-          "stdout_sha256": "b11a057413d75ab32ccc8d1f05b6b7501fe2e3f344b67389ea6925a407736121",
+          "stdout_sha256": "6619ade070fa1c29bfd76c4967307d9a99aa9a10a3ce4653b5fb8288086b06c2",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
@@ -169,7 +169,7 @@
           "command": "node --test scripts/docs/correction-repository-bundle.test.mjs",
           "status": "PASS",
           "exit_code": 0,
-          "stdout_sha256": "cb73b2dc55466978e1600d744bf5f120743d8d0d3d6c1cc6559224a7c5408945",
+          "stdout_sha256": "391c30749723a10f1bba343e69496f7ca767e2cbaad46345b40a8257de96a762",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
@@ -183,7 +183,7 @@
           "command": "npm run docs:correction:test",
           "status": "PASS",
           "exit_code": 0,
-          "stdout_sha256": "00996d5cd2fdec8fc64f2ab7d78f0739693b06492a04823b8181c236cfa84cb1",
+          "stdout_sha256": "22d76c30de61d08e75c94db6368aea096f5f53b69c571ebdee9715201a915127",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
@@ -197,7 +197,7 @@
           "command": "npm run docs:plan:test",
           "status": "PASS",
           "exit_code": 0,
-          "stdout_sha256": "481dfdd27a7752517e4ec1b6536e947e9ac5376b285516ded65472ae1e73843e",
+          "stdout_sha256": "04858ea97d84e29c714dd5f6fe50c188a6c303d110c6e7db58f771563fd379bc",
           "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
         },
         {
