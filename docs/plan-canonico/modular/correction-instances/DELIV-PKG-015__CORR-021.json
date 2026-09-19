@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,68 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Make implementation accelerator execute with an exact current-main control-plane runtime while preserving the physical branch as the target working tree.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add regression coverage for exact main runtime selection, pin validation and stale branch re-execution.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-branch-lifecycle.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Provide verified correction metadata proof to integration-impact classification before main reconciliation.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-branch-lifecycle.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add fail-closed regression coverage for verified correction record recognition.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Classify only proven governance lifecycle deltas as reusable physical evidence while keeping product and unknown paths fail-closed.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-integration-impact.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add regression coverage for verified correction ledgers, correction lifecycle tooling, repository bundle tooling and additive lifecycle-only package scripts.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Lifecycle governance correction only; it changes no product semantics, TREQ requirement, Supabase behavior, migration, consumer code or Registro 04A content.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-19T20:16:23.662Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-19T20:05:06.371Z"
 }
