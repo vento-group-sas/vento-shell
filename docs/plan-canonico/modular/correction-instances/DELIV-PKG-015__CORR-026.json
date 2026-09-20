@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,42 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "In multi-repository FINISH, validate and checkpoint IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_V1 before invoking finishImplementation; push the checkpoint when created, support resumable pre-existing publish evidence, and never republish consumers when valid publish evidence already exists.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add regression coverage proving persist -> validate -> checkpoint -> push -> finish ordering, exactly one external publisher call guarded by missing publish evidence, resumable pre-existing evidence, and no relaxation of candidate integrity.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "npm run docs:correction:check",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Implementation lifecycle governance correction only. It checkpoints already validated multi-repository publish evidence before FINISH and does not change product behavior, physical validation commands, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-20T21:38:14.406Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-20T21:27:01.269Z"
 }
