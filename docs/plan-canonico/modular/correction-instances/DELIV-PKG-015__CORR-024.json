@@ -54,6 +54,15 @@
     "approval_statement": "APROBADO, METELO EN EL INICIADOR, TODO EL PLAN ANTERIOR Y ESTE Y CONTINUEMOS",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-20T07:33:56.827Z",
+      "candidate_head_before": "a5afa96918e08909b60f685cd88ee5d73e66a555",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-20T06:04:28.360Z"
 }
