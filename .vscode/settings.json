@@ -1,5 +1,16 @@
 {
   "task.allowAutomaticTasks": "on",
   "files.eol": "\n",
-  "files.encoding": "utf8"
+  "files.encoding": "utf8",
+  "terminal.integrated.profiles.windows": {
+    "VENTO UTF-8": {
+      "path": "pwsh.exe",
+      "args": [
+        "-NoExit",
+        "-Command",
+        ". (Join-Path '${workspaceFolder}' 'scripts/docs/vento-terminal.ps1')"
+      ]
+    }
+  },
+  "terminal.integrated.defaultProfile.windows": "VENTO UTF-8"
 }
