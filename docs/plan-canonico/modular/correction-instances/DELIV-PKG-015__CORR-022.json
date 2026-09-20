@@ -80,6 +80,89 @@
       "exit_code": 0,
       "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-20T00:42:31.690Z",
+      "candidate_head": "a30c5e0342eed5e28ca7be75c743d1fc796ac108",
+      "commands": [
+        "node --test scripts/docs/implementation-state-integrity.test.mjs",
+        "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+        "node --test scripts/docs/implementation-integration-impact.test.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/docs/implementation-state-integrity.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b178db7b47b0f780c246ba2c1264d8283ae50f3a24ee2bf14bbaeb99b1114234",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-branch-lifecycle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "0159729de5b7b80bfa81455cfe373766fc0d9f27523b9912dd45efa9eb48c343",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-integration-impact.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "7f1c8630ebe4d930a08b16ddada597426fc94a6e649276a527c723e5504cf38f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "30bee69e1eeeb6cabf058f45d89ab23738e9dc4f2ace1e9c45aaaaf2e5cddafe",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "cfa98af5f7b2cdb164801684652d4f9f418f93cac2ae857d84fdbbedcf14e2e5",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f90853e390887c0d8eb7a1f8997ce27cda8c6ef5eda5ba4ba8f221e4b3c868bd",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "a4cfd61f83619f66368e94e9f554c9ef7034cf7d2c70289a04bcb8bf902ba4be",
+          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "687ffd7fb56d6cc8a975032e29daafacb27b639bb6ffda4bafd34af7db0c4fcd",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-09-19T23:31:18.739Z",
