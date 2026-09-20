@@ -67,6 +67,81 @@
       "exit_code": 0,
       "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-20T18:00:29.714Z",
+      "candidate_head": "3641cc05fb978947f78a768ed652e1fb0898deb0",
+      "commands": [
+        "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+        "node --test scripts/docs/correction-repository-bundle.test.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "16498867c01dbda36164bef450d88040ca67e497f436cc4e1a4ced787e6a04fc",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "856708ec272a0197891297121dcb33466967f598660ab345ddff6d1d60b7ea6b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "938e01815ce71383c1c0f99f85998be035134aac090f0d9e39e612f4db8ad689",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d0057ba9c5091f7b955f0858a90022702148c808ae196e0da503203a2fc44504",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "ae4bd79456094d7e0a5a88a716d18a834c2d4f87cb086c7a027929dee1750ede",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "66fbf159a6b24895a1ec35c7248d5ea2be97ad92397b735f6fecb420a3cd2249",
+          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "ff0b8760e211c678bcb5fcb3984dad626940649a8c201066c2a4d2d75e8a9eb1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-09-20T16:56:13.430Z",
