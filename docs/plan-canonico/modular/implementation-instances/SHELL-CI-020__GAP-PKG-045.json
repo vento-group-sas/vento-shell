@@ -773,6 +773,64 @@
         "status": "PASS",
         "recordSha256": "6bcdd8a50b311bd21ab1b9fef323f627803d713d8b7a2a700ada24be1d8e952d"
       }
+    },
+    {
+      "type": "IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_V1",
+      "model_id": "VENTO-IMPLEMENTATION-REPOSITORY-BUNDLE-V1",
+      "instance_id": "SHELL-CI-020::GAP-PKG-045",
+      "published_at": "2026-09-20T18:58:41.975Z",
+      "repositories": [
+        {
+          "repository": "vento-group-sas/vento-fogo",
+          "candidate_commit": "5cfead6eca2804b6911e888f564b5551a7a28e0d",
+          "pr": 3,
+          "merge_commit": "a40683b2413d621fb3f54f2eebb8743a42bad3d7",
+          "merged_at": "2026-09-20T18:54:08Z",
+          "status": "MERGED",
+          "checks": 4,
+          "resume": "MERGED_THIS_RUN"
+        },
+        {
+          "repository": "vento-group-sas/vento-nexo",
+          "candidate_commit": "432837756c68bae6bba59ebfdaa9192143d76694",
+          "pr": 11,
+          "merge_commit": "f0a12557a1a258c84b025933653dc756de4b5a59",
+          "merged_at": "2026-09-20T18:55:17Z",
+          "status": "MERGED",
+          "checks": 4,
+          "resume": "MERGED_THIS_RUN"
+        },
+        {
+          "repository": "vento-group-sas/vento-origo",
+          "candidate_commit": "c3f912758dc390758c0dd5af3c984c9c28e08506",
+          "pr": 3,
+          "merge_commit": "70860f1ca5f0a4a73e894cbb840956f9f7eda2ad",
+          "merged_at": "2026-09-20T18:56:24Z",
+          "status": "MERGED",
+          "checks": 4,
+          "resume": "MERGED_THIS_RUN"
+        },
+        {
+          "repository": "vento-group-sas/vento-pulso",
+          "candidate_commit": "07e2db8e0889d617653f2c03fb884c5fb827a1e6",
+          "pr": 5,
+          "merge_commit": "715b5683db05caa010d725679b5ada4705a6da6e",
+          "merged_at": "2026-09-20T18:57:31Z",
+          "status": "MERGED",
+          "checks": 4,
+          "resume": "MERGED_THIS_RUN"
+        },
+        {
+          "repository": "vento-group-sas/vento-viso",
+          "candidate_commit": "df584ce067a9aa845e4095518df6af4623260514",
+          "pr": 17,
+          "merge_commit": "df3f28654188e4c8a4dd64e057c1f01ef602a2ba",
+          "merged_at": "2026-09-20T18:58:45Z",
+          "status": "MERGED",
+          "checks": 4,
+          "resume": "MERGED_THIS_RUN"
+        }
+      ]
     }
   ],
   "target_environments": [
