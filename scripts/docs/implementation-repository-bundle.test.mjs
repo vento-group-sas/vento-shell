@@ -127,6 +127,79 @@ test('CORR-019 separa candidato fisico de lifecycle HEAD y solo reconcilia vento
   assert.throws(() => reconcileRepositoryBundleCandidateEvidence({ plan, evidence: externalDrift, orchestratorCandidateCommit: physicalCandidate }), /CANDIDATE_STALE:vento-group-sas\/vento-nexo/u);
 });
 
+test('external integration head preserva candidate fisico solo para merges automaticos de main', (context) => {
+  const parent = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-external-integration-'));
+  context.after(() => fs.rmSync(parent, { recursive: true, force: true }));
+  const shellRoot = path.join(parent, 'vento-shell');
+  const nexoRoot = path.join(parent, 'vento-nexo');
+  fs.mkdirSync(shellRoot, { recursive: true });
+  fs.mkdirSync(nexoRoot, { recursive: true });
+  seedRepository(shellRoot, 'src/app/page.tsx', 'base-shell\n');
+  seedRepository(nexoRoot, 'src/components/vento/standard/vento-shell.tsx', 'base-nexo\n');
+  git(shellRoot, ['switch', '-c', BRANCH]);
+  git(nexoRoot, ['switch', '-c', BRANCH]);
+  fs['write' + 'FileSync'](path.join(nexoRoot, 'src/components/vento/standard/vento-shell.tsx'), 'physical-nexo\n', 'utf8');
+  git(nexoRoot, ['add', '--', 'src/components/vento/standard/vento-shell.tsx']);
+  git(nexoRoot, ['commit', '-m', 'physical nexo candidate']);
+
+  const plan = buildImplementationRepositoryPlan({ shellRoot, instance: record(), verifyCheckouts: false });
+  const evidence = buildRepositoryBundleCandidateEvidence({ plan });
+  const physicalShell = evidence.repositories.find((entry) => entry.repository === 'vento-group-sas/vento-shell').candidate_commit;
+  const physicalNexo = evidence.repositories.find((entry) => entry.repository === 'vento-group-sas/vento-nexo').candidate_commit;
+
+  git(nexoRoot, ['switch', 'main']);
+  fs['write' + 'FileSync'](path.join(nexoRoot, 'governance-only.txt'), 'main integration\n', 'utf8');
+  git(nexoRoot, ['add', '--', 'governance-only.txt']);
+  git(nexoRoot, ['commit', '-m', 'main governance advance']);
+  const mainIntegration = git(nexoRoot, ['rev-parse', 'HEAD']);
+  git(nexoRoot, ['fetch', 'origin', 'main']);
+  git(nexoRoot, ['switch', BRANCH]);
+  git(nexoRoot, ['merge', '--no-edit', mainIntegration]);
+  const integrationHead = git(nexoRoot, ['rev-parse', 'HEAD']);
+  assert.notEqual(integrationHead, physicalNexo);
+
+  assert.equal(validateRepositoryBundleCandidateEvidence({
+    plan,
+    evidence,
+    orchestratorCandidateCommit: physicalShell,
+  }), true);
+  const reconciled = reconcileRepositoryBundleCandidateEvidence({
+    plan,
+    evidence,
+    orchestratorCandidateCommit: physicalShell,
+  });
+  assert.equal(reconciled.updated, false);
+  assert.equal(
+    reconciled.evidence.repositories.find((entry) => entry.repository === 'vento-group-sas/vento-nexo').candidate_commit,
+    physicalNexo,
+  );
+
+  fs['write' + 'FileSync'](path.join(nexoRoot, 'src/components/vento/standard/vento-shell.tsx'), 'material-drift\n', 'utf8');
+  git(nexoRoot, ['add', '--', 'src/components/vento/standard/vento-shell.tsx']);
+  git(nexoRoot, ['commit', '-m', 'material drift after integration']);
+  const driftCommit = git(nexoRoot, ['rev-parse', 'HEAD']);
+  const driftTree = git(nexoRoot, ['rev-parse', `${driftCommit}^{tree}`]);
+  const forgedMerge = git(nexoRoot, [
+    'commit-tree', driftTree,
+    '-p', physicalNexo,
+    '-p', mainIntegration,
+    '-m', 'manual merge tree divergence',
+  ]);
+  git(nexoRoot, ['switch', '--detach', forgedMerge]);
+  assert.throws(() => validateRepositoryBundleCandidateEvidence({
+    plan,
+    evidence,
+    orchestratorCandidateCommit: physicalShell,
+  }), /CANDIDATE_STALE:vento-group-sas\/vento-nexo:INTEGRATION_TREE_MISMATCH/u);
+
+  git(nexoRoot, ['switch', BRANCH]);
+  assert.throws(() => validateRepositoryBundleCandidateEvidence({
+    plan,
+    evidence,
+    orchestratorCandidateCommit: physicalShell,
+  }), /CANDIDATE_STALE:vento-group-sas\/vento-nexo:INTEGRATION_COMMIT_NOT_TWO_PARENT_MERGE/u);
+});
+
 test('publish evidence exige todos los repos externos', () => {
   assert.equal(validatePublishedRepositoryBundleEvidence({ instance: record(), evidence: {
     type: 'IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_V1', instance_id: ID,

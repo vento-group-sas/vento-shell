@@ -82,10 +82,90 @@ function normalizedCandidateCommit(value,label='IMPLEMENTATION_REPOSITORY_CANDID
 function candidateBaseCommit(root,candidateCommit){ const candidate=normalizedCandidateCommit(candidateCommit); git(root,['fetch','origin',DEFAULT_BRANCH,'--quiet']); return git(root,['merge-base',`origin/${DEFAULT_BRANCH}`,candidate]).stdout.trim().toLowerCase(); }
 function candidateChangedPaths(root,candidateCommit){ const candidate=normalizedCandidateCommit(candidateCommit); return git(root,['diff','--name-only','--diff-filter=ACMRD',`origin/${DEFAULT_BRANCH}...${candidate}`]).stdout.split(/\r?\n/u).map(normalizeImplementationPath).filter(Boolean); }
 function expectedRepositoryCandidate(entry,orchestratorCandidateCommit=null){ if(entry.orchestrator&&orchestratorCandidateCommit){ const candidate=normalizedCandidateCommit(orchestratorCandidateCommit,'IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE'); const lifecycleHead=currentHead(entry.root); if(git(entry.root,['merge-base','--is-ancestor',candidate,lifecycleHead],{allowFailure:true}).status!==0) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE_NOT_ANCESTOR:${candidate}:${lifecycleHead}`); return candidate; } return currentHead(entry.root); }
+function assessExternalRepositoryCandidateHead(entry,candidateCommit){
+  const physical=normalizedCandidateCommit(candidateCommit,'IMPLEMENTATION_REPOSITORY_EXTERNAL_PHYSICAL_CANDIDATE');
+  const head=currentHead(entry.root);
+  if(head===physical) return Object.freeze({safe:true,reason:'EXACT_PHYSICAL_CANDIDATE',physical_candidate:physical,integration_head:head,merge_count:0});
+  if(git(entry.root,['merge-base','--is-ancestor',physical,head],{allowFailure:true}).status!==0){
+    return Object.freeze({safe:false,reason:'PHYSICAL_CANDIDATE_NOT_ANCESTOR',physical_candidate:physical,integration_head:head,merge_count:0});
+  }
+  git(entry.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']);
+  const commits=git(entry.root,['rev-list','--first-parent','--reverse',`${physical}..${head}`]).stdout
+    .split(/\r?\n/u).map(value=>value.trim().toLowerCase()).filter(Boolean);
+  if(commits.length===0){
+    return Object.freeze({safe:false,reason:'INTEGRATION_CHAIN_EMPTY',physical_candidate:physical,integration_head:head,merge_count:0});
+  }
+  let previous=physical;
+  for(const commit of commits){
+    const tokens=git(entry.root,['rev-list','--parents','-n','1',commit]).stdout
+      .trim().toLowerCase().split(/\s+/u).filter(Boolean);
+    const parents=tokens.slice(1);
+    if(parents.length!==2){
+      return Object.freeze({safe:false,reason:'INTEGRATION_COMMIT_NOT_TWO_PARENT_MERGE',physical_candidate:physical,integration_head:head,merge_count:0});
+    }
+    if(parents[0]!==previous){
+      return Object.freeze({safe:false,reason:'INTEGRATION_FIRST_PARENT_CHAIN_BROKEN',physical_candidate:physical,integration_head:head,merge_count:0});
+    }
+    if(git(entry.root,['merge-base','--is-ancestor',parents[1],`origin/${DEFAULT_BRANCH}`],{allowFailure:true}).status!==0){
+      return Object.freeze({safe:false,reason:'INTEGRATION_SECOND_PARENT_NOT_MAIN',physical_candidate:physical,integration_head:head,merge_count:0});
+    }
+    const mergeTree=git(entry.root,['merge-tree','--write-tree',parents[0],parents[1]],{allowFailure:true});
+    if(mergeTree.status!==0){
+      return Object.freeze({safe:false,reason:'INTEGRATION_MERGE_NOT_REPRODUCIBLE',physical_candidate:physical,integration_head:head,merge_count:0});
+    }
+    const expectedTree=mergeTree.stdout.split(/\r?\n/u).map(value=>value.trim().toLowerCase()).find(value=>SHA_PATTERN.test(value))??null;
+    const actualTree=git(entry.root,['rev-parse',`${commit}^{tree}`]).stdout.trim().toLowerCase();
+    if(!expectedTree||expectedTree!==actualTree){
+      return Object.freeze({safe:false,reason:'INTEGRATION_TREE_MISMATCH',physical_candidate:physical,integration_head:head,merge_count:0});
+    }
+    previous=commit;
+  }
+  if(previous!==head){
+    return Object.freeze({safe:false,reason:'INTEGRATION_HEAD_NOT_REACHED',physical_candidate:physical,integration_head:head,merge_count:commits.length});
+  }
+  return Object.freeze({safe:true,reason:'REPRODUCIBLE_MAIN_INTEGRATION_ONLY',physical_candidate:physical,integration_head:head,merge_count:commits.length});
+}
 function assertRepositoryBundleCandidateShape(plan,evidence){ if(!evidence||evidence.type!==IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE||evidence.model_id!==IMPLEMENTATION_REPOSITORY_BUNDLE_MODEL_ID||evidence.instance_id!==plan.instance_id) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_EVIDENCE_INVALID'); const expected=plan.repositories.map(e=>e.repository).sort(); const rows=Array.isArray(evidence.repositories)?evidence.repositories:[]; const actual=rows.map(e=>String(e?.repository??'')).sort(); if(JSON.stringify(expected)!==JSON.stringify(actual)) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_SET_MISMATCH'); if(new Set(actual).size!==actual.length) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_REPOSITORY_DUPLICATE'); for(const row of rows){ if(!SHA_PATTERN.test(String(row?.candidate_commit??''))) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_SHA_INVALID:${row?.repository??'UNKNOWN'}`); } return rows; }
 export function buildRepositoryBundleCandidateEvidence({plan,orchestratorCandidateCommit=null}={}){ const repositories=plan.repositories.map(entry=>{ const candidate=expectedRepositoryCandidate(entry,orchestratorCandidateCommit); return Object.freeze({repository:entry.repository,branch:entry.branch,base_commit:candidateBaseCommit(entry.root,candidate),candidate_commit:candidate,changed_paths:Object.freeze(candidateChangedPaths(entry.root,candidate))}); }); return Object.freeze({type:IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE,model_id:IMPLEMENTATION_REPOSITORY_BUNDLE_MODEL_ID,instance_id:plan.instance_id,repository_count:repositories.length,repositories:Object.freeze(repositories)}); }
-export function validateRepositoryBundleCandidateEvidence({plan,evidence,orchestratorCandidateCommit=null}={}){ const rows=assertRepositoryBundleCandidateShape(plan,evidence); for(const row of rows){ const pe=plan.repositories.find(e=>e.repository===row.repository); if(!pe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_REPO_UNKNOWN:${row.repository}`); const expected=expectedRepositoryCandidate(pe,orchestratorCandidateCommit); if(expected!==row.candidate_commit) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}`); } return true; }
-export function reconcileRepositoryBundleCandidateEvidence({plan,evidence,orchestratorCandidateCommit}={}){ const rows=assertRepositoryBundleCandidateShape(plan,evidence); const physical=normalizedCandidateCommit(orchestratorCandidateCommit,'IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE'); let updated=false; const repositories=rows.map(row=>{ const pe=plan.repositories.find(e=>e.repository===row.repository); if(!pe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_REPO_UNKNOWN:${row.repository}`); if(!pe.orchestrator){ const external=currentHead(pe.root); if(external!==row.candidate_commit) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}`); return Object.freeze({...row,changed_paths:Object.freeze([...(row.changed_paths??[])])}); } expectedRepositoryCandidate(pe,physical); if(row.candidate_commit===physical) return Object.freeze({...row,changed_paths:Object.freeze([...(row.changed_paths??[])])}); if(git(pe.root,['merge-base','--is-ancestor',row.candidate_commit,physical],{allowFailure:true}).status!==0) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_RECONCILIATION_UNSAFE:${row.candidate_commit}->${physical}`); updated=true; return Object.freeze({...row,base_commit:candidateBaseCommit(pe.root,physical),candidate_commit:physical,changed_paths:Object.freeze(candidateChangedPaths(pe.root,physical))}); }); const next=Object.freeze({...evidence,repository_count:repositories.length,repositories:Object.freeze(repositories)}); validateRepositoryBundleCandidateEvidence({plan,evidence:next,orchestratorCandidateCommit:physical}); return Object.freeze({updated,evidence:next,orchestrator_candidate_commit:physical}); }
+export function validateRepositoryBundleCandidateEvidence({plan,evidence,orchestratorCandidateCommit=null}={}){
+  const rows=assertRepositoryBundleCandidateShape(plan,evidence);
+  for(const row of rows){
+    const pe=plan.repositories.find(entry=>entry.repository===row.repository);
+    if(!pe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_REPO_UNKNOWN:${row.repository}`);
+    if(pe.orchestrator){
+      const expected=expectedRepositoryCandidate(pe,orchestratorCandidateCommit);
+      if(expected!==row.candidate_commit) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}`);
+      continue;
+    }
+    const assessment=assessExternalRepositoryCandidateHead(pe,row.candidate_commit);
+    if(!assessment.safe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}:${assessment.reason}`);
+  }
+  return true;
+}
+export function reconcileRepositoryBundleCandidateEvidence({plan,evidence,orchestratorCandidateCommit}={}){
+  const rows=assertRepositoryBundleCandidateShape(plan,evidence);
+  const physical=normalizedCandidateCommit(orchestratorCandidateCommit,'IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE');
+  let updated=false;
+  const repositories=rows.map(row=>{
+    const pe=plan.repositories.find(entry=>entry.repository===row.repository);
+    if(!pe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_REPO_UNKNOWN:${row.repository}`);
+    if(!pe.orchestrator){
+      const assessment=assessExternalRepositoryCandidateHead(pe,row.candidate_commit);
+      if(!assessment.safe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}:${assessment.reason}`);
+      return Object.freeze({...row,changed_paths:Object.freeze([...(row.changed_paths??[])])});
+    }
+    expectedRepositoryCandidate(pe,physical);
+    if(row.candidate_commit===physical) return Object.freeze({...row,changed_paths:Object.freeze([...(row.changed_paths??[])])});
+    if(git(pe.root,['merge-base','--is-ancestor',row.candidate_commit,physical],{allowFailure:true}).status!==0){
+      fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_RECONCILIATION_UNSAFE:${row.candidate_commit}->${physical}`);
+    }
+    updated=true;
+    return Object.freeze({...row,base_commit:candidateBaseCommit(pe.root,physical),candidate_commit:physical,changed_paths:Object.freeze(candidateChangedPaths(pe.root,physical))});
+  });
+  const next=Object.freeze({...evidence,repository_count:repositories.length,repositories:Object.freeze(repositories)});
+  validateRepositoryBundleCandidateEvidence({plan,evidence:next,orchestratorCandidateCommit:physical});
+  return Object.freeze({updated,evidence:next,orchestrator_candidate_commit:physical});
+}
 function parseJson(source,label){ try{return JSON.parse(String(source??'').trim()||'null');}catch{fail(`${label}: JSON_INVALID`);} }
 
 function normalizedPrBody(value){ return String(value??'').replace(/\r\n/gu,'\n').trimEnd(); }
