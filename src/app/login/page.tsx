@@ -6,43 +6,28 @@ import { createClient } from "@/lib/supabase/server";
 
 type SearchParams = { returnTo?: string; email?: string };
 
-const APP_METADATA_BY_HOST: Record<string, { label: string; description: string; icon: string }> = {
-  "nexo.ventogroup.co": {
-    label: "NEXO",
-    description: "Logistica e inventario operativo.",
-    icon: "/logos/nexo.svg",
-  },
-  "origo.ventogroup.co": {
-    label: "ORIGO",
-    description: "Ordenes de compra y proveedores.",
-    icon: "/logos/origo.svg",
-  },
-  "fogo.ventogroup.co": {
-    label: "FOGO",
-    description: "Produccion y cocina operativa.",
-    icon: "/logos/fogo.svg",
-  },
-  "viso.ventogroup.co": {
-    label: "VISO",
-    description: "Analitica y control operativo.",
-    icon: "/logos/viso.svg",
-  },
-  "pulso.ventogroup.co": {
-    label: "PULSO",
-    description: "Gestion y seguimiento operativo.",
-    icon: "/logos/pulso.svg",
-  },
-  "anima.ventogroup.co": {
-    label: "ANIMA",
-    description: "Gestion de personas y comunicacion.",
-    icon: "/logos/anima.svg",
-  },
-  "aura.ventogroup.co": {
-    label: "AURA",
-    description: "Experiencia y asistencia operativa.",
-    icon: "/logos/aura.svg",
-  },
-};
+type CanonicalAppCode = "shell" | "anima" | "viso" | "nexo" | "fogo" | "origo" | "pulso" | "numera" | "aura" | "pass";
+type AppMetadata = { appCode: CanonicalAppCode; label: string; description: string; icon: string };
+type CanonicalLoginApp = AppMetadata & { host: string | null; webAvailable: boolean };
+
+const CANONICAL_LOGIN_APPS: readonly CanonicalLoginApp[] = [
+  { appCode: "shell", label: "Vento OS", description: "Centro de aplicaciones de Vento Group.", icon: "/icon.svg", host: "os.ventogroup.co", webAvailable: true },
+  { appCode: "anima", label: "ANIMA", description: "Gestion de personas y asistencia.", icon: "/logos/anima.svg", host: "anima.ventogroup.co", webAvailable: true },
+  { appCode: "viso", label: "VISO", description: "Analitica y control operativo.", icon: "/logos/viso.svg", host: "viso.ventogroup.co", webAvailable: true },
+  { appCode: "nexo", label: "NEXO", description: "Logistica e inventario operativo.", icon: "/logos/nexo.svg", host: "nexo.ventogroup.co", webAvailable: true },
+  { appCode: "fogo", label: "FOGO", description: "Produccion y cocina operativa.", icon: "/logos/fogo.svg", host: "fogo.ventogroup.co", webAvailable: true },
+  { appCode: "origo", label: "ORIGO", description: "Ordenes de compra y proveedores.", icon: "/logos/origo.svg", host: "origo.ventogroup.co", webAvailable: true },
+  { appCode: "pulso", label: "PULSO", description: "Gestion y seguimiento operativo.", icon: "/logos/pulso.svg", host: "pulso.ventogroup.co", webAvailable: true },
+  { appCode: "numera", label: "NUMERA", description: "Economia, costos y rentabilidad.", icon: "/icon.svg", host: "numera.ventogroup.co", webAvailable: true },
+  { appCode: "aura", label: "AURA", description: "Identidad canonica diferida; producto web no disponible.", icon: "/logos/aura.svg", host: null, webAvailable: false },
+  { appCode: "pass", label: "Vento Pass", description: "Identidad canonica de cliente sin destino web aprobado.", icon: "/icon.svg", host: null, webAvailable: false },
+];
+
+const APP_METADATA_BY_HOST: Record<string, AppMetadata> = Object.fromEntries(
+  CANONICAL_LOGIN_APPS
+    .filter((entry) => entry.webAvailable && entry.host)
+    .map((entry) => [String(entry.host), { appCode: entry.appCode, label: entry.label, description: entry.description, icon: entry.icon }])
+);
 
 function safeReturnTo(value?: string) {
   const v = (value ?? "").trim();

@@ -1,10 +1,11 @@
-﻿import Image from "next/image";
+import Image from "next/image";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
 import { createClient } from "@/lib/supabase/server";
 
-type AppAccess = "enabled" | "disabled";
+type AppStatus = "active" | "soon";
+type AppAccess = "enabled" | "disabled" | "soon";
 type SupabaseClient = Awaited<ReturnType<typeof createClient>>;
 
 type AppLink = {
@@ -15,6 +16,7 @@ type AppLink = {
   href: string;
   permissionCode: string;
   logo: string;
+  status: AppStatus;
   accentText: string;
   accentBorder: string;
   accentBg: string;
@@ -22,82 +24,22 @@ type AppLink = {
   glowClass: string;
 };
 
-type ResolvedAppLink = AppLink & {
-  access: AppAccess;
-};
+type ResolvedAppLink = AppLink & { access: AppAccess };
 
-const INTERNAL_APPS: AppLink[] = [
-  {
-    id: "viso",
-    name: "VISO",
-    label: "Gerencia y auditoría",
-    description: "Gestión centralizada de equipo, sedes, permisos y visión ejecutiva.",
-    href: "https://viso.ventogroup.co",
-    permissionCode: "viso.access",
-    logo: "/logos/viso.svg",
-    accentText: "text-violet-700",
-    accentBorder: "border-violet-200",
-    accentBg: "bg-violet-50",
-    buttonClass: "bg-violet-600 hover:bg-violet-700 shadow-violet-500/20",
-    glowClass: "group-hover:shadow-violet-500/18",
-  },
-  {
-    id: "nexo",
-    name: "NEXO",
-    label: "Inventario y logística",
-    description: "Control operativo de stock, remisiones, ubicaciones y abastecimiento.",
-    href: "https://nexo.ventogroup.co",
-    permissionCode: "nexo.access",
-    logo: "/logos/nexo.svg",
-    accentText: "text-amber-700",
-    accentBorder: "border-amber-200",
-    accentBg: "bg-amber-50",
-    buttonClass: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20",
-    glowClass: "group-hover:shadow-amber-500/18",
-  },
-  {
-    id: "fogo",
-    name: "FOGO",
-    label: "Producción",
-    description: "Recetas, preparaciones, lotes y trazabilidad de producción.",
-    href: "https://fogo.ventogroup.co",
-    permissionCode: "fogo.access",
-    logo: "/logos/fogo.svg",
-    accentText: "text-orange-700",
-    accentBorder: "border-orange-200",
-    accentBg: "bg-orange-50",
-    buttonClass: "bg-orange-600 hover:bg-orange-700 shadow-orange-500/20",
-    glowClass: "group-hover:shadow-orange-500/18",
-  },
-  {
-    id: "origo",
-    name: "ORIGO",
-    label: "Compras",
-    description: "Órdenes de compra, proveedores, recepción y abastecimiento externo.",
-    href: "https://origo.ventogroup.co",
-    permissionCode: "origo.access",
-    logo: "/logos/origo.svg",
-    accentText: "text-emerald-700",
-    accentBorder: "border-emerald-200",
-    accentBg: "bg-emerald-50",
-    buttonClass: "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20",
-    glowClass: "group-hover:shadow-emerald-500/18",
-  },
-  {
-    id: "pulso",
-    name: "PULSO",
-    label: "POS y experiencia",
-    description: "Clientes, redenciones, salón, pedidos y operación en punto de venta.",
-    href: "https://pulso.ventogroup.co",
-    permissionCode: "pulso.access",
-    logo: "/logos/pulso.svg",
-    accentText: "text-cyan-700",
-    accentBorder: "border-cyan-200",
-    accentBg: "bg-cyan-50",
-    buttonClass: "bg-cyan-500 hover:bg-cyan-600 shadow-cyan-500/20",
-    glowClass: "group-hover:shadow-cyan-500/18",
-  },
+const CANONICAL_APPS: AppLink[] = [
+  { id: "shell", name: "Vento OS", label: "Hub", description: "Launcher central del ecosistema Vento OS.", href: "https://os.ventogroup.co", permissionCode: "shell.access", logo: "/icon.svg", status: "active", accentText: "text-zinc-700", accentBorder: "border-zinc-200", accentBg: "bg-zinc-50", buttonClass: "bg-zinc-800 hover:bg-zinc-900 shadow-zinc-500/20", glowClass: "group-hover:shadow-zinc-500/18" },
+  { id: "anima", name: "ANIMA", label: "Personas y asistencia", description: "Jornadas, asistencia y contexto laboral.", href: "https://anima.ventogroup.co", permissionCode: "anima.access", logo: "/logos/anima.svg", status: "active", accentText: "text-teal-700", accentBorder: "border-teal-200", accentBg: "bg-teal-50", buttonClass: "bg-teal-600 hover:bg-teal-700 shadow-teal-500/20", glowClass: "group-hover:shadow-teal-500/18" },
+  { id: "viso", name: "VISO", label: "Gerencia y auditoria", description: "Gestion centralizada de equipo, sedes, permisos y vision ejecutiva.", href: "https://viso.ventogroup.co", permissionCode: "viso.access", logo: "/logos/viso.svg", status: "active", accentText: "text-violet-700", accentBorder: "border-violet-200", accentBg: "bg-violet-50", buttonClass: "bg-violet-600 hover:bg-violet-700 shadow-violet-500/20", glowClass: "group-hover:shadow-violet-500/18" },
+  { id: "nexo", name: "NEXO", label: "Inventario y logistica", description: "Control operativo de stock, remisiones, ubicaciones y abastecimiento.", href: "https://nexo.ventogroup.co", permissionCode: "nexo.access", logo: "/logos/nexo.svg", status: "active", accentText: "text-amber-700", accentBorder: "border-amber-200", accentBg: "bg-amber-50", buttonClass: "bg-amber-500 hover:bg-amber-600 shadow-amber-500/20", glowClass: "group-hover:shadow-amber-500/18" },
+  { id: "fogo", name: "FOGO", label: "Produccion", description: "Recetas, preparaciones, lotes y trazabilidad de produccion.", href: "https://fogo.ventogroup.co", permissionCode: "fogo.access", logo: "/logos/fogo.svg", status: "active", accentText: "text-orange-700", accentBorder: "border-orange-200", accentBg: "bg-orange-50", buttonClass: "bg-orange-600 hover:bg-orange-700 shadow-orange-500/20", glowClass: "group-hover:shadow-orange-500/18" },
+  { id: "origo", name: "ORIGO", label: "Compras", description: "Ordenes de compra, proveedores, recepcion y abastecimiento externo.", href: "https://origo.ventogroup.co", permissionCode: "origo.access", logo: "/logos/origo.svg", status: "active", accentText: "text-emerald-700", accentBorder: "border-emerald-200", accentBg: "bg-emerald-50", buttonClass: "bg-emerald-600 hover:bg-emerald-700 shadow-emerald-500/20", glowClass: "group-hover:shadow-emerald-500/18" },
+  { id: "pulso", name: "PULSO", label: "POS y experiencia", description: "Clientes, redenciones, salon, pedidos y operacion en punto de venta.", href: "https://pulso.ventogroup.co", permissionCode: "pulso.access", logo: "/logos/pulso.svg", status: "active", accentText: "text-cyan-700", accentBorder: "border-cyan-200", accentBg: "bg-cyan-50", buttonClass: "bg-cyan-500 hover:bg-cyan-600 shadow-cyan-500/20", glowClass: "group-hover:shadow-cyan-500/18" },
+  { id: "numera", name: "NUMERA", label: "Finanzas", description: "Economia, costos y rentabilidad.", href: "https://numera.ventogroup.co", permissionCode: "numera.access", logo: "/icon.svg", status: "active", accentText: "text-blue-700", accentBorder: "border-blue-200", accentBg: "bg-blue-50", buttonClass: "bg-blue-600 hover:bg-blue-700 shadow-blue-500/20", glowClass: "group-hover:shadow-blue-500/18" },
+  { id: "aura", name: "AURA", label: "Marketing y contenido", description: "Identidad canonica reservada; producto web no disponible en el roadmap actual.", href: "", permissionCode: "aura.access", logo: "/logos/aura.svg", status: "soon", accentText: "text-fuchsia-700", accentBorder: "border-fuchsia-200", accentBg: "bg-fuchsia-50", buttonClass: "bg-fuchsia-600", glowClass: "" },
+  { id: "pass", name: "Vento Pass", label: "Clientes", description: "Identidad canonica de cliente sin destino web aprobado.", href: "", permissionCode: "pass.access", logo: "/icon.svg", status: "soon", accentText: "text-teal-700", accentBorder: "border-teal-200", accentBg: "bg-teal-50", buttonClass: "bg-teal-600", glowClass: "" },
 ];
+
+const INTERNAL_APPS: AppLink[] = CANONICAL_APPS.filter((app) => app.id !== "shell");
 
 function splitPermissionCode(permissionCode: string) {
   const normalized = permissionCode.trim();
@@ -120,6 +62,9 @@ async function resolveAccess(
   supabase: SupabaseClient,
   app: AppLink
 ): Promise<AppAccess> {
+  if (app.status === "soon" || !app.href) return "soon";
+  if (app.id === "shell") return "enabled";
+
   const { data: fullCodeResult, error: fullCodeError } = await supabase.rpc(
     "has_permission",
     {
@@ -196,7 +141,7 @@ function AppCard({ app }: { app: ResolvedAppLink }) {
               : "border-zinc-200 bg-zinc-100 text-zinc-500"
           }`}
         >
-          {isEnabled ? "Disponible" : "Sin acceso"}
+          {isEnabled ? "Disponible" : app.access === "soon" ? "Proximamente" : "Sin acceso"}
         </span>
       </div>
 
@@ -231,7 +176,7 @@ function AppCard({ app }: { app: ResolvedAppLink }) {
             className="inline-flex h-11 cursor-not-allowed items-center justify-center rounded-2xl bg-zinc-100 px-5 text-sm font-semibold text-zinc-400"
             aria-disabled="true"
           >
-            Bloqueada
+            {app.access === "soon" ? "Proximamente" : "Bloqueada"}
           </button>
         )}
       </div>
@@ -278,7 +223,7 @@ export default async function Home() {
 
   const apps = await resolveApps(supabase);
   const accessibleApps = apps.filter((app) => app.access === "enabled");
-  const blockedApps = apps.filter((app) => app.access === "disabled");
+  const blockedApps = apps.filter((app) => app.access !== "enabled");
 
   const userEmail = user.email ?? "";
   const userInitials = initialsFromEmail(userEmail);
