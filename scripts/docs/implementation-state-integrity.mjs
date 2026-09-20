@@ -3,7 +3,10 @@ import fs from 'node:fs';
 import path from 'node:path';
 
 import { validateInPackageCandidateEvidence } from './package-readiness-scanner.mjs';
-import { classifyImplementationIntegrationImpact } from './implementation-integration-impact.mjs';
+import {
+  classifyImplementationIntegrationImpact,
+  isVerifiedCorrectionIntegrationRecord,
+} from './implementation-integration-impact.mjs';
 import {
   assessImplementationCandidateLifecycleDelta,
   resolveValidationCandidateAnchor,
@@ -49,6 +52,7 @@ const NEXT_BY_STATUS = Object.freeze({
 const LOCAL_VALIDATION_PATTERN = /^LOCAL_VALIDATION candidate=([0-9a-f]{40}) command=(.*) status=(PASS|NOT_APPLICABLE)$/u;
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const IMPLEMENTATION_INSTANCE_DIRECTORY = 'docs/plan-canonico/modular/implementation-instances/';
+const CORRECTION_INSTANCE_DIRECTORY = 'docs/plan-canonico/modular/correction-instances/';
 
 function unique(values) {
   return [...new Set(values.map((value) => String(value)).filter(Boolean))];
@@ -212,10 +216,18 @@ function resolveVerifiedResumeCandidate({ root, instance, branchTip }) {
     if (delta.status !== 0) continue;
     const changedPaths = delta.stdout.split(/\r?\n/u).map((entry) => entry.trim()).filter(Boolean);
     const pendingRecords = {};
+    const verifiedCorrectionRecordPaths = [];
     for (const relativePath of changedPaths) {
       const normalized = normalizeRepoPath(relativePath);
       if (normalized !== ownLedger && normalized.startsWith(IMPLEMENTATION_INSTANCE_DIRECTORY)) {
         pendingRecords[normalized] = readGitJson(root, branchTip, normalized);
+        continue;
+      }
+      if (normalized.startsWith(CORRECTION_INSTANCE_DIRECTORY)) {
+        const correctionRecord = readGitJson(root, branchTip, normalized);
+        if (isVerifiedCorrectionIntegrationRecord(correctionRecord, normalized)) {
+          verifiedCorrectionRecordPaths.push(normalized);
+        }
       }
     }
 
@@ -239,6 +251,7 @@ function resolveVerifiedResumeCandidate({ root, instance, branchTip }) {
       instance,
       changedPaths: resumePaths,
       pristinePendingInstancePaths,
+      verifiedCorrectionRecordPaths,
       packageJsonBefore,
       packageJsonAfter,
     });
