@@ -4,6 +4,12 @@ import os from 'node:os';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { spawnSync } from 'node:child_process';
+import { observeLifecycleCommand } from './lifecycle-command-observer.mjs';
+import {
+    CorrectionValidationSession,
+    correctionInputFingerprint,
+    validateCorrectionCheckpoint,
+} from './correction-validation-session.mjs';
 
 import {
     classifyPrChecksProbe,
@@ -64,6 +70,7 @@ const MERGE_CONFIRM_INTERVAL_MS = 2000;
 const GITHUB_TRANSPORT_ATTEMPTS = 20;
 const GITHUB_TRANSPORT_INTERVAL_MS = 2000;
 const GITHUB_TRANSIENT_MARKER = 'GITHUB_TRANSIENT_UNAVAILABLE';
+const validationSession = new CorrectionValidationSession();
 
 function fail(message, code = 1) {
     const error = new Error(message);
@@ -154,7 +161,13 @@ function gh(args, options = {}) {
 
 function npm(args, options = {}) {
     const invocation = resolveNpmInvocation();
-    return run(invocation.command, [...invocation.prefixArgs, ...args], options);
+    const result = observeLifecycleCommand({
+        root: options.cwd ?? process.cwd(),
+        label: `npm ${args.join(' ')}`,
+        execute: () => run(invocation.command, [...invocation.prefixArgs, ...args], { ...options, allowFailure: true }),
+    });
+    if (result.status !== 0 && !options.allowFailure) fail(result.stderr || result.stdout, result.status);
+    return result;
 }
 
 function sleep(milliseconds) {
@@ -415,15 +428,12 @@ function sha256Text(value) {
 function runAuthorizedValidationCommand(root, command) {
     const exact = String(command ?? '').trim();
     if (!exact) fail('VALIDATION_COMMAND_EMPTY');
-    if (process.platform === 'win32') {
-        return run(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', exact], {
-            cwd: root,
-            allowFailure: true,
-        });
-    }
-    return run('/bin/sh', ['-lc', exact], {
-        cwd: root,
-        allowFailure: true,
+    return observeLifecycleCommand({
+        root,
+        label: exact,
+        execute: () => process.platform === 'win32'
+            ? run(process.env.ComSpec || 'cmd.exe', ['/d', '/s', '/c', exact], { cwd: root, allowFailure: true })
+            : run('/bin/sh', ['-lc', exact], { cwd: root, allowFailure: true }),
     });
 }
 
@@ -459,6 +469,7 @@ function ensureQualityRepairExactlyOnce(root, record) {
     });
 
     const executionHead = currentHead(root);
+    const executionStartedAt = new Date().toISOString();
     const result = npm(['run', 'quality:repair'], {
         cwd: root,
         allowFailure: true,
@@ -470,6 +481,8 @@ function ensureQualityRepairExactlyOnce(root, record) {
         ...armedEvidence,
         status: result.status === 0 ? 'PASS' : 'FAIL',
         completed_at: new Date().toISOString(),
+        execution_started_at: executionStartedAt,
+        duration_ms: result.duration_ms,
         execution_candidate_head: executionHead,
         exit_code: result.status,
         stdout_sha256: sha256Text(stdout),
@@ -507,6 +520,9 @@ function runCorrectionValidations(root, record) {
         const stderr = String(result.stderr ?? '');
         results.push({
             command,
+            duration_ms: result.duration_ms,
+            started_at: result.started_at,
+            completed_at: result.completed_at,
             status: result.status === 0 ? 'PASS' : 'FAIL',
             exit_code: result.status,
             stdout_sha256: sha256Text(stdout),
@@ -549,13 +565,8 @@ function sealVerifiedCorrection(root, record, validationEvidence) {
     }, verifiedEvidence);
     writeRecord(root, next);
 
-    npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
-    normalizeDirtyTextEol(root);
-    validateEolPolicy({ root });
-    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
-    git(['diff', '--check'], { cwd: root });
+    // VERIFIED changes derived readiness: certify the final state in full.
+    runCheckpointValidation(root, next, { forceFull: true });
 
     const sealed = readRecord(root, record.correction_id);
     const scope = assertActiveCorrectionScope(root, sealed);
@@ -861,6 +872,38 @@ function commitDirtyByLane(root, dirtyPaths, commitMessage) {
     return created;
 }
 
+function runCheckpointValidation(root, record, { forceFull = false, requireExact = false } = {}) {
+    // Scope and schema are always enforced, including metadata-only checkpoints.
+    assertActiveCorrectionScope(root, record);
+    const recordPath = correctionRecordRelativePath(record.correction_id);
+    const key = `${path.resolve(root)}:${record.correction_id}`;
+    const fingerprint = () => correctionInputFingerprint({ root, recordPath });
+    const strictFingerprint = () => correctionInputFingerprint({ root, recordPath, metadataOnly: false });
+    const result = validateCorrectionCheckpoint({
+        session: validationSession, key, fingerprint, exactFingerprint: strictFingerprint, forceFull, requireExact,
+        full: () => {
+            npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+            const normalizedEol = normalizeDirtyTextEol(root);
+            const before = strictFingerprint();
+            // plan:check already includes correction:check and the EOL policy.
+            npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
+            if (before !== strictFingerprint()) fail('CORRECTION_INPUT_CHANGED_DURING_FULL_CHECK');
+            git(['diff', '--check'], { cwd: root });
+            return { normalizedEol };
+        },
+        light: () => {
+            loadValidatedCorrectionControl({ root });
+            const normalizedEol = normalizeDirtyTextEol(root);
+            validateEolPolicy({ root });
+            npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
+            git(['diff', '--check'], { cwd: root });
+            return { normalizedEol };
+        },
+    });
+    console.log(`[LIFECYCLE] CHECKPOINT ${record.correction_id}: ${result.strategy}`);
+    return result;
+}
+
 export function checkpointCorrection({
     root = ensureRepositoryRoot(),
     correctionId,
@@ -881,14 +924,7 @@ export function checkpointCorrection({
     assertBaselineCurrent({ root, record, ref: `origin/${DEFAULT_BRANCH}` });
     assertPendingImplementationPr(root, record);
 
-    npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
-    const normalizedEol = normalizeDirtyTextEol(root);
-
-    validateEolPolicy({ root });
-    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
-    git(['diff', '--check'], { cwd: root });
+    const { normalizedEol, strategy } = runCheckpointValidation(root, record);
 
     record = readRecord(root, id);
     const scope = assertActiveCorrectionScope(root, record);
@@ -916,13 +952,14 @@ export function checkpointCorrection({
         CORRECTION_ID: id,
         STATUS: record.status,
         CANDIDATE_HEAD: head,
+        LOCAL_VALIDATION_STRATEGY: strategy,
         NORMALIZED_EOL_FILES: normalizedEol.length,
         COMMITS_CREATED: createdCommits,
         EXTERNAL_REPOSITORIES: externalCheckpoint.length,
         WORKTREE: 'CLEAN',
         REMOTE_BRANCH_SYNC: '0/0',
     });
-    return { record, head, normalizedEol, createdCommits, externalCheckpoint };
+    return { record, head, normalizedEol, createdCommits, externalCheckpoint, strategy };
 }
 
 function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commitMessage, beforeMerge = () => {} }) {
@@ -942,8 +979,15 @@ function publishBranchAndMerge(root, { branch, title, body, allowedPaths, commit
     const prNumber = createOrUpdatePr(root, { branch, title, body });
     let state = readOpenPrState(root, prNumber);
     ensureOpenPrIdentity(state, prNumber, headSha);
-    const registered = waitForPrChecksToRegister(root, prNumber);
-    const completed = waitForPrChecksToComplete(root, prNumber);
+    const { registered, completed } = observeLifecycleCommand({
+        root,
+        label: `GitHub gates PR #${prNumber}`,
+        execute: () => ({
+            status: 0,
+            registered: waitForPrChecksToRegister(root, prNumber),
+            completed: waitForPrChecksToComplete(root, prNumber),
+        }),
+    });
     state = readOpenPrState(root, prNumber);
     ensureOpenPrIdentity(state, prNumber, headSha);
     beforeMerge();
@@ -1102,13 +1146,7 @@ export function startCorrection({ root = ensureRepositoryRoot(), correctionId } 
 
     const next = { ...record, status: 'IN_PROGRESS' };
     writeRecord(root, next);
-    npm(['run', '--silent', 'docs:correction:starter'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
-    normalizeDirtyTextEol(root);
-    validateEolPolicy({ root });
-    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
-    git(['diff', '--check'], { cwd: root });
+    runCheckpointValidation(root, next, { forceFull: true });
 
     const scope = assertActiveCorrectionScope(root, next);
     if (scope.dirty.length > 0) {
@@ -1361,12 +1399,8 @@ export function finishCorrection({ root = ensureRepositoryRoot(), correctionId }
     const combinedPaths = [...new Set([...branchPaths, ...dirtyBeforeStage])].sort();
     assertScope(combinedPaths);
 
-    normalizeDirtyTextEol(root);
-    validateEolPolicy({ root });
-    npm(['run', '--silent', 'docs:correction:check'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
-    npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
-    git(['diff', '--check'], { cwd: root });
+    // Reuse the seal only if its complete state, including evidence, is unchanged.
+    runCheckpointValidation(root, record, { requireExact: true });
 
     const finalDirtyPaths = worktreePaths(root);
     const finalBranchPaths = git(['diff', '--name-only', '--diff-filter=ACMRD', `origin/${DEFAULT_BRANCH}...HEAD`], { cwd: root }).stdout
