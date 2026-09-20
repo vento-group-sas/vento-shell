@@ -8,28 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-027`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-047`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-027`
+### 1. Correcciones canónicas
 
-- **Estado:** `IN_PROGRESS`
-- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
-- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
-- **Contrato autorizado:** APROBADO
-- **Edita solamente:**
-  - `MODIFY` `scripts/docs/implementation-integration-impact.mjs`
-  - `MODIFY` `scripts/docs/implementation-integration-impact.test.mjs`
-- **Valida, en este orden:**
-  1. `node --check scripts/docs/implementation-integration-impact.mjs`
-  2. `node --check scripts/docs/implementation-integration-impact.test.mjs`
-  3. `node --test scripts/docs/implementation-integration-impact.test.mjs`
-  4. `node --test scripts/docs/implementation-state-integrity.test.mjs`
-  5. `npm run docs:correction:check`
-  6. `git diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-027`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
 
