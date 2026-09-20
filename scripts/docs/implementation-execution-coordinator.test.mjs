@@ -1132,3 +1132,34 @@ test('accelerator stale branch reejecuta runtime exacto de main', () => {
   assert.match(source, /runtime.reexec/u);
   assert.match(source, /stdio: 'inherit'/u);
 });
+test('coordinator usa una sola autoridad efectiva de candidate en todas las superficies', () => {
+  const source = fs.readFileSync(
+    new URL('./implementation-execution-coordinator.mjs', import.meta.url),
+    'utf8',
+  );
+
+  assert.match(
+    source,
+    /resolveEffectiveImplementationCandidate,\s*\}\s*from '\.\/implementation-state-integrity\.mjs';/u,
+  );
+  assert.doesNotMatch(source, /resolveImplementationCandidateLifecycle\(/u);
+
+  const validationStart = source.indexOf('export function candidateValidationState');
+  const validationEnd = source.indexOf('export function evaluateCandidatePreverifyReceipt', validationStart);
+  const validationBlock = source.slice(validationStart, validationEnd);
+  assert.match(validationBlock, /resolveEffectiveImplementationCandidate\(\{/u);
+
+  const bundleStart = source.indexOf('function resolveRepositoryBundleOrchestratorCandidate');
+  const bundleEnd = source.indexOf('function ensureRepositoryBundleCandidateEvidence', bundleStart);
+  const bundleBlock = source.slice(bundleStart, bundleEnd);
+  assert.match(bundleBlock, /resolveEffectiveImplementationCandidate\(\{/u);
+
+  const evidenceStart = source.indexOf('function writeEvidenceRequest');
+  const evidenceEnd = source.indexOf('export function classifyExecutionState', evidenceStart);
+  const evidenceBlock = source.slice(evidenceStart, evidenceEnd);
+  assert.match(evidenceBlock, /resolveEffectiveImplementationCandidate\(\{/u);
+
+  assert.ok(validationStart >= 0);
+  assert.ok(bundleStart >= 0);
+  assert.ok(evidenceStart >= 0);
+});
