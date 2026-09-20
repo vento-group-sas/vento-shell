@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,57 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-state-integrity.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Create one canonical effective implementation candidate resolver that composes strict candidate lifecycle proof with the existing fail-closed VERIFIED governance-only resume proof.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-state-integrity.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add a candidate-resolution regression matrix covering strict reuse, unverified correction rejection, verified governance fallback reuse, unknown path rejection, material product rejection and non-ancestor rejection.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Remove direct strict candidate resolution from coordinator surfaces and consume the canonical effective candidate resolver for validation state, evidence request and multi-repository orchestrator publication.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Prove the coordinator has zero direct strict candidate-resolution calls and all candidate consumers use the single effective candidate authority.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --test scripts/docs/implementation-integration-model.test.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Implementation lifecycle tooling authority consolidation only; no product behavior, Supabase behavior, database migration, TREQ requirement or Registro 04A content changes.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-20T02:17:29.309Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-20T01:59:48.899Z"
 }
