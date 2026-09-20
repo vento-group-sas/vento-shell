@@ -52,6 +52,15 @@
     "approval_statement": "APROBADO",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-20T23:20:09.178Z",
+      "candidate_head_before": "a9ce8810f70a2ff993b90e2375504a017098ec87",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-20T23:00:24.734Z"
 }
