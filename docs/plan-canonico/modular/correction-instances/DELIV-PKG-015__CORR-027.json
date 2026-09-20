@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,146 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Recognize only the exact non-physical correction lifecycle support surfaces introduced by PR #585, and allow the exact lifecycle-command-observer.test.mjs additive package test while preserving fail-closed classification for unknown, physical, writable, or execute-only material changes.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-integration-impact.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add positive regression for the exact PR #585 delta and negative regressions proving unknown sibling lifecycle paths and unapproved additive tests still require physical revalidation.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-integration-impact.mjs",
+    "node --check scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "npm run docs:correction:check",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-20T23:00:24.734Z"
+  "zero_treq_reason": "Implementation integration classifier correction only. It classifies exact lifecycle support changes from PR #585 and does not change product behavior, physical candidate files, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-20T23:09:48.672Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-20T23:20:09.178Z",
+      "candidate_head_before": "a9ce8810f70a2ff993b90e2375504a017098ec87",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-20T23:20:19.879Z",
+      "execution_started_at": "2026-09-20T23:20:18.780Z",
+      "duration_ms": 1097,
+      "execution_candidate_head": "d2be9b24404fd54256b31d789436e07af38c9954",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-20T23:20:59.011Z",
+      "candidate_head": "6a97d569ec32d4ec889b295ac9a904b5508f9992",
+      "commands": [
+        "node --check scripts/docs/implementation-integration-impact.mjs",
+        "node --check scripts/docs/implementation-integration-impact.test.mjs",
+        "node --test scripts/docs/implementation-integration-impact.test.mjs",
+        "node --test scripts/docs/implementation-state-integrity.test.mjs",
+        "npm run docs:correction:check",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/implementation-integration-impact.mjs",
+          "duration_ms": 79,
+          "started_at": "2026-09-20T23:20:46.590Z",
+          "completed_at": "2026-09-20T23:20:46.670Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-integration-impact.test.mjs",
+          "duration_ms": 78,
+          "started_at": "2026-09-20T23:20:46.671Z",
+          "completed_at": "2026-09-20T23:20:46.749Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-integration-impact.test.mjs",
+          "duration_ms": 171,
+          "started_at": "2026-09-20T23:20:46.750Z",
+          "completed_at": "2026-09-20T23:20:46.921Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "7ad84e9b0a84dcba3bb9d6b3d7ab25fb53ae7f120143a1c9313c2e8fb388509a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-state-integrity.test.mjs",
+          "duration_ms": 10041,
+          "started_at": "2026-09-20T23:20:46.922Z",
+          "completed_at": "2026-09-20T23:20:56.964Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f88fa732f5ce9659e13284c445fe30a1e23db20810c5a0986a568cebe33dc85b",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 1971,
+          "started_at": "2026-09-20T23:20:56.965Z",
+          "completed_at": "2026-09-20T23:20:58.936Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "5663630881f31e5b1ce6772bcf872ffc7bdd818f8afd46f77a3d6faaf2815cb7",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "duration_ms": 73,
+          "started_at": "2026-09-20T23:20:58.937Z",
+          "completed_at": "2026-09-20T23:20:59.011Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-20T23:21:14.569Z",
+      "validated_candidate_head": "6a97d569ec32d4ec889b295ac9a904b5508f9992",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-20T23:00:24.734Z",
+  "implemented_at": "2026-09-20T23:20:29.573Z",
+  "verified_at": "2026-09-20T23:21:14.569Z"
 }
