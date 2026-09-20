@@ -67,6 +67,15 @@
     "approval_statement": "Analiza bien y dame la mejor solución y si es esa queda aprobado",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-20T00:12:53.281Z",
+      "candidate_head_before": "53968c28831c8f0eedd846d97f8fe354605b5180",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-19T23:31:18.739Z"
 }
