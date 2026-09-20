@@ -1113,6 +1113,30 @@ test('CORR-019 mantiene candidate fisico estable entre materializacion, EVIDENCE
   assert.match(bundleSource, /merge-base','--is-ancestor'/u);
 });
 
+test('FINISH multi-repo checkpointa publish evidence antes de finish y resume sin republicar', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  const finishStart = source.indexOf("if (state === 'FINISH')");
+  const finishEnd = source.indexOf("if (state === 'BLOCKED' || state === 'DEFERRED')", finishStart);
+  assert.ok(finishStart >= 0 && finishEnd > finishStart);
+  const block = source.slice(finishStart, finishEnd);
+  const evidenceRead = block.indexOf('let publishEvidence = repositoryBundleEvidence');
+  const missingGuard = block.indexOf('if (!publishEvidence)', evidenceRead);
+  const publish = block.indexOf('publishEvidence = publishExternalRepositoryBundle({ plan: repositoryPlan });', missingGuard);
+  const persist = block.indexOf('persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE, publishEvidence)', publish);
+  const validate = block.indexOf('validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });', persist);
+  const checkpoint = block.indexOf('const publishEvidenceCheckpoint = commitAllowedWorktree(', validate);
+  const push = block.indexOf('pushCandidate(root, implementationBranchName(instanceId))', checkpoint);
+  const reread = block.indexOf('instance = resolveInstance(root, instanceId).instance;', push);
+  const finish = block.indexOf("await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId)", reread);
+  assert.ok(evidenceRead >= 0 && missingGuard > evidenceRead);
+  assert.ok(publish > missingGuard && persist > publish && validate > persist);
+  assert.ok(checkpoint > validate && push > checkpoint && reread > push && finish > reread);
+  assert.equal((block.match(/publishExternalRepositoryBundle\(\{ plan: repositoryPlan \}\)/gu) ?? []).length, 1);
+  assert.match(block, /IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_CHECKPOINT_MISSING/u);
+  assert.match(block, /IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_MISSING_AFTER_CHECKPOINT/u);
+  assert.match(block, /if \(publishEvidenceCheckpoint\) \{[\s\S]*pushCandidate/u);
+});
+
 test('runtime current-main pin es determinista', () => {
   const main = 'a'.repeat(40);
   const branch = 'b'.repeat(40);
@@ -1131,4 +1155,35 @@ test('accelerator stale branch reejecuta runtime exacto de main', () => {
   assert.match(source, /'worktree', 'add', '--detach'/u);
   assert.match(source, /runtime.reexec/u);
   assert.match(source, /stdio: 'inherit'/u);
+});
+test('coordinator usa una sola autoridad efectiva de candidate en todas las superficies', () => {
+  const source = fs.readFileSync(
+    new URL('./implementation-execution-coordinator.mjs', import.meta.url),
+    'utf8',
+  );
+
+  assert.match(
+    source,
+    /resolveEffectiveImplementationCandidate,\s*\}\s*from '\.\/implementation-state-integrity\.mjs';/u,
+  );
+  assert.doesNotMatch(source, /resolveImplementationCandidateLifecycle\(/u);
+
+  const validationStart = source.indexOf('export function candidateValidationState');
+  const validationEnd = source.indexOf('export function evaluateCandidatePreverifyReceipt', validationStart);
+  const validationBlock = source.slice(validationStart, validationEnd);
+  assert.match(validationBlock, /resolveEffectiveImplementationCandidate\(\{/u);
+
+  const bundleStart = source.indexOf('function resolveRepositoryBundleOrchestratorCandidate');
+  const bundleEnd = source.indexOf('function ensureRepositoryBundleCandidateEvidence', bundleStart);
+  const bundleBlock = source.slice(bundleStart, bundleEnd);
+  assert.match(bundleBlock, /resolveEffectiveImplementationCandidate\(\{/u);
+
+  const evidenceStart = source.indexOf('function writeEvidenceRequest');
+  const evidenceEnd = source.indexOf('export function classifyExecutionState', evidenceStart);
+  const evidenceBlock = source.slice(evidenceStart, evidenceEnd);
+  assert.match(evidenceBlock, /resolveEffectiveImplementationCandidate\(\{/u);
+
+  assert.ok(validationStart >= 0);
+  assert.ok(bundleStart >= 0);
+  assert.ok(evidenceStart >= 0);
 });

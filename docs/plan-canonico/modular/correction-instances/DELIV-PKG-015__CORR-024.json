@@ -1,0 +1,160 @@
+{
+  "schema_version": 1,
+  "correction_id": "DELIV-PKG-015::CORR-024",
+  "task_id": "DELIV-PKG-015",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "IMPLEMENTATION_DEFECT",
+  "status": "VERIFIED",
+  "blocking": true,
+  "blocked_targets": [
+    "SHELL-CI-020::GAP-PKG-045"
+  ],
+  "baseline": {
+    "main_commit": "5eef2df6d071e640aa91fadc5a1f86e5000fd4db",
+    "target_task_path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/02_PAQUETES_DE_IMPLEMENTACION.md",
+    "target_task_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-repository-bundle.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Consolidate implementation multi-repo publication: canonical TREQ PR metadata, stale PR body repair, explicit Required Gate semantics, skipped non-required check handling, already-merged recovery and idempotent partial resume.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-repository-bundle.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add the full publisher regression matrix for canonical PR metadata, fail-closed PR identity, Required Gate classification, stale-run replacement, already-merged resume ordering and merge-on-main evidence.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "node --test scripts/docs/correction-repository-bundle.test.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Implementation publisher governance correction only; it changes PR metadata, Required Gate evaluation and resume semantics without changing product behavior, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-20T06:16:55.529Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO, METELO EN EL INICIADOR, TODO EL PLAN ANTERIOR Y ESTE Y CONTINUEMOS",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-20T07:33:56.827Z",
+      "candidate_head_before": "a5afa96918e08909b60f685cd88ee5d73e66a555",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-20T07:40:31.072Z",
+      "execution_candidate_head": "229fc11d8fa76b6e08e5c38beb2e7b30283c94ed",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-20T08:04:16.437Z",
+      "candidate_head": "a4c271e96e9f709bd63a90d0d3c2651dc3342153",
+      "commands": [
+        "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+        "node --test scripts/docs/correction-repository-bundle.test.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "cea78e85c338cecf397b19d6aef58f55652f4151dc1bbf6d48ab518328ae7e80",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-repository-bundle.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f28d6f10dc39fda99047702cbacbcdb722433dd166955796399f6184c6061bf4",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b5d4d5025e49f5cbdb323f511b2c89b209a393e9cd98e49f733be095a3a4f80f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "284d4b47252b5626359a0d894a9c149bf2e1f7b53a06f1de90e8dfca45be173d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "73be6947120d44c598e7ecafcf5f5ca63142f3c7d28b3d39ada94d9749ae9d45",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d6a57f7fb676689b919ad4a7c6065086b71b97da5846706ebd475825c9688c37",
+          "stderr_sha256": "61a85dcdebd4237a9f75b998a8fa504153e7f7a36823044aac44b75e7b8fd733"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "89cc2c0215a2d940c6b0be077f518faf7408a8aeeef4e448c8afec2780df6d33",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-20T08:10:31.359Z",
+      "validated_candidate_head": "a4c271e96e9f709bd63a90d0d3c2651dc3342153",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-20T06:04:28.360Z",
+  "implemented_at": "2026-09-20T07:46:55.090Z",
+  "verified_at": "2026-09-20T08:10:31.359Z"
+}

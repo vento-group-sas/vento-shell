@@ -11,6 +11,7 @@ import {
   deriveImplementationStateFacts,
   evaluateImplementationStateIntegrity,
   isVerifiedResumeDeltaAllowed,
+  resolveEffectiveImplementationCandidate,
   resolveImplementationCandidateLifecycle,
   rejectDirectImplementationLifecycleEntry,
   verifiedLedgerTransitionCompatible,
@@ -290,12 +291,16 @@ test('resume VERIFIED usa el clasificador de impacto para aceptar integration to
   const packageBefore = source.indexOf("readGitJson(root, candidate, 'package.json')", resolver);
   const packageAfter = source.indexOf("readGitJson(root, branchTip, 'package.json')", resolver);
   const reuse = source.indexOf("impact.decision === 'REUSE_PHYSICAL_EVIDENCE'", resolver);
+  const verifiedCorrectionProof = source.indexOf('const verifiedCorrectionRecordPaths = [];', resolver);
+  const verifiedCorrectionPlumbing = source.indexOf('verifiedCorrectionRecordPaths,', verifiedCorrectionProof);
   assert.match(
     source,
-    /import \{ classifyImplementationIntegrationImpact \} from '\.\/implementation-integration-impact\.mjs';/u,
+    /import\s*\{\s*classifyImplementationIntegrationImpact,\s*isVerifiedCorrectionIntegrationRecord,\s*\}\s*from '\.\/implementation-integration-impact\.mjs';/u,
   );
   assert.ok(resolver >= 0);
-  assert.ok(classifier > resolver);
+  assert.ok(verifiedCorrectionProof > resolver);
+  assert.ok(classifier > verifiedCorrectionProof);
+  assert.ok(verifiedCorrectionPlumbing > classifier);
   assert.ok(packageBefore > resolver);
   assert.ok(packageAfter > packageBefore);
   assert.ok(reuse > classifier);
@@ -516,4 +521,265 @@ test('VERIFIED dirty resume acepta siguiente instancia pending pristina sin degr
   });
   assert.equal(unsafe.status, 'INVALID', JSON.stringify(unsafe));
   assert.equal(unsafe.decision, 'REVALIDATE_PHYSICAL');
+});
+test('VERIFIED resume conserva candidate físico tras integrar correction VERIFIED probada', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-verified-correction-resume-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = (...args) => {
+    const result = spawnSync('git', args, {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    return String(result.stdout ?? '').trim();
+  };
+  git('init', '-b', 'main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.invalid');
+  git('switch', '-c', 'implementation/shell-ci-020/gap-pkg-045');
+
+  const ledgerPath = path.join(
+    root,
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-045.json',
+  );
+  const correctionPath = path.join(
+    root,
+    'docs/plan-canonico/modular/correction-instances/DELIV-PKG-015__CORR-021.json',
+  );
+  const correctionToolPath = path.join(root, 'scripts/docs/correction-control.mjs');
+  fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
+
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-020::GAP-PKG-045',
+    task_id: 'SHELL-CI-020',
+    status: 'IN_PROGRESS',
+    target_repositories: ['vento-group-sas/vento-shell'],
+    authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: 'src/product.ts', change: 'MODIFY' }],
+    validation_commands: ['node --test x.test.mjs'],
+    authorization: { decision: 'APPROVED' },
+    evidence: [],
+    target_environments: [],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(candidateLedger, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'physical candidate');
+  const candidate = git('rev-parse', 'HEAD');
+
+  const implemented = {
+    ...candidateLedger,
+    status: 'IMPLEMENTED',
+    evidence: [
+      `LOCAL_VALIDATION candidate=${candidate} command=node --test x.test.mjs status=PASS`,
+    ],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(implemented, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'implementation lifecycle');
+
+  const verified = {
+    ...implemented,
+    status: 'VERIFIED',
+    evidence: [
+      ...implemented.evidence,
+      {
+        type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
+        candidate_commit: candidate,
+        validation_commands: ['node --test x.test.mjs'],
+        results: [{ command: 'node --test x.test.mjs', status: 'PASS' }],
+        target_environments: [],
+        environment_results: [],
+      },
+    ],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(verified, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'seal verified');
+
+  fs.mkdirSync(path.dirname(correctionPath), { recursive: true });
+  fs.mkdirSync(path.dirname(correctionToolPath), { recursive: true });
+  fs.writeFileSync(correctionPath, `${JSON.stringify({
+    correction_id: 'DELIV-PKG-015::CORR-021',
+    status: 'VERIFIED',
+    verified_at: '2026-09-19T20:55:42.232Z',
+    evidence: [{ type: 'CORRECTION_VERIFICATION_V1', status: 'PASS' }],
+  }, null, 2)}\n`);
+  fs.writeFileSync(correctionToolPath, 'export const correctionLifecycle = true;\n');
+  git('add', '.');
+  git('commit', '-m', 'integrate verified correction');
+  const branchTip = git('rev-parse', 'HEAD');
+
+  const facts = deriveImplementationStateFacts({
+    root,
+    instance: verified,
+    readiness: null,
+    branchPresent: true,
+    candidateGateStatus: 'PASS',
+    historicalVerified: false,
+  });
+  assert.equal(facts.candidate_commit, candidate);
+  assert.equal(facts.candidate_lifecycle_head_commit, branchTip);
+  assert.equal(facts.local_validation_complete, true);
+  assert.equal(facts.verification_evidence_present, true);
+  assert.equal(facts.verification_receipt_valid, true);
+  assert.deepEqual(facts.stale_evidence.filter((entry) => entry.startsWith('LOCAL_VALIDATION_')), []);
+
+  const integrity = evaluateImplementationStateIntegrity({ instance: verified, facts });
+  assert.equal(integrity.status_valid, true);
+  assert.equal(integrity.highest_valid_status, 'VERIFIED');
+  assert.equal(integrity.next_legal_transition, 'FINISH');
+});
+test('resolver efectivo unifica strict, VERIFIED governance fallback y fail-closed material', (t) => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), 'vento-effective-candidate-'));
+  t.after(() => fs.rmSync(root, { recursive: true, force: true }));
+  const git = (...args) => {
+    const result = spawnSync('git', args, {
+      cwd: root,
+      encoding: 'utf8',
+      windowsHide: true,
+      stdio: ['ignore', 'pipe', 'pipe'],
+    });
+    assert.equal(result.status, 0, result.stderr || result.stdout);
+    return String(result.stdout ?? '').trim();
+  };
+  git('init', '-b', 'main');
+  git('config', 'user.name', 'Test');
+  git('config', 'user.email', 'test@example.invalid');
+  git('switch', '-c', 'implementation/shell-ci-020/gap-pkg-045');
+
+  const ledgerPath = path.join(
+    root,
+    'docs/plan-canonico/modular/implementation-instances/SHELL-CI-020__GAP-PKG-045.json',
+  );
+  const correctionPath = path.join(
+    root,
+    'docs/plan-canonico/modular/correction-instances/DELIV-PKG-015__CORR-099.json',
+  );
+  const correctionToolPath = path.join(root, 'scripts/docs/correction-control.mjs');
+  fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
+
+  const candidateLedger = {
+    instance_id: 'SHELL-CI-020::GAP-PKG-045',
+    task_id: 'SHELL-CI-020',
+    status: 'IN_PROGRESS',
+    target_repositories: ['vento-group-sas/vento-shell'],
+    authorized_changes: [{ repo: 'vento-group-sas/vento-shell', path: 'src/product.ts', change: 'MODIFY' }],
+    validation_commands: ['node --test x.test.mjs'],
+    authorization: { decision: 'APPROVED' },
+    evidence: [],
+    target_environments: [],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(candidateLedger, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'physical candidate');
+  const candidate = git('rev-parse', 'HEAD');
+
+  const verified = {
+    ...candidateLedger,
+    status: 'VERIFIED',
+    evidence: [
+      `LOCAL_VALIDATION candidate=${candidate} command=node --test x.test.mjs status=PASS`,
+      {
+        type: 'IMPLEMENTATION_EXECUTION_EVIDENCE_V1',
+        candidate_commit: candidate,
+        validation_commands: ['node --test x.test.mjs'],
+        results: [{ command: 'node --test x.test.mjs', status: 'PASS' }],
+        target_environments: [],
+        environment_results: [],
+      },
+    ],
+  };
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(verified, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'seal verified');
+  const strictTip = git('rev-parse', 'HEAD');
+
+  const strict = resolveEffectiveImplementationCandidate({
+    root,
+    instance: verified,
+    branchTip: strictTip,
+  });
+  assert.equal(strict.status, 'PASS');
+  assert.equal(strict.candidate_commit, candidate);
+  assert.equal(strict.source, 'STRICT_LIFECYCLE');
+
+  fs.mkdirSync(path.dirname(correctionPath), { recursive: true });
+  fs.mkdirSync(path.dirname(correctionToolPath), { recursive: true });
+  fs.writeFileSync(correctionPath, `${JSON.stringify({
+    correction_id: 'DELIV-PKG-015::CORR-099',
+    status: 'AUTHORIZED',
+    verified_at: null,
+    evidence: [],
+  }, null, 2)}\n`);
+  fs.writeFileSync(correctionToolPath, 'export const correctionLifecycle = true;\n');
+  git('add', '.');
+  git('commit', '-m', 'unverified correction governance');
+  const unverifiedTip = git('rev-parse', 'HEAD');
+
+  const unverified = resolveEffectiveImplementationCandidate({
+    root,
+    instance: verified,
+    branchTip: unverifiedTip,
+  });
+  assert.equal(unverified.status, 'INVALID');
+  assert.equal(unverified.source, 'STRICT_LIFECYCLE_REJECTED');
+
+  fs.writeFileSync(correctionPath, `${JSON.stringify({
+    correction_id: 'DELIV-PKG-015::CORR-099',
+    status: 'VERIFIED',
+    verified_at: '2026-09-19T23:59:59.000Z',
+    evidence: [{ type: 'CORRECTION_VERIFICATION_V1', status: 'PASS' }],
+  }, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'verify correction governance');
+  const governanceTip = git('rev-parse', 'HEAD');
+
+  const governance = resolveEffectiveImplementationCandidate({
+    root,
+    instance: verified,
+    branchTip: governanceTip,
+  });
+  assert.equal(governance.status, 'PASS');
+  assert.equal(governance.candidate_commit, candidate);
+  assert.equal(governance.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.equal(governance.source, 'VERIFIED_RESUME');
+
+  git('switch', '-c', 'unknown-governance-case', governanceTip);
+  const unknownPath = path.join(root, 'scripts/docs/unclassified-lifecycle-tool.mjs');
+  fs.mkdirSync(path.dirname(unknownPath), { recursive: true });
+  fs.writeFileSync(unknownPath, 'export const unknown = true;\n');
+  git('add', '.');
+  git('commit', '-m', 'unknown governance path');
+  const unknown = resolveEffectiveImplementationCandidate({
+    root,
+    instance: verified,
+    branchTip: git('rev-parse', 'HEAD'),
+  });
+  assert.equal(unknown.status, 'INVALID');
+
+  git('switch', 'implementation/shell-ci-020/gap-pkg-045');
+  fs.mkdirSync(path.join(root, 'src'), { recursive: true });
+  fs.writeFileSync(path.join(root, 'src/product.ts'), 'export const changed = true;\n');
+  git('add', '.');
+  git('commit', '-m', 'material product delta');
+  const material = resolveEffectiveImplementationCandidate({
+    root,
+    instance: verified,
+    branchTip: git('rev-parse', 'HEAD'),
+  });
+  assert.equal(material.status, 'INVALID');
+
+  git('switch', '--orphan', 'non-ancestor-case');
+  git('rm', '-rf', '--ignore-unmatch', '.');
+  fs.mkdirSync(path.dirname(ledgerPath), { recursive: true });
+  fs.writeFileSync(ledgerPath, `${JSON.stringify(verified, null, 2)}\n`);
+  git('add', '.');
+  git('commit', '-m', 'unrelated verified lifecycle');
+  const nonAncestor = resolveEffectiveImplementationCandidate({
+    root,
+    instance: verified,
+    branchTip: git('rev-parse', 'HEAD'),
+  });
+  assert.equal(nonAncestor.status, 'INVALID');
 });

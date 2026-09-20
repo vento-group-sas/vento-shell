@@ -47,12 +47,19 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
 
 const CORRECTION_INSTANCE_DIRECTORY = 'docs/plan-canonico/modular/correction-instances/';
 const CORRECTION_INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
+  '.vscode/settings.json',
   'scripts/docs/correction-branch-lifecycle.mjs',
   'scripts/docs/correction-branch-lifecycle.test.mjs',
   'scripts/docs/correction-control.mjs',
   'scripts/docs/correction-control.test.mjs',
+  'scripts/docs/correction-lifecycle-performance.md',
   'scripts/docs/correction-repository-bundle.mjs',
   'scripts/docs/correction-repository-bundle.test.mjs',
+  'scripts/docs/correction-validation-session.mjs',
+  'scripts/docs/correction-validation-session.test.mjs',
+  'scripts/docs/lifecycle-command-observer.mjs',
+  'scripts/docs/lifecycle-command-observer.test.mjs',
+  'scripts/docs/vento-terminal.ps1',
 ]);
 
 function fail(message) {
@@ -99,6 +106,21 @@ export function isImplementationIntegrationLifecyclePath(filePath) {
 
 export function isCorrectionIntegrationLifecyclePath(filePath) {
   return CORRECTION_INTEGRATION_LIFECYCLE_EXACT_PATHS.has(normalizeRepoPath(filePath));
+}
+
+export function isVerifiedCorrectionIntegrationRecord(record, relativePath) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
+  const id = String(record.correction_id ?? '').trim();
+  if (!/^[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3,4}::CORR-[0-9]{3}$/u.test(id)) return false;
+  const expectedPath = `${CORRECTION_INSTANCE_DIRECTORY}${id.replace('::', '__')}.json`;
+  if (normalizeRepoPath(relativePath) !== expectedPath) return false;
+  if (record.status !== 'VERIFIED') return false;
+  if (!String(record.verified_at ?? '').trim() || !Number.isFinite(Date.parse(record.verified_at))) return false;
+  return (record.evidence ?? []).some((entry) => (
+    entry && typeof entry === 'object' && !Array.isArray(entry)
+    && entry.type === 'CORRECTION_VERIFICATION_V1'
+    && entry.status === 'PASS'
+  ));
 }
 
 function assessAdditiveTestScript({ before, after, allowedPattern, label }) {
@@ -179,7 +201,7 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
   const planDelta = assessAdditiveTestScript({
     before: beforePlanTest,
     after: afterPlanTest,
-    allowedPattern: /^scripts\/docs\/(?:implementation|correction)-[A-Za-z0-9._/-]*\.test\.mjs$/u,
+    allowedPattern: /^scripts\/docs\/(?:(?:implementation|correction)-[A-Za-z0-9._/-]*|lifecycle-command-observer)\.test\.mjs$/u,
     label: 'DOCS_PLAN_TEST',
   });
   if (!planDelta.safe) {
@@ -194,7 +216,7 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
   const correctionDelta = assessAdditiveTestScript({
     before: beforeCorrectionTest,
     after: afterCorrectionTest,
-    allowedPattern: /^scripts\/docs\/correction-[A-Za-z0-9._/-]*\.test\.mjs$/u,
+    allowedPattern: /^scripts\/docs\/(?:correction-[A-Za-z0-9._/-]*|lifecycle-command-observer)\.test\.mjs$/u,
     label: 'DOCS_CORRECTION_TEST',
   });
   if (!correctionDelta.safe) {
