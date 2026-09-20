@@ -349,3 +349,54 @@ test('package.json admite solo tests lifecycle aditivos de correction', () => {
   bad.scripts['docs:correction:test'] += ' scripts/supabase/environment-drift.test.mjs';
   assert.equal(assessPackageJsonIntegrationImpact({ before, after: bad }).safe, false);
 });
+
+test('PR585 lifecycle support delta reutiliza evidencia fisica sin ampliar paths desconocidos', () => {
+  const supportPaths = [
+    '.vscode/settings.json',
+    'scripts/docs/correction-lifecycle-performance.md',
+    'scripts/docs/correction-validation-session.mjs',
+    'scripts/docs/correction-validation-session.test.mjs',
+    'scripts/docs/lifecycle-command-observer.mjs',
+    'scripts/docs/lifecycle-command-observer.test.mjs',
+    'scripts/docs/vento-terminal.ps1',
+  ];
+  for (const relativePath of supportPaths) {
+    assert.equal(isCorrectionIntegrationLifecyclePath(relativePath), true);
+  }
+  assert.equal(isCorrectionIntegrationLifecyclePath('scripts/docs/lifecycle-command-observer-runtime.mjs'), false);
+
+  const before = {
+    name: 'vento-shell',
+    scripts: {
+      'docs:plan:test': 'node --test scripts/docs/correction-control.test.mjs',
+      'docs:correction:test': 'node --test scripts/docs/correction-control.test.mjs',
+    },
+    dependencies: { next: '16.1.1' },
+  };
+  const after = structuredClone(before);
+  after.scripts['docs:plan:test'] += ' scripts/docs/correction-validation-session.test.mjs scripts/docs/lifecycle-command-observer.test.mjs';
+  after.scripts['docs:correction:test'] += ' scripts/docs/correction-validation-session.test.mjs scripts/docs/lifecycle-command-observer.test.mjs';
+
+  const semantic = assessPackageJsonIntegrationImpact({ before, after });
+  assert.equal(semantic.safe, true);
+
+  const impact = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: [...supportPaths, 'package.json'],
+    packageJsonBefore: before,
+    packageJsonAfter: after,
+  });
+  assert.equal(impact.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(impact.material_paths, []);
+
+  const unsafePackage = structuredClone(after);
+  unsafePackage.scripts['docs:plan:test'] += ' scripts/docs/lifecycle-command-observer-runtime.test.mjs';
+  assert.equal(assessPackageJsonIntegrationImpact({ before, after: unsafePackage }).safe, false);
+
+  const unknown = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: ['scripts/docs/lifecycle-command-observer-runtime.mjs'],
+  });
+  assert.equal(unknown.decision, 'REVALIDATE_PHYSICAL');
+  assert.equal(unknown.classifications[0].classification, 'UNKNOWN_OR_PHYSICAL_DEPENDENCY_CHANGED');
+});
