@@ -18,6 +18,7 @@ const DEFAULT_BRANCH = 'main';
 const SHA_PATTERN = /^[0-9a-f]{40}$/u;
 const CHECK_ATTEMPTS = 720;
 const CHECK_INTERVAL_MS = 5000;
+const REQUIRED_GATE = 'VENTO Required Gate';
 function fail(message, code = 1) { const error = new Error(message); error.exitCode = code; throw error; }
 function run(command, args, { cwd = process.cwd(), allowFailure = false } = {}) {
   const result = spawnSync(command, args, { cwd, encoding: 'utf8', windowsHide: true, stdio: ['ignore','pipe','pipe'], maxBuffer: 64 * 1024 * 1024 });
@@ -86,10 +87,276 @@ export function buildRepositoryBundleCandidateEvidence({plan,orchestratorCandida
 export function validateRepositoryBundleCandidateEvidence({plan,evidence,orchestratorCandidateCommit=null}={}){ const rows=assertRepositoryBundleCandidateShape(plan,evidence); for(const row of rows){ const pe=plan.repositories.find(e=>e.repository===row.repository); if(!pe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_REPO_UNKNOWN:${row.repository}`); const expected=expectedRepositoryCandidate(pe,orchestratorCandidateCommit); if(expected!==row.candidate_commit) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}`); } return true; }
 export function reconcileRepositoryBundleCandidateEvidence({plan,evidence,orchestratorCandidateCommit}={}){ const rows=assertRepositoryBundleCandidateShape(plan,evidence); const physical=normalizedCandidateCommit(orchestratorCandidateCommit,'IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE'); let updated=false; const repositories=rows.map(row=>{ const pe=plan.repositories.find(e=>e.repository===row.repository); if(!pe) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_REPO_UNKNOWN:${row.repository}`); if(!pe.orchestrator){ const external=currentHead(pe.root); if(external!==row.candidate_commit) fail(`IMPLEMENTATION_REPOSITORY_CANDIDATE_STALE:${row.repository}`); return Object.freeze({...row,changed_paths:Object.freeze([...(row.changed_paths??[])])}); } expectedRepositoryCandidate(pe,physical); if(row.candidate_commit===physical) return Object.freeze({...row,changed_paths:Object.freeze([...(row.changed_paths??[])])}); if(git(pe.root,['merge-base','--is-ancestor',row.candidate_commit,physical],{allowFailure:true}).status!==0) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_RECONCILIATION_UNSAFE:${row.candidate_commit}->${physical}`); updated=true; return Object.freeze({...row,base_commit:candidateBaseCommit(pe.root,physical),candidate_commit:physical,changed_paths:Object.freeze(candidateChangedPaths(pe.root,physical))}); }); const next=Object.freeze({...evidence,repository_count:repositories.length,repositories:Object.freeze(repositories)}); validateRepositoryBundleCandidateEvidence({plan,evidence:next,orchestratorCandidateCommit:physical}); return Object.freeze({updated,evidence:next,orchestrator_candidate_commit:physical}); }
 function parseJson(source,label){ try{return JSON.parse(String(source??'').trim()||'null');}catch{fail(`${label}: JSON_INVALID`);} }
-function findOrCreatePr(entry,instanceId,headSha){ const rows=parseJson(gh(entry.root,['pr','list','--head',entry.branch,'--base',DEFAULT_BRANCH,'--state','open','--json','number,headRefOid','--limit','1']).stdout,'gh pr list')??[]; if(Array.isArray(rows)&&rows.length) return Number(rows[0].number); gh(entry.root,['pr','create','--base',DEFAULT_BRANCH,'--head',entry.branch,'--title',`implementation(${instanceId}): ${entry.repository}`,'--body',`CI020 multi-repo ${instanceId}. Candidate ${headSha}.`]); const created=parseJson(gh(entry.root,['pr','list','--head',entry.branch,'--base',DEFAULT_BRANCH,'--state','open','--json','number','--limit','1']).stdout,'gh pr list post-create')??[]; if(!Array.isArray(created)||created.length!==1) fail(`IMPLEMENTATION_REPOSITORY_PR_NOT_RESOLVED:${entry.repository}`); return Number(created[0].number); }
-function waitChecks(entry,prNumber,headSha){ for(let attempt=1;attempt<=CHECK_ATTEMPTS;attempt+=1){ const state=parseJson(gh(entry.root,['pr','view',String(prNumber),'--json','state,isDraft,headRefOid,baseRefName']).stdout,'gh pr view'); if(state?.state!=='OPEN'||state?.isDraft===true||state?.baseRefName!==DEFAULT_BRANCH||state?.headRefOid!==headSha) fail(`IMPLEMENTATION_REPOSITORY_PR_IDENTITY_INVALID:${entry.repository}:#${prNumber}`); const checks=gh(entry.root,['pr','checks',String(prNumber),'--json','name,state,bucket,link'],{allowFailure:true}); if(checks.status===0){ const rows=parseJson(checks.stdout,'gh pr checks')??[]; if(Array.isArray(rows)&&rows.length){ const failed=rows.filter(r=>['fail','cancel','skipping'].includes(String(r?.bucket??'').toLowerCase())); if(failed.length) fail(`IMPLEMENTATION_REPOSITORY_CHECKS_FAILED:${entry.repository}:#${prNumber}`); const pending=rows.filter(r=>String(r?.bucket??'').toLowerCase()!=='pass'); if(!pending.length) return rows.length; } } if(attempt<CHECK_ATTEMPTS) sleep(CHECK_INTERVAL_MS); } fail(`IMPLEMENTATION_REPOSITORY_CHECKS_TIMEOUT:${entry.repository}:#${prNumber}`); }
-function waitMerged(entry,prNumber,headSha){ for(let attempt=1;attempt<=60;attempt+=1){ const state=parseJson(gh(entry.root,['pr','view',String(prNumber),'--json','state,mergedAt,mergeCommit,headRefOid']).stdout,'gh pr view merged'); if(state?.headRefOid!==headSha) fail(`IMPLEMENTATION_REPOSITORY_PR_HEAD_CHANGED:${entry.repository}:#${prNumber}`); if(state?.state==='MERGED'){ const mergeCommit=String(state?.mergeCommit?.oid??'').trim().toLowerCase(); if(!state?.mergedAt||!SHA_PATTERN.test(mergeCommit)) fail(`IMPLEMENTATION_REPOSITORY_MERGE_EVIDENCE_INVALID:${entry.repository}`); return {mergeCommit,mergedAt:state.mergedAt}; } if(state?.state==='CLOSED') fail(`IMPLEMENTATION_REPOSITORY_PR_CLOSED_WITHOUT_MERGE:${entry.repository}`); sleep(2000); } fail(`IMPLEMENTATION_REPOSITORY_MERGE_TIMEOUT:${entry.repository}`); }
-export function publishExternalRepositoryBundle({plan}={}){ const published=[]; for(const entry of plan.repositories.filter(x=>!x.orchestrator)){ verifyRepositoryCheckout(entry.root,entry.repository); if(currentBranch(entry.root)!==entry.branch) fail(`IMPLEMENTATION_REPOSITORY_FINISH_BRANCH_INVALID:${entry.repository}`); if(worktreePaths(entry.root).length) fail(`IMPLEMENTATION_REPOSITORY_FINISH_DIRTY:${entry.repository}`); git(entry.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']); const contained=git(entry.root,['merge-base','--is-ancestor',`origin/${DEFAULT_BRANCH}`,'HEAD'],{allowFailure:true}); if(contained.status!==0){ const merge=git(entry.root,['merge','--no-edit',`origin/${DEFAULT_BRANCH}`],{allowFailure:true}); if(merge.status!==0) fail(`IMPLEMENTATION_REPOSITORY_FINISH_RECONCILIATION_FAILED:${entry.repository}`); git(entry.root,['push','-u','origin',entry.branch]); }
-    const headSha=currentHead(entry.root); const prNumber=findOrCreatePr(entry,plan.instance_id,headSha); const checks=waitChecks(entry,prNumber,headSha); gh(entry.root,['pr','merge',String(prNumber),'--merge','--match-head-commit',headSha]); const merged=waitMerged(entry,prNumber,headSha); git(entry.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']); git(entry.root,['switch',DEFAULT_BRANCH]); git(entry.root,['pull','--ff-only','origin',DEFAULT_BRANCH]); if(remoteBranchExists(entry.root,entry.branch)) git(entry.root,['push','origin','--delete',entry.branch],{allowFailure:true}); if(branchExists(entry.root,entry.branch)) git(entry.root,['branch','-d',entry.branch],{allowFailure:true}); if(worktreePaths(entry.root).length) fail(`IMPLEMENTATION_REPOSITORY_MAIN_DIRTY_AFTER_MERGE:${entry.repository}`); published.push(Object.freeze({repository:entry.repository,candidate_commit:headSha,pr:prNumber,checks,merge_commit:merged.mergeCommit,merged_at:merged.mergedAt,status:'MERGED'})); }
-  return Object.freeze({type:IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE,model_id:IMPLEMENTATION_REPOSITORY_BUNDLE_MODEL_ID,instance_id:plan.instance_id,published_at:new Date().toISOString(),repositories:Object.freeze(published)}); }
+
+function normalizedPrBody(value){ return String(value??'').replace(/\r\n/gu,'\n').trimEnd(); }
+
+export function buildImplementationRepositoryPrBody({instanceId,repository,headSha}={}){
+  const id=String(instanceId??'').trim();
+  const repo=String(repository??'').trim();
+  const head=normalizedCandidateCommit(headSha,'IMPLEMENTATION_REPOSITORY_PR_HEAD');
+  if(!id) fail('IMPLEMENTATION_REPOSITORY_PR_INSTANCE_INVALID');
+  if(!repo) fail('IMPLEMENTATION_REPOSITORY_PR_REPOSITORY_INVALID');
+  return [
+    'VENTO-TREQ-AFFECTED: NONE',
+    `VENTO-TREQ-ZERO-REASON: ${id} publica un delta fisico multi-repo ya gobernado por requisitos TREQ y no modifica el registro 04A.`,
+    '',
+    '## Implementacion multi-repo',
+    '',
+    id,
+    '',
+    `Repositorio: ${repo}`,
+    `Candidate: ${head}`,
+  ].join('\n');
+}
+
+export function assessImplementationRepositoryPrState({state,expectedBody,headSha,branch}={}){
+  if(!state||typeof state!=='object'||Array.isArray(state)) return Object.freeze({status:'INVALID',reason:'PR_STATE_INVALID'});
+  const expectedHead=normalizedCandidateCommit(headSha,'IMPLEMENTATION_REPOSITORY_PR_HEAD');
+  if(state.state!=='OPEN') return Object.freeze({status:'INVALID',reason:'PR_NOT_OPEN'});
+  if(state.isDraft===true) return Object.freeze({status:'INVALID',reason:'PR_DRAFT'});
+  if(state.baseRefName!==DEFAULT_BRANCH) return Object.freeze({status:'INVALID',reason:'PR_BASE_INVALID'});
+  if(branch&&state.headRefName!==branch) return Object.freeze({status:'INVALID',reason:'PR_BRANCH_INVALID'});
+  if(String(state.headRefOid??'').trim().toLowerCase()!==expectedHead) return Object.freeze({status:'INVALID',reason:'PR_HEAD_INVALID'});
+  if(normalizedPrBody(state.body)===normalizedPrBody(expectedBody)) return Object.freeze({status:'PASS',reason:'PR_BODY_CURRENT'});
+  return Object.freeze({status:'UPDATE_BODY',reason:'PR_BODY_STALE'});
+}
+
+function checkRunId(link){
+  const match=/\/actions\/runs\/([0-9]+)/u.exec(String(link??''));
+  if(!match) return null;
+  const value=Number(match[1]);
+  return Number.isSafeInteger(value)?value:null;
+}
+
+function latestImplementationRepositoryChecks(rows){
+  const latest=new Map();
+  for(const [index,row] of (Array.isArray(rows)?rows:[]).entries()){
+    const name=String(row?.name??'').trim();
+    if(!name) continue;
+    const runId=checkRunId(row?.link);
+    const rank=runId??index;
+    const current=latest.get(name);
+    if(!current||rank>=current.rank) latest.set(name,{rank,row});
+  }
+  return [...latest.values()].map(entry=>entry.row);
+}
+
+export function classifyImplementationRepositoryChecks(rows){
+  const latest=latestImplementationRepositoryChecks(rows);
+  if(latest.length===0) return Object.freeze({state:'WAIT',reason:'NO_CHECKS',count:0});
+  const required=latest.find(row=>String(row?.name??'').trim()===REQUIRED_GATE)??null;
+  const failed=latest.filter(row=>['fail','cancel'].includes(String(row?.bucket??'').toLowerCase()));
+  if(failed.length>0){
+    return Object.freeze({
+      state:'FAIL',
+      reason:`FAILED_CHECKS:${failed.map(row=>String(row?.name??'UNKNOWN')).sort().join(',')}`,
+      count:latest.length,
+    });
+  }
+  if(!required) return Object.freeze({state:'WAIT',reason:'REQUIRED_GATE_MISSING',count:latest.length});
+  const requiredBucket=String(required?.bucket??'').toLowerCase();
+  if(requiredBucket==='skipping') return Object.freeze({state:'FAIL',reason:'REQUIRED_GATE_SKIPPED',count:latest.length});
+  const pending=latest.filter(row=>!['pass','skipping'].includes(String(row?.bucket??'').toLowerCase()));
+  if(requiredBucket!=='pass'||pending.length>0){
+    return Object.freeze({
+      state:'WAIT',
+      reason:requiredBucket!=='pass'?'REQUIRED_GATE_PENDING':'CHECKS_PENDING',
+      count:latest.length,
+    });
+  }
+  return Object.freeze({state:'PASS',reason:'REQUIRED_GATE_PASS',count:latest.length});
+}
+
+function readOpenPrState(entry,prNumber){
+  return parseJson(
+    gh(entry.root,['pr','view',String(prNumber),'--json','number,state,isDraft,headRefName,headRefOid,baseRefName,body']).stdout,
+    'gh pr view',
+  );
+}
+
+function mergedPrForBranch(entry){
+  const result=gh(entry.root,[
+    'pr','list','--head',entry.branch,'--base',DEFAULT_BRANCH,'--state','closed',
+    '--json','number,state,headRefName,headRefOid,baseRefName,mergedAt,mergeCommit','--limit','20',
+  ],{allowFailure:true});
+  if(result.status!==0) return null;
+  const rows=parseJson(result.stdout,'gh pr list merged')??[];
+  if(!Array.isArray(rows)) return null;
+  return rows.find(row=>row?.mergedAt&&row?.baseRefName===DEFAULT_BRANCH&&row?.headRefName===entry.branch)??null;
+}
+
+function verifyMergedPrOnMain(entry,row){
+  const candidate=String(row?.headRefOid??'').trim().toLowerCase();
+  const mergeCommit=String(row?.mergeCommit?.oid??'').trim().toLowerCase();
+  if(!Number.isSafeInteger(Number(row?.number))||Number(row.number)<=0||!SHA_PATTERN.test(candidate)||!SHA_PATTERN.test(mergeCommit)){
+    fail(`IMPLEMENTATION_REPOSITORY_MERGED_PR_INVALID:${entry.repository}`);
+  }
+  git(entry.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']);
+  if(git(entry.root,['merge-base','--is-ancestor',mergeCommit,`origin/${DEFAULT_BRANCH}`],{allowFailure:true}).status!==0){
+    fail(`IMPLEMENTATION_REPOSITORY_MERGE_NOT_ON_MAIN:${entry.repository}:${mergeCommit}`);
+  }
+  return Object.freeze({
+    repository:entry.repository,
+    candidate_commit:candidate,
+    pr:Number(row.number),
+    merge_commit:mergeCommit,
+    merged_at:row.mergedAt,
+    status:'MERGED',
+  });
+}
+
+function synchronizeMergedRepository(entry){
+  if(worktreePaths(entry.root).length) fail(`IMPLEMENTATION_REPOSITORY_MAIN_DIRTY_BEFORE_SYNC:${entry.repository}`);
+  git(entry.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']);
+  const current=currentBranch(entry.root);
+  if(current===entry.branch){
+    git(entry.root,['switch',DEFAULT_BRANCH]);
+  }else if(current!==DEFAULT_BRANCH){
+    fail(`IMPLEMENTATION_REPOSITORY_POST_MERGE_BRANCH_INVALID:${entry.repository}:${current||'DETACHED'}`);
+  }
+  git(entry.root,['pull','--ff-only','origin',DEFAULT_BRANCH]);
+  if(remoteBranchExists(entry.root,entry.branch)) git(entry.root,['push','origin','--delete',entry.branch],{allowFailure:true});
+  if(branchExists(entry.root,entry.branch)) git(entry.root,['branch','-d',entry.branch],{allowFailure:true});
+  if(worktreePaths(entry.root).length) fail(`IMPLEMENTATION_REPOSITORY_MAIN_DIRTY_AFTER_MERGE:${entry.repository}`);
+}
+
+function findOrCreatePr(entry,instanceId,headSha){
+  const expectedBody=buildImplementationRepositoryPrBody({
+    instanceId,
+    repository:entry.repository,
+    headSha,
+  });
+  const rows=parseJson(gh(entry.root,[
+    'pr','list','--head',entry.branch,'--state','open',
+    '--json','number,headRefOid,baseRefName','--limit','20',
+  ]).stdout,'gh pr list')??[];
+  if(!Array.isArray(rows)) fail(`IMPLEMENTATION_REPOSITORY_PR_LIST_INVALID:${entry.repository}`);
+  if(rows.length>1) fail(`IMPLEMENTATION_REPOSITORY_PR_AMBIGUOUS:${entry.repository}`);
+  let prNumber=null;
+  if(rows.length===1){
+    prNumber=Number(rows[0].number);
+    const state=readOpenPrState(entry,prNumber);
+    const assessment=assessImplementationRepositoryPrState({
+      state,
+      expectedBody,
+      headSha,
+      branch:entry.branch,
+    });
+    if(assessment.status==='INVALID'){
+      fail(`IMPLEMENTATION_REPOSITORY_PR_IDENTITY_INVALID:${entry.repository}:#${prNumber}:${assessment.reason}`);
+    }
+    if(assessment.status==='UPDATE_BODY'){
+      gh(entry.root,['pr','edit',String(prNumber),'--body',expectedBody]);
+      const updated=readOpenPrState(entry,prNumber);
+      const confirmed=assessImplementationRepositoryPrState({
+        state:updated,
+        expectedBody,
+        headSha,
+        branch:entry.branch,
+      });
+      if(confirmed.status!=='PASS'){
+        fail(`IMPLEMENTATION_REPOSITORY_PR_BODY_REPAIR_FAILED:${entry.repository}:#${prNumber}:${confirmed.reason}`);
+      }
+    }
+    return prNumber;
+  }
+  gh(entry.root,[
+    'pr','create','--base',DEFAULT_BRANCH,'--head',entry.branch,
+    '--title',`implementation(${instanceId}): ${entry.repository}`,
+    '--body',expectedBody,
+  ]);
+  const created=parseJson(gh(entry.root,[
+    'pr','list','--head',entry.branch,'--state','open',
+    '--json','number,headRefOid,baseRefName','--limit','20',
+  ]).stdout,'gh pr list post-create')??[];
+  if(!Array.isArray(created)||created.length!==1) fail(`IMPLEMENTATION_REPOSITORY_PR_NOT_RESOLVED:${entry.repository}`);
+  prNumber=Number(created[0].number);
+  const state=readOpenPrState(entry,prNumber);
+  const confirmed=assessImplementationRepositoryPrState({
+    state,
+    expectedBody,
+    headSha,
+    branch:entry.branch,
+  });
+  if(confirmed.status!=='PASS'){
+    fail(`IMPLEMENTATION_REPOSITORY_PR_CREATE_INVALID:${entry.repository}:#${prNumber}:${confirmed.reason}`);
+  }
+  return prNumber;
+}
+
+function waitChecks(entry,prNumber,headSha,instanceId){
+  for(let attempt=1;attempt<=CHECK_ATTEMPTS;attempt+=1){
+    const state=readOpenPrState(entry,prNumber);
+    const identity=assessImplementationRepositoryPrState({
+      state,
+      expectedBody:buildImplementationRepositoryPrBody({
+        instanceId,
+        repository:entry.repository,
+        headSha,
+      }),
+      headSha,
+      branch:entry.branch,
+    });
+    if(identity.status==='INVALID') fail(`IMPLEMENTATION_REPOSITORY_PR_IDENTITY_INVALID:${entry.repository}:#${prNumber}:${identity.reason}`);
+    const checks=gh(entry.root,['pr','checks',String(prNumber),'--json','name,state,bucket,link'],{allowFailure:true});
+    let rows=[];
+    try{ rows=parseJson(checks.stdout||'[]','gh pr checks')??[]; }catch{ rows=[]; }
+    const classification=classifyImplementationRepositoryChecks(rows);
+    if(classification.state==='FAIL') fail(`IMPLEMENTATION_REPOSITORY_CHECKS_FAILED:${entry.repository}:#${prNumber}:${classification.reason}`);
+    if(classification.state==='PASS') return classification.count;
+    if(attempt<CHECK_ATTEMPTS) sleep(CHECK_INTERVAL_MS);
+  }
+  fail(`IMPLEMENTATION_REPOSITORY_CHECKS_TIMEOUT:${entry.repository}:#${prNumber}`);
+}
+
+function waitMerged(entry,prNumber,headSha){
+  for(let attempt=1;attempt<=60;attempt+=1){
+    const state=parseJson(
+      gh(entry.root,['pr','view',String(prNumber),'--json','number,state,mergedAt,mergeCommit,headRefName,headRefOid,baseRefName']).stdout,
+      'gh pr view merged',
+    );
+    if(state?.headRefOid!==headSha) fail(`IMPLEMENTATION_REPOSITORY_PR_HEAD_CHANGED:${entry.repository}:#${prNumber}`);
+    if(state?.state==='MERGED') return verifyMergedPrOnMain(entry,{...state,number:prNumber});
+    if(state?.state==='CLOSED') fail(`IMPLEMENTATION_REPOSITORY_PR_CLOSED_WITHOUT_MERGE:${entry.repository}`);
+    sleep(2000);
+  }
+  fail(`IMPLEMENTATION_REPOSITORY_MERGE_TIMEOUT:${entry.repository}`);
+}
+
+export function publishExternalRepositoryBundle({plan}={}){
+  const published=[];
+  for(const entry of plan.repositories.filter(candidate=>!candidate.orchestrator)){
+    verifyRepositoryCheckout(entry.root,entry.repository);
+    const alreadyMerged=mergedPrForBranch(entry);
+    if(alreadyMerged){
+      const recovered=verifyMergedPrOnMain(entry,alreadyMerged);
+      synchronizeMergedRepository(entry);
+      published.push(Object.freeze({...recovered,checks:0,resume:'ALREADY_MERGED'}));
+      continue;
+    }
+    if(currentBranch(entry.root)!==entry.branch) fail(`IMPLEMENTATION_REPOSITORY_FINISH_BRANCH_INVALID:${entry.repository}`);
+    if(worktreePaths(entry.root).length) fail(`IMPLEMENTATION_REPOSITORY_FINISH_DIRTY:${entry.repository}`);
+    git(entry.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']);
+    const contained=git(entry.root,['merge-base','--is-ancestor',`origin/${DEFAULT_BRANCH}`,'HEAD'],{allowFailure:true});
+    if(contained.status!==0){
+      const merge=git(entry.root,['merge','--no-edit',`origin/${DEFAULT_BRANCH}`],{allowFailure:true});
+      if(merge.status!==0) fail(`IMPLEMENTATION_REPOSITORY_FINISH_RECONCILIATION_FAILED:${entry.repository}`);
+      git(entry.root,['push','-u','origin',entry.branch]);
+    }
+    const headSha=currentHead(entry.root);
+    const prNumber=findOrCreatePr(entry,plan.instance_id,headSha);
+    const checks=waitChecks(entry,prNumber,headSha,plan.instance_id);
+    gh(entry.root,['pr','merge',String(prNumber),'--merge','--match-head-commit',headSha]);
+    const merged=waitMerged(entry,prNumber,headSha);
+    synchronizeMergedRepository(entry);
+    published.push(Object.freeze({...merged,checks,resume:'MERGED_THIS_RUN'}));
+  }
+  return Object.freeze({
+    type:IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE,
+    model_id:IMPLEMENTATION_REPOSITORY_BUNDLE_MODEL_ID,
+    instance_id:plan.instance_id,
+    published_at:new Date().toISOString(),
+    repositories:Object.freeze(published),
+  });
+}
 export function validatePublishedRepositoryBundleEvidence({instance,evidence,plan=null}={}){ const external=uniqueSorted(instance?.target_repositories??[]).filter(r=>r!==SHELL_REPOSITORY); if(!external.length) return true; if(!evidence||evidence.type!==IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE||evidence.instance_id!==instance.instance_id) fail('IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_MISSING'); const actual=(evidence.repositories??[]).map(e=>e.repository).sort(); if(JSON.stringify(external)!==JSON.stringify(actual)) fail('IMPLEMENTATION_REPOSITORY_PUBLISH_SET_MISMATCH'); for(const row of evidence.repositories){ if(row.status!=='MERGED'||!SHA_PATTERN.test(String(row.candidate_commit??''))||!SHA_PATTERN.test(String(row.merge_commit??''))||!Number.isSafeInteger(Number(row.pr))||Number(row.pr)<=0) fail(`IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_INVALID:${row.repository}`); if(plan){ const pe=plan.repositories.find(e=>e.repository===row.repository); if(!pe) fail(`IMPLEMENTATION_REPOSITORY_PUBLISH_REPO_UNKNOWN:${row.repository}`); git(pe.root,['fetch','origin',DEFAULT_BRANCH,'--quiet']); if(git(pe.root,['merge-base','--is-ancestor',row.merge_commit,`origin/${DEFAULT_BRANCH}`],{allowFailure:true}).status!==0) fail(`IMPLEMENTATION_REPOSITORY_PUBLISH_NOT_ON_MAIN:${row.repository}`); } } return true; }
