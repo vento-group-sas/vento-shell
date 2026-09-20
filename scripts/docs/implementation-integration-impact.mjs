@@ -101,6 +101,21 @@ export function isCorrectionIntegrationLifecyclePath(filePath) {
   return CORRECTION_INTEGRATION_LIFECYCLE_EXACT_PATHS.has(normalizeRepoPath(filePath));
 }
 
+export function isVerifiedCorrectionIntegrationRecord(record, relativePath) {
+  if (!record || typeof record !== 'object' || Array.isArray(record)) return false;
+  const id = String(record.correction_id ?? '').trim();
+  if (!/^[A-Z0-9]+(?:-[A-Z0-9]+)*-[0-9]{3,4}::CORR-[0-9]{3}$/u.test(id)) return false;
+  const expectedPath = `${CORRECTION_INSTANCE_DIRECTORY}${id.replace('::', '__')}.json`;
+  if (normalizeRepoPath(relativePath) !== expectedPath) return false;
+  if (record.status !== 'VERIFIED') return false;
+  if (!String(record.verified_at ?? '').trim() || !Number.isFinite(Date.parse(record.verified_at))) return false;
+  return (record.evidence ?? []).some((entry) => (
+    entry && typeof entry === 'object' && !Array.isArray(entry)
+    && entry.type === 'CORRECTION_VERIFICATION_V1'
+    && entry.status === 'PASS'
+  ));
+}
+
 function assessAdditiveTestScript({ before, after, allowedPattern, label }) {
   if (before === after) return Object.freeze({ safe: true, added: [] });
   const beforeTokens = String(before ?? '').split(/\s+/u).filter(Boolean);
