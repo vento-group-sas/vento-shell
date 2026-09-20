@@ -1494,13 +1494,32 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
     if (isMultiRepoInstance(instance)) {
       const repositoryPlan = buildImplementationRepositoryPlan({ shellRoot: root, instance });
       let publishEvidence = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE);
-      if (publishEvidence) {
-        validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });
-      } else {
+      let publishEvidencePersistedThisRun = false;
+      if (!publishEvidence) {
         const ensured = ensureRepositoryBundleCandidateEvidence({ root, instanceId, repositoryPlan });
         instance = ensured.instance;
         publishEvidence = publishExternalRepositoryBundle({ plan: repositoryPlan });
         instance = persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE, publishEvidence);
+        publishEvidencePersistedThisRun = true;
+      }
+      validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });
+      const publishEvidenceCheckpoint = commitAllowedWorktree(
+        root,
+        instanceId,
+        instance,
+        `implementation(${instanceId}): checkpoint multi-repo publish evidence`,
+      );
+      if (publishEvidencePersistedThisRun && !publishEvidenceCheckpoint) {
+        fail(`IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_CHECKPOINT_MISSING:${instanceId}`);
+      }
+      if (publishEvidenceCheckpoint) {
+        pushCandidate(root, implementationBranchName(instanceId));
+        instance = resolveInstance(root, instanceId).instance;
+        publishEvidence = repositoryBundleEvidence(instance, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE);
+        if (!publishEvidence) {
+          fail(`IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_MISSING_AFTER_CHECKPOINT:${instanceId}`);
+        }
+        validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });
       }
     }
     await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);

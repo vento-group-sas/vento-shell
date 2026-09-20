@@ -1113,6 +1113,30 @@ test('CORR-019 mantiene candidate fisico estable entre materializacion, EVIDENCE
   assert.match(bundleSource, /merge-base','--is-ancestor'/u);
 });
 
+test('FINISH multi-repo checkpointa publish evidence antes de finish y resume sin republicar', () => {
+  const source = fs.readFileSync(new URL('./implementation-execution-coordinator.mjs', import.meta.url), 'utf8');
+  const finishStart = source.indexOf("if (state === 'FINISH')");
+  const finishEnd = source.indexOf("if (state === 'BLOCKED' || state === 'DEFERRED')", finishStart);
+  assert.ok(finishStart >= 0 && finishEnd > finishStart);
+  const block = source.slice(finishStart, finishEnd);
+  const evidenceRead = block.indexOf('let publishEvidence = repositoryBundleEvidence');
+  const missingGuard = block.indexOf('if (!publishEvidence)', evidenceRead);
+  const publish = block.indexOf('publishEvidence = publishExternalRepositoryBundle({ plan: repositoryPlan });', missingGuard);
+  const persist = block.indexOf('persistBundleEvidence(root, instanceId, IMPLEMENTATION_REPOSITORY_BUNDLE_PUBLISH_EVIDENCE_TYPE, publishEvidence)', publish);
+  const validate = block.indexOf('validatePublishedRepositoryBundleEvidence({ instance, evidence: publishEvidence, plan: repositoryPlan });', persist);
+  const checkpoint = block.indexOf('const publishEvidenceCheckpoint = commitAllowedWorktree(', validate);
+  const push = block.indexOf('pushCandidate(root, implementationBranchName(instanceId))', checkpoint);
+  const reread = block.indexOf('instance = resolveInstance(root, instanceId).instance;', push);
+  const finish = block.indexOf("await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId)", reread);
+  assert.ok(evidenceRead >= 0 && missingGuard > evidenceRead);
+  assert.ok(publish > missingGuard && persist > publish && validate > persist);
+  assert.ok(checkpoint > validate && push > checkpoint && reread > push && finish > reread);
+  assert.equal((block.match(/publishExternalRepositoryBundle\(\{ plan: repositoryPlan \}\)/gu) ?? []).length, 1);
+  assert.match(block, /IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_CHECKPOINT_MISSING/u);
+  assert.match(block, /IMPLEMENTATION_REPOSITORY_PUBLISH_EVIDENCE_MISSING_AFTER_CHECKPOINT/u);
+  assert.match(block, /if \(publishEvidenceCheckpoint\) \{[\s\S]*pushCandidate/u);
+});
+
 test('runtime current-main pin es determinista', () => {
   const main = 'a'.repeat(40);
   const branch = 'b'.repeat(40);
