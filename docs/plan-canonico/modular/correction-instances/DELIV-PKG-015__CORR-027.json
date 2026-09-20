@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,41 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Recognize only the exact non-physical correction lifecycle support surfaces introduced by PR #585, and allow the exact lifecycle-command-observer.test.mjs additive package test while preserving fail-closed classification for unknown, physical, writable, or execute-only material changes.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-integration-impact.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add positive regression for the exact PR #585 delta and negative regressions proving unknown sibling lifecycle paths and unapproved additive tests still require physical revalidation.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-integration-impact.mjs",
+    "node --check scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "node --test scripts/docs/implementation-state-integrity.test.mjs",
+    "npm run docs:correction:check",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Implementation integration classifier correction only. It classifies exact lifecycle support changes from PR #585 and does not change product behavior, physical candidate files, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-20T23:09:48.672Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-20T23:00:24.734Z"
 }
