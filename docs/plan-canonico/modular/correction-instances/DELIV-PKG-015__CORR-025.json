@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-020::GAP-PKG-045"
@@ -17,12 +17,43 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "path": "scripts/docs/implementation-repository-bundle.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Accept an external repository integration head only when the preserved physical candidate remains the first-parent anchor and every intervening commit is an exact reproducible two-parent automatic merge whose second parent is contained in origin/main; keep physical candidate evidence unchanged and fail closed on material drift.",
+      "change": "MODIFY"
+    },
+    {
+      "path": "scripts/docs/implementation-repository-bundle.test.mjs",
+      "repo": "vento-group-sas/vento-shell",
+      "scope": "Add regression proof that automatic main integration heads are accepted without rewriting the physical candidate while manual merge-tree divergence and normal post-integration commits remain rejected as stale external drift.",
+      "change": "MODIFY"
+    }
+  ],
+  "validation_commands": [
+    "node --test scripts/docs/implementation-repository-bundle.test.mjs",
+    "node --test scripts/docs/correction-repository-bundle.test.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Implementation lifecycle governance correction only; it recognizes reproducible main-integration heads for external repositories while preserving the already validated physical candidate and does not modify product behavior, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-20T17:07:39.859Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADOOO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-20T16:56:13.430Z"
 }
