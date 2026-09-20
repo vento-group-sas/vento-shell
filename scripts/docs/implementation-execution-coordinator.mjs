@@ -16,7 +16,7 @@ import { repairWorkingCopy } from './repair-working-copy.mjs';
 import {
   assessImplementationStateIntegrity,
   formatImplementationStateIntegrityViolation,
-  resolveImplementationCandidateLifecycle,
+  resolveEffectiveImplementationCandidate,
 } from './implementation-state-integrity.mjs';
 import {
   instanceRecordRelativePath,
@@ -261,7 +261,7 @@ function worktreePaths(root) {
 
 export function candidateValidationState(root, instance) {
   const lifecycleHeadCommit = currentHead(root).toLowerCase();
-  const candidateLifecycle = resolveImplementationCandidateLifecycle({
+  const candidateLifecycle = resolveEffectiveImplementationCandidate({
     root,
     instance,
     branchTip: lifecycleHeadCommit,
@@ -844,7 +844,7 @@ function persistBundleEvidence(root, instanceId, type, evidence) {
   return resolveInstance(root, instanceId).instance;
 }
 
-function resolveRepositoryBundleOrchestratorCandidate(root,instance){ const lifecycle=resolveImplementationCandidateLifecycle({root,instance,branchTip:currentHead(root).toLowerCase()}); if(lifecycle.status!=='PASS'||lifecycle.decision!=='REUSE_PHYSICAL_EVIDENCE'||!/^[a-f0-9]{40}$/u.test(String(lifecycle.candidate_commit??''))) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE_INVALID:${lifecycle.reason??lifecycle.status}`); return lifecycle.candidate_commit; }
+function resolveRepositoryBundleOrchestratorCandidate(root,instance){ const lifecycle=resolveEffectiveImplementationCandidate({root,instance,branchTip:currentHead(root).toLowerCase()}); if(lifecycle.status!=='PASS'||lifecycle.decision!=='REUSE_PHYSICAL_EVIDENCE'||!/^[a-f0-9]{40}$/u.test(String(lifecycle.candidate_commit??''))) fail(`IMPLEMENTATION_REPOSITORY_ORCHESTRATOR_CANDIDATE_INVALID:${lifecycle.reason??lifecycle.status}`); return lifecycle.candidate_commit; }
 function ensureRepositoryBundleCandidateEvidence({root,instanceId,repositoryPlan}={}){ let current=resolveInstance(root,instanceId).instance; const orchestratorCandidateCommit=resolveRepositoryBundleOrchestratorCandidate(root,current); let evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); if(!evidence) fail('IMPLEMENTATION_REPOSITORY_CANDIDATE_EVIDENCE_MISSING'); const reconciliation=reconcileRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit}); if(reconciliation.updated){ current=persistBundleEvidence(root,instanceId,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE,reconciliation.evidence); const committed=commitAllowedWorktree(root,instanceId,current,`implementation(${instanceId}): reconcile multi-repo candidate bundle`); if(!committed) fail(`IMPLEMENTATION_REPOSITORY_RECONCILIATION_CHECKPOINT_MISSING:${instanceId}`); pushCandidate(root,implementationBranchName(instanceId)); current=resolveInstance(root,instanceId).instance; evidence=repositoryBundleEvidence(current,IMPLEMENTATION_REPOSITORY_BUNDLE_EVIDENCE_TYPE); }
   validateRepositoryBundleCandidateEvidence({plan:repositoryPlan,evidence,orchestratorCandidateCommit});
   pushExternalRepositoryBundle({plan:repositoryPlan});
@@ -910,7 +910,7 @@ function writeEvidenceRequest(
   const absolute = path.join(root, ...EVIDENCE_REQUEST_PATH.split('/'));
   fs.mkdirSync(path.dirname(absolute), { recursive: true });
   const prior = readEvidenceRequest(root);
-  const lifecycle = resolveImplementationCandidateLifecycle({
+  const lifecycle = resolveEffectiveImplementationCandidate({
     root,
     instance,
     branchTip: currentHead(root).toLowerCase(),

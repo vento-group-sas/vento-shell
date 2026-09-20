@@ -378,6 +378,47 @@ export function resolveImplementationCandidateLifecycle({
   });
 }
 
+export function resolveEffectiveImplementationCandidate({
+  root = process.cwd(),
+  instance,
+  branchTip = null,
+} = {}) {
+  const strict = resolveImplementationCandidateLifecycle({ root, instance, branchTip });
+  if (strict.status === 'PASS' && strict.decision === 'REUSE_PHYSICAL_EVIDENCE') {
+    return Object.freeze({
+      ...strict,
+      source: 'STRICT_LIFECYCLE',
+      strict_lifecycle: strict,
+    });
+  }
+
+  const detectedTip = String(strict.lifecycle_head_commit ?? branchTip ?? '').toLowerCase();
+  const verifiedCandidate = resolveVerifiedResumeCandidate({
+    root,
+    instance,
+    branchTip: detectedTip,
+  });
+  if (verifiedCandidate && SHA_PATTERN.test(verifiedCandidate)) {
+    return Object.freeze({
+      status: 'PASS',
+      candidate_commit: verifiedCandidate,
+      lifecycle_head_commit: detectedTip || null,
+      decision: 'REUSE_PHYSICAL_EVIDENCE',
+      reason: 'VERIFIED_RESUME_GOVERNANCE_ONLY',
+      changed_paths: strict.changed_paths ?? Object.freeze([]),
+      model_id: strict.model_id ?? 'VENTO-IMPLEMENTATION-CANDIDATE-LIFECYCLE-V1',
+      source: 'VERIFIED_RESUME',
+      strict_lifecycle: strict,
+    });
+  }
+
+  return Object.freeze({
+    ...strict,
+    source: 'STRICT_LIFECYCLE_REJECTED',
+    strict_lifecycle: strict,
+  });
+}
+
 function authorizationValid(instance) {
   return instance?.authorization?.decision === 'APPROVED'
     && Array.isArray(instance?.target_repositories)
@@ -538,17 +579,15 @@ export function deriveImplementationStateFacts({
     || (localRef && gitRefCommit(root, localRef))
     || ''
   ).toLowerCase();
-  const candidateLifecycle = candidateCommit == null
-    ? resolveImplementationCandidateLifecycle({ root, instance, branchTip: detectedTip })
+  const candidateResolution = candidateCommit == null
+    ? resolveEffectiveImplementationCandidate({ root, instance, branchTip: detectedTip })
     : null;
-  const verifiedResumeCandidate = candidateCommit == null
-    ? resolveVerifiedResumeCandidate({ root, instance, branchTip: detectedTip })
-    : null;
-  const lifecycleCandidate = candidateLifecycle?.status === 'PASS'
-    ? candidateLifecycle.candidate_commit
+  const candidateLifecycle = candidateResolution?.strict_lifecycle ?? null;
+  const effectiveCandidate = candidateResolution?.status === 'PASS'
+    ? candidateResolution.candidate_commit
     : null;
   const detectedCandidate = String(
-    candidateCommit ?? lifecycleCandidate ?? verifiedResumeCandidate ?? detectedTip ?? ''
+    candidateCommit ?? effectiveCandidate ?? detectedTip ?? ''
   ).toLowerCase();
   const localValidation = parseLocalValidationEvidence(instance, detectedCandidate || null);
   const candidateLifecycleStale = candidateLifecycle?.status === 'INVALID'
@@ -591,8 +630,8 @@ export function deriveImplementationStateFacts({
     verification_evidence_present: Boolean(verification.evidence),
     verification_receipt_valid: verificationReceipt.valid,
     grandfathered_verified: false,
-    candidate_lifecycle_head_commit: candidateLifecycle?.lifecycle_head_commit ?? detectedTip ?? null,
-    candidate_lifecycle_decision: candidateLifecycle?.decision ?? null,
+    candidate_lifecycle_head_commit: candidateResolution?.lifecycle_head_commit ?? detectedTip ?? null,
+    candidate_lifecycle_decision: candidateResolution?.decision ?? null,
     stale_evidence: unique([
       ...candidateLifecycleStale,
       ...localValidation.stale,
