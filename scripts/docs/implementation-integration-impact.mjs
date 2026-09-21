@@ -17,6 +17,7 @@ const IMPLEMENTATION_DOCTOR_SCRIPT = 'node scripts/docs/implementation-doctor.mj
 
 const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'docs/plan-canonico/modular/task-development-policy.json',
+  'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md',
   'scripts/docs/canonical-task-preflight.mjs',
   'scripts/docs/docs-runtime-primitives.mjs',
   'scripts/docs/docs-runtime-primitives.test.mjs',
@@ -24,6 +25,8 @@ const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'scripts/docs/implementation-branch-lifecycle.test.mjs',
   'scripts/docs/implementation-execution-coordinator.mjs',
   'scripts/docs/implementation-execution-coordinator.test.mjs',
+  'scripts/docs/implementation-readiness-gate-engine.mjs',
+  'scripts/docs/implementation-readiness-gate-engine.test.mjs',
   'scripts/docs/implementation-path-policy.mjs',
   'scripts/docs/implementation-path-policy.test.mjs',
   'scripts/docs/implementation-repository-bundle.mjs',
@@ -164,17 +167,21 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
   const afterPlanTest = String(afterCopy?.scripts?.['docs:plan:test'] ?? '');
   const beforeCorrectionTest = String(beforeCopy?.scripts?.['docs:correction:test'] ?? '');
   const afterCorrectionTest = String(afterCopy?.scripts?.['docs:correction:test'] ?? '');
+  const beforeAcceleratorTest = String(beforeCopy?.scripts?.['docs:implementation:accelerator:test'] ?? '');
+  const afterAcceleratorTest = String(afterCopy?.scripts?.['docs:implementation:accelerator:test'] ?? '');
   const beforeDoctor = String(beforeCopy?.scripts?.['docs:implementation:doctor'] ?? '');
   const afterDoctor = String(afterCopy?.scripts?.['docs:implementation:doctor'] ?? '');
 
   if (beforeCopy.scripts) {
     delete beforeCopy.scripts['docs:plan:test'];
     delete beforeCopy.scripts['docs:correction:test'];
+    delete beforeCopy.scripts['docs:implementation:accelerator:test'];
     delete beforeCopy.scripts['docs:implementation:doctor'];
   }
   if (afterCopy.scripts) {
     delete afterCopy.scripts['docs:plan:test'];
     delete afterCopy.scripts['docs:correction:test'];
+    delete afterCopy.scripts['docs:implementation:accelerator:test'];
     delete afterCopy.scripts['docs:implementation:doctor'];
   }
 
@@ -228,7 +235,22 @@ export function assessPackageJsonIntegrationImpact({ before, after } = {}) {
     });
   }
 
-  const addedTests = [...planDelta.added, ...correctionDelta.added];
+  const acceleratorDelta = assessAdditiveTestScript({
+    before: beforeAcceleratorTest,
+    after: afterAcceleratorTest,
+    allowedPattern: /^scripts\/docs\/implementation-[A-Za-z0-9._/-]*\.test\.mjs$/u,
+    label: 'DOCS_IMPLEMENTATION_ACCELERATOR_TEST',
+  });
+  if (!acceleratorDelta.safe) {
+    return Object.freeze({
+      safe: false,
+      reason: `PACKAGE_JSON_${acceleratorDelta.reason}`,
+      added_tests: [...planDelta.added, ...correctionDelta.added, ...acceleratorDelta.added],
+      doctor_script: afterDoctor || null,
+    });
+  }
+
+  const addedTests = [...planDelta.added, ...correctionDelta.added, ...acceleratorDelta.added];
   if (addedTests.length === 0) {
     return Object.freeze({
       safe: true,

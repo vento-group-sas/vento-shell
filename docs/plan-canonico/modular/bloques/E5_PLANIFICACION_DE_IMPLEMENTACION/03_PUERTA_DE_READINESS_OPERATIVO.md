@@ -4,6 +4,16 @@ Estas tareas diseñan el checklist que `SHELL-CI-021` ejecutará después de
 `SHELL-CI-020` y de las tareas aplicables de BLOQUE R. E5 no exige todavía la
 evidencia resultante.
 
+#### Regla transversal de aplicabilidad temporal
+
+La existencia de un `READY-GATE-*` en el universo canónico no implica que su evidencia deba existir en la primera comprobación técnica de todos los paquetes. La ejecución por paquete deberá clasificar cada gate mediante un `readiness_profile` trazable:
+
+- `NOW`: obligatorio para la fase que se está intentando completar; un `FAIL` o `BLOQUEADO` sí bloquea esa fase.
+- `LATER`: obligatorio en una fase posterior identificada por `target_phase`; genera handoff y evidencia pendiente, pero no bloquea la fase técnica actual.
+- `NEVER`: no corresponde al alcance físico aprobado del paquete; se conserva como `NO_APLICA` con justificación reproducible.
+
+Por seguridad, la ausencia de clasificación explícita se interpreta como `NOW`. `LATER` y `NEVER` nunca se infieren solo porque un gate sea incómodo ni por coincidencias de palabras en documentación: requieren una decisión explícita, justificable y persistida. Cuando el alcance cambie, el perfil deberá reevaluarse. La metadata de ejecución (por ejemplo, si una evidencia fue recalculada o reutilizada) no cambia por sí sola la verdad semántica del gate.
+
 ### ✅ READY-GATE-001 — Definir criterio y evidencia para confirmar código desplegado en el entorno objetivo
 
 **Estado:** APROBADA
