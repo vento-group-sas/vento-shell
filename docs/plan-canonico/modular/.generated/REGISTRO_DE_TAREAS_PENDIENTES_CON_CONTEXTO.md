@@ -8,28 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `AUTH-RBAC-018::CORR-001`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-047`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `AUTH-RBAC-018::CORR-001`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO: autoriza AUTH-RBAC-018::CORR-001 exclusivamente para reconciliar AUTH-RBAC-018 con AUTH-CAT-022 a AUTH-CAT-025, el conjunto activo de 140 PermissionKey y operational-role-grants@1.0.0; preservar el snapshot histórico de 112 permisos como lineage no autorizante; reconocer 16 grants vigentes de conductor_logistica; separar accept_custody, start_transit y deliver; mantener dispatch, transit y transit.view fuera de autoridad runtime; no cambiar datasets, grants, TREQ, 04A, Supabase ni código físico; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.
-- **Edita solamente:**
-  - `MODIFY` `docs/plan-canonico/modular/bloques/D_MATRICES/06_OPERATIVOS_LOGISTICA_Y_GERENCIA.md`
-- **Valida, en este orden:**
-  1. `node scripts/docs/correction-control.mjs --check`
-  2. `npm run docs:plan:build`
-  3. `npm run docs:plan:check`
-  4. `npm run docs:plan:test`
-  5. `npm run docs:treq:check`
-  6. `npm run docs:treq:test`
-  7. `git diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id AUTH-RBAC-018::CORR-001`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
 
