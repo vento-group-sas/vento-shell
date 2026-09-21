@@ -10601,7 +10601,775 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-013 — Proteger movimientos`
-### [ ] NEXO-AUTH-013 — Proteger movimientos
+### ✅ NEXO-AUTH-013 — Proteger movimientos
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-012 — Proteger conteos
+**Tarea siguiente:** NEXO-AUTH-014 — Proteger catálogo y configuraciones
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger consulta del ledger y traslados internos mediante las PermissionKey activas `nexo.inventory.movements.view`, `nexo.inventory.transfers.view` y `nexo.inventory.transfers.create`, preservando fuente causal, grupos y legs append-only, conservación cuantitativa, territorio, segregación entre lectura y escritura, idempotencia, receipts, secuencia autoritativa, reconciliación de proyecciones y frontera estricta con remisiones, conteos, ajustes y escritores propietarios
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-013::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger de extremo a extremo la consulta del ledger de inventario y la creación de traslados internos para que leer, filtrar, reconstruir, exportar, reubicar o transferir inventario dependa de capacidades exactas, actor, sesión, territorio, recurso, fuente, versión, intención y contexto verificables, sin convertir la vista de movimientos en writer genérico ni permitir que notas, aliases, roles, URLs, formularios o proyecciones mutables sustituyan causalidad, autorización o el command boundary propietario de cada proceso.
+
+#### 2. Resultado contractual
+
+La consulta del ledger y la creación de un traslado interno se resuelven de forma independiente.
+
+Consulta de movimientos:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ PermissionKey nexo.inventory.movements.view
++ UN CARRIL COMPLETO BASE U OPERACIONAL
++ TERRITORIO Y RECURSO COMPATIBLES
++ FILTRO Y CAMPOS AUTORIZADOS
++ DENEGACIONES AUSENTES
+→ CONSULTA DEL LEDGER AUTORIZABLE
+```
+
+Consulta de traslados:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ PermissionKey nexo.inventory.transfers.view
++ UN CARRIL COMPLETO BASE U OPERACIONAL
++ RELACION LEGITIMA CON ORIGEN O DESTINO
++ TERRITORIO COMPATIBLE
++ DENEGACIONES AUSENTES
+→ CONSULTA DE TRASLADOS AUTORIZABLE
+```
+
+Creación de traslado interno:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ SESION HUMANA ATRIBUIDA
++ PermissionKey nexo.inventory.transfers.create
++ CARRIL OPERACIONAL VALIDO
++ TURNO Y CHECK-IN CUANDO APLIQUEN
++ SEDE Y AREA ACTIVAS
++ ORIGEN Y DESTINO AUTORIZADOS
++ MISMA SEDE Y AREA DE BODEGA
++ STOCK ELEGIBLE SUFICIENTE
++ UOM Y VERSIONES VALIDAS
++ INTENCION IDEMPOTENTE
++ DENEGACIONES AUSENTES
+→ TRASLADO INTERNO AUTORIZABLE
+```
+
+Ninguna de estas decisiones sustituye a las demás.
+
+#### 3. PermissionKey activas exactas
+
+El catálogo vigente conserva activas:
+
+```text
+nexo.inventory.movements.view
+nexo.inventory.transfers.view
+nexo.inventory.transfers.create
+```
+
+No existen como PermissionKey activas:
+
+```text
+nexo.inventory.movements
+nexo.inventory.transfers
+nexo.inventory.movements.export
+```
+
+Estas claves amplias o hipotéticas no pueden autorizar runtime, RLS, RPC, navegación, exportación ni mutaciones.
+
+#### 4. Consulta del ledger
+
+`nexo.inventory.movements.view` conserva modalidad:
+
+```text
+BASE_OR_OPERATIONAL
+```
+
+Un carril base completo o un carril operacional completo pueden satisfacer la consulta dentro de sus propios límites. Los carriles se evalúan por separado y no se mezclan para fabricar un alcance mayor.
+
+La capacidad es de lectura. No concede:
+
+- crear movimientos;
+- insertar groups o legs;
+- ajustar stock;
+- crear traslados;
+- despachar remisiones;
+- recibir remisiones;
+- aprobar conteos;
+- revertir efectos cuantitativos;
+- exportar por implicación.
+
+#### 5. Grants base de `movements.view`
+
+El dataset base vigente contiene grants `DIRECT_BASE` para:
+
+```text
+propietario
+gerente_general
+gerente
+supervisor
+auxiliar_administrativa
+contador
+```
+
+Cada rol conserva su alcance territorial propio. La consulta global aparente nunca puede ampliarse a APP-REVIEW, demo, pruebas, secretos o territorios aislados cuando su matriz los excluye.
+
+`contador` consume evidencia transaccional para conciliación, valoración y trazabilidad financiera; no ejecuta movimientos físicos.
+
+#### 6. Grants operacionales de `movements.view`
+
+El dataset operacional vigente contiene grants directos para:
+
+| Rol operacional | Contexto | Límite |
+| --- | --- | --- |
+| `bodeguero` | `CTX-WH-MOVEMENTS` | Movimientos cuyo origen, destino o efecto pertenezca a la bodega activa. Ver un extremo no concede autoridad sobre territorios ajenos. |
+| `conductor_logistica` | `CTX-DRV-CUSTODY-MOVEMENTS` | Eventos de inventario y custodia relacionados con remisiones asignadas; no concede historial general ni writer. |
+| `gerencia_operativa` | `CTX-MGR-INVENTORY-VIEW` | Inventario y movimientos de la sede o área activa; no produce visibilidad global implícita. |
+
+Un rol operacional diferente queda en `DEFAULT_DENY` salvo grant canónico explícito.
+
+#### 7. Consulta de traslados
+
+`nexo.inventory.transfers.view` conserva modalidad:
+
+```text
+BASE_OR_OPERATIONAL
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+propietario
+gerente_general
+gerente
+supervisor
+auxiliar_administrativa
+contador
+```
+
+Los grants operacionales vigentes corresponden a:
+
+```text
+bodeguero
+gerencia_operativa
+```
+
+La consulta se limita a traslados donde exista relación territorial legítima con el recurso. Ver origen no concede autoridad general sobre destino y viceversa.
+
+#### 8. Creación de traslado interno
+
+`nexo.inventory.transfers.create` conserva modalidad:
+
+```text
+OPERATIONAL_ONLY
+```
+
+El dataset vigente contiene un único grant operacional directo ordinario:
+
+```text
+bodeguero
+```
+
+con contexto:
+
+```text
+CTX-WH-TRANSFER-CREATE
+```
+
+La capacidad se limita a traslados ordinarios entre ubicaciones autorizadas de la misma sede y área de bodega.
+
+No concede:
+
+- traslado intersede;
+- remisión;
+- salida hacia consumo productivo;
+- ajuste;
+- recepción;
+- writer genérico del ledger;
+- mutación sobre ubicaciones fuera del territorio activo.
+
+#### 9. Frontera con remisiones
+
+Los movimientos entre sedes no se modelan como `transfers.create`.
+
+La frontera correcta es:
+
+```text
+TRASLADO INTERNO MISMA SEDE
+→ nexo.inventory.transfers.create
+
+MOVIMIENTO ENTRE SEDES
+→ FLUJO DE REMISIONES
+→ DESPACHO
+→ CUSTODIA / TRANSITO
+→ ENTREGA
+→ RECEPCION
+```
+
+El ledger intersede consume los hechos de remisión; no sustituye su autorización.
+
+#### 10. Frontera con conteos y ajustes
+
+Conteo, diferencia, ajuste y movimiento permanecen separados:
+
+```text
+CONTEO
+→ OBSERVACION
+→ DIFERENCIA
+→ INVESTIGACION
+→ CANDIDATO
+
+CANDIDATO
+→ DECISION DE AJUSTE AUTORIZADA
+→ WRITER DE AJUSTES
+→ MOVIMIENTO AUTORITATIVO
+```
+
+`movements.view` no aprueba diferencias y `transfers.create` no publica ajustes.
+
+#### 11. No existe writer genérico de movimientos
+
+Ninguna PermissionKey activa permite a un usuario crear una fila arbitraria del ledger.
+
+Cada efecto cuantitativo debe provenir de un proceso propietario identificado, por ejemplo:
+
+- entrada;
+- recepción;
+- remisión;
+- producción;
+- venta;
+- retiro;
+- traslado interno;
+- ajuste autorizado;
+- reversa compensatoria.
+
+El productor propietario genera la intención y el command boundary del ledger materializa groups y legs con causalidad verificable.
+
+#### 12. Denegación por defecto
+
+No autorizan consulta o mutación por sí solos:
+
+```text
+nexo.access
+nexo.inventory.stock
+nexo.inventory.movements
+nexo.inventory.transfers
+rol o cargo
+sede seleccionada
+URL directa
+formulario visible
+scanner
+QR
+LOC visible
+stock visible
+nota libre
+movement_type
+estado completed
+all_sites
+```
+
+Toda acción exige su PermissionKey exacta y contexto compatible. La ausencia de una capacidad activa produce `DEFAULT_DENY`.
+
+#### 13. Recurso y territorio
+
+La autorización se resuelve sobre el recurso exacto.
+
+Para consulta de ledger, el servidor resuelve como mínimo:
+
+- sitio o conjunto territorial;
+- producto;
+- source identity;
+- group;
+- leg;
+- secuencia;
+- receipt;
+- actor relacionado;
+- filtros solicitados;
+- campos sensibles.
+
+Para traslado interno resuelve además:
+
+- work item o intención;
+- origen;
+- destino;
+- sede;
+- área;
+- LOC;
+- posición cuando aplique;
+- producto;
+- UOM;
+- cantidad;
+- stock elegible;
+- versiones;
+- actor y sesión.
+
+La UI nunca decide por sí sola el territorio efectivo.
+
+#### 14. Fuente causal
+
+Cada movimiento debe conservar una fuente entre las familias canónicas de `NEXO-UX-016` y verificar:
+
+- owner de la fuente;
+- tipo;
+- ID;
+- versión;
+- línea;
+- receipt previo;
+- saldo elegible;
+- postings anteriores.
+
+No se reconstruye causalidad a partir de `movement_type`, alias o nota libre.
+
+Un mismo hecho empresarial tiene un único productor autoritativo.
+
+#### 15. Groups y legs append-only
+
+Todo posting autoritativo crea:
+
+```text
+MOVEMENT GROUP
++ UNO O MAS LEGS
++ POSTING RECEIPT
++ SERVER SEQUENCE
+```
+
+Cada leg conserva, cuando aplique:
+
+- source;
+- receipt;
+- producto;
+- actor;
+- scope;
+- signo;
+- cantidad;
+- UOM;
+- origen;
+- destino;
+- counterpart;
+- correlation;
+- causation;
+- `leg_sequence`;
+- `server_sequence`;
+- `occurred_at`;
+- `recorded_at`.
+
+Después del posting receipt, group, legs, secuencias y receipts son inmutables.
+
+#### 16. Conservación cuantitativa
+
+Los legs conservan cantidad entre:
+
+```text
+SITE
+LOCATION
+POSITION
+PRESENTATION
+CUSTODY
+```
+
+Una reubicación dentro de la misma sede suma cero en sede.
+
+Una reubicación de posición suma cero en LOC.
+
+Un despacho intersede reduce origen y aumenta custodia.
+
+Una recepción aceptada reduce custodia y aumenta destino únicamente por la cantidad aceptada.
+
+La misma cantidad no puede existir simultáneamente en origen, custodia y destino.
+
+#### 17. Traslado interno
+
+Un traslado interno válido conserva:
+
+- intención;
+- work item cuando aplique;
+- actor y sesión;
+- origen y destino activos;
+- cantidad disponible;
+- UOM snapshot;
+- versiones;
+- revisión;
+- idempotency key;
+- group;
+- legs pareados;
+- receipt;
+- proyecciones derivadas.
+
+El encabezado no nace `completed` antes del efecto autoritativo.
+
+Un fallo no puede dejar header, items, movimiento y stock en estados parciales incompatibles.
+
+#### 18. Movimiento intersede
+
+El ledger intersede empareja cantidades por shipment, línea, despacho, journey y receipt.
+
+El despacho crea salida de origen y custodia positiva.
+
+Los hitos de tránsito no vuelven a mover cantidad.
+
+Cada receipt aceptado reduce custodia y aumenta destino solo por lo aceptado.
+
+Faltantes, rechazo, cuarentena, sobrantes y saldos sin resolver permanecen explícitos y no se fuerzan mediante ajuste artificial.
+
+#### 19. Identidad física, UOM y costo
+
+Cada leg cuantitativo conserva:
+
+- cantidad cruda;
+- unidad de entrada;
+- factor;
+- unidad de stock;
+- cantidad base;
+- precisión;
+- signo;
+- producto;
+- lote o batch cuando aplique;
+- vencimiento;
+- condición;
+- presentación;
+- posición;
+- LPN cuando aplique.
+
+Costo y campos sensibles se consumen de la fuente o policy autorizada y pueden permanecer protegidos en servidor.
+
+Cambios posteriores de catálogo no reescriben historia.
+
+#### 20. Idempotencia y secuencia
+
+Toda publicación autoritativa persiste una intención con:
+
+- producer;
+- source;
+- versión;
+- línea;
+- parcialidad;
+- familia;
+- fingerprint;
+- idempotency key.
+
+Misma key y mismo payload devuelven el mismo receipt.
+
+Misma key y payload distinto producen conflicto.
+
+Timeout o resultado desconocido se reconcilian por intención antes de repetir.
+
+La secuencia de servidor es estable y un gap impide declarar un balance definitivo.
+
+#### 21. Proyecciones derivadas
+
+Stock de sede, LOC, posición, presentación, costo, custodia y disponibilidad son proyecciones o eventos derivados de groups y legs.
+
+Cada consumidor deduplica por movimiento, evento y receipt y produce su propio receipt.
+
+Reparar una proyección significa replay, rebuild o caso de reconciliación. Nunca significa crear un movimiento ficticio para cuadrar el saldo.
+
+#### 22. Balance histórico
+
+Un saldo histórico se reconstruye desde:
+
+```text
+CHECKPOINT VERIFICADO
++ LEGS POSTERIORES DE UNA SECUENCIA CONTINUA
+```
+
+o desde el ledger completo requerido.
+
+Filtros, paginación y límites de UI se aplican después de resolver el saldo.
+
+Una ventana truncada de filas no puede producir opening o closing autoritativos.
+
+Ante gap o cobertura insuficiente el resultado es `BALANCE_UNAVAILABLE`, no una estimación silenciosa.
+
+#### 23. Corrección y reversa
+
+Después del posting no existen UPDATE o DELETE destructivos sobre group, legs, secuencias o receipts.
+
+Toda corrección cuantitativa crea:
+
+- caso;
+- referencia al original;
+- group compensatorio;
+- legs opuestos;
+- motivo;
+- evidencia;
+- autoridad;
+- cantidad compensada;
+- saldo restante.
+
+El movimiento original permanece visible.
+
+Un ajuste no se utiliza para ocultar una reversa.
+
+#### 24. Exportación
+
+El catálogo vigente no contiene una PermissionKey activa específica para exportar movimientos.
+
+Por tanto:
+
+```text
+MOVEMENTS_EXPORT
+→ DEFAULT_DENY
+```
+
+hasta que exista una capacidad canónica activa que defina alcance, territorio, minimización y auditoría.
+
+`movements.view`, un rol de gerencia o un string de cargo no conceden exportación por implicación.
+
+#### 25. Minimización y datos sensibles
+
+Consulta, detalle y futuras exportaciones deben minimizar:
+
+- costo;
+- datos personales;
+- notas;
+- evidencia;
+- territorios ajenos;
+- identificadores internos no necesarios.
+
+La autorización se aplica antes de serializar datos hacia el cliente.
+
+#### 26. Dispositivo compartido y captura
+
+Scanner, QR, tablet o quiosco pueden proponer identidad o contexto, pero no crean autoridad ni movimiento por sí solos.
+
+Un adapter de captura produce una proposal reversible. El command boundary revalida actor, sesión, PermissionKey, recurso, versiones, cantidad, UOM, territorio e idempotencia antes de cualquier efecto.
+
+#### 27. AS-IS verificado en `/inventory/movements`
+
+El snapshot remoto `vento-nexo@f0a12557a1a258c84b025933653dc756de4b5a59` conserva una superficie de historial incompatible con el contrato objetivo.
+
+En `src/app/inventory/movements/page.tsx`:
+
+- `requireAppAccess` usa `permissionCode: "inventory.movements"`, clave amplia no activa en el catálogo canónico;
+- se consultan como máximo los últimos 200 registros ordenados por `created_at`;
+- movimientos técnicos pueden ocultarse de la vista;
+- el saldo histórico se reconstruye partiendo de `inventory_stock_by_site.current_qty` actual y restando las filas visibles;
+- el opening/closing queda por tanto condicionado a una ventana truncada y no a ledger completo o checkpoint verificable;
+- el detalle causal se infiere parcialmente desde `movement_type` y `note`;
+- la exportación se habilita por strings de rol `gerente_general` o `propietario` en lugar de PermissionKey activa específica.
+
+Este estado es evidencia de convergencia pendiente y no autoridad canónica.
+
+#### 28. AS-IS verificado en `/inventory/transfers`
+
+En `src/app/inventory/transfers/page.tsx` del mismo snapshot:
+
+- la página usa `permissionCode: "inventory.transfers"`, clave amplia no activa;
+- el server action `createTransfer` valida autenticación y sede seleccionada, pero no demuestra `nexo.inventory.transfers.create` exacta;
+- crea `inventory_transfers` directamente con `status: "completed"`;
+- después inserta `inventory_transfer_items`;
+- después inserta filas `transfer_internal` en `inventory_movements`;
+- después llama `consume_inventory_stock_from_positions`;
+- después ejecuta upserts separados de stock en origen y destino;
+- esas escrituras ocurren secuencialmente y no demuestran una única frontera atómica de intención, group, legs, receipt y proyecciones.
+
+Ese AS-IS debe converger; no redefine el contrato aprobado.
+
+#### 29. Convergencia técnica obligatoria
+
+La futura materialización deberá:
+
+- retirar `inventory.movements` y `inventory.transfers` como autorización runtime;
+- usar `nexo.inventory.movements.view` solo para lectura;
+- usar `nexo.inventory.transfers.view` para consulta de traslados;
+- usar `nexo.inventory.transfers.create` únicamente para traslado interno autorizado;
+- mantener exportación en deny hasta que exista PermissionKey específica activa;
+- eliminar writers genéricos desde timelines o formularios;
+- introducir intention, group, legs, receipts y secuencia autoritativa;
+- garantizar atomicidad o compensación gobernada;
+- derivar proyecciones desde ledger;
+- reconstruir balances desde ledger/checkpoints, no desde ventanas visibles;
+- conservar causalidad y source identity;
+- separar traslado interno de remisión intersede;
+- revalidar autorización en servidor y RLS;
+- eliminar UPDATE/DELETE destructivos del historial cuantitativo.
+
+#### 30. Modelo físico objetivo
+
+El modelo futuro debe converger hacia un ledger causal append-only donde productores propietarios emiten intenciones y el command boundary autoritativo crea grupos y legs idempotentes.
+
+La vista de movimientos consume ledger y proyecciones; no escribe en ellos.
+
+El traslado interno consume un command especializado y no coordina manualmente cinco o más escrituras independientes desde una page action.
+
+#### 31. Ownership de Supabase
+
+Toda futura modificación de:
+
+- tablas;
+- RPC;
+- RLS;
+- grants;
+- funciones;
+- triggers;
+- secuencias;
+- outbox;
+- tipos;
+- migraciones;
+- idempotencia;
+- reconciliación;
+- rollback;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Esta tarea no ejecuta cambios Supabase.
+
+#### 32. Materialización física posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador global no autoriza código ni infraestructura.
+
+Cada materialización futura usa:
+
+```text
+NEXO-AUTH-013::<implementation_unit_id>
+```
+
+solo después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+#### 33. Lineage de paquetes
+
+La evidencia canónica actual no autoriza colapsar todo el frente en un único `package_id` inventado.
+
+`NEXO-UX-016` aparece como dependencia documental de `GAP-PKG-038`, mientras que varias obligaciones de source posting, corrección, ledger y reconciliación están vinculadas a `GAP-PKG-096`.
+
+La materialización futura resolverá `implementation_unit_id` y lineage por las fuentes canónicas de E5/DELIV-PKG. Esta tarea no reasigna packages ni crea relaciones TASK → UNIT manualmente.
+
+#### 34. Validaciones funcionales heredadas
+
+La futura implementación conserva la matriz:
+
+```text
+MOV-VAL-001 ... MOV-VAL-048
+```
+
+También conserva los inventarios contractuales de `NEXO-UX-016`, incluidos veintiún artefactos, veinticuatro pasos `MOV-STEP-*`, veintidós estados empresariales/técnicos, treinta estados de interfaz, ocho colas `MOVQ-*`, doce familias de fuente, doce familias semánticas y diecinueve superficies.
+
+Esta tarea no redefine esos conjuntos.
+
+#### 35. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La autorización de movimientos especializa capacidades, segregación y fronteras ya cubiertas por requisitos vigentes sin crear una obligación verificable nueva.
+
+#### 36. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-011`;
+- `TREQ-NEXO-011`;
+- `TREQ-NEXO-175` a `TREQ-NEXO-188`;
+- cobertura relacionada de `NEXO-UX-014` a `NEXO-UX-016`, `NEXO-UX-019`, `NEXO-UX-020`, `NEXO-UX-021`, `NEXO-UX-022` y `NEXO-UX-023` a `NEXO-UX-025`.
+
+Estas referencias son trazabilidad heredada y no modifican filas del Registro 04A.
+
+#### 37. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | El marcador define un contrato documental y no compila ni despliega producto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout local de `NEXO-AUTH-013`; formato, quality, delivery y batería global corresponden al lifecycle documental posterior al reemplazo. |
+| REMOTA | PASS | Se verificaron `vento-shell` en `357b820e0b4bff0971a5c5c90dabfa22d3878aeb`, catálogo activo, grants base y operacionales, `NEXO-UX-016`, `TREQ-NEXO-175..188`, topología `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, y `vento-nexo` en `f0a12557a1a258c84b025933653dc756de4b5a59` para las superficies actuales de movimientos y traslados. |
+| OPERATIVA | NOT_APPLICABLE | No se consulta un ledger productivo, no se ejecuta traslado real, no se publica leg real y no se modifica stock real. |
+| FÍSICA | NOT_APPLICABLE | No se crea ni autoriza `NEXO-AUTH-013::<implementation_unit_id>` durante este marcador global. |
+
+#### 38. Criterios de aceptación
+
+- [x] `nexo.inventory.movements.view` es la capacidad activa exacta de consulta del ledger;
+- [x] `nexo.inventory.transfers.view` es la capacidad activa exacta de consulta de traslados;
+- [x] `nexo.inventory.transfers.create` es la capacidad activa exacta de creación de traslado interno;
+- [x] `inventory.movements`, `inventory.transfers` y equivalentes amplios no autorizan runtime;
+- [x] no existe un writer genérico de movimientos para usuario final;
+- [x] `movements.view` conserva `BASE_OR_OPERATIONAL` y es read-only;
+- [x] `transfers.view` conserva `BASE_OR_OPERATIONAL`;
+- [x] `transfers.create` conserva `OPERATIONAL_ONLY`;
+- [x] el único grant operacional ordinario de `transfers.create` corresponde a `bodeguero`;
+- [x] `transfers.create` se limita a ubicaciones autorizadas de la misma sede y área;
+- [x] los movimientos intersede permanecen bajo remisiones;
+- [x] `conductor_logistica` puede consultar movimientos de custodia relacionados con remisiones asignadas, pero no crear traslados;
+- [x] source identity y productor propietario son obligatorios;
+- [x] groups, legs, secuencias y receipts son append-only después del posting;
+- [x] se conserva cantidad entre SITE, LOCATION, POSITION, PRESENTATION y CUSTODY;
+- [x] traslado interno produce legs pareados e intención idempotente;
+- [x] ninguna proyección mutable es fuente causal del ledger;
+- [x] balances históricos se reconstruyen desde ledger/checkpoints y secuencia continua;
+- [x] una ventana de 200 filas nunca produce saldo histórico autoritativo;
+- [x] reversas cuantitativas usan grupos compensatorios y conservan original;
+- [x] exportar movimientos queda `DEFAULT_DENY` mientras no exista PermissionKey activa específica;
+- [x] strings de rol no autorizan exportación;
+- [x] el AS-IS de transfers con múltiples escrituras secuenciales queda identificado como convergencia pendiente;
+- [x] la futura implementación ejecuta `MOV-VAL-001` a `MOV-VAL-048`;
+- [x] toda modificación Supabase futura pertenece a `vento-shell`;
+- [x] la topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 39. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia el catálogo de PermissionKey;
+- cambia matrices de rol;
+- consulta datos productivos reales;
+- crea un traslado real;
+- crea un group real;
+- crea un leg real;
+- crea un receipt real;
+- modifica stock real;
+- ejecuta una remisión real;
+- ejecuta un ajuste real;
+- ejecuta una reversa real;
+- exporta movimientos reales;
+- crea una instancia física;
+- autoriza una instancia física;
+- reasigna packages;
+- modifica el Registro 04A.
+
+#### 40. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-012 — Proteger conteos`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-013 — Proteger movimientos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-014 — Proteger catálogo y configuraciones`
 ### [ ] NEXO-AUTH-014 — Proteger catálogo y configuraciones
 ### [ ] NEXO-AUTH-015 — Filtrar por sede y área efectivas
 ### [ ] NEXO-AUTH-016 — Integrar dispositivo compartido
