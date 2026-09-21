@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "AUTH-RBAC-018"
@@ -17,12 +17,40 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Use the canonical task marker as the sole approval-state source for correction prepare; approve only ✅ and [x]."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Add regression coverage for approved and non-approved canonical markers, including historical table-formatted tasks."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/correction-branch-lifecycle.mjs",
+    "node --check scripts/docs/correction-branch-lifecycle.test.mjs",
+    "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+    "node scripts/docs/correction-control.mjs --check",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Correction lifecycle tooling only. It reconciles approval detection with canonical task markers and does not change product behavior, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-21T00:14:35.128Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza DELIV-PKG-015::CORR-028 exclusivamente para corregir el detector de aprobacion del lifecycle de correcciones para consumir los marcadores canonicos aprobados ✅ y [x], sin ampliar permisos, semantica funcional, TREQ, 04A, Supabase ni alcance fisico.",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-21T00:03:39.670Z"
 }
