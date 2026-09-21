@@ -15576,7 +15576,907 @@ La materialización física pertenece a futuras instancias autorizadas `NEXO-AUT
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-019 — Eliminar helpers duplicados`
 
-### [ ] NEXO-AUTH-019 — Eliminar helpers duplicados
+### ✅ NEXO-AUTH-019 — Eliminar helpers duplicados
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-018 — Migrar a paquetes de vento-shell
+**Tarea siguiente:** NEXO-AUTH-020 — Ejecutar pruebas integrales
+**Tipo de tarea:** documental; contrato canónico de retiro gobernado de helpers locales duplicados o autoritativos después del cutover demostrado de `NEXO-AUTH-018`, con conservación explícita de adapters de framework y lógica de dominio que no dupliquen autoridad compartida
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; este marcador no elimina archivos, imports, cookies, helpers, adapters, componentes, scripts, packages, dependencias, lockfiles, RPC, RLS, migraciones, datos, configuración, CI, releases, PR, merge ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el retiro seguro de helpers locales de NEXO que, después de la adopción gobernada establecida por `NEXO-AUTH-018`, dupliquen responsabilidad compartida, mantengan autoridad legacy, recreen decisiones canónicas o preserven rutas paralelas de autorización, contexto o simulación.
+
+La regla raíz queda:
+
+```text
+CANONICAL CUTOVER PASS
++
+PARITY PASS
++
+ZERO LEGITIMATE CONSUMERS
++
+NO REQUIRED LOCAL ADAPTER SEMANTICS
+=
+RETIRE LOCAL DUPLICATE
+```
+
+Y simultáneamente:
+
+```text
+SAME NAME
+!=
+DUPLICATE RESPONSIBILITY
+```
+
+```text
+LOCAL FILE
+!=
+RETIRE ENTIRE FILE
+```
+
+```text
+LEGACY HELPER UNUSED
+!=
+SAFE TO RESURRECT
+```
+
+El objetivo no es reducir líneas de código por sí mismo. El objetivo es terminar con una sola autoridad efectiva por responsabilidad y eliminar únicamente la deuda cuya sustitución canónica ya fue demostrada.
+
+---
+
+#### 2. Resultado material
+
+La tarea fija un contrato de retiro para que cada futura unidad física:
+
+1. consuma el handoff de migración producido por `NEXO-AUTH-018`;
+2. clasifique cada helper, rama, alias, cookie, wrapper, adapter y consumidor local;
+3. retire autoridad duplicada únicamente después de cutover y paridad demostrados;
+4. conserve lógica NEXO de dominio que no pertenezca al package compartido;
+5. conserve adapters mínimos de Next.js, cookies técnicas, configuración o presentación cuando sigan siendo necesarios y no decidan autoridad;
+6. elimine reexports, aliases y wrappers que permitan reintroducir la ruta legacy;
+7. demuestre cero consumidores legítimos antes de borrar una superficie;
+8. impida que rollback posterior resucite deuda ya migrada;
+9. produzca evidencia atribuible por `implementation_unit_id`;
+10. entregue a `NEXO-AUTH-020` una superficie sin autoridad paralela para certificación integral.
+
+Esta tarea documental no ejecuta el retiro físico.
+
+---
+
+#### 3. Handoff obligatorio recibido de NEXO-AUTH-018
+
+Cada candidato de retiro deberá llegar desde la materialización aplicable de `NEXO-AUTH-018` con estos siete campos resueltos:
+
+```text
+LOCAL SURFACE
+CANONICAL REPLACEMENT
+CUTOVER STATUS
+PARITY RESULT
+LAST LEGITIMATE CONSUMER
+RETIREMENT CONDITION
+ROLLBACK BOUNDARY
+```
+
+Ninguna fila puede considerarse elegible para eliminación física si falta uno de esos campos o si el `CUTOVER STATUS` todavía permite autoridad legacy activa.
+
+La mera existencia de un package compartido, un export interno, una rama de migración, un PR o un build verde no satisface este handoff.
+
+---
+
+#### 4. Frontera recibida de simulación estricta
+
+`NEXO-AUTH-017` ya separa:
+
+```text
+REAL_AUTHORITY_PLANE
+SIMULATED_EVALUATION_PLANE
+SIMULATION_PRESENTATION_PLANE
+SIMULATION_AUDIT_PLANE
+```
+
+y fija:
+
+```text
+WOULD_ALLOW != ALLOW
+```
+
+Por tanto, un helper local que convierta role override, cookie, sede simulada, área simulada, turno simulado, check-in simulado o resultado hipotético en autorización real es deuda autoritativa y su conservación no puede justificarse como compatibilidad de UI.
+
+---
+
+#### 5. Qué significa helper duplicado
+
+Para esta tarea existe duplicación cuando una superficie local cumple al menos una de estas condiciones después del cutover de 018:
+
+- vuelve a resolver una decisión cuya autoridad pertenece al package canónico;
+- vuelve a construir identidad o clave contractual ya compartida;
+- replica una factory compartida sin necesidad de adapter local;
+- interpreta contexto efectivo por fuera del resolver canónico;
+- permite fallback hacia `ALLOW` legacy;
+- mantiene un rol o bypass como fuente de autoridad real;
+- conserva un wrapper cuyo único propósito es ocultar una llamada legacy;
+- reexporta o renombra una superficie retirada;
+- duplica un componente compartido sin divergencia funcional justificada;
+- mantiene una segunda ruta de simulación con semántica distinta a la canónica.
+
+No existe duplicación automática por coincidencia nominal, por compartir lenguaje o por residir bajo `src/lib`.
+
+---
+
+#### 6. Superficies que pueden permanecer locales
+
+Permanecen locales cuando su responsabilidad sigue siendo NEXO o adaptación de framework:
+
+- lógica de remisiones;
+- filtros y semántica de inventario;
+- resolución de estados de proceso NEXO;
+- adaptación de `next/headers`;
+- redirects y routing de Next.js;
+- construcción de URLs de retorno;
+- lectura de variables de entorno propia del deployment cuando el package recibe config ya resuelta;
+- adapter de cookies requerido por una factory compartida;
+- composición de view models;
+- mensajes de bloqueo específicos de NEXO;
+- lógica de sede o área que sea de dominio y consuma contexto ya autorizado sin reconstruirlo;
+- wrappers que añadan exclusivamente semántica de framework o dominio sin reevaluar autoridad.
+
+Un adapter permitido no puede convertirse en segunda fuente de verdad.
+
+---
+
+#### 7. Snapshot AS-IS observado de NEXO
+
+En `vento-nexo` main observado, la deuda local relevante incluye:
+
+- `src/lib/auth/role-override.ts`;
+- `src/lib/auth/role-override-config.ts`;
+- ramas de role override en `src/lib/auth/guard.ts`;
+- `applyNexoRoleOverrideArea` dentro de `src/lib/auth/operational-context.ts`;
+- ramas de role override en superficies de remisiones;
+- escritura y lectura client-side de `nexo_role_override` en `src/components/vento/standard/profile-menu.tsx`;
+- selección local `nexo_site_override_id` usada como preferencia de navegación;
+- helpers locales de `permissions.ts`, `operational-context.ts` y `operational-session.ts` cuya clasificación final depende del cutover de 018;
+- factories locales Supabase cuya porción compartida solo puede retirarse después de adopción efectiva de `@vento/supabase`;
+- composición de autorización dentro de superficies visuales como `vento-shell.tsx`;
+- un script temporal `scripts/tmp-apply-privileged-request-area.mjs` que todavía referencia la lógica de override y allowlists locales.
+
+Este snapshot demuestra deuda y consumidores actuales, no autoriza su eliminación inmediata.
+
+---
+
+#### 8. Conteo estático observado de símbolos role override
+
+La búsqueda remota sobre el commit NEXO observado muestra:
+
+| Símbolo | Archivos observados que contienen la referencia | Lectura contractual |
+| --- | ---: | --- |
+| `getRoleOverrideFromCookies` | 6 | definición más consumidores reales; no está listo para retiro |
+| `canUseRoleOverride` | 8 | definición, consumidores y script temporal; no está listo para retiro |
+| `checkPermissionWithRoleOverride` | 10 | definición y múltiples superficies server/read; autoridad paralela vigente |
+| `isPermissionAllowedForRole` | 4 | definición y consumidores que evalúan permisos por rol localmente |
+| `applyNexoRoleOverrideArea` | 1 | helper interno que muta el contexto retornado |
+| `ROLE_OVERRIDE_COOKIE` | 4 | definición, lectura server y UI client-side |
+
+El gate físico posterior deberá recalcular estos conteos contra el commit real de la unidad. Estos valores son evidencia AS-IS, no baseline transferible ni cuota reutilizable.
+
+---
+
+#### 9. Retiro obligatorio de autoridad en role-override.ts
+
+Después del cutover de autorización/contexto de 018, la ruta local formada por:
+
+- `getRoleOverrideFromCookies`;
+- `canUseRoleOverride`;
+- `isPermissionAllowedForRole`;
+- `checkPermissionWithRoleOverride`;
+
+no puede seguir autorizando operaciones reales.
+
+Su retiro físico exige demostrar que:
+
+- la simulación canónica está disponible por el contrato adoptado;
+- la autorización real usa el evaluador canónico;
+- las superficies consumidoras ya no necesitan estos símbolos;
+- los escenarios allow y deny tienen paridad contractual;
+- el caso `conductor` de tránsito está resuelto por la autoridad canónica o por una regla propietaria explícita, no por un bypass local silencioso;
+- no existe fallback de un fallo canónico hacia esta ruta.
+
+La eliminación puede ser por archivo completo o por reducción progresiva, pero el resultado final no conserva una segunda autoridad equivalente.
+
+---
+
+#### 10. Retiro de applyNexoRoleOverrideArea
+
+`applyNexoRoleOverrideArea` modifica localmente:
+
+- `active_area_id`;
+- `active_area_kind`;
+- `active_operational_role`;
+
+usando role override y una búsqueda local de área.
+
+Después del cutover de contexto, esa transformación no puede permanecer dentro del camino real de `getOperationalContext`.
+
+La superficie se retira cuando el contexto efectivo canónico ya representa correctamente simulación y contexto real como planos separados y cuando ningún consumidor depende de la mutación legacy.
+
+No se conserva una versión renombrada, inline o movida de la misma transformación para evadir el retiro.
+
+---
+
+#### 11. role-override-config.ts
+
+El archivo contiene tres responsabilidades distintas y no se trata como unidad indivisible:
+
+| Superficie | Decisión documental |
+| --- | --- |
+| `ROLE_OVERRIDE_COOKIE` | retirar cuando la simulación canónica adoptada deje de usar la cookie legacy |
+| `PRIVILEGED_ROLE_OVERRIDES` | retirar como autoridad local; la elegibilidad para simular debe provenir del contrato canónico |
+| `ROLE_OPTIONS` | conservar solo mientras no exista un catálogo compartido consumible equivalente y únicamente para presentación, nunca como autoridad |
+
+Si `ROLE_OPTIONS` permanece temporalmente, no puede usarse como allowlist autoritativa ni como fuente de `PermissionKey`, scope o territorio.
+
+---
+
+#### 12. Modo prueba en profile-menu.tsx
+
+La UI puede conservar una experiencia de simulación, pero debe dejar de gestionar autoridad mediante:
+
+- escritura directa de `nexo_role_override`;
+- lectura directa de esa cookie como estado autoritativo;
+- evento local `nexo-role-override-changed` como fuente de verdad;
+- role list local usada para determinar elegibilidad real.
+
+Cuando 018 certifique la superficie canónica correspondiente, el flujo de UI deberá usar el lifecycle de simulación adoptado y mostrar únicamente estado devuelto por la autoridad canónica.
+
+El componente visual puede permanecer; lo que se retira es la ruta de autoridad duplicada.
+
+---
+
+#### 13. Cookie de sede y preferencia de navegación
+
+`nexo_site_override_id` no se elimina por el solo hecho de ser una cookie local.
+
+Puede conservarse únicamente como preferencia de navegación o selección visual si se demuestra que:
+
+```text
+SITE PREFERENCE
+!=
+AUTHORIZED SITE
+```
+
+Y que servidor, permisos, recursos y contexto efectivo ignoran esa cookie como autoridad.
+
+Si alguna superficie la utiliza como sede efectiva sin validación canónica, esa rama se clasifica como deuda autoritativa y debe retirarse o degradarse a preferencia no autoritativa.
+
+---
+
+#### 14. guard.ts
+
+`src/lib/auth/guard.ts` conserva valor como adapter de aplicación porque gestiona:
+
+- redirect a login;
+- redirect a no-access;
+- `returnTo`;
+- integración con Next.js;
+- shape local de retorno.
+
+Pero las ramas que:
+
+- leen role override;
+- deciden `canOverride`;
+- evalúan `isPermissionAllowedForRole`;
+- alternan entre evaluador local y canonical por lógica propia;
+
+son candidatas obligatorias de retiro después del cutover.
+
+El guard final puede orquestar la decisión canónica, pero no recalcularla.
+
+---
+
+#### 15. Server Actions de remisiones
+
+Los Server Actions observados que importan `checkPermissionWithRoleOverride` no pueden conservar esa ruta después del cutover.
+
+En particular, la autoridad server-side de remisiones deberá converger al evaluador canónico aplicable antes de mutar.
+
+La eliminación del helper no habilita a omitir el check. Sustituir una llamada por ausencia de autorización es una regresión crítica.
+
+Toda mutación conserva:
+
+```text
+SERVER REAUTHORIZATION BEFORE EFFECT
+```
+
+---
+
+#### 16. Lecturas, páginas y detail-access
+
+Las superficies read-side y de navegación pueden conservar composición local, pero no pueden mantener un evaluador paralelo para decidir visibilidad protegida o capacidad real.
+
+En `detail-access.ts`, páginas de remisiones y páginas de fulfillment:
+
+- se retira la derivación de permisos desde role override local;
+- se conserva la lógica de dominio para determinar recurso, extremos territoriales, capacidades de sede y semántica de remisión;
+- la decisión de permiso/contexto proviene de la autoridad canónica adoptada;
+- UI y navegación no elevan un resultado visible a autorización de servidor.
+
+---
+
+#### 17. operational-area-scope.ts como retiro parcial
+
+`operational-area-scope.ts` mezcla dos clases de responsabilidad:
+
+1. lógica NEXO de áreas habilitadas para remisiones;
+2. autorización local basada en role override.
+
+No se elimina el archivo completo por defecto.
+
+Deben permanecer, si siguen siendo necesarias:
+
+- normalización de `area_kind` de dominio;
+- labels de área;
+- cálculo de kinds habilitados para remisiones;
+- filtros de remisiones;
+- reglas de área específicas del dominio.
+
+Deben retirarse, después del cutover:
+
+- `getRoleOverrideFromCookies` dentro de esta superficie;
+- `canUseRoleOverride` como selector de autoridad;
+- `isPermissionAllowedForRole` como evaluador alterno;
+- `checkPermissionWithRoleOverride` como fallback;
+- cualquier branch que transforme un rol simulado en acceso real a todas las áreas.
+
+---
+
+#### 18. permissions.ts
+
+`src/lib/auth/permissions.ts` no se elimina automáticamente.
+
+`checkPermission` es candidato de retiro cuando todos sus consumidores de la unidad hayan migrado al evaluador canónico y no sea un adapter contractual requerido.
+
+`normalizePermissionCode` solo puede retirarse cuando el consumidor use una identidad canónica publicada y validable de permiso. No se sustituye por concatenación dispersa de strings.
+
+La existencia interna actual de `PermissionKey` en `@vento/contracts/authorization` no autoriza imports de rutas internas mientras el package no tenga una superficie pública adoptada.
+
+---
+
+#### 19. operational-context.ts
+
+Después de retirar `applyNexoRoleOverrideArea`, el resto de `operational-context.ts` se clasifica función por función.
+
+Pueden ser candidatos de migración o adapter:
+
+- `getOperationalContext`;
+- `checkOperationalPermission`;
+- `requireOperationalPermission`;
+- `buildOperationalBlockMessage`.
+
+Reglas:
+
+- un wrapper que solo adapte datos o mensajes puede permanecer;
+- un wrapper que vuelva a ejecutar una RPC legacy cuando 018 ya cortó al evaluador canónico debe retirarse;
+- `buildOperationalBlockMessage` puede permanecer como presentación si recibe razones ya resueltas y no decide autoridad;
+- no se conserva `can_operate` como sustituto de permiso canónico.
+
+---
+
+#### 20. operational-session.ts
+
+`operational-session.ts` no se clasifica en bloque como duplicado.
+
+Su porción de:
+
+- adaptación de sesión a Next.js;
+- composición local de datos de NEXO;
+- shape de retorno de aplicación;
+
+puede permanecer.
+
+Su porción que duplique resolución canónica de shared device, actor, contexto o permiso debe migrar o retirarse según el handoff de 018 y la especialización ya fijada por `NEXO-AUTH-016`.
+
+No se permite mantener dos resolutores efectivos con precedencias diferentes.
+
+---
+
+#### 21. Clientes Supabase locales
+
+`src/lib/supabase/client.ts` y `src/lib/supabase/server.ts` se tratan por responsabilidad.
+
+`@vento/supabase` ya materializa internamente fronteras browser y server, pero el snapshot observado todavía no expone una release npm consumible.
+
+Por tanto:
+
+- no se elimina una factory local antes de adopción real del package;
+- después del cutover se retira la lógica técnica duplicada que ya posea la factory compartida;
+- puede permanecer un adapter local que resuelva env, `next/headers`, cookies o modo de escritura y entregue esa configuración a la factory compartida;
+- el adapter local no puede recrear otra factory completa;
+- no se cambia autorización empresarial por haber cambiado la factory Supabase.
+
+---
+
+#### 22. Componentes y composición visual
+
+`vento-shell.tsx`, `profile-menu.tsx` y otras superficies visuales no se eliminan por compartir responsabilidades con `@vento/ui-web`.
+
+La regla es:
+
+```text
+PRESENTATION MAY REMAIN
+AUTHORITY MUST CONVERGE
+```
+
+Cuando un componente local mezcle UI con autorización, se retira o extrae únicamente la porción autoritativa después de que el reemplazo compartido esté adoptado.
+
+Una primitiva visual local que todavía no tenga API compartida consumible puede permanecer sin convertirse en deuda autoritativa.
+
+---
+
+#### 23. Scripts temporales
+
+`scripts/tmp-apply-privileged-request-area.mjs` aparece en el snapshot actual y referencia allowlists y helpers locales de autorización.
+
+Esta tarea exige que un helper retirado no conserve consumidores en scripts temporales, generadores o parches.
+
+La eliminación administrativa del script temporal continúa bajo su propietario canónico de saneamiento NEXO; `NEXO-AUTH-019` no reasigna esa responsabilidad.
+
+Sin embargo, mientras el script exista, no puede conservar una dependencia activa sobre una superficie que 019 marque como retirada ni convertirse en mecanismo para reintroducirla.
+
+---
+
+#### 24. Clasificación canónica de retiro
+
+Cada superficie deberá terminar en exactamente una de estas clases:
+
+| Clase | Significado |
+| --- | --- |
+| `RETIRE_FULL` | archivo o export completo deja de tener responsabilidad legítima |
+| `RETIRE_SYMBOL` | se elimina un símbolo específico y el archivo permanece |
+| `RETIRE_BRANCH` | se elimina una rama autoritativa dentro de una superficie de dominio o framework |
+| `KEEP_ADAPTER` | permanece adapter mínimo no autoritativo |
+| `KEEP_DOMAIN` | permanece lógica NEXO propietaria |
+| `KEEP_PRESENTATION` | permanece UI sin decisión de autoridad |
+| `BLOCKED_BY_018` | no existe todavía cutover/paridad suficiente |
+| `TRANSFERRED_OWNER` | la responsabilidad pertenece a otro owner canónico ya identificado |
+
+No se usa una categoría genérica `KEEP_LEGACY` después del cutover.
+
+---
+
+#### 25. Condición mínima de elegibilidad
+
+Un retiro solo puede pasar de `BLOCKED_BY_018` a una clase ejecutable cuando:
+
+- el package o contrato destino está adoptado por la misma unidad;
+- la versión exacta y lockfile están certificados;
+- la superficie canónica existe físicamente;
+- el consumidor ya está cortado al destino canónico;
+- la paridad es `IGUAL` o `CORRECCION_INTENCIONAL`;
+- no existe `BRECHA_DE_DATOS`;
+- no existe `BUG_CANONICO` abierto;
+- no existe `CONTRATO_PENDIENTE`;
+- no queda consumidor legítimo del helper legacy;
+- existe rollback compatible dentro de su límite temporal.
+
+---
+
+#### 26. Paridad no significa preservar el bug legacy
+
+La clasificación de 018 permanece vigente:
+
+```text
+IGUAL
+CORRECCION_INTENCIONAL
+BRECHA_DE_DATOS
+BUG_LEGACY
+BUG_CANONICO
+CONTRATO_PENDIENTE
+```
+
+Un `BUG_LEGACY` no se copia dentro del destino canónico para poder borrar el helper antiguo.
+
+Si la diferencia es una corrección intencional, la evidencia debe identificarla y demostrar el contrato que la justifica.
+
+---
+
+#### 27. Cero consumidores antes del retiro
+
+Antes de `RETIRE_FULL` o `RETIRE_SYMBOL` deberá demostrarse:
+
+```text
+DIRECT CONSUMERS = 0
+ALIASES = 0
+REEXPORTS = 0
+WRAPPERS HIDING LEGACY = 0
+TEMPORARY PATCH CONSUMERS = 0
+UNREGISTERED CONSUMERS = 0
+```
+
+La ausencia de resultados en una búsqueda parcial no basta por sí sola. El scan debe cubrir el repositorio y superficies gobernadas de la misma versión.
+
+---
+
+#### 28. No mover la deuda
+
+Está prohibido considerar retiro exitoso si la misma semántica reaparece mediante:
+
+- función renombrada;
+- archivo nuevo;
+- inline logic;
+- hook;
+- utility;
+- barrel export;
+- alias de import;
+- wrapper RPC;
+- copia dentro de un Server Action;
+- componente UI;
+- script temporal;
+- branch local de excepción.
+
+El criterio es semántico, no textual.
+
+---
+
+#### 29. Reexports, barrels y aliases
+
+Cuando un símbolo se retire, se eliminan también sus exports públicos o locales, barrels, aliases y tipos que únicamente existen para sostener esa ruta.
+
+No se deja un export muerto como promesa de compatibilidad indefinida.
+
+Una compatibilidad transitoria solo puede permanecer si 018 la declaró necesaria, acotada, observada y con condición de salida explícita.
+
+---
+
+#### 30. Adapters permitidos
+
+Un `KEEP_ADAPTER` debe satisfacer todas estas condiciones:
+
+- no evalúa permiso;
+- no elige rol efectivo;
+- no decide sede o área autorizada;
+- no transforma simulación en autoridad;
+- no interpreta `can_operate` como permiso;
+- no hace fallback permisivo;
+- no consulta una RPC legacy de autorización si el cutover ya la retiró;
+- no crea claves de permiso fuera del catálogo canónico;
+- no oculta errores técnicos como éxito;
+- no mantiene state duplicado que cambie el outcome.
+
+---
+
+#### 31. Coexistencia después de 018
+
+La coexistencia temporal solo puede existir antes de completar el retiro de una fila y bajo la misma regla de 018:
+
+- un solo side effect autoritativo;
+- comparación separada cuando sea segura;
+- trazabilidad del legacy y del canónico;
+- condición de salida;
+- owner de retiro;
+- rollback definido.
+
+Nunca:
+
+```text
+ALLOW = LEGACY OR CANONICAL
+```
+
+---
+
+#### 32. Punto de no retorno
+
+Antes de `MIGRATION_COMMITTED`, la unidad puede ensayar rollback hacia una combinación previa certificada si sigue siendo segura y compatible.
+
+Después de `MIGRATION_COMMITTED`:
+
+- un helper retirado no recupera cuota;
+- un finding migrado no vuelve a activo;
+- un wrapper legacy no reaparece como fallback;
+- una cookie retirada no vuelve a producir autoridad;
+- un bypass no se reactiva para resolver una incidencia ordinaria.
+
+La recuperación posterior usa la arquitectura canónica o una corrección gobernada, no resurrección de deuda.
+
+---
+
+#### 33. Observabilidad para declarar cero uso
+
+Un contador de cero solo es evidencia si existe cobertura demostrada.
+
+La futura unidad debe reconciliar, según aplicabilidad:
+
+- scanner estático;
+- consumidores registrados;
+- allowlist temporal;
+- imports y exports;
+- telemetría legacy disponible;
+- commit del consumidor;
+- manifest y lockfile;
+- runtime y ambiente observados.
+
+Ausencia de instrumentación no equivale a cero uso.
+
+---
+
+#### 34. Evidencia stale
+
+La evidencia de retiro se vuelve `STALE` si cambia cualquiera de estas dimensiones relevantes:
+
+- commit de NEXO;
+- package version;
+- manifest;
+- lockfile;
+- export surface;
+- tests;
+- fixtures;
+- env/config;
+- runtime/framework;
+- consumer set;
+- compatibility ref;
+- parity oracle;
+- scanner/allowlist snapshot;
+- backend requerido.
+
+No se reutiliza un PASS de otra combinación.
+
+---
+
+#### 35. Integridad de seguridad
+
+El retiro deberá demostrar al menos:
+
+- deny real permanece deny;
+- error técnico no produce allow;
+- simulación no produce mutación real;
+- selected site no amplía territorio;
+- shared device no hereda privilegios del configurador;
+- permiso de lectura no autoriza mutación;
+- rol visible no reemplaza el grant;
+- ocultar un control UI no sustituye autorización de servidor;
+- eliminación del legacy no abre una ruta sin guard.
+
+---
+
+#### 36. Topología física futura
+
+La cardinalidad de esta familia es `PER_IMPLEMENTATION_UNIT`.
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-019::<implementation_unit_id>
+```
+
+El gate temporal es `POST_E5_PACKAGE`.
+
+Toda materialización requiere:
+
+- `implementation_unit_id` asignado;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS` cuando corresponda;
+- handoff de 018 para las superficies de la unidad;
+- autorización física explícita.
+
+Este marcador documental no concede esa autorización.
+
+---
+
+#### 37. Relación con @vento/os-context
+
+El snapshot observado de `@vento/os-context` contiene internamente:
+
+- `getEffectiveContext`;
+- `hasEffectivePermission`;
+- `startContextSimulation`;
+- `stopContextSimulation`.
+
+Estas superficies son el destino conceptual de varias responsabilidades legacy, pero el package observado sigue siendo privado.
+
+019 no puede importar rutas internas ni asumir publicación. La adopción consumible y la versión exacta deben llegar certificadas desde 018 antes del retiro.
+
+---
+
+#### 38. Relación con @vento/contracts
+
+`@vento/contracts/authorization` ya contiene internamente identidades y tipos como `PermissionKey` y contratos estáticos de autorización.
+
+Mientras esos artefactos no estén publicados y adoptados por la unidad, NEXO no puede depender de rutas internas para justificar el retiro de helpers locales.
+
+Cuando el contrato consumible exista, se elimina cualquier construcción local paralela de identidad contractual que 018 haya clasificado como duplicada.
+
+---
+
+#### 39. Relación con @vento/supabase y @vento/ui-web
+
+`@vento/supabase` conserva acceso técnico compartido y no autoridad empresarial.
+
+`@vento/ui-web` conserva presentación y no autorización runtime.
+
+Por tanto:
+
+- retirar una factory Supabase local no mueve permisos a `@vento/supabase`;
+- retirar un helper visual local no mueve lógica NEXO a `@vento/ui-web`;
+- los adapters de framework pueden permanecer;
+- la autoridad real sigue en el contrato de contexto/autorización aplicable.
+
+---
+
+#### 40. Propiedad de Supabase
+
+Toda modificación de Supabase requerida por la migración o retiro permanece versionada, documentada y ejecutada desde `vento-group-sas/vento-shell`.
+
+Esta tarea no crea migraciones, RPC, RLS, grants, datos, secretos ni cambios remotos.
+
+Eliminar un helper consumidor no autoriza retirar un objeto backend. El retiro de objetos Supabase conserva su owner y lifecycle propios.
+
+---
+
+#### 41. Frontera con NEXO-AUTH-018
+
+`NEXO-AUTH-018` conserva en exclusiva:
+
+- adopción de packages;
+- versiones exactas;
+- compatibilidad del consumidor;
+- paridad para el cutover;
+- instalación y migración de imports en su materialización física;
+- evidencia de transición;
+- handoff de candidatos de retiro.
+
+019 no declara adoptado un package que 018 no haya certificado.
+
+Si 018 cambia una superficie o su clasificación, la fila correspondiente de 019 debe revalidarse antes de incorporarse físicamente.
+
+---
+
+#### 42. Frontera con NEXO-AUTH-020
+
+`NEXO-AUTH-020 — Ejecutar pruebas integrales` conserva la certificación integral posterior al retiro.
+
+019 debe entregar a 020:
+
+- cero autoridad local duplicada en filas committed;
+- lista exacta de adapters conservados;
+- lista exacta de lógica de dominio conservada;
+- evidencia de no reexport y no alias legacy;
+- evidencia de rollback dentro del límite permitido;
+- superficies afectadas y suites específicas ya ejecutadas.
+
+020 valida el sistema completo y no sustituye la prueba de retiro por unidad.
+
+---
+
+#### 43. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya cubre congelamiento de nuevos helpers y wrappers legacy, bloqueo de autoridad local, migración fail-closed, paridad contractual, evidencia atribuible, convergencia a cero consumidores, retiro irreversible de deuda y rollback sin resurrección. Esta tarea especializa esas obligaciones para NEXO sin crear una condición verificable nueva ni modificar owner, prioridad, estado, modalidad, package o relaciones del registro.
+
+---
+
+#### 44. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- `TREQ-SHELL-084`, para impedir nuevos aliases, wrappers, reexports o copias de superficies legacy;
+- `TREQ-SHELL-086`, para bloquear autoridad local basada en role override, bypass, `can_operate`, booleanos y helpers duplicados;
+- `TREQ-SHELL-088`, para que deuda migrada no recupere cuota ni reaparezca después del retiro;
+- `TREQ-SHELL-091`, para reconciliar consumidores y lineage antes del retiro;
+- `TREQ-SHELL-092`, para exigir cero llamada legacy y cero fallback permisivo después del cutover;
+- `TREQ-SHELL-094`, para conservar las seis clasificaciones de paridad y no copiar bugs legacy;
+- `TREQ-SHELL-096`, para evidencia atribuible por repo, commit, manifest, lockfile, runtime y versiones;
+- `TREQ-SHELL-097`, para convergencia a cero directos, findings, clientes no registrados y allowlist activa antes del handoff de retiro;
+- `TREQ-SHELL-098`, para unicidad por `implementation_unit_id` y rollback sin resucitar findings migrados;
+- `TREQ-NEXO-001`, para que saneamiento NEXO no dependa de scripts temporales como mecanismo de reescritura de la rama.
+
+Estas referencias son cobertura heredada y no representan requisitos creados o modificados por `NEXO-AUTH-019`.
+
+---
+
+#### 45. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el artefacto se preparó fuera del checkout local del usuario y no se incorporó al owner ni se ejecutó build documental |
+| LOCAL | NOT_EXECUTED | no se abrió rama 019, no se modificó el repositorio local y no se ejecutaron format, quality, delivery, topología, TREQ ni batería global sobre la tarea 019 |
+| REMOTA | PASS | se verificaron en solo lectura `vento-shell` main `8967e335391e5851322e90ee178fbbc5adb85f80` y `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`; marker exacto 019, sucesora 020, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, políticas documentales, package manifests, APIs internas de `@vento/os-context`, estado privado de `@vento/supabase`, contratos de autorización y consumidores legacy observados |
+| OPERATIVA | NOT_EXECUTED | no se retiró ningún helper, cookie, branch, import, adapter ni consumidor; no se ejecutó paridad ni prueba funcional de NEXO |
+| FÍSICA | NOT_EXECUTED | no se creó ninguna instancia `NEXO-AUTH-019::<implementation_unit_id>` ni se modificaron código, packages, Supabase, CI, PR, merge o despliegues |
+
+---
+
+#### 46. Criterios de aceptación
+
+- [x] Se definió duplicación por responsabilidad y no por nombre de archivo.
+- [x] Se preservó la frontera de 018 como precondición de retiro.
+- [x] Se preservó la separación de simulación de 017.
+- [x] Se inventariaron los símbolos role override observados.
+- [x] Se definió el retiro de `applyNexoRoleOverrideArea`.
+- [x] Se separaron las tres responsabilidades de `role-override-config.ts`.
+- [x] Se definió el retiro de la cookie de role override como autoridad.
+- [x] Se preservó la cookie de sede solo como preferencia no autoritativa cuando corresponda.
+- [x] Se preservó `guard.ts` como adapter de Next.js sin evaluador paralelo.
+- [x] Se exigió reautorización server-side en mutaciones.
+- [x] Se definió retiro parcial para `operational-area-scope.ts`.
+- [x] Se evitó eliminar lógica de dominio de remisiones.
+- [x] Se clasificaron `permissions.ts`, `operational-context.ts` y `operational-session.ts` por función.
+- [x] Se preservaron adapters legítimos de Supabase y framework.
+- [x] Se prohibió trasladar deuda por alias, wrapper, inline o reexport.
+- [x] Se exigió cero consumidores antes de retiro completo.
+- [x] Se preservó la clasificación de paridad de 018.
+- [x] Se definió punto de no retorno y rollback sin resurrección.
+- [x] Se definió evidencia stale.
+- [x] Se conservó ownership de scripts temporales en su tarea propietaria.
+- [x] Se conservó `PER_IMPLEMENTATION_UNIT`.
+- [x] Se conservó `POST_E5_PACKAGE`.
+- [x] Se mantuvo Supabase bajo `vento-shell`.
+- [x] Se reservó certificación integral a 020.
+- [x] No se crearon ni modificaron TREQ.
+- [x] No se autorizó implementación física.
+
+---
+
+#### 47. Límites
+
+Esta tarea no:
+
+- publica packages;
+- crea releases;
+- instala dependencias;
+- modifica manifest o lockfile;
+- cambia imports físicamente;
+- elimina archivos;
+- elimina exports;
+- elimina cookies;
+- cambia `profile-menu.tsx`;
+- cambia guards;
+- cambia Server Actions;
+- cambia remisiones;
+- cambia factories Supabase;
+- modifica UI compartida;
+- crea adapters físicos;
+- crea scanners;
+- ejecuta paridad;
+- ejecuta rollback;
+- retira RPC o RLS;
+- crea migraciones;
+- toca Supabase remoto;
+- modifica datos;
+- elimina scripts temporales de owners ajenos;
+- abre PR;
+- hace merge;
+- despliega;
+- certifica integralmente NEXO.
+
+La materialización física pertenece únicamente a futuras instancias autorizadas `NEXO-AUTH-019::<implementation_unit_id>` después de satisfacer 018 y el gate aplicable.
+
+---
+
+#### 48. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-018 — Migrar a paquetes de vento-shell`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-019 — Eliminar helpers duplicados`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-020 — Ejecutar pruebas integrales`
+
 ### [ ] NEXO-AUTH-020 — Ejecutar pruebas integrales
 
 ### Carril histórico suspendido
