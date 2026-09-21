@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1213** |
+| Aprobadas | **1214** |
 | En propuesta | **0** |
-| No iniciadas | **383** |
+| No iniciadas | **382** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **76.00% (1213/1596)** |
+| Porcentaje de completamiento | **76.07% (1214/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **383** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1114** |
+| ⏸ NO_EVALUADA | **382** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1115** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-008` — Proteger despacho | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-009` — Proteger tránsito | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-010` — Proteger recepción | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-009` — Proteger tránsito | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-010` — Proteger recepción | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-011` — Proteger ajustes de inventario | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -940,7 +940,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-006` | Proteger preparación | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-007` | Proteger producción vinculada | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-008` | Proteger despacho | — | — | `bloques/K_NEXO/00_INTRO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-009` | Proteger tránsito | — | — | `bloques/K_NEXO/00_INTRO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-009` | Proteger tránsito | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-010` | Proteger recepción | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-011` | Proteger ajustes de inventario | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-012` | Proteger conteos | — | — | `bloques/K_NEXO/00_INTRO.md` |
