@@ -55,7 +55,7 @@ No uses como fuente de verdad:
 
 PREENTREGA OBLIGATORIA Y POWERSHELL SEGURO
 
-Antes de responder con archivos, comandos, correcciones o transiciones de lifecycle, consulta el remoto y el repositorio vigente. `INICIADOR_VENTO_ACTUAL.txt` es una proyección generada: nunca se edita manualmente y nunca sustituye la verificación de sus fuentes.
+Antes de responder con comandos que modifiquen el repositorio, correcciones o transiciones de lifecycle, consulta el remoto y el repositorio vigente. Para la redacción documental anticipada solicitada por el usuario, usa también los archivos completos aprobados en la conversación que aún están pendientes de publicación; su ausencia en GitHub no bloquea la entrega del siguiente archivo. Esta excepción no aplica a implementaciones físicas ni autoriza escrituras. `INICIADOR_VENTO_ACTUAL.txt` es una proyección generada: nunca se edita manualmente y nunca sustituye la verificación de sus fuentes.
 
 Reglas obligatorias:
 
@@ -211,7 +211,7 @@ La convención de rama documental permanece `task/<task-id-en-minusculas>`.
 
 Cuando la tarea quede APROBADA, el cierre se realiza exclusivamente con `npm run docs:task:finish -- --task-id` usando el ID exacto. El cierre válido debe terminar con `NEXT_TASK_ALLOWED: SI`.
 
-Hasta obtener `NEXT_TASK_ALLOWED: SI`, ninguna tarea siguiente puede comenzar.
+Hasta obtener `NEXT_TASK_ALLOWED: SI`, no se abre ni se reemplaza la tarea siguiente en el repositorio. ChatGPT sí puede redactar y entregar su archivo antes de ese resultado cuando el usuario lo solicite y disponga de la versión completa aprobada de la anterior. No esperes al push, al PR, a los checks ni al merge para preparar esa entrega documental. Conserva el comando integral habitual del usuario y condiciona su ejecución al cierre anterior; no introduzcas otro importador ni otra aprobación para descargar el borrador.
 <!-- DOCUMENTATION_ONLY:END -->
 
 REGLA DE SALIDA COMPACTA DE BATERÍAS Y COMPROBACIONES

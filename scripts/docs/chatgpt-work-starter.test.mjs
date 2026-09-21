@@ -7,7 +7,36 @@ import {
   buildChatgptWorkStarter,
   CHATGPT_STARTER_PATHS,
   projectAdvanceOnlyImplementationSource,
+  renderManualDocumentationAhead,
 } from './chatgpt-work-starter.mjs';
+
+test('iniciador manual permite entregar la sucesora antes del remoto sin adelantar Git', () => {
+  const result = buildChatgptWorkStarter();
+  assert.match(result.documentationSource, /MANUAL_DOCUMENTATION_AHEAD: ENABLED/u);
+  assert.match(result.documentationSource, /REMOTE_PUBLICATION_REQUIRED_FOR_DRAFT: FALSE/u);
+  assert.match(result.documentationSource, /REPOSITORY_WRITE_BEFORE_PREDECESSOR_CLOSE: FALSE/u);
+  assert.match(result.documentationSource, /última versión completa aprobada por el usuario/u);
+  assert.match(result.documentationSource, /04A resultante/u);
+  assert.match(result.documentationSource, /contenido aprobado usado como base coincide con el incorporado/u);
+  assert.match(result.documentationSource, /Mantén el comando integral habitual/u);
+  assert.doesNotMatch(result.documentationSource, /ninguna tarea siguiente puede comenzar|No prepares ni desarrolles la siguiente|EXCLUSIVAMENTE el carril documental y la tarea/u);
+  assert.doesNotMatch(result.implementationSource, /MANUAL_DOCUMENTATION_AHEAD: ENABLED|MARCADOR Y CONTENIDO CANÓNICO DE REFERENCIA DE LA SUCESORA/u);
+});
+
+test('referencia adelantada respeta la ruta entre bloques, omite aprobadas y no modifica tareas', () => {
+  const current = { id: 'NEXO-099', title: 'Actual', marker: '[ ]', block: 'actual', relativePath: 'nexo.md' };
+  const done = { id: 'NEXO-100', title: 'Aprobada', marker: '✅', block: 'aprobada', relativePath: 'nexo.md' };
+  const next = { id: 'OPS-REC-001', title: 'Siguiente exacta', marker: '[ ]', block: '### [ ] OPS-REC-001 — Siguiente exacta\nContenido sin modificar.', relativePath: 'ops.md' };
+  const workTopology = { ordered: [current, done, next] };
+  const before = JSON.stringify(workTopology);
+  const text = renderManualDocumentationAhead({ task: current, workTopology });
+  assert.match(text, /- ID: OPS-REC-001/u);
+  assert.match(text, /docs\/plan-canonico\/modular\/ops.md/u);
+  assert.ok(text.includes(next.block));
+  assert.doesNotMatch(text, /- ID: NEXO-100/u);
+  assert.equal(JSON.stringify(workTopology), before);
+  assert.match(renderManualDocumentationAhead({ task: next, workTopology }), /No hay sucesora pendiente identificada/u);
+});
 
 test('genera dos iniciadores separados por intención y un selector legacy mínimo', () => {
   const result = buildChatgptWorkStarter();
