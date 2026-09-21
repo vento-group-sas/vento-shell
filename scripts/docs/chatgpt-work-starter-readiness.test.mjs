@@ -60,17 +60,28 @@ const coordinated = {
   },
 };
 
-test('el mismo snapshot de readiness se inyecta en selector y ambos iniciadores', () => {
+test('el mismo snapshot de readiness se inyecta en selector y todos los iniciadores', () => {
   const result = injectReadinessIntoSources({
     baseResult,
     readiness: readiness(),
     coordinated,
   });
   assert.match(result.documentationSource, /^INTENT_LOCK: DOCUMENTATION/u);
+  assert.match(result.documentationAheadSource, /^INTENT_LOCK: DOCUMENTATION/u);
   assert.match(result.implementationSource, /^INTENT_LOCK: PHYSICAL_IMPLEMENTATION/u);
   assert.ok(result.documentationSource.indexOf('PACKAGE READINESS SCANNER') > result.documentationSource.indexOf('DO_NOT_SWITCH_LANES: TRUE'));
   assert.ok(result.implementationSource.indexOf('PACKAGE READINESS SCANNER') > result.implementationSource.indexOf('DO_NOT_SWITCH_LANES: TRUE'));
-  for (const source of [result.source, result.documentationSource, result.implementationSource]) {
+  assert.equal(result.documentationAheadSource, result.documentationSource);
+  assert.equal(
+    result.outputs.find(({ key }) => key === 'documentationAhead')?.source,
+    result.documentationSource,
+  );
+  for (const source of [
+    result.source,
+    result.documentationSource,
+    result.documentationAheadSource,
+    result.implementationSource,
+  ]) {
     assert.match(source, /PACKAGE READINESS SCANNER — OBLIGATORIO/u);
     assert.match(source, /NEXO-PACKAGE-001/u);
     assert.match(source, /E5-GATE-008::NEXO-PACKAGE-001/u);

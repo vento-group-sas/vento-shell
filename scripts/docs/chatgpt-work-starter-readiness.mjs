@@ -15,6 +15,7 @@ const SLOT = '{{CURRENT_WORK}}';
 export const CHATGPT_STARTER_PATHS = Object.freeze({
   selector: 'INICIADOR_VENTO_ACTUAL.txt',
   documentation: '.delivery/INICIADOR_VENTO_DOCUMENTACION.txt',
+  documentationAhead: '.delivery/INICIADOR_VENTO_DOCUMENTACION_TRABAJO_ADELANTADO.txt',
   implementation: '.delivery/INICIADOR_VENTO_IMPLEMENTACION.txt',
 });
 
@@ -198,12 +199,17 @@ export function injectReadinessIntoSources({ baseResult, readiness, coordinated 
 
   const source = append(baseResult.source, selectorBlock);
   const documentationSource = afterLaneLock(baseResult.documentationSource, documentationBlock);
+  const documentationAheadSource = afterLaneLock(
+    baseResult.documentationAheadSource ?? baseResult.documentationSource,
+    documentationBlock,
+  );
   const implementationSource = afterLaneLock(baseResult.implementationSource, implementationBlock);
 
   return {
     ...baseResult,
     source,
     documentationSource,
+    documentationAheadSource,
     implementationSource,
     readiness,
     coordinated,
@@ -213,6 +219,11 @@ export function injectReadinessIntoSources({ baseResult, readiness, coordinated 
         key: 'documentation',
         relativePath: CHATGPT_STARTER_PATHS.documentation,
         source: documentationSource,
+      },
+      {
+        key: 'documentationAhead',
+        relativePath: CHATGPT_STARTER_PATHS.documentationAhead,
+        source: documentationAheadSource,
       },
       {
         key: 'implementation',
@@ -408,6 +419,7 @@ function main() {
     `OK: iniciadores ChatGPT + package readiness ${result.changed ? 'actualizados' : 'vigentes'}.`,
   );
   console.log(`DOCUMENTATION: ${CHATGPT_STARTER_PATHS.documentation}`);
+  console.log(`DOCUMENTATION_AHEAD: ${CHATGPT_STARTER_PATHS.documentationAhead}`);
   console.log(`PHYSICAL_IMPLEMENTATION: ${CHATGPT_STARTER_PATHS.implementation}`);
   console.log(`SELECTOR_LEGACY: ${CHATGPT_STARTER_PATHS.selector}`);
 }

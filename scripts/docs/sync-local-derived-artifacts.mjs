@@ -146,6 +146,7 @@ export function syncLocalDerivedArtifacts({
   const localProjectionPaths = [
     STARTER_RELATIVE_PATH,
     '.delivery/INICIADOR_VENTO_DOCUMENTACION.txt',
+    '.delivery/INICIADOR_VENTO_DOCUMENTACION_TRABAJO_ADELANTADO.txt',
     '.delivery/INICIADOR_VENTO_IMPLEMENTACION.txt',
     '.delivery/INICIADOR_VENTO_CORRECCION.txt',
     '.delivery/current-work-directive.md',
