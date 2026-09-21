@@ -14469,7 +14469,1113 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-018 — Migrar a paquetes de vento-shell`
-### [ ] NEXO-AUTH-018 — Migrar a paquetes de vento-shell
+### ✅ NEXO-AUTH-018 — Migrar a paquetes de vento-shell
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-017 — Integrar simulación estricta
+**Tarea siguiente:** NEXO-AUTH-019 — Eliminar helpers duplicados
+**Tipo de tarea:** documental; contrato canónico de adopción gobernada de paquetes compartidos de `vento-shell` por NEXO, con paridad, compatibilidad, coexistencia temporal, rollback y materialización posterior por `implementation_unit_id` conforme a `PER_IMPLEMENTATION_UNIT`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; no modifica dependencias, lockfiles, imports, packages, exports, código de NEXO, Supabase, migraciones, RLS, RPC, datos, configuración, CI, releases, registry, despliegues ni helpers legacy
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NEXO deberá migrar responsabilidades transversales actualmente resueltas de forma local hacia las familias compartidas canónicas de `vento-shell`, sin convertir esa migración en una extracción indiscriminada de código y sin confundir:
+
+- reutilización con transferencia de ownership;
+- package existente con release consumible;
+- compatibilidad teórica con adopción;
+- baseline del consumidor con cutover;
+- paridad contractual con reproducción de un bug legacy;
+- adapter temporal con nueva fuente de verdad;
+- dependencia instalada con autorización correcta;
+- UI compartida con lógica empresarial;
+- cliente Supabase compartido con autoridad empresarial;
+- eliminación de duplicados con adopción inicial.
+
+La regla raíz queda:
+
+```text
+SHARED RESPONSIBILITY
++
+CANONICAL PACKAGE READY
++
+EXACT CONSUMER VERSION
++
+COMPATIBILITY PASS
++
+CONTRACTUAL PARITY
++
+FAIL-CLOSED CUTOVER
++
+REPRODUCIBLE ROLLBACK
+=
+NEXO PACKAGE ADOPTION
+```
+
+Y simultáneamente:
+
+```text
+PACKAGE INSTALLED
+!=
+PACKAGE ADOPTED
+```
+
+```text
+LOCAL CODE EXISTS
+!=
+LOCAL CODE MUST BECOME SHARED
+```
+
+```text
+SHARED PACKAGE
+!=
+NEXO DOMAIN OWNER
+```
+
+---
+
+#### 2. Resultado material
+
+La tarea fija un contrato completo para que cada futura unidad física de adopción:
+
+1. reconcilie las cuatro familias compartidas canónicas contra las superficies NEXO realmente consumidoras;
+2. clasifique cada superficie local como adopción directa, adapter local necesario, responsabilidad de dominio que permanece local o candidato de retiro posterior;
+3. exija release consumible y versión exacta antes de modificar `package.json` o lockfile del consumidor;
+4. use las relaciones package–NEXO y perfiles de compatibilidad ya canónicos;
+5. compare comportamiento legacy y canónico con un oracle contractual;
+6. prohíba doble ejecución de side effects durante coexistencia;
+7. corte por superficie o unidad únicamente con evidencia atribuible;
+8. preserve rollback sin reactivar bypasses prohibidos;
+9. entregue los candidatos de retiro a `NEXO-AUTH-019`;
+10. entregue la certificación integral a `NEXO-AUTH-020`.
+
+Esta tarea no ejecuta la migración física.
+
+---
+
+#### 3. Handoff recibido de NEXO-AUTH-017
+
+`NEXO-AUTH-017` conserva la separación estricta entre:
+
+```text
+REAL_AUTHORITY_PLANE
+SIMULATED_EVALUATION_PLANE
+SIMULATION_PRESENTATION_PLANE
+SIMULATION_AUDIT_PLANE
+```
+
+y fija:
+
+```text
+WOULD_ALLOW != ALLOW
+```
+
+La adopción de packages no puede degradar esa separación.
+
+En particular, una migración de contexto o autorización no podrá preservar como autoridad final:
+
+- `nexo_role_override`;
+- una cookie de rol o sede declarada por cliente;
+- un `navigation_role`;
+- `can_operate`;
+- un booleano legacy de permiso;
+- `EffectiveContext` interpretado sin su contrato vigente;
+- sede, área, actor, turno o check-in aportados por el caller como hechos efectivos;
+- un helper local que produzca un `ALLOW` más permisivo que el contrato canónico.
+
+---
+
+#### 4. Universo cerrado de packages compartidos
+
+La adopción NEXO se limita a estas cuatro familias canónicas:
+
+| Package | Responsabilidad canónica para esta tarea | Relación con NEXO |
+| --- | --- | --- |
+| `@vento/contracts` | contratos estáticos, catálogos, schemas, identificadores y tipos compartidos | consumidor |
+| `@vento/os-context` | resolución runtime de contexto y autorización compartida | consumidor |
+| `@vento/supabase` | acceso técnico compartido a Supabase según frontera runtime | consumidor |
+| `@vento/ui-web` | implementación visual web compartida y composición neutral | consumidor |
+
+No se crea una quinta familia por conveniencia local.
+
+Una responsabilidad NEXO que no pertenezca a estas cuatro fronteras permanece en NEXO o en su owner canónico ya existente.
+
+---
+
+#### 5. Estado físico observado de los packages
+
+El estado remoto verificado no equivale todavía a un conjunto completo de releases estables consumibles:
+
+| Package | Estado observado relevante |
+| --- | --- |
+| `@vento/contracts` | workspace privado con metadata `1.0.0-alpha.1`; no constituye release estable adoptada |
+| `@vento/os-context` | workspace privado `0.1.0` con entrypoint interno; su presencia no demuestra publicación ni adopción NEXO |
+| `@vento/supabase` | raíz privada de autoría sin versión pública ni exports npm consumibles |
+| `@vento/ui-web` | raíz privada de autoría sin versión pública, `main`, `types` o exports npm consumibles |
+
+Consecuencia:
+
+```text
+WORKSPACE MATERIALIZED
+!=
+STABLE RELEASE ELIGIBLE FOR NEXO
+```
+
+La futura instancia física deberá consumir releases realmente elegibles bajo el lifecycle propietario de packages. Esta tarea no promueve metadata privada actual a release estable.
+
+---
+
+#### 6. Estado físico observado de NEXO
+
+El `package.json` vigente de `vento-nexo` no declara dependencias `@vento/*`.
+
+Sí conserva tooling de baseline que conoce las cuatro familias mediante `SHELL-CI-007::GLOBAL`.
+
+Por tanto:
+
+```text
+BASELINE READY
++
+ZERO @vento/* DECLARED DEPENDENCIES
+=
+CONSUMER PREPARED FOR GOVERNED MIGRATION,
+NOT MIGRATED
+```
+
+No se interpretan los imports locales ni los helpers actuales como adopción implícita.
+
+---
+
+#### 7. Relaciones package–NEXO canónicas
+
+La futura adopción deberá conservar exactamente estas relaciones:
+
+| Package | Compatibilidad | Actualización | Perfil NEXO |
+| --- | --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-003` | `PKG-PR-REL-003` | `NEXO-PROFILE-CONTRACTS` |
+| `@vento/os-context` | `PKG-COMP-MX-010` | `PKG-PR-REL-010` | `NEXO-PROFILE-OS-CONTEXT` |
+| `@vento/supabase` | `PKG-COMP-MX-017` | `PKG-PR-REL-017` | `NEXO-PROFILE-SUPABASE` |
+| `@vento/ui-web` | `PKG-COMP-MX-024` | `PKG-PR-REL-024` | `NEXO-PROFILE-UI-WEB` |
+
+No se crean relaciones alternativas, aliases o perfiles locales para evitar un gate existente.
+
+---
+
+#### 8. Regla de migración por responsabilidad
+
+La unidad mínima de decisión no es el archivo por su ubicación ni el nombre de una función.
+
+Cada superficie se clasifica por responsabilidad:
+
+```text
+SHARED STATIC CONTRACT
+-> @vento/contracts
+
+SHARED RUNTIME CONTEXT / AUTHORIZATION
+-> @vento/os-context
+
+SHARED TECHNICAL SUPABASE ACCESS
+-> @vento/supabase
+
+SHARED WEB PRESENTATION
+-> @vento/ui-web
+
+NEXO BUSINESS / DOMAIN / PROCESS LOGIC
+-> STAYS IN NEXO
+```
+
+Un mismo archivo legacy puede contener responsabilidades de más de una clase y deberá descomponerse mediante adapters o refactor controlado en la instancia propietaria.
+
+---
+
+#### 9. Adopción de @vento/contracts
+
+NEXO deberá consumir `@vento/contracts` cuando necesite identidades y contratos estáticos que ya tengan una superficie compartida publicada y compatible.
+
+La migración podrá sustituir definiciones locales equivalentes de:
+
+- identificadores canónicos;
+- códigos de aplicación;
+- catálogos estáticos;
+- schemas;
+- tipos compartidos;
+- contratos serializables;
+- metadata contractual.
+
+No podrá mover a `@vento/contracts`:
+
+- acceso a Supabase;
+- autorización runtime;
+- cookies;
+- sesión;
+- redirects;
+- RLS o RPC;
+- lógica de remisiones;
+- stock;
+- UOM;
+- reglas de inventario;
+- settings de NEXO;
+- UI;
+- side effects.
+
+---
+
+#### 10. Paridad de contratos estáticos
+
+La adopción de una definición estática exige demostrar:
+
+1. misma identidad semántica;
+2. serialización compatible;
+3. schema compatible;
+4. ausencia de cast global que oculte incompatibilidad;
+5. tratamiento explícito de valores desconocidos;
+6. versión exacta atribuible;
+7. consumidores compilando contra la misma superficie.
+
+Una discrepancia semántica no se resuelve copiando el tipo local dentro del package para obtener un build verde.
+
+---
+
+#### 11. Adopción de @vento/os-context
+
+`@vento/os-context` es el destino canónico de responsabilidades compartidas de:
+
+- contexto efectivo;
+- separación de identidad real, rol administrativo y rol operativo;
+- dispositivo compartido;
+- simulación autorizada;
+- contexto laboral real;
+- decisión compartida de permiso cuando la superficie física aplicable esté lista.
+
+La adopción no autoriza tratar cualquier implementación física actual del package como contrato final si todavía conserva shapes o behaviors pendientes de reconciliación.
+
+El package deberá satisfacer el contrato aprobado antes de convertirse en autoridad del consumidor.
+
+---
+
+#### 12. Superficies locales de autorización y contexto
+
+El AS-IS NEXO contiene, entre otras, estas superficies locales:
+
+- `src/lib/auth/permissions.ts`;
+- `src/lib/auth/guard.ts`;
+- `src/lib/auth/operational-session.ts`;
+- `src/lib/auth/operational-context.ts`;
+- `src/lib/auth/role-override.ts`;
+- `src/lib/auth/shared-device-signature.ts`;
+- guards y helpers embebidos en páginas y Server Actions.
+
+La futura unidad deberá decidir para cada superficie:
+
+| Decisión documental | Significado |
+| --- | --- |
+| adopción compartida | la responsabilidad puede consumir directamente el package canónico |
+| adapter local necesario | NEXO conserva adapter del framework o dominio, pero no autoridad paralela |
+| responsabilidad NEXO | la responsabilidad es empresarial de NEXO y permanece local |
+| retiro posterior a paridad | existe reemplazo canónico probado y el retiro se entrega a 019 |
+| migración bloqueada por dependencia | falta package, release, backend, contrato o evidencia para migrar |
+
+Estas decisiones no crean estados nuevos del lifecycle físico.
+
+---
+
+#### 13. Regla para adapters locales
+
+Un adapter NEXO puede permanecer cuando traduzca una frontera del framework o del dominio, por ejemplo:
+
+- `next/headers`;
+- cookies de Next;
+- redirects;
+- variables de entorno;
+- routing;
+- resource mapping de NEXO;
+- error presentation;
+- parámetros de una Server Action.
+
+El adapter:
+
+- no redefine catálogos;
+- no implementa un segundo evaluador;
+- no agrega grants;
+- no amplía territorio;
+- no reconstruye contexto desde cookies cliente;
+- no hace fallback a un `ALLOW` legacy;
+- no oculta la procedencia del resultado;
+- no convierte errores técnicos en autorización.
+
+---
+
+#### 14. Dispositivo compartido durante la migración
+
+La adopción de `@vento/os-context` debe preservar las decisiones de `NEXO-AUTH-016`.
+
+Nunca:
+
+```text
+APP ALLOWED ON DEVICE
+=
+HUMAN AUTHORIZED
+```
+
+Nunca:
+
+```text
+NAVIGATION ROLE
+=
+EFFECTIVE HUMAN ROLE
+```
+
+Nunca:
+
+```text
+TECHNICAL PRINCIPAL
+=
+HUMAN ACTOR
+```
+
+La unidad migrada deberá comparar el resultado legacy y canónico con el actor, dispositivo, sede, área, app, permiso y recurso equivalentes.
+
+---
+
+#### 15. Simulación durante la migración
+
+La adopción debe preservar `NEXO-AUTH-017`.
+
+Una simulación puede alimentar preview y explicación; no puede convertirse en input autoritativo de una mutación real.
+
+Toda superficie migrada deberá conservar:
+
+```text
+REAL DECISION
++
+SIMULATED RESULT
+=
+TWO DISTINCT RESULTS
+```
+
+Un adapter temporal no puede reintroducir `role_override` como autoridad para mantener paridad con el comportamiento incorrecto anterior.
+
+---
+
+#### 16. Adopción de @vento/supabase
+
+`@vento/supabase` es el destino de acceso técnico compartido cuando exista una superficie publicada aplicable.
+
+NEXO puede migrar hacia factories o wrappers compartidos para:
+
+- browser;
+- server de sesión;
+- errores técnicos;
+- tipos generados;
+- RPC wrappers;
+- otras superficies aprobadas por el owner del package.
+
+Esto no mueve al package:
+
+- reglas de negocio NEXO;
+- autorización empresarial;
+- selección de recurso;
+- decisiones de remisión;
+- policies funcionales;
+- routing de aplicación;
+- ownership de cookies de framework;
+- resolución de variables de entorno específica del despliegue cuando el contrato del package exige config ya resuelta.
+
+---
+
+#### 17. Adapter Supabase de aplicación
+
+Cuando `@vento/supabase` exija configuración resuelta, NEXO conserva un adapter local mínimo para construir la configuración desde su runtime.
+
+Ese adapter podrá:
+
+- leer configuración permitida;
+- adaptar `next/headers` o cookies;
+- seleccionar el modo server/browser autorizado;
+- propagar errores técnicos.
+
+No podrá:
+
+- reinterpretar `service_role` como autoridad humana;
+- incorporar un bypass de permisos;
+- cambiar RLS;
+- elegir una credencial más privilegiada como fallback;
+- silenciar fallos de cookie o sesión de forma permisiva;
+- crear una segunda factory compartida paralela.
+
+---
+
+#### 18. Adopción de @vento/ui-web
+
+`@vento/ui-web` conserva exclusivamente responsabilidad visual web compartida.
+
+La futura migración NEXO podrá adoptar componentes compartidos cuando:
+
+- exista API consumible y versionada;
+- la semántica del componente coincida;
+- SSR/client/hydration sean compatibles;
+- accesibilidad y estilos pasen el perfil NEXO;
+- el componente no absorba dominio.
+
+Nunca:
+
+```text
+VISIBLE
+=
+AUTHORIZED
+```
+
+Ni:
+
+```text
+DISABLED
+=
+SERVER-SIDE DENY
+```
+
+---
+
+#### 19. AppShell y composición local
+
+El AS-IS de NEXO mantiene composición visual mezclada con resolución de contexto, navegación y autorización.
+
+La migración deberá separar:
+
+```text
+PRESENTATION
+FROM
+AUTHORIZATION / CONTEXT / DOMAIN
+```
+
+`@vento/ui-web` podrá recibir únicamente props y contratos ya resueltos.
+
+No consulta Supabase ni ejecuta permisos para decidir autoridad.
+
+Los adapters y compositores NEXO pueden preparar el view model, pero la decisión empresarial se resuelve antes en su owner autorizado.
+
+---
+
+#### 20. Responsabilidades que permanecen en NEXO
+
+No se promueven a package por conveniencia técnica:
+
+- reglas de inventario;
+- semántica de remisiones;
+- políticas de solicitud;
+- perfiles UOM específicos del dominio;
+- lógica de stock;
+- LOC y posiciones;
+- activos;
+- preparación, tránsito y recepción;
+- settings funcionales;
+- category domains y labels de negocio;
+- estados de proceso NEXO no materializados como contrato compartido;
+- queries de dominio;
+- transacciones y side effects de NEXO.
+
+Ser TypeScript, helper o constante no convierte una responsabilidad en compartida.
+
+---
+
+#### 21. Release estable como precondición de adopción
+
+La existencia física de un workspace privado no satisface el gate de consumidor.
+
+Antes de una modificación de dependencias deberá existir, para cada package objetivo:
+
+- release elegible;
+- versión SemVer exacta;
+- identidad de source commit;
+- artefacto atribuible;
+- manifest coherente;
+- integridad verificable;
+- changelog o evidencia exigida por el lifecycle;
+- compatibilidad NEXO vigente.
+
+Si no existe release elegible, la adopción permanece bloqueada y no se modifica el consumidor.
+
+No se usa `file:`, `workspace:*`, ruta local o copia manual como atajo para simular una release gobernada cuando el lifecycle del consumidor exige una release estable.
+
+---
+
+#### 22. Manifest y lockfile
+
+La futura unidad deberá tratar `package.json` y `package-lock.json` como una unidad.
+
+Por package adoptado:
+
+```text
+DECLARED VERSION
+=
+LOCKFILE ROOT VERSION
+=
+LOCKFILE RESOLVED VERSION
+=
+ELIGIBLE RELEASE VERSION
+```
+
+La versión debe ser exacta para el gate gobernado.
+
+No se acepta para el cutover:
+
+- `^`;
+- `~`;
+- `latest`;
+- `*`;
+- branch ref;
+- commit sin release;
+- path local;
+- workspace shortcut no respaldado por el lifecycle de release aplicable.
+
+---
+
+#### 23. SHELL-CI-007 como baseline
+
+`SHELL-CI-007::GLOBAL` ya define la línea base de NEXO frente a las cuatro familias.
+
+Su existencia demuestra que hay un harness de consumidor.
+
+No demuestra:
+
+- package instalado;
+- versionado adoptado;
+- imports migrados;
+- compatibilidad final de una release concreta;
+- paridad de una superficie real;
+- retiro de helpers;
+- deploy;
+- rollback ejecutado.
+
+La futura unidad deberá volver a vincular la evidencia a su commit, manifest, lockfile, versiones y surface set actuales.
+
+---
+
+#### 24. Cobertura mínima del baseline NEXO
+
+La validación de adopción debe conservar las doce superficies ya reconocidas:
+
+1. identidad, sesión y permisos;
+2. contexto operativo;
+3. catálogo, categorías, unidad y presentación;
+4. stock por sede y LOC;
+5. entradas, conteos, ajustes, retiros y traslados;
+6. LOC, board, kiosk y posiciones;
+7. remisiones;
+8. división y recepción parcial;
+9. activos físicos y conteos;
+10. settings, rutas y políticas operativas;
+11. integración y fronteras de dominio;
+12. UI, SSR, interacción, accesibilidad e impresión.
+
+Una migración de package no se declara completa si rompe una superficie que no importaba directamente ese package, pero dependía de su contrato transitivamente.
+
+---
+
+#### 25. Perfiles por familia
+
+La evidencia futura deberá satisfacer al menos el perfil aplicable:
+
+| Familia | Cobertura mínima |
+| --- | --- |
+| `NEXO-PROFILE-CONTRACTS` | tipos, schemas, serialización, semántica de identificadores y ausencia de cast global permisivo |
+| `NEXO-PROFILE-OS-CONTEXT` | sesión, contexto operativo, allow, deny y ausencia de elevación cliente |
+| `NEXO-PROFILE-SUPABASE` | cliente browser, cliente server, deny path, fuente aislada de schema y ausencia de fixture privilegiado |
+| `NEXO-PROFILE-UI-WEB` | server render, client render, hydration, accesibilidad y print preview |
+
+Un PASS parcial de un perfil no sustituye el PASS de los demás packages adoptados por la misma unidad.
+
+---
+
+#### 26. Gating de actualización del consumidor
+
+La futura actualización deberá satisfacer el lifecycle compartido de consumidor, incluyendo:
+
+- identidad de release;
+- elegibilidad de versión;
+- coherencia manifest-lockfile;
+- instalación bloqueada reproducible;
+- pruebas propias del package;
+- lint o análisis estático;
+- typecheck;
+- build;
+- pruebas automatizadas del consumidor;
+- matriz de compatibilidad;
+- perfil especializado de familia;
+- TREQ afectados;
+- controles de riesgo cuando apliquen;
+- frescura de evidencia;
+- revisión y protección de merge;
+- separación entre merge, despliegue y adopción.
+
+No se omite un gate porque el package se encuentre dentro del mismo grupo empresarial.
+
+---
+
+#### 27. Oracle de paridad
+
+Paridad significa conformidad con el contrato correcto, no igualdad ciega con el legacy.
+
+Cada superficie migrada debe comparar escenarios equivalentes y clasificar el delta como:
+
+```text
+IGUAL
+CORRECCION_INTENCIONAL
+BRECHA_DE_DATOS
+BUG_LEGACY
+BUG_CANONICO
+CONTRATO_PENDIENTE
+```
+
+Solo `IGUAL` y una `CORRECCION_INTENCIONAL` sustentada pueden participar en un cutover.
+
+`BRECHA_DE_DATOS`, `BUG_CANONICO` o `CONTRATO_PENDIENTE` bloquean.
+
+Un `BUG_LEGACY` no se copia al package para fabricar igualdad.
+
+---
+
+#### 28. Paridad de allow y deny
+
+Las pruebas deberán cubrir ambos resultados.
+
+```text
+LEGACY ALLOW
+CANONICAL ALLOW
+```
+
+por sí solo no es suficiente.
+
+También se demostrarán:
+
+```text
+LEGACY DENY
+CANONICAL DENY
+```
+
+y casos adversariales para:
+
+- rol manipulado;
+- sede manipulada;
+- área manipulada;
+- actor ausente;
+- dispositivo no permitido;
+- simulación activa;
+- permiso ausente;
+- recurso fuera de scope;
+- sesión expirada;
+- evidencia stale.
+
+La migración no es correcta si mejora el happy path mientras amplía un deny path.
+
+---
+
+#### 29. Prohibición de doble side effect
+
+Durante coexistencia, una operación empresarial se ejecuta por un solo carril.
+
+Se permite comparar decisiones puras o proyecciones seguras.
+
+No se permite:
+
+```text
+LEGACY MUTATION
++
+CANONICAL MUTATION
+```
+
+para comparar resultados.
+
+Una mutación real se autoriza una sola vez y su side effect ocurre una sola vez.
+
+---
+
+#### 30. Coexistencia temporal
+
+Antes del cutover puede coexistir:
+
+```text
+LEGACY PATH
++
+CANONICAL PATH
++
+PARITY OBSERVATION
+```
+
+solo si:
+
+- uno solo controla el side effect;
+- el resultado autoritativo está declarado;
+- el otro carril no amplía autoridad;
+- la comparación es trazable;
+- existe condición de salida;
+- existe owner de retiro;
+- el rollback sigue disponible.
+
+No se acepta coexistencia indefinida.
+
+---
+
+#### 31. Fail closed ante divergencia
+
+Si legacy y canónico divergen materialmente y la clasificación no está resuelta:
+
+```text
+CUTOVER
+=
+BLOCKED
+```
+
+Nunca:
+
+```text
+ALLOW = LEGACY_ALLOW OR CANONICAL_ALLOW
+```
+
+Nunca se elige el resultado más permisivo.
+
+Un error del package tampoco autoriza fallback automático a un `ALLOW` legacy.
+
+---
+
+#### 32. Cutover por superficie
+
+Una superficie puede pasar a autoridad canónica únicamente cuando:
+
+1. package y versión son elegibles;
+2. dependencia y lockfile están fijados;
+3. imports/adapters están definidos;
+4. compatibilidad está en PASS;
+5. perfil NEXO está en PASS;
+6. paridad contractual está cerrada;
+7. allow y deny están cubiertos;
+8. no existe side effect duplicado;
+9. rollback está preparado;
+10. evidencia pertenece al mismo commit y snapshot.
+
+El resto de superficies puede permanecer en coexistencia o bloqueado sin exigir un big-bang.
+
+---
+
+#### 33. Punto de no retorno
+
+Antes de declarar una superficie `MIGRATION_COMMITTED`, se permite volver a una combinación previa únicamente si esa combinación:
+
+- sigue siendo segura;
+- sigue siendo compatible;
+- está versionada;
+- conserva evidencia;
+- no depende de un bypass ya prohibido.
+
+Después de `MIGRATION_COMMITTED`, el rollback ordinario no reabre autoridad legacy retirada ni restaura una excepción que ya se clasificó como histórica.
+
+---
+
+#### 34. Rollback reproducible
+
+El rollback deberá identificar como mínimo:
+
+- package;
+- versión nueva;
+- versión previa;
+- commit del consumidor;
+- manifest;
+- lockfile;
+- adapter o import afectado;
+- feature/cutover state aplicable;
+- evidencia de compatibilidad de la combinación previa;
+- validación post-rollback.
+
+Rollback no significa copiar de vuelta helpers desde memoria ni reactivar cookies autoritativas sin gate.
+
+---
+
+#### 35. Evidencia stale
+
+Se considera stale, como mínimo, evidencia asociada a otra combinación material de:
+
+- commit de NEXO;
+- manifest;
+- lockfile;
+- test contract;
+- test suite;
+- fixtures;
+- entorno;
+- runtime;
+- framework;
+- target package set;
+- compatibilidad;
+- perfil NEXO.
+
+Evidencia de otra aplicación nunca satisface NEXO.
+
+---
+
+#### 36. Orden multi-package
+
+Las cuatro familias pueden adoptarse en unidades o waves diferentes.
+
+El orden deberá respetar dependencias reales.
+
+Principios:
+
+1. contrato estático requerido se publica antes del consumidor que lo importe;
+2. `@vento/os-context` no se adopta como autoridad final mientras sus contratos/runtime necesarios no estén listos;
+3. `@vento/supabase` no fuerza migración de routing, cookies o lógica de dominio que pertenezca a NEXO;
+4. `@vento/ui-web` no se adopta antes de separar la autoridad de su composición visual;
+5. una family no se marca adoptada por transitividad desde otra.
+
+No se inventa un orden único cuando dos unidades sean independientes; el package/implementation lineage decide.
+
+---
+
+#### 37. Lineage por implementation unit
+
+La topología de esta tarea es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-018::<implementation_unit_id>
+```
+
+Cada `implementation_unit_id` se materializa como máximo una vez y puede servir a varios `package_id` únicamente con lineage explícito.
+
+Una instancia futura requiere:
+
+- owner package;
+- `implementation_unit_id`;
+- consumer package ids cuando apliquen;
+- `E5-GATE-008::<package_id> = PASS`;
+- dependencias físicas listas;
+- autorización física explícita.
+
+---
+
+#### 38. Separación entre PR, merge, despliegue y adopción
+
+Un PR verde no equivale a adopción operativa.
+
+Se mantienen separados:
+
+```text
+CODE PROPOSED
+CODE MERGED
+PACKAGE INSTALLED
+FEATURE / CUTOVER ENABLED
+DEPLOYED
+ADOPTED
+LEGACY RETIRED
+```
+
+Cada transición conserva evidencia y owner.
+
+La actualización de consumidor no puede autoaprobar su propio PR ni convertir un merge en deploy.
+
+---
+
+#### 39. Propiedad de Supabase
+
+Toda migración, configuración o modificación de Supabase VENTO que resulte necesaria para una futura unidad permanece versionada y gobernada desde `vento-group-sas/vento-shell`.
+
+Esta tarea no crea migraciones.
+
+La adopción de `@vento/supabase` tampoco autoriza cambios remotos por sí sola.
+
+---
+
+#### 40. Frontera con NEXO-AUTH-019
+
+`NEXO-AUTH-019 — Eliminar helpers duplicados` conserva la responsabilidad exclusiva de retirar helpers locales después de demostrar reemplazo y paridad.
+
+Entre los candidatos heredados se encuentran:
+
+- `getRoleOverrideFromCookies`;
+- `canUseRoleOverride`;
+- `checkPermissionWithRoleOverride`;
+- `applyNexoRoleOverrideArea`;
+- configuración local de role override;
+- cookies locales de override de rol o sede cuando hayan dejado de tener un uso legítimo no autoritativo;
+- otros helpers que la evidencia de migración clasifique como duplicados reales.
+
+Esta tarea no los elimina.
+
+La salida de 018 hacia 019 deberá identificar:
+
+```text
+LOCAL SURFACE
+CANONICAL REPLACEMENT
+CUTOVER STATUS
+PARITY RESULT
+LAST LEGITIMATE CONSUMER
+RETIREMENT CONDITION
+ROLLBACK BOUNDARY
+```
+
+---
+
+#### 41. Frontera con NEXO-AUTH-020
+
+`NEXO-AUTH-020 — Ejecutar pruebas integrales` conserva la certificación integral de NEXO.
+
+La 018 exige evidencia de adopción por package y superficie, pero no sustituye:
+
+- build integral;
+- pruebas de flujos completos;
+- seguridad integral;
+- pruebas de dispositivos;
+- pruebas de simulación;
+- pruebas de remisiones completas;
+- piloto;
+- certificación final del bloque.
+
+---
+
+#### 42. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege adopción de responsabilidades compartidas, comandos reproducibles, compatibilidad por consumidor, rollback independiente, trazabilidad TREQ, bloqueo de autoridad local duplicada, migración fail-closed, orden de waves, paridad contractual, evidencia atribuible y retiro posterior. La presente tarea especializa esas obligaciones para NEXO sin crear una nueva regla verificable ni cambiar owner, prioridad, modalidad, package, estado o relaciones del registro.
+
+---
+
+#### 43. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- `TREQ-SHELL-002`, para responsabilidades compartidas y paridad de copias locales;
+- `TREQ-SHELL-005`, para comandos reproducibles del consumidor;
+- `TREQ-SHELL-006`, para pruebas propias y compatibilidad por consumidor antes de adopción;
+- `TREQ-SHELL-007`, para rollback independiente;
+- `TREQ-SHELL-008`, para trazabilidad de TREQ por package y PR;
+- `TREQ-SHELL-086`, para bloquear nueva autoridad local y helpers duplicados;
+- `TREQ-SHELL-092`, para migración de consumers sin fallback a autoridad legacy;
+- `TREQ-SHELL-093`, para orden contractual de migración;
+- `TREQ-SHELL-094`, para clasificación de paridad;
+- `TREQ-SHELL-096`, para evidencia por consumidor, commit, manifest, lockfile y runtime;
+- `TREQ-SHELL-097`, para convergencia previa al retiro;
+- `TREQ-SHELL-098`, para unicidad por `implementation_unit_id` y rollback gobernado;
+- `TREQ-NEXO-001`, para código canónico validable sin dependencia de scripts temporales que reescriban la rama.
+
+Estas referencias son trazabilidad heredada y no representan requisitos creados o modificados por `NEXO-AUTH-018`.
+
+---
+
+#### 44. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | el artefacto se preparó fuera del checkout local del usuario y no se incorporó al owner ni se ejecutó build documental |
+| LOCAL | `NOT_EXECUTED` | no se ejecutaron `docs:task:start`, preflight, formateador, quality, delivery, topología, TREQ ni batería global sobre el checkout del usuario |
+| REMOTA | `PASS` | se verificaron en solo lectura `vento-shell` en `8f99710a83263bad21c7a27c5bec338d3da9d7f7` y `vento-nexo` en `f0a12557a1a258c84b025933653dc756de4b5a59`; continuidad `017 → 018 → 019`, marker único de 018, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, cuatro packages canónicos, relaciones NEXO, perfiles CI007, manifests de packages y ausencia actual de dependencias `@vento/*` en NEXO |
+| OPERATIVA | `NOT_EXECUTED` | no se realizó adopción, cutover, rollback ni prueba funcional de NEXO con una release compartida durante esta tarea documental |
+| FÍSICA | `NOT_EXECUTED` | no se modificaron packages, dependencies, lockfiles, imports, helpers, Supabase, datos, configuración, CI, releases, PR, merge ni despliegues |
+
+---
+
+#### 45. Criterios de aceptación
+
+- [x] Se cerró el universo en cuatro packages compartidos.
+- [x] Se conservaron las cuatro relaciones de compatibilidad NEXO exactas.
+- [x] Se conservaron las cuatro relaciones de actualización NEXO exactas.
+- [x] Se conservaron los cuatro perfiles NEXO exactos.
+- [x] Se distinguió workspace privado de release elegible.
+- [x] Se registró que NEXO no declara dependencias `@vento/*` en el snapshot observado.
+- [x] Se distinguió baseline CI007 de adopción.
+- [x] Se definió clasificación por responsabilidad y no por nombre de archivo.
+- [x] Se separaron contratos estáticos, contexto runtime, acceso Supabase, UI y dominio NEXO.
+- [x] Se prohibió crear una quinta familia por conveniencia.
+- [x] Se preservó el handoff de dispositivo compartido de 016.
+- [x] Se preservó la separación estricta de simulación de 017.
+- [x] Se bloqueó role override como autoridad final del carril migrado.
+- [x] Se definió un adapter local no autoritativo.
+- [x] Se preservó routing y adaptación de framework como responsabilidad local cuando corresponde.
+- [x] Se prohibió mover lógica empresarial NEXO a packages por conveniencia.
+- [x] Se exigió release elegible antes de adopción.
+- [x] Se exigió SemVer exacto.
+- [x] Se exigió coherencia manifest-lockfile-release.
+- [x] Se preservaron los dieciséis gates del lifecycle de actualización.
+- [x] Se definió paridad contractual y sus seis clasificaciones.
+- [x] Se exigieron allow y deny paths.
+- [x] Se prohibió doble side effect.
+- [x] Se definió coexistencia temporal acotada.
+- [x] Se definió fail closed ante divergencia.
+- [x] Se definió cutover por superficie.
+- [x] Se definió punto de no retorno.
+- [x] Se definió rollback reproducible.
+- [x] Se definió evidencia stale.
+- [x] Se definió orden multi-package por dependencias.
+- [x] Se conservó `PER_IMPLEMENTATION_UNIT`.
+- [x] Se conservó `POST_E5_PACKAGE`.
+- [x] Se separaron PR, merge, deploy, adopción y retiro.
+- [x] Se mantuvo Supabase bajo `vento-shell`.
+- [x] Se reservó eliminación de helpers a 019.
+- [x] Se reservó certificación integral a 020.
+- [x] No se crearon ni modificaron TREQ.
+- [x] No se autorizó implementación física.
+
+---
+
+#### 46. Límites
+
+Esta tarea no:
+
+- publica packages;
+- crea releases;
+- asigna versiones futuras;
+- modifica `package.json` o lockfiles;
+- instala dependencias;
+- cambia imports;
+- modifica código de NEXO;
+- crea adapters físicos;
+- corrige `@vento/os-context`;
+- cambia factories Supabase;
+- modifica componentes `@vento/ui-web`;
+- elimina helpers duplicados;
+- desactiva role override;
+- modifica cookies;
+- cambia Server Actions;
+- ejecuta paridad;
+- ejecuta rollback;
+- crea o modifica migraciones;
+- toca Supabase remoto;
+- modifica datos;
+- abre PR de adopción;
+- hace merge;
+- despliega;
+- certifica NEXO.
+
+La materialización física pertenece a futuras instancias autorizadas `NEXO-AUTH-018::<implementation_unit_id>` después del gate aplicable.
+
+---
+
+#### 47. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-017 — Integrar simulación estricta`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-018 — Migrar a paquetes de vento-shell`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-019 — Eliminar helpers duplicados`
+
 ### [ ] NEXO-AUTH-019 — Eliminar helpers duplicados
 ### [ ] NEXO-AUTH-020 — Ejecutar pruebas integrales
 
