@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1227** |
+| Aprobadas | **1228** |
 | En propuesta | **0** |
-| No iniciadas | **369** |
+| No iniciadas | **368** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **76.88% (1227/1596)** |
+| Porcentaje de completamiento | **76.94% (1228/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **369** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1128** |
+| ⏸ NO_EVALUADA | **368** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1129** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-022` — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-023` — Proteger empaque, desempaque, división, unión y transferencia | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-024` — Proteger consulta y administración de activos y reutilizables | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-023` — Proteger empaque, desempaque, división, unión y transferencia | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-024` — Proteger consulta y administración de activos y reutilizables | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-025` — Proteger custodia, préstamo, devolución y transferencia | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -992,7 +992,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-038` | Definir novedades locativas, severidad, contención, escalamiento, resolución y cierre | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-021` | Auditar permisos actuales de LPN, activos y contenedores | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-022` | Proteger creación, actualización, cierre, anulación y reetiquetado de LPN | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-023` | Proteger empaque, desempaque, división, unión y transferencia | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-023` | Proteger empaque, desempaque, división, unión y transferencia | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-024` | Proteger consulta y administración de activos y reutilizables | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-025` | Proteger custodia, préstamo, devolución y transferencia | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-026` | Proteger mantenimiento, daño, pérdida y baja | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
