@@ -8,7 +8,19 @@ import {
 } from './correction-control.mjs';
 import {
     buildAuthorizedCorrectionRecord,
+    taskIsApproved,
 } from './correction-branch-lifecycle.mjs';
+test('taskIsApproved usa exclusivamente el marcador canonico de aprobacion', () => {
+    assert.equal(taskIsApproved({ marker: '✅', block: '| Estado | **APROBADA** |' }), true);
+    assert.equal(taskIsApproved({ marker: '[x]', block: '**Estado:** APROBADA' }), true);
+
+    for (const marker of ['[ ]', '[~]', '🟡', '❌']) {
+        assert.equal(taskIsApproved({ marker, block: '**Estado:** APROBADA' }), false);
+    }
+
+    assert.equal(taskIsApproved(null), false);
+});
+
 
 test('lifecycle usa ramas separadas para registro y corrección', () => {
     assert.equal(correctionRegistrationBranchName('AUTH-DB-033::CORR-001'), 'correction-register/auth-db-033/corr-001');
