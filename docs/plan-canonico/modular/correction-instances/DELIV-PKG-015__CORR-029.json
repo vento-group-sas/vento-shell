@@ -88,6 +88,15 @@
     "approval_statement": "APROBADO",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-21T08:02:25.880Z",
+      "candidate_head_before": "0f4dd8f676c624ae03c00d88896367d242fca110",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-21T07:37:50.990Z"
 }
