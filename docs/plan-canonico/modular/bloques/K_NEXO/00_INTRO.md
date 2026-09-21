@@ -13575,7 +13575,900 @@ Todo cambio físico queda reservado a instancias explícitamente autorizadas.
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-017 — Integrar simulación estricta`
-### [ ] NEXO-AUTH-017 — Integrar simulación estricta
+### ✅ NEXO-AUTH-017 — Integrar simulación estricta
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-016 — Integrar dispositivo compartido
+**Tarea siguiente:** NEXO-AUTH-018 — Migrar a paquetes de vento-shell
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización NEXO de simulación estricta para separar autoridad real, evaluación hipotética, presentación read-only y auditoría, prohibiendo que role override, sede, área, turno, check-in o resultado simulado produzcan autoridad empresarial ejecutable
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-017::<implementation_unit_id>` después del package propietario y de `E5-GATE-008::<package_id> = PASS`, con autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Especializar en NEXO el contrato canónico de simulación para que una representación hipotética de rol, sede, área, turno, check-in, permiso o recurso nunca se convierta en autoridad real de lectura protegida, mutación, transición de proceso o efecto empresarial.
+
+La regla raíz queda:
+
+```text
+AUTORIDAD REAL NEXO
+!=
+EVALUACIÓN SIMULADA NEXO
+```
+
+Y, de forma operativa:
+
+```text
+WOULD_ALLOW
+!=
+ALLOW
+```
+
+```text
+ROL SIMULADO
+!=
+ROL EFECTIVO REAL
+```
+
+```text
+TERRITORIO SIMULADO
+!=
+TERRITORIO AUTORIZADO REAL
+```
+
+```text
+PREVIEW NEXO
+!=
+CAPACIDAD DE EJECUCIÓN NEXO
+```
+
+La simulación podrá explicar, comparar y previsualizar comportamiento NEXO dentro de los límites aprobados, pero no podrá conceder autoridad, completar contexto real ausente ni producir efectos empresariales.
+
+#### 2. Resultado contractual
+
+Quedan fijadas treinta obligaciones NEXO:
+
+1. actor real y actor simulado permanecen separados;
+2. sesión real y sesión de simulación permanecen separadas;
+3. rol real y rol simulado permanecen separados;
+4. sede real y sede simulada permanecen separadas;
+5. área real y área simulada permanecen separadas;
+6. turno real y turno simulado permanecen separados;
+7. check-in real y check-in simulado permanecen separados;
+8. permiso real y resultado hipotético permanecen separados;
+9. `would_allow` nunca se convierte en `ALLOW`;
+10. `would_deny` nunca se registra como una denegación real del actor;
+11. `indeterminate` nunca se resuelve por optimismo;
+12. el actor real conserva el techo de datos visibles;
+13. el escenario simulado no amplía acceso a recursos reales;
+14. navegación de preview no concede acceso real;
+15. preview NEXO permanece read-only;
+16. una Server Action empresarial real rechaza procedencia simulada antes del efecto;
+17. Route Handlers, RPC, RLS, Edge Functions, jobs, colas e integraciones no consumen rol o territorio simulado como autoridad;
+18. query, cookie, storage, estado React o formulario no autentican una simulación;
+19. el inicio de simulación consume el contrato canónico y no un helper local;
+20. la salida de simulación requiere retorno a contexto real fresco;
+21. simulación expirada, revocada, stale o inválida no se prolonga por navegación;
+22. tabs, refresh y respuestas tardías revalidan lifecycle;
+23. replay y reintentos no convierten una request simulada en request real;
+24. dispositivo compartido no puede iniciar simulación interactiva bajo el contrato vigente;
+25. el principal técnico no sustituye al simulador humano;
+26. NEXO no inventa aliases locales para estados o razones de simulación;
+27. role override legacy se trata como brecha de adopción, no como autoridad canónica;
+28. coexistencia temporal exige paridad y fail closed, nunca selección del camino más permisivo;
+29. la migración final a contratos compartidos queda reservada a `NEXO-AUTH-018`;
+30. la certificación integral queda reservada a `NEXO-AUTH-020`.
+
+#### 3. Handoff recibido de `NEXO-AUTH-016`
+
+`NEXO-AUTH-016` entrega una frontera de dispositivo compartido donde permanecen separados:
+
+```text
+PRINCIPAL TÉCNICO
++
+DEVICE ID
++
+ACTOR HUMANO REAL
++
+ACTOR SESSION CUANDO APLIQUE
++
+AUTORIDAD HUMANA PROPIA
++
+TECHO DEL DEVICE
++
+TERRITORIO REAL
+```
+
+La tarea anterior reserva explícitamente a esta tarea la simulación estricta y establece que la combinación `shared_device + simulation` no puede permitir que un plano amplíe al otro.
+
+Esta tarea conserva además que:
+
+- `navigation_role` no es autoridad;
+- preferencias de sede o área no son autoridad;
+- el principal técnico no es trabajador;
+- firma por acción y actor session son conceptos distintos;
+- la autoridad efectiva no puede exceder al actor humano ni al techo del dispositivo;
+- el cambio de actor invalida autoridad y estado del actor anterior.
+
+`NEXO-AUTH-017` añade exclusivamente la frontera de simulación sobre esa base.
+
+#### 4. Contratos transversales consumidos
+
+La especialización consume sin redefinir:
+
+- `AUTH-SIM-001` a `AUTH-SIM-006`, para solicitante, rol, sede, área, turno y separación entre autoridad real y simulada;
+- `AUTH-SIM-007` a `AUTH-SIM-011`, para aviso, inicio, salida, bloqueo de ejecución y read-only;
+- `AUTH-SIM-012`, para navegación de preview;
+- `AUTH-SIM-013`, para Server Actions;
+- `AUTH-SIM-014`, para certificación transversal por aplicación;
+- `AUTH-SRV-015`, para separación server-side entre contexto real y simulado;
+- `AUTH-DB-013`, para persistencia y auditoría del lifecycle de simulación;
+- `NEXO-AUTH-001` a `NEXO-AUTH-016`, para carriles, capacidades, territorio y dispositivo compartido;
+- los contratos vigentes de permiso, scope, recurso, denegaciones, frescura, auditoría, idempotencia, concurrencia y privacidad;
+- `@vento/os-context` como contrato compartido de contexto cuando corresponda a la futura adopción física.
+
+NEXO no crea una variante local del modelo de simulación.
+
+#### 5. Cuatro planos obligatorios
+
+Toda integración NEXO conserva exactamente cuatro planos:
+
+| Plano | Fuente | Propósito | Puede producir autoridad real |
+| --- | --- | --- | ---: |
+| `REAL_AUTHORITY_PLANE` | actor, sesión, permisos, territorio, recurso y denegaciones reales | controlar acceso y ejecución real | Sí |
+| `SIMULATED_EVALUATION_PLANE` | escenario hipotético tipado y versionado | producir `would_allow`, `would_deny` o `indeterminate` | No |
+| `SIMULATION_PRESENTATION_PLANE` | resultado hipotético ya evaluado | mostrar preview, navegación y razones | No |
+| `SIMULATION_AUDIT_PLANE` | actor real + escenario + resultados + lifecycle | trazabilidad y reproducción | No |
+
+Ningún campo del plano simulado puede rellenar silenciosamente un requisito ausente del plano real.
+
+#### 6. Doble resultado obligatorio
+
+Una evaluación deberá mantener simultáneamente:
+
+```text
+REAL_DECISION
++
+SIMULATED_RESULT
+```
+
+Nunca:
+
+```text
+MIXED_EFFECTIVE_DECISION
+```
+
+Casos mínimos:
+
+```text
+REAL_DENY + WOULD_ALLOW
+=
+SIN ACCESO REAL
+```
+
+```text
+REAL_ALLOW + WOULD_DENY
+=
+ACTOR REAL PUEDE VER LA EXPLICACIÓN AUTORIZADA,
+PERO EL ESCENARIO SIMULADO RESULTA DENEGADO
+```
+
+```text
+REAL_ALLOW + WOULD_ALLOW
+=
+PREVIEW EXPLICATIVA,
+NO EJECUCIÓN
+```
+
+#### 7. Actor simulador
+
+NEXO no decide por sí mismo quién puede simular.
+
+La elegibilidad proviene del contrato transversal y exige, según aplicabilidad:
+
+- actor humano real inequívoco;
+- sesión personal real válida;
+- permisos reales de simulación;
+- alcance real suficiente;
+- justificación;
+- reautenticación fuerte cuando corresponda;
+- ausencia de denegaciones;
+- contexto real no simulado.
+
+Ni el nombre `propietario`, ni `gerente_general`, ni un booleano local de privilegio, ni la visibilidad de un selector satisfacen por sí solos esta elegibilidad.
+
+#### 8. Dispositivo compartido como solicitante
+
+Bajo el contrato vigente:
+
+```text
+INICIO INTERACTIVO DE SIMULACIÓN
+DESDE DISPOSITIVO COMPARTIDO
+=
+DENY
+```
+
+El principal técnico, el `device_id`, el `navigation_role`, la firma ligera del trabajador o el techo del dispositivo no convierten la estación en un simulador autorizado.
+
+Si una futura política habilitara simulación desde un dispositivo administrado, requerirá un contrato explícito posterior. Esta tarea no lo habilita.
+
+#### 9. Identidad del rol simulado
+
+Toda simulación de rol deberá consumir una referencia tipada y versionada equivalente a:
+
+```text
+role_kind
++
+role_code
++
+catalog_version
++
+matrix_version
+```
+
+Reglas NEXO:
+
+1. una cadena bare no basta;
+2. rol base y rol operativo no se confunden;
+3. un label de interfaz no sustituye el código canónico;
+4. `navigation_role` no sustituye el rol simulado;
+5. un rol legacy, ambiguo, inactivo, deprecado o no materializado falla cerrado conforme al contrato transversal;
+6. seleccionar un rol no concede permisos reales.
+
+#### 10. Sede simulada
+
+La sede simulada es parte del escenario hipotético.
+
+No puede reemplazar:
+
+- sede administrativa real;
+- sede operativa real;
+- sede del turno real;
+- sede del check-in real;
+- sede del recurso real;
+- sede fija del dispositivo.
+
+Un `site_id` proveniente de query, cookie, selector, formulario o estado cliente nunca se convierte por ello en sede simulada autoritativa ni en sede real autorizada.
+
+#### 11. Área simulada
+
+El área simulada permanece separada de:
+
+- área administrativa real;
+- área operativa real;
+- área del turno;
+- área del check-in;
+- área del recurso;
+- política de área del dispositivo.
+
+Una simulación puede representar un área hipotética cuando el contrato lo permite, pero no puede escribirla sobre `active_area_id`, reutilizarla como área real de una mutación o completar un contexto real ausente.
+
+#### 12. Turno y check-in simulados
+
+Un turno o check-in hipotéticos solo explican cómo se evaluaría un escenario.
+
+```text
+SIMULATED_SHIFT
+!=
+ACTIVE_REAL_SHIFT
+```
+
+```text
+SIMULATED_CHECKIN
+!=
+REAL_CHECKIN
+```
+
+No satisfacen prerrequisitos reales de remisión, inventario, producción vinculada, recepción, ajuste, conteo, movimiento ni otra capacidad NEXO.
+
+#### 13. Contexto real de NEXO
+
+Toda operación real sigue utilizando el contexto real definido por `NEXO-AUTH-001` a `NEXO-AUTH-016`.
+
+La simulación no modifica:
+
+- actor efectivo real;
+- rol base real;
+- rol operativo real;
+- turno real;
+- check-in real;
+- sede real;
+- área real;
+- device real;
+- permisos reales;
+- scopes reales;
+- recurso real;
+- denegaciones reales.
+
+Una mutación nunca utiliza el escenario simulado como contexto de autorización.
+
+#### 14. Techo de datos reales
+
+La simulación no permite leer datos empresariales que el actor real no puede leer.
+
+```text
+DATOS REALES VISIBLES EN PREVIEW
+⊆
+DATOS REALES AUTORIZADOS AL SIMULADOR
+```
+
+La simulación puede explicar que un rol hipotético tendría determinada capacidad sin revelar filas, atributos, personas, documentos, cantidades, costos, auditoría o configuraciones fuera del alcance real del actor.
+
+Un resultado `would_allow` no funciona como filtro de seguridad de datos.
+
+#### 15. Clasificación por capacidad
+
+NEXO consume la clasificación canónica vigente de simulación por `PermissionKey`.
+
+Para una capacidad concreta, la integración deberá respetar la clasificación vigente equivalente a:
+
+- `FULL_PREVIEW`;
+- `DECISION_ONLY`;
+- `NOT_ALLOWED`.
+
+Reglas:
+
+1. NEXO no reclasifica una capacidad localmente;
+2. una clasificación desconocida falla cerrado para preview;
+3. `FULL_PREVIEW` sigue siendo no ejecutable;
+4. `DECISION_ONLY` no habilita formulario operativo ni datos protegidos por autoridad simulada;
+5. `NOT_ALLOWED` no se degrada a preview parcial.
+
+#### 16. Navegación simulada
+
+La navegación puede preservar una simulación vigente, pero nunca concede autoridad.
+
+```text
+ROUTE CHANGE
+!=
+EXIT SIMULATION
+```
+
+```text
+ROUTE REACHED UNDER SIMULATION
+!=
+REAL AUTHORITY ON DESTINATION
+```
+
+Pathname, query, hash, history state, referrer, cookie aislada, storage o estado React no prueban lifecycle vigente.
+
+Cada destino debe resolver el estado de simulación desde el owner correspondiente.
+
+#### 17. Preview read-only
+
+Mientras exista procedencia simulada activa, la representación NEXO permanece read-only respecto de efectos empresariales reales.
+
+La UI puede mostrar:
+
+- acciones hipotéticamente disponibles;
+- navegación hipotética;
+- razones de allow o deny;
+- contexto simulado;
+- diferencias frente al contexto real;
+- recursos sintéticos o proyecciones seguras cuando el contrato lo permita.
+
+No puede utilizar el preview para:
+
+- crear;
+- editar;
+- cancelar;
+- preparar;
+- despachar;
+- recibir;
+- ajustar;
+- contar;
+- transferir;
+- retirar;
+- mover inventario;
+- cambiar catálogo o configuración;
+- imprimir efectos reales;
+- generar integraciones reales.
+
+#### 18. Server Actions
+
+Toda Server Action NEXO que pueda producir un efecto empresarial deberá rechazar procedencia simulada antes del primer efecto real.
+
+```text
+SIMULATED ORIGIN
++
+BUSINESS SERVER ACTION
+=
+DENY BEFORE EFFECT
+```
+
+El deny debe ocurrir antes de:
+
+- `insert`;
+- `update`;
+- `delete`;
+- RPC mutante;
+- movimiento de inventario;
+- transición de estado;
+- evento empresarial;
+- outbox;
+- notificación;
+- impresión;
+- webhook;
+- job o cola;
+- efecto externo.
+
+Una transacción posterior no sustituye el guard previo.
+
+#### 19. Lecturas protegidas server-side
+
+Una lectura real protegida alcanzada desde una preview deberá:
+
+- usar exclusivamente la autoridad real del actor;
+- aplicar el techo de datos reales;
+- minimizar campos según el contrato;
+- denegar cuando el actor real no posea acceso;
+- mantener separado el resultado simulado.
+
+La lectura no utiliza el rol simulado para ampliar RLS, filtros, RPC o proyecciones.
+
+#### 20. RPC, PostgREST y RLS
+
+NEXO no puede enviar rol, sede, área, turno o permiso simulados a RPC o RLS como si fueran identidad real.
+
+Reglas:
+
+1. el servidor resuelve la autoridad real de forma independiente;
+2. una RPC de evaluación hipotética permanece separada de una RPC empresarial;
+3. RLS no interpreta cookies, query strings o payloads de preview como grants;
+4. `service_role` no crea autoridad humana;
+5. una policy permisiva en otra capa no convierte la simulación en ejecutable;
+6. la decisión material debe converger entre canales.
+
+#### 21. Route Handlers, APIs, Edge Functions e integraciones
+
+La misma frontera aplica a cualquier canal capaz de producir el mismo efecto:
+
+- Route Handler;
+- API;
+- Edge Function;
+- webhook;
+- job;
+- cola;
+- Realtime con efecto;
+- cliente offline;
+- integración externa;
+- periférico.
+
+Una superficie no cubierta por el frontend no queda fuera de la restricción.
+
+#### 22. Inicio canónico de simulación
+
+NEXO no puede iniciar simulación escribiendo solamente un cookie de rol o sede.
+
+El inicio válido pertenece al owner transversal y deberá producir una sesión o revisión de simulación autoritativa, correlacionable y con lifecycle verificable.
+
+La futura adopción podrá consumir la superficie compartida correspondiente de `@vento/os-context`, siempre que la implementación física vigente satisfaga los contratos canónicos y no reintroduzca mezcla entre contexto real y simulado.
+
+La existencia actual de `startContextSimulation` no constituye por sí sola certificación.
+
+#### 23. Salida canónica de simulación
+
+La salida válida deberá:
+
+1. terminar el lifecycle de simulación mediante su owner;
+2. invalidar proyecciones, caches y resultados simulados afectados;
+3. descartar submits o drafts que dependan de la procedencia simulada cuando no sean reutilizables de forma segura;
+4. resolver nuevamente actor y contexto reales;
+5. exigir una nueva intención para cualquier acción empresarial posterior.
+
+```text
+EXIT SIMULATION
+!=
+AUTOEXECUTE PREVIOUS ACTION
+```
+
+#### 24. Lifecycle visible
+
+NEXO deberá distinguir, según el contrato vigente, estados como:
+
+```text
+RESOLVING
+ACTIVE
+STALE
+INVALID
+EXIT_PENDING
+```
+
+y estados terminales persistidos.
+
+Reglas:
+
+- `RESOLVING` no habilita;
+- `ACTIVE` sigue siendo no ejecutable;
+- `STALE` suspende el preview hasta revalidación;
+- `INVALID` no cae automáticamente a un contexto real permisivo;
+- `EXIT_PENDING` mantiene procedencia simulada;
+- un terminal no resucita por refresh, back, deep link o cache.
+
+#### 25. Varias pestañas y concurrencia
+
+Todas las tabs asociadas al mismo lifecycle deberán converger.
+
+Una tab no puede:
+
+- conservar `ACTIVE` después de expiración o revocación;
+- ocultar el aviso por estado local;
+- ejecutar una mutación porque otra tab salió;
+- reactivar un resultado anterior;
+- restaurar un rol simulado desde cookie stale;
+- convertir una respuesta tardía en autoridad vigente.
+
+Cambios materiales revalidan antes de continuar.
+
+#### 26. Offline, retry y replay
+
+Una simulación no crea autoridad offline.
+
+Reglas:
+
+1. una request simulada capturada offline no se convierte en mutación real al sincronizar;
+2. un resultado `would_allow` cacheado no se reutiliza como decisión real;
+3. reintentos conservan procedencia simulada;
+4. idempotency keys de preview no se reutilizan para ejecutar una acción real posterior;
+5. después de salir, una operación real exige request nueva y autorización real fresca;
+6. replay de una request de simulación terminal permanece bloqueado.
+
+#### 27. Auditoría
+
+Toda evaluación NEXO bajo simulación debe permitir reconstruir, según aplicabilidad:
+
+- actor real;
+- sesión real;
+- rol base real;
+- rol operativo real;
+- sede y área reales;
+- turno y check-in reales;
+- device real cuando exista;
+- `simulation_request_id` o identidad equivalente;
+- sesión o revisión de simulación;
+- sujeto simulado;
+- rol simulado tipado;
+- sede, área, turno y check-in simulados;
+- permiso y recurso evaluados;
+- decisión real;
+- resultado hipotético;
+- razones estructuradas;
+- clasificación de simulación;
+- versión contractual;
+- timestamp confiable;
+- correlación.
+
+La auditoría no convierte el resultado simulado en autoridad.
+
+#### 28. Errores y razones
+
+NEXO consume las razones canónicas de simulación y autorización.
+
+Una acción real bloqueada por procedencia simulada no debe presentarse como éxito, fallo de datos o ausencia genérica de permisos si existe un código propietario más específico.
+
+A la inversa, un error técnico no debe etiquetarse falsamente como una denegación de simulación.
+
+La precedencia de razones permanece gobernada por el contrato transversal.
+
+#### 29. AS-IS verificable de NEXO
+
+El consumidor remoto actual demuestra una implementación local de “modo prueba” basada en role override:
+
+1. existe el cookie `nexo_role_override`;
+2. `propietario` y `gerente_general` pueden activar overrides mediante `PRIVILEGED_ROLE_OVERRIDES`;
+3. la UI permite escoger valores de `ROLE_OPTIONS` y conserva el cookie durante hasta treinta días;
+4. `checkPermissionWithRoleOverride` sustituye la evaluación real por una evaluación de permisos del rol override cuando el actor local es elegible;
+5. el helper incluye una excepción específica de tránsito para `conductor`;
+6. `applyNexoRoleOverrideArea` puede modificar `active_operational_role`, `active_area_id` y `active_area_kind` del contexto retornado;
+7. el área simulada local se deriva por nombre de rol para `cocinero`, `barista` y `cajero`;
+8. el resolvedor puede usar `siteId`, `active_site_id` o `selected_site_id` para localizar esa área;
+9. páginas y Server Actions de remisiones consumen `checkPermissionWithRoleOverride`;
+10. el menú permite además cambiar sede mediante query, cookie local y `employee_settings.selected_site_id`;
+11. `vento-nexo` no muestra consumo directo de `startContextSimulation` o `stopContextSimulation` de `@vento/os-context` en la evidencia revisada.
+
+Estas piezas demuestran comportamiento de prueba legacy, no integración canónica de simulación estricta.
+
+#### 30. Brechas AS-IS obligatorias de cierre
+
+La futura materialización deberá cerrar al menos estas brechas:
+
+1. un cookie local no puede ser la fuente autoritativa de una sesión de simulación;
+2. `canUseRoleOverride` no puede sustituir elegibilidad canónica del simulador;
+3. el nombre del rol simulado no puede convertirse en rol real efectivo;
+4. `active_operational_role` real no puede mutarse por un override de preview;
+5. `active_area_id` real no puede mutarse por un área simulada;
+6. `selected_site_id` o una query no pueden completar territorio simulado o real de forma permisiva;
+7. un helper de permisos de rol simulado no puede autorizar mutaciones reales;
+8. la excepción local de `conductor` no puede escapar al contrato de simulación y autorización;
+9. una Server Action de remisiones no puede ejecutar porque `checkPermissionWithRoleOverride` devolvió `true` bajo procedencia simulada;
+10. el cliente no puede fijar una duración de simulación incompatible con el owner;
+11. el cambio de rol o sede de preview debe ser auditable y versionado;
+12. salida, expiración, revocación, stale e invalidación deben converger entre superficies;
+13. el preview debe mostrar aviso persistente y remain read-only;
+14. una mutación debe rechazar simulación antes del primer efecto;
+15. la adopción debe retirar el role override como autoridad, no ocultarlo detrás de otro nombre.
+
+#### 31. Estrategia de convergencia
+
+La futura adopción por unidad seguirá:
+
+```text
+IDENTIFICAR SUPERFICIES QUE CONSUMEN ROLE OVERRIDE
++
+INTRODUCIR RESOLUCIÓN CANÓNICA DE SIMULACIÓN
++
+SEPARAR CONTEXTO REAL Y ESCENARIO HIPOTÉTICO
++
+SEPARAR REAL_DECISION Y SIMULATED_RESULT
++
+BLOQUEAR WRITERS DESDE PREVIEW
++
+PRESERVAR TECHO DE DATOS DEL ACTOR REAL
++
+MEDIR PARIDAD Y DENY PATHS
++
+RETIRAR COOKIES Y HELPERS AUTORITATIVOS SOLO CON EVIDENCIA
+```
+
+Durante coexistencia no se calcula ambos caminos para escoger el `ALLOW` más favorable.
+
+#### 32. Compatibilidad transitoria
+
+Un adapter transitorio puede existir únicamente cuando:
+
+- conserva actor real y simulado separados;
+- no cambia la modalidad de una capacidad;
+- no amplía territorio;
+- no produce un `ALLOW` real desde el rol simulado;
+- registra procedencia suficiente;
+- permite comparar decisiones;
+- falla cerrado ante divergencia material;
+- tiene owner de retiro en `NEXO-AUTH-019` cuando corresponda.
+
+Compatibilidad no significa mantener una ruta legacy más permisiva.
+
+#### 33. Frontera con `NEXO-AUTH-016`
+
+`NEXO-AUTH-016` conserva la integración de dispositivo compartido.
+
+Esta tarea no redefine:
+
+- identidad de device;
+- actor session;
+- techo de aplicaciones o permisos del device;
+- sede o área del device;
+- firma por acción;
+- lifecycle de device.
+
+La simulación nunca amplía ese contrato.
+
+Bajo el contrato vigente, el dispositivo compartido no inicia simulación interactiva.
+
+#### 34. Frontera con `NEXO-AUTH-018`
+
+`NEXO-AUTH-018` conserva la migración hacia paquetes compartidos de `vento-shell`.
+
+Esta tarea define la semántica que debe consumirse, pero no ejecuta aquí:
+
+- cambio de imports;
+- publicación de packages;
+- pinning de versiones;
+- rollout de `@vento/os-context`;
+- sustitución de contratos locales;
+- migración de consumidores.
+
+La existencia actual del paquete compartido no convierte esta tarea en una migración de dependencias.
+
+#### 35. Frontera con `NEXO-AUTH-019`
+
+`NEXO-AUTH-019` conserva la eliminación de helpers duplicados.
+
+Esta tarea identifica como candidates de convergencia, entre otros:
+
+- `getRoleOverrideFromCookies`;
+- `canUseRoleOverride`;
+- `checkPermissionWithRoleOverride`;
+- `applyNexoRoleOverrideArea`;
+- configuración local de role override;
+- cookies locales de role y site override.
+
+No se eliminan todavía. Su retiro exige reemplazo canónico y paridad demostrada.
+
+#### 36. Frontera con `NEXO-AUTH-020`
+
+`NEXO-AUTH-020` conserva la ejecución integral de pruebas NEXO.
+
+Esta tarea define los escenarios que deberán existir, pero no declara PASS físico para:
+
+- navegación simulada;
+- preview read-only;
+- Server Actions;
+- Route Handlers;
+- RPC;
+- RLS;
+- offline;
+- replay;
+- lifecycle;
+- varias tabs;
+- dispositivo compartido;
+- efectos empresariales.
+
+#### 37. Topología física futura
+
+La cardinalidad física es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+identity = NEXO-AUTH-017::<implementation_unit_id>
+execution_gate = POST_E5_PACKAGE
+```
+
+Cada futura instancia requiere:
+
+- `implementation_unit_id` asignada;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS`;
+- alcance físico exacto;
+- autorización física explícita;
+- evidencia propia;
+- rollback propio.
+
+El marcador documental no concede autorización física.
+
+#### 38. Supabase y ownership
+
+Toda modificación futura de tablas, RPC, RLS, funciones, triggers, grants, Auth, Edge Functions, configuración o datos de Supabase requerida por esta integración pertenece a `vento-group-sas/vento-shell` y debe versionarse allí.
+
+Esta tarea no crea migraciones ni modifica Supabase.
+
+El repositorio consumidor NEXO no redefine el modelo persistente de simulación ni crea un datastore paralelo.
+
+#### 39. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la separación estricta entre autoridad real y simulada ya posee cobertura transversal vigente;
+- lifecycle, read-only, navegación, Server Actions, paridad de canales, cero efectos y replay ya están cubiertos;
+- el contrato de dispositivo compartido ya protege separación entre principal técnico y actor humano;
+- NEXO ya posee cobertura de autorización, territorio, remisiones, recursos y efectos empresariales;
+- esta tarea especializa el consumo NEXO de obligaciones existentes sin introducir una obligación verificable nueva fuera de esa cobertura.
+
+#### 40. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro, la cobertura vigente asociada a:
+
+- separación entre autoridad real y simulada;
+- resultados `would_allow`, `would_deny` e `indeterminate` no ejecutables;
+- actor, rol, sede, área, turno y check-in simulados;
+- inicio y salida autoritativos;
+- aviso persistente y read-only;
+- bloqueo antes de efectos empresariales;
+- navegación y Server Actions;
+- paridad entre canales;
+- lifecycle, invalidación, cache, offline, retry y replay;
+- reconciliación física de consumidores legacy;
+- dispositivos compartidos;
+- autorización territorial y de recursos NEXO.
+
+Trazabilidad vigente reutilizada: `TREQ-AUTH-011`, `TREQ-AUTH-012`, `TREQ-AUTH-013`, `TREQ-AUTH-014`, `TREQ-AUTH-015`, `TREQ-AUTH-085`, `TREQ-AUTH-086`, `TREQ-AUTH-119` a `TREQ-AUTH-128`, `TREQ-AUTH-165`, `TREQ-AUTH-267`, `TREQ-AUTH-279` a `TREQ-AUTH-288`, `TREQ-NEXO-006` y `TREQ-NEXO-009`.
+
+Estas referencias constituyen trazabilidad heredada y no representan cambios al registro.
+
+#### 41. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define contrato documental y no compila ni despliega producto |
+| LOCAL | NOT_EXECUTED | incorporación, formateo, task quality, delivery check y batería documental corresponden al checkout local de la tarea |
+| REMOTA | PASS | auditoría estática sobre `vento-shell` main `52e52b8bf4acb98d1070dba3651eacf6ed73ebbf` y `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`; se verificaron continuidad `NEXO-AUTH-016 -> NEXO-AUTH-017 -> NEXO-AUTH-018`, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, contratos `AUTH-SIM-001..014`, `@vento/os-context` y el AS-IS de role override, contexto operativo, menú y Server Actions NEXO |
+| OPERATIVA | NOT_APPLICABLE | no se inició simulación real, no se ejecutó preview desplegada ni se produjo una operación NEXO |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza ninguna instancia `NEXO-AUTH-017::<implementation_unit_id>` ni se modifica consumidor, Supabase o despliegue |
+
+#### 42. Criterios de aceptación
+
+- [x] actor real y actor simulado quedan separados;
+- [x] sesión real y sesión de simulación quedan separadas;
+- [x] rol real y rol simulado quedan separados;
+- [x] sede real y simulada quedan separadas;
+- [x] área real y simulada quedan separadas;
+- [x] turno real y simulado quedan separados;
+- [x] check-in real y simulado quedan separados;
+- [x] `WOULD_ALLOW != ALLOW`;
+- [x] `WOULD_DENY` no sustituye decisión real;
+- [x] `INDETERMINATE` no se resuelve permisivamente;
+- [x] se preservan cuatro planos independientes;
+- [x] se preserva doble resultado real + hipotético;
+- [x] datos visibles no exceden autoridad real del simulador;
+- [x] la clasificación de simulación se consume sin redefinirla;
+- [x] `FULL_PREVIEW` permanece no ejecutable;
+- [x] `DECISION_ONLY` no habilita writer ni datos protegidos;
+- [x] `NOT_ALLOWED` no se degrada;
+- [x] clasificación desconocida falla cerrado;
+- [x] navegación no crea autoridad;
+- [x] preview permanece read-only;
+- [x] Server Actions empresariales deniegan antes del efecto;
+- [x] lecturas protegidas usan autoridad real;
+- [x] RPC y RLS no consumen contexto simulado como grant;
+- [x] Route Handlers, APIs, jobs, colas e integraciones conservan la frontera;
+- [x] inicio y salida de simulación pertenecen al owner transversal;
+- [x] dispositivo compartido no inicia simulación interactiva bajo el contrato vigente;
+- [x] principal técnico no sustituye simulador humano;
+- [x] varias tabs y respuestas tardías revalidan lifecycle;
+- [x] offline, retry y replay no convierten preview en ejecución;
+- [x] auditoría conserva actor real, escenario y doble resultado;
+- [x] role override actual queda clasificado como brecha de adopción;
+- [x] el cookie local no se eleva a sesión canónica de simulación;
+- [x] `active_operational_role` real no puede ser sustituido por override simulado;
+- [x] `active_area_id` real no puede ser sustituido por área simulada;
+- [x] Server Actions actuales que consumen role override quedan dentro del alcance futuro;
+- [x] la excepción local de conductor no crea bypass de simulación;
+- [x] coexistencia transitoria no escoge el `ALLOW` más favorable;
+- [x] `NEXO-AUTH-018` conserva migración a paquetes;
+- [x] `NEXO-AUTH-019` conserva retiro de helpers duplicados;
+- [x] `NEXO-AUTH-020` conserva certificación integral;
+- [x] topología futura `PER_IMPLEMENTATION_UNIT`;
+- [x] gate futuro `POST_E5_PACKAGE`;
+- [x] cero cambios de requisitos de prueba;
+- [x] cero cambios físicos autorizados en esta tarea.
+
+#### 43. Límites
+
+Esta tarea no:
+
+- modifica código NEXO;
+- modifica código SHELL;
+- modifica Supabase;
+- crea migraciones;
+- cambia RLS;
+- cambia RPC;
+- cambia grants;
+- cambia Auth;
+- crea o termina sesiones reales de simulación;
+- cambia cookies en producción;
+- elimina role override;
+- cambia `ROLE_OPTIONS`;
+- cambia permisos;
+- cambia matrices;
+- cambia roles;
+- cambia sede o área real;
+- cambia turnos o check-ins;
+- cambia dispositivos compartidos;
+- cambia actor sessions;
+- modifica remisiones;
+- produce movimientos de inventario;
+- despliega packages;
+- migra imports a `@vento/os-context`;
+- elimina helpers duplicados;
+- certifica una aplicación o unidad física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-AUTH-018`;
+- desarrolla `NEXO-AUTH-019`;
+- desarrolla `NEXO-AUTH-020`.
+
+#### 44. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-016 — Integrar dispositivo compartido`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-017 — Integrar simulación estricta`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-018 — Migrar a paquetes de vento-shell`
 ### [ ] NEXO-AUTH-018 — Migrar a paquetes de vento-shell
 ### [ ] NEXO-AUTH-019 — Eliminar helpers duplicados
 ### [ ] NEXO-AUTH-020 — Ejecutar pruebas integrales
