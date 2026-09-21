@@ -106,6 +106,172 @@
       "exit_code": 0,
       "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
       "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "FAIL",
+      "observed_at": "2026-09-21T11:38:18.565Z",
+      "candidate_head": "5742815f29260bdd43667506060c94cc65c3da0d",
+      "commands": [
+        "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+        "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+        "node --check scripts/docs/implementation-execution-coordinator.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "node --check scripts/docs/implementation-integration-impact.mjs",
+        "node --test scripts/docs/implementation-integration-impact.test.mjs",
+        "npm run docs:implementation:accelerator:test",
+        "npm run docs:correction:check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "npm run quality:lint:ratchet -- --base origin/main",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+          "duration_ms": 78,
+          "started_at": "2026-09-21T11:32:48.002Z",
+          "completed_at": "2026-09-21T11:32:48.081Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+          "duration_ms": 172,
+          "started_at": "2026-09-21T11:32:48.082Z",
+          "completed_at": "2026-09-21T11:32:48.254Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "9dee9e05711926b2eab3f52fa8772b24b2303a56bba8a0c7c87b78b642483bb2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-execution-coordinator.mjs",
+          "duration_ms": 77,
+          "started_at": "2026-09-21T11:32:48.255Z",
+          "completed_at": "2026-09-21T11:32:48.333Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "duration_ms": 1299,
+          "started_at": "2026-09-21T11:32:48.334Z",
+          "completed_at": "2026-09-21T11:32:49.634Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b924fc5ce545c5f14c7046278bd0e34eb22bfe417f4c00461daf29a1b724967a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-integration-impact.mjs",
+          "duration_ms": 78,
+          "started_at": "2026-09-21T11:32:49.634Z",
+          "completed_at": "2026-09-21T11:32:49.713Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-integration-impact.test.mjs",
+          "duration_ms": 190,
+          "started_at": "2026-09-21T11:32:49.714Z",
+          "completed_at": "2026-09-21T11:32:49.904Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "4c1c99782d99e513d256739399457a1d3f0c5bc2cd84cc86b7e22047ccc3b4e0",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:accelerator:test",
+          "duration_ms": 1650,
+          "started_at": "2026-09-21T11:32:49.905Z",
+          "completed_at": "2026-09-21T11:32:51.556Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "2339803c1e8428f8ace4fac4df227d60f6108706c91ce5e3320da903fa10c367",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 1887,
+          "started_at": "2026-09-21T11:32:51.557Z",
+          "completed_at": "2026-09-21T11:32:53.444Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "806c100c014b17315ed5a97982a338aedeeb280bd56a57a7ac30ea0e9ae63359",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "duration_ms": 98462,
+          "started_at": "2026-09-21T11:32:53.444Z",
+          "completed_at": "2026-09-21T11:34:31.908Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "dca5474e55096f4b9f0a1abf471fcefb3a591d4b808a34aa42c17978d780af8e",
+          "stderr_sha256": "cc16bb53fb60f312299d6f9150f5e54b5c9ddefcaffa80d241262f9d65a270cb"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 174996,
+          "started_at": "2026-09-21T11:34:31.909Z",
+          "completed_at": "2026-09-21T11:37:26.906Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "14ab648d97ea6ad0baf4a3731571f968d0024a1fbb67ac3c106a4b2709f98d31",
+          "stderr_sha256": "248eb15af329a239e2a4a22df959561d4077df9c09542b040195555108048e56"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 30324,
+          "started_at": "2026-09-21T11:37:26.907Z",
+          "completed_at": "2026-09-21T11:37:57.232Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "da4322634e992f7f118c932ddc3c4c3b58017f0d75f993ad231fc351bf6f8126",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 3569,
+          "started_at": "2026-09-21T11:37:57.233Z",
+          "completed_at": "2026-09-21T11:38:00.803Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b38daa940413d06c60d14b686800c114058715cf7de15345b872cf7383d8408c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 644,
+          "started_at": "2026-09-21T11:38:00.803Z",
+          "completed_at": "2026-09-21T11:38:01.448Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "979d4b89aa95321d678e75b0e688b1a62113439f76a212c44c709e73d10d8fa2",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run quality:lint:ratchet -- --base origin/main",
+          "duration_ms": 17116,
+          "started_at": "2026-09-21T11:38:01.448Z",
+          "completed_at": "2026-09-21T11:38:18.565Z",
+          "status": "FAIL",
+          "exit_code": 1,
+          "stdout_sha256": "b1c82a16af4cc829e596a980bee9a853b6b92776e75d1ce0bb0d77a8123e5e27",
+          "stderr_sha256": "6752df806cce4256de0c9e3e21b3c38a1ae0bc6c8466096ed834372469295c88"
+        }
+      ],
+      "ordered_fail_fast": true
     }
   ],
   "opened_at": "2026-09-21T11:00:10.369Z",
