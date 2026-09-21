@@ -8587,7 +8587,611 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-010 — Proteger recepción`
-### [ ] NEXO-AUTH-010 — Proteger recepción
+### ✅ NEXO-AUTH-010 — Proteger recepción
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-009 — Proteger tránsito
+**Tarea siguiente:** NEXO-AUTH-011 — Proteger ajustes de inventario
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger la recepción de remisiones mediante `nexo.inventory.remissions.receive`, handoff de tránsito verificable, función receptora, destino, sesión, versión, cantidades observadas, receipts append-only, cierre de custodia e idempotencia, sin confundir recepción con entrega física, putaway, ajuste ni resolución de diferencias
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-010::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger de extremo a extremo la recepción de remisiones para que una carga únicamente pueda ser reclamada, observada, clasificada y confirmada por un actor receptor autorizado sobre el destino, shipment, handoff, sesión, versión y cantidades exactas, preservando custodia, parcialidad, diferencias, condición, idempotencia y trazabilidad sin convertir la recepción en entrega física del conductor, putaway, ajuste, cancelación, conciliación supervisora ni cierre ficticio de inventario.
+
+#### 2. Resultado contractual
+
+La decisión autorizante objetivo es:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ SESION HUMANA ATRIBUIDA
++ FUNCION RECEPTORA VIGENTE
++ TURNO Y CHECK-IN CUANDO APLIQUEN
++ DISPOSITIVO Y CONTEXTO VALIDOS
++ DESTINO Y TERRITORIO EXACTOS
++ PERMISSIONKEY nexo.inventory.remissions.receive
++ HANDOFF DE TRANSITO ADMISIBLE
++ SHIPMENT Y VERSION VIGENTES
++ CUSTODIA Y ESTADO RECIBIBLES
++ SESION DE RECEPCION VIGENTE
++ CANTIDADES OBSERVADAS VALIDAS
++ DENEGACIONES AUSENTES
+→ RECEPCION AUTORIZABLE
+```
+
+Autenticación, sede, URL, escaneo, nombre de rol, estado `in_transit`, presencia física o acceso a una pantalla no sustituyen esta decisión.
+
+#### 3. Capacidad protegida exacta
+
+La única `PermissionKey` autorizante para confirmar recepción ordinaria de una remisión es:
+
+```text
+nexo.inventory.remissions.receive
+```
+
+La capacidad permanece `active` y conserva modalidad:
+
+```text
+OPERATIONAL_ONLY
+```
+
+No se amplía ningún permiso vecino para sustituirla.
+
+#### 4. Fronteras con tránsito y entrega física
+
+La secuencia autorizativa se mantiene separada:
+
+```text
+nexo.inventory.remissions.accept_custody
+        ↓
+DESPACHO CONFIRMADO
+        ↓
+nexo.inventory.remissions.start_transit
+        ↓
+TRANSITO
+        ↓
+nexo.inventory.remissions.deliver
+        ↓
+HANDOFF FISICO EN DESTINO
+        ↓
+nexo.inventory.remissions.receive
+        ↓
+RECEPCION CONFIRMADA
+```
+
+`deliver` permite el handoff físico del conductor al receptor previsto. No confirma recepción. `receive` pertenece al actor receptor y no concede al conductor autoridad para auto-recibir la carga que transporta.
+
+#### 5. Actores ordinarios con concesión vigente
+
+El dataset `operational-role-grants@1.0.0` contiene exactamente dos grants `DIRECT_OPERATIONAL` para `nexo.inventory.remissions.receive`:
+
+| Rol operativo | Contexto | Límite |
+| --- | --- | --- |
+| `bodeguero` | `CTX-WH-REMISSION-RECEIVE` | Recepción de remisiones cuyo destino autorizado sea la bodega activa, con verificación física, cantidades, diferencias y transferencia de custodia. |
+| `operador_integral_satelite` | `CTX-INTEGRATED-REMISSION-RECEIVE` | Recepción ordinaria de remisiones cuyo destino sea la sede integrada activa, con recurso, origen, cantidades y estado válidos. |
+
+Una concesión individual canónica podrá existir únicamente si el modelo de autorización vigente la permite y mantiene las mismas fronteras de recurso, destino, contexto, segregación y auditoría. No se infiere desde cargo, sede o acceso general.
+
+#### 6. Contrato de `bodeguero`
+
+`bodeguero` puede recibir cuando:
+
+- la bodega activa es el destino autorizado;
+- turno y check-in aplicables son válidos;
+- sede, área, actor y recurso se resuelven en servidor;
+- el shipment y handoff corresponden a la carga recibible;
+- la verificación física y las cantidades observadas son válidas;
+- diferencias y transferencia de custodia quedan trazables;
+- el mismo actor no recibe en el mismo extremo una remisión que preparó sin una excepción formal vigente.
+
+La capacidad no concede ajuste, cancelación, resolución supervisora ni mutación del origen.
+
+#### 7. Contrato de `operador_integral_satelite`
+
+`operador_integral_satelite` puede recibir exclusivamente remisiones destinadas a la sede integrada activa y en estado empresarial recibible.
+
+La operación exige turno y check-in activos, reautenticación fuerte cuando corresponda, verificación física, control de concurrencia y auditoría antes/después. No concede preparación en origen, despacho, cancelación, inventario general, administración logística ni corrección unilateral de cantidades del origen.
+
+#### 8. Denegación por defecto
+
+No autorizan recepción:
+
+```text
+nexo.access
+nexo.inventory.remissions.view
+nexo.inventory.remissions.prepare
+nexo.inventory.remissions.accept_custody
+nexo.inventory.remissions.start_transit
+nexo.inventory.remissions.deliver
+nexo.inventory.remissions.dispatch
+nexo.inventory.remissions.transit
+nexo.transit.view
+rol o cargo
+all_sites
+URL directa
+shipment visible
+estado in_transit
+escaneo
+geolocalizacion
+firma
+fotografia
+codigo de entrega
+dispositivo
+```
+
+Toda ausencia o incompatibilidad produce `DEFAULT_DENY`.
+
+#### 9. Recurso, destino y territorio
+
+La autorización se resuelve sobre el recurso exacto de recepción y no sobre una sede en abstracto.
+
+El servidor debe demostrar como mínimo:
+
+- `shipment_id` o identidad canónica equivalente;
+- destino exacto;
+- handoff de tránsito vigente;
+- journey y parada cuando correspondan;
+- estado y versión;
+- actor receptor;
+- función receptora;
+- área o contexto operacional aplicable;
+- custodia vigente;
+- líneas y cantidades recibibles;
+- receipts previos y saldo pendiente.
+
+Una relación con la sede no autoriza shipments ajenos al trabajo del receptor.
+
+#### 10. Admisión desde tránsito
+
+Recepción consume exclusivamente el handoff:
+
+```text
+NEXO-REMISSION-TRANSIT-TO-RECEPTION-HANDOFF-001
+```
+
+El handoff debe conservar de forma verificable:
+
+- handoff;
+- journey;
+- parada;
+- shipment;
+- dispatch receipt;
+- transit receipts aplicables;
+- destino;
+- sello;
+- bultos;
+- custodio;
+- versión.
+
+Arribo, presentación, proximidad, coordenada, escaneo o enlace no confirman recepción ni reparan un handoff incompleto.
+
+#### 11. Cola de trabajo receptora
+
+La experiencia reutiliza exactamente las ocho colas aprobadas:
+
+```text
+RCVQ-BLOQUEO
+RCVQ-HANDOFF
+RCVQ-ARRIBO
+RCVQ-VERIFICACION
+RCVQ-RECEPCION_PARCIAL
+RCVQ-DIFERENCIA
+RCVQ-EVIDENCIA
+RCVQ-CONTINUIDAD
+```
+
+Solo se muestran handoffs y shipments atribuibles al destino y actor. Autorización, custodia, integridad y condición tienen prioridad sobre continuidad o publicación.
+
+#### 12. Reclamo y sesión de recepción
+
+Abrir una vista no reclama una recepción.
+
+El reclamo debe crear una sesión única y versionada por:
+
+```text
+handoff
++ shipment
++ destino
++ actor
+```
+
+La sesión se crea mediante intención idempotente. Una segunda sesión activa produce conflicto. Transferencia, expiración o revocación conservan hechos históricos y requieren versión, motivo y aceptación cuando corresponda.
+
+#### 13. Control de versión y concurrencia
+
+Toda mutación compara versiones vigentes de:
+
+- handoff;
+- sesión;
+- shipment;
+- línea;
+- receipt acumulado;
+- saldo pendiente.
+
+Un cliente obsoleto no puede sobrescribir observaciones, receipts, cantidades, condición ni custodia confirmadas por otro actor o intento.
+
+#### 14. Verificación física de identidad
+
+Cada observación debe demostrar pertenencia al handoff admitido de las identidades aplicables:
+
+- shipment;
+- bulto;
+- sello;
+- shipment item;
+- producto;
+- presentación;
+- lote;
+- empaque;
+- política snapshot.
+
+Escáner, código, etiqueta o enlace solo identifican dentro de la sesión; no conceden autoridad ni confirman cantidad, condición, receipt, custodia o inventario.
+
+#### 15. Cantidad y UOM
+
+La recepción conserva la cantidad cruda observada y su normalización mediante el snapshot vigente de:
+
+- UOM;
+- factor;
+- modo de medición;
+- tolerancia;
+- presentación aplicable.
+
+`variable_weight` y `bulk_volume` exigen valor actual. `count_with_weight` exige peso y conteo auxiliar. La cantidad despachada o solicitada no sustituye una medición obligatoria.
+
+#### 16. Conservación por línea
+
+Por cada línea y receipt se cumple:
+
+```text
+O = A + R + Q + U
+```
+
+Donde:
+
+- `O` = cantidad observada;
+- `A` = aceptada;
+- `R` = rechazada;
+- `Q` = cuarentena;
+- `U` = sin resolver.
+
+El faltante es saldo esperado no observado. El sobrante se registra por separado y nunca se convierte en aceptación automática.
+
+#### 17. Condición y disposición
+
+Toda cantidad observada recibe condición y disposición explícitas.
+
+Solo `A` puede llegar a ser elegible para stock disponible. `R` conserva custodia y destino de retorno pendiente. `Q` permanece inmovilizada. `U` no se publica.
+
+Daño, temperatura fuera de rango, calidad dudosa, producto incorrecto, conflicto de sello o evidencia insuficiente nunca degradan a aceptación por defecto.
+
+#### 18. Receipts parciales y múltiples
+
+Los receipts son append-only y admiten recepción parcial.
+
+El servidor deriva acumulados y saldo pendiente. Un nuevo receipt no reescribe el anterior y no puede exceder la cantidad despachada salvo el caso explícito de sobrante registrado separadamente.
+
+Cerrar una pantalla, sesión o turno no convierte una recepción parcial en completa.
+
+#### 19. Confirmación de recepción
+
+La confirmación debe ejecutarse mediante una intención atómica e idempotente que produzca un receipt limpio o con excepciones.
+
+La misma intención con el mismo payload devuelve el mismo receipt. La misma intención con payload distinto produce conflicto. Un resultado desconocido se reconcilia antes de reintentar.
+
+La confirmación conserva receipts e items append-only y no sobrescribe historia observada.
+
+#### 20. Cierre de custodia
+
+La transferencia de custodia exige declaraciones separadas de entrega y aceptación.
+
+El conductor no queda liberado por:
+
+- arribo;
+- presentación;
+- geocerca;
+- escaneo;
+- captura parcial;
+- evidencia unilateral.
+
+La custodia solo cambia cuando la aceptación válida queda confirmada conforme al handoff y receipt aplicables.
+
+#### 21. Diferencias y excepciones
+
+Faltante, sobrante, daño, producto incorrecto, rechazo, cuarentena, conflicto de UOM, medición, sello, bulto o evidencia generan casos estructurados.
+
+Recepción puede capturar y contener, pero no resolver por defecto:
+
+- responsabilidad;
+- reposición;
+- liberación;
+- disposición;
+- compensación;
+- ajuste;
+- retorno;
+- cierre supervisor.
+
+Confirmar un receipt con excepciones no cierra esas excepciones.
+
+#### 22. Frontera con inventario
+
+La publicación de inventario consume exclusivamente cantidades `A` de receipt items confirmados.
+
+Debe existir una LOC explícita de recepción o staging perteneciente al destino. Rechazado, cuarentena, faltante, sobrante y sin resolver no incrementan stock disponible.
+
+Se mantienen separados:
+
+```text
+CONFIRMAR RECEIPT
+!=
+PUBLICAR INVENTARIO
+!=
+PUTAWAY FINAL
+```
+
+Ningún algoritmo puede elegir silenciosamente la primera LOC o una ubicación heurística.
+
+#### 23. Frontera con putaway
+
+La recepción no ejecuta por inferencia el flujo de ubicación.
+
+Una cantidad aceptada y publicada puede quedar pendiente de putaway. La ubicación final conserva su propio contrato, destino físico, autorización, receipt y pruebas. `NEXO-AUTH-010` no absorbe `NEXO-UX-015` ni futuras tareas de autorización de movimientos o ubicación.
+
+#### 24. Frontera con ajustes
+
+Recepción no concede autoridad para ajustar inventario.
+
+Una diferencia observada no se corrige alterando cantidad enviada, aceptada, recibida, stock o movimiento. Los ajustes quedan reservados a `NEXO-AUTH-011 — Proteger ajustes de inventario` y a sus contratos propietarios.
+
+#### 25. Auditoría y recuperación
+
+Cada recepción debe preservar, según corresponda:
+
+- intención;
+- actor;
+- sesión;
+- función receptora;
+- destino;
+- shipment;
+- handoff;
+- versiones;
+- receipt;
+- receipt items;
+- cantidades crudas y normalizadas;
+- condición y disposición;
+- custodia antes/después;
+- timestamps de servidor;
+- evidencia referenciada;
+- resultado conocido o desconocido;
+- correlación con publicación de inventario.
+
+Un timeout, reconexión o pérdida de respuesta exige consulta del resultado antes de repetir la mutación.
+
+#### 26. Dispositivo compartido y sesión humana
+
+Un dispositivo compartido no es el receptor empresarial.
+
+Toda acción debe quedar atribuida al trabajador autenticado y a su sesión humana vigente. PIN, identidad técnica del equipo, sede preseleccionada, escáner o dispositivo instalado en el punto receptor no sustituyen actor, permiso, función, turno, check-in ni relación con el shipment.
+
+#### 27. AS-IS verificado en `vento-nexo`
+
+El snapshot remoto `f0a12557a1a258c84b025933653dc756de4b5a59` conserva dos superficies de recepción que todavía deben converger.
+
+**Camino de shipment físico**
+
+- `src/app/inventory/remissions/receive/page.tsx` consulta `remission_shipments` con `status = in_transit`;
+- la consulta visible no filtra por destino ni actor antes de serializar la lista;
+- cada cantidad `received_base_qty` se precarga con `base_qty` despachada;
+- `confirmShipmentReceipt` valida sesión autenticada y forma básica del payload y llama `confirm_remission_shipment_receipt`;
+- el caller no demuestra por sí solo la revalidación completa de PermissionKey, función receptora, destino, handoff, sesión versionada e idempotencia exigidas por este contrato.
+
+**Camino legacy `restock_requests`**
+
+- `detail-access.ts` resuelve `inventory.remissions.receive` junto con capacidad receptora del destino, sede efectiva y área;
+- `detail-actions.ts` admite `receive`, `receive_partial` y `resolve_shortage` sobre estados `in_transit` o `partial`;
+- conserva `received_quantity` y `shortage_quantity` en `restock_request_items`;
+- puede actualizar estado, `received_at`, `received_by`, sincronizar recepción y producir movimientos de destino;
+- por tanto todavía existe riesgo de doble verdad frente al modelo de shipments y receipts.
+
+Esta tarea documenta la convergencia; no la ejecuta.
+
+#### 28. Modelo físico objetivo
+
+La futura materialización deberá hacer converger la recepción hacia:
+
+```text
+remission_shipments
++ remission_receipts
++ remission_receipt_items
+```
+
+como escritor canónico de recepción.
+
+`restock_requests` y sus cantidades pueden sobrevivir únicamente como proyección temporal compatible durante la transición; no pueden conservar un segundo hecho autoritativo.
+
+#### 29. Compatibilidad y dual-write
+
+Si una transición requiere dual-write temporal, ambos lados deberán consumir una misma intención y correlación, con atomicidad u outbox aprobados y pruebas de:
+
+- cero doble receipt;
+- cero doble movimiento;
+- cero doble cierre de custodia;
+- cero saldo perdido;
+- reconstrucción determinista de la proyección legacy.
+
+No se permite mantener dos escritores independientes.
+
+#### 30. Ownership de Supabase
+
+Toda futura modificación de:
+
+- tablas;
+- RPC;
+- RLS;
+- grants;
+- tipos;
+- funciones;
+- triggers;
+- outbox;
+- migraciones;
+- rollback;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Esta tarea no ejecuta cambios Supabase.
+
+#### 31. Materialización física posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto, este marcador global no autoriza código ni infraestructura. Cada materialización futura utiliza:
+
+```text
+NEXO-AUTH-010::<implementation_unit_id>
+```
+
+y solo puede ejecutarse cuando el `package_id` propietario aplicable tenga `E5-GATE-008::<package_id> = PASS`, exista lineage válido y se otorgue autorización física explícita.
+
+#### 32. Convergencia futura
+
+La implementación de recepción deberá cerrar las brechas ya identificadas en `GAP-PKG-112` y consumir la frontera de tránsito de `GAP-PKG-163` sin reabrir despacho ni tránsito.
+
+La convergencia incluye, como mínimo:
+
+- filtrar la cola por destino, actor, función y relación exacta;
+- eliminar la precarga autoritativa de cantidad recibida cuando la política requiera observación física;
+- introducir sesión de recepción versionada;
+- aplicar idempotencia y reconciliación de resultado desconocido;
+- usar receipts append-only y receipts parciales;
+- separar condición, disposición, diferencia, publicación y putaway;
+- retirar el segundo escritor legacy cuando la compatibilidad permita hacerlo;
+- conservar RLS, grants, rollback y cero doble efecto.
+
+#### 33. Validaciones funcionales heredadas
+
+La futura implementación deberá conservar la matriz ya aprobada de:
+
+```text
+RCP-VAL-001 ... RCP-VAL-042
+```
+
+Esta tarea no redefine esas cuarenta y dos validaciones; las consume como cobertura vigente.
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La autorización de recepción especializa contratos y requisitos ya vigentes sin crear una obligación verificable nueva.
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-011`;
+- `TREQ-NEXO-069` a `TREQ-NEXO-075`;
+- `TREQ-NEXO-122`;
+- `TREQ-NEXO-128`;
+- `TREQ-NEXO-131`;
+- `TREQ-NEXO-133` a `TREQ-NEXO-146`.
+
+Estas referencias son trazabilidad heredada y no modifican filas del Registro 04A.
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | El marcador define un contrato documental y no compila ni despliega producto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout local de `NEXO-AUTH-010`; formato, quality, delivery y batería global corresponden al lifecycle documental posterior al reemplazo. |
+| REMOTA | PASS | Se verificaron `vento-shell` en `b335cc78ffcd974c70542f18db0ea1f6a349ef42`, continuidad NEXO-AUTH-009 → NEXO-AUTH-010 → NEXO-AUTH-011, topología `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, catálogo activo de 140 PermissionKey, grants vigentes de `receive`, 04A de NEXO y `vento-nexo` en `f0a12557a1a258c84b025933653dc756de4b5a59` para recepción física y legacy. |
+| OPERATIVA | NOT_APPLICABLE | No se recibe una carga real, no se transfiere custodia real, no se publica inventario ni se resuelve una diferencia real. |
+| FÍSICA | NOT_APPLICABLE | No se crea ni autoriza `NEXO-AUTH-010::<implementation_unit_id>` durante este marcador global. |
+
+#### 37. Criterios de aceptación
+
+- [x] la PermissionKey exacta de recepción ordinaria es `nexo.inventory.remissions.receive`;
+- [x] la capacidad conserva `OPERATIONAL_ONLY`;
+- [x] los grants directos ordinarios vigentes corresponden a `bodeguero` y `operador_integral_satelite` bajo sus contextos aprobados;
+- [x] destino, actor, función, sesión, turno o check-in, dispositivo, territorio, shipment, handoff, estado, versión y custodia se revalidan en servidor;
+- [x] `deliver` y `receive` permanecen separados;
+- [x] el conductor no puede auto-recibir su propia carga por inferencia;
+- [x] una sede, URL, rol, escaneo, geocerca o estado `in_transit` no conceden recepción;
+- [x] la admisión consume `NEXO-REMISSION-TRANSIT-TO-RECEPTION-HANDOFF-001`;
+- [x] las ocho colas `RCVQ-*` permanecen diferenciadas;
+- [x] abrir la pantalla no reclama una sesión;
+- [x] la sesión de recepción es única, versionada e idempotente;
+- [x] observación, aceptación, rechazo, cuarentena y saldo sin resolver permanecen separados;
+- [x] se conserva `O = A + R + Q + U`;
+- [x] receipts parciales y múltiples son append-only;
+- [x] la custodia no cambia por arribo, escaneo o evidencia unilateral;
+- [x] confirmar recepción no resuelve automáticamente diferencias;
+- [x] confirmar receipt, publicar inventario y ejecutar putaway son efectos separados;
+- [x] la recepción no concede ajustes de inventario;
+- [x] el modelo físico objetivo usa shipments y receipts como escritor canónico;
+- [x] el camino legacy queda como compatibilidad temporal y no como segundo escritor permanente;
+- [x] la futura implementación consume `RCP-VAL-001` a `RCP-VAL-042`;
+- [x] toda modificación Supabase futura pertenece a `vento-shell`;
+- [x] la topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 38. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia el catálogo de PermissionKey;
+- cambia matrices de rol;
+- recibe una remisión real;
+- crea un receipt real;
+- modifica cantidades reales;
+- transfiere custodia real;
+- publica inventario real;
+- ejecuta putaway;
+- ajusta inventario;
+- resuelve diferencias;
+- ejecuta retorno;
+- libera cuarentena;
+- cambia un destino real;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el Registro 04A.
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-009 — Proteger tránsito`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-010 — Proteger recepción`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-011 — Proteger ajustes de inventario`
 ### [ ] NEXO-AUTH-011 — Proteger ajustes de inventario
 ### [ ] NEXO-AUTH-012 — Proteger conteos
 ### [ ] NEXO-AUTH-013 — Proteger movimientos
