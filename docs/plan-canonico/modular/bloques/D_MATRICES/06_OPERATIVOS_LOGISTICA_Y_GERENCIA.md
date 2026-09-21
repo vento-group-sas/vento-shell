@@ -643,11 +643,27 @@ No se implementan código, migraciones, cambios en Supabase, RLS, RPC, datasets,
 | Estado                    | **APROBADA**                                                       |
 | Naturaleza                | Definición documental de matriz operativa de transporte y custodia |
 | Implementación física     | No incluida                                                        |
-| Catálogo evaluado         | 112 permisos canónicos vigentes                                    |
+| Catálogo evaluado         | Snapshot aprobado: 112 permisos; conjunto activo vigente: 140 PermissionKey |
 | Tarea anterior vigente    | AUTH-RBAC-017 — APROBADA                                           |
 | Tarea posterior reservada | AUTH-RBAC-019 — Crear matriz de gerencia_operativa                 |
 
 Esta tarea no modifica Supabase, migraciones, tablas, RLS, RPC, aplicaciones, repositorios, dispositivos ni datasets físicos. La aplicación posterior deberá realizarse mediante AUTH-RBAC-025 y las migraciones versionadas del BLOQUE R en `vento-shell`.
+
+#### 1.1 Reconciliación contractual vinculante
+
+El cuerpo original de AUTH-RBAC-018 conserva trazabilidad como **snapshot histórico aprobado de 112 permisos y 14 concesiones**. Ese snapshot ya no determina autorización runtime. La autoridad vigente se resuelve contra el conjunto activo congelado por AUTH-CAT-024, preservado por AUTH-CAT-025, y contra el dataset operacional materializado.
+
+- conjunto activo vigente: **140 PermissionKey**;
+- concesiones vigentes de `conductor_logistica`: **16**;
+- `nexo.inventory.remissions.accept_custody`: capacidad activa y concedida para aceptar custodia;
+- `nexo.inventory.remissions.start_transit`: capacidad activa y concedida para iniciar tránsito después de aceptar custodia;
+- `nexo.inventory.remissions.deliver`: capacidad activa y concedida para registrar el handoff físico al receptor previsto;
+- `nexo.inventory.remissions.receive`: permanece separada y pertenece al receptor autorizado del destino;
+- `nexo.inventory.remissions.dispatch`, `nexo.inventory.remissions.transit` y `nexo.transit.view`: no pertenecen al conjunto activo y no autorizan runtime;
+- no existe alias uno-a-muchos desde `dispatch` hacia `accept_custody` y `start_transit`; cada acción exige su PermissionKey exacta;
+- cualquier mutación de progreso, incidencia, retorno o reasignación sin PermissionKey activa exacta permanece `DEFAULT_DENY`.
+
+Ante cualquier conflicto entre el snapshot histórico de las secciones siguientes y esta reconciliación, prevalecen el catálogo congelado, los grants vigentes y las decisiones de AUTH-CAT-022 a AUTH-CAT-025.
 
 #### 2. Objetivo
 
@@ -691,22 +707,35 @@ conductor_logistica → consultar todas las rutas o conductores
 | Solicitud                | Área solicitante                                      | Consultar solo cuando la remisión quede asignada a su operación                   | No solicita en nombre de terceros                                         |
 | Preparación              | Bodeguero u origen autorizado                         | Verificar manifiesto, bultos y estado listo                                       | No reserva, sustituye ni modifica cantidades                              |
 | Carga                    | Origen + conductor                                    | Contrastar bultos, sellos, LPN y vehículo antes de aceptar custodia               | No crea stock ni corrige diferencias                                      |
-| Despacho                 | Conductor                                             | Aceptar custodia e iniciar tránsito mediante `remissions.dispatch`                | Solo desde estado preparable y con asignación válida                      |
-| Tránsito                 | Conductor                                             | Consultar ruta, operaciones propias y cumplimiento                                | No modifica rutas ni opera remisiones ajenas                              |
-| Entrega física           | Conductor                                             | Presentar la carga al destino y registrar evidencia cuando exista permiso atómico | El catálogo actual no contiene una capacidad ordinaria de entrega/handoff |
+| Despacho                 | Conductor                                             | Aceptar custodia mediante `nexo.inventory.remissions.accept_custody`                              | No inicia tránsito ni modifica cantidades por esa capacidad               |
+| Tránsito                 | Conductor                                             | Iniciar tránsito mediante `nexo.inventory.remissions.start_transit` y consultar únicamente trabajo asignado | Requiere custodia previa; no opera remisiones ajenas                       |
+| Entrega física           | Conductor                                             | Registrar el handoff mediante `nexo.inventory.remissions.deliver`                                | No ejecuta `nexo.inventory.remissions.receive` por el destino              |
 | Recepción                | Actor del destino                                     | Permanecer como custodio hasta la aceptación                                      | El conductor no ejecuta `remissions.receive`                              |
 | Diferencias o incidentes | Conductor reporta; autoridad correspondiente resuelve | Aportar evidencia y bloquear continuidad si corresponde                           | No ajusta inventario, cancela ni resuelve unilateralmente                 |
 
-#### 5. Resultado cuantitativo de la matriz
+#### 5. Resultado cuantitativo y reconciliación
+
+##### 5.1 Snapshot histórico aprobado
 
 | Resultado                                    | Cantidad | Efecto                                                                              |
 | -------------------------------------------- | -------: | ----------------------------------------------------------------------------------- |
 | Capacidades operativas asignadas             |       14 | Concesiones explícitas de NEXO para carga asignada, tránsito, rutas y cumplimiento. |
 | Capacidades `BASE_AND_OPERATIONAL` asignadas |        0 | El rol no recibe overrides, ajustes, cancelaciones ni aprobaciones.                 |
 | Capacidades no asignadas                     |       98 | Permanecen denegadas por defecto.                                                   |
-| Total evaluado                               |      112 | Sin omisiones ni duplicados.                                                        |
+| Total evaluado                               |      112 | Snapshot histórico aprobado sin omisiones ni duplicados.                            |
 
-La matriz contiene **14 concesiones operativas a nivel de clave** y **98 ausencias de concesión**. La ausencia de concesión produce denegación por defecto; no se crean filas `deny` redundantes.
+La matriz original contiene **14 concesiones históricas a nivel de clave** y **98 ausencias históricas de concesión**. Estas cifras se preservan solo como lineage del snapshot de 112 permisos.
+
+##### 5.2 Vigencia contractual materializada
+
+| Resultado vigente                                      | Cantidad | Efecto |
+| ------------------------------------------------------ | -------: | ------ |
+| PermissionKey activas                                  |      140 | Conjunto autorizante vigente; no se infieren claves legacy. |
+| Concesiones vigentes de `conductor_logistica`         |       16 | Grants operacionales materializados y auditables. |
+| PermissionKey activas no concedidas al conductor       |      124 | Denegación por ausencia de grant; no se crean deny redundantes. |
+| Mutaciones atómicas de remisión concedidas al conductor |        3 | `accept_custody`, `start_transit` y `deliver`. |
+
+La autorización runtime se evalúa exclusivamente sobre esta vigencia contractual y no sobre el conteo histórico de 112.
 
 #### 6. Perfiles de alcance utilizados
 
@@ -715,7 +744,9 @@ La matriz contiene **14 concesiones operativas a nivel de clave** y **98 ausenci
 - `CTX-DRV-LPN` — LPN, bultos, contenedores y sellos vinculados a remisiones bajo custodia del actor.
 - `CTX-DRV-CUSTODY-MOVEMENTS` — Eventos de custodia e inventario relacionados con la operación asignada, no el historial global.
 - `CTX-DRV-REMISSIONS` — Remisiones asignadas al conductor, ruta o vehículo y remisiones listas para recogida en un origen autorizado.
-- `CTX-DRV-DISPATCH` — Aceptación de custodia e inicio de tránsito sobre carga preparada, validada y asignada.
+- `CTX-DRV-ACCEPT-CUSTODY` — Aceptar custodia de bultos, LPN y cantidades declaradas únicamente sobre remisiones, ruta, vehículo o segmento logístico asignados.
+- `CTX-DRV-START-TRANSIT` — Iniciar tránsito únicamente sobre una remisión con custodia ya aceptada y asignación logística vigente.
+- `CTX-DRV-DELIVER` — Registrar entrega física al receptor previsto únicamente sobre la remisión y destino autorizados, sin ejecutar recepción en nombre del destino.
 - `CTX-DRV-BOARD` — Tablero limitado a las operaciones propias del turno.
 - `CTX-DRV-OPERATIONS` — Operaciones donde el conductor sea actor asignado o custodio vigente.
 - `CTX-DRV-SELF` — Historial y estado operativo del propio conductor, nunca de otros conductores.
@@ -725,7 +756,19 @@ La matriz contiene **14 concesiones operativas a nivel de clave** y **98 ausenci
 
 Los perfiles operativos se materializarán después como contratos de recurso y filtros del lado servidor. No son simples filtros visuales.
 
-#### 7. Matriz canónica completa — 112 permisos
+#### 7. Matriz histórica aprobada — snapshot de 112 permisos (no autorizante runtime)
+
+Las filas 7.1 a 7.10 preservan el snapshot aprobado original para trazabilidad. Sus decisiones no sustituyen el conjunto activo ni los grants vigentes cuando una clave fue retirada, dividida o incorporada posteriormente.
+
+##### 7.0 Delta contractual vigente sobre remisiones
+
+| PermissionKey vigente | Decisión actual para `conductor_logistica` | Frontera |
+| --- | --- | --- |
+| `nexo.inventory.remissions.accept_custody` | **ASIGNAR OPERATIVO** | Acepta custodia; no inicia tránsito ni altera cantidades declaradas. |
+| `nexo.inventory.remissions.start_transit` | **ASIGNAR OPERATIVO** | Inicia tránsito con custodia previa; no acepta custodia retroactivamente ni entrega. |
+| `nexo.inventory.remissions.deliver` | **ASIGNAR OPERATIVO** | Registra handoff físico; no ejecuta `receive` ni crea inventario en destino. |
+
+`nexo.inventory.remissions.view` conserva su grant de lectura acotada. `nexo.inventory.remissions.dispatch`, `nexo.inventory.remissions.transit` y `nexo.transit.view` permanecen fuera del conjunto activo.
 
 
 ##### 7.1 SHELL — 1 permisos
@@ -812,7 +855,7 @@ Los perfiles operativos se materializarán después como contratos de recurso y 
 | `nexo.inventory.remissions.update`           | Actualizar remisiones                    | `BASE_OR_OPERATIONAL`  | **NO ASIGNAR**                    | — Denegación por defecto; no se crea concesión en la matriz operativa.                                                                                                                                                                 | La actualización amplia mezclaría etapas y permitiría alterar datos fuera de la responsabilidad del conductor. Cada transición debe usar un permiso atómico.                                        |
 | `nexo.inventory.remissions.request`          | Solicitar remisiones                     | `OPERATIONAL_ONLY`     | **NO ASIGNAR**                    | — Denegación por defecto; no se crea concesión en la matriz operativa.                                                                                                                                                                 | Solicitar abastecimiento corresponde al área solicitante, no al conductor.                                                                                                                          |
 | `nexo.inventory.remissions.prepare`          | Preparar remisiones                      | `OPERATIONAL_ONLY`     | **NO ASIGNAR**                    | — Denegación por defecto; no se crea concesión en la matriz operativa.                                                                                                                                                                 | Preparar, reservar, empacar y definir cantidades corresponde al bodeguero o actor de origen.                                                                                                        |
-| `nexo.inventory.remissions.dispatch`         | Despachar remisiones                     | `OPERATIONAL_ONLY`     | **ASIGNAR OPERATIVO**             | CTX-DRV-DISPATCH — Aceptación explícita de custodia e inicio de tránsito únicamente sobre una remisión preparada, cargada, validada y asignada al conductor. No permite modificar cantidades, preparar, recibir ni cancelar.           | Carril operativo con prerrequisito `T+C`. Actor, turno, check-in cuando aplique, asignación, ruta, vehículo y recurso deben resolverse en servidor; toda mutación debe ser idempotente y auditable. |
+| `nexo.inventory.remissions.dispatch`         | Despachar remisiones                     | `OPERATIONAL_ONLY`     | **HISTÓRICO — NO AUTORIZANTE**    | CTX-DRV-DISPATCH — fila preservada únicamente como snapshot del contrato anterior al split atómico.                                                                                                                                    | La clave no está activa ni tiene grant runtime; no funciona como alias o fallback de `accept_custody` o `start_transit`.                                                                          |
 | `nexo.inventory.remissions.receive`          | Recibir remisiones                       | `OPERATIONAL_ONLY`     | **NO ASIGNAR**                    | — Denegación por defecto; no se crea concesión en la matriz operativa.                                                                                                                                                                 | La recepción y confirmación de cantidades corresponde al actor autorizado en el destino; el conductor entrega la custodia, pero no se auto-recibe.                                                  |
 | `nexo.inventory.remissions.cancel`           | Cancelar remisiones                      | `BASE_OR_OPERATIONAL`  | **NO ASIGNAR**                    | — Denegación por defecto; no se crea concesión en la matriz operativa.                                                                                                                                                                 | Cancelar es una decisión sensible de control y no corresponde a quien transporta la carga.                                                                                                          |
 | `nexo.logistics.operations_board.view`       | Consultar tablero logístico              | `BASE_OR_OPERATIONAL`  | **ASIGNAR OPERATIVO**             | CTX-DRV-BOARD — Tablero limitado a las operaciones asignadas al actor, ruta o vehículo durante el turno. No muestra el tablero logístico global ni operaciones de otros conductores.                                                   | Carril operativo con prerrequisito `T+C`. Actor, turno, check-in cuando aplique, asignación, ruta, vehículo y recurso deben resolverse en servidor; toda mutación debe ser idempotente y auditable. |
@@ -901,7 +944,7 @@ Los perfiles operativos se materializarán después como contratos de recurso y 
 3. El check-in externo deberá realizarse en un punto aprobado, como el patio o punto de recogida, y vincularse con el turno correcto.
 4. Un punto de check-in oculto no se convierte en sede laboral ni amplía la cobertura territorial del conductor.
 5. Las consultas globales de logística se proyectarán exclusivamente sobre operaciones asignadas al actor, ruta o vehículo.
-6. `remissions.dispatch` representa aceptación de custodia e inicio de tránsito; no permite preparar, editar líneas, recibir o cancelar.
+6. Aceptar custodia, iniciar tránsito y registrar entrega física son acciones separadas y exigen respectivamente `nexo.inventory.remissions.accept_custody`, `nexo.inventory.remissions.start_transit` y `nexo.inventory.remissions.deliver`; `dispatch`, `transit` y `transit.view` no autorizan ninguna de ellas.
 7. Antes del despacho deberán coincidir remisión, versión, origen, destino, bultos, LPN, sellos, cantidades preparadas, ruta, vehículo y conductor.
 8. Cualquier diferencia previa al despacho bloquea la aceptación de custodia hasta que el origen la resuelva o registre formalmente.
 9. Tras el despacho, la custodia queda atribuida al conductor hasta la recepción válida o un evento formal de transferencia.
@@ -911,7 +954,7 @@ Los perfiles operativos se materializarán después como contratos de recurso y 
 13. La geolocalización y telemetría, cuando se implementen, deben limitarse a la jornada activa, tener finalidad logística y cumplir retención definida.
 14. El conductor no consulta stock general de origen o destino; la carga autorizada se deriva del manifiesto asignado.
 15. Los eventos de movimientos visibles deben pertenecer a la cadena de custodia de la carga asignada.
-16. Las pruebas de entrega, firmas, fotografías o códigos de recepción requerirán permisos y contratos atómicos antes de su implementación.
+16. `nexo.inventory.remissions.deliver` autoriza el handoff físico, pero firma, fotografía, código u otra evidencia sensible solo podrán incorporarse cuando sus contratos de privacidad, Storage, retención, dispositivo y minimización estén aprobados; ninguna evidencia sustituye `receive` del destino.
 17. Un incidente no permite ajustar inventario, cancelar la remisión ni declarar recepción automáticamente.
 18. El cierre de jornada deberá bloquearse cuando existan remisiones todavía bajo custodia, salvo transferencia o excepción documentada.
 19. APP-REVIEW, demo, sedes aisladas, rutas no asignadas y vehículos ajenos permanecen excluidos.
@@ -921,12 +964,12 @@ Los perfiles operativos se materializarán después como contratos de recurso y 
 
 | Brecha                                                           | Impacto                                                                                                                         | Decisión en esta matriz                                                                                                                               |
 | ---------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------- |
-| No existe `nexo.inventory.remissions.handoff` o `deliver`        | El conductor puede iniciar tránsito, pero el catálogo no representa la entrega física ordinaria y la transferencia al receptor. | No ampliar `dispatch` ni `receive`. Crear permiso atómico de entrega o handoff.                                                                       |
-| No existe permiso para prueba de entrega                         | No hay capacidad explícita para firma, fotografía, código, sello o evidencia del destino.                                       | Mantener la evidencia fuera de autorización hasta definir permiso, sensibilidad, retención y recurso.                                                 |
+| Entrega física ordinaria                                            | **RESUELTA CONTRACTUALMENTE**: `nexo.inventory.remissions.deliver` representa el handoff físico del conductor al receptor previsto. | Usar exclusivamente `deliver`; no ampliar `receive`, `dispatch` ni `delivery.override`.                                                            |
+| Evidencia sensible de entrega                                      | La capacidad de handoff existe, pero firma, fotografía, código u otra evidencia sensible requiere contratos adicionales de privacidad, Storage, retención y dispositivo. | Mantener esos artefactos fuera del flujo hasta que sus contratos específicos estén aprobados; no crear autoridad implícita desde `deliver`. |
 | No existe permiso para incidentes de transporte                  | Avería, faltante, rechazo, accidente, demora o imposibilidad de entrega no tienen acción atómica.                               | El conductor no ajusta ni cancela. Crear `logistics.incidents.register` y flujo de resolución.                                                        |
 | No existe permiso para progreso de ruta                          | La matriz permite consultar rutas, pero no registrar llegada, salida, omisión o reprogramación de una parada.                   | Crear acciones atómicas de progreso; no inferirlas desde `operations.view`.                                                                           |
 | No existe permiso para inspección o asignación de vehículo       | El catálogo no representa checklist, kilometraje, combustible, mantenimiento o aceptación del vehículo.                         | No usar permisos de activos como sustituto. Diseñar el subdominio y sus capacidades.                                                                  |
-| `dispatch` concentra aceptación de custodia e inicio de tránsito | Una sola acción puede dificultar doble validación entre origen y conductor.                                                     | La implementación deberá usar confirmación transaccional, versión, manifiesto y actor de origen; evaluar separar `custody.accept` de `transit.start`. |
+| Separación de custodia e inicio de tránsito                        | **RESUELTA CONTRACTUALMENTE** mediante `accept_custody` y `start_transit`; `dispatch` quedó fuera del conjunto activo.              | Consumir ambas PermissionKey de forma independiente, con estado previo, versión, actor y evidencia exactos; no crear alias uno-a-muchos.             |
 | No existe flujo atómico de entrega fallida o devolución          | El conductor no puede cerrar de forma segura una parada no entregada.                                                           | Mantener la operación abierta o bloqueada hasta contar con permiso y estado canónico.                                                                 |
 
 #### 10. Capacidades expresamente excluidas
@@ -965,12 +1008,12 @@ La operación deberá tolerar conectividad intermitente sin duplicar transicione
 #### 13. Riesgos de transición
 
 1. El rol base legacy `conductor` conserva permisos permanentes y puede mantener acceso fuera de turno.
-2. El permiso legacy `nexo.inventory.remissions.transit` deberá mapearse cuidadosamente a la capacidad canónica `nexo.inventory.remissions.dispatch` sin ampliar su significado.
+2. Los códigos legacy `nexo.inventory.remissions.transit`, `nexo.inventory.remissions.dispatch` y `nexo.transit.view` no se mapearán ni aliasarán a una capacidad activa; cada consumidor deberá migrar a la PermissionKey exacta que corresponda.
 3. El único perfil operativo existente del conductor puede ser interpretado erróneamente como autorización automática.
 4. Los puntos externos de check-in comparten la tabla `sites` y pueden aparecer incorrectamente como sedes laborales.
 5. La matriz física actual usa cadenas de permiso sin FK y concesiones globales; el dataset canónico deberá corregir integridad y alcance.
 6. La aplicación puede depender de rutas técnicas legacy como `conductor.view` o `transit.view`; deberán sustituirse por permisos funcionales.
-7. Sin permiso de entrega, la interfaz puede reutilizar indebidamente `receive` o `delivery.override`, rompiendo la segregación de funciones.
+7. `nexo.inventory.remissions.deliver` ya representa el handoff físico del conductor, pero no concede `receive`; reutilizar `receive` o `pulso.delivery.deliveries.override` para la entrega ordinaria sigue rompiendo la segregación de funciones.
 8. La conectividad móvil puede producir doble despacho o eventos fuera de orden si no existe idempotencia y control de versión.
 
 #### 14. Resultado esperado en la experiencia
@@ -994,15 +1037,17 @@ Ruta
 3. Saudo                  ○ Pendiente
 
 Acciones disponibles
-[ Aceptar carga e iniciar tránsito ]
+[ Aceptar custodia ]
+[ Iniciar tránsito ]
+[ Registrar entrega física ]
 [ Ver manifiesto ]
 [ Ver ruta ]
 
 Pendiente contractual
-- Registrar llegada
-- Entregar y transferir custodia
-- Adjuntar prueba de entrega
-- Reportar incidencia
+- Registrar llegada o progreso de parada cuando exista PermissionKey exacta
+- Adjuntar evidencia sensible de entrega bajo contratos aprobados
+- Reportar incidencia mediante capacidad explícita
+- Registrar entrega fallida, retorno o reasignación mediante capacidad explícita
 ```
 
 No se mostrará:
@@ -1033,15 +1078,18 @@ No se mostrará:
 
 La tarea podrá aprobarse cuando se acepte que:
 
-- `conductor_logistica` recibe 14 concesiones operativas explícitas;
+- `conductor_logistica` recibe **16 concesiones vigentes** en el dataset operacional;
 - puede consultar exclusivamente su carga, operaciones, rutas y cumplimiento asignados;
-- acepta custodia e inicia tránsito mediante `nexo.inventory.remissions.dispatch`;
-- no prepara, modifica, recibe, cancela ni ajusta remisiones o inventario;
-- el destino conserva la responsabilidad de recepción;
+- acepta custodia exclusivamente mediante `nexo.inventory.remissions.accept_custody`;
+- inicia tránsito exclusivamente mediante `nexo.inventory.remissions.start_transit`;
+- registra el handoff físico exclusivamente mediante `nexo.inventory.remissions.deliver`;
+- no prepara, modifica, recibe, cancela ni ajusta remisiones o inventario por inferencia;
+- el destino conserva la responsabilidad exclusiva de `nexo.inventory.remissions.receive`;
 - no se utiliza `pulso.delivery.deliveries.override` como permiso ordinario del conductor;
-- la entrega, prueba de entrega, incidentes y progreso de ruta quedan reconocidos como brechas contractuales;
+- evidencia sensible, incidentes, progreso, retorno y reasignación permanecen `DEFAULT_DENY` mientras no exista contrato y PermissionKey activa exacta;
 - el perfil, punto de check-in, vehículo y dispositivo no sustituyen el permiso;
-- los 112 permisos fueron evaluados sin omisiones ni duplicados.
+- el snapshot histórico de 112 permisos se conserva para trazabilidad, mientras la autorización vigente consume **140 PermissionKey activas** y **16 grants** del conductor;
+- `dispatch`, `transit` y `transit.view` no forman parte del conjunto activo ni autorizan runtime.
 
 #### 17. Estado final de la propuesta
 
