@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1221** |
+| Aprobadas | **1222** |
 | En propuesta | **0** |
-| No iniciadas | **375** |
+| No iniciadas | **374** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **76.50% (1221/1596)** |
+| Porcentaje de completamiento | **76.57% (1222/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **375** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1122** |
+| ⏸ NO_EVALUADA | **374** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1123** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-016` — Integrar dispositivo compartido | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-017` — Integrar simulación estricta | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-018` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-017` — Integrar simulación estricta | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-018` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-019` — Eliminar helpers duplicados | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -948,7 +948,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-014` | Proteger catálogo y configuraciones | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-015` | Filtrar por sede y área efectivas | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-016` | Integrar dispositivo compartido | — | — | `bloques/K_NEXO/00_INTRO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-017` | Integrar simulación estricta | — | — | `bloques/K_NEXO/00_INTRO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-017` | Integrar simulación estricta | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-018` | Migrar a paquetes de vento-shell | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-019` | Eliminar helpers duplicados | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-020` | Ejecutar pruebas integrales | — | — | `bloques/K_NEXO/00_INTRO.md` |

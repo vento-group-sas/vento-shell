@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1221** |
+| Tareas aprobadas | **1222** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **375** |
+| Tareas no iniciadas | **374** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **76.50% (1221/1596)** |
+| Porcentaje de completamiento | **76.57% (1222/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-AUTH-016 — Integrar dispositivo compartido** |
-| Tarea actual | **NEXO-AUTH-017 — Integrar simulación estricta** |
+| Última tarea aprobada | **NEXO-AUTH-017 — Integrar simulación estricta** |
+| Tarea actual | **NEXO-AUTH-018 — Migrar a paquetes de vento-shell** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-AUTH-018 — Migrar a paquetes de vento-shell** |
+| Siguiente tarea | **NEXO-AUTH-019 — Eliminar helpers duplicados** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 79 de 127 aprobadas; NEXO-AUTH-017 pendiente** |
+| Progreso del bloque | **BLOQUE K: 80 de 127 aprobadas; NEXO-AUTH-018 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-AUTH-017** |
+| Carril documental | **ACTIVO — NEXO-AUTH-018** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-AUTH-016` — Integrar dispositivo compartido |
-| Tarea actual | `NEXO-AUTH-017` — Integrar simulación estricta — **NO INICIADA** |
-| Siguiente tarea | `NEXO-AUTH-018` — Migrar a paquetes de vento-shell |
+| Última aprobada | `NEXO-AUTH-017` — Integrar simulación estricta |
+| Tarea actual | `NEXO-AUTH-018` — Migrar a paquetes de vento-shell — **NO INICIADA** |
+| Siguiente tarea | `NEXO-AUTH-019` — Eliminar helpers duplicados |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 79 DE 127 APROBADAS — ACTUAL NEXO-AUTH-017** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 80 DE 127 APROBADAS — ACTUAL NEXO-AUTH-018** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-AUTH-016 — Integrar dispositivo compartido
-        ↓
-TAREA ACTUAL
 NEXO-AUTH-017 — Integrar simulación estricta
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-AUTH-018 — Migrar a paquetes de vento-shell
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-AUTH-019 — Eliminar helpers duplicados
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 79 de 127 tareas aprobadas
+BLOQUE K — 80 de 127 tareas aprobadas
 ```
