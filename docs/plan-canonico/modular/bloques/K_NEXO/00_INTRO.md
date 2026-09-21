@@ -9192,7 +9192,672 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-011 — Proteger ajustes de inventario`
-### [ ] NEXO-AUTH-011 — Proteger ajustes de inventario
+### ✅ NEXO-AUTH-011 — Proteger ajustes de inventario
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-010 — Proteger recepción
+**Tarea siguiente:** NEXO-AUTH-012 — Proteger conteos
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger consulta y registro de ajustes mediante las PermissionKey activas `nexo.inventory.adjustments.view` y `nexo.inventory.adjustments.register`, composición exacta de carriles `BASE_OR_OPERATIONAL` y `BASE_AND_OPERATIONAL`, territorio y recurso resueltos en servidor, segregación, decisión versionada, reautenticación fuerte, idempotencia y publicación exclusiva mediante el límite autoritativo del ledger
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-011::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger de extremo a extremo la consulta y el registro de ajustes de inventario para que una variación únicamente pueda investigarse, decidirse y publicarse cuando actor, sesión, carriles de autorización, territorio, recurso, causa, evidencia, versión, decisión e intención sean compatibles y verificables, sin convertir conteos, diferencias, movimientos, recepción, pérdida, daño, costo, navegación o acceso general al inventario en autoridad implícita para modificar stock.
+
+#### 2. Resultado contractual
+
+La consulta y el registro se resuelven de forma independiente.
+
+Para consulta:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ PermissionKey nexo.inventory.adjustments.view
++ UN CARRIL COMPLETO BASE U OPERACIONAL
++ TERRITORIO Y RECURSO COMPATIBLES
++ DENEGACIONES AUSENTES
+→ CONSULTA AUTORIZABLE
+```
+
+Para registro:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ SESION HUMANA ATRIBUIDA
++ PermissionKey nexo.inventory.adjustments.register
++ COMPONENTE BASE VALIDO
++ COMPONENTE OPERACIONAL VALIDO
++ INTERSECCION TERRITORIAL NO VACIA
++ TURNO Y CHECK-IN VIGENTES
++ DISPOSITIVO COMPATIBLE
++ REAUTENTICACION STRONG
++ CASO Y DIFERENCIA DOCUMENTADOS
++ MOTIVO Y EVIDENCIA SEGUN POLICY
++ PROPUESTA Y DECISION VIGENTES
++ RECURSO Y VERSION VIGENTES
++ INTENCION IDEMPOTENTE
++ DENEGACIONES AUSENTES
+→ POSTING DE AJUSTE AUTORIZABLE
+```
+
+Ninguna mitad incompleta de la segunda decisión puede ser completada por nombre de cargo, jerarquía, dispositivo, URL, sede seleccionada o acceso de lectura.
+
+#### 3. PermissionKey activas exactas
+
+El catálogo vigente contiene exactamente las dos capacidades atómicas del frente:
+
+```text
+nexo.inventory.adjustments.view
+nexo.inventory.adjustments.register
+```
+
+Ambas permanecen `active`.
+
+No existe autorización canónica para registro mediante una clave amplia `nexo.inventory.adjustments` ni mediante permisos de stock, conteos o movimientos.
+
+#### 4. Modalidad de consulta
+
+`nexo.inventory.adjustments.view` conserva:
+
+```text
+BASE_OR_OPERATIONAL
+```
+
+Un carril base completo o un carril operacional completo pueden satisfacer la consulta dentro de su propio alcance. Los dos carriles se evalúan por separado y no se mezclan para fabricar autoridad que ninguno tenga por sí mismo.
+
+El alcance máximo continúa territorializado por sede, área, ubicación, producto, lote o recurso persistido aplicable.
+
+#### 5. Concesiones base de consulta vigentes
+
+El dataset base vigente contiene grants `DIRECT_BASE` de `nexo.inventory.adjustments.view` para:
+
+| Rol base | Alcance contractual resumido |
+| --- | --- |
+| `propietario` | Organización productiva ordinaria dentro del alcance global base permitido. |
+| `gerente_general` | Organización productiva ordinaria dentro del alcance global base permitido. |
+| `gerente` | Sedes o áreas pertenecientes a su cobertura administrativa activa. |
+| `supervisor` | Sedes o áreas pertenecientes a su cobertura administrativa activa. |
+| `auxiliar_administrativa` | Recursos vinculados a sedes o áreas asignadas o atendidas dentro del proceso administrativo autorizado. |
+| `contador` | Evidencia transaccional de inventario de sedes ordinarias para conciliación, valoración y trazabilidad financiera. |
+
+La consulta nunca concede registro ni ejecución física.
+
+#### 6. Concesiones operacionales de consulta vigentes
+
+El dataset operacional vigente contiene grants `DIRECT_OPERATIONAL` de `nexo.inventory.adjustments.view` para:
+
+| Rol operacional | Contexto | Límite |
+| --- | --- | --- |
+| `bodeguero` | `CTX-WH-ADJUSTMENTS-READ` | Ajustes finalizados que afecten stock bajo custodia de la bodega activa; durante conteos ciegos no expone existencias teóricas, variaciones ni información que sesgue la observación. |
+| `gerencia_operativa` | `CTX-MGR-INVENTORY-CONTROL` | Entradas o ajustes que afecten la sede activa, con actor, documento, motivo, estado y trazabilidad; no amplía por sí sola la capacidad de registrar. |
+
+Un rol operacional distinto no recibe consulta por analogía.
+
+#### 7. Modalidad de registro
+
+`nexo.inventory.adjustments.register` conserva:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+La acción exige simultáneamente un componente base válido y un componente operacional válido. Ninguno sustituye al otro.
+
+La decisión efectiva es la intersección de ambos alcances y del contexto real del recurso. Si la intersección es vacía o no puede demostrarse, la acción se deniega.
+
+#### 8. Componentes base de registro vigentes
+
+El dataset base vigente contiene exactamente estos `BASE_COMPONENT` para `nexo.inventory.adjustments.register`:
+
+| Rol base | Alcance del componente |
+| --- | --- |
+| `propietario` | `G(B)` para el componente base; ejecución limitada por la intersección con el contexto operacional real. |
+| `gerente_general` | `G(B)` para el componente base; ejecución limitada por la intersección con el contexto operacional real. |
+| `gerente` | Sedes o áreas asignadas; ejecución sobre un recurso concreto dentro del contexto operacional compatible. |
+
+La concesión base aislada nunca ejecuta un ajuste.
+
+#### 9. Componente operacional de registro vigente
+
+El dataset operacional vigente contiene un único componente operacional para `nexo.inventory.adjustments.register`:
+
+```text
+gerencia_operativa
+```
+
+Su contexto es:
+
+```text
+CTX-MGR-DOUBLE-ADJUSTMENT
+```
+
+El componente se limita al inventario de la sede o área activa y exige, además del componente base compatible, diferencia documentada, motivo, turno y check-in activos, reautenticación y auditoría reforzada.
+
+#### 10. Composiciones ordinarias actualmente posibles
+
+Con los datasets vigentes, la capacidad de registro solo puede completarse mediante una de estas composiciones de carril:
+
+| Componente base | Componente operacional requerido | Resultado potencial |
+| --- | --- | --- |
+| `propietario` | `gerencia_operativa` | Autorizable únicamente dentro de la intersección efectiva y si todas las demás precondiciones pasan. |
+| `gerente_general` | `gerencia_operativa` | Autorizable únicamente dentro de la intersección efectiva y si todas las demás precondiciones pasan. |
+| `gerente` | `gerencia_operativa` | Autorizable únicamente dentro de la intersección efectiva y si todas las demás precondiciones pasan. |
+
+No se crea una concesión completa nueva en ningún dataset. La composición se resuelve en runtime a partir de los componentes canónicos vigentes.
+
+#### 11. Frontera de `bodeguero`
+
+`bodeguero` puede consultar ajustes finalizados de la bodega activa y puede detectar o documentar diferencias dentro de sus procesos propietarios.
+
+No posee componente operacional de `nexo.inventory.adjustments.register` y no puede corregir stock unilateralmente.
+
+Contar, recibir, preparar, observar una diferencia, escanear un producto o custodiar una ubicación no elevan al bodeguero a autoridad de ajuste.
+
+#### 12. Frontera con roles base sin componente de registro
+
+`supervisor`, `auxiliar_administrativa` y `contador` pueden tener consulta base conforme a sus alcances, pero el dataset base vigente no les concede componente de `nexo.inventory.adjustments.register`.
+
+La consulta de evidencia, la supervisión o la conciliación financiera no permiten publicar un delta de inventario.
+
+#### 13. Reautenticación y dispositivo
+
+La clasificación de dispositivo vigente exige:
+
+```text
+nexo.inventory.adjustments.view     → STANDARD
+nexo.inventory.adjustments.register → STRONG
+```
+
+El soporte `STRONG` es un límite adicional y nunca una fuente de autoridad. Un dispositivo compatible no crea componente base, componente operacional, turno, check-in, territorio, caso ni decisión.
+
+#### 14. Recurso protegido
+
+El recurso de registro es:
+
+```text
+INVENTORY_ADJUSTMENT
+```
+
+Antes de autorizar una mutación, el servidor debe resolver un borrador o expediente que identifique como mínimo:
+
+- stock objetivo;
+- sede;
+- área cuando aplique;
+- LOC cuando aplique;
+- posición cuando aplique;
+- producto;
+- presentación, lote, condición o LPN cuando apliquen;
+- cantidad y UOM;
+- motivo;
+- fuente causal;
+- territorio;
+- versión;
+- estado de investigación y decisión.
+
+El ajuste actúa sobre stock empresarial y no sobre un recurso "propiedad" del actor.
+
+#### 15. Intersección territorial
+
+Para registro se aplica:
+
+```text
+ALCANCE EFECTIVO
+=
+ALCANCE BASE
+∩
+CONTEXTO OPERACIONAL
+∩
+TERRITORIO REAL DEL RECURSO
+```
+
+La intersección debe contener la sede, área y alcance físico del stock afectado. No se permiten ajustes globales por inferencia, ajustes masivos multisede ni recursos cuyo territorio no pueda resolverse de forma determinista.
+
+#### 16. Revalidación server-side obligatoria
+
+Toda creación, claim, investigación, revisión, aprobación, posting, consulta sensible, compensación o reversa debe revalidar según corresponda:
+
+- principal técnico;
+- actor efectivo;
+- sesión humana;
+- rol base efectivo;
+- rol operacional efectivo;
+- grants exactos de ambos carriles;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- soporte de reautenticación;
+- territorio;
+- recurso;
+- acción;
+- versión;
+- policy;
+- denegaciones y revocaciones vigentes.
+
+Los valores enviados por el cliente son intención y selección, no autoridad.
+
+#### 17. Fuentes que no autorizan registro
+
+No autorizan un ajuste por sí solas:
+
+```text
+nexo.access
+nexo.inventory.stock
+nexo.inventory.counts
+nexo.inventory.movements
+nexo.inventory.adjustments.view
+rol base aislado
+rol operacional aislado
+nombre de cargo
+sede seleccionada
+URL directa
+pantalla visible
+navegacion
+scanner
+codigo de producto
+LOC visible
+diferencia observada
+conteo cerrado
+recepcion confirmada
+movimiento previo
+dispositivo STRONG
+```
+
+Toda ausencia o incompatibilidad produce `DEFAULT_DENY` o indisponibilidad técnica según la causa propietaria; nunca un fallback permisivo.
+
+#### 18. Separación entre observación, diferencia y ajuste
+
+La secuencia empresarial mantiene fronteras explícitas:
+
+```text
+OBSERVACION
+→ DIFERENCIA
+→ INVESTIGACION
+→ PROPUESTA
+→ DECISION
+→ INTENCION DE POSTING
+→ POSTING
+→ VERIFICACION
+→ CIERRE
+```
+
+Observar o calcular una diferencia no modifica stock. La investigación no concede aprobación. Una aprobación no ejecuta por sí sola el posting. El posting no elimina la historia de la diferencia ni sustituye la verificación posterior.
+
+#### 19. Segregación de funciones
+
+Solicitante, contador e investigador no pueden aprobar el mismo expediente cuando la policy exige independencia.
+
+La misma persona puede participar en varias funciones únicamente cuando cada función tenga autoridad explícita, contexto compatible y la regla de segregación aplicable no lo prohíba.
+
+Cuando el actor haya participado en el hecho origen y la policy requiera independencia, no puede aprobar, certificar ni cerrar su propia diferencia o ajuste.
+
+#### 20. Expediente versionado
+
+Cada ajuste debe existir como expediente versionado con, como mínimo:
+
+- candidato;
+- fuente;
+- sujeto;
+- cutoff;
+- balance;
+- claim;
+- investigación;
+- propuesta;
+- decisión;
+- posting;
+- cierre.
+
+Una misma línea fuente no puede tener dos expedientes activos equivalentes. Las versiones son append-only y las transferencias o expiraciones de claim no conceden aprobación.
+
+#### 21. Investigación y policy
+
+La investigación conserva:
+
+- causa raíz;
+- ventana de movimientos;
+- alternativas;
+- disposición propuesta;
+- razón estructurada;
+- evidencia clasificada;
+- digest;
+- responsable;
+- SLA;
+- snapshot de policy.
+
+Umbrales de cantidad, valor, riesgo, separación, autoridad y expiración proceden de policy versionada. Ausencia o ambigüedad bloquean la decisión.
+
+#### 22. Cantidad, UOM y signo
+
+El sujeto y alcance se resuelven en servidor.
+
+La variación candidata se calcula en el cutoff autorizado como:
+
+```text
+candidate_variance = observed - expected
+```
+
+El efecto permitido es el delta firmado de la decisión aprobada, no un saldo final enviado por el cliente.
+
+El balance posterior se deriva del ledger:
+
+```text
+balance_after = ledger_balance_before + approved_delta
+```
+
+No se distribuye cantidad entre sede, LOC, posición, presentación, lote o LPN por inferencia y no se aplica clamp silencioso a cero.
+
+#### 23. Decisión de ajuste
+
+Toda propuesta cuantitativa produce una decisión inmutable:
+
+```text
+APPROVED
+```
+
+o:
+
+```text
+REJECTED
+```
+
+La decisión conserva versión de caso y propuesta, delta, scope, policy, autoridad, evidencia de segregación, razón, `issued_at` y expiración.
+
+Un cambio de fuente, sujeto, policy, evidencia, secuencia o TTL invalida la decisión antes del posting. La autoridad no puede ampliar el payload después de aprobarlo.
+
+#### 24. Intención, idempotencia y resultado desconocido
+
+El posting persiste antes del efecto:
+
+- intención;
+- idempotency key;
+- fingerprint;
+- versión de caso;
+- decision receipt;
+- referencias de fuente;
+- sujeto;
+- scope;
+- delta;
+- UOM;
+- precondiciones.
+
+La misma clave y el mismo payload devuelven el mismo resultado. La misma clave con payload distinto produce conflicto. Un timeout o resultado desconocido se reconcilia antes de repetir.
+
+#### 25. Publicador autoritativo
+
+Solo el command boundary del ledger puede publicar el ajuste cuantitativo.
+
+La interfaz, formularios, conteos, endpoints legacy y RPC heredados no son escritores alternos y deben producir cero inserts directos al ledger objetivo y cero actualizaciones manuales de proyecciones cuando la materialización canónica esté activa.
+
+Group, legs, sequence, posting receipt y outbox comparten una única frontera lógica y el decision receipt se consume una sola vez.
+
+#### 26. Proyecciones de stock
+
+Stock por sede, LOC, posición, presentación y demás vistas derivadas son proyecciones del ledger, no fuentes independientes de verdad para el ajuste.
+
+Una divergencia se repara mediante replay, rebuild o procedimiento propietario idempotente. No se crea un movimiento ficticio para cuadrar una proyección y no se usa `DELETE`, read-modify-write o zeroing silencioso como reparación contractual.
+
+#### 27. Costo y valoración
+
+La autoridad para modificar cantidad permanece separada de valoración.
+
+Un incremento consume policy y fuente económica autorizadas. Una disminución aplica el método vigente. El usuario no ingresa libremente un costo como autoridad.
+
+Una corrección exclusivamente de costo produce cero legs de cantidad. Si un consumidor de valoración falla después de un leg cuantitativo confirmado, el leg no se repite.
+
+#### 28. Ajustes masivos
+
+Un ajuste masivo exige batch, scope snapshot, digest, cantidad esperada de líneas, líneas y versiones, policy, estrategia de decisión, atomicidad, idempotency key y fingerprint.
+
+Vaciar un LOC requiere cobertura completa y ceros explícitos. No se ejecuta con catálogo parcial ni mediante un loop cliente que convierta una intención en múltiples efectos no coordinados.
+
+Atomicidad o parcialidad deben quedar declaradas y los reintentos deduplicados.
+
+#### 29. Corrección y reversa
+
+Antes del posting solo pueden anularse expedientes o intenciones cuya ausencia de efecto esté demostrada.
+
+Después del posting no se modifica ni elimina el hecho original. Una corrección abre un expediente nuevo, calcula saldo compensable, exige la autoridad independiente aplicable y publica un grupo compensatorio.
+
+Original, compensación, saldo remanente, receipts y proyecciones permanecen trazables.
+
+#### 30. Frontera con conteos
+
+Un conteo es observación y no autorización de ajuste.
+
+El conteo ciego no expone expected, delta, valor ni señales de conciliación antes de certificar la observación. Una diferencia derivada de conteo puede producir un candidato versionado, pero debe atravesar investigación, decisión y posting de ajuste.
+
+`NEXO-AUTH-011` no absorbe `NEXO-AUTH-012 — Proteger conteos`.
+
+#### 31. Frontera con recepción y diferencias
+
+Una diferencia detectada en recepción puede originar un caso o candidato, pero confirmar recepción no concede `nexo.inventory.adjustments.register`.
+
+Recepción, cuarentena, faltante, sobrante, daño, rechazo y retorno conservan sus propios hechos. El ajuste solo consume un handoff causal válido cuando la policy y el proceso propietario permitan convertir la diferencia en una propuesta cuantitativa.
+
+#### 32. Frontera con movimientos
+
+`nexo.inventory.movements` y cualquier permiso de consulta del ledger no conceden ajuste.
+
+Cuando una discrepancia corresponde realmente a traslado, reubicación, reversa de movimiento u otra operación propietaria, se usa ese proceso y no un ajuste genérico para ocultar la causa.
+
+`NEXO-AUTH-013 — Proteger movimientos` permanece propietario de su autorización específica.
+
+#### 33. AS-IS verificado en `vento-nexo`
+
+El snapshot remoto `f0a12557a1a258c84b025933653dc756de4b5a59` conserva una implementación que todavía debe converger al contrato aprobado.
+
+**Superficie de ajuste**
+
+- `src/app/inventory/adjust/page.tsx` invoca `requireAppAccess` con `permissionCode = "inventory.adjustments"`;
+- `normalizePermissionCode` convierte ese valor en `nexo.inventory.adjustments`, que no corresponde a ninguna de las dos PermissionKey activas exactas del catálogo vigente;
+- la selección de sedes usa además el nombre de rol y concede todas las sedes activas a `propietario`, `gerente_general` y `contador` en esa superficie;
+- la consulta inicial de productos usa un corte fijo de 500 y solo rescata omitidos que ya presentan stock positivo en los alcances consultados.
+
+**Endpoint de escritura**
+
+- `src/app/api/inventory/adjust/route.ts` autentica al usuario, pero el caller no demuestra la composición exacta `BASE_AND_OPERATIONAL` antes de escribir;
+- acepta sede, LOC, posición, producto, delta o conteo, costo unitario, motivo y evidencia desde el payload;
+- inserta directamente `inventory_movements`;
+- actualiza por separado proyecciones de stock de sede, LOC y posición;
+- puede ejecutar reconciliación de ceros y actualizaciones separadas;
+- puede actualizar costo del producto y crear un evento de costo en escrituras posteriores;
+- no materializa en el caller un expediente, proposal versionada, decision receipt, idempotency key, fingerprint ni reconciliación de resultado desconocido.
+
+**Ajuste derivado de conteo**
+
+- `src/app/api/inventory/count-initial/approve/route.ts` y `src/app/inventory/count-initial/session/[id]/page.tsx` invocan `apply_inventory_count_adjustments`;
+- ese camino deberá converger sin transformar la aprobación de un conteo en autoridad implícita ni conservar un segundo escritor de ajustes.
+
+La existencia de RLS, grants o funciones de base subyacentes no sustituye la revalidación contractual exigida al boundary autoritativo.
+
+#### 34. Convergencia física posterior
+
+La implementación futura pertenece al paquete ya vinculado por el contrato funcional:
+
+```text
+GAP-PKG-096
+```
+
+y deberá hacer converger, como mínimo:
+
+- superficie `/inventory/adjust`;
+- formulario de ajuste;
+- endpoint de ajuste;
+- aprobación de conteos;
+- `apply_inventory_count_adjustments`;
+- ledger de movimientos;
+- proyecciones de stock;
+- reconciliación de ceros;
+- valoración y costo;
+- RLS;
+- grants;
+- observabilidad;
+- rollback.
+
+La convergencia elimina escritores directos o duplicados y hace que cada efecto cuantitativo nazca del command boundary autorizado.
+
+#### 35. Ownership de Supabase
+
+Toda futura modificación de Supabase necesaria para materializar este contrato pertenece exclusivamente a `vento-group-sas/vento-shell`, incluidas:
+
+- migraciones;
+- tablas;
+- funciones y RPC;
+- triggers;
+- grants;
+- RLS;
+- outbox;
+- tipos generados;
+- compatibilidad;
+- rollback;
+- pruebas de base de datos.
+
+Esta tarea no ejecuta cambios Supabase.
+
+#### 36. Materialización física posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto, este marcador global no autoriza código ni infraestructura. Cada materialización futura utiliza:
+
+```text
+NEXO-AUTH-011::<implementation_unit_id>
+```
+
+y solo puede ejecutarse cuando el paquete propietario aplicable tenga `E5-GATE-008::<package_id> = PASS`, exista lineage válido y se otorgue autorización física explícita.
+
+#### 37. Validaciones funcionales heredadas
+
+La futura implementación conserva la matriz ya aprobada:
+
+```text
+ADJ-VAL-001 ... ADJ-VAL-048
+```
+
+La cobertura incluye autorización, segregación, fuentes, expediente, investigación, decisión, scope, UOM, posting, ledger, proyecciones, valoración, bulk, reversa, estados de interfaz, superficies y convergencia técnica.
+
+Esta tarea no redefine esas cuarenta y ocho comprobaciones.
+
+#### 38. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea especializa la autorización del flujo de ajustes ya diseñado y ya cubierto por requisitos canónicos; no introduce una obligación verificable nueva ni cambia una fila existente del registro.
+
+#### 39. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-NEXO-002`;
+- `TREQ-NEXO-011`;
+- `TREQ-NEXO-058`;
+- `TREQ-NEXO-071`;
+- `TREQ-NEXO-072`;
+- `TREQ-NEXO-076` a `TREQ-NEXO-080`;
+- `TREQ-NEXO-217` a `TREQ-NEXO-230`;
+- `TREQ-NEXO-253`;
+- `TREQ-NEXO-268`;
+- `TREQ-NEXO-270`;
+- `TREQ-NEXO-290`;
+- `TREQ-SUPABASE-002`.
+
+Estas referencias son trazabilidad heredada y no modifican el Registro 04A.
+
+#### 40. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | El marcador define un contrato documental y no compila ni despliega producto. |
+| LOCAL | NOT_EXECUTED | La incorporación, normalización canónica, quality, delivery y batería global corresponden al lifecycle documental cuando la tarea anterior haya cerrado y este artefacto sea autorizado por el usuario. |
+| REMOTA | PASS | Se verificaron en `vento-shell` el catálogo activo de PermissionKey, modalidades `BASE_OR_OPERATIONAL` y `BASE_AND_OPERATIONAL`, datasets base y operacional de grants, contrato de recurso, clasificación STRONG, topología `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, cobertura vigente del Registro 04A y vínculo `GAP-PKG-096`; se verificó además `vento-nexo` en `f0a12557a1a258c84b025933653dc756de4b5a59` para la superficie, endpoint y camino de ajustes derivados de conteo. El remoto documental aún conserva a `NEXO-AUTH-010` como marcador pendiente; la continuidad de esta tarea consume la versión completa de `NEXO-AUTH-010` aprobada por el usuario bajo el modo documental adelantado vigente. |
+| OPERATIVA | NOT_APPLICABLE | No se investiga, aprueba, publica, compensa ni revierte un ajuste real de inventario. |
+| FÍSICA | NOT_APPLICABLE | No se crea ni autoriza `NEXO-AUTH-011::<implementation_unit_id>` durante este marcador global. |
+
+#### 41. Criterios de aceptación
+
+- [x] `nexo.inventory.adjustments.view` y `nexo.inventory.adjustments.register` son las PermissionKey activas exactas del frente;
+- [x] consulta conserva `BASE_OR_OPERATIONAL` y cada carril completo se evalúa por separado;
+- [x] registro conserva `BASE_AND_OPERATIONAL` y exige ambos carriles simultáneamente;
+- [x] los componentes base vigentes de registro pertenecen a `propietario`, `gerente_general` y `gerente`;
+- [x] el componente operacional vigente de registro pertenece a `gerencia_operativa`;
+- [x] `bodeguero` conserva consulta y detección de diferencias, pero no registro unilateral;
+- [x] `supervisor`, `auxiliar_administrativa` y `contador` no reciben componente base de registro por tener consulta;
+- [x] el alcance efectivo de registro es la intersección de carril base, contexto operacional y territorio real del recurso;
+- [x] la acción exige turno, check-in, motivo, diferencia documentada y auditoría reforzada;
+- [x] el registro exige soporte de reautenticación `STRONG` sin convertir al dispositivo en autoridad;
+- [x] stock, conteos, movimientos, lectura, cargo, URL, scanner o diferencia observada no sustituyen la PermissionKey de registro;
+- [x] conteo, diferencia, investigación, decisión y posting permanecen etapas distintas;
+- [x] solicitante, contador o investigador no autoaprueban cuando la policy exige independencia;
+- [x] el expediente y sus decisiones son versionados y append-only;
+- [x] cantidad, UOM, signo y balance se derivan en servidor y no desde un saldo final enviado por cliente;
+- [x] el posting es idempotente y reconcilia resultados desconocidos antes de reintentar;
+- [x] solo el command boundary del ledger publica el efecto cuantitativo;
+- [x] las proyecciones no son escritores independientes de stock;
+- [x] valoración y cantidad permanecen separadas y no se acepta costo libre como autoridad;
+- [x] bulk, compensación y reversa conservan sus contratos de atomicidad e historia;
+- [x] `NEXO-AUTH-012` mantiene la autorización de conteos separada;
+- [x] `NEXO-AUTH-013` mantiene la autorización de movimientos separada;
+- [x] el AS-IS amplio y multi-write queda identificado como brecha de convergencia y no como semántica objetivo;
+- [x] la futura implementación se vincula a `GAP-PKG-096` y conserva `ADJ-VAL-001` a `ADJ-VAL-048`;
+- [x] toda modificación Supabase futura pertenece a `vento-shell`;
+- [x] la topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 42. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia el catálogo de PermissionKey;
+- cambia matrices de rol;
+- ejecuta un ajuste real;
+- publica movimientos reales;
+- cambia stock real;
+- actualiza costo real;
+- aprueba un conteo real;
+- compensa o revierte un movimiento real;
+- crea un expediente real;
+- crea una decisión real;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el Registro 04A.
+
+#### 43. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-010 — Proteger recepción`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-011 — Proteger ajustes de inventario`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-012 — Proteger conteos`
 ### [ ] NEXO-AUTH-012 — Proteger conteos
 ### [ ] NEXO-AUTH-013 — Proteger movimientos
 ### [ ] NEXO-AUTH-014 — Proteger catálogo y configuraciones
