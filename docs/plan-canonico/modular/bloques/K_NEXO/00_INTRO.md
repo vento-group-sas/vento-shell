@@ -12112,7 +12112,664 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-015 — Filtrar por sede y área efectivas`
-### [ ] NEXO-AUTH-015 — Filtrar por sede y área efectivas
+### ✅ NEXO-AUTH-015 — Filtrar por sede y área efectivas
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-014 — Proteger catálogo y configuraciones
+**Tarea siguiente:** NEXO-AUTH-016 — Integrar dispositivo compartido
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización NEXO del filtrado territorial por carril, sede, área y territorio real del recurso, preservando separación entre navegación, cobertura administrativa, turno, check-in, recurso, scope y autorización
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-015::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo toda superficie NEXO debe limitar lectura, navegación, filtros, consultas, acciones y mutaciones al territorio realmente autorizable del actor y del recurso, sin convertir una sede seleccionada, un área seleccionada, un parámetro de URL, un fallback local, un rol, un dispositivo, una cookie o una proyección de interfaz en autoridad territorial.
+
+La decisión territorial se resuelve antes de exponer datos o ejecutar efectos:
+
+```text
+PRINCIPAL Y ACTOR EFECTIVOS
++ PermissionKey EXACTA
++ MODALIDAD DEL PERMISO
++ CARRIL COMPLETO APLICABLE
++ TERRITORIO DEL CARRIL
++ SCOPE DEL PERMISO
++ TERRITORIO REAL DEL RECURSO
++ ESTADO Y RELACIONES DEL RECURSO
++ DENEGACIONES
+→ RECURSO AUTORIZABLE O DENEGADO
+```
+
+El filtrado no sustituye la autorización. Es una consecuencia de una autorización territorial ya resuelta.
+
+#### 2. Resultado contractual
+
+Quedan fijadas las siguientes reglas globales para NEXO:
+
+1. no existe una única propiedad local llamada `activeSiteId`, `siteId`, `areaId` o equivalente que por sí sola determine autoridad;
+2. la sede administrativa y la sede operativa permanecen separadas;
+3. el área administrativa y el área operativa permanecen separadas;
+4. la sede seleccionada y el área seleccionada son preferencias de navegación y nunca autoridad;
+5. `employees.site_id` y `employees.area_id` continúan siendo campos legacy y no fuentes canónicas de autorización;
+6. el territorio operativo procede del turno publicado y vigente;
+7. el check-in confirma el contexto exigido, pero no crea ni reemplaza la sede o el área del turno;
+8. el territorio del recurso se resuelve en backend y nunca se fabrica desde la UI;
+9. cada recurso se evalúa contra un carril completo compatible con la modalidad del permiso;
+10. `null` nunca significa todas las sedes o todas las áreas;
+11. una ausencia legítima de área debe conservar su semántica explícita de recurso o rol site-wide;
+12. recursos multiárea o multisede conservan sus extremos y reglas propietarias; no se reducen a un único `site_id` arbitrario;
+13. una consulta filtra antes de serializar datos hacia el cliente;
+14. una mutación revalida actor, permiso, contexto, scope, territorio y recurso inmediatamente antes del efecto;
+15. UI, Server Actions, Route Handlers, RPC, RLS y proyecciones deberán converger en la misma frontera territorial;
+16. cambiar turno, sede, área, asignación, rol, check-in o recurso invalida decisiones territoriales afectadas;
+17. una rotación laboral no conserva privilegios territoriales obsoletos;
+18. un actor administrativo no adquiere territorio operativo por tener cobertura base;
+19. un actor operativo no adquiere cobertura administrativa por estar de turno;
+20. el filtrado nunca repara una autorización incompleta mezclando hechos de dos carriles.
+
+#### 3. Fuentes canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+| Fuente | Regla preservada |
+| --- | --- |
+| `NEXO-AUTH-001` | carril base y carril operativo se evalúan por separado y no se mezclan |
+| `AUTH-MOD-007` | sede asignada, primaria, seleccionada, administrativa, operativa y del recurso son conceptos distintos |
+| `AUTH-MOD-008` | área asignada, primaria, seleccionada, administrativa, operativa y del recurso son conceptos distintos |
+| `AUTH-MOD-018` | la modalidad del permiso determina qué carril puede satisfacer la decisión |
+| `SHELL-CTX-003` | `operational_site` y `operational_area` proceden del contexto canónico y no se reconstruyen localmente |
+| `AUTH-CTX-018` | el territorio del recurso permanece separado del territorio laboral del actor |
+| `AUTH-CTX-029` | cambios materiales invalidan contexto y decisiones derivadas |
+| `AUTH-SRV-004 a AUTH-SRV-018` | servidor revalida permiso, actor, territorio, contexto y recurso |
+| `NEXO-AUTH-004..014` | cada proceso conserva sus permisos, estados y recursos propietarios; esta tarea solo especializa su frontera territorial |
+
+No se introduce una jerarquía territorial nueva para NEXO.
+
+#### 4. Carriles territoriales independientes
+
+La modalidad del permiso define el carril que puede autorizar un recurso.
+
+```text
+BASE_ONLY
+→ solo territorio base completo
+
+OPERATIONAL_ONLY
+→ solo territorio operativo completo
+
+BASE_OR_OPERATIONAL
+→ un recurso puede ser autorizado por cualquiera de los dos carriles completos
+→ nunca por una mezcla parcial de ambos
+
+BASE_AND_OPERATIONAL
+→ el recurso debe satisfacer simultáneamente ambos carriles completos
+```
+
+Cuando `BASE_OR_OPERATIONAL` permita resultados desde ambos carriles, el conjunto visible puede ser la unión de recursos independientemente autorizados por cada carril. Ningún recurso individual puede usar cobertura base parcial más contexto operativo parcial para producir `ALLOW`.
+
+Cuando `BASE_AND_OPERATIONAL` aplique, el territorio autorizable corresponde a la intersección material de ambos carriles y del territorio del recurso.
+
+#### 5. Territorio base o administrativo
+
+El carril base usa identidad, rol base, grants, cobertura administrativa, scope, recurso, estado y denegaciones.
+
+La sede administrativa puede resolverse para navegación o consulta desde una sede solicitada validada, una sede seleccionada validada o una sede primaria válida conforme al contrato transversal. Esa resolución no convierte la selección en permiso.
+
+El área administrativa puede resolverse desde un área solicitada validada, área seleccionada validada, área primaria válida o ausencia explícita según el modo administrativo aplicable.
+
+Modos reconocidos por las fuentes canónicas incluyen, según corresponda:
+
+```text
+single_site
+assigned_sites
+organization
+single_area
+assigned_areas
+site_wide
+organization
+```
+
+`null` no amplía el alcance. El scope explícito del permiso determina si la autorización es global, por sede, área o tipo de área.
+
+#### 6. Territorio operativo
+
+La sede operativa efectiva procede del turno publicado y vigente.
+
+```text
+OperationalActiveSite = active_shift.site_id
+```
+
+El área operativa efectiva procede del mismo turno cuando exista:
+
+```text
+OperationalActiveArea = active_shift.area_id
+```
+
+El check-in es evidencia confirmatoria y debe ser compatible cuando el permiso lo exija. No reemplaza la sede ni el área del turno.
+
+Si el rol requiere área y el turno no la contiene, la operación se deniega.
+
+Si el rol es site-wide y el contrato permite operar sin área, `area_id = null` conserva esa semántica explícita; no se transforma en acceso a cualquier área fuera de la sede efectiva.
+
+#### 7. Sede y área seleccionadas
+
+`employee_settings.selected_site_id` y `employee_settings.selected_area_id` son preferencias de navegación.
+
+Pueden servir para:
+
+- elegir una vista administrativa válida;
+- construir un filtro visible;
+- recordar una preferencia de navegación;
+- proponer un destino para validación posterior.
+
+No pueden por sí solas:
+
+- conceder acceso;
+- ampliar cobertura;
+- sustituir turno;
+- sustituir check-in;
+- sustituir scope;
+- definir el territorio del recurso;
+- autorizar una mutación;
+- producir un wildcard territorial.
+
+Una selección inválida se ignora, limpia o sustituye para navegación conforme al contrato administrativo, sin degradar un turno operativo válido.
+
+#### 8. Campos legacy
+
+`employees.site_id` y `employees.area_id` no se utilizan como fuente canónica de autorización.
+
+Pueden permanecer como datos legacy o referencias transitorias mientras su retiro esté gobernado, pero no pueden ocupar el lugar de:
+
+- `employee_sites` y cobertura administrativa;
+- turno vigente;
+- sede operativa;
+- área operativa;
+- scope del permiso;
+- territorio del recurso.
+
+No se autoriza un fallback del tipo:
+
+```text
+selected_site_id ?? employees.site_id ?? ALLOW
+```
+
+ni su equivalente para área.
+
+#### 9. Territorio del recurso
+
+La sede y área del actor no sustituyen la sede y área del recurso.
+
+Antes de decidir, el backend resuelve el recurso exacto y su territorio real.
+
+Según el dominio, el recurso puede ser:
+
+- site-level;
+- area-level;
+- organization-level;
+- multi-area;
+- multi-site;
+- route-endpoint based;
+- custody based;
+- source-and-target based.
+
+La relación territorial requerida se toma del contrato del recurso y del permiso exacto.
+
+#### 10. Recursos sin área
+
+Un recurso con área nula no significa recurso de todas las áreas.
+
+La ausencia debe representar una semántica aprobada, por ejemplo:
+
+```text
+site_level
+organization
+multi_area
+```
+
+Si el contrato exige área y no puede resolverse, la decisión falla cerrada.
+
+#### 11. Recursos multiárea
+
+Un recurso multiárea conserva sus extremos y reglas propietarias.
+
+Según el permiso, la autorización puede exigir:
+
+```text
+source_area
+target_area
+both
+```
+
+No se permite escoger uno de los extremos para fabricar coincidencia territorial.
+
+#### 12. Recursos multisede
+
+Una remisión, ruta, custodia u otro recurso con más de una sede no se reduce a la sede seleccionada por la interfaz.
+
+El contrato propietario determina si la relación válida requiere:
+
+- origen;
+- destino;
+- ambos extremos;
+- custodia asignada;
+- segmento logístico;
+- cobertura administrativa explícita.
+
+La visibilidad de un extremo no concede autoridad general sobre el otro.
+
+#### 13. Filtrado de lectura
+
+Una consulta protegida aplica la autorización antes de serializar datos.
+
+```text
+RESOLVER CONTEXTO
+→ RESOLVER PERMISO Y MODALIDAD
+→ RESOLVER TERRITORIO AUTORIZABLE
+→ RESOLVER TERRITORIO DE CADA RECURSO
+→ EXCLUIR RECURSOS NO AUTORIZABLES
+→ MINIMIZAR CAMPOS
+→ SERIALIZAR
+```
+
+No es válido:
+
+```text
+CONSULTAR TODO
+→ ENVIAR AL CLIENTE
+→ OCULTAR FILAS EN REACT
+```
+
+El filtrado de UI es presentación adicional, no control de seguridad.
+
+#### 14. Filtrado de mutación
+
+Una mutación protegida no confía en filtros previos de la pantalla.
+
+Antes del efecto debe revalidar:
+
+- principal;
+- actor efectivo;
+- permiso exacto;
+- modalidad;
+- carril requerido;
+- turno y check-in cuando apliquen;
+- sede y área efectivas del carril;
+- scope;
+- recurso actual;
+- sede y área reales del recurso;
+- estado;
+- versión o concurrencia;
+- columnas o transición permitidas;
+- denegaciones.
+
+Un `site_id` o `area_id` enviado por formulario, query string, body o RPC es un localizador propuesto, no evidencia suficiente de autorización.
+
+#### 15. Parámetros de URL y formulario
+
+Parámetros como:
+
+```text
+site_id
+area_id
+area_kind
+from_site_id
+to_site_id
+location_id
+```
+
+pueden identificar la intención o ayudar a localizar el recurso. Nunca conceden territorio por sí solos.
+
+La alteración manual de cualquiera de estos valores debe terminar en un recurso válido y autorizado o en denegación segura.
+
+#### 16. Convergencia entre capas
+
+Para el mismo snapshot material, deben coincidir:
+
+```text
+UI projection
+Server Action / Route Handler
+RPC
+RLS
+```
+
+No se permite que:
+
+- UI filtre por sede mientras RPC consulta global;
+- RPC valide sede pero ignore área exigida;
+- RLS use una fuente territorial distinta;
+- un helper local agregue un fallback permisivo;
+- una página convierta `selected_site_id` en autoridad;
+- un rol local amplíe el territorio resuelto en backend.
+
+#### 17. Separación entre filtro y permiso
+
+Un filtro territorial no concede capacidades.
+
+```text
+FILTRO DE SEDE
+!= PERMISO
+
+FILTRO DE ÁREA
+!= PERMISO
+
+PERMISO
+!= TERRITORIO DEL RECURSO
+```
+
+Se requieren las tres dimensiones cuando el contrato las exige.
+
+#### 18. Separación entre filtro y disponibilidad
+
+Que un recurso aparezca en una sede o área no implica que esté:
+
+- activo;
+- disponible;
+- elegible;
+- en estado mutable;
+- libre de reserva;
+- apto para el proceso actual.
+
+El filtro territorial se evalúa junto con las reglas de estado propietarias de cada proceso.
+
+#### 19. Rotación y cambios territoriales
+
+Cambios en cualquiera de estos elementos invalidan decisiones afectadas:
+
+- asignación de sede;
+- cobertura administrativa;
+- turno;
+- sede del turno;
+- área del turno;
+- rol operativo;
+- check-in;
+- sede o área del recurso;
+- scope;
+- estado del recurso.
+
+Un actor rotado a otra sede o área no conserva acceso por caché, navegación, URL anterior o una decisión previa.
+
+#### 20. Denegación y fail closed
+
+Se deniega cuando exista, entre otras causas:
+
+- sede inexistente o inactiva;
+- área inexistente o inactiva;
+- área que no pertenece a la sede resuelta;
+- configuración territorial ambigua;
+- turno requerido ausente;
+- área requerida ausente;
+- check-in requerido ausente o incompatible;
+- recurso fuera del scope;
+- recurso fuera del territorio efectivo;
+- cruce de origen o destino no permitido;
+- snapshot stale;
+- información crítica insuficiente.
+
+Un error técnico no se convierte en territorio global ni en fallback permisivo.
+
+#### 21. Área y rol operativo
+
+La combinación operativa se valida como una sola configuración coherente:
+
+```text
+rol + sede + área
+→ una configuración válida
+```
+
+Cuando la relación sea ambigua o incompatible se deniega.
+
+El nombre del rol no sustituye el permiso exacto.
+
+#### 22. Cobertura administrativa
+
+Una persona con varias sedes asignadas no obtiene automáticamente scope global.
+
+La cobertura administrativa es un insumo territorial del carril base y debe combinarse con el scope explícito del permiso.
+
+Un permiso global ordinario mantiene sus límites de aplicación, recurso, entorno y denegaciones; no significa acceso universal.
+
+#### 23. NEXO operativo
+
+Para una capacidad `OPERATIONAL_ONLY`, la decisión territorial exige un contexto operativo completo compatible con el recurso.
+
+Ejemplos conceptuales incluyen preparación, tránsito, recepción, entradas, retiros, conteos, validaciones y traslados cuando sus contratos lo requieran.
+
+La presencia de una pantalla operativa, una sede seleccionada o un permiso base no sustituye el turno ni el territorio operativo.
+
+#### 24. NEXO administrativo
+
+Para una capacidad `BASE_ONLY`, el turno y el área operativa no se usan para completar una autorización base faltante.
+
+Configuración, catálogos, políticas, plantillas y otras capacidades base conservan cobertura administrativa y scope propios.
+
+Una sede o área operativa activa no amplía esos alcances.
+
+#### 25. NEXO híbrido
+
+Una misma persona puede tener simultáneamente:
+
+```text
+AdministrativeActiveSite != OperationalActiveSite
+AdministrativeActiveArea != OperationalActiveArea
+```
+
+Esto es válido.
+
+Cada recurso se autoriza mediante el carril que admita su PermissionKey. La UI debe hacer visible el contexto suficiente para evitar que el actor confunda una vista administrativa con su territorio operativo.
+
+#### 26. AS-IS verificado en `vento-nexo`
+
+El snapshot remoto `vento-nexo@f0a12557a1a258c84b025933653dc756de4b5a59` conserva convergencias pendientes relevantes:
+
+- `src/lib/auth/operational-context.ts` todavía expone `active_site_id`, `selected_site_id`, `employee_default_site_id`, `active_area_id`, `can_operate` y fallbacks locales;
+- el mismo helper puede resolver un sitio desde `siteId`, `active_site_id` o `selected_site_id` para aplicar un role override local;
+- `src/lib/auth/guard.ts` acepta `siteId` y `areaId` preferidos, resuelve una sesión operacional y todavía contiene una rama local de role override;
+- varias superficies de inventario continúan usando combinaciones de `selected_site_id` y `employees.site_id` para formar un sitio visible o activo;
+- rutas de catálogo, ubicaciones, entradas, retiros, traslados y fulfillment contienen ejemplos representativos de estas precedencias locales.
+
+Este AS-IS es evidencia de adopción pendiente. No redefine la autoridad canónica.
+
+#### 27. Convergencia técnica futura
+
+La futura materialización deberá retirar o encapsular cualquier reconstrucción local de territorio que compita con el contexto canónico.
+
+El objetivo es:
+
+```text
+AccessContextV1 validado
+→ territorio del carril aplicable
+→ territorio del recurso
+→ evaluateAuthorization / frontera server canónica
+→ query o mutación ya limitada
+→ proyección segura
+```
+
+No se autoriza crear un segundo motor territorial dentro de `vento-nexo`.
+
+#### 28. Frontera con `NEXO-AUTH-014`
+
+`NEXO-AUTH-014` conserva la protección de catálogos y configuraciones.
+
+Esta tarea recibe de ella recursos configurativos y permisos ya definidos, pero únicamente especializa cómo se limitan territorialmente cuando el contrato de recurso o el scope contienen sede, área, aplicabilidad o endpoints.
+
+No reabre la semántica de producto, presentación, unidad, categoría, política, precio, sitio o plantilla definida por su propietaria.
+
+#### 29. Frontera con `NEXO-AUTH-016`
+
+`NEXO-AUTH-016` conserva la integración de dispositivo compartido.
+
+Esta tarea solo establece que el dispositivo no puede ampliar el territorio humano o del recurso.
+
+La intersección exacta actor–turno–dispositivo, la identidad del terminal, la expiración y el propósito del dispositivo permanecen reservados a `NEXO-AUTH-016`.
+
+#### 30. Frontera con `NEXO-AUTH-017`
+
+`NEXO-AUTH-017` conserva la simulación estricta.
+
+Esta tarea prohíbe que una simulación o role override modifique el territorio real utilizado para una acción real, pero no diseña el contrato de simulación.
+
+#### 31. Frontera con `NEXO-AUTH-018..020`
+
+Se conservan responsabilidades posteriores:
+
+- `NEXO-AUTH-018` migra consumidores a paquetes compartidos de `vento-shell`;
+- `NEXO-AUTH-019` elimina helpers duplicados solo después de demostrar paridad;
+- `NEXO-AUTH-020` ejecuta pruebas integrales del frente NEXO-AUTH.
+
+Esta tarea no absorbe esos cierres.
+
+#### 32. Ownership de Supabase
+
+Toda futura modificación de:
+
+- funciones o RPC de contexto;
+- RLS;
+- grants;
+- vistas;
+- tablas de asignaciones;
+- turno y check-in;
+- funciones territoriales;
+- índices;
+- triggers;
+- migraciones;
+- tipos generados;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Esta tarea no ejecuta cambios Supabase.
+
+#### 33. Materialización física posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador global no autoriza código ni infraestructura.
+
+Cada materialización futura usa:
+
+```text
+NEXO-AUTH-015::<implementation_unit_id>
+```
+
+solo después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+La unidad y su lineage se resuelven desde las fuentes canónicas de planificación; esta tarea no inventa `implementation_unit_id` ni reasigna packages.
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea especializa para NEXO obligaciones territoriales, de revalidación, frescura y auditoría ya registradas. No introduce una obligación verificable nueva que requiera otra fila del Registro 04A.
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-007`;
+- `TREQ-AUTH-008`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-015`;
+- `TREQ-NEXO-009`;
+- `TREQ-NEXO-011`.
+
+Estas referencias son trazabilidad heredada y no modifican filas del Registro 04A.
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | El marcador define un contrato documental y no compila ni despliega producto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout local de `NEXO-AUTH-015`; formato, quality, delivery y batería global corresponden al lifecycle documental posterior al reemplazo. |
+| REMOTA | PASS | Se verificaron `vento-shell` main `a99c687d4a3a2e7d8f3668693a9c1ee79e74af26`, continuidad que reserva `NEXO-AUTH-015`, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, contratos territoriales `AUTH-MOD-007/008`, proyección territorial `SHELL-CTX-003`, 04A vigente y `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59` para los helpers y superficies AS-IS representativas. |
+| OPERATIVA | NOT_APPLICABLE | No se consulta ni modifica información operativa productiva y no se ejecuta un proceso NEXO real. |
+| FÍSICA | NOT_APPLICABLE | No se crea ni autoriza `NEXO-AUTH-015::<implementation_unit_id>` durante este marcador global. |
+
+#### 37. Criterios de aceptación
+
+- [x] sede asignada, primaria, seleccionada, administrativa, operativa y del recurso permanecen separadas;
+- [x] área asignada, primaria, seleccionada, administrativa, operativa y del recurso permanecen separadas;
+- [x] `selected_site_id` no autoriza;
+- [x] `selected_area_id` no autoriza;
+- [x] `employees.site_id` y `employees.area_id` no son fuentes canónicas de autorización;
+- [x] la sede operativa procede del turno válido;
+- [x] el área operativa procede del turno cuando existe;
+- [x] el check-in confirma y no crea territorio;
+- [x] `null` nunca se interpreta como wildcard;
+- [x] roles site-wide conservan semántica explícita sin ampliar sede;
+- [x] cada recurso se evalúa contra su territorio real;
+- [x] recursos multiárea conservan source, target o both según contrato;
+- [x] recursos multisede conservan extremos y relaciones propietarias;
+- [x] lectura filtra antes de serializar;
+- [x] mutación revalida territorio inmediatamente antes del efecto;
+- [x] parámetros de URL o formulario son localizadores, no autoridad;
+- [x] `BASE_ONLY`, `OPERATIONAL_ONLY`, `BASE_OR_OPERATIONAL` y `BASE_AND_OPERATIONAL` conservan semántica territorial independiente;
+- [x] no se mezclan carriles parciales;
+- [x] cambios territoriales invalidan decisiones afectadas;
+- [x] UI, servidor, RPC y RLS deben converger;
+- [x] el AS-IS local con fallbacks queda identificado como convergencia pendiente;
+- [x] toda futura modificación Supabase pertenece a `vento-shell`;
+- [x] la topología permanece `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 38. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia turnos;
+- cambia check-ins;
+- cambia asignaciones laborales;
+- cambia coberturas administrativas;
+- cambia el catálogo de PermissionKey;
+- cambia matrices de rol;
+- crea una sede o área;
+- modifica `selected_site_id`;
+- modifica `selected_area_id`;
+- migra consumidores;
+- elimina helpers;
+- implementa dispositivo compartido;
+- implementa simulación;
+- ejecuta pruebas integrales físicas;
+- crea una instancia física;
+- autoriza una instancia física;
+- reasigna packages;
+- modifica el Registro 04A.
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-014 — Proteger catálogo y configuraciones`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-015 — Filtrar por sede y área efectivas`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-016 — Integrar dispositivo compartido`
 ### [ ] NEXO-AUTH-016 — Integrar dispositivo compartido
 ### [ ] NEXO-AUTH-017 — Integrar simulación estricta
 ### [ ] NEXO-AUTH-018 — Migrar a paquetes de vento-shell
