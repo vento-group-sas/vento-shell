@@ -12770,7 +12770,811 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-016 — Integrar dispositivo compartido`
-### [ ] NEXO-AUTH-016 — Integrar dispositivo compartido
+### ✅ NEXO-AUTH-016 — Integrar dispositivo compartido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-015 — Filtrar por sede y área efectivas
+**Tarea siguiente:** NEXO-AUTH-017 — Integrar simulación estricta
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización NEXO del contrato de dispositivo compartido para intersectar identidad humana, contexto, territorio, aplicaciones, techo de permisos, lifecycle y auditoría del dispositivo sin convertir el principal técnico, `navigation_role`, la aplicación visible ni el terminal en autoridad empresarial
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-016::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo NEXO consume el contrato canónico de dispositivo compartido en todas sus superficies protegidas sin tratar la identidad técnica del terminal como trabajador, sin heredar privilegios administrativos, sin autorizar por `navigation_role`, sin convertir una aplicación permitida en un permiso y sin usar sede o área solicitadas por cliente para ampliar el contexto efectivo.
+
+La decisión protegida desde un dispositivo compartido se resuelve como una intersección restrictiva:
+
+```text
+DISPOSITIVO CANONICO Y ELEGIBLE
++ NEXO DENTRO DEL CONJUNTO EFECTIVO DE APLICACIONES
++ ACTOR HUMANO EFECTIVO CUANDO LA ACCION LO EXIJA
++ AUTORIDAD PROPIA DEL ACTOR EN EL CARRIL APLICABLE
++ TECHO EFECTIVO DEL DISPOSITIVO
++ POLITICA TERRITORIAL DEL DISPOSITIVO
++ TERRITORIO EFECTIVO DEL ACTOR
++ TERRITORIO Y ESTADO DEL RECURSO
++ CONTROLES ADICIONALES APLICABLES
++ AUSENCIA DE DENEGACIONES
+→ ALLOW O DENY NEXO
+```
+
+El dispositivo puede reducir autoridad. Nunca puede crearla.
+
+#### 2. Resultado contractual
+
+Quedan fijadas las siguientes obligaciones globales para NEXO:
+
+1. el principal técnico del dispositivo permanece separado del actor humano;
+2. `device_id`, endpoint, activo, estación, principal técnico y trabajador conservan identidades independientes;
+3. un dispositivo compartido no posee por sí mismo rol base, rol operativo ni permiso empresarial;
+4. `navigation_role` es una señal de navegación o presentación y no una fuente de autorización;
+5. NEXO dentro del conjunto efectivo de aplicaciones del dispositivo es condición necesaria de superficie, nunca un grant de `nexo.access`;
+6. toda capacidad NEXO interna continúa exigiendo su `PermissionKey` exacta;
+7. la autoridad humana se intersecta con el techo efectivo del dispositivo y nunca se suma con él;
+8. una clave fuera del techo produce `DENY` aunque el trabajador la posea;
+9. una clave dentro del techo no produce `ALLOW` si el trabajador no la posee;
+10. el actor humano se resuelve desde las fuentes canónicas del dispositivo y del contexto laboral, no desde un `employee_id` elegido libremente por cliente;
+11. una firma o PIN puede identificar o atribuir al humano conforme al contrato aprobado, pero no concede permiso, rol, turno, check-in, sede, área ni `ALLOW`;
+12. una actor session, cuando aplique, debe ser única, vigente y resoluble; su ausencia o invalidez nunca se rellena con el principal técnico;
+13. el cambio de trabajador invalida la autoridad, reautenticaciones, decisiones y estado sensible del actor anterior antes de habilitar al siguiente;
+14. el administrador que configuró o usó previamente el terminal no presta privilegios al trabajador actual;
+15. la sede y área del dispositivo restringen conforme a sus modos canónicos y no sustituyen la sede o área efectivas del actor;
+16. la política territorial de `NEXO-AUTH-015` continúa siendo obligatoria para actor y recurso;
+17. una sede o área solicitada por UI, cookie, query, body o estado local puede orientar una solicitud, pero no ampliar autoridad;
+18. revocación, suspensión, conflicto, expiración o cambio material del dispositivo invalidan decisiones derivadas según el contrato propietario;
+19. una aplicación retirada del dispositivo deja de ser elegible sin conservar acceso por caché o sesión stale;
+20. una reducción del paquete máximo invalida las capacidades afectadas aunque una decisión anterior hubiera permitido la acción;
+21. UI, Server Actions, Route Handlers, RPC, RLS y cualquier canal equivalente deberán converger en la misma decisión material;
+22. una mutación protegida revalida actor, dispositivo, permiso, contexto, territorio, recurso y estado inmediatamente antes del efecto;
+23. una decisión `DENY`, un actor no resuelto o un dispositivo no elegible produce cero efectos empresariales;
+24. la auditoría conserva principal técnico, dispositivo, actor humano, contexto, permiso, recurso, decisión y resultado sin fusionar identidades;
+25. la integración de simulación permanece reservada a `NEXO-AUTH-017`.
+
+#### 3. Fuentes canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+| Fuente | Regla preservada |
+| --- | --- |
+| `NEXO-AUTH-001` | carril base y carril operativo permanecen separados; el dispositivo compartido no presta autoridad administrativa |
+| `NEXO-AUTH-015` | sede y área efectivas del actor y del recurso se resuelven sin fallbacks permisivos de navegación |
+| `AUTH-DEV-001..002` | inventario e identidades de dispositivo, endpoint, activo, estación y principal técnico permanecen separadas |
+| `AUTH-DEV-003` | la sede fija del dispositivo es un límite explícito y nunca autoridad del actor |
+| `AUTH-DEV-004` | el área fija o conjunto permitido del dispositivo es un límite subordinado a su sede y nunca wildcard |
+| `AUTH-DEV-005` | aplicaciones permitidas definen superficie máxima y no conceden `<app>.access` |
+| `AUTH-DEV-006` | el paquete de permisos es un techo restrictivo; nunca concede autoridad al actor |
+| `AUTH-DEV-007` | firma o PIN identifica al humano mediante validación server-side sin convertirse en permiso |
+| `AUTH-DEV-008` | autoridad efectiva = autoridad humana intersectada con techo y restricciones del dispositivo |
+| `AUTH-DEV-009` | principal técnico, administrador previo, actor anterior, `navigation_role` y estado residual no transfieren privilegios |
+| `AUTH-DEV-010` | dispositivo, principal, actor, contexto, decisión y resultado permanecen correlacionables y separados |
+| `AUTH-DEV-011..013` | revocación, expiración y cambio de trabajador invalidan autoridad de forma fail-closed |
+| `AUTH-DEV-014` | la certificación física de unidades NEXO compartidas es una responsabilidad separada de este contrato de integración |
+| `SHELL-CTX-003` y `@vento/os-context` | el contexto compartido se consume como contexto resuelto; los consumidores no reconstruyen localmente autoridad equivalente |
+
+NEXO no crea una variante local del modelo de dispositivo compartido.
+
+#### 4. Identidades que nunca se fusionan
+
+La integración conserva como identidades distintas:
+
+```text
+AUTH TECHNICAL PRINCIPAL
+DEVICE_ID
+DEVICE_CODE
+ENDPOINT_ID
+ASSET_ID
+STATION_INSTANCE_ID
+ACTOR_SESSION_ID
+EMPLOYEE_ID
+SHIFT_ID
+CHECKIN_ID
+```
+
+Ninguna coincidencia de UUID, código, sesión, sede, área, terminal, navegador, IP, MAC, serial o fingerprint permite inferir otra identidad.
+
+En particular:
+
+```text
+AUTH USER DEL DEVICE != EMPLOYEE ACTOR
+DEVICE_ID != EMPLOYEE_ID
+NAVIGATION_ROLE != ROLE EFECTIVO
+```
+
+#### 5. Principal técnico del dispositivo
+
+El principal técnico demuestra que la solicitud proviene de una identidad técnica aceptada para el dispositivo.
+
+No demuestra:
+
+- qué humano ejecuta la acción;
+- qué rol posee ese humano;
+- qué turno tiene;
+- qué sede o área operativa le corresponde;
+- qué permiso posee;
+- qué recurso puede mutar;
+- que la acción deba permitirse.
+
+NEXO no copiará el identificador del principal técnico a campos de actor humano por conveniencia.
+
+#### 6. Elegibilidad del dispositivo
+
+Antes de utilizar cualquier límite del dispositivo, NEXO debe consumir un estado canónico y vigente de elegibilidad.
+
+Un dispositivo revocado, retirado, suspendido, conflictivo o no resoluble no puede producir nuevos efectos empresariales cuando su lifecycle lo clasifique como no elegible.
+
+Una indisponibilidad técnica no se reinterpreta como dispositivo válido por ausencia de evidencia contraria.
+
+#### 7. Aplicación NEXO permitida
+
+Para una sesión de dispositivo compartido, NEXO debe pertenecer al conjunto efectivo de aplicaciones de la instancia.
+
+```text
+NEXO EN DEVICE APPS
+→ SUPERFICIE NEXO ELEGIBLE
+```
+
+pero:
+
+```text
+NEXO EN DEVICE APPS
+!=
+nexo.access DEL ACTOR
+```
+
+El acceso a la aplicación debe seguir resolviendo al actor y la autorización que corresponda. La presencia de NEXO en el launcher, plantilla o binding no constituye permiso.
+
+#### 8. Techo máximo de permisos
+
+El techo efectivo del dispositivo se consume como un conjunto cerrado, exacto y versionado.
+
+Para cada `PermissionKey` NEXO:
+
+```text
+ACTOR TIENE LA CLAVE
+AND
+DEVICE CONSERVA LA CLAVE EN SU TECHO EFECTIVO
+→ CONTINUA EVALUACION
+```
+
+Cualquier otro resultado produce `DENY` o indisponibilidad conforme al contrato propietario.
+
+Quedan prohibidos:
+
+- wildcards locales;
+- inferencia por prefijo;
+- inferencia por nombre de rol;
+- inferencia por ruta;
+- inferencia por aplicación visible;
+- ampliación de una instancia sobre su plantilla;
+- fallback a un paquete más permisivo.
+
+#### 9. Actor humano efectivo
+
+Cuando una acción NEXO exige actor humano, el actor debe proceder del mecanismo canónico de identificación y sesión del dispositivo.
+
+NEXO no puede resolverlo desde:
+
+- último trabajador usado;
+- lista o selector visual de empleados;
+- `navigation_role`;
+- usuario Auth técnico;
+- sede o área del dispositivo;
+- último PIN exitoso almacenado;
+- turno de otra persona;
+- actor de una decisión cacheada.
+
+Si el actor no puede resolverse con evidencia suficiente, la acción empresarial permanece bloqueada.
+
+#### 10. Firma o PIN del trabajador
+
+Una prueba humana ligera se valida server-side y puede producir una referencia opaca de firma o identificación.
+
+El secreto crudo no forma parte de contexto, logs, auditoría, receipts ni payload persistente.
+
+Una firma válida significa, como máximo, que el humano fue identificado para el uso contractual aplicable.
+
+No significa:
+
+```text
+PIN VALIDADO = PERMISO
+PIN VALIDADO = CHECKIN
+PIN VALIDADO = TURNO
+PIN VALIDADO = STRONG REAUTH
+PIN VALIDADO = ALLOW
+```
+
+#### 11. Actor session
+
+Cuando el contrato aplicable exige una sesión de actor, NEXO debe consumir una `actor_session_id` única, vigente y asociada al dispositivo y al empleado correctos.
+
+La sesión de actor:
+
+- identifica al humano efectivo;
+- no sustituye Auth personal;
+- no crea turno;
+- no crea check-in;
+- no crea rol;
+- no crea permiso;
+- no crea territorio.
+
+Si la sesión está expirada, cerrada, ambigua o incompatible, deja de ser autoridad para nuevas acciones.
+
+#### 12. Firma por acción y sesión persistente
+
+La firma por acción y la actor session son conceptos distintos.
+
+Una firma por acción puede atribuir una operación exacta al humano validado. No demuestra por sí sola que exista un lifecycle persistente de actor conforme entre varias superficies y aplicaciones.
+
+Por tanto, NEXO no declarará materializado el cambio de trabajador, expiración o limpieza transversal solo porque exista un helper de firma.
+
+#### 13. Autoridad humana propia
+
+El trabajador aporta únicamente la autoridad que el servidor resuelva para ese mismo actor en el carril exigido por la capacidad.
+
+Para capacidades base:
+
+```text
+AUTORIDAD BASE DEL ACTOR ACTUAL
+```
+
+Para capacidades operativas:
+
+```text
+AUTORIDAD OPERATIVA DEL ACTOR ACTUAL
+```
+
+Para modalidades combinadas se conserva la semántica de `NEXO-AUTH-001`.
+
+No se mezclan fragmentos de autoridad de dos actores, dos sesiones o dos carriles.
+
+#### 14. Prohibición de herencia administrativa
+
+El dispositivo no transmite a un trabajador:
+
+- permisos del administrador que lo configuró;
+- permisos de una sesión personal previa;
+- cobertura administrativa del trabajador anterior;
+- elevaciones o reautenticaciones del actor anterior;
+- `navigation_role`;
+- permisos aparentes del principal técnico;
+- autoridad derivada de una credencial técnica privilegiada.
+
+Un trabajador con autoridad administrativa legítima puede ejercer únicamente su propia autoridad, restringida por el dispositivo y el resto del contrato.
+
+#### 15. `navigation_role`
+
+`navigation_role` puede utilizarse para presentación, navegación o experiencia únicamente donde el contrato lo permita.
+
+No puede:
+
+- resolver `PermissionKey`;
+- actuar como rol base;
+- actuar como rol operativo;
+- seleccionar un `ALLOW`;
+- completar un actor ausente;
+- justificar una mutación.
+
+Toda ruta NEXO que actualmente lo use como autoridad debe converger en la futura materialización sin ampliar permisos durante la transición.
+
+#### 16. Sede fija del dispositivo
+
+La sede fija se consume según el `effect_mode` aprobado por el contrato del dispositivo.
+
+No se transforma en sede del trabajador ni en sede del recurso.
+
+En un modo operativo de coincidencia exacta, la acción debe satisfacer simultáneamente:
+
+```text
+SEDE OPERATIVA EFECTIVA DEL ACTOR
+∩
+SEDE FIJA DEL DEVICE
+∩
+SEDE DEL RECURSO
+```
+
+Cuando el modo sea de propiedad física o custodia, NEXO conserva esa semántica exacta y no inventa una restricción administrativa adicional.
+
+#### 17. Área del dispositivo
+
+La política de área permanece subordinada a la sede fija y se consume según su modo exacto.
+
+No se admite:
+
+```text
+area_id = null → ALL_AREAS
+```
+
+ni:
+
+```text
+DEVICE SITE → TODAS LAS AREAS DE ESA SEDE
+```
+
+Cuando el modo exige área exacta o conjunto cerrado, el área efectiva del actor y el recurso deben resultar compatibles con esa política.
+
+#### 18. Territorio efectivo del actor
+
+`NEXO-AUTH-015` permanece autoritativa para resolver sede y área efectivas del actor.
+
+El dispositivo añade una restricción independiente. No sustituye:
+
+- turno;
+- check-in;
+- cobertura administrativa;
+- scope;
+- territorio del recurso.
+
+Una acción nunca puede producir `ALLOW` usando territorio del dispositivo para completar un territorio laboral ausente.
+
+#### 19. Territorio solicitado por cliente
+
+`preferredSiteId`, `preferredAreaId`, query params, body, cookies o estado visual no son autoridad.
+
+Pueden representar una intención de navegación o una solicitud de contexto, pero todo valor debe ser validado contra fuentes server-side antes de afectar una decisión.
+
+Queda prohibido:
+
+```text
+requested_site ?? device.site_id → ALLOW
+requested_area ?? device.area_id → ALLOW
+```
+
+sin la evaluación canónica completa.
+
+#### 20. Territorio del recurso
+
+El recurso protegido conserva su propia sede, área, extremos, custodia, ruta o alcance según el dominio.
+
+La sede o área del dispositivo no reescribe el recurso.
+
+Un permiso correcto sobre un recurso territorialmente incompatible permanece denegado.
+
+#### 21. Recursos multiárea, multisede y de tránsito
+
+Para recursos con origen y destino, varias áreas o una ruta, NEXO conserva todos los extremos exigidos por el permiso.
+
+La política del dispositivo se aplica conforme a su modo sin colapsar el recurso a un único `site_id` o `area_id` arbitrario.
+
+La integración no reabre las reglas específicas de remisión, tránsito, recepción o movimientos definidas en `NEXO-AUTH-004..013`.
+
+#### 22. Cambio de trabajador
+
+El cambio A→B debe producir una frontera real de autoridad:
+
+```text
+A DEJA DE SER ELEGIBLE
+→ AUTORIDAD Y ESTADO SENSIBLE DE A INVALIDOS
+→ SIN ACTOR EFECTIVO
+→ B SE IDENTIFICA INDEPENDIENTEMENTE
+→ CONTEXTO DE B SE RESUELVE DE NUEVO
+→ B QUEDA COMO ACTOR EFECTIVO
+```
+
+No se permite editar una sesión existente para reemplazar `employee_id`.
+
+B no hereda de A:
+
+- rol;
+- permisos;
+- turno;
+- check-in;
+- territorio;
+- firmas;
+- STRONG;
+- borradores personales;
+- decisiones cacheadas.
+
+#### 23. Expiración del actor
+
+Cuando la sesión de actor expira, el dispositivo técnico puede seguir autenticado, pero el humano deja de ser elegible.
+
+Nuevas acciones empresariales que exijan humano quedan bloqueadas hasta una nueva identificación válida.
+
+Actividad, navegación, heartbeat, cambio de aplicación o permanencia del turno no renuevan silenciosamente la sesión.
+
+#### 24. Revocación y cambios materiales del dispositivo
+
+Revocación, cambio de sede, cambio de política de área, cambio de aplicaciones, reducción del paquete, cambio de actor y demás cambios materiales invalidan el contexto y las decisiones afectadas.
+
+Un snapshot, caché, token derivado, respuesta tardía o cola offline anterior no conserva autoridad después de la invalidación.
+
+#### 25. Offline, stale y reintentos
+
+Una acción capturada offline o retenida para reintento se reautoriza antes de producir el efecto.
+
+Un `ALLOW` previo no se reutiliza después de:
+
+- cambio de actor;
+- expiración;
+- revocación;
+- cambio territorial;
+- cambio de aplicación;
+- cambio de techo;
+- cambio del recurso;
+- cambio del estado empresarial material.
+
+Un resultado incierto se reconcilia antes de reintentar para no duplicar efectos.
+
+#### 26. Acceso a aplicación
+
+NEXO debe separar dos decisiones:
+
+```text
+DEVICE PUEDE PRESENTAR NEXO
+```
+
+y:
+
+```text
+ACTOR PUEDE ACCEDER A NEXO
+```
+
+La primera proviene de la política del dispositivo. La segunda continúa siendo autorización empresarial del actor.
+
+No se admite devolver `ALLOW` para `nexo.access` únicamente porque `nexo` aparezca en `allowedAppCodes`.
+
+#### 27. Capacidades internas
+
+Después de superar el acceso a la aplicación, cada capacidad interna conserva su permiso exacto y contrato propietario.
+
+Ejemplos de superficie no equivalentes entre sí incluyen remisiones, inventario, conteos, movimientos, ajustes, catálogo y configuración.
+
+`nexo.access` no concede esas capacidades, y una capacidad visible no concede su mutación.
+
+#### 28. Mutaciones protegidas
+
+Toda mutación desde shared device revalida server-side, inmediatamente antes del efecto:
+
+```text
+principal técnico
++ device elegible
++ app permitida
++ actor humano
++ actor session o evidencia humana aplicable
++ PermissionKey
++ carril
++ rol efectivo
++ turno/check-in cuando aplique
++ sede/área efectivas
++ techo del device
++ territorio del device
++ recurso
++ estado
++ controles adicionales
++ denegaciones
+```
+
+La omisión de uno de los insumos obligatorios no se repara desde la UI.
+
+#### 29. Lecturas y listados protegidos
+
+Las lecturas que dependen de autorización deben filtrar antes de serializar datos al cliente.
+
+El dispositivo puede reducir el universo visible cuando su política lo exija. Nunca puede ampliarlo.
+
+Una lectura administrativa legítima conserva la autoridad propia del actor y el modo de efecto territorial del dispositivo; una lectura operativa conserva el turno, territorio y límites del device.
+
+#### 30. Convergencia entre canales
+
+Para el mismo snapshot material, los canales que puedan producir el mismo efecto deberán converger en la misma decisión:
+
+- RSC o render server-side;
+- Server Actions;
+- Route Handlers o API;
+- RPC/PostgREST;
+- RLS/Data API;
+- procesamiento asíncrono;
+- Realtime cuando pueda producir o confirmar efectos;
+- sincronización offline.
+
+Ocultar un botón no sustituye un `DENY` server-side.
+
+#### 31. Auditoría
+
+Toda acción protegida originada desde dispositivo compartido debe permitir reconstruir, según aplicabilidad:
+
+- principal técnico;
+- `device_id`;
+- endpoint o referencia técnica segura cuando exista;
+- actor humano efectivo;
+- `actor_session_id` cuando aplique;
+- aplicación;
+- permiso exacto;
+- carril y roles efectivos;
+- turno y check-in;
+- sede y área;
+- recurso;
+- decisión y razones;
+- versión contractual;
+- correlación e idempotencia cuando apliquen;
+- resultado real o ausencia de efecto;
+- timestamp confiable.
+
+No se almacenan secretos humanos ni credenciales técnicas completas.
+
+#### 32. Denegación y estados interactivos
+
+Una restricción concluyente de dispositivo, actor o permiso produce cero efectos empresariales.
+
+Los estados interactivos de identificación humana o reautenticación fuerte permanecen separados de una autorización positiva y de una denegación irreversible.
+
+NEXO consume las razones y estados canónicos; no crea aliases locales que alteren su semántica.
+
+#### 33. Seguridad de secretos
+
+PIN, credenciales del endpoint, access tokens, refresh tokens, JWT completos, API keys y secretos equivalentes no se incorporan a:
+
+- contexto empresarial;
+- metadata de recurso;
+- query strings;
+- logs;
+- auditoría funcional;
+- receipts;
+- errores visibles;
+- payload de navegación.
+
+Solo se conservan referencias opacas y evidencia segura cuando corresponda.
+
+#### 34. AS-IS verificable de NEXO
+
+El consumidor remoto actual demuestra una integración parcial:
+
+1. `resolveOperationalSession` detecta filas activas de `shared_operational_devices`;
+2. consulta `shared_operational_device_apps`;
+3. expone `sharedDeviceId`, código, label, `siteId`, `areaId` y `navigationRole`;
+4. `requireAppAccess` diferencia un camino de dispositivo compartido;
+5. existe un helper de firma por acción que invoca `sign_shared_device_action` y puede devolver trabajador y turno;
+6. existe baseline de consumidor que reconoce `@vento/os-context` entre los contratos compartidos esperados.
+
+Estas piezas son base de adopción, no evidencia de conformidad integral.
+
+#### 35. Brechas AS-IS que la materialización deberá cerrar
+
+Se observan, como mínimo, las siguientes diferencias frente al contrato aprobado:
+
+1. el resolvedor actual permite `preferredSiteId ?? sharedDevice.site_id` y `preferredAreaId ?? sharedDevice.area_id`, por lo que la futura materialización debe impedir que una preferencia amplíe territorio;
+2. el objeto de sesión actual asigna `role` y `navigationRole` desde `sharedDevice.navigation_role`;
+3. la comprobación de permisos del device utiliza `navigationRole` contra `has_operational_role_permission`;
+4. el acceso a aplicación del camino shared device puede quedar satisfecho por la presencia de la app en `allowedAppCodes` sin demostrar por sí mismo autoridad humana de `nexo.access`;
+5. la firma por acción observada es parcial y no demuestra una actor session persistente, expiración o cambio A→B transversal;
+6. no se demuestra en todas las mutaciones NEXO atribución simultánea y separada de principal técnico y actor humano;
+7. la coexistencia de helpers actuales no demuestra paridad entre UI, servidor, RPC, RLS, offline y recursos.
+
+Estas brechas describen el objetivo de futuras instancias. No autorizan cambios físicos en este marcador.
+
+#### 36. Estrategia de convergencia
+
+La futura adopción seguirá esta secuencia material por unidad:
+
+```text
+CONSERVAR COMPORTAMIENTO LEGACY OBSERVABLE
++ INTRODUCIR RESOLUCION CANONICA DE DEVICE Y ACTOR
++ INTERSECTAR TECHO, TERRITORIO Y AUTORIDAD
++ REVALIDAR EN SERVIDOR
++ MEDIR PARIDAD Y DENY PATHS
++ MIGRAR CONSUMIDORES
++ RETIRAR FALLBACKS SOLO CON EVIDENCIA
+```
+
+Durante coexistencia, una ruta legacy no puede mantenerse como fallback más permisivo.
+
+#### 37. Frontera con `AUTH-DEV-014`
+
+`AUTH-DEV-014 — Probar tablets de NEXO` define cómo certificar físicamente una unidad compartida que expone NEXO.
+
+Esta tarea define qué debe significar la integración NEXO con dispositivo compartido.
+
+Por tanto:
+
+```text
+NEXO-AUTH-016
+= CONTRATO DE INTEGRACION NEXO
+
+AUTH-DEV-014
+= CONTRATO DE CERTIFICACION FISICA DEL DEVICE NEXO
+```
+
+Una tarea no absorbe a la otra. Una unidad futura puede necesitar satisfacer ambas trazabilidades.
+
+#### 38. Frontera con `NEXO-AUTH-017`
+
+`NEXO-AUTH-017` conserva la integración de simulación estricta.
+
+Esta tarea no autoriza que una simulación altere:
+
+- actor real;
+- device real;
+- territorio real;
+- techo real del dispositivo;
+- permiso real;
+- auditoría del actor real.
+
+La combinación `shared_device + simulation` deberá consumir ambos contratos sin que uno amplíe al otro.
+
+#### 39. Frontera con `NEXO-AUTH-018`
+
+`NEXO-AUTH-018` conserva la migración de NEXO hacia paquetes compartidos de `vento-shell`.
+
+Esta tarea puede definir la semántica que NEXO debe consumir, pero no obliga a resolver aquí la mecánica final de imports, dependencias, publicación, versionado, compatibilidad o rollout de `@vento/os-context`, `@vento/contracts`, `@vento/supabase` o `@vento/ui-web`.
+
+#### 40. Frontera con `NEXO-AUTH-019`
+
+`NEXO-AUTH-019` conserva el retiro de helpers duplicados.
+
+Esta tarea identifica comportamiento que debe converger, pero no elimina todavía:
+
+- `resolveOperationalSession`;
+- evaluadores locales;
+- helpers de firma;
+- role override;
+- adapters transitorios.
+
+Su retiro exige paridad demostrada y un propietario de reemplazo vigente.
+
+#### 41. Frontera con `NEXO-AUTH-020`
+
+`NEXO-AUTH-020` conserva la ejecución integral de pruebas NEXO.
+
+Esta tarea define deny paths y criterios que deberán ser observables, pero no ejecuta la certificación integral ni convierte auditoría estática en evidencia física.
+
+#### 42. Topología física futura
+
+La cardinalidad física es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+identity = NEXO-AUTH-016::<implementation_unit_id>
+execution_gate = POST_E5_PACKAGE
+```
+
+Cada futura instancia requiere:
+
+- `implementation_unit_id` asignada;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS`;
+- alcance físico exacto;
+- autorización física explícita;
+- evidencia y rollback propios.
+
+El marcador documental no concede esa autorización.
+
+#### 43. Supabase y ownership
+
+Toda modificación futura de tablas, RPC, RLS, grants, funciones, triggers, Auth, Edge Functions, configuración o datos de Supabase requerida por este contrato pertenece a `vento-group-sas/vento-shell` y debe versionarse allí.
+
+Esta tarea no crea migraciones ni modifica Supabase.
+
+El código consumidor de NEXO se materializa únicamente dentro de una instancia física autorizada y sin redefinir contratos de datos desde el repositorio consumidor.
+
+#### 44. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- identidad, lifecycle, límites y auditoría del dispositivo ya poseen cobertura transversal vigente;
+- la intersección entre autoridad humana y techo del dispositivo ya está protegida;
+- cambios de sede, área, aplicaciones, paquete, actor y sesión ya están cubiertos por requisitos de invalidación y frescura;
+- NEXO ya posee requisitos de autorización, remisiones, paridad y efecto empresarial;
+- esta tarea especializa el consumo de contratos existentes sin introducir una obligación verificable nueva fuera de esa cobertura.
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro:
+
+- `TREQ-AUTH-003`;
+- `TREQ-AUTH-011`;
+- `TREQ-AUTH-013`;
+- `TREQ-AUTH-014`;
+- `TREQ-AUTH-015`;
+- `TREQ-AUTH-019` a `TREQ-AUTH-029`;
+- `TREQ-AUTH-034`;
+- `TREQ-AUTH-044`;
+- `TREQ-AUTH-054`;
+- `TREQ-AUTH-055`;
+- `TREQ-AUTH-063`;
+- `TREQ-AUTH-065`;
+- `TREQ-AUTH-145`;
+- `TREQ-AUTH-267`;
+- `TREQ-AUTH-269`;
+- `TREQ-AUTH-271`;
+- `TREQ-AUTH-273`;
+- `TREQ-AUTH-277`;
+- `TREQ-AUTH-278`;
+- `TREQ-AUTH-331`;
+- `TREQ-NEXO-006`;
+- `TREQ-NEXO-009`.
+
+La lista documenta cobertura heredada y no representa actualización del registro.
+
+#### 46. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define contrato documental y no compila ni despliega producto |
+| LOCAL | NOT_EXECUTED | incorporación, formato y batería documental corresponden al checkout local de la tarea |
+| REMOTA | PASS | auditoría estática sobre `vento-shell` main `73259c4f95f0cb5aff44fb4a6c93b1162fae145c` y `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`; se verificaron continuidad, owner, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, contratos `AUTH-DEV`, `@vento/os-context` y el AS-IS de sesión, guard y firma shared-device de NEXO |
+| OPERATIVA | NOT_APPLICABLE | no se identifica trabajadores reales, no se concede ni revoca autoridad y no se ejecutan operaciones NEXO |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza ninguna instancia `NEXO-AUTH-016::<implementation_unit_id>` ni se certifica una unidad física |
+
+#### 47. Criterios de aceptación
+
+- [x] principal técnico y actor humano permanecen separados;
+- [x] `device_id`, endpoint, activo, estación y empleado no se fusionan;
+- [x] NEXO permitido en el dispositivo no concede `nexo.access`;
+- [x] `navigation_role` no concede autoridad;
+- [x] toda capacidad interna conserva su `PermissionKey` exacta;
+- [x] autoridad humana y techo del dispositivo se intersectan sin suma;
+- [x] el device solo restringe y nunca concede;
+- [x] firma/PIN no se convierte en permiso, turno, check-in o STRONG;
+- [x] actor session y firma por acción conservan semánticas distintas;
+- [x] ausencia de actor humano no se rellena con principal técnico;
+- [x] cambio A→B invalida autoridad y estado del actor anterior;
+- [x] no existe herencia administrativa;
+- [x] territorio del actor permanece gobernado por `NEXO-AUTH-015`;
+- [x] sede y área del device conservan su propio `effect_mode` y nunca amplían territorio;
+- [x] preferencias de sede o área no son autoridad;
+- [x] recurso y territorio del recurso permanecen independientes;
+- [x] revocación, expiración y cambios materiales invalidan contexto afectado;
+- [x] offline y reintentos reautorizan antes del efecto;
+- [x] lectura y mutación convergen en controles server-side;
+- [x] deny produce cero efectos empresariales;
+- [x] auditoría conserva principal, device y actor sin fusionarlos;
+- [x] secretos no se incorporan a contexto ni auditoría funcional;
+- [x] se documenta el AS-IS parcial del consumidor sin declararlo conforme;
+- [x] se documentan los fallbacks observados que deberán cerrarse físicamente;
+- [x] `AUTH-DEV-014` conserva la certificación física del dispositivo NEXO;
+- [x] `NEXO-AUTH-017` conserva simulación estricta;
+- [x] `NEXO-AUTH-018` conserva migración a paquetes compartidos;
+- [x] `NEXO-AUTH-019` conserva retiro de helpers duplicados;
+- [x] `NEXO-AUTH-020` conserva pruebas integrales;
+- [x] topología futura `PER_IMPLEMENTATION_UNIT`;
+- [x] gate futuro `POST_E5_PACKAGE`;
+- [x] cero cambios de requisitos de prueba;
+- [x] cero cambios físicos autorizados en esta tarea.
+
+#### 48. Límites
+
+Esta tarea no modifica código, Supabase, migraciones, RLS, RPC, grants, Auth, datos, dispositivos, endpoints, activos, plantillas, bindings, aplicaciones, paquetes, trabajadores, sesiones, PIN, turnos, check-ins, roles, permisos, navegación, cachés ni despliegues.
+
+No:
+
+- certifica tablets o kioscos;
+- crea actor sessions reales;
+- ejecuta firmas reales;
+- corrige todavía `navigation_role` como autoridad observada;
+- corrige todavía acceso implícito de aplicación;
+- elimina fallbacks territoriales;
+- migra imports a paquetes de `vento-shell`;
+- elimina helpers duplicados;
+- integra simulación;
+- ejecuta pruebas integrales;
+- cambia el registro 04A.
+
+Todo cambio físico queda reservado a instancias explícitamente autorizadas.
+
+#### 49. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-015 — Filtrar por sede y área efectivas`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-016 — Integrar dispositivo compartido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-017 — Integrar simulación estricta`
 ### [ ] NEXO-AUTH-017 — Integrar simulación estricta
 ### [ ] NEXO-AUTH-018 — Migrar a paquetes de vento-shell
 ### [ ] NEXO-AUTH-019 — Eliminar helpers duplicados
