@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021::GAP-PKG-045"
@@ -17,12 +17,284 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.mjs",
+      "change": "MODIFY",
+      "scope": "Add explicit NOW/LATER/NEVER readiness applicability profile, persist it across resumes, ignore execution-only reused metadata for semantic stability, recognize package rollback_steps and distinguish technical readiness from final pilot readiness."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover temporal applicability, technical readiness, deferred pilot gates, rollback_steps evidence, cross-resume profile persistence and semantic stability."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Emit TECHNICAL_READINESS PASS as a resumable intermediate CI021 result when all NOW gates pass while LATER gates remain deferred, without sealing VERIFIED or starting CI022."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for technical readiness output, deferred gate reporting and preservation of final pilot approval boundary."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "change": "MODIFY",
+      "scope": "Treat the normative E5 readiness contract as lifecycle metadata so evolving readiness rules do not force false physical revalidation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-integration-impact.test.mjs",
+      "change": "MODIFY",
+      "scope": "Prove the readiness lifecycle plus normative E5 delta reuses physical evidence and keeps material_paths empty."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md",
+      "change": "MODIFY",
+      "scope": "Evolve the readiness contract with mandatory temporal applicability semantics NOW/LATER/NEVER, default NOW fail-closed, explicit rationale, persistence and no inference from incidental text."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+    "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-integration-impact.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "npm run docs:implementation:accelerator:test",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-21T11:00:10.369Z"
+  "zero_treq_reason": "Lifecycle/readiness governance evolution only. Adds explicit temporal applicability and technical-readiness handoff semantics without changing product behavior, Supabase, database schema, business requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-21T11:10:28.416Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-21T11:32:11.243Z",
+      "candidate_head_before": "a53626ec898c6f56b2099a5fd8f68f849a30fa8a",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-21T11:32:21.752Z",
+      "execution_started_at": "2026-09-21T11:32:20.649Z",
+      "duration_ms": 1102,
+      "execution_candidate_head": "217dc7abbe67e8e310a1e33572688a680b503c61",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-21T11:59:43.611Z",
+      "candidate_head": "9889554bd4e6728b81fd764c66e9ac8eaef24619",
+      "commands": [
+        "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+        "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+        "node --check scripts/docs/implementation-execution-coordinator.mjs",
+        "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+        "node --check scripts/docs/implementation-integration-impact.mjs",
+        "node --test scripts/docs/implementation-integration-impact.test.mjs",
+        "npm run docs:implementation:accelerator:test",
+        "npm run docs:correction:check",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "npm run quality:lint:ratchet -- --base origin/main",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+          "duration_ms": 74,
+          "started_at": "2026-09-21T11:54:13.782Z",
+          "completed_at": "2026-09-21T11:54:13.857Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+          "duration_ms": 183,
+          "started_at": "2026-09-21T11:54:13.858Z",
+          "completed_at": "2026-09-21T11:54:14.041Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b781c8427ce6672aa1342dcc7ad24ba05734cc20f07a1a776c7414d733a2cc50",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-execution-coordinator.mjs",
+          "duration_ms": 78,
+          "started_at": "2026-09-21T11:54:14.042Z",
+          "completed_at": "2026-09-21T11:54:14.120Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+          "duration_ms": 1305,
+          "started_at": "2026-09-21T11:54:14.121Z",
+          "completed_at": "2026-09-21T11:54:15.426Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "d2f53d2624ab25fb1b1b078fa4d0a3fcbe29e4dff6fb61d18e767429849204d8",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/implementation-integration-impact.mjs",
+          "duration_ms": 78,
+          "started_at": "2026-09-21T11:54:15.427Z",
+          "completed_at": "2026-09-21T11:54:15.505Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/implementation-integration-impact.test.mjs",
+          "duration_ms": 186,
+          "started_at": "2026-09-21T11:54:15.506Z",
+          "completed_at": "2026-09-21T11:54:15.692Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f5ed5ee409f2a9d5f2344bddd83c4ff24a25b2254fd212b9f42124c385b1dc5a",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:implementation:accelerator:test",
+          "duration_ms": 1821,
+          "started_at": "2026-09-21T11:54:15.693Z",
+          "completed_at": "2026-09-21T11:54:17.514Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c798a0680521140abb2b2c5ab100e5564694c109e3b35b98cbbe4e0751a8665f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 1977,
+          "started_at": "2026-09-21T11:54:17.515Z",
+          "completed_at": "2026-09-21T11:54:19.493Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "806c100c014b17315ed5a97982a338aedeeb280bd56a57a7ac30ea0e9ae63359",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "duration_ms": 98242,
+          "started_at": "2026-09-21T11:54:19.493Z",
+          "completed_at": "2026-09-21T11:55:57.736Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "dca5474e55096f4b9f0a1abf471fcefb3a591d4b808a34aa42c17978d780af8e",
+          "stderr_sha256": "cc16bb53fb60f312299d6f9150f5e54b5c9ddefcaffa80d241262f9d65a270cb"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 174989,
+          "started_at": "2026-09-21T11:55:57.737Z",
+          "completed_at": "2026-09-21T11:58:52.727Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "14ab648d97ea6ad0baf4a3731571f968d0024a1fbb67ac3c106a4b2709f98d31",
+          "stderr_sha256": "248eb15af329a239e2a4a22df959561d4077df9c09542b040195555108048e56"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 29623,
+          "started_at": "2026-09-21T11:58:52.728Z",
+          "completed_at": "2026-09-21T11:59:22.352Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "62ac71485e2547536f2d5d5b4f1a928d16538558f91792c2e0b8144774e8492d",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 3684,
+          "started_at": "2026-09-21T11:59:22.353Z",
+          "completed_at": "2026-09-21T11:59:26.038Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "b38daa940413d06c60d14b686800c114058715cf7de15345b872cf7383d8408c",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 636,
+          "started_at": "2026-09-21T11:59:26.039Z",
+          "completed_at": "2026-09-21T11:59:26.676Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "dc627b89d0e52ca14ebf4fa87c957a42557104bc83e736766b6700edefc701c1",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run quality:lint:ratchet -- --base origin/main",
+          "duration_ms": 16860,
+          "started_at": "2026-09-21T11:59:26.677Z",
+          "completed_at": "2026-09-21T11:59:43.537Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "bcbb404999b64847477ab1b2d887a6ebff15309de5a7fbd694587735875102a3",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "duration_ms": 72,
+          "started_at": "2026-09-21T11:59:43.538Z",
+          "completed_at": "2026-09-21T11:59:43.610Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-21T11:59:53.228Z",
+      "validated_candidate_head": "9889554bd4e6728b81fd764c66e9ac8eaef24619",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-21T11:00:10.369Z",
+  "implemented_at": "2026-09-21T11:32:31.080Z",
+  "verified_at": "2026-09-21T11:59:53.228Z"
 }

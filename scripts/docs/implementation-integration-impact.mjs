@@ -17,6 +17,7 @@ const IMPLEMENTATION_DOCTOR_SCRIPT = 'node scripts/docs/implementation-doctor.mj
 
 const INTEGRATION_LIFECYCLE_EXACT_PATHS = new Set([
   'docs/plan-canonico/modular/task-development-policy.json',
+  'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md',
   'scripts/docs/canonical-task-preflight.mjs',
   'scripts/docs/docs-runtime-primitives.mjs',
   'scripts/docs/docs-runtime-primitives.test.mjs',

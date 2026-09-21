@@ -1522,6 +1522,30 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
           return;
         }
 
+        if (readiness.technicalReady) {
+          printResult({
+            ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
+            STATUS: 'IMPLEMENTED', EXECUTOR_STATE: state,
+            CANDIDATE_SHA: request.candidate_commit, LIFECYCLE_HEAD_SHA: request.lifecycle_head_commit,
+            PREVERIFY: preverifyMode,
+            PREVERIFY_RECEIPT: readinessStateChanged
+              ? 'REFRESHED_AFTER_GOVERNANCE_ONLY_CHECKPOINT'
+              : 'REUSED_EXACT_CANDIDATE',
+            READINESS_GATE_ENGINE: IMPLEMENTATION_READINESS_GATE_ENGINE_MODEL_ID,
+            TECHNICAL_READINESS: 'PASS',
+            READY_GATE_PASS: readiness.state.summary.pass_count,
+            READY_GATE_FAIL: readiness.state.summary.fail_count,
+            READY_GATE_BLOCKED: readiness.state.summary.blocked_count,
+            READY_GATE_NO_APLICA: readiness.state.summary.not_applicable_count,
+            READY_GATE_DEFERRED: readiness.state.summary.deferred_count,
+            BLOCKED_GATES: readiness.state.summary.blocked_gates.join(',') || 'NONE',
+            DEFERRED_GATES: readiness.state.summary.deferred_gates.join(',') || 'NONE',
+            NEXT_GATE: readiness.nextGate, READINESS_INPUT: readiness.inputPath,
+            HUMAN_GATE: 'SI', RESUMABLE: 'SI',
+          });
+          return;
+        }
+
         printResult({
           ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
           STATUS: 'IMPLEMENTED', EXECUTOR_STATE: state,
@@ -1536,7 +1560,9 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
           READY_GATE_FAIL: readiness.state.summary.fail_count,
           READY_GATE_BLOCKED: readiness.state.summary.blocked_count,
           READY_GATE_NO_APLICA: readiness.state.summary.not_applicable_count,
+          READY_GATE_DEFERRED: readiness.state.summary.deferred_count,
           BLOCKED_GATES: readiness.state.summary.blocked_gates.join(',') || 'NONE',
+          DEFERRED_GATES: readiness.state.summary.deferred_gates.join(',') || 'NONE',
           NEXT_GATE: readiness.nextGate,
           READINESS_INPUT: readiness.inputPath,
           HUMAN_GATE: 'SI', RESUMABLE: 'SI',
