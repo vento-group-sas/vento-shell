@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1224** |
+| Aprobadas | **1225** |
 | En propuesta | **0** |
-| No iniciadas | **372** |
+| No iniciadas | **371** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **76.69% (1224/1596)** |
+| Porcentaje de completamiento | **76.75% (1225/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **372** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1125** |
+| ⏸ NO_EVALUADA | **371** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1126** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-019` — Eliminar helpers duplicados | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-020` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-021` — Auditar permisos actuales de LPN, activos y contenedores | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-020` — Ejecutar pruebas integrales | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-021` — Auditar permisos actuales de LPN, activos y contenedores | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-022` — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -951,7 +951,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-017` | Integrar simulación estricta | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-018` | Migrar a paquetes de vento-shell | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-019` | Eliminar helpers duplicados | — | — | `bloques/K_NEXO/00_INTRO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-020` | Ejecutar pruebas integrales | — | — | `bloques/K_NEXO/00_INTRO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-020` | Ejecutar pruebas integrales | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-001` | Clasificar consumibles, stock por cantidad, reutilizables, activos serializados, repuestos, kits y contenedores | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-002` | Definir propósito y tipos canónicos de LPN | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-DOM-003` | Definir ciclo de vida de LPN: crear, activar, cerrar, anular y reetiquetar | — | — | `bloques/K_NEXO/02_DOMINIO_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
