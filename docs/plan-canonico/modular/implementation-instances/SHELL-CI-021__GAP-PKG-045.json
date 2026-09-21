@@ -1,7 +1,7 @@
 {
   "instance_id": "SHELL-CI-021::GAP-PKG-045",
   "task_id": "SHELL-CI-021",
-  "status": "IN_PROGRESS",
+  "status": "IMPLEMENTED",
   "target_repositories": [
     "vento-group-sas/vento-shell"
   ],
@@ -87,7 +87,12 @@
     "approval_statement": "APROBADO SHELL-CI-021::GAP-PKG-045",
     "source_contract_sha256": "e395b9fa825770cfc1fc735af82a12f15aaceeee915ced174e4e003dc341e31c"
   },
-  "evidence": [],
+  "evidence": [
+    "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:package:gate:check -- --package-id GAP-PKG-045 status=PASS",
+    "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:package:readiness:check -- --package GAP-PKG-045 status=PASS",
+    "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:package:execution:check status=PASS",
+    "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:implementation:check status=PASS"
+  ],
   "target_environments": [
     {
       "environment_role": "STAGING",
