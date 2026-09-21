@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "DOCUMENTARY_CONTRADICTION",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "NEXO-AUTH-009"
@@ -17,12 +17,36 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/D_MATRICES/06_OPERATIVOS_LOGISTICA_Y_GERENCIA.md",
+      "change": "MODIFY",
+      "scope": "Reconcile the historical conductor_logistica matrix with the frozen 140-key authorization catalog and the 16 current operational grants without changing TREQ, datasets, Supabase or product code."
+    }
+  ],
+  "validation_commands": [
+    "node scripts/docs/correction-control.mjs --check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "AUTH-RBAC-018::CORR-001 corrige exclusivamente la contradicción documental histórica de AUTH-RBAC-018 frente al catálogo y grants ya aprobados; no crea ni modifica requisitos TREQ ni Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-21T01:54:06.731Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza AUTH-RBAC-018::CORR-001 exclusivamente para reconciliar AUTH-RBAC-018 con AUTH-CAT-022 a AUTH-CAT-025, el conjunto activo de 140 PermissionKey y operational-role-grants@1.0.0; preservar el snapshot histórico de 112 permisos como lineage no autorizante; reconocer 16 grants vigentes de conductor_logistica; separar accept_custody, start_transit y deliver; mantener dispatch, transit y transit.view fuera de autoridad runtime; no cambiar datasets, grants, TREQ, 04A, Supabase ni código físico; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.",
+    "source_contract_sha256": "f32854bac397d09cadb88b40b379573743e1260fa10ee577b45c5f67d704178a"
+  },
   "evidence": [],
   "opened_at": "2026-09-21T01:37:38.724Z"
 }

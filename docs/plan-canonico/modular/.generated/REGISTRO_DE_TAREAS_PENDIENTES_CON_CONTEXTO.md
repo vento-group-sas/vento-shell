@@ -12,17 +12,23 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `AUTH-RBAC-018::CORR-001`
+### 1. Termina la corrección abierta — `AUTH-RBAC-018::CORR-001`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO: autoriza AUTH-RBAC-018::CORR-001 exclusivamente para reconciliar AUTH-RBAC-018 con AUTH-CAT-022 a AUTH-CAT-025, el conjunto activo de 140 PermissionKey y operational-role-grants@1.0.0; preservar el snapshot histórico de 112 permisos como lineage no autorizante; reconocer 16 grants vigentes de conductor_logistica; separar accept_custody, start_transit y deliver; mantener dispatch, transit y transit.view fuera de autoridad runtime; no cambiar datasets, grants, TREQ, 04A, Supabase ni código físico; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/bloques/D_MATRICES/06_OPERATIVOS_LOGISTICA_Y_GERENCIA.md`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `node scripts/docs/correction-control.mjs --check`
+  2. `npm run docs:plan:build`
+  3. `npm run docs:plan:check`
+  4. `npm run docs:plan:test`
+  5. `npm run docs:treq:check`
+  6. `npm run docs:treq:test`
+  7. `git diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id AUTH-RBAC-018::CORR-001`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
