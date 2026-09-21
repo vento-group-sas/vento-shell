@@ -9858,7 +9858,749 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-012 — Proteger conteos`
-### [ ] NEXO-AUTH-012 — Proteger conteos
+### ✅ NEXO-AUTH-012 — Proteger conteos
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-011 — Proteger ajustes de inventario
+**Tarea siguiente:** NEXO-AUTH-013 — Proteger movimientos
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger consulta, ejecución, observación, cierre, investigación y resolución de conteos mediante las PermissionKey activas `nexo.inventory.stock_counts.view`, `nexo.inventory.stock_counts.perform`, `nexo.inventory.initial_counts.view`, `nexo.inventory.stock_count_variances.approve` y `nexo.inventory.stock_count_variances.resolve`, preservando conteo ciego, segregación contador/investigador/aprobador, snapshots, claims, receipts append-only, idempotencia, cutoff de ledger y frontera estricta con ajustes
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-012::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger de extremo a extremo el ciclo de conteos de inventario para que crear, consultar, asignar, reclamar, capturar, guardar, cerrar, investigar, aprobar o resolver diferencias dependa de capacidades exactas, actor, sesión humana, función, territorio, recurso, finalidad, versión y claim verificables, sin convertir el conteo en ajuste, movimiento, reconciliación automática, exposición prematura del expected ni publicación de stock.
+
+#### 2. Resultado contractual
+
+El frente se divide en decisiones autorizantes distintas.
+
+Consulta:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ PermissionKey nexo.inventory.stock_counts.view
++ UN CARRIL COMPLETO BASE U OPERACIONAL
++ TERRITORIO Y RECURSO COMPATIBLES
++ ETAPA Y CAMPOS VISIBLES COMPATIBLES
++ DENEGACIONES AUSENTES
+→ CONSULTA AUTORIZABLE
+```
+
+Ejecución física del conteo:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ SESION HUMANA ATRIBUIDA
++ PermissionKey nexo.inventory.stock_counts.perform
++ CARRIL OPERACIONAL VALIDO
++ TURNO Y CHECK-IN CUANDO APLIQUEN
++ DISPOSITIVO Y TERRITORIO VALIDOS
++ WORK ITEM + RONDA + CLAIM VIGENTES
++ SCOPE SNAPSHOT VIGENTE
++ POLICY DE CONTEO VIGENTE
++ VERSIONES ESPERADAS
++ DENEGACIONES AUSENTES
+→ CAPTURA AUTORIZABLE
+```
+
+Aprobación o resolución de una diferencia:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ PermissionKey exacta de varianza
++ COMPONENTE BASE VALIDO
++ COMPONENTE OPERACIONAL VALIDO
++ MISMO ACTOR Y MISMO RECURSO
++ INTERSECCION TERRITORIAL NO VACIA
++ SEGREGACION RESPECTO DEL CONTADOR
++ MOTIVO + EVIDENCIA + AUDITORIA
++ CASO Y VERSION VIGENTES
++ DENEGACIONES AUSENTES
+→ DECISION SOBRE VARIANZA AUTORIZABLE
+```
+
+Ninguna de estas decisiones sustituye a las demás.
+
+#### 3. PermissionKey activas exactas
+
+El catálogo vigente conserva activas:
+
+```text
+nexo.inventory.stock_counts.view
+nexo.inventory.stock_counts.perform
+nexo.inventory.initial_counts.view
+nexo.inventory.stock_count_variances.approve
+nexo.inventory.stock_count_variances.resolve
+```
+
+La clave amplia:
+
+```text
+nexo.inventory.counts
+```
+
+no es una PermissionKey activa y no puede autorizar runtime, RLS, RPC, navegación ni mutaciones.
+
+#### 4. Consulta de conteos
+
+`nexo.inventory.stock_counts.view` conserva modalidad:
+
+```text
+BASE_OR_OPERATIONAL
+```
+
+La consulta puede satisfacerse por un carril base completo o por un carril operacional completo, evaluados de forma independiente.
+
+El permiso no concede ejecución, cierre, aprobación de diferencias, resolución, ajuste ni publicación de stock.
+
+Antes de la certificación de una observación ciega, la consulta no puede exponer expected, diferencia, cantidad previa, valor, alerta derivada ni pista de conciliación fuera de la etapa autorizada.
+
+#### 5. Ejecución de conteos
+
+`nexo.inventory.stock_counts.perform` conserva modalidad:
+
+```text
+OPERATIONAL_ONLY
+```
+
+El dataset vigente contiene concesión operacional directa para `bodeguero` bajo `CTX-WH-COUNT-PERFORM`.
+
+La capacidad permite capturar y enviar cantidades físicas en sesiones válidas de la bodega activa. No concede:
+
+- aprobar diferencias;
+- resolver diferencias;
+- ajustar stock;
+- reabrir sesiones cerradas;
+- alterar observaciones confirmadas de otro actor;
+- publicar movimientos de inventario.
+
+#### 6. Consulta de conteos iniciales
+
+`nexo.inventory.initial_counts.view` conserva modalidad:
+
+```text
+BASE_OR_OPERATIONAL
+```
+
+Es una capacidad de lectura de sesiones de conteo inicial. No concede ejecución ni aplicación de diferencias.
+
+Su permanencia en el catálogo no reautoriza la clave legacy `nexo.inventory.counts` ni permite reutilizarla como writer de conteos.
+
+#### 7. Aprobación de varianzas
+
+`nexo.inventory.stock_count_variances.approve` conserva modalidad:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+El componente base existe para:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+El componente operacional vigente existe para:
+
+```text
+gerencia_operativa
+```
+
+Ningún componente autoriza por sí solo. La decisión exige coincidencia del mismo actor, mismo permiso, mismo recurso, contexto compatible y segregación frente al actor que capturó el conteo.
+
+#### 8. Resolución de varianzas
+
+`nexo.inventory.stock_count_variances.resolve` conserva modalidad:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+La composición autorizante usa los mismos componentes base y operacional de la aprobación, pero resolver no es sinónimo de aprobar ni de publicar ajuste.
+
+Toda resolución debe conservar causa, evidencia, decisión, actor, recurso, territorio, versión y auditoría.
+
+#### 9. Segregación de funciones
+
+Se mantienen separados como mínimo:
+
+```text
+CONTADOR
+!=
+INVESTIGADOR
+!=
+APROBADOR DE VARIANZA
+!=
+RESOLUTOR DE VARIANZA
+!=
+PUBLICADOR DE AJUSTE
+```
+
+El actor que captura una observación no puede aprobar o resolver su propia diferencia cuando la política exige segregación.
+
+La autoridad jerárquica o acceso de lectura no elimina esta frontera.
+
+#### 10. Denegación por defecto
+
+No autorizan por sí solos un conteo ni una decisión sobre varianza:
+
+```text
+nexo.access
+nexo.inventory.stock
+nexo.inventory.counts
+nexo.inventory.stock_counts.view
+nexo.inventory.initial_counts.view
+nexo.inventory.adjustments.view
+rol o cargo
+sede seleccionada
+URL directa
+QR
+scanner
+LOC visible
+stock visible
+sesion visible
+estado open o closed
+all_sites
+dispositivo compartido
+```
+
+Cada acción exige su PermissionKey exacta y contexto compatible. Toda ausencia produce `DEFAULT_DENY`.
+
+#### 11. Recurso y territorio
+
+La autorización se resuelve sobre el recurso exacto del conteo y no sobre una sede abstracta.
+
+El servidor debe poder resolver, según corresponda:
+
+- `count_id` o identidad canónica equivalente;
+- work item;
+- ronda;
+- sesión;
+- claim;
+- sede;
+- área;
+- LOC;
+- posiciones incluidas;
+- sujetos incluidos;
+- política;
+- propósito;
+- scope snapshot;
+- versiones;
+- actor asignado;
+- dispositivo;
+- estado y etapa.
+
+El territorio del recurso debe quedar contenido en la cobertura del actor y del carril autorizante aplicable.
+
+#### 12. Fuente y work item
+
+Todo conteo se origina en una de las fuentes canónicas aprobadas por `NEXO-UX-018` y materializa un work item identificable.
+
+No se admite un conteo improvisado sin:
+
+- fuente;
+- tipo de sujeto;
+- finalidad;
+- ventana;
+- policy;
+- scope snapshot;
+- expected line count;
+- digest.
+
+La selección manual de una pantalla o LOC no crea autoridad ni fuente empresarial.
+
+#### 13. Snapshot de alcance
+
+Antes de capturar se persiste un snapshot inmutable con el alcance admitido, incluyendo sujetos, ubicaciones, posiciones, versiones de catálogo, reglas de inclusión/exclusión y digest.
+
+Un cambio posterior del maestro no reescribe la sesión ya abierta.
+
+Un alcance parcial es válido únicamente si la regla de parcialidad fue declarada antes de observar.
+
+#### 14. Rondas, sesión y claim
+
+Cada work item puede producir rondas independientes.
+
+Cada ronda conserva al menos:
+
+- asignación;
+- actor;
+- sesión humana;
+- dispositivo;
+- claim único;
+- heartbeat;
+- policy;
+- versión.
+
+Pausa, expiración, transferencia, revocación, cambio de actor o cambio territorial cierran o invalidan el claim sin borrar receipts previamente confirmados.
+
+#### 15. Política de conteo ciego
+
+El inventario usa por defecto:
+
+```text
+BLIND_QUANTITY
+```
+
+Los activos pueden usar:
+
+```text
+IDENTITY_GUIDED_QUANTITY_BLIND
+```
+
+`GUIDED_VERIFICATION` requiere una política, versión y razón excepcionales explícitas.
+
+En modo ciego, expected, diferencia, cantidad previa, valor o alertas derivadas no pueden filtrarse mediante HTML, caché, respuesta de red, exportación, UI, logs visibles o precarga del formulario.
+
+#### 16. Observaciones append-only
+
+Cada observación confirmada es append-only y conserva, cuando aplique:
+
+- sujeto;
+- identidad;
+- LOC;
+- posición;
+- cantidad cruda;
+- UOM;
+- perfil;
+- factor;
+- cantidad base;
+- precisión;
+- condición;
+- evidencia;
+- actor;
+- dispositivo;
+- tiempos;
+- versión;
+- fingerprint;
+- receipt.
+
+Una corrección previa al cierre crea una nueva versión enlazada; no sobrescribe silenciosamente la observación anterior.
+
+#### 17. Cero, vacío, inesperado y omisión
+
+Se conserva semántica separada:
+
+```text
+VACIO = PENDIENTE
+CERO = OBSERVACION CONFIRMADA EN CERO
+NO OBSERVADO != FALTANTE AUTOMATICO
+INESPERADO = LINEA SEPARADA PENDIENTE DE CLASIFICACION
+```
+
+Un inesperado no se agrega automáticamente a stock ni al catálogo.
+
+Una omisión permanece dentro de la cobertura y no desaparece por cerrar la interfaz.
+
+#### 18. Identidad y UOM
+
+La captura conserva identidad física y UOM reproducibles.
+
+La conversión a unidad base debe quedar gobernada por perfil y versión vigentes. Un cambio posterior de UOM o presentación no puede reescribir una observación histórica.
+
+Scanner o QR identifican candidatos dentro de la sesión; no confirman cantidad ni autoridad por sí solos.
+
+#### 19. Cutoff y expected reproducible
+
+Cada observación online confirmada recibe un `observation_cutoff_sequence` autoritativo en la misma frontera de su receipt.
+
+Expected se reconstruye desde:
+
+```text
+CHECKPOINT VERIFICADO
++ LEGS DEL LEDGER HASTA observation_cutoff_sequence
+```
+
+No se compara contra una proyección mutable tomada arbitrariamente al cerrar.
+
+Un gap de ledger bloquea una diferencia definitiva y exige reconciliación o recuento.
+
+#### 20. Concurrencia
+
+Un movimiento concurrente no desaparece ni se absorbe silenciosamente en la diferencia.
+
+Versiones esperadas, cutoff, scope digest, work item, ronda y receipt permiten distinguir:
+
+- captura válida;
+- cliente obsoleto;
+- movimiento concurrente;
+- resultado desconocido;
+- conflicto de claim;
+- necesidad de recuento.
+
+#### 21. Alcance parcial y recuento
+
+Un recuento crea una ronda nueva enlazada y conserva las rondas anteriores.
+
+Cuando la policy exija independencia:
+
+- se usa contador distinto;
+- no se muestra la observación anterior;
+- no se prellena la cantidad previa;
+- no se promedian cantidades automáticamente;
+- no se escoge silenciosamente un resultado.
+
+Toda decisión entre rondas queda trazable.
+
+#### 22. Idempotencia y receipts
+
+Autosave y confirmación conservan como mínimo:
+
+- productor;
+- sesión;
+- ronda;
+- sujeto;
+- versión;
+- idempotency key;
+- fingerprint;
+- expected versions;
+- scope digest;
+- payload digest.
+
+Misma key y mismo payload devuelven el mismo receipt. Misma key y payload distinto producen conflicto.
+
+Un timeout obliga a consultar el resultado antes de repetir.
+
+#### 23. Offline y sincronización
+
+Offline puede conservar un borrador local no concluyente.
+
+Offline no puede confirmar:
+
+- claim;
+- permiso;
+- cutoff;
+- cierre;
+- varianza;
+- ajuste;
+- movimiento.
+
+Al sincronizar se revalidan actor, sesión, territorio, recurso, policy, versiones, claim y PermissionKey exacta.
+
+#### 24. Clasificación de diferencias
+
+Las diferencias se clasifican como mínimo entre:
+
+- ninguna;
+- cantidad positiva;
+- cantidad negativa;
+- identidad;
+- ubicación;
+- condición;
+- UOM;
+- cobertura;
+- ventana de movimientos;
+- calidad de datos.
+
+Una diferencia cuantitativa no borra una diferencia cualitativa.
+
+#### 25. Investigación
+
+Cada caso de diferencia conserva:
+
+- work;
+- sesión;
+- rondas;
+- sujeto;
+- observed;
+- expected;
+- movimientos relevantes;
+- evidencia;
+- responsable;
+- severidad;
+- plazo;
+- estado;
+- resolución.
+
+Conteos contienen y transfieren el caso; no resuelven automáticamente pérdida, daño, disposición, UOM, ubicación o causa.
+
+#### 26. Frontera con ajustes
+
+La frontera es estricta:
+
+```text
+CONTEO
+→ OBSERVACION
+→ EXPECTED REPRODUCIBLE
+→ DIFERENCIA
+→ INVESTIGACION / RECUENTO
+→ CANDIDATO DOCUMENTADO
+
+CANDIDATO DOCUMENTADO
+!=
+AJUSTE PUBLICADO
+```
+
+Crear, guardar, cerrar, anular o consultar un conteo produce cero inserts en `inventory_movements` y cero mutación de stock.
+
+La publicación pertenece a `NEXO-AUTH-011` y al command boundary de ajustes.
+
+#### 27. Frontera con aprobación y resolución de varianza
+
+`stock_count_variances.approve` y `stock_count_variances.resolve` gobiernan decisiones sobre el expediente de diferencia.
+
+No autorizan por sí solas:
+
+- `adjustments.register`;
+- posting al ledger;
+- upserts directos de stock;
+- modificación retroactiva de observaciones;
+- cierre ficticio de una investigación incompleta.
+
+#### 28. Frontera con movimientos
+
+El conteo no crea movimientos autoritativos.
+
+Cuando una decisión posterior requiera efecto cuantitativo, ese efecto se publica únicamente por el writer canónico correspondiente y produce su propio receipt.
+
+`NEXO-AUTH-013 — Proteger movimientos` permanece como frontera posterior independiente.
+
+#### 29. Corrección y anulación
+
+Antes del cierre, corregir una observación produce una versión enlazada y conserva el original.
+
+Después del cierre no existen UPDATE o DELETE destructivos sobre sesión, ronda, observación, cutoff o expected snapshot.
+
+Un error posterior exige anulación documentada y, cuando proceda, nueva ronda. Cancelar una sesión conserva expediente y cero efecto cuantitativo.
+
+#### 30. Consulta y exportación
+
+Consulta y exportación revalidan PermissionKey, territorio, etapa y minimización de datos.
+
+Una exportación no puede revelar expected o diferencias a un contador durante una etapa ciega.
+
+Strings de rol, acceso general a stock o visibilidad de la sede no sustituyen `stock_counts.view`.
+
+#### 31. Dispositivo compartido
+
+Un dispositivo compartido no es el contador empresarial.
+
+PIN, identidad técnica del equipo, sede configurada o scanner no sustituyen actor, sesión humana, turno, check-in, PermissionKey, claim ni relación con el work item.
+
+Toda observación queda atribuida al actor efectivo.
+
+#### 32. AS-IS verificado en `vento-nexo`
+
+El snapshot remoto `f0a12557a1a258c84b025933653dc756de4b5a59` conserva una superficie de conteos iniciales todavía incompatible con el contrato objetivo.
+
+En `src/app/inventory/count-initial/session/[id]/page.tsx`:
+
+- `requireAppAccess` recibe `permissionCode: "inventory.counts"`;
+- la normalización produce una clave amplia que no existe activa en el catálogo vigente;
+- la pantalla lee `current_qty_at_open`, `current_qty_at_close`, `quantity_delta` y `adjustment_applied_at` junto con la observación;
+- durante una sesión abierta calcula y muestra `current` y `delta`;
+- la UI explica que el permiso `inventory.counts` permite crear, cerrar y aprobar;
+- tras cerrar ofrece desde la misma superficie una acción para aprobar ajustes.
+
+En `src/app/api/inventory/count-initial/approve/route.ts`:
+
+- se valida usuario autenticado;
+- se exige que la sesión esté `closed`;
+- se invoca directamente `apply_inventory_count_adjustments`;
+- el caller no demuestra la composición exacta `BASE_AND_OPERATIONAL`, segregación respecto del contador ni la separación conteo → investigación → decisión → ajuste exigida por este contrato.
+
+Este estado es evidencia de convergencia pendiente; no es autoridad canónica.
+
+#### 33. Convergencia técnica obligatoria
+
+La futura materialización deberá:
+
+- retirar `nexo.inventory.counts` como autorización runtime;
+- usar `stock_counts.view` para lectura;
+- usar `stock_counts.perform` para captura;
+- preservar `initial_counts.view` como lectura específica;
+- usar `stock_count_variances.approve` y `resolve` únicamente para sus decisiones exactas;
+- impedir expected y delta durante conteo ciego;
+- separar la acción de ajuste de la superficie de captura;
+- introducir work item, ronda, claim, policy, snapshot y receipts conforme al contrato;
+- eliminar el ajuste automático desde el flujo de conteos;
+- conservar history append-only;
+- hacer el expected reproducible desde ledger + cutoff;
+- revalidar autorización en servidor y RLS.
+
+#### 34. Modelo físico objetivo
+
+La futura implementación debe hacer converger `inventory_count_sessions`, líneas, entries, work items, rondas, observations, claims, receipts, casos de diferencia y proyecciones hacia un único modelo de verdad reproducible.
+
+La sesión no será simultáneamente observación física, decisión de varianza y writer de ajuste.
+
+#### 35. Ownership de Supabase
+
+Toda futura modificación de:
+
+- tablas;
+- RPC;
+- RLS;
+- grants;
+- funciones;
+- triggers;
+- tipos;
+- migraciones;
+- outbox;
+- políticas de idempotencia;
+- rollback;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Esta tarea no ejecuta cambios Supabase.
+
+#### 36. Materialización física posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador global no autoriza código ni infraestructura.
+
+Cada materialización futura usa:
+
+```text
+NEXO-AUTH-012::<implementation_unit_id>
+```
+
+solo después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+#### 37. Paquete y convergencia futura
+
+La cobertura vigente vincula el frente de conteos a:
+
+```text
+GAP-PKG-096
+```
+
+La futura implementación debe consumir el handoff de `NEXO-UX-018`, respetar la frontera con `NEXO-UX-019` y ejecutar la transición sin reabrir decisiones documentales ya aprobadas.
+
+#### 38. Validaciones funcionales heredadas
+
+La futura implementación conserva la matriz:
+
+```text
+CNT-VAL-001 ... CNT-VAL-048
+```
+
+y los inventarios contractuales de `NEXO-UX-018`, incluyendo veinticuatro artefactos, veinticuatro pasos, veintidós estados empresariales/técnicos, treinta estados de interfaz, ocho colas, diez fuentes y catorce superficies.
+
+Esta tarea no redefine esos conjuntos.
+
+#### 39. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La autorización de conteos especializa capacidades y fronteras ya cubiertas por requisitos vigentes sin crear una obligación verificable nueva.
+
+#### 40. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-AUTH-001`;
+- `TREQ-AUTH-009`;
+- `TREQ-AUTH-011`;
+- `TREQ-NEXO-011`;
+- `TREQ-NEXO-203` a `TREQ-NEXO-216`;
+- cobertura relacionada de `NEXO-UX-018`, `NEXO-UX-019`, `NEXO-UX-021`, `NEXO-UX-022` y `NEXO-UX-023` a `NEXO-UX-025`.
+
+Estas referencias son trazabilidad heredada y no modifican filas del Registro 04A.
+
+#### 41. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | El marcador define un contrato documental y no compila ni despliega producto. |
+| LOCAL | NOT_EXECUTED | El artefacto todavía no ha sido incorporado al checkout local de `NEXO-AUTH-012`; formato, quality, delivery y batería global corresponden al lifecycle documental posterior al reemplazo. |
+| REMOTA | PASS | Se verificaron `vento-shell` en `12c3dc277e1c56612d851ca707d493ebeb2af87f`, catálogo activo, grants base y operacionales, `NEXO-UX-018`, `TREQ-NEXO-203..216`, topología `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`, y `vento-nexo` en `f0a12557a1a258c84b025933653dc756de4b5a59` para la superficie y endpoint actuales de conteos. |
+| OPERATIVA | NOT_APPLICABLE | No se ejecuta un conteo real, no se aprueba una varianza real, no se ajusta stock y no se publica movimiento real. |
+| FÍSICA | NOT_APPLICABLE | No se crea ni autoriza `NEXO-AUTH-012::<implementation_unit_id>` durante este marcador global. |
+
+#### 42. Criterios de aceptación
+
+- [x] `nexo.inventory.counts` queda identificado como clave legacy no activa y no autorizante;
+- [x] lectura usa `nexo.inventory.stock_counts.view` con `BASE_OR_OPERATIONAL`;
+- [x] ejecución usa `nexo.inventory.stock_counts.perform` con `OPERATIONAL_ONLY`;
+- [x] conteos iniciales conservan `nexo.inventory.initial_counts.view` solo para lectura;
+- [x] `stock_count_variances.approve` y `resolve` conservan `BASE_AND_OPERATIONAL`;
+- [x] la composición doble exige componente base y operacional del mismo actor y recurso;
+- [x] el contador no aprueba o resuelve su propia diferencia cuando la política exige segregación;
+- [x] `bodeguero` puede ejecutar conteos solo dentro de su contexto operativo autorizado;
+- [x] expected y delta permanecen ocultos durante `BLIND_QUANTITY`;
+- [x] work item, scope snapshot, ronda, sesión y claim son explícitos;
+- [x] observaciones confirmadas son append-only;
+- [x] cero, vacío, no observado e inesperado tienen semántica distinta;
+- [x] UOM y conversión histórica permanecen reproducibles;
+- [x] cada observación online usa cutoff autoritativo;
+- [x] expected se reconstruye desde ledger y cutoff;
+- [x] recuentos crean rondas nuevas sin sobrescribir resultados previos;
+- [x] autosave y confirmación son idempotentes;
+- [x] offline no confirma autoridad ni efectos empresariales;
+- [x] diferencias generan casos estructurados y no ajustes automáticos;
+- [x] crear, guardar, cerrar o anular conteo produce cero movimientos y cero mutación de stock;
+- [x] aprobar o resolver varianza no equivale a publicar ajuste;
+- [x] la publicación de ajustes permanece bajo `NEXO-AUTH-011`;
+- [x] movimientos autoritativos permanecen separados y reservados a `NEXO-AUTH-013`;
+- [x] la futura convergencia elimina `apply_inventory_count_adjustments` del flujo directo de conteos;
+- [x] la futura implementación ejecuta `CNT-VAL-001` a `CNT-VAL-048`;
+- [x] toda modificación Supabase futura pertenece a `vento-shell`;
+- [x] la topología es `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 43. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia el catálogo de PermissionKey;
+- cambia matrices de rol;
+- ejecuta un conteo real;
+- crea un claim real;
+- crea una observación real;
+- cierra una sesión real;
+- aprueba o resuelve una varianza real;
+- ejecuta un ajuste real;
+- publica movimientos reales;
+- cambia stock real;
+- cambia costos reales;
+- corrige UOM real;
+- modifica activos reales;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el Registro 04A.
+
+#### 44. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-011 — Proteger ajustes de inventario`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-012 — Proteger conteos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-013 — Proteger movimientos`
 ### [ ] NEXO-AUTH-013 — Proteger movimientos
 ### [ ] NEXO-AUTH-014 — Proteger catálogo y configuraciones
 ### [ ] NEXO-AUTH-015 — Filtrar por sede y área efectivas
