@@ -7835,7 +7835,758 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-009 — Proteger tránsito`
-### [ ] NEXO-AUTH-009 — Proteger tránsito
+### ✅ NEXO-AUTH-009 — Proteger tránsito
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-008 — Proteger despacho
+**Tarea siguiente:** NEXO-AUTH-010 — Proteger recepción
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger consultas y mutaciones del tránsito mediante PermissionKey activas exactas, custodia continua, journey y shipment asignados, estado y versión vigentes, intención idempotente y fronteras explícitas entre despacho, tránsito, entrega física y recepción
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-009::<implementation_unit_id>` después de la asignación física gobernada del paquete propietario y de la autorización explícita correspondiente
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 0. Autoridad contractual vigente
+
+La autorización de tránsito consume exclusivamente el catálogo y los grants vigentes posteriores a `AUTH-CAT-022`, `AUTH-CAT-023`, `AUTH-CAT-024`, `AUTH-CAT-025` y `AUTH-RBAC-018::CORR-001`.
+
+El universo vinculante es:
+
+```text
+PermissionKey activas: 140
+grants operacionales totales: 240
+grants vigentes de conductor_logistica: 16
+```
+
+Para esta tarea, las capacidades relevantes son:
+
+```text
+nexo.inventory.remissions.view           ACTIVA
+nexo.inventory.remissions.accept_custody ACTIVA
+nexo.inventory.remissions.start_transit  ACTIVA
+nexo.inventory.remissions.deliver        ACTIVA
+nexo.inventory.remissions.receive        ACTIVA
+```
+
+Los códigos siguientes no pertenecen al conjunto autorizante vigente:
+
+```text
+nexo.inventory.remissions.dispatch
+nexo.inventory.remissions.transit
+nexo.transit.view
+```
+
+No existe alias uno-a-muchos, fallback ni equivalencia implícita desde esos códigos legacy hacia una PermissionKey activa.
+
+#### 1. Propósito
+
+Proteger de extremo a extremo la autorización del tránsito de remisiones para que cada consulta o mutación se resuelva sobre el actor efectivo, sesión humana, contexto operacional, asignación logística, journey, vehículo, shipment, territorio, custodia, estado, versión y PermissionKey activa exacta de la acción, sin inferir autoridad desde una URL, un nombre de rol, una sede visible, un estado `in_transit`, una etiqueta de vehículo, una coordenada o una capacidad vecina.
+
+La decisión general es:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ SESION HUMANA VIGENTE
++ TURNO Y CHECK-IN CUANDO APLIQUEN
++ DISPOSITIVO ATRIBUIDO CUANDO APLIQUE
++ ROL OPERATIVO COMPATIBLE
++ ASIGNACION LOGISTICA VIGENTE
++ JOURNEY EXACTO
++ VEHICULO COMPATIBLE
++ SHIPMENT RELACIONADO
++ TERRITORIO AUTORIZADO
++ CUSTODIA VIGENTE
++ ESTADO PREVIO VALIDO
++ VERSION ESPERADA
++ PermissionKey ACTIVA EXACTA
++ DENEGACIONES AUSENTES
+= ACCION DE TRANSITO AUTORIZABLE
+```
+
+La autenticación por sí sola nunca autoriza tránsito.
+
+#### 2. Frontera empresarial
+
+Las fronteras permanecen separadas:
+
+```text
+DISPATCH_CONFIRMED
+!= TRANSIT_STARTED
+!= STOP_ARRIVED
+!= STOP_COMPLETED
+!= STOP_DEPARTED
+!= DESTINATION_ARRIVED
+!= PHYSICAL_DELIVERY_HANDOFF
+!= DESTINATION_RECEIVED
+```
+
+`DISPATCH_CONFIRMED` pertenece a la frontera anterior de `NEXO-AUTH-008`.
+
+`TRANSIT_STARTED` y el recorrido bajo custodia pertenecen a esta tarea.
+
+El handoff físico del conductor al receptor consume `nexo.inventory.remissions.deliver` como cierre de la responsabilidad de transporte, pero no confirma recepción.
+
+La recepción empresarial y de inventario pertenece a `NEXO-AUTH-010` y exige `nexo.inventory.remissions.receive`.
+
+#### 3. Capacidades protegidas exactas
+
+La consulta de remisiones propias exige:
+
+```text
+nexo.inventory.remissions.view
+```
+
+El inicio de tránsito exige exclusivamente:
+
+```text
+nexo.inventory.remissions.start_transit
+```
+
+El handoff físico al receptor previsto exige exclusivamente:
+
+```text
+nexo.inventory.remissions.deliver
+```
+
+La aceptación de custodia previa exige:
+
+```text
+nexo.inventory.remissions.accept_custody
+```
+
+pero pertenece a la frontera anterior y no autoriza `TRANSIT_STARTED`.
+
+La recepción del destino exige:
+
+```text
+nexo.inventory.remissions.receive
+```
+
+pero pertenece a la tarea siguiente y no puede ser ejecutada por inferencia desde tránsito o entrega física.
+
+#### 4. Regla de `DEFAULT_DENY`
+
+Una mutación de tránsito que no posea una PermissionKey activa exacta permanece denegada.
+
+Esto aplica, mientras no exista resolución contractual explícita, a mutaciones como:
+
+- registrar progreso ordinario de una parada;
+- reportar o resolver incidentes de transporte;
+- ordenar o confirmar un retorno;
+- reasignar actor, journey o vehículo después del inicio;
+- cambiar destino empresarial;
+- reprogramar o reordenar paradas;
+- cerrar una entrega fallida;
+- declarar una excepción como resuelta.
+
+No se ampliarán `view`, `start_transit`, `deliver`, `receive`, un rol operativo ni un estado para cubrir esas acciones.
+
+#### 5. Modalidad operacional
+
+`start_transit` y `deliver` son capacidades operacionales sensibles y no se conceden desde el carril base.
+
+La autoridad exige contexto operacional completo. Un rol base, override administrativo, acceso multisede, modo de simulación, vista de gerente o pertenencia organizacional no sustituye el carril operacional.
+
+#### 6. Decisión para `conductor_logistica`
+
+`conductor_logistica` conserva grants vigentes para:
+
+- `nexo.inventory.remissions.view`;
+- `nexo.inventory.remissions.accept_custody`;
+- `nexo.inventory.remissions.start_transit`;
+- `nexo.inventory.remissions.deliver`;
+- las capacidades logísticas de lectura ya definidas por su matriz vigente.
+
+Esta tarea no modifica el dataset de grants.
+
+El conductor solo puede ejercer esas capacidades cuando la relación con el recurso, journey, vehículo, shipment y custodia se demuestra en servidor.
+
+#### 7. Prohibición de bypass
+
+No autorizan tránsito:
+
+```text
+employees.role
+role override administrativo
+conductor_logistica como string aislado
+nexo.access
+remissions.view por sí solo
+nexo.inventory.remissions.dispatch
+nexo.inventory.remissions.transit
+nexo.transit.view
+selección de sede
+site_id recibido del cliente
+shipment_id recibido del cliente
+journey_id recibido del cliente
+vehicle_id recibido del cliente
+estado in_transit
+URL
+botón visible
+coordenada
+geocerca
+placa o etiqueta de vehículo
+```
+
+Toda entrada cliente se trata como referencia no confiable hasta resolverla de nuevo en servidor.
+
+#### 8. Recurso y relaciones autorizantes
+
+La autorización se resuelve sobre una relación explícita entre:
+
+```text
+actor
+journey
+shipment
+custodia
+vehiculo
+origen
+recorrido
+destino
+versiones
+```
+
+Para `start_transit`, el recurso debe demostrar como mínimo:
+
+- shipment despachado y versionado;
+- receipt de despacho válido;
+- custodia aceptada y vigente;
+- actor logístico asignado;
+- recorrido o plan vigente;
+- vehículo compatible cuando aplique;
+- estado previo admisible;
+- ausencia de bloqueo incompatible.
+
+Para `deliver`, además debe existir destino válido y receptor previsto o identificable bajo el contrato de handoff.
+
+#### 9. Handoff de entrada desde despacho
+
+Tránsito consume exclusivamente el handoff contractual definido por la etapa de despacho.
+
+Debe recibir, sin reconstruirlos:
+
+- shipment;
+- versión;
+- dispatch receipt;
+- sello o identidad equivalente de carga;
+- bultos o LPN aplicables;
+- cantidades ya confirmadas;
+- custodia vigente;
+- actor asignado;
+- vehículo cuando aplique;
+- origen y destino;
+- correlación con la salida de inventario ya confirmada.
+
+Un handoff ausente, incompleto, contradictorio u obsoleto bloquea el inicio.
+
+#### 10. Prohibición de efectos de inventario en tránsito
+
+Ningún comando de esta tarea puede volver a:
+
+- incrementar cantidad enviada;
+- descontar stock;
+- crear `transfer_out`;
+- consumir paquetes productivos;
+- editar cantidades del shipment;
+- rehacer preparación;
+- reconstruir el dispatch receipt;
+- corregir silenciosamente un despacho incompleto.
+
+Esos efectos pertenecen al punto autoritativo de despacho definido por `NEXO-AUTH-008`.
+
+`TRANSIT_STARTED` solo inicia la responsabilidad operacional del recorrido.
+
+#### 11. Cola de trabajo autorizada
+
+La cola de tránsito no es una lista de remisiones de una sede.
+
+Debe proyectar exclusivamente trabajo que satisfaga simultáneamente:
+
+- actor efectivo autorizado;
+- asignación logística vigente;
+- journey vigente o elegible para inicio según el contrato;
+- shipment relacionado;
+- vehículo compatible cuando aplique;
+- custodia vigente o handoff de despacho válido;
+- estado visible para la etapa;
+- territorio autorizado.
+
+Una remisión de la misma sede, fecha, recorrido o destino no se vuelve visible por proximidad semántica.
+
+#### 12. `TRANSIT_STARTED`
+
+El inicio de tránsito es un comando server-side atómico e idempotente.
+
+Debe recibir o resolver:
+
+- intención idempotente;
+- actor efectivo;
+- PermissionKey exacta `nexo.inventory.remissions.start_transit`;
+- shipment y versión esperada;
+- dispatch receipt;
+- custodia vigente;
+- journey o identidad necesaria para crearlo;
+- plan de recorrido;
+- vehículo cuando aplique;
+- estado previo;
+- contexto operacional.
+
+La misma intención con igual payload devuelve el mismo resultado verificable.
+
+La misma intención con payload distinto produce conflicto.
+
+Un journey no puede iniciarse dos veces.
+
+#### 13. Efectos permitidos del inicio
+
+La transacción de inicio puede materializar únicamente los efectos propios del comienzo del recorrido, conforme al contrato vigente:
+
+- crear o activar el journey cuando corresponda;
+- registrar `TRANSIT_STARTED`;
+- persistir receipt del comando;
+- emitir outbox o evento correlacionado;
+- sellar versiones necesarias para impedir doble inicio.
+
+Si la operación intenta producir efectos de inventario, paquetes o cantidades, debe fallar y revertirse.
+
+#### 14. Journey único y versionado
+
+Cada journey conserva una asignación explícita y versionada de:
+
+- actor;
+- vehículo;
+- shipments;
+- origen;
+- destino o destinos;
+- plan de recorrido;
+- paradas.
+
+Cada shipment pertenece como máximo a un journey activo.
+
+Una reasignación posterior al inicio no puede editar silenciosamente la identidad existente: exige nueva versión, motivo, autoridad y transferencia explícita de custodia, y mientras no exista una PermissionKey activa exacta para esa mutación permanece `DEFAULT_DENY`.
+
+#### 15. Paradas y orden
+
+El contrato funcional vigente distingue, por parada:
+
+```text
+STOP_PENDING
+STOP_ARRIVED
+STOP_COMPLETED
+STOP_DEPARTED
+```
+
+Estas identidades de estado no conceden autoridad de mutación.
+
+Mientras el catálogo no publique una PermissionKey exacta para progreso de parada, las transiciones mutadoras permanecen `DEFAULT_DENY` aunque la interfaz pueda representar el estado.
+
+No se permite inferir una mutación desde `start_transit`, `deliver`, una coordenada o un permiso de lectura.
+
+#### 16. Ubicación y geocerca
+
+Ubicación y geocerca son observaciones auxiliares.
+
+Una coordenada no puede por sí sola:
+
+- iniciar tránsito;
+- confirmar llegada;
+- completar una parada;
+- sustituir `site_id` o una parada contractual;
+- transferir custodia;
+- ampliar territorio;
+- confirmar entrega;
+- confirmar recepción.
+
+El seguimiento continuo permanece fuera de materialización hasta que finalidad, minimización, frecuencia, retención, consentimiento cuando corresponda, dispositivo y piloto estén aprobados.
+
+#### 17. Continuidad de custodia
+
+Desde el despacho hasta la aceptación válida del destino debe existir exactamente un custodio activo por shipment.
+
+Cambiar:
+
+- actor;
+- turno;
+- dispositivo;
+- vehículo;
+- recorrido;
+- cercanía física;
+- ubicación;
+
+no transfiere custodia.
+
+El custodio anterior continúa responsable hasta una transferencia válida y auditable.
+
+#### 18. Entrega física
+
+El conductor puede registrar el handoff físico únicamente mediante:
+
+```text
+nexo.inventory.remissions.deliver
+```
+
+La acción exige como mínimo:
+
+- actor logístico autorizado;
+- shipment y journey relacionados;
+- destino válido;
+- custodia vigente;
+- estado de recorrido compatible;
+- versión esperada;
+- receptor previsto o identificable bajo el contrato;
+- momento de servidor;
+- evidencia permitida por política.
+
+`deliver` no concede `receive` y no crea inventario en destino.
+
+#### 19. Frontera con recepción
+
+Arribo, presentación, entrega física y recepción son hechos diferentes.
+
+Esta tarea puede producir un handoff versionado hacia `NEXO-AUTH-010`, pero no puede afirmar:
+
+- cantidad recibida;
+- cantidad aceptada;
+- cantidad rechazada;
+- cuarentena;
+- entrada de inventario;
+- cierre de diferencias;
+- aceptación del receptor.
+
+El receptor debe ejecutar su propia autorización exacta posteriormente.
+
+#### 20. Evidencia de entrega
+
+Firma, fotografía, código de un solo uso, escaneo, attestation o ubicación no son autoridad por sí solos.
+
+Cuando se materialicen, deberán estar vinculados al shipment, journey, destino, actor, receptor, servidor, custodia y política aplicable.
+
+La incorporación de evidencia sensible exige los contratos de privacidad, Storage, retención, minimización y dispositivo correspondientes.
+
+#### 21. Incidentes
+
+Retraso, avería, accidente, bloqueo de vía, pérdida de conectividad, alteración de sello, daño, pérdida, temperatura, calidad, conflicto de custodia, destino incorrecto, receptor ausente, rechazo o retorno requerido deben permanecer estructurados y auditables.
+
+El conductor puede observar o contener según los contratos funcionales vigentes, pero una mutación de incidente no queda autorizada por esta tarea si no posee una PermissionKey activa exacta.
+
+Un incidente no concede permiso para ajustar inventario, cambiar destino, levantar calidad, cancelar, reasignar o confirmar recepción.
+
+#### 22. Entrega fallida y retorno
+
+Una entrega fallida conserva:
+
+- shipment;
+- journey;
+- receipts;
+- sello;
+- custodia;
+- destino original;
+- evidencia;
+- incidente relacionado.
+
+La instrucción de esperar, reintentar, continuar, transferir o retornar exige autoridad explícita.
+
+Mientras no exista PermissionKey activa exacta para esa decisión, la mutación permanece `DEFAULT_DENY`.
+
+Un retorno no repone inventario automáticamente ni se considera recepción.
+
+#### 23. Dispositivo compartido
+
+Un dispositivo personal, corporativo, compartido o instalado en vehículo nunca es el actor empresarial.
+
+En dispositivo compartido debe existir sesión de actor atribuible.
+
+PIN, código de vehículo, etiqueta técnica, sesión de navegador o hardware identificado no conceden el rol, el permiso ni la custodia.
+
+Cada acción se atribuye al trabajador efectivo y al contexto operacional vigente.
+
+#### 24. Conectividad intermitente
+
+La operación móvil debe tolerar desconexión sin duplicar hechos.
+
+Toda mutación futura deberá conservar:
+
+- intención idempotente;
+- versión esperada;
+- tiempo observado cuando corresponda;
+- tiempo de servidor;
+- actor;
+- dispositivo cuando aplique;
+- resultado verificable.
+
+Tras un timeout o resultado desconocido, el cliente debe reconciliar por intención antes de emitir otra mutación.
+
+Un estado obsoleto no puede forzar éxito.
+
+#### 25. AS-IS verificado en `vento-nexo`
+
+Corte observado: `vento-group-sas/vento-nexo@f0a12557a1a258c84b025933653dc756de4b5a59`.
+
+El código actual demuestra múltiples superficies que aún deben converger:
+
+1. `src/app/inventory/remissions/conductor/actions.ts` autentica usuario y permite cambiar directamente `remission_shipments.status` desde `draft`, `loading` o `sealed` hacia `in_transit`; la acción observada no revalida explícitamente `start_transit`, asignación, custodia, journey, versión o dispatch receipt.
+2. `src/app/inventory/remissions/conductor/page.tsx` consulta shipments en `draft`, `loading`, `sealed` e `in_transit` y ofrece salida sobre todo shipment no `in_transit`; la consulta observada no añade un filtro explícito por actor, journey o asignación logística.
+3. `src/app/inventory/remissions/transit/page.tsx` consume el código legacy `inventory.remissions.transit`, habilita por sedes de origen autorizadas y consulta `restock_requests` en `preparing`, `in_transit` y `partial`; esa superficie no demuestra por sí sola asignación de journey, shipment ni custodia exacta.
+4. `src/app/inventory/remissions/[id]/detail-actions.ts` contiene `submitTransitChecklist`, que usa `access.canTransit` sobre una solicitud `preparing` y puede ejecutar efectos de stock, despacho de paquetes productivos y transición a `in_transit` dentro del mismo carril; ese acoplamiento debe desaparecer del inicio de tránsito.
+5. `src/app/inventory/remissions/receive/page.tsx` consume shipments `in_transit` como entrada de recepción; la frontera posterior deberá admitir únicamente el handoff versionado y autorizado definido por tránsito y recepción.
+
+Estas observaciones describen el AS-IS y no autorizan modificaciones físicas desde este marcador.
+
+#### 26. Convergencia obligatoria futura
+
+La materialización futura de `GAP-PKG-163` deberá converger las superficies anteriores sobre una sola verdad de autorización y tránsito.
+
+Como mínimo deberá:
+
+- eliminar `inventory.remissions.transit`, `nexo.inventory.remissions.transit` y `nexo.transit.view` como autoridades runtime;
+- impedir el salto directo `draft|loading|sealed -> in_transit` sin despacho y custodia válidos;
+- impedir `preparing -> in_transit` como sustituto del handoff de despacho;
+- hacer que `TRANSIT_STARTED` use exclusivamente `nexo.inventory.remissions.start_transit`;
+- separar completamente inventario y consumo productivo del comando de inicio;
+- filtrar la cola por actor, asignación, journey, shipment, territorio y custodia;
+- producir intención, receipt, evento y outbox idempotentes;
+- mantener progreso, incidentes, retornos y reasignaciones denegados hasta disponer de PermissionKey exacta;
+- usar `nexo.inventory.remissions.deliver` exclusivamente para el handoff físico del conductor;
+- entregar a recepción un handoff versionado, sin auto-confirmar `receive`.
+
+#### 27. Escritura única de hechos
+
+No pueden coexistir dos escritores independientes que afirmen el mismo hecho empresarial.
+
+En particular:
+
+- solo un comando puede afirmar `TRANSIT_STARTED`;
+- una ruta legacy no puede escribir `in_transit` en paralelo con el flujo canónico;
+- el cliente no puede escribir estados directamente;
+- un RPC de tránsito no puede reproducir efectos ya confirmados por despacho;
+- una recepción no puede reconstruir o corregir retrospectivamente el inicio.
+
+La convergencia física debe retirar o encapsular escritores legacy antes de declarar materialización completa.
+
+#### 28. RLS y servidor
+
+La autorización de servidor y RLS deben fallar cerrado de manera coherente.
+
+La UI puede ocultar acciones, pero la seguridad no depende de la UI.
+
+Cada lectura o mutación debe revalidar en servidor:
+
+- usuario;
+- actor efectivo;
+- sesión operacional;
+- permiso exacto;
+- relación con el recurso;
+- estado;
+- versión;
+- territorio;
+- custodia;
+- asignación.
+
+Un service role no puede convertirse en atajo del camino ordinario de usuario.
+
+#### 29. Auditoría mínima
+
+Cada decisión sensible debe permitir reconstruir:
+
+- actor;
+- permiso evaluado;
+- recurso;
+- journey;
+- shipment;
+- versión;
+- estado previo;
+- estado resultante;
+- custodia;
+- vehículo cuando aplique;
+- origen y destino;
+- intención;
+- receipt;
+- decisión de autorización;
+- razón de denegación cuando corresponda;
+- tiempo de servidor.
+
+La auditoría no sustituye autorización previa.
+
+#### 30. Experiencia autorizada objetivo
+
+La experiencia del conductor debe distinguir como mínimo:
+
+```text
+CARGA DESPACHADA Y BAJO CUSTODIA
+[ Iniciar tránsito ]
+
+TRÁNSITO ACTIVO
+- journey vigente
+- shipment bajo custodia
+- siguiente parada visible
+- recorrido visible
+
+DESTINO VÁLIDO
+[ Registrar entrega física ]
+```
+
+Los controles de progreso, incidencia, retorno o reasignación no se presentan como mutaciones habilitadas mientras no exista PermissionKey activa exacta.
+
+No se presenta al conductor una acción de `receive`.
+
+#### 31. Estados visuales no autorizantes
+
+Los estados de interfaz pueden informar, pero nunca conceder autoridad.
+
+Una etiqueta como:
+
+```text
+En tránsito
+Llegando
+En destino
+Entregado
+```
+
+no autoriza por sí sola la siguiente transición.
+
+El servidor resuelve siempre el hecho empresarial, el estado anterior y el permiso exacto.
+
+#### 32. Relación con `GAP-PKG-163`
+
+La cobertura física prevista para tránsito está vinculada a `GAP-PKG-163`, cuyo estado documental observado es `COMPILED` con alcance de readiness documental.
+
+Esta tarea no convierte ese estado en autorización física ni declara una instancia ejecutable.
+
+La futura materialización debe respetar el paquete, los gates, ownership, plan de pruebas y evidencia que correspondan en E5.
+
+#### 33. Validaciones contractuales obligatorias futuras
+
+La implementación deberá ejecutar el conjunto ya definido `TRN-VAL-001` a `TRN-VAL-036`.
+
+La cobertura debe demostrar al menos:
+
+- allow del actor correcto;
+- deny de actor no asignado;
+- deny sin turno o contexto requerido;
+- deny con PermissionKey legacy;
+- deny con recurso ajeno;
+- deny con custodia ausente;
+- deny con versión obsoleta;
+- deny con handoff incompleto;
+- idempotencia del inicio;
+- conflicto por reutilización de intención con payload diferente;
+- cero doble inicio;
+- cero doble evento;
+- cero efecto de inventario en tránsito;
+- cero consumo duplicado de paquetes;
+- segregación entre `deliver` y `receive`;
+- `DEFAULT_DENY` para mutaciones sin PermissionKey exacta.
+
+La definición de esta tarea no ejecuta esas pruebas físicas.
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+```
+
+La tarea especializa autorización y materialización sobre obligaciones ya registradas; no crea una obligación verificable nueva.
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar el registro:
+
+- `TREQ-NEXO-121` — separación de pasos, estados y fronteras del tránsito;
+- `TREQ-NEXO-122` — revalidación de contexto y PermissionKey exacta;
+- `TREQ-NEXO-123` — admisión exclusiva desde el handoff de despacho y cero doble contabilización;
+- `TREQ-NEXO-124` — journey único, asignación y versionado;
+- `TREQ-NEXO-125` — comando atómico e idempotente `TRANSIT_STARTED`;
+- `TREQ-NEXO-126` — progresión ordenada de paradas;
+- `TREQ-NEXO-127` — ubicación como observación auxiliar;
+- `TREQ-NEXO-128` — continuidad única de custodia;
+- `TREQ-NEXO-129` — incidentes estructurados;
+- `TREQ-NEXO-130` — entrega fallida y retorno;
+- `TREQ-NEXO-131` — separación entre arribo, presentación, handoff y recepción;
+- `TREQ-NEXO-132` — convergencia física y `TRN-VAL-001` a `TRN-VAL-036`.
+
+Estas referencias documentan cobertura heredada y no modifican filas del Registro 04A.
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador define un contrato documental y no ejecuta build de producto |
+| LOCAL | NOT_EXECUTED | incorporación al owner, normalización canónica y batería documental corresponden al checkout local de la rama de tarea |
+| REMOTA | PASS | se verificaron `main` vigente de `vento-shell`, cierre `VERIFIED` de `AUTH-RBAC-018::CORR-001`, catálogo activo de 140 PermissionKey, 16 grants de `conductor_logistica`, cobertura `TREQ-NEXO-121` a `TREQ-NEXO-132`, vínculo `GAP-PKG-163` y AS-IS vigente de `vento-nexo` para conductor, tránsito, detalle y recepción |
+| OPERATIVA | NOT_APPLICABLE | no se inicia journey real, no se cambia un shipment real y no se registra entrega o recepción real |
+| FÍSICA | NOT_APPLICABLE | no se crea ni autoriza `NEXO-AUTH-009::<implementation_unit_id>` |
+
+#### 37. Criterios de aceptación
+
+- [x] la consulta de remisiones propias exige `nexo.inventory.remissions.view`;
+- [x] `TRANSIT_STARTED` exige exclusivamente `nexo.inventory.remissions.start_transit`;
+- [x] `accept_custody` permanece como frontera previa y no inicia tránsito;
+- [x] el handoff físico del conductor exige exclusivamente `nexo.inventory.remissions.deliver`;
+- [x] `deliver` no concede `receive`;
+- [x] `receive` permanece reservado al receptor y a `NEXO-AUTH-010`;
+- [x] `dispatch`, `transit` y `transit.view` no autorizan runtime;
+- [x] ninguna PermissionKey vecina se amplía por inferencia;
+- [x] progreso, incidentes, retorno y reasignación permanecen `DEFAULT_DENY` sin PermissionKey activa exacta;
+- [x] la cola de trabajo se limita a actor, asignación, journey, shipment, territorio y custodia relacionados;
+- [x] el inicio consume el handoff de despacho y no reconstruye sus efectos;
+- [x] tránsito no vuelve a descontar inventario ni consumir paquetes productivos;
+- [x] el comando de inicio es atómico, idempotente y versionado;
+- [x] cada shipment pertenece como máximo a un journey activo;
+- [x] ubicación y geocerca son observaciones auxiliares, no autoridad;
+- [x] existe exactamente un custodio activo por shipment durante el recorrido;
+- [x] una entrega física no confirma recepción empresarial ni inventario de destino;
+- [x] un dispositivo no sustituye al actor;
+- [x] un timeout se reconcilia antes de reintentar;
+- [x] los escritores legacy observados deben converger antes de materialización completa;
+- [x] la futura implementación ejecutará `TRN-VAL-001` a `TRN-VAL-036`;
+- [x] cualquier cambio Supabase futuro pertenece a `vento-shell`;
+- [x] la topología permanece `PER_IMPLEMENTATION_UNIT`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se ejecuta materialización física desde este marcador.
+
+#### 38. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia el catálogo de PermissionKey;
+- cambia matrices de rol;
+- inicia un journey real;
+- cambia un shipment real a `in_transit`;
+- registra progreso real de parada;
+- registra geolocalización real;
+- abre o resuelve un incidente real;
+- cambia un destino real;
+- reasigna conductor o vehículo real;
+- registra una entrega real;
+- confirma una recepción real;
+- modifica inventario real;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el Registro 04A.
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-008 — Proteger despacho`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-009 — Proteger tránsito`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-010 — Proteger recepción`
 ### [ ] NEXO-AUTH-010 — Proteger recepción
 ### [ ] NEXO-AUTH-011 — Proteger ajustes de inventario
 ### [ ] NEXO-AUTH-012 — Proteger conteos
