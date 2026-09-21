@@ -42,16 +42,23 @@ test('genera dos iniciadores separados por intención y un selector legacy míni
   const result = buildChatgptWorkStarter();
 
   assert.equal(CHATGPT_STARTER_PATHS.documentation, '.delivery/INICIADOR_VENTO_DOCUMENTACION.txt');
+  assert.equal(CHATGPT_STARTER_PATHS.documentationAhead, '.delivery/INICIADOR_VENTO_DOCUMENTACION_TRABAJO_ADELANTADO.txt');
   assert.equal(CHATGPT_STARTER_PATHS.implementation, '.delivery/INICIADOR_VENTO_IMPLEMENTACION.txt');
   assert.equal(CHATGPT_STARTER_PATHS.selector, 'INICIADOR_VENTO_ACTUAL.txt');
 
   assert.match(result.source, /^VENTO OS — SELECTOR DE INICIADOR POR INTENCIÓN/u);
   assert.match(result.source, /INICIADOR_VENTO_DOCUMENTACION\.txt/u);
+  assert.match(result.source, /INICIADOR_VENTO_DOCUMENTACION_TRABAJO_ADELANTADO\.txt/u);
   assert.match(result.source, /INICIADOR_VENTO_IMPLEMENTACION\.txt/u);
   assert.match(result.source, /Nunca cargues ambos/u);
   assert.doesNotMatch(result.source, /CONTENIDO CANÓNICO DE LA TAREA OBJETIVO/u);
 
   assert.match(result.documentationSource, /INTENT_LOCK: DOCUMENTATION/u);
+  assert.equal(result.documentationAheadSource, result.documentationSource);
+  assert.equal(
+    result.outputs.find(({ key }) => key === 'documentationAhead')?.source,
+    result.documentationSource,
+  );
   assert.match(result.documentationSource, /CONVERSATION_LANE: DOCUMENTARY/u);
   assert.match(result.documentationSource, /DO_NOT_SWITCH_LANES: TRUE/u);
   assert.match(

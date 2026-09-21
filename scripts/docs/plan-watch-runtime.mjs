@@ -102,6 +102,7 @@ export function renderPlanWatchStatus({
 ## INICIADORES CHATGPT POR INTENCIÓN
 
 - **Documentación:** \`.delivery/INICIADOR_VENTO_DOCUMENTACION.txt\`
+- **Documentación adelantada:** \`.delivery/INICIADOR_VENTO_DOCUMENTACION_TRABAJO_ADELANTADO.txt\` — alias sincronizado del mismo snapshot documental.
 - **Implementación:** \`.delivery/INICIADOR_VENTO_IMPLEMENTACION.txt\`
 - **Selector legacy:** \`INICIADOR_VENTO_ACTUAL.txt\` — no contiene el payload completo.
 - **Regla:** carga únicamente el iniciador correspondiente a la intención de la conversación.

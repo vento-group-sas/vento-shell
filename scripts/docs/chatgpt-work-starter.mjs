@@ -12,6 +12,7 @@ import { resolveTaskWorkTopology } from './task-work-topology.mjs';
 const TEMPLATE_PATH = 'docs/plan-canonico/modular/chatgpt-work-starter-template.txt';
 const LEGACY_OUTPUT_PATH = 'INICIADOR_VENTO_ACTUAL.txt';
 const DOCUMENTATION_OUTPUT_PATH = '.delivery/INICIADOR_VENTO_DOCUMENTACION.txt';
+const DOCUMENTATION_AHEAD_OUTPUT_PATH = '.delivery/INICIADOR_VENTO_DOCUMENTACION_TRABAJO_ADELANTADO.txt';
 const IMPLEMENTATION_OUTPUT_PATH = '.delivery/INICIADOR_VENTO_IMPLEMENTACION.txt';
 const SLOT = '{{CURRENT_WORK}}';
 
@@ -65,6 +66,7 @@ Nunca limpies Descargas de forma general. Nunca uses Remove-Item sobre la carpet
 export const CHATGPT_STARTER_PATHS = Object.freeze({
   selector: LEGACY_OUTPUT_PATH,
   documentation: DOCUMENTATION_OUTPUT_PATH,
+  documentationAhead: DOCUMENTATION_AHEAD_OUTPUT_PATH,
   implementation: IMPLEMENTATION_OUTPUT_PATH,
 });
 
@@ -114,9 +116,10 @@ NO LO USES COMO SUSTITUTO DE LOS INICIADORES ESPECÍFICOS.
 CARRIL DOCUMENTAL
 
 - Archivo: ${DOCUMENTATION_OUTPUT_PATH}
+- Alias para trabajo adelantado: ${DOCUMENTATION_AHEAD_OUTPUT_PATH}
 - Tarea actual: ${control.documentary.taskId} — ${control.documentary.taskTitle}
 - Estado: ${control.documentary.state}
-- Úsalo para: desarrollar, documentar, revisar o corregir la tarea documental actual.
+- Úsalos para: desarrollar, documentar, revisar o corregir la tarea documental actual; ambos se regeneran desde el mismo snapshot y permiten preparar una sola sucesora sin incorporarla antes del cierre.
 
 CARRIL FÍSICO
 
@@ -656,11 +659,18 @@ export function buildChatgptWorkStarter({ root = process.cwd() } = {}) {
     source: selectorSource,
     documentationOutputPath: path.join(repositoryRoot, DOCUMENTATION_OUTPUT_PATH),
     documentationSource,
+    documentationAheadOutputPath: path.join(repositoryRoot, DOCUMENTATION_AHEAD_OUTPUT_PATH),
+    documentationAheadSource: documentationSource,
     implementationOutputPath: path.join(repositoryRoot, IMPLEMENTATION_OUTPUT_PATH),
     implementationSource,
     outputs: Object.freeze([
       { key: 'selector', relativePath: LEGACY_OUTPUT_PATH, source: selectorSource },
       { key: 'documentation', relativePath: DOCUMENTATION_OUTPUT_PATH, source: documentationSource },
+      {
+        key: 'documentationAhead',
+        relativePath: DOCUMENTATION_AHEAD_OUTPUT_PATH,
+        source: documentationSource,
+      },
       { key: 'implementation', relativePath: IMPLEMENTATION_OUTPUT_PATH, source: implementationSource },
     ]),
   };
@@ -698,6 +708,7 @@ function main() {
   const result = writeChatgptWorkStarter({ check: process.argv.includes('--check') });
   console.log(`OK: iniciadores ChatGPT ${result.changed ? 'actualizados' : 'vigentes'}.`);
   console.log(`DOCUMENTATION: ${DOCUMENTATION_OUTPUT_PATH}`);
+  console.log(`DOCUMENTATION_AHEAD: ${DOCUMENTATION_AHEAD_OUTPUT_PATH}`);
   console.log(`PHYSICAL_IMPLEMENTATION: ${IMPLEMENTATION_OUTPUT_PATH}`);
   console.log(`SELECTOR_LEGACY: ${LEGACY_OUTPUT_PATH}`);
 }
