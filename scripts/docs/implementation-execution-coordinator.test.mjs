@@ -1187,3 +1187,24 @@ test('coordinator usa una sola autoridad efectiva de candidate en todas las supe
   assert.ok(bundleStart >= 0);
   assert.ok(evidenceStart >= 0);
 });
+
+
+test('EVIDENCE_GATE de CI021 usa el motor estándar de readiness y checkpointa solo metadata gobernada', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-execution-coordinator.mjs', 'utf8');
+  assert.match(source, /implementation-readiness-gate-engine\.mjs/u);
+  assert.match(source, /evaluateImplementationReadinessGates/u);
+  assert.match(source, /replaceImplementationReadinessGateState/u);
+  assert.match(source, /checkpoint readiness gate state/u);
+  assert.match(source, /REFRESHED_AFTER_GOVERNANCE_ONLY_CHECKPOINT/u);
+  assert.match(source, /READINESS_GATE_STATE_NOT_STABLE_AFTER_CHECKPOINT/u);
+});
+
+
+test('CI021 distingue TECHNICAL_READINESS PASS de aprobación final de piloto', () => {
+  const source = fs.readFileSync('scripts/docs/implementation-execution-coordinator.mjs', 'utf8');
+  assert.match(source, /TECHNICAL_READINESS:\s*'PASS'/u);
+  assert.match(source, /READY_GATE_DEFERRED/u);
+  assert.match(source, /DEFERRED_GATES/u);
+  assert.match(source, /PILOT_PREP_REQUIRED|readiness\.nextGate/u);
+  assert.match(source, /if \(readiness\.technicalReady\)/u);
+});

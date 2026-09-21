@@ -400,3 +400,83 @@ test('PR585 lifecycle support delta reutiliza evidencia fisica sin ampliar paths
   assert.equal(unknown.decision, 'REVALIDATE_PHYSICAL');
   assert.equal(unknown.classifications[0].classification, 'UNKNOWN_OR_PHYSICAL_DEPENDENCY_CHANGED');
 });
+
+
+test('readiness gate engine y su test son tooling lifecycle seguro', () => {
+  assert.equal(isImplementationIntegrationLifecyclePath('scripts/docs/implementation-readiness-gate-engine.mjs'), true);
+  assert.equal(isImplementationIntegrationLifecyclePath('scripts/docs/implementation-readiness-gate-engine.test.mjs'), true);
+});
+
+test('package.json permite añadir el test del readiness engine a plan y accelerator sin ampliar otras superficies', () => {
+  const before = {
+    name: 'vento-shell',
+    scripts: {
+      'docs:plan:test': 'node --test scripts/docs/implementation-execution-coordinator.test.mjs',
+      'docs:implementation:accelerator:test': 'node --test scripts/docs/implementation-execution-coordinator.test.mjs',
+    },
+  };
+  const after = structuredClone(before);
+  after.scripts['docs:plan:test'] += ' scripts/docs/implementation-readiness-gate-engine.test.mjs';
+  after.scripts['docs:implementation:accelerator:test'] += ' scripts/docs/implementation-readiness-gate-engine.test.mjs';
+  const safe = assessPackageJsonIntegrationImpact({ before, after });
+  assert.equal(safe.safe, true);
+  assert.equal(safe.reason, 'PACKAGE_JSON_ADDITIVE_IMPLEMENTATION_TESTS_ONLY');
+
+  const unsafe = structuredClone(after);
+  unsafe.scripts['docs:implementation:accelerator:test'] += ' scripts/quality/arbitrary-physical-harness.test.mjs';
+  const rejected = assessPackageJsonIntegrationImpact({ before, after: unsafe });
+  assert.equal(rejected.safe, false);
+  assert.match(rejected.reason, /DOCS_IMPLEMENTATION_ACCELERATOR_TEST_UNSAFE_ADDITION/u);
+});
+
+test('delta completo del readiness engine reutiliza evidencia física', () => {
+  const before = {
+    name: 'vento-shell',
+    scripts: {
+      'docs:plan:test': 'node --test scripts/docs/implementation-execution-coordinator.test.mjs',
+      'docs:implementation:accelerator:test': 'node --test scripts/docs/implementation-execution-coordinator.test.mjs',
+    },
+  };
+  const after = structuredClone(before);
+  after.scripts['docs:plan:test'] += ' scripts/docs/implementation-readiness-gate-engine.test.mjs';
+  after.scripts['docs:implementation:accelerator:test'] += ' scripts/docs/implementation-readiness-gate-engine.test.mjs';
+  const result = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: [
+      'scripts/docs/implementation-readiness-gate-engine.mjs',
+      'scripts/docs/implementation-readiness-gate-engine.test.mjs',
+      'scripts/docs/implementation-execution-coordinator.mjs',
+      'scripts/docs/implementation-execution-coordinator.test.mjs',
+      'scripts/docs/implementation-integration-impact.mjs',
+      'scripts/docs/implementation-integration-impact.test.mjs',
+      'package.json',
+    ],
+    packageJsonBefore: before,
+    packageJsonAfter: after,
+  });
+  assert.equal(result.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(result.material_paths, []);
+});
+
+
+test('contratos normativos READY-GATE y CI021 son metadata lifecycle segura', () => {
+  for (const relativePath of [
+    'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md',
+  ]) {
+    assert.equal(isImplementationIntegrationLifecyclePath(relativePath), true);
+  }
+  const impact = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: [
+      'scripts/docs/implementation-readiness-gate-engine.mjs',
+      'scripts/docs/implementation-readiness-gate-engine.test.mjs',
+      'scripts/docs/implementation-execution-coordinator.mjs',
+      'scripts/docs/implementation-execution-coordinator.test.mjs',
+      'scripts/docs/implementation-integration-impact.mjs',
+      'scripts/docs/implementation-integration-impact.test.mjs',
+      'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md',
+    ],
+  });
+  assert.equal(impact.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(impact.material_paths, []);
+});
