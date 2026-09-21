@@ -457,3 +457,26 @@ test('delta completo del readiness engine reutiliza evidencia física', () => {
   assert.equal(result.decision, 'REUSE_PHYSICAL_EVIDENCE');
   assert.deepEqual(result.material_paths, []);
 });
+
+
+test('contratos normativos READY-GATE y CI021 son metadata lifecycle segura', () => {
+  for (const relativePath of [
+    'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md',
+  ]) {
+    assert.equal(isImplementationIntegrationLifecyclePath(relativePath), true);
+  }
+  const impact = classifyImplementationIntegrationImpact({
+    instance: instance(),
+    changedPaths: [
+      'scripts/docs/implementation-readiness-gate-engine.mjs',
+      'scripts/docs/implementation-readiness-gate-engine.test.mjs',
+      'scripts/docs/implementation-execution-coordinator.mjs',
+      'scripts/docs/implementation-execution-coordinator.test.mjs',
+      'scripts/docs/implementation-integration-impact.mjs',
+      'scripts/docs/implementation-integration-impact.test.mjs',
+      'docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md',
+    ],
+  });
+  assert.equal(impact.decision, 'REUSE_PHYSICAL_EVIDENCE');
+  assert.deepEqual(impact.material_paths, []);
+});

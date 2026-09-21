@@ -29,6 +29,7 @@ const GATE_MODES = Object.freeze({
 
 const ALLOWED_GATE_STATUSES = new Set(['PASS', 'FAIL', 'BLOQUEADO', 'NO_APLICA']);
 const ALLOWED_FINAL_DECISIONS = new Set(['APROBAR_ENTRADA', 'DENEGAR_ENTRADA', 'BLOQUEAR_DECISION', 'NO_APLICA']);
+const APPLICABILITY_PHASES = new Set(['NOW', 'LATER', 'NEVER']);
 
 function fail(message) {
   throw new Error(message);
@@ -132,13 +133,82 @@ function gateResult({ id, status, mode = GATE_MODES[id], evidence = [], reason =
     gate_id: id,
     evaluation_mode: mode,
     status,
-    evidence: Object.freeze([...evidence]),
+    evidence: Object.freeze([...new Set(evidence)]),
     blocking_reason: reason,
     required_evidence: Object.freeze([...requiredEvidence]),
     dependencies: Object.freeze([...dependencies]),
     owner,
     reused,
   });
+}
+
+function normalizeReadinessProfile(input, previous) {
+  const explicit = input?.readiness_profile?.gates ?? null;
+  const persisted = Array.isArray(previous?.readiness_profile) ? previous.readiness_profile : null;
+  const rows = explicit ?? persisted ?? [];
+  if (!Array.isArray(rows)) fail('READINESS_PROFILE_GATES_INVALID');
+  const result = new Map();
+  for (const row of rows) {
+    const gateId = String(row?.gate_id ?? '').trim();
+    if (!IMPLEMENTATION_READINESS_GATE_IDS.includes(gateId)) fail(`READINESS_PROFILE_GATE_INVALID:${gateId || 'EMPTY'}`);
+    if (result.has(gateId)) fail(`READINESS_PROFILE_GATE_DUPLICATE:${gateId}`);
+    const phase = String(row?.phase ?? '').trim().toUpperCase();
+    if (!APPLICABILITY_PHASES.has(phase)) fail(`READINESS_PROFILE_PHASE_INVALID:${gateId}:${phase || 'EMPTY'}`);
+    const targetPhase = String(row?.target_phase ?? '').trim() || null;
+    if (phase === 'LATER' && !targetPhase) fail(`READINESS_PROFILE_LATER_TARGET_REQUIRED:${gateId}`);
+    const rationale = String(row?.rationale ?? '').trim();
+    if (!rationale) fail(`READINESS_PROFILE_RATIONALE_REQUIRED:${gateId}`);
+    const evidenceRefs = Array.isArray(row?.evidence_refs)
+      ? row.evidence_refs.map((entry) => String(entry ?? '').trim()).filter(Boolean)
+      : [];
+    result.set(gateId, Object.freeze({
+      gate_id: gateId, phase, target_phase: targetPhase, rationale,
+      evidence_refs: Object.freeze(evidenceRefs),
+      source: explicit ? 'EXPLICIT_PROFILE' : (String(row?.source ?? '').trim() || 'PERSISTED_STATE'),
+    }));
+  }
+  return result;
+}
+
+function readinessProfileEntry(profile, gateId) {
+  return profile.get(gateId) ?? Object.freeze({
+    gate_id: gateId, phase: 'NOW', target_phase: null,
+    rationale: 'DEFAULT_NOW_FAIL_CLOSED', evidence_refs: Object.freeze([]), source: 'DEFAULT',
+  });
+}
+
+function applyReadinessProfile(result, profile) {
+  if (profile.phase === 'NEVER') {
+    return Object.freeze({
+      ...result,
+      status: 'NO_APLICA',
+      evidence: Object.freeze([
+        ...result.evidence, ...profile.evidence_refs,
+        `READINESS_PROFILE:${result.gate_id}:NEVER`,
+      ]),
+      blocking_reason: null,
+      required_evidence: Object.freeze([]),
+      applicability_phase: 'NEVER',
+      target_phase: null,
+      applicability_rationale: profile.rationale,
+      applicability_evidence: profile.evidence_refs,
+      blocks_current_phase: false,
+    });
+  }
+  return Object.freeze({
+    ...result,
+    applicability_phase: profile.phase,
+    target_phase: profile.target_phase,
+    applicability_rationale: profile.rationale,
+    applicability_evidence: profile.evidence_refs,
+    blocks_current_phase: profile.phase === 'NOW' && ['FAIL', 'BLOQUEADO'].includes(result.status),
+  });
+}
+
+function semanticGate(gate) {
+  if (!gate || typeof gate !== 'object') return gate;
+  const { reused, ...semantic } = gate;
+  return semantic;
 }
 
 function evidenceText(value) {
@@ -217,6 +287,9 @@ export function evaluateImplementationReadinessGates({
   const fingerprint = physicalFingerprint({ instance, request, packageId });
   const previous = readinessStateEntry(instance);
   const input = normalizeInput({ input: inputs.input ?? null, instance, request, fingerprint });
+  const readinessProfileMap = normalizeReadinessProfile(input, previous);
+  const resolvedReadinessProfile = IMPLEMENTATION_READINESS_GATE_IDS.map((gateId) => readinessProfileEntry(readinessProfileMap, gateId));
+  const profileById = new Map(resolvedReadinessProfile.map((entry) => [entry.gate_id, entry]));
   const decisionOwner = deriveDecisionOwnerFromPackageCatalog(packageCatalog, packageId)
     ?? request.target_environments?.[0]?.owner
     ?? null;
@@ -226,8 +299,16 @@ export function evaluateImplementationReadinessGates({
     package_gate: packageGate,
   });
   const gates = [];
-  const set = (result) => gates.push(result);
-  const reused = (id) => priorGateReusable(previous, id, fingerprint);
+  const set = (result) => gates.push(applyReadinessProfile(result, profileById.get(result.gate_id)));
+  const reused = (id) => {
+    const candidate = priorGateReusable(previous, id, fingerprint);
+    if (!candidate) return null;
+    const prior = (previous?.gates ?? []).find((entry) => entry?.gate_id === id) ?? null;
+    const profile = profileById.get(id);
+    if (prior?.applicability_phase && prior.applicability_phase !== profile.phase) return null;
+    if (!prior?.applicability_phase && profile.source !== 'DEFAULT') return null;
+    return candidate;
+  };
 
   const g001Reuse = reused('READY-GATE-001');
   if (g001Reuse) set(g001Reuse);
@@ -295,9 +376,18 @@ export function evaluateImplementationReadinessGates({
   const g008Reuse = reused('READY-GATE-008');
   if (g008Reuse) set(g008Reuse);
   else {
-    const pass = /ROLLBACK_STRATEGY|CONTINGENCY|RUNBOOK/u.test(corpus);
+    const rollbackSteps = Array.isArray(packageGate?.evidence_plan?.rollback_steps)
+      ? packageGate.evidence_plan.rollback_steps.map((entry) => String(entry ?? '').trim()).filter(Boolean)
+      : [];
+    const pass = rollbackSteps.length > 0 || /ROLLBACK_STRATEGY|ROLLBACK_STEPS|CONTINGENCY|RUNBOOK/u.test(corpus);
     set(pass
-      ? gateResult({ id: 'READY-GATE-008', status: 'PASS', evidence: ['PROCEDURE_OR_CONTINGENCY_EVIDENCE_PRESENT'] })
+      ? gateResult({
+        id: 'READY-GATE-008',
+        status: 'PASS',
+        evidence: rollbackSteps.length > 0
+          ? rollbackSteps.map((entry, index) => `PACKAGE_GATE_ROLLBACK_STEP:${index + 1}:${entry}`)
+          : ['PROCEDURE_OR_CONTINGENCY_EVIDENCE_PRESENT'],
+      })
       : gateResult({ id: 'READY-GATE-008', status: 'BLOQUEADO', reason: 'PROCEDURE_OR_CONTINGENCY_EVIDENCE_REQUIRED', requiredEvidence: ['rollback/contingency/runbook evidence'] }));
   }
 
@@ -347,7 +437,10 @@ export function evaluateImplementationReadinessGates({
   else if (gate001?.status === 'PASS' && localResultsPass) set(gateResult({ id: 'READY-GATE-013', status: 'PASS', dependencies: ['READY-GATE-001'], evidence: ['LOCAL_VALIDATION_AND_ENVIRONMENT_BASELINE_PASS'] }));
   else set(gateResult({ id: 'READY-GATE-013', status: 'BLOQUEADO', dependencies: ['READY-GATE-001'], reason: 'PRE_PILOT_BASELINE_INCOMPLETE', requiredEvidence: ['READY-GATE-001 PASS', 'all local validation results PASS/NOT_APPLICABLE'] }));
 
-  const before014 = gates.filter((entry) => /^READY-GATE-0(?:0[1-9]|1[0-3])$/u.test(entry.gate_id));
+  const before014 = gates.filter((entry) => (
+    /^READY-GATE-0(?:0[1-9]|1[0-3])$/u.test(entry.gate_id)
+    && entry.applicability_phase === 'NOW'
+  ));
   const failCount = before014.filter((entry) => entry.status === 'FAIL').length;
   const blockedCount = before014.filter((entry) => entry.status === 'BLOQUEADO').length;
   if (failCount > 0) set(gateResult({ id: 'READY-GATE-014', status: 'FAIL', dependencies: before014.filter((entry) => entry.status === 'FAIL').map((entry) => entry.gate_id), reason: 'PRIOR_READY_GATE_FAILED' }));
@@ -377,12 +470,20 @@ export function evaluateImplementationReadinessGates({
     }
   }
 
+  const blockedNow = gates.filter((entry) => entry.blocks_current_phase === true && entry.status === 'BLOQUEADO');
+  const failedNow = gates.filter((entry) => entry.blocks_current_phase === true && entry.status === 'FAIL');
+  const deferred = gates.filter((entry) => (
+    entry.applicability_phase === 'LATER'
+    && ['FAIL', 'BLOQUEADO'].includes(entry.status)
+  ));
   const summary = {
     pass_count: gates.filter((entry) => entry.status === 'PASS').length,
-    fail_count: gates.filter((entry) => entry.status === 'FAIL').length,
-    blocked_count: gates.filter((entry) => entry.status === 'BLOQUEADO').length,
+    fail_count: failedNow.length,
+    blocked_count: blockedNow.length,
     not_applicable_count: gates.filter((entry) => entry.status === 'NO_APLICA').length,
-    blocked_gates: gates.filter((entry) => entry.status === 'BLOQUEADO').map((entry) => entry.gate_id),
+    deferred_count: deferred.length,
+    blocked_gates: blockedNow.map((entry) => entry.gate_id),
+    deferred_gates: deferred.map((entry) => entry.gate_id),
   };
   const proposedState = {
     type: IMPLEMENTATION_READINESS_GATE_STATE_TYPE,
@@ -396,9 +497,22 @@ export function evaluateImplementationReadinessGates({
     observed_at: now,
     decision_owner: decisionOwner,
     target_environments: request.target_environments ?? [],
+    readiness_profile: resolvedReadinessProfile,
     gates,
     summary,
     input_path: IMPLEMENTATION_READINESS_GATE_INPUT_PATH,
+  };
+  const semanticGate = (gate) => {
+    const semantic = Object.fromEntries(
+      Object.entries(gate ?? {}).filter(([key]) => key !== 'reused'),
+    );
+    if (Array.isArray(semantic.evidence)) {
+      semantic.evidence = [...new Set(semantic.evidence)];
+    }
+    if (Array.isArray(semantic.applicability_evidence)) {
+      semantic.applicability_evidence = [...new Set(semantic.applicability_evidence)];
+    }
+    return semantic;
   };
   const comparable = (value) => stableJson({
     type: value?.type,
@@ -410,7 +524,8 @@ export function evaluateImplementationReadinessGates({
     physical_fingerprint: value?.physical_fingerprint,
     decision_owner: value?.decision_owner,
     target_environments: value?.target_environments,
-    gates: value?.gates,
+    readiness_profile: value?.readiness_profile,
+    gates: (value?.gates ?? []).map(semanticGate),
     summary: value?.summary,
     input_path: value?.input_path,
   });
@@ -420,7 +535,10 @@ export function evaluateImplementationReadinessGates({
     : proposedState;
 
   const finalGate = gates.find((entry) => entry.gate_id === 'READY-GATE-015');
-  const complete = finalGate?.status === 'PASS';
+  const complete = finalGate?.applicability_phase === 'NOW' && finalGate?.status === 'PASS';
+  const technicalReady = summary.fail_count === 0
+    && summary.blocked_count === 0
+    && gates.find((entry) => entry.gate_id === 'READY-GATE-014')?.status === 'PASS';
   const finalReceipt = complete ? {
     ...request,
     observed_at: now,
@@ -444,9 +562,11 @@ export function evaluateImplementationReadinessGates({
   return Object.freeze({
     applies: true,
     complete,
+    technicalReady,
     state,
     finalReceipt,
-    nextGate: summary.blocked_gates[0] ?? (complete ? 'COMPLETE' : 'READY-GATE-015'),
+    nextGate: summary.blocked_gates[0]
+      ?? (technicalReady && summary.deferred_gates.length > 0 ? 'PILOT_PREP_REQUIRED' : (complete ? 'COMPLETE' : 'READY-GATE-015')),
     inputPath: IMPLEMENTATION_READINESS_GATE_INPUT_PATH,
   });
 }

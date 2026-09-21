@@ -104,11 +104,11 @@ test('CI021 estándar resuelve auto/no-aplica y bloquea únicamente evidencia re
   assert.equal(result.state.gates.find((g) => g.gate_id === 'READY-GATE-013').status, 'PASS');
 });
 
-test('PASS previos con mismo fingerprint se reutilizan y blockers se reevalúan', () => {
+test('mismo fingerprint conserva identidad semántica y blockers se reevalúan', () => {
   const first = evaluateImplementationReadinessGates({ ...fixture(), now: '2026-09-21T06:40:00Z' });
   const secondFx = fixture({ previous: first.state });
   const second = evaluateImplementationReadinessGates({ ...secondFx, now: '2026-09-21T06:41:00Z' });
-  assert.equal(second.state.gates.find((g) => g.gate_id === 'READY-GATE-001').reused, true);
+  assert.strictEqual(second.state, first.state);
   assert.equal(second.state.gates.find((g) => g.gate_id === 'READY-GATE-010').status, 'BLOQUEADO');
 });
 
@@ -139,4 +139,48 @@ test('replace conserva evidencia existente y sustituye un único readiness state
   const twice = replaceImplementationReadinessGateState(once, { ...first.state, observed_at: 'later' });
   assert.equal(twice.evidence.filter((entry) => entry?.type === IMPLEMENTATION_READINESS_GATE_STATE_TYPE).length, 1);
   assert.equal(twice.evidence[0].startsWith('LOCAL_VALIDATION'), true);
+});
+
+
+test('readiness profile NOW/LATER/NEVER separa readiness técnico de preparación de piloto y permanece estable', () => {
+  const initial = evaluateImplementationReadinessGates({ ...fixture(), now: '2026-09-21T08:00:00Z' });
+  const profileInput = {
+    schema_version: 1,
+    instance_id: 'SHELL-CI-021::GAP-PKG-045',
+    candidate_commit: CANDIDATE,
+    physical_fingerprint: initial.state.physical_fingerprint,
+    readiness_profile: {
+      gates: [
+        { gate_id: 'READY-GATE-002', phase: 'NEVER', rationale: 'No database or Supabase mutation in package scope.' },
+        { gate_id: 'READY-GATE-003', phase: 'NEVER', rationale: 'No permission or policy configuration mutation in package scope.' },
+        { gate_id: 'READY-GATE-004', phase: 'NEVER', rationale: 'No operational user, role, site, area or shift mutation in package scope.' },
+        { gate_id: 'READY-GATE-006', phase: 'NEVER', rationale: 'No external integration or credential mutation in package scope.' },
+        { gate_id: 'READY-GATE-007', phase: 'NEVER', rationale: 'No hardware or peripheral dependency in package scope.' },
+        { gate_id: 'READY-GATE-009', phase: 'NEVER', rationale: 'No training obligation created by this package.' },
+        { gate_id: 'READY-GATE-010', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Nominal support is required before operational pilot exposure, not for technical preview certification.' },
+        { gate_id: 'READY-GATE-012', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Rollback exercise is required before operational pilot exposure.' },
+        { gate_id: 'READY-GATE-015', phase: 'LATER', target_phase: 'PRE_CI022_PILOT_PREP', rationale: 'Pilot entry decision requires concrete pilot scope.' },
+      ],
+    },
+  };
+  const fx = fixture({ input: profileInput, previous: initial.state });
+  fx.supplied.packageGate.evidence_plan = { rollback_steps: ['Restore exact consumer files to pre-CI020 state and rerun package validations.'] };
+  const result = evaluateImplementationReadinessGates({ ...fx, now: '2026-09-21T08:01:00Z' });
+  assert.equal(result.technicalReady, true);
+  assert.equal(result.complete, false);
+  assert.equal(result.nextGate, 'PILOT_PREP_REQUIRED');
+  assert.equal(result.state.summary.blocked_count, 0);
+  assert.deepEqual(result.state.summary.deferred_gates, ['READY-GATE-010', 'READY-GATE-012', 'READY-GATE-015']);
+  assert.equal(result.state.gates.find((g) => g.gate_id === 'READY-GATE-003').status, 'NO_APLICA');
+  assert.equal(result.state.gates.find((g) => g.gate_id === 'READY-GATE-003').applicability_phase, 'NEVER');
+  assert.equal(result.state.gates.find((g) => g.gate_id === 'READY-GATE-008').status, 'PASS');
+  assert.equal(result.state.gates.find((g) => g.gate_id === 'READY-GATE-010').applicability_phase, 'LATER');
+  assert.equal(result.state.gates.find((g) => g.gate_id === 'READY-GATE-010').blocks_current_phase, false);
+
+  const resumed = evaluateImplementationReadinessGates({
+    ...fixture({ previous: result.state }),
+    supplied: { ...fixture({ previous: result.state }).supplied, packageGate: fx.supplied.packageGate },
+    now: '2026-09-21T08:02:00Z',
+  });
+  assert.strictEqual(resumed.state, result.state);
 });
