@@ -656,7 +656,9 @@ test('el iniciador exige start antes de trabajo y finish antes de siguiente tare
   assert.match(template, /task\/<task-id-en-minusculas>/u);
   assert.match(template, /npm run docs:task:finish -- --task-id/u);
   assert.match(template, /NEXT_TASK_ALLOWED: SI/u);
-  assert.match(template, /ninguna tarea siguiente puede comenzar/u);
+  assert.match(template, /no se abre ni se reemplaza la tarea siguiente en el repositorio/u);
+  assert.match(template, /ChatGPT sí puede redactar y entregar su archivo antes de ese resultado/u);
+  assert.doesNotMatch(template, /ninguna tarea siguiente puede comenzar/u);
   assert.match(template, /ARQUITECTURA DE INICIADORES POR CARRIL/u);
   assert.equal(template.split('{{CURRENT_WORK}}').length, 2);
   assert.match(template, /ranura estructural de trabajo/u);

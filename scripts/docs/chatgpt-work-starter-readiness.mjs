@@ -166,7 +166,9 @@ export function renderReadinessStarterBlock({ readiness, lane, coordinated = nul
 ${operationalBlock}
 
 
-Antes de determinar la siguiente acción y después del cierre de cada tarea, el estado debe haber pasado por PACKAGE READINESS SCAN.
+${lane === 'DOCUMENTATION'
+    ? 'PACKAGE READINESS SCAN gobierna la incorporación y el cierre en el repositorio. Para redactar la sucesora en ChatGPT, el snapshot de readiness es informativo: no esperes al cierre remoto ni a otro scan si dispones de los archivos completos aprobados de la anterior.'
+    : 'Antes de determinar la siguiente acción y después del cierre de cada tarea, el estado debe haber pasado por PACKAGE READINESS SCAN.'}
 Toda condición PASS exige evidencia trazable. Evidencia ausente produce UNKNOWN para el gate afectado; no autoriza ejecución ni concede un bypass.
 DELIV-PKG-001..025 y E5-GATE-008 son contratos globales reutilizables; no se reejecutan cronológicamente por cada package.
 IMPLEMENTATION_READY requiere package_id, dossier DELIV-PKG, E5-GATE-008::<package_id>, cero bloqueadores y dependencias físicas disponibles.
