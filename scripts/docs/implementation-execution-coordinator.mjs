@@ -25,6 +25,11 @@ import {
 } from './implementation-control.mjs';
 import { deriveCoordinatedImplementationStatus } from './implementation-readiness-coordinator.mjs';
 import {
+  IMPLEMENTATION_READINESS_GATE_ENGINE_MODEL_ID,
+  evaluateImplementationReadinessGates,
+  replaceImplementationReadinessGateState,
+} from './implementation-readiness-gate-engine.mjs';
+import {
   assessSafeSelectiveExecution,
   buildShadowImpactPlan,
   createCandidateRepairReceipt,
@@ -1431,13 +1436,114 @@ async function advance({ root, explicitInstanceId, materialized, evidenceFile })
         validationCommands: candidateState.validationCommands,
         toolchain: candidateState.toolchain,
       });
-      const requestPath = writeEvidenceRequest(
+      let requestPath = writeEvidenceRequest(
         root, refreshedAfterPreverify, candidateCommit, preverifyReceipt,
         materializedResult?.shadowImpact ?? priorRequest?.validation_engine_shadow_impact ?? null,
         materializedResult?.selectiveValidation ?? priorRequest?.validation_engine_selective_validation ?? null,
         safeSelectiveCertification,
       );
-      const request = readEvidenceRequest(root);
+      let request = readEvidenceRequest(root);
+      let readiness = evaluateImplementationReadinessGates({
+        root,
+        instance: refreshedAfterPreverify,
+        request,
+      });
+      if (readiness.applies) {
+        const currentInstance = resolveInstance(root, instanceId).instance;
+        const withReadinessState = replaceImplementationReadinessGateState(
+          currentInstance,
+          readiness.state,
+        );
+        const readinessStateChanged = JSON.stringify(withReadinessState) !== JSON.stringify(currentInstance);
+        if (readinessStateChanged) {
+          writeInstance(root, withReadinessState);
+          npm(['run', '--silent', 'docs:plan:build'], { cwd: root });
+          npm(['run', '--silent', 'docs:plan:check'], { cwd: root });
+          git(['diff', '--check'], { cwd: root });
+          const checkpointed = commitAllowedWorktree(
+            root,
+            instanceId,
+            resolveInstance(root, instanceId).instance,
+            `implementation(${instanceId}): checkpoint readiness gate state`,
+          );
+          if (!checkpointed) fail(`READINESS_GATE_STATE_CHECKPOINT_MISSING:${instanceId}`);
+          pushCandidate(root, implementationBranchName(instanceId));
+
+          const afterCheckpoint = resolveInstance(root, instanceId).instance;
+          const refreshedCandidateState = candidateValidationState(root, afterCheckpoint);
+          if (
+            refreshedCandidateState.candidateLifecycle?.status !== 'PASS'
+            || refreshedCandidateState.candidateLifecycle?.decision !== 'REUSE_PHYSICAL_EVIDENCE'
+          ) {
+            fail(
+              `READINESS_GATE_STATE_INVALIDATED_PHYSICAL_EVIDENCE:${instanceId}:`
+              + `${refreshedCandidateState.candidateLifecycle?.reason ?? 'UNKNOWN'}`,
+            );
+          }
+          const refreshedPreverifyReceipt = createCandidateValidationReceipt({
+            instanceId,
+            candidateCommit: refreshedCandidateState.candidateCommit,
+            lifecycleHeadCommit: refreshedCandidateState.lifecycleHeadCommit,
+            repositoryStateSha256: refreshedCandidateState.repositoryStateSha256,
+            validationCommands: refreshedCandidateState.validationCommands,
+            toolchain: refreshedCandidateState.toolchain,
+          });
+          requestPath = writeEvidenceRequest(
+            root, afterCheckpoint, refreshedCandidateState.candidateCommit, refreshedPreverifyReceipt,
+            materializedResult?.shadowImpact ?? priorRequest?.validation_engine_shadow_impact ?? null,
+            materializedResult?.selectiveValidation ?? priorRequest?.validation_engine_selective_validation ?? null,
+            safeSelectiveCertification,
+          );
+          request = readEvidenceRequest(root);
+          readiness = evaluateImplementationReadinessGates({
+            root,
+            instance: afterCheckpoint,
+            request,
+          });
+          const stableState = replaceImplementationReadinessGateState(afterCheckpoint, readiness.state);
+          if (JSON.stringify(stableState) !== JSON.stringify(afterCheckpoint)) {
+            fail(`READINESS_GATE_STATE_NOT_STABLE_AFTER_CHECKPOINT:${instanceId}`);
+          }
+        }
+
+        if (readiness.complete) {
+          writeEvidenceState(root, readiness.finalReceipt);
+          const sealed = await sealVerifiedEvidence({
+            root, id: instanceId, evidenceFile: requestPath, certification: safeSelectiveCertification,
+          });
+          await runCanonicalLifecycle(root, 'docs:implementation:finish', instanceId);
+          printResult({
+            ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR_COMPLETE', INSTANCE_ID: instanceId,
+            CANDIDATE_SHA: sealed.candidateCommit, PREVERIFY: preverifyMode,
+            EVIDENCE_RECEIPT: 'READINESS_GATE_ENGINE', VERIFIED: 'SI', FINISH: 'PASS',
+            READINESS_GATE_ENGINE: IMPLEMENTATION_READINESS_GATE_ENGINE_MODEL_ID,
+            MAIN_SYNC: '0/0', RESUMABLE: 'NO_NECESARIO',
+          });
+          return;
+        }
+
+        printResult({
+          ESTADO: 'PASS', OPERACION: 'IMPLEMENTATION_ACCELERATOR', INSTANCE_ID: instanceId,
+          STATUS: 'IMPLEMENTED', EXECUTOR_STATE: state,
+          CANDIDATE_SHA: request.candidate_commit,
+          LIFECYCLE_HEAD_SHA: request.lifecycle_head_commit,
+          PREVERIFY: preverifyMode,
+          PREVERIFY_RECEIPT: readinessStateChanged
+            ? 'REFRESHED_AFTER_GOVERNANCE_ONLY_CHECKPOINT'
+            : 'REUSED_EXACT_CANDIDATE',
+          READINESS_GATE_ENGINE: IMPLEMENTATION_READINESS_GATE_ENGINE_MODEL_ID,
+          READY_GATE_PASS: readiness.state.summary.pass_count,
+          READY_GATE_FAIL: readiness.state.summary.fail_count,
+          READY_GATE_BLOCKED: readiness.state.summary.blocked_count,
+          READY_GATE_NO_APLICA: readiness.state.summary.not_applicable_count,
+          BLOCKED_GATES: readiness.state.summary.blocked_gates.join(',') || 'NONE',
+          NEXT_GATE: readiness.nextGate,
+          READINESS_INPUT: readiness.inputPath,
+          HUMAN_GATE: 'SI', RESUMABLE: 'SI',
+        });
+        return;
+      }
+
       const machineEvidence = buildMachineObservableExecutionEvidence({ request });
       if (machineEvidence) {
         writeEvidenceState(root, machineEvidence);
