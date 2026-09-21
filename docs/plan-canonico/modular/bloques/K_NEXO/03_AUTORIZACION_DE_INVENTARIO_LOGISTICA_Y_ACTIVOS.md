@@ -5138,7 +5138,1214 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja`
-### [ ] NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
+### ✅ NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
+**Tarea siguiente:** NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — contrato NEXO para proteger mantenimiento, daño, pérdida, recuperación, indisponibilidad, reparación, liberación, solicitud de baja, aprobación de baja y disposición mediante decisiones server-side exactas, segregación por riesgo, evidencia no destructiva, idempotencia, concurrencia y `DEFAULT_DENY` mientras no exista una `PermissionKey` atómica activa aplicable
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-026::<implementation_unit_id>` después de que la unidad y su package propietario estén asignados, `E5-GATE-008::<package_id>` aplicable haya resultado `PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger las decisiones que cambian la condición, disponibilidad o ciclo técnico de un activo para que reportar daño, declarar pérdida, abrir o ejecutar mantenimiento, liberar nuevamente al servicio, solicitar baja, aprobar baja o ejecutar disposición no pueda ocurrir por autenticación sola, visibilidad de una pantalla, rol nominal, posesión física, capacidad de lectura, acceso general a inventario, permiso legacy amplio, estado enviado por cliente ni existencia de una fila técnica.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++ SUJETO EXACTO
++ ACCIÓN TÉCNICA EXACTA
++ CAPACIDAD CANÓNICA EXACTA CUANDO EXISTA
++ CARRIL AUTORIZANTE COMPLETO
++ ESTADO Y CONDICIÓN VIGENTES
++ TERRITORIO Y RELACIONES VIGENTES
++ MOTIVO Y EVIDENCIA
++ SEGREGACIÓN CUANDO EL RIESGO LA EXIJA
++ REPUESTOS Y EFECTOS RELACIONADOS CUANDO APLIQUEN
++ PRUEBA Y LIBERACIÓN CUANDO APLIQUEN
++ IDEMPOTENCIA Y CONCURRENCIA
++ AUDITORÍA RECONCILIABLE
+→ TRANSICIÓN AUTORIZABLE
+```
+
+Mientras no exista una capacidad exacta activa aplicable:
+
+```text
+MUTACIÓN TÉCNICA SIN PermissionKey ACTIVA EXACTA
+→ DEFAULT_DENY
+```
+
+#### 2. Naturaleza y topología
+
+El marcador global conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-026::<implementation_unit_id>
+```
+
+La aprobación documental de este marcador no crea, autoriza ni ejecuta una instancia física.
+
+#### 3. Handoff contractual recibido de `NEXO-AUTH-025`
+
+025 entrega expresamente a 026:
+
+- mantenimiento;
+- daño;
+- pérdida;
+- baja;
+- reparación;
+- disposición;
+- reemplazo como efecto que debe conservar su autoridad propietaria;
+- evidencia de condición detectada durante entrega o devolución cuando el hallazgo no puede cerrarse como retorno íntegro.
+
+025 no autoriza declarar daño como resolución final, declarar pérdida, iniciar o cerrar mantenimiento, ejecutar reparación, dar de baja, disponer ni reemplazar.
+
+Se preserva además que un envío a técnico o tercero puede requerir una decisión adicional de custodia bajo 025; mantenimiento y custodia no se absorben entre sí.
+
+#### 4. Entradas canónicas preservadas
+
+026 consume sin redefinir:
+
+- `VPROC-0030 — Gestionar mantenimiento, reparación, garantía, repuesto y disposición de activos`;
+- `NEXO-DOM-010 — Definir estado, condición, daño, pérdida y faltante`;
+- `NEXO-DOM-012 — Definir mantenimiento, reparación y disponibilidad`;
+- `NEXO-DOM-013 — Definir baja, descarte, venta o reemplazo`;
+- `NEXO-DOM-016 — Definir repuestos, compatibilidad y stock mínimo`;
+- `NEXO-DOM-017 — Definir auditoría, historial y evidencia`;
+- `NEXO-DOM-025 — Vincular repuestos consumidos con mantenimiento y costo del activo`;
+- `NEXO-DOM-026 — Definir inspecciones, mantenimiento preventivo, garantía y calibración`;
+- `NEXO-DOM-028 — Emitir eventos financieros por adquisición, reparación, pérdida y baja cuando corresponda`;
+- la regla de ciclo no destructivo de activos;
+- la separación entre condición, disponibilidad, custodia, ubicación, propiedad y efecto económico;
+- la obligación de conservar plan, disparador, orden de trabajo, diagnóstico, ejecución, evidencia, prueba, liberación y próxima obligación cuando correspondan.
+
+#### 5. Eventos canónicos de resultado relevantes
+
+026 protege las decisiones que producen o validan, según corresponda, los siguientes eventos ya definidos:
+
+```text
+asset_condition_reported
+asset_damaged
+asset_lost
+asset_found
+maintenance_due
+maintenance_work_order_opened
+maintenance_started
+spare_part_reserved
+spare_part_consumed
+maintenance_completed
+asset_released_to_service
+warranty_claim_opened
+insurance_claim_opened
+asset_retirement_requested
+asset_retirement_approved
+asset_disposed
+```
+
+Estos nombres son eventos de dominio.
+
+No son `PermissionKey` y no se reutilizan como permisos.
+
+#### 6. Separación de responsabilidades
+
+Se fija como mínimo:
+
+```text
+REPORT CONDITION
+!=
+DECLARE DAMAGE
+!=
+DECLARE LOSS
+!=
+OPEN MAINTENANCE
+!=
+EXECUTE MAINTENANCE
+!=
+COMPLETE MAINTENANCE
+!=
+RELEASE TO SERVICE
+!=
+REQUEST RETIREMENT
+!=
+APPROVE RETIREMENT
+!=
+DISPOSE ASSET
+```
+
+Una interfaz puede encadenar pasos, pero la autorización debe poder negar uno aunque otro resulte permitido.
+
+#### 7. Estado actual del catálogo de permisos
+
+El catálogo activo observado expone capacidades de activos como:
+
+```text
+nexo.assets.items.view
+nexo.assets.items.create
+nexo.assets.groups.view
+nexo.assets.counts.view
+```
+
+y capacidades generales de inventario relacionadas con ubicaciones, movimientos o conteos.
+
+No se observó una `PermissionKey` activa exacta específica para:
+
+```text
+reportar daño
+confirmar daño
+reportar pérdida
+confirmar pérdida
+registrar hallazgo o recuperación
+abrir mantenimiento
+ejecutar mantenimiento
+completar mantenimiento
+liberar activo al servicio
+solicitar baja
+aprobar baja
+ejecutar disposición
+```
+
+La ausencia no autoriza a fabricar identidades locales dentro de `vento-nexo`.
+
+#### 8. Decisión autorizante bajo el catálogo actual
+
+| Intención empresarial | `PermissionKey` activa exacta observada | Decisión autorizante actual |
+| --- | --- | --- |
+| reportar condición o daño con efecto técnico | ninguna exacta | `DEFAULT_DENY` |
+| confirmar daño | ninguna exacta | `DEFAULT_DENY` |
+| declarar pérdida | ninguna exacta | `DEFAULT_DENY` |
+| registrar hallazgo con efecto de recuperación | ninguna exacta | `DEFAULT_DENY` |
+| abrir mantenimiento | ninguna exacta | `DEFAULT_DENY` |
+| iniciar mantenimiento | ninguna exacta | `DEFAULT_DENY` |
+| completar mantenimiento | ninguna exacta | `DEFAULT_DENY` |
+| liberar al servicio | ninguna exacta | `DEFAULT_DENY` |
+| solicitar baja | ninguna exacta | `DEFAULT_DENY` |
+| aprobar baja | ninguna exacta | `DEFAULT_DENY` |
+| ejecutar disposición | ninguna exacta | `DEFAULT_DENY` |
+
+La tabla no crea modalidad, scope, grants, excepciones ni nombres futuros.
+
+#### 9. Lectura del activo no autoriza transición técnica
+
+Se preserva:
+
+```text
+nexo.assets.items.view
+=
+LECTURA AUTORIZADA DE ACTIVO
+```
+
+pero:
+
+```text
+nexo.assets.items.view
+!=
+AUTORIDAD DE MANTENIMIENTO
+!=
+AUTORIDAD DE DAÑO
+!=
+AUTORIDAD DE PÉRDIDA
+!=
+AUTORIDAD DE BAJA
+```
+
+La posibilidad de consultar condición, historial o mantenimiento no concede escritura.
+
+#### 10. Creación del activo no autoriza su ciclo técnico posterior
+
+`nexo.assets.items.create` protege el alta inicial bajo su contrato.
+
+No concede por transitividad:
+
+- mantenimiento;
+- reparación;
+- cambio de disponibilidad;
+- declaración de daño;
+- declaración de pérdida;
+- baja;
+- disposición;
+- liberación al servicio.
+
+El creador no se convierte en autoridad permanente del activo.
+
+#### 11. `inventory.stock` no es autoridad técnica
+
+La auditoría previa observó `registerAssetMaintenance` y otras superficies de activos bajo:
+
+```text
+permissionCode = inventory.stock
+```
+
+Se fija:
+
+```text
+inventory.stock
+!=
+AUTORIDAD FINAL DE MANTENIMIENTO O DISPOSICIÓN
+```
+
+El retiro físico de ese permiso amplio permanece bajo `NEXO-AUTH-029`.
+
+#### 12. AS-IS de `registerAssetMaintenance`
+
+El consumidor observado posee una Server Action denominada `registerAssetMaintenance` que:
+
+1. exige actualmente `inventory.stock`;
+2. recibe `maintenance_status` desde el formulario;
+3. recibe `maintenance_type` desde el formulario;
+4. inserta una fila en `asset_maintenance_records`;
+5. si el estado recibido es `planned`, actualiza el activo a mantenimiento/reparación;
+6. si el estado recibido es `done`, actualiza el activo a operativo/activo;
+7. ejecuta el registro técnico y el cambio del activo como escrituras separadas.
+
+Este estado se clasifica como:
+
+```text
+LEGACY_BROAD
++
+ATOMIC_PERMISSION_GAP
++
+MULTI_EFFECT_NOT_PROVEN_ATOMIC
++
+RELEASE_BY_CLIENT_STATUS_RISK
+```
+
+La existencia funcional de la acción no demuestra que el contrato objetivo ya esté protegido.
+
+#### 13. Estados observados no son permisos
+
+El consumidor actual presenta valores como:
+
+```text
+equipment_status:
+operativo
+en_mantenimiento
+fuera_servicio
+baja
+
+lifecycle_status:
+activo
+almacenado
+prestado
+en_reparacion
+retirado
+perdido
+
+condition_status:
+nuevo
+bueno
+regular
+malo
+critico
+```
+
+026 no convierte esos strings en autoridad.
+
+Un cliente no puede autorizar una transición enviando un valor reconocido por la interfaz.
+
+#### 14. Condición no es disponibilidad
+
+Se preserva:
+
+```text
+CONDITION
+!=
+AVAILABILITY
+```
+
+Un activo puede tener condición aceptable y permanecer indisponible por:
+
+- mantenimiento;
+- garantía;
+- bloqueo de seguridad;
+- investigación;
+- pérdida no resuelta;
+- documento vencido;
+- política aplicable.
+
+Asimismo, una condición degradada no equivale automáticamente a baja.
+
+#### 15. Reporte de condición
+
+`asset_condition_reported` conserva una observación atribuible.
+
+Debe incluir como mínimo, cuando aplique:
+
+- activo exacto;
+- condición observada;
+- actor;
+- fecha efectiva;
+- origen del reporte;
+- evidencia;
+- notas o causa;
+- contexto territorial;
+- correlación.
+
+Reportar condición no aprueba reparación, baja ni efecto económico.
+
+#### 16. Daño reportado frente a daño confirmado
+
+Se separa:
+
+```text
+DAMAGE REPORTED
+!=
+DAMAGE CONFIRMED
+```
+
+El reporte puede provenir del custodio, usuario, conteo, inspección o mantenimiento.
+
+La confirmación con efecto técnico exige revalidar recurso, actor, evidencia, estado vigente y política aplicable.
+
+Un hallazgo visual o una selección cliente no cambia por sí solo la disponibilidad final.
+
+#### 17. Daño no implica baja
+
+Se fija:
+
+```text
+DAMAGED
+!=
+RETIRED
+!=
+DISPOSED
+```
+
+Un activo dañado puede:
+
+- permanecer bloqueado;
+- entrar a diagnóstico;
+- entrar a reparación;
+- gestionarse por garantía;
+- ser recuperable;
+- terminar posteriormente en baja mediante su ciclo independiente.
+
+026 prohíbe saltar directamente desde daño a disposición sin las decisiones intermedias que correspondan.
+
+#### 18. Pérdida reportada frente a pérdida confirmada
+
+Se separa:
+
+```text
+LOSS REPORTED
+!=
+LOSS CONFIRMED
+```
+
+Una ausencia en conteo, una devolución faltante o una ubicación no resuelta no constituyen por sí solas una pérdida final.
+
+La confirmación debe conservar investigación, actor, evidencia, última custodia conocida, última ubicación conocida, fecha efectiva y estado previo.
+
+#### 19. Pérdida no borra identidad
+
+La pérdida es un estado o evento no destructivo.
+
+Se preserva:
+
+```text
+ASSET LOST
+→ IDENTITY PRESERVED
+→ HISTORY PRESERVED
+→ LAST KNOWN CUSTODY PRESERVED
+→ LAST KNOWN LOCATION PRESERVED
+```
+
+No se elimina el expediente ni se reutiliza el identificador.
+
+#### 20. Hallazgo y recuperación
+
+`asset_found` no reabre automáticamente disponibilidad.
+
+Una recuperación debe poder demostrar:
+
+- identidad exacta;
+- relación con la pérdida vigente;
+- actor que reporta;
+- ubicación encontrada;
+- condición observada;
+- evidencia;
+- necesidad de inspección o mantenimiento;
+- decisión posterior de disponibilidad.
+
+Encontrado no equivale a liberado al servicio.
+
+#### 21. Plan de mantenimiento
+
+El plan define una obligación futura y no una ejecución.
+
+Puede considerar disparadores por:
+
+- fecha;
+- uso;
+- ciclos;
+- kilometraje;
+- condición;
+- inspección;
+- fabricante;
+- política interna.
+
+Crear o consultar un plan no autoriza una orden, ejecución ni liberación.
+
+#### 22. Mantenimiento vencido
+
+`maintenance_due` representa una obligación o alerta.
+
+No debe:
+
+- crear automáticamente una ejecución;
+- declarar trabajo realizado;
+- consumir repuestos;
+- liberar el activo;
+- cerrar evidencia pendiente.
+
+La política puede bloquear disponibilidad cuando corresponda, pero ese efecto debe ser explícito y auditable.
+
+#### 23. Orden de trabajo
+
+`maintenance_work_order_opened` representa una intención controlada de trabajo sobre un activo.
+
+Debe conservar cuando aplique:
+
+- activo;
+- disparador;
+- tipo;
+- diagnóstico inicial;
+- tareas previstas;
+- técnico o proveedor;
+- fechas;
+- indisponibilidad esperada;
+- evidencia inicial;
+- correlación;
+- autorización aplicable.
+
+Una orden abierta no equivale a mantenimiento iniciado ni completado.
+
+#### 24. Inicio de mantenimiento
+
+`maintenance_started` debe revalidar el activo y su estado actual.
+
+No puede iniciar válidamente si la combinación vigente lo impide, por ejemplo cuando:
+
+- el activo ya está retirado;
+- existe una pérdida confirmada sin recuperación;
+- la orden aplicable fue cancelada;
+- el recurso no corresponde al sujeto esperado;
+- el actor ya no posee autoridad;
+- existe conflicto de revisión.
+
+La evaluación se realiza en servidor.
+
+#### 25. Ejecución de mantenimiento
+
+Durante ejecución deben poder conservarse:
+
+- diagnóstico;
+- trabajo realizado;
+- técnico o proveedor;
+- fechas reales;
+- evidencia;
+- repuestos;
+- costo informado;
+- resultado;
+- incidencias;
+- próxima obligación.
+
+Texto libre puede complementar, pero no sustituye hechos estructurados que tengan owner canónico.
+
+#### 26. Repuestos
+
+Se preserva:
+
+```text
+TEXT "PARTS REPLACED"
+!=
+SPARE PART CONSUMPTION
+```
+
+Cuando se consume un repuesto real:
+
+```text
+MAINTENANCE AUTHORITY
++
+INVENTORY AUTHORITY
++
+EXACT SPARE PART
++
+QUANTITY
++
+REFERENCE TO ASSET AND WORK ORDER
+→ EFFECT MAY COMMIT
+```
+
+026 no presta su autoridad al inventario ni convierte una descripción en movimiento físico.
+
+#### 27. Garantía y seguro
+
+La existencia de un documento no demuestra cobertura vigente.
+
+`warranty_claim_opened` e `insurance_claim_opened` deben conservar según aplique:
+
+- vigencia;
+- proveedor o asegurador;
+- cobertura;
+- exclusiones;
+- documentos;
+- activo;
+- causa;
+- reclamación;
+- estado;
+- resultado.
+
+Abrir reclamación no aprueba automáticamente reparación, reemplazo, pago ni baja.
+
+#### 28. Mantenimiento completado
+
+`maintenance_completed` demuestra cierre del trabajo técnico correspondiente.
+
+No implica por sí solo:
+
+```text
+asset_released_to_service
+```
+
+Se preserva:
+
+```text
+WORK COMPLETED
+!=
+SERVICE RELEASED
+```
+
+#### 29. Prueba y liberación
+
+Cuando la política del activo exija prueba o verificación, la liberación al servicio requiere evidencia suficiente del resultado.
+
+Se fija:
+
+```text
+MAINTENANCE COMPLETED
++ REQUIRED TEST PASS
++ REQUIRED REVIEW PASS
++ CURRENT STATE COMPATIBLE
+→ MAY RELEASE
+```
+
+Si falta una condición requerida:
+
+```text
+RELEASE = DENY
+```
+
+#### 30. Prohibición de liberación por estado cliente
+
+La interfaz actual puede enviar `maintenance_status = done`.
+
+026 fija que un valor enviado por cliente no puede ser el único fundamento para:
+
+- declarar mantenimiento completado;
+- cambiar el activo a operativo;
+- cambiar lifecycle a activo;
+- retirar un bloqueo;
+- liberar al servicio.
+
+La decisión autoritativa se reconstruye en servidor.
+
+#### 31. Baja como ciclo separado
+
+La baja conserva como mínimo:
+
+```text
+REQUEST
+→ EVALUATE
+→ APPROVE WHEN REQUIRED
+→ EXECUTE DISPOSITION
+→ RECORD RESULT
+→ RECONCILE ECONOMIC EFFECT WHEN APPLICABLE
+```
+
+No se autoriza una actualización genérica de estado que colapse el ciclo.
+
+#### 32. Solicitud de baja
+
+`asset_retirement_requested` no es una baja consumada.
+
+Debe conservar:
+
+- sujeto exacto;
+- motivo;
+- condición;
+- estado previo;
+- actor solicitante;
+- evidencia;
+- fecha;
+- propuesta de tratamiento;
+- correlación.
+
+El solicitante no obtiene por ello autoridad de aprobación o disposición.
+
+#### 33. Aprobación de baja
+
+`asset_retirement_approved` requiere la segregación definida por valor, riesgo, propiedad y política.
+
+Se preserva:
+
+```text
+CUSTODIAN
+!=
+AUTOMATIC RETIREMENT APPROVER
+```
+
+Tampoco se presume que técnico, registrador del daño o ejecutor del mantenimiento pueda aprobar la misma baja.
+
+#### 34. Disposición
+
+`asset_disposed` representa la ejecución del destino aprobado.
+
+Puede corresponder, según contrato propietario, a:
+
+- descarte;
+- venta;
+- devolución a tercero;
+- reemplazo con tratamiento explícito del activo anterior;
+- otra disposición autorizada.
+
+La disposición no borra historia ni reutiliza identidad.
+
+#### 35. Reemplazo
+
+Se preserva:
+
+```text
+RETIRED ASSET
+!=
+REPLACEMENT ASSET
+```
+
+Un reemplazo nuevo posee identidad propia.
+
+026 no crea órdenes de compra, compromisos, pagos ni activos sustitutos por inferencia.
+
+Los owners de ORIGO, NUMERA y alta de activos conservan sus decisiones.
+
+#### 36. Efecto económico
+
+NEXO conserva el hecho operacional de reparación, pérdida o baja.
+
+NUMERA conserva el tratamiento económico cuando corresponda.
+
+Se fija:
+
+```text
+NEXO OPERATIONAL EVENT
+!=
+ACCOUNTING DECISION
+```
+
+La ausencia de conciliación económica no autoriza a ocultar o reescribir el hecho físico.
+
+#### 37. Custodia durante mantenimiento
+
+Enviar un activo a un técnico, proveedor o tercero puede exigir:
+
+```text
+MAINTENANCE DECISION
++
+CUSTODY DECISION WHEN APPLICABLE
+```
+
+026 no absorbe `NEXO-AUTH-025`.
+
+El mantenimiento tampoco cambia custodio automáticamente por registrar un proveedor.
+
+#### 38. Ubicación durante mantenimiento
+
+Una salida física o retorno puede requerir la autoridad de ubicación o movimiento aplicable.
+
+Se preserva:
+
+```text
+MAINTENANCE STATUS CHANGE
+!=
+LOCATION ASSIGNMENT
+```
+
+026 no teletransporta el activo ni usa mantenimiento para evadir controles de origen y destino.
+
+#### 39. Conteo y diferencia
+
+Una ausencia detectada por conteo puede disparar investigación de pérdida, pero:
+
+```text
+COUNT DIFFERENCE
+!=
+CONFIRMED LOSS
+```
+
+`NEXO-AUTH-027` conserva captura, cierre, aprobación y resolución de diferencias de conteo.
+
+026 solo recibe un hallazgo cuando corresponde iniciar el ciclo técnico de daño, pérdida o recuperación.
+
+#### 40. Datos sensibles de mantenimiento
+
+Los registros pueden contener:
+
+- proveedor;
+- técnico;
+- costo informado;
+- garantía;
+- seguro;
+- documentos;
+- diagnóstico;
+- fotografías;
+- evidencia de incidentes.
+
+La lectura debe respetar finalidad, recurso, scope y proyección permitida.
+
+`nexo.assets.items.view` no debe interpretarse automáticamente como permiso para exponer todos los campos sensibles de todo expediente técnico.
+
+026 no inventa una nueva capacidad de lectura; mantiene `DEFAULT_DENY` para cualquier proyección sensible cuya autoridad exacta no pueda demostrarse.
+
+#### 41. Dispositivo compartido
+
+Un dispositivo compartido:
+
+- no crea una capacidad inexistente;
+- no hereda privilegios del actor anterior;
+- no permite aprobar baja por permanecer autenticado;
+- no convierte un reporte de daño en decisión técnica;
+- debe resolver al actor humano efectivo antes de toda mutación.
+
+La plantilla del dispositivo es límite, no fuente de autoridad.
+
+#### 42. Operación offline
+
+Una captura offline puede conservar evidencia o intención pendiente cuando el contrato futuro lo permita.
+
+No modifica por sí sola el estado canónico.
+
+Al reconectar se revalidan como mínimo:
+
+- actor;
+- capacidad exacta;
+- sujeto;
+- estado;
+- condición;
+- revisión;
+- territorio;
+- orden de trabajo;
+- decisión de baja cuando aplique;
+- idempotencia.
+
+Una intención obsoleta puede ser denegada.
+
+#### 43. Timeout y resultado desconocido
+
+Ante timeout:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO CREATE A NEW OPERATION
+```
+
+El replay conserva la misma identidad idempotente.
+
+No se crea una segunda orden, mantenimiento, liberación, baja o disposición para resolver incertidumbre.
+
+#### 44. Idempotencia
+
+El replay de la misma intención aceptada no puede:
+
+- abrir dos órdenes;
+- registrar dos inicios;
+- consumir dos veces el mismo repuesto;
+- completar dos veces;
+- liberar dos veces;
+- aprobar dos bajas;
+- disponer dos veces;
+- emitir dos efectos correlacionados.
+
+La respuesta persistida o reconciliable debe poder recuperarse mediante la misma identidad de operación.
+
+#### 45. Concurrencia
+
+Dos decisiones concurrentes sobre el mismo activo no pueden confirmar efectos incompatibles sobre el mismo estado inicial.
+
+Ejemplos:
+
+```text
+RELEASE TO SERVICE
+vs
+CONFIRMED LOSS
+```
+
+```text
+RETIREMENT APPROVAL
+vs
+NEW MAINTENANCE START
+```
+
+```text
+DISPOSAL
+vs
+CUSTODY TRANSFER
+```
+
+La segunda decisión debe revalidar el estado vigente y aceptar o denegar desde la nueva realidad.
+
+#### 46. Atomicidad y efectos compuestos
+
+Cuando una decisión empresarial requiere más de una escritura autoritativa, el resultado no puede quedar presentado como completo si solo una parte confirmó.
+
+Para el caso observado de mantenimiento:
+
+```text
+MAINTENANCE RECORD COMMITTED
++
+ASSET STATE CHANGE FAILED
+!=
+SUCCESSFUL COMPOUND TRANSITION
+```
+
+La futura materialización debe usar un mecanismo atómico o un estado durable, identificable y reconciliable que impida reportar éxito falso.
+
+#### 47. Auditoría mínima
+
+Toda decisión aceptada o rechazada debe poder correlacionar, según corresponda:
+
+- operación;
+- activo;
+- orden de trabajo;
+- estado anterior;
+- condición anterior;
+- decisión solicitada;
+- actor;
+- dispositivo cuando sea material;
+- capacidad evaluada;
+- scope y territorio;
+- motivo;
+- evidencia;
+- proveedor o técnico cuando aplique;
+- repuestos relacionados;
+- aprobación cuando aplique;
+- prueba;
+- liberación;
+- estado posterior;
+- correlación;
+- idempotencia;
+- instante de servidor;
+- resultado;
+- efecto económico o referencia externa cuando aplique.
+
+Los nombres físicos finales pertenecen a implementación.
+
+#### 48. Orden lógico de evaluación
+
+Toda mutación futura recorre lógicamente:
+
+1. resolver principal y actor efectivo;
+2. comprobar capacidad exacta activa;
+3. resolver grants y denegaciones;
+4. resolver activo exacto;
+5. resolver recurso y territorio;
+6. leer estado y condición vigentes;
+7. leer revisión vigente;
+8. resolver operación técnica exacta;
+9. validar evidencia y motivo;
+10. validar segregación aplicable;
+11. validar orden de trabajo cuando corresponda;
+12. validar efectos de repuestos, custodia, ubicación o economía cuando correspondan;
+13. aplicar idempotencia;
+14. bloquear concurrencia incompatible;
+15. autorizar;
+16. ejecutar el efecto coherente;
+17. registrar auditoría;
+18. devolver estado persistido.
+
+Una etapa posterior no corrige una denegación anterior.
+
+#### 49. AS-IS remoto observado
+
+El consumidor `vento-nexo` observado mantiene un estado parcial:
+
+- la ficha de activo utiliza `permissionCode = inventory.stock`;
+- `registerAssetMaintenance` utiliza el mismo permiso amplio;
+- existe `asset_maintenance_records` con estado, tipo, fechas, proveedor, trabajo, repuestos descritos, costo, próxima fecha y notas;
+- el formulario ofrece tipos preventivo, correctivo, inspección, calibración, limpieza y otro;
+- el formulario ofrece estados planeado, realizado, cancelado y vencido;
+- el action observado modifica `equipment_status` y `lifecycle_status` según `maintenance_status`;
+- los cambios del registro técnico y del estado del activo se realizan mediante escrituras separadas;
+- no se observó en esa acción una `PermissionKey` específica de mantenimiento;
+- no se observó una acción equivalente completa para confirmar daño, pérdida, recuperación, aprobación de baja o disposición con segregación propia;
+- valores de interfaz para baja, pérdida, condición o fuera de servicio existen como representación, pero no demuestran un ciclo autorizado completo.
+
+La existencia de tablas y UI no se presenta como protección material completada.
+
+#### 50. Cierre de hallazgos heredados
+
+| Hallazgo heredado | Decisión de 026 | Condición de salida física |
+| --- | --- | --- |
+| `AUTH021-F-004` | `inventory.stock` no es autoridad final de ciclo técnico | superficie migrada a capacidades específicas compatibles |
+| `AUTH021-F-007` | mantenimiento, daño, pérdida y baja se separan en decisiones autoritativas | consumidor y backend protegen cada mutación aplicable |
+| mantenimiento actual incompleto | plan, orden, ejecución, prueba y liberación permanecen distinguibles | flujo E2E materializado y validado por unidad |
+| repuestos descritos como texto | texto no sustituye reserva ni consumo de inventario | consumo correlacionado con activo y orden |
+| baja y efecto económico mezclables | solicitud, aprobación, disposición y tratamiento económico permanecen separados | decisiones propietarias materializadas y conciliables |
+
+026 cierra el contrato documental de autorización, no esos cambios físicos.
+
+#### 51. Frontera con `NEXO-AUTH-025`
+
+025 conserva:
+
+- custodia;
+- préstamo;
+- devolución;
+- transferencia de custodia;
+- cambio de responsable;
+- aceptación de handoff.
+
+026 puede exigir una decisión adicional de 025 cuando el activo sale hacia tercero, pero no cambia custodia por inferencia.
+
+#### 52. Frontera con `NEXO-AUTH-027`
+
+027 conserva:
+
+- captura de conteo;
+- cierre o cancelación de sesión;
+- investigación de diferencia;
+- aprobación de diferencia;
+- resolución de diferencia.
+
+026 no usa una ausencia de conteo como declaración automática de pérdida y no corrige saldos mediante una decisión técnica.
+
+#### 53. Frontera con `NEXO-AUTH-028`
+
+Imprimir o reimprimir una etiqueta, QR, soporte técnico o evidencia conserva su permiso propietario.
+
+Una autorización de mantenimiento, daño, pérdida o baja no concede impresión por transitividad.
+
+#### 54. Frontera con `NEXO-AUTH-029`
+
+026 fija que `inventory.stock` y otros permisos amplios no son autoridad final del ciclo técnico.
+
+029 conserva el retiro físico gobernado de aliases, fallbacks y helpers legacy cuando existan reemplazos específicos válidos.
+
+026 no declara físicamente retirado ningún permiso.
+
+#### 55. Frontera con `NEXO-AUTH-030`
+
+030 conserva la certificación integral del subdominio.
+
+Para 026 deberá cubrir posteriormente, como mínimo:
+
+- deny por ausencia de capacidad exacta;
+- API o acción directa;
+- daño reportado frente a confirmado;
+- pérdida reportada frente a confirmada;
+- hallazgo sin liberación automática;
+- mantenimiento vencido;
+- orden abierta, iniciada y completada;
+- repuesto sin consumo real;
+- intento de liberación sin prueba;
+- replay idempotente;
+- concurrencia incompatible;
+- timeout;
+- operación offline;
+- solicitud y aprobación de baja separadas;
+- disposición sin aprobación;
+- efecto económico separado;
+- custodia y ubicación como decisiones independientes.
+
+Este marcador no ejecuta esas pruebas.
+
+#### 56. Frontera con `NEXO-AUTH-031`
+
+031 protege instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras en el subdominio de instalaciones.
+
+026 protege el ciclo técnico de activos bajo este mini-bloque.
+
+Cuando un objeto sea instalación fija o componente gobernado por 031, no se duplica el expediente bajo 026 por similitud terminológica.
+
+La clase de recurso propietaria decide el owner.
+
+#### 57. Materialización futura
+
+Una futura materialización solo puede ejecutarse cuando exista:
+
+- `implementation_unit_id` asignado;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS` cuando corresponda;
+- autorización física explícita;
+- catálogo de permisos compatible;
+- grants y denegaciones definidos;
+- consumidor compatible;
+- backend compatible;
+- contratos de recurso, estado y evidencia compatibles;
+- pruebas atribuibles a la misma unidad.
+
+La instancia física válida seguirá:
+
+```text
+NEXO-AUTH-026::<implementation_unit_id>
+```
+
+#### 58. Rollback de una futura materialización
+
+Un rollback físico:
+
+- solo vuelve a una combinación previamente certificada;
+- no reactiva un permiso legacy más amplio;
+- no convierte `DEFAULT_DENY` en autenticación sola;
+- no borra daño, pérdida, mantenimiento, baja o disposición ya confirmados;
+- no marca operativo un activo sin prueba requerida;
+- no restaura disponibilidad de un activo retirado o perdido por simple downgrade de código;
+- conserva órdenes, repuestos, evidencia, auditoría y efectos económicos ya emitidos;
+- mantiene coherencia entre catálogo, consumidor, backend y datos.
+
+Si no existe combinación segura anterior, se bloquea la mutación y se corrige hacia adelante.
+
+#### 59. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige ciclo no destructivo de activos, daño y pérdida auditables, mantenimiento con plan, orden, ejecución, repuestos, prueba y liberación, baja con segregación y autorización server-side. 026 especializa la frontera de autorización sin introducir una obligación de prueba independiente.
+
+#### 60. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013` para identidad estable, condición, daño, pérdida, hallazgo y eventos auditables del activo;
+- `TREQ-NEXO-014` para mantenimiento, reparación, repuestos, garantía, seguro, prueba, liberación, baja y disposición;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y scope canónicos;
+- `TREQ-AUTH-013` para validación server-side de permiso exacto, actor, territorio, contexto, estado y campos permitidos;
+- `TREQ-INTEGRATION-012` para la integración de inventario físico y efectos relacionados cuando corresponda;
+- `TREQ-NUMERA-001` para conservar la autoridad económica propietaria cuando exista efecto financiero.
+
+Estas referencias son trazabilidad existente y no una modificación del registro.
+
+#### 61. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no materializa código; la batería local ejecutará la compilación documental antes del cierre |
+| LOCAL | NOT_EXECUTED | no se ejecutaron scripts sobre el checkout local del usuario durante la elaboración del artefacto |
+| REMOTA | PASS | se contrastaron el protocolo y contratos documentales de `vento-shell`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, auditoría `NEXO-AUTH-021`, catálogo activo de permisos, fuentes E1/E2, registro modular NEXO y el consumidor `vento-nexo` observado; `registerAssetMaintenance` continúa protegido por `inventory.stock`, inserta `asset_maintenance_records` y modifica estados del activo mediante escrituras separadas |
+| OPERATIVA | NOT_EXECUTED | no se ejecutó mantenimiento, daño, pérdida, recuperación, baja ni disposición sobre activos reales |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-026::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 62. Criterios de aceptación
+
+- [x] mantenimiento, daño, pérdida y baja quedan separados en decisiones explícitas;
+- [x] se preservan los eventos canónicos relevantes sin convertirlos en permisos;
+- [x] no se inventa ninguna `PermissionKey`;
+- [x] las mutaciones sin capacidad exacta activa quedan en `DEFAULT_DENY`;
+- [x] `assets.items.view` no autoriza transición técnica;
+- [x] `assets.items.create` no concede autoridad técnica posterior;
+- [x] `inventory.stock` se rechaza como autoridad final;
+- [x] condición y disponibilidad permanecen separadas;
+- [x] daño reportado y daño confirmado permanecen separados;
+- [x] daño no implica baja;
+- [x] pérdida reportada y pérdida confirmada permanecen separadas;
+- [x] pérdida preserva identidad e historia;
+- [x] hallazgo no libera automáticamente al servicio;
+- [x] plan, orden, inicio, ejecución, finalización y liberación permanecen distinguibles;
+- [x] mantenimiento vencido no crea ejecución ficticia;
+- [x] repuestos en texto no sustituyen consumo de inventario;
+- [x] garantía y seguro no se infieren por existencia de documento;
+- [x] mantenimiento completado no equivale a liberación;
+- [x] un estado enviado por cliente no libera el activo;
+- [x] baja conserva solicitud, evaluación, aprobación, disposición y resultado;
+- [x] custodio o técnico no se convierte en aprobador automático de baja;
+- [x] disposición no borra historia ni reutiliza identidad;
+- [x] reemplazo conserva identidad nueva y owners externos;
+- [x] efecto operacional y tratamiento económico permanecen separados;
+- [x] custodia de tercero permanece bajo 025 cuando aplique;
+- [x] ubicación permanece una autoridad independiente;
+- [x] una diferencia de conteo no se convierte en pérdida automática;
+- [x] campos técnicos sensibles no se exponen por inferencia amplia;
+- [x] dispositivo compartido no crea autoridad;
+- [x] offline no muta estado canónico por sí solo;
+- [x] timeout no crea una segunda operación;
+- [x] se exige idempotencia;
+- [x] se bloquean concurrencias incompatibles;
+- [x] los efectos compuestos no se presentan como éxito parcial;
+- [x] la decisión final es server-side;
+- [x] se preserva frontera con 027, 028, 029, 030 y 031;
+- [x] no se modifica Supabase;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la futura materialización conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [x] `NEXO-AUTH-027` recibe una frontera explícita.
+
+#### 63. Límites
+
+Esta tarea no:
+
+- crea ni modifica `PermissionKey`;
+- modifica grants base u operativos;
+- crea roles;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- ejecuta mantenimiento real;
+- declara daño real;
+- declara pérdida real;
+- recupera activos reales;
+- libera activos reales al servicio;
+- consume repuestos reales;
+- abre reclamaciones reales;
+- solicita ni aprueba bajas reales;
+- ejecuta disposición real;
+- crea reemplazos reales;
+- modifica propiedad económica;
+- cambia custodios reales;
+- cambia ubicaciones reales;
+- resuelve diferencias de conteo;
+- imprime o reimprime;
+- retira físicamente permisos legacy;
+- ejecuta certificación integral;
+- protege instalaciones bajo 031;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-027`.
+
+#### 64. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias`
 ### [ ] NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
 ### [ ] NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
 ### [ ] NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
