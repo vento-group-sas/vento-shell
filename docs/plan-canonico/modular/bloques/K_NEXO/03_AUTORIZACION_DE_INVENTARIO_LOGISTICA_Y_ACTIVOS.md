@@ -1768,7 +1768,1360 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia`
 
-### [ ] NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia
+### ✅ NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-022 — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN
+**Tarea siguiente:** NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — contrato NEXO para proteger mutaciones de contenido y membresía LPN mediante decisiones independientes de empaque, desempaque, división, unión y transferencia de contenido, con autorización server-side exacta, `DEFAULT_DENY` ante ausencia de `PermissionKey` atómica activa, conservación de cantidad e identidad, lineage, territorio, revisiones, atomicidad, idempotencia, concurrencia y fronteras estrictas con lifecycle, movimientos, ubicación, custodia y contenedores físicos
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-023::<implementation_unit_id>` después de que la unidad y su package propietario estén asignados, `E5-GATE-008::<package_id>` aplicable haya resultado `PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger toda mutación autoritativa del contenido de un LPN para que empacar, desempacar, dividir, unir o transferir contenido no pueda ejecutarse por autenticación sola, lectura del LPN, acceso a stock, conocimiento de una URL, pertenencia a una sede, posesión física del contenido, rol nominal, permiso legacy amplio ni reutilización de una capacidad de traslado con un recurso distinto.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++ ACCIÓN DE CONTENIDO LPN EXACTA
++ CAPACIDAD CANÓNICA EXACTA CUANDO EXISTA
++ CARRIL AUTORIZANTE COMPLETO
++ RECURSO FUENTE AUTORITATIVO
++ LPN ORIGEN O DESTINO SEGÚN APLIQUE
++ TERRITORIO Y CONTEXTO VIGENTES
++ LIFECYCLE COMPATIBLE
++ REVISIONES VIGENTES
++ CONTENIDO ELEGIBLE
++ DIMENSIONES Y TRAZABILIDAD CONSERVADAS
++ CAPACIDAD Y COMPATIBILIDAD CUANDO APLIQUEN
++ DENEGACIONES AUSENTES
++ IDEMPOTENCIA Y CONCURRENCIA
++ EFECTO ATÓMICO RECONCILIABLE
+→ ACCIÓN AUTORIZABLE
+```
+
+Y mientras no exista una capacidad exacta activa para la mutación:
+
+```text
+MUTACIÓN DE MEMBRESÍA LPN SIN PermissionKey ACTIVA EXACTA
+→ DEFAULT_DENY
+```
+
+#### 2. Handoff recibido de `NEXO-AUTH-022`
+
+`NEXO-AUTH-022` entrega a esta tarea las siguientes decisiones cerradas:
+
+- lifecycle LPN y contenido son responsabilidades distintas;
+- `nexo.inventory.lpns.view` es una capacidad de lectura y nunca autoriza mutación;
+- `inventory.stock` no puede convertirse en autoridad final;
+- `nexo.inventory.location_assignments.assign` no autoriza lifecycle ni contenido;
+- crear, actualizar, activar, cerrar, anular y reetiquetar permanecen fuera de 023;
+- toda mutación sin `PermissionKey` exacta activa permanece en `DEFAULT_DENY`;
+- la decisión real debe producirse en servidor;
+- actor, territorio, estado, revisión, idempotencia y concurrencia deben revalidarse antes del efecto;
+- custodia y transferencia de custodia permanecen fuera del alcance de contenido.
+
+Esta tarea aplica la misma política fail-closed a las cinco mutaciones de contenido que 022 dejó expresamente reservadas.
+
+#### 3. Entradas canónicas preservadas
+
+La protección consume sin redefinir:
+
+- `NEXO-DOM-004`, propietario de contenido, `PACK` y `UNPACK`;
+- `NEXO-DOM-005`, propietario de `SPLIT_CONTENT`, `MERGE_CONTENT` y `TRANSFER_CONTENT`;
+- `NEXO-DOM-006`, propietario de LPN anidados;
+- `NEXO-DOM-007`, propietario de ubicación efectiva;
+- `NEXO-DOM-021`, propietario de no doble contabilización;
+- `NEXO-DOM-022`, propietario del movimiento atómico de un LPN completo y su cierre;
+- `NEXO-DOM-023`, propietario de lote, serial, vencimiento y condición;
+- `NEXO-DOM-024`, propietario de capacidad, peso, volumen y compatibilidad;
+- las tres formas canónicas de contenido `QUANTITY_SLICE`, `SERIALIZED_IDENTITY` y `KIT_INSTANCE`;
+- la separación entre LPN y `PHYSICAL_CONTAINER`;
+- la prohibición de usar un LPN como contenido ordinario de otro;
+- la fuente canónica de movimientos y proyecciones reconciliables;
+- la regla de una sola representación autoritativa de la existencia.
+
+#### 4. Topología y materialización futura
+
+El marcador global usa:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura sigue:
+
+```text
+NEXO-AUTH-023::<implementation_unit_id>
+```
+
+La aprobación documental de este marcador no crea, autoriza ni ejecuta una instancia física.
+
+Toda futura materialización requiere:
+
+- `implementation_unit_id` asignado;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS` cuando corresponda;
+- autorización física explícita;
+- consumidor, contratos compartidos y backend compatibles;
+- evidencia atribuible a la misma combinación material.
+
+#### 5. Cinco decisiones de autorización
+
+023 protege exactamente cinco decisiones empresariales:
+
+```text
+PACK
+UNPACK
+SPLIT_CONTENT
+MERGE_CONTENT
+TRANSFER_CONTENT
+```
+
+Estas cinco acciones son semánticamente distintas.
+
+Una futura interfaz puede encadenarlas, pero ninguna decisión se absorbe silenciosamente dentro de otra.
+
+La autorización debe poder negar una acción aunque otra resulte autorizable.
+
+#### 6. Estado actual del catálogo de permisos
+
+El catálogo activo observado de NEXO contiene 67 `PermissionKey`.
+
+Entre las capacidades relacionadas se encuentran:
+
+```text
+nexo.inventory.lpns.view
+nexo.inventory.stock.view
+nexo.inventory.movements.view
+nexo.inventory.location_assignments.assign
+nexo.inventory.transfers.view
+nexo.inventory.transfers.create
+```
+
+No se observó una `PermissionKey` activa exacta que autorice por contrato propio:
+
+```text
+PACK
+UNPACK
+SPLIT_CONTENT
+MERGE_CONTENT
+TRANSFER_CONTENT
+```
+
+La ausencia no autoriza a fabricar identidades locales en `vento-nexo`.
+
+#### 7. Decisión autorizante bajo el catálogo actual
+
+La matriz actual queda:
+
+| Acción | `PermissionKey` activa exacta observada | Decisión autorizante actual |
+| --- | --- | --- |
+| `PACK` | ninguna | `DEFAULT_DENY` |
+| `UNPACK` | ninguna | `DEFAULT_DENY` |
+| `SPLIT_CONTENT` | ninguna | `DEFAULT_DENY` |
+| `MERGE_CONTENT` | ninguna | `DEFAULT_DENY` |
+| `TRANSFER_CONTENT` | ninguna | `DEFAULT_DENY` |
+
+Esta tabla no crea nuevos permisos ni determina todavía nombres, modalidad, scope o grants futuros.
+
+#### 8. `lpns.view` no autoriza contenido
+
+Se fija:
+
+```text
+nexo.inventory.lpns.view
+=
+LECTURA DE LPN Y CONTENIDO AUTORIZADO
+```
+
+pero:
+
+```text
+nexo.inventory.lpns.view
+!=
+PACK
+!=
+UNPACK
+!=
+SPLIT_CONTENT
+!=
+MERGE_CONTENT
+!=
+TRANSFER_CONTENT
+```
+
+Poder consultar un LPN, su contenido, posición o custodia no concede autoridad de mutación.
+
+#### 9. `stock.view` no autoriza contenido LPN
+
+`nexo.inventory.stock.view` es una capacidad de lectura de posiciones de stock.
+
+No autoriza:
+
+- retirar existencia suelta hacia un LPN;
+- restituir existencia desde LPN;
+- dividir membresías;
+- consolidar membresías;
+- transferir contenido entre LPN.
+
+Una proyección visible de stock no es una capacidad de escritura.
+
+#### 10. `location_assignments.assign` no autoriza membresía
+
+`nexo.inventory.location_assignments.assign` protege la asignación de una existencia, LPN o ítem a una ubicación concreta.
+
+Su recurso es:
+
+```text
+LOCATION_ASSIGNMENT
+```
+
+No protege:
+
+```text
+LPN_CONTENT_MEMBERSHIP
+```
+
+Por tanto, una asignación de ubicación válida no concede `PACK`, `UNPACK`, `SPLIT_CONTENT`, `MERGE_CONTENT` ni `TRANSFER_CONTENT`.
+
+#### 11. `transfers.create` no sustituye `TRANSFER_CONTENT`
+
+`nexo.inventory.transfers.create` protege el recurso:
+
+```text
+INVENTORY_TRANSFER
+```
+
+con origen, destino, ítems y cantidades, y exige autorización sobre ambos extremos.
+
+`TRANSFER_CONTENT` protege otra responsabilidad:
+
+```text
+LPN SOURCE MEMBERSHIP
+→
+LPN TARGET MEMBERSHIP
+```
+
+Por tanto:
+
+```text
+nexo.inventory.transfers.create
+!=
+AUTORIZACIÓN DE TRANSFER_CONTENT
+```
+
+Si una operación futura de contenido produce además un traslado canónico de inventario entre extremos físicos, el traslado deberá satisfacer su propia capacidad y contrato en adición a la autoridad específica de contenido LPN. Una capacidad no reemplaza a la otra.
+
+#### 12. `movements.view` no autoriza mutación
+
+`nexo.inventory.movements.view` permite consultar movimientos.
+
+No autoriza producir un movimiento ni alterar membresía LPN.
+
+La existencia de un evento consultable después de una operación válida no convierte el permiso de lectura en permiso de escritura.
+
+#### 13. Permisos legacy amplios
+
+No autorizan las cinco mutaciones:
+
+```text
+inventory.stock
+nexo.access
+permiso de lectura de LPN
+permiso de lectura de stock
+permiso de lectura de movimientos
+permiso de lectura de traslados
+rol base por nombre
+rol operativo por nombre
+cobertura administrativa
+sede seleccionada
+custodia actual
+posesión física
+código LPN escaneado
+```
+
+`NEXO-AUTH-029` conserva la responsabilidad de retirar los aliases, fallbacks y helpers amplios que todavía existan.
+
+#### 14. Modalidad, scope y grants inexistentes no se infieren
+
+Mientras una acción no posea `PermissionKey` activa exacta, 023 no inventa:
+
+- `BASE_ONLY`;
+- `OPERATIONAL_ONLY`;
+- `BASE_OR_OPERATIONAL`;
+- scope administrativo;
+- scope operativo;
+- grants por rol;
+- denegaciones;
+- política de dispositivo;
+- reautenticación;
+- clasificación de simulación.
+
+La ausencia de esas piezas produce:
+
+```text
+DEFAULT_DENY
+```
+
+No se completa localmente un contrato compartido incompleto.
+
+#### 15. Gate de futura capacidad exacta
+
+Una capacidad de contenido LPN solo podrá producir `ALLOW` cuando pueda demostrarse conjuntamente:
+
+```text
+IDENTIDAD CANÓNICA ACTIVA
++ ACCIÓN CONTRACTUAL EXPLÍCITA
++ DESCRIPCIÓN CANÓNICA
++ MODALIDAD DEFINIDA
++ SCOPE DEFINIDO
++ RECURSO DEFINIDO
++ PRERREQUISITOS DEFINIDOS
++ GRANTS Y DENEGACIONES DEFINIDOS
++ POLÍTICA DE DISPOSITIVO
++ POLÍTICA DE SIMULACIÓN
++ CONSUMIDOR COMPATIBLE
++ BACKEND COMPATIBLE
++ PRUEBAS
+```
+
+Hasta entonces, la mutación permanece bloqueada.
+
+#### 16. Recurso conceptual de `PACK`
+
+`PACK` protege una intención compuesta por:
+
+```text
+SOURCE LOOSE CONTENT OR EXACT IDENTITY
++ TARGET LPN
++ CONTENT SHAPE
++ QUANTITY OR EXACT IDENTITY
++ INVENTORY DIMENSIONS
++ TARGET CONTENT REVISION
+```
+
+El cliente propone la intención.
+
+El servidor vuelve a resolver origen, destino, contenido, estado y revisiones.
+
+#### 17. Precondiciones autorizantes de `PACK`
+
+Además de la futura capacidad exacta, un `PACK` real deberá comprobar:
+
+1. LPN destino existente;
+2. lifecycle `ACTIVE`;
+3. revisión de lifecycle vigente cuando sea material;
+4. revisión de contenido esperada vigente;
+5. actor efectivo;
+6. territorio del contenido y del LPN;
+7. contenido elegible;
+8. clase primaria conocida;
+9. cantidad positiva o identidad exacta;
+10. origen autoritativo suficiente;
+11. dimensiones completas;
+12. ausencia de membresía duplicada;
+13. condición y liberación compatibles;
+14. capacidad y compatibilidad cuando apliquen;
+15. correlación;
+16. idempotencia;
+17. posibilidad de commit coherente sin doble contabilización.
+
+Una condición de dominio fallida conserva `DENY` aunque el actor disponga de una capacidad futura.
+
+#### 18. Efecto protegido de `PACK`
+
+Una aceptación válida produce conceptualmente:
+
+```text
+LOOSE REPRESENTATION DECREASES OR CEASES
++
+TARGET LPN MEMBERSHIP INCREASES OR STARTS
++
+TOTAL PHYSICAL EXISTENCE IS CONSERVED
+```
+
+`PACK` no:
+
+- crea producto;
+- crea existencia;
+- activa el LPN;
+- cambia purpose type;
+- mueve un LPN completo;
+- transfiere custodia por inferencia;
+- crea un contenedor físico.
+
+#### 19. Contenido ya perteneciente a otro LPN
+
+Si una cantidad o identidad pertenece autoritativamente a otro LPN:
+
+```text
+PACK FROM LOOSE STOCK
+→ NOT APPLICABLE
+```
+
+La operación correcta es `TRANSFER_CONTENT` cuando sus precondiciones se satisfagan.
+
+No se autoriza duplicar membresía empacando el mismo sujeto una segunda vez.
+
+#### 20. Recurso conceptual de `UNPACK`
+
+`UNPACK` protege:
+
+```text
+SOURCE LPN
++ AUTHORITATIVE SOURCE MEMBERSHIP
++ QUANTITY OR EXACT IDENTITY
++ DESTINATION LOOSE CONTEXT
++ SOURCE CONTENT REVISION
+```
+
+Desempaquetar no equivale a borrar una fila.
+
+#### 21. Precondiciones autorizantes de `UNPACK`
+
+Además de la futura capacidad exacta deberá verificarse:
+
+1. LPN fuente existente;
+2. lifecycle `ACTIVE`;
+3. membresía autoritativa vigente;
+4. cantidad suficiente o identidad exacta;
+5. revisión de contenido vigente;
+6. destino declarado y permitido;
+7. actor efectivo autorizado;
+8. territorio aplicable;
+9. conservación de dimensiones;
+10. compatibilidad de destino cuando aplique;
+11. correlación;
+12. idempotencia;
+13. commit coherente del cambio de control.
+
+#### 22. Efecto protegido de `UNPACK`
+
+Una aceptación válida produce:
+
+```text
+SOURCE LPN MEMBERSHIP DECREASES OR CEASES
++
+LOOSE REPRESENTATION APPEARS AT VALID DESTINATION
++
+TOTAL PHYSICAL EXISTENCE IS CONSERVED
+```
+
+No se borra historia.
+
+Un LPN que queda vacío no se cierra automáticamente.
+
+#### 23. `UNPACK` no es transferencia entre LPN
+
+Se fija:
+
+```text
+UNPACK TO LOOSE
+!=
+TRANSFER_CONTENT TO ANOTHER LPN
+```
+
+Está prohibido representar una sola intención empresarial de transferencia como:
+
+```text
+COMMITTED UNPACK
++
+LATER INDEPENDENT PACK
+```
+
+porque introduce una ventana de pérdida, duplicación o autoridad divergente.
+
+#### 24. Recurso conceptual de `SPLIT_CONTENT`
+
+`SPLIT_CONTENT` opera dentro del mismo LPN sobre una membresía:
+
+```text
+QUANTITY_SLICE
+```
+
+y produce dos o más porciones hijas con la misma identidad dimensional.
+
+No cambia por sí sola el LPN propietario.
+
+#### 25. Precondiciones autorizantes de `SPLIT_CONTENT`
+
+Además de una capacidad exacta futura se exige:
+
+- LPN vigente;
+- lifecycle compatible;
+- membresía fuente autoritativa;
+- forma `QUANTITY_SLICE`;
+- revisión esperada vigente;
+- actor autorizado;
+- cantidades hijas válidas;
+- suma exacta;
+- dimensiones conservadas;
+- idempotencia;
+- correlación;
+- ausencia de bloqueo superior.
+
+#### 26. Operaciones no divisibles
+
+Se preserva:
+
+```text
+SPLIT(SERIALIZED_IDENTITY) = DENY
+SPLIT(KIT_INSTANCE) = DENY
+```
+
+`SPLIT_CONTENT` tampoco puede utilizarse para cambiar:
+
+- lote;
+- vencimiento;
+- condición;
+- producto;
+- unidad canónica;
+- clase primaria;
+- owner económico;
+- identidad serializada.
+
+#### 27. División con intención de transferencia
+
+Cuando el negocio quiere transferir solo una parte hacia otro LPN:
+
+```text
+PARTIAL TRANSFER
+=
+ONE TRANSFER_CONTENT INTENT
+```
+
+La partición necesaria puede ocurrir internamente dentro de la decisión atómica de transferencia.
+
+No se requiere autorizar primero un split independiente para dejar una porción intermedia sin destino empresarial.
+
+#### 28. Recurso conceptual de `MERGE_CONTENT`
+
+`MERGE_CONTENT` opera dentro del mismo LPN sobre dos o más:
+
+```text
+QUANTITY_SLICE
+```
+
+compatibles.
+
+El resultado consolida representación sin cambiar la existencia total.
+
+#### 29. Precondiciones autorizantes de `MERGE_CONTENT`
+
+Además de la capacidad exacta futura se exige:
+
+- mismo LPN;
+- lifecycle compatible;
+- al menos dos membresías vigentes;
+- forma `QUANTITY_SLICE`;
+- clave de equivalencia completa;
+- revisiones vigentes;
+- actor autorizado;
+- suma representable sin pérdida;
+- lineage preservable;
+- idempotencia;
+- correlación.
+
+#### 30. Unión incompatible
+
+Se deniega la unión cuando difieren materialmente:
+
+- producto;
+- clase primaria;
+- unidad canónica;
+- presentación material;
+- lote;
+- vencimiento;
+- condición;
+- liberación;
+- propiedad diferenciadora;
+- otra dimensión discriminante vigente.
+
+También se preserva:
+
+```text
+MERGE(SERIALIZED_IDENTITY) = DENY
+MERGE(KIT_INSTANCE) = DENY
+```
+
+La agrupación visual en UI nunca autoriza fusionar identidad canónica.
+
+#### 31. Lineage de división y unión
+
+Cada split y merge aceptado debe conservar lineage suficiente para reconstruir:
+
+```text
+SOURCE MEMBERSHIP OR MEMBERSHIPS
++ RESULTING MEMBERSHIP OR MEMBERSHIPS
++ QUANTITIES
++ MATERIAL DIMENSIONS
++ REVISION BEFORE
++ REVISION AFTER
++ ACTOR
++ OPERATION
++ CORRELATION
+```
+
+Una normalización de filas no puede borrar origen histórico.
+
+#### 32. Recurso conceptual de `TRANSFER_CONTENT`
+
+`TRANSFER_CONTENT` protege una única intención de negocio entre:
+
+```text
+SOURCE_LPN_ID
+!=
+TARGET_LPN_ID
+```
+
+con contenido seleccionado y una mutación correlacionada de ambas membresías.
+
+#### 33. Precondiciones autorizantes de `TRANSFER_CONTENT`
+
+Una futura transferencia autorizable debe demostrar:
+
+1. LPN fuente existente;
+2. LPN destino existente;
+3. identificadores distintos;
+4. fuente `ACTIVE`;
+5. destino `ACTIVE`;
+6. membresía fuente autoritativa vigente;
+7. cantidad válida o identidad exacta;
+8. revisión de contenido fuente vigente;
+9. revisión de contenido destino vigente;
+10. actor efectivo;
+11. capacidad exacta de contenido;
+12. territorio aplicable a ambos extremos;
+13. capacidad y compatibilidad del destino;
+14. trazabilidad completa;
+15. ausencia de membresía duplicada;
+16. idempotencia;
+17. correlación;
+18. posibilidad de commit atómico origen/destino.
+
+#### 34. Transferencia parcial por cantidad
+
+Para una porción transferida:
+
+```text
+0 < TRANSFER_QUANTITY <= SOURCE_QUANTITY
+```
+
+La operación conserva:
+
+```text
+SOURCE_AFTER
+=
+SOURCE_BEFORE - TRANSFER_QUANTITY
+```
+
+```text
+TARGET_AFTER
+=
+TARGET_BEFORE + TRANSFER_QUANTITY
+```
+
+bajo las mismas dimensiones de existencia.
+
+La suma entre origen y destino permanece constante.
+
+#### 35. Transferencia total por cantidad
+
+Cuando se transfiere toda la membresía:
+
+- la fuente deja de poseer la cantidad autoritativa;
+- el destino recibe la misma existencia dimensional;
+- la historia fuente permanece;
+- no se crea nueva existencia económica;
+- el LPN fuente no se cierra automáticamente.
+
+#### 36. Transferencia de identidad serializada
+
+Para `SERIALIZED_IDENTITY`:
+
+```text
+SOURCE HAS IDENTITY = TRUE
+TARGET HAS IDENTITY = FALSE
+```
+
+después de una aceptación válida:
+
+```text
+SOURCE HAS IDENTITY = FALSE
+TARGET HAS IDENTITY = TRUE
+```
+
+La identidad no se clona, fracciona ni renumera.
+
+#### 37. Transferencia de instancia de kit
+
+`KIT_INSTANCE` se transfiere como instancia completa.
+
+La operación no:
+
+- desarma el kit;
+- recrea componentes;
+- cambia versión;
+- cambia completitud por inferencia;
+- duplica valoración.
+
+La composición sigue perteneciendo al contrato de kit.
+
+#### 38. Transferencia multilínea
+
+Una intención que declara varias membresías se trata como:
+
+```text
+ALL OR NOTHING
+```
+
+No se presenta éxito parcial como transferencia completa.
+
+Si el negocio desea transferencias independientes, cada intención posee correlación e idempotencia propias.
+
+#### 39. Atomicidad fuente/destino
+
+La mutación de origen y destino es indivisible desde la perspectiva empresarial:
+
+```text
+SOURCE REMOVAL ACCEPTED
+IFF
+TARGET ADDITION ACCEPTED
+```
+
+Si cualquiera falla:
+
+```text
+COMMITTED TRANSFER_CONTENT = FALSE
+```
+
+No existe un estado final válido donde la misma intención ya redujo origen pero todavía no incorporó destino.
+
+#### 40. Revisiones de contenido
+
+Para split o merge dentro del mismo LPN:
+
+```text
+EXPECTED_CONTENT_REVISION
+=
+CURRENT_CONTENT_REVISION
+```
+
+Para transferencia:
+
+```text
+EXPECTED_SOURCE_CONTENT_REVISION
+=
+CURRENT_SOURCE_CONTENT_REVISION
+```
+
+y:
+
+```text
+EXPECTED_TARGET_CONTENT_REVISION
+=
+CURRENT_TARGET_CONTENT_REVISION
+```
+
+No se permite last-write-wins silencioso.
+
+#### 41. Lifecycle se revalida antes del commit
+
+La revisión de contenido no sustituye lifecycle.
+
+Antes del efecto final se vuelve a comprobar el estado aplicable.
+
+Ejemplo:
+
+```text
+CLIENT SAW TARGET ACTIVE
+TARGET IS NOW CLOSED
+→ DENY
+```
+
+Una observación anterior no revive un LPN terminal.
+
+#### 42. Idempotencia
+
+El replay de la misma intención aceptada:
+
+- no resta dos veces;
+- no suma dos veces;
+- no genera dos splits;
+- no genera dos merges;
+- no duplica lineage;
+- no incrementa revisiones dos veces;
+- no duplica movimientos correlacionados.
+
+Una respuesta perdida se resuelve mediante la misma identidad de idempotencia.
+
+#### 43. Concurrencia
+
+Dos mutaciones concurrentes sobre la misma membresía o revisiones incompatibles no pueden confirmarse como si ambas hubieran operado sobre el mismo estado inicial.
+
+La segunda decisión revalida el estado actualizado y se acepta o deniega desde esa nueva realidad.
+
+#### 44. Una sola contabilización
+
+Toda operación debe conservar:
+
+```text
+ONE PHYSICAL EXISTENCE
+→
+ONE AUTHORITATIVE REPRESENTATION
+```
+
+Se prohíbe:
+
+- stock suelto y contenido LPN simultáneos para la misma cantidad;
+- una identidad serializada en dos LPN;
+- origen reducido sin destino correlacionado;
+- destino incrementado sin origen correlacionado;
+- filas duplicadas usadas como saldo competidor.
+
+#### 45. Capacidad y compatibilidad
+
+Una autorización de contenido no elimina las precondiciones de `NEXO-DOM-024`.
+
+Cuando una operación introduce contenido en un LPN o destino sujeto a capacidad o compatibilidad:
+
+```text
+AUTHORIZATION PASS
++
+CAPACITY PASS
++
+COMPATIBILITY PASS
+→
+MAY COMMIT
+```
+
+Un permiso válido no convierte un contenido incompatible en admisible.
+
+#### 46. Trazabilidad interna
+
+Al empacar, desempacar, dividir, unir o transferir deben conservarse cuando apliquen:
+
+- producto o sujeto;
+- clase primaria;
+- cantidad;
+- unidad;
+- presentación material;
+- lote;
+- batch;
+- serial;
+- fecha relevante;
+- vencimiento;
+- origen;
+- estado de liberación;
+- condición.
+
+La membresía LPN no absorbe ni reemplaza esas dimensiones.
+
+#### 47. Ubicación
+
+Las mutaciones de contenido no pueden teletransportar existencia.
+
+Una operación que cambie además la colocación física debe satisfacer el contrato propietario de ubicación o movimiento.
+
+Se preserva:
+
+```text
+LPN CONTENT CHANGE
+!=
+LOCATION AUTHORITY
+```
+
+`nexo.inventory.location_assignments.assign` puede ser una autorización adicional cuando corresponda a una asignación real de ubicación; nunca sustituye la autoridad de contenido.
+
+#### 48. Movimiento de inventario
+
+La membresía LPN debe ser reconciliable con la fuente canónica de movimientos.
+
+Un movimiento correlacionado:
+
+- no es permiso LPN;
+- no puede escribirse para ocultar una membresía inválida;
+- no puede omitirse cuando el modelo de inventario lo exige;
+- no crea autoridad por existir técnicamente una RPC o tabla.
+
+La autorización y el efecto físico deben converger en la misma intención empresarial.
+
+#### 49. Traslado de inventario
+
+Cuando la operación real implica un traslado de inventario con origen y destino, `nexo.inventory.transfers.create` conserva su propio contrato `INVENTORY_TRANSFER`.
+
+Se fija:
+
+```text
+CONTENT MEMBERSHIP AUTHORITY
++
+INVENTORY TRANSFER AUTHORITY WHEN APPLICABLE
+=
+TWO REQUIRED DECISIONS, NOT ONE ALIAS
+```
+
+Una denegación en cualquiera de las responsabilidades aplicables bloquea el efecto compuesto.
+
+#### 50. Transferencia de contenido no es movimiento de LPN completo
+
+Se preserva:
+
+```text
+TRANSFER_CONTENT
+!=
+MOVE_ROOT_LPN
+```
+
+Mover un LPN raíz completo y todo su cierre pertenece a `NEXO-DOM-022` y al contrato de movimiento aplicable.
+
+023 no usa una transferencia de contenido para simular un movimiento estructural completo.
+
+#### 51. Transferencia de contenido no es custodia
+
+Se preserva:
+
+```text
+TRANSFER_CONTENT
+!=
+CUSTODY_TRANSFER
+```
+
+`NEXO-AUTH-025` protege custodia, préstamo, devolución y transferencia de custodia.
+
+Mover membresía de un LPN a otro no cambia custodio por inferencia.
+
+Cambiar custodio no cambia membresía LPN por inferencia.
+
+#### 52. Contenedor físico
+
+`PHYSICAL_CONTAINER` no es una cuarta forma de contenido transferible por 023.
+
+Se preserva:
+
+```text
+PHYSICAL_CONTAINER
+!=
+QUANTITY_SLICE
+!=
+SERIALIZED_IDENTITY
+!=
+KIT_INSTANCE
+```
+
+Vincular o desvincular LPN y contenedor físico conserva ambas identidades y requiere su contrato propietario.
+
+023 no crea, da de baja, mueve ni transfiere custodia de un contenedor.
+
+#### 53. LPN anidados
+
+Un LPN no se trata como línea ordinaria de contenido de otro LPN.
+
+Se conserva:
+
+```text
+LPN CHILD
+!=
+LPN CONTENT LINE
+```
+
+El anidamiento, desanidamiento y reparentado pertenecen al contrato estructural de `NEXO-DOM-006` y no se autorizan mediante `PACK`, `UNPACK` o `TRANSFER_CONTENT`.
+
+#### 54. Dispositivo compartido
+
+Un dispositivo compartido:
+
+- no crea una capacidad inexistente;
+- no transforma `DEFAULT_DENY` en `ALLOW`;
+- no hereda autoridad del actor anterior;
+- debe identificar al actor humano efectivo;
+- puede restringir sede, área, acción o recurso;
+- exige revalidación server-side antes del efecto.
+
+Una plantilla de dispositivo compatible es límite, no fuente de autoridad.
+
+#### 55. Simulación
+
+Una decisión simulada nunca produce contenido LPN real.
+
+```text
+SIMULATED PACK
+SIMULATED UNPACK
+SIMULATED SPLIT
+SIMULATED MERGE
+SIMULATED TRANSFER
+→ ZERO BUSINESS MUTATIONS
+```
+
+La simulación puede calcular `would_allow` o `would_deny` conforme al contrato aplicable, pero una ejecución real vuelve a evaluar autoridad real y estado vigente.
+
+#### 56. Operación offline
+
+Una intención capturada offline no modifica el estado canónico.
+
+Al reconectar se debe recuperar y revalidar:
+
+- actor;
+- permiso exacto;
+- lifecycle;
+- revisiones;
+- membresía fuente;
+- destino;
+- territorio;
+- capacidad y compatibilidad;
+- idempotencia.
+
+Una intención obsoleta puede ser denegada.
+
+#### 57. Timeout y estado desconocido
+
+Ante timeout o respuesta perdida:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO RETRY WITH A NEW OPERATION ID
+```
+
+El cliente consulta o reintenta con la misma identidad de idempotencia hasta resolver el resultado o iniciar reconciliación.
+
+No se duplica contenido para resolver incertidumbre.
+
+#### 58. Decisión server-side
+
+Cada una de las cinco mutaciones debe autorizarse en servidor antes del efecto.
+
+No son oráculos:
+
+- botón visible;
+- formulario alterado;
+- estado local;
+- query string;
+- cookie no verificada;
+- código de barras;
+- QR;
+- dato oculto;
+- respuesta anterior;
+- permiso evaluado solo en cliente.
+
+Una llamada directa recibe la misma política que la experiencia ordinaria.
+
+#### 59. Orden de evaluación
+
+Toda mutación futura recorre lógicamente:
+
+1. resolver principal y actor efectivo;
+2. comprobar que existe capacidad exacta activa;
+3. resolver carril, grants y denegaciones;
+4. resolver fuente;
+5. resolver LPN origen y/o destino;
+6. resolver territorio;
+7. leer lifecycle;
+8. leer revisiones;
+9. resolver contenido exacto;
+10. validar acción contra forma de contenido;
+11. validar cantidad o identidad;
+12. validar trazabilidad;
+13. validar capacidad y compatibilidad;
+14. validar efectos de ubicación, movimiento o traslado cuando apliquen;
+15. aplicar idempotencia;
+16. bloquear concurrencia incompatible;
+17. autorizar;
+18. ejecutar el efecto atómico;
+19. registrar auditoría;
+20. devolver el estado persistido.
+
+Una etapa posterior no corrige una denegación anterior.
+
+#### 60. Fallos seguros
+
+Si no puede demostrarse capacidad, identidad, estado, revisión, cantidad, origen, destino, territorio, compatibilidad o integridad:
+
+```text
+NO MUTATION
+```
+
+No se produce éxito parcial.
+
+No se elige automáticamente la interpretación más permisiva.
+
+No se convierten errores de schema, red, permiso o RLS en autorización.
+
+#### 61. Auditoría mínima
+
+Toda decisión aceptada o rechazada debe poder correlacionar, según la acción:
+
+- tipo de operación;
+- identidad de operación;
+- LPN fuente;
+- LPN destino;
+- membresías fuente;
+- membresías resultantes;
+- cantidad o identidad exacta;
+- dimensiones materiales;
+- revisiones antes y después;
+- lifecycle observado;
+- principal;
+- actor efectivo;
+- dispositivo cuando sea material;
+- capacidad evaluada;
+- scope y territorio;
+- decisión y razones;
+- correlación;
+- idempotencia;
+- instante de servidor;
+- movimiento o traslado relacionado cuando aplique;
+- resultado del efecto.
+
+Los nombres físicos finales pertenecen a implementación.
+
+#### 62. AS-IS remoto observado
+
+El consumidor `vento-nexo` observado mantiene un estado parcial:
+
+- `/inventory/lpns` redirige a `/inventory/stock`;
+- existe `LpnCreateForm` como componente aislado;
+- `GET /api/inventory/lpns` consulta `inventory_lpns`;
+- no se observaron consumidores de `inventory_lpn_items`;
+- no se observaron operaciones de runtime denominadas o equivalentes a `PACK`, `UNPACK`, `SPLIT_CONTENT`, `MERGE_CONTENT` o `TRANSFER_CONTENT`;
+- no se observó un flujo alcanzable de extremo a extremo para mutar contenido LPN.
+
+La ausencia de implementación no se presenta como protección material ya completada.
+
+#### 63. Condiciones de salida del handoff de 021
+
+| Brecha recibida | Decisión de 023 | Condición de salida física |
+| --- | --- | --- |
+| ciclo LPN no alcanzable | contenido se protege como cinco decisiones independientes | flujo real materializado y validado por unidad |
+| mutaciones LPN sin permisos atómicos | `DEFAULT_DENY` hasta capacidad exacta activa | catálogo, grants, consumidor y backend compatibles |
+| contenido LPN sin ciclo funcional completo | contratos `PACK`, `UNPACK`, `SPLIT_CONTENT`, `MERGE_CONTENT`, `TRANSFER_CONTENT` quedan vinculantes | implementación E2E sin doble contabilización |
+| relación operativa con contenedor | se mantiene separación LPN/contenedor | owner de contenedor materializado sin alias permisivo |
+
+023 cierra el contrato de autorización de contenido, no la implementación física.
+
+#### 64. Frontera con `NEXO-AUTH-024`
+
+`NEXO-AUTH-024` protege consulta y administración de activos y reutilizables.
+
+023 no autoriza:
+
+- crear activos;
+- editar atributos maestros de activo;
+- administrar grupos reutilizables;
+- modificar cantidades esperadas de grupos por una mutación genérica;
+- convertir un activo o reutilizable en contenido sin satisfacer primero sus contratos propietarios.
+
+La forma de contenido no sustituye la autoridad sobre el objeto contenido.
+
+#### 65. Frontera con `NEXO-AUTH-025`
+
+`NEXO-AUTH-025` recibe:
+
+- custodia;
+- préstamo;
+- devolución;
+- transferencia de custodia;
+- cambio de responsable.
+
+023 solo cambia membresía LPN cuando una operación válida lo exige.
+
+La custodia continúa como dimensión independiente.
+
+#### 66. Frontera con `NEXO-AUTH-028`
+
+Imprimir una etiqueta o QR no equivale a empacar ni transferir contenido.
+
+La autorización de una mutación LPN no concede por transitividad:
+
+- impresión;
+- reimpresión;
+- modificación de plantilla;
+- acceso general a trabajos de impresión.
+
+`NEXO-AUTH-028` conserva ese owner.
+
+#### 67. Frontera con `NEXO-AUTH-029`
+
+023 prohíbe que `inventory.stock` u otros permisos amplios sean autoridad final.
+
+`NEXO-AUTH-029` ejecutará el retiro gobernado de esos aliases o fallbacks una vez existan reemplazos específicos válidos.
+
+023 no declara físicamente retirado ningún helper.
+
+#### 68. Frontera con `NEXO-AUTH-030`
+
+`NEXO-AUTH-030` deberá probar integralmente 022–029.
+
+Para 023, la certificación posterior debe incluir como mínimo:
+
+- allow paths cuando existan capacidades exactas;
+- deny paths por acción;
+- acceso directo a API o acción;
+- stock insuficiente;
+- lifecycle incompatible;
+- revisión obsoleta;
+- serial ya contenido;
+- split de serial;
+- merge incompatible;
+- target LPN incompatible;
+- transferencia parcial y total;
+- transferencia multilínea;
+- idempotencia;
+- concurrencia;
+- offline;
+- timeout;
+- dispositivo compartido;
+- simulación;
+- cero doble contabilización.
+
+Este marcador no ejecuta esas pruebas.
+
+#### 69. Rollback de una futura materialización
+
+Un rollback físico:
+
+- solo puede volver a una combinación previamente certificada;
+- no puede reactivar un permiso legacy más amplio;
+- no puede degradar una capacidad exacta a autenticación sola;
+- no puede restaurar doble contabilización;
+- debe conservar movimientos, lineage y auditoría ya confirmados;
+- debe mantener coherencia entre catálogo, consumidor, backend y datos.
+
+Si no existe combinación segura anterior, se bloquea la mutación y se corrige hacia adelante.
+
+#### 70. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro canónico vigente ya protege el ciclo completo y auditable de LPN, no doble contabilización, atomicidad, idempotencia, concurrencia, conservación de trazabilidad, separación entre LPN y contenedor, y autorización server-side exacta. Esta tarea especializa la frontera de autorización de cinco mutaciones de contenido sin introducir una obligación de prueba independiente.
+
+#### 71. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004` para ciclo de LPN ejecutable por actor autorizado, contenido y no doble contabilización;
+- `TREQ-NEXO-011` para fuente reconciliable, atomicidad, idempotencia, concurrencia y separación de existencia suelta frente a contenido LPN;
+- `TREQ-NEXO-012` para conservar lote, serial, vencimiento, ubicación, cantidad y condición al empacar, mover, dividir, unir o desempacar;
+- `TREQ-NEXO-016` para separar LPN, contenedor, custodia, entrega, recepción y transporte;
+- `TREQ-NEXO-046` para preservar identidad independiente del contenedor físico frente al LPN y su contenido;
+- `TREQ-NEXO-047` para evitar duplicación de saldo, instancia, kit, contenedor y contenido LPN;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y scope canónicos;
+- `TREQ-AUTH-013` para validación server-side de permiso exacto, actor, territorio, contexto, estado y campos permitidos.
+
+Estas referencias son trazabilidad reutilizada y no una modificación de 04A.
+
+#### 72. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no materializa código; build y suites corresponden a la incorporación local y a futuras unidades físicas |
+| LOCAL | NOT_EXECUTED | no se ejecutaron scripts sobre el checkout local del usuario durante la elaboración del artefacto |
+| REMOTA | PASS | se verificaron `vento-shell` main `7f7e1038a5b7e92e0039752621e7af65dde2b969`, `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`, owner y marcador 023, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, catálogo activo de 67 permisos NEXO, contratos de `lpns.view`, `transfers.create`, `location_assignments.assign`, `NEXO-DOM-004/005`, 04A vigente y superficies LPN remotas observables; el handoff de 022 se consume desde el artefacto completo aprobado por el usuario pendiente de incorporación |
+| OPERATIVA | NOT_EXECUTED | no se ejecutó empaque, desempaque, división, unión ni transferencia sobre inventario operativo |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-023::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 73. Criterios de aceptación
+
+- [x] se protegen exactamente cinco decisiones de contenido LPN;
+- [x] se preservan `PACK`, `UNPACK`, `SPLIT_CONTENT`, `MERGE_CONTENT` y `TRANSFER_CONTENT`;
+- [x] ninguna de las cinco mutaciones reutiliza `lpns.view`;
+- [x] ninguna reutiliza `stock.view`;
+- [x] ninguna reutiliza `movements.view`;
+- [x] `location_assignments.assign` queda separado de membresía;
+- [x] `transfers.create` queda separado de `TRANSFER_CONTENT`;
+- [x] las cinco mutaciones sin capacidad exacta activa quedan en `DEFAULT_DENY`;
+- [x] no se inventan nombres de `PermissionKey`;
+- [x] no se inventan modalidad, scope ni grants;
+- [x] se preserva la regla de una sola contabilización;
+- [x] `PACK` exige contenido elegible y LPN destino compatible;
+- [x] `UNPACK` conserva existencia y destino reconciliable;
+- [x] split solo opera sobre `QUANTITY_SLICE`;
+- [x] merge solo une cantidades dimensionalmente equivalentes;
+- [x] seriales y kits no se dividen ni fusionan como cantidad;
+- [x] transferencia exige LPN fuente y destino distintos y `ACTIVE`;
+- [x] transferencia actualiza origen y destino atómicamente;
+- [x] transferencia multilínea es all-or-nothing;
+- [x] se revalidan revisiones y lifecycle;
+- [x] se preservan lineage, lote, serial, vencimiento y condición;
+- [x] capacidad y compatibilidad permanecen gates independientes;
+- [x] ubicación y movimiento permanecen autoridades independientes;
+- [x] traslado de inventario conserva su permiso propio cuando aplique;
+- [x] transferencia de contenido queda separada de custodia;
+- [x] contenedor físico queda separado del contenido LPN;
+- [x] LPN anidado no se convierte en línea de contenido;
+- [x] dispositivo compartido no crea autoridad;
+- [x] simulación no produce mutaciones reales;
+- [x] offline y timeout no producen doble efecto;
+- [x] la decisión se ejecuta server-side;
+- [x] no se modifica Supabase;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la futura materialización conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [x] `NEXO-AUTH-024` recibe una frontera explícita.
+
+#### 74. Límites
+
+Esta tarea no:
+
+- inventa nuevas `PermissionKey`;
+- modifica las 67 identidades activas NEXO;
+- modifica grants base u operativos;
+- materializa rutas LPN;
+- implementa `PACK`, `UNPACK`, `SPLIT_CONTENT`, `MERGE_CONTENT` ni `TRANSFER_CONTENT`;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- modifica `inventory_lpns`;
+- modifica `inventory_lpn_items`;
+- modifica tablas de movimientos o traslados;
+- crea migraciones;
+- modifica datos;
+- mueve stock;
+- cambia ubicación;
+- cambia lifecycle;
+- cambia purpose type;
+- crea LPN anidados;
+- mueve un LPN raíz completo;
+- transfiere custodia;
+- administra activos o reutilizables;
+- modifica contenedores físicos;
+- imprime o reimprime;
+- retira físicamente permisos legacy;
+- ejecuta certificación integral;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-024`.
+
+#### 75. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-022 — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables`
+
 ### [ ] NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables
 ### [ ] NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
 ### [ ] NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
