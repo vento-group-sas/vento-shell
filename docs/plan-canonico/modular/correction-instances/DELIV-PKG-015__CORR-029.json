@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021::GAP-PKG-045"
@@ -17,12 +17,77 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.mjs",
+      "change": "CREATE",
+      "scope": "Create vendor-agnostic READY-GATE-001..015 evaluation, persistence, resumability and final receipt engine for SHELL-CI-021 instances."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.test.mjs",
+      "change": "CREATE",
+      "scope": "Regression coverage for AUTO/HUMAN_EVIDENCE/EXTERNAL_EXERCISE/HUMAN_DECISION gates, evidence reuse, invalidation and final receipt compatibility."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Invoke the standard readiness engine at CI021 EVIDENCE_GATE, checkpoint gate state only on semantic change, refresh governance-only preverify identity without rerunning physical validation, and preserve existing sealing/finish lifecycle."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage proving CI021 EVIDENCE_GATE uses the standard engine, checkpoints resumable state, refreshes preverify after governance-only checkpoint and fails closed on unstable state."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "change": "MODIFY",
+      "scope": "Classify the exact readiness engine files as lifecycle tooling and permit strictly additive implementation tests in docs:implementation:accelerator:test while preserving fail-closed semantics."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-integration-impact.test.mjs",
+      "change": "MODIFY",
+      "scope": "Add positive regression for the exact seven-file readiness-engine delta and negative regression for unsafe accelerator test additions."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "package.json",
+      "change": "MODIFY",
+      "scope": "Add readiness gate engine regression to docs:plan:test and docs:implementation:accelerator:test without creating a new lifecycle entrypoint."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+    "node --check scripts/docs/implementation-readiness-gate-engine.test.mjs",
+    "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-integration-impact.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "npm run docs:implementation:accelerator:test",
+    "npm run docs:correction:check",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Implementation lifecycle/readiness tooling only. Standardizes READY-GATE evaluation, evidence persistence, resumability and integration classification without changing product behavior, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-21T07:48:13.617Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-21T07:37:50.990Z"
 }

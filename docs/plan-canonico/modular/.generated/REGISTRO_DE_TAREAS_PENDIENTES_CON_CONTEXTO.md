@@ -12,17 +12,34 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-029`
+### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-029`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `CREATE` `scripts/docs/implementation-readiness-gate-engine.mjs`
+  - `CREATE` `scripts/docs/implementation-readiness-gate-engine.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-execution-coordinator.mjs`
+  - `MODIFY` `scripts/docs/implementation-execution-coordinator.test.mjs`
+  - `MODIFY` `scripts/docs/implementation-integration-impact.mjs`
+  - `MODIFY` `scripts/docs/implementation-integration-impact.test.mjs`
+  - `MODIFY` `package.json`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `node --check scripts/docs/implementation-readiness-gate-engine.mjs`
+  2. `node --check scripts/docs/implementation-readiness-gate-engine.test.mjs`
+  3. `node --test scripts/docs/implementation-readiness-gate-engine.test.mjs`
+  4. `node --check scripts/docs/implementation-execution-coordinator.mjs`
+  5. `node --test scripts/docs/implementation-execution-coordinator.test.mjs`
+  6. `node --check scripts/docs/implementation-integration-impact.mjs`
+  7. `node --test scripts/docs/implementation-integration-impact.test.mjs`
+  8. `npm run docs:implementation:accelerator:test`
+  9. `npm run docs:correction:check`
+  10. `npm run docs:plan:check`
+  11. `npm run docs:plan:test`
+  12. `git diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-029`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
