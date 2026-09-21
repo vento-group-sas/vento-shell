@@ -4295,7 +4295,849 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia`
 
-### [ ] NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
+### ✅ NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables
+**Tarea siguiente:** NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — contrato NEXO para proteger custodia, préstamo, devolución, transferencia de custodia y cambio de responsable mediante decisiones server-side exactas, aceptación bilateral cuando corresponda, origen y destino autorizados, segregación de aprobación por riesgo, idempotencia, concurrencia, auditoría y `DEFAULT_DENY` mientras no exista una `PermissionKey` atómica activa aplicable
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-025::<implementation_unit_id>` después de que la unidad y su package propietario estén asignados, `E5-GATE-008::<package_id>` aplicable haya resultado `PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger las decisiones que alteran quién tiene, usa, recibe, devuelve o asume la custodia de un activo o reutilizable, de forma que ninguna de esas mutaciones pueda ejecutarse por autenticación sola, visibilidad de una pantalla, conocimiento de una URL, posesión física, pertenencia a una sede, rol nominal, permiso de lectura, permiso de stock, permiso de ubicación o un alias legacy amplio.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++ SUJETO EXACTO
++ ACCIÓN DE CUSTODIA EXACTA
++ CAPACIDAD CANÓNICA EXACTA CUANDO EXISTA
++ CARRIL AUTORIZANTE COMPLETO
++ RELACIÓN DE CUSTODIA VIGENTE
++ ORIGEN AUTORIZADO
++ DESTINO AUTORIZADO
++ TERRITORIO ORIGEN Y DESTINO
++ ESTADO Y CONDICIÓN COMPATIBLES
++ ACEPTACIÓN CUANDO CORRESPONDA
++ APROBACIÓN INDEPENDIENTE CUANDO EL RIESGO LA EXIJA
++ IDEMPOTENCIA Y CONCURRENCIA
++ AUDITORÍA RECONCILIABLE
+→ MUTACIÓN AUTORIZABLE
+```
+
+Mientras no exista una capacidad exacta activa aplicable:
+
+```text
+MUTACIÓN DE CUSTODIA SIN PermissionKey ACTIVA EXACTA
+→ DEFAULT_DENY
+```
+
+#### 2. Naturaleza y topología
+
+El marcador global conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-025::<implementation_unit_id>
+```
+
+La aprobación documental de este marcador no crea, autoriza ni ejecuta una instancia física.
+
+#### 3. Handoff contractual recibido
+
+`NEXO-AUTH-024` entrega expresamente a 025:
+
+- custodia;
+- préstamo;
+- devolución;
+- transferencia;
+- cambio de responsable;
+- cambio territorial operativo;
+- aceptación de handoff.
+
+024 permite únicamente que la creación inicial resuelva destino y custodio conforme al contrato de `nexo.assets.items.create`; no autoriza mutaciones posteriores de custodia.
+
+Además se preservan las fronteras ya cerradas por 023 y 024:
+
+- el contenido de un LPN y la custodia son responsabilidades distintas;
+- `TRANSFER_CONTENT` no equivale a `CUSTODY_TRANSFER`;
+- mover una membresía LPN no cambia custodio por inferencia;
+- cambiar custodio no cambia membresía LPN por inferencia;
+- consulta y administración general de activos permanecen en `NEXO-AUTH-024`;
+- permisos amplios legacy no constituyen el modelo objetivo;
+- la decisión autoritativa debe revalidarse en servidor.
+
+025 protege exclusivamente esas transiciones de custodia y no absorbe la administración maestra de 024.
+
+#### 4. Entradas canónicas preservadas
+
+La tarea consume sin redefinir:
+
+- `VPROC-0029 — Gestionar identidad, ubicación, custodia, préstamo y transferencia de activos`;
+- `NEXO-DOM-008 — Definir custodia y responsable actual`;
+- `NEXO-DOM-011 — Definir préstamo, devolución, transferencia y cambio de custodia`;
+- la separación entre activo individual, reutilizable controlado por cantidad, kit, LPN y contenedor físico;
+- la regla de que la custodia requiere entrega y aceptación cuando corresponda;
+- los eventos canónicos de activos ya definidos;
+- los contratos de territorio, actor efectivo, autorización, auditoría e idempotencia;
+- la separación entre ubicación física, custodia, propiedad, estado, condición y existencia.
+
+#### 5. Resultado funcional protegido
+
+025 protege seis transiciones canónicas observables:
+
+```text
+asset_custody_offered
+asset_custody_accepted
+asset_loaned
+asset_returned
+asset_transfer_started
+asset_transfer_completed
+```
+
+Estos nombres describen eventos canónicos de resultado.
+
+No son `PermissionKey` y esta tarea no los reutiliza como permisos.
+
+#### 6. Estado actual del catálogo de permisos
+
+El catálogo activo observado contiene capacidades relacionadas como:
+
+```text
+nexo.assets.items.view
+nexo.assets.items.create
+nexo.assets.groups.view
+nexo.assets.counts.view
+nexo.inventory.locations.view
+nexo.inventory.location_assignments.assign
+```
+
+No se observó una `PermissionKey` activa exacta específica para:
+
+```text
+ofrecer custodia
+aceptar custodia
+prestar
+devolver
+iniciar transferencia de custodia
+completar transferencia de custodia
+```
+
+La ausencia no autoriza a fabricar nombres locales dentro de `vento-nexo`.
+
+#### 7. Decisión autorizante bajo el catálogo actual
+
+| Intención empresarial | `PermissionKey` activa exacta observada | Decisión autorizante actual |
+| --- | --- | --- |
+| ofrecer custodia | ninguna | `DEFAULT_DENY` |
+| aceptar custodia | ninguna | `DEFAULT_DENY` |
+| registrar préstamo | ninguna | `DEFAULT_DENY` |
+| registrar devolución | ninguna | `DEFAULT_DENY` |
+| iniciar transferencia de custodia | ninguna | `DEFAULT_DENY` |
+| completar transferencia de custodia | ninguna | `DEFAULT_DENY` |
+
+La tabla no crea nuevas identidades, modalidad, scope, grants ni excepciones.
+
+#### 8. Lectura de activos no autoriza custodia
+
+Se fija:
+
+```text
+nexo.assets.items.view
+=
+LECTURA AUTORIZADA DE ACTIVO
+```
+
+pero:
+
+```text
+nexo.assets.items.view
+!=
+MUTACIÓN DE CUSTODIA
+```
+
+Consultar activo, custodio, ubicación, historial o responsable no concede autoridad para modificar ninguna de esas relaciones.
+
+#### 9. Creación de activos no autoriza custodia posterior
+
+`nexo.assets.items.create` protege el alta administrativa inicial dentro de su contrato.
+
+No concede por transitividad:
+
+- préstamo;
+- devolución;
+- transferencia;
+- cambio de responsable;
+- aceptación de custodia;
+- reasignación posterior.
+
+Una custodia inicial incluida en un alta válida no convierte el permiso de creación en una capacidad general de custodia.
+
+#### 10. Ubicación no es custodia
+
+`nexo.inventory.location_assignments.assign` protege una asignación de ubicación.
+
+Se preserva:
+
+```text
+LOCATION_ASSIGNMENT
+!=
+CUSTODY_ASSIGNMENT
+```
+
+Por tanto:
+
+- mover físicamente un activo no cambia custodio por inferencia;
+- cambiar custodio no mueve físicamente el activo por inferencia;
+- una operación que necesite ambos efectos debe satisfacer ambos contratos aplicables.
+
+#### 11. `inventory.stock` no es autoridad de custodia
+
+La auditoría previa observó superficies de activos protegidas por `inventory.stock`.
+
+Se fija:
+
+```text
+inventory.stock
+!=
+AUTORIDAD FINAL DE CUSTODIA
+```
+
+El permiso amplio legacy no autoriza por sí solo oferta, aceptación, préstamo, devolución, transferencia ni cambio de responsable.
+
+Su retiro físico permanece bajo `NEXO-AUTH-029`.
+
+#### 12. Recurso conceptual de custodia
+
+Toda decisión de custodia se evalúa sobre un sujeto exacto y una relación explícita:
+
+```text
+SUBJECT_ID
++ CURRENT_CUSTODY
++ PROPOSED_CUSTODY
++ SOURCE_TERRITORY
++ TARGET_TERRITORY
++ BUSINESS_REASON
++ CURRENT_REVISION
+```
+
+El sujeto puede ser un activo individual o una identidad canónica cuya modalidad de custodia esté definida por su dominio propietario.
+
+No se usa una descripción libre como identidad autoritativa.
+
+#### 13. Custodia no es propiedad
+
+Se preserva:
+
+```text
+CUSTODIAN
+!=
+OWNER
+```
+
+La transferencia de custodia no cambia por inferencia:
+
+- propiedad económica;
+- centro de costo;
+- titular legal;
+- depreciación;
+- valoración;
+- obligación contable.
+
+Los efectos económicos permanecen en sus autoridades propietarias.
+
+#### 14. Custodia no es uso
+
+Se preserva:
+
+```text
+CUSTODIAN
+!=
+CURRENT_USER
+```
+
+Un activo puede tener custodio y usuario operativo distintos cuando el contrato de dominio lo permita.
+
+La relación de uso no concede capacidad para transferir custodia.
+
+#### 15. Oferta de custodia
+
+`asset_custody_offered` representa una propuesta de cambio todavía no consumada.
+
+Una oferta válida debe conservar como mínimo:
+
+- sujeto exacto;
+- custodio actual;
+- destinatario propuesto;
+- actor que ofrece;
+- territorio origen;
+- territorio destino;
+- motivo;
+- revisión de custodia esperada;
+- instante de servidor;
+- correlación;
+- idempotencia.
+
+La oferta no libera al custodio actual ni convierte al destinatario en custodio.
+
+#### 16. Aceptación de custodia
+
+`asset_custody_accepted` solo puede producir el cambio efectivo cuando la oferta aplicable continúa vigente y el destinatario autorizado acepta.
+
+Se fija:
+
+```text
+OFFERED
+!=
+ACCEPTED
+```
+
+y:
+
+```text
+ACEPTACIÓN VÁLIDA
+→
+NUEVA CUSTODIA EFECTIVA
+```
+
+La aceptación debe revalidar sujeto, actor, oferta, origen, destino, estado, revisión, territorio y denegaciones inmediatamente antes del commit.
+
+#### 17. Rechazo, expiración o revocación de una oferta
+
+Una oferta no aceptada no cambia custodia.
+
+Si la oferta:
+
+- expira;
+- es revocada;
+- queda obsoleta por cambio de estado;
+- pierde territorio válido;
+- cambia de sujeto o destinatario;
+- encuentra una revisión distinta;
+
+la mutación final se deniega y debe iniciarse una nueva intención válida.
+
+No se backdatea una aceptación sobre una oferta inválida.
+
+#### 18. Préstamo
+
+`asset_loaned` representa tenencia temporal con obligación de retorno o cierre explícito.
+
+Un préstamo autorizable debe declarar como mínimo:
+
+- sujeto;
+- custodio o responsable origen;
+- receptor;
+- inicio;
+- condición de salida;
+- fecha o condición esperada de retorno cuando aplique;
+- territorio permitido;
+- estado y condición;
+- revisión vigente;
+- evidencia de entrega y aceptación;
+- correlación e idempotencia.
+
+Préstamo no equivale a venta, baja, transferencia de propiedad ni traslado de inventario.
+
+#### 19. Devolución
+
+`asset_returned` cierra o modifica una relación temporal de tenencia únicamente cuando:
+
+- existe una relación previa compatible;
+- el sujeto coincide;
+- el receptor de devolución es válido;
+- la condición observada queda registrada;
+- las discrepancias no se ocultan;
+- la revisión vigente coincide;
+- la operación no está ya confirmada por la misma clave idempotente.
+
+La devolución ordinaria no borra el préstamo ni su historia.
+
+#### 20. Transferencia de custodia
+
+La transferencia de custodia se modela como una intención con inicio y final explícitos:
+
+```text
+asset_transfer_started
+→
+asset_transfer_completed
+```
+
+La fase iniciada no libera automáticamente al custodio origen.
+
+La fase completada solo puede fijar la nueva custodia si se revalidan origen, destino, aceptación, estado, territorio y revisión.
+
+#### 21. Atomicidad de la transferencia
+
+La transición efectiva debe respetar:
+
+```text
+OLD CUSTODY RELEASED
+IFF
+NEW CUSTODY ACCEPTED
+```
+
+No existe un estado final válido donde:
+
+- el origen quedó liberado;
+- el destino todavía no aceptó;
+- y el sistema presenta la transferencia como completada.
+
+Los estados intermedios deben distinguirse explícitamente del resultado confirmado.
+
+#### 22. Cambio de responsable
+
+Un cambio de responsable que altere custodia se somete al mismo contrato de 025.
+
+No se permite usar un campo editable de `responsible_id`, nombre, área o ubicación como bypass de la transición autorizada.
+
+Si el cambio de responsable no altera custodia según el dominio propietario, debe conservarse esa diferencia y no inventar un evento de transferencia.
+
+#### 23. Territorio origen y destino
+
+Toda mutación debe resolver ambos extremos cuando corresponda:
+
+```text
+SOURCE TERRITORY
++
+TARGET TERRITORY
+```
+
+No basta con que el actor tenga autoridad sobre uno de los dos.
+
+Un destino existente pero fuera de alcance produce `DENY`.
+
+Una sede, área, LOC o posición no se considera válida solo por haber sido enviada por el cliente.
+
+#### 24. Estado y condición del sujeto
+
+Una capacidad de custodia no elimina las precondiciones de estado y condición.
+
+La mutación se deniega cuando el dominio propietario declare al sujeto incompatible con la acción, por ejemplo por un estado terminal, baja, pérdida ya resuelta, bloqueo o condición que exija otro flujo.
+
+025 no redefine esos estados.
+
+#### 25. Activos de terceros
+
+La custodia de un activo de tercero no convierte a VENTO en propietario.
+
+Toda relación con tercero debe conservar:
+
+- identidad del sujeto;
+- tercero relacionado cuando sea aplicable;
+- custodio operativo;
+- territorio;
+- vigencia;
+- evidencia de entrega y retorno;
+- restricciones contractuales conocidas.
+
+La ausencia de propiedad interna no autoriza una custodia sin trazabilidad.
+
+#### 26. Reutilizables controlados por cantidad
+
+025 no convierte una familia reutilizable en activo individual ficticio.
+
+Cuando el dominio permita custodia por cantidad, la operación debe conservar:
+
+- familia exacta;
+- cantidad;
+- unidad;
+- origen;
+- destino;
+- tenedor o responsable;
+- obligación de retorno;
+- diferencia observada.
+
+Una mutación no puede fabricar seriales inexistentes para obtener trazabilidad aparente.
+
+#### 27. Kits y conjuntos
+
+Una instancia de kit conserva su identidad y completitud propietarias.
+
+Prestar, devolver o transferir un kit:
+
+- no desarma componentes por inferencia;
+- no duplica componentes;
+- no cambia la definición maestra;
+- no sustituye los controles de completitud;
+- no convierte componentes en custodias independientes salvo que el dominio lo establezca.
+
+#### 28. LPN y contenedor físico
+
+Se preserva:
+
+```text
+ASSET OR REUSABLE CUSTODY
+!=
+LPN CONTENT MEMBERSHIP
+!=
+PHYSICAL CONTAINER IDENTITY
+```
+
+Una sola interacción de UI puede coordinar varias responsabilidades, pero cada autoridad aplicable debe resolverse por separado.
+
+#### 29. Transporte y remisiones
+
+La custodia de un activo no reutiliza por analogía la custodia de una remisión.
+
+Del mismo modo, aceptar custodia de una remisión no concede autoridad general sobre activos.
+
+Los contratos pueden compartir actor, territorio o evidencia, pero no intercambian `PermissionKey` ni recurso protegido.
+
+#### 30. Separación de aprobación
+
+`VPROC-0029` conserva aprobación condicional para asignación o transferencia según valor y riesgo.
+
+Por tanto:
+
+- el flujo ordinario no agrega una aprobación artificial si el contrato vigente no la exige;
+- cuando el riesgo o valor la exige, ejecutor y aprobador deben permanecer separados según la matriz vigente;
+- el custodio o receptor no se autoconcede una excepción administrativa;
+- una aprobación no sustituye la aceptación del destinatario cuando ésta sea requerida.
+
+#### 31. Decisión server-side
+
+La decisión final se ejecuta en servidor.
+
+No son oráculos de autoridad:
+
+- botón visible;
+- menú disponible;
+- formulario alterado;
+- URL;
+- query string;
+- estado local;
+- código QR;
+- cookie no verificada;
+- nombre de rol;
+- posesión física;
+- respuesta previa;
+- selección de sede enviada por cliente.
+
+Una llamada directa recibe la misma política que el flujo ordinario.
+
+#### 32. Idempotencia
+
+El replay de una misma intención aceptada:
+
+- no crea dos préstamos;
+- no registra dos devoluciones;
+- no libera dos veces al custodio origen;
+- no asigna dos veces al destinatario;
+- no duplica movimientos relacionados;
+- no duplica auditoría empresarial;
+- no incrementa revisiones dos veces.
+
+La misma identidad de operación debe resolver el resultado ya persistido.
+
+#### 33. Concurrencia
+
+Dos mutaciones incompatibles sobre la misma custodia no pueden confirmarse sobre la misma revisión inicial.
+
+Ejemplo:
+
+```text
+TRANSFER A
++
+TRANSFER B
+ON SAME EXPECTED REVISION
+→ AT MOST ONE COMMITS
+```
+
+La segunda intención revalida el estado persistido y se acepta o deniega desde esa nueva realidad.
+
+#### 34. Offline
+
+Una intención capturada offline no cambia el estado canónico.
+
+Al reconectar se revalidan:
+
+- actor;
+- capacidad exacta;
+- sujeto;
+- custodia actual;
+- revisión;
+- origen;
+- destino;
+- territorio;
+- estado;
+- condición;
+- aprobación cuando aplique;
+- idempotencia.
+
+Una intención obsoleta puede terminar en `DENY`.
+
+#### 35. Timeout y resultado desconocido
+
+Ante respuesta perdida:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO CREATE NEW OPERATION
+```
+
+El cliente consulta o reintenta con la misma identidad idempotente hasta resolver el resultado o iniciar reconciliación.
+
+No se crea una segunda transferencia para compensar incertidumbre.
+
+#### 36. Auditoría mínima
+
+Toda decisión aceptada o rechazada debe poder correlacionar, según aplique:
+
+- sujeto;
+- tipo de operación;
+- identidad de operación;
+- custodio previo;
+- custodio propuesto;
+- custodio resultante;
+- usuario o receptor cuando aplique;
+- actor efectivo;
+- aprobador cuando aplique;
+- permiso evaluado;
+- scope;
+- territorio origen;
+- territorio destino;
+- estado y condición;
+- revisión antes y después;
+- oferta o relación previa;
+- decisión y razones;
+- correlación;
+- idempotencia;
+- instante de servidor;
+- evidencia de entrega o aceptación;
+- efecto relacionado de ubicación o movimiento cuando exista.
+
+Los nombres físicos finales pertenecen a implementación.
+
+#### 37. AS-IS remoto observado
+
+La evidencia disponible mantiene un estado parcial:
+
+- superficies de activos observadas todavía dependen de `inventory.stock` como guard amplio;
+- lectura y creación no consumen de forma uniforme las capacidades específicas `nexo.assets.*`;
+- mutaciones de ubicación y custodia fueron observadas bajo permiso amplio;
+- acciones actuales pueden alterar sede, área, LOC, posición interna, responsable y movimiento;
+- préstamo, devolución y transferencia existen de forma parcial, no como expediente cerrado;
+- no se observó una familia activa de `PermissionKey` específica para las seis transiciones protegidas por 025.
+
+La ausencia de implementación objetivo no se presenta como protección ya materializada.
+
+#### 38. Cierre de hallazgos heredados
+
+| Hallazgo heredado | Decisión de 025 | Condición de salida física |
+| --- | --- | --- |
+| `AUTH021-F-004` | `inventory.stock` no es autoridad final de custodia | superficie migrada a capacidades específicas compatibles |
+| `AUTH021-F-006` | ubicación, custodia y transferencia deben revalidar capacidad, origen y destino | consumidor y backend protegen la mutación exacta |
+| `AUTH021-F-010` | contenedor físico no recibe autoridad por alias de activo, LPN o stock | capacidad y recurso propietarios materializados sin alias permisivo |
+| expediente de préstamo/devolución/transferencia parcial | se define ciclo cerrado con aceptación, revisión, idempotencia y auditoría | flujo E2E materializado y validado por unidad |
+
+025 cierra el contrato documental de autorización, no esos cambios físicos.
+
+#### 39. Frontera con `NEXO-AUTH-024`
+
+`NEXO-AUTH-024` conserva consulta y administración de activos y reutilizables.
+
+025 no autoriza por sí sola:
+
+- crear un activo;
+- editar atributos maestros;
+- administrar grupos;
+- modificar cantidades esperadas;
+- consultar recursos fuera de alcance.
+
+Una capacidad administrativa no concede custodia por transitividad y una capacidad de custodia no concede administración general.
+
+#### 40. Frontera con `NEXO-AUTH-026`
+
+`NEXO-AUTH-026` protege mantenimiento, daño, pérdida y baja.
+
+025 puede conservar condición observada durante entrega o devolución, pero no autoriza:
+
+- declarar daño como resolución final;
+- declarar pérdida;
+- iniciar o cerrar mantenimiento;
+- ejecutar reparación;
+- dar de baja;
+- disponer;
+- reemplazar.
+
+Si una devolución detecta daño o pérdida, se conserva evidencia y se deriva al owner correspondiente sin falsear un retorno íntegro.
+
+#### 41. Frontera con `NEXO-AUTH-029`
+
+025 fija que ninguna mutación de custodia puede depender como autoridad final de `inventory.stock` u otro permiso amplio.
+
+`NEXO-AUTH-029` conserva el retiro físico gobernado de aliases, fallbacks y helpers legacy después de que existan reemplazos válidos.
+
+025 no declara ningún permiso legacy físicamente eliminado.
+
+#### 42. Materialización futura
+
+Una futura materialización solo puede ejecutarse cuando exista:
+
+- `implementation_unit_id` asignado;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS` cuando corresponda;
+- autorización física explícita;
+- catálogo de permisos compatible;
+- grants y denegaciones definidos;
+- consumidor compatible;
+- backend compatible;
+- contrato de recurso y territorio compatible;
+- pruebas atribuibles a la misma unidad.
+
+La instancia física válida seguirá:
+
+```text
+NEXO-AUTH-025::<implementation_unit_id>
+```
+
+#### 43. Rollback de una futura materialización
+
+Un rollback físico:
+
+- solo vuelve a una combinación previamente certificada;
+- no reactiva un permiso legacy más amplio;
+- no convierte `DEFAULT_DENY` en autenticación sola;
+- no pierde historial de custodia ya confirmado;
+- no borra préstamos, devoluciones o transferencias persistidas;
+- no reduce evidencia de actor, origen, destino o aceptación;
+- conserva coherencia entre catálogo, consumidor, backend y datos.
+
+Si no existe una combinación anterior segura, se bloquea la mutación y se corrige hacia adelante.
+
+#### 44. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura canónica vigente ya exige trazabilidad de activos, custodia, préstamos, transferencias, reutilizables, autorización server-side, territorio y separación de responsabilidades. 025 especializa el contrato de autorización de esas transiciones sin crear una obligación de prueba nueva.
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013` para identidad, clasificación, ubicación, custodia, préstamos, transferencias, conteos, condición, activos individuales, reutilizables y kits;
+- `TREQ-NEXO-016` para separación entre LPN, contenedor, custodia, transporte, entrega y recepción;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y scope canónicos;
+- `TREQ-AUTH-013` para validación server-side de permiso exacto, actor, territorio, contexto, estado y campos permitidos.
+
+Estas referencias son trazabilidad existente y no una modificación del registro.
+
+#### 46. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no materializa código; la batería local ejecutará la compilación documental antes del cierre |
+| LOCAL | NOT_EXECUTED | no se ejecutaron scripts sobre el checkout local del usuario durante la elaboración del artefacto |
+| REMOTA | PASS | se contrastaron en GitHub el archivo propietario vigente, `package.json`, protocolo, continuidad, topología, políticas, auditoría `NEXO-AUTH-021`, contrato aprobado `NEXO-AUTH-023`, catálogo de permisos y fuentes E1/E2 aplicables; el archivo propietario observado corresponde al blob `1ebfe93bcd17df95745bfcad64f7f8dbd562bb7a` |
+| OPERATIVA | NOT_EXECUTED | no se ejecutó oferta, aceptación, préstamo, devolución ni transferencia sobre activos reales |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-025::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 47. Criterios de aceptación
+
+- [x] se separa custodia de contenido LPN, ubicación, propiedad y uso;
+- [x] se preservan seis eventos canónicos de resultado sin convertirlos en permisos;
+- [x] no se inventa ninguna `PermissionKey`;
+- [x] las seis transiciones quedan en `DEFAULT_DENY` mientras no exista capacidad exacta activa;
+- [x] `assets.items.view` no autoriza mutación;
+- [x] `assets.items.create` no se convierte en autoridad general de custodia;
+- [x] `location_assignments.assign` queda separado de custodia;
+- [x] `inventory.stock` queda rechazado como autoridad final;
+- [x] oferta y aceptación permanecen separadas;
+- [x] préstamo conserva temporalidad y obligación de retorno;
+- [x] devolución conserva historia y discrepancias;
+- [x] transferencia distingue inicio y final;
+- [x] origen no queda liberado sin aceptación válida del destino;
+- [x] se revalidan origen y destino;
+- [x] se revalidan territorio, estado, condición y revisión;
+- [x] se preserva aprobación condicional según riesgo sin imponer aprobación universal;
+- [x] se protege contra replay mediante idempotencia;
+- [x] se protege contra carreras mediante revisión y concurrencia;
+- [x] offline no muta el estado canónico;
+- [x] timeout no autoriza crear una segunda operación;
+- [x] la decisión final es server-side;
+- [x] activos de terceros conservan propiedad separada;
+- [x] reutilizables por cantidad no se serializan ficticiamente;
+- [x] kits conservan identidad y completitud;
+- [x] contenedor físico conserva identidad propia;
+- [x] remisiones no prestan su permiso de custodia a activos;
+- [x] mantenimiento, daño, pérdida y baja permanecen en 026;
+- [x] retiro de permisos legacy permanece en 029;
+- [x] no se modifica Supabase;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la futura materialización conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [x] `NEXO-AUTH-026` recibe una frontera explícita.
+
+#### 48. Límites
+
+Esta tarea no:
+
+- crea ni modifica `PermissionKey`;
+- modifica grants base u operativos;
+- crea roles;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- cambia custodios reales;
+- registra préstamos reales;
+- registra devoluciones reales;
+- transfiere activos reales;
+- mueve stock;
+- cambia ubicación física;
+- modifica propiedad económica;
+- ejecuta mantenimiento;
+- declara daño;
+- declara pérdida;
+- ejecuta baja;
+- administra catálogos de activos;
+- modifica grupos o cantidades esperadas;
+- imprime o reimprime;
+- retira físicamente permisos legacy;
+- autoriza una instancia física;
+- ejecuta certificación integral;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-026`.
+
+#### 49. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja`
 ### [ ] NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
 ### [ ] NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
 ### [ ] NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
