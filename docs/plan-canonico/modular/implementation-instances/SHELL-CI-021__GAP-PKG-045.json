@@ -99,9 +99,9 @@
       "instance_id": "SHELL-CI-021::GAP-PKG-045",
       "package_id": "GAP-PKG-045",
       "candidate_commit": "15188286bb9268d18317a2659ab8ea1c39b7ff5d",
-      "lifecycle_head_commit": "0824cee32fa3192d33bbae71e8509f2e414ae822",
+      "lifecycle_head_commit": "efd894c1648daf3c113e47b2de42fbdefea90bdf",
       "physical_fingerprint": "2c3aefee20602ef78dcbce9c2a4a8768378285087b475a3cd279793f2dacd9ea",
-      "observed_at": "2026-09-21T13:49:53.443Z",
+      "observed_at": "2026-09-21T13:55:22.894Z",
       "decision_owner": "OWN-OPS",
       "target_environments": [
         {
@@ -122,27 +122,27 @@
         },
         {
           "gate_id": "READY-GATE-002",
-          "phase": "NOW",
+          "phase": "NEVER",
           "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "rationale": "No database or Supabase mutation in package scope.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-003",
-          "phase": "NOW",
+          "phase": "NEVER",
           "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "rationale": "No permission or policy configuration mutation in package scope.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-004",
-          "phase": "NOW",
+          "phase": "NEVER",
           "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "rationale": "No operational user, role, site, area or shift mutation in package scope.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-005",
@@ -154,19 +154,19 @@
         },
         {
           "gate_id": "READY-GATE-006",
-          "phase": "NOW",
+          "phase": "NEVER",
           "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "rationale": "No external integration or credential mutation in package scope.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-007",
-          "phase": "NOW",
+          "phase": "NEVER",
           "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "rationale": "No hardware or peripheral dependency in package scope.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-008",
@@ -178,19 +178,19 @@
         },
         {
           "gate_id": "READY-GATE-009",
-          "phase": "NOW",
+          "phase": "NEVER",
           "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "rationale": "No training obligation created by this package.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-010",
-          "phase": "NOW",
-          "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "phase": "LATER",
+          "target_phase": "PRE_CI022_PILOT_PREP",
+          "rationale": "Nominal support is required before operational pilot exposure, not for technical preview certification.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-011",
@@ -202,11 +202,11 @@
         },
         {
           "gate_id": "READY-GATE-012",
-          "phase": "NOW",
-          "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "phase": "LATER",
+          "target_phase": "PRE_CI022_PILOT_PREP",
+          "rationale": "Rollback exercise is required before operational pilot exposure.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         },
         {
           "gate_id": "READY-GATE-013",
@@ -226,11 +226,11 @@
         },
         {
           "gate_id": "READY-GATE-015",
-          "phase": "NOW",
-          "target_phase": null,
-          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "phase": "LATER",
+          "target_phase": "PRE_CI022_PILOT_PREP",
+          "rationale": "Pilot entry decision requires concrete pilot scope.",
           "evidence_refs": [],
-          "source": "DEFAULT"
+          "source": "PERSISTED_STATE"
         }
       ],
       "gates": [
@@ -262,7 +262,7 @@
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -274,56 +274,55 @@
           "evaluation_mode": "AUTO",
           "status": "NO_APLICA",
           "evidence": [
-            "NO_DATABASE_MUTATION_DECLARED"
+            "NO_DATABASE_MUTATION_DECLARED",
+            "READINESS_PROFILE:READY-GATE-002:NEVER"
           ],
           "blocking_reason": null,
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
-          "applicability_phase": "NOW",
+          "applicability_phase": "NEVER",
           "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_rationale": "No database or Supabase mutation in package scope.",
           "applicability_evidence": [],
           "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-003",
           "evaluation_mode": "HUMAN_EVIDENCE",
-          "status": "BLOQUEADO",
-          "evidence": [],
-          "blocking_reason": "PERMISSIONS_EVIDENCE_REQUIRED",
-          "required_evidence": [
-            "permissions_readiness.status",
-            "permissions_readiness.evidence_refs"
+          "status": "NO_APLICA",
+          "evidence": [
+            "READINESS_PROFILE:READY-GATE-003:NEVER"
           ],
+          "blocking_reason": null,
+          "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
-          "applicability_phase": "NOW",
+          "applicability_phase": "NEVER",
           "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_rationale": "No permission or policy configuration mutation in package scope.",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-004",
           "evaluation_mode": "HUMAN_EVIDENCE",
-          "status": "BLOQUEADO",
-          "evidence": [],
-          "blocking_reason": "OPERATIONAL_IDENTITY_EVIDENCE_REQUIRED",
-          "required_evidence": [
-            "operational_identity_readiness.status",
-            "operational_identity_readiness.evidence_refs"
+          "status": "NO_APLICA",
+          "evidence": [
+            "READINESS_PROFILE:READY-GATE-004:NEVER"
           ],
+          "blocking_reason": null,
+          "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
-          "applicability_phase": "NOW",
+          "applicability_phase": "NEVER",
           "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_rationale": "No operational user, role, site, area or shift mutation in package scope.",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-005",
@@ -336,7 +335,7 @@
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -346,37 +345,37 @@
         {
           "gate_id": "READY-GATE-006",
           "evaluation_mode": "HUMAN_EVIDENCE",
-          "status": "BLOQUEADO",
-          "evidence": [],
-          "blocking_reason": "INTEGRATION_EVIDENCE_REQUIRED",
-          "required_evidence": [
-            "integration_readiness.status",
-            "integration_readiness.evidence_refs"
-          ],
-          "dependencies": [],
-          "owner": null,
-          "reused": false,
-          "applicability_phase": "NOW",
-          "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
-          "applicability_evidence": [],
-          "blocks_current_phase": true
-        },
-        {
-          "gate_id": "READY-GATE-007",
-          "evaluation_mode": "HUMAN_EVIDENCE",
           "status": "NO_APLICA",
           "evidence": [
-            "NO_HARDWARE_SCOPE_DETECTED"
+            "READINESS_PROFILE:READY-GATE-006:NEVER"
           ],
           "blocking_reason": null,
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
-          "applicability_phase": "NOW",
+          "applicability_phase": "NEVER",
           "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_rationale": "No external integration or credential mutation in package scope.",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-007",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "NO_APLICA",
+          "evidence": [
+            "NO_HARDWARE_SCOPE_DETECTED",
+            "READINESS_PROFILE:READY-GATE-007:NEVER"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NEVER",
+          "target_phase": null,
+          "applicability_rationale": "No hardware or peripheral dependency in package scope.",
           "applicability_evidence": [],
           "blocks_current_phase": false
         },
@@ -395,7 +394,7 @@
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -407,16 +406,17 @@
           "evaluation_mode": "HUMAN_EVIDENCE",
           "status": "NO_APLICA",
           "evidence": [
-            "NO_TRAINING_SCOPE_DETECTED"
+            "NO_TRAINING_SCOPE_DETECTED",
+            "READINESS_PROFILE:READY-GATE-009:NEVER"
           ],
           "blocking_reason": null,
           "required_evidence": [],
           "dependencies": [],
           "owner": null,
           "reused": false,
-          "applicability_phase": "NOW",
+          "applicability_phase": "NEVER",
           "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_rationale": "No training obligation created by this package.",
           "applicability_evidence": [],
           "blocks_current_phase": false
         },
@@ -437,11 +437,11 @@
           "dependencies": [],
           "owner": "OWN-OPS",
           "reused": false,
-          "applicability_phase": "NOW",
-          "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_phase": "LATER",
+          "target_phase": "PRE_CI022_PILOT_PREP",
+          "applicability_rationale": "Nominal support is required before operational pilot exposure, not for technical preview certification.",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-011",
@@ -456,7 +456,7 @@
             "READY-GATE-001"
           ],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -481,11 +481,11 @@
           "dependencies": [],
           "owner": "OWN-OPS",
           "reused": false,
-          "applicability_phase": "NOW",
-          "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_phase": "LATER",
+          "target_phase": "PRE_CI022_PILOT_PREP",
+          "applicability_rationale": "Rollback exercise is required before operational pilot exposure.",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-013",
@@ -500,7 +500,7 @@
             "READY-GATE-001"
           ],
           "owner": null,
-          "reused": false,
+          "reused": true,
           "applicability_phase": "NOW",
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
@@ -510,16 +510,18 @@
         {
           "gate_id": "READY-GATE-014",
           "evaluation_mode": "AUTO",
-          "status": "BLOQUEADO",
-          "evidence": [],
-          "blocking_reason": "PRIOR_READY_GATE_BLOCKED",
+          "status": "PASS",
+          "evidence": [
+            "READY_GATES_001_013_CLEAR"
+          ],
+          "blocking_reason": null,
           "required_evidence": [],
           "dependencies": [
-            "READY-GATE-003",
-            "READY-GATE-004",
-            "READY-GATE-006",
-            "READY-GATE-010",
-            "READY-GATE-012"
+            "READY-GATE-001",
+            "READY-GATE-005",
+            "READY-GATE-008",
+            "READY-GATE-011",
+            "READY-GATE-013"
           ],
           "owner": null,
           "reused": false,
@@ -527,45 +529,44 @@
           "target_phase": null,
           "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         },
         {
           "gate_id": "READY-GATE-015",
           "evaluation_mode": "HUMAN_DECISION",
           "status": "BLOQUEADO",
           "evidence": [],
-          "blocking_reason": "READY_GATE_014_NOT_PASS",
+          "blocking_reason": "PILOT_ENTRY_HUMAN_DECISION_REQUIRED",
           "required_evidence": [
-            "READY-GATE-014 PASS"
+            "pilot_entry_decision.decision",
+            "pilot_entry_decision.authority",
+            "pilot_entry_decision.approved_by",
+            "pilot_entry_decision.approved_at"
           ],
           "dependencies": [
             "READY-GATE-014"
           ],
           "owner": "OWN-OPS",
           "reused": false,
-          "applicability_phase": "NOW",
-          "target_phase": null,
-          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_phase": "LATER",
+          "target_phase": "PRE_CI022_PILOT_PREP",
+          "applicability_rationale": "Pilot entry decision requires concrete pilot scope.",
           "applicability_evidence": [],
-          "blocks_current_phase": true
+          "blocks_current_phase": false
         }
       ],
       "summary": {
-        "pass_count": 5,
+        "pass_count": 6,
         "fail_count": 0,
-        "blocked_count": 7,
-        "not_applicable_count": 3,
-        "deferred_count": 0,
-        "blocked_gates": [
-          "READY-GATE-003",
-          "READY-GATE-004",
-          "READY-GATE-006",
+        "blocked_count": 0,
+        "not_applicable_count": 6,
+        "deferred_count": 3,
+        "blocked_gates": [],
+        "deferred_gates": [
           "READY-GATE-010",
           "READY-GATE-012",
-          "READY-GATE-014",
           "READY-GATE-015"
-        ],
-        "deferred_gates": []
+        ]
       },
       "input_path": ".delivery/implementation-readiness-gate-input.json"
     }
