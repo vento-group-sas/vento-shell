@@ -205,12 +205,6 @@ function applyReadinessProfile(result, profile) {
   });
 }
 
-function semanticGate(gate) {
-  if (!gate || typeof gate !== 'object') return gate;
-  const { reused, ...semantic } = gate;
-  return semantic;
-}
-
 function evidenceText(value) {
   return stableJson(value).toUpperCase();
 }
