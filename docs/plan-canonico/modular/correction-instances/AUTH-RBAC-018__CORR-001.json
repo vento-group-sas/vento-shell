@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "correction_id": "AUTH-RBAC-018::CORR-001",
+  "task_id": "AUTH-RBAC-018",
+  "target_instance_id": null,
+  "correction_type": "DOCUMENTARY",
+  "reason_code": "DOCUMENTARY_CONTRADICTION",
+  "status": "PENDING_AUTHORIZATION",
+  "blocking": true,
+  "blocked_targets": [
+    "NEXO-AUTH-009"
+  ],
+  "baseline": {
+    "main_commit": "f12aefd8a84c51610a187e6e830884abd62622fd",
+    "target_task_path": "docs/plan-canonico/modular/bloques/D_MATRICES/06_OPERATIVOS_LOGISTICA_Y_GERENCIA.md",
+    "target_task_sha256": "f32854bac397d09cadb88b40b379573743e1260fa10ee577b45c5f67d704178a",
+    "target_instance_record_path": null,
+    "target_instance_record_sha256": null
+  },
+  "target_repositories": [],
+  "authorized_changes": [],
+  "validation_commands": [],
+  "affected_treq_ids": [],
+  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
+  "authorization": null,
+  "evidence": [],
+  "opened_at": "2026-09-21T01:37:38.724Z"
+}
