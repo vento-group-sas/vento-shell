@@ -11370,7 +11370,748 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-014 — Proteger catálogo y configuraciones`
-### [ ] NEXO-AUTH-014 — Proteger catálogo y configuraciones
+### ✅ NEXO-AUTH-014 — Proteger catálogo y configuraciones
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-013 — Proteger movimientos
+**Tarea siguiente:** NEXO-AUTH-015 — Filtrar por sede y área efectivas
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger lectura de catálogo, creación de producto, lectura y configuración de ubicaciones mediante PermissionKey atómicas vigentes, modalidades exactas por carril, recursos resueltos en servidor, prohibición de permisos amplios legacy, denegación segura de escrituras sin capacidad activa y separación estricta entre configuración administrativa, asignación operativa y filtrado territorial
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-014::<implementation_unit_id>` después de que la unidad física real sea asignada, el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger el catálogo y las configuraciones operativas de NEXO para que cada lectura o mutación dependa de una PermissionKey activa exacta, de su modalidad autorizativa, del recurso concreto y del carril válido, sin convertir rutas, roles nominales, selección de sede, acceso a stock, permisos amplios legacy o configuración visible en autoridad implícita para modificar maestros o topología física.
+
+La tarea separa explícitamente:
+
+```text
+CONSULTAR REFERENCIA
+!=
+CREAR PRODUCTO
+!=
+CONFIGURAR CATALOGO DE UBICACION
+!=
+ASIGNAR STOCK O LPN A UBICACION
+!=
+FILTRAR POR SEDE O AREA
+```
+
+`NEXO-AUTH-015` conserva la resolución posterior de sede y área efectivas.
+
+#### 2. Resultado contractual
+
+Toda decisión queda ligada a capacidad, carril, recurso y contexto exactos.
+
+Lectura:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ PermissionKey DE LECTURA ACTIVA
++ CARRIL BASE U OPERACIONAL COMPLETO
++ RECURSO AUTORIZADO
++ PROYECCION MINIMA NECESARIA
++ DENEGACIONES AUSENTES
+→ CONSULTA AUTORIZABLE
+```
+
+Creación de producto:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ nexo.catalog.products.create
++ CARRIL BASE VALIDO
++ RECURSO ORGANIZACIONAL VALIDO
++ VERSION Y DATOS VALIDOS
++ DENEGACIONES AUSENTES
+→ CREACION AUTORIZABLE
+```
+
+Asignación operativa de ubicación:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ nexo.inventory.location_assignments.assign
++ CARRIL OPERACIONAL VALIDO
++ TURNO Y CHECK-IN CUANDO APLIQUEN
++ BODEGA Y RECURSO COMPATIBLES
++ UBICACION ACTIVA Y ELEGIBLE
++ DENEGACIONES AUSENTES
+→ ASIGNACION AUTORIZABLE
+```
+
+Actualización administrativa del catálogo de ubicación:
+
+```text
+PRINCIPAL AUTENTICADO
++ ACTOR EFECTIVO
++ nexo.inventory.location_catalog.update
++ CARRIL BASE VALIDO
++ RECURSO ORGANIZACIONAL VALIDO
++ VERSION VIGENTE
++ DENEGACIONES AUSENTES
+→ CONFIGURACION AUTORIZABLE
+```
+
+Ninguna ruta puede completar una decisión faltante mediante nombre de rol, permiso vecino, acceso a aplicación, permiso de stock o existencia de una pantalla editable.
+
+#### 3. PermissionKey activas exactas
+
+El frente queda limitado a estas once PermissionKey activas:
+
+```text
+nexo.catalog.products.view
+nexo.catalog.products.create
+nexo.catalog.presentations.view
+nexo.catalog.request_policies.view
+nexo.catalog.categories.view
+nexo.catalog.units.view
+nexo.inventory.locations.view
+nexo.inventory.location_assignments.assign
+nexo.inventory.location_catalog.update
+nexo.inventory.zones.view
+nexo.inventory.storage_positions.view
+```
+
+No se crean claves nuevas desde esta tarea.
+
+#### 4. Modalidades exactas
+
+Las modalidades vigentes quedan preservadas:
+
+| PermissionKey | Modalidad |
+| --- | --- |
+| `nexo.catalog.products.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.catalog.products.create` | `BASE_ONLY` |
+| `nexo.catalog.presentations.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.catalog.request_policies.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.catalog.categories.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.catalog.units.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.inventory.locations.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.inventory.location_assignments.assign` | `OPERATIONAL_ONLY` |
+| `nexo.inventory.location_catalog.update` | `BASE_ONLY` |
+| `nexo.inventory.zones.view` | `BASE_OR_OPERATIONAL` |
+| `nexo.inventory.storage_positions.view` | `BASE_OR_OPERATIONAL` |
+
+`BASE_OR_OPERATIONAL` significa que uno de los dos carriles completos puede satisfacer la lectura. No permite mezclar componentes parciales.
+
+#### 5. Lectura de productos
+
+`nexo.catalog.products.view` autoriza únicamente una proyección de referencia compatible con el carril y el recurso.
+
+Los grants operacionales vigentes corresponden a:
+
+```text
+barista_satelite
+bodeguero
+cajero_satelite
+cocinero_satelite
+conductor_logistica
+gerencia_operativa
+mostrador_satelite
+operador_integral_satelite
+produccion_cocina
+produccion_panaderia
+produccion_reposteria
+servicio_salon
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+auxiliar_administrativa
+contador
+gerente
+gerente_general
+marketing
+propietario
+supervisor
+```
+
+La lectura no concede costos, márgenes, proveedores, recetas, existencias ni campos técnicos salvo que otra capacidad exacta los autorice.
+
+#### 6. Creación de producto
+
+`nexo.catalog.products.create` es:
+
+```text
+BASE_ONLY
+```
+
+Los únicos grants base vigentes son:
+
+```text
+propietario
+gerente_general
+```
+
+No existe grant operacional de creación.
+
+Por tanto:
+
+```text
+bodeguero
++ acceso operativo
++ pantalla visible
+!=
+autoridad para crear producto
+```
+
+La creación no puede autorizarse mediante `inventory.stock`, `catalog.products`, rol nominal ni acceso general a NEXO.
+
+#### 7. Lectura de presentaciones
+
+`nexo.catalog.presentations.view` es `BASE_OR_OPERATIONAL`.
+
+Los grants operacionales vigentes corresponden a:
+
+```text
+barista_satelite
+bodeguero
+cajero_satelite
+cocinero_satelite
+conductor_logistica
+gerencia_operativa
+mostrador_satelite
+operador_integral_satelite
+produccion_cocina
+produccion_panaderia
+produccion_reposteria
+servicio_salon
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+auxiliar_administrativa
+contador
+gerente
+gerente_general
+marketing
+propietario
+supervisor
+```
+
+La consulta permite interpretar presentación, empaque o conversión aplicable, pero no crear, editar, activar o desactivar presentaciones.
+
+#### 8. Políticas de solicitud
+
+`nexo.catalog.request_policies.view` es `BASE_OR_OPERATIONAL`.
+
+Los grants operacionales vigentes corresponden a:
+
+```text
+barista_satelite
+bodeguero
+cajero_satelite
+cocinero_satelite
+gerencia_operativa
+mostrador_satelite
+operador_integral_satelite
+servicio_salon
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+auxiliar_administrativa
+gerente
+gerente_general
+propietario
+supervisor
+```
+
+La lectura de una política no concede mutación de la política, ampliación de audiencia ni bypass del flujo propietario de remisiones.
+
+#### 9. Categorías y unidades
+
+`nexo.catalog.categories.view` y `nexo.catalog.units.view` son `BASE_OR_OPERATIONAL`.
+
+La lectura sirve como referencia para clasificación, captura y conversión.
+
+No existen en el catálogo activo PermissionKey atómicas para:
+
+```text
+categories.create
+categories.update
+categories.activate
+categories.deactivate
+units.create
+units.update
+units.activate
+units.deactivate
+```
+
+Los permisos amplios legacy de gestión de categorías o unidades no pueden sustituir capacidades inexistentes.
+
+Resultado:
+
+```text
+MUTACION SIN PermissionKey ACTIVA EXACTA
+→ DEFAULT_DENY
+```
+
+#### 10. Lectura de ubicaciones
+
+`nexo.inventory.locations.view` es `BASE_OR_OPERATIONAL`.
+
+Los grants operacionales vigentes corresponden a:
+
+```text
+bodeguero
+gerencia_operativa
+produccion_cocina
+produccion_panaderia
+produccion_reposteria
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+gerente
+gerente_general
+propietario
+supervisor
+```
+
+La consulta de ubicación no concede configuración, asignación, traslado, movimiento, ajuste ni autoridad sobre otra sede o área.
+
+#### 11. Asignación de stock o LPN a ubicación
+
+`nexo.inventory.location_assignments.assign` es:
+
+```text
+OPERATIONAL_ONLY
+```
+
+El único grant operacional vigente corresponde a:
+
+```text
+bodeguero
+```
+
+Contexto:
+
+```text
+CTX-WH-PUTAWAY
+```
+
+La acción se limita a stock o LPN recibidos y a una ubicación válida dentro de la bodega activa, respetando compatibilidad de producto, capacidad, lote, condición y restricciones de almacenamiento.
+
+No equivale a modificar el maestro de ubicaciones.
+
+#### 12. Configuración administrativa del catálogo de ubicación
+
+`nexo.inventory.location_catalog.update` es:
+
+```text
+BASE_ONLY
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+La acción protege cambios del catálogo físico o lógico de ubicaciones.
+
+No concede asignar stock, ejecutar putaway, trasladar inventario ni modificar saldo.
+
+#### 13. Zonas y posiciones
+
+`nexo.inventory.zones.view` y `nexo.inventory.storage_positions.view` son `BASE_OR_OPERATIONAL`.
+
+Los grants operacionales vigentes corresponden a:
+
+```text
+bodeguero
+gerencia_operativa
+```
+
+Los grants base vigentes corresponden a:
+
+```text
+gerente
+gerente_general
+propietario
+supervisor
+```
+
+Son capacidades de consulta. No existen PermissionKey activas de mutación de zonas o posiciones dentro de este frente.
+
+#### 14. Escrituras de catálogo sin PermissionKey activa
+
+El catálogo vigente no contiene PermissionKey atómicas activas para:
+
+- editar producto;
+- eliminar producto;
+- activar o desactivar producto;
+- crear o editar presentación;
+- crear, editar, activar o desactivar categoría;
+- crear, editar, activar o desactivar unidad;
+- modificar política de solicitud;
+- crear, editar o eliminar zona mediante una capacidad específica;
+- crear, editar o eliminar posición mediante una capacidad específica.
+
+`nexo.catalog.products.create` no puede reutilizarse como permiso de edición.
+
+`nexo.inventory.location_catalog.update` no puede reutilizarse como permiso general de catálogo.
+
+Hasta que exista una capacidad activa exacta:
+
+```text
+DEFAULT_DENY
+```
+
+#### 15. Identidades legacy y permisos amplios
+
+Quedan fuera de autoridad runtime, entre otros:
+
+```text
+nexo.catalog.view
+nexo.ficha.view
+nexo.products.view
+nexo.catalog.products
+nexo.inventory_catalog_id.view
+nexo.inventory_catalog.view
+nexo.inventory_catalog_new.view
+nexo.presentations.view
+nexo.inventory_catalog_presentations.view
+nexo.request_policies.view
+nexo.settings.categories.manage
+nexo.settings.units.manage
+nexo.locations.view
+nexo.inventory.locations
+nexo.inventory_locations_id.view
+nexo.assign_location.view
+nexo.inventory_settings_locations_id_catalog.view
+```
+
+Esas identidades solo pueden participar en compatibilidad explícita hacia la PermissionKey canónica exacta que ya exista.
+
+No pueden fabricar una capacidad de mutación que el catálogo activo no contenga.
+
+#### 16. Dispositivo compartido
+
+Las capacidades ordinarias de lectura y `nexo.inventory.location_assignments.assign` pueden clasificarse como `STANDARD` cuando el contrato de dispositivo aplicable lo permita.
+
+Las capacidades:
+
+```text
+nexo.catalog.products.create
+nexo.inventory.location_catalog.update
+```
+
+están clasificadas `NOT_ALLOWED` en las plantillas de dispositivo compartido.
+
+Un dispositivo compatible nunca crea autoridad; únicamente limita dónde puede ejercerse una autoridad ya válida.
+
+#### 17. Frontera con `NEXO-AUTH-013`
+
+`NEXO-AUTH-013` conserva ledger, movimientos y traslado interno.
+
+`NEXO-AUTH-014` no autoriza:
+
+- insertar movimientos;
+- alterar saldo;
+- ejecutar transferencia;
+- publicar ajuste;
+- corregir una diferencia.
+
+Configurar o consultar catálogo no es un writer de inventario.
+
+#### 18. Frontera con `NEXO-AUTH-015`
+
+`NEXO-AUTH-015` conserva:
+
+```text
+SEDE EFECTIVA
+AREA EFECTIVA
+FILTRO TERRITORIAL
+INTERSECCION DE ALCANCE
+```
+
+`NEXO-AUTH-014` exige que el recurso sea compatible con el alcance recibido, pero no redefine cómo se calcula sede o área efectivas.
+
+`selected_site_id`, query params, cookies, rol o navegación no sustituyen ese contrato.
+
+#### 19. Frontera con dominio de producto y ubicación
+
+Esta tarea no redefine identidad de producto, presentación, unidad, categoría, LOC, zona o posición.
+
+Consume las identidades canónicas y exige que cada autorización se evalúe sobre el recurso real, no sobre etiquetas de interfaz.
+
+#### 20. AS-IS verificable — catálogo
+
+En `vento-nexo` vigente, `/inventory/catalog` entra actualmente mediante:
+
+```text
+permissionCode: inventory.stock
+```
+
+y decide administración mediante strings de rol.
+
+La creación de producto permite actualmente:
+
+```text
+propietario
+gerente_general
+bodeguero
+```
+
+o un chequeo legacy de `catalog.products`.
+
+La ruta de alta no presenta una PermissionKey atómica exacta en `requireAppAccess`.
+
+La edición de producto usa `inventory.stock` para entrar y después strings de rol o `catalog.products`.
+
+Esto no demuestra cumplimiento de:
+
+```text
+nexo.catalog.products.view
+nexo.catalog.products.create
+```
+
+ni justifica una capacidad de actualización inexistente.
+
+#### 21. AS-IS verificable — ubicaciones
+
+Las superficies `/inventory/locations`, `/inventory/locations/zones` y kiosco utilizan actualmente el permiso amplio legacy:
+
+```text
+inventory.locations
+```
+
+La misma superficie principal contiene acciones server-side que crean, actualizan, renombran o eliminan filas de `inventory_locations`.
+
+Varias mutaciones sensibles se protegen mediante strings de rol como:
+
+```text
+propietario
+gerente_general
+```
+
+mientras la acción de creación no demuestra en el mismo límite una PermissionKey atómica equivalente a `nexo.inventory.location_catalog.update`.
+
+Ese patrón deberá converger sin ampliar autoridad.
+
+#### 22. Regla de servidor
+
+Toda mutación debe revalidar server-side:
+
+- principal;
+- actor efectivo;
+- sesión humana;
+- PermissionKey exacta;
+- carril;
+- rol o contexto que origina el grant;
+- recurso;
+- versión;
+- alcance;
+- dispositivo cuando aplique;
+- denegaciones;
+- intención idempotente cuando aplique.
+
+La autorización de UI no sustituye la autorización del command boundary.
+
+#### 23. Minimización de lectura
+
+Las proyecciones de catálogo se limitan a los campos requeridos por la acción actual.
+
+Un rol con `products.view` no recibe por defecto:
+
+- costo;
+- margen;
+- proveedor;
+- receta;
+- existencia;
+- configuración administrativa;
+- campos técnicos internos.
+
+La existencia de esos campos en la tabla fuente no los hace parte de la proyección autorizada.
+
+#### 24. Frescura y concurrencia
+
+Un cambio de:
+
+- rol;
+- grant;
+- turno;
+- check-in;
+- sede o área efectiva;
+- estado del recurso;
+- versión de catálogo;
+- política;
+- dispositivo;
+- ubicación;
+- capacidad de sede;
+
+invalida decisiones afectadas.
+
+Las mutaciones revalidan antes de aplicar efectos.
+
+#### 25. Compatibilidad y migración
+
+La adopción futura puede mantener temporalmente adapters legacy únicamente cuando:
+
+- la identidad legacy mapea uno-a-uno a una PermissionKey activa;
+- el adapter es observable;
+- no amplía campos;
+- no amplía territorio;
+- no convierte lectura en escritura;
+- no convierte un permiso amplio en varias mutaciones;
+- existe retiro planificado.
+
+Un alias many-to-many o una normalización que elija la decisión más permisiva queda prohibido.
+
+#### 26. Estrategia de convergencia futura
+
+La materialización física deberá, según la unidad real:
+
+1. reemplazar gates amplios por PermissionKey exactas;
+2. retirar strings de rol usados como autoridad directa;
+3. separar lectura, creación, asignación y configuración;
+4. impedir escrituras sin capacidad activa;
+5. aplicar resource scope en servidor;
+6. minimizar proyecciones;
+7. reconciliar RLS/RPC/actions con la misma decisión;
+8. conservar auditoría e idempotencia;
+9. eliminar compatibilidad solo después de paridad;
+10. ejecutar rollback sin reintroducir bypass conocido.
+
+La tarea documental no ejecuta esas acciones.
+
+#### 27. Topología física futura
+
+La topología aplicable es:
+
+```text
+PER_IMPLEMENTATION_UNIT
+```
+
+La identidad futura es:
+
+```text
+NEXO-AUTH-014::<implementation_unit_id>
+```
+
+El gate temporal aplicable es:
+
+```text
+POST_E5_PACKAGE
+```
+
+No se fija una `implementation_unit_id` ni un `package_id` desde este marcador documental.
+
+#### 28. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya cubre descubribilidad de producto, semántica canónica de producto y presentación, coherencia de UOM y políticas, jerarquías de configuración y exposición territorial;
+- esta tarea especializa autorización sobre capacidades existentes;
+- no crea una nueva transición empresarial;
+- no cambia el Registro 04A.
+
+#### 29. Cobertura de prueba vigente reutilizada
+
+Esta sección es trazabilidad heredada y no constituye actualización del registro.
+
+Cobertura relevante:
+
+- `TREQ-NEXO-002`;
+- `TREQ-NEXO-007`;
+- `TREQ-NEXO-008`;
+- `TREQ-NEXO-009`;
+- `TREQ-NEXO-010`;
+- `TREQ-NEXO-016`;
+- `TREQ-NEXO-252`;
+- `TREQ-AUTH-015`.
+
+#### 30. Evidencia de validación
+
+- **BUILD:** `NOT_EXECUTED` — la batería documental se ejecutará después de incorporar el artefacto en la rama canónica.
+- **LOCAL:** `NOT_EXECUTED` — no se modificó un checkout local desde esta conversación.
+- **REMOTA:** `PASS` — se verificaron catálogo de PermissionKey, datasets base y operacionales, matrices canónicas, owner, topología, 04A y AS-IS remoto de `vento-nexo`.
+- **OPERATIVA:** `NOT_APPLICABLE` — esta tarea define autorización documental y no ejecuta una operación real de catálogo o ubicación.
+- **FÍSICA:** `NOT_APPLICABLE` — no se materializa ninguna implementation unit ni se modifica Supabase, datos o producto.
+
+#### 31. Criterios de aceptación
+
+- [x] se identificaron once PermissionKey activas del frente;
+- [x] se conservaron sus modalidades exactas;
+- [x] lectura se separó de mutación;
+- [x] `products.create` permanece `BASE_ONLY`;
+- [x] `location_assignments.assign` permanece `OPERATIONAL_ONLY`;
+- [x] `location_catalog.update` permanece `BASE_ONLY`;
+- [x] se documentaron grants directos relevantes sin crear nuevos grants;
+- [x] se prohibió usar `products.create` como update;
+- [x] se prohibió usar permisos amplios legacy como writer;
+- [x] escrituras sin PermissionKey activa exacta quedan `DEFAULT_DENY`;
+- [x] catálogo de ubicación y asignación operativa permanecen separados;
+- [x] sede y área efectivas quedan reservadas a `NEXO-AUTH-015`;
+- [x] dispositivo compartido no eleva autoridad;
+- [x] se documentaron brechas AS-IS verificables;
+- [x] la topología es `PER_IMPLEMENTATION_UNIT`;
+- [x] el gate es `POST_E5_PACKAGE`;
+- [x] no se crean ni modifican TREQ;
+- [x] no se autoriza materialización física.
+
+#### 32. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica datos;
+- modifica Supabase;
+- crea migraciones;
+- modifica RLS;
+- modifica grants;
+- cambia el catálogo de PermissionKey;
+- crea PermissionKey nuevas;
+- crea o edita productos reales;
+- crea o edita presentaciones reales;
+- crea o edita categorías reales;
+- crea o edita unidades reales;
+- cambia políticas reales de solicitud;
+- crea, edita o elimina ubicaciones reales;
+- asigna stock o LPN reales;
+- mueve inventario;
+- cambia saldo;
+- resuelve sede o área efectivas;
+- implementa un dispositivo compartido;
+- crea una instancia física;
+- autoriza una instancia física;
+- modifica el Registro 04A.
+
+#### 33. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-013 — Proteger movimientos`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-014 — Proteger catálogo y configuraciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-015 — Filtrar por sede y área efectivas`
 ### [ ] NEXO-AUTH-015 — Filtrar por sede y área efectivas
 ### [ ] NEXO-AUTH-016 — Integrar dispositivo compartido
 ### [ ] NEXO-AUTH-017 — Integrar simulación estricta
