@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1217** |
+| Aprobadas | **1218** |
 | En propuesta | **0** |
-| No iniciadas | **379** |
+| No iniciadas | **378** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **76.25% (1217/1596)** |
+| Porcentaje de completamiento | **76.32% (1218/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **379** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1118** |
+| ⏸ NO_EVALUADA | **378** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1119** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-012` — Proteger conteos | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-013` — Proteger movimientos | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-014` — Proteger catálogo y configuraciones | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-013` — Proteger movimientos | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-014` — Proteger catálogo y configuraciones | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-015` — Filtrar por sede y área efectivas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -944,7 +944,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-010` | Proteger recepción | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-011` | Proteger ajustes de inventario | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-012` | Proteger conteos | — | — | `bloques/K_NEXO/00_INTRO.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-013` | Proteger movimientos | — | — | `bloques/K_NEXO/00_INTRO.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-013` | Proteger movimientos | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-014` | Proteger catálogo y configuraciones | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-015` | Filtrar por sede y área efectivas | — | — | `bloques/K_NEXO/00_INTRO.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-016` | Integrar dispositivo compartido | — | — | `bloques/K_NEXO/00_INTRO.md` |
