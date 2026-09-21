@@ -34,9 +34,6 @@ function fail(message) {
   throw new Error(message);
 }
 
-function normalizePath(value) {
-  return String(value ?? '').trim().replaceAll('\\', '/').replace(/^\.\//u, '');
-}
 
 function packageIdFromInstance(instanceId) {
   const match = /^SHELL-CI-021::(GAP-PKG-\d{3})$/u.exec(String(instanceId ?? '').trim());
@@ -185,7 +182,7 @@ function applicabilityFromCorpus(corpus, patterns) {
   return patterns.some((pattern) => pattern.test(corpus));
 }
 
-function resolveInputsFromRoot({ root, instance, packageId }) {
+function resolveInputsFromRoot({ root, packageId }) {
   const base = path.join(root, 'docs', 'plan-canonico', 'modular');
   const ci020 = readJsonObject(path.join(base, 'implementation-instances', `SHELL-CI-020__${packageId}.json`));
   const packageGate = readJsonObject(path.join(base, 'package-gate-instances', `${packageId}.json`));
@@ -212,7 +209,7 @@ export function evaluateImplementationReadinessGates({
   if (!/^[a-f0-9]{40}$/u.test(String(request.lifecycle_head_commit ?? ''))) fail('READINESS_LIFECYCLE_HEAD_INVALID');
   if (request.candidate_lifecycle?.decision !== 'REUSE_PHYSICAL_EVIDENCE') fail('READINESS_CANDIDATE_LIFECYCLE_NOT_REUSABLE');
 
-  const inputs = supplied ?? resolveInputsFromRoot({ root, instance, packageId });
+  const inputs = supplied ?? resolveInputsFromRoot({ root, packageId });
   const ci020 = inputs.ci020 ?? null;
   const packageGate = inputs.packageGate ?? null;
   const packageCatalog = String(inputs.packageCatalog ?? '');
