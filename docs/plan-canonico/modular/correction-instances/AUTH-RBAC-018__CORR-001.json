@@ -47,6 +47,15 @@
     "approval_statement": "APROBADO: autoriza AUTH-RBAC-018::CORR-001 exclusivamente para reconciliar AUTH-RBAC-018 con AUTH-CAT-022 a AUTH-CAT-025, el conjunto activo de 140 PermissionKey y operational-role-grants@1.0.0; preservar el snapshot histórico de 112 permisos como lineage no autorizante; reconocer 16 grants vigentes de conductor_logistica; separar accept_custody, start_transit y deliver; mantener dispatch, transit y transit.view fuera de autoridad runtime; no cambiar datasets, grants, TREQ, 04A, Supabase ni código físico; y mantener NEXO-AUTH-009 bloqueada hasta VERIFIED_ON_MAIN.",
     "source_contract_sha256": "f32854bac397d09cadb88b40b379573743e1260fa10ee577b45c5f67d704178a"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-21T02:12:58.869Z",
+      "candidate_head_before": "ed7947cbd3a5a6e88b38a26e813d3a32cbcf3db8",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-21T01:37:38.724Z"
 }
