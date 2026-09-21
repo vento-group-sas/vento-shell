@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1218** |
+| Tareas aprobadas | **1219** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **378** |
+| Tareas no iniciadas | **377** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **76.32% (1218/1596)** |
+| Porcentaje de completamiento | **76.38% (1219/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-AUTH-013 — Proteger movimientos** |
-| Tarea actual | **NEXO-AUTH-014 — Proteger catálogo y configuraciones** |
+| Última tarea aprobada | **NEXO-AUTH-014 — Proteger catálogo y configuraciones** |
+| Tarea actual | **NEXO-AUTH-015 — Filtrar por sede y área efectivas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-AUTH-015 — Filtrar por sede y área efectivas** |
+| Siguiente tarea | **NEXO-AUTH-016 — Integrar dispositivo compartido** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 76 de 127 aprobadas; NEXO-AUTH-014 pendiente** |
+| Progreso del bloque | **BLOQUE K: 77 de 127 aprobadas; NEXO-AUTH-015 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-AUTH-014** |
+| Carril documental | **ACTIVO — NEXO-AUTH-015** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-AUTH-013` — Proteger movimientos |
-| Tarea actual | `NEXO-AUTH-014` — Proteger catálogo y configuraciones — **NO INICIADA** |
-| Siguiente tarea | `NEXO-AUTH-015` — Filtrar por sede y área efectivas |
+| Última aprobada | `NEXO-AUTH-014` — Proteger catálogo y configuraciones |
+| Tarea actual | `NEXO-AUTH-015` — Filtrar por sede y área efectivas — **NO INICIADA** |
+| Siguiente tarea | `NEXO-AUTH-016` — Integrar dispositivo compartido |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 76 DE 127 APROBADAS — ACTUAL NEXO-AUTH-014** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 77 DE 127 APROBADAS — ACTUAL NEXO-AUTH-015** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-AUTH-013 — Proteger movimientos
-        ↓
-TAREA ACTUAL
 NEXO-AUTH-014 — Proteger catálogo y configuraciones
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-AUTH-015 — Filtrar por sede y área efectivas
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-AUTH-016 — Integrar dispositivo compartido
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 76 de 127 tareas aprobadas
+BLOQUE K — 77 de 127 tareas aprobadas
 ```
