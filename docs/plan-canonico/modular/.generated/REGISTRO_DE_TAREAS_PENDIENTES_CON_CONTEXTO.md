@@ -8,42 +8,13 @@
 
 ## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR
 
-> **Prioridad del checkout actual:** terminar `DELIV-PKG-015::CORR-030`; este checkout ya pertenece a esa corrección.
+> **Prioridad del checkout actual:** ejecutar `PREPARE_PACKAGE_GATE` sobre `GAP-PKG-047`.
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Valida y cierra la corrección implementada — `DELIV-PKG-015::CORR-030`
+### 1. Correcciones canónicas
 
-- **Estado:** `IMPLEMENTED`
-- **Acción exacta:** `VALIDAR_Y_CERRAR_CORRECCIÓN`
-- **Haz ahora:** Ejecutar las validaciones declaradas en orden fail-fast y cerrar solo si todas pasan.
-- **Contrato autorizado:** APROBADO
-- **Edita solamente:**
-  - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.mjs`
-  - `MODIFY` `scripts/docs/implementation-readiness-gate-engine.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-execution-coordinator.mjs`
-  - `MODIFY` `scripts/docs/implementation-execution-coordinator.test.mjs`
-  - `MODIFY` `scripts/docs/implementation-integration-impact.mjs`
-  - `MODIFY` `scripts/docs/implementation-integration-impact.test.mjs`
-  - `MODIFY` `docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md`
-- **Valida, en este orden:**
-  1. `node --check scripts/docs/implementation-readiness-gate-engine.mjs`
-  2. `node --test scripts/docs/implementation-readiness-gate-engine.test.mjs`
-  3. `node --check scripts/docs/implementation-execution-coordinator.mjs`
-  4. `node --test scripts/docs/implementation-execution-coordinator.test.mjs`
-  5. `node --check scripts/docs/implementation-integration-impact.mjs`
-  6. `node --test scripts/docs/implementation-integration-impact.test.mjs`
-  7. `npm run docs:implementation:accelerator:test`
-  8. `npm run docs:correction:check`
-  9. `npm run docs:plan:build`
-  10. `npm run docs:plan:check`
-  11. `npm run docs:plan:test`
-  12. `npm run docs:treq:check`
-  13. `npm run docs:treq:test`
-  14. `npm run quality:lint:ratchet -- --base origin/main`
-  15. `git diff --check`
-- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-030`
-- **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
+- **Acción:** ninguna corrección abierta.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
 
