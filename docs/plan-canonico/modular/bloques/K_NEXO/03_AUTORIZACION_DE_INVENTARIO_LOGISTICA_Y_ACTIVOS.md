@@ -634,7 +634,1140 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-022 — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN`
 
-### [ ] NEXO-AUTH-022 — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN
+### ✅ NEXO-AUTH-022 — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-021 — Auditar permisos actuales de LPN, activos y contenedores
+**Tarea siguiente:** NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — contrato NEXO para proteger lectura y lifecycle de LPN, exigir autorización server-side por acción, estado, territorio y recurso, aplicar `DEFAULT_DENY` a mutaciones sin `PermissionKey` activa exacta y preservar identidad, idempotencia, concurrencia, auditoría y fronteras con contenido, custodia, contenedores e impresión
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-022::<implementation_unit_id>` después de que la unidad y su package propietario estén asignados, `E5-GATE-008::<package_id>` aplicable haya resultado `PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger el lifecycle de una identidad LPN para que consultar, crear, actualizar, activar, cerrar, anular y reetiquetar no puedan ejecutarse por autenticación sola, visibilidad de interfaz, nombre de rol, permiso legacy amplio, posesión de un código LPN, conocimiento de una URL o reutilización indebida de una capacidad de lectura.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++ ACCESO A NEXO
++ ACCIÓN LPN EXACTA
++ CAPACIDAD CANÓNICA EXACTA CUANDO EXISTA
++ CARRIL AUTORIZANTE COMPLETO
++ SCOPE VIGENTE
++ TERRITORIO DEL LPN
++ ESTADO Y REVISIÓN VIGENTES
++ RECURSO O BORRADOR RESUELTO EN SERVIDOR
++ PRECONDICIONES DE DOMINIO
++ DENEGACIONES AUSENTES
++ IDEMPOTENCIA Y CONCURRENCIA
+→ ACCIÓN AUTORIZABLE
+```
+
+Y siempre:
+
+```text
+MUTACIÓN LPN SIN PermissionKey ACTIVA EXACTA
+→ DEFAULT_DENY
+```
+
+Esta tarea define el contrato de protección. No materializa todavía rutas, Server Actions, RPC, RLS, migraciones, UI, etiquetas ni cambios de datos.
+
+#### 2. Handoff recibido de `NEXO-AUTH-021`
+
+La auditoría anterior entrega cuatro brechas directamente relevantes:
+
+1. el endpoint LPN observado autentica usuario pero no demuestra autorización explícita mediante `nexo.inventory.lpns.view`;
+2. el ciclo LPN continúa parcial y no alcanzable de extremo a extremo;
+3. el catálogo activo contiene `nexo.inventory.lpns.view`, pero no contiene capacidades atómicas activas suficientes para las mutaciones de lifecycle;
+4. LPN y contenedor físico deben permanecer como identidades distintas y no pueden compartir autoridad por inferencia.
+
+La presente tarea consume esos hallazgos sin reabrir la auditoría de activos, mantenimiento, conteos o impresión reservada a tareas posteriores.
+
+#### 3. Entradas canónicas preservadas
+
+La protección consume sin redefinir:
+
+- `NEXO-DOM-002`, que define LPN como identidad logística estable y distinta de LOC, producto, lote, remisión, movimiento y contenedor físico;
+- `NEXO-DOM-003`, que fija los estados `DRAFT`, `ACTIVE`, `CLOSED`, `CANCELLED` y `VOID`;
+- la máquina de estados y las precondiciones de creación, activación, cierre, anulación y reetiquetado;
+- `nexo.inventory.lpns.view` como única `PermissionKey` activa observada cuyo recurso canónico es `LPN`;
+- el catálogo activo de 67 permisos NEXO observado;
+- los contratos vigentes de modalidad, scope, territorio, recurso, actor efectivo, dispositivo compartido, simulación, idempotencia, concurrencia y auditoría;
+- la regla transversal de autorización server-side antes de toda mutación;
+- la topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- el principio de que una capacidad inexistente no se fabrica con un alias, helper o permiso más amplio.
+
+#### 4. Topología y materialización futura
+
+El marcador global usa:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura sigue el patrón:
+
+```text
+NEXO-AUTH-022::<implementation_unit_id>
+```
+
+Cada materialización física deberá corresponder a una unidad asignada y no podrá iniciarse únicamente porque este contrato documental esté aprobado.
+
+El package propietario aplicable deberá haber superado:
+
+```text
+E5-GATE-008::<package_id> = PASS
+```
+
+y la instancia conservará autorización física explícita.
+
+#### 5. Resultado contractual
+
+La tarea fija las siguientes decisiones:
+
+1. toda lectura LPN usa la capacidad canónica existente `nexo.inventory.lpns.view`;
+2. autenticación sin autorización específica no basta para leer LPN;
+3. una capacidad de lectura nunca autoriza una mutación;
+4. ninguna mutación LPN se autoriza mediante `inventory.stock`;
+5. ninguna mutación LPN se autoriza mediante `nexo.inventory.lpns.view`;
+6. ninguna mutación LPN se autoriza mediante `nexo.inventory.location_assignments.assign`;
+7. crear, actualizar, activar, cerrar, anular y reetiquetar se evalúan como acciones distintas;
+8. la activación se protege explícitamente aunque el título de la tarea la agrupe dentro del lifecycle;
+9. si la acción mutadora no dispone de una `PermissionKey` activa exacta, el resultado actual es `DEFAULT_DENY`;
+10. no se infieren modalidad, scope ni grants para una capacidad inexistente;
+11. el estado del recurso se resuelve de nuevo en servidor antes del efecto;
+12. las transiciones se validan contra `NEXO-DOM-003`;
+13. las mutaciones validan revisión esperada;
+14. los reintentos conservan idempotencia;
+15. ninguna transición borra identidad o historia;
+16. reetiquetar no crea un LPN nuevo;
+17. el contenido se mantiene fuera del alcance de 022 y pasa a 023;
+18. custodia, préstamo y devolución no se absorben en esta tarea;
+19. imprimir o reimprimir no se confunde con reetiquetar;
+20. las futuras capacidades exactas deberán existir primero en el catálogo compartido antes de poder producir `ALLOW`.
+
+#### 6. Capacidad de lectura vigente
+
+La lectura de un LPN utiliza exclusivamente:
+
+```text
+nexo.inventory.lpns.view
+```
+
+Su semántica canónica permanece:
+
+```text
+resource_type = LPN
+resource_locator = lpn_id o filtro
+territory_resolver = LPN_TERRITORY
+authorization_requirement = BASE_OR_OPERATIONAL
+```
+
+El custodio o actor relacionado con el LPN no adquiere autoridad automática por esa relación.
+
+#### 7. Scope de lectura
+
+La lectura conserva los scopes ya aprobados para `nexo.inventory.lpns.view`:
+
+```text
+G(B)
+AS
+SS
+AST
+TST
+AA
+SA
+AAT
+ATW
+CTX(O)
+```
+
+El máximo administrativo es `G(B)` bajo el contrato vigente.
+
+La lectura operativa usa el contexto operativo real y no convierte `CTX(O)` en autoridad global.
+
+Si el LPN cambió de territorio, una lectura histórica usa el territorio histórico aplicable y una lectura vigente usa el territorio real vigente del recurso.
+
+#### 8. Prerrequisitos de lectura
+
+Por ser `BASE_OR_OPERATIONAL`, la lectura admite dos carriles completos e independientes:
+
+```text
+CARRIL BASE COMPLETO
+→ PUEDE AUTORIZAR
+```
+
+```text
+CARRIL OPERATIVO COMPLETO
+→ PUEDE AUTORIZAR
+```
+
+```text
+MEZCLA DE COMPONENTES DE AMBOS CARRILES
+→ NO AUTORIZA
+```
+
+El carril operativo conserva turno y check-in cuando el contrato vigente los exige.
+
+La existencia de una sesión autenticada no sustituye ninguno de estos carriles.
+
+#### 9. Corrección contractual del endpoint LPN observado
+
+El endpoint observado:
+
+```text
+GET /api/inventory/lpns
+```
+
+debe converger a una evaluación server-side que resuelva como mínimo:
+
+```text
+PRINCIPAL
++ ACTOR EFECTIVO
++ nexo.access
++ nexo.inventory.lpns.view
++ CARRIL
++ SCOPE
++ TERRITORIO
++ FILTRO O RECURSO
+→ CONJUNTO AUTORIZADO
+```
+
+La consulta no puede leer primero un universo amplio y confiar en que la interfaz o el cliente oculte filas después.
+
+Paginación, búsqueda y ordenamiento deben preservar el conjunto autorizado.
+
+#### 10. Autenticación no equivale a autorización
+
+Se fija:
+
+```text
+AUTHENTICATED USER
+!=
+AUTHORIZED LPN READER
+```
+
+y también:
+
+```text
+AUTHORIZED LPN READER
+!=
+AUTHORIZED LPN MUTATOR
+```
+
+Una sesión válida únicamente establece identidad técnica o humana suficiente para continuar la evaluación.
+
+#### 11. Estado actual de las mutaciones LPN
+
+El catálogo activo observado no contiene `PermissionKey` atómicas exactas para:
+
+- crear LPN;
+- actualizar LPN;
+- activar LPN;
+- cerrar LPN;
+- anular LPN;
+- reetiquetar LPN.
+
+No se crea un identificador nuevo dentro de este marcador global.
+
+La consecuencia autorizante actual es:
+
+```text
+NO EXACT ACTIVE PermissionKey
+→ NO VALID MODALITY TO INFER
+→ NO VALID SCOPE TO INFER
+→ NO VALID GRANT TO INFER
+→ DEFAULT_DENY
+```
+
+#### 12. Prohibición de reutilizar permisos existentes
+
+No autorizan las mutaciones anteriores:
+
+```text
+nexo.access
+nexo.inventory.lpns.view
+nexo.inventory.stock.view
+nexo.inventory.location_assignments.assign
+inventory.stock
+rol base
+rol operativo por nombre
+propiedad del LPN
+custodia del LPN
+sede seleccionada
+URL conocida
+botón visible
+formulario visible
+```
+
+Una capacidad solo puede autorizar la acción para la que su contrato la define.
+
+#### 13. Matriz de acción y decisión bajo el catálogo actual
+
+| Estado actual | Acción | Estado o efecto esperado | Capacidad activa exacta observada | Decisión actual |
+| --- | --- | --- | --- | --- |
+| cualquiera legible | consultar | sin transición | `nexo.inventory.lpns.view` | evaluar capacidad, scope y recurso |
+| inexistente | crear | `DRAFT` | ninguna exacta | `DEFAULT_DENY` |
+| `DRAFT` | actualizar campos permitidos | `DRAFT` | ninguna exacta | `DEFAULT_DENY` |
+| `DRAFT` | activar | `ACTIVE` | ninguna exacta | `DEFAULT_DENY` |
+| `ACTIVE` | actualizar campos permitidos | `ACTIVE` | ninguna exacta | `DEFAULT_DENY` |
+| `ACTIVE` | cerrar | `CLOSED` | ninguna exacta | `DEFAULT_DENY` |
+| `DRAFT` | anular | `CANCELLED` | ninguna exacta | `DEFAULT_DENY` |
+| `ACTIVE` | anular | `VOID` | ninguna exacta | `DEFAULT_DENY` |
+| `CLOSED` | anular excepcionalmente | `VOID` | ninguna exacta | `DEFAULT_DENY` |
+| `DRAFT` | reetiquetar | conserva `DRAFT` | ninguna exacta | `DEFAULT_DENY` |
+| `ACTIVE` | reetiquetar | conserva `ACTIVE` | ninguna exacta | `DEFAULT_DENY` |
+| `CLOSED` | reetiquetar para evidencia controlada | conserva `CLOSED` | ninguna exacta | `DEFAULT_DENY` |
+
+La tabla no crea nuevas `PermissionKey`; registra el comportamiento autorizado por el catálogo vigente.
+
+#### 14. Activación protegida explícitamente
+
+`NEXO-DOM-003` define:
+
+```text
+DRAFT -> ACTIVE
+```
+
+como una transición real.
+
+Aunque el título de 022 resume el frente como creación, actualización, cierre, anulación y reetiquetado, la activación no puede esconderse dentro de una escritura genérica.
+
+La activación debe recibir una decisión de autorización propia antes del efecto y debe validar las precondiciones de dominio aplicables.
+
+Mientras no exista capacidad exacta activa para autorizarla:
+
+```text
+ACTIVATE
+→ DEFAULT_DENY
+```
+
+#### 15. Protección de creación
+
+Una futura creación autorizable deberá resolver, además de la capacidad exacta que llegue a existir:
+
+- identidad nueva;
+- código correlacionable;
+- sede o contexto inicial permitido;
+- purpose type válido;
+- actor efectivo;
+- carril completo;
+- territorio;
+- origen de la intención;
+- correlación;
+- idempotencia;
+- revisión inicial;
+- ausencia de denegaciones.
+
+La creación produce:
+
+```text
+NEW LPN
+→ DRAFT
+```
+
+y no produce por sí sola contenido, stock, movimiento, ubicación confirmada, custodia, remisión ni disponibilidad.
+
+#### 16. Idempotencia de creación
+
+Una misma intención reintentada no puede crear dos identidades.
+
+```text
+SAME IDEMPOTENCY ID
++ SAME VALID CREATION INTENT
+→ SAME LOGICAL LPN CREATION
+```
+
+Un timeout de cliente no autoriza una segunda identidad.
+
+Una intención materialmente diferente requiere una nueva identidad de operación y vuelve a pasar autorización completa.
+
+#### 17. Protección de actualización
+
+`actualizar` no significa escritura libre sobre una fila LPN.
+
+Una futura actualización autorizable deberá:
+
+1. resolver el LPN vigente;
+2. verificar estado y revisión;
+3. identificar exactamente los campos propuestos;
+4. rechazar columnas fuera de la allowlist contractual;
+5. conservar `lpn_id`;
+6. no convertir un cambio de estado en un `UPDATE` genérico;
+7. no cambiar contenido;
+8. no mover inventario;
+9. no transferir custodia;
+10. no ejecutar impresión;
+11. no modificar contenedor físico por implicación;
+12. conservar historia cuando el dato sea versionado.
+
+Mientras no exista capacidad exacta activa para esa mutación:
+
+```text
+UPDATE
+→ DEFAULT_DENY
+```
+
+#### 18. Campos que no pueden escribirse por actualización genérica
+
+Una actualización genérica no puede alterar por escritura directa:
+
+- `lpn_id`;
+- lifecycle state;
+- lifecycle revision;
+- historial de lifecycle;
+- identidad del contenido;
+- cantidades contenidas;
+- ubicación efectiva;
+- movimiento;
+- custodia;
+- identidad de contenedor físico;
+- evidencias históricas;
+- auditoría;
+- estado de remisión;
+- estado de viaje.
+
+Cada responsabilidad conserva su contrato propietario.
+
+#### 19. Cambio de purpose type
+
+`NEXO-DOM-003` permite cambios de purpose type únicamente bajo condiciones de dominio y con historia.
+
+Por tanto, un cambio de propósito no puede ejecutarse como una edición silenciosa de texto o enum.
+
+Una futura autorización deberá comprobar:
+
+```text
+LPN VIGENTE
++ ESTADO COMPATIBLE
++ PURPOSE ACTUAL
++ PURPOSE PROPUESTO
++ CONDICIONES DE SALIDA DEL PURPOSE ACTUAL
++ CONDICIONES DEL PURPOSE NUEVO
++ REVISION ESPERADA
++ CAPACIDAD EXACTA
++ ACTOR Y TERRITORIO
+→ CAMBIO AUTORIZABLE
+```
+
+Mientras la capacidad mutadora exacta no exista, el cambio permanece `DEFAULT_DENY`.
+
+#### 20. Protección de cierre
+
+El cierre solo es semánticamente válido como:
+
+```text
+ACTIVE -> CLOSED
+```
+
+y debe revalidar las precondiciones de `NEXO-DOM-003`, incluyendo que el cierre no oculte trabajo operativo pendiente.
+
+Una capacidad de lectura, stock, ubicación o impresión no concede cierre.
+
+El cierre:
+
+- conserva identidad;
+- conserva código;
+- conserva historia;
+- bloquea mutación operativa ordinaria;
+- no borra contenido;
+- no ejecuta movimientos compensatorios por sí solo;
+- no cierra remisiones por implicación.
+
+Sin capacidad exacta activa:
+
+```text
+CLOSE
+→ DEFAULT_DENY
+```
+
+#### 21. Anulación antes de la primera activación
+
+La anulación preactivación corresponde exclusivamente a:
+
+```text
+DRAFT
++ NEVER ACTIVE
+→ CANCELLED
+```
+
+Debe preservar identidad, actor, razón, instante y correlación.
+
+No puede utilizarse para ocultar un efecto real ya producido.
+
+Sin capacidad exacta activa:
+
+```text
+ANNUL DRAFT
+→ DEFAULT_DENY
+```
+
+#### 22. Anulación posterior a activación
+
+Para un LPN que ya fue activo, la anulación corresponde a:
+
+```text
+ACTIVE -> VOID
+```
+
+o, excepcionalmente:
+
+```text
+CLOSED -> VOID
+```
+
+La transición exige preservar historia y reconciliar efectos dependientes sin borrarlos.
+
+La anulación no puede:
+
+- eliminar movimientos;
+- poner cantidades a cero silenciosamente;
+- revertir remisiones automáticamente;
+- borrar custodias;
+- fabricar un LPN sustituto;
+- reabrir la identidad;
+- reutilizar el código.
+
+Sin capacidad exacta activa:
+
+```text
+ANNUL ACTIVE OR CLOSED
+→ DEFAULT_DENY
+```
+
+#### 23. Reetiquetado
+
+Reetiquetar es un evento sobre la representación física de una identidad ya existente.
+
+```text
+RELABEL
+!=
+NEW LPN
+```
+
+```text
+STATE BEFORE RELABEL
+=
+STATE AFTER RELABEL
+```
+
+La operación debe conservar:
+
+- `lpn_id`;
+- lifecycle state;
+- revisión coherente;
+- relación con emisiones anteriores;
+- actor;
+- motivo cuando aplique;
+- instante;
+- correlación;
+- evidencia de la nueva emisión cuando exista.
+
+Sin capacidad exacta activa:
+
+```text
+RELABEL
+→ DEFAULT_DENY
+```
+
+#### 24. Reetiquetado no equivale a impresión o reimpresión
+
+022 gobierna la autoridad empresarial para que una identidad LPN pueda ser reetiquetada.
+
+`NEXO-AUTH-028` gobierna la autorización atómica de impresión y reimpresión.
+
+Por tanto:
+
+```text
+RELABEL AUTHORIZED
+!=
+PRINT AUTHORIZED
+```
+
+y:
+
+```text
+PRINT AUTHORIZED
+!=
+LPN IDENTITY MAY CHANGE
+```
+
+Una futura operación puede requerir ambas decisiones, pero una nunca sustituye a la otra.
+
+#### 25. Máquina de estados preservada
+
+022 no redefine la máquina de estados de `NEXO-DOM-003`.
+
+Se conserva:
+
+```text
+CREATE -> DRAFT
+DRAFT -> ACTIVE
+DRAFT -> CANCELLED
+ACTIVE -> CLOSED
+ACTIVE -> VOID
+CLOSED -> VOID
+```
+
+No se autoriza:
+
+```text
+CANCELLED -> ACTIVE
+VOID -> ACTIVE
+CLOSED -> ACTIVE
+```
+
+Una operación prohibida por dominio sigue prohibida aunque un actor tenga una capacidad mutadora futura.
+
+#### 26. Orden de evaluación
+
+Toda mutación física futura deberá evaluar en este orden lógico:
+
+1. resolver principal y actor efectivo;
+2. resolver disponibilidad del carril aplicable;
+3. comprobar existencia de la capacidad exacta activa;
+4. resolver grants y denegaciones;
+5. resolver recurso o borrador;
+6. resolver territorio;
+7. leer estado y revisión vigentes;
+8. comprobar transición o campo permitido;
+9. comprobar precondiciones de dominio;
+10. comprobar idempotencia;
+11. comprobar concurrencia;
+12. autorizar;
+13. ejecutar efecto;
+14. registrar evidencia;
+15. devolver el estado realmente persistido.
+
+Una etapa posterior no puede compensar una denegación anterior.
+
+#### 27. Prohibición de inferir modalidad, scope o grants
+
+Para las mutaciones sin `PermissionKey` activa exacta no existe autoridad para inventar:
+
+- `BASE_ONLY`;
+- `OPERATIONAL_ONLY`;
+- `BASE_OR_OPERATIONAL`;
+- scopes;
+- roles;
+- grants;
+- excepciones;
+- política de dispositivo;
+- requisitos de reautenticación.
+
+Hasta que esos elementos aparezcan en el catálogo canónico correspondiente:
+
+```text
+DEFAULT_DENY
+```
+
+022 no rellena el hueco con una decisión local de `vento-nexo`.
+
+#### 28. Alta futura de capacidades exactas
+
+Si una materialización futura necesita una capacidad que el catálogo aún no contiene, esa capacidad deberá existir primero como identidad canónica aprobada en la fuente compartida de autorización.
+
+La incorporación deberá mantener coherencia con:
+
+- catálogo de PermissionKey;
+- descripción canónica;
+- modalidad;
+- scope;
+- recurso;
+- prerrequisitos;
+- grants base;
+- grants operativos;
+- denegaciones;
+- dispositivo compartido;
+- simulación;
+- contratos compartidos;
+- persistencia o migración aplicable;
+- pruebas de autorización.
+
+No se permite crear una clave solo dentro de `vento-nexo` para desbloquear la implementación.
+
+#### 29. Decisión server-side
+
+Toda lectura o mutación LPN protegida debe decidirse del lado servidor antes de acceder a datos sensibles o producir un efecto.
+
+No son oráculos de autorización:
+
+- estado de un botón;
+- componente oculto;
+- validación cliente;
+- cookie no verificada;
+- query string;
+- campo hidden;
+- middleware de navegación por sí solo;
+- respuesta previa;
+- rol visual;
+- código LPN escaneado.
+
+Una llamada directa debe recibir la misma decisión que la interfaz ordinaria.
+
+#### 30. Recurso actual, no copia del cliente
+
+Para una acción sobre LPN existente, el servidor vuelve a resolver el recurso autoritativo.
+
+El cliente puede aportar un localizador y una intención, pero no una verdad autorizante.
+
+Se valida como mínimo:
+
+```text
+lpn_id
++ current lifecycle state
++ current revision
++ current purpose type
++ current territory
++ proposed action
+```
+
+según aplicabilidad.
+
+#### 31. Territorio
+
+La autorización debe evaluar el territorio del LPN, no únicamente la sede seleccionada en la UI.
+
+Para lectura vigente se usa el territorio vigente.
+
+Para evidencia histórica se usa el territorio correspondiente al snapshot histórico cuando el contrato lo requiera.
+
+Para una mutación que pueda cambiar una relación territorial, la decisión debe proteger el recurso actual y la relación propuesta según el owner de movimiento o ubicación.
+
+022 no concede por sí misma traslado de contenido ni custodia.
+
+#### 32. Principal, actor y dispositivo
+
+Se distinguen siempre:
+
+```text
+PRINCIPAL TECNICO
+ACTOR EFECTIVO
+DISPOSITIVO
+ROL BASE
+ROL OPERATIVO
+```
+
+En un dispositivo compartido, el dispositivo restringe la operación pero no crea la capacidad.
+
+El actor humano efectivo debe estar identificado y autorizado.
+
+Una sesión de dispositivo no permite reutilizar la autoridad del usuario anterior.
+
+#### 33. Simulación
+
+Una decisión simulada nunca ejecuta una transición real de LPN.
+
+```text
+SIMULATED ALLOW
+!=
+REAL AUTHORITY
+```
+
+La simulación puede evaluar qué ocurriría bajo el contrato autorizado, pero no puede:
+
+- crear LPN;
+- activar;
+- actualizar;
+- cerrar;
+- anular;
+- reetiquetar;
+- imprimir;
+- modificar grants;
+- cambiar estado físico.
+
+La transición real vuelve a evaluar con autoridad real.
+
+#### 34. Revisión y concurrencia
+
+Toda mutación futura que cambie estado, purpose type o datos protegidos debe comprobar:
+
+```text
+EXPECTED_REVISION = CURRENT_REVISION
+```
+
+Si la revisión no coincide:
+
+```text
+NO EFFECT
++ REFRESH OR RECONCILE
+```
+
+No se usa last-write-wins silencioso para resolver dos decisiones concurrentes sobre la misma identidad.
+
+#### 35. Idempotencia de transiciones
+
+El replay de una misma intención aceptada:
+
+- no crea un segundo evento lógico;
+- no incrementa dos veces la revisión;
+- no duplica una emisión;
+- no duplica una compensación;
+- no duplica un movimiento derivado;
+- no cambia el resultado por haber sido reintentado.
+
+Una nueva intención incompatible con el estado vigente se rechaza.
+
+#### 36. Operación offline
+
+Una intención capturada offline no es una transición canónica.
+
+Al sincronizar se debe:
+
+1. recuperar estado actual;
+2. recuperar revisión actual;
+3. revalidar actor y capacidad;
+4. revalidar territorio;
+5. revalidar precondiciones;
+6. aplicar idempotencia;
+7. aceptar o denegar;
+8. conservar evidencia del resultado.
+
+La antigüedad de la captura no obliga al servidor a aceptar una transición ya inválida.
+
+#### 37. Auditoría mínima
+
+Toda acción LPN aceptada o denegada debe poder correlacionar, según aplicabilidad:
+
+- `lpn_id` o borrador de creación;
+- acción solicitada;
+- estado anterior;
+- estado resultante;
+- revisión anterior;
+- revisión resultante;
+- purpose type;
+- principal;
+- actor efectivo;
+- carril;
+- rol aplicable;
+- sede;
+- área cuando aplique;
+- dispositivo;
+- permiso evaluado;
+- scope;
+- recurso;
+- decisión;
+- razones;
+- idempotencia;
+- correlación;
+- instante de servidor;
+- resultado del efecto;
+- referencias de reconciliación cuando existan.
+
+No se exige que esos sean nombres físicos de columnas.
+
+#### 38. Errores seguros
+
+Una denegación no debe revelar más información de la necesaria sobre un LPN fuera de scope.
+
+Se debe distinguir internamente:
+
+- no autenticado;
+- no autorizado;
+- recurso inexistente;
+- recurso fuera de scope;
+- estado incompatible;
+- revisión obsoleta;
+- precondición incumplida;
+- conflicto;
+- error técnico.
+
+La respuesta pública puede minimizar detalle conforme al contrato transversal sin convertir fallos técnicos en `ALLOW`.
+
+#### 39. RLS, RPC y autorización de aplicación
+
+RLS, RPC o funciones backend pueden reforzar la protección, pero no sustituyen por sí solas la decisión de aplicación que exige una capacidad exacta.
+
+A la inversa, una decisión de aplicación no puede saltar políticas de datos obligatorias.
+
+La equivalencia objetivo es:
+
+```text
+APP AUTHORIZATION
++
+BACKEND DATA POLICY
+→ MISMA FRONTERA DE AUTORIDAD
+```
+
+Cualquier cambio VENTO de Supabase pertenece a `vento-group-sas/vento-shell`.
+
+#### 40. Efecto atómico
+
+Una acción autorizada debe producir:
+
+```text
+AUTHORIZED
+→ EFFECT COMMITTED COHERENTLY
+```
+
+o:
+
+```text
+FAILURE
+→ NO FALSE SUCCESS
+```
+
+No se acepta:
+
+- estado cambiado sin evento;
+- evento sin estado;
+- nueva etiqueta sin correlación;
+- cierre parcial;
+- anulación que deje referencias imposibles;
+- doble creación por timeout;
+- revisión incrementada sin efecto empresarial coherente.
+
+El mecanismo físico final pertenece a la unidad de implementación y contratos de datos aplicables.
+
+#### 41. Frontera con contenido y `NEXO-AUTH-023`
+
+022 no autoriza:
+
+- empacar;
+- desempacar;
+- dividir;
+- unir;
+- transferir contenido;
+- anidar LPN;
+- desanidar LPN;
+- mover contenido entre LPN.
+
+Esas acciones pertenecen a `NEXO-AUTH-023`.
+
+Una capacidad futura de lifecycle no podrá reutilizarse para mutar contenido.
+
+#### 42. Frontera con ubicación y custodia
+
+La creación o actualización del lifecycle no concede por sí sola:
+
+- putaway;
+- traslado;
+- cambio de LOC;
+- cambio de posición;
+- cambio de custodio;
+- préstamo;
+- devolución;
+- transferencia de custodia.
+
+Las operaciones aplicables permanecen en los contratos de ubicación, movimientos y `NEXO-AUTH-025`.
+
+#### 43. Frontera con contenedor físico
+
+Un LPN y un contenedor físico conservan identidades distintas.
+
+Por tanto una autorización LPN:
+
+- no crea un contenedor;
+- no da de baja un contenedor;
+- no transfiere su custodia;
+- no modifica su condición;
+- no cierra su ciclo de retorno;
+- no convierte un contenedor en LPN.
+
+Cuando una operación futura vincule ambos objetos, deberá autorizar cada responsabilidad aplicable sin alias permisivo.
+
+#### 44. Frontera con impresión
+
+022 protege la decisión de lifecycle y el evento empresarial de reetiquetado.
+
+`NEXO-AUTH-028` protege impresión y reimpresión.
+
+La visualización u obtención local de un QR no concede reetiquetado.
+
+La autorización de reetiquetado no concede acceso general a plantillas ni trabajos de impresión.
+
+#### 45. Frontera con permisos legacy
+
+`NEXO-AUTH-029` conserva la responsabilidad de retirar:
+
+- `inventory.stock` como autoridad final;
+- aliases legacy;
+- helpers amplios;
+- fallbacks de permiso;
+- rutas paralelas de autorización.
+
+022 prohíbe depender de ellos, pero no declara su retiro físico completado.
+
+#### 46. Frontera con certificación integral
+
+`NEXO-AUTH-030` probará integralmente el subdominio después de materializar 022–029.
+
+Un PASS documental de 022 no significa:
+
+```text
+LPN AUTHORIZATION PHYSICALLY CERTIFIED
+```
+
+La certificación posterior debe demostrar allow, deny, scope, estado, concurrencia, idempotencia, dispositivo, simulación, offline, API directa y ausencia de efectos no autorizados.
+
+#### 47. Condiciones para cerrar los hallazgos recibidos
+
+| Hallazgo de 021 | Resultado contractual de 022 | Cierre físico |
+| --- | --- | --- |
+| endpoint LPN autenticado sin permiso explícito | lectura exige `nexo.inventory.lpns.view` en servidor | pendiente de unidad física |
+| ciclo LPN no alcanzable | lifecycle protegido por acción y estado; no se confunde infraestructura con autorización | sigue dependiendo de materialización funcional |
+| mutaciones sin permisos atómicos | `DEFAULT_DENY` hasta capacidad exacta activa | pendiente de catálogo y unidad física |
+| contenedor sin familia propia | se prohíbe heredar autoridad LPN hacia contenedor | continúa en tareas propietarias posteriores |
+
+022 cierra el contrato de protección, no las materializaciones pendientes.
+
+#### 48. Gate de una futura capacidad mutadora
+
+Una capacidad LPN mutadora solo podrá utilizarse cuando pueda demostrarse conjuntamente:
+
+```text
+IDENTIDAD CANÓNICA ACTIVA
++ DESCRIPCIÓN CANÓNICA
++ MODALIDAD DEFINIDA
++ SCOPE DEFINIDO
++ RECURSO DEFINIDO
++ PRERREQUISITOS DEFINIDOS
++ GRANTS DEFINIDOS
++ DENEGACIONES DEFINIDAS
++ POLÍTICA DE DISPOSITIVO
++ POLÍTICA DE SIMULACIÓN
++ CONSUMIDOR COMPATIBLE
++ BACKEND COMPATIBLE
++ PRUEBAS
+```
+
+La ausencia de cualquiera de esas piezas no se rellena desde el consumidor.
+
+#### 49. Rollback de materialización futura
+
+El rollback de una unidad física:
+
+- solo puede volver a una combinación previamente certificada;
+- no puede reactivar una autoridad legacy más permisiva;
+- no puede convertir `DEFAULT_DENY` en permiso temporal;
+- debe conservar historia y evidencia;
+- debe mantener compatibles catálogo, consumidor, backend y datos;
+- no puede borrar eventos de lifecycle ya confirmados.
+
+Si no existe combinación previa segura, se bloquea la mutación y se corrige hacia adelante.
+
+#### 50. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el ciclo auditable completo de LPN ya está cubierto por requisitos vigentes;
+- autorización exacta y validación server-side ya cuentan con cobertura transversal;
+- idempotencia, concurrencia, no doble contabilización, custodia y trazabilidad ya están protegidas;
+- esta tarea especializa el contrato de autorización y no introduce una obligación de prueba independiente;
+- crear un requisito nuevo duplicaría obligaciones existentes.
+
+#### 51. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004` para creación, contenido, ubicación, movimiento, custodia, cierre, anulación y reetiquetado por actor autorizado;
+- `TREQ-NEXO-011` para atomicidad, idempotencia, concurrencia, movimientos y no doble contabilización;
+- `TREQ-NEXO-016` para separación entre LPN, contenedor, custodia, transporte, entrega y recepción;
+- `TREQ-NEXO-046` para separación entre LPN y contenedor físico;
+- `TREQ-NEXO-047` para comportamiento explícito de LPN y contenedores sin duplicar representación;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y scope canónicos;
+- `TREQ-AUTH-013` para autorización server-side exacta frente a URL, formulario, API o RPC manipulada.
+
+Estas referencias son trazabilidad reutilizada, no una modificación de 04A.
+
+#### 52. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no materializa código; build y suites pertenecen a la incorporación local y a las futuras unidades físicas |
+| LOCAL | NOT_EXECUTED | la inserción, normalización, quality y batería documental quedan para el checkout local al incorporar la tarea |
+| REMOTA | PASS | se verificaron `vento-shell` main con `NEXO-AUTH-020` cerrado, `vento-nexo` vigente, owner del minibloque, topología, `NEXO-DOM-002/003`, catálogo activo de 67 permisos NEXO, `nexo.inventory.lpns.view`, contratos de scope/recurso y el artefacto aprobado de `NEXO-AUTH-021` |
+| OPERATIVA | NOT_EXECUTED | no se ejecutó creación, actualización, activación, cierre, anulación ni reetiquetado de LPN en un ambiente operativo |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-022::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 53. Criterios de aceptación
+
+- [x] la lectura LPN queda vinculada a `nexo.inventory.lpns.view`;
+- [x] autenticación sola queda explícitamente insuficiente;
+- [x] lectura y mutación quedan separadas;
+- [x] se preserva la máquina de estados de `NEXO-DOM-003`;
+- [x] la activación queda protegida como transición propia;
+- [x] crear, actualizar, cerrar, anular y reetiquetar no reutilizan `lpns.view`;
+- [x] no se reutiliza `inventory.stock` como autoridad;
+- [x] no se reutiliza `location_assignments.assign` como lifecycle permission;
+- [x] las mutaciones sin capacidad exacta activa quedan en `DEFAULT_DENY`;
+- [x] no se inventan nombres de PermissionKey faltantes;
+- [x] no se inventan modalidad, scope ni grants faltantes;
+- [x] se exige autorización server-side;
+- [x] se exige estado y revisión vigentes;
+- [x] se preservan idempotencia y concurrencia;
+- [x] se preserva identidad durante cierre, anulación y reetiquetado;
+- [x] reetiquetado e impresión quedan separados;
+- [x] contenido queda reservado a `NEXO-AUTH-023`;
+- [x] custodia queda reservada a su tarea propietaria;
+- [x] retiro legacy queda reservado a `NEXO-AUTH-029`;
+- [x] certificación integral queda reservada a `NEXO-AUTH-030`;
+- [x] no se modifica Supabase;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+
+#### 54. Límites
+
+Esta tarea no:
+
+- inventa nuevas `PermissionKey`;
+- modifica las 67 identidades activas NEXO;
+- modifica grants base u operativos;
+- decide una modalidad inexistente;
+- decide un scope inexistente;
+- materializa `GET /api/inventory/lpns`;
+- crea POST, PATCH o DELETE para LPN;
+- implementa `LpnCreateForm`;
+- crea Server Actions;
+- crea RPC;
+- modifica RLS;
+- modifica `inventory_lpns`;
+- modifica `inventory_lpn_items`;
+- crea migraciones;
+- modifica datos;
+- crea etiquetas;
+- imprime;
+- modifica contenido LPN;
+- empaca o desempaca;
+- divide o une;
+- transfiere contenido;
+- modifica custodia;
+- modifica contenedores físicos;
+- retira helpers legacy;
+- ejecuta pruebas integrales;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-023`.
+
+#### 55. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-021 — Auditar permisos actuales de LPN, activos y contenedores`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-022 — Proteger creación, actualización, cierre, anulación y reetiquetado de LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia`
+
 ### [ ] NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia
 ### [ ] NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables
 ### [ ] NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
