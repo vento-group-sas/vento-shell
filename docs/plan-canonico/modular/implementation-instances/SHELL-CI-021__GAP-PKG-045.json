@@ -91,7 +91,484 @@
     "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:package:gate:check -- --package-id GAP-PKG-045 status=PASS",
     "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:package:readiness:check -- --package GAP-PKG-045 status=PASS",
     "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:package:execution:check status=PASS",
-    "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:implementation:check status=PASS"
+    "LOCAL_VALIDATION candidate=15188286bb9268d18317a2659ab8ea1c39b7ff5d command=npm run docs:implementation:check status=PASS",
+    {
+      "type": "IMPLEMENTATION_READINESS_GATE_STATE_V1",
+      "schema_version": 1,
+      "model_id": "VENTO-IMPLEMENTATION-READINESS-GATE-ENGINE-V1",
+      "instance_id": "SHELL-CI-021::GAP-PKG-045",
+      "package_id": "GAP-PKG-045",
+      "candidate_commit": "15188286bb9268d18317a2659ab8ea1c39b7ff5d",
+      "lifecycle_head_commit": "0824cee32fa3192d33bbae71e8509f2e414ae822",
+      "physical_fingerprint": "2c3aefee20602ef78dcbce9c2a4a8768378285087b475a3cd279793f2dacd9ea",
+      "observed_at": "2026-09-21T13:49:53.443Z",
+      "decision_owner": "OWN-OPS",
+      "target_environments": [
+        {
+          "environment_role": "STAGING",
+          "target_type": "ENVIRONMENT_PROFILE",
+          "target_id": "ENV-WEB-CI-STAGING",
+          "owner": "OWN-OPS"
+        }
+      ],
+      "readiness_profile": [
+        {
+          "gate_id": "READY-GATE-001",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-002",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-003",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-004",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-005",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-006",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-007",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-008",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-009",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-010",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-011",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-012",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-013",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-014",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        },
+        {
+          "gate_id": "READY-GATE-015",
+          "phase": "NOW",
+          "target_phase": null,
+          "rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "evidence_refs": [],
+          "source": "DEFAULT"
+        }
+      ],
+      "gates": [
+        {
+          "gate_id": "READY-GATE-001",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-shell candidate=a4b4b68739b6b5cdd4f07734d41f4eb366c22272 deployment=dpl_9t4k7ydJXTnQr4pEjSp2muZgF4yM url=https://vento-shell-85pymnhaf-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-nexo candidate=8b09100622e0113ceb7b383c460417e80d1035ec deployment=dpl_6bVTQA5GfhPUpANGD9VBJEkmrs13 url=https://vento-nexo-oqbp9dc5x-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-fogo candidate=8fe73d1b75587189af96a72c27111922de5e878e deployment=dpl_2fTnvLZRhMKKkVSzy3zuPpt3aZMa url=https://vento-fogo-hcsaaordh-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-origo candidate=d2f0bc3d56b31da141a052450d1d7ee971bb9e8d deployment=dpl_CF33YTYwgv7tejSxUScRoECpiq7W url=https://vento-origo-4iiwuhbrr-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-pulso candidate=da73c80e63aba5607e06be18bbf633a55690de22 deployment=dpl_DPX9VRvfrPEWhGbU4qBE6CDsh4px url=https://vento-pulso-ebwsrxci0-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "VERCEL_PREVIEW repository=vento-group-sas/vento-viso candidate=6ded846db875f34c03acf17778128ad2f8bbd5f4 deployment=dpl_BXRbAtWdhaPeU84d2ja4o15QXJo6 url=https://vento-viso-cm3wqkxuc-jefe-de-operaciones-projects.vercel.app state=READY target=PREVIEW_NO_PRODUCTION source=cli provenance=EXACT_GIT_ARCHIVE_PER_CANDIDATE",
+            "HTTP_CHECK repository=vento-group-sas/vento-shell result=307_REDIRECT_TO_CANONICAL_LOGIN",
+            "HTTP_CHECK repository=vento-group-sas/vento-nexo result=307_REDIRECT_TO_CANONICAL_LOGIN",
+            "HTTP_CHECK repository=vento-group-sas/vento-fogo result=302_VERCEL_SSO_PROTECTED",
+            "HTTP_CHECK repository=vento-group-sas/vento-origo result=302_VERCEL_SSO_PROTECTED",
+            "HTTP_CHECK repository=vento-group-sas/vento-pulso result=200_OK",
+            "HTTP_CHECK repository=vento-group-sas/vento-viso result=302_VERCEL_SSO_PROTECTED",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-shell deployment=dpl_9t4k7ydJXTnQr4pEjSp2muZgF4yM result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-nexo deployment=dpl_6bVTQA5GfhPUpANGD9VBJEkmrs13 result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-fogo deployment=dpl_2fTnvLZRhMKKkVSzy3zuPpt3aZMa result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-origo deployment=dpl_CF33YTYwgv7tejSxUScRoECpiq7W result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-pulso deployment=dpl_DPX9VRvfrPEWhGbU4qBE6CDsh4px result=NO_ERROR_OR_FATAL_LOGS window=2h",
+            "RUNTIME_ERROR_SCAN repository=vento-group-sas/vento-viso deployment=dpl_BXRbAtWdhaPeU84d2ja4o15QXJo6 result=NO_ERROR_OR_FATAL_LOGS window=2h"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-002",
+          "evaluation_mode": "AUTO",
+          "status": "NO_APLICA",
+          "evidence": [
+            "NO_DATABASE_MUTATION_DECLARED"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-003",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "PERMISSIONS_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "permissions_readiness.status",
+            "permissions_readiness.evidence_refs"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-004",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "OPERATIONAL_IDENTITY_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "operational_identity_readiness.status",
+            "operational_identity_readiness.evidence_refs"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-005",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "PACKAGE_GATE:GAP-PKG-045:APPROVED_FOR_IMPLEMENTATION"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-006",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "INTEGRATION_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "integration_readiness.status",
+            "integration_readiness.evidence_refs"
+          ],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-007",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "NO_APLICA",
+          "evidence": [
+            "NO_HARDWARE_SCOPE_DETECTED"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-008",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "PACKAGE_GATE_ROLLBACK_STEP:1:If implementation fails before publication, revert only GAP-PKG-045 consumer changes and package-specific evidence artifacts in their authorized repositories; do not modify or revert the VERIFIED SHELL-CON-002::GLOBAL foundation.",
+            "PACKAGE_GATE_ROLLBACK_STEP:2:If any runtime consumer cannot be reconciled without a new undiscovered repository/path/surface, stop CI020 and re-mature again before making that new delta.",
+            "PACKAGE_GATE_ROLLBACK_STEP:3:If a consumer regression appears, restore that repository consumer file to its pre-CI020 state and keep the package unverified until canonical identity semantics and repository tests pass.",
+            "PACKAGE_GATE_ROLLBACK_STEP:4:No database rollback is required because Supabase/database mutation is outside this package scope.",
+            "PACKAGE_GATE_ROLLBACK_STEP:5:After rollback, rerun canonical catalog generation/validation, all GAP-PKG-045 package tests and the affected consumer repository test/typecheck commands."
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-009",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "NO_APLICA",
+          "evidence": [
+            "NO_TRAINING_SCOPE_DETECTED"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-010",
+          "evaluation_mode": "HUMAN_EVIDENCE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "NOMINAL_SUPPORT_EVIDENCE_REQUIRED",
+          "required_evidence": [
+            "support.titular",
+            "support.suplente",
+            "support.coverage_window",
+            "support.levels",
+            "support.escalation",
+            "support.ownership_confirmed"
+          ],
+          "dependencies": [],
+          "owner": "OWN-OPS",
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-011",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "OBSERVABILITY_BOUND_TO_DEPLOYMENT_EVIDENCE"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [
+            "READY-GATE-001"
+          ],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-012",
+          "evaluation_mode": "EXTERNAL_EXERCISE",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "AUTHORIZED_ROLLBACK_EXERCISE_REQUIRED",
+          "required_evidence": [
+            "rollback_exercise.result=PASS",
+            "rollback_exercise.executed_at",
+            "rollback_exercise.environment_id",
+            "rollback_exercise.candidate_commit",
+            "rollback_exercise.evidence_refs[]",
+            "rollback_exercise.restore_verified=true",
+            "rollback_exercise.production_mutations!=true"
+          ],
+          "dependencies": [],
+          "owner": "OWN-OPS",
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-013",
+          "evaluation_mode": "AUTO",
+          "status": "PASS",
+          "evidence": [
+            "LOCAL_VALIDATION_AND_ENVIRONMENT_BASELINE_PASS"
+          ],
+          "blocking_reason": null,
+          "required_evidence": [],
+          "dependencies": [
+            "READY-GATE-001"
+          ],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": false
+        },
+        {
+          "gate_id": "READY-GATE-014",
+          "evaluation_mode": "AUTO",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "PRIOR_READY_GATE_BLOCKED",
+          "required_evidence": [],
+          "dependencies": [
+            "READY-GATE-003",
+            "READY-GATE-004",
+            "READY-GATE-006",
+            "READY-GATE-010",
+            "READY-GATE-012"
+          ],
+          "owner": null,
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        },
+        {
+          "gate_id": "READY-GATE-015",
+          "evaluation_mode": "HUMAN_DECISION",
+          "status": "BLOQUEADO",
+          "evidence": [],
+          "blocking_reason": "READY_GATE_014_NOT_PASS",
+          "required_evidence": [
+            "READY-GATE-014 PASS"
+          ],
+          "dependencies": [
+            "READY-GATE-014"
+          ],
+          "owner": "OWN-OPS",
+          "reused": false,
+          "applicability_phase": "NOW",
+          "target_phase": null,
+          "applicability_rationale": "DEFAULT_NOW_FAIL_CLOSED",
+          "applicability_evidence": [],
+          "blocks_current_phase": true
+        }
+      ],
+      "summary": {
+        "pass_count": 5,
+        "fail_count": 0,
+        "blocked_count": 7,
+        "not_applicable_count": 3,
+        "deferred_count": 0,
+        "blocked_gates": [
+          "READY-GATE-003",
+          "READY-GATE-004",
+          "READY-GATE-006",
+          "READY-GATE-010",
+          "READY-GATE-012",
+          "READY-GATE-014",
+          "READY-GATE-015"
+        ],
+        "deferred_gates": []
+      },
+      "input_path": ".delivery/implementation-readiness-gate-input.json"
+    }
   ],
   "target_environments": [
     {
