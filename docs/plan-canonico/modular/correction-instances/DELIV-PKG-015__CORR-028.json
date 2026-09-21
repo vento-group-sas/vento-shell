@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "AUTH-RBAC-018"
@@ -132,8 +132,19 @@
         }
       ],
       "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-21T00:26:09.156Z",
+      "validated_candidate_head": "f19ecd83833d7603ce40547d5363ee3622aef307",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
     }
   ],
   "opened_at": "2026-09-21T00:03:39.670Z",
-  "implemented_at": "2026-09-21T00:25:35.279Z"
+  "implemented_at": "2026-09-21T00:25:35.279Z",
+  "verified_at": "2026-09-21T00:26:09.156Z"
 }
