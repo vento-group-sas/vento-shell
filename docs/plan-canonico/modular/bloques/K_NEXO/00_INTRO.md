@@ -16477,7 +16477,1135 @@ La materialización física pertenece únicamente a futuras instancias autorizad
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-020 — Ejecutar pruebas integrales`
 
-### [ ] NEXO-AUTH-020 — Ejecutar pruebas integrales
+### ✅ NEXO-AUTH-020 — Ejecutar pruebas integrales
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-019 — Eliminar helpers duplicados
+**Tarea siguiente:** NEXO-AUTH-021 — Auditar permisos actuales de LPN, activos y contenedores
+**Tipo de tarea:** documental; contrato canónico de certificación integral por `implementation_unit_id` para el alcance base `NEXO-AUTH-001..019`, reuniendo build, contratos compartidos, autorización server-side, territorio, dispositivo compartido, simulación, flujos de remisiones, inventario, retiro legacy, seguridad, regresión, rollback y evidencia atribuible sin sustituir la certificación transversal posterior del BLOQUE U
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/00_INTRO.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** ninguno; este marcador no ejecuta suites sobre ambientes, no modifica código, tests, fixtures, packages, dependencias, lockfiles, Supabase, datos, configuración, dispositivos, CI, releases, PR, merge, despliegues ni pilotos
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir qué deberá demostrar una futura materialización física para considerar integralmente validado el alcance base de autorización de NEXO después de:
+
+- separar administración de operación;
+- cerrar bypasses de remisiones;
+- proteger acciones operativas;
+- resolver sede y área efectivas;
+- integrar dispositivo compartido;
+- separar simulación de autoridad real;
+- adoptar packages compartidos;
+- retirar helpers y ramas de autoridad duplicada.
+
+La regla raíz queda:
+
+```text
+BASE AUTH CONTRACTS MATERIALIZED
++
+PACKAGE ADOPTION CERTIFIED
++
+LEGACY RETIREMENT CERTIFIED
++
+ALLOW PATHS PASS
++
+DENY PATHS PASS
++
+ZERO UNAUTHORIZED SIDE EFFECTS
++
+E2E FLOWS PASS
++
+ROLLBACK / RECOVERY PASS WHEN APPLICABLE
++
+EVIDENCE FRESH AND ATTRIBUTABLE
+=
+NEXO AUTH UNIT PASS
+```
+
+Y siempre:
+
+```text
+CI007 BASELINE PASS
+!=
+INTEGRAL NEXO AUTH CERTIFICATION
+```
+
+```text
+NEXO AUTH UNIT PASS
+!=
+GLOBAL AUTHORIZATION CERTIFIED
+```
+
+---
+
+#### 2. Resultado material
+
+La tarea fija un contrato de certificación para que cada futura unidad física:
+
+1. identifique exactamente la `implementation_unit_id`, package owner, consumer commit, manifest, lockfile, runtime, framework y versiones compartidas;
+2. ejecute gates técnicos reproducibles del consumidor;
+3. ejecute los perfiles aplicables de las cuatro familias compartidas adoptadas;
+4. pruebe cada responsabilidad `NEXO-AUTH-001..019` que aplique a la unidad;
+5. demuestre rutas positivas y negativas;
+6. demuestre autorización server-side antes de todo efecto empresarial;
+7. ejecute flujos completos de remisiones e inventario incluidos en el alcance;
+8. demuestre límites territoriales por sede y área;
+9. demuestre aislamiento de dispositivo compartido;
+10. demuestre que simulación nunca se convierte en autoridad real;
+11. demuestre que el retiro legacy no dejó aliases, wrappers ni rutas equivalentes;
+12. pruebe idempotencia, reintentos, fallos técnicos y recuperación cuando apliquen;
+13. pruebe rollback dentro del límite temporal permitido;
+14. registre defectos y retests sin borrar historia;
+15. emita un resultado de unidad que no pueda confundirse con certificación global del sistema.
+
+Este marcador documental no ejecuta esas pruebas.
+
+---
+
+#### 3. Naturaleza del marcador y materialización posterior
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-020::<implementation_unit_id>
+```
+
+Toda materialización requiere:
+
+- `implementation_unit_id` asignado;
+- package propietario aplicable;
+- `E5-GATE-008::<package_id> = PASS` cuando corresponda;
+- resultados físicos aplicables de `NEXO-AUTH-001..019` para la misma unidad;
+- autorización física explícita;
+- ambiente de prueba autorizado;
+- evidencia perteneciente a la misma combinación de código, contratos, configuración y backend.
+
+La aprobación documental de esta tarea no concede autorización física.
+
+---
+
+#### 4. Handoff obligatorio recibido de NEXO-AUTH-019
+
+`NEXO-AUTH-019` debe entregar a 020, por la misma unidad:
+
+- cero autoridad local duplicada en filas `committed`;
+- lista exacta de adapters conservados;
+- lista exacta de lógica NEXO conservada;
+- evidencia de cero aliases y cero reexports legacy aplicables;
+- evidencia de cero wrappers que oculten la semántica retirada;
+- evidencia de consumidores reconciliados;
+- evidencia de rollback dentro del límite permitido;
+- suites específicas ya ejecutadas durante el retiro;
+- cualquier objeto backend todavía perteneciente a otro owner canónico.
+
+Si una superficie permanece `BLOCKED_BY_018`, 020 no la normaliza a PASS.
+
+---
+
+#### 5. Handoff obligatorio recibido de NEXO-AUTH-018
+
+`NEXO-AUTH-018` debe entregar, según la unidad:
+
+- packages efectivamente adoptados;
+- versiones exactas;
+- manifest y lockfile coherentes;
+- compatibilidad NEXO aplicable;
+- perfiles de package;
+- resultados de paridad;
+- clasificación de divergencias;
+- estado de cutover por superficie;
+- rollback previo certificado cuando aplique;
+- lineage de implementación;
+- evidencia de frescura.
+
+Un package presente en el workspace, un export interno o una release no consumida no satisface esta entrada.
+
+---
+
+#### 6. Universo de autorización base que certifica 020
+
+La certificación cubre exclusivamente el minibloque:
+
+| Tarea | Responsabilidad que debe quedar probada |
+| --- | --- |
+| `NEXO-AUTH-001` | configuración administrativa separada de operación |
+| `NEXO-AUTH-002` | ausencia de bypass administrativo de remisiones |
+| `NEXO-AUTH-003` | `inventory.remissions.all_sites` limitado a su semántica propia |
+| `NEXO-AUTH-004` | creación de solicitudes protegida |
+| `NEXO-AUTH-005` | edición y cancelación protegidas |
+| `NEXO-AUTH-006` | preparación protegida |
+| `NEXO-AUTH-007` | producción vinculada protegida cuando aplique |
+| `NEXO-AUTH-008` | despacho protegido |
+| `NEXO-AUTH-009` | tránsito protegido |
+| `NEXO-AUTH-010` | recepción protegida |
+| `NEXO-AUTH-011` | ajustes protegidos |
+| `NEXO-AUTH-012` | conteos protegidos |
+| `NEXO-AUTH-013` | movimientos protegidos |
+| `NEXO-AUTH-014` | catálogo y configuraciones protegidos |
+| `NEXO-AUTH-015` | sede y área efectivas aplicadas |
+| `NEXO-AUTH-016` | dispositivo compartido integrado sin herencia indebida |
+| `NEXO-AUTH-017` | simulación estricta sin autoridad ejecutable |
+| `NEXO-AUTH-018` | adopción gobernada de packages compartidos |
+| `NEXO-AUTH-019` | autoridad local duplicada retirada conforme al cutover |
+
+Una fila no aplicable a una unidad debe justificar `NOT_APPLICABLE`; no puede omitirse silenciosamente.
+
+---
+
+#### 7. Frontera con NEXO-AUTH-021 y tareas posteriores
+
+`NEXO-AUTH-021` inicia otro alcance documental: auditoría de permisos actuales de LPN, activos y contenedores.
+
+Por tanto, 020 no afirma que hayan quedado certificados los permisos especializados reservados a `NEXO-AUTH-021..032`.
+
+La regla es:
+
+```text
+BASE NEXO AUTH CERTIFIED
+!=
+ADVANCED LPN / ASSETS / CONTAINERS AUTH CERTIFIED
+```
+
+Las superficies de esos subdominios solo se prueban en 020 en la medida exacta en que formen parte de responsabilidades base ya materializadas; no se inventan permisos ni decisiones reservadas al bloque siguiente.
+
+---
+
+#### 8. Frontera con el BLOQUE U
+
+El orden canónico conserva una certificación transversal posterior mediante `AUTH-QA-001..030` y `UX-QA-001..030`.
+
+Por tanto:
+
+```text
+NEXO-AUTH-020 PASS
+=
+BASE NEXO AUTHORIZATION UNIT CERTIFIED
+```
+
+pero:
+
+```text
+NEXO-AUTH-020 PASS
+!=
+VENTO OS AUTHORIZATION FINAL PASS
+```
+
+020 no sustituye pruebas cross-app, seguridad global, regresión global, experiencia transversal ni certificación final del sistema.
+
+---
+
+#### 9. Baseline técnico AS-IS observado de NEXO
+
+El consumidor NEXO observado expone gates técnicos para:
+
+- lint;
+- typecheck;
+- test de baseline CI007;
+- baseline CI007 multi-package;
+- build Next.js.
+
+El baseline vigente reconoce:
+
+- cuatro packages canónicos;
+- doce superficies NEXO;
+- cuatro perfiles especializados de package;
+- evidencia con identidad de commit, manifest, lockfile, suite, fixtures, ambiente, runtime, framework y package set;
+- invalidación `STALE` ante cambios materiales;
+- bloqueo de entorno productivo para el baseline sintético;
+- deny paths obligatorios;
+- prohibición de secretos dentro de la evidencia.
+
+Ese baseline es prerrequisito técnico, no certificación integral.
+
+---
+
+#### 10. Doce superficies de baseline que deben permanecer cubiertas
+
+La certificación no puede reducir el universo mínimo ya reconocido:
+
+1. identidad, sesión y permisos;
+2. contexto operativo;
+3. catálogo, categorías, unidad y presentación;
+4. stock por sede y LOC;
+5. entradas, conteos, ajustes, retiros y traslados;
+6. LOC, board, kiosk y posiciones;
+7. remisiones;
+8. división y recepción parcial;
+9. activos físicos y conteos en la medida de la responsabilidad base aplicable;
+10. settings, rutas y políticas operativas;
+11. integración y fronteras de dominio;
+12. UI, SSR, interacción, accesibilidad e impresión.
+
+Un PASS de una superficie no compensa una superficie obligatoria fallida.
+
+---
+
+#### 11. Cuatro perfiles de package
+
+Cuando la unidad adopte la familia correspondiente, deberá conservar el perfil aplicable:
+
+| Familia | Perfil mínimo |
+| --- | --- |
+| `@vento/contracts` | tipos, schemas, serialización, semántica de identificadores y ausencia de cast global permisivo |
+| `@vento/os-context` | sesión, contexto operativo, allow, deny y ausencia de elevación cliente |
+| `@vento/supabase` | cliente browser, cliente server, deny path, fuente aislada de schema y ausencia de fixture privilegiado |
+| `@vento/ui-web` | server render, client render, hydration, accesibilidad y print preview |
+
+Un package no adoptado por la unidad no se marca PASS por transitividad.
+
+---
+
+#### 12. Capas de validación obligatorias
+
+La unidad deberá cubrir, según aplicabilidad:
+
+- contrato;
+- estática;
+- tipos;
+- build;
+- integración;
+- autorización allow;
+- autorización deny;
+- seguridad adversarial;
+- Server Actions y Route Handlers aplicables;
+- backend real autorizado cuando el contrato dependa de RPC/RLS;
+- idempotencia y concurrencia;
+- regresión;
+- dispositivo compartido;
+- simulación;
+- SSR/client/hydration;
+- accesibilidad e impresión cuando el perfil UI aplique;
+- rollback o recuperación;
+- flujos E2E del alcance.
+
+No se declara una capa PASS con mocks que omitan precisamente la frontera que esa capa debe demostrar.
+
+---
+
+#### 13. Ambientes de prueba
+
+Se separan al menos:
+
+```text
+ISOLATED / CI
+STAGING / INTEGRATION
+DEVICE OR CONTROLLED OPERATIONAL ENVIRONMENT WHEN APPLICABLE
+```
+
+Reglas:
+
+- el baseline sintético no usa producción;
+- los escenarios que dependen de objetos reales de backend usan un ambiente autorizado con objetos reales aplicables;
+- datos productivos no se requieren para certificar autorización;
+- secretos no se copian a fixtures ni evidencias;
+- una prueba física de dispositivo identifica el dispositivo real utilizado;
+- un PASS de CI no sustituye una comprobación de staging o dispositivo cuando esa capa sea obligatoria.
+
+---
+
+#### 14. Identidad mínima de evidencia
+
+Cada ejecución deberá poder vincular, según aplicabilidad:
+
+- `implementation_unit_id`;
+- package owner;
+- consumer repository;
+- consumer commit;
+- branch o build;
+- manifest identity;
+- lockfile identity;
+- test contract identity;
+- test suite identity;
+- fixture set identity;
+- environment identity;
+- runtime identity;
+- framework identity;
+- target package set;
+- compatibility refs;
+- NEXO profile set;
+- backend version o migration state aplicable;
+- feature/cutover state;
+- inicio y finalización;
+- resultado;
+- razón de bloqueo o invalidez cuando exista.
+
+La evidencia de otro commit, unidad, ambiente o combinación no satisface la actual.
+
+---
+
+#### 15. Resultado admisible de la unidad
+
+La unidad solo puede terminar en `PASS` cuando:
+
+```text
+ALL REQUIRED TEST LAYERS COMPLETE
++
+ALL APPLICABLE NEXO-AUTH-001..019 ROWS VERIFIED
++
+ZERO REQUIRED TEST FAILURES
++
+ZERO REQUIRED TESTS SILENTLY SKIPPED
++
+DENY PATHS PROVEN
++
+ZERO UNAUTHORIZED SIDE EFFECTS
++
+PACKAGE PROFILES PASS
++
+LEGACY RETIREMENT PASS
++
+EVIDENCE FRESH
+=
+PASS
+```
+
+También pueden existir resultados `FAIL`, `BLOCKED`, `STALE` y `NOT_APPLICABLE` conforme a la evidencia real.
+
+---
+
+#### 16. BLOCKED y NOT_APPLICABLE
+
+`BLOCKED` corresponde cuando falta una dependencia material, por ejemplo:
+
+- package o release requerida no disponible;
+- backend requerido no materializado;
+- 018 no cerró cutover/paridad;
+- 019 mantiene consumidor legacy pendiente;
+- fixture no existe;
+- dispositivo requerido no está disponible;
+- identidad de unidad no es concluyente;
+- ambiente no está autorizado.
+
+`NOT_APPLICABLE` requiere una razón canónica y trazable. No se usa para evitar un escenario fallido.
+
+---
+
+#### 17. Gates técnicos del consumidor
+
+La certificación deberá comenzar con una base reproducible del consumidor y cubrir al menos los equivalentes vigentes de:
+
+- instalación bloqueada reproducible;
+- lint;
+- typecheck;
+- pruebas automatizadas del consumidor;
+- baseline CI007;
+- build de producción del consumidor.
+
+Si 018 añade validators de package o consumer adicionales, también forman parte de la unidad.
+
+Un build verde no sustituye pruebas de autorización.
+
+---
+
+#### 18. Certificación de adopción compartida
+
+Para cada package adoptado deberán quedar vinculados:
+
+- versión exacta;
+- compatibilidad NEXO exacta;
+- perfil de familia;
+- manifest y lockfile;
+- imports/adapters de la unidad;
+- paridad aplicable;
+- estado de cutover;
+- ausencia de fallback más permisivo;
+- evidencia stale policy.
+
+020 no vuelve a decidir la migración de 018; verifica que el sistema integrado conserve esas decisiones.
+
+---
+
+#### 19. Matriz integral de administración, bypass y visibilidad
+
+| Owner | Path positivo obligatorio | Path negativo obligatorio |
+| --- | --- | --- |
+| `NEXO-AUTH-001` | configuración administrativa legítima conserva su carril administrativo | privilegio administrativo no concede operación que requiera contexto operativo |
+| `NEXO-AUTH-002` | remisión autorizada usa permiso y contexto correctos | propietario, gerente o rol amplio no elude la autorización operacional |
+| `NEXO-AUTH-003` | visibilidad multisede se obtiene cuando el permiso exacto lo concede | visibilidad multisede no autoriza mutar recursos de otra sede |
+
+El resultado debe ser consistente entre UI, lectura server-side y mutación server-side aplicable.
+
+---
+
+#### 20. Matriz integral de remisiones
+
+Cada responsabilidad debe probar al menos un caso permitido y un caso denegado:
+
+| Owner | Operación |
+| --- | --- |
+| `NEXO-AUTH-004` | crear solicitud |
+| `NEXO-AUTH-005` | editar y cancelar |
+| `NEXO-AUTH-006` | preparar |
+| `NEXO-AUTH-007` | producción vinculada cuando aplique |
+| `NEXO-AUTH-008` | despachar |
+| `NEXO-AUTH-009` | registrar tránsito |
+| `NEXO-AUTH-010` | recibir |
+
+Para cada operación se valida, según aplique:
+
+- actor;
+- permiso exacto;
+- sede;
+- área;
+- recurso;
+- estado previo;
+- transición permitida;
+- dispositivo;
+- simulación;
+- versión o concurrencia;
+- efecto observado.
+
+La denegación debe producir cero efecto empresarial.
+
+---
+
+#### 21. Matriz integral de inventario y configuración
+
+| Owner | Operación protegida |
+| --- | --- |
+| `NEXO-AUTH-011` | ajustes |
+| `NEXO-AUTH-012` | conteos |
+| `NEXO-AUTH-013` | movimientos |
+| `NEXO-AUTH-014` | catálogo y configuraciones |
+
+Las pruebas deben impedir que:
+
+- un permiso de lectura se convierta en write;
+- un permiso amplio legacy actúe como writer genérico;
+- una ruta directa omita el guard server-side;
+- una configuración administrativa actúe como evento operativo;
+- un error técnico se normalice como éxito;
+- un reintento duplique un efecto.
+
+---
+
+#### 22. NEXO-AUTH-015 — sede y área efectivas
+
+La certificación territorial deberá incluir:
+
+- sede autorizada correcta;
+- área autorizada correcta;
+- recurso dentro del territorio;
+- sede manipulada por URL o input;
+- área manipulada por URL o input;
+- preferencia visual de sede distinta de autoridad;
+- contexto stale;
+- cambio de sede o área entre evaluación y mutación cuando aplique.
+
+Un valor enviado por cliente nunca se acepta como hecho efectivo sin validación canónica.
+
+---
+
+#### 23. NEXO-AUTH-016 — dispositivo compartido
+
+Cuando la unidad incluya dispositivo compartido, debe demostrarse:
+
+- identidad del dispositivo resuelta;
+- aplicación permitida;
+- sede y área del dispositivo dentro de sus límites;
+- actor humano separado del principal técnico;
+- permiso resultante no excede la intersección aplicable;
+- configurador o administrador no presta sus privilegios al usuario posterior;
+- cambio de trabajador invalida contexto previo cuando corresponda;
+- dispositivo no permitido falla cerrado;
+- acceso directo o caché no eluden la restricción;
+- una denegación no produce mutación.
+
+La prueba de un dispositivo no certifica automáticamente otro dispositivo.
+
+---
+
+#### 24. NEXO-AUTH-017 — simulación estricta
+
+La suite debe demostrar simultáneamente:
+
+```text
+WOULD_ALLOW
+!=
+ALLOW
+```
+
+Escenarios mínimos aplicables:
+
+- simulación autorizada inicia como plano hipotético;
+- rol simulado no reemplaza rol real;
+- sede o área simulada no amplían territorio real;
+- preview conserva read-only;
+- Server Action originada en simulación no produce efecto real;
+- navegación no convierte preview en sesión real;
+- salida de simulación obliga a resolver contexto real fresco;
+- estado stale o inválido falla cerrado;
+- UI de simulación no es fuente de autoridad.
+
+---
+
+#### 25. NEXO-AUTH-018 — packages compartidos
+
+020 debe volver a verificar la integración completa de los packages adoptados por la unidad.
+
+No basta con reutilizar un PASS histórico si cambió:
+
+- commit;
+- manifest;
+- lockfile;
+- versión;
+- adapter;
+- test suite;
+- fixture;
+- runtime;
+- framework;
+- package set;
+- compatibilidad;
+- backend.
+
+Las clasificaciones `BRECHA_DE_DATOS`, `BUG_CANONICO` y `CONTRATO_PENDIENTE` permanecen bloqueantes.
+
+---
+
+#### 26. NEXO-AUTH-019 — retiro legacy
+
+La suite integral debe demostrar que las superficies committed por 019 cumplen:
+
+```text
+DIRECT LEGACY CONSUMERS = 0
+ALIASES = 0
+REEXPORTS = 0
+WRAPPERS HIDING LEGACY = 0
+UNREGISTERED CONSUMERS = 0
+```
+
+Además:
+
+- un deny canónico no cae a helper legacy;
+- un fallo técnico no reactiva bypass;
+- `role override` legacy no produce autoridad real;
+- `can_operate` no reemplaza permiso;
+- una cookie retirada no vuelve a actuar como autoridad;
+- adapters conservados no recalculan decisiones.
+
+---
+
+#### 27. Flujo E2E de remisiones
+
+La certificación debe recorrer el flujo completo aplicable de remisiones a través de sus responsabilidades propietarias, demostrando continuidad de autorización entre etapas.
+
+Debe verificarse que:
+
+- cada etapa revalida autoridad cuando corresponde;
+- un permiso de una etapa no concede la siguiente;
+- cambios de actor, sede, área, dispositivo o contexto invalidan la continuidad cuando corresponda;
+- una transición denegada no cambia estado ni inventario;
+- recepción parcial conserva el remanente correcto cuando aplique;
+- reintentos no duplican efectos;
+- errores intermedios no producen estado final falso;
+- el registro de auditoría mantiene correlación suficiente.
+
+---
+
+#### 28. Autorización server-side antes del efecto
+
+Toda mutación incluida en el alcance debe demostrar:
+
+```text
+REQUEST
+->
+SERVER AUTHORIZATION
+->
+RESOURCE / CONTEXT VALIDATION
+->
+BUSINESS EFFECT
+```
+
+Nunca:
+
+```text
+UI VISIBLE
+->
+BUSINESS EFFECT
+```
+
+La prueba deberá intentar, cuando sea materialmente posible:
+
+- llamada directa sin pasar por UI;
+- payload con sede o área alterada;
+- recurso fuera de scope;
+- permiso ausente;
+- sesión expirada;
+- simulación activa;
+- dispositivo no permitido.
+
+El resultado esperado es deny sin efecto.
+
+---
+
+#### 29. Paridad de allow y deny
+
+La certificación exige ambos carriles:
+
+```text
+ALLOW EXPECTED -> ALLOW OBSERVED
+DENY EXPECTED -> DENY OBSERVED
+```
+
+No existe PASS integral si solo se prueba happy path.
+
+Cuando exista comparación legacy/canónica todavía permitida por el lifecycle, el oracle conserva las seis clasificaciones de 018 y no ejecuta doble side effect.
+
+---
+
+#### 30. Casos adversariales territoriales y de identidad
+
+La suite debe cubrir, según aplicabilidad:
+
+- rol manipulado;
+- actor ausente;
+- actor distinto al esperado;
+- sede manipulada;
+- área manipulada;
+- recurso ajeno;
+- dispositivo distinto;
+- dispositivo revocado o no permitido;
+- permiso ausente;
+- permiso de lectura usado para mutación;
+- sesión expirada;
+- contexto stale;
+- simulación activa;
+- parámetro cliente que intenta fabricar contexto.
+
+Todo caso no autorizado falla cerrado.
+
+---
+
+#### 31. Cero side effects en deny
+
+Para toda mutación denegada se deben comparar estado previo y posterior.
+
+Según la operación, se observa al menos:
+
+- fila principal;
+- estado empresarial;
+- stock o proyección afectada;
+- movimiento o ledger aplicable;
+- evento/outbox aplicable;
+- receipt;
+- auditoría;
+- trabajo de impresión o integración si correspondiera.
+
+La ausencia de respuesta de éxito no basta: debe demostrarse que no ocurrió el efecto.
+
+---
+
+#### 32. Idempotencia, reintentos y concurrencia
+
+Cuando la operación soporte intención, receipt, expected version o clave idempotente, la suite debe cubrir:
+
+- mismo intento repetido;
+- respuesta perdida;
+- timeout;
+- doble submit;
+- dos solicitudes concurrentes;
+- versión stale;
+- recuperación posterior.
+
+Un reintento no puede convertir un deny en allow ni duplicar una mutación ya aceptada.
+
+---
+
+#### 33. Fallos técnicos
+
+Se deben diferenciar de una denegación empresarial:
+
+- error de red;
+- RPC no disponible;
+- schema u objeto requerido ausente;
+- respuesta inválida;
+- package o adapter con error;
+- timeout;
+- conflicto de versión;
+- evidencia stale.
+
+Regla:
+
+```text
+TECHNICAL FAILURE
+!=
+ALLOW
+```
+
+Y tampoco se oculta automáticamente como deny válido si el contrato exige diagnóstico distinto.
+
+---
+
+#### 34. Backend real cuando aplica
+
+RLS, RPC, grants, funciones o políticas solo pueden declararse probadas cuando la unidad depende realmente de esos objetos y la evidencia proviene de un ambiente autorizado que los materializa.
+
+Un mock puede probar lógica de aplicación, pero no certifica una política física de backend inexistente.
+
+Toda modificación VENTO de Supabase continúa bajo `vento-group-sas/vento-shell`.
+
+---
+
+#### 35. SSR, cliente, hydration, accesibilidad e impresión
+
+Cuando el perfil de UI sea aplicable, deben quedar demostrados:
+
+- server render;
+- client render;
+- ausencia de hydration mismatch contractual;
+- interacción habilitada solo cuando corresponde;
+- estados denied y blocked perceptibles;
+- controles inaccesibles no convertidos en autoridad;
+- accesibilidad del flujo probado;
+- print preview cuando la superficie lo requiera.
+
+Un botón oculto no sustituye autorización de servidor.
+
+---
+
+#### 36. Evidencia de retiro semántico
+
+La búsqueda de imports es necesaria pero no suficiente.
+
+La unidad debe detectar también:
+
+- aliases;
+- barrels;
+- wrappers;
+- inline logic;
+- hooks;
+- reexports;
+- llamadas RPC legacy equivalentes;
+- role allowlists usadas como autoridad;
+- cookies usadas como autoridad;
+- copia de lógica en Server Actions;
+- scripts temporales que reintroduzcan la ruta.
+
+El resultado se evalúa por semántica, no solo por nombre textual.
+
+---
+
+#### 37. Auditoría y correlación
+
+Cada escenario debe conservar suficiente evidencia para explicar:
+
+- quién o qué actuó;
+- qué modalidad se resolvió;
+- qué permiso se evaluó;
+- qué sede y área fueron efectivas;
+- qué recurso se intentó afectar;
+- qué decisión se obtuvo;
+- por qué;
+- qué efecto ocurrió o no ocurrió;
+- qué correlación, receipt o identidad de intención aplica;
+- qué versión de contratos y código produjo el resultado.
+
+La evidencia no incluye secretos, PIN, tokens ni datos personales innecesarios.
+
+---
+
+#### 38. Rollback antes de MIGRATION_COMMITTED
+
+Cuando la unidad aún se encuentre antes del punto de no retorno y 018 permita rollback, la certificación debe demostrar que la combinación previa:
+
+- está identificada;
+- sigue siendo compatible;
+- sigue siendo segura;
+- posee manifest y lockfile reproducibles;
+- no depende de un bypass ya prohibido;
+- vuelve a operar sin ampliar autoridad;
+- conserva evidencia post-rollback.
+
+Un rollback no se improvisa copiando helpers legacy desde otra rama.
+
+---
+
+#### 39. Después de MIGRATION_COMMITTED
+
+Después del commit de migración:
+
+- findings migrados no vuelven a activos;
+- helpers retirados no reaparecen;
+- role override legacy no se reactiva;
+- cookies retiradas no recuperan autoridad;
+- fallback legacy no reaparece;
+- una incidencia ordinaria se corrige dentro de la arquitectura canónica.
+
+Una prueba de recuperación que resucite deuda debe fallar.
+
+---
+
+#### 40. NEXO-AUTH-007 condicional
+
+La protección de producción vinculada se prueba dentro de 020 únicamente cuando el package o implementation unit incluya la capacidad propietaria correspondiente.
+
+Si no aplica, debe registrarse `NOT_APPLICABLE` con la condición canónica que lo justifica.
+
+No se inventa un flujo productivo para obtener cobertura artificial.
+
+---
+
+#### 41. Recepción parcial y división
+
+Cuando la unidad incluya parcialidad, debe demostrarse que:
+
+- cantidad aceptada no excede cantidad pendiente;
+- una recepción parcial no cierra el documento indebidamente;
+- remanente posterior es exacto;
+- autorización se aplica a cada efecto real;
+- reintento no duplica recepción;
+- deny conserva pendiente y stock sin alteración.
+
+Esta cobertura corresponde también a la superficie baseline de división y recepción parcial.
+
+---
+
+#### 42. Datos y fixtures
+
+Los fixtures deberán ser:
+
+- versionados;
+- trazables;
+- mínimos;
+- no productivos salvo autorización excepcional propietaria;
+- suficientes para allow y deny;
+- capaces de representar al menos dos territorios cuando se pruebe aislamiento territorial;
+- capaces de representar actores o modalidades distintas cuando se pruebe separación de autoridad;
+- reiniciables o reconciliables sin ocultar side effects.
+
+Cambiar fixtures materialmente vuelve stale la evidencia asociada.
+
+---
+
+#### 43. Defectos y retest
+
+Todo fallo debe conservar:
+
+- escenario;
+- expectativa;
+- observación;
+- commit/build;
+- ambiente;
+- evidencia;
+- owner;
+- condición de salida.
+
+Un retest:
+
+- no borra el fallo original;
+- usa versión corregida identificable;
+- repite el escenario afectado;
+- ejecuta regresión proporcional cuando el cambio toca autorización, territorio, dispositivo, simulación, packages, idempotencia o retiro legacy.
+
+No se cierra un defecto por explicación narrativa sin evidencia.
+
+---
+
+#### 44. Evidencia stale
+
+La evidencia deja de certificar la unidad si cambia materialmente alguno de estos elementos:
+
+- commit NEXO;
+- package versions;
+- manifest;
+- lockfile;
+- test contract;
+- test suite;
+- fixtures;
+- environment;
+- runtime;
+- framework;
+- target package set;
+- compatibility refs;
+- NEXO profile set;
+- adapter;
+- backend schema/migration state aplicable;
+- feature/cutover state;
+- consumer set;
+- scanner/allowlist snapshot relevante.
+
+Una evidencia stale se conserva históricamente pero no produce PASS actual.
+
+---
+
+#### 45. Paquete de evidencia de cierre de unidad
+
+El cierre físico de 020 deberá poder producir una vista reconciliada que contenga, como mínimo:
+
+```text
+IMPLEMENTATION UNIT
+OWNER PACKAGE
+CONSUMER COMMIT
+MANIFEST IDENTITY
+LOCKFILE IDENTITY
+TARGET PACKAGE SET
+COMPATIBILITY REFS
+NEXO PROFILE SET
+TECHNICAL GATES
+NEXO-AUTH-001..019 APPLICABILITY MATRIX
+ALLOW RESULTS
+DENY RESULTS
+E2E RESULTS
+LEGACY RETIREMENT RESULTS
+ROLLBACK / RECOVERY RESULT
+OPEN BLOCKERS
+EVIDENCE FRESHNESS
+FINAL UNIT RESULT
+```
+
+No se declara PASS si el paquete de evidencia no puede reconciliarse con la ejecución real.
+
+---
+
+#### 46. Handoff hacia la continuidad NEXO
+
+Un PASS de 020 entrega:
+
+- alcance base `NEXO-AUTH-001..019` certificado para la unidad probada;
+- packages y versiones efectivamente usadas;
+- adapters y lógica NEXO conservados;
+- pruebas allow/deny y E2E;
+- evidencia de dispositivo y simulación cuando apliquen;
+- estado de retiro legacy;
+- defectos cerrados o bloqueos explícitos;
+- límites de lo que NO fue certificado.
+
+Ese handoff permite continuar la documentación hacia `NEXO-AUTH-021` sin afirmar que el subdominio avanzado ya está implementado o certificado.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea ejecuta y reconcilia cobertura ya existente para autorización, contexto, paquetes compartidos, remisiones, movimientos, dispositivo, simulación, paridad, retiro legacy, evidencia y rollback. No introduce una nueva obligación de producto ni cambia owner, prioridad, modalidad, package, estado o relaciones de requisitos existentes.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Sin modificar 04A, se reutiliza la cobertura vigente asociada a:
+
+- `TREQ-SHELL-006`, para pruebas propias y compatibilidad por consumidor;
+- `TREQ-SHELL-086`, para bloquear autoridad local por role override, bypass, `can_operate`, contexto fabricado y helpers duplicados;
+- `TREQ-SHELL-092`, para cero fallback a autoridad legacy después del cutover;
+- `TREQ-SHELL-094`, para paridad contractual sin doble side effect;
+- `TREQ-SHELL-096`, para evidencia por consumidor, commit, manifest, lockfile, runtime y versiones;
+- `TREQ-SHELL-097`, para convergencia a cero directos y findings legacy antes del retiro;
+- `TREQ-SHELL-098`, para unicidad por unidad y rollback sin resurrección;
+- `TREQ-NEXO-006`, para remisiones sin doble contabilización y con efecto verificable;
+- `TREQ-NEXO-007`, para paridad controlada al retirar fallbacks legacy de remisiones;
+- `TREQ-NEXO-009`, para jerarquía única de capacidades de remisión y paridad entre interfaz y servidor;
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables con atomicidad, idempotencia y recuperación;
+- `TREQ-NEXO-028`, para acceso por LOC normalizado y destino local seguro;
+- `TREQ-NEXO-029`, para restricción de kiosco a targets declarados.
+
+Estas referencias son cobertura heredada y no representan requisitos creados o modificados por `NEXO-AUTH-020`.
+
+---
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el artefacto documental se preparó fuera del checkout de ejecución; no se corrieron lint, typecheck, test, baseline CI007 ni build sobre una materialización 020 |
+| LOCAL | NOT_EXECUTED | no se abrió rama 020, no se incorporó el artefacto al owner y no se ejecutaron format, quality, delivery, topología, TREQ ni batería global para 020 |
+| REMOTA | PASS | se verificaron en solo lectura `vento-shell` main `93ee08a6e6fca67ce9622e2a254d46dc75c20b0f` y `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`; se verificaron owner, continuidad proyectada hacia 020, topología `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, títulos `NEXO-AUTH-001..020`, baseline CI007, doce superficies, cuatro perfiles, scripts técnicos del consumidor y la separación posterior del BLOQUE U |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron escenarios allow/deny, remisiones E2E, pruebas de dispositivo, simulación, concurrencia, rollback ni retest sobre una unidad física |
+| FÍSICA | NOT_EXECUTED | no se creó ninguna instancia `NEXO-AUTH-020::<implementation_unit_id>` ni se modificaron producto, backend, Supabase, dispositivos, CI, releases, PR, merge o despliegues |
+
+---
+
+#### 50. Criterios de aceptación
+
+- [x] Se preservó `PER_IMPLEMENTATION_UNIT`.
+- [x] Se preservó `POST_E5_PACKAGE`.
+- [x] Se definió la identidad futura `NEXO-AUTH-020::<implementation_unit_id>`.
+- [x] Se consumió el handoff de 018.
+- [x] Se consumió el handoff de 019.
+- [x] Se delimitó el alcance exacto `NEXO-AUTH-001..019`.
+- [x] Se separó 020 de `NEXO-AUTH-021..032`.
+- [x] Se separó 020 de la certificación transversal del BLOQUE U.
+- [x] Se preservaron las doce superficies CI007.
+- [x] Se preservaron los cuatro perfiles NEXO de package.
+- [x] Se exigieron gates técnicos reproducibles.
+- [x] Se exigieron allow y deny paths.
+- [x] Se exigió cero side effect ante deny.
+- [x] Se definió matriz completa de remisiones base.
+- [x] Se cubrieron ajustes, conteos, movimientos, catálogo y configuraciones.
+- [x] Se cubrió sede y área efectivas.
+- [x] Se cubrió dispositivo compartido.
+- [x] Se cubrió simulación estricta.
+- [x] Se cubrió integración de packages.
+- [x] Se cubrió retiro legacy.
+- [x] Se cubrieron idempotencia, reintentos y concurrencia cuando aplican.
+- [x] Se separaron fallos técnicos de decisiones de autorización.
+- [x] Se exigió backend real para certificar objetos reales cuando aplican.
+- [x] Se cubrieron SSR, client, hydration, accesibilidad e impresión cuando aplica.
+- [x] Se definió rollback previo y prohibición de resurrección posterior.
+- [x] Se definió evidencia stale.
+- [x] Se definió defect handling y retest.
+- [x] Se definió paquete de evidencia de cierre por unidad.
+- [x] Se mantuvo Supabase bajo `vento-shell`.
+- [x] No se crearon ni modificaron TREQ.
+- [x] No se autorizó implementación física.
+
+---
+
+#### 51. Límites
+
+Esta tarea no:
+
+- ejecuta pruebas físicas;
+- autoriza una implementation unit;
+- crea fixtures;
+- modifica tests;
+- corrige fallos encontrados;
+- cambia permisos;
+- cambia rutas;
+- cambia Server Actions;
+- cambia lógica de remisiones;
+- cambia lógica de inventario;
+- adopta packages;
+- cambia package versions;
+- modifica manifest o lockfile;
+- elimina helpers;
+- elimina cookies;
+- elimina scripts temporales;
+- crea scanners;
+- modifica Supabase;
+- crea RPC, RLS o grants;
+- modifica datos;
+- certifica `NEXO-AUTH-021..032`;
+- certifica todo NEXO funcional o UX;
+- sustituye `AUTH-QA-001..030`;
+- sustituye `UX-QA-001..030`;
+- aprueba piloto global;
+- declara producción lista;
+- abre PR;
+- hace merge;
+- despliega.
+
+La ejecución física pertenece únicamente a instancias autorizadas `NEXO-AUTH-020::<implementation_unit_id>` después de satisfacer los gates correspondientes.
 
 ### Carril histórico suspendido
 
@@ -16512,3 +17640,16 @@ Quedan fuera del cierre, salvo dependencia explícita del paquete:
 
 La matriz completa de dependencias, condiciones e invariantes se conserva en
 `priority-delivery-lanes.json`.
+
+---
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-019 — Eliminar helpers duplicados`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-020 — Ejecutar pruebas integrales`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-021 — Auditar permisos actuales de LPN, activos y contenedores`
