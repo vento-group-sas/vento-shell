@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": true,
   "blocked_targets": [
     "SHELL-CI-021::GAP-PKG-045"
@@ -17,12 +17,80 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.mjs",
+      "change": "MODIFY",
+      "scope": "Add explicit NOW/LATER/NEVER readiness applicability profile, persist it across resumes, ignore execution-only reused metadata for semantic stability, recognize package rollback_steps and distinguish technical readiness from final pilot readiness."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-readiness-gate-engine.test.mjs",
+      "change": "MODIFY",
+      "scope": "Cover temporal applicability, technical readiness, deferred pilot gates, rollback_steps evidence, cross-resume profile persistence and semantic stability."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.mjs",
+      "change": "MODIFY",
+      "scope": "Emit TECHNICAL_READINESS PASS as a resumable intermediate CI021 result when all NOW gates pass while LATER gates remain deferred, without sealing VERIFIED or starting CI022."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-execution-coordinator.test.mjs",
+      "change": "MODIFY",
+      "scope": "Regression coverage for technical readiness output, deferred gate reporting and preservation of final pilot approval boundary."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-integration-impact.mjs",
+      "change": "MODIFY",
+      "scope": "Treat the normative E5 readiness contract as lifecycle metadata so evolving readiness rules do not force false physical revalidation."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/implementation-integration-impact.test.mjs",
+      "change": "MODIFY",
+      "scope": "Prove the readiness lifecycle plus normative E5 delta reuses physical evidence and keeps material_paths empty."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/bloques/E5_PLANIFICACION_DE_IMPLEMENTACION/03_PUERTA_DE_READINESS_OPERATIVO.md",
+      "change": "MODIFY",
+      "scope": "Evolve the readiness contract with mandatory temporal applicability semantics NOW/LATER/NEVER, default NOW fail-closed, explicit rationale, persistence and no inference from incidental text."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/implementation-readiness-gate-engine.mjs",
+    "node --test scripts/docs/implementation-readiness-gate-engine.test.mjs",
+    "node --check scripts/docs/implementation-execution-coordinator.mjs",
+    "node --test scripts/docs/implementation-execution-coordinator.test.mjs",
+    "node --check scripts/docs/implementation-integration-impact.mjs",
+    "node --test scripts/docs/implementation-integration-impact.test.mjs",
+    "npm run docs:implementation:accelerator:test",
+    "npm run docs:correction:check",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "npm run quality:lint:ratchet -- --base origin/main",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Lifecycle/readiness governance evolution only. Adds explicit temporal applicability and technical-readiness handoff semantics without changing product behavior, Supabase, database schema, business requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-21T11:10:28.416Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-21T11:00:10.369Z"
 }
