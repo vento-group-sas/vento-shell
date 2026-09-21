@@ -51,6 +51,15 @@
     "approval_statement": "APROBADO: autoriza DELIV-PKG-015::CORR-028 exclusivamente para corregir el detector de aprobacion del lifecycle de correcciones para consumir los marcadores canonicos aprobados ✅ y [x], sin ampliar permisos, semantica funcional, TREQ, 04A, Supabase ni alcance fisico.",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-21T00:25:12.984Z",
+      "candidate_head_before": "72f3f2cb10465fd1c2d82f8b31011afe1898c242",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-21T00:03:39.670Z"
 }
