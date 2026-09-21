@@ -302,8 +302,8 @@ function readJsonObject(filePath, label) {
     return parsed;
 }
 
-function taskIsApproved(task) {
-    return /\*\*Estado:\*\*\s*APROBADA\s*$/imu.test(task.block);
+export function taskIsApproved(task) {
+    return task?.marker === '✅' || task?.marker === '[x]';
 }
 
 function buildPendingRecord({ correctionId, taskId, type, reasonCode, targetInstanceId, blockedTargets, baseline }) {

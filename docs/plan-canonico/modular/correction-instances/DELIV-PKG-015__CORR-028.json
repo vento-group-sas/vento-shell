@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "IMPLEMENTATION_DEFECT",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": true,
   "blocked_targets": [
     "AUTH-RBAC-018"
@@ -17,12 +17,134 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.mjs",
+      "change": "MODIFY",
+      "scope": "Use the canonical task marker as the sole approval-state source for correction prepare; approve only ✅ and [x]."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "scripts/docs/correction-branch-lifecycle.test.mjs",
+      "change": "MODIFY",
+      "scope": "Add regression coverage for approved and non-approved canonical markers, including historical table-formatted tasks."
+    }
+  ],
+  "validation_commands": [
+    "node --check scripts/docs/correction-branch-lifecycle.mjs",
+    "node --check scripts/docs/correction-branch-lifecycle.test.mjs",
+    "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+    "node scripts/docs/correction-control.mjs --check",
+    "git diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-21T00:03:39.670Z"
+  "zero_treq_reason": "Correction lifecycle tooling only. It reconciles approval detection with canonical task markers and does not change product behavior, Supabase, database schema, TREQ requirements or Registro 04A.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-21T00:14:35.128Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza DELIV-PKG-015::CORR-028 exclusivamente para corregir el detector de aprobacion del lifecycle de correcciones para consumir los marcadores canonicos aprobados ✅ y [x], sin ampliar permisos, semantica funcional, TREQ, 04A, Supabase ni alcance fisico.",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-21T00:25:12.984Z",
+      "candidate_head_before": "72f3f2cb10465fd1c2d82f8b31011afe1898c242",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-21T00:25:24.857Z",
+      "execution_started_at": "2026-09-21T00:25:23.446Z",
+      "duration_ms": 1409,
+      "execution_candidate_head": "09b01009d31cdf70215ce6c011ecf05de5d35e5e",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-21T00:25:58.013Z",
+      "candidate_head": "f19ecd83833d7603ce40547d5363ee3622aef307",
+      "commands": [
+        "node --check scripts/docs/correction-branch-lifecycle.mjs",
+        "node --check scripts/docs/correction-branch-lifecycle.test.mjs",
+        "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+        "node scripts/docs/correction-control.mjs --check",
+        "git diff --check"
+      ],
+      "results": [
+        {
+          "command": "node --check scripts/docs/correction-branch-lifecycle.mjs",
+          "duration_ms": 97,
+          "started_at": "2026-09-21T00:25:55.477Z",
+          "completed_at": "2026-09-21T00:25:55.575Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --check scripts/docs/correction-branch-lifecycle.test.mjs",
+          "duration_ms": 102,
+          "started_at": "2026-09-21T00:25:55.576Z",
+          "completed_at": "2026-09-21T00:25:55.679Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/correction-branch-lifecycle.test.mjs",
+          "duration_ms": 261,
+          "started_at": "2026-09-21T00:25:55.680Z",
+          "completed_at": "2026-09-21T00:25:55.941Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "afabbccf8eff6d47b24df6ed498851f69dcd6ef9ac38f22a4965dfd7640c62d7",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node scripts/docs/correction-control.mjs --check",
+          "duration_ms": 1972,
+          "started_at": "2026-09-21T00:25:55.942Z",
+          "completed_at": "2026-09-21T00:25:57.915Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "5ad6453ac2c22bcd111c8352f60b69e1cb56dd840d18f13aa754b766e7717e40",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git diff --check",
+          "duration_ms": 95,
+          "started_at": "2026-09-21T00:25:57.916Z",
+          "completed_at": "2026-09-21T00:25:58.012Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-21T00:26:09.156Z",
+      "validated_candidate_head": "f19ecd83833d7603ce40547d5363ee3622aef307",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-21T00:03:39.670Z",
+  "implemented_at": "2026-09-21T00:25:35.279Z",
+  "verified_at": "2026-09-21T00:26:09.156Z"
 }
