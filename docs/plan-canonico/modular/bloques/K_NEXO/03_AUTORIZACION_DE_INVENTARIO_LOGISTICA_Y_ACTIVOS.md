@@ -3122,7 +3122,1179 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables`
 
-### [ ] NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables
+### ✅ NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia
+**Tarea siguiente:** NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — contrato NEXO para proteger consulta, creación y administración de activos serializados y reutilizables controlados por cantidad mediante capacidades exactas, granularidad de dominio aprobada, autorización server-side, territorio y recurso canónicos, `DEFAULT_DENY` para mutaciones sin `PermissionKey` activa exacta y fronteras estrictas con ubicación, custodia, mantenimiento, conteos, impresión y retiro legacy
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante el marcador global; las futuras materializaciones ocurren únicamente mediante `NEXO-AUTH-024::<implementation_unit_id>` después de que la unidad y su package propietario estén asignados, `E5-GATE-008::<package_id>` aplicable haya resultado `PASS` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger la consulta y administración base de activos serializados y reutilizables controlados por cantidad para que ninguna lectura, creación o edición dependa de `inventory.stock`, de un selector visual, de una relación de custodia, de una sede seleccionada, de una URL conocida ni de una capacidad destinada a otra responsabilidad.
+
+La regla raíz queda:
+
+```text
+CLASE PRIMARIA Y GRANULARIDAD APROBADAS
++ ACTOR EFECTIVO
++ ACCIÓN EXACTA
++ PermissionKey ACTIVA EXACTA CUANDO EXISTA
++ CARRIL AUTORIZANTE COMPLETO
++ SCOPE
++ RECURSO
++ TERRITORIO
++ ESTADO Y REVISIÓN VIGENTES
++ COLUMNAS PERMITIDAS
++ DENEGACIONES AUSENTES
++ IDEMPOTENCIA Y CONCURRENCIA
+→ ACCIÓN AUTORIZABLE
+```
+
+Y siempre:
+
+```text
+MUTACIÓN ADMINISTRATIVA SIN PermissionKey ACTIVA EXACTA
+→ DEFAULT_DENY
+```
+
+#### 2. Continuidad recibida de `NEXO-AUTH-023`
+
+La tarea anterior cerró la protección contractual del contenido LPN y dejó explícito que la forma de contenido no sustituye la autoridad sobre el objeto contenido.
+
+024 recibe esa frontera y mantiene:
+
+```text
+LPN CONTENT AUTHORITY
+!=
+ASSET MASTER AUTHORITY
+```
+
+Un activo serializado o reusable puede participar en otros procesos, pero su identidad, granularidad y administración conservan decisiones propias.
+
+#### 3. Handoff sustantivo recibido de `NEXO-AUTH-021`
+
+La auditoría de permisos entrega a 024 estas brechas:
+
+- las superficies de activos observadas usan `inventory.stock` como guard amplio;
+- lectura y creación de activos no consumen las capacidades `nexo.assets.*` ya existentes;
+- grupos y reutilizables se consultan y modifican bajo el mismo permiso legacy;
+- cambios de ubicación y responsable aparecen mezclados con administración general;
+- el consumidor actual permite elegir representación `item` o `group` desde la interfaz;
+- una misma autoridad broad cubre lectura, creación, edición, movimientos, mantenimiento, conteos e impresión.
+
+024 resuelve la frontera de consulta y administración base. Las responsabilidades especializadas permanecen en 025–029.
+
+#### 4. Entradas canónicas preservadas
+
+Esta tarea consume sin redefinir:
+
+- `NEXO-DOM-001`, con las siete clases primarias;
+- `NEXO-DOM-007`, para ubicación efectiva;
+- `NEXO-DOM-008`, para custodia y responsable actual;
+- `NEXO-DOM-009`, para separar `SERIALIZED_ASSET` de `REUSABLE_QUANTITY`;
+- `NEXO-DOM-010`, para condición, daño, pérdida y faltante;
+- `NEXO-DOM-011`, para préstamo, devolución, transferencia y cambio de custodia;
+- `NEXO-DOM-012`, para mantenimiento, reparación y disponibilidad;
+- `NEXO-DOM-015`, para conteos;
+- la representación autoritativa única;
+- la prohibición de doble representación;
+- la transición versionada de granularidad;
+- autorización server-side;
+- scopes, carriles, territorio, dispositivo, simulación, idempotencia, concurrencia y auditoría vigentes.
+
+#### 5. Topología y materialización futura
+
+El marcador global usa:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura sigue:
+
+```text
+NEXO-AUTH-024::<implementation_unit_id>
+```
+
+La aprobación documental no crea ni autoriza una instancia física.
+
+#### 6. Universo activo de permisos de activos
+
+El catálogo activo observado contiene exactamente cuatro capacidades `nexo.assets.*`:
+
+```text
+nexo.assets.items.view
+nexo.assets.items.create
+nexo.assets.groups.view
+nexo.assets.counts.view
+```
+
+024 consume las tres primeras únicamente para las responsabilidades que su contrato describe.
+
+`nexo.assets.counts.view` permanece fuera de la administración base y se conserva para la superficie de conteos gobernada posteriormente por `NEXO-AUTH-027`.
+
+#### 7. Matriz de autorización base
+
+| Acción | Capacidad exacta activa observada | Decisión actual |
+| --- | --- | --- |
+| consultar activo individual | `nexo.assets.items.view` | evaluar permiso, carril, scope y recurso |
+| crear activo individual | `nexo.assets.items.create` | evaluar permiso, carril base, scope y borrador |
+| consultar definición o grupo cubierto por `ASSET_GROUP` | `nexo.assets.groups.view` | evaluar recurso y contrato `ORG` |
+| crear grupo físico reutilizable por cantidad | ninguna exacta demostrada | `DEFAULT_DENY` |
+| editar identidad de activo existente | ninguna exacta demostrada | `DEFAULT_DENY` |
+| editar atributos administrativos de grupo físico | ninguna exacta demostrada | `DEFAULT_DENY` |
+| cambiar cantidad esperada de grupo | ninguna exacta demostrada | `DEFAULT_DENY` como administración genérica |
+| modificar condición o lifecycle por formulario genérico | ninguna exacta de administración base | `DEFAULT_DENY` y derivar al owner correspondiente |
+| cambiar ubicación | no se autoriza por permiso de activos; evaluar contrato de ubicación aplicable | decisión separada |
+| cambiar custodio o responsable | fuera de 024 | `NEXO-AUTH-025` |
+| mantenimiento | fuera de 024 | `NEXO-AUTH-026` |
+| mutar conteo | fuera de 024 | `NEXO-AUTH-027` |
+| imprimir o reimprimir | fuera de 024 | `NEXO-AUTH-028` |
+
+La matriz no crea nuevos permisos.
+
+#### 8. Lectura de activo individual
+
+La consulta de una identidad individual utiliza:
+
+```text
+nexo.assets.items.view
+```
+
+El recurso canónico es:
+
+```text
+ASSET_ITEM
+```
+
+y el localizador es:
+
+```text
+asset_id
+OR
+normalized filter
+```
+
+La lectura no autoriza mutación.
+
+#### 9. Scope de `items.view`
+
+`nexo.assets.items.view` conserva:
+
+```text
+BASE_OR_OPERATIONAL
+SITE-READ
+G(B)
+AS
+SS
+AST
+TST
+AA
+SA
+AAT
+ATW
+CTX(O)
+```
+
+El máximo administrativo es `G(B)`.
+
+La lectura operacional usa el contexto realmente autorizado y no convierte `CTX(O)` en visibilidad global.
+
+#### 10. Territorio de lectura de activo
+
+La resolución de recurso conserva:
+
+```text
+SITE_AREA_CUSTODY
+```
+
+y debe considerar, según el recurso vigente o histórico:
+
+- `asset.site_id`;
+- `area_id` cuando exista;
+- relación de custodia;
+- snapshot histórico cuando aplique.
+
+La custodia es relación contextual y nunca bypass de permiso o territorio.
+
+#### 11. Consulta transversal
+
+Una consulta que abarque más de una sede o área debe producir la unión de recursos realmente autorizados.
+
+No se permite:
+
+```text
+READ BROAD DATASET
+→ HIDE UNAUTHORIZED ROWS ONLY IN UI
+```
+
+Filtrado, búsqueda, ordenamiento y paginación conservan la frontera autorizada.
+
+#### 12. Lectura de información sensible
+
+Serial, placa, responsable, ubicación, condición, garantía, documentos y otras dimensiones del expediente solo se exponen dentro del recurso autorizado.
+
+La autorización para leer un activo no concede automáticamente lectura transversal sobre otros activos relacionados por producto, grupo, sede o custodio.
+
+#### 13. Creación de activo individual
+
+La creación utiliza exclusivamente:
+
+```text
+nexo.assets.items.create
+```
+
+Su recurso es:
+
+```text
+ASSET_ITEM
+```
+
+sobre un borrador con clasificación y territorio concretos.
+
+#### 14. Modalidad de `items.create`
+
+La capacidad es:
+
+```text
+BASE_ONLY
+```
+
+Por tanto:
+
+```text
+OPERATIONAL ROLE ONLY
+→ NO CREATE AUTHORITY
+```
+
+Una sesión operativa o un turno no reemplazan la autoridad base requerida.
+
+#### 15. Scope de `items.create`
+
+La creación conserva:
+
+```text
+BASE-TERR-WRITE
+AS
+SS
+AST
+AA
+SA
+AAT
+```
+
+y excluye:
+
+```text
+G
+TST
+ATW
+```
+
+La creación exige un destino territorial concreto cuando el activo deba tener clasificación territorial.
+
+#### 16. Dispositivo compartido y creación
+
+`nexo.assets.items.create` está clasificado como:
+
+```text
+NOT_ALLOWED
+```
+
+para la modalidad de dispositivo compartido.
+
+Por tanto:
+
+```text
+LIGHTWEIGHT SHARED DEVICE ACTOR
+→ CANNOT CREATE ASSET MASTER
+```
+
+La operación requiere la sesión personal y el carril base definidos por el contrato.
+
+#### 17. Recurso de creación
+
+El borrador de creación resuelve como mínimo:
+
+```text
+CLASSIFICATION
++ SITE
++ AREA WHEN APPLICABLE
++ CUSTODIAN WHEN APPLICABLE
+```
+
+El servidor no confía en que la combinación aportada por el formulario sea válida.
+
+#### 18. Creación no decide granularidad
+
+Se fija:
+
+```text
+CREATE ASSET ITEM
+REQUIRES
+APPROVED SERIALIZED_ASSET / INDIVIDUAL_IDENTITY
+```
+
+Una interfaz no puede permitir:
+
+```text
+USER SELECTS "item"
+→ DOMAIN BECOMES INDIVIDUAL
+```
+
+La granularidad precede la representación física.
+
+#### 19. Selector AS-IS `item/group`
+
+El consumidor observado acepta un valor visual:
+
+```text
+asset_mode = item | group
+```
+
+y selecciona directamente entre `asset_items` y `asset_groups`.
+
+El comportamiento objetivo debe converger a:
+
+```text
+APPROVED DOMAIN GRANULARITY
+→ ALLOWED REPRESENTATION
+```
+
+La selección del operador no es autoridad de dominio.
+
+#### 20. `inventory_kind=asset` no basta
+
+El código observado filtra productos por:
+
+```text
+inventory_kind = asset
+```
+
+Ese valor legacy no sustituye:
+
+```text
+SERIALIZED_ASSET
+OR
+REUSABLE_QUANTITY
+```
+
+según `NEXO-DOM-001` y `NEXO-DOM-009`.
+
+Una fila legacy elegible para la pantalla no queda automáticamente autorizada para crear una representación física.
+
+#### 21. Idempotencia de creación
+
+La creación debe ser idempotente.
+
+Un retry de la misma intención:
+
+- no crea dos identidades;
+- no duplica código o serial;
+- no duplica movimiento inicial;
+- no duplica asignación inicial;
+- no duplica auditoría lógica.
+
+La pérdida de respuesta no autoriza emitir otra identidad de operación equivalente.
+
+#### 22. Unicidad de identidad
+
+La creación individual conserva:
+
+```text
+CANONICAL ASSET ID
+!=
+SERIAL
+!=
+INTERNAL PLATE
+!=
+QR
+```
+
+Código, serial, placa o QR son representaciones o atributos y no sustituyen la identidad canónica.
+
+#### 23. Creación y serial
+
+Un activo individual puede existir sin serial de fabricante cuando la identidad individual está justificada.
+
+No se inventa un serial.
+
+Cuando el serial sea material, su unicidad y atribución deben validarse conforme al contrato aplicable.
+
+#### 24. Creación y custodio inicial
+
+El contrato de `nexo.assets.items.create` admite custodio concreto cuando aplique dentro del territorio autorizado.
+
+Eso no convierte al custodio en fuente de permiso.
+
+Una creación que pretenda además materializar un handoff o aceptación de custodia posterior debe satisfacer el contrato de `NEXO-AUTH-025`.
+
+#### 25. Creación y ubicación inicial
+
+Sede y área del borrador forman parte del recurso de creación.
+
+Cuando la intención incluya LOC, posición u otra asignación física gobernada por el contrato de ubicación, esa parte no se autoriza por transitividad desde `items.create`.
+
+La materialización deberá demostrar la capacidad de ubicación aplicable sobre el recurso exacto o permanecer `DEFAULT_DENY`.
+
+#### 26. `location_assignments.assign` es una decisión separada
+
+La capacidad:
+
+```text
+nexo.inventory.location_assignments.assign
+```
+
+protege un:
+
+```text
+LOCATION_ASSIGNMENT
+```
+
+No es un permiso genérico de administrar activos.
+
+Puede ser una capacidad adicional cuando la operación sea realmente una asignación de ubicación cubierta por su recurso y territorio.
+
+No autoriza:
+
+- editar identidad;
+- cambiar condición;
+- cambiar lifecycle;
+- cambiar custodio;
+- crear un grupo;
+- modificar cantidad esperada.
+
+#### 27. Ubicación versus transferencia
+
+Se mantiene:
+
+```text
+LOCATION ASSIGNMENT
+!=
+PHYSICAL TRANSFER
+!=
+CUSTODY TRANSFER
+```
+
+Un cambio que atraviese una frontera física o de responsabilidad debe satisfacer los contratos propietarios correspondientes.
+
+024 no rebautiza una transferencia como simple edición de ubicación.
+
+#### 28. Lectura de grupos
+
+La capacidad activa disponible es:
+
+```text
+nexo.assets.groups.view
+```
+
+El recurso declarado por catálogo es:
+
+```text
+ASSET_GROUP
+```
+
+con localizador `group_id` o filtro.
+
+La capacidad es de lectura y nunca autoriza mutación.
+
+#### 29. Semántica de `groups.view`
+
+El catálogo vigente describe `nexo.assets.groups.view` como lectura de grupos organizacionales con scope:
+
+```text
+ORG exacto
+```
+
+y especifica que ver grupos no concede acceso a los activos clasificados.
+
+Por tanto, 024 no amplía silenciosamente ese contrato para cubrir toda existencia física agregada de `REUSABLE_QUANTITY`.
+
+#### 30. Brecha entre catálogo y `asset_groups` AS-IS
+
+El consumidor actual utiliza `asset_groups` como una representación física por cantidad que contiene, entre otros:
+
+- producto;
+- `expected_qty`;
+- unidad;
+- sede;
+- área;
+- LOC;
+- posición;
+- responsable;
+- condición;
+- lifecycle.
+
+Ese significado es más amplio que una simple clasificación organizacional.
+
+La conclusión contractual es:
+
+```text
+ASSET_GROUP RESOURCE CONTRACT NOT PROVEN FOR ALL PHYSICAL GROUP DATA
+→ DO NOT EXPAND AUTHORITY BY ASSUMPTION
+```
+
+La lectura sensible de un grupo físico debe demostrar que el contrato compartido cubre el recurso exacto. En caso contrario, falla cerrado hasta reconciliar catálogo y consumidor.
+
+#### 31. Creación de grupo reutilizable
+
+No se observó una `PermissionKey` activa exacta para:
+
+```text
+CREATE REUSABLE QUANTITY GROUP
+```
+
+Por tanto:
+
+```text
+CREATE asset_groups
+→ DEFAULT_DENY
+```
+
+bajo el catálogo actual.
+
+`nexo.assets.items.create` no se reutiliza para grupos.
+
+#### 32. Carga rápida de grupos
+
+La superficie AS-IS permite crear varios `asset_groups` y movimientos iniciales bajo `inventory.stock`.
+
+024 fija:
+
+```text
+BULK GROUP CREATE
+!=
+VIEW GROUP
+!=
+CREATE ASSET ITEM
+```
+
+La creación masiva permanece `DEFAULT_DENY` hasta disponer de una capacidad exacta aprobada y un contrato de recurso compatible.
+
+#### 33. Edición de identidad de activo
+
+El consumidor observado puede actualizar en `asset_items`:
+
+- `display_name`;
+- `asset_code`;
+- `internal_plate`;
+- `serial_number`;
+- `brand`;
+- `model`;
+- `main_image_url`.
+
+No se observó una `PermissionKey` activa exacta de actualización administrativa para ese conjunto.
+
+Resultado:
+
+```text
+UPDATE ASSET IDENTITY
+→ DEFAULT_DENY
+```
+
+La lectura o creación no se reutilizan como permiso de edición.
+
+#### 34. Columnas permitidas
+
+Una futura capacidad de edición debe declarar explícitamente sus columnas permitidas.
+
+No se admite un permiso genérico para escribir cualquier columna de `asset_items`.
+
+En particular, lifecycle, condición, custodia, ubicación, mantenimiento, baja, pérdida y campos económicos conservan sus owners.
+
+#### 35. Edición de grupo físico
+
+El consumidor observado puede actualizar en `asset_groups`:
+
+- nombre;
+- cantidad esperada;
+- unidad;
+- condición;
+- lifecycle;
+- imagen;
+- notas.
+
+No existe una capacidad atómica activa exacta que autorice ese bloque como administración general.
+
+Resultado actual:
+
+```text
+UPDATE asset_groups
+→ DEFAULT_DENY
+```
+
+#### 36. Cantidad esperada no es edición cosmética
+
+Modificar `expected_qty` cambia significado físico del alcance reutilizable.
+
+El código actual además genera un movimiento de tipo `adjustment`.
+
+Se fija:
+
+```text
+EXPECTED QUANTITY CHANGE
+!=
+METADATA EDIT
+```
+
+No puede autorizarse con `groups.view`.
+
+El ajuste debe respetar el contrato de existencia, movimientos y reconciliación aplicable.
+
+#### 37. Condición no pertenece a administración genérica
+
+Cambiar `condition_status` puede afectar disponibilidad, daño o tratamiento del objeto.
+
+Por tanto:
+
+```text
+GENERIC GROUP ADMIN
+!=
+CONDITION TRANSITION AUTHORITY
+```
+
+La condición conserva sus contratos de dominio y las tareas posteriores aplicables.
+
+#### 38. Lifecycle no pertenece a administración genérica
+
+Cambiar `lifecycle_status` no es una edición de presentación.
+
+Una futura transición debe poseer autoridad y precondiciones propias.
+
+024 no autoriza escrituras genéricas de lifecycle.
+
+#### 39. Reutilizable por cantidad
+
+`REUSABLE_QUANTITY` se controla por cantidad cuando las unidades son equivalentes y no requieren historia individual material.
+
+Se prohíbe crear una identidad por pieza para obtener acceso a una capacidad destinada a `ASSET_ITEM`.
+
+#### 40. Activo serializado
+
+`SERIALIZED_ASSET` conserva identidad estable por unidad.
+
+Se prohíbe agruparlo como cantidad para evitar controles de lectura, creación, custodia, mantenimiento o baja propios de la identidad individual.
+
+#### 41. Representación autoritativa única
+
+Se conserva:
+
+```text
+ONE PHYSICAL EXISTENCE
+→
+ONE AUTHORITATIVE CONTROL REPRESENTATION
+```
+
+La misma existencia no puede quedar simultáneamente en:
+
+```text
+asset_items
+AND
+asset_groups
+```
+
+como dos representaciones vigentes.
+
+#### 42. Promoción de grupo a identidad
+
+La transición de `REUSABLE_QUANTITY` hacia `SERIALIZED_ASSET` no es una creación ordinaria aislada.
+
+Debe conservar:
+
+```text
+SOURCE QUANTITY REDUCTION
++
+NEW INDIVIDUAL IDENTITIES
++
+LINEAGE
++
+NO DOUBLE REPRESENTATION
+```
+
+como una transición versionada y reconciliable.
+
+`items.create` por sí sola no autoriza retirar silenciosamente cantidad desde un grupo.
+
+#### 43. Transición inversa
+
+024 no autoriza convertir identidades individuales históricas en cantidad agregada mediante edición o borrado.
+
+La transición inversa permanece fail-closed hasta que exista una decisión canónica aplicable.
+
+#### 44. Lectura no concede creación
+
+Se fija:
+
+```text
+items.view
+!=
+items.create
+```
+
+y:
+
+```text
+groups.view
+!=
+group mutation
+```
+
+La visibilidad del recurso no demuestra autoridad para cambiarlo.
+
+#### 45. Creación no concede actualización posterior
+
+Se fija:
+
+```text
+items.create
+!=
+items.update
+```
+
+Una capacidad que permite materializar una identidad nueva no concede mantenimiento permanente del maestro.
+
+#### 46. Custodia no concede administración
+
+La relación `responsible_employee_id` o cualquier relación de custodio:
+
+- no concede lectura fuera del scope;
+- no concede edición;
+- no concede creación;
+- no concede traslado;
+- no concede impresión.
+
+La custodia es relación de recurso, no permiso.
+
+#### 47. Cambio de responsable
+
+Modificar `responsible_employee_id` pertenece a la frontera de custodia.
+
+Se fija:
+
+```text
+CHANGE RESPONSIBLE
+→ NEXO-AUTH-025
+```
+
+024 no lo autoriza como edición administrativa.
+
+#### 48. Préstamo, devolución y transferencia
+
+024 no autoriza:
+
+```text
+LOAN
+RETURN
+PHYSICAL_TRANSFER
+CUSTODY_TRANSFER
+```
+
+Esas decisiones pertenecen a `NEXO-AUTH-025`.
+
+#### 49. Mantenimiento y disponibilidad
+
+024 no autoriza:
+
+- programar mantenimiento;
+- registrar ejecución;
+- marcar reparación;
+- declarar fuera de servicio;
+- liberar;
+- resolver disponibilidad.
+
+Estas decisiones pertenecen a `NEXO-AUTH-026`.
+
+#### 50. Daño, pérdida y baja
+
+Daño, pérdida, hallazgo, baja y retiro no se ejecutan mediante una edición genérica de activo o grupo.
+
+La autorización especializada permanece en `NEXO-AUTH-026`.
+
+#### 51. Conteos
+
+La existencia de:
+
+```text
+nexo.assets.counts.view
+```
+
+no autoriza:
+
+- crear sesión;
+- capturar observación;
+- cerrar sesión;
+- cancelar;
+- aprobar diferencia;
+- ajustar existencia.
+
+`NEXO-AUTH-027` conserva la separación de captura y aprobación de diferencias.
+
+#### 52. Impresión
+
+Ver o administrar un activo no concede imprimir o reimprimir su QR.
+
+`NEXO-AUTH-028` conserva esa autoridad.
+
+La emisión de otra representación visual nunca crea una identidad física nueva.
+
+#### 53. Retiro legacy
+
+024 prohíbe tratar:
+
+```text
+inventory.stock
+```
+
+como autoridad final para las superficies de activos.
+
+`NEXO-AUTH-029` conserva el retiro material de ese guard y otros aliases amplios.
+
+024 define el destino contractual sin declarar la migración física completada.
+
+#### 54. Decisión server-side
+
+Lectura y mutación deben resolverse en servidor.
+
+No son oráculos de autorización:
+
+- enlace visible;
+- pestaña activa;
+- query string;
+- formulario;
+- campo hidden;
+- selector `asset_mode`;
+- QR;
+- código;
+- nombre de rol;
+- filtro de sede;
+- componente cliente;
+- dato ya cargado en el navegador.
+
+#### 55. Recurso actual, no copia del cliente
+
+El servidor vuelve a resolver:
+
+```text
+asset_id OR group_id
++ current classification
++ current control granularity
++ current territory
++ current revision
++ proposed action
+```
+
+cuando sean aplicables.
+
+Un `product_id` aportado por cliente no demuestra que pueda materializarse una representación concreta.
+
+#### 56. Concurrencia
+
+Toda mutación futura comprueba revisión vigente o mecanismo equivalente.
+
+Dos actores no pueden:
+
+- crear dos identidades para la misma unidad;
+- promover dos veces la misma cantidad;
+- editar simultáneamente desde la misma revisión y aceptar ambos estados incompatibles;
+- cambiar cantidad esperada y ubicación sobre supuestos obsoletos sin reconciliación.
+
+#### 57. Operación offline
+
+Una captura offline puede representar intención, no autoridad ni estado confirmado.
+
+Al sincronizar se revalidan:
+
+- actor;
+- capacidad;
+- recurso;
+- clasificación;
+- granularidad;
+- territorio;
+- revisión;
+- duplicidad;
+- dependencias aplicables.
+
+#### 58. Simulación
+
+Las capacidades compatibles con simulación pueden producir únicamente una evaluación hipotética.
+
+```text
+SIMULATED ALLOW
+!=
+REAL MUTATION
+```
+
+La simulación no:
+
+- crea `asset_items`;
+- crea `asset_groups`;
+- modifica identidad;
+- cambia cantidad;
+- cambia ubicación;
+- cambia custodia;
+- crea movimientos reales.
+
+#### 59. Dispositivo compartido
+
+Para las capacidades que admiten operación en dispositivo compartido se conserva el contrato `STANDARD`.
+
+Para `nexo.assets.items.create` se conserva `NOT_ALLOWED`.
+
+Ninguna plantilla de dispositivo crea una capacidad inexistente.
+
+#### 60. Errores seguros
+
+Se distinguen internamente:
+
+- no autenticado;
+- no autorizado;
+- recurso inexistente;
+- recurso fuera de scope;
+- clasificación incompatible;
+- granularidad incompatible;
+- revisión obsoleta;
+- capacidad inexistente;
+- error técnico.
+
+Un error técnico no se traduce en `ALLOW`.
+
+#### 61. Auditoría mínima
+
+Toda decisión aceptada o rechazada debe poder correlacionar, según aplique:
+
+- acción;
+- `asset_id` o `group_id`;
+- producto o modelo;
+- clase primaria;
+- granularidad;
+- principal;
+- actor efectivo;
+- carril;
+- permiso evaluado;
+- scope;
+- territorio;
+- custodio como relación cuando aplique;
+- revisión;
+- decisión;
+- razón;
+- correlación;
+- idempotencia;
+- instante de servidor;
+- columnas modificadas;
+- resultado del efecto;
+- movimiento o asignación relacionada cuando aplique.
+
+#### 62. AS-IS remoto observado
+
+El consumidor vigente mantiene, entre otras, estas superficies bajo:
+
+```text
+permissionCode = inventory.stock
+```
+
+- `/inventory/assets`;
+- `/inventory/assets/new`;
+- `/inventory/assets/quick`;
+- `/inventory/assets/items/[id]`;
+- `/inventory/assets/groups/[id]`;
+- `/inventory/assets/counts`;
+- `/inventory/assets/counts/[id]`.
+
+La presencia de estas superficies demuestra funcionalidad parcial, no autorización objetivo.
+
+#### 63. Mutaciones AS-IS observadas
+
+Se observaron bajo el guard amplio:
+
+- creación de `asset_items`;
+- creación de `asset_groups`;
+- creación masiva de grupos;
+- actualización de ubicación de item;
+- actualización de identidad de item;
+- actualización de ubicación de grupo;
+- actualización de detalles y cantidad esperada de grupo;
+- movimientos derivados;
+- mantenimiento;
+- creación y mutación de conteos.
+
+024 solo toma ownership de la consulta y administración base descritas en esta tarea.
+
+#### 64. Clasificación del estado actual
+
+La superficie se clasifica:
+
+```text
+FOUNDATION_PARTIAL
++
+LEGACY_BROAD_AUTHORITY
++
+ATOMIC_PERMISSION_GAPS
+```
+
+No se declara implementada ni certificada la protección de 024.
+
+#### 65. Condiciones de salida de hallazgos heredados
+
+| Hallazgo | Resultado contractual de 024 | Condición de salida física |
+| --- | --- | --- |
+| superficies bajo `inventory.stock` | autoridad final debe migrar a capacidades exactas | consumidores sin guard broad como oracle |
+| lectura de activos bajo permiso amplio | usar `nexo.assets.items.view` | consulta filtrada y validada server-side |
+| creación de activos bajo permiso amplio | usar `nexo.assets.items.create` | creación compatible con clase y granularidad |
+| grupos leídos y mutados bajo permiso amplio | `groups.view` solo lectura; mutaciones faltantes fail-closed | recurso de grupo reconciliado y capacidades exactas para escritura |
+| `asset_mode` decide representación | dominio decide granularidad | selector no puede crear representación incompatible |
+| ubicación mezclada con administración | decisión separada de ubicación | capacidad y recurso de ubicación demostrados |
+| custodio mezclado con edición | derivado a 025 | handoff/custodia protegido |
+| conteos mezclados con administración | derivado a 027 | captura/aprobación segregadas |
+
+#### 66. Rollback de futura materialización
+
+Un rollback:
+
+- solo vuelve a una combinación previamente certificada;
+- no reactiva `inventory.stock` como autoridad más permisiva;
+- no convierte permisos de lectura en escritura;
+- no reintroduce selección visual como autoridad de granularidad;
+- no duplica representación física;
+- conserva identidades e historia;
+- mantiene catálogo, consumidor, backend y datos compatibles.
+
+Si no existe combinación segura, se bloquea la mutación y se corrige hacia adelante.
+
+#### 67. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya exige separación entre activo individual y reutilizable por cantidad;
+- ya exige identidad, ubicación, custodia, condición e historia de activos;
+- ya prohíbe doble representación;
+- ya protege autorización canónica y validación server-side;
+- ya exige transición versionada e idempotente entre granularidades;
+- esta tarea especializa la autorización de consulta y administración base sin introducir una obligación independiente.
+
+#### 68. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011` para fuente reconciliable, movimientos, atomicidad, idempotencia y concurrencia;
+- `TREQ-NEXO-013` para separación de activo individual, reutilizable por cantidad, identidad, ubicación, custodia, condición y eventos auditables;
+- `TREQ-NEXO-043` para separar `REUSABLE_QUANTITY` y `SERIALIZED_ASSET` sin doble representación;
+- `TREQ-NEXO-047` para comportamiento explícito por clase y ausencia de duplicación;
+- `TREQ-NEXO-048` para transición versionada, determinista, idempotente y reversible antes de activación;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y scope canónicos;
+- `TREQ-AUTH-013` para validación server-side de permiso exacto, actor, territorio, estado y columnas permitidas.
+
+Estas referencias son trazabilidad reutilizada y no una modificación de 04A.
+
+#### 69. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no modifica código; build y suites corresponden a la incorporación local y a futuras unidades físicas |
+| LOCAL | NOT_EXECUTED | no se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración |
+| REMOTA | PASS | se verificaron `vento-shell` main `d141cbe18e36f8dee5730372faac291e606d45ef`, `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`, cierre de 023, marcador 024, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, cuatro permisos `nexo.assets.*`, sus contratos de modalidad/scope/recurso, `NEXO-DOM-001/008/009/011`, 04A vigente y las superficies actuales de activos, grupos y conteos |
+| OPERATIVA | NOT_EXECUTED | no se consultó, creó, editó, trasladó ni reasignó ningún activo o reutilizable operativo |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-024::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 70. Criterios de aceptación
+
+- [x] `items.view` queda como capacidad exacta de lectura individual;
+- [x] `items.create` queda como capacidad exacta de creación individual;
+- [x] `groups.view` queda limitada a lectura según su contrato vigente;
+- [x] `counts.view` no se usa como administración genérica;
+- [x] `inventory.stock` queda prohibido como autoridad final;
+- [x] la lectura no concede escritura;
+- [x] la creación no concede actualización posterior;
+- [x] `asset_mode` no decide granularidad;
+- [x] `inventory_kind=asset` no decide representación final;
+- [x] solo `SERIALIZED_ASSET / INDIVIDUAL_IDENTITY` puede usar creación individual;
+- [x] la creación de grupos reutilizables sin permiso exacto queda `DEFAULT_DENY`;
+- [x] la edición de identidad de activo sin permiso exacto queda `DEFAULT_DENY`;
+- [x] la edición administrativa de grupo sin permiso exacto queda `DEFAULT_DENY`;
+- [x] cambiar `expected_qty` no se trata como metadata cosmética;
+- [x] condición y lifecycle quedan fuera de edición genérica;
+- [x] ubicación se evalúa como decisión separada;
+- [x] custodio/responsable queda reservado a 025;
+- [x] mantenimiento, daño, pérdida y baja quedan reservados a 026;
+- [x] conteos quedan reservados a 027;
+- [x] impresión queda reservada a 028;
+- [x] retiro físico de permisos broad queda reservado a 029;
+- [x] se exige autorización server-side;
+- [x] se preservan idempotencia, concurrencia, simulación y offline;
+- [x] no se modifica Supabase;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+
+#### 71. Límites
+
+Esta tarea no:
+
+- crea nuevas `PermissionKey`;
+- modifica las 67 capacidades activas NEXO;
+- modifica grants;
+- modifica scopes;
+- cambia contratos de modalidad;
+- crea activos;
+- crea grupos;
+- edita activos;
+- edita grupos;
+- cambia cantidad real;
+- cambia ubicación;
+- cambia custodio;
+- ejecuta préstamo;
+- ejecuta devolución;
+- ejecuta transferencia;
+- ejecuta mantenimiento;
+- declara daño o pérdida;
+- da de baja;
+- crea ni cierra conteos;
+- ajusta diferencias;
+- imprime;
+- modifica `asset_items`;
+- modifica `asset_groups`;
+- modifica `asset_movements`;
+- modifica tablas de conteo;
+- crea migraciones;
+- modifica RLS;
+- modifica datos;
+- modifica Supabase;
+- modifica `vento-nexo`;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-025`.
+
+#### 72. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-023 — Proteger empaque, desempaque, división, unión y transferencia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-024 — Proteger consulta y administración de activos y reutilizables`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia`
+
 ### [ ] NEXO-AUTH-025 — Proteger custodia, préstamo, devolución y transferencia
 ### [ ] NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
 ### [ ] NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
