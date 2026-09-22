@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1237** |
+| Tareas aprobadas | **1238** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **359** |
+| Tareas no iniciadas | **358** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **77.51% (1237/1596)** |
+| Porcentaje de completamiento | **77.57% (1238/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-025 — Definir métricas de tiempo, error y capacitación para el piloto operativo** |
-| Tarea actual | **NEXO-UX-026 — Diseñar ciclo de vida completo de LPN** |
+| Última tarea aprobada | **NEXO-UX-026 — Diseñar ciclo de vida completo de LPN** |
+| Tarea actual | **NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido** |
+| Siguiente tarea | **NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 95 de 127 aprobadas; NEXO-UX-026 pendiente** |
+| Progreso del bloque | **BLOQUE K: 96 de 127 aprobadas; NEXO-UX-027 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-026** |
+| Carril documental | **ACTIVO — NEXO-UX-027** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-025` — Definir métricas de tiempo, error y capacitación para el piloto operativo |
-| Tarea actual | `NEXO-UX-026` — Diseñar ciclo de vida completo de LPN — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-027` — Diseñar empaque, desempaque y consulta de contenido |
+| Última aprobada | `NEXO-UX-026` — Diseñar ciclo de vida completo de LPN |
+| Tarea actual | `NEXO-UX-027` — Diseñar empaque, desempaque y consulta de contenido — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-028` — Diseñar división, unión, transferencia y reetiquetado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 95 DE 127 APROBADAS — ACTUAL NEXO-UX-026** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 96 DE 127 APROBADAS — ACTUAL NEXO-UX-027** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-025 — Definir métricas de tiempo, error y capacitación para el piloto operativo
-        ↓
-TAREA ACTUAL
 NEXO-UX-026 — Diseñar ciclo de vida completo de LPN
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 95 de 127 tareas aprobadas
+BLOQUE K — 96 de 127 tareas aprobadas
 ```
