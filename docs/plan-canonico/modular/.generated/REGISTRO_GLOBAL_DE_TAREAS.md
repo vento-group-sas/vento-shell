@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1243** |
+| Aprobadas | **1244** |
 | En propuesta | **0** |
-| No iniciadas | **353** |
+| No iniciadas | **352** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **77.88% (1243/1596)** |
+| Porcentaje de completamiento | **77.94% (1244/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **353** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1144** |
+| ⏸ NO_EVALUADA | **352** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1145** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-031` — Diseñar custodia, préstamo, devolución y transferencia | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-032` — Diseñar estado, daño, pérdida, reparación y baja | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-033` — Diseñar kits, conjuntos y control de completitud | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-032` — Diseñar estado, daño, pérdida, reparación y baja | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-033` — Diseñar kits, conjuntos y control de completitud | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-034` — Diseñar conteos de activos y reutilizables | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1033,7 +1033,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-029` | Diseñar contenedores anidados y retornables | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-030` | Diseñar catálogo de activos y reutilizables | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-031` | Diseñar custodia, préstamo, devolución y transferencia | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-032` | Diseñar estado, daño, pérdida, reparación y baja | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-032` | Diseñar estado, daño, pérdida, reparación y baja | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-033` | Diseñar kits, conjuntos y control de completitud | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-034` | Diseñar conteos de activos y reutilizables | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-035` | Diseñar repuestos, compatibilidad y reposición mínima | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
