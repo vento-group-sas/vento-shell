@@ -28502,7 +28502,1533 @@ CONFIRMED OR EXPLICITLY PARTIAL DATASET
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia`
-### [ ] NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
+### ✅ NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
+**Tarea siguiente:** NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
+**Tipo de tarea:** documental; diseño canónico de experiencia para custodia, oferta y aceptación de handoff, préstamo, devolución, transferencia directa, tránsito y reconciliación de activos individualizados y reutilizables controlados por cantidad, con separación entre custodia, ubicación, propiedad, uso y disponibilidad, preservación de identidad o cantidad, autorización fail-closed, aceptación explícita, revisiones, idempotencia, concurrencia, operación offline, resultado desconocido y fronteras con condición, daño, pérdida, mantenimiento y baja, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado pueda conocer quién tiene actualmente la responsabilidad física de un activo o alcance reutilizable, proponer y aceptar un cambio de custodia, prestar con obligación de retorno, devolver total o parcialmente y transferir custodia sin convertir una ubicación, un campo editable de responsable, una asignación de conductor, una recepción física o la visibilidad del catálogo en autoridad suficiente.
+
+La regla raíz queda:
+
+```text
+SUJETO AUTORITATIVO YA IDENTIFICADO
++
+GRANULARIDAD YA RESUELTA
++
+CUSTODIA ACTUAL RECONCILIADA
++
+INTENCION EMPRESARIAL EXPLICITA
++
+ORIGEN Y DESTINO VALIDOS
++
+REVISION VIGENTE
++
+AUTORIZACION SERVER-SIDE
++
+ACEPTACION CUANDO CORRESPONDA
++
+RESULTADO ATOMICO O DENEGADO
++
+RECIBO + HISTORIA + RECONCILIACION
+→
+CUSTODIA COMPRENSIBLE, AUDITABLE Y SIN DOBLE RESPONSABLE FINAL
+```
+
+Siempre:
+
+```text
+CUSTODY
+!=
+LOCATION
+!=
+OWNERSHIP
+!=
+USE
+!=
+AVAILABILITY
+```
+
+```text
+RESPONSIBLE FIELD EDIT
+!=
+CUSTODY TRANSFER
+```
+
+```text
+DELIVERED
+!=
+ACCEPTED
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-031` define una experiencia que:
+
+1. parte de un sujeto y una granularidad ya resueltos por 030;
+2. hace visible la custodia actual, su alcance, revisión y fuente autoritativa;
+3. separa ubicación, custodio, usuario, propietario, centro de costo y disponibilidad;
+4. distingue oferta de custodia y aceptación de custodia;
+5. conserva al custodio anterior hasta el commit válido de la aceptación aplicable;
+6. define préstamo como tenencia temporal con obligación de retorno explícita;
+7. define devolución como reconciliación de una obligación previa, no como comentario o cambio de campo;
+8. admite devolución parcial para cantidad sin fabricar identidades individuales;
+9. define transferencia directa de custodia sin obligación de retorno por defecto;
+10. separa cambio de custodia de movimiento físico;
+11. permite coordinar ambos cuando una operación real los necesita sin fusionar sus contratos;
+12. distingue tránsito, llegada física y aceptación de destino;
+13. conserva cadenas de custodia intermedias cuando existan;
+14. preserva condición observada al entregar o devolver sin resolver daño o pérdida por inferencia;
+15. conserva diferencias, faltantes y daño como handoff hacia 032;
+16. define cancelación únicamente antes del efecto irreversible aplicable;
+17. define expiración de propuestas sin cambio de custodia;
+18. define rechazo sin asignar custodia al destinatario;
+19. protege contra doble transferencia mediante revisión y concurrencia;
+20. protege contra doble efecto mediante idempotencia;
+21. trata timeout como resultado desconocido, no como autorización para crear otra operación;
+22. trata offline como intención pendiente y no como custodia comprometida;
+23. distingue activos individualizados y reutilizables por cantidad;
+24. consume `VPROC-0029` para activos y `VPROC-0032` para reutilizables y contenedores donde corresponda;
+25. conserva los eventos empresariales canónicos de esos procesos sin inventar eventos;
+26. respeta aprobación condicional por valor o riesgo donde el proceso ya la exige, sin imponer aprobación universal;
+27. mantiene las seis mutaciones de custodia en `DEFAULT_DENY` mientras no exista capacidad atómica exacta activa demostrada;
+28. documenta el AS-IS de actualización conjunta de ubicación/responsable como comportamiento legacy insuficiente;
+29. reserva estado, daño, pérdida, reparación y baja a `NEXO-UX-032`;
+30. entrega un handoff explícito a 032 sin ejecutar cambios físicos.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No crea rutas, componentes, Server Actions, Route Handlers, RPC, tablas, columnas, migraciones, RLS, datos, permisos, backfills, despliegues ni cambios de Supabase.
+
+#### 4. Handoff recibido de `NEXO-UX-030`
+
+030 entrega:
+
+```text
+AUTHORITATIVE SUBJECT ID
++
+MODEL / PHYSICAL SEPARATION
++
+SERIALIZED_ASSET VS REUSABLE_QUANTITY
++
+ONE AUTHORITATIVE REPRESENTATION
++
+VISIBLE LOCATION / CONDITION / RESPONSIBILITY CONTEXT
++
+EXACT RESOURCE AUTHORIZATION BOUNDARY
++
+NO GENERIC EDIT BYPASS
++
+SAFE CATALOG NAVIGATION
++
+CONFIRMED OR EXPLICITLY PARTIAL DATASET
+```
+
+031 consume ese handoff sin reabrir clasificación ni granularidad.
+
+Por tanto:
+
+- un `SERIALIZED_ASSET` llega con identidad física exacta;
+- un `REUSABLE_QUANTITY` llega como scope cuantificado;
+- un `PHYSICAL_CONTAINER` conserva su identidad propia;
+- un LPN no se convierte en activo;
+- un kit no se desarma por cambiar custodia;
+- una existencia no cambia entre grupo e identidad individual para facilitar un préstamo.
+
+#### 5. Contratos de dominio consumidos
+
+La experiencia consume sin redefinir:
+
+- `NEXO-DOM-001`, clases primarias y comportamiento por clase;
+- `NEXO-DOM-007`, ubicación física;
+- `NEXO-DOM-008`, custodia, `CUSTODY_SCOPE`, responsable actual y aceptación;
+- `NEXO-DOM-009`, identidad individual frente a control por cantidad;
+- `NEXO-DOM-010`, condición, daño, pérdida y faltante;
+- `NEXO-DOM-011`, préstamo, devolución, transferencia y cambio de custodia;
+- `NEXO-DOM-012`, disponibilidad posterior a devolución o mantenimiento;
+- `NEXO-DOM-014`, kit y completitud;
+- `NEXO-DOM-017`, auditoría, historial y evidencia;
+- `NEXO-DOM-019` y `NEXO-DOM-020`, contenedor físico y ciclo de retorno;
+- `NEXO-DOM-021` a `NEXO-DOM-024`, no doble contabilización, movimiento, trazabilidad y compatibilidad.
+
+#### 6. Contrato de autorización consumido
+
+`NEXO-AUTH-025` protege seis intenciones observables:
+
+```text
+asset_custody_offered
+asset_custody_accepted
+asset_loaned
+asset_returned
+asset_transfer_started
+asset_transfer_completed
+```
+
+Esos nombres son resultados empresariales, no `PermissionKey`.
+
+El catálogo activo observado no demuestra una capacidad atómica exacta para ninguna de las seis transiciones.
+
+Por tanto, el diseño mantiene:
+
+```text
+OFFER CUSTODY → DEFAULT_DENY
+ACCEPT CUSTODY → DEFAULT_DENY
+LOAN → DEFAULT_DENY
+RETURN → DEFAULT_DENY
+START CUSTODY TRANSFER → DEFAULT_DENY
+COMPLETE CUSTODY TRANSFER → DEFAULT_DENY
+```
+
+hasta que exista autoridad canónica exacta y materializada.
+
+#### 7. `CUSTODY_SCOPE` visible
+
+Toda pantalla de custodia debe mostrar qué alcance está gobernando la acción.
+
+Para identidad individual:
+
+```text
+CUSTODY_SCOPE = EXACT PHYSICAL IDENTITY
+```
+
+Para cantidad:
+
+```text
+CUSTODY_SCOPE = FAMILY OR GROUP + QUANTITY + UNIT + NON-OVERLAPPING SCOPE
+```
+
+Para kit o contenedor identificado, la UI conserva la identidad del sujeto propietaria.
+
+Nunca se usa el producto maestro como sustituto del alcance físico.
+
+#### 8. Custodia actual
+
+La superficie debe distinguir:
+
+- responsable actual confirmado;
+- alcance físico al que responde;
+- instante efectivo;
+- revisión vigente;
+- fuente o expediente de la decisión;
+- estado de reconciliación;
+- obligación abierta asociada cuando exista.
+
+No se presenta un nombre como responsable actual si solo proviene de un formulario legacy, ubicación, último actor o heurística.
+
+#### 9. Custodia desconocida
+
+Cuando no existe evidencia suficiente:
+
+```text
+CUSTODY = UNKNOWN
+```
+
+La UX debe mostrarlo explícitamente y bloquear mutaciones que dependan de conocer el origen hasta reconciliarlo.
+
+No usa como fallback:
+
+- responsable de sede;
+- creador del registro;
+- último usuario;
+- último actor de movimiento;
+- persona seleccionada previamente en UI.
+
+#### 10. Custodia disputada
+
+Cuando existen evidencias incompatibles:
+
+```text
+CUSTODY = DISPUTED
+```
+
+La experiencia conserva:
+
+- última custodia aceptada conocida;
+- evidencias contradictorias;
+- sujetos y scopes afectados;
+- estado de reconciliación;
+- owner de resolución.
+
+No permite `last-write-wins` silencioso.
+
+#### 11. Resumen visual del sujeto
+
+Antes de cualquier acción, la cabecera debe permitir reconocer al sujeto sin ambigüedad.
+
+Para activo individual muestra como mínimo, según permiso:
+
+```text
+IDENTIDAD / CODIGO
+MODELO
+CLASE = SERIALIZED_ASSET
+UBICACION ACTUAL
+CUSTODIO ACTUAL
+CONDICION OBSERVADA
+DISPONIBILIDAD PROYECTADA
+REVISION DE CUSTODIA
+OBLIGACION ABIERTA, SI EXISTE
+```
+
+Para reutilizable por cantidad:
+
+```text
+FAMILIA / GRUPO
+CLASE = REUSABLE_QUANTITY
+CANTIDAD DEL SCOPE
+UNIDAD
+UBICACION DEL SCOPE
+CUSTODIO DEL SCOPE
+CANTIDAD PRESTADA / RETORNADA / ABIERTA
+REVISION
+```
+
+#### 12. Ubicación no es custodia
+
+Se conserva:
+
+```text
+LOCATION CHANGE
+!=
+CUSTODY CHANGE
+```
+
+La UI no agrupa sede, LOC, posición y responsable en un único control semántico llamado “trasladar” cuando existan efectos distintos.
+
+Un cambio de LOC puede mantener custodio.
+
+Un cambio de custodio puede mantener LOC.
+
+#### 13. Propiedad no es custodia
+
+La UX nunca describe una transferencia de custodia como cambio de dueño.
+
+No modifica por inferencia:
+
+- titular legal;
+- propiedad económica;
+- centro de costo;
+- depreciación;
+- valoración;
+- documento de compra.
+
+#### 14. Usuario no es custodio
+
+La persona que usa temporalmente un recurso puede ser distinta del custodio.
+
+La UI debe usar etiquetas diferenciadas cuando ambas dimensiones estén disponibles:
+
+```text
+Custodio actual
+Usuario actual
+```
+
+No reemplaza una por la otra.
+
+#### 15. Actor ejecutor no es custodio
+
+La persona que pulsa, escanea, registra o aprueba una acción no se convierte automáticamente en responsable actual.
+
+La UX conserva por separado:
+
+```text
+ACTOR EFECTIVO
+TARGET CUSTODIAN
+CURRENT CUSTODIAN
+```
+
+#### 16. Oferta de custodia
+
+La intención “Entregar responsabilidad” inicia una oferta, no un cambio efectivo.
+
+La revisión previa debe mostrar:
+
+- sujeto o scope;
+- cantidad cuando corresponda;
+- custodio actual;
+- destinatario propuesto;
+- origen;
+- destino cuando aplique;
+- motivo;
+- condición visible;
+- obligaciones abiertas;
+- aprobación requerida cuando corresponda;
+- efecto esperado si el destinatario acepta.
+
+Confirmar la oferta no libera al custodio actual.
+
+#### 17. Estado pendiente de aceptación
+
+Después de una oferta válida y antes de aceptación:
+
+```text
+CURRENT CUSTODIAN = SOURCE
+PROPOSED CUSTODIAN = TARGET
+HANDOFF = PENDING_ACCEPTANCE
+```
+
+La UI debe mostrar ambos sin presentar al destinatario como custodio actual.
+
+#### 18. Aceptación de custodia
+
+La aceptación debe ejecutarse por el receptor autorizado o por el mecanismo empresarial equivalente definido por el owner.
+
+Antes del commit se revalidan:
+
+- identidad del receptor;
+- sujeto;
+- oferta;
+- revisión;
+- custodio origen;
+- territorio origen;
+- territorio destino;
+- estado y condición compatibles;
+- aprobación cuando aplique;
+- idempotencia.
+
+Solo entonces la proyección cambia a nuevo custodio.
+
+#### 19. Rechazo
+
+Rechazar una oferta:
+
+- no cambia custodio;
+- no mueve ubicación;
+- no cambia propiedad;
+- conserva motivo;
+- conserva actor;
+- conserva oferta original;
+- permite una nueva intención posterior.
+
+No se reutiliza un rechazo como “devolución”.
+
+#### 20. Expiración o revocación
+
+Una oferta expirada o revocada queda históricamente visible cuando sea material.
+
+Se fija:
+
+```text
+EXPIRED OR REVOKED OFFER
+→
+NO CUSTODY EFFECT
+```
+
+Una aceptación tardía contra una oferta inválida falla cerrada.
+
+#### 21. Préstamo
+
+La acción “Prestar” representa una tenencia temporal con obligación de retorno.
+
+La revisión debe mostrar como mínimo:
+
+- sujeto o scope;
+- identidad exacta o cantidad;
+- custodio origen;
+- receptor;
+- condición de salida;
+- ubicación de salida;
+- fecha o condición esperada de retorno cuando aplique;
+- territorio permitido;
+- evidencia requerida;
+- aprobación condicional si corresponde;
+- obligación que quedará abierta.
+
+#### 22. Préstamo propuesto
+
+Un préstamo propuesto todavía no es activo.
+
+```text
+LOAN PROPOSED
+!=
+LOAN ACTIVE
+```
+
+Mientras falta aceptación, el receptor no aparece como custodio efectivo y la obligación no se presenta como entrega consumada.
+
+#### 23. Préstamo activo
+
+El préstamo se presenta como activo únicamente después de la aceptación de custodia aplicable.
+
+La UX muestra:
+
+- quién tiene la custodia;
+- desde cuándo;
+- qué debe retornar;
+- fecha esperada o condición de retorno;
+- cantidad original;
+- cantidad ya retornada;
+- saldo abierto;
+- condición de salida;
+- incidentes abiertos.
+
+#### 24. Préstamo de activo individual
+
+Para `SERIALIZED_ASSET`:
+
+```text
+LOAN SUBJECT = EXACT SAME ASSET ID
+```
+
+Prestar no crea una identidad nueva, no cambia serial, placa o QR y no convierte el activo en cantidad.
+
+#### 25. Préstamo de reutilizable por cantidad
+
+Para `REUSABLE_QUANTITY`:
+
+```text
+0 < LOAN QUANTITY <= AVAILABLE CUSTODY QUANTITY
+```
+
+La operación crea o actualiza un scope cuantificado de custodia sin fabricar IDs por pieza.
+
+El total de scopes activos no puede exceder la existencia autoritativa compatible.
+
+#### 26. Préstamo parcial
+
+Un grupo puede prestar solo una parte de su cantidad.
+
+La revisión visualiza antes y después:
+
+```text
+SOURCE CUSTODY BEFORE
+- LOAN QUANTITY
+= SOURCE CUSTODY AFTER
+```
+
+```text
+TARGET CUSTODY AFTER
+= PREVIOUS TARGET SCOPE + LOAN QUANTITY
+```
+
+si el contrato permite consolidación compatible.
+
+No se duplican cantidades entre scopes.
+
+#### 27. Obligación de retorno
+
+Toda tenencia temporal mantiene una obligación durable separada de la custodia actual.
+
+La UI debe distinguir:
+
+```text
+CUSTODY NOW
+```
+
+de:
+
+```text
+WHAT REMAINS TO BE RETURNED
+```
+
+Cambiar custodio dentro de un flujo autorizado no borra una obligación abierta por inferencia.
+
+#### 28. Vencimiento
+
+Una fecha esperada de retorno vencida produce atraso, no pérdida automática.
+
+```text
+OVERDUE
+!=
+LOST
+```
+
+La UX puede alertar y escalar, pero no presenta la existencia como perdida sin el proceso de 032.
+
+#### 29. Inicio de devolución
+
+La acción “Devolver” debe partir de una obligación compatible existente.
+
+La selección del préstamo u obligación fuente es explícita cuando exista más de una relación posible.
+
+Iniciar devolución no modifica todavía la custodia.
+
+#### 30. Devolución presentada
+
+Antes de aceptación de retorno se muestra:
+
+- obligación fuente;
+- sujeto;
+- cantidad presentada;
+- saldo abierto antes;
+- condición observada;
+- ubicación de presentación;
+- receptor esperado;
+- diferencias detectadas;
+- evidencia.
+
+Se mantiene:
+
+```text
+RETURN PRESENTED
+!=
+RETURN ACCEPTED
+```
+
+#### 31. Aceptación de devolución
+
+La aceptación confirma exactamente qué identidad o cantidad fue recibida.
+
+No acepta silenciosamente:
+
+- otra identidad;
+- más cantidad que la obligación abierta;
+- una unidad incompatible;
+- un destino no autorizado;
+- una revisión stale.
+
+#### 32. Devolución total
+
+Una devolución total aceptada puede cerrar la obligación solo cuando:
+
+- identidad o cantidad coinciden;
+- saldo abierto llega a cero;
+- diferencias están resueltas o derivadas correctamente;
+- condición de retorno queda preservada;
+- custodia final es reconciliable;
+- no quedan excepciones sin owner.
+
+#### 33. Devolución parcial
+
+Para cantidad:
+
+```text
+OPEN BEFORE = Q
+ACCEPTED RETURN = R
+0 < R <= Q
+OPEN AFTER = Q - R
+```
+
+La UI muestra el saldo pendiente y no presenta el préstamo como cerrado.
+
+#### 34. Identidad incorrecta en devolución
+
+Presentar un activo distinto no cierra la obligación original.
+
+La UI debe mostrar:
+
+```text
+EXPECTED SUBJECT
+!=
+PRESENTED SUBJECT
+```
+
+La existencia presentada puede requerir investigación independiente.
+
+#### 35. Exceso de cantidad retornada
+
+Si:
+
+```text
+PRESENTED QUANTITY > OPEN OBLIGATION
+```
+
+la interfaz bloquea el cierre automático y abre reconciliación.
+
+No incrementa existencia ni crea un saldo positivo por inferencia.
+
+#### 36. Condición al retorno
+
+La devolución captura condición observada sin mezclarla con aceptación.
+
+Se preserva:
+
+```text
+RETURN ACCEPTED
+!=
+CONDITION GOOD
+```
+
+Una recepción puede ser válida y, simultáneamente, generar un caso de daño para 032.
+
+#### 37. Faltante al retorno
+
+Una devolución incompleta mantiene saldo abierto o diferencia explícita.
+
+Se fija:
+
+```text
+MISSING AT RETURN
+!=
+LOSS CONFIRMED
+```
+
+031 conserva la discrepancia; 032 resuelve pérdida, daño, reparación o baja.
+
+#### 38. Transferencia directa de custodia
+
+La acción “Transferir custodia” cambia responsable sin crear una obligación de retorno por defecto.
+
+La revisión muestra:
+
+- sujeto o scope;
+- custodio origen;
+- custodio destino;
+- cantidad cuando corresponda;
+- ubicación antes y después solo si la operación también incluye movimiento;
+- revisión vigente;
+- motivo;
+- aprobación condicional;
+- aceptación requerida.
+
+#### 39. Transferencia directa frente a préstamo
+
+La UI obliga a distinguir intención:
+
+```text
+TEMPORARY HOLDING + RETURN OBLIGATION
+→ LOAN
+```
+
+```text
+NEW RESPONSIBILITY WITHOUT RETURN OBLIGATION BY DEFAULT
+→ DIRECT CUSTODY TRANSFER
+```
+
+No transforma una transferencia permanente en préstamo para reutilizar una pantalla.
+
+#### 40. Inicio y completitud de transferencia
+
+Se conserva:
+
+```text
+TRANSFER_STARTED
+!=
+TRANSFER_COMPLETED
+```
+
+Una transferencia pendiente no libera al origen si el destino aún no ha aceptado.
+
+El estado final válido cumple:
+
+```text
+OLD CUSTODY RELEASED
+IFF
+NEW CUSTODY ACCEPTED
+```
+
+#### 41. Transferencia sin movimiento físico
+
+La UX admite:
+
+```text
+SAME LOCATION
++
+NEW ACCEPTED CUSTODIAN
+→
+CUSTODY CHANGED
+```
+
+No inventa un traslado.
+
+#### 42. Movimiento sin cambio de custodia
+
+La UX admite:
+
+```text
+NEW LOCATION
++
+SAME CUSTODIAN
+→
+LOCATION CHANGED
+```
+
+No inventa un handoff de custodia.
+
+La operación propietaria de ubicación conserva su autorización separada.
+
+#### 43. Operación coordinada de ubicación y custodia
+
+Cuando la realidad exige ambos efectos, la experiencia puede coordinarlos en un flujo único para el usuario, pero debe conservar:
+
+- dos decisiones distinguibles;
+- precondiciones propias;
+- autoridad propia;
+- commit consistente;
+- evidencia de ambos efectos.
+
+La UI no reduce ambos a un `UPDATE asset_items` genérico.
+
+#### 44. Tránsito
+
+Se mantiene:
+
+```text
+IN_TRANSIT
+!=
+DESTINATION CUSTODY ACCEPTED
+```
+
+La superficie de tránsito muestra quién conserva la responsabilidad actual en cada tramo.
+
+#### 45. Custodio transportador
+
+Asignar conductor o vehículo no cambia custodia.
+
+Si el transportador asume responsabilidad real, debe aceptar el handoff correspondiente.
+
+```text
+DRIVER ASSIGNED
+!=
+DRIVER CUSTODY ACCEPTED
+```
+
+#### 46. Cadena de custodia
+
+Un flujo multi-tramo puede mostrar:
+
+```text
+ORIGEN
+→ INTERMEDIO 1
+→ INTERMEDIO 2
+→ DESTINO
+```
+
+Cada tramo efectivo conserva:
+
+- custodio anterior;
+- custodio nuevo;
+- aceptación;
+- instante efectivo;
+- revisión;
+- ubicación asociada cuando aplique;
+- evidencia.
+
+#### 47. Rechazo en destino
+
+Si existe llegada física pero el receptor rechaza:
+
+- no se le asigna custodia;
+- la ubicación observada se conserva;
+- el custodio efectivo sigue visible;
+- la operación queda pendiente de resolución;
+- no se presenta “entregado” como sinónimo de aceptado.
+
+#### 48. Reutilizables y `VPROC-0032`
+
+Para reutilizables y contenedores donde aplique, la experiencia debe respetar el lifecycle aprobado de `VPROC-0032`:
+
+```text
+REUSABLE_HANDOFF_REQUESTED
+PREPARING_HANDOFF
+HANDOFF_PENDING_ACCEPTANCE
+IN_CUSTODY
+RETURN_REQUESTED
+RETURN_IN_PROGRESS
+RETURN_UNDER_VERIFICATION
+DIFFERENCE_UNDER_REVIEW
+REUSABLE_CYCLE_RECONCILED
+```
+
+031 no crea un lifecycle paralelo.
+
+#### 49. Activos y `VPROC-0029`
+
+Para activos individualizados, la experiencia consume los estados aprobados de `VPROC-0029` relevantes al flujo:
+
+```text
+ASSET_REGISTRATION_PENDING
+UNDER_VALIDATION
+REGISTERED
+LABELING_PENDING
+ASSIGNMENT_PENDING
+IN_CUSTODY
+TRANSFER_PENDING
+RETURN_UNDER_VERIFICATION
+ASSET_CUSTODY_CYCLE_RECONCILED
+```
+
+031 no interpreta `ASSIGNMENT_PENDING` como custodia ya aceptada ni `RETURN_UNDER_VERIFICATION` como disponibilidad confirmada.
+
+#### 50. Eventos empresariales de `VPROC-0029`
+
+031 conserva exactamente los seis business events registrados para `VPROC-0029`:
+
+```text
+VPROC-0029.EVT-001
+VPROC-0029.EVT-002
+VPROC-0029.EVT-003
+VPROC-0029.EVT-004
+VPROC-0029.EVT-005
+VPROC-0029.EVT-006
+```
+
+Sus proyecciones corresponden a inicio, validación, readiness, handoff pendiente, devolución en verificación y ciclo conciliado.
+
+Los nombres `asset_custody_offered`, `asset_custody_accepted`, `asset_loaned`, `asset_returned`, `asset_transfer_started` y `asset_transfer_completed` siguen siendo eventos de dominio/resultados observables y no reemplazan las identidades de business event del proceso.
+
+#### 51. Eventos empresariales de `VPROC-0032`
+
+Para reutilizables se conservan exactamente:
+
+```text
+VPROC-0032.EVT-001
+VPROC-0032.EVT-002
+VPROC-0032.EVT-003
+VPROC-0032.EVT-004
+VPROC-0032.EVT-005
+VPROC-0032.EVT-006
+```
+
+correspondientes a solicitud, preparación, handoff pendiente de aceptación, retorno en verificación, diferencia en revisión y ciclo conciliado.
+
+No se inventan eventos adicionales para completar la UX.
+
+#### 52. Aprobación condicional por riesgo o valor
+
+`VPROC-0029` conserva separación condicional para asignación o transferencia según valor y riesgo.
+
+La UX debe:
+
+- mostrar aprobación solo cuando el caso realmente la requiera;
+- distinguir aprobador de receptor;
+- distinguir aprobación administrativa de aceptación de custodia;
+- impedir que el custodio se autoconceda una excepción;
+- continuar sin una aprobación artificial cuando la política no la exige.
+
+#### 53. Componentes de experiencia
+
+La superficie objetivo puede materializarse con componentes equivalentes a:
+
+```text
+[ Cabecera del sujeto ]
+[ Custodia actual ]
+[ Obligaciones abiertas ]
+[ Handoff pendiente ]
+[ Acciones elegibles ]
+[ Revisión antes de confirmar ]
+[ Evidencia / condición ]
+[ Historial de custodia ]
+[ Recibo de resultado ]
+```
+
+Los nombres físicos de componentes quedan para implementación.
+
+#### 54. Panel de custodia actual
+
+Debe responder rápidamente:
+
+- ¿quién es responsable ahora?;
+- ¿de qué identidad o cantidad exacta?;
+- ¿desde cuándo?;
+- ¿dónde está?;
+- ¿existe préstamo u obligación abierta?;
+- ¿hay handoff pendiente?;
+- ¿la información está confirmada, en conflicto o pendiente de reconciliación?;
+- ¿qué revisión gobierna la próxima acción?;
+
+#### 55. Panel de obligaciones
+
+Para cada obligación abierta muestra:
+
+- tipo: préstamo, retorno u otra obligación compatible;
+- sujeto;
+- cantidad original;
+- cantidad retornada;
+- saldo;
+- vencimiento cuando exista;
+- custodio actual;
+- estado;
+- incidentes;
+- siguiente acción autorizable.
+
+No agrega obligaciones de distintos sujetos como si fueran una sola.
+
+#### 56. Acciones visibles y autoridad
+
+Se mantiene:
+
+```text
+VISIBLE ACTION
+!=
+AUTHORIZED MUTATION
+```
+
+La interfaz puede ocultar o deshabilitar acciones que sabe no elegibles, pero el servidor revalida siempre.
+
+Con el catálogo de permisos observado, las seis mutaciones permanecen no ejecutables en el modelo objetivo hasta materializar capacidades exactas.
+
+#### 57. Ausencia de capacidad exacta
+
+Cuando el actor puede leer el sujeto pero no ejecutar la mutación, la UX no presenta un botón que inevitablemente fallará como camino principal.
+
+Debe comunicar, en lenguaje humano:
+
+- que puede consultar la custodia;
+- que la acción no está habilitada bajo el contrato actual;
+- que los datos visibles no conceden autoridad;
+- que ninguna modificación fue aplicada.
+
+#### 58. Revisión optimista prohibida
+
+La UI no cambia localmente el custodio a “nuevo responsable” antes de confirmación server-side.
+
+Puede mostrar:
+
+```text
+PENDIENTE DE ACEPTACION
+```
+
+pero no:
+
+```text
+CUSTODIO NUEVO CONFIRMADO
+```
+
+hasta recibir resultado autoritativo.
+
+#### 59. Revisión monotónica
+
+Toda mutación usa una revisión esperada.
+
+Si la revisión cambió:
+
+```text
+EXPECTED REVISION
+!=
+CURRENT REVISION
+→
+CONFLICT
+```
+
+La UX refresca el estado real y exige nueva revisión humana cuando cambió materialmente el efecto.
+
+#### 60. Concurrencia
+
+Dos transferencias incompatibles desde la misma revisión no pueden confirmarse ambas.
+
+El segundo actor debe recibir un conflicto comprensible que muestre:
+
+- qué cambió;
+- quién aparece ahora como custodio;
+- qué operación quedó sin aplicar;
+- cómo volver a revisar.
+
+No sobrescribe el cambio confirmado.
+
+#### 61. Idempotencia
+
+Repetir la misma intención con la misma identidad lógica debe resolver el resultado persistido.
+
+No puede:
+
+- duplicar préstamo;
+- duplicar aceptación;
+- duplicar devolución;
+- reducir dos veces el saldo de retorno;
+- liberar dos veces al custodio origen;
+- duplicar movimiento correlacionado;
+- duplicar auditoría empresarial.
+
+#### 62. Resultado desconocido
+
+Ante timeout posterior al envío:
+
+```text
+UNKNOWN RESULT
+!=
+FAILED
+```
+
+La experiencia mantiene el intento en estado de resolución y consulta o reintenta la misma identidad idempotente.
+
+No ofrece “crear de nuevo” como recuperación automática.
+
+#### 63. Operación offline
+
+Offline puede conservar localmente:
+
+- intención;
+- sujeto;
+- cantidad;
+- destinatario propuesto;
+- condición observada;
+- evidencia;
+- clave idempotente;
+- revisión observada.
+
+No cambia la custodia canónica.
+
+Al reconectar se revalidan actor, autoridad, sujeto, revisión, origen, destino, cantidad, estado, condición, aprobación e idempotencia.
+
+#### 64. Pérdida de sesión o dispositivo
+
+Si la sesión expira o el dispositivo se pierde antes del commit:
+
+- el custodio confirmado no cambia;
+- el borrador puede conservarse solo según la política de datos del dispositivo;
+- la reanudación exige reautorización;
+- cualquier contexto sensible obsoleto se limpia;
+- el actor efectivo vuelve a resolverse.
+
+#### 65. Dispositivo compartido
+
+En tablet o estación compartida, la superficie muestra al actor efectivo antes de aceptar, devolver o transferir.
+
+Cambiar de persona requiere nueva resolución de contexto.
+
+No hereda silenciosamente el actor anterior ni convierte el dispositivo en custodio.
+
+#### 66. Evidencia
+
+La experiencia puede capturar, según política:
+
+- escaneo;
+- foto;
+- firma o confirmación electrónica permitida;
+- nota estructurada;
+- condición;
+- cantidad;
+- ubicación;
+- documento relacionado.
+
+Se mantiene:
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+La evidencia no autoriza por sí sola la transición.
+
+#### 67. Privacidad y minimización
+
+La superficie no expone universalmente datos personales o económicos por el hecho de mostrar custodia.
+
+Debe minimizar:
+
+- datos de empleado;
+- documentos;
+- valor comercial;
+- información de terceros;
+- datos sensibles asociados al activo.
+
+La persona receptora solo recibe lo necesario para entender y aceptar la responsabilidad aplicable.
+
+#### 68. AS-IS de activo individual
+
+En `vento-nexo/main`, `updateAssetLocation` usa actualmente `inventory.stock`, lee ubicación y `responsible_employee_id`, actualiza en una sola operación:
+
+```text
+site_id
+area_id
+location_id
+location_position_id
+responsible_employee_id
+```
+
+y registra `asset_movements.movement_type = transfer`.
+
+Ese comportamiento se clasifica como base legacy parcial.
+
+No demuestra por sí solo:
+
+- oferta;
+- aceptación;
+- revisión de custodia;
+- permiso atómico de custodia;
+- separación entre ubicación y custodia;
+- préstamo;
+- obligación de retorno;
+- devolución;
+- expediente de transferencia cerrado.
+
+#### 69. AS-IS de reutilizable por cantidad
+
+La superficie `asset_groups` conserva igualmente `responsible_employee_id`, ubicación, cantidad esperada y movimientos, y permite una actualización conjunta bajo `inventory.stock`.
+
+La existencia de `movement_type` con labels `loan`, `return` o `transfer` no prueba un workflow completo de préstamo/devolución/custodia.
+
+La UX objetivo no adopta esos labels como lifecycle autoritativo por inferencia.
+
+#### 70. `responsible_employee_id` legacy
+
+Se fija:
+
+```text
+LEGACY RESPONSIBLE FIELD
+!=
+CANONICAL CURRENT CUSTODY BY ITSELF
+```
+
+Puede participar en una proyección futura una vez reconciliado con el expediente autoritativo, pero no habilita edición directa como mecanismo final.
+
+#### 71. `inventory.stock` legacy
+
+Se mantiene:
+
+```text
+inventory.stock
+!=
+CUSTODY AUTHORITY
+```
+
+031 no normaliza ni elimina este permiso.
+
+El retiro físico de autoridad legacy permanece en su owner de autorización.
+
+#### 72. Matriz de intención UX
+
+| Intención | Cambia custodia | Crea obligación de retorno | Cambia ubicación necesariamente | Requiere aceptación cuando aplica |
+| --- | --- | --- | --- | --- |
+| consultar custodia | no | no | no | no |
+| ofrecer custodia | no todavía | no | no | destino posterior |
+| aceptar custodia | sí | no por defecto | no | sí |
+| prestar | sí al activarse | sí | no necesariamente | sí |
+| iniciar devolución | no todavía | conserva obligación | puede iniciar movimiento | destino posterior |
+| aceptar devolución | sí según destino | reduce o cierra | no necesariamente | sí |
+| transferir custodia | sí al completarse | no por defecto | no necesariamente | sí |
+| mover ubicación | no por inferencia | no | sí | contrato de ubicación |
+| reportar daño o pérdida | no por inferencia | no | no | owner 032 |
+
+#### 73. Matriz por granularidad
+
+| Comportamiento | `SERIALIZED_ASSET` | `REUSABLE_QUANTITY` |
+| --- | --- | --- |
+| sujeto de custodia | identidad exacta | scope cuantificado |
+| cantidad ordinaria | 1 identidad | cantidad + unidad |
+| préstamo parcial | no divide identidad | sí, si cantidad válida |
+| devolución parcial | no para la misma identidad | sí |
+| historial | por identidad | por expediente/scope |
+| responsable actual | por identidad | por scope |
+| fabricar ID por pieza | prohibido | prohibido |
+| doble representación | prohibida | prohibida |
+
+#### 74. Flujo objetivo de préstamo individual
+
+```text
+OPEN SUBJECT
+→ VERIFY CURRENT CUSTODY
+→ CHOOSE LOAN
+→ RESOLVE RECIPIENT
+→ REVIEW RETURN OBLIGATION
+→ VERIFY AUTHORITY / APPROVAL IF NEEDED
+→ OFFER / PRESENT
+→ RECIPIENT ACCEPTS
+→ SERVER COMMITS CUSTODY + LOAN DOSSIER
+→ SHOW RECEIPT + OPEN OBLIGATION
+```
+
+No existe edición directa del campo responsable.
+
+#### 75. Flujo objetivo de devolución
+
+```text
+OPEN OBLIGATION
+→ SELECT RETURN
+→ IDENTIFY SUBJECT OR QUANTITY
+→ CAPTURE CONDITION / DIFFERENCE
+→ PRESENT RETURN
+→ RECEIVER VERIFIES
+→ ACCEPT OR REJECT / ESCALATE
+→ SERVER RECONCILES CUSTODY + OBLIGATION
+→ SHOW REMAINING BALANCE OR CLOSED STATUS
+```
+
+La disponibilidad posterior no se confirma automáticamente.
+
+#### 76. Flujo objetivo de transferencia directa
+
+```text
+OPEN SUBJECT
+→ VERIFY CURRENT CUSTODY
+→ CHOOSE DIRECT TRANSFER
+→ RESOLVE TARGET
+→ REVIEW NO-RETURN EFFECT
+→ VERIFY AUTHORITY / APPROVAL IF NEEDED
+→ TARGET ACCEPTS
+→ ATOMIC CUSTODY TRANSITION
+→ RECEIPT + HISTORY
+```
+
+Si además hay movimiento físico, la UI coordina el handoff al contrato de ubicación sin confundir efectos.
+
+#### 77. Errores y bloqueos
+
+La experiencia distingue como mínimo:
+
+```text
+SUBJECT_NOT_FOUND
+CUSTODY_UNKNOWN
+CUSTODY_DISPUTED
+STALE_REVISION
+RECIPIENT_NOT_ELIGIBLE
+SOURCE_OUT_OF_SCOPE
+TARGET_OUT_OF_SCOPE
+QUANTITY_NOT_AVAILABLE
+OPEN_OBLIGATION_CONFLICT
+APPROVAL_REQUIRED
+AUTHORIZATION_DENIED
+CONDITION_REQUIRES_REVIEW
+IDEMPOTENCY_CONFLICT
+UNKNOWN_RESULT
+OFFLINE_PENDING_REVALIDATION
+```
+
+Los nombres técnicos finales pueden variar; la semántica no.
+
+#### 78. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| CUS-01 | activo con custodio confirmado | resumen exacto |
+| CUS-02 | custodia desconocida | reconciliación; sin mutación |
+| CUS-03 | custodia disputada | bloqueo y evidencia |
+| CUS-04 | oferta válida | pendiente de aceptación |
+| CUS-05 | oferta rechazada | custodio origen permanece |
+| CUS-06 | oferta expirada | sin efecto |
+| CUS-07 | aceptación válida | nuevo custodio confirmado |
+| CUS-08 | aceptación stale | conflicto |
+| CUS-09 | préstamo individual | misma identidad + obligación |
+| CUS-10 | préstamo parcial por cantidad | scopes reconciliables |
+| CUS-11 | cantidad insuficiente | bloqueado |
+| CUS-12 | devolución total | obligación cerrable |
+| CUS-13 | devolución parcial | saldo abierto visible |
+| CUS-14 | identidad distinta devuelta | no cierra original |
+| CUS-15 | exceso de cantidad devuelta | reconciliación |
+| CUS-16 | daño observado al retorno | retorno y caso 032 separados |
+| CUS-17 | faltante al retorno | no confirma pérdida |
+| CUS-18 | vencido | atraso; no pérdida |
+| CUS-19 | transferencia sin movimiento | custodio cambia; LOC igual |
+| CUS-20 | movimiento sin custodia | LOC cambia; custodio igual |
+| CUS-21 | transferencia coordinada con ubicación | dos contratos preservados |
+| CUS-22 | destino rechaza tras llegada | custodio destino no confirmado |
+| CUS-23 | transportador intermedio | cadena explícita |
+| CUS-24 | doble transferencia concurrente | máximo una confirma |
+| CUS-25 | retry misma idempotencia | un resultado |
+| CUS-26 | timeout post-submit | reconciliar, no duplicar |
+| CUS-27 | intención offline | pendiente de revalidación |
+| CUS-28 | dispositivo compartido cambia actor | nueva autorización |
+| CUS-29 | visible pero sin capacidad exacta | acción no ejecutable |
+| CUS-30 | update legacy responsable+LOC | no se acepta como contrato objetivo |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 79. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| identidad y granularidad | `NEXO-DOM-009` / `NEXO-UX-030` |
+| custodia y responsable actual | `NEXO-DOM-008` |
+| préstamo, devolución y transferencia | `NEXO-DOM-011` / `NEXO-UX-031` |
+| autorización de custodia | `NEXO-AUTH-025` |
+| ubicación | `NEXO-DOM-007` y contratos de ubicación aplicables |
+| condición, daño, pérdida, reparación y baja | `NEXO-DOM-010`; `NEXO-DOM-012`; `NEXO-DOM-013`; `NEXO-UX-032` |
+| kits y completitud | `NEXO-DOM-014` / `NEXO-UX-033` |
+| conteos | `NEXO-DOM-015` / `NEXO-UX-034` |
+| contenedor y retorno | `NEXO-DOM-019`; `NEXO-DOM-020`; `VPROC-0032` |
+| movimiento de LPN | contratos LPN propietarios |
+| impresión | `NEXO-AUTH-028` / `NEXO-UX-037` |
+
+#### 80. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige préstamos, devoluciones, transferencias, tránsito, tenencia por tercero y aceptación de custodia como hechos auditables; separación entre custodia, ubicación y propiedad; cantidades prestadas y retornadas sin fabricar identidades; comportamiento por clase; idempotencia, concurrencia, operación offline, recuperación segura y autorización server-side. La tarea especializa la experiencia de esas obligaciones sin crear una obligación de prueba independiente.
+
+#### 81. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para movimientos y proyecciones reconciliables, atomicidad, idempotencia, concurrencia y operación offline;
+- `TREQ-NEXO-012`, para condición, devolución y transiciones auditables no destructivas;
+- `TREQ-NEXO-013`, para custodia, préstamo, devolución, transferencia, tránsito, tenencia por tercero y aceptación;
+- `TREQ-NEXO-016`, para separar traslado, custodia, entrega, recepción, retorno y cierre con aceptación explícita;
+- `TREQ-NEXO-043`, para cantidades prestadas, dañadas, perdidas y retornadas sin identidad por unidad y para identidad estable de activos;
+- `TREQ-NEXO-047`, para comportamiento por clase, tránsito y ausencia de doble contabilización;
+- `TREQ-NEXO-048`, para reconciliación versionada de custodia y operaciones abiertas durante transición legacy;
+- `TREQ-UX-002`, para errores, bloqueos y recuperación comprensibles;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado o pendiente, actor y último cambio visibles;
+- `TREQ-UX-006`, para pérdida de red, energía, sesión o dispositivo y reanudación sin duplicar efectos.
+
+Estas referencias son trazabilidad existente y no una modificación del registro 04A.
+
+#### 82. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea define experiencia documental bajo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no contiene código de producto que compilar |
+| LOCAL | NOT_EXECUTED | no se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración; la batería documental deberá ejecutarlos después de incorporar el artefacto |
+| REMOTA | PASS | se contrastaron `vento-shell/main`, protocolo, contrato de entrega, continuidad, topología, owner UX, `NEXO-DOM-008/011`, `NEXO-AUTH-025`, procesos `VPROC-0029` y `VPROC-0032`, sus estados y business events, 04A NEXO/UX y `vento-nexo/main`; el AS-IS remoto conserva actualizaciones directas de ubicación y `responsible_employee_id` bajo `inventory.stock` y movimientos `transfer` como implementación parcial no equivalente al contrato objetivo |
+| OPERATIVA | NOT_EXECUTED | no se ofreció, aceptó, prestó, devolvió ni transfirió custodia sobre activos o reutilizables reales |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-031` no genera instancia física propia y no autoriza cambios de producto, datos, Supabase, hardware o infraestructura |
+
+#### 83. Criterios de aceptación
+
+- [x] La tarea parte de identidad y granularidad resueltas por 030.
+- [x] Custodia queda separada de ubicación.
+- [x] Custodia queda separada de propiedad.
+- [x] Custodia queda separada de uso.
+- [x] Devolución queda separada de disponibilidad.
+- [x] Actor ejecutor queda separado de custodio.
+- [x] Dispositivo queda separado de custodio.
+- [x] Se define `CUSTODY_SCOPE` individual y cuantificado.
+- [x] Se define custodia desconocida sin fallback.
+- [x] Se define custodia disputada sin last-write-wins.
+- [x] Oferta no cambia custodio.
+- [x] Aceptación revalida receptor, sujeto, revisión y territorios.
+- [x] Rechazo no cambia custodia.
+- [x] Expiración no cambia custodia.
+- [x] Préstamo crea obligación de retorno.
+- [x] Préstamo individual conserva identidad.
+- [x] Préstamo por cantidad no fabrica identidades.
+- [x] Se permite préstamo parcial cuantitativo reconciliable.
+- [x] Vencimiento no equivale a pérdida.
+- [x] Inicio de devolución no cambia custodia.
+- [x] Devolución total exige reconciliación.
+- [x] Devolución parcial conserva saldo abierto.
+- [x] Identidad incorrecta no cierra obligación original.
+- [x] Exceso de devolución exige reconciliación.
+- [x] Daño al retorno no impide por inferencia la aceptación.
+- [x] Faltante al retorno no confirma pérdida.
+- [x] Transferencia directa no crea retorno por defecto.
+- [x] Transferencia y préstamo son intenciones distintas.
+- [x] Origen no queda liberado sin destino aceptado.
+- [x] Movimiento y custodia permanecen separados.
+- [x] Se admite operación coordinada conservando contratos separados.
+- [x] Tránsito no equivale a custodia de destino.
+- [x] Conductor asignado no equivale a custodio.
+- [x] Se conserva cadena de custodia multi-tramo.
+- [x] Rechazo de destino conserva custodio efectivo.
+- [x] Se consumen estados exactos de `VPROC-0029`.
+- [x] Se consumen estados exactos de `VPROC-0032`.
+- [x] Se conservan los seis business events de cada proceso.
+- [x] No se confunden eventos empresariales con permisos.
+- [x] Se preserva aprobación condicional por riesgo sin hacerla universal.
+- [x] Las seis mutaciones permanecen `DEFAULT_DENY` sin capacidad exacta.
+- [x] Visible no equivale a autorizado.
+- [x] No hay actualización optimista de custodio.
+- [x] Se define revisión monotónica.
+- [x] Se define concurrencia fail-closed.
+- [x] Se define idempotencia.
+- [x] Timeout se trata como resultado desconocido.
+- [x] Offline no cambia custodia canónica.
+- [x] Pérdida de sesión exige reautorización.
+- [x] Dispositivo compartido revalida actor.
+- [x] Evidencia no equivale a autoridad.
+- [x] Se minimizan datos personales y económicos.
+- [x] Se documenta `updateAssetLocation` AS-IS.
+- [x] Se documenta actualización conjunta de ubicación y responsable.
+- [x] Se documenta `inventory.stock` como guard legacy insuficiente.
+- [x] Se documenta `responsible_employee_id` como proyección legacy, no contrato final.
+- [x] Se documenta `asset_movements.transfer` sin asumir workflow completo.
+- [x] Se definen matrices de intención y granularidad.
+- [x] Se definen flujos de préstamo, devolución y transferencia.
+- [x] Se definen escenarios documentales.
+- [x] No se crean requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff explícito a `NEXO-UX-032`.
+
+#### 84. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- modifica navegación desplegada;
+- crea endpoints, Server Actions, Route Handlers o RPC;
+- modifica `asset_items`, `asset_groups`, `asset_movements` ni vistas;
+- cambia `responsible_employee_id` real;
+- cambia ubicación física real;
+- crea custodias reales;
+- crea préstamos reales;
+- crea devoluciones reales;
+- crea transferencias reales;
+- crea obligaciones de retorno reales;
+- modifica cantidades reales;
+- clasifica activos o reutilizables;
+- convierte grupos en activos individuales;
+- cambia propiedad;
+- cambia centro de costo;
+- cambia usuario;
+- cambia disponibilidad;
+- confirma daño o pérdida;
+- abre reparación;
+- ejecuta mantenimiento;
+- da de baja;
+- modifica kits;
+- modifica LPN;
+- mueve contenedores reales;
+- crea `PermissionKey`, grants, scope o modalidad;
+- elimina `inventory.stock`;
+- modifica políticas de autorización;
+- modifica Supabase;
+- crea migraciones o backfills;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-032`.
+
+#### 85. Handoff hacia `NEXO-UX-032`
+
+`NEXO-UX-031` entrega:
+
+```text
+AUTHORITATIVE SUBJECT OR QUANTITY SCOPE
++
+RECONCILED CURRENT CUSTODY
++
+ACCEPTED HANDOFF SEMANTICS
++
+LOAN AND RETURN OBLIGATION HISTORY
++
+DIRECT CUSTODY TRANSFER SEMANTICS
++
+LOCATION / CUSTODY SEPARATION
++
+CONDITION OBSERVED AT HANDOFF
++
+OPEN DIFFERENCE / INCIDENT REFERENCES
++
+VERSIONED IDEMPOTENT HISTORY
++
+NO SILENT LOSS OR DAMAGE INFERENCE
+```
+
+`NEXO-UX-032` deberá diseñar estado, daño, pérdida, reparación y baja preservando la custodia e historial recibidos, sin tratar una devolución dañada como pérdida, un faltante como baja, una custodia como responsabilidad económica automática ni una reparación como liberación de custodia por inferencia.
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-030 — Diseñar catálogo de activos y reutilizables`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja`
 ### [ ] NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
 ### [ ] NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
 ### [ ] NEXO-UX-034 — Diseñar conteos de activos y reutilizables
