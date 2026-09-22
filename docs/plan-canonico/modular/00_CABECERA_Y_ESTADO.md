@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1248** |
+| Tareas aprobadas | **1249** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **348** |
+| Tareas no iniciadas | **347** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **78.20% (1248/1596)** |
+| Porcentaje de completamiento | **78.26% (1249/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido** |
-| Tarea actual | **NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento** |
+| Última tarea aprobada | **NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento** |
+| Tarea actual | **NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas** |
+| Siguiente tarea | **NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 106 de 127 aprobadas; NEXO-UX-037 pendiente** |
+| Progreso del bloque | **BLOQUE K: 107 de 127 aprobadas; NEXO-UX-038 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-037** |
+| Carril documental | **ACTIVO — NEXO-UX-038** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-036` — Diseñar búsqueda por LOC, LPN, código, responsable y contenido |
-| Tarea actual | `NEXO-UX-037` — Diseñar impresión de LOC, LPN, activo y documento — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-038` — Diseñar operación con escáner y etiquetas dañadas |
+| Última aprobada | `NEXO-UX-037` — Diseñar impresión de LOC, LPN, activo y documento |
+| Tarea actual | `NEXO-UX-038` — Diseñar operación con escáner y etiquetas dañadas — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-039` — Diseñar inventario inicial de contenedores y activos |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 106 DE 127 APROBADAS — ACTUAL NEXO-UX-037** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 107 DE 127 APROBADAS — ACTUAL NEXO-UX-038** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
-        ↓
-TAREA ACTUAL
 NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 106 de 127 tareas aprobadas
+BLOQUE K — 107 de 127 tareas aprobadas
 ```

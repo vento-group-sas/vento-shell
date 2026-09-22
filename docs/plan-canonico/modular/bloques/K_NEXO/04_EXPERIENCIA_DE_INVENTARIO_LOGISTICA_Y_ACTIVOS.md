@@ -36202,7 +36202,923 @@ NO IMPLIED MUTATION
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento`
-### [ ] NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
+### ✅ NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
+**Tarea siguiente:** NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
+**Tipo de tarea:** documental; diseño canónico de experiencia para impresión y reimpresión de LOC, LPN, activos y documentos NEXO mediante las identidades y contratos transversales de BLOQUE E4, con identidad estable, snapshot/versionado, preview explícitamente no físico, autorización independiente, trabajo durable, idempotencia, routing, resultado conocido o desconocido, reimpresión auditable y continuidad frente a fallos bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede preparar, revisar, solicitar, seguir, reintentar, conciliar y, cuando corresponda, reimprimir una representación física de un LOC, un LPN, un activo o un documento NEXO sin convertir la etiqueta, el QR, el código de barras, el PDF, el ZPL, la impresora o la copia física en fuente de verdad del recurso empresarial.
+
+La regla raíz queda:
+
+```text
+AUTHORIZED RESOLVED RESOURCE
++
+EXPLICIT PRINTABLE OUTPUT
++
+IMMUTABLE SNAPSHOT / RESOURCE VERSION
++
+AUTHORIZED PRINT ACTION
++
+DURABLE JOB / COPY IDENTITY
++
+ROUTING AND DEVICE ELIGIBILITY
++
+IDEMPOTENT EXECUTION
++
+RESULT RECONCILIATION
++
+AUDITABLE RECEIPT
+→
+TRACEABLE PHYSICAL REPRESENTATION
+WITHOUT MUTATING THE SOURCE RESOURCE
+```
+
+Siempre:
+
+```text
+RESOURCE
+!=
+LABEL
+!=
+PRINT JOB
+!=
+PRINTED COPY
+```
+
+```text
+PREVIEW
+!=
+PRINTED OUTPUT
+```
+
+```text
+RETRY
+!=
+REPRINT
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-037` deja definido un único contrato de experiencia que:
+
+1. consume la identidad ya resuelta por `NEXO-UX-036`;
+2. obliga a distinguir tipo de recurso, identidad estable y versión o snapshot antes de imprimir;
+3. consume las identidades imprimibles de BLOQUE E4 sin crear un catálogo paralelo;
+4. conserva LOC, LPN, activo y documento como sujetos distintos;
+5. evita que un código visible reemplace al identificador estable;
+6. separa representación de efecto empresarial;
+7. distingue preview, solicitud, trabajo, envío, resultado y copia física;
+8. conserva la identidad de copia y trabajo durante retry o conciliación;
+9. evita retirar definitivamente un trabajo antes de conocer un resultado suficiente;
+10. trata timeout o pérdida de callback como resultado desconocido, no como fallo definitivo automático;
+11. separa retry de reimpresión;
+12. exige causa, actor y vínculo con la copia original para reimpresión;
+13. conserva la misma identidad NEXO al sustituir o reimprimir un QR o etiqueta;
+14. mantiene autorización del recurso fuente separada de autorización de impresión;
+15. mantiene administración de plantillas separada de producción de copias;
+16. mantiene dispositivo y routing como responsabilidades de BLOQUE E4;
+17. define comportamiento seguro cuando no existe impresora elegible;
+18. define comportamiento seguro cuando una capacidad atómica objetivo todavía no existe;
+19. distingue evidencia técnica de envío de evidencia física de impresión;
+20. no presenta Labelary ni otra vista previa como validación física;
+21. mantiene reimpresión incapaz de duplicar remisiones, movimientos, custodia, mantenimiento o cualquier otro hecho fuente;
+22. no autoriza una identidad E4 inexistente para LPN genérico;
+23. entrega a `NEXO-UX-038` el flujo de identificación y trabajo de impresión sin absorber la operación de escáner ni la incidencia de etiqueta dañada;
+24. no crea requisitos de prueba ni autoriza materialización física.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+`NEXO-UX-037` no crea una instancia física propia ni habilita una impresora real.
+
+#### 4. Continuidad recibida de `NEXO-UX-036`
+
+La continuidad funcional inmediata es:
+
+```text
+NEXO-UX-036
+→
+NEXO-UX-037
+→
+NEXO-UX-038
+```
+
+036 entrega:
+
+```text
+AUTHORIZED RESOLVED RESOURCE
++
+EXPLICIT RESOURCE TYPE
++
+STABLE RESOURCE ID
++
+SAFE DISPLAY CONTEXT
++
+CANONICAL OWNER SURFACE
++
+FRESHNESS / REVISION CONTEXT WHEN MATERIAL
++
+NO IMPLIED MUTATION
+```
+
+037 consume exactamente ese handoff. Encontrar un recurso o abrir su detalle no equivale a autorizar una copia física.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume, sin redefinir:
+
+- `NEXO-DOM-018`, integración de LOC, LPN, activos y documentos con BLOQUE E4;
+- `NEXO-DOM-017`, historia y evidencia no destructiva;
+- `NEXO-DOM-019`, separación entre LPN y contenedor físico;
+- contratos de identidad, ubicación, custodia, condición, mantenimiento, conteo y movimiento del subdominio;
+- las identidades imprimibles y contratos `PRINT-ARC-*` aprobados por BLOQUE E4;
+- las reglas de archivos y evidencia `EVID-ARC-*` cuando la representación también produzca archivo o evidencia asociada.
+
+#### 6. Contrato de autorización consumido
+
+El diseño consume `NEXO-AUTH-028`.
+
+El catálogo activo observado contiene como claves canónicas directamente relevantes:
+
+```text
+nexo.printing.jobs.view
+nexo.printing.templates.update
+```
+
+Estas claves no autorizan una salida física por implicación.
+
+Las capacidades objetivo de crear trabajo, retry, conciliación, cancelación o reimpresión permanecen `DEFAULT_DENY` mientras no existan como capacidades atómicas activas compatibles.
+
+#### 7. Tres planos de autoridad
+
+La experiencia conserva:
+
+```text
+BUSINESS_SOURCE
+PRINT_ACTION
+SERVICE_ADMINISTRATION
+```
+
+Un actor puede estar autorizado a consultar el recurso fuente sin estar autorizado a imprimirlo.
+
+Un actor puede administrar una plantilla sin estar autorizado a producir copias.
+
+Un servicio técnico puede despachar una copia ya admitida sin adquirir autoridad empresarial sobre el recurso.
+
+#### 8. Fuente de verdad
+
+La pantalla de impresión nunca se convierte en owner del recurso.
+
+```text
+PRINTING UI
+→
+REFERENCES AUTHORITATIVE RESOURCE OR SNAPSHOT
+```
+
+Nunca:
+
+```text
+PRINTING UI
+→
+REWRITES DOMAIN TRUTH
+```
+
+Si el recurso cambia antes de la admisión o despacho y el cambio es material para la representación, la experiencia debe revalidar la versión aplicable.
+
+#### 9. Matriz de salidas NEXO
+
+| Sujeto | Salida canónica o regla | Decisión UX |
+| --- | --- | --- |
+| LOC | `IMP-LBL-08` | imprimible cuando recurso, versión y autoridad sean válidos |
+| LPN genérico | sin identidad E4 genérica aprobada exacta | `FAIL_CLOSED`; no inventar `IMP-*` |
+| LPN como bulto de traslado/remisión/despacho | `IMP-LBL-10` únicamente cuando el significado empresarial coincide | permitir solo en ese contexto exacto |
+| activo: identificación | `IMP-LBL-12` | imprimir identidad estable del activo |
+| activo: mantenimiento/restricción | `IMP-LBL-13` | salida distinta de la etiqueta de identidad |
+| remisión o nota de despacho | `IMP-DOC-01` | snapshot del documento, no lifecycle |
+| manifiesto de traslado interno | `IMP-DOC-02` | snapshot autorizado de traslado |
+| hoja de conteo | `IMP-DOC-03` | representación del universo de conteo |
+| diferencias o ajustes | `IMP-DOC-04` | representación de investigación/decisión, no aprobación por papel |
+| orden de mantenimiento | `IMP-DOC-11` | snapshot de intervención |
+| acta de entrega/devolución/traslado de activo | `IMP-DOC-12` | evidencia del expediente, no sustituto del evento |
+| incidente o soporte técnico | `IMP-DOC-13` | snapshot del caso técnico |
+| resumen operativo o gerencial | `IMP-DOC-16` | snapshot con fecha de corte |
+
+#### 10. LOC
+
+La experiencia de LOC muestra como mínimo:
+
+- código visible;
+- nombre o descripción autorizada;
+- sede;
+- tipo de ubicación cuando aplique;
+- versión o vigencia de la representación;
+- salida seleccionada;
+- cantidad de copias autorizada;
+- estado del trabajo.
+
+Reimprimir un LOC no crea otro LOC, no mueve inventario y no altera capacidad o estado.
+
+#### 11. LPN genérico
+
+La UX no ofrece una impresión genérica de LPN usando una identidad E4 de otro significado.
+
+Mientras no exista una salida E4 dedicada o una reconciliación propietaria explícita:
+
+```text
+GENERIC LPN LABEL
+→
+NOT AVAILABLE
+```
+
+No se sustituye silenciosamente con una etiqueta de ubicación, SKU, activo o bulto.
+
+#### 12. LPN de traslado, remisión o despacho
+
+Cuando un LPN sea efectivamente el bulto de un traslado, remisión o despacho compatible con `IMP-LBL-10`, la UX debe mostrar el contexto empresarial que habilita ese output.
+
+La salida no convierte todo LPN en bulto de despacho.
+
+#### 13. Activo: identidad
+
+`IMP-LBL-12` representa la identidad canónica del activo.
+
+Puede mostrar únicamente campos aprobados del snapshot, como código, nombre, serial cuando exista, sede o ubicación permitida.
+
+No puede fabricar un serial, cambiar un código ni crear otro activo.
+
+#### 14. Activo: estado técnico
+
+`IMP-LBL-13` permanece separado de `IMP-LBL-12`.
+
+```text
+ASSET ID LABEL
+!=
+MAINTENANCE / RESTRICTION LABEL
+```
+
+Una nueva etiqueta de estado técnico no modifica por sí misma condición, disponibilidad o mantenimiento.
+
+#### 15. Documentos
+
+La UX distingue siempre:
+
+```text
+BUSINESS RECORD
+PRINTABLE OUTPUT
+PRINT JOB
+PRINTED COPY
+STORED FILE
+```
+
+Imprimir una remisión, manifiesto, hoja de conteo, orden de mantenimiento o acta no repite ni confirma el hecho empresarial representado.
+
+#### 16. Snapshot
+
+Antes de crear una copia se congela o referencia un snapshot compatible con el output.
+
+Para recursos versionados se conserva la versión de recurso.
+
+Para documentos o reportes se conserva la versión o fecha de corte correspondiente.
+
+Una copia posterior del mismo snapshot no crea una versión empresarial nueva.
+
+#### 17. Preview
+
+La vista previa debe declarar su nivel real de evidencia.
+
+Una preview generada por Labelary, navegador o renderizador equivalente se etiqueta como simulación o previsualización cuando no exista verificación física.
+
+```text
+PREVIEW PASS
+!=
+PHYSICAL PRINT PASS
+```
+
+La experiencia no usa una imagen renderizada como prueba de DPI, tamaño real, legibilidad del código o calidad de soporte físico.
+
+#### 18. Configuración visible previa
+
+Antes de solicitar una copia, la UX presenta únicamente opciones gobernadas por el contrato E4, incluyendo cuando apliquen:
+
+- output;
+- template y versión;
+- tamaño/perfil físico;
+- cantidad de copias autorizable;
+- destino lógico;
+- estado de elegibilidad de routing;
+- privacidad o campos ocultos;
+- advertencias de vigencia.
+
+La selección del usuario es una intención; el servidor o servicio autoritativo revalida la decisión.
+
+#### 19. Primera copia automática
+
+Cuando un proceso empresarial ya autoriza una primera copia automática, la UX puede presentar el trabajo derivado y su estado.
+
+El principal técnico solo completa la copia admitida; no aumenta cantidad ni cambia snapshot.
+
+#### 20. Primera copia manual
+
+Una primera copia manual requiere autoridad sobre el recurso fuente y capacidad atómica activa compatible para crear el trabajo.
+
+Mientras esa capacidad no exista:
+
+```text
+MANUAL NEW COPY
+→
+DEFAULT_DENY
+```
+
+La UI no usa `jobs.view`, `templates.update`, `inventory.stock`, BrowserPrint o `window.print()` como sustitutos.
+
+#### 21. Identidad durable de trabajo y copia
+
+Cada copia admitida conserva una identidad que permite correlacionar:
+
+- recurso o documento fuente;
+- snapshot o versión;
+- output;
+- template;
+- cantidad/copy slot;
+- actor;
+- autorización;
+- routing;
+- dispositivo cuando sea resuelto;
+- intentos;
+- receipts;
+- resultado.
+
+La misma copia puede atravesar múltiples intentos técnicos sin convertirse en múltiples intenciones empresariales.
+
+#### 22. Cola durable
+
+El trabajo permanece visible hasta alcanzar un resultado que permita cerrarlo conforme al contrato E4.
+
+Se prohíbe el patrón UX:
+
+```text
+SEND INVOKED
+→
+REMOVE JOB
+```
+
+antes de disponer del resultado suficiente.
+
+#### 23. Estados presentados al operador
+
+La UX diferencia al menos semánticamente:
+
+- pendiente de admisión o procesamiento;
+- preparado/enrutado cuando sea demostrable;
+- enviado cuando exista evidencia técnica de envío;
+- resultado desconocido;
+- fallo conocido;
+- confirmado al nivel verificable disponible;
+- cancelado o expirado cuando corresponda.
+
+La interfaz no eleva el nivel de certeza más allá de la evidencia disponible.
+
+#### 24. Resultado desconocido
+
+Ante timeout, desconexión, pérdida de callback o cierre de navegador después del envío:
+
+```text
+RESULT UNKNOWN
+→
+PRESERVE JOB
+→
+NO BLIND DUPLICATE
+→
+RECONCILE SAME COPY
+```
+
+No se crea una copia adicional por incertidumbre.
+
+#### 25. Retry
+
+Retry intenta completar la misma copia.
+
+Conserva:
+
+- identidad empresarial de copia;
+- snapshot;
+- cantidad;
+- motivo técnico del intento;
+- correlación con intentos anteriores.
+
+No requiere ni crea una intención de reimpresión mientras la copia original no esté resuelta como producida y la acción siga siendo completar el mismo trabajo.
+
+#### 26. Reimpresión
+
+Reimpresión es una copia adicional deliberada de un snapshot ya resuelto.
+
+Requiere mostrar y conservar:
+
+- copia original;
+- snapshot original;
+- causa;
+- cantidad adicional solicitada;
+- actor solicitante;
+- política de segregación;
+- aprobador cuando aplique;
+- nueva identidad de copia;
+- relación causal con el original.
+
+#### 27. Reimpresión no repite el hecho fuente
+
+Una reimpresión no puede:
+
+- emitir otra remisión;
+- duplicar un traslado;
+- repetir un conteo;
+- aprobar una diferencia;
+- transferir custodia;
+- abrir o cerrar mantenimiento;
+- modificar inventario;
+- crear otro activo;
+- crear otro LOC;
+- crear otro LPN.
+
+#### 28. Versión corregida
+
+Si cambió información material del documento o recurso:
+
+```text
+CORRECTED VERSION
+!=
+REPRINT
+```
+
+La UX devuelve al owner del recurso para producir la versión empresarial correcta antes de imprimir.
+
+#### 29. Sustitución física de etiqueta
+
+Sustituir una etiqueta por deterioro o ilegibilidad conserva la identidad empresarial.
+
+```text
+OLD PHYSICAL REPRESENTATION
+→
+REPLACED / SUPERSEDED COPY
+
+CANONICAL RESOURCE ID
+→
+UNCHANGED
+```
+
+La operación específica de detectar, escanear y gestionar una etiqueta dañada pertenece a `NEXO-UX-038`.
+
+#### 30. Cantidad de copias
+
+La cantidad forma parte de la autorización.
+
+Una copia autorizada no habilita una cantidad abierta.
+
+Cuando existan varias copias legítimas, cada copy slot o identidad de copia permanece correlacionable.
+
+#### 31. Routing
+
+La UX solicita un output y contexto; no elige una impresora saltándose E4.
+
+BLOQUE E4 resuelve:
+
+- destino lógico;
+- dispositivo principal;
+- alternativas;
+- fallback compatible;
+- elegibilidad por sede/área/canal;
+- heartbeat/estado cuando aplique.
+
+#### 32. Impresora no disponible
+
+Si no existe dispositivo elegible:
+
+```text
+RESOURCE VALID
++
+PRINT AUTHORIZED
++
+NO ELIGIBLE DEVICE
+→
+PRINT NOT DISPATCHED
+RESOURCE UNCHANGED
+```
+
+La UX conserva el trabajo cuando corresponda y muestra una recuperación permitida sin crear otro recurso ni otra intención.
+
+#### 33. BrowserPrint
+
+Detectar BrowserPrint o una Zebra local es información técnica de routing/dispositivo.
+
+```text
+PRINTER DISCOVERED
+!=
+PRINT AUTHORIZED
+```
+
+La experiencia no usa presencia del dispositivo como barrera ni concesión de autoridad.
+
+#### 34. Impresión de navegador
+
+`window.print()` no es una excepción al contrato.
+
+Si produce una copia física, sigue siendo una acción gobernada.
+
+La UI no usa impresión de navegador como fallback para evadir una denegación de servidor o de capacidad.
+
+#### 35. Exportación local de QR
+
+Guardar localmente una imagen QR no equivale a crear un trabajo de impresión.
+
+La exportación local puede existir como acción distinta conforme a la autoridad del recurso, pero no concede reimpresión ni salida física gobernada.
+
+#### 36. Código escaneable
+
+El código impreso transporta una referencia resoluble.
+
+El consumidor posterior debe resolver y revalidar el recurso vigente.
+
+```text
+SCANNED CODE
+→
+RESOLVE RESOURCE
+→
+REVALIDATE AUTHORITY AND CURRENT STATE
+```
+
+Nunca se confía en estado embebido como verdad vigente.
+
+#### 37. Privacidad y minimización
+
+La preview y la copia física contienen únicamente campos aprobados para el output, template y contexto.
+
+Un QR no debe exponer información sensible como sustituto de un lookup autenticado.
+
+La pantalla de impresión no revela campos a los que el actor no tenga acceso en el recurso fuente.
+
+#### 38. Dispositivo compartido
+
+En una estación compartida:
+
+- el actor efectivo permanece visible;
+- la cola local no mezcla intenciones de actores distintos;
+- cambiar de usuario invalida contexto y datos sensibles no confirmados;
+- el dispositivo técnico no se convierte en actor autorizante.
+
+#### 39. Offline
+
+La pérdida de conectividad no crea autoridad nueva.
+
+Una contingencia offline puede completar únicamente una copia previamente admitida dentro del envelope permitido por E4.
+
+Una reimpresión nueva exige revalidación autoritativa.
+
+#### 40. Idempotencia
+
+Doble toque, refresh, reconexión, callback repetido o nueva estación no deben crear una segunda copia semánticamente equivalente.
+
+La huella autoritativa no depende únicamente de una clave generada por cliente.
+
+#### 41. Concurrencia
+
+Dos actores o estaciones pueden solicitar simultáneamente el mismo output.
+
+La capa autoritativa debe resolver si:
+
+- representan la misma intención y se deduplican; o
+- son copias distintas expresamente autorizadas.
+
+La UI nunca decide esta condición por orden temporal local.
+
+#### 42. Historial visible
+
+Desde el contexto de impresión, cuando la autoridad lo permita, el operador puede consultar:
+
+- copia original;
+- reimpresiones;
+- intentos;
+- dispositivo/routing;
+- actor;
+- causa;
+- resultado;
+- timestamps;
+- receipt o referencia disponible.
+
+El historial es append-only desde la perspectiva UX; no se reescribe un intento viejo para representar uno nuevo.
+
+#### 43. Separación frente a plantillas
+
+`VSCREEN-0143 — Diseñador de etiquetas logísticas` conserva propiedad sobre diseño/configuración de plantillas.
+
+`VSCREEN-0144 — Cola y trabajos de impresión logística` conserva propiedad sobre operación de trabajos.
+
+`VSCREEN-0054 — Etiquetas e impresión logística` funciona como superficie operativa contextual de NEXO.
+
+Editar una plantilla no produce una copia.
+
+#### 44. Superficies canónicas
+
+La experiencia reutiliza:
+
+- `VSCREEN-0054` para preparación y emisión operativa contextual;
+- `VSCREEN-0143` para diseño de etiquetas;
+- `VSCREEN-0144` para cola y trabajos correlacionados.
+
+037 no crea una identidad `VSCREEN-*` nueva.
+
+#### 45. Entrada desde búsqueda
+
+Cuando 037 se abre desde 036, recibe una identidad estable ya resuelta y el tipo de recurso.
+
+La UX debe volver a consultar el recurso fuente cuando sea necesario antes de congelar el snapshot de impresión.
+
+No imprime directamente desde el resultado de búsqueda sin pasar por autoridad de impresión.
+
+#### 46. Entrada desde detalle de recurso
+
+Un LOC, LPN, activo o documento puede ofrecer una acción de impresión contextual únicamente cuando exista un output compatible y la acción sea autorizable.
+
+Un botón visible nunca sustituye el gate autoritativo.
+
+#### 47. AS-IS observado: cola cliente
+
+El código remoto observado de `vento-nexo` mantiene `/printing/jobs` como una superficie cliente que puede:
+
+- recibir parámetros de navegación;
+- conservar cola en `localStorage`;
+- generar ZPL;
+- detectar dispositivos BrowserPrint;
+- seleccionar impresora local;
+- enviar directamente al dispositivo;
+- utilizar impresión del navegador;
+- mostrar callbacks de éxito o error.
+
+Este AS-IS es reutilizable como insumo técnico, pero no representa todavía el contrato objetivo de trabajo durable y autorización server-side.
+
+#### 48. AS-IS observado: retiro prematuro
+
+La auditoría vigente documenta caminos donde el trabajo puede retirarse de la cola local después de invocar el envío antes de disponer de confirmación durable suficiente.
+
+Por tanto:
+
+```text
+SEND INVOKED
+!=
+JOB COMPLETE
+```
+
+037 exige conservar la intención hasta reconciliar un resultado compatible con E4.
+
+#### 49. AS-IS observado: activo individual
+
+El detalle de activo puede dirigir hacia `/printing/jobs`, usar `window.print()` y ofrecer impresión o exportación local de QR.
+
+La existencia de estas acciones no demuestra autoridad atómica activa para salida física.
+
+La futura implementación deberá aplicar el contrato 037 sin crear una identidad de activo nueva.
+
+#### 50. AS-IS observado: grupo de activos
+
+Los grupos pueden ofrecer impresión o exportación local de QR desde cliente.
+
+La operación objetivo debe separar:
+
+- lectura del grupo;
+- exportación local de imagen;
+- primera copia física;
+- retry;
+- reimpresión.
+
+No se infiere una capacidad desde el componente visible.
+
+#### 51. AS-IS observado: preview
+
+El diseñador actual puede usar Labelary como preview realista de ZPL.
+
+037 clasifica esa evidencia como preview técnica.
+
+La aprobación física sigue requiriendo impresora, material, tamaño/DPI y lectura real del código conforme al plan de pruebas aplicable.
+
+#### 52. Adopción objetivo
+
+La clasificación de adopción es:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se pueden reutilizar:
+
+- generadores ZPL compatibles;
+- diseñador de plantillas cuando converja al contrato E4;
+- integración BrowserPrint como adaptador;
+- preview Labelary;
+- componentes visuales de cola.
+
+Deben refactorizarse o sustituirse las partes que dependan de cola local como autoridad, autorización implícita, deduplicación cliente o cierre prematuro.
+
+#### 53. Escenarios documentales mínimos
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| PRT-01 | imprimir LOC con output exacto | snapshot y trabajo correlacionado |
+| PRT-02 | reimprimir LOC | misma identidad LOC, nueva copia autorizada |
+| PRT-03 | imprimir LPN genérico sin output E4 | bloqueado |
+| PRT-04 | imprimir LPN como bulto exacto | `IMP-LBL-10` solo bajo contexto compatible |
+| PRT-05 | imprimir identidad de activo | `IMP-LBL-12`, identidad estable |
+| PRT-06 | imprimir estado técnico de activo | `IMP-LBL-13`, separado de identidad |
+| PRT-07 | imprimir documento NEXO | snapshot, sin repetir hecho fuente |
+| PRT-08 | preview Labelary | marcado como preview, no evidencia física |
+| PRT-09 | permiso de view sin create | no salida física |
+| PRT-10 | template update sin create | no salida física |
+| PRT-11 | BrowserPrint disponible sin autoridad | no salida física |
+| PRT-12 | `window.print()` sin autoridad | no bypass |
+| PRT-13 | doble toque | una intención/copia admitida |
+| PRT-14 | timeout después de send | resultado desconocido, no copia nueva |
+| PRT-15 | retry | misma copia |
+| PRT-16 | reprint | nueva copia enlazada al original |
+| PRT-17 | cambio material del recurso | versión corregida, no reprint |
+| PRT-18 | impresora no disponible | trabajo no despachado, recurso intacto |
+| PRT-19 | dos estaciones concurrentes | deduplicación o copias expresamente autorizadas |
+| PRT-20 | copia múltiple | cantidad explícita y copias correlacionables |
+| PRT-21 | dispositivo compartido cambia actor | contexto revalidado |
+| PRT-22 | offline con copia no admitida | no impresión nueva |
+| PRT-23 | cola local perdida | recurso no se considera impreso por inferencia |
+| PRT-24 | callback técnico exitoso | no eleva certeza a validación física por sí solo |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 54. Handoff hacia `NEXO-UX-038`
+
+037 entrega:
+
+```text
+STABLE RESOURCE IDENTITY
++
+PRINTABLE OUTPUT / SNAPSHOT CONTRACT
++
+DURABLE JOB AND COPY IDENTITY
++
+PREVIEW VS PHYSICAL EVIDENCE BOUNDARY
++
+RETRY / REPRINT SEPARATION
++
+UNKNOWN RESULT RECOVERY
++
+STABLE QR / BARCODE REFERENCE
++
+NO IDENTITY CHANGE ON LABEL REPLACEMENT
+```
+
+`NEXO-UX-038` deberá diseñar la operación con escáner y etiquetas dañadas sin convertir un scan en efecto empresarial, sin confiar en estado embebido, sin crear identidades nuevas y sin usar el daño de la etiqueta como autorización automática de reimpresión.
+
+#### 55. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige correspondencia entre preview y salida física, trabajo durable, conservación de resultado y error, prevención de pérdida o duplicación, estabilidad de identidad ante reimpresión y comportamiento seguro ante periférico o conectividad no disponible. Esta tarea especializa la experiencia para LOC, LPN, activos y documentos sin introducir una obligación de prueba independiente.
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-003`, para correspondencia suficiente entre template, ZPL, DPI, dimensiones, códigos y muestra física antes de considerar validada una salida;
+- `TREQ-NEXO-005`, para trabajo durable, resultado, error, retry, dispositivo, contenido y prevención de pérdida o duplicación;
+- `TREQ-NEXO-013`, para estabilidad de identidad de activos al reimprimir o sustituir QR;
+- `TREQ-UX-002`, para recuperación comprensible y segura;
+- `TREQ-UX-004`, para operación real con impresoras y periféricos;
+- `TREQ-UX-005`, para estado confirmado o pendiente y fuente de verdad visible;
+- `TREQ-UX-006`, para contingencia ante red, energía, sesión, dispositivo o proveedor.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la redacción. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, continuidad, topología, políticas, owner UX, `NEXO-DOM-018`, `NEXO-AUTH-028`, requisitos NEXO/UX, superficies `VSCREEN-0054/0143/0144` y código remoto actual de `/printing/jobs`, BrowserPrint, `window.print()`, Labelary y acciones QR. |
+| OPERATIVA | NOT_EXECUTED | No se crearon trabajos reales, no se ejecutaron reintentos o reimpresiones y no se alteró una cola operativa. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-037` es `DEFINE_ONCE`, no genera instancia física propia y no autoriza uso real de impresora, etiqueta, papel, escáner o hardware. |
+
+#### 58. Criterios de aceptación
+
+- [x] LOC, LPN, activo y documento permanecen sujetos distintos;
+- [x] representación no sustituye identidad empresarial;
+- [x] impresión no ejecuta efecto empresarial;
+- [x] 036 entrega identidad resuelta sin autoridad de impresión implícita;
+- [x] se consume catálogo E4 sin inventar outputs;
+- [x] `IMP-LBL-08` se usa para LOC;
+- [x] LPN genérico falla cerrado sin output E4 exacto;
+- [x] `IMP-LBL-10` queda limitado a bulto de traslado/remisión/despacho compatible;
+- [x] `IMP-LBL-12` identifica activo;
+- [x] `IMP-LBL-13` representa estado técnico separado;
+- [x] documentos NEXO reutilizan identidades `IMP-DOC-*` aprobadas;
+- [x] snapshot y recurso permanecen diferenciados;
+- [x] preview no equivale a salida física;
+- [x] Labelary no constituye prueba física;
+- [x] `jobs.view` no autoriza impresión;
+- [x] `templates.update` no autoriza impresión;
+- [x] capacidades objetivo ausentes conservan `DEFAULT_DENY`;
+- [x] trabajo y copia tienen identidad durable;
+- [x] trabajo no se retira antes de resultado suficiente;
+- [x] resultado desconocido no se presenta como fallo definitivo;
+- [x] resultado desconocido no crea copia adicional;
+- [x] retry conserva la misma copia;
+- [x] reprint crea copia adicional deliberada y enlazada;
+- [x] versión corregida no se confunde con reprint;
+- [x] reprint no duplica el hecho fuente;
+- [x] cantidad de copias forma parte de la autorización;
+- [x] routing y dispositivo permanecen bajo E4;
+- [x] impresora no disponible no altera recurso;
+- [x] BrowserPrint no concede autoridad;
+- [x] `window.print()` no evade autorización;
+- [x] la exportación local de QR permanece separada de impresión;
+- [x] QR/código requiere resolución y revalidación;
+- [x] privacidad y minimización se conservan;
+- [x] dispositivo compartido conserva actor efectivo;
+- [x] offline no crea autoridad nueva;
+- [x] idempotencia y concurrencia se resuelven autoritativamente;
+- [x] se reutilizan `VSCREEN-0054`, `VSCREEN-0143` y `VSCREEN-0144`;
+- [x] no se crea una nueva pantalla canónica;
+- [x] AS-IS de cola cliente queda `REUSE_OR_REFACTOR`;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-UX-038`.
+
+#### 59. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- crea Server Actions ni Route Handlers;
+- crea trabajos reales de impresión;
+- despacha ZPL;
+- ejecuta BrowserPrint;
+- ejecuta `window.print()`;
+- imprime etiquetas o documentos reales;
+- crea o modifica plantillas reales;
+- crea identidades `IMP-*`;
+- crea un output genérico para LPN;
+- crea ni modifica `PermissionKey`;
+- amplía `inventory.stock`;
+- materializa capacidades objetivo de `NEXO-AUTH-028`;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas, funciones, RPC o RLS;
+- modifica Supabase;
+- ejecuta migraciones ni backfills;
+- cambia LOC, LPN, activo, documento, contenido, custodia, condición, mantenimiento o movimiento;
+- redefine E4;
+- redefine autorización de dominio;
+- diseña la operación física de escáner;
+- diseña la incidencia completa de etiqueta dañada;
+- ejecuta validación física con Zebra, papel o etiqueta;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- autoriza una instancia física;
+- desarrolla `NEXO-UX-038`.
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas`
 ### [ ] NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
 ### [ ] NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
 ### [ ] NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
