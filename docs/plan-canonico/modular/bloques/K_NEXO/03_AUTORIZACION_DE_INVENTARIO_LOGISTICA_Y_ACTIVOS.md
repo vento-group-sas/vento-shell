@@ -10417,5 +10417,1134 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras`
-### [ ] NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
+### ✅ NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio
+**Tarea siguiente:** NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — protección de autorización por recurso, acción, territorio, estado y contexto para instalaciones y sus subdominios operativos, sin inventar capacidades ausentes y con denegación segura hasta disponer de autoridad canónica exacta
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; cualquier materialización futura ocurre únicamente mediante `NEXO-AUTH-031::<implementation_unit_id>` después de resolver el package propietario, cumplir el gate físico aplicable y recibir autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera de autorización del subdominio de instalaciones de NEXO para que ninguna consulta, modificación, intervención, ejecución física, evidencia, acceso, calibración, inspección, limpieza, mantenimiento, obra o decisión relacionada pueda quedar autorizada por autenticación sola, permiso amplio, nombre de rol, contexto visual, acceso físico, proveedor externo o autoridad perteneciente a otro dominio.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++
+CAPACIDAD CANÓNICA EXACTA Y ACTIVA
++
+TERRITORIO
++
+RECURSO
++
+ACCIÓN
++
+ESTADO Y REVISIÓN VIGENTES
++
+CONTEXTO Y POLÍTICAS APLICABLES
+=
+DECISIÓN SERVER-SIDE
+```
+
+Nunca:
+
+```text
+AUTENTICACIÓN
+OR APP ACCESS
+OR INVENTORY.STOCK
+OR ASSET PERMISSION
+OR NOMBRE DE ROL
+OR ACCESO FÍSICO
+OR PROVEEDOR CONTRATADO
+OR APROBACIÓN ECONÓMICA
+OR BOTÓN VISIBLE
+=
+AUTORIDAD FINAL
+```
+
+#### 2. Resultado contractual
+
+`NEXO-AUTH-031` deja definido un contrato de protección reutilizable para:
+
+1. instalación física y espacios;
+2. componentes fijos;
+3. redes y puntos de servicio;
+4. mantenimiento locativo;
+5. limpieza y saneamiento;
+6. control de plagas cuando opere sobre instalaciones;
+7. servicios físicos e interrupciones cuando la acción requiera autoridad sobre un recurso locativo;
+8. inspecciones físicas;
+9. control metrológico, calibración y verificación;
+10. llaves, medios y zonas de acceso físico;
+11. obras y adecuaciones;
+12. novedades locativas cuando requieran autoridad sobre un recurso del subdominio;
+13. evidencia, documentos y acciones técnicas relacionadas.
+
+El contrato protege la autoridad sobre esos recursos. La segregación detallada entre reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir permanece reservada a `NEXO-AUTH-032`.
+
+#### 3. Topología
+
+La tarea conserva:
+
+```text
+MODE: PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE: POST_E5_PACKAGE
+PHYSICAL_IDENTITY: NEXO-AUTH-031::<implementation_unit_id>
+```
+
+El marcador documental define una vez el contrato global. No crea ni autoriza una instancia física.
+
+#### 4. Base canónica consumida
+
+La tarea consume y preserva:
+
+- `CAP-SCOPE-013`, para la cobertura empresarial de instalaciones, mantenimiento, limpieza, inspecciones y calibración;
+- `NEXO-DOM-029`, para identidad y jerarquía locativa;
+- `NEXO-DOM-030`, para mantenimiento locativo, solicitudes, órdenes, ejecución, prueba y liberación;
+- `NEXO-DOM-031`, para limpieza y saneamiento;
+- `NEXO-DOM-032`, para control de plagas;
+- `NEXO-DOM-033`, para servicios, medidores, interrupciones y contingencias;
+- `NEXO-DOM-034`, para inspecciones físicas, plantillas, hallazgos y acciones;
+- `NEXO-DOM-035`, para control metrológico, calibración, tolerancias, certificados e impacto;
+- `NEXO-DOM-036`, para llaves, credenciales físicas, zonas, custodia, devolución e incidencias;
+- `NEXO-DOM-037`, para obras, adecuaciones, contratistas, permisos, afectación y recepción;
+- `NEXO-DOM-038`, para novedades locativas, severidad, contención, escalamiento, resolución y cierre;
+- `NEXO-AUTH-026`, para la frontera con mantenimiento de activos;
+- `NEXO-AUTH-030`, para impedir que la certificación del subdominio anterior absorba instalaciones;
+- contratos transversales de autorización, contexto, evidencia, offline, integración y packages.
+
+#### 5. Regla de objeto principal
+
+Toda decisión protegida debe resolver un recurso principal inequívoco.
+
+```text
+PRIMARY RESOURCE
+=
+PHYSICAL_FACILITY
+OR PHYSICAL_SPACE
+OR FIXED_COMPONENT
+OR SERVICE_NETWORK
+OR SERVICE_POINT
+OR FACILITY-MAINTENANCE SUBJECT
+OR CLEANING SUBJECT
+OR INSPECTION SUBJECT
+OR METROLOGY SUBJECT
+OR PHYSICAL-ACCESS SUBJECT
+OR FACILITY-WORK SUBJECT
+OR FACILITY-ISSUE SUBJECT
+```
+
+Un mismo hecho puede relacionarse con otros sujetos, pero la autorización no puede evaluarse sobre un recurso genérico distinto del objeto real de la acción.
+
+#### 6. Instalación, espacio y recurso compartido
+
+Se preserva:
+
+```text
+PHYSICAL_FACILITY
+!=
+OPERATIONAL_SITE
+!=
+ORGANIZATIONAL_AREA
+!=
+PHYSICAL_SPACE
+!=
+LOC
+!=
+SERIALIZED_ASSET
+```
+
+Una capacidad sobre sede, área, LOC o activo no concede por transitividad autoridad sobre una instalación o espacio.
+
+Una relación contextual sirve para delimitar alcance; no transforma una identidad en otra.
+
+#### 7. Frontera con `NEXO-AUTH-026`
+
+`NEXO-AUTH-026` protege el ciclo técnico de activos.
+
+031 protege instalaciones y sujetos locativos.
+
+Se fija:
+
+```text
+ASSET MAINTENANCE AUTHORITY
+!=
+FACILITY MAINTENANCE AUTHORITY
+```
+
+Si el objeto principal es un activo individual con lifecycle propio, la autorización corresponde al contrato de activos.
+
+Si el objeto principal es instalación, espacio, componente fijo, red o punto de servicio, la autorización corresponde al contrato de instalaciones.
+
+No se duplica autoridad por similitud terminológica.
+
+#### 8. Estado del catálogo de capacidades observado
+
+No se demostró en el catálogo activo una familia de capacidades exactas de NEXO que cubra de forma completa las decisiones sensibles definidas por 031.
+
+Por tanto, esta tarea no inventa nombres de `PermissionKey`, aliases ni grants.
+
+La regla es:
+
+```text
+CAPACIDAD EXACTA ACTIVA NO DEMOSTRADA
+→
+DEFAULT_DENY PARA MUTACIÓN SENSIBLE
+```
+
+Una familia objetivo futura puede materializarse únicamente desde su tarea y package propietarios, con catálogo, descripción, modalidad, scope, recurso, grants, denegaciones, consumidor, backend y pruebas coherentes.
+
+#### 9. App access no basta
+
+El acceso general a NEXO demuestra únicamente entrada a la aplicación cuando corresponde.
+
+Se preserva:
+
+```text
+NEXO ACCESS
+!=
+FACILITY VIEW
+!=
+FACILITY MUTATION
+!=
+MAINTENANCE EXECUTION
+!=
+PHYSICAL ACCESS DECISION
+```
+
+Una superficie no queda autorizada por estar dentro de una sesión válida.
+
+#### 10. Lectura y mutación
+
+Toda futura capacidad de lectura debe permanecer separada de mutación.
+
+```text
+VIEW
+!=
+CREATE
+!=
+UPDATE
+!=
+EXECUTE
+!=
+VERIFY
+!=
+RELEASE
+```
+
+Una autorización de consulta no permite modificar identidad, condición, disponibilidad, plan, orden, evidencia, resultado, custodio, acceso, certificado, obra o cierre.
+
+#### 11. Administración locativa
+
+Las acciones que creen, modifiquen, relacionen, reubiquen, retiren o sustituyan sujetos locativos requieren autoridad específica sobre el recurso correspondiente.
+
+No se admite que:
+
+- editar una sede autorice modificar una instalación;
+- editar un área autorice modificar un espacio;
+- administrar LOC autorice modificar topología locativa;
+- administrar activos autorice modificar componentes fijos;
+- cambiar un texto visible cambie la identidad física.
+
+Las mutaciones sin capacidad exacta activa permanecen denegadas.
+
+#### 12. Condición y disponibilidad
+
+Condición y disponibilidad son decisiones distintas.
+
+Una capacidad que permita registrar condición no concede automáticamente autoridad para:
+
+- restringir uso;
+- declarar indisponibilidad;
+- liberar a operación;
+- retirar una restricción;
+- cerrar una novedad.
+
+La decisión debe evaluar recurso, política, estado y autoridad aplicables.
+
+#### 13. Mantenimiento locativo
+
+La autorización de mantenimiento locativo debe proteger separadamente, según la acción aplicable:
+
+- plan;
+- obligación;
+- solicitud;
+- triage;
+- orden de trabajo;
+- diagnóstico;
+- ejecución;
+- repuestos o materiales;
+- prueba;
+- liberación;
+- cierre;
+- reapertura o corrección.
+
+031 fija que cada acción sensible exige autoridad exacta. `NEXO-AUTH-032` define la segregación formal entre los roles y etapas de ese lifecycle.
+
+#### 14. Plan no concede ejecución
+
+Se preserva:
+
+```text
+PLAN AUTHORITY
+!=
+WORK AUTHORITY
+```
+
+Crear, editar o consultar un plan no autoriza ejecutar una intervención.
+
+La existencia de una obligación `DUE` u `OVERDUE` tampoco concede por sí sola autoridad para intervenir físicamente.
+
+#### 15. Orden de trabajo no concede liberación
+
+Se preserva:
+
+```text
+WORK ORDER AUTHORIZED
+!=
+RESOURCE RELEASED
+```
+
+Una orden puede autorizar un trabajo dentro de alcance y vigencia definidos.
+
+No concede por sí sola autoridad para declarar el recurso verificado, liberado, disponible o cerrado.
+
+#### 16. Limpieza y saneamiento
+
+Limpieza y saneamiento requieren protección sobre:
+
+- programa o plan aplicable;
+- sujeto físico;
+- procedimiento vigente;
+- ejecución registrada;
+- producto o químico cuando aplique;
+- concentración, lote u otra evidencia requerida;
+- desviación;
+- verificación;
+- decisión de liberación cuando corresponda.
+
+Se preserva:
+
+```text
+CLEANED
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+Una persona autorizada para ejecutar limpieza no recibe automáticamente autoridad para verificar o liberar.
+
+#### 17. Químicos y consumo
+
+El uso de un químico o insumo no concede autoridad para modificar catálogo, inventario ni maestro de productos.
+
+Cuando exista consumo inventariable:
+
+- NEXO conserva la correlación operacional;
+- el dominio de inventario conserva la mutación de existencia;
+- la autorización aplicable se evalúa en cada responsabilidad.
+
+Un texto de producto utilizado no sustituye un movimiento requerido.
+
+#### 18. Control de plagas
+
+La ejecución por proveedor especializado no concede autoridad empresarial sobre:
+
+- instalación;
+- mapa de dispositivos;
+- hallazgos;
+- acciones internas;
+- liberación;
+- cierre.
+
+El proveedor puede aportar evidencia y ejecución autorizada dentro de alcance, vigencia y contrato demostrados.
+
+NEXO conserva la autoridad del expediente interno.
+
+#### 19. Servicios físicos
+
+Las decisiones sobre redes, puntos de servicio, interrupciones y contingencias deben evaluar el recurso físico y el contexto aplicable.
+
+Se preserva:
+
+```text
+SERVICE CONTRACT
+!=
+SERVICE POINT AUTHORITY
+!=
+INTERRUPTION AUTHORITY
+!=
+FACILITY RELEASE AUTHORITY
+```
+
+Una factura, contrato comercial o capacidad financiera no autoriza una modificación física ni una liberación operativa.
+
+#### 20. Inspecciones físicas
+
+Una inspección física de instalaciones debe permanecer separada de:
+
+- inspección SST;
+- auditoría de cumplimiento;
+- mantenimiento de activos;
+- validación logística de LOC;
+- cierre técnico de una orden.
+
+La autoridad para ejecutar una inspección no concede autoridad para modificar automáticamente condición, ejecutar reparación, cerrar un hallazgo o liberar el recurso.
+
+#### 21. Hallazgo de inspección
+
+Se preserva:
+
+```text
+FINDING RECORDED
+!=
+CORRECTIVE ACTION APPROVED
+!=
+ACTION EXECUTED
+!=
+FINDING VERIFIED
+!=
+FINDING CLOSED
+```
+
+031 exige autoridad exacta sobre cada acción material. 032 definirá la segregación completa del ciclo.
+
+#### 22. Control metrológico
+
+Calibración y verificación metrológica se protegen como acciones especializadas.
+
+La autorización debe respetar:
+
+- sujeto calibrable;
+- magnitud;
+- rango;
+- tolerancia;
+- método;
+- patrón o laboratorio cuando aplique;
+- vigencia;
+- certificado;
+- resultado;
+- impacto de fuera de tolerancia.
+
+Una capacidad genérica de mantenimiento no puede sustituir la autoridad metrológica cuando la política requiera una decisión especializada.
+
+#### 23. Calibración ejecutada no equivale a conformidad
+
+Se preserva:
+
+```text
+CALIBRATION PERFORMED
+!=
+METROLOGICALLY CONFORMING
+!=
+RESOURCE RELEASED
+```
+
+Un certificado recibido no libera automáticamente el recurso.
+
+Un resultado fuera de tolerancia no puede ocultarse mediante cierre administrativo.
+
+#### 24. Acceso físico
+
+El acceso físico permanece separado de autorización digital.
+
+```text
+PHYSICAL_ACCESS_SCOPE
+!=
+DIGITAL_AUTHORIZATION_SCOPE
+```
+
+Una llave, tarjeta, control o código físico no concede permisos de aplicación.
+
+Un permiso de aplicación no concede por sí mismo derecho físico de entrada.
+
+SHELL no se convierte en maestro de llaves, cerraduras, custodias ni accesos físicos por el hecho de proveer identidad o sesión.
+
+#### 25. Medio de acceso y custodio
+
+Una futura mutación sobre medios físicos debe evaluar, según aplique:
+
+- identidad del medio;
+- tipo;
+- zona o alcance físico;
+- custodio vigente;
+- vigencia;
+- estado;
+- entrega;
+- devolución;
+- revocación;
+- recuperación;
+- incidencia.
+
+Un nombre de persona o rol no puede sustituir el expediente de custodia.
+
+#### 26. Acceso físico de emergencia o excepcional
+
+Una excepción no convierte la política ordinaria en un permiso permanente.
+
+Debe conservar, cuando aplique:
+
+- fundamento;
+- autoridad;
+- alcance;
+- vigencia;
+- restricciones;
+- evidencia;
+- condición de salida.
+
+La contingencia no elimina auditoría ni reconciliación posterior.
+
+#### 27. Obras y adecuaciones
+
+Una obra o adecuación requiere autorización sobre el recurso y el alcance técnico aplicables.
+
+Se preserva:
+
+```text
+TECHNICAL APPROVAL
+!=
+COMMERCIAL APPROVAL
+!=
+FINANCIAL AUTHORIZATION
+!=
+PHYSICAL ACCESS
+!=
+AUTHORIZATION TO START
+```
+
+La existencia de contrato, presupuesto, proveedor o medio de acceso no concede automáticamente autorización para iniciar trabajo.
+
+#### 28. Contratista
+
+Un contratista externo no se convierte en usuario interno amplio por participar en una obra, reparación, calibración, limpieza, plagas o servicio.
+
+Cuando requiera acceso digital o físico, este debe ser:
+
+- explícito;
+- mínimo;
+- limitado al recurso y finalidad;
+- territorialmente compatible;
+- temporal cuando corresponda;
+- auditable;
+- revocable;
+- separado de grants laborales ordinarios.
+
+#### 29. ORIGO no concede cierre técnico
+
+ORIGO conserva contratación, proveedor, orden y recepción empresarial cuando corresponda.
+
+Se preserva:
+
+```text
+PROCUREMENT ACCEPTED
+!=
+TECHNICALLY ACCEPTED
+```
+
+Una orden de compra, factura o recepción comercial no puede producir por sí sola condición, conformidad, liberación o cierre en NEXO.
+
+#### 30. NUMERA no concede cierre técnico
+
+NUMERA conserva compromiso, gasto, costo y hechos financieros.
+
+Se preserva:
+
+```text
+BUDGET AVAILABLE
+!=
+WORK AUTHORIZED
+```
+
+```text
+COST RECOGNIZED
+!=
+RESOURCE RELEASED
+```
+
+La autoridad financiera no sustituye la autoridad física o técnica.
+
+#### 31. VISO y SST
+
+VISO/SST conservan riesgo, cumplimiento, políticas y expedientes que les pertenecen.
+
+Una decisión SST puede bloquear o condicionar una acción de instalaciones cuando el contrato competente así lo exija.
+
+No concede automáticamente autoridad para editar el expediente técnico de NEXO fuera de la acción expresamente permitida.
+
+Una inspección SST no se reutiliza como inspección locativa por simple similitud de formulario.
+
+#### 32. FOGO, calidad e inocuidad
+
+Cuando limpieza, saneamiento, calibración, servicio o condición de instalación afecten calidad, inocuidad o producción:
+
+- el dominio competente conserva su decisión de calidad o producción;
+- NEXO conserva el hecho físico y técnico de instalaciones;
+- una liberación de producción no sustituye una liberación locativa;
+- una liberación locativa no sustituye una liberación de producto o proceso.
+
+#### 33. Novedades locativas
+
+Una novedad locativa conserva identidad y owner propios.
+
+Se preserva:
+
+```text
+FACILITY ISSUE
+!=
+WORK ORDER
+!=
+INSPECTION FINDING
+!=
+ACCESS INCIDENT
+!=
+SERVICE INTERRUPTION
+```
+
+Una capacidad de uno de esos recursos no autoriza automáticamente mutaciones sobre los otros.
+
+#### 34. `inventory.stock` no es autoridad de instalaciones
+
+El permiso legacy amplio de inventario no puede actuar como autoridad final sobre acciones de instalaciones.
+
+Se fija:
+
+```text
+inventory.stock
+!=
+FACILITY AUTHORITY
+```
+
+La presencia histórica del permiso en superficies de activos no crea una equivalencia para instalaciones.
+
+#### 35. Permisos de activos no se prestan
+
+Capacidades de activos, grupos, conteos, mantenimiento de activos o ubicación logística no pueden prestarse por inferencia a instalaciones.
+
+Se fija:
+
+```text
+ASSET CAPABILITY
+!=
+FACILITY CAPABILITY
+```
+
+Un componente fijo relacionado con un activo conserva la frontera definida por el objeto principal.
+
+#### 36. Permisos de LOC no se prestan
+
+Una capacidad sobre LOC o posiciones logísticas no concede autoridad para:
+
+- crear espacios;
+- modificar jerarquía física;
+- cambiar un componente fijo;
+- intervenir una red;
+- gestionar un punto de servicio;
+- liberar un área.
+
+LOC continúa siendo un recurso logístico distinto.
+
+#### 37. Nombre de rol no concede autoridad
+
+Ningún nombre de rol, cargo, área o etiqueta humana constituye por sí mismo una concesión empresarial.
+
+Se prohíbe:
+
+```text
+ROLE NAME
+→
+ALLOW
+```
+
+La decisión usa capacidad, contexto, scope, recurso y estado canónicos.
+
+#### 38. UI no es barrera de seguridad
+
+Ocultar un botón, tarjeta, sección o menú no protege la acción.
+
+Toda mutación debe revalidarse en servidor.
+
+La ausencia visual de una acción no sustituye denegación en Server Action, Route Handler, RPC, función o capa persistente aplicable.
+
+#### 39. Acceso directo
+
+Una URL directa, formulario manipulado, llamada API o RPC directa no puede ampliar autoridad.
+
+La evaluación debe producir el mismo resultado material que el flujo normal para el mismo actor, recurso, territorio, contexto y acción.
+
+#### 40. Scope territorial
+
+El territorio efectivo debe resolverse desde contexto canónico y relaciones autorizadas.
+
+Un `site_id`, `area_id`, identificador locativo, parámetro cliente o referencia enviada por formulario no amplía por sí mismo el alcance del actor.
+
+Cuando una acción afecte origen y destino, zona y sujeto, o varias instalaciones, cada territorio requerido debe resultar compatible.
+
+#### 41. Scope de recurso
+
+La autorización debe resolverse sobre la identidad real del recurso.
+
+La posesión de un identificador no demuestra derecho de acceso.
+
+Se debe impedir sustitución horizontal entre:
+
+- instalaciones;
+- espacios;
+- componentes;
+- puntos de servicio;
+- medios de acceso;
+- órdenes;
+- inspecciones;
+- certificados;
+- obras;
+- novedades.
+
+#### 42. Estado y revisión
+
+Toda acción sensible debe revalidar el estado y revisión vigentes inmediatamente antes del commit cuando el contrato lo requiera.
+
+Una autorización obtenida sobre una versión obsoleta no concede autoridad sobre una revisión posterior incompatible.
+
+#### 43. Denegación segura
+
+Un deny debe producir:
+
+- cero mutación empresarial;
+- cero transición parcial;
+- cero liberación accidental;
+- cero consumo duplicado;
+- cero evidencia presentada como confirmación de una acción no ejecutada;
+- error seguro y consistente.
+
+No se corrige un deny mediante un fallback más amplio.
+
+#### 44. Idempotencia
+
+Toda mutación material debe utilizar identidad estable de operación o mecanismo equivalente.
+
+Un replay de la misma intención no puede crear:
+
+- otra solicitud;
+- otra orden;
+- otra ejecución;
+- otra inspección;
+- otra calibración;
+- otra entrega de medio de acceso;
+- otra obra;
+- otra evidencia;
+- otro cierre.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+#### 45. Concurrencia
+
+Dos acciones incompatibles sobre el mismo recurso no pueden confirmar simultáneamente estados imposibles.
+
+La futura materialización debe proteger, según aplique:
+
+- revisión;
+- estado;
+- reservas o locks;
+- disponibilidad;
+- vigencia;
+- decisiones de liberación;
+- restricciones activas.
+
+Una carrera se resuelve por una autoridad vigente; no por último write silencioso.
+
+#### 46. Timeout y resultado desconocido
+
+Se preserva:
+
+```text
+REQUEST SENT
+!=
+RESULT KNOWN
+```
+
+Ante timeout o resultado desconocido:
+
+- se conserva la intención;
+- se consulta o reconcilia antes de repetir;
+- no se emite una segunda ejecución ciega;
+- no se marca el recurso como liberado por ausencia de error visible.
+
+#### 47. Operación offline
+
+La captura offline puede conservar intención y evidencia cuando la arquitectura autorizada lo permita.
+
+Se fija:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER AUTHORIZED
+!=
+EXECUTED
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+La sincronización debe revalidar actor, autoridad, territorio, recurso, estado, revisión, vigencia y conflicto.
+
+#### 48. Evidencia y documentos
+
+Fotos, certificados, actas, planos, firmas, informes y documentos relacionados no constituyen por sí solos autoridad para transición.
+
+La acción empresarial y la evidencia permanecen separadas.
+
+El acceso al documento debe respetar su clasificación, finalidad, recurso y autorización propietaria.
+
+#### 49. Auditoría mínima
+
+Toda mutación sensible debe poder dejar evidencia de:
+
+- actor y principal efectivos;
+- capacidad utilizada;
+- recurso;
+- territorio;
+- acción;
+- estado previo relevante;
+- estado posterior cuando aplique;
+- revisión;
+- resultado;
+- motivo o referencia cuando corresponda;
+- operación idempotente;
+- momento;
+- evidencia correlacionada.
+
+La auditoría no reemplaza la autorización previa.
+
+#### 50. Recuperación y rollback
+
+Rollback de una futura unidad:
+
+- solo puede regresar a una combinación previamente segura;
+- no reactiva `inventory.stock` como autoridad;
+- no presta permisos de activos o LOC;
+- no convierte app access en permiso funcional;
+- no borra intervenciones, inspecciones, calibraciones, custodias, obras o novedades ya confirmadas;
+- no elimina restricciones vigentes sin autoridad;
+- no marca un recurso como disponible sin prueba y liberación aplicables;
+- conserva trazabilidad y evidencia.
+
+Si no existe una combinación anterior segura, la acción sensible queda bloqueada y se corrige hacia adelante.
+
+#### 51. Materialización futura
+
+Cada futura instancia `NEXO-AUTH-031::<implementation_unit_id>` debe demostrar:
+
+1. package propietario;
+2. gate E5 aplicable satisfecho;
+3. autorización física explícita;
+4. recurso exacto de la unidad;
+5. catálogo de capacidades compatible;
+6. grants y denegaciones definidos;
+7. scope territorial y de recurso;
+8. consumidor compatible;
+9. backend compatible;
+10. estados y revisiones compatibles;
+11. auditoría;
+12. idempotencia y concurrencia;
+13. pruebas allow y deny;
+14. rollback o recuperación aplicable.
+
+#### 52. Gate para activar una capacidad futura
+
+Una capacidad de instalaciones solo puede utilizarse cuando pueda demostrarse conjuntamente:
+
+```text
+IDENTIDAD CANÓNICA ACTIVA
++
+DESCRIPCIÓN CANÓNICA
++
+ACCIÓN DEFINIDA
++
+RECURSO DEFINIDO
++
+MODALIDAD DEFINIDA
++
+SCOPE DEFINIDO
++
+GRANTS DEFINIDOS
++
+DENEGACIONES DEFINIDAS
++
+CONSUMIDOR COMPATIBLE
++
+BACKEND COMPATIBLE
++
+PRUEBAS
+```
+
+La ausencia de cualquiera de esas piezas no se rellena en el consumidor mediante una cadena local.
+
+#### 53. AS-IS remoto observado
+
+La evidencia remota observable de `vento-nexo` no demuestra un módulo integral dedicado de instalaciones.
+
+Las búsquedas inspeccionadas no demostraron superficies dedicadas completas para:
+
+- facility management;
+- saneamiento;
+- control metrológico de instalaciones;
+- llaves y credenciales físicas;
+- obras y adecuaciones.
+
+Se observaron, en cambio, etiquetas de `inspection`, `calibration` y `cleaning` dentro del mantenimiento de activos y la tabla `asset_maintenance_records`.
+
+Ese AS-IS confirma una frontera parcial de activos, no una implementación equivalente del dominio de instalaciones.
+
+#### 54. Consecuencia del AS-IS
+
+La tarea no presenta como disponible una autorización física inexistente.
+
+El resultado correcto es:
+
+```text
+FACILITY AUTHORIZATION CONTRACT DEFINED
+ACTIVE EXACT FACILITY CAPABILITIES NOT DEMONSTRATED
+SENSITIVE MUTATIONS DEFAULT_DENY UNTIL MATERIALIZED
+```
+
+#### 55. Condiciones de salida de brechas principales
+
+| Brecha | Decisión de 031 | Condición de salida física |
+| --- | --- | --- |
+| instalación sin familia autorizante exacta | exigir capacidad exacta o deny | catálogo, grants, consumidor y backend compatibles |
+| mantenimiento locativo confundido con activos | separar por objeto principal | consumidor resuelve recurso propietario antes de autorizar |
+| limpieza ejecutada sin autoridad verificable | proteger ejecución y evidencia | mutación server-side con capacidad y scope compatibles |
+| inspección física confundida con SST | separar recurso y finalidad | contrato y permisos propietarios sin alias transversal |
+| calibración tratada como mantenimiento genérico | proteger acción metrológica | capacidad y backend compatibles con contrato metrológico |
+| llave o tarjeta tratada como auth digital | separar acceso físico | expediente físico y autoridad digital permanecen independientes |
+| obra autorizada por compra o presupuesto | separar autoridad técnica | inicio exige gates técnicos aplicables además de comercial/financiero |
+| proveedor externo con acceso amplio | mínimo privilegio y vigencia | identidad, alcance, expiración, auditoría y revocación materializados |
+| offline o replay duplican hechos | idempotencia y reconciliación | operación estable y pruebas de retry/concurrencia |
+| cierre o liberación por evidencia visual | decisión server-side | estado, prueba, verificación y autoridad aplicables |
+
+#### 56. Frontera con `NEXO-AUTH-032`
+
+031 protege el recurso y exige autoridad exacta por acción.
+
+032 conserva de forma exclusiva la segregación entre:
+
+```text
+REPORTAR
+SOLICITAR
+APROBAR
+EJECUTAR
+VERIFICAR
+LIBERAR
+CERRAR
+REABRIR
+```
+
+031 no define que un mismo actor pueda o no acumular etapas concretas. Sí prohíbe que una sola autorización genérica conceda automáticamente todas esas acciones.
+
+032 deberá materializar las combinaciones, incompatibilidades, excepciones, evidencia y reglas de independencia aplicables.
+
+#### 57. Frontera con certificación posterior
+
+031 no declara certificadas físicamente las protecciones de instalaciones.
+
+Una futura prueba deberá cubrir, como mínimo:
+
+- allow cuando exista capacidad exacta;
+- deny por ausencia de capacidad;
+- deny por scope;
+- deny por recurso;
+- estado incompatible;
+- revisión obsoleta;
+- acceso directo;
+- replay;
+- concurrencia;
+- timeout;
+- offline;
+- proveedor externo;
+- dispositivo compartido cuando aplique;
+- simulación cuando aplique;
+- evidencia sin autoridad;
+- rollback;
+- ausencia de préstamo desde activos, LOC, stock, roles, ORIGO, NUMERA o acceso físico.
+
+#### 58. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- identidad locativa, mantenimiento, órdenes, prueba, liberación y reapertura ya tienen cobertura vigente;
+- limpieza, saneamiento, inspecciones, calibración, acceso físico, obras, novedades, offline y evidencia ya tienen cobertura vigente;
+- autorización exacta y validación server-side ya cuentan con cobertura transversal;
+- integración con ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos ya tiene requisito canónico vigente;
+- 031 especializa la frontera de autorización sin crear una obligación empresarial nueva.
+
+#### 59. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-017` para identidad locativa, mantenimiento, solicitud, orden, ejecución, prueba, liberación, cierre y reapertura;
+- `TREQ-NEXO-018` para limpieza, saneamiento, plagas, servicios, inspecciones físicas, calibración, llaves, acceso físico, obras, novedades y offline;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y alcance canónicos sin allow por nombre de rol;
+- `TREQ-AUTH-013` para protección server-side frente a URL, formulario, API o RPC manipulada;
+- `TREQ-INTEGRATION-018` para coordinación versionada e idempotente con ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos;
+- `TREQ-NEXO-014` como frontera reutilizada cuando una intervención corresponda al mantenimiento técnico de activos.
+
+Estas referencias son trazabilidad existente y no una modificación del registro.
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador global define contrato de autorización y no modifica producto ni ejecuta build físico |
+| LOCAL | NOT_EXECUTED | incorporación, formateo, quality, delivery, topología, plan y TREQ corresponden al checkout local al incorporar la tarea |
+| REMOTA | PASS | se verificaron `vento-shell` main con `NEXO-AUTH-029` cerrado, owner del mini-bloque, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `CAP-SCOPE-013`, `NEXO-DOM-029` a `NEXO-DOM-038`, registro modular NEXO/INTEGRATION, catálogo canónico y `vento-nexo` vigente; no se demostró una familia activa exacta de permisos de instalaciones y las superficies observadas de inspection/calibration/cleaning pertenecen al mantenimiento de activos, no a un módulo integral locativo |
+| OPERATIVA | NOT_EXECUTED | no se ejecutó mantenimiento locativo, limpieza, inspección, calibración, acceso físico, obra, servicio, plagas ni novedad real durante este marcador |
+| FÍSICA | NOT_EXECUTED | no se materializó ninguna instancia `NEXO-AUTH-031::<implementation_unit_id>` |
+
+#### 61. Criterios de aceptación
+
+- [x] se conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [x] el marcador documental no autoriza materialización física;
+- [x] instalaciones, espacios, componentes, redes y puntos de servicio permanecen recursos distinguibles;
+- [x] LOC, área, sede y activo no se convierten en aliases de instalación;
+- [x] mantenimiento de activo y mantenimiento locativo quedan separados por objeto principal;
+- [x] app access no equivale a autoridad funcional;
+- [x] lectura no concede mutación;
+- [x] capacidad de activos no se presta a instalaciones;
+- [x] capacidad de LOC no se presta a instalaciones;
+- [x] `inventory.stock` no se acepta como autoridad de instalaciones;
+- [x] nombre de rol no concede autoridad final;
+- [x] se exige decisión server-side;
+- [x] se exige scope territorial y de recurso;
+- [x] se exige estado y revisión vigentes;
+- [x] las mutaciones sin capacidad exacta activa quedan `DEFAULT_DENY`;
+- [x] no se inventan PermissionKeys ausentes;
+- [x] plan de mantenimiento no concede ejecución;
+- [x] orden autorizada no concede liberación;
+- [x] limpio, verificado y liberado permanecen separados;
+- [x] proveedor de plagas no gobierna el expediente interno;
+- [x] contrato o factura de servicio no concede autoridad física;
+- [x] inspección locativa permanece separada de SST y compliance;
+- [x] hallazgo no equivale a acción ejecutada ni cierre;
+- [x] calibración ejecutada no equivale a conformidad ni liberación;
+- [x] acceso físico permanece separado de autorización digital;
+- [x] llave, tarjeta o código físico no concede permiso de aplicación;
+- [x] permiso digital no concede entrada física;
+- [x] obra técnica permanece separada de aprobación comercial y financiera;
+- [x] contratista externo no recibe privilegios laborales amplios por defecto;
+- [x] ORIGO no concede aceptación técnica;
+- [x] NUMERA no concede liberación técnica;
+- [x] VISO/SST conserva su autoridad sin absorber el expediente locativo;
+- [x] FOGO/calidad conserva su propia liberación cuando aplique;
+- [x] acceso directo no crea bypass;
+- [x] UI no es barrera de seguridad;
+- [x] deny produce cero efectos empresariales;
+- [x] idempotencia protege reintentos;
+- [x] concurrencia protege estados incompatibles;
+- [x] timeout y resultado desconocido exigen reconciliación;
+- [x] offline no inventa autoridad;
+- [x] evidencia no equivale a transición;
+- [x] rollback no reactiva una autoridad más amplia;
+- [x] 032 conserva la segregación detallada de etapas;
+- [x] no se modifica Supabase;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] se conserva una frontera explícita con 032.
+
+#### 62. Límites
+
+Esta tarea no:
+
+- crea nuevas `PermissionKey`;
+- modifica el catálogo activo de permisos;
+- modifica grants o denegaciones;
+- define roles nuevos;
+- modifica scopes;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos reales;
+- crea instalaciones, espacios o componentes;
+- crea planes, órdenes o trabajos reales;
+- ejecuta mantenimientos reales;
+- ejecuta limpieza o saneamiento real;
+- ejecuta control de plagas real;
+- modifica servicios reales;
+- ejecuta inspecciones reales;
+- ejecuta calibraciones reales;
+- entrega, revoca o recupera medios físicos reales;
+- abre accesos físicos reales;
+- ejecuta obras o adecuaciones reales;
+- cambia restricciones o disponibilidad reales;
+- libera instalaciones reales;
+- cierra novedades reales;
+- incorpora proveedores como usuarios internos;
+- altera contratos de ORIGO o NUMERA;
+- ejecuta certificación física;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-032`.
+
+#### 63. Handoff hacia `NEXO-AUTH-032`
+
+031 entrega a 032:
+
+```text
+STABLE FACILITY RESOURCE BOUNDARIES
++
+EXACT-AUTHORITY-OR-DENY RULE
++
+SERVER-SIDE ENFORCEMENT
++
+TERRITORY AND RESOURCE SCOPE
++
+STATE / REVISION REVALIDATION
++
+NO TRANSITIVE AUTHORITY
++
+NO ROLE-NAME AUTHORITY
++
+PHYSICAL ACCESS != DIGITAL AUTHORIZATION
++
+EXTERNAL CONTRACTOR MINIMUM PRIVILEGE
++
+IDEMPOTENCY / CONCURRENCY / OFFLINE RULES
++
+AUDIT / DENY / ROLLBACK REQUIREMENTS
+```
+
+032 deberá separar y proteger de forma explícita reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir, sin convertir el contrato de 031 en un permiso genérico que autorice todas las etapas.
+
+#### 64. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura`
 ### [ ] NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura
