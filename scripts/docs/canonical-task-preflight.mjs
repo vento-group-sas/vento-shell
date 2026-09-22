@@ -123,6 +123,7 @@ export function classifyPreflightFindings({
   ahead = 0,
   activeSequenceCurrent = true,
   taskStructure = 'DEVELOPED',
+  taskState = null,
   formatState = 'OK',
   contractErrors = [],
 } = {}) {
@@ -134,6 +135,10 @@ export function classifyPreflightFindings({
   const physicalRecordPath = requestedInstance
     ? instanceRecordRelativePath(requestedInstance.instance_id)
     : null;
+  const currentUnapprovedDocumentTask = !requestedInstance
+    && requestedTaskId
+    && requestedTaskId === currentTaskId
+    && String(taskState ?? '').toUpperCase() === 'NO INICIADA';
 
   if (requestedInstance && requestedInstance.status !== 'IN_PROGRESS') {
     blockers.push(
@@ -182,9 +187,13 @@ export function classifyPreflightFindings({
   }
   if (!activeSequenceCurrent) blockers.push('active-sequence.json requiere regeneración.');
   if (formatState !== 'OK') {
-    if (taskStructure === 'EMPTY_DRAFT' && formatState === 'NEEDS_FORMAT') {
+    if (
+      formatState === 'NEEDS_FORMAT'
+      && (taskStructure === 'EMPTY_DRAFT' || currentUnapprovedDocumentTask)
+    ) {
       advisories.push(
-        'formato prospectivo pendiente permitido mientras la tarea permanezca EMPTY_DRAFT.',
+        `formato prospectivo pendiente permitido para tarea documental actual ${taskStructure}; `
+        + 'docs:task:format --write sigue siendo obligatorio después del reemplazo.',
       );
     } else {
       blockers.push(`formato de tarea: ${formatState}.`);
@@ -275,6 +284,7 @@ export function derivePreflight({
     ahead,
     activeSequenceCurrent,
     taskStructure: sectionCount === 0 ? 'EMPTY_DRAFT' : 'DEVELOPED',
+    taskState: task.state,
     formatState,
     contractErrors,
   });

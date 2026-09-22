@@ -188,11 +188,27 @@ test('borrador documental vacío trata NEEDS_FORMAT como advisory y permite star
   );
 });
 
-test('tarea desarrollada conserva NEEDS_FORMAT como bloqueo real', () => {
+test('tarea documental actual NO INICIADA desarrollada permite normalización en su rama', () => {
+  const result = classifyPreflightFindings({
+    requestedTaskId: 'AUTH-UI-052',
+    currentTaskId: 'AUTH-UI-052',
+    taskStructure: 'DEVELOPED',
+    taskState: 'NO INICIADA',
+    formatState: 'NEEDS_FORMAT',
+  });
+
+  assert.deepEqual(result.blockers, []);
+  assert.ok(
+    result.advisories.some((entry) => /DEVELOPED/u.test(entry) && /format --write/u.test(entry)),
+  );
+});
+
+test('tarea desarrollada aprobada conserva NEEDS_FORMAT como bloqueo real', () => {
   const result = classifyPreflightFindings({
     requestedTaskId: 'SHELL-APP-021',
     currentTaskId: 'SHELL-APP-021',
     taskStructure: 'DEVELOPED',
+    taskState: 'APROBADA',
     formatState: 'NEEDS_FORMAT',
   });
 
@@ -201,6 +217,19 @@ test('tarea desarrollada conserva NEEDS_FORMAT como bloqueo real', () => {
     result.blockers[0],
     /formato de tarea: NEEDS_FORMAT/u,
   );
+});
+
+test('tarea NO INICIADA que no es la actual no obtiene bypass de formato', () => {
+  const result = classifyPreflightFindings({
+    requestedTaskId: 'AUTH-UI-053',
+    currentTaskId: 'AUTH-UI-052',
+    taskStructure: 'DEVELOPED',
+    taskState: 'NO INICIADA',
+    formatState: 'NEEDS_FORMAT',
+  });
+
+  assert.ok(result.blockers.some((entry) => /no es la tarea actual/u.test(entry)));
+  assert.ok(result.blockers.some((entry) => /formato de tarea: NEEDS_FORMAT/u.test(entry)));
 });
 
 test('ahead durante una instancia física es aviso y no bloqueo', () => {
