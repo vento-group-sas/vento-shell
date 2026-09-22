@@ -5,6 +5,7 @@ import {
   automaticTaskIds,
   isTaskCoveredByPresentationPolicy,
   renderSemanticWarningsReport,
+  shouldPreserveUnapprovedTask,
   summarizeSemanticWarnings,
 } from './auto-prepare-canonical-task.mjs';
 
@@ -33,6 +34,12 @@ test('incluye tareas normalizables aunque la continuidad ya haya saltado de etap
     continuity: { previous: 'AUTH-UI-039', current: 'SHELL-CI-001' },
   }, ['SHELL-CTX-006']);
   assert.deepEqual(ids, ['AUTH-UI-039', 'SHELL-CI-001', 'SHELL-CTX-006']);
+});
+
+test('preserva tareas no aprobadas antes de su propio lifecycle', () => {
+  assert.equal(shouldPreserveUnapprovedTask({ task: { state: 'NO INICIADA' } }), true);
+  assert.equal(shouldPreserveUnapprovedTask({ task: { state: 'PROPUESTA PARA APROBACIÓN' } }), true);
+  assert.equal(shouldPreserveUnapprovedTask({ task: { state: 'APROBADA' } }), false);
 });
 
 test('preserva tareas anteriores y aplica el formato desde la frontera incluida', () => {

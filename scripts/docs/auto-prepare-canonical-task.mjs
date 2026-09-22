@@ -31,6 +31,10 @@ export function isTaskCoveredByPresentationPolicy(taskOrder, boundaryOrder) {
   return taskOrder >= boundaryOrder;
 }
 
+export function shouldPreserveUnapprovedTask(preflight) {
+  return String(preflight?.task?.state ?? '').trim().toUpperCase() !== 'APROBADA';
+}
+
 function writePreservingEol(filePath, raw, normalized) {
   const next = raw.includes('\r\n') ? normalized.replace(/\n/gu, '\r\n') : normalized;
   fs.writeFileSync(filePath, next, 'utf8');
@@ -119,6 +123,13 @@ export function autoPrepareCanonicalTask({
       continue;
     }
 
+    if (shouldPreserveUnapprovedTask(preflight)) {
+      const semantic = validateProspectiveTaskSemantics({ root, taskId });
+      semanticWarnings.push(...semantic.warnings.map((warning) => ({ taskId, ...warning })));
+      skipped.push({ taskId, reason: 'UNAPPROVED_TASK_PRESERVED' });
+      continue;
+    }
+
     if (preflight.task.structure === 'EMPTY_DRAFT') {
       const semantic = validateProspectiveTaskSemantics({ root, taskId });
       semanticWarnings.push(...semantic.warnings.map((warning) => ({ taskId, ...warning })));
@@ -164,6 +175,8 @@ export function autoPrepareCanonicalTask({
   for (const { taskId, reason } of skipped) {
     if (reason === 'EMPTY_DRAFT_NO_AUTO_SCAFFOLD') {
       console.log(`[PLAN CANÓNICO] ${taskId}: borrador vacío preservado; no se inicia automáticamente.`);
+    } else if (reason === 'UNAPPROVED_TASK_PRESERVED') {
+      console.log(`[PLAN CANONICO] ${taskId}: tarea no aprobada preservada; no se modifica antes de su propio lifecycle.`);
     } else if (reason === 'HISTORICAL_STYLE_PRESERVED') {
       console.log(`[PLAN CANÓNICO] ${taskId}: formato histórico preservado por la frontera prospectiva.`);
     } else if (reason === 'HISTORICAL_APPROVAL_PRESERVED') {
