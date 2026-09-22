@@ -43727,7 +43727,1349 @@ Esta trazabilidad no cambia ninguna fila del registro 04A.
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones`
-### [ ] NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
+### ✅ NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
+**Tarea siguiente:** NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
+**Tipo de tarea:** documental; diseño canónico de experiencia para solicitar, clasificar, planear, autorizar, programar, ejecutar, probar, liberar, cerrar y reabrir mantenimiento y reparaciones locativas sobre instalaciones, espacios, componentes fijos, redes y puntos de servicio, preservando objeto principal, plan y obligación versionados, segregación de decisiones, evidencia, repuestos, proveedor, disponibilidad, historia, idempotencia y fronteras con activos, ORIGO, NUMERA y los workflows especializados posteriores, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K2 — NEXO / experiencia
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual NEXO convierte una necesidad de mantenimiento o reparación locativa en un expediente técnico comprensible, segregado y auditable, desde la solicitud u obligación inicial hasta prueba, liberación, cierre o reapertura, sin confundir planificación con ejecución ni finalización técnica con disponibilidad.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+NECESIDAD U OBLIGACION TRAZABLE
++
+SOLICITUD Y TRIAGE
++
+PLAN / ORDEN VIGENTES
++
+AUTORIZACION EXACTA
++
+EJECUCION REAL
++
+EVIDENCIA
++
+PRUEBA CUANDO APLIQUE
++
+LIBERACION AUTORIZADA
++
+CIERRE RECONCILIADO
+→
+MANTENIMIENTO LOCATIVO COMPRENSIBLE Y AUDITABLE
+```
+
+Nunca:
+
+```text
+PLANIFICADO = INICIADO
+```
+
+ni:
+
+```text
+TRABAJO TERMINADO = PRUEBA APROBADA = LIBERADO = DISPONIBLE = CERRADO
+```
+
+ni:
+
+```text
+FACTURA OR FOTO OR COMENTARIO = CIERRE TECNICO
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-044` deja diseñados los siguientes resultados de experiencia:
+
+1. entrada contextual desde el registro o mapa de instalaciones diseñado en `NEXO-UX-043`;
+2. bandeja de trabajo para mantenimiento locativo con prioridades y bloqueos explicables;
+3. experiencia de planes y obligaciones sin confundir regla recurrente con trabajo iniciado;
+4. captura de solicitudes y triage con preservación del reporte original;
+5. creación y revisión de órdenes de trabajo sobre un objeto principal inequívoco;
+6. programación y preparación de recursos sin anticipar ejecución;
+7. diagnóstico y ejecución técnica como hechos separados;
+8. integración visible de repuestos, materiales, proveedor, contratación y costo sin apropiarse de sus dominios;
+9. prueba posterior independiente;
+10. liberación separada de ejecución y de cierre;
+11. cierre reconciliado y reapertura no destructiva;
+12. recuperación ante bloqueo, concurrencia, operación offline y resultado remoto desconocido;
+13. adopción controlada del mantenimiento legacy de activos sin promover `planned` o `done` a verdad locativa;
+14. handoff a `NEXO-UX-045` sin absorber saneamiento, limpieza o plagas.
+
+La tarea no fija rutas web, nombres de componentes React, nombres físicos de tablas, RPC, Server Actions ni esquema de Supabase.
+
+#### 3. Topología contractual
+
+La tarea conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No crea una instancia `NEXO-UX-044::*` ni autoriza implementación física.
+
+#### 4. Base canónica consumida
+
+La experiencia consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.02` y `CAP-13.03`;
+- `NEXO-DOM-029`, para sujetos locativos, jerarquía, condición, criticidad y disponibilidad;
+- `NEXO-DOM-030`, como contrato propietario del mantenimiento locativo;
+- `NEXO-DOM-025`, cuando existen repuestos o materiales inventariables correlacionados;
+- `NEXO-DOM-028`, para hechos con relevancia financiera sin escritura contable directa;
+- `NEXO-AUTH-031`, para autoridad exacta sobre recursos de instalaciones;
+- `NEXO-AUTH-032`, para segregación entre reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir;
+- `NEXO-UX-032`, únicamente como experiencia previa del ciclo técnico de activos que no debe confundirse con el owner locativo;
+- `NEXO-UX-035`, únicamente cuando una intervención correlaciona repuestos con un activo bajo su contrato propietario;
+- `NEXO-UX-043`, como handoff de identidad y contexto locativo estable;
+- `VPROC-0055`, como proceso transversal de instalaciones aplicable al caso operativo;
+- el registro canónico vigente de requisitos de prueba;
+- el AS-IS remoto de mantenimiento de activos en `vento-nexo`, únicamente como base parcial de reutilización o refactorización.
+
+#### 5. Handoff recibido de `NEXO-UX-043`
+
+043 entrega exactamente el contexto locativo necesario para iniciar mantenimiento o reparación:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+PHYSICAL HIERARCHY
++
+CURRENT RELATIONS
++
+CONDITION
++
+AVAILABILITY + REASONS
++
+CRITICALITY
++
+RESPONSIBLE
++
+HISTORY
+→
+MAINTENANCE / REPAIR UX INPUT
+```
+
+044 no vuelve a crear la instalación, espacio, componente, red o punto de servicio.
+
+La experiencia conserva visible el contexto recibido para impedir que una solicitud quede huérfana o apunte por texto libre a un lugar distinto.
+
+#### 6. Objeto principal obligatorio
+
+Toda solicitud u orden debe resolver un objeto principal antes de una decisión material:
+
+```text
+PRIMARY SUBJECT
+=
+PHYSICAL_FACILITY
+OR PHYSICAL_SPACE
+OR FIXED_COMPONENT
+OR SERVICE_NETWORK
+OR SERVICE_POINT
+```
+
+Cuando el objeto real sea un activo individual con lifecycle propio:
+
+```text
+ASSET MAINTENANCE
+!=
+FACILITY MAINTENANCE
+```
+
+La UX deriva o transfiere el caso al owner correspondiente y conserva la relación con el reporte original.
+
+No se mantienen dos órdenes primarias competidoras para la misma intervención.
+
+#### 7. Proceso `VPROC-0055`
+
+La experiencia reconoce el proceso canónico de instalaciones:
+
+```text
+FACILITY_CASE_OPENED
+→ TRIAGED
+→ WORK_PLANNED
+→ RESOURCES_PENDING
+→ IN_EXECUTION
+→ VERIFICATION_PENDING
+→ RELEASE_PENDING
+→ FACILITY_CASE_CLOSED
+```
+
+Ese estado describe el **caso de instalación**.
+
+No sustituye los estados de la solicitud, de la obligación ni de la orden de trabajo.
+
+#### 8. Caso de instalación frente a orden de trabajo
+
+Se preserva:
+
+```text
+FACILITY CASE
+!=
+MAINTENANCE REQUEST
+!=
+WORK ORDER
+!=
+WORK EXECUTION
+```
+
+Un caso puede originar, relacionar o agrupar trabajo permitido por el contrato propietario, pero la interfaz nunca usa un único campo `status` para representar simultáneamente todas esas realidades.
+
+#### 9. Eventos empresariales del proceso
+
+La experiencia puede proyectar los seis eventos empresariales canónicos de `VPROC-0055` cuando corresponda:
+
+```text
+VPROC-0055.EVT-001
+VPROC-0055.EVT-002
+VPROC-0055.EVT-003
+VPROC-0055.EVT-004
+VPROC-0055.EVT-005
+VPROC-0055.EVT-006
+```
+
+044 no inventa eventos adicionales para llenar visualmente cada estado intermedio.
+
+Los hechos de dominio más detallados permanecen correlacionables con estos eventos de proceso sin sustituirlos.
+
+#### 10. Entradas de la experiencia
+
+Una necesidad puede llegar, según el contrato aplicable, desde:
+
+- un sujeto seleccionado en Registro o Mapa de 043;
+- una obligación programada;
+- un defecto o condición observada;
+- una falla reportada;
+- pérdida o restricción de disponibilidad;
+- un hallazgo de inspección;
+- una novedad locativa;
+- una recomendación técnica autorizada;
+- un disparador de calendario, uso, ciclo o medición;
+- una contingencia o emergencia.
+
+El origen se conserva.
+
+Abrir un caso no convierte el origen en diagnóstico ni en autorización de trabajo.
+
+#### 11. Bandeja de trabajo
+
+La experiencia prioriza trabajo pendiente en lugar de tablas técnicas.
+
+Como mínimo debe poder ofrecer vistas conceptuales equivalentes a:
+
+```text
+REQUIERE ATENCION
+VENCE PRONTO
+VENCIDO
+PENDIENTE DE TRIAGE
+PENDIENTE DE APROBACION
+RECURSOS PENDIENTES
+PROGRAMADO
+EN EJECUCION
+BLOQUEADO
+ESPERA PRUEBA
+ESPERA LIBERACION
+CIERRE PENDIENTE
+```
+
+Cada entrada muestra sujeto, prioridad explicable, estado, responsable, vencimiento o ventana cuando aplique y razón del bloqueo.
+
+#### 12. Búsqueda y filtros
+
+La bandeja permite filtrar, cuando exista dato autoritativo, por:
+
+- instalación o espacio;
+- sujeto principal;
+- tipo de mantenimiento;
+- estado del caso;
+- estado de solicitud u orden;
+- prioridad;
+- criticidad del sujeto;
+- disponibilidad;
+- responsable;
+- técnico o proveedor;
+- vencimiento;
+- origen;
+- necesidad de repuesto o servicio;
+- bloqueo vigente.
+
+Filtrar o agrupar no modifica el expediente.
+
+#### 13. Plan de mantenimiento
+
+La vista del plan presenta como mínimo:
+
+- identidad y versión;
+- vigencia;
+- sujeto o alcance;
+- tipo de mantenimiento;
+- disparador;
+- frecuencia, umbral o condición cuando aplique;
+- ventana;
+- procedimiento vigente;
+- recursos requeridos;
+- evidencia mínima;
+- prueba requerida o no aplicabilidad autorizada;
+- regla de liberación;
+- owner del plan;
+- siguiente obligación proyectada.
+
+Editar una regla material produce revisión conforme al contrato propietario; no reescribe obligaciones históricas.
+
+#### 14. Plan frente a obligación
+
+La experiencia comunica explícitamente:
+
+```text
+MAINTENANCE_PLAN
+!=
+MAINTENANCE_OBLIGATION
+```
+
+El plan es una regla reutilizable.
+
+La obligación es una ocurrencia exigible.
+
+Una obligación visible como `DUE` u `OVERDUE` no se muestra como trabajo iniciado.
+
+#### 15. Estados de obligación
+
+La experiencia preserva los estados canónicos:
+
+```text
+UPCOMING
+DUE
+OVERDUE
+SATISFIED
+CANCELLED
+SUPERSEDED
+EXCEPTION
+```
+
+`SATISFIED` requiere resolución compatible con la política.
+
+Mover una fecha no elimina una obligación vencida histórica.
+
+Una excepción debe mostrar motivo, autoridad, vigencia y condición de salida.
+
+#### 16. Crear solicitud
+
+La acción de solicitar mantenimiento o reparación parte de un sujeto exacto o de un origen reconciliable.
+
+La captura mínima incluye, cuando aplique:
+
+- sujeto principal propuesto;
+- reportante o fuente;
+- síntoma o necesidad original;
+- momento;
+- condición observada;
+- impacto operativo informado;
+- urgencia o severidad observada;
+- evidencia inicial;
+- relación con obligación, inspección, novedad o evento de origen;
+- contexto de disponibilidad actual.
+
+La interfaz diferencia claramente hechos observados de interpretaciones del reportante.
+
+#### 17. Solicitar no autoriza
+
+Se preserva:
+
+```text
+REQUESTED
+!=
+APPROVED
+!=
+AUTHORIZED_TO_EXECUTE
+```
+
+Una solicitud confirmada muestra recibo e identidad del caso, pero no presenta la reparación como iniciada.
+
+#### 18. Estados de solicitud
+
+La experiencia conserva al menos:
+
+```text
+OPEN
+TRIAGED
+APPROVED
+REJECTED
+CANCELLED
+CONVERTED_TO_WORK_ORDER
+```
+
+`REJECTED` muestra motivo.
+
+`CANCELLED` conserva actor y causa.
+
+`CONVERTED_TO_WORK_ORDER` conserva referencia a la orden resultante y no elimina la solicitud original.
+
+#### 19. Triage
+
+El triage permite decidir de forma explícita:
+
+- sujeto principal confirmado;
+- owner del dominio;
+- tipo de atención;
+- prioridad;
+- necesidad de contención;
+- necesidad de diagnóstico;
+- obligación relacionada;
+- impacto operativo;
+- necesidad de parada o restricción;
+- necesidad de repuesto, proveedor o contratación;
+- necesidad de escalamiento;
+- posible duplicado.
+
+Triage no equivale a ejecución ni a diagnóstico terminado.
+
+#### 20. Derivación a otro owner
+
+Cuando el triage determina que el objeto o workflow pertenece a otro dominio, la experiencia conserva:
+
+- reporte original;
+- sujeto observado;
+- clasificación y motivo;
+- owner de destino;
+- expediente resultante cuando exista;
+- estado del handoff.
+
+No se cierra ficticiamente el caso original para ocultar la transferencia.
+
+#### 21. Prioridad y criticidad
+
+La prioridad del trabajo puede consumir criticidad, impacto, severidad, disponibilidad, vencimiento, riesgo y ventana operacional.
+
+La interfaz diferencia:
+
+```text
+CRITICALITY OF SUBJECT
+!=
+CURRENT WORK PRIORITY
+```
+
+044 no inventa una escala numérica universal ni un SLA que no exista en una política propietaria.
+
+#### 22. Aprobación y autorización de trabajo
+
+Cuando la política exige decisión previa, la experiencia presenta una etapa explícita de aprobación o autorización.
+
+Debe revalidar el alcance vigente y mostrar, según corresponda:
+
+- sujeto;
+- trabajo solicitado;
+- revisión;
+- impacto;
+- ventana;
+- recursos;
+- competencias;
+- proveedor;
+- repuestos o materiales;
+- restricciones físicas o de seguridad;
+- referencia comercial o presupuestal cuando aplique;
+- prueba requerida;
+- regla de liberación.
+
+La aprobación económica no sustituye autorización técnica.
+
+#### 23. Orden de trabajo
+
+La orden de trabajo representa el mandato técnico autorizado para una intervención definida.
+
+La vista debe poder mostrar:
+
+- identidad estable;
+- revisión;
+- sujeto principal;
+- solicitud u obligación de origen;
+- diagnóstico de referencia cuando exista;
+- alcance autorizado;
+- tipo de mantenimiento;
+- prioridad;
+- ventana;
+- responsable técnico;
+- proveedor cuando aplique;
+- procedimiento;
+- recursos;
+- repuestos y materiales previstos;
+- impacto esperado sobre disponibilidad;
+- prueba requerida;
+- autoridad o regla de liberación;
+- estado;
+- bloqueos y motivo cuando existan.
+
+#### 24. Estados de orden de trabajo
+
+Se preservan conceptualmente:
+
+```text
+DRAFT
+AUTHORIZED
+SCHEDULED
+IN_PROGRESS
+BLOCKED
+AWAITING_TEST
+AWAITING_RELEASE
+CLOSED
+CANCELLED
+SUPERSEDED
+```
+
+La interfaz no colapsa esos estados con los del caso `VPROC-0055`.
+
+#### 25. Revisión de orden
+
+Un cambio material de sujeto, alcance, procedimiento, proveedor, prueba o criterio de liberación exige revisión o decisión equivalente.
+
+La experiencia muestra qué revisión está vigente y qué cambió.
+
+Una revisión nueva no sobrescribe la versión que ya produjo autorización, reserva, ejecución, evidencia o efecto de disponibilidad.
+
+#### 26. Programación
+
+Programar define una ventana prevista.
+
+Debe poder considerar:
+
+- ventana autorizada;
+- disponibilidad del espacio;
+- interferencia con producción, venta, almacenamiento o atención;
+- técnico o proveedor;
+- recursos;
+- repuestos;
+- dependencias;
+- necesidad de cierre parcial o total;
+- contingencia.
+
+Se preserva:
+
+```text
+SCHEDULED
+!=
+STARTED
+```
+
+#### 27. Recursos pendientes
+
+Si el trabajo espera un recurso, la UX muestra el bloqueo de forma concreta:
+
+- repuesto;
+- material;
+- proveedor;
+- técnico;
+- permiso;
+- acceso;
+- ventana;
+- presupuesto o contratación cuando corresponda;
+- dependencia técnica.
+
+El bloqueo conserva owner y condición exacta de salida.
+
+#### 28. Diagnóstico
+
+El diagnóstico registra una conclusión o hipótesis técnica separada de la reparación.
+
+La experiencia debe poder mostrar:
+
+- síntoma o hallazgo de origen;
+- sujeto;
+- condición observada;
+- causa o hipótesis;
+- método;
+- actor técnico;
+- evidencia;
+- recomendación;
+- trabajo requerido;
+- necesidad de repuesto, proveedor, parada o prueba;
+- incertidumbre o diagnóstico adicional cuando aplique.
+
+Se preserva:
+
+```text
+DIAGNOSIS
+!=
+REPAIR
+```
+
+#### 29. Ejecución técnica
+
+El inicio de ejecución exige confirmación server-side de la revisión y autoridad vigentes.
+
+Durante el trabajo se registra, cuando aplique:
+
+- inicio y fin reales;
+- técnico o proveedor;
+- procedimiento ejecutado;
+- tareas realizadas;
+- desviaciones;
+- materiales y repuestos efectivamente usados;
+- componentes retirados, instalados o ajustados;
+- mediciones técnicas pertinentes;
+- condición antes y después;
+- evidencia;
+- incidencias;
+- resultado técnico informado;
+- necesidad de prueba, retrabajo o escalamiento.
+
+#### 30. Ejecución parcial o bloqueada
+
+Una ejecución parcial no se presenta como terminada.
+
+La UX permite conservar:
+
+```text
+WORK PERFORMED SO FAR
++
+REMAINING SCOPE
++
+BLOCKER
++
+BLOCKER OWNER
++
+EXIT CONDITION
+```
+
+Un bloqueo no se resuelve cambiando manualmente la orden a `CLOSED`.
+
+#### 31. Repuestos y materiales
+
+Cuando existe repuesto inventariable:
+
+```text
+TEXT DESCRIPTION OF PART
+!=
+INVENTORY RESERVATION OR CONSUMPTION
+```
+
+La experiencia muestra la relación con:
+
+- orden;
+- sujeto intervenido;
+- producto o repuesto canónico;
+- cantidad y unidad;
+- lote, serial o identidad cuando aplique;
+- movimiento de inventario;
+- actor y momento;
+- resultado de instalación.
+
+Cuando la intervención también pertenece al ciclo de un activo, se consumen las reglas aplicables de `NEXO-UX-035` sin duplicar su autoridad.
+
+#### 32. Material no inventariable
+
+Un material no controlado individualmente puede quedar como uso técnico informado cuando la política lo permita.
+
+La interfaz no ofrece texto libre como vía para evitar un movimiento de inventario que sí sea obligatorio.
+
+#### 33. Proveedor externo
+
+Un proveedor puede aportar diagnóstico, ejecución y evidencia dentro de su alcance.
+
+La experiencia conserva:
+
+```text
+PROVIDER EXECUTED
+!=
+TECHNICALLY ACCEPTED
+!=
+RELEASED
+!=
+CLOSED
+```
+
+El proveedor no se convierte en autoridad interna de disponibilidad por cargar una factura, certificado o informe.
+
+#### 34. Frontera con ORIGO
+
+Cuando se requiere compra o contratación, la UX de 044 puede mostrar el handoff y su estado, pero no recrea el ciclo comercial.
+
+ORIGO conserva contratación y recepción empresarial.
+
+NEXO conserva necesidad técnica, sujeto, diagnóstico, alcance, ejecución, aceptación técnica, prueba, liberación y cierre técnico.
+
+Se preserva:
+
+```text
+SERVICE PURCHASED
+!=
+WORK EXECUTED
+!=
+TECHNICALLY ACCEPTED
+```
+
+#### 35. Frontera con NUMERA
+
+La experiencia puede mostrar costo informado con fuente y vínculo al expediente.
+
+No presenta ese valor como decisión contable.
+
+Se preserva:
+
+```text
+OPERATIONAL COST INFORMATION
+!=
+ACCOUNTING RECOGNITION
+```
+
+La clasificación financiera pertenece a NUMERA conforme al contrato aplicable.
+
+#### 36. Evidencia de trabajo
+
+La evidencia se captura vinculada al hecho que soporta.
+
+Según política y criticidad puede incluir:
+
+- reporte original;
+- diagnóstico;
+- fotografías o documentos;
+- procedimiento o revisión;
+- actor técnico;
+- proveedor;
+- tiempos reales;
+- materiales y repuestos;
+- antes y después;
+- mediciones;
+- resultado;
+- prueba;
+- decisión de liberación;
+- firmas o aprobaciones cuando apliquen.
+
+Una fotografía aislada no cierra la orden.
+
+#### 37. Prueba posterior
+
+Cuando la política exige prueba, la UX crea un hecho separado de la ejecución.
+
+Debe mostrar:
+
+- orden y ejecución evaluadas;
+- sujeto;
+- método o procedimiento;
+- criterio de aceptación;
+- actor competente;
+- momento;
+- medición u observación;
+- evidencia;
+- resultado;
+- desviaciones;
+- necesidad de retrabajo.
+
+#### 38. Resultado de prueba
+
+La experiencia distingue como mínimo:
+
+```text
+PASS
+FAIL
+INCONCLUSIVE
+```
+
+Se preserva:
+
+```text
+FAIL
+→
+NO POSITIVE RELEASE
+```
+
+Y cuando se requiere liberación positiva:
+
+```text
+INCONCLUSIVE
+→
+NO POSITIVE RELEASE
+```
+
+El criterio de aceptación no se edita retrospectivamente para convertir un fallo en PASS.
+
+#### 39. Liberación
+
+La liberación es una decisión autorizada sobre aptitud para un propósito operativo.
+
+La revisión previa muestra, cuando aplique:
+
+- sujeto;
+- propósito de uso;
+- orden y ejecución;
+- prueba o justificación de no aplicabilidad;
+- condición resultante;
+- restricciones residuales;
+- bloqueos vigentes;
+- autoridad;
+- evidencia;
+- siguiente obligación.
+
+La decisión puede proyectar:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+sin convertir esos valores en estados de la orden.
+
+#### 40. Trabajo terminado no es liberación
+
+Se preserva:
+
+```text
+WORK COMPLETED
+!=
+TEST PASSED
+!=
+RELEASED
+!=
+AVAILABLE
+```
+
+Una orden técnicamente terminada puede mantener el sujeto restringido o indisponible.
+
+#### 41. Cierre técnico
+
+Cerrar significa reconciliar el expediente, no esconder pendientes.
+
+Antes del cierre la UX verifica, según aplicabilidad:
+
+1. alcance ejecutado o resolución explícita;
+2. ejecución registrada;
+3. repuestos y movimientos reconciliados;
+4. diagnóstico final cuando aplique;
+5. prueba resuelta;
+6. liberación resuelta;
+7. condición y disponibilidad coherentes;
+8. evidencia mínima completa;
+9. costos informados con fuente cuando existan;
+10. pendientes derivados con owner y salida;
+11. obligaciones resueltas explícitamente;
+12. autoridad de cierre.
+
+#### 42. Liberación y cierre son distintos
+
+Se preserva:
+
+```text
+RELEASED
+!=
+CLOSED
+```
+
+Un sujeto puede estar liberado mientras queda conciliación documental válida pendiente.
+
+Un expediente puede cerrar con el sujeto aún `UNAVAILABLE` si existe un resultado final legítimo y un handoff trazable a otro owner.
+
+#### 43. Reapertura
+
+La reapertura conserva el cierre anterior.
+
+La UX muestra:
+
+- cierre original;
+- motivo de reapertura;
+- actor autorizado;
+- hecho o evidencia disparadora;
+- momento;
+- estado resultante;
+- nueva revisión u orden cuando corresponda.
+
+Nunca:
+
+```text
+REOPEN
+→
+DELETE PREVIOUS CLOSURE
+```
+
+#### 44. Emergencia
+
+La emergencia puede acelerar triage, autorización y ejecución únicamente conforme a política aprobada.
+
+No elimina retrospectivamente:
+
+- sujeto;
+- actor;
+- trabajo realizado;
+- materiales críticos;
+- evidencia mínima;
+- prueba requerida;
+- liberación;
+- justificación de excepción.
+
+La contención temporal permanece visible cuando no resuelve la causa.
+
+#### 45. Condición y disponibilidad
+
+La experiencia consume las dimensiones de 043 sin mezclarlas con estado de trabajo.
+
+```text
+CONDITION
+!=
+AVAILABILITY
+!=
+WORK ORDER STATUS
+```
+
+Una reparación puede cambiar condición observada solo mediante el hecho propietario correspondiente.
+
+La disponibilidad se recalcula con razones vigentes después de prueba o liberación y no se fuerza a `AVAILABLE` por cerrar una orden.
+
+#### 46. Frontera con mantenimiento de activos
+
+El mantenimiento de activos conserva su owner y su experiencia previa.
+
+044 diseña mantenimiento locativo sobre sujetos de instalaciones.
+
+Cuando una intervención afecta ambos ámbitos, se elige un objeto principal y se muestran las relaciones secundarias.
+
+No se duplica la misma reparación en dos expedientes primarios.
+
+#### 47. Estado AS-IS de `vento-nexo`
+
+La implementación remota observada ofrece mantenimiento de activos mediante `asset_maintenance_records` y superficies en la ficha del activo.
+
+El registro legacy observado incluye, entre otros:
+
+- `status`;
+- `maintenance_type`;
+- `scheduled_date`;
+- `performed_date`;
+- `maintenance_provider`;
+- `work_done`;
+- `parts_replaced`;
+- `replaced_parts`;
+- `cost`;
+- `next_scheduled_date`;
+- `notes`.
+
+También existe una acción `registerAssetMaintenance` protegida por el permiso amplio legacy `inventory.stock`.
+
+No se observó en el repositorio una superficie equivalente que demuestre un ciclo locativo completo de solicitudes y órdenes de trabajo para instalaciones.
+
+#### 48. Semántica legacy rechazada
+
+La acción legacy observada puede actualizar directamente el activo de esta forma conceptual:
+
+```text
+planned
+→ equipment_status = en_mantenimiento
+→ lifecycle_status = en_reparacion
+```
+
+Y:
+
+```text
+done
+→ equipment_status = operativo
+→ lifecycle_status = activo
+```
+
+044 no adopta esas equivalencias para instalaciones ni las usa como oracle del ciclo objetivo.
+
+Se preserva:
+
+```text
+planned != IN_PROGRESS
+```
+
+Y:
+
+```text
+done
+!= TEST PASSED
+!= RELEASED
+!= AVAILABLE
+!= CLOSED
+```
+
+#### 49. Estrategia de adopción
+
+La clasificación queda:
+
+```text
+ASSET MAINTENANCE UI / HISTORY
+→ REUSE_OR_REFACTOR AS PARTIAL PATTERN
+
+LOCATIVE REQUEST + WORK ORDER + TEST + RELEASE + CLOSURE
+→ BUILD MISSING WORKFLOW
+
+LEGACY AUTOMATIC STATE COUPLING
+→ DO NOT ADOPT AS TARGET SEMANTICS
+```
+
+Se reutilizan componentes o patrones únicamente cuando preserven el contrato canónico.
+
+#### 50. Autorización server-side
+
+La autoridad final nunca procede de:
+
+- botón visible;
+- URL;
+- query string;
+- nombre de rol;
+- permiso `inventory.stock`;
+- estar asignado como técnico;
+- poseer físicamente una llave o herramienta;
+- ser reportante;
+- ser responsable del espacio;
+- existir una orden visible.
+
+Toda mutación sensible revalida recurso, acción, actor, territorio, estado, revisión y política.
+
+#### 51. Segregación de decisiones
+
+La UX conserva las decisiones transversales de `NEXO-AUTH-032`:
+
+```text
+REPORT
+REQUEST
+APPROVE
+EXECUTE
+VERIFY
+RELEASE
+CLOSE
+REOPEN
+```
+
+Una capacidad sobre una etapa no concede autoridad transitiva sobre otra.
+
+Cuando exista una acción especializada adicional, conserva su propia autoridad.
+
+#### 52. Actor efectivo
+
+En dispositivos compartidos la experiencia resuelve el actor humano efectivo antes de una decisión sensible.
+
+El dispositivo no se convierte en técnico, aprobador, verificador ni liberador.
+
+Un cambio de actor obliga a revalidar capacidades y contexto.
+
+#### 53. Concurrencia
+
+Dos decisiones incompatibles sobre la misma revisión no pueden confirmar silenciosamente.
+
+Ejemplos:
+
+```text
+RELEASE
+vs
+NEW BLOCKING FINDING
+```
+
+```text
+CLOSE
+vs
+NEW EXECUTION RESULT
+```
+
+```text
+CANCEL WORK ORDER
+vs
+START EXECUTION
+```
+
+La intención posterior revalida estado persistido y muestra el conflicto.
+
+#### 54. Idempotencia
+
+Cada mutación material utiliza una identidad estable de operación o equivalente.
+
+Un doble click, retry o reenvío no puede:
+
+- crear dos solicitudes;
+- crear dos órdenes;
+- iniciar dos ejecuciones;
+- consumir dos veces el mismo repuesto;
+- registrar dos pruebas equivalentes como una sola acción;
+- liberar dos veces;
+- cerrar dos veces;
+- reabrir dos veces el mismo hecho lógico.
+
+#### 55. Operación offline
+
+Offline puede conservar de forma local o en cola, según el contrato aplicable:
+
+- reporte;
+- evidencia pendiente;
+- observación;
+- solicitud;
+- intención de trabajo todavía no confirmada.
+
+No presenta como comprometidos sin confirmación autoritativa:
+
+- aprobación;
+- inicio material de una orden;
+- consumo de inventario;
+- liberación;
+- cierre;
+- reapertura.
+
+Al reconectar se revalidan actor, autoridad, revisión y estado.
+
+#### 56. Resultado remoto desconocido
+
+Ante timeout posterior a una mutación:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO CREATE ANOTHER OPERATION
+```
+
+La UX conserva la identidad de la intención y reconcilia antes de habilitar otra operación con efectos equivalentes.
+
+#### 57. Efectos compuestos
+
+Una acción puede producir varios efectos correlacionados.
+
+La experiencia no presenta éxito total cuando solo una parte confirmó.
+
+Ejemplo:
+
+```text
+WORK EXECUTION COMMITTED
++
+SPARE CONSUMPTION UNKNOWN
++
+AVAILABILITY UPDATE NOT CONFIRMED
+!=
+FULL SUCCESS
+```
+
+El resultado parcial queda explícitamente pendiente de reconciliación.
+
+#### 58. Error y recuperación
+
+Todo error material explica:
+
+- qué acción se intentó;
+- qué se confirmó;
+- qué no se confirmó;
+- si existe resultado desconocido;
+- si el expediente quedó bloqueado;
+- owner del bloqueo;
+- condición de salida;
+- siguiente acción segura.
+
+No se invita a “intentar de nuevo” cuando primero corresponde reconciliar.
+
+#### 59. Recibo e historial
+
+Después de una decisión confirmada la experiencia muestra un recibo con:
+
+- sujeto;
+- expediente;
+- acción;
+- actor;
+- instante;
+- revisión;
+- resultado;
+- evidencia relevante;
+- cambio de estado cuando aplique;
+- siguiente paso o pendiente.
+
+El historial conserva solicitudes, revisiones, diagnósticos, ejecuciones, pruebas, liberaciones, cierres y reaperturas sin sobrescribir el pasado.
+
+#### 60. Frontera con `NEXO-UX-045`
+
+044 entrega a 045 sujetos locativos estables y un patrón transversal ya segregado de solicitud, ejecución, verificación y liberación.
+
+`NEXO-UX-045` permanece propietaria de:
+
+- programa de limpieza y saneamiento;
+- frecuencias propias;
+- procedimientos sanitarios;
+- químicos, concentración, lote y tiempo de contacto;
+- control de contaminación cruzada;
+- ejecución de limpieza;
+- verificación sanitaria;
+- liberación sanitaria;
+- control de plagas y evidencia especializada por área.
+
+No se modela limpieza rutinaria como mantenimiento para reutilizar la pantalla de 044.
+
+#### 61. Frontera con `NEXO-UX-046`
+
+046 conserva:
+
+- inspecciones físicas generales;
+- plantillas y hallazgos;
+- calibración y control metrológico;
+- servicios;
+- medidores;
+- lecturas;
+- alertas y contingencias.
+
+Un hallazgo o alerta puede originar una solicitud de mantenimiento, pero conserva identidad y owner de origen.
+
+#### 62. Frontera con `NEXO-UX-047`
+
+047 conserva:
+
+- llaves y medios de acceso físico;
+- obras y adecuaciones;
+- cierres temporales;
+- novedades locativas.
+
+Una solicitud inicialmente recibida en 044 puede transferirse a obra durante triage o diagnóstico, conservando trazabilidad.
+
+No se mantiene una orden de reparación competidora salvo contención temporal explícita.
+
+#### 63. Frontera con `NEXO-UX-048`
+
+048 permanece propietaria de la validación integrada del prototipo con actores reales o escenarios de validación autorizados.
+
+044 define el contrato UX de mantenimiento y sus oráculos, pero no afirma sesiones humanas, mantenimiento real, tiempos reales ni pruebas operativas realizadas.
+
+#### 64. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el registro vigente ya protege la separación entre plan, solicitud, orden, ejecución, prueba, liberación y cierre;
+- la cobertura vigente ya exige objeto principal, identidad, historial, autorización, repuestos, idempotencia y fronteras de integración;
+- esta tarea materializa la experiencia de esas obligaciones sin introducir una obligación verificable nueva fuera de los contratos aprobados.
+
+#### 65. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar el registro:
+
+- `TREQ-NEXO-017`, cobertura directa de instalaciones, planes, solicitudes, órdenes, ejecución, prueba, liberación, cierre y reapertura y referencia expresa a esta tarea;
+- `TREQ-NEXO-014`, para separación del ciclo de mantenimiento, repuestos, prueba y liberación;
+- `TREQ-NEXO-018`, para fronteras con workflows especializados de instalaciones;
+- `TREQ-INTEGRATION-018`, para coordinación con ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos;
+- requisitos transversales de autorización, persistencia, idempotencia, evidencia y experiencia aplicables al package de implementación.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza 04A.
+
+#### 66. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | PASS | Auditoría estática del artefacto: título, metadata, topología, proceso, estados de solicitud y orden, fronteras, TREQ afectados y continuidad coherentes con las fuentes canónicas consumidas. |
+| LOCAL | PASS | Consistencia interna comprobada entre entrada desde 043, solicitud, triage, autorización, orden, programación, diagnóstico, ejecución, repuestos, prueba, liberación, cierre, reapertura y handoff hacia 045–048. |
+| REMOTA | PASS | Fuentes remotas vigentes de `vento-shell`, contratos generados de `VPROC-0055` y AS-IS de mantenimiento de activos en `vento-nexo` fueron inspeccionados antes de redactar el diseño. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron mantenimientos, reparaciones, órdenes, pruebas, liberaciones, sesiones con usuarios ni mediciones reales durante la tarea documental. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-044` usa `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`; el contrato documental no materializa instalaciones, órdenes, datos ni intervenciones. |
+
+#### 67. Criterios de aceptación
+
+- [x] Se conserva exactamente el título canónico de `NEXO-UX-044`.
+- [x] La tarea consume el handoff completo de `NEXO-UX-043`.
+- [x] El objeto principal evita reparaciones competidoras entre activo e instalación.
+- [x] El caso `VPROC-0055` queda separado de solicitud, orden y ejecución.
+- [x] Se preservan los estados canónicos de `VPROC-0055` sin convertirlos en estados de orden.
+- [x] Plan y obligación permanecen separados.
+- [x] Vencimiento no equivale a trabajo iniciado.
+- [x] Solicitud y triage permanecen separados.
+- [x] Solicitud no equivale a autorización.
+- [x] Triage puede transferir owner sin borrar el reporte original.
+- [x] Orden y ejecución permanecen separadas.
+- [x] Programado no equivale a iniciado.
+- [x] Diagnóstico no equivale a reparación.
+- [x] Se diseñan bloqueos con owner y condición de salida.
+- [x] Repuestos inventariables no se sustituyen por texto libre.
+- [x] Compra o contratación no equivale a aceptación técnica.
+- [x] Costo informado no equivale a reconocimiento contable.
+- [x] Prueba permanece separada de ejecución.
+- [x] Prueba fallida o inconclusa bloquea liberación positiva cuando corresponde.
+- [x] Trabajo terminado no equivale a liberación.
+- [x] Liberación no equivale a cierre.
+- [x] Cierre exige reconciliación y autoridad.
+- [x] Reapertura conserva el cierre anterior.
+- [x] Emergencia no elimina trazabilidad obligatoria.
+- [x] Condición, disponibilidad y estado de orden permanecen separados.
+- [x] El AS-IS `asset_maintenance_records` se clasifica como patrón parcial reutilizable o refactorizable.
+- [x] `planned` y `done` legacy no se adoptan como oráculos canónicos.
+- [x] `inventory.stock` no se adopta como autoridad final de mantenimiento.
+- [x] Se cubren actor efectivo, concurrencia, idempotencia, offline y resultado desconocido.
+- [x] 045, 046, 047 y 048 conservan sus responsabilidades.
+- [x] Se crean 0 requisitos y se modifican 0 requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza código, Supabase, migraciones, despliegue ni intervención física.
+
+#### 68. Límites
+
+`NEXO-UX-044` no:
+
+- crea tablas, vistas, columnas, funciones, RPC, triggers, RLS, Storage ni migraciones;
+- modifica Supabase local o remoto;
+- crea código o componentes en `vento-nexo`;
+- fija nombres técnicos definitivos de rutas, endpoints, tablas o componentes;
+- ejecuta mantenimiento o reparación real;
+- crea órdenes reales;
+- consume repuestos reales;
+- contrata proveedores;
+- reconoce costos contables;
+- cambia condición o disponibilidad de instalaciones reales;
+- crea una segunda identidad locativa;
+- convierte un activo en componente fijo o viceversa por inferencia;
+- define limpieza, saneamiento o plagas de 045;
+- define inspecciones, calibración, servicios, medidores o alertas de 046;
+- define llaves, acceso físico, obras, cierres temporales o novedades de 047;
+- ejecuta validación integrada del prototipo de 048;
+- inventa `PermissionKey`, roles, aliases, grants o scopes;
+- modifica requisitos de prueba;
+- modifica 04A;
+- cambia `active-sequence.json`;
+- autoriza una instancia física;
+- aprueba ni ejecuta un package E5.
+
+#### 69. Handoff hacia `NEXO-UX-045`
+
+044 entrega a 045:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+WORK-PENDING NAVIGATION PATTERN
++
+REPORT / REQUEST / EXECUTE / VERIFY / RELEASE SEPARATION
++
+EVIDENCE PATTERN
++
+BLOCKER + OWNER + EXIT CONDITION
++
+AUTHORIZATION / REVISION / IDEMPOTENCY RULES
++
+NO FALSE CLOSURE
+→
+SANITATION / CLEANING / PEST UX INPUT
+```
+
+045 reutiliza únicamente las reglas transversales compatibles y define su propio programa sanitario, químicos, frecuencias, verificación, desviaciones y liberación.
+
+#### 70. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área`
 ### [ ] NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
 ### [ ] NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
 ### [ ] NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
