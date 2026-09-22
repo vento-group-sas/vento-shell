@@ -39366,7 +39366,1175 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos`
-### [ ] NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
+### ✅ NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
+**Tarea siguiente:** NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
+**Tipo de tarea:** documental; validación canónica por escenarios del prototipo objetivo del subdominio de activos, reutilizables, kits, repuestos y contenedores mediante casos representativos de decoración, vajilla, herramientas y repuestos, comprobando clasificación, granularidad, búsqueda, captura, evidencia, custodia, ubicación, condición, conteo, autorización, recuperación y cierre sin ejecutar sesiones humanas, inventario físico, materialización ni cambios de runtime
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Validar que el prototipo canónico compuesto por `NEXO-UX-026` a `NEXO-UX-039` conserva un comportamiento coherente cuando se aplica a objetos físicos representativos y deliberadamente heterogéneos: decoración, vajilla, herramientas y repuestos.
+
+La validación no parte del nombre comercial del objeto. Parte de la evidencia, de la necesidad de identidad individual o control por cantidad, de su ciclo operativo y de los contratos canónicos ya aprobados.
+
+La regla raíz queda:
+
+```text
+PROTOTIPO CANÓNICO COMPUESTO
++
+ESCENARIO REPRESENTATIVO
++
+CLASE Y GRANULARIDAD VERIFICABLES
++
+ESTADO OBSERVADO
++
+AUTORIDAD Y FRONTERAS VIGENTES
++
+RESULTADO ESPERADO TRAZABLE
+→
+VALIDACIÓN DOCUMENTAL DEL DISEÑO
+```
+
+Y se preserva:
+
+```text
+VALIDACIÓN DOCUMENTAL DEL PROTOTIPO
+!=
+SESIÓN HUMANA EJECUTADA
+!=
+CERTIFICACIÓN FÍSICA
+!=
+IMPLEMENTACIÓN DE RUNTIME
+!=
+APROBACIÓN PARA E5
+```
+
+La aprobación y remisión a E5 permanecen reservadas a `NEXO-UX-042`.
+
+#### 2. Resultado canónico
+
+040 valida que el prototipo objetivo:
+
+1. no clasifica objetos por nombre, categoría, ruta legacy o metadata histórica;
+2. conserva exactamente una clase primaria cuando la evidencia es concluyente;
+3. permite mantener clasificación pendiente cuando la evidencia es insuficiente;
+4. diferencia identidad individual de control por cantidad;
+5. diferencia kit, miembro, repuesto, contenedor físico, LPN y stock;
+6. preserva búsqueda y escaneo como mecanismos de resolución, no como mutaciones;
+7. separa observación de ubicación de movimiento autoritativo;
+8. separa tenencia observada de custodia aceptada;
+9. separa condición observada de disponibilidad, reparación, pérdida y baja;
+10. preserva conteos como observación y no como ajuste automático;
+11. mantiene repuestos en existencia hasta reserva, consumo, instalación, devolución o disposición correlacionados;
+12. impide duplicar una misma existencia como cantidad y como identidad individual;
+13. impide contabilizar un kit como existencia adicional sobre sus miembros;
+14. impide confundir contenedor físico con LPN y con contenido;
+15. permite capturar candidatos de inventario inicial sin alta automática;
+16. hace visible la incertidumbre y el bloqueo cuando falta autoridad exacta;
+17. preserva idempotencia, concurrencia, operación offline y reconciliación de resultado desconocido;
+18. conserva evidencia y privacidad sin convertir el plan canónico en repositorio de datos sensibles;
+19. mantiene las superficies legacy como evidencia AS-IS y no como oráculo del modelo objetivo;
+20. entrega a `NEXO-UX-041` dimensiones medibles sin fijar todavía línea base, meta ni umbral.
+
+La conclusión documental es que las cuatro familias pueden recorrer el mismo lenguaje de interacción sin perder las diferencias de clase y granularidad.
+
+#### 3. Naturaleza de la validación
+
+La tarea valida decisiones del diseño mediante recorrido trazable de escenarios.
+
+Cada escenario se considera cubierto únicamente cuando existe respuesta explícita para:
+
+- qué sujeto se observa;
+- qué clase puede corresponder;
+- qué granularidad aplica;
+- cómo se resuelve su identidad;
+- qué información puede mostrarse;
+- qué acción está permitida o bloqueada;
+- qué evidencia debe conservarse;
+- qué ocurre ante discrepancia;
+- qué owner recibe la diferencia;
+- qué resultado debe quedar visible al operador.
+
+No se inventan participantes, tiempos medidos, clics observados, tasas de éxito, errores humanos, fotografías, seriales, inventario real ni resultados de hardware.
+
+#### 4. Handoff recibido desde `NEXO-UX-039`
+
+040 consume sin redefinir:
+
+```text
+INITIAL BASELINE AS RECONCILED OBSERVATION
++
+OBSERVATION / CANDIDATE / CANONICAL RECORD SEPARATION
++
+SERIALIZED IDENTITY VS QUANTITY CONTROL
++
+PHYSICAL_CONTAINER VS LPN SEPARATION
++
+NO DOUBLE REPRESENTATION
++
+SEARCH / SCAN RECOVERY
++
+EVIDENCE-BASED REVIEW
++
+NO OBSERVATION-IMPLIED OWNERSHIP OR CUSTODY
++
+EXACT AUTHORIZATION BEFORE MATERIALIZATION
++
+SAFE PARTIAL-CAMPAIGN CLOSURE
+```
+
+El prototipo se considera inválido si un escenario representativo necesita romper cualquiera de estas fronteras para poder completarse.
+
+#### 5. Entradas canónicas preservadas
+
+040 consume además:
+
+- las siete clases primarias de `NEXO-DOM-001`;
+- el comportamiento de catálogo de `NEXO-UX-030`;
+- custodia, préstamo, devolución y transferencia de `NEXO-UX-031`;
+- condición, daño, pérdida, reparación y baja de `NEXO-UX-032`;
+- definición, instancia y completitud de kits de `NEXO-UX-033`;
+- conteos de activos y reutilizables de `NEXO-UX-034`;
+- repuestos, compatibilidad y reposición de `NEXO-UX-035`;
+- búsqueda transversal de `NEXO-UX-036`;
+- impresión y reimpresión de `NEXO-UX-037`;
+- captura mediante escáner y etiquetas dañadas de `NEXO-UX-038`;
+- inventario inicial y reconciliación de `NEXO-UX-039`;
+- la evidencia AS-IS de `OPS-ACT-001`.
+
+040 no reabre esos contratos para simplificar los escenarios.
+
+#### 6. Objeto de validación
+
+El objeto validado es el prototipo canónico compuesto del subdominio.
+
+No se ha identificado como fuente autoritativa de esta tarea un prototipo clicable único que sustituya los contratos anteriores.
+
+Por tanto:
+
+```text
+CANONICAL COMPOSED PROTOTYPE
+=
+CONJUNTO COHERENTE DE FLUJOS, REGLAS, ESTADOS UX, FRONTERAS Y HANDOFFS APROBADOS
+```
+
+Y:
+
+```text
+CURRENT LEGACY SCREEN
+!=
+TARGET PROTOTYPE ORACLE
+```
+
+Una ruta existente puede aportar evidencia AS-IS, pero no puede invalidar una regla canónica únicamente porque todavía implemente un modelo anterior.
+
+#### 7. Clases primarias que deben permanecer distinguibles
+
+Los escenarios se evalúan contra exactamente estas clases:
+
+```text
+CONSUMABLE
+QUANTITY_STOCK
+REUSABLE_QUANTITY
+SERIALIZED_ASSET
+SPARE_PART
+KIT
+PHYSICAL_CONTAINER
+```
+
+Para el alcance representativo de 040 predominan:
+
+- `REUSABLE_QUANTITY`;
+- `SERIALIZED_ASSET`;
+- `SPARE_PART`;
+- `KIT`;
+- `PHYSICAL_CONTAINER` cuando el escenario incluye un recipiente durable identificado.
+
+`CONSUMABLE` y `QUANTITY_STOCK` permanecen como fronteras de exclusión cuando un objeto aparente pertenecer a esas clases.
+
+#### 8. Nombre de familia no decide clase
+
+Se fija como criterio de validación:
+
+```text
+DECORACIÓN
+!=
+CLASE
+
+VAJILLA
+!=
+CLASE
+
+HERRAMIENTA
+!=
+CLASE
+
+REPUESTO
+!=
+GRANULARIDAD AUTOMÁTICA
+```
+
+El prototipo debe pedir o resolver evidencia suficiente antes de activar comportamiento dependiente de clase.
+
+#### 9. Decoración repetida
+
+Una decoración repetida, homogénea, recuperable y sin necesidad material de historia individual puede ser `REUSABLE_QUANTITY`.
+
+El prototipo debe permitir:
+
+- cantidad esperada y observada;
+- ubicación observada;
+- condición por cantidad o buckets cuando corresponda;
+- préstamo, traslado y retorno sin consumo;
+- daño o pérdida como diferencia/evento, no como desaparición silenciosa;
+- búsqueda por familia, ubicación y alcance;
+- inventario inicial sin fabricar identidades individuales.
+
+#### 10. Decoración individualizable
+
+Una pieza de decoración que requiera historia individual por valor operativo, custodia, serial, placa, identificación estable, mantenimiento o trazabilidad puede ser `SERIALIZED_ASSET`.
+
+El prototipo debe conservar identidad aunque cambie:
+
+- etiqueta;
+- ubicación;
+- custodio;
+- alias visible;
+- condición;
+- uso operativo.
+
+El hecho de que otras decoraciones equivalentes estén controladas por cantidad no convierte esta pieza en grupo.
+
+#### 11. Vajilla por cantidad
+
+Vajilla equivalente controlada por conteo valida el caso principal de `REUSABLE_QUANTITY`.
+
+Debe poder mostrar sin identidad artificial por unidad:
+
+- familia;
+- unidad de control;
+- cantidad disponible;
+- cantidad prestada o desplazada cuando corresponda;
+- cantidad dañada o no utilizable;
+- cantidad observada en conteo;
+- diferencia pendiente de investigación.
+
+La rotura de una unidad no autoriza por sí sola una baja automática del saldo canónico.
+
+#### 12. Vajilla en tránsito o fuera de sede
+
+La vajilla puede estar:
+
+- en una sede;
+- en un punto externo;
+- en tránsito;
+- en custodia observada de un tercero;
+- dentro de un alcance logístico identificable.
+
+El prototipo no debe traducir automáticamente esos contextos a propiedad, custodia aceptada o disponibilidad confirmada.
+
+#### 13. Herramienta simple equivalente
+
+Herramientas simples equivalentes que se prestan o devuelven por cantidad pueden permanecer como `REUSABLE_QUANTITY`.
+
+El prototipo no debe crear un expediente por unidad únicamente porque exista una pantalla legacy que permita modo individual.
+
+#### 14. Herramienta individualizada
+
+Una herramienta con historia individual material puede ser `SERIALIZED_ASSET`.
+
+Son señales compatibles, no decisiones aisladas:
+
+- serial;
+- código estable;
+- mantenimiento propio;
+- garantía;
+- calibración;
+- custodia individual;
+- condición individual;
+- historial de préstamo o reparación.
+
+La clasificación requiere el conjunto de evidencia aplicable.
+
+#### 15. Instrumento sujeto a calibración
+
+Un instrumento que necesita calibración y trazabilidad por unidad valida el caso individual.
+
+El prototipo debe poder navegar desde identidad a condición, disponibilidad y owner de mantenimiento sin convertir una fecha, una alerta o una lectura en ejecución automática de mantenimiento.
+
+#### 16. Conjunto de herramientas
+
+Cuando existe una definición de conjunto con miembros y reglas de completitud, el prototipo debe tratarlo como `KIT` cuando corresponda.
+
+Se preserva:
+
+```text
+KIT INSTANCE
+!=
+SUMA ADICIONAL SOBRE SUS MIEMBROS
+```
+
+Una herramienta miembro conserva su propia clase, identidad o cantidad.
+
+#### 17. Repuesto almacenado
+
+Una pieza conservada para mantenimiento o reparación valida `SPARE_PART`.
+
+El prototipo debe mantenerla como existencia hasta una transición correlacionada como:
+
+- reserva;
+- liberación de reserva;
+- consumo;
+- instalación;
+- devolución;
+- disposición autorizada.
+
+#### 18. Repuesto compatible
+
+La selección de un repuesto debe respetar compatibilidad técnica y contexto del activo u orden de trabajo cuando aplique.
+
+Una coincidencia de nombre no basta para afirmar compatibilidad.
+
+#### 19. Repuesto instalado sin identidad individual adicional
+
+Si la política no exige identidad individual del componente instalado:
+
+```text
+SPARE_PART STOCK
+→
+CONSUMO / INSTALACIÓN CORRELACIONADA
+→
+RELACIÓN DE INSTALACIÓN
+```
+
+El prototipo no debe dejar simultáneamente la misma existencia disponible en stock e instalada.
+
+#### 20. Repuesto instalado con historia individual
+
+Cuando la política sí exige serial e historia individual:
+
+```text
+SPARE_PART
++
+INSTALACIÓN AUTORIZADA
++
+POLÍTICA DE TRAZABILIDAD INDIVIDUAL
+→
+RELACIÓN O IDENTIDAD INDIVIDUAL APROBADA
+```
+
+La transición no se deduce de la mera proximidad al activo ni de una nota de mantenimiento.
+
+#### 21. Pieza retirada
+
+Una pieza retirada debe conservar destino explícito cuando sea material:
+
+- devolución;
+- reparación;
+- cuarentena;
+- descarte solicitado;
+- almacenamiento;
+- evidencia pendiente.
+
+El prototipo no puede borrar su existencia o historia mediante texto libre.
+
+#### 22. Clasificación ambigua
+
+Cuando el objeto podría ser, por ejemplo, herramienta individual, herramienta por cantidad, componente de kit o repuesto, el prototipo debe permitir:
+
+```text
+EVIDENCIA INSUFICIENTE
+→
+CLASIFICACIÓN PENDIENTE
+→
+OWNER DE RESOLUCIÓN
+→
+SIN MATERIALIZACIÓN DEPENDIENTE DE CLASE
+```
+
+Un flujo que obligue a escoger una clase arbitraria para poder guardar falla la validación.
+
+#### 23. Doble representación legacy
+
+Si una misma existencia aparece simultáneamente como item y grupo legacy, el prototipo debe tratarla como conflicto de representación.
+
+No debe:
+
+- escoger silenciosamente una de las dos;
+- sumar ambas;
+- crear una tercera identidad;
+- aprobar la clasificación por `inventory_kind=asset`.
+
+#### 24. Búsqueda transversal
+
+La validación consume la búsqueda de `NEXO-UX-036`.
+
+Un escenario debe poder resolverse, según corresponda, por:
+
+- LOC;
+- código;
+- serial o placa;
+- familia/modelo;
+- responsable o custodio visible autorizado;
+- contenido;
+- identidad LPN;
+- identidad de contenedor;
+- referencia de kit.
+
+Los resultados deben conservar namespace, clase, granularidad, frescura y autorización suficientes para evitar seleccionar el sujeto equivocado.
+
+#### 25. Búsqueda sin coincidencia
+
+No encontrar un resultado no demuestra que el objeto sea nuevo.
+
+En inventario inicial:
+
+```text
+NO MATCH
+→
+NEW CANDIDATE
+→
+REVIEW REQUIRED
+```
+
+Fuera de inventario inicial, el flujo debe remitir al owner correspondiente en vez de fabricar una identidad.
+
+#### 26. Escaneo contextual
+
+El escaneo valida únicamente resolución contextual.
+
+Se mantiene:
+
+```text
+SCAN
+!=
+CREATE
+!=
+MOVE
+!=
+TRANSFER CUSTODY
+!=
+ADJUST COUNT
+```
+
+El significado depende del flujo invocante y de la resolución autoritativa actual.
+
+#### 27. Etiqueta dañada o ausente
+
+Una etiqueta dañada, ilegible, obsoleta o ausente no convierte el recurso en nuevo.
+
+El prototipo debe ofrecer búsqueda o identificación alternativa antes de crear candidato o solicitar reimpresión.
+
+La reimpresión permanece separada y exige identidad existente e imprimible más autoridad vigente.
+
+#### 28. Ubicación observada
+
+En todos los escenarios se preserva:
+
+```text
+OBSERVED LOCATION
+!=
+AUTHORITATIVE PLACEMENT
+```
+
+Una herramienta hallada en otro sitio, una decoración movida o un repuesto localizado fuera de su posición registrada generan una diferencia; no un movimiento silencioso.
+
+#### 29. Custodia observada
+
+Se preserva:
+
+```text
+OBSERVED HOLDER
+!=
+ACCEPTED CUSTODIAN
+```
+
+La persona que tiene una herramienta, pieza decorativa o lote de vajilla al momento del levantamiento no se convierte automáticamente en custodio canónico.
+
+#### 30. Propiedad
+
+El prototipo no deduce propiedad desde:
+
+- sede;
+- marca;
+- usuario;
+- custodio observado;
+- factura sin validar;
+- etiqueta;
+- categoría;
+- creador del registro;
+- ubicación temporal.
+
+La incertidumbre de propiedad permanece visible.
+
+#### 31. Condición
+
+La condición observada debe permanecer separada de:
+
+- disponibilidad;
+- mantenimiento;
+- reparación;
+- pérdida;
+- baja;
+- conteo;
+- propiedad.
+
+Una herramienta dañada no se repara automáticamente. Una vajilla rota no se ajusta automáticamente. Una decoración degradada no se da de baja automáticamente. Un repuesto defectuoso no se consume automáticamente.
+
+#### 32. Conteo
+
+Para sujetos por cantidad:
+
+```text
+OBSERVED QUANTITY
+!=
+EXPECTED QUANTITY
+```
+
+Para sujetos individuales, el conteo preserva la identidad observada y los no localizados.
+
+En ambos casos:
+
+```text
+COUNT OBSERVATION
+!=
+ADJUSTMENT
+!=
+LOSS CONFIRMATION
+```
+
+#### 33. Kit y miembros
+
+El prototipo debe poder mostrar simultáneamente:
+
+- instancia de kit;
+- definición aplicable;
+- miembros esperados;
+- miembros presentes;
+- sustituciones permitidas;
+- faltantes;
+- condición relevante de miembros.
+
+Los miembros no desaparecen de sus propios contratos por pertenecer al kit.
+
+#### 34. Contenedor físico y LPN
+
+Cuando un escenario use una canastilla u otro recipiente durable identificado:
+
+```text
+PHYSICAL_CONTAINER
+!=
+LPN
+!=
+CONTENT
+```
+
+Un LPN puede existir sin contenedor y un contenedor puede existir sin LPN.
+
+El vínculo no fusiona identidades ni duplica contenido.
+
+#### 35. Existencia dentro de LPN
+
+Una herramienta, repuesto u otra existencia observada dentro de un LPN no se suma otra vez como existencia suelta en el mismo alcance.
+
+Si la evidencia contradice la representación registrada, el prototipo debe llevar el caso a reconciliación.
+
+#### 36. Inventario inicial
+
+Los cuatro grupos representativos deben poder entrar por el flujo de 039:
+
+```text
+OBSERVATION
+→
+CANDIDATE
+→
+REVIEW
+→
+CANONICAL RECORD ONLY IF AUTHORIZED
+```
+
+La experiencia debe poder cerrar una campaña parcialmente cuando algunos candidatos permanezcan bloqueados, siempre que el alcance no resuelto y sus owners queden visibles.
+
+#### 37. Captura por identidad o cantidad
+
+La validación comprueba que el formulario o flujo conceptual no obliga a una granularidad única.
+
+Debe permitir, según clase:
+
+```text
+SERIALIZED_ASSET
+→ IDENTIDAD INDIVIDUAL
+
+PHYSICAL_CONTAINER
+→ IDENTIDAD INDIVIDUAL
+
+REUSABLE_QUANTITY
+→ CANTIDAD
+
+SPARE_PART
+→ CANTIDAD O SERIAL SEGÚN POLÍTICA
+
+KIT
+→ DEFINICIÓN + INSTANCIA CUANDO CORRESPONDA
+```
+
+#### 38. Autorización
+
+La visibilidad de un candidato o identidad no concede permiso de mutación.
+
+Se preserva:
+
+```text
+READ / RESOLVE
+!=
+MUTATE
+```
+
+Y:
+
+```text
+CAPTURE AUTHORITY
+!=
+MATERIALIZATION AUTHORITY
+```
+
+Cada mutación futura deberá revalidar actor, capacidad, scope, recurso, versión y precondiciones en servidor.
+
+#### 39. Bloqueos correctos forman parte del prototipo
+
+Un escenario no falla por quedar bloqueado cuando el bloqueo es la respuesta contractual correcta.
+
+Ejemplos:
+
+- clase ambigua;
+- identidad duplicada;
+- autoridad exacta ausente;
+- creación de contenedor físico sin capacidad atómica activa;
+- creación de reutilizable por cantidad sin capacidad exacta demostrada;
+- evidencia insuficiente;
+- conflicto de ubicación o custodia que requiere owner especializado.
+
+El fallo sería ocultar el bloqueo o permitir continuar de manera insegura.
+
+#### 40. Materialización de activo individual
+
+Cuando exista capacidad activa exacta para crear un activo individual, el prototipo puede presentar la acción correspondiente únicamente después de clasificación, revisión y validación vigente.
+
+Esa capacidad no se amplía a:
+
+- grupos por cantidad;
+- kits;
+- contenedores físicos;
+- propiedad;
+- custodia;
+- movimiento;
+- mantenimiento;
+- baja.
+
+#### 41. Concurrencia
+
+Dos operadores o sesiones pueden referirse al mismo sujeto.
+
+El prototipo debe detectar la posible colisión antes de convertir dos candidatos en dos registros definitivos.
+
+Para cantidad, la reconciliación debe considerar corte, scope y versión antes de aceptar una diferencia.
+
+#### 42. Operación offline
+
+Una captura offline conserva intención y evidencia permitida, pero no se considera creación canónica.
+
+Al reconectar se revalidan:
+
+- identidad;
+- clase;
+- existencia previa;
+- ubicación;
+- custodia;
+- autorización;
+- versión;
+- revisión pendiente.
+
+#### 43. Resultado desconocido
+
+Ante pérdida de respuesta después de una mutación futura:
+
+```text
+UNKNOWN RESULT
+→
+QUERY / RECONCILE
+→
+NO BLIND RETRY
+```
+
+El prototipo no debe presentar un spinner finalizado o una navegación posterior como prueba suficiente de éxito.
+
+#### 44. Evidencia y privacidad
+
+Los escenarios pueden exigir evidencia, pero el plan canónico no almacena:
+
+- fotografías reales;
+- seriales sensibles completos;
+- documentos personales;
+- facturas privadas;
+- placas completas;
+- información de terceros no necesaria.
+
+La evidencia real debe permanecer en el repositorio autorizado y con minimización apropiada.
+
+#### 45. Información mínima visible
+
+Para evitar sobrecarga y decisiones por inferencia, la vista de cada sujeto debe priorizar:
+
+- identidad o familia;
+- clase o clasificación pendiente;
+- granularidad;
+- ubicación registrada y observada cuando difieran;
+- custodia registrada y observada cuando difieran;
+- condición relevante;
+- disponibilidad cuando aplique;
+- cantidad esperada y observada cuando aplique;
+- pertenencia a kit, contenedor o LPN cuando sea material;
+- bloqueos;
+- acción siguiente autorizada.
+
+No debe exponer campos irrelevantes solo porque existen en el modelo legacy.
+
+#### 46. Resultado visible de una acción
+
+Toda acción futura que cambie estado debe terminar con un resultado atribuible y reconciliable.
+
+La UX debe distinguir:
+
+```text
+SUCCESS CONFIRMED
+PENDING / IN PROGRESS
+BLOCKED
+VALIDATION ERROR
+CONFLICT
+UNKNOWN RESULT
+```
+
+Estos términos describen estados de presentación; no crean enums de dominio por esta tarea.
+
+#### 47. Validación de decoración
+
+| Escenario | Clasificación o decisión esperada | Resultado documental |
+| --- | --- | --- |
+| decoración repetida equivalente | `REUSABLE_QUANTITY` si la evidencia confirma control por cantidad | PASS |
+| pieza decorativa con historia individual material | `SERIALIZED_ASSET` | PASS |
+| decoración sin evidencia suficiente | clasificación pendiente | PASS |
+| decoración encontrada en sede distinta | diferencia de ubicación, no movimiento | PASS |
+| decoración en poder de tercero | tenencia observada, no propiedad transferida | PASS |
+| etiqueta dañada | resolver identidad y separar reimpresión | PASS |
+| misma pieza representada como item y grupo | conflicto de representación | PASS |
+| decoración no registrada durante inventario inicial | candidato, no alta automática | PASS |
+
+#### 48. Validación de vajilla
+
+| Escenario | Clasificación o decisión esperada | Resultado documental |
+| --- | --- | --- |
+| vajilla homogénea por cantidad | `REUSABLE_QUANTITY` | PASS |
+| conteo observado menor al esperado | diferencia, no ajuste automático | PASS |
+| unidades dañadas | condición/diferencia, no desaparición silenciosa | PASS |
+| vajilla trasladada temporalmente | movimiento o custodia bajo owner correspondiente | PASS |
+| vajilla en tercero | contexto y evidencia, sin inferir propiedad | PASS |
+| scan repetido del alcance | idempotencia, sin duplicar candidato | PASS |
+| vajilla dentro de LPN | no doble contabilización | PASS |
+| campaña incompleta | cierre parcial explícito | PASS |
+
+#### 49. Validación de herramientas
+
+| Escenario | Clasificación o decisión esperada | Resultado documental |
+| --- | --- | --- |
+| herramienta simple equivalente | `REUSABLE_QUANTITY` cuando basta cantidad | PASS |
+| herramienta con serial e historia | `SERIALIZED_ASSET` | PASS |
+| instrumento calibrable | identidad individual y handoff a mantenimiento | PASS |
+| set con lista de componentes | `KIT` cuando existe definición y completitud | PASS |
+| miembro separado de su kit | diferencia de completitud, no nueva existencia | PASS |
+| herramienta prestada | custodia/préstamo explícitos, identidad estable | PASS |
+| custodio observado diferente | reconciliación, no transferencia automática | PASS |
+| herramienta dañada | condición, no baja ni reparación automática | PASS |
+| herramienta sin etiqueta | búsqueda por otras evidencias | PASS |
+| herramienta capturada por dos operadores | colisión detectada antes de doble alta | PASS |
+
+#### 50. Validación de repuestos
+
+| Escenario | Clasificación o decisión esperada | Resultado documental |
+| --- | --- | --- |
+| pieza almacenada para reparar | `SPARE_PART` | PASS |
+| compatibilidad no demostrada | bloqueo de selección/instalación | PASS |
+| repuesto reservado | existencia separada de disponible según contrato | PASS |
+| instalación sin identidad individual adicional | consumo correlacionado + relación de instalación | PASS |
+| instalación con serial/historia requeridos | transición individual autorizada | PASS |
+| pieza retirada | destino explícito, no borrado | PASS |
+| repuesto en ubicación distinta | diferencia, no movimiento implícito | PASS |
+| respuesta perdida durante instalación futura | reconciliar antes de repetir | PASS |
+
+#### 51. Escenarios transversales adicionales
+
+| Escenario | Resultado esperado | Resultado documental |
+| --- | --- | --- |
+| nombre legacy sugiere clase incompatible | ignorar heurística y usar contrato canónico | PASS |
+| candidato sin clase concluyente | bloqueo con owner | PASS |
+| contenedor identificado y LPN visible | conservar dos identidades | PASS |
+| contenido visto suelto y dentro de LPN | conflicto, no doble suma | PASS |
+| recurso esperado no localizado | no localizado, no pérdida confirmada | PASS |
+| materialización sin capacidad exacta | `DEFAULT_DENY` | PASS |
+
+#### 52. Cobertura de escenarios
+
+La validación materializa cuarenta escenarios representativos en total: treinta y cuatro específicos de familia y seis transversales adicionales:
+
+| Grupo | Escenarios | Con resultado definido | Sin resultado | Fallos documentales |
+| --- | ---: | ---: | ---: | ---: |
+| decoración | 8 | 8 | 0 | 0 |
+| vajilla | 8 | 8 | 0 | 0 |
+| herramientas | 10 | 10 | 0 | 0 |
+| repuestos | 8 | 8 | 0 | 0 |
+| transversales adicionales | 6 | 6 | 0 | 0 |
+| **Total** | **40** | **40** | **0** | **0** |
+
+El total es correcto porque los seis transversales están incluidos dentro del universo de cuarenta: los cuatro bloques de familia aportan treinta y cuatro escenarios exclusivos y seis escenarios se contabilizan únicamente en el bloque transversal.
+
+#### 53. Resultado de consistencia
+
+No se identifica una contradicción documental que obligue a cambiar los contratos aprobados de `NEXO-UX-026` a `NEXO-UX-039` para resolver los escenarios de 040.
+
+Las diferencias que permanecen abiertas son deliberadamente bloqueos de implementación, evidencia o autoridad, no contradicciones del prototipo.
+
+Por tanto:
+
+```text
+DESIGN CONSISTENCY
+→ PASS
+
+RUNTIME COMPLETENESS
+→ NOT CLAIMED
+
+HUMAN USABILITY VALIDATION
+→ NOT EXECUTED
+
+PHYSICAL VALIDATION
+→ NOT APPLICABLE TO THIS DEFINE_ONCE TASK
+```
+
+#### 54. AS-IS — creación individual y por grupos
+
+Las superficies actuales `/inventory/assets/new` y `/inventory/assets/quick` permanecen como evidencia de runtime existente.
+
+040 conserva la clasificación recibida de 039:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+No se valida como correcto que:
+
+- `inventory.stock` actúe como autoridad suficiente;
+- `inventory_kind=asset` decida la clase;
+- `asset_mode` decida por sí solo granularidad;
+- insertar directamente `asset_items` o `asset_groups` sustituya captura, revisión y autorización;
+- `initial_location` convierta una ubicación observada en placement autoritativo.
+
+#### 55. AS-IS — conteos de activos
+
+Las sesiones y líneas de conteo actuales son referencia reutilizable para recorrido y observación de sujetos ya existentes.
+
+No demuestran por sí solas:
+
+- descubrimiento de identidades desconocidas;
+- clasificación de las siete clases;
+- materialización de contenedor físico;
+- separación completa de observación y decisión;
+- cierre de línea base inicial.
+
+Clasificación:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+#### 56. AS-IS — conteo inicial de stock
+
+La superficie `/inventory/count-initial` continúa orientada al conteo de stock por ubicación.
+
+Se preserva:
+
+```text
+INITIAL STOCK COUNT
+!=
+ASSET / REUSABLE / CONTAINER PROTOTYPE VALIDATION
+```
+
+No constituye el owner directo de los escenarios de 040.
+
+#### 57. Gaps aceptados como bloqueos explícitos
+
+El prototipo puede ser documentalmente consistente aunque runtime todavía no materialice todas las capacidades.
+
+Permanecen visibles al menos:
+
+- creación exacta de grupos reutilizables bajo autoridad atómica aprobada;
+- creación exacta de `PHYSICAL_CONTAINER`;
+- refactor de superficies legacy que todavía deciden por `inventory_kind` o `asset_mode`;
+- reconciliación física completa requerida antes de adopción;
+- ejecución de pruebas físicas, operativas y de usuario en las etapas posteriores correspondientes.
+
+040 no cierra esos gaps por declaración.
+
+#### 58. Criterio de aprobación de un escenario
+
+Un escenario documental queda cubierto cuando:
+
+1. conserva la clase o la incertidumbre correcta;
+2. conserva granularidad correcta;
+3. identifica fuente de verdad y owner;
+4. no produce una mutación implícita;
+5. preserva autorización fail-closed;
+6. distingue observado de canónico;
+7. conserva evidencia necesaria;
+8. evita doble representación;
+9. define recuperación segura;
+10. termina en resultado visible y trazable.
+
+Un bloqueo explícito puede satisfacer estos criterios.
+
+#### 59. Criterio de fallo del prototipo
+
+Se consideraría fallo documental si algún escenario exigiera:
+
+- inventar una clase;
+- usar una clase equivocada para poder continuar;
+- duplicar existencia;
+- confundir cantidad e identidad;
+- crear LPN como sustituto de contenedor;
+- inferir propiedad o custodia;
+- mover por observación;
+- ajustar por conteo;
+- instalar repuesto sin movimiento correlacionado;
+- borrar miembros de kit;
+- saltar autorización;
+- repetir una mutación de resultado desconocido;
+- ocultar una diferencia o bloqueo.
+
+No se detecta uno de estos fallos en el recorrido documental realizado.
+
+#### 60. Datos que 040 no mide
+
+040 no fija ni declara valores para:
+
+- tiempo de búsqueda;
+- tiempo de clasificación;
+- tiempo de conteo;
+- pérdidas;
+- tasa de diferencias;
+- tasa de duplicados;
+- tasa de scans fallidos;
+- tasa de recuperación;
+- precisión de ubicación;
+- precisión de custodia;
+- porcentaje de candidatos bloqueados;
+- satisfacción;
+- aprendizaje;
+- reducción objetivo.
+
+Esos valores pertenecen al trabajo de `NEXO-UX-041` cuando exista evidencia adecuada.
+
+#### 61. Handoff de dimensiones a `NEXO-UX-041`
+
+040 entrega únicamente dimensiones observables y sus fronteras:
+
+| Dimensión | Unidad o naturaleza a definir en 041 | Fuente futura |
+| --- | --- | --- |
+| pérdida/no localización | evento o proporción | conteos y reconciliación |
+| diferencia de cantidad | unidades + proporción | conteos por cantidad |
+| búsqueda exitosa | resultado correcto / intento | búsqueda transversal |
+| búsqueda ambigua | caso / intento | desambiguación |
+| tiempo de búsqueda | duración | telemetría o sesión válida |
+| scan no resuelto | caso / intento | captura contextual |
+| duplicado sospechoso | caso | reconciliación |
+| conflicto de clase | caso | clasificación |
+| diferencia de ubicación | caso | inventario/conteo |
+| diferencia de custodia | caso | inventario/custodia |
+| candidato bloqueado | caso por causa | inventario inicial |
+| recuperación de resultado desconocido | caso resuelto / caso | receipts y reconciliación |
+
+040 no asigna baseline, target, SLO, SLA, porcentaje de mejora ni umbral de aceptación.
+
+#### 62. Handoff hacia `NEXO-UX-041`
+
+040 entrega:
+
+```text
+VALIDATED REPRESENTATIVE SCENARIO SET
++
+CLASS / GRANULARITY ORACLES
++
+SEARCH / SCAN FAILURE SURFACES
++
+COUNT / LOSS / DIFFERENCE SURFACES
++
+BLOCKED-CANDIDATE CAUSES
++
+NO DOUBLE REPRESENTATION RULES
++
+OBSERVATION VS CANONICAL SEPARATION
++
+MEASURABLE DIMENSIONS WITHOUT TARGETS
+```
+
+`NEXO-UX-041` deberá definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias sin reinterpretar los escenarios como mediciones ya ejecutadas.
+
+#### 63. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: 040 valida por recorrido documental que un conjunto representativo de escenarios puede resolverse usando obligaciones de clasificación, granularidad, movimientos, conteos, condición, kits, repuestos, contenedores, reconciliación y autorización ya registradas. No introduce una regla ejecutable nueva, una capacidad de runtime nueva, una transición física nueva ni un criterio cuantitativo nuevo. Las métricas y sus objetivos permanecen reservados a 041.
+
+#### 64. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para ciclo LPN y ausencia de doble contabilización;
+- `TREQ-NEXO-011`, para movimientos, cantidades, conteos y reconciliación;
+- `TREQ-NEXO-012`, para condición y trazabilidad separadas;
+- `TREQ-NEXO-013`, para identidad, activos, reutilizables, custodia, conteos y fronteras de dominio;
+- `TREQ-NEXO-014`, para mantenimiento, repuestos, reparación y liberación;
+- `TREQ-NEXO-040`, para exactamente una clase primaria activa cuando corresponda;
+- `TREQ-NEXO-041`, para impedir que metadata legacy decida clase;
+- `TREQ-NEXO-043`, para separar reutilizables por cantidad de activos serializados;
+- `TREQ-NEXO-044`, para ciclo de existencia e instalación de repuestos;
+- `TREQ-NEXO-045`, para definición, instancia y miembros de kit sin doble existencia;
+- `TREQ-NEXO-046`, para separar contenedor físico, LPN y contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito de las siete clases;
+- `TREQ-NEXO-049`, para reconciliación física exhaustiva antes de adopción.
+
+Estas referencias son trazabilidad y no constituyen cambios al registro.
+
+#### 65. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la redacción de 040. |
+| REMOTA | PASS | Se contrastaron continuidad, topología, contrato de entrega, políticas de tarea, owner canónico, 04A modular NEXO, contratos de clasificación y el estado remoto actual de las superficies AS-IS de `vento-nexo` relevantes para creación, carga rápida, conteo inicial y conteos de activos. La versión completa aprobada de 039 se consumió como predecesora documental aportada para trabajo adelantado. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con usuarios, inventario físico, préstamo, conteo real, instalación de repuestos ni operación con objetos reales. |
+| FÍSICA | NOT_APPLICABLE | La tarea usa topología `DEFINE_ONCE`, tiene `NO_PHYSICAL_INSTANCE` y no autoriza cambios físicos. |
+
+#### 66. Criterios de aceptación
+
+- [x] se valida el prototipo canónico compuesto y no una pantalla legacy aislada;
+- [x] se preservan exactamente las siete clases primarias;
+- [x] el nombre de familia no decide clase;
+- [x] decoración repetida puede resolverse por cantidad sin fabricar identidades;
+- [x] decoración individualizable puede conservar identidad estable;
+- [x] vajilla por cantidad conserva cantidad, condición y diferencias;
+- [x] herramienta simple puede permanecer por cantidad;
+- [x] herramienta con historia material conserva identidad individual;
+- [x] instrumento calibrable no se reduce a cantidad;
+- [x] conjunto de herramientas puede conservar definición e instancia de kit;
+- [x] repuesto permanece como existencia hasta transición correlacionada;
+- [x] instalación de repuesto no duplica stock e instalación;
+- [x] pieza retirada conserva destino explícito;
+- [x] clasificación ambigua bloquea materialización dependiente de clase;
+- [x] doble representación legacy no se suma ni resuelve por heurística;
+- [x] búsqueda sin coincidencia no crea automáticamente;
+- [x] scan no implica mutación;
+- [x] etiqueta dañada no implica recurso nuevo;
+- [x] ubicación observada no implica movimiento;
+- [x] custodio observado no implica custodia aceptada;
+- [x] propiedad no se infiere;
+- [x] condición no ejecuta mantenimiento, baja o ajuste;
+- [x] conteo no ejecuta ajuste ni pérdida automática;
+- [x] kit no suma existencia adicional sobre miembros;
+- [x] contenedor físico, LPN y contenido permanecen separados;
+- [x] contenido LPN no se contabiliza dos veces;
+- [x] inventario inicial conserva observación, candidato y registro canónico separados;
+- [x] identidad y cantidad permanecen como granularidades distintas;
+- [x] lectura/resolución y mutación conservan autoridad separada;
+- [x] bloqueo correcto se muestra como resultado seguro;
+- [x] concurrencia evita doble alta;
+- [x] captura offline exige revalidación;
+- [x] resultado desconocido se reconcilia antes de repetir;
+- [x] evidencia sensible queda fuera del plan canónico;
+- [x] las rutas legacy se mantienen como evidencia AS-IS, no como oráculo;
+- [x] se documentan 40 escenarios con resultado definido y cero fallos documentales;
+- [x] no se simulan sesiones humanas;
+- [x] no se fijan métricas ni objetivos reservados a 041;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza implementación física;
+- [x] se entrega handoff exacto a `NEXO-UX-041`.
+
+#### 67. Límites
+
+Esta tarea no:
+
+- ejecuta un inventario físico;
+- recluta participantes;
+- ejecuta pruebas de usabilidad con personas;
+- opera un prototipo clicable;
+- mide tiempos reales;
+- fija líneas base;
+- fija metas;
+- fija SLO o SLA;
+- fija porcentajes de reducción de pérdidas o diferencias;
+- crea activos;
+- crea grupos reutilizables;
+- crea kits;
+- crea contenedores físicos;
+- crea LPN;
+- crea candidatos reales;
+- modifica stock;
+- ejecuta conteos reales;
+- ajusta cantidades;
+- mueve inventario;
+- transfiere custodia;
+- confirma propiedad;
+- cambia condición o disponibilidad;
+- instala repuestos;
+- ejecuta mantenimiento;
+- imprime o reimprime;
+- modifica código de `vento-nexo`;
+- modifica Supabase;
+- crea tablas, RLS, RPC, funciones, triggers, vistas, índices o constraints;
+- crea migraciones o backfills;
+- modifica permisos;
+- cambia `active-sequence.json`;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- autoriza una instancia física;
+- aprueba la remisión a E5;
+- desarrolla `NEXO-UX-041`.
+
+#### 68. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias`
 ### [ ] NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
 ### [ ] NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
 ### [ ] NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
