@@ -24695,7 +24695,1353 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado`
-### [ ] NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
+### ✅ NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido
+**Tarea siguiente:** NEXO-UX-029 — Diseñar contenedores anidados y retornables
+**Tipo de tarea:** documental; diseño canónico de experiencia para división y unión de contenido por cantidad dentro de un LPN, transferencia atómica de contenido entre LPN y reetiquetado de una identidad LPN estable, con conservación de cantidad, identidad, trazabilidad, lineage, revisiones, autorización, idempotencia, concurrencia y recuperación, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede dividir o unir contenido por cantidad dentro de un LPN, transferir contenido de forma atómica entre dos LPN y solicitar el reetiquetado controlado de una identidad LPN sin alterar silenciosamente cantidad, dimensiones de trazabilidad, lifecycle, purpose type, identidad estable ni autoridad.
+
+La regla raíz queda:
+
+```text
+CONTEXTO LPN AUTORIZADO
++
+MEMBRESIA AUTORITATIVA VIGENTE
++
+OPERACION EXPLICITA
++
+REVISIONES VIGENTES
++
+DIMENSIONES Y LINEAGE VISIBLES
++
+REVISION PREVIA DEL EFECTO
++
+DECISION SERVER-SIDE
++
+RESULTADO ATOMICO O DENEGADO
++
+RECIBO Y RECONCILIACION
+→
+TRANSFORMACION LPN COMPRENSIBLE, CONSERVATIVA Y AUDITABLE
+```
+
+Siempre:
+
+```text
+VISIBLE CONTROL
+!=
+AUTHORIZED OPERATION
+```
+
+```text
+UI GROUPING
+!=
+CANONICAL MERGE
+```
+
+```text
+UNPACK + PACK
+!=
+TRANSFER_CONTENT
+```
+
+```text
+RELABEL
+!=
+NEW LPN
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-028` deja definido un único contrato de experiencia que:
+
+1. conserva `SPLIT_CONTENT`, `MERGE_CONTENT`, `TRANSFER_CONTENT` y `RELABEL` como cuatro intenciones empresariales distintas;
+2. restringe split y merge a `QUANTITY_SLICE`;
+3. mantiene `SERIALIZED_IDENTITY` y `KIT_INSTANCE` indivisibles y no fusionables;
+4. conserva cantidad total y dimensiones materiales durante split, merge y transfer;
+5. exige lineage visible y reconstruible;
+6. exige revisión de contenido vigente antes de cualquier mutación;
+7. exige dos revisiones correlacionadas en transferencia entre LPN;
+8. exige lifecycle compatible en origen y destino;
+9. define transferencia parcial como una única intención, sin split confirmado intermedio;
+10. define transferencia multilínea como `ALL OR NOTHING`;
+11. impide transferir hacia el mismo LPN;
+12. mantiene vacío y cierre como conceptos separados;
+13. mantiene lifecycle y purpose type sin cambios por inferencia;
+14. separa transferencia de contenido de movimiento de un LPN completo;
+15. separa transferencia de contenido de transferencia de custodia;
+16. exige capacidad y compatibilidad cuando apliquen al destino;
+17. preserva lote, serial, vencimiento, condición, liberación, unidad, presentación y demás dimensiones discriminantes;
+18. define revisión previa con efectos antes/después sin presentar estado optimista como confirmado;
+19. define conflicto de revisión y concurrencia sin last-write-wins silencioso;
+20. define idempotencia y recuperación ante timeout o resultado desconocido;
+21. define comportamiento offline como intención pendiente, nunca efecto canónico;
+22. diseña `RELABEL` como evento sobre una identidad estable y no como lifecycle state;
+23. preserva `lpn_id` y estado antes/después de relabel;
+24. conserva relación con emisiones anteriores y motivo cuando aplique;
+25. separa autorización empresarial de reetiquetado de autorización de impresión/reimpresión;
+26. no define sintaxis física final de código, plantilla, ZPL, DPI, impresora o simbología;
+27. entrega contenedores anidados y retornables a `NEXO-UX-029`;
+28. entrega búsqueda transversal a `NEXO-UX-036`;
+29. entrega impresión/reimpresión a `NEXO-UX-037` y operación con etiquetas dañadas a `NEXO-UX-038`;
+30. no crea requisitos de prueba nuevos ni autoriza materialización física.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado se agota en el contrato documental.
+
+La tarea no genera una identidad física propia. La futura implementación consume este contrato únicamente desde los paquetes y unidades que sus owners autoricen por separado.
+
+#### 4. Continuidad y handoff recibido de `NEXO-UX-027`
+
+La continuidad interna es:
+
+```text
+NEXO-UX-027
+→
+NEXO-UX-028
+→
+NEXO-UX-029
+```
+
+`NEXO-UX-027` entrega:
+
+```text
+AUTHORIZED LPN DETAIL CONTEXT
++
+AUTHORITATIVE CONTENT MEMBERSHIP
++
+THREE CONTENT SHAPES
++
+MATERIAL TRACEABILITY DIMENSIONS
++
+CONTENT REVISION
++
+PACK / UNPACK UX BOUNDARIES
++
+NO DOUBLE COUNTING RULE
++
+SAFE REVIEW / CONFLICT / IDEMPOTENCY PATTERNS
++
+OFFLINE / UNKNOWN-RESULT RECOVERY
+```
+
+028 consume exactamente ese handoff y añade split, merge, transferencia y reetiquetado. No reabre `PACK` ni `UNPACK` y no usa una combinación informal de ambos para representar una transferencia entre LPN.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume sin redefinir:
+
+- `NEXO-DOM-002`, identidad y purpose type LPN;
+- `NEXO-DOM-003`, lifecycle y `RELABEL` como evento;
+- `NEXO-DOM-004`, formas de contenido y `PACK/UNPACK`;
+- `NEXO-DOM-005`, propietario de split, merge y transferencia de contenido;
+- `NEXO-DOM-006`, propietario de anidamiento;
+- `NEXO-DOM-007`, ubicación efectiva;
+- `NEXO-DOM-008`, custodia;
+- `NEXO-DOM-021`, no doble contabilización;
+- `NEXO-DOM-022`, movimiento atómico del LPN raíz;
+- `NEXO-DOM-023`, trazabilidad interna;
+- `NEXO-DOM-024`, capacidad y compatibilidad.
+
+#### 6. Contratos de autorización consumidos
+
+El diseño consume:
+
+- `NEXO-AUTH-022` para autoridad empresarial de `RELABEL`;
+- `NEXO-AUTH-023` para `SPLIT_CONTENT`, `MERGE_CONTENT` y `TRANSFER_CONTENT`;
+- `NEXO-AUTH-028` como owner separado de impresión y reimpresión.
+
+En el catálogo activo observado, las mutaciones de contenido y `RELABEL` no disponen de una `PermissionKey` atómica exacta activa demostrada. Por tanto, el diseño conserva:
+
+```text
+SPLIT_CONTENT → DEFAULT_DENY
+MERGE_CONTENT → DEFAULT_DENY
+TRANSFER_CONTENT → DEFAULT_DENY
+RELABEL → DEFAULT_DENY
+```
+
+hasta que la capacidad canónica exacta exista y su contrato completo resulte aplicable.
+
+#### 7. Principio de diseño ante `DEFAULT_DENY`
+
+La ausencia de autoridad exacta no elimina la necesidad de definir la experiencia futura, pero impide presentar las mutaciones como disponibles ahora.
+
+La interfaz futura debe distinguir:
+
+```text
+ACTION DESIGNED
+!=
+ACTION CURRENTLY AUTHORIZED
+```
+
+Un consumidor puede mostrar información explicativa o un estado no disponible según el contrato de autorización, pero no puede habilitar una mutación usando permisos legacy, rol nominal, acceso a stock o visibilidad del LPN.
+
+#### 8. Superficie de detalle como punto de entrada
+
+Las cuatro intenciones parten de un contexto LPN ya resuelto y autorizado para lectura.
+
+La experiencia debe mostrar como mínimo, según la operación:
+
+- código o representación visible;
+- identidad estable indirectamente resoluble;
+- lifecycle vigente;
+- purpose type vigente;
+- revisión de lifecycle;
+- revisión de contenido;
+- ubicación/contexto territorial relevante;
+- contenido autoritativo;
+- trazabilidad material necesaria;
+- última decisión confirmada cuando sea material.
+
+No se fija una ruta técnica concreta.
+
+#### 9. Catálogo UX de operaciones
+
+La superficie distingue explícitamente:
+
+```text
+DIVIDIR CONTENIDO
+UNIR CONTENIDO
+TRANSFERIR CONTENIDO
+REETIQUETAR LPN
+```
+
+Ninguna etiqueta de acción puede representar dos decisiones empresariales distintas.
+
+#### 10. Elegibilidad visual no equivale a autoridad
+
+Un control puede aparecer como no disponible por:
+
+- lifecycle incompatible;
+- forma de contenido incompatible;
+- revisión desconocida;
+- destino inválido;
+- dimensiones incompatibles;
+- capacidad o compatibilidad no demostradas;
+- falta de autoridad exacta;
+- conflicto o resultado pendiente.
+
+La causa debe ser comprensible. La interfaz no debe ocultar una denegación real detrás de un control que parece fallar técnicamente.
+
+#### 11. `SPLIT_CONTENT`: intención de usuario
+
+Dividir significa transformar una `QUANTITY_SLICE` en dos o más porciones dentro del mismo LPN.
+
+La experiencia comienza desde una membresía autoritativa y presenta:
+
+- cantidad fuente actual;
+- unidad canónica;
+- dimensiones materiales que permanecerán iguales;
+- revisión de contenido vigente;
+- campos de cantidades hijas;
+- suma resultante;
+- advertencias de precisión o redondeo.
+
+#### 12. Regla de conservación visible en split
+
+Antes de confirmar, la revisión muestra:
+
+```text
+SOURCE QUANTITY
+=
+SUM(CHILD QUANTITIES)
+```
+
+La interfaz no permite presentar éxito si la suma no coincide exactamente dentro del contrato de precisión vigente.
+
+No se ajusta automáticamente la última porción para “hacer cuadrar” una captura ambigua sin mostrar el valor resultante al actor.
+
+#### 13. Split no cambia dimensiones
+
+La revisión previa deja claro que split no modifica:
+
+- producto o sujeto;
+- clase primaria;
+- unidad canónica;
+- lote;
+- vencimiento;
+- condición;
+- liberación;
+- presentación material;
+- owner económico cuando sea discriminante.
+
+Si el actor necesita cambiar una dimensión, la experiencia remite al owner de esa transición; no usa split como atajo.
+
+#### 14. Split solo para `QUANTITY_SLICE`
+
+Se preserva:
+
+```text
+SPLIT(SERIALIZED_IDENTITY) = DENY
+SPLIT(KIT_INSTANCE) = DENY
+```
+
+La UI no muestra una caja numérica para fragmentar una identidad serializada ni una instancia de kit.
+
+#### 15. Split y transferencia parcial
+
+Cuando la intención real sea enviar una parte a otro LPN, la UI no obliga a ejecutar primero un split confirmado.
+
+Se presenta una sola intención:
+
+```text
+PARTIAL TRANSFER
+=
+ONE TRANSFER_CONTENT INTENT
+```
+
+La partición requerida puede quedar reflejada en la revisión del transfer, pero no crea un estado intermedio autoritativo separado para el actor.
+
+#### 16. Confirmación de split
+
+La revisión previa presenta como mínimo:
+
+- LPN afectado;
+- membresía fuente;
+- cantidad fuente;
+- cantidades resultantes;
+- dimensiones conservadas;
+- revisión esperada;
+- actor efectivo;
+- ausencia de cambio de lifecycle/purpose;
+- mensaje de que el resultado será definitivo solo tras confirmación del servidor.
+
+#### 17. Recibo de split
+
+Un split aceptado muestra:
+
+- resultado confirmado;
+- nuevas membresías o representación resultante;
+- revisión de contenido resultante;
+- cantidad total conservada;
+- correlación o referencia operacional disponible;
+- posibilidad de volver al contenido actualizado.
+
+Un resultado local optimista no se presenta como autoritativo.
+
+#### 18. `MERGE_CONTENT`: intención de usuario
+
+Unir significa consolidar dos o más `QUANTITY_SLICE` compatibles dentro del mismo LPN.
+
+La selección debe mostrar simultáneamente las dimensiones discriminantes de las fuentes para que la equivalencia no dependa solo del nombre del producto.
+
+#### 19. Clave de equivalencia visible para merge
+
+Antes de permitir la revisión final, la experiencia verifica y muestra compatibilidad de, cuando apliquen:
+
+- producto o material;
+- clase primaria;
+- unidad canónica;
+- presentación material;
+- lote;
+- vencimiento;
+- condición;
+- liberación;
+- owner o procedencia discriminante;
+- demás dimensiones propietarias.
+
+Se fija:
+
+```text
+UNKNOWN
+!=
+MATCH
+```
+
+Una dimensión ausente no se trata como coincidencia arbitraria.
+
+#### 20. Merge incompatible
+
+La UI debe bloquear y explicar al menos:
+
+```text
+DIFFERENT LOT → NO MERGE
+DIFFERENT CONDITION → NO MERGE
+DIFFERENT CANONICAL UNIT → NO MERGE
+```
+
+La comodidad visual no justifica perder trazabilidad.
+
+#### 21. Identidades exactas no se fusionan
+
+Se preserva:
+
+```text
+MERGE(SERIALIZED_IDENTITY) = DENY
+MERGE(KIT_INSTANCE) = DENY
+```
+
+La interfaz puede agrupar visualmente múltiples identidades para lectura, pero no ofrecer una operación que las convierta en una sola identidad canónica.
+
+#### 22. Revisión previa de merge
+
+La pantalla de revisión muestra:
+
+- todas las membresías fuente;
+- sus cantidades;
+- dimensiones comunes verificadas;
+- cantidad consolidada resultante;
+- lineage que debe conservarse;
+- revisión esperada;
+- ausencia de cambio de lifecycle, purpose, ubicación o custodia por inferencia.
+
+#### 23. Recibo de merge
+
+Un merge aceptado confirma:
+
+- una representación consolidada autoritativa;
+- cantidad total conservada;
+- revisión resultante;
+- lineage disponible hacia todas las fuentes;
+- ausencia de creación o destrucción de existencia.
+
+#### 24. `TRANSFER_CONTENT`: intención de usuario
+
+Transferir contenido significa mover una cantidad o identidad desde un LPN fuente hacia un LPN destino distinto en una única decisión empresarial.
+
+Se fija en UX:
+
+```text
+SOURCE LPN
++
+TARGET LPN
++
+SELECTED CONTENT
++
+ONE CONFIRMATION
+→
+ONE ATOMIC BUSINESS INTENT
+```
+
+#### 25. Selección del LPN destino
+
+El destino debe resolverse sin permitir que una cadena arbitraria introducida por el cliente se convierta en recurso autoritativo.
+
+La experiencia puede localizarlo por búsqueda o escaneo según contratos posteriores, pero antes de confirmar muestra:
+
+- identidad/código resuelto;
+- lifecycle actual;
+- purpose type;
+- territorio/contexto;
+- revisión de contenido;
+- información suficiente para evitar confundir origen y destino.
+
+#### 26. Fuente y destino deben ser distintos
+
+Se preserva:
+
+```text
+SOURCE_LPN_ID != TARGET_LPN_ID
+```
+
+Si el destino resuelve al mismo LPN, la transferencia se bloquea. La interfaz puede orientar hacia split o merge cuando esa sea la intención real, pero no reinterpreta automáticamente la operación sin consentimiento explícito.
+
+#### 27. Lifecycle de transferencia
+
+Para transferencia ordinaria:
+
+```text
+SOURCE = ACTIVE
+TARGET = ACTIVE
+```
+
+`DRAFT`, `CLOSED`, `CANCELLED` y `VOID` no reciben una transferencia operativa ordinaria.
+
+La UI vuelve a mostrar el estado actual en la revisión final; una vista anterior no autoriza la operación.
+
+#### 28. Transferencia no cambia lifecycle
+
+Se preserva:
+
+```text
+TRANSFER_CONTENT
+!=
+ACTIVATE
+!=
+CLOSE
+!=
+VOID
+```
+
+Si el origen queda vacío después de transferir todo:
+
+```text
+EMPTY SOURCE
+!=
+CLOSED SOURCE
+```
+
+El cierre requiere su flujo independiente.
+
+#### 29. Transferencia no cambia purpose type
+
+El origen y el destino conservan su purpose type salvo una transición explícita propietaria.
+
+La interfaz no propone cambiar propósito automáticamente para “hacer compatible” una transferencia.
+
+#### 30. Transferencia parcial por cantidad
+
+Para `QUANTITY_SLICE`, la captura debe satisfacer:
+
+```text
+0 < TRANSFER_QUANTITY <= SOURCE_QUANTITY
+```
+
+La revisión muestra:
+
+```text
+SOURCE AFTER = SOURCE BEFORE - Q
+TARGET AFTER = TARGET BEFORE + Q
+```
+
+con las mismas dimensiones materiales.
+
+#### 31. Transferencia total por cantidad
+
+Al transferir toda la membresía:
+
+- el origen deja de poseer la cantidad autoritativa;
+- el destino recibe la misma existencia dimensional;
+- la historia del origen permanece;
+- no se crea otra existencia económica;
+- no se cierra el LPN fuente automáticamente.
+
+La UI debe presentar estas consecuencias sin lenguaje de “copiar”.
+
+#### 32. Transferencia de identidad serializada
+
+Para `SERIALIZED_IDENTITY` se presenta la identidad exacta.
+
+La operación confirma conceptualmente:
+
+```text
+SOURCE HAS IDENTITY = TRUE
+TARGET HAS IDENTITY = FALSE
+```
+
+antes de transferir, y nunca ofrece cantidad fraccionaria.
+
+#### 33. Transferencia de kit
+
+`KIT_INSTANCE` se transfiere como una instancia completa.
+
+La experiencia no permite:
+
+- desarmarlo durante el transfer;
+- recrear componentes;
+- modificar versión;
+- alterar completitud por inferencia;
+- duplicar la instancia.
+
+La composición pertenece a `NEXO-UX-033` y contratos de dominio correspondientes.
+
+#### 34. Consolidación en destino
+
+Si una transferencia por cantidad puede consolidarse con una membresía existente del destino, la UI puede anticipar el resultado solo cuando la clave de equivalencia completa sea demostrable.
+
+Si no lo es:
+
+```text
+TARGET GETS SEPARATE MEMBERSHIP
+```
+
+La interfaz no fuerza merge para reducir filas.
+
+#### 35. Transferencia multilínea
+
+Una intención que contiene varias membresías se presenta como:
+
+```text
+ALL OR NOTHING
+```
+
+La revisión previa enumera todas las líneas incluidas.
+
+Si una sola línea falla una precondición, no se muestra la transferencia completa como parcialmente exitosa. Si el negocio necesita subconjuntos independientes, cada uno se convierte en una intención separada y explícita.
+
+#### 36. Atomicidad visible de transferencia
+
+La experiencia nunca presenta el origen reducido antes de que el destino también esté confirmado como receptor de la misma intención.
+
+Se preserva:
+
+```text
+SOURCE REMOVAL ACCEPTED
+IFF
+TARGET ADDITION ACCEPTED
+```
+
+No existe un estado final UX válido de “salió del origen pero todavía no llegó al destino” para `TRANSFER_CONTENT`; tránsito físico pertenece a otros contratos cuando aplique.
+
+#### 37. Transferencia no es movimiento del LPN completo
+
+Se preserva:
+
+```text
+TRANSFER_CONTENT
+!=
+MOVE_ROOT_LPN
+```
+
+Mover el LPN raíz y su cierre estructural pertenece a su owner de movimiento. La UI no reutiliza el flujo de transferir contenido para teletransportar el LPN completo.
+
+#### 38. Transferencia no es custodia
+
+Se preserva:
+
+```text
+TRANSFER_CONTENT
+!=
+CUSTODY_TRANSFER
+```
+
+Cambiar membresía entre LPN no modifica custodio por inferencia.
+
+La transferencia de custodia conserva su experiencia en `NEXO-UX-031`.
+
+#### 39. Capacidad y compatibilidad del destino
+
+Cuando aplique, la revisión de transferencia debe poder mostrar si el destino es elegible según capacidad y compatibilidad vigentes.
+
+La ausencia de datos necesarios no se transforma en aceptación:
+
+```text
+CAPACITY OR COMPATIBILITY UNKNOWN
+→
+NO IMPLIED ACCEPTANCE
+```
+
+La lógica propietaria permanece en `NEXO-DOM-024`.
+
+#### 40. Trazabilidad conservada
+
+Split, merge y transfer preservan cuando apliquen:
+
+- producto o sujeto;
+- clase primaria;
+- unidad;
+- presentación material;
+- lote;
+- batch;
+- serial;
+- fecha relevante;
+- vencimiento;
+- origen;
+- estado de liberación;
+- condición;
+- identidad de kit.
+
+La interfaz no ofrece “corregir” estas dimensiones dentro de la operación si hacerlo corresponde a otro owner.
+
+#### 41. Revisiones en split y merge
+
+La revisión previa muestra la `content_revision` observada y la trata como precondición.
+
+Se exige conceptualmente:
+
+```text
+EXPECTED_CONTENT_REVISION
+=
+CURRENT_CONTENT_REVISION
+```
+
+Si el servidor detecta cambio concurrente, el actor vuelve a revisar el estado actual antes de reintentar.
+
+#### 42. Revisiones en transferencia
+
+La transferencia consume dos precondiciones:
+
+```text
+EXPECTED_SOURCE_CONTENT_REVISION
+=
+CURRENT_SOURCE_CONTENT_REVISION
+```
+
+```text
+EXPECTED_TARGET_CONTENT_REVISION
+=
+CURRENT_TARGET_CONTENT_REVISION
+```
+
+La UI no oculta cuál extremo cambió cuando el servidor pueda distinguirlo de forma segura.
+
+#### 43. Concurrencia
+
+Casos de conflicto que la experiencia debe manejar explícitamente incluyen:
+
+- dos transferencias de la misma cantidad;
+- split concurrente con transfer;
+- merge concurrente con unpack;
+- cierre o anulación concurrente con transfer;
+- cambio de condición concurrente con merge;
+- dos destinos intentando adquirir la misma identidad exacta.
+
+La recuperación consiste en recargar y revisar; no en sobrescribir.
+
+#### 44. Idempotencia
+
+Cada mutación usa una identidad de intención estable suficiente para reconocer reintentos.
+
+Un doble envío no debe producir:
+
+- dos splits;
+- dos merges;
+- doble resta del origen;
+- doble suma al destino;
+- dos eventos de relabel;
+- dos incrementos de revisión por una sola intención.
+
+#### 45. Timeout y resultado desconocido
+
+Cuando el cliente pierde la respuesta:
+
+```text
+NO RESPONSE
+!=
+FAILED
+```
+
+La experiencia entra en un estado local de resultado desconocido y consulta o reintenta usando la misma identidad de idempotencia.
+
+No habilita una segunda intención equivalente con un nuevo identificador hasta reconciliar la primera.
+
+#### 46. Operación offline
+
+Una intención offline puede conservarse localmente cuando el contrato de dispositivo lo permita, pero:
+
+```text
+OFFLINE INTENT
+!=
+CANONICAL MUTATION
+```
+
+Al reconectar se revalidan:
+
+- actor;
+- autoridad exacta;
+- lifecycle;
+- revisiones;
+- membresías;
+- destino;
+- territorio;
+- trazabilidad;
+- capacidad y compatibilidad;
+- idempotencia.
+
+Un rechazo posterior se presenta como rechazo de la intención, no como reversión de un efecto que nunca fue confirmado.
+
+#### 47. Error y recuperación
+
+Para cada fallo la interfaz comunica:
+
+1. qué operación se intentó;
+2. qué ocurrió;
+3. qué datos siguen confirmados;
+4. si existe una intención pendiente o resultado desconocido;
+5. qué cambió si hay conflicto;
+6. qué puede hacer el actor: revisar, corregir, reintentar, cancelar la intención local o escalar.
+
+No se exponen detalles internos sensibles como sustituto de un mensaje operativo.
+
+#### 48. Denegación de autorización
+
+Una denegación produce:
+
+```text
+ZERO BUSINESS MUTATIONS
+```
+
+La UI no crea una proyección optimista persistente, no modifica cantidad local como si fuera real y no sugiere que cambiar de rol nominal o sede seleccionada sea una solución válida.
+
+#### 49. Dispositivo compartido
+
+En tablet, kiosco o estación compartida:
+
+- el actor humano efectivo permanece visible antes de confirmar;
+- cambiar de actor invalida una revisión sensible pendiente cuando corresponda;
+- el dispositivo no hereda autoridad del actor anterior;
+- el escaneo puede resolver recursos, pero no confirmar la operación por sí solo;
+- timeout de sesión no se convierte en resultado de negocio.
+
+#### 50. Accesibilidad y operación táctil
+
+Las superficies de 028 deben contemplar:
+
+- objetivos táctiles adecuados para operación `touch`;
+- foco visible;
+- navegación por teclado cuando aplique;
+- lectores de pantalla en controles esenciales;
+- confirmaciones no dependientes únicamente de color;
+- cantidades legibles y unidad siempre visible;
+- prevención de confirmación accidental;
+- soporte de operación sin escáner cuando el periférico no esté disponible y el contrato permita búsqueda manual.
+
+#### 51. Escaneo y resolución de origen/destino
+
+Escanear un código puede:
+
+- resolver un LPN;
+- resolver una identidad serializada;
+- proponer una selección.
+
+Nunca equivale automáticamente a:
+
+```text
+SPLIT
+MERGE
+TRANSFER
+RELABEL
+```
+
+Una coincidencia ambigua exige resolución explícita.
+
+#### 52. `RELABEL`: intención de usuario
+
+Reetiquetar significa emitir una nueva representación física controlada de la misma identidad LPN.
+
+Se preserva:
+
+```text
+LPN_ID BEFORE = LPN_ID AFTER
+STATE BEFORE = STATE AFTER
+```
+
+`RELABELED` es evento, no estado del lifecycle.
+
+#### 53. Estados y relabel
+
+La experiencia consume la matriz de dominio:
+
+- `DRAFT`: relabel permitido contractualmente si existe una emisión previa válida y autoridad exacta;
+- `ACTIVE`: relabel permitido contractualmente sin cambiar identidad ni estado;
+- `CLOSED`: solo para evidencia o necesidad controlada, sin presentar el LPN como operativo;
+- `CANCELLED`: no se ofrece relabel para uso operativo;
+- `VOID`: no se ofrece relabel para uso operativo.
+
+La autorización actual continúa fail-closed mientras no exista capacidad exacta activa.
+
+#### 54. Revisión previa de relabel
+
+Antes de confirmar una futura operación autorizada se muestran como mínimo:
+
+- identidad LPN;
+- código o representación vigente;
+- lifecycle;
+- propósito;
+- revisión vigente;
+- motivo cuando aplique;
+- efecto esperado: nueva emisión de representación;
+- efecto prohibido: no crear nueva identidad, no cambiar lifecycle, no mover contenido, no transferir custodia.
+
+#### 55. Emisiones anteriores
+
+El diseño exige que el actor pueda comprender que existe una relación histórica entre emisiones.
+
+Una representación anterior puede quedar obsoleta según el contrato físico posterior, pero nunca se reasigna a otra identidad LPN.
+
+028 no define el modelo físico de almacenamiento de emisiones.
+
+#### 56. Relabel y código visible
+
+El `lpn_id` permanece estable. La representación visible debe seguir resolviendo de forma no ambigua a la identidad correspondiente conforme al contrato futuro.
+
+Esta tarea no decide:
+
+- sintaxis final del código;
+- QR o código de barras;
+- tamaño;
+- DPI;
+- plantilla;
+- ZPL;
+- dispositivo de impresión.
+
+#### 57. Relabel no equivale a impresión
+
+Se fija en UX:
+
+```text
+RELABEL AUTHORIZED
+!=
+PRINT AUTHORIZED
+```
+
+```text
+PRINT SUCCESS
+!=
+RELABEL BUSINESS DECISION BY ITSELF
+```
+
+`NEXO-UX-028` diseña la intención empresarial de reetiquetar. `NEXO-UX-037` diseña impresión/reimpresión y `NEXO-UX-038` la operación frente a etiquetas dañadas.
+
+Una futura orquestación puede requerir ambas decisiones, pero no las fusiona en una autoridad única.
+
+#### 58. Relabel ante etiqueta dañada
+
+028 no diagnostica hardware ni decide el tratamiento operativo completo de una etiqueta dañada.
+
+Cuando el motivo de relabel sea daño, ilegibilidad o pérdida de etiqueta, conserva:
+
+- motivo;
+- identidad estable;
+- estado vigente;
+- relación con la emisión anterior;
+- handoff a la experiencia especializada de `NEXO-UX-038` cuando corresponda.
+
+#### 59. Revisión y concurrencia de relabel
+
+Antes del efecto se vuelve a resolver lifecycle y revisión.
+
+Si el LPN cambió a un estado donde la operación ordinaria ya no es válida, la intención no se confirma usando la vista antigua.
+
+Un relabel confirmado no cambia `content_revision` por inferencia; las revisiones concretas afectadas pertenecen al modelo físico que materialice el evento.
+
+#### 60. Lineage
+
+La experiencia exige que lineage pueda reconstruirse sin obligar al operador a interpretar IDs técnicos.
+
+Debe poder responder, según operación:
+
+```text
+WHAT CHANGED?
+FROM WHICH MEMBERSHIP?
+TO WHICH MEMBERSHIP OR LPN?
+HOW MUCH OR WHICH EXACT IDENTITY?
+UNDER WHICH REVISION?
+BY WHICH ACTOR?
+UNDER WHICH BUSINESS INTENT?
+```
+
+#### 61. Auditoría visible al operador
+
+El detalle posterior a una operación puede mostrar una historia humana resumida con:
+
+- operación;
+- actor;
+- momento;
+- cantidad o identidad;
+- origen/destino cuando aplique;
+- resultado;
+- motivo de rechazo o relabel cuando sea material.
+
+La auditoría técnica completa permanece en contratos propietarios; la UI no necesita exponer secretos, tokens ni payloads internos.
+
+#### 62. Matriz por forma de contenido
+
+| Forma | Dividir | Unir | Transferir entre LPN | UX principal |
+| --- | --- | --- | --- | --- |
+| `QUANTITY_SLICE` | sí, si autorizada y válida | sí, solo equivalentes | sí, parcial o total | cantidad, unidad, dimensiones, revisiones y conservación |
+| `SERIALIZED_IDENTITY` | no | no | sí, identidad completa | sujeto exacto, origen y destino |
+| `KIT_INSTANCE` | no como cantidad | no como identidad | sí, instancia completa | instancia, completitud propietaria y destino |
+
+La matriz no convierte `PHYSICAL_CONTAINER` ni otro LPN en una cuarta forma de contenido.
+
+#### 63. Matriz de operaciones UX prohibidas
+
+| Caso | Resultado UX |
+| --- | --- |
+| dividir identidad serializada | control no ofrecido o denegado con explicación |
+| dividir kit como cantidad | control no ofrecido o denegado |
+| unir lotes distintos | bloqueado |
+| unir condiciones distintas | bloqueado |
+| unir dimensiones desconocidas como si fueran iguales | bloqueado |
+| transferir hacia el mismo LPN | bloqueado |
+| transferir desde/hacia LPN no `ACTIVE` | bloqueado para operación ordinaria |
+| transferir cantidad cero/negativa | bloqueado |
+| transferir más que la fuente | bloqueado |
+| transferir mediante `UNPACK + PACK` independientes | no ofrecido como atajo |
+| aceptar revisión stale | conflicto y recarga |
+| relabel creando nuevo `lpn_id` | prohibido |
+| relabel cambiando lifecycle | prohibido |
+| relabel usando autorización de impresión como sustituto | prohibido |
+
+#### 64. Matriz de conservación
+
+| Dimensión | Split | Merge | Transfer | Relabel |
+| --- | --- | --- | --- | --- |
+| cantidad total | conserva | conserva | conserva origen+destino | no aplica |
+| identidad serializada | no aplica | no aplica | conserva exacta | no cambia |
+| identidad kit | no aplica | no aplica | conserva exacta | no cambia |
+| producto/sujeto | conserva | exige igualdad | conserva | no cambia |
+| unidad | conserva | exige igualdad | conserva | no cambia |
+| lote | conserva | exige igualdad | conserva | no cambia |
+| vencimiento | conserva | exige igualdad | conserva | no cambia |
+| condición | conserva | exige igualdad | conserva | no cambia |
+| lifecycle | no cambia | no cambia | no cambia | no cambia |
+| purpose type | no cambia | no cambia | no cambia | no cambia |
+| lineage | amplía | agrega fuentes | agrega origen/destino | agrega emisión/evento |
+| revisión de contenido | monotónica | monotónica | monotónica en ambos LPN | no se infiere cambio |
+
+#### 65. Estados locales de interacción
+
+La interfaz puede utilizar estados locales no canónicos como:
+
+```text
+READY_FOR_REVIEW
+SUBMITTING
+UNKNOWN_RESULT
+CONFLICT
+FAILED
+OFFLINE_PENDING
+```
+
+Estos estados pertenecen a la interacción y nunca se persisten o presentan como lifecycle LPN.
+
+#### 66. Caso: split aceptado
+
+Secuencia UX:
+
+1. abrir contenido autoritativo;
+2. seleccionar `QUANTITY_SLICE`;
+3. capturar porciones;
+4. validar suma y precisión;
+5. revisar dimensiones y efectos;
+6. confirmar intención;
+7. esperar decisión server-side;
+8. mostrar recibo confirmado y revisión resultante;
+9. recargar contenido autoritativo.
+
+#### 67. Caso: merge aceptado
+
+Secuencia UX:
+
+1. seleccionar dos o más `QUANTITY_SLICE` del mismo LPN;
+2. comparar clave de equivalencia completa;
+3. calcular cantidad resultante sin mutar estado;
+4. mostrar todas las fuentes y lineage a preservar;
+5. confirmar;
+6. esperar decisión server-side;
+7. presentar membresía resultante y revisión confirmada.
+
+#### 68. Caso: transferencia parcial aceptada
+
+Secuencia UX:
+
+1. seleccionar membresía fuente;
+2. elegir transferencia;
+3. resolver LPN destino distinto;
+4. capturar cantidad parcial;
+5. revalidar origen, destino, revisiones y compatibilidad;
+6. mostrar `SOURCE AFTER` y `TARGET AFTER`;
+7. confirmar una sola intención;
+8. esperar resultado atómico;
+9. presentar ambos lados confirmados y lineage.
+
+No existe un split confirmado intermedio.
+
+#### 69. Caso: transferencia de identidad exacta
+
+Secuencia UX:
+
+1. resolver identidad exacta en origen;
+2. resolver destino;
+3. verificar que no exista ya una membresía autoritativa de esa identidad en destino u otro LPN incompatible;
+4. revisar origen y destino;
+5. confirmar;
+6. esperar resultado;
+7. mostrar identidad exactamente una vez en el estado final autoritativo.
+
+#### 70. Caso: conflicto concurrente
+
+Si una revisión cambió:
+
+```text
+STALE REVIEW
+→
+NO MUTATION
+→
+SHOW WHAT CHANGED WHEN SAFE
+→
+RELOAD AUTHORITATIVE STATE
+→
+REQUIRE NEW REVIEW
+```
+
+La acción no se reenvía automáticamente sobre la nueva realidad.
+
+#### 71. Caso: respuesta perdida
+
+Si la solicitud fue enviada y no se conoce el resultado:
+
+- se conserva la identidad de idempotencia;
+- se bloquea el envío de una intención equivalente nueva;
+- se consulta/reintenta la misma operación;
+- se presenta `UNKNOWN_RESULT` hasta resolver;
+- al resolver se actualizan ambas proyecciones desde servidor.
+
+#### 72. Caso: relabel solicitado
+
+Secuencia UX futura:
+
+1. abrir LPN;
+2. elegir reetiquetar si dominio y autoridad lo permiten;
+3. mostrar identidad, lifecycle y representación vigente;
+4. capturar motivo cuando sea requerido;
+5. revisar explícitamente que la identidad y el estado no cambian;
+6. confirmar intención empresarial;
+7. esperar decisión server-side;
+8. registrar nueva emisión/evento cuando sea aceptada;
+9. entregar el trabajo de impresión al contrato correspondiente cuando aplique.
+
+#### 73. Estado AS-IS remoto observado
+
+La inspección remota vigente permite sostener únicamente un AS-IS parcial:
+
+- `vento-nexo/main` permanece en `f0a12557a1a258c84b025933653dc756de4b5a59`;
+- existe `LpnCreateForm` como componente localizado;
+- existe un endpoint de lectura sobre `inventory_lpns` con campos básicos;
+- no se localizaron consumidores operativos de `inventory_lpn_items` mediante la búsqueda remota disponible;
+- no se localizaron flujos específicos `split`, `merge`, `transfer` o `relabel` asociados a LPN en el código remoto inspeccionado;
+- la evidencia canónica histórica ya clasifica el ciclo LPN como infraestructura/proceso parcial pendiente de materialización completa.
+
+Estas observaciones no prueban inexistencia absoluta de código fuera de las fuentes inspeccionadas; sí impiden declarar 028 implementada o validada físicamente.
+
+#### 74. Brechas que 028 deja explícitas para implementación futura
+
+La materialización posterior deberá demostrar, como mínimo:
+
+- consumidor real de membresía LPN;
+- operaciones server-side atómicas;
+- capacidades exactas canónicas activas;
+- revisiones monotónicas;
+- conservación exacta de cantidad;
+- lineage reconstruible;
+- ausencia de doble contabilización;
+- unicidad de identidades exactas;
+- atomicidad origen/destino;
+- idempotencia de reintentos;
+- concurrencia fail-closed;
+- revalidación offline;
+- relabel sin identidad nueva;
+- separación entre relabel e impresión;
+- pruebas en tablet/escáner cuando aplique.
+
+#### 75. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| identidad y purpose LPN | `NEXO-DOM-002` |
+| lifecycle y semántica de relabel | `NEXO-DOM-003` |
+| `PACK` / `UNPACK` | `NEXO-DOM-004` / `NEXO-UX-027` |
+| split / merge / transfer | `NEXO-DOM-005` / `NEXO-UX-028` |
+| anidamiento y retornables | `NEXO-DOM-006` / `NEXO-UX-029` |
+| ubicación | `NEXO-DOM-007` |
+| custodia | `NEXO-DOM-008` / `NEXO-UX-031` |
+| movimiento de LPN raíz | `NEXO-DOM-022` |
+| trazabilidad | `NEXO-DOM-023` |
+| capacidad/compatibilidad | `NEXO-DOM-024` |
+| autoridad de relabel | `NEXO-AUTH-022` |
+| autoridad de split/merge/transfer | `NEXO-AUTH-023` |
+| impresión/reimpresión | `NEXO-AUTH-028` / `NEXO-UX-037` |
+| etiqueta dañada y escáner | `NEXO-UX-038` |
+
+#### 76. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| LPN-XFM-01 | split de cantidad válido | revisión y conservación exacta |
+| LPN-XFM-02 | split de serial | bloqueado |
+| LPN-XFM-03 | split de kit | bloqueado |
+| LPN-XFM-04 | split con suma distinta | bloqueado |
+| LPN-XFM-05 | merge equivalente | consolidación con lineage |
+| LPN-XFM-06 | merge lote distinto | bloqueado |
+| LPN-XFM-07 | merge condición distinta | bloqueado |
+| LPN-XFM-08 | merge con dimensión desconocida | bloqueado |
+| LPN-XFM-09 | transfer parcial | una intención atómica |
+| LPN-XFM-10 | transfer total | origen sin membresía, destino con la misma existencia |
+| LPN-XFM-11 | transfer serial | identidad exacta una vez |
+| LPN-XFM-12 | transfer kit | instancia completa |
+| LPN-XFM-13 | transfer mismo LPN | bloqueado |
+| LPN-XFM-14 | origen no ACTIVE | bloqueado |
+| LPN-XFM-15 | destino no ACTIVE | bloqueado |
+| LPN-XFM-16 | transfer multilínea con una línea inválida | rechazo completo |
+| LPN-XFM-17 | destino incompatible | bloqueado |
+| LPN-XFM-18 | revisión stale origen | conflicto |
+| LPN-XFM-19 | revisión stale destino | conflicto |
+| LPN-XFM-20 | doble envío | un solo resultado empresarial |
+| LPN-XFM-21 | timeout post-submit | resultado desconocido y reconciliación |
+| LPN-XFM-22 | intención offline | pendiente local, revalidación al reconectar |
+| LPN-XFM-23 | relabel ACTIVE | misma identidad/estado, nueva emisión controlada |
+| LPN-XFM-24 | relabel CLOSED | solo necesidad controlada/evidencia |
+| LPN-XFM-25 | relabel CANCELLED/VOID para uso operativo | bloqueado |
+| LPN-XFM-26 | impresión sin relabel autorizado | no sustituye autoridad empresarial |
+| LPN-XFM-27 | relabel sin print autorizado | decisión empresarial no implica impresión |
+| LPN-XFM-28 | catálogo sin capacidad exacta | mutación no ejecutable |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 77. Handoff hacia `NEXO-UX-029`
+
+`NEXO-UX-028` entrega a `NEXO-UX-029`:
+
+```text
+STABLE LPN IDENTITY
++
+AUTHORITATIVE CONTENT MEMBERSHIP
++
+THREE CONTENT SHAPES
++
+SPLIT / MERGE / TRANSFER UX BOUNDARIES
++
+EXACT QUANTITY AND IDENTITY CONSERVATION
++
+SOURCE / TARGET LINEAGE
++
+MONOTONIC CONTENT REVISIONS
++
+NO LPN-AS-ORDINARY-CONTENT RULE
++
+RELABEL AS NON-LIFECYCLE EVENT
++
+SAFE CONFLICT / IDEMPOTENCY / OFFLINE RECOVERY
+```
+
+`NEXO-UX-029` deberá diseñar contenedores anidados y retornables sin convertir un LPN hijo en contenido ordinario, sin debilitar la unicidad de representación autoritativa y sin confundir LPN con `PHYSICAL_CONTAINER`.
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige ciclo LPN auditable, no doble contabilización, conservación de trazabilidad, atomicidad, idempotencia, concurrencia, operación offline, comportamiento por clase, fuente de verdad visible y recuperación segura. Esta tarea especializa la experiencia de split, merge, transferencia y reetiquetado dentro de esas obligaciones sin introducir un requisito independiente.
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para ciclo LPN completo y reetiquetado auditable sin doble contabilización;
+- `TREQ-NEXO-011`, para fuente canónica, atomicidad, membresía LPN, idempotencia, concurrencia y offline;
+- `TREQ-NEXO-012`, para conservar lote, serial, vencimiento, condición y trazabilidad al dividir y unir contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y prohibición de duplicar saldo, identidad, kit o contenido LPN;
+- `TREQ-UX-002`, para errores, bloqueos, recuperación y reintentos sin duplicar efectos;
+- `TREQ-UX-004`, para operación en tablet, estación compartida, escáner y periféricos reales;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado, actor, último cambio y conciliaciones visibles;
+- `TREQ-UX-006`, para pérdida de red, sesión, dispositivo, reautorización y reanudación segura.
+
+Estas referencias son trazabilidad existente y no una modificación del registro 04A.
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea define experiencia documental bajo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no contiene código de producto que compilar |
+| LOCAL | NOT_EXECUTED | no se ejecutaron validadores sobre el checkout local del usuario durante la elaboración; la batería documental los ejecutará después de incorporar el artefacto |
+| REMOTA | PASS | se contrastaron `vento-shell/main` vigente, protocolo, contrato de entrega, topología, owner UX, `NEXO-DOM-003/005`, `NEXO-AUTH-022/023`, 04A NEXO/UX y `vento-nexo/main`; el AS-IS remoto mantiene LPN parcial y no demostró flujos operativos split/merge/transfer/relabel |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron split, merge, transferencia ni reetiquetado con actores reales, tablet, escáner o impresora |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-028` no genera instancia física propia y no autoriza cambios de producto, datos, Supabase ni hardware |
+
+#### 81. Criterios de aceptación
+
+- [x] split, merge, transfer y relabel son cuatro intenciones separadas;
+- [x] split opera únicamente sobre `QUANTITY_SLICE`;
+- [x] merge opera únicamente sobre `QUANTITY_SLICE` equivalentes;
+- [x] seriales y kits no se dividen ni fusionan;
+- [x] cantidad total se conserva;
+- [x] dimensiones materiales se preservan;
+- [x] lineage se conserva y es reconstruible;
+- [x] partial transfer no exige split confirmado intermedio;
+- [x] transfer no se modela como unpack+pack independientes;
+- [x] fuente y destino de transfer son LPN distintos;
+- [x] ambos LPN deben ser `ACTIVE` para transferencia ordinaria;
+- [x] transfer no cierra automáticamente el origen vacío;
+- [x] transfer no cambia purpose type;
+- [x] transferencia multilínea es all-or-nothing;
+- [x] transferencia de serial conserva una única identidad;
+- [x] transferencia de kit conserva la instancia completa;
+- [x] capacidad y compatibilidad se revalidan cuando aplican;
+- [x] revisiones stale generan conflicto y nueva revisión humana;
+- [x] transferencia valida revisiones de origen y destino;
+- [x] retry no duplica efectos;
+- [x] timeout no se interpreta como fallo;
+- [x] offline no se interpreta como efecto canónico;
+- [x] escaneo no muta automáticamente;
+- [x] actor efectivo permanece visible en dispositivo compartido;
+- [x] relabel mantiene `lpn_id` y lifecycle;
+- [x] `RELABELED` no se trata como estado;
+- [x] relabel y print permanecen decisiones separadas;
+- [x] CLOSED solo admite relabel controlado para evidencia/necesidad legítima;
+- [x] CANCELLED y VOID no reciben relabel para uso operativo;
+- [x] el diseño no inventa `PermissionKey`;
+- [x] el diseño respeta `DEFAULT_DENY` actual para mutaciones sin capacidad exacta;
+- [x] no se redefine impresión, etiqueta dañada, custodia, ubicación o movimiento de LPN raíz;
+- [x] no se crean requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+#### 82. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- modifica navegación;
+- crea endpoints o Server Actions;
+- modifica `inventory_lpns` ni `inventory_lpn_items`;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas, funciones, RPC o RLS;
+- crea migraciones o backfills;
+- muta LPN, contenido, saldo o movimientos reales;
+- crea `PermissionKey`, grants, scope o modalidad;
+- habilita split, merge, transfer o relabel bajo el catálogo actual;
+- redefine `PACK` o `UNPACK`;
+- redefine lifecycle ni purpose type;
+- redefine unidades o conversiones;
+- redefine trazabilidad;
+- redefine capacidad o compatibilidad;
+- mueve un LPN raíz;
+- cambia custodia;
+- diseña contenedores anidados o retornables;
+- diseña catálogo de activos;
+- diseña búsqueda transversal;
+- diseña impresión o reimpresión;
+- define plantilla, ZPL, DPI, código QR/barra o hardware;
+- diseña la operación especializada de etiquetas dañadas;
+- ejecuta prueba de usuario;
+- crea prototipo ejecutable;
+- modifica Supabase;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-029`.
+
+#### 83. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-029 — Diseñar contenedores anidados y retornables`
 ### [ ] NEXO-UX-029 — Diseñar contenedores anidados y retornables
 ### [ ] NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
 ### [ ] NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
