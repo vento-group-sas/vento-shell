@@ -1054,6 +1054,40 @@ propósito es validar una capacidad vertical reutilizable y devolver evidencia,
 defectos y contratos comprobados al desarrollo normal.
 <!-- PRIORITY-PACKAGE-PROTOCOL:END -->
 
+<!-- APPLICATION-CLOSURE-REVALIDATION:PROTOCOL:START -->
+### Invariante transversal — cierre de aplicación revalidable
+
+El cierre de un package y el cierre agregado de una aplicación son autoridades distintas. Un package conserva como autoridad de cierre `SHELL-CI-024::<package_id>` en estado `VERIFIED` con evidencia; ese cierre histórico no se reescribe ni se invalida por trabajo descubierto después.
+
+`COMPLETE_EXPLICIT_SCOPE` significa únicamente que, para el snapshot canónico vigente, todos los packages explícitamente relacionados con la aplicación están cerrados y los criterios de aceptación considerados por el modelo no permanecen `UNKNOWN`. Es un estado calculado y revalidable, no una declaración eterna o inmutable de que la aplicación nunca volverá a requerir trabajo.
+
+Reglas obligatorias:
+
+1. `COMPLETE_EXPLICIT_SCOPE` no aprueba tareas canónicas, no cambia sus marcadores y no autoriza omitir tareas pendientes por el solo hecho de pertenecer a una aplicación cerrada anteriormente.
+2. Una tarea canónica pendiente se ejecuta cuando su secuencia y dependencias lo indiquen, salvo que su propio estado cambie mediante el mecanismo canónico correspondiente; el estado agregado de una aplicación no es un sustituto del estado de la tarea.
+3. Si el plan vigente incorpora una nueva relación de propiedad o consumo, dependencia, package relacionado, criterio de aceptación, integración o capacidad aplicable a una aplicación, el `package-application-closure` debe recalcularse contra ese nuevo snapshot.
+4. Si la nueva evaluación encuentra al menos un package relacionado abierto, la aplicación deja de satisfacer `COMPLETE_EXPLICIT_SCOPE` y se proyecta como `INCOMPLETE`.
+5. Si todos los packages relacionados están cerrados pero existen criterios de aceptación sin cierre explícito, la aplicación se proyecta como `UNKNOWN_CRITERIA_TRACEABILITY`.
+6. La evidencia histórica de un package cerrado permanece inmutable; el trabajo nuevo se representa mediante su tarea, relación, package o unidad propietaria, sin alterar retrospectivamente evidencia válida.
+7. Una ruta vertical adelantada, un priority lane o una implementación temprana puede cerrar el alcance explícito conocido de una aplicación, pero ese cierre no constituye un token para saltar trabajo que el flujo normal descubra o alcance posteriormente.
+8. Antes del cierre integral de VENTO OS debe recalcularse el application closure contra el plan canónico completo vigente; ningún agente, desarrollador, scanner, iniciador o automatización puede conservar un cierre agregado solo por memoria o por un resultado histórico anterior.
+9. Esta regla aplica por igual a `anima`, `aura`, `fogo`, `nexo`, `numera`, `origo`, `pass`, `pulso`, `shell` y `viso`.
+
+En consecuencia:
+
+```text
+PACKAGE VERIFIED
+!= APLICACION ETERNAMENTE COMPLETA
+
+COMPLETE_EXPLICIT_SCOPE
+= CIERRE DEL ALCANCE EXPLICITO VIGENTE
++ REVALIDACION OBLIGATORIA CONTRA EL SNAPSHOT CANONICO ACTUAL
+
+APLICACION CERRADA ANTES
+!= TAREA FUTURA OMITIBLE
+```
+<!-- APPLICATION-CLOSURE-REVALIDATION:PROTOCOL:END -->
+
 <!-- TASK-WORK-TOPOLOGY:START -->
 ## Topología canónica de trabajo, cardinalidad y gate temporal
 
