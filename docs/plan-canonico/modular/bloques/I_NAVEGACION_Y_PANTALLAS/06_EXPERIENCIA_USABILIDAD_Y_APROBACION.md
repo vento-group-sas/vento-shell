@@ -2728,533 +2728,696 @@ Estas tareas diseñan, prototipan, prueban y aprueban el contrato de experiencia
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-DEV-007 — Exigir firma o PIN del trabajador`
 
-### [ ] AUTH-UI-052 — Diseñar página inicial según actor
+### ✅ AUTH-UI-052 — Diseñar página inicial según actor
 
-**Estado:** NO INICIADA; evidencia parcial NEXO conservada
-**Tarea anterior:** `AUTH-UI-051 — Estandarizar errores recuperables` — NO INICIADA
-**Tarea siguiente:** `AUTH-UI-053 — Diseñar navegación según tareas frecuentes` — NO INICIADA
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
+**Tarea siguiente:** AUTH-UI-053 — Diseñar navegación según tareas frecuentes
 **Tipo de tarea:** documental global; diseño funcional de la entrada de cada aplicación según actor efectivo, función activa, contexto territorial, trabajo autorizado y modalidad de dispositivo
-**Repositorio propietario:** `vento-shell`
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
 **Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
-**Evidencia parcial inspeccionada:** `vento-nexo`, `NEXO-ROUTE-001` — `/`
-**Ruta vigente:** flujo canónico integral; el carril `NEXO-REMISSIONS-001` queda únicamente como procedencia histórica de la evidencia NEXO
-**Cambios físicos autorizados:** ninguno; no modifica código, rutas, permisos, roles, procesos, datos, Supabase, migraciones, RLS, configuración ni despliegues
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
 
 ---
 
 #### 1. Propósito
 
-Diseñar la página inicial de NEXO como una proyección de trabajo resuelta según
-el actor efectivo, la función activa y el contexto autorizado, sin convertir el
-nombre de un rol, la URL, el dispositivo o la presencia de una tarjeta en una
-fuente de autoridad.
+Diseñar la página inicial o superficie de entrada equivalente de cada aplicación incluida en la rectificación vigente de `AUTH-UI-052..060`, de forma que el primer estado interactivo útil dependa del actor efectivo, la función activa, el carril de experiencia, el contexto territorial o personal, el dispositivo y el trabajo realmente autorizado.
 
-La regla canónica es:
+La regla global es:
+
+```text
+ACTOR EFECTIVO
++
+FUNCION ACTIVA O RELACION PERSONAL VIGENTE
++
+CARRIL DE EXPERIENCIA
++
+CONTEXTO Y TERRITORIO APLICABLES
++
+DISPOSITIVO Y SESION COMPATIBLES
++
+TRABAJO, OBLIGACIONES Y CAPACIDADES AUTORIZADAS
++
+ESTADO, FRESCURA Y SENSIBILIDAD
+=
+UNA SOLA PROYECCION INICIAL COHERENTE
+```
+
+La página inicial organiza trabajo y contexto ya autorizados. No concede permisos, no amplía territorio, no fusiona funciones y no sustituye la revalidación de servidor de cada lectura o mutación.
+
+---
+
+#### 2. Alcance y límites
+
+##### 2.1. Incluido
+
+- decisión explícita para las diez aplicaciones exigidas por la rectificación vigente;
+- identificación de la superficie inicial existente cuando ya hay una entrada interactiva canónica o inventariada;
+- `NO_APLICA` justificado cuando no existe una aplicación operativa o una superficie inicial gobernable dentro de Vento OS;
+- resolución por actor, función, contexto, carril y dispositivo;
+- una proyección activa por render;
+- acción principal o foco inicial cuando exista trabajo ejecutable;
+- obligaciones, bloqueos y handoffs secundarios sin competir con la acción principal;
+- reutilización de estados y reglas ya aprobados para contexto, simulación, sin acceso, carga, vacío y errores recuperables;
+- responsive, accesibilidad, minimización, sensibilidad y cambio de contexto;
+- preservación de la evidencia NEXO ya materializada como perfil específico de aplicación.
+
+##### 2.2. Excluido
+
+- diseñar la navegación completa por tareas frecuentes, reservada a `AUTH-UI-053`;
+- reducir opciones irrelevantes fuera de la entrada, reservado a `AUTH-UI-054`;
+- crear prototipos visuales finales, reservado a `AUTH-UI-055`;
+- declarar validación interna de prototipos, reservada a `AUTH-UI-056`;
+- definir criterios de usabilidad por superficie, reservado a `AUTH-UI-057`;
+- probar con usuarios reales, registrar hallazgos o aprobar pantallas, reservados a `AUTH-UI-058..060`;
+- crear rutas, pantallas, procesos, permisos, roles, tablas, RLS, RPC, migraciones, datos, eventos o componentes;
+- ejecutar cambios en aplicaciones o Supabase;
+- convertir una home en backoffice universal;
+- inventar una home para una aplicación futura, no desplegada o fuera de Vento OS.
+
+---
+
+#### 3. Resultado material
+
+Se definen ocho artefactos documentales globales:
+
+1. `APPLICATION-ACTOR-HOME-CONTRACT-001`, contrato común de la entrada según actor y contexto;
+2. `APPLICATION-ACTOR-HOME-COVERAGE-MATRIX-001`, decisión exhaustiva para las diez aplicaciones requeridas;
+3. `APPLICATION-ACTOR-HOME-RESOLUTION-CONTRACT-001`, resolución autoritativa de la proyección inicial;
+4. `APPLICATION-ACTOR-HOME-INFORMATION-ARCHITECTURE-001`, zonas comunes sin imponer un layout físico único;
+5. `APPLICATION-ACTOR-HOME-PRIORITY-CONTRACT-001`, foco, acción principal y siguiente trabajo;
+6. `APPLICATION-ACTOR-HOME-STATE-MAPPING-001`, composición de estados existentes sin crear una taxonomía paralela;
+7. `APPLICATION-ACTOR-HOME-RESPONSIVE-ACCESSIBILITY-CONTRACT-001`, reglas por modalidad de dispositivo y accesibilidad;
+8. `APPLICATION-ACTOR-HOME-HANDOFF-001`, entrega exacta a `AUTH-UI-053` sin iniciar la navegación frecuente.
+
+Cobertura global:
+
+| Elemento | Total esperado | Total materializado | Faltantes | Duplicados |
+| --- | ---: | ---: | ---: | ---: |
+| Aplicaciones exigidas por la rectificación | 10 | 10 | 0 | 0 |
+| Aplicaciones con entrada interactiva aplicable | 8 | 8 | 0 | 0 |
+| Aplicaciones con `NO_APLICA` justificado | 2 | 2 | 0 | 0 |
+| Perfiles específicos preservados de NEXO | 1 | 1 | 0 | 0 |
+| Contextos NEXO preservados | 8 | 8 | 0 | 0 |
+| Rutas, pantallas o superficies nuevas | 0 | 0 | 0 | 0 |
+| Roles, funciones o permisos nuevos | 0 | 0 | 0 | 0 |
+| Requisitos de prueba nuevos o modificados | 0 | 0 | 0 | 0 |
+
+El resultado queda `ESPECIFICADO`. No se declara `IMPLEMENTADO`, `VALIDADO_CON_USUARIOS` ni disponible en producción por efecto de esta tarea.
+
+---
+
+#### 4. Fuentes y precedencia consumidas
+
+La tarea consume sin redefinir:
+
+- la rectificación integral de `AUTH-UI-052..060`, que exige cobertura global de ANIMA, FOGO, NEXO, NUMERA, ORIGO, PASS, PULSO, TALENTO, VISO y VITAL;
+- los inventarios de superficies de BLOQUE I;
+- la arquitectura transversal de actor, tarea, navegación y contexto de E2;
+- los contratos de relevancia contextual y contexto activo ya aprobados;
+- las reglas de navegación y autorización de `AUTH-UI-030..045`;
+- la presentación de contexto y simulación de `AUTH-UI-046..047`;
+- los estados sin acceso, carga, vacío y recuperación de `AUTH-UI-048..051`;
+- los contratos de aplicación, proceso, pantalla, actor, dispositivo y sensibilidad vigentes;
+- la evidencia NEXO histórica producida en el carril `NEXO-REMISSIONS-001`, únicamente como insumo específico de NEXO y nunca como prueba de cobertura global.
+
+Precedencia de interpretación:
+
+```text
+RECTIFICACION GLOBAL AUTH-UI-052..060
+>
+EVIDENCIA PARCIAL HISTORICA NEXO
+```
+
+Por tanto, el diseño NEXO se conserva, pero no limita ni define por analogía las otras nueve decisiones de cobertura.
+
+---
+
+#### 5. `APPLICATION-ACTOR-HOME-CONTRACT-001`
+
+##### 5.1. Unidad de entrada
+
+La unidad es la primera superficie interactiva útil que representa la relación real del actor con la aplicación después de resolver acceso, bootstrap y contexto.
+
+No se consideran home empresarial por sí solos:
+
+- login;
+- splash;
+- redirect bridge;
+- no-access;
+- error boundary;
+- update gate;
+- callback;
+- route handler;
+- layout;
+- loader técnico;
+- selector que todavía no resolvió actor o contexto.
+
+Una aplicación móvil puede tener un bootstrap previo y una home posterior. Una aplicación web puede reutilizar `/` como home. La identidad física existente se conserva; esta tarea no crea otra ruta para cada rol.
+
+##### 5.2. Proyección única
+
+Cada render mantiene una sola proyección activa.
+
+```text
+MULTIPLES FUNCIONES AUTORIZADAS
+!=
+UNION DE TODAS LAS HOMES
+```
+
+Si una persona puede actuar en más de una función, se exige una función o relación activa inequívoca antes de componer controles, datos y acciones.
+
+##### 5.3. No autoridad de la presentación
+
+No conceden autoridad:
+
+- estar en la ruta `/`;
+- entrar desde un favorito o deep link;
+- una tarjeta visible;
+- un conteo;
+- un nombre de rol;
+- un `navigation_role`;
+- el último contexto almacenado;
+- una sede seleccionada como filtro;
+- el tipo de dispositivo;
+- haber ejecutado esa tarea antes;
+- que otra función del mismo usuario tenga el permiso.
+
+##### 5.4. Minimización
+
+La home recibe la proyección mínima suficiente para orientar el trabajo. No obtiene un universo global para ocultarlo después en cliente.
+
+---
+
+#### 6. `APPLICATION-ACTOR-HOME-RESOLUTION-CONTRACT-001`
+
+Antes de componer una entrada aplicable, el servidor o contrato propietario debe poder resolver, según corresponda:
 
 ```text
 PRINCIPAL AUTENTICADO
 +
-ACTOR EFECTIVO ATRIBUIBLE
+ACTOR EFECTIVO O SUJETO PERSONAL
 +
-FUNCIÓN ACTIVA
+FUNCION ACTIVA
 +
-CONTEXTO TERRITORIAL Y LABORAL VIGENTE
+CARRIL DE EXPERIENCIA
 +
-DISPOSITIVO Y SESIÓN COMPATIBLES
+EMPRESA / SEDE / AREA / TERRITORIO / PERIODO
 +
-PERMISOS, RECURSOS, ETAPAS Y RELACIONES RESUELTOS EN SERVIDOR
+TURNO Y CHECK-IN CUANDO APLIQUEN
 +
-PRIORIDAD DE TRABAJO AUTORITATIVA
-→
-UNA SOLA PROYECCIÓN INICIAL COHERENTE
+DISPOSITIVO Y SESION
++
+PERMISOS Y CAPACIDADES EXACTAS
++
+ASIGNACION / PARTICIPACION / CUSTODIA / RESPONSABILIDAD
++
+ESTADO / ETAPA / VERSION / FRESCURA
++
+SENSIBILIDAD Y MASKING
 ```
 
-La página inicial organiza y presenta trabajo autorizado. No concede permisos,
-no mezcla funciones, no crea procesos y no sustituye las comprobaciones de
-servidor aplicables a cada lectura o mutación.
+Resultado posible:
+
+1. proyección resoluble y lista;
+2. contexto todavía en resolución;
+3. carga de datos posteriores a una resolución válida;
+4. vacío válido;
+5. sin acceso concluyente;
+6. reautenticación o identificación adicional requerida;
+7. datos parciales;
+8. contexto cambiado o revocado;
+9. indisponibilidad o error recuperable;
+10. resultado de mutación previo todavía desconocido y pendiente de conciliación.
+
+La composición visible no redefine esos estados; los mapea a sus contratos propietarios.
 
 ---
 
-#### 2. Resultado material
+#### 7. `APPLICATION-ACTOR-HOME-COVERAGE-MATRIX-001`
 
-Se aprueban ocho artefactos documentales consumibles:
-
-1. `NEXO-ACTOR-HOME-PAGE-CONTRACT-001`, que define la identidad, autoridad,
-   límites y comportamiento común de la página inicial;
-2. `NEXO-ACTOR-HOME-RESOLUTION-MATRIX-001`, que materializa una decisión para
-   los ocho contextos de actor, función y dispositivo aprobados;
-3. `NEXO-ACTOR-HOME-COMPOSITION-MATRIX-001`, que vincula cada contexto con su
-   contrato de inicio, entradas prioritarias, contenido secundario y
-   ocultamientos obligatorios;
-4. `NEXO-ACTOR-HOME-INFORMATION-ARCHITECTURE-001`, que define ocho zonas de
-   composición sin alterar el orden interno de cada proyección aprobada;
-5. `NEXO-ACTOR-HOME-PRIORITY-CONTRACT-001`, que define selección de proyección,
-   acción primaria y siguiente trabajo sin prioridad calculada por el cliente;
-6. `NEXO-ACTOR-HOME-STATE-CONTRACT-001`, que materializa diez resultados de
-   presentación y sus reglas de recuperación;
-7. `NEXO-ACTOR-HOME-RESPONSIVE-ACCESSIBILITY-CONTRACT-001`, que define
-   comportamiento en móvil, tablet, escritorio y estación compartida;
-8. `NEXO-ACTOR-HOME-HANDOFF-001`, que entrega el diseño a la navegación por
-   tareas frecuentes sin iniciar la tarea siguiente.
-
-Cobertura materializada:
-
-| Elemento                                      | Total esperado | Total materializado | Faltantes | Duplicados |
-| --------------------------------------------- | -------------: | ------------------: | --------: | ---------: |
-| Superficies iniciales existentes reutilizadas |              1 |                   1 |         0 |          0 |
-| Contextos canónicos resueltos                 |              8 |                   8 |         0 |          0 |
-| Proyecciones funcionales principales          |              6 |                   6 |         0 |          0 |
-| Casos especiales de composición               |              2 |                   2 |         0 |          0 |
-| Zonas de composición                          |              8 |                   8 |         0 |          0 |
-| Resultados de presentación                    |             10 |                  10 |         0 |          0 |
-| Rutas nuevas                                  |              0 |                   0 |         0 |          0 |
-| Roles o funciones nuevas                      |              0 |                   0 |         0 |          0 |
-| Permisos nuevos                               |              0 |                   0 |         0 |          0 |
-| Requisitos de prueba nuevos o modificados     |              0 |                   0 |         0 |          0 |
-
-El resultado queda `ESPECIFICADO`. No se declara `IMPLEMENTADO`, `VALIDADO` ni
-disponible en producción.
-
----
-
-#### 3. Decisiones y contratos consumidos
-
-La tarea consume sin modificar:
-
-- `NEXO-REQUESTER-HOME-CONTRACT-001` y su arquitectura de información;
-- `NEXO-WAREHOUSE-HOME-CONTRACT-001` y sus colas operativas;
-- `NEXO-DRIVER-HOME-CONTRACT-001` y su composición de custodia;
-- `NEXO-RECEIVER-HOME-CONTRACT-001` y su composición de recepción;
-- `NEXO-SUPERVISOR-HOME-CONTRACT-001` y sus colas de control;
-- `NEXO-TASK-NAVIGATION-CONTRACT-001`;
-- `NEXO-NAVIGATION-TASK-CATALOG-001`;
-- `NEXO-ACTOR-TASK-COMPOSITION-MATRIX-001`;
-- `NEXO-ROUTE-TO-TASK-REGISTRY-001`;
-- `NEXO-NAVIGATION-ENTRY-RETURN-CONTRACT-001`;
-- contratos aprobados de lectura, acciones, turno, check-in, sede, área,
-  dispositivo compartido, simulación, sensibilidad y masking;
-- contratos vigentes de razones de autorización y estados interactivos
-  auxiliares;
-- requisitos `TREQ-*` vigentes asociados a los contratos anteriores.
-
-No se renombra ninguna identidad consumida ni se altera la distribución de
-familias, tareas, rutas, procesos, etapas o responsabilidades aprobadas.
-
----
-
-#### 4. Alcance y límites
-
-##### 4.1. Incluido
-
-- resolución de una proyección inicial según actor efectivo y función activa;
-- contexto visible de actor, sede, área, turno, check-in y dispositivo cuando
-  resulten aplicables;
-- una acción primaria coherente con la proyección activa;
-- siguiente trabajo y colas autorizadas resueltos por el servidor;
-- contenido secundario limitado a referencias necesarias para la tarea;
-- separación explícita entre operación, supervisión y configuración;
-- composición segura para una persona con varias funciones;
-- comportamiento de estación compartida con actor humano activo;
-- carga, vacío, parcialidad, denegación, fallo técnico, revocación y estados
-  interactivos auxiliares;
-- reglas responsive, accesibilidad, privacidad y minimización.
-
-##### 4.2. Excluido
-
-- diseñar el menú y la navegación completa por frecuencia;
-- reducir opciones irrelevantes fuera de la página inicial;
-- crear prototipos visuales;
-- validar con usuarios;
-- implementar componentes, consultas, guards, resolutores o telemetría;
-- crear una ruta adicional por actor;
-- inferir permisos desde nombres de rol;
-- mezclar acciones de solicitante, bodega, conductor, receptor, supervisor o
-  configuración en una única vista operativa;
-- mostrar métricas de productividad individual;
-- ejecutar cambios físicos o desplegados.
-
----
-
-#### 5. `NEXO-ACTOR-HOME-PAGE-CONTRACT-001`
-
-##### 5.1. Identidad de la superficie
-
-La página inicial reutiliza exclusivamente `NEXO-ROUTE-001` con patrón `/`.
-No se crean rutas como `/home-bodeguero`, `/home-conductor` o equivalentes.
-La misma superficie obtiene una respuesta distinta porque cambia el contexto
-autoritativo, no porque el cliente elija una URL o envíe un rol.
-
-##### 5.2. Autoridad
-
-La proyección se calcula con la intersección de:
-
-- principal autenticado;
-- actor efectivo;
-- función activa;
-- rol base y rol operativo cuando apliquen;
-- turno y check-in cuando sean obligatorios;
-- sede, área, LOC, origen, destino o territorio aplicables;
-- dispositivo, paquete y sesión de actor cuando apliquen;
-- permisos de lectura y acción exactos;
-- asignación, participación, custodia, handoff o responsabilidad válida;
-- estado, etapa, versión y frescura del recurso.
-
-Una ausencia, conflicto o revocación de un componente requerido falla cerrado.
-La página nunca obtiene un universo global para ocultarlo después en el
-cliente.
-
-##### 5.3. Proyección única
-
-En cada render existe una sola proyección activa. El actor puede tener varias
-funciones autorizadas, pero sus controles no se fusionan. Cambiar de función
-provoca una resolución completa nueva antes de presentar información o
-acciones.
-
-##### 5.4. No autoridad de presentación
-
-No conceden autoridad:
-
-- una tarjeta visible;
-- un conteo;
-- un elemento de navegación;
-- una ruta directa;
-- un nombre de cargo;
-- `navigation_role`;
-- el tipo de dispositivo;
-- haber participado en otra etapa;
-- pertenecer a la misma sede;
-- conocer un identificador;
-- haber tenido acceso en una sesión anterior.
-
----
-
-#### 6. `NEXO-ACTOR-HOME-RESOLUTION-MATRIX-001`
-
-| Caso           | Contexto canónico                       | Proyección activa                             | Entrada prioritaria                                                                                               | Acción primaria                                        | Regla de resolución                                                                            | Estado         |
-| -------------- | --------------------------------------- | --------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------------------------------------------------------------------------------- | -------------- |
-| `HOME-CTX-001` | solicitante autorizado                  | `NEXO-REQUESTER-HOME-CONTRACT-001`            | `NEXO-TASK-003` y solicitudes propias continuables                                                                | `NUEVA SOLICITUD` cuando la autorización permita crear | actor, participación propia, territorio y permiso exacto resueltos en servidor                 | `ESPECIFICADO` |
-| `HOME-CTX-002` | bodeguero o preparador autorizado       | `NEXO-WAREHOUSE-HOME-CONTRACT-001`            | `NEXO-TASK-004`, `NEXO-TASK-007` a `NEXO-TASK-011` según trabajo vigente                                          | `CONTINUAR_SIGUIENTE_TAREA`                            | función de bodega, turno, área warehouse, asignación, recurso y prioridad autoritativa         | `ESPECIFICADO` |
-| `HOME-CTX-003` | conductor o custodio autorizado         | `NEXO-DRIVER-HOME-CONTRACT-001`               | `NEXO-TASK-005`                                                                                                   | `CONTINUAR_SIGUIENTE_TAREA`                            | jornada, asignación, ruta, vehículo, custodia, etapa y permiso compatibles                     | `ESPECIFICADO` |
-| `HOME-CTX-004` | receptor autorizado                     | `NEXO-RECEIVER-HOME-CONTRACT-001`             | `NEXO-TASK-006` y `NEXO-TASK-007` cuando el origen empresarial lo permita                                         | `CONTINUAR_SIGUIENTE_TAREA`                            | función receptora, destino, handoff, custodia, segregación y permiso exacto                    | `ESPECIFICADO` |
-| `HOME-CTX-005` | supervisor con cobertura territorial    | `NEXO-SUPERVISOR-HOME-CONTRACT-001`           | `NEXO-TASK-012`; referencias `NEXO-TASK-013` a `NEXO-TASK-017` y `NEXO-TASK-026` según permiso                    | `CONTINUAR_SIGUIENTE_TAREA`                            | cobertura, responsabilidad, conflicto, evidencia, autorización atómica y segregación           | `ESPECIFICADO` |
-| `HOME-CTX-006` | configurador autorizado                 | `NEXO-TASK-NAVIGATION-CONTRACT-001`           | `NEXO-TASK-021`; referencias `NEXO-TASK-020`, `NEXO-TASK-022` a `NEXO-TASK-025` y `NEXO-TASK-027` según capacidad | abrir la tarea de configuración prioritaria autorizada | capacidad administrativa exacta y territorio, sin ejecución física ni supervisión implícita    | `ESPECIFICADO` |
-| `HOME-CTX-007` | persona con varias funciones            | proyección de la función activa               | siguiente tarea autoritativa de la función activa                                                                 | la definida por la proyección activa                   | las otras funciones aparecen únicamente como cambio de contexto separado y sin datos mezclados | `ESPECIFICADO` |
-| `HOME-CTX-008` | dispositivo compartido con actor activo | proyección compatible con actor y dispositivo | tareas compatibles con dispositivo, actor, turno y contexto                                                       | la definida por la proyección activa                   | la identidad del dispositivo limita; nunca sustituye actor, permiso, turno o territorio        | `ESPECIFICADO` |
+| Aplicación | Entrada existente o referencia gobernada | Aplicabilidad | Actor / carril dominante de entrada | Foco inicial aprobado | Decisión |
+| --- | --- | --- | --- | --- | --- |
+| ANIMA | `ANIMA-SCREEN-004` — `/home` después del bootstrap de `ANIMA-SCREEN-001..002` | `APLICA` | trabajador en experiencia personal y operación móvil ligera; supervisión puntual cuando exista capacidad | asistencia y jornada propias, acción vigente de check-in/check-out cuando aplique, turno actual, obligaciones personales y alertas necesarias | una home personal-operativa; no se convierte en planner administrativo denso ni mezcla controles de manager con los del trabajador |
+| FOGO | `FOGO-ROUTE-001` — `/` | `APLICA` | producción, supervisión o administración de producción según función activa | trabajo productivo o cola autorizada; si el actor está en gobierno, plan/receta/versión correspondiente | ejecución productiva y gobierno de receta/plan permanecen separados; el mismo `/` resuelve una sola proyección por función |
+| NEXO | `NEXO-ROUTE-001` — `/` | `APLICA` | solicitante, bodega/preparación, conducción/custodia, recepción, supervisión o configuración | acción o siguiente trabajo autoritativo del perfil NEXO preservado | se conserva el perfil NEXO específico de esta tarea y se integra como una fila del contrato global, no como patrón impuesto al resto |
+| NUMERA | `NUMERA-ROUTE-001` — `/` | `APLICA` | trabajo administrativo, financiero, conciliación y auditoría | periodo/entidad/centro aplicables, obligaciones o cierres pendientes, excepciones y análisis autorizados | no ejecuta hechos físicos; una selección financiera o filtro no se transforma en contexto operativo |
+| ORIGO | `ORIGO-ROUTE-001` — `/` | `APLICA` | compras y proveedores, aprobación, conciliación o recepción delimitada según función | solicitud/orden/aprobación/recepción prioritaria que corresponda al actor | recepción física no presta autoridad de comprador o aprobador; administración y recepción permanecen separadas |
+| PASS | `PASS-CUSTOMER-SURFACE-003` — `Home — inicio del cliente` | `APLICA` | cliente sobre su propia relación | identidad personal, puntos/beneficios, pedidos propios y accesos personales habilitados | la home de cliente no incorpora soporte laboral ni operación PULSO; una identidad cliente no concede función interna |
+| PULSO | `PULSO-ROUTE-001` — `/` | `APLICA` | venta/servicio operativo con sesión, sede y dispositivo; administración comercial separada | sesión operativa y acción de venta/servicio vigente o trabajo de caja compatible | el inicio operativo no mezcla configuración, importación administrativa, análisis o cierre si la función activa no los autoriza |
+| TALENTO | producto futuro sin despliegue comprobado y sin `app_code` canónico vigente para pantallas | `NO_APLICA` | no existe carril interactivo productivo gobernable en este corte | ninguno | no se diseña ni se inventa una home; la fila queda explícita para no confundir código futuro con aplicación operativa |
+| VISO | `VISO-ROUTE-001` — `/` | `APLICA` | administración, supervisión, configuración o auditoría según responsabilidad | casos, obligaciones, aprobaciones, bloqueos o vistas de control vinculadas al alcance del actor | no existe backoffice universal; supervisión, configuración, auditoría y administración mantienen capacidad y alcance propios |
+| VITAL | proyecto separado y fuera de Vento OS en el corte canónico vigente | `NO_APLICA` | fuera del universo operativo de esta tarea | ninguno | no se asigna home, actor Vento OS, ruta o contrato de entrada; su existencia técnica no lo convierte en aplicación Vento OS |
 
 Reconciliación:
 
 ```text
-EXPECTED_CONTEXTS = 8
-MATERIALIZED_CONTEXTS = 8
-UNIQUE_CONTEXT_IDS = 8
-MISSING_CONTEXTS = 0
-DUPLICATE_CONTEXTS = 0
+EXPECTED_APPLICATIONS = 10
+MATERIALIZED_DECISIONS = 10
+APPLIES = 8
+NOT_APPLICABLE = 2
+MISSING = 0
+DUPLICATES = 0
 ```
 
 ---
 
-#### 7. `NEXO-ACTOR-HOME-COMPOSITION-MATRIX-001`
+#### 8. Perfil ANIMA
 
-| Proyección             | Contenido principal                                                                                    | Contenido secundario permitido                                                 | Ocultamiento obligatorio                                                                                 |
-| ---------------------- | ------------------------------------------------------------------------------------------------------ | ------------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------- |
-| solicitante            | creación autorizada, solicitudes propias, siguiente paso y estado                                      | referencia mínima de solicitud y resultado propio                              | preparación, conducción, recepción, supervisión, configuración, stock global y costos                    |
-| bodega                 | siguiente tarea, recepción, ubicación, preparación, handoff, movimientos, conteos y reportes asignados | stock, LOC, movimientos, lote, LPN, impresión y escaneo vinculados a una tarea | creación de solicitudes ajenas, tránsito, decisiones supervisoras, configuración y métricas individuales |
-| conductor              | recogida, custodia, tránsito, parada, entrega, incidente, retorno y bloqueo asignados                  | manifiesto, carga, sello, evidencia y referencias de ruta necesarias           | solicitud, picking, recepción, ajustes, configuración y trabajo ajeno                                    |
-| receptor               | arribos, handoff, verificación, recepción parcial o completa, diferencias y evidencia                  | existencia, ubicación y documento necesarios para recibir                      | conducción, preparación, decisiones supervisoras, configuración y datos de otros destinos                |
-| supervisor             | bloqueos, vencimientos, excepciones, diferencias, autorizaciones, cumplimiento, cierre y continuidad   | referencias territoriales y evidencia necesarias para decidir                  | mutaciones operativas, configuración no concedida y métricas individuales fuera de propósito             |
-| configuración          | tarea administrativa exacta y capacidades publicadas                                                   | referencias de catálogo o política indispensables                              | ejecución física, supervisión, colas operativas y autoridad derivada del cargo                           |
-| multifunción           | una sola proyección activa                                                                             | selector de función autorizada sin datos previos de la otra proyección         | controles mezclados, autoaprobación, herencia de autoridad y acciones cruzadas                           |
-| dispositivo compartido | proyección mínima compatible con la estación y el actor activo                                         | utilidades contextuales requeridas por la tarea                                | datos sensibles no necesarios, administración y toda acción sin actor atribuible                         |
+La entrada interactiva es `/home`; `/` y `/splash` son bootstrap y redirección, no homes empresariales independientes.
 
-Las secciones vacías no se sustituyen por contenido de otra función ni por
-accesos técnicos.
+La proyección ordinaria prioriza:
 
----
+1. actor trabajador identificado;
+2. estado de jornada y asistencia;
+3. sede/área/turno cuando sean relevantes y resolubles;
+4. acción personal vigente de asistencia;
+5. turno y obligación personal próxima;
+6. incidencias o alertas propias que requieran atención;
+7. accesos personales secundarios.
 
-#### 8. `NEXO-ACTOR-HOME-INFORMATION-ARCHITECTURE-001`
-
-La página utiliza ocho zonas de composición. Cada proyección conserva el orden,
-las secciones y el lenguaje de su contrato aprobado; estas zonas son el
-contenedor común y no renombran su contenido interno.
-
-| Orden | Zona común                  | Regla                                                                                                                               |
-| ----: | --------------------------- | ----------------------------------------------------------------------------------------------------------------------------------- |
-|     1 | Contexto activo             | muestra actor, función, sede, área, turno, dispositivo y frescura aplicables; no expone permisos ni detalles internos               |
-|     2 | Acción primaria             | presenta una sola acción primaria válida para la proyección activa; se oculta cuando falta autorización                             |
-|     3 | Siguiente trabajo           | muestra una tarea autoritativa o un vacío válido; no calcula prioridad en el cliente                                                |
-|     4 | Trabajo en curso            | agrupa únicamente instancias propias, asignadas, participadas o bajo custodia válida                                                |
-|     5 | Entradas y handoffs         | presenta arribos, entregas o continuaciones que requieren participación del actor activo                                            |
-|     6 | Bloqueos y excepciones      | explica causa, efecto, propietario y recuperación segura sin sugerir bypass                                                         |
-|     7 | Referencias contextuales    | ofrece datos y utilidades necesarios para la tarea sin convertirlos en navegación global                                            |
-|     8 | Cambio de contexto y sesión | permite resolver otra función autorizada o cerrar/cambiar actor de forma controlada; nunca conserva datos de la proyección anterior |
-
-Reglas de jerarquía:
-
-1. contexto y acción primaria preceden a listas y referencias;
-2. el siguiente trabajo precede a accesos secundarios;
-3. bloqueos críticos preceden a contenido informativo;
-4. una referencia nunca compite visualmente con la acción primaria;
-5. la configuración no ocupa espacio en proyecciones operativas;
-6. los conteos describen trabajo, no desempeño individual;
-7. toda sección conserva una salida accesible de carga, vacío, parcialidad o
-   fallo;
-8. el cambio de función es explícito y provoca una nueva resolución.
+Una capacidad de manager no convierte la home del trabajador en una vista agregada de toda la sede. La supervisión puntual se muestra únicamente cuando la función activa y la capacidad exacta la hacen relevante.
 
 ---
 
-#### 9. `NEXO-ACTOR-HOME-PRIORITY-CONTRACT-001`
+#### 9. Perfil FOGO
 
-##### 9.1. Selección de proyección
+La entrada `/` resuelve el carril antes de mostrar trabajo.
 
-La selección ocurre antes de consultar datos de la página. El resolutor no
-utiliza una precedencia fija de cargos; evalúa funciones vigentes y exige una
-función activa cuando exista más de una posibilidad compatible.
+- ejecución productiva: siguiente lote, orden, etapa o evidencia atribuible;
+- supervisión: bloqueos, vencimientos, cobertura y excepciones dentro del alcance;
+- administración/configuración: receta, versión, plan o liberación únicamente cuando esa función esté activa.
 
-##### 9.2. Acción primaria
-
-- solicitante: `NUEVA SOLICITUD`, solo cuando la creación esté autorizada;
-- bodeguero, conductor, receptor y supervisor:
-  `CONTINUAR_SIGUIENTE_TAREA`;
-- configurador: abrir únicamente la tarea administrativa prioritaria ya
-  autorizada;
-- multifunción y dispositivo compartido: heredan la acción de la proyección
-  activa, sin añadir una acción paralela.
-
-No aparece una acción primaria si el resultado autoritativo no incluye acción,
-recurso, etapa, territorio, versión y condición de ejecución compatibles.
-
-##### 9.3. Prioridad de trabajo
-
-La prioridad se entrega resuelta por el servidor y conserva las reglas del
-contrato propietario de cada proyección. El cliente puede ordenar
-presentación secundaria, pero no puede aumentar prioridad, cambiar propietario,
-reclasificar severidad ni convertir una referencia en tarea ejecutable.
-
-##### 9.4. Reanudación
-
-Una tarea reanudada conserva identidad, instancia, actor, función, contexto,
-etapa y versión. Una URL directa revalida el mismo conjunto antes de mostrar
-datos o acciones.
+No se presenta una receta editable, una liberación sensible o una configuración global como acción ordinaria de quien está ejecutando producción.
 
 ---
 
-#### 10. Binding de superficie y navegación
+#### 10. Perfil NEXO preservado
 
-1. `NEXO-ROUTE-001` es la única entrada inicial.
-2. La página consume tareas humanas y bindings aprobados; no organiza el inicio
-   por segmentos de URL.
-3. Las rutas de escáner, kiosco, código, alias y utilidades se abren desde una
-   tarea y regresan a la tarea invocante.
-4. Breadcrumb, retorno y reanudación conservan tarea e instancia, no una ruta
-   técnica como identidad empresarial.
-5. La navegación secundaria completa pertenece a `AUTH-UI-053` y permanece
-   reservada.
-6. Un acceso directo nunca crea una entrada visible ni concede autoridad.
+La materialización histórica NEXO se conserva como `NEXO-ACTOR-HOME-PROFILE-001` dentro del contrato global.
 
----
+Superficie:
 
-#### 11. `NEXO-ACTOR-HOME-STATE-CONTRACT-001`
+```text
+NEXO-ROUTE-001 = /
+```
 
-| Resultado                          | Condición                                                                                   | Presentación obligatoria                                          | Acción permitida                                                |
-| ---------------------------------- | ------------------------------------------------------------------------------------------- | ----------------------------------------------------------------- | --------------------------------------------------------------- |
-| `RESOLVIENDO_CONTEXTO`             | todavía no existe actor, función y contexto concluyentes                                    | estructura mínima sin conteos, colas ni datos empresariales       | esperar o cancelar resolución                                   |
-| `ACTOR_IDENTIFICATION_REQUIRED`    | dispositivo compartido válido sin actor humano activo                                       | flujo de identificación separado, sin presentarlo como denegación | identificar actor mediante mecanismo autorizado                 |
-| `STRONG_REAUTHENTICATION_REQUIRED` | la acción o sensibilidad exige soporte fuerte vigente                                       | solicitud de reautenticación separada y propósito visible         | iniciar una solicitud nueva de soporte fuerte                   |
-| `CARGANDO_PROYECCION`              | contexto resuelto y datos todavía en carga                                                  | contexto visible, controles deshabilitados y esqueleto coherente  | cancelar navegación o esperar                                   |
-| `PROYECCION_LISTA`                 | contexto, autorización y datos elegibles completos                                          | arquitectura de la proyección activa y una acción primaria        | ejecutar solo comandos incluidos en la respuesta autoritativa   |
-| `VACIO_VALIDO`                     | no existe trabajo elegible y la consulta fue concluyente                                    | mensaje de ausencia real sin fabricar conteos ni accesos alternos | acción primaria propia si continúa autorizada                   |
-| `DATOS_PARCIALES`                  | una sección falló o perdió frescura mientras otras siguen confirmadas                       | identificar sección afectada y último dato confirmado             | lectura segura y reintento de consulta; no mutación dependiente |
-| `AUTORIZACION_DENEGADA`            | evaluación concluyente de denegación                                                        | mensaje canónico minimizado, sesión preservada y cero efectos     | recuperación segura derivada del perfil, sin bypass             |
-| `FALLO_TECNICO`                    | no existe una decisión estable por indisponibilidad o error                                 | mensaje técnico recuperable sin presentarlo como política         | reintentar consulta cuando sea seguro                           |
-| `CONTEXTO_CAMBIADO_O_REVOCADO`     | actor, función, turno, territorio, dispositivo, asignación o versión dejaron de ser válidos | retirar datos y acciones de la proyección anterior                | resolver nuevamente el contexto                                 |
+Contextos preservados:
 
-Reglas transversales:
+| Caso | Contexto | Proyección | Foco principal |
+| --- | --- | --- | --- |
+| `HOME-CTX-001` | solicitante autorizado | solicitante | crear o continuar solicitudes propias autorizadas |
+| `HOME-CTX-002` | bodeguero o preparador autorizado | bodega | siguiente preparación, entrada, ubicación, movimiento o conteo elegible |
+| `HOME-CTX-003` | conductor o custodio autorizado | conducción/custodia | siguiente transporte, recogida, entrega, incidente o retorno bajo custodia válida |
+| `HOME-CTX-004` | receptor autorizado | recepción | siguiente handoff, recepción o entrada permitida en destino |
+| `HOME-CTX-005` | supervisor con cobertura territorial | supervisión | siguiente bloqueo, diferencia, vencimiento o caso que requiera decisión autorizada |
+| `HOME-CTX-006` | configurador autorizado | configuración | capacidad administrativa exacta prioritaria, sin ejecución física implícita |
+| `HOME-CTX-007` | persona con varias funciones | una sola función activa | foco de la función seleccionada después de resolver nuevamente contexto y autoridad |
+| `HOME-CTX-008` | dispositivo compartido con actor activo | proyección compatible | tareas compatibles con actor, función, turno, contexto y capacidades máximas del dispositivo |
 
-- los dos estados interactivos auxiliares no se presentan como `403`;
-- una denegación no se presenta como fallo técnico;
-- un fallo técnico no se degrada a vacío;
-- datos parciales no se completan con cero o valores estimados;
-- una acción revocada desaparece antes de permitir otra mutación;
-- un resultado desconocido de una escritura no se presenta como éxito ni se
-  reintenta automáticamente desde la página inicial.
+Se conservan además estas decisiones NEXO:
+
+- una sola proyección y una sola acción primaria por render;
+- ninguna ruta por rol nueva;
+- cambio de función obliga a una resolución completa nueva;
+- dispositivo compartido nunca sustituye al actor humano;
+- configuración no aparece dentro de la proyección operativa por mera pertenencia de rol;
+- solicitante, bodega, conducción, recepción y supervisión no mezclan mutaciones;
+- bloqueos, carga, vacío, denegación, error y revocación usan los contratos transversales propietarios;
+- el perfil específico de NEXO no demuestra cobertura de otra aplicación.
 
 ---
 
-#### 12. Multifunción y dispositivo compartido
+#### 11. Perfil NUMERA
 
-##### 12.1. Persona con varias funciones
+La raíz `/` se trata como panel económico inicial gobernado.
 
-- el selector muestra únicamente funciones autorizadas y vigentes;
-- la función activa es visible y no se infiere desde la última ruta visitada;
-- cambiar de función invalida datos, conteos, acciones y caché de la proyección
-  anterior;
-- cada acción conserva segregación y no permite autoaprobar, autopreparar,
-  autotransportar o autorecibir cuando el contrato lo prohíba;
-- las otras funciones no aparecen como tarjetas accionables dentro del mismo
-  home.
+La home debe resolver antes de presentar decisiones:
 
-##### 12.2. Estación compartida
+- actor y capacidad financiera/administrativa;
+- entidad o alcance empresarial;
+- centro, periodo y dimensión económica aplicables;
+- versión o escenario cuando corresponda;
+- obligaciones, cierres, excepciones y conciliaciones del actor;
+- sensibilidad de costos, presupuestos, márgenes y datos de terceros.
 
-- el dispositivo se identifica antes de habilitar la aplicación;
-- el actor humano se identifica antes de mostrar trabajo atribuible;
-- actor, dispositivo y contexto se conservan juntos en cada acción;
-- cambiar o cerrar actor retira información sensible y acciones;
-- la estación limita aplicaciones y capacidades máximas, pero no aporta rol,
-  permiso, turno, check-in ni territorio;
-- las tareas incompatibles con la estación no se muestran como bloqueadas: no
-  forman parte de la proyección.
+La entrada no presenta un único total financiero como si fuera verdad universal y no confunde datos reales, presupuestados, simulados, propuestos o publicados.
 
 ---
 
-#### 13. `NEXO-ACTOR-HOME-RESPONSIVE-ACCESSIBILITY-CONTRACT-001`
+#### 12. Perfil ORIGO
 
-##### 13.1. Móvil
+La raíz `/` conserva una sola proyección según la función activa.
 
-- contexto compacto y acción primaria visibles antes del primer desplazamiento
-  largo;
-- una columna;
-- siguiente trabajo antes de referencias;
-- tablas convertidas en estructuras semánticas sin perder etiquetas;
-- ninguna acción crítica depende de hover o gesto oculto.
+Carriles posibles:
 
-##### 13.2. Tablet
+- recepción física delimitada;
+- administración de proveedores y contratos;
+- compras;
+- aprobación;
+- conciliación.
 
-- contexto, siguiente trabajo y primera cola visibles sin convertir la página
-  en tablero supervisor;
-- objetivos táctiles compatibles con operación física;
-- escaneo e impresión aparecen únicamente cuando la tarea los requiere;
-- orientación y tamaño no cambian autoridad ni prioridad.
-
-##### 13.3. Escritorio
-
-- máximo dos columnas para contenido operativo;
-- el espacio adicional no habilita configuración, métricas ni trabajo ajeno;
-- detalle resumido y lista conservan orden de lectura y foco.
-
-##### 13.4. Accesibilidad
-
-- orden de foco equivalente a las ocho zonas;
-- nombre y propósito estables para la acción primaria;
-- estados, severidad y bloqueo no dependen solo del color;
-- cambios importantes se anuncian de forma accesible;
-- errores se asocian con la zona afectada;
-- conteos tienen etiqueta, unidad y contexto;
-- el cambio de función y actor es explícito y confirmable;
-- la información sensible no se expone en atributos, URLs, títulos o mensajes.
+La home muestra trabajo de una sola función activa y referencias mínimas necesarias. Un receptor no recibe controles de aprobación comercial; un comprador no obtiene por defecto acciones físicas de recepción; una factura o recepción comercial no equivale a aceptación técnica de otro dominio.
 
 ---
 
-#### 14. Seguridad, privacidad y minimización
+#### 13. Perfil PASS
 
-1. La autorización filtra datos antes de construir la proyección.
-2. La página no consulta datos globales para filtrarlos en el navegador.
-3. Cada acción vuelve a validar actor, función, permiso, territorio, recurso,
-   etapa y versión.
-4. La página aplica los contratos de sensibilidad y masking vigentes.
-5. No expone claves de permiso, reglas RLS, reason codes internos, nombres de
-   tablas, trazas ni actores elegibles.
-6. Simulación, cuando sea admisible, permanece visualmente diferenciada y no
-   produce acciones reales.
-7. Los datos personales de terceros se minimizan a la función o identificación
-   estrictamente necesaria.
-8. Los costos, saldos, existencias sensibles, notas de control y evidencia no
-   aparecen fuera de la necesidad de la tarea.
-9. Un conteo agregado no permite inferir trabajo, datos o recursos fuera del
-   territorio autorizado.
-10. Cerrar sesión, cambiar actor o revocar contexto elimina la proyección y sus
-    datos temporales.
+La entrada de cliente es `PASS-CUSTOMER-SURFACE-003` y permanece en el carril personal/cliente.
 
----
+Prioriza:
 
-#### 15. Estado técnico y brecha de implementación
+- identidad de la relación cliente;
+- puntos, beneficios y vigencia aplicables;
+- pedidos propios y seguimiento;
+- acciones personales de cuenta;
+- acceso a compra únicamente cuando la capacidad/feature y contexto lo permitan.
 
-| Elemento                                                                      | Estado documental        | Evidencia permitida                        | Condición de salida                                        |
-| ----------------------------------------------------------------------------- | ------------------------ | ------------------------------------------ | ---------------------------------------------------------- |
-| contratos de inicio por solicitante, bodega, conductor, receptor y supervisor | `ESPECIFICADO`           | tareas `NEXO-UX-003` a `NEXO-UX-007`       | consumo íntegro en prototipo e implementación              |
-| navegación por tareas y composición de ocho contextos                         | `ESPECIFICADO`           | `NEXO-UX-008`                              | binding físico y pruebas posteriores                       |
-| flujo funcional de remisiones y estados de experiencia                        | `ESPECIFICADO`           | `NEXO-UX-009` a `NEXO-UX-025`              | prototipo, implementación y evidencia                      |
-| superficie raíz existente                                                     | `IMPLEMENTADO_PARCIAL`   | `NEXO-ROUTE-001` en `vento-nexo`           | sustituir composición agregada por resolución autoritativa |
-| página inicial según actor                                                    | `ESPECIFICADO`           | esta tarea                                 | `AUTH-UI-055`, implementación NEXO y pruebas               |
-| prototipo visual por función                                                  | `NO_IMPLEMENTADO`        | no existe evidencia aprobada en esta tarea | `AUTH-UI-055`                                              |
-| validación de usabilidad                                                      | `PENDIENTE_DE_EVIDENCIA` | no ejecutada                               | `AUTH-UI-056` a `AUTH-UI-060`                              |
+Queda prohibido usar la home de PASS para:
 
-La existencia de la ruta raíz no demuestra que el diseño aquí definido esté
-implementado o validado.
+- exponer módulos laborales internos;
+- actuar como trabajador por coincidencia de identidad;
+- ejecutar ventas o redenciones propietarias de PULSO;
+- mostrar datos administrativos o de otros clientes.
 
 ---
 
-#### 16. Criterios de aceptación
+#### 14. Perfil PULSO
 
-La tarea se considera documentalmente completa cuando se confirme que:
+La raíz `/` se conserva como entrada operativa de POS/scanner cuando la sesión y el dispositivo lo permiten.
 
-- existe exactamente una superficie inicial, `NEXO-ROUTE-001` — `/`;
-- los ocho contextos canónicos tienen una decisión explícita;
-- las seis proyecciones principales conservan sus contratos propietarios;
-- multifunción y dispositivo compartido no crean proyecciones adicionales;
-- la resolución depende de actor efectivo, función, contexto, permiso, recurso
-  y etapa, no de un nombre de rol enviado por cliente;
-- existe una sola proyección y una sola acción primaria por render;
-- solicitante, bodega, conductor, receptor, supervisor y configuración no
-  mezclan controles;
-- el selector multifunción provoca una nueva resolución y retira datos previos;
-- el dispositivo compartido no sustituye al actor humano;
-- las ocho zonas comunes no alteran el orden interno de cada home aprobado;
-- prioridad y siguiente trabajo se resuelven en servidor;
-- rutas, deep links, kioscos y escáner no conceden autoridad;
-- los diez resultados de presentación distinguen interacción, denegación,
-  fallo técnico, vacío, parcialidad y revocación;
-- móvil, tablet, escritorio y estación compartida tienen reglas explícitas;
-- la página conserva accesibilidad, minimización, sensibilidad y masking;
-- no se crean rutas, roles, funciones, procesos, permisos ni requisitos nuevos;
-- todas las brechas tienen propietario y condición de salida;
-- `AUTH-UI-053` permanece únicamente reservada.
+La proyección debe resolver:
+
+- actor atribuible;
+- sede o satélite;
+- sesión operativa/caja cuando aplique;
+- dispositivo y capacidades;
+- trabajo de venta/servicio vigente;
+- estado de pedidos o handoffs necesarios para la acción actual.
+
+Administración comercial, importaciones, configuración, cierres y análisis no se mezclan al mismo nivel con la ejecución ordinaria si la función activa no los exige.
 
 ---
 
-#### 17. Requisitos de prueba derivados
+#### 15. Perfil VISO
+
+La raíz `/` se conserva como entrada agregada, pero la agregación no equivale a autoridad global.
+
+La home selecciona una proyección entre:
+
+- administración;
+- supervisión;
+- configuración;
+- auditoría.
+
+El foco puede ser caso, obligación, aprobación, bloqueo o revisión dentro del alcance del actor. Una persona con rol gerencial no recibe automáticamente todas las capacidades, sedes, datos sensibles o herramientas de configuración.
+
+---
+
+#### 16. `NO_APLICA` TALENTO y VITAL
+
+##### 16.1. TALENTO
+
+`NO_APLICA` en este corte porque el producto permanece futuro/no desplegado y las superficies futuras no poseen un `app_code` canónico utilizable para asignarles una home empresarial vigente.
+
+Condición de salida:
+
+```text
+EXISTE APP_CODE CANONICO
++
+EXISTE PRODUCTO OPERATIVO GOBERNADO
++
+EXISTE SUPERFICIE DE ENTRADA INVENTARIADA
+```
+
+Hasta entonces, esta tarea no crea rutas, pantallas ni identidades de home TALENTO.
+
+##### 16.2. VITAL
+
+`NO_APLICA` porque la evidencia canónica vigente lo mantiene como proyecto separado y fuera de Vento OS.
+
+Condición de salida:
+
+```text
+DECISION CANONICA EXPRESA DE INCORPORACION A VENTO OS
++
+CATALOGO / OWNERSHIP / SUPERFICIE DE ENTRADA GOBERNADOS
+```
+
+La mera existencia de repositorio, controladores o pruebas no satisface esa condición.
+
+---
+
+#### 17. `APPLICATION-ACTOR-HOME-INFORMATION-ARCHITECTURE-001`
+
+Las aplicaciones aplicables usan hasta ocho zonas conceptuales, omitiendo únicamente las que realmente no tengan contenido:
+
+| Orden | Zona | Regla |
+| ---: | --- | --- |
+| 1 | Contexto activo | actor, función/carril, territorio personal u operativo, periodo y dispositivo materiales; sin claves internas |
+| 2 | Foco o acción principal | una sola acción o foco compatible con autoridad y estado actuales |
+| 3 | Siguiente trabajo u obligación | una instancia prioritaria o un vacío concluyente; nunca una inferencia de cliente |
+| 4 | Trabajo en curso | únicamente casos propios, asignados, participados o bajo responsabilidad válida |
+| 5 | Handoffs / entradas | trabajo entrante que exige participación del actor actual |
+| 6 | Bloqueos / excepciones | causa humana, efecto, propietario y recuperación segura |
+| 7 | Referencias contextuales | información secundaria necesaria para decidir o ejecutar sin transformarla en navegación global |
+| 8 | Cambio de contexto / sesión | cambio explícito de función, actor o alcance; limpia datos incompatibles antes de recomponer |
+
+No todas las aplicaciones requieren las ocho zonas visibles simultáneamente. Omitir una zona sin contenido no autoriza sustituirla por datos de otra función.
+
+---
+
+#### 18. `APPLICATION-ACTOR-HOME-PRIORITY-CONTRACT-001`
+
+La prioridad visible se resuelve con una política propietaria y explicable. Como regla transversal:
+
+1. seguridad o riesgo accionable dentro de la responsabilidad actual;
+2. trabajo ya iniciado, reclamado o bajo custodia válida;
+3. obligación asignada con vencimiento o ventana autoritativa;
+4. handoff pendiente que requiera aceptación o respuesta del actor;
+5. siguiente trabajo ordinario compatible con proceso, etapa y contexto;
+6. obligaciones personales vigentes;
+7. acceso secundario autorizado cuando no exista trabajo prioritario.
+
+No priorizan por sí solos:
+
+- clics locales;
+- última ruta visitada;
+- popularidad global;
+- valor económico sin contrato de prioridad;
+- rol jerárquico;
+- número de permiso;
+- tarjeta fijada por frontend;
+- una alerta sin propietario ni acción autorizada.
+
+`AUTH-UI-053` podrá ordenar tareas frecuentes dentro del conjunto ya elegible, pero no podrá cambiar esta frontera de autoridad.
+
+---
+
+#### 19. Multifunción, cambio de actor y dispositivo compartido
+
+##### 19.1. Multifunción
+
+- existe una función activa inequívoca;
+- las otras funciones pueden ser descubribles solo mediante cambio explícito de contexto;
+- cambiar función retira controles, datos, caché, recientes y acciones incompatibles;
+- no se fusionan permisos, colas ni acciones primarias;
+- una persona no se autoaprueba ni completa etapas segregadas por disponer de varias funciones.
+
+##### 19.2. Dispositivo compartido
+
+- el dispositivo puede limitar capacidades máximas, pero nunca aporta actor, rol, turno, check-in o permiso;
+- no se muestra trabajo atribuible hasta identificar al actor cuando la operación lo requiera;
+- cambio o cierre de actor elimina datos sensibles y acciones del actor anterior;
+- un dispositivo incompatible retira la capacidad de la proyección; no sugiere bypass.
+
+---
+
+#### 20. `APPLICATION-ACTOR-HOME-STATE-MAPPING-001`
+
+La home no crea un enum transversal nuevo. Mapea sus resultados a contratos ya aprobados:
+
+| Situación | Contrato propietario consumido | Regla de home |
+| --- | --- | --- |
+| contexto todavía no resuelto | contexto activo de `AUTH-UI-046` | no mostrar datos ni acciones como si el contexto fuese vigente |
+| rol simulado | `AUTH-UI-047` | mantener simulación inequívoca y no ejecutable |
+| sin acceso concluyente | `AUTH-UI-048` | retirar datos/acciones y presentar recuperación permitida sin confundir con error técnico |
+| carga | `AUTH-UI-049` | preservar estructura y contexto ya confirmados sin mostrar valores falsos |
+| vacío concluyente | `AUTH-UI-050` | presentar ausencia real sin inventar ceros ni reemplazarla por acceso alterno |
+| error recuperable | `AUTH-UI-051` | mostrar reintento/recuperación compatible y distinguir resultado desconocido |
+| contexto cambiado o revocado | contratos de contexto/autorización | invalidar inmediatamente la proyección anterior antes de otra mutación |
+| reautenticación o identificación requerida | contratos de soporte fuerte/dispositivo | separar la interacción de recuperación de una denegación definitiva |
+
+---
+
+#### 21. `APPLICATION-ACTOR-HOME-RESPONSIVE-ACCESSIBILITY-CONTRACT-001`
+
+##### 21.1. Móvil
+
+- contexto esencial y foco principal aparecen antes del primer desplazamiento largo;
+- una columna para trabajo ordinario;
+- objetivos táctiles compatibles con la operación;
+- no se exige hover, gesto oculto o densidad de escritorio para acciones críticas.
+
+##### 21.2. Tablet / estación compartida
+
+- contexto, actor y siguiente trabajo permanecen visibles;
+- periféricos aparecen solo desde la tarea que los necesita;
+- tamaño u orientación no amplían autoridad;
+- en estación compartida, el actor sigue siendo explícito.
+
+##### 21.3. Escritorio
+
+- el espacio adicional permite contexto y comparación, no más autoridad;
+- máximo visual razonable de columnas sin convertir la home en tablero universal;
+- administración, auditoría y supervisión conservan jerarquía y alcance visibles.
+
+##### 21.4. Accesibilidad
+
+- orden de foco coherente con la arquitectura de información;
+- acción principal y contexto tienen nombre y propósito estables;
+- prioridad, bloqueo, severidad y estado no dependen solo del color;
+- cambios de contexto importantes se anuncian sin robar foco de forma impredecible;
+- errores y recuperación se asocian con la zona afectada;
+- conteos tienen etiqueta, unidad y contexto.
+
+---
+
+#### 22. Seguridad, privacidad y resiliencia
+
+1. La autorización filtra antes de componer la home.
+2. La home no obtiene listas globales para filtrarlas en frontend.
+3. Cada mutación revalida actor, función, permiso, territorio, recurso, etapa y versión.
+4. Los conteos no revelan existencia de trabajo, recursos o personas fuera del alcance.
+5. Datos sensibles se enmascaran antes de construir tarjetas, subtítulos o previews.
+6. Una sesión offline no conserva capacidades revocadas indefinidamente.
+7. Un resultado de escritura desconocido no se presenta como éxito ni se reintenta a ciegas.
+8. Deep links reconstruyen contexto y autoridad en destino; no heredan una home anterior como prueba de permiso.
+9. Cambiar actor, función, sitio, periodo o dispositivo invalida datos incompatibles.
+10. La simulación nunca convierte una vista previa en autoridad real.
+
+---
+
+#### 23. Fronteras con tareas posteriores
+
+`AUTH-UI-052` entrega únicamente composición inicial por actor.
+
+- `AUTH-UI-053` decide navegación por tareas frecuentes dentro del conjunto autorizado;
+- `AUTH-UI-054` decide reducción y relegación de opciones irrelevantes;
+- `AUTH-UI-055` construye prototipos testeables;
+- `AUTH-UI-056` ejecuta validación interna de prototipos;
+- `AUTH-UI-057` fija criterios medibles por superficie;
+- `AUTH-UI-058` ejecuta sesiones con usuarios reales;
+- `AUTH-UI-059` registra y enruta problemas observados;
+- `AUTH-UI-060` decide aprobación final por superficie.
+
+Ninguna decisión de esta tarea autoriza implementación física de una home o navegación.
+
+---
+
+#### 24. Requisitos de prueba derivados
 
 **NO GENERA REQUISITOS DE PRUEBA.**
 
-Justificación: esta tarea no introduce un comportamiento autorizativo,
-operativo, de navegación o de seguridad nuevo. Materializa la composición de la
-superficie inicial usando exclusivamente contratos, matrices, estados y
-requisitos vigentes ya aprobados para los inicios por función y la navegación
-por tareas. No modifica, difiere, descarta ni declara obsoleto ningún requisito
-histórico, por lo que el Registro Canónico de Requisitos de Prueba no cambia.
+Justificación: la tarea completa la cobertura global del diseño de entrada usando inventarios, contratos de contexto, autorización, navegación, dispositivo, sensibilidad y estados ya vigentes. No crea una capacidad, transición, permiso, dato, ruta, pantalla o efecto nuevo; tampoco modifica, difiere, descarta ni declara obsoleto un requisito histórico. El registro canónico de requisitos de prueba no cambia.
 
 ---
 
-#### 18. `NEXO-ACTOR-HOME-HANDOFF-001`
+#### 25. Cobertura de prueba vigente reutilizada
 
-| Destino                        | Handoff aprobado                                                                                                                                                                  |
-| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AUTH-UI-053`                  | diseñar la navegación según tareas frecuentes consumiendo la proyección activa, las entradas prioritarias y los ocultamientos definidos aquí, sin cambiar la resolución por actor |
-| `AUTH-UI-054`                  | reducir opciones irrelevantes sin eliminar trabajo autorizado ni usar frecuencia como fuente de permiso                                                                           |
-| `AUTH-UI-055`                  | crear prototipos separados por proyección y por casos multifunción y dispositivo compartido                                                                                       |
-| `AUTH-UI-056`                  | validar el prototipo sin presentar inspección documental como prueba con usuarios                                                                                                 |
-| `AUTH-UI-057` a `AUTH-UI-060`  | definir criterios, probar, registrar problemas y aprobar pantallas con evidencia real                                                                                             |
-| paquete de implementación NEXO | construir resolutor, componentes, consultas, guards, estados, pruebas y telemetría cuando la continuidad lo autorice                                                              |
+La validación posterior reutiliza la cobertura existente de:
 
-Ningún destino anterior se inicia mediante esta tarea.
+- inventarios de superficies por aplicación;
+- contexto activo y visibilidad;
+- autorización y protección de servidor;
+- simulación;
+- estados sin acceso, carga, vacío y recuperación;
+- dispositivos compartidos;
+- privacidad, sensibilidad y masking;
+- navegación, deep links y revalidación;
+- contratos específicos de las aplicaciones aplicables.
+
+Esta sección es trazabilidad heredada y no modifica el registro 04A.
 
 ---
 
-#### 19. Traza histórica del carril NEXO
+#### 26. Evidencia de validación
 
-> Esta fotografía dejó de ser continuidad vigente. Se conserva únicamente como evidencia de la ejecución parcial que originó los artefactos NEXO.
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout del usuario después del reemplazo. |
+| LOCAL | NOT_EXECUTED | El artefacto fue revisado estáticamente fuera del checkout; formato, quality y delivery quedan para la batería local. |
+| REMOTA | PASS | `main` observado en `6b1e9f99d7e051141c98b0390eb6671cb15292f0`; 048 está cerrada y las fuentes canónicas vigentes de 052, BLOQUE I, E2, topología y validadores fueron consultadas. |
+| OPERATIVA | NOT_EXECUTED | Esta tarea no ejecuta sesiones con usuarios ni valida implementación runtime. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`; no existe materialización física propia de 052. |
+
+---
+
+#### 27. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] existe una decisión para las diez aplicaciones exigidas por la rectificación;
+- [ ] exactamente ocho quedan `APLICA` y dos `NO_APLICA` con justificación y condición de salida;
+- [ ] ANIMA diferencia bootstrap de `/home`;
+- [ ] FOGO, NEXO, NUMERA, ORIGO, PULSO y VISO conservan sus raíces existentes sin crear rutas por rol;
+- [ ] PASS conserva `Home — inicio del cliente` como experiencia personal y separa soporte laboral y operación PULSO;
+- [ ] TALENTO no recibe una home inventada mientras sea futuro/no desplegado y sin `app_code` canónico aplicable;
+- [ ] VITAL no recibe una home Vento OS mientras continúe fuera de Vento OS;
+- [ ] NEXO conserva los ocho contextos históricos ya materializados;
+- [ ] una sola función o relación activa gobierna cada render;
+- [ ] una persona multifunción no obtiene una unión de capacidades;
+- [ ] un dispositivo compartido no sustituye al actor humano;
+- [ ] la home no usa ruta, rol, tarjeta, filtro o dispositivo como fuente de autoridad;
+- [ ] contexto, simulación, sin acceso, carga, vacío y error reutilizan los contratos propietarios existentes;
+- [ ] acción principal, siguiente trabajo y referencias secundarias permanecen separados;
+- [ ] ninguna aplicación se declara cubierta por asociación con NEXO;
+- [ ] no se crean rutas, pantallas, procesos, roles, permisos ni requisitos de prueba;
+- [ ] no se ejecuta código, Supabase ni despliegue;
+- [ ] `AUTH-UI-053` permanece reservada.
+
+---
+
+#### 28. `APPLICATION-ACTOR-HOME-HANDOFF-001`
+
+`AUTH-UI-053` recibe:
+
+```text
+10 DECISIONES DE APLICACION
++
+8 HOMES APLICABLES
++
+2 NO_APLICA JUSTIFICADOS
++
+ACTOR / FUNCION / CARRIL / CONTEXTO / DISPOSITIVO
++
+FOCO Y ACCION PRINCIPAL AUTORIZADOS
++
+TRABAJO / HANDOFF / BLOQUEO / REFERENCIAS
++
+PERFIL NEXO PRESERVADO
++
+ESTADOS TRANSVERSALES REUTILIZADOS
+```
+
+`AUTH-UI-053` podrá ordenar tareas frecuentes y continuaciones únicamente dentro del conjunto ya elegible. Frecuencia, historial o visibilidad nunca conceden autoridad ni modifican la decisión de `NO_APLICA` de TALENTO o VITAL.
+
+---
+
+#### 29. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
-
-`NEXO-UX-025 — Definir métricas de tiempo, error y capacitación para el piloto operativo`
+`NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede`
 
 **TAREA ACTUAL APROBADA**
-
 `AUTH-UI-052 — Diseñar página inicial según actor`
 
 **SIGUIENTE TAREA RESERVADA**
-
 `AUTH-UI-053 — Diseñar navegación según tareas frecuentes`
-
 
 ### [ ] AUTH-UI-053 — Diseñar navegación según tareas frecuentes
 

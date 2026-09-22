@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1260** |
+| Aprobadas | **1261** |
 | En propuesta | **0** |
-| No iniciadas | **336** |
+| No iniciadas | **335** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.95% (1260/1596)** |
+| Porcentaje de completamiento | **79.01% (1261/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **336** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1161** |
+| ⏸ NO_EVALUADA | **335** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1162** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-052` — Diseñar página inicial según actor | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-053` — Diseñar navegación según tareas frecuentes | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-052` — Diseñar página inicial según actor | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-053` — Diseñar navegación según tareas frecuentes | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-054` — Reducir opciones irrelevantes | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -904,7 +904,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | PARTIAL_DELTA | `AUTH-UI-049` | Estandarizar estados de carga | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | PARTIAL_DELTA | `AUTH-UI-050` | Estandarizar estados vacíos | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | PARTIAL_DELTA | `AUTH-UI-051` | Estandarizar errores recuperables | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-052` | Diseñar página inicial según actor | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-052` | Diseñar página inicial según actor | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-053` | Diseñar navegación según tareas frecuentes | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-054` | Reducir opciones irrelevantes | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-055` | Crear prototipo por rol | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
