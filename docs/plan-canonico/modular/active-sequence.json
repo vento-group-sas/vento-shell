@@ -5,14 +5,14 @@
   "sequence_id": "PHASE-05-NEXO",
   "block_code": "BLOQUE K",
   "block_title": "NEXO",
-  "previous_task_id": "NEXO-UX-029",
+  "previous_task_id": "NEXO-UX-030",
   "latest_treq_task_id": "NEXO-UX-025",
   "handoff_task_id": "OPS-REC-001",
   "handoff_sequence_id": "PHASE-06-FOGO-ORIGO",
   "segments": [
     {
       "prefix": "NEXO-UX",
-      "from": 30,
+      "from": 31,
       "to": 48
     },
     {
@@ -23,12 +23,12 @@
   ],
   "block_progress": {
     "total_tasks": 127,
-    "approved_tasks": 99,
-    "pending_tasks": 28
+    "approved_tasks": 100,
+    "pending_tasks": 27
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 355,
+    "pending_tasks": 354,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 24
