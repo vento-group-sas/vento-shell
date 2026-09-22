@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1243** |
+| Tareas aprobadas | **1244** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **353** |
+| Tareas no iniciadas | **352** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **77.88% (1243/1596)** |
+| Porcentaje de completamiento | **77.94% (1244/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia** |
-| Tarea actual | **NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja** |
+| Última tarea aprobada | **NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja** |
+| Tarea actual | **NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud** |
+| Siguiente tarea | **NEXO-UX-034 — Diseñar conteos de activos y reutilizables** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 101 de 127 aprobadas; NEXO-UX-032 pendiente** |
+| Progreso del bloque | **BLOQUE K: 102 de 127 aprobadas; NEXO-UX-033 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-032** |
+| Carril documental | **ACTIVO — NEXO-UX-033** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-031` — Diseñar custodia, préstamo, devolución y transferencia |
-| Tarea actual | `NEXO-UX-032` — Diseñar estado, daño, pérdida, reparación y baja — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-033` — Diseñar kits, conjuntos y control de completitud |
+| Última aprobada | `NEXO-UX-032` — Diseñar estado, daño, pérdida, reparación y baja |
+| Tarea actual | `NEXO-UX-033` — Diseñar kits, conjuntos y control de completitud — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-034` — Diseñar conteos de activos y reutilizables |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 101 DE 127 APROBADAS — ACTUAL NEXO-UX-032** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 102 DE 127 APROBADAS — ACTUAL NEXO-UX-033** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
-        ↓
-TAREA ACTUAL
 NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-034 — Diseñar conteos de activos y reutilizables
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 101 de 127 tareas aprobadas
+BLOQUE K — 102 de 127 tareas aprobadas
 ```

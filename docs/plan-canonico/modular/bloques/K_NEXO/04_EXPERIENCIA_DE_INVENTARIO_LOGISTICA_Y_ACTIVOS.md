@@ -30029,7 +30029,1406 @@ NO SILENT LOSS OR DAMAGE INFERENCE
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja`
-### [ ] NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
+### ✅ NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
+**Tarea siguiente:** NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
+**Tipo de tarea:** documental; diseño canónico de experiencia para estado físico, condición, daño, faltante, pérdida, hallazgo, recuperación, mantenimiento, reparación, prueba, liberación al servicio, disponibilidad y baja de activos individualizados y reutilizables controlados por cantidad, con historia no destructiva, segregación de decisiones, autorización fail-closed, revisiones, idempotencia, concurrencia, operación offline, resultado desconocido y fronteras con custodia, conteos, repuestos, kits y efecto económico, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado pueda conocer la condición física vigente de un activo o alcance reutilizable, reportar y resolver daño o pérdida sin inferencias destructivas, gestionar mantenimiento y reparación hasta prueba y liberación, y tramitar una baja sin convertir un selector de estado, una diferencia de conteo, una devolución dañada, una orden marcada como terminada o un permiso legacy amplio en autoridad suficiente.
+
+La regla raíz queda:
+
+```text
+SUJETO AUTORITATIVO YA IDENTIFICADO
++
+GRANULARIDAD YA RESUELTA
++
+CUSTODIA E HISTORIA PRESERVADAS
++
+OBSERVACION O INTENCION EXPLICITA
++
+ESTADO + CONDICION + INCIDENTES VIGENTES
++
+REVISION VIGENTE
++
+AUTORIZACION SERVER-SIDE
++
+SEGREGACION CUANDO CORRESPONDA
++
+RESULTADO CONFIRMADO O PENDIENTE EXPLICITO
++
+RECIBO + HISTORIA + RECONCILIACION
+→
+CICLO TECNICO COMPRENSIBLE, NO DESTRUCTIVO Y AUDITABLE
+```
+
+Siempre:
+
+```text
+CONDITION
+!=
+AVAILABILITY
+!=
+LIFECYCLE
+!=
+CUSTODY
+!=
+LOCATION
+```
+
+```text
+MISSING
+!=
+LOST
+```
+
+```text
+MAINTENANCE COMPLETED
+!=
+RELEASED TO SERVICE
+!=
+AVAILABLE
+```
+
+```text
+DAMAGED
+!=
+RETIRED
+!=
+DISPOSED
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-032` define una experiencia que:
+
+1. parte del sujeto o scope, granularidad, custodia e historial recibidos de 031;
+2. presenta condición física, lifecycle, disponibilidad, ubicación, custodia e incidentes como dimensiones separadas;
+3. conserva una condición explícitamente desconocida cuando falta evidencia;
+4. separa observación de condición de decisión técnica;
+5. separa daño reportado de daño confirmado;
+6. separa faltante de pérdida confirmada;
+7. separa hallazgo de recuperación y recuperación de liberación al servicio;
+8. conserva identidad e historia ante pérdida;
+9. conserva cantidades por condición o incidente para reutilizables sin fabricar identidades unitarias;
+10. impide que una diferencia de conteo se convierta automáticamente en pérdida, ajuste o baja;
+11. consume `VPROC-0030` para el ciclo de mantenimiento sin crear un lifecycle paralelo;
+12. distingue solicitud, triage, diagnóstico, aprobación, preparación, reparación, prueba, liberación y cierre;
+13. mantiene prueba y liberación separadas;
+14. trata disponibilidad como proyección explicable y contextual, no como bandera libre;
+15. define estados visibles `AVAILABLE`, `RESTRICTED`, `UNAVAILABLE` y `UNKNOWN` como proyección UX cuando correspondan;
+16. impide que `maintenance_status = done` o una fecha ejecutada demuestren liberación;
+17. separa repuestos descritos en texto de reserva o consumo real de inventario;
+18. conserva garantía y seguro como contratos separados del mantenimiento realizado;
+19. conserva custodia y ubicación durante mantenimiento como decisiones independientes;
+20. diseña baja como ciclo `REQUEST → EVALUATE → APPROVE → EXECUTE → RECONCILE`, no como cambio genérico de estado;
+21. preserva identidad, documentos, mantenimiento e incidentes después de baja o disposición;
+22. impide reciclar código, placa, serial o QR de una identidad retirada;
+23. separa disposición física de efecto económico;
+24. define reemplazo como relación entre identidad saliente y nueva identidad, sin copiar historial;
+25. conserva tratamiento por identidad individual y por cantidad;
+26. protege contra reintentos mediante idempotencia;
+27. protege contra decisiones incompatibles mediante revisión y concurrencia;
+28. trata timeout como resultado desconocido y no como permiso para repetir con otra identidad;
+29. trata offline como captura o intención pendiente, nunca como transición canónica ya confirmada;
+30. mantiene las mutaciones técnicas en `DEFAULT_DENY` mientras no exista capacidad exacta activa demostrada;
+31. documenta el AS-IS de `registerAssetMaintenance` e `inventory.stock` como implementación legacy insuficiente;
+32. entrega un handoff explícito a `NEXO-UX-033` sin ejecutar cambios físicos.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No crea rutas, componentes, Server Actions, Route Handlers, RPC, tablas, columnas, migraciones, RLS, datos, permisos, backfills, despliegues ni cambios de Supabase.
+
+#### 4. Handoff recibido de `NEXO-UX-031`
+
+031 entrega:
+
+```text
+AUTHORITATIVE SUBJECT OR QUANTITY SCOPE
++
+RECONCILED CURRENT CUSTODY
++
+ACCEPTED HANDOFF SEMANTICS
++
+LOAN AND RETURN OBLIGATION HISTORY
++
+DIRECT CUSTODY TRANSFER SEMANTICS
++
+LOCATION / CUSTODY SEPARATION
++
+CONDITION OBSERVED AT HANDOFF
++
+OPEN DIFFERENCE / INCIDENT REFERENCES
++
+VERSIONED IDEMPOTENT HISTORY
++
+NO SILENT LOSS OR DAMAGE INFERENCE
+```
+
+032 consume ese handoff sin reabrir custodia, préstamo, devolución ni transferencia.
+
+Por tanto:
+
+- una devolución dañada sigue siendo una devolución válida con un incidente técnico separado cuando corresponda;
+- un faltante al retorno no se convierte en pérdida confirmada por inferencia;
+- una custodia vigente no crea responsabilidad económica automática;
+- enviar a reparación no libera custodia por inferencia;
+- recibir desde reparación no equivale a liberación al servicio;
+- la ubicación observada no sustituye condición ni disponibilidad.
+
+#### 5. Contratos de dominio consumidos
+
+La experiencia consume sin redefinir:
+
+- `NEXO-DOM-001`, clases primarias y comportamiento por clase;
+- `NEXO-DOM-007`, ubicación física;
+- `NEXO-DOM-008`, custodia y responsable actual;
+- `NEXO-DOM-009`, identidad individual frente a control por cantidad;
+- `NEXO-DOM-010`, estado físico, condición, daño, pérdida, faltante, hallazgo y recuperación;
+- `NEXO-DOM-011`, préstamo, devolución, transferencia y custodia;
+- `NEXO-DOM-012`, mantenimiento, reparación, prueba, liberación y disponibilidad;
+- `NEXO-DOM-013`, baja, descarte, venta y reemplazo;
+- `NEXO-DOM-016`, repuestos y compatibilidad;
+- `NEXO-DOM-017`, auditoría, historial y evidencia;
+- `NEXO-DOM-025` y `NEXO-DOM-026`, consumo de repuestos y mantenimiento especializado;
+- `NEXO-DOM-028`, efectos financieros cuando correspondan.
+
+#### 6. Contrato de autorización consumido
+
+`NEXO-AUTH-026` protege las decisiones que producen o validan, según corresponda:
+
+```text
+asset_condition_reported
+asset_damaged
+asset_lost
+asset_found
+maintenance_due
+maintenance_work_order_opened
+maintenance_started
+spare_part_reserved
+spare_part_consumed
+maintenance_completed
+asset_released_to_service
+warranty_claim_opened
+insurance_claim_opened
+asset_retirement_requested
+asset_retirement_approved
+asset_disposed
+```
+
+Estos nombres describen eventos de dominio o resultados observables.
+
+No son `PermissionKey`.
+
+Bajo el catálogo activo observado, las mutaciones técnicas exactas sin capacidad atómica activa permanecen:
+
+```text
+DEFAULT_DENY
+```
+
+La UX nunca convierte `inventory.stock`, lectura de activo o creación de activo en autoridad técnica posterior.
+
+#### 7. Proceso canónico `VPROC-0030`
+
+Para mantenimiento, reparación, garantía, repuestos y destino técnico se consume el lifecycle aprobado de `VPROC-0030`:
+
+```text
+MAINTENANCE_REQUESTED
+UNDER_TRIAGE
+DIAGNOSIS_IN_PROGRESS
+WORK_PENDING_APPROVAL
+PARTS_OR_SERVICE_PENDING
+IN_REPAIR
+TESTING
+RELEASE_PENDING
+MAINTENANCE_CASE_CLOSED
+```
+
+032 no crea estados alternos para simplificar UI.
+
+#### 8. Business events de `VPROC-0030`
+
+La experiencia conserva exactamente los seis business events registrados:
+
+```text
+VPROC-0030.EVT-001
+VPROC-0030.EVT-002
+VPROC-0030.EVT-003
+VPROC-0030.EVT-004
+VPROC-0030.EVT-005
+VPROC-0030.EVT-006
+```
+
+Sus proyecciones corresponden a solicitud, análisis, decisión pendiente, ejecución, verificación y cierre del caso.
+
+Los eventos de dominio más detallados no reemplazan estas identidades de proceso ni se presentan como permisos.
+
+#### 9. Modelo visible de estado físico
+
+La ficha no presenta un único “Estado” que mezcle realidades distintas.
+
+Debe poder mostrar, según aplique:
+
+```text
+Condicion fisica
+Disponibilidad
+Lifecycle
+Ubicacion
+Custodia
+Incidentes abiertos
+Mantenimiento vigente
+Baja o disposicion
+```
+
+Cada dimensión conserva su fuente y último cambio relevante.
+
+#### 10. Condición física canónica
+
+La UX representa la escala conceptual:
+
+```text
+NEW
+GOOD
+FAIR
+POOR
+CRITICAL
+UNKNOWN
+```
+
+Puede localizar etiquetas al español, pero no altera su semántica.
+
+Correspondencia legacy observada:
+
+| Valor legacy | Condición canónica |
+| --- | --- |
+| `nuevo` | `NEW` |
+| `bueno` | `GOOD` |
+| `regular` | `FAIR` |
+| `malo` | `POOR` |
+| `critico` | `CRITICAL` |
+
+`UNKNOWN` no se sustituye por `GOOD` para “completar” la pantalla.
+
+#### 11. Condición desconocida
+
+Cuando la evidencia es insuficiente:
+
+```text
+CONDITION = UNKNOWN
+```
+
+La UI muestra que falta verificación y no inventa una evaluación desde fotografía, fecha de compra, ausencia de mantenimiento o última ubicación.
+
+#### 12. Condición no es disponibilidad
+
+Se preserva:
+
+```text
+GOOD CONDITION
+!=
+AVAILABLE
+```
+
+Un activo puede estar físicamente bien y permanecer bloqueado por mantenimiento vencido, préstamo, tránsito, investigación, prueba o liberación pendiente.
+
+#### 13. Disponibilidad no es condición
+
+Se preserva también:
+
+```text
+AVAILABLE
+!=
+GOOD CONDITION
+```
+
+La disponibilidad es una decisión contextual derivada de hechos vigentes.
+
+#### 14. Proyección de disponibilidad
+
+La UX puede presentar:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+junto con la razón vigente.
+
+No existe un toggle libre “Disponible / No disponible” que ignore sus fuentes.
+
+#### 15. Disponibilidad explicable
+
+Toda lectura de disponibilidad debe poder explicar, cuando corresponda:
+
+- mantenimiento próximo o vencido;
+- mantenimiento activo;
+- reparación activa;
+- condición bloqueante;
+- prueba pendiente o fallida;
+- liberación pendiente;
+- préstamo o custodia incompatible con el propósito consultado;
+- tránsito;
+- lifecycle bloqueante;
+- evidencia insuficiente.
+
+#### 16. Observación de condición
+
+La acción de registrar una observación debe mostrar:
+
+- sujeto exacto;
+- condición observada;
+- actor efectivo;
+- instante;
+- origen de la observación;
+- evidencia cuando aplique;
+- notas estructuradas o contexto;
+- revisión vigente.
+
+Registrar observación no aprueba reparación, baja ni efecto económico.
+
+#### 17. Daño reportado frente a daño confirmado
+
+La interfaz distingue:
+
+```text
+DAMAGE REPORTED
+!=
+DAMAGE CONFIRMED
+```
+
+El reporte puede provenir de custodia, retorno, conteo, inspección o mantenimiento.
+
+La confirmación con efecto técnico requiere decisión server-side y evidencia vigente.
+
+#### 18. Daño no implica baja
+
+Se preserva:
+
+```text
+DAMAGED
+!=
+RETIRED
+!=
+DISPOSED
+```
+
+Un activo dañado puede requerir diagnóstico, reparación, garantía, restricción o investigación antes de una eventual baja.
+
+#### 19. Daño no termina custodia
+
+Se mantiene:
+
+```text
+DAMAGED
+!=
+CUSTODY ENDED
+```
+
+La ficha conserva quién responde actualmente y cualquier transferencia requerida se gestiona bajo 031.
+
+#### 20. Faltante frente a pérdida
+
+La experiencia usa lenguaje distinto:
+
+```text
+MISSING
+!=
+LOST
+```
+
+Un faltante significa que la existencia esperada no fue reconciliada en el contexto observado.
+
+No confirma pérdida definitiva.
+
+#### 21. Diferencia de conteo no es pérdida
+
+Se preserva:
+
+```text
+COUNT DIFFERENCE
+!=
+CONFIRMED LOSS
+```
+
+Una diferencia puede abrir investigación, pero no modifica automáticamente lifecycle, cantidad autoritativa, custodia ni efecto económico.
+
+#### 22. Faltante en devolución
+
+Se preserva el handoff de 031:
+
+```text
+MISSING AT RETURN
+!=
+LOSS CONFIRMED
+```
+
+La obligación de retorno o discrepancia permanece visible hasta resolución propietaria.
+
+#### 23. Pérdida reportada frente a confirmada
+
+La UX distingue:
+
+```text
+LOSS REPORTED
+!=
+LOSS CONFIRMED
+```
+
+La confirmación debe poder mostrar, como mínimo:
+
+- sujeto o scope;
+- última custodia conocida;
+- última ubicación conocida;
+- evidencia;
+- investigación;
+- actor decisor;
+- fecha efectiva;
+- revisión vigente;
+- efecto técnico resultante.
+
+#### 24. Pérdida no borra identidad
+
+Cuando se confirma pérdida:
+
+```text
+IDENTITY PRESERVED
+HISTORY PRESERVED
+LAST KNOWN CUSTODY PRESERVED
+LAST KNOWN LOCATION PRESERVED
+```
+
+La UX nunca ofrece “eliminar” como resolución del caso.
+
+#### 25. Hallazgo
+
+`asset_found` representa un hallazgo atribuible.
+
+Debe poder mostrar:
+
+- identidad o scope exacto;
+- relación con la pérdida o faltante vigente;
+- ubicación encontrada;
+- condición observada;
+- actor;
+- evidencia;
+- siguiente revisión requerida.
+
+#### 26. Hallazgo no es recuperación completa
+
+Se fija:
+
+```text
+FOUND
+!=
+RECOVERED
+!=
+AVAILABLE
+```
+
+Un activo encontrado puede requerir inspección, mantenimiento, reconciliación de custodia o liberación antes de volver al uso.
+
+#### 27. Activo serializado
+
+Para `SERIALIZED_ASSET`, condición, daño, pérdida, hallazgo, mantenimiento, baja y disposición se refieren a la identidad exacta.
+
+La UI no reemplaza identidad por cantidad ni permite resolver un incidente sobre “otro igual”.
+
+#### 28. Reutilizable por cantidad
+
+Para `REUSABLE_QUANTITY`, la experiencia conserva componentes reconciliables por cantidad cuando aplique:
+
+```text
+EXPECTED
+OBSERVED
+USABLE
+DAMAGED
+LOST
+RETURNED
+OPEN / UNRESOLVED
+```
+
+No fabrica seriales para explicar una diferencia.
+
+#### 29. Conservación cuantitativa
+
+La UI no permite que la misma porción quede simultáneamente como utilizable, dañada y perdida.
+
+Cuando la política lo exige, la revisión muestra las cantidades antes y después y falla cerrada ante incoherencia.
+
+#### 30. Entrada al ciclo de mantenimiento
+
+La acción “Solicitar mantenimiento” crea una intención o caso técnico, no una reparación confirmada.
+
+Debe partir de:
+
+- sujeto exacto;
+- síntoma, obligación o disparador;
+- condición vigente;
+- prioridad preliminar;
+- disponibilidad vigente;
+- custodia y ubicación visibles;
+- evidencia disponible.
+
+#### 31. `MAINTENANCE_REQUESTED`
+
+La UI presenta el caso como solicitado.
+
+No muestra:
+
+```text
+DIAGNOSED
+IN REPAIR
+DONE
+RELEASED
+```
+
+por anticipación.
+
+#### 32. `UNDER_TRIAGE`
+
+El triage permite clasificar:
+
+- prioridad;
+- criticidad;
+- seguridad;
+- garantía;
+- tipo de intervención;
+- necesidad de aislamiento o indisponibilidad.
+
+Clasificar no ejecuta reparación.
+
+#### 33. `DIAGNOSIS_IN_PROGRESS`
+
+El diagnóstico registra causa probable, alcance, trabajo requerido y necesidades técnicas.
+
+Se preserva:
+
+```text
+DAMAGE REPORT
+!=
+DIAGNOSIS
+```
+
+#### 34. `WORK_PENDING_APPROVAL`
+
+Cuando costo, riesgo o política exigen aprobación, la UX muestra explícitamente que el trabajo espera decisión.
+
+No impone aprobación artificial a todo mantenimiento ni permite que el mismo actor se autoapruebe cuando la segregación vigente lo prohíba.
+
+#### 35. `PARTS_OR_SERVICE_PENDING`
+
+El caso puede esperar repuesto, proveedor, ventana, servicio o recurso.
+
+La UI no lo presenta como reparación iniciada.
+
+#### 36. Repuestos descritos no son consumo
+
+Se conserva:
+
+```text
+TEXT "PARTS REPLACED"
+!=
+SPARE PART CONSUMPTION
+```
+
+Si un repuesto real se reserva, retira o consume, el inventario propietario debe producir su efecto y referencia correlacionada.
+
+El diseño detallado de repuestos permanece en `NEXO-UX-035`.
+
+#### 37. `IN_REPAIR`
+
+Durante reparación se muestran, cuando apliquen:
+
+- técnico o proveedor;
+- inicio real;
+- diagnóstico vigente;
+- tareas ejecutadas;
+- repuestos correlacionados;
+- evidencia;
+- incidencias;
+- revisión.
+
+La interfaz no modifica condición, custodia, ubicación o disponibilidad mediante inferencias silenciosas.
+
+#### 38. Reparación completada
+
+Se preserva:
+
+```text
+REPAIR COMPLETED
+!=
+RELEASED TO SERVICE
+```
+
+El cierre técnico puede requerir prueba o aprobación antes de habilitar uso.
+
+#### 39. `TESTING`
+
+Cuando la política exige prueba, la UI conserva:
+
+- criterio o procedimiento;
+- actor competente;
+- instante;
+- medición u observación;
+- resultado;
+- evidencia;
+- trabajo relacionado.
+
+#### 40. Resultado de prueba
+
+La experiencia distingue:
+
+```text
+PASS
+FAIL
+INCONCLUSIVE
+```
+
+`FAIL` e `INCONCLUSIVE` no producen liberación positiva.
+
+#### 41. `RELEASE_PENDING`
+
+La prueba registrada no implica liberación automática.
+
+La UI muestra explícitamente:
+
+```text
+TEST RECORDED
++
+RELEASE DECISION PENDING
+```
+
+cuando aplique.
+
+#### 42. Liberación al servicio
+
+`asset_released_to_service` requiere que las precondiciones vigentes resulten compatibles.
+
+La UX no permite que un valor de formulario o un botón visible sea la única fuente de la decisión.
+
+#### 43. Mantenimiento completado no es disponibilidad
+
+Se preserva:
+
+```text
+MAINTENANCE COMPLETED
+!=
+AVAILABLE
+```
+
+Después de liberar, la disponibilidad se recalcula contra los demás bloqueos vigentes.
+
+#### 44. `MAINTENANCE_CASE_CLOSED`
+
+El cierre significa que el caso técnico quedó reconciliado según su contrato.
+
+No garantiza disponibilidad futura ni borra:
+
+- falla original;
+- garantía;
+- próxima obligación;
+- incidentes;
+- baja asociada;
+- restricción futura.
+
+#### 45. Mantenimiento vencido
+
+`maintenance_due` o una obligación vencida se presentan como hechos separados de ejecución.
+
+Se preserva:
+
+```text
+MAINTENANCE DUE
+!=
+MAINTENANCE STARTED
+```
+
+La política decide si restringe o bloquea disponibilidad.
+
+#### 46. Ausencia de historial
+
+Se preserva:
+
+```text
+NO MAINTENANCE RECORDS
+!=
+UP TO DATE
+```
+
+La UI no muestra “al día” solo porque no existen registros.
+
+#### 47. Estado legacy `planned`
+
+Se preserva:
+
+```text
+planned
+!=
+IN_REPAIR
+```
+
+Un trabajo planificado no cambia por sí solo la realidad física del sujeto.
+
+#### 48. Estado legacy `done`
+
+Se preserva:
+
+```text
+done
+!=
+TEST PASSED
+!=
+RELEASED
+!=
+AVAILABLE
+```
+
+La UX objetivo no usa `done` como atajo para todos esos efectos.
+
+#### 49. Custodia durante mantenimiento
+
+Enviar a proveedor o técnico puede requerir una decisión adicional de custodia.
+
+Se preserva:
+
+```text
+MAINTENANCE DECISION
+!=
+CUSTODY TRANSFER
+```
+
+La coordinación puede ocurrir en un flujo compuesto, pero ambos efectos conservan su autoridad.
+
+#### 50. Ubicación durante mantenimiento
+
+Se preserva:
+
+```text
+MAINTENANCE STATUS CHANGE
+!=
+LOCATION ASSIGNMENT
+```
+
+La salida o retorno físico consume el contrato de ubicación o movimiento correspondiente.
+
+#### 51. Retorno desde mantenimiento
+
+Se fija:
+
+```text
+MAINTENANCE IN
+!=
+RELEASED TO SERVICE
+```
+
+La llegada física puede coexistir con prueba, liberación o reconciliación pendiente.
+
+#### 52. Garantía y seguro
+
+Una garantía o póliza visible no demuestra cobertura vigente ni resultado aprobado.
+
+Abrir una reclamación no equivale a:
+
+- reparación aprobada;
+- reemplazo aprobado;
+- pago confirmado;
+- baja;
+- disponibilidad.
+
+#### 53. Baja como ciclo separado
+
+La UX representa la baja como:
+
+```text
+REQUEST
+→
+EVALUATE
+→
+APPROVE OR REJECT
+→
+EXECUTE DISPOSITION
+→
+RECONCILE
+→
+CLOSE
+```
+
+No como un dropdown de `lifecycle_status`.
+
+#### 54. Solicitud de baja
+
+`asset_retirement_requested` debe mostrar:
+
+- sujeto exacto;
+- motivo;
+- condición;
+- estado previo;
+- actor solicitante;
+- evidencia;
+- fecha;
+- tratamiento propuesto cuando aplique;
+- revisión.
+
+Solicitar no aprueba.
+
+#### 55. Evaluación de baja
+
+La evaluación comprueba, cuando aplique:
+
+- identidad o scope;
+- condición;
+- disponibilidad;
+- propiedad o autoridad de disposición;
+- custodia;
+- ubicación;
+- préstamo o transferencia abierta;
+- mantenimiento e incidentes;
+- cantidad para scopes reutilizables;
+- evidencia;
+- política de riesgo o valor.
+
+#### 56. Aprobación de baja
+
+`asset_retirement_approved` permanece separada de solicitud y ejecución.
+
+Se preserva:
+
+```text
+CUSTODIAN
+!=
+AUTOMATIC RETIREMENT APPROVER
+```
+
+El técnico, registrador de daño o ejecutor tampoco se convierte en aprobador por haber participado antes.
+
+#### 57. Disposición
+
+`asset_disposed` representa el destino físico aprobado.
+
+Puede corresponder a descarte, venta, devolución a tercero u otro método autorizado.
+
+La UI conserva el método, contraparte cuando aplique, evidencia, actor, instante y resultado.
+
+#### 58. Baja no borra historia
+
+Después de retiro o disposición permanecen visibles conforme a autorización:
+
+- identidad;
+- serial, placa, código o QR históricos;
+- historial de custodia;
+- ubicación histórica;
+- condición e incidentes;
+- mantenimientos;
+- documentos;
+- decisión de baja;
+- disposición;
+- referencias económicas cuando existan.
+
+#### 59. Identidad no reciclable
+
+Se prohíbe reutilizar la identidad, serial, placa, código o QR histórico del sujeto retirado para representar un reemplazo.
+
+#### 60. Reemplazo
+
+Se preserva:
+
+```text
+RETIRED SUBJECT
+!=
+REPLACEMENT SUBJECT
+```
+
+El reemplazo nuevo posee identidad propia.
+
+La UI puede mostrar la relación saliente → entrante sin copiar historia del anterior.
+
+#### 61. Baja individual
+
+Para `SERIALIZED_ASSET`, la baja y disposición operan sobre la identidad exacta.
+
+No se sustituyen por una cantidad genérica ni por otro activo del mismo modelo.
+
+#### 62. Baja por cantidad
+
+Para `REUSABLE_QUANTITY`, la experiencia puede operar sobre un scope cuantificado.
+
+Debe poder mostrar:
+
+```text
+AUTHORITATIVE BEFORE
+PROPOSED
+APPROVED
+EXECUTED
+REMAINING
+```
+
+sin fabricar identidades unitarias.
+
+#### 63. Contenedor, LPN y contenido
+
+Se preserva:
+
+```text
+PHYSICAL CONTAINER DISPOSED
+!=
+LPN DISPOSED
+!=
+LPN CONTENT DISPOSED
+```
+
+La disposición del contenedor no borra ni dispone automáticamente identidades logísticas o contenido.
+
+#### 64. Kit y componentes
+
+La baja o daño de una instancia de kit no se propaga automáticamente a todos sus componentes.
+
+La relación de kit, miembros y completitud pertenece a `NEXO-UX-033`.
+
+#### 65. Efecto económico
+
+La UX distingue claramente:
+
+```text
+PHYSICAL LOSS / REPAIR / DISPOSAL
+!=
+ACCOUNTING DECISION
+```
+
+NEXO conserva el hecho operacional; NUMERA conserva el tratamiento económico cuando corresponda.
+
+#### 66. Venta como disposición controlada
+
+Una eventual venta de activo retirado no se presenta como simple cambio de estado.
+
+La entrega física y el efecto económico deben permanecer correlacionables pero distintos.
+
+#### 67. Decisión server-side
+
+La autoridad final nunca procede de:
+
+- botón visible;
+- URL;
+- query string;
+- valor `condition_status`;
+- valor `equipment_status`;
+- valor `lifecycle_status`;
+- `maintenance_status` enviado por cliente;
+- QR;
+- rol nominal;
+- ubicación;
+- custodia;
+- posesión física;
+- permiso `inventory.stock`.
+
+#### 68. Actor efectivo y dispositivo compartido
+
+Antes de cualquier mutación técnica la experiencia debe resolver al actor humano efectivo.
+
+Un dispositivo compartido no hereda autoridad del usuario anterior y nunca se convierte en actor, custodio, técnico o aprobador.
+
+#### 69. Operación offline
+
+Offline puede conservar:
+
+- observación;
+- evidencia pendiente;
+- solicitud;
+- intención no confirmada.
+
+No puede presentar como comprometidos:
+
+- pérdida confirmada;
+- liberación;
+- aprobación de baja;
+- disposición irreversible;
+- consumo de repuesto;
+- efecto económico.
+
+Al reconectar se revalidan actor, capacidad, sujeto, estado, revisión, contexto e idempotencia.
+
+#### 70. Timeout y resultado desconocido
+
+Ante timeout posterior a una mutación:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO CREATE NEW OPERATION
+```
+
+La UX conserva la misma identidad de operación y ofrece reconciliación o reintento idempotente.
+
+#### 71. Concurrencia
+
+Dos decisiones incompatibles no pueden confirmar sobre la misma revisión inicial.
+
+Ejemplos:
+
+```text
+RELEASE TO SERVICE
+vs
+CONFIRMED LOSS
+```
+
+```text
+RETIREMENT APPROVAL
+vs
+NEW MAINTENANCE START
+```
+
+```text
+DISPOSAL
+vs
+CUSTODY TRANSFER
+```
+
+La segunda intención debe revalidar el estado persistido.
+
+#### 72. Idempotencia
+
+El mismo intento lógico no puede:
+
+- abrir dos casos iguales;
+- confirmar dos veces el mismo daño;
+- declarar dos veces la misma pérdida;
+- consumir dos veces un repuesto;
+- completar o liberar dos veces;
+- aprobar dos bajas;
+- disponer dos veces;
+- duplicar auditoría empresarial.
+
+#### 73. Efectos compuestos
+
+Cuando una intención requiere varias escrituras, la UX no presenta éxito completo si solo una confirmó.
+
+Para el caso AS-IS observado:
+
+```text
+MAINTENANCE RECORD COMMITTED
++
+ASSET STATE CHANGE FAILED
+!=
+SUCCESS
+```
+
+El resultado parcial queda pendiente de reconciliación.
+
+#### 74. Error y recuperación
+
+Todo bloqueo o fallo debe explicar:
+
+- qué ocurrió;
+- qué no se confirmó;
+- qué sí quedó preservado;
+- si existe resultado desconocido;
+- cómo reintentar o reconciliar;
+- qué actor o owner debe resolverlo.
+
+No se ofrecen controles que produzcan una transición conocida como imposible bajo el estado vigente.
+
+#### 75. Recibo de operación
+
+Tras una decisión confirmada, la UX muestra un recibo con la información mínima material:
+
+- sujeto o scope;
+- operación;
+- resultado;
+- actor;
+- instante;
+- estado o condición antes/después cuando aplique;
+- revisión resultante;
+- evidencia o referencia relevante;
+- siguiente acción si queda trabajo pendiente.
+
+#### 76. Historial no destructivo
+
+La ficha debe permitir reconstruir cronológicamente:
+
+```text
+OBSERVATION
+→
+ASSESSMENT
+→
+DECISION
+→
+EXECUTION
+→
+VERIFICATION
+→
+RELEASE / RETIREMENT / OTHER RESULT
+```
+
+sin sobrescribir hechos previos.
+
+#### 77. AS-IS remoto reconciliado
+
+La implementación observada en `vento-nexo` continúa siendo parcial:
+
+- superficies de activos utilizan `inventory.stock` como guard amplio;
+- `registerAssetMaintenance` recibe `maintenance_status` y `maintenance_type` desde formulario;
+- inserta `asset_maintenance_records`;
+- con `planned` puede cambiar `equipment_status` a mantenimiento y `lifecycle_status` a reparación;
+- con `done` puede cambiar `equipment_status` a operativo y `lifecycle_status` a activo;
+- registro técnico y cambio de estado se ejecutan como escrituras separadas;
+- existen valores legacy de condición, lifecycle y estado técnico;
+- no se demuestra mediante esa acción una capacidad atómica específica, prueba obligatoria, liberación separada ni workflow completo de baja.
+
+Se clasifica como:
+
+```text
+PARTIAL LEGACY FOUNDATION
+```
+
+No como implementación objetivo completada.
+
+#### 78. Matriz de intención y consecuencia
+
+| Intención | Lo que sí representa | Lo que no representa |
+| --- | --- | --- |
+| reportar condición | observación atribuible | reparación o baja |
+| reportar daño | incidente | daño confirmado o disposición |
+| reportar faltante | discrepancia | pérdida confirmada |
+| confirmar pérdida | decisión técnica auditable | eliminación de identidad |
+| registrar hallazgo | reaparición observada | disponibilidad automática |
+| solicitar mantenimiento | caso técnico | reparación iniciada |
+| completar mantenimiento | trabajo terminado | liberación o disponibilidad |
+| prueba `PASS` | verificación favorable | liberación automática cuando la política exige decisión |
+| liberar servicio | decisión técnica | condición `GOOD` por inferencia |
+| solicitar baja | propuesta | aprobación |
+| aprobar baja | autorización | disposición ejecutada |
+| disponer | destino físico confirmado | efecto económico implícito |
+| reemplazar | relación saliente/entrante | reutilización de identidad |
+
+#### 79. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| ASSET-STATE-01 | condición desconocida | `UNKNOWN`, no `GOOD` |
+| ASSET-STATE-02 | devolución con daño | retorno preservado + incidente separado |
+| ASSET-STATE-03 | faltante en retorno | diferencia abierta, no pérdida automática |
+| ASSET-STATE-04 | diferencia de conteo | investigación, no baja |
+| ASSET-STATE-05 | pérdida confirmada | identidad e historia preservadas |
+| ASSET-STATE-06 | activo encontrado | inspección/reconciliación, no disponibilidad automática |
+| ASSET-STATE-07 | reusable con 20 unidades y 2 dañadas | cantidades segregadas sin seriales ficticios |
+| ASSET-STATE-08 | mantenimiento solicitado | caso solicitado, no reparación |
+| ASSET-STATE-09 | mantenimiento `planned` | planificación, no `IN_REPAIR` por inferencia |
+| ASSET-STATE-10 | reparación terminada | prueba/liberación pendientes cuando apliquen |
+| ASSET-STATE-11 | prueba fallida | no liberado |
+| ASSET-STATE-12 | prueba inconclusa | pendiente/bloqueado |
+| ASSET-STATE-13 | `done` enviado por cliente | no autoridad de liberación |
+| ASSET-STATE-14 | mantenimiento cerrado con otro bloqueo vigente | disponibilidad recalculada, no asumida |
+| ASSET-STATE-15 | solicitud de baja | no disposición |
+| ASSET-STATE-16 | custodio solicita su propia baja | aprobación independiente cuando aplique |
+| ASSET-STATE-17 | baja aprobada sin disposición | caso abierto hasta ejecución/reconciliación |
+| ASSET-STATE-18 | disposición de activo serializado | identidad histórica conservada |
+| ASSET-STATE-19 | baja parcial de reutilizable | cantidad remanente reconciliada |
+| ASSET-STATE-20 | contenedor dispuesto con LPN asociado | no dispone LPN ni contenido |
+| ASSET-STATE-21 | activo reemplazado | nueva identidad, historial separado |
+| ASSET-STATE-22 | timeout post-submit | resultado desconocido con misma idempotency key |
+| ASSET-STATE-23 | intención offline de pérdida | pendiente, no confirmada |
+| ASSET-STATE-24 | release concurrente con pérdida | como máximo una decisión compatible compromete |
+| ASSET-STATE-25 | registro de mantenimiento confirma pero state update falla | resultado parcial, no éxito |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 80. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| clase primaria | `NEXO-DOM-001` |
+| ubicación | `NEXO-DOM-007` |
+| custodia | `NEXO-DOM-008` / `NEXO-UX-031` |
+| granularidad individual/cantidad | `NEXO-DOM-009` / `NEXO-UX-030` |
+| condición, daño, pérdida, faltante | `NEXO-DOM-010` / `NEXO-UX-032` |
+| préstamo/devolución/transferencia | `NEXO-DOM-011` / `NEXO-UX-031` |
+| mantenimiento/reparación/disponibilidad | `NEXO-DOM-012` / `NEXO-UX-032` |
+| baja/disposición/reemplazo | `NEXO-DOM-013` / `NEXO-UX-032` |
+| kits y completitud | `NEXO-DOM-014` / `NEXO-UX-033` |
+| conteos | `NEXO-DOM-015` / `NEXO-UX-034` |
+| repuestos | `NEXO-DOM-016` / `NEXO-UX-035` |
+| auditoría/historial/evidencia | `NEXO-DOM-017` |
+| autorización técnica | `NEXO-AUTH-026` |
+| efecto económico | contratos NUMERA aplicables |
+
+#### 81. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige condición, daño, pérdida y hallazgo auditables; mantenimiento separado en plan, diagnóstico, ejecución, repuestos, prueba y liberación; baja y disposición no destructivas con segregación; tratamiento diferenciado de identidad y cantidad; recuperación segura ante error, concurrencia, offline y resultado desconocido. Esta tarea especializa la experiencia de usuario sobre esas obligaciones sin introducir un requisito independiente.
+
+#### 82. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-012`, para daño, pérdida, devolución, disposición y liberación como transiciones auditables no destructivas;
+- `TREQ-NEXO-013`, para condición, disponibilidad, daño, pérdida, hallazgo, custodia e identidad estable;
+- `TREQ-NEXO-014`, para plan, orden, diagnóstico, ejecución, repuestos, prueba, liberación, baja, venta, descarte y reemplazo;
+- `TREQ-NEXO-043`, para cantidades esperadas, observadas, utilizables, dañadas, perdidas y retornadas sin identidad por unidad;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y ausencia de doble representación;
+- `TREQ-UX-002`, para error y recuperación en lenguaje humano sin efectos duplicados;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado o pendiente y trazabilidad visible;
+- `TREQ-UX-006`, para comportamiento explícito ante pérdida de red, sesión, dispositivo o proveedor.
+
+Estas referencias son trazabilidad existente y no una modificación del registro.
+
+#### 83. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el build canónico corresponde al checkout local posterior a la incorporación de la tarea |
+| LOCAL | NOT_EXECUTED | no se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración |
+| REMOTA | PASS | se contrastaron `NEXO-DOM-010`, `NEXO-DOM-012`, `NEXO-DOM-013`, `NEXO-AUTH-026`, `VPROC-0030`, sus seis business events, 04A NEXO/UX, `package.json` y el AS-IS de mantenimiento documentado del consumidor vigente |
+| OPERATIVA | NOT_EXECUTED | no se reportó condición, daño o pérdida; no se ejecutó mantenimiento, prueba, liberación, baja ni disposición sobre sujetos reales |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-032` usa `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no autoriza cambios de producto, datos, Supabase, permisos, infraestructura ni aplicación |
+
+#### 84. Criterios de aceptación
+
+- [x] condición, disponibilidad, lifecycle, custodia y ubicación permanecen separadas;
+- [x] existe condición `UNKNOWN` sin fallback optimista;
+- [x] observación de condición no equivale a decisión técnica;
+- [x] daño reportado y confirmado permanecen separados;
+- [x] daño no implica baja ni fin de custodia;
+- [x] faltante y pérdida permanecen separados;
+- [x] diferencia de conteo no confirma pérdida;
+- [x] faltante al retorno no confirma pérdida;
+- [x] pérdida conserva identidad, custodia e historia;
+- [x] hallazgo no equivale a recuperación completa ni disponibilidad;
+- [x] activos serializados usan identidad exacta;
+- [x] reutilizables conservan cantidades por estado sin seriales ficticios;
+- [x] se consume `VPROC-0030` sin lifecycle paralelo;
+- [x] se conservan exactamente sus seis business events registrados;
+- [x] solicitud, triage, diagnóstico, aprobación, preparación, reparación, prueba, liberación y cierre permanecen distinguibles;
+- [x] mantenimiento planificado no equivale a reparación activa;
+- [x] repuestos descritos en texto no sustituyen consumo de inventario;
+- [x] reparación completada no equivale a liberación;
+- [x] prueba fallida o inconclusa no libera;
+- [x] liberación no implica disponibilidad automática;
+- [x] ausencia de historial no demuestra mantenimiento al día;
+- [x] `planned` y `done` no se usan como atajos de estado físico;
+- [x] custodia y ubicación durante mantenimiento mantienen autoridades separadas;
+- [x] retorno desde mantenimiento no equivale a liberación;
+- [x] garantía y seguro no se infieren desde un documento aislado;
+- [x] baja conserva solicitud, evaluación, aprobación, disposición, reconciliación y cierre;
+- [x] custodio o técnico no se convierten en aprobadores por inferencia;
+- [x] disposición preserva historia e identidad;
+- [x] identidad, serial, placa, código y QR no se reciclan;
+- [x] reemplazo crea relación entre identidades separadas;
+- [x] baja por cantidad conserva remanente reconciliable;
+- [x] disposición de contenedor no dispone LPN ni contenido;
+- [x] kit y componentes quedan reservados a 033;
+- [x] efecto económico permanece separado;
+- [x] autoridad final es server-side;
+- [x] `inventory.stock` no se acepta como autoridad técnica final;
+- [x] dispositivo compartido no crea autoridad;
+- [x] offline no confirma transición autoritativa;
+- [x] timeout conserva resultado desconocido;
+- [x] se exige idempotencia;
+- [x] se bloquean decisiones concurrentes incompatibles;
+- [x] los efectos compuestos parciales no se presentan como éxito;
+- [x] el AS-IS se clasifica como fundación legacy parcial;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff explícito a `NEXO-UX-033`.
+
+#### 85. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- modifica navegación;
+- crea Server Actions ni Route Handlers;
+- crea RPC;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas o políticas RLS;
+- modifica `asset_items`, `asset_groups`, `asset_movements` ni `asset_maintenance_records`;
+- cambia condición, lifecycle, disponibilidad, ubicación o custodia reales;
+- registra daño, pérdida, hallazgo o recuperación reales;
+- abre, ejecuta, completa ni libera mantenimientos reales;
+- reserva ni consume repuestos reales;
+- abre reclamaciones reales de garantía o seguro;
+- solicita, evalúa, aprueba ni ejecuta bajas reales;
+- vende, descarta, reemplaza ni dispone activos reales;
+- crea reemplazos reales;
+- calcula valor contable, depreciación, ganancia, pérdida, impuestos ni asientos;
+- modifica permisos, grants, scope o modalidad;
+- elimina `inventory.stock`;
+- modifica Supabase;
+- crea migraciones o backfills;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-033`.
+
+#### 86. Handoff hacia `NEXO-UX-033`
+
+`NEXO-UX-032` entrega:
+
+```text
+AUTHORITATIVE SUBJECT OR QUANTITY SCOPE
++
+SEPARATE CONDITION / AVAILABILITY / LIFECYCLE DIMENSIONS
++
+NON-DESTRUCTIVE DAMAGE / LOSS / RECOVERY HISTORY
++
+MAINTENANCE REQUEST → DIAGNOSIS → REPAIR → TEST → RELEASE BOUNDARIES
++
+RETIREMENT REQUEST / APPROVAL / DISPOSITION SEPARATION
++
+NO IDENTITY REUSE
++
+QUANTITY-SAFE INCIDENT AND DISPOSITION SEMANTICS
++
+VERSIONED IDEMPOTENT HISTORY
++
+NO KIT-WIDE CASCADE BY INFERENCE
+```
+
+`NEXO-UX-033` deberá diseñar kits, conjuntos y control de completitud conservando identidad y estado propios de kit y componentes, sin propagar daño, pérdida, reparación, baja o disposición del kit a todos sus miembros por inferencia y sin usar completitud para borrar incidentes individuales o cantidades faltantes.
+
+#### 87. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud`
 ### [ ] NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
 ### [ ] NEXO-UX-034 — Diseñar conteos de activos y reutilizables
 ### [ ] NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
