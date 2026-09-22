@@ -54,6 +54,15 @@
     "approval_statement": "APROBADO: autoriza documentar como regla transversal que COMPLETE_EXPLICIT_SCOPE representa únicamente el cierre revalidable del alcance explícitamente conocido en el snapshot canónico vigente; no constituye cierre eterno ni inmutable, no aprueba ni oculta tareas canónicas pendientes, y no permite omitir trabajo futuro por haber cerrado antes una aplicación. Autoriza documentar que nuevas relaciones, dependencias, packages o criterios deben provocar una nueva evaluación del application closure y pueden devolver una aplicación a INCOMPLETE o UNKNOWN_CRITERIA_TRACEABILITY conforme al modelo vigente. Los packages históricos cerrados conservan su evidencia; el trabajo nuevo se incorpora por su owner canónico. No autoriza cambios funcionales, TREQ, Supabase, ejecución de GAP-PKG-047, implementación física, piloto ni SHELL-CI-022.",
     "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
   },
-  "evidence": [],
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "STARTED",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-22T17:57:32.190Z",
+      "candidate_head_before": "01bed76dac897a0e9ab531e5ffcc2d17268fc511",
+      "automatic_retry_forbidden": true
+    }
+  ],
   "opened_at": "2026-09-22T17:35:39.814Z"
 }
