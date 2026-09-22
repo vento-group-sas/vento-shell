@@ -26042,7 +26042,1186 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-029 — Diseñar contenedores anidados y retornables`
-### [ ] NEXO-UX-029 — Diseñar contenedores anidados y retornables
+### ✅ NEXO-UX-029 — Diseñar contenedores anidados y retornables
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
+**Tarea siguiente:** NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
+**Tipo de tarea:** documental; diseño canónico de experiencia para jerarquía LPN, anidamiento, desanidamiento, reparentado y operación de contenedores retornables identificados o controlados por cantidad, con conservación de identidad, propiedad directa de contenido, revisiones, autorización, idempotencia, concurrencia, retorno, recuperación y fronteras con ubicación, custodia, condición y movimiento, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia mediante la cual un actor autorizado puede comprender y operar una jerarquía de LPN sin convertir al LPN hijo en contenido ordinario, y puede consultar o reconciliar contenedores retornables sin confundir su identidad física, obligación de retorno, ubicación, custodia o condición con la identidad logística del LPN.
+
+La regla raíz de experiencia queda:
+
+```text
+LPN AUTORIZADO Y VIGENTE
++
+JERARQUIA ACICLICA VISIBLE
++
+PROPIEDAD DIRECTA DE CONTENIDO VISIBLE
++
+OPERACION ESTRUCTURAL EXPLICITA
++
+REVISIONES VIGENTES
++
+DECISION SERVER-SIDE
++
+IDENTIDAD FISICA DE CONTENEDOR SEPARADA
++
+OBLIGACION DE RETORNO RECONCILIABLE
++
+RECIBO Y RECUPERACION
+→
+ANIDAMIENTO Y RETORNO COMPRENSIBLES, CONSERVATIVOS Y AUDITABLES
+```
+
+Siempre:
+
+```text
+LPN CHILD RELATION
+!=
+CONTENT MEMBERSHIP
+```
+
+```text
+PARENT LPN
+!=
+PHYSICAL_CONTAINER
+```
+
+```text
+RETURN EXPECTED
+!=
+RETURN CONFIRMED
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-029` deja definido un único contrato de experiencia que:
+
+1. representa la jerarquía LPN como bosque dirigido y acíclico;
+2. conserva máximo un padre autoritativo vigente por LPN hijo;
+3. diferencia LPN raíz, LPN hijo, contenido directo y contenido descendiente;
+4. evita representar un LPN hijo como `QUANTITY_SLICE`, `SERIALIZED_IDENTITY` o `KIT_INSTANCE`;
+5. diseña `NEST_LPN`, `UNNEST_LPN` y `REPARENT_LPN` como tres intenciones empresariales explícitas;
+6. exige revisión previa de las relaciones afectadas antes de mutar;
+7. impide autorreferencia, ciclos y multiparentalidad;
+8. trata el reparentado como una única intención atómica;
+9. conserva identidad, lifecycle, purpose type y contenido directo de cada LPN;
+10. distingue planificación en `DRAFT` de relación autoritativa;
+11. diferencia jerarquía LPN de ubicación, custodia, movimiento y contenido;
+12. permite proyección agregada del padre sin crear doble contabilización;
+13. mantiene trazabilidad hasta el LPN propietario directo de cada existencia;
+14. conserva manejo explícito de concurrencia, idempotencia, timeout y offline;
+15. mantiene `PHYSICAL_CONTAINER` como identidad física separada;
+16. conserva `RETURNABLE` como rol u obligación y no como nueva clase primaria;
+17. mantiene `REUSABLE_QUANTITY` para retornables equivalentes controlados por cantidad;
+18. distingue `CONTAINER ISSUED`, `RETURN EXPECTED` y `RETURN CONFIRMED`;
+19. conserva retorno parcial, diferencia y excepción sin inventar identidades;
+20. separa retorno de custodia, ubicación y cierre de LPN;
+21. no infiere retorno por desaparición visual de un contenedor;
+22. no infiere cierre de LPN por retorno de contenedor;
+23. no infiere retorno de contenedor por cierre de LPN;
+24. conserva autorización server-side y `DEFAULT_DENY` donde no exista capacidad exacta activa demostrada;
+25. no define persistencia, columnas, RPC, RLS, migraciones ni implementación de producto;
+26. entrega catálogo de activos y reutilizables a `NEXO-UX-030` sin redefinir su clasificación.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado se agota en el contrato documental.
+
+No genera una identidad física propia ni autoriza código, datos, migraciones, Supabase, despliegues o backfills.
+
+#### 4. Continuidad y handoff recibido de `NEXO-UX-028`
+
+La continuidad interna es:
+
+```text
+NEXO-UX-028
+→
+NEXO-UX-029
+→
+NEXO-UX-030
+```
+
+`NEXO-UX-028` entrega:
+
+```text
+STABLE LPN IDENTITY
++
+AUTHORITATIVE CONTENT MEMBERSHIP
++
+THREE CONTENT SHAPES
++
+SPLIT / MERGE / TRANSFER UX BOUNDARIES
++
+EXACT QUANTITY AND IDENTITY CONSERVATION
++
+SOURCE / TARGET LINEAGE
++
+MONOTONIC CONTENT REVISIONS
++
+NO LPN-AS-ORDINARY-CONTENT RULE
++
+RELABEL AS NON-LIFECYCLE EVENT
++
+SAFE CONFLICT / IDEMPOTENCY / OFFLINE RECOVERY
+```
+
+029 consume ese handoff y añade estructura LPN y retorno de contenedores. No reabre split, merge, transferencia ni relabel.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume sin redefinir:
+
+- `NEXO-DOM-001`, clases `PHYSICAL_CONTAINER` y `REUSABLE_QUANTITY`;
+- `NEXO-DOM-002`, identidad y purpose type LPN;
+- `NEXO-DOM-003`, lifecycle LPN;
+- `NEXO-DOM-004`, contenido directo, `PACK` y `UNPACK`;
+- `NEXO-DOM-005`, split, merge y transferencia de contenido;
+- `NEXO-DOM-006`, jerarquía, anidamiento, retornables y reglas raíz de esta experiencia;
+- `NEXO-DOM-007`, sede, LOC, LPN y contenido;
+- `NEXO-DOM-008`, custodia y responsable;
+- `NEXO-DOM-010`, condición, daño, pérdida y faltante;
+- `NEXO-DOM-019`, vínculo entre contenedor físico y LPN;
+- `NEXO-DOM-020`, continuidad o cierre del LPN respecto del contenedor;
+- `NEXO-DOM-021`, no doble contabilización;
+- `NEXO-DOM-022`, movimiento atómico del LPN y su contenido;
+- `NEXO-DOM-023`, trazabilidad interna;
+- `NEXO-DOM-024`, capacidad, peso, volumen y compatibilidad.
+
+#### 6. Contratos de autorización consumidos
+
+El diseño consume:
+
+- `NEXO-AUTH-021`, auditoría vigente de permisos LPN, activos y contenedores;
+- `NEXO-AUTH-022`, como frontera de lifecycle LPN;
+- `NEXO-AUTH-023`, como frontera de contenido LPN;
+- `NEXO-AUTH-024`, para consulta y administración base de activos y reutilizables cuando el sujeto sea un contenedor físico o reusable cubierto por su contrato;
+- `NEXO-AUTH-025`, para custodia, préstamo, devolución y transferencia cuando la operación material implique esas responsabilidades.
+
+La auditoría vigente no demuestra una `PermissionKey` atómica activa exacta para `NEST_LPN`, `UNNEST_LPN` o `REPARENT_LPN`, ni una familia `container.*` que autorice por sí sola el ciclo completo de contenedores físicos.
+
+Por tanto:
+
+```text
+NEST_LPN → DEFAULT_DENY
+UNNEST_LPN → DEFAULT_DENY
+REPARENT_LPN → DEFAULT_DENY
+```
+
+hasta que exista una capacidad canónica exacta y aplicable.
+
+#### 7. Principio UX ante `DEFAULT_DENY`
+
+La ausencia actual de autoridad exacta no elimina el diseño, pero impide presentar una mutación como disponible.
+
+Se preserva:
+
+```text
+ACTION DESIGNED
+!=
+ACTION CURRENTLY AUTHORIZED
+```
+
+La UI puede explicar por qué una acción no está disponible. No puede habilitarla mediante `lpns.view`, `inventory.stock`, rol nominal, acceso a una sede, posesión de una etiqueta o un permiso de otra responsabilidad.
+
+#### 8. Punto de entrada
+
+La experiencia parte de un LPN ya resuelto y autorizado para lectura.
+
+La superficie debe mostrar como mínimo:
+
+- identidad o código visible del LPN;
+- lifecycle vigente;
+- purpose type vigente;
+- revisión estructural o equivalente cuando esté disponible;
+- padre autoritativo actual, si existe;
+- hijos directos;
+- cantidad de descendientes, si puede resolverse de forma completa;
+- contenido directo;
+- contenido descendiente como proyección diferenciada;
+- ubicación y custodia como dimensiones separadas;
+- vínculo con contenedor físico cuando exista;
+- obligaciones de retorno relevantes cuando correspondan.
+
+No se fija una ruta técnica concreta.
+
+#### 9. Representación visual de jerarquía
+
+La jerarquía se muestra como estructura, no como lista de contenido.
+
+Ejemplo conceptual:
+
+```text
+LPN A — RAIZ
+├─ LPN B
+│  ├─ LPN D
+│  └─ LPN E
+└─ LPN C
+```
+
+Cada nodo debe ser resoluble a su propio detalle y conservar identidad independiente.
+
+#### 10. LPN raíz y LPN hijo
+
+La interfaz distingue:
+
+```text
+ROOT LPN
+ACTIVE_PARENT_COUNT = 0
+```
+
+frente a:
+
+```text
+NESTED LPN
+ACTIVE_PARENT_COUNT = 1
+```
+
+Ser raíz no implica estar libre, disponible, ubicado en una LOC concreta, sin custodio o sin contenedor físico.
+
+#### 11. Identidad del hijo
+
+Un LPN hijo nunca se presenta como una línea ordinaria dentro de la tabla de contenido del padre.
+
+La UI preserva:
+
+- `lpn_id` propio;
+- código propio;
+- lifecycle propio;
+- purpose type propio;
+- revisión propia;
+- contenido directo propio;
+- historial propio;
+- acceso a su propia jerarquía descendiente.
+
+#### 12. Contenido directo y contenido descendiente
+
+La lectura del padre separa explícitamente:
+
+```text
+CONTENIDO DIRECTO
+```
+
+```text
+CONTENIDO EN DESCENDIENTES
+```
+
+Una vista consolidada puede existir, pero cada fila o agrupación derivada debe permitir identificar el LPN propietario directo.
+
+#### 13. Proyección agregada sin doble contabilización
+
+Cuando se muestran totales agregados del padre:
+
+```text
+AGGREGATED VIEW
+!=
+NEW AUTHORITATIVE MEMBERSHIP
+```
+
+La interfaz no suma dos veces la misma existencia por aparecer en hijo y ancestro.
+
+Toda agregación debe ser descomponible hasta los propietarios directos.
+
+#### 14. Catálogo UX de operaciones estructurales
+
+La superficie distingue explícitamente:
+
+```text
+ANIDAR LPN
+DESANIDAR LPN
+CAMBIAR LPN PADRE
+```
+
+Ninguna de estas etiquetas representa `PACK`, `TRANSFER_CONTENT`, putaway, cambio de custodia o movimiento físico.
+
+#### 15. `NEST_LPN`: intención de usuario
+
+Anidar significa establecer una relación estructural autoritativa entre un LPN padre y un LPN hijo actualmente raíz.
+
+La experiencia muestra antes de confirmar:
+
+- padre seleccionado;
+- hijo seleccionado;
+- lifecycle de ambos;
+- revisión vigente de ambos o de la relación;
+- padre actual del hijo;
+- ancestros relevantes;
+- capacidad y compatibilidad cuando estén materializadas;
+- efecto esperado sobre la jerarquía;
+- efectos que no ocurrirán por inferencia.
+
+#### 16. Selección del padre
+
+El padre debe resolverse como recurso autoritativo.
+
+Una cadena escrita o escaneada por el cliente no se convierte directamente en `lpn_id` válido.
+
+Antes de confirmar se muestra información suficiente para evitar seleccionar el mismo LPN o un descendiente del hijo.
+
+#### 17. Selección del hijo
+
+El hijo debe ser un LPN autoritativo vigente y resoluble.
+
+La experiencia no ofrece anidar:
+
+- una línea de producto;
+- una identidad serializada;
+- un kit;
+- un contenedor físico;
+- una LOC;
+- una remisión;
+- un bulto;
+- un viaje.
+
+#### 18. Autorreferencia
+
+Si padre e hijo resuelven al mismo LPN:
+
+```text
+PARENT_LPN_ID = CHILD_LPN_ID
+→
+BLOCK
+```
+
+La interfaz explica que un LPN no puede contenerse estructuralmente a sí mismo.
+
+#### 19. Prevención de ciclos
+
+Antes de revisión final se debe poder demostrar que el nuevo padre no es descendiente del hijo.
+
+Si no puede demostrarse ausencia de ciclo:
+
+```text
+UNKNOWN ACYCLICITY
+→
+NO IMPLIED ACCEPTANCE
+```
+
+La UI no intenta “arreglar” automáticamente la jerarquía.
+
+#### 20. Multiparentalidad
+
+Si el hijo ya posee un padre autoritativo vigente, `NEST_LPN` no se presenta como forma de crear un segundo padre.
+
+La interfaz orienta a `REPARENT_LPN` cuando esa sea la intención válida.
+
+#### 21. Lifecycle de anidamiento
+
+Para la relación autoritativa ordinaria:
+
+```text
+PARENT = ACTIVE
+CHILD = ACTIVE
+```
+
+Un estado visto anteriormente no autoriza la acción. Lifecycle se revalida en la revisión final.
+
+#### 22. Capacidad y compatibilidad
+
+Cuando el contrato físico esté materializado, la revisión podrá mostrar:
+
+- capacidad disponible;
+- peso o volumen aplicables;
+- incompatibilidades;
+- restricciones físicas o sanitarias.
+
+La ausencia de datos requeridos no se transforma en aceptación.
+
+#### 23. Revisión previa de `NEST_LPN`
+
+La pantalla de revisión muestra:
+
+- padre antes;
+- hijo antes;
+- padre actual del hijo: ninguno;
+- jerarquía resultante;
+- revisiones esperadas;
+- actor efectivo;
+- restricciones relevantes;
+- ausencia de cambios de contenido, ubicación, custodia, lifecycle y purpose type;
+- mensaje de que el resultado solo será autoritativo tras confirmación server-side.
+
+#### 24. Recibo de `NEST_LPN`
+
+Un anidamiento aceptado confirma:
+
+- padre resultante;
+- hijo resultante;
+- revisión resultante;
+- actor;
+- momento;
+- correlación disponible;
+- estructura recargada desde servidor.
+
+Un resultado optimista local no se presenta como confirmado.
+
+#### 25. `UNNEST_LPN`: intención de usuario
+
+Desanidar significa retirar la relación autoritativa vigente entre un hijo y su padre sin mover contenido ni ubicación por inferencia.
+
+La revisión muestra:
+
+```text
+CHILD ACTIVE PARENT
+1 → 0
+```
+
+junto con padre actual, hijo, revisiones y efectos no incluidos.
+
+#### 26. Recibo de `UNNEST_LPN`
+
+Un desanidamiento aceptado muestra al hijo como raíz únicamente respecto de la jerarquía LPN.
+
+No lo presenta como:
+
+- movido a otra LOC;
+- recibido por otro custodio;
+- desempacado;
+- cerrado;
+- disponible para cualquier operación.
+
+#### 27. `REPARENT_LPN`: intención de usuario
+
+Cambiar padre significa mover estructuralmente un LPN hijo desde un padre fuente a un padre destino en una sola decisión.
+
+La experiencia presenta:
+
+```text
+SOURCE PARENT
++
+CHILD LPN
++
+TARGET PARENT
++
+ONE CONFIRMATION
+→
+ONE REPARENT INTENT
+```
+
+#### 28. Atomicidad visual de reparentado
+
+La UI nunca presenta un estado final confirmado donde el hijo quedó sin padre porque el primer paso terminó y el segundo todavía no.
+
+Se preserva:
+
+```text
+SOURCE RELATION REMOVED
+IFF
+TARGET RELATION ESTABLISHED
+```
+
+cuando la intención empresarial es un reparentado único.
+
+#### 29. Revisión previa de reparentado
+
+La revisión final muestra:
+
+- padre fuente;
+- padre destino;
+- hijo;
+- revisiones vigentes de los tres extremos cuando correspondan;
+- ruta de ancestros relevante;
+- ausencia de ciclo;
+- capacidad y compatibilidad aplicables;
+- jerarquía antes;
+- jerarquía después;
+- ausencia de cambio automático de contenido, LOC, custodia o lifecycle.
+
+#### 30. Profundidad de jerarquía
+
+La UX no impone arbitrariamente un máximo contractual de niveles.
+
+Para jerarquías profundas debe usar divulgación progresiva, carga controlada y navegación por ancestros/descendientes sin presentar un árbol parcial como árbol completo.
+
+Si existe un límite técnico de visualización, se comunica como límite de la vista y no como límite del dominio.
+
+#### 31. Plan en `DRAFT`
+
+Una composición preparada en `DRAFT` puede mostrarse como:
+
+```text
+PLANIFICADO
+NO AUTORITATIVO
+```
+
+La interfaz distingue claramente plan previsto de relación confirmada.
+
+El plan no cambia contenido, ubicación, custodia, lifecycle ni disponibilidad.
+
+#### 32. Cierre de padre con hijos
+
+Si un padre mantiene relaciones hijas activas, la UI no ofrece un cierre ordinario como si esas relaciones pudieran desaparecer.
+
+El actor debe resolver la jerarquía por el flujo propietario antes de cerrar o utilizar una futura reconciliación atómica explícita autorizada.
+
+#### 33. Cierre de hijo con padre
+
+Un hijo con padre vigente no se presenta como cerrable ordinariamente sin resolver antes la relación estructural.
+
+La historia de la relación permanece visible después de su terminación.
+
+#### 34. Anidamiento no es ubicación
+
+Se preserva:
+
+```text
+NEST_LPN
+!=
+PUTAWAY
+```
+
+```text
+UNNEST_LPN
+!=
+LOCATION TRANSFER
+```
+
+La UI evita lenguaje como “mover físicamente” cuando solo se está cambiando estructura LPN.
+
+#### 35. Anidamiento no es custodia
+
+Se preserva:
+
+```text
+PARENT LPN CUSTODY
+!=
+AUTOMATIC CHILD CUSTODY
+```
+
+La interfaz no hereda responsable del padre hacia el hijo por inferencia.
+
+#### 36. Anidamiento no es transferencia de contenido
+
+Se preserva:
+
+```text
+REPARENT_LPN
+!=
+TRANSFER_CONTENT
+```
+
+Cambiar padre no reasigna las membresías directas del hijo al padre fuente ni al padre destino.
+
+#### 37. Anidamiento no es movimiento del LPN completo
+
+Se preserva:
+
+```text
+STRUCTURAL NESTING
+!=
+MOVE_ROOT_LPN
+```
+
+La experiencia de movimiento físico completo permanece en su owner contractual.
+
+#### 38. Escaneo y jerarquía
+
+Un escaneo puede resolver o proponer un LPN padre o hijo.
+
+Nunca equivale automáticamente a:
+
+```text
+NEST
+UNNEST
+REPARENT
+```
+
+Una coincidencia ambigua exige selección explícita.
+
+#### 39. `QUANTITY_SLICE` en un hijo
+
+Una cantidad contenida directamente por un LPN hijo permanece propiedad directa del hijo.
+
+La vista agregada del padre puede sumar únicamente cantidades dimensionalmente compatibles y debe permitir ver de qué LPN proviene cada contribución.
+
+#### 40. `SERIALIZED_IDENTITY` en un hijo
+
+Una identidad serializada contenida por un hijo aparece exactamente una vez como membresía autoritativa.
+
+El ancestro puede referenciarla en una vista derivada, pero no crea una segunda pertenencia.
+
+#### 41. `KIT_INSTANCE` en un hijo
+
+Una instancia de kit conserva su identidad y completitud propietarias.
+
+La jerarquía LPN no la desarma, replica ni convierte en una instancia del padre.
+
+#### 42. Identidad de contenedor físico
+
+Un contenedor físico individual se presenta como objeto distinto del LPN:
+
+```text
+PHYSICAL_CONTAINER_ID
+!=
+LPN_ID
+```
+
+La UI puede mostrar un vínculo entre ambos, pero no reutiliza el código de uno como identidad del otro.
+
+#### 43. `RETURNABLE` es rol u obligación
+
+La experiencia no muestra `RETURNABLE` como octava clase primaria.
+
+Se preserva:
+
+```text
+PHYSICAL_CONTAINER
++
+RETURNABLE ROLE
+```
+
+sin alterar la clasificación primaria.
+
+#### 44. Reutilizable controlado por cantidad
+
+Cuando unidades equivalentes no requieren historia individual, la experiencia conserva `REUSABLE_QUANTITY`.
+
+Ejemplo conceptual:
+
+```text
+BANDEJAS ESPERADAS: 20
+RETORNADAS: 14
+DAÑADAS: 1
+FALTANTES ABIERTAS: 5
+```
+
+La UI no inventa veinte identidades individuales para obtener trazabilidad aparente.
+
+#### 45. Contenedor retornable identificado
+
+Para `PHYSICAL_CONTAINER` individual, el detalle puede mostrar:
+
+- identidad estable;
+- tipo o clasificación visible;
+- rol retornable;
+- condición conocida;
+- ubicación conocida;
+- custodia conocida;
+- vínculo LPN cuando exista;
+- origen de la obligación de retorno;
+- contexto de salida o entrega;
+- contraparte o ámbito de retorno cuando aplique;
+- estado reconciliable de la obligación;
+- última evidencia de retorno o excepción.
+
+La tarea no define columnas físicas.
+
+#### 46. Tres hechos de retorno
+
+La experiencia separa:
+
+```text
+CONTAINER ISSUED
+```
+
+```text
+RETURN EXPECTED
+```
+
+```text
+RETURN CONFIRMED
+```
+
+No usa una sola casilla para colapsar los tres hechos.
+
+#### 47. Obligación de retorno abierta
+
+Cuando el retorno sigue pendiente, la UI muestra de forma comprensible:
+
+- qué se espera;
+- identidad o cantidad;
+- origen de la obligación;
+- contexto o contraparte;
+- fecha o referencia temporal cuando exista;
+- condición de salida conocida;
+- diferencias abiertas;
+- siguiente acción permitida.
+
+No muestra “devuelto” por ausencia de datos nuevos.
+
+#### 48. Confirmación de retorno
+
+La confirmación futura debe mostrar antes de enviar:
+
+- identidad exacta o cantidad retornada;
+- obligación fuente;
+- condición observada;
+- actor que confirma;
+- destino o contexto de recepción cuando aplique;
+- diferencia frente a lo esperado;
+- efecto que se registrará;
+- efectos que no se ejecutarán por inferencia.
+
+#### 49. Retorno parcial por cantidad
+
+Para `REUSABLE_QUANTITY` se preserva una reconciliación cuantitativa:
+
+```text
+EXPECTED
+=
+RETURNED
++
+DAMAGED
++
+LOST_OR_MISSING
++
+OPEN
+```
+
+cuando esas categorías estén definidas por los contratos propietarios.
+
+029 diseña la visibilidad de la diferencia; no redefine sus estados finales.
+
+#### 50. Retorno de identidades exactas
+
+Para `PHYSICAL_CONTAINER` individual, cada identidad se confirma o queda pendiente de forma independiente.
+
+Una devolución de cinco contenedores no permite marcar como retornada una sexta identidad no observada.
+
+#### 51. Daño, pérdida y faltante
+
+Si el retorno revela daño, pérdida o faltante, la UX conserva la evidencia observada y entrega la resolución especializada a `NEXO-UX-032` y sus contratos propietarios.
+
+No convierte una observación en baja, disposición o cierre automático.
+
+#### 52. Retorno y custodia
+
+Se preserva:
+
+```text
+RETURN OBLIGATION
+!=
+CUSTODY
+```
+
+Un retorno puede requerir además aceptación o cambio de custodia conforme a `NEXO-UX-031` y `NEXO-AUTH-025`.
+
+029 no usa “retornado” como sustituto de “custodia transferida”.
+
+#### 53. Retorno y ubicación
+
+Confirmar retorno no inventa una LOC.
+
+Si la operación requiere ubicación de recepción, esa dimensión debe resolverse por su owner y mostrarse separadamente.
+
+#### 54. Retorno y lifecycle LPN
+
+Se prohíbe presentar:
+
+```text
+CONTAINER RETURNED
+→
+LPN CLOSED
+```
+
+como efecto automático.
+
+También se prohíbe:
+
+```text
+LPN CLOSED
+→
+CONTAINER RETURN CONFIRMED
+```
+
+#### 55. Vínculo LPN–contenedor
+
+La UI puede mostrar:
+
+```text
+LPN A
+↔
+CONTENEDOR FISICO C-17
+```
+
+como relación entre identidades distintas.
+
+La semántica física final del vínculo pertenece a `NEXO-DOM-019` y `NEXO-DOM-020`.
+
+#### 56. Jerarquía LPN y vínculo de contenedor
+
+Un contenedor físico asociado a un LPN raíz no se convierte en padre de sus LPN hijos.
+
+La pantalla debe evitar una representación que mezcle en un solo árbol nodos LPN y contenedores como si tuvieran la misma semántica.
+
+#### 57. Remisión, viaje y bulto
+
+La experiencia no permite seleccionar como padre LPN una remisión, viaje, bulto, envío o vehículo.
+
+Esas identidades pueden correlacionarse con el árbol y los contenedores, pero conservan ciclos propios.
+
+#### 58. Revisiones
+
+Toda mutación estructural consume revisiones vigentes suficientes para detectar cambios concurrentes.
+
+La revisión previa muestra la versión observada y el servidor vuelve a comprobarla al confirmar.
+
+Una vista obsoleta produce conflicto, no sobrescritura silenciosa.
+
+#### 59. Concurrencia
+
+La UX maneja explícitamente casos como:
+
+- dos padres intentando adquirir el mismo hijo;
+- dos reparentados simultáneos;
+- anidamiento concurrente con cierre;
+- desanidamiento concurrente con movimiento;
+- cambio de jerarquía mientras cambia capacidad o compatibilidad;
+- retorno confirmado desde dos dispositivos sobre la misma obligación.
+
+La recuperación consiste en recargar y revisar el estado actual.
+
+#### 60. Idempotencia
+
+Una intención estable evita que un doble envío produzca:
+
+- dos relaciones padre-hijo;
+- dos desanidamientos;
+- dos reparentados;
+- dos incrementos de revisión;
+- dos confirmaciones del mismo retorno;
+- dos cierres de una misma obligación.
+
+#### 61. Timeout y resultado desconocido
+
+Cuando el cliente pierde la respuesta:
+
+```text
+NO RESPONSE
+!=
+FAILED
+```
+
+La UI entra en `UNKNOWN_RESULT`, conserva la identidad de idempotencia y reconcilia antes de permitir una intención equivalente nueva.
+
+#### 62. Operación offline
+
+Una intención local offline puede conservarse cuando el contrato de dispositivo lo permita, pero:
+
+```text
+OFFLINE INTENT
+!=
+CANONICAL NESTING OR RETURN
+```
+
+Al reconectar se revalidan actor, autoridad, lifecycle, jerarquía, revisiones, ausencia de ciclo, padre vigente, ubicación, capacidad, compatibilidad, custodia, obligación de retorno e idempotencia según apliquen.
+
+#### 63. Error y recuperación
+
+Ante un fallo la interfaz comunica:
+
+1. qué acción se intentó;
+2. qué parte del estado sigue confirmada;
+3. qué cambió cuando exista conflicto;
+4. si el resultado es desconocido;
+5. si hay una intención local pendiente;
+6. qué puede revisar, corregir, reintentar o escalar el actor.
+
+No borra una selección válida por un fallo técnico recuperable ni presenta un estado parcial como éxito.
+
+#### 64. Dispositivo compartido
+
+En tablet, kiosco o estación compartida:
+
+- el actor efectivo permanece visible;
+- cambiar de actor invalida una revisión sensible pendiente cuando corresponda;
+- el dispositivo no hereda autoridad del actor anterior;
+- escanear no confirma la operación;
+- timeout de sesión no se convierte en resultado de negocio;
+- una obligación de retorno no se cierra solo por haber leído una etiqueta.
+
+#### 65. Accesibilidad y operación táctil
+
+Las superficies deben contemplar:
+
+- objetivos táctiles adecuados;
+- foco visible;
+- navegación por teclado cuando aplique;
+- lectores de pantalla;
+- jerarquía comprensible sin depender solo de indentación o color;
+- estados de retorno comprensibles sin depender solo de color;
+- prevención de confirmación accidental;
+- alternativa a drag-and-drop para reparentado;
+- soporte sin escáner cuando exista búsqueda manual autorizada.
+
+#### 66. Auditoría visible al operador
+
+El detalle posterior puede mostrar una historia humana resumida con:
+
+- operación estructural o de retorno;
+- padre anterior;
+- padre nuevo;
+- LPN hijo;
+- contenedor o cantidad afectada;
+- actor;
+- momento;
+- resultado;
+- motivo o diferencia cuando sea material.
+
+La auditoría técnica completa permanece en los contratos propietarios.
+
+#### 67. Estado AS-IS remoto observado
+
+La inspección remota vigente permite sostener únicamente un AS-IS parcial:
+
+- `vento-nexo/main` continúa exponiendo `LpnCreateForm`;
+- el endpoint localizado de `inventory_lpns` es de lectura y devuelve campos básicos como `id`, `code`, `site_id` y `created_at`;
+- no se localizaron en la búsqueda remota disponible consumidores o contratos de aplicación con `parent_lpn`, `parent_lpn_id`, `returnable`, `retornable` o `asset_returned`;
+- no se localizó una superficie operativa autónoma de jerarquía LPN o retorno de contenedores;
+- el contrato canónico de dominio ya registra como brecha que `inventory_lpns.container_type` mezcla identidad logística con forma de contenedor y que no existe todavía una identidad física canónica de contenedor vinculada de forma versionada con LPN.
+
+Estas observaciones no prueban inexistencia absoluta fuera de las fuentes inspeccionadas; sí impiden declarar 029 implementada o validada físicamente.
+
+#### 68. Brechas que 029 deja explícitas para implementación futura
+
+La materialización posterior deberá demostrar, como mínimo:
+
+- representación autoritativa padre-hijo;
+- máximo un padre activo;
+- prevención server-side de ciclos;
+- reparentado atómico;
+- revisión estructural monotónica;
+- idempotencia;
+- concurrencia fail-closed;
+- propiedad directa de contenido sin duplicación en ancestros;
+- proyección agregada descomponible;
+- coherencia con lifecycle;
+- capacidad y compatibilidad cuando apliquen;
+- identidad física de contenedor separada;
+- vínculo LPN-contenedor versionado;
+- obligación de retorno reconciliable;
+- retorno individual y por cantidad según clase;
+- diferencias de retorno preservadas;
+- separación entre retorno, custodia, ubicación y lifecycle;
+- operación segura en tablet/escáner cuando aplique.
+
+#### 69. Matriz de responsabilidades
+
+| Responsabilidad | Owner |
+| --- | --- |
+| clasificación física | `NEXO-DOM-001` |
+| identidad y purpose LPN | `NEXO-DOM-002` |
+| lifecycle LPN | `NEXO-DOM-003` |
+| contenido directo | `NEXO-DOM-004` / `NEXO-UX-027` |
+| split / merge / transfer | `NEXO-DOM-005` / `NEXO-UX-028` |
+| jerarquía y semántica de retornables | `NEXO-DOM-006` / `NEXO-UX-029` |
+| ubicación | `NEXO-DOM-007` |
+| custodia | `NEXO-DOM-008` / `NEXO-UX-031` |
+| condición, daño, pérdida y faltante | `NEXO-DOM-010` / `NEXO-UX-032` |
+| vínculo contenedor–LPN | `NEXO-DOM-019` |
+| continuidad/cierre LPN respecto del contenedor | `NEXO-DOM-020` |
+| no doble contabilización | `NEXO-DOM-021` |
+| movimiento del LPN completo | `NEXO-DOM-022` |
+| trazabilidad | `NEXO-DOM-023` |
+| capacidad/compatibilidad | `NEXO-DOM-024` |
+| administración base de activos/reutilizables | `NEXO-AUTH-024` |
+| custodia/préstamo/devolución/transferencia | `NEXO-AUTH-025` |
+| catálogo UX de activos y reutilizables | `NEXO-UX-030` |
+
+#### 70. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado UX esperado |
+| --- | --- | --- |
+| LPN-NEST-01 | anidar hijo raíz válido | revisión y relación confirmada |
+| LPN-NEST-02 | padre = hijo | bloqueado |
+| LPN-NEST-03 | nuevo padre es descendiente | bloqueado por ciclo |
+| LPN-NEST-04 | hijo ya tiene padre | orientar a reparentado; no segundo padre |
+| LPN-NEST-05 | padre no `ACTIVE` | bloqueado |
+| LPN-NEST-06 | hijo no `ACTIVE` | bloqueado |
+| LPN-NEST-07 | revisión stale | conflicto y recarga |
+| LPN-NEST-08 | doble envío | un solo resultado estructural |
+| LPN-NEST-09 | timeout post-submit | resultado desconocido y reconciliación |
+| LPN-NEST-10 | intención offline | pendiente local, revalidación al reconectar |
+| LPN-NEST-11 | desanidar válido | hijo queda raíz estructuralmente |
+| LPN-NEST-12 | desanidar sin relación vigente | bloqueado |
+| LPN-NEST-13 | reparentar válido | cambio atómico de padre |
+| LPN-NEST-14 | reparentado que forma ciclo | bloqueado |
+| LPN-NEST-15 | vista agregada | descendiente visible sin nueva membresía |
+| LPN-NEST-16 | serial en hijo | una sola membresía autoritativa |
+| LPN-NEST-17 | cantidad en hijo | agregación descomponible por owner LPN |
+| LPN-NEST-18 | kit en hijo | una sola instancia, completitud preservada |
+| LPN-RET-01 | contenedor identificado con retorno pendiente | obligación visible y abierta |
+| LPN-RET-02 | retorno de identidad exacta | confirmación de esa identidad únicamente |
+| LPN-RET-03 | retorno parcial por cantidad | esperado, retornado y diferencia visibles |
+| LPN-RET-04 | retorno con daño | evidencia preservada y handoff a owner |
+| LPN-RET-05 | cierre LPN | no confirma retorno |
+| LPN-RET-06 | retorno de contenedor | no cierra LPN |
+| LPN-RET-07 | bandeja genérica por cantidad | no crear identidades ficticias |
+| LPN-RET-08 | contenedor físico usado como padre LPN | bloqueado |
+| LPN-RET-09 | escaneo de contenedor | resolver/proponer, nunca confirmar por sí solo |
+| LPN-RET-10 | ausencia de capacidad exacta | mutación no ejecutable |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 71. Handoff hacia `NEXO-UX-030`
+
+`NEXO-UX-029` entrega a `NEXO-UX-030`:
+
+```text
+SEPARATE LPN HIERARCHY
++
+DIRECT CONTENT OWNERSHIP
++
+DESCENDANT PROJECTION WITHOUT DUPLICATION
++
+PHYSICAL_CONTAINER IDENTITY SEPARATE FROM LPN
++
+RETURNABLE AS ROLE / OBLIGATION
++
+REUSABLE_QUANTITY BOUNDARY
++
+RETURN EXPECTED VS CONFIRMED
++
+SAFE CONFLICT / IDEMPOTENCY / OFFLINE RECOVERY
+```
+
+`NEXO-UX-030` deberá diseñar el catálogo de activos y reutilizables sin convertir LPN en activo, sin serializar artificialmente reusable quantity y sin redefinir la jerarquía o el ciclo de retorno aprobados aquí.
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige ciclo LPN auditable, no doble contabilización, fuente canónica y reconciliable de inventario, conservación de trazabilidad, separación entre LPN y contenedor físico, comportamiento explícito por clase, logística de retorno, errores recuperables, fuente de verdad visible, dispositivos operativos y recuperación ante pérdida de red o sesión. Esta tarea especializa la experiencia de jerarquía y retorno dentro de esas obligaciones sin introducir una obligación independiente.
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para ciclo LPN ejecutable y auditable sin doble contabilización;
+- `TREQ-NEXO-011`, para fuente canónica, proyecciones reconciliables, atomicidad, idempotencia, concurrencia y offline;
+- `TREQ-NEXO-012`, para conservar lote, serial, vencimiento, ubicación, condición y trazabilidad dentro de LPN;
+- `TREQ-NEXO-016`, para separar LPN, bulto, contenedor, custodia, entrega, recepción, retorno y cierre;
+- `TREQ-NEXO-046`, para identidad, condición, ubicación, custodia, disponibilidad y ciclo de retorno de contenedor físico separados del LPN y su contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y prohibición de duplicar saldo, instancia, kit, contenedor, contenido LPN o valor;
+- `TREQ-UX-002`, para errores y recuperación sin duplicar efectos;
+- `TREQ-UX-004`, para operación en tablet, estación compartida, escáner y periféricos reales;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado o pendiente, actor y último cambio visibles;
+- `TREQ-UX-006`, para pérdida de red, energía, sesión o dispositivo y reanudación segura.
+
+Estas referencias son trazabilidad existente y no una modificación del registro 04A.
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea define experiencia documental bajo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no contiene código de producto que compilar |
+| LOCAL | NOT_EXECUTED | no se ejecutaron validadores sobre el checkout local del usuario durante la elaboración; la batería documental los ejecutará después de incorporar el artefacto |
+| REMOTA | PASS | se contrastaron `vento-shell/main` vigente, protocolo, contrato de entrega, topología, owner UX, `NEXO-DOM-006`, `NEXO-AUTH-021/024/025`, fragmentos 04A NEXO/UX y `vento-nexo/main`; el AS-IS remoto mantiene LPN parcial y no demostró flujos operativos de nesting, reparentado o retorno de contenedores |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron anidamientos, desanidamientos, reparentados ni retornos con actores, contenedores o dispositivos reales |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-029` no genera instancia física propia y no autoriza cambios de producto, datos, Supabase, hardware o infraestructura |
+
+#### 75. Criterios de aceptación
+
+- [x] LPN hijo está separado de contenido ordinario.
+- [x] LPN padre está separado de contenedor físico.
+- [x] La jerarquía se representa como bosque acíclico.
+- [x] Cada hijo admite máximo un padre activo.
+- [x] La autorreferencia está bloqueada.
+- [x] Los ciclos están bloqueados.
+- [x] La multiparentalidad está bloqueada.
+- [x] `NEST_LPN`, `UNNEST_LPN` y `REPARENT_LPN` son intenciones distintas.
+- [x] Reparentado se presenta como una sola intención atómica.
+- [x] Las relaciones ordinarias requieren LPN `ACTIVE`.
+- [x] Las revisiones stale generan conflicto y nueva revisión.
+- [x] Retry no duplica relaciones ni retorno.
+- [x] Timeout no se interpreta como fallo.
+- [x] Offline no se interpreta como efecto canónico.
+- [x] Contenido directo conserva un único owner LPN.
+- [x] La proyección de descendientes no crea membresías nuevas.
+- [x] Seriales, cantidades y kits conservan identidad y dimensiones.
+- [x] Anidamiento no cambia ubicación, custodia, lifecycle ni purpose type por inferencia.
+- [x] Escaneo no muta automáticamente.
+- [x] `PHYSICAL_CONTAINER` conserva identidad separada.
+- [x] `RETURNABLE` no crea una octava clase primaria.
+- [x] `REUSABLE_QUANTITY` no se serializa artificialmente.
+- [x] `CONTAINER ISSUED`, `RETURN EXPECTED` y `RETURN CONFIRMED` permanecen separados.
+- [x] Retorno parcial conserva diferencias.
+- [x] Daño, pérdida y faltante conservan handoff a su owner.
+- [x] Retorno y custodia permanecen separados.
+- [x] Retorno y ubicación permanecen separados.
+- [x] Retornar contenedor no cierra LPN por inferencia.
+- [x] Cerrar LPN no confirma retorno.
+- [x] No se inventa `PermissionKey`.
+- [x] Mutaciones estructurales permanecen `DEFAULT_DENY` sin capacidad exacta activa demostrada.
+- [x] No se crean requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff explícito a `NEXO-UX-030`.
+
+#### 76. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- modifica navegación;
+- crea endpoints, Server Actions o RPC;
+- modifica `inventory_lpns` ni `inventory_lpn_items`;
+- crea `parent_lpn_id` ni otra persistencia de jerarquía;
+- elimina o reinterpreta físicamente `container_type`;
+- crea identidad física de contenedor;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas, funciones o RLS;
+- crea migraciones o backfills;
+- muta LPN, jerarquías, contenido, contenedores, saldos o movimientos reales;
+- crea `PermissionKey`, grants, scope o modalidad;
+- habilita `NEST_LPN`, `UNNEST_LPN` o `REPARENT_LPN` bajo el catálogo actual;
+- cambia lifecycle ni purpose type;
+- cambia ubicación o custodia;
+- redefine pack, unpack, split, merge o transfer;
+- mueve físicamente un LPN;
+- define capacidad numérica, peso, volumen o reglas materiales de compatibilidad;
+- resuelve condición, daño, pérdida o baja;
+- diseña el catálogo de activos y reutilizables;
+- diseña préstamo y transferencia de custodia;
+- diseña impresión o reimpresión;
+- define plantilla, ZPL, DPI, QR, código de barras o hardware;
+- ejecuta prueba de usuario;
+- crea prototipo ejecutable;
+- modifica Supabase;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-030`.
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-029 — Diseñar contenedores anidados y retornables`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-030 — Diseñar catálogo de activos y reutilizables`
 ### [ ] NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
 ### [ ] NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
 ### [ ] NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
