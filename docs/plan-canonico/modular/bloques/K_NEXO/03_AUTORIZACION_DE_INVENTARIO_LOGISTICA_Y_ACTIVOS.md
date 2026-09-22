@@ -7347,7 +7347,886 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos`
-### [ ] NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
+### ✅ NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
+**Tarea siguiente:** NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — contrato NEXO para proteger impresión original, retry, conciliación, cancelación y reimpresión mediante autoridad server-side exacta, permisos atómicos compatibles con `VENTO-PRINT-AUTHORIZATION`, segregación cuando corresponda, identidad durable de copia, idempotencia, resultado verificable y `DEFAULT_DENY` mientras la capacidad objetivo no exista como `PermissionKey` activa
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; cualquier materialización futura ocurre únicamente mediante `NEXO-AUTH-028::<implementation_unit_id>` después de cumplir el gate físico aplicable y contar con autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger la producción de una copia física y la creación deliberada de copias adicionales para que imprimir, reintentar, conciliar o reimprimir no pueda ejecutarse por autenticación sola, visibilidad de una pantalla, conocimiento de una URL, posesión del QR, capacidad de lectura, permiso de edición de plantilla, permiso legacy amplio, presencia de una impresora local, selección de un dispositivo, parámetro de URL, estado en `localStorage` ni llamada directa desde el navegador.
+
+La regla raíz queda:
+
+```text
+AUTORIDAD SOBRE RECURSO FUENTE
++ ACCION DE IMPRESION EXACTA
++ CAPACIDAD ATOMICA ACTIVA CUANDO EXISTA
++ ACTOR EFECTIVO
++ SCOPE AUTORIZADO
++ SNAPSHOT INMUTABLE
++ IDENTIDAD DE COPIA
++ IDEMPOTENCIA
++ ESTADO DE RESULTADO
++ DISPOSITIVO Y RUTA ELEGIBLES
++ SEGREGACION CUANDO APLIQUE
++ AUDITORIA
+→ ACCION AUTORIZABLE
+```
+
+Cuando la capacidad objetivo todavía no exista como `PermissionKey` activa:
+
+```text
+ACCION DE IMPRESION SIN CAPACIDAD ATOMICA ACTIVA COMPATIBLE
+→ DEFAULT_DENY
+```
+
+#### 2. Naturaleza y topología
+
+El marcador global conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-028::<implementation_unit_id>
+```
+
+La aprobación documental de este marcador no crea, autoriza ni ejecuta una instancia física.
+
+#### 3. Handoff contractual recibido desde `NEXO-AUTH-021`
+
+La auditoría previa registró `AUTH021-F-009`:
+
+```text
+IMPRESION / REIMPRESION DE QR
+SIN PERMISO ATOMICO ACTIVO OBSERVADO
+→ ATOMIC_PERMISSION_GAP
+```
+
+Además entregó a 028 la obligación de separar impresión y reimpresión de:
+
+- consultar un trabajo;
+- editar una plantilla;
+- descargar una imagen;
+- visualizar un QR.
+
+La salida física y la reimpresión deben conservar actor, recurso, dispositivo, motivo cuando corresponda y resultado.
+
+#### 4. Handoff contractual recibido desde `NEXO-AUTH-027`
+
+027 mantiene impresión y reimpresión fuera del ciclo de conteo y las entrega sin absorción a 028.
+
+Por tanto:
+
+- cerrar un conteo no concede impresión;
+- aprobar o resolver una diferencia no concede impresión;
+- una observación de QR o activo no concede reimpresión;
+- 028 no modifica decisiones de captura, diferencia ni ajuste.
+
+#### 5. Contratos transversales consumidos
+
+028 consume, sin redefinir, los contratos aprobados del servicio transversal de impresión:
+
+- `VENTO-PRINT-JOB` `1.0.0`;
+- `VENTO-PRINT-IDEMPOTENCY` `1.0.0`;
+- `VENTO-PRINT-RETRY-QUEUE` `1.0.0`;
+- `VENTO-PRINT-CONFIRMATION` `1.0.0`;
+- `VENTO-PRINT-CANCELLATION-EXPIRATION` `1.0.0`;
+- `VENTO-PRINT-REPRINT` `1.0.0`;
+- `VENTO-PRINT-AUTHORIZATION` `1.0.0`;
+- `VENTO-PRINT-OFFLINE-CONTINGENCY` `1.0.0`.
+
+El servicio transversal conserva la semántica de job, copy, retry, receipt, reimpresión, dispositivo, ruta, privacidad, contingencia y auditoría.
+
+#### 6. Entrada de dominio y experiencia
+
+Se conserva la integración ya asignada a:
+
+- `NEXO-DOM-018 — Integrar etiquetas LOC, LPN, activos y documentos con BLOQUE E4`;
+- `NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento`;
+- `NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas`.
+
+028 define autorización y segregación. No reemplaza el diseño de experiencia, el contrato transversal ni la identidad de dominio.
+
+#### 7. Catálogo activo NEXO observado
+
+Dentro del catálogo activo relevante, las claves de impresión actualmente existentes que 028 puede tratar como canónicas son:
+
+| Clave activa | Acción autorizable por esa clave | No autoriza por implicación |
+| --- | --- | --- |
+| `nexo.printing.jobs.view` | consultar trabajos y estados permitidos | crear trabajo, imprimir, retry, cancelar, conciliar o reimprimir |
+| `nexo.printing.templates.update` | actualizar plantillas dentro de su contrato | imprimir, reimprimir, consultar payload protegido, administrar cola o emitir copias |
+
+Ninguna de estas dos claves constituye un permiso de salida física.
+
+#### 8. Catálogo objetivo de E4 relevante para 028
+
+`PRINT-ARC-015` define catorce claves objetivo para el servicio. De ellas, dos ya existen y doce son capacidades objetivo todavía no materializadas.
+
+Las acciones directamente relevantes para esta tarea son:
+
+| Acción | Clave objetivo | Estado documental actual |
+| --- | --- | --- |
+| consultar trabajo | `nexo.printing.jobs.view` | `EXISTING_CANONICAL` |
+| crear primera copia manual | `nexo.printing.jobs.create` | `TARGET_ADDITION` |
+| cancelar trabajo | `nexo.printing.jobs.cancel` | `TARGET_ADDITION` |
+| retry de la misma copia | `nexo.printing.jobs.retry` | `TARGET_ADDITION` |
+| conciliar resultado desconocido | `nexo.printing.jobs.reconcile` | `TARGET_ADDITION` |
+| solicitar reimpresión | `nexo.printing.reprints.request` | `TARGET_ADDITION` |
+| aprobar reimpresión cuando la política lo exija | `nexo.printing.reprints.approve` | `TARGET_ADDITION` |
+| actualizar plantilla | `nexo.printing.templates.update` | `EXISTING_CANONICAL` |
+
+`TARGET_ADDITION` describe una capacidad objetivo aprobada documentalmente. No significa que la clave exista ya en runtime.
+
+#### 9. Regla de materialización de capacidades objetivo
+
+Mientras una clave `TARGET_ADDITION` no haya sido materializada mediante el proceso canónico de catálogo, contratos, tipos, consumidores y migraciones de `vento-shell`, la acción asociada no puede recibir un alias permisivo.
+
+Por tanto:
+
+```text
+TARGET_ADDITION
+!=
+PERMISSION KEY ACTIVA
+```
+
+Y:
+
+```text
+CLAVE OBJETIVO AUSENTE
+→ DEFAULT_DENY
+```
+
+028 no inventa una clave sustituta ni reutiliza otra por parecido semántico.
+
+#### 10. Tres planos de autoridad preservados
+
+La protección conserva los tres planos definidos por `VENTO-PRINT-AUTHORIZATION`:
+
+```text
+BUSINESS_SOURCE
+PRINT_ACTION
+SERVICE_ADMINISTRATION
+```
+
+Reglas:
+
+- autoridad sobre el recurso fuente no equivale a administrar impresión;
+- administrar impresoras o plantillas no equivale a imprimir;
+- operar una cola no equivale a aprobar una reimpresión;
+- el servicio técnico no puede crear autoridad empresarial;
+- una acción que cruza planos exige la intersección de todas las autoridades aplicables.
+
+#### 11. Impresión original automática
+
+Una primera copia automática prevista por un proceso solo puede ejecutarse cuando exista una decisión fuente verificable que congele:
+
+- recurso fuente;
+- versión o snapshot;
+- output permitido;
+- cantidad de copias autorizadas;
+- actor o decisión autorizante;
+- vigencia;
+- correlación.
+
+El principal técnico puede completar la copia admitida dentro de su delegación mínima. No puede ampliar cantidad, cambiar snapshot ni emitir otra copia por iniciativa propia.
+
+#### 12. Impresión original manual
+
+Una primera copia iniciada manualmente exige, como mínimo:
+
+```text
+AUTORIDAD SOBRE RECURSO FUENTE
++
+nexo.printing.jobs.create ACTIVA
++
+SCOPE EXACTO
++
+SNAPSHOT INMUTABLE
++
+ADMISION IDEMPOTENTE
+```
+
+Mientras `nexo.printing.jobs.create` no exista como capacidad activa compatible, la creación manual de una nueva copia queda en `DEFAULT_DENY`.
+
+#### 13. Consulta no equivale a impresión
+
+`nexo.printing.jobs.view` solo permite consulta dentro de su scope.
+
+Regla:
+
+```text
+JOB_VIEW
+!=
+DIRECT_PRINT
+!=
+RETRY
+!=
+REPRINT
+```
+
+Ver un trabajo, estado, preview o cola nunca constituye autoridad para producir una copia física.
+
+#### 14. Edición de plantilla no equivale a impresión
+
+`nexo.printing.templates.update` permite editar una plantilla conforme a su contrato.
+
+No concede por sí sola:
+
+- creación de trabajo;
+- impresión;
+- retry;
+- reimpresión;
+- cancelación;
+- conciliación;
+- lectura del recurso empresarial fuente.
+
+#### 15. Preview no equivale a salida física
+
+Una vista previa puede demostrar correspondencia de diseño, pero no es una decisión de impresión.
+
+```text
+PREVIEW
+!=
+PRINT AUTHORIZATION
+```
+
+Aprobar visualmente una etiqueta tampoco crea una copia, un permiso ni un receipt físico.
+
+#### 16. Descargar QR no equivale a imprimir
+
+Obtener una copia local de una imagen o abrir un QR no constituye una acción de impresión autorizada.
+
+La autorización de lectura o descarga se rige por el recurso fuente y su política de campos. 028 solo establece que esa capacidad no se puede convertir en permiso de impresión o reimpresión.
+
+#### 17. Impresión desde navegador sigue siendo acción gobernada
+
+Usar `window.print()` no crea una excepción al contrato.
+
+Una salida iniciada desde navegador sigue siendo una copia física y requiere la misma autoridad empresarial y de impresión que cualquier otro canal.
+
+La ausencia de cola durable no convierte la acción en inocua ni la libera de autorización.
+
+#### 18. Impresión por BrowserPrint sigue siendo acción gobernada
+
+Seleccionar una Zebra local, detectar BrowserPrint o disponer de `device.send` no concede permiso.
+
+```text
+PRINTER DISCOVERED
+!=
+PRINT AUTHORIZED
+```
+
+El dispositivo es destino técnico. No es actor autorizante.
+
+#### 19. Parámetros de URL no conceden autoridad
+
+Valores recibidos mediante `preset`, `queue`, `title`, `append`, `layout` u otros parámetros de navegación son intención de cliente.
+
+Nunca pueden decidir:
+
+- permiso;
+- actor;
+- scope;
+- cantidad autorizada;
+- recurso fuente;
+- reimpresión;
+- resultado de impresión.
+
+Todo dato material se revalida desde fuentes autoritativas antes de crear o despachar una copia.
+
+#### 20. `localStorage` no es fuente de autorización
+
+La cola local vigente puede conservar conveniencia de UI, pero no es autoridad de negocio, deduplicación, vigencia ni resultado.
+
+No puede demostrar:
+
+- que una copia está autorizada;
+- que nunca se imprimió;
+- que un retry es seguro;
+- que una reimpresión fue aprobada;
+- que otra estación no ejecutó la misma intención.
+
+#### 21. AS-IS de acciones QR de activo individual
+
+El consumidor vigente de activo individual expone acciones cliente para:
+
+- enviar datos a `/printing/jobs`;
+- imprimir etiqueta con `window.print()`;
+- imprimir QR con `window.print()`;
+- descargar QR.
+
+La superficie se alcanza desde un área de activos cuyo guard histórico amplio pertenece a la deuda legacy ya auditada.
+
+Estas acciones cliente no demuestran por sí mismas una decisión server-side específica de impresión o reimpresión.
+
+#### 22. AS-IS de acciones QR de grupo de activos
+
+El consumidor vigente de grupo expone acciones cliente para:
+
+- imprimir QR con `window.print()`;
+- descargar QR.
+
+La acción física no tiene una capacidad atómica activa específica observada que pueda inferirse de la mera disponibilidad del componente.
+
+#### 23. AS-IS de `/printing/jobs`
+
+La superficie vigente:
+
+- es cliente;
+- construye cola desde parámetros y `localStorage`;
+- genera ZPL;
+- detecta dispositivos BrowserPrint;
+- selecciona una impresora local;
+- llama directamente al envío del dispositivo;
+- informa éxito o error mediante callback;
+- puede usar impresión del navegador.
+
+No se observó en esa superficie una decisión server-side por acción equivalente al contrato objetivo de impresión y reimpresión.
+
+#### 24. Brecha de retiro prematuro de cola
+
+El consumidor actual contiene caminos en los que la cola local se limpia inmediatamente después de invocar el envío, antes de disponer de una confirmación durable del resultado.
+
+Por tanto:
+
+```text
+SEND INVOKED
+!=
+RESULT DURABLY KNOWN
+```
+
+Una copia no puede considerarse resuelta ni retirarse definitivamente de la intención durable antes del resultado correspondiente.
+
+#### 25. Callback de éxito no equivale a impresión física confirmada
+
+El callback exitoso del adaptador puede demostrar aceptación técnica en un nivel determinado.
+
+No demuestra automáticamente:
+
+- papel o etiqueta producidos correctamente;
+- legibilidad;
+- entrega al destinatario;
+- ausencia de doble impresión;
+- cierre físico definitivo.
+
+La evidencia conserva el nivel real de confirmación disponible.
+
+#### 26. Identidad durable de la copia
+
+Cada copia legítima conserva, según los contratos E4:
+
+- intención empresarial;
+- `job_id`;
+- identidad de copia;
+- clave de idempotencia;
+- huella semántica;
+- snapshot;
+- plantilla y versión;
+- output;
+- actor o principal;
+- ruta y dispositivo;
+- intentos;
+- receipts;
+- resultado.
+
+Una segunda ejecución técnica no crea una segunda intención.
+
+#### 27. Retry no equivale a reimpresión
+
+Regla obligatoria:
+
+```text
+RETRY
+!=
+REPRINT
+```
+
+Retry intenta completar la misma copia y conserva identidad empresarial de la copia.
+
+Reimpresión crea una copia adicional deliberada, enlazada al original y gobernada por una nueva autorización.
+
+#### 28. Resultado desconocido bloquea repetición ciega
+
+Si una operación pudo haber sido aceptada y se pierde el callback, ocurre timeout, desconexión o incertidumbre equivalente:
+
+```text
+RESULT_UNKNOWN
+→ NO BLIND RETRY
+→ NO AUTOMATIC REPRINT
+→ RECONCILE FIRST
+```
+
+La incertidumbre no se resuelve enviando otra copia.
+
+#### 29. Conciliación es acción separada
+
+La conciliación de resultado desconocido pertenece a `nexo.printing.jobs.reconcile` cuando esa capacidad exista activa.
+
+Conciliar:
+
+- no crea copia;
+- no borra intentos previos;
+- no inventa receipt;
+- no sustituye evidencia;
+- no autoriza reimpresión por sí sola.
+
+#### 30. Reimpresión como copia adicional deliberada
+
+Una reimpresión solo existe cuando se pretende producir una copia física adicional del mismo snapshot ya resuelto.
+
+Debe conservar como mínimo:
+
+- original referenciado;
+- snapshot original;
+- causa;
+- cantidad solicitada;
+- actor solicitante;
+- autoridad sobre el recurso fuente;
+- scope;
+- destino permitido;
+- política de segregación;
+- decisión de aprobación cuando aplique;
+- nueva identidad de copia;
+- vínculo causal con el original.
+
+#### 31. Solicitud de reimpresión
+
+La solicitud usa la capacidad objetivo:
+
+```text
+nexo.printing.reprints.request
+```
+
+Mientras no exista activa, no se autoriza mediante:
+
+- `jobs.view`;
+- `templates.update`;
+- `inventory.stock`;
+- permiso del recurso fuente aislado;
+- posesión del documento;
+- selección de impresora;
+- botón visible.
+
+#### 32. Aprobación de reimpresión
+
+Cuando el perfil transversal exija segregación, se requiere además:
+
+```text
+nexo.printing.reprints.approve
+```
+
+La aprobación:
+
+- se evalúa de forma independiente;
+- conserva actor aprobador;
+- conserva decisión y motivo;
+- exige actor distinto cuando la política use segregación dual;
+- no puede ser sustituida por el principal técnico.
+
+#### 33. Perfiles de segregación preservados
+
+028 consume los perfiles E4:
+
+```text
+NONE
+POLICY_CONDITIONAL
+DISTINCT_ACTOR_REQUIRED
+```
+
+La política del recurso fuente determina cuándo una reimpresión operativa puede resolverse con solicitud válida y cuándo requiere aprobación separada.
+
+#### 34. Reimpresión no modifica el hecho empresarial
+
+Una copia adicional no puede:
+
+- emitir otra venta;
+- repetir un pago;
+- duplicar una factura;
+- duplicar una remisión;
+- duplicar un movimiento;
+- cambiar lote;
+- cambiar inventario;
+- alterar el activo;
+- modificar custodia;
+- crear un nuevo cierre empresarial.
+
+La reimpresión reproduce un snapshot; no repite el hecho fuente.
+
+#### 35. Versión corregida no es reimpresión
+
+Si cambian datos materiales del recurso, documento, cantidad, destinatario, periodo, precio, identidad, estado o versión:
+
+```text
+CORRECTED_VERSION
+!=
+REPRINT
+```
+
+Corresponde un nuevo trabajo empresarial conforme al owner del recurso, no una reimpresión del snapshot anterior.
+
+#### 36. Identidad QR permanece estable
+
+Reimprimir o sustituir una etiqueta dañada no crea una identidad nueva del activo, grupo, LPN, LOC, contenedor o documento.
+
+Para activos:
+
+```text
+QR REPRINT
+!=
+NEW ASSET IDENTITY
+```
+
+El nuevo soporte físico debe representar la misma identidad canónica cuando la intención sea sustitución o reimpresión del mismo identificador.
+
+#### 37. Etiqueta dañada no autoriza reimpresión automática
+
+Detectar que una etiqueta está dañada, ilegible o ausente constituye una causa posible según política.
+
+No constituye por sí sola:
+
+- autorización;
+- aprobación;
+- cantidad libre;
+- permiso para cambiar el identificador;
+- permiso para alterar el recurso fuente.
+
+#### 38. Cambio de impresora no crea reimpresión
+
+Cambiar de dispositivo o canal para completar una copia no resuelta es routing o retry técnico.
+
+No crea una reimpresión mientras se conserve la identidad de copia y la política permita el cambio.
+
+#### 39. Offline no crea autoridad nueva
+
+La pérdida de conectividad no permite crear una nueva impresión o reimpresión no autorizada.
+
+La operación offline solo puede completar una copia ya admitida dentro de un envelope finito y vigente conforme a `VENTO-PRINT-OFFLINE-CONTINGENCY`.
+
+Una nueva reimpresión exige revalidación autoritativa en línea.
+
+#### 40. Dispositivo compartido no es actor
+
+Una estación compartida, impresora, BrowserPrint, puente local, navegador o dispositivo técnico no sustituye al actor efectivo.
+
+Toda acción humana conserva identidad del actor y contexto de autorización aplicable.
+
+#### 41. UI no es barrera de seguridad
+
+Ocultar un botón, deshabilitar un control o no mostrar una ruta mejora experiencia, pero no constituye autorización.
+
+Las decisiones de creación, retry, conciliación y reimpresión deben fallar cerrado en servidor o en el componente autoritativo del servicio antes de cualquier mutación durable o despacho físico.
+
+#### 42. Revalidación antes de despacho
+
+Aunque el trabajo haya sido autorizado previamente, el gate predespacho revalida lo que pueda haber cambiado materialmente:
+
+- vigencia;
+- cancelación;
+- scope;
+- recurso;
+- política;
+- privacidad;
+- elegibilidad de ruta;
+- estado de copia;
+- restricción de reimpresión.
+
+La impresora no recibe un trabajo que ya no sea despachable conforme a la decisión vigente.
+
+#### 43. Idempotencia de creación
+
+La creación de una primera copia usa identidad estable y deduplicación autoritativa.
+
+Doble toque, refresh, reconexión, otra estación, callback repetido o nueva clave cliente no pueden crear una segunda copia semánticamente equivalente sin autorización adicional.
+
+#### 44. Idempotencia de reimpresión
+
+Una misma solicitud de reimpresión repetida por red o cliente debe resolver a la misma solicitud/copia admitida.
+
+Cambiar arbitrariamente una clave de cliente no puede evadir la huella semántica ni crear otra copia adicional.
+
+#### 45. Concurrencia
+
+Dos actores o estaciones no pueden crear simultáneamente copias equivalentes sin que la capa autoritativa resuelva una única admisión o dos copias expresamente autorizadas.
+
+La autorización de varias copias debe existir antes de despachar y conservar identidades de copia diferenciadas.
+
+#### 46. Cantidad de copias
+
+La cantidad es parte de la autorización.
+
+Una autorización para una copia no habilita dos, diez ni cantidad abierta.
+
+Una reimpresión que solicite más de una copia adicional debe materializar cada copia legítima de forma identificable y conforme a la política de segregación.
+
+#### 47. Auditoría mínima
+
+Toda acción gobernada conserva, como mínimo cuando aplique:
+
+- actor efectivo;
+- principal técnico;
+- acción exacta;
+- permiso evaluado;
+- recurso fuente;
+- versión o snapshot;
+- output;
+- job y copy;
+- solicitud de reimpresión;
+- causa;
+- cantidad;
+- scope;
+- ruta;
+- dispositivo;
+- decisión;
+- timestamps;
+- correlación;
+- intentos;
+- receipts;
+- resultado conocido o desconocido.
+
+#### 48. Denegación segura
+
+La denegación de impresión o reimpresión no debe:
+
+- crear job nuevo;
+- modificar cola durable;
+- despachar ZPL;
+- abrir impresión física como fallback;
+- consumir idempotency key de una operación permitida distinta;
+- alterar el recurso fuente;
+- producir una nueva identidad;
+- ocultar el motivo de denegación en auditoría.
+
+#### 49. Fallback no puede evadir autorización
+
+Si BrowserPrint falla, la aplicación no puede convertir automáticamente la misma intención en `window.print()` para evadir una denegación de autorización.
+
+El cambio de canal solo es legítimo dentro de una copia ya autorizada y una política de routing/fallback compatible.
+
+#### 50. Frontera con `NEXO-AUTH-024`
+
+024 sigue gobernando lectura y administración de activos y reutilizables.
+
+028 no usa permiso de impresión para editar activos ni usa permiso de edición de activo para crear copias físicas por implicación.
+
+#### 51. Frontera con `NEXO-AUTH-026`
+
+Daño o pérdida de un activo, incluyendo daño de una etiqueta como evidencia asociada, no permite modificar condición, pérdida, baja o mantenimiento desde una acción de impresión.
+
+028 solo gobierna la copia física y su autorización.
+
+#### 52. Frontera con `NEXO-AUTH-027`
+
+Conteo y diferencias no se modifican al imprimir.
+
+Una etiqueta generada durante un conteo no aprueba diferencia, mueve ubicación, confirma pérdida ni cambia cantidad maestra.
+
+#### 53. Frontera con `NEXO-AUTH-029`
+
+029 recibe la eliminación física de `inventory.stock` y otros permisos amplios legacy como autoridad final.
+
+028 define el reemplazo semántico exacto para impresión y reimpresión, pero no retira por sí sola el guard broad existente.
+
+El retiro solo es válido cuando las capacidades exactas necesarias hayan sido materializadas y el consumidor correspondiente esté protegido.
+
+#### 54. Frontera con `NEXO-AUTH-030`
+
+030 ejecutará pruebas integrales del subdominio después de que las protecciones 022–029 estén materializadas.
+
+028 no declara certificación integral ni evidencia física final de hardware.
+
+#### 55. Frontera con el servicio transversal de impresión
+
+E4 continúa siendo autoridad sobre:
+
+- contrato de job;
+- identidad de copia;
+- routing;
+- dispositivo;
+- heartbeat;
+- idempotencia;
+- retry;
+- receipts;
+- cancelación;
+- expiración;
+- reimpresión;
+- autorización transversal;
+- privacidad;
+- offline;
+- adaptadores;
+- monitoreo.
+
+028 aplica esa autoridad al subdominio NEXO sin duplicar contratos.
+
+#### 56. Materialización física futura
+
+Cada `NEXO-AUTH-028::<implementation_unit_id>` deberá resolver su superficie concreta contra:
+
+1. package propietario;
+2. gate E5 aplicable;
+3. capacidad exacta activa;
+4. actor y principal;
+5. recurso fuente;
+6. job/copy/reprint identity;
+7. scope territorial;
+8. política transversal;
+9. idempotencia;
+10. estado de resultado;
+11. auditoría;
+12. rollback o recuperación aplicable.
+
+Una unidad no puede materializar una clave objetivo ausente mediante alias local.
+
+#### 57. Rollback de materialización
+
+El rollback de una futura unidad deberá restaurar el consumidor anterior sin borrar evidencia ya producida y sin convertir un fallback legacy en autoridad nueva.
+
+Si la capacidad exacta queda indisponible, la acción sensible vuelve a `DEFAULT_DENY` hasta recuperar una ruta autorizante compatible.
+
+#### 58. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la correspondencia entre preview y salida física ya está cubierta;
+- la durabilidad, idempotencia, retry y prevención de duplicados ya están cubiertas;
+- la estabilidad de identidad ante reimpresión de QR ya está cubierta;
+- esta tarea especializa autorización y segregación sobre obligaciones vigentes sin crear un comportamiento de prueba empresarial nuevo.
+
+#### 59. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro:
+
+- `TREQ-NEXO-003` para correspondencia entre preview, plantilla, ZPL, DPI, dimensiones, códigos y muestra física;
+- `TREQ-NEXO-005` para trabajo durable, resultado, error, retry, dispositivo, contenido, prevención de pérdida y duplicación;
+- `TREQ-NEXO-013` para estabilidad de identidad de activos y prohibición de crear una identidad nueva al reimprimir o sustituir QR.
+
+Esta trazabilidad no representa una actualización del registro de requisitos.
+
+#### 60. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | tarea documental de contrato; no modifica producto ni genera build físico |
+| LOCAL | NOT_EXECUTED | incorporación, formateo, quality, delivery, topología, plan y TREQ corresponden al checkout local al incorporar la tarea |
+| REMOTA | PASS | se verificaron `vento-shell` main `1dd46a17d1f3751fb10b8d4886c50523bfc4d609`, `vento-nexo` main `f0a12557a1a258c84b025933653dc756de4b5a59`, owner de autorización, catálogo activo, contratos `PRINT-ARC-006/010/011/012/014/015/017`, requisitos NEXO y superficies vigentes de QR/BrowserPrint |
+| OPERATIVA | NOT_EXECUTED | no se enviaron trabajos reales, no se ejecutaron reimpresiones y no se alteró una cola operativa |
+| FÍSICA | NOT_EXECUTED | no se imprimieron etiquetas ni documentos y no se materializó ninguna instancia `NEXO-AUTH-028::<implementation_unit_id>` |
+
+#### 61. Criterios de aceptación
+
+- [x] impresión y reimpresión quedan separadas de lectura y edición de plantilla;
+- [x] se distingue catálogo activo de catálogo objetivo;
+- [x] `jobs.view` permanece solo lectura;
+- [x] `templates.update` no concede salida física;
+- [x] `jobs.create` se reconoce como capacidad objetivo, no activa;
+- [x] `jobs.retry` se reconoce como capacidad objetivo, no activa;
+- [x] `jobs.reconcile` se reconoce como capacidad objetivo, no activa;
+- [x] `reprints.request` se reconoce como capacidad objetivo, no activa;
+- [x] `reprints.approve` se reconoce como capacidad objetivo, no activa;
+- [x] ausencia de capacidad activa produce `DEFAULT_DENY`;
+- [x] `inventory.stock` no se acepta como autoridad final de impresión;
+- [x] imprimir desde navegador no crea bypass;
+- [x] BrowserPrint y dispositivo local no conceden autoridad;
+- [x] parámetros de URL y `localStorage` no conceden autoridad;
+- [x] preview no equivale a impresión;
+- [x] descarga de QR no equivale a impresión;
+- [x] se documenta el AS-IS de activo individual, grupos y `/printing/jobs`;
+- [x] se conserva trabajo durable hasta conocer resultado suficiente;
+- [x] callback técnico no se presenta como evidencia física superior a su nivel real;
+- [x] retry y reimpresión permanecen acciones distintas;
+- [x] `RESULT_UNKNOWN` bloquea repetición ciega;
+- [x] reimpresión conserva causa, actor, original, snapshot, cantidad y decisión;
+- [x] la segregación puede exigir aprobador distinto;
+- [x] reimpresión no duplica el hecho empresarial;
+- [x] versión corregida no se confunde con reimpresión;
+- [x] reimpresión de QR no crea nueva identidad;
+- [x] etiqueta dañada no autoriza reimpresión automática;
+- [x] cambio de impresora no crea una copia nueva por sí mismo;
+- [x] offline no crea autoridad nueva;
+- [x] dispositivo compartido no es actor;
+- [x] UI no se usa como barrera de seguridad;
+- [x] existe revalidación predespacho;
+- [x] creación y reimpresión conservan idempotencia y concurrencia;
+- [x] cantidad de copias forma parte de la autorización;
+- [x] auditoría mínima queda definida;
+- [x] una denegación no produce efecto físico;
+- [x] fallback no evade autorización;
+- [x] se preservan fronteras con 024, 026, 027, 029, 030 y E4;
+- [x] no se modifica Supabase;
+- [x] no se crean ni modifican `PermissionKey` durante este marcador;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+
+#### 62. Límites
+
+Esta tarea no:
+
+- crea ni modifica `PermissionKey`;
+- materializa las doce capacidades objetivo de `PRINT-ARC-015`;
+- modifica grants base u operativos;
+- crea roles;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- crea trabajos reales de impresión;
+- envía ZPL real;
+- imprime por navegador;
+- imprime por BrowserPrint;
+- ejecuta retry real;
+- concilia trabajos reales;
+- cancela trabajos reales;
+- solicita reimpresiones reales;
+- aprueba reimpresiones reales;
+- cambia impresoras reales;
+- cambia routing real;
+- modifica plantillas reales;
+- descarga QR reales como parte de esta tarea;
+- modifica activos, grupos, LPN, LOC o documentos empresariales;
+- cambia identidad por reimpresión;
+- retira físicamente `inventory.stock` ni otros permisos legacy;
+- autoriza una instancia física;
+- ejecuta certificación integral;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-029`.
+
+#### 63. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy`
 ### [ ] NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
 ### [ ] NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio
 ### [ ] NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
