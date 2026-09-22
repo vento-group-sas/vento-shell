@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1246** |
+| Aprobadas | **1247** |
 | En propuesta | **0** |
-| No iniciadas | **350** |
+| No iniciadas | **349** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.07% (1246/1596)** |
+| Porcentaje de completamiento | **78.13% (1247/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **350** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1147** |
+| ⏸ NO_EVALUADA | **349** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1148** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-034` — Diseñar conteos de activos y reutilizables | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-035` — Diseñar repuestos, compatibilidad y reposición mínima | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-036` — Diseñar búsqueda por LOC, LPN, código, responsable y contenido | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-035` — Diseñar repuestos, compatibilidad y reposición mínima | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-036` — Diseñar búsqueda por LOC, LPN, código, responsable y contenido | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-037` — Diseñar impresión de LOC, LPN, activo y documento | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1036,7 +1036,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-032` | Diseñar estado, daño, pérdida, reparación y baja | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-033` | Diseñar kits, conjuntos y control de completitud | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-034` | Diseñar conteos de activos y reutilizables | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-035` | Diseñar repuestos, compatibilidad y reposición mínima | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-035` | Diseñar repuestos, compatibilidad y reposición mínima | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-036` | Diseñar búsqueda por LOC, LPN, código, responsable y contenido | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-037` | Diseñar impresión de LOC, LPN, activo y documento | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-038` | Diseñar operación con escáner y etiquetas dañadas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |

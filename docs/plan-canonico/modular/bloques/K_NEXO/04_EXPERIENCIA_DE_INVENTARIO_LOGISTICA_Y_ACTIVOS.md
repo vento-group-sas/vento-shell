@@ -33895,7 +33895,1227 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima`
-### [ ] NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
+### ✅ NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-034 — Diseñar conteos de activos y reutilizables
+**Tarea siguiente:** NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
+**Tipo de tarea:** documental; diseño canónico de experiencia para repuestos, compatibilidad técnica, selección y sustitución controlada, reserva, liberación, consumo, instalación, pieza retirada, stock mínimo por contexto y handoff de reposición hacia ORIGO, preservando identidad, unidad, disponibilidad, orden de trabajo, trazabilidad, autorización, idempotencia, concurrencia y recuperación bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado identifica un repuesto, comprueba su compatibilidad con un activo o modelo, lo vincula a una orden de trabajo, reserva cantidad disponible, libera reservas no utilizadas, consume e instala el repuesto exactamente una vez, registra la pieza retirada y vigila mínimos de reposición sin confundir inventario, mantenimiento ni compra.
+
+La regla raíz queda:
+
+```text
+REPUESTO CANONICO
++
+COMPATIBILIDAD EXPLICITA
++
+ORDEN DE TRABAJO
++
+DISPONIBILIDAD VIGENTE
++
+RESERVA TRAZABLE
++
+CONSUMO EXACTAMENTE UNA VEZ
++
+INSTALACION CORRELACIONADA
++
+PIEZA RETIRADA TRAZABLE
++
+MINIMO POR CONTEXTO
++
+HANDOFF A ORIGO CUANDO APLIQUE
+→
+FLUJO DE REPUESTOS RECONCILIABLE Y SIN DOBLE CONTABILIZACION
+```
+
+Siempre:
+
+```text
+SIMILAR PART
+!=
+AUTHORIZED COMPATIBLE PART
+```
+
+```text
+RESERVED
+!=
+CONSUMED
+!=
+INSTALLED
+```
+
+```text
+BELOW MINIMUM
+!=
+PURCHASE ORDER
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-035` deja definido un único contrato de experiencia que:
+
+1. presenta `SPARE_PART` como clase primaria distinta de activo, consumible y stock genérico;
+2. conserva control ordinario por cantidad para repuestos;
+3. distingue existencia disponible de componente instalado;
+4. exige compatibilidad técnica explícita cuando la política aplicable la requiera;
+5. distingue compatible, incompatible y no verificado sin convertir ausencia de evidencia en aceptación;
+6. conserva fuente y versión de compatibilidad visibles cuando afecten la decisión;
+7. trata sustitutos autorizados como decisión explícita, no como coincidencia de nombre;
+8. exige orden de trabajo y activo como contexto de reserva y consumo de reparación;
+9. separa diagnóstico de reserva, consumo, instalación y compra;
+10. separa reserva de consumo;
+11. impide sobreasignación concurrente;
+12. define liberación explícita de reservas no utilizadas;
+13. exige efecto de stock exactamente una vez para el consumo;
+14. vincula instalación con activo, orden y movimiento físico;
+15. conserva pieza retirada y su destino como hecho separado;
+16. impide devolver una pieza retirada a stock por inferencia;
+17. separa stock mínimo, stock actual y stock disponible;
+18. permite mínimo por sede o contexto autorizado;
+19. normaliza el umbral en unidad base de stock;
+20. conserva la presentación de compra únicamente como ayuda de captura y reposición;
+21. convierte cruce de mínimo en señal o necesidad, nunca en orden de compra automática;
+22. entrega compra y abastecimiento a ORIGO sin duplicar sus responsabilidades;
+23. consume `VPROC-0030` sin crear lifecycle competidor;
+24. conserva los seis eventos empresariales aprobados de `VPROC-0030`;
+25. preserva los hechos existentes `spare_part_reserved` y `spare_part_consumed`;
+26. distribuye la experiencia entre consulta de existencias, reservas, mantenimiento y solicitud de compra canónicas sin crear una pantalla paralela propietaria;
+27. documenta el AS-IS de `replaced_parts` como texto insuficiente para el contrato objetivo;
+28. reutiliza la infraestructura `min_stock_*` sin convertirla por sí sola en política completa de repuestos;
+29. mantiene toda mutación sensible sujeta a autorización server-side exacta y no adopta `inventory.stock` como autoridad suficiente de mantenimiento o repuestos;
+30. define idempotencia, concurrencia, timeout y operación degradada;
+31. no crea requisitos de prueba nuevos ni autoriza materialización física.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+El resultado de 035 es exclusivamente documental.
+
+No existe una instancia física `NEXO-UX-035::*` que esta tarea autorice o materialice.
+
+#### 4. Continuidad y handoff recibido de `NEXO-UX-034`
+
+La continuidad inmediata es:
+
+```text
+NEXO-UX-034
+→
+NEXO-UX-035
+→
+NEXO-UX-036
+```
+
+`NEXO-UX-034` entrega:
+
+```text
+FROZEN COUNT BASELINE
++
+IDENTITY OR QUANTITY-SCOPE OBSERVATION
++
+PRESENCE / QUANTITY / LOCATION / CONDITION SEPARATION
++
+DIFFERENCE BEFORE INVESTIGATION
++
+INVESTIGATION BEFORE DECISION
++
+DECISION BEFORE DOMAIN EFFECT
++
+IMMUTABLE ORIGINAL OBSERVATION
++
+RECONCILED VERSIONED COUNT HISTORY
+```
+
+035 consume ese handoff únicamente como evidencia contextual.
+
+Una diferencia de conteo no significa por sí sola:
+
+- consumo de repuesto;
+- instalación;
+- incompatibilidad;
+- reserva;
+- reposición;
+- compra.
+
+#### 5. Contrato de dominio propietario
+
+`NEXO-DOM-016` es el owner semántico de:
+
+- identidad de repuesto;
+- compatibilidad;
+- sustitución autorizada;
+- reserva;
+- liberación de reserva;
+- consumo;
+- instalación;
+- pieza retirada;
+- stock mínimo;
+- frontera NEXO–ORIGO.
+
+La experiencia de 035 consume ese contrato sin redefinirlo.
+
+#### 6. Contratos de dominio relacionados
+
+El diseño consume además, sin reabrirlos:
+
+- `NEXO-DOM-001`, clasificación física y clase `SPARE_PART`;
+- `NEXO-DOM-007`, ubicación;
+- `NEXO-DOM-009`, granularidad individual o por cantidad;
+- `NEXO-DOM-010`, condición, daño y pérdida;
+- `NEXO-DOM-012`, mantenimiento, reparación y disponibilidad;
+- `NEXO-DOM-013`, retiro y disposición;
+- `NEXO-DOM-015`, conteos no destructivos;
+- `NEXO-DOM-025`, relación posterior entre repuestos consumidos, mantenimiento y costo del activo;
+- `NEXO-DOM-026`, inspección, preventivo, garantía y calibración.
+
+#### 7. Frontera de autorización
+
+`NEXO-AUTH-026` conserva la autorización de mantenimiento, daño, pérdida, liberación y baja.
+
+Las decisiones de repuesto que produzcan efectos reales deben pasar por autoridad server-side aplicable a su recurso y acción exactos.
+
+La experiencia no puede asumir que alguno de estos hechos basta como autorización:
+
+- actor autenticado;
+- acceso de lectura al activo;
+- permiso amplio de inventario;
+- ser custodio;
+- ser técnico asignado;
+- estar dentro de la sede;
+- poseer la orden de trabajo;
+- disponer físicamente de la pieza.
+
+#### 8. `inventory.stock` no es autoridad final de repuestos
+
+El AS-IS observado utiliza `inventory.stock` en superficies amplias de inventario y mantenimiento.
+
+035 conserva:
+
+```text
+inventory.stock
+!=
+AUTORIDAD FINAL DE COMPATIBILIDAD
+!=
+AUTORIDAD FINAL DE RESERVA DE REPUESTO
+!=
+AUTORIDAD FINAL DE CONSUMO
+!=
+AUTORIDAD FINAL DE INSTALACION
+```
+
+La UI nunca convierte la existencia de un control en evidencia de autoridad.
+
+#### 9. Clase `SPARE_PART`
+
+La experiencia presenta al repuesto como existencia con semántica propia.
+
+Se preserva:
+
+```text
+SPARE_PART
+!=
+SERIALIZED_ASSET
+!=
+CONSUMABLE
+!=
+QUANTITY_STOCK GENERICO
+```
+
+El hecho de que normalmente se controle por cantidad no elimina su clasificación ni su compatibilidad técnica.
+
+#### 10. Granularidad de repuesto
+
+La granularidad ordinaria es por cantidad.
+
+La UI muestra:
+
+- producto repuesto;
+- unidad de stock;
+- cantidad disponible;
+- cantidad reservada;
+- cantidad utilizable cuando aplique;
+- ubicación;
+- contexto de sede;
+- compatibilidad relevante.
+
+No crea identidades unitarias por cada tornillo, filtro, rodamiento o pieza genérica.
+
+#### 11. Repuesto disponible frente a componente instalado
+
+Se conserva:
+
+```text
+INVENTORY SPARE PART
+!=
+INSTALLED COMPONENT
+```
+
+La misma cantidad no puede aparecer simultáneamente como disponible en almacén e instalada en un activo.
+
+#### 12. Entrada principal desde mantenimiento
+
+El flujo principal de reparación parte de una orden de trabajo identificable.
+
+La experiencia de `VSCREEN-0133` debe poder llevar al actor desde:
+
+```text
+ACTIVO
+→
+DIAGNOSTICO
+→
+NECESIDAD DE REPUESTO
+→
+SELECCION COMPATIBLE
+→
+RESERVA
+→
+EJECUCION
+→
+CONSUMO / INSTALACION
+→
+PRUEBA
+→
+LIBERACION
+```
+
+sin convertir la secuencia visual en una sola mutación indiferenciada.
+
+#### 13. Diagnóstico no reserva
+
+Un diagnóstico puede proponer repuesto, cantidad y prioridad.
+
+Se preserva:
+
+```text
+DIAGNOSIS SUGGESTS PART
+!=
+PART RESERVED
+```
+
+La propuesta permanece revisable antes de comprometer stock.
+
+#### 14. Diagnóstico no compra
+
+Se conserva:
+
+```text
+DIAGNOSIS NEEDS PART
+!=
+PURCHASE REQUEST CREATED
+```
+
+Primero debe resolverse si existe stock compatible, reserva posible, traslado interno aplicable u otra fuente autorizada.
+
+#### 15. Buscador contextual de repuestos
+
+Dentro de una orden de mantenimiento, el selector de repuesto prioriza:
+
+- identidad canónica;
+- compatibilidad con activo/modelo;
+- disponibilidad por sede;
+- unidad;
+- ubicación;
+- sustitutos autorizados;
+- evidencia técnica disponible.
+
+No prioriza coincidencia textual por encima de compatibilidad demostrada.
+
+#### 16. Resultado de compatibilidad visible
+
+Para cada candidato la UI distingue al menos conceptualmente:
+
+- compatibilidad demostrada;
+- incompatibilidad demostrada;
+- compatibilidad no verificada.
+
+La ausencia de una regla no se pinta como compatible por defecto.
+
+#### 17. Fuente técnica visible
+
+Cuando la compatibilidad afecta una operación crítica, el actor puede consultar la fuente que soporta la decisión, por ejemplo:
+
+- fabricante;
+- manual;
+- referencia OEM;
+- catálogo técnico;
+- decisión técnica autorizada;
+- validación controlada.
+
+La UI evita presentar una confianza falsa cuando esa evidencia no existe.
+
+#### 18. Compatibilidad versionada
+
+Si la regla de compatibilidad cambia, la experiencia histórica conserva la versión utilizada al aprobar la reserva o instalación.
+
+Una instalación pasada no se reetiqueta retroactivamente como si hubiera usado la versión nueva.
+
+#### 19. Compatibilidad desconocida
+
+Cuando la política exige comprobación técnica:
+
+```text
+COMPATIBILITY UNKNOWN
+→
+INSTALLATION BLOCKED
+```
+
+La interfaz ofrece revisar evidencia o seguir el flujo de excepción autorizado cuando exista, nunca omitir silenciosamente el control.
+
+#### 20. Compatibilidad negativa
+
+Una incompatibilidad demostrada se muestra como bloqueo explícito.
+
+No existe acción normal de “usar de todos modos” sin una excepción trazable autorizada por el contrato propietario.
+
+#### 21. Sustitutos
+
+Se preserva:
+
+```text
+SIMILAR
+!=
+AUTHORIZED SUBSTITUTE
+```
+
+Un sustituto visible debe declarar por qué puede reemplazar al previsto y bajo qué restricciones.
+
+#### 22. Sustitución dentro de orden
+
+Cuando se use sustituto, la revisión previa muestra:
+
+- repuesto previsto;
+- repuesto sustituto;
+- activo;
+- orden;
+- cantidad;
+- motivo;
+- compatibilidad;
+- autoridad requerida;
+- impacto sobre reserva previa.
+
+La selección de sustituto no modifica la especificación histórica original.
+
+#### 23. Orden de trabajo como contexto obligatorio
+
+Para consumo por reparación se preserva:
+
+```text
+REPAIR SPARE CONSUMPTION
+REQUIRES
+WORK ORDER + ASSET CONTEXT
+```
+
+La UI no ofrece un consumo técnico huérfano sin expediente correlacionable.
+
+#### 24. Reserva desde la orden
+
+La acción de reservar muestra antes de confirmar:
+
+- repuesto exacto;
+- activo;
+- orden;
+- cantidad solicitada;
+- cantidad disponible;
+- cantidad ya reservada;
+- origen físico;
+- unidad;
+- compatibilidad;
+- sustitución cuando aplique.
+
+#### 25. Reserva no es consumo
+
+Después de reservar, la experiencia representa claramente:
+
+```text
+AVAILABLE BEFORE
+→
+RESERVED FOR ORDER
+```
+
+pero no muestra todavía la pieza como consumida o instalada.
+
+#### 26. Disponibilidad después de reserva
+
+La reserva puede reducir disponibilidad utilizable sin alterar cantidad física bruta.
+
+La interfaz evita sumar simultáneamente la misma cantidad como:
+
+- libre;
+- reservada;
+- instalada.
+
+#### 27. Sobreasignación concurrente
+
+Si dos órdenes intentan reservar la misma cantidad, la decisión final pertenece al servidor.
+
+Ante conflicto la UI recarga disponibilidad vigente y no conserva una confirmación optimista falsa.
+
+#### 28. Reserva parcial
+
+Si la orden requiere más cantidad de la disponible, la interfaz distingue:
+
+- cantidad requerida;
+- cantidad reservable ahora;
+- faltante pendiente;
+- posible sustituto autorizado;
+- necesidad de reposición.
+
+No reduce silenciosamente la necesidad original para hacerla “cabida”.
+
+#### 29. Liberación de reserva
+
+Una reserva no usada se libera mediante acción explícita.
+
+Se conserva:
+
+```text
+RELEASE RESERVATION
+!=
+NEGATIVE CONSUMPTION
+```
+
+La historia de la reserva permanece visible en la orden.
+
+#### 30. Cancelación de trabajo
+
+Si la orden se cancela antes del consumo, la UX obliga a resolver reservas pendientes.
+
+El cierre no deja cantidades bloqueadas sin owner ni registra consumos ficticios para cuadrar el expediente.
+
+#### 31. Consumo
+
+El consumo representa la salida física del repuesto de inventario por la intervención.
+
+La revisión muestra:
+
+- reserva correlacionada cuando exista;
+- repuesto;
+- cantidad;
+- unidad;
+- ubicación de origen;
+- activo;
+- orden;
+- actor;
+- evidencia.
+
+#### 32. Consumo exactamente una vez
+
+La UX usa una intención estable de operación.
+
+Un doble click, retry o reenvío no puede descontar la misma cantidad dos veces.
+
+#### 33. Resultado remoto desconocido
+
+Ante timeout posterior al submit:
+
+```text
+UNKNOWN RESULT
+!=
+FAILED CONSUMPTION
+```
+
+La pantalla consulta o reconcilia la operación original antes de habilitar otro intento.
+
+#### 34. Instalación
+
+Después del efecto de stock, la experiencia registra la instalación como hecho relacionado.
+
+Se preserva:
+
+```text
+STOCK CONSUMED
+!=
+INSTALLATION CONFIRMED
+```
+
+Una orden puede necesitar resolver un fallo entre ambos hechos mediante reconciliación explícita.
+
+#### 35. Instalación no libera el activo
+
+Se conserva:
+
+```text
+PART INSTALLED
+!=
+ASSET RELEASED TO SERVICE
+```
+
+Prueba y liberación pertenecen al lifecycle de mantenimiento.
+
+#### 36. Pieza retirada
+
+Cuando la reparación reemplaza un componente, la UI captura el hecho de retiro de forma separada.
+
+Debe permitir reconstruir:
+
+- activo;
+- orden;
+- posición o función;
+- pieza retirada o scope identificable;
+- condición observada;
+- causa;
+- repuesto instalado;
+- destino previsto.
+
+#### 37. Destino de pieza retirada
+
+El actor selecciona únicamente destinos permitidos por el contrato aplicable, por ejemplo:
+
+- evaluación;
+- reparación;
+- garantía;
+- devolución a proveedor;
+- cuarentena;
+- reincorporación autorizada;
+- disposición controlada.
+
+La lista UX no otorga la autorización del destino.
+
+#### 38. Pieza retirada no vuelve a stock automáticamente
+
+Se conserva:
+
+```text
+REMOVED FROM ASSET
+!=
+AVAILABLE IN STOCK
+```
+
+La reincorporación exige su decisión propietaria.
+
+#### 39. Texto libre legacy
+
+Los campos legacy:
+
+```text
+parts_replaced
+replaced_parts
+```
+
+pueden conservarse como contexto narrativo, pero la experiencia objetivo no los usa como prueba de:
+
+- reserva;
+- consumo;
+- instalación;
+- movimiento;
+- compatibilidad;
+- pieza retirada.
+
+#### 40. AS-IS de mantenimiento
+
+La implementación actual conserva registros en `asset_maintenance_records` y presenta mantenimiento en la ficha del activo.
+
+La forma actual es reutilizable como contexto e historial, pero no demuestra el flujo completo de repuestos canónicos.
+
+#### 41. Estado de adopción de mantenimiento
+
+La clasificación UX para este ámbito es:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan superficies e historial útiles y se reemplaza la semántica incompleta de piezas en texto por relaciones y efectos reconciliables en la materialización posterior.
+
+#### 42. Stock mínimo
+
+La experiencia distingue:
+
+```text
+MINIMUM THRESHOLD
+CURRENT QUANTITY
+AVAILABLE QUANTITY
+RESERVED QUANTITY
+```
+
+El umbral es una política, no una existencia.
+
+#### 43. Mínimo por sede o contexto
+
+El mismo repuesto puede requerir mínimos distintos según sede o contexto autorizado.
+
+La UI nunca copia un valor global a todas las sedes sin una decisión explícita.
+
+#### 44. Unidad base del mínimo
+
+La comparación de mínimo se muestra en la unidad base aplicable.
+
+Si el usuario captura una presentación de compra, la pantalla debe mostrar también la equivalencia normalizada que realmente se almacenará o comparará.
+
+#### 45. Captura en unidad de compra
+
+Cuando exista configuración válida de compra, la experiencia puede mostrar:
+
+```text
+PURCHASE QUANTITY
+×
+APPROVED FACTOR
+=
+BASE STOCK THRESHOLD
+```
+
+La conversión queda visible antes de guardar.
+
+#### 46. Factor ausente o inválido
+
+Si el modo de entrada usa unidad de compra pero no existe factor válido:
+
+```text
+NO VALID CONVERSION
+→
+NO SILENT SAVE AS BASE
+```
+
+La UI exige corregir la configuración o usar una unidad canónica válida.
+
+#### 47. AS-IS de mínimo reutilizable
+
+La infraestructura existente de `product_site_settings` ya expone:
+
+- `min_stock_qty`;
+- `min_stock_input_mode`;
+- `min_stock_purchase_qty`;
+- `min_stock_purchase_unit_code`;
+- `min_stock_purchase_to_base_factor`.
+
+035 conserva estos campos como base reutilizable, no como prueba de que el ciclo completo de repuestos ya exista.
+
+#### 48. Mínimo no implica reposición automática
+
+Se preserva:
+
+```text
+AVAILABLE < MINIMUM
+→
+REPLENISHMENT NEED
+```
+
+pero:
+
+```text
+REPLENISHMENT NEED
+!=
+PURCHASE ORDER
+```
+
+#### 49. Indicador de reposición
+
+Una alerta de mínimo muestra al menos:
+
+- repuesto;
+- sede;
+- mínimo;
+- disponibilidad actual;
+- cantidad reservada relevante;
+- déficit frente al umbral;
+- unidad;
+- stock en tránsito cuando el contrato lo permita;
+- fuente y frescura del dato.
+
+#### 50. Señal sin duplicación
+
+Recalcular varias veces el mismo déficit no crea múltiples necesidades empresariales equivalentes.
+
+La UI debe reconciliar una necesidad ya abierta antes de proponer otra para el mismo contexto lógico.
+
+#### 51. Prioridad de reposición
+
+La experiencia puede mostrar severidad operativa basada en reglas aprobadas, por ejemplo:
+
+- activo bloqueado esperando repuesto;
+- repuesto crítico sin sustituto;
+- mínimo cruzado;
+- cantidad cero;
+- múltiples órdenes compitiendo por stock.
+
+La prioridad visual no crea aprobación de compra.
+
+#### 52. Handoff a ORIGO
+
+Cuando la reposición requiera compra externa, NEXO entrega a ORIGO el contexto de necesidad.
+
+El handoff puede incluir:
+
+- repuesto;
+- sede;
+- déficit;
+- unidad;
+- orden de trabajo relacionada;
+- activo cuando aplique;
+- fecha requerida;
+- justificación;
+- sustitutos permitidos;
+- evidencia técnica.
+
+#### 53. `VSCREEN-0069` como owner de solicitud de compra
+
+La creación y seguimiento de la solicitud de compra pertenece a ORIGO mediante su superficie canónica.
+
+NEXO puede originar o enlazar la necesidad, pero no crea una segunda orden de compra paralela.
+
+#### 54. Handoff no equivale a recepción
+
+Se conserva:
+
+```text
+PURCHASE REQUEST CREATED
+!=
+PURCHASED
+!=
+RECEIVED
+!=
+AVAILABLE IN NEXO
+```
+
+Cada transición mantiene su owner.
+
+#### 55. Recepción sin doble entrada
+
+Cuando ORIGO complete su recepción, la entrada física a NEXO debe correlacionarse con el contrato de inventario aplicable.
+
+La UX de 035 no ofrece “sumar al stock” manualmente si la recepción ya produjo el efecto físico.
+
+#### 56. Servicio externo separado
+
+La experiencia distingue:
+
+```text
+EXTERNAL REPAIR SERVICE
+!=
+SPARE PART PURCHASE
+```
+
+Una orden puede usar ambos, pero no mezcla proveedor de servicio, producto repuesto y efectos físicos en una sola línea ambigua.
+
+#### 57. Proceso canónico consumido
+
+035 consume:
+
+```text
+VPROC-0030
+Gestionar mantenimiento, reparación, garantía, repuesto y disposición de activos
+```
+
+No crea proceso paralelo de repuestos.
+
+#### 58. Estados de `VPROC-0030`
+
+Se consumen exactamente:
+
+```text
+MAINTENANCE_REQUESTED
+UNDER_TRIAGE
+DIAGNOSIS_IN_PROGRESS
+WORK_PENDING_APPROVAL
+PARTS_OR_SERVICE_PENDING
+IN_REPAIR
+TESTING
+RELEASE_PENDING
+MAINTENANCE_CASE_CLOSED
+```
+
+La falta de repuesto puede explicar `PARTS_OR_SERVICE_PENDING`, pero no cambia el lifecycle por simple inferencia de stock.
+
+#### 59. Business events de `VPROC-0030`
+
+La experiencia conserva exactamente:
+
+```text
+VPROC-0030.EVT-001
+VPROC-0030.EVT-002
+VPROC-0030.EVT-003
+VPROC-0030.EVT-004
+VPROC-0030.EVT-005
+VPROC-0030.EVT-006
+```
+
+No inventa un séptimo evento empresarial para cada click de repuesto.
+
+#### 60. Hechos de capacidad existentes
+
+Se preservan los hechos existentes:
+
+```text
+spare_part_reserved
+spare_part_consumed
+```
+
+La experiencia puede proyectarlos, pero no los sustituye por `replaced_parts` ni por comentarios.
+
+#### 61. Superficies NEXO consumidas
+
+035 distribuye responsabilidades sin crear una pantalla canónica nueva:
+
+- `VSCREEN-0039` para consulta de existencias cuando corresponda;
+- `VSCREEN-0132` para reservas explícitas;
+- `VSCREEN-0133` para planes y órdenes de mantenimiento con repuestos;
+- las superficies de catálogo/configuración vigentes para el mínimo por sede.
+
+La UI concreta futura puede componer estas responsabilidades dentro de una navegación coherente sin fusionar sus decisiones.
+
+#### 62. Frontera con búsqueda transversal
+
+035 define búsqueda contextual dentro del trabajo de repuestos.
+
+La búsqueda transversal por LOC, LPN, código, responsable y contenido pertenece a `NEXO-UX-036`.
+
+No se adelanta ese contrato.
+
+#### 63. Estado confirmado frente a pendiente
+
+Toda operación muestra claramente si su efecto está:
+
+- pendiente local;
+- enviándose;
+- confirmado;
+- rechazado;
+- en conflicto;
+- con resultado desconocido.
+
+No usa un toast optimista como prueba de reserva o consumo confirmado.
+
+#### 64. Revisión y frescura
+
+Antes de reservar o consumir, la interfaz muestra o revalida la frescura material de:
+
+- disponibilidad;
+- reserva vigente;
+- compatibilidad;
+- orden;
+- estado del activo;
+- ubicación;
+- unidad.
+
+Una vista desactualizada no concede efecto.
+
+#### 65. Concurrencia
+
+Cuando otro actor cambia disponibilidad, reserva o estado de orden antes del submit, el servidor prevalece.
+
+La UX presenta el conflicto con el nuevo estado y requiere revisión humana cuando la diferencia sea material.
+
+#### 66. Idempotencia
+
+Una misma intención lógica no puede duplicar:
+
+- reserva;
+- liberación;
+- consumo;
+- instalación;
+- pieza retirada;
+- señal de reposición.
+
+El retry reutiliza la identidad de la operación original.
+
+#### 67. Offline
+
+Offline puede capturar:
+
+- diagnóstico;
+- evidencia;
+- necesidad;
+- candidato de repuesto;
+- intención pendiente.
+
+No confirma offline:
+
+- reserva autoritativa;
+- consumo;
+- instalación;
+- reposición empresarial.
+
+#### 68. Reconciliación al reconectar
+
+Al recuperar conectividad se revalidan:
+
+- actor;
+- autorización;
+- orden;
+- activo;
+- compatibilidad;
+- disponibilidad;
+- reserva;
+- cantidad;
+- unidad;
+- revisión.
+
+Una intención inválida se mantiene como pendiente fallida o conflicto, no como efecto aplicado.
+
+#### 69. Operación en dispositivo compartido
+
+La estación o tablet no sustituye al actor humano.
+
+Antes de una mutación sensible la experiencia conserva actor efectivo y contexto autorizado.
+
+#### 70. Evidencia visible
+
+Según la operación, la experiencia puede adjuntar o consultar:
+
+- manual;
+- referencia técnica;
+- foto;
+- escaneo;
+- orden de trabajo;
+- activo;
+- repuesto;
+- cantidad;
+- ubicación;
+- condición;
+- pieza retirada;
+- proveedor;
+- prueba técnica.
+
+Se preserva:
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+#### 71. Corrección no destructiva
+
+Un consumo incorrecto no se corrige editando el hecho original.
+
+La UX conduce a una compensación trazable que conserve:
+
+- original;
+- corrección;
+- causa;
+- actor;
+- correlación;
+- cantidades antes y después.
+
+#### 72. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| clase `SPARE_PART` | `NEXO-DOM-001` |
+| compatibilidad, reserva, consumo, instalación y mínimo | `NEXO-DOM-016` / `NEXO-UX-035` |
+| disponibilidad y mantenimiento | `NEXO-DOM-012` / `NEXO-AUTH-026` |
+| baja y disposición | `NEXO-DOM-013` / `NEXO-UX-032` |
+| conteo no destructivo | `NEXO-DOM-015` / `NEXO-UX-034` |
+| repuesto consumido y costo del activo | `NEXO-DOM-025` |
+| preventivo, garantía y calibración | `NEXO-DOM-026` |
+| proceso de mantenimiento | `VPROC-0030` |
+| reservas de inventario | `VSCREEN-0132` |
+| orden de mantenimiento | `VSCREEN-0133` |
+| solicitud de compra | `VSCREEN-0069` / ORIGO |
+| búsqueda transversal | `NEXO-UX-036` |
+
+#### 73. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| SPARE-UX-01 | repuesto compatible y disponible | candidato seleccionable |
+| SPARE-UX-02 | compatibilidad desconocida obligatoria | instalación bloqueada |
+| SPARE-UX-03 | incompatibilidad demostrada | bloqueado |
+| SPARE-UX-04 | coincidencia textual sin evidencia | no se trata como compatible |
+| SPARE-UX-05 | sustituto autorizado | selección con motivo y fuente |
+| SPARE-UX-06 | sustituto solo similar | no autorizado por inferencia |
+| SPARE-UX-07 | diagnóstico propone repuesto | no reserva ni compra |
+| SPARE-UX-08 | reserva válida | cantidad comprometida una vez |
+| SPARE-UX-09 | reserva repetida por retry | un único efecto lógico |
+| SPARE-UX-10 | dos órdenes compiten por stock | servidor impide sobreasignación |
+| SPARE-UX-11 | reserva parcial | faltante visible sin alterar necesidad |
+| SPARE-UX-12 | orden cancelada antes de consumo | reserva liberada explícitamente |
+| SPARE-UX-13 | consumo con reserva válida | efecto de stock correlacionado |
+| SPARE-UX-14 | consumo duplicado | bloqueado/idempotente |
+| SPARE-UX-15 | timeout después de consumir | resultado desconocido y reconciliación |
+| SPARE-UX-16 | instalación confirmada | vínculo con activo y orden |
+| SPARE-UX-17 | pieza instalada sin movimiento correlacionado | estado incompleto/conflicto |
+| SPARE-UX-18 | pieza retirada | hecho separado con destino |
+| SPARE-UX-19 | retirar pieza y devolverla a stock automáticamente | prohibido |
+| SPARE-UX-20 | pieza retirada apta tras evaluación | reincorporación por flujo autorizado |
+| SPARE-UX-21 | `replaced_parts` con texto | contexto narrativo, no consumo |
+| SPARE-UX-22 | mínimo por sede bajo umbral | necesidad de reposición |
+| SPARE-UX-23 | mínimo capturado en compra con factor válido | equivalencia base visible |
+| SPARE-UX-24 | modo compra sin factor | guardado bloqueado |
+| SPARE-UX-25 | cruce de mínimo | no crea PO automática |
+| SPARE-UX-26 | necesidad ya abierta | no duplica señal equivalente |
+| SPARE-UX-27 | handoff a ORIGO | solicitud correlacionada con contexto |
+| SPARE-UX-28 | compra ORIGO aprobada | aún no disponible hasta recepción física |
+| SPARE-UX-29 | recepción correlacionada | una sola entrada física |
+| SPARE-UX-30 | servicio externo más repuesto | hechos separados |
+| SPARE-UX-31 | instalación terminada | activo aún puede estar en testing |
+| SPARE-UX-32 | operación offline | intención pendiente, no efecto autoritativo |
+| SPARE-UX-33 | actor cambia en estación compartida | reautorización |
+| SPARE-UX-34 | `inventory.stock` como única autoridad | no aceptado como contrato objetivo |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 74. Handoff hacia `NEXO-UX-036`
+
+035 entrega:
+
+```text
+CANONICAL SPARE PART CONTEXT
++
+COMPATIBILITY STATUS AND EVIDENCE
++
+WORK-ORDER-BOUND RESERVATION
++
+AVAILABLE / RESERVED / CONSUMED SEPARATION
++
+INSTALLATION AND REMOVED-PART TRACEABILITY
++
+SITE-SCOPED MINIMUM STOCK
++
+REPLENISHMENT NEED WITH ORIGO BOUNDARY
++
+STABLE IDENTIFIERS FOR PART / ASSET / ORDER / LOCATION
+```
+
+`NEXO-UX-036` deberá diseñar búsqueda transversal por LOC, LPN, código, responsable y contenido sin convertir índices o resultados de búsqueda en autoridad para reservar, consumir, mover, instalar o comprar repuestos.
+
+#### 75. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige mantenimiento con repuestos correlacionados, clase `SPARE_PART`, compatibilidad, reserva y consumo, pieza retirada, no doble representación, comportamiento por cantidad e integración exactamente una vez entre ORIGO, NEXO y efectos posteriores. Esta tarea especializa la experiencia de usuario dentro de obligaciones existentes sin introducir una obligación de prueba independiente.
+
+#### 76. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-014`, para separar orden, diagnóstico, ejecución, repuestos, indisponibilidad, prueba y liberación;
+- `TREQ-NEXO-040`, para conservar `SPARE_PART` como clase primaria única;
+- `TREQ-NEXO-041`, para separar clase de producto, presentación, unidad, ubicación, condición y costo;
+- `TREQ-NEXO-044`, para reserva, consumo, instalación, pieza retirada, compatibilidad y no doble representación;
+- `TREQ-NEXO-047`, para aplicar comportamiento por cantidad a repuestos sin duplicar saldo;
+- `TREQ-INTEGRATION-012`, para correlacionar compra o servicio, mantenimiento, reserva, consumo y efectos entre ORIGO, NEXO y NUMERA;
+- `TREQ-UX-002`, para error y recuperación sin duplicar efectos;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado o pendiente y frescura visible;
+- `TREQ-UX-006`, para pérdida de conectividad, reautorización y reanudación idempotente.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 77. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron fuentes canónicas vigentes de `vento-shell`, topología `DEFINE_ONCE`, owner UX, `NEXO-DOM-016`, fronteras de `NEXO-AUTH-026`, `VPROC-0030`, `VSCREEN-0132/0133`, handoff ORIGO mediante `VSCREEN-0069`, 04A NEXO/INTEGRATION y el AS-IS de `vento-nexo`; la aplicación actual mantiene `asset_maintenance_records` con `parts_replaced/replaced_parts` y configuración `min_stock_*`, pero no se observó un workflow canónico completo de compatibilidad, reserva, consumo, instalación y pieza retirada de `SPARE_PART`. |
+| OPERATIVA | NOT_EXECUTED | No se seleccionó, reservó, liberó, consumió, instaló, retiró, repuso ni compró ningún repuesto real. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-035` no crea instancia física propia y no autoriza cambios de productos, stock, órdenes, activos, mantenimiento, compras, datos, Supabase ni permisos. |
+
+#### 78. Criterios de aceptación
+
+- [x] `SPARE_PART` se mantiene separado de activo y consumible;
+- [x] la granularidad ordinaria es por cantidad;
+- [x] stock e instalación no se duplican;
+- [x] compatibilidad es explícita y reproducible;
+- [x] ausencia de evidencia no significa compatible;
+- [x] incompatibilidad bloquea cuando la política exige compatibilidad;
+- [x] sustituto autorizado no equivale a similaridad textual;
+- [x] diagnóstico no reserva ni compra;
+- [x] reserva exige orden y activo para reparación;
+- [x] reserva y consumo permanecen separados;
+- [x] sobreasignación concurrente falla cerrada;
+- [x] reserva parcial conserva faltante visible;
+- [x] liberación de reserva no se modela como consumo negativo;
+- [x] consumo descuenta exactamente una vez;
+- [x] timeout no provoca segundo consumo;
+- [x] instalación queda correlacionada con stock y orden;
+- [x] instalación no libera automáticamente el activo;
+- [x] pieza retirada conserva destino propio;
+- [x] pieza retirada no vuelve a stock por inferencia;
+- [x] texto legacy no sustituye movimiento ni compatibilidad;
+- [x] `min_stock_*` se reutiliza sin afirmar ciclo completo;
+- [x] mínimo se separa de stock actual y disponible;
+- [x] mínimo puede variar por sede/contexto;
+- [x] unidad de compra se normaliza con factor visible;
+- [x] factor inválido no produce conversión silenciosa;
+- [x] cruce de mínimo genera necesidad, no PO automática;
+- [x] señales equivalentes no se duplican por recomputación;
+- [x] ORIGO conserva solicitud y compra;
+- [x] recepción no duplica entrada física;
+- [x] servicio externo y compra de repuesto se separan;
+- [x] se consume `VPROC-0030` sin lifecycle competidor;
+- [x] se conservan exactamente nueve estados de `VPROC-0030`;
+- [x] se conservan exactamente seis business events de `VPROC-0030`;
+- [x] se preservan `spare_part_reserved` y `spare_part_consumed`;
+- [x] se preserva actor humano en dispositivo compartido;
+- [x] offline no produce reserva ni consumo autoritativo;
+- [x] retry es idempotente;
+- [x] `inventory.stock` no se adopta como autoridad final;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff explícito a `NEXO-UX-036`.
+
+#### 79. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- crea Server Actions ni Route Handlers;
+- crea RPC;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas o políticas RLS;
+- crea o modifica productos reales;
+- reclasifica productos como repuestos;
+- crea reglas reales de compatibilidad;
+- reserva stock real;
+- libera reservas reales;
+- consume stock real;
+- registra instalaciones reales;
+- reincorpora piezas retiradas;
+- crea compras ni órdenes de compra;
+- recibe mercancía;
+- modifica mínimos reales;
+- modifica `asset_maintenance_records`;
+- modifica `product_asset_maintenance_events`;
+- modifica `product_site_settings`;
+- modifica `inventory.stock` ni otros permisos;
+- crea o modifica `PermissionKey`, grants, scope o modalidad;
+- ejecuta migraciones ni backfills;
+- modifica Supabase;
+- despliega código;
+- modifica costos de activo reservados a `NEXO-DOM-025`;
+- redefine preventivo, garantía o calibración reservados a `NEXO-DOM-026`;
+- desarrolla búsqueda transversal reservada a `NEXO-UX-036`;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A.
+
+#### 80. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-034 — Diseñar conteos de activos y reutilizables`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido`
 ### [ ] NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
 ### [ ] NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
 ### [ ] NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
