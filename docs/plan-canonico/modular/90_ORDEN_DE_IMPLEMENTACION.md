@@ -929,6 +929,23 @@ las integraciones sean idempotentes;
 la trazabilidad sea completa;
 el piloto operativo haya sido aprobado.
 
+<!-- APPLICATION-CLOSURE-REVALIDATION:ORDER:START -->
+### Regla de continuidad — una aplicación cerrada no retira trabajo futuro
+
+La proyección de cierre de una aplicación se evalúa siempre contra el plan canónico vigente. `COMPLETE_EXPLICIT_SCOPE` describe el alcance explícito cerrado en ese momento; no marca la aplicación como inmutable ni elimina tareas de fases posteriores.
+
+Al recorrer este orden de implementación:
+
+- nunca se omitirá una tarea pendiente únicamente porque su aplicación haya alcanzado antes `COMPLETE_EXPLICIT_SCOPE`;
+- el estado de cada tarea se resuelve desde su marcador canónico y sus dependencias, no desde el estado agregado de la aplicación;
+- una relación, dependencia, package, integración o criterio descubierto posteriormente vuelve a formar parte del cálculo de cierre cuando corresponda;
+- los packages ya cerrados conservan su evidencia histórica, mientras el trabajo nuevo se materializa en la unidad propietaria adecuada;
+- una ruta vertical adelantada puede producir un cierre válido del alcance conocido sin convertir ese cierre en autorización para saltar el flujo normal posterior;
+- en el cierre transversal final se recalcula el application closure con el snapshot completo vigente antes de afirmar cierre integral.
+
+Por tanto, cuando el flujo normal alcance trabajo de PASS, NEXO, PULSO o cualquier otra aplicación previamente cerrada de forma temprana, ese trabajo solo podrá omitirse si la propia tarea ya está canónicamente aprobada o ha sido tratada mediante un mecanismo canónico explícito; nunca por inferencia desde un cierre histórico de aplicación.
+<!-- APPLICATION-CLOSURE-REVALIDATION:ORDER:END -->
+
 <!-- CURRENT-EXECUTABLE-WORK-CORR-002:START -->
 ### Invariante de governed frontier y trabajo ejecutable
 

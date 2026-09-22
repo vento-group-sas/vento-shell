@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,194 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Documentar que COMPLETE_EXPLICIT_SCOPE es un cierre revalidable del alcance explícito vigente y nunca autoriza omitir tareas canónicas futuras o pendientes."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Documentar la obligación operativa de recalcular el cierre de aplicación cuando aparezcan nuevas relaciones, dependencias, packages o criterios, y de no saltar tareas por cierres históricos."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:package:application:closure",
+    "node --test scripts/docs/package-application-closure.test.mjs",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
-  "evidence": [],
-  "opened_at": "2026-09-22T17:35:39.814Z"
+  "zero_treq_reason": "Corrección documental de gobierno de cierre de aplicaciones; aclara semántica existente sin introducir comportamiento funcional ni requisitos verificables nuevos.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-22T17:46:44.924Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza documentar como regla transversal que COMPLETE_EXPLICIT_SCOPE representa únicamente el cierre revalidable del alcance explícitamente conocido en el snapshot canónico vigente; no constituye cierre eterno ni inmutable, no aprueba ni oculta tareas canónicas pendientes, y no permite omitir trabajo futuro por haber cerrado antes una aplicación. Autoriza documentar que nuevas relaciones, dependencias, packages o criterios deben provocar una nueva evaluación del application closure y pueden devolver una aplicación a INCOMPLETE o UNKNOWN_CRITERIA_TRACEABILITY conforme al modelo vigente. Los packages históricos cerrados conservan su evidencia; el trabajo nuevo se incorpora por su owner canónico. No autoriza cambios funcionales, TREQ, Supabase, ejecución de GAP-PKG-047, implementación física, piloto ni SHELL-CI-022.",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
+  "evidence": [
+    {
+      "type": "CORRECTION_QUALITY_REPAIR_V1",
+      "status": "PASS",
+      "command": "npm run quality:repair",
+      "started_at": "2026-09-22T17:57:32.190Z",
+      "candidate_head_before": "01bed76dac897a0e9ab531e5ffcc2d17268fc511",
+      "automatic_retry_forbidden": true,
+      "completed_at": "2026-09-22T17:57:46.841Z",
+      "execution_started_at": "2026-09-22T17:57:45.681Z",
+      "duration_ms": 1158,
+      "execution_candidate_head": "a8f251807e18d461bae04a2268d66fe7317ca822",
+      "exit_code": 0,
+      "stdout_sha256": "591c81fd91b14db80d3944a372c94907a82d503dc299abff48ac97aa405348ce",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "type": "CORRECTION_VALIDATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-22T18:04:24.105Z",
+      "candidate_head": "60a8cd352a056bb8f2d1b326503474055ef8d920",
+      "commands": [
+        "npm run docs:correction:check",
+        "npm run docs:correction:test",
+        "npm run docs:package:application:closure",
+        "node --test scripts/docs/package-application-closure.test.mjs",
+        "npm run docs:plan:build",
+        "npm run docs:plan:check",
+        "npm run docs:plan:test",
+        "npm run docs:treq:check",
+        "npm run docs:treq:test",
+        "git --no-pager diff --check"
+      ],
+      "results": [
+        {
+          "command": "npm run docs:correction:check",
+          "duration_ms": 1976,
+          "started_at": "2026-09-22T17:58:14.659Z",
+          "completed_at": "2026-09-22T17:58:16.636Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "f67e8ef3803f4ae02b729851cf6d1f80613ada3a91dcf82252cb9fee3556c888",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:correction:test",
+          "duration_ms": 23157,
+          "started_at": "2026-09-22T17:58:16.637Z",
+          "completed_at": "2026-09-22T17:58:39.795Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "93f8c31523ac07c589a05f28d37e13abeb7c7af024713b1065c6c1c6bbb7a94f",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:package:application:closure",
+          "duration_ms": 1395,
+          "started_at": "2026-09-22T17:58:39.796Z",
+          "completed_at": "2026-09-22T17:58:41.192Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "864d3c79c34f6a05963d50d7123ce40b3036b1f906e7925f16c3ed83cf8a7af7",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "node --test scripts/docs/package-application-closure.test.mjs",
+          "duration_ms": 237,
+          "started_at": "2026-09-22T17:58:41.193Z",
+          "completed_at": "2026-09-22T17:58:41.430Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "da4a1e526f83787e4972712d7568c7d4af6ec89092e16886de6d2058b1c096c9",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:plan:build",
+          "duration_ms": 110878,
+          "started_at": "2026-09-22T17:58:41.431Z",
+          "completed_at": "2026-09-22T18:00:32.310Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "033e1099cd096654af6bf5dd313725c11022a1ec7a266d3ff21a54981cef822f",
+          "stderr_sha256": "1ae30b43a81703ad076f9082e6e27e157800d67364441cb4f935c96828f9c1ce"
+        },
+        {
+          "command": "npm run docs:plan:check",
+          "duration_ms": 195786,
+          "started_at": "2026-09-22T18:00:32.311Z",
+          "completed_at": "2026-09-22T18:03:48.097Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "a07a01fa786a0a8dc267b1d4a9fc70d1cf064080bcefc2222c1ffa86ab597cdd",
+          "stderr_sha256": "242f011e67878c52bcdd518c7cc35e8183469b62cc7fe8d659f3146aabb11c86"
+        },
+        {
+          "command": "npm run docs:plan:test",
+          "duration_ms": 31410,
+          "started_at": "2026-09-22T18:03:48.099Z",
+          "completed_at": "2026-09-22T18:04:19.510Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "c6fdbd70776fdecf5994c17571040384f988a44b7073b42b744d99f3803367ee",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:check",
+          "duration_ms": 3858,
+          "started_at": "2026-09-22T18:04:19.511Z",
+          "completed_at": "2026-09-22T18:04:23.369Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "fae61db78684a0d99759837929da2020bc8f7bbb299cd4e402ae2c61330df253",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "npm run docs:treq:test",
+          "duration_ms": 644,
+          "started_at": "2026-09-22T18:04:23.370Z",
+          "completed_at": "2026-09-22T18:04:24.014Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "819ac6d422112dc022ba1565a8be43d6885bf5a99200c62c7f305745d68389bb",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "command": "git --no-pager diff --check",
+          "duration_ms": 88,
+          "started_at": "2026-09-22T18:04:24.015Z",
+          "completed_at": "2026-09-22T18:04:24.104Z",
+          "status": "PASS",
+          "exit_code": 0,
+          "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        }
+      ],
+      "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-22T18:09:25.731Z",
+      "validated_candidate_head": "60a8cd352a056bb8f2d1b326503474055ef8d920",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
+    }
+  ],
+  "opened_at": "2026-09-22T17:35:39.814Z",
+  "implemented_at": "2026-09-22T17:57:56.672Z",
+  "verified_at": "2026-09-22T18:09:25.731Z"
 }
