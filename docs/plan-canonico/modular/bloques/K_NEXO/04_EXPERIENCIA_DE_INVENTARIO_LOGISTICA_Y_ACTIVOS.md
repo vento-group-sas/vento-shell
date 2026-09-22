@@ -35116,7 +35116,1092 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido`
-### [ ] NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
+### ✅ NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
+**Tarea siguiente:** NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
+**Tipo de tarea:** documental; diseño canónico de experiencia para búsqueda y resolución transversal de ubicaciones, LPN, activos, reutilizables, contenedores, kits, repuestos y existencias mediante LOC, identificadores, códigos, responsable y contenido, con autorización por resultado, desambiguación de namespaces, paginación completa, frescura visible, ausencia de doble contabilización y navegación hacia superficies propietarias bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede localizar una existencia o identidad física sin conocer previamente en qué pantalla vive, usando un LOC, un LPN, un código, un responsable o un contenido conocido, y obtener resultados inequívocos, autorizados, navegables y reconciliables sin convertir la búsqueda en una nueva fuente de verdad ni exponer información fuera del alcance permitido.
+
+La regla raíz queda:
+
+```text
+INTENCION DE BUSQUEDA
++
+CONTEXTO AUTORIZADO
++
+RESOLUCION DE IDENTIFICADORES
++
+FILTROS EXPLICITOS
++
+RESULTADOS POR TIPO
++
+AUTORIZACION POR RESULTADO
++
+FRESCURA VISIBLE
++
+NAVEGACION A OWNER CANONICO
+→
+LOCALIZACION RAPIDA SIN INVENTAR IDENTIDAD NI AUTORIDAD
+```
+
+Siempre:
+
+```text
+SEARCH RESULT
+!=
+SOURCE OF TRUTH
+```
+
+```text
+MATCH
+!=
+AUTHORIZED ACTION
+```
+
+```text
+SAME TEXT
+!=
+SAME IDENTITY
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-036` deja definido un contrato único de experiencia que:
+
+1. permite búsqueda por LOC, LPN, código, responsable y contenido;
+2. reconoce que cada criterio puede resolver tipos distintos de recurso;
+3. evita un namespace global ficticio de códigos;
+4. exige desambiguación cuando el mismo texto identifica recursos distintos;
+5. separa coincidencia de lectura autorizada;
+6. aplica autorización al resultado antes de mostrarlo;
+7. no revela por conteos o mensajes la existencia de recursos no autorizados;
+8. distingue ubicación, LPN, contenedor físico, activo, reutilizable, kit, repuesto, producto y existencia;
+9. permite navegar desde un resultado hacia su superficie propietaria;
+10. exige servidor y paginación para conjuntos que pueden superar límites locales;
+11. prohíbe presentar un subconjunto truncado como universo completo;
+12. conserva sede, LOC, posición, LPN, custodia, condición y disponibilidad como dimensiones separadas;
+13. permite buscar contenido dentro de LPN sin duplicarlo como stock suelto;
+14. permite encontrar una identidad por responsable solo cuando existe una relación canónica vigente aplicable;
+15. no infiere responsabilidad desde creador, último actor o último movimiento;
+16. distingue responsable vigente de historial de responsables;
+17. muestra frescura y contexto del dato consultado;
+18. revalida el detalle al navegar a una superficie propietaria;
+19. no transforma una búsqueda en reserva, movimiento, transferencia, impresión o mutación;
+20. conserva comportamiento seguro ante red degradada, resultado parcial y caché local;
+21. no crea una identidad `VSCREEN-*` nueva;
+22. consume superficies canónicas existentes;
+23. entrega a `NEXO-UX-037` identidades resueltas aptas para decidir impresión sin imprimir por inferencia;
+24. no crea requisitos de prueba ni autoriza materialización física.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No existe una instancia física propia de `NEXO-UX-036`.
+
+#### 4. Continuidad recibida de `NEXO-UX-035`
+
+La continuidad funcional inmediata es:
+
+```text
+NEXO-UX-035
+→
+NEXO-UX-036
+→
+NEXO-UX-037
+```
+
+`NEXO-UX-035` entrega identidades de repuesto, compatibilidad, órdenes de trabajo, reservas, consumos, instalaciones, pieza retirada y mínimo por contexto suficientemente diferenciadas para que 036 pueda localizarlas sin convertir nombre, texto libre o mínimo en una identidad física nueva.
+
+#### 5. Contratos de dominio consumidos
+
+La búsqueda consume sin redefinir:
+
+- `NEXO-DOM-001`, clasificación física primaria;
+- `NEXO-DOM-002`, identidad de LPN;
+- `NEXO-DOM-007`, ubicación efectiva;
+- `NEXO-DOM-008`, custodia;
+- `NEXO-DOM-009`, separación entre activo individual y reutilizable por cantidad;
+- `NEXO-DOM-014`, kit, instancia y completitud;
+- `NEXO-DOM-016`, repuesto, compatibilidad y mínimo;
+- `NEXO-DOM-017`, historial y evidencia cuando una vista requiera contexto temporal;
+- `NEXO-DOM-019`, separación entre LPN y contenedor físico;
+- `NEXO-DOM-020`, relación temporal o persistente entre contenedor y LPN;
+- `NEXO-DOM-021`, no doble contabilización;
+- `NEXO-DOM-022`, efecto de mover un LPN raíz;
+- `NEXO-DOM-023`, trazabilidad de contenido;
+- `NEXO-DOM-024`, capacidad y compatibilidad de contenido.
+
+#### 6. Contratos de autorización consumidos
+
+El catálogo activo observado dispone, entre otros, de permisos específicos de lectura:
+
+```text
+nexo.inventory.locations.view
+nexo.inventory.lpns.view
+nexo.assets.items.view
+nexo.assets.groups.view
+nexo.assets.counts.view
+nexo.inventory.stock_counts.view
+```
+
+036 no crea un permiso global `search` y no utiliza una coincidencia como sustituto de autorización.
+
+La regla queda:
+
+```text
+QUERY ACCEPTED
++
+MATCH FOUND
++
+RESULT AUTHORIZED
+→
+RESULT MAY BE SHOWN
+```
+
+Si falta la capacidad de lectura propietaria de un tipo de resultado, ese tipo no se incorpora por inferencia a la respuesta transversal.
+
+#### 7. Brecha de autorización legacy
+
+El código actual conserva superficies de activos protegidas ampliamente por `inventory.stock` y el endpoint de LPN observado autentica al usuario pero no demuestra el uso de `nexo.inventory.lpns.view`.
+
+Por tanto:
+
+```text
+LEGACY BROAD ACCESS
+!=
+CANONICAL SEARCH AUTHORITY
+```
+
+036 diseña la experiencia objetivo sin declarar resuelta esa brecha física.
+
+#### 8. Superficies canónicas consumidas
+
+La experiencia se integra con identidades de pantalla ya aprobadas:
+
+| Superficie | Uso desde búsqueda |
+| --- | --- |
+| `VSCREEN-0037` — Catálogo de ubicaciones | explorar y filtrar ubicaciones |
+| `VSCREEN-0038` — Identificación y detalle de ubicación | abrir LOC exacto y su contexto |
+| `VSCREEN-0039` — Consulta de existencias | resolver producto, presentación, ubicación, lote, estado o sede |
+| `VSCREEN-0052` — LPN, contenedores y reutilizables | abrir LPN, contenedor o reutilizable relacionado |
+| `VSCREEN-0053` — Activos y custodia | abrir activo, responsable y relaciones de custodia |
+| `VSCREEN-0132` — Reservas de inventario | consultar una reserva cuando sea parte del contexto permitido |
+| `VSCREEN-0133` — Planes y órdenes de mantenimiento de activos | abrir mantenimiento o repuesto contextual cuando corresponda |
+
+La tarea no crea una pantalla paralela propietaria de todas las entidades.
+
+#### 9. Búsqueda transversal como interacción, no como nuevo dominio
+
+La búsqueda transversal es una interacción compartida sobre owners existentes.
+
+No crea:
+
+- una entidad física nueva;
+- un catálogo duplicado;
+- una tabla maestra paralela;
+- un lifecycle;
+- una autoridad distinta;
+- una clasificación adicional.
+
+#### 10. Tipos de resultado
+
+El resultado puede clasificarse como mínimo en:
+
+```text
+LOCATION
+LPN
+PHYSICAL_CONTAINER
+SERIALIZED_ASSET
+REUSABLE_QUANTITY
+KIT_INSTANCE
+SPARE_PART
+PRODUCT_OR_STOCK
+CONTENT_MATCH
+```
+
+La clase de resultado se muestra explícitamente y nunca se deduce únicamente por estilo visual.
+
+#### 11. Código no es un namespace único
+
+Se fija:
+
+```text
+LOC CODE
+LPN CODE
+ASSET CODE
+INTERNAL PLATE
+SERIAL NUMBER
+CONTAINER CODE
+PRODUCT SKU
+KIT CODE
+```
+
+son namespaces diferentes.
+
+El mismo texto puede existir legítimamente en más de uno.
+
+#### 12. Prioridad de resolución de identificadores
+
+La búsqueda intenta reconocer coincidencias exactas antes que coincidencias textuales amplias.
+
+Orden UX recomendado:
+
+1. identificador exacto en un namespace conocido;
+2. código exacto;
+3. serial, placa o SKU exactos;
+4. prefijo significativo;
+5. coincidencia textual normalizada;
+6. filtros secundarios.
+
+Este orden organiza presentación; no altera la autoridad de la fuente propietaria.
+
+#### 13. Desambiguación obligatoria
+
+Cuando una cadena coincide con varias identidades:
+
+```text
+AMBIGUOUS TOKEN
+→
+SHOW TYPED CANDIDATES
+→
+SHOW SAFE CONTEXT
+→
+REQUIRE EXPLICIT SELECTION
+```
+
+No se abre automáticamente el primer resultado por orden accidental.
+
+#### 14. Búsqueda por LOC
+
+Una búsqueda LOC puede resolver por:
+
+- código exacto;
+- zona;
+- descripción;
+- sede;
+- posición cuando forme parte del contexto autorizado.
+
+El resultado debe distinguir:
+
+```text
+SITE
+LOCATION / LOC
+POSITION
+```
+
+No se fusionan en una única cadena autoritativa.
+
+#### 15. Resultado LOC
+
+Un resultado de ubicación muestra, cuando esté autorizado:
+
+- código LOC;
+- sede;
+- zona o descripción;
+- posición o subnivel aplicable;
+- estado relevante;
+- resumen de contenido;
+- frescura;
+- acceso al detalle propietario.
+
+El resumen no sustituye `VSCREEN-0038`.
+
+#### 16. Contenido de LOC
+
+Buscar una ubicación por contenido puede devolver el LOC que contiene una existencia.
+
+Se preserva:
+
+```text
+CONTENT MATCH IN LOCATION
+!=
+LOCATION IDENTITY
+```
+
+El contenido sigue perteneciendo a su representación canónica y el LOC sigue siendo una ubicación.
+
+#### 17. Búsqueda por LPN
+
+Un LPN puede resolverse por código o identificador permitido.
+
+El resultado conserva:
+
+- `lpn_id` estable;
+- código visible;
+- lifecycle;
+- sede y ubicación efectiva;
+- parent cuando exista;
+- contenedor físico relacionado cuando exista;
+- resumen de contenido directo;
+- indicador de contenido descendiente cuando aplique;
+- frescura.
+
+#### 18. LPN directo y contenido descendiente
+
+En anidamiento se separa:
+
+```text
+DIRECT CONTENT
+!=
+DESCENDANT CONTENT
+```
+
+Una coincidencia encontrada dentro de un LPN hijo puede hacer visible la ruta de anidamiento, pero no reasigna el contenido al padre.
+
+#### 19. LPN y contenedor físico
+
+Se preserva:
+
+```text
+LPN ID
+!=
+PHYSICAL CONTAINER ID
+```
+
+Si ambos comparten una relación vigente, la búsqueda puede mostrarla como relación, nunca como equivalencia.
+
+#### 20. Búsqueda por código de activo
+
+La resolución de activo puede considerar, según la fuente propietaria:
+
+- código de activo;
+- placa interna;
+- serial;
+- código QR resuelto a identidad;
+- producto o modelo como filtro complementario.
+
+La coincidencia exacta conserva la identidad individual.
+
+#### 21. Búsqueda de reutilizables por cantidad
+
+Los reutilizables controlados por cantidad no se presentan como cientos de identidades individuales inventadas.
+
+La búsqueda conserva:
+
+- grupo o agregación canónica;
+- producto o referencia;
+- cantidad;
+- unidad;
+- ubicación;
+- condición;
+- responsable cuando aplique.
+
+#### 22. Búsqueda de kits
+
+Un kit puede localizarse por su instancia o por un miembro conocido.
+
+Se fija:
+
+```text
+MEMBER MATCH
+!=
+KIT IDENTITY
+```
+
+La UI debe explicar si la coincidencia corresponde al kit completo o a un miembro del kit.
+
+#### 23. Búsqueda de repuestos
+
+Un repuesto puede aparecer por:
+
+- producto o SKU;
+- compatibilidad con un activo o modelo como filtro;
+- ubicación;
+- disponibilidad;
+- reserva u orden de trabajo cuando el actor tenga acceso.
+
+La búsqueda no interpreta texto libre `replaced_parts` como identidad de repuesto.
+
+#### 24. Búsqueda por responsable
+
+`responsable` representa una relación operativa vigente reconocida por el contrato propietario.
+
+No se interpreta automáticamente como:
+
+- creador del registro;
+- último editor;
+- último actor de movimiento;
+- propietario económico;
+- persona que imprimió la etiqueta;
+- persona que realizó un conteo.
+
+#### 25. Responsable y custodia
+
+Cuando el recurso tenga una custodia canónica vigente, la búsqueda por responsable puede usar esa relación conforme a la autorización aplicable.
+
+Se fija:
+
+```text
+CURRENT RESPONSIBLE / CUSTODIAN
+!=
+HISTORICAL ACTOR
+```
+
+#### 26. Historial de responsable
+
+Buscar por responsable vigente no incluye automáticamente historial.
+
+La consulta histórica requiere un modo explícito y consume el contrato de historial/evidencia correspondiente.
+
+#### 27. Privacidad del responsable
+
+La UI muestra únicamente la identidad laboral necesaria para desambiguar el resultado autorizado.
+
+No incorpora por defecto correo personal, teléfono, dirección, documento u otros datos no requeridos para la tarea logística.
+
+#### 28. Búsqueda por contenido
+
+`contenido` puede significar una existencia conocida dentro de:
+
+- LOC;
+- LPN;
+- LPN anidado;
+- kit;
+- contenedor físico cuando exista relación de contenido autorizada.
+
+El resultado debe explicar el camino de pertenencia o ubicación.
+
+#### 29. Producto y existencia
+
+Se preserva:
+
+```text
+PRODUCT
+!=
+PHYSICAL EXISTENCE
+```
+
+Buscar un producto puede mostrar dónde existe, pero el producto maestro no se convierte en una existencia física.
+
+#### 30. Stock suelto y contenido de LPN
+
+La búsqueda nunca suma la misma cantidad simultáneamente como:
+
+```text
+LOOSE STOCK
++
+LPN CONTENT
+```
+
+si ambas representaciones apuntan a la misma existencia.
+
+Los resultados pueden mostrar distintas proyecciones de una misma realidad, pero deben etiquetarlas sin producir un total duplicado.
+
+#### 31. Dimensiones de trazabilidad
+
+Cuando el contenido esté sujeto a trazabilidad, la búsqueda conserva las dimensiones relevantes:
+
+- lote;
+- serial;
+- origen;
+- vencimiento o vida útil;
+- estado de liberación;
+- condición;
+- ubicación;
+- LPN;
+- cantidad y unidad.
+
+No se colapsan dos existencias materialmente distintas solo porque comparten producto.
+
+#### 32. Filtros canónicos
+
+La experiencia puede combinar filtros autorizados de:
+
+- sede;
+- LOC;
+- posición;
+- tipo de resultado;
+- clase primaria;
+- producto;
+- presentación;
+- lote;
+- condición;
+- lifecycle;
+- disponibilidad;
+- responsable;
+- LPN;
+- estado de contenido.
+
+La disponibilidad de cada filtro depende del universo de resultados y del permiso efectivo.
+
+#### 33. Filtros no crean autoridad
+
+Se fija:
+
+```text
+VISIBLE FILTER
+!=
+ACCESS GRANT
+```
+
+Un filtro nunca amplía territorio, recurso o datos disponibles.
+
+#### 34. Alcance territorial
+
+La búsqueda respeta territorio, sede, recurso y demás contexto efectivo aplicable.
+
+No mezcla resultados de otras sedes porque el texto coincida.
+
+Cuando el actor pueda consultar múltiples sedes, la sede se muestra de forma inequívoca en cada resultado.
+
+#### 35. Autorización por resultado
+
+Un motor transversal puede consultar varias fuentes internamente, pero la respuesta final se construye solo con resultados que el actor pueda leer.
+
+No se autoriza una familia completa por tener acceso a otra.
+
+#### 36. Ausencia segura
+
+La experiencia no debe distinguir de forma insegura entre:
+
+```text
+NO EXISTE
+NO COINCIDE
+NO ESTA EN EL ALCANCE AUTORIZADO
+```
+
+cuando revelar esa diferencia exponga la existencia de un recurso restringido.
+
+El detalle técnico queda en observabilidad autorizada, no en la UI ordinaria.
+
+#### 37. Conteos de resultados
+
+Un contador global no incluye recursos ocultos por autorización.
+
+No se muestra `10 resultados, 4 ocultos` ni señales equivalentes que filtren existencia restringida.
+
+#### 38. Paginación completa
+
+La búsqueda sobre universos amplios debe ser server-side o usar un mecanismo equivalente que permita continuidad completa.
+
+Se prohíbe:
+
+```text
+LOAD FIRST 500
++
+FILTER LOCALLY
++
+CLAIM COMPLETE SEARCH
+```
+
+#### 39. Resultado parcial
+
+Si una fuente no puede recorrerse completamente, la UI debe mostrar que el resultado es parcial y permitir continuar o reintentar.
+
+No se presenta un corte técnico como `sin resultados`.
+
+#### 40. Orden estable
+
+Dentro de un mismo nivel de relevancia, el orden debe ser estable y reproducible.
+
+Una opción válida es combinar:
+
+1. exactitud;
+2. tipo de recurso;
+3. código o nombre estable;
+4. identificador estable como desempate.
+
+No se depende del orden accidental devuelto por una tabla.
+
+#### 41. Búsqueda tolerante sin identidad ambigua
+
+La entrada textual puede normalizar mayúsculas, minúsculas y diacríticos para coincidencia humana.
+
+La normalización no modifica el valor canónico ni fusiona identificadores distintos.
+
+#### 42. Coincidencia exacta y coincidencia aproximada
+
+La interfaz distingue visualmente:
+
+```text
+EXACT MATCH
+PREFIX MATCH
+TEXT MATCH
+```
+
+Una coincidencia aproximada nunca se presenta como identidad exacta.
+
+#### 43. Contexto mínimo del resultado
+
+Cada fila de resultado incluye suficiente contexto para elegir sin abrir múltiples pantallas a ciegas.
+
+Como mínimo, según tipo:
+
+- tipo de resultado;
+- identidad o código principal;
+- descripción legible;
+- sede/LOC cuando aplique;
+- estado relevante;
+- responsable cuando aplique;
+- resumen de contenido cuando aplique;
+- frescura.
+
+#### 44. Frescura visible
+
+La búsqueda es una proyección consultiva.
+
+Cuando la frescura sea material, se muestra:
+
+- instante de consulta o actualización;
+- estado confirmado;
+- advertencia de dato potencialmente obsoleto cuando corresponda.
+
+#### 45. Navegación revalida
+
+Al abrir un resultado, la superficie propietaria vuelve a cargar y autorizar el recurso.
+
+Se fija:
+
+```text
+SEARCH SNAPSHOT
+!=
+DETAIL AUTHORITY
+```
+
+Un resultado encontrado antes no garantiza que continúe visible o vigente al abrirlo.
+
+#### 46. Resultado obsoleto
+
+Si un recurso cambió entre búsqueda y apertura:
+
+- no se intenta forzar el estado anterior;
+- se carga la realidad actual;
+- se explica el cambio cuando sea útil y seguro;
+- se conserva la consulta como navegación, no como mutación.
+
+#### 47. Estado confirmado y estado derivado
+
+La UI distingue campos autoritativos de resúmenes derivados.
+
+Por ejemplo, un LPN padre puede mostrar un resumen de contenido descendiente, pero ese resumen no se convierte en membresía directa.
+
+#### 48. Entrada por escaneo
+
+036 define que una cadena de identificador proveniente de cualquier método de entrada use el mismo resolvedor y las mismas reglas de autorización.
+
+La captura física por escáner, cámara, reintento y etiqueta dañada pertenece a `NEXO-UX-038`.
+
+#### 49. Entrada por enlace o QR
+
+Un enlace o token resuelto hacia un recurso no evita la autorización normal.
+
+Se fija:
+
+```text
+VALID TOKEN
+!=
+AUTHORIZED VIEW
+```
+
+#### 50. Búsqueda y acciones rápidas
+
+Los resultados pueden ofrecer navegación o acciones contextuales únicamente cuando la superficie propietaria ya defina y autorice esas acciones.
+
+036 no crea mutaciones nuevas desde la lista de búsqueda.
+
+#### 51. Búsqueda e impresión
+
+Encontrar un LOC, LPN, activo o documento no inicia impresión.
+
+036 entrega a `NEXO-UX-037`:
+
+- tipo de identidad resuelta;
+- identificador estable;
+- contexto suficiente para escoger representación;
+- autoridad de lectura ya evaluada para mostrar el resultado.
+
+037 deberá evaluar por separado la autoridad de impresión.
+
+#### 52. Búsqueda y movimiento
+
+Se fija:
+
+```text
+FOUND RESOURCE
+!=
+MOVABLE RESOURCE
+```
+
+La posibilidad de localizar una existencia no concede moverla, transferirla, asignarla ni reubicarla.
+
+#### 53. Búsqueda y custodia
+
+Encontrar por responsable no concede transferencia de custodia.
+
+La custodia continúa gobernada por su contrato y su autoridad propia.
+
+#### 54. Búsqueda y contenido LPN
+
+Encontrar contenido dentro de un LPN no concede `PACK`, `UNPACK`, `SPLIT`, `MERGE` ni `TRANSFER_CONTENT`.
+
+La consulta permanece de lectura.
+
+#### 55. Estado AS-IS: activos
+
+La aplicación actual posee búsqueda `q` en `/inventory/assets` que normaliza texto y compara localmente campos como:
+
+- producto;
+- SKU;
+- código de activo o grupo;
+- nombre;
+- placa interna;
+- serial;
+- marca/modelo;
+- sede/área;
+- LOC/zona/posición;
+- responsable.
+
+Sin embargo, carga hasta 500 activos individuales y 500 grupos antes de filtrar.
+
+Ese comportamiento es una base parcial y no demuestra búsqueda transversal completa.
+
+#### 56. Estado AS-IS: stock
+
+El módulo de stock ya acepta `q`, sede, clase, categoría, LOC y zona.
+
+La búsqueda de producto observada se ejecuta server-side y pagina por rangos, pero su texto se centra en `name` y `sku` de producto.
+
+No cubre por sí sola LPN, responsable, contenido anidado ni activos exactos.
+
+#### 57. Estado AS-IS: LPN
+
+El endpoint observado `/api/inventory/lpns`:
+
+- exige usuario autenticado;
+- devuelve `id`, `code`, `site_id` y `created_at`;
+- usa límite configurable con máximo 1000;
+- no expone en la implementación observada una búsqueda `q` por contenido o responsable;
+- no demuestra guard específico `nexo.inventory.lpns.view`.
+
+Se clasifica como infraestructura parcial reutilizable, no como resolvedor transversal final.
+
+#### 58. Estado AS-IS: ubicación
+
+El detalle actual de ubicación consulta `inventory_stock_by_location` y muestra un resumen limitado de existencias del LOC.
+
+La superficie es útil como destino de navegación, pero no constituye una búsqueda transversal completa.
+
+#### 59. Clasificación de adopción
+
+La capacidad se clasifica:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+Se reutilizan filtros, helpers, vistas y superficies existentes donde preserven contratos; se refactorizan límites locales, autoridad amplia, endpoints parciales y universos incompletos.
+
+#### 60. No búsqueda por heurística de texto libre
+
+No se debe reconstruir identidad desde notas, observaciones o descripciones libres cuando existe una identidad canónica.
+
+Texto libre puede ayudar a orientar al usuario, pero no decide:
+
+- LPN;
+- activo;
+- serial;
+- responsable;
+- kit;
+- repuesto;
+- contenedor;
+- ubicación.
+
+#### 61. Caché y dispositivo compartido
+
+Si existe caché local de resultados:
+
+- queda particionada por actor y contexto;
+- no persiste información sensible después de cerrar sesión o cambiar actor;
+- muestra su condición de caché;
+- no se usa como autoridad de mutación;
+- respeta la política de expiración aplicable.
+
+#### 62. Operación offline
+
+Offline puede permitir consulta de resultados previamente autorizados y cacheados cuando la política lo permita.
+
+Se fija:
+
+```text
+OFFLINE CACHE
+!=
+CURRENT AUTHORITATIVE STATE
+```
+
+La UI muestra que la información puede estar desactualizada y revalida al reconectar.
+
+#### 63. Recuperación ante fallo de fuente
+
+Si una fuente falla y otras responden:
+
+- la UI no declara búsqueda completa;
+- identifica de forma humana que faltan resultados de una categoría cuando sea seguro;
+- permite reintentar;
+- conserva la consulta;
+- no duplica resultados al recuperar la fuente.
+
+#### 64. Observabilidad
+
+La observabilidad futura debe permitir diagnosticar:
+
+- duración total;
+- fuentes consultadas;
+- fuente fallida;
+- paginación;
+- resultado parcial;
+- categoría de coincidencia;
+- denegación o redacción sin payload sensible;
+- versión o frescura relevante.
+
+No se registran consultas sensibles completas cuando una política de seguridad lo prohíba.
+
+#### 65. Rendimiento percibido
+
+La UX prioriza respuesta útil progresiva sin sacrificar completitud declarada.
+
+Puede mostrar categorías conforme terminan, siempre que distinga:
+
+```text
+LOADING
+PARTIAL
+COMPLETE
+FAILED
+```
+
+No cambia a `COMPLETE` mientras una fuente obligatoria siga sin resolver.
+
+#### 66. Estados vacíos
+
+Se distinguen:
+
+- consulta todavía no ejecutada;
+- búsqueda completa sin coincidencias visibles;
+- búsqueda parcial;
+- fallo técnico;
+- contexto sin permiso suficiente;
+- filtro demasiado restrictivo cuando pueda afirmarse de forma segura.
+
+#### 67. Matriz de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| SEARCH-01 | LOC exacto | ubicación única y navegación a detalle |
+| SEARCH-02 | código igual en LOC y LPN | desambiguación tipada |
+| SEARCH-03 | LPN exacto | identidad estable, estado y contexto |
+| SEARCH-04 | contenido directo en LPN | LPN y membresía directa visibles |
+| SEARCH-05 | contenido en LPN hijo | ruta de anidamiento sin reasignar membresía |
+| SEARCH-06 | activo por serial | identidad individual exacta |
+| SEARCH-07 | activo por placa | identidad individual exacta |
+| SEARCH-08 | reutilizable por código de grupo | resultado por cantidad, no identidades inventadas |
+| SEARCH-09 | kit por miembro | coincidencia explica miembro y kit |
+| SEARCH-10 | repuesto por SKU | stock y contexto sin consumo implícito |
+| SEARCH-11 | responsable vigente | recursos actualmente relacionados y autorizados |
+| SEARCH-12 | actor histórico | no aparece como responsable vigente por inferencia |
+| SEARCH-13 | mismo producto suelto y dentro de LPN | proyecciones visibles sin sumar doble |
+| SEARCH-14 | más de 500 activos | resultado completo mediante paginación, no truncado silencioso |
+| SEARCH-15 | LPN no autorizado | no fuga de existencia |
+| SEARCH-16 | resultado stale al abrir | detalle actual reemplaza snapshot |
+| SEARCH-17 | fuente LPN caída | estado parcial explícito |
+| SEARCH-18 | caché offline | dato marcado como no actual y revalidación posterior |
+| SEARCH-19 | token QR válido sin permiso | recurso no mostrado |
+| SEARCH-20 | búsqueda seguida de impresión | impresión requiere decisión separada |
+| SEARCH-21 | búsqueda seguida de transferencia | búsqueda no concede mutación |
+| SEARCH-22 | coincidencia textual aproximada | no se presenta como exacta |
+| SEARCH-23 | filtros multisedes autorizados | sede visible por resultado |
+| SEARCH-24 | filtros que dejan cero resultados | vacío seguro y comprensible |
+
+La matriz es de diseño y no representa ejecución de pruebas.
+
+#### 68. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| clasificación física | `NEXO-DOM-001` |
+| identidad LPN | `NEXO-DOM-002` |
+| ubicación efectiva | `NEXO-DOM-007` |
+| custodia y responsable aplicable | `NEXO-DOM-008` / `NEXO-UX-031` |
+| activos/reutilizables | `NEXO-DOM-009` / `NEXO-UX-030` |
+| kits | `NEXO-DOM-014` / `NEXO-UX-033` |
+| repuestos | `NEXO-DOM-016` / `NEXO-UX-035` |
+| historial/evidencia | `NEXO-DOM-017` |
+| LPN vs contenedor | `NEXO-DOM-019` / `NEXO-DOM-020` |
+| trazabilidad de contenido | `NEXO-DOM-023` |
+| lectura LPN y ubicaciones | `NEXO-AUTH-021` y owners protectores posteriores |
+| lectura de activos/reutilizables | `NEXO-AUTH-024` |
+| impresión | `NEXO-AUTH-028` / `NEXO-UX-037` |
+| escáner y etiqueta dañada | `NEXO-UX-038` |
+
+#### 69. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya obliga a conservar ciclo LPN, fuente canónica de movimientos y proyecciones, trazabilidad, separación de identidades físicas, comportamiento por clase, fuente de verdad visible, operación resiliente y lectura segura. 036 especializa la interacción de localización y resolución sobre esas obligaciones sin introducir una regla de negocio nueva independiente.
+
+#### 70. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para que LPN y contenido sean alcanzables y auditables;
+- `TREQ-NEXO-011`, para fuente canónica, LOC/LPN y no doble contabilización;
+- `TREQ-NEXO-012`, para conservar trazabilidad de lote, serial, ubicación, condición y contenido LPN;
+- `TREQ-NEXO-013`, para identidad estable, ubicación, custodio, responsable y clases de activos;
+- `TREQ-NEXO-040`, para clase primaria única;
+- `TREQ-NEXO-041`, para impedir que nombre, categoría, ubicación o estado sustituyan la clase;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y ausencia de representaciones duplicadas;
+- `TREQ-UX-002`, para errores y recuperación comprensibles;
+- `TREQ-UX-004`, para superficies operativas y periféricos reales;
+- `TREQ-UX-005`, para fuente de verdad, actor, estado y frescura visibles;
+- `TREQ-UX-006`, para red, dispositivo, sesión y recuperación sin duplicar trabajo.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 71. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la redacción. |
+| REMOTA | PASS | Se verificaron fuentes canónicas vigentes de protocolo, contrato de entrega, continuidad, topología, políticas, owner UX, contratos de dominio y autorización aplicables, registro 04A NEXO/UX, catálogo de pantallas y código remoto actual de activos, stock, LPN y ubicación. |
+| OPERATIVA | NOT_EXECUTED | No se realizaron búsquedas de operación con actores, lectores o dispositivos físicos. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-036` es `DEFINE_ONCE`, no genera instancia física propia y no autoriza cambios de producto, datos, Supabase ni hardware. |
+
+#### 72. Criterios de aceptación
+
+- [x] se definen LOC, LPN, código, responsable y contenido como entradas de búsqueda;
+- [x] se mantiene cada namespace de código separado;
+- [x] coincidencias ambiguas exigen desambiguación;
+- [x] búsqueda no crea identidad nueva;
+- [x] búsqueda no es fuente de verdad;
+- [x] coincidencia no concede acción;
+- [x] autorización se aplica por resultado;
+- [x] no se filtra existencia de recursos no autorizados;
+- [x] LOC, posición y sede permanecen separados;
+- [x] LPN y contenedor físico permanecen separados;
+- [x] contenido directo y descendiente permanecen separados;
+- [x] activo serializado conserva identidad exacta;
+- [x] reutilizable por cantidad no crea identidades ficticias;
+- [x] kit y miembro se diferencian;
+- [x] producto y existencia física se diferencian;
+- [x] repuesto no se resuelve desde texto libre legacy;
+- [x] responsable vigente no se infiere desde último actor;
+- [x] historial de responsable no invade búsqueda vigente;
+- [x] datos personales no necesarios quedan fuera del resultado;
+- [x] contenido LPN no se duplica como stock suelto;
+- [x] trazabilidad material se conserva;
+- [x] filtros no amplían autorización;
+- [x] búsqueda multisedes muestra contexto de sede;
+- [x] paginación evita truncamiento silencioso;
+- [x] resultado parcial se declara como parcial;
+- [x] exactitud y aproximación se diferencian;
+- [x] frescura resulta visible cuando es material;
+- [x] detalle propietario revalida estado y autoridad;
+- [x] caché offline no se presenta como estado vigente;
+- [x] caché en dispositivo compartido queda particionada por actor/contexto;
+- [x] fallo de una fuente no se presenta como búsqueda completa;
+- [x] búsqueda por token o QR no evita autorización;
+- [x] búsqueda no inicia movimiento, custodia, contenido o impresión;
+- [x] no se crea una nueva identidad `VSCREEN-*`;
+- [x] se reutilizan las superficies canónicas existentes;
+- [x] se documenta el AS-IS y su límite de 500 en activos;
+- [x] se documenta stock server-side parcial por nombre/SKU;
+- [x] se documenta endpoint LPN parcial y su límite;
+- [x] la adopción queda `REUSE_OR_REFACTOR`;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-UX-037`.
+
+#### 73. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- crea Server Actions ni Route Handlers;
+- crea un motor de búsqueda físico;
+- crea índices de base de datos;
+- crea extensiones de full-text search;
+- crea tablas, columnas, enums, constraints, triggers, vistas, funciones, RPC o RLS;
+- crea ni modifica datos de búsqueda;
+- crea un namespace global de códigos;
+- modifica LOC, posiciones, LPN, contenido, activos, reutilizables, kits, repuestos o contenedores;
+- mueve, reserva, consume, asigna, transfiere, empaca o desempaca existencias;
+- modifica custodia;
+- imprime etiquetas;
+- define plantillas, ZPL, DPI, simbologías o hardware de impresión;
+- diseña la operación física de escáner reservada a `NEXO-UX-038`;
+- crea permisos ni amplía `inventory.stock`;
+- crea `PermissionKey`, grants, scope o modalidad;
+- modifica Supabase;
+- ejecuta migraciones ni backfills;
+- despliega código;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- autoriza una instancia física;
+- desarrolla `NEXO-UX-037`.
+
+#### 74. Handoff hacia `NEXO-UX-037`
+
+036 entrega:
+
+```text
+AUTHORIZED RESOLVED RESOURCE
++
+EXPLICIT RESOURCE TYPE
++
+STABLE RESOURCE ID
++
+SAFE DISPLAY CONTEXT
++
+CANONICAL OWNER SURFACE
++
+FRESHNESS / REVISION CONTEXT WHEN MATERIAL
++
+NO IMPLIED MUTATION
+```
+
+`NEXO-UX-037` deberá diseñar impresión de LOC, LPN, activo y documento consumiendo una identidad ya resuelta, pero evaluando de forma independiente plantilla, representación, autoridad de impresión, trabajo durable, dispositivo y resultado físico.
+
+#### 75. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento`
 ### [ ] NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
 ### [ ] NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
 ### [ ] NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
