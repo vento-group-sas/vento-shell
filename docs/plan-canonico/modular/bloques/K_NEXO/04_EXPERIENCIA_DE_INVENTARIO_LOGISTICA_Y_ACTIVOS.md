@@ -40535,7 +40535,1388 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias`
-### [ ] NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
+### ✅ NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
+**Tarea siguiente:** NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
+**Tipo de tarea:** documental; definición canónica del marco de línea base y métricas objetivo para pérdidas o no localización, búsqueda, captura y diferencias del subdominio de activos, reutilizables, kits, repuestos y contenedores, con identidades métricas, fórmulas, denominadores, segmentación, calidad, estados de baseline y target, guardrails, scorecard y handoff a aprobación de diseño, sin fabricar valores observados ni ejecutar instrumentación o cambios físicos
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma calculable, reproducible y auditable cómo se establecerán la línea base y los objetivos de pérdidas o no localización, búsqueda y diferencias para el subdominio diseñado en `NEXO-UX-026` a `NEXO-UX-040`.
+
+La tarea consume las dimensiones observables entregadas por `NEXO-UX-040`, pero no convierte ausencia de medición en cero, una validación documental en desempeño operativo ni una aspiración de mejora en meta aprobada.
+
+La regla raíz queda:
+
+```text
+DEFINICIÓN MÉTRICA VERSIONADA
++
+GRANO Y DENOMINADOR ELEGIBLES
++
+FUENTE Y CORTE REPRODUCIBLES
++
+CALIDAD Y COBERTURA EXPLÍCITAS
++
+BASELINE OBSERVADO Y APROBADO
++
+TARGET FUNDAMENTADO Y APROBADO
++
+GUARDRAILS
+→
+MEDICIÓN COMPARABLE DEL SUBDOMINIO
+```
+
+Y se preserva:
+
+```text
+MÉTRICA DEFINIDA
+!=
+VALOR OBSERVADO
+
+BASELINE DISEÑADO
+!=
+BASELINE MEDIDO
+
+DIRECCIÓN DE MEJORA
+!=
+TARGET NUMÉRICO APROBADO
+
+AUSENCIA DE DATO
+!=
+CERO
+```
+
+#### 2. Resultado canónico
+
+041 materializa trece artefactos documentales:
+
+1. `NEXO-SUBDOMAIN-METRIC-GOVERNANCE-CONTRACT-001` — gobierna identidad, propósito, versión, comparabilidad y prohibición de fabricar resultados;
+2. `NEXO-SUBDOMAIN-METRIC-CATALOG-001` — materializa doce métricas estables recibidas desde el handoff de 040;
+3. `NEXO-SUBDOMAIN-METRIC-STATE-CONTRACT-001` — reutiliza estados canónicos de colección, baseline, target, monitoreo e invalidación;
+4. `NEXO-SUBDOMAIN-BASELINE-ELIGIBILITY-CONTRACT-001` — define qué observaciones pueden formar una línea base;
+5. `NEXO-SUBDOMAIN-BASELINE-REGISTER-SHAPE-001` — define el shape versionado de cada baseline sin crear filas reales;
+6. `NEXO-SUBDOMAIN-TARGET-CONTRACT-001` — define cómo se propone y aprueba un objetivo después de baseline;
+7. `NEXO-SUBDOMAIN-LOSS-METRIC-CONTRACT-001` — especializa pérdida y no localización sin fusionarlas;
+8. `NEXO-SUBDOMAIN-SEARCH-METRIC-CONTRACT-001` — especializa éxito, ambigüedad, tiempo de búsqueda y scan no resuelto;
+9. `NEXO-SUBDOMAIN-DIFFERENCE-METRIC-CONTRACT-001` — especializa cantidad, duplicados, clase, ubicación, custodia, candidatos y resultado desconocido;
+10. `NEXO-SUBDOMAIN-SEGMENTATION-CONTRACT-001` — fija segmentos mínimos y prohíbe agregaciones que oculten diferencias materiales;
+11. `NEXO-SUBDOMAIN-DATA-QUALITY-GUARDRAIL-CONTRACT-001` — gobierna elegibilidad, datos parciales, fuentes incompletas y anti-gaming;
+12. `NEXO-SUBDOMAIN-SCORECARD-CONTRACT-001` — define la lectura conjunta de las doce métricas sin crear un promedio engañoso;
+13. `NEXO-SUBDOMAIN-E5-MEASUREMENT-HANDOFF-001` — entrega a `NEXO-UX-042` y a la futura materialización las obligaciones de instrumentación, baseline y target.
+
+Cobertura materializada:
+
+| Elemento | Esperado | Materializado | Faltantes | Duplicados |
+| --- | ---: | ---: | ---: | ---: |
+| Familias métricas | 3 | 3 | 0 | 0 |
+| Dimensiones heredadas de 040 | 12 | 12 | 0 | 0 |
+| Métricas estables | 12 | 12 | 0 | 0 |
+| Baselines observados | 0 | 0 | 0 | 0 |
+| Baselines aprobados | 0 | 0 | 0 | 0 |
+| Targets numéricos propuestos | 0 | 0 | 0 | 0 |
+| Targets numéricos aprobados | 0 | 0 | 0 | 0 |
+| Requisitos nuevos o modificados | 0 | 0 | 0 | 0 |
+
+#### 3. Handoff recibido desde `NEXO-UX-040`
+
+041 consume exactamente estas doce dimensiones observables:
+
+```text
+1. pérdida / no localización
+2. diferencia de cantidad
+3. búsqueda exitosa
+4. búsqueda ambigua
+5. tiempo de búsqueda
+6. scan no resuelto
+7. duplicado sospechoso
+8. conflicto de clase
+9. diferencia de ubicación
+10. diferencia de custodia
+11. candidato bloqueado por causa
+12. recuperación de resultado desconocido
+```
+
+040 no entregó valores, baseline, target, SLO, SLA ni porcentaje de mejora.
+
+Por tanto 041 no puede presentar cifras operativas como observadas.
+
+#### 4. Frontera con `NEXO-UX-025`
+
+041 reutiliza el gobierno métrico ya aprobado en `NEXO-UX-025` y no crea un segundo vocabulario incompatible.
+
+Se conservan estos estados:
+
+```text
+NOT_COLLECTED
+COLLECTING
+DATA_QUALITY_BLOCKED
+BASELINE_PROVISIONAL
+BASELINE_APPROVED
+NOT_SET
+TARGET_PROPOSED
+TARGET_APPROVED
+MONITORING
+INVALIDATED
+```
+
+Pero el objeto medido es distinto:
+
+```text
+NEXO-UX-025
+→ desempeño de piloto operativo por actor y escenario
+
+NEXO-UX-041
+→ calidad operativa del subdominio de activos, reutilizables,
+  kits, repuestos y contenedores en pérdidas, búsqueda y diferencias
+```
+
+Los valores de una familia no sustituyen a la otra.
+
+#### 5. Gobierno de identidad métrica
+
+Cada métrica conserva como mínimo:
+
+- `metric_id` estable;
+- `metric_version`;
+- nombre empresarial;
+- decisión que apoya;
+- familia;
+- unidad;
+- fórmula;
+- numerador;
+- denominador;
+- grano;
+- población elegible;
+- exclusiones;
+- segmentos obligatorios;
+- fuente o fuentes;
+- regla de corte;
+- tratamiento de datos tardíos;
+- tratamiento de anulaciones o correcciones;
+- owner funcional;
+- owner técnico futuro;
+- calidad mínima;
+- estado de baseline;
+- estado de target;
+- guardrails;
+- vigencia;
+- regla de invalidación.
+
+Se fija:
+
+```text
+MISMA MÉTRICA
++
+MISMA VERSIÓN
++
+MISMO SCOPE
++
+MISMO CORTE
++
+MISMAS EXCLUSIONES
+→
+MISMO RESULTADO
+```
+
+#### 6. Grano canónico
+
+No existe un único grano para las doce métricas.
+
+Se distinguen:
+
+```text
+RESOURCE OBSERVATION
+SEARCH ATTEMPT
+SCAN ATTEMPT
+COUNT LINE
+DISCREPANCY CASE
+CANDIDATE REVIEW
+UNKNOWN-RESULT CASE
+```
+
+Una agregación deberá declarar desde cuál de esos granos se construye.
+
+No se permite dividir un numerador por un denominador de otro grano solo porque ambos pertenezcan al mismo periodo.
+
+#### 7. Universo y población elegible
+
+Una observación entra a medición únicamente si puede demostrar:
+
+- identidad o alcance medido;
+- clase o estado de clasificación aplicable;
+- sede y contexto territorial cuando correspondan;
+- versión del contrato o prototipo;
+- instante o ventana de corte;
+- fuente de verdad o evidencia suficiente;
+- estado de ejecución conocido;
+- regla de inclusión satisfecha.
+
+Quedan fuera del denominador, con razón explícita:
+
+- zonas no recorridas;
+- recursos fuera del scope declarado;
+- consultas canceladas antes de ejecución;
+- fuentes obligatorias no consultables;
+- datos con conflicto de versión sin resolver;
+- observaciones duplicadas no reconciliadas;
+- registros de prueba mezclados con operación sin marca confiable;
+- casos cuyo resultado permanece técnicamente indeterminado cuando la métrica exige estado terminal.
+
+#### 8. Estados de baseline y target
+
+| Estado | Uso en 041 |
+| --- | --- |
+| `NOT_COLLECTED` | no existe evidencia operativa elegible para baseline |
+| `COLLECTING` | existe captura, todavía sin cierre de calidad |
+| `DATA_QUALITY_BLOCKED` | la evidencia no permite una línea base reproducible |
+| `BASELINE_PROVISIONAL` | existe valor exploratorio con limitaciones declaradas |
+| `BASELINE_APPROVED` | baseline revisado, reproducible, segmentado y aprobado |
+| `NOT_SET` | no existe target numérico vigente |
+| `TARGET_PROPOSED` | existe propuesta sustentada posterior al baseline |
+| `TARGET_APPROVED` | target versionado y aprobado con vigencia |
+| `MONITORING` | existe medición comparable contra baseline y target |
+| `INVALIDATED` | un cambio material rompe comparabilidad |
+
+Estado inicial de las doce métricas:
+
+```text
+BASELINE = NOT_COLLECTED
+TARGET = NOT_SET
+```
+
+#### 9. Línea base no fabricada
+
+El baseline no se obtiene de:
+
+- los cuarenta escenarios documentales de 040;
+- el número de tareas aprobadas;
+- el número de rutas existentes;
+- un screenshot;
+- una demostración del diseñador;
+- un listado legacy;
+- la mera existencia de `asset_items` o `asset_groups`;
+- los conteos físicos históricos si su scope, corte o calidad no son reconciliables;
+- una consulta parcial que se presente como universo completo.
+
+La ausencia actual de baseline se registra como `NOT_COLLECTED`, no como cero.
+
+#### 10. Baseline provisional y aprobado
+
+Un baseline puede pasar a `BASELINE_PROVISIONAL` cuando:
+
+1. la fórmula y versión estén congeladas;
+2. el scope esté identificado;
+3. exista evidencia elegible;
+4. se publique `n` o población aplicable;
+5. los faltantes y exclusiones sean visibles;
+6. el corte sea reproducible;
+7. las fuentes incompletas estén identificadas;
+8. no se mezclen periodos materialmente incompatibles.
+
+Puede pasar a `BASELINE_APPROVED` únicamente cuando, además:
+
+- el owner funcional acepte el scope;
+- la calidad sea suficiente para la decisión;
+- la cobertura material no esté sesgada de forma oculta;
+- los segmentos críticos tengan lectura explícita;
+- exista trazabilidad desde agregado hasta evidencia;
+- no haya un cambio de definición pendiente que vuelva el dato incomparable.
+
+041 no declara ninguna de esas condiciones satisfecha operativamente.
+
+#### 11. `NEXO-SUBDOMAIN-METRIC-CATALOG-001`
+
+Se aprueban exactamente doce identidades:
+
+| ID | Familia | Métrica | Unidad principal | Estado baseline | Estado target |
+| --- | --- | --- | --- | --- | --- |
+| `NEXO-SUBMET-001` | PÉRDIDA | no localización / pérdida confirmada | proporción + casos | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-002` | DIFERENCIA | diferencia de cantidad | proporción + delta compatible | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-003` | BÚSQUEDA | búsqueda exitosa | porcentaje | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-004` | BÚSQUEDA | búsqueda ambigua | porcentaje | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-005` | BÚSQUEDA | tiempo a resultado correcto | duración | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-006` | BÚSQUEDA | scan no resuelto | porcentaje | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-007` | DIFERENCIA | duplicado sospechoso | porcentaje + casos | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-008` | DIFERENCIA | conflicto de clase | porcentaje + casos | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-009` | DIFERENCIA | diferencia de ubicación | porcentaje + casos | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-010` | DIFERENCIA | diferencia de custodia | porcentaje + casos | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-011` | DIFERENCIA | candidato bloqueado por causa | porcentaje + casos | `NOT_COLLECTED` | `NOT_SET` |
+| `NEXO-SUBMET-012` | DIFERENCIA | recuperación de resultado desconocido | porcentaje + duración | `NOT_COLLECTED` | `NOT_SET` |
+
+No se crean aliases métricos por pantalla.
+
+#### 12. `NEXO-SUBMET-001` — no localización y pérdida confirmada
+
+Esta métrica conserva dos estados obligatoriamente separados:
+
+```text
+NOT_LOCATED
+CONFIRMED_LOSS
+```
+
+Se prohíbe sumar ambos como si fueran equivalentes.
+
+Fórmulas:
+
+```text
+NOT_LOCATED_RATE
+=
+recursos esperados elegibles no localizados al cierre del recorrido
+/
+recursos esperados elegibles del mismo scope
+
+CONFIRMED_LOSS_RATE
+=
+recursos o unidades cuya pérdida terminó confirmada por el proceso propietario
+/
+población elegible del mismo scope y grano
+```
+
+Una no localización no se convierte en pérdida por vencimiento de tiempo, opinión o ausencia en una pantalla.
+
+#### 13. Segmentación de pérdida
+
+La lectura mínima distingue:
+
+- sede;
+- área o LOC cuando aplique;
+- clase primaria;
+- identidad individual vs cantidad;
+- familia operativa;
+- periodo;
+- causa o estado de investigación;
+- recuperación posterior;
+- versión del modelo.
+
+Para cantidad, toda proporción usa una unidad canónica compatible dentro del mismo sujeto o grupo comparable.
+
+No se suman unidades incompatibles entre productos para construir una falsa tasa global.
+
+#### 14. Target de pérdida
+
+Dirección deseada:
+
+```text
+CONFIRMED_LOSS_RATE → REDUCIR
+NOT_LOCATED_RATE → REDUCIR
+```
+
+Pero 041 no fija porcentaje.
+
+El target numérico solo podrá proponerse después de baseline aprobado y deberá impedir que una aparente mejora se obtenga mediante:
+
+- reducir el universo contado;
+- omitir zonas difíciles;
+- reclasificar pérdidas como no localizadas indefinidamente;
+- borrar diferencias;
+- cambiar el denominador;
+- ajustar expected para que coincida con observed;
+- excluir recursos de mayor riesgo sin declarar el cambio.
+
+#### 15. `NEXO-SUBMET-002` — diferencia de cantidad
+
+Para cada línea comparable:
+
+```text
+SIGNED_DELTA = OBSERVED - EXPECTED
+ABS_DELTA = abs(OBSERVED - EXPECTED)
+```
+
+La métrica de tasa se calcula sobre líneas elegibles:
+
+```text
+QUANTITY_DISCREPANCY_LINE_RATE
+=
+líneas con delta distinto de cero
+/
+líneas elegibles cerradas
+```
+
+Cuando se publique magnitud, se hace únicamente dentro de grano y UOM compatibles.
+
+Se prohíbe sumar kilogramos, unidades, litros u otras magnitudes heterogéneas como un único delta.
+
+#### 16. Guardrail de conteo
+
+Reducir diferencias no autoriza:
+
+- mostrar expected antes del conteo cuando el modo deba ser ciego;
+- sobrescribir la observación;
+- autoajustar;
+- ocultar recuentos;
+- cerrar investigación sin owner;
+- eliminar movimientos concurrentes del análisis.
+
+Una tasa menor con conteo sesgado se considera inválida.
+
+#### 17. `NEXO-SUBMET-003` — búsqueda exitosa
+
+Una búsqueda es exitosa únicamente si:
+
+1. la consulta o identificador es elegible;
+2. las fuentes obligatorias para ese tipo alcanzaron estado suficiente;
+3. el recurso correcto aparece o la ausencia segura es correctamente resuelta;
+4. no existe fuga de recursos no autorizados;
+5. la identidad encontrada puede revalidarse al abrirse.
+
+Fórmula:
+
+```text
+SEARCH_SUCCESS_RATE
+=
+intentos elegibles con resultado correcto
+/
+intentos elegibles completos
+```
+
+Una búsqueda parcial no cuenta como éxito completo.
+
+#### 18. `NEXO-SUBMET-004` — búsqueda ambigua
+
+Fórmula:
+
+```text
+AMBIGUOUS_SEARCH_RATE
+=
+intentos elegibles que requieren desambiguación entre múltiples identidades válidas
+/
+intentos elegibles ejecutados
+```
+
+La ambigüedad no es automáticamente un error.
+
+Puede ser el resultado correcto cuando existen namespaces o candidatos legítimamente distintos.
+
+El análisis distingue:
+
+- ambigüedad esperada;
+- ambigüedad causada por datos duplicados;
+- ambigüedad causada por código insuficiente;
+- ambigüedad causada por texto aproximado;
+- ambigüedad resuelta;
+- ambigüedad no resuelta.
+
+#### 19. `NEXO-SUBMET-005` — tiempo a resultado correcto
+
+Inicio:
+
+```text
+SEARCH_ATTEMPT_ACCEPTED
+```
+
+Fin:
+
+```text
+CORRECT_RESULT_AVAILABLE
+```
+
+La duración solo es elegible cuando el intento produjo un resultado evaluable.
+
+Se reportan como mínimo:
+
+- `n`;
+- mediana;
+- distribución;
+- p75 o p90 únicamente cuando la suficiencia y calidad permitan interpretarlos;
+- método de entrada;
+- fuente parcial o completa;
+- dispositivo y red cuando sean materiales.
+
+La media no se publica sola.
+
+#### 20. Guardrail de velocidad de búsqueda
+
+Reducir tiempo no puede lograrse mediante:
+
+- truncar resultados;
+- omitir una fuente obligatoria;
+- devolver el primer match sin desambiguar;
+- relajar autorización;
+- tratar coincidencia aproximada como exacta;
+- esconder estado parcial;
+- cargar un universo fijo y declarar completitud.
+
+Velocidad con identidad incorrecta no es mejora.
+
+#### 21. `NEXO-SUBMET-006` — scan no resuelto
+
+Fórmula:
+
+```text
+UNRESOLVED_SCAN_RATE
+=
+scans elegibles que no llegan a identidad o fallback seguro
+/
+scans elegibles
+```
+
+Se segmenta al menos por:
+
+- método de captura;
+- tipo de código;
+- estado de etiqueta;
+- dispositivo;
+- red;
+- namespace;
+- fallback utilizado;
+- causa final.
+
+Un scan leído pero no autorizado no se clasifica como fallo de lectura.
+
+#### 22. `NEXO-SUBMET-007` — duplicado sospechoso
+
+Fórmula:
+
+```text
+SUSPECTED_DUPLICATE_RATE
+=
+candidatos u observaciones con conflicto de identidad duplicada
+/
+candidatos u observaciones elegibles revisados
+```
+
+La métrica conserva separados:
+
+- sospecha;
+- duplicado confirmado;
+- representación dual legacy;
+- coincidencia falsa descartada;
+- caso pendiente.
+
+No se optimiza reduciendo la sensibilidad de detección.
+
+#### 23. `NEXO-SUBMET-008` — conflicto de clase
+
+Fórmula:
+
+```text
+CLASS_CONFLICT_RATE
+=
+sujetos elegibles con cero o más de una clase primaria resoluble para el mismo periodo
+/
+sujetos elegibles revisados
+```
+
+También se registran casos donde la evidencia es insuficiente y el estado correcto es revisión requerida.
+
+No se fuerza una clase solo para mejorar la tasa.
+
+#### 24. `NEXO-SUBMET-009` — diferencia de ubicación
+
+Fórmula:
+
+```text
+LOCATION_DISCREPANCY_RATE
+=
+recursos elegibles con ubicación observada incompatible con la ubicación autoritativa aplicable al mismo corte
+/
+recursos elegibles observados
+```
+
+Se separan:
+
+- movimiento todavía no publicado;
+- observación stale;
+- recurso en tránsito;
+- ubicación errónea;
+- recurso fuera de scope;
+- diferencia real pendiente.
+
+Observar otra ubicación no corrige el registro por sí solo.
+
+#### 25. `NEXO-SUBMET-010` — diferencia de custodia
+
+Fórmula:
+
+```text
+CUSTODY_DISCREPANCY_RATE
+=
+recursos elegibles cuya tenencia observada no coincide con custodia autoritativa aplicable
+/
+recursos elegibles observados
+```
+
+Se conserva la frontera:
+
+```text
+OBSERVED HOLDER
+!=
+ACCEPTED CUSTODIAN
+```
+
+Una diferencia no autoriza transferencia retrospectiva.
+
+#### 26. `NEXO-SUBMET-011` — candidato bloqueado por causa
+
+Fórmula:
+
+```text
+BLOCKED_CANDIDATE_RATE
+=
+candidatos elegibles bloqueados
+/
+candidatos elegibles revisados
+```
+
+Toda fila bloqueada requiere `block_reason` versionado.
+
+Causas mínimas:
+
+- identidad ambigua;
+- clase no resuelta;
+- duplicado sospechoso;
+- evidencia insuficiente;
+- ubicación en conflicto;
+- custodia en conflicto;
+- propiedad no sustentada;
+- representación legacy conflictiva;
+- autorización insuficiente;
+- resultado desconocido pendiente.
+
+Esta métrica es principalmente diagnóstica.
+
+Una tasa alta puede significar que el sistema está bloqueando correctamente materializaciones inseguras.
+
+Por tanto, no se fija dirección de mejora única sin analizar la distribución por causa.
+
+#### 27. `NEXO-SUBMET-012` — recuperación de resultado desconocido
+
+Fórmula principal:
+
+```text
+UNKNOWN_RESULT_RECOVERY_RATE
+=
+casos de resultado desconocido reconciliados a estado terminal autoritativo
+/
+casos elegibles de resultado desconocido
+```
+
+Duración complementaria:
+
+```text
+UNKNOWN_RESULT_RECOVERY_TIME
+=
+TERMINAL_STATE_VERIFIED_AT - RECONCILIATION_STARTED_AT
+```
+
+Un reintento ciego que crea efecto duplicado no cuenta como recuperación.
+
+#### 28. Segmentos obligatorios comunes
+
+Toda métrica declara, cuando aplique:
+
+- sede;
+- área/LOC;
+- clase primaria;
+- granularidad individual o cantidad;
+- tipo de recurso;
+- flujo o superficie propietaria;
+- versión del contrato;
+- periodo o ventana;
+- actor o función solo cuando sea material y autorizado;
+- dispositivo/red solo cuando puedan afectar búsqueda o captura;
+- estado de evidencia;
+- causa o severidad para diferencias.
+
+No se publican comparaciones personales como ranking de productividad.
+
+#### 29. Scope antes que agregación
+
+Se fija:
+
+```text
+SCOPE_EXPLICIT
+→ MEASURE
+→ SEGMENT
+→ AGGREGATE
+```
+
+Nunca:
+
+```text
+AGGREGATE FIRST
+→ DISCOVER SCOPE AFTERWARD
+```
+
+Un consolidado debe poder explicar qué sedes, clases, familias, periodos y fuentes incluye.
+
+#### 30. Calidad mínima de datos
+
+La calidad se evalúa al menos en:
+
+- completitud de población;
+- unicidad;
+- validez de identidad;
+- consistencia de clase;
+- consistencia de UOM;
+- frescura;
+- integridad de timestamps;
+- trazabilidad a evidencia;
+- estabilidad de fórmula;
+- cobertura de fuentes;
+- ausencia de doble contabilización;
+- reconciliación de datos tardíos.
+
+Un baseline puede quedar `DATA_QUALITY_BLOCKED` aunque exista un número calculable.
+
+#### 31. Fuentes parciales
+
+Para búsqueda se distinguen:
+
+```text
+COMPLETE
+PARTIAL
+FAILED
+NOT_AUTHORIZED
+NOT_APPLICABLE
+```
+
+Un resultado `PARTIAL` no entra como búsqueda completa en `NEXO-SUBMET-003`.
+
+Puede entrar a una métrica diagnóstica de disponibilidad futura, pero 041 no crea esa métrica adicional.
+
+#### 32. Datos tardíos y restatement
+
+Si después del cierre de una ventana aparece evidencia válida que cambia el numerador o denominador:
+
+- no se sobrescribe silenciosamente el valor publicado;
+- se conserva versión o restatement;
+- se registra motivo;
+- se identifica la ventana afectada;
+- se recalcula de forma reproducible;
+- se marca comparabilidad.
+
+#### 33. Corrección de clasificación
+
+Si una identidad cambia de clase mediante transición aprobada:
+
+- el periodo histórico conserva la clase vigente en ese momento;
+- el periodo posterior usa la nueva versión;
+- la métrica no reescribe la historia para hacerla homogénea artificialmente;
+- una comparación entre versiones declara el puente utilizado.
+
+#### 34. Shape del baseline
+
+Cada baseline futuro deberá conservar:
+
+```text
+baseline_id
+metric_id
+metric_version
+scope_id
+scope_definition
+window_start
+window_end
+business_timezone
+population_count
+eligible_count
+excluded_count
+value
+unit
+segments
+source_versions
+source_cutoff
+quality_state
+quality_findings
+calculation_digest
+approved_by
+approved_at
+invalidated_at
+invalidation_reason
+```
+
+041 define el shape; no crea una fila real.
+
+#### 35. Identidad de baseline
+
+Un mismo `metric_id` puede tener distintos baselines por scope y versión.
+
+Ejemplos conceptuales válidos:
+
+```text
+MISMA MÉTRICA
++
+SEDE DISTINTA
+→ BASELINE DISTINTO
+```
+
+```text
+MISMA MÉTRICA
++
+CAMBIO MATERIAL DE PROCESO
+→ BASELINE NUEVO O PUENTE DE COMPARABILIDAD
+```
+
+No se usa un baseline global para ocultar una sede o clase deteriorada.
+
+#### 36. Shape del target
+
+Cada target futuro deberá conservar:
+
+```text
+target_id
+metric_id
+metric_version
+baseline_id
+target_type
+target_value
+unit
+direction
+scope_id
+segments
+valid_from
+review_window
+due_at
+rationale
+owner
+guardrails
+approval_state
+approved_by
+approved_at
+invalidated_at
+invalidation_reason
+```
+
+041 no completa `target_value` para ninguna métrica.
+
+#### 37. Tipos de target permitidos
+
+Se permiten, según la métrica:
+
+- valor absoluto;
+- reducción relativa contra baseline;
+- incremento relativo contra baseline;
+- rango;
+- máximo;
+- mínimo;
+- guardrail sin optimización;
+- target diagnóstico sin dirección única.
+
+Se prohíbe interpretar automáticamente `0` como target ideal.
+
+#### 38. Condiciones para proponer target
+
+Un target solo puede pasar de `NOT_SET` a `TARGET_PROPOSED` cuando:
+
+1. el baseline aplicable esté `BASELINE_APPROVED`;
+2. la fórmula siga vigente;
+3. exista owner;
+4. se explique la decisión que el target apoya;
+5. se evalúe riesgo de gaming;
+6. se definan guardrails;
+7. se declare horizonte;
+8. se declare si la mejora es absoluta o relativa;
+9. se justifique la magnitud con capacidad operacional, histórico o experimento;
+10. no contradiga seguridad, integridad, custodia, autorización o calidad.
+
+#### 39. Condiciones para aprobar target
+
+Un target puede pasar a `TARGET_APPROVED` únicamente con aprobación explícita del owner competente y trazabilidad a:
+
+- baseline;
+- fundamento;
+- ventana;
+- segmentos;
+- guardrails;
+- fecha de vigencia;
+- regla de revisión;
+- condición de invalidación.
+
+La aprobación documental de 041 no equivale a esa aprobación numérica futura.
+
+#### 40. Dirección inicial por métrica
+
+| Métrica | Dirección de diseño | Regla |
+| --- | --- | --- |
+| `NEXO-SUBMET-001` | reducir | separar no localización de pérdida confirmada |
+| `NEXO-SUBMET-002` | reducir | no sesgar conteo ni cambiar expected |
+| `NEXO-SUBMET-003` | aumentar | solo sobre búsquedas completas y correctas |
+| `NEXO-SUBMET-004` | investigar/reducir cuando sea evitable | ambigüedad legítima no es fallo |
+| `NEXO-SUBMET-005` | reducir | exactitud, autorización y completitud prevalecen |
+| `NEXO-SUBMET-006` | reducir | fallback seguro no cuenta como falsa resolución |
+| `NEXO-SUBMET-007` | reducir después de reconciliación | detección no se debilita para mejorar el indicador |
+| `NEXO-SUBMET-008` | reducir después de evidencia | no forzar clase para cerrar conflicto |
+| `NEXO-SUBMET-009` | reducir | no mover por observación para maquillar la tasa |
+| `NEXO-SUBMET-010` | reducir | no crear custodia retrospectiva |
+| `NEXO-SUBMET-011` | diagnóstico | no existe dirección única sin causa |
+| `NEXO-SUBMET-012` | aumentar y reducir tiempo | reconciliación autoritativa antes que rapidez |
+
+Estas direcciones no son targets numéricos.
+
+#### 41. Guardrails transversales
+
+Ningún target puede considerarse cumplido si la mejora exige degradar:
+
+- autorización;
+- identidad;
+- clasificación;
+- integridad de movimientos;
+- no doble contabilización;
+- conteo ciego cuando aplique;
+- custodia;
+- evidencia;
+- privacidad;
+- trazabilidad;
+- completitud declarada de búsqueda;
+- capacidad de reconciliar resultado desconocido.
+
+#### 42. Anti-gaming
+
+Se registran como invalidaciones de medición:
+
+- reducir denominadores sin cambio de scope aprobado;
+- excluir fallos después de conocer su resultado;
+- reclasificar casos para moverlos fuera del KPI;
+- cambiar fórmula sin nueva versión;
+- medir solo sedes o familias favorables;
+- omitir fuentes lentas para mejorar tiempo;
+- tratar bloqueos correctos como éxito de materialización;
+- ajustar expected para eliminar diferencias;
+- cerrar casos de no localización como resueltos sin evidencia;
+- eliminar observaciones tardías legítimas.
+
+#### 43. Scorecard del subdominio
+
+El scorecard no usa una puntuación total compensatoria.
+
+Contiene tres paneles:
+
+| Panel | Métricas | Lectura |
+| --- | --- | --- |
+| PÉRDIDA | `NEXO-SUBMET-001` | no localización y pérdida confirmada por scope y clase |
+| BÚSQUEDA | `NEXO-SUBMET-003` a `006` | éxito, ambigüedad, tiempo y captura |
+| DIFERENCIAS | `NEXO-SUBMET-002`, `007` a `012` | cantidad, identidad, clase, ubicación, custodia, candidatos y recuperación |
+
+Cada panel muestra además:
+
+- estado de baseline;
+- estado de target;
+- cobertura;
+- calidad;
+- exclusiones;
+- versión;
+- principales segmentos;
+- hallazgos abiertos.
+
+#### 44. No promedio compensatorio
+
+Se prohíbe declarar el subdominio saludable porque un panel compense otro.
+
+Ejemplos:
+
+```text
+SEARCH FAST + LOSS HIGH
+!=
+GOOD OVERALL
+```
+
+```text
+LOW DIFFERENCE RATE + INCOMPLETE COUNT COVERAGE
+!=
+GOOD OVERALL
+```
+
+```text
+LOW BLOCKED-CANDIDATE RATE + UNSAFE AUTO-CREATION
+!=
+GOOD OVERALL
+```
+
+#### 45. Cadencia
+
+041 define que cada métrica tendrá una cadencia explícita futura.
+
+La cadencia depende de la naturaleza de la fuente:
+
+- evento o intento;
+- cierre de conteo;
+- cierre de campaña;
+- cierre de caso;
+- corte operativo;
+- periodo de gestión.
+
+No se fija una cadencia universal ni se inventa una frecuencia sin conocer volumen y capacidad de captura.
+
+#### 46. Ventana de comparación
+
+Toda comparación baseline-target declara:
+
+- ventana baseline;
+- ventana actual;
+- mismas o reconciliadas reglas de inclusión;
+- estacionalidad material cuando exista;
+- cambios de sede o scope;
+- cambios de proceso;
+- cambios de versión;
+- calidad de ambas ventanas.
+
+Una diferencia entre periodos incompatibles no se presenta como mejora.
+
+#### 47. Causalidad
+
+041 mide resultados, no demuestra causa.
+
+Se fija:
+
+```text
+METRIC MOVED
+!=
+CHANGE CAUSED THE MOVEMENT
+```
+
+Una mejora posterior a una implementación requiere análisis de cambios concurrentes antes de atribuir causalidad.
+
+#### 48. Privacidad y personas
+
+Las métricas son operativas y de diseño del subdominio.
+
+No se utilizan para:
+
+- ranking individual;
+- inferencia disciplinaria automática;
+- publicación de desempeño personal;
+- exposición innecesaria de responsables;
+- comparación de grupos pequeños sin protección.
+
+Cuando actor o custodio sea material para investigar un caso, el acceso se limita a finalidad autorizada.
+
+#### 49. Trazabilidad desde agregado
+
+Todo valor publicado deberá permitir reconstruir:
+
+```text
+METRIC VALUE
+→ METRIC VERSION
+→ BASELINE / TARGET VERSION
+→ SCOPE
+→ SOURCE CUT
+→ ELIGIBLE POPULATION
+→ EXCLUSIONS
+→ SEGMENTS
+→ EVIDENCE OR CASE IDS
+```
+
+No necesariamente toda esa información se muestra en la pantalla ordinaria, pero debe ser auditable.
+
+#### 50. Búsqueda legacy y comparabilidad
+
+Las superficies AS-IS actuales pueden servir como fuente de observación futura solo si su cobertura se conoce.
+
+Se conserva:
+
+```text
+LEGACY SEARCH RESULT
+!=
+COMPLETE SEARCH UNIVERSE
+```
+
+Un límite local, paginación incompleta o fuente ausente bloquea la interpretación de éxito completo cuando sea material.
+
+#### 51. Inventario inicial y baseline
+
+El inventario inicial diseñado en 039 puede aportar eventos y observaciones a la futura línea base.
+
+Pero:
+
+```text
+INITIAL INVENTORY CLOSED
+!=
+ALL METRIC BASELINES APPROVED
+```
+
+Cada métrica requiere su propia elegibilidad y calidad.
+
+#### 52. Conteos y baseline
+
+Los conteos de 034 y los contratos de conteo general pueden aportar:
+
+- población esperada;
+- observación;
+- delta;
+- cutoff;
+- recuento;
+- caso de diferencia;
+- resolución.
+
+No se usan ajustes posteriores para reescribir la observación original.
+
+#### 53. Casos de diferencia
+
+Una diferencia puede permanecer abierta más allá de la ventana de medición.
+
+La métrica distingue:
+
+- detectada;
+- investigando;
+- contenida;
+- resuelta;
+- confirmada como pérdida;
+- descartada por evidencia;
+- no comparable.
+
+El cierre de periodo no autocierra el caso.
+
+#### 54. Resultado desconocido
+
+Los casos `RESULT_UNKNOWN` permanecen en una población explícita.
+
+No se eliminan del denominador para mejorar éxito ni se cuentan como fallo definitivo antes de reconciliación cuando la fórmula exige estado terminal.
+
+#### 55. Matriz de trazabilidad de las doce métricas
+
+| Métrica | Entrada principal | Owner de verdad | Riesgo evitado |
+| --- | --- | --- | --- |
+| `NEXO-SUBMET-001` | conteo/reconciliación/caso | dominio de activo o reutilizable + caso | pérdida confundida con ausencia temporal |
+| `NEXO-SUBMET-002` | observed/expected/cutoff | conteo + ledger | diferencia falsa o ajuste oculto |
+| `NEXO-SUBMET-003` | search attempt/result | resolvedor + owners de recursos | éxito sobre universo parcial |
+| `NEXO-SUBMET-004` | search candidates | resolvedor | identidad ambigua presentada como exacta |
+| `NEXO-SUBMET-005` | timestamps de búsqueda | instrumentación futura | optimización de velocidad insegura |
+| `NEXO-SUBMET-006` | scan attempt/fallback | captura + resolvedor | fallo de scan mezclado con autorización |
+| `NEXO-SUBMET-007` | candidato/reconciliación | identidad canónica | duplicados ocultos o falsos positivos |
+| `NEXO-SUBMET-008` | clasificación/evidencia | clasificación canónica | clase forzada para cerrar caso |
+| `NEXO-SUBMET-009` | observed location/current authority | ubicación/movimiento | movimiento inferido por observación |
+| `NEXO-SUBMET-010` | holder/custody evidence | custodia/handoff | custodia retrospectiva inferida |
+| `NEXO-SUBMET-011` | candidate review | inventario inicial/autorización | bloqueo tratado como fracaso sin causa |
+| `NEXO-SUBMET-012` | receipt/reconciliation | operación propietaria | reintento ciego y doble efecto |
+
+#### 56. Estado inicial materializado
+
+La tarea congela este registro documental inicial:
+
+| ID | Baseline | Target | Motivo |
+| --- | --- | --- | --- |
+| `NEXO-SUBMET-001` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-002` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-003` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-004` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-005` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-006` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-007` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-008` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-009` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-010` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-011` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+| `NEXO-SUBMET-012` | `NOT_COLLECTED` | `NOT_SET` | no existe baseline operativo elegible aportado |
+
+Esto es una decisión de estado, no una simulación de medición.
+
+#### 57. Condición de materialización futura
+
+Para que E5 pueda producir valores reales deberá existir, según cada métrica:
+
+- evento o fuente autoritativa identificable;
+- instrumentación versionada cuando sea necesaria;
+- idempotencia de captura;
+- timestamps confiables;
+- scope y corte;
+- clasificación y UOM reconciliadas;
+- autorización de lectura de datos;
+- evidencia suficiente;
+- mecanismo de backfill o declaración explícita de no disponibilidad;
+- pruebas de cálculo;
+- observabilidad;
+- rollback de instrumentación cuando corresponda.
+
+041 no autoriza esa materialización.
+
+#### 58. Handoff de baseline a E5
+
+E5 deberá poder producir, por métrica:
+
+```text
+RAW ELIGIBLE OBSERVATIONS
+→ QUALITY CHECK
+→ CALCULATION
+→ SEGMENTATION
+→ BASELINE_PROVISIONAL
+→ REVIEW
+→ BASELINE_APPROVED
+```
+
+No se salta directamente de datos crudos a target.
+
+#### 59. Handoff de targets a gobierno operativo
+
+Después de baseline aprobado:
+
+```text
+BASELINE_APPROVED
+→ TARGET_PROPOSED
+→ OWNER REVIEW
+→ GUARDRAIL REVIEW
+→ TARGET_APPROVED
+→ MONITORING
+```
+
+La futura implementación deberá conservar esta separación.
+
+#### 60. Handoff hacia `NEXO-UX-042`
+
+041 entrega:
+
+```text
+12 VERSIONED METRICS
++
+EXACT FORMULAS AND GRAINS
++
+BASELINE ELIGIBILITY RULES
++
+BASELINE REGISTER SHAPE
++
+TARGET CONTRACT
++
+SEGMENTATION
++
+DATA QUALITY
++
+ANTI-GAMING GUARDRAILS
++
+INITIAL NOT_COLLECTED / NOT_SET STATE
++
+E5 MEASUREMENT HANDOFF
+```
+
+`NEXO-UX-042` deberá decidir la aprobación del diseño del subdominio y su remisión a E5 sin presentar estos estados iniciales como si el sistema ya hubiera medido, mejorado o cumplido targets.
+
+#### 61. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: 041 especializa para el subdominio obligaciones ya existentes de métricas versionadas, denominadores y fuentes reproducibles, calidad y exclusiones, baseline y objetivos sustentados, comparación contra línea base, conteos no destructivos, investigación de diferencias y ausencia de valores fabricados. No introduce una obligación ejecutable independiente que requiera un identificador de prueba adicional.
+
+#### 62. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para movimientos, conteos, proyecciones reconciliables y ausencia de doble contabilización;
+- `TREQ-NEXO-013`, para identidad, ubicación, custodia, conteos, activos y reutilizables;
+- `TREQ-NEXO-212`, para clasificación, expediente e investigación de diferencias;
+- `TREQ-NEXO-265`, para separar hecho, hipótesis, causa, responsabilidad y evidencia durante investigación;
+- `TREQ-NEXO-301`, para identidad, versión, fórmula, denominador, segmentos y estados de baseline/objetivo de métricas;
+- `TREQ-NEXO-305`, para preservar datos faltantes, bloqueados e inválidos sin convertirlos en cero;
+- `TREQ-NEXO-310`, para impedir baseline u objetivo sin evidencia, calidad, cobertura, segmentación y aprobación;
+- `TREQ-DATA-002`, para registro canónico versionado, fuente, fórmula, calidad y comparación de métricas;
+- `TREQ-DATA-005`, para línea base, meta, indicador, guardrails y comprobación de mejora;
+- `TREQ-UX-005`, para fuente, estado y frescura visibles cuando corresponda.
+
+Estas referencias son trazabilidad vigente y no constituyen cambios al registro.
+
+#### 63. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la redacción de 041. |
+| REMOTA | PASS | Se contrastaron protocolo, contrato de entrega, continuidad, topología, políticas de tarea, owner NEXO, 04A modular NEXO y DATA, `NEXO-UX-025`, contratos de búsqueda, conteos, diferencias y clasificación, además de `CAP-SCOPE-017`. La versión completa aprobada de 040 se consumió como predecesora documental aportada para trabajo adelantado. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron conteos, búsquedas controladas, escaneos, campañas, investigaciones, mediciones de tiempo, baselines ni validaciones con operación real. |
+| FÍSICA | NOT_APPLICABLE | La tarea usa topología `DEFINE_ONCE`, tiene `NO_PHYSICAL_INSTANCE` y no autoriza instrumentación ni cambios físicos. |
+
+#### 64. Criterios de aceptación
+
+- [x] las doce dimensiones entregadas por 040 se materializan una sola vez;
+- [x] existen doce identidades métricas estables;
+- [x] cada métrica define grano y denominador;
+- [x] pérdida confirmada queda separada de no localización;
+- [x] cantidad incompatible no se agrega entre UOM heterogéneas;
+- [x] búsqueda exitosa exige resultado correcto y cobertura suficiente;
+- [x] búsqueda parcial no se presenta como éxito completo;
+- [x] ambigüedad legítima queda separada de error;
+- [x] tiempo de búsqueda no puede optimizarse ocultando completitud o autorización;
+- [x] scan no resuelto queda separado de denegación de acceso;
+- [x] duplicado sospechoso queda separado de duplicado confirmado;
+- [x] conflicto de clase no se cierra por heurística;
+- [x] diferencia de ubicación no ejecuta movimiento;
+- [x] diferencia de custodia no ejecuta transferencia retrospectiva;
+- [x] candidato bloqueado conserva causa y no tiene dirección de mejora única;
+- [x] resultado desconocido exige reconciliación autoritativa;
+- [x] se definen segmentos mínimos;
+- [x] se define calidad mínima;
+- [x] se definen exclusiones sin convertirlas en cero;
+- [x] se define shape versionado de baseline;
+- [x] se define shape versionado de target;
+- [x] se definen condiciones para baseline provisional y aprobado;
+- [x] se definen condiciones para target propuesto y aprobado;
+- [x] se definen direcciones de diseño sin inventar target numérico;
+- [x] se definen guardrails anti-gaming;
+- [x] no existe promedio compensatorio entre pérdida, búsqueda y diferencias;
+- [x] datos tardíos producen restatement o nueva versión, no sobrescritura silenciosa;
+- [x] cambio material puede invalidar baseline;
+- [x] la causalidad no se infiere desde movimiento de una métrica;
+- [x] métricas no se usan como ranking individual;
+- [x] estado inicial de las doce métricas queda `NOT_COLLECTED / NOT_SET`;
+- [x] no se inventan valores operativos;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-UX-042`.
+
+#### 65. Límites
+
+Esta tarea no:
+
+- ejecuta instrumentación;
+- crea eventos reales;
+- crea tablas de métricas;
+- crea vistas analíticas;
+- crea dashboards;
+- crea snapshots materiales;
+- ejecuta consultas de medición productivas;
+- crea baselines reales;
+- aprueba baselines;
+- fija targets numéricos;
+- aprueba targets;
+- fija SLA o SLO;
+- crea alertas operativas;
+- ejecuta inventario físico;
+- ejecuta conteos reales;
+- busca recursos con actores reales;
+- mide tiempos reales;
+- escanea hardware real;
+- confirma pérdidas;
+- resuelve diferencias;
+- mueve inventario;
+- transfiere custodia;
+- crea candidatos;
+- materializa activos, reutilizables, kits, repuestos o contenedores;
+- modifica código de `vento-nexo`;
+- modifica Supabase;
+- crea migraciones, tablas, columnas, índices, vistas, funciones, RPC, triggers o RLS;
+- cambia permisos;
+- cambia `active-sequence.json`;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- autoriza una instancia física;
+- aprueba la remisión a E5;
+- desarrolla `NEXO-UX-042`.
+
+#### 66. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente`
 ### [ ] NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
 ### [ ] NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
 ### [ ] NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
