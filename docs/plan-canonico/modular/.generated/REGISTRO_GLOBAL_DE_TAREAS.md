@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1254** |
+| Aprobadas | **1255** |
 | En propuesta | **0** |
-| No iniciadas | **342** |
+| No iniciadas | **341** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.57% (1254/1596)** |
+| Porcentaje de completamiento | **78.63% (1255/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **342** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1155** |
+| ⏸ NO_EVALUADA | **341** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1156** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-042` — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-043` — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-044` — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-043` — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-044` — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-045` — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1044,7 +1044,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-040` | Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-041` | Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-042` | Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-043` | Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-043` | Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-044` | Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-045` | Diseñar limpieza, saneamiento, plagas y evidencia operativa por área | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-046` | Diseñar inspecciones, calibración, servicios, medidores y alertas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |

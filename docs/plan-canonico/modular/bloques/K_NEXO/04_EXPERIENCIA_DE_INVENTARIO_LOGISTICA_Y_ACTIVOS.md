@@ -42848,7 +42848,885 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad`
-### [ ] NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
+### ✅ NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
+**Tarea siguiente:** NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
+**Tipo de tarea:** documental; diseño canónico de experiencia para registrar, localizar, explorar y comprender instalaciones, espacios, componentes fijos, redes y puntos de servicio mediante un registro y mapa semántico simple, preservando identidad, jerarquía, relaciones, condición, criticidad, disponibilidad, responsabilidad e historia sin confundir sede, área, LOC, activo o representación gráfica, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K2 — NEXO / experiencia
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia mediante la cual un actor autorizado puede registrar y consultar la topología física de Vento Group sin convertir el maestro de sedes, las áreas organizacionales, los LOC logísticos, las posiciones de inventario ni los activos en un sustituto de la instalación y sus espacios.
+
+La regla raíz queda:
+
+```text
+IDENTIDAD FÍSICA ESTABLE
++
+JERARQUÍA ESPACIAL EXPLÍCITA
++
+RELACIONES TIPADAS
++
+CONDICIÓN OBSERVABLE
++
+DISPONIBILIDAD CON RAZÓN
++
+RESPONSABILIDAD E HISTORIA
++
+MAPA SEMÁNTICO SIMPLE
+→
+CONTEXTO LOCATIVO COMPRENSIBLE Y AUDITABLE
+```
+
+Nunca:
+
+```text
+NOMBRE VISIBLE
+OR ZONA LEGACY
+OR LOC
+OR ÁREA ORGANIZACIONAL
+OR POSICIÓN DE INVENTARIO
+→
+IDENTIDAD FÍSICA CANÓNICA
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-043` deja diseñados siete resultados de experiencia:
+
+1. registro navegable de instalaciones y sujetos locativos;
+2. mapa semántico jerárquico y relacional, sin exigir geometría;
+3. detalle único de instalación, espacio, componente fijo, red o punto de servicio;
+4. presentación separada de condición, disponibilidad, criticidad, razones y frescura;
+5. visualización explícita de relaciones con sede, área, LOC, activos y servicios;
+6. captura controlada de nuevas identidades locativas y cambios no destructivos;
+7. handoff hacia mantenimiento y reparaciones sin absorber el trabajo de `NEXO-UX-044`.
+
+La tarea no define una ruta técnica obligatoria, un esquema de base de datos, un componente React específico ni una librería gráfica.
+
+#### 3. Base canónica consumida
+
+La experiencia consume y preserva:
+
+- `CAP-SCOPE-013`, en especial `CAP-13.01 — Inventariar espacios e instalaciones`;
+- `NEXO-DOM-029`, como contrato propietario de identidad, jerarquía, relaciones, condición, disponibilidad e historia locativa;
+- `NEXO-AUTH-031`, para autorización exacta por recurso, acción, territorio, estado y contexto;
+- `NEXO-AUTH-032`, para impedir autoridad transitiva entre reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir;
+- el cierre de `NEXO-UX-042`, que separa diseño aprobado, handoff a E5 y autorización física;
+- el registro canónico de requisitos de prueba vigente;
+- el AS-IS remoto de `vento-nexo` para LOC, posiciones, zonas, sedes, áreas y activos, únicamente como evidencia de reutilización o refactorización.
+
+#### 4. Sujetos visibles
+
+La experiencia distingue exactamente estos sujetos locativos del contrato de dominio:
+
+```text
+PHYSICAL_FACILITY
+PHYSICAL_SPACE
+FIXED_COMPONENT
+SERVICE_NETWORK
+SERVICE_POINT
+```
+
+`PHYSICAL_FACILITY` se consume desde la estructura territorial compartida.
+
+NEXO puede crear y mantener la topología interna que le corresponde, pero no crea una segunda sede o instalación compartida solo porque falte una relación en su pantalla.
+
+#### 5. Identidades que nunca se fusionan
+
+La interfaz preserva explícitamente:
+
+```text
+PHYSICAL_FACILITY
+!=
+OPERATIONAL_SITE
+!=
+ORGANIZATIONAL_AREA
+!=
+PHYSICAL_SPACE
+!=
+LOC
+!=
+SERIALIZED_ASSET
+```
+
+También:
+
+```text
+SERVICE_POINT != METER != READING != CONSUMPTION
+```
+
+Y:
+
+```text
+FIXED_COMPONENT != SERIALIZED_ASSET
+```
+
+Una relación visible no cambia la identidad ni la propiedad del objeto relacionado.
+
+#### 6. Modelo de navegación
+
+La experiencia se organiza en cuatro niveles de navegación, sin obligar una URL concreta:
+
+1. **Registro** — lista de instalaciones y sujetos locativos con filtros y estado resumido;
+2. **Mapa simple** — jerarquía física expandible de una instalación con relaciones adicionales visibles bajo demanda;
+3. **Detalle** — expediente de un sujeto seleccionado;
+4. **Historia y relaciones** — cambios de identidad, parentado, condición, disponibilidad y vínculos relacionados.
+
+El actor puede cambiar entre Registro y Mapa sin perder instalación seleccionada, filtros relevantes ni sujeto activo cuando la navegación continúe dentro del mismo contexto permitido.
+
+#### 7. Registro de instalaciones
+
+El registro presenta una fila o tarjeta por instalación compartida visible para el actor.
+
+Como mínimo muestra:
+
+- código estable;
+- nombre vigente;
+- contexto operativo o sede relacionado cuando exista;
+- cantidad de espacios vigentes;
+- condición resumida cuando exista una regla válida de agregación;
+- disponibilidad resumida cuando exista una regla válida de agregación;
+- cantidad de restricciones o hechos bloqueantes vigentes;
+- responsable operativo cuando exista;
+- frescura de la información resumida.
+
+La ausencia de una regla de agregación impide fabricar un estado global a partir de un hijo.
+
+#### 8. Búsqueda y filtros del registro
+
+El actor puede buscar por atributos identificadores y relaciones que existan realmente, como:
+
+- código canónico;
+- nombre visible;
+- instalación;
+- tipo de sujeto;
+- sede o contexto operativo relacionado;
+- área organizacional relacionada;
+- condición;
+- disponibilidad;
+- responsable;
+- LOC relacionado;
+- activo relacionado.
+
+Buscar nunca crea relaciones ni reclasifica sujetos.
+
+Un resultado de búsqueda es una vía de acceso al expediente, no una fuente de verdad distinta.
+
+#### 9. Qué significa mapa simple
+
+El `mapa simple` es una representación semántica de la topología aprobada.
+
+Debe poder representar:
+
+```text
+PHYSICAL_FACILITY
+    |
+    +-- PHYSICAL_SPACE
+          |
+          +-- PHYSICAL_SPACE
+          |     |
+          |     +-- FIXED_COMPONENT
+          |     +-- SERVICE_POINT
+          |
+          +-- FIXED_COMPONENT
+          +-- SERVICE_POINT
+```
+
+No exige:
+
+- coordenadas;
+- georreferenciación;
+- polígonos;
+- escala arquitectónica;
+- plano CAD;
+- BIM;
+- dibujo libre;
+- posicionamiento exacto dentro de una imagen.
+
+Una representación gráfica futura puede añadirse si existe contrato propietario, pero 043 no la necesita para cerrar su propósito.
+
+#### 10. Red de servicio en el mapa
+
+`SERVICE_NETWORK` puede cruzar varios espacios y por ello no se fuerza dentro de un único padre visual como si fuera un árbol puro.
+
+El mapa dispone de una capa o panel relacional capaz de mostrar:
+
+- red seleccionada;
+- instalación propietaria;
+- espacios cubiertos;
+- puntos de servicio relacionados;
+- condición;
+- criticidad;
+- disponibilidad estructural;
+- vigencia.
+
+La relación transversal no altera el padre físico principal de cada espacio.
+
+#### 11. Nodo visual mínimo
+
+Cada nodo locativo visible muestra, cuando aplique:
+
+- tipo de sujeto;
+- código;
+- nombre;
+- condición;
+- disponibilidad;
+- criticidad;
+- responsable;
+- vigencia;
+- indicador de restricciones;
+- indicador de relaciones adicionales.
+
+La interfaz no usa solo color para comunicar condición o disponibilidad.
+
+`UNKNOWN` se representa como desconocido o evidencia insuficiente, nunca como estado favorable.
+
+#### 12. Jerarquía y breadcrumbs
+
+Al seleccionar un espacio o componente, la experiencia muestra su ruta física principal desde la instalación raíz.
+
+Ejemplo conceptual:
+
+```text
+Instalación
+→ Piso o zona física
+→ Espacio
+→ Componente fijo
+```
+
+El breadcrumb representa contención física, no área organizacional ni ruta logística.
+
+Relaciones con área, LOC, activo o red se muestran por separado.
+
+#### 13. Padre físico y relaciones secundarias
+
+Un espacio activo tiene un único padre físico principal cuando no es raíz inmediata de la instalación.
+
+La experiencia distingue visualmente:
+
+```text
+PARENT PHYSICAL RELATION
+```
+
+frente a:
+
+```text
+RELATED AREA
+RELATED LOC
+RELATED ASSET
+RELATED SERVICE NETWORK
+```
+
+Nunca presenta una relación secundaria como segundo padre físico.
+
+#### 14. Instalación compartida
+
+La creación de un árbol locativo inicia seleccionando una `PHYSICAL_FACILITY` existente y visible para el actor.
+
+043 no diseña un botón que duplique una instalación compartida dentro de NEXO.
+
+Cuando la instalación necesaria no exista o no sea visible, la experiencia debe mostrar una salida bloqueada y dirigir el problema a la fuente propietaria correspondiente, sin fabricar una identidad temporal canónica.
+
+#### 15. Registro de `PHYSICAL_SPACE`
+
+El flujo de registro de un espacio solicita únicamente información necesaria y demostrable, incluyendo según aplique:
+
+- instalación raíz;
+- padre físico;
+- clasificación espacial controlada;
+- código canónico;
+- nombre visible;
+- responsable operativo;
+- criticidad cuando exista fuente o criterio aprobado;
+- observación inicial de condición cuando exista evidencia;
+- referencias gráficas o documentales opcionales.
+
+No se obliga a inventar criticidad, responsable, condición o documento para completar el alta.
+
+La ausencia permitida se conserva como ausencia o `UNKNOWN` según el contrato propietario.
+
+#### 16. Registro de `FIXED_COMPONENT`
+
+El flujo exige seleccionar instalación o espacio físico vigente y declarar la identidad del componente cuando requiere historia propia.
+
+La interfaz deja visible la pregunta conceptual:
+
+```text
+¿ES UN COMPONENTE FIJO DEL ESPACIO
+O UN ACTIVO INDIVIDUAL GESTIONADO COMO ACTIVO?
+```
+
+La decisión no se toma por costo, nombre, serial o presencia en una tabla legacy.
+
+Si la evidencia indica que el objeto ya posee identidad de activo, la experiencia propone relacionar identidades o revisar el objeto principal; no crea un duplicado automáticamente.
+
+#### 17. Registro de `SERVICE_NETWORK` y `SERVICE_POINT`
+
+El registro de red conserva como mínimo instalación y relaciones con espacios.
+
+El registro de punto de servicio conserva, cuando aplique:
+
+- instalación;
+- espacio;
+- red relacionada;
+- código;
+- nombre;
+- criticidad;
+- condición;
+- disponibilidad;
+- responsable;
+- vigencia.
+
+No exige un medidor para que exista un punto de servicio.
+
+Medidores, lecturas, consumos, interrupciones y alertas permanecen fuera de 043 y se entregan a las tareas propietarias posteriores.
+
+#### 18. Confirmación antes de crear
+
+Antes de enviar un alta, la experiencia presenta una revisión breve con:
+
+- sujeto que se creará;
+- instalación;
+- padre físico cuando aplique;
+- código;
+- nombre;
+- relaciones declaradas;
+- condición inicial si fue observada;
+- campos desconocidos o ausentes relevantes.
+
+La confirmación envía una intención al servidor.
+
+La UI no crea una identidad definitiva hasta recibir resultado autoritativo.
+
+#### 19. Recibo de alta
+
+Una creación confirmada devuelve un recibo visible con al menos:
+
+- identidad estable;
+- tipo de sujeto;
+- código aceptado;
+- instalación y padre vigentes;
+- revisión o versión cuando aplique;
+- actor efectivo;
+- momento confirmado;
+- resultado.
+
+Un timeout o respuesta ambigua se presenta como resultado desconocido de la interacción, no como una segunda creación automática.
+
+Antes de reintentar se reconcilia por identificador de intención, correlación o lectura autoritativa disponible.
+
+#### 20. Edición de atributos
+
+Editar nombre visible, relación funcional, responsable u otro atributo permitido nunca modifica implícitamente la identidad.
+
+Antes de confirmar una edición se presenta:
+
+```text
+VALOR VIGENTE
+→
+CAMBIO PROPUESTO
+```
+
+La decisión server-side revalida recurso, acción, territorio, estado y revisión.
+
+Una interfaz stale no sobrescribe silenciosamente una revisión más reciente.
+
+#### 21. Reparentado y movimiento de un espacio
+
+Cambiar el padre físico es una acción explícita y diferenciada de renombrar.
+
+La experiencia debe:
+
+1. mostrar padre actual;
+2. mostrar padre propuesto;
+3. verificar que ambos pertenezcan al contexto permitido;
+4. impedir ciclos y doble padre principal;
+5. advertir relaciones afectadas cuando sean conocidas;
+6. pedir confirmación;
+7. conservar historia después de la decisión server-side.
+
+El mapa no usa drag-and-drop como mutación inmediata.
+
+Si en el futuro se ofrece drag-and-drop, solo podrá preparar una intención de cambio que atraviese la misma revisión y autorización.
+
+#### 22. División, fusión y sustitución
+
+La experiencia no resuelve una división o fusión espacial mediante edición destructiva del mismo registro.
+
+Cuando cambie materialmente la realidad física, la interfaz debe explicar que se realizará una transición controlada con nuevas identidades y relaciones de sucesión cuando el contrato propietario lo requiera.
+
+Los hechos históricos permanecen asociados con los sujetos originales.
+
+043 no diseña una herramienta de edición geométrica.
+
+#### 23. Retiro y vigencia
+
+No existe `Eliminar instalación` o `Eliminar espacio` como acción canónica destructiva sobre identidades con historia.
+
+La experiencia diferencia:
+
+- activo o vigente;
+- temporalmente no utilizable;
+- retirado o sin vigencia;
+- sustituido cuando corresponda.
+
+Retirar una identidad exige razón, momento, revisión y decisión autorizada.
+
+Retirar un LOC relacionado no retira el espacio y retirar un espacio no borra automáticamente LOC, activos o hechos históricos.
+
+#### 24. Condición física
+
+La experiencia reutiliza exactamente la escala canónica:
+
+```text
+NEW
+GOOD
+FAIR
+POOR
+CRITICAL
+UNKNOWN
+```
+
+La pantalla muestra condición como dimensión física observada.
+
+Nunca:
+
+```text
+GOOD = AVAILABLE
+```
+
+ni:
+
+```text
+CRITICAL = RETIRED
+```
+
+`UNKNOWN` debe permanecer visible y accionable como falta de evidencia, no como ausencia de problema.
+
+#### 25. Observación de condición
+
+Cuando el actor tenga autoridad para registrar una observación, la experiencia conserva:
+
+- sujeto;
+- condición observada;
+- momento efectivo;
+- actor o fuente;
+- evidencia cuando corresponda;
+- contexto;
+- condición anterior conocida;
+- correlación o revisión.
+
+Registrar una condición no ejecuta reparación, no cierra un hallazgo y no libera el recurso.
+
+Una inspección formal, su plantilla y sus hallazgos continúan en `NEXO-UX-046`.
+
+#### 26. Disponibilidad
+
+La experiencia reutiliza exactamente:
+
+```text
+AVAILABLE
+RESTRICTED
+UNAVAILABLE
+UNKNOWN
+```
+
+Disponibilidad es una proyección contextual y se muestra junto con:
+
+- propósito o uso evaluado cuando aplique;
+- razones vigentes;
+- hechos bloqueantes;
+- fuente o política;
+- momento de evaluación;
+- frescura de evidencia.
+
+No existe un toggle genérico `Disponible / No disponible` que sustituya las reglas propietarias.
+
+#### 27. Razones de disponibilidad
+
+Cuando un sujeto esté `RESTRICTED` o `UNAVAILABLE`, la experiencia presenta las razones conocidas y sus propietarios.
+
+Las razones pueden proceder posteriormente de mantenimiento, inspección, saneamiento, servicios, obra o novedad.
+
+043 solo diseña su visualización y trazabilidad.
+
+No adelanta los workflows de 044–047.
+
+#### 28. Disponibilidad desconocida
+
+Si no existe evidencia suficiente para determinar disponibilidad, se presenta:
+
+```text
+AVAILABILITY = UNKNOWN
+```
+
+La interfaz no transforma ausencia de hechos en `AVAILABLE`.
+
+El estado desconocido debe permitir comprender qué evidencia falta o qué workflow propietario puede resolverlo cuando esa relación ya esté definida.
+
+#### 29. Criticidad
+
+La criticidad se presenta como dimensión separada de condición y disponibilidad.
+
+La UI no inventa niveles ni calcula criticidad desde costo, tamaño, nombre o cantidad de relaciones.
+
+Cuando la criticidad no esté disponible, se muestra como no determinada conforme al contrato propietario.
+
+#### 30. Responsable
+
+El detalle distingue visualmente, cuando existan:
+
+```text
+RESPONSABLE OPERATIVO
+CUSTODIO DE ACTIVO
+PROPIETARIO JURÍDICO
+APROBADOR
+TÉCNICO O PROVEEDOR
+```
+
+043 muestra el responsable operativo locativo.
+
+No convierte al responsable de un área, al custodio de un activo o al proveedor externo en propietario automático del espacio.
+
+#### 31. Relación con área organizacional
+
+El detalle de un espacio puede mostrar el área o las áreas relacionadas con vigencia.
+
+Se preserva:
+
+```text
+ORGANIZATIONAL_AREA != PHYSICAL_SPACE
+```
+
+Una misma área puede usar varios espacios y un espacio puede cambiar de asignación funcional sin cambiar su identidad física.
+
+#### 32. Relación con LOC
+
+El detalle muestra LOC asociados como una relación logística separada.
+
+Se preserva:
+
+```text
+LOC != PHYSICAL_SPACE
+```
+
+La experiencia permite comprender:
+
+- espacio sin LOC;
+- espacio con uno o varios LOC;
+- LOC anclado a un espacio;
+- posiciones como subdivisiones logísticas del LOC.
+
+No convierte zona, aisle, level o position legacy en jerarquía física canónica por inferencia.
+
+#### 33. Relación con activos
+
+El detalle puede mostrar activos relacionados con el sujeto locativo.
+
+La relación no cambia la identidad del activo ni del espacio.
+
+El actor puede navegar al expediente del activo cuando tenga acceso, pero 043 no duplica acciones de custodia, préstamo, mantenimiento de activo o baja ya propietarias del subdominio anterior.
+
+#### 34. Historia
+
+La experiencia debe permitir reconstruir, según aplique:
+
+- identidad y nombres vigentes e históricos;
+- padre físico anterior y nuevo;
+- relaciones creadas o cerradas;
+- condición observada;
+- disponibilidad y razón;
+- responsable;
+- vigencia;
+- sustitución, división o fusión;
+- actor, momento y motivo del cambio.
+
+La historia no se presenta como una lista técnica de filas de base de datos, sino como eventos comprensibles con acceso al detalle cuando exista evidencia.
+
+#### 35. Documentos y referencias gráficas
+
+Planos, fotografías, certificados o documentos pueden vincularse como evidencia o referencia.
+
+La experiencia los muestra asociados con el sujeto correcto y su vigencia cuando exista.
+
+Un archivo nunca crea por sí solo un `PHYSICAL_SPACE`, un componente o un punto de servicio.
+
+043 no define todavía almacenamiento físico, retención ni proveedor documental.
+
+#### 36. Acciones contextuales
+
+El detalle puede ofrecer acciones únicamente cuando sean aplicables y autorizables, como:
+
+- registrar o corregir atributos permitidos;
+- registrar observación de condición;
+- relacionar o desvincular referencias permitidas;
+- proponer cambio de padre;
+- retirar o sustituir identidad cuando el contrato lo permita;
+- abrir el workflow propietario relacionado cuando ya exista diseño posterior.
+
+La presencia del botón no concede autoridad.
+
+El servidor revalida cada mutación.
+
+#### 37. Autorización
+
+La experiencia consume `NEXO-AUTH-031` y `NEXO-AUTH-032`.
+
+La experiencia separa consulta, creación, actualización, registro de condición, restricción, liberación y retiro; autoridad sobre una de estas acciones no concede autoridad sobre las demás.
+
+El catálogo activo observado no demuestra una familia completa de capacidades exactas para estas acciones.
+
+Por tanto, 043 no inventa `PermissionKey`, aliases, roles ni grants.
+
+Toda mutación sensible sin autoridad canónica exacta materializada debe terminar en denegación segura.
+
+#### 38. Estados de interacción local
+
+La UI puede distinguir condiciones de interacción como carga, envío en curso, confirmación, conflicto, resultado desconocido, denegación y error técnico.
+
+Estas condiciones no se convierten en lifecycle, condición ni disponibilidad del sujeto.
+
+Un error técnico no convierte el recurso en `UNKNOWN` canónico salvo que el dominio realmente haya perdido la evidencia necesaria.
+
+#### 39. Concurrencia y revisión stale
+
+Una edición parte de una revisión observable.
+
+Si el recurso cambió antes de confirmar:
+
+1. la mutación se bloquea o reconcilia según el contrato futuro;
+2. la UI muestra el valor vigente;
+3. conserva la propuesta del usuario cuando sea seguro;
+4. exige nueva revisión antes de reenviar.
+
+Nunca se resuelve un conflicto con `last write wins` silencioso desde el navegador.
+
+#### 40. Operación con conectividad intermitente
+
+043 no certifica operación offline física, pero deja la experiencia compatible con:
+
+- lectura cacheada marcada como potencialmente stale;
+- intención pendiente cuando el contrato futuro la admita;
+- resultado desconocido;
+- reintento idempotente;
+- reconciliación antes de duplicar una creación o cambio.
+
+Una vista offline no puede presentar como confirmada una condición, relación o disponibilidad que todavía no recibió confirmación autoritativa.
+
+#### 41. Vacíos y estados sin datos
+
+La experiencia distingue al menos:
+
+- instalación sin espacios registrados;
+- espacio sin hijos;
+- sujeto sin responsable conocido;
+- condición `UNKNOWN`;
+- disponibilidad `UNKNOWN`;
+- relación con LOC ausente;
+- relación con activos ausente;
+- documento no disponible;
+- acceso denegado;
+- dato no visible por alcance territorial.
+
+Ninguno se presenta como error equivalente a los demás.
+
+#### 42. Accesibilidad y ergonomía
+
+La experiencia deberá:
+
+- funcionar con teclado para navegación estructural;
+- exponer jerarquía y estado mediante texto y semántica accesible;
+- no depender únicamente de color, posición o iconografía;
+- conservar objetivos táctiles suficientes en dispositivos compartidos;
+- permitir expandir o contraer ramas sin perder foco;
+- identificar claramente el sujeto seleccionado;
+- evitar mapas con navegación exclusivamente espacial cuando no exista geometría canónica;
+- mantener la información crítica disponible en vista estrecha mediante estructura lineal equivalente.
+
+#### 43. Disposición del AS-IS de `vento-nexo`
+
+La implementación observada se clasifica así:
+
+| Superficie o estructura actual | Disposición | Uso permitido en el diseño objetivo | Uso prohibido |
+| --- | --- | --- | --- |
+| `/inventory/locations` | reutilizar o refactorizar | patrones de listado, filtros, contexto de sede y administración de LOC | tratar LOC como instalación o espacio físico general |
+| `/inventory/locations/[id]` | reutilizar o refactorizar | patrón de detalle contextual y relaciones operativas | usar flags runtime del LOC como disponibilidad locativa canónica |
+| `/inventory/locations/zones` y vista por zona | reutilizar o refactorizar | patrón de exploración agrupada | convertir `zone` textual en `PHYSICAL_SPACE` por inferencia |
+| posiciones de LOC | reutilizar o refactorizar | relación logística y navegación | convertir posición logística en cuarto, piso o espacio físico general |
+| `inventory_locations` | reutilizar o refactorizar | fuente parcial para LOC y evidencia de relaciones existentes | asumir que ya representa el maestro de instalaciones |
+| `inventory_location_positions` | reutilizar o refactorizar | fuente parcial de granularidad logística | usarla como jerarquía física completa |
+| relaciones de `asset_items` con ubicación | reutilizar o refactorizar | enlazar activo con contexto físico futuro | convertir activo en espacio o componente fijo automáticamente |
+| administración de sedes y áreas | reutilizar o refactorizar | consumir identidades compartidas existentes | crear copias NEXO de sede o área |
+| borrado físico actual de LOC | no adoptar como patrón objetivo | ninguno para identidades locativas con historia | borrar sujetos canónicos para representar retiro |
+| checks directos por nombre de rol y `inventory.locations` | no adoptar como autoridad objetivo | evidencia AS-IS para migración futura | tratarlos como autorización objetivo de instalaciones |
+
+La coexistencia temporal debe preservar los contratos legacy hasta que un package E5 autorizado defina transición, compatibilidad y retiro.
+
+#### 44. Frontera con `NEXO-UX-044`
+
+043 entrega a 044 sujetos locativos inequívocos y navegables.
+
+El handoff mínimo es:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+PHYSICAL HIERARCHY
++
+CURRENT RELATIONS
++
+CONDITION
++
+AVAILABILITY + REASONS
++
+CRITICALITY
++
+RESPONSIBLE
++
+HISTORY
+→
+MAINTENANCE / REPAIR UX INPUT
+```
+
+`NEXO-UX-044` permanece propietaria de:
+
+- solicitudes de mantenimiento o reparación;
+- triage y prioridad de la intervención;
+- planes y obligaciones;
+- órdenes de trabajo;
+- diagnóstico;
+- autorización de trabajo cuando aplique;
+- ejecución;
+- prueba;
+- liberación;
+- reapertura;
+- cierre técnico.
+
+043 no incorpora ese lifecycle dentro del registro o mapa.
+
+#### 45. Frontera con `NEXO-UX-045` a `NEXO-UX-047`
+
+La experiencia de 043 únicamente muestra los sujetos y estados que esas tareas consumirán.
+
+Queda reservado:
+
+- limpieza, saneamiento, plagas y evidencia por área → `NEXO-UX-045`;
+- inspecciones, calibración, servicios, medidores y alertas → `NEXO-UX-046`;
+- llaves, acceso físico, obras, cierres temporales y novedades → `NEXO-UX-047`.
+
+No se crean atajos en 043 que ejecuten esas operaciones antes de sus contratos.
+
+#### 46. Frontera con validación del prototipo
+
+`NEXO-UX-048` permanece propietaria de la validación integrada con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede.
+
+043 puede definir estados, flujos y oráculos documentales de su propia experiencia, pero no afirma sesiones humanas ni validación operativa realizada.
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+La tarea materializa la experiencia de una regla ya protegida por el registro canónico vigente. No introduce una semántica nueva de identidad, jerarquía, condición, disponibilidad, autorización, persistencia o integración que exija modificar el registro.
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+La cobertura directa se conserva mediante `TREQ-NEXO-017`, que ya exige identidad estable, jerarquía, relaciones con LOC y activos, criticidad, condición, disponibilidad, responsable e historial y referencia expresamente esta tarea.
+
+También se preserva la cobertura relacionada de `TREQ-NEXO-018`, `TREQ-INTEGRATION-018`, requisitos transversales de autorización, Supabase, evidencia, accesibilidad y experiencia que resulten aplicables en su package de implementación.
+
+Esta trazabilidad no cambia ninguna fila del registro 04A.
+
+#### 49. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | PASS | Auditoría estática del artefacto: título, metadata, continuidad, fronteras, vocabulario, condición, disponibilidad, sujetos, relaciones y conteo de TREQ afectados coherentes con las fuentes canónicas consumidas. |
+| LOCAL | PASS | Consistencia interna comprobada entre Registro, Mapa simple, Detalle, alta, edición, reparentado, retiro, condición, disponibilidad, autorización, errores, concurrencia y handoff hacia 044–048. |
+| REMOTA | PASS | Fuentes remotas vigentes revisadas en `vento-shell` y AS-IS de `vento-nexo` contrastado para LOC, posiciones, zonas, sedes, áreas y activos antes de redactar el diseño. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones con usuarios, operación real, creación de instalaciones, cambios de condición, restricciones, mantenimiento ni pruebas en operación. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-043` usa `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`; la tarea se agota en el contrato documental y no materializa infraestructura ni datos. |
+
+#### 50. Criterios de aceptación
+
+- [x] Se conserva exactamente el título canónico de `NEXO-UX-043`.
+- [x] La tarea consume `NEXO-DOM-029` sin redefinir su dominio.
+- [x] Se distinguen instalación, sede, área, espacio, LOC y activo.
+- [x] Se distinguen los cinco sujetos locativos aplicables.
+- [x] El mapa simple es semántico y no exige geometría inexistente.
+- [x] La jerarquía conserva un padre físico principal por espacio.
+- [x] Las redes de servicio pueden cruzar espacios sin forzar un segundo padre.
+- [x] Condición y disponibilidad permanecen separadas.
+- [x] `UNKNOWN` no se convierte en estado favorable.
+- [x] Disponibilidad conserva razón, fuente y frescura.
+- [x] No existe toggle genérico que fabrique disponibilidad.
+- [x] Criticidad permanece separada de condición y costo.
+- [x] Se diseñan alta, revisión, recibo, edición y recuperación ante resultado desconocido.
+- [x] El reparentado exige revisión y no se ejecuta por drag-and-drop inmediato.
+- [x] División, fusión, sustitución y retiro preservan historia.
+- [x] LOC y posiciones legacy no se promueven por inferencia a modelo de instalaciones.
+- [x] Las superficies actuales de NEXO se clasifican para reutilización o rechazo explícito.
+- [x] El borrado físico legacy de LOC no se adopta como retiro canónico.
+- [x] La autorización no se deriva de nombre de rol ni del permiso amplio legacy.
+- [x] No se inventan capacidades nuevas.
+- [x] Se preserva default deny para mutaciones sensibles sin autoridad exacta.
+- [x] Se separan estados locales de interacción y estados del dominio.
+- [x] Se contempla conflicto por revisión stale y resultado desconocido.
+- [x] Se contemplan estados vacíos y accesibilidad.
+- [x] `NEXO-UX-044` recibe un handoff explícito sin absorber su lifecycle.
+- [x] 045, 046, 047 y 048 conservan sus responsabilidades.
+- [x] Se crean 0 requisitos y se modifican 0 requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza código, Supabase, migraciones, despliegue ni operación física.
+
+#### 51. Límites
+
+`NEXO-UX-043` no:
+
+- crea tablas, vistas, columnas, funciones, RPC, triggers, RLS, Storage ni migraciones;
+- modifica Supabase local o remoto;
+- crea código o componentes en `vento-nexo`;
+- define nombres técnicos definitivos de tablas, endpoints, rutas o componentes;
+- crea una segunda identidad de sede, instalación o área;
+- convierte LOC, posición, zona textual o activo en espacio por inferencia;
+- exige CAD, BIM, GIS, coordenadas o planos vectoriales;
+- ejecuta inspecciones físicas;
+- declara condición de recursos reales;
+- declara disponibilidad de recursos reales;
+- cambia criticidad real;
+- crea, mueve, divide, fusiona, sustituye o retira sujetos reales;
+- ejecuta mantenimiento o reparación;
+- diseña en detalle solicitudes u órdenes de trabajo, reservadas a 044;
+- diseña limpieza o plagas, reservadas a 045;
+- diseña inspecciones, metrología, servicios, medidores o alertas, reservadas a 046;
+- diseña llaves, accesos, obras, cierres temporales o novedades, reservadas a 047;
+- ejecuta validación humana del prototipo, reservada a 048;
+- inventa `PermissionKey`, roles, aliases, grants o scopes;
+- modifica requisitos de prueba;
+- modifica 04A;
+- cambia `active-sequence.json`;
+- autoriza una instancia física;
+- aprueba o ejecuta un package E5.
+
+#### 52. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones`
 ### [ ] NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
 ### [ ] NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
 ### [ ] NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
