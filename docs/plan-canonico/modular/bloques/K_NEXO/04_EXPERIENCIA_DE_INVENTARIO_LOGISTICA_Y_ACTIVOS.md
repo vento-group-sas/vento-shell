@@ -45070,7 +45070,1245 @@ SANITATION / CLEANING / PEST UX INPUT
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área`
-### [ ] NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
+### ✅ NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
+**Tarea siguiente:** NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
+**Tipo de tarea:** documental; diseño canónico de experiencia para planear, programar, ejecutar, evidenciar, verificar, liberar y reconciliar limpieza, saneamiento y control de plagas por sujeto locativo y área, preservando programa, obligación, procedimiento, químico o insumo, ejecución, evidencia, verificación, liberación, proveedor, hallazgo, acción, dispositivo, visita, certificado, idempotencia y fronteras con mantenimiento, inventario, ORIGO, NUMERA, VISO/SST, calidad y los workflows especializados posteriores, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K2 — NEXO / experiencia
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual NEXO gobierna limpieza, saneamiento y control de plagas sobre instalaciones y áreas identificadas, desde el programa y la obligación hasta la ejecución, la evidencia, la verificación, la liberación y el cierre reconciliado, sin convertir una rutina programada, una fotografía, un certificado externo o una ejecución declarada en prueba automática de conformidad.
+
+La regla raíz queda:
+
+```text
+SUJETO LOCATIVO ESTABLE
++
+PROGRAMA Y OBLIGACION TRAZABLES
++
+PROCEDIMIENTO VIGENTE
++
+RECURSOS Y PRODUCTOS IDENTIFICADOS
++
+EJECUCION AUTORIZADA
++
+EVIDENCIA DEL HECHO REAL
++
+VERIFICACION INDEPENDIENTE CUANDO APLIQUE
++
+LIBERACION AUTORIZADA CUANDO APLIQUE
++
+CIERRE RECONCILIADO
+→
+CONDICION SANITARIA OPERATIVA COMPRENSIBLE Y AUDITABLE
+```
+
+Nunca:
+
+```text
+PROGRAMADO = EJECUTADO
+```
+
+ni:
+
+```text
+LIMPIADO = VERIFICADO = LIBERADO
+```
+
+ni:
+
+```text
+FOTO OR CHECKLIST OR CERTIFICADO = CIERRE
+```
+
+ni:
+
+```text
+PROVEEDOR EJECUTA = PROVEEDOR GOBIERNA EL EXPEDIENTE
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-045` deja diseñados los siguientes resultados de experiencia:
+
+1. entrada contextual desde el sujeto locativo estable de `NEXO-UX-043` y desde el patrón de trabajo pendiente de `NEXO-UX-044`;
+2. bandeja operativa por sede, área, sujeto, programa, obligación, estado, responsable y bloqueo;
+3. experiencia de programa maestro de limpieza y saneamiento sin confundir regla recurrente con ejecución;
+4. obligaciones trazables por frecuencia, disparador, ventana o condición;
+5. procedimiento versionado visible antes de ejecutar;
+6. preparación y uso trazable de químicos, productos e insumos cuando corresponda;
+7. ejecución con actor, momento, alcance, producto, concentración, lote, evidencia y desviaciones aplicables;
+8. verificación separada de la ejecución;
+9. liberación sanitaria separada de ejecución, verificación, disponibilidad locativa y liberación de producto o proceso;
+10. retrabajo y tratamiento explícito de desviaciones;
+11. programa interno de control de plagas con mapa y dispositivos;
+12. visitas de proveedor o ejecución especializada con alcance y evidencia trazables;
+13. hallazgos, acciones y certificados de plagas sin cierre ficticio;
+14. handoffs explícitos a mantenimiento, inspecciones, obras, calidad, SST, compras, inventario o continuidad cuando corresponda;
+15. operación idempotente, concurrente, recuperable y compatible con captura offline gobernada;
+16. handoff a `NEXO-UX-046` sin absorber inspecciones físicas generales, calibración, servicios, medidores ni alertas.
+
+La tarea no fija rutas web, nombres de componentes, tablas, RPC, Server Actions, esquemas físicos ni estructura de Supabase.
+
+#### 3. Topología contractual
+
+La tarea conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No crea una instancia `NEXO-UX-045::*` ni autoriza implementación física.
+
+#### 4. Base canónica consumida
+
+La experiencia consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.04` y `CAP-13.05`;
+- `NEXO-DOM-029`, para identidad y jerarquía locativa;
+- `NEXO-DOM-031`, para limpieza, saneamiento, procedimientos, frecuencias, químicos, verificación y liberación;
+- `NEXO-DOM-032`, para control de plagas, mapa, dispositivos, visitas, hallazgos, acciones y certificados;
+- `NEXO-DOM-025`, cuando productos o insumos consumidos estén gobernados por inventario;
+- `NEXO-AUTH-031`, para autoridad exacta sobre instalaciones, limpieza y acciones relacionadas;
+- `NEXO-AUTH-032`, para segregación entre reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir;
+- `NEXO-UX-043`, como origen del sujeto locativo estable;
+- `NEXO-UX-044`, para navegación de trabajo pendiente, evidencia, bloqueos, revisión, idempotencia y cierre no ficticio;
+- `VPROC-0055`, como proceso transversal de instalaciones;
+- contratos vigentes de evidencia, integración externa, continuidad, autorización y operación offline;
+- el registro canónico vigente de requisitos de prueba.
+
+#### 5. Handoff recibido de `NEXO-UX-044`
+
+044 entrega exactamente el patrón transversal necesario:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+WORK-PENDING NAVIGATION PATTERN
++
+REPORT / REQUEST / EXECUTE / VERIFY / RELEASE SEPARATION
++
+EVIDENCE PATTERN
++
+BLOCKER + OWNER + EXIT CONDITION
++
+AUTHORIZATION / REVISION / IDEMPOTENCY RULES
++
+NO FALSE CLOSURE
+→
+SANITATION / CLEANING / PEST UX INPUT
+```
+
+045 no vuelve a definir el mantenimiento locativo de 044.
+
+Cuando limpieza o control de plagas descubre una necesidad de reparación, la UX conserva el hallazgo de origen y deriva el trabajo técnico al owner de mantenimiento sin fabricar una reparación dentro del expediente sanitario.
+
+#### 6. Sujeto principal obligatorio
+
+Toda obligación, ejecución, verificación o visita debe resolver un sujeto físico inequívoco antes de una decisión material.
+
+La experiencia puede operar sobre instalaciones, espacios, áreas físicas, superficies, componentes fijos o equipos fijos cuando el contrato propietario los incluya en el programa aplicable.
+
+Nunca se usa un nombre libre del lugar como sustituto de la identidad locativa vigente.
+
+Cuando un elemento individual tenga lifecycle de activo propio, la experiencia conserva la relación y respeta el owner del activo.
+
+#### 7. Área operativa y sujeto físico
+
+Se preserva:
+
+```text
+ORGANIZATIONAL AREA
+!=
+PHYSICAL SPACE
+!=
+CLEANING SUBJECT
+```
+
+Un área organizativa puede ayudar a resolver responsable, turno o contexto, pero no reemplaza la identidad física sobre la que se ejecutó o verificó el trabajo.
+
+#### 8. Proceso `VPROC-0055`
+
+La experiencia conserva el proceso canónico de instalaciones:
+
+```text
+FACILITY_CASE_OPENED
+→ TRIAGED
+→ WORK_PLANNED
+→ RESOURCES_PENDING
+→ IN_EXECUTION
+→ VERIFICATION_PENDING
+→ RELEASE_PENDING
+→ FACILITY_CASE_CLOSED
+```
+
+Esos estados describen el caso transversal de instalación.
+
+No sustituyen el estado de un programa, una obligación sanitaria, una ejecución de limpieza, una visita de plagas, un hallazgo ni una acción correctiva.
+
+#### 9. Eventos empresariales del proceso
+
+La experiencia puede proyectar los seis eventos empresariales canónicos de `VPROC-0055` cuando corresponda:
+
+```text
+VPROC-0055.EVT-001
+VPROC-0055.EVT-002
+VPROC-0055.EVT-003
+VPROC-0055.EVT-004
+VPROC-0055.EVT-005
+VPROC-0055.EVT-006
+```
+
+045 no inventa eventos adicionales para representar visualmente cada paso sanitario.
+
+Los hechos detallados de limpieza y plagas permanecen correlacionables con el proceso sin perder su identidad propia.
+
+#### 10. Gramática de interacción
+
+La experiencia consume la gramática ya aprobada para `VPROC-0055`:
+
+```text
+REPORTAR
+PLANEAR
+EJECUTAR
+VERIFICAR
+LIBERAR
+```
+
+La interacción operativa prioriza:
+
+```text
+CHECKLIST + EVIDENCIA + CAMBIO DE ESTADO
+```
+
+con cámara opcional y medición según el caso, sin convertir la existencia del periférico en obligación universal.
+
+#### 11. Bandeja de trabajo
+
+La bandeja prioriza trabajo pendiente, no filas técnicas.
+
+Como mínimo debe poder expresar vistas conceptuales equivalentes a:
+
+```text
+VENCE HOY
+VENCE PRONTO
+VENCIDO
+PROGRAMADO
+RECURSOS PENDIENTES
+LISTO PARA EJECUTAR
+EN EJECUCION
+BLOQUEADO
+ESPERA VERIFICACION
+ESPERA LIBERACION
+RETRABAJO REQUERIDO
+VISITA DE PLAGAS PENDIENTE
+HALLAZGO DE PLAGAS ABIERTO
+ACCION PENDIENTE
+CIERRE PENDIENTE
+```
+
+Cada entrada muestra sujeto, programa u origen, vencimiento o ventana cuando aplique, responsable, estado y razón del bloqueo.
+
+#### 12. Búsqueda y filtros
+
+Cuando exista dato autoritativo, la experiencia permite filtrar por:
+
+- sede;
+- área;
+- sujeto físico;
+- programa;
+- procedimiento;
+- tipo de actividad;
+- estado de obligación;
+- responsable;
+- ejecutor;
+- verificador;
+- fecha o ventana;
+- vencimiento;
+- riesgo o clasificación aplicable;
+- producto o químico;
+- proveedor;
+- dispositivo de plagas;
+- hallazgo;
+- bloqueo;
+- necesidad de liberación.
+
+Filtrar o agrupar no modifica el expediente.
+
+#### 13. Programa maestro de limpieza y saneamiento
+
+La vista del programa presenta, según aplicabilidad:
+
+- identidad y revisión;
+- vigencia;
+- sede, área y sujetos incluidos;
+- superficies o elementos cubiertos;
+- riesgo o fundamento operacional;
+- actividad requerida;
+- procedimiento vigente;
+- frecuencia, disparador o condición;
+- ventana permitida;
+- responsable;
+- competencias requeridas cuando existan;
+- productos o químicos permitidos;
+- concentración o dilución aplicable;
+- tiempo de contacto cuando el procedimiento lo exija;
+- recursos requeridos;
+- control de contaminación cruzada aplicable;
+- evidencia mínima;
+- método de verificación;
+- criterio de aceptación;
+- regla de liberación;
+- siguiente obligación proyectada.
+
+Un cambio material produce revisión conforme al contrato propietario y no reescribe ejecuciones históricas.
+
+#### 14. Programa frente a obligación
+
+Se preserva:
+
+```text
+SANITATION PROGRAM
+!=
+SANITATION OBLIGATION
+```
+
+El programa define una regla reutilizable.
+
+La obligación representa una ocurrencia exigible para un sujeto y contexto concretos.
+
+Una obligación vencida no se presenta como ejecutada.
+
+#### 15. Obligación frente a ejecución
+
+Se preserva:
+
+```text
+DUE
+!=
+STARTED
+!=
+EXECUTED
+```
+
+Mover una obligación a otra fecha no elimina el vencimiento histórico que ya ocurrió.
+
+Una excepción conserva motivo, autoridad, vigencia y condición de salida.
+
+#### 16. Procedimiento vigente
+
+Antes de iniciar una actividad, la experiencia muestra la revisión vigente del procedimiento y los datos operativos necesarios para ejecutarlo correctamente.
+
+Debe ser posible identificar:
+
+- procedimiento;
+- revisión;
+- vigencia;
+- sujetos a los que aplica;
+- secuencia operativa;
+- recursos;
+- producto o químico;
+- concentración o dilución cuando aplique;
+- tiempo de contacto cuando aplique;
+- restricciones e incompatibilidades pertinentes;
+- evidencia requerida;
+- verificación y criterio de aceptación;
+- regla de liberación.
+
+Una revisión nueva no altera la evidencia de una ejecución realizada con una revisión anterior válida.
+
+#### 17. Programación
+
+Programar fija una ventana prevista y recursos esperados.
+
+Se preserva:
+
+```text
+SCHEDULED
+!=
+STARTED
+```
+
+La experiencia puede considerar horarios de producción, atención, almacenamiento, circulación, disponibilidad del área, recursos, producto, proveedor y contingencia sin declarar ejecución antes del hecho real.
+
+#### 18. Recursos pendientes
+
+Cuando una obligación no puede ejecutarse, la UX muestra el bloqueo concreto, su owner y la condición de salida.
+
+Los bloqueos pueden corresponder, según el contrato aplicable, a:
+
+- producto o químico;
+- insumo;
+- equipo de aplicación;
+- agua u otro servicio requerido;
+- acceso al área;
+- ventana operativa;
+- responsable;
+- competencia requerida;
+- proveedor;
+- procedimiento vigente;
+- información de seguridad o ficha aplicable;
+- contingencia externa.
+
+No se resuelve un bloqueo marcando la actividad como realizada.
+
+#### 19. Producto, químico e insumo
+
+Cuando el procedimiento exige un producto controlado, la experiencia conserva identidad autoritativa y no lo sustituye por una descripción libre.
+
+Debe poder mostrar, según aplicabilidad:
+
+- producto canónico;
+- presentación;
+- lote;
+- vigencia o fecha relevante;
+- ficha o información vigente aplicable;
+- incompatibilidades relevantes;
+- concentración objetivo;
+- dilución requerida;
+- cantidad prevista;
+- cantidad utilizada;
+- unidad;
+- referencia de inventario cuando exista control de existencia.
+
+#### 20. Texto libre no sustituye control
+
+Se preserva:
+
+```text
+TEXT PRODUCT NAME
+!=
+CANONICAL PRODUCT IDENTITY
+```
+
+Y, cuando existe control inventariable:
+
+```text
+DECLARED USE
+!=
+INVENTORY CONSUMPTION
+```
+
+La interfaz no ofrece texto libre como vía para omitir un movimiento obligatorio de inventario.
+
+#### 21. Preparación o dilución
+
+Cuando el procedimiento exige preparación, la UX permite registrar el hecho de preparación sin inventar una fórmula distinta de la revisión vigente.
+
+Según aplicabilidad conserva:
+
+- producto de origen;
+- lote;
+- cantidad utilizada;
+- dilución o concentración objetivo;
+- concentración resultante cuando exista medición;
+- actor;
+- momento;
+- recipiente o identificación operacional cuando la política lo requiera;
+- evidencia;
+- desviación.
+
+La existencia de una preparación no demuestra que la aplicación posterior se ejecutó.
+
+#### 22. Inicio de ejecución
+
+El inicio material exige revalidación server-side de actor, recurso, revisión, estado, territorio y autoridad vigentes.
+
+La UX confirma el sujeto exacto, la obligación y el procedimiento que se ejecutarán antes de registrar el inicio.
+
+Una captura offline puede conservar intención, pero no presenta como confirmada una decisión que requiera aceptación autoritativa.
+
+#### 23. Ejecución de limpieza o saneamiento
+
+Durante la ejecución se registra, según aplicabilidad:
+
+- obligación de origen;
+- sujeto;
+- procedimiento y revisión;
+- actor efectivo;
+- inicio y fin reales;
+- producto o químico;
+- lote;
+- concentración o dilución;
+- tiempo de contacto cuando aplique;
+- recursos utilizados;
+- pasos completados;
+- control de contaminación cruzada;
+- condiciones observadas;
+- evidencia;
+- desviaciones;
+- interrupciones;
+- resultado informado por el ejecutor;
+- necesidad de retrabajo, verificación, mantenimiento o escalamiento.
+
+#### 24. Ejecución parcial
+
+Una ejecución parcial no se presenta como actividad terminada.
+
+La experiencia conserva:
+
+```text
+WORK PERFORMED SO FAR
++
+REMAINING SCOPE
++
+BLOCKER
++
+BLOCKER OWNER
++
+EXIT CONDITION
+```
+
+El hecho parcial permanece auditable y no satisface automáticamente la obligación completa.
+
+#### 25. Evidencia operativa
+
+La evidencia se vincula al hecho concreto que soporta.
+
+Puede incluir, según política:
+
+- actor;
+- timestamps;
+- sujeto;
+- procedimiento;
+- checklist;
+- producto;
+- lote;
+- concentración;
+- medición;
+- fotografías;
+- documento;
+- observación;
+- desviación;
+- resultado;
+- verificación;
+- decisión de liberación.
+
+Una fotografía aislada no equivale a ejecución completa, verificación o liberación.
+
+#### 26. Verificación separada
+
+Cuando la política exige verificación, la UX crea un hecho separado de la ejecución.
+
+Debe mostrar, según aplicabilidad:
+
+- obligación y ejecución evaluadas;
+- sujeto;
+- procedimiento y criterio;
+- método de verificación;
+- actor competente;
+- momento;
+- observación o medición;
+- evidencia;
+- desviaciones;
+- resultado;
+- acción requerida.
+
+La misma persona solo puede ejecutar y verificar cuando la política y la autoridad aplicables lo permitan.
+
+#### 27. Resultado de verificación
+
+La experiencia distingue, como mínimo de forma conceptual:
+
+```text
+PASS
+FAIL
+INCONCLUSIVE
+```
+
+Se preserva:
+
+```text
+FAIL
+→
+NO POSITIVE SANITARY RELEASE
+```
+
+Y cuando la política exige liberación positiva:
+
+```text
+INCONCLUSIVE
+→
+NO POSITIVE SANITARY RELEASE
+```
+
+El criterio de aceptación no se modifica retrospectivamente para convertir un fallo en conformidad.
+
+#### 28. Retrabajo
+
+Una verificación fallida o una desviación material puede originar retrabajo conforme al contrato aplicable.
+
+La experiencia conserva:
+
+- motivo;
+- alcance afectado;
+- obligación o ejecución de origen;
+- procedimiento vigente;
+- trabajo requerido;
+- responsable;
+- ventana;
+- nueva evidencia;
+- nueva verificación cuando corresponda.
+
+Retrabajar no elimina el resultado previo.
+
+#### 29. Liberación sanitaria
+
+La liberación sanitaria es una decisión autorizada sobre aptitud del sujeto para el propósito definido por la política aplicable.
+
+La revisión previa muestra, cuando corresponda:
+
+- sujeto;
+- propósito;
+- obligación;
+- ejecución;
+- verificación;
+- desviaciones;
+- restricciones residuales;
+- evidencia;
+- autoridad;
+- condición resultante;
+- siguiente obligación.
+
+#### 30. Liberaciones no equivalentes
+
+Se preserva:
+
+```text
+SANITARY RELEASE
+!=
+FACILITY AVAILABILITY
+!=
+PRODUCT RELEASE
+!=
+PROCESS RELEASE
+```
+
+Una liberación sanitaria no sustituye una decisión de calidad, producción, SST o disponibilidad locativa que tenga owner propio.
+
+Una liberación de producto o proceso tampoco demuestra que el área quedó sanitariamente liberada.
+
+#### 31. Cierre de la obligación
+
+Cerrar una obligación requiere reconciliar, según aplicabilidad:
+
+1. alcance ejecutado o resolución explícita;
+2. ejecución registrada;
+3. producto y lote cuando correspondan;
+4. consumo de inventario reconciliado cuando sea obligatorio;
+5. evidencia mínima completa;
+6. desviaciones tratadas;
+7. verificación resuelta;
+8. liberación resuelta cuando aplique;
+9. pendientes derivados con owner y condición de salida;
+10. autoridad de cierre.
+
+El cierre no borra hechos previos ni convierte una excepción en ejecución.
+
+#### 32. Programa de control de plagas
+
+La experiencia de plagas conserva un programa interno gobernado por NEXO aunque exista proveedor especializado.
+
+La vista puede mostrar, según contrato:
+
+- identidad y revisión del programa;
+- sede y áreas cubiertas;
+- alcance;
+- periodicidad o disparadores;
+- proveedor cuando aplique;
+- mapa de control;
+- dispositivos;
+- ventanas de visita;
+- evidencia requerida;
+- criterios de hallazgo;
+- acciones esperadas;
+- documentos o certificados aplicables;
+- owner interno;
+- próxima actividad.
+
+#### 33. Mapa de plagas
+
+El mapa representa la ubicación vigente de los puntos o dispositivos de control sin sustituir la jerarquía locativa de 043.
+
+Cada elemento representado conserva relación con un sujeto físico estable.
+
+Mover, instalar, retirar o sustituir un dispositivo no se resuelve cambiando únicamente una etiqueta visual del mapa.
+
+#### 34. Dispositivo de control
+
+Cuando el contrato propietario exige identidad individual, la UX conserva, según aplicabilidad:
+
+- identidad estable;
+- tipo o función;
+- ubicación vigente;
+- estado;
+- fecha de instalación;
+- proveedor o responsable;
+- última revisión;
+- próximo control;
+- historial de cambios;
+- evidencia relacionada.
+
+La numeración visible no sustituye la identidad canónica.
+
+#### 35. Visita de control de plagas
+
+Una visita conserva:
+
+- identidad;
+- programa de origen;
+- proveedor o ejecutor;
+- alcance autorizado;
+- sede y áreas;
+- fecha y tiempos aplicables;
+- dispositivos revisados;
+- observaciones;
+- hallazgos;
+- productos utilizados cuando corresponda y la política exija trazabilidad;
+- evidencia;
+- acciones recomendadas;
+- certificado o informe recibido cuando exista.
+
+Una visita programada no se presenta como realizada.
+
+#### 36. Proveedor especializado
+
+Se preserva:
+
+```text
+PROVIDER VISIT COMPLETED
+!=
+INTERNAL VERIFICATION
+!=
+AREA RELEASED
+!=
+CASE CLOSED
+```
+
+El proveedor puede aportar ejecución y evidencia dentro de su alcance.
+
+NEXO conserva el expediente interno, los hallazgos, las acciones, la verificación y las decisiones que no hayan sido delegadas por un contrato canónico explícito.
+
+#### 37. Hallazgo de plagas
+
+Un hallazgo conserva, según aplicabilidad:
+
+- visita u origen;
+- sujeto o área;
+- dispositivo relacionado;
+- observación;
+- evidencia;
+- severidad o clasificación cuando exista política propietaria;
+- impacto informado;
+- contención requerida;
+- acción requerida;
+- owner;
+- condición de salida;
+- estado.
+
+045 no inventa una escala universal de severidad.
+
+#### 38. Hallazgo no es cierre
+
+Se preserva:
+
+```text
+FINDING RECORDED
+!=
+ACTION APPROVED
+!=
+ACTION EXECUTED
+!=
+FINDING VERIFIED
+!=
+FINDING CLOSED
+```
+
+Una recomendación del proveedor no se presenta como acción ejecutada.
+
+#### 39. Acción derivada de plagas
+
+Una acción puede pertenecer a distintos owners según su naturaleza.
+
+Ejemplos conceptuales:
+
+- nueva visita o tratamiento especializado → control de plagas;
+- limpieza o saneamiento extraordinario → programa sanitario;
+- reparación de grieta, sello, red o componente → mantenimiento de 044;
+- modificación física mayor → workflow de obras de 047;
+- restricción de operación → autoridad locativa o de continuidad aplicable;
+- decisión de calidad o inocuidad → dominio competente.
+
+La UX conserva la relación con el hallazgo original durante el handoff.
+
+#### 40. Certificado o informe externo
+
+Un certificado, acta o informe se registra como evidencia documental con fuente, alcance, fecha y relación con la visita o servicio.
+
+Se preserva:
+
+```text
+CERTIFICATE RECEIVED
+!=
+FINDING RESOLVED
+!=
+INTERNAL ACCEPTANCE
+!=
+RELEASED
+```
+
+La existencia del documento no cierra automáticamente el expediente.
+
+#### 41. Frontera con inventario
+
+NEXO puede mostrar la correlación operacional con químicos, insumos y consumos.
+
+El dominio de inventario conserva movimientos, existencias, lotes y demás efectos que le pertenecen.
+
+La UX no simula una salida de inventario mediante una nota dentro de la ejecución sanitaria.
+
+#### 42. Frontera con ORIGO
+
+Cuando se requiere compra o contratación, la experiencia puede mostrar el handoff y su estado.
+
+ORIGO conserva proveedor, cotización, contratación, orden y recepción empresarial.
+
+Se preserva:
+
+```text
+SERVICE PURCHASED
+!=
+SANITARY WORK EXECUTED
+!=
+TECHNICALLY OR SANITARILY ACCEPTED
+```
+
+NEXO conserva necesidad operativa, sujeto, ejecución, evidencia, hallazgo, verificación, liberación y cierre de su expediente.
+
+#### 43. Frontera con NUMERA
+
+La experiencia puede mostrar costo informado con fuente y vínculo al expediente.
+
+No presenta el valor como reconocimiento contable ni usa el pago como evidencia de conformidad.
+
+Se preserva:
+
+```text
+PAID
+!=
+VERIFIED
+!=
+RELEASED
+!=
+CLOSED
+```
+
+#### 44. Frontera con VISO/SST
+
+VISO/SST conserva las decisiones de seguridad laboral, riesgo y cumplimiento que le correspondan.
+
+Cuando una política SST bloquea o condiciona una actividad, NEXO consume esa precondición sin apropiarse de su significado.
+
+Una inspección SST no se transforma en verificación sanitaria por similitud de formulario.
+
+#### 45. Frontera con calidad e inocuidad
+
+Cuando una condición sanitaria afecta producción, producto o inocuidad, la experiencia muestra el handoff al dominio competente.
+
+NEXO conserva el hecho físico y sanitario del área.
+
+El dominio competente conserva las decisiones de producto, proceso, lote o calidad que le pertenezcan.
+
+#### 46. Frontera con mantenimiento de `NEXO-UX-044`
+
+045 no modela una reparación como limpieza ni una limpieza rutinaria como orden de mantenimiento.
+
+Se preserva:
+
+```text
+SANITATION OBLIGATION
+!=
+MAINTENANCE WORK ORDER
+```
+
+Un hallazgo sanitario puede originar mantenimiento; una reparación puede originar una limpieza posterior; ambos expedientes conservan identidad y correlación.
+
+#### 47. Frontera con `NEXO-UX-046`
+
+046 permanece propietaria de:
+
+- inspecciones físicas generales;
+- plantillas y hallazgos de inspección;
+- control metrológico;
+- calibración y verificación;
+- servicios;
+- medidores;
+- lecturas;
+- consumos;
+- interrupciones;
+- alertas y contingencias asociadas.
+
+045 solo consume mediciones o hallazgos de 046 cuando sean entradas o evidencias válidas para un expediente sanitario.
+
+#### 48. Frontera con `NEXO-UX-047`
+
+047 conserva:
+
+- llaves y medios de acceso físico;
+- obras y adecuaciones;
+- cierres temporales;
+- novedades locativas.
+
+Una desviación sanitaria puede solicitar un cierre o una obra, pero 045 no se apropia de ese lifecycle.
+
+#### 49. Frontera con `NEXO-UX-048`
+
+048 conserva la validación integrada del prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede.
+
+045 define contrato UX y oráculos; no afirma sesiones humanas, limpiezas reales, fumigaciones, tiempos reales ni validaciones operativas realizadas.
+
+#### 50. Autorización server-side
+
+La autoridad final nunca procede de:
+
+- botón visible;
+- URL;
+- query string;
+- nombre de rol;
+- estar asignado al área;
+- haber ejecutado la actividad anterior;
+- proveedor contratado;
+- certificado cargado;
+- acceso físico al lugar;
+- permiso amplio legacy.
+
+Toda mutación sensible revalida recurso, acción, actor, territorio, estado, revisión y política.
+
+#### 51. Segregación de decisiones
+
+La UX conserva las decisiones transversales de `NEXO-AUTH-032`:
+
+```text
+REPORT
+REQUEST
+APPROVE
+EXECUTE
+VERIFY
+RELEASE
+CLOSE
+REOPEN
+```
+
+Una capacidad sobre una etapa no concede autoridad transitiva sobre otra.
+
+Las acciones especializadas de preparación, aplicación, visita, hallazgo, retrabajo y reconciliación conservan la autoridad que les corresponda.
+
+#### 52. Actor efectivo
+
+En dispositivo compartido, la experiencia resuelve el actor humano efectivo antes de una decisión sensible.
+
+El dispositivo no se convierte en ejecutor, verificador, liberador ni aprobador.
+
+Un cambio de actor obliga a revalidar capacidades y contexto.
+
+#### 53. Concurrencia
+
+Dos decisiones incompatibles sobre la misma revisión no pueden confirmar silenciosamente.
+
+Ejemplos:
+
+```text
+RELEASE
+vs
+NEW FAILED VERIFICATION
+```
+
+```text
+CLOSE
+vs
+NEW SANITATION DEVIATION
+```
+
+```text
+DEVICE REMOVED
+vs
+VISIT RECORDING DEVICE RESULT
+```
+
+La intención posterior revalida el estado persistido y muestra el conflicto.
+
+#### 54. Idempotencia
+
+Cada mutación material utiliza una identidad estable de operación o equivalente.
+
+Un doble click, retry o reenvío no puede:
+
+- crear dos obligaciones equivalentes;
+- iniciar dos veces la misma ejecución;
+- consumir dos veces el mismo insumo por la misma intención;
+- registrar dos verificaciones equivalentes como una sola acción duplicada;
+- liberar dos veces;
+- cerrar dos veces;
+- crear dos visitas equivalentes;
+- duplicar el mismo hallazgo o acción por reintento.
+
+#### 55. Operación offline
+
+Offline puede conservar, según contrato:
+
+- observación;
+- checklist en progreso;
+- evidencia pendiente;
+- intención de ejecución aún no confirmada;
+- datos de visita pendientes de sincronización.
+
+No presenta como comprometidos sin confirmación autoritativa:
+
+- aprobación;
+- liberación;
+- cierre;
+- consumo inventariable definitivo;
+- cambio de estado que requiera autoridad online.
+
+Al reconectar se revalidan actor, autoridad, revisión y estado.
+
+#### 56. Resultado remoto desconocido
+
+Ante timeout posterior a una mutación:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO CREATE ANOTHER OPERATION
+```
+
+La UX conserva la identidad de la intención y reconcilia antes de habilitar otro efecto equivalente.
+
+#### 57. Efectos compuestos
+
+Una misma acción puede producir efectos correlacionados en varios dominios.
+
+La experiencia no presenta éxito total cuando solo una parte confirmó.
+
+Ejemplo:
+
+```text
+SANITATION EXECUTION COMMITTED
++
+INVENTORY CONSUMPTION UNKNOWN
++
+RELEASE NOT CONFIRMED
+!=
+FULL SUCCESS
+```
+
+El resultado parcial queda explícitamente pendiente de reconciliación.
+
+#### 58. Error y recuperación
+
+Todo error material explica:
+
+- acción intentada;
+- qué se confirmó;
+- qué no se confirmó;
+- si existe resultado desconocido;
+- si el expediente quedó bloqueado;
+- owner del bloqueo;
+- condición de salida;
+- siguiente acción segura.
+
+No se invita a repetir una mutación cuando primero corresponde reconciliar.
+
+#### 59. Recibo e historial
+
+Después de una decisión confirmada la experiencia muestra un recibo con:
+
+- sujeto;
+- programa, obligación, visita o expediente;
+- acción;
+- actor;
+- instante;
+- revisión;
+- resultado;
+- evidencia relevante;
+- cambio de estado cuando aplique;
+- siguiente paso o pendiente.
+
+El historial conserva revisiones de programa, obligaciones, ejecuciones, verificaciones, liberaciones, visitas, hallazgos, acciones, certificados, cierres y reaperturas sin sobrescribir el pasado.
+
+#### 60. Estado AS-IS y estrategia de adopción
+
+La cobertura canónica vigente clasifica limpieza y saneamiento como capacidad a construir y control de plagas como integración externa gobernada internamente.
+
+No existe evidencia canónica suficiente para declarar implementado un ciclo dedicado completo que cubra programa, obligación, producto, ejecución, evidencia, verificación, liberación, mapa, dispositivos, visitas, hallazgos, acciones y certificados.
+
+La estrategia queda:
+
+```text
+CLEANING / SANITATION WORKFLOW
+→ BUILD MISSING WORKFLOW
+
+PEST INTERNAL RECORD + MAP + FINDINGS + ACTIONS
+→ BUILD INTERNAL GOVERNANCE
+
+SPECIALIZED PEST EXECUTION
+→ INTEGRATE_EXTERNAL
+```
+
+Los patrones reutilizables solo se adoptan cuando preserven las fronteras aprobadas.
+
+#### 61. Handoff hacia `NEXO-UX-046`
+
+045 entrega a 046:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+PROGRAM / OBLIGATION / EXECUTION SEPARATION
++
+EVIDENCE + VERIFICATION PATTERN
++
+RELEASE AS INDEPENDENT DECISION
++
+BLOCKER + OWNER + EXIT CONDITION
++
+VERSION / AUTHORIZATION / IDEMPOTENCY RULES
++
+EXTERNAL-PROVIDER EVIDENCE PATTERN
++
+NO FALSE CLOSURE
+→
+INSPECTION / CALIBRATION / SERVICE / METER UX INPUT
+```
+
+046 reutiliza únicamente los patrones transversales compatibles y define sus propios instrumentos, plantillas, lecturas, tolerancias, servicios, medidores, alertas y contingencias.
+
+#### 62. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la cobertura vigente ya protege limpieza, saneamiento, plagas, verificación, disponibilidad, cierre y fronteras de integración;
+- la cobertura vigente ya exige identidad locativa, segregación de etapas, autorización server-side, evidencia, idempotencia y operación segura;
+- esta tarea materializa la experiencia de esas obligaciones sin introducir una obligación verificable nueva fuera de los contratos aprobados.
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar el registro:
+
+- `TREQ-NEXO-018`, para limpieza, plagas, servicios, inspecciones, calibración, acceso físico, obras y novedades con verificación, disponibilidad y cierre separados;
+- `TREQ-NEXO-017`, para identidad locativa, disponibilidad y fronteras con mantenimiento cuando un hallazgo sanitario deriva trabajo locativo;
+- `TREQ-INTEGRATION-018`, para coordinación con ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos;
+- requisitos transversales vigentes de autorización, persistencia, evidencia, idempotencia, concurrencia y experiencia aplicables al futuro package de implementación.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza 04A.
+
+#### 64. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | PASS | Auditoría estática del artefacto: título, metadata, topología, proceso, programa, obligación, químicos, ejecución, verificación, liberación, plagas, fronteras, TREQ afectados y continuidad resultan coherentes con las fuentes canónicas consumidas. |
+| LOCAL | PASS | Consistencia interna comprobada entre handoff de 044, programa sanitario, obligación, procedimiento, recursos, ejecución, evidencia, verificación, liberación, retrabajo, plagas y handoff hacia 046. |
+| REMOTA | PASS | Fuentes remotas vigentes de `vento-shell`, contratos generados de `VPROC-0055`, cobertura de `CAP-SCOPE-013`, autorización `NEXO-AUTH-031/032` y contratos de experiencia E2 fueron inspeccionados antes de redactar el diseño. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron limpiezas, saneamientos, aplicaciones, visitas de plagas, verificaciones, liberaciones, cierres ni sesiones con usuarios reales durante la tarea documental. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-045` usa `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`; el contrato documental no materializa programas, obligaciones, químicos, dispositivos, visitas ni datos. |
+
+#### 65. Criterios de aceptación
+
+- [x] Se conserva exactamente el título canónico de `NEXO-UX-045`.
+- [x] La tarea consume el handoff completo de `NEXO-UX-044` sin reabrir mantenimiento locativo.
+- [x] Se preserva el sujeto locativo estable de 043.
+- [x] El caso `VPROC-0055` permanece separado de programa, obligación, ejecución, visita, hallazgo y acción.
+- [x] Se preservan los estados canónicos de `VPROC-0055` sin convertirlos en estados sanitarios universales.
+- [x] Programa y obligación permanecen separados.
+- [x] Obligación y ejecución permanecen separadas.
+- [x] Programado no equivale a iniciado.
+- [x] Procedimiento y revisión vigentes permanecen visibles antes de ejecutar.
+- [x] La identidad del producto no se sustituye por texto libre cuando existe maestro canónico.
+- [x] Declarar uso no sustituye consumo de inventario cuando este es obligatorio.
+- [x] Se preservan lote, concentración, dilución y tiempo de contacto cuando apliquen.
+- [x] Ejecución y verificación permanecen separadas.
+- [x] Limpieza ejecutada no equivale a verificación.
+- [x] Verificación fallida bloquea liberación positiva cuando corresponde.
+- [x] Resultado inconcluso no se presenta como liberación positiva cuando la política exige decisión positiva.
+- [x] Retrabajo conserva la evidencia del resultado anterior.
+- [x] Liberación sanitaria permanece separada de disponibilidad locativa y liberación de producto o proceso.
+- [x] Cierre exige reconciliación y autoridad.
+- [x] Se diseña programa interno de control de plagas.
+- [x] Mapa y dispositivos conservan relación con sujetos físicos estables.
+- [x] Visita programada no equivale a visita ejecutada.
+- [x] Proveedor ejecutor no gobierna el expediente interno.
+- [x] Hallazgo, acción, verificación y cierre permanecen separados.
+- [x] Certificado recibido no equivale a hallazgo resuelto ni liberación.
+- [x] Handoffs a mantenimiento, obras, calidad, SST, compras e inventario preservan owner de origen y destino.
+- [x] Se cubren actor efectivo, concurrencia, idempotencia, offline y resultado desconocido.
+- [x] 046, 047 y 048 conservan sus responsabilidades.
+- [x] Se crean 0 requisitos y se modifican 0 requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza código, Supabase, migraciones, despliegue ni intervención física.
+
+#### 66. Límites
+
+`NEXO-UX-045` no:
+
+- crea tablas, vistas, columnas, funciones, RPC, triggers, RLS, Storage ni migraciones;
+- modifica Supabase local o remoto;
+- crea código o componentes en aplicaciones consumidoras;
+- fija nombres técnicos definitivos de rutas, endpoints, tablas o componentes;
+- crea programas sanitarios reales;
+- genera obligaciones reales;
+- ejecuta limpieza o saneamiento real;
+- prepara o aplica químicos reales;
+- consume inventario real;
+- ejecuta fumigaciones o control de plagas real;
+- instala, mueve o retira dispositivos reales;
+- contrata proveedores;
+- reconoce costos contables;
+- libera áreas reales;
+- libera productos o procesos;
+- sustituye decisiones de calidad o SST;
+- crea una segunda identidad locativa;
+- convierte un activo en componente fijo o viceversa por inferencia;
+- define inspecciones, calibración, servicios, medidores o alertas de 046;
+- define llaves, acceso físico, obras, cierres temporales o novedades de 047;
+- ejecuta validación integrada del prototipo de 048;
+- inventa `PermissionKey`, roles, aliases, grants o scopes;
+- modifica requisitos de prueba;
+- modifica 04A;
+- cambia `active-sequence.json`;
+- autoriza una instancia física;
+- aprueba ni ejecuta un package E5.
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas`
 ### [ ] NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
 ### [ ] NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
 ### [ ] NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
