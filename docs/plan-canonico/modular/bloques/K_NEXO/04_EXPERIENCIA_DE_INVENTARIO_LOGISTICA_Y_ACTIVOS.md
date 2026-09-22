@@ -38127,7 +38127,1245 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos`
-### [ ] NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
+### ✅ NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
+**Tarea siguiente:** NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
+**Tipo de tarea:** documental; diseño UX canónico del inventario inicial de contenedores físicos, activos serializados y reutilizables controlados por cantidad, con captura de evidencia, reconciliación contra representaciones existentes, clasificación, resolución de duplicados, revisión, aprobación de materialización y cierre de línea base, sin convertir observaciones físicas en altas automáticas ni ejecutar cambios físicos
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia mediante la cual NEXO podrá construir una línea base inicial de contenedores y activos a partir de observación física, evidencia disponible y registros existentes, sin confundir el levantamiento con creación automática de inventario, propiedad confirmada, custodia confirmada, ubicación autoritativa, ajuste de stock, movimiento, conteo destructivo ni migración.
+
+La regla raíz queda:
+
+```text
+PHYSICAL OBSERVATION
++
+IDENTITY RESOLUTION
++
+CLASSIFICATION
++
+EVIDENCE
++
+LOCATION / CUSTODY / CONDITION OBSERVATION
++
+RECONCILIATION AGAINST EXISTING REPRESENTATIONS
++
+AUTHORIZED REVIEW
+→
+INITIAL BASELINE CANDIDATE
+```
+
+Y únicamente cuando exista un owner, contrato y autorización exactos:
+
+```text
+APPROVED BASELINE CANDIDATE
++
+EXACT MATERIALIZATION CAPABILITY
++
+CURRENT SERVER-SIDE VALIDATION
+→
+CANONICAL RECORD OR CONTROLLED TRANSITION
+```
+
+#### 2. Resultado canónico
+
+039 define:
+
+1. el alcance del inventario inicial de contenedores y activos;
+2. la diferencia entre observación, candidato y registro canónico;
+3. el flujo por campaña o sesión de levantamiento;
+4. la segmentación por sede, área, LOC, punto externo, tránsito o tercero;
+5. la captura por identidad individual y por cantidad;
+6. la reconciliación contra activos, grupos, LPN, LOC y otras representaciones existentes;
+7. el tratamiento de contenedores físicos separado de LPN;
+8. el tratamiento de activos serializados;
+9. el tratamiento de reutilizables por cantidad;
+10. el tratamiento de kits y miembros sin doble contabilización;
+11. la evidencia mínima y sus estados de calidad;
+12. la separación de ubicación observada, custodia observada, propiedad, condición y uso;
+13. la detección de duplicados, conflictos y representaciones ambiguas;
+14. la revisión previa a toda materialización;
+15. la frontera de autorización para crear o modificar registros;
+16. el tratamiento offline, idempotente y concurrente;
+17. la reconciliación de resultados inciertos;
+18. la UX de cierre de línea base;
+19. la reconciliación con el AS-IS de `vento-nexo`;
+20. el handoff exacto a `NEXO-UX-040`.
+
+No implementa tablas, migraciones, RLS, RPC, Server Actions, páginas, dispositivos, procesos físicos ni altas reales.
+
+#### 3. Handoff recibido desde `NEXO-UX-038`
+
+039 consume sin redefinir:
+
+```text
+RESOLVABLE STABLE IDENTITIES
++
+SCANNER AS CONTEXTUAL INPUT
++
+NO SCAN-IMPLIED MUTATION
++
+SEARCH FALLBACK FOR UNREADABLE REPRESENTATIONS
++
+DAMAGED-LABEL / DAMAGED-RESOURCE SEPARATION
++
+NO NEW IDENTITY ON LABEL REPLACEMENT
++
+REPRINT AUTHORIZATION BOUNDARY
++
+SAFE PERIPHERAL/OFFLINE RECOVERY
+```
+
+Por tanto, un primer scan durante el inventario inicial no equivale a alta, propiedad, custodia, ubicación confirmada ni existencia adicional.
+
+#### 4. Entradas canónicas preservadas
+
+039 consume, sin reabrir sus decisiones:
+
+- separación entre producto/modelo y existencia física;
+- `SERIALIZED_ASSET` con identidad individual;
+- `REUSABLE_QUANTITY` con control por cantidad;
+- `PHYSICAL_CONTAINER` separado de LPN;
+- kit definido por instancia y miembros reales;
+- ubicación separada de custodia;
+- custodia separada de propiedad, uso y autorización;
+- condición separada de disponibilidad y lifecycle;
+- conteo como observación y no como ajuste automático;
+- LPN separado de contenedor físico y de su contenido;
+- prohibición de doble contabilización entre existencia suelta y existencia contenida;
+- búsqueda transversal de 036;
+- impresión e identidad física de 037;
+- captura contextual y recuperación de 038.
+
+#### 5. Fuente AS-IS `OPS-ACT-001`
+
+El inventario inicial debe poder incorporar la evidencia AS-IS ya reconocida para:
+
+- decoraciones y elementos de marca;
+- vehículo y recursos de logística;
+- canastas y reutilizables de transporte;
+- mobiliario, herramientas y repuestos;
+- equipos pendientes de instalar o reubicar;
+- activos en tránsito o en poder de terceros;
+- puntos externos de custodia.
+
+La existencia de estas familias no confirma propiedad, disponibilidad, condición, cobertura de seguro ni custodia definitiva.
+
+#### 6. Inventario inicial no es migración automática
+
+Se fija:
+
+```text
+INITIAL INVENTORY
+!=
+AUTOMATIC MIGRATION
+```
+
+El levantamiento produce evidencia y candidatos reconciliables. Una migración posterior podrá consumirlos, pero requiere su contrato, aprobación y mecanismo propios.
+
+#### 7. Inventario inicial no es conteo de stock
+
+La superficie AS-IS `/inventory/count-initial` corresponde al conteo por LOC de productos controlados como stock.
+
+Se fija:
+
+```text
+INITIAL STOCK COUNT
+!=
+INITIAL ASSET / CONTAINER BASELINE
+```
+
+039 no convierte productos fungibles en activos ni reutiliza el saldo de stock como prueba de existencia individual.
+
+#### 8. Inventario inicial no es conteo patrimonial periódico
+
+El inventario inicial establece una línea base reconciliada para sujetos todavía incompletos, desconocidos o fragmentados.
+
+Un conteo periódico posterior parte de identidades y alcances ya registrados.
+
+```text
+BASELINE DISCOVERY
+!=
+PERIODIC COUNT SESSION
+```
+
+#### 9. Tres capas de registro
+
+La UX distingue:
+
+```text
+OBSERVATION
+→ CANDIDATE
+→ CANONICAL RECORD
+```
+
+`OBSERVATION` conserva lo visto.
+
+`CANDIDATE` agrega resolución, clasificación y evidencia.
+
+`CANONICAL RECORD` solo existe después de una materialización autorizada.
+
+#### 10. Observación física
+
+Una observación registra un hecho visible o verificable sin convertirlo todavía en verdad maestra.
+
+Puede declarar:
+
+- sujeto visto;
+- cantidad vista;
+- código o serial visible;
+- representación escaneada;
+- ubicación observada;
+- custodio observado;
+- condición observada;
+- fotografía o soporte;
+- instante y actor de captura.
+
+No declara por sí sola propiedad, identidad nueva ni custodia efectiva.
+
+#### 11. Candidato de línea base
+
+Un candidato se forma cuando la observación ha sido contrastada contra las fuentes autoritativas disponibles.
+
+Debe conservar al menos:
+
+- referencia de observación;
+- clase candidata;
+- granularidad candidata;
+- referencia existente, si existe;
+- resultado de coincidencia;
+- evidencia;
+- diferencias detectadas;
+- estado de revisión;
+- owner de la resolución pendiente.
+
+#### 12. Registro canónico
+
+Un registro canónico no se crea por proximidad física, código legible, foto, nombre, categoría, ubicación ni selección del operador.
+
+Su creación exige la capacidad exacta, scope exacto y validaciones server-side del recurso propietario.
+
+#### 13. Campaña o sesión de inventario inicial
+
+La UX debe agrupar el levantamiento dentro de una campaña o sesión con alcance explícito.
+
+Debe poder mostrar:
+
+- alcance físico;
+- responsable del levantamiento;
+- fecha de corte;
+- progreso;
+- zonas cubiertas;
+- zonas pendientes;
+- candidatos resueltos;
+- candidatos con conflicto;
+- observaciones sin clasificar;
+- revisión pendiente;
+- cierre o reapertura controlada.
+
+La sesión es una unidad de trabajo UX; esta tarea no crea un enum o tabla de dominio.
+
+#### 14. Alcance físico
+
+El alcance puede corresponder a:
+
+- sede;
+- área;
+- LOC;
+- posición interna;
+- punto administrativo;
+- punto externo;
+- tercero;
+- tránsito;
+- conjunto explícito de recursos por investigar.
+
+No se usa una ubicación inventada para representar un alcance desconocido.
+
+#### 15. Corte temporal
+
+Toda campaña conserva un instante o periodo de corte.
+
+La UX debe distinguir:
+
+```text
+OBSERVED AT CUT-OFF
+!=
+CURRENT STATE NOW
+```
+
+Si el recurso cambió después de la observación, la revisión debe poder detectarlo antes de materializar o cerrar la línea base.
+
+#### 16. Cobertura del recorrido
+
+El cierre de una campaña exige poder distinguir:
+
+- alcance cubierto;
+- alcance no recorrido;
+- alcance inaccesible;
+- alcance excluido por regla;
+- alcance pendiente de evidencia;
+- alcance pendiente de reconciliación.
+
+No recorrer un lugar no equivale a confirmar ausencia.
+
+#### 17. Captura por identidad individual
+
+Para `SERIALIZED_ASSET` y `PHYSICAL_CONTAINER` individual la captura debe priorizar:
+
+- identificador estable existente;
+- código visible;
+- serial o placa cuando aplique;
+- modelo o familia;
+- ubicación observada;
+- condición observada;
+- evidencia;
+- coincidencia contra registros existentes.
+
+Una identidad individual no se convierte en cantidad agregada para facilitar captura.
+
+#### 18. Captura por cantidad
+
+Para `REUSABLE_QUANTITY`, la UX captura:
+
+- familia o modelo;
+- unidad;
+- cantidad observada;
+- ubicación observada;
+- custodio o responsable observado cuando aplique;
+- condición por buckets cuando sea necesario;
+- evidencia;
+- alcance físico de la cantidad.
+
+No genera una identidad artificial por cada unidad.
+
+#### 19. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` identificado conserva identidad propia.
+
+Debe poder capturarse aunque:
+
+- no tenga LPN;
+- el LPN esté cerrado;
+- el LPN cambie después;
+- no tenga contenido;
+- su contenido sea desconocido.
+
+```text
+PHYSICAL_CONTAINER ID
+!=
+LPN ID
+```
+
+#### 20. Recipiente genérico no individualizado
+
+Un recipiente genérico sin identidad individual aprobada no se convierte automáticamente en `PHYSICAL_CONTAINER` individual.
+
+Cuando el contrato de clase corresponda, puede permanecer como `REUSABLE_QUANTITY` por cantidad hasta que una transición autorizada establezca otra granularidad.
+
+#### 21. LPN encontrado durante inventario inicial
+
+Un LPN escaneado o visible puede ayudar a resolver ubicación logística y contenido, pero no crea automáticamente el contenedor físico.
+
+```text
+LPN OBSERVED
+!=
+PHYSICAL CONTAINER CREATED
+```
+
+#### 22. Contenido de LPN
+
+Si se observa contenido dentro de un LPN, la UX debe evitar registrar simultáneamente la misma existencia como:
+
+- contenido del LPN; y
+- existencia suelta en el LOC.
+
+La observación contradictoria queda para reconciliación.
+
+#### 23. Movimiento aparente durante el recorrido
+
+Si una existencia se mueve mientras la campaña está abierta, la UX no reescribe silenciosamente la observación anterior.
+
+Debe conservar:
+
+- observación original;
+- nueva evidencia;
+- cambio de estado o ubicación conocido;
+- necesidad de refresco o reconciliación.
+
+#### 24. Kits
+
+Una instancia de kit se registra una vez como agrupación lógica materializada y sus miembros conservan su propia identidad o cantidad.
+
+La línea base no suma el kit como existencia adicional sobre sus componentes.
+
+#### 25. Miembro de kit fuera del kit
+
+Un componente encontrado separado de su kit puede generar una diferencia de completitud o ubicación.
+
+No debe crear automáticamente otro componente ni cerrar el kit.
+
+#### 26. Repuestos
+
+Un repuesto observado se registra según su clase y granularidad.
+
+No se considera instalado, consumido ni reservado únicamente porque aparezca cerca de un activo o taller.
+
+#### 27. Herramientas
+
+Una herramienta serializada conserva identidad individual.
+
+Una familia de herramientas homogéneas sin identificación individual puede permanecer por cantidad cuando el contrato aplicable así lo determine.
+
+La interfaz no decide la clase por el nombre “herramienta”.
+
+#### 28. Vehículos
+
+Un vehículo se trata como existencia individual con su propio contrato de flota.
+
+039 puede incorporarlo a la línea base de observación y evidencia, pero no redefine lifecycle, mantenimiento, documentos ni operación de flota.
+
+#### 29. Ubicación observada
+
+Se mantiene:
+
+```text
+OBSERVED LOCATION
+!=
+AUTHORITATIVE PLACEMENT COMMIT
+```
+
+La UX puede mostrar la ubicación observada y la ubicación registrada lado a lado.
+
+Una diferencia no mueve el recurso automáticamente.
+
+#### 30. Custodia observada
+
+Se mantiene:
+
+```text
+OBSERVED HOLDER
+!=
+ACCEPTED CUSTODIAN
+```
+
+El inventario inicial puede registrar quién conserva físicamente un recurso al momento del levantamiento sin convertirlo en custodio canónico.
+
+#### 31. Propiedad
+
+Propiedad no se deduce de:
+
+- sede;
+- custodio;
+- usuario;
+- factura no validada;
+- marca;
+- etiqueta;
+- código;
+- creador del registro.
+
+Cuando no esté demostrada permanece `POR_VERIFICAR` o su equivalente de evidencia, sin fallback silencioso.
+
+#### 32. Condición
+
+La condición observada se mantiene separada de disponibilidad, lifecycle y mantenimiento.
+
+Una observación de daño no ejecuta el ciclo de daño, pérdida, reparación o baja.
+
+#### 33. Uso y responsable operativo
+
+El uso observado y el responsable operativo pueden capturarse como contexto.
+
+No sustituyen custodia, propiedad ni autorización.
+
+#### 34. Evidencia mínima
+
+Cada observación debe poder conservar, cuando aplique:
+
+- actor de captura;
+- instante;
+- alcance de campaña;
+- foto o referencia de evidencia;
+- código, serial, placa o token observados;
+- cantidad observada;
+- ubicación;
+- custodio observado;
+- condición;
+- notas de incertidumbre;
+- fuente documental adicional.
+
+La ausencia de evidencia se registra como ausencia; no se rellena por inferencia.
+
+#### 35. Datos sensibles
+
+Placas, seriales, documentos, fotografías y datos personales deben respetar minimización y el repositorio de evidencia autorizado.
+
+El plan canónico no debe transformarse en repositorio de información sensible capturada durante el levantamiento.
+
+#### 36. Resolución contra existentes
+
+Para cada candidato individual la UX debe intentar resolver, según corresponda, contra:
+
+- identidad canónica;
+- código de activo;
+- serial o placa;
+- modelo/producto;
+- QR o representación vigente;
+- ubicación registrada;
+- LPN vinculado;
+- contenedor físico vinculado;
+- candidato previo de la misma campaña.
+
+Para cantidad se resuelve además contra el alcance cuantificado existente.
+
+#### 37. Coincidencia exacta
+
+Una coincidencia exacta actualiza el expediente de observación y diferencias.
+
+No crea una segunda existencia.
+
+```text
+EXACT MATCH
+→
+RECONCILE OBSERVATION WITH EXISTING IDENTITY
+```
+
+#### 38. Coincidencia probable
+
+Cuando existen señales compatibles pero no concluyentes, la UX debe exigir revisión.
+
+No combina identidades por heurística.
+
+#### 39. Ninguna coincidencia
+
+No encontrar coincidencia no autoriza una creación automática.
+
+El resultado es un candidato nuevo que requiere clase, granularidad, evidencia y autoridad de materialización.
+
+#### 40. Duplicado sospechoso
+
+La UX debe marcar posible duplicidad cuando dos registros o candidatos podrían representar la misma existencia.
+
+Mientras no se resuelva:
+
+- no se fusiona;
+- no se crea otra identidad definitiva;
+- no se descarta evidencia;
+- no se suma doblemente en totales concluyentes.
+
+#### 41. Conflicto de identidad
+
+Si un mismo objeto físico presenta dos identidades incompatibles, se fija:
+
+```text
+IDENTITY CONFLICT
+→
+RECONCILIATION REQUIRED
+→
+NO MATERIALIZATION
+```
+
+#### 42. Conflicto de clase
+
+Si la evidencia no permite decidir entre activo serializado, reutilizable por cantidad, kit, repuesto o contenedor físico, la clasificación permanece pendiente.
+
+La UI no usa `asset_mode`, nombre, categoría o `inventory_kind` legacy como árbitro final.
+
+#### 43. Conflicto de ubicación
+
+Una diferencia entre ubicación observada y registrada no crea un movimiento por sí sola.
+
+La campaña conserva ambas referencias y entrega la diferencia al owner de ubicación/movimiento.
+
+#### 44. Conflicto de custodia
+
+Una diferencia entre custodio observado y custodio aceptado no reescribe custodia.
+
+Debe mantenerse para reconciliación bajo el contrato de custodia.
+
+#### 45. Conflicto de cantidad
+
+Para `REUSABLE_QUANTITY`, la cantidad observada puede diferir de la esperada.
+
+```text
+OBSERVED QUANTITY
+!=
+EXPECTED QUANTITY
+```
+
+La diferencia no genera ajuste, pérdida, retorno, baja ni alta automática.
+
+#### 46. Conflicto de condición
+
+Una condición observada distinta de la registrada queda como observación verificable.
+
+No cambia automáticamente disponibilidad, mantenimiento o lifecycle.
+
+#### 47. Estados UX de trabajo
+
+La experiencia puede usar estados de presentación como:
+
+```text
+CAPTURE_PENDING
+CAPTURED
+MATCHED_EXISTING
+NEW_CANDIDATE
+AMBIGUOUS
+DUPLICATE_SUSPECT
+CLASSIFICATION_REQUIRED
+RECONCILIATION_REQUIRED
+READY_FOR_REVIEW
+REVIEWED
+MATERIALIZATION_BLOCKED
+MATERIALIZED
+CLOSED
+```
+
+Estos estados son de UX y no crean enums de dominio.
+
+#### 48. Revisión
+
+Antes de toda materialización, la revisión debe poder mostrar:
+
+- observación original;
+- clasificación propuesta;
+- coincidencia existente;
+- diferencias;
+- evidencia;
+- ubicación observada y registrada;
+- custodia observada y registrada;
+- condición observada y registrada;
+- cantidad observada y esperada;
+- riesgos de duplicidad;
+- capacidad requerida para materializar.
+
+#### 49. Segregación entre captura y materialización
+
+El actor que captura no obtiene por ello permiso para crear o modificar el recurso.
+
+```text
+CAPTURE AUTHORITY
+!=
+MATERIALIZATION AUTHORITY
+```
+
+La revisión puede ser realizada por el mismo actor únicamente cuando la política y autorización exactas lo permitan; esta tarea no concede esa compatibilidad.
+
+#### 50. Creación de activo individual
+
+La capacidad `nexo.assets.items.create` puede representar creación administrativa de un activo cuando esté activa para el actor y el recurso cumpla el contrato de `SERIALIZED_ASSET`.
+
+039 no convierte esa capacidad en permiso para:
+
+- decidir clase;
+- crear grupos;
+- crear contenedores físicos;
+- asignar custodia implícita;
+- confirmar propiedad;
+- ejecutar movimiento físico;
+- corregir diferencias observadas.
+
+#### 51. Creación de reutilizables por cantidad
+
+La evidencia canónica de autorización no demuestra una capacidad atómica activa equivalente para crear cualquier grupo físico de reutilizables durante el inventario inicial.
+
+Por tanto:
+
+```text
+NO EXACT ACTIVE CAPABILITY
+→
+DEFAULT_DENY MATERIALIZATION
+```
+
+La observación y el candidato pueden conservarse para reconciliación o paquete posterior.
+
+#### 52. Creación de contenedor físico
+
+039 no identifica una capacidad atómica activa que autorice crear un `PHYSICAL_CONTAINER` individual desde la experiencia de inventario inicial.
+
+Por tanto, la UX objetivo permite capturarlo y reconciliarlo como candidato, pero la materialización permanece bloqueada hasta que el owner contractual habilite la capacidad exacta.
+
+#### 53. LPN no es sustituto de contenedor
+
+La ausencia de capacidad para crear contenedor no autoriza usar un LPN como reemplazo del registro físico permanente.
+
+```text
+NO PHYSICAL_CONTAINER MATERIALIZATION
+!=
+CREATE LPN AS SUBSTITUTE
+```
+
+#### 54. Materialización parcial de una campaña
+
+Una campaña puede cerrar con candidatos materializados y otros pendientes únicamente si la UX declara explícitamente:
+
+- qué quedó canónico;
+- qué quedó bloqueado;
+- por qué;
+- owner de resolución;
+- evidencia conservada;
+- efecto de la pendiente sobre la completitud de la línea base.
+
+No se presenta como inventario completo cuando existen alcances sin resolver.
+
+#### 55. Totales y KPIs
+
+Los indicadores deben separar, al menos:
+
+- identidades individuales observadas;
+- cantidades reutilizables observadas;
+- contenedores identificados;
+- candidatos nuevos;
+- coincidencias existentes;
+- duplicados sospechosos;
+- conflictos;
+- observaciones pendientes;
+- alcances sin recorrer.
+
+No se suma `1 activo + 30 reutilizables` como un único “total de activos” sin dimensión explícita.
+
+#### 56. Completitud de campaña
+
+Una campaña solo puede declararse completa cuando:
+
+- el alcance previsto está cubierto o las exclusiones están justificadas;
+- no se confunde no recorrido con cero;
+- cada observación tiene clasificación o owner de reconciliación;
+- cada duplicado sospechoso tiene resolución o bloqueo explícito;
+- cada candidato bloqueado conserva owner;
+- los totales indican sus unidades y granularidad;
+- el resultado de materialización está declarado.
+
+#### 57. Idempotencia de captura
+
+Repetir el mismo scan, foto o formulario no debe crear otra observación efectiva cuando se trata de la misma intención y sujeto.
+
+La UX debe poder devolver el resultado previo o advertir coincidencia antes de duplicar candidatos.
+
+#### 58. Concurrencia
+
+Dos operadores pueden observar el mismo sujeto durante una campaña.
+
+La experiencia debe detectar la posible colisión y evitar que ambos candidatos se conviertan en registros definitivos independientes.
+
+#### 59. Operación offline
+
+Una captura offline puede conservar evidencia local conforme al contrato de contingencia, pero:
+
+```text
+OFFLINE CAPTURE
+!=
+CANONICAL CREATION
+```
+
+Al sincronizar se revalidan identidad, existencia previa, clase, ubicación, custodia, autorización y revisión vigente.
+
+#### 60. Resultado desconocido
+
+Si una materialización autorizada fue enviada pero el cliente perdió la respuesta, la UX debe reconciliar el resultado antes de repetir.
+
+```text
+UNKNOWN RESULT
+→
+QUERY / RECONCILE
+→
+NO BLIND DUPLICATE CREATE
+```
+
+#### 61. Corrección de observación
+
+Corregir una observación antes de materialización conserva historial suficiente para explicar el cambio cuando sea material.
+
+No debe editar retrospectivamente un registro canónico ya creado como si nunca hubiera existido la decisión anterior.
+
+#### 62. Reapertura
+
+Una campaña cerrada puede requerir reapertura por evidencia nueva o alcance omitido.
+
+La reapertura es una decisión de trabajo y no borra el corte, revisión ni resultados anteriores.
+
+#### 63. AS-IS — `/inventory/assets/new`
+
+La superficie actual:
+
+- usa `inventory.stock`;
+- exige `product_type=insumo` e `inventory_kind=asset`;
+- permite seleccionar `asset_mode=item|group`;
+- inserta directamente `asset_items` o `asset_groups`;
+- permite capturar ubicación y `responsible_employee_id`;
+- crea un movimiento `initial_location` después del insert.
+
+Clasificación 039:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+No constituye por sí sola el contrato objetivo de inventario inicial.
+
+#### 64. Brechas de `/inventory/assets/new`
+
+La superficie observada no demuestra por sí sola:
+
+- clasificación canónica de las siete clases;
+- separación captura/revisión/materialización;
+- reconciliación contra duplicados;
+- custodia aceptada;
+- autoridad atómica para grupos;
+- autoridad para contenedores físicos;
+- registro de observaciones bloqueadas;
+- cierre de campaña;
+- tratamiento de resultado desconocido.
+
+Por tanto, no se reutiliza como wizard canónico sin refactor.
+
+#### 65. AS-IS — `/inventory/assets/quick`
+
+La carga rápida actual:
+
+- usa `inventory.stock`;
+- crea varios `asset_groups`;
+- usa `inventory_kind=asset` como filtro legacy;
+- genera códigos;
+- inserta movimientos `initial_location`;
+- está orientada a grupos repetidos.
+
+Clasificación:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+No puede convertirse en importador masivo de línea base sin resolver clasificación, autorización, duplicidad y revisión.
+
+#### 66. AS-IS — conteos de activos
+
+`asset_count_sessions` y `asset_count_lines` operan sobre activos/grupos ya existentes.
+
+Son útiles como referencia de recorrido y observación, pero no resuelven descubrimiento de sujetos desconocidos ni materialización de contenedores físicos.
+
+Clasificación:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+#### 67. AS-IS — `/inventory/count-initial`
+
+La ruta actual opera productos inventariables por sede/LOC y perfiles de unidad.
+
+Clasificación para 039:
+
+```text
+OUT_OF_SCOPE AS DIRECT BASELINE OWNER
+```
+
+Puede coexistir con la campaña patrimonial, pero no sustituirla.
+
+#### 68. AS-IS — contenedor físico
+
+La inspección remota de `vento-nexo` no muestra una superficie o entidad de producto claramente materializada bajo el nombre `physical_container`.
+
+Por tanto:
+
+```text
+PHYSICAL_CONTAINER TARGET CONTRACT EXISTS
++
+NO DIRECT RUNTIME SURFACE OBSERVED
+→
+CAPTURE / RECONCILIATION DESIGN ONLY
+```
+
+No se inventa una tabla o ruta para cerrar esa brecha dentro de 039.
+
+#### 69. Flujo objetivo
+
+El flujo UX queda:
+
+```text
+DEFINIR ALCANCE
+→
+ABRIR CAMPAÑA
+→
+RECORRER / CAPTURAR
+→
+RESOLVER IDENTIDAD
+→
+CLASIFICAR
+→
+COMPARAR ESTADO OBSERVADO VS REGISTRADO
+→
+DETECTAR DUPLICIDAD / CONFLICTO
+→
+REVISAR
+→
+MATERIALIZAR SOLO SI EXISTE AUTORIDAD EXACTA
+→
+CONSERVAR BLOQUEADOS CON OWNER
+→
+CERRAR LINEA BASE
+```
+
+#### 70. Pantalla de alcance
+
+Debe permitir seleccionar el alcance de forma explícita y mostrar exclusiones o zonas pendientes.
+
+No debe inferir “todo inventariado” porque el usuario haya seleccionado una sede.
+
+#### 71. Pantalla de captura
+
+Debe priorizar:
+
+- escaneo contextual;
+- búsqueda 036;
+- entrada manual controlada;
+- cantidad o identidad según clase;
+- fotografía/evidencia;
+- ubicación observada;
+- condición observada;
+- custodio observado;
+- incertidumbre visible.
+
+#### 72. Pantalla de reconciliación
+
+Debe mostrar en paralelo:
+
+```text
+OBSERVED
+vs
+CURRENT REGISTERED
+vs
+PROPOSED CANDIDATE
+```
+
+Los campos discrepantes se explican; no se selecciona silenciosamente uno como ganador.
+
+#### 73. Pantalla de revisión
+
+La revisión agrupa candidatos por:
+
+- listos;
+- bloqueados por clasificación;
+- duplicados;
+- conflicto de identidad;
+- ubicación contradictoria;
+- custodia contradictoria;
+- cantidad diferente;
+- condición diferente;
+- capacidad de materialización ausente.
+
+#### 74. Pantalla de cierre
+
+El cierre debe mostrar:
+
+- alcance previsto y cubierto;
+- cobertura incompleta;
+- observaciones totales por granularidad;
+- registros existentes reconciliados;
+- nuevos candidatos;
+- materializaciones confirmadas;
+- candidatos bloqueados;
+- conflictos abiertos;
+- owners pendientes;
+- evidencia de corte.
+
+No usa “100%” si la campaña tiene alcance no recorrido o datos sin resolución.
+
+#### 75. Búsqueda, escáner e impresión dentro de 039
+
+039 consume:
+
+- 036 para resolución y búsqueda;
+- 038 para captura contextual;
+- 037 para impresión o reimpresión autorizada después de que exista identidad imprimible.
+
+No redefine ninguna de esas superficies.
+
+#### 76. Etiqueta durante el levantamiento
+
+Una etiqueta existente ayuda a resolver una identidad.
+
+Una etiqueta dañada o ausente no permite declarar que el recurso es nuevo.
+
+Una etiqueta nueva solo puede emitirse cuando exista identidad canónica y la política de impresión lo permita.
+
+#### 77. Activo sin etiqueta
+
+Un activo sin etiqueta puede coincidir por otras evidencias.
+
+La UX debe intentar reconciliación antes de crear un candidato nuevo.
+
+#### 78. Contenedor sin etiqueta
+
+Un contenedor sin etiqueta puede capturarse como candidato y evidencia física.
+
+No se le asigna automáticamente un LPN ni una identidad permanente solo para poder continuar el recorrido.
+
+#### 79. Recurso no localizable
+
+Una referencia esperada que no fue localizada durante un recorrido no se declara perdida automáticamente.
+
+El resultado es una observación de no localización dentro del alcance y corte de la campaña.
+
+#### 80. Recurso extra
+
+Un objeto físico observado sin representación previa se conserva como candidato nuevo.
+
+No se registra como “sobrante” de stock ni se crea automáticamente.
+
+#### 81. Recurso en poder de tercero
+
+La UX debe permitir conservar:
+
+- tercero o punto externo observado;
+- evidencia disponible;
+- última custodia aceptada conocida;
+- obligación de retorno si existe;
+- estado pendiente de reconciliación.
+
+No atribuye propiedad al tercero.
+
+#### 82. Recurso en tránsito
+
+El tránsito no se traduce automáticamente a una sede o custodio actual.
+
+Se conserva el contexto causal y se revalida contra los owners de movimiento y custodia.
+
+#### 83. Equipo pendiente de instalar
+
+Puede formar parte de la línea base con condición y disponibilidad separadas.
+
+La campaña no lo activa, instala ni asigna a producción.
+
+#### 84. Diferencias y owners
+
+Toda diferencia queda con owner conocido:
+
+| Diferencia | Owner contractual |
+| --- | --- |
+| clase o granularidad | contratos de clase NEXO-DOM |
+| ubicación | contrato de ubicación/movimiento |
+| custodia | `NEXO-DOM-008` / `NEXO-DOM-011` |
+| condición, daño o pérdida | `NEXO-DOM-010` |
+| mantenimiento | `NEXO-DOM-012` |
+| baja | `NEXO-DOM-013` |
+| kit/completitud | `NEXO-DOM-014` |
+| cantidad observada | conteo/reconciliación |
+| contenedor/LPN | `NEXO-DOM-019` a `NEXO-DOM-024` |
+| impresión/etiqueta | `NEXO-UX-037` / `NEXO-AUTH-028` |
+
+039 no resuelve diferencias invadiendo esos owners.
+
+#### 85. Matriz de escenarios
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| INIT-01 | activo serializado ya registrado | reconciliar con identidad existente |
+| INIT-02 | activo serializado no registrado | candidato nuevo, no alta automática |
+| INIT-03 | dos registros para el mismo activo | duplicado sospechoso, bloqueo |
+| INIT-04 | grupo reutilizable con cantidad distinta | diferencia cuantificada, no ajuste |
+| INIT-05 | recipiente genérico sin ID | cantidad reutilizable o clasificación pendiente |
+| INIT-06 | contenedor físico identificado sin LPN | candidato/identidad de contenedor, sin crear LPN |
+| INIT-07 | LPN visible sobre contenedor | conservar dos identidades |
+| INIT-08 | mismo contenido visto suelto y dentro de LPN | conflicto de representación, no doble suma |
+| INIT-09 | kit completo | una instancia + miembros, sin existencia adicional |
+| INIT-10 | kit incompleto | diferencia de completitud, no autocierre |
+| INIT-11 | activo sin etiqueta | resolver por otras evidencias |
+| INIT-12 | etiqueta dañada | mismo recurso; reprint separado |
+| INIT-13 | scan repetido | misma observación/intención, sin duplicado |
+| INIT-14 | scan desconocido | candidato, no creación |
+| INIT-15 | ubicación observada distinta | diferencia, no movimiento |
+| INIT-16 | custodio observado distinto | reconciliación, no transferencia |
+| INIT-17 | condición observada distinta | observación, no mantenimiento automático |
+| INIT-18 | recurso esperado no localizado | no localizado, no pérdida confirmada |
+| INIT-19 | recurso extra observado | candidato nuevo, no sobrante de stock |
+| INIT-20 | recurso en tercero | evidencia y custodia pendiente |
+| INIT-21 | captura offline | pendiente de revalidación |
+| INIT-22 | dos operadores capturan el mismo objeto | colisión detectada, no doble alta |
+| INIT-23 | creación enviada con respuesta perdida | reconciliar antes de repetir |
+| INIT-24 | grupo sin permiso de creación exacto | `DEFAULT_DENY` materialización |
+| INIT-25 | contenedor sin permiso de creación exacto | `DEFAULT_DENY` materialización |
+| INIT-26 | campaña con zona no recorrida | cierre parcial explícito, no 100% |
+| INIT-27 | candidato sin clase concluyente | owner de clasificación, bloqueo |
+| INIT-28 | activo individual con serial duplicado | bloqueo por identidad |
+| INIT-29 | producto legacy `inventory_kind=asset` | señal legacy, no clase canónica automática |
+| INIT-30 | carga rápida intenta fabricar grupos desde observación | bloquear sin revisión/autoridad exacta |
+
+La matriz es diseño documental; no representa pruebas ejecutadas.
+
+#### 86. Handoff hacia `NEXO-UX-040`
+
+039 entrega a la validación del prototipo:
+
+```text
+INITIAL BASELINE AS RECONCILED OBSERVATION
++
+OBSERVATION / CANDIDATE / CANONICAL RECORD SEPARATION
++
+SERIALIZED IDENTITY VS QUANTITY CONTROL
++
+PHYSICAL_CONTAINER VS LPN SEPARATION
++
+NO DOUBLE REPRESENTATION
++
+SEARCH / SCAN RECOVERY
++
+EVIDENCE-BASED REVIEW
++
+NO OBSERVATION-IMPLIED OWNERSHIP OR CUSTODY
++
+EXACT AUTHORIZATION BEFORE MATERIALIZATION
++
+SAFE PARTIAL-CAMPAIGN CLOSURE
+```
+
+`NEXO-UX-040` deberá validar estas decisiones con escenarios representativos de decoración, vajilla, herramientas y repuestos, incluyendo identidad individual, control por cantidad, kits/agrupaciones cuando correspondan, etiqueta dañada, diferencia de ubicación, custodia, condición y candidatos bloqueados.
+
+#### 87. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya controla estabilidad de identidad, separación de clase y granularidad, inventario físico incompleto, conteos no destructivos, contenedores separados de LPN, reutilizables por cantidad, activos serializados y reconciliación física sin doble contabilización. 039 especializa la experiencia de levantamiento y revisión sin introducir una obligación de prueba independiente.
+
+#### 88. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para lifecycle y reconciliación de LPN sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos y cantidades reconciliables;
+- `TREQ-NEXO-012`, para condición, daño, pérdida y disponibilidad separadas;
+- `TREQ-NEXO-013`, para separación de activos, reutilizables, contenedores, LPN, custodia y conteos;
+- `TREQ-NEXO-040`, para clasificación canónica y comportamientos por clase;
+- `TREQ-NEXO-041`, para impedir que categorías o metadata legacy decidan clase;
+- `TREQ-NEXO-043`, para separación de identidad individual y reutilizable por cantidad;
+- `TREQ-NEXO-046`, para contenedor físico separado de LPN y contenido;
+- `TREQ-NEXO-047`, para comportamiento explícito de movimientos, conteos, custodias, mantenimiento y LPN por clase;
+- `TREQ-NEXO-049`, para reconciliación física exhaustiva sin faltantes ni duplicados antes de adoptar el modelo objetivo;
+- la cobertura UX vigente de errores, recuperación, fuente de verdad, periféricos y contingencia.
+
+Estas referencias son trazabilidad y no constituyen cambios al registro.
+
+#### 89. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la redacción. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, continuidad, topología, políticas, `OPS-ACT-001`, contratos NEXO de clase, custodia, conteo y contenedores/LPN, cobertura 04A, `package.json` y el AS-IS remoto de `vento-nexo` para `/inventory/assets/new`, `/inventory/assets/quick`, conteos de activos y `/inventory/count-initial`. |
+| OPERATIVA | NOT_EXECUTED | No se realizó inventario físico, conteo, alta, ajuste, movimiento, custodia, impresión ni reconciliación operativa real. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-039` es documental bajo `DEFINE_ONCE`, no genera instancia física propia y no autoriza cambios sobre recursos reales. |
+
+#### 90. Criterios de aceptación
+
+- [x] inventario inicial queda separado de migración automática;
+- [x] inventario inicial de activos/contenedores queda separado de conteo de stock;
+- [x] observación, candidato y registro canónico quedan separados;
+- [x] la campaña conserva alcance y corte temporal;
+- [x] no recorrido queda separado de ausencia;
+- [x] identidad individual y control por cantidad conservan granularidad;
+- [x] contenedor físico permanece separado de LPN;
+- [x] contenido LPN no se duplica como existencia suelta;
+- [x] kit no suma existencia adicional sobre miembros;
+- [x] repuesto no se considera instalado por proximidad;
+- [x] ubicación observada no mueve el recurso;
+- [x] custodio observado no crea custodia aceptada;
+- [x] propiedad no se infiere;
+- [x] condición no modifica disponibilidad o mantenimiento por sí sola;
+- [x] evidencia insuficiente permanece explícita;
+- [x] coincidencia exacta no duplica identidad;
+- [x] coincidencia probable exige revisión;
+- [x] ausencia de coincidencia no crea automáticamente;
+- [x] duplicado sospechoso bloquea doble alta;
+- [x] conflicto de identidad bloquea materialización;
+- [x] conflicto de clase no se resuelve con metadata legacy;
+- [x] diferencias de cantidad no ejecutan ajuste;
+- [x] captura y materialización conservan autoridad separada;
+- [x] `nexo.assets.items.create` no amplía su alcance por esta tarea;
+- [x] reutilizables sin capacidad exacta quedan `DEFAULT_DENY` para materialización;
+- [x] contenedores físicos sin capacidad exacta quedan `DEFAULT_DENY` para materialización;
+- [x] LPN no sustituye un contenedor físico faltante;
+- [x] campañas parciales declaran pendientes y owners;
+- [x] KPIs no mezclan identidades con cantidades;
+- [x] cierre no declara 100% cuando hay alcance no recorrido;
+- [x] captura repetida es idempotente;
+- [x] concurrencia evita doble alta;
+- [x] captura offline se revalida;
+- [x] resultado desconocido se reconcilia antes de repetir;
+- [x] `/inventory/assets/new` se clasifica `REUSE_OR_REFACTOR`;
+- [x] `/inventory/assets/quick` se clasifica `REUSE_OR_REFACTOR`;
+- [x] conteos de activos se clasifican `REUSE_OR_REFACTOR`;
+- [x] `/inventory/count-initial` queda fuera como owner directo de esta línea base;
+- [x] no se inventa implementación de `PHYSICAL_CONTAINER`;
+- [x] se define flujo objetivo completo;
+- [x] cada diferencia conserva owner;
+- [x] se documentan escenarios límite;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-UX-040`.
+
+#### 91. Límites
+
+Esta tarea no:
+
+- ejecuta un inventario físico;
+- crea campañas reales;
+- crea tablas de observaciones o candidatos;
+- crea activos reales;
+- crea grupos reutilizables reales;
+- crea contenedores físicos reales;
+- crea LPN reales;
+- etiqueta recursos;
+- imprime o reimprime;
+- mueve inventario;
+- asigna ubicación autoritativa;
+- transfiere custodia;
+- confirma propiedad;
+- cambia condición, disponibilidad o lifecycle;
+- instala equipos;
+- ejecuta mantenimiento;
+- ejecuta bajas;
+- ajusta cantidades;
+- modifica stock;
+- ejecuta migraciones o backfills;
+- modifica Supabase;
+- crea RLS, RPC, triggers, vistas, funciones, índices o constraints;
+- crea permisos;
+- modifica matrices de autorización;
+- cambia `active-sequence.json`;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- autoriza una instancia física;
+- ejecuta el prototipo de `NEXO-UX-040`.
+
+#### 92. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos`
 ### [ ] NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
 ### [ ] NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
 ### [ ] NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
