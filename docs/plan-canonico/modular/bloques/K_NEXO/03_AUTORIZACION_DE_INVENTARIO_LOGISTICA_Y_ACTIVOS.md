@@ -9345,6 +9345,1077 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio`
-### [ ] NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio
+### ✅ NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
+**Tarea siguiente:** NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — certificación integral de autorización, segregación, alcance, recurso, idempotencia, concurrencia, resiliencia, dispositivo, simulación, rollback y ausencia de bypass legacy sobre las protecciones materializadas por `NEXO-AUTH-022` a `NEXO-AUTH-029`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; la ejecución real de la certificación corresponde únicamente a `NEXO-AUTH-030::<implementation_unit_id>` después de resolver el package propietario, cumplir `E5-GATE-008::<package_id> = PASS` cuando aplique y recibir autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato integral de certificación del subdominio de autorización de inventario, logística y activos cubierto por `NEXO-AUTH-022` a `NEXO-AUTH-029`.
+
+La tarea consolida en una sola matriz verificable los oracles de:
+
+- LPN y contenido;
+- activos individuales y reutilizables por cantidad;
+- custodia, préstamo, devolución y transferencia;
+- mantenimiento, daño, pérdida, hallazgo, baja y disposición;
+- conteos y diferencias;
+- impresión y reimpresión;
+- remisiones y retiro de autorización legacy;
+- autorización server-side, alcance, recurso, dispositivo, simulación, idempotencia, concurrencia, offline, timeout, auditoría y rollback.
+
+El marcador global especifica qué debe probarse. No sustituye la ejecución física de ninguna instancia.
+
+#### 2. Resultado contractual
+
+La certificación integral solo puede producir `PASS` para una unidad cuando todas las pruebas aplicables tienen evidencia válida y ninguna permanece sin ejecutar, bloqueada o fallida.
+
+Se fija:
+
+```text
+PASS INTEGRAL
+=
+TODOS LOS ORACLES APLICABLES PASS
++
+CERO BYPASS LEGACY
++
+CERO MUTACION NO AUTORIZADA
++
+CERO DOBLE EFECTO
++
+EVIDENCIA ATRIBUIBLE A LA MISMA UNIDAD
+```
+
+#### 3. Topología
+
+`NEXO-AUTH-030` conserva:
+
+```text
+MODE: PER_IMPLEMENTATION_UNIT
+EXECUTION_GATE: POST_E5_PACKAGE
+PHYSICAL_IDENTITY: NEXO-AUTH-030::<implementation_unit_id>
+```
+
+El marcador documental no crea ni autoriza ninguna instancia física.
+
+#### 4. Prerrequisitos de una ejecución física
+
+Una instancia solo puede ejecutar certificación cuando pueda demostrar:
+
+1. `implementation_unit_id` vigente;
+2. package propietario aplicable;
+3. gate E5 satisfecho cuando corresponda;
+4. autorización física explícita;
+5. protecciones aplicables de `NEXO-AUTH-022` a `NEXO-AUTH-029` materializadas para esa unidad;
+6. catálogo de permisos, grants, denegaciones, scopes y recursos compatibles con el consumidor probado;
+7. backend compatible y desplegado en el ambiente de prueba;
+8. fixtures controlados y reversibles;
+9. versión identificable de código, contratos y datos;
+10. mecanismo de captura de evidencia y auditoría;
+11. estrategia de limpieza o rollback del fixture;
+12. ausencia de cambios concurrentes no reconciliados sobre la misma unidad.
+
+La ausencia de cualquiera de estas condiciones impide declarar `PASS`.
+
+#### 5. Resultado de certificación por unidad
+
+La ejecución física de una unidad puede terminar conceptualmente en:
+
+| Resultado | Significado |
+| --- | --- |
+| `PASS` | todos los casos aplicables pasaron y la evidencia es suficiente |
+| `FAIL` | al menos un oracle aplicable fue violado |
+| `BLOCKED` | una precondición material impide ejecutar o interpretar correctamente la certificación |
+| `NOT_EXECUTED` | la certificación física no fue ejecutada |
+
+`BLOCKED` y `NOT_EXECUTED` nunca se reinterpretan como éxito parcial.
+
+#### 6. Tratamiento de no aplicabilidad
+
+Un caso individual puede clasificarse `NOT_APPLICABLE` únicamente cuando:
+
+- la superficie no pertenece a la unidad;
+- el recurso no existe en ese implementation unit;
+- la acción está explícitamente fuera del contrato de esa unidad;
+- existe evidencia suficiente para justificar la exclusión.
+
+La mera ausencia de implementación no convierte un caso en `NOT_APPLICABLE`.
+
+#### 7. Regla de evidencia única por unidad
+
+Toda evidencia utilizada para un `PASS` debe corresponder a la misma combinación de:
+
+- implementation unit;
+- package;
+- versión de consumidor;
+- versión de backend;
+- catálogo de permisos;
+- configuración de alcance;
+- ambiente;
+- fixtures;
+- ventana de ejecución.
+
+No se mezclan resultados de versiones incompatibles para construir un PASS compuesto.
+
+#### 8. Oracle universal de allow
+
+Un allow válido requiere simultáneamente:
+
+```text
+CAPACIDAD EXACTA COMPATIBLE
++ ACTOR EFECTIVO
++ PRINCIPAL EFECTIVO
++ SCOPE COMPATIBLE
++ RECURSO COMPATIBLE
++ ESTADO COMPATIBLE
++ CONTEXTO VIGENTE
++ DECISION SERVER-SIDE
+```
+
+La presencia de UI, ruta, botón, rol nominal o sesión autenticada no sustituye esas condiciones.
+
+#### 9. Oracle universal de deny
+
+La certificación debe demostrar denegación segura por lo menos ante:
+
+- capacidad ausente;
+- scope incompatible;
+- recurso incompatible;
+- estado incompatible;
+- contexto obsoleto;
+- actor no relacionado;
+- intento de acceso directo;
+- payload manipulado;
+- replay no autorizado;
+- versión stale cuando aplique.
+
+La denegación no puede producir efectos parciales.
+
+#### 10. Acceso directo
+
+Toda superficie protegida debe conservar su decisión de autorización al invocarse sin recorrer la navegación normal.
+
+Se prueban, según aplique:
+
+- URL directa;
+- Server Action directa;
+- Route Handler;
+- API;
+- RPC;
+- envío manual de formulario;
+- llamada cliente reproducida.
+
+Un control visual oculto no cuenta como protección.
+
+#### 11. Scope territorial
+
+La matriz debe verificar que sede, área, tipo de sede, tipo de área y relación territorial produzcan el mismo resultado en interfaz y servidor.
+
+Se prueba como mínimo:
+
+- scope correcto;
+- sede incorrecta;
+- área incorrecta;
+- recurso de otra sede;
+- ausencia de contexto requerido;
+- cobertura revocada o inactiva.
+
+`null`, error de resolución y ausencia de configuración no equivalen a alcance global.
+
+#### 12. Recurso
+
+La capacidad debe evaluarse contra el recurso real protegido.
+
+No se permite intercambiar por parecido textual:
+
+- `LPN` con contenedor físico;
+- `ASSET_ITEM` con `ASSET_GROUP`;
+- `ASSET_COUNT` con `STOCK_COUNT`;
+- custodia con ubicación;
+- lectura con mutación;
+- impresión con reimpresión;
+- remisión con stock general.
+
+#### 13. Estado del recurso
+
+Cada mutación debe revalidar el estado canónico inmediatamente antes del commit.
+
+Se prueban estados válidos e incompatibles, incluyendo revisión stale cuando exista versionado del recurso.
+
+Una decisión obtenida antes de un cambio concurrente no autoriza la mutación posterior sin revalidación.
+
+#### 14. Actor, principal y dispositivo
+
+La evidencia debe distinguir:
+
+```text
+PRINCIPAL AUTENTICADO
+ACTOR OPERATIVO
+DISPOSITIVO COMPARTIDO
+```
+
+El dispositivo no se convierte en actor y el principal administrativo no presta privilegios al operador identificado.
+
+#### 15. Simulación
+
+Cuando exista role override o simulación autorizada:
+
+- se utiliza el mismo contrato de permiso, scope y recurso;
+- no se mezclan permisos reales con el rol simulado;
+- la simulación no crea bypasses especiales;
+- el resultado debe ser reproducible sin simulación usando un actor equivalente.
+
+#### 16. Idempotencia
+
+Toda operación con riesgo de repetición debe probar replay de la misma intención.
+
+El resultado esperado es:
+
+```text
+MISMA INTENCION
++
+MISMA CLAVE ESTABLE
+→
+UN SOLO EFECTO EMPRESARIAL
+```
+
+Una respuesta perdida no autoriza duplicar movimiento, transferencia, conteo, impresión, custodia o evento técnico.
+
+#### 17. Concurrencia
+
+Se deben probar al menos dos operaciones incompatibles sobre el mismo recurso cuando la superficie lo admita.
+
+El sistema debe:
+
+- serializar;
+- rechazar la segunda por revisión/estado;
+- o resolver mediante mecanismo transaccional equivalente.
+
+Nunca deben sobrevivir dos efectos incompatibles como si ambos fueran válidos.
+
+#### 18. Timeout y resultado desconocido
+
+Timeout, desconexión o callback ausente producen un estado de resultado desconocido que exige reconciliación.
+
+Se fija:
+
+```text
+TIMEOUT
+!=
+FAIL DEFINITIVO
+!=
+AUTORIZACION PARA REPETIR A CIEGAS
+```
+
+#### 19. Offline
+
+Una intención creada offline:
+
+- no adquiere autoridad nueva;
+- se revalida al sincronizar;
+- usa la misma identidad idempotente;
+- respeta estado vigente y scope vigente;
+- no ejecuta si la autoridad expiró o cambió.
+
+#### 20. Auditoría
+
+Toda prueba mutadora debe poder demostrar, según aplique:
+
+- actor;
+- principal;
+- dispositivo;
+- permiso evaluado;
+- recurso;
+- scope;
+- estado previo;
+- estado posterior;
+- idempotency key o correlación equivalente;
+- resultado;
+- error o razón de deny;
+- timestamp;
+- revisión o versión.
+
+#### 21. Atomicidad y compensación
+
+Cuando una operación afecta más de una proyección o entidad, la certificación debe demostrar:
+
+- commit atómico; o
+- estado durable reconciliable; o
+- compensación verificable.
+
+No se acepta un PASS con proyecciones divergentes.
+
+#### 22. No doble contabilización
+
+Ninguna prueba puede terminar con el mismo hecho físico contabilizado simultáneamente como:
+
+- existencia suelta y contenido LPN;
+- activo individual y reutilizable por cantidad;
+- movimiento original y replay duplicado;
+- salida física y reimpresión como hecho empresarial nuevo.
+
+#### 23. Familia LPN — lectura
+
+La lectura LPN debe demostrar:
+
+- permiso de lectura compatible;
+- scope compatible;
+- recurso compatible;
+- deny sin permiso;
+- deny por territorio incompatible;
+- acceso directo protegido.
+
+Autenticación sola no constituye autorización LPN.
+
+#### 24. Familia LPN — lifecycle
+
+Para crear, actualizar, activar, cerrar, anular y reetiquetar:
+
+- lectura no concede mutación;
+- `inventory.stock` no actúa como autoridad final;
+- estado y revisión se revalidan;
+- no se cambia identidad al cerrar, anular o reetiquetar;
+- reetiquetado e impresión permanecen decisiones separadas;
+- capacidad exacta ausente produce `DEFAULT_DENY`.
+
+#### 25. Familia LPN — contenido
+
+Empaque, desempaque, división, unión y transferencia deben demostrar:
+
+- permiso exacto o deny seguro;
+- membresía y cantidades consistentes;
+- serial no contenido dos veces;
+- split de serial prohibido;
+- merge incompatible denegado;
+- destino LPN compatible;
+- transferencia parcial y total consistente;
+- transferencia multilínea atómica o reconciliable;
+- cero doble contabilización.
+
+#### 26. Familia LPN — stock insuficiente
+
+Empaque o transferencia con stock insuficiente debe fallar sin dejar:
+
+- membresía parcial;
+- movimiento huérfano;
+- saldo negativo no autorizado;
+- reserva duplicada;
+- evento final falso.
+
+#### 27. Familia de activos — lectura individual
+
+`nexo.assets.items.view` solo autoriza lectura compatible de `ASSET_ITEM`.
+
+Se prueba:
+
+- allow válido;
+- deny sin permiso;
+- deny cross-scope;
+- acceso directo;
+- ausencia de escritura derivada de la lectura.
+
+#### 28. Familia de activos — creación individual
+
+`nexo.assets.items.create` debe limitarse a creación compatible de identidad individual.
+
+No concede:
+
+- edición posterior;
+- custodia;
+- ubicación;
+- mantenimiento;
+- conteo;
+- impresión;
+- administración genérica de grupos.
+
+#### 29. Familia de activos — grupos reutilizables
+
+La certificación debe mantener separadas:
+
+```text
+SERIALIZED_ASSET / INDIVIDUAL_IDENTITY
+REUSABLE_QUANTITY
+```
+
+Si la capacidad exacta para una mutación de grupo no está materializada, el resultado correcto es `DEFAULT_DENY`, no reutilización de `items.create`, `groups.view` o `inventory.stock`.
+
+#### 30. Granularidad de representación
+
+`asset_mode`, `inventory_kind=asset`, selección visual o ruta del formulario no deciden la granularidad física autorizada.
+
+La prueba debe demostrar que el dominio aprobado gobierna la representación y evita duplicación entre item y grupo.
+
+#### 31. Ubicación y administración
+
+Cambiar ubicación no se considera una edición cosmética del activo.
+
+Debe probarse con su autoridad aplicable, recurso, origen, destino y territorio, separada de:
+
+- identidad;
+- custodia;
+- mantenimiento;
+- conteo.
+
+#### 32. Custodia — oferta y aceptación
+
+La certificación debe demostrar:
+
+```text
+OFFERED
+!=
+ACCEPTED
+```
+
+Una oferta no cambia custodia efectiva.
+
+La aceptación válida revalida actor, destinatario, origen, destino, estado, revisión y scope antes del commit.
+
+#### 33. Custodia — préstamo y devolución
+
+El préstamo conserva:
+
+- actor;
+- custodio origen;
+- destinatario;
+- plazo o condición de retorno;
+- aceptación cuando corresponda;
+- estado vigente.
+
+La devolución no borra historia ni discrepancias observadas.
+
+#### 34. Custodia — transferencia
+
+Inicio y final de transferencia son estados distintos.
+
+El origen no queda liberado definitivamente hasta la condición de aceptación o cierre aprobada por el contrato.
+
+Replay, concurrencia y timeout no pueden dejar doble custodio efectivo.
+
+#### 35. Custodia frente a ubicación
+
+Se certifica explícitamente:
+
+```text
+CAMBIAR UBICACION
+!=
+CAMBIAR CUSTODIA
+```
+
+Una capacidad no presta autoridad a la otra.
+
+#### 36. Mantenimiento — ciclo técnico
+
+La matriz debe cubrir, cuando la unidad lo materialice:
+
+- solicitud o apertura;
+- inicio;
+- ejecución;
+- finalización;
+- prueba;
+- liberación.
+
+Cada transición debe respetar permiso, estado, recurso y revisión.
+
+#### 37. Daño observado frente a confirmado
+
+Se certifica:
+
+```text
+DAMAGED_OBSERVED
+!=
+DAMAGE_CONFIRMED
+```
+
+Reportar condición no concede resolución técnica, baja ni efecto económico.
+
+#### 38. Pérdida observada frente a confirmada
+
+Se certifica:
+
+```text
+MISSING_OBSERVED
+!=
+LOSS_CONFIRMED
+```
+
+Ausencia en conteo no produce automáticamente pérdida, baja, ajuste ni liberación de custodia.
+
+#### 39. Hallazgo y recuperación
+
+Registrar hallazgo no libera automáticamente el activo para uso.
+
+La prueba debe preservar:
+
+- estado anterior;
+- investigación;
+- custodia;
+- condición;
+- decisión de liberación separada.
+
+#### 40. Baja y disposición
+
+Solicitud, aprobación, ejecución de baja y disposición permanecen decisiones distintas cuando apliquen.
+
+La disposición sin aprobación válida debe ser denegada.
+
+El efecto económico continúa bajo su autoridad propietaria.
+
+#### 41. Repuestos y mantenimiento
+
+Registrar un repuesto previsto no equivale a consumo real.
+
+La certificación debe demostrar que el efecto de inventario solo ocurre mediante la operación propietaria autorizada y trazable.
+
+#### 42. Conteos — apertura y snapshot
+
+La apertura de sesión debe congelar el conjunto esperado aplicable.
+
+La prueba debe demostrar que cambios posteriores del catálogo no reescriben silenciosamente la observación histórica de la sesión.
+
+#### 43. Conteos — captura
+
+Capturar una línea:
+
+- registra observación;
+- conserva expected y observed separados;
+- conserva actor y tiempo;
+- no corrige automáticamente ubicación maestra;
+- no confirma daño;
+- no confirma pérdida;
+- no aplica ajuste.
+
+#### 44. Conteos — cierre
+
+Cerrar captura solo demuestra completitud de captura según el contrato.
+
+Se certifica:
+
+```text
+CLOSE CAPTURE
+!=
+APPROVE DIFFERENCE
+```
+
+#### 45. Conteos — aprobación y resolución
+
+Se certifica:
+
+```text
+CAPTURE
+!=
+CLOSE
+!=
+APPROVE DIFFERENCE
+!=
+RESOLVE DIFFERENCE
+!=
+DOWNSTREAM DOMAIN MUTATION
+```
+
+Cada frontera debe conservar su autoridad.
+
+#### 46. Conteos — recursos distintos
+
+`ASSET_COUNT` y `STOCK_COUNT` permanecen recursos distintos.
+
+`nexo.inventory.stock_counts.perform` y capacidades de variación de stock no se reutilizan para activos por similitud nominal.
+
+#### 47. Impresión — lectura frente a salida física
+
+`nexo.printing.jobs.view` solo autoriza lectura de trabajos.
+
+`nexo.printing.templates.update` solo autoriza la edición correspondiente de plantilla.
+
+Ninguna de las dos concede por sí misma salida física.
+
+#### 48. Impresión — creación, retry y reconciliación
+
+Cuando las capacidades exactas estén materializadas, deben probarse separadamente:
+
+- creación de job;
+- retry;
+- reconciliación.
+
+Una capacidad objetivo ausente no puede sustituirse por alias local o permiso amplio.
+
+#### 49. Reimpresión
+
+Reimpresión conserva:
+
+- referencia al original;
+- causa;
+- actor;
+- snapshot;
+- cantidad;
+- decisión de autorización;
+- identidad empresarial original.
+
+Reimprimir QR no crea un activo nuevo.
+
+#### 50. Retry frente a reimpresión
+
+Se certifica:
+
+```text
+RETRY
+!=
+REPRINT
+```
+
+Retry intenta completar la misma intención técnica.
+
+Reimpresión crea una nueva copia autorizada del mismo hecho empresarial sin crear identidad nueva.
+
+#### 51. Resultado de impresión desconocido
+
+`RESULT_UNKNOWN` bloquea repetición ciega.
+
+La cola o intención durable se conserva hasta disponer de evidencia suficiente para reconciliar, reintentar o solicitar reimpresión según el contrato transversal.
+
+#### 52. BrowserPrint y navegador
+
+BrowserPrint, `window.print()`, impresora local, parámetros URL y `localStorage` no constituyen autoridad.
+
+La certificación debe demostrar que la ausencia de autorización server-side no puede suplirse desde el cliente.
+
+#### 53. Remisiones — consulta
+
+Los aliases de consulta legacy no permanecen como capacidades independientes.
+
+La consulta canónica utiliza la capacidad vigente y el alcance se expresa mediante scope, no mediante un permiso paralelo de tipo `all_sites`.
+
+#### 54. Remisiones — update propio pendiente
+
+La condición histórica `edit_own_pending` se prueba como combinación de:
+
+```text
+UPDATE
++
+RELACION OWN
++
+ESTADO PENDING
+```
+
+No como permiso independiente más amplio.
+
+#### 55. Remisiones — despacho y tránsito
+
+`transit` no permanece como permiso paralelo ambiguo a la acción canónica de despacho cuando el contrato materializado haya completado la migración.
+
+El estado posterior puede seguir representando tránsito sin convertir ese estado en permiso.
+
+#### 56. Remisiones — jerarquía única
+
+La decisión de si una sede o área puede solicitar, preparar, despachar, transportar o recibir debe producir el mismo resultado al combinar:
+
+- capacidad explícita;
+- reglas globales;
+- overrides;
+- contexto;
+- permisos;
+- scope;
+- recurso;
+- configuración válida.
+
+Una falla de catálogo no puede activar silenciosamente una lista hardcodeada que amplíe autoridad.
+
+#### 57. Prohibición de allow por nombre de rol
+
+Ningún nombre de rol, alias textual o lista hardcodeada puede producir por sí mismo un allow empresarial.
+
+La prueba debe incluir el caso de un rol cuyo nombre coincide históricamente con una excepción, pero carece de la capacidad o scope requerido.
+
+#### 58. `inventory.stock` como oracle broad
+
+En las superficies objetivo de 022–029, `inventory.stock` no puede producir autoridad final sobre una mutación más específica.
+
+La presencia histórica del código puede conservarse como compatibilidad no autorizante únicamente cuando el consumidor materializado ya no depende de él como decisión final.
+
+#### 59. Aliases legacy
+
+Un alias legacy solo puede sobrevivir temporalmente si:
+
+- su semántica está definida;
+- no crea una capacidad independiente;
+- conserva scope;
+- no amplía grants;
+- existe owner y condición de retiro;
+- no puede ser invocado como bypass alterno.
+
+#### 60. Migración de grants
+
+La migración de un grant legacy a una capacidad canónica debe conservar o reducir el alcance efectivo.
+
+Se prohíbe:
+
+```text
+LEGACY AMBIGUOUS GRANT
+→
+CANONICAL BROADER GRANT
+```
+
+Los casos ambiguos permanecen bloqueados hasta resolución explícita.
+
+#### 61. Role override legacy
+
+La simulación de rol debe utilizar el mismo contrato de scope que la autorización ordinaria.
+
+No se acepta un bypass específico por nombre de rol o por una acción histórica como `remissions.transit`.
+
+#### 62. Dispositivo compartido
+
+La certificación debe probar que el permiso efectivo es restrictivo respecto de:
+
+- actor identificado;
+- dispositivo;
+- aplicación permitida;
+- sede;
+- área;
+- capacidad;
+- recurso.
+
+El dispositivo no presta privilegios a un actor sin autoridad.
+
+#### 63. Rollback
+
+Rollback de una unidad certificada:
+
+- no puede reactivar `inventory.stock` como autoridad broad;
+- no puede restaurar aliases con privilegio independiente;
+- no puede convertir `DEFAULT_DENY` en autenticación sola;
+- no borra evidencia ya producida;
+- conserva identidades y hechos empresariales confirmados;
+- vuelve únicamente a una combinación previamente segura o bloquea la operación.
+
+#### 64. Matriz mínima por familia
+
+| Familia | Allow válido | Deny capacidad | Deny scope | Deny recurso/estado | Acceso directo | Replay / concurrencia | Offline / timeout | Legacy bypass |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| LPN lifecycle | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| LPN contenido | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| activos / reutilizables | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| custodia | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| mantenimiento / daño / pérdida / baja | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| conteos | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| impresión / reimpresión | obligatorio cuando exista capacidad exacta | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| remisiones / retiro legacy | obligatorio para capacidades materializadas | obligatorio | obligatorio | obligatorio | obligatorio | según acción | según acción | obligatorio |
+
+La matriz es un mínimo contractual, no un máximo de casos.
+
+#### 65. Criterio de PASS integral
+
+Una unidad puede declarar `PASS` únicamente cuando:
+
+1. todos los casos aplicables de la matriz fueron ejecutados;
+2. no existe ningún `FAIL`;
+3. no existe ningún `BLOCKED` sin resolver;
+4. cada `NOT_APPLICABLE` tiene justificación verificable;
+5. los allow se producen solo por autoridad compatible;
+6. los deny no dejan efectos parciales;
+7. acceso directo no elude autorización;
+8. replay y concurrencia no duplican efectos;
+9. offline y timeout conservan intención y reautorización;
+10. simulación y dispositivo compartido no amplían privilegios;
+11. rollback no reabre broad legacy;
+12. la evidencia pertenece a la misma versión de la unidad.
+
+#### 66. Criterio de FAIL
+
+La certificación termina `FAIL` ante cualquier evidencia de:
+
+- allow sin capacidad exacta compatible;
+- bypass por UI, URL, API, RPC o cliente;
+- scope ampliado;
+- recurso incorrecto autorizado;
+- estado imposible aceptado;
+- mutación parcial no reconciliable;
+- doble efecto;
+- pérdida de identidad o historia;
+- alias legacy con autoridad independiente;
+- allow por nombre de rol;
+- `inventory.stock` como oracle broad en superficie objetivo;
+- replay que duplica efecto;
+- rollback que reactiva autoridad más amplia.
+
+#### 67. Criterio de bloqueo
+
+La certificación permanece `BLOCKED` cuando falta una precondición necesaria para interpretar la prueba, incluyendo:
+
+- protección aplicable no materializada;
+- package o gate no resuelto;
+- catálogo/grants inconsistentes;
+- backend incompatible;
+- fixture no controlable;
+- ambiente no confiable;
+- evidencia insuficiente;
+- cambio concurrente no reconciliado;
+- dependencia técnica propietaria pendiente.
+
+Un bloqueo no se resuelve relajando el oracle.
+
+#### 68. Evidencia mínima de ejecución física
+
+Una ejecución posterior debe conservar como mínimo:
+
+- identidad de la instancia;
+- package propietario;
+- versión de consumidor;
+- versión de backend;
+- ambiente;
+- actor o fixture de actor;
+- dispositivo cuando aplique;
+- recurso o fixture;
+- permiso/scope esperado;
+- acción ejecutada;
+- resultado esperado;
+- resultado observado;
+- evidencia de auditoría;
+- evidencia de ausencia o presencia de efectos;
+- resultado final de la unidad.
+
+#### 69. Relación con `DELIV-PKG-016`
+
+La ejecución física reutiliza los perfiles y matrices de prueba ya definidos por el contrato de paquetes cuando apliquen, incluyendo pruebas de autorización, base de datos, UI y control.
+
+030 no crea un framework paralelo ni duplica la matriz E5.
+
+La evidencia integral debe poder enlazarse al package y al requisito ya planificado.
+
+#### 70. Relación con 04A
+
+030 no modifica el registro de requisitos.
+
+Su función es ejecutar y consolidar evidencia contra obligaciones ya existentes.
+
+La ausencia de un requisito nuevo no reduce la obligación de probar todos los oracles recibidos de 022–029.
+
+#### 71. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- las obligaciones de autorización exacta y denegación segura ya existen;
+- LPN, activos, custodia, mantenimiento, conteos, impresión, remisiones, idempotencia, concurrencia y retiro legacy ya tienen requisitos vigentes;
+- 030 consolida la ejecución de esos oracles sin introducir una nueva obligación empresarial independiente.
+
+#### 72. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-AUTH-001` para autorización explícita mediante permiso, contexto y scope;
+- `TREQ-AUTH-004` para coherencia de scope y role override entre consumidores;
+- `TREQ-AUTH-013` para protección server-side frente a URL, formulario, API o RPC manipulada;
+- `TREQ-NEXO-003` y `TREQ-NEXO-005` para impresión, salida física, trabajo durable, retry y no duplicación;
+- `TREQ-NEXO-004`, `TREQ-NEXO-011`, `TREQ-NEXO-012`, `TREQ-NEXO-016`, `TREQ-NEXO-046` y `TREQ-NEXO-047` para lifecycle y contenido LPN, atomicidad, identidad, cantidades y separación frente a contenedor;
+- `TREQ-NEXO-013`, `TREQ-NEXO-014`, `TREQ-NEXO-043`, `TREQ-NEXO-047` y `TREQ-NEXO-048` para activos, reutilizables, custodia, mantenimiento, representación y transición controlada;
+- `TREQ-NEXO-006`, `TREQ-NEXO-007` y `TREQ-NEXO-009` para remisiones, exactly-once, fallbacks legacy y jerarquía única;
+- `TREQ-SUPABASE-001` cuando el retiro legacy involucre wrappers, aliases, funciones o infraestructura persistente.
+
+Estas referencias son trazabilidad reutilizada y no una modificación de 04A.
+
+#### 73. Estado AS-IS observado al definir 030
+
+La evidencia remota disponible mantiene protecciones 022–029 aún no materializadas de forma integral en `vento-nexo`.
+
+Se observan, entre otros:
+
+- superficies de activos todavía protegidas por `inventory.stock`;
+- conteos de activos todavía protegidos por `inventory.stock`;
+- acciones de activos bajo el mismo guard broad;
+- bypass específico de role override para conductor y `nexo.inventory.remissions.transit`;
+- superficies de impresión con decisiones cliente que no equivalen a autorización atómica final.
+
+Por tanto, el estado actual no permite declarar `PASS` integral físico del subdominio.
+
+#### 74. Consecuencia del AS-IS
+
+El resultado correcto del marcador global es:
+
+```text
+CERTIFICATION CONTRACT DEFINED
+PHYSICAL INTEGRAL PASS NOT YET DEMONSTRATED
+```
+
+030 no convierte una brecha conocida en éxito documental.
+
+#### 75. Condición de salida física de 030
+
+Una instancia `NEXO-AUTH-030::<implementation_unit_id>` queda cerrada físicamente solo cuando:
+
+- las protecciones aplicables de 022–029 están materializadas;
+- la matriz integral fue ejecutada;
+- todos los casos aplicables tienen evidencia;
+- no existen bypasses legacy activos dentro del alcance;
+- el resultado final es atribuible a la misma unidad y package;
+- rollback y recuperación son seguros;
+- el resultado se registra por el lifecycle físico propietario.
+
+#### 76. Frontera con `NEXO-AUTH-031`
+
+`NEXO-AUTH-031` inicia la protección de instalaciones, mantenimiento de instalaciones, limpieza, inspecciones, calibración, acceso físico y obras.
+
+030 no absorbe ese subdominio.
+
+La palabra mantenimiento dentro de 030 se limita al mantenimiento de activos cubierto por `NEXO-AUTH-026`.
+
+#### 77. Frontera con `NEXO-AUTH-032`
+
+030 no define el ciclo de reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura de instalaciones.
+
+Ese alcance permanece reservado a `NEXO-AUTH-032`.
+
+#### 78. Frontera con pruebas transversales posteriores
+
+030 certifica el mini-bloque de autorización específico de NEXO cubierto por 022–029.
+
+No sustituye:
+
+- certificación transversal de autorización;
+- pruebas integrales de UX;
+- pruebas de integración entre aplicaciones;
+- gates de package;
+- pruebas físicas de hardware propietarias;
+- certificación productiva final.
+
+#### 79. Rollback de la propia certificación
+
+Una certificación no modifica hechos empresariales por sí sola salvo fixtures controlados de prueba.
+
+Si una ejecución deja datos o recursos temporales:
+
+- se limpian mediante el mecanismo aprobado;
+- no se borran eventos reales preexistentes;
+- no se oculta un fallo mediante cleanup;
+- la evidencia del fallo se conserva aunque el fixture sea revertido.
+
+#### 80. Reejecución
+
+Una reejecución posterior a corrección debe usar una nueva evidencia atribuible a la versión corregida.
+
+No se sobrescribe el resultado previo sin conservar su trazabilidad.
+
+Un PASS posterior no convierte el FAIL histórico en inexistente.
+
+#### 81. Regresión
+
+Después de una corrección en cualquiera de 022–029, deben reejecutarse:
+
+- el caso corregido;
+- sus deny paths;
+- los casos de frontera afectados;
+- los casos de replay/concurrencia afectados;
+- los casos legacy relacionados;
+- la matriz integral necesaria para volver a declarar PASS de la unidad.
+
+#### 82. Fail-safe
+
+Cuando la evidencia sea ambigua, incompleta o contradictoria, la certificación falla cerrada como `BLOCKED` o `FAIL` según la naturaleza observada.
+
+Nunca se infiere PASS por ausencia de errores visibles.
+
+#### 83. Criterios de aceptación
+
+- [x] se define una certificación integral por `implementation_unit_id`;
+- [x] se conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [x] el marcador documental no ejecuta pruebas físicas;
+- [x] se exige materialización aplicable de 022–029 antes del PASS integral;
+- [x] PASS, FAIL, BLOCKED y NOT_EXECUTED quedan diferenciados;
+- [x] NOT_APPLICABLE exige justificación;
+- [x] se exige evidencia de la misma versión de unidad;
+- [x] se prueban allow y deny;
+- [x] se prueban scope, recurso y estado;
+- [x] se prueba acceso directo;
+- [x] se prueban idempotencia y concurrencia;
+- [x] se prueban timeout y offline;
+- [x] se prueba actor, principal y dispositivo;
+- [x] se prueba simulación sin privilegio adicional;
+- [x] se prueba atomicidad o reconciliación;
+- [x] se prohíbe doble contabilización;
+- [x] se cubre lifecycle y contenido LPN;
+- [x] se cubren activos individuales y reutilizables;
+- [x] se cubre custodia, préstamo, devolución y transferencia;
+- [x] se cubre mantenimiento, daño, pérdida, hallazgo, baja y disposición de activos;
+- [x] se cubren conteos, diferencias y no mutación automática;
+- [x] se cubren impresión, retry, reconciliación y reimpresión;
+- [x] se cubren remisiones y jerarquía única;
+- [x] se prohíbe allow por nombre de rol;
+- [x] se prohíbe `inventory.stock` como oracle broad en superficies objetivo;
+- [x] se prueba retiro de aliases legacy como autoridad independiente;
+- [x] se prueba rollback sin reactivar broad legacy;
+- [x] se reutiliza `DELIV-PKG-016` y perfiles existentes cuando apliquen;
+- [x] no se crea un framework paralelo de pruebas;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] se documenta que el AS-IS vigente todavía no demuestra PASS integral físico;
+- [x] 031 recibe una frontera explícita.
+
+#### 84. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | el marcador global define el contrato de certificación y no modifica producto ni ejecuta build físico |
+| LOCAL | NOT_EXECUTED | incorporación, formateo, quality, delivery, topología, plan y TREQ corresponden al checkout local al incorporar la tarea |
+| REMOTA | PASS | se verificaron el protocolo y contratos vigentes de `vento-shell`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, owner del mini-bloque, 04A modular aplicable, contratos aprobados de `NEXO-AUTH-022` a `NEXO-AUTH-028`, artefacto aprobado de `NEXO-AUTH-029` usado como base y `vento-nexo` vigente; el consumidor remoto todavía conserva guards `inventory.stock` y el bypass de `nexo.inventory.remissions.transit`, por lo que no existe evidencia de PASS integral físico |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron flujos reales de LPN, activos, custodia, mantenimiento, conteos, impresión ni remisiones durante este marcador |
+| FÍSICA | NOT_EXECUTED | no se ejecutó ninguna instancia `NEXO-AUTH-030::<implementation_unit_id>` ni se produjo una certificación integral física |
+
+#### 85. Límites
+
+Esta tarea no:
+
+- crea nuevas `PermissionKey`;
+- modifica catálogo de permisos;
+- modifica grants o denegaciones;
+- cambia scopes;
+- modifica contratos de recurso;
+- modifica código de `vento-nexo`;
+- modifica código de producto;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos reales;
+- ejecuta operaciones reales;
+- imprime etiquetas reales;
+- modifica dispositivos compartidos;
+- materializa 022–029;
+- retira aliases físicamente;
+- cambia el lifecycle físico;
+- autoriza una instancia física;
+- declara PASS integral físico sin evidencia;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-031`;
+- desarrolla `NEXO-AUTH-032`.
+
+#### 86. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras`
 ### [ ] NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
 ### [ ] NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura
