@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1257** |
+| Aprobadas | **1258** |
 | En propuesta | **0** |
-| No iniciadas | **339** |
+| No iniciadas | **338** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.76% (1257/1596)** |
+| Porcentaje de completamiento | **78.82% (1258/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **339** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1158** |
+| ⏸ NO_EVALUADA | **338** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1159** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-045` — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-046` — Diseñar inspecciones, calibración, servicios, medidores y alertas | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-046` — Diseñar inspecciones, calibración, servicios, medidores y alertas | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1047,7 +1047,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-043` | Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-044` | Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-045` | Diseñar limpieza, saneamiento, plagas y evidencia operativa por área | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-046` | Diseñar inspecciones, calibración, servicios, medidores y alertas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-046` | Diseñar inspecciones, calibración, servicios, medidores y alertas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-047` | Diseñar llaves, acceso físico, obras, cierres temporales y novedades | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-048` | Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-001` | Inventariar vistas y acciones productivas | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |

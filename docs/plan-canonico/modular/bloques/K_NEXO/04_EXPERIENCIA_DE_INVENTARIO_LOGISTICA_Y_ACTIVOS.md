@@ -46309,6 +46309,1463 @@ Esta enumeración es trazabilidad de cobertura existente y no actualiza 04A.
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas`
-### [ ] NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
+### ✅ NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
+**Tarea siguiente:** NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
+**Tipo de tarea:** documental; diseño canónico de experiencia para inspecciones físicas, plantillas versionadas, hallazgos y acciones, servicios públicos y físicos, puntos de servicio, medidores, lecturas, consumos, interrupciones, alertas y contingencias, y control metrológico con calibración, verificación, tolerancias, certificados, vencimientos y evaluación de impacto, preservando identidad locativa, autorización, evidencia, segregación de decisiones, idempotencia y fronteras con mantenimiento, limpieza, VISO/SST, ORIGO, NUMERA, FOGO, calidad, continuidad y los workflows especializados posteriores, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K2 — NEXO / experiencia
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual NEXO gobierna inspecciones físicas de instalaciones, servicios y puntos de servicio, medidores y lecturas, alertas de consumo o interrupción y control metrológico de equipos o instrumentos calibrables, desde la programación o detección de necesidad hasta la evidencia, la verificación, la decisión técnica y el cierre reconciliado, sin convertir una lectura, una factura, una inspección ejecutada, un certificado de calibración o una alerta en prueba automática de conformidad, disponibilidad o cierre.
+
+La regla raíz queda:
+
+```text
+SUJETO FISICO ESTABLE
++
+CONTRATO / PLAN / PLANTILLA / CRITERIO VIGENTES
++
+MEDICION O INSPECCION TRAZABLE
++
+EVIDENCIA DEL HECHO REAL
++
+RESULTADO Y DESVIACION EXPLICITOS
++
+ACCION Y OWNER CUANDO APLIQUE
++
+VERIFICACION O EVALUACION TECNICA CUANDO CORRESPONDA
++
+DECISION DE DISPONIBILIDAD O RESTRICCION AUTORIZADA
++
+CIERRE RECONCILIADO
+→
+CONDICION OPERATIVA COMPRENSIBLE Y AUDITABLE
+```
+
+Nunca:
+
+```text
+READING = CONSUMPTION = INVOICE
+```
+
+ni:
+
+```text
+INSPECTION PERFORMED = CONDITION ACCEPTED = FINDING CLOSED
+```
+
+ni:
+
+```text
+CALIBRATION CERTIFICATE RECEIVED = METROLOGICALLY CONFORMING = RELEASED
+```
+
+ni:
+
+```text
+ALERT = CONFIRMED INCIDENT = CONTINGENCY RESOLVED
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-046` deja diseñados los siguientes resultados de experiencia:
+
+1. entrada contextual desde el sujeto locativo estable y desde el patrón de trabajo pendiente ya aprobado;
+2. una superficie coherente con `VSCREEN-0141` para instalaciones, servicios y mantenimiento locativo sin crear un catálogo paralelo de pantallas;
+3. bandeja operativa por inspección, servicio, punto de servicio, medidor, lectura, alerta, calibración, vencimiento, hallazgo, acción, restricción y bloqueo;
+4. experiencia de servicios con proveedor, contrato, punto de servicio y medidor diferenciados;
+5. captura y consulta de lecturas sin confundir lectura física, consumo calculado, factura ni costo conciliado;
+6. detección y tratamiento explícito de lecturas faltantes, inválidas, sospechosas o no reconciliadas sin fabricar consumos;
+7. alertas de consumo, interrupción, fuga, pérdida, vencimiento, hallazgo o fuera de tolerancia como señales que requieren evaluación;
+8. contingencias asociadas a servicios con capacidad alternativa y handoff a continuidad cuando corresponda;
+9. inspecciones físicas mediante plantillas versionadas, alcance, criterios, resultados, evidencia, hallazgos y acciones;
+10. frontera expresa entre inspección locativa, inspección SST, auditoría de cumplimiento, validación logística de LOC y cierre técnico de mantenimiento;
+11. control metrológico con magnitud, unidad, rango, resolución, tolerancia, criterio, método, patrón, trazabilidad, laboratorio, certificado, resultado, vencimiento y restricciones;
+12. evaluación de impacto ante fuera de tolerancia sin asumir automáticamente qué lotes, mediciones, controles o decisiones quedan afectados;
+13. handoffs explícitos a mantenimiento, limpieza, SST, calidad, producción, compras, finanzas o continuidad según la naturaleza del hallazgo;
+14. autorización server-side y segregación entre reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir;
+15. operación idempotente, concurrente, recuperable y compatible con captura offline gobernada;
+16. handoff a `NEXO-UX-047` sin absorber llaves, acceso físico, obras, cierres temporales ni novedades locativas.
+
+La tarea no fija rutas web, nombres de componentes, tablas, RPC, Server Actions, esquemas físicos ni estructura de Supabase.
+
+#### 3. Topología contractual
+
+La tarea conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No crea una instancia `NEXO-UX-046::*` ni autoriza implementación física.
+
+#### 4. Base canónica consumida
+
+La experiencia consume y preserva, sin reabrir sus decisiones:
+
+- `CAP-SCOPE-013`, especialmente `CAP-13.06`, `CAP-13.07` y `CAP-13.08`;
+- `NEXO-DOM-029`, para identidad y jerarquía locativa;
+- `NEXO-DOM-030`, cuando un hallazgo deriva mantenimiento o reparación locativa;
+- `NEXO-DOM-033`, para servicios, medidores, lecturas, consumos, interrupciones, alertas y contingencias;
+- `NEXO-DOM-034`, para inspecciones físicas, plantillas versionadas, hallazgos y acciones correctivas;
+- `NEXO-DOM-035`, para control metrológico, calibración, verificación, tolerancias, certificados e impacto;
+- `NEXO-AUTH-031`, para autoridad exacta sobre instalaciones, servicios, inspecciones y metrología;
+- `NEXO-AUTH-032`, para segregación entre reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir;
+- `NEXO-UX-043`, como origen del sujeto locativo estable;
+- `NEXO-UX-044`, para navegación de trabajo pendiente, mantenimiento, evidencia, bloqueos, revisión, idempotencia y cierre no ficticio;
+- `NEXO-UX-045`, para patrones de programa, obligación, ejecución, evidencia, verificación, liberación y proveedor externo compatibles;
+- `VPROC-0055`, como proceso transversal de instalaciones;
+- `VSCREEN-0141`, como pantalla canónica de instalaciones, servicios y mantenimiento locativo;
+- contratos vigentes de evidencia, integración externa, continuidad, autorización y operación offline;
+- el registro canónico vigente de requisitos de prueba.
+
+#### 5. Handoff recibido de `NEXO-UX-045`
+
+045 entrega exactamente los patrones transversales reutilizables:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+PROGRAM / OBLIGATION / EXECUTION SEPARATION
++
+EVIDENCE + VERIFICATION PATTERN
++
+RELEASE AS INDEPENDENT DECISION
++
+BLOCKER + OWNER + EXIT CONDITION
++
+VERSION / AUTHORIZATION / IDEMPOTENCY RULES
++
+EXTERNAL-PROVIDER EVIDENCE PATTERN
++
+NO FALSE CLOSURE
+→
+INSPECTION / CALIBRATION / SERVICE / METER UX INPUT
+```
+
+046 no vuelve a definir limpieza, saneamiento ni control de plagas.
+
+Cuando una inspección, lectura o calibración afecta un expediente de 045, la UX conserva la correlación y devuelve únicamente el hecho o restricción pertinente, sin absorber el lifecycle sanitario.
+
+#### 6. Sujeto principal obligatorio
+
+Toda inspección, lectura, alerta, calibración, verificación o decisión material debe resolver un sujeto físico inequívoco antes de producir efectos.
+
+La experiencia puede operar, según contrato propietario, sobre:
+
+- instalación;
+- espacio;
+- componente fijo;
+- red o punto de servicio;
+- medidor;
+- instrumento;
+- equipo calibrable;
+- elemento relacionado que conserve identidad propietaria demostrada.
+
+Nunca se usa un nombre libre del lugar o del equipo como sustituto de la identidad vigente.
+
+#### 7. Identidades que no se confunden
+
+Se preserva:
+
+```text
+SITE
+!=
+PHYSICAL SPACE
+!=
+LOC
+!=
+FIXED INSTALLATION
+!=
+SERVICE POINT
+!=
+METER
+!=
+CALIBRABLE INSTRUMENT
+!=
+SERIALIZED ASSET
+```
+
+Las relaciones entre identidades permiten contexto y navegación, no sustitución.
+
+#### 8. Proceso `VPROC-0055`
+
+La experiencia conserva el proceso canónico de instalaciones:
+
+```text
+FACILITY_CASE_OPENED
+→ TRIAGED
+→ WORK_PLANNED
+→ RESOURCES_PENDING
+→ IN_EXECUTION
+→ VERIFICATION_PENDING
+→ RELEASE_PENDING
+→ FACILITY_CASE_CLOSED
+```
+
+Esos estados describen el caso transversal de instalación.
+
+No sustituyen el estado propio de una inspección, lectura, alerta, hallazgo, acción, calibración, certificado o contingencia.
+
+#### 9. Eventos empresariales del proceso
+
+La experiencia puede proyectar los seis eventos empresariales canónicos de `VPROC-0055` cuando corresponda:
+
+```text
+VPROC-0055.EVT-001
+VPROC-0055.EVT-002
+VPROC-0055.EVT-003
+VPROC-0055.EVT-004
+VPROC-0055.EVT-005
+VPROC-0055.EVT-006
+```
+
+046 no inventa eventos adicionales para convertir cada lectura, alerta o punto de checklist en un evento empresarial nuevo.
+
+Los hechos detallados permanecen correlacionables con el proceso sin perder su identidad propia.
+
+#### 10. Superficie canónica `VSCREEN-0141`
+
+La experiencia se integra conceptualmente en:
+
+```text
+VSCREEN-0141
+Instalaciones, servicios y mantenimiento locativo
+```
+
+con propósito canónico de gestionar limpieza, inspecciones, mantenimiento, plagas, servicios, calibración y cierre de novedades de instalaciones.
+
+046 no crea una segunda pantalla canónica por cada subdominio. La materialización futura puede organizar vistas, pestañas, paneles o rutas internas según el diseño de implementación aprobado, sin alterar la identidad canónica de la superficie.
+
+#### 11. Gramática de interacción
+
+La experiencia consume la gramática aprobada para `VPROC-0055`:
+
+```text
+REPORTAR
+PLANEAR
+EJECUTAR
+VERIFICAR
+LIBERAR
+```
+
+La interacción operativa prioriza:
+
+```text
+CHECKLIST + EVIDENCIA + CAMBIO DE ESTADO
+```
+
+con cámara opcional y medición según el caso.
+
+La existencia de un medidor o instrumento no obliga a captura automática si el contrato no la exige.
+
+#### 12. Bandeja de trabajo
+
+La bandeja prioriza trabajo pendiente y riesgo operativo, no tablas técnicas.
+
+Como mínimo debe poder expresar vistas conceptuales equivalentes a:
+
+```text
+INSPECCIONES DE HOY
+INSPECCIONES VENCIDAS
+HALLAZGOS ABIERTOS
+ACCIONES VENCIDAS
+LECTURAS PENDIENTES
+LECTURAS SOSPECHOSAS
+CONSUMO ANOMALO
+SERVICIO INTERRUMPIDO
+CONTINGENCIA ACTIVA
+CALIBRACION PROXIMA A VENCER
+CALIBRACION VENCIDA
+FUERA DE TOLERANCIA
+CERTIFICADO PENDIENTE
+ESPERA VERIFICACION
+ESPERA LIBERACION
+CIERRE PENDIENTE
+```
+
+Cada entrada muestra sujeto, origen, responsable, estado, fecha o vencimiento, bloqueo y siguiente acción segura cuando exista autoridad para mostrarla.
+
+#### 13. Búsqueda y filtros
+
+Cuando exista dato autoritativo, la experiencia permite filtrar por:
+
+- sede;
+- área;
+- sujeto físico;
+- tipo de inspección;
+- plantilla y revisión;
+- responsable;
+- hallazgo;
+- severidad o criticidad cuando exista contrato propietario;
+- estado de acción;
+- servicio;
+- proveedor;
+- contrato;
+- punto de servicio;
+- medidor;
+- periodo;
+- lectura;
+- consumo;
+- anomalía;
+- interrupción;
+- contingencia;
+- instrumento;
+- magnitud;
+- estado metrológico;
+- vencimiento;
+- laboratorio o responsable;
+- certificado;
+- restricción;
+- bloqueo.
+
+Filtrar o agrupar no modifica el expediente.
+
+#### 14. Servicios y puntos de servicio
+
+La experiencia de servicios representa, según aplicabilidad:
+
+- proveedor;
+- contrato;
+- titular;
+- sede e instalación relacionadas;
+- punto de servicio;
+- tipo de servicio;
+- medidor asociado cuando exista;
+- unidad de lectura;
+- método de lectura;
+- periodicidad;
+- estado operacional observado;
+- restricciones;
+- contingencia asociada;
+- factura o referencia económica como dato correlacionado;
+- relación con NUMERA cuando corresponda.
+
+Se preserva:
+
+```text
+SERVICE CONTRACT
+!=
+SERVICE POINT
+!=
+METER
+!=
+READING
+!=
+INVOICE
+```
+
+#### 15. Contrato no sustituye disponibilidad
+
+Un contrato vigente demuestra una relación comercial o administrativa cuando la fuente competente así lo confirme.
+
+No demuestra por sí solo:
+
+- continuidad del servicio;
+- presión, calidad, tensión, caudal u otra condición técnica;
+- lectura vigente;
+- ausencia de fuga;
+- ausencia de interrupción;
+- disponibilidad operativa del área.
+
+#### 16. Punto de servicio
+
+El punto de servicio conserva identidad estable y relación con la instalación que abastece o afecta.
+
+La experiencia puede mostrar, según contrato:
+
+- sede;
+- espacio o instalación;
+- proveedor;
+- contrato;
+- servicio;
+- medidor asociado;
+- restricciones;
+- criticidad;
+- dependencias operativas;
+- capacidad alternativa cuando exista;
+- historial de interrupciones y cambios.
+
+Un punto de servicio no se identifica únicamente por el número visible del medidor.
+
+#### 17. Medidor
+
+Cuando existe medición individual, la UX conserva identidad del medidor y su relación temporal con el punto de servicio.
+
+Puede mostrar, según aplicabilidad:
+
+- identidad estable;
+- tipo;
+- serie o identificador externo cuando exista;
+- unidad;
+- rango o características relevantes cuando estén gobernadas;
+- fecha de instalación o asociación;
+- estado observado;
+- última lectura válida;
+- próxima lectura esperada;
+- historial de reemplazo o reasignación cuando el contrato lo permita;
+- relación con calibración o verificación cuando corresponda.
+
+Cambiar un medidor no reescribe las lecturas históricas del medidor anterior.
+
+#### 18. Lectura
+
+Una lectura conserva, como mínimo cuando aplique:
+
+- punto de servicio;
+- medidor;
+- valor;
+- unidad;
+- fecha y hora;
+- periodo o posición temporal;
+- actor o fuente;
+- método de captura;
+- evidencia cuando se requiera;
+- calidad o validación del dato;
+- observación;
+- relación con lectura previa;
+- clave idempotente o correlación equivalente.
+
+La UX no presenta un valor sin unidad o sujeto cuando esos datos son obligatorios para interpretarlo.
+
+#### 19. Fuente de lectura
+
+La experiencia distingue la procedencia de la lectura cuando el contrato lo permita:
+
+```text
+MANUAL CAPTURE
+AUTOMATED SOURCE
+PROVIDER DOCUMENT
+IMPORTED RECORD
+```
+
+La fuente informa procedencia y nivel de confianza; no modifica silenciosamente el valor canónico.
+
+Una importación o integración externa sigue reglas de correlación, validación e idempotencia antes de producir un hecho interno aceptado.
+
+#### 20. Lectura no equivale a consumo
+
+Se preserva:
+
+```text
+READING
+!=
+CONSUMPTION
+```
+
+El consumo requiere una relación válida entre lecturas o la metodología canónica aplicable.
+
+Una lectura aislada no produce por sí sola un consumo de periodo.
+
+#### 21. Consumo no equivale a costo
+
+Se preserva:
+
+```text
+CONSUMPTION
+!=
+INVOICE AMOUNT
+!=
+RECOGNIZED COST
+```
+
+NEXO conserva la dimensión operacional de lectura, consumo y anomalía.
+
+NUMERA conserva compromiso, gasto, costo, conciliación y demás decisiones financieras que le pertenezcan.
+
+#### 22. Lectura sospechosa o inválida
+
+Una lectura que no satisface los controles aplicables no se corrige silenciosamente para hacerla plausible.
+
+La experiencia conserva:
+
+- valor recibido;
+- fuente;
+- motivo de sospecha o invalidez;
+- dato previo relacionado;
+- evidencia;
+- actor o integración de origen;
+- acción requerida;
+- owner;
+- condición de salida.
+
+El tratamiento posterior crea una corrección o resolución trazable sin borrar el dato recibido.
+
+#### 23. Reinicio, reemplazo o discontinuidad del medidor
+
+Cuando una diferencia de lectura pueda explicarse por reemplazo, reinicio, rollover, corrección o cambio de unidad, la UX exige evidencia y relación explícitas según el contrato propietario.
+
+No se normaliza la serie histórica por inferencia.
+
+Si la causa no puede demostrarse, el periodo queda pendiente de reconciliación.
+
+#### 24. Consumo anómalo
+
+Una anomalía puede detectar una diferencia material respecto de reglas, historial o umbrales gobernados.
+
+Se preserva:
+
+```text
+ANOMALY DETECTED
+!=
+LEAK CONFIRMED
+!=
+METER FAILURE CONFIRMED
+!=
+FINANCIAL ERROR CONFIRMED
+```
+
+La UX muestra señal, contexto, evidencia disponible, impacto, owner y siguiente evaluación requerida.
+
+#### 25. Interrupción de servicio
+
+Una interrupción conserva, según aplicabilidad:
+
+- servicio;
+- punto afectado;
+- inicio conocido o estimado;
+- fuente del reporte;
+- alcance;
+- causa conocida o pendiente;
+- áreas o procesos afectados;
+- criticidad;
+- proveedor relacionado;
+- acciones en curso;
+- contingencia;
+- capacidad alternativa;
+- restablecimiento observado;
+- verificación posterior;
+- restricciones residuales.
+
+Restablecer el suministro no cierra automáticamente todos los efectos derivados.
+
+#### 26. Fuga, pérdida o condición anormal
+
+Una fuga, pérdida u otra condición anormal puede originarse en lectura, inspección, reporte humano, proveedor o sensor futuro.
+
+La experiencia conserva el origen y no transforma una alerta en diagnóstico confirmado.
+
+Cuando requiera reparación, el handoff se realiza hacia el flujo de mantenimiento de 044 conservando correlación y evidencia.
+
+#### 27. Contingencia de servicio
+
+La contingencia puede expresar, según contrato:
+
+- servicio afectado;
+- condición de activación;
+- capacidad alternativa disponible;
+- alcance temporal;
+- restricciones operativas;
+- responsable;
+- evidencia;
+- dependencia con producción, frío, seguridad o atención;
+- handoff a continuidad cuando la afectación exceda el tratamiento local.
+
+Se preserva:
+
+```text
+LOCAL SERVICE CONTINGENCY
+!=
+ENTERPRISE CONTINUITY EVENT
+```
+
+NEXO no declara por sí solo un evento empresarial de continuidad cuando esa decisión pertenece al dominio de continuidad.
+
+#### 28. Alertas
+
+Una alerta es una proyección de atención y no una transición empresarial por sí sola.
+
+Puede representar, según reglas aprobadas:
+
+- lectura faltante;
+- lectura sospechosa;
+- consumo anómalo;
+- interrupción;
+- fuga o pérdida reportada;
+- inspección próxima o vencida;
+- hallazgo crítico;
+- acción vencida;
+- calibración próxima a vencer;
+- calibración vencida;
+- certificado pendiente;
+- resultado fuera de tolerancia;
+- restricción vigente;
+- contingencia activa.
+
+#### 29. Alerta no concede decisión
+
+Se preserva:
+
+```text
+ALERT VISIBLE
+!=
+INCIDENT CONFIRMED
+!=
+WORK AUTHORIZED
+!=
+RESOURCE BLOCKED
+!=
+RESOURCE RELEASED
+```
+
+La acción derivada revalida actor, recurso, estado, territorio, política y autoridad.
+
+#### 30. Inspecciones físicas
+
+La inspección locativa verifica condición física y aptitud operativa del sujeto definido.
+
+VISO/SST conserva la evaluación de obligación, peligro laboral, cumplimiento y otras decisiones que le pertenezcan.
+
+La experiencia no convierte una inspección locativa en auditoría SST ni una inspección SST en verificación locativa por similitud de formulario.
+
+#### 31. Plantilla versionada
+
+Cada inspección utiliza una plantilla versionada cuando el contrato así lo exige.
+
+La plantilla puede definir:
+
+- identidad;
+- revisión;
+- vigencia;
+- alcance;
+- sujetos aplicables;
+- criterios;
+- preguntas o puntos de control;
+- evidencia requerida;
+- resultado permitido;
+- reglas de hallazgo;
+- escalamiento;
+- restricciones;
+- criterio de cierre o verificación.
+
+Una revisión nueva no reescribe inspecciones realizadas bajo una revisión anterior válida.
+
+#### 32. Inspección programada frente a ejecutada
+
+Se preserva:
+
+```text
+SCHEDULED INSPECTION
+!=
+STARTED INSPECTION
+!=
+COMPLETED INSPECTION
+```
+
+Programar fija una obligación o ventana; ejecutar registra el hecho real.
+
+Una inspección vencida permanece visible hasta resolución explícita.
+
+#### 33. Ejecución de inspección
+
+La ejecución conserva, según aplicabilidad:
+
+- sujeto;
+- plantilla y revisión;
+- actor;
+- fecha y hora;
+- criterios evaluados;
+- respuestas o mediciones;
+- evidencia;
+- condiciones observadas;
+- desviaciones;
+- resultado;
+- hallazgos;
+- necesidad de acción;
+- restricción o escalamiento propuestos.
+
+Completar el checklist no cierra automáticamente los hallazgos derivados.
+
+#### 34. Resultado de inspección
+
+El resultado visible debe distinguir el estado de la inspección del estado de cada hallazgo.
+
+Se preserva:
+
+```text
+INSPECTION COMPLETED
+!=
+NO FINDINGS
+```
+
+Y:
+
+```text
+FINDING RECORDED
+!=
+RESOURCE UNAVAILABLE
+```
+
+Un hallazgo crítico puede bloquear disponibilidad únicamente mediante regla y autoridad explícitas.
+
+#### 35. Hallazgo
+
+Un hallazgo conserva, según aplicabilidad:
+
+- inspección u origen;
+- sujeto;
+- criterio afectado;
+- observación;
+- evidencia;
+- clasificación o severidad cuando exista política propietaria;
+- impacto;
+- contención;
+- acción requerida;
+- owner;
+- plazo;
+- condición de salida;
+- estado;
+- verificación posterior.
+
+046 no inventa una escala universal de severidad.
+
+#### 36. Hallazgo no equivale a acción
+
+Se preserva:
+
+```text
+FINDING RECORDED
+!=
+CORRECTIVE ACTION APPROVED
+!=
+ACTION EXECUTED
+!=
+FINDING VERIFIED
+!=
+FINDING CLOSED
+```
+
+La UX muestra la cadena sin ocultar etapas pendientes.
+
+#### 37. Contención
+
+Cuando un hallazgo exige contención inmediata, la UX conserva:
+
+- motivo;
+- alcance;
+- actor;
+- inicio;
+- restricción;
+- evidencia;
+- owner;
+- condición de salida;
+- relación con reparación, continuidad, limpieza, calidad o SST cuando corresponda.
+
+Una contención no es resolución permanente.
+
+#### 38. Acción correctiva
+
+La acción derivada conserva:
+
+- hallazgo de origen;
+- owner;
+- alcance;
+- decisión requerida;
+- trabajo esperado;
+- fecha o SLA cuando exista;
+- evidencia;
+- estado;
+- verificación requerida;
+- condición de cierre.
+
+Si la acción pertenece a mantenimiento, limpieza, SST, calidad, obras u otro owner, 046 conserva el handoff y no duplica el expediente especializado.
+
+#### 39. Verificación de hallazgo
+
+Cerrar un hallazgo material exige evidencia de la acción y verificación cuando el contrato lo requiera.
+
+Se preserva:
+
+```text
+ACTION MARKED DONE
+!=
+FINDING VERIFIED
+```
+
+La verificación conserva actor, momento, criterio, evidencia, resultado y restricciones residuales.
+
+#### 40. Frontera con validaciones de LOC
+
+Las validaciones logísticas de LOC pueden ser una base reutilizable para contexto físico, pero no cubren por sí solas inspecciones completas de instalaciones ni plantillas versionadas por riesgo.
+
+Se preserva:
+
+```text
+LOC VALIDATION
+!=
+FACILITY INSPECTION
+```
+
+La UX no extiende una validación logística hasta convertirla en inspección técnica sin contrato propietario.
+
+#### 41. Control metrológico
+
+La experiencia de control metrológico conserva para cada sujeto calibrable, según aplicabilidad:
+
+- identidad;
+- magnitud;
+- unidad;
+- rango;
+- resolución;
+- tolerancia;
+- criterio de aceptación;
+- método;
+- patrón y trazabilidad;
+- laboratorio o responsable;
+- certificado;
+- resultados;
+- fecha;
+- vencimiento;
+- estado metrológico;
+- ajustes;
+- sellos;
+- restricciones;
+- evaluación de impacto cuando corresponda.
+
+#### 42. Estados conceptuales no equivalentes
+
+Se preserva:
+
+```text
+CALIBRATED
+!=
+VERIFIED
+!=
+ADJUSTED
+!=
+OUT OF TOLERANCE
+!=
+NOT SUITABLE
+```
+
+La UX no colapsa esos significados en un único indicador genérico de mantenimiento.
+
+#### 43. Plan o vencimiento metrológico
+
+La experiencia muestra, según contrato:
+
+- última intervención válida;
+- próxima fecha;
+- ventana permitida;
+- estado de vencimiento;
+- responsable;
+- proveedor o laboratorio;
+- recursos o documentos requeridos;
+- restricciones de uso cuando existan.
+
+Un vencimiento no inventa automáticamente un resultado fuera de tolerancia, pero puede activar la restricción definida por la política competente.
+
+#### 44. Calibración frente a verificación
+
+Se preserva:
+
+```text
+CALIBRATION
+!=
+METROLOGICAL VERIFICATION
+```
+
+La experiencia muestra qué actividad se ejecutó, con qué método y bajo qué criterio.
+
+Una actividad no se renombra para satisfacer el estado esperado.
+
+#### 45. Ejecución metrológica
+
+Una ejecución conserva, según aplicabilidad:
+
+- sujeto calibrable;
+- actividad;
+- método;
+- patrón o referencia;
+- laboratorio o actor;
+- fecha;
+- condiciones relevantes;
+- resultados;
+- ajustes;
+- evidencia;
+- certificado;
+- resultado respecto del criterio;
+- restricciones;
+- próxima fecha.
+
+El proveedor externo aporta hechos y documentos dentro de su alcance; NEXO conserva el expediente interno y la relación con disponibilidad.
+
+#### 46. Certificado
+
+Un certificado se registra como evidencia documental con:
+
+- fuente;
+- sujeto;
+- alcance;
+- fecha;
+- identificación del laboratorio o responsable;
+- método o referencia cuando aplique;
+- resultados relacionados;
+- vigencia;
+- vínculo con la ejecución correspondiente.
+
+Se preserva:
+
+```text
+CERTIFICATE RECEIVED
+!=
+CERTIFICATE VALIDATED
+!=
+METROLOGICALLY CONFORMING
+!=
+RESOURCE RELEASED
+```
+
+#### 47. Fuera de tolerancia
+
+Un resultado fuera de tolerancia permanece explícito y no puede cerrarse administrativamente como conformidad.
+
+La experiencia conserva:
+
+- sujeto;
+- magnitud;
+- criterio;
+- resultado;
+- desviación;
+- periodo potencialmente afectado;
+- restricciones;
+- evidencia;
+- owner de evaluación;
+- acción técnica;
+- necesidad de evaluación de impacto;
+- condición de salida.
+
+#### 48. Evaluación de impacto
+
+Fuera de tolerancia puede requerir evaluación sobre:
+
+- mediciones históricas;
+- controles;
+- lotes;
+- producción;
+- calidad;
+- decisiones previas;
+- registros operativos relacionados.
+
+046 no decide por inferencia qué elementos quedan invalidados.
+
+El dominio competente evalúa alcance, materialidad y tratamiento, preservando correlación con el evento metrológico de origen.
+
+#### 49. Disponibilidad frente a estado metrológico
+
+Se preserva:
+
+```text
+CALIBRATION CURRENT
+!=
+RESOURCE AVAILABLE FOR EVERY USE
+```
+
+Y:
+
+```text
+CALIBRATION EXPIRED
+!=
+AUTOMATIC PHYSICAL FAILURE
+```
+
+La disponibilidad depende del uso, criticidad, política, restricciones y autoridad aplicables.
+
+#### 50. Frontera entre instalación fija e instrumento o activo
+
+Cuando un elemento calibrable tiene lifecycle de activo propio, la UX respeta el owner del activo y correlaciona su condición con la instalación.
+
+Cuando el objeto principal es componente fijo o punto de servicio de la instalación, la experiencia conserva el owner locativo.
+
+No se crean dos mantenimientos o dos expedientes metrológicos competidores para el mismo objeto por similitud terminológica.
+
+#### 51. Frontera con mantenimiento de `NEXO-UX-044`
+
+046 no ejecuta reparación dentro de una inspección, lectura o calibración.
+
+Se preserva:
+
+```text
+FINDING OR SERVICE ANOMALY
+!=
+MAINTENANCE WORK ORDER
+```
+
+Un hallazgo puede originar mantenimiento; la orden de trabajo conserva su identidad y lifecycle bajo 044.
+
+046 conserva correlación hasta conocer el resultado necesario para verificar o cerrar el hallazgo de origen.
+
+#### 52. Frontera con `NEXO-UX-045`
+
+045 conserva limpieza, saneamiento y plagas.
+
+046 puede aportar:
+
+- lectura o medición;
+- inspección locativa;
+- hallazgo;
+- restricción;
+- evidencia metrológica;
+- condición de servicio.
+
+Esos hechos pueden ser entradas a 045 cuando corresponda, pero 046 no ejecuta ni cierra el expediente sanitario.
+
+#### 53. Frontera con ORIGO
+
+ORIGO conserva contratación, proveedor, orden y recepción empresarial de servicios, calibraciones o trabajos externos cuando corresponda.
+
+Se preserva:
+
+```text
+SERVICE CONTRACTED
+!=
+SERVICE AVAILABLE
+!=
+CALIBRATION PERFORMED
+!=
+TECHNICALLY ACCEPTED
+```
+
+NEXO conserva el hecho técnico, la condición, la evidencia y la decisión locativa que le pertenezcan.
+
+#### 54. Frontera con NUMERA
+
+NUMERA conserva presupuesto, compromiso, factura, gasto, costo y conciliación financiera.
+
+NEXO puede mostrar referencias económicas y diferencias operativas para navegación, pero no reconoce costos ni corrige facturas.
+
+Se preserva:
+
+```text
+INVOICE PAID
+!=
+CONSUMPTION RECONCILED
+!=
+SERVICE CONDITION VERIFIED
+```
+
+#### 55. Frontera con VISO/SST
+
+VISO/SST conserva obligaciones, riesgos laborales, cumplimiento y expedientes propios.
+
+Una inspección locativa puede producir un hallazgo relevante para SST y una inspección SST puede producir una condición relevante para NEXO, pero ambas conservan identidad y owner.
+
+La UX no duplica la misma decisión en dos dominios.
+
+#### 56. Frontera con FOGO, calidad e inocuidad
+
+Cuando una condición de servicio o resultado metrológico afecta producción, lote, control o calidad:
+
+- NEXO conserva el hecho físico o metrológico;
+- FOGO conserva producción y proceso que le pertenezcan;
+- calidad o inocuidad conserva sus decisiones de aceptación, retención, investigación o liberación;
+- el expediente de impacto mantiene correlación entre hechos sin convertir NEXO en owner de producto.
+
+#### 57. Frontera con continuidad
+
+Una interrupción o contingencia local puede escalar al dominio de continuidad cuando la política lo determine.
+
+NEXO aporta:
+
+- servicio afectado;
+- sujeto;
+- alcance;
+- criticidad;
+- tiempo conocido;
+- capacidad alternativa;
+- restricciones;
+- evidencia;
+- estado de recuperación.
+
+El dominio de continuidad conserva activación, coordinación empresarial, mínimo operativo, recuperación y cierre del evento que le pertenezcan.
+
+#### 58. Frontera con `NEXO-UX-047`
+
+047 permanece propietaria de:
+
+- llaves y medios de acceso físico;
+- custodia y vigencia de acceso;
+- obras y adecuaciones;
+- cierres temporales;
+- novedades locativas y su cierre especializado.
+
+046 puede solicitar o recomendar una restricción, cierre, acceso especializado u obra a partir de un hallazgo, interrupción o resultado metrológico, pero no absorbe esos lifecycles.
+
+#### 59. Frontera con `NEXO-UX-048`
+
+048 conserva la validación integrada del prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede.
+
+046 define contrato UX y oráculos; no afirma inspecciones reales, lecturas reales, calibraciones reales, interrupciones reales, tiempos de respuesta ni sesiones humanas ejecutadas.
+
+#### 60. Autorización server-side
+
+La autoridad final nunca procede de:
+
+- botón visible;
+- URL;
+- query string;
+- nombre de rol;
+- estar asignado al área;
+- tener acceso físico;
+- ser proveedor contratado;
+- haber emitido una factura;
+- haber cargado un certificado;
+- haber ejecutado la etapa anterior;
+- permiso amplio legacy.
+
+Toda mutación sensible revalida recurso, acción, actor, territorio, estado, revisión y política.
+
+#### 61. Segregación de decisiones
+
+La UX conserva las decisiones transversales de `NEXO-AUTH-032`:
+
+```text
+REPORT
+REQUEST
+APPROVE
+EXECUTE
+VERIFY
+RELEASE
+CLOSE
+REOPEN
+```
+
+Una capacidad sobre una etapa no concede autoridad transitiva sobre otra.
+
+Las acciones especializadas de lectura, inspección, calibración, validación documental, evaluación de impacto y contingencia conservan la autoridad que les corresponda.
+
+#### 62. Actor efectivo
+
+En dispositivo compartido, la experiencia resuelve el actor humano efectivo antes de una decisión sensible.
+
+El dispositivo no se convierte en inspector, lector, técnico, verificador, liberador ni aprobador.
+
+Un cambio de actor obliga a revalidar capacidades y contexto.
+
+#### 63. Concurrencia
+
+Dos decisiones incompatibles sobre la misma revisión no pueden confirmar silenciosamente.
+
+Ejemplos:
+
+```text
+METER READING CORRECTION
+vs
+CONSUMPTION RECONCILIATION
+```
+
+```text
+FINDING CLOSE
+vs
+NEW FAILED VERIFICATION
+```
+
+```text
+RESOURCE RELEASE
+vs
+NEW OUT-OF-TOLERANCE RESULT
+```
+
+```text
+SERVICE RESTORED
+vs
+NEW INTERRUPTION REPORT
+```
+
+La intención posterior revalida el estado persistido y muestra el conflicto.
+
+#### 64. Idempotencia
+
+Cada mutación material utiliza una identidad estable de operación o equivalente.
+
+Un doble click, retry, reenvío, webhook repetido o sincronización offline no puede:
+
+- crear dos lecturas equivalentes por la misma intención;
+- crear dos inspecciones ejecutadas equivalentes;
+- duplicar el mismo hallazgo por replay;
+- cerrar dos veces la misma acción;
+- registrar dos calibraciones equivalentes por retry;
+- duplicar el mismo certificado;
+- activar dos veces la misma contingencia;
+- crear dos cierres equivalentes.
+
+#### 65. Operación offline
+
+Offline puede conservar, según contrato:
+
+- observación;
+- lectura pendiente;
+- checklist en progreso;
+- evidencia pendiente;
+- intención de inspección;
+- resultado técnico pendiente de sincronización.
+
+No presenta como comprometidos sin confirmación autoritativa:
+
+- aprobación;
+- liberación;
+- cierre;
+- corrección definitiva de lectura;
+- estado metrológico final cuando requiera validación server-side;
+- activación empresarial de continuidad;
+- cambio de disponibilidad que requiera autoridad online.
+
+Al reconectar se revalidan actor, autoridad, revisión, sujeto y estado.
+
+#### 66. Resultado remoto desconocido
+
+Ante timeout posterior a una mutación:
+
+```text
+UNKNOWN RESULT
+!=
+SAFE TO CREATE ANOTHER OPERATION
+```
+
+La UX conserva la identidad de la intención y reconcilia antes de habilitar otro efecto equivalente.
+
+#### 67. Efectos compuestos
+
+Una misma acción puede producir efectos correlacionados en varios dominios.
+
+La experiencia no presenta éxito total cuando solo una parte confirmó.
+
+Ejemplo:
+
+```text
+INSPECTION COMMITTED
++
+MAINTENANCE HANDOFF UNKNOWN
++
+FACILITY RESTRICTION NOT CONFIRMED
+!=
+FULL SUCCESS
+```
+
+Y:
+
+```text
+CALIBRATION RESULT COMMITTED
++
+QUALITY IMPACT EVALUATION PENDING
+!=
+FULL RELEASE
+```
+
+El resultado parcial queda explícitamente pendiente de reconciliación.
+
+#### 68. Error y recuperación
+
+Todo error material explica:
+
+- acción intentada;
+- qué se confirmó;
+- qué no se confirmó;
+- si existe resultado desconocido;
+- si el expediente quedó bloqueado;
+- owner del bloqueo;
+- condición de salida;
+- siguiente acción segura.
+
+No se invita a repetir una mutación cuando primero corresponde reconciliar.
+
+#### 69. Recibo e historial
+
+Después de una decisión confirmada la experiencia muestra un recibo con:
+
+- sujeto;
+- inspección, lectura, alerta, servicio o calibración;
+- acción;
+- actor;
+- instante;
+- revisión;
+- resultado;
+- evidencia relevante;
+- cambio de estado cuando aplique;
+- siguiente paso o pendiente.
+
+El historial conserva plantillas, inspecciones, hallazgos, acciones, lecturas, correcciones, consumos, interrupciones, contingencias, calibraciones, certificados, restricciones, liberaciones, cierres y reaperturas sin sobrescribir el pasado.
+
+#### 70. Estado AS-IS y estrategia de adopción
+
+La cobertura canónica vigente clasifica:
+
+```text
+CAP-13.06 SERVICES / METERS / READINGS / ALERTS
+→ BUILD
+
+CAP-13.07 FACILITY INSPECTIONS
+→ REUSE_OR_REFACTOR
+
+CAP-13.08 METROLOGY / CALIBRATION
+→ REUSE_OR_REFACTOR
+```
+
+La evidencia disponible confirma infraestructura parcial, no un ciclo integral implementado que cubra servicios, puntos, medidores, lecturas, consumos, interrupciones, alertas, plantillas versionadas, hallazgos, acciones, metrología, certificados y evaluación de impacto.
+
+Los patrones existentes solo se reutilizan cuando conservan identidades, fronteras, autorización y trazabilidad aprobadas.
+
+#### 71. Handoff hacia `NEXO-UX-047`
+
+046 entrega a 047:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+FACILITY CONDITION + RESTRICTION CONTEXT
++
+SERVICE INTERRUPTION / CONTINGENCY CONTEXT
++
+INSPECTION FINDING + ACTION CONTEXT
++
+METROLOGY RESTRICTION / IMPACT CONTEXT
++
+EVIDENCE + VERIFICATION PATTERN
++
+BLOCKER + OWNER + EXIT CONDITION
++
+VERSION / AUTHORIZATION / IDEMPOTENCY RULES
++
+NO FALSE CLOSURE
+→
+PHYSICAL ACCESS / WORKS / TEMPORARY CLOSURE / FACILITY ISSUE UX INPUT
+```
+
+047 reutiliza únicamente los patrones transversales compatibles y define sus propios medios de acceso, custodias, obras, cierres temporales y novedades.
+
+#### 72. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- la cobertura vigente ya protege servicios, inspecciones, calibración, evidencia, disponibilidad y cierre;
+- la cobertura vigente ya exige identidad locativa, segregación de etapas, autorización server-side, idempotencia y operación segura;
+- la cobertura vigente ya cubre la coordinación con ORIGO, NUMERA, VISO/SST, continuidad y proveedores externos;
+- esta tarea materializa la experiencia de obligaciones ya aprobadas sin introducir una obligación verificable nueva fuera de esos contratos.
+
+#### 73. Cobertura de prueba vigente reutilizada
+
+La tarea reutiliza sin modificar el registro:
+
+- `TREQ-NEXO-018`, para servicios, inspecciones, calibración, evidencia, disponibilidad y cierre separados;
+- `TREQ-NEXO-017`, para identidad locativa, disponibilidad, mantenimiento y relación entre instalación, punto de servicio y acciones derivadas;
+- `TREQ-INTEGRATION-018`, para coordinación con ORIGO, NUMERA, VISO/SST, FOGO, continuidad y proveedores externos;
+- requisitos transversales vigentes de autorización, persistencia, evidencia, idempotencia, concurrencia y experiencia aplicables al futuro package de implementación.
+
+Esta enumeración es trazabilidad de cobertura existente y no actualiza 04A.
+
+#### 74. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | PASS | Auditoría estática del artefacto: título, metadata, topología, servicios, puntos de servicio, medidores, lecturas, consumos, interrupciones, alertas, inspecciones, plantillas, hallazgos, acciones, metrología, certificados, fronteras, TREQ y continuidad resultan coherentes con las fuentes canónicas consumidas. |
+| LOCAL | PASS | Consistencia interna comprobada entre handoff de 045, `NEXO-DOM-033..035`, `VPROC-0055`, `VSCREEN-0141`, autorización, integración, evidencia y handoff hacia 047. |
+| REMOTA | PASS | Fuentes remotas vigentes de `vento-shell`, cobertura `CAP-SCOPE-013`, contratos de autorización, proceso `VPROC-0055`, superficie `VSCREEN-0141` y registro modular de requisitos fueron inspeccionados antes de redactar el diseño. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron inspecciones, lecturas, conciliaciones de consumo, interrupciones, contingencias, calibraciones, verificaciones, evaluaciones de impacto ni sesiones con usuarios reales durante la tarea documental. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-046` usa `DEFINE_ONCE` y `NO_PHYSICAL_INSTANCE`; el contrato documental no materializa medidores, plantillas, instrumentos, servicios, datos ni configuraciones. |
+
+#### 75. Criterios de aceptación
+
+- [x] Se conserva exactamente el título canónico de `NEXO-UX-046`.
+- [x] La tarea consume el handoff completo de `NEXO-UX-045` sin reabrir limpieza, saneamiento ni plagas.
+- [x] Se preserva el sujeto locativo estable.
+- [x] `VPROC-0055` permanece separado de lecturas, inspecciones, hallazgos, calibraciones y alertas.
+- [x] Se usa `VSCREEN-0141` como superficie canónica sin crear una pantalla paralela.
+- [x] Proveedor, contrato, punto de servicio, medidor, lectura, consumo e invoice permanecen diferenciados.
+- [x] Lectura no equivale a consumo.
+- [x] Consumo no equivale a costo.
+- [x] Una lectura sospechosa no se corrige silenciosamente.
+- [x] Reemplazo o reinicio de medidor no reescribe historia.
+- [x] Consumo anómalo no equivale a fuga confirmada ni error financiero confirmado.
+- [x] Interrupción y restablecimiento conservan evidencia y efectos pendientes.
+- [x] Contingencia local no equivale a evento empresarial de continuidad.
+- [x] Alerta no concede autorización ni confirma incidente.
+- [x] Inspección locativa permanece separada de SST, cumplimiento, LOC y mantenimiento.
+- [x] Las plantillas de inspección son versionadas cuando aplica.
+- [x] Inspección programada y ejecutada permanecen separadas.
+- [x] Inspección completada no equivale a ausencia de hallazgos.
+- [x] Hallazgo, acción, verificación y cierre permanecen separados.
+- [x] Un hallazgo crítico solo bloquea disponibilidad con regla y autoridad explícitas.
+- [x] Contención no equivale a resolución.
+- [x] Acción marcada como realizada no equivale a hallazgo verificado.
+- [x] Se cubren magnitud, unidad, rango, resolución, tolerancia, criterio, método, patrón, trazabilidad, laboratorio, certificado y vencimiento.
+- [x] Calibración, verificación, ajuste, fuera de tolerancia y no apto permanecen diferenciados.
+- [x] Certificado recibido no equivale a conformidad ni liberación.
+- [x] Fuera de tolerancia activa evaluación de impacto cuando corresponde sin invalidar datos por inferencia.
+- [x] Calibración vigente no equivale a disponibilidad para cualquier uso.
+- [x] Se preserva la frontera entre componente fijo e instrumento o activo con lifecycle propio.
+- [x] Handoffs a mantenimiento, limpieza, SST, calidad, producción, compras, finanzas y continuidad conservan owner de origen y destino.
+- [x] Se cubren actor efectivo, concurrencia, idempotencia, offline y resultado desconocido.
+- [x] 047 y 048 conservan sus responsabilidades.
+- [x] Se crean 0 requisitos y se modifican 0 requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza código, Supabase, migraciones, despliegue ni intervención física.
+
+#### 76. Límites
+
+`NEXO-UX-046` no:
+
+- crea tablas, vistas, columnas, funciones, RPC, triggers, RLS, Storage ni migraciones;
+- modifica Supabase local o remoto;
+- crea código o componentes en aplicaciones consumidoras;
+- fija nombres técnicos definitivos de rutas, endpoints, tablas o componentes;
+- crea contratos reales de servicios;
+- registra puntos de servicio reales;
+- instala, sustituye o retira medidores reales;
+- crea lecturas reales;
+- modifica consumos reales;
+- concilia facturas reales;
+- declara fugas o interrupciones reales;
+- activa contingencias reales;
+- ejecuta inspecciones reales;
+- crea plantillas físicas o formularios implementados;
+- bloquea o libera instalaciones reales;
+- ejecuta calibraciones o verificaciones metrológicas reales;
+- valida certificados reales;
+- determina impacto real sobre lotes, mediciones, calidad o decisiones previas;
+- ejecuta mantenimiento de 044;
+- ejecuta limpieza, saneamiento o plagas de 045;
+- define llaves, acceso físico, obras, cierres temporales o novedades de 047;
+- ejecuta validación integrada del prototipo de 048;
+- reconoce costos contables;
+- sustituye decisiones de SST, calidad, producción o continuidad;
+- crea una segunda identidad locativa;
+- inventa `PermissionKey`, roles, aliases, grants o scopes;
+- modifica requisitos de prueba;
+- modifica 04A;
+- cambia `active-sequence.json`;
+- autoriza una instancia física;
+- aprueba ni ejecuta un package E5.
+
+#### 77. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades`
 ### [ ] NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
 ### [ ] NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
