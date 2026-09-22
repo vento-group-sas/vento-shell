@@ -32642,7 +32642,1259 @@ VERSIONED IDEMPOTENT KIT HISTORY
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-034 — Diseñar conteos de activos y reutilizables`
-### [ ] NEXO-UX-034 — Diseñar conteos de activos y reutilizables
+### ✅ NEXO-UX-034 — Diseñar conteos de activos y reutilizables
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
+**Tarea siguiente:** NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
+**Tipo de tarea:** documental; diseño canónico de experiencia para sesiones de conteo de activos serializados, reutilizables controlados por cantidad, contenedores físicos e instancias de kit, con alcance y corte explícitos, población esperada congelada, captura no destructiva, diferencias, investigación, decisión separada, reconciliación, autorización, idempotencia, concurrencia y recuperación bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede abrir una sesión de conteo, observar físicamente activos y reutilizables dentro de un alcance y momento de corte, registrar diferencias sin alterar la verdad maestra, investigar esas diferencias y conducirlas hacia una decisión separada y reconciliable.
+
+La regla raíz queda:
+
+```text
+ALCANCE AUTORIZADO
++
+MOMENTO DE CORTE
++
+POBLACION ESPERADA CONGELADA
++
+OBSERVACION FISICA
++
+DIFERENCIA DERIVADA
++
+INVESTIGACION
++
+DECISION SEPARADA
++
+EFECTO COMPENSATORIO PROPIETARIO CUANDO APLIQUE
++
+RECONCILIACION
+→
+CONTEO EXPLICABLE SIN SOBRESCRITURA DE LA VERDAD MAESTRA
+```
+
+Siempre:
+
+```text
+COUNT OBSERVATION
+!=
+MASTER DATA MUTATION
+```
+
+```text
+MISSING OBSERVED
+!=
+LOSS CONFIRMED
+```
+
+```text
+CAPTURE COMPLETE
+!=
+VARIANCE APPROVED
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-034` deja definido un único contrato de experiencia que:
+
+1. trata el conteo como una sesión identificable y versionada;
+2. exige alcance territorial explícito;
+3. fija un momento de corte visible;
+4. conserva una población esperada congelada para la sesión;
+5. separa expectativa, observación y estado vivo posterior al corte;
+6. cuenta `SERIALIZED_ASSET` por identidad exacta;
+7. cuenta `REUSABLE_QUANTITY` por scope cuantificado;
+8. cuenta `PHYSICAL_CONTAINER` individual por identidad exacta;
+9. cuenta `KIT_INSTANCE` sin volver a contar sus miembros como saldo adicional;
+10. separa progreso, presencia, cantidad, ubicación, condición y evidencia;
+11. preserva la captura original;
+12. distingue pendiente de faltante;
+13. distingue faltante de pérdida confirmada;
+14. distingue daño observado de daño confirmado;
+15. distingue ubicación observada de actualización de ubicación;
+16. soporta sujetos inesperados sin crear identidades o saldo por inferencia;
+17. exige razón para `NO_APLICA`;
+18. impide duplicados de captura;
+19. mantiene unidad y precisión compatibles con la clase;
+20. permite operación por escaneo sin convertir el escaneo en decisión;
+21. muestra movimientos posteriores al corte como contexto de investigación;
+22. deriva diferencias sin modificar el maestro;
+23. separa revisión, investigación, aprobación y resolución;
+24. impide que aprobar una diferencia ejecute automáticamente su corrección;
+25. deriva cada corrección al owner de dominio correspondiente;
+26. consume el lifecycle canónico `VPROC-0026` sin crear otro;
+27. conserva los seis business events aprobados de `VPROC-0026`;
+28. distribuye la experiencia entre `VSCREEN-0040`, `VSCREEN-0041` y `VSCREEN-0042`;
+29. conserva `nexo.assets.counts.view` como autoridad de lectura únicamente;
+30. mantiene `DEFAULT_DENY` para mutaciones sin capacidad exacta compatible demostrada;
+31. rechaza `inventory.stock` como autoridad final de conteo patrimonial;
+32. define recuperación ante concurrencia, reintento, timeout y offline;
+33. no crea requisitos de prueba nuevos ni autoriza materialización física.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+El resultado de 034 es exclusivamente documental.
+
+No existe una instancia física `NEXO-UX-034::*` que esta tarea autorice o materialice.
+
+#### 4. Continuidad y handoff recibido de `NEXO-UX-033`
+
+La continuidad inmediata es:
+
+```text
+NEXO-UX-033
+→
+NEXO-UX-034
+→
+NEXO-UX-035
+```
+
+`NEXO-UX-033` entrega:
+
+```text
+STABLE KIT INSTANCE IDENTITY
++
+FIXED VERSIONED DEFINITION
++
+AUTHORITATIVE MEMBER ASSIGNMENTS
++
+REQUIRED / OPTIONAL COMPONENT RULES
++
+EXPLICIT SUBSTITUTIONS
++
+DETERMINISTIC COMPLETENESS
++
+NO DUPLICATED MEMBER EXISTENCE
++
+KIT / LPN / CONTAINER SEPARATION
++
+NON-DESTRUCTIVE MEMBER INCIDENT HISTORY
++
+VERSIONED IDEMPOTENT KIT HISTORY
+```
+
+034 consume ese handoff para observar una instancia de kit sin sumar nuevamente sus miembros ni modificar composición durante el conteo.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume sin redefinir:
+
+- `NEXO-DOM-001`, clases primarias y comportamiento por clase;
+- `NEXO-DOM-007`, ubicación;
+- `NEXO-DOM-008`, custodia;
+- `NEXO-DOM-009`, granularidad individual o por cantidad;
+- `NEXO-DOM-010`, condición, daño, faltante, pérdida y hallazgo;
+- `NEXO-DOM-011`, préstamo, devolución y transferencia;
+- `NEXO-DOM-012`, disponibilidad;
+- `NEXO-DOM-013`, baja y disposición;
+- `NEXO-DOM-014`, instancia de kit y completitud;
+- `NEXO-DOM-015`, sesiones, corte, observación, diferencias, investigación y reconciliación.
+
+#### 6. Contrato de autorización consumido
+
+`NEXO-AUTH-027` es el owner de autorización para el conteo patrimonial.
+
+Se conserva:
+
+```text
+OBSERVAR
+!=
+CERRAR CAPTURA
+!=
+APROBAR DIFERENCIA
+!=
+RESOLVER DIFERENCIA
+!=
+APLICAR MUTACION DE DOMINIO
+```
+
+La interfaz puede mostrar una acción únicamente cuando la decisión server-side correspondiente resulte autorizable.
+
+#### 7. Estado actual del catálogo de permisos
+
+La capacidad activa exacta demostrada para lectura es:
+
+```text
+nexo.assets.counts.view
+```
+
+No se demostró una `PermissionKey` activa exacta compatible para:
+
+- abrir sesión de activos;
+- capturar observación;
+- cerrar captura;
+- cancelar sesión;
+- aprobar diferencia de activos;
+- resolver diferencia de activos.
+
+Por tanto esas mutaciones permanecen:
+
+```text
+DEFAULT_DENY
+```
+
+hasta que exista una capacidad exacta compatible y su contrato autorizante completo resulte aplicable.
+
+#### 8. `inventory.stock` no es autoridad objetivo
+
+El AS-IS observado utiliza:
+
+```text
+PERMISSION = inventory.stock
+```
+
+en las superficies actuales de conteo de activos.
+
+034 no adopta ese guard amplio como autoridad canónica para mutaciones patrimoniales.
+
+```text
+LEGACY BROAD GUARD
+!=
+ATOMIC ASSET COUNT AUTHORITY
+```
+
+#### 9. Stock count y asset count permanecen separados
+
+Se conserva:
+
+```text
+STOCK_COUNT
+!=
+ASSET_COUNT
+```
+
+Las capacidades o decisiones de variación de stock no autorizan diferencias de activos por similitud de nombre.
+
+#### 10. Proceso canónico
+
+La experiencia consume `VPROC-0026 — Contar como observación, investigar diferencias y ajustar mediante decisión separada`.
+
+No crea un proceso paralelo para activos o reutilizables.
+
+#### 11. Estados canónicos de `VPROC-0026`
+
+La UX consume exactamente:
+
+```text
+COUNT_SESSION_OPENED
+IN_CAPTURE
+CAPTURE_COMPLETE
+DIFFERENCES_DETECTED
+UNDER_INVESTIGATION
+ADJUSTMENT_DECISION_PENDING
+ADJUSTMENT_APPROVED
+RECONCILIATION_PENDING
+COUNT_RECONCILED
+```
+
+Los estados legacy `open`, `closed` y `cancelled` del AS-IS no sustituyen este lifecycle objetivo.
+
+#### 12. Eventos canónicos de `VPROC-0026`
+
+Se conservan exactamente:
+
+```text
+VPROC-0026.EVT-001
+VPROC-0026.EVT-002
+VPROC-0026.EVT-003
+VPROC-0026.EVT-004
+VPROC-0026.EVT-005
+VPROC-0026.EVT-006
+```
+
+La experiencia no inventa business events para estados intermedios sin evento empresarial propio.
+
+#### 13. Superficies canónicas
+
+La experiencia distribuye responsabilidades en:
+
+| Pantalla | Responsabilidad |
+| --- | --- |
+| `VSCREEN-0040 — Conteo de inventario` | abrir y ejecutar observaciones de una sesión sin ajustar automáticamente |
+| `VSCREEN-0041 — Revisión de conteo y diferencias` | investigar diferencias y preservar evidencia |
+| `VSCREEN-0042 — Caso de ajuste de inventario` | separar decisión de ajuste de observación y del efecto posterior |
+
+La navegación entre superficies conserva la misma `count_session_id` o correlación canónica aplicable.
+
+#### 14. Arquitectura de experiencia
+
+La experiencia se organiza en cinco momentos:
+
+```text
+CONFIGURAR SESION
+→
+CAPTURAR
+→
+REVISAR DIFERENCIAS
+→
+DECIDIR TRATAMIENTO
+→
+RECONCILIAR
+```
+
+Ningún paso posterior reescribe silenciosamente el anterior.
+
+#### 15. Lista de sesiones
+
+La lista debe permitir distinguir como mínimo:
+
+- identidad y nombre de sesión;
+- alcance;
+- momento de corte;
+- actor de apertura;
+- estado canónico;
+- progreso de captura;
+- cantidad de diferencias;
+- última actualización;
+- estado de reconciliación.
+
+Una sesión cerrada operacionalmente no se presenta como conciliada si aún existen diferencias pendientes de tratamiento.
+
+#### 16. Apertura de sesión
+
+La apertura presenta al actor:
+
+- sede;
+- área cuando aplique;
+- LOC cuando aplique;
+- posición cuando aplique;
+- nombre o referencia operativa;
+- momento de corte;
+- población esperada resumida;
+- clases incluidas;
+- advertencias de alcance;
+- autoridad efectiva.
+
+La acción de abrir solo aparece ejecutable si la decisión autorizante exacta existe.
+
+#### 17. Jerarquía de alcance
+
+Se preserva el alcance observado:
+
+```text
+SITE
+AREA
+LOC
+POSITION
+```
+
+Una selección más específica debe permanecer compatible con sus ancestros.
+
+La UX no permite construir un alcance imposible combinando sede, área, LOC o posición incongruentes.
+
+#### 18. Alcance no concede autoridad adicional
+
+Seleccionar una sede o ubicación no concede autoridad sobre todos sus recursos.
+
+```text
+SCOPE SELECTED
+!=
+SCOPE AUTHORIZED
+```
+
+El servidor resuelve el territorio realmente permitido.
+
+#### 19. Momento de corte visible
+
+La sesión muestra de forma persistente:
+
+```text
+EXPECTED AT CUT
+OBSERVED DURING CAPTURE
+CURRENT NOW
+```
+
+La experiencia no sustituye la expectativa histórica con el estado vivo posterior.
+
+#### 20. Población esperada congelada
+
+Al abrir una sesión, la UX consume un snapshot de población esperado.
+
+Cada línea debe poder explicar por qué pertenece al conteo mediante identidad, clase, ubicación esperada o scope cuantificado.
+
+La población no se reconstruye silenciosamente en cada render desde el maestro vivo.
+
+#### 21. Sujetos del conteo
+
+La experiencia soporta los cuatro sujetos definidos por dominio:
+
+```text
+SERIALIZED_ASSET
+REUSABLE_QUANTITY
+PHYSICAL_CONTAINER
+KIT_INSTANCE
+```
+
+El AS-IS actual soporta directamente `asset_item_id` o `asset_group_id`; esa forma se clasifica como cobertura parcial y no limita el diseño objetivo.
+
+#### 22. Activo serializado
+
+Un `SERIALIZED_ASSET` se presenta por identidad exacta.
+
+La línea debe priorizar identificadores que permitan reconocimiento físico, como código, placa, serial, modelo e imagen cuando existan.
+
+La captura de presencia ordinaria es indivisible:
+
+```text
+OBSERVED = YES / NO
+```
+
+sin convertir el activo en cantidad fungible.
+
+#### 23. Reutilizable controlado por cantidad
+
+Un `REUSABLE_QUANTITY` se presenta como scope cuantificado.
+
+La línea separa:
+
+```text
+EXPECTED_QTY
+OBSERVED_QTY
+DELTA_QTY
+```
+
+sin fabricar IDs por unidad para explicar la diferencia.
+
+#### 24. Contenedor físico
+
+Un `PHYSICAL_CONTAINER` individual se cuenta por identidad exacta.
+
+Un recipiente genérico sin identidad individual continúa siendo `REUSABLE_QUANTITY` y se observa por cantidad.
+
+La UX no usa `container_type` de LPN como sustituto de identidad física.
+
+#### 25. Instancia de kit
+
+Una `KIT_INSTANCE` se cuenta como una identidad operacional exacta.
+
+La tarjeta de conteo puede mostrar definición, versión y resumen de completitud para ayudar al reconocimiento.
+
+```text
+COUNT KIT INSTANCE
+!=
+COUNT MEMBERS AGAIN
+```
+
+#### 26. Verificación de composición de kit
+
+Cuando el alcance exige revisar composición, la UX puede abrir una verificación de miembros bajo `NEXO-UX-033`.
+
+Los miembros se muestran como detalle de la instancia, no como segunda existencia agregada al total del mismo conteo.
+
+#### 27. Ejes independientes de captura
+
+La interfaz separa explícitamente:
+
+- progreso de captura;
+- presencia;
+- cantidad;
+- ubicación observada;
+- condición observada;
+- identificación;
+- evidencia;
+- notas.
+
+No se reduce todo a un único selector de estado.
+
+#### 28. Reconciliación del estado legacy de línea
+
+El AS-IS ofrece:
+
+```text
+pending
+found
+missing
+found_elsewhere
+damaged
+extra
+not_applicable
+```
+
+034 los trata como representación legacy que mezcla dimensiones.
+
+En el diseño objetivo, por ejemplo:
+
+```text
+damaged = CONDITION OBSERVATION
+```
+
+y no debe reemplazar la información de presencia.
+
+#### 29. Pendiente
+
+`PENDING` significa captura no completada.
+
+Se conserva:
+
+```text
+PENDING
+!=
+MISSING
+!=
+OBSERVED_ZERO
+```
+
+Una sesión no puede declarar captura completa mientras existan líneas obligatorias pendientes.
+
+#### 30. Encontrado como esperado
+
+Para una identidad exacta, la acción “encontrado” registra presencia sin modificar ubicación, custodia, condición ni lifecycle salvo que se capturen observaciones separadas.
+
+Para cantidad, “encontrado” no fuerza automáticamente la cantidad esperada; la cantidad observada sigue siendo un dato explícito.
+
+#### 31. Faltante observado
+
+La UX presenta lenguaje de observación:
+
+```text
+NO OBSERVADO EN ESTE CONTEO
+```
+
+No presenta como conclusión automática:
+
+- perdido;
+- robado;
+- dado de baja;
+- prestado no devuelto;
+- transferido;
+- inexistente.
+
+#### 32. Encontrado en otra ubicación
+
+La experiencia conserva simultáneamente:
+
+- ubicación esperada;
+- ubicación observada;
+- actor;
+- instante;
+- evidencia.
+
+No ofrece “corregir ubicación” como efecto implícito del conteo.
+
+#### 33. Condición observada
+
+La condición se captura como dimensión separada.
+
+```text
+CONDITION OBSERVED
+!=
+CONDITION MASTER UPDATED
+```
+
+Una observación de daño puede abrir o alimentar el flujo propietario de `NEXO-UX-032`, pero no confirma por sí sola un incidente técnico.
+
+#### 34. Sujeto extra
+
+La experiencia debe permitir registrar un sujeto físico observado que no estaba en la población esperada cuando el contrato lo permita.
+
+El extra queda como hallazgo a investigar.
+
+No crea automáticamente:
+
+- activo;
+- grupo;
+- cantidad maestra;
+- kit;
+- contenedor;
+- custodia;
+- ubicación maestra.
+
+#### 35. `NO_APLICA`
+
+`NO_APLICA` exige una razón visible y trazable.
+
+Se utiliza únicamente cuando existe evidencia de que la línea no debía pertenecer al alcance o requiere corrección controlada de población.
+
+No es un mecanismo para esconder una diferencia.
+
+#### 36. Identificación por escaneo
+
+Escáner, QR, código, placa o serial pueden resolver el sujeto.
+
+Siempre:
+
+```text
+SCAN
+!=
+COUNT DECISION
+```
+
+El servidor valida sesión, scope, identidad y clase antes de aceptar la observación.
+
+#### 37. Captura manual
+
+Cuando no exista lectura automática, la interfaz permite selección manual controlada.
+
+La búsqueda manual no amplía el universo autorizado ni permite insertar sujetos arbitrarios sin validación server-side.
+
+#### 38. Cantidad y precisión
+
+Para scopes cuantificados, la captura muestra unidad y precisión aplicables.
+
+No se aceptan silenciosamente:
+
+- cantidades negativas;
+- fracciones físicamente imposibles;
+- unidad distinta sin conversión autorizada;
+- redondeos que alteren el hecho observado.
+
+#### 39. Cantidades por condición
+
+Cuando un reutilizable requiera desglose por condición, la experiencia puede capturar buckets compatibles.
+
+La suma reconciliable de buckets debe explicar la cantidad observada.
+
+`MISSING` y `LOSS_CONFIRMED` no se convierten en buckets de condición.
+
+#### 40. Evidencia
+
+La captura puede asociar:
+
+- fotografía;
+- QR o código leído;
+- serial o placa;
+- cantidad;
+- ubicación observada;
+- condición;
+- nota;
+- referencia a movimiento o incidencia.
+
+```text
+EVIDENCE
+!=
+AUTHORITY
+```
+
+#### 41. Progreso de sesión
+
+El progreso se calcula desde la obligación de captura de la sesión.
+
+La UX distingue:
+
+- pendientes;
+- observadas sin diferencia;
+- observadas con diferencia;
+- extras;
+- revisadas;
+- pendientes de investigación;
+- pendientes de decisión.
+
+Un porcentaje de captura no se presenta como porcentaje de reconciliación.
+
+#### 42. Guardado de línea
+
+El guardado confirma únicamente la observación aceptada por servidor.
+
+La UX muestra estado `PENDIENTE` durante envío y `CONFIRMADO` solo después de recibo autoritativo.
+
+No actualiza optimistamente el maestro físico.
+
+#### 43. Duplicado de captura
+
+Escanear repetidamente la misma identidad exacta en el mismo scope no crea observaciones duplicadas.
+
+La interfaz identifica la captura existente y ofrece revisarla según autoridad.
+
+#### 44. Concurrencia sobre una línea
+
+Si otra captura cambia la revisión de una línea:
+
+```text
+EXPECTED REVISION
+!=
+CURRENT REVISION
+→
+CONFLICT
+```
+
+La experiencia muestra el estado actual y exige nueva revisión humana antes de reenviar.
+
+#### 45. Movimientos posteriores al corte
+
+La sesión debe poder indicar que un recurso tuvo movimiento después del corte.
+
+Ese movimiento no reescribe la expectativa, pero puede explicar la diferencia durante investigación.
+
+#### 46. Captura completa
+
+Cerrar captura exige que todas las líneas requeridas estén resueltas como observación.
+
+La transición objetivo es:
+
+```text
+IN_CAPTURE
+→
+CAPTURE_COMPLETE
+```
+
+No equivale a `COUNT_RECONCILED`.
+
+#### 47. AS-IS de cierre
+
+La aplicación actual permite cerrar cuando no quedan líneas `pending` y cambia la sesión legacy a `closed`.
+
+034 documenta esa conducta como base parcial.
+
+El objetivo requiere conservar fases posteriores cuando existan diferencias:
+
+```text
+CAPTURE_COMPLETE
+→
+DIFFERENCES_DETECTED
+→
+UNDER_INVESTIGATION
+...
+```
+
+#### 48. Cancelación
+
+Cancelar una sesión es una decisión distinta de cerrar captura.
+
+La experiencia exige motivo y preserva observaciones ya aceptadas.
+
+Cancelar no borra evidencia ni produce ajustes.
+
+#### 49. Diferencia derivada
+
+Una diferencia se obtiene de comparar expectativa y observación.
+
+Puede expresar, según clase:
+
+- faltante;
+- exceso;
+- cantidad distinta;
+- ubicación distinta;
+- condición distinta;
+- sujeto inesperado;
+- composición de kit no conforme;
+- `NO_APLICA` sujeto a revisión.
+
+La diferencia es un hecho derivado, no una orden de corrección.
+
+#### 50. Resumen de diferencias
+
+`VSCREEN-0041` debe priorizar diferencias por:
+
+- criticidad;
+- clase;
+- sede/área/LOC;
+- magnitud cuantitativa;
+- custodia;
+- movimiento posterior al corte;
+- condición observada;
+- antigüedad sin resolver.
+
+El filtro no modifica el conjunto ni la decisión.
+
+#### 51. Investigación
+
+La ficha de diferencia puede consultar evidencia relevante de:
+
+- movimientos;
+- ubicación;
+- custodia;
+- préstamo y devolución;
+- transferencia;
+- LPN;
+- kit;
+- condición;
+- mantenimiento;
+- eventos después del corte;
+- otras sesiones relacionadas.
+
+La investigación conserva lectura separada de mutación.
+
+#### 52. Diferencia explicada sin corrección
+
+La UX permite cerrar una investigación con resultado “explicada sin cambio al maestro” cuando la evidencia lo soporte.
+
+La observación original y la explicación permanecen vinculadas.
+
+#### 53. Decisión de ajuste pendiente
+
+Cuando la investigación concluya que una corrección es necesaria, la experiencia pasa a:
+
+```text
+ADJUSTMENT_DECISION_PENDING
+```
+
+La recomendación muestra:
+
+- qué se observó;
+- qué se investigó;
+- qué cambio se propone;
+- qué owner debe ejecutarlo;
+- qué evidencia lo soporta.
+
+#### 54. Aprobación separada
+
+La aprobación no ejecuta la corrección.
+
+```text
+ADJUSTMENT_APPROVED
+!=
+DOMAIN MUTATION APPLIED
+```
+
+La experiencia no presenta “aprobar y corregir” como una única acción inseparable.
+
+#### 55. Derivación por owner
+
+Según el resultado, la corrección puede pertenecer a:
+
+- administración de activo o reusable;
+- ubicación;
+- custodia, préstamo o devolución;
+- daño, pérdida, recuperación o baja;
+- composición de kit;
+- otra acción de inventario propietaria.
+
+034 no absorbe esas mutaciones.
+
+#### 56. Efecto compensatorio
+
+Cuando corresponde una corrección cuantitativa, el efecto se registra como operación separada y correlacionada.
+
+El conteo nunca sobrescribe el snapshot para aparentar conciliación.
+
+#### 57. Conciliación pendiente
+
+Después de la decisión o efecto aplicable, la UX pasa a:
+
+```text
+RECONCILIATION_PENDING
+```
+
+La revisión final comprueba que expectativa, observación, investigación, decisión y efecto pueden explicarse conjuntamente.
+
+#### 58. Conteo reconciliado
+
+`COUNT_RECONCILED` indica que el expediente del conteo puede reconstruirse de extremo a extremo.
+
+No significa que toda diferencia haya sido un error de inventario.
+
+#### 59. Inmutabilidad de la observación original
+
+Después de captura completa, una corrección posterior no reemplaza destructivamente:
+
+- cantidad observada;
+- ubicación observada;
+- condición observada;
+- actor;
+- instante;
+- evidencia original.
+
+Se registra un hecho posterior correlacionado.
+
+#### 60. Sesiones superpuestas
+
+Si dos sesiones cubren subjects o scopes superpuestos, la interfaz debe advertir la relación.
+
+Una observación no satisface silenciosamente dos sesiones con cortes o propósitos distintos.
+
+#### 61. Revisión de sesión
+
+Las mutaciones gobernadas consumen una revisión monotónica o mecanismo equivalente.
+
+```text
+EXPECTED COUNT REVISION
+=
+CURRENT COUNT REVISION
+```
+
+Una revisión obsoleta no se resuelve con `last-write-wins` silencioso.
+
+#### 62. Idempotencia
+
+El mismo intento lógico no puede:
+
+- abrir dos sesiones;
+- duplicar una línea;
+- duplicar una observación;
+- cerrar dos veces captura;
+- aprobar dos veces una diferencia;
+- emitir dos veces un efecto compensatorio;
+- reconciliar dos veces el mismo cierre.
+
+El retry consulta el resultado de la intención original.
+
+#### 63. Resultado remoto desconocido
+
+Ante timeout posterior al submit:
+
+```text
+TIMEOUT
+!=
+FAILURE CONFIRMED
+```
+
+La UX marca resultado desconocido, bloquea un nuevo intento independiente y reconcilia la operación original.
+
+#### 64. Operación offline
+
+La captura offline puede conservar intención local cuando el contrato operativo la permita.
+
+```text
+OFFLINE CAPTURE
+!=
+AUTHORITATIVE COUNT OBSERVATION
+```
+
+Al reconectar se revalidan actor, sesión, scope, sujeto, revisión, duplicados y autoridad.
+
+#### 65. Dispositivo compartido
+
+Una estación o escáner compartido no se convierte en actor empresarial.
+
+La experiencia mantiene visible el actor humano efectivo y exige reautorización cuando cambie.
+
+#### 66. Simulación
+
+Una simulación de autorización puede explicar si una acción sería permitida.
+
+No abre sesiones, no captura, no cierra, no aprueba ni resuelve.
+
+#### 67. Errores y recuperación
+
+Los errores deben indicar:
+
+- qué operación no se confirmó;
+- qué observación ya quedó preservada;
+- qué permanece pendiente;
+- si existe conflicto;
+- si debe reautorizarse;
+- si el resultado es desconocido;
+- cuál es el siguiente paso seguro.
+
+Una recuperación nunca duplica efectos.
+
+#### 68. Estado de fuente de verdad
+
+Cada superficie debe distinguir:
+
+```text
+EXPECTED SNAPSHOT
+OBSERVED FACT
+LIVE MASTER
+DERIVED DIFFERENCE
+APPROVED DECISION
+APPLIED EFFECT
+```
+
+La UI no presenta estas fuentes como un único campo editable.
+
+#### 69. AS-IS reutilizable
+
+La implementación actual aporta una base real reutilizable:
+
+- `asset_count_sessions`;
+- `asset_count_lines`;
+- scopes `site`, `area`, `loc`, `position`;
+- población inicial desde activos individuales y grupos activos;
+- cantidades esperadas;
+- captura de cantidad, ubicación y condición;
+- sesiones `open`, `closed`, `cancelled`;
+- actor de conteo y timestamps;
+- vista de resumen de sesión.
+
+034 clasifica esta base como `REUSE_OR_REFACTOR`, no como contrato final.
+
+#### 70. Brecha AS-IS de sujetos
+
+El AS-IS actual siembra líneas desde:
+
+```text
+asset_items
+asset_groups
+```
+
+y exige una de esas representaciones en cada línea.
+
+No demuestra soporte propietario completo para:
+
+```text
+PHYSICAL_CONTAINER
+KIT_INSTANCE
+```
+
+La materialización futura deberá resolver esa brecha sin inventar identidades artificiales.
+
+#### 71. Brecha AS-IS de estados de línea
+
+El selector legacy mezcla presencia, ubicación y condición.
+
+Por ejemplo:
+
+```text
+damaged
+```
+
+no expresa si el sujeto estuvo presente o si la cantidad fue completa.
+
+El diseño objetivo mantiene esos ejes separados aunque una UI física futura pueda ofrecer accesos rápidos equivalentes.
+
+#### 72. Brecha AS-IS de extras
+
+El AS-IS opera principalmente sobre líneas sembradas al abrir la sesión.
+
+La experiencia objetivo requiere poder preservar un hallazgo inesperado real sin transformarlo automáticamente en alta o saldo.
+
+#### 73. Brecha AS-IS de cierre
+
+El AS-IS bloquea `closed` mientras existan líneas `pending`, pero no demuestra un ciclo completo obligatorio de:
+
+```text
+DIFFERENCES_DETECTED
+UNDER_INVESTIGATION
+ADJUSTMENT_DECISION_PENDING
+ADJUSTMENT_APPROVED
+RECONCILIATION_PENDING
+COUNT_RECONCILED
+```
+
+034 conserva esa diferencia como requisito de materialización futura.
+
+#### 74. Brecha AS-IS de autorización
+
+Las rutas actuales usan `inventory.stock` para lectura y mutación.
+
+La experiencia objetivo conserva:
+
+- `nexo.assets.counts.view` para lectura compatible;
+- mutaciones en `DEFAULT_DENY` hasta disponer de capacidades exactas compatibles;
+- decisión server-side por acción.
+
+#### 75. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| semántica de sesión, corte y diferencias | `NEXO-DOM-015` |
+| diseño UX de conteo | `NEXO-UX-034` |
+| autorización de conteo patrimonial | `NEXO-AUTH-027` |
+| identidad/granularidad de activos y reutilizables | `NEXO-DOM-009` / `NEXO-UX-030` |
+| condición, daño, pérdida y baja | `NEXO-DOM-010/013` / `NEXO-UX-032` |
+| custodia, préstamo y devolución | `NEXO-DOM-011` / `NEXO-UX-031` |
+| kits y completitud | `NEXO-DOM-014` / `NEXO-UX-033` |
+| repuestos y reposición mínima | `NEXO-DOM-016` / `NEXO-UX-035` |
+| proceso canónico | `VPROC-0026` |
+| captura de conteo | `VSCREEN-0040` |
+| revisión de diferencias | `VSCREEN-0041` |
+| decisión de ajuste | `VSCREEN-0042` |
+
+#### 76. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| COUNT-UX-01 | abrir sesión en sede autorizada | snapshot y corte visibles |
+| COUNT-UX-02 | scope LOC incompatible con sede | bloqueado |
+| COUNT-UX-03 | actor sin capacidad exacta de apertura | `DEFAULT_DENY` |
+| COUNT-UX-04 | contar activo serializado encontrado | identidad exacta, presencia confirmada |
+| COUNT-UX-05 | serial esperado no observado | diferencia, no pérdida confirmada |
+| COUNT-UX-06 | serial encontrado en otro LOC | observación separada, sin mover maestro |
+| COUNT-UX-07 | activo presente y dañado | presencia + condición, no estado excluyente |
+| COUNT-UX-08 | reusable cantidad igual | delta cero |
+| COUNT-UX-09 | reusable cantidad menor | diferencia cuantitativa |
+| COUNT-UX-10 | reusable cantidad mayor | exceso a investigar |
+| COUNT-UX-11 | fracción inválida para unidad discreta | bloqueado |
+| COUNT-UX-12 | contenedor individual | identidad exacta |
+| COUNT-UX-13 | recipiente genérico | scope cuantificado |
+| COUNT-UX-14 | kit observado | instancia exacta una vez |
+| COUNT-UX-15 | verificar miembros del kit | detalle sin doble conteo |
+| COUNT-UX-16 | mismo serial escaneado dos veces | una observación, aviso de duplicado |
+| COUNT-UX-17 | sujeto extra | hallazgo sin alta automática |
+| COUNT-UX-18 | `NO_APLICA` sin razón | bloqueado |
+| COUNT-UX-19 | movimiento después del corte | contexto visible, snapshot intacto |
+| COUNT-UX-20 | línea pendiente al cerrar captura | bloqueado |
+| COUNT-UX-21 | captura completa sin diferencias | avanza hacia reconciliación aplicable |
+| COUNT-UX-22 | captura completa con diferencias | diferencias detectadas, no cierre final |
+| COUNT-UX-23 | diferencia explicada por movimiento válido | sin ajuste al maestro |
+| COUNT-UX-24 | faltante requiere investigación de custodia | handoff al owner, no cambio automático |
+| COUNT-UX-25 | daño observado requiere ciclo técnico | handoff a 032 |
+| COUNT-UX-26 | diferencia aprobada | decisión registrada, efecto aún separado |
+| COUNT-UX-27 | revisión stale de sesión | conflicto y recarga |
+| COUNT-UX-28 | doble submit | un solo resultado lógico |
+| COUNT-UX-29 | timeout post-submit | resultado desconocido y reconciliación |
+| COUNT-UX-30 | captura offline | pendiente local y revalidación |
+| COUNT-UX-31 | cambio de actor en estación compartida | reautorización |
+| COUNT-UX-32 | cerrar sesión legacy con diferencias | no se presenta como reconciliada |
+| COUNT-UX-33 | lectura con `nexo.assets.counts.view` | consulta permitida según scope |
+| COUNT-UX-34 | mutación con `inventory.stock` como única autoridad | no aceptada como contrato objetivo |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 77. Handoff hacia `NEXO-UX-035`
+
+`NEXO-UX-034` entrega:
+
+```text
+FROZEN COUNT BASELINE
++
+IDENTITY OR QUANTITY-SCOPE OBSERVATION
++
+KIT INSTANCE COUNT WITHOUT MEMBER DUPLICATION
++
+PHYSICAL CONTAINER COUNT BOUNDARY
++
+PRESENCE / QUANTITY / LOCATION / CONDITION SEPARATION
++
+DIFFERENCE BEFORE INVESTIGATION
++
+INVESTIGATION BEFORE DECISION
++
+DECISION BEFORE DOMAIN EFFECT
++
+IMMUTABLE ORIGINAL OBSERVATION
++
+RECONCILED VERSIONED COUNT HISTORY
+```
+
+`NEXO-UX-035` deberá diseñar repuestos, compatibilidad y reposición mínima sin interpretar una diferencia de conteo como consumo, instalación, incompatibilidad o necesidad automática de reposición.
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que los conteos sean observaciones no destructivas, que las diferencias sean auditables, que activos y reutilizables conserven su granularidad, que kits no se dupliquen con sus miembros y que cualquier corrección requiera una decisión separada. Esta tarea especializa la experiencia de usuario dentro de esas obligaciones sin introducir un requisito independiente.
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para conteo como observación, investigación y efecto compensatorio autorizado con atomicidad, idempotencia y concurrencia;
+- `TREQ-NEXO-013`, para conteos no destructivos de activos, preservación de la observación original y prohibición de baja o ajuste automático;
+- `TREQ-NEXO-040`, para conservar una sola clase primaria activa por identidad física;
+- `TREQ-NEXO-041`, para separar clase de ubicación, custodia, condición, disponibilidad, LPN y kit;
+- `TREQ-NEXO-043`, para conservar granularidad distinta entre reutilizable por cantidad y activo serializado;
+- `TREQ-NEXO-045`, para contar `KIT_INSTANCE` sin duplicar miembros ni alterar completitud por inferencia;
+- `TREQ-NEXO-047`, para aplicar conteos según comportamiento explícito de clase sin duplicar saldo, instancia o valor;
+- `TREQ-UX-002`, para errores y recuperación sin duplicación de efectos;
+- `TREQ-UX-005`, para visibilidad de fuente de verdad, estado confirmado o pendiente y último cambio;
+- `TREQ-UX-006`, para pérdida de red, reautorización y reanudación idempotente.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron fuentes canónicas vigentes de `vento-shell`, topología `DEFINE_ONCE`, owner UX, `NEXO-DOM-015`, `NEXO-AUTH-027`, `VPROC-0026`, `VSCREEN-0040/0041/0042`, 04A NEXO/UX, package scripts y el AS-IS de `vento-nexo`; las superficies actuales usan `asset_count_sessions`, `asset_count_lines`, scopes site/area/loc/position y guard legacy `inventory.stock`, con cierre al resolver pendientes pero sin demostrar el lifecycle completo de investigación y reconciliación. |
+| OPERATIVA | NOT_EXECUTED | No se abrió, capturó, cerró, canceló, investigó, aprobó ni reconcilió ningún conteo real. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-034` no crea instancia física propia y no autoriza cambios de datos, Supabase, permisos, activos, grupos, kits, contenedores ni movimientos. |
+
+#### 81. Criterios de aceptación
+
+- [x] conteo se diseña como sesión versionada;
+- [x] alcance y corte son explícitos;
+- [x] población esperada queda congelada;
+- [x] estado vivo posterior no reescribe el corte;
+- [x] serializados se cuentan por identidad exacta;
+- [x] reutilizables se cuentan por cantidad;
+- [x] contenedor individual se cuenta por identidad;
+- [x] kit se cuenta como instancia exacta sin duplicar miembros;
+- [x] progreso, presencia, cantidad, ubicación y condición permanecen separados;
+- [x] pendiente no equivale a faltante;
+- [x] faltante observado no confirma pérdida;
+- [x] daño observado no confirma daño maestro;
+- [x] ubicación encontrada no mueve el activo;
+- [x] extra no crea identidad ni saldo;
+- [x] `NO_APLICA` requiere razón;
+- [x] escaneo identifica, no decide;
+- [x] se impiden duplicados de captura;
+- [x] unidad y precisión son visibles;
+- [x] movimientos posteriores al corte se usan como contexto y no sobrescriben snapshot;
+- [x] captura completa no equivale a conciliación;
+- [x] cancelar conserva evidencia;
+- [x] diferencia se deriva antes de investigar;
+- [x] investigación precede decisión;
+- [x] aprobación no ejecuta mutación de dominio;
+- [x] efecto compensatorio permanece separado;
+- [x] observación original es inmutable;
+- [x] sesiones superpuestas no comparten observación silenciosamente;
+- [x] revisiones stale producen conflicto;
+- [x] retry es idempotente;
+- [x] timeout conserva resultado desconocido;
+- [x] offline no crea hecho autoritativo sin revalidación;
+- [x] dispositivo compartido conserva actor humano efectivo;
+- [x] se consumen exactamente nueve estados de `VPROC-0026`;
+- [x] se conservan exactamente seis business events de `VPROC-0026`;
+- [x] `VSCREEN-0040/0041/0042` mantienen responsabilidades separadas;
+- [x] `nexo.assets.counts.view` permanece lectura;
+- [x] mutaciones sin capacidad exacta permanecen `DEFAULT_DENY`;
+- [x] `inventory.stock` no se adopta como autoridad final;
+- [x] AS-IS se clasifica como `REUSE_OR_REFACTOR`;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff explícito a `NEXO-UX-035`.
+
+#### 82. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- implementa `VSCREEN-0040`, `VSCREEN-0041` ni `VSCREEN-0042`;
+- crea Server Actions ni Route Handlers;
+- crea RPC;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas o políticas RLS;
+- abre sesiones reales;
+- inserta o modifica líneas de conteo reales;
+- modifica `asset_count_sessions` ni `asset_count_lines`;
+- modifica activos, grupos, kits o contenedores reales;
+- modifica cantidades, saldos, ubicación, custodia, condición, disponibilidad o lifecycle;
+- confirma pérdidas ni daños;
+- ejecuta bajas;
+- ajusta inventario;
+- crea o modifica `PermissionKey`, grants, scope o modalidad;
+- cambia físicamente el guard legacy `inventory.stock`;
+- ejecuta migraciones ni backfills;
+- modifica Supabase;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-035`.
+
+#### 83. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-034 — Diseñar conteos de activos y reutilizables`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima`
 ### [ ] NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
 ### [ ] NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
 ### [ ] NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
