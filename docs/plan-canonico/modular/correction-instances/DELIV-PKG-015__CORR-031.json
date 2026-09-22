@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "PENDING_AUTHORIZATION",
+  "status": "IN_PROGRESS",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -15,12 +15,45 @@
     "target_instance_record_path": null,
     "target_instance_record_sha256": null
   },
-  "target_repositories": [],
-  "authorized_changes": [],
-  "validation_commands": [],
+  "target_repositories": [
+    "vento-group-sas/vento-shell"
+  ],
+  "authorized_changes": [
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/01_PROTOCOLO.md",
+      "change": "MODIFY",
+      "scope": "Documentar que COMPLETE_EXPLICIT_SCOPE es un cierre revalidable del alcance explícito vigente y nunca autoriza omitir tareas canónicas futuras o pendientes."
+    },
+    {
+      "repo": "vento-group-sas/vento-shell",
+      "path": "docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md",
+      "change": "MODIFY",
+      "scope": "Documentar la obligación operativa de recalcular el cierre de aplicación cuando aparezcan nuevas relaciones, dependencias, packages o criterios, y de no saltar tareas por cierres históricos."
+    }
+  ],
+  "validation_commands": [
+    "npm run docs:correction:check",
+    "npm run docs:correction:test",
+    "npm run docs:package:application:closure",
+    "node --test scripts/docs/package-application-closure.test.mjs",
+    "npm run docs:plan:build",
+    "npm run docs:plan:check",
+    "npm run docs:plan:test",
+    "npm run docs:treq:check",
+    "npm run docs:treq:test",
+    "git --no-pager diff --check"
+  ],
   "affected_treq_ids": [],
-  "zero_treq_reason": "Registro inicial de la corrección; todavía no modifica requisitos TREQ.",
-  "authorization": null,
+  "zero_treq_reason": "Corrección documental de gobierno de cierre de aplicaciones; aclara semántica existente sin introducir comportamiento funcional ni requisitos verificables nuevos.",
+  "authorization": {
+    "decision": "APPROVED",
+    "approved_by": "VENTO_OWNER",
+    "approved_at": "2026-09-22T17:46:44.924Z",
+    "timezone": "America/Bogota",
+    "approval_statement": "APROBADO: autoriza documentar como regla transversal que COMPLETE_EXPLICIT_SCOPE representa únicamente el cierre revalidable del alcance explícitamente conocido en el snapshot canónico vigente; no constituye cierre eterno ni inmutable, no aprueba ni oculta tareas canónicas pendientes, y no permite omitir trabajo futuro por haber cerrado antes una aplicación. Autoriza documentar que nuevas relaciones, dependencias, packages o criterios deben provocar una nueva evaluación del application closure y pueden devolver una aplicación a INCOMPLETE o UNKNOWN_CRITERIA_TRACEABILITY conforme al modelo vigente. Los packages históricos cerrados conservan su evidencia; el trabajo nuevo se incorpora por su owner canónico. No autoriza cambios funcionales, TREQ, Supabase, ejecución de GAP-PKG-047, implementación física, piloto ni SHELL-CI-022.",
+    "source_contract_sha256": "a68ec87b747fe9ef1eeea638a44952c692fe86d3a37ac856ef2ca9a8d78913a9"
+  },
   "evidence": [],
   "opened_at": "2026-09-22T17:35:39.814Z"
 }

@@ -12,17 +12,27 @@
 >
 > Las secciones siguientes son las únicas colas vigentes. Corrección, documentación, preparación de package e implementación física son estados distintos; una no autoriza silenciosamente a la otra.
 
-### 1. Decide la corrección propuesta — `DELIV-PKG-015::CORR-031`
+### 1. Termina la corrección abierta — `DELIV-PKG-015::CORR-031`
 
-- **Estado:** `PENDING_AUTHORIZATION`
-- **Acción exacta:** `DECIDIR_AUTORIZACIÓN_DE_CORRECCIÓN`
-- **Haz ahora:** Revisar el alcance propuesto y aprobarlo o rechazarlo explícitamente; todavía no editar.
-- **Contrato autorizado:** PENDIENTE_DE_APROBACIÓN
+- **Estado:** `IN_PROGRESS`
+- **Acción exacta:** `CONTINUAR_CORRECCIÓN`
+- **Haz ahora:** Materializar únicamente los cambios autorizados, ejecutar las validaciones en orden y cerrar el lifecycle.
+- **Contrato autorizado:** APROBADO: autoriza documentar como regla transversal que COMPLETE_EXPLICIT_SCOPE representa únicamente el cierre revalidable del alcance explícitamente conocido en el snapshot canónico vigente; no constituye cierre eterno ni inmutable, no aprueba ni oculta tareas canónicas pendientes, y no permite omitir trabajo futuro por haber cerrado antes una aplicación. Autoriza documentar que nuevas relaciones, dependencias, packages o criterios deben provocar una nueva evaluación del application closure y pueden devolver una aplicación a INCOMPLETE o UNKNOWN_CRITERIA_TRACEABILITY conforme al modelo vigente. Los packages históricos cerrados conservan su evidencia; el trabajo nuevo se incorpora por su owner canónico. No autoriza cambios funcionales, TREQ, Supabase, ejecución de GAP-PKG-047, implementación física, piloto ni SHELL-CI-022.
 - **Edita solamente:**
-  - Ningún cambio autorizado todavía.
+  - `MODIFY` `docs/plan-canonico/modular/01_PROTOCOLO.md`
+  - `MODIFY` `docs/plan-canonico/modular/90_ORDEN_DE_IMPLEMENTACION.md`
 - **Valida, en este orden:**
-  1. Ninguna validación autorizada todavía.
-- **Comando de lifecycle:** `NINGUNO_HASTA_APROBADO`
+  1. `npm run docs:correction:check`
+  2. `npm run docs:correction:test`
+  3. `npm run docs:package:application:closure`
+  4. `node --test scripts/docs/package-application-closure.test.mjs`
+  5. `npm run docs:plan:build`
+  6. `npm run docs:plan:check`
+  7. `npm run docs:plan:test`
+  8. `npm run docs:treq:check`
+  9. `npm run docs:treq:test`
+  10. `git --no-pager diff --check`
+- **Comando de lifecycle:** `npm run docs:correction:finish -- --correction-id DELIV-PKG-015::CORR-031`
 - **Regla:** no mezclar esta corrección con documentación nueva, preparación de packages ni código físico en el mismo checkout.
 
 ### 2. Ejecuta el primary de la governed frontier — `GAP-PKG-047`
