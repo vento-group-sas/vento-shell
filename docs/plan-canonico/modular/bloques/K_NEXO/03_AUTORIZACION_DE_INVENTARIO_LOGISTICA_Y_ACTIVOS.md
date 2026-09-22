@@ -11547,4 +11547,1215 @@ AUDIT / DENY / ROLLBACK REQUIREMENTS
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura`
-### [ ] NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura
+### ✅ NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
+**Tarea siguiente:** NEXO-UX-026 — Diseñar ciclo de vida completo de LPN
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — segregación canónica de capacidades y decisiones para reportar, solicitar, aprobar, ejecutar, verificar, liberar, cerrar y reabrir dentro del subdominio de instalaciones de NEXO, con autorización server-side, denegación segura y preservación no destructiva de estado, evidencia e historia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; cualquier materialización futura ocurre únicamente mediante `NEXO-AUTH-032::<implementation_unit_id>` después de resolver el package propietario, cumplir el gate físico aplicable y recibir autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la segregación de autoridad que debe aplicar NEXO sobre los ciclos de instalaciones para impedir que una capacidad concedida en una etapa se convierta por inferencia en autoridad sobre las etapas posteriores o anteriores.
+
+La regla raíz queda:
+
+```text
+ACTOR EFECTIVO
++
+RECURSO EXACTO
++
+ACCIÓN EXACTA
++
+CAPACIDAD CANÓNICA EXACTA Y ACTIVA
++
+TERRITORIO
++
+ESTADO Y REVISIÓN VIGENTES
++
+POLÍTICA APLICABLE
++
+EVIDENCIA Y PRECONDICIONES REQUERIDAS
+=
+DECISIÓN SERVER-SIDE
+```
+
+Nunca:
+
+```text
+REPORTAR
+=
+SOLICITAR
+=
+APROBAR
+=
+EJECUTAR
+=
+VERIFICAR
+=
+LIBERAR
+=
+CERRAR
+=
+REABRIR
+```
+
+Tampoco:
+
+```text
+CAPACIDAD DE UNA ETAPA
+→
+AUTORIDAD TRANSITIVA SOBRE OTRA ETAPA
+```
+
+#### 2. Resultado contractual
+
+`NEXO-AUTH-032` deja definido un contrato reutilizable de segregación para los recursos protegidos por `NEXO-AUTH-031`.
+
+El contrato fija ocho decisiones transversales mínimas:
+
+```text
+REPORT
+REQUEST
+APPROVE
+EXECUTE
+VERIFY
+RELEASE
+CLOSE
+REOPEN
+```
+
+Cada decisión debe poder evaluarse de manera independiente.
+
+La existencia de estas ocho decisiones no elimina acciones especializadas ya definidas por los contratos de dominio, entre ellas:
+
+- clasificar o realizar triage;
+- autorizar trabajo;
+- programar;
+- registrar materiales o repuestos;
+- probar;
+- aceptar excepciones;
+- corregir;
+- cancelar;
+- revocar;
+- recibir técnicamente;
+- reconciliar;
+- registrar contención;
+- transferir responsabilidad cuando una política lo permita.
+
+Cuando una acción especializada exista, conserva su autoridad propia y no se fusiona artificialmente con una de las ocho decisiones del título.
+
+#### 3. Topología
+
+La tarea conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = NEXO-AUTH-032::<implementation_unit_id>
+```
+
+El marcador global define el contrato una sola vez.
+
+No crea una instancia física.
+
+No ejecuta cambios de código, datos, permisos, RLS, RPC, Server Actions, UI, Supabase ni despliegues.
+
+#### 4. Handoff recibido desde `NEXO-AUTH-031`
+
+031 entrega:
+
+```text
+STABLE FACILITY RESOURCE BOUNDARIES
++
+EXACT-AUTHORITY-OR-DENY RULE
++
+SERVER-SIDE ENFORCEMENT
++
+TERRITORY AND RESOURCE SCOPE
++
+STATE / REVISION REVALIDATION
++
+NO TRANSITIVE AUTHORITY
++
+NO ROLE-NAME AUTHORITY
++
+PHYSICAL ACCESS != DIGITAL AUTHORIZATION
++
+EXTERNAL CONTRACTOR MINIMUM PRIVILEGE
++
+IDEMPOTENCY / CONCURRENCY / OFFLINE RULES
++
+AUDIT / DENY / ROLLBACK REQUIREMENTS
+```
+
+032 especializa ese handoff para las decisiones del lifecycle.
+
+031 responde quién puede actuar sobre un recurso de instalaciones y bajo qué contexto.
+
+032 responde qué acción concreta puede ejecutar ese actor y qué acciones siguen prohibidas aunque el actor ya tenga autoridad sobre otra etapa del mismo expediente.
+
+#### 5. Ámbito de recursos
+
+La segregación aplica cuando corresponda a:
+
+1. instalaciones físicas;
+2. espacios;
+3. componentes fijos;
+4. redes y puntos de servicio;
+5. solicitudes y órdenes de mantenimiento locativo;
+6. limpieza y saneamiento;
+7. control de plagas;
+8. servicios físicos e interrupciones;
+9. inspecciones físicas y hallazgos;
+10. calibración y control metrológico;
+11. llaves, medios y zonas de acceso físico;
+12. obras y adecuaciones;
+13. novedades locativas;
+14. evidencia y decisiones técnicas relacionadas.
+
+La segregación no cambia la propiedad de dominio definida por las tareas `NEXO-DOM-029` a `NEXO-DOM-038`.
+
+#### 6. Aplicabilidad de las ocho decisiones
+
+Las ocho decisiones son un vocabulario transversal de autorización, no una obligación de que todos los expedientes recorran exactamente ocho pasos.
+
+Cada contrato de dominio determina qué etapas aplican.
+
+Ejemplos:
+
+- un reporte puede originar una novedad sin crear todavía una solicitud de trabajo;
+- una rutina programada puede no necesitar un reporte humano previo;
+- una ejecución puede requerir una autorización de trabajo especializada adicional;
+- una verificación puede consistir en prueba técnica, inspección, control sanitario o conformidad metrológica;
+- una liberación puede no aplicar a un expediente puramente informativo;
+- una recurrencia puede crear un caso nuevo en vez de reabrir el anterior.
+
+Se prohíbe forzar un flujo inválido solo para completar la lista de ocho etapas.
+
+#### 7. Matriz transversal de decisiones
+
+| Decisión | Hecho que autoriza | No autoriza por sí sola |
+| --- | --- | --- |
+| `REPORT` | registrar una observación, novedad, condición o hecho original permitido | crear trabajo, aprobar, ejecutar, verificar, liberar, cerrar o reabrir |
+| `REQUEST` | solicitar una acción, intervención, evaluación o trabajo permitido | aprobar la solicitud, autorizar ejecución, ejecutar, verificar, liberar o cerrar |
+| `APPROVE` | emitir la aprobación competente sobre la revisión y alcance que correspondan | ejecutar el trabajo, verificar su resultado, liberar el recurso o cerrar el expediente |
+| `EXECUTE` | realizar la acción material o técnica ya autorizada dentro del alcance vigente | aprobarse a sí misma por inferencia, verificar automáticamente, liberar, cerrar o reabrir |
+| `VERIFY` | comprobar resultado, criterios, condición o evidencia contra la política aplicable | declarar disponibilidad, liberar, cerrar o alterar el alcance aprobado |
+| `RELEASE` | decidir que un recurso puede volver a un propósito o condición de uso autorizada | cerrar automáticamente todos los expedientes relacionados ni producir recepción comercial o financiera |
+| `CLOSE` | reconciliar y cerrar el expediente conforme a sus precondiciones | borrar historia, declarar liberación retroactiva ni impedir reapertura válida |
+| `REOPEN` | reactivar de forma trazable un expediente cerrado cuando el contrato propietario lo permita | borrar el cierre anterior, alterar hechos históricos ni crear autoridad sobre las demás etapas |
+
+#### 8. `REPORT`
+
+`REPORT` registra un hecho original o una observación.
+
+Debe preservar, según aplique:
+
+- recurso o sujeto declarado;
+- actor o fuente;
+- momento;
+- descripción original;
+- evidencia original;
+- canal;
+- contexto territorial;
+- correlación conocida.
+
+Se preserva:
+
+```text
+REPORT
+!=
+VERIFIED FACT
+```
+
+y:
+
+```text
+REPORT
+!=
+REQUEST
+```
+
+El derecho a reportar no concede autoridad para decidir causa, severidad, aprobación, ejecución, liberación o cierre.
+
+#### 9. `REQUEST`
+
+`REQUEST` registra una intención empresarial para obtener una acción posterior.
+
+Debe preservar, según aplique:
+
+- expediente o recurso;
+- solicitante;
+- acción solicitada;
+- motivo;
+- alcance;
+- prioridad informada;
+- evidencia;
+- revisión;
+- dependencias conocidas.
+
+Se preserva:
+
+```text
+REQUESTED
+!=
+APPROVED
+```
+
+y:
+
+```text
+REQUESTED
+!=
+AUTHORIZED_TO_EXECUTE
+```
+
+Crear una solicitud no crea una orden aprobada ni una ejecución.
+
+#### 10. `APPROVE`
+
+`APPROVE` representa una decisión competente sobre una solicitud, revisión, alcance, excepción o condición que requiera aprobación.
+
+Debe revalidar:
+
+- actor efectivo;
+- capacidad exacta;
+- recurso;
+- territorio;
+- estado;
+- revisión;
+- alcance;
+- evidencia mínima;
+- políticas y restricciones vigentes.
+
+Una aprobación queda ligada a la revisión aprobada.
+
+```text
+APPROVAL REVISION N
+!=
+AUTHORITY FOR REVISION N+1
+```
+
+Una modificación material del alcance exige nueva evaluación cuando el contrato propietario así lo requiera.
+
+#### 11. Aprobación y autorización de trabajo
+
+Cuando el dominio distinga entre aprobar una solicitud y autorizar el inicio de un trabajo, ambas decisiones permanecen separadas.
+
+```text
+REQUEST APPROVED
+!=
+WORK AUTHORIZED
+```
+
+`NEXO-DOM-030` conserva esta diferencia para mantenimiento locativo.
+
+`NEXO-DOM-037` conserva gates técnicos, comerciales, económicos, de seguridad y operativos aplicables a obras.
+
+032 no fusiona esas decisiones bajo un único permiso genérico.
+
+#### 12. `EXECUTE`
+
+`EXECUTE` permite realizar la acción autorizada dentro de:
+
+- recurso;
+- alcance;
+- revisión;
+- ventana;
+- condiciones;
+- restricciones;
+- procedimiento;
+- territorio;
+- contexto vigentes.
+
+La ejecución debe registrar hechos reales.
+
+Se preserva:
+
+```text
+AUTHORIZED
+!=
+EXECUTED
+```
+
+y:
+
+```text
+EXECUTED
+!=
+VERIFIED
+```
+
+Un actor con capacidad de ejecución no puede convertir el final de su acción en verificación, liberación o cierre únicamente porque la interfaz lo permita.
+
+#### 13. `VERIFY`
+
+`VERIFY` comprueba el resultado frente a criterios aplicables.
+
+Puede especializarse como:
+
+- prueba técnica;
+- inspección;
+- verificación sanitaria;
+- conformidad metrológica;
+- comprobación de restricción;
+- recepción técnica;
+- otra verificación definida por el contrato propietario.
+
+Debe conservar:
+
+- objeto verificado;
+- resultado;
+- criterio o política;
+- evidencia;
+- actor;
+- momento;
+- revisión;
+- desviaciones;
+- bloqueos.
+
+Se preserva:
+
+```text
+VERIFIED
+!=
+RELEASED
+```
+
+#### 14. `RELEASE`
+
+`RELEASE` es una decisión sobre aptitud, disponibilidad o retorno a un propósito autorizado.
+
+Debe comprobar, según aplique:
+
+- verificaciones requeridas;
+- restricciones;
+- hallazgos bloqueantes;
+- condición;
+- disponibilidad;
+- pendientes;
+- autorizaciones requeridas;
+- revisión vigente.
+
+Se preserva:
+
+```text
+RELEASED
+!=
+CLOSED
+```
+
+Una liberación operacional no equivale a recepción empresarial, aceptación comercial, pago, reconocimiento financiero ni cierre de todos los expedientes relacionados.
+
+#### 15. `CLOSE`
+
+`CLOSE` cierra un expediente únicamente después de reconciliar las precondiciones del contrato propietario.
+
+Debe comprobar, según aplique:
+
+- ejecución o resultado requerido;
+- verificaciones;
+- liberación;
+- restricciones;
+- contenciones;
+- pendientes;
+- evidencia;
+- relaciones con otros expedientes;
+- estado y revisión.
+
+Se preserva:
+
+```text
+CLOSED
+!=
+DELETED
+```
+
+y:
+
+```text
+CLOSED
+!=
+IMMUTABLE FOREVER
+```
+
+El cierre no borra hechos, decisiones, denegaciones ni evidencia previos.
+
+#### 16. `REOPEN`
+
+`REOPEN` crea una transición auditable desde un expediente cerrado hacia un estado nuevamente activo cuando el contrato propietario lo permita.
+
+Debe conservar:
+
+- cierre anterior;
+- motivo;
+- evidencia nueva;
+- actor;
+- momento;
+- estado resultante;
+- revisión;
+- relaciones vigentes.
+
+Se preserva:
+
+```text
+REOPEN
+!=
+OVERWRITE PREVIOUS CLOSURE
+```
+
+y:
+
+```text
+REOPEN
+!=
+AUTOMATIC RECURRENCE HANDLING
+```
+
+Una recurrencia puede requerir un expediente nuevo y correlacionado en lugar de una reapertura.
+
+#### 17. Acciones especializadas que no se absorben
+
+Las siguientes acciones permanecen diferenciadas cuando un contrato propietario las defina:
+
+| Acción especializada | Regla |
+| --- | --- |
+| `TRIAGE / CLASSIFY` | reportar no concede autoridad para clasificar; clasificar no concede aprobación |
+| `AUTHORIZE_WORK` | aprobación de una solicitud no sustituye la autorización específica para iniciar |
+| `SCHEDULE` | programar no equivale a ejecutar |
+| `REGISTER_PARTS / MATERIALS` | ejecutar no concede autoridad implícita para afectar inventario |
+| `TEST` | ejecutar no equivale a probar; probar puede formar parte de verificación |
+| `ACCEPT_EXCEPTION` | una excepción requiere autoridad propia y no cambia la política base |
+| `CORRECT` | corregir no borra el hecho original ni equivale necesariamente a reabrir |
+| `CANCEL` | cancelar no equivale a cerrar con resultado satisfactorio |
+| `REVOKE` | revocar acceso o vigencia no equivale a recuperación física |
+| `TECHNICAL_RECEIPT` | no equivale a recepción empresarial ni pago |
+| `RECONCILE` | resolver resultado desconocido no concede autoridad sobre la acción material |
+
+#### 18. Matriz de no equivalencias
+
+Quedan prohibidas las siguientes inferencias:
+
+```text
+REPORT → REQUEST
+REQUEST → APPROVE
+APPROVE → EXECUTE
+EXECUTE → VERIFY
+VERIFY → RELEASE
+RELEASE → CLOSE
+CLOSE → REOPEN
+```
+
+También:
+
+```text
+VISIBILIDAD DE UI
+→ AUTORIDAD
+```
+
+```text
+ACCESO GENERAL A NEXO
+→ AUTORIDAD DE LIFECYCLE
+```
+
+```text
+ACCESO FÍSICO
+→ AUTORIDAD DIGITAL
+```
+
+```text
+CONTRATO O COMPRA
+→ AUTORIDAD TÉCNICA
+```
+
+```text
+PAGO O COSTO
+→ LIBERACIÓN
+```
+
+```text
+FOTO, CERTIFICADO O COMENTARIO
+→ CIERRE
+```
+
+#### 19. Capacidad exacta o denegación segura
+
+Cada etapa requiere una capacidad canónica exacta y activa compatible con su semántica.
+
+032 no inventa nombres de `PermissionKey`.
+
+Si la capacidad exacta necesaria no existe en el catálogo activo:
+
+```text
+EXACT ACTIVE CAPABILITY ABSENT
+→ DEFAULT_DENY
+```
+
+Se prohíbe usar como sustituto:
+
+- autenticación sola;
+- `nexo.access`;
+- `inventory.stock`;
+- permiso de lectura;
+- permiso de activos;
+- permiso de LOC;
+- nombre de rol;
+- pertenencia al área;
+- visibilidad de botón;
+- autoridad económica;
+- acceso físico;
+- contrato con proveedor;
+- alias amplio;
+- fallback legacy.
+
+#### 20. Un mismo actor y múltiples etapas
+
+La segregación obligatoria es, como mínimo, de capacidad y evaluación.
+
+Un mismo actor puede ejercer más de una etapa únicamente cuando:
+
+1. posea cada capacidad exacta de forma independiente;
+2. el recurso, territorio, estado y contexto sean válidos en cada decisión;
+3. ninguna política aplicable exija actores distintos;
+4. no exista conflicto de interés o incompatibilidad definida por la autoridad competente;
+5. cada decisión quede auditada por separado.
+
+Nunca:
+
+```text
+ACTOR CAN REPORT
+→
+ACTOR CAN REQUEST / APPROVE / EXECUTE / VERIFY / RELEASE / CLOSE / REOPEN
+```
+
+#### 21. Separación de actores cuando la política lo exija
+
+Cuando una política competente exija independencia entre dos etapas:
+
+```text
+POLICY REQUIRES DISTINCT ACTORS
++
+SAME EFFECTIVE ACTOR
+→ DENY
+```
+
+La comparación usa actor efectivo, no solo cuenta, sesión, dispositivo o nombre visible.
+
+Una simulación, delegación o actuación técnica no debe ocultar que el mismo actor está intentando ocupar dos funciones incompatibles.
+
+032 no inventa incompatibilidades universales que no estén definidas por política.
+
+#### 22. Principal, actor y dispositivo
+
+Se preserva:
+
+```text
+PRINCIPAL
+!=
+EFFECTIVE ACTOR
+!=
+DEVICE
+```
+
+Un dispositivo compartido no adquiere autoridad humana para aprobar, verificar, liberar, cerrar o reabrir.
+
+Una sesión técnica no sustituye atribución empresarial cuando la decisión requiera actor humano.
+
+La materialización futura deberá usar los contratos compartidos de identidad, contexto y dispositivo aplicables.
+
+#### 23. Territorio y recurso
+
+Cada evaluación debe resolver el recurso autoritativo y su territorio antes del efecto.
+
+La autoridad puede depender de:
+
+- sede;
+- área;
+- instalación;
+- espacio;
+- componente;
+- punto de servicio;
+- zona de acceso físico;
+- expediente;
+- relación con el recurso;
+- otro scope definido canónicamente.
+
+Se prohíbe ampliar:
+
+```text
+ONE SITE
+→
+ANY SITE
+```
+
+```text
+ONE RESOURCE
+→
+ANY RELATED RESOURCE
+```
+
+```text
+OWN RELATION
+→
+ANY RELATION
+```
+
+#### 24. Estado y revisión vigentes
+
+Toda mutación sensible revalida el estado actual y la revisión esperada.
+
+Una decisión tomada sobre una revisión anterior no autoriza silenciosamente una revisión posterior.
+
+La implementación futura deberá impedir, según corresponda:
+
+- aprobación sobre alcance desactualizado;
+- ejecución después de revocación;
+- verificación sobre ejecución distinta;
+- liberación sobre prueba supersedida;
+- cierre con cambios no reconciliados;
+- reapertura contra una versión que ya cambió.
+
+#### 25. Autorización server-side
+
+Toda etapa material debe protegerse en el servidor.
+
+La UI puede ocultar, deshabilitar o explicar una acción, pero la decisión final no depende de la UI.
+
+Se exige protección equivalente para:
+
+- Server Actions;
+- Route Handlers;
+- APIs;
+- RPC;
+- acceso directo a datos cuando exista;
+- procesos asíncronos;
+- integraciones externas;
+- reintentos;
+- operación offline sincronizada.
+
+Una URL directa o formulario alterado no puede eludir la segregación.
+
+#### 26. Precondiciones y denegación
+
+Cada etapa debe fallar cerrada cuando falte una precondición obligatoria.
+
+Ejemplos:
+
+| Intento | Condición bloqueante |
+| --- | --- |
+| aprobar | solicitud ausente, revisión stale, scope incorrecto o evidencia requerida ausente |
+| ejecutar | aprobación o autorización requerida ausente, recurso bloqueado o revisión incompatible |
+| verificar | ejecución o resultado inexistente, evidencia insuficiente o verificador no autorizado |
+| liberar | verificación bloqueante ausente, restricción vigente o condición incompatible |
+| cerrar | pendientes bloqueantes, contención vigente, conciliación incompleta o liberación requerida ausente |
+| reabrir | cierre inexistente, motivo inválido, contrato que exige nuevo expediente o actor no autorizado |
+
+La denegación no produce efectos parciales.
+
+#### 27. Frontera con ORIGO
+
+ORIGO conserva:
+
+- proveedor;
+- cotización;
+- negociación;
+- contratación;
+- orden de compra o servicio;
+- recepción empresarial;
+- documentos comerciales.
+
+Se preserva:
+
+```text
+COMMERCIAL APPROVAL
+!=
+TECHNICAL APPROVAL
+```
+
+y:
+
+```text
+ENTERPRISE RECEIPT
+!=
+TECHNICAL VERIFICATION
+```
+
+Una compra o contrato no autoriza ejecutar, verificar, liberar ni cerrar técnicamente un expediente NEXO.
+
+#### 28. Frontera con NUMERA
+
+NUMERA conserva:
+
+- presupuesto;
+- compromiso;
+- obligación;
+- gasto;
+- costo;
+- pago;
+- tratamiento económico.
+
+Se preserva:
+
+```text
+ECONOMIC AUTHORIZATION
+!=
+TECHNICAL APPROVAL
+```
+
+y:
+
+```text
+PAID
+!=
+VERIFIED
+!=
+RELEASED
+!=
+CLOSED
+```
+
+Ninguna señal financiera libera una instalación.
+
+#### 29. Frontera con VISO/SST
+
+VISO/SST conserva las decisiones de riesgo, seguridad laboral y cumplimiento que le correspondan.
+
+Cuando una política exija aprobación o evidencia SST, NEXO la consume como precondición sin apropiarse de su significado.
+
+Se preserva:
+
+```text
+SST APPROVAL
+!=
+NEXO TECHNICAL VERIFICATION
+```
+
+y:
+
+```text
+NEXO RELEASE
+!=
+SST CASE CLOSURE
+```
+
+salvo que un contrato explícito defina una correlación específica.
+
+#### 30. Frontera con proveedores y contratistas
+
+Un proveedor o contratista puede aportar ejecución y evidencia dentro de un alcance autorizado.
+
+No recibe por ese hecho autoridad para:
+
+- aprobar el trabajo internamente;
+- ampliar alcance;
+- verificar en nombre de NEXO cuando la política exige verificación interna;
+- liberar;
+- cerrar;
+- reabrir;
+- modificar scope territorial;
+- conceder permisos a terceros.
+
+Cualquier capacidad adicional requiere autorización canónica exacta y scope mínimo.
+
+#### 31. Acceso físico y lifecycle digital
+
+Se preserva:
+
+```text
+PHYSICAL ACCESS GRANTED
+!=
+WORK APPROVED
+!=
+DIGITAL EXECUTION AUTHORITY
+```
+
+Una llave, tarjeta, control, código físico o permiso de ingreso no concede autoridad sobre el lifecycle digital.
+
+Una autorización digital tampoco demuestra acceso físico material ni disponibilidad del lugar.
+
+#### 32. Evidencia por etapa
+
+La evidencia mínima exacta depende del contrato propietario, pero la materialización debe poder demostrar por separado:
+
+| Etapa | Evidencia trazable mínima conceptual |
+| --- | --- |
+| `REPORT` | fuente, actor, momento, observación original y recurso |
+| `REQUEST` | solicitante, acción pedida, alcance, motivo y revisión |
+| `APPROVE` | decisión, autoridad, base, alcance, revisión y momento |
+| `EXECUTE` | actor o proveedor, trabajo real, timestamps, alcance y resultado |
+| `VERIFY` | criterio, resultado, evidencia, desviaciones y verificador |
+| `RELEASE` | propósito liberado, decisión, autoridad, restricciones y condición |
+| `CLOSE` | reconciliación, pendientes, relaciones, decisión y estado final |
+| `REOPEN` | cierre previo, motivo, evidencia nueva, actor y nueva revisión |
+
+La evidencia no sustituye la decisión estructurada.
+
+#### 33. Idempotencia
+
+Toda mutación material debe admitir una identidad estable de operación o mecanismo equivalente.
+
+Repetir la misma intención no produce:
+
+- otro reporte;
+- otra solicitud;
+- otra aprobación;
+- otra ejecución;
+- otra verificación;
+- otra liberación;
+- otro cierre;
+- otra reapertura.
+
+El mismo identificador con contenido materialmente distinto produce conflicto o revisión explícita.
+
+#### 34. Concurrencia
+
+La implementación futura debe impedir, según aplique:
+
+- dos aprobaciones incompatibles sobre la misma revisión;
+- ejecución contra una aprobación supersedida;
+- dos ejecuciones mutuamente excluyentes;
+- verificación mientras la ejecución relevante cambia;
+- dos liberaciones contradictorias;
+- cierre mientras existe una mutación pendiente;
+- cierre y reapertura simultáneos sin orden causal;
+- doble efecto por reintento.
+
+Se requiere versión, compare-and-set, bloqueo o mecanismo equivalente según la materialización aprobada.
+
+#### 35. Captura offline
+
+La captura offline puede registrar intención o evidencia pendiente.
+
+No crea autoridad final.
+
+Se preserva:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER ACCEPTED
+!=
+APPROVED
+!=
+EXECUTED
+!=
+VERIFIED
+!=
+RELEASED
+!=
+CLOSED
+```
+
+Una aprobación, liberación o cierre que exija autoridad online permanece pendiente hasta confirmación válida del servidor.
+
+#### 36. Resultado desconocido
+
+Ante timeout, pérdida de conectividad o respuesta ambigua después de una mutación:
+
+```text
+UNKNOWN RESULT
+→
+RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+La reconciliación consulta por la identidad estable de operación o expediente.
+
+No se resuelve la incertidumbre creando una segunda aprobación, ejecución, liberación, cierre o reapertura.
+
+#### 37. Corrección y supersesión
+
+Una corrección válida:
+
+- conserva el hecho original;
+- registra el cambio;
+- identifica actor y motivo;
+- mantiene correlación con la decisión previa;
+- no fabrica un lifecycle alterno.
+
+Se preserva:
+
+```text
+CORRECT
+!=
+REOPEN
+```
+
+Una corrección de dato no reabre automáticamente un expediente.
+
+Una reapertura no autoriza a reescribir silenciosamente datos históricos.
+
+#### 38. Auditoría
+
+Cada decisión material debe producir evidencia suficiente para reconstruir:
+
+- principal;
+- actor efectivo;
+- dispositivo cuando aplique;
+- recurso;
+- territorio;
+- acción;
+- capacidad evaluada;
+- fuente de la capacidad;
+- estado y revisión;
+- decisión;
+- motivo de denegación cuando corresponda;
+- momento;
+- correlación;
+- política aplicable;
+- referencias de evidencia;
+- resultado conocido, desconocido o reconciliado.
+
+La auditoría no debe registrar secretos innecesarios.
+
+#### 39. Rollback futuro
+
+Un rollback físico solo puede volver a una combinación previamente certificada y compatible.
+
+Nunca puede:
+
+- fusionar etapas;
+- reactivar un permiso amplio como autoridad;
+- convertir autenticación en autorización;
+- convertir visibilidad de UI en permiso;
+- permitir ejecución sin aprobación requerida;
+- permitir liberación sin verificación;
+- cerrar omitiendo restricciones;
+- borrar decisiones ya emitidas;
+- borrar cierres o reaperturas históricas.
+
+Si no existe una combinación segura anterior, se bloquea la mutación y se corrige hacia adelante.
+
+#### 40. AS-IS remoto observado
+
+La implementación remota observada de `vento-nexo` conserva mantenimiento de activos mediante `asset_maintenance_records` y una Server Action `registerAssetMaintenance`.
+
+Las superficies inspeccionadas continúan usando `inventory.stock` como guard amplio en el área de activos.
+
+Ese AS-IS:
+
+- pertenece al ciclo de activos y no demuestra un workflow locativo integral;
+- no demuestra capacidades separadas para las ocho decisiones de 032;
+- no demuestra segregación integral de aprobación, ejecución, verificación, liberación, cierre y reapertura;
+- no puede reutilizar `inventory.stock` como autoridad final para instalaciones;
+- no autoriza inferir PermissionKeys nuevas.
+
+Las búsquedas remotas inspeccionadas no demostraron una superficie dedicada de `facility work order` en `vento-nexo`.
+
+La ausencia en esas superficies no constituye prueba absoluta de inexistencia fuera de lo inspeccionado.
+
+#### 41. Materialización física futura
+
+Una materialización `NEXO-AUTH-032::<implementation_unit_id>` solo puede ejecutarse cuando exista:
+
+- `implementation_unit_id` asignado;
+- package propietario aplicable;
+- gate físico correspondiente satisfecho;
+- autorización física explícita;
+- recursos y acciones exactos de la unidad identificados;
+- catálogo de capacidades compatible;
+- grants y denegaciones definidos;
+- enforcement server-side;
+- datos y estados compatibles;
+- pruebas atribuibles a la misma unidad;
+- rollback seguro o estrategia forward-only explícita.
+
+El marcador documental no materializa ninguna de esas condiciones.
+
+#### 42. Oracles mínimos de futura certificación
+
+Cada unidad física aplicable deberá demostrar, como mínimo:
+
+| Oracle | Resultado requerido |
+| --- | --- |
+| solo `REPORT` presente | cualquier intento de `REQUEST`, `APPROVE`, `EXECUTE`, `VERIFY`, `RELEASE`, `CLOSE` o `REOPEN` queda denegado |
+| solo `REQUEST` presente | aprobar o ejecutar queda denegado |
+| solo `APPROVE` presente | ejecutar, verificar, liberar, cerrar o reabrir queda denegado |
+| solo `EXECUTE` presente | verificar, liberar, cerrar o reabrir queda denegado |
+| solo `VERIFY` presente | liberar, cerrar o reabrir queda denegado |
+| solo `RELEASE` presente | cerrar o reabrir queda denegado |
+| solo `CLOSE` presente | reabrir queda denegado |
+| capacidad exacta ausente | `DEFAULT_DENY` |
+| scope incorrecto | denegación sin efecto parcial |
+| recurso incorrecto | denegación sin fuga de datos o efecto |
+| revisión stale | denegación o conflicto gobernado |
+| llamada directa | misma decisión que la interfaz |
+| reintento idéntico | mismo resultado o no-op permitido |
+| resultado desconocido | reconciliación antes de repetir efecto |
+| captura offline | sin autoridad final hasta aceptación válida |
+| política exige actor distinto | mismo actor efectivo queda denegado |
+| proveedor externo | únicamente capacidades explícitas y mínimas |
+| acceso físico | no concede autoridad digital |
+| pago o contratación | no concede liberación ni cierre técnico |
+| rollback | no reactiva autoridad amplia ni colapsa etapas |
+
+#### 43. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige identidad locativa estable, separación entre solicitud, orden, ejecución, prueba, liberación, cierre y reapertura, autorización mediante capacidad exacta y contexto, validación server-side, y coordinación idempotente con dominios externos. 032 especializa la segregación de autoridad sin introducir una obligación de prueba independiente.
+
+#### 44. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-017` para identidad locativa, mantenimiento, solicitud, orden, ejecución, prueba, liberación, cierre y reapertura diferenciados;
+- `TREQ-NEXO-018` para limpieza, servicios, inspecciones, calibración, acceso físico, obras y novedades con verificación, disponibilidad y cierre separados;
+- `TREQ-AUTH-001` para autorización mediante permisos, contexto y alcance canónicos;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC y exigir validación server-side de permiso, actor, territorio, recurso y estado;
+- `TREQ-INTEGRATION-018` para preservar fronteras entre solicitud, orden, visita, servicio, certificado, factura, pago, hallazgo, acción y cierre entre NEXO y dominios externos.
+
+Estas referencias son trazabilidad existente y no una modificación del registro.
+
+#### 45. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no materializa código; la batería local ejecutará la compilación documental antes del cierre |
+| LOCAL | NOT_EXECUTED | no se ejecutaron scripts sobre el checkout local del usuario durante la elaboración del artefacto |
+| REMOTA | PASS | se contrastaron protocolo, contrato de entrega, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, fuentes E1, `NEXO-DOM-029` a `NEXO-DOM-038`, cobertura 04A vigente, handoff aprobado de `NEXO-AUTH-031`, `vento-shell/main` y el consumidor `vento-nexo` observado; el AS-IS mantiene mantenimiento de activos con `inventory.stock` y no demuestra segregación específica del lifecycle locativo |
+| OPERATIVA | NOT_EXECUTED | no se reportó, solicitó, aprobó, ejecutó, verificó, liberó, cerró ni reabrió ningún expediente real |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-032::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 46. Criterios de aceptación
+
+- [x] `REPORT`, `REQUEST`, `APPROVE`, `EXECUTE`, `VERIFY`, `RELEASE`, `CLOSE` y `REOPEN` quedan definidos como decisiones independientes;
+- [x] las ocho decisiones no se fuerzan sobre recursos donde el contrato propietario no las requiera;
+- [x] acciones especializadas como triage, autorización de trabajo, prueba, corrección, cancelación y reconciliación no quedan absorbidas;
+- [x] reportar no concede solicitud;
+- [x] solicitar no concede aprobación;
+- [x] aprobación no concede ejecución;
+- [x] ejecución no concede verificación;
+- [x] verificación no concede liberación;
+- [x] liberación no concede cierre;
+- [x] cierre no concede reapertura;
+- [x] reapertura conserva el cierre anterior;
+- [x] recurrencia y reapertura permanecen distinguibles;
+- [x] la misma persona solo puede ocupar varias etapas si posee cada capacidad y ninguna política exige separación adicional;
+- [x] cuando una política exige actores distintos, el mismo actor efectivo queda denegado;
+- [x] principal, actor y dispositivo permanecen separados;
+- [x] la capacidad exacta ausente produce `DEFAULT_DENY`;
+- [x] no se inventan `PermissionKey`;
+- [x] `inventory.stock` no se acepta como autoridad final;
+- [x] cada etapa revalida territorio, recurso, estado y revisión;
+- [x] una aprobación no se extiende automáticamente a una revisión posterior;
+- [x] todas las mutaciones sensibles requieren enforcement server-side;
+- [x] acceso directo no puede eludir autorización;
+- [x] ORIGO no sustituye aprobación ni cierre técnico;
+- [x] NUMERA no sustituye liberación ni cierre técnico;
+- [x] VISO/SST conserva sus decisiones propietarias;
+- [x] proveedor o contratista no obtiene autoridad interna amplia;
+- [x] acceso físico no concede autoridad digital;
+- [x] evidencia se conserva por etapa y no reemplaza la decisión estructurada;
+- [x] idempotencia evita duplicar las ocho decisiones;
+- [x] concurrencia impide decisiones incompatibles;
+- [x] operación offline no inventa autoridad;
+- [x] resultado desconocido exige reconciliación;
+- [x] corrección y reapertura permanecen distintas;
+- [x] auditoría conserva actor, recurso, capacidad, decisión y revisión;
+- [x] rollback no reactiva autoridad amplia ni colapsa etapas;
+- [x] se definen oracles mínimos de futura certificación;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+#### 47. Riesgos residuales y propietarios
+
+| Riesgo residual | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| catálogo activo no demuestra capacidades exactas para todas las etapas locativas | no | materialización NEXO aplicable | capacidades exactas aprobadas o `DEFAULT_DENY` preservado |
+| AS-IS no demuestra workflow locativo integral | no | implementación NEXO posterior | unidad física materializada y certificada contra 031 y 032 |
+| incompatibilidades específicas entre actores dependen de política | no | owner de política aplicable | regla versionada consumida por autorización |
+| RLS, RPC y persistencia física no se diseñan aquí | no | package y tareas físicas propietarias | enforcement y pruebas implementados |
+| terceros externos pueden requerir acceso limitado | no | integración externa + autorización | scope mínimo materializado y auditado |
+| operación offline requiere mecanismo físico de reconciliación | no | package técnico aplicable | idempotencia y reconciliación certificadas |
+| UX final de instalaciones aún no está materializada | no | tareas NEXO-UX propietarias | experiencia aprobada e implementada según su secuencia |
+
+#### 48. Cierre documental del mini-bloque de autorización
+
+Con 032 queda definido documentalmente el cierre del mini-bloque:
+
+```text
+NEXO-AUTH-021
+→
+AUDITORÍA
+
+NEXO-AUTH-022..029
+→
+PROTECCIÓN Y RETIRO LEGACY DE INVENTARIO / LPN / ACTIVOS
+
+NEXO-AUTH-030
+→
+CONTRATO DE CERTIFICACIÓN INTEGRAL DEL SUBDOMINIO PRECEDENTE
+
+NEXO-AUTH-031
+→
+FRONTERA DE AUTORIZACIÓN PARA INSTALACIONES
+
+NEXO-AUTH-032
+→
+SEGREGACIÓN DE ETAPAS DEL LIFECYCLE DE INSTALACIONES
+```
+
+El cierre documental no significa que las instancias físicas `NEXO-AUTH-022..032::<implementation_unit_id>` estén materializadas.
+
+La continuidad no reabre tareas de experiencia ya aprobadas.
+
+La siguiente tarea documental pendiente de la secuencia es `NEXO-UX-026`.
+
+#### 49. Límites
+
+Esta tarea no:
+
+- crea o modifica PermissionKeys;
+- crea grants;
+- asigna roles;
+- crea tablas, vistas, funciones, RPC, triggers, RLS o migraciones;
+- modifica Supabase;
+- modifica `vento-nexo`;
+- modifica datos;
+- modifica estados empresariales reales;
+- reporta casos reales;
+- solicita trabajos reales;
+- aprueba trabajos reales;
+- ejecuta trabajos reales;
+- verifica resultados reales;
+- libera instalaciones reales;
+- cierra expedientes reales;
+- reabre expedientes reales;
+- entrega acceso físico;
+- contrata proveedores;
+- reconoce costos;
+- ejecuta pagos;
+- define incompatibilidades de actores sin fuente competente;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-UX-026`.
+
+#### 50. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-026 — Diseñar ciclo de vida completo de LPN`
