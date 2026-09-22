@@ -5,7 +5,7 @@
   "target_instance_id": null,
   "correction_type": "DOCUMENTARY",
   "reason_code": "CONTRACT_NON_CONFORMANCE",
-  "status": "IMPLEMENTED",
+  "status": "VERIFIED",
   "blocking": false,
   "blocked_targets": [],
   "baseline": {
@@ -190,8 +190,19 @@
         }
       ],
       "ordered_fail_fast": true
+    },
+    {
+      "type": "CORRECTION_VERIFICATION_V1",
+      "status": "PASS",
+      "observed_at": "2026-09-22T18:09:25.731Z",
+      "validated_candidate_head": "60a8cd352a056bb8f2d1b326503474055ef8d920",
+      "validation_evidence_type": "CORRECTION_VALIDATION_V1",
+      "lifecycle_model": "VENTO-CORRECTION-LIFECYCLE-V1",
+      "lifecycle_decision": "SAFE_CORRECTION_METADATA_ONLY",
+      "remote_mutations": false
     }
   ],
   "opened_at": "2026-09-22T17:35:39.814Z",
-  "implemented_at": "2026-09-22T17:57:56.672Z"
+  "implemented_at": "2026-09-22T17:57:56.672Z",
+  "verified_at": "2026-09-22T18:09:25.731Z"
 }
