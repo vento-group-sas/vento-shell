@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1249** |
+| Aprobadas | **1250** |
 | En propuesta | **0** |
-| No iniciadas | **347** |
+| No iniciadas | **346** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.26% (1249/1596)** |
+| Porcentaje de completamiento | **78.32% (1250/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **347** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1150** |
+| ⏸ NO_EVALUADA | **346** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1151** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-037` — Diseñar impresión de LOC, LPN, activo y documento | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-038` — Diseñar operación con escáner y etiquetas dañadas | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-039` — Diseñar inventario inicial de contenedores y activos | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-038` — Diseñar operación con escáner y etiquetas dañadas | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-039` — Diseñar inventario inicial de contenedores y activos | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-040` — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1039,7 +1039,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-035` | Diseñar repuestos, compatibilidad y reposición mínima | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-036` | Diseñar búsqueda por LOC, LPN, código, responsable y contenido | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-037` | Diseñar impresión de LOC, LPN, activo y documento | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-038` | Diseñar operación con escáner y etiquetas dañadas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-038` | Diseñar operación con escáner y etiquetas dañadas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-039` | Diseñar inventario inicial de contenedores y activos | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-040` | Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-041` | Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |

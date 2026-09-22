@@ -37119,7 +37119,1014 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas`
-### [ ] NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
+### ✅ NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento
+**Tarea siguiente:** NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
+**Tipo de tarea:** documental; diseño canónico de experiencia para captura mediante escáner, cámara o lector compatible y para tratamiento de etiquetas dañadas, ilegibles, obsoletas, ausentes o duplicadas, preservando identidad estable, contexto invocante, autorización por operación, resolución contra fuente autoritativa, cero efectos por el solo escaneo, recuperación ante periférico o conectividad no disponible y separación estricta entre incidencia de representación y estado del recurso bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual una tarea NEXO puede consumir un escaneo para identificar un recurso y continuar una operación autorizada sin convertir el escáner, la cámara, el código leído, el QR, la etiqueta física ni el payload embebido en autoridad empresarial.
+
+La misma experiencia debe resolver etiquetas dañadas, ilegibles, obsoletas, ausentes o duplicadas sin crear identidades nuevas, sin inferir daño del recurso representado y sin transformar la incidencia física de la representación en autorización automática de impresión, reimpresión, movimiento, ajuste, conteo, custodia, mantenimiento o baja.
+
+La regla raíz queda:
+
+```text
+SCAN INPUT
++
+INVOKING TASK CONTEXT
++
+RESOURCE NAMESPACE
++
+CANONICAL RESOLUTION
++
+CURRENT AUTHORIZATION
++
+CURRENT RESOURCE STATE
+→
+IDENTIFIED SUBJECT FOR THE INVOKING OPERATION
+```
+
+Nunca:
+
+```text
+SCAN
+→
+BUSINESS EFFECT
+```
+
+Y siempre:
+
+```text
+DAMAGED LABEL
+!=
+DAMAGED RESOURCE
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-038` deja definido un único contrato de experiencia que:
+
+1. recibe de `NEXO-UX-037` identidad estable, outputs imprimibles, identidad durable de trabajo/copia y separación retry/reprint;
+2. trata escáner, cámara y lector como canales de captura y no como permisos;
+3. conserva la tarea invocante como owner de la operación;
+4. evita una pantalla de escáner convertida en menú empresarial paralelo;
+5. resuelve el código leído contra una identidad canónica antes de mostrar o ejecutar acciones;
+6. separa código visible de identificador estable;
+7. no confía en estado empresarial embebido como verdad vigente;
+8. no ejecuta movimiento, recepción, retiro, custodia, conteo, mantenimiento, baja o impresión por el solo hecho de leer un código;
+9. aplica el permiso exacto de la operación invocante y no un permiso global de scanner;
+10. conserva actor, contexto, sede, área, dispositivo y tarea cuando la operación lo requiera;
+11. distingue código válido, no reconocido, ambiguo, obsoleto y no autorizado;
+12. distingue fallo de lectura de denegación de autorización;
+13. distingue periférico no disponible de recurso inexistente;
+14. evita que escaneos repetidos creen efectos duplicados;
+15. define comportamiento seguro frente a desconexión o resultado incierto;
+16. define recuperación por búsqueda canónica cuando la etiqueta no pueda leerse;
+17. separa incidencia de etiqueta de condición del LOC, LPN, activo, contenedor o documento;
+18. conserva identidad estable cuando una etiqueta se sustituye o reimprime;
+19. no permite que una etiqueta dañada autorice automáticamente reimpresión;
+20. conserva la distinción entre retry de una misma copia y reprint de una copia adicional;
+21. mantiene fail-closed la impresión genérica de LPN cuando no exista output E4 exacto;
+22. clasifica el `/scanner` AS-IS como superficie parcial que no constituye el flujo objetivo;
+23. reconoce `scanned_qr_token` observado en conteo de activos como evidencia parcial y no como implementación integral del escáner;
+24. entrega a `NEXO-UX-039` identidades resolubles y manejo de representación sin ejecutar inventario inicial;
+25. no crea requisitos de prueba ni autoriza materialización física.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+`NEXO-UX-038` no habilita hardware real, no instala lectores y no certifica periféricos.
+
+#### 4. Continuidad recibida de `NEXO-UX-037`
+
+La continuidad funcional inmediata es:
+
+```text
+NEXO-UX-037
+→
+NEXO-UX-038
+→
+NEXO-UX-039
+```
+
+037 entrega:
+
+```text
+STABLE RESOURCE IDENTITY
++
+PRINTABLE OUTPUT / SNAPSHOT CONTRACT
++
+DURABLE JOB AND COPY IDENTITY
++
+PREVIEW VS PHYSICAL EVIDENCE BOUNDARY
++
+RETRY / REPRINT SEPARATION
++
+UNKNOWN RESULT RECOVERY
++
+STABLE QR / BARCODE REFERENCE
++
+NO IDENTITY CHANGE ON LABEL REPLACEMENT
+```
+
+038 consume exactamente ese handoff.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume, sin redefinir:
+
+- `NEXO-DOM-018`, integración entre identidades NEXO y representación física;
+- `NEXO-DOM-017`, historia y evidencia no destructiva;
+- contratos de LOC, LPN, activos, contenedores, movimientos, custodia, conteo y mantenimiento ya aprobados;
+- la separación entre LPN y contenedor físico definida por el dominio;
+- los contratos `PRINT-ARC-*` de BLOQUE E4 consumidos por 037;
+- el contrato de búsqueda transversal definido por `NEXO-UX-036`;
+- el contrato de impresión definido por `NEXO-UX-037`.
+
+#### 6. Contrato de autorización consumido
+
+La herramienta de escaneo no recibe una autorización empresarial propia.
+
+Se conserva la regla canónica:
+
+```text
+scanner.view
+→ RETIRED_TECHNICAL
+```
+
+La autorización se evalúa con la capacidad de la operación real.
+
+Ejemplos canónicos ya aprobados:
+
+```text
+ESCANEAR UNA REMISION PARA RECIBIR
+→ nexo.inventory.remissions.receive
+
+ESCANEAR UN LPN PARA CONSULTAR
+→ nexo.inventory.lpns.view
+
+ESCANEAR PARA RETIRAR
+→ nexo.inventory.withdrawals.register
+```
+
+No existe un permiso global de escáner que amplíe esas capacidades.
+
+#### 7. Escáner como modalidad de entrada
+
+El escáner es una modalidad de captura.
+
+Puede entregar una cadena, token, código o referencia al flujo invocante, pero no determina:
+
+- actor;
+- permiso;
+- operación;
+- cantidad;
+- destino;
+- movimiento;
+- custodia;
+- aceptación;
+- estado;
+- condición;
+- resultado empresarial.
+
+#### 8. Contexto invocante
+
+Las utilidades de escaneo se abren desde una tarea y regresan a la tarea invocante.
+
+La experiencia debe conservar, cuando aplique:
+
+- identidad de tarea;
+- instancia de trabajo;
+- actor efectivo;
+- contexto operativo;
+- sede;
+- área;
+- operación esperada;
+- recurso esperado o namespace admitido;
+- estado previo confirmado.
+
+El segmento técnico de navegación no se convierte en identidad empresarial.
+
+#### 9. Pipeline canónico de escaneo
+
+El flujo conceptual es:
+
+```text
+CAPTURE RAW INPUT
+→ NORMALIZE INPUT
+→ IDENTIFY POSSIBLE NAMESPACE
+→ RESOLVE CANONICAL RESOURCE
+→ REVALIDATE CURRENT STATE
+→ REVALIDATE OPERATION AUTHORITY
+→ PRESENT RESOLVED SUBJECT
+→ REQUIRE EXPLICIT BUSINESS ACTION WHEN THE OWNER REQUIRES IT
+```
+
+El scan termina en identificación.
+
+La mutación, cuando exista, pertenece al owner de la operación.
+
+#### 10. Código visible frente a identidad estable
+
+Un código legible o escaneable puede ayudar a resolver un recurso.
+
+No sustituye su identidad estable.
+
+```text
+VISIBLE CODE
+!=
+CANONICAL RESOURCE ID
+```
+
+Cambiar la representación visible no crea por sí mismo otro recurso.
+
+#### 11. Payload embebido
+
+Un QR, Data Matrix o código de barras puede transportar una referencia resoluble.
+
+El cliente no trata como vigente un estado empresarial embebido.
+
+```text
+SCANNED PAYLOAD
+→ RESOLVE CURRENT RESOURCE
+→ REVALIDATE CURRENT AUTHORITY AND STATE
+```
+
+No:
+
+```text
+SCANNED PAYLOAD
+→ TRUST EMBEDDED BUSINESS STATE
+```
+
+#### 12. Namespace explícito
+
+Cuando un valor pueda ser válido en más de un namespace, la UX no elige silenciosamente por parecido.
+
+Los namespaces relevantes pueden incluir, según el flujo:
+
+- LOC;
+- LPN;
+- activo;
+- serial o placa;
+- documento;
+- remisión;
+- recurso logístico admitido por la tarea invocante.
+
+La resolución debe ser determinista o pedir desambiguación.
+
+#### 13. Scan válido y único
+
+Si el valor resuelve exactamente un recurso permitido por la tarea invocante, la UX muestra:
+
+- tipo de recurso;
+- identidad visible segura;
+- contexto relevante;
+- estado vigente necesario para continuar;
+- acción disponible derivada del owner.
+
+El scan por sí solo sigue sin ejecutar esa acción.
+
+#### 14. Scan ambiguo
+
+Si más de un recurso elegible coincide:
+
+```text
+AMBIGUOUS SCAN
+→ NO BUSINESS EFFECT
+```
+
+La UX debe:
+
+- indicar que existe ambigüedad;
+- mostrar únicamente alternativas autorizadas y suficientes para resolverla;
+- conservar el input para no exigir una nueva lectura innecesaria;
+- impedir selección silenciosa del primer resultado.
+
+#### 15. Scan no reconocido
+
+Si no existe un recurso resoluble:
+
+```text
+UNKNOWN CODE
+→ NOT FOUND
+→ ZERO BUSINESS EFFECT
+```
+
+La experiencia no crea automáticamente:
+
+- activo;
+- LOC;
+- LPN;
+- documento;
+- stock;
+- alias;
+- etiqueta nueva.
+
+#### 16. Código obsoleto
+
+Una representación antigua puede continuar físicamente presente después de un cambio permitido del recurso.
+
+Si el código todavía puede correlacionarse históricamente, la UX debe resolver al sujeto correcto y advertir que la representación no es la vigente cuando esa diferencia sea material.
+
+La etiqueta física antigua no convierte un estado histórico en estado actual.
+
+#### 17. Recurso vigente pero operación no autorizada
+
+Si el recurso existe y el actor puede conocer su existencia, pero la operación invocante no está autorizada:
+
+```text
+RESOURCE RESOLVED
++
+OPERATION DENIED
+→ ZERO BUSINESS EFFECT
+```
+
+La UX diferencia esa denegación de:
+
+- código inválido;
+- periférico averiado;
+- problema de red;
+- recurso inexistente.
+
+#### 18. Periférico no disponible
+
+La ausencia o fallo del escáner, lector o cámara es un fallo de periférico.
+
+No significa:
+
+- recurso inexistente;
+- código inválido;
+- permiso denegado;
+- operación completada.
+
+Cuando exista una alternativa admitida por el flujo, la UX puede ofrecer búsqueda o ingreso seguro de referencia sin fabricar resultado de escaneo.
+
+#### 19. Búsqueda como recuperación
+
+Cuando la etiqueta sea ilegible o el periférico no pueda operar, la recuperación principal consume `NEXO-UX-036`.
+
+El actor puede localizar el sujeto por los criterios ya aprobados, siempre dentro de su autorización:
+
+```text
+LOC / LPN / CODE / RESPONSIBLE / CONTENT
+```
+
+La búsqueda recupera identidad; no crea una etiqueta ni un efecto empresarial.
+
+#### 20. Escaneos repetidos
+
+Dos lecturas iguales consecutivas del mismo código no equivalen a dos operaciones empresariales.
+
+```text
+REPEATED SCAN
+!=
+REPEATED BUSINESS EFFECT
+```
+
+El flujo debe evitar doble disparo por:
+
+- lector que repite input;
+- doble lectura accidental;
+- re-render;
+- reconexión;
+- retorno desde una tarea auxiliar.
+
+La idempotencia final pertenece a la operación propietaria.
+
+#### 21. Cambio de recurso entre scan y acción
+
+Resolver un recurso no congela indefinidamente su estado.
+
+Si la operación posterior depende de estado, ubicación, custodia, versión, contenido o autorización que pueda cambiar, se revalida antes de ejecutar el efecto.
+
+```text
+SCAN AT T1
+!=
+AUTHORITY GUARANTEED AT T2
+```
+
+#### 22. Operación en dispositivo compartido
+
+En una estación compartida, el scan conserva actor efectivo y contexto vigente.
+
+Cambiar de actor invalida cualquier operación sensible pendiente que dependa de la autoridad anterior.
+
+El periférico compartido no se convierte en actor.
+
+#### 23. Limpieza entre actores
+
+Al cambiar o cerrar actor, la experiencia no debe dejar reutilizable para el siguiente actor:
+
+- recurso sensible resuelto;
+- operación pendiente;
+- token temporal de acción;
+- payload privado;
+- autorización heredada;
+- resultado incierto de una mutación anterior.
+
+Los datos que deban persistir por trazabilidad pertenecen a la capa autoritativa correspondiente, no a estado cliente reutilizable.
+
+#### 24. Offline y escaneo
+
+Una lectura puede ocurrir sin conectividad, pero una captura local no demuestra resolución ni autoridad vigente.
+
+```text
+OFFLINE SCAN
+→ LOCAL INPUT ONLY
+```
+
+La operación solo puede continuar offline cuando el contrato propietario lo permita expresamente y exista un envelope autorizado vigente.
+
+En ausencia de ese contrato:
+
+```text
+OFFLINE SCAN
+→ PENDING RESOLUTION
+→ ZERO NEW BUSINESS EFFECT
+```
+
+#### 25. Reconexión
+
+Al recuperar conectividad, la UX no ejecuta automáticamente una mutación solo porque exista un código capturado previamente.
+
+Debe resolver nuevamente:
+
+- identidad;
+- vigencia;
+- actor;
+- contexto;
+- permiso;
+- precondiciones de la operación.
+
+#### 26. Scan durante resultado empresarial incierto
+
+Si una mutación anterior quedó con resultado desconocido, un nuevo scan del mismo recurso no autoriza repetirla.
+
+La UX debe reconciliar primero el intento anterior cuando el owner indique riesgo de duplicación.
+
+```text
+UNKNOWN PREVIOUS RESULT
+→ RECONCILE FIRST
+```
+
+#### 27. Etiqueta dañada como incidencia de representación
+
+Una etiqueta dañada es una incidencia de la representación física.
+
+Puede incluir, como descripción de UX:
+
+- ilegible;
+- parcialmente destruida;
+- despegada;
+- contaminada;
+- desgastada;
+- ausente;
+- desactualizada;
+- duplicada físicamente;
+- asociada visualmente a un sujeto dudoso.
+
+Estas categorías de presentación no crean enums de dominio ni estados de base de datos en esta tarea.
+
+#### 28. Daño de etiqueta frente a daño del recurso
+
+Regla obligatoria:
+
+```text
+DAMAGED LABEL
+!=
+DAMAGED LOC
+!=
+DAMAGED LPN
+!=
+DAMAGED ASSET
+!=
+DAMAGED CONTAINER
+```
+
+El daño físico de la etiqueta no modifica condición, disponibilidad, mantenimiento, pérdida ni lifecycle del recurso.
+
+#### 29. Etiqueta ausente frente a recurso faltante
+
+Regla obligatoria:
+
+```text
+MISSING LABEL
+!=
+MISSING RESOURCE
+```
+
+La ausencia de una etiqueta no demuestra pérdida del activo, contenedor, LPN o contenido.
+
+#### 30. Etiqueta ilegible con identidad recuperable
+
+Si la representación no puede leerse pero el recurso puede identificarse mediante búsqueda, contexto operativo o atributos visibles autorizados:
+
+1. se resuelve la identidad canónica;
+2. se muestra el recurso actual;
+3. se registra la causa de la solicitud de representación cuando el flujo futuro lo soporte;
+4. se evalúa la autorización de impresión o reimpresión separadamente.
+
+No se crea una identidad nueva.
+
+#### 31. Etiqueta ilegible sin identidad recuperable
+
+Si no puede demostrarse qué recurso representa:
+
+```text
+UNRESOLVED DAMAGED LABEL
+→ NO REPRINT
+→ NO NEW IDENTITY
+```
+
+La experiencia debe derivar hacia identificación/investigación segura y no adivinar por proximidad física, último recurso visto o texto parcial no concluyente.
+
+#### 32. Etiqueta obsoleta
+
+Si la representación resuelve un recurso válido pero la versión, código o datos visibles dejaron de ser vigentes:
+
+```text
+STALE REPRESENTATION
+→ CURRENT RESOURCE REMAINS AUTHORITATIVE
+```
+
+La UX puede ofrecer una acción de actualización de representación únicamente si existe autoridad de impresión/reimpresión compatible.
+
+#### 33. Etiqueta duplicada
+
+Dos etiquetas físicas que resuelven al mismo recurso siguen representando una sola identidad empresarial.
+
+```text
+TWO LABELS
+→ ONE RESOURCE IDENTITY
+```
+
+La UX no crea una segunda existencia ni un segundo activo.
+
+Cuando la duplicación sea material, debe advertirse para retirar o invalidar físicamente la copia incorrecta mediante el procedimiento operativo correspondiente, sin borrar historia.
+
+#### 34. Etiquetas que resuelven a identidades distintas sobre el mismo objeto físico
+
+Si el operador observa dos representaciones incompatibles adheridas al mismo objeto:
+
+```text
+IDENTITY CONFLICT
+→ STOP BUSINESS MUTATION
+→ INVESTIGATE
+```
+
+La UX no decide cuál identidad es correcta por recencia visual, posición de la etiqueta o primer scan.
+
+#### 35. Reimpresión por etiqueta dañada
+
+El daño o ausencia de la etiqueta es una causa posible para solicitar una nueva copia.
+
+No constituye autorización automática.
+
+La solicitud consume el contrato de 037 y `NEXO-AUTH-028`.
+
+Mientras la capacidad atómica de reimpresión aplicable no exista activa:
+
+```text
+DAMAGED LABEL
++
+MISSING REPRINT CAPABILITY
+→ DEFAULT_DENY
+```
+
+#### 36. Sustitución física de una etiqueta
+
+Cuando una copia nueva sea autorizada como sustitución:
+
+- conserva la identidad del recurso;
+- conserva el snapshot o versión aplicable;
+- conserva actor y causa;
+- enlaza la nueva copia con el contexto autorizado;
+- no reescribe la historia de la copia anterior;
+- no ejecuta el hecho empresarial representado.
+
+#### 37. Retry frente a reprint
+
+El flujo mantiene:
+
+```text
+RETRY
+!=
+REPRINT
+```
+
+Retry intenta completar la misma copia no resuelta.
+
+Reprint crea una copia adicional deliberada después de una decisión autorizada.
+
+Una etiqueta dañada después de una impresión confirmada corresponde potencialmente a reprint, no a retry del trabajo original.
+
+#### 38. Resultado desconocido de impresión y etiqueta aparentemente ausente
+
+Si un trabajo quedó con resultado desconocido, la ausencia visible de una etiqueta no demuestra que nunca fue producida.
+
+La UX no crea otra copia a ciegas.
+
+Primero se aplica la conciliación definida por 037/E4 cuando exista.
+
+#### 39. LPN genérico
+
+La operación con escáner puede resolver un LPN existente.
+
+No cambia la decisión de 037 sobre impresión genérica:
+
+```text
+SCAN LPN
+→ LPN RESOLVED
+```
+
+No:
+
+```text
+SCAN LPN
+→ GENERIC LPN LABEL AVAILABLE
+```
+
+Mientras E4 no tenga un output exacto aprobado para LPN genérico, esa impresión permanece fail-closed.
+
+#### 40. LOC
+
+Escanear un LOC puede resolver su identidad y contexto.
+
+No mueve stock, no cambia capacidad y no confirma que el operador esté físicamente dentro del LOC.
+
+La operación posterior decide qué efecto, si alguno, es válido.
+
+#### 41. Activo
+
+Escanear QR, código, serial o placa de un activo busca resolver el activo individual correspondiente.
+
+No cambia por sí solo:
+
+- ubicación;
+- custodia;
+- usuario;
+- condición;
+- disponibilidad;
+- mantenimiento;
+- baja.
+
+#### 42. LPN
+
+Escanear un LPN puede identificarlo para consulta o para una operación propietaria posterior.
+
+No:
+
+- agrega contenido;
+- quita contenido;
+- anida;
+- desanida;
+- mueve;
+- cambia custodia;
+- cierra;
+- cancela;
+- reetiqueta.
+
+Cada efecto conserva su autorización y contrato específicos.
+
+#### 43. Documento
+
+Escanear una referencia de documento puede resolver el documento o snapshot permitido.
+
+No repite el hecho empresarial ni convierte la copia física en fuente de verdad.
+
+#### 44. Uso dentro de conteos
+
+Una sesión de conteo puede consumir un identificador escaneado para ayudar a resolver una línea.
+
+La lectura no convierte automáticamente la observación en:
+
+- encontrado;
+- faltante;
+- dañado;
+- extra;
+- diferencia aprobada;
+- ajuste.
+
+La observación del conteo conserva su propio flujo.
+
+#### 45. `scanned_qr_token` AS-IS
+
+El AS-IS observado incluye `scanned_qr_token` en líneas de conteo de activos.
+
+La superficie actual de edición de línea observada no demuestra un flujo integral de escáner gobernado por ese campo.
+
+Por tanto:
+
+```text
+FIELD EXISTS
+!=
+SCANNER EXPERIENCE IMPLEMENTED
+```
+
+Se clasifica como evidencia técnica reutilizable sujeta a reconciliación, no como contrato objetivo ya completado.
+
+#### 46. `/scanner` AS-IS
+
+La superficie runtime observada `/scanner` redirige actualmente a `/inventory/locations`.
+
+Por tanto:
+
+```text
+/scanner EXISTS
+!=
+CANONICAL SCANNER FLOW IMPLEMENTED
+```
+
+La superficie se clasifica `REUSE_OR_REFACTOR`.
+
+La UX objetivo no debe depender de un permiso técnico `scanner.view` ni de una entrada global independiente de la tarea humana.
+
+#### 47. Recuperación visual y accesibilidad
+
+La retroalimentación debe distinguir al menos:
+
+- lectura recibida;
+- resolviendo;
+- recurso resuelto;
+- código no reconocido;
+- ambigüedad;
+- recurso resuelto pero operación denegada;
+- representación obsoleta;
+- periférico no disponible;
+- conectividad insuficiente;
+- resultado anterior que requiere conciliación.
+
+Color, sonido o vibración pueden reforzar la respuesta cuando estén disponibles, pero no pueden ser el único canal de significado.
+
+#### 48. Estados de presentación
+
+Los siguientes estados describen UX y no crean enums de dominio:
+
+```text
+READY_TO_SCAN
+CAPTURED
+RESOLVING
+RESOLVED
+AMBIGUOUS
+NOT_FOUND
+STALE_REPRESENTATION
+OPERATION_DENIED
+PERIPHERAL_UNAVAILABLE
+CONNECTIVITY_REQUIRED
+PREVIOUS_RESULT_UNKNOWN
+```
+
+Ninguno autoriza por sí mismo una mutación.
+
+#### 49. Mensajes de error
+
+Los mensajes deben indicar:
+
+- qué ocurrió;
+- si el recurso fue o no resuelto;
+- si el problema es lectura, red, autorización o estado;
+- qué dato fue conservado;
+- qué recuperación es segura.
+
+La UX no debe usar un mensaje genérico de “código inválido” para una denegación ni un “sin resultados” para un fallo técnico.
+
+#### 50. Privacidad del código
+
+El código escaneable no debe requerir exponer secretos, tokens reutilizables ni datos personales innecesarios.
+
+Resolver la referencia exige autorización actual antes de mostrar información sensible.
+
+Una captura de pantalla o fotografía del código no concede autoridad.
+
+#### 51. Dispositivo y resultado
+
+La experiencia conserva:
+
+```text
+COMMAND / INPUT ACCEPTED BY PERIPHERAL
+!=
+BUSINESS RESULT CONFIRMED
+```
+
+La presencia de un periférico funcional no demuestra que la operación propietaria terminó correctamente.
+
+#### 52. AS-IS reconciliation
+
+| Superficie o dato AS-IS | Observación | Decisión 038 |
+| --- | --- | --- |
+| `/scanner` | redirige a `/inventory/locations` | `REUSE_OR_REFACTOR`; no representa flujo objetivo |
+| `scanned_qr_token` en conteo | campo observado en líneas | conservar como dato técnico; no asumir workflow completo |
+| acciones QR de activo | permiten imprimir/descargar QR | consumir solo como representación; no autoridad de scan |
+| `/printing/jobs` | cola cliente y BrowserPrint | 037 gobierna impresión; 038 no la convierte en scanner owner |
+| búsqueda 036 | resuelve LOC/LPN/código/responsable/contenido | usar como recuperación ante etiqueta/periférico fallido |
+| permisos técnicos legacy de scanner | retirados | no reutilizar como autoridad |
+
+#### 53. Matriz de escenarios
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| SCN-01 | scan único válido | recurso resuelto, cero efecto automático |
+| SCN-02 | scan repetido | misma resolución, sin doble efecto |
+| SCN-03 | código ambiguo | desambiguación, cero efecto |
+| SCN-04 | código inexistente | `NOT_FOUND`, sin creación automática |
+| SCN-05 | código obsoleto | recurso actual resuelto con advertencia |
+| SCN-06 | recurso válido sin permiso operativo | `OPERATION_DENIED`, cero efecto |
+| SCN-07 | escáner desconectado | `PERIPHERAL_UNAVAILABLE`, recurso no inferido |
+| SCN-08 | cámara/lector falla | recuperación segura por búsqueda |
+| SCN-09 | scan offline sin contrato offline | captura pendiente, cero efecto |
+| SCN-10 | reconexión | identidad y autorización revalidadas |
+| SCN-11 | resultado previo desconocido | reconciliar antes de repetir |
+| SCN-12 | cambio de actor | contexto previo invalidado |
+| SCN-13 | etiqueta dañada, recurso resoluble | identidad conservada; reprint separado |
+| SCN-14 | etiqueta dañada, recurso no resoluble | investigación, no reprint |
+| SCN-15 | etiqueta ausente | no declarar recurso faltante |
+| SCN-16 | etiqueta duplicada | una identidad, no dos existencias |
+| SCN-17 | dos identidades conflictivas en un objeto | bloquear mutación e investigar |
+| SCN-18 | reprint sin capacidad activa | `DEFAULT_DENY` |
+| SCN-19 | retry de copia no resuelta | misma identidad de copia |
+| SCN-20 | reprint de copia confirmada dañada | nueva copia autorizada, mismo recurso |
+| SCN-21 | LPN genérico escaneado | consulta posible; impresión genérica sigue bloqueada |
+| SCN-22 | scan dentro de conteo | no fija automáticamente resultado del conteo |
+| SCN-23 | scan de LOC | no mueve inventario |
+| SCN-24 | scan de activo | no cambia custodia/condición/disponibilidad |
+| SCN-25 | scan de LPN | no cambia contenido/lifecycle |
+| SCN-26 | scan de documento | no repite hecho empresarial |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 54. Handoff hacia `NEXO-UX-039`
+
+038 entrega:
+
+```text
+RESOLVABLE STABLE IDENTITIES
++
+SCANNER AS CONTEXTUAL INPUT
++
+NO SCAN-IMPLIED MUTATION
++
+SEARCH FALLBACK FOR UNREADABLE REPRESENTATIONS
++
+DAMAGED-LABEL / DAMAGED-RESOURCE SEPARATION
++
+NO NEW IDENTITY ON LABEL REPLACEMENT
++
+REPRINT AUTHORIZATION BOUNDARY
++
+SAFE PERIPHERAL/OFFLINE RECOVERY
+```
+
+`NEXO-UX-039` deberá diseñar el inventario inicial de contenedores y activos utilizando estas reglas de identificación sin convertir un primer escaneo, una etiqueta preexistente o una proximidad física en alta automática, propiedad confirmada, custodia confirmada o existencia duplicada.
+
+#### 55. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige correspondencia de salida impresa, trabajo durable, estabilidad de identidad ante reimpresión, lifecycle de LPN sin doble contabilización, experiencia segura con periféricos, mensajes de recuperación y comportamiento ante red/dispositivo/proveedor no disponible. Esta tarea especializa la experiencia de captura y etiqueta dañada sin introducir una obligación de prueba independiente.
+
+#### 56. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-003`, para correspondencia y legibilidad suficiente de representaciones impresas;
+- `TREQ-NEXO-004`, para preservar el ciclo de LPN sin doble contabilización cuando el escaneo participe en operaciones futuras;
+- `TREQ-NEXO-005`, para conservar trabajo de impresión, error, resultado, retry, dispositivo e identidad sin pérdida ni duplicación;
+- `TREQ-NEXO-013`, para estabilidad de identidad de activos ante reimpresión o sustitución de QR;
+- `TREQ-UX-002`, para errores y recuperación comprensibles sin duplicar efectos;
+- `TREQ-UX-004`, para operación real con escáneres, impresoras y otros periféricos;
+- `TREQ-UX-005`, para fuente de verdad y estado confirmado o pendiente visibles;
+- `TREQ-UX-006`, para contingencia ante pérdida de red, energía, sesión, dispositivo o proveedor.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron comandos contra el checkout local del usuario durante la redacción. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, continuidad, topología, políticas, `NEXO-DOM-018`, `NEXO-AUTH-028`, catálogo de autorización donde `scanner.view` está retirado, requisitos NEXO/UX, reglas de periféricos compartidos y código remoto actual de `/scanner`, conteo con `scanned_qr_token`, acciones QR y superficies de impresión. |
+| OPERATIVA | NOT_EXECUTED | No se escanearon recursos reales, no se modificaron conteos, no se solicitaron reimpresiones y no se alteró ninguna operación NEXO. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-038` es `DEFINE_ONCE`, no genera instancia física propia y no autoriza uso real de escáner, cámara, lector, impresora o etiquetas. |
+
+#### 58. Criterios de aceptación
+
+- [x] el escáner queda definido como modalidad de entrada y no como permiso;
+- [x] `scanner.view` no se reutiliza como autoridad;
+- [x] la operación invocante conserva su permiso exacto;
+- [x] la utilidad de escaneo conserva contexto y retorna a la tarea invocante;
+- [x] el scan no ejecuta efecto empresarial por sí solo;
+- [x] el payload embebido no se trata como estado vigente;
+- [x] código visible e identidad estable permanecen separados;
+- [x] namespaces ambiguos no se resuelven silenciosamente;
+- [x] scan desconocido no crea recursos;
+- [x] etiqueta obsoleta no convierte estado histórico en actual;
+- [x] recurso resuelto y operación denegada quedan diferenciados;
+- [x] fallo de periférico no se presenta como recurso inexistente;
+- [x] búsqueda 036 funciona como recuperación;
+- [x] scans repetidos no implican efectos repetidos;
+- [x] el estado se revalida entre scan y mutación cuando corresponda;
+- [x] cambio de actor invalida contexto sensible previo;
+- [x] offline no crea autoridad nueva;
+- [x] reconexión revalida identidad y permiso;
+- [x] resultado previo desconocido exige conciliación antes de repetir;
+- [x] etiqueta dañada permanece separada de daño del recurso;
+- [x] etiqueta ausente permanece separada de recurso faltante;
+- [x] etiqueta ilegible resoluble conserva la misma identidad;
+- [x] etiqueta ilegible no resoluble no autoriza reprint;
+- [x] representación obsoleta conserva recurso autoritativo;
+- [x] etiquetas duplicadas no crean existencias duplicadas;
+- [x] conflicto de identidades bloquea mutación;
+- [x] etiqueta dañada no autoriza reimpresión automática;
+- [x] retry y reprint permanecen separados;
+- [x] ausencia aparente tras resultado desconocido no crea copia ciega;
+- [x] LPN genérico mantiene fail-closed de impresión;
+- [x] scan de LOC no mueve inventario;
+- [x] scan de activo no cambia estado de dominio;
+- [x] scan de LPN no altera contenido ni lifecycle;
+- [x] scan de documento no repite hecho fuente;
+- [x] scan dentro de conteo no fija automáticamente la observación;
+- [x] `scanned_qr_token` no se presenta como workflow completo;
+- [x] `/scanner` AS-IS se clasifica `REUSE_OR_REFACTOR`;
+- [x] los estados de presentación no crean enums de dominio;
+- [x] mensajes distinguen lectura, autorización, red y estado;
+- [x] privacidad y minimización quedan preservadas;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff exacto a `NEXO-UX-039`.
+
+#### 59. Límites
+
+Esta tarea no:
+
+- implementa hardware de escaneo;
+- instala drivers ni SDK de lectores;
+- activa cámara real;
+- crea una pantalla empresarial nueva de escáner;
+- crea permiso `scanner.view`;
+- crea ni modifica `PermissionKey`;
+- ejecuta recepción, retiro, movimiento, custodia, conteo, mantenimiento, baja o ajuste;
+- crea activos, LPN, LOC, contenedores o documentos;
+- crea identidades por leer códigos;
+- crea aliases por códigos desconocidos;
+- crea jobs reales de impresión;
+- ejecuta BrowserPrint;
+- ejecuta `window.print()`;
+- solicita o aprueba reimpresiones reales;
+- crea una identidad E4 para LPN genérico;
+- redefine `NEXO-UX-036`;
+- redefine `NEXO-UX-037`;
+- redefine `NEXO-AUTH-028`;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas, funciones, RPC o RLS;
+- modifica Supabase;
+- ejecuta migraciones ni backfills;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- autoriza una instancia física;
+- ejecuta certificación física con escáner, cámara, lector, impresora o etiquetas;
+- desarrolla `NEXO-UX-039`.
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-037 — Diseñar impresión de LOC, LPN, activo y documento`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos`
 ### [ ] NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
 ### [ ] NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
 ### [ ] NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
