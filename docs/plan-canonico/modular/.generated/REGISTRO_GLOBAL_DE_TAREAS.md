@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1239** |
+| Aprobadas | **1240** |
 | En propuesta | **0** |
-| No iniciadas | **357** |
+| No iniciadas | **356** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **77.63% (1239/1596)** |
+| Porcentaje de completamiento | **77.69% (1240/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **357** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1140** |
+| ⏸ NO_EVALUADA | **356** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1141** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-027` — Diseñar empaque, desempaque y consulta de contenido | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-028` — Diseñar división, unión, transferencia y reetiquetado | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-029` — Diseñar contenedores anidados y retornables | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-028` — Diseñar división, unión, transferencia y reetiquetado | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-029` — Diseñar contenedores anidados y retornables | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-030` — Diseñar catálogo de activos y reutilizables | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1029,7 +1029,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-025` | Definir métricas de tiempo, error y capacitación para el piloto operativo | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-026` | Diseñar ciclo de vida completo de LPN | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-027` | Diseñar empaque, desempaque y consulta de contenido | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-028` | Diseñar división, unión, transferencia y reetiquetado | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-028` | Diseñar división, unión, transferencia y reetiquetado | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-029` | Diseñar contenedores anidados y retornables | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-030` | Diseñar catálogo de activos y reutilizables | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-031` | Diseñar custodia, préstamo, devolución y transferencia | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
