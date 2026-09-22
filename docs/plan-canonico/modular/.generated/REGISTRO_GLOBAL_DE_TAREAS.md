@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1259** |
+| Aprobadas | **1260** |
 | En propuesta | **0** |
-| No iniciadas | **337** |
+| No iniciadas | **336** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.88% (1259/1596)** |
+| Porcentaje de completamiento | **78.95% (1260/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **337** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1160** |
+| ⏸ NO_EVALUADA | **336** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1161** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-052` — Diseñar página inicial según actor | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-052` — Diseñar página inicial según actor | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-053` — Diseñar navegación según tareas frecuentes | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1049,7 +1049,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-045` | Diseñar limpieza, saneamiento, plagas y evidencia operativa por área | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-046` | Diseñar inspecciones, calibración, servicios, medidores y alertas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-047` | Diseñar llaves, acceso físico, obras, cierres temporales y novedades | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-048` | Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-048` | Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-001` | Inventariar vistas y acciones productivas | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-002` | Definir permisos por área productiva | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-003` | Filtrar cola por sede y área | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |

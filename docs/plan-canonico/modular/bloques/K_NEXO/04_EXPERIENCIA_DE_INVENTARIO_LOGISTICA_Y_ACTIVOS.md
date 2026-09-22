@@ -49029,4 +49029,972 @@ Estas referencias son trazabilidad vigente y no una modificación de 04A.
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede`
-### [ ] NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
+### ✅ NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
+**Tarea siguiente:** AUTH-UI-052 — Diseñar página inicial según actor
+**Tipo de tarea:** Definición documental global (`DEFINE_ONCE / NO_PHYSICAL_INSTANCE`) — validación contractual del prototipo integrado de instalaciones mediante seis lentes operativas y escenarios canónicos, sin presentar revisión documental como prueba con usuarios reales ni autorizar implementación
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0; esta tarea no crea UI runtime, código, datos, Supabase, permisos, instalaciones ni acciones físicas y no ejecuta pruebas con usuarios reales
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Validar documentalmente el prototipo integrado del subdominio de instalaciones definido por `NEXO-UX-043` a `NEXO-UX-047` contra los contratos y escenarios aprobados de Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede, de modo que el cierre del mini-bloque demuestre coherencia funcional antes de trasladar la experiencia a la capa transversal de navegación y pantallas.
+
+La validación debe confirmar que el prototipo:
+
+- representa el mismo sujeto físico a través de todos los flujos;
+- organiza trabajo pendiente y no tablas técnicas aisladas;
+- conserva estados, evidencia, responsables, bloqueos y condiciones de salida;
+- separa reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura;
+- conserva fronteras entre NEXO, ORIGO, NUMERA, VISO/SST, FOGO, continuidad y proveedores externos;
+- no confunde una revisión documental con prueba de usabilidad o validación con usuarios reales.
+
+#### 2. Resultado canónico
+
+La tarea deja como resultado:
+
+```text
+INTEGRATED FACILITY UX PROTOTYPE
++
+SIX OPERATIONAL VALIDATION LENSES
++
+CANONICAL SCENARIO COVERAGE
++
+AUTHORITY / EVIDENCE / STATE BOUNDARIES
++
+DOCUMENTARY FINDINGS AND CARRYOVERS
+=
+DOCUMENTARY VALIDATION CLOSED FOR K_NEXO FACILITY UX
+```
+
+No significa:
+
+```text
+USER TEST PASSED
+OR
+RUNTIME UI IMPLEMENTED
+OR
+PHYSICAL OPERATION CERTIFIED
+OR
+E5 IMPLEMENTATION AUTHORIZED
+```
+
+#### 3. Topología
+
+La tarea conserva:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_identity = NONE
+```
+
+La tarea se desarrolla una sola vez como contrato documental.
+
+No crea instancia física propia.
+
+#### 4. Base canónica consumida
+
+La validación consume y preserva:
+
+- `CAP-SCOPE-013`, para instalaciones, mantenimiento, limpieza, servicios, inspecciones, calibración, acceso, obras y novedades;
+- `NEXO-DOM-029` a `NEXO-DOM-038`, para el dominio completo de instalaciones;
+- `NEXO-AUTH-031`, para la protección del recurso y la autoridad exacta;
+- `NEXO-AUTH-032`, para la segregación entre decisiones del lifecycle;
+- `NEXO-UX-043`, para jerarquía locativa, instalación y condición;
+- `NEXO-UX-044`, para solicitudes, órdenes, mantenimiento y reparaciones;
+- `NEXO-UX-045`, para limpieza, saneamiento, plagas y evidencia por área;
+- `NEXO-UX-046`, para inspecciones, calibración, servicios, medidores y alertas;
+- `NEXO-UX-047`, para llaves, acceso físico, obras, cierres temporales y novedades;
+- `VPROC-0055`, como proceso empresarial de instalaciones;
+- `VSCREEN-0141`, como superficie canónica de instalaciones, servicios y mantenimiento locativo;
+- la gramática E2 `WAREHOUSE_FLOW / SUPERVISION_EXPO + MOBILE` con `CHECKLIST + EVIDENCIA + CAMBIO_DE_ESTADO`;
+- el mapa de actores E2 aplicable a `VPROC-0055`;
+- la cobertura vigente de pruebas del registro modular 04A.
+
+#### 5. Handoff recibido desde `NEXO-UX-047`
+
+047 entrega:
+
+```text
+STABLE LOCATIVE SUBJECT
++
+MAINTENANCE / CLEANING / SERVICES / INSPECTIONS / METROLOGY
++
+PHYSICAL ACCESS
++
+WORKS AND TEMPORARY CLOSURES
++
+FACILITY ISSUES
++
+EVIDENCE / AUTHORIZATION / IDEMPOTENCY
++
+OWNER / BLOCKER / EXIT CONDITION
+```
+
+048 valida ese conjunto sin reescribir sus decisiones.
+
+#### 6. Naturaleza de la validación
+
+La presente validación es contractual y de escenario.
+
+Evalúa si el prototipo documental puede representar correctamente las tareas, decisiones, excepciones y límites de los seis frentes del título.
+
+Se fija:
+
+```text
+DOCUMENTARY VALIDATION
+!=
+REAL USER TEST
+```
+
+La prueba con usuarios reales permanece en la secuencia posterior de experiencia y usabilidad y no puede declararse ejecutada desde esta tarea.
+
+#### 7. Unidad de validación
+
+La unidad validada no es una pantalla aislada.
+
+Es la composición:
+
+```text
+ACTOR
++
+ACTIVE TERRITORY
++
+PHYSICAL SUBJECT
++
+PENDING WORK
++
+CURRENT STATE
++
+NEXT AUTHORIZED ACTION
++
+REQUIRED EVIDENCE
++
+BLOCKER / OWNER / EXIT CONDITION
+```
+
+Una vista visualmente correcta que pierda cualquiera de esas piezas no satisface la validación.
+
+#### 8. Lentes operativas obligatorias
+
+La validación utiliza exactamente los seis frentes nombrados por la tarea:
+
+1. Operaciones;
+2. Producción;
+3. Limpieza;
+4. Mantenimiento;
+5. SST;
+6. responsables de sede.
+
+Estas lentes no crean roles ni permisos nuevos.
+
+Sirven para comprobar que el mismo contrato de experiencia responde a necesidades diferentes sin duplicar procesos ni transferir autoridad.
+
+#### 9. Lente de Operaciones
+
+Operaciones debe poder reconocer, según contexto autorizado:
+
+- qué requiere atención;
+- qué vence pronto;
+- qué bloquea la operación;
+- qué debe ejecutarse hoy;
+- qué espera verificación;
+- qué permanece fuera de servicio;
+- quién es owner del siguiente paso;
+- cuál es la condición de salida del bloqueo.
+
+Operaciones no recibe por ello autoridad automática para ejecutar, verificar, liberar o cerrar.
+
+#### 10. Lente de Producción
+
+Producción debe poder reconocer el impacto de una condición locativa sobre su operación sin asumir propiedad del expediente NEXO.
+
+Debe poder distinguir:
+
+- instalación disponible;
+- instalación restringida;
+- cierre temporal;
+- servicio interrumpido;
+- limpieza o saneamiento pendiente;
+- calibración o inspección pendiente cuando afecte la operación;
+- liberación locativa;
+- liberación de producto o proceso.
+
+Se preserva:
+
+```text
+FACILITY RELEASE
+!=
+PRODUCTION RELEASE
+```
+
+#### 11. Lente de Limpieza
+
+Limpieza debe poder seguir:
+
+```text
+PROGRAMA / OBLIGACION
+→ EJECUCION
+→ EVIDENCIA
+→ DESVIACION SI EXISTE
+→ VERIFICACION
+→ LIBERACION CUANDO APLIQUE
+```
+
+Debe conservar procedimiento vigente, sujeto físico, producto o químico cuando aplique, concentración, lote, evidencia y responsable.
+
+Se preserva:
+
+```text
+CLEANED
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+#### 12. Lente de Mantenimiento
+
+Mantenimiento debe poder distinguir:
+
+- solicitud;
+- triage;
+- trabajo planificado;
+- recursos pendientes;
+- ejecución;
+- prueba o verificación;
+- liberación;
+- cierre;
+- reapertura o corrección.
+
+El prototipo no debe permitir que una fotografía, factura, comentario o cambio visual cierre el trabajo sin precondiciones válidas.
+
+#### 13. Lente de SST
+
+SST debe poder aportar riesgo, restricción, condición de seguridad, bloqueo o evidencia dentro de su responsabilidad sin convertirse en owner del expediente técnico de NEXO.
+
+Se preserva:
+
+```text
+SST DECISION
+MAY BLOCK OR CONDITION FACILITY WORK
+BUT
+SST RECORD
+!=
+FACILITY TECHNICAL RECORD
+```
+
+La interfaz debe hacer visible el condicionamiento sin mezclar los expedientes.
+
+#### 14. Lente de responsables de sede
+
+El responsable de sede debe poder comprender:
+
+- estado de disponibilidad por instalación o espacio;
+- restricciones activas;
+- cierres temporales;
+- rutas o capacidades alternativas;
+- trabajo pendiente crítico;
+- escalamiento;
+- owner de resolución;
+- criterio de liberación;
+- reaperturas y pendientes posteriores al cierre.
+
+La visibilidad global de sede no concede autorización material sobre cada acción.
+
+#### 15. Superficie canónica
+
+La validación mantiene una única superficie canónica de referencia:
+
+```text
+VSCREEN-0141
+Instalaciones, servicios y mantenimiento locativo
+```
+
+ligada a:
+
+```text
+VPROC-0055::STEP-MANAGE_FACILITY_SERVICE
+```
+
+048 no crea otra pantalla paralela para cada subcapacidad.
+
+La especialización por actor, navegación y relevancia se entrega a la secuencia `AUTH-UI-052` en adelante.
+
+#### 16. Proceso canónico
+
+La validación conserva `VPROC-0055`:
+
+```text
+FACILITY_CASE_OPENED
+→ TRIAGED
+→ WORK_PLANNED
+→ RESOURCES_PENDING
+→ IN_EXECUTION
+→ VERIFICATION_PENDING
+→ RELEASE_PENDING
+→ FACILITY_CASE_CLOSED
+```
+
+El prototipo puede especializar el contenido mostrado en cada caso, pero no inventa estados competidores para ocultar estas verdades empresariales.
+
+#### 17. Regla de no forzar todos los estados
+
+No todos los casos deben atravesar todos los estados de forma artificial.
+
+Una rutina, una observación, una inspección, una interrupción, una obra o una novedad pueden tener especializaciones propias.
+
+La experiencia debe preservar la verdad mínima del proceso sin crear pasos falsos solo para completar una secuencia visual.
+
+#### 18. Gramática de interacción validada
+
+La experiencia se valida contra:
+
+```text
+ESTACION:
+WAREHOUSE_FLOW / SUPERVISION_EXPO + MOBILE
+
+INTERACCION:
+CHECKLIST + EVIDENCIA + CAMBIO_DE_ESTADO
+
+PERIFERICOS:
+CAMARA_OPCIONAL
+MEDICION_SEGUN_CASO
+
+CONTINGENCIA:
+CIERRE_TEMPORAL
+OR PROVEEDOR_ALTERNO
++
+FOLIO_DE_TRABAJO
+```
+
+Esta gramática no fija un dispositivo comercial específico.
+
+#### 19. Criterios transversales de escenario
+
+Cada escenario se considera documentalmente coherente únicamente cuando demuestra:
+
+1. sujeto físico inequívoco;
+2. actor o fuente;
+3. territorio;
+4. estado vigente;
+5. siguiente acción;
+6. autoridad requerida;
+7. evidencia requerida;
+8. owner;
+9. bloqueo cuando exista;
+10. condición de salida;
+11. protección contra replay o duplicado cuando aplique;
+12. recuperación o reconciliación ante resultado desconocido.
+
+#### 20. Escenarios canónicos de validación
+
+| ID | Escenario | Lente principal | Resultado documental |
+| --- | --- | --- | --- |
+| `FAC-VAL-001` | localizar instalación, espacio, componente fijo o punto de servicio desde sede y área | Operaciones | `PASS_DOCUMENTAL` |
+| `FAC-VAL-002` | reportar fuga, daño o condición urgente sin convertir el reporte en diagnóstico confirmado | Operaciones | `PASS_DOCUMENTAL` |
+| `FAC-VAL-003` | mantenimiento planificado con recursos, ventana, procedimiento y prueba | Mantenimiento | `PASS_DOCUMENTAL` |
+| `FAC-VAL-004` | reparación correctiva con indisponibilidad temporal y liberación posterior | Mantenimiento | `PASS_DOCUMENTAL` |
+| `FAC-VAL-005` | limpieza programada con producto, concentración, evidencia y verificación | Limpieza | `PASS_DOCUMENTAL` |
+| `FAC-VAL-006` | desviación de limpieza que exige corrección antes de liberar | Limpieza | `PASS_DOCUMENTAL` |
+| `FAC-VAL-007` | hallazgo de plagas con proveedor especializado, acción interna y cierre separado | Limpieza | `PASS_DOCUMENTAL` |
+| `FAC-VAL-008` | interrupción de agua, energía, gas u otro servicio con contingencia operativa | responsables de sede | `PASS_DOCUMENTAL` |
+| `FAC-VAL-009` | lectura anómala de medidor que requiere investigación sin declarar causa por inferencia | Operaciones | `PASS_DOCUMENTAL` |
+| `FAC-VAL-010` | inspección física con hallazgo, contención, acción y verificación | SST | `PASS_DOCUMENTAL` |
+| `FAC-VAL-011` | calibración vencida o resultado fuera de tolerancia con evaluación de impacto | Producción | `PASS_DOCUMENTAL` |
+| `FAC-VAL-012` | entrega y devolución de llave, tarjeta, control o código con custodia trazable | responsables de sede | `PASS_DOCUMENTAL` |
+| `FAC-VAL-013` | pérdida de medio de acceso con suspensión, recuperación o cambio de mecanismo | responsables de sede | `PASS_DOCUMENTAL` |
+| `FAC-VAL-014` | acceso físico excepcional limitado por alcance, vigencia y condición de salida | SST | `PASS_DOCUMENTAL` |
+| `FAC-VAL-015` | obra o adecuación que exige permisos, contratista, afectación, prueba y recepción | Mantenimiento | `PASS_DOCUMENTAL` |
+| `FAC-VAL-016` | cierre temporal con ruta o capacidad alternativa sin cerrar el expediente original | responsables de sede | `PASS_DOCUMENTAL` |
+| `FAC-VAL-017` | novedad locativa con severidad, contención, disponibilidad, resolución, verificación y cierre | Operaciones | `PASS_DOCUMENTAL` |
+| `FAC-VAL-018` | reapertura no destructiva de una novedad cerrada | Operaciones | `PASS_DOCUMENTAL` |
+| `FAC-VAL-019` | captura offline y sincronización posterior sin duplicar evidencia ni transición | Mantenimiento | `PASS_DOCUMENTAL` |
+| `FAC-VAL-020` | timeout o resultado desconocido que obliga a reconciliar antes de repetir | Operaciones | `PASS_DOCUMENTAL` |
+
+`PASS_DOCUMENTAL` significa que el escenario queda representado sin contradicción material en los contratos aprobados. No significa ejecución real ni prueba con usuario.
+
+#### 21. Cobertura por lente
+
+| Lente | Cobertura mínima demostrada | Resultado |
+| --- | --- | --- |
+| Operaciones | bandeja de pendientes, prioridad, condición, bloqueos, escalamiento, novedades y continuidad | `COHERENTE_DOCUMENTALMENTE` |
+| Producción | impacto de condición, servicios, higiene, metrología y liberaciones diferenciadas | `COHERENTE_DOCUMENTALMENTE` |
+| Limpieza | programa, obligación, ejecución, producto, evidencia, desviación, verificación y liberación | `COHERENTE_DOCUMENTALMENTE` |
+| Mantenimiento | solicitud, plan, recursos, ejecución, prueba, reparación, obra, recepción y cierre | `COHERENTE_DOCUMENTALMENTE` |
+| SST | riesgo, restricciones, inspecciones, acceso excepcional y bloqueos sin apropiarse del expediente NEXO | `COHERENTE_DOCUMENTALMENTE` |
+| responsables de sede | disponibilidad, cierres temporales, accesos, contingencias, escalamiento, liberación y reapertura | `COHERENTE_DOCUMENTALMENTE` |
+
+#### 22. Autoridad transversal
+
+La validación confirma que ninguna lente obtiene autoridad por aparecer en la experiencia.
+
+Se preserva:
+
+```text
+VISIBLE
+!=
+AUTHORIZED
+```
+
+Toda mutación futura deberá respetar `NEXO-AUTH-031` y `NEXO-AUTH-032`.
+
+#### 23. Segregación de decisiones
+
+La experiencia conserva:
+
+```text
+REPORT
+!=
+REQUEST
+!=
+APPROVE
+!=
+EXECUTE
+!=
+VERIFY
+!=
+RELEASE
+!=
+CLOSE
+!=
+REOPEN
+```
+
+Una misma persona puede tener más de una capacidad cuando el contrato lo permita, pero la interfaz no puede fusionar las decisiones ni inferir autoridad transitiva.
+
+#### 24. Trabajo pendiente antes que tablas
+
+La validación confirma como patrón principal:
+
+- `Qué requiere atención`;
+- `Qué vence pronto`;
+- `Qué está bloqueando la operación`;
+- `Qué debe ejecutarse hoy`;
+- `Qué espera verificación`;
+- `Qué quedó fuera de servicio`.
+
+Las tablas técnicas permanecen como apoyo, no como modelo mental primario del operador.
+
+#### 25. Sujeto físico y contexto
+
+Todo escenario debe conservar:
+
+```text
+PHYSICAL_FACILITY
+!=
+OPERATIONAL_SITE
+!=
+ORGANIZATIONAL_AREA
+!=
+PHYSICAL_SPACE
+!=
+LOC
+!=
+SERIALIZED_ASSET
+```
+
+La experiencia puede navegar entre relaciones, pero no puede sustituir una identidad por otra.
+
+#### 26. Mantenimiento frente a activos
+
+Se valida que:
+
+```text
+FACILITY MAINTENANCE
+!=
+ASSET MAINTENANCE
+```
+
+El objeto principal determina el expediente propietario.
+
+Una interfaz unificada no autoriza duplicar reparaciones en ambos dominios.
+
+#### 27. Limpieza, saneamiento y plagas
+
+Se valida que:
+
+- la programación no equivale a ejecución;
+- la ejecución no equivale a verificación;
+- la verificación no equivale a liberación;
+- un certificado externo no sustituye el expediente interno;
+- proveedor externo no se convierte en owner empresarial;
+- evidencia fotográfica no sustituye campos obligatorios ni decisiones.
+
+#### 28. Servicios, medidores y alertas
+
+Se valida que:
+
+- contrato de servicio no equivale a autoridad sobre el punto físico;
+- lectura no equivale a consumo facturado;
+- anomalía no equivale a causa;
+- interrupción no equivale a cierre definitivo;
+- alerta no equivale a orden ejecutada;
+- contingencia no oculta el incidente original.
+
+#### 29. Inspección y hallazgos
+
+Se valida:
+
+```text
+FINDING RECORDED
+!=
+CORRECTIVE ACTION APPROVED
+!=
+ACTION EXECUTED
+!=
+FINDING VERIFIED
+!=
+FINDING CLOSED
+```
+
+La inspección física de instalaciones permanece separada de la inspección SST aunque ambas puedan correlacionarse.
+
+#### 30. Metrología
+
+La experiencia debe conservar:
+
+- sujeto calibrable;
+- magnitud;
+- rango;
+- tolerancia;
+- método;
+- patrón o laboratorio cuando aplique;
+- certificado;
+- vigencia;
+- resultado;
+- impacto cuando exista fuera de tolerancia.
+
+Se valida:
+
+```text
+CALIBRATION PERFORMED
+!=
+METROLOGICALLY CONFORMING
+!=
+RESOURCE RELEASED
+```
+
+#### 31. Llaves y acceso físico
+
+Se valida que llave, tarjeta, control, código u otro medio conserve:
+
+- identidad;
+- tipo;
+- alcance físico;
+- custodio;
+- vigencia;
+- entrega;
+- devolución;
+- suspensión;
+- revocación;
+- pérdida;
+- recuperación;
+- incidencia.
+
+El acceso físico permanece separado de la autorización digital.
+
+#### 32. Obras y adecuaciones
+
+La experiencia debe hacer distinguibles:
+
+```text
+TECHNICAL APPROVAL
+!=
+COMMERCIAL APPROVAL
+!=
+FINANCIAL AUTHORIZATION
+!=
+PHYSICAL ACCESS
+!=
+AUTHORIZATION TO START
+!=
+EXECUTION
+!=
+TECHNICAL RECEPTION
+```
+
+Un presupuesto o contrato visible no habilita inicio de obra.
+
+#### 33. Cierres temporales
+
+Un cierre temporal debe mostrar:
+
+- área o recurso afectado;
+- causa;
+- autoridad;
+- inicio;
+- alcance;
+- restricciones;
+- ruta o capacidad alternativa cuando exista;
+- criterio de salida;
+- verificación;
+- liberación.
+
+Se valida:
+
+```text
+TEMPORARY CLOSURE
+!=
+PERMANENT RETIREMENT
+```
+
+#### 34. Novedades locativas
+
+Se conserva:
+
+```text
+FACILITY ISSUE
+!=
+WORK ORDER
+!=
+INSPECTION FINDING
+!=
+ACCESS INCIDENT
+!=
+SERVICE INTERRUPTION
+```
+
+La correlación entre expedientes no permite cerrarlos en cascada por inferencia.
+
+#### 35. Evidencia
+
+La validación exige que fotos, certificados, actas, planos, firmas, informes y lecturas permanezcan correlacionados con el hecho que prueban.
+
+Se preserva:
+
+```text
+EVIDENCE PRESENT
+!=
+ACTION AUTHORIZED
+!=
+STATE TRANSITION CONFIRMED
+```
+
+#### 36. ORIGO
+
+La experiencia puede mostrar contratación, orden o recepción empresarial cuando sea relevante, pero mantiene:
+
+```text
+PROCUREMENT ACCEPTED
+!=
+TECHNICALLY ACCEPTED
+```
+
+NEXO conserva condición, ejecución técnica, verificación y disponibilidad dentro de su responsabilidad.
+
+#### 37. NUMERA
+
+La experiencia puede mostrar presupuesto, compromiso, gasto o costo correlacionado, pero mantiene:
+
+```text
+BUDGET AVAILABLE
+!=
+WORK AUTHORIZED
+```
+
+```text
+COST RECOGNIZED
+!=
+RESOURCE RELEASED
+```
+
+#### 38. VISO y SST
+
+Riesgo, cumplimiento y políticas propietarias pueden bloquear o condicionar acciones de instalaciones.
+
+La experiencia no debe copiar esos expedientes ni convertir una decisión de cumplimiento en cierre técnico de NEXO.
+
+#### 39. FOGO, producción, calidad e inocuidad
+
+Cuando una condición de instalación afecte producción, calidad o inocuidad:
+
+- NEXO conserva el hecho físico y técnico;
+- el dominio competente conserva la decisión de producto o proceso;
+- ninguna liberación sustituye a la otra.
+
+#### 40. Proveedor externo
+
+La validación exige que el proveedor externo aparezca como ejecutor o fuente autorizada dentro de un alcance concreto, no como rol interno amplio.
+
+Debe conservarse, cuando aplique:
+
+- proveedor;
+- orden o contrato correlacionado;
+- alcance;
+- vigencia;
+- acceso concedido;
+- trabajo realizado;
+- evidencia;
+- recepción técnica;
+- pendientes;
+- garantía.
+
+#### 41. Idempotencia
+
+El prototipo debe poder representar una identidad estable de operación para impedir duplicados por replay.
+
+Un reintento no puede crear:
+
+- otra ejecución;
+- otra lectura;
+- otra evidencia;
+- otra entrega de llave;
+- otra orden;
+- otra liberación;
+- otro cierre.
+
+#### 42. Concurrencia
+
+La experiencia debe poder advertir revisión obsoleta o conflicto cuando dos decisiones incompatibles compiten sobre el mismo recurso.
+
+No se admite último-write silencioso como mecanismo de resolución empresarial.
+
+#### 43. Offline
+
+Se valida:
+
+```text
+OFFLINE CAPTURED
+!=
+SERVER AUTHORIZED
+!=
+EXECUTED
+!=
+VERIFIED
+!=
+RELEASED
+```
+
+La sincronización futura deberá revalidar actor, recurso, territorio, estado, revisión, vigencia y conflicto.
+
+#### 44. Resultado desconocido
+
+Ante timeout o pérdida de respuesta:
+
+```text
+REQUEST SENT
+!=
+RESULT KNOWN
+```
+
+La experiencia debe llevar a consultar o reconciliar antes de emitir una segunda operación material.
+
+#### 45. Mensajes y recuperación
+
+Un error debe distinguir al menos:
+
+- acción denegada;
+- conflicto de revisión;
+- falta de recurso;
+- dependencia pendiente;
+- evidencia insuficiente;
+- conectividad;
+- resultado desconocido;
+- bloqueo externo;
+- caso que requiere escalamiento.
+
+Un mensaje genérico no debe inducir al operador a repetir una acción materialmente incierta.
+
+#### 46. Accesibilidad y uso operativo
+
+La validación documental exige que la futura experiencia:
+
+- no dependa solo de color;
+- no dependa solo de audio;
+- mantenga textos críticos legibles;
+- presente objetivos táctiles compatibles con uso operativo;
+- permita cámara o medición solo cuando el escenario lo requiera;
+- conserve la acción principal visible sin ocultar estado, actor o territorio.
+
+La verificación física en dispositivos reales permanece para tareas posteriores de UI/QA y no se declara ejecutada aquí.
+
+#### 47. Hallazgos de la validación documental
+
+No se identifican contradicciones materiales nuevas entre `NEXO-UX-043..047` y los contratos consumidos.
+
+Se conservan como carryovers, no como defectos de 048:
+
+| Carryover | Propietario | Condición de salida |
+| --- | --- | --- |
+| página inicial diferenciada por actor | `AUTH-UI-052` | composición inicial definida contra actor, contexto y trabajo autorizado |
+| navegación por trabajo frecuente | `AUTH-UI-053` | rutas y prioridades de navegación definidas sin depender de módulos técnicos |
+| reducción de opciones irrelevantes | `AUTH-UI-054` | acciones visibles filtradas por contexto sin usarse como barrera de seguridad |
+| prototipo por rol | `AUTH-UI-055` | proyecciones y casos multifunción materializados documentalmente |
+| validación previa a implementación | `AUTH-UI-056` | prototipo contrastado con contratos y escenarios sin fingir prueba de usuarios |
+| criterio de usabilidad y prueba humana | `AUTH-UI-057` y `AUTH-UI-058` | criterios definidos y usuarios reales probados con evidencia |
+| problemas y aprobación de pantalla | `AUTH-UI-059` y `AUTH-UI-060` | hallazgos registrados y pantalla aprobada solo después de evidencia suficiente |
+
+#### 48. Bloqueadores de cierre de 048
+
+Para el cierre documental de 048:
+
+```text
+BLOCKING CONTRADICTIONS FOUND: 0
+NEW TREQ REQUIRED: 0
+04A CHANGE REQUIRED: NO
+PHYSICAL EXECUTION REQUIRED: NO
+REAL USER TEST CLAIMED: NO
+```
+
+Los carryovers de UI no bloquean el cierre de 048 porque poseen propietarios posteriores explícitos.
+
+#### 49. Decisión de validación
+
+El resultado queda:
+
+```text
+NEXO FACILITY UX SUBDOMAIN
+DOCUMENTARY VALIDATION: PASS
+REAL USER VALIDATION: NOT_EXECUTED
+RUNTIME IMPLEMENTATION: NOT_AUTHORIZED
+HANDOFF: AUTH-UI-052
+```
+
+Este `PASS` describe coherencia documental del prototipo integrado, no desempeño operacional real.
+
+#### 50. Handoff hacia `AUTH-UI-052`
+
+048 entrega a `AUTH-UI-052`:
+
+```text
+VSCREEN-0141 AS CANONICAL FACILITY SURFACE
++
+VPROC-0055 PROCESS TRUTH
++
+SIX OPERATIONAL LENSES
++
+PENDING-WORK FIRST EXPERIENCE
++
+ACTOR / TERRITORY / RESOURCE / STATE CONTEXT
++
+AUTHORITY SEGREGATION
++
+EVIDENCE AND RECOVERY RULES
++
+SCENARIO MATRIX FAC-VAL-001..020
++
+ZERO BLOCKING DOCUMENTARY CONTRADICTIONS
+```
+
+`AUTH-UI-052` podrá diseñar la página inicial según actor sin reabrir las decisiones de dominio de 043 a 048.
+
+#### 51. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige identidad y ciclo locativo, limpieza, servicios, inspecciones, metrología, acceso físico, obras, novedades, integración, autorización, evidencia e idempotencia. Esta tarea valida documentalmente el prototipo contra esa cobertura sin introducir una obligación de prueba nueva ni modificar el registro.
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-017`, para identidad estable, jerarquía locativa, condición, disponibilidad, mantenimiento, estados diferenciados, verificación, liberación, cierre y reapertura;
+- `TREQ-NEXO-018`, para limpieza, plagas, servicios, inspecciones, calibración, llaves, acceso físico, obras, novedades, evidencia, contención, disponibilidad e idempotencia offline;
+- `TREQ-INTEGRATION-018`, para coordinación con ORIGO, NUMERA, VISO/SST, FOGO, continuidad y proveedores externos sin equivalencias falsas ni duplicados.
+
+Estas referencias son trazabilidad vigente y no una modificación de 04A.
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó `docs:plan:build` sobre el checkout local del usuario durante la preparación anticipada; la batería de incorporación lo ejecutará antes de `docs:task:finish`. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery check ni lifecycle contra el checkout local del usuario durante la preparación del artefacto. |
+| REMOTA | PASS | Se contrastaron las fuentes vigentes de `vento-shell` para protocolo, contrato de entrega, continuidad, topología, `CAP-SCOPE-013`, `NEXO-DOM-029..038`, `NEXO-AUTH-031/032`, `VPROC-0055`, `VSCREEN-0141`, gramática E2, actores, cobertura 04A y secuencia posterior `AUTH-UI-052..060`; además se consumió el handoff completo aprobado de `NEXO-UX-047`. |
+| OPERATIVA | NOT_EXECUTED | No se realizaron talleres, sesiones observadas ni pruebas con personas reales de Operaciones, Producción, Limpieza, Mantenimiento, SST o responsables de sede; 048 no presenta revisión contractual como evidencia humana. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-048` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea pantalla runtime, instalación, acceso, obra, cierre, dato, configuración ni cambio físico. |
+
+#### 54. Criterios de aceptación
+
+- [x] Se conserva exactamente el título canónico de `NEXO-UX-048`.
+- [x] Se consume el handoff completo de 047.
+- [x] Se valida el conjunto integrado de 043 a 047 sin reescribir sus decisiones.
+- [x] Se mantienen seis lentes explícitas: Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede.
+- [x] La validación documental se separa de la prueba con usuarios reales.
+- [x] Se mantiene `VSCREEN-0141` como superficie canónica.
+- [x] Se mantiene `VPROC-0055` como verdad de proceso.
+- [x] Se preservan sus ocho estados canónicos observados.
+- [x] Se conserva la gramática `WAREHOUSE_FLOW / SUPERVISION_EXPO + MOBILE`.
+- [x] La experiencia prioriza trabajo pendiente sobre tablas técnicas.
+- [x] El sujeto locativo permanece estable.
+- [x] Instalación, sede, área, espacio, LOC y activo no se confunden.
+- [x] Mantenimiento locativo y mantenimiento de activo permanecen separados.
+- [x] Limpieza, verificación y liberación permanecen separados.
+- [x] Proveedor externo no recibe propiedad del expediente.
+- [x] Servicio, lectura, consumo, anomalía e interrupción permanecen diferenciados.
+- [x] Hallazgo, acción, ejecución, verificación y cierre permanecen diferenciados.
+- [x] Calibración realizada, conformidad y liberación permanecen diferenciadas.
+- [x] Acceso físico permanece separado de autorización digital.
+- [x] Aprobación técnica, comercial, financiera, acceso físico e inicio de obra permanecen separados.
+- [x] Cierre temporal no equivale a retiro permanente.
+- [x] Novedad, orden, hallazgo, incidente de acceso e interrupción permanecen separados.
+- [x] `REPORT/REQUEST/APPROVE/EXECUTE/VERIFY/RELEASE/CLOSE/REOPEN` no se fusionan.
+- [x] Se cubren 20 escenarios canónicos `FAC-VAL-001..020`.
+- [x] Cada escenario conserva sujeto, estado, acción, autoridad, evidencia, owner y salida.
+- [x] Se cubren idempotencia, concurrencia, offline y resultado desconocido.
+- [x] Evidencia no se convierte en autorización ni transición por sí sola.
+- [x] ORIGO no concede cierre técnico.
+- [x] NUMERA no concede liberación técnica.
+- [x] VISO/SST puede condicionar sin apropiarse del expediente NEXO.
+- [x] FOGO/Producción conserva su propia liberación de proceso o producto.
+- [x] Se registran carryovers con owner y condición de salida.
+- [x] No se identifican contradicciones documentales bloqueantes nuevas.
+- [x] Se crean 0 requisitos de prueba y se modifican 0.
+- [x] No se modifica 04A.
+- [x] No se autoriza implementación física, código, Supabase, migraciones ni despliegue.
+- [x] Se entrega handoff explícito a `AUTH-UI-052`.
+
+#### 55. Límites
+
+`NEXO-UX-048` no:
+
+- crea ni modifica tablas, vistas, columnas, funciones, RPC, triggers, RLS, Storage o migraciones;
+- modifica Supabase local o remoto;
+- crea componentes, rutas, páginas o acciones runtime;
+- modifica `VSCREEN-0141` físicamente;
+- modifica contratos de proceso generados;
+- crea roles, permisos, grants, aliases o scopes;
+- ejecuta mantenimiento, limpieza, saneamiento, plagas, inspecciones o calibraciones reales;
+- entrega, revoca o recupera medios de acceso reales;
+- inicia ni recibe obras reales;
+- cierra ni libera áreas reales;
+- modifica medidores, servicios o instalaciones;
+- registra costos o compras reales;
+- ejecuta talleres con usuarios;
+- presenta entrevistas o pruebas humanas inexistentes;
+- mide tiempos reales de uso;
+- certifica usabilidad;
+- aprueba pantallas runtime;
+- autoriza package, implementación, piloto o cutover;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `AUTH-UI-052`.
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-052 — Diseñar página inicial según actor`
