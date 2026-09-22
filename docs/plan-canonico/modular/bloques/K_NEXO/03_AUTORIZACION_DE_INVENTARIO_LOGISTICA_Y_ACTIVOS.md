@@ -8227,7 +8227,1124 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy`
-### [ ] NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
+### ✅ NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
+**Tarea siguiente:** NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — retiro gobernado de permisos amplios, aliases, bypasses y fuentes legacy de autorización del subdominio NEXO, conservando scope y recurso, prohibiendo ampliación de privilegios, exigiendo autoridad canónica exacta o `DEFAULT_DENY` y separando la migración del consumidor de la eliminación de compatibilidad
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; cualquier materialización futura ocurre únicamente mediante `NEXO-AUTH-029::<implementation_unit_id>` después de cumplir el gate físico aplicable y contar con autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Eliminar la dependencia funcional de permisos amplios, aliases, bypasses y decisiones legacy que todavía puedan actuar como autoridad final dentro del subdominio de inventario, logística y activos de NEXO.
+
+La tarea no consiste en renombrar cadenas ni en eliminar todo elemento histórico que contenga terminología antigua. La condición de cierre es que una acción protegida ya no pueda quedar autorizada por un mecanismo más amplio, ambiguo o paralelo que el contrato canónico aplicable.
+
+La regla raíz queda:
+
+```text
+ACCION EMPRESARIAL EXACTA
++ ACTOR EFECTIVO
++ CAPACIDAD CANONICA COMPATIBLE
++ SCOPE
++ RECURSO
++ CONTEXTO
++ ESTADO Y REVISION VIGENTES
+= DECISION CANONICA
+```
+
+Nunca:
+
+```text
+PERMISO AMPLIO
+OR ALIAS LEGACY
+OR NOMBRE DE ROL
+OR LISTA HARDCODEADA
+OR AUTH SOLA
+OR BYPASS LOCAL
+OR DECISION PARALELA
+= AUTORIDAD FINAL
+```
+
+Si una acción no dispone todavía de una capacidad exacta activa compatible:
+
+```text
+CAPACIDAD EXACTA AUSENTE
+→ DEFAULT_DENY
+```
+
+#### 2. Naturaleza y topología
+
+El marcador global conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-029::<implementation_unit_id>
+```
+
+La aprobación documental de este marcador no crea, autoriza ni ejecuta una instancia física.
+
+#### 3. Deuda recibida desde `NEXO-AUTH-021`
+
+La auditoría 021 entrega a 029 los hallazgos de autorización legacy que requieren retiro gobernado:
+
+| Hallazgo | Deuda recibida por 029 |
+| --- | --- |
+| `AUTH021-F-001` | impedir que lectura LPN dependa únicamente de autenticación |
+| `AUTH021-F-004` | retirar `inventory.stock` como autoridad final de las superficies de activos observadas |
+| `AUTH021-F-005` | migrar lectura y creación de activos hacia capacidades específicas compatibles |
+| `AUTH021-F-006` | retirar permiso amplio de ubicación, custodia y transferencia |
+| `AUTH021-F-008` | retirar guard amplio del ciclo de conteo y preservar segregación de acciones |
+
+Los hallazgos con otros propietarios conservan su owner original. 029 no absorbe el diseño funcional de 022–028.
+
+#### 4. Handoff acumulado desde `NEXO-AUTH-022` a `NEXO-AUTH-028`
+
+Las tareas precedentes fijaron que:
+
+- lectura LPN usa una capacidad de lectura específica;
+- mutaciones LPN no pueden heredar autoridad desde lectura o stock amplio;
+- contenido LPN exige autoridad propia por acción;
+- consulta y administración de activos no pueden usar `inventory.stock` como oráculo final;
+- custodia, préstamo, devolución y transferencia no pueden usar un permiso broad como autoridad;
+- mantenimiento, daño, pérdida y baja permanecen separados;
+- captura de conteo, cierre, aprobación y resolución permanecen separados;
+- impresión original, retry, conciliación y reimpresión permanecen separados;
+- cuando la capacidad exacta requerida no está activa, la decisión es `DEFAULT_DENY`.
+
+029 materializa el contrato de retiro de las dependencias legacy después de esas definiciones. No redefine sus acciones.
+
+#### 5. Handoff directo desde `NEXO-AUTH-028`
+
+028 entrega expresamente a 029 la eliminación física futura de `inventory.stock` y otros permisos amplios como autoridad final, incluyendo cualquier alias o fallback que intente sustituir una capacidad de impresión exacta.
+
+029 conserva esta regla:
+
+```text
+SEMANTICA EXACTA DEFINIDA
+!=
+DEPENDENCIA LEGACY RETIRADA
+```
+
+Una tarea anterior puede haber prohibido el uso de un guard broad sin haberlo eliminado todavía del consumidor.
+
+#### 6. Definición de dependencia legacy de autorización
+
+Para 029 existe dependencia legacy cuando un consumidor puede obtener una decisión autorizante desde cualquiera de estas clases:
+
+1. permiso empresarial demasiado amplio para la acción;
+2. alias deprecated tratado como capacidad independiente;
+3. autenticación usada como sustituto de autorización;
+4. nombre de rol usado como concesión;
+5. lista hardcodeada usada para ampliar área, sede o capacidad;
+6. fallback que cambia la decisión cuando falla el contrato canónico;
+7. bypass local que devuelve allow sin resolver permiso, scope y recurso;
+8. helper paralelo cuya semántica difiere del resolutor canónico;
+9. condición de UI usada como barrera de seguridad;
+10. decisión que combina autoridad legacy y canónica mediante un OR permisivo.
+
+#### 7. Elementos legacy que no pertenecen automáticamente a 029
+
+No todo fallback histórico es una dependencia de autorización.
+
+Quedan fuera de 029, salvo que se conviertan directamente en un oráculo de autorización:
+
+- productos sin perfil canónico;
+- compatibilidad de SKU;
+- inferencias de clasificación de datos cuya corrección pertenece a tareas de datos;
+- aliases de estados cuyo owner pertenece al contrato de proceso;
+- wrappers o columnas de Supabase con owner de transición propio;
+- extracción de librerías compartidas con owner SHELL;
+- limpieza global de código no vinculada a una decisión de autorización NEXO.
+
+029 no invade esos propietarios.
+
+#### 8. Regla de retiro seguro
+
+Una dependencia legacy solo puede retirarse físicamente cuando la unidad de implementación demuestre:
+
+```text
+CAPACIDAD CANONICA ACTIVA O DEFAULT_DENY APROBADO
++ CONSUMIDOR MIGRADO
++ SCOPE PRESERVADO
++ RECURSO PRESERVADO
++ CASO ALLOW VERIFICADO CUANDO APLIQUE
++ CASO DENY VERIFICADO
++ LLAMADA DIRECTA PROTEGIDA
++ PARIDAD O REDUCCION CONTROLADA DE AUTORIDAD
++ ROLLBACK SEGURO
+→ RETIRO ADMITIDO
+```
+
+La ausencia de sustituto no mantiene vivo un permiso broad como solución temporal.
+
+#### 9. Prohibición de sustitución broad por broad
+
+No se considera cierre válido:
+
+```text
+PERMISO BROAD A
+→
+PERMISO BROAD B
+```
+
+Tampoco:
+
+```text
+PERMISO DE LECTURA
+→
+AUTORIDAD DE MUTACION
+```
+
+La migración debe terminar en la capacidad exacta compatible o en `DEFAULT_DENY`.
+
+#### 10. Semántica de `inventory.stock`
+
+El consumidor NEXO normaliza un código corto usando el `appId`.
+
+Por tanto, bajo `appId = nexo`:
+
+```text
+inventory.stock
+→
+nexo.inventory.stock
+```
+
+El catálogo canónico clasifica `nexo.inventory.stock` como identidad legacy de consulta que converge en:
+
+```text
+nexo.inventory.stock.view
+```
+
+Consecuencia:
+
+```text
+nexo.inventory.stock
+!=
+AUTORIDAD GENERICA DE MUTACION
+```
+
+Y:
+
+```text
+nexo.inventory.stock.view
+!=
+SUSTITUTO DE inventory.stock PARA MUTACIONES
+```
+
+#### 11. Regla contra sustitución mecánica
+
+029 prohíbe sustituir globalmente cada aparición de `inventory.stock` por `inventory.stock.view`.
+
+El uso observado del permiso amplio cubre superficies con responsabilidades distintas. Cada consumidor debe migrarse según la acción real.
+
+Un cambio mecánico podría convertir una lectura canónica en permiso de escritura por implicación o bloquear una operación sin identificar su autoridad correcta.
+
+#### 12. Universo de activos observado
+
+La auditoría heredada identificó ocho superficies funcionales bajo el guard amplio:
+
+| Superficie | Responsabilidad observada |
+| --- | --- |
+| `/inventory/assets` | listar activos y grupos |
+| `/inventory/assets/new` | crear activo o grupo |
+| `/inventory/assets/quick` | creación rápida de grupos |
+| `/inventory/assets/items/[id]` | consultar activo individual |
+| acciones de activo individual | ubicación, edición y mantenimiento |
+| `/inventory/assets/groups/[id]` | consultar y modificar grupo |
+| `/inventory/assets/counts` | consultar y crear sesiones de conteo |
+| `/inventory/assets/counts/[id]` | observar, cerrar o cancelar conteo |
+
+029 exige retirar el broad guard como autoridad final de este universo sin mezclar sus acciones.
+
+#### 13. Lectura de activos individuales
+
+La autoridad objetivo para la consulta ordinaria de activo individual es:
+
+```text
+nexo.assets.items.view
+```
+
+La migración debe conservar:
+
+- actor;
+- scope;
+- territorio;
+- recurso individual;
+- filtrado server-side;
+- denegación directa aunque la URL sea conocida.
+
+`inventory.stock` deja de ser requisito o alternativa autorizante para esta lectura.
+
+#### 14. Creación de activo individual
+
+La creación individual usa la capacidad activa específica:
+
+```text
+nexo.assets.items.create
+```
+
+No autoriza por implicación:
+
+- editar después de crear;
+- cambiar custodio;
+- mover ubicación;
+- registrar mantenimiento;
+- declarar daño o pérdida;
+- imprimir;
+- ejecutar conteo.
+
+#### 15. Lectura de grupos y reutilizables
+
+La consulta compatible de grupo usa:
+
+```text
+nexo.assets.groups.view
+```
+
+Esa capacidad no concede edición del grupo, cambio de cantidad esperada, ubicación, custodio ni movimiento.
+
+#### 16. Mutaciones de grupo sin capacidad exacta
+
+Cuando la operación de grupo no dispone de una capacidad exacta activa aprobada, 029 no crea un alias a partir de `inventory.stock`, `groups.view`, `items.create` ni otra identidad existente.
+
+Resultado:
+
+```text
+CAPACIDAD EXACTA AUSENTE
+→ DEFAULT_DENY
+```
+
+#### 17. Creación rápida o masiva de grupos
+
+La superficie de creación rápida no puede conservar `inventory.stock` como autoridad por conveniencia.
+
+Tampoco puede usar `items.create`, porque una identidad individual y un grupo controlado por cantidad no son el mismo recurso.
+
+Hasta que exista autoridad exacta compatible:
+
+```text
+BULK GROUP CREATE
+→ DEFAULT_DENY
+```
+
+#### 18. Ubicación de activos y grupos
+
+`nexo.inventory.location_assignments.assign` puede autorizar la asignación de ubicación únicamente dentro de su contrato.
+
+No concede por implicación:
+
+- custodia;
+- préstamo;
+- devolución;
+- transferencia de responsabilidad;
+- mantenimiento;
+- baja;
+- edición administrativa general.
+
+El retiro de `inventory.stock` no fusiona esas responsabilidades.
+
+#### 19. Custodia, préstamo, devolución y transferencia
+
+Las acciones protegidas por 025 deben consumir las capacidades exactas que resulten materializadas para ese ciclo.
+
+Mientras no exista una capacidad exacta activa compatible para una transición:
+
+```text
+TRANSICION DE CUSTODIA
+→ DEFAULT_DENY
+```
+
+029 no conserva un fallback a `inventory.stock` ni a `location_assignments.assign`.
+
+#### 20. Mantenimiento, daño, pérdida y baja
+
+Las acciones de 026 no pueden quedar detrás de un único permiso broad después de la migración.
+
+Cada mutación debe conservar la autoridad exacta definida por su owner y las transiciones de estado aplicables.
+
+Si una capacidad todavía no está activa, la acción permanece denegada en lugar de reabrir el guard legacy.
+
+#### 21. Conteos de activos
+
+La lectura de conteos puede consumir:
+
+```text
+nexo.assets.counts.view
+```
+
+Esta capacidad no autoriza:
+
+- crear una sesión;
+- capturar observaciones;
+- cerrar captura;
+- cancelar;
+- aprobar diferencias;
+- resolver diferencias;
+- aplicar una mutación de dominio.
+
+#### 22. Mutaciones de conteo
+
+Las acciones de conteo definidas por 027 deben utilizar autoridades específicas compatibles cuando estén activas.
+
+029 prohíbe conservar:
+
+```text
+inventory.stock
+```
+
+como fallback común de creación, captura, cierre o cancelación.
+
+Una acción sin capacidad exacta activa queda en `DEFAULT_DENY`.
+
+#### 23. Lectura de LPN
+
+El endpoint o consumidor de lectura LPN debe exigir:
+
+```text
+nexo.inventory.lpns.view
+```
+
+además de la autenticación y contexto aplicables.
+
+La sesión autenticada por sí sola no constituye autoridad de lectura.
+
+#### 24. Mutaciones LPN
+
+Crear, actualizar, activar, cerrar, anular, reetiquetar, empacar, desempacar, dividir, unir o transferir contenido no heredan autoridad desde:
+
+- `nexo.inventory.lpns.view`;
+- `nexo.inventory.stock.view`;
+- `nexo.inventory.location_assignments.assign`;
+- `inventory.stock`;
+- autenticación;
+- posesión física;
+- lectura de contenido.
+
+Cada acción usa su contrato exacto o queda en `DEFAULT_DENY`.
+
+#### 25. Impresión y reimpresión
+
+029 recibe de 028 la obligación de no mantener un permiso broad como escape cuando las capacidades exactas de impresión no estén disponibles.
+
+Por tanto:
+
+- consultar un trabajo no imprime;
+- editar plantilla no imprime;
+- poseer QR no imprime;
+- BrowserPrint no autoriza;
+- dispositivo conectado no autoriza;
+- `inventory.stock` no autoriza;
+- capacidad objetivo no materializada no puede simularse con alias.
+
+#### 26. Inventario de aliases de remisiones
+
+El catálogo canónico ya normaliza varias identidades legacy del subdominio de remisiones.
+
+| Identidad legacy | Autoridad canónica o tratamiento |
+| --- | --- |
+| `nexo.inventory.remissions` | `nexo.inventory.remissions.view` con scope preservado |
+| `nexo.inventory.remissions.all_sites` | `nexo.inventory.remissions.view` con alcance explícito; el nombre no concede globalidad |
+| `nexo.inventory.remissions.view_dispatch` | no crea capacidad separada; la superficie consume capacidades funcionales |
+| `nexo.inventory_remissions_id.view` | `nexo.inventory.remissions.view` sobre recurso identificado |
+| `nexo.inventory_remissions.view` | `nexo.inventory.remissions.view` |
+| `nexo.inventory.remissions.edit_own_pending` | `nexo.inventory.remissions.update` con `OWN` y estado pendiente como restricciones de recurso |
+| `nexo.prepare.view` | `nexo.inventory.remissions.prepare` |
+| `nexo.receive.view` | `nexo.inventory.remissions.receive` |
+| `nexo.inventory.remissions.transit` | converge en `nexo.inventory.remissions.dispatch` |
+| `nexo.transit.view` | converge en `nexo.inventory.remissions.dispatch` como acción empresarial |
+
+029 gobierna el retiro de estas dependencias de autorización en consumidores NEXO cuando correspondan al subdominio actual.
+
+#### 27. `all_sites` no es una capacidad empresarial distinta
+
+La identidad legacy:
+
+```text
+nexo.inventory.remissions.all_sites
+```
+
+no debe sobrevivir como bypass global.
+
+La autoridad objetivo se expresa como:
+
+```text
+nexo.inventory.remissions.view
++
+SCOPE EXPLICITO COMPATIBLE
+```
+
+La migración conserva el alcance real de cada concesión y no convierte una asignación local en global.
+
+#### 28. `edit_own_pending` se convierte en recurso y estado
+
+La identidad legacy:
+
+```text
+nexo.inventory.remissions.edit_own_pending
+```
+
+mezcla acción, ownership y estado.
+
+El contrato objetivo separa:
+
+```text
+ACTION = update
+RESOURCE RELATION = OWN
+STATE = pending compatible
+```
+
+No se crea una capacidad nueva por cada combinación de filtro.
+
+#### 29. `transit` se retira como permiso de acción
+
+La autorización empresarial canónica usa:
+
+```text
+nexo.inventory.remissions.dispatch
+```
+
+La palabra `transit` puede permanecer como estado de negocio cuando corresponda, pero no como autoridad paralela para despachar.
+
+El cambio de nombre de permiso no modifica por sí mismo la máquina de estados de la remisión.
+
+#### 30. Solicitud y cancelación se conservan
+
+Las capacidades:
+
+```text
+nexo.inventory.remissions.request
+nexo.inventory.remissions.cancel
+```
+
+se conservan conforme al catálogo canónico.
+
+029 no las retira por ser históricas si continúan representando acciones empresariales distintas.
+
+#### 31. Preparación, despacho y recepción permanecen separadas
+
+La migración no fusiona:
+
+```text
+request
+prepare
+dispatch
+receive
+cancel
+update
+view
+```
+
+Compartir una misma entidad `REMISSION` no convierte estas acciones en una sola autoridad.
+
+#### 32. Fuente legacy basada en nombre de rol
+
+La auditoría E1 identificó reglas que derivan áreas de remisión desde nombres de rol y listas hardcodeadas.
+
+Ejemplos observados incluyen asociaciones históricas entre roles operativos y clases de área.
+
+029 fija:
+
+```text
+NOMBRE DE ROL
+!=
+PERMISO
+```
+
+Y:
+
+```text
+LISTA HARDCODEADA DE AREAS
+!=
+SCOPE AUTORIZANTE
+```
+
+#### 33. Jerarquía canónica para remisiones
+
+Una decisión de remisión debe converger en una sola jerarquía reutilizable que combine, según aplique:
+
+- capacidad explícita;
+- contexto operativo activo;
+- sede;
+- área;
+- scope del permiso;
+- relación del recurso;
+- estado de la remisión;
+- reglas canónicas de sede y área;
+- contexto de dispositivo compartido;
+- restricciones del producto o proceso cuando sean parte del recurso, no de la concesión.
+
+La UI y el servidor deben producir la misma decisión para la misma entrada autorizante.
+
+#### 34. Falla de catálogo no puede ampliar autoridad
+
+Si una fuente canónica de contexto o catálogo no puede resolverse, el sistema no puede sustituirla por una lista broad de roles o áreas para mantener el flujo abierto.
+
+Regla:
+
+```text
+CONTEXTO AUTORIZANTE NO RESUELTO
+→ DENY O ERROR CONTROLADO
+```
+
+Nunca:
+
+```text
+CONTEXTO AUTORIZANTE NO RESUELTO
+→ FALLBACK PERMISIVO
+```
+
+#### 35. Excepción actual de conductor
+
+El consumidor observado contiene una excepción local equivalente a:
+
+```text
+ROL EFECTIVO = conductor
++
+PERMISO = nexo.inventory.remissions.transit
+→ ALLOW
+```
+
+029 clasifica esta rama como bypass legacy de autorización.
+
+El contrato objetivo exige:
+
+```text
+CAPACIDAD CANONICA DE DESPACHO
++ CONTEXTO
++ SCOPE
++ RECURSO
+→ DECISION
+```
+
+El nombre `conductor` no puede devolver allow por sí mismo.
+
+#### 36. Retiro de la excepción de conductor
+
+La excepción local solo puede retirarse físicamente cuando el consumidor de despacho disponga de la capacidad canónica, asignaciones y scope compatibles y existan pruebas allow/deny suficientes.
+
+Si esas condiciones no están disponibles:
+
+```text
+DESPACHO
+→ DEFAULT_DENY
+```
+
+No se conserva el `return true` legacy como sustituto.
+
+#### 37. Role override
+
+La simulación o sustitución temporal de rol debe evaluar el mismo contrato de permiso y scope que el actor simulado.
+
+No puede:
+
+- omitir scope de sede;
+- omitir scope de área;
+- sustituir scope específico por todas las sedes del trabajador;
+- crear excepciones por nombre de rol;
+- mezclar permisos reales del usuario con los del rol simulado;
+- conceder una capacidad inexistente.
+
+#### 38. Frontera con la fundación compartida de autorización
+
+La extracción, unificación o rediseño transversal de helpers compartidos pertenece a los contratos SHELL propietarios.
+
+029 solo exige que el consumidor NEXO deje de depender de semántica legacy o bypass local para las acciones de su subdominio.
+
+No convierte esta tarea en una refactorización multi-repositorio de toda la fundación compartida.
+
+#### 39. Dispositivo compartido
+
+Un dispositivo compartido aporta contexto y restricciones. No se convierte en actor ni en permiso.
+
+La decisión debe conservar:
+
+```text
+ACTOR HUMANO EFECTIVO
++ DISPOSITIVO AUTORIZADO
++ APP PERMITIDA
++ CONTEXTO
++ CAPACIDAD EXACTA
++ SCOPE
++ RECURSO
+```
+
+No se acepta un fallback de rol o de dispositivo para ampliar autoridad.
+
+#### 40. UI y navegación
+
+Una pantalla visible, un enlace, una pestaña, una navegación permitida o una query string no autorizan la acción empresarial.
+
+La eliminación de un alias de navegación no debe confundirse con eliminar la superficie funcional.
+
+La protección final ocurre en servidor o en el punto autoritativo equivalente.
+
+#### 41. Llamadas directas
+
+Cada acción migrada debe continuar denegada cuando se intenta invocar directamente sin la capacidad exacta, aunque el usuario conozca:
+
+- identificador del recurso;
+- endpoint;
+- Server Action;
+- payload;
+- URL interna;
+- código visible.
+
+La ausencia de botón no se cuenta como control suficiente.
+
+#### 42. Migración de concesiones
+
+Antes de retirar una identidad legacy asignable, la unidad física debe inventariar las concesiones efectivas que todavía la consumen.
+
+Cada concesión se clasifica en:
+
+```text
+MIGRATE_EXACT
+MIGRATE_WITH_NARROWER_SCOPE
+NO_EQUIVALENT_DEFAULT_DENY
+REVIEW_REQUIRED_BLOCKING
+```
+
+No existe migración automática cuando el significado legacy mezcla más de una acción.
+
+#### 43. Preservación de scope
+
+Una migración nunca amplía alcance.
+
+Reglas mínimas:
+
+- local no se vuelve global;
+- una sede no se vuelve cualquier sede;
+- un área no se vuelve cualquier área;
+- `OWN` no se vuelve `ANY`;
+- lectura no se vuelve escritura;
+- una relación de origen no se vuelve autoridad sobre destino;
+- un permiso de consulta multisede no habilita mutaciones multisede.
+
+#### 44. Ambigüedad de concesión
+
+Si no puede demostrarse qué capacidad canónica corresponde a una concesión legacy:
+
+```text
+AMBIGUOUS LEGACY GRANT
+→ NO AUTO-MIGRATION
+→ BLOCK OR DEFAULT_DENY
+```
+
+La conveniencia operativa no justifica una ampliación silenciosa.
+
+#### 45. Doble evaluación durante transición
+
+Si una unidad requiere observar temporalmente la decisión legacy y la canónica para demostrar paridad, la decisión legacy no puede dominar.
+
+Patrón permitido:
+
+```text
+CANONICAL = DECISION AUTORITATIVA
+LEGACY = SHADOW OBSERVATION
+MISMATCH = TELEMETRIA / BLOQUEO SEGUN RIESGO
+```
+
+Patrón prohibido:
+
+```text
+CANONICAL_ALLOW OR LEGACY_ALLOW
+→ ALLOW
+```
+
+#### 46. `DEFAULT_DENY` durante transición
+
+Cuando la decisión canónica no pueda resolverse de forma suficiente, la transición no recurre al permiso broad para mantener disponibilidad.
+
+La acción sensible se deniega o falla de forma controlada sin producir el efecto empresarial.
+
+#### 47. Idempotencia de la migración
+
+Aplicar dos veces el proceso de retiro sobre la misma unidad no debe:
+
+- duplicar grants;
+- duplicar aliases;
+- ampliar scope;
+- reactivar claves retiradas;
+- crear estados de autorización divergentes;
+- producir dos efectos empresariales.
+
+#### 48. Concurrencia y cambios de autorización
+
+La autorización relevante se revalida en el punto de efecto.
+
+Una decisión obtenida antes de un cambio de:
+
+- rol;
+- turno;
+- sede;
+- área;
+- scope;
+- estado del recurso;
+- asignación;
+- política;
+
+no puede convertirse en un token indefinido de autoridad.
+
+#### 49. Offline
+
+Un cliente offline puede conservar intención o evidencia local cuando su contrato lo permita, pero no puede usar un permiso legacy cacheado para mutar el estado canónico.
+
+Al reconectar se reevalúa la autoridad vigente antes del efecto.
+
+#### 50. Auditoría mínima del retiro
+
+Cada unidad física debe poder demostrar como mínimo:
+
+- dependencia legacy objetivo;
+- consumidor afectado;
+- capacidad canónica o razón de `DEFAULT_DENY`;
+- scope anterior;
+- scope final;
+- recursos afectados;
+- concesiones migradas o bloqueadas;
+- decisiones allow/deny probadas;
+- mismatches observados durante shadow cuando aplique;
+- fecha y versión de cutover;
+- responsable técnico;
+- rollback permitido.
+
+#### 51. Condición de cierre de `AUTH021-F-001`
+
+`AUTH021-F-001` queda físicamente cerrable solo cuando la lectura LPN exige una capacidad canónica compatible server-side y autenticación sola no produce la respuesta protegida.
+
+El marcador documental 029 define la condición; no afirma que el código ya la cumpla.
+
+#### 52. Condición de cierre de `AUTH021-F-004`
+
+`AUTH021-F-004` queda físicamente cerrable cuando las superficies de activos dejan de usar `inventory.stock` como autoridad final y cada acción consume su capacidad exacta o queda denegada.
+
+No basta con cambiar el nombre de la constante.
+
+#### 53. Condición de cierre de `AUTH021-F-005`
+
+`AUTH021-F-005` queda físicamente cerrable cuando:
+
+- lectura individual consume `nexo.assets.items.view`;
+- creación individual consume `nexo.assets.items.create`;
+- lectura de grupos consume `nexo.assets.groups.view`;
+- las mutaciones sin autoridad exacta no heredan esos permisos de lectura o creación.
+
+#### 54. Condición de cierre de `AUTH021-F-006`
+
+`AUTH021-F-006` queda físicamente cerrable cuando ubicación, custodia y transferencia dejan de compartir un permiso broad y cada mutación revalida sus lados, scope y recurso.
+
+#### 55. Condición de cierre de `AUTH021-F-008`
+
+`AUTH021-F-008` queda físicamente cerrable cuando captura, cierre, cancelación y las decisiones de diferencia dejan de depender del mismo guard broad y la segregación definida por 027 se mantiene en el consumidor.
+
+#### 56. Condición de cierre de `H-CODE-013-006`
+
+La deuda de autorización de `H-CODE-013-006` queda cerrable para 029 cuando nombres de rol y listas hardcodeadas dejan de conceder o ampliar área/capacidad de remisión.
+
+Las responsabilidades de catálogo, proceso y experiencia conservan sus propietarios originales.
+
+#### 57. Frontera con `H-CODE-014-006`
+
+029 solo resuelve la dimensión de autorización de la decisión distribuida de remisiones.
+
+No redefine contratos de datos o configuración pertenecientes a otros owners.
+
+Su condición es que múltiples fuentes legítimas se integren bajo una precedencia canónica y no se transformen en bypasses independientes.
+
+#### 58. Estado AS-IS remoto consolidado
+
+La evidencia remota observada conserva dependencias legacy activas, entre ellas:
+
+- varias superficies de activos con `permissionCode = inventory.stock`;
+- normalización del código corto a `nexo.inventory.stock`;
+- lectura LPN históricamente identificada con brecha de autorización específica;
+- aliases de remisiones todavía consumidos por superficies NEXO;
+- `nexo.inventory.remissions.all_sites` todavía presente como identidad legacy consumida;
+- `nexo.inventory.remissions.edit_own_pending` todavía presente en consumidor;
+- `nexo.inventory.remissions.transit` todavía presente en consumidor;
+- una excepción de role override para `conductor` + `nexo.inventory.remissions.transit` que retorna allow.
+
+Por tanto, 029 permanece:
+
+```text
+ESPECIFICADO_NO_MATERIALIZADO
+```
+
+#### 59. Matriz de destino consolidada
+
+| Familia | Legacy observado | Destino contractual | Si el destino no está activo |
+| --- | --- | --- | --- |
+| stock read | `nexo.inventory.stock` | `nexo.inventory.stock.view` | deny para lectura no cubierta |
+| asset item read | `inventory.stock` | `nexo.assets.items.view` | deny |
+| asset item create | `inventory.stock` | `nexo.assets.items.create` | deny |
+| asset group read | `inventory.stock` | `nexo.assets.groups.view` | deny |
+| asset group mutation | `inventory.stock` | capacidad exacta del owner | `DEFAULT_DENY` |
+| custody mutation | `inventory.stock` | capacidad exacta de 025 | `DEFAULT_DENY` |
+| maintenance/loss mutation | `inventory.stock` | capacidad exacta de 026 | `DEFAULT_DENY` |
+| asset count read | `inventory.stock` | `nexo.assets.counts.view` | deny |
+| asset count mutation | `inventory.stock` | capacidad exacta de 027 | `DEFAULT_DENY` |
+| print/reprint | permiso broad o capacidad de lectura | capacidades exactas de 028 | `DEFAULT_DENY` |
+| LPN read | auth sola / permiso broad | `nexo.inventory.lpns.view` | deny |
+| LPN mutation/content | permiso broad o de lectura | capacidades exactas de 022/023 | `DEFAULT_DENY` |
+| remission read aliases | aliases históricos | `nexo.inventory.remissions.view` + scope | deny |
+| remission `all_sites` | permiso con globalidad embebida | `remissions.view` + scope explícito | deny |
+| remission edit own pending | acción + relación + estado embebidos | `remissions.update` + resource predicates | deny |
+| remission transit | alias de acción/estado | `nexo.inventory.remissions.dispatch` | deny |
+| role-name area fallback | nombre de rol / lista hardcodeada | capacidad + contexto + scope canónicos | deny/error controlado |
+| conductor bypass | rol literal + transit | dispatch + contexto + scope + recurso | deny |
+
+#### 60. Condición de materialización por unidad
+
+Una futura `NEXO-AUTH-029::<implementation_unit_id>` solo puede ejecutar cambios físicos cuando exista:
+
+1. `implementation_unit_id` válido;
+2. package propietario aplicable;
+3. gate E5 del package en PASS cuando corresponda;
+4. autorización física explícita;
+5. inventario exacto de consumidores de la unidad;
+6. capacidad canónica activa o decisión `DEFAULT_DENY` aprobada;
+7. scope y recurso reconciliados;
+8. grants afectados inventariados;
+9. estrategia de transición;
+10. pruebas allow/deny y acceso directo;
+11. evidencia de no ampliación;
+12. rollback seguro.
+
+#### 61. Rollback de materialización
+
+Un rollback solo puede volver a una combinación previamente certificada que conserve el modelo canónico de autorización.
+
+Está prohibido usar el rollback para reactivar:
+
+- `inventory.stock` como autoridad broad;
+- aliases legacy como capacidades independientes;
+- `all_sites` como bypass global;
+- `edit_own_pending` como permiso compuesto;
+- `transit` como autoridad paralela de despacho;
+- una excepción por nombre de rol;
+- un OR permisivo entre decisión legacy y canónica.
+
+Si no existe una combinación segura, la acción se bloquea y se corrige hacia adelante.
+
+#### 62. Frontera con Supabase
+
+Este marcador documental no modifica Supabase.
+
+Si una unidad futura requiere cambios de:
+
+- grants;
+- catálogo de permisos;
+- scope persistido;
+- funciones de autorización;
+- RLS;
+- migraciones;
+- aliases persistidos;
+- datos de asignación;
+
+la modificación pertenece a `vento-group-sas/vento-shell` y debe seguir el lifecycle físico gobernado de la unidad correspondiente.
+
+#### 63. Frontera con catálogo canónico
+
+029 consume decisiones de normalización ya aprobadas. No reabre la taxonomía global de permisos ni inventa nuevas claves para cerrar huecos.
+
+Cuando el catálogo declara una clave canónica activa, se usa esa identidad.
+
+Cuando una capacidad exacta todavía no existe, se conserva `DEFAULT_DENY` hasta su materialización por el owner competente.
+
+#### 64. Frontera con limpieza global de código
+
+029 no exige que desaparezca toda cadena legacy de todo `vento-nexo`.
+
+La condición es más estricta y más acotada:
+
+```text
+NINGUNA DEPENDENCIA LEGACY DEL ALCANCE 029
+PUEDE PRODUCIR AUTORIDAD FINAL
+```
+
+Un texto histórico, fixture, prueba de migración o compatibilidad no autorizante no se elimina por inferencia.
+
+#### 65. Handoff a `NEXO-AUTH-030`
+
+030 recibe un subdominio cuyo contrato exige demostrar integralmente, después de materialización:
+
+- allow únicamente por capacidad exacta compatible;
+- deny por ausencia de capacidad;
+- deny por scope incompatible;
+- deny por recurso incompatible;
+- acceso directo protegido;
+- ausencia de `inventory.stock` como oracle broad en las superficies objetivo;
+- lectura LPN sin auth-only;
+- conteo segregado;
+- custodia segregada;
+- mantenimiento segregado;
+- impresión/reimpresión segregadas;
+- aliases de remisión sin autoridad independiente;
+- `all_sites` expresado como scope;
+- `edit_own_pending` expresado como update + relación + estado;
+- `transit` retirado como permiso paralelo a dispatch;
+- ausencia de allow por nombre de rol;
+- dispositivo compartido sin autoridad propia;
+- simulación de rol con el mismo contrato;
+- rollback sin reactivar broad legacy.
+
+029 define los oracles; 030 ejecuta la certificación integral.
+
+#### 66. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación:
+
+- el retiro de aliases y fallbacks ya está cubierto por obligaciones vigentes de autorización, remisiones, activos y transición legacy;
+- la jerarquía única de remisiones ya tiene requisito vigente;
+- la prohibición de ampliar scope ya forma parte del modelo de autorización;
+- esta tarea especializa el cierre documental de dependencias existentes sin crear una nueva obligación empresarial.
+
+#### 67. Cobertura de prueba vigente reutilizada
+
+Se reutiliza, sin modificar el registro:
+
+- `TREQ-AUTH-001` para decisión explícita de autorización y denegación segura;
+- `TREQ-AUTH-004` para coherencia de scopes y role override entre consumidores;
+- `TREQ-NEXO-006` para autorización y efectos exactamente-una-vez del ciclo de remisiones;
+- `TREQ-NEXO-007` para control y retiro de fallbacks legacy de remisiones;
+- `TREQ-NEXO-009` para una jerarquía canónica única de capacidades, contexto, reglas, overrides y fallbacks de remisiones;
+- `TREQ-NEXO-011` para integridad y autorización del ciclo de inventario y conteos;
+- `TREQ-NEXO-013` para identidad y trazabilidad del ciclo de activos;
+- `TREQ-SUPABASE-001` para retiro gobernado de wrappers, aliases y fallbacks legacy cuando exista persistencia o infraestructura involucrada.
+
+Esta trazabilidad no representa una actualización del registro de requisitos.
+
+#### 68. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | tarea documental de contrato; no modifica producto ni genera build físico |
+| LOCAL | NOT_EXECUTED | incorporación, formateo, quality, delivery, topología, plan y TREQ corresponden al checkout local al incorporar la tarea |
+| REMOTA | PASS | se verificaron `vento-shell` main con 027 incorporada, `vento-nexo` main vigente, owner del minibloque, topología, catálogo de normalización, registro NEXO, ocho superficies de activos con guard broad y helpers actuales de autorización/remisiones |
+| OPERATIVA | NOT_EXECUTED | no se retiraron aliases reales, no se migraron grants y no se ejecutaron remisiones, conteos, custodia, mantenimiento o impresión reales |
+| FÍSICA | NOT_EXECUTED | no se materializó ninguna instancia `NEXO-AUTH-029::<implementation_unit_id>` ni se modificaron consumidores, Supabase o despliegues |
+
+#### 69. Criterios de aceptación
+
+- [x] se define con precisión qué constituye dependencia legacy de autorización;
+- [x] se evita confundir limpieza global con retiro de autoridad legacy;
+- [x] se reciben explícitamente los hallazgos `AUTH021-F-001`, `004`, `005`, `006` y `008`;
+- [x] se consumen los handoffs de 022–028 sin redefinir sus acciones;
+- [x] `inventory.stock` queda rechazado como autoridad final;
+- [x] `nexo.inventory.stock` queda reconocido como alias legacy de lectura, no permiso genérico de mutación;
+- [x] se prohíbe sustituir mecánicamente `inventory.stock` por `inventory.stock.view`;
+- [x] se define destino por cada una de las ocho superficies de activos auditadas;
+- [x] `items.view` solo autoriza lectura compatible;
+- [x] `items.create` solo autoriza creación individual compatible;
+- [x] `groups.view` solo autoriza lectura compatible;
+- [x] mutaciones de grupo sin capacidad exacta quedan `DEFAULT_DENY`;
+- [x] creación rápida de grupos no hereda `items.create`;
+- [x] ubicación y custodia permanecen separadas;
+- [x] mantenimiento, daño, pérdida y baja permanecen separados;
+- [x] lectura y mutación de conteo permanecen separadas;
+- [x] lectura LPN exige permiso específico y no auth sola;
+- [x] mutaciones LPN no heredan autoridad de lectura;
+- [x] impresión/reimpresión no reciben fallback broad;
+- [x] se documentan aliases de remisiones y su destino canónico;
+- [x] `all_sites` se convierte en scope, no en bypass;
+- [x] `edit_own_pending` se separa en acción, relación y estado;
+- [x] `transit` converge en `dispatch` como autoridad de acción;
+- [x] request y cancel se conservan como acciones distintas;
+- [x] se prohíbe autorización derivada únicamente del nombre de rol;
+- [x] listas hardcodeadas no pueden ampliar scope;
+- [x] falla de catálogo no abre un fallback permisivo;
+- [x] la excepción literal de conductor queda clasificada como bypass legacy a retirar;
+- [x] role override debe respetar el mismo contrato de scope;
+- [x] dispositivo compartido no se convierte en permiso;
+- [x] UI o navegación no se usan como control final;
+- [x] acceso directo debe permanecer protegido;
+- [x] grants legacy ambiguos no se migran automáticamente;
+- [x] ninguna migración amplía scope;
+- [x] shadow legacy no puede dominar la decisión canónica;
+- [x] ausencia de decisión canónica produce deny o error controlado;
+- [x] idempotencia y concurrencia del retiro quedan definidas;
+- [x] offline exige revalidación al reconectar;
+- [x] auditoría mínima del retiro queda definida;
+- [x] rollback no reactiva broad legacy;
+- [x] la frontera con Supabase conserva `vento-shell` como propietario;
+- [x] no se reabre el catálogo global;
+- [x] no se inventan nuevas `PermissionKey`;
+- [x] se entrega a 030 una batería integral de oracles de certificación;
+- [x] no se modifica Supabase durante este marcador;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la materialización futura conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+
+#### 70. Límites
+
+Esta tarea no:
+
+- modifica código de producto;
+- elimina físicamente `inventory.stock`;
+- elimina físicamente aliases de remisiones;
+- cambia helpers de autorización;
+- modifica role override;
+- modifica grants;
+- crea permisos;
+- modifica el catálogo de permisos;
+- crea roles;
+- modifica scope persistido;
+- modifica RLS;
+- crea RPC;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- ejecuta backfills;
+- cambia estados de remisión;
+- cambia el proceso de remisiones;
+- cambia el modelo de activos;
+- cambia la máquina de estados de LPN;
+- ejecuta conteos;
+- ejecuta custodia o transferencias;
+- registra mantenimiento, daño, pérdida o baja;
+- imprime ni reimprime;
+- ejecuta cambios en dispositivos compartidos;
+- unifica físicamente helpers entre repositorios;
+- elimina fallbacks de datos con otros propietarios;
+- limpia código global no autorizante;
+- autoriza una instancia física;
+- ejecuta certificación integral;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-030`.
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio`
 ### [ ] NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio
 ### [ ] NEXO-AUTH-031 — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras
 ### [ ] NEXO-AUTH-032 — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura
