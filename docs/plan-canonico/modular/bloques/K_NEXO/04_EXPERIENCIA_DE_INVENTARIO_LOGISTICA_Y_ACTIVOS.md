@@ -22193,7 +22193,1169 @@ El carril `NEXO_FUNCTIONAL_UX` queda cerrado únicamente como definición docume
 **SIGUIENTE TAREA RESERVADA:** `AUTH-UI-052 — Diseñar página inicial según actor`
 
 
-### [ ] NEXO-UX-026 — Diseñar ciclo de vida completo de LPN
+### ✅ NEXO-UX-026 — Diseñar ciclo de vida completo de LPN
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-025 — Definir métricas de tiempo, error y capacitación para el piloto operativo
+**Tarea siguiente:** NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido
+**Tipo de tarea:** documental; diseño canónico de experiencia del ciclo de vida completo de LPN, sus superficies, estados, acciones, revisión previa, confirmaciones, conflictos, recuperación y handoffs, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede comprender, crear, revisar, activar, consultar, cerrar, cancelar y anular una identidad LPN sin confundir lifecycle, propósito logístico, contenido, ubicación, custodia, contenedor físico, impresión, remisión o movimiento de inventario.
+
+La regla raíz de experiencia queda:
+
+```text
+IDENTIDAD LPN ESTABLE
++
+ESTADO CANÓNICO VISIBLE
++
+PROPÓSITO VISIBLE COMO DIMENSIÓN SEPARADA
++
+ACCIÓN CONTEXTUALMENTE ELEGIBLE
++
+REVISIÓN PREVIA DEL EFECTO
++
+DECISIÓN SERVER-SIDE
++
+RECIBO DEL RESULTADO CONFIRMADO
++
+HISTORIA Y RECUPERACIÓN
+→
+CICLO LPN COMPRENSIBLE, SEGURO Y AUDITABLE
+```
+
+La interfaz nunca convierte una acción visible en autoridad ni un estado local en verdad canónica.
+
+#### 2. Resultado canónico
+
+`NEXO-UX-026` deja definido un único contrato de experiencia con los siguientes resultados:
+
+1. conserva los cinco estados canónicos `DRAFT`, `ACTIVE`, `CLOSED`, `CANCELLED` y `VOID` sin crear estados de dominio adicionales;
+2. conserva los seis tipos de propósito LPN como una dimensión separada del lifecycle;
+3. define una superficie de listado y acceso al detalle sin fijar una ruta técnica obligatoria;
+4. define una superficie de detalle que presenta identidad, estado, revisión, propósito, ubicación, relaciones y última decisión confirmada;
+5. define el flujo de creación de una intención LPN hasta obtener un `DRAFT` confirmado por servidor;
+6. define edición de metadatos permitidos en `DRAFT` sin convertirla en escritura genérica de lifecycle;
+7. define una revisión explícita antes de activar;
+8. define activación `DRAFT → ACTIVE` como decisión separada;
+9. define cierre `ACTIVE → CLOSED` con chequeo de bloqueos y efecto no destructivo;
+10. define cancelación `DRAFT → CANCELLED` únicamente antes de primera activación;
+11. define anulación excepcional `ACTIVE/CLOSED → VOID` con advertencia, motivo y reconciliación;
+12. conserva reetiquetado como evento separado y entrega su diseño detallado a `NEXO-UX-028`;
+13. separa acciones de lifecycle de contenido, ubicación, movimiento, custodia, contenedor físico e impresión;
+14. define estados de interacción local como pendiente, resultado desconocido, conflicto y error sin promoverlos a estados LPN;
+15. define recuperación ante timeout, red, sesión, dispositivo y revisión stale;
+16. define entrada por escaneo como localización o propuesta de intención, nunca como mutación automática;
+17. define comportamiento para dispositivo compartido y actor efectivo;
+18. define criterios de accesibilidad, touch, foco, lectura y feedback;
+19. define trazabilidad visible de actor, momento, estado anterior, estado nuevo, revisión y correlación;
+20. define el handoff exacto hacia `NEXO-UX-027` sin absorber empaque, desempaque ni consulta detallada de contenido;
+21. no crea requisitos de prueba porque la cobertura vigente ya protege lifecycle LPN, fuente de verdad, dispositivos y recuperación;
+22. no autoriza código, rutas, componentes, Supabase, migraciones, datos, permisos, hardware ni despliegues.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es un contrato documental reutilizable.
+
+No existe una instancia física:
+
+```text
+NEXO-UX-026::<package_id>
+NEXO-UX-026::<implementation_unit_id>
+NEXO-UX-026::GLOBAL
+```
+
+La materialización posterior pertenece a los paquetes y tareas físicas que consuman este contrato.
+
+#### 4. Continuidad de ruta y frontera con `NEXO-AUTH-032`
+
+La continuidad interna del mini-bloque UX conserva:
+
+```text
+NEXO-UX-025
+→
+NEXO-UX-026
+→
+NEXO-UX-027
+```
+
+`NEXO-AUTH-032` cierra el mini-bloque documental de autorización inmediatamente anterior en la ruta pendiente y habilita el avance global hacia UX cuando su lifecycle documental finaliza.
+
+Ese gate global no cambia la dependencia estructural de `NEXO-UX-026` respecto de `NEXO-UX-025` ni reescribe la continuidad histórica del archivo propietario UX.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume sin reabrir:
+
+- `NEXO-DOM-002`, para identidad LPN y tipos de propósito;
+- `NEXO-DOM-003`, para estados y máquina de lifecycle;
+- `NEXO-DOM-004`, para contenido y membresía;
+- `NEXO-DOM-005`, para división, unión y transferencia de contenido;
+- `NEXO-DOM-006`, para anidamiento;
+- `NEXO-DOM-007`, para relación sede, LOC, LPN y contenido;
+- `NEXO-DOM-008`, para custodia;
+- `NEXO-DOM-019` y `NEXO-DOM-020`, para separación entre LPN y contenedor físico;
+- `NEXO-DOM-021`, para no doble contabilización;
+- `NEXO-DOM-022`, para movimiento atómico de un LPN raíz y su cierre estructural;
+- `NEXO-DOM-023`, para lote, serial, vencimiento y condición;
+- `NEXO-DOM-024`, para capacidad y compatibilidad.
+
+La experiencia no sustituye ninguno de esos contratos.
+
+#### 6. Contratos de autorización consumidos
+
+El diseño consume sin redefinir:
+
+- `NEXO-AUTH-022`, para lectura y mutaciones de lifecycle;
+- `NEXO-AUTH-023`, para mutaciones de contenido;
+- `NEXO-AUTH-029`, para retiro de autoridad legacy;
+- `NEXO-AUTH-030`, para certificación integral del subdominio.
+
+La experiencia asume siempre:
+
+```text
+VISIBLE ACTION
+!=
+AUTHORIZED ACTION
+```
+
+Toda mutación se decide nuevamente en servidor.
+
+#### 7. Catálogo visible de estados
+
+La experiencia representa exactamente estos cinco estados canónicos:
+
+| Estado | Etiqueta conceptual para UX | Significado operativo resumido | Acción ordinaria posterior |
+| --- | --- | --- | --- |
+| `DRAFT` | Borrador | identidad creada, todavía no habilitada para uso operativo | completar y revisar para activar o cancelar |
+| `ACTIVE` | Activo | lifecycle habilita operaciones que además superen sus propios contratos | operar, revisar, cerrar o anular según autoridad |
+| `CLOSED` | Cerrado | fin normal de uso operativo | consulta histórica; anulación excepcional si procede |
+| `CANCELLED` | Cancelado | borrador abandonado antes de primera activación | solo consulta histórica |
+| `VOID` | Anulado | identidad previamente activa o cierre invalidado de forma excepcional | solo consulta y reconciliación histórica |
+
+La traducción visible puede adaptarse lingüísticamente sin cambiar el valor canónico ni su significado.
+
+#### 8. Valores que la UI no presenta como estado LPN
+
+No se presentan como lifecycle:
+
+```text
+CREATED
+RELABELED
+TEMPORARY
+PERSISTENT
+IN_TRANSIT
+RECEIVED
+DELIVERED
+EMPTY
+FULL
+DAMAGED
+QUARANTINED
+PENDING_SYNC
+RESULT_UNKNOWN
+CONFLICT
+```
+
+Los primeros pertenecen a eventos, temporalidad, otros objetos, condición o propiedades derivadas.
+
+Los últimos tres pueden describir estado de una interacción o intención local, nunca el estado canónico del LPN.
+
+#### 9. Propósito logístico visible y separado
+
+La experiencia puede mostrar el purpose type vigente entre:
+
+```text
+STORAGE
+RECEIVING
+TRANSFER
+FULFILLMENT
+PRODUCTION_STAGING
+RETURN
+```
+
+pero debe presentarlo en un campo o agrupación visual distinta del estado.
+
+Se prohíbe una etiqueta combinada que sugiera equivalencias como:
+
+```text
+TRANSFER = ACTIVE
+RETURN = VOID
+FULFILLMENT = CLOSED
+```
+
+#### 10. Identidad frente a código visible
+
+La UI conserva conceptualmente:
+
+```text
+LPN_ID
+!=
+DISPLAYED LPN CODE
+```
+
+El código visible sirve para reconocimiento operativo y escaneo.
+
+La identidad estable no cambia por:
+
+- reimpresión;
+- reetiquetado;
+- cierre;
+- cancelación;
+- anulación;
+- cambio permitido de propósito;
+- cambio de ubicación;
+- cambio de custodio;
+- vínculo o desvínculo con un contenedor físico.
+
+#### 11. Arquitectura de información del ciclo LPN
+
+La experiencia se organiza conceptualmente en cuatro niveles:
+
+```text
+REGISTRO / LISTADO
+→
+DETALLE LPN
+→
+ACCIÓN CONTEXTUAL
+→
+RECIBO / HISTORIA
+```
+
+La tarea no fija una URL, layout técnico, framework ni componente físico.
+
+Sí fija qué información debe ser distinguible y qué decisiones no pueden quedar mezcladas.
+
+#### 12. Registro o listado de LPN
+
+El registro de LPN deberá poder mostrar, como mínimo cuando el actor esté autorizado:
+
+- código LPN;
+- estado vigente;
+- propósito vigente;
+- sede o contexto territorial suficiente;
+- LOC efectivo cuando exista y pueda mostrarse;
+- indicador de contenido sin convertirlo en saldo competidor;
+- indicador de relación con contenedor físico cuando exista;
+- último cambio confirmado;
+- presencia de bloqueo, conflicto o reconciliación pendiente cuando sea material;
+- acceso al detalle.
+
+No se exige que todas las columnas permanezcan visibles simultáneamente en todos los dispositivos.
+
+#### 13. Filtros del registro
+
+Los filtros conceptuales pueden incluir:
+
+- estado;
+- purpose type;
+- sede dentro del scope real;
+- LOC compatible;
+- código exacto o búsqueda;
+- presencia de bloqueo o reconciliación;
+- vigencia temporal cuando se consulte historia.
+
+Un filtro no amplía el universo autorizado.
+
+La UI no debe cargar un universo amplio y ocultar filas localmente como sustituto de autorización.
+
+#### 14. Estado vacío y ausencia de acceso
+
+La experiencia distingue al menos:
+
+```text
+NO RESULTS IN AUTHORIZED UNIVERSE
+!=
+NO PERMISSION
+!=
+TECHNICAL FAILURE
+```
+
+Un resultado vacío no se presenta como evidencia de que no existen LPN fuera del alcance del actor.
+
+Una denegación no revela conteos, códigos, sedes o contenido fuera del scope permitido.
+
+#### 15. Superficie de detalle LPN
+
+El detalle presenta por grupos conceptualmente separados:
+
+**Identidad**
+- código visible;
+- identificador estable cuando sea apropiado para soporte/auditoría;
+- fecha o momento de creación cuando esté autorizado.
+
+**Lifecycle**
+- estado canónico;
+- revisión vigente;
+- última transición confirmada.
+
+**Propósito**
+- purpose type vigente;
+- historia de propósito cuando sea relevante y autorizada.
+
+**Contexto físico**
+- sede;
+- LOC/posición cuando corresponda;
+- relación con contenedor físico separada.
+
+**Relaciones operativas**
+- contenido como resumen o handoff;
+- custodia como dimensión separada;
+- referencias a movimientos o casos relacionados cuando corresponda.
+
+**Historia**
+- actor;
+- evento;
+- estado anterior;
+- estado resultante;
+- momento;
+- correlación y evidencia disponible.
+
+#### 16. Fuente de verdad visible
+
+El detalle debe distinguir la información confirmada por servidor de una intención todavía local.
+
+Regla:
+
+```text
+CANONICAL CONFIRMED STATE
+!=
+LOCAL PROPOSED STATE
+```
+
+Mientras una mutación no tenga recibo autoritativo, la UI conserva el último estado confirmado y muestra la intención como pendiente o en reconciliación.
+
+Nunca sustituye el estado visible confirmado por una animación optimista irreversible.
+
+#### 17. Actor efectivo visible en estaciones compartidas
+
+Cuando el dispositivo sea compartido y la política lo requiera, la experiencia muestra de forma inequívoca quién es el actor humano efectivo antes de ofrecer una mutación sensible.
+
+No se admite:
+
+```text
+ACTOR ANTERIOR RESIDUAL
+→
+AUTORIDAD DEL ACTOR ACTUAL
+```
+
+Un cambio de actor, sesión o reautenticación invalida cualquier confirmación no enviada que dependa de autoridad anterior.
+
+#### 18. Acción primaria por estado
+
+La UI calcula disponibilidad funcional desde estado y contexto, sin convertirla en autorización final.
+
+| Estado | Acciones de lifecycle que puede presentar conceptualmente |
+| --- | --- |
+| `DRAFT` | editar campos permitidos, revisar activación, activar, cancelar, consultar historia |
+| `ACTIVE` | consultar, revisar estado, cerrar, solicitar anulación excepcional, handoffs operativos permitidos |
+| `CLOSED` | consultar, evidencia, anulación excepcional cuando corresponda, handoffs históricos permitidos |
+| `CANCELLED` | consultar e historia |
+| `VOID` | consultar, reconciliación e historia |
+
+Una acción puede permanecer oculta o deshabilitada si el actor carece de autoridad o si una precondición conocida la hace imposible.
+
+La seguridad no depende de esa presentación.
+
+#### 19. Crear un LPN
+
+El flujo conceptual de creación queda:
+
+```text
+INICIAR INTENCIÓN
+→
+CAPTURAR DATOS MÍNIMOS
+→
+VALIDACIÓN LOCAL NO AUTORIZANTE
+→
+ENVIAR INTENCIÓN CON IDENTIDAD DE IDEMPOTENCIA
+→
+DECISIÓN SERVER-SIDE
+→
+RECIBIR IDENTIDAD Y DRAFT CONFIRMADOS
+→
+ABRIR DETALLE DEL LPN CONFIRMADO
+```
+
+La pantalla no genera un segundo LPN para resolver una respuesta tardía.
+
+#### 20. Datos mínimos de creación
+
+La experiencia debe poder capturar o resolver, según el contrato materializado:
+
+- purpose type;
+- sede o contexto inicial aplicable;
+- origen de la intención cuando sea material;
+- correlación con el proceso que originó el LPN cuando exista;
+- datos adicionales exigidos por el backend autorizado.
+
+No inventa como obligatorios campos que los contratos propietarios no han declarado.
+
+#### 21. Creación pendiente no es `DRAFT`
+
+Cuando una intención se envía pero el resultado todavía no está confirmado:
+
+```text
+LOCAL CREATE INTENT PENDING
+!=
+CANONICAL DRAFT
+```
+
+La UI puede usar una etiqueta operacional como “Pendiente de confirmar”, pero no presenta código o identidad provisionales como LPN canónico salvo que el contrato físico posterior defina una identidad estable reservada y reconciliable.
+
+#### 22. Resultado desconocido de creación
+
+Ante timeout después de enviar creación:
+
+1. se conserva la identidad de operación;
+2. se bloquea la creación duplicada mediante un segundo envío independiente;
+3. se intenta reconciliar el resultado de la misma intención;
+4. si se recupera el LPN creado, se muestra ese mismo LPN;
+5. si el servidor confirma rechazo, se conserva la entrada para corrección cuando sea seguro;
+6. si el resultado continúa indeterminado, se muestra estado de reconciliación y no “éxito” ni “fallo definitivo”.
+
+#### 23. Edición de un `DRAFT`
+
+La edición de borrador se limita a campos permitidos por el contrato vigente.
+
+Nunca se presenta como una ficha genérica con escritura libre sobre:
+
+- estado;
+- revisión;
+- contenido;
+- cantidades;
+- ubicación efectiva;
+- custodia;
+- contenedor físico;
+- auditoría;
+- movimiento;
+- remisión;
+- viaje.
+
+Esas dimensiones usan acciones o handoffs propietarios.
+
+#### 24. Edición y revisión optimista
+
+Al comenzar una edición, la UI conserva la revisión observada.
+
+Al guardar:
+
+```text
+EXPECTED REVISION
++
+PROPOSED ALLOWED CHANGES
+→
+SERVER REVALIDATION
+```
+
+Si la revisión cambió, no se aplica last-write-wins silencioso.
+
+Se abre recuperación por conflicto.
+
+#### 25. Conflicto de revisión
+
+Cuando otro actor o proceso cambió el LPN:
+
+- se informa que el LPN cambió desde que se abrió la acción;
+- se muestra el estado confirmado más reciente que el actor pueda consultar;
+- se conserva la intención del usuario cuando sea seguro;
+- se distinguen campos propios y cambios remotos;
+- se exige revisar antes de reenviar;
+- no se fusiona automáticamente lifecycle, purpose, ubicación o relaciones sensibles.
+
+#### 26. Revisión previa a activación
+
+Antes de intentar `DRAFT → ACTIVE`, la experiencia presenta un snapshot de revisión suficiente para comprender la intención.
+
+Debe poder incluir, según aplicabilidad:
+
+- LPN y código;
+- propósito;
+- contexto territorial;
+- estado y revisión actuales;
+- resumen de contenido o ausencia de contenido;
+- ubicación prevista o confirmada según contrato;
+- bloqueos conocidos;
+- advertencias no bloqueantes;
+- actor efectivo;
+- consecuencia de activar.
+
+#### 27. Activación
+
+El acto de activar es explícito.
+
+No se activa por:
+
+- guardar un formulario;
+- imprimir una etiqueta;
+- escanear el LPN;
+- agregar contenido;
+- asignar ubicación;
+- abrir la pantalla;
+- cerrar un modal;
+- seleccionar un purpose type.
+
+La UI envía una intención de activación separada y espera el estado persistido.
+
+#### 28. Activación bloqueada
+
+Si una precondición impide activar, la experiencia distingue la clase de bloqueo sin inventar una razón falsa.
+
+Puede mostrar categorías como:
+
+- autorización insuficiente;
+- estado incompatible;
+- revisión stale;
+- información requerida incompleta;
+- contenido incompatible;
+- ubicación o compatibilidad pendiente;
+- condición bloqueante;
+- conflicto de concurrencia;
+- falla técnica.
+
+La explicación concreta proviene de una razón estructurada o evidencia verificable.
+
+#### 29. Confirmación de activación
+
+Después de una activación aceptada, la UI muestra el `ACTIVE` confirmado y un recibo suficiente para evitar reintento accidental.
+
+El recibo debe poder asociar:
+
+- LPN;
+- acción;
+- estado previo;
+- estado resultante;
+- revisión resultante;
+- actor;
+- momento;
+- correlación o identificador de operación.
+
+#### 30. Cierre normal
+
+El cierre se ofrece únicamente sobre `ACTIVE` y constituye una intención explícita.
+
+La experiencia debe explicar que cerrar:
+
+- termina el uso operativo ordinario de la identidad;
+- conserva historia;
+- no borra contenido por sí mismo;
+- no borra movimientos;
+- no cierra automáticamente remisiones;
+- no libera ni revierte custodia por inferencia;
+- no recicla el código.
+
+#### 31. Revisión previa al cierre
+
+Antes del cierre, la superficie debe poder mostrar bloqueos materiales relevantes, por ejemplo:
+
+- operaciones pendientes;
+- reconciliación pendiente;
+- relación estructural incompatible;
+- contenido o ubicación que el contrato de dominio exija resolver;
+- conflicto de revisión;
+- restricción de autorización.
+
+La ausencia de un bloqueo visible no sustituye la comprobación server-side final.
+
+#### 32. Cierre confirmado
+
+Un cierre aceptado produce en la experiencia:
+
+```text
+ACTIVE
+→
+CLOSED CONFIRMED
+```
+
+Después del recibo:
+
+- las acciones operativas ordinarias desaparecen o quedan no disponibles;
+- el detalle continúa consultable según autorización;
+- la historia permanece accesible según scope;
+- no aparece una acción “reactivar”.
+
+#### 33. Cancelación preactivación
+
+La interfaz usa cancelación únicamente para:
+
+```text
+DRAFT
++
+NEVER ACTIVE
+→
+CANCELLED
+```
+
+La acción debe diferenciarse visual y verbalmente de eliminar.
+
+Requiere una confirmación que explique que la identidad se conservará como cancelada y no será reutilizable.
+
+#### 34. Cancelación no destructiva
+
+La experiencia nunca etiqueta la acción como “Borrar LPN” cuando el efecto canónico es `CANCELLED`.
+
+Después de cancelar:
+
+- el estado confirmado es `CANCELLED`;
+- el código no se presenta como reutilizable;
+- no existe acción de activación;
+- la historia y el motivo permanecen según autorización.
+
+#### 35. Anulación excepcional
+
+La anulación de un LPN que ya fue activo se presenta como una operación excepcional distinta de cancelar.
+
+Puede aplicar a:
+
+```text
+ACTIVE → VOID
+CLOSED → VOID
+```
+
+No se ofrece como acción primaria de alta frecuencia ni se representa como “deshacer”.
+
+#### 36. Confirmación de anulación
+
+La revisión de anulación debe dejar claro que:
+
+- la identidad seguirá existiendo históricamente;
+- los movimientos y referencias previos no desaparecen;
+- puede requerirse reconciliación de efectos relacionados;
+- el LPN no volverá a uso operativo;
+- un reemplazo, si es necesario, será otra intención explícita y no reciclaje del mismo LPN.
+
+El motivo requerido se captura conforme a la política materializada, sin inventar un catálogo local en esta tarea.
+
+#### 37. Anulación con reconciliación pendiente
+
+Cuando la anulación sea aceptada pero existan efectos dependientes que requieran reconciliación, la UI distingue:
+
+```text
+LPN STATE = VOID
+```
+
+de:
+
+```text
+RELATED RECONCILIATION = PENDING
+```
+
+No crea un sexto estado LPN como `VOID_PENDING`.
+
+#### 38. Reetiquetado
+
+`NEXO-UX-026` solo fija que reetiquetar:
+
+- preserva `lpn_id`;
+- preserva lifecycle;
+- preserva purpose type salvo otra decisión independiente;
+- se muestra como evento, no estado;
+- no equivale a reimpresión autorizada;
+- puede estar disponible solo en estados compatibles y con autoridad específica.
+
+El diseño detallado de reetiquetado se entrega a `NEXO-UX-028` y la impresión a `NEXO-UX-037`.
+
+#### 39. Contenido como handoff, no como lifecycle
+
+La superficie de detalle puede mostrar un resumen de contenido para contexto, pero:
+
+```text
+CONTENT SUMMARY
+!=
+LIFECYCLE STATE
+```
+
+Agregar, retirar, dividir, unir o transferir contenido no forma parte del flujo detallado de esta tarea.
+
+`NEXO-UX-027` recibe empaque, desempaque y consulta de contenido.
+
+`NEXO-UX-028` recibe división, unión, transferencia y reetiquetado.
+
+#### 40. Ubicación como dimensión separada
+
+La UX distingue:
+
+```text
+LPN STATE
+!=
+CURRENT LOCATION
+```
+
+Un LPN `ACTIVE` puede requerir contexto de ubicación, pero su estado no se deriva de LOC, posición, zona o sede mostradas.
+
+Cambiar ubicación no se implementa mediante edición de estado.
+
+#### 41. Custodia como dimensión separada
+
+La experiencia distingue:
+
+```text
+LPN STATE
+!=
+CUSTODY STATE
+```
+
+La pantalla puede mostrar custodio o relación vigente cuando corresponda, pero no convierte transferencia de custodia en activación, cierre o anulación.
+
+Los detalles de experiencia de custodia pertenecen a las tareas propietarias de activos, reutilizables y logística aplicables.
+
+#### 42. Contenedor físico como identidad separada
+
+Cuando exista relación con un contenedor físico, la experiencia debe evitar una sola tarjeta o etiqueta que haga parecer que LPN y contenedor son la misma identidad.
+
+Debe poder distinguir:
+
+- LPN;
+- contenedor físico;
+- tipo o clase del contenedor cuando exista;
+- vigencia de la relación;
+- condición/custodia del contenedor como hechos propios.
+
+Vincular o desvincular no cambia lifecycle LPN por inferencia.
+
+#### 43. Movimiento y tránsito
+
+La experiencia no usa `IN_TRANSIT`, `RECEIVED` o `DELIVERED` como estados LPN.
+
+Si el LPN participa en transporte o movimiento, esos estados pertenecen al objeto propietario.
+
+El detalle puede mostrar la relación o handoff sin colapsar ambos lifecycles.
+
+#### 44. Escaneo de un LPN existente
+
+Un escaneo válido de código LPN debe comportarse conceptualmente como:
+
+```text
+SCAN
+→
+RESOLVE IDENTITY
+→
+AUTHORIZE READ
+→
+OPEN AUTHORIZED CONTEXT
+```
+
+Nunca como:
+
+```text
+SCAN
+→
+ACTIVATE / CLOSE / MOVE / PACK / RECEIVE
+```
+
+sin una intención y autorización separadas.
+
+#### 45. Código desconocido o ilegible
+
+Ante un código no resuelto:
+
+- no se crea un LPN automáticamente;
+- no se asigna el contenido a un nuevo objeto;
+- no se reutiliza una coincidencia parcial peligrosa;
+- se ofrece captura manual o recuperación compatible con el dispositivo cuando exista;
+- se distingue “no encontrado”, “sin acceso” y “lectura inválida” sin filtrar información sensible.
+
+El diseño especializado de escáner y etiquetas dañadas pertenece a `NEXO-UX-038`.
+
+#### 46. Dispositivo compartido
+
+En tablet, kiosco o estación compartida, la UX:
+
+1. muestra o confirma actor efectivo cuando sea requerido;
+2. no reutiliza confirmaciones de otro actor;
+3. no asume que la estación concede permisos;
+4. limpia o separa datos sensibles al cambiar actor;
+5. reautoriza mutaciones en servidor;
+6. conserva recuperación ante pérdida de sesión;
+7. no expone historia o contenido fuera del scope efectivo.
+
+#### 47. Operación offline
+
+La interfaz puede capturar una intención offline únicamente si una arquitectura posterior lo autoriza.
+
+Se preserva:
+
+```text
+OFFLINE INTENT
+!=
+CANONICAL LPN TRANSITION
+```
+
+La UX debe distinguir:
+
+- capturado localmente;
+- pendiente de sincronización;
+- enviado;
+- confirmado;
+- rechazado;
+- en conflicto;
+- resultado desconocido.
+
+Esos estados describen la operación local, no el lifecycle LPN.
+
+#### 48. Reautorización al sincronizar
+
+Al volver la red, una intención pendiente debe revalidar al menos:
+
+- actor y sesión vigentes;
+- autorización aplicable;
+- estado LPN actual;
+- revisión actual;
+- contexto territorial;
+- precondiciones de dominio;
+- idempotencia.
+
+Una intención offline válida cuando fue capturada puede ser rechazada después si el estado cambió.
+
+La UX debe explicarlo sin presentar el cambio remoto como pérdida silenciosa del trabajo.
+
+#### 49. Resultado desconocido después de una mutación
+
+Ante pérdida de conexión después de enviar una acción:
+
+```text
+TIMEOUT
+!=
+FAILURE CONFIRMED
+```
+
+La interfaz:
+
+1. conserva la intención y su identificador;
+2. bloquea el reenvío como nueva operación;
+3. consulta o reintenta de forma reconciliable;
+4. mantiene visible el último estado confirmado;
+5. cuando resuelve el resultado, actualiza desde la verdad server-side;
+6. si no puede resolverlo, presenta intervención/reconciliación requerida.
+
+#### 50. Errores y lenguaje operativo
+
+Todo error material debe responder, cuando la evidencia lo permita:
+
+- qué acción no se completó;
+- si el estado canónico cambió o no;
+- qué información se conservó;
+- qué debe hacer el actor a continuación;
+- si puede reintentar con seguridad;
+- si debe refrescar, corregir, reautorizar o escalar.
+
+No se usan mensajes de “algo salió mal” como único diagnóstico para acciones con posible efecto empresarial.
+
+#### 51. Denegación segura
+
+Una denegación de autorización:
+
+- no presenta el botón como exitoso;
+- no cambia el estado optimistamente;
+- no filtra permisos, roles, sedes o datos sensibles innecesarios;
+- conserva el contexto suficiente para que el actor pueda regresar o solicitar ayuda;
+- distingue denegación de falla técnica.
+
+La UI no recomienda cambiar de sede, rol o URL como mecanismo para eludir la denegación.
+
+#### 52. Timeline e historial
+
+El detalle debe poder representar una historia no destructiva de eventos relevantes, entre ellos:
+
+- creación;
+- cambios autorizados de metadatos o purpose;
+- activación;
+- cierre;
+- cancelación;
+- anulación;
+- reetiquetado;
+- correcciones;
+- reconciliaciones;
+- referencias a acciones de contenido, ubicación, custodia o movimiento cuando sea útil y esté permitido.
+
+El timeline es una proyección de evidencia, no un ledger editable.
+
+#### 53. Diferencia entre evento y estado
+
+La UI presenta claramente:
+
+```text
+CURRENT STATE
+```
+
+y por separado:
+
+```text
+EVENT HISTORY
+```
+
+Por ejemplo, `RELABELED` puede aparecer en historia sin aparecer como badge de lifecycle.
+
+`CREATED` puede aparecer como evento inicial, mientras el estado creado es `DRAFT`.
+
+#### 54. Correcciones
+
+Una corrección autorizada no reemplaza silenciosamente el dato histórico.
+
+La experiencia debe poder mostrar:
+
+- valor o decisión anterior;
+- corrección vigente;
+- actor;
+- motivo cuando aplique;
+- momento;
+- relación con el evento corregido.
+
+No se exige mostrar toda la auditoría técnica al operador si no es necesaria para su tarea.
+
+#### 55. Jerarquía de acciones visuales
+
+Para reducir errores:
+
+- la acción ordinaria más probable se presenta como primaria solo cuando es válida para el estado y contexto;
+- acciones terminales o excepcionales no compiten visualmente con acciones rutinarias;
+- cancelar y anular no comparten una etiqueta genérica;
+- cerrar no comparte control con eliminar;
+- activación siempre exige una intención explícita;
+- acciones irreversibles desde la perspectiva operativa requieren revisión previa proporcional.
+
+La jerarquía visual nunca sustituye autorización.
+
+#### 56. Prevención de doble envío
+
+Tras enviar una mutación, la superficie bloquea reenvíos accidentales mientras la misma intención está en vuelo.
+
+Esto no depende únicamente de deshabilitar un botón: el backend conserva idempotencia.
+
+La UX puede permitir salir de la pantalla sin perder la capacidad de reconciliar la operación cuando la arquitectura lo soporte.
+
+#### 57. Accesibilidad
+
+El diseño exige:
+
+- estado expresado con texto, no solo color;
+- foco visible;
+- navegación por teclado donde corresponda;
+- orden de foco coherente en formularios y confirmaciones;
+- etiquetas asociadas a controles;
+- mensajes de error vinculados al campo o acción;
+- feedback de mutación perceptible sin depender solo de animación;
+- touch targets adecuados en tablet/kiosco;
+- confirmaciones legibles bajo condiciones operativas;
+- alternativas a gestos exclusivos;
+- soporte para captura manual cuando cámara, escáner o wedge no estén disponibles.
+
+#### 58. Densidad por dispositivo
+
+La misma semántica puede proyectarse de forma distinta:
+
+**Desktop**
+- mayor densidad de columnas;
+- historia lateral o expandible;
+- comparación de revisiones cuando corresponda.
+
+**Tablet**
+- prioridad a estado, código, contexto y acción actual;
+- controles táctiles amplios;
+- detalle progresivo.
+
+**Kiosco/estación compartida**
+- una intención dominante;
+- actor efectivo visible cuando aplique;
+- minimización de datos;
+- recuperación simple.
+
+El dispositivo no cambia los estados ni la autoridad.
+
+#### 59. AS-IS remoto observado
+
+El consumidor `vento-nexo` observado presenta cobertura parcial:
+
+1. existe `src/app/api/inventory/lpns/route.ts` con lectura de `inventory_lpns`;
+2. la lectura observada devuelve `id`, `code`, `site_id` y `created_at`;
+3. la ruta observada autentica usuario mediante Supabase pero no demuestra en esa superficie la evaluación explícita de `nexo.inventory.lpns.view`;
+4. `src/app/inventory/lpns/page.tsx` redirige actualmente a `/inventory/stock`;
+5. el registro de navegación clasifica `/inventory/lpns` como superficie interna, no como opción de menú;
+6. las superficies inspeccionadas no demuestran un flujo UX dedicado de crear, activar, cerrar, cancelar, anular, resolver revisión stale o reconciliar resultado desconocido.
+
+El AS-IS se clasifica como base parcial reutilizable, no como implementación del diseño objetivo.
+
+#### 60. Estrategia de adopción
+
+La estrategia futura queda:
+
+```text
+REUSE VERIFIED LPN DATA AND IDENTITY
++
+REPLACE REDIRECT-ONLY EXPERIENCE WITH A GOVERNED LIFECYCLE SURFACE
++
+REUSE SHARED AUTHORIZATION AND CONTEXT
++
+KEEP CONTENT / LOCATION / CUSTODY / CONTAINER / PRINTING AS SEPARATE HANDOFFS
++
+MATERIALIZE ONLY THROUGH AUTHORIZED IMPLEMENTATION WORK
+```
+
+Esta tarea no decide si la futura implementación será una página, panel, drawer, modal, flujo compuesto o combinación de superficies.
+
+#### 61. Handoff hacia `NEXO-UX-027`
+
+`NEXO-UX-026` entrega a `NEXO-UX-027`:
+
+```text
+STABLE LPN IDENTITY
++
+FIVE-STATE LIFECYCLE UX
++
+SEPARATE PURPOSE TYPE
++
+AUTHORIZED DETAIL CONTEXT
++
+CONFIRMED SERVER STATE / REVISION
++
+VISIBLE LOCATION AND RELATIONSHIP CONTEXT
++
+SAFE PENDING / CONFLICT / UNKNOWN-RESULT PATTERNS
++
+SCANNER ENTRY WITHOUT AUTO-MUTATION
+```
+
+`NEXO-UX-027` deberá diseñar empaque, desempaque y consulta de contenido sin convertir la membresía en un estado LPN ni duplicar existencia física.
+
+#### 62. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya protege el ciclo LPN completo, la separación con contenedores y saldo, la fuente de verdad visible, la operación en dispositivos y la recuperación segura ante interrupciones. Esta tarea materializa el contrato UX de esas obligaciones sin introducir una obligación de prueba independiente.
+
+#### 63. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para ciclo LPN completo, auditable y sin doble contabilización;
+- `TREQ-NEXO-011`, para movimientos, proyecciones, idempotencia, concurrencia y consistencia de inventario;
+- `TREQ-NEXO-012`, para conservar lote, serial, vencimiento, condición y trazabilidad dentro de LPN;
+- `TREQ-NEXO-046`, para separar contenedor físico, LPN y contenido;
+- `TREQ-NEXO-047`, para preservar el comportamiento por clase y evitar representaciones duplicadas;
+- `TREQ-UX-004`, para operación real en tablet, kiosco, escáner y periféricos;
+- `TREQ-UX-005`, para mostrar fuente de verdad, estado confirmado, actor y último cambio;
+- `TREQ-UX-006`, para pérdida de red, sesión, dispositivo, reanudación e idempotencia.
+
+Estas referencias son trazabilidad existente y no una modificación de 04A.
+
+#### 64. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea define experiencia documental bajo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no contiene código de producto que compilar |
+| LOCAL | NOT_EXECUTED | no se ejecutaron validadores sobre el checkout local del usuario durante la elaboración del artefacto; la batería documental los ejecutará después de incorporarlo |
+| REMOTA | PASS | se contrastaron protocolo, contrato de entrega, topología, owner UX, `NEXO-DOM-002` a `008`, `NEXO-DOM-019` a `024`, `NEXO-AUTH-022` y `023`, registro modular de requisitos y el consumidor remoto `vento-nexo`; el AS-IS conserva endpoint LPN parcial y una superficie `/inventory/lpns` que redirige a stock |
+| OPERATIVA | NOT_EXECUTED | no se crearon, activaron, cerraron, cancelaron, anularon ni reetiquetaron LPN reales y no se realizó prueba con operadores |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-026` no genera instancia física propia; cualquier materialización posterior pertenece a trabajo de implementación autorizado |
+
+#### 65. Criterios de aceptación
+
+- [x] se preservan exactamente `DRAFT`, `ACTIVE`, `CLOSED`, `CANCELLED` y `VOID`;
+- [x] ningún estado local de sincronización se convierte en estado LPN;
+- [x] purpose type y lifecycle permanecen separados;
+- [x] LPN y contenedor físico permanecen separados;
+- [x] estado, ubicación, custodia, contenido y movimiento permanecen separados;
+- [x] identidad estable y código visible permanecen distinguibles;
+- [x] crear produce una intención que solo se presenta como `DRAFT` después de confirmación server-side;
+- [x] el reintento de creación conserva la misma identidad de operación;
+- [x] editar borrador no permite escritura genérica de lifecycle ni relaciones propietarias;
+- [x] activación usa revisión previa y una intención explícita;
+- [x] guardar, imprimir, escanear o agregar contenido no activa por inferencia;
+- [x] cierre solo corresponde a `ACTIVE → CLOSED`;
+- [x] cierre no se presenta como eliminación;
+- [x] cancelación se reserva a borradores nunca activados;
+- [x] cancelación no recicla identidad o código;
+- [x] anulación permanece excepcional y no destructiva;
+- [x] `VOID` no borra efectos previos ni historia;
+- [x] `CLOSED`, `CANCELLED` y `VOID` no ofrecen reactivación;
+- [x] reetiquetado permanece evento y no estado;
+- [x] la UX detallada de reetiquetado permanece reservada a `NEXO-UX-028`;
+- [x] empaque, desempaque y consulta de contenido permanecen reservados a `NEXO-UX-027`;
+- [x] división, unión y transferencia permanecen reservadas a `NEXO-UX-028`;
+- [x] la lectura y las mutaciones siguen el contrato de autorización propietario;
+- [x] una acción visible no concede autoridad;
+- [x] una denegación no produce cambio optimista;
+- [x] una revisión stale produce conflicto explícito y no overwrite silencioso;
+- [x] timeout no se presenta como fallo definitivo cuando el resultado es desconocido;
+- [x] una intención offline no se presenta como transición canónica;
+- [x] la sincronización revalida actor, autorización, estado y revisión;
+- [x] escanear un LPN abre contexto autorizado y no produce una mutación automática;
+- [x] un código no encontrado no crea LPN por fallback;
+- [x] dispositivo compartido no hereda autoridad del actor anterior;
+- [x] estado y acciones tienen alternativas textuales y no dependen solo de color;
+- [x] el diseño contempla teclado, foco, touch y fallback de escaneo;
+- [x] la historia visible distingue estado actual de eventos;
+- [x] el AS-IS remoto se trata como base parcial, no como diseño final;
+- [x] no se crean requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+#### 66. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- cambia navegación;
+- modifica `inventory_lpns`;
+- crea migraciones, tablas, vistas, funciones, triggers, RLS o RPC;
+- modifica permisos o grants;
+- crea `PermissionKey`;
+- implementa acciones de servidor;
+- crea datos o backfills;
+- define una sintaxis física definitiva de código LPN;
+- define simbología de código de barras o QR;
+- define hardware de impresión o escaneo;
+- diseña empaque o desempaque detallado;
+- diseña split, merge o transferencia de contenido;
+- diseña contenedores anidados o retornables;
+- diseña búsqueda global por contenido;
+- diseña impresión;
+- diseña el tratamiento especializado de etiquetas dañadas;
+- ejecuta una prueba con operador;
+- crea prototipo ejecutable;
+- modifica Supabase;
+- ejecuta despliegues;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-UX-027`.
+
+#### 67. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-025 — Definir métricas de tiempo, error y capacitación para el piloto operativo`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-026 — Diseñar ciclo de vida completo de LPN`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido`
 ### [ ] NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido
 ### [ ] NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
 ### [ ] NEXO-UX-029 — Diseñar contenedores anidados y retornables
