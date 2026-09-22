@@ -41917,7 +41917,937 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente`
-### [ ] NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
+### ✅ NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
+**Tarea siguiente:** NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
+**Tipo de tarea:** documental; cierre y aprobación canónica del diseño del subdominio compuesto por LPN, contenedores físicos, activos serializados, reutilizables controlados por cantidad, kits, repuestos, custodia, condición, conteos, búsqueda, impresión, escaneo, inventario inicial y métricas, con handoff explícito a la planificación E5 existente, sin crear paquetes, alterar la frontera gobernada, aprobar gates E5 ni autorizar implementación física
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Cerrar documentalmente el diseño del subdominio desarrollado entre `NEXO-UX-026` y `NEXO-UX-041`, decidir si sus contratos pueden aprobarse como un conjunto coherente y transferir a E5 las obligaciones de planificación que deberán resolverse antes de cualquier implementación física.
+
+La regla raíz queda:
+
+```text
+DISEÑO CANÓNICO COMPLETO
++
+FRONTERAS DE DOMINIO Y AUTORIZACIÓN COHERENTES
++
+ESCENARIOS REPRESENTATIVOS VALIDADOS DOCUMENTALMENTE
++
+MÉTRICAS CALCULABLES SIN VALORES FABRICADOS
++
+TRAZABILIDAD HACIA REQUISITOS Y CAPACIDADES
++
+BRECHAS DE IMPLEMENTACIÓN EXPLÍCITAS
+→
+DISEÑO APROBADO PARA HANDOFF A E5
+```
+
+Y se preserva:
+
+```text
+DISEÑO APROBADO
+!=
+PACKAGE APROBADO
+!=
+E5-GATE-008 PASS
+!=
+IMPLEMENTATION_READY
+!=
+AUTORIZACIÓN FÍSICA
+!=
+IMPLEMENTACIÓN EJECUTADA
+```
+
+#### 2. Resultado canónico
+
+La decisión de 042 es:
+
+```text
+DISEÑO DEL SUBDOMINIO
+→ APROBADO DOCUMENTALMENTE
+
+HANDOFF A E5
+→ DEFINIDO Y TRAZABLE
+
+AUTORIZACIÓN DE IMPLEMENTACIÓN FÍSICA
+→ NO CONCEDIDA
+```
+
+El cierre produce seis artefactos documentales:
+
+1. `NEXO-ASSET-SUBDOMAIN-DESIGN-APPROVAL-001` — decisión de aprobación del diseño compuesto;
+2. `NEXO-ASSET-SUBDOMAIN-E5-HANDOFF-001` — contenido mínimo que E5 deberá consumir;
+3. `NEXO-ASSET-SUBDOMAIN-PACKAGE-COVERAGE-SNAPSHOT-001` — reconciliación documental de capacidades con vínculos E5 existentes y ausentes;
+4. `NEXO-ASSET-SUBDOMAIN-IMPLEMENTATION-BOUNDARY-001` — frontera que impide convertir este cierre en autorización física;
+5. `NEXO-ASSET-SUBDOMAIN-TRACEABILITY-MATRIX-001` — relación entre las tareas 026–041, su salida y el consumidor E5 correspondiente;
+6. `NEXO-ASSET-SUBDOMAIN-MEASUREMENT-HANDOFF-001` — transferencia de las doce métricas de 041 sin baseline ni target inventados.
+
+#### 3. Universo aprobado
+
+042 consume exactamente dieciséis tareas de diseño y validación:
+
+| Tarea | Resultado consumido | Estado en el cierre |
+| --- | --- | --- |
+| `NEXO-UX-026` | ciclo de vida completo de LPN | incorporado |
+| `NEXO-UX-027` | empaque, desempaque y consulta de contenido | incorporado |
+| `NEXO-UX-028` | división, unión, transferencia y reetiquetado | incorporado |
+| `NEXO-UX-029` | contenedores anidados y retornables | incorporado |
+| `NEXO-UX-030` | catálogo de activos y reutilizables | incorporado |
+| `NEXO-UX-031` | custodia, préstamo, devolución y transferencia | incorporado |
+| `NEXO-UX-032` | estado, daño, pérdida, reparación y baja | incorporado |
+| `NEXO-UX-033` | kits, conjuntos y control de completitud | incorporado |
+| `NEXO-UX-034` | conteos de activos y reutilizables | incorporado |
+| `NEXO-UX-035` | repuestos, compatibilidad y reposición mínima | incorporado |
+| `NEXO-UX-036` | búsqueda por LOC, LPN, código, responsable y contenido | incorporado |
+| `NEXO-UX-037` | impresión de LOC, LPN, activo y documento | incorporado |
+| `NEXO-UX-038` | escáner y etiquetas dañadas | incorporado |
+| `NEXO-UX-039` | inventario inicial de contenedores y activos | incorporado |
+| `NEXO-UX-040` | validación documental con decoración, vajilla, herramientas y repuestos | incorporado |
+| `NEXO-UX-041` | línea base y métricas objetivo sin valores fabricados | incorporado |
+
+Reconciliación:
+
+```text
+EXPECTED_TASKS = 16
+MATERIALIZED_TASKS = 16
+MISSING_TASKS = 0
+DUPLICATE_TASKS = 0
+```
+
+#### 4. Frontera del subdominio aprobado
+
+El subdominio aprobado incluye:
+
+- identidad y lifecycle de LPN;
+- contenido directo y anidado;
+- empaque, desempaque, split, merge, transferencia y reetiquetado;
+- contenedores físicos separados de LPN;
+- activos individualizados;
+- reutilizables controlados por cantidad;
+- custodia, préstamo, devolución y transferencia;
+- condición, daño, no localización, pérdida confirmada, reparación y baja;
+- kits, definiciones, instancias, miembros y completitud;
+- conteos no destructivos;
+- repuestos, compatibilidad, reserva, instalación y destino de pieza retirada;
+- búsqueda transversal;
+- impresión y reimpresión;
+- captura mediante escáner y recuperación ante etiqueta dañada;
+- inventario inicial por observación, candidato, revisión y materialización autorizada;
+- validación documental mediante escenarios representativos;
+- métricas de pérdida o no localización, búsqueda y diferencias.
+
+#### 5. Clases e identidades preservadas
+
+La aprobación conserva exactamente las siete clases primarias ya definidas:
+
+```text
+CONSUMABLE
+QUANTITY_STOCK
+REUSABLE_QUANTITY
+SERIALIZED_ASSET
+SPARE_PART
+KIT
+PHYSICAL_CONTAINER
+```
+
+042 no crea una octava clase ni redefine las existentes.
+
+También preserva:
+
+```text
+PHYSICAL_CONTAINER != LPN != CONTENT
+SERIALIZED_ASSET != REUSABLE_QUANTITY
+KIT INSTANCE != ADDITIONAL STOCK
+SPARE_PART IN STOCK != INSTALLED COMPONENT
+OBSERVED LOCATION != AUTHORITATIVE PLACEMENT
+OBSERVED HOLDER != ACCEPTED CUSTODIAN
+COUNT OBSERVATION != ADJUSTMENT
+NO LOCALIZADO != PÉRDIDA CONFIRMADA
+SEARCH RESULT != SOURCE OF TRUTH
+SCAN != MUTATION
+PRINT != NEW IDENTITY
+```
+
+#### 6. Decisión de consistencia del diseño
+
+El recorrido de 026–041 no exige romper una frontera canónica para completar los escenarios previstos.
+
+Se aprueba que:
+
+1. identidad, clase y granularidad permanecen separadas;
+2. la misma existencia no necesita dos representaciones activas incompatibles;
+3. LPN y contenedor físico pueden vincularse sin fusionarse;
+4. contenido LPN no se suma de nuevo como existencia suelta;
+5. una observación física no crea automáticamente un registro canónico;
+6. una diferencia no ejecuta automáticamente ajuste, transferencia, baja o reparación;
+7. búsqueda, escaneo e impresión permanecen auxiliares de identificación y operación, no fuentes de autoridad;
+8. clasificación, conteo y reconciliación pueden bloquearse de forma segura cuando falta evidencia;
+9. runtime legacy puede reutilizarse o refactorizarse sin convertirse en oráculo del modelo objetivo;
+10. las métricas pueden calcularse cuando exista instrumentación y evidencia elegible, sin fabricar baseline ni target durante el diseño.
+
+#### 7. Qué significa la aprobación de 042
+
+La aprobación de 042 significa únicamente:
+
+```text
+EL CONTRATO DOCUMENTAL DEL SUBDOMINIO
+TIENE SUFICIENTE DEFINICIÓN Y COHERENCIA
+PARA SER CONSUMIDO POR LA PLANIFICACIÓN E5
+```
+
+No significa que:
+
+- el runtime ya implemente el diseño;
+- los datos actuales estén reconciliados;
+- las migraciones existan;
+- las pantallas legacy sean conformes;
+- el piloto haya sido ejecutado;
+- existan baselines medidos;
+- existan targets aprobados;
+- un `GAP-PKG-*` esté listo para implementación;
+- la puerta E5 de un paquete haya pasado;
+- un cambio físico esté autorizado.
+
+#### 8. Modelo de handoff a E5
+
+El handoff usa el lifecycle E5 ya aprobado.
+
+```text
+CONTRATOS NEXO APROBADOS
+→
+CAPACIDADES / BRECHAS / TREQ EXISTENTES
+→
+EXPEDIENTE DEL package_id EXISTENTE
+→
+DELIV-PKG-001..025::<package_id>
+→
+E5-GATE-008::<package_id>
+→
+SOLO DESPUÉS, IMPLEMENTACIÓN POST-E5 AUTORIZADA
+```
+
+042 no crea `package_id`, no selecciona manualmente el package siguiente y no modifica el orden gobernado de packages.
+
+#### 9. Frontera con `DELIV-PKG-001..025`
+
+E5 conserva la responsabilidad de materializar por paquete:
+
+| Grupo E5 | Responsabilidad que consume el handoff de 042 |
+| --- | --- |
+| `DELIV-PKG-001..005` | identidad, membresía, ownership, AS-IS/TO-BE y alcance del paquete |
+| `DELIV-PKG-006..008` | runtime, datos y persistencia aplicables |
+| `DELIV-PKG-009` | transición, migraciones previstas, backfills, compatibilidad y retiro legacy |
+| `DELIV-PKG-010` | eventos, entrega, idempotencia, retry, compensación y conciliación |
+| `DELIV-PKG-011` | impresión, documentos, notificaciones y evidencia |
+| `DELIV-PKG-012` | autorización por acción, actor, modalidad, alcance, contexto y recurso |
+| `DELIV-PKG-013` | NFR medibles aplicables |
+| `DELIV-PKG-014` | archivos y símbolos reales que se crearán, modificarán, reutilizarán o retirarán |
+| `DELIV-PKG-015` | arquitectura consolidada, dependencias, bloqueos, precondiciones y orden |
+| `DELIV-PKG-016` | vínculo formal `TREQ-*` ↔ prueba ↔ archivos ↔ comandos ↔ fixtures ↔ entorno ↔ evidencia |
+| `DELIV-PKG-017` | observabilidad |
+| `DELIV-PKG-018` | feature flags, configuración y kill switch |
+| `DELIV-PKG-019` | rollout |
+| `DELIV-PKG-020` | rollback técnico, funcional y de datos |
+| `DELIV-PKG-021` | documentación, runbooks y capacitación |
+| `DELIV-PKG-022` | piloto |
+| `DELIV-PKG-023` | criterios medibles y manifiesto de evidencia |
+| `DELIV-PKG-024` | trazabilidad completa del paquete |
+| `DELIV-PKG-025` | decisión final del expediente antes de gates finales |
+
+042 no sustituye ninguna de estas decisiones.
+
+#### 10. Frontera con `E5-GATE-008`
+
+Se preserva:
+
+```text
+HANDOFF A E5
+!=
+E5-GATE-008::<package_id> = PASS
+```
+
+La existencia de contratos completos en NEXO no satisface por sí sola:
+
+- expediente del paquete;
+- identidad física de implementación;
+- archivos exactos;
+- estrategia de transición;
+- fixtures;
+- pruebas ejecutables;
+- readiness;
+- rollback probado;
+- piloto definido por paquete;
+- evidencia de cierre;
+- aprobación física.
+
+#### 11. Cobertura E5 heredada para `CAP-06`
+
+El snapshot canónico de E5 conserva quince subcapacidades `CAP-06`.
+
+Diez poseen al menos un vínculo explícito a package y cinco no poseen vínculo de package en esa fuente:
+
+```text
+CAP-06 TOTAL = 15
+CON PACKAGE = 10
+SIN PACKAGE = 5
+VÍNCULOS PACKAGE = 33
+```
+
+Subcapacidades sin package explícito:
+
+- `CAP-06.03` — registrar entradas;
+- `CAP-06.04` — ubicar y reubicar existencias;
+- `CAP-06.06` — reservar o separar existencias;
+- `CAP-06.10` — preparar y despachar remisiones;
+- `CAP-06.11` — recibir y confirmar remisiones.
+
+042 no inventa package para cerrar estas ausencias.
+
+#### 12. Packages ya vinculados a `CAP-06`
+
+Los vínculos explícitos observados en la matriz E5 de `CAP-06` utilizan estas identidades existentes:
+
+```text
+GAP-PKG-015
+GAP-PKG-037
+GAP-PKG-038
+GAP-PKG-068
+GAP-PKG-083
+GAP-PKG-087
+GAP-PKG-093
+GAP-PKG-104
+GAP-PKG-105
+GAP-PKG-128
+GAP-PKG-134
+GAP-PKG-144
+GAP-PKG-179
+GAP-PKG-198
+```
+
+042 conserva estos vínculos como evidencia de planificación existente; no cambia membresía, prioridad, dependencia, estado ni disposición.
+
+#### 13. Cobertura E5 heredada para `CAP-07`
+
+El snapshot canónico de E5 conserva trece subcapacidades `CAP-07`.
+
+Nueve poseen al menos un vínculo explícito a package y cuatro no poseen vínculo de package en esa fuente:
+
+```text
+CAP-07 TOTAL = 13
+CON PACKAGE = 9
+SIN PACKAGE = 4
+VÍNCULOS PACKAGE = 20
+```
+
+Subcapacidades sin package explícito:
+
+- `CAP-07.04` — transferir custodia;
+- `CAP-07.05` — contar activos y reutilizables;
+- `CAP-07.06` — registrar condición, daño, pérdida y faltante;
+- `CAP-07.13` — controlar combustible, kilometraje y disponibilidad.
+
+042 no inventa package para cerrar estas ausencias.
+
+#### 14. Packages ya vinculados a `CAP-07`
+
+Los vínculos explícitos observados en la matriz E5 de `CAP-07` utilizan estas identidades existentes:
+
+```text
+GAP-PKG-016
+GAP-PKG-029
+GAP-PKG-039
+GAP-PKG-106
+GAP-PKG-107
+GAP-PKG-108
+GAP-PKG-126
+GAP-PKG-135
+GAP-PKG-180
+GAP-PKG-199
+```
+
+042 conserva estos vínculos como evidencia de planificación existente; no los declara aprobados para implementación.
+
+#### 15. Balance de cobertura primaria entregado a E5
+
+Para las dos familias de capacidad directamente relacionadas con el subdominio:
+
+| Familia | Subcapacidades | Con package | Sin package | Vínculos explícitos |
+| --- | ---: | ---: | ---: | ---: |
+| `CAP-06` | 15 | 10 | 5 | 33 |
+| `CAP-07` | 13 | 9 | 4 | 20 |
+| **Total** | **28** | **19** | **9** | **53** |
+
+Los nueve casos sin package son handoffs explícitos de planificación.
+
+No se convierten en:
+
+- package sintético;
+- package seleccionado por similitud semántica;
+- exclusión implícita;
+- autorización parcial;
+- motivo para reescribir capacidades aprobadas.
+
+#### 16. Vínculos de requisitos y vínculos de capacidades no se colapsan
+
+El registro 04A contiene relaciones `TREQ-*` con packages que pueden incluir identidades adicionales a las visibles en la proyección `CAP-06`/`CAP-07`.
+
+Se fija:
+
+```text
+CAPABILITY → PACKAGE LINK
+!=
+TREQ → PACKAGE LINK
+```
+
+Ambas vistas deben reconciliarse en E5.
+
+042 no elimina una relación de requisito porque no aparezca en la tabla de capacidad ni añade una relación de capacidad por aparecer en una fila TREQ.
+
+#### 17. Handoff de requisitos existentes
+
+El diseño aprobado conserva, entre otros, requisitos ya existentes sobre:
+
+- movimientos y fuente de verdad de inventario;
+- trazabilidad, lote, condición y contenido;
+- activos, reutilizables, identidad, custodia y conteos;
+- mantenimiento, repuestos, reparación y liberación;
+- clasificación primaria única;
+- separación entre clase y metadata legacy;
+- consumibles y stock por cantidad;
+- separación reutilizable/serializado;
+- ciclo de repuestos;
+- kits;
+- contenedores físicos separados de LPN;
+- comportamiento explícito por clase;
+- transición legacy versionada y reversible;
+- reconciliación de las 963 identidades de producto cuando corresponda;
+- investigación de diferencias;
+- métricas versionadas, calidad de datos, baseline y targets.
+
+La vinculación formal exhaustiva de estos requisitos con cada package permanece propiedad de `DELIV-PKG-016`.
+
+#### 18. Handoff de datos y transición
+
+E5 deberá preservar que cualquier transición del AS-IS hacia el modelo aprobado:
+
+1. sea determinista;
+2. sea idempotente;
+3. conserve historia;
+4. no duplique existencia;
+5. no fabrique clase por heurística;
+6. no convierta observación en estado autoritativo;
+7. mantenga compatibilidad temporal solo cuando esté diseñada;
+8. identifique writers legacy y objetivo;
+9. defina reconciliación y rollback;
+10. cree, versione y ejecute toda modificación Supabase desde `vento-shell`.
+
+#### 19. Handoff de autorización
+
+E5 deberá mantener separadas:
+
+```text
+VISIBILIDAD
+RESOLUCIÓN
+CAPTURA
+REVISIÓN
+APROBACIÓN
+MATERIALIZACIÓN
+MOVIMIENTO
+TRANSFERENCIA DE CUSTODIA
+AJUSTE
+MANTENIMIENTO
+BAJA
+```
+
+La UI no concede autoridad por mostrar una acción.
+
+La implementación deberá revalidar en servidor actor, capability, scope, recurso, versión y precondiciones aplicables.
+
+#### 20. Handoff de LPN y contenedores
+
+E5 deberá conservar:
+
+- lifecycle de LPN;
+- contenido directo y anidado;
+- idempotencia en split, merge y transferencia;
+- reetiquetado sin cambio de identidad;
+- LPN separado de contenedor físico;
+- contenedor físico separado de contenido;
+- ausencia de doble contabilización;
+- historia de vínculo y desvínculo cuando exista contenedor;
+- recuperación ante resultado desconocido.
+
+#### 21. Handoff de activos y reutilizables
+
+E5 deberá conservar:
+
+- identidad estable por unidad para `SERIALIZED_ASSET`;
+- control por cantidad para `REUSABLE_QUANTITY`;
+- transición controlada cuando cambie la granularidad;
+- ubicación, custodia, condición y disponibilidad como dimensiones separadas;
+- eventos append-only o equivalentes auditables para cambios materiales;
+- conteos como observación;
+- diferencias como casos investigables;
+- cero doble representación de una misma existencia.
+
+#### 22. Handoff de kits
+
+E5 deberá preservar:
+
+```text
+KIT DEFINITION
+!=
+KIT INSTANCE
+!=
+MEMBER EXISTENCE
+```
+
+La instancia no agrega existencia adicional sobre sus miembros y la completitud debe ser calculable y auditable.
+
+#### 23. Handoff de repuestos
+
+E5 deberá asegurar que un `SPARE_PART` permanezca en un estado físico reconciliable hasta reserva, instalación, consumo, devolución o disposición.
+
+Una instalación futura deberá conservar:
+
+- activo u orden relacionada;
+- compatibilidad;
+- pieza instalada;
+- pieza retirada cuando aplique;
+- movimiento de stock;
+- evidencia;
+- resultado;
+- rollback o compensación cuando la transición lo admita.
+
+#### 24. Handoff de búsqueda, escaneo e impresión
+
+E5 deberá mantener:
+
+```text
+SEARCH / SCAN / PRINT
+→ INPUT O REPRESENTACIÓN
+→ RESOLUCIÓN AUTORITATIVA
+→ ACCIÓN SOLO SI ESTÁ AUTORIZADA
+```
+
+No se permite:
+
+- crear identidad por no encontrar resultado;
+- mover por escanear LOC;
+- transferir custodia por escanear activo;
+- modificar contenido por escanear LPN;
+- crear una identidad nueva por reimprimir QR;
+- presentar una búsqueda parcial como completa.
+
+#### 25. Handoff del inventario inicial
+
+La implementación futura deberá conservar:
+
+```text
+OBSERVATION
+→ CANDIDATE
+→ REVIEW
+→ AUTHORIZED MATERIALIZATION
+```
+
+Y separar:
+
+- no recorrido;
+- no observado;
+- no localizado;
+- diferencia;
+- pérdida confirmada;
+- candidato bloqueado;
+- registro canónico.
+
+#### 26. Handoff de las doce métricas
+
+042 transfiere las doce identidades de 041 sin alterar su definición:
+
+```text
+NEXO-SUBMET-001
+NEXO-SUBMET-002
+NEXO-SUBMET-003
+NEXO-SUBMET-004
+NEXO-SUBMET-005
+NEXO-SUBMET-006
+NEXO-SUBMET-007
+NEXO-SUBMET-008
+NEXO-SUBMET-009
+NEXO-SUBMET-010
+NEXO-SUBMET-011
+NEXO-SUBMET-012
+```
+
+Estado inicial preservado:
+
+```text
+BASELINE = NOT_COLLECTED
+TARGET = NOT_SET
+```
+
+042 no convierte dirección deseada de mejora en target numérico.
+
+#### 27. Secuencia de medición futura
+
+E5 deberá permitir, cuando el package correspondiente lo requiera:
+
+```text
+RAW ELIGIBLE OBSERVATIONS
+→ QUALITY CHECK
+→ CALCULATION
+→ SEGMENTATION
+→ BASELINE_PROVISIONAL
+→ REVIEW
+→ BASELINE_APPROVED
+→ TARGET_PROPOSED
+→ GUARDRAIL REVIEW
+→ TARGET_APPROVED
+→ MONITORING
+```
+
+No se permite saltar directamente de datos crudos a target.
+
+#### 28. Handoff de calidad de datos
+
+Los paquetes que produzcan o consuman métricas deberán distinguir:
+
+- dato válido;
+- dato parcial;
+- dato faltante;
+- dato inválido;
+- evidencia insuficiente;
+- resultado desconocido;
+- exclusión justificada;
+- no aplicable.
+
+Ninguno se convierte en cero por conveniencia.
+
+#### 29. Handoff de observabilidad
+
+E5 deberá decidir por package qué logs, métricas, trazas y alertas son necesarios para diagnosticar:
+
+- identidad incorrecta;
+- doble efecto;
+- resultado desconocido;
+- conflicto de versión;
+- búsqueda parcial;
+- scan no resuelto;
+- diferencia sin owner;
+- candidato bloqueado;
+- transición legacy incompleta;
+- baseline o target inválidos.
+
+La observabilidad no debe almacenar secretos ni datos personales innecesarios.
+
+#### 30. Handoff de rollout y rollback
+
+Antes de implementación física, cada package aplicable deberá definir:
+
+- precondiciones;
+- orden de cambios;
+- compatibilidad temporal;
+- feature gate cuando aplique;
+- canary o cohorte cuando corresponda;
+- condición de pausa;
+- rollback técnico;
+- rollback funcional;
+- tratamiento de datos;
+- conciliación posterior;
+- evidencia de recuperación.
+
+042 no ejecuta estas acciones.
+
+#### 31. Handoff de piloto
+
+Cuando un package afecte operación física o de usuarios, E5 deberá declarar:
+
+- actores;
+- sedes o alcance;
+- dispositivos;
+- datos o fixtures;
+- duración;
+- exclusiones;
+- salvaguardas;
+- criterios medibles;
+- evidencia;
+- regla de salida.
+
+El diseño aprobado no equivale a piloto ejecutado.
+
+#### 32. Estado de las superficies legacy
+
+Las superficies existentes de `vento-nexo` relacionadas con activos, grupos, conteos e inventario inicial continúan como:
+
+```text
+REUSE_OR_REFACTOR
+```
+
+042 no ordena reutilización ciega ni retiro automático.
+
+E5 deberá determinar por package:
+
+- qué se reutiliza;
+- qué se refactoriza;
+- qué se reemplaza;
+- qué se mantiene temporalmente por compatibilidad;
+- qué se retira;
+- cuándo deja de existir un writer o proyección competidora.
+
+#### 33. Gaps aceptados para handoff
+
+El diseño puede aprobarse aunque permanezcan gaps de implementación, siempre que tengan owner y condición de salida.
+
+| Gap | Bloquea diseño | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| nueve subcapacidades `CAP-06`/`CAP-07` sin package explícito en la proyección E5 | no | E5 / fuentes propietarias de package | vínculo o exclusión canónica explícita antes de gate del alcance afectado |
+| reconciliación física completa de datos legacy | no | package E5 aplicable + tareas de transición | evidencia reproducible antes de adopción o cutover |
+| capacidades runtime faltantes de grupos reutilizables y contenedores físicos | no | package E5 aplicable | implementación y pruebas bajo gate autorizado |
+| refactor de `inventory_kind` y `asset_mode` legacy | no | package E5 aplicable | contrato objetivo implementado sin heurística competidora |
+| instrumentación de doce métricas | no | package E5 aplicable | eventos, cálculo, calidad y observabilidad implementados y probados |
+| baseline y target reales | no | operación/gobierno posterior al piloto o medición válida | evidencia elegible y aprobación correspondiente |
+
+Ningún gap anterior autoriza un bypass.
+
+#### 34. No selección manual de packages
+
+La secuencia de packages pertenece al governed frontier.
+
+042 no puede:
+
+- escoger un `GAP-PKG-*` por conveniencia;
+- cambiar prioridad;
+- adelantar un package posterior;
+- crear un expediente package-gate;
+- aprobar un dossier;
+- ejecutar `handoff` físico;
+- convertir un package compilado en autorizado;
+- cambiar dependencias de `DELIV-PKG-015`.
+
+#### 35. Frontera con la implementación física
+
+Se fija:
+
+```text
+NEXO-UX-042
+→ NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea no tiene una identidad física propia.
+
+La ejecución material futura pertenece a los packages y unidades de implementación que E5 y la topología vigente determinen.
+
+#### 36. Frontera con Supabase
+
+042 no crea ni modifica:
+
+- migraciones;
+- tablas;
+- columnas;
+- enums;
+- índices;
+- constraints;
+- vistas;
+- funciones;
+- RPC;
+- triggers;
+- RLS;
+- grants;
+- Storage;
+- Realtime;
+- Edge Functions;
+- cron;
+- colas;
+- datos.
+
+Toda modificación futura de Supabase para VENTO deberá crearse, versionarse, documentarse y ejecutarse desde `vento-shell` bajo su package, gate y lifecycle aplicables.
+
+#### 37. `NEXO-ASSET-SUBDOMAIN-TRACEABILITY-MATRIX-001`
+
+| Fuente | Entrega aprobada | Consumidor futuro mínimo |
+| --- | --- | --- |
+| `NEXO-UX-026..029` | contratos LPN, contenido y contenedores | E5 package(s) que materialicen inventario/LPN |
+| `NEXO-UX-030..035` | activos, reutilizables, custodia, condición, kits, conteos y repuestos | E5 package(s) de `CAP-07` y dependencias compartidas |
+| `NEXO-UX-036` | búsqueda transversal | packages que expongan lectura/resolución |
+| `NEXO-UX-037` | impresión/reimpresión | packages con impresión o representación física |
+| `NEXO-UX-038` | escaneo y recuperación | packages con dispositivos/captura |
+| `NEXO-UX-039` | inventario inicial | packages de transición, reconciliación y altas autorizadas |
+| `NEXO-UX-040` | oráculos de escenarios representativos | `DELIV-PKG-016`, `022`, `023`, `024` según aplicabilidad |
+| `NEXO-UX-041` | métricas, baseline y targets | `DELIV-PKG-016`, `017`, `022`, `023`, `024` según aplicabilidad |
+| `NEXO-UX-042` | aprobación de diseño y handoff | E5 existente; no crea package ni gate |
+
+#### 38. Criterio de handoff válido
+
+El handoff se considera documentalmente válido cuando:
+
+1. todas las tareas 026–041 están representadas;
+2. las fronteras de identidad permanecen explícitas;
+3. los gaps se transfieren con owner y condición de salida;
+4. no se inventan packages;
+5. las relaciones package existentes se preservan;
+6. las ausencias de package permanecen visibles;
+7. TREQ se conserva como registro de obligaciones existentes;
+8. `DELIV-PKG-016` conserva la vinculación formal de pruebas por package;
+9. métricas llegan a E5 sin baseline ni target fabricados;
+10. la aprobación no se presenta como autorización física.
+
+#### 39. Decisión final de 042
+
+La decisión queda:
+
+```text
+DESIGN CONSISTENCY = PASS
+DESIGN APPROVAL = APPROVED
+E5 HANDOFF = DEFINED
+PACKAGE CREATION = NOT PERFORMED
+PACKAGE SELECTION = NOT PERFORMED
+E5-GATE-008 = NOT CLAIMED
+IMPLEMENTATION AUTHORIZATION = NOT GRANTED
+PHYSICAL EXECUTION = NOT PERFORMED
+```
+
+Los términos anteriores describen el cierre documental de esta tarea y no crean estados de runtime.
+
+#### 40. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: 042 aprueba y transfiere a E5 contratos, métricas, brechas y obligaciones ya definidos y cubiertos por requisitos existentes. No introduce una regla ejecutable nueva, una transición de dominio nueva, una capacidad de runtime nueva, un umbral nuevo ni una obligación de prueba independiente. La vinculación formal requisito ↔ package ↔ prueba ↔ evidencia permanece gobernada por E5.
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011`, para movimientos, fuente de verdad y no doble contabilización;
+- `TREQ-NEXO-012`, para trazabilidad, condición y contenido;
+- `TREQ-NEXO-013`, para identidad, activos, reutilizables, custodia y conteos;
+- `TREQ-NEXO-014`, para mantenimiento, repuestos, reparación y liberación;
+- `TREQ-NEXO-040` a `TREQ-NEXO-049`, para clasificación, granularidad, comportamiento por clase, transición legacy y reconciliación física;
+- `TREQ-NEXO-212`, para expediente de diferencias;
+- `TREQ-NEXO-265`, para investigación y causalidad;
+- `TREQ-NEXO-301`, `TREQ-NEXO-305` y `TREQ-NEXO-310`, para métricas, calidad, baseline y objetivos;
+- `TREQ-DATA-002`, para definición reproducible de métricas;
+- `TREQ-DATA-005`, para línea base, meta, guardrails y comprobación de mejora;
+- requisitos transversales de autorización, UX, integración, Supabase y dispositivos ya relacionados por sus fuentes propietarias.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La validación de build corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron validadores contra el checkout local del usuario durante la redacción de 042. |
+| REMOTA | PASS | Se verificaron protocolo, contrato de entrega, continuidad, topología, políticas de tarea, owner NEXO, 04A modular NEXO, `CAP-SCOPE-006`, `CAP-SCOPE-007`, la planificación E5, el lifecycle de packages, `DELIV-PKG-001..025`, la puerta `E5-GATE-008`, la matriz E5 de `CAP-06` y `CAP-07`, el registro de package readiness y el estado remoto actual. La versión completa aprobada de 041 se consumió como predecesora documental para trabajo adelantado. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó inventario, conteo, préstamo, mantenimiento, búsqueda con usuarios, piloto, cutover, baseline, target ni otra operación real. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-042` usa `DEFINE_ONCE`, no genera instancia física propia y no autoriza implementación, package, migración, despliegue ni cambio remoto. |
+
+#### 43. Criterios de aceptación
+
+- [x] se consumen exactamente `NEXO-UX-026` a `NEXO-UX-041`;
+- [x] el universo esperado contiene 16 tareas y no presenta faltantes ni duplicados;
+- [x] el diseño compuesto se declara coherente;
+- [x] LPN, contenedor físico y contenido permanecen separados;
+- [x] activo serializado y reutilizable por cantidad permanecen separados;
+- [x] kit no agrega existencia sobre miembros;
+- [x] repuesto no queda simultáneamente en stock e instalado;
+- [x] observación y estado canónico permanecen separados;
+- [x] conteo y ajuste permanecen separados;
+- [x] no localizado y pérdida confirmada permanecen separados;
+- [x] búsqueda, scan e impresión no conceden mutación;
+- [x] inventario inicial conserva observación, candidato, revisión y materialización separados;
+- [x] se preservan las doce métricas de 041;
+- [x] baseline permanece `NOT_COLLECTED` y target `NOT_SET` hasta evidencia válida;
+- [x] handoff a E5 consume el lifecycle ya existente;
+- [x] 042 no crea `package_id`;
+- [x] 042 no selecciona el package siguiente;
+- [x] 042 no modifica el governed frontier;
+- [x] 042 no aprueba `E5-GATE-008`;
+- [x] se preservan los vínculos E5 existentes de `CAP-06` y `CAP-07`;
+- [x] las nueve subcapacidades sin package explícito permanecen visibles;
+- [x] no se inventan package IDs para cubrir esas ausencias;
+- [x] vínculos por capacidad y vínculos por TREQ no se confunden;
+- [x] `DELIV-PKG-016` conserva la vinculación formal de pruebas por package;
+- [x] gaps de implementación conservan owner y condición de salida;
+- [x] superficies legacy permanecen `REUSE_OR_REFACTOR`;
+- [x] toda futura modificación Supabase permanece gobernada desde `vento-shell`;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega continuidad exacta a `NEXO-UX-043`.
+
+#### 44. Límites
+
+Esta tarea no:
+
+- crea package IDs;
+- divide, fusiona o reprioriza packages;
+- crea expedientes package-gate;
+- cambia `DELIV-PKG-015`;
+- aprueba `DELIV-PKG-025` para un package;
+- aprueba `E5-GATE-008`;
+- crea instancias `SHELL-CI-020..024`;
+- autoriza implementación física;
+- modifica código de `vento-nexo`;
+- crea páginas, componentes, Server Actions o Route Handlers;
+- modifica Supabase;
+- crea migraciones o backfills;
+- modifica datos;
+- ejecuta clasificación física;
+- crea LPN;
+- crea contenedores físicos;
+- crea activos;
+- crea grupos reutilizables;
+- crea kits;
+- crea repuestos;
+- ejecuta conteos;
+- ajusta cantidades;
+- mueve inventario;
+- transfiere custodia;
+- confirma pérdida;
+- ejecuta mantenimiento o reparación;
+- imprime o reimprime;
+- opera escáneres;
+- ejecuta inventario inicial;
+- instrumenta métricas;
+- calcula baseline real;
+- fija target numérico;
+- ejecuta piloto, cutover, rollback o hypercare;
+- modifica `active-sequence.json`;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-043`.
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad`
 ### [ ] NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
 ### [ ] NEXO-UX-044 — Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones
 ### [ ] NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
