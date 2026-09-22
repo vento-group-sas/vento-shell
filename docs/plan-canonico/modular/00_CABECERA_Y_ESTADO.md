@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1250** |
+| Tareas aprobadas | **1251** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **346** |
+| Tareas no iniciadas | **345** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **78.32% (1250/1596)** |
+| Porcentaje de completamiento | **78.38% (1251/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas** |
-| Tarea actual | **NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos** |
+| Última tarea aprobada | **NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos** |
+| Tarea actual | **NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos** |
+| Siguiente tarea | **NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 108 de 127 aprobadas; NEXO-UX-039 pendiente** |
+| Progreso del bloque | **BLOQUE K: 109 de 127 aprobadas; NEXO-UX-040 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-039** |
+| Carril documental | **ACTIVO — NEXO-UX-040** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-038` — Diseñar operación con escáner y etiquetas dañadas |
-| Tarea actual | `NEXO-UX-039` — Diseñar inventario inicial de contenedores y activos — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-040` — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos |
+| Última aprobada | `NEXO-UX-039` — Diseñar inventario inicial de contenedores y activos |
+| Tarea actual | `NEXO-UX-040` — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-041` — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 108 DE 127 APROBADAS — ACTUAL NEXO-UX-039** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 109 DE 127 APROBADAS — ACTUAL NEXO-UX-040** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-038 — Diseñar operación con escáner y etiquetas dañadas
-        ↓
-TAREA ACTUAL
 NEXO-UX-039 — Diseñar inventario inicial de contenedores y activos
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 108 de 127 tareas aprobadas
+BLOQUE K — 109 de 127 tareas aprobadas
 ```
