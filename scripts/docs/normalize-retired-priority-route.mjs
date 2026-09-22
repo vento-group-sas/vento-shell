@@ -100,15 +100,34 @@ const authUiPath = path.join(
   '06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md',
 );
 const authUi = fs.readFileSync(authUiPath, 'utf8');
-for (let number = 52; number <= 60; number += 1) {
-  const id = `AUTH-UI-${String(number).padStart(3, '0')}`;
-  if (!authUi.includes(`### [ ] ${id} —`)) {
-    throw new Error(`${id} no permanece pendiente dentro de la rectificación integral.`);
-  }
+const rectificationHeading = '## Rectificación integral de `AUTH-UI-052..060`';
+if (!authUi.includes(rectificationHeading)) {
+  throw new Error('No existe la rectificación integral AUTH-UI-052..060.');
 }
 
+const rectificationStates = new Map();
+for (let number = 52; number <= 60; number += 1) {
+  const id = `AUTH-UI-${String(number).padStart(3, '0')}`;
+  const headingPattern = new RegExp(
+    `^###\\s+(✅|\\[ \\])\\s+${id}\\s+—[^\\n]*$`,
+    'gmu',
+  );
+  const matches = [...authUi.matchAll(headingPattern)];
+  if (matches.length !== 1) {
+    throw new Error(
+      `${id} debe existir exactamente una vez dentro de la rectificación integral con estado APROBADA o NO INICIADA; encontrados ${matches.length}.`,
+    );
+  }
+  rectificationStates.set(id, matches[0][1] === '✅' ? 'APROBADA' : 'NO_INICIADA');
+}
+
+const approvedCount = [...rectificationStates.values()].filter((state) => state === 'APROBADA').length;
+const pendingCount = [...rectificationStates.values()].filter((state) => state === 'NO_INICIADA').length;
+
 if (checkOnly) {
-  console.log('[PLAN CANÓNICO] Carril retirado y alcance AUTH-UI integral verificados.');
+  console.log(
+    `[PLAN CANÓNICO] Carril retirado y alcance AUTH-UI integral verificados; ${approvedCount} aprobada(s), ${pendingCount} pendiente(s).`,
+  );
 } else {
   console.log(`[PLAN CANÓNICO] Normalización de carril retirado completa: ${staleFiles.length} archivo(s) actualizado(s).`);
 }
