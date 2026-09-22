@@ -31429,7 +31429,1219 @@ NO KIT-WIDE CASCADE BY INFERENCE
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud`
-### [ ] NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
+### ✅ NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
+**Tarea siguiente:** NEXO-UX-034 — Diseñar conteos de activos y reutilizables
+**Tipo de tarea:** documental; diseño canónico de experiencia para definición versionada de kits, materialización de instancias, armado, asignación de miembros, verificación de completitud, sustituciones, préstamo, devolución, desarme y reconciliación, separando definición, instancia, componentes, LPN, contenedor, custodia, condición, disponibilidad y existencia física, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede definir una versión de kit, materializar una instancia, asignar miembros reales, verificar su completitud, resolver sustituciones, entregar o prestar la instancia, verificar su retorno y desarmarla sin duplicar existencias, perder identidad, ocultar faltantes ni confundir kit, activo, reutilizable, LPN o contenedor físico.
+
+La regla raíz queda:
+
+```text
+DEFINICION VERSIONADA
++
+INSTANCIA ESTABLE
++
+MIEMBROS AUTORITATIVOS
++
+REGLAS OBLIGATORIAS / OPCIONALES
++
+SUSTITUCIONES EXPLICITAS
++
+VERIFICACION DE COMPLETITUD
++
+ESTADO / CONDICION / CUSTODIA VISIBLES
++
+DECISION SERVER-SIDE
++
+RECIBO RECONCILIABLE
+→
+KIT OPERABLE SIN EXISTENCIA DUPLICADA
+```
+
+Siempre:
+
+```text
+KIT_DEFINITION
+!=
+KIT_INSTANCE
+```
+
+```text
+KIT_INSTANCE
+!=
+LPN
+!=
+PHYSICAL_CONTAINER
+```
+
+```text
+STRUCTURALLY_COMPLETE
+!=
+AVAILABLE
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-033` deja definido un único contrato de experiencia que:
+
+1. mantiene `KIT` como clase primaria ya aprobada;
+2. separa `KIT_DEFINITION` de `KIT_INSTANCE`;
+3. trata “conjunto” como lenguaje empresarial y no como una clase adicional;
+4. conserva versiones de definición sin mutación histórica silenciosa;
+5. distingue componentes obligatorios y opcionales;
+6. permite cantidades requeridas mayores que uno cuando el contrato lo admite;
+7. conserva miembros serializados por identidad exacta;
+8. conserva miembros por cantidad como scopes cuantificados reconciliables;
+9. permite kit anidado solo cuando la definición lo autoriza y la composición es acíclica;
+10. impide que una instancia cree saldo adicional;
+11. impide doble contabilización de miembros;
+12. define armado como asignación de existencias ya existentes;
+13. define verificación de completitud determinista contra una versión fija;
+14. separa completitud de condición y disponibilidad;
+15. exige que un kit incompleto exponga exactamente qué falta;
+16. permite sustituciones solo mediante regla o decisión autorizada;
+17. conserva sustitución de miembro separada de reemplazo patrimonial;
+18. conserva préstamo y devolución como contratos de custodia separados;
+19. verifica completitud nuevamente al retorno;
+20. trata faltante al retorno como diferencia, no como pérdida confirmada;
+21. trata daño al retorno como incidente, no como eliminación de membresía;
+22. integra `KIT_INSTANCE` como contenido de LPN sin duplicar sus miembros;
+23. separa kit de contenedor físico;
+24. conserva desarme sin disposición automática de miembros;
+25. conserva retiro o disposición del kit sin cascada hacia componentes;
+26. conserva revisión, idempotencia, concurrencia y recuperación ante resultado desconocido;
+27. trata offline como intención u observación pendiente, nunca como cambio autoritativo;
+28. consume exactamente `VPROC-0067` y sus seis business events aprobados;
+29. usa `VSCREEN-0176` para definición y `VSCREEN-0135` para instancias y operación;
+30. entrega a `NEXO-UX-034` un modelo de conteo de kits que no duplique instancia y miembros.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado se agota en el contrato documental.
+
+La tarea no genera identidad física propia ni autoriza código, datos, migraciones, UI o permisos.
+
+#### 4. Handoff recibido de `NEXO-UX-032`
+
+La continuidad interna es:
+
+```text
+NEXO-UX-032
+→
+NEXO-UX-033
+→
+NEXO-UX-034
+```
+
+`NEXO-UX-032` entrega:
+
+```text
+AUTHORITATIVE SUBJECT OR QUANTITY SCOPE
++
+SEPARATE CONDITION / AVAILABILITY / LIFECYCLE DIMENSIONS
++
+NON-DESTRUCTIVE DAMAGE / LOSS / RECOVERY HISTORY
++
+MAINTENANCE REQUEST → DIAGNOSIS → REPAIR → TEST → RELEASE BOUNDARIES
++
+RETIREMENT REQUEST / APPROVAL / DISPOSITION SEPARATION
++
+NO IDENTITY REUSE
++
+QUANTITY-SAFE INCIDENT AND DISPOSITION SEMANTICS
++
+VERSIONED IDEMPOTENT HISTORY
++
+NO KIT-WIDE CASCADE BY INFERENCE
+```
+
+033 consume ese handoff y conserva una regla estricta:
+
+```text
+INCIDENT ON KIT
+!=
+INCIDENT ON EVERY MEMBER
+```
+
+```text
+INCIDENT ON MEMBER
+!=
+AUTO INCIDENT ON WHOLE KIT
+```
+
+La UI puede proyectar impacto de completitud o disponibilidad, pero no propaga daño, pérdida, reparación, baja o disposición por inferencia.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume sin redefinir:
+
+- `NEXO-DOM-001`, clase primaria `KIT` y matriz de comportamiento por clase;
+- `NEXO-DOM-007`, ubicación física;
+- `NEXO-DOM-008`, custodia y responsable;
+- `NEXO-DOM-009`, granularidad individual o por cantidad;
+- `NEXO-DOM-010`, condición, daño, faltante, pérdida y recuperación;
+- `NEXO-DOM-011`, préstamo, devolución y transferencia de custodia;
+- `NEXO-DOM-012`, mantenimiento y disponibilidad;
+- `NEXO-DOM-013`, baja, disposición y reemplazo;
+- `NEXO-DOM-014`, definición, instancia, miembros, sustituciones y completitud;
+- `NEXO-DOM-015`, conteos, como owner inmediatamente posterior;
+- `NEXO-DOM-019`, frontera entre contenedor físico y LPN;
+- las reglas LPN aprobadas para contenido `KIT_INSTANCE`;
+- la prohibición de doble representación de existencia.
+
+#### 6. Proceso canónico `VPROC-0067`
+
+La UX consume exactamente:
+
+```text
+VPROC-0067.KIT_DEFINITION_DRAFT
+VPROC-0067.DEFINITION_UNDER_REVIEW
+VPROC-0067.DEFINITION_APPROVED
+VPROC-0067.INSTANCE_ASSEMBLING
+VPROC-0067.COMPLETENESS_CHECK
+VPROC-0067.AVAILABLE
+VPROC-0067.ASSIGNED
+VPROC-0067.IN_USE
+VPROC-0067.RETURN_UNDER_VERIFICATION
+VPROC-0067.KIT_CYCLE_RECONCILED
+```
+
+No crea estados adicionales para resolver necesidades visuales.
+
+#### 7. Business events de `VPROC-0067`
+
+La UX reconoce exactamente:
+
+```text
+VPROC-0067.EVT-001
+VPROC-0067.EVT-002
+VPROC-0067.EVT-003
+VPROC-0067.EVT-004
+VPROC-0067.EVT-005
+VPROC-0067.EVT-006
+```
+
+Corresponden a borrador de definición, revisión, aprobación, asignación, retorno en verificación y cierre reconciliado.
+
+Un estado de proceso sin business event dedicado no autoriza inventar un event ID local.
+
+#### 8. Superficies canónicas
+
+La experiencia se distribuye conceptualmente entre dos superficies ya catalogadas:
+
+```text
+VSCREEN-0176
+Definición de kits y conjuntos
+```
+
+para versiones reutilizables, componentes obligatorios u opcionales, sustituciones y reglas de completitud, y:
+
+```text
+VSCREEN-0135
+Instancias y operación de kits
+```
+
+para armado, miembros reales, completitud, asignación, préstamo, devolución y sustitución de una instancia concreta.
+
+La existencia de esas identidades de pantalla no demuestra materialización física actual.
+
+#### 9. Actores y responsabilidades visibles
+
+La experiencia debe poder distinguir, según el proceso y autoridad vigente:
+
+- `BODEGA_Y_ABASTECIMIENTO`;
+- `CUSTODIO_O_USUARIO_DE_ACTIVO`;
+- `AREA_SOLICITANTE`;
+- `RESPONSABLE_DE_CATALOGO`;
+- `LOGISTICA_Y_TRANSPORTE`;
+- `GERENCIA_O_SUPERVISION_DE_SEDE` cuando una excepción requiera aprobación separada.
+
+La UI no convierte esa participación en permiso.
+
+#### 10. Frontera de autorización
+
+La definición y administración base consumen las fronteras de `NEXO-AUTH-024`.
+
+Préstamo, devolución, aceptación y custodia consumen `NEXO-AUTH-025`.
+
+El catálogo activo observado no demuestra una `PermissionKey` atómica exacta para crear o aprobar definiciones de kit, crear instancias, asignar miembros, autorizar sustituciones, verificar con efecto autoritativo, desarmar o cerrar ciclos de kit.
+
+Por tanto, el diseño conserva:
+
+```text
+MUTACION DE KIT SIN CAPACIDAD EXACTA DEMOSTRADA
+→
+DEFAULT_DENY
+```
+
+La tarea diseña la experiencia sin presentar controles mutantes como actualmente autorizados.
+
+#### 11. Modelo mental visible
+
+La interfaz debe hacer visible la jerarquía conceptual:
+
+```text
+KIT DEFINITION
+  └─ VERSION
+      ├─ REQUIRED COMPONENT RULES
+      ├─ OPTIONAL COMPONENT RULES
+      └─ SUBSTITUTION RULES
+
+KIT INSTANCE
+  ├─ FIXED DEFINITION VERSION
+  ├─ AUTHORITATIVE MEMBERS
+  ├─ COMPLETENESS
+  ├─ LOCATION
+  ├─ CUSTODY
+  └─ CURRENT PROCESS STATE
+```
+
+Nunca se usa una sola tarjeta o fila para colapsar definición e instancia.
+
+#### 12. Definición de kit
+
+Una definición describe reglas reutilizables.
+
+Debe mostrar al menos:
+
+- identidad de definición;
+- versión;
+- propósito;
+- estado de revisión;
+- componentes;
+- obligatoriedad;
+- cantidad requerida;
+- elegibilidad;
+- sustituciones permitidas;
+- regla de completitud;
+- vigencia cuando corresponda.
+
+No muestra “existencia disponible” porque una definición no es un objeto físico.
+
+#### 13. Versionado de definición
+
+Editar una versión aprobada no se presenta como sobrescritura silenciosa.
+
+La UX debe mostrar conceptualmente:
+
+```text
+CURRENT APPROVED VERSION
+→
+CREATE / REVIEW NEW VERSION
+→
+APPROVE NEW VERSION
+```
+
+Las instancias existentes conservan la versión que las gobierna hasta transición explícita.
+
+#### 14. `KIT_DEFINITION_DRAFT`
+
+En borrador se permite estructurar propósito y componentes sin afirmar operabilidad.
+
+La interfaz no presenta el borrador como apto para instanciar kits operativos.
+
+#### 15. `DEFINITION_UNDER_REVIEW`
+
+La revisión debe permitir comprobar:
+
+- propósito;
+- componentes obligatorios;
+- opcionales;
+- cantidades;
+- clases elegibles;
+- sustituciones;
+- posibles incompatibilidades;
+- impacto de cambio frente a la versión anterior.
+
+La revisión no materializa ninguna instancia.
+
+#### 16. `DEFINITION_APPROVED`
+
+Una definición aprobada puede ser seleccionada como base de nuevas instancias conforme a autoridad y vigencia.
+
+Se preserva:
+
+```text
+DEFINITION_APPROVED
+!=
+INSTANCE_EXISTS
+```
+
+#### 17. Línea de componente
+
+Cada línea debe mostrarse como requisito de composición, no como miembro físico.
+
+Una línea debe poder expresar conceptualmente:
+
+```text
+ROLE
+REQUIRED / OPTIONAL
+REQUIRED QUANTITY
+ELIGIBLE SUBJECT OR CLASS
+SUBSTITUTION POLICY
+CONDITION REQUIREMENT WHEN APPLICABLE
+```
+
+#### 18. Componente obligatorio
+
+La UI identifica claramente una línea obligatoria.
+
+Si no está satisfecha:
+
+```text
+STRUCTURALLY_COMPLETE = NO
+```
+
+El actor debe poder ver qué falta y cuánto falta.
+
+#### 19. Componente opcional
+
+Un opcional puede estar ausente sin bloquear completitud estructural.
+
+Su presencia o ausencia sigue siendo visible en la composición real.
+
+#### 20. Cantidad requerida
+
+Para una línea cuantificada se presenta al menos:
+
+```text
+REQUIRED
+ASSIGNED
+VALID
+MISSING
+```
+
+La interfaz no oculta déficit detrás de un estado genérico “incompleto”.
+
+#### 21. Elegibilidad del miembro
+
+Asignar un miembro exige que éste pueda satisfacer la línea según definición y estado vigente.
+
+La UI no usa nombre, categoría, texto libre o similitud visual como autoridad suficiente.
+
+#### 22. Instancia de kit
+
+Una `KIT_INSTANCE` posee identidad estable distinta de la definición.
+
+Su cabecera debe hacer visible:
+
+- identidad de instancia;
+- definición;
+- versión fijada;
+- estado de proceso;
+- completitud;
+- ubicación;
+- custodia o responsable aplicable;
+- revisión vigente;
+- última operación relevante.
+
+#### 23. Creación de instancia
+
+La creación se presenta como materialización de una instancia bajo una versión aprobada.
+
+No implica que el kit ya esté completo ni disponible.
+
+#### 24. `INSTANCE_ASSEMBLING`
+
+Durante armado se muestran miembros asignados y faltantes en tiempo real a partir del estado confirmado.
+
+La UI no usa optimismo para marcar un miembro como confirmado antes de persistencia autoritativa.
+
+#### 25. Miembro serializado
+
+Un miembro individual se selecciona por identidad exacta.
+
+Debe poder verse, cuando aplique:
+
+- código o identidad;
+- serial o placa;
+- condición;
+- disponibilidad relevante;
+- ubicación;
+- custodia;
+- conflicto o bloqueo.
+
+No se reemplaza por “1 unidad del modelo” si la definición exige identidad exacta.
+
+#### 26. Miembro por cantidad
+
+Cuando la definición permite control por cantidad, la UI usa un scope cuantificado.
+
+Se exige conceptualmente:
+
+```text
+ASSIGNED_QTY > 0
+```
+
+La cantidad asignada debe ser reconciliable contra la existencia autoritativa y no puede reservarse dos veces de forma incompatible.
+
+#### 27. Kit como miembro
+
+Una instancia de kit puede satisfacer una línea únicamente si la definición lo permite.
+
+La UI muestra la instancia anidada como identidad separada y no expande sus miembros como si fueran miembros directos del kit padre.
+
+#### 28. Composición acíclica
+
+Antes de aceptar una membresía kit-a-kit se debe impedir:
+
+```text
+SELF MEMBERSHIP
+DIRECT CYCLE
+INDIRECT CYCLE
+```
+
+Un conflicto de ciclo se explica como bloqueo estructural y no como error genérico.
+
+#### 29. La instancia no crea stock
+
+La vista de una instancia puede agrupar miembros, pero no presenta la instancia como saldo adicional equivalente.
+
+Se preserva:
+
+```text
+MEMBER EXISTENCE
++
+KIT INSTANCE VIEW
+!=
+TWO PHYSICAL EXISTENCES
+```
+
+#### 30. No doble contabilización
+
+La UX no suma el kit y sus miembros como unidades homogéneas.
+
+Cuando una métrica muestre número de kits y número de componentes, debe etiquetar claramente ambas dimensiones para evitar una suma conceptual falsa.
+
+#### 31. Verificación de completitud
+
+`COMPLETENESS_CHECK` consume:
+
+- versión fijada;
+- líneas requeridas;
+- miembros confirmados;
+- cantidades;
+- sustituciones activas;
+- condición o elegibilidad cuando aplique;
+- revisión vigente.
+
+La UX presenta la evaluación como resultado derivado de esos hechos, no como un checkbox editable.
+
+#### 32. Resultado de completitud
+
+El resultado mínimo visible es:
+
+```text
+COMPLETE
+INCOMPLETE
+UNKNOWN / CONFLICT
+```
+
+`UNKNOWN / CONFLICT` no se degrada silenciosamente a completo.
+
+#### 33. Explicabilidad de incompletitud
+
+Para cada línea no satisfecha se muestra:
+
+- requisito;
+- cantidad requerida;
+- cantidad válida observada;
+- cantidad faltante;
+- miembro rechazado cuando exista;
+- motivo;
+- acción o owner de resolución cuando corresponda.
+
+#### 34. Completitud y condición
+
+La UI conserva:
+
+```text
+COMPLETE
+!=
+ALL MEMBERS IN GOOD CONDITION
+```
+
+Un kit puede tener todos los miembros y seguir bloqueado por daño, mantenimiento, condición crítica u otra política.
+
+#### 35. Completitud y disponibilidad
+
+La UI conserva:
+
+```text
+COMPLETE
+!=
+AVAILABLE
+```
+
+La disponibilidad requiere completar la evaluación de bloqueos aplicables.
+
+#### 36. `AVAILABLE`
+
+Solo se presenta disponibilidad positiva cuando la fuente autoritativa la confirma.
+
+La tarjeta o fila debe poder explicar por qué está disponible o qué bloqueo impide estarlo.
+
+#### 37. Miembro extra
+
+Un miembro observado que no satisface una línea conocida no se adopta silenciosamente.
+
+Se presenta como:
+
+```text
+EXTRA / UNMATCHED MEMBER
+```
+
+hasta que una regla válida, sustitución o corrección autorizada lo resuelva.
+
+#### 38. Sustitución
+
+La sustitución se diseña como operación explícita.
+
+La revisión previa debe mostrar:
+
+```text
+COMPONENT LINE
+EXPECTED / CURRENT MEMBER
+PROPOSED SUBSTITUTE
+REASON
+EFFECT ON COMPLETENESS
+```
+
+#### 39. Sustitución autorizada
+
+La UI nunca presenta “similar” como sinónimo de “permitido”.
+
+Si la regla de sustitución no existe o no puede demostrarse:
+
+```text
+SUBSTITUTION = BLOCKED
+```
+
+#### 40. Sustitución e historia
+
+El miembro anterior permanece en historial.
+
+La UX no elimina su presencia histórica para que la instancia parezca siempre haber tenido el sustituto actual.
+
+#### 41. Sustitución frente a reemplazo patrimonial
+
+La experiencia separa:
+
+```text
+KIT MEMBER SUBSTITUTION
+!=
+ASSET REPLACEMENT
+```
+
+El segundo conserva su owner en baja/reemplazo de activos.
+
+#### 42. `ASSIGNED`
+
+La asignación debe mostrar a qué persona, área, actividad o viaje queda comprometida la instancia cuando el proceso lo permita.
+
+No cambia composición ni propiedad por inferencia.
+
+#### 43. `IN_USE`
+
+En uso, la experiencia prioriza:
+
+- identidad de instancia;
+- responsable o custodia aplicable;
+- miembros relevantes;
+- condición reportada;
+- obligación de retorno cuando exista;
+- incidentes abiertos;
+- acción de devolución o reporte cuando esté autorizada.
+
+#### 44. Custodia del kit
+
+Se preserva:
+
+```text
+KIT CUSTODIAN
+!=
+AUTOMATIC CUSTODIAN OF EVERY MEMBER
+```
+
+La vista puede proyectar responsables de miembros, pero no reescribe relaciones individuales.
+
+#### 45. Préstamo
+
+El préstamo consume el patrón diseñado por `NEXO-UX-031`.
+
+La revisión debe identificar la instancia exacta y su composición entregada.
+
+Un préstamo no modifica la definición de kit.
+
+#### 46. Devolución
+
+La devolución no termina al registrar “devuelto”.
+
+La instancia entra en:
+
+```text
+RETURN_UNDER_VERIFICATION
+```
+
+hasta reconciliar miembros, cantidades, condición, sustituciones y diferencias.
+
+#### 47. Faltante al retorno
+
+Un faltante se muestra como diferencia concreta de completitud.
+
+Se preserva:
+
+```text
+MISSING MEMBER
+!=
+LOSS CONFIRMED
+```
+
+La pérdida sigue su contrato propietario.
+
+#### 48. Daño al retorno
+
+Un miembro dañado permanece visible y conserva identidad o cantidad.
+
+La UI puede indicar que dejó de satisfacer una línea cuando la política lo determine, pero no borra el miembro ni confirma baja por inferencia.
+
+#### 49. Opcionales al retorno
+
+La ausencia de un componente opcional no convierte automáticamente el kit en incompleto.
+
+La UI puede mostrar una novedad independiente cuando exista obligación de retorno específica.
+
+#### 50. Verificación por escaneo
+
+El escaneo puede acelerar identificación de instancia o miembro.
+
+Siempre:
+
+```text
+SCAN
+!=
+AUTHORIZED MUTATION
+```
+
+Un código válido no prueba que el objeto sea elegible, que pertenezca a la instancia ni que la operación esté autorizada.
+
+#### 51. Dispositivo compartido
+
+En estación, tableta o kiosco compartido, la UX debe mantener visible al actor efectivo antes de una mutación relevante.
+
+Un dispositivo no hereda privilegios de quien lo usó anteriormente.
+
+#### 52. Ubicación
+
+La instancia puede mostrar ubicación operacional.
+
+Mover el kit no reescribe de forma silenciosa ubicaciones individuales que deban conservarse para miembros exactos.
+
+#### 53. Movimiento
+
+La UX no usa “mover kit” como atajo para crear, borrar o cambiar membresías.
+
+Cuando componentes viajan con la instancia, la experiencia debe correlacionar el movimiento sin producir presencia confirmada simultánea en ubicaciones incompatibles.
+
+#### 54. Kit dentro de LPN
+
+Se preserva:
+
+```text
+KIT_INSTANCE
+=
+VALID LPN CONTENT SHAPE
+```
+
+cuando el contrato de LPN lo permite.
+
+La UI del LPN muestra la instancia como una identidad de contenido y puede proyectar sus miembros para consulta.
+
+#### 55. No duplicar miembros dentro de LPN
+
+Si el `KIT_INSTANCE` ya es contenido autoritativo del LPN, sus miembros no se presentan como líneas autoritativas paralelas que dupliquen su existencia.
+
+Se distingue:
+
+```text
+PROJECTED MEMBER
+!=
+DIRECT LPN MEMBERSHIP
+```
+
+#### 56. Kit frente a contenedor físico
+
+Se preserva:
+
+```text
+KIT_INSTANCE
+!=
+PHYSICAL_CONTAINER
+```
+
+Una caja, maleta o canastilla puede ser miembro del kit sin convertirse en la identidad del kit.
+
+#### 57. Kit frente a reusable quantity
+
+Un grupo por cantidad representa unidades equivalentes.
+
+Una instancia de kit representa composición y completitud.
+
+La UI no reutiliza “grupo” como alias de kit.
+
+#### 58. Kit frente a activo serializado
+
+Un kit puede contener activos serializados, pero no sustituye su identidad, historial, condición, mantenimiento o custodio individual.
+
+#### 59. Desarme
+
+El desarme se presenta como terminación controlada de membresías.
+
+La revisión previa muestra miembros que quedarán liberados de la composición.
+
+Siempre:
+
+```text
+DISASSEMBLE
+!=
+DISPOSE MEMBERS
+```
+
+#### 60. Retiro o disposición del kit
+
+Retirar la instancia no propaga automáticamente baja o disposición a sus componentes.
+
+La UX debe advertir cuando existen miembros todavía asignados y exigir reconciliación antes de un cierre incompatible.
+
+#### 61. Reemplazo de instancia
+
+Una nueva instancia que sustituye otra obtiene identidad propia.
+
+La UX conserva relación histórica entre saliente y entrante cuando el contrato lo requiera, sin reutilizar `kit_instance_id`.
+
+#### 62. Conteo
+
+El conteo de kits pertenece a `NEXO-UX-034`.
+
+033 solo fija que una observación puede registrar:
+
+- presencia de instancia;
+- miembros observados;
+- cantidades;
+- faltantes;
+- extras;
+- condición;
+- ubicación.
+
+La observación no modifica composición automáticamente.
+
+#### 63. Revisión de definición
+
+Toda edición que pueda producir una nueva versión debe mostrar la revisión esperada.
+
+Un conflicto concurrente exige recargar y volver a revisar antes de intentar aprobar.
+
+#### 64. Revisión de instancia
+
+Armado, membresía, sustitución, retorno, desarme y cierre consumen una revisión de instancia.
+
+Se preserva:
+
+```text
+EXPECTED_KIT_REVISION
+=
+CURRENT_KIT_REVISION
+```
+
+antes de una mutación autoritativa.
+
+#### 65. Idempotencia
+
+El mismo intento lógico no puede:
+
+- crear dos definiciones equivalentes;
+- crear dos instancias por doble envío;
+- asignar dos veces el mismo miembro;
+- comprometer dos veces la misma porción;
+- registrar dos sustituciones iguales;
+- confirmar dos veces el mismo retorno;
+- desarmar dos veces la misma composición;
+- cerrar dos veces el mismo ciclo.
+
+#### 66. Timeout y resultado desconocido
+
+Ante timeout posterior al submit:
+
+```text
+UNKNOWN RESULT
+!=
+FAILED
+```
+
+La UX bloquea un nuevo intento independiente y reconcilia la misma operación.
+
+#### 67. Operación offline
+
+Offline puede conservar:
+
+- intención de armado;
+- escaneos u observaciones de miembros;
+- evidencia local;
+- verificación preliminar de retorno.
+
+No confirma membresía, sustitución, completitud, préstamo, retorno o cierre.
+
+Al reconectar se revalidan versión, revisión, miembros, cantidades y autoridad.
+
+#### 68. Error y recuperación
+
+Un error debe indicar:
+
+- qué no se confirmó;
+- qué datos u observaciones se conservaron;
+- si existe resultado desconocido;
+- si la revisión quedó obsoleta;
+- si un miembro ya fue comprometido;
+- cuál es la acción segura siguiente.
+
+La recuperación no duplica efectos.
+
+#### 69. Recibo de operación
+
+Toda mutación confirmada debe dejar un recibo comprensible con, según aplique:
+
+- instancia;
+- definición y versión;
+- operación;
+- miembros afectados;
+- completitud antes/después;
+- actor;
+- instante;
+- resultado;
+- correlación;
+- próxima acción cuando exista.
+
+#### 70. AS-IS remoto reconciliado
+
+La búsqueda dirigida en `vento-nexo` no demuestra un workflow gobernado de definición, instancia, membresía y completitud de kits.
+
+La aparición `VENTO-KIT-0004` como ejemplo de placa interna no constituye un dominio de kits.
+
+No se observa una superficie equivalente a `VSCREEN-0176` o `VSCREEN-0135` materializada con el contrato objetivo.
+
+Por tanto:
+
+```text
+AS_IS_KIT_CAPABILITY = NOT_MATERIALIZED_AS_GOVERNED_WORKFLOW
+```
+
+#### 71. Estado de adopción
+
+La capacidad permanece de naturaleza:
+
+```text
+BUILD
+```
+
+La existencia de contratos compartidos de `VPROC-0067` no equivale a implementación de producto.
+
+#### 72. Arquitectura de experiencia
+
+La experiencia objetivo se organiza en dos contextos:
+
+```text
+DEFINITION CONTEXT
+→ VERSIONES / COMPONENTES / SUSTITUCIONES / APROBACION
+
+INSTANCE CONTEXT
+→ ARMADO / MIEMBROS / COMPLETITUD / ASIGNACION / USO / RETORNO / CIERRE
+```
+
+No se mezclan en un mismo formulario genérico.
+
+#### 73. Navegación conceptual
+
+Desde una definición debe poder consultarse la versión y, cuando la implementación exista, navegar a instancias relacionadas sin presentar sus miembros como parte editable de la definición.
+
+Desde una instancia debe poder verse la versión que la gobierna, pero no editar esa versión desde el contexto operacional.
+
+#### 74. Revisión antes de mutación
+
+Toda operación de alto impacto presenta primero un resumen del efecto esperado.
+
+Ejemplos:
+
+```text
+ASSIGN MEMBER
+REMOVE MEMBER
+SUBSTITUTE MEMBER
+ACCEPT RETURN
+DISASSEMBLE
+CLOSE CYCLE
+```
+
+No se usa un botón ambiguo “guardar” para mezclar intenciones distintas.
+
+#### 75. Matriz de estado y experiencia
+
+| Estado | UX principal | Mutación conceptual permitida solo con autoridad |
+| --- | --- | --- |
+| `KIT_DEFINITION_DRAFT` | editar borrador y componentes preliminares | enviar a revisión |
+| `DEFINITION_UNDER_REVIEW` | revisar diferencias, cantidades y sustituciones | aprobar o devolver según owner |
+| `DEFINITION_APPROVED` | consultar versión aprobada | crear instancia cuando corresponda |
+| `INSTANCE_ASSEMBLING` | asignar miembros y ver faltantes | agregar/quitar miembros válidos |
+| `COMPLETENESS_CHECK` | verificar líneas y excepciones | confirmar evaluación válida |
+| `AVAILABLE` | mostrar aptitud y bloqueos | asignar o prestar |
+| `ASSIGNED` | mostrar destinatario y composición entregable | ejecutar handoff aplicable |
+| `IN_USE` | seguimiento, incidentes y retorno | iniciar devolución |
+| `RETURN_UNDER_VERIFICATION` | reconciliar composición y condición | aceptar retorno o resolver diferencias |
+| `KIT_CYCLE_RECONCILED` | historial y cierre | iniciar un nuevo ciclo si corresponde |
+
+La tabla diseña comportamiento UX; no concede permisos.
+
+#### 76. Inventario de escenarios documentales
+
+| ID | Escenario | Resultado esperado |
+| --- | --- | --- |
+| KIT-UX-01 | nueva definición en borrador | sin instancia física |
+| KIT-UX-02 | definición aprobada | utilizable como base futura |
+| KIT-UX-03 | editar versión aprobada | nueva versión, no sobrescritura |
+| KIT-UX-04 | crear instancia | identidad estable, estado assembling |
+| KIT-UX-05 | asignar miembro serial elegible | identidad exacta una vez |
+| KIT-UX-06 | asignar reusable por cantidad | porción reconciliable |
+| KIT-UX-07 | cantidad insuficiente | bloqueado |
+| KIT-UX-08 | miembro ya comprometido incompatible | bloqueado |
+| KIT-UX-09 | kit anidado válido | relación explícita |
+| KIT-UX-10 | ciclo de kits | bloqueado |
+| KIT-UX-11 | falta obligatorio | incompleto con causa visible |
+| KIT-UX-12 | falta opcional | no bloquea completitud estructural |
+| KIT-UX-13 | miembro extra | diferencia visible |
+| KIT-UX-14 | sustitución permitida | historial y nueva satisfacción |
+| KIT-UX-15 | sustitución por similitud sin regla | bloqueada |
+| KIT-UX-16 | completo con miembro dañado | completo pero no necesariamente disponible |
+| KIT-UX-17 | asignación | no cambia definición |
+| KIT-UX-18 | préstamo | consume contrato de custodia |
+| KIT-UX-19 | retorno completo | pasa por verificación |
+| KIT-UX-20 | faltante al retorno | diferencia, no pérdida confirmada |
+| KIT-UX-21 | daño al retorno | incidente, sin borrado de miembro |
+| KIT-UX-22 | kit dentro de LPN | instancia una vez, miembros proyectados |
+| KIT-UX-23 | miembros duplicados como líneas LPN | bloqueado conceptualmente |
+| KIT-UX-24 | desarme | libera membresías, no dispone miembros |
+| KIT-UX-25 | retirar kit con miembros activos | requiere reconciliación |
+| KIT-UX-26 | conteo | observación, no ajuste de composición |
+| KIT-UX-27 | revisión stale | conflicto y nueva revisión |
+| KIT-UX-28 | doble submit | un solo resultado empresarial |
+| KIT-UX-29 | timeout post-submit | reconciliar operación existente |
+| KIT-UX-30 | captura offline | pendiente local, revalidación posterior |
+| KIT-UX-31 | actor cambia en dispositivo compartido | nueva autoridad requerida |
+| KIT-UX-32 | ausencia de PermissionKey exacta | mutación no ejecutable |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 77. Responsabilidades y fronteras
+
+| Responsabilidad | Owner |
+| --- | --- |
+| clasificación `KIT` | `NEXO-DOM-001` |
+| definición, instancia, miembros y completitud | `NEXO-DOM-014` / `NEXO-UX-033` |
+| condición, daño, faltante y pérdida | `NEXO-DOM-010` / `NEXO-UX-032` |
+| préstamo, devolución y custodia | `NEXO-DOM-011` / `NEXO-UX-031` |
+| mantenimiento y disponibilidad | `NEXO-DOM-012` / `NEXO-UX-032` |
+| baja y disposición | `NEXO-DOM-013` / `NEXO-UX-032` |
+| conteo | `NEXO-DOM-015` / `NEXO-UX-034` |
+| LPN y contenido | familia LPN aprobada |
+| contenedor físico | `NEXO-DOM-019` y owners relacionados |
+| administración base de activos/reutilizables | `NEXO-AUTH-024` |
+| custodia/préstamo/devolución | `NEXO-AUTH-025` |
+| definición de pantalla | `VSCREEN-0176` |
+| operación de instancia | `VSCREEN-0135` |
+| proceso canónico | `VPROC-0067` |
+
+#### 78. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: la cobertura vigente ya exige separación entre kit y otras clases, definición e instancia, componentes y cantidades, sustituciones, completitud, identidad estable, no doble contabilización, comportamiento por clase, préstamo/devolución y recuperación segura. Esta tarea especializa la experiencia de usuario dentro de esas obligaciones sin introducir un requisito independiente.
+
+#### 79. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para separar kit, activo, reutilizable, contenedor, LPN y stock y preservar identidad, custodia e historia;
+- `TREQ-NEXO-040`, para conservar `KIT` dentro de las siete clases primarias;
+- `TREQ-NEXO-041`, para mantener clase, producto, ubicación, custodia, condición, LPN y kit como dimensiones separadas;
+- `TREQ-NEXO-043`, para impedir doble representación entre scopes cuantificados e identidades individuales;
+- `TREQ-NEXO-045`, como requisito propietario directo de definición, instancia, componentes, sustituciones, completitud y eventos auditables;
+- `TREQ-NEXO-047`, para aplicar completitud como comportamiento de `KIT` sin duplicar saldo, instancia, contenido LPN o valor;
+- `TREQ-UX-002`, para errores y recuperación sin duplicación de efectos;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado o pendiente y último cambio visibles;
+- `TREQ-UX-006`, para pérdida de red, reautorización, reanudación e idempotencia.
+
+Estas referencias son trazabilidad vigente y no representan cambios al registro.
+
+#### 80. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build canónico corresponde al checkout local posterior a la incorporación de la tarea. |
+| LOCAL | NOT_EXECUTED | No se ejecutaron format, quality, delivery, topología, plan ni TREQ contra el checkout local del usuario durante la elaboración. |
+| REMOTA | PASS | Se verificaron fuentes canónicas de `vento-shell`, topología `DEFINE_ONCE`, owner UX, `NEXO-DOM-014`, `NEXO-AUTH-024/025`, `VPROC-0067`, `VSCREEN-0176`, `VSCREEN-0135`, 04A NEXO/UX, package scripts y el AS-IS de `vento-nexo`; no se demostró un workflow gobernado de kits materializado. |
+| OPERATIVA | NOT_EXECUTED | No se definió, armó, asignó, prestó, devolvió, sustituyó, desarmó ni cerró un kit real. |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-033` no crea instancia física propia y no autoriza cambios de producto, datos, Supabase, permisos ni hardware. |
+
+#### 81. Criterios de aceptación
+
+- [x] `KIT` permanece como clase primaria existente;
+- [x] “conjunto” no crea una clase adicional;
+- [x] definición e instancia permanecen separadas;
+- [x] definición se versiona;
+- [x] instancia conserva versión fija;
+- [x] componentes obligatorios y opcionales son distinguibles;
+- [x] cantidades requeridas son visibles;
+- [x] miembros conservan su clase primaria;
+- [x] seriales usan identidad exacta;
+- [x] miembros por cantidad usan scope cuantificado;
+- [x] kit anidado es explícito y acíclico;
+- [x] instancia no crea stock adicional;
+- [x] no se duplica existencia entre instancia y miembros;
+- [x] armado no crea ni consume miembros por inferencia;
+- [x] completitud es derivada y no un checkbox editable;
+- [x] faltantes obligatorios impiden completitud;
+- [x] opcionales no bloquean completitud estructural;
+- [x] incompletitud es explicable por línea;
+- [x] miembro extra no se adopta silenciosamente;
+- [x] sustitución es explícita y auditable;
+- [x] similitud no autoriza sustitución;
+- [x] sustitución no borra historial;
+- [x] completitud se separa de condición;
+- [x] completitud se separa de disponibilidad;
+- [x] custodio de kit no se propaga automáticamente a miembros;
+- [x] préstamo y devolución consumen el contrato de custodia;
+- [x] retorno exige verificación;
+- [x] faltante al retorno no confirma pérdida;
+- [x] daño al retorno no elimina miembro;
+- [x] escaneo no autoriza mutación;
+- [x] dispositivo compartido exige actor efectivo;
+- [x] kit se separa de LPN;
+- [x] kit se separa de contenedor físico;
+- [x] miembros proyectados en LPN no duplican membresía autoritativa;
+- [x] desarme no dispone miembros;
+- [x] disposición del kit no se propaga a miembros;
+- [x] reemplazo de instancia no recicla identidad;
+- [x] conteo permanece observación;
+- [x] revisión stale produce conflicto;
+- [x] retry es idempotente;
+- [x] timeout preserva resultado desconocido;
+- [x] offline no confirma cambios autoritativos;
+- [x] se consumen exactamente los diez estados de `VPROC-0067`;
+- [x] se conservan exactamente seis business events de `VPROC-0067`;
+- [x] `VSCREEN-0176` y `VSCREEN-0135` conservan responsabilidades separadas;
+- [x] no se inventa `PermissionKey`;
+- [x] mutaciones sin autoridad exacta permanecen `DEFAULT_DENY`;
+- [x] AS-IS no se presenta como implementación completa;
+- [x] no se crean ni modifican requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física;
+- [x] se entrega handoff explícito a `NEXO-UX-034`.
+
+#### 82. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- implementa `VSCREEN-0176` ni `VSCREEN-0135`;
+- crea Server Actions ni Route Handlers;
+- crea RPC;
+- crea tablas, columnas, enums, constraints, índices, triggers, vistas o políticas RLS;
+- crea definiciones o instancias reales de kit;
+- asigna ni retira miembros reales;
+- cambia cantidades, saldos o ubicaciones;
+- modifica custodia real;
+- ejecuta préstamos ni devoluciones reales;
+- registra sustituciones reales;
+- ejecuta armado o desarme real;
+- modifica LPN o su contenido;
+- crea contenedores físicos;
+- modifica condición, disponibilidad, lifecycle, daño, pérdida, reparación o baja reales;
+- ejecuta conteos reales;
+- crea `PermissionKey`, grants, scope o modalidad;
+- modifica Supabase;
+- crea migraciones o backfills;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-034`.
+
+#### 83. Handoff hacia `NEXO-UX-034`
+
+`NEXO-UX-033` entrega:
+
+```text
+STABLE KIT INSTANCE IDENTITY
++
+FIXED VERSIONED DEFINITION
++
+AUTHORITATIVE MEMBER ASSIGNMENTS
++
+REQUIRED / OPTIONAL COMPONENT RULES
++
+EXPLICIT SUBSTITUTIONS
++
+DETERMINISTIC COMPLETENESS
++
+NO DUPLICATED MEMBER EXISTENCE
++
+KIT / LPN / CONTAINER SEPARATION
++
+NON-DESTRUCTIVE MEMBER INCIDENT HISTORY
++
+VERSIONED IDEMPOTENT KIT HISTORY
+```
+
+`NEXO-UX-034` deberá diseñar conteos de activos y reutilizables incluyendo observación de kits sin sumar dos veces instancia y miembros, conservando la observación original, mostrando faltantes y extras y evitando que el conteo modifique automáticamente composición, condición, pérdida, baja o saldo.
+
+#### 84. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-034 — Diseñar conteos de activos y reutilizables`
 ### [ ] NEXO-UX-034 — Diseñar conteos de activos y reutilizables
 ### [ ] NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
 ### [ ] NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
