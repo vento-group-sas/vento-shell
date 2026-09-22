@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1252** |
+| Tareas aprobadas | **1253** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **344** |
+| Tareas no iniciadas | **343** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **78.45% (1252/1596)** |
+| Porcentaje de completamiento | **78.51% (1253/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos** |
-| Tarea actual | **NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias** |
+| Última tarea aprobada | **NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias** |
+| Tarea actual | **NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente** |
+| Siguiente tarea | **NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 110 de 127 aprobadas; NEXO-UX-041 pendiente** |
+| Progreso del bloque | **BLOQUE K: 111 de 127 aprobadas; NEXO-UX-042 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-041** |
+| Carril documental | **ACTIVO — NEXO-UX-042** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-040` — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos |
-| Tarea actual | `NEXO-UX-041` — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-042` — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente |
+| Última aprobada | `NEXO-UX-041` — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias |
+| Tarea actual | `NEXO-UX-042` — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-043` — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 110 DE 127 APROBADAS — ACTUAL NEXO-UX-041** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 111 DE 127 APROBADAS — ACTUAL NEXO-UX-042** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-040 — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos
-        ↓
-TAREA ACTUAL
 NEXO-UX-041 — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-042 — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-043 — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 110 de 127 tareas aprobadas
+BLOQUE K — 111 de 127 tareas aprobadas
 ```

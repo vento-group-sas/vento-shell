@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1252** |
+| Aprobadas | **1253** |
 | En propuesta | **0** |
-| No iniciadas | **344** |
+| No iniciadas | **343** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **78.45% (1252/1596)** |
+| Porcentaje de completamiento | **78.51% (1253/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **344** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1153** |
+| ⏸ NO_EVALUADA | **343** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1154** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-UX-040` — Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos | ✅ APROBADA |
-| Tarea actual | `NEXO-UX-041` — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-UX-042` — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-UX-041` — Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias | ✅ APROBADA |
+| Tarea actual | `NEXO-UX-042` — Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-043` — Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1042,7 +1042,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-038` | Diseñar operación con escáner y etiquetas dañadas | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-039` | Diseñar inventario inicial de contenedores y activos | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-040` | Validar el prototipo del subdominio con decoración, vajilla, herramientas y repuestos | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-041` | Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-041` | Definir línea base y métricas objetivo de pérdidas, búsqueda y diferencias | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-042` | Aprobar el diseño del subdominio y remitirlo a E5 antes de implementarlo físicamente | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-043` | Diseñar registro y mapa simple de instalaciones, espacios, condición y disponibilidad | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-UX-044` | Diseñar solicitudes, órdenes de trabajo, mantenimiento y reparaciones | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
