@@ -6346,7 +6346,1007 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias`
-### [ ] NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
+### ✅ NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja
+**Tarea siguiente:** NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
+**Tipo de tarea:** Contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) y gate físico `POST_E5_PACKAGE` — contrato NEXO para separar apertura de sesión, captura de observaciones, cierre o cancelación, revisión de diferencias, aprobación y resolución de diferencias de activos mediante decisiones server-side exactas, snapshot consistente, scope territorial, idempotencia, concurrencia, segregación autorizante y `DEFAULT_DENY` cuando no exista una `PermissionKey` activa compatible con `ASSET_COUNT`
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; cualquier materialización futura ocurre únicamente mediante `NEXO-AUTH-027::<implementation_unit_id>` después de cumplir su gate físico y autorización explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Separar de forma autoritativa el ciclo de conteo patrimonial de activos y reutilizables para impedir que capturar una observación física, cerrar una sesión o detectar una diferencia otorgue por sí mismo autoridad para aprobarla, resolverla o modificar la verdad maestra del activo.
+
+La regla raíz queda:
+
+```text
+OBSERVAR
+!=
+CERRAR CAPTURA
+!=
+APROBAR DIFERENCIA
+!=
+RESOLVER DIFERENCIA
+!=
+APLICAR MUTACION DE DOMINIO
+```
+
+Toda decisión que altere estado canónico exige su propia autorización server-side y no hereda autoridad de una fase anterior.
+
+#### 2. Naturaleza y topología
+
+El marcador global conserva:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+La identidad física futura es:
+
+```text
+NEXO-AUTH-027::<implementation_unit_id>
+```
+
+La aprobación documental de este marcador no crea, autoriza ni ejecuta una instancia física.
+
+#### 3. Handoff contractual recibido desde `NEXO-AUTH-021`
+
+La auditoría previa entregó a 027 la separación obligatoria entre:
+
+```text
+CREAR SESION
+CAPTURAR OBSERVACION
+CERRAR CAPTURA
+APROBAR DIFERENCIA
+RESOLVER DIFERENCIA
+```
+
+También registró `AUTH021-F-008`: captura, cierre y cancelación de conteos comparten actualmente un guard amplio y su corrección pertenece a `NEXO-AUTH-027` y al retiro legacy posterior de `NEXO-AUTH-029`.
+
+#### 4. Handoff contractual recibido desde `NEXO-AUTH-026`
+
+026 entrega expresamente a 027:
+
+- captura de conteo;
+- cierre o cancelación de sesión;
+- investigación de diferencia;
+- aprobación de diferencia;
+- resolución de diferencia.
+
+Además fija:
+
+```text
+COUNT DIFFERENCE
+!=
+CONFIRMED LOSS
+```
+
+Una ausencia observada puede abrir una investigación técnica, pero no declara pérdida ni corrige datos por sí sola.
+
+#### 5. Principio de observación no destructiva
+
+El conteo es una observación sobre un snapshot y no una orden de corrección.
+
+Por tanto:
+
+- cantidad esperada y cantidad observada permanecen distinguibles;
+- ubicación esperada y ubicación observada permanecen distinguibles;
+- condición observada no sobrescribe automáticamente la condición maestra;
+- una ausencia no elimina, retira ni da de baja un activo;
+- un hallazgo en otro lugar no mueve automáticamente el activo;
+- una cantidad adicional no crea automáticamente identidad ni saldo;
+- el cierre de captura no ejecuta ajustes.
+
+#### 6. Universo protegido
+
+027 cubre decisiones de autorización sobre:
+
+- sesiones de conteo de activos individuales;
+- sesiones de conteo de reutilizables controlados por cantidad;
+- alcance territorial persistido de la sesión;
+- conjunto esperado congelado;
+- observaciones por línea;
+- cantidad observada;
+- estado de conteo;
+- ubicación encontrada;
+- condición observada;
+- cierre de captura;
+- cancelación de sesión;
+- diferencias derivadas;
+- revisión de diferencias;
+- aprobación de diferencias;
+- resolución de diferencias;
+- handoff hacia la mutación propietaria que corresponda.
+
+No convierte stock, LPN, custodia, mantenimiento ni baja en sinónimos de conteo patrimonial.
+
+#### 7. Estados observados actualmente en líneas de conteo
+
+El consumidor vigente expone estados de observación equivalentes a:
+
+```text
+pending
+found
+missing
+found_elsewhere
+damaged
+extra
+not_applicable
+```
+
+Estos estados describen el resultado capturado de una línea. Ninguno constituye por sí solo una aprobación de diferencia ni una mutación del activo maestro.
+
+#### 8. AS-IS de autorización observado
+
+Las superficies vigentes:
+
+```text
+/inventory/assets/counts
+/inventory/assets/counts/[id]
+```
+
+usan actualmente:
+
+```text
+appId = nexo
+permissionCode = inventory.stock
+```
+
+El mismo guard amplio protege hoy:
+
+- creación de sesión;
+- captura de líneas;
+- cierre;
+- cancelación;
+- consulta del conteo.
+
+Clasificación:
+
+```text
+LEGACY_BROAD
+```
+
+`inventory.stock` no es el modelo objetivo para estas decisiones.
+
+#### 9. AS-IS de creación de sesión
+
+La creación observada:
+
+1. exige una sede y resuelve área, LOC o posición cuando aplican;
+2. selecciona activos y grupos activos del alcance;
+3. crea `asset_count_sessions` con estado `open`;
+4. crea `asset_count_lines` con cantidades y ubicaciones esperadas;
+5. revierte la sesión si falla la inserción de líneas.
+
+La compensación actual evita una sesión vacía por fallo parcial de inserción, pero no sustituye autorización atómica específica.
+
+#### 10. AS-IS de captura de línea
+
+La captura observada puede registrar:
+
+- estado de conteo;
+- cantidad contada;
+- ubicación encontrada;
+- condición observada;
+- notas;
+- actor contador;
+- fecha de conteo.
+
+La captura no debe convertirse en una actualización automática de `asset_items`, `asset_groups`, ubicación, custodia, condición definitiva, daño confirmado, pérdida o baja.
+
+#### 11. AS-IS de cierre de sesión
+
+El cierre observado exige que no queden líneas `pending` y luego cambia la sesión a `closed` con fecha de cierre.
+
+Ese control demuestra completitud de captura, no aprobación de las diferencias.
+
+Regla:
+
+```text
+TODAS LAS LINEAS CAPTURADAS
+!=
+TODAS LAS DIFERENCIAS APROBADAS
+```
+
+#### 12. AS-IS de cancelación
+
+La cancelación observada cambia la sesión a `cancelled` y registra fecha de cierre.
+
+Cancelar:
+
+- no aprueba observaciones;
+- no corrige el maestro;
+- no convierte faltantes en pérdidas;
+- no ejecuta movimientos;
+- no libera diferencias como resueltas.
+
+#### 13. Ausencia de ciclo de aprobación de diferencias de activos
+
+No se observó en el consumidor actual una superficie completa y alcanzable que materialice, para `ASSET_COUNT`:
+
+```text
+REVISAR DIFERENCIA
+APROBAR DIFERENCIA
+RESOLVER DIFERENCIA
+```
+
+La presencia de estados `missing`, `extra`, `damaged` o `found_elsewhere` no constituye ese ciclo.
+
+#### 14. Capacidad de lectura compatible disponible
+
+El catálogo activo dispone de:
+
+```text
+nexo.assets.counts.view
+```
+
+Su recurso canónico es:
+
+```text
+ASSET_COUNT
+```
+
+y su alcance se basa en el conjunto territorial persistido del conteo.
+
+Esta capacidad sirve exclusivamente para consulta autorizada de sesiones y resultados dentro del scope aplicable.
+
+#### 15. Lectura no concede ejecución
+
+Se preserva:
+
+```text
+nexo.assets.counts.view
+!=
+OPEN_COUNT_SESSION
+!=
+CAPTURE_COUNT_LINE
+!=
+CLOSE_COUNT_SESSION
+!=
+CANCEL_COUNT_SESSION
+!=
+APPROVE_ASSET_VARIANCE
+!=
+RESOLVE_ASSET_VARIANCE
+```
+
+Una capacidad de vista no autoriza ninguna mutación.
+
+#### 16. Conteo de activos no equivale a conteo de stock
+
+El catálogo distingue:
+
+```text
+ASSET_COUNT
+STOCK_COUNT
+```
+
+Además, la matriz canónica declara que los conteos de activos requieren proceso y responsabilidad específicos y no se confunden con conteos de inventario.
+
+Por tanto, semejanza funcional o nominal no autoriza reutilización transversal de capacidades.
+
+#### 17. `stock_counts.perform` no se presta por inferencia
+
+Existe:
+
+```text
+nexo.inventory.stock_counts.perform
+```
+
+pero su recurso contractual es `STOCK_COUNT`, con conjunto cerrado de stock y captura de líneas de existencias.
+
+No se acepta:
+
+```text
+PERMISO DE STOCK_COUNT
++
+PANTALLA DE ASSET_COUNT
+=>
+AUTORIZACION DE ASSET_COUNT
+```
+
+Para mutaciones de `ASSET_COUNT`, la ausencia de capacidad exacta compatible mantiene `DEFAULT_DENY`.
+
+#### 18. Aprobación y resolución de variaciones de stock
+
+El catálogo/auditoría también reconoce:
+
+```text
+nexo.inventory.stock_count_variances.approve
+nexo.inventory.stock_count_variances.resolve
+```
+
+Estas identidades pertenecen al dominio de diferencias de conteo de inventario y no existe evidencia canónica suficiente para tratarlas como autoridad de diferencias de activos.
+
+027 prohíbe extenderlas a `ASSET_COUNT` por coincidencia textual.
+
+#### 19. Matriz de decisiones protegidas
+
+| Decisión conceptual | Autoridad activa exacta compatible observada | Resultado documental |
+| --- | --- | --- |
+| consultar sesión de activos | `nexo.assets.counts.view` | `CANONICAL_MATCH` para lectura |
+| crear sesión de activos | ninguna activa exacta compatible observada | `DEFAULT_DENY` |
+| capturar observación de línea | ninguna activa exacta compatible observada | `DEFAULT_DENY` |
+| cerrar captura | ninguna activa exacta compatible observada | `DEFAULT_DENY` |
+| cancelar sesión | ninguna activa exacta compatible observada | `DEFAULT_DENY` |
+| aprobar diferencia de activos | ninguna activa exacta compatible observada | `DEFAULT_DENY` |
+| resolver diferencia de activos | ninguna activa exacta compatible observada | `DEFAULT_DENY` |
+
+Los nombres de decisiones de esta tabla son acciones contractuales, no nuevas `PermissionKey`.
+
+#### 20. Regla de `DEFAULT_DENY`
+
+Mientras el catálogo activo no exponga una capacidad compatible con la mutación exacta de `ASSET_COUNT`:
+
+```text
+MUTACION ASSET_COUNT SIN CAPACIDAD EXACTA COMPATIBLE
+=>
+DENY
+```
+
+No sustituyen esa capacidad:
+
+- autenticación;
+- `inventory.stock`;
+- `assets.counts.view`;
+- `stock_counts.perform`;
+- pertenencia a sede;
+- ser custodio;
+- ser contador de la sesión;
+- haber creado la sesión;
+- poseer un rol nominal;
+- conocer URL o ID;
+- operar desde dispositivo de bodega.
+
+#### 21. Fórmula autoritativa de apertura de sesión
+
+Una futura apertura materializada deberá resolver como mínimo:
+
+```text
+ACTOR EFECTIVO
++ ACCION EXACTA
++ CAPACIDAD EXACTA COMPATIBLE
++ SEDE
++ AREA/LOC/POSICION CUANDO APLIQUE
++ SCOPE AUTORIZADO
++ CONJUNTO ESPERADO
++ ESTADO DE SESION
++ IDEMPOTENCIA
++ AUDITORIA
+=> DECISION
+```
+
+027 no crea la capacidad faltante.
+
+#### 22. Snapshot del conjunto esperado
+
+Al abrir una sesión se congela el conjunto esperado aplicable a esa sesión.
+
+La sesión debe conservar como evidencia:
+
+- territorio de corte;
+- conjunto esperado;
+- cantidades esperadas cuando correspondan;
+- ubicación esperada;
+- momento del corte;
+- actor y contexto de apertura;
+- versión o revisión necesaria para detectar conflicto.
+
+Cambios posteriores del maestro no reescriben silenciosamente la observación histórica.
+
+#### 23. Conjunto cerrado de sesión
+
+Una sesión no acepta miembros externos por simple envío de un identificador desde cliente.
+
+Cualquier inclusión posterior requiere un contrato explícito y auditable; mientras no exista, el conjunto persistido gobierna la captura.
+
+#### 24. Captura de observación
+
+Capturar significa registrar lo observado, no declarar la verdad final del maestro.
+
+La autorización se evalúa por:
+
+- sesión;
+- línea;
+- actor;
+- territorio;
+- estado `open`;
+- pertenencia de la línea al conjunto;
+- revisión vigente;
+- campos permitidos;
+- idempotency key o equivalente contractual;
+- ausencia de conflicto incompatible.
+
+#### 25. Cantidad observada
+
+Para reutilizables por cantidad:
+
+```text
+EXPECTED_QTY
+!=
+COUNTED_QTY
+```
+
+Una diferencia cuantitativa se conserva como evidencia y no modifica automáticamente `expected_qty` ni crea un ajuste.
+
+#### 26. Activo individual
+
+Un activo individual se observa por identidad estable.
+
+No se autoriza:
+
+- crear un segundo activo para representar un hallazgo;
+- borrar el activo por ausencia;
+- reutilizar su ID para otra unidad;
+- convertir una línea faltante en baja.
+
+#### 27. Observación de ubicación
+
+`found_elsewhere` o una ubicación encontrada distinta se conserva como observación.
+
+Se preserva:
+
+```text
+FOUND_LOCATION
+!=
+CANONICAL_LOCATION_UPDATE
+```
+
+Modificar ubicación requiere la autoridad propietaria correspondiente fuera de esta captura.
+
+#### 28. Observación de condición
+
+`damaged` o una condición observada se conserva como evidencia de conteo.
+
+Se preserva:
+
+```text
+COUNT_CONDITION_OBSERVED
+!=
+DAMAGE_CONFIRMED
+```
+
+La transición técnica confirmada pertenece al contrato de `NEXO-AUTH-026`.
+
+#### 29. Faltante observado
+
+`missing` significa que el recurso esperado no fue observado en el corte y alcance registrados.
+
+No significa por sí solo:
+
+- pérdida confirmada;
+- transferencia;
+- préstamo no devuelto;
+- baja;
+- robo;
+- movimiento de ubicación;
+- ajuste contable.
+
+La investigación decide el siguiente owner.
+
+#### 30. Extra observado
+
+`extra` describe una discrepancia frente al conjunto o cantidad esperados.
+
+No crea automáticamente:
+
+- identidad de activo;
+- propiedad;
+- custodia;
+- cantidad maestra;
+- saldo de inventario;
+- alta patrimonial.
+
+#### 31. Cierre de captura
+
+Cerrar captura exige, como mínimo:
+
+- sesión abierta;
+- todas las líneas requeridas resueltas como observación;
+- revisiones vigentes;
+- ninguna escritura concurrente incompatible;
+- autorización exacta para cerrar;
+- auditoría del cierre.
+
+Cerrar congela la captura y habilita revisión de diferencias; no aprueba diferencias.
+
+#### 32. Cancelación
+
+Cancelar una sesión debe ser una decisión distinta del cierre normal.
+
+La cancelación conserva:
+
+- motivo;
+- actor;
+- timestamp;
+- observaciones existentes;
+- estado previo;
+- evidencia necesaria para auditoría.
+
+No puede usarse para borrar una diferencia ya observada.
+
+#### 33. Derivación de diferencias
+
+Una diferencia se deriva comparando snapshot esperado y observación preservada.
+
+Como mínimo pueden existir categorías equivalentes a:
+
+- faltante;
+- exceso;
+- ubicación distinta;
+- condición distinta;
+- cantidad distinta;
+- observación no aplicable que requiera revisión.
+
+La clasificación derivada no altera el maestro.
+
+#### 34. Revisión de diferencia
+
+Revisar una diferencia significa reunir evidencia suficiente para decidir su tratamiento.
+
+La revisión puede consultar información permitida, pero no hereda autoridad para aprobar o ejecutar cambios.
+
+#### 35. Aprobación de diferencia
+
+Aprobar una diferencia significa aceptar formalmente que la discrepancia debe seguir un tratamiento autorizado.
+
+No equivale a ejecutar ese tratamiento.
+
+Regla:
+
+```text
+VARIANCE_APPROVED
+!=
+DOMAIN_MUTATION_APPLIED
+```
+
+#### 36. Resolución de diferencia
+
+Resolver una diferencia registra la decisión final de tratamiento y su resultado documental.
+
+Una resolución puede concluir, según evidencia:
+
+- sin cambio al maestro;
+- requiere corrección de ubicación;
+- requiere investigación o transición de custodia;
+- requiere ciclo de daño/pérdida;
+- requiere corrección administrativa del activo;
+- requiere una acción de otro dominio.
+
+La mutación posterior conserva su propia autorización.
+
+#### 37. Segregación de capacidades
+
+Se preserva:
+
+```text
+CAPTURE
+!=
+CLOSE
+!=
+APPROVE
+!=
+RESOLVE
+```
+
+El mismo actor solo podrá acumular más de una capacidad cuando la matriz canónica aplicable las conceda de forma independiente.
+
+No se infiere segregación absoluta de personas cuando la matriz no la exige, pero nunca se colapsan las decisiones de autorización.
+
+#### 38. Separación entre sesión y diferencia
+
+La sesión contiene observaciones.
+
+La diferencia representa una discrepancia derivada y su ciclo de decisión.
+
+No se acepta usar simplemente `session.status = closed` como evidencia de que todas las diferencias fueron aprobadas o resueltas.
+
+#### 39. Versionado y concurrencia
+
+Toda mutación futura debe detectar conflictos sobre:
+
+- sesión;
+- línea;
+- observación;
+- estado de cierre;
+- decisión de diferencia.
+
+Una escritura basada en revisión obsoleta debe denegarse o reconciliarse explícitamente; nunca sobrescribir silenciosamente una observación ajena.
+
+#### 40. Idempotencia
+
+Reintentos de:
+
+- apertura;
+- captura;
+- cierre;
+- cancelación;
+- aprobación;
+- resolución;
+
+deben producir como máximo un efecto lógico por intención autorizada.
+
+Un timeout no autoriza a emitir una segunda operación con nueva identidad sin consultar el estado de la primera.
+
+#### 41. Atomicidad de cierre
+
+El cierre no debe quedar parcialmente aplicado entre:
+
+- estado de sesión;
+- snapshot final;
+- evidencia de líneas;
+- derivación de diferencias requerida.
+
+Si no puede demostrarse consistencia, el cierre falla cerrado.
+
+#### 42. Correcciones posteriores
+
+027 no aplica directamente una corrección patrimonial solo porque una diferencia fue aprobada o resuelta.
+
+La corrección se deriva al owner correspondiente:
+
+- administración del activo: `NEXO-AUTH-024`;
+- custodia o responsable: `NEXO-AUTH-025`;
+- daño, pérdida, recuperación o baja: `NEXO-AUTH-026`;
+- retiro de autorización legacy: `NEXO-AUTH-029`.
+
+Cada owner revalida su propia capacidad, recurso, territorio y estado.
+
+#### 43. Ajustes de stock
+
+Un permiso de ajuste de inventario no autoriza por inferencia una corrección de activo o reutilizable patrimonial.
+
+`ASSET_COUNT` y `INVENTORY_ADJUSTMENT` mantienen recursos y autoridades distintas.
+
+#### 44. Custodia y conteo
+
+Ser custodio no concede permiso de captura, cierre, aprobación o resolución.
+
+A la inversa, contar un activo no cambia custodio ni responsable.
+
+#### 45. Ubicación y conteo
+
+Una ubicación observada distinta puede producir una diferencia, pero la actualización del maestro sigue el contrato de ubicación aplicable.
+
+El conteo no teletransporta recursos.
+
+#### 46. Daño, pérdida y conteo
+
+027 conserva el handoff a 026:
+
+```text
+DAMAGED_OBSERVED
+!=
+DAMAGE_CONFIRMED
+
+MISSING_OBSERVED
+!=
+LOSS_CONFIRMED
+```
+
+La observación puede abrir investigación, no cerrarla.
+
+#### 47. LPN y contenido
+
+Un conteo de activo no cambia por inferencia:
+
+- membresía de LPN;
+- contenido de LPN;
+- estado del LPN;
+- identidad de contenedor físico.
+
+Estas responsabilidades conservan sus owners canónicos.
+
+#### 48. Kits
+
+Una diferencia sobre un kit puede señalar incompletitud, pero no desarma automáticamente el kit ni crea/baja componentes.
+
+La identidad y reglas de completitud permanecen separadas de la autorización de conteo.
+
+#### 49. Dispositivo compartido
+
+Una estación, escáner o dispositivo compartido no es el actor autorizado.
+
+Toda decisión sensible conserva:
+
+```text
+ACTOR HUMANO EFECTIVO
++ SESION
++ CONTEXTO
++ CAPACIDAD
+```
+
+No se acepta una sesión técnica del dispositivo como sustituto del principal humano.
+
+#### 50. Simulación
+
+La simulación de autorización puede mostrar la decisión esperada, pero:
+
+- no abre sesiones;
+- no guarda observaciones;
+- no cierra;
+- no cancela;
+- no aprueba;
+- no resuelve;
+- no modifica activos.
+
+Simular conserva cero mutaciones empresariales.
+
+#### 51. Operación offline
+
+Cuando exista captura offline autorizada, el dispositivo conserva intención y evidencia local, no autoridad permanente.
+
+Al reconectar se revalida como mínimo:
+
+- actor;
+- capacidad;
+- sesión aún abierta;
+- línea aún vigente;
+- scope;
+- revisión;
+- conflicto concurrente.
+
+Una observación offline nunca aprueba una diferencia automáticamente.
+
+#### 52. Auditoría mínima
+
+Cada decisión futura debe conservar, según aplique:
+
+- actor;
+- sujeto;
+- sesión;
+- línea;
+- acción;
+- capacidad evaluada;
+- scope;
+- territorio;
+- snapshot o revisión;
+- antes y después de la decisión;
+- motivo;
+- evidencia;
+- idempotency key o correlación;
+- resultado;
+- error o denegación;
+- timestamps relevantes.
+
+#### 53. Errores y denegación segura
+
+Ante:
+
+- permiso ausente;
+- scope insuficiente;
+- sesión cerrada o cancelada;
+- línea ajena al conjunto;
+- revisión obsoleta;
+- actor no resoluble;
+- conflicto concurrente;
+- recurso no compatible;
+- timeout de estado desconocido;
+
+la operación no aplica mutación y retorna una decisión segura y auditable.
+
+#### 54. Frontera con `NEXO-AUTH-024`
+
+024 conserva consulta y administración del maestro de activos y reutilizables.
+
+027 puede producir una diferencia que requiera corrección administrativa, pero no usa el conteo para evadir la autoridad de 024.
+
+#### 55. Frontera con `NEXO-AUTH-025`
+
+025 conserva custodia, préstamo, devolución, transferencia y responsable.
+
+Un `missing` o `found_elsewhere` no cambia custodia por inferencia.
+
+#### 56. Frontera con `NEXO-AUTH-026`
+
+026 conserva daño, pérdida, recuperación, mantenimiento y baja.
+
+Un `damaged` o `missing` observado solo genera evidencia para ese ciclo cuando corresponda.
+
+#### 57. Frontera con `NEXO-AUTH-028`
+
+Imprimir o reimprimir hojas, etiquetas, QR o soportes de conteo no hereda autorización desde la sesión.
+
+La impresión permanece gobernada por 028.
+
+#### 58. Frontera con `NEXO-AUTH-029`
+
+027 fija que `inventory.stock` no es autoridad final para conteo de activos.
+
+029 conserva el retiro físico de aliases, guards y fallbacks legacy cuando los reemplazos específicos válidos estén disponibles y verificados.
+
+#### 59. Frontera con `NEXO-AUTH-030`
+
+030 ejecutará pruebas integrales del subdominio sobre las protecciones materializadas.
+
+027 define los oracles de separación, denegación segura, idempotencia y no mutación automática que 030 deberá consumir.
+
+#### 60. Estado AS-IS consolidado
+
+La situación observada queda:
+
+| Superficie | Estado actual | Brecha |
+| --- | --- | --- |
+| consulta de conteos de activos | existe superficie y `nexo.assets.counts.view` en catálogo, pero consumidor usa `inventory.stock` | guard efectivo no canónico |
+| creación de sesión | implementada bajo `inventory.stock` | sin capacidad activa exacta compatible observada |
+| captura de línea | implementada bajo `inventory.stock` | sin capacidad activa exacta compatible observada |
+| cierre | implementado bajo `inventory.stock` | se confunde ejecución con guard amplio |
+| cancelación | implementada bajo `inventory.stock` | se confunde decisión con guard amplio |
+| aprobación de diferencia de activos | ciclo completo no observado | capacidad exacta compatible no demostrada |
+| resolución de diferencia de activos | ciclo completo no observado | capacidad exacta compatible no demostrada |
+
+027 documenta la protección objetivo; no afirma que esté físicamente materializada.
+
+#### 61. Condición de salida de `AUTH021-F-008`
+
+El hallazgo se considera materialmente resuelto solo cuando:
+
+1. lectura usa la capacidad compatible de `ASSET_COUNT`;
+2. cada mutación de sesión usa capacidad exacta compatible o permanece denegada;
+3. captura no concede cierre;
+4. cierre no concede aprobación;
+5. aprobación no concede resolución;
+6. resolución no muta otro dominio sin autorización propietaria;
+7. `inventory.stock` deja de ser oracle final;
+8. tests de allow/deny, scope, revisión, idempotencia y concurrencia resultan PASS.
+
+El marcador documental no satisface por sí solo esa salida física.
+
+#### 62. Política para futura capacidad exacta
+
+Si el catálogo incorpora capacidades atómicas de `ASSET_COUNT`, cada una debe declarar explícitamente:
+
+- identidad estable;
+- descripción;
+- modalidad base/operativa;
+- scope;
+- recurso;
+- ownership y relaciones;
+- prerrequisitos;
+- grants y denials;
+- simulación;
+- consumidor backend;
+- campos permitidos;
+- auditoría;
+- tests.
+
+027 no inventa nombres ni grants futuros.
+
+#### 63. Rollback futuro
+
+Una materialización física debe poder revertir el cambio de guard o consumidor sin borrar:
+
+- sesiones creadas válidamente;
+- observaciones ya registradas;
+- historial de decisiones;
+- evidencia de diferencias;
+- auditoría.
+
+Rollback técnico no equivale a borrar hechos empresariales.
+
+#### 64. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige que el conteo sea una observación no destructiva, que la diferencia se investigue, que cualquier ajuste requiera decisión autorizada y que el dominio de activos preserve observaciones y diferencias auditables. 027 especializa la separación de autorización sin crear una obligación de prueba nueva.
+
+#### 65. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-011` para conteo como observación, diferencia investigada, ajuste autorizado, atomicidad, idempotencia y concurrencia;
+- `TREQ-NEXO-013` para conteo de activos no destructivo, observación original, diferencias auditables y ausencia de baja o ajuste automático;
+- `TREQ-AUTH-001` para evaluación mediante permiso, contexto y scope canónicos;
+- `TREQ-AUTH-013` para autorización server-side exacta, actor, territorio, estado y campos permitidos.
+
+Estas referencias son trazabilidad existente y no modifican 04A.
+
+#### 66. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | el marcador global no materializa código; la batería local ejecutará la compilación documental antes del cierre |
+| LOCAL | NOT_EXECUTED | no se ejecutaron scripts sobre el checkout local del usuario durante la elaboración del artefacto |
+| REMOTA | PASS | se contrastaron protocolo, contratos documentales, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `NEXO-AUTH-021`, la tarea 026 aprobada usada como base, catálogo y matrices de autorización, registro modular NEXO y el consumidor `vento-nexo`; las superficies de conteo de activos continúan bajo `inventory.stock`, `nexo.assets.counts.view` es lectura de `ASSET_COUNT`, `nexo.inventory.stock_counts.perform` gobierna `STOCK_COUNT` y no se observó un ciclo completo de aprobación/resolución de diferencias de activos |
+| OPERATIVA | NOT_EXECUTED | no se abrió, capturó, cerró, canceló, aprobó ni resolvió ningún conteo real durante esta tarea |
+| FÍSICA | NOT_EXECUTED | no existe materialización `NEXO-AUTH-027::<implementation_unit_id>` ejecutada desde este marcador documental |
+
+#### 67. Criterios de aceptación
+
+- [x] se separan apertura, captura, cierre, cancelación, aprobación y resolución;
+- [x] `assets.counts.view` permanece solo lectura;
+- [x] `ASSET_COUNT` y `STOCK_COUNT` permanecen recursos distintos;
+- [x] `stock_counts.perform` no se presta a activos por inferencia;
+- [x] las capacidades de variación de stock no se prestan a diferencias de activos por nombre;
+- [x] las mutaciones de `ASSET_COUNT` sin capacidad exacta compatible quedan en `DEFAULT_DENY`;
+- [x] `inventory.stock` se rechaza como autoridad final;
+- [x] el conjunto esperado se congela como snapshot de sesión;
+- [x] la captura conserva observación original;
+- [x] cantidad esperada y observada permanecen separadas;
+- [x] ubicación observada no actualiza ubicación maestra automáticamente;
+- [x] condición observada no confirma daño automáticamente;
+- [x] faltante observado no confirma pérdida;
+- [x] extra observado no crea identidad ni saldo automáticamente;
+- [x] cerrar captura no aprueba diferencias;
+- [x] cancelar no borra evidencia;
+- [x] aprobar diferencia no ejecuta mutación de dominio;
+- [x] resolver diferencia no evade el permiso del owner downstream;
+- [x] el mismo actor requiere cada capacidad de forma independiente;
+- [x] se preservan idempotencia y control de concurrencia;
+- [x] dispositivo compartido no se convierte en actor;
+- [x] offline revalida al reconectar;
+- [x] simulación conserva cero mutaciones;
+- [x] se preservan fronteras con 024, 025, 026, 028, 029 y 030;
+- [x] no se modifica Supabase;
+- [x] no se crean ni modifican `PermissionKey`;
+- [x] no se modifican TREQ;
+- [x] no se modifica 04A;
+- [x] la futura materialización conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+
+#### 68. Límites
+
+Esta tarea no:
+
+- crea ni modifica `PermissionKey`;
+- modifica grants base u operativos;
+- crea roles;
+- crea Server Actions;
+- crea Route Handlers;
+- crea RPC;
+- modifica RLS;
+- crea migraciones;
+- modifica Supabase;
+- modifica datos;
+- abre sesiones reales;
+- captura conteos reales;
+- cierra sesiones reales;
+- cancela sesiones reales;
+- aprueba diferencias reales;
+- resuelve diferencias reales;
+- modifica `asset_items`;
+- modifica `asset_groups`;
+- modifica `asset_count_sessions`;
+- modifica `asset_count_lines`;
+- modifica ubicación real;
+- cambia custodia;
+- declara daño o pérdida;
+- ejecuta baja;
+- registra ajustes de stock;
+- imprime o reimprime;
+- retira físicamente permisos legacy;
+- autoriza una instancia física;
+- ejecuta certificación integral;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-AUTH-028`.
+
+#### 69. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-AUTH-026 — Proteger mantenimiento, daño, pérdida y baja`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-AUTH-027 — Separar captura de conteo y aprobación de diferencias`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos`
 ### [ ] NEXO-AUTH-028 — Proteger impresión y reimpresión mediante permisos atómicos
 ### [ ] NEXO-AUTH-029 — Eliminar dependencia de permisos amplios legacy
 ### [ ] NEXO-AUTH-030 — Ejecutar pruebas integrales del subdominio

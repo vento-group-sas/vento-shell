@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1231** |
+| Aprobadas | **1232** |
 | En propuesta | **0** |
-| No iniciadas | **365** |
+| No iniciadas | **364** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **77.13% (1231/1596)** |
+| Porcentaje de completamiento | **77.19% (1232/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **365** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1132** |
+| ⏸ NO_EVALUADA | **364** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1133** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-026` — Proteger mantenimiento, daño, pérdida y baja | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-027` — Separar captura de conteo y aprobación de diferencias | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-028` — Proteger impresión y reimpresión mediante permisos atómicos | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-027` — Separar captura de conteo y aprobación de diferencias | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-028` — Proteger impresión y reimpresión mediante permisos atómicos | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-AUTH-029` — Eliminar dependencia de permisos amplios legacy | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -996,7 +996,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-024` | Proteger consulta y administración de activos y reutilizables | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-025` | Proteger custodia, préstamo, devolución y transferencia | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-026` | Proteger mantenimiento, daño, pérdida y baja | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-027` | Separar captura de conteo y aprobación de diferencias | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-027` | Separar captura de conteo y aprobación de diferencias | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-028` | Proteger impresión y reimpresión mediante permisos atómicos | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-029` | Eliminar dependencia de permisos amplios legacy | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-030` | Ejecutar pruebas integrales del subdominio | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
