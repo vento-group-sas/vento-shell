@@ -27222,7 +27222,1286 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-030 — Diseñar catálogo de activos y reutilizables`
-### [ ] NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
+### ✅ NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-029 — Diseñar contenedores anidados y retornables
+**Tarea siguiente:** NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
+**Tipo de tarea:** documental; diseño canónico de experiencia para catálogo operativo de activos individualizados y reutilizables controlados por cantidad, con separación entre modelo y existencia física, granularidad autoritativa, navegación de detalle, filtros, estados, acciones permitidas, reconciliación AS-IS, autorización fail-closed y fronteras con custodia, condición, conteos, kits, repuestos, búsqueda, impresión e inventario inicial, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el catálogo operativo desde el cual un actor autorizado pueda localizar, distinguir y comprender activos físicos individualizados y reutilizables controlados por cantidad sin confundir el producto o modelo con la existencia real, sin permitir que la interfaz decida arbitrariamente la granularidad de control y sin duplicar una misma existencia entre representaciones incompatibles.
+
+La regla raíz queda:
+
+```text
+MODELO O REFERENCIA AUTORITATIVA
++
+CLASE PRIMARIA APROBADA
++
+GRANULARIDAD DE CONTROL APROBADA
++
+UNA REPRESENTACION FISICA AUTORITATIVA
++
+LECTURA AUTORIZADA DEL RECURSO
++
+ESTADO, UBICACION Y CONTEXTO VISIBLES
++
+FRONTERAS DE ACCION EXPLICITAS
+→
+CATALOGO OPERATIVO DE ACTIVOS Y REUTILIZABLES
+SIN DOBLE REPRESENTACION
+```
+
+Siempre:
+
+```text
+PRODUCT OR MODEL
+!=
+PHYSICAL EXISTENCE
+```
+
+```text
+SERIALIZED_ASSET
+!=
+REUSABLE_QUANTITY
+```
+
+```text
+UI MODE
+!=
+CANONICAL GRANULARITY
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-030` define una experiencia de catálogo que:
+
+1. separa catálogo maestro de producto o modelo y catálogo de existencia física;
+2. representa `SERIALIZED_ASSET` como identidad física individual;
+3. representa `REUSABLE_QUANTITY` como alcance cuantificado sin identidad por pieza;
+4. preserva una sola representación autoritativa por existencia;
+5. impide usar `asset_mode`, `inventory_kind=asset`, nombre, categoría o tabla legacy como decisión final de granularidad;
+6. distingue modelo, activo individual, grupo o alcance cuantificado y contenedor físico;
+7. mantiene LPN, kit, repuesto, vehículo, consumible y stock fuera de equivalencias incorrectas;
+8. define composición, densidad, filtros y navegación del catálogo sin fijar rutas técnicas nuevas;
+9. define ficha resumida y detalle para activo individual;
+10. define ficha resumida y detalle para reusable quantity;
+11. presenta ubicación, custodia, condición y disponibilidad como dimensiones independientes;
+12. permite navegar desde el modelo hacia sus existencias físicas y desde la existencia hacia su modelo sin fusionarlos;
+13. define estados de carga, vacío, ausencia de autorización, dato parcial, conflicto y fallo;
+14. prohíbe declarar exhaustivo un conjunto truncado o una búsqueda ejecutada solo sobre filas precargadas;
+15. exige que conteos y KPIs indiquen si provienen de una fuente completa o de un subconjunto;
+16. consume autorización exacta existente y mantiene `DEFAULT_DENY` para mutaciones sin capacidad atómica demostrada;
+17. conserva creación de activo individual únicamente cuando la clase y granularidad ya son compatibles y existe autoridad exacta;
+18. mantiene creación y edición de reusable quantity en `DEFAULT_DENY` mientras no exista capacidad exacta aplicable;
+19. mantiene edición administrativa genérica de activos en `DEFAULT_DENY` bajo el catálogo observado;
+20. no convierte cambio de ubicación, responsable, condición, lifecycle, mantenimiento o cantidad en edición cosmética;
+21. reserva custodia, préstamo, devolución y transferencia a `NEXO-UX-031`;
+22. reserva daño, pérdida, reparación y baja a `NEXO-UX-032`;
+23. reserva kits y completitud a `NEXO-UX-033`;
+24. reserva conteos a `NEXO-UX-034`;
+25. reserva repuestos y reposición a `NEXO-UX-035`;
+26. reserva búsqueda transversal por LOC, LPN, código, responsable y contenido a `NEXO-UX-036`;
+27. reserva impresión y reimpresión a `NEXO-UX-037`;
+28. reserva operación especializada de escáner y etiquetas dañadas a `NEXO-UX-038`;
+29. reserva inventario inicial a `NEXO-UX-039`;
+30. entrega una base verificable a `NEXO-UX-031` sin ejecutar cambios físicos.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es exclusivamente documental.
+
+No autoriza componentes, rutas, consultas, Server Actions, tablas, migraciones, RLS, RPC, datos, permisos, backfills, despliegues ni modificaciones de Supabase.
+
+#### 4. Handoff recibido de `NEXO-UX-029`
+
+`NEXO-UX-029` entrega:
+
+```text
+SEPARATE LPN HIERARCHY
++
+DIRECT CONTENT OWNERSHIP
++
+DESCENDANT PROJECTION WITHOUT DUPLICATION
++
+PHYSICAL_CONTAINER IDENTITY SEPARATE FROM LPN
++
+RETURNABLE AS ROLE / OBLIGATION
++
+REUSABLE_QUANTITY BOUNDARY
++
+RETURN EXPECTED VS CONFIRMED
++
+SAFE CONFLICT / IDEMPOTENCY / OFFLINE RECOVERY
+```
+
+030 consume ese handoff y lo conserva.
+
+En particular:
+
+- un LPN no aparece como activo individual;
+- un LPN no aparece como reusable quantity;
+- un contenedor físico identificado no se reduce a un reusable quantity;
+- un recipiente equivalente sin identidad individual no se serializa artificialmente;
+- la obligación de retorno no cambia la granularidad;
+- el catálogo no redefine jerarquía LPN ni retorno.
+
+#### 5. Contratos de dominio consumidos
+
+La experiencia consume sin redefinir:
+
+- `NEXO-DOM-001`, para las siete clases primarias;
+- `NEXO-DOM-006`, para frontera entre LPN, retornables y contenedores físicos;
+- `NEXO-DOM-007`, para ubicación efectiva;
+- `NEXO-DOM-008`, para custodia y responsable actual;
+- `NEXO-DOM-009`, propietario de `INDIVIDUAL_IDENTITY` frente a `QUANTITY_CONTROLLED`;
+- `NEXO-DOM-010`, para condición, daño, pérdida y faltante;
+- `NEXO-DOM-011`, para préstamo, devolución y transferencia;
+- `NEXO-DOM-012`, para mantenimiento, reparación y disponibilidad;
+- `NEXO-DOM-013`, para baja, descarte, venta o reemplazo;
+- `NEXO-DOM-014`, para kits y completitud;
+- `NEXO-DOM-015`, para conteos;
+- `NEXO-DOM-016`, para repuestos;
+- `NEXO-DOM-017`, para auditoría, historial y evidencia;
+- `NEXO-DOM-018`, para etiquetas;
+- `NEXO-DOM-019` y `NEXO-DOM-020`, para contenedor físico frente a LPN;
+- `NEXO-DOM-021` a `NEXO-DOM-024`, para no doble contabilización, movimiento, trazabilidad y compatibilidad.
+
+#### 6. Granularidad canónica consumida
+
+`NEXO-DOM-009` fija:
+
+```text
+SERIALIZED_ASSET
+→
+INDIVIDUAL_IDENTITY
+```
+
+```text
+REUSABLE_QUANTITY
+→
+QUANTITY_CONTROLLED
+```
+
+030 no agrega una tercera granularidad.
+
+Una decisión no resuelta no se resuelve desde la UI:
+
+```text
+GRANULARITY = UNRESOLVED
+→
+NO MUTATING SHORTCUT
+```
+
+#### 7. El catálogo no decide la clasificación
+
+La experiencia puede mostrar hechos, advertencias o una clasificación ya aprobada.
+
+No puede decidir por sí sola:
+
+```text
+SERIALIZED_ASSET
+OR
+REUSABLE_QUANTITY
+```
+
+a partir de:
+
+- una pestaña;
+- un radio button;
+- un nombre;
+- una categoría;
+- un QR;
+- una imagen;
+- un registro legacy;
+- `inventory_kind=asset`;
+- una ruta;
+- una sede;
+- un responsable;
+- un serial escrito por el usuario;
+- la existencia de `asset_items` o `asset_groups`.
+
+#### 8. Catálogo maestro y catálogo físico son superficies distintas
+
+Se distinguen:
+
+```text
+PRODUCT / MODEL CATALOG
+```
+
+y:
+
+```text
+PHYSICAL ASSET / REUSABLE CATALOG
+```
+
+El primero responde qué modelo o referencia existe.
+
+El segundo responde qué existencias físicas concretas o scopes cuantificados existen bajo ese modelo.
+
+El catálogo físico no duplica el maestro ni convierte datos físicos de una unidad en atributos del modelo.
+
+#### 9. Relación modelo → existencia
+
+Para un modelo compatible con `SERIALIZED_ASSET`:
+
+```text
+ONE MODEL
+→
+ZERO OR MANY INDIVIDUAL ASSET IDENTITIES
+```
+
+Para un modelo compatible con `REUSABLE_QUANTITY`:
+
+```text
+ONE MODEL
+→
+ZERO OR MANY QUANTITY SCOPES
+```
+
+La cantidad de instancias o scopes no modifica el modelo maestro.
+
+#### 10. Entrada principal del catálogo
+
+La experiencia objetivo presenta una superficie única de consulta operacional para activos y reutilizables con dos representaciones claramente separadas:
+
+```text
+ACTIVOS INDIVIDUALES
+REUTILIZABLES POR CANTIDAD
+```
+
+Puede existir una vista combinada únicamente si cada resultado conserva de forma visible su clase y granularidad.
+
+No existe una fila visual ambigua denominada simplemente `asset`.
+
+#### 11. Vista combinada
+
+En una vista combinada cada resultado debe declarar al menos:
+
+- clase de control;
+- granularidad;
+- modelo o producto de referencia;
+- identificador físico o identificador del scope;
+- ubicación resumida cuando exista;
+- condición resumida cuando exista;
+- estado o disponibilidad resumidos cuando existan;
+- responsable o custodia resumida cuando sea legítimo exponerla;
+- última actualización material o fuente temporal cuando esté disponible.
+
+Un resultado combinado nunca normaliza identidades individuales y cantidades como si fueran el mismo objeto.
+
+#### 12. Activo individual
+
+Un resultado `SERIALIZED_ASSET` representa una unidad física identificada.
+
+La ficha resumida puede mostrar:
+
+- nombre visible del modelo;
+- código interno o placa;
+- serial cuando exista;
+- marca y modelo cuando correspondan;
+- ubicación vigente;
+- custodio o responsable visible cuando esté autorizado;
+- condición vigente;
+- lifecycle o disponibilidad vigentes;
+- resumen de mantenimiento cuando exista;
+- imagen o representación aprobada;
+- indicador de datos incompletos.
+
+La ficha no convierte esos campos en permisos de edición.
+
+#### 13. Identidad de activo
+
+Se conserva:
+
+```text
+CANONICAL ASSET ID
+!=
+SERIAL
+!=
+INTERNAL PLATE
+!=
+QR
+```
+
+El catálogo puede mostrar serial, placa o QR como representaciones de la identidad.
+
+Reimpresión, cambio de placa o corrección de serial no crean una identidad nueva.
+
+#### 14. Reutilizable por cantidad
+
+Un resultado `REUSABLE_QUANTITY` representa un scope cuantificado de unidades equivalentes, no una colección implícita de activos individualizados.
+
+La ficha resumida puede mostrar:
+
+- modelo o producto de referencia;
+- código del scope cuando exista;
+- cantidad esperada;
+- unidad;
+- ubicación o territorio del scope;
+- responsable o custodia cuantificada cuando esté definida;
+- condición agregada o resumen por buckets cuando el contrato lo permita;
+- cantidad observada más reciente cuando exista una fuente de conteo válida;
+- diferencias abiertas cuando exista una proyección autorizada;
+- indicador de retorno cuando aplique;
+- indicador de datos incompletos.
+
+#### 15. Cantidad esperada no es cantidad observada
+
+Se preserva:
+
+```text
+EXPECTED QUANTITY
+!=
+OBSERVED QUANTITY
+```
+
+El catálogo no sobrescribe una con la otra.
+
+Cuando ambas existan se muestran con etiquetas distintas y con la fecha o fuente relevante cuando esté disponible.
+
+#### 16. Cantidad disponible no se infiere
+
+La cantidad esperada tampoco equivale automáticamente a:
+
+```text
+AVAILABLE
+USABLE
+RETURNED
+ON LOAN
+DAMAGED
+LOST
+```
+
+Las proyecciones de esas dimensiones pertenecen a sus contratos propietarios.
+
+030 puede mostrarlas cuando una fuente autoritativa las exponga, pero no las calcula mediante resta ad hoc en cliente.
+
+#### 17. Grupo por cantidad no crea unidades ficticias
+
+Se prohíbe representar:
+
+```text
+EXPECTED_QTY = 40
+→
+40 ARTIFICIAL ASSET IDs
+```
+
+La experiencia conserva una sola granularidad por la existencia vigente.
+
+#### 18. `PHYSICAL_CONTAINER`
+
+Un `PHYSICAL_CONTAINER` identificado conserva identidad propia y no se presenta como `SERIALIZED_ASSET` por conveniencia.
+
+030 puede mostrar un vínculo o una entrada relacionada cuando el catálogo operativo necesite navegar al objeto, pero lo etiqueta explícitamente como contenedor físico y mantiene su experiencia propietaria.
+
+Se preserva:
+
+```text
+PHYSICAL_CONTAINER
+!=
+SERIALIZED_ASSET
+!=
+REUSABLE_QUANTITY
+```
+
+#### 19. LPN
+
+Un LPN queda fuera de la taxonomía de activo/reutilizable.
+
+Si una existencia está asociada con un LPN, el catálogo puede mostrar la referencia logística como contexto, nunca como clase de activo ni como identidad física sustituta.
+
+#### 20. Kits
+
+`KIT` y `KIT_INSTANCE` permanecen fuera de la clasificación de activo individual y reusable quantity.
+
+030 no muestra una instancia de kit como si fuera un grupo de activos.
+
+La experiencia especializada se reserva a `NEXO-UX-033`.
+
+#### 21. Repuestos
+
+`SPARE_PART` no se presenta como activo individual por el solo hecho de estar físicamente identificado ni como reusable quantity por estar contado.
+
+El subdominio de repuestos permanece en `NEXO-UX-035`.
+
+#### 22. Vehículos
+
+La existencia de un vehículo en datos históricos o de activos no autoriza a colapsar su ciclo especializado dentro del catálogo genérico.
+
+Cuando un vehículo utilice una identidad física compartida con NEXO, la navegación conserva esa identidad y deriva las responsabilidades específicas de flota a sus owners.
+
+#### 23. Herramientas y decoración
+
+Los nombres `herramienta`, `decoración`, `vajilla`, `equipo` o equivalentes no determinan granularidad.
+
+El catálogo muestra la representación canónica ya aprobada:
+
+- identidad individual cuando exige historia por unidad;
+- cantidad cuando las unidades son equivalentes y sustituibles.
+
+#### 24. Pestañas o filtros de representación
+
+La interfaz puede ofrecer filtros como:
+
+```text
+TODOS
+ACTIVOS INDIVIDUALES
+REUTILIZABLES POR CANTIDAD
+```
+
+Estos filtros cambian la proyección visual.
+
+No modifican clasificación ni granularidad.
+
+#### 25. Filtros operativos
+
+Dentro del alcance de 030 pueden existir filtros de catálogo por dimensiones ya materializadas, por ejemplo:
+
+- sede;
+- área;
+- estado de lifecycle;
+- condición;
+- modelo o referencia;
+- clase o granularidad.
+
+Los filtros no conceden territorio ni autoridad.
+
+Una sede elegida en pantalla no amplía el conjunto autorizado.
+
+#### 26. Búsqueda local del catálogo
+
+030 permite una búsqueda propia de esta superficie sobre atributos del activo o reusable que ya forman parte del catálogo, por ejemplo nombre del modelo, código de activo, placa o serial.
+
+La búsqueda transversal que combina LOC, LPN, código, responsable y contenido entre dominios permanece reservada a `NEXO-UX-036`.
+
+#### 27. Exhaustividad del resultado
+
+El catálogo no puede presentar como completo un conjunto que fue truncado sin declaración.
+
+Se exige una de estas garantías:
+
+```text
+COMPLETE SERVER-RESOLVED RESULT
+```
+
+o:
+
+```text
+PAGINATED / CURSOR RESULT WITH VISIBLE CONTINUATION
+```
+
+o, cuando exista una limitación temporal:
+
+```text
+EXPLICIT PARTIAL RESULT
+```
+
+Un límite técnico de filas no se convierte en significado empresarial.
+
+#### 28. Búsqueda sobre resultado truncado
+
+Se prohíbe:
+
+```text
+LOAD FIRST N ROWS
+→
+FILTER LOCALLY
+→
+NO MATCH
+→
+DECLARE NOT FOUND
+```
+
+si el universo autorizado puede contener más filas.
+
+Una ausencia de coincidencia solo puede presentarse como ausencia en el universo consultado cuando la consulta es exhaustiva para ese alcance.
+
+#### 29. KPIs del catálogo
+
+Un KPI como:
+
+```text
+ACTIVOS INDIVIDUALES
+REUTILIZABLES
+SIN UBICACION
+```
+
+debe indicar o garantizar que su universo es completo.
+
+No se calcula un total empresarial desde las primeras filas cargadas si el dataset puede ser mayor.
+
+#### 30. Métricas derivadas y owners
+
+Los indicadores de mantenimiento, condición, conteo, devolución o faltantes pueden mostrarse como resúmenes únicamente cuando provienen de fuentes autoritativas de sus owners.
+
+030 no redefine la fórmula de esas métricas.
+
+#### 31. Navegación modelo → físico
+
+Desde un modelo o producto compatible, la experiencia puede ofrecer:
+
+```text
+VER EXISTENCIAS FISICAS
+```
+
+La navegación conserva:
+
+- identidad del modelo;
+- clase primaria;
+- granularidad;
+- filtros legítimos;
+- retorno al modelo.
+
+No crea un activo ni un grupo por navegar.
+
+#### 32. Navegación físico → modelo
+
+Desde una identidad individual o scope cuantificado se puede abrir su modelo de referencia.
+
+Ese salto no mezcla:
+
+- datos del modelo;
+- datos de la existencia;
+- historial individual;
+- cantidad;
+- costo;
+- ubicación;
+- custodia.
+
+Cada owner conserva su información.
+
+#### 33. Selección de un activo individual
+
+Al abrir un `SERIALIZED_ASSET`, el detalle resuelve la identidad exacta y presenta el estado más reciente autorizado.
+
+La URL o identificador enviado por cliente no constituye autorización.
+
+Un deep link revalida recurso, permiso y territorio.
+
+#### 34. Selección de reusable quantity
+
+Al abrir un scope cuantificado, el detalle resuelve el scope exacto y su contexto.
+
+Una cantidad enviada por cliente no sustituye la fuente autoritativa.
+
+La interfaz no permite editar `expected_qty` por el solo hecho de poder visualizarla.
+
+#### 35. Acción primaria de consulta
+
+La acción principal del catálogo es consultar y abrir el sujeto.
+
+Las mutaciones se muestran únicamente cuando:
+
+1. pertenecen al owner correcto;
+2. existe una capacidad exacta activa;
+3. el recurso exacto es autorizable;
+4. el contexto y territorio son válidos;
+5. la operación no invade una tarea posterior reservada.
+
+#### 36. Contrato de autorización consumido
+
+`NEXO-AUTH-024` demuestra actualmente:
+
+```text
+nexo.assets.items.view
+nexo.assets.items.create
+nexo.assets.groups.view
+nexo.assets.counts.view
+```
+
+030 no crea nuevas `PermissionKey`.
+
+#### 37. Consulta de activo individual
+
+Cuando el actor posee autoridad exacta aplicable sobre `ASSET_ITEM`, el catálogo puede mostrar y abrir el activo individual.
+
+La lectura no concede mutación.
+
+#### 38. Creación de activo individual
+
+`nexo.assets.items.create` puede habilitar una entrada de registro de activo únicamente cuando:
+
+- el modelo ya resuelve a `SERIALIZED_ASSET`;
+- la granularidad ya es `INDIVIDUAL_IDENTITY`;
+- la capacidad exacta aplica;
+- el carril, scope, territorio y recurso son válidos;
+- el dispositivo y sesión cumplen su contrato;
+- la creación no se usa para retirar cantidad de un reusable existente.
+
+La interfaz no pregunta al usuario si desea crear `item` o `group` como decisión de dominio.
+
+#### 39. `asset_mode` legacy
+
+El selector actual:
+
+```text
+asset_mode = item | group
+```
+
+se clasifica como mecanismo AS-IS de captura.
+
+La experiencia objetivo no lo usa como autoridad.
+
+Cuando la clase y granularidad estén resueltas, la forma de registro se deriva de esa decisión.
+
+Cuando estén sin resolver, la creación queda bloqueada y se explica qué decisión falta.
+
+#### 40. Consulta de grupos o scopes cuantificados
+
+`nexo.assets.groups.view` existe, pero el contrato observado describe `ASSET_GROUP` con alcance organizacional y no demuestra que cubra automáticamente toda existencia física de `REUSABLE_QUANTITY`.
+
+Por tanto:
+
+```text
+GROUP PHYSICAL DATA
+WITHOUT PROVEN RESOURCE CONTRACT
+→
+FAIL CLOSED
+```
+
+La experiencia no amplía el permiso por analogía.
+
+#### 41. Creación de reusable quantity
+
+No existe una capacidad exacta activa demostrada para crear un grupo físico reusable por cantidad.
+
+Por tanto:
+
+```text
+CREATE REUSABLE QUANTITY
+→
+DEFAULT_DENY
+```
+
+030 diseña dónde aparecería esa capacidad futura, pero no presenta la acción como habilitada hoy.
+
+#### 42. Edición de activo
+
+No existe una capacidad exacta activa demostrada para editar de forma general la identidad administrativa de un activo existente.
+
+Por tanto:
+
+```text
+UPDATE ASSET IDENTITY
+→
+DEFAULT_DENY
+```
+
+La experiencia puede mostrar los datos, no convertir lectura o creación en permiso de edición.
+
+#### 43. Edición de reusable quantity
+
+No existe una capacidad exacta activa demostrada para editar atributos administrativos generales de un reusable quantity físico.
+
+Por tanto:
+
+```text
+UPDATE REUSABLE QUANTITY
+→
+DEFAULT_DENY
+```
+
+#### 44. Cantidad esperada no es metadata cosmética
+
+Modificar `expected_qty` puede cambiar la representación física esperada.
+
+Se conserva:
+
+```text
+EXPECTED QUANTITY CHANGE
+!=
+GENERIC METADATA EDIT
+```
+
+La acción debe pertenecer al contrato de existencia, reconciliación o movimiento correspondiente.
+
+#### 45. Ubicación no es edición genérica
+
+Cambiar sede, área, LOC o posición no se autoriza desde un formulario genérico de catálogo.
+
+Se conserva:
+
+```text
+CATALOG VIEW
+!=
+LOCATION AUTHORITY
+```
+
+030 muestra ubicación.
+
+La operación que la cambia pertenece al owner de ubicación.
+
+#### 46. Responsable no es edición genérica
+
+Modificar `responsible_employee_id` o su equivalente altera una relación de responsabilidad o custodia cuando el dominio así lo defina.
+
+Se conserva:
+
+```text
+CHANGE RESPONSIBLE
+→
+NEXO-UX-031 / NEXO-AUTH-025
+```
+
+030 no ofrece esa mutación como edición básica.
+
+#### 47. Condición no es edición genérica
+
+Modificar condición puede afectar disponibilidad, daño, pérdida o tratamiento operativo.
+
+Se conserva:
+
+```text
+CHANGE CONDITION
+→
+NEXO-UX-032
+```
+
+030 muestra la condición vigente y deriva su gestión al owner posterior.
+
+#### 48. Lifecycle no es edición genérica
+
+Un estado de lifecycle no se modifica mediante un selector de ficha general.
+
+Cada transición requiere su autoridad y precondiciones propietarias.
+
+#### 49. Mantenimiento no es edición genérica
+
+El catálogo puede mostrar resumen de mantenimiento para facilitar comprensión del sujeto.
+
+La programación, ejecución, reparación, prueba y liberación pertenecen a los owners de mantenimiento y a `NEXO-UX-032` cuando corresponda al flujo de experiencia reservado.
+
+#### 50. Conteo no es edición genérica
+
+El acceso desde el catálogo hacia conteo puede existir como navegación contextual.
+
+La captura, diferencia, investigación y ajuste pertenecen a `NEXO-UX-034` y `NEXO-AUTH-027`.
+
+#### 51. Promoción cantidad → identidad
+
+El catálogo puede detectar que un reusable quantity tiene una decisión de transición pendiente o aprobada.
+
+No ejecuta:
+
+```text
+SOURCE QUANTITY REDUCTION
++
+NEW INDIVIDUAL IDENTITIES
+```
+
+como creación ordinaria.
+
+La transición física futura debe ser versionada, reconciliable y sin doble representación.
+
+#### 52. Transición inversa
+
+La interfaz no ofrece convertir activos individuales históricos en un grupo genérico por simplicidad.
+
+Ante una decisión futura compatible, deberá existir un contrato propietario explícito.
+
+Mientras no exista:
+
+```text
+INDIVIDUAL → QUANTITY
+=
+DEFAULT_DENY
+```
+
+#### 53. Representación autoritativa única
+
+Se exige en toda la experiencia:
+
+```text
+ONE PHYSICAL EXISTENCE
+→
+ONE AUTHORITATIVE CONTROL REPRESENTATION
+```
+
+Una vista combinada puede mostrar varias clases, pero no puede mostrar la misma existencia como grupo y como uno o más activos simultáneamente.
+
+#### 54. Detección de posible doble representación
+
+Si la fuente informa una inconsistencia o si existe evidencia suficiente de posible solapamiento, el catálogo presenta el estado como conflicto o reconciliación pendiente.
+
+No elige silenciosamente una representación.
+
+No elimina ni fusiona filas por heurística visual.
+
+#### 55. Estado de datos incompletos
+
+Cuando falta información material, la ficha distingue:
+
+```text
+UNKNOWN
+```
+
+de:
+
+```text
+NONE
+```
+
+Ejemplos:
+
+- serial no registrado ≠ activo sin identidad;
+- ubicación desconocida ≠ sin ubicación asignable;
+- custodio desconocido ≠ libre de custodia;
+- condición desconocida ≠ condición buena;
+- cantidad observada ausente ≠ cero observado.
+
+#### 56. Estado sin ubicación completa
+
+La experiencia puede destacar sujetos cuya ubicación está incompleta.
+
+No corrige la ubicación ni asigna una LOC automáticamente.
+
+El indicador es diagnóstico, no autoridad.
+
+#### 57. Estado sin modelo resoluble
+
+Una existencia física sin modelo o referencia autoritativa resoluble se presenta como conflicto de datos.
+
+No se crea un modelo por nombre, serial o coincidencia textual.
+
+El owner de catálogo o transición debe resolverlo.
+
+#### 58. Estado de autorización insuficiente
+
+Cuando el sujeto existe pero el actor no posee acceso aplicable:
+
+- no se filtran detalles sensibles después de obtenerlos;
+- no se muestra una acción que fallará inevitablemente;
+- se comunica denegación o ausencia de alcance en lenguaje humano;
+- no se revela información innecesaria sobre el recurso.
+
+#### 59. Estado técnico de lectura
+
+Un fallo de vista, esquema, red o consulta no se presenta como catálogo vacío.
+
+Se distinguen:
+
+```text
+EMPTY AUTHORITATIVE RESULT
+```
+
+```text
+ACCESS DENIED
+```
+
+```text
+PARTIAL RESULT
+```
+
+```text
+TECHNICAL FAILURE
+```
+
+#### 60. Resultado desconocido tras mutación externa
+
+Cuando el catálogo recibe retorno desde una operación especializada y el resultado todavía es desconocido, no aplica un estado optimista como hecho confirmado.
+
+Refresca o reconcilia desde la fuente propietaria.
+
+#### 61. Dispositivo y densidad
+
+La consulta debe poder operar en web y tablet con objetivos táctiles adecuados, densidad legible y acciones no destructivas.
+
+Las operaciones especializadas de escáner permanecen en `NEXO-UX-038`.
+
+030 no presupone que un escáner esté disponible.
+
+#### 62. Tabla, tarjetas y responsive
+
+El catálogo puede adaptar su representación:
+
+- tabla densa en escritorio;
+- lista o tarjetas en tablet;
+- detalle progresivo en pantallas estrechas.
+
+El cambio de layout no altera identidad, estado, permisos ni orden semántico.
+
+#### 63. Información mínima visible en listados
+
+El listado evita una tabla excesivamente ancha.
+
+La información mínima priorizada es:
+
+```text
+IDENTIDAD VISIBLE
+CLASE / GRANULARIDAD
+MODELO
+UBICACION
+CONDICION / ESTADO
+RESPONSABILIDAD RESUMIDA
+ULTIMO CAMBIO MATERIAL CUANDO EXISTA
+```
+
+Información técnica extensa queda en el detalle.
+
+#### 64. Comparabilidad
+
+Los activos individuales pueden ordenarse y filtrarse entre sí por atributos aplicables.
+
+Los reusable quantity pueden ordenarse y filtrarse entre sí por atributos aplicables.
+
+No se comparan cantidades de grupo con número de activos como si fueran la misma métrica.
+
+#### 65. KPIs separados por granularidad
+
+Se evita un KPI ambiguo `TOTAL ACTIVOS` que sume:
+
+```text
+NUMBER OF ASSET IDENTITIES
++
+EXPECTED REUSABLE UNITS
+```
+
+como una sola cifra.
+
+Se muestran unidades semánticas separadas:
+
+- identidades individuales;
+- scopes de reusable quantity;
+- unidades esperadas dentro de scopes cuando sea útil.
+
+#### 66. Historial resumido
+
+La ficha puede mostrar un resumen de últimos cambios o eventos cuando exista una proyección autorizada.
+
+La historia completa permanece en su owner de auditoría.
+
+Un resumen no sustituye eventos autoritativos.
+
+#### 67. Fuente y frescura
+
+Cuando sea material, la experiencia informa fuente temporal suficiente para distinguir:
+
+- estado confirmado;
+- dato cacheado;
+- proyección pendiente;
+- último conteo;
+- último movimiento;
+- último mantenimiento.
+
+La ausencia de timestamp no se inventa.
+
+#### 68. AS-IS remoto observado
+
+La implementación remota inspeccionada muestra actualmente:
+
+- `/inventory/assets` como superficie de activos;
+- vistas separadas para activos individuales y grupos;
+- filtros por texto, sede, estado y vista;
+- KPIs de identidades individuales, grupos, cantidad esperada, ubicación y mantenimiento;
+- `v_asset_items_inventory_status` y `v_asset_groups_inventory_status`;
+- lectura limitada a las primeras 500 filas de cada vista antes del filtrado local;
+- guard amplio `inventory.stock`;
+- `/inventory/assets/new` con selección legacy `asset_mode=item|group`;
+- creación directa de `asset_items` o `asset_groups`;
+- `/inventory/assets/quick` con creación masiva de grupos por cantidad;
+- detalle individual y detalle de grupo con ubicación y responsable editables;
+- conteos basados en `asset_items` y `asset_groups`;
+- navegación entre catálogo maestro y activos físicos;
+- mantenimiento proyectado dentro de la superficie de activos.
+
+Estas superficies son evidencia AS-IS parcial y no constituyen el diseño objetivo aprobado por esta tarea.
+
+#### 69. Brechas AS-IS que 030 deja explícitas
+
+| Brecha | Riesgo | Propietario o salida |
+| --- | --- | --- |
+| `inventory.stock` protege superficies amplias de activos | autoridad excesiva o no atómica | `NEXO-AUTH-024` a `NEXO-AUTH-029` y materialización posterior |
+| `asset_mode` permite escoger `item/group` | granularidad decidida por UI | `NEXO-DOM-009` + implementación futura de 030 |
+| lectura `.limit(500)` seguida de filtro local | falso “no encontrado” y KPI incompleto | implementación futura del catálogo con consulta exhaustiva o paginada |
+| `asset_groups` físico excede contrato demostrado de `groups.view` | lectura sensible sin recurso probado | reconciliación de recurso/autorización antes de exposición |
+| creación de grupo sin capacidad exacta | mutación no autorizada | `DEFAULT_DENY` hasta catálogo de permisos compatible |
+| edición general de activo/grupo sin capacidad exacta | mutación no autorizada | `DEFAULT_DENY` |
+| ubicación y responsable editados desde ficha general | responsabilidades mezcladas | owners de ubicación y `NEXO-UX-031` |
+| `inventory_kind=asset` usado como agrupador legacy | clase y granularidad ambiguas | clasificación canónica y transición posterior |
+| KPIs calculados desde dataset cargado | totales potencialmente incompletos | fuente completa o indicador explícito de parcialidad |
+| quick create materializa grupos | doble representación o clase incorrecta | bloquear hasta clase, granularidad y permiso exactos |
+
+#### 70. Flujo objetivo de consulta
+
+```text
+OPEN CATALOG
+→
+RESOLVE ACTOR + PERMISSION + TERRITORY
+→
+RESOLVE AUTHORITATIVE FILTERED DATASET
+→
+DECLARE GRANULARITY PER RESULT
+→
+SHOW COMPLETE OR PAGINATED RESULT
+→
+OPEN EXACT SUBJECT
+→
+SHOW OWNER-SPECIFIC SUMMARY
+→
+OFFER ONLY AUTHORIZABLE HANDOFFS
+```
+
+#### 71. Flujo objetivo de registro individual
+
+Cuando la creación individual sea elegible:
+
+```text
+RESOLVE MODEL
+→
+VERIFY SERIALIZED_ASSET
+→
+VERIFY INDIVIDUAL_IDENTITY
+→
+VERIFY items.create + CONTEXT
+→
+CAPTURE ONLY CREATE-OWNED DATA
+→
+SERVER-SIDE REVALIDATION
+→
+CONFIRMED IDENTITY
+→
+REFRESH CATALOG
+```
+
+No existe el paso “elige individual o grupo”.
+
+#### 72. Flujo bloqueado de reusable quantity
+
+Mientras no exista una capacidad exacta activa y un recurso autorizado compatible:
+
+```text
+RESOLVE MODEL AS REUSABLE_QUANTITY
+→
+SHOW EXISTING AUTHORIZED DATA WHEN ALLOWED
+→
+CREATE / UPDATE ACTION ABSENT OR BLOCKED
+→
+EXPLAIN REQUIRED AUTHORITY
+```
+
+No se reutiliza `items.create`.
+
+#### 73. Navegación hacia responsabilidades posteriores
+
+Desde un sujeto exacto, el catálogo puede ofrecer handoffs contextuales:
+
+| Intención | Destino propietario |
+| --- | --- |
+| prestar, devolver o transferir custodia | `NEXO-UX-031` |
+| registrar daño, pérdida, reparación o baja | `NEXO-UX-032` |
+| revisar o gestionar kit | `NEXO-UX-033` |
+| iniciar o consultar conteo | `NEXO-UX-034` |
+| gestionar repuesto | `NEXO-UX-035` |
+| búsqueda transversal avanzada | `NEXO-UX-036` |
+| imprimir o reimprimir | `NEXO-UX-037` |
+| resolver etiqueta dañada o escaneo especializado | `NEXO-UX-038` |
+| inventario inicial y conciliación de universo | `NEXO-UX-039` |
+
+El handoff conserva identidad, clase, granularidad, contexto y retorno sin trasladar autoridad.
+
+#### 74. Auditoría de navegación y acciones
+
+La consulta ordinaria no requiere fabricar un evento empresarial por cada render.
+
+Las mutaciones y handoffs que sí producen efectos pertenecen a sus contratos propietarios y deben conservar actor, recurso, revisión, decisión, correlación e idempotencia cuando apliquen.
+
+030 no crea un ledger paralelo de catálogo.
+
+#### 75. Privacidad y minimización
+
+El catálogo muestra únicamente la información necesaria para la tarea y el actor autorizado.
+
+Datos de responsable, documentos, valor comercial, garantía, factura u otros campos sensibles no se exponen universalmente por estar asociados a un activo.
+
+La visibilidad se resuelve por recurso y permiso.
+
+#### 76. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya cubre de forma explícita la separación entre tipo o modelo, activo individual, reusable quantity, contenedor, LPN y stock; la representación autoritativa única; la granularidad individual frente a cantidad; ubicación, custodia, condición y lifecycle separados; no doble representación; búsqueda y experiencia recuperable; y autorización server-side. Esta tarea especializa la experiencia del catálogo sin introducir una obligación de prueba independiente.
+
+#### 77. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-013`, para separación de modelo, activo individual, reusable quantity, contenedor, LPN, stock, ubicación, custodia, condición y eventos auditables;
+- `TREQ-NEXO-043`, para cantidad esperada, observada, utilizable, prestada, dañada, perdida y retornada frente a identidad individual estable y prohibición de doble representación;
+- `TREQ-NEXO-046`, para identidad de contenedor físico separada de LPN y reusable quantity;
+- `TREQ-NEXO-047`, para comportamiento explícito por clase y prohibición de duplicar saldo, instancia, kit, contenedor, contenido LPN o valor;
+- `TREQ-UX-002`, para errores, bloqueos y recuperación comprensibles sin duplicar efectos;
+- `TREQ-UX-004`, para uso en tablets, estaciones compartidas y periféricos reales cuando apliquen;
+- `TREQ-UX-005`, para fuente de verdad, estado confirmado o pendiente, actor y último cambio visibles;
+- `TREQ-UX-006`, para pérdida de red, sesión, energía o dispositivo y reanudación segura.
+
+Estas referencias son trazabilidad existente y no una modificación del registro 04A.
+
+#### 78. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea define experiencia documental bajo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no contiene código de producto que compilar |
+| LOCAL | NOT_EXECUTED | no se ejecutaron validadores sobre el checkout local del usuario durante la elaboración; la batería documental deberá ejecutarlos después de incorporar el artefacto |
+| REMOTA | PASS | se contrastaron `vento-shell/main`, protocolo, contrato de entrega, topología, owner UX, `NEXO-DOM-009`, fronteras de dominio posteriores, `NEXO-AUTH-024/025`, 04A NEXO/UX y `vento-nexo/main`; el AS-IS remoto conserva `asset_items`, `asset_groups`, `asset_mode`, guard `inventory.stock`, filtros locales y límite de 500 filas como implementación parcial no equivalente al diseño objetivo |
+| OPERATIVA | NOT_EXECUTED | no se consultaron ni modificaron activos, grupos, reutilizables, contenedores o conteos con actores reales |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-030` no genera instancia física propia y no autoriza cambios de producto, datos, Supabase, hardware o infraestructura |
+
+#### 79. Criterios de aceptación
+
+- [x] El catálogo maestro y el catálogo de existencia física quedan separados.
+- [x] `SERIALIZED_ASSET` se representa por identidad individual.
+- [x] `REUSABLE_QUANTITY` se representa por scope cuantificado.
+- [x] `asset_mode` no decide la granularidad.
+- [x] `inventory_kind=asset` no decide la granularidad.
+- [x] Modelo y existencia física no se confunden.
+- [x] Existe máximo una representación autoritativa por existencia.
+- [x] Una vista combinada conserva clase y granularidad visibles.
+- [x] Un reusable quantity no fabrica identidades por pieza.
+- [x] Un activo individual conserva identidad estable.
+- [x] Serial, placa y QR no sustituyen la identidad.
+- [x] `PHYSICAL_CONTAINER` permanece separado.
+- [x] LPN permanece separado.
+- [x] Kit permanece separado.
+- [x] Repuesto permanece separado.
+- [x] Vehículo no se absorbe silenciosamente por el catálogo genérico.
+- [x] Herramienta o decoración no determinan granularidad por nombre.
+- [x] Filtros no conceden territorio.
+- [x] Búsqueda local no absorbe la búsqueda transversal de 036.
+- [x] Un resultado truncado no se declara exhaustivo.
+- [x] KPIs no se presentan como totales completos si provienen de subconjuntos.
+- [x] KPIs de identidades y cantidades no se suman como una sola métrica.
+- [x] Modelo → físico y físico → modelo conservan identidades separadas.
+- [x] `items.view` no concede mutación.
+- [x] `items.create` exige clase y granularidad compatibles.
+- [x] No existe selección libre `item/group` en el flujo objetivo.
+- [x] `groups.view` no se amplía por inferencia a todo dato físico.
+- [x] Creación de reusable quantity permanece `DEFAULT_DENY` sin capacidad exacta.
+- [x] Edición general de activo permanece `DEFAULT_DENY` sin capacidad exacta.
+- [x] Edición general de reusable quantity permanece `DEFAULT_DENY`.
+- [x] Cantidad esperada no se trata como metadata cosmética.
+- [x] Ubicación no se trata como edición genérica.
+- [x] Responsable o custodia no se trata como edición genérica.
+- [x] Condición no se trata como edición genérica.
+- [x] Lifecycle no se trata como edición genérica.
+- [x] Mantenimiento y conteo conservan owners separados.
+- [x] Promoción de cantidad a identidad no se ejecuta como creación aislada.
+- [x] La transición inversa no se inventa.
+- [x] `UNKNOWN` se diferencia de `NONE`.
+- [x] Vacío, deny, parcial y fallo técnico permanecen distinguibles.
+- [x] Se documenta el AS-IS de `/inventory/assets`.
+- [x] Se documenta el límite actual de 500 filas y filtrado local.
+- [x] Se documenta el guard amplio `inventory.stock`.
+- [x] Se documenta la creación legacy por `asset_mode`.
+- [x] Se documenta la creación masiva de grupos como brecha.
+- [x] Se documentan handoffs exactos a 031–039.
+- [x] No se crean requisitos de prueba.
+- [x] No se modifica 04A.
+- [x] No se autoriza materialización física.
+- [x] Se entrega handoff explícito a `NEXO-UX-031`.
+
+#### 80. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- modifica navegación desplegada;
+- crea endpoints, Server Actions, Route Handlers o RPC;
+- modifica `asset_items`, `asset_groups`, vistas, movimientos, conteos ni mantenimiento;
+- modifica el catálogo maestro de productos;
+- reclasifica productos o modelos;
+- decide granularidad para identidades reales;
+- migra `asset_mode`;
+- migra `inventory_kind`;
+- corrige dobles representaciones existentes;
+- crea activos;
+- crea grupos o scopes cuantificados;
+- cambia cantidad esperada;
+- cambia ubicación;
+- cambia custodio o responsable;
+- cambia condición;
+- cambia lifecycle;
+- registra préstamo, devolución o transferencia;
+- registra daño, pérdida, reparación o baja;
+- ejecuta conteos;
+- crea kits;
+- gestiona repuestos;
+- diseña la búsqueda transversal de `NEXO-UX-036`;
+- diseña impresión o reimpresión;
+- define QR, ZPL, DPI, impresora o hardware;
+- ejecuta inventario inicial;
+- crea `PermissionKey`, grants, scope o modalidad;
+- modifica Supabase;
+- crea migraciones o backfills;
+- despliega código;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica 04A;
+- desarrolla `NEXO-UX-031`.
+
+#### 81. Handoff hacia `NEXO-UX-031`
+
+`NEXO-UX-030` entrega:
+
+```text
+AUTHORITATIVE SUBJECT ID
++
+MODEL / PHYSICAL SEPARATION
++
+SERIALIZED_ASSET VS REUSABLE_QUANTITY
++
+ONE AUTHORITATIVE REPRESENTATION
++
+VISIBLE LOCATION / CONDITION / RESPONSIBILITY CONTEXT
++
+EXACT RESOURCE AUTHORIZATION BOUNDARY
++
+NO GENERIC EDIT BYPASS
++
+SAFE CATALOG NAVIGATION
++
+CONFIRMED OR EXPLICITLY PARTIAL DATASET
+```
+
+`NEXO-UX-031` deberá diseñar custodia, préstamo, devolución y transferencia a partir de un sujeto ya identificado y una granularidad ya resuelta, sin convertir el cambio de responsable en edición genérica, sin fabricar identidades para reusable quantity y sin usar la visibilidad del catálogo como autorización de custodia.
+
+#### 82. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-029 — Diseñar contenedores anidados y retornables`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-030 — Diseñar catálogo de activos y reutilizables`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia`
 ### [ ] NEXO-UX-031 — Diseñar custodia, préstamo, devolución y transferencia
 ### [ ] NEXO-UX-032 — Diseñar estado, daño, pérdida, reparación y baja
 ### [ ] NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
