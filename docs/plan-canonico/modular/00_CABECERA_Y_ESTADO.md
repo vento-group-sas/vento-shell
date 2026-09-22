@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1258** |
+| Tareas aprobadas | **1259** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **338** |
+| Tareas no iniciadas | **337** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **78.82% (1258/1596)** |
+| Porcentaje de completamiento | **78.88% (1259/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas** |
-| Tarea actual | **NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades** |
+| Última tarea aprobada | **NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades** |
+| Tarea actual | **NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede** |
+| Siguiente tarea | **AUTH-UI-052 — Diseñar página inicial según actor** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 116 de 127 aprobadas; NEXO-UX-047 pendiente** |
+| Progreso del bloque | **BLOQUE K: 117 de 127 aprobadas; NEXO-UX-048 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-047** |
+| Carril documental | **ACTIVO — NEXO-UX-048** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-046` — Diseñar inspecciones, calibración, servicios, medidores y alertas |
-| Tarea actual | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede |
+| Última aprobada | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades |
+| Tarea actual | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-052` — Diseñar página inicial según actor |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 116 DE 127 APROBADAS — ACTUAL NEXO-UX-047** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 117 DE 127 APROBADAS — ACTUAL NEXO-UX-048** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
-        ↓
-TAREA ACTUAL
 NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-052 — Diseñar página inicial según actor
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 116 de 127 tareas aprobadas
+BLOQUE K — 117 de 127 tareas aprobadas
 ```
