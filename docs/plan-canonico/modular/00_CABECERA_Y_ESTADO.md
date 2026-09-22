@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1245** |
+| Tareas aprobadas | **1246** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **351** |
+| Tareas no iniciadas | **350** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **78.01% (1245/1596)** |
+| Porcentaje de completamiento | **78.07% (1246/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud** |
-| Tarea actual | **NEXO-UX-034 — Diseñar conteos de activos y reutilizables** |
+| Última tarea aprobada | **NEXO-UX-034 — Diseñar conteos de activos y reutilizables** |
+| Tarea actual | **NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima** |
+| Siguiente tarea | **NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 103 de 127 aprobadas; NEXO-UX-034 pendiente** |
+| Progreso del bloque | **BLOQUE K: 104 de 127 aprobadas; NEXO-UX-035 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-034** |
+| Carril documental | **ACTIVO — NEXO-UX-035** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-033` — Diseñar kits, conjuntos y control de completitud |
-| Tarea actual | `NEXO-UX-034` — Diseñar conteos de activos y reutilizables — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-035` — Diseñar repuestos, compatibilidad y reposición mínima |
+| Última aprobada | `NEXO-UX-034` — Diseñar conteos de activos y reutilizables |
+| Tarea actual | `NEXO-UX-035` — Diseñar repuestos, compatibilidad y reposición mínima — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-036` — Diseñar búsqueda por LOC, LPN, código, responsable y contenido |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 103 DE 127 APROBADAS — ACTUAL NEXO-UX-034** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 104 DE 127 APROBADAS — ACTUAL NEXO-UX-035** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-033 — Diseñar kits, conjuntos y control de completitud
-        ↓
-TAREA ACTUAL
 NEXO-UX-034 — Diseñar conteos de activos y reutilizables
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-035 — Diseñar repuestos, compatibilidad y reposición mínima
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-036 — Diseñar búsqueda por LOC, LPN, código, responsable y contenido
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 103 de 127 tareas aprobadas
+BLOQUE K — 104 de 127 tareas aprobadas
 ```
