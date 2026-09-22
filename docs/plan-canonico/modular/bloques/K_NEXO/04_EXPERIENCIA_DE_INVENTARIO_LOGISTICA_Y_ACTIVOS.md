@@ -23356,7 +23356,1345 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido`
-### [ ] NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido
+### ✅ NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido
+
+**Estado:** APROBADA
+**Tarea anterior:** NEXO-UX-026 — Diseñar ciclo de vida completo de LPN
+**Tarea siguiente:** NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
+**Tipo de tarea:** documental; diseño canónico de experiencia para consulta, empaque y desempaque de contenido LPN, diferenciando plan y membresía autoritativa, granularidad por cantidad o identidad, revisión, confirmación, conflictos, recuperación y fronteras con lifecycle, transferencia, ubicación, custodia, contenedor físico y movimiento, bajo topología `DEFINE_ONCE` y sin instancia física propia
+**Bloque:** BLOQUE K — NEXO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia canónica mediante la cual un actor autorizado puede consultar el contenido de un LPN y, cuando exista autoridad exacta y las precondiciones de dominio se satisfagan, empacar existencia suelta dentro de un LPN o desempacar contenido hacia un destino de inventario declarado, sin crear saldo duplicado, borrar trazabilidad, convertir una selección visual en membresía autoritativa ni confundir contenido con lifecycle, ubicación, custodia, contenedor físico o movimiento.
+
+La regla raíz de experiencia queda:
+
+```text
+LPN Y CONTEXTO AUTORIZADOS
++
+FUENTE DE VERDAD DE CONTENIDO VISIBLE
++
+SUJETO Y DIMENSIONES IDENTIFICADOS
++
+REVISION DE CONTENIDO VIGENTE
++
+INTENCION EXPLICITA DE PACK O UNPACK
++
+REVISION PREVIA DEL EFECTO
++
+DECISION SERVER-SIDE
++
+RECIBO DEL RESULTADO CONFIRMADO
++
+RECONCILIACION SIN DOBLE CONTABILIZACION
+→
+CONTENIDO LPN COMPRENSIBLE, TRAZABLE Y SEGURO
+```
+
+Y siempre:
+
+```text
+SELECCION VISUAL
+!=
+MEMBRESIA AUTORITATIVA
+```
+
+```text
+CONTENIDO PLANIFICADO
+!=
+CONTENIDO EMPACADO
+```
+
+```text
+PACK / UNPACK VISIBLE
+!=
+PACK / UNPACK AUTORIZADO
+```
+
+#### 2. Resultado canónico
+
+`NEXO-UX-027` deja definido un único contrato de experiencia con los siguientes resultados:
+
+1. separa de forma visible contenido planificado y membresía empacada autoritativa;
+2. conserva las tres formas canónicas `QUANTITY_SLICE`, `SERIALIZED_IDENTITY` y `KIT_INSTANCE`;
+3. excluye `PHYSICAL_CONTAINER` y LPN anidados como líneas ordinarias de contenido;
+4. define la consulta de contenido vigente dentro del contexto de detalle del LPN sin fijar una ruta técnica obligatoria;
+5. define el resumen derivado y la lista de membresías sin convertirlos en un segundo ledger;
+6. define la lectura histórica de contenido para LPN terminales;
+7. define el flujo de selección de origen y sujeto para `PACK`;
+8. define captura de cantidad para contenido fungible sin alterar unidad canónica ni dimensiones materiales;
+9. define selección exacta de identidad para contenido serializado;
+10. define selección de instancia para kits sin reconstruir su composición dentro de esta tarea;
+11. define revisión explícita antes de `PACK`;
+12. define confirmación server-side y recibo de `PACK` con revisión resultante;
+13. define el flujo de selección de membresía y destino para `UNPACK`;
+14. define desempaque parcial y total por cantidad sin confundirlo con división entre LPN;
+15. define desempaque de identidad exacta sin clonar ni renumerar el sujeto;
+16. conserva lote, batch, serial, vencimiento, condición, liberación, unidad, presentación y origen cuando apliquen;
+17. exige capacidad y compatibilidad cuando sean precondiciones del destino;
+18. conserva la regla de una sola representación autoritativa de la existencia;
+19. define tratamiento de revisión stale y conflictos de concurrencia;
+20. define idempotencia, timeout, resultado desconocido y reconciliación;
+21. define comportamiento offline sin presentar una intención local como efecto canónico;
+22. define escaneo como propuesta o resolución de sujeto, nunca como mutación automática;
+23. define comportamiento en dispositivo compartido con actor efectivo visible;
+24. define mensajes operativos para saldo insuficiente, identidad ya contenida, lifecycle incompatible, autorización denegada, destino inválido, incompatibilidad y conflicto;
+25. mantiene `PACK`, `UNPACK`, `SPLIT_CONTENT`, `MERGE_CONTENT` y `TRANSFER_CONTENT` como decisiones distintas;
+26. entrega división, unión, transferencia de contenido y reetiquetado detallado a `NEXO-UX-028`;
+27. entrega anidamiento y retornabilidad a `NEXO-UX-029`;
+28. entrega búsqueda transversal por LOC, LPN, código, responsable y contenido a `NEXO-UX-036`;
+29. entrega impresión a `NEXO-UX-037` y tratamiento de etiquetas dañadas a `NEXO-UX-038`;
+30. no crea requisitos de prueba porque la cobertura vigente ya protege contenido LPN, no doble contabilización, trazabilidad, fuente de verdad y recuperación;
+31. no autoriza código, rutas, componentes, Supabase, permisos, datos, hardware ni despliegues.
+
+#### 3. Topología contractual
+
+La tarea usa:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+physical_instance = NONE
+```
+
+Su resultado es un contrato documental reutilizable.
+
+No existe una instancia física:
+
+```text
+NEXO-UX-027::<package_id>
+NEXO-UX-027::<implementation_unit_id>
+NEXO-UX-027::GLOBAL
+```
+
+La materialización posterior pertenece a los paquetes y tareas físicas que consuman este contrato.
+
+#### 4. Continuidad y handoff recibido de `NEXO-UX-026`
+
+La continuidad interna conserva:
+
+```text
+NEXO-UX-026
+→
+NEXO-UX-027
+→
+NEXO-UX-028
+```
+
+`NEXO-UX-026` entrega:
+
+```text
+STABLE LPN IDENTITY
++
+FIVE-STATE LIFECYCLE UX
++
+SEPARATE PURPOSE TYPE
++
+AUTHORIZED DETAIL CONTEXT
++
+CONFIRMED SERVER STATE / REVISION
++
+VISIBLE LOCATION AND RELATIONSHIP CONTEXT
++
+SAFE PENDING / CONFLICT / UNKNOWN-RESULT PATTERNS
++
+SCANNER ENTRY WITHOUT AUTO-MUTATION
+```
+
+`NEXO-UX-027` consume ese contexto y agrega exclusivamente la experiencia de consulta, `PACK` y `UNPACK`. No convierte membresía de contenido en un estado del lifecycle y no redefine la máquina `DRAFT / ACTIVE / CLOSED / CANCELLED / VOID`.
+
+#### 5. Contratos de dominio consumidos
+
+El diseño consume sin reabrir:
+
+- `NEXO-DOM-002`, para identidad y propósito LPN;
+- `NEXO-DOM-003`, para lifecycle y estados terminales;
+- `NEXO-DOM-004`, propietario de contenido, membresía, `PACK` y `UNPACK`;
+- `NEXO-DOM-005`, propietario de división, unión y transferencia de contenido;
+- `NEXO-DOM-006`, propietario de anidamiento;
+- `NEXO-DOM-007`, para ubicación efectiva y relación sede → LOC → LPN → contenido;
+- `NEXO-DOM-008`, para custodia;
+- `NEXO-DOM-019` y `NEXO-DOM-020`, para separación entre LPN y contenedor físico;
+- `NEXO-DOM-021`, para una sola representación autoritativa y prohibición de doble contabilización;
+- `NEXO-DOM-022`, para movimiento atómico de un LPN raíz y su cierre estructural;
+- `NEXO-DOM-023`, para lote, serial, vencimiento, condición, liberación y origen;
+- `NEXO-DOM-024`, para capacidad, peso, volumen y compatibilidad.
+
+La experiencia no sustituye ninguno de esos contratos.
+
+#### 6. Contrato de autorización consumido
+
+`NEXO-AUTH-023` protege exactamente:
+
+```text
+PACK
+UNPACK
+SPLIT_CONTENT
+MERGE_CONTENT
+TRANSFER_CONTENT
+```
+
+El catálogo activo observado no demuestra una `PermissionKey` exacta activa para esas cinco mutaciones. Por tanto, el diseño distingue contrato UX de ejecutabilidad actual:
+
+```text
+DISEÑO DE FLUJO DOCUMENTAL
+!=
+AUTORIDAD ACTIVA PARA EJECUTARLO
+```
+
+Mientras no exista una capacidad canónica exacta activa y completa:
+
+```text
+PACK → DEFAULT_DENY
+UNPACK → DEFAULT_DENY
+```
+
+La interfaz actual o futura no puede presentar como ejecutable una mutación que el servidor debe denegar. Puede presentar el contenido en modo lectura y, cuando el producto requiera explicar la indisponibilidad, mostrar un estado no ejecutable sin fabricar permiso, scope, modalidad o grant.
+
+#### 7. AS-IS remoto observado
+
+La inspección remota vigente confirma una base parcial:
+
+- existe `inventory_lpns` y un endpoint de lectura `GET /api/inventory/lpns`;
+- el endpoint observado devuelve únicamente `id`, `code`, `site_id` y `created_at` y autentica usuario, sin exponer un flujo de contenido LPN completo;
+- `/inventory/lpns` redirige a `/inventory/stock`;
+- no se localizaron consumidores vigentes de `inventory_lpn_items` en `vento-nexo`;
+- no se localizó una experiencia activa de `PACK` o `UNPACK` LPN;
+- referencias de `pack` halladas en compras, presentaciones o empaques FOGO no demuestran membresía LPN;
+- la evidencia histórica clasifica esta brecha como infraestructura LPN sin proceso alcanzable y modelo de contenido sin consumidor.
+
+Por tanto:
+
+```text
+AS-IS PARCIAL
+!=
+DISEÑO UX CANÓNICO MATERIALIZADO
+```
+
+#### 8. Dos planos visibles de contenido
+
+La experiencia debe distinguir siempre:
+
+```text
+CONTENT PLAN
+```
+
+```text
+AUTHORITATIVE PACKED MEMBERSHIP
+```
+
+El primero expresa intención o preparación. El segundo expresa existencia que ya pasó a estar controlada como contenido del LPN mediante una decisión aceptada y reconciliable.
+
+No se permite una lista única que mezcle ambos sin señal explícita del plano al que pertenece cada fila.
+
+#### 9. Contenido planificado
+
+Cuando exista un plan de contenido proporcionado por el proceso propietario, la UX puede mostrar:
+
+- sujeto previsto;
+- cantidad prevista;
+- unidad de captura cuando aplique;
+- dimensiones conocidas;
+- referencia causal o de proceso cuando exista;
+- estado de preparación.
+
+Pero debe quedar explícito:
+
+```text
+PLANIFICADO
+!=
+EMPACADO
+```
+
+Un plan no muestra el contenido como saldo dentro del LPN, no disminuye existencia suelta, no confirma reserva, no acredita disponibilidad y no se usa como prueba de empaque físico.
+
+#### 10. Membresía empacada autoritativa
+
+Una fila de contenido vigente solo se presenta como empacada cuando procede de una membresía autoritativa confirmada por servidor.
+
+La superficie debe poder distinguir, según aplique:
+
+- forma de contenido;
+- sujeto o producto;
+- clase primaria;
+- cantidad y unidad canónica;
+- identidad exacta cuando sea serializada;
+- instancia de kit cuando aplique;
+- presentación material;
+- lote o batch;
+- vencimiento o fecha relevante;
+- condición;
+- liberación;
+- origen suficiente para trazabilidad;
+- revisión de contenido;
+- última decisión confirmada.
+
+La UX no convierte esos campos en una copia editable del ledger.
+
+#### 11. Formas canónicas de contenido
+
+La experiencia conserva exactamente:
+
+```text
+QUANTITY_SLICE
+SERIALIZED_IDENTITY
+KIT_INSTANCE
+```
+
+| Forma | Representación UX | Mutación de cantidad |
+| --- | --- | --- |
+| `QUANTITY_SLICE` | producto o sujeto + dimensiones + cantidad + unidad | admite `PACK` y `UNPACK` parcial o total dentro de los límites del dominio |
+| `SERIALIZED_IDENTITY` | identidad física exacta + serial/código + condición | indivisible; se empaca o desempaca la identidad exacta |
+| `KIT_INSTANCE` | instancia de kit + versión/completitud recibidas del owner | se trata como instancia completa; esta tarea no edita composición |
+
+#### 12. Objetos que no son líneas ordinarias de contenido
+
+No se muestran como una cuarta forma de membresía ordinaria:
+
+```text
+PHYSICAL_CONTAINER
+LPN CHILD
+LOC
+REMISION
+MOVEMENT
+```
+
+Un contenedor físico conserva su identidad y relación separada.
+
+Un LPN anidado conserva su identidad estructural y se diseña en el frente propietario posterior.
+
+Una LOC es contexto de ubicación, no contenido.
+
+Una remisión o movimiento puede relacionarse con el contenido, pero no lo sustituye.
+
+#### 13. Arquitectura de información de contenido
+
+Dentro del contexto autorizado de un LPN, la experiencia debe permitir comprender al menos:
+
+1. identidad y código del LPN;
+2. lifecycle y propósito vigentes;
+3. revisión de lifecycle cuando sea material;
+4. revisión de contenido;
+5. ubicación o contexto físico vigente cuando aplique;
+6. resumen derivado de contenido vigente;
+7. membresías autoritativas actuales;
+8. contenido planificado separado cuando exista;
+9. historial o acceso a eventos de contenido;
+10. acciones contextuales elegibles conceptualmente;
+11. bloqueos, conflicto o reconciliación pendiente;
+12. última decisión server-side relevante.
+
+La tarea no obliga a implementar todos esos elementos en una sola página.
+
+#### 14. Resumen derivado de contenido
+
+La UX puede presentar totales, conteos, agrupaciones o indicadores derivados para lectura rápida.
+
+Se fija:
+
+```text
+DERIVED CONTENT SUMMARY
+!=
+SECOND INVENTORY BALANCE
+```
+
+El resumen:
+
+- no se edita directamente;
+- no reemplaza la lista autoritativa;
+- no oculta dimensiones materiales al abrir el detalle;
+- no autoriza una mutación;
+- no se usa para resolver una inconsistencia contra el detalle.
+
+Ante divergencia entre resumen y detalle autoritativo, se muestra una condición de reconciliación o error; no se permite elegir manualmente cuál total “vale”.
+
+#### 15. Consulta de contenido vigente
+
+Para un LPN operativo, la consulta prioriza la membresía actual y permite identificar de manera inequívoca qué existe dentro del LPN.
+
+Cada fila debe ser diferenciable de otra cuando cambie una dimensión material como:
+
+- producto;
+- clase primaria;
+- unidad canónica;
+- presentación material;
+- lote;
+- vencimiento;
+- condición;
+- liberación;
+- identidad serializada;
+- instancia de kit.
+
+Dos filas visualmente similares no se consolidan si el dominio las considera existencias distintas.
+
+#### 16. Consulta histórica
+
+Para `CLOSED`, `CANCELLED` y `VOID`, la UX puede mostrar contenido histórico, eventos y snapshots disponibles, pero lo etiqueta como histórico y no como membresía mutable ordinaria.
+
+Se conserva:
+
+```text
+HISTORICAL CONTENT
+!=
+CURRENT MUTABLE CONTENT
+```
+
+Un snapshot final no prueba por sí solo que la existencia continúe físicamente bajo control del LPN después del evento terminal.
+
+#### 17. Lifecycle y acciones de contenido
+
+La matriz UX conserva:
+
+| Lifecycle | Consultar plan | Consultar membresía | Nuevo `PACK` | `UNPACK` ordinario |
+| --- | --- | --- | --- | --- |
+| `DRAFT` | sí, cuando exista | no como membresía autoritativa nueva | no | no aplica |
+| `ACTIVE` | sí, separado | sí | conceptualmente elegible si autoridad y dominio permiten | conceptualmente elegible si autoridad y dominio permiten |
+| `CLOSED` | histórico | histórico | no | no ordinario |
+| `CANCELLED` | histórico | histórico | no | no |
+| `VOID` | histórico | histórico | no | no ordinario |
+
+La disponibilidad visual de la acción nunca supera la autorización server-side vigente.
+
+#### 18. Entrada al flujo `PACK`
+
+`PACK` comienza desde un LPN objetivo ya resuelto y desde la intención explícita de agregar contenido.
+
+La experiencia no debe hacer que un escaneo de producto, una selección de stock o la apertura de un LPN produzcan empaque por sí solos.
+
+Antes de cualquier revisión final se identifica:
+
+```text
+TARGET LPN
++
+SOURCE LOOSE CONTENT OR EXACT IDENTITY
++
+CONTENT SHAPE
++
+QUANTITY OR EXACT IDENTITY
++
+MATERIAL INVENTORY DIMENSIONS
++
+EXPECTED CONTENT REVISION
+```
+
+#### 19. Selección de origen para `PACK`
+
+La selección de origen consume únicamente existencias o identidades que el backend autorizado pueda presentar como candidatas dentro del contexto vigente.
+
+La UX puede ofrecer búsqueda contextual, escaneo o selección desde una lista elegible, pero esta tarea no diseña la búsqueda transversal reservada a `NEXO-UX-036`.
+
+La fila candidata debe mostrar datos suficientes para evitar seleccionar por nombre solamente, incluyendo cuando apliquen:
+
+- ubicación de origen;
+- cantidad disponible autoritativa;
+- unidad;
+- lote;
+- vencimiento;
+- condición;
+- identidad exacta;
+- liberación;
+- clase primaria.
+
+#### 20. Captura para `QUANTITY_SLICE`
+
+Para una porción por cantidad, la experiencia exige una cantidad positiva y representable.
+
+Se conserva:
+
+```text
+0 < PACK_QUANTITY <= ELIGIBLE_SOURCE_QUANTITY
+```
+
+La interfaz puede aceptar una presentación de captura autorizada, pero debe mostrar la cantidad canónica resultante antes de confirmar cuando exista conversión.
+
+No se permite:
+
+- aplicar la conversión dos veces;
+- redondear de forma destructiva;
+- ocultar la unidad canónica;
+- unir por comodidad cantidades con dimensiones distintas.
+
+#### 21. Selección para `SERIALIZED_IDENTITY`
+
+Para una identidad serializada, la experiencia selecciona el sujeto exacto.
+
+No se presenta un campo de cantidad arbitraria.
+
+Antes de confirmar se muestran, según aplique:
+
+- identificador estable;
+- serial, placa o código;
+- modelo o producto;
+- condición;
+- ubicación de origen;
+- membresía actual;
+- bloqueo relevante.
+
+Una identidad ya perteneciente a otro LPN no se presenta como un `PACK` válido desde stock suelto.
+
+#### 22. Selección para `KIT_INSTANCE`
+
+Para un kit, la experiencia recibe una instancia materializada del contrato propietario.
+
+La revisión puede mostrar:
+
+- identificador de instancia;
+- definición o versión de kit;
+- estado de completitud recibido;
+- condición o bloqueo relevante.
+
+`NEXO-UX-027` no permite construir, sustituir, desarmar ni corregir miembros del kit dentro del flujo de empaque.
+
+#### 23. Capacidad y compatibilidad antes de `PACK`
+
+Cuando el contrato de destino exige capacidad o compatibilidad, la interfaz debe presentar el resultado de evaluación antes de la confirmación final.
+
+Posibles resultados conceptuales:
+
+```text
+ELEGIBLE
+DENIED
+RECONCILIATION_REQUIRED
+UNKNOWN / NOT YET RESOLVED
+```
+
+Un estado desconocido nunca se presenta como compatible.
+
+La UX no permite que “hay espacio visual” o “el LPN está vacío” sustituya la política autoritativa.
+
+#### 24. Revisión previa de `PACK`
+
+La revisión previa resume únicamente la intención que se enviará:
+
+- LPN objetivo;
+- estado y revisión relevantes;
+- origen;
+- sujeto exacto;
+- forma de contenido;
+- cantidad y unidad o identidad exacta;
+- lote, vencimiento, condición y liberación cuando apliquen;
+- impacto conceptual de control: existencia suelta disminuye o cesa y membresía LPN aumenta o comienza;
+- capacidad/compatibilidad cuando apliquen;
+- advertencias o bloqueos;
+- actor efectivo.
+
+La revisión no dice “empacado” hasta recibir confirmación server-side.
+
+#### 25. Confirmación de `PACK`
+
+Después de enviar la intención, la UX distingue:
+
+```text
+SUBMITTED
+CONFIRMED
+DENIED
+CONFLICT
+OUTCOME_UNKNOWN
+RECONCILIATION_REQUIRED
+```
+
+Estos son estados de interacción o resultado, no estados de dominio LPN.
+
+Solo `CONFIRMED` actualiza la membresía visible como autoritativa.
+
+#### 26. Recibo de `PACK`
+
+Una confirmación debe devolver o permitir resolver suficiente evidencia para mostrar:
+
+- LPN afectado;
+- sujeto empacado;
+- cantidad o identidad;
+- revisión de contenido anterior y resultante cuando aplique;
+- actor efectivo;
+- instante confirmado;
+- correlación;
+- referencia de operación idempotente cuando corresponda;
+- resultado final;
+- estado autoritativo refrescado.
+
+La UX no fabrica el recibo desde el payload enviado.
+
+#### 27. Saldo insuficiente
+
+Si el backend determina que la existencia de origen ya no alcanza:
+
+```text
+STALE SOURCE QUANTITY
+→
+DENY OR CONFLICT
+```
+
+La interfaz debe:
+
+1. conservar la intención original para explicación;
+2. mostrar la cantidad vigente recibida del servidor cuando esté disponible;
+3. exigir nueva revisión antes de reintentar con otra cantidad;
+4. no reducir automáticamente la cantidad y enviar de nuevo sin decisión humana cuando esa modificación cambie la intención.
+
+#### 28. Identidad ya contenida
+
+Si una identidad serializada ya pertenece autoritativamente a un LPN:
+
+- no se crea una segunda membresía;
+- se muestra el LPN propietario actual cuando el actor pueda verlo;
+- se explica que `PACK` desde existencia suelta no aplica;
+- el caso de traslado entre LPN se entrega a `TRANSFER_CONTENT` y a `NEXO-UX-028`.
+
+#### 29. Entrada al flujo `UNPACK`
+
+`UNPACK` comienza desde una membresía autoritativa seleccionada dentro de un LPN `ACTIVE` y exige un destino de inventario no contenido declarado.
+
+La intención incluye:
+
+```text
+SOURCE LPN
++
+AUTHORITATIVE MEMBERSHIP
++
+QUANTITY OR EXACT IDENTITY
++
+DESTINATION LOOSE CONTEXT
++
+EXPECTED CONTENT REVISION
+```
+
+Borrar una fila visual no es una operación de desempaque.
+
+#### 30. Selección de destino para `UNPACK`
+
+El destino debe ser explícito y elegible según el contrato aplicable.
+
+La UX no infiere destino a partir de:
+
+- la última LOC usada;
+- una preferencia local;
+- la sede seleccionada únicamente;
+- la ubicación del dispositivo;
+- la ubicación histórica del contenido;
+- la primera opción disponible.
+
+Cuando el destino requiere capacidad, compatibilidad, autorización de ubicación o movimiento, esas decisiones deben resolverse antes del efecto.
+
+#### 31. Desempaque parcial por cantidad
+
+Para una membresía por cantidad:
+
+```text
+0 < UNPACK_QUANTITY <= PACKED_QUANTITY
+```
+
+La interfaz muestra antes de confirmar:
+
+```text
+SOURCE MEMBERSHIP BEFORE
+-
+UNPACK QUANTITY
+=
+SOURCE MEMBERSHIP AFTER
+```
+
+Y, cuando el destino sea una representación suelta válida:
+
+```text
+DESTINATION LOOSE BEFORE
++
+UNPACK QUANTITY
+=
+DESTINATION LOOSE AFTER
+```
+
+La operación conserva las dimensiones materiales de la existencia.
+
+#### 32. Desempaque total
+
+Un desempaque total retira la membresía activa de esa cantidad o identidad sin borrar historia.
+
+Se conserva:
+
+```text
+ACTIVE MEMBERSHIP REMOVED
+!=
+HISTORY DELETED
+```
+
+La UX puede ocultar una línea con cantidad autoritativa cero de la vista vigente, pero debe conservar acceso a la historia según el contrato de auditoría.
+
+#### 33. LPN vacío no se cierra
+
+Después de un desempaque total del último contenido:
+
+```text
+LPN EMPTY
+!=
+LPN CLOSED
+```
+
+La interfaz no encadena automáticamente cierre, cancelación ni anulación.
+
+Si el proceso requiere cierre, el actor vuelve al contrato de lifecycle definido en `NEXO-UX-026` y toma una decisión separada.
+
+#### 34. `UNPACK` no es transferencia entre LPN
+
+Se conserva:
+
+```text
+UNPACK TO LOOSE
+!=
+TRANSFER_CONTENT TO ANOTHER LPN
+```
+
+La interfaz no modela una transferencia como:
+
+```text
+UNPACK CONFIRMED
++
+PACK POSTERIOR INDEPENDIENTE
+```
+
+cuando la intención empresarial real es mover contenido directamente entre LPN.
+
+La transferencia directa pertenece a `NEXO-UX-028`.
+
+#### 35. Contenido mixto
+
+Un LPN puede mostrar múltiples productos, clases o dimensiones solo cuando la membresía autoritativa así lo indique.
+
+La experiencia:
+
+- no crea una categoría `MIXED` como lifecycle o purpose type;
+- permite comprender cada línea materialmente distinta;
+- no fusiona líneas incompatibles para simplificar la pantalla;
+- muestra bloqueos de compatibilidad cuando el contrato aplicable los produce;
+- no asume que un LPN parcialmente ocupado acepta cualquier contenido adicional.
+
+#### 36. Lote, batch, vencimiento y condición
+
+La consulta y las revisiones de `PACK` y `UNPACK` conservan visibles las dimensiones materiales que distinguen la existencia.
+
+No se permite una UX que muestre únicamente producto y cantidad cuando el dominio exige además lote, batch, vencimiento, condición o liberación para evitar ambigüedad.
+
+Una misma referencia maestra con dos lotes distintos no se presenta como una única membresía fungible si el dominio las mantiene separadas.
+
+#### 37. Identidad y serial
+
+Una identidad serializada se muestra como sujeto individual.
+
+Se prohíbe:
+
+- agrupar dos seriales como si fueran una cantidad fungible editable;
+- duplicar una identidad en dos LPN;
+- reemplazar el serial real por un alias visual como fuente de verdad;
+- renumerar la identidad como consecuencia de `PACK` o `UNPACK`.
+
+#### 38. Unidad y conversión
+
+La interfaz distingue:
+
+- unidad de captura, si existe;
+- factor aprobado cuando sea necesario mostrarlo;
+- cantidad canónica resultante;
+- tolerancia o precisión aplicable cuando el contrato propietario la proporcione.
+
+La confirmación se apoya en la cantidad canónica que el servidor reconoce, no en una cifra local sin reconciliar.
+
+#### 39. Ubicación efectiva
+
+La membresía LPN y la ubicación permanecen responsabilidades separadas.
+
+La UX puede mostrar el contexto de ubicación derivado del LPN y la cadena estructural aplicable, pero no crea una segunda ubicación editable del contenido solo por estar listándolo.
+
+Se conserva:
+
+```text
+CONTENT MEMBERSHIP
+!=
+LOCATION ASSIGNMENT
+```
+
+Una mutación que cambie también colocación física requiere el contrato propietario adicional.
+
+#### 40. Movimiento de inventario
+
+`PACK` y `UNPACK` deben terminar con un estado reconciliable contra la fuente canónica de movimientos o efectos físicos.
+
+La experiencia no exige al operador crear manualmente una “fila de movimiento” separada para completar la misma intención empresarial.
+
+Tampoco oculta una divergencia de membresía y movimiento como éxito.
+
+Si la operación termina en incertidumbre sobre el efecto físico:
+
+```text
+RECONCILIATION_REQUIRED
+```
+
+#### 41. Reserva y disponibilidad
+
+La UX no presenta como equivalentes:
+
+```text
+CONTENT PLAN
+RESERVATION
+PACKED MEMBERSHIP
+AVAILABLE INVENTORY
+```
+
+Un plan no reserva por sí solo.
+
+Contenido empacado no se etiqueta automáticamente como disponible.
+
+El actor debe poder distinguir la dimensión que está observando cuando sea material para su tarea.
+
+#### 42. Purpose type no cambia la semántica de membresía
+
+Los seis purpose types pueden aportar contexto, pero no redefinen `PACK` o `UNPACK`.
+
+| Purpose type | Lo que el contenido puede representar | Lo que no prueba por sí solo |
+| --- | --- | --- |
+| `STORAGE` | existencia agrupada para almacenamiento | disponibilidad o LOC permanente |
+| `RECEIVING` | existencia agrupada durante recepción | recepción aceptada o stock liberado |
+| `TRANSFER` | material agrupado para traslado | transferencia ejecutada |
+| `FULFILLMENT` | material agrupado para satisfacer un caso logístico | despacho, entrega o recepción |
+| `PRODUCTION_STAGING` | material agrupado para interacción física con producción | consumo productivo o lote de producción |
+| `RETURN` | material agrupado para retorno | devolución comercial aceptada o reversión económica |
+
+#### 43. Contenido material de empaque
+
+Una caja, bolsa, película, etiqueta u otro material usado físicamente durante el empaque no se convierte automáticamente en LPN ni en membresía de contenido.
+
+Si ese material es inventariable, conserva su clase y su hecho propietario de consumo o asignación.
+
+Si es un contenedor físico permanente o retornable, su identidad pertenece al contrato de contenedor y no a una línea ordinaria de contenido.
+
+#### 44. Escaneo dentro del flujo de contenido
+
+El escaneo puede resolver o proponer:
+
+- un LPN;
+- un producto;
+- una identidad serializada;
+- un código de lote o referencia compatible con el contrato propietario.
+
+Pero se conserva:
+
+```text
+SCAN
+→
+RESOLVE / PROPOSE
+```
+
+Nunca:
+
+```text
+SCAN
+→
+AUTO PACK
+```
+
+ni:
+
+```text
+SCAN
+→
+AUTO UNPACK
+```
+
+La acción real siempre pasa por contexto, revisión, autorización y confirmación.
+
+#### 45. Código desconocido, ambiguo o duplicado
+
+Si un escaneo no resuelve un único sujeto autorizado:
+
+- no se crea contenido por fallback;
+- no se selecciona el primer resultado;
+- no se asume que un código desconocido es producto, LPN, lote o serial;
+- se muestra la naturaleza del problema;
+- se permite reintentar o elegir otra vía de resolución cuando el contrato lo permita.
+
+El tratamiento especializado de etiquetas dañadas permanece reservado a `NEXO-UX-038`.
+
+#### 46. Dispositivo compartido
+
+En una estación compartida la experiencia mantiene visible el actor efectivo antes de cualquier revisión de mutación.
+
+Cambiar de actor exige volver a resolver autoridad y contexto.
+
+La estación:
+
+- no hereda autoridad del actor anterior;
+- no transforma un `DEFAULT_DENY` en `ALLOW`;
+- no conserva una selección sensible como si siguiera autorizada;
+- puede mantener datos no sensibles de orientación únicamente cuando el contrato de privacidad y seguridad lo permita.
+
+#### 47. Revisión de contenido y conflicto
+
+Toda mutación usa una revisión esperada de contenido cuando el contrato físico la materialice.
+
+Si el servidor detecta:
+
+```text
+EXPECTED_CONTENT_REVISION
+!=
+CURRENT_CONTENT_REVISION
+```
+
+la UX presenta conflicto y obliga a refrescar la realidad autoritativa antes de decidir de nuevo.
+
+No se permite `last-write-wins` silencioso.
+
+#### 48. Concurrencia con lifecycle
+
+Además de la revisión de contenido, la mutación revalida lifecycle.
+
+Ejemplo:
+
+```text
+CLIENT SAW ACTIVE
+SERVER NOW CLOSED
+→
+DENY
+```
+
+La experiencia explica que el LPN cambió y no ofrece un botón de “forzar” basado en la vista anterior.
+
+#### 49. Idempotencia visible
+
+Un reintento de la misma intención usa la misma identidad idempotente.
+
+La UX debe evitar que doble clic, reenvío, refresh o reconexión produzcan dos operaciones empresariales.
+
+Después de una respuesta ambigua, el operador no crea una nueva intención hasta resolver el resultado anterior.
+
+#### 50. Timeout y resultado desconocido
+
+Ante timeout o pérdida de respuesta:
+
+```text
+NO RESPONSE
+!=
+FAILED
+```
+
+La interfaz entra en un estado local de resultado desconocido y permite consultar o reintentar con la misma identidad de operación.
+
+Mientras no se resuelva:
+
+- no vuelve a aplicar un delta local;
+- no permite asumir que la existencia sigue suelta o sigue empacada;
+- no envía la misma existencia a otro destino;
+- no ofrece una segunda operación incompatible como vía de “arreglo”.
+
+#### 51. Operación offline
+
+Una intención capturada offline puede conservar datos suficientes para que el actor no pierda contexto, pero no se presenta como membresía autoritativa.
+
+Se conserva:
+
+```text
+OFFLINE PACK INTENT
+!=
+PACKED CONTENT
+```
+
+```text
+OFFLINE UNPACK INTENT
+!=
+UNPACKED CONTENT
+```
+
+Al reconectar se revalidan actor, capacidad exacta, lifecycle, revisiones, origen, membresía, destino, territorio, capacidad, compatibilidad e idempotencia.
+
+Una intención obsoleta puede terminar denegada o en reconciliación.
+
+#### 52. Autoridad actual y controles mutadores
+
+Mientras el catálogo vigente conserve `DEFAULT_DENY` para `PACK` y `UNPACK`, una futura materialización que consuma este contrato no puede dejar un control mutador funcional únicamente porque el flujo UX esté diseñado.
+
+Se fija:
+
+```text
+NO EXACT ACTIVE CAPABILITY
+→
+NO EXECUTABLE BUSINESS MUTATION CONTROL
+```
+
+La consulta autorizada puede existir independientemente.
+
+La transición a controles ejecutables requiere primero la capacidad canónica exacta y el resto del contrato de autorización; esta tarea no crea esos elementos.
+
+#### 53. Denegación segura
+
+Una denegación de autorización, dominio, compatibilidad, ubicación o revisión produce cero efectos empresariales.
+
+La UX debe:
+
+- conservar la intención suficiente para explicar qué se intentó;
+- indicar por qué no se confirmó;
+- mostrar qué dato sigue vigente;
+- orientar hacia corregir, refrescar, cambiar destino o escalar cuando exista una vía canónica;
+- no presentar el contenido como parcialmente mutado.
+
+#### 54. Mensajes operativos mínimos
+
+La experiencia debe distinguir al menos:
+
+| Situación | Mensaje conceptual |
+| --- | --- |
+| sin autoridad exacta | la acción no está habilitada para este actor/contexto |
+| lifecycle incompatible | el LPN ya no admite esta operación |
+| revisión stale | el contenido cambió; actualiza antes de continuar |
+| saldo insuficiente | la cantidad disponible ya no alcanza |
+| identidad ya contenida | el sujeto ya pertenece a otro LPN o a esta membresía |
+| destino inválido | selecciona un destino elegible |
+| incompatibilidad/capacidad | el destino no admite el contenido bajo la política vigente |
+| resultado desconocido | la operación está por reconciliar; no la repitas como nueva |
+| red o sesión perdida | la intención no está confirmada y será revalidada |
+
+Los mensajes concretos pueden adaptarse, pero no pueden invertir la semántica.
+
+#### 55. Jerarquía visual de acciones
+
+Cuando las acciones sean ejecutables bajo una futura capacidad válida:
+
+- consultar contenido es una acción de lectura de bajo riesgo;
+- `PACK` y `UNPACK` son mutaciones explícitas y diferenciadas;
+- la revisión previa aparece antes del efecto;
+- cancelar una revisión local no produce efecto;
+- cerrar LPN no se coloca como consecuencia implícita de desempacar;
+- transferir a otro LPN no se ofrece como “desempacar”;
+- acciones de lifecycle permanecen separadas del contenido.
+
+#### 56. Prevención de doble envío
+
+Durante una solicitud mutadora pendiente:
+
+- el control primario no envía otra intención igual;
+- el operador puede ver que la solicitud está en curso;
+- refresh o reconexión recuperan el estado mediante la identidad idempotente;
+- un timeout cambia a resultado desconocido, no a botón libre para repetir con otra operación.
+
+#### 57. Accesibilidad
+
+La experiencia debe permitir:
+
+- teclado completo cuando exista teclado físico;
+- foco visible;
+- orden lógico de tabulación;
+- lectores y etiquetas accesibles para estado y errores;
+- señales redundantes además de color;
+- objetivos táctiles apropiados;
+- lectura de cantidades y unidades sin depender de abreviaturas ambiguas;
+- confirmaciones comprensibles sin requerir precisión de puntero;
+- recuperación si el escáner no está disponible.
+
+#### 58. Densidad por dispositivo
+
+En tablet o estación de bodega se prioriza:
+
+- identificación del LPN;
+- sujeto escaneado o seleccionado;
+- cantidad o identidad;
+- lote/serial/condición material;
+- origen o destino;
+- resultado de compatibilidad cuando aplique;
+- acción primaria y estado de confirmación.
+
+En escritorio pueden coexistir más columnas e historial.
+
+En kiosco o estación compartida se minimizan datos no necesarios y se conserva actor efectivo visible.
+
+El diseño no fija breakpoints, framework ni componente concreto.
+
+#### 59. Consulta no equivale a búsqueda transversal
+
+`NEXO-UX-027` diseña la consulta de contenido **dentro del contexto de un LPN ya resuelto**.
+
+No diseña:
+
+- buscar qué LPN contiene un producto en toda la organización;
+- buscar por responsable en múltiples sedes;
+- buscar por código arbitrario entre LOC, LPN y activos;
+- ranking o indexación global.
+
+Eso permanece reservado a `NEXO-UX-036`.
+
+#### 60. Frontera con `NEXO-UX-028`
+
+Esta tarea no diseña el flujo detallado de:
+
+```text
+SPLIT_CONTENT
+MERGE_CONTENT
+TRANSFER_CONTENT
+RELABEL
+```
+
+Sí deja preparados los datos que 028 deberá consumir:
+
+- forma de contenido;
+- membresía vigente;
+- revisión de contenido;
+- dimensiones materiales;
+- lifecycle;
+- actor efectivo;
+- patrones de revisión, conflicto, idempotencia y resultado desconocido.
+
+#### 61. Frontera con `NEXO-UX-029`
+
+Un LPN hijo no se trata como una línea ordinaria de contenido.
+
+`NEXO-UX-029` recibe el diseño de:
+
+- anidamiento y desanidamiento;
+- jerarquía visual padre/hijo;
+- contenedores retornables;
+- vínculo entre LPN y contenedor físico cuando corresponda.
+
+`NEXO-UX-027` únicamente preserva esas identidades y evita colapsarlas dentro de `PACK`/`UNPACK` ordinario.
+
+#### 62. Frontera con impresión y etiquetas
+
+Esta tarea puede mostrar código o identidad de un LPN o sujeto para orientación, pero no diseña:
+
+- emisión de etiqueta;
+- cola de impresión;
+- reimpresión;
+- hardware;
+- ZPL;
+- tratamiento de etiqueta dañada.
+
+`NEXO-UX-037` conserva impresión y `NEXO-UX-038` conserva operación especializada con escáner y etiquetas dañadas.
+
+#### 63. Handoff de materialización futura
+
+Una materialización posterior que consuma este contrato deberá demostrar, como mínimo:
+
+```text
+READ AUTHORIZED LPN CONTENT
++
+SEPARATE PLAN FROM AUTHORITATIVE MEMBERSHIP
++
+NO DOUBLE COUNTING
++
+SERVER-SIDE PACK/UNPACK AUTHORIZATION
++
+CONTENT REVISION CONTROL
++
+IDEMPOTENT MUTATION
++
+ATOMIC OR RECONCILIABLE INVENTORY EFFECT
++
+CAPACITY / COMPATIBILITY WHEN APPLICABLE
++
+OFFLINE AND UNKNOWN-RESULT RECOVERY
++
+ACCESSIBLE DEVICE FLOW
+```
+
+Esta tarea no selecciona package, implementación, schema, RPC, componente o ruta física.
+
+#### 64. Matriz de escenarios documentales
+
+El contrato cubre al menos estos escenarios:
+
+| ID | Escenario | Resultado UX esperado |
+| --- | --- | --- |
+| LPN-CONT-01 | abrir LPN sin contenido vigente | estado vacío explícito, sin confundirlo con `CLOSED` |
+| LPN-CONT-02 | abrir LPN con varias líneas | membresías diferenciadas por dimensiones materiales |
+| LPN-CONT-03 | mostrar plan y membresía | planos separados y etiquetados |
+| LPN-CONT-04 | `PACK` por cantidad | revisión → decisión servidor → recibo confirmado |
+| LPN-CONT-05 | `PACK` identidad serializada | identidad exacta, sin campo de cantidad arbitraria |
+| LPN-CONT-06 | `PACK` instancia de kit | instancia completa sin edición de composición |
+| LPN-CONT-07 | saldo insuficiente | denegación/conflicto y refresh de fuente |
+| LPN-CONT-08 | identidad ya contenida | no duplicar; indicar propietario cuando sea visible |
+| LPN-CONT-09 | target incompatible | bloquear confirmación y explicar política aplicable |
+| LPN-CONT-10 | `UNPACK` parcial | cantidad válida, destino explícito, dimensiones preservadas |
+| LPN-CONT-11 | `UNPACK` total | membresía vigente cesa; historia permanece |
+| LPN-CONT-12 | último contenido sale | LPN queda vacío pero continúa `ACTIVE` |
+| LPN-CONT-13 | intento en `DRAFT` | mutación autoritativa ordinaria no disponible |
+| LPN-CONT-14 | intento en `CLOSED` | lectura histórica; mutación ordinaria bloqueada |
+| LPN-CONT-15 | revisión stale | conflicto y recarga antes de decidir |
+| LPN-CONT-16 | doble envío | una sola intención idempotente |
+| LPN-CONT-17 | timeout | resultado desconocido, consulta/retry misma identidad |
+| LPN-CONT-18 | intención offline | pendiente local, revalidación al reconectar |
+| LPN-CONT-19 | escaneo de producto | resolver/proponer; no auto-pack |
+| LPN-CONT-20 | escaneo ambiguo | no elegir por fallback |
+| LPN-CONT-21 | dispositivo compartido | actor efectivo visible y reautorización |
+| LPN-CONT-22 | catálogo sin capacidad exacta | lectura posible según autoridad; mutación no ejecutable |
+| LPN-CONT-23 | divergencia resumen/detalle | reconciliación; no elegir manualmente una verdad |
+| LPN-CONT-24 | transferencia a otro LPN | handoff a 028; no simular con unpack+pack |
+
+La matriz es documental y no constituye ejecución de pruebas.
+
+#### 65. Handoff hacia `NEXO-UX-028`
+
+`NEXO-UX-027` entrega a `NEXO-UX-028`:
+
+```text
+AUTHORIZED LPN DETAIL CONTEXT
++
+AUTHORITATIVE CONTENT MEMBERSHIP
++
+THREE CONTENT SHAPES
++
+MATERIAL TRACEABILITY DIMENSIONS
++
+CONTENT REVISION
++
+PACK / UNPACK UX BOUNDARIES
++
+NO DOUBLE COUNTING RULE
++
+SAFE REVIEW / CONFLICT / IDEMPOTENCY PATTERNS
++
+OFFLINE / UNKNOWN-RESULT RECOVERY
+```
+
+`NEXO-UX-028` deberá diseñar división, unión, transferencia de contenido y reetiquetado sin convertir `UNPACK + PACK` en una transferencia informal, sin fusionar identidades incompatibles y sin cambiar lifecycle por inferencia.
+
+#### 66. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+Justificación: el registro vigente ya exige un ciclo LPN completo y auditable sin doble contabilización, fuente canónica reconciliable, conservación de trazabilidad dentro del LPN, comportamiento por clase, claridad de fuente de verdad y recuperación ante fallos. Esta tarea materializa la experiencia de consulta, `PACK` y `UNPACK` dentro de esa cobertura sin introducir una obligación de prueba independiente.
+
+#### 67. Cobertura de prueba vigente reutilizada
+
+Sin modificar el registro se reutiliza:
+
+- `TREQ-NEXO-004`, para ciclo LPN completo, contenido, auditoría y ausencia de doble contabilización;
+- `TREQ-NEXO-011`, para fuente canónica de movimientos, membresía LPN, idempotencia, concurrencia, offline y consistencia de inventario;
+- `TREQ-NEXO-012`, para conservar lote, serial, origen, vencimiento, condición y demás trazabilidad al empacar y desempacar;
+- `TREQ-NEXO-046`, para mantener contenedor físico separado del LPN y de su contenido;
+- `TREQ-NEXO-047`, para comportamiento por clase y prohibición de duplicar saldo, identidad, kit, contenedor o contenido LPN;
+- `TREQ-UX-002`, para errores, bloqueos, recuperación y reintentos sin duplicar efectos;
+- `TREQ-UX-004`, para operación real en tablet, kiosco, escáner y periféricos;
+- `TREQ-UX-005`, para mostrar fuente de verdad, estado confirmado, actor, último cambio y conciliaciones;
+- `TREQ-UX-006`, para pérdida de red, sesión, dispositivo, reautorización y reanudación segura.
+
+Estas referencias son trazabilidad existente y no una modificación de 04A.
+
+#### 68. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_APPLICABLE | la tarea define experiencia documental bajo `DEFINE_ONCE / NO_PHYSICAL_INSTANCE` y no contiene código de producto que compilar |
+| LOCAL | NOT_EXECUTED | no se ejecutaron validadores sobre el checkout local del usuario durante la elaboración del artefacto; la batería documental los ejecutará después de incorporarlo |
+| REMOTA | PASS | se contrastaron `main` vigente de `vento-shell`, protocolo, contrato de entrega, topología, owner UX, `NEXO-DOM-004`, `021` a `024`, `NEXO-AUTH-023`, 04A NEXO/UX y el consumidor remoto `vento-nexo`; el AS-IS mantiene `inventory_lpns` con lectura parcial, `/inventory/lpns` redirigido a stock y ningún consumidor localizado de `inventory_lpn_items` ni flujo `PACK/UNPACK` LPN |
+| OPERATIVA | NOT_EXECUTED | no se empacó, desempacó ni consultó contenido LPN con operadores reales y no se ejecutó prueba en tablet, kiosco o escáner |
+| FÍSICA | NOT_APPLICABLE | `NEXO-UX-027` no genera instancia física propia; cualquier materialización posterior pertenece a trabajo de implementación autorizado |
+
+#### 69. Criterios de aceptación
+
+- [x] contenido planificado y membresía autoritativa permanecen separados;
+- [x] `QUANTITY_SLICE`, `SERIALIZED_IDENTITY` y `KIT_INSTANCE` son las únicas formas ordinarias consumidas;
+- [x] `PHYSICAL_CONTAINER` no se trata como línea ordinaria de contenido;
+- [x] un LPN hijo no se trata como línea ordinaria de contenido;
+- [x] la consulta de contenido ocurre dentro de un LPN resuelto y no absorbe la búsqueda transversal de 036;
+- [x] el resumen derivado no se convierte en un segundo ledger;
+- [x] dimensiones materiales distintas permanecen visibles y separadas;
+- [x] LPN `DRAFT` no recibe empaque autoritativo ordinario;
+- [x] `PACK` y `UNPACK` se reservan a lifecycle compatible y decisión server-side;
+- [x] el diseño no presenta una mutación como ejecutable mientras AUTH conserve `DEFAULT_DENY` por falta de capacidad exacta;
+- [x] `PACK` identifica origen, sujeto, forma, cantidad o identidad, dimensiones y revisión;
+- [x] `PACK` por cantidad conserva unidad y conversión canónica;
+- [x] `PACK` de identidad serializada usa el sujeto exacto y no cantidad fungible;
+- [x] `PACK` de kit usa una instancia materializada sin editar composición;
+- [x] capacidad y compatibilidad se evalúan cuando aplican;
+- [x] una revisión previa ocurre antes de cualquier efecto;
+- [x] solo confirmación server-side produce membresía visible como autoritativa;
+- [x] saldo insuficiente no se corrige y reenvía silenciosamente;
+- [x] una identidad ya contenida no se duplica;
+- [x] `UNPACK` parte de membresía autoritativa y destino explícito;
+- [x] desempaque parcial conserva cantidad total y dimensiones;
+- [x] desempaque total conserva historia;
+- [x] un LPN vacío no se cierra automáticamente;
+- [x] `UNPACK` no se usa como transferencia informal a otro LPN;
+- [x] lote, batch, vencimiento, condición, liberación y serial se preservan;
+- [x] membresía y ubicación permanecen responsabilidades separadas;
+- [x] membresía y movimiento permanecen reconciliables sin pedir una segunda operación manual del mismo hecho;
+- [x] plan, reserva, membresía y disponibilidad permanecen diferenciados;
+- [x] purpose type no se usa como prueba de despacho, recepción, transferencia o consumo productivo;
+- [x] escaneo resuelve o propone y nunca muta automáticamente;
+- [x] código ambiguo no selecciona por fallback;
+- [x] actor efectivo permanece visible en dispositivo compartido;
+- [x] conflicto de revisión no usa last-write-wins silencioso;
+- [x] cambio concurrente de lifecycle bloquea la mutación incompatible;
+- [x] doble envío no produce dos operaciones empresariales;
+- [x] timeout se trata como resultado desconocido hasta reconciliar;
+- [x] intención offline no se presenta como efecto canónico;
+- [x] denegación produce cero efectos empresariales;
+- [x] errores indican qué ocurrió, qué se conservó y cómo continuar;
+- [x] el diseño cubre teclado, foco, touch, señales no basadas solo en color y fallback sin escáner;
+- [x] `SPLIT_CONTENT`, `MERGE_CONTENT`, `TRANSFER_CONTENT` y reetiquetado detallado permanecen reservados a 028;
+- [x] anidamiento y retornabilidad permanecen reservados a 029;
+- [x] impresión y etiquetas dañadas permanecen reservadas a 037/038;
+- [x] no se crean requisitos de prueba;
+- [x] no se modifica 04A;
+- [x] no se autoriza materialización física.
+
+#### 70. Límites
+
+Esta tarea no:
+
+- crea ni modifica rutas Next.js;
+- crea componentes React;
+- modifica navegación;
+- crea un endpoint de contenido;
+- modifica `inventory_lpns` ni `inventory_lpn_items`;
+- crea tablas, columnas, vistas, funciones, triggers, constraints, índices, RLS o RPC;
+- crea migraciones o backfills;
+- modifica stock, movimientos, LPN o membresías reales;
+- crea `PermissionKey`, modalidad, scope, grant o deny;
+- habilita `PACK` o `UNPACK` bajo el catálogo actual;
+- diseña división o unión de contenido;
+- diseña transferencia directa entre LPN;
+- diseña reetiquetado detallado;
+- diseña anidamiento o reparentado de LPN;
+- diseña contenedores retornables;
+- diseña búsqueda transversal por contenido;
+- diseña impresión o reimpresión;
+- diseña etiquetas dañadas;
+- define hardware o protocolo de escáner;
+- redefine unidades, conversiones, capacidad o compatibilidad;
+- redefine lifecycle;
+- redefine custodia;
+- redefine ubicación;
+- redefine remisión, viaje, despacho o recepción;
+- ejecuta una prueba con operador;
+- crea prototipo ejecutable;
+- modifica Supabase;
+- ejecuta despliegues;
+- autoriza una instancia física;
+- crea ni modifica requisitos de prueba;
+- modifica el registro 04A;
+- desarrolla `NEXO-UX-028`.
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`NEXO-UX-026 — Diseñar ciclo de vida completo de LPN`
+
+**TAREA ACTUAL APROBADA**
+`NEXO-UX-027 — Diseñar empaque, desempaque y consulta de contenido`
+
+**SIGUIENTE TAREA RESERVADA**
+`NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado`
 ### [ ] NEXO-UX-028 — Diseñar división, unión, transferencia y reetiquetado
 ### [ ] NEXO-UX-029 — Diseñar contenedores anidados y retornables
 ### [ ] NEXO-UX-030 — Diseñar catálogo de activos y reutilizables
