@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1235** |
+| Aprobadas | **1236** |
 | En propuesta | **0** |
-| No iniciadas | **361** |
+| No iniciadas | **360** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **77.38% (1235/1596)** |
+| Porcentaje de completamiento | **77.44% (1236/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **361** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1136** |
+| ⏸ NO_EVALUADA | **360** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1137** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `NEXO-AUTH-030` — Ejecutar pruebas integrales del subdominio | ✅ APROBADA |
-| Tarea actual | `NEXO-AUTH-031` — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras | ⬜ NO INICIADA |
-| Siguiente reservada | `NEXO-AUTH-032` — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura | ⬜ NO INICIADA |
+| Última aprobada | `NEXO-AUTH-031` — Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras | ✅ APROBADA |
+| Tarea actual | `NEXO-AUTH-032` — Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura | ⬜ NO INICIADA |
+| Siguiente reservada | `NEXO-UX-026` — Diseñar ciclo de vida completo de LPN | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1000,7 +1000,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-028` | Proteger impresión y reimpresión mediante permisos atómicos | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-029` | Eliminar dependencia de permisos amplios legacy | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-030` | Ejecutar pruebas integrales del subdominio | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-031` | Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-AUTH-031` | Proteger instalaciones, mantenimiento, limpieza, inspecciones, calibración, acceso físico y obras | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `NEXO-AUTH-032` | Separar reporte, solicitud, aprobación, ejecución, verificación, liberación, cierre y reapertura | — | — | `bloques/K_NEXO/03_AUTORIZACION_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-001` | Inventariar procesos reales de inventario y logística | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-002` | Separar operación, supervisión y configuración | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
