@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1257** |
+| Tareas aprobadas | **1258** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **339** |
+| Tareas no iniciadas | **338** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **78.76% (1257/1596)** |
+| Porcentaje de completamiento | **78.82% (1258/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área** |
-| Tarea actual | **NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas** |
+| Última tarea aprobada | **NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas** |
+| Tarea actual | **NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades** |
+| Siguiente tarea | **NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 115 de 127 aprobadas; NEXO-UX-046 pendiente** |
+| Progreso del bloque | **BLOQUE K: 116 de 127 aprobadas; NEXO-UX-047 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — NEXO-UX-046** |
+| Carril documental | **ACTIVO — NEXO-UX-047** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `NEXO-UX-045` — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área |
-| Tarea actual | `NEXO-UX-046` — Diseñar inspecciones, calibración, servicios, medidores y alertas — **NO INICIADA** |
-| Siguiente tarea | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades |
+| Última aprobada | `NEXO-UX-046` — Diseñar inspecciones, calibración, servicios, medidores y alertas |
+| Tarea actual | `NEXO-UX-047` — Diseñar llaves, acceso físico, obras, cierres temporales y novedades — **NO INICIADA** |
+| Siguiente tarea | `NEXO-UX-048` — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 115 DE 127 APROBADAS — ACTUAL NEXO-UX-046** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 116 DE 127 APROBADAS — ACTUAL NEXO-UX-047** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-NEXO-UX-045 — Diseñar limpieza, saneamiento, plagas y evidencia operativa por área
-        ↓
-TAREA ACTUAL
 NEXO-UX-046 — Diseñar inspecciones, calibración, servicios, medidores y alertas
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 NEXO-UX-047 — Diseñar llaves, acceso físico, obras, cierres temporales y novedades
         ↓
+SIGUIENTE TAREA RESERVADA
+NEXO-UX-048 — Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 115 de 127 tareas aprobadas
+BLOQUE K — 116 de 127 tareas aprobadas
 ```
