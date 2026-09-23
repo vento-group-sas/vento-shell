@@ -5724,7 +5724,748 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-010 — Proteger producción parcial`
 
-### [ ] FOGO-AUTH-010 — Proteger producción parcial
+### ✅ FOGO-AUTH-010 — Proteger producción parcial
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-009 — Proteger inicio de producción
+**Tarea siguiente:** FOGO-AUTH-011 — Proteger finalización
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — protección server-side del registro parcial de `VPROC-0034` durante `IN_PRODUCTION`, con actor y contexto efectivos, territorio persistido del lote, estado vigente, capacidad exacta de mutación, deltas versionados, idempotencia, concurrencia, trazabilidad y separación estricta entre avance, consumo físico y finalización
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `FOGO-AUTH-010::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera de autorización y consistencia del **registro parcial de producción** en FOGO para que una ejecución ya iniciada pueda conservar avances reales sin convertir cada captura en cierre, sin sobrescribir historia y sin permitir que una vista visible, un lote consultable, una autoridad de creación previa o un payload de cliente modifiquen producción por sí solos.
+
+La regla raíz queda:
+
+```text
+LOTE EN EJECUCION AUTORIZABLE
++
+ACTOR Y CONTEXTO OPERATIVO VIGENTES
++
+SEDE Y AREA DEL LOTE COMPATIBLES
++
+CAPACIDAD EXACTA DE MUTACION PARA LA ACCION PARCIAL
++
+ESTADO VPROC-0034.IN_PRODUCTION VIGENTE
++
+DELTA PRODUCTIVO VALIDO Y VERSIONADO
++
+IDENTIDAD IDEMPOTENTE
++
+CONTROL DE CONCURRENCIA
+=
+CAPTURA PARCIAL AUTORIZABLE
+```
+
+La captura parcial conserva hechos de ejecución. No concede por sí sola finalización, liberación de calidad, publicación de inventario ni autoridad para corregir historia previa.
+
+---
+
+#### 2. Handoff recibido de FOGO-AUTH-001..009
+
+Esta tarea consume sin reinterpretación las fronteras ya aprobadas:
+
+1. `FOGO-AUTH-001` inventarió `VSCREEN-0059 — Registro parcial de producción` y `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS — Registrar avance parcial` como identidades canónicas de FOGO;
+2. `FOGO-AUTH-002` limitó el carril productivo ordinario a `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`, cada uno dentro de su sede y área efectivas;
+3. `FOGO-AUTH-003` estableció que visibilidad en la cola no equivale a autoridad de mutación;
+4. `FOGO-AUTH-004`, `FOGO-AUTH-005` y `FOGO-AUTH-006` aislaron territorialmente Panadería, Repostería y Cocina Caliente;
+5. `FOGO-AUTH-007` separó el hecho productivo FOGO de la reserva, retiro, consumo y movimiento físico autoritativos de NEXO;
+6. `FOGO-AUTH-008` estableció que supervisar, coordinar o leer lotes no concede mutaciones productivas ordinarias;
+7. `FOGO-AUTH-009` protegió creación e inicio y dejó explícito que poder iniciar producción no autoriza registrar producción parcial.
+
+`FOGO-AUTH-010` no reabre esas decisiones. Protege exclusivamente las capturas posteriores al inicio mientras la ejecución permanece activa.
+
+---
+
+#### 3. Identidad canónica de la superficie protegida
+
+| Dimensión | Identidad canónica |
+| --- | --- |
+| Aplicación | `fogo` |
+| Pantalla | `VSCREEN-0059 — Registro parcial de producción` |
+| Acción primaria | `VSCREEN-0059::PRIMARY` |
+| Proceso | `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada` |
+| Paso | `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS — Registrar avance parcial` |
+| Clase de acción | `CAPTURE` |
+| Fase | `IN_PROGRESS` |
+| Recurso empresarial | `PRODUCTION_BATCH` |
+| Estado ordinario de origen | `VPROC-0034.IN_PRODUCTION` |
+| Evento de ejecución reutilizado | `VPROC-0034.EVT-003 — producción en curso` |
+
+`VSCREEN-0059` conserva avances parciales sin cerrar prematuramente el resultado. La pantalla y sus parámetros son superficies de interacción, no fuentes de autoridad.
+
+---
+
+#### 4. Capacidad exacta de mutación y prohibición de inferencia
+
+El catálogo canónico vigente de FOGO no contiene una clave dedicada a la captura parcial de un lote. Las claves operativas existentes separan entrada, lectura, creación de lote, lectura de órdenes y recetario operativo.
+
+Por tanto, este marcador fija una regla fail-closed:
+
+```text
+fogo.production.batches.view
+!=
+AUTORIDAD PARA REGISTRAR AVANCE
+
+fogo.production.batches.create
+!=
+AUTORIDAD AUTOMATICA PARA REGISTRAR AVANCE
+
+fogo.production.recipe_book.view
+!=
+AUTORIDAD PARA REGISTRAR AVANCE
+```
+
+La materialización de cada `FOGO-AUTH-010::<implementation_unit_id>` deberá vincular la mutación parcial a una **capacidad canónica concreta y registrada** cuya semántica cubra esa acción. El código de esa capacidad no se inventa en este marcador global.
+
+Una unidad física no puede declararse conforme si resuelve la captura parcial mediante:
+
+- permiso de lectura;
+- permiso de creación reutilizado por conveniencia sin contrato explícito de la acción;
+- nombre de rol;
+- pertenencia previa al lote;
+- visibilidad de la pantalla;
+- firma de dispositivo aislada;
+- literal local `production.*` no normalizado;
+- ausencia de comprobación de permiso presentada como compatibilidad temporal.
+
+Si la capacidad exacta todavía no está materializada para una unidad, la mutación parcial permanece no ejecutable hasta que la misma unidad y las tareas propietarias de normalización/migración de permisos satisfagan el contrato canónico aplicable. No se abre un wildcard ni un alias ampliatorio.
+
+---
+
+#### 5. Actores ordinarios autorizables
+
+La captura parcial ordinaria permanece dentro de los tres perfiles productivos definidos para FOGO:
+
+| Rol operativo efectivo | Sede | Área productiva exacta | Condición territorial |
+| --- | --- | --- | --- |
+| `produccion_cocina` | Centro de Producción | Cocina Caliente | solo lotes persistidos en este territorio |
+| `produccion_panaderia` | Centro de Producción | Galletería y Panadería | solo lotes persistidos en este territorio |
+| `produccion_reposteria` | Centro de Producción | Repostería | solo lotes persistidos en este territorio |
+
+No adquieren mutación parcial por implicación:
+
+- `supervisor`;
+- `gerencia_operativa`;
+- `bodeguero`;
+- quien haya creado el lote;
+- quien haya creado o publicado la receta;
+- quien pueda consultar órdenes o lotes;
+- quien administre la estación física.
+
+Una ampliación futura requiere autoridad explícita de la acción y no puede derivarse de supervisión o lectura.
+
+---
+
+#### 6. Estado empresarial de origen
+
+La captura parcial ordinaria se autoriza sobre una instancia existente de `VPROC-0034` que haya alcanzado realmente:
+
+```text
+VPROC-0034.IN_PRODUCTION
+```
+
+Ese estado significa que se ejecutan pasos de receta y se capturan consumos, tiempos y desviaciones.
+
+No son estados equivalentes para capturar avance ordinario:
+
+```text
+PRODUCTION_ORDER_READY
+MATERIALS_RESERVING
+MATERIALS_READY
+OUTPUT_REPORTED
+CONSUMPTION_RECONCILIATION_PENDING
+READY_FOR_QUALITY
+PRODUCTION_EXECUTION_COMPLETED
+```
+
+Reglas:
+
+1. un lote que todavía está en preparación no puede recibir avance productivo como si ya estuviera ejecutándose;
+2. una captura stale no puede hacer retroceder `OUTPUT_REPORTED` o estados posteriores a `IN_PRODUCTION`;
+3. una ejecución completada no puede recibir un nuevo parcial ordinario;
+4. una corrección posterior pertenece a la acción propietaria de corrección y no se disfraza como otro parcial;
+5. la reanudación después de una interrupción deberá demostrar un estado vigente que permita continuar, no asumirlo desde una pantalla abierta.
+
+---
+
+#### 7. Semántica del avance parcial
+
+Una captura parcial representa un hecho incremental de una ejecución activa. Puede conservar, según aplique:
+
+- paso o etapa ejecutada;
+- cantidad observada durante el intervalo;
+- tiempo o duración real;
+- material utilizado declarado por FOGO;
+- salida parcial observada;
+- merma, desperdicio o desviación observados;
+- medición o control operacional asociado;
+- comentario estructurado o motivo cuando corresponda;
+- evidencia autorizada;
+- referencias NEXO correlacionadas cuando exista efecto físico.
+
+No significa por sí sola:
+
+- lote terminado;
+- salida final;
+- rendimiento final;
+- consumo NEXO conciliado;
+- calidad liberada;
+- producto disponible;
+- remisión satisfecha;
+- inventario terminado publicado;
+- cierre productivo aprobado.
+
+---
+
+#### 8. Delta actual y acumulado
+
+Toda captura deberá distinguir el hecho nuevo de la proyección acumulada.
+
+Contrato conceptual:
+
+```text
+ACUMULADO_ANTERIOR_VERIFICADO
++
+DELTA_ACTUAL_ACEPTADO
+=
+ACUMULADO_RESULTANTE
+```
+
+Reglas:
+
+1. el cliente no suministra un total acumulado autoritativo capaz de borrar capturas previas;
+2. un delta no puede reescribir silenciosamente el plan, la receta, la orden o las cantidades históricas;
+3. cualquier proyección acumulada se calcula o valida server-side contra la versión vigente;
+4. el delta conserva unidad, precisión y regla de conversión aplicables;
+5. un delta negativo no se usa como corrección genérica de un hecho ya confirmado;
+6. una diferencia entre plan y acumulado permanece visible hasta su tratamiento propietario;
+7. la identidad del lote no cambia por producción parcial ni por diferencia de rendimiento.
+
+---
+
+#### 9. Datos mínimos de una captura protegida
+
+Sin imponer nombres físicos de columnas o tablas, la operación deberá poder resolver y auditar como mínimo:
+
+- identidad estable del lote o ejecución;
+- instancia de `VPROC-0034`;
+- orden productiva y versión;
+- receta y versión exacta;
+- producto o salida aplicable;
+- sede y área persistidas del lote;
+- estado y versión vigentes del agregado;
+- cantidad planificada y unidad;
+- delta de la captura actual;
+- acumulado anterior verificable;
+- acumulado resultante verificable;
+- materiales y deltas de consumo productivo cuando apliquen;
+- salida parcial, rendimiento, merma o desviaciones cuando apliquen;
+- paso, tiempo o control operacional relevante;
+- principal técnico y actor efectivo;
+- rol operativo efectivo;
+- turno y check-in cuando correspondan;
+- dispositivo cuando aplique;
+- momento de ocurrencia y registro;
+- `correlation_id`, `causation_id`, `request_id` o equivalentes del contrato compartido cuando apliquen;
+- identidad idempotente estable;
+- referencia de resultado y auditoría.
+
+La materialización física podrá usar los shapes canónicos correspondientes, pero no perder ninguna verdad empresarial requerida por esta lista.
+
+---
+
+#### 10. Revalidación server-side en cada captura
+
+Cada mutación parcial deberá revalidar inmediatamente antes del efecto:
+
+```text
+PRINCIPAL TECNICO
++
+ACTOR EFECTIVO
++
+TURNO PUBLICADO Y VIGENTE
++
+CHECK-IN CUANDO APLIQUE
++
+ROL OPERATIVO EFECTIVO
++
+SEDE ACTIVA
++
+AREA ACTIVA
++
+CAPACIDAD EXACTA DE LA ACCION
++
+LOTE Y TERRITORIO PERSISTIDOS
++
+ESTADO Y VERSION ACTUALES
++
+ORDEN / RECETA / VERSION VINCULADAS
++
+DELTA Y CAMPOS PERMITIDOS
++
+SIN DENEGACION PREVALENTE
+=
+MUTACION PARCIAL AUTORIZABLE
+```
+
+Una decisión obtenida al cargar la pantalla no se reutiliza como autorización indefinida.
+
+---
+
+#### 11. Territorio del lote
+
+La sede y el área del recurso persistido prevalecen sobre valores suministrados por el cliente.
+
+Reglas:
+
+1. el lote debe pertenecer al territorio operativo efectivo del actor;
+2. compartir Centro de Producción no une Cocina, Panadería y Repostería;
+3. un cambio de turno o área invalida la autoridad anterior;
+4. un actor rotado a otra área no continúa capturando sobre el lote abierto con una decisión stale;
+5. un lote sin territorio resoluble cuando la operación lo exige se deniega cerrado;
+6. una captura multiárea no se ejecuta parcialmente por inferencia;
+7. `site_id` y `area_id` de formularios o URL son localizadores o filtros, no autoridad.
+
+---
+
+#### 12. Actor, turno y continuidad de atribución
+
+La captura debe registrar al humano que efectivamente realizó la acción, no únicamente al usuario técnico que mantiene abierta una sesión.
+
+La identidad de actor puede variar entre capturas del mismo lote si el trabajo cambia legítimamente de trabajador o turno. Ese cambio:
+
+- no cambia la identidad del lote;
+- no transfiere autoridad previa;
+- exige resolución fresca de contexto;
+- conserva quién hizo cada captura;
+- conserva el principal técnico y dispositivo cuando aplique;
+- no permite que el nuevo actor edite silenciosamente hechos históricos del actor anterior.
+
+La continuidad del lote no implica continuidad de autorización personal.
+
+---
+
+#### 13. Dispositivo compartido
+
+En estación compartida, la operación parcial deberá aplicar la intersección entre:
+
+```text
+LIMITES DEL DISPOSITIVO
+∩
+AUTORIDAD DEL ACTOR EFECTIVO
+∩
+TERRITORIO DEL LOTE
+∩
+ESTADO ACTUAL
+```
+
+Cuando el contrato de dispositivo exija firma o identificación reforzada, esa evidencia se resuelve para la captura actual.
+
+La firma:
+
+- identifica al actor;
+- no crea el permiso;
+- no amplía sede o área;
+- no convierte al administrador de la estación en ejecutor productivo;
+- no autoriza una captura sobre estado incompatible.
+
+---
+
+#### 14. Campos permitidos y protección contra sobreescritura
+
+La acción parcial solo puede modificar los hechos pertenecientes a la captura de avance.
+
+Queda prohibido usarla para alterar silenciosamente:
+
+- identidad del lote;
+- orden de origen;
+- versión de receta aplicada;
+- sede o área persistidas;
+- cantidad planificada histórica;
+- identidad de capturas previas;
+- autor de una captura anterior;
+- disposición de calidad;
+- movimientos NEXO ya confirmados;
+- estado terminal;
+- genealogía ya materializada;
+- resultado de cierre aprobado.
+
+Un cambio legítimo sobre esos elementos utiliza su acción propietaria y conserva historia no destructiva.
+
+---
+
+#### 15. Idempotencia de la captura parcial
+
+Cada captura con efecto debe tener una identidad idempotente estable dentro de su alcance.
+
+Huella mínima conceptual:
+
+```text
+TIPO_DE_ACCION
++
+LOTE / INSTANCIA
++
+VERSION ESPERADA
++
+ACTOR EFECTIVO
++
+DELTA NORMALIZADO
++
+UNIDADES
++
+PASO O CONTEXTO OPERACIONAL
++
+REFERENCIAS DE EFECTO
+```
+
+Resultados:
+
+| Caso | Resultado obligatorio |
+| --- | --- |
+| misma identidad + misma huella | devolver resultado durable previo; no duplicar captura |
+| misma identidad + huella incompatible | conflicto; cero segundo efecto |
+| respuesta perdida | recuperar resultado antes de repetir la mutación |
+| estado ya avanzado por otra operación | revalidar y responder conflicto/estado vigente; no retroceder |
+
+Un retry técnico no equivale a una nueva producción real.
+
+---
+
+#### 16. Concurrencia y control de versión
+
+Dos capturas concurrentes no pueden provocar pérdida de actualización ni doble contabilización.
+
+La materialización deberá usar versión esperada, bloqueo, compare-and-swap, claim o mecanismo equivalente compatible con su arquitectura.
+
+Invariantes:
+
+1. cada captura aceptada se aplica una sola vez;
+2. el acumulado resultante incorpora todos los deltas confirmados;
+3. una escritura stale no sobrescribe un acumulado más nuevo;
+4. el orden de persistencia se puede reconstruir;
+5. el estado de proceso no retrocede por carrera;
+6. una captura que cruza un cambio de actor, turno, área o estado vuelve a autorizarse antes de cualquier efecto.
+
+---
+
+#### 17. Relación con `VPROC-0034.EVT-003`
+
+`VPROC-0034.EVT-003` conserva la semántica de **producción en curso** y puede representar el hecho durable de ejecución con captura de consumos, tiempos y desviaciones.
+
+Una captura parcial válida:
+
+- puede producir o actualizar la evidencia que sustenta producción en curso;
+- no crea una definición `EVT-*` nueva;
+- no convierte cada delta en un evento empresarial de cierre;
+- conserva el mismo `process_instance_id` y lote cuando corresponde;
+- mantiene correlación con la captura que la originó.
+
+Los eventos se reutilizan conforme al catálogo existente; no se crea un segundo ciclo paralelo de estados.
+
+---
+
+#### 18. Frontera con `OUTPUT_REPORTED`
+
+`VPROC-0034.OUTPUT_REPORTED` es un estado posterior de handoff cuyo significado es que se registraron salidas, rendimiento y merma sin liberación de calidad.
+
+Por tanto:
+
+1. registrar un parcial ordinario mientras se ejecuta no obliga a transicionar a `OUTPUT_REPORTED`;
+2. una salida parcial observada puede conservarse dentro del expediente sin presentarse como resultado final;
+3. la transición a `OUTPUT_REPORTED` deberá satisfacer su contrato de estado y no se deriva de que `produced_qty > 0`;
+4. `OUTPUT_REPORTED` no implica conciliación de consumos;
+5. `OUTPUT_REPORTED` no implica finalización, calidad liberada ni inventario disponible.
+
+La 010 protege la captura; no redefine la transición terminal ni absorbe la finalización propietaria de la 011.
+
+---
+
+#### 19. Producción parcial inferior a la planificada
+
+Cuando una ejecución termine posteriormente con salida inferior a la planificada y el proceso/autoridad aplicable lo permita, las capturas realizadas deben conservar suficiente verdad para demostrar que:
+
+1. la cantidad planificada no fue reducida silenciosamente;
+2. la cantidad faltante no se convirtió en producto terminado;
+3. el rendimiento real y la diferencia permanecieron explícitos;
+4. materiales consumidos, devueltos y desperdiciados pueden conciliarse;
+5. motivo y autoridad de una aceptación con diferencia pueden vincularse al cierre;
+6. NEXO no recibe una cantidad faltante ficticia;
+7. una remisión o necesidad externa no queda satisfecha por inferencia.
+
+La decisión de aceptar el cierre con diferencia no se ejecuta mediante la captura parcial ordinaria.
+
+---
+
+#### 20. Interrupción de producción
+
+Si la ejecución se interrumpe después de uno o más avances parciales:
+
+- se conserva el último estado real alcanzado;
+- se conservan capturas, materiales, salida parcial, merma, evidencia y efectos ya ocurridos;
+- no se emite `VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` como si la ejecución hubiese terminado normalmente;
+- los movimientos físicos confirmados permanecen inmutables;
+- solo el trabajo futuro se cancela mediante la acción propietaria aplicable;
+- el cierre posterior debe explicar resultado residual, variaciones y pendientes.
+
+Una interrupción no convierte la historia en vacía y no autoriza borrar parciales previamente aceptados.
+
+---
+
+#### 21. Separación FOGO / NEXO durante parciales
+
+FOGO conserva la verdad productiva de la captura. NEXO conserva la verdad física de reserva, retiro, consumo, traslado, posting y conciliación de existencias.
+
+```text
+CAPTURA FOGO DE USO / AVANCE
+!=
+MOVIMIENTO NEXO CONFIRMADO
+!=
+CONSUMO NEXO RECONCILIADO
+```
+
+Reglas:
+
+1. una captura FOGO puede iniciar o continuar el handoff hacia NEXO;
+2. no puede fabricar un movimiento NEXO ni declararlo conciliado;
+3. una respuesta visual de stock no prueba el efecto físico;
+4. una cantidad productiva puede estar registrada mientras su operación física correlacionada permanece pendiente;
+5. diferencias abiertas permanecen explícitas;
+6. la conciliación posterior compara requerido, reservado, emitido, consumido, devuelto, desperdiciado y diferencia;
+7. cualquier cambio futuro de Supabase perteneciente a VENTO se crea, versiona y ejecuta desde `vento-shell` bajo la instancia física propietaria.
+
+---
+
+#### 22. Denegación, error y recuperación
+
+Una captura denegada debe producir cero efectos empresariales.
+
+Se deniega o falla cerrado cuando, entre otros casos:
+
+- no existe actor efectivo válido;
+- turno o check-in requerido no están vigentes;
+- sede o área no coinciden con el lote;
+- la capacidad exacta de mutación no está materializada o no es concedida;
+- el lote no está en estado compatible;
+- la versión esperada está obsoleta;
+- el delta es inválido o viola invariantes;
+- la receta/orden vinculadas no son resolubles;
+- el payload intenta alterar campos fuera de la acción;
+- la firma requerida de dispositivo falta o no corresponde al actor;
+- una clave idempotente se reutiliza con contenido incompatible;
+- existe fallo técnico que impide obtener una decisión autorizativa confiable.
+
+Un fallo técnico no se convierte en `ALLOW`, y un retry no se ejecuta a ciegas si el resultado previo es incierto.
+
+---
+
+#### 23. Estado AS-IS observado en `vento-fogo`
+
+El runtime vigente demuestra creación y consulta de lotes, pero no demuestra una superficie canónica separada para el registro parcial de `VPROC-0034`.
+
+Se observa:
+
+- `src/app/production-batches/new/page.tsx` captura cantidades reales durante `createBatch` y llama a `fogo_create_real_production_batch`;
+- la operación actual mezcla creación del lote con consumos y otros efectos del resultado en un mismo flujo transitorio;
+- `src/app/production-batches/page.tsx` consulta `production_batch_consumptions` para visualizar consumos registrados;
+- no se observó en el runtime revisado una acción separada que materialice `VSCREEN-0059::PRIMARY` o `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS` como lifecycle incremental;
+- no se observó una transición física explícita que mantenga múltiples capturas parciales versionadas dentro de `IN_PRODUCTION`.
+
+Conclusión AS-IS:
+
+```text
+CAPTURA FINAL / ACOPLADA EXISTENTE
+!=
+REGISTRO PARCIAL CANONICO MATERIALIZADO
+```
+
+La ausencia de la superficie separada no se corrige declarando equivalente el RPC existente.
+
+---
+
+#### 24. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| El catálogo FOGO vigente no contiene una clave dedicada a captura parcial. | Bloquea una materialización conforme si la unidad pretende mutar parciales sin capacidad canónica concreta. | `FOGO-AUTH-010::<implementation_unit_id>` con normalización/migración propietaria en `FOGO-AUTH-013` / `FOGO-AUTH-015` cuando aplique | la acción parcial queda ligada a una capacidad canónica registrada, con alcance explícito y pruebas negativas contra lectura/creación no equivalentes |
+| El runtime actual acopla creación, cantidades reales y efectos posteriores dentro de `fogo_create_real_production_batch`. | Bloquea declarar el lifecycle parcial como materializado. | `FOGO-AUTH-010::<implementation_unit_id>` y unidad técnica propietaria del consumidor | existe captura incremental protegida o adaptación equivalente que conserva estados, idempotencia, deltas y ownership sin falsificar parciales |
+| `production_batch_consumptions` es visible pero no demuestra autorización ni lifecycle de captura. | Riesgo de confundir dato observado con mutación protegida. | `FOGO-AUTH-010::<implementation_unit_id>` | lectura y escritura quedan separadas; la mutación revalida actor, contexto, capacidad, lote, estado y versión |
+| Una captura puede coincidir con handoffs NEXO todavía pendientes. | No bloquea el contrato; exige estado durable y conciliación posterior. | `INT-PROD-002` / `FOGO-AUTH-010::<implementation_unit_id>` | cada efecto productivo mantiene correlación con la operación física y no se presenta como reconciliado antes de serlo |
+| Finalización e interrupción requieren acciones distintas a registrar un parcial. | No bloquea. | `FOGO-AUTH-011` / `FOGO-AUTH-012` | cierre, cancelación o corrección utilizan sus acciones propietarias sin reusar el endpoint parcial |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 25. Frontera con tareas posteriores
+
+| Tarea | Frontera preservada |
+| --- | --- |
+| `FOGO-AUTH-011` | protege la finalización; una captura parcial no hereda autoridad para cerrar ni emitir ejecución completada |
+| `FOGO-AUTH-012` | protege correcciones y anulaciones; un parcial aceptado no se reescribe mediante otro delta negativo o edición destructiva |
+| `FOGO-AUTH-013` | normaliza la protección de lotes/recetas y permisos legacy; no convierte aliases amplios en autorización parcial |
+| `FOGO-AUTH-014` | registra actor y turno con la evidencia completa de cada captura |
+| `FOGO-AUTH-015` | migra consumidores a contratos compartidos conservando capacidad exacta, contexto, versión e idempotencia |
+| `FOGO-AUTH-016` | prueba integralmente parciales, denegaciones, concurrencia, stale state, shared device y ausencia de escalamiento |
+| `FOGO-UX-007` y superficies propietarias aplicables | representan el avance sin presentar parciales como cierre o resultado liberado |
+
+Esta tarea no adelanta ninguna de esas materializaciones.
+
+---
+
+#### 26. Materialización física posterior
+
+La topología canónica aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define el contrato global de la acción parcial;
+2. no autoriza una ejecución física global;
+3. cada materialización usa `FOGO-AUTH-010::<implementation_unit_id>`;
+4. la unidad física solo puede abrirse después del `E5-GATE-008::<package_id>` aplicable y de la autorización física explícita;
+5. una misma decisión global puede ser consumida por varias unidades sin convertirlas en una sola instancia;
+6. la unidad debe probar su binding real de permiso/capacidad, guard server-side, persistencia, idempotencia, concurrencia, estados y auditoría;
+7. ningún cambio de Supabase se ejecuta desde `vento-fogo`; pertenece a `vento-shell`.
+
+---
+
+#### 27. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el ciclo de producción parcial, actor/turno, cantidades, consumos, desviaciones, autorización de mutaciones, territorio, segregación, shared device, frescura, idempotencia, concurrencia y auditoría ya están cubiertos por requisitos vigentes. Esta tarea especializa esa cobertura sobre `VSCREEN-0059` y `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS` sin introducir una obligación verificable nueva fuera de esos contratos.
+
+---
+
+#### 28. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-FOGO-001` para demostrar inicio, producción parcial, consumo, desperdicio, resultado, finalización, cancelación/corrección, actor, turno, cantidades y efectos de inventario auditables;
+- `TREQ-FOGO-004` para conservar orden, lote, receta/version, cantidades, materiales, pasos, desviaciones, rendimiento, merma y controles durante la ejecución;
+- `TREQ-AUTH-008` para exigir contexto operativo completo a capacidades operativas;
+- `TREQ-AUTH-009` para resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-010` para segregación de funciones entre producción e inventario/bodega;
+- `TREQ-AUTH-011` para identidad efectiva y límites en dispositivo compartido;
+- `TREQ-AUTH-013` para impedir bypass de UI/API/RPC y exigir permiso exacto, actor, territorio, contexto, estado y campos permitidos en cada mutación;
+- `TREQ-AUTH-014` para invalidación de autoridad stale ante cambios de turno, área, trabajador, dispositivo, rol o asignación;
+- `TREQ-AUTH-015` para evidencia correlacionable de cada decisión y acción protegida.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 29. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@7df8c5a6c1ed1882dfeecafcd10f7116118c3a41`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `VSCREEN-0059`, `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS`, estados/eventos de `VPROC-0034`, reglas de producción parcial e interrupción, contratos de autorización y recurso, cobertura 04A vigente y el AS-IS de `production-batches`; `FOGO-AUTH-009` se consume desde su artefacto completo aprobado, todavía pendiente de incorporación remota al momento de esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron lotes reales, capturas parciales, turnos, check-ins, dispositivos, handoffs NEXO, reintentos, concurrencia ni pruebas adversariales de autorización. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `FOGO-AUTH-010::<implementation_unit_id>`. |
+
+---
+
+#### 30. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] la superficie protegida es exactamente `VSCREEN-0059` con `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS`;
+- [ ] la acción conserva clase `CAPTURE` y contexto `IN_PROGRESS`;
+- [ ] la captura ordinaria exige una instancia vigente en `VPROC-0034.IN_PRODUCTION`;
+- [ ] `VPROC-0034.EVT-003` se reutiliza sin inventar otro catálogo de eventos;
+- [ ] una captura parcial no finaliza el lote;
+- [ ] una captura parcial no obliga a entrar a `OUTPUT_REPORTED`;
+- [ ] `OUTPUT_REPORTED` no se interpreta como consumo conciliado, finalización o calidad liberada;
+- [ ] la capacidad de mutación parcial debe ser canónica, concreta y registrada antes de cualquier materialización;
+- [ ] `batches.view`, `batches.create` y `recipe_book.view` no se usan como equivalentes automáticos de la autoridad parcial;
+- [ ] los tres roles productivos ordinarios conservan sede y área exactas;
+- [ ] supervisor, gerencia operativa, bodega, autor de receta o creador de lote no adquieren mutación parcial por implicación;
+- [ ] actor, turno, check-in, rol, sede, área, capacidad, lote, estado y versión se revalidan en cada captura;
+- [ ] el territorio persistido del lote prevalece sobre parámetros de cliente;
+- [ ] el delta actual se distingue del acumulado anterior y resultante;
+- [ ] el cliente no puede sobrescribir autoritativamente acumulados o historia;
+- [ ] un delta negativo no funciona como corrección genérica;
+- [ ] la identidad del lote permanece estable ante producción parcial;
+- [ ] retries equivalentes no duplican capturas;
+- [ ] la misma identidad idempotente con huella incompatible produce conflicto;
+- [ ] capturas concurrentes no generan lost update ni doble contabilización;
+- [ ] una escritura stale no retrocede el estado;
+- [ ] shared device identifica al actor sin ampliar autoridad;
+- [ ] FOGO y NEXO mantienen verdad productiva y física separadas;
+- [ ] un parcial no fabrica movimientos ni conciliación NEXO;
+- [ ] la producción parcial inferior a plan conserva plan, faltante, rendimiento, diferencias y material consumido/devuelto/desperdiciado;
+- [ ] una interrupción conserva la historia y no emite finalización normal falsa;
+- [ ] el AS-IS queda clasificado como flujo acoplado, no como lifecycle parcial canónico materializado;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] la finalización permanece reservada a `FOGO-AUTH-011`;
+- [ ] correcciones y anulaciones permanecen reservadas a `FOGO-AUTH-012`;
+- [ ] cualquier modificación futura de Supabase perteneciente a VENTO se realiza desde `vento-shell` bajo la instancia física propietaria;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 31. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica `fogo_create_real_production_batch`;
+- crea una tabla o endpoint físico de parciales;
+- inventa una clave de permiso nueva;
+- reutiliza por contrato `fogo.production.batches.create` como permiso de captura parcial;
+- modifica matrices RBAC aprobadas;
+- modifica Server Actions, RPC, RLS, grants o datos;
+- crea o modifica migraciones;
+- redefine el inicio protegido por `FOGO-AUTH-009`;
+- finaliza producción;
+- corrige o anula lotes;
+- modifica recetas;
+- libera calidad;
+- publica producto terminado en inventario;
+- cierra remisiones o necesidades externas;
+- reconcilia por sí sola movimientos NEXO;
+- redefine empaque o etiquetado;
+- diseña UX final;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 32. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-009 — Proteger inicio de producción`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-010 — Proteger producción parcial`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-011 — Proteger finalización`
+
 ### [ ] FOGO-AUTH-011 — Proteger finalización
 ### [ ] FOGO-AUTH-012 — Proteger correcciones y anulaciones
 ### [ ] FOGO-AUTH-013 — Proteger lotes y recetas
