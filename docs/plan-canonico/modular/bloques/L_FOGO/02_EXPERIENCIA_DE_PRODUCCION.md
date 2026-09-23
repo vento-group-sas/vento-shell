@@ -2028,7 +2028,817 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-004 — Mostrar producción pendiente del turno`
 
-### [ ] FOGO-UX-004 — Mostrar producción pendiente del turno
+### ✅ FOGO-UX-004 — Mostrar producción pendiente del turno
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-003 — Diseñar inicio por área productiva
+**Tarea siguiente:** FOGO-UX-005 — Diseñar inicio de lote
+**Tipo de tarea:** diseño documental integral de la cola operativa de producción pendiente del turno por área efectiva, con elegibilidad, temporalidad, prioridad visible, bloqueos, continuidad, minimización y handoff al inicio de lote
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, componentes, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de experiencia de la producción pendiente que un trabajador puede ver durante su turno dentro de `VSCREEN-0055 — Inicio y cola de producción`, de forma que la cola:
+
+- muestre únicamente trabajo autorizado para el área y contexto efectivos;
+- distinga trabajo listo, bloqueado, en curso, arrastrado y temporalmente no clasificable sin inventar disponibilidad;
+- conserve la prioridad, fecha requerida, restricciones y versión provenientes de la planificación autoritativa;
+- no convierta señales brutas, filtros cliente-side, `created_at`, orden visual o acciones de supervisión en prioridad empresarial;
+- permita reconocer qué debe atenderse ahora sin mezclar planeación, inicio de lote, ejecución parcial, cierre, calidad o administración de recetas;
+- muestre bloqueos y siguiente propietario sin afirmar que una condición está satisfecha cuando todavía es desconocida;
+- prepare un handoff determinista a `FOGO-UX-005` sin iniciar por sí sola un lote.
+
+La tarea concreta la zona `trabajo ahora` reservada por `FOGO-UX-003`. No redefine el inicio de FOGO, el área efectiva, el catálogo de permisos ni la UX de supervisión multiárea.
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-003
+
+`FOGO-UX-003` entrega el siguiente contrato de entrada:
+
+```text
+VSCREEN-0055 COMO INICIO CANÓNICO DEL ÁREA
+ÁREA EFECTIVA YA RESUELTA SERVER-SIDE
+ACTOR Y TURNO REVALIDABLES
+FUENTE UX = PROYECCIÓN FOGO, NO SEÑALES CRUDAS
+VPROC-0033.PRODUCTION_PLAN_RELEASED COMO FRONTERA DE PLAN LIBERADO
+VPROC-0034.PRODUCTION_ORDER_READY COMO ENTRADA DE EJECUCIÓN
+SIN SELECTOR DE ÁREA QUE CONCEDA AUTORIDAD
+ESTADOS VACÍO / CONTEXTO / DENY / STALE / ERROR DIFERENCIADOS
+ESPACIO PRIORITARIO PARA TRABAJO PENDIENTE
+```
+
+Por tanto, `FOGO-UX-004` no vuelve a decidir:
+
+- quién es el actor efectivo;
+- cuál es la sede efectiva;
+- cuál es el área efectiva;
+- qué rol operativo aplica;
+- qué permiso concede lectura;
+- si un selector visual puede ampliar territorio.
+
+La tarea recibe esos hechos ya resueltos y define únicamente la experiencia de la cola de trabajo autorizada.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el contrato de cola se define una sola vez;
+2. no existe una instancia física propia de `FOGO-UX-004`;
+3. la tarea no implementa consultas, RPC, vistas, componentes, endpoints ni almacenamiento;
+4. las materializaciones posteriores deberán consumir este contrato sin reinterpretar prioridad, turno, territorio o elegibilidad;
+5. cualquier modificación futura de Supabase perteneciente a VENTO continuará bajo `vento-group-sas/vento-shell`.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-001 — Inventariar procesos reales de producción`;
+- `FOGO-UX-002 — Separar cocina, panadería y repostería`;
+- `FOGO-UX-003 — Diseñar inicio por área productiva`;
+- `FOGO-AUTH-003 — Filtrar cola por sede y área`;
+- `FOGO-AUTH-008 — Definir permisos de supervisor`;
+- `FOGO-AUTH-009 — Proteger inicio de producción`;
+- `FOGO-AUTH-014 — Registrar actor y turno`;
+- `VSCREEN-0055 — Inicio y cola de producción`;
+- `VSCREEN-0056 — Planeación de producción`;
+- `VSCREEN-0057 — Preparación e inicio de lote`;
+- `VPROC-0033 — Planear producción desde demanda, inventario, capacidad, prioridad y fecha requerida`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- estados canónicos de `VPROC-0033` y `VPROC-0034`;
+- hallazgos `H-CAP-SCOPE-008-002`, `H-CAP-SCOPE-008-005` y `H-CAP-SCOPE-008-009`;
+- Registro 04A vigente del dominio FOGO;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`.
+
+---
+
+#### 5. Identidad canónica de la cola
+
+La producción pendiente del turno vive dentro de:
+
+| Identidad | Nombre | Proceso | Paso | Interacción | Momento |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0055` | Inicio y cola de producción | `VPROC-0033` | `VPROC-0033::STEP-TRIAGE_PRODUCTION_QUEUE` — Priorizar cola de producción | `TRIAGE` | `INITIAL` |
+
+Su propósito canónico permanece:
+
+> presentar la producción pendiente, priorizada y disponible para el área y contexto efectivos.
+
+La cola no es equivalente a:
+
+- la pantalla de planeación `VSCREEN-0056`;
+- la preparación/inicio de lote `VSCREEN-0057`;
+- la lista histórica de lotes;
+- un tablero de todas las áreas;
+- un listado de señales de demanda sin formalizar.
+
+---
+
+#### 6. Definición de «producción pendiente del turno»
+
+Para esta experiencia, un elemento puede considerarse **pendiente del turno** únicamente cuando satisface simultáneamente:
+
+```text
+RECURSO AUTORIZADO PARA EL ÁREA EFECTIVA
++
+ESTADO PRODUCTIVO ELEGIBLE
++
+PLAN / ORDEN CON TRAZABILIDAD SUFICIENTE
++
+VENTANA TEMPORAL APLICABLE AL TURNO O ARRASTRE VÁLIDO
++
+NO TERMINAL
++
+NO CANCELADO
++
+NO SUSTITUIDO POR UNA VERSIÓN POSTERIOR
+=
+CANDIDATO A LA COLA DEL TURNO
+```
+
+La cola no transforma en producción pendiente:
+
+```text
+SEÑAL BRUTA
+VENTA
+PEDIDO
+REMISIÓN
+MÍNIMO DE INVENTARIO
+RECOMENDACIÓN
+PLAN EN BORRADOR
+PLAN EN REVISIÓN
+PLAN PENDIENTE DE APROBACIÓN
+REGISTRO HISTÓRICO DE LOTE
+```
+
+Esos hechos pueden originar o informar planificación, pero no son trabajo ejecutable por sí solos.
+
+---
+
+#### 7. Frontera plan → orden → trabajo visible
+
+La cadena mínima de autoridad UX queda:
+
+```text
+VPROC-0033.PRODUCTION_PLAN_RELEASED
+→ ORDEN / COMPROMISO PRODUCTIVO DERIVADO Y TRAZABLE
+→ VPROC-0034.PRODUCTION_ORDER_READY O ESTADO POSTERIOR ELEGIBLE
+→ TERRITORIO Y PERMISO REVALIDADOS
+→ COLA DEL ÁREA / TURNO
+```
+
+Reglas:
+
+1. un plan liberado demuestra planificación aprobada, no ejecución realizada;
+2. una orden productiva lista puede ingresar a la cola si su territorio y ventana son compatibles;
+3. un lote ya iniciado no vuelve a aparecer como orden nueva;
+4. un elemento terminal o cancelado sale de la cola operativa ordinaria;
+5. una revisión del plan no sobrescribe silenciosamente la versión que originó una orden ya trazable.
+
+---
+
+#### 8. Ventana temporal del turno
+
+La experiencia usa el **turno efectivo** del actor cuando el carril operativo exige turno.
+
+El turno debe provenir del contexto autoritativo y no de:
+
+- la hora local del navegador;
+- un parámetro libre;
+- una preferencia guardada;
+- la última sesión del dispositivo;
+- el `created_at` de la orden o del lote.
+
+Para cada candidato autorizado, la cola compara la ventana efectiva del turno con la temporalidad productiva que la fuente autoritativa pueda demostrar.
+
+No se inventa un campo físico nuevo. El contrato semántico exige distinguir cuando exista información suficiente sobre:
+
+- fecha/hora requerida;
+- horizonte o ventana de ejecución;
+- secuencia liberada;
+- vigencia de la orden;
+- vencimiento o arrastre.
+
+Si esa temporalidad no puede demostrarse, el elemento no se descarta silenciosamente: se clasifica como trabajo ejecutable **sin ventana temporal explícita** y queda visible con esa advertencia cuando pertenezca al área y al conjunto autorizado.
+
+---
+
+#### 9. Clases temporales de la cola
+
+La cola ordinaria distingue al menos:
+
+| Clase UX | Regla semántica | Tratamiento |
+| --- | --- | --- |
+| `EN_CURSO` | existe ejecución no terminal que el actor puede continuar | se eleva como continuidad; no ofrece crear otro lote para la misma ejecución |
+| `DEL_TURNO` | trabajo ejecutable cuya ventana autoritativa corresponde al turno efectivo | aparece en la cola primaria |
+| `ARRASTRE` | trabajo que debía haberse atendido antes del inicio del turno actual y sigue válido/no terminal | permanece visible y marcado; no se refecha silenciosamente |
+| `BLOQUEADO_DEL_TURNO` | pertenece al turno/área, pero una condición autoritativa impide iniciar o continuar | visible con bloqueo y propietario; sin acción indebida |
+| `SIN_VENTANA_EXPLICITA` | es ejecutable y autorizado, pero no existe temporalidad suficiente para asignarlo con certeza a una ventana | visible de forma diferenciada; exige decisión propietaria, no heurística local |
+| `FUERA_DEL_TURNO` | la fuente autoritativa lo ubica en una ventana futura incompatible con el turno actual | no integra la cola primaria del productor ordinario |
+
+La clasificación temporal no concede autoridad adicional.
+
+---
+
+#### 10. Estados productivos elegibles
+
+La cola consume los estados canónicos sin renombrar su verdad empresarial.
+
+| Proceso | Estado | Tratamiento UX |
+| --- | --- | --- |
+| `VPROC-0033` | `PRODUCTION_PLAN_RELEASED` | habilita derivación trazable de trabajo, pero no se muestra como lote ya iniciado |
+| `VPROC-0034` | `PRODUCTION_ORDER_READY` | trabajo listo para preparación cuando el resto de condiciones aplica |
+| `VPROC-0034` | `MATERIALS_RESERVING` | visible como preparación/bloqueo cuando el actor necesite conocer su estado |
+| `VPROC-0034` | `MATERIALS_READY` | puede mostrarse como listo para continuar al inicio, sujeto a revalidación de `FOGO-UX-005` |
+| `VPROC-0034` | `IN_PRODUCTION` | aparece como continuidad, no como orden nueva |
+| `VPROC-0034` | `OUTPUT_REPORTED` | deja de tratarse como nueva producción pendiente; se deriva al flujo posterior que corresponda |
+| `VPROC-0034` | `CONSUMPTION_RECONCILIATION_PENDING` | se trata como seguimiento/conciliación, no como nueva orden |
+| `VPROC-0034` | `READY_FOR_QUALITY` | sale de la cola ordinaria de inicio de producción y pasa a la responsabilidad de calidad aplicable |
+| `VPROC-0034` | `PRODUCTION_EXECUTION_COMPLETED` | no permanece como trabajo pendiente del turno |
+
+La UI no crea estados paralelos en base de datos. Las clases UX son proyecciones de presentación sobre estados canónicos.
+
+---
+
+#### 11. Secciones visibles para el productor ordinario
+
+Dentro del área efectiva, la composición prioritaria es:
+
+1. **Continuar trabajo en curso**, cuando exista una ejecución recuperable y autorizada.
+2. **Listo para este turno**, con órdenes ejecutables no bloqueadas.
+3. **Bloqueado en este turno**, con explicación resumida y siguiente propietario.
+4. **Arrastre pendiente**, sin ocultar que corresponde a una ventana anterior.
+5. **Sin ventana temporal explícita**, únicamente cuando el trabajo sea real y autorizado pero la planificación no permita asignarlo con certeza al turno.
+
+La experiencia no mezcla en estas secciones:
+
+- tareas de otra área;
+- próximos turnos del productor ordinario;
+- planes no liberados;
+- órdenes canceladas;
+- lotes históricos cerrados;
+- trabajo de supervisión multiárea.
+
+---
+
+#### 12. Información mínima de cada pendiente
+
+Cada fila, tarjeta o representación equivalente debe permitir responder sin abrir otra pantalla:
+
+1. **qué producto o salida debe producirse**;
+2. **cuánto se espera producir**, con unidad compatible;
+3. **cuándo se requiere**, cuando la fuente autoritativa lo defina;
+4. **qué prioridad vigente tiene**, sin recalcularla localmente;
+5. **qué estado operativo tiene ahora**;
+6. **si está listo o bloqueado**;
+7. **qué condición o propietario explica el bloqueo**, cuando aplique;
+8. **qué acción siguiente está permitida**;
+9. **si existe una ejecución ya iniciada que debe continuarse**;
+10. **qué referencia de plan/orden permite trazabilidad** sin exponer identificadores técnicos innecesarios.
+
+Cuando una receta publicada ya esté vinculada y el actor esté autorizado, puede mostrarse una referencia resumida suficiente para reconocer la preparación. La fórmula completa no forma parte de la tarjeta de cola.
+
+---
+
+#### 13. Información que no debe saturar la cola
+
+La vista primaria no necesita mostrar por defecto:
+
+- UUID internos;
+- SQL/RPC o nombres de tablas;
+- scopes técnicos;
+- costos detallados;
+- fórmula completa de receta;
+- ledger de inventario;
+- historial completo de cambios;
+- auditoría completa de actor/turno;
+- logs;
+- detalles de RLS;
+- cantidades de otras áreas;
+- planes futuros no ejecutables;
+- todas las métricas del turno.
+
+La cola debe ser una superficie operativa, no un dashboard administrativo exhaustivo.
+
+---
+
+#### 14. Semántica de prioridad
+
+La prioridad visible proviene de la planificación autoritativa.
+
+La UI no puede fabricar prioridad a partir de:
+
+```text
+created_at
+posición previa en pantalla
+orden alfabético
+cantidad mayor
+producto más popular
+usuario que creó el registro
+área seleccionada
+color de una tarjeta
+regla local hardcodeada
+```
+
+Si la planificación entrega prioridad explícita, la cola la conserva sin reinterpretarla.
+
+Si no existe prioridad explícita demostrable, la UX muestra `SIN PRIORIDAD EXPLÍCITA` o equivalente y no inventa un nivel.
+
+---
+
+#### 15. Ordenamiento de la cola
+
+El orden visual se determina únicamente después de autorizar y clasificar el conjunto.
+
+Orden lógico:
+
+```text
+1. CONTINUIDAD DE EJECUCIÓN YA INICIADA
+2. CLASE TEMPORAL / OPERATIVA
+3. PRIORIDAD AUTORITATIVA, SI EXISTE
+4. FECHA / HORA REQUERIDA, SI EXISTE
+5. SECUENCIA CANÓNICA EXPLÍCITA, SI EXISTE
+6. DESEMPATE TÉCNICO ESTABLE SIN SIGNIFICADO EMPRESARIAL
+```
+
+El desempate técnico solo evita una UI inestable. No se presenta al usuario como prioridad ni altera la semántica del plan.
+
+No se admite:
+
+```text
+TOP N GLOBAL
+→ OCULTAR POR ÁREA
+```
+
+El conjunto debe estar autorizado y territorialmente filtrado antes de priorizarse.
+
+---
+
+#### 16. Arrastre, atraso y trabajo desplazado
+
+La cola no oculta demanda ejecutable solo porque su fecha requerida ya pasó.
+
+Cuando un trabajo válido no fue completado en la ventana anterior:
+
+- se identifica como `ARRASTRE` o equivalente;
+- conserva su fecha requerida original;
+- conserva la prioridad autoritativa vigente;
+- no se modifica automáticamente su fecha para hacerlo parecer trabajo normal del turno;
+- no se duplica creando una orden nueva solo por cambio de turno;
+- cualquier repriorización o reprogramación real pertenece al contrato propietario de planificación/supervisión y debe ser auditable.
+
+Esto protege la obligación de no ocultar demanda desplazada, faltantes ni excedentes.
+
+---
+
+#### 17. Bloqueos y condiciones no verificadas
+
+La cola distingue:
+
+```text
+LISTO
+!= BLOQUEADO
+!= NO VERIFICADO
+!= ERROR TÉCNICO
+```
+
+Un elemento puede mostrar un bloqueo únicamente cuando existe evidencia autoritativa suficiente.
+
+Categorías de presentación permitidas, sin inventar su fuente física:
+
+- materiales no listos;
+- capacidad/equipo no confirmado;
+- condición laboral o cobertura no confirmada;
+- receta o versión no aplicable;
+- dependencia operativa pendiente;
+- conflicto de estado;
+- restricción de calidad o seguridad cuando el proceso aplicable la exponga.
+
+Si una integración todavía no existe o no está fresca, el estado correcto es `NO VERIFICADO`, no `DISPONIBLE`.
+
+---
+
+#### 18. Propietario del bloqueo y siguiente paso
+
+La cola debe mostrar, en lenguaje operativo, quién o qué dominio debe resolver el bloqueo cuando esa propiedad sea conocida.
+
+Ejemplos semánticos:
+
+| Bloqueo | Propietario esperado |
+| --- | --- |
+| reserva/material faltante | contrato NEXO correspondiente |
+| receta no vigente/aplicable | FOGO receta/planificación |
+| orden no liberada | FOGO planificación |
+| contexto laboral inválido | contrato de contexto/turno aplicable |
+| equipo no disponible | propietario de disponibilidad/mantenimiento aplicable |
+| autorización insuficiente | contrato de autorización exacto |
+
+La UI no concede a un productor acciones para resolver una excepción que pertenece a otro dominio.
+
+---
+
+#### 19. Disponibilidad laboral y limitación actual
+
+El hallazgo canónico `H-CAP-SCOPE-008-005` establece que la disponibilidad laboral de VISO todavía no está integrada con planificación productiva.
+
+Por tanto, `FOGO-UX-004` no puede afirmar que:
+
+```text
+TRABAJADOR EN TURNO
+=
+CAPACIDAD PRODUCTIVA SUFICIENTE PARA TODA LA COLA
+```
+
+La tarea sí exige:
+
+1. usar el turno efectivo para determinar el contexto del actor;
+2. no inferir capacidad total solo porque existe un trabajador conectado;
+3. diferenciar capacidad confirmada de capacidad desconocida;
+4. no ocultar una orden válida porque la integración de disponibilidad laboral todavía no esté materializada;
+5. asignar la resolución integral de capacidad a sus propietarios canónicos posteriores.
+
+---
+
+#### 20. Equipos, materiales y capacidad
+
+La cola puede mostrar señales resumidas de disponibilidad solo cuando provengan de una fuente autorizada y fresca.
+
+No embebe ni duplica:
+
+- inventario NEXO;
+- mantenimiento de equipos;
+- compras ORIGO;
+- programación laboral VISO;
+- capacidad analítica completa.
+
+La cola consume el resultado necesario para decidir `LISTO`, `BLOQUEADO` o `NO_VERIFICADO`, conservando fuente y fecha de corte cuando sean materiales para la decisión.
+
+---
+
+#### 21. Continuidad de un lote ya iniciado
+
+Si una orden ya produjo una ejecución no terminal y el actor puede continuarla, la cola debe evitar que el mismo trabajo parezca nuevamente disponible para «iniciar».
+
+Regla:
+
+```text
+ORDEN CON LOTE ACTIVO AUTORIZADO
+→ CONTINUAR LOTE
+!=
+CREAR OTRO LOTE
+```
+
+La cola puede mostrar producto, cantidad objetivo, progreso resumido y estado suficiente para reconocer la continuidad, pero el detalle de ejecución pertenece a `FOGO-UX-006` y la acción inicial/revalidación a `FOGO-UX-005`.
+
+---
+
+#### 22. Acción primaria de cada elemento
+
+La acción mostrada depende del estado y del permiso actual.
+
+| Situación | Acción UX posible | Propietario del flujo posterior |
+| --- | --- | --- |
+| orden lista y autorizada | `Preparar / iniciar` o equivalente | `FOGO-UX-005` |
+| lote activo autorizado | `Continuar` | `FOGO-UX-006` |
+| bloqueado | `Ver bloqueo` / siguiente propietario | tarea propietaria de la excepción |
+| arrastre listo | `Preparar / iniciar`, conservando marca de arrastre | `FOGO-UX-005` |
+| sin ventana explícita | `Ver detalle` y, si está permitido, continuar por el flujo propietario sin inventar prioridad | planificación / `FOGO-UX-005` según estado |
+| no autorizado | ninguna acción ni revelación del recurso | autorización propietaria |
+
+La acción `Preparar / iniciar` nunca ejecuta el efecto dentro de `VSCREEN-0055`; abre el handoff y `FOGO-UX-005` vuelve a revalidar.
+
+---
+
+#### 23. Receta resumida dentro de la cola
+
+La cola puede mostrar una referencia resumida a receta cuando sea necesaria para reconocer correctamente el trabajo.
+
+Reglas:
+
+- debe ser una publicación aplicable y autorizada;
+- la versión exacta permanece trazable;
+- el resumen no revela fórmula completa por defecto;
+- abrir receta requiere la capacidad propietaria correspondiente;
+- la receta no se usa para inferir área si el recurso no tiene territorio demostrable;
+- cambiar de receta no es una acción de la cola ordinaria.
+
+El diseño detallado de receta operativa permanece en `FOGO-UX-008`.
+
+---
+
+#### 24. Filtros y búsqueda
+
+Los filtros sirven únicamente para reducir o reorganizar el conjunto ya autorizado.
+
+Se permiten criterios de presentación como:
+
+- estado visible;
+- producto;
+- prioridad autoritativa;
+- bloqueo;
+- arrastre;
+- búsqueda textual sobre campos ya autorizados.
+
+Para un productor ordinario, la UI no ofrece un filtro capaz de seleccionar otra área y ampliar territorio.
+
+Parámetros como `site_id`, `area_id`, `status`, `priority`, `product_id` o `recipe_id` no son autoridad y nunca amplían el resultado server-side.
+
+---
+
+#### 25. Frontera con supervisión y repriorización
+
+`FOGO-AUTH-008` permite supervisión multiárea únicamente por carriles completos y explícitos. También establece:
+
+```text
+COORDINAR PRIORIDAD != REESCRIBIR PRIORIDAD
+```
+
+Por tanto, esta tarea:
+
+- define la cola ordinaria de un área/turno;
+- puede mostrar prioridad y urgencia existentes;
+- no crea permiso de override;
+- no autoriza drag-and-drop que persista nueva prioridad;
+- no concede multiárea al productor;
+- no define la UX final del supervisor.
+
+La experiencia multiárea, coordinación, excepciones y controles de supervisor permanecen en `FOGO-UX-014` y contratos de autorización propietarios.
+
+---
+
+#### 26. Frescura, concurrencia y revalidación
+
+Una fila mostrada no conserva autoridad indefinidamente.
+
+La cola debe considerarse stale cuando cambie materialmente:
+
+- actor efectivo;
+- turno;
+- rol operativo;
+- sede;
+- área;
+- permiso;
+- cobertura;
+- versión del plan;
+- estado de la orden;
+- prioridad o fecha requerida;
+- cancelación o sustitución;
+- disponibilidad material que gobierne el bloqueo;
+- lote activo asociado.
+
+Antes de una mutación, `FOGO-UX-005` y la autorización propietaria revalidan nuevamente actor, turno, área, permiso, recurso, estado y versión.
+
+---
+
+#### 27. Estados vacío, stale, deny y error
+
+La cola diferencia al menos:
+
+| Estado UX | Significado |
+| --- | --- |
+| `COLA_VACIA` | contexto válido y fuente resuelta; no existe trabajo visible autorizado |
+| `SIN_CONTEXTO` | no puede resolverse el turno/área requeridos |
+| `SIN_PERMISO` | existe contexto pero no autoriza la lectura |
+| `STALE` | la cola fue válida, pero su contexto o fuente dejó de ser demostrablemente fresca |
+| `ERROR_TECNICO` | no pudo resolverse la fuente requerida |
+| `SIN_TRABAJO_DEL_TURNO_CON_OTRO_TRABAJO_VALIDO` | existe trabajo ejecutable fuera de la ventana ordinaria o sin ventana explícita; no debe presentarse como cola vacía absoluta |
+
+Reglas:
+
+```text
+COLA VACÍA != ERROR
+SIN PERMISO != COLA VACÍA
+STALE != COLA VACÍA
+SIN VENTANA EXPLÍCITA != NO EXISTE TRABAJO
+```
+
+---
+
+#### 28. Tactilidad, legibilidad y densidad
+
+En una estación productiva compartida, la cola debe priorizar lectura rápida y acción inequívoca.
+
+Criterios:
+
+- una tarjeta/fila debe poder reconocerse por producto, cantidad, estado y siguiente acción;
+- prioridad y bloqueo no dependen únicamente de color;
+- el área efectiva permanece visible en el contexto general;
+- los targets de acción no se superponen;
+- no existe una acción destructiva primaria desde la cola;
+- información secundaria puede expandirse progresivamente;
+- la cola evita tablas horizontales densas como requisito único de operación táctil;
+- el estado de carga no permite tocar una acción con contexto todavía no resuelto.
+
+La definición no impone un framework, componente o tamaño físico concreto.
+
+---
+
+#### 29. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se observó:
+
+| Superficie AS-IS | Qué demuestra | Qué no demuestra |
+| --- | --- | --- |
+| `/` | acceso general a recetario y lotes | `VSCREEN-0055` contextual, cola de turno o prioridad autoritativa |
+| `/production-batches` | lista de lotes registrados, métricas recientes, estado y filtro opcional por sede | trabajo pendiente derivado de plan, aislamiento por área, ventana de turno, prioridad de planificación o bloqueos autoritativos |
+| `/production-batches` usando `created_at` para métricas de 7 días | historia operativa reciente | fecha requerida, secuencia de plan o prioridad empresarial |
+| `/production-batches/new` | creación real y revalidación posterior de receta/área en el flujo auditado | cola de pendientes ni clasificación temporal del turno |
+
+La lista histórica de lotes no se reutiliza como sustituto de la cola solo porque contenga producción real.
+
+---
+
+#### 30. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe una única fuente física comprobada para plan y programación. | la UX no puede derivar una cola autoritativa directamente desde señales sueltas | `FOGO-UX-004`, `FOGO-UX-014`, `PROC-CAT-009..018` y materialización aplicable | la implementación consume una proyección FOGO que distingue plan liberado, orden ejecutable, estado, prioridad, fecha requerida y versión |
+| `/production-batches` no demuestra aislamiento por área. | riesgo de mezclar lotes de la misma sede | materializaciones de `FOGO-AUTH-003` + implementación FOGO propietaria | el servidor filtra por contexto/territorio antes de serializar |
+| `created_at` está disponible en la lista histórica. | riesgo de convertir orden de registro en prioridad del turno | implementación propietaria de `VSCREEN-0055` | la cola usa prioridad/fecha/secuencia autoritativas y trata el desempate técnico como no empresarial |
+| La disponibilidad laboral VISO no está integrada con planificación productiva. | no puede declararse capacidad humana completa solo por sesión/turno | `CAP-SCOPE-002`, `INT-PROD-001..005` y consumidores aplicables | la planificación consume disponibilidad autoritativa y la cola diferencia confirmado de desconocido |
+| Prioridades, urgencias y overrides carecen todavía de reglas/evidencia uniformes en implementación. | riesgo de reordenamiento opaco o override desde UI | `FOGO-UX-004`, `FOGO-UX-014`, `FOGO-AUTH-008`, `FOGO-AUTH-012` | la cola muestra prioridad autoritativa; cualquier cambio usa acción/permiso/motivo/evidencia propietarios |
+| Un trabajo puede cambiar de estado después de mostrarse. | riesgo de iniciar con autorización o estado stale | `FOGO-AUTH-009`, `FOGO-AUTH-014`, `FOGO-UX-005` | el inicio vuelve a revalidar actor, turno, área, permiso, orden, receta, estado y versión |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 31. Handoff inmediato a FOGO-UX-005
+
+`FOGO-UX-005 — Diseñar inicio de lote` recibe de esta tarea un elemento seleccionado con, como mínimo, semántica suficiente para revalidar:
+
+```text
+ÁREA EFECTIVA
+ACTOR / TURNO ACTUALES
+REFERENCIA ESTABLE A PLAN / ORDEN
+VPROC-0034.PRODUCTION_ORDER_READY O ESTADO ELEGIBLE
+PRODUCTO / SALIDA
+CANTIDAD OBJETIVO + UNIDAD
+RECETA / VERSIÓN CUANDO APLIQUE
+PRIORIDAD AUTORITATIVA SIN MUTARLA
+FECHA / VENTANA REQUERIDA CUANDO EXISTA
+ESTADO DE BLOQUEO / DISPONIBILIDAD
+INDICADOR DE ARRASTRE CUANDO APLIQUE
+REFERENCIA A LOTE ACTIVO SI YA EXISTE
+SNAPSHOT DE FRESCURA SUFICIENTE PARA SABER QUE DEBE REVALIDARSE
+```
+
+`FOGO-UX-005` no confía en el snapshot de la cola como autorización final. Revalida el recurso inmediatamente antes del inicio.
+
+---
+
+#### 32. Handoff al resto de FOGO-UX
+
+| Tarea | Entrada exacta proveniente de FOGO-UX-004 |
+| --- | --- |
+| `FOGO-UX-005` | orden seleccionada, contexto, temporalidad, prioridad visible y bloqueos sin autoridad final heredada |
+| `FOGO-UX-006` | lotes `IN_PRODUCTION` aparecen como continuidad y no como órdenes nuevas |
+| `FOGO-UX-007` | estados posteriores a ejecución dejan de ser nueva producción pendiente y pasan al cierre correspondiente |
+| `FOGO-UX-008` | referencia resumida de receta puede abrir recetario operativo autorizado sin exponer fórmula completa |
+| `FOGO-UX-010` | cantidades reales, merma y rendimiento no se resuelven dentro de la cola inicial |
+| `FOGO-UX-012` | materiales/bloqueos se consumen como estado propietario, sin duplicar inventario NEXO |
+| `FOGO-UX-014` | supervisor agrega múltiples áreas únicamente por autoridad propia y conserva prioridad/override como decisiones auditables |
+| `FOGO-UX-015` | prototipo debe validar lectura rápida, bloqueos, arrastre, continuidad, vacío, stale y ausencia de autoridad fabricada |
+
+---
+
+#### 33. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones ya registradas de planificación productiva, territorio, prioridad, turno, autorización, frescura, iniciación de procesos y experiencia. No introduce una obligación observable fuera de la cobertura existente ni cambia texto, estado, relaciones, secuencia o propietario del registro.
+
+---
+
+#### 34. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-003` — planificación productiva con señales normalizadas/deduplicadas, plan/versiones, horizonte, sede, área, producto, receta, cantidades, fechas, prioridad, capacidad, restricciones, aprobaciones, overrides y órdenes derivadas trazables;
+- `TREQ-FOGO-001` — ciclo productivo con actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-004` — ejecución productiva con orden, lote, receta/versión, materiales, cantidades, pasos, desviaciones y estados independientes;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-013` — autorización server-side y revalidación de territorio/recurso;
+- `TREQ-AUTH-014` — invalidación de decisiones stale ante cambios materiales de contexto;
+- `TREQ-AUTH-015` — evidencia correlacionable de actor, contexto, permiso, recurso, decisión y tiempo;
+- `TREQ-UX-001` — tarea actual, acción principal y estado identificables;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad.
+
+Esta enumeración es trazabilidad reutilizada y no constituye una modificación del Registro 04A.
+
+---
+
+#### 35. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@947d7eb3acb65ea589febf82d6b9196350ca3d66`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, `FOGO-AUTH-003`, `FOGO-AUTH-008`, `FOGO-AUTH-014`, `VSCREEN-0055`, estados de `VPROC-0033`/`VPROC-0034`, cobertura `TREQ-FOGO-003`, hallazgos de capacidad/prioridad y el AS-IS de `/production-batches`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron turnos, colas, prioridades, bloqueos, órdenes, lotes, filtros, arrastres ni pruebas con trabajadores. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-004` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 36. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0055` conserva identidad de inicio y triage de producción;
+- [ ] la cola consume área efectiva ya resuelta y no ofrece un selector que conceda territorio;
+- [ ] solo trabajo derivado de planificación/orden ejecutable puede presentarse como producción pendiente;
+- [ ] `VPROC-0033.PRODUCTION_PLAN_RELEASED` y `VPROC-0034.PRODUCTION_ORDER_READY` permanecen diferenciados;
+- [ ] plan, orden, lote y registro histórico no se presentan como la misma entidad;
+- [ ] el turno efectivo proviene del contexto autoritativo y no de parámetros o `created_at`;
+- [ ] `EN_CURSO`, `DEL_TURNO`, `ARRASTRE`, `BLOQUEADO_DEL_TURNO`, `SIN_VENTANA_EXPLICITA` y `FUERA_DEL_TURNO` no se confunden;
+- [ ] una orden sin temporalidad suficiente no se oculta ni recibe una ventana inventada;
+- [ ] prioridad visible proviene de planificación autoritativa;
+- [ ] la UI no calcula prioridad desde tiempo de creación, posición visual, cantidad, producto o reglas locales;
+- [ ] el orden visual separa continuidad, clase temporal, prioridad, fecha requerida, secuencia y desempate técnico;
+- [ ] el desempate técnico no adquiere significado empresarial;
+- [ ] trabajo arrastrado conserva fecha requerida original y no se reprograma silenciosamente;
+- [ ] bloqueado, no verificado y error técnico permanecen distintos;
+- [ ] disponibilidad laboral no se infiere solo desde la existencia de un trabajador en turno;
+- [ ] señales de materiales/equipos/capacidad solo se muestran cuando tienen fuente/frescura suficientes;
+- [ ] un lote activo aparece como continuidad y no vuelve a ofrecer crear otro lote para la misma ejecución;
+- [ ] cada pendiente permite reconocer producto, cantidad, fecha cuando exista, prioridad, estado, bloqueo y siguiente acción;
+- [ ] la cola minimiza fórmula, costos, UUID, logs y detalles técnicos;
+- [ ] filtros solo reducen el conjunto ya autorizado;
+- [ ] productores ordinarios no obtienen multiárea ni repriorización persistente;
+- [ ] coordinación de prioridad no se convierte en override;
+- [ ] cambios de actor, turno, área, permiso, plan, orden o estado invalidan decisiones stale;
+- [ ] vacío, deny, stale, error y trabajo sin ventana explícita se distinguen;
+- [ ] `FOGO-UX-005` recibe una referencia trazable y vuelve a revalidar antes de iniciar;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 37. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0055`;
+- crea una tabla, vista, RPC o endpoint de cola;
+- define nombres físicos de columnas;
+- modifica Supabase, RLS, grants, migraciones o datos;
+- crea permisos FOGO nuevos;
+- crea un permiso de override o repriorización;
+- diseña la planeación completa de `VSCREEN-0056`;
+- define el algoritmo empresarial completo de planificación;
+- decide disponibilidad laboral en VISO;
+- decide disponibilidad de equipos en NEXO;
+- duplica stock o reservas NEXO;
+- diseña la pantalla multiárea final del supervisor;
+- inicia un lote;
+- registra producción parcial;
+- finaliza un lote;
+- libera calidad;
+- administra recetas maestras;
+- registra consumos o inventario;
+- convierte una señal externa en orden de producción;
+- usa `created_at` como prioridad empresarial;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 38. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-003 — Diseñar inicio por área productiva`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-004 — Mostrar producción pendiente del turno`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-005 — Diseñar inicio de lote`
+
 ### [ ] FOGO-UX-005 — Diseñar inicio de lote
 ### [ ] FOGO-UX-006 — Diseñar producción parcial
 ### [ ] FOGO-UX-007 — Diseñar finalización de lote
