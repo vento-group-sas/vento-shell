@@ -7325,7 +7325,779 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-012 — Proteger correcciones y anulaciones`
 
-### [ ] FOGO-AUTH-012 — Proteger correcciones y anulaciones
+### ✅ FOGO-AUTH-012 — Proteger correcciones y anulaciones
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-011 — Proteger finalización
+**Tarea siguiente:** FOGO-AUTH-013 — Proteger lotes y recetas
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — protección server-side de correcciones, cancelaciones, anulaciones, reversas, compensaciones, ajustes, reexpresiones y excepciones aplicables al ciclo productivo, con acción y capacidad exactas, actor/contexto vigentes, territorio y recurso persistidos, estado/versión compatibles, historia inmutable, operaciones vinculadas, idempotencia, concurrencia, auditoría y separación estricta entre detener trabajo futuro, neutralizar un registro inválido, corregir información y compensar efectos ya ocurridos
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `FOGO-AUTH-012::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera de autorización para **corregir o anular hechos productivos** sin convertir una edición, un estado visual, una prioridad, un rol productivo ordinario, una lectura permitida o un payload de cliente en autoridad para destruir historia.
+
+La regla raíz queda:
+
+```text
+HECHO PRODUCTIVO EXISTENTE
++
+ACCION CORRECTIVA EXACTA
++
+ACTOR Y CONTEXTO VIGENTES
++
+CAPACIDAD CANONICA CONCRETA
++
+TERRITORIO REAL COMPATIBLE
++
+ESTADO Y VERSION AUTORIZABLES
++
+MOTIVO Y EVIDENCIA
++
+VINCULO CON EL HECHO ORIGINAL
++
+IDENTIDAD IDEMPOTENTE
++
+CONTROL DE CONCURRENCIA
+=
+ACCION CORRECTIVA AUTORIZABLE
+```
+
+La operación correctiva nunca obtiene permiso por el hecho de que el actor haya creado, consultado, ejecutado parcialmente, finalizado o supervisado el lote.
+
+---
+
+#### 2. Handoff recibido de FOGO-AUTH-001..011
+
+Esta tarea consume sin reinterpretación las fronteras ya aprobadas:
+
+1. `FOGO-AUTH-001` inventarió superficies, acciones y brechas FOGO y reservó correcciones/anulaciones para esta tarea;
+2. `FOGO-AUTH-002` estableció que correcciones y anulaciones no se derivan del rol productivo ordinario ni de permisos de lectura;
+3. `FOGO-AUTH-003` estableció que visibilidad o prioridad de una fila no concede autoridad de corrección o anulación;
+4. `FOGO-AUTH-004`, `FOGO-AUTH-005` y `FOGO-AUTH-006` fijaron territorio exacto para Panadería, Repostería y Cocina Caliente;
+5. `FOGO-AUTH-007` separó la verdad productiva FOGO de los efectos físicos NEXO;
+6. `FOGO-AUTH-008` estableció que supervisión, coordinación, prioridad u override no funcionan como bypass y que toda mutación futura exige acción y permiso exactos;
+7. `FOGO-AUTH-009` separó creación/inicio de las correcciones posteriores;
+8. `FOGO-AUTH-010` prohibió usar un delta negativo o una edición destructiva como corrección genérica de producción parcial;
+9. `FOGO-AUTH-011` protegió finalización y dejó explícitamente correcciones/anulaciones fuera del cierre ordinario.
+
+`FOGO-AUTH-012` no reabre esas decisiones. Define cómo una corrección o anulación puede actuar sobre historia existente sin reemplazarla silenciosamente.
+
+---
+
+#### 3. Alcance funcional protegido
+
+No existe todavía una pantalla FOGO dedicada y aprobada exclusivamente como “corrección/anulación de producción”. La experiencia específica permanece reservada a `FOGO-UX-011 — Diseñar correcciones sin alterar historial`.
+
+Esta tarea protege la **familia de acciones empresariales condicionales** que puede afectar:
+
+- órdenes productivas;
+- lotes;
+- avances parciales;
+- cantidades;
+- consumos;
+- desperdicio o merma;
+- salida productiva;
+- resultado;
+- finalización;
+- cierre productivo;
+- prioridad u override cuando exista contrato propietario;
+- relaciones con efectos NEXO ya aplicados.
+
+`VSCREEN-0067 — Reproceso, aprovechamiento, merma y cierre productivo` es una superficie relacionada con disposición y cierre, pero esta tarea no la convierte en una pantalla genérica de corrección ni le concede por sí sola todas las acciones correctivas.
+
+---
+
+#### 4. Semánticas que no pueden fusionarse
+
+La taxonomía canónica conserva las siguientes acciones diferenciadas:
+
+| Acción | Semántica canónica | Regla mínima |
+| --- | --- | --- |
+| `CANCEL` | `FUTURE_STOP_WITH_RESIDUALS` | detiene trabajo futuro; no deshace efectos confirmados |
+| `VOID` | `INVALID_RECORD_NEUTRALIZATION` | neutraliza únicamente un registro sin efecto válido; conserva evidencia |
+| `REVERSE` | `LINKED_REVERSAL` | ejecuta una operación inversa autorizada e idempotente |
+| `COMPENSATE` | `LINKED_COMPENSATION` | crea restitución o mitigación medible cuando no existe reverso literal |
+| `ADJUST` | `LINKED_ADJUSTMENT` | registra diferencia y ajuste separado sin modificar el hecho original |
+| `CORRECT` | `VERSIONED_CORRECTION` | crea enmienda con antes/después, causa, autoridad e impacto |
+| `RESTATE` | `LINKED_RESTATEMENT` | reexpresa clasificación o resultado sin alterar el hecho fuente |
+
+Por tanto:
+
+```text
+CANCEL
+!=
+VOID
+!=
+REVERSE
+!=
+COMPENSATE
+!=
+ADJUST
+!=
+CORRECT
+!=
+RESTATE
+```
+
+Usar una de estas acciones para simular otra queda prohibido.
+
+---
+
+#### 5. Familias de evento condicional preservadas
+
+El catálogo transversal ya define familias condicionales para representar estas acciones sin fabricar eventos normales del proceso:
+
+| Familia | Condición | Restricción |
+| --- | --- | --- |
+| `cancellation-recorded` | se cancela trabajo futuro válido | conserva efectos ejecutados y obligaciones residuales |
+| `void-recorded` | se demuestra registro sin efecto válido o duplicado | no funciona como borrado genérico |
+| `reversal-applied` | se crea un efecto inverso legítimo | referencia y conserva el efecto original |
+| `compensation-posted` | un hecho irreversible requiere efecto compensatorio | no declara deshecho el original |
+| `correction-applied` | se rectifica información | conserva antes, después, motivo, autoridad y versión |
+| `linked-review-opened` | el cierre requiere revisión posterior | la instancia original permanece inmutable |
+
+Estas familias son condicionales y no reemplazan los eventos normales `VPROC-*.EVT-*` ya emitidos.
+
+---
+
+#### 6. Capacidad exacta y prohibición de inferencia
+
+El vocabulario FOGO visible contiene permisos de acceso, lectura, creación, cierre y administración de recetas, pero no una clave canónica dedicada que pueda asumirse automáticamente como permiso universal de corrección/anulación de lote.
+
+Por ello:
+
+```text
+fogo.production.batches.view
+!=
+AUTORIDAD_DE_CORRECCION
+
+fogo.production.batches.create
+!=
+AUTORIDAD_DE_CORRECCION
+
+fogo.production.batches.close
+!=
+AUTORIDAD_DE_CORRECCION
+
+fogo.production.recipes.update
+!=
+AUTORIDAD_DE_CORRECCION_DE_LOTE
+```
+
+Cada materialización deberá vincular la acción concreta a una capacidad canónica registrada y con alcance explícito antes del efecto. Mientras ese binding no exista o no pueda demostrarse, la mutación correctiva falla cerrada.
+
+Esta tarea no inventa una clave de permiso nueva.
+
+---
+
+#### 7. Actor autorizable
+
+Una corrección o anulación deberá resolver nuevamente al actor efectivo en el punto de efecto.
+
+No bastan por sí solos:
+
+- ser creador del lote;
+- haber registrado un parcial;
+- haber finalizado la ejecución;
+- ser productor ordinario del área;
+- ser supervisor;
+- ser `gerencia_operativa`;
+- haber abierto la pantalla;
+- aparecer en auditoría previa;
+- poseer un dispositivo compartido autorizado;
+- haber tenido autoridad en un momento anterior.
+
+La decisión exige la capacidad concreta de la acción correctiva y todos sus prerrequisitos vigentes.
+
+---
+
+#### 8. Territorio y recurso real
+
+La corrección se autoriza contra el recurso real persistido, no contra filtros del navegador.
+
+La evaluación debe resolver, según corresponda:
+
+- `batch_id` o identidad empresarial equivalente;
+- orden y versión relacionadas;
+- sede real;
+- área productiva real;
+- receta y versión utilizadas;
+- estado vigente del lote/ejecución;
+- versión del recurso;
+- efectos productivos ya confirmados;
+- efectos físicos NEXO ya confirmados o pendientes;
+- relaciones de calidad, empaque o cierre que condicionen la acción.
+
+Un `site_id`, `area_id`, `status`, cantidad o tipo de corrección enviado por cliente es un localizador o intención, nunca autoridad final.
+
+---
+
+#### 9. Estado y ventana de acción
+
+La misma acción no es válida en todos los estados.
+
+Reglas:
+
+1. una corrección pre-efecto puede modificar únicamente campos todavía corregibles por contrato;
+2. un hecho durable ya confirmado no se reemplaza silenciosamente;
+3. después de un cierre o handoff material, la acción deberá usar corrección versionada, ajuste, reversa o compensación según la naturaleza del efecto;
+4. una cancelación no se usa para borrar efectos ya producidos;
+5. un `VOID` solo aplica cuando se demuestra ausencia de efecto válido o duplicación;
+6. una acción contra una versión stale produce denegación o conflicto recuperable;
+7. un estado terminal no habilita una edición administrativa directa.
+
+---
+
+#### 10. Corrección versionada
+
+`CORRECT / VERSIONED_CORRECTION` crea una enmienda enlazada.
+
+Debe conservar como mínimo:
+
+- identidad del hecho original;
+- versión original;
+- valor o clasificación anterior;
+- valor o clasificación corregida;
+- campos exactos afectados;
+- causa;
+- actor;
+- rol/carril efectivo;
+- sede y área;
+- instante;
+- versión resultante;
+- impacto declarado;
+- correlación e idempotencia;
+- evidencia de autorización.
+
+La corrección no cambia la identidad del hecho original ni lo reescribe en lugar.
+
+---
+
+#### 11. Cancelación
+
+`CANCEL / FUTURE_STOP_WITH_RESIDUALS` detiene trabajo futuro válido.
+
+Puede impedir que continúen acciones todavía no ejecutadas, pero debe preservar:
+
+- avances ya confirmados;
+- materiales ya consumidos;
+- movimientos ya aplicados;
+- salida ya producida;
+- evidencia de actor;
+- registros de calidad ya emitidos;
+- obligaciones de devolución, ajuste, conciliación o disposición pendientes.
+
+Una cancelación exitosa no significa que el lote “nunca existió”.
+
+---
+
+#### 12. Anulación
+
+`VOID / INVALID_RECORD_NEUTRALIZATION` aplica únicamente cuando el registro que se neutraliza no produjo un efecto empresarial válido o quedó demostrado como duplicado/inválido bajo su contrato.
+
+Debe conservar:
+
+- registro original;
+- motivo de invalidez;
+- evidencia de que no existe efecto válido que deba revertirse o compensarse;
+- actor y autoridad;
+- referencia de anulación;
+- relación con cualquier duplicado o sucesor válido.
+
+Queda prohibido usar `VOID` para esconder consumo, producción, movimiento, calidad, cierre o inventario que sí ocurrieron.
+
+---
+
+#### 13. Reversa
+
+`REVERSE / LINKED_REVERSAL` crea una operación inversa autorizada e idempotente cuando la naturaleza del dominio admite reverso literal.
+
+La reversa:
+
+- referencia siempre el efecto original;
+- no elimina la fila original;
+- conserva ambas operaciones;
+- revalida autoridad en el momento de reversar;
+- usa identidad idempotente distinta pero vinculada;
+- no se presenta como si el primer efecto jamás hubiera ocurrido.
+
+Si el dominio propietario no permite reversa literal, deberá usarse la compensación o ajuste aplicable, no simular una reversa mediante edición.
+
+---
+
+#### 14. Compensación
+
+`COMPENSATE / LINKED_COMPENSATION` se usa cuando el efecto original no puede deshacerse literalmente y se requiere una restitución o mitigación medible.
+
+Ejemplos de frontera:
+
+- material ya consumido físicamente;
+- salida ya producida;
+- merma ya ocurrida;
+- movimiento externo confirmado;
+- evento ya publicado y consumido.
+
+La compensación conserva causa, relación, cantidad/unidad cuando aplique, actor, autoridad y resultado propio.
+
+---
+
+#### 15. Ajuste
+
+`ADJUST / LINKED_ADJUSTMENT` registra una diferencia separada cuando la conciliación demuestra una desviación.
+
+No puede implementarse como:
+
+- modificar directamente el acumulado histórico;
+- reemplazar `actual_qty` anterior sin rastro;
+- editar una salida confirmada para cuadrar inventario;
+- borrar un consumo previo;
+- alterar silenciosamente rendimiento o merma.
+
+El ajuste tiene identidad, motivo y efecto propios.
+
+---
+
+#### 16. Reexpresión
+
+`RESTATE / LINKED_RESTATEMENT` puede cambiar una clasificación o presentación del resultado sin alterar el hecho fuente.
+
+No autoriza:
+
+- cambiar cantidad física real;
+- crear o eliminar consumo;
+- fabricar inventario;
+- modificar la receta utilizada;
+- reescribir quién ejecutó el hecho;
+- alterar un estado empresarial cuyo cambio requiera otra acción propietaria.
+
+---
+
+#### 17. Prioridad, override y excepción
+
+El handoff de `FOGO-AUTH-008` incluye repriorizaciones u overrides aplicables.
+
+Reglas:
+
+1. supervisión o coordinación no concede por sí sola mutación;
+2. una prioridad ya publicada no se cambia por UI sin acción propietaria;
+3. un override conserva antes/después, motivo, autoridad, alcance y vigencia;
+4. una excepción temporal no se convierte en permiso permanente;
+5. terminar la excepción no borra su evidencia;
+6. si el catálogo todavía no contiene capacidad canónica concreta para el override, la materialización falla cerrada.
+
+---
+
+#### 18. Historia inmutable
+
+La invariancia principal es:
+
+```text
+HECHO ORIGINAL
++
+ACCION CORRECTIVA VINCULADA
+=
+HISTORIA EXPLICABLE
+```
+
+Queda prohibido:
+
+- `DELETE` como mecanismo empresarial de corrección;
+- update in-place destructivo de hechos confirmados;
+- reemplazar actor original;
+- reemplazar timestamp original;
+- ocultar la versión de receta utilizada;
+- compactar original + corrección en una sola verdad sin lineage;
+- reusar la misma identidad empresarial para dos efectos incompatibles.
+
+La lectura de estado actual puede proyectar el resultado vigente, pero la historia debe poder reconstruir todas las capas.
+
+---
+
+#### 19. Relación con producción parcial
+
+Un parcial aceptado es un hecho durable.
+
+Por tanto:
+
+```text
+PARCIAL EQUIVOCADO
+!=
+DELTA NEGATIVO SIN CONTRATO
+```
+
+Si una captura parcial requiere corrección:
+
+1. se identifica la captura o hecho afectado;
+2. se determina si corresponde `CORRECT`, `ADJUST`, `REVERSE`, `COMPENSATE` u otra acción propietaria;
+3. se conserva el original;
+4. se revalida capacidad, estado, territorio y versión;
+5. el acumulado derivado se recalcula desde hechos válidos y vinculados.
+
+`FOGO-AUTH-010` sigue gobernando capturas ordinarias; esta tarea gobierna su rectificación excepcional.
+
+---
+
+#### 20. Relación con finalización y cierre
+
+Finalizar o cerrar no otorga autoridad para corregir retroactivamente.
+
+Después de `VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` o de `VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED`:
+
+- la historia permanece inmutable;
+- una corrección debe quedar vinculada;
+- una revisión posterior puede usar `linked-review-opened`;
+- un efecto físico ya aplicado se resuelve mediante la acción propietaria correspondiente;
+- un cierre no se “reabre” editando directamente su estado sin contrato.
+
+`FOGO-AUTH-011` conserva la autoridad de cierre ordinario; `FOGO-AUTH-012` solo protege acciones posteriores o excepcionales de corrección/anulación.
+
+---
+
+#### 21. Frontera con calidad
+
+Una corrección productiva no puede modificar silenciosamente decisiones de `VPROC-0035`.
+
+Si cambia información que afecta calidad:
+
+1. FOGO registra la corrección productiva autorizada;
+2. se conserva la decisión de calidad original;
+3. el proceso propietario de calidad determina si requiere revisión, nueva inspección o nueva disposición;
+4. la corrección no convierte un producto retenido/rechazado en liberado;
+5. la autoridad productiva no sustituye autoridad de calidad.
+
+---
+
+#### 22. Frontera con inventario y NEXO
+
+FOGO no corrige stock por edición de datos productivos.
+
+Cuando una corrección afecta un efecto físico ya registrado:
+
+- NEXO conserva propiedad sobre stock, LPN, LOC, movimiento y conciliación;
+- FOGO conserva el hecho productivo y la razón de la corrección;
+- una reversa, devolución o ajuste NEXO se crea bajo su contrato propietario;
+- ambas operaciones quedan correlacionadas;
+- una corrección FOGO no declara conciliado un efecto NEXO pendiente;
+- una operación NEXO no reescribe el hecho productivo original.
+
+---
+
+#### 23. Frontera con lotes y recetas
+
+`FOGO-AUTH-013` conserva la normalización de lotes, recetas, versionado y acciones sensibles.
+
+Esta tarea exige que una corrección:
+
+- no cambie retroactivamente la receta/version usada por el lote;
+- no transforme una receta retirada en vigente;
+- no modifique definición maestra de receta mediante permiso de corrección de producción;
+- no use un alias `production.*` como equivalente automático a un permiso canónico FOGO;
+- no cambie identidad del lote para ocultar la corrección.
+
+---
+
+#### 24. Actor, turno y evidencia
+
+Toda acción correctiva debe persistir evidencia suficiente para atribuir:
+
+- actor efectivo;
+- turno vigente cuando aplique;
+- check-in cuando aplique;
+- rol/carril efectivo;
+- sede;
+- área;
+- dispositivo y `actor_session_id` cuando aplique;
+- capacidad evaluada;
+- recurso y versión;
+- acción solicitada;
+- decisión de autorización;
+- motivo;
+- correlación;
+- resultado.
+
+`FOGO-AUTH-014` conserva el contrato durable de actor y turno; esta tarea no lo sustituye.
+
+---
+
+#### 25. Dispositivo compartido
+
+Un dispositivo compartido identifica el contexto técnico y puede exigir firma de actor, pero no concede la corrección.
+
+Reglas:
+
+1. cada trabajador revalida su propia autoridad;
+2. una corrección preparada por A no puede confirmarse con autoridad residual de A cuando B ocupa la estación;
+3. cambiar de actor invalida borradores sensibles no confirmados;
+4. un resultado ya confirmado conserva el actor original;
+5. el dispositivo no crea cobertura multiárea ni privilegio de supervisor.
+
+---
+
+#### 26. Patch permitido y protección contra mass assignment
+
+Una acción correctiva acepta únicamente campos definidos por su contrato.
+
+El servidor deberá ignorar o denegar intentos de modificar directamente, cuando no sean parte explícita de la acción:
+
+- actor original;
+- `created_at` original;
+- sede/área histórica;
+- receta/version histórica;
+- estado arbitrario;
+- flags de autorización;
+- ownership;
+- acumulados derivados;
+- identificadores de movimiento NEXO;
+- evidencia de calidad;
+- eventos emitidos;
+- datos de auditoría.
+
+La intención “corregir” no convierte el payload en un patch general del agregado.
+
+---
+
+#### 27. Idempotencia y concurrencia
+
+Cada acción correctiva sensible debe tener identidad empresarial recuperable.
+
+Reglas:
+
+- retry equivalente devuelve el mismo resultado empresarial;
+- misma identidad con payload incompatible produce conflicto;
+- dos correcciones concurrentes sobre la misma versión no aplican last-write-wins silencioso;
+- la segunda operación revalida la versión actual;
+- una corrección no se duplica por timeout o respuesta perdida;
+- una cancelación repetida no recrea efectos residuales;
+- una reversa/compensación repetida no aplica el efecto dos veces;
+- la cadena original → corrección/reversa/compensación permanece única y trazable.
+
+---
+
+#### 28. Denegación, error y recuperación
+
+Ante falta de autoridad, territorio incompatible, estado inválido, versión stale o binding de capacidad ausente:
+
+1. no se modifica el recurso;
+2. no se emite el evento condicional de éxito;
+3. no se crea un efecto físico compensatorio parcial;
+4. se devuelve denegación o conflicto estructurado;
+5. se registra evidencia técnica/auditable conforme a política;
+6. el cliente refresca la verdad autoritativa antes de reintentar.
+
+Ante fallo técnico después de un efecto confirmado, la recuperación consulta por identidad idempotente; no repite ciegamente la mutación.
+
+---
+
+#### 29. Estado AS-IS observado en `vento-fogo`
+
+El runtime vigente expone estados locales de lote como `draft`, `posted`, `cancelled` y `completed` en la vista de producción, pero la búsqueda sobre el consumidor actual no demuestra una Server Action separada de corrección, anulación o cancelación empresarial de lote.
+
+Tampoco se observó una escritura directa `update/delete` de `production_batches` desde las superficies auditadas que materialice por sí sola el contrato canónico de esta tarea.
+
+La creación actual continúa concentrada en `fogo_create_real_production_batch`, con efectos productivos/físicos acoplados ya identificados por tareas previas.
+
+Por tanto:
+
+```text
+ETIQUETA LOCAL cancelled/completed
+!=
+LIFECYCLE CORRECTIVO CANONICO MATERIALIZADO
+```
+
+La ausencia de una mutación visible no autoriza implementarla como edición directa.
+
+---
+
+#### 30. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe una capacidad FOGO dedicada demostrada como permiso universal de corrección/anulación de lote. | Bloquea materializar una mutación correctiva por inferencia desde lectura, creación o cierre. | `FOGO-AUTH-012::<implementation_unit_id>` con normalización en `FOGO-AUTH-013 / FOGO-AUTH-015` cuando corresponda | cada acción queda ligada a una capacidad canónica concreta y pruebas negativas demuestran que otros permisos no la sustituyen |
+| El runtime muestra `cancelled` y `completed`, pero no una acción empresarial separada de corrección/anulación en las superficies auditadas. | Un label podría confundirse con lifecycle implementado. | `FOGO-AUTH-012::<implementation_unit_id>` y `FOGO-UX-011` | existe acción protegida y experiencia explícita, o adaptación equivalente aprobada, con historia inmutable y autoridad server-side |
+| El RPC transitorio de creación acopla efectos que después podrían requerir compensación. | Corrección productiva e inventario pueden cruzar ownership. | `FOGO-AUTH-012::<implementation_unit_id>` + integración FOGO/NEXO propietaria | cada efecto ya ocurrido usa reversa/compensación/ajuste del dominio propietario y conserva correlación |
+| Las correcciones posteriores al cierre pueden degradar historia si se implementan como update in-place. | Riesgo crítico de pérdida de trazabilidad. | `FOGO-UX-011`, `FOGO-AUTH-012::<implementation_unit_id>` y persistencia propietaria | original y corrección quedan versionados/vinculados; el estado vigente es proyección derivable |
+| Repriorización/override no tiene permiso atómico demostrado por la supervisión FOGO. | Supervisión podría interpretarse como mutación. | `FOGO-AUTH-012::<implementation_unit_id>` y superficie UX propietaria | override usa capacidad concreta, motivo, antes/después, vigencia y evidencia; sin binding falla cerrado |
+| Los literales runtime `production.*` no equivalen automáticamente a `fogo.production.*`. | Puede crear aliases ampliatorios. | `FOGO-AUTH-013 / FOGO-AUTH-015` | consumidores usan claves canónicas exactas y eliminan aliases no autorizados |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 31. Frontera con tareas posteriores
+
+| Tarea | Responsabilidad reservada |
+| --- | --- |
+| `FOGO-AUTH-013` | normalizar lotes, recetas, versionado, permisos legacy y acciones sensibles sin ampliar aliases |
+| `FOGO-AUTH-014` | consolidar actor y turno como evidencia durable de cada acción productiva/correctiva |
+| `FOGO-AUTH-015` | migrar consumidores a contratos compartidos y bindings de capacidad canónicos |
+| `FOGO-AUTH-016` | certificar corrección, anulación, denegaciones, concurrencia, idempotencia e historia inmutable |
+| `FOGO-UX-011` | diseñar la experiencia de corrección sin alterar historial |
+| integraciones FOGO/NEXO propietarias | materializar reversas, devoluciones, ajustes o compensaciones físicas cuando correspondan |
+
+Esta tarea no absorbe esas responsabilidades.
+
+---
+
+#### 32. Materialización física posterior
+
+La topología canónica aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global de correcciones y anulaciones;
+2. no autoriza una ejecución física global;
+3. cada materialización usa `FOGO-AUTH-012::<implementation_unit_id>`;
+4. la unidad física solo puede abrirse después del `E5-GATE-008::<package_id>` aplicable y de autorización física explícita;
+5. cada implementation unit prueba binding de capacidad, guard server-side, estados/versiones, persistencia inmutable, eventos condicionales, idempotencia, concurrencia y auditoría;
+6. una materialización no puede inventar `implementation_unit_id` ni package ownership;
+7. cualquier cambio de Supabase perteneciente a VENTO se crea, versiona, documenta y ejecuta desde `vento-shell`.
+
+---
+
+#### 33. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: ciclo de lote, cancelación/corrección, historia inmutable, versionado, autorización exacta, actor/contexto, territorio, segregación, idempotencia, concurrencia, calidad, inventario y cierre ya están protegidos por requisitos vigentes. Esta tarea especializa esa cobertura sobre las acciones correctivas y sus familias condicionales sin introducir una obligación verificable nueva fuera de esos contratos.
+
+---
+
+#### 34. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-FOGO-001` para demostrar ciclo productivo completo, incluida cancelación/corrección, con actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` para receta/version inmutables, desviaciones y rendimiento sin sobrescritura de conocimiento histórico;
+- `TREQ-FOGO-003` para prioridad, aprobaciones y overrides productivos trazables;
+- `TREQ-FOGO-004` para ejecución, calidad, reproceso, genealogía y cierre sin sobrescritura destructiva;
+- `TREQ-AUTH-001` para impedir autorización final por nombre de rol;
+- `TREQ-AUTH-004` para decisión equivalente por actor, permiso, sede, área y contexto;
+- `TREQ-AUTH-008` para separar carril base y operativo y sus prerrequisitos;
+- `TREQ-AUTH-009` para resolución territorial determinista;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-011` para actor efectivo en dispositivo compartido;
+- `TREQ-AUTH-013` para impedir bypass de UI/API/RPC y exigir permiso, actor, territorio, contexto, estado y campos permitidos;
+- `TREQ-AUTH-014` para frescura antes de efectos sensibles;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisión y acción protegida.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 35. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@90047a50c4b803cea14a90c6ae25fea341d09a77`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, taxonomía `CANCEL/VOID/REVERSE/COMPENSATE/ADJUST/CORRECT/RESTATE`, familias condicionales de eventos, fronteras FOGO/NEXO, catálogo de permisos, runtime de lotes y cobertura 04A; `FOGO-AUTH-011` se consume desde su artefacto completo aprobado por el usuario mientras su cierre remoto permanece pendiente durante esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron lotes reales, cancelaciones, anulaciones, correcciones, reversas, compensaciones, ajustes, overrides, turnos, dispositivos ni pruebas adversariales. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `FOGO-AUTH-012::<implementation_unit_id>`. |
+
+---
+
+#### 36. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `CANCEL`, `VOID`, `REVERSE`, `COMPENSATE`, `ADJUST`, `CORRECT` y `RESTATE` permanecen semánticamente distintos;
+- [ ] `CANCEL` detiene trabajo futuro sin borrar efectos confirmados;
+- [ ] `VOID` solo neutraliza registro sin efecto válido o duplicado demostrado;
+- [ ] `REVERSE` conserva y referencia el efecto original;
+- [ ] `COMPENSATE` conserva el original y materializa restitución/mitigación vinculada;
+- [ ] `ADJUST` registra diferencia separada;
+- [ ] `CORRECT` conserva antes/después, causa, autoridad, impacto y versión;
+- [ ] `RESTATE` no cambia el hecho fuente;
+- [ ] se preservan `cancellation-recorded`, `void-recorded`, `reversal-applied`, `compensation-posted`, `correction-applied` y `linked-review-opened` como familias condicionales;
+- [ ] no existe borrado genérico de historia productiva;
+- [ ] una lectura, creación, cierre o actualización de receta no concede corrección de lote;
+- [ ] la materialización falla cerrada hasta disponer de capacidad canónica concreta para la acción;
+- [ ] actor, turno/check-in cuando apliquen, rol/carril, sede, área, recurso, estado y versión se revalidan en servidor;
+- [ ] filtros o payload cliente no determinan autoridad ni territorio;
+- [ ] una versión stale no produce last-write-wins silencioso;
+- [ ] un parcial errado no se corrige con delta negativo sin contrato;
+- [ ] una finalización previa no concede corrección retroactiva;
+- [ ] calidad no se modifica desde autoridad productiva de corrección;
+- [ ] FOGO no corrige stock NEXO mediante edición de datos productivos;
+- [ ] cualquier reversa/ajuste físico se ejecuta bajo el dominio propietario y queda correlacionado;
+- [ ] la receta/version histórica usada por el lote permanece inmutable;
+- [ ] prioridad/override exige capacidad exacta y evidencia;
+- [ ] el dispositivo compartido identifica al actor sin ampliar autoridad;
+- [ ] el patch correctivo está limitado a campos permitidos y evita mass assignment;
+- [ ] retries equivalentes no duplican correcciones, reversas o compensaciones;
+- [ ] payload incompatible con la misma identidad produce conflicto;
+- [ ] concurrencia no permite dos correcciones incompatibles sobre la misma versión;
+- [ ] denegación o conflicto no emite eventos condicionales de éxito;
+- [ ] el AS-IS con labels `cancelled/completed` no se presenta como lifecycle correctivo canónico materializado;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] `FOGO-AUTH-013` conserva lotes/recetas/versionado y permisos legacy;
+- [ ] `FOGO-UX-011` conserva el diseño de experiencia de corrección;
+- [ ] cualquier modificación futura de Supabase perteneciente a VENTO se realiza desde `vento-shell` bajo la instancia física propietaria;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 37. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica `fogo_create_real_production_batch`;
+- crea una pantalla física de correcciones;
+- diseña la UX de `FOGO-UX-011`;
+- inventa una clave de permiso nueva;
+- concede corrección por `batches.view`, `batches.create` o `batches.close`;
+- concede corrección por `recipes.update`;
+- modifica matrices RBAC aprobadas;
+- modifica Server Actions, API, RPC, RLS, grants o datos;
+- crea o modifica migraciones;
+- redefine inicio de `FOGO-AUTH-009`;
+- redefine parciales de `FOGO-AUTH-010`;
+- redefine finalización de `FOGO-AUTH-011`;
+- redefine recetas o lotes de `FOGO-AUTH-013`;
+- decide calidad;
+- publica inventario;
+- crea, borra o ajusta movimientos NEXO;
+- reabre un cierre por edición directa;
+- borra hechos históricos;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 38. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-011 — Proteger finalización`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-012 — Proteger correcciones y anulaciones`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-013 — Proteger lotes y recetas`
+
 ### [ ] FOGO-AUTH-013 — Proteger lotes y recetas
 ### [ ] FOGO-AUTH-014 — Registrar actor y turno
 ### [ ] FOGO-AUTH-015 — Migrar a paquetes de vento-shell
