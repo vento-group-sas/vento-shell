@@ -8912,6 +8912,511 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-014 — Registrar actor y turno`
 
-### [ ] FOGO-AUTH-014 — Registrar actor y turno
+### ✅ FOGO-AUTH-014 — Registrar actor y turno
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-013 — Proteger lotes y recetas
+**Tarea siguiente:** FOGO-AUTH-015 — Migrar a paquetes de vento-shell
+**Tipo de tarea:** documental; contrato canónico de atribución de actor efectivo y contexto laboral para acciones protegidas de FOGO, con materialización física posterior por `PER_IMPLEMENTATION_UNIT` y gate `POST_E5_PACKAGE`
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo toda decisión y acción protegida de FOGO conserva evidencia suficiente para atribuir el efecto al principal que presentó la credencial, al actor efectivo que realizó la acción y al contexto laboral que realmente la autorizó.
+
+La regla principal queda:
+
+```text
+PRINCIPAL AUTENTICADO
++
+ACTOR EFECTIVO RESUELTO
++
+ROL BASE Y/O ROL OPERATIVO APLICABLE
++
+TURNO Y CHECK-IN CUANDO LA ACCION LOS EXIGE
++
+SEDE Y AREA EFECTIVAS
++
+DISPOSITIVO CUANDO CORRESPONDA
++
+PERMISO / CAPACIDAD EXACTA
++
+RECURSO + ESTADO + VERSION
++
+DECISION + RAZONES + TIEMPO
+=
+EVIDENCIA CORRELACIONABLE DE LA ACCION FOGO
+```
+
+Registrar actor y turno no concede autoridad. La evidencia demuestra quién actuó y bajo qué contexto se decidió; la autorización sigue perteneciendo al contrato exacto de la acción.
+
+---
+
+#### 2. Frontera recibida de FOGO-AUTH-009..013
+
+Esta tarea consolida una obligación transversal ya exigida por las tareas productivas anteriores:
+
+- inicio de producción: actor, turno, check-in, sede, área, capacidad, recurso y estado se revalidan antes del efecto;
+- producción parcial: cada captura conserva actor y contexto propios y no hereda autoridad histórica del lote;
+- finalización: el cierre se atribuye al actor y contexto que ejecutan la transición terminal;
+- correcciones y anulaciones: toda corrección, cancelación, reversa, compensación, ajuste o reexpresión conserva actor, autoridad, causa y vínculo con el hecho original;
+- lotes y recetas: lectura, creación, administración, publicación y mutaciones sensibles mantienen separados permiso, recurso, versión y actor.
+
+`FOGO-AUTH-014` no reabre esas decisiones. Define la evidencia común que sus materializaciones deberán conservar.
+
+---
+
+#### 3. Identidades que deben permanecer separadas
+
+FOGO adopta sin reinterpretación la separación canónica entre:
+
+```text
+PRINCIPAL AUTENTICADO
+!=
+IDENTIDAD LABORAL
+!=
+ACTOR EFECTIVO
+!=
+ROL
+!=
+TURNO
+!=
+DISPOSITIVO
+!=
+PERMISO
+```
+
+Consecuencias:
+
+1. `auth.uid()` no equivale por sí solo a empleado autorizado.
+2. El usuario autenticado debe resolver una identidad laboral activa cuando la acción sea humana.
+3. El actor efectivo es la identidad a la que se atribuye la acción empresarial.
+4. Un dispositivo compartido puede ser el principal técnico de la sesión sin convertirse en actor humano.
+5. Un turno aporta contexto laboral cuando el contrato de la capacidad lo exige; no reemplaza actor ni permiso.
+6. Un rol describe una posición o función; no constituye por sí solo una autorización final.
+
+---
+
+#### 4. Carriles de resolución del actor
+
+##### 4.1 Sesión personal
+
+Para una acción humana desde sesión personal:
+
+```text
+USUARIO AUTENTICADO
+-> EMPLEADO ACTIVO VINCULADO
+-> ACTOR EFECTIVO = EMPLEADO
+```
+
+La evidencia debe conservar el principal autenticado y el actor efectivo como conceptos distintos aunque ambos conduzcan a la misma persona.
+
+##### 4.2 Dispositivo compartido
+
+Para una acción desde terminal compartida:
+
+```text
+PRINCIPAL TECNICO DEL DISPOSITIVO
++
+SESION / FIRMA ACTIVA DE ACTOR
+-> EMPLEADO ACTIVO
+-> ACTOR EFECTIVO = EMPLEADO
+```
+
+Cuando la política del dispositivo exige firma humana, una acción sin actor humano resoluble queda denegada. La firma del dispositivo puede aportar identidad de actor y turno, pero no sustituye la decisión de autorización ni amplía permisos.
+
+##### 4.3 Proceso de sistema
+
+Una acción técnica automatizada solo podrá atribuirse a sistema o a un empleado delegado cuando el contrato propietario lo permita explícitamente. Nunca se fabricará un empleado humano a partir de una service role.
+
+---
+
+#### 5. Contrato del turno operativo
+
+Para capacidades operativas FOGO que exigen contexto laboral, el turno efectivo debe ser:
+
+- publicado;
+- vigente para el instante de decisión;
+- perteneciente al actor efectivo;
+- compatible con la sede operativa;
+- compatible con el área productiva aplicable;
+- portador del rol operativo efectivo requerido;
+- coherente con check-in activo cuando la capacidad lo exige.
+
+La evidencia del turno debe provenir de la resolución autoritativa del contexto, no de un parámetro libre del cliente.
+
+```text
+SHIFT_ID SOLICITADO POR CLIENTE
+!=
+TURNO EFECTIVO AUTORIZANTE
+```
+
+Un cambio, finalización o invalidación de turno obliga a recalcular contexto y autorización antes de nuevos efectos.
+
+---
+
+#### 6. Acciones administrativas sin turno obligatorio
+
+La separación transversal entre carril base y carril operativo se conserva.
+
+Si una acción FOGO administrativa está autorizada por rol base y cobertura administrativa sin turno ni check-in, la evidencia:
+
+- conserva actor efectivo;
+- conserva rol base y cobertura aplicable;
+- conserva sede o territorio administrativo cuando corresponda;
+- registra que turno y check-in no fueron requisitos autorizantes de esa decisión;
+- no inventa `shift_id`, check-in ni rol operativo ficticios.
+
+```text
+TURNO NO REQUERIDO
+!=
+TURNO DESCONOCIDO
+!=
+TURNO AUSENTE CUANDO ERA OBLIGATORIO
+```
+
+Solo el primer caso puede ser válido para un contrato administrativo que expresamente no exija turno.
+
+---
+
+#### 7. Contexto territorial asociado
+
+Cuando la capacidad sea operativa, la evidencia debe mantener correlacionados:
+
+- actor efectivo;
+- turno efectivo;
+- rol operativo efectivo;
+- sede activa operativa;
+- área activa exacta;
+- recurso o destino productivo;
+- sede y área persistidas del recurso cuando existan.
+
+La evidencia no convierte la sede o área del cliente en autoridad. Si el recurso y el contexto efectivo son incompatibles, la operación queda denegada aunque el cliente presente valores aparentemente válidos.
+
+---
+
+#### 8. Evidencia mínima de una decisión FOGO protegida
+
+Cada materialización deberá conservar, como modelo lógico y sin imponer aquí un esquema físico nuevo, evidencia correlacionable de:
+
+| Dimensión | Evidencia mínima |
+| --- | --- |
+| Principal | tipo de principal e identidad autenticada o técnica resoluble |
+| Actor | actor efectivo y su identidad laboral cuando corresponda |
+| Contexto base | rol base y cobertura administrativa aplicable |
+| Contexto operativo | rol operativo, turno, check-in, sede y área cuando la capacidad los exige |
+| Dispositivo | identidad de dispositivo y sesión/firma de actor cuando la acción proviene de dispositivo compartido |
+| Acción | aplicación, acción o capacidad exacta evaluada |
+| Recurso | tipo de recurso, identidad y versión/estado relevante |
+| Autorización | decisión, razones y contrato o versión de política aplicable |
+| Correlación | identidad de operación, request o idempotencia cuando exista en el contrato propietario |
+| Tiempo | timestamp de la decisión y del efecto cuando sean distintos |
+| Resultado | efecto confirmado, denegación, conflicto o fallo técnico correlacionable |
+
+Los nombres físicos de columnas, tablas, RPC o eventos se reservan a la unidad de implementación propietaria. Esta tarea fija el contenido semántico obligatorio.
+
+---
+
+#### 9. Punto de captura y frescura
+
+La evidencia autorizante debe corresponder al contexto inmediatamente anterior al efecto empresarial protegido.
+
+No basta con guardar el actor o turno que existían cuando:
+
+- se abrió la aplicación;
+- se cargó la pantalla;
+- se seleccionó el lote;
+- se obtuvo una fila de recetario;
+- se inició un formulario;
+- se generó una firma que ya expiró;
+- se creó un request que será ejecutado después con contexto potencialmente distinto.
+
+Antes de la mutación autoritativa se revalidan las dimensiones exigidas por el contrato de esa acción.
+
+Un check-out, expiración, cambio de trabajador, cambio de turno, cambio de área, cambio de rol, revocación del dispositivo o cambio de asignación invalida la autoridad derivada anterior.
+
+---
+
+#### 10. Dispositivo compartido y firma del actor
+
+La evidencia AS-IS de `vento-fogo` demuestra una integración específica mediante `requireSharedDeviceActorSignature` y `sign_shared_device_action`.
+
+La respuesta observada de la firma contempla:
+
+- `signature_id`;
+- `actor_employee_id`;
+- `actor_shift_id`.
+
+Contrato objetivo:
+
+1. `signature_id` identifica una evidencia de firma, no un permiso.
+2. `actor_employee_id` debe resolver al actor humano efectivo de la acción cuando la política de la terminal lo exige.
+3. `actor_shift_id` solo es válido como contexto si el turno continúa vigente y compatible al momento del efecto.
+4. La identidad técnica del dispositivo se conserva separada del actor.
+5. Cambiar de trabajador invalida la atribución previa para acciones nuevas.
+6. Una firma expirada, revocada o incompatible no puede reutilizarse.
+7. La acción final debe mantener vínculo entre firma, actor, dispositivo y recurso cuando la firma fue requerida.
+
+---
+
+#### 11. Sesión personal y contexto activo
+
+El runtime FOGO ya contiene resolución de contexto activo con, entre otros, sede, área, turno y rol operativo para la experiencia de SHELL.
+
+Ese contexto visual o de navegación no constituye por sí solo evidencia suficiente de una mutación.
+
+La unidad física propietaria deberá demostrar que el mismo contexto autoritativo, o uno recalculado de forma equivalente, participa en la decisión server-side inmediatamente anterior al efecto.
+
+Para una sesión personal, que el helper de firma de dispositivo retorne `required = false` y actor/turno nulos no significa que la acción carezca de actor o turno. Significa únicamente que ese helper específico no es la fuente de la atribución personal.
+
+---
+
+#### 12. Cobertura mínima sobre el ciclo productivo
+
+La evidencia de actor y turno debe acompañar, cuando cada acción se materialice, al menos:
+
+| Familia | Evidencia específica adicional |
+| --- | --- |
+| Inicio de lote | actor/contexto que autoriza creación e inicio, receta/version, orden y destino productivo |
+| Producción parcial | actor/contexto de cada captura, lote, versión observada y delta aceptado |
+| Finalización | actor/contexto de la transición terminal y estado/version precondición |
+| Corrección/anulación | actor/contexto, autoridad correctiva, causa, antes/después y vínculo al hecho original |
+| Lote sensible | actor/contexto de lectura o mutación según capacidad exacta |
+| Recetario operativo | actor/contexto y publicación aplicable consumida |
+| Administración de receta | actor base, cobertura, definición/version y acción administrativa exacta; turno solo si el contrato lo exige |
+
+La atribución de una acción no se hereda automáticamente a la siguiente. Cada efecto protegido conserva su propia decisión y evidencia.
+
+---
+
+#### 13. Denegaciones, conflictos y fallos
+
+La auditoría de actor/contexto no se limita a operaciones exitosas.
+
+Debe conservarse evidencia suficiente también cuando exista:
+
+- permiso ausente;
+- turno obligatorio ausente o inválido;
+- check-in obligatorio ausente;
+- actor no resoluble;
+- dispositivo revocado o firma inválida;
+- cruce de sede o área;
+- estado incompatible del recurso;
+- versión stale;
+- retry incompatible;
+- conflicto de concurrencia;
+- fallo técnico después de la decisión pero antes de confirmar el efecto.
+
+Una denegación nunca se reetiqueta como fallo técnico para omitir actor o razones.
+
+---
+
+#### 14. Idempotencia y atribución
+
+Los retries equivalentes deben conservar la misma identidad empresarial y no crear un segundo efecto con un actor distinto por accidente.
+
+Si una operación se reintenta después de un cambio material de actor, turno, contexto o payload, la unidad propietaria deberá resolver si corresponde conflicto, nueva operación o reautorización; nunca reutilizará silenciosamente una decisión stale.
+
+La evidencia debe permitir reconstruir:
+
+```text
+QUIEN PIDIO
+QUIEN ACTUO
+BAJO QUE CONTEXTO
+QUE SE AUTORIZO O DENEGO
+SOBRE QUE RECURSO
+CON QUE VERSION / ESTADO
+CUANDO
+Y QUE EFECTO QUEDO CONFIRMADO
+```
+
+---
+
+#### 15. Relación con recetas y lotes
+
+Esta tarea consume la protección de `FOGO-AUTH-013` sin redefinirla.
+
+Para recetas y lotes:
+
+- autor del recurso no equivale a actor autorizado de la acción actual;
+- creador del lote no adquiere autoridad perpetua sobre el lote;
+- una receta publicada conserva historia de autoría, pero la acción que la consulta, administra, publica o aplica registra su propio actor;
+- usar una receta publicada en producción conserva la versión exacta y el actor/contexto de la ejecución;
+- actualizar una definición no altera quién ejecutó lotes históricos ni reescribe su evidencia.
+
+---
+
+#### 16. Relación con FOGO-AUTH-015
+
+`FOGO-AUTH-015 — Migrar a paquetes de vento-shell` recibe de esta tarea un contrato de evidencia que debe conservarse durante la migración de consumidores.
+
+La migración no podrá:
+
+- reducir actor efectivo a `auth.uid()`;
+- convertir dispositivo en actor;
+- perder turno o contexto operativo cuando eran obligatorios;
+- introducir aliases que omitan la capacidad exacta;
+- degradar denegaciones o razones;
+- perder correlación entre decisión y efecto;
+- mantener caches o sesiones con autoridad stale después de invalidación.
+
+`FOGO-AUTH-015` es propietario de la adopción de contratos compartidos; `FOGO-AUTH-014` define qué evidencia no puede perderse.
+
+---
+
+#### 17. Hallazgos AS-IS y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `requireSharedDeviceActorSignature` existe y obtiene `actor_employee_id` y `actor_shift_id` cuando la acción requiere firma en dispositivo compartido. | No bloquea la definición; demuestra una pieza reutilizable de atribución. | `FOGO-AUTH-014::<implementation_unit_id>` | La unidad demuestra vínculo durable entre firma, actor, turno, dispositivo, recurso y efecto para las acciones donde la firma sea obligatoria. |
+| En sesión no compartida, el helper de firma retorna `required = false` y no aporta actor/turno. | Bloquea tratar ese helper como solución universal de atribución. | `FOGO-AUTH-014::<implementation_unit_id>` | Las acciones personales obtienen actor efectivo y contexto laboral desde la fuente canónica correspondiente y los registran en el punto de efecto. |
+| La experiencia FOGO resuelve un `ActiveWorkContext` con sede, área, turno y rol operativo. | No demuestra por sí sola persistencia de esa evidencia en cada mutación. | `FOGO-AUTH-014::<implementation_unit_id>` | Cada mutación aplicable revalida y correlaciona el contexto server-side con su decisión y resultado. |
+| La firma compartida fue observada en la creación de lote, pero no queda demostrado por esa evidencia que todas las acciones FOGO sensibles tengan una estrategia uniforme de actor/turno. | Bloquea declarar la familia FOGO completamente materializada. | `FOGO-AUTH-014::<implementation_unit_id>` y adopción de `FOGO-AUTH-015` | Inventario de consumidores y pruebas demuestran atribución equivalente en cada acción protegida materializada. |
+| La autoridad derivada puede quedar stale ante check-out, cambio de turno, trabajador, área, rol o dispositivo. | Riesgo crítico si una decisión previa se reutiliza. | contratos transversales de contexto + `FOGO-AUTH-014::<implementation_unit_id>` | Revalidación e invalidación observables impiden nuevos efectos con contexto obsoleto. |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 18. Topología y materialización física posterior
+
+La topología aplicable es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato documental global de actor/turno para FOGO;
+2. no autoriza una implementación física global;
+3. cada unidad física aplicable usa la identidad canónica `FOGO-AUTH-014::<implementation_unit_id>`;
+4. una unidad solo puede materializarse después del paquete propietario y de `E5-GATE-008::<package_id> = PASS`;
+5. la unidad debe declarar consumidores reales, persistencia/evidencia, revalidación server-side, pruebas negativas, rollback y compatibilidad;
+6. varias unidades pueden consumir el mismo contrato sin reabrir esta tarea;
+7. cualquier modificación de Supabase perteneciente a VENTO se crea, versiona y ejecuta desde `vento-shell` bajo la unidad física propietaria.
+
+Esta tarea documental no crea tablas, columnas, RPC, RLS, migraciones, tipos, eventos, endpoints ni despliegues.
+
+---
+
+#### 19. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: actor efectivo, turno, check-in, sede, área, frescura, autorización server-side, auditoría correlacionable y ciclo productivo con actor/turno ya están cubiertos por requisitos canónicos vigentes. Esta tarea especializa esas obligaciones para FOGO y asigna su futura materialización sin introducir una obligación verificable nueva fuera de la cobertura existente.
+
+---
+
+#### 20. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-AUTH-001` para autorización final por permisos, contexto y alcance en vez de nombres de rol;
+- `TREQ-AUTH-004` para equivalencia de decisiones entre evaluadores sobre el mismo principal, actor y contexto;
+- `TREQ-AUTH-008` para separar carril administrativo y operativo y exigir turno/check-in en capacidades operativas;
+- `TREQ-AUTH-009` para resolución determinista de sede y área desde asignaciones, turno y check-in;
+- `TREQ-AUTH-013` para revalidación server-side de principal, actor, territorio, contexto, estado y columnas permitidas;
+- `TREQ-AUTH-014` para invalidación de autoridad stale ante cambios de sesión, turno, área, trabajador, dispositivo, rol o asignación;
+- `TREQ-AUTH-015` para evidencia correlacionable de principal, actor efectivo, roles, turno, check-in, sede, área, dispositivo, permiso, recurso, decisión, razones, versión y timestamp;
+- `TREQ-FOGO-001` para ciclo productivo con actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-003` para planificación con actor, motivo e impacto;
+- `TREQ-FOGO-004` para ejecución, calidad, resultado y cierre con actor, tiempo y evidencia;
+- `TREQ-FOGO-023` para impedir que la vista de creación autorice por sí sola la creación y exigir actor/contexto en la acción.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 21. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron en `vento-shell` el owner, continuidad, topología, contratos de identidad/contexto, requisitos AUTH/FOGO y reglas de dispositivo compartido; en `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se verificaron el helper de firma compartida, la creación de lote y la resolución de contexto activo. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron lotes, recetas, turnos, firmas, check-in, correcciones ni acciones productivas reales. |
+| FÍSICA | NOT_APPLICABLE | El marcador global no ejecuta cambios; las materializaciones futuras son por implementation unit después de E5. |
+
+---
+
+#### 22. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] principal autenticado y actor efectivo permanecen separados;
+- [ ] el actor humano efectivo queda resoluble para toda acción humana protegida;
+- [ ] el dispositivo compartido no se convierte en actor humano;
+- [ ] la firma de dispositivo no concede permisos ni sustituye revalidación;
+- [ ] capacidades operativas exigen turno publicado y vigente cuando el contrato lo establece;
+- [ ] check-in se exige únicamente cuando la capacidad aplicable lo requiere;
+- [ ] acciones administrativas sin turno obligatorio registran explícitamente que el turno no fue requisito, sin inventarlo;
+- [ ] actor, turno, rol, sede, área, permiso, recurso, estado y versión se revalidan en el punto de efecto cuando corresponda;
+- [ ] el contexto persistido del recurso prevalece sobre parámetros cliente-side ampliatorios;
+- [ ] cambios de turno, trabajador, área, rol, sesión o dispositivo invalidan autoridad derivada stale;
+- [ ] denegaciones, conflictos y fallos conservan evidencia correlacionable;
+- [ ] retries no cambian silenciosamente actor ni contexto de una misma operación empresarial;
+- [ ] inicio, parcial, finalización, corrección, lotes y recetas conservan atribución propia;
+- [ ] autoría histórica de una receta o lote no equivale a autoridad sobre acciones futuras;
+- [ ] la adopción AS-IS no se presenta como uniforme donde no está demostrada;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] `FOGO-AUTH-015` recibe explícitamente la obligación de preservar la evidencia al migrar consumidores;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 23. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica físicamente la implementación de `vento-shell`;
+- crea tablas, columnas, vistas, funciones, RPC, triggers, RLS, grants o migraciones;
+- crea un nuevo modelo de turno;
+- modifica ANIMA o VISO;
+- cambia cómo se publican turnos;
+- modifica matrices RBAC aprobadas;
+- inventa permisos FOGO nuevos;
+- redefine lotes o recetas de `FOGO-AUTH-013`;
+- redefine inicio, producción parcial, finalización o correcciones;
+- convierte firma de actor en autorización;
+- convierte dispositivo en trabajador;
+- exige turno a una capacidad administrativa cuyo contrato no lo exige;
+- permite operar sin turno cuando una capacidad operativa sí lo exige;
+- diseña UX final;
+- migra consumidores a paquetes compartidos;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 24. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-013 — Proteger lotes y recetas`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-014 — Registrar actor y turno`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-015 — Migrar a paquetes de vento-shell`
+
 ### [ ] FOGO-AUTH-015 — Migrar a paquetes de vento-shell
 ### [ ] FOGO-AUTH-016 — Ejecutar pruebas integrales
