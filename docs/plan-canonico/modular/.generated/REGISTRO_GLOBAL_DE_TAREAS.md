@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1273** |
+| Aprobadas | **1274** |
 | En propuesta | **0** |
-| No iniciadas | **323** |
+| No iniciadas | **322** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.76% (1273/1596)** |
+| Porcentaje de completamiento | **79.82% (1274/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **323** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1174** |
+| ⏸ NO_EVALUADA | **322** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1175** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-AUTH-001` — Inventariar vistas y acciones productivas | ✅ APROBADA |
-| Tarea actual | `FOGO-AUTH-002` — Definir permisos por área productiva | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-AUTH-003` — Filtrar cola por sede y área | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-AUTH-002` — Definir permisos por área productiva | ✅ APROBADA |
+| Tarea actual | `FOGO-AUTH-003` — Filtrar cola por sede y área | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-AUTH-004` — Restringir Panadería | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1051,7 +1051,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-047` | Diseñar llaves, acceso físico, obras, cierres temporales y novedades | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `NEXO-UX-048` | Validar el prototipo con Operaciones, Producción, Limpieza, Mantenimiento, SST y responsables de sede | — | — | `bloques/K_NEXO/04_EXPERIENCIA_DE_INVENTARIO_LOGISTICA_Y_ACTIVOS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-001` | Inventariar vistas y acciones productivas | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-002` | Definir permisos por área productiva | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-002` | Definir permisos por área productiva | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-003` | Filtrar cola por sede y área | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-004` | Restringir Panadería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-005` | Restringir Repostería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
