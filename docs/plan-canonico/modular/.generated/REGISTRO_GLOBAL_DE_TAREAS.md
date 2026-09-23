@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1281** |
+| Aprobadas | **1282** |
 | En propuesta | **0** |
-| No iniciadas | **315** |
+| No iniciadas | **314** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **80.26% (1281/1596)** |
+| Porcentaje de completamiento | **80.33% (1282/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **315** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1182** |
+| ⏸ NO_EVALUADA | **314** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1183** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-AUTH-009` — Proteger inicio de producción | ✅ APROBADA |
-| Tarea actual | `FOGO-AUTH-010` — Proteger producción parcial | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-AUTH-011` — Proteger finalización | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-AUTH-010` — Proteger producción parcial | ✅ APROBADA |
+| Tarea actual | `FOGO-AUTH-011` — Proteger finalización | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-AUTH-012` — Proteger correcciones y anulaciones | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1059,7 +1059,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-007` | Restringir Insumos | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-008` | Definir permisos de supervisor | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-009` | Proteger inicio de producción | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-010` | Proteger producción parcial | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-010` | Proteger producción parcial | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-011` | Proteger finalización | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-012` | Proteger correcciones y anulaciones | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-013` | Proteger lotes y recetas | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
