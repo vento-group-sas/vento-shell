@@ -4468,7 +4468,567 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-008 — Definir permisos de supervisor`
 
-### [ ] FOGO-AUTH-008 — Definir permisos de supervisor
+### ✅ FOGO-AUTH-008 — Definir permisos de supervisor
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-007 — Restringir Insumos
+**Tarea siguiente:** FOGO-AUTH-009 — Proteger inicio de producción
+**Tipo de tarea:** documental; definición `DEFINE_ONCE` de autoridad de supervisión FOGO, separación entre carril base `supervisor` y carril operativo `gerencia_operativa`, lectura multiárea explícita y fronteras de mutación, sin instancia física propia
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, permisos, datasets, contratos publicados, Supabase, RLS, RPC, migraciones, datos, dispositivos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma inequívoca qué significa **supervisar FOGO** sin inventar un cuarto rol productivo, sin convertir el título `supervisor` en wildcard y sin mezclar los dos carriles canónicos de autorización.
+
+La regla raíz es:
+
+```text
+SUPERVISIÓN FOGO
+=
+AUTORIDAD BASE COMPLETA DEL ROL supervisor
+O
+AUTORIDAD OPERATIVA COMPLETA DEL ROL gerencia_operativa
+```
+
+Los dos carriles son independientes. Un mismo trabajador puede satisfacer ambos en momentos distintos o simultáneamente cuando sus contratos lo permitan, pero ningún fragmento incompleto de un carril puede reparar, ampliar o completar el otro.
+
+Esta tarea cierra la frontera reservada por `FOGO-AUTH-002..007`: la lectura multiárea de supervisión existe únicamente cuando deriva de cobertura administrativa o contexto operativo explícitos y nunca por compartir sede, usar una estación, seleccionar un área en interfaz, tener antigüedad o portar un nombre de rol.
+
+---
+
+#### 2. Decisión principal
+
+FOGO conserva dos formas canónicas y separadas de supervisión:
+
+| Carril | Identidad canónica | Naturaleza | Territorio | Vigencia |
+| --- | --- | --- | --- | --- |
+| Base administrativo | `supervisor` | seguimiento y supervisión local mediante permisos base explícitos | cobertura administrativa activa `AS/AA` del actor | mientras rol, concesión y cobertura base permanezcan vigentes |
+| Operativo de coordinación | `gerencia_operativa` | coordinación directa de la jornada mediante permisos operativos explícitos | sede operativa activa y recursos/áreas relacionados con la jornada | únicamente durante contexto operativo válido |
+
+No se admite:
+
+```text
+supervisor = gerencia_operativa
+supervisor = productor
+supervisor = todas las areas del Centro de Produccion
+supervisor = todas las sedes
+supervisor = todas las capacidades FOGO
+gerencia_operativa = supervisor base
+gerencia_operativa = creador de lotes
+gerencia_operativa = administrador de recetas
+lectura multiárea = permiso de mutación
+```
+
+Un trabajador con rol base `supervisor` puede asumir `gerencia_operativa` cuando exista un contexto operativo válido, pero los grants, alcances, prerrequisitos, razones y auditorías de cada carril se resuelven de forma independiente.
+
+---
+
+#### 3. Handoff recibido de FOGO-AUTH-002..007
+
+Esta definición consume sin reinterpretación las siguientes fronteras ya aprobadas:
+
+1. solo existen tres roles productivos ordinarios: `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`;
+2. los tres roles productivos permanecen restringidos a sus áreas exactas y no adquieren autoridad de supervisor;
+3. `FOGO-AUTH-003` reserva cualquier lectura multiárea a un contrato explícito de supervisión;
+4. `FOGO-AUTH-004`, `FOGO-AUTH-005` y `FOGO-AUTH-006` prohíben inferir supervisión desde Panadería, Repostería o Cocina Caliente;
+5. `FOGO-AUTH-007` conserva insumos, stock, LPN, ubicaciones y retiros dentro del área, orden, lote y receta autorizados y no convierte supervisión en autoridad de bodega;
+6. compartir Centro de Producción, dispositivo, aplicación o contexto visual no fusiona territorios productivos.
+
+Esta tarea no reabre esas decisiones; define únicamente el carril que puede observar más de un área cuando exista autoridad explícita para hacerlo.
+
+---
+
+#### 4. Universo FOGO evaluado
+
+El catálogo vigente contiene exactamente seis permisos FOGO relevantes para esta tarea:
+
+| Permiso | Modalidad canónica | Recurso / frontera |
+| --- | --- | --- |
+| `fogo.access` | `BASE_OR_OPERATIONAL` | `APP_SURFACE`; entrada a FOGO, sin recursos internos por implicación |
+| `fogo.production.batches.view` | `BASE_OR_OPERATIONAL` | `PRODUCTION_BATCH`; territorio real `SITE_AREA` |
+| `fogo.production.batches.create` | `OPERATIONAL_ONLY` | `PRODUCTION_BATCH`; destino productivo exacto `SITE_AREA_DRAFT` |
+| `fogo.production.orders.view` | `BASE_OR_OPERATIONAL` | `PRODUCTION_ORDER`; relación entre sede solicitante, sede productiva y áreas relacionadas |
+| `fogo.production.recipe_book.view` | `OPERATIONAL_ONLY` | `RECIPE_PUBLICATION`; publicación aplicable al contexto productivo |
+| `fogo.production.recipes.view` | `BASE_ONLY` | `RECIPE_DEFINITION`; catálogo organizacional sensible |
+
+La tarea no crea aliases, wildcards ni permisos nuevos.
+
+---
+
+#### 5. Matriz FOGO del carril base supervisor
+
+La matriz base aprobada para `supervisor` se conserva exactamente:
+
+| Permiso | Decisión desde `supervisor` | Alcance / condición |
+| --- | --- | --- |
+| `fogo.access` | **ASIGNAR** | `NT-APP`; permite entrar a FOGO, no amplía territorio ni concede capacidades internas |
+| `fogo.production.batches.view` | **ASIGNAR** | `AS/AA`; lotes cuya sede o área pertenece a la cobertura administrativa activa del supervisor |
+| `fogo.production.batches.create` | **NO ASIGNAR** | capacidad `OPERATIONAL_ONLY`; supervisar no permite crear lotes |
+| `fogo.production.orders.view` | **ASIGNAR** | `AS/AA`; órdenes cuya relación territorial pertenece a la cobertura administrativa activa |
+| `fogo.production.recipe_book.view` | **NO ASIGNAR** | capacidad `OPERATIONAL_ONLY`; el carril base no la satisface |
+| `fogo.production.recipes.view` | **NO ASIGNAR** | receta maestra sensible; la matriz base del supervisor no la concede |
+
+Resultado del carril base FOGO:
+
+```text
+3 CONCESIONES
+3 AUSENCIAS DE CONCESION
+0 MUTACIONES PRODUCTIVAS CONCEDIDAS
+```
+
+La cobertura `AS/AA` puede contener más de una sede o más de un área cuando esas asignaciones existan realmente. Esa unión sigue siendo cobertura administrativa explícita y no alcance global.
+
+---
+
+#### 6. Matriz FOGO del carril operativo gerencia_operativa
+
+La matriz operativa aprobada para `gerencia_operativa` se conserva exactamente:
+
+| Permiso | Decisión desde `gerencia_operativa` | Alcance / condición |
+| --- | --- | --- |
+| `fogo.access` | **ASIGNAR OPERATIVO** | `CTX-MGR-FOGO-APP`; entrada a FOGO durante el turno de coordinación |
+| `fogo.production.batches.view` | **ASIGNAR OPERATIVO** | `CTX-MGR-PRODUCTION-STATUS`; lotes relacionados con la sede activa, áreas operativas o abastecimientos que afectan la jornada |
+| `fogo.production.batches.create` | **NO ASIGNAR** | la creación corresponde al rol productivo responsable; coordinación no sustituye producción |
+| `fogo.production.orders.view` | **ASIGNAR OPERATIVO** | `CTX-MGR-PRODUCTION-STATUS`; órdenes relacionadas con la jornada coordinada |
+| `fogo.production.recipe_book.view` | **ASIGNAR OPERATIVO** | `CTX-MGR-PRODUCTION-RECIPE`; recetario operativo mínimo necesario para verificar ejecución, rendimiento o incidencias activas |
+| `fogo.production.recipes.view` | **NO ASIGNAR** | capacidad `BASE_ONLY`; el carril operativo no concede el maestro de recetas |
+
+Resultado del carril operativo FOGO:
+
+```text
+4 CONCESIONES OPERATIVAS
+2 AUSENCIAS DE CONCESION
+0 AUTORIDAD PARA CREAR LOTES
+0 AUTORIDAD PARA ADMINISTRAR EL MAESTRO DE RECETAS
+```
+
+La visibilidad operativa se limita a coordinación de la jornada. No equivale a todas las áreas de una sede ni a todas las sedes de la organización.
+
+---
+
+#### 7. Composición obligatoria entre carriles
+
+Para permisos `BASE_OR_OPERATIONAL`, la decisión se calcula por carril completo:
+
+```text
+ALLOW_FINAL
+=
+ALLOW_BASE_COMPLETO
+OR
+ALLOW_OPERATIVO_COMPLETO
+```
+
+Está prohibido construir una autorización híbrida como:
+
+```text
+permiso del carril base
++
+territorio del carril operativo
++
+turno de otra sesión
+=
+ALLOW
+```
+
+Cuando ambos carriles autorizan lecturas distintas, el conjunto efectivo puede ser la unión de **recursos autorizados de forma completa por cada carril**, nunca una combinación cartesiana de territorios, roles o contextos.
+
+Ejemplo permitido:
+
+```text
+lote A autorizado por cobertura base AS/AA
+UNION
+lote B autorizado por CTX-MGR-PRODUCTION-STATUS
+```
+
+Ejemplo prohibido:
+
+```text
+sede autorizada solo por carril base
++
+area autorizada solo por carril operativo
+=
+lote C autorizado
+```
+
+Una denegación, bloqueo estructural, recurso fuera de territorio o contexto inválido conserva la precedencia transversal que le corresponda y no se repara por el otro carril salvo que ese otro carril produzca de forma independiente una autorización completa para el mismo recurso y permiso.
+
+---
+
+#### 8. Lectura multiárea del supervisor base
+
+El rol base `supervisor` puede consultar lotes y órdenes de más de un área únicamente cuando cada recurso pertenece a su cobertura administrativa activa.
+
+La resolución debe usar:
+
+- asignaciones administrativas canónicas de sede y área;
+- territorio persistido o relación territorial real del recurso;
+- permiso exacto;
+- estado y restricciones del recurso cuando apliquen;
+- denegaciones y límites estructurales vigentes.
+
+No se usa como autoridad:
+
+- sede seleccionada en UI;
+- área seleccionada en UI;
+- sede primaria del empleado como sustituto de asignaciones;
+- pertenecer al Centro de Producción;
+- texto, slug, nombre de producto o categoría;
+- uso habitual de una estación;
+- título laboral distinto de la concesión canónica.
+
+Una cobertura con varias sedes se interpreta como unión de sedes expresamente asignadas, nunca como `G` ni como incorporación automática de sedes futuras.
+
+---
+
+#### 9. Lectura multiárea de gerencia_operativa
+
+`gerencia_operativa` puede observar producción de más de un área durante la jornada solo cuando los recursos están vinculados con la sede operativa activa y con la coordinación real del turno.
+
+`CTX-MGR-PRODUCTION-STATUS` autoriza seguimiento de órdenes y lotes relacionados con:
+
+- la sede activa;
+- sus áreas operativas relevantes para la jornada;
+- abastecimientos o incidencias que afecten la coordinación actual.
+
+No autoriza:
+
+- otra sede no relacionada con el turno;
+- un lote sin relación territorial demostrable;
+- una receta administrativa;
+- una orden histórica ajena a la coordinación;
+- mutar el recurso por haberlo visto.
+
+La sede activa es un límite superior operativo, no un wildcard que convierta todas sus áreas y recursos en autorizados automáticamente.
+
+---
+
+#### 10. Recetario operativo bajo supervisión
+
+El permiso `fogo.production.recipe_book.view` es `OPERATIONAL_ONLY`.
+
+Por tanto:
+
+- `supervisor` base por sí solo **no** obtiene el recetario operativo;
+- un trabajador que además satisfaga `gerencia_operativa` puede obtenerlo por el carril operativo;
+- la publicación debe estar vigente y ser aplicable al producto, proceso y contexto coordinado;
+- el conjunto se limita al recetario necesario para verificar ejecución, rendimiento o incidencias activas;
+- no incluye borradores, definiciones maestras, edición, publicación, exportación masiva ni fórmulas de otro dominio;
+- `fogo.production.recipes.view` continúa fuera de esta supervisión.
+
+Supervisar una orden no transforma la definición maestra de su receta en información automáticamente autorizada.
+
+---
+
+#### 11. Frontera entre supervisar y producir
+
+La supervisión definida aquí no concede ninguna mutación productiva.
+
+En particular:
+
+```text
+VER LOTE != CREAR LOTE
+VER ORDEN != INICIAR PRODUCCION
+VER RECETARIO OPERATIVO != MODIFICAR RECETA
+COORDINAR PRIORIDAD != REESCRIBIR PRIORIDAD
+OBSERVAR DESVIACION != CORREGIR O ANULAR
+```
+
+`fogo.production.batches.create` permanece sin concesión tanto para `supervisor` base como para `gerencia_operativa`.
+
+Si el mismo trabajador posee además un rol productivo ordinario válido, una eventual creación de lote se evaluará exclusivamente por ese carril productivo completo y por la acción propietaria correspondiente. La supervisión no aporta fragmentos para completar esa autorización.
+
+---
+
+#### 12. Prioridades, urgencias y overrides
+
+La planificación productiva conserva prioridad, aprobaciones y overrides como decisiones auditables, pero el catálogo FOGO evaluado en esta tarea no contiene una mutación atómica que autorice por sí sola a un supervisor a cambiar esos valores.
+
+Por ello:
+
+1. `FOGO-AUTH-008` define quién puede **supervisar y coordinar** la información visible;
+2. no se inventa un permiso de override;
+3. una futura acción de corrección, anulación, repriorización o excepción debe usar el permiso exacto que su contrato propietario establezca;
+4. hasta que exista esa autoridad exacta, la lectura o coordinación no autoriza la mutación;
+5. los cambios de prioridad o excepción deberán conservar actor, motivo, antes/después, recurso, territorio y evidencia.
+
+La materialización de correcciones y anulaciones permanece en `FOGO-AUTH-012`; la experiencia de planificación y coordinación permanece en las tareas FOGO-UX propietarias de esa superficie.
+
+---
+
+#### 13. Relación con los tres roles productivos
+
+Los roles productivos ordinarios no heredan supervisión:
+
+| Rol productivo | Área ordinaria | Autoridad multiárea por este rol |
+| --- | --- | --- |
+| `produccion_cocina` | Cocina Caliente | ninguna |
+| `produccion_panaderia` | Galletería y Panadería | ninguna |
+| `produccion_reposteria` | Repostería | ninguna |
+
+Un productor con antigüedad, responsabilidad informal o uso de una terminal compartida no se convierte en supervisor.
+
+Del mismo modo, un supervisor no se convierte en productor. Cada acción productiva posterior deberá demostrar el rol/carril operativo que realmente la autoriza.
+
+---
+
+#### 14. Relación con insumos e inventario
+
+La visibilidad multiárea de producción no abre inventario general.
+
+Cuando un recurso visible incluya información de insumos, el conjunto continúa sujeto a las fronteras aprobadas en `FOGO-AUTH-007`:
+
+- producto o ingrediente relacionado con una receta aplicable;
+- orden o lote productivo relacionado;
+- ubicación, stock, LPN o retiro que conserve territorio real;
+- permiso NEXO exacto cuando la información pertenezca a NEXO;
+- ninguna autoridad implícita de bodega, ajuste, entrada, traslado, conteo, remisión o compra.
+
+Ver varias áreas productivas no convierte al supervisor en `bodeguero` ni amplía el catálogo de movimientos permitido.
+
+---
+
+#### 15. Dispositivos compartidos
+
+La plantilla `operations_management_terminal` puede alojar SHELL, FOGO, NEXO, ORIGO y PULSO para una sesión operacional de `gerencia_operativa`, con sede operativa activa y área exacta cuando el permiso la exija.
+
+En FOGO esa plantilla admite como techo de superficie:
+
+- `fogo.access`;
+- `fogo.production.batches.view`;
+- `fogo.production.orders.view`;
+- `fogo.production.recipe_book.view`.
+
+No admite por esta función:
+
+- `fogo.production.batches.create`;
+- `fogo.production.recipes.view`.
+
+El dispositivo solo restringe. Nunca crea rol, permiso, cobertura base, sede, área ni autoridad multiárea.
+
+---
+
+#### 16. Parámetros de interfaz y filtros
+
+Los parámetros `site_id`, `area_id`, filtros de estado, producto, receta, prioridad o búsqueda únicamente pueden reducir un conjunto ya autorizado.
+
+No pueden:
+
+- seleccionar una sede no cubierta por `supervisor`;
+- crear un área de coordinación para `gerencia_operativa`;
+- ampliar una consulta de lotes u órdenes;
+- activar recetario operativo;
+- convertir una vista autorizada en permiso de mutación.
+
+La resolución territorial ocurre antes de serializar datos al cliente. Las filas protegidas no deben viajar al navegador para ser ocultadas posteriormente.
+
+---
+
+#### 17. Frescura y cambio de contexto
+
+Toda decisión de supervisión debe invalidarse y resolverse nuevamente cuando cambie cualquiera de los elementos que gobierna su carril, entre ellos:
+
+- rol base o concesión base;
+- cobertura administrativa de sedes o áreas;
+- rol operativo efectivo;
+- turno publicado y vigente;
+- check-in cuando corresponda;
+- sede o área operativa;
+- permiso;
+- estado o territorio del recurso;
+- límites del dispositivo compartido;
+- revocaciones o denegaciones aplicables.
+
+Una fila visible bajo un contexto anterior no conserva autoridad para una acción posterior.
+
+---
+
+#### 18. Estado AS-IS observado en vento-fogo
+
+La implementación vigente no demuestra todavía el contrato completo definido en esta tarea.
+
+En `src/app/recipe-book/page.tsx` se observa que:
+
+- la clasificación local `isManagement` reconoce `propietario`, `gerente_general` y `gerente`;
+- no expresa de forma equivalente los carriles canónicos `supervisor` base y `gerencia_operativa`;
+- el chequeo observado de `production.recipe_book.view` usa sede, pero deja `areaId` sin resolver en la llamada mostrada;
+- la selección de área se habilita mediante la heurística local de management;
+- para actores fuera de esa heurística, la presentación puede operar a nivel de sede;
+- el chequeo observado de `production.batches.create` también deja `areaId` sin resolver en la llamada mostrada.
+
+En la vista histórica de lotes ya auditada, la consulta observada utiliza un filtro opcional de sede y no demuestra por sí sola resolución completa de área para supervisión.
+
+Estas observaciones son brechas de adopción, no una redefinición del contrato canónico.
+
+---
+
+#### 19. Propiedad de las brechas AS-IS
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| La heurística local de management del recetario no representa por sí sola `supervisor` base ni `gerencia_operativa`. | Puede divergir del evaluador canónico y de las matrices vigentes. | `FOGO-AUTH-015` | El consumidor usa contratos compartidos de rol/contexto/permisos y deja de convertir listas locales de roles en autoridad final. |
+| `production.recipe_book.view` se evalúa en la llamada observada sin `areaId` resuelta. | No demuestra aplicabilidad territorial completa del recetario operativo. | materializaciones aplicables de `FOGO-AUTH-003..007` y adopción de `FOGO-AUTH-015` | La consulta deriva contexto efectivo y recurso aplicable en servidor antes de serializar. |
+| La selección de área del recetario depende de una heurística visual de management. | Un filtro visual puede divergir de la cobertura base o del contexto operativo real. | `FOGO-AUTH-015` y tareas FOGO-UX propietarias | La UI consume el conjunto ya autorizado y la selección solo lo refina. |
+| La vista histórica de lotes no demuestra el contrato multiárea completo. | No puede tomarse como prueba de cobertura de supervisor. | materializaciones territoriales aplicables y `FOGO-AUTH-016` | Pruebas integrales demuestran recursos permitidos y denegados para ambos carriles. |
+| No existe un permiso FOGO de override de prioridad dentro de las seis claves evaluadas. | La coordinación no puede reinterpretarse como mutación. | `FOGO-AUTH-012` y superficie UX propietaria | La acción futura usa permiso exacto, actor, motivo, territorio, estado y auditoría; hasta entonces falla cerrado. |
+
+No se crea una instancia física de `FOGO-AUTH-008`; sus consumidores materializan estas decisiones dentro de sus tareas propietarias.
+
+---
+
+#### 20. Topología y materialización
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. este marcador se desarrolla y aprueba una sola vez;
+2. no existe identidad de instancia física propia para esta tarea;
+3. no se autoriza código, migración, dataset, despliegue ni modificación remota desde `FOGO-AUTH-008`;
+4. `FOGO-AUTH-009..016` y las unidades de implementación aplicables consumen este contrato sin reabrirlo;
+5. cualquier cambio futuro de Supabase perteneciente a VENTO se versionará y ejecutará desde `vento-shell` bajo la tarea física propietaria correspondiente.
+
+---
+
+#### 21. Handoff a FOGO-AUTH-009..016
+
+| Tarea | Entrada exacta proveniente de esta definición |
+| --- | --- |
+| `FOGO-AUTH-009` | iniciar producción o crear lote no se deriva de supervisión; exige capacidad de mutación exacta y carril productivo válido |
+| `FOGO-AUTH-010` | registrar producción parcial exige revalidación de actor, turno, área, lote, estado y permiso; haber visto el lote no basta |
+| `FOGO-AUTH-011` | finalizar producción requiere autoridad propia y no se hereda de lectura administrativa u operativa |
+| `FOGO-AUTH-012` | correcciones, anulaciones, repriorizaciones u overrides deben usar acción y permiso exactos; supervisión no funciona como bypass |
+| `FOGO-AUTH-013` | lotes y recetas conservan separación entre lectura, creación, recetario operativo y definición maestra sensible |
+| `FOGO-AUTH-014` | toda acción supervisada o productiva registra actor y contexto efectivo sin atribuir autoridad por nombre de rol |
+| `FOGO-AUTH-015` | los consumidores migran a contratos compartidos conservando la separación `supervisor` / `gerencia_operativa` y eliminando heurísticas locales ampliatorias |
+| `FOGO-AUTH-016` | las pruebas integrales demuestran ambos carriles, lectura multiárea autorizada, denegación cruzada, frescura y ausencia de escalamiento por dispositivo o vista |
+
+---
+
+#### 22. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la separación entre rol base, rol operativo, territorio, permisos exactos, segregación de funciones, planificación productiva, frescura y auditoría ya está cubierta por requisitos vigentes. Esta tarea especializa la aplicación de esas obligaciones a la supervisión FOGO sin introducir una obligación verificable nueva fuera de la cobertura existente.
+
+---
+
+#### 23. Cobertura de prueba vigente reutilizada
+
+Esta tarea consume como trazabilidad, sin modificar texto, estado, relación, secuencia ni propietario, al menos:
+
+- `TREQ-AUTH-001` — autorización final por permisos, contexto y alcance; no por nombre de rol;
+- `TREQ-AUTH-004` — equivalencia de decisión entre evaluadores para el mismo actor, permiso, sede, área y contexto;
+- `TREQ-AUTH-008` — separación entre carril base y carril operativo con prerrequisitos propios;
+- `TREQ-AUTH-009` — resolución determinista de sede y área y denegación de cruces territoriales;
+- `TREQ-AUTH-010` — segregación de funciones entre producción, inventario, logística y administración;
+- `TREQ-AUTH-014` — frescura de contexto y decisión antes de efectos sensibles;
+- `TREQ-AUTH-015` — trazabilidad y evidencia de decisiones de autorización;
+- `TREQ-FOGO-003` — planificación productiva con sede, área, prioridad, aprobaciones y overrides auditables;
+- `TREQ-SHELL-040` — catálogo exacto de roles base, incluido `supervisor`;
+- `TREQ-SHELL-041` — catálogo exacto de roles operativos, incluido `gerencia_operativa`;
+- `TREQ-SHELL-042` — scopes admitidos y límites territoriales sin wildcard implícito;
+- `TREQ-SHELL-043` — tipos compartidos de contexto sin bypass ni autoridad derivada de strings locales.
+
+La enumeración anterior es cobertura reutilizada y no constituye una modificación del Registro 04A.
+
+---
+
+#### 24. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@edad8f4ad23ddffc0e14dfd6e2663f21ba92e62c`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, la topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, matrices canónicas de `supervisor` y `gerencia_operativa`, modalidades, scopes, prerrequisitos, contratos de recurso y el AS-IS del recetario FOGO. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones reales de supervisor, `gerencia_operativa`, turnos, check-ins, áreas, lotes, órdenes, dispositivos ni pruebas adversariales multiárea. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-AUTH-008` no crea instancia física propia ni autoriza materialización. |
+
+---
+
+#### 25. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `supervisor` y `gerencia_operativa` permanecen como identidades distintas;
+- [ ] un mismo trabajador puede satisfacer ambos carriles sin fusionarlos;
+- [ ] `fogo.access` no funciona como wildcard;
+- [ ] el supervisor base conserva exactamente tres concesiones FOGO y tres ausencias de concesión;
+- [ ] `gerencia_operativa` conserva exactamente cuatro concesiones FOGO y dos ausencias de concesión;
+- [ ] `fogo.production.batches.create` no se concede por supervisión;
+- [ ] `fogo.production.recipes.view` no se concede por supervisión;
+- [ ] el recetario operativo solo puede venir del carril operativo válido;
+- [ ] cobertura administrativa multiárea usa asignaciones reales `AS/AA`, no UI ni sede primaria inferida;
+- [ ] coordinación operativa multiárea se limita a la sede y jornada relacionadas;
+- [ ] una sede activa no se convierte en wildcard de todas sus áreas y recursos;
+- [ ] cada recurso debe ser autorizado completamente por al menos un carril;
+- [ ] no se mezclan permiso, territorio o contexto de carriles distintos para fabricar un `ALLOW`;
+- [ ] productores ordinarios no heredan supervisión;
+- [ ] supervisores no heredan ejecución productiva;
+- [ ] lectura de lotes u órdenes no autoriza inicio, parcial, cierre, corrección, anulación ni override;
+- [ ] la supervisión de insumos no abre inventario general ni autoridad de bodega;
+- [ ] `operations_management_terminal` solo restringe y no otorga autoridad;
+- [ ] filtros de cliente únicamente reducen conjuntos ya autorizados;
+- [ ] cambios de rol, cobertura, turno, check-in, sede, área, permiso, recurso o dispositivo invalidan decisiones previas;
+- [ ] el AS-IS de recetario queda clasificado como adopción pendiente y no como cumplimiento;
+- [ ] las brechas físicas tienen propietario y condición de salida;
+- [ ] la topología queda `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 26. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica `vento-shell` fuera del documento propietario;
+- crea permisos nuevos;
+- modifica matrices RBAC aprobadas;
+- crea o cambia roles;
+- crea una jerarquía automática entre `supervisor` y `gerencia_operativa`;
+- concede `fogo.production.batches.create`;
+- concede `fogo.production.recipes.view`;
+- define la UX final del supervisor;
+- modifica prioridades, órdenes, lotes, recetas, consumos o stock;
+- define inicio, producción parcial, finalización, corrección, anulación, cierre o calidad;
+- crea o modifica migraciones, RLS, RPC, grants o datos;
+- cambia contratos de dispositivo;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 27. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-007 — Restringir Insumos`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-008 — Definir permisos de supervisor`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-009 — Proteger inicio de producción`
+
 ### [ ] FOGO-AUTH-009 — Proteger inicio de producción
 ### [ ] FOGO-AUTH-010 — Proteger producción parcial
 ### [ ] FOGO-AUTH-011 — Proteger finalización
