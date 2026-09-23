@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1266** |
+| Aprobadas | **1267** |
 | En propuesta | **0** |
-| No iniciadas | **330** |
+| No iniciadas | **329** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.32% (1266/1596)** |
+| Porcentaje de completamiento | **79.39% (1267/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **330** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1167** |
+| ⏸ NO_EVALUADA | **329** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1168** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-057` — Definir criterio de usabilidad por pantalla | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-058` — Probar con usuarios reales | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-059` — Registrar problemas encontrados | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-058` — Probar con usuarios reales | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-059` — Registrar problemas encontrados | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -910,7 +910,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-055` | Crear prototipo por rol | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-056` | Validar prototipo antes de implementar | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-057` | Definir criterio de usabilidad por pantalla | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-058` | Probar con usuarios reales | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-058` | Probar con usuarios reales | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-059` | Registrar problemas encontrados | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-060` | Aprobar la pantalla antes de retirarla del roadmap | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-061` | Reconciliar rutas y superficies VISO posteriores al inventario aprobado | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/07_RECONCILIACION_DE_DERIVA_POSTERIOR.md` |
