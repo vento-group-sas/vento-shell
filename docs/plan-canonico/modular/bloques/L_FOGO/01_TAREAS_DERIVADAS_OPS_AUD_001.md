@@ -573,12 +573,959 @@ Este contrato no:
 **SIGUIENTE TAREA RESERVADA**
 `OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento`
 
-### [ ] OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento
+### ✅ OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento
 
-**Dependencias:** `OPS-PLAN-001`, `OPS-REC-001` y diseño productivo de FOGO.  
-**Propósito:** definir ubicación, actor, equipos, capacidad, kits, reservas, inventario, urgencias, alérgenos, contaminación cruzada, almacenamiento, devoluciones y protección de fórmulas.  
-**Continuidad:** NEXO conserva existencias y movimientos; FOGO conserva planificación y ejecución; NUMERA consume costos; E5 define piloto e implementación.  
-**Límite:** permanece como capacidad futura hasta validar demanda, recetas, espacio, personal y viabilidad.
+**Estado:** APROBADA
+**Tarea anterior:** OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual
+**Tarea siguiente:** OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva
+**Tipo de tarea:** diseño documental de capacidad productiva futura y contrato operativo de preparación de materiales
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no crea áreas, equipos, puestos, inventario, reservas, movimientos, datos, Supabase, permisos, migraciones ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el Centro de Pesaje, Premezclas y Porcionamiento como capacidad futura del Centro de Producción y Distribución, definiendo su posición funcional, actores, flujo, equipos por capacidad, modelo de dimensionamiento, preparación de kits, relación con reservas e inventario, atención de urgencias, controles de alérgenos y contaminación cruzada, almacenamiento temporal, devoluciones y protección de fórmulas.
+
+El diseño debe permitir:
+
+- pesar ingredientes contra una versión de receta aprobada;
+- preparar mezclas secas cuando corresponda;
+- porcionar insumos;
+- formar kits de preparación por receta, versión, cantidad objetivo y destino productivo;
+- reducir errores de preparación;
+- controlar consumo sin convertir preparación en movimiento de inventario implícito;
+- mejorar trazabilidad;
+- reducir exposición innecesaria de fórmulas sensibles;
+- responder a demanda planificada y a cambios operativos tardíos sin perder control.
+
+La tarea diseña el contrato de la capacidad. No demuestra viabilidad física, no selecciona equipos concretos, no asigna espacio definitivo y no activa operación.
+
+---
+
+#### 2. Condiciones heredadas
+
+El diseño consume como condiciones obligatorias:
+
+1. `OPS-PLAN-001` separa demanda observada, capacidad disponible y decisión futura de producción.
+2. Los productos pueden ser previsibles, estacionales, bajo pedido, críticos o de producción limitada.
+3. Capacidad, equipos, personal, ventana horaria, logística e insumos son restricciones explícitas de planificación.
+4. El Centro de Pesaje es una capacidad futura, no implementada.
+5. Su ubicación física exacta continúa condicionada a espacio, personal y viabilidad.
+6. La operación actual presenta una ventana crítica:
+   - producción termina alrededor de las 14:00;
+   - el centro puede quedar sin personal hacia las 17:00;
+   - remisiones pueden llegar durante la noche;
+   - producción reinicia alrededor de las 06:00.
+7. Por esa condición, el modelo no puede depender exclusivamente de preparar kits durante la tarde anterior.
+8. `OPS-REC-001` entrega versión, escala, sensibilidad, alérgenos, conservación y restricciones para pesaje, premezcla, porcionamiento y protección de fórmula.
+9. NEXO conserva identidades maestras, unidades, conversiones, disponibilidad, reservas y movimientos físicos.
+10. FOGO conserva planificación y ejecución productiva.
+11. NUMERA consume hechos económicos y costos, sin convertirse en fuente de movimiento físico.
+12. E5 conserva el piloto y cualquier implementación real.
+
+---
+
+#### 3. Decisión de ubicación funcional
+
+La ubicación funcional objetivo es el **Centro de Producción y Distribución**, dentro de la instalación integrada ya reconocida canónicamente.
+
+El Centro de Pesaje no se diseña como:
+
+- sede independiente;
+- inventario independiente;
+- bodega paralela;
+- aplicación independiente;
+- fuente de verdad de existencias;
+- área comercial;
+- sustituto de las áreas productivas.
+
+Su posición funcional es una frontera controlada entre:
+
+```text
+NEXO
+CUSTODIA / DISPONIBILIDAD / RESERVA / MOVIMIENTO
+        ↓
+CENTRO DE PESAJE
+PREPARACIÓN CONTROLADA DE MATERIALES
+        ↓
+FOGO
+EJECUCIÓN PRODUCTIVA
+```
+
+La ubicación física definitiva dentro de la instalación no queda fijada por coordenada, sala o metraje en esta tarea.
+
+La decisión física posterior deberá demostrar:
+
+- cercanía operativa suficiente a los puntos de abastecimiento;
+- separación compatible con inocuidad y contaminación cruzada;
+- circulación segura de personas y materiales;
+- capacidad de limpieza;
+- acceso controlable;
+- espacio de staging;
+- espacio de devoluciones o cuarentena operativa;
+- compatibilidad con frío cuando aplique;
+- factibilidad de equipos;
+- viabilidad de operación en la ventana requerida.
+
+---
+
+#### 4. Naturaleza del centro
+
+El Centro de Pesaje se define como una **capacidad productiva de preparación previa de materiales**.
+
+Puede ejecutar cuatro familias de trabajo:
+
+| Familia | Resultado |
+| --- | --- |
+| `PESAJE` | cantidad medida de un ingrediente o preparación, vinculada a necesidad productiva |
+| `PORCIONAMIENTO` | cantidad separada para una ejecución, sin cambiar por sí sola la identidad del material |
+| `KIT_DE_PREPARACION` | agrupación operativa de componentes destinados a una receta, versión y cantidad objetivo |
+| `PREMEZCLA` | preparación intermedia obtenida por combinación controlada cuando la receta lo exige |
+
+Una simple agrupación o porcionamiento no crea automáticamente un producto nuevo.
+
+Una premezcla que transforma o combina materiales de forma que deba conservar composición, versión, lote o rendimiento se trata como resultado productivo y debe conservar las reglas de FOGO y la trazabilidad posterior correspondiente.
+
+El término `KIT_DE_PREPARACION` es una descripción operativa de esta capacidad y no redefine el contrato de kits y conjuntos patrimoniales de NEXO.
+
+---
+
+#### 5. Fronteras de propiedad
+
+| Materia | Propietario | Regla |
+| --- | --- | --- |
+| plan productivo y prioridad | FOGO | determina qué trabajo productivo debe prepararse |
+| receta y versión | FOGO | define composición, escala, restricciones y sensibilidad |
+| producto e ingrediente maestro | NEXO | identifica el material físico |
+| unidad y conversión | NEXO | gobierna interpretación física de cantidades |
+| disponibilidad | NEXO | ninguna proyección local sustituye la disponibilidad canónica |
+| reserva | NEXO | una reserva reduce disponibilidad según contrato, pero no equivale a consumo |
+| movimiento físico | NEXO | entrada, traslado, retiro, devolución y consumo conservan movimiento correlacionado |
+| preparación de materiales | FOGO | ejecuta el trabajo contra plan y receta aprobados |
+| calidad e inocuidad | contratos de calidad vigentes | alérgenos, restricciones y liberación no se infieren desde la preparación |
+| costo | NUMERA | consume hechos trazables; no origina movimientos |
+| lotes y etiquetado ampliado | `OPS-TRZ-001` | recibe el handoff de identidad y trazabilidad de materiales preparados |
+| implementación física | E5 | valida espacio, personal, equipos, piloto y viabilidad |
+
+---
+
+#### 6. Modelo de actores
+
+El centro reutiliza responsabilidades canónicas; no crea un rol nuevo por el nombre de la capacidad.
+
+| Responsabilidad | Actor o familia canónica |
+| --- | --- |
+| accountable del trabajo de preparación | `RESPONSABLE_PRODUCTIVO` |
+| ejecución ordinaria | `EQUIPO_PRODUCTIVO` dentro de variante y área habilitadas |
+| soporte de disponibilidad, retiro, ubicación y devolución | `BODEGA_Y_ABASTECIMIENTO` |
+| control de alérgenos, inocuidad y desviaciones | `RESPONSABLE_DE_CALIDAD_E_INOCUIDAD` |
+| excepción operativa y priorización material | `GERENCIA_O_SUPERVISION_DE_SEDE` / `COORDINACION_DE_OPERACIONES` según contrato aplicable |
+| preparación del plan que origina necesidad | responsabilidades de `VPROC-0033` |
+| ejecución de materiales y producción | responsabilidades de `VPROC-0034` |
+
+Reglas:
+
+- el equipo productivo no obtiene autoridad de inventario por trabajar en el centro;
+- bodega no obtiene autoridad sobre receta por entregar materiales;
+- calidad no se convierte en ejecutor ordinario por revisar una excepción;
+- una urgencia no elimina segregaciones;
+- el dispositivo o estación no es actor empresarial.
+
+---
+
+#### 7. Flujo operativo objetivo
+
+El flujo conceptual es:
+
+```text
+NECESIDAD PRODUCTIVA ACEPTADA
+→ VERSION DE RECETA Y CANTIDAD OBJETIVO
+→ DISPONIBILIDAD Y RESERVA NEXO
+→ COLA DE PREPARACION
+→ PICK / ENTREGA DE MATERIAL
+→ VERIFICACION DE IDENTIDAD Y CONDICION
+→ PESAJE / PORCIONAMIENTO / PREMEZCLA
+→ CONTROLES APLICABLES
+→ KIT O RESULTADO PREPARADO
+→ STAGING CONTROLADO
+→ ENTREGA A AREA PRODUCTIVA
+→ CONSUMO / DEVOLUCION / DIFERENCIA
+→ CONCILIACION
+```
+
+No se permite:
+
+```text
+RESERVA = CONSUMO
+```
+
+ni:
+
+```text
+MATERIAL PREPARADO = LOTE LIBERADO
+```
+
+ni:
+
+```text
+KIT ARMADO = PRODUCCION TERMINADA
+```
+
+---
+
+#### 8. Entrada mínima de una orden de preparación
+
+Una necesidad de preparación debe poder resolver, cuando aplique:
+
+- referencia a plan u orden productiva;
+- producto o preparación objetivo;
+- `recipe_version_ref` exacta;
+- sede;
+- área productiva destino;
+- tipo de preparación requerida;
+- cantidad objetivo;
+- escala calculada;
+- fecha y ventana requerida;
+- prioridad;
+- ingredientes o componentes;
+- cantidades y unidades canónicas;
+- restricciones de sustitución;
+- alérgenos;
+- conservación;
+- controles de calidad o inocuidad;
+- sensibilidad de fórmula;
+- estado de disponibilidad;
+- referencias de reserva;
+- responsable operativo;
+- condición de urgencia o excepción.
+
+La cola del centro no debe reconstruir estos hechos mediante nombres libres o defaults locales.
+
+---
+
+#### 9. Modelo de demanda y dos carriles de preparación
+
+El diseño adopta dos carriles complementarios.
+
+##### 9.1. Carril planificado
+
+Para necesidades suficientemente previsibles:
+
+```text
+PLAN APROBADO
+→ RESERVA
+→ PREPARACION ANTICIPADA
+→ STAGING
+→ ENTREGA EN VENTANA
+```
+
+Aplica solo cuando:
+
+- existe una necesidad productiva aprobada;
+- la receta está vigente;
+- la conservación permite preparación anticipada;
+- la vida útil o condición del material no se deteriora;
+- el riesgo de alérgenos y contaminación cruzada es controlable;
+- el espacio de staging es suficiente;
+- la preparación anticipada no crea sobrante injustificado.
+
+##### 9.2. Carril de ajuste tardío
+
+Para remisiones nocturnas, cambios posteriores al cierre de la jornada o demanda no previsible:
+
+```text
+NUEVA NECESIDAD
+→ REVALIDAR PRIORIDAD
+→ REVALIDAR DISPONIBILIDAD
+→ ASIGNAR CAPACIDAD
+→ PREPARAR EN VENTANA TEMPRANA O DISPONIBLE
+→ ENTREGAR SIN BYPASS
+```
+
+Este carril evita que el centro dependa únicamente del trabajo de la tarde anterior.
+
+No autoriza:
+
+- stock negativo;
+- reserva ficticia;
+- sustitución silenciosa;
+- omitir control de alérgenos;
+- exponer fórmula completa sin necesidad;
+- consumir inventario antes del hecho físico;
+- desplazar una necesidad crítica sin registrar la decisión.
+
+---
+
+#### 10. Modelo de capacidad
+
+La tarea no inventa una capacidad numérica sin evidencia de demanda, tiempos, equipos, espacio y personal.
+
+La capacidad se define mediante:
+
+```text
+CAPACIDAD UTIL
+=
+VENTANA DISPONIBLE
+×
+RECURSOS HABILITADOS
+×
+RENDIMIENTO DE ESTACION
+-
+CAMBIOS / LIMPIEZA
+-
+CONTROLES OBLIGATORIOS
+-
+CONTINGENCIA
+```
+
+El dimensionamiento posterior debe medir por tipo de trabajo:
+
+| Variable | Uso |
+| --- | --- |
+| líneas o kits requeridos | volumen de trabajo |
+| peso o cantidad por línea | esfuerzo de manipulación |
+| tiempo de preparación | carga directa |
+| tiempo de cambio | impacto por familia o alérgeno |
+| limpieza requerida | capacidad no productiva obligatoria |
+| equipo requerido | cuello de botella |
+| personal habilitado | capacidad humana |
+| ventana requerida | capacidad temporal |
+| staging disponible | límite de acumulación |
+| conservación | límite temporal |
+| prioridad | secuenciación |
+| tasa de urgencias | colchón de capacidad |
+| reproceso o devolución | carga de excepción |
+
+La capacidad se evalúa por ventana y escenario, no mediante un único número permanente.
+
+---
+
+#### 11. Política de carga
+
+El centro no acepta trabajo ilimitado.
+
+Cada necesidad debe clasificarse al menos como:
+
+- planificada;
+- ajuste operativo;
+- urgente;
+- bloqueada;
+- diferida.
+
+La priorización debe considerar:
+
+1. compromiso productivo aprobado;
+2. hora requerida;
+3. disponibilidad real;
+4. criticidad;
+5. capacidad disponible;
+6. dependencia de equipos;
+7. alérgenos y secuencia sanitaria;
+8. conservación;
+9. impacto sobre otros lotes;
+10. posibilidad de preparación parcial segura.
+
+Urgencia no significa prioridad infinita.
+
+Una urgencia debe conservar:
+
+- motivo;
+- actor que la eleva;
+- impacto;
+- trabajo desplazado cuando exista;
+- decisión de excepción cuando corresponda.
+
+---
+
+#### 12. Equipos por capacidad
+
+Esta tarea define clases funcionales de equipo, no marcas, modelos ni cantidades.
+
+| Capacidad | Clase funcional |
+| --- | --- |
+| pesar | balanza o equipo de medición con rango y precisión compatibles |
+| porcionar | utensilios, recipientes o medios de separación compatibles con material y cantidad |
+| contener | envase temporal compatible con alimento, condición y trazabilidad |
+| identificar | medio de identificación legible del trabajo preparado |
+| verificar | recursos para confirmar identidad, cantidad, unidad y condición |
+| manipular | superficie y herramienta compatibles con inocuidad y ergonomía |
+| conservar | recurso de conservación cuando la receta o ingrediente lo exija |
+| limpiar | recursos que permitan limpieza y cambio controlado |
+| contingencia | medio alterno aprobado cuando el equipo principal quede indisponible |
+
+Cada equipo que afecte una medición crítica debe tener:
+
+- identidad;
+- capacidad o rango;
+- precisión necesaria;
+- condición;
+- control de calibración o verificación cuando aplique;
+- disponibilidad;
+- restricciones de uso;
+- tratamiento de falla.
+
+La selección física y validación metrológica se realizan posteriormente.
+
+---
+
+#### 13. Pesaje y porcionamiento
+
+El pesaje debe ocurrir contra:
+
+- ingrediente identificado;
+- cantidad objetivo;
+- unidad canónica;
+- versión de receta;
+- orden o necesidad;
+- destino productivo.
+
+Reglas:
+
+1. el operador no redefine unidades;
+2. la balanza no se convierte en fuente de identidad;
+3. tolerancia y redondeo provienen del contrato de receta o especificación aplicable;
+4. una cantidad fuera de tolerancia no se corrige silenciosamente;
+5. el sobrante de un envase no se considera automáticamente devolución utilizable;
+6. cada porción preparada mantiene vínculo con la necesidad que la originó;
+7. una porción no crea consumo de inventario antes del movimiento o evento correspondiente.
+
+---
+
+#### 14. Premezclas
+
+Una premezcla debe clasificarse antes de ejecutarse.
+
+##### 14.1. Agrupación sin transformación
+
+Si los ingredientes permanecen separados y solo se agrupan:
+
+- no nace una preparación intermedia nueva;
+- cada componente conserva identidad, lote y condición;
+- la agrupación funciona como kit operativo.
+
+##### 14.2. Combinación o transformación
+
+Si los ingredientes se mezclan de forma que ya no puedan tratarse como componentes separados:
+
+- se considera preparación productiva;
+- conserva versión de receta;
+- conserva cantidades realmente usadas;
+- requiere trazabilidad compatible con el contrato posterior de lotes;
+- no puede devolverse a stock como si cada ingrediente permaneciera intacto;
+- debe respetar conservación, alérgenos y controles aplicables.
+
+`OPS-TRZ-001` recibe la definición de identidad, lote y etiquetado necesaria para estas preparaciones.
+
+---
+
+#### 15. Kit de preparación
+
+Un kit operativo se forma para una necesidad concreta y debe poder identificar:
+
+- destino productivo;
+- receta y versión;
+- cantidad objetivo;
+- componentes esperados;
+- componentes preparados;
+- faltantes;
+- sustituciones autorizadas;
+- alérgenos o restricciones relevantes;
+- condición de conservación;
+- ventana de uso;
+- estado de completitud;
+- actor que preparó;
+- actor o área que recibió.
+
+Estados conceptuales mínimos:
+
+```text
+PENDIENTE
+EN_PREPARACION
+PARCIAL
+COMPLETO
+BLOQUEADO
+ENTREGADO
+CANCELADO
+CON_DIFERENCIA
+```
+
+Estos estados son semántica del diseño, no una autorización para crear enums o tablas.
+
+Un kit `PARCIAL` no puede mostrarse como completo por conveniencia operacional.
+
+---
+
+#### 16. Reservas y disponibilidad
+
+El centro consume el contrato de reservas de NEXO.
+
+Reglas:
+
+- reservar no cambia la identidad del material;
+- reservar no equivale a retirar;
+- reservar no equivale a consumir;
+- la cantidad reservada debe mantenerse separada de física y disponible;
+- el centro no mantiene un saldo paralelo;
+- un faltante debe reflejarse contra la necesidad, no ocultarse modificando la receta;
+- la liberación de reserva debe estar correlacionada con cancelación, ajuste o consumo;
+- concurrencia y reintentos no pueden sobreasignar stock.
+
+El diseño debe tolerar que una necesidad quede parcialmente reservada.
+
+Una reserva parcial debe producir una decisión explícita:
+
+- esperar;
+- replanificar;
+- sustituir mediante autoridad aplicable;
+- producir parcialmente cuando sea válido;
+- cancelar;
+- escalar.
+
+---
+
+#### 17. Consumo y movimientos
+
+El Centro de Pesaje no escribe inventario por inferencia.
+
+Los efectos físicos conservan el contrato de NEXO.
+
+Eventos o movimientos relevantes incluyen, según corresponda:
+
+- retiro desde ubicación;
+- traslado a staging;
+- consumo;
+- devolución;
+- diferencia;
+- merma;
+- cuarentena;
+- disposición.
+
+Todo efecto debe:
+
+- conservar origen;
+- conservar destino cuando aplique;
+- conservar cantidad y unidad;
+- conservar lote o condición cuando aplique;
+- ser atómico o idempotente/compensable;
+- evitar doble contabilización.
+
+Una hoja de pesaje no sustituye un movimiento físico.
+
+---
+
+#### 18. Alérgenos y contaminación cruzada
+
+El centro debe organizar trabajo de forma compatible con los contratos vigentes de alérgenos, especificaciones e inocuidad.
+
+Reglas:
+
+1. el perfil de alérgenos relevante debe estar visible antes de preparar;
+2. información de seguridad no se oculta por protección de fórmula;
+3. las necesidades incompatibles no comparten secuencia o recursos sin cambio y limpieza validados;
+4. un cambio de familia de alérgeno puede consumir capacidad;
+5. utensilios, recipientes y superficies deben ser compatibles con el riesgo aplicable;
+6. una duda sobre contaminación no se resuelve marcando el kit como completo;
+7. la contaminación sospechada produce bloqueo o excepción controlada;
+8. la condición de una premezcla no puede inferirse solo de la condición de sus ingredientes por separado.
+
+La definición exacta de segregación física se valida posteriormente contra espacio, equipos y procedimiento.
+
+---
+
+#### 19. Limpieza y cambio de trabajo
+
+El diseño reconoce la limpieza y el cambio como consumo real de capacidad.
+
+Un cambio puede depender de:
+
+- producto;
+- familia;
+- alérgeno;
+- colorante o ingrediente sensible;
+- condición de higiene;
+- herramienta;
+- equipo;
+- recipiente;
+- temperatura;
+- contaminación observada.
+
+No se permite planificar al 100 % de utilización ignorando cambios y limpieza.
+
+La evidencia física de limpieza, frecuencia y criterio pertenece al contrato de inocuidad y a su implementación posterior.
+
+---
+
+#### 20. Almacenamiento temporal y staging
+
+El centro puede requerir staging temporal, pero no crea una bodega paralela.
+
+Todo material en staging conserva:
+
+- propietario funcional;
+- identidad;
+- cantidad;
+- condición;
+- lote cuando aplique;
+- necesidad o kit destino;
+- ubicación reconocible;
+- tiempo de permanencia;
+- conservación requerida;
+- estado de disponibilidad.
+
+El staging debe distinguir:
+
+```text
+POR PREPARAR
+EN PREPARACION
+PREPARADO
+BLOQUEADO
+PENDIENTE DE DEVOLUCION
+PENDIENTE DE DISPOSICION
+```
+
+La permanencia máxima depende de conservación, inocuidad, receta, material y política aplicable; no se inventa un tiempo universal.
+
+---
+
+#### 21. Devoluciones y material no utilizado
+
+El tratamiento depende del estado físico.
+
+##### 21.1. Material íntegro y utilizable
+
+Puede volver a disponibilidad solo mediante:
+
+- verificación de identidad;
+- verificación de condición;
+- lote o vencimiento cuando aplique;
+- cantidad real;
+- movimiento de devolución;
+- liberación de reserva correspondiente.
+
+##### 21.2. Material abierto, pesado o manipulado
+
+No vuelve automáticamente al stock ordinario.
+
+Debe evaluarse:
+
+- integridad;
+- contaminación;
+- trazabilidad;
+- conservación;
+- posibilidad de reutilización;
+- disposición.
+
+##### 21.3. Premezcla o componente transformado
+
+No se descompone contablemente en ingredientes originales como si la transformación no hubiese ocurrido.
+
+Su reproceso, aprovechamiento, merma o disposición pertenece a los contratos productivos correspondientes.
+
+---
+
+#### 22. Urgencias y excepciones
+
+Una urgencia puede originarse por:
+
+- remisión tardía;
+- cambio de prioridad;
+- faltante;
+- sustitución;
+- falla de equipo;
+- diferencia de inventario;
+- pérdida de kit;
+- contaminación;
+- nueva necesidad crítica.
+
+La urgencia no autoriza:
+
+- saltarse la versión de receta;
+- omitir reserva o disponibilidad;
+- usar una unidad no compatible;
+- exponer más fórmula de la necesaria;
+- ignorar alérgenos;
+- omitir limpieza;
+- consumir material no liberado;
+- ocultar trabajo desplazado.
+
+La decisión de excepción debe registrar:
+
+- causa;
+- impacto;
+- actor;
+- momento;
+- necesidad afectada;
+- resolución.
+
+---
+
+#### 23. Protección de fórmulas
+
+El centro recibe la **proyección operativa mínima** necesaria para preparar el trabajo asignado.
+
+Puede incluir:
+
+- ingrediente;
+- cantidad;
+- unidad;
+- orden de preparación;
+- controles necesarios;
+- alérgenos;
+- restricciones;
+- conservación.
+
+No necesita por defecto:
+
+- catálogo completo de recetas;
+- otras fórmulas;
+- historial administrativo;
+- autores;
+- revisiones no publicadas;
+- notas de desarrollo no operativas;
+- costos;
+- márgenes;
+- información comercial.
+
+La protección de fórmula nunca oculta información de seguridad necesaria.
+
+El acceso debe resolverse por actor, contexto, función, área y trabajo asignado; no por pertenecer físicamente a la estación.
+
+---
+
+#### 24. Fórmula y visibilidad por separación de trabajo
+
+Cuando el trabajo pueda dividirse sin afectar seguridad ni control, la preparación puede mostrarse por subtrabajo o componente para reducir exposición.
+
+La segmentación es válida solo si:
+
+- conserva identidad de receta y versión;
+- no rompe controles de alérgenos;
+- no impide verificar completitud;
+- no oculta incompatibilidades;
+- no crea una receta paralela;
+- permite reconciliar el kit final.
+
+La segmentación de fórmula es una medida de minimización, no un mecanismo para degradar trazabilidad.
+
+---
+
+#### 25. Fallo de equipo
+
+Ante falla de balanza, recurso de conservación o equipo crítico:
+
+```text
+FALLA
+→ BLOQUEAR TRABAJO AFECTADO
+→ IDENTIFICAR EQUIPO ALTERNO AUTORIZADO
+→ REVALIDAR CAPACIDAD / PRECISION / CONDICION
+→ CONTINUAR O REPLANIFICAR
+```
+
+No se sustituye equipo mediante:
+
+- estimación visual cuando la medición sea obligatoria;
+- otro equipo sin rango suficiente;
+- unidad improvisada;
+- omisión del control.
+
+La falla y su impacto deben conservarse como evidencia operativa cuando afecten una necesidad.
+
+---
+
+#### 26. Modelo de métricas para validar viabilidad
+
+El piloto posterior debe poder medir, al menos:
+
+- necesidades recibidas;
+- necesidades planificadas vs urgentes;
+- kits completos;
+- kits parciales;
+- kits bloqueados;
+- tiempo de espera;
+- tiempo de preparación;
+- tiempo de cambio y limpieza;
+- cumplimiento de ventana;
+- errores de ingrediente;
+- errores de cantidad;
+- diferencias de inventario;
+- devoluciones;
+- merma asociada;
+- urgencias;
+- trabajo desplazado;
+- incidencias de alérgenos o contaminación;
+- utilización de equipo;
+- utilización de staging;
+- capacidad efectiva por ventana.
+
+Estas métricas validan la viabilidad. No se fijan objetivos numéricos sin línea base.
+
+---
+
+#### 27. Criterios para decidir si se implementa
+
+La capacidad permanece futura hasta demostrar simultáneamente:
+
+1. demanda suficiente y repetible;
+2. recetas suficientemente estandarizadas;
+3. ventana operativa viable;
+4. espacio compatible;
+5. personal disponible;
+6. equipos compatibles;
+7. control de alérgenos y contaminación;
+8. reservas e inventario integrables con NEXO;
+9. staging suficiente;
+10. manejo de urgencias viable;
+11. retorno o disposición controlables;
+12. protección de fórmulas compatible con operación;
+13. trazabilidad compatible con `OPS-TRZ-001`;
+14. costo/beneficio y viabilidad económica evaluables por NUMERA;
+15. piloto E5 autorizado.
+
+No cumplir una condición no elimina el diseño; impide declarar la capacidad lista para implementación.
+
+---
+
+#### 28. Handoff a `OPS-TRZ-001`
+
+`OPS-TRZ-001` recibe:
+
+- la necesidad de correlacionar material preparado con receta y versión;
+- el vínculo entre kit/premezcla, destino productivo y ejecución;
+- el tratamiento diferenciado entre agrupación y transformación;
+- las condiciones que requieren identidad de lote;
+- la necesidad de conservar cantidad, unidad, origen y condición;
+- los puntos donde una etiqueta puede ser necesaria;
+- los estados de entrega, devolución, diferencia, bloqueo y disposición;
+- las fronteras entre preparación, inventario y producción.
+
+`OPS-TRZ-001` define el contrato empresarial de lotes, etiquetas y trazabilidad; no se anticipa en esta tarea.
+
+---
+
+#### 29. Handoffs adicionales
+
+| Destino | Entrega |
+| --- | --- |
+| FOGO UX | cola de preparación, estados, urgencia, kit, staging, diferencia y entrega |
+| FOGO AUTH | recursos y acciones que requieren protección por actor, área y contexto |
+| NEXO | reservas, disponibilidad, movimientos, ubicación, devolución y condición |
+| NUMERA | hechos necesarios para evaluar costo productivo, merma y viabilidad |
+| E3 | invariantes que deben soportarse en persistencia e integración física |
+| E5 | criterios de espacio, equipo, capacidad, personal, seguridad y piloto |
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**NO GENERA NI MODIFICA REQUISITOS DE PRUEBA.**
+
+Justificación: las obligaciones observables de planificación y capacidad, preparación y ejecución contra receta, reservas y movimientos, trazabilidad física, calidad, costo y conciliación ya cuentan con cobertura vigente. Esta tarea concreta el diseño especializado del Centro de Pesaje sin introducir una obligación nueva fuera de esos contratos.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-FOGO-002` para receta/versionado, cantidades, unidades, alérgenos, conservación y sensibilidad;
+- `TREQ-FOGO-003` para plan productivo, capacidad, restricciones, prioridad y fuentes;
+- `TREQ-FOGO-004` como cobertura directa de ejecución productiva y porque su origen y tareas responsables incluyen expresamente `OPS-PRD-001`;
+- `TREQ-NEXO-010` para unidades y conversiones;
+- `TREQ-NEXO-011` para reservas, disponibilidad, movimientos, concurrencia e idempotencia;
+- `TREQ-NEXO-012` para lote, condición, vencimiento, ubicación, frío, cuarentena y trazabilidad;
+- `TREQ-NUMERA-004` para costo productivo, merma y análisis económico posterior.
+
+Esta trazabilidad no modifica 04A.
+
+---
+
+#### 32. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron identidad, marcador, dependencias, línea base futura del Centro de Pesaje, `OPS-PLAN-001`, topología `DEFINE_ONCE`, gate `NO_PHYSICAL_INSTANCE`, procesos `VPROC-0033`/`VPROC-0034`, responsabilidades, contratos de inventario y cobertura 04A vigente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó pesaje, porcionamiento, premezcla, preparación de kits, reserva, consumo, devolución ni piloto. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea instancia física propia; ubicación final, equipos, espacio, personal y piloto pertenecen a validación posterior. |
+
+---
+
+#### 33. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] el Centro de Pesaje se mantiene como capacidad futura dentro del Centro de Producción y Distribución;
+- [ ] la ubicación funcional queda definida sin inventar ubicación física final;
+- [ ] FOGO, NEXO y NUMERA conservan ownership separado;
+- [ ] no se crea un rol nuevo solo por el nombre del centro;
+- [ ] el flujo distingue reserva, preparación, movimiento, consumo y producción;
+- [ ] existe un carril planificado y un carril de ajuste tardío;
+- [ ] el diseño responde a remisiones nocturnas sin depender solo de preparación vespertina;
+- [ ] la capacidad se define mediante variables medibles y no mediante un número inventado;
+- [ ] limpieza y cambio consumen capacidad;
+- [ ] las clases de equipo quedan definidas sin inventar marcas, modelos o cantidades;
+- [ ] pesaje y porcionamiento conservan ingrediente, cantidad, unidad y versión;
+- [ ] agrupación y transformación permanecen conceptos distintos;
+- [ ] una premezcla transformada no puede volver a stock como ingredientes intactos;
+- [ ] un kit parcial no puede presentarse como completo;
+- [ ] reserva no se confunde con consumo;
+- [ ] staging no se convierte en bodega paralela;
+- [ ] las devoluciones distinguen material íntegro, manipulado y transformado;
+- [ ] urgencia no crea bypass de receta, inventario, alérgenos o limpieza;
+- [ ] la protección de fórmula conserva información de seguridad;
+- [ ] toda responsabilidad diferida tiene propietario;
+- [ ] `OPS-TRZ-001` recibe un handoff suficiente sin ser anticipada;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecuta implementación física.
+
+---
+
+#### 34. Límites
+
+Esta tarea no:
+
+- crea un Centro de Pesaje físico;
+- elige sala, coordenadas, metraje o layout final;
+- compra, instala o calibra equipos;
+- fija cantidades de balanzas o estaciones;
+- contrata personal;
+- crea turnos;
+- modifica recetas;
+- crea inventario;
+- crea reservas;
+- mueve o consume existencias;
+- crea LOC;
+- crea lotes;
+- imprime etiquetas;
+- crea un nuevo maestro de kits;
+- define IDs técnicos nuevos;
+- crea tablas, columnas, vistas, RLS, RPC, triggers o migraciones;
+- implementa UI;
+- concede permisos;
+- calcula costo realizado;
+- define el detalle final de trazabilidad reservado a `OPS-TRZ-001`;
+- autoriza piloto;
+- autoriza E5.
+
+---
+
+#### 35. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual`
+
+**TAREA ACTUAL APROBADA**
+`OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento`
+
+**SIGUIENTE TAREA RESERVADA**
+`OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva`
 
 ### [ ] OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva
 

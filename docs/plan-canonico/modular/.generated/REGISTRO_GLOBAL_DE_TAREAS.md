@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1270** |
+| Aprobadas | **1271** |
 | En propuesta | **0** |
-| No iniciadas | **326** |
+| No iniciadas | **325** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.57% (1270/1596)** |
+| Porcentaje de completamiento | **79.64% (1271/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **326** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1171** |
+| ⏸ NO_EVALUADA | **325** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1172** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual | ✅ APROBADA |
-| Tarea actual | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | ⬜ NO INICIADA |
-| Siguiente reservada | `OPS-TRZ-001` — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | ⬜ NO INICIADA |
+| Última aprobada | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | ✅ APROBADA |
+| Tarea actual | `OPS-TRZ-001` — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-AUTH-001` — Inventariar vistas y acciones productivas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1082,7 +1082,7 @@
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-014` | Diseñar pantalla para supervisor de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-015` | Validar el prototipo por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-REC-001` | Definir el contrato canónico de recetas y acceso contextual | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-PRD-001` | Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-PRD-001` | Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-TRZ-001` | Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-001` | Inventariar vistas de compras | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-002` | Inventariar vistas de proveedores | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |

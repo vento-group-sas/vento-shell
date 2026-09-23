@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1270** |
+| Tareas aprobadas | **1271** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **326** |
+| Tareas no iniciadas | **325** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **79.57% (1270/1596)** |
+| Porcentaje de completamiento | **79.64% (1271/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual** |
-| Tarea actual | **OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento** |
+| Última tarea aprobada | **OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento** |
+| Tarea actual | **OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva** |
+| Siguiente tarea | **FOGO-AUTH-001 — Inventariar vistas y acciones productivas** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 1 de 65 aprobadas; OPS-PRD-001 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 2 de 65 aprobadas; OPS-TRZ-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — OPS-PRD-001** |
+| Carril documental | **ACTIVO — OPS-TRZ-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual |
-| Tarea actual | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento — **NO INICIADA** |
-| Siguiente tarea | `OPS-TRZ-001` — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva |
+| Última aprobada | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento |
+| Tarea actual | `OPS-TRZ-001` — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva — **NO INICIADA** |
+| Siguiente tarea | `FOGO-AUTH-001` — Inventariar vistas y acciones productivas |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 1 DE 65 APROBADAS — ACTUAL OPS-PRD-001** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 2 DE 65 APROBADAS — ACTUAL OPS-TRZ-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual
-        ↓
-TAREA ACTUAL
 OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva
         ↓
+SIGUIENTE TAREA RESERVADA
+FOGO-AUTH-001 — Inventariar vistas y acciones productivas
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 1 de 65 tareas aprobadas
+BLOQUES L Y M — 2 de 65 tareas aprobadas
 ```
