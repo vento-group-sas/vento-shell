@@ -5696,7 +5696,876 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-008 — Mostrar receta resumida para operación`
 
-### [ ] FOGO-UX-008 — Mostrar receta resumida para operación
+### ✅ FOGO-UX-008 — Mostrar receta resumida para operación
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-007 — Diseñar finalización de lote
+**Tarea siguiente:** FOGO-UX-009 — Separar recetario operativo y administración de recetas
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0061` como proyección operativa mínima, publicada, versionada, contextual y sensible de la receta aplicable al trabajo productivo, preservando identidad, versión, escala, ingredientes, unidades, pasos, controles, alérgenos, conservación, área, lote y autorización sin convertir consulta operativa en administración, edición, aprobación, publicación, exportación ni autoridad para iniciar producción
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la experiencia canónica de `VSCREEN-0061 — Receta operativa` para que un trabajador de producción consulte únicamente la **versión publicada, vigente y aplicable** que necesita para preparar y controlar su trabajo, con suficiente información para ejecutar con seguridad y reproducibilidad, sin exponer por conveniencia administrativa, financiera o técnica información que no pertenece al carril operativo.
+
+La regla raíz queda:
+
+```text
+ACTOR + TURNO + SEDE + AREA EFECTIVOS
++
+TRABAJO / PRODUCTO / PROCESO COMPATIBLES
++
+RECIPE_PUBLICATION PUBLICADA Y APLICABLE
++
+VERSION EXACTA CUANDO EXISTE LOTE
++
+AUTORIZACION fogo.production.recipe_book.view
++
+PROYECCION MINIMA NECESARIA PARA EJECUTAR
+=
+RECETA OPERATIVA CONSULTABLE
+```
+
+Y se conserva la separación:
+
+```text
+RECIPE_DEFINITION
+!=
+RECIPE_PUBLICATION
+!=
+RECETA OPERATIVA
+!=
+LOTE / EJECUCION
+!=
+INVENTARIO DISPONIBLE
+!=
+COSTO REALIZADO
+```
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-007
+
+`FOGO-UX-007` entrega una ejecución productiva y un cierre que conservan la versión exacta de receta utilizada por el lote y que nunca deben reinterpretar una versión posterior como si hubiera gobernado la ejecución histórica.
+
+La entrada relevante para esta tarea es:
+
+```text
+LOTE / PROCESS_INSTANCE CUANDO EXISTA
+ORDEN + VERSION
+RECETA / PUBLICACION + VERSION EXACTA
+PRODUCTO / SALIDA OBJETIVO
+CANTIDAD OBJETIVO + UNIDAD
+SEDE + AREA PRODUCTIVA
+ACTOR / TURNO / CONTEXTO
+ESTADO DE EJECUCION
+REFERENCIA DE VERSION Y SNAPSHOT SUFICIENTE
+```
+
+`FOGO-UX-008` no altera ninguno de esos hechos. Su responsabilidad es presentar una proyección operativa coherente con ellos.
+
+Cuando no existe todavía un lote, la consulta del recetario operativo se resuelve contra publicaciones vigentes y aplicables al contexto actual; cuando existe lote, la experiencia prioriza la versión exacta fijada por ese lote.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el contrato UX de receta operativa se define una sola vez;
+2. `FOGO-UX-008` no crea una instancia física propia;
+3. esta tarea no implementa consultas, rutas, componentes, persistencia, permisos, caché ni integraciones;
+4. las materializaciones posteriores deben consumir este contrato sin ampliar la exposición operativa por conveniencia de UI;
+5. cualquier modificación de Supabase perteneciente a VENTO continúa bajo `vento-group-sas/vento-shell` y el trabajo físico propietario correspondiente.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-002 — Separar cocina, panadería y repostería`;
+- `FOGO-UX-003 — Diseñar inicio por área productiva`;
+- `FOGO-UX-005 — Diseñar inicio de lote`;
+- `FOGO-UX-006 — Diseñar producción parcial`;
+- `FOGO-UX-007 — Diseñar finalización de lote`;
+- `OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual`;
+- `FOGO-AUTH-002 — Definir permisos por área productiva`;
+- `FOGO-AUTH-004..006` para aislamiento de Panadería, Repostería y Cocina Caliente;
+- `FOGO-AUTH-013` y `FOGO-AUTH-015` como fronteras de normalización/protección física posteriores;
+- `VSCREEN-0061 — Receta operativa`;
+- `VPROC-0016 — Gestionar desarrollo, prueba, aprobación, publicación y versión de recetas`;
+- `VPROC-0016::STEP-CONSULT_APPLICABLE_RECIPE — Consultar receta aplicable`;
+- `RECIPE_DEFINITION`, `RECIPE_PUBLICATION`, `recipe_definition_id`, `published_recipe_version_id` y `recipe_version_ref`;
+- ciclo de estados y eventos de `VPROC-0016`;
+- `TREQ-FOGO-002` y cobertura relacionada;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`;
+- versión completa aprobada de `FOGO-UX-007 — Diseñar finalización de lote` mientras su incorporación remota permanece pendiente durante esta preparación anticipada.
+
+---
+
+#### 5. Identidad canónica de la superficie
+
+| Dimensión | Identidad canónica |
+| --- | --- |
+| Pantalla | `VSCREEN-0061 — Receta operativa` |
+| Aplicación | `fogo` |
+| Proceso propietario | `VPROC-0016` |
+| Paso | `VPROC-0016::STEP-CONSULT_APPLICABLE_RECIPE — Consultar receta aplicable` |
+| Interacción | `MONITOR` |
+| Momento | `IN_PROGRESS` |
+| Acción funcional primaria | `VSCREEN-0061::PRIMARY` |
+| Rol de superficie | `OWNER_WORKSPACE` |
+| Recurso consultado | `RECIPE_PUBLICATION` |
+| Consumidor productivo principal | `VPROC-0034` |
+
+La pantalla presenta la versión aprobada/publicada utilizada por el lote o aplicable al trabajo. No convierte el recetario operativo en editor de `VPROC-0016`.
+
+---
+
+#### 6. Recurso operativo y recurso administrativo
+
+La experiencia distingue de forma obligatoria:
+
+```text
+RECIPE_PUBLICATION
+=
+VERSION PUBLICADA APLICABLE A OPERACION
+
+RECIPE_DEFINITION
+=
+DEFINICION ADMINISTRATIVA DE RECETA
+```
+
+`fogo.production.recipe_book.view` consulta `RECIPE_PUBLICATION`.
+
+`fogo.production.recipes.view` consulta `RECIPE_DEFINITION` dentro de un carril administrativo autorizado.
+
+Por tanto:
+
+```text
+fogo.production.recipe_book.view
+!=
+fogo.production.recipes.view
+```
+
+La pertenencia a Cocina Caliente, Galletería y Panadería o Repostería concede únicamente el carril operativo definido por autorización; no concede el maestro administrativo.
+
+---
+
+#### 7. Condición de disponibilidad de una receta operativa
+
+Una receta puede aparecer como utilizable para nuevo trabajo únicamente cuando pueda demostrarse la intersección:
+
+```text
+PUBLICACION EXISTENTE
++
+ESTADO PUBLICADO / UTILIZABLE
++
+VIGENCIA ACTUAL
++
+PRODUCTO O PROCESO COMPATIBLE
++
+SEDE COMPATIBLE CUANDO APLIQUE
++
+AREA PRODUCTIVA ACTIVA
++
+FUNCION PRODUCTIVA ACTIVA
++
+ACTOR HUMANO EFECTIVO
++
+DISPOSITIVO / ESTACION COMPATIBLE CUANDO APLIQUE
++
+PERMISO fogo.production.recipe_book.view
++
+SIN DENEGACION PREVALENTE
+=
+PUBLICACION OPERATIVA CONSULTABLE
+```
+
+La búsqueda textual, una selección visual, compartir sede o que el producto tenga el mismo nombre no sustituyen la aplicabilidad server-side.
+
+---
+
+#### 8. Versión exacta del lote y consulta libre del recetario
+
+La experiencia tiene dos modos de lectura que no pueden mezclarse silenciosamente.
+
+##### 8.1. Consulta desde un lote o ejecución
+
+Cuando existe lote:
+
+```text
+LOTE
+→ recipe_version_ref EXACTA
+→ published_recipe_version_id CORRESPONDIENTE
+→ PROYECCION OPERATIVA DE ESA VERSION
+```
+
+La pantalla no cambia a la publicación vigente más reciente si el lote fue iniciado con otra versión.
+
+##### 8.2. Consulta sin lote
+
+Cuando el trabajador abre el recetario antes de un lote, la UX muestra publicaciones que sean actualmente vigentes y aplicables al contexto.
+
+Seleccionar o previsualizar una receta no crea lote, no fija una versión empresarial y no concede capacidad de producción.
+
+---
+
+#### 9. Ciclo de `VPROC-0016` y elegibilidad operativa
+
+El ciclo canónico permanece:
+
+```text
+VPROC-0016.RECIPE_DRAFT
+→ VPROC-0016.IN_DEVELOPMENT
+→ VPROC-0016.IN_TESTING
+→ VPROC-0016.UNDER_TECHNICAL_REVIEW
+→ VPROC-0016.PENDING_APPROVAL
+→ VPROC-0016.APPROVED
+→ VPROC-0016.PUBLISHED
+→ VPROC-0016.RECIPE_VERSION_RELEASED
+```
+
+Reglas UX:
+
+1. `VPROC-0016.APPROVED` no equivale a publicación operativa;
+2. un borrador no aparece al trabajador ordinario como receta ejecutable;
+3. `VPROC-0016.PUBLISHED` representa habilitación productiva dentro de vigencia y alcance;
+4. `VPROC-0016.RECIPE_VERSION_RELEASED` conserva el hito final de versión liberada con contenido completo aceptado por sus consumidores autorizados;
+5. una versión retirada no origina nuevos lotes;
+6. una versión retirada puede seguir siendo consultable cuando un lote histórico la referencia;
+7. ninguna etiqueta local `published` autoriza por sí sola a ignorar aplicabilidad, versión o contexto.
+
+---
+
+#### 10. Proyección operativa mínima
+
+`VSCREEN-0061` presenta únicamente la información necesaria para preparar, ejecutar y controlar de forma segura el trabajo autorizado.
+
+La proyección mínima puede incluir, según aplicabilidad:
+
+- producto o preparación resultante;
+- referencia/version visible suficiente para evitar ambigüedad;
+- rendimiento base;
+- cantidad objetivo o escala operativa;
+- porciones;
+- ingredientes o preparaciones intermedias necesarias;
+- cantidades y unidades;
+- pasos en orden;
+- tiempos operativos cuando existan;
+- método e instrucciones;
+- puntos de control;
+- tolerancias;
+- alérgenos y advertencias materiales;
+- conservación y manipulación;
+- restricciones de uso;
+- especificaciones necesarias para ejecutar;
+- evidencia visual estrictamente necesaria cuando esté autorizada.
+
+No se presume que todas las recetas usen todas las dimensiones; sí se exige que ninguna dimensión material requerida para ejecutar quede omitida por simplificación de UI.
+
+---
+
+#### 11. Encabezado operativo de receta
+
+La ficha debe permitir reconocer sin ambigüedad:
+
+1. qué producto o preparación se ejecuta;
+2. qué versión gobierna la lectura;
+3. qué sede/área o lote contextualizan la receta cuando aplique;
+4. qué rendimiento base tiene la publicación;
+5. qué cantidad o escala se está mostrando;
+6. si la lectura corresponde a un lote histórico fijado o a una publicación vigente para nuevo trabajo;
+7. si existe una advertencia material que requiera atención antes de continuar.
+
+El identificador técnico interno puede permanecer oculto al operador cuando una referencia humana inequívoca sea suficiente, pero la identidad exacta debe conservarse en el contrato y en la navegación/consulta subyacente.
+
+---
+
+#### 12. Escala, rendimiento y porciones
+
+El escalamiento es una proyección determinista y no una edición de la publicación.
+
+Contrato:
+
+```text
+RENDIMIENTO BASE DE LA VERSION
++
+CANTIDAD OBJETIVO VALIDA
++
+UNIDADES / CONVERSIONES CANONICAS
++
+REGLA DE REDONDEO Y TOLERANCIA
+=
+CANTIDADES OPERATIVAS ESCALADAS
+```
+
+Reglas:
+
+- la cantidad objetivo no cambia la versión publicada;
+- un preview libre no modifica orden ni lote;
+- cuando la receta se abre desde un lote, la escala principal corresponde a la cantidad del lote;
+- unidades incompatibles no se fuerzan mediante equivalencias locales;
+- componentes no escalables deben declararse explícitamente;
+- rendimiento esperado permanece separado de rendimiento real;
+- merma real o desviación no reescribe la fórmula esperada.
+
+---
+
+#### 13. Ingredientes y preparaciones intermedias
+
+La proyección de ingredientes conserva referencias canónicas y evita identidades libres competidoras.
+
+Para cada línea operacionalmente necesaria se debe poder interpretar:
+
+- ingrediente o preparación intermedia;
+- cantidad requerida para la escala mostrada;
+- unidad compatible;
+- relación con la versión exacta;
+- advertencia/restricción aplicable cuando sea material.
+
+La receta no demuestra disponibilidad física.
+
+Por tanto:
+
+```text
+INGREDIENTE EN RECETA
+!=
+STOCK DISPONIBLE
+!=
+RESERVA
+!=
+CONSUMO NEXO
+```
+
+La disponibilidad y los movimientos físicos permanecen bajo NEXO.
+
+---
+
+#### 14. Pasos, método e instrucciones
+
+La secuencia mostrada corresponde exactamente a la versión consultada.
+
+La UX debe:
+
+- ordenar los pasos de forma inequívoca;
+- conservar instrucciones y condiciones necesarias;
+- mostrar tiempo o evidencia visual cuando formen parte material de la versión;
+- diferenciar instrucción obligatoria de tip o ayuda cuando esa diferencia exista;
+- evitar sustituir un paso por la versión de otra publicación;
+- impedir que un cambio administrativo posterior modifique retrospectivamente el lote histórico.
+
+Una fotografía, tip o ayuda visual no se convierte en fuente de verdad separada de la versión publicada.
+
+---
+
+#### 15. Controles, alérgenos, inocuidad, conservación y calidad
+
+La simplificación operativa nunca puede ocultar información necesaria para ejecutar con seguridad.
+
+Cuando sea aplicable, la receta resumida presenta de forma suficientemente visible:
+
+- alérgenos;
+- puntos de control;
+- tolerancias;
+- restricciones de manipulación;
+- conservación;
+- temperatura/tiempo u otra condición material definida por la versión;
+- criterios operativos de calidad necesarios para la ejecución;
+- advertencias que condicionen la continuidad del trabajo.
+
+La existencia de un campo no prueba que su contenido esté verificado. La UX consume el estado y evidencia que el contrato de receta declare; no presenta “validado” únicamente porque el registro exista.
+
+---
+
+#### 16. Sensibilidad de fórmula y exposición mínima
+
+Las recetas son información sensible.
+
+La regla de exposición es:
+
+```text
+OPERACION
+→ INFORMACION NECESARIA PARA PREPARAR Y CONTROLAR
+
+ADMINISTRACION AUTORIZADA
+→ INFORMACION NECESARIA PARA DEFINIR / REVISAR / APROBAR
+```
+
+El recetario operativo no expone por defecto:
+
+- borradores;
+- versiones no publicadas;
+- historial administrativo completo;
+- decisiones de aprobación;
+- campos de fórmula no necesarios para la tarea;
+- costos o márgenes administrativos;
+- permisos de edición;
+- catálogo organizacional completo;
+- secretos de otro dominio;
+- exportación masiva.
+
+La sensibilidad tampoco justifica ocultar alérgenos, inocuidad o controles necesarios para la seguridad de la operación.
+
+---
+
+#### 17. Aplicabilidad por sede y área
+
+El acceso operativo se resuelve antes de serializar la proyección.
+
+Regla:
+
+```text
+AUTORIZAR PUBLICACION
+→ RESOLVER SEDE / AREA / PRODUCTO / PROCESO
+→ OBTENER CONJUNTO PERMITIDO
+→ SERIALIZAR PROYECCION OPERATIVA
+```
+
+Nunca:
+
+```text
+CARGAR RECETAS DE TODA LA SEDE
+→ ENVIARLAS AL CLIENTE
+→ FILTRAR VISUALMENTE POR AREA
+```
+
+Los query parameters pueden reducir una colección ya autorizada, pero no ampliar el territorio.
+
+Un `area_id` enviado por cliente es una solicitud de filtro, no una concesión de autoridad.
+
+---
+
+#### 18. Tres áreas productivas
+
+La misma composición UX se reutiliza para:
+
+| Rol operativo | Área efectiva | Perfil de recetario |
+| --- | --- | --- |
+| `produccion_cocina` | Cocina Caliente | `CTX-PROD-KITCHEN-RECIPE-BOOK` |
+| `produccion_panaderia` | Galletería y Panadería | `CTX-PROD-BAKERY-RECIPE-BOOK` |
+| `produccion_reposteria` | Repostería | `CTX-PROD-PASTRY-RECIPE-BOOK` |
+
+Los tres roles comparten `fogo.production.recipe_book.view`, pero no comparten territorio.
+
+Una receta de otra área no se vuelve operativa porque:
+
+- comparte Centro de Producción;
+- usa el mismo ingrediente;
+- produce un producto parecido;
+- fue creada por la misma persona;
+- aparece en una búsqueda;
+- existe en el mismo catálogo físico.
+
+---
+
+#### 19. Relación con lote y `VPROC-0034`
+
+`VSCREEN-0061` es propietaria de la consulta de receta, pero `VPROC-0034` consume la versión durante la ejecución.
+
+Cuando la superficie se abre desde `FOGO-UX-005`, `FOGO-UX-006` o `FOGO-UX-007`, debe mantener el vínculo con:
+
+- lote;
+- orden/version;
+- `recipe_version_ref`;
+- cantidad objetivo y escala;
+- producto/salida;
+- área productiva;
+- estado de ejecución.
+
+La receta puede abrirse sin alterar el lote y volver al contexto de ejecución correspondiente.
+
+Consultar no inicia, avanza, pausa, finaliza ni corrige la producción.
+
+---
+
+#### 20. Semántica de solo lectura operativa
+
+La acción primaria de `VSCREEN-0061` es consulta/monitorización del conocimiento operativo aplicable.
+
+Por tanto, el trabajador ordinario no puede desde esta superficie:
+
+- editar ingredientes;
+- editar cantidades base;
+- reordenar pasos;
+- cambiar rendimiento base;
+- cambiar alérgenos;
+- cambiar estado de publicación;
+- archivar;
+- aprobar;
+- publicar;
+- retirar una versión;
+- crear una nueva versión;
+- modificar la publicación que gobierna un lote.
+
+Una interacción local de recalcular escala no constituye mutación de receta.
+
+---
+
+#### 21. Frontera con administración de recetas
+
+La sucesora `FOGO-UX-009` conserva la separación detallada entre:
+
+```text
+VSCREEN-0061
+RECETARIO OPERATIVO
+
+VSCREEN-0062 / VSCREEN-0063
+ADMINISTRACION + REVISION + APROBACION + PUBLICACION
+```
+
+La 008 fija la frontera que la 009 debe preservar:
+
+- operación consume publicación aplicable;
+- administración gestiona definición/versionado bajo permisos propios;
+- un rol productivo no recibe administración por pertenecer al área;
+- un actor administrativo no se convierte en trabajador productivo por consultar definición;
+- la autoría no concede acceso operativo ni administrativo posterior por sí sola.
+
+---
+
+#### 22. Acciones secundarias, PDF y exportación
+
+La existencia de `VSCREEN-0061::SECONDARY:01..04` no autoriza a inventar semántica empresarial individual ni permisos atómicos que la fuente todavía no declara.
+
+La receta operativa no obtiene exportación por implicación.
+
+`/recipes/pdf` conserva protección server-side propia y pertenece a la superficie técnica/administrativa observada; el permiso de recetario operativo no se transforma en permiso para exportar el catálogo o la fórmula.
+
+Copiar, imprimir o exportar información sensible requiere contrato propietario cuando exista.
+
+---
+
+#### 23. Frontera con creación e inicio de lote
+
+Poder consultar una receta no equivale a poder producirla.
+
+```text
+fogo.production.recipe_book.view
+!=
+fogo.production.batches.create
+```
+
+La acción `Producir lote` o equivalente solo puede aparecer como ejecutable cuando la materialización demuestre además la autoridad exacta de creación y todas las precondiciones de `FOGO-UX-005`.
+
+La vista de receta no hereda autoridad de mutación por proximidad visual.
+
+---
+
+#### 24. Versiones retiradas e historia
+
+Una publicación retirada:
+
+- no aparece como opción para nuevos lotes;
+- no desaparece de la historia si un lote la utilizó;
+- puede seguir siendo consultable desde un lote histórico autorizado;
+- se presenta claramente como versión histórica/no utilizable para nuevo trabajo;
+- conserva snapshot suficiente para explicar la ejecución;
+- no se “actualiza” a la nueva versión al abrirla.
+
+La historia no se reconstruye desde la receta actualmente vigente cuando existe referencia exacta de versión previa.
+
+---
+
+#### 25. Frescura, cambio de contexto y recarga
+
+La pantalla puede quedar stale por cambios de:
+
+- actor;
+- turno/check-in;
+- rol;
+- sede/área;
+- permiso;
+- publicación/vigencia;
+- aplicabilidad;
+- lote/version;
+- receta/version;
+- producto/proceso asociado.
+
+Antes de mostrar una publicación después de un cambio material de contexto, la experiencia vuelve a resolver autorización y aplicabilidad.
+
+Una receta previamente visible no queda autorizada indefinidamente por haber estado abierta.
+
+Cuando el lote fija una versión histórica, la pérdida de vigencia para **nuevos lotes** no sustituye la versión histórica; la UX diferencia historia autorizada de elegibilidad para nuevo trabajo.
+
+---
+
+#### 26. Estados de experiencia
+
+La UX distingue como mínimo:
+
+| Estado | Significado |
+| --- | --- |
+| `PUBLICACION_APLICABLE` | publicación vigente y autorizada para consulta operativa |
+| `VERSION_FIJADA_POR_LOTE` | el lote exige una versión exacta, aunque exista otra publicación más nueva |
+| `VERSION_HISTORICA` | versión retirada/no vigente consultable únicamente por historia autorizada |
+| `NO_APLICABLE_AL_AREA` | existe publicación, pero no corresponde al territorio operativo efectivo |
+| `NO_APLICABLE_AL_PRODUCTO_PROCESO` | la publicación no corresponde al trabajo solicitado |
+| `SIN_PERMISO` | falta `fogo.production.recipe_book.view` o existe denegación prevalente |
+| `CONTEXTO_INCOMPLETO` | no puede resolverse actor/turno/sede/área requerido |
+| `STALE` | cambió publicación, contexto o vínculo de lote y debe recuperarse el estado actual |
+| `DATOS_INCOMPLETOS` | falta información material de la versión para ejecutar con seguridad |
+| `ERROR_TECNICO` | no puede resolverse la proyección de forma confiable |
+| `SIN_RECETAS_APLICABLES` | consulta válida sin publicaciones elegibles para ese contexto |
+
+`SIN_RECETAS_APLICABLES` no se usa para esconder un `DENY`, un contexto roto o un fallo técnico.
+
+---
+
+#### 27. Densidad y uso en estación productiva
+
+La receta resumida prioriza lectura rápida y seguridad operacional.
+
+Debe favorecer:
+
+- producto y versión reconocibles;
+- rendimiento/escala visibles;
+- cantidades legibles;
+- pasos secuenciales claros;
+- advertencias materiales no escondidas;
+- alérgenos y controles distinguibles;
+- navegación simple entre receta y lote cuando exista;
+- lectura táctil sin confundir consulta con acciones de edición;
+- confirmación visual de qué versión está siendo utilizada.
+
+No se impone framework, color, tamaño exacto ni componente específico.
+
+---
+
+#### 28. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, `/recipe-book` demuestra una base funcional real:
+
+- exige un permiso local `production.recipe_book.view`;
+- fuerza `status = published` para el conjunto visible;
+- consulta `recipe_cards` con sede, área, rendimiento, porción, tiempo, vida útil, dificultad y descripción;
+- permite escalar una cantidad de producción;
+- carga ingredientes y cantidades;
+- carga pasos, tiempos, tips e imágenes;
+- presenta rendimiento, porciones, tiempo, conservación, ingredientes y paso a paso;
+- oculta el costo estimado salvo cuando `isManagement` es verdadero;
+- enlaza hacia creación de lote cuando la comprobación local lo permite.
+
+Sin embargo, el código observado también demuestra brechas frente al contrato objetivo:
+
+1. la comprobación de `production.recipe_book.view` utiliza `areaId: undefined`;
+2. para actores no management, la selección de área visible no demuestra un filtro server-side por área antes de obtener el dataset;
+3. la consulta observada filtra explícitamente por sede para actor ordinario, no demuestra por sí sola aislamiento completo por área;
+4. la superficie inspeccionada no muestra `published_recipe_version_id` ni `recipe_version_ref` canónicos como vínculo explícito;
+5. el runtime usa un modelo `recipe_cards/status=published` que no demuestra el ciclo completo de `VPROC-0016`;
+6. los datos mostrados no demuestran alérgenos, tolerancias, controles o restricciones completos exigidos cuando son materiales;
+7. la consulta de ingredientes selecciona también `cost` y calcula `totalCost` aunque solo se renderice para management; el contrato objetivo exige minimizar el dataset operativo y no depender solo de ocultamiento visual;
+8. `canCreateBatchInSite` se resuelve con `areaId: undefined`, por lo que la proximidad del enlace de producción no puede usarse como prueba de autorización exacta por área;
+9. la navegación administrativa existe en superficies `/recipes*` separadas, pero la separación contractual completa pertenece a `FOGO-UX-009`.
+
+Conclusión:
+
+```text
+/recipe-book AS-IS
+=
+BASE REAL Y REUTILIZABLE
+
+!=
+VSCREEN-0061 COMPLETAMENTE CONFORME
+```
+
+---
+
+#### 29. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| La consulta AS-IS no demuestra aislamiento server-side por área para el trabajador ordinario. | Puede exponer publicaciones de otra área dentro de la misma sede. | `FOGO-UX-008`, `FOGO-AUTH-015` y materialización propietaria | la consulta resuelve área efectiva y serializa únicamente publicaciones autorizadas/aplicables antes de llegar a UI |
+| El permiso runtime observado es `production.recipe_book.view`, no la clave canónica completa. | Riesgo de alias ampliatorio o migración incompleta. | `FOGO-AUTH-013` / `FOGO-AUTH-015` | consumidor usa `fogo.production.recipe_book.view` o binding normalizado explícito sin wildcard |
+| `recipe_cards/status=published` no demuestra identidad/versionado canónico completo. | Un lote podría consultar contenido distinto al que lo originó. | materialización de `OPS-REC-001`, `FOGO-UX-008`, E3/paquete propietario | consulta por `published_recipe_version_id` / `recipe_version_ref` o mecanismo canónico equivalente preserva versión exacta y snapshot |
+| No se observan alérgenos/controles/restricciones completos en la ficha AS-IS. | Ejecución puede carecer de información material de seguridad o reproducibilidad. | materialización propietaria de `OPS-REC-001` + `FOGO-UX-008` | la proyección incluye toda dimensión material aplicable o bloquea la receta incompleta |
+| El código de la vista obtiene costo de ingrediente aunque solo management lo renderice. | La proyección operativa puede traer datos sensibles innecesarios al servidor de esa superficie. | implementación propietaria FOGO | el dataset operativo selecciona solo campos necesarios y costos/márgenes permanecen fuera salvo contrato autorizado |
+| La acción de producir aparece adyacente al recetario. | Riesgo de confundir lectura con autoridad de creación. | `FOGO-UX-005` + autorización propietaria | enlace/acción de lote solo queda ejecutable tras comprobar creación exacta para receta, sede y área |
+| La administración de recetas ya existe físicamente en `/recipes*`. | Riesgo de mezclar navegación y permisos operativos/administrativos. | `FOGO-UX-009` | superficies, permisos y acciones quedan separadas sin administración heredada por rol productivo |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 30. Handoff inmediato a FOGO-UX-009
+
+`FOGO-UX-009 — Separar recetario operativo y administración de recetas` recibe una frontera cerrada:
+
+```text
+VSCREEN-0061
+→ RECIPE_PUBLICATION
+→ OPERACION
+→ SOLO LECTURA OPERATIVA
+→ VERSION PUBLICADA / VIGENTE / APLICABLE
+→ EXPOSICION MINIMA NECESARIA
+
+VSCREEN-0062 / VSCREEN-0063
+→ RECIPE_DEFINITION + VERSIONADO ADMINISTRATIVO
+→ ADMINISTRACION
+→ ACCIONES DE CREAR / EDITAR / REVISAR / APROBAR / PUBLICAR SEGUN AUTORIDAD
+```
+
+La 009 no necesita reabrir qué información corresponde a la proyección operativa; debe impedir que las superficies administrativas la contaminen o hereden autoridad incorrecta.
+
+---
+
+#### 31. Handoff al resto de FOGO-UX
+
+| Tarea | Frontera recibida desde FOGO-UX-008 |
+| --- | --- |
+| `FOGO-UX-009` | separar administración y publicación de la proyección operativa definida aquí |
+| `FOGO-UX-010` | resultado real permanece separado del rendimiento esperado de la receta |
+| `FOGO-UX-011` | correcciones del lote no reescriben la versión de receta usada |
+| `FOGO-UX-012` | consumo NEXO se correlaciona con ingredientes de la versión exacta, sin convertir receta en ledger |
+| `FOGO-UX-013` | producto terminado conserva genealogía hacia la versión exacta sin fabricar stock desde la receta |
+| `FOGO-UX-014` | supervisión multiárea no amplía el recetario sin autoridad contextual específica |
+| `FOGO-UX-015` | prototipo debe demostrar aislamiento de área, versión exacta, contenido operativo suficiente y ausencia de administración accidental |
+
+---
+
+#### 32. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones ya registradas para receta publicada, identidad/versionado, snapshot, escalamiento, ingredientes, unidades, pasos, controles, alérgenos, conservación, sensibilidad, autorización contextual, aislamiento territorial y uso productivo. No introduce una obligación verificable nueva fuera de esa cobertura ni modifica texto, estado, relación, secuencia o propietario del registro.
+
+---
+
+#### 33. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-002` — receta publicada inmutable y versionada, versión exacta por lote, snapshot, escala, ingredientes, unidades, pasos, controles, rendimiento, porciones, conservación, alérgenos, especificaciones y autorización contextual;
+- `TREQ-FOGO-004` — ejecución conserva receta/version, materiales, pasos, desviaciones, rendimiento, merma y controles aplicables;
+- `TREQ-FOGO-013` — páginas protegidas fallan cerrado ante ausencia de sesión, acceso, contexto o permiso exigido;
+- `TREQ-FOGO-019` — filtros/query parameters permanecen dentro de la vista y no crean autoridad nueva;
+- `TREQ-FOGO-020` — ruta, guard, permiso local o enlace no demuestran autorización completa;
+- `TREQ-FOGO-022` — solo se atribuye permiso exacto cuando la evidencia inspeccionada lo declara;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-013` — autorización server-side sin bypass por UI/API/RPC;
+- `TREQ-AUTH-014` — invalidación de autoridad stale;
+- `TREQ-AUTH-015` — protección y evidencia correlacionable de recursos/acciones sensibles;
+- `TREQ-UX-001` — tarea, acción principal y estado identificables;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 34. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@d7c834aa8b74b7019810e9370995ee15537d8bed`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VSCREEN-0061`, `VPROC-0016`, `OPS-REC-001`, autorización por área, cobertura 04A y el AS-IS de `/recipe-book`; `FOGO-UX-007` se consume desde su versión completa aprobada SHA-256 `433d62544471760495290854818f1109b251723ec0b35a9e38064a8ea3b9e58e` mientras su incorporación remota permanece pendiente durante esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se consultaron recetas con trabajadores reales, cambios de turno, aislamiento cruzado de áreas, lotes históricos, versiones retiradas, alérgenos, escalamiento ni pruebas de dispositivo compartido. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-008` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 35. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0061` conserva ownership de `VPROC-0016` y el paso `VPROC-0016::STEP-CONSULT_APPLICABLE_RECIPE`;
+- [ ] la interacción permanece `MONITOR / IN_PROGRESS`;
+- [ ] `RECIPE_PUBLICATION` y `RECIPE_DEFINITION` permanecen separados;
+- [ ] `published_recipe_version_id` y `recipe_version_ref` conservan responsabilidades inequívocas;
+- [ ] un lote consulta la versión exacta fijada por su ejecución;
+- [ ] una consulta sin lote muestra únicamente publicaciones vigentes y aplicables;
+- [ ] `APPROVED` no se interpreta como publicación utilizable;
+- [ ] una versión retirada no origina nuevos lotes;
+- [ ] una versión retirada sigue disponible para historia autorizada cuando un lote la referencia;
+- [ ] la proyección incluye toda información material necesaria para ejecutar con seguridad;
+- [ ] rendimiento base y cantidad objetivo/escala permanecen diferenciados;
+- [ ] escalar la vista no modifica la publicación;
+- [ ] ingredientes usan identidades y unidades canónicas;
+- [ ] receta no se interpreta como disponibilidad, reserva o consumo NEXO;
+- [ ] pasos e instrucciones corresponden exactamente a la versión consultada;
+- [ ] alérgenos, inocuidad, controles y conservación no se ocultan por sensibilidad;
+- [ ] fórmula sensible, costos, márgenes y datos administrativos innecesarios permanecen fuera de la proyección operativa;
+- [ ] `fogo.production.recipe_book.view` permanece distinto de `fogo.production.recipes.view`;
+- [ ] Cocina, Panadería y Repostería comparten vocabulario de permiso pero no territorio;
+- [ ] la consulta se filtra/autorizada server-side por área antes de serializar datos;
+- [ ] query params no amplían autoridad;
+- [ ] cambiar actor/turno/área fuerza revalidación;
+- [ ] abrir la receta desde lote no cambia estado del lote;
+- [ ] lectura de receta no concede `fogo.production.batches.create`;
+- [ ] recalcular escala no equivale a edición administrativa;
+- [ ] `VSCREEN-0061::SECONDARY:01..04` conservan identidad sin semántica inventada;
+- [ ] exportación/PDF no se concede desde permiso operativo por implicación;
+- [ ] estados `SIN_RECETAS_APLICABLES`, `SIN_PERMISO`, `CONTEXTO_INCOMPLETO`, `STALE` y `ERROR_TECNICO` permanecen distintos;
+- [ ] el AS-IS `/recipe-book` se trata como base parcial y no como contrato completo;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] `FOGO-UX-009` recibe una frontera suficiente sin adelantar su diseño detallado;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0061`;
+- modifica `/recipe-book`;
+- crea rutas, componentes, RPC, tablas, vistas, RLS, grants, migraciones o datos;
+- crea permisos;
+- normaliza físicamente `production.recipe_book.view`;
+- implementa `fogo.production.recipe_book.view`;
+- edita recetas;
+- diseña el editor administrativo de `FOGO-UX-009`;
+- aprueba o publica recetas;
+- retira versiones;
+- crea versiones nuevas;
+- corrige el lifecycle AS-IS de `recipe_cards`;
+- cambia producto/ingrediente/unidad maestra de NEXO;
+- demuestra disponibilidad de inventario;
+- calcula costo realizado;
+- concede exportación/PDF;
+- crea lote ni inicia producción;
+- altera orden, lote o receta histórica;
+- registra resultado real de `FOGO-UX-010`;
+- define correcciones de `FOGO-UX-011`;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 37. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-007 — Diseñar finalización de lote`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-008 — Mostrar receta resumida para operación`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-009 — Separar recetario operativo y administración de recetas`
+
 ### [ ] FOGO-UX-009 — Separar recetario operativo y administración de recetas
 ### [ ] FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
 ### [ ] FOGO-UX-011 — Diseñar correcciones sin alterar historial

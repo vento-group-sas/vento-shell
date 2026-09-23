@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1295** |
+| Tareas aprobadas | **1296** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **301** |
+| Tareas no iniciadas | **300** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **81.14% (1295/1596)** |
+| Porcentaje de completamiento | **81.20% (1296/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **FOGO-UX-007 — Diseñar finalización de lote** |
-| Tarea actual | **FOGO-UX-008 — Mostrar receta resumida para operación** |
+| Última tarea aprobada | **FOGO-UX-008 — Mostrar receta resumida para operación** |
+| Tarea actual | **FOGO-UX-009 — Separar recetario operativo y administración de recetas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **FOGO-UX-009 — Separar recetario operativo y administración de recetas** |
+| Siguiente tarea | **FOGO-UX-010 — Registrar cantidades, desperdicio y resultado** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 26 de 65 aprobadas; FOGO-UX-008 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 27 de 65 aprobadas; FOGO-UX-009 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — FOGO-UX-008** |
+| Carril documental | **ACTIVO — FOGO-UX-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `FOGO-UX-007` — Diseñar finalización de lote |
-| Tarea actual | `FOGO-UX-008` — Mostrar receta resumida para operación — **NO INICIADA** |
-| Siguiente tarea | `FOGO-UX-009` — Separar recetario operativo y administración de recetas |
+| Última aprobada | `FOGO-UX-008` — Mostrar receta resumida para operación |
+| Tarea actual | `FOGO-UX-009` — Separar recetario operativo y administración de recetas — **NO INICIADA** |
+| Siguiente tarea | `FOGO-UX-010` — Registrar cantidades, desperdicio y resultado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 26 DE 65 APROBADAS — ACTUAL FOGO-UX-008** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 27 DE 65 APROBADAS — ACTUAL FOGO-UX-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-FOGO-UX-007 — Diseñar finalización de lote
-        ↓
-TAREA ACTUAL
 FOGO-UX-008 — Mostrar receta resumida para operación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 FOGO-UX-009 — Separar recetario operativo y administración de recetas
         ↓
+SIGUIENTE TAREA RESERVADA
+FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 26 de 65 tareas aprobadas
+BLOQUES L Y M — 27 de 65 tareas aprobadas
 ```
