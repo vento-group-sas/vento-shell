@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1268** |
+| Tareas aprobadas | **1269** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **328** |
+| Tareas no iniciadas | **327** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **79.45% (1268/1596)** |
+| Porcentaje de completamiento | **79.51% (1269/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-059 — Registrar problemas encontrados** |
-| Tarea actual | **AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap** |
+| Última tarea aprobada | **AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap** |
+| Tarea actual | **OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual** |
-| Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 126 de 127 aprobadas; AUTH-UI-060 pendiente** |
+| Siguiente tarea | **OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento** |
+| Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
+| Progreso del bloque | **BLOQUES L Y M: 0 de 65 aprobadas; OPS-REC-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-060** |
+| Carril documental | **ACTIVO — OPS-REC-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-059` — Registrar problemas encontrados |
-| Tarea actual | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap — **NO INICIADA** |
-| Siguiente tarea | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual |
+| Última aprobada | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap |
+| Tarea actual | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual — **NO INICIADA** |
+| Siguiente tarea | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 126 DE 127 APROBADAS — ACTUAL AUTH-UI-060** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 0 DE 65 APROBADAS — ACTUAL OPS-REC-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-059 — Registrar problemas encontrados
-        ↓
-TAREA ACTUAL
 AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual
         ↓
+SIGUIENTE TAREA RESERVADA
+OPS-PRD-001 — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 126 de 127 tareas aprobadas
+BLOQUES L Y M — 0 de 65 tareas aprobadas
 ```

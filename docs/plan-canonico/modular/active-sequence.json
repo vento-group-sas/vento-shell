@@ -2,31 +2,61 @@
   "schema_version": 1,
   "generated_from": "execution-route.json",
   "route_id": "NORMAL-CANONICAL-FLOW-001",
-  "sequence_id": "PHASE-05-NEXO",
-  "block_code": "BLOQUE K",
-  "block_title": "NEXO",
-  "previous_task_id": "AUTH-UI-059",
+  "sequence_id": "PHASE-06-FOGO-ORIGO",
+  "block_code": "BLOQUES L Y M",
+  "block_title": "FOGO y ORIGO",
+  "previous_task_id": "AUTH-UI-060",
   "latest_treq_task_id": "NEXO-UX-025",
-  "handoff_task_id": "OPS-REC-001",
-  "handoff_sequence_id": "PHASE-06-FOGO-ORIGO",
+  "handoff_task_id": "PULSO-UX-001",
+  "handoff_sequence_id": "PHASE-07-PULSO",
   "segments": [
     {
-      "prefix": "AUTH-UI",
-      "from": 60,
-      "to": 60
+      "prefix": "OPS-REC",
+      "from": 1,
+      "to": 1
+    },
+    {
+      "prefix": "OPS-PRD",
+      "from": 1,
+      "to": 1
+    },
+    {
+      "prefix": "OPS-TRZ",
+      "from": 1,
+      "to": 1
+    },
+    {
+      "prefix": "FOGO-AUTH",
+      "from": 1,
+      "to": 16
+    },
+    {
+      "prefix": "FOGO-UX",
+      "from": 1,
+      "to": 15
+    },
+    {
+      "prefix": "ORIGO-AUTH",
+      "from": 1,
+      "to": 15
+    },
+    {
+      "prefix": "ORIGO-UX",
+      "from": 1,
+      "to": 16
     }
   ],
   "block_progress": {
-    "total_tasks": 127,
-    "approved_tasks": 126,
-    "pending_tasks": 1
+    "total_tasks": 65,
+    "approved_tasks": 0,
+    "pending_tasks": 65
   },
   "route_progress": {
     "covered_tasks": 1596,
-    "pending_tasks": 328,
+    "pending_tasks": 327,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
-    "active_stage": 24
+    "active_stage": 25
   },
   "selected_route_id": "NORMAL-CANONICAL-FLOW-001"
 }
