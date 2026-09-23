@@ -1342,7 +1342,692 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-003 — Diseñar inicio por área productiva`
 
-### [ ] FOGO-UX-003 — Diseñar inicio por área productiva
+### ✅ FOGO-UX-003 — Diseñar inicio por área productiva
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-002 — Separar cocina, panadería y repostería
+**Tarea siguiente:** FOGO-UX-004 — Mostrar producción pendiente del turno
+**Tipo de tarea:** diseño documental integral de la experiencia de inicio productivo contextual por área efectiva, con separación entre entrada operativa, planificación, cola, ejecución y supervisión
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, componentes, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para la entrada de un trabajador a FOGO cuando su contexto productivo ya fue resuelto y autorizado, de forma que la primera superficie operativa:
+
+- identifique con claridad la sede y el área efectiva;
+- muestre la siguiente acción útil sin convertir la interfaz en fuente de autoridad;
+- conduzca a la producción pendiente del turno sin fabricar trabajo ejecutable desde señales brutas;
+- separe el inicio operativo de la planeación, del inicio de lote, del recetario administrativo y de la supervisión;
+- falle de forma cerrada cuando el contexto sea ausente, inválido, vencido, denegado o no verificable;
+- minimice la exposición de información de otras áreas y de datos no necesarios para comenzar la jornada.
+
+La tarea define la identidad y composición de `VSCREEN-0055 — Inicio y cola de producción` como superficie inicial del contexto productivo autorizado. No desarrolla todavía el contenido exhaustivo de la cola, el inicio de lote ni la pantalla de supervisor.
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-002
+
+`FOGO-UX-002` entrega una separación ya cerrada:
+
+| Rol operativo efectivo | Sede | Área exacta | Plantilla de dispositivo especializada |
+| --- | --- | --- | --- |
+| `produccion_cocina` | Centro de Producción | Cocina Caliente | `production_kitchen` |
+| `produccion_panaderia` | Centro de Producción | Galletería y Panadería | `production_bakery` |
+| `produccion_reposteria` | Centro de Producción | Repostería | `production_pastry` |
+
+La entrada contractual recibida es:
+
+```text
+3 ÁREAS PRODUCTIVAS EXACTAS
+3 ROLES OPERATIVOS EXACTOS
+3 PLANTILLAS DE DISPOSITIVO ESPECIALIZADAS
+1 CATÁLOGO COMPARTIDO DE PROCESOS
+1 CATÁLOGO COMPARTIDO DE PANTALLAS
+1 VOCABULARIO COMPARTIDO DE PERMISOS
+AISLAMIENTO SERVER-SIDE POR ÁREA
+SIN SELECTOR QUE CONCEDA TERRITORIO
+```
+
+Por tanto, esta tarea no vuelve a decidir el área del trabajador. Diseña el inicio **dentro de un área efectiva ya resuelta**.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el contrato de experiencia se define una sola vez;
+2. no existe una instancia física propia de `FOGO-UX-003`;
+3. esta tarea no implementa una ruta, componente o consulta;
+4. la materialización posterior pertenece al paquete E5 y a los propietarios técnicos aplicables;
+5. la ausencia de una implementación AS-IS equivalente no reduce ni altera el contrato objetivo.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-001 — Inventariar procesos reales de producción`;
+- `FOGO-UX-002 — Separar cocina, panadería y repostería`;
+- `FOGO-AUTH-002 — Definir permisos por área productiva`;
+- `FOGO-AUTH-003 — Filtrar cola por sede y área`;
+- `FOGO-AUTH-008 — Definir permisos de supervisor`;
+- `FOGO-AUTH-014 — Registrar actor y turno`;
+- catálogo canónico de procesos `VPROC-*`;
+- catálogo canónico de pantallas `VSCREEN-*`;
+- contrato de estados de `VPROC-0033` y `VPROC-0034`;
+- contratos de estaciones compartidas y dispositivos de producción;
+- hallazgos de planificación productiva del BLOQUE E1;
+- registro 04A vigente del dominio FOGO;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`.
+
+---
+
+#### 5. Identidad canónica del inicio
+
+La superficie inicial se identifica por contrato, no por una URL física concreta:
+
+| Identidad | Nombre | Proceso | Paso | Clase de interacción | Momento |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0055` | Inicio y cola de producción | `VPROC-0033` | `VPROC-0033::STEP-TRIAGE_PRODUCTION_QUEUE` — Priorizar cola de producción | `TRIAGE` | `INITIAL` |
+
+La pantalla relacionada de planeación permanece separada:
+
+| Identidad | Nombre | Proceso | Paso | Clase de interacción | Momento |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0056` | Planeación de producción | `VPROC-0033` | `VPROC-0033::STEP-PLAN_PRODUCTION` — Planear producción | `PLAN` | `IN_PROGRESS` |
+
+Y el inicio físico de un lote pertenece a otra pantalla y otra tarea:
+
+| Identidad | Nombre | Proceso | Paso | Propietario documental inmediato |
+| --- | --- | --- | --- | --- |
+| `VSCREEN-0057` | Preparación e inicio de lote | `VPROC-0034` | `VPROC-0034::STEP-PREPARE_AND_START_BATCH` | `FOGO-UX-005` |
+
+Regla:
+
+```text
+VSCREEN-0055 INICIO DEL ÁREA
+!=
+VSCREEN-0056 PLANEACIÓN
+!=
+VSCREEN-0057 INICIO DE LOTE
+```
+
+Esta tarea no congela la URL física futura de `VSCREEN-0055`. La ruta raíz `/` se usa únicamente como evidencia AS-IS de la aplicación actual.
+
+---
+
+#### 6. Decisión principal
+
+Al entrar a FOGO como productor ordinario, la experiencia debe resolver primero un **contexto operativo efectivo** y luego presentar un único inicio contextual para esa área.
+
+```text
+ACTOR HUMANO EFECTIVO
++
+TURNO PUBLICADO Y VIGENTE
++
+ROL OPERATIVO PRODUCTIVO
++
+SEDE ACTIVA COMPATIBLE
++
+ÁREA ACTIVA EXACTA
++
+PERMISOS APLICABLES
++
+FRESCURA DEL CONTEXTO
+=
+INICIO FOGO DEL ÁREA AUTORIZADA
+```
+
+La pantalla no solicita al productor que elija qué autoridad desea usar. Cuando existe un único contexto productivo válido, ese contexto gobierna la superficie. Si el contexto no puede resolverse de forma determinista, la experiencia queda bloqueada o deriva al flujo propietario de resolución de contexto; nunca presenta una selección que amplíe territorio.
+
+---
+
+#### 7. Fuente canónica del trabajo visible
+
+`FOGO-UX-003` cierra la frontera de experiencia frente al hallazgo de que todavía no existe una única fuente física comprobada para plan y programación.
+
+La experiencia objetivo de `VSCREEN-0055` tratará a FOGO como la proyección propietaria de planificación y ejecución productiva. El inicio operativo no construye trabajo ejecutable leyendo independientemente ventas, pedidos, remisiones, mínimos, stock, recomendaciones o señales externas.
+
+Para un productor ordinario, un elemento puede aparecer como **trabajo ejecutable** únicamente cuando FOGO pueda demostrar una cadena suficiente, como mínimo:
+
+```text
+SEÑAL O NECESIDAD NORMALIZADA
+→ PLAN FOGO APROBADO / PUBLICADO SEGÚN CONTRATO
+→ VERSIÓN LIBERADA PARA EJECUCIÓN
+→ ORDEN O COMPROMISO PRODUCTIVO EJECUTABLE
+→ ÁREA EFECTIVA COMPATIBLE
+```
+
+La verdad terminal de planificación que habilita el handoff a ejecución es:
+
+`VPROC-0033.PRODUCTION_PLAN_RELEASED`.
+
+La entrada inicial del proceso de ejecución es:
+
+`VPROC-0034.PRODUCTION_ORDER_READY`.
+
+La experiencia puede informar que existen señales o planificación en curso cuando el actor tenga autoridad para ello, pero no las presenta al productor como una orden lista para ejecutar.
+
+---
+
+#### 8. Frontera entre señal, plan, orden y lote
+
+El inicio conserva identidades distintas:
+
+| Concepto | Puede aparecer en el inicio | Puede presentarse como ejecutable | Regla |
+| --- | --- | --- | --- |
+| señal de demanda | solo como estado agregado autorizado | no | inicia evaluación, no producción |
+| plan en borrador/revisión | solo a actor de planificación autorizado | no | no crea órdenes ni compromisos ejecutables |
+| plan publicado | según autoridad de planificación | no necesariamente | publicación no demuestra todavía ejecución iniciada |
+| plan liberado | sí, cuando tenga salida ejecutable para el área | sí, mediante su orden/compromiso derivado | conserva versión y restricciones |
+| orden productiva lista | sí | sí | debe pertenecer al área efectiva |
+| lote activo | sí, si el actor puede continuar o consultar | no crea otro lote | se presenta como continuidad, no como nueva orden |
+| lote cerrado/histórico | no como prioridad ordinaria del inicio | no | queda en consulta/historia propietaria |
+
+Queda prohibido:
+
+```text
+VENTA = ORDEN DE PRODUCCIÓN
+REMISIÓN = ORDEN DE PRODUCCIÓN
+STOCK BAJO = ORDEN DE PRODUCCIÓN
+RECOMENDACIÓN = ORDEN DE PRODUCCIÓN
+PLAN EN BORRADOR = TRABAJO EJECUTABLE
+PLAN PUBLICADO = LOTE YA INICIADO
+```
+
+---
+
+#### 9. Contexto efectivo al entrar
+
+El inicio consume un contexto server-side con, como mínimo, las siguientes decisiones resueltas o denegadas:
+
+| Dimensión | Tratamiento en la experiencia |
+| --- | --- |
+| actor efectivo | visible de forma suficiente para atribución; nunca sustituido por usuario técnico del dispositivo |
+| turno | vigente para el rol operativo aplicado |
+| sede | Centro de Producción para los tres perfiles definidos en `FOGO-UX-002` |
+| área | exactamente Cocina Caliente, Galletería y Panadería o Repostería según contexto efectivo |
+| rol operativo | uno de los tres roles productivos cuando el inicio sea productor ordinario |
+| dispositivo | restricción adicional; nunca fuente de autoridad |
+| permisos | evaluados por acción o lectura; `fogo.access` no funciona como wildcard |
+| frescura | la pantalla no reutiliza silenciosamente un contexto vencido después de cambio de actor, turno, sede o área |
+
+La interfaz muestra la identidad del área como **contexto vigente**, no como selector de permisos.
+
+---
+
+#### 10. Estados de entrada de la experiencia
+
+La experiencia debe distinguir al menos estos estados semánticos:
+
+| Estado UX | Qué significa | Acción permitida |
+| --- | --- | --- |
+| `CONTEXTO_VALIDO_CON_TRABAJO` | actor y área válidos; existen elementos autorizados | entrar a la cola contextual y continuar |
+| `CONTEXTO_VALIDO_SIN_TRABAJO` | actor y área válidos; no existe trabajo ejecutable visible | mostrar estado vacío real; no sugerir otra área |
+| `SIN_CONTEXTO_OPERATIVO` | no existe turno/área productiva resoluble | bloquear superficie productiva y dirigir a resolución propietaria |
+| `CONTEXTO_CAMBIO_O_VENCIDO` | la sesión ya no coincide con actor, turno, sede o área actuales | revalidar antes de mostrar datos o acciones |
+| `SIN_PERMISO` | el contexto existe pero no autoriza la superficie/acción | denegar sin exponer datos protegidos |
+| `DATOS_DESACTUALIZADOS` | no puede demostrarse frescura suficiente | no declarar cola actual como vigente |
+| `FALLO_TECNICO` | la fuente requerida no pudo resolverse | mostrar fallo recuperable sin convertirlo en lista vacía |
+
+Reglas de no equivalencia:
+
+```text
+SIN TRABAJO != SIN PERMISO
+SIN PERMISO != SIN CONTEXTO
+SIN CONTEXTO != FALLO TÉCNICO
+DATOS DESACTUALIZADOS != COLA VACÍA
+```
+
+---
+
+#### 11. Cabecera contextual mínima
+
+`VSCREEN-0055` debe mantener visible, sin exigir navegación secundaria:
+
+- nombre de FOGO o identidad equivalente de la superficie;
+- área productiva efectiva;
+- sede efectiva cuando sea útil para evitar ambigüedad;
+- estado del contexto/turno cuando afecte la posibilidad de operar;
+- actor efectivo de forma suficiente en estaciones compartidas;
+- indicación clara cuando la información no esté actualizada;
+- siguiente acción operativa principal.
+
+No necesita mostrar en la cabecera:
+
+- UUID técnicos;
+- scopes internos;
+- nombres de políticas de autorización;
+- detalles de RLS;
+- hashes, logs o razón técnica completa;
+- catálogo completo de permisos.
+
+La explicación técnica solo aparece en una superficie de soporte o diagnóstico autorizada.
+
+---
+
+#### 12. Composición general del inicio
+
+La superficie se compone por prioridad operativa, no por módulos administrativos.
+
+| Zona lógica | Contenido | Acción primaria | Propietario detallado |
+| --- | --- | --- | --- |
+| contexto | área, actor/turno aplicable y frescura | resolver/revalidar si existe bloqueo | contratos transversales + `FOGO-UX-003` |
+| trabajo ahora | resumen de producción pendiente autorizada | abrir cola contextual | `FOGO-UX-004` |
+| continuidad | lote o ejecución activa recuperable | continuar el trabajo válido | `FOGO-UX-005` a `FOGO-UX-007` |
+| recetario operativo | acceso a receta publicada aplicable | abrir receta operativa | `FOGO-UX-008` |
+| planificación | acceso solo para actor con autoridad separada | abrir `VSCREEN-0056` | planificación + `FOGO-UX-014` cuando corresponda |
+| incidencias/bloqueos | razón operativa resumida y siguiente paso permitido | resolver por flujo propietario | tarea propietaria de la excepción |
+
+La superficie no se convierte en dashboard exhaustivo de producción, inventario, compras, calidad, costos o administración.
+
+---
+
+#### 13. Producción pendiente en el inicio
+
+El inicio reserva un espacio prioritario para la producción pendiente del área, pero `FOGO-UX-003` define solo su contrato de entrada.
+
+Debe poder comunicar como mínimo:
+
+- si existe o no trabajo ejecutable para el área;
+- cantidad agregada de elementos pendientes cuando sea fiable;
+- existencia de prioridad o bloqueo relevante sin inventar su regla;
+- acceso directo a la cola contextual.
+
+No define todavía:
+
+- las columnas o tarjetas de cada elemento;
+- el algoritmo de ordenamiento;
+- la semántica completa de prioridad;
+- el tratamiento de urgencias y overrides;
+- la composición de señales de capacidad, personal, equipos o materiales.
+
+Esas decisiones pertenecen a `FOGO-UX-004` y `FOGO-UX-014` según el actor.
+
+---
+
+#### 14. Continuidad de una ejecución ya iniciada
+
+Cuando exista un lote o ejecución activa que el actor esté autorizado a continuar, el inicio puede elevar una acción de continuidad por encima de crear otra ejecución.
+
+La superficie deberá distinguir:
+
+```text
+CONTINUAR LOTE EXISTENTE
+!=
+INICIAR LOTE NUEVO
+```
+
+El inicio no decide por sí mismo que el actor puede continuar. La acción se presenta solo después de validar el recurso y el estado aplicables.
+
+Los detalles del flujo pertenecen a:
+
+- `FOGO-UX-005` — inicio de lote;
+- `FOGO-UX-006` — producción parcial;
+- `FOGO-UX-007` — finalización;
+- `FOGO-UX-011` — correcciones posteriores sin alterar historia.
+
+---
+
+#### 15. Acceso al recetario operativo
+
+El inicio puede ofrecer acceso al recetario operativo cuando exista `fogo.production.recipe_book.view` efectivo y aplicable.
+
+Reglas:
+
+1. el acceso no expone el maestro administrativo completo;
+2. no muestra borradores ni versiones no aplicables al productor ordinario;
+3. el área efectiva no se cambia mediante el recetario;
+4. abrir el recetario no equivale a poder crear lote;
+5. una receta aplicable puede conducir posteriormente a una acción de producción únicamente si la mutación vuelve a validar área, permiso, recurso y estado.
+
+El diseño detallado del recetario corresponde a `FOGO-UX-008` y su separación administrativa a `FOGO-UX-009`.
+
+---
+
+#### 16. Acceso a planeación
+
+`VSCREEN-0056 — Planeación de producción` no forma parte de la autoridad ordinaria implícita de los tres roles productivos por el solo hecho de poder entrar a FOGO.
+
+El inicio puede mostrar una entrada a planeación únicamente cuando el actor tenga autoridad exacta proveniente de su contrato propietario.
+
+No se admite:
+
+```text
+produccion_cocina → puede planear por defecto
+produccion_panaderia → puede planear por defecto
+produccion_reposteria → puede planear por defecto
+fogo.access → puede planear
+ver cola → puede publicar plan
+usar terminal de producción → puede aprobar plan
+```
+
+La ausencia de una clave de mutación específica demostrada por esta tarea se interpreta de forma cerrada: `FOGO-UX-003` no inventa un permiso de planeación, aprobación, publicación o override.
+
+---
+
+#### 17. Frontera con supervisión y administración
+
+El inicio del productor ordinario no absorbe las superficies de supervisión o administración.
+
+| Capacidad | Productor ordinario | Propietario |
+| --- | --- | --- |
+| ver trabajo autorizado de su área | sí | `FOGO-UX-003/004` |
+| continuar ejecución propia/autorizada | según recurso y permiso | `FOGO-UX-005..007` |
+| consultar recetario operativo aplicable | según permiso | `FOGO-UX-008` |
+| editar o administrar receta maestra | no por rol productivo | `FOGO-UX-009` |
+| observar varias áreas | no por rol productivo | `FOGO-UX-014` + autorización aplicable |
+| aprobar/publicar plan | no se infiere | contrato de planeación/autoridad propietario |
+| cambiar prioridad/override | no se infiere | `FOGO-UX-014` + autorización propietaria |
+
+El hecho de que una persona posea además un rol administrativo o de supervisión no mezcla ambos carriles. Cada acción se resuelve con su autoridad propia.
+
+---
+
+#### 18. Variantes por área
+
+La composición es la misma para las tres áreas. Cambian únicamente el contexto y los recursos visibles.
+
+| Área | Inicio esperado | No debe aparecer por pertenecer a la sede |
+| --- | --- | --- |
+| Cocina Caliente | cola, continuidad y recetario de Cocina Caliente | órdenes, recetas o lotes exclusivos de Panadería/Repostería |
+| Galletería y Panadería | cola, continuidad y recetario de Galletería y Panadería | órdenes, recetas o lotes exclusivos de Cocina/Repostería |
+| Repostería | cola, continuidad y recetario de Repostería | órdenes, recetas o lotes exclusivos de Cocina/Panadería |
+
+No se crean tres catálogos de pantallas ni tres variantes del proceso `VPROC-0033`.
+
+---
+
+#### 19. Dispositivos compartidos
+
+Las plantillas especializadas entregadas por `FOGO-UX-002` restringen la experiencia:
+
+```text
+production_kitchen  → Cocina Caliente
+production_bakery   → Galletería y Panadería
+production_pastry   → Repostería
+```
+
+El inicio debe:
+
+- identificar al actor humano efectivo;
+- limpiar contexto al cambiar actor;
+- volver a resolver turno y área;
+- aplicar el techo del dispositivo;
+- bloquear una discrepancia entre área del actor, área del dispositivo y recurso cuando el contrato lo exija;
+- evitar mostrar como trabajo vigente datos cacheados de otro actor.
+
+El dispositivo no selecciona rol ni concede permisos.
+
+---
+
+#### 20. Parámetros, filtros y navegación
+
+Los parámetros de URL o filtros de interfaz pueden conservar comodidad y estado visual, pero solo reducen un conjunto ya autorizado.
+
+Por tanto:
+
+```text
+?area_id=OTRA_AREA
+?site_id=OTRA_SEDE
+?role=OTRO_ROL
+```
+
+no cambian el contexto efectivo.
+
+Un enlace profundo hacia cola, recetario, planeación o lote debe revalidar el contexto y recurso en servidor. La navegación no constituye evidencia de autorización.
+
+---
+
+#### 21. Minimización de datos en el inicio
+
+La superficie inicial no necesita cargar por defecto:
+
+- fórmulas completas de recetas;
+- costos unitarios o totales de producción;
+- ledger completo de inventario;
+- stock general de la sede;
+- órdenes de otras áreas;
+- lotes históricos de otras áreas;
+- información de compras o proveedores;
+- datos de personal no necesarios para el contexto;
+- detalles completos de calidad o trazabilidad de lotes no activos.
+
+Debe preferir resúmenes mínimos y referencias que conduzcan a la superficie propietaria cuando el actor esté autorizado.
+
+---
+
+#### 22. Vacío, carga, error, stale y operación degradada
+
+La experiencia no puede representar todos los problemas como una pantalla vacía.
+
+| Situación | Tratamiento UX |
+| --- | --- |
+| consulta en curso | estado de carga sin confirmar que no existe trabajo |
+| cero trabajo autorizado | estado vacío explícito del área efectiva |
+| permiso denegado | estado de denegación; sin datos protegidos |
+| contexto no resuelto | estado de contexto; sin cola |
+| datos stale | advertencia y revalidación antes de acciones sensibles |
+| error de fuente | error recuperable; no equivale a cero pendientes |
+| conectividad degradada | mostrar antigüedad y limitar acciones según contrato de continuidad |
+
+Ninguna caché antigua habilita iniciar una producción sensible cuando el estado requerido no puede revalidarse.
+
+---
+
+#### 23. Tactilidad, legibilidad y foco operativo
+
+El inicio se diseña para estaciones productivas compartidas y uso táctil.
+
+Debe priorizar:
+
+- una acción principal evidente;
+- blancos táctiles suficientes;
+- área y contexto visibles;
+- texto operacional breve;
+- estados diferenciables sin depender solo del color;
+- foco y navegación accesibles;
+- progresividad: detalle técnico bajo demanda, no en la vista primaria;
+- ausencia de tablas administrativas densas como interfaz inicial del productor.
+
+Esta tarea no fija tamaños físicos, hardware final, breakpoints o tokens visuales específicos.
+
+---
+
+#### 24. Contraste con el AS-IS observado
+
+El runtime actual demuestra una aplicación funcional parcial, pero no materializa todavía el inicio contractual definido aquí.
+
+| Superficie AS-IS | Evidencia observada | Brecha frente al inicio objetivo |
+| --- | --- | --- |
+| `/` | entrada genérica FOGO con enlaces a Recetario y Lotes | no muestra actor/turno/área efectiva, cola priorizada, continuidad ni estados contextuales |
+| `/recipe-book` | puede filtrar por sede y área; para productores la comprobación observada utiliza sede con `areaId` no resuelta | no demuestra aislamiento completo del inicio por área |
+| `/production-batches` | lista lotes con filtro opcional de sede | no demuestra cola contextual por área ni fuente de plan/orden |
+| `/production-batches/new` | receta publicada con sede/área y validación de creación contra ambos valores antes de mostrar creación | primitiva útil de revalidación exacta; pertenece al flujo posterior de lote |
+
+El AS-IS no se eleva a contrato solo porque exista una ruta o enlace.
+
+---
+
+#### 25. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| La raíz FOGO es genérica y no materializa `VSCREEN-0055` como inicio contextual. | bloquea conformidad UX, no esta definición documental | materialización E5 FOGO consumiendo `FOGO-UX-003` | la entrada FOGO resuelve contexto efectivo y presenta el inicio del área sin autoridad fabricada |
+| No existe una única fuente física comprobada para plan y programación. | riesgo de mostrar señales como trabajo ejecutable | `FOGO-UX-003`, `FOGO-UX-004`, `FOGO-UX-014`, `PROC-CAT-009..018` y materialización aplicable | la UX consume una proyección FOGO que distingue señal, plan, versión liberada y orden ejecutable |
+| `/production-batches` no demuestra filtrado por área. | puede mezclar evidencia de lotes de la misma sede | `FOGO-UX-004` + autorización/materialización aplicable | la cola y consultas de trabajo se resuelven server-side por área efectiva antes de serializar |
+| El recetario AS-IS puede evaluar permiso sin `areaId` efectiva para la consulta observada. | puede presentar recetas con alcance mayor al área operativa | `FOGO-UX-008`, `FOGO-AUTH-015` y materialización aplicable | recetario operativo consume contexto/área efectivos y solo devuelve publicaciones aplicables |
+| El inicio AS-IS no distingue vacío, falta de contexto, deny, stale y fallo técnico. | operador puede interpretar un fallo como ausencia de trabajo | `FOGO-UX-003` + sistema de mensajes/estados aplicable | los estados quedan diferenciados y ninguna condición incierta concede acción |
+| La planificación requiere autoridad distinta del acceso productivo ordinario. | riesgo de convertir un acceso de producción en mutación de plan | `FOGO-UX-014` + contratos de autorización propietarios | la entrada a planeación y sus mutaciones se muestran solo con autoridad exacta demostrable |
+
+No queda un hallazgo narrativo sin propietario ni condición de salida.
+
+---
+
+#### 26. Handoff inmediato a FOGO-UX-004
+
+`FOGO-UX-004 — Mostrar producción pendiente del turno` recibe:
+
+```text
+VSCREEN-0055 COMO INICIO CANÓNICO DEL ÁREA
+ÁREA EFECTIVA YA RESUELTA SERVER-SIDE
+ACTOR Y TURNO REVALIDABLES
+FUENTE UX = PROYECCIÓN FOGO, NO SEÑALES CRUDAS
+VPROC-0033.PRODUCTION_PLAN_RELEASED COMO FRONTERA DE PLAN LIBERADO
+VPROC-0034.PRODUCTION_ORDER_READY COMO ENTRADA DE EJECUCIÓN
+SIN SELECTOR DE ÁREA QUE CONCEDA AUTORIDAD
+ESTADOS VACÍO / CONTEXTO / DENY / STALE / ERROR DIFERENCIADOS
+ESPACIO PRIORITARIO PARA TRABAJO PENDIENTE
+```
+
+Su responsabilidad será definir qué información de cada pendiente se presenta, cómo se ordena, qué prioridades/bloqueos se muestran y cómo se representa el turno sin reabrir la definición del inicio o del área.
+
+---
+
+#### 27. Handoff al resto de FOGO-UX
+
+| Tarea | Entrada exacta proveniente de esta definición |
+| --- | --- |
+| `FOGO-UX-004` | cola dentro del inicio y del área efectiva; no señales externas crudas |
+| `FOGO-UX-005` | acción de iniciar lote separada del triage y sujeta a orden/receta/área revalidadas |
+| `FOGO-UX-006` | continuidad de ejecución desde un lote válido, no desde el home genérico |
+| `FOGO-UX-007` | finalización separada del inicio y de la planeación |
+| `FOGO-UX-008` | recetario operativo accesible desde inicio solo con publicación y alcance aplicables |
+| `FOGO-UX-009` | administración de recetas fuera del inicio ordinario del productor |
+| `FOGO-UX-010` | métricas de cantidades/desperdicio no saturan el inicio; pertenecen a ejecución/resultado |
+| `FOGO-UX-011` | correcciones se tratan como flujo específico y no como edición desde home |
+| `FOGO-UX-012` | insumos NEXO se consumen como estado/condición propietaria, no como ledger embebido en inicio |
+| `FOGO-UX-013` | terminado NEXO no se confunde con la acción de entrar o priorizar trabajo |
+| `FOGO-UX-014` | supervisor puede agregar áreas únicamente por su propia autoridad y conserva una experiencia distinta |
+| `FOGO-UX-015` | prototipo valida los tres contextos de área, estados adversariales y separación de superficies |
+
+---
+
+#### 28. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones ya registradas de planificación productiva, contexto/territorio, separación de superficies, autorización, proceso y experiencia. No introduce una obligación observable fuera de la cobertura existente ni cambia texto, estado, relaciones, secuencia o propietario del registro.
+
+---
+
+#### 29. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-003` — planificación productiva, señales normalizadas/deduplicadas, plan/versiones, sede, área, prioridad, capacidad, restricciones, aprobaciones y prohibición de convertir una señal aislada en producción aprobada;
+- `TREQ-FOGO-001` — ciclo productivo con actor, turno, cantidades y efectos auditables;
+- `TREQ-AUTH-001` — autorización por permiso, contexto y alcance, no por nombre de rol;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-UX-001` — tarea actual, acción principal y estado identificables en superficies operativas;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad;
+- `TREQ-PROC-028` — iniciador y condición de inicio definidos para cada proceso;
+- `TREQ-PROC-029` — conservación de origen iniciador, función, canal, territorio, correlación y actor cuando aplique.
+
+Esta enumeración es trazabilidad reutilizada y no constituye una modificación del Registro 04A.
+
+---
+
+#### 30. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@63bb9e9b4d867c9d8985f7b93932b5893289d738`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VSCREEN-0055..0057`, `VPROC-0033`, sus estados canónicos, la frontera de iniciación señal→producción, autorización por área y el AS-IS de `/`, recetario y lotes. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron turnos, áreas, colas, planes, órdenes, lotes, dispositivos, filtros ni pruebas con trabajadores. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-003` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 31. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0055` queda definida como inicio y triage del área efectiva;
+- [ ] `VSCREEN-0055`, `VSCREEN-0056` y `VSCREEN-0057` conservan responsabilidades distintas;
+- [ ] el inicio no vuelve a decidir Cocina, Panadería o Repostería;
+- [ ] los tres perfiles productivos reutilizan la misma composición y cambian únicamente contexto/recursos autorizados;
+- [ ] no existe selector cliente-side capaz de crear territorio o rol;
+- [ ] actor, turno, sede, área, permiso y frescura gobiernan el inicio;
+- [ ] el dispositivo restringe pero nunca concede;
+- [ ] una señal de demanda, venta, remisión, stock o recomendación no aparece como orden ejecutable por sí sola;
+- [ ] `VPROC-0033.PRODUCTION_PLAN_RELEASED` y `VPROC-0034.PRODUCTION_ORDER_READY` quedan distinguidos;
+- [ ] plan, orden y lote no se presentan como la misma entidad;
+- [ ] el inicio reserva un espacio prioritario para trabajo pendiente sin definir todavía la cola detallada;
+- [ ] la continuidad de un lote activo no crea un lote nuevo;
+- [ ] recetario operativo y administración de recetas permanecen separados;
+- [ ] planeación no se concede por `fogo.access` ni por rol productivo ordinario;
+- [ ] supervisión multiárea permanece fuera de la experiencia ordinaria del productor;
+- [ ] vacío, falta de contexto, deny, stale y fallo técnico no se confunden;
+- [ ] datos de otras áreas no se serializan para ocultarse después en cliente;
+- [ ] el inicio minimiza datos y evita un dashboard administrativo denso;
+- [ ] los hallazgos físicos tienen propietario y condición de salida;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 32. Límites
+
+Esta tarea no:
+
+- implementa el home de FOGO;
+- crea rutas, componentes o endpoints;
+- define una URL final nueva para `VSCREEN-0055`;
+- modifica permisos o roles;
+- crea un permiso de planeación, aprobación, publicación u override;
+- diseña las filas/tarjetas completas de la cola pendiente;
+- decide algoritmos de prioridad;
+- modela disponibilidad integral de personas o equipos;
+- diseña el flujo de inicio de lote;
+- diseña producción parcial o finalización;
+- administra recetas maestras;
+- diseña la pantalla final de supervisor;
+- modifica `vento-fogo`;
+- modifica Supabase, migraciones, RLS, RPC, grants o datos;
+- cambia plantillas físicas de dispositivo;
+- modifica contratos generados;
+- ejecuta E5;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 33. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-002 — Separar cocina, panadería y repostería`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-003 — Diseñar inicio por área productiva`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-004 — Mostrar producción pendiente del turno`
+
 ### [ ] FOGO-UX-004 — Mostrar producción pendiente del turno
 ### [ ] FOGO-UX-005 — Diseñar inicio de lote
 ### [ ] FOGO-UX-006 — Diseñar producción parcial
