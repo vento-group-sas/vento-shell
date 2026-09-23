@@ -8098,7 +8098,820 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-013 — Proteger lotes y recetas`
 
-### [ ] FOGO-AUTH-013 — Proteger lotes y recetas
+### ✅ FOGO-AUTH-013 — Proteger lotes y recetas
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-012 — Proteger correcciones y anulaciones
+**Tarea siguiente:** FOGO-AUTH-014 — Registrar actor y turno
+**Tipo de tarea:** contrato documental de autorización de lotes, recetas, versiones, publicaciones y acciones sensibles de FOGO
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** contrato global definido para materialización posterior por `implementation_unit_id`; ninguna materialización física ocurre en este marcador
+**Cambios físicos autorizados:** ninguno; no modifica código, datos, Supabase, permisos desplegados, migraciones, RLS, RPC, rutas, recetas, lotes ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Proteger de forma explícita y no ampliatoria las identidades y acciones sensibles de lote y receta utilizadas por FOGO, cerrando la frontera de autorización entre:
+
+```text
+RECIPE_DEFINITION
+RECIPE_PUBLICATION
+PRODUCTION_ORDER
+PRODUCTION_BATCH
+```
+
+La tarea consolida la separación entre administración de recetas, recetario operativo y ejecución de lotes, y establece cómo debe consumirse el vocabulario de permisos sin convertir permisos de lectura, aliases legacy, rol, autoría, visibilidad o contexto en autoridad de mutación.
+
+La regla raíz es:
+
+```text
+VER ≠ CREAR ≠ ACTUALIZAR ≠ ARCHIVAR
+APROBAR ≠ PUBLICAR ≠ EXPORTAR
+VER RECETARIO ≠ ADMINISTRAR RECETA
+VER LOTE ≠ CREAR LOTE ≠ CERRAR LOTE ≠ CORREGIR LOTE
+```
+
+---
+
+#### 2. Handoff recibido de FOGO-AUTH-001..012
+
+Esta tarea consume como decisiones cerradas:
+
+- `FOGO-AUTH-001`: inventario AS-IS de rutas, acciones, pantallas y seis permisos canónicos existentes;
+- `FOGO-AUTH-002`: matriz de tres áreas productivas × seis permisos FOGO, con cinco capacidades operativas por área y `fogo.production.recipes.view` fuera del carril productivo ordinario;
+- `FOGO-AUTH-003`: cola productiva filtrada por sede y área sin ampliación cliente-side;
+- `FOGO-AUTH-004..006`: aislamiento de Panadería, Repostería y Cocina;
+- `FOGO-AUTH-007`: insumos restringidos por área, orden, lote, receta e integración NEXO;
+- `FOGO-AUTH-008`: supervisión separada de ejecución productiva y sin mutación implícita;
+- `FOGO-AUTH-009`: creación e inicio de lote protegidos por capacidad exacta, contexto, estado e idempotencia;
+- `FOGO-AUTH-010`: captura parcial separada de creación, cierre y corrección;
+- `FOGO-AUTH-011`: finalización operativa y cierre productivo conciliado como hitos distintos;
+- `FOGO-AUTH-012`: `CANCEL`, `VOID`, `REVERSE`, `COMPENSATE`, `ADJUST`, `CORRECT` y `RESTATE` como semánticas distintas, no destructivas y con autoridad propia.
+
+En particular, esta tarea recibe de `FOGO-AUTH-012` la obligación de impedir que una corrección cambie retrospectivamente la receta, versión, identidad de lote o hechos ya confirmados.
+
+---
+
+#### 3. Autoridades canónicas consumidas
+
+La tarea consume sin redefinir:
+
+- `OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual`;
+- `OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva`;
+- `VPROC-0016` para desarrollo, prueba, revisión, aprobación, publicación y versión de recetas;
+- `VPROC-0034` para ejecución productiva;
+- `VPROC-0037` para cierre productivo conciliado;
+- `RECIPE_DEFINITION`;
+- `RECIPE_PUBLICATION`;
+- `PRODUCTION_ORDER`;
+- `PRODUCTION_BATCH`;
+- `recipe_definition_id`;
+- `published_recipe_version_id`;
+- `recipe_version_ref`;
+- `batch_id`;
+- `production_lot_ref`;
+- `production_order_ref`;
+- el catálogo canónico y su normalización vigente;
+- la familia modular 04A vigente.
+
+Ninguna de estas identidades se renombra ni se sustituye por un alias local.
+
+---
+
+#### 4. Alcance
+
+Esta tarea define:
+
+1. qué recursos de receta y lote requieren autorización diferenciada;
+2. qué permisos canónicos existentes pueden reutilizarse sin ampliación;
+3. cómo se consume la descomposición pendiente de `fogo.production.recipes.manage`;
+4. qué acciones deben fallar cerrado mientras no tengan capacidad atómica registrada;
+5. cómo se preserva la diferencia entre recetario operativo y administración;
+6. cómo se preservan identidad y versión de receta en cada lote;
+7. cómo se protege la inmutabilidad histórica de publicaciones y lotes;
+8. cómo se aplican sede, área, producto, proceso, actor, turno, recurso y estado;
+9. cómo se evita que una ruta o una pantalla visible funcione como autorización;
+10. cómo se protege exportación, publicación, archivo y otras acciones sensibles;
+11. cómo se reconcilian los literales `production.*` AS-IS con el namespace canónico `fogo.production.*` sin equivalencias automáticas;
+12. qué brechas AS-IS pertenecen a materialización posterior;
+13. qué responsabilidades permanecen reservadas a `FOGO-AUTH-014..016` y FOGO-UX.
+
+---
+
+#### 5. Topología y materialización
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+instance_pattern = FOGO-AUTH-013::<implementation_unit_id>
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global;
+2. no crea una ejecución física global;
+3. cada unidad técnica aplicable materializa como máximo una instancia con su `implementation_unit_id`;
+4. la ejecución física requiere el package propietario aplicable y `E5-GATE-008::<package_id> = PASS`;
+5. la autorización física sigue siendo explícita por instancia;
+6. esta tarea documental no modifica `vento-fogo`, `vento-nexo` ni Supabase;
+7. cualquier modificación futura de Supabase perteneciente a VENTO se versiona y ejecuta desde `vento-shell` bajo la instancia propietaria.
+
+---
+
+#### 6. Modelo de recursos protegido
+
+| Recurso | Localizador | Naturaleza | Frontera de autorización |
+| --- | --- | --- | --- |
+| `RECIPE_DEFINITION` | `recipe_definition_id` | definición administrativa y conocimiento versionado | administración autorizada; no pertenece al carril productivo ordinario |
+| `RECIPE_PUBLICATION` | `published_recipe_version_id` / `recipe_version_ref` | versión publicada, inmutable y aplicable | recetario operativo o consumidores autorizados dentro de aplicabilidad |
+| `PRODUCTION_ORDER` | `production_order_ref` | instrucción productiva versionada | relación con sede, área, producto, plan y estado |
+| `PRODUCTION_BATCH` | `batch_id` / `production_lot_ref` | ejecución productiva concreta | territorio persistido, orden, receta/versión, estado y acción exacta |
+
+Una referencia a producto no sustituye ninguna de estas identidades.
+
+---
+
+#### 7. Identidad del lote
+
+El lote productivo conserva:
+
+```text
+batch_id
++
+production_lot_ref
++
+production_order_ref
++
+producto de salida
++
+recipe_version_ref
++
+sede
++
+área productiva
++
+instancia de VPROC-0034
+```
+
+Reglas:
+
+1. `batch_id` y `production_lot_ref` deben ser correlacionables inequívocamente cuando coexistan;
+2. `inventory_batch_id` pertenece a NEXO y no sustituye la identidad FOGO;
+3. la identidad nace en una creación válida e idempotente;
+4. producción parcial, calidad, empaque, ingreso NEXO, traslado, reimpresión, corrección documental o cierre no cambian la identidad del lote;
+5. un reproceso materialmente nuevo conserva genealogía y no se oculta reutilizando identidad cuando corresponda un resultado derivado;
+6. un lote nunca adquiere autoridad por haber sido creado por el mismo actor que intenta modificarlo después.
+
+---
+
+#### 8. Identidad y versión de receta
+
+`RECIPE_DEFINITION` y `RECIPE_PUBLICATION` permanecen distintas.
+
+```text
+RECIPE_DEFINITION
+→ identidad estable del conocimiento
+
+RECIPE_PUBLICATION
+→ versión publicada, inmutable, vigente y aplicable
+```
+
+Una publicación conserva `published_recipe_version_id` y las integraciones conservan `recipe_version_ref`.
+
+Reglas:
+
+1. una versión publicada no se edita destructivamente;
+2. un cambio material produce nueva versión;
+3. una versión retirada no origina nuevos lotes;
+4. una versión retirada permanece consultable para historia y trazabilidad cuando corresponda;
+5. aprobación y publicación no se tratan como el mismo hecho;
+6. publicación no demuestra disponibilidad de ingredientes ni producción ejecutada;
+7. la ejecución histórica no cambia cuando aparece una versión posterior.
+
+---
+
+#### 9. Vocabulario FOGO canónico existente
+
+Los seis permisos FOGO canónicos existentes permanecen:
+
+| Permiso | Recurso | Decisión en esta tarea |
+| --- | --- | --- |
+| `fogo.access` | `APP_SURFACE` | acceso general; nunca concede acciones internas |
+| `fogo.production.batches.view` | `PRODUCTION_BATCH` | lectura de lote dentro del territorio autorizado |
+| `fogo.production.batches.create` | `PRODUCTION_BATCH` | creación de lote con orden, publicación, destino y contexto válidos |
+| `fogo.production.orders.view` | `PRODUCTION_ORDER` | lectura por relación autorizada |
+| `fogo.production.recipe_book.view` | `RECIPE_PUBLICATION` | lectura operacional de versión publicada y aplicable |
+| `fogo.production.recipes.view` | `RECIPE_DEFINITION` | lectura administrativa; fuera de la concesión ordinaria de los tres roles productivos |
+
+Estos seis permisos no se reinterpretan como un catálogo completo de mutaciones.
+
+---
+
+#### 10. Descomposición obligatoria de `fogo.production.recipes.manage`
+
+La normalización vigente mantiene:
+
+```text
+fogo.production.recipes.manage
+→ DECOMPOSE_REQUIRED
+```
+
+La descomposición mínima ya nombrada por el catálogo es:
+
+```text
+fogo.production.recipes.view
+fogo.production.recipes.create
+fogo.production.recipes.update
+fogo.production.recipes.archive
+```
+
+Esta tarea fija las siguientes reglas:
+
+1. `manage` no es permiso canónico atómico;
+2. nuevas asignaciones de `manage` permanecen bloqueadas;
+3. no existe alias que convierta `manage` en la suma automática de la familia;
+4. `view` no concede `create`, `update` ni `archive`;
+5. `create` no concede `update` ni `archive`;
+6. `update` no concede `archive`;
+7. estas capacidades objetivo solo se vuelven asignables cuando la materialización propietaria las registre canónicamente con alcance, modalidad, sensibilidad y contrato de recurso válidos;
+8. mientras una capacidad atómica requerida no exista como clave canónica activa, la mutación correspondiente falla cerrado.
+
+---
+
+#### 11. Matriz de acciones de receta
+
+| Acción empresarial | Recurso | Capacidad exigida | Estado contractual |
+| --- | --- | --- | --- |
+| consultar definición | `RECIPE_DEFINITION` | `fogo.production.recipes.view` | canónica existente |
+| crear definición o candidato | `RECIPE_DEFINITION` | `fogo.production.recipes.create` | objetivo de descomposición ya nombrado; requiere materialización canónica antes de asignar |
+| actualizar borrador o candidato autorizado | `RECIPE_DEFINITION` | `fogo.production.recipes.update` | objetivo de descomposición ya nombrado; requiere materialización canónica antes de asignar |
+| archivar o desactivar definición | `RECIPE_DEFINITION` | `fogo.production.recipes.archive` | objetivo de descomposición ya nombrado; requiere materialización canónica antes de asignar |
+| consultar recetario operativo | `RECIPE_PUBLICATION` | `fogo.production.recipe_book.view` | canónica existente |
+| aprobar versión candidata | transición `VPROC-0016` | capacidad atómica propietaria | `CAPABILITY_BINDING_REQUIRED`; no se infiere desde `update` ni `manage` |
+| publicar versión aprobada | transición `VPROC-0016` | capacidad atómica propietaria | `CAPABILITY_BINDING_REQUIRED`; no se infiere desde `update` ni `manage` |
+| exportar PDF o proyección sensible | proyección de receta | capacidad atómica propietaria o contrato server-side específico | `CAPABILITY_BINDING_REQUIRED`; abrir `/recipes` no basta |
+
+No se inventa un nombre de permiso para las tres filas `CAPABILITY_BINDING_REQUIRED`. La unidad física debe consumir una clave canónica realmente registrada antes de habilitar el efecto.
+
+---
+
+#### 12. Administración y recetario operativo
+
+La frontera es obligatoria:
+
+```text
+ADMINISTRACION
+RECIPE_DEFINITION
+fogo.production.recipes.view + capacidades atómicas de mutación
+
+OPERACION
+RECIPE_PUBLICATION
+fogo.production.recipe_book.view
+```
+
+El carril operativo no expone por defecto:
+
+- borradores;
+- versiones no publicadas;
+- historial administrativo completo;
+- decisiones de aprobación;
+- campos sensibles no necesarios para ejecutar;
+- capacidades de creación o edición;
+- catálogo organizacional completo.
+
+El carril administrativo no se convierte automáticamente en turno productivo.
+
+---
+
+#### 13. Ciclo de vida de receta protegido
+
+Se conserva el ciclo canónico de `VPROC-0016`:
+
+```text
+RECIPE_DRAFT
+→ IN_DEVELOPMENT
+→ IN_TESTING
+→ UNDER_TECHNICAL_REVIEW
+→ PENDING_APPROVAL
+→ APPROVED
+→ PUBLISHED
+→ RECIPE_VERSION_RELEASED
+```
+
+Reglas:
+
+1. guardar no equivale a aprobar;
+2. aprobar no equivale a publicar;
+3. publicar no equivale a ejecutar;
+4. una prueba no publica automáticamente;
+5. la aprobación crítica conserva segregación de funciones;
+6. una transición requiere estado de origen compatible y control de concurrencia;
+7. un request stale no retrocede ni sobrescribe una versión posterior;
+8. una publicación materialmente distinta crea versión nueva, no edición in-place de una publicación histórica.
+
+---
+
+#### 14. Aplicabilidad contextual de una publicación
+
+El recetario operativo se resuelve mediante intersección restrictiva:
+
+```text
+PUBLICADA Y VIGENTE
++
+PRODUCTO / PROCESO COMPATIBLE
++
+SEDE COMPATIBLE
++
+AREA PRODUCTIVA ACTIVA
++
+FUNCION ACTIVA
++
+ACTOR HUMANO EFECTIVO
++
+DISPOSITIVO COMPATIBLE CUANDO APLIQUE
++
+AUTORIZACION EFECTIVA
+```
+
+Una sede, área, rol, dispositivo o selección de UI nunca crea por sí sola acceso a una publicación.
+
+---
+
+#### 15. Sensibilidad y exposición mínima
+
+Las recetas son información sensible.
+
+La proyección visible depende de necesidad de trabajo:
+
+```text
+OPERACION
+→ mínimo necesario para preparar y controlar
+
+ADMINISTRACION AUTORIZADA
+→ información necesaria para definir, revisar o aprobar
+
+INTEGRACION
+→ proyección contractual mínima
+```
+
+No se utiliza sensibilidad para ocultar alérgenos, controles de inocuidad o información necesaria para ejecutar con seguridad.
+
+La autoría de una receta no concede derecho de lectura, edición, aprobación, publicación, archivo o exportación.
+
+---
+
+#### 16. Creación de lote y receta aplicable
+
+Crear un lote exige simultáneamente:
+
+```text
+fogo.production.batches.create
++
+orden/version autorizada
++
+RECIPE_PUBLICATION publicada y vigente
++
+recipe_version_ref exacta
++
+producto compatible
++
+sede y área compatibles
++
+actor y contexto efectivos
++
+estado empresarial válido
++
+idempotencia
+```
+
+`fogo.production.recipe_book.view` nunca sustituye `fogo.production.batches.create`.
+
+La Server Action autoritativa debe revalidar el permiso de creación y la publicación aplicable inmediatamente antes del efecto.
+
+---
+
+#### 17. Consulta de lotes
+
+`fogo.production.batches.view` permite consultar únicamente lotes dentro del territorio y relación autorizados.
+
+La lectura no concede:
+
+- creación;
+- cierre;
+- corrección;
+- anulación;
+- cambio de receta o versión;
+- cambio de sede o área histórica;
+- modificación de cantidades históricas;
+- mutación de calidad;
+- efecto NEXO.
+
+Un lote histórico conserva la sede y área de ejecución aunque el actor cambie después de asignación.
+
+---
+
+#### 18. Vínculo exacto lote ↔ receta/version
+
+Todo lote conserva la `recipe_version_ref` que gobernó su ejecución.
+
+Reglas:
+
+1. una versión posterior no reemplaza esa referencia;
+2. una publicación retirada puede seguir siendo consultable para reconstruir el lote;
+3. corregir la receta después no cambia la versión histórica del lote;
+4. una sustitución autorizada durante ejecución se registra como hecho del lote;
+5. una desviación real no reescribe la receta publicada;
+6. la etiqueta, PDF o proyección no puede presentar una versión distinta de la realmente utilizada cuando esa referencia sea material.
+
+---
+
+#### 19. Snapshot mínimo protegido del lote
+
+El expediente debe poder reconstruir, cuando aplique:
+
+- `batch_id`;
+- `production_lot_ref`;
+- `production_order_ref` y versión;
+- producto o salidas;
+- `recipe_version_ref`;
+- sede y área;
+- actor y contexto;
+- cantidad objetivo;
+- cantidad real;
+- materiales y consumos correlacionados;
+- genealogía;
+- tiempos reales;
+- conservación;
+- calidad;
+- empaque;
+- referencias NEXO;
+- correcciones vinculadas.
+
+Una fila de lote aislada no demuestra trazabilidad suficiente.
+
+---
+
+#### 20. Inmutabilidad histórica
+
+Queda prohibido que una mutación posterior:
+
+- cambie silenciosamente la receta/version usada por un lote;
+- sobrescriba ingredientes o pasos de una publicación utilizada históricamente;
+- borre la publicación retirada que necesita trazabilidad;
+- reescriba el área o sede donde ocurrió la ejecución;
+- sustituya consumos reales por los esperados;
+- borre correcciones o compensaciones;
+- convierta un lote corregido en un lote que aparenta no haber tenido historia previa.
+
+La corrección sigue el contrato de `FOGO-AUTH-012`.
+
+---
+
+#### 21. Segregación de funciones
+
+Se conservan las responsabilidades aprobadas de `VPROC-0016`:
+
+- desarrollo primario: `RESPONSABLE_PRODUCTIVO`;
+- participación técnica: `RESPONSABLE_DE_CALIDAD_E_INOCUIDAD`;
+- apoyos autorizados según contexto;
+- aprobación final crítica: `GERENCIA_GENERAL`.
+
+Regla:
+
+```text
+PREPARAR O DESARROLLAR
++
+PROBAR
+≠
+APROBAR EN SOLITARIO LA MISMA DECISION CRITICA
+```
+
+Una misma persona solo puede ejecutar varias etapas cuando el contrato transversal y la segregación efectiva lo permitan; la interfaz no decide esa excepción.
+
+---
+
+#### 22. Frontera con NEXO
+
+FOGO conserva:
+
+- orden productiva;
+- identidad del lote productivo;
+- receta y versión;
+- necesidad material;
+- ejecución y resultado productivo.
+
+NEXO conserva:
+
+- producto físico maestro;
+- unidad y conversión física;
+- stock;
+- reserva;
+- LOC;
+- LPN;
+- movimiento;
+- `inventory_batch_id`;
+- disponibilidad física.
+
+```text
+production_lot_ref != inventory_batch_id
+RECIPE_PUBLICATION != stock disponible
+lote FOGO != movimiento NEXO
+```
+
+Ninguna aplicación fabrica el hecho propietario de la otra.
+
+---
+
+#### 23. Frontera con correcciones y anulaciones
+
+`FOGO-AUTH-012` conserva autoridad sobre correcciones, anulaciones, reversas, compensaciones, ajustes y reexpresiones.
+
+Esta tarea aporta únicamente las invariantes del recurso:
+
+1. la corrección no cambia identidad de lote;
+2. la corrección no reescribe una publicación histórica;
+3. la receta nueva no altera lotes previos;
+4. una corrección de FOGO no reescribe movimientos NEXO confirmados;
+5. una corrección NEXO no reescribe receta, salida o calidad FOGO;
+6. toda corrección conserva antes/después, causa, autoridad, evidencia y consumidores a reconciliar.
+
+---
+
+#### 24. Frontera con actor y turno
+
+`FOGO-AUTH-014` conserva la responsabilidad de hacer durable la atribución de actor y turno.
+
+`FOGO-AUTH-013` exige que toda mutación sensible pueda resolver en el punto de efecto:
+
+- actor humano efectivo;
+- sesión vigente;
+- rol/carril aplicable;
+- turno y check-in cuando correspondan;
+- sede;
+- área;
+- dispositivo cuando aplique;
+- recurso exacto;
+- estado y versión actuales.
+
+Esta tarea no sustituye el contrato de evidencia durable de `FOGO-AUTH-014`.
+
+---
+
+#### 25. Frontera con migración de paquetes
+
+`FOGO-AUTH-015` deberá migrar consumidores preservando exactamente:
+
+- namespace `fogo.production.*`;
+- prohibición de alias ampliatorio desde `production.*`;
+- separación `RECIPE_DEFINITION` / `RECIPE_PUBLICATION`;
+- descomposición de `recipes.manage`;
+- bindings atómicos de mutación;
+- contexto territorial y recurso;
+- idempotencia y concurrencia;
+- segregación de funciones;
+- denegación fail-closed cuando una capacidad no exista.
+
+No se permite compatibilidad temporal que convierta `manage` en wildcard.
+
+---
+
+#### 26. Frontera con pruebas integrales
+
+`FOGO-AUTH-016` deberá demostrar al menos:
+
+- aislamiento de lotes por sede/área;
+- publicación retirada no origina lote nuevo;
+- lote histórico conserva `recipe_version_ref`;
+- `recipe_book.view` no crea lotes;
+- `recipes.view` no muta recetas;
+- `recipes.manage` legacy no funciona como permiso canónico wildcard;
+- `create`, `update` y `archive` permanecen independientes cuando estén materializados;
+- aprobación/publicación/exportación fallan cerrado sin binding atómico;
+- retries no duplican creación ni mutación;
+- estado stale no sobrescribe una versión posterior;
+- shared device no presta autoridad;
+- NEXO y FOGO no se reescriben mutuamente.
+
+---
+
+#### 27. Reconciliación con AS-IS de `vento-fogo`
+
+El runtime observado conserva estas superficies:
+
+| Superficie | Evidencia AS-IS | Decisión contractual |
+| --- | --- | --- |
+| `/recipe-book` | usa `production.recipe_book.view` y presenta publicaciones | se reconcilia con `fogo.production.recipe_book.view`; no concede administración |
+| `/production-batches` | usa lectura de lotes | se reconcilia con `fogo.production.batches.view`; no concede mutaciones |
+| `/production-batches/new` | consulta receta y evalúa `production.batches.create` | crear lote exige binding canónico exacto en la frontera autoritativa |
+| `/recipes` | usa `production.recipes.manage` | legacy amplio; debe migrar a capacidades atómicas |
+| `/recipes/new` | `saveRecipe` crea definición bajo `production.recipes.manage` | requiere capacidad atómica de creación |
+| `/recipes/[id]/edit` | `saveRecipe` actualiza, desactiva o archiva bajo `production.recipes.manage` | actualización y archivo deben quedar separados |
+| `/recipes/pdf` | usa `production.recipes.manage` | exportación no se deriva de vista ni de un wildcard legacy |
+
+La equivalencia entre literales locales y namespace canónico no se autoriza automáticamente.
+
+---
+
+#### 28. Brechas AS-IS relevantes
+
+1. `production.recipes.manage` protege lectura, creación, edición, archivo y exportación como un identificador amplio legacy.
+2. `saveRecipe` permite estados `draft`, `published` y `archived` bajo la misma capacidad legacy.
+3. la edición observada actualiza `recipe_cards` in-place;
+4. la edición observada elimina y recrea conjuntos relacionados de outputs, ingredientes o pasos;
+5. el modelo observado no demuestra por sí solo una identidad física separada de versión publicada inmutable;
+6. el recetario operativo solo filtra publicaciones, pero la autorización observada usa namespace local `production.*`;
+7. la consulta operativa puede resolver sede mientras el chequeo observado de creación deja `areaId` sin resolver en una llamada previa;
+8. `createBatch` entra a una Server Action protegida nominalmente por `production.recipe_book.view` aunque la mutación exige creación de lote;
+9. estados locales `draft/published/archived` no sustituyen el lifecycle completo de `VPROC-0016`;
+10. la exportación PDF no tiene una capacidad canónica atómica observada.
+
+Estas brechas no redefinen el contrato objetivo.
+
+---
+
+#### 29. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `production.recipes.manage` agrupa acciones distintas. | Bloquea conformidad de mutaciones administrativas. | `FOGO-AUTH-013::<implementation_unit_id>` y migración de `FOGO-AUTH-015` | consumidores usan capacidades atómicas; `manage` queda sin asignación nueva y sin alias ampliatorio |
+| `fogo.production.recipes.create/update/archive` están nombrados por la normalización pero no forman parte de las seis claves FOGO hoy asignables. | Bloquea habilitarlas por inferencia. | `FOGO-AUTH-013::<implementation_unit_id>` | catálogo materializado registra cada capacidad con contrato y pruebas antes de asignación |
+| aprobación, publicación y exportación no tienen clave canónica atómica observada. | Bloquea esas mutaciones por inferencia desde `update` o `manage`. | `FOGO-AUTH-013::<implementation_unit_id>` | cada efecto queda ligado a capacidad propietaria registrada; hasta entonces `DENY` |
+| `saveRecipe` puede actualizar contenido publicado in-place. | Riesgo de perder inmutabilidad/versionado. | `FOGO-AUTH-013::<implementation_unit_id>` y persistencia E3 propietaria | cambios materiales generan nueva versión y lotes históricos conservan la previa |
+| ingredientes, outputs y pasos pueden reemplazarse mediante delete+insert. | Riesgo de historia incompleta si la publicación ya fue utilizada. | persistencia E3 y `FOGO-AUTH-013::<implementation_unit_id>` | publicación histórica permanece inmutable y mutaciones operan sobre versión candidata nueva |
+| `createBatch` puede entrar con permiso nominal de recetario. | Riesgo de permiso de lectura usado como guard de mutación. | `FOGO-AUTH-009::<implementation_unit_id>` y `FOGO-AUTH-013::<implementation_unit_id>` | punto de efecto revalida `fogo.production.batches.create` y `recipe_version_ref` aplicable |
+| literales `production.*` no equivalen automáticamente a `fogo.production.*`. | Riesgo de alias o bypass ampliatorio. | `FOGO-AUTH-015` | consumidor usa claves canónicas exactas y elimina compatibilidad ampliatoria |
+| actor y turno aún requieren consolidación durable. | Riesgo de atribución incompleta. | `FOGO-AUTH-014` | cada acción sensible conserva actor y contexto efectivo con evidencia durable |
+
+No queda hallazgo narrativo sin dueño y condición de salida.
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: las obligaciones de identidad de lote, ciclo productivo, receta publicada inmutable, versión exacta, sensibilidad, autorización contextual, mutación server-side, segregación y trazabilidad ya están cubiertas por requisitos vigentes. Esta tarea especializa y conecta esas obligaciones con las superficies y capacidades FOGO sin introducir una obligación verificable nueva fuera de la cobertura existente.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones, secuencia ni propietario:
+
+- `TREQ-FOGO-001` — ciclo productivo de lote con inicio, parciales, consumo, resultado, cierre, cancelación/corrección, actor, turno e inventario auditable;
+- `TREQ-FOGO-002` — receta publicada inmutable/versionada, `recipe_version_ref` exacta, snapshot, ingredientes, unidades, controles, rendimiento, conservación, alérgenos y acciones sensibles;
+- `TREQ-FOGO-004` — ejecución productiva con lote, receta/version, materiales, desviaciones, calidad, reproceso, genealogía y cierre no destructivo;
+- `TREQ-FOGO-022` — atribución de permisos únicamente desde evidencia real, sin inventar protección o desprotección;
+- `TREQ-FOGO-023` — abrir creación de lote no autoriza crear; la acción revalida permiso, actor, contexto, estado e idempotencia;
+- `TREQ-AUTH-004` — decisión equivalente por actor, permiso, sede, área y contexto;
+- `TREQ-AUTH-008` — separación de carriles y prerrequisitos operativos;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y bloqueo de cruces;
+- `TREQ-AUTH-010` — segregación de funciones;
+- `TREQ-AUTH-013` — prohibición de bypass y revalidación en mutaciones;
+- `TREQ-AUTH-014` — frescura de contexto antes de efectos sensibles;
+- `TREQ-AUTH-015` — trazabilidad de decisiones de autorización;
+- `TREQ-AUTH-017` — autoridad explícita para operaciones sensibles cuando corresponda.
+
+Esta trazabilidad no modifica 04A.
+
+---
+
+#### 32. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, TREQ y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell` vigente, owner FOGO, topología, catálogo de permisos, normalización `DECOMPOSE_REQUIRED`, `OPS-REC-001`, `OPS-TRZ-001`, 04A vigente y `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`; el AS-IS usa `production.recipes.manage`, `production.recipe_book.view` y `production.batches.create` en las superficies auditadas. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, editaron, publicaron, archivaron, exportaron ni ejecutaron recetas o lotes reales. |
+| FÍSICA | NOT_EXECUTED | La materialización pertenece a instancias `FOGO-AUTH-013::<implementation_unit_id>` posteriores a E5 y autorización física explícita. |
+
+---
+
+#### 33. Matriz de denegaciones obligatorias
+
+| Escenario | Resultado |
+| --- | --- |
+| `fogo.access` sin permiso de recurso | `DENY` para recurso/acción |
+| `recipes.view` intentando crear | `DENY` |
+| `recipes.view` intentando editar | `DENY` |
+| `recipes.update` intentando archivar | `DENY` salvo capacidad de archivo separada |
+| `recipes.update` intentando publicar | `DENY` mientras no exista binding atómico de publicación |
+| `recipes.manage` legacy intentando cualquier mutación nueva | `DENY` como autoridad canónica |
+| `recipe_book.view` intentando crear lote | `DENY` sin `batches.create` |
+| publicación retirada intentando originar lote nuevo | `DENY` |
+| publicación no aplicable al área | `DENY` |
+| lote de otra sede/área | `DENY` |
+| actor sin contexto requerido | `DENY` |
+| versión stale intentando sobrescribir candidata posterior | conflicto, nunca last-write-wins silencioso |
+| edición de publicación ya usada por lotes | nueva versión o `DENY`, nunca sobrescritura histórica |
+| exportación sin capacidad propietaria | `DENY` |
+| dispositivo compartido con actor distinto | recalcular autorización; no heredar la sesión del actor anterior |
+
+---
+
+#### 34. Seguridad, concurrencia e idempotencia
+
+Toda materialización deberá demostrar:
+
+1. revalidación server-side inmediata antes del efecto;
+2. identidad estable de recurso;
+3. versión/estado de origen esperados;
+4. control optimista o mecanismo equivalente frente a escrituras stale;
+5. idempotencia para creación y transiciones sensibles;
+6. ausencia de efecto duplicado ante retry equivalente;
+7. conflicto ante mismo identificador idempotente con payload incompatible;
+8. no existencia de mass-assignment de sede, área, actor, rol, estado o publicación desde cliente;
+9. auditoría de intento, decisión y resultado para mutaciones sensibles;
+10. no filtración de fórmula sensible en errores, logs, eventos o proyecciones no autorizadas;
+11. ausencia de alias legacy que amplíe capacidades;
+12. no dependencia de UI, ruta o navegación como frontera de seguridad.
+
+---
+
+#### 35. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `RECIPE_DEFINITION`, `RECIPE_PUBLICATION`, `PRODUCTION_ORDER` y `PRODUCTION_BATCH` permanecen separados;
+- [ ] `batch_id`, `production_lot_ref`, `production_order_ref`, `published_recipe_version_id` y `recipe_version_ref` conservan su semántica;
+- [ ] los seis permisos FOGO existentes no se amplían por inferencia;
+- [ ] `fogo.production.recipes.manage` permanece `DECOMPOSE_REQUIRED` y sin asignaciones nuevas;
+- [ ] `recipes.view/create/update/archive` quedan separados conforme a la normalización vigente;
+- [ ] create/update/archive no se presentan como asignables antes de materialización canónica real;
+- [ ] aprobación, publicación y exportación quedan fail-closed sin capacidad atómica registrada;
+- [ ] administración y recetario operativo permanecen separados;
+- [ ] una versión publicada es inmutable y un cambio material produce versión nueva;
+- [ ] un lote conserva la `recipe_version_ref` exacta utilizada;
+- [ ] una versión retirada no origina nuevos lotes pero permanece disponible para historia cuando aplica;
+- [ ] creación de lote exige `fogo.production.batches.create` en el punto de efecto;
+- [ ] `recipe_book.view` no sustituye creación de lote;
+- [ ] autor, rol, área, pantalla o dispositivo no funcionan como permiso;
+- [ ] correcciones no reescriben lote o receta histórica;
+- [ ] FOGO y NEXO conservan fuentes de verdad separadas;
+- [ ] las brechas AS-IS tienen owner y condición de salida;
+- [ ] `FOGO-AUTH-014` conserva actor/turno;
+- [ ] `FOGO-AUTH-015` conserva migración de namespace y aliases;
+- [ ] `FOGO-AUTH-016` conserva certificación integral;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica `vento-nexo`;
+- crea o edita recetas reales;
+- crea o edita lotes reales;
+- publica una receta;
+- aprueba una receta;
+- exporta una receta;
+- crea permisos desplegados;
+- asigna permisos a personas o roles;
+- convierte `recipes.manage` en alias;
+- modifica matrices RBAC aprobadas;
+- cambia `createBatch`;
+- crea o modifica Server Actions, API, RPC, RLS, grants o datos;
+- crea o modifica migraciones;
+- modifica Supabase remoto;
+- redefine la corrección de `FOGO-AUTH-012`;
+- redefine actor/turno de `FOGO-AUTH-014`;
+- ejecuta la migración de `FOGO-AUTH-015`;
+- ejecuta pruebas integrales de `FOGO-AUTH-016`;
+- diseña la UX final de `FOGO-UX-008`, `FOGO-UX-009` o `FOGO-UX-011`;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 37. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-012 — Proteger correcciones y anulaciones`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-013 — Proteger lotes y recetas`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-014 — Registrar actor y turno`
+
 ### [ ] FOGO-AUTH-014 — Registrar actor y turno
 ### [ ] FOGO-AUTH-015 — Migrar a paquetes de vento-shell
 ### [ ] FOGO-AUTH-016 — Ejecutar pruebas integrales
