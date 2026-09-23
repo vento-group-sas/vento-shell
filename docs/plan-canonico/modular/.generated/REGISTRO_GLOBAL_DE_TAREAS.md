@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1265** |
+| Aprobadas | **1266** |
 | En propuesta | **0** |
-| No iniciadas | **331** |
+| No iniciadas | **330** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.26% (1265/1596)** |
+| Porcentaje de completamiento | **79.32% (1266/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **331** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1166** |
+| ⏸ NO_EVALUADA | **330** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1167** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-056` — Validar prototipo antes de implementar | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-057` — Definir criterio de usabilidad por pantalla | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-058` — Probar con usuarios reales | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-057` — Definir criterio de usabilidad por pantalla | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-058` — Probar con usuarios reales | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-059` — Registrar problemas encontrados | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -909,7 +909,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-054` | Reducir opciones irrelevantes | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-055` | Crear prototipo por rol | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-056` | Validar prototipo antes de implementar | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-057` | Definir criterio de usabilidad por pantalla | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-057` | Definir criterio de usabilidad por pantalla | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-058` | Probar con usuarios reales | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-059` | Registrar problemas encontrados | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-060` | Aprobar la pantalla antes de retirarla del roadmap | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |

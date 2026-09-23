@@ -6034,275 +6034,685 @@ La tarea queda documentalmente completa cuando se confirma que:
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-UI-057 — Definir criterio de usabilidad por pantalla`
 
-### [ ] AUTH-UI-057 — Definir criterio de usabilidad por pantalla
+### ✅ AUTH-UI-057 — Definir criterio de usabilidad por pantalla
 
-**Estado:** NO INICIADA; evidencia parcial NEXO conservada
-**Tarea anterior:** `AUTH-UI-056 — Validar prototipo antes de implementar` — NO INICIADA
-**Tarea siguiente:** `AUTH-UI-058 — Probar con usuarios reales` — NO INICIADA
-**Tipo de tarea:** documental global; definición de criterios, umbrales y reglas de decisión por cada superficie aplicable del inventario canónico
-**Repositorio propietario:** `vento-shell`
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-056 — Validar prototipo antes de implementar
+**Tarea siguiente:** AUTH-UI-058 — Probar con usuarios reales
+**Tipo de tarea:** documental global; definición de criterios, umbrales, registro de evidencia y reglas de decisión para cada superficie aplicable del inventario canónico
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
 **Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
-**Evidencia parcial inspeccionada:** `vento-nexo`, `NEXO-ROUTE-001` — `/`
-**Ruta vigente:** flujo canónico integral; el carril `NEXO-REMISSIONS-001` queda únicamente como procedencia histórica de la evidencia NEXO
-**Cambios físicos autorizados:** ninguno; no modifica código productivo, componentes de aplicación, rutas, permisos, roles, funciones, procesos, datos, Supabase, migraciones, RLS, configuración, telemetría ni despliegues
-**Artefacto evaluable:** `NEXO_PROTOTIPO_TEST_USUARIOS_AUTH_UI_055_057.pptx`
-**Instrumento de recolección:** `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no modifica código productivo, componentes, rutas, roles, permisos, procesos, datos, Supabase, migraciones, RLS, configuración, telemetría ni despliegues
+**Requisitos de prueba creados o modificados:** 0
 
 ---
 
 #### 1. Propósito
 
-Definir criterios de usabilidad medibles para las dieciséis pantallas testeables
-sin exigir dieciséis formularios separados. La prueba se ejecutará con un único
-cuestionario y permitirá decidir por pantalla, prototipo, contexto y tipo de
-problema.
+Definir cómo se medirá y decidirá la usabilidad de cada una de las 177 superficies `VSCREEN-*` ya vinculadas y validadas internamente por `AUTH-UI-055` y `AUTH-UI-056`, sin ejecutar todavía sesiones con usuarios ni inventar resultados.
 
-La regla de evaluación es:
+La regla general es:
 
 ```text
-PANTALLA TESTEABLE
+VSCREEN CANONICA
 +
-CONSIGNA BREVE
+CLASE DE REDUCCION HEREDADA DE AUTH-UI-054
 +
-OBSERVACIÓN DE PRIMERA ACCIÓN
+PERFIL DE CRITERIO
 +
-PREGUNTAS DE COMPRENSIÓN Y RECUPERACIÓN
+ESCENARIO NORMAL O DE RECUPERACION
 +
-CRITERIOS CRÍTICOS DE SEGURIDAD, CUSTODIA, PRIVACIDAD Y ACCESIBILIDAD
-→
-DECISIÓN POR PANTALLA PARA AUTH-UI-059 Y AUTH-UI-060
+EVIDENCIA DEL FORMULARIO GLOBAL
++
+GATE DE ERROR CRITICO
+=
+DECISION POR PANTALLA
 ```
 
-La tarea define cómo medir. No ejecuta usuarios ni inventa resultados.
+Cada superficie conserva su identidad, `app_code` y clase aprobada. Esta tarea define el criterio; `AUTH-UI-058` produce la evidencia, `AUTH-UI-059` gestiona hallazgos y `AUTH-UI-060` toma la decisión final.
 
 ---
 
-#### 2. Resultado material
+#### 2. Alcance y límites
 
-Se materializan siete artefactos documentales:
+##### 2.1. Incluido
 
-1. `NEXO-SINGLE-FORM-USABILITY-CRITERIA-CONTRACT-001`;
-2. `NEXO-SCREEN-DECISION-CRITERIA-MATRIX-001`;
-3. `NEXO-QUESTIONNAIRE-SCORING-MAP-001`;
-4. `NEXO-CRITICAL-ERROR-CATALOG-001`;
-5. `NEXO-PROBLEM-ROUTING-RULES-001`;
-6. `NEXO-SESSION-RESULT-SUMMARY-SCHEMA-001`;
-7. `NEXO-USABILITY-CRITERIA-HANDOFF-001`.
+- una decisión de aplicabilidad para las diez aplicaciones de la rectificación;
+- cobertura explícita de las 177 superficies `VSCREEN-0001..0177`;
+- cinco perfiles de criterio derivados de las cinco clases de reducción aprobadas en 054;
+- ocho dimensiones globales de medición;
+- umbrales observables para localización, comprensión, recuperación, ayuda, carga cognitiva, seguridad/privacidad y accesibilidad;
+- catálogo cerrado de ocho errores críticos;
+- cuatro estados de decisión por superficie;
+- un esquema global único de registro de evidencia, sin formularios separados por rol;
+- mapeo de campos a reglas de decisión;
+- esquema de problemas para `AUTH-UI-059`;
+- esquema agregado de resultados para `AUTH-UI-058`;
+- preservación del instrumento NEXO como antecedente específico, no como única fuente global.
 
-Cobertura materializada:
+##### 2.2. Excluido
 
-| Elemento                                  | Esperado | Materializado | Faltantes | Duplicados |
-| ----------------------------------------- | -------: | ------------: | --------: | ---------: |
-| Pantallas testeables cubiertas            |       16 |            16 |         0 |          0 |
-| Contextos cubiertos                       |        8 |             8 |         0 |          0 |
-| Cuestionarios únicos                      |        1 |             1 |         0 |          0 |
-| Dimensiones evaluadas                     |        8 |             8 |         0 |          0 |
-| Errores críticos catalogados              |        8 |             8 |         0 |          0 |
-| Estados de decisión por pantalla          |        4 |             4 |         0 |          0 |
-| Requisitos de prueba nuevos o modificados |        0 |             0 |         0 |          0 |
-
----
-
-#### 3. Entradas y decisiones preservadas
-
-La tarea consume:
-
-- las dieciséis pantallas `SCREEN-055-001` a `SCREEN-055-016`;
-- las ocho proyecciones `PROTO-NEXO-001` a `PROTO-NEXO-008`;
-- el cuestionario único de `AUTH-UI-055`;
-- la validación interna de `AUTH-UI-056`;
-- los contratos de navegación, reducción, contexto, dispositivo compartido,
-  seguridad, privacidad, accesibilidad y recuperación.
-
-No modifica pantallas, tareas, roles, permisos, rutas, datos ni implementación.
-
----
-
-#### 4. Alcance y límites
-
-##### 4.1. Incluido
-
-- criterios por pantalla y por dimensión;
-- umbrales de éxito, comprensión, recuperación, ayuda, error crítico y dificultad;
-- mapeo entre campos del cuestionario y decisión;
-- reglas para pasar problemas a `AUTH-UI-059`;
-- reglas para bloquear aprobación en `AUTH-UI-060`.
-
-##### 4.2. Excluido
-
-- ejecutar sesiones;
-- reclutar usuarios;
-- modificar pantallas;
-- crear prototipos adicionales;
-- programar la aplicación;
+- ejecutar sesiones o reclutar participantes;
+- registrar tiempos, éxitos, dificultades o errores como observados si no fueron ejecutados;
+- modificar prototipos, pantallas, rutas, roles, permisos, procesos o datos;
 - conectar Supabase;
-- declarar pantallas aprobadas;
-- iniciar `AUTH-UI-058`, `AUTH-UI-059` o `AUTH-UI-060`.
+- definir un tamaño de muestra no aprobado por otra fuente;
+- usar el tiempo bruto como gate sin un umbral específico aprobado;
+- corregir problemas reales, reservado a `AUTH-UI-059`;
+- aprobar pantallas finales, reservado a `AUTH-UI-060`;
+- crear superficies para TALENTO, VITAL o AURA;
+- crear requisitos de prueba nuevos.
 
 ---
 
-#### 5. `NEXO-SINGLE-FORM-USABILITY-CRITERIA-CONTRACT-001`
+#### 3. Entradas preservadas
 
-Todas las pantallas se evalúan con el mismo formulario. La pantalla evaluada se
-identifica con `screen_id`, no con un formulario distinto.
+La tarea consume sin reabrir:
 
-Dimensiones mínimas:
+- `AUTH-UI-052 — Diseñar página inicial según actor`;
+- `AUTH-UI-053 — Diseñar navegación según tareas frecuentes`;
+- `AUTH-UI-054 — Reducir opciones irrelevantes`;
+- `AUTH-UI-055 — Crear prototipo por rol`;
+- `AUTH-UI-056 — Validar prototipo antes de implementar`;
+- `SCREEN-CANONICAL-CATALOG-001`;
+- las 177 decisiones de reducción de 054;
+- las nueve suites, 29 perfiles y 58 variantes del paquete 055;
+- el gate interno conforme de 056;
+- las ocho dimensiones y reglas de medición heredadas de la evidencia NEXO cuando son generalizables.
 
-| ID             | Dimensión                        | Evidencia del cuestionario                                     | Umbral general                                          |
-| -------------- | -------------------------------- | -------------------------------------------------------------- | ------------------------------------------------------- |
-| `USAB-FORM-01` | localización                     | primera acción, tiempo y aperturas incorrectas                 | acción correcta sin más de una apertura incorrecta      |
-| `USAB-FORM-02` | comprensión de contexto          | respuesta sobre función, sede, área, actor o dispositivo       | correcto o parcial sin confusión crítica                |
-| `USAB-FORM-03` | comprensión de efecto            | respuesta sobre qué pasará al actuar                           | correcto para acciones sensibles                        |
-| `USAB-FORM-04` | recuperación                     | respuesta y conducta ante cambio, retiro, dato parcial o fallo | sin pérdida, duplicación ni falso éxito                 |
-| `USAB-FORM-05` | ayuda                            | ayuda del moderador y motivo                                   | no debe ser necesaria para contexto básico              |
-| `USAB-FORM-06` | carga cognitiva                  | dificultad de 1 a 7 y comentario                               | mediana objetivo igual o menor a 3 tras varias sesiones |
-| `USAB-FORM-07` | seguridad y privacidad           | error crítico y clase                                          | tolerancia cero                                         |
-| `USAB-FORM-08` | tacto y accesibilidad observable | observación de toque, foco, lectura o bloqueo                  | cero bloqueo del camino crítico                         |
-
----
-
-#### 6. `NEXO-SCREEN-DECISION-CRITERIA-MATRIX-001`
-
-| Decisión                 | Condición                                                                                                                                        |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `CONFORME_PARA_CIERRE`   | acción correcta, comprensión suficiente, cero error crítico, recuperación correcta cuando aplica y dificultad dentro del umbral                  |
-| `REQUIERE_AJUSTE`        | existe confusión o fricción no crítica que puede corregirse sin rehacer el contrato                                                              |
-| `BLOQUEADA`              | existe error crítico, mezcla de función, dato ajeno, acción indebida, falso éxito, doble efecto, pérdida de custodia o bloqueo accesible crítico |
-| `PENDIENTE_DE_EVIDENCIA` | la pantalla no fue probada o la evidencia es incompleta                                                                                          |
-
-Una pantalla bloqueada no puede aprobarse por promedio agregado.
+No se extrapolan resultados humanos NEXO a otras aplicaciones.
 
 ---
 
-#### 7. `NEXO-QUESTIONNAIRE-SCORING-MAP-001`
+#### 4. Resultado material
 
-| Campo del formulario     | Uso en decisión                  | Regla                                                                        |
-| ------------------------ | -------------------------------- | ---------------------------------------------------------------------------- |
-| `found_correct_action`   | localización y éxito             | `no` genera ajuste o bloqueo según severidad                                 |
-| `time_to_action_seconds` | esfuerzo                         | tiempos altos generan ajuste, no bloqueo automático                          |
-| `wrong_openings`         | carga cognitiva                  | más de una apertura incorrecta genera ajuste                                 |
-| `moderator_help`         | autonomía                        | ayuda para contexto básico genera ajuste o bloqueo                           |
-| `context_understanding`  | comprensión                      | incorrecto en actor, función o dispositivo puede bloquear                    |
-| `effect_understanding`   | seguridad                        | incorrecto en acción sensible bloquea                                        |
-| `recovery_behavior`      | recuperación                     | pérdida, duplicación o falso éxito bloquea                                   |
-| `critical_error`         | seguridad, privacidad y custodia | cualquier `sí` bloquea                                                       |
-| `difficulty_1_to_7`      | carga subjetiva                  | valor alto alimenta problema no crítico salvo que coincida con error crítico |
-| `participant_comment`    | diagnóstico                      | no decide solo, pero orienta problema                                        |
-| `observer_notes`         | diagnóstico                      | soporta clasificación en `AUTH-UI-059`                                       |
-| `proposed_issue_id`      | trazabilidad                     | vínculo posterior con registro de problemas                                  |
+Se materializan ocho artefactos documentales:
 
----
+1. `APPLICATION-SINGLE-FORM-USABILITY-CRITERIA-CONTRACT-001`;
+2. `APPLICATION-USABILITY-DIMENSION-CATALOG-001`;
+3. `APPLICATION-USABILITY-CRITERION-PROFILES-001`;
+4. `APPLICATION-SCREEN-CRITERIA-CATALOG-001`;
+5. `APPLICATION-SCREEN-DECISION-RULES-001`;
+6. `APPLICATION-CRITICAL-ERROR-CATALOG-001`;
+7. `APPLICATION-PROBLEM-ROUTING-AND-SESSION-SCHEMA-001`;
+8. `APPLICATION-USABILITY-CRITERIA-HANDOFF-001`.
 
-#### 8. `NEXO-CRITICAL-ERROR-CATALOG-001`
+Cobertura:
 
-| Error crítico                          | Ejemplo                                                         | Efecto      |
-| -------------------------------------- | --------------------------------------------------------------- | ----------- |
-| mezcla de función                      | bodega intenta conducción o configuración                       | `BLOQUEADA` |
-| dato de otro actor                     | ve trabajo o referencia no propia                               | `BLOQUEADA` |
-| acción prohibida                       | intenta aprobar, ajustar o recibir sin autoridad                | `BLOQUEADA` |
-| falso éxito                            | cree que una acción quedó confirmada cuando no hay confirmación | `BLOQUEADA` |
-| doble efecto                           | intenta repetir una acción por resultado desconocido            | `BLOQUEADA` |
-| pérdida de custodia                    | no identifica quién conserva responsabilidad                    | `BLOQUEADA` |
-| bloqueo accesible crítico              | no puede llegar al control principal con el medio usado         | `BLOQUEADA` |
-| persistencia en dispositivo compartido | quedan datos del actor anterior                                 | `BLOQUEADA` |
+| Elemento | Esperado | Materializado | Faltantes | Duplicados |
+| --- | ---: | ---: | ---: | ---: |
+| decisiones de rectificación | 10 | 10 | 0 | 0 |
+| superficies con criterio | 177 | 177 | 0 | 0 |
+| clases heredadas de reducción | 5 | 5 | 0 | 0 |
+| perfiles de criterio | 5 | 5 | 0 | 0 |
+| dimensiones globales | 8 | 8 | 0 | 0 |
+| errores críticos | 8 | 8 | 0 | 0 |
+| estados de decisión | 4 | 4 | 0 | 0 |
+| campos del registro global | 24 | 24 | 0 | 0 |
+| requisitos de prueba nuevos o modificados | 0 | 0 | 0 | 0 |
 
 ---
 
-#### 9. `NEXO-PROBLEM-ROUTING-RULES-001`
+#### 5. Cobertura de aplicaciones
 
-Todo problema detectado en `AUTH-UI-058` se enruta a `AUTH-UI-059` con:
+| Aplicación de rectificación | Decisión | Superficies | Cobertura |
+| --- | --- | --- | --- |
+| ANIMA | APLICA | 14 | `VSCREEN-0027..0032`; `VSCREEN-0124..0131` |
+| FOGO | APLICA | 15 | `VSCREEN-0055..0067`; `VSCREEN-0173..0174` |
+| NEXO | APLICA | 37 | `VSCREEN-0033..0054`; `VSCREEN-0132..0144`; `VSCREEN-0176..0177` |
+| NUMERA | APLICA | 20 | `VSCREEN-0094..0106`; `VSCREEN-0153..0159` |
+| ORIGO | APLICA | 14 | `VSCREEN-0068..0079`; `VSCREEN-0145..0146` |
+| PASS | APLICA | 19 | `VSCREEN-0107..0112`; `VSCREEN-0160..0172` |
+| PULSO | APLICA | 20 | `VSCREEN-0080..0093`; `VSCREEN-0147..0152` |
+| TALENTO | NO_APLICA | 0 | sin `app_code` canónico de pantallas |
+| VISO | APLICA | 31 | `VSCREEN-0007..0026`; `VSCREEN-0113..0123` |
+| VITAL | NO_APLICA | 0 | fuera de Vento OS |
+
+Cobertura adicional del inventario real:
+
+| Soporte transversal | Estado | Superficies | Regla |
+| --- | --- | ---: | --- |
+| SHELL | `APLICA_COMO_SOPORTE` | 7 | conserva criterios para `VSCREEN-0001..0006` y `VSCREEN-0175` sin convertirse en una undécima aplicación de la rectificación |
+| AURA | `NO_APLICA` | 0 | no se inventan superficies ni criterios sin `VSCREEN-*` |
+
+Reconciliación:
 
 ```text
-screen_id
-prototype_id
-function_tested
-device_mode
-criterion_failed
-severity
-evidence_reference
-owner
-required_correction
-retest_condition
+RECTIFICATION_APPLICABLE_VSCREEN = 170
+SHELL_SUPPORT_VSCREEN = 7
+TOTAL_CRITERIA_VSCREEN = 177
+MISSING = 0
+DUPLICATES = 0
 ```
 
-No se permite corregir silenciosamente una pantalla sin registrar el problema.
+---
+
+#### 6. `APPLICATION-USABILITY-DIMENSION-CATALOG-001`
+
+| ID | Dimensión | Evidencia | Umbral |
+| --- | --- | --- | --- |
+| `USAB-DIM-01` | localización | primera acción, tiempo y aperturas incorrectas | acción o navegación correcta; máximo una apertura incorrecta |
+| `USAB-DIM-02` | comprensión de contexto | actor, función, sede/área, dispositivo o relación aplicable | correcto o parcial sin confusión crítica |
+| `USAB-DIM-03` | comprensión de efecto | respuesta sobre qué ocurriría al actuar | correcta para toda acción sensible |
+| `USAB-DIM-04` | recuperación | conducta ante cambio, retiro, parcialidad, conflicto o fallo | sin pérdida, duplicación, bypass ni falso éxito |
+| `USAB-DIM-05` | ayuda | ayuda del moderador y motivo | no necesaria para reconocer contexto básico o acción principal |
+| `USAB-DIM-06` | carga cognitiva | dificultad de 1 a 7 y observación | mediana objetivo <= 3 cuando exista pluralidad de sesiones válidas |
+| `USAB-DIM-07` | seguridad y privacidad | error crítico y clase | tolerancia cero |
+| `USAB-DIM-08` | tacto y accesibilidad observable | foco, lectura, toque, medio de entrada y bloqueos | cero bloqueo del camino crítico |
+
+El umbral de dificultad se interpreta únicamente cuando exista más de una sesión válida para una misma unidad de decisión. Una sola observación no se presenta como mediana representativa.
+
+El tiempo hasta la acción se registra para comparación y diagnóstico. Esta tarea no inventa un umbral temporal universal porque las superficies tienen complejidades distintas y no existe una decisión canónica que autorice un único límite en segundos.
 
 ---
 
-#### 10. `NEXO-SESSION-RESULT-SUMMARY-SCHEMA-001`
+#### 7. `APPLICATION-USABILITY-CRITERION-PROFILES-001`
 
-La salida mínima de `AUTH-UI-058` será:
+| Perfil | Clase heredada 054 | Criterio principal | Umbral general | Recuperación | Gate crítico |
+| --- | --- | --- | --- | --- | --- |
+| `USAB-PROFILE-ENTRY-001` | `ENTRY_RETURN` | identificar la entrada o retorno correcto y reconocer el contexto activo sin duplicar la superficie dentro de la proyección | acción o retorno correcto; máximo una apertura incorrecta; contexto correcto o parcial sin confusión crítica; dificultad mediana objetivo <= 3 cuando exista pluralidad de sesiones | si el contexto deja de ser válido, retirar el destino incompatible y volver a resolución segura | 0 errores críticos aplicables |
+| `USAB-PROFILE-CONTEXTUAL-001` | `CONTEXTUAL_ONLY` | usar la superficie únicamente desde el disparador o tarea propietaria y comprender su efecto contextual | acceso solo desde contexto válido; cero descubrimiento global indebido; efecto comprendido cuando sea sensible; dificultad mediana objetivo <= 3 cuando exista pluralidad de sesiones | ante pérdida de contexto, regresar al origen seguro sin conservar una acción ya inválida | 0 errores críticos aplicables |
+| `USAB-PROFILE-WORK-001` | `WORK_ELIGIBLE` | localizar y ejecutar conceptualmente la tarea elegible correcta sin confundir función, actor, estado o efecto | acción correcta; máximo una apertura incorrecta; sin ayuda para contexto básico; efecto correcto en acciones sensibles; dificultad mediana objetivo <= 3 cuando exista pluralidad de sesiones | si trabajo, asignación o estado cambian, retirar el control obsoleto y recalcular la proyección sin repetir efectos | 0 errores críticos aplicables |
+| `USAB-PROFILE-CONDITIONAL-001` | `CONDITIONAL_WORK` | reconocer la condición que habilita la superficie y actuar solo cuando el caso, excepción, revisión o bloqueo existe | condición comprendida; cero acción cuando la condición no aplica; máximo una apertura incorrecta cuando sí aplica; dificultad mediana objetivo <= 3 cuando exista pluralidad de sesiones | si la condición desaparece o la evidencia queda insuficiente, bloquear la decisión y conservar salida segura | 0 errores críticos aplicables |
+| `USAB-PROFILE-SECONDARY-001` | `SECONDARY_DISCOVERABLE` | encontrar la capacidad dentro de una familia o descubrimiento secundario sin convertirla en opción primaria irrelevante | localización correcta dentro de la familia; máximo una apertura incorrecta; sin ayuda para contexto básico; dificultad mediana objetivo <= 3 cuando exista pluralidad de sesiones | si función o alcance dejan de aplicar, excluir la opción en vez de revelarla deshabilitada | 0 errores críticos aplicables |
 
-| Campo                           | Descripción                                          |
-| ------------------------------- | ---------------------------------------------------- |
-| `tested_screens`                | cantidad de pantallas ejecutadas                     |
-| `participants_count`            | cantidad de participantes codificados                |
-| `sessions_count`                | cantidad de registros válidos                        |
-| `screens_conformant`            | pantallas sin problema bloqueante                    |
-| `screens_requiring_adjustment`  | pantallas con problema no crítico                    |
-| `screens_blocked`               | pantallas con error crítico o evidencia insuficiente |
-| `issues_to_register`            | problemas que deben pasar a `AUTH-UI-059`            |
-| `screens_ready_for_auth_ui_060` | pantallas candidatas a aprobación final              |
+Reglas comunes a los cinco perfiles:
 
----
-
-#### 11. Requisitos de prueba derivados
-
-**Resultado:** NO GENERA REQUISITOS DE PRUEBA
-
-**Justificación:** esta tarea ajusta criterios y umbrales para medir, mediante
-un cuestionario único, pantallas y comportamientos ya definidos. No introduce
-una regla ejecutable nueva ni modifica reglas de autorización, seguridad,
-navegación, privacidad, cálculo, integración o datos. No crea, modifica,
-difiere, descarta ni declara obsoleto ningún requisito histórico; el Registro
-Canónico de Requisitos de Prueba no cambia.
+1. cualquier error crítico aplicable prevalece sobre promedios o medianas;
+2. una pantalla sin evidencia suficiente permanece `PENDIENTE_DE_EVIDENCIA`;
+3. el criterio se evalúa sobre la tarea o comportamiento esperado, no sobre preferencia estética;
+4. el formulario global identifica `screen_id`; no se crea un formulario por superficie;
+5. una recuperación solo se evalúa cuando el escenario correspondiente exista en el prototipo o sesión;
+6. la ausencia de una capacidad no autorizada no cuenta como fracaso de localización;
+7. una opción correctamente excluida por 054 no debe reaparecer para “facilitar” la prueba.
 
 ---
 
-#### 12. Criterios de aceptación
+#### 8. `APPLICATION-SCREEN-CRITERIA-CATALOG-001`
 
-La tarea se considera completa cuando se confirme que:
+Cada superficie aparece exactamente una vez. La columna `Estado inicial` representa el estado previo a `AUTH-UI-058`, no un resultado de usabilidad.
 
-- las dieciséis pantallas tienen criterio aplicable;
-- el cuestionario único cubre localización, comprensión, recuperación, ayuda,
-  dificultad, error crítico y observación;
-- existen reglas de decisión por pantalla;
-- los errores críticos bloquean sin depender de promedios;
-- los problemas quedan destinados a `AUTH-UI-059`;
-- la aprobación final queda destinada a `AUTH-UI-060`;
-- no se declaran sesiones ejecutadas;
-- no se implementa código ni Supabase;
-- no se crean ni modifican requisitos `TREQ-*`;
-- `AUTH-UI-058` permanece únicamente reservada.
+| Pantalla | `app_code` | Clase 054 | Perfil de criterio | Gate crítico | Estado inicial |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0001` | `shell` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0002` | `shell` | `CONTEXTUAL_ONLY` | `USAB-PROFILE-CONTEXTUAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0003` | `shell` | `CONTEXTUAL_ONLY` | `USAB-PROFILE-CONTEXTUAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0004` | `shell` | `CONTEXTUAL_ONLY` | `USAB-PROFILE-CONTEXTUAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0005` | `shell` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0006` | `shell` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0007` | `viso` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0008` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0009` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0010` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0011` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0012` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0013` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0014` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0015` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0016` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0017` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0018` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0019` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0020` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0021` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0022` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0023` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0024` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0025` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0026` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0027` | `anima` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0028` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0029` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0030` | `anima` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0031` | `anima` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0032` | `anima` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0033` | `nexo` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0034` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0035` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0036` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0037` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0038` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0039` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0040` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0041` | `nexo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0042` | `nexo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0043` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0044` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0045` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0046` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0047` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0048` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0049` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0050` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0051` | `nexo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0052` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0053` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0054` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0055` | `fogo` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0056` | `fogo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0057` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0058` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0059` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0060` | `fogo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0061` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0062` | `fogo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0063` | `fogo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0064` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0065` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0066` | `fogo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0067` | `fogo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0068` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0069` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0070` | `origo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0071` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0072` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0073` | `origo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0074` | `origo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0075` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0076` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0077` | `origo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0078` | `origo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0079` | `origo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0080` | `pulso` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0081` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0082` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0083` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0084` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0085` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0086` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0087` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0088` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0089` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0090` | `pulso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0091` | `pulso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0092` | `pulso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0093` | `pulso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0094` | `numera` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0095` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0096` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0097` | `numera` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0098` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0099` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0100` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0101` | `numera` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0102` | `numera` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0103` | `numera` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0104` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0105` | `numera` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0106` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0107` | `pass` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0108` | `pass` | `CONTEXTUAL_ONLY` | `USAB-PROFILE-CONTEXTUAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0109` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0110` | `pass` | `CONTEXTUAL_ONLY` | `USAB-PROFILE-CONTEXTUAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0111` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0112` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0113` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0114` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0115` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0116` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0117` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0118` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0119` | `viso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0120` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0121` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0122` | `viso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0123` | `viso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0124` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0125` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0126` | `anima` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0127` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0128` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0129` | `anima` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0130` | `anima` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0131` | `anima` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0132` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0133` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0134` | `nexo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0135` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0136` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0137` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0138` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0139` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0140` | `nexo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0141` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0142` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0143` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0144` | `nexo` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0145` | `origo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0146` | `origo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0147` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0148` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0149` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0150` | `pulso` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0151` | `pulso` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0152` | `pulso` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0153` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0154` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0155` | `numera` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0156` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0157` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0158` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0159` | `numera` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0160` | `pass` | `ENTRY_RETURN` | `USAB-PROFILE-ENTRY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0161` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0162` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0163` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0164` | `pass` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0165` | `pass` | `CONTEXTUAL_ONLY` | `USAB-PROFILE-CONTEXTUAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0166` | `pass` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0167` | `pass` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0168` | `pass` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0169` | `pass` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0170` | `pass` | `WORK_ELIGIBLE` | `USAB-PROFILE-WORK-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0171` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0172` | `pass` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0173` | `fogo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0174` | `fogo` | `CONDITIONAL_WORK` | `USAB-PROFILE-CONDITIONAL-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0175` | `shell` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0176` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+| `VSCREEN-0177` | `nexo` | `SECONDARY_DISCOVERABLE` | `USAB-PROFILE-SECONDARY-001` | 0 errores críticos aplicables | `PENDIENTE_DE_EVIDENCIA` |
+
+Reconciliación por clase:
+
+| Clase | Esperado | Materializado |
+| --- | ---: | ---: |
+| `WORK_ELIGIBLE` | 75 | 75 |
+| `SECONDARY_DISCOVERABLE` | 48 | 48 |
+| `CONDITIONAL_WORK` | 39 | 39 |
+| `ENTRY_RETURN` | 9 | 9 |
+| `CONTEXTUAL_ONLY` | 6 | 6 |
+| **Total** | **177** | **177** |
 
 ---
 
-#### 13. `NEXO-USABILITY-CRITERIA-HANDOFF-001`
+#### 9. `APPLICATION-SINGLE-FORM-USABILITY-CRITERIA-CONTRACT-001`
 
-| Destino       | Handoff aprobado                                                                    |
-| ------------- | ----------------------------------------------------------------------------------- |
-| `AUTH-UI-058` | ejecutar sesiones reales con el prototipo visual y el cuestionario único            |
-| `AUTH-UI-059` | registrar problemas derivados de los campos y criterios fallidos                    |
-| `AUTH-UI-060` | decidir aprobación final por pantalla con evidencia, criterios y problemas cerrados |
+Todas las superficies usan un único shape lógico de recolección. El formulario o instrumento físico puede cambiar de soporte, pero los campos de evidencia no se fragmentan por rol o aplicación.
 
-Ningún destino anterior se inicia mediante esta tarea.
+| Campo | Uso |
+| --- | --- |
+| `session_id` | identidad técnica de sesión, sin dato personal directo |
+| `participant_code` | código pseudónimo del participante |
+| `app_code` | aplicación o soporte transversal evaluado |
+| `screen_id` | `VSCREEN-*` evaluada |
+| `prototype_id` | perfil/prototipo usado |
+| `function_tested` | función, relación o contexto probado |
+| `device_mode` | móvil, tablet, escritorio o estación compartida simulada |
+| `scenario_variant` | normal o recuperación |
+| `reduction_class` | clase heredada de 054 |
+| `criterion_profile_id` | perfil de criterio aplicable |
+| `found_correct_action` | si localizó la acción, retorno o capacidad esperada |
+| `time_to_action_seconds` | tiempo observado hasta la acción o decisión objetivo |
+| `wrong_openings` | aperturas incorrectas previas |
+| `moderator_help` | si necesitó ayuda y motivo |
+| `context_understanding` | comprensión de actor, función, alcance, dispositivo o relación |
+| `effect_understanding` | comprensión del efecto de una acción sensible |
+| `recovery_behavior` | conducta frente a cambio, retiro, parcialidad, conflicto o fallo |
+| `critical_error` | sí/no |
+| `critical_error_class` | `USAB-CRIT-*` cuando aplique |
+| `difficulty_1_to_7` | dificultad subjetiva |
+| `accessibility_blocker` | bloqueo observable del camino crítico |
+| `participant_comment` | comentario del participante |
+| `observer_notes` | evidencia cualitativa del observador |
+| `proposed_issue_id` | vínculo propuesto con `AUTH-UI-059` |
+
+Reglas de datos:
+
+- `participant_code` no contiene nombre, documento, correo ni teléfono;
+- los prototipos y sesiones usan datos ficticios o minimizados;
+- `screen_id`, `app_code`, `criterion_profile_id` y variante deben quedar presentes en cada registro válido;
+- `critical_error_class` se usa solo cuando existe error crítico;
+- `proposed_issue_id` es trazabilidad hacia 059 y no crea por sí mismo un problema aprobado.
 
 ---
 
-#### 14. Traza histórica del carril NEXO
+#### 10. Mapeo de scoring y decisión
 
-> Esta fotografía dejó de ser continuidad vigente. Se conserva únicamente como evidencia de la ejecución parcial que originó los artefactos NEXO.
+| Campo | Dimensión | Regla |
+| --- | --- | --- |
+| `found_correct_action` | localización/éxito | `no` => `REQUIERE_AJUSTE` o `BLOQUEADA` según la causa |
+| `wrong_openings` | fricción | más de una => `REQUIERE_AJUSTE`, salvo que revele error crítico |
+| `moderator_help` | autonomía | ayuda para contexto básico o acción principal => `REQUIERE_AJUSTE` o `BLOQUEADA` si encubre error crítico |
+| `context_understanding` | contexto/autoridad | confusión crítica de actor, función, alcance o dispositivo => `BLOQUEADA` |
+| `effect_understanding` | seguridad | comprensión incorrecta en acción sensible => `BLOQUEADA` |
+| `recovery_behavior` | recuperación | pérdida, duplicación, bypass o falso éxito => `BLOQUEADA` |
+| `critical_error` | seguridad/privacidad/custodia | cualquier `sí` => `BLOQUEADA` |
+| `difficulty_1_to_7` | carga cognitiva | mediana > 3 cuando exista pluralidad de sesiones => `REQUIERE_AJUSTE` |
+| `accessibility_blocker` | accesibilidad observable | bloqueo del camino crítico => `BLOQUEADA` |
+| `time_to_action_seconds` | esfuerzo | se registra para comparación/diagnóstico; no bloquea por sí solo sin umbral específico aprobado |
+| `participant_comment` | diagnóstico | no decide por sí solo |
+| `observer_notes` | diagnóstico | sustenta clasificación en `AUTH-UI-059` |
+
+No se usa un promedio agregado para neutralizar una violación crítica. Una superficie con un solo error crítico aplicable permanece bloqueada hasta corrección y retest suficiente.
+
+---
+
+#### 11. `APPLICATION-CRITICAL-ERROR-CATALOG-001`
+
+| ID | Error crítico | Definición | Efecto |
+| --- | --- | --- | --- |
+| `USAB-CRIT-01` | mezcla de función o autoridad | la persona intenta o interpreta trabajo reservado a otra función/autoridad | `BLOQUEADA` |
+| `USAB-CRIT-02` | dato de otro actor o alcance | se revela o interpreta como propio trabajo/dato fuera del actor, relación, sede, área o alcance | `BLOQUEADA` |
+| `USAB-CRIT-03` | acción prohibida | la interfaz induce aprobación, ajuste, recepción, pago, configuración u otra acción sin autoridad | `BLOQUEADA` |
+| `USAB-CRIT-04` | falso éxito | la persona cree que un efecto quedó confirmado sin confirmación suficiente | `BLOQUEADA` |
+| `USAB-CRIT-05` | doble efecto | la recuperación induce repetir una acción cuyo resultado previo es desconocido | `BLOQUEADA` |
+| `USAB-CRIT-06` | pérdida de custodia o responsabilidad | la superficie impide identificar quién conserva responsabilidad material u operacional | `BLOQUEADA` |
+| `USAB-CRIT-07` | bloqueo accesible crítico | el medio usado no permite llegar, comprender o activar el control crítico aplicable | `BLOQUEADA` |
+| `USAB-CRIT-08` | persistencia entre actores | un dispositivo compartido conserva datos, recientes u opciones del actor anterior | `BLOQUEADA` |
+
+Regla de tolerancia:
+
+```text
+CRITICAL_ERROR_COUNT > 0
+→
+BLOQUEADA
+```
+
+La severidad exacta y el tratamiento del hallazgo se registran en `AUTH-UI-059`. La existencia del error ya impide considerar la superficie conforme.
+
+---
+
+#### 12. `APPLICATION-SCREEN-DECISION-RULES-001`
+
+| Decisión | Condición |
+| --- | --- |
+| `CONFORME_PARA_CIERRE` | evidencia suficiente; criterio principal satisfecho; recuperación correcta cuando aplique; cero error crítico; dificultad dentro del umbral aplicable |
+| `REQUIERE_AJUSTE` | fricción, confusión o dificultad no crítica que exige corrección y retest antes de cierre |
+| `BLOQUEADA` | al menos un error crítico aplicable o un incumplimiento que impide uso seguro |
+| `PENDIENTE_DE_EVIDENCIA` | la superficie no fue probada, la muestra no permite evaluar el criterio aplicable o falta evidencia de una variante requerida |
+
+Orden de precedencia:
+
+```text
+ERROR CRITICO
+>
+EVIDENCIA SUFICIENTE
+>
+CRITERIO PRINCIPAL DEL PERFIL
+>
+RECUPERACION CUANDO APLICA
+>
+AYUDA / APERTURAS INCORRECTAS
+>
+DIFICULTAD
+>
+TIEMPO COMO DIAGNOSTICO
+```
+
+Una pantalla no puede pasar de `PENDIENTE_DE_EVIDENCIA` a `CONFORME_PARA_CIERRE` por inferencia documental.
+
+---
+
+#### 13. `APPLICATION-PROBLEM-ROUTING-AND-SESSION-SCHEMA-001`
+
+Todo problema que surja en 058 y requiera corrección se enruta a 059 con:
+
+| Campo obligatorio de problema | Propósito |
+| --- | --- |
+| `issue_id` | identidad estable del hallazgo |
+| `screen_id` | superficie afectada |
+| `app_code` | aplicación |
+| `prototype_id` | perfil usado |
+| `function_tested` | función/contexto |
+| `device_mode` | medio de interacción |
+| `scenario_variant` | normal/recuperación |
+| `criterion_failed` | dimensión o perfil incumplido |
+| `critical_error_class` | clase crítica cuando aplique |
+| `severity` | severidad a registrar en 059 |
+| `evidence_reference` | sesión/registro que demuestra el hallazgo |
+| `owner` | responsable de corrección |
+| `required_correction` | resultado esperado de la corrección |
+| `retest_condition` | evidencia necesaria para cerrar |
+
+Resumen agregado mínimo de 058:
+
+| Campo agregado | Descripción |
+| --- | --- |
+| `tested_screens` | superficies ejecutadas con evidencia válida |
+| `participants_count` | participantes codificados |
+| `sessions_count` | registros válidos |
+| `screens_conformant` | superficies que cumplen criterios con evidencia suficiente |
+| `screens_requiring_adjustment` | superficies con fricción no crítica |
+| `screens_blocked` | superficies con error crítico o bloqueo |
+| `screens_pending_evidence` | superficies todavía no evaluables |
+| `issues_to_register` | problemas que pasan a `AUTH-UI-059` |
+| `screens_ready_for_auth_ui_060` | candidatas a decisión final |
+
+La salida agregada nunca sustituye la evidencia por pantalla. `AUTH-UI-060` decide con trazabilidad hacia registros válidos y problemas cerrados.
+
+---
+
+#### 14. Preservación del perfil histórico NEXO
+
+Las dieciséis vistas históricas, ocho contextos y el cuestionario `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001` permanecen como antecedente específico.
+
+Mapeo:
+
+```text
+NEXO SCREEN-055-* / PROTO-NEXO-*
+→
+VSCREEN NEXO Y PERFIL GLOBAL APLICABLE
+→
+MISMAS 8 DIMENSIONES GLOBALIZADAS
+→
+MISMO GATE DE ERROR CRITICO
+```
+
+No se asume que una pantalla NEXO probada represente otra aplicación. No se crean formularios separados para NEXO salvo que una tarea posterior documente una necesidad específica.
+
+---
+
+#### 15. Hallazgos y pendientes transferidos
+
+| Hallazgo | Qué falta | Bloquea 057 | Propietario | Condición exacta de salida |
+| --- | --- | --- | --- | --- |
+| `PRETEST-057-001` | evidencia humana por pantalla y escenario aplicable | no | `AUTH-UI-058` | ejecutar sesiones y producir registros válidos con `screen_id`, criterio y variante |
+| `PRETEST-057-002` | problemas reales derivados de criterios fallidos | no | `AUTH-UI-059` | cada hallazgo tenga severidad, evidencia, owner, corrección y retest |
+| `PRETEST-057-003` | decisión final por superficie | no | `AUTH-UI-060` | evidencia suficiente, cero error crítico abierto y problemas requeridos cerrados |
+
+No quedan pendientes narrativos sin propietario.
+
+---
+
+#### 16. `APPLICATION-USABILITY-CRITERIA-HANDOFF-001`
+
+`AUTH-UI-058` recibe exactamente:
+
+```text
+177 SCREEN_ID
++
+5 PERFILES DE CRITERIO
++
+8 DIMENSIONES
++
+24 CAMPOS DE REGISTRO
++
+8 ERRORES CRITICOS
++
+4 ESTADOS DE DECISION
++
+REGLAS DE SCORING
++
+29 PERFILES / 58 VARIANTES DE PROTOTIPO
+```
+
+Handoff:
+
+| Destino | Responsabilidad |
+| --- | --- |
+| `AUTH-UI-058` | ejecutar sesiones reales y poblar evidencia sin inventar resultados |
+| `AUTH-UI-059` | registrar, asignar, corregir y retestar problemas |
+| `AUTH-UI-060` | decidir aprobación final por pantalla con evidencia suficiente |
+
+---
+
+#### 17. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación: la tarea define la metodología documental de medición y decisión para superficies ya existentes. No introduce comportamiento ejecutable, autorización, regla de negocio, integración, dato persistente, ruta, pantalla canónica ni efecto empresarial nuevo; tampoco crea, modifica, difiere, descarta o declara obsoleto ningún requisito histórico. El registro canónico de requisitos de prueba no cambia.
+
+---
+
+#### 18. Cobertura de prueba vigente reutilizada
+
+Se reutilizan sin modificación los requisitos existentes que cubren autorización, actor/función/contexto, navegación, reducción de opciones, dispositivo compartido, privacidad, masking, recuperación, accesibilidad, estados críticos y contratos específicos de cada aplicación.
+
+Esta sección es trazabilidad heredada y no altera 04A.
+
+---
+
+#### 19. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout después del cierre de 056 y la incorporación de este artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, BLOQUE I, topología y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron la identidad y alcance canónicos de 057, el bloque propietario, la rectificación 052..060, la topología `DEFINE_ONCE`, `NO_PHYSICAL_INSTANCE`, `package.json`, preflight, formatter, quality, delivery, lifecycle y validadores aplicables; la base 056 proviene de su versión completa aprobada mientras su publicación remota permanece pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones, tiempos, observaciones, participantes ni resultados de usabilidad. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea instancia física propia ni modifica código, datos, Supabase o despliegues. |
+
+---
+
+#### 20. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se confirma que:
+
+- [ ] existen exactamente diez decisiones de la rectificación, con ocho `APLICA` y dos `NO_APLICA`;
+- [ ] SHELL conserva siete superficies de soporte sin alterar la matriz de diez aplicaciones;
+- [ ] AURA conserva cero superficies;
+- [ ] las 177 `VSCREEN-*` aparecen exactamente una vez;
+- [ ] cada superficie conserva `app_code` y clase heredados;
+- [ ] existen cinco perfiles de criterio, uno por clase de reducción;
+- [ ] la distribución es 75/48/39/9/6 y suma 177;
+- [ ] existen ocho dimensiones globales;
+- [ ] existen veinticuatro campos de registro global;
+- [ ] existen ocho errores críticos y todos tienen tolerancia cero;
+- [ ] existen cuatro estados de decisión por pantalla;
+- [ ] cada superficie inicia `PENDIENTE_DE_EVIDENCIA`;
+- [ ] el tiempo no recibe un umbral universal inventado;
+- [ ] la dificultad usa mediana objetivo solo cuando exista pluralidad de sesiones válidas;
+- [ ] ninguna media o mediana puede neutralizar un error crítico;
+- [ ] NEXO queda preservado como perfil específico y no como sustituto global;
+- [ ] los problemas se enrutan a 059 con evidencia, owner y retest;
+- [ ] la aprobación final permanece en 060;
+- [ ] no se ejecutan usuarios ni se inventan resultados;
+- [ ] no se crean o modifican requisitos de prueba;
+- [ ] `AUTH-UI-058` permanece únicamente reservada.
+
+---
+
+#### 21. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
-
 `AUTH-UI-056 — Validar prototipo antes de implementar`
 
 **TAREA ACTUAL APROBADA**
-
 `AUTH-UI-057 — Definir criterio de usabilidad por pantalla`
 
 **SIGUIENTE TAREA RESERVADA**
-
 `AUTH-UI-058 — Probar con usuarios reales`
 
 ### [ ] AUTH-UI-058 — Probar con usuarios reales
