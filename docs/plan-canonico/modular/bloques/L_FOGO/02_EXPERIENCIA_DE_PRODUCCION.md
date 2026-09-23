@@ -4634,7 +4634,1068 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-007 — Diseñar finalización de lote`
 
-### [ ] FOGO-UX-007 — Diseñar finalización de lote
+### ✅ FOGO-UX-007 — Diseñar finalización de lote
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-006 — Diseñar producción parcial
+**Tarea siguiente:** FOGO-UX-008 — Mostrar receta resumida para operación
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0060` para finalizar una ejecución productiva y conducir su cierre productivo conciliado sin fusionar resultado, consumos, calidad, empaque, inventario, reproceso ni correcciones, preservando actor/turno, territorio, estados/versiones, idempotencia, concurrencia, evidencia y handoffs propietarios
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la experiencia canónica de finalización de un lote para que FOGO pueda distinguir de forma inequívoca **terminar la ejecución productiva** de **aprobar el cierre productivo conciliado**, sin convertir ninguno de esos hitos en liberación de calidad, ingreso a inventario, disponibilidad comercial, corrección histórica o movimiento físico de NEXO.
+
+La regla raíz queda:
+
+```text
+EJECUCION PRODUCTIVA EXISTENTE
++
+RESULTADO PRODUCTIVO REGISTRADO
++
+CONSUMOS Y DIFERENCIAS EN ESTADO EXIGIBLE
++
+ACTOR + TURNO + SEDE + AREA FRESCOS
++
+AUTORIDAD EXACTA DE LA ACCION
++
+ESTADO + VERSION VIGENTES
++
+EVIDENCIA SUFICIENTE DEL HITO
++
+IDENTIDAD IDEMPOTENTE + CONTROL DE CONCURRENCIA
+=
+TRANSICION DE FINALIZACION AUTORIZABLE
+```
+
+La experiencia conserva dos verdades distintas:
+
+```text
+FINALIZACION OPERATIVA
+=
+VPROC-0034.PRODUCTION_EXECUTION_COMPLETED
+
+!=
+
+CIERRE PRODUCTIVO CONCILIADO
+=
+VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED
+```
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-006
+
+`FOGO-UX-006` entrega una ejecución real y reconstruible con, como mínimo:
+
+```text
+LOTE / PROCESS_INSTANCE DURABLE
+ESTADO Y VERSION ACTUALES
+ORDEN + VERSION
+RECETA + VERSION EXACTA
+CANTIDAD OBJETIVO + UNIDAD
+CAPTURAS PARCIALES INMUTABLES
+ACUMULADO PRODUCTIVO VERIFICADO
+PASOS / TIEMPOS / PAUSAS / INCIDENCIAS CUANDO APLIQUEN
+MATERIALES Y CONSUMOS PRODUCTIVOS CAPTURADOS
+REFERENCIAS NEXO Y SU ESTADO DE CONCILIACION
+SALIDAS PARCIALES / RENDIMIENTO / MERMA OBSERVADOS
+DIFERENCIAS ABIERTAS
+ACTORES / TURNOS DE CADA CAPTURA
+CORRELACION / IDEMPOTENCIA / VERSIONES
+PENDIENTES Y BLOQUEOS NO OCULTOS
+```
+
+`FOGO-UX-007` no reescribe esos parciales ni usa el último registro como sustituto del expediente completo.
+
+Si la ejecución todavía carece de hechos requeridos para finalizar, la experiencia mantiene el lote abierto y conduce al propietario funcional correspondiente en vez de fabricar datos de cierre.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el contrato UX de finalización se define una sola vez;
+2. no existe instancia física propia de `FOGO-UX-007`;
+3. esta tarea no implementa componentes, RPC, estados, permisos, almacenamiento ni movimientos;
+4. la materialización posterior consume este contrato sin reinterpretar qué significa finalizar, cerrar, liberar, conciliar o publicar inventario;
+5. cualquier modificación de Supabase perteneciente a VENTO continúa bajo `vento-group-sas/vento-shell` y la unidad física propietaria aplicable.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-005 — Diseñar inicio de lote`;
+- `FOGO-UX-006 — Diseñar producción parcial`;
+- `FOGO-AUTH-011 — Proteger finalización`;
+- `FOGO-AUTH-012 — Proteger correcciones y anulaciones` como frontera posterior;
+- `FOGO-AUTH-014 — Registrar actor y turno`;
+- `VSCREEN-0060 — Finalización y cierre de lote`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- `VPROC-0037 — Gestionar reproceso, aprovechamiento, rendimiento, merma y cierre productivo`;
+- `VPROC-0037::STEP-CLOSE_BATCH — Finalizar y cerrar lote`;
+- estados y eventos canónicos de `VPROC-0034`, `VPROC-0035`, `VPROC-0036` y `VPROC-0037`;
+- `INT-PROD-002 — Definir contrato para que NEXO registre el consumo`;
+- `INT-PROD-003 — Definir contrato para que FOGO finalice el lote`;
+- fronteras de `INT-PROD-004` para ingreso físico de producto terminado;
+- Registro 04A vigente de FOGO, autorización e integración;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`;
+- versión completa aprobada de `FOGO-UX-006 — Diseñar producción parcial` como dependencia inmediata mientras su incorporación remota permanece pendiente durante esta preparación anticipada.
+
+---
+
+#### 5. Identidad canónica de la superficie
+
+| Dimensión | Identidad |
+| --- | --- |
+| Pantalla | `VSCREEN-0060 — Finalización y cierre de lote` |
+| Aplicación | `fogo` |
+| Proceso propietario de la pantalla | `VPROC-0037` |
+| Paso primario | `VPROC-0037::STEP-CLOSE_BATCH — Finalizar y cerrar lote` |
+| Interacción | `CLOSE` |
+| Momento | `TERMINAL` |
+| Acción funcional primaria | `VSCREEN-0060::PRIMARY` |
+| Recurso empresarial | `PRODUCTION_BATCH` |
+| Proceso precedente | `VPROC-0034` |
+| Procesos relacionados | `VPROC-0035`, `VPROC-0036` y NEXO mediante contratos de inventario |
+
+`VSCREEN-0060` pertenece a `VPROC-0037`. La superficie puede mostrar la preparación y elegibilidad de la finalización operativa precedente, pero no reasigna la propiedad de `VPROC-0034` ni fusiona ambos procesos en un único estado local.
+
+---
+
+#### 6. Dos hitos que la experiencia no puede fusionar
+
+La UX presenta explícitamente dos hitos:
+
+| Hito | Estado canónico | Verdad que demuestra | Lo que NO demuestra |
+| --- | --- | --- | --- |
+| finalización operativa | `VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` | materiales, pasos, cantidades, desviaciones, rendimiento y salida quedaron registrados y el expediente fue entregado a calidad | calidad liberada, empaque conciliado, ingreso NEXO, disponibilidad o cierre productivo definitivo |
+| cierre productivo conciliado | `VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` | consumos, salida, merma, reproceso, rendimiento, movimientos y pendientes quedaron conciliados y el cierre fue aprobado | permiso para reescribir historia, modificar calidad retroactivamente o recrear movimientos |
+
+Queda prohibido usar una sola etiqueta como:
+
+```text
+completed
+posted
+closed
+finished
+ready
+```
+
+para representar simultáneamente ambos hitos y sus dependencias.
+
+---
+
+#### 7. Condición de entrada al flujo de finalización
+
+La experiencia puede abrirse desde una ejecución activa o desde una ejecución ya terminada/interrumpida que requiera cierre productivo, pero cada acción disponible depende del estado real.
+
+La UX debe poder resolver:
+
+- lote y `process_instance`;
+- estado/version de `VPROC-0034`;
+- estado/version de `VPROC-0037` cuando ya exista;
+- orden y versión;
+- receta y versión exacta;
+- área y sede persistidas;
+- cantidades objetivo y reales confirmadas;
+- parciales y acumulados;
+- materiales, consumos, retornos y diferencias;
+- salida, rendimiento, merma y desviaciones registradas;
+- estado de calidad cuando aplique;
+- estado de empaque cuando aplique;
+- efectos NEXO exigibles y su resultado;
+- actor, turno, dispositivo y autoridad actuales;
+- pendientes que impidan cada hito.
+
+Abrir la pantalla no ejecuta ninguna transición terminal.
+
+---
+
+#### 8. Secuencia de finalización operativa de VPROC-0034
+
+La progresión relevante se conserva exactamente:
+
+```text
+VPROC-0034.IN_PRODUCTION
+→ VPROC-0034.OUTPUT_REPORTED
+→ VPROC-0034.CONSUMPTION_RECONCILIATION_PENDING
+→ VPROC-0034.READY_FOR_QUALITY
+→ VPROC-0034.PRODUCTION_EXECUTION_COMPLETED
+```
+
+La UX no permite saltar una condición requerida porque visualmente “parezca terminado”.
+
+En particular:
+
+```text
+OUTPUT_REPORTED
+!= PRODUCTION_EXECUTION_COMPLETED
+
+CONSUMPTION_RECONCILIATION_PENDING
+!= PRODUCTION_EXECUTION_COMPLETED
+
+READY_FOR_QUALITY
+!= QUALITY_RELEASED
+```
+
+---
+
+#### 9. Resultado productivo reportado
+
+`VPROC-0034.OUTPUT_REPORTED` representa que las salidas, rendimiento y merma requeridos para el hito fueron registrados como resultado productivo, todavía sin liberación de calidad.
+
+La 007 no redefine el formulario detallado de cantidades, desperdicio y resultado.
+
+Si esos datos están incompletos o requieren captura/rectificación, la experiencia remite a la responsabilidad de `FOGO-UX-010 — Registrar cantidades, desperdicio y resultado` y mantiene el hito bloqueado.
+
+Por tanto:
+
+```text
+FOGO-UX-007
+CONSUME / VERIFICA RESULTADO CONFIRMADO
+
+FOGO-UX-010
+DISEÑA EL REGISTRO DETALLADO DEL RESULTADO
+```
+
+La finalización no inventa cantidades para lograr que el cierre pase.
+
+---
+
+#### 10. Conciliación de consumos antes de completar ejecución
+
+`VPROC-0034.CONSUMPTION_RECONCILIATION_PENDING` distingue el resultado productivo de la verdad física de inventario.
+
+Antes de afirmar una finalización operativa normal, FOGO debe conocer el estado exigible de cada material relevante, incluyendo cuando aplique:
+
+- cantidad requerida;
+- cantidad reservada;
+- cantidad emitida físicamente;
+- cantidad clasificada como consumida;
+- cantidad devuelta;
+- cantidad desperdiciada;
+- diferencia;
+- operación NEXO relacionada;
+- estado de conciliación;
+- resultado pendiente, incierto o conflictivo.
+
+Una captura FOGO de uso no sustituye la conciliación NEXO.
+
+---
+
+#### 11. Handoff `READY_FOR_QUALITY`
+
+`VPROC-0034.READY_FOR_QUALITY` representa que el lote y su expediente están disponibles para inspección y decisión de calidad.
+
+La experiencia muestra esta verdad sin presentarla como:
+
+- liberación;
+- conformidad;
+- ingreso a inventario;
+- empaque terminado;
+- disponibilidad comercial;
+- cierre productivo.
+
+La disposición de calidad permanece en `VPROC-0035`.
+
+---
+
+#### 12. Finalización operativa
+
+`VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` se ejecuta únicamente cuando el expediente puede demostrar, como mínimo:
+
+- materiales aplicables tratados conforme al expediente;
+- pasos y controles aplicables registrados;
+- cantidades reales de salida registradas;
+- desviaciones y rendimiento registrados;
+- resultado productivo identificado;
+- consumos en el estado de conciliación exigible;
+- handoff a calidad disponible;
+- versión vigente del recurso;
+- ausencia de transición concurrente incompatible;
+- actor/contexto y autoridad exacta válidos en el punto de efecto.
+
+La acción produce el hecho durable asociado a:
+
+```text
+VPROC-0034.EVT-006
+=
+EJECUCION PRODUCTIVA COMPLETADA
+```
+
+No se emite por abrir la pantalla, registrar un parcial, obtener HTTP 200, seleccionar un status cliente o iniciar calidad.
+
+---
+
+#### 13. Qué ocurre después de la finalización operativa
+
+Una ejecución operativamente completada:
+
+- no vuelve a aceptar parciales ordinarios;
+- no aparece como producción pendiente de iniciar;
+- conserva todos sus hechos históricos;
+- queda disponible para los procesos de calidad y cierre que correspondan;
+- no se convierte automáticamente en producto liberado;
+- no crea stock disponible;
+- no confirma empaque;
+- no aprueba cierre productivo.
+
+La UX debe mostrar claramente que “ejecución terminada” todavía puede conservar trabajo posterior.
+
+---
+
+#### 14. Apertura del cierre productivo
+
+Una ejecución terminada o interrumpida con hechos suficientes para reconciliar puede abrir:
+
+```text
+VPROC-0037.PRODUCTION_CLOSEOUT_OPENED
+```
+
+Abrir el cierre demuestra únicamente que existe un caso productivo que debe conciliarse.
+
+No demuestra:
+
+- rendimiento final aceptado;
+- merma final aceptada;
+- reproceso aprobado;
+- efectos NEXO confirmados;
+- inventario conciliado;
+- cierre definitivo.
+
+La apertura puede producir `VPROC-0037.EVT-001` únicamente cuando el proceso quedó creado de forma durable.
+
+---
+
+#### 15. Máquina de cierre productivo preservada
+
+La experiencia conserva la máquina canónica:
+
+```text
+VPROC-0037.PRODUCTION_CLOSEOUT_OPENED
+→ VPROC-0037.DATA_COLLECTING
+→ VPROC-0037.YIELD_RECONCILIATION_IN_PROGRESS
+→ VPROC-0037.VARIANCE_UNDER_REVIEW
+→ VPROC-0037.REWORK_PLAN_PENDING
+→ VPROC-0037.REWORK_IN_PROGRESS
+→ VPROC-0037.INVENTORY_EFFECTS_PENDING
+→ VPROC-0037.CLOSURE_REVIEW_PENDING
+→ VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED
+```
+
+No todos los lotes deben materializar cada estado cuando el contrato propietario permita no aplicabilidad o una ruta válida, pero la UI nunca salta o fabrica estados para esconder una obligación real.
+
+---
+
+#### 16. Recopilación de datos de cierre
+
+En `VPROC-0037.DATA_COLLECTING`, la UX consolida referencias verificables sin crear copias editables que compitan con sus propietarias.
+
+Puede reunir:
+
+- orden y receta/version;
+- parciales productivos;
+- resultado confirmado;
+- consumos NEXO;
+- devoluciones y diferencias;
+- rendimiento esperado y real;
+- merma, desperdicio, coproducto o subproducto;
+- incidencias y desviaciones;
+- calidad y disposición cuando ya existan;
+- empaque cuando aplique;
+- movimientos NEXO confirmados;
+- actores, tiempos y evidencia.
+
+La recopilación no “normaliza” una diferencia alterando el hecho fuente.
+
+---
+
+#### 17. Conciliación de rendimiento
+
+`VPROC-0037.YIELD_RECONCILIATION_IN_PROGRESS` compara el estándar de la receta/version con el resultado real.
+
+La UX distingue:
+
+```text
+RENDIMIENTO ESPERADO
+!=
+SALIDA REAL PRODUCTIVA
+!=
+SALIDA FISICAMENTE INGRESADA A NEXO
+```
+
+La comparación utiliza identidades, unidades, conversiones, redondeos y tolerancias compatibles.
+
+Una diferencia no desaparece porque el resultado sea “aceptable visualmente”.
+
+---
+
+#### 18. Variaciones bajo revisión
+
+Una diferencia material que requiera investigación entra en:
+
+```text
+VPROC-0037.VARIANCE_UNDER_REVIEW
+```
+
+La experiencia puede mostrar, cuando aplique:
+
+- magnitud de la diferencia;
+- dimensión afectada;
+- referencia esperada y real;
+- causa conocida o investigación pendiente;
+- responsable/propietario de resolución;
+- impacto en calidad, inventario, reproceso o costo;
+- estado de resolución.
+
+No se permite aprobar el cierre introduciendo una causa vacía cuando el proceso exige explicación.
+
+---
+
+#### 19. Reproceso y aprovechamiento
+
+Si una variación exige reproceso, `VPROC-0037` utiliza su ruta propietaria:
+
+```text
+REWORK_PLAN_PENDING
+→ REWORK_IN_PROGRESS
+```
+
+La 007 no diseña el detalle funcional del reproceso ni reemplaza `VSCREEN-0067`.
+
+La experiencia sí debe impedir un cierre definitivo mientras un reproceso aplicable que afecta el resultado permanezca abierto.
+
+El reproceso conserva genealogía y no agrega consumos retroactivamente al hecho original.
+
+---
+
+#### 20. Efectos de inventario pendientes
+
+`VPROC-0037.INVENTORY_EFFECTS_PENDING` significa:
+
+```text
+RESULTADO PRODUCTIVO SUFICIENTEMENTE VALIDADO
++
+EFECTOS FISICOS EXIGIBLES TODAVIA PENDIENTES O EN VERIFICACION
+```
+
+No significa que el inventario ya fue actualizado.
+
+La UX distingue:
+
+- efecto requerido;
+- solicitud o handoff emitido;
+- resultado NEXO pendiente;
+- resultado incierto;
+- movimiento aplicado;
+- posting/reconciliación según contrato;
+- diferencia abierta.
+
+`FOGO-UX-013` conserva el diseño específico del vínculo de producto terminado con NEXO.
+
+---
+
+#### 21. Revisión previa al cierre definitivo
+
+`VPROC-0037.CLOSURE_REVIEW_PENDING` presenta una revisión de coherencia, no un formulario para modificar hechos hasta que “cuadren”.
+
+Debe verificar, según aplicabilidad:
+
+- ejecución y resultado productivos;
+- materiales y consumos conciliados;
+- devoluciones, mermas y ajustes resueltos;
+- rendimiento conciliado;
+- variaciones explicadas o tratadas;
+- reproceso resuelto;
+- disposición de calidad coherente;
+- empaque y presentación aplicables;
+- efectos físicos NEXO confirmados/correlacionados;
+- pendientes explícitos;
+- actor/contexto y autoridad vigentes para aprobar.
+
+Un pendiente obligatorio mantiene el cierre abierto.
+
+---
+
+#### 22. Cierre productivo aprobado
+
+`VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` solo se afirma cuando los hechos exigibles quedaron conciliados y la revisión terminó con autoridad válida.
+
+La verdad final es:
+
+```text
+CIERRE PRODUCTIVO APROBADO
+=
+CONCILIACION ACEPTADA
++
+AUTORIDAD DE CIERRE VALIDA
++
+EVIDENCIA DURABLE
+```
+
+La transición produce el hecho durable:
+
+```text
+VPROC-0037.EVT-006
+=
+PRODUCTION_CLOSEOUT_APPROVED
+=
+PROCESS_COMPLETED DE VPROC-0037
+```
+
+El cierre conserva las divergencias resueltas y su explicación; no las borra.
+
+---
+
+#### 23. Frontera con FOGO-UX-010
+
+`FOGO-UX-010 — Registrar cantidades, desperdicio y resultado` conserva la propiedad del diseño detallado de captura de:
+
+- cantidades finales;
+- desperdicio/merma;
+- resultado productivo;
+- rendimiento observable;
+- motivos y diferencias aplicables.
+
+La 007:
+
+- consume esos hechos confirmados;
+- presenta su completitud;
+- bloquea o deriva cuando faltan;
+- los usa como evidencia para progresar estados;
+- no redefine su formulario ni su autoridad de captura.
+
+Así se evita que “Finalizar” se convierta en un formulario monolítico que además invente el resultado.
+
+---
+
+#### 24. Frontera con calidad
+
+`VPROC-0035` conserva la decisión de calidad.
+
+La experiencia mantiene:
+
+```text
+PRODUCTION_EXECUTION_COMPLETED
+!=
+QUALITY_DISPOSITION_VERIFIED
+```
+
+Y no supone una secuencia artificial en la que la verificación final de calidad deba existir siempre antes de cualquier efecto NEXO: cuando la disposición requiere comprobar su aplicación física, un resultado NEXO reconciliado puede formar parte de la evidencia usada durante `VPROC-0035.EXECUTION_VERIFICATION_PENDING` para alcanzar después `QUALITY_DISPOSITION_VERIFIED`.
+
+Por tanto, la 007 muestra dependencias reales y no fabrica un orden circular imposible.
+
+---
+
+#### 25. Frontera con empaque y etiquetado
+
+`VPROC-0036` conserva su propio ciclo.
+
+La finalización puede correlacionar:
+
+- lote;
+- salida autorizada;
+- presentación;
+- cantidad empacada;
+- etiqueta;
+- LPN cuando exista;
+- diferencias;
+- estado de conciliación del empaque.
+
+Pero:
+
+```text
+PACKAGED_OUTPUT_RECORDED
+!=
+PRODUCTION_CLOSEOUT_APPROVED
+```
+
+El cierre tampoco crea etiqueta, LPN ni identidad logística nueva.
+
+---
+
+#### 26. Frontera con NEXO e inventario
+
+FOGO conserva la verdad productiva; NEXO conserva la verdad física.
+
+La 007 no puede afirmar por sí sola:
+
+- saldo disponible;
+- LOC final;
+- LPN final;
+- movimiento aplicado;
+- posting reconciliado;
+- existencia vendible;
+- producto despachable.
+
+Un estado final FOGO no fabrica un movimiento NEXO inexistente.
+
+Un movimiento NEXO tampoco finaliza por sí solo `VPROC-0034` ni aprueba `VPROC-0037`.
+
+---
+
+#### 27. Ejecución interrumpida
+
+Una ejecución interrumpida antes del terminal normal de `VPROC-0034` conserva el último estado real alcanzado.
+
+No se emite:
+
+```text
+VPROC-0034.PRODUCTION_EXECUTION_COMPLETED
+```
+
+como si hubiese terminado normalmente.
+
+Cuando existan hechos suficientes, puede abrirse `VPROC-0037.PRODUCTION_CLOSEOUT_OPENED` para conciliar el resultado residual, conservando:
+
+- materiales utilizados;
+- salida parcial;
+- merma/desperdicio;
+- parciales confirmados;
+- movimientos físicos ya ocurridos;
+- incidencias;
+- razón de interrupción;
+- pendientes.
+
+Interrumpido no significa vacío ni borrado.
+
+---
+
+#### 28. Autoridad exacta de finalización
+
+El inventario canónico FOGO no demuestra todavía una capacidad materializada y asignada específicamente para finalización/cierre.
+
+El literal:
+
+```text
+fogo.production.batches.close
+```
+
+aparece como ejemplo de naming empresarial válido en contratos previos, pero no se convierte por sí solo en permiso concedido ni binding materializado.
+
+La UX adopta fail-closed:
+
+```text
+fogo.production.batches.view
+!= AUTORIDAD PARA FINALIZAR
+
+fogo.production.batches.create
+!= AUTORIDAD PARA FINALIZAR
+
+SUPERVISAR
+!= AUTORIDAD PARA FINALIZAR
+```
+
+La acción primaria solo podrá ejecutarse cuando la materialización propietaria disponga de una capacidad canónica concreta, registrada y evaluable para el hito correspondiente.
+
+---
+
+#### 29. Actor, turno, territorio y contexto
+
+Cada transición terminal revalida inmediatamente antes del efecto:
+
+```text
+PRINCIPAL TECNICO
++
+ACTOR EFECTIVO
++
+TURNO / CHECK-IN CUANDO APLIQUEN
++
+ROL OPERATIVO
++
+SEDE
++
+AREA
++
+CAPACIDAD EXACTA
++
+LOTE Y TERRITORIO PERSISTIDOS
++
+ESTADO + VERSION
++
+EVIDENCIA DEL HITO
+=
+ACCION AUTORIZABLE
+```
+
+La persona que inició el lote puede ser distinta de quien registró parciales, terminó la ejecución o aprobó el cierre.
+
+Cada acción conserva su actor real.
+
+---
+
+#### 30. Dispositivo compartido
+
+En una estación compartida:
+
+- el dispositivo no se convierte en actor;
+- una firma identifica al humano cuando corresponda;
+- la firma no concede capacidad;
+- una firma previa no autoriza indefinidamente otro hito;
+- cambiar de actor invalida una finalización preparada pero no confirmada cuando dependía de ese actor;
+- área/dispositivo funcionan como límites adicionales, no como ampliación de territorio;
+- un cierre confirmado conserva al actor que realmente lo ejecutó.
+
+---
+
+#### 31. Idempotencia por hito
+
+La finalización operativa y el cierre productivo son operaciones idempotentes distintas.
+
+Cada una conserva una identidad estable y una huella lógica propia.
+
+Invariantes:
+
+1. misma identidad + misma huella retorna resultado durable previo;
+2. misma identidad + payload incompatible produce conflicto;
+3. doble clic no crea dos transiciones terminales;
+4. refresh no crea otra finalización;
+5. timeout obliga a recuperar resultado antes de repetir;
+6. `VPROC-0034.EVT-006` no se duplica por retry;
+7. `VPROC-0037.EVT-006` no se duplica por retry;
+8. una identidad de finalización operativa no se reutiliza como identidad del cierre productivo.
+
+---
+
+#### 32. Concurrencia y versión
+
+Dos actores, sesiones o workers no pueden completar de forma incompatible la misma revisión del lote.
+
+La experiencia espera control de versión, claim, compare-and-swap, lock o mecanismo equivalente en la materialización.
+
+Si el recurso avanzó:
+
+- el intento stale no sobrescribe;
+- se recupera estado/version actuales;
+- no se hace rollback silencioso;
+- no se presentan dos cierres exitosos;
+- no se fuerza `last-write-wins`;
+- el actor debe revisar el nuevo estado antes de otra acción.
+
+---
+
+#### 33. Respuesta perdida y resultado desconocido
+
+Una respuesta perdida después de solicitar finalización no autoriza otro submit ciego.
+
+La UX conserva:
+
+```text
+IDEMPOTENCY_ID ORIGINAL
+CORRELACION ORIGINAL
+VERSION ESPERADA
+```
+
+Y consulta el resultado durable para distinguir:
+
+- aplicado;
+- resultado duplicado recuperado;
+- en progreso;
+- conflicto;
+- stale;
+- resultado desconocido;
+- reconciliación requerida.
+
+No se genera una clave nueva para “probar otra vez”.
+
+---
+
+#### 34. Estados de experiencia
+
+La superficie distingue, como mínimo:
+
+| Estado UX | Significado |
+| --- | --- |
+| `EJECUCION_EN_CURSO` | todavía existen parciales o trabajo productivo ordinario |
+| `RESULTADO_INCOMPLETO` | faltan hechos de cantidad/resultado que pertenecen a su captura propietaria |
+| `CONSUMOS_PENDIENTES` | el resultado existe, pero la conciliación material exigible no está resuelta |
+| `LISTO_PARA_CALIDAD` | expediente disponible para inspección; no liberado |
+| `EJECUCION_COMPLETADA` | terminal operativo de `VPROC-0034` alcanzado |
+| `CIERRE_ABIERTO` | existe `VPROC-0037` sin cierre aprobado |
+| `VARIACION_EN_REVISION` | diferencia material exige investigación |
+| `REPROCESO_PENDIENTE_O_ACTIVO` | cierre bloqueado por ruta de reproceso aplicable |
+| `EFECTOS_INVENTARIO_PENDIENTES` | FOGO espera resultados físicos autoritativos |
+| `REVISION_CIERRE_PENDIENTE` | expediente listo para verificación final, todavía no aprobado |
+| `CIERRE_APROBADO` | `PRODUCTION_CLOSEOUT_APPROVED` durable |
+| `SIN_CAPACIDAD_DE_CIERRE` | actor puede consultar pero no mutar el hito |
+| `STALE` | estado/contexto/version cambiaron |
+| `CONFLICT` | otra operación produjo un estado incompatible |
+| `RESULTADO_DESCONOCIDO` | debe recuperarse el resultado durable |
+| `DENY` | autoridad/territorio/contexto no permiten la acción |
+| `ERROR_TECNICO` | una dependencia impide decidir con seguridad |
+
+Los estados no se reducen a `completed = true/false`.
+
+---
+
+#### 35. Confirmaciones y prevención de cierre accidental
+
+Las acciones terminales deben ser inequívocas.
+
+La UX separa claramente:
+
+```text
+Guardar / registrar dato
+Finalizar ejecucion
+Abrir cierre
+Aprobar cierre productivo
+```
+
+Reglas:
+
+- una captura parcial no comparte semántica con finalizar;
+- “Finalizar ejecución” identifica el lote y el efecto;
+- “Aprobar cierre” se muestra únicamente cuando la revisión lo permite;
+- no se habilita por color o status cliente solamente;
+- el estado de envío evita doble submit;
+- una acción terminal no queda adyacente de forma ambigua a `Atrás`, `Actualizar` o `Ver receta`;
+- la confirmación no afirma calidad o inventario que todavía no existen.
+
+No se impone componente, framework o estilo visual concreto.
+
+---
+
+#### 36. Historia y auditoría visible
+
+La experiencia debe poder reconstruir de forma resumida:
+
+- inicio del lote;
+- actores/turnos relevantes;
+- parciales confirmados;
+- resultado reportado;
+- conciliación de consumos;
+- finalización operativa;
+- apertura de cierre;
+- variaciones;
+- reproceso cuando aplique;
+- efectos de calidad;
+- efectos de empaque;
+- efectos NEXO;
+- revisión de cierre;
+- aprobación final.
+
+La timeline es una proyección de hechos durables; no permite editar historia para hacer coincidir el cierre.
+
+---
+
+#### 37. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se observa:
+
+1. `/production-batches/new` crea producción mediante `fogo_create_real_production_batch`;
+2. el flujo actual captura consumos y outputs dentro de la operación de creación;
+3. `/production-batches` lee `production_batches` y `production_batch_consumptions`;
+4. la proyección runtime presenta estados locales como `posted`, `draft`, `cancelled` y `completed`;
+5. no se observa una acción separada que materialice `VSCREEN-0060::PRIMARY`;
+6. no se observa una máquina física separada que materialice el lifecycle completo de `VPROC-0037`;
+7. no se observa una acción runtime canónica `production.batches.close` ya materializada.
+
+Conclusión:
+
+```text
+STATUS LOCAL "completed"
+!=
+VPROC-0034.PRODUCTION_EXECUTION_COMPLETED
+!=
+VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED
+```
+
+La UX objetivo no adopta el status legacy como alias de ambos hitos.
+
+---
+
+#### 38. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe una superficie física separada que materialice `VSCREEN-0060::PRIMARY`. | no puede demostrarse finalización/cierre canónicos | implementación propietaria FOGO consumiendo `FOGO-UX-007` + `FOGO-AUTH-011::<implementation_unit_id>` | existe acción de cierre protegida con estados, autoridad, versionado, idempotencia y auditoría |
+| El runtime usa `completed` como status local. | puede fusionar finalización operativa y cierre productivo | `FOGO-UX-007` + materialización propietaria | UI/backend distinguen `PRODUCTION_EXECUTION_COMPLETED` y `PRODUCTION_CLOSEOUT_APPROVED` sin alias ambiguo |
+| No existe capacidad FOGO materializada y asignada específicamente para cierre. | bloquea mutación terminal conforme | `FOGO-AUTH-011::<implementation_unit_id>` con normalización en `FOGO-AUTH-013` / `FOGO-AUTH-015` cuando aplique | cada hito queda ligado a capacidad canónica concreta y evaluable |
+| El literal `fogo.production.batches.close` es naming, no concesión vigente. | riesgo de fabricar permiso por convención | `FOGO-AUTH-013` / `FOGO-AUTH-015` | la clave, si se adopta, queda en catálogo, contratos, asignaciones y pruebas antes de usarla |
+| Creación AS-IS acopla consumos y outputs. | impide demostrar lifecycle separado | unidades físicas FOGO/NEXO propietarias | inicio, parciales, resultado, conciliación y cierre son operaciones separadas y correlacionadas |
+| Resultado detallado pertenece a `FOGO-UX-010`. | riesgo de duplicar formularios y autoridad | `FOGO-UX-010` | la 007 consume hechos confirmados y deriva a la 010 cuando faltan; no duplica su captura |
+| Calidad, empaque e inventario aportan hechos independientes. | un cierre puede afirmarse prematuramente | procesos `VPROC-0035`, `VPROC-0036`, NEXO e integración | cada dependencia aplicable aporta resultado durable o tratamiento canónico antes del hito que la exige |
+| Correcciones posteriores no pueden editar el cierre original. | pérdida de historia | `FOGO-AUTH-012` / `FOGO-UX-011` | corrección/anulación crea acción vinculada, motivo, autoridad y evidencia sin sobrescritura destructiva |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 39. Continuidad funcional con FOGO-UX-008..015
+
+| Tarea | Frontera preservada desde FOGO-UX-007 |
+| --- | --- |
+| `FOGO-UX-008` | conserva la receta/version operativa aplicable; la 007 no redefine cómo se presenta su resumen |
+| `FOGO-UX-009` | administración de recetas permanece separada del cierre de lotes |
+| `FOGO-UX-010` | captura cantidades, desperdicio y resultado; la 007 los consume como evidencia |
+| `FOGO-UX-011` | corrige sin alterar historial; un cierre aprobado no se edita in-place |
+| `FOGO-UX-012` | conecta consumo con NEXO; la 007 consume su estado de conciliación |
+| `FOGO-UX-013` | conecta producto terminado con NEXO; la 007 no fabrica ingreso físico |
+| `FOGO-UX-014` | supervisión no concede autoridad terminal por implicación |
+| `FOGO-UX-015` | prototipo debe demostrar estados, bloqueos y separación entre ejecución, calidad, inventario y cierre |
+
+La sucesora canónica inmediata es `FOGO-UX-008`; esta tarea no adelanta su diseño detallado.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones ya registradas para finalización operativa, cierre productivo, cantidades, consumos, desperdicio, rendimiento, actor/turno, territorio, autorización exacta, idempotencia, concurrencia, calidad, empaque, inventario, integración y trazabilidad. No introduce una obligación verificable nueva fuera de esa cobertura ni modifica texto, estado, relación, secuencia o propietario del registro.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-001` — ciclo del lote con producción parcial, consumo, desperdicio, resultado, finalización, cancelación/corrección, actor, turno y efectos auditables;
+- `TREQ-FOGO-002` — receta/version exactas, unidades, rendimiento real, merma, sustituciones y desviaciones sin sobrescritura;
+- `TREQ-FOGO-004` — ejecución productiva, independencia entre finalización, calidad e inventario, reproceso con genealogía y cierre conciliado;
+- `TREQ-NEXO-010` — unidades, conversión, tolerancia y política de operación coherentes;
+- `TREQ-NEXO-011` — movimientos/proyecciones canónicos, atomicidad o idempotencia, compensación y prevención de doble efecto;
+- `TREQ-INTEGRATION-003` — identidad idempotente, resultado durable, reintento, concurrencia, resultado desconocido y conciliación;
+- `TREQ-INTEGRATION-011` — efectos de inventario por contrato NEXO correlacionado e idempotente;
+- `TREQ-INTEGRATION-013` — cadena materiales, ejecución, calidad, inventario y costo correlacionada y reconciliable;
+- `TREQ-AUTH-008` — contexto operativo completo de capacidades operativas;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación territorial;
+- `TREQ-AUTH-010` — segregación de funciones entre producción, inventario, logística y administración;
+- `TREQ-AUTH-011` — actor efectivo en dispositivo compartido;
+- `TREQ-AUTH-013` — autorización server-side sin bypass por UI/API/RPC;
+- `TREQ-AUTH-014` — invalidación de autoridad stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de actor, contexto, permiso, recurso, decisión, estado y tiempo;
+- `TREQ-UX-001` — tarea, acción principal y estado identificables;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La construcción documental local corresponde al checkout posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | Formato y validaciones locales, de topología, EOL, requisitos y plan global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@6299d0e89ca47f0185fcb1f640b545908e6a6a84`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO, topología `DEFINE_ONCE`, `FOGO-AUTH-011`, `VSCREEN-0060`, `VPROC-0034`, `VPROC-0037`, eventos de cierre, `INT-PROD-002`, `INT-PROD-003`, cobertura 04A y el AS-IS de lotes; `FOGO-UX-006` se consume desde su versión completa aprobada mientras su incorporación remota permanece pendiente durante esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron finalizaciones, cierres, conciliaciones, calidad, empaque, handoffs NEXO, cambios de turno, dispositivos, reintentos ni concurrencia sobre lotes reales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-007` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 43. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0060` conserva ownership de `VPROC-0037` y `VPROC-0037::STEP-CLOSE_BATCH`;
+- [ ] la acción primaria conserva clase `CLOSE` y fase `TERMINAL`;
+- [ ] finalización operativa y cierre productivo conciliado permanecen como hitos distintos;
+- [ ] `VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` no se presenta como calidad liberada ni inventario disponible;
+- [ ] `VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` no se presenta como simple alias de `completed`;
+- [ ] la progresión `IN_PRODUCTION → OUTPUT_REPORTED → CONSUMPTION_RECONCILIATION_PENDING → READY_FOR_QUALITY → PRODUCTION_EXECUTION_COMPLETED` permanece distinguible;
+- [ ] resultado incompleto no se fabrica desde la pantalla de cierre;
+- [ ] la captura detallada de cantidades/desperdicio/resultado permanece en `FOGO-UX-010`;
+- [ ] consumos pendientes o inciertos no se presentan como conciliados;
+- [ ] `READY_FOR_QUALITY` no se presenta como liberación de calidad;
+- [ ] `VPROC-0034.EVT-006` solo representa finalización operativa durable;
+- [ ] `VPROC-0037.PRODUCTION_CLOSEOUT_OPENED` no equivale a cierre aprobado;
+- [ ] los estados de `VPROC-0037` se conservan sin saltos usados para ocultar obligaciones;
+- [ ] rendimiento esperado, salida real e ingreso físico NEXO permanecen distintos;
+- [ ] una variación material permanece abierta hasta resolución/tratamiento válido;
+- [ ] reproceso abierto que afecte resultado bloquea cierre definitivo;
+- [ ] `INVENTORY_EFFECTS_PENDING` no se interpreta como inventario actualizado;
+- [ ] revisión de cierre verifica hechos sin modificarlos para obtener coherencia;
+- [ ] `VPROC-0037.EVT-006` solo se emite por cierre productivo durable;
+- [ ] calidad permanece bajo `VPROC-0035`;
+- [ ] empaque permanece bajo `VPROC-0036`;
+- [ ] NEXO conserva la verdad física de inventario;
+- [ ] una ejecución interrumpida no emite finalización normal falsa;
+- [ ] no se inventa una capacidad de cierre desde `batches.view`, `batches.create`, rol o naming;
+- [ ] `fogo.production.batches.close` no se concede por aparecer como convención de nombre;
+- [ ] actor, turno, sede, área, capacidad, lote, estado y versión se revalidan en cada transición terminal;
+- [ ] dispositivo compartido identifica al actor sin ampliar autoridad;
+- [ ] finalización operativa y cierre productivo usan identidades idempotentes separadas;
+- [ ] doble clic, retry o timeout no duplican cierre ni eventos;
+- [ ] concurrencia no produce dos terminales incompatibles;
+- [ ] un estado stale no se sobrescribe por last-write-wins;
+- [ ] respuesta perdida se recupera antes de repetir;
+- [ ] estados UX distinguen resultado incompleto, consumos pendientes, calidad, cierre, deny, stale, conflicto y error técnico;
+- [ ] la timeline conserva historia y no permite edición destructiva;
+- [ ] el AS-IS `completed` no se convierte en alias canónico;
+- [ ] hallazgos tienen propietario y condición de salida;
+- [ ] `FOGO-UX-008` queda reservada sin adelantar su diseño;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 44. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0060`;
+- crea rutas, componentes, RPC, tablas, vistas, RLS, grants, migraciones o datos;
+- crea una capacidad de cierre;
+- concede `fogo.production.batches.close`;
+- redefine `FOGO-UX-006` ni sus parciales;
+- diseña el formulario detallado de cantidades/desperdicio/resultado de `FOGO-UX-010`;
+- modifica la receta/version histórica;
+- edita orden o planificación;
+- ejecuta inspección o disposición de calidad;
+- ejecuta empaque;
+- crea etiquetas o LPN;
+- crea movimientos NEXO;
+- publica stock terminado;
+- decide disponibilidad comercial;
+- calcula costo final;
+- borra diferencias para cerrar;
+- ejecuta reproceso;
+- corrige historia mediante edición in-place;
+- reabre un cierre aprobado por mutación ordinaria;
+- crea eventos empresariales nuevos;
+- inventa nombres físicos de tablas, columnas o enums;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-006 — Diseñar producción parcial`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-007 — Diseñar finalización de lote`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-008 — Mostrar receta resumida para operación`
+
 ### [ ] FOGO-UX-008 — Mostrar receta resumida para operación
 ### [ ] FOGO-UX-009 — Separar recetario operativo y administración de recetas
 ### [ ] FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
