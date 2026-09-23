@@ -3648,7 +3648,826 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-007 — Restringir Insumos`
 
-### [ ] FOGO-AUTH-007 — Restringir Insumos
+### ✅ FOGO-AUTH-007 — Restringir Insumos
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-006 — Restringir Cocina
+**Tarea siguiente:** FOGO-AUTH-008 — Definir permisos de supervisor
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización FOGO/NEXO de la autorización de insumos productivos, limitada por actor, sede, área productiva, orden o lote, receta/version aplicable, ubicación, stock y operación de consumo, sin crear un cuarto rol productivo ni autoridad general de bodega
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `FOGO-AUTH-007::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo un actor productivo autorizado puede consultar, identificar y consumir insumos necesarios para su trabajo sin convertir FOGO en propietario del inventario, sin crear un rol `produccion_insumos`, sin convertir bodega en una cuarta área productiva y sin conceder inventario general por compartir Centro de Producción.
+
+La regla central queda:
+
+```text
+ACTOR PRODUCTIVO AUTORIZADO
++
+SEDE Y AREA PRODUCTIVA EFECTIVAS
++
+ORDEN O LOTE PRODUCTIVO AUTORIZADO
++
+RECETA / VERSION PUBLICADA Y APLICABLE
++
+INSUMO CANONICO NECESARIO
++
+UBICACION / STOCK / LOTE DE INVENTARIO AUTORIZADOS
++
+PERMISO NEXO EXACTO
++
+ESTADO Y PRERREQUISITOS DE LA OPERACION
+=
+CAPACIDAD AUTORIZABLE SOBRE INSUMOS
+```
+
+La palabra “insumo”, la pertenencia al Centro de Producción, la presencia del producto en una receta o conocer un identificador no constituyen autoridad.
+
+---
+
+#### 2. Fuentes y entradas canónicas
+
+La definición consume y conserva:
+
+- `FOGO-AUTH-002` como contrato de permisos por las tres áreas productivas;
+- `FOGO-AUTH-003` como frontera server-side por sede, área, permiso, recurso y estado;
+- `FOGO-AUTH-004`, `FOGO-AUTH-005` y `FOGO-AUTH-006` como contratos de aislamiento de Panadería, Repostería y Cocina Caliente;
+- las matrices canónicas `AUTH-RBAC-014`, `AUTH-RBAC-015` y `AUTH-RBAC-016`;
+- el catálogo y contrato de recurso NEXO para ubicaciones, LPN, stock, lotes productivos de inventario y retiros;
+- `INT-PROD-001` como contrato de solicitud/reserva de materiales entre FOGO y NEXO;
+- `INT-PROD-002` como propietario del registro de consumo en NEXO;
+- los contratos vigentes de receta, orden, lote, identidad, turno, check-in, sede, área, recurso, idempotencia y trazabilidad;
+- las plantillas operativas `production_kitchen`, `production_bakery` y `production_pastry`;
+- el runtime observado de `vento-group-sas/vento-fogo` y `vento-group-sas/vento-nexo`.
+
+La tarea anterior entrega esta entrada exacta:
+
+```text
+TRES AREAS PRODUCTIVAS AISLADAS
+=
+Cocina Caliente
++
+Galletería y Panadería
++
+Repostería
+```
+
+Esta tarea aplica ese aislamiento a los materiales consumibles y a sus superficies NEXO sin unir las áreas ni crear autoridad transversal.
+
+---
+
+#### 3. Insumos no es un cuarto rol productivo
+
+El canon vigente reconoce exactamente tres roles productivos ordinarios:
+
+| Rol operativo | Sede | Área productiva | Dispositivo compatible |
+| --- | --- | --- | --- |
+| `produccion_cocina` | Centro de Producción | Cocina Caliente | `production_kitchen` |
+| `produccion_panaderia` | Centro de Producción | Galletería y Panadería | `production_bakery` |
+| `produccion_reposteria` | Centro de Producción | Repostería | `production_pastry` |
+
+Por tanto:
+
+```text
+NO EXISTE:
+produccion_insumos
+```
+
+y tampoco se crea una cuarta área FOGO denominada “Insumos”.
+
+Los insumos son recursos empresariales gobernados por NEXO que una ejecución productiva autorizada puede consultar o consumir dentro de una relación concreta con su área, orden, lote y receta.
+
+---
+
+#### 4. Separación de ownership FOGO y NEXO
+
+La propiedad funcional queda:
+
+| Dominio | Owner funcional |
+| --- | --- |
+| Orden productiva, receta/version, ejecución, lote productivo y rendimiento | FOGO |
+| Producto, presentación, unidad, ubicación, LPN, stock, lote de inventario, retiro y movimiento de existencias | NEXO |
+| Contratos de autorización y toda modificación VENTO de Supabase | `vento-shell` |
+
+Reglas:
+
+1. FOGO determina qué materiales requiere la ejecución mediante orden y receta/version aplicables;
+2. NEXO determina qué existencia real puede consultarse, reservarse, consumirse o moverse;
+3. FOGO no crea una proyección alternativa de stock como fuente de verdad;
+4. NEXO no redefine la receta, orden o lote productivo;
+5. una pantalla FOGO puede presentar información mínima de materiales sin adquirir ownership de inventario;
+6. cualquier efecto sobre existencias conserva el contrato propietario de NEXO.
+
+---
+
+#### 5. Capacidades NEXO ya concedidas a las tres áreas productivas
+
+Las matrices vigentes asignan exactamente las mismas once claves NEXO operativas a `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`:
+
+| Permiso | Función dentro de producción |
+| --- | --- |
+| `nexo.access` | Entrar a NEXO bajo contexto operativo válido. |
+| `nexo.catalog.products.view` | Identificar productos e insumos necesarios. |
+| `nexo.catalog.presentations.view` | Interpretar presentaciones, empaques y conversiones publicadas. |
+| `nexo.catalog.categories.view` | Localizar referencias relacionadas con la ejecución. |
+| `nexo.catalog.units.view` | Resolver unidades y equivalencias publicadas. |
+| `nexo.inventory.locations.view` | Consultar únicamente ubicaciones aplicables al territorio productivo. |
+| `nexo.inventory.lpns.view` | Consultar LPN o contenedores relacionados con insumos o lote autorizado. |
+| `nexo.inventory.stock.view` | Consultar disponibilidad necesaria dentro del alcance autorizado. |
+| `nexo.inventory.production_batches.view` | Consultar trazabilidad de inventario vinculada a lotes productivos autorizados. |
+| `nexo.inventory.withdrawals.view` | Consultar retiros o consumos relacionados con el actor o recurso productivo autorizado. |
+| `nexo.inventory.withdrawals.register` | Registrar consumo trazable contra una orden o lote productivo válido. |
+
+Esta tarea no crea nuevas claves ni transforma ninguna de estas concesiones en wildcard de inventario.
+
+---
+
+#### 6. Frontera de `nexo.access`
+
+`nexo.access` habilita únicamente la entrada contextual a NEXO.
+
+No concede por sí solo:
+
+- catálogo completo;
+- ubicaciones completas;
+- stock completo;
+- LPN completos;
+- retiros de terceros;
+- movimientos generales;
+- bodega;
+- remisiones;
+- ajustes;
+- entradas;
+- traslados;
+- conteos;
+- configuración.
+
+Cada capacidad interna exige su permiso exacto, territorio, recurso y prerrequisitos.
+
+---
+
+#### 7. Proyección mínima de catálogo
+
+Las capacidades de productos, presentaciones, categorías y unidades se utilizan únicamente para interpretar la ejecución productiva.
+
+La proyección operativa podrá incluir lo mínimo necesario para:
+
+- identificar el insumo;
+- resolver presentación;
+- resolver unidad de entrada y unidad de stock;
+- aplicar conversión publicada;
+- distinguir producto activo/elegible;
+- relacionar el insumo con receta, orden o lote.
+
+No concede:
+
+- creación o edición de productos;
+- edición de presentaciones, categorías o unidades;
+- proveedores;
+- costos o márgenes no necesarios;
+- configuración de inventario;
+- catálogo administrativo transversal.
+
+---
+
+#### 8. Ubicaciones autorizadas
+
+`nexo.inventory.locations.view` no concede ver todas las ubicaciones de la sede.
+
+Una ubicación es consultable por un actor productivo solo cuando:
+
+- pertenece a la sede autorizada;
+- es compatible con el área productiva efectiva o con una relación material explícita;
+- puede abastecer el insumo requerido según el contrato propietario;
+- su estado permite la operación;
+- la proyección es necesaria para identificar el origen físico del material.
+
+Zona, posición o código LOC no sustituyen la pertenencia territorial de la ubicación.
+
+---
+
+#### 9. Consulta de stock
+
+`nexo.inventory.stock.view` se limita al stock que pueda participar legítimamente en la ejecución autorizada.
+
+La consulta deberá considerar, según corresponda:
+
+- producto/presentación;
+- unidad y conversión;
+- sede;
+- área;
+- ubicación;
+- lote o LPN;
+- estado de disponibilidad;
+- reserva previa;
+- cuarentena, daño, vencimiento u otra condición;
+- relación con orden, lote o receta.
+
+Stock físico observado no equivale a stock autorizable ni a stock reservado.
+
+---
+
+#### 10. Consulta de LPN
+
+`nexo.inventory.lpns.view` solo expone LPN cuyo territorio vigente o histórico corresponda a la consulta autorizada y cuya información sea necesaria para seleccionar o trazar material.
+
+El permiso no concede:
+
+- mover el LPN;
+- reasignar ubicación;
+- abrir otro territorio;
+- consultar todo su historial fuera de necesidad;
+- modificar custodia;
+- consumir contenido sin autorización de retiro.
+
+Si el LPN cambia de territorio, la decisión utiliza el territorio real aplicable al estado consultado.
+
+---
+
+#### 11. Lotes productivos vinculados al inventario
+
+`nexo.inventory.production_batches.view` permite únicamente la trazabilidad de inventario necesaria para relacionar existencias con un lote productivo autorizado.
+
+La lectura no concede:
+
+- consultar lotes de otra área;
+- modificar existencias;
+- corregir consumos;
+- iniciar movimientos;
+- cambiar el estado productivo;
+- convertir un lote FOGO en autoridad general sobre inventario.
+
+La relación deberá ser verificable mediante identidad canónica y no por coincidencia de nombres.
+
+---
+
+#### 12. Consulta de retiros y consumos
+
+`nexo.inventory.withdrawals.view` se limita a:
+
+- consumos del actor cuando el contrato lo permita;
+- consumos del lote productivo autorizado;
+- consumos de la orden autorizada;
+- retiros relacionados con el área productiva efectiva;
+- evidencia necesaria para conciliación de la ejecución.
+
+No expone retiros generales de la sede, otras áreas, bodega o trabajadores no relacionados.
+
+---
+
+#### 13. Registro de consumo
+
+`nexo.inventory.withdrawals.register` representa la operación empresarial de registrar salida o consumo de existencias; no es una simple inserción de fila.
+
+Para producción, una autorización válida exige como mínimo:
+
+```text
+ACTOR EFECTIVO
++
+TURNO Y CHECK-IN ACTIVOS
++
+ROL PRODUCTIVO AUTORIZADO
++
+SEDE Y AREA EFECTIVAS
++
+nexo.inventory.withdrawals.register
++
+ORDEN O LOTE PRODUCTIVO AUTORIZADO
++
+RECETA / VERSION APLICABLE
++
+INSUMO REQUERIDO
++
+UBICACION ORIGEN AUTORIZADA
++
+STOCK / LOTE / LPN UTILIZABLE CUANDO APLIQUE
++
+CANTIDAD Y UNIDAD VALIDAS
++
+IDEMPOTENCIA Y CONTROL DE CONCURRENCIA
+=
+CONSUMO AUTORIZABLE
+```
+
+La mutación debe revalidarse server-side inmediatamente antes del efecto.
+
+---
+
+#### 14. Vínculo obligatorio con área, orden, lote y receta
+
+Un consumo productivo no se autoriza solamente por coincidir producto y sede.
+
+La cadena de relación debe permitir demostrar, según el momento del proceso:
+
+```text
+AREA PRODUCTIVA
+↔ ORDEN
+↔ LOTE PRODUCTIVO
+↔ RECETA / VERSION
+↔ LINEA MATERIAL / INSUMO
+↔ EXISTENCIA ORIGEN
+↔ RETIRO / CONSUMO
+```
+
+No todos los extremos tienen que estar materializados en la misma tabla, pero la relación empresarial debe ser determinista y auditable.
+
+Un retiro manual sin vínculo productivo no se transforma en consumo de FOGO por escribir una nota o un texto descriptivo.
+
+---
+
+#### 15. Disponibilidad, reserva y consumo son hechos distintos
+
+La tarea conserva la separación definida por los contratos de integración:
+
+```text
+DISPONIBLE
+!=
+RESERVADO
+!=
+CONSUMIDO
+```
+
+Reglas:
+
+1. una lectura de stock no reserva;
+2. una reserva no consume;
+3. una reserva pertenece al contrato de preparación de materiales;
+4. el consumo pertenece al contrato NEXO de efecto sobre existencias;
+5. una respuesta perdida no autoriza repetir el efecto;
+6. una corrección no sobrescribe silenciosamente la historia previa;
+7. una cancelación de trabajo debe liberar o reconciliar recursos mediante el contrato propietario.
+
+---
+
+#### 16. Inventario general y bodega permanecen fuera
+
+La operación productiva ordinaria no recibe autoridad de bodega.
+
+Quedan fuera por defecto:
+
+- ajustes de inventario;
+- entradas ordinarias o excepcionales;
+- asignaciones de ubicación;
+- configuración de catálogo de ubicación;
+- movimientos generales;
+- creación de traslados;
+- zonas y posiciones de almacenamiento como catálogo general;
+- operaciones de bodega;
+- validaciones de stock;
+- conteos de inventario;
+- conteos iniciales;
+- remisiones;
+- operaciones logísticas;
+- compras y recepciones ORIGO.
+
+La posibilidad de consumir un insumo desde una ubicación autorizada no convierte al actor productivo en `bodeguero`.
+
+---
+
+#### 17. Remisiones no son consumo productivo
+
+Una remisión puede abastecer la sede o participar como antecedente logístico, pero sus capacidades pertenecen a roles y procesos distintos.
+
+El actor productivo no obtiene por `FOGO-AUTH-007`:
+
+- solicitar remisión;
+- preparar remisión;
+- despachar remisión;
+- recibir remisión;
+- cancelar remisión;
+- administrar logística.
+
+El material recibido solo entra al carril productivo cuando NEXO lo reconoce como existencia utilizable y el contrato de producción lo relaciona con una ejecución autorizada.
+
+---
+
+#### 18. Compras y ORIGO permanecen separados
+
+La necesidad productiva de un insumo no concede:
+
+- acceso a proveedores;
+- órdenes de compra;
+- recepciones de compra;
+- precios administrativos;
+- autoridad para abastecer o comprar.
+
+FOGO expresa necesidad productiva; NEXO gobierna inventario; ORIGO conserva compras y recepciones.
+
+---
+
+#### 19. Unidades y conversiones
+
+Toda cantidad productiva y de inventario deberá conservar unidades compatibles y conversiones canónicas.
+
+No se autoriza:
+
+- inventar factores en la UI;
+- mezclar unidad de receta con unidad de stock sin conversión publicada;
+- redondear de forma diferente entre FOGO y NEXO;
+- registrar un consumo con unidad ambigua;
+- usar una presentación distinta para producir un efecto equivalente sin demostrar la conversión.
+
+La cantidad consumida deberá poder reconciliarse con la cantidad productiva y la identidad exacta del insumo.
+
+---
+
+#### 20. Lote, condición y vencimiento
+
+Cuando el producto esté sujeto a trazabilidad, la selección de existencia deberá conservar la información aplicable de:
+
+- lote o serial;
+- origen;
+- ubicación;
+- cantidad;
+- estado de liberación;
+- vencimiento o vida útil;
+- cuarentena;
+- daño, pérdida u otra condición;
+- requerimientos de frío u otra condición operacional.
+
+Una existencia no utilizable no se vuelve consumible por ser visible o por tener cantidad positiva.
+
+---
+
+#### 21. Idempotencia, concurrencia y no doble consumo
+
+Toda mutación de consumo deberá impedir:
+
+- stock negativo no autorizado;
+- dos consumos del mismo intento lógico;
+- dos órdenes reservando o consumiendo la misma existencia incompatible;
+- replay con payload diferente bajo el mismo identificador;
+- actualización parcial que deje movimiento y proyección divergentes;
+- contabilizar simultáneamente stock suelto y contenido de LPN como existencias independientes;
+- reintento ciego después de un timeout con resultado desconocido.
+
+La operación deberá producir un resultado recuperable y auditable.
+
+---
+
+#### 22. No inferir autoridad desde la receta
+
+La receta/version publicada determina qué material necesita una ejecución, no quién puede consumir cualquier existencia.
+
+Por tanto:
+
+```text
+RECETA CONTIENE INSUMO
+!=
+AUTORIZACION DE INVENTARIO
+```
+
+La decisión final continúa exigiendo actor, contexto, permiso NEXO, territorio, recurso y estado.
+
+---
+
+#### 23. Dispositivos productivos
+
+Las plantillas `production_kitchen`, `production_bakery` y `production_pastry` pueden restringir la sesión a su área productiva compatible y al package operacional permitido.
+
+Nunca pueden:
+
+- crear un rol `produccion_insumos`;
+- ampliar el territorio humano;
+- conceder bodega;
+- conceder remisiones;
+- conceder compras;
+- sustituir turno o check-in;
+- convertir un permiso legacy en autoridad más amplia;
+- autorizar un consumo sin vínculo con el recurso productivo.
+
+La intersección entre actor y dispositivo siempre adopta la restricción más estrecha.
+
+---
+
+#### 24. AS-IS observado en FOGO
+
+El runtime observado de FOGO demuestra una integración material parcial, no el contrato objetivo completo.
+
+La creación de lote:
+
+- captura cantidades reales por ingrediente;
+- invoca `fogo_create_real_production_batch`;
+- puede seleccionar existencias;
+- puede modificar proyecciones de inventario;
+- puede insertar movimientos `production_consume`;
+- registra consumos del lote durante la creación productiva.
+
+Esto demuestra capacidad técnica de consumo, pero no demuestra por sí solo la separación canónica FOGO → NEXO con autorización, reserva/consumo, idempotencia, posting y conciliación independientes.
+
+La implementación vigente no convierte a FOGO en owner del inventario.
+
+---
+
+#### 25. AS-IS observado en NEXO
+
+El runtime observado de NEXO contiene una superficie genérica de retiro con capacidad real de producir movimientos de inventario.
+
+Se observó que `src/app/inventory/withdraw/page.tsx`:
+
+- entra mediante el código legacy `inventory.withdraw`;
+- la normalización canónica converge esa capacidad a `nexo.inventory.withdrawals.register`;
+- permite seleccionar sede por parámetro URL antes de preferencias y sede del empleado;
+- lista ubicaciones activas por sede en la superficie observada;
+- usa `manual_withdraw_enabled` con valor por defecto permisivo cuando no existe configuración;
+- separa el modo de inventario real de un movimiento operativo `stock_consume_position`;
+- la server action observada resuelve sede desde preferencias/empleado y valida que la ubicación pertenezca a la sede;
+- no demuestra en esa acción una revalidación explícita del área productiva efectiva;
+- no demuestra vínculo obligatorio con orden, lote, receta/version, reserva o línea material FOGO;
+- puede llamar `consume_inventory_stock_from_positions`, insertar `inventory_movements` y actualizar proyecciones de stock.
+
+Esta superficie genérica no constituye por sí sola la materialización del consumo productivo gobernado por esta tarea.
+
+---
+
+#### 26. Normalización de permiso legacy
+
+Los códigos legacy:
+
+```text
+nexo.inventory.withdraw
+nexo.kiosk_withdraw.view
+```
+
+convergen en la capacidad canónica:
+
+```text
+nexo.inventory.withdrawals.register
+```
+
+La forma de acceso —kiosco, tablet, PC o interfaz personal— no crea permisos empresariales distintos.
+
+La compatibilidad legacy puede mantenerse durante transición, pero la decisión canónica, auditoría y tests deben converger al permiso normalizado y a su contrato de recurso.
+
+---
+
+#### 27. Orden de decisión server-side
+
+La secuencia mínima para consultar o consumir insumos queda:
+
+```text
+1. resolver actor efectivo
+2. resolver turno y check-in cuando corresponda
+3. resolver rol productivo
+4. resolver sede y area efectivas
+5. validar permiso exacto
+6. resolver orden/lote/receta aplicables
+7. derivar material requerido
+8. resolver existencia y territorio reales en NEXO
+9. validar unidad, cantidad, lote/LPN, condicion y estado
+10. aplicar idempotencia/concurrencia
+11. minimizar datos en lecturas o ejecutar la mutacion atomica
+12. registrar evidencia y correlacion
+```
+
+Los parámetros de cliente solo pueden seleccionar o refinar dentro del conjunto autorizado.
+
+---
+
+#### 28. Denegación y no revelación
+
+La decisión falla cerrada cuando no pueda demostrarse cualquiera de las relaciones obligatorias.
+
+Un recurso denegado no deberá utilizarse para producir:
+
+- filas visibles;
+- conteos;
+- stock agregado;
+- autocompletados;
+- nombres de ubicaciones;
+- LPN;
+- lotes;
+- sugerencias de productos;
+- mensajes que permitan enumerar existencia protegida.
+
+`null`, ausencia, error de resolución o contexto incompleto no significan “toda la sede” ni “todas las áreas”.
+
+---
+
+#### 29. Frescura y revalidación
+
+La decisión queda obsoleta cuando cambia materialmente:
+
+- actor;
+- turno;
+- check-in;
+- rol;
+- sede;
+- área;
+- permiso;
+- orden o lote productivo;
+- receta/version;
+- requerimiento material;
+- ubicación;
+- stock;
+- lote/LPN;
+- condición o vencimiento;
+- reserva;
+- configuración del dispositivo;
+- estado del recurso.
+
+Toda mutación revalida autoridad inmediatamente antes del efecto, aunque el insumo hubiera sido visible previamente.
+
+---
+
+#### 30. Ownership de Supabase
+
+Toda futura modificación VENTO necesaria para materializar esta frontera en:
+
+- RLS;
+- RPC;
+- funciones de autorización;
+- movimientos;
+- reservas;
+- retiros;
+- proyecciones de stock;
+- relaciones de área;
+- locks;
+- idempotencia;
+- auditoría;
+- tipos generados;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Este marcador no ejecuta cambios Supabase.
+
+---
+
+#### 31. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| El consumo vigente de FOGO puede producir efectos NEXO dentro de `fogo_create_real_production_batch`. | No demuestra la separación empresarial completa entre ejecución productiva y operación de inventario. | `FOGO-AUTH-007::<implementation_unit_id>` junto con `INT-PROD-001`/`INT-PROD-002` y la unidad de integración aplicable | La unidad materializada conserva autorización exacta, ownership NEXO, correlación, idempotencia y conciliación sin doble efecto. |
+| La superficie genérica NEXO observada entra con `inventory.withdraw`, código legacy de la capacidad de retiro. | Puede mantener semántica de autorización divergente si consumidor y contrato canónico no convergen. | Unidad NEXO aplicable y `FOGO-AUTH-007::<implementation_unit_id>` cuando el consumidor sea productivo | El consumidor productivo usa o normaliza de forma verificable `nexo.inventory.withdrawals.register` con el mismo resultado de autorización. |
+| La server action de retiro observada resuelve sede desde preferencias/empleado y valida ubicación por sede, sin demostrar área productiva efectiva. | Puede permitir un alcance mayor al área productiva si otras capas no cierran la decisión. | `FOGO-AUTH-007::<implementation_unit_id>` y owner NEXO de la superficie | La mutación deriva/revalida área efectiva y territorio real del origen antes del efecto. |
+| La superficie de retiro observada no demuestra vínculo obligatorio con orden, lote, receta/version, reserva o línea material FOGO. | Un retiro manual no prueba consumo productivo trazable. | `FOGO-AUTH-007::<implementation_unit_id>` + contrato `INT-PROD-002` | El consumo productivo conserva correlación determinista con ejecución y material requeridos. |
+| `manual_withdraw_enabled` usa un default permisivo en la función observada. | No bloquea el contrato, pero no puede sustituir autorización canónica ni habilitar producción por defecto. | Owner NEXO de configuración/consumo | La flag se trata solo como capacidad operacional adicional y nunca como grant de autorización. |
+| Bodega, remisiones y compras permanecen dominios separados. | Evita ampliar permisos productivos por necesidad material. | Matrices NEXO/ORIGO y tareas propietarias existentes | Las materializaciones consumen contratos propietarios sin conceder nuevas capacidades desde FOGO. |
+| La supervisión multiárea no pertenece a un operador ordinario. | No bloquea. | `FOGO-AUTH-008` | La tarea 008 define explícitamente cualquier autoridad multiárea. |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 32. Materialización física posterior
+
+La topología vigente de `FOGO-AUTH-007` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador define el contrato global una sola vez.
+
+Cada materialización futura usa:
+
+```text
+FOGO-AUTH-007::<implementation_unit_id>
+```
+
+La unidad exacta y el paquete propietario se resuelven desde las fuentes canónicas de implementación. Esta tarea no inventa `implementation_unit_id`, no reasigna packages y no autoriza código.
+
+La materialización solo puede comenzar después de que el paquete aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+---
+
+#### 33. Handoff a FOGO-AUTH-008..016
+
+| Tarea | Entrada exacta proveniente de esta definición |
+| --- | --- |
+| `FOGO-AUTH-008` | Cualquier supervisor con lectura o acción multiárea deberá recibir autoridad explícita; la restricción ordinaria de insumos no se amplía por supervisión implícita. |
+| `FOGO-AUTH-009..016` | Una acción productiva posterior no queda autorizada por haber podido consultar o consumir insumos; cada mutación revalida su permiso, estado, actor, territorio y recurso. |
+
+La visibilidad o consumo de materiales no sustituye autorización para iniciar, avanzar, finalizar, corregir, anular, liberar o cerrar producción.
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones vigentes de autorización territorial, receta/version, ejecución productiva, inventario reconciliable, unidad/conversión, trazabilidad de lotes, idempotencia e integración FOGO/NEXO. Define alcance y ownership de materialización sin introducir una obligación verificable independiente fuera de esa cobertura.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-AUTH-008` para exigir contexto laboral y territorial aplicable;
+- `TREQ-AUTH-009` para resolver sede/área de forma determinista y denegar cruces;
+- `TREQ-AUTH-013` para impedir bypass de autorización y exigir decisión server-side;
+- `TREQ-AUTH-014` y `TREQ-AUTH-015` para frescura, convergencia y trazabilidad;
+- `TREQ-FOGO-001` para ciclo productivo, consumo y efectos de inventario auditables;
+- `TREQ-FOGO-002` para receta/version exacta, ingredientes, unidades y desviaciones;
+- `TREQ-FOGO-003` para planificación con sede, área, receta, cantidades y restricciones materiales;
+- `TREQ-FOGO-004` para ejecución con orden, lote, receta, materiales, cantidades y conciliación;
+- `TREQ-NEXO-010` para unidades, conversiones, disponibilidad y política equivalentes;
+- `TREQ-NEXO-011` para movimientos/proyecciones reconciliables, atomicidad, idempotencia y concurrencia;
+- `TREQ-NEXO-012` para lote, condición, vencimiento, ubicación y trazabilidad;
+- `TREQ-INTEGRATION-003` para idempotencia, reintentos y resultado recuperable;
+- `TREQ-INTEGRATION-006` para propiedad de datos y ausencia de fuentes competidoras.
+
+Esta trazabilidad no modifica 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@ff465b3d132e8a3115d1d6497394d3834b4ed325`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, `vento-nexo/main@f0a12557a1a258c84b025933653dc756de4b5a59`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, las tres matrices productivas, contratos de recurso NEXO, normalización de retiro y el AS-IS de FOGO/NEXO. `FOGO-AUTH-006` se consume como dependencia completa aprobada en trabajo adelantado; su cierre canónico se valida antes de iniciar esta tarea en el repositorio. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron retiros, reservas, consumos, lotes, LPN, stock real ni pruebas operativas de las tres áreas. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `FOGO-AUTH-007::<implementation_unit_id>`. |
+
+---
+
+#### 37. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] no se crea un rol `produccion_insumos`;
+- [ ] no se crea una cuarta área productiva de insumos;
+- [ ] FOGO conserva ownership de ejecución y NEXO de inventario;
+- [ ] las tres áreas productivas reutilizan exactamente las once capacidades NEXO ya asignadas;
+- [ ] `nexo.access` no funciona como wildcard;
+- [ ] catálogo, ubicaciones, LPN, stock, lotes y retiros quedan minimizados al recurso productivo autorizado;
+- [ ] el consumo exige `nexo.inventory.withdrawals.register`, turno/check-in cuando aplican y área efectiva;
+- [ ] el consumo mantiene relación verificable con orden o lote, receta/version e insumo;
+- [ ] disponibilidad, reserva y consumo permanecen hechos distintos;
+- [ ] receta visible no concede autoridad de inventario;
+- [ ] no se concede bodega general;
+- [ ] no se conceden ajustes, entradas, traslados, conteos o remisiones;
+- [ ] no se conceden compras o recepciones ORIGO;
+- [ ] unidades y conversiones son canónicas y reconciliables;
+- [ ] lote/LPN/condición/vencimiento se validan cuando aplican;
+- [ ] idempotencia y concurrencia impiden doble consumo y stock negativo no autorizado;
+- [ ] los dispositivos solo restringen;
+- [ ] el código legacy de retiro no redefine el permiso canónico;
+- [ ] el AS-IS de FOGO se reconoce como integración material parcial;
+- [ ] el AS-IS de NEXO se reconoce como retiro genérico insuficiente para demostrar consumo productivo completo;
+- [ ] los hallazgos tienen owner y condición de salida;
+- [ ] cualquier cambio Supabase pertenece a `vento-shell`;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo` o `vento-nexo`;
+- modifica datos;
+- crea o modifica migraciones;
+- modifica RLS, RPC, grants, triggers o proyecciones de inventario;
+- crea permisos nuevos;
+- crea roles nuevos;
+- redefine matrices RBAC;
+- redefine el lifecycle de bodega;
+- concede remisiones;
+- concede compras;
+- define autoridad de supervisor;
+- redefine el contrato completo de reserva de `INT-PROD-001`;
+- redefine el contrato completo de consumo de `INT-PROD-002`;
+- define permisos de inicio, parcial, finalización, corrección, anulación, calidad o cierre;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- reasigna packages;
+- modifica el Registro 04A.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-006 — Restringir Cocina`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-007 — Restringir Insumos`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-008 — Definir permisos de supervisor`
+
 ### [ ] FOGO-AUTH-008 — Definir permisos de supervisor
 ### [ ] FOGO-AUTH-009 — Proteger inicio de producción
 ### [ ] FOGO-AUTH-010 — Proteger producción parcial
