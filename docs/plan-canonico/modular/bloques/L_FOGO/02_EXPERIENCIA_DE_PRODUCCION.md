@@ -2839,7 +2839,804 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-005 — Diseñar inicio de lote`
 
-### [ ] FOGO-UX-005 — Diseñar inicio de lote
+### ✅ FOGO-UX-005 — Diseñar inicio de lote
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-004 — Mostrar producción pendiente del turno
+**Tarea siguiente:** FOGO-UX-006 — Diseñar producción parcial
+**Tipo de tarea:** diseño documental integral de `VSCREEN-0057` para preparar e iniciar un lote desde una orden productiva autorizada, separando preparación, readiness e inicio real, con receta/version exactas, materiales y recursos verificados, autorización fresca, idempotencia, concurrencia y handoff a ejecución parcial
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato de experiencia de `VSCREEN-0057 — Preparación e inicio de lote` para que una orden seleccionada desde la cola autorizada pueda convertirse en una ejecución productiva únicamente cuando se demuestren todas las precondiciones materiales, territoriales, contractuales y de autorización aplicables.
+
+La regla raíz queda:
+
+```text
+ORDEN PRODUCTIVA AUTORIZADA Y VIGENTE
++
+RECETA / VERSION PUBLICADA Y APLICABLE
++
+ACTOR + TURNO + SEDE + AREA FRESCOS
++
+PERMISO EXACTO DE CREACION
++
+MATERIALES Y RECURSOS PREPARADOS
++
+ESTADO DE ORIGEN COMPATIBLE
++
+IDENTIDAD IDEMPOTENTE
+=
+INICIO PRODUCTIVO AUTORIZABLE
+```
+
+La experiencia debe dejar inequívoco que **preparar un lote no significa que la producción haya comenzado** y que **iniciar producción no equivale a registrar consumo real, resultado, empaque, calidad o cierre**.
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-004
+
+`FOGO-UX-004` entrega un elemento seleccionado de la cola con semántica suficiente para revalidar, como mínimo:
+
+```text
+AREA EFECTIVA
+ACTOR / TURNO ACTUALES
+REFERENCIA ESTABLE A PLAN / ORDEN
+VPROC-0034.PRODUCTION_ORDER_READY O ESTADO ELEGIBLE
+PRODUCTO / SALIDA
+CANTIDAD OBJETIVO + UNIDAD
+RECETA / VERSION CUANDO APLIQUE
+PRIORIDAD AUTORITATIVA SIN MUTARLA
+FECHA / VENTANA REQUERIDA CUANDO EXISTA
+ESTADO DE BLOQUEO / DISPONIBILIDAD
+INDICADOR DE ARRASTRE CUANDO APLIQUE
+REFERENCIA A LOTE ACTIVO SI YA EXISTE
+SNAPSHOT DE FRESCURA SUFICIENTE PARA SABER QUE DEBE REVALIDARSE
+```
+
+`FOGO-UX-005` no acepta ese snapshot como autorización final. Lo utiliza para identificar la intención del trabajador y vuelve a resolver la verdad autoritativa antes de cualquier transición o efecto.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el diseño se define una sola vez;
+2. no existe instancia física propia de `FOGO-UX-005`;
+3. esta tarea no implementa componentes, consultas, RPC, transiciones ni almacenamiento;
+4. las materializaciones posteriores consumen el contrato sin reinterpretar inicio, readiness, permiso o estado;
+5. cualquier modificación de Supabase perteneciente a VENTO continúa bajo `vento-group-sas/vento-shell` y su trabajo físico propietario.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-001 — Inventariar procesos reales de producción`;
+- `FOGO-UX-002 — Separar cocina, panadería y repostería`;
+- `FOGO-UX-003 — Diseñar inicio por área productiva`;
+- `FOGO-UX-004 — Mostrar producción pendiente del turno`;
+- `FOGO-AUTH-009 — Proteger inicio de producción`;
+- `FOGO-AUTH-013 — Proteger lotes y recetas`;
+- `FOGO-AUTH-014 — Registrar actor y turno`;
+- `VSCREEN-0057 — Preparación e inicio de lote`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- `VPROC-0034::STEP-PREPARE_AND_START_BATCH — Preparar e iniciar lote`;
+- estados y eventos canónicos de `VPROC-0034`;
+- contrato FOGO ↔ NEXO de materiales y reservas;
+- Registro 04A vigente de FOGO y autorización;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`.
+
+---
+
+#### 5. Identidad canónica de la superficie
+
+| Dimensión | Identidad |
+| --- | --- |
+| Pantalla | `VSCREEN-0057 — Preparación e inicio de lote` |
+| Aplicación | `fogo` |
+| Proceso | `VPROC-0034` |
+| Paso primario | `VPROC-0034::STEP-PREPARE_AND_START_BATCH — Preparar e iniciar lote` |
+| Interacción | `EXECUTE` |
+| Momento | `INITIAL` |
+| Acción funcional primaria | `VSCREEN-0057::PRIMARY` |
+| Permiso de mutación | `fogo.production.batches.create` |
+
+La superficie prepara y ejecuta la transición inicial del lote. No sustituye la cola `VSCREEN-0055`, la ejecución continua `VSCREEN-0058`, la captura parcial `VSCREEN-0059` ni el cierre `VSCREEN-0060`.
+
+---
+
+#### 6. Máquina de estados que gobierna el inicio
+
+`VPROC-0034` conserva la siguiente progresión relevante:
+
+```text
+VPROC-0034.PRODUCTION_ORDER_READY
+→ VPROC-0034.MATERIALS_RESERVING
+→ VPROC-0034.MATERIALS_READY
+→ VPROC-0034.IN_PRODUCTION
+```
+
+Semántica obligatoria:
+
+| Estado | Verdad mínima | Lo que todavía NO demuestra |
+| --- | --- | --- |
+| `PRODUCTION_ORDER_READY` | existe orden autorizada con producto, cantidad, receta/version, sede, área y fecha requerida | reserva, readiness o producción iniciada |
+| `MATERIALS_RESERVING` | FOGO está verificando y obteniendo materiales contra la orden | reserva completa, readiness o producción iniciada |
+| `MATERIALS_READY` | materiales y demás recursos requeridos están preparados y validados | que la ejecución haya comenzado |
+| `IN_PRODUCTION` | comenzó la ejecución productiva y pueden registrarse pasos, consumos, tiempos y desviaciones | resultado final, liberación de calidad o cierre |
+
+La UX no usa un único estado visual `listo` para representar simultáneamente estas cuatro verdades.
+
+---
+
+#### 7. Preparación e inicio son decisiones distintas
+
+El paso `PREPARE_AND_START_BATCH` contiene dos fronteras que deben ser visibles y auditables:
+
+```text
+FRONTERA A — PREPARAR
+PRODUCTION_ORDER_READY
+→ MATERIALS_RESERVING
+→ MATERIALS_READY
+
+FRONTERA B — INICIAR PRODUCCION
+MATERIALS_READY
+→ IN_PRODUCTION
+```
+
+Reglas:
+
+1. entrar en preparación no inicia producción;
+2. solicitar o validar materiales no inicia producción;
+3. una reserva NEXO no equivale por sí sola a `MATERIALS_READY`;
+4. `MATERIALS_READY` no equivale por sí solo a `IN_PRODUCTION`;
+5. la confirmación que inicia producción se ejecuta únicamente desde un estado fresco compatible;
+6. ninguna fase adelanta consumos, resultado, empaque o cierre.
+
+---
+
+#### 8. Condición de entrada desde la cola
+
+La pantalla solo acepta como intención inicial una orden o ejecución referenciable que continúe siendo compatible con el área y contexto efectivos.
+
+La entrada debe permitir resolver:
+
+- identidad estable de la orden productiva;
+- versión vigente de la orden;
+- referencia al plan que la originó cuando aplique;
+- producto o salida planificada;
+- cantidad objetivo y unidad;
+- sede y área productivas;
+- receta publicada y versión exacta;
+- fecha o ventana requerida cuando exista;
+- prioridad vigente sin convertirla en permiso;
+- estado actual de la instancia `VPROC-0034`;
+- existencia de un lote activo relacionado cuando corresponda.
+
+Si ya existe una ejecución activa incompatible con crear otro lote, el flujo no ofrece un segundo inicio y deriva a continuidad.
+
+---
+
+#### 9. Revalidación al abrir la preparación
+
+Al abrir `VSCREEN-0057`, la experiencia vuelve a comprobar, sin confiar en parámetros del cliente:
+
+```text
+ACTOR EFECTIVO
+TURNO Y CHECK-IN CUANDO APLIQUEN
+ROL OPERATIVO
+SEDE
+AREA
+PERMISO fogo.production.batches.create
+ORDEN Y VERSION
+RECETA Y VERSION
+ESTADO DE LA INSTANCIA
+TERRITORIO DEL RECURSO
+EXISTENCIA DE EJECUCION ACTIVA
+FRESCURA DEL SNAPSHOT
+```
+
+La selección realizada en la cola expresa intención; no funciona como token de autoridad.
+
+---
+
+#### 10. Resumen operativo previo a preparar
+
+Antes de cualquier acción, el trabajador debe poder verificar de forma compacta:
+
+1. producto o salida a producir;
+2. cantidad objetivo y unidad;
+3. área productiva efectiva;
+4. fecha requerida cuando exista;
+5. prioridad vigente cuando exista;
+6. receta publicada aplicable y versión identificable;
+7. estado actual de preparación;
+8. materiales o recursos aún pendientes;
+9. bloqueos que impiden continuar;
+10. acción siguiente realmente disponible.
+
+El resumen no expone por defecto fórmula completa, costos detallados, UUID técnicos, SQL, scopes ni información de otras áreas.
+
+---
+
+#### 11. Orden productiva como autoridad de la intención
+
+La preparación nace de una orden autorizada.
+
+La UX no permite convertir directamente en inicio:
+
+```text
+RECETA PUBLICADA AISLADA
+VENTA
+PEDIDO
+REMISION
+MINIMO
+RECOMENDACION
+PLAN EN BORRADOR
+PLAN LIBERADO SIN ORDEN EJECUTABLE
+```
+
+La orden conserva vínculo con su versión de plan, producto, cantidad, sede, área, receta/version y temporalidad aplicable.
+
+Si el AS-IS transitorio permite crear lote desde receta sin orden canónica, esa posibilidad se presenta como brecha de adopción y no redefine el diseño objetivo.
+
+---
+
+#### 12. Receta y versión exactas
+
+El inicio usa una publicación vigente y aplicable de receta, no una definición mutable sin versión.
+
+Antes de continuar:
+
+- la publicación debe seguir vigente;
+- la versión debe ser identificable de forma estable;
+- producto, sede y área deben ser compatibles con la orden;
+- una versión retirada no origina un nuevo lote;
+- el escalamiento debe partir de la versión que gobierna la orden;
+- una lectura previa del recetario no prueba que la publicación siga vigente al confirmar;
+- `fogo.production.recipe_book.view` no sustituye `fogo.production.batches.create`.
+
+La experiencia muestra la versión suficiente para que el trabajador sepa qué formulación aplicará sin convertir esta pantalla en administración de recetas.
+
+---
+
+#### 13. Cantidad objetivo y escalamiento
+
+La cantidad objetivo procede de la orden productiva vigente y se expresa en una unidad compatible con la receta/version.
+
+La UI no permite que un campo libre cambie silenciosamente el alcance empresarial de la orden.
+
+Si una ejecución futura necesita dividir, reducir, ampliar o reprogramar la cantidad, esa decisión debe estar gobernada por el contrato propietario y quedar trazada como una revisión o excepción; `FOGO-UX-005` no inventa una capacidad local de modificación de plan.
+
+El escalamiento de ingredientes para preparación debe ser determinista y reproducible desde:
+
+```text
+ORDEN / CANTIDAD OBJETIVO
++
+RECETA / VERSION
++
+UNIDADES Y CONVERSIONES CANONICAS
++
+REDONDEO Y TOLERANCIAS APLICABLES
+```
+
+---
+
+#### 14. Materiales: estados visibles sin fabricar readiness
+
+La experiencia distingue al menos:
+
+| Estado UX | Verdad empresarial |
+| --- | --- |
+| `PENDIENTE_DE_RESERVA` | existen requerimientos todavía no solicitados o no resueltos |
+| `RESERVANDO` | FOGO está en `MATERIALS_RESERVING`; NEXO procesa requerimientos aplicables |
+| `RESERVA_PARCIAL` | no toda la cantidad requerida está reservada y no existe todavía decisión que la convierta en readiness completo |
+| `MATERIALES_LISTOS` | FOGO puede demostrar `MATERIALS_READY` con evidencia vigente |
+| `BLOQUEADO` | una condición concluyente impide continuar |
+| `NO_VERIFICADO` | la fuente necesaria no está disponible o no tiene frescura suficiente |
+
+No se admite una bandera genérica que trate solicitud, reserva, preparación y consumo como el mismo hecho.
+
+---
+
+#### 15. Frontera FOGO ↔ NEXO durante preparación
+
+FOGO conserva la intención productiva; NEXO conserva inventario, reservas y movimientos.
+
+La preparación consume evidencia NEXO sin copiar su ledger como fuente editable FOGO.
+
+```text
+FOGO: ORDEN + RECETA/VERSION + REQUERIMIENTO MATERIAL
+→ NEXO: VALIDAR / RESERVAR
+→ FOGO: EVALUAR READINESS
+```
+
+Reglas:
+
+1. stock visible no equivale a reserva;
+2. reserva completa es necesaria cuando el material la exige, pero no demuestra por sí sola readiness de todos los recursos;
+3. reserva parcial conserva faltante y excepción explícita cuando pueda continuar;
+4. FOGO no fabrica stock inexistente;
+5. NEXO no modifica receta para cubrir faltantes;
+6. el inicio no consume materiales por el mero hecho de confirmar que están listos.
+
+---
+
+#### 16. Recursos adicionales y condiciones de preparación
+
+`MATERIALS_READY` exige que los materiales **y los demás recursos aplicables** estén preparados y validados.
+
+La UX puede mostrar, cuando exista fuente autoritativa:
+
+- equipo o estación requerida;
+- condición operativa o de seguridad aplicable;
+- preparación física necesaria;
+- dependencias previas;
+- restricciones de lote o material;
+- condición temporal relevante.
+
+Cuando una fuente todavía no esté integrada o no sea fresca, la UX usa `NO_VERIFICADO`; nunca convierte desconocimiento en readiness.
+
+---
+
+#### 17. Área, actor y turno
+
+Para los productores ordinarios, la preparación conserva exactamente el área efectiva recibida del contexto operativo.
+
+No se permite:
+
+- cambiar de área desde la pantalla para ampliar territorio;
+- iniciar con un turno finalizado o incompatible;
+- usar un check-in aislado como sustituto de turno;
+- prestar el área de la receta al actor;
+- usar el área del dispositivo como autoridad humana;
+- iniciar porque el trabajador puede ver la receta o la orden.
+
+Un cambio de actor, turno, rol, sede o área invalida cualquier decisión previa de preparación.
+
+---
+
+#### 18. Permiso exacto y acción primaria
+
+La acción primaria de inicio exige:
+
+```text
+fogo.production.batches.create
+```
+
+La UX puede mostrar la superficie bajo contratos de lectura aplicables, pero la mutación se habilita solo cuando la autorización exacta de creación queda demostrada de forma fresca.
+
+No autorizan el inicio:
+
+- `fogo.access` por sí solo;
+- `fogo.production.recipe_book.view`;
+- `fogo.production.batches.view`;
+- ser supervisor;
+- ser `gerencia_operativa`;
+- haber creado previamente la receta;
+- conocer el identificador de la orden;
+- haber abierto la pantalla antes de un cambio de contexto.
+
+---
+
+#### 19. Dispositivo compartido
+
+En estación compartida, la experiencia puede requerir identificación o firma del actor según la política aplicable.
+
+La firma:
+
+- identifica al humano cuando corresponde;
+- no concede el permiso;
+- no sustituye turno, área, orden, receta/version ni estado;
+- no convierte al dispositivo en trabajador;
+- no autoriza si el actor dejó de ser elegible;
+- queda correlacionada con el efecto cuando el contrato físico la exige.
+
+Una terminal de Cocina, Panadería o Repostería funciona como restricción adicional, nunca como ampliación de territorio.
+
+---
+
+#### 20. Preflight visible antes de iniciar producción
+
+Cuando la instancia alcance `MATERIALS_READY`, la interfaz presenta una comprobación final comprensible antes de ejecutar la transición a `IN_PRODUCTION`.
+
+El preflight debe poder expresar:
+
+| Dimensión | Estado visible |
+| --- | --- |
+| orden/version | vigente / cambió / inválida |
+| receta/version | aplicable / retirada / incompatible |
+| actor/turno/área | válido / stale / no autorizado |
+| materiales | listos / parciales / bloqueados / no verificados |
+| recursos adicionales | listos / bloqueados / no verificados |
+| estado de ejecución | preparado / ya iniciado / cancelado / conflicto |
+| dispositivo cuando aplique | válido / firma requerida / bloqueado |
+
+El preflight es una proyección de evidencia; no sustituye la revalidación server-side de la acción primaria.
+
+---
+
+#### 21. Confirmación de inicio
+
+La confirmación que representa el inicio real solo está disponible cuando la instancia continúa en `MATERIALS_READY` y no existe un bloqueo conocido.
+
+La intención visible puede expresarse como `Iniciar producción` o equivalente inequívoco.
+
+Al confirmar:
+
+```text
+REVALIDAR TODO
+→ TRANSICIONAR MATERIALS_READY -> IN_PRODUCTION
+→ PERSISTIR RESULTADO DURABLE
+→ EMITIR / REGISTRAR HECHO DE PRODUCCION EN CURSO
+→ ABRIR EJECUCION DEL LOTE
+```
+
+La confirmación no debe ocultar efectos adicionales ajenos al inicio.
+
+---
+
+#### 22. Efectos que NO pertenecen al inicio
+
+La transición inicial no equivale a:
+
+- registrar consumos reales completos;
+- descontar definitivamente todos los materiales por conveniencia de interfaz;
+- reportar rendimiento real;
+- registrar salida final;
+- crear stock terminado disponible;
+- cerrar empaques;
+- liberar calidad;
+- publicar producto a inventario;
+- finalizar el lote;
+- conciliar consumos;
+- corregir o anular hechos históricos.
+
+Esos efectos permanecen en sus tareas y contratos propietarios posteriores.
+
+---
+
+#### 23. Idempotencia
+
+La experiencia protege contra doble acción y reintentos inciertos.
+
+Invariantes:
+
+1. doble clic no crea dos lotes ni dos transiciones a `IN_PRODUCTION`;
+2. retry después de timeout recupera el resultado durable antes de intentar de nuevo;
+3. misma identidad idempotente y misma huella devuelven el mismo resultado empresarial;
+4. misma identidad con payload incompatible produce conflicto;
+5. una respuesta perdida no permite asumir que el inicio falló;
+6. no se generan claves idempotentes nuevas automáticamente para esconder un resultado desconocido.
+
+La implementación concreta de la clave pertenece al trabajo físico propietario; la UX conserva el comportamiento observable.
+
+---
+
+#### 24. Concurrencia y estado stale
+
+Dos actores o dos pestañas no pueden iniciar la misma ejecución desde el mismo estado de origen.
+
+Antes del efecto se compara el estado/version vigente.
+
+Si otro actor ya inició, canceló, sustituyó o modificó materialmente la ejecución:
+
+- el intento posterior no reinicia;
+- no retrocede estado;
+- no crea un lote paralelo por fallback;
+- muestra conflicto recuperable;
+- ofrece actualizar y continuar el recurso válido cuando el actor conserve autoridad.
+
+Una pantalla abierta antes de un cambio no mantiene un `ALLOW` histórico.
+
+---
+
+#### 25. Resultado exitoso del inicio
+
+Un inicio exitoso deja al menos una referencia durable y recuperable a la ejecución/lote y una verdad equivalente a:
+
+```text
+VPROC-0034.IN_PRODUCTION
+```
+
+El hecho canónico asociado es `VPROC-0034.EVT-003 — producción en curso`.
+
+La experiencia posterior abre `VSCREEN-0058 — Ejecución de lote` con la identidad de ejecución ya existente.
+
+No vuelve a la cola presentando la misma orden como si todavía estuviera pendiente de iniciar.
+
+---
+
+#### 26. Resultado de preparación sin inicio
+
+La pantalla puede quedar válidamente en preparación sin iniciar cuando:
+
+- materiales siguen reservándose;
+- existe reserva parcial no autorizada para continuar;
+- faltan recursos;
+- una fuente está `NO_VERIFICADO`;
+- el trabajador sale voluntariamente antes de iniciar;
+- el turno cambia;
+- el permiso deja de estar vigente;
+- la orden o receta/version cambian y deben revisarse.
+
+Salir durante preparación no debe crear consumos, salida, terminado o un falso estado `IN_PRODUCTION`.
+
+---
+
+#### 27. Estados de bloqueo y recuperación
+
+La experiencia diferencia al menos:
+
+| Estado | Tratamiento |
+| --- | --- |
+| `DENY` | no ejecuta efectos; muestra recuperación segura sin revelar información protegida |
+| `STALE` | exige refrescar contexto y recurso antes de continuar |
+| `CONFLICT` | otro efecto o versión hizo incompatible el intento; recupera verdad actual |
+| `MATERIALS_NOT_READY` | permanece en preparación y muestra condición/propietario |
+| `NO_VERIFICADO` | no asume readiness; permite reintentar lectura segura cuando corresponda |
+| `ERROR_TECNICO` | no se presenta como deny ni como materiales faltantes |
+| `RESULTADO_DESCONOCIDO` | recupera resultado durable por correlación/idempotencia antes de repetir |
+
+Todos los estados preservan cero efectos adicionales cuando el inicio no quedó confirmado.
+
+---
+
+#### 28. Continuidad cuando ya existe lote activo
+
+Si al entrar o revalidar se detecta una ejecución no terminal ya iniciada para el trabajo seleccionado:
+
+```text
+LOTE ACTIVO AUTORIZADO
+→ CONTINUAR EJECUCION
+!=
+INICIAR OTRO LOTE
+```
+
+La experiencia deriva a `FOGO-UX-006` / `VSCREEN-0058` cuando el actor puede continuar.
+
+Si el actor no puede continuar, no crea un lote alternativo para rodear la denegación.
+
+---
+
+#### 29. Tactilidad y prevención de errores
+
+En estación productiva compartida:
+
+- la acción de iniciar se distingue visual y semánticamente de `Atrás`, `Actualizar`, `Ver receta` o `Revisar bloqueo`;
+- iniciar no comparte target táctil con acciones secundarias;
+- el botón permanece inactivo mientras el preflight no esté resuelto;
+- el estado de carga evita doble envío;
+- prioridad o readiness no dependen solo de color;
+- la confirmación identifica producto, cantidad y área;
+- una acción irreversible posterior no se anticipa desde esta pantalla.
+
+No se impone un componente, framework, color o dimensión física concreta.
+
+---
+
+#### 30. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se observó una capacidad real pero colapsada:
+
+1. `/production-batches/new` parte de una `recipe_id`, no de una referencia canónica de orden productiva;
+2. exige receta `published` con `site_id` y `area_id`;
+3. la página comprueba `production.batches.create` usando sede y área de la receta;
+4. la Server Action `createBatch` vuelve a entrar con `production.recipe_book.view`;
+5. desde dispositivo compartido solicita firma para `production.batches.create`;
+6. la llamada a `fogo_create_real_production_batch` no transporta en la superficie observada una referencia canónica de orden ni una identidad empresarial explícita de idempotencia;
+7. el formulario captura **consumo real de ingredientes**, **outputs reales** y **empaques** antes de una única confirmación;
+8. la misma operación transitoria puede producir efectos de inventario y registrar producción real;
+9. el flujo observado no materializa la separación canónica `PRODUCTION_ORDER_READY → MATERIALS_RESERVING → MATERIALS_READY → IN_PRODUCTION`.
+
+Por tanto:
+
+```text
+AS-IS: CONFIRMAR PRODUCCION REAL COLAPSADA
+!=
+TO-BE: PREPARAR -> VALIDAR READINESS -> INICIAR -> EJECUTAR -> REPORTAR / CERRAR
+```
+
+La existencia de producción real AS-IS se conserva como evidencia de capacidad, no como contrato objetivo.
+
+---
+
+#### 31. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| El inicio AS-IS nace desde receta y no demuestra orden productiva canónica. | riesgo de producción espontánea sin plan/orden trazable | materialización aplicable de `FOGO-AUTH-009` + implementación de `VSCREEN-0057` | todo inicio resuelve orden/version y su vínculo con plan cuando aplica |
+| `createBatch` entra con permiso de recetario y el check exacto de creación observado ocurre antes en la página. | un check previo puede quedar stale o ser saltado por llamada directa | `FOGO-AUTH-009::<implementation_unit_id>` | la mutación revalida `fogo.production.batches.create`, actor, contexto, recurso y estado inmediatamente antes del efecto |
+| El formulario actual captura consumo, salida y empaque en la misma confirmación. | colapsa inicio, ejecución, resultado y empaque | `FOGO-UX-005..007`, `FOGO-UX-010`, `FOGO-UX-012`, `FOGO-UX-013` + implementaciones propietarias | iniciar solo abre ejecución; efectos posteriores se registran en sus transiciones y superficies propias |
+| El RPC actual acopla efectos productivos e inventario. | impide demostrar separación FOGO/NEXO e idempotencia distribuida completa | `INT-PROD-001..005`, materializaciones FOGO/NEXO y paquetes E5 propietarios | reservas, consumos, salidas y reconciliación usan contratos propietarios correlacionados y exactamente una vez |
+| No se observa identidad explícita de idempotencia empresarial en la llamada de creación. | retry o respuesta perdida puede duplicar efecto si capas inferiores no lo resuelven | `FOGO-AUTH-009::<implementation_unit_id>` | replay seguro, conflicto de huella y recuperación de resultado quedan demostrados |
+| La asociación de firma compartida con el lote puede ser posterior al efecto. | riesgo de evidencia incompleta si falla la asociación | `FOGO-AUTH-014` + contrato de dispositivo aplicable | actor, dispositivo, firma y recurso quedan correlacionados de forma durable y recuperable |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 32. Handoff inmediato a FOGO-UX-006
+
+`FOGO-UX-006 — Diseñar producción parcial` recibe una ejecución ya iniciada con:
+
+```text
+PROCESS_INSTANCE / LOTE DURABLE
+ESTADO = VPROC-0034.IN_PRODUCTION
+ORDEN + VERSION
+RECETA + VERSION EXACTA
+PRODUCTO / SALIDA OBJETIVO
+CANTIDAD OBJETIVO + UNIDAD
+ACTOR / TURNO / SEDE / AREA DEL INICIO
+REFERENCIAS DE MATERIALES PREPARADOS
+CORRELACION / IDEMPOTENCIA DEL INICIO
+TIMESTAMP / VERSION DE ESTADO
+DISPOSITIVO / FIRMA CUANDO APLIQUE
+```
+
+La 006 registra progreso y hechos parciales sobre esa ejecución existente; no vuelve a crear el lote ni repite la transición de inicio.
+
+---
+
+#### 33. Handoff al resto de FOGO-UX
+
+| Tarea | Entrada exacta proveniente de FOGO-UX-005 |
+| --- | --- |
+| `FOGO-UX-006` | lote en `IN_PRODUCTION`, contexto y versión iniciales para capturas parciales |
+| `FOGO-UX-007` | inicio y ejecución permanecen separados del cierre terminal |
+| `FOGO-UX-008` | la receta operativa consumida por el lote conserva publicación/version exactas |
+| `FOGO-UX-010` | rendimiento, desperdicio y resultado reales no se fabrican al iniciar |
+| `FOGO-UX-011` | correcciones posteriores preservan el hecho original de inicio |
+| `FOGO-UX-012` | materiales y consumos posteriores se correlacionan sin convertir readiness en consumo |
+| `FOGO-UX-013` | empaque y salida terminada no se crean por la transición de inicio |
+| `FOGO-UX-014` | supervisión no concede `batches.create` ni override de inicio |
+| `FOGO-UX-015` | prototipo debe demostrar preparación, bloqueo, readiness, inicio, conflicto y recuperación por separado |
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea desarrolla de forma UX obligaciones ya registradas para ciclo de lote, receta/version exacta, planificación/orden, ejecución productiva, autorización server-side, actor/turno, territorio, concurrencia, idempotencia, integración FOGO/NEXO y experiencia. No introduce una obligación observable nueva fuera de esa cobertura ni modifica texto, estado, relación, secuencia o propietario del registro.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-001` — ciclo productivo de inicio, parciales, consumo, desperdicio, resultado, finalización, cancelación/corrección, actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` — receta publicada inmutable, versión exacta, unidades, escalamiento, tolerancias y snapshot reproducible;
+- `TREQ-FOGO-003` — plan y orden derivados con sede, área, cantidad, fechas, prioridad, capacidad, restricciones y materiales trazables;
+- `TREQ-FOGO-004` — ejecución con orden, lote, receta/version, materiales, pasos, desviaciones y estados posteriores separados;
+- `TREQ-AUTH-008` — carril operativo y dependencia de turno/check-in cuando corresponde;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-011` — identidad efectiva en dispositivo compartido;
+- `TREQ-AUTH-013` — autorización server-side sin bypass por UI/API/RPC;
+- `TREQ-AUTH-014` — invalidación de autoridad stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de actor, contexto, permiso, recurso, decisión, estado y tiempo;
+- `TREQ-UX-001` — tarea actual, acción principal y estado identificables;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad.
+
+Esta enumeración es trazabilidad reutilizada y no constituye una modificación del Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@58de85c3aa6d65276a16450903a5d6fc1578c9f7`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, `FOGO-AUTH-009`, `FOGO-AUTH-013`, `FOGO-AUTH-014`, `VSCREEN-0057`, estados/eventos de `VPROC-0034`, contrato FOGO ↔ NEXO, cobertura 04A vigente y el AS-IS de `/production-batches/new`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron órdenes, reservas, materiales, turnos, firmas, lotes, concurrencia, retries ni pruebas con trabajadores reales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-005` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 37. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0057` conserva identidad `fogo` y `VPROC-0034::STEP-PREPARE_AND_START_BATCH`;
+- [ ] la entrada proviene de orden productiva referenciable y no de una receta aislada;
+- [ ] `PRODUCTION_ORDER_READY`, `MATERIALS_RESERVING`, `MATERIALS_READY` e `IN_PRODUCTION` permanecen distintos;
+- [ ] preparar no se presenta como producción iniciada;
+- [ ] reserva NEXO no se presenta automáticamente como `MATERIALS_READY`;
+- [ ] `MATERIALS_READY -> IN_PRODUCTION` representa el inicio productivo;
+- [ ] la pantalla revalida actor, turno, rol, sede, área y permiso antes de preparar/iniciar según corresponda;
+- [ ] la mutación exige `fogo.production.batches.create` y no hereda autoridad de lectura;
+- [ ] orden y versión se revalidan antes del efecto;
+- [ ] receta publicada y versión exacta se revalidan antes del efecto;
+- [ ] una versión retirada o incompatible no puede originar nuevo lote;
+- [ ] cantidad objetivo procede de la orden y no se amplía mediante campo cliente sin contrato propietario;
+- [ ] escalamiento de materiales es determinista y reproducible;
+- [ ] pendiente, reservando, reserva parcial, materiales listos, bloqueado y no verificado permanecen distintos;
+- [ ] desconocimiento de materiales/recursos no se presenta como readiness;
+- [ ] FOGO conserva orden/receta/ejecución y NEXO conserva inventario/reserva/movimiento;
+- [ ] readiness no se convierte en consumo;
+- [ ] firma de dispositivo no concede permiso;
+- [ ] preflight visible no sustituye autorización server-side;
+- [ ] doble clic no duplica lote ni transición;
+- [ ] retry recupera resultado antes de repetir;
+- [ ] concurrencia no permite dos inicios sobre el mismo estado de origen;
+- [ ] un estado stale obliga a refrescar y reautorizar;
+- [ ] un lote ya activo deriva a continuidad y no ofrece segundo inicio;
+- [ ] el inicio exitoso deja una ejecución durable en `IN_PRODUCTION`;
+- [ ] `VPROC-0034.EVT-003` representa producción en curso sin afirmar cierre ni calidad;
+- [ ] iniciar no registra por sí solo consumo completo, resultado final, empaque, calidad, inventario disponible o cierre;
+- [ ] la UX diferencia deny, stale, conflicto, materiales no listos, no verificado, error técnico y resultado desconocido;
+- [ ] `FOGO-UX-006` recibe una ejecución existente y no repite creación/inicio;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0057`;
+- crea o modifica RPC, tablas, vistas, RLS, grants, migraciones o datos;
+- crea permisos nuevos;
+- redefine la cola de `FOGO-UX-004`;
+- redefine planificación de `VPROC-0033`;
+- administra recetas maestras;
+- publica recetas;
+- modifica prioridades u órdenes;
+- crea una regla nueva de parcialidad o sustitución de materiales;
+- redefine reservas NEXO;
+- registra consumo real completo;
+- registra producción parcial;
+- reporta resultado final;
+- crea empaque terminado;
+- libera calidad;
+- publica stock terminado;
+- finaliza el lote;
+- corrige o anula hechos históricos;
+- inventa nombres físicos de campos o esquemas;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-004 — Mostrar producción pendiente del turno`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-005 — Diseñar inicio de lote`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-006 — Diseñar producción parcial`
+
 ### [ ] FOGO-UX-006 — Diseñar producción parcial
 ### [ ] FOGO-UX-007 — Diseñar finalización de lote
 ### [ ] FOGO-UX-008 — Mostrar receta resumida para operación
