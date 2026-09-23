@@ -892,7 +892,589 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-003 — Filtrar cola por sede y área`
 
-### [ ] FOGO-AUTH-003 — Filtrar cola por sede y área
+### ✅ FOGO-AUTH-003 — Filtrar cola por sede y área
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-002 — Definir permisos por área productiva
+**Tarea siguiente:** FOGO-AUTH-004 — Restringir Panadería
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización FOGO del filtrado server-side de la cola productiva por sede activa, área productiva efectiva, permiso exacto, estado ejecutable y territorio real del recurso
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `FOGO-AUTH-003::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo la cola operativa de FOGO limita sus elementos a la sede activa, el área productiva efectiva y el territorio real de cada recurso antes de exponer datos al cliente, sin convertir parámetros de URL, filtros visuales, sede seleccionada, área seleccionada, dispositivo, nombre de rol o visibilidad de pantalla en autoridad.
+
+La regla central queda fijada así:
+
+```text
+CONTEXTO OPERATIVO EFECTIVO
++
+PERMISO EXACTO
++
+TERRITORIO REAL DEL RECURSO
++
+ESTADO ELEGIBLE
++
+REGLAS DE APLICABILIDAD
+=
+ELEMENTO AUTORIZABLE EN COLA
+```
+
+El filtrado de cola es una consecuencia de la autorización; no la sustituye.
+
+---
+
+#### 2. Fuentes y entradas canónicas
+
+La definición consume y conserva:
+
+- `FOGO-AUTH-001` como inventario de superficies y acciones;
+- `FOGO-AUTH-002` como contrato inmediato de permisos por área productiva;
+- `VSCREEN-0055 — Inicio y cola de producción`;
+- `VPROC-0033 — Planear producción desde demanda, inventario, capacidad, prioridad y fecha requerida`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- contratos de sede, área, turno, rol operativo, scope, recurso, denegación, frescura y autorización server-side;
+- `TREQ-FOGO-003` como cobertura vigente de planificación por sede y área;
+- `TREQ-AUTH-009`, `TREQ-AUTH-013` y cobertura territorial transversal vigente;
+- runtime `vento-group-sas/vento-fogo` verificado en `a40683b2413d621fb3f54f2eebb8743a42bad3d7`.
+
+`FOGO-AUTH-002` entrega exactamente esta frontera para la cola:
+
+```text
+SEDE ACTIVA COMPATIBLE
++
+AREA ACTIVA EXACTA
++
+PERMISO OPERATIVO
++
+RECURSO COMPATIBLE
+```
+
+La cola no puede ampliar esa frontera.
+
+---
+
+#### 3. Identidad canónica de la cola
+
+La cola operativa corresponde a `VSCREEN-0055 — Inicio y cola de producción`.
+
+Su propósito canónico es presentar producción pendiente, priorizada y disponible para el área y contexto efectivos. Su acción primaria está vinculada a:
+
+```text
+VPROC-0033::STEP-TRIAGE_PRODUCTION_QUEUE
+```
+
+La superficie presenta trabajo derivado de planificación y ejecución productiva, pero no redefine la autoridad de esos procesos.
+
+La cola puede representar, según el contrato propietario y el estado vigente:
+
+- planes productivos liberados por `VPROC-0033`;
+- órdenes productivas listas para preparación de `VPROC-0034`;
+- lotes o identidades de ejecución ya materializados cuando su estado todavía los haga operables por el actor.
+
+No se crea en esta tarea un modelo de datos nuevo ni se obliga a que esas identidades vivan en una sola tabla.
+
+---
+
+#### 4. Estados mínimos que pueden originar trabajo en cola
+
+Los estados canónicos ya definidos conservan su semántica:
+
+| Proceso | Estado canónico | Tratamiento en cola |
+| --- | --- | --- |
+| `VPROC-0033` | `PRODUCTION_PLAN_RELEASED` | Puede originar trabajo visible si sede, área, permiso, aplicabilidad y relaciones son compatibles. |
+| `VPROC-0034` | `PRODUCTION_ORDER_READY` | Puede presentarse como trabajo listo para preparación cuando el actor está autorizado en el área correspondiente. |
+| `VPROC-0034` | estados posteriores no terminales | Solo permanecen visibles cuando la acción concreta de seguimiento o ejecución pertenece al actor, al área y al estado actual. |
+| `VPROC-0034` | `PRODUCTION_EXECUTION_COMPLETED` | No permanece como trabajo pendiente de la cola operativa; su consulta histórica pertenece a la superficie o contrato que corresponda. |
+
+La inclusión en cola nunca se deriva únicamente del nombre del estado. También exige territorio, permiso y relación aplicables.
+
+---
+
+#### 5. Contextos productivos ordinarios
+
+La cola operativa ordinaria reconoce los tres perfiles productivos definidos por `FOGO-AUTH-002`:
+
+| Rol operativo efectivo | Sede efectiva requerida | Área efectiva exacta |
+| --- | --- | --- |
+| `produccion_cocina` | Centro de Producción | Cocina Caliente |
+| `produccion_panaderia` | Centro de Producción | Galletería y Panadería |
+| `produccion_reposteria` | Centro de Producción | Repostería |
+
+Para estos perfiles, la cola es estrictamente de un área efectiva a la vez.
+
+Compartir sede no permite mezclar trabajo de otras áreas.
+
+---
+
+#### 6. Resolución territorial de la cola
+
+Para un actor productivo ordinario, el territorio visible se resuelve así:
+
+```text
+ACTOR EFECTIVO
+→ TURNO PUBLICADO Y VIGENTE
+→ ROL OPERATIVO EFECTIVO
+→ SEDE OPERATIVA DEL TURNO
+→ AREA OPERATIVA DEL TURNO
+→ PERMISO EXACTO
+→ TERRITORIO REAL DEL RECURSO
+→ ESTADO Y APLICABILIDAD
+→ FILA AUTORIZABLE
+```
+
+Reglas obligatorias:
+
+1. la sede operativa procede del turno vigente;
+2. el área operativa procede del mismo turno cuando el rol la exige;
+3. el área debe pertenecer a la sede efectiva;
+4. `null` en un área requerida produce denegación cerrada;
+5. la sede seleccionada para navegación no sustituye la sede del turno;
+6. el área seleccionada para navegación no sustituye el área del turno;
+7. un cambio de turno, sede, área o rol invalida la cola previamente resuelta;
+8. una fila cuyo territorio no pueda resolverse no se expone por fallback.
+
+---
+
+#### 7. Territorio real del elemento de cola
+
+El contexto del actor no reemplaza el territorio del recurso.
+
+Cada elemento candidato deberá resolver de forma verificable la sede y el área productiva que realmente gobiernan su ejecución.
+
+La resolución puede provenir del propio recurso o de una relación canónica trazable con su plan, orden, receta, destino productivo o lote. Lo que no puede ocurrir es inferir territorio desde:
+
+- el texto de un producto;
+- el nombre de una receta;
+- el creador del registro;
+- la pestaña seleccionada;
+- el parámetro enviado por el navegador;
+- el último contexto almacenado en cliente;
+- una coincidencia parcial de sede sin área cuando el área es obligatoria.
+
+Si el territorio material no puede demostrarse, el elemento queda fuera de la cola operativa.
+
+---
+
+#### 8. Regla de filtrado server-side
+
+La consulta protegida debe aplicar la frontera territorial antes de serializar filas hacia el cliente.
+
+```text
+RESOLVER ACTOR Y CONTEXTO
+→ RESOLVER PERMISO
+→ CONSTRUIR TERRITORIO AUTORIZABLE
+→ OBTENER CANDIDATOS COMPATIBLES
+→ RESOLVER TERRITORIO REAL DE CADA CANDIDATO
+→ APLICAR ESTADO Y APLICABILIDAD
+→ EXCLUIR NO AUTORIZADOS
+→ MINIMIZAR CAMPOS
+→ ORDENAR Y SERIALIZAR
+```
+
+No es válido:
+
+```text
+CONSULTAR COLA GLOBAL
+→ ENVIARLA AL CLIENTE
+→ OCULTAR FILAS EN REACT
+```
+
+La UI puede aplicar filtros adicionales de presentación únicamente sobre un conjunto que ya fue autorizado en servidor.
+
+---
+
+#### 9. Parámetros de cliente y filtros visibles
+
+Valores como:
+
+```text
+site_id
+area_id
+area_kind
+status
+priority
+product_id
+recipe_id
+```
+
+son criterios de búsqueda o presentación, no autoridad.
+
+Un parámetro solicitado por el cliente puede:
+
+- reducir un conjunto ya autorizado;
+- seleccionar una vista compatible con el contexto;
+- ordenar o segmentar resultados autorizados.
+
+No puede:
+
+- ampliar la sede efectiva;
+- ampliar el área efectiva;
+- saltar el turno;
+- sustituir un permiso;
+- fabricar una relación con el recurso;
+- convertir `null` en wildcard;
+- devolver filas de otra área porque el actor conozca su identificador.
+
+Una solicitud territorial incompatible falla cerrada o devuelve un conjunto vacío según el contrato de interfaz propietario, pero nunca hace fallback a una cola más amplia.
+
+---
+
+#### 10. Permisos que gobiernan la cola
+
+La cola no introduce claves nuevas.
+
+Las capacidades existentes se conservan con su función exacta:
+
+| Permiso | Uso dentro de esta tarea |
+| --- | --- |
+| `fogo.access` | Permite entrada a FOGO bajo contexto válido; no concede filas de cola por sí solo. |
+| `fogo.production.orders.view` | Autoriza consulta de órdenes relacionadas legítimamente con el territorio operativo efectivo. |
+| `fogo.production.batches.view` | Autoriza consulta de lotes dentro del territorio operativo efectivo y del recurso. |
+| `fogo.production.batches.create` | No es requisito para listar toda la cola; gobierna la futura mutación de creación cuando corresponda. |
+| `fogo.production.recipe_book.view` | Permite consultar publicación aplicable cuando la cola necesite presentar la receta operativa autorizada. |
+| `fogo.production.recipes.view` | Permanece administrativo y no amplía la cola productiva ordinaria. |
+
+Una pantalla visible con `fogo.access` no autoriza automáticamente todas las filas ni todas las acciones asociadas.
+
+---
+
+#### 11. Priorización sin ampliación territorial
+
+`VSCREEN-0055` puede priorizar elementos autorizados, pero la prioridad se aplica después de resolver el conjunto territorial permitido.
+
+```text
+AUTORIZAR CONJUNTO
+→ FILTRAR TERRITORIO
+→ FILTRAR ELEGIBILIDAD
+→ PRIORIZAR
+```
+
+Nunca:
+
+```text
+PRIORIZAR GLOBAL
+→ MOSTRAR PRIMEROS N
+→ ASUMIR QUE SON DEL AREA
+```
+
+Una prioridad alta no convierte un trabajo de otra área en visible ni ejecutable.
+
+---
+
+#### 12. Supervisión y visibilidad multiárea
+
+Esta tarea no concede visibilidad multiárea a supervisores.
+
+`FOGO-AUTH-008 — Definir permisos de supervisor` conserva la responsabilidad de establecer qué capacidad adicional, si alguna, permite supervisión entre áreas.
+
+Hasta que ese contrato aplique:
+
+- los roles productivos ordinarios permanecen restringidos a un área efectiva;
+- no se infiere multiárea desde el título laboral `supervisor`;
+- no se infiere multiárea desde pertenecer al Centro de Producción;
+- no se infiere multiárea desde una selección de interfaz.
+
+---
+
+#### 13. Dispositivo compartido
+
+El dispositivo puede imponer un techo adicional de aplicación, sede o área, pero no puede ampliar el territorio humano.
+
+Para una futura materialización en dispositivo compartido, el conjunto visible deberá satisfacer simultáneamente el contexto efectivo del trabajador y las restricciones válidas del dispositivo cuando apliquen.
+
+Esta tarea no redefine identidad del dispositivo, handoff de trabajador, expiración, PIN, revocación ni propósito del terminal.
+
+---
+
+#### 14. Frescura y concurrencia
+
+Una cola resuelta deja de ser autoridad suficiente cuando cambia cualquiera de estos hechos materiales:
+
+- actor efectivo;
+- turno;
+- rol operativo;
+- sede del turno;
+- área del turno;
+- check-in cuando aplique;
+- permiso o grant;
+- sede o área del recurso;
+- versión del plan;
+- estado de la orden o lote;
+- cancelación, cierre o cambio de elegibilidad.
+
+La futura implementación deberá revalidar antes de una mutación aunque el elemento se hubiera mostrado previamente en la cola.
+
+---
+
+#### 15. Minimización y no revelación
+
+Un recurso fuera del territorio autorizado no debe llegar al cliente para ser ocultado posteriormente.
+
+La proyección de cola deberá limitarse a los datos necesarios para identificar y priorizar trabajo autorizado.
+
+No se usarán filas denegadas para:
+
+- conteos visibles;
+- indicadores de prioridad;
+- totales por producto;
+- badges;
+- autocompletados;
+- filtros con valores descubiertos desde otra área;
+- mensajes que revelen que existe un trabajo protegido.
+
+---
+
+#### 16. AS-IS verificado y brecha de adopción
+
+El runtime actual de `vento-fogo` no demuestra todavía el contrato de cola canónica.
+
+Se verificó que `/production-batches`:
+
+- protege la página con `production.batches.view`;
+- consulta `production_batches`;
+- recibe opcionalmente `site_id` desde `searchParams`;
+- aplica `.eq("site_id", siteId)` únicamente cuando ese parámetro existe;
+- no incorpora `area_id` en la proyección observada de la consulta;
+- presenta lotes históricos/registrados, no constituye por sí sola `VSCREEN-0055` completa.
+
+También se verificó que el shell de aplicación puede resolver contexto operativo de sede y área, pero esa existencia no demuestra que la consulta de lotes o la futura cola lo esté usando como frontera server-side.
+
+Por tanto:
+
+```text
+FILTRO OPCIONAL POR URL
+!=
+COLA CANONICA FILTRADA POR CONTEXTO EFECTIVO
+```
+
+La diferencia se materializará únicamente en las instancias físicas futuras de esta tarea.
+
+---
+
+#### 17. Convergencia técnica futura
+
+La materialización deberá llevar a una frontera coherente entre:
+
+```text
+CONTEXTO CANONICO
+→ AUTORIZACION
+→ QUERY / RPC / VISTA AUTORIZADA
+→ PROYECCION DE COLA
+→ ACCION POSTERIOR REVALIDADA
+```
+
+Si la unidad física necesita cambios en consulta, helper, RPC, vista, RLS o contrato compartido, todos deberán usar la misma semántica territorial.
+
+No se autoriza mantener dos motores que puedan devolver conjuntos territoriales distintos para el mismo actor y snapshot.
+
+---
+
+#### 18. Ownership de Supabase
+
+Toda futura modificación VENTO relacionada con:
+
+- RPC de cola;
+- vistas SQL;
+- RLS;
+- funciones territoriales;
+- índices;
+- tablas o columnas;
+- triggers;
+- grants;
+- tipos generados;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Este marcador documental no ejecuta cambios Supabase.
+
+---
+
+#### 19. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `/production-batches` acepta un filtro `site_id` suministrado por cliente y no demuestra una frontera derivada del contexto efectivo. | Bloquea conformidad física de la cola, no esta definición documental. | `FOGO-AUTH-003::<implementation_unit_id>` | La unidad propietaria deriva el territorio desde contexto autorizado y trata filtros del cliente solo como refinamiento. |
+| La consulta observada de `production_batches` no proyecta `area_id`. | Bloquea demostrar aislamiento por área desde esa consulta aislada. | `FOGO-AUTH-003::<implementation_unit_id>` | La unidad resuelve de forma trazable el área real del recurso sin inferencias cliente-side. |
+| `VSCREEN-0055` es un contrato canónico más amplio que la página histórica de lotes observada. | No bloquea esta definición. | `FOGO-UX-003 / FOGO-UX-004 / FOGO-AUTH-003` | El diseño UX y la materialización física consumen la misma identidad de cola y contexto efectivo. |
+| La visibilidad multiárea de supervisión no pertenece a esta tarea. | No bloquea. | `FOGO-AUTH-008` | El contrato de supervisor define permisos y alcance explícitos sin reutilizar el rol ordinario. |
+| Una fila mostrada puede dejar de ser ejecutable antes de la acción. | Riesgo de autorización stale. | `FOGO-AUTH-009..012 / FOGO-AUTH-014` | Cada mutación revalida actor, turno, área, permiso, recurso y estado inmediatamente antes del efecto. |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 20. Materialización física posterior
+
+La topología vigente de `FOGO-AUTH-003` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador define el contrato global una sola vez.
+
+Cada materialización futura usa:
+
+```text
+FOGO-AUTH-003::<implementation_unit_id>
+```
+
+La unidad exacta y su paquete propietario se resuelven desde las fuentes canónicas de implementación; esta tarea no inventa `implementation_unit_id`, no reasigna packages y no autoriza código.
+
+La materialización solo puede comenzar después de que el paquete aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+---
+
+#### 21. Handoff a FOGO-AUTH-004..008
+
+| Tarea | Entrada exacta proveniente de esta definición |
+| --- | --- |
+| `FOGO-AUTH-004` | Panadería consume una cola ya limitada a Centro de Producción + Galletería y Panadería; no recibe trabajo de Cocina o Repostería por filtro cliente-side. |
+| `FOGO-AUTH-005` | Repostería consume la misma regla con su área efectiva exacta. |
+| `FOGO-AUTH-006` | Cocina consume la misma regla con Cocina Caliente como área efectiva exacta. |
+| `FOGO-AUTH-007` | Insumos visibles desde trabajo productivo deben conservar el área, orden, lote y receta autorizados sin ampliar inventario general. |
+| `FOGO-AUTH-008` | La supervisión deberá definir explícitamente cualquier lectura multiárea; esta tarea no la concede. |
+
+---
+
+#### 22. Handoff a FOGO-AUTH-009..016 y FOGO-UX
+
+| Tarea | Entrada exacta proveniente de esta definición |
+| --- | --- |
+| `FOGO-AUTH-009` | Iniciar producción desde una fila visible exige revalidar permiso de mutación, actor, turno, sede, área, recurso y estado. |
+| `FOGO-AUTH-010` | Producción parcial no conserva autoridad únicamente porque el lote estaba visible al abrir la cola. |
+| `FOGO-AUTH-011` | Finalización se autoriza por acción y estado, no por pertenencia previa a la cola. |
+| `FOGO-AUTH-012` | Corrección o anulación no se deriva de visibilidad ni prioridad. |
+| `FOGO-AUTH-014` | Actor y turno efectivos deben quedar trazables en las acciones originadas desde la cola. |
+| `FOGO-AUTH-015` | La migración a paquetes compartidos conserva la misma resolución territorial sin filtros permisivos locales. |
+| `FOGO-AUTH-016` | Las pruebas integrales demuestran aislamiento por sede/área, filtros cliente-side no ampliatorios y revalidación antes de mutar. |
+| `FOGO-UX-003` | El inicio por área productiva presenta el contexto efectivo sin convertir selección visual en autorización. |
+| `FOGO-UX-004` | La producción pendiente del turno se obtiene del conjunto ya autorizado y no de una cola global ocultada en cliente. |
+
+---
+
+#### 23. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el filtrado territorial de FOGO ya está cubierto por requisitos vigentes de contexto, aislamiento territorial, autorización server-side, planificación por sede/área y mutación revalidada. Esta tarea especializa el contrato y asigna ownership de materialización sin introducir una obligación verificable nueva fuera de esa cobertura.
+
+---
+
+#### 24. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-AUTH-001` para impedir autorización final por nombre de rol;
+- `TREQ-AUTH-004` para decisiones equivalentes por actor, permiso, sede, área y contexto;
+- `TREQ-AUTH-008` para exigir turno, rol, sede y área cuando correspondan;
+- `TREQ-AUTH-009` para resolución determinista de sede y área y denegación de cruces territoriales;
+- `TREQ-AUTH-013` para impedir bypass de autorización y revalidar territorio y recurso en servidor;
+- `TREQ-AUTH-014` y `TREQ-AUTH-015` para frescura, convergencia y evidencia de decisión cuando apliquen;
+- `TREQ-FOGO-001` para ciclo productivo trazable;
+- `TREQ-FOGO-003` para planificación con sede, área, prioridad, capacidad, versión y órdenes derivadas;
+- `TREQ-FOGO-004` para ejecución productiva y estados independientes;
+- `TREQ-FOGO-023` para impedir que una vista autorice por sí sola una mutación.
+
+Esta trazabilidad no modifica 04A.
+
+---
+
+#### 25. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, TREQ y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@d2d84604df053d0ff49d46395f36f9609c757b8b`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, `VSCREEN-0055`, `VPROC-0033`, `VPROC-0034`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, contratos territoriales vigentes y el AS-IS de `/production-batches`; la entrada inmediata `FOGO-AUTH-002` se consume desde su artefacto completo aprobado en la conversación. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó cola, planificación, turno, filtros, producción ni pruebas de autorización reales. |
+| FÍSICA | NOT_APPLICABLE | El marcador global no crea ni autoriza ninguna instancia `FOGO-AUTH-003::<implementation_unit_id>`. |
+
+---
+
+#### 26. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0055` queda identificada como la cola operativa canónica;
+- [ ] la cola se deriva de contexto efectivo y no de parámetros del cliente;
+- [ ] Cocina, Panadería y Repostería conservan áreas exactas separadas;
+- [ ] compartir Centro de Producción no une las tres colas;
+- [ ] sede y área del actor permanecen separadas del territorio del recurso;
+- [ ] `null` no funciona como wildcard de área;
+- [ ] una fila sin territorio demostrable queda fuera de la cola operativa;
+- [ ] `site_id` y `area_id` cliente-side solo pueden reducir un conjunto ya autorizado;
+- [ ] la consulta filtra antes de serializar;
+- [ ] la UI no recibe filas protegidas para ocultarlas posteriormente;
+- [ ] la prioridad se aplica después del filtrado territorial;
+- [ ] `fogo.access` no concede filas ni acciones internas por sí solo;
+- [ ] la visibilidad multiárea de supervisor permanece reservada a `FOGO-AUTH-008`;
+- [ ] toda mutación posterior revalida autoridad aunque la fila hubiera sido visible;
+- [ ] cambios de turno, sede, área, permiso o estado invalidan decisiones previas;
+- [ ] el AS-IS de `/production-batches` queda identificado como adopción pendiente y no como cumplimiento;
+- [ ] cualquier cambio futuro de Supabase pertenece a `vento-shell`;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican TREQ;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 27. Límites
+
+Esta tarea no:
+
+- implementa la cola;
+- modifica código de `vento-fogo`;
+- modifica `production_batches`;
+- crea tablas, vistas o columnas;
+- modifica RLS;
+- crea RPC;
+- crea migraciones;
+- modifica grants;
+- cambia turnos o check-ins;
+- modifica matrices RBAC;
+- crea permisos nuevos;
+- concede visibilidad multiárea a supervisores;
+- redefine dispositivos compartidos;
+- diseña la pantalla visual final;
+- define el contrato completo de planificación;
+- inicia lotes;
+- registra producción parcial;
+- finaliza lotes;
+- corrige ni anula producción;
+- migra permisos legacy;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- reasigna packages;
+- modifica el Registro 04A.
+
+---
+
+#### 28. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-002 — Definir permisos por área productiva`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-003 — Filtrar cola por sede y área`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-004 — Restringir Panadería`
 ### [ ] FOGO-AUTH-004 — Restringir Panadería
 ### [ ] FOGO-AUTH-005 — Restringir Repostería
 ### [ ] FOGO-AUTH-006 — Restringir Cocina
