@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1269** |
+| Aprobadas | **1270** |
 | En propuesta | **0** |
-| No iniciadas | **327** |
+| No iniciadas | **326** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.51% (1269/1596)** |
+| Porcentaje de completamiento | **79.57% (1270/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **327** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1170** |
+| ⏸ NO_EVALUADA | **326** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1171** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap | ✅ APROBADA |
-| Tarea actual | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual | ⬜ NO INICIADA |
-| Siguiente reservada | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | ⬜ NO INICIADA |
+| Última aprobada | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual | ✅ APROBADA |
+| Tarea actual | `OPS-PRD-001` — Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | ⬜ NO INICIADA |
+| Siguiente reservada | `OPS-TRZ-001` — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1081,7 +1081,7 @@
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-013` | Conectar producto terminado con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-014` | Diseñar pantalla para supervisor de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-015` | Validar el prototipo por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-REC-001` | Definir el contrato canónico de recetas y acceso contextual | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-REC-001` | Definir el contrato canónico de recetas y acceso contextual | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-PRD-001` | Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `OPS-TRZ-001` | Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-001` | Inventariar vistas de compras | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
