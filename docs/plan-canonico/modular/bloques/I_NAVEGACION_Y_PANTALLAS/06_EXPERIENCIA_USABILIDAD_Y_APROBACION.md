@@ -4268,593 +4268,587 @@ PERFIL NEXO DE 29 TAREAS / 8 CONTEXTOS
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-UI-054 — Reducir opciones irrelevantes`
 
-### [ ] AUTH-UI-054 — Reducir opciones irrelevantes
+### ✅ AUTH-UI-054 — Reducir opciones irrelevantes
 
-**Estado:** NO INICIADA; evidencia parcial NEXO conservada
-**Tarea anterior:** `AUTH-UI-053 — Diseñar navegación según tareas frecuentes` — NO INICIADA
-**Tarea siguiente:** `AUTH-UI-055 — Crear prototipo por rol` — NO INICIADA
-**Tipo de tarea:** documental global; reducción de opciones de cada aplicación según relevancia autoritativa, función activa, trabajo vigente, disposición canónica, recurrencia válida, modalidad de dispositivo y necesidad de descubrimiento secundario
-**Repositorio propietario:** `vento-shell`
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-053 — Diseñar navegación según tareas frecuentes
+**Tarea siguiente:** AUTH-UI-055 — Crear prototipo por rol
+**Tipo de tarea:** documental global; reducción de opciones por aplicación y por cada superficie canónica mediante relevancia autoritativa, función activa, trabajo vigente, disposición, recurrencia, estado, dispositivo y necesidad de descubrimiento secundario
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
 **Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
-**Evidencia parcial inspeccionada:** `vento-nexo`, `NEXO-ROUTE-001` — `/`
-**Ruta vigente:** flujo canónico integral; el carril `NEXO-REMISSIONS-001` queda únicamente como procedencia histórica de la evidencia NEXO
-**Cambios físicos autorizados:** ninguno; no modifica código, rutas, permisos, roles, procesos, datos, Supabase, migraciones, RLS, configuración, telemetría ni despliegues
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno
+**Requisitos de prueba creados o modificados:** 0
 
 ---
 
 #### 1. Propósito
 
-Reducir las opciones visibles de NEXO hasta conservar únicamente aquellas que
-son relevantes para el actor efectivo, la función activa, el contexto vigente,
-el trabajo disponible y la superficie utilizada, sin eliminar tareas
-canónicas, ocultar trabajo autorizado ni convertir la presentación en una
-fuente de autoridad.
+Reducir las opciones visibles de cada proyección de Vento OS hasta conservar únicamente las que resulten relevantes para el actor efectivo, la función o relación activa, el contexto, el trabajo vigente y la superficie utilizada, sin eliminar identidades canónicas, ocultar trabajo todavía autorizado ni convertir presentación, frecuencia o posición visual en autoridad.
 
-La regla canónica es:
+La regla global queda fijada así:
 
 ```text
-CONJUNTO DE TAREAS AUTORIZADAS
+CONJUNTO YA ELEGIBLE SEGUN AUTH-UI-052 Y AUTH-UI-053
 +
-FUNCIÓN ACTIVA Y CONTEXTO VIGENTE
+ACTOR / FUNCION / RELACION ACTIVA
 +
-TRABAJO, RESPONSABILIDAD, CUSTODIA, HANDOFF Y BLOQUEOS REALES
+TRABAJO, RESPONSABILIDAD, CUSTODIA, HANDOFF, VENCIMIENTO Y BLOQUEOS
 +
-DISPOSICIÓN CANÓNICA Y RELEVANCIA PARA LA SUPERFICIE
+SUPERFICIE CANONICA Y CONTEXTO DE USO
 +
-DEDUCCIÓN DE DUPLICADOS Y AGRUPACIÓN POR INTENCIÓN HUMANA
-→
+RECURRENCIA Y CONTINUACION REVALIDADAS
++
+DEDUCCION DE DUPLICADOS Y AGRUPACION POR INTENCION HUMANA
+=
 SOLO LAS OPCIONES NECESARIAS EN EL NIVEL ADECUADO
 ```
 
-Reducir no significa revocar. Una tarea autorizada puede salir del primer
-nivel, permanecer dentro de su familia o mostrarse únicamente dentro de otra
-tarea. La ausencia visual nunca modifica permisos, asignaciones, territorio,
-responsabilidad, custodia, estado empresarial ni capacidad de acceso directo
-cuando este último continúe autorizado y sea revalidado por el servidor.
+Reducir no significa revocar. Una opción autorizada puede dejar el primer nivel y permanecer descubrible en su familia; una opción contextual puede desaparecer del menú global y seguir disponible desde su tarea propietaria. La ausencia visual nunca modifica permiso, asignación, territorio, responsabilidad, custodia, estado empresarial ni acceso directo cuando este último continúe autorizado y sea revalidado por servidor.
 
 ---
 
-#### 2. Resultado material
+#### 2. Alcance y límites
 
-Se materializan siete artefactos documentales consumibles:
+##### 2.1. Incluido
 
-1. `NEXO-OPTION-RELEVANCE-CONTRACT-001`, que define relevancia, exclusión,
-   descenso de nivel, conservación y autoridad;
-2. `NEXO-OPTION-REDUCTION-LAYER-CATALOG-001`, que define cinco niveles de
-   presentación y una salida fuera de la proyección;
-3. `NEXO-ACTOR-OPTION-REDUCTION-MATRIX-001`, que decide el tratamiento para los
-   ocho contextos aprobados;
-4. `NEXO-TASK-REDUCTION-REGISTER-001`, que materializa una decisión explícita
-   para las veintinueve tareas canónicas;
-5. `NEXO-OPTION-DEDUPE-AND-COLLAPSE-CONTRACT-001`, que elimina duplicación entre
-   acción primaria, siguiente tarea, frecuentes, recientes, familias y pasos;
-6. `NEXO-OPTION-REDUCTION-STATE-CONTRACT-001`, que define diez estados de
-   presentación y recuperación;
-7. `NEXO-OPTION-REDUCTION-HANDOFF-001`, que entrega las decisiones al prototipo
-   y a la implementación posterior sin iniciar dichas tareas.
+- las diez decisiones de cobertura exigidas por la rectificación `AUTH-UI-052..060`;
+- las ocho aplicaciones aplicables y los dos `NO_APLICA` ya heredados de `AUTH-UI-052..053`;
+- decisión explícita de reducción para las 177 superficies `VSCREEN-0001..0177` del inventario canónico;
+- conservación de los `app_code` propietarios existentes sin reasignar pantallas;
+- reducción por actor, función, relación, territorio, recurso, etapa, estado, trabajo y dispositivo;
+- deduplicación entre entrada, acción primaria, siguiente tarea, frecuentes, recientes, familia y contexto;
+- preservación de trabajo autorizado mediante familia o descubrimiento secundario cuando no compita en primer nivel;
+- exclusión de opciones no autorizadas, incompatibles, obsoletas, revocadas o no aplicables antes de construir la presentación;
+- tratamiento explícito de opciones condicionales, contextuales, administrativas, personales y de excepción;
+- preservación del perfil NEXO histórico de 29 tareas y 8 contextos como especialización específica;
+- reglas de vacío, parcialidad, revocación, acceso directo, fallo técnico, responsive, accesibilidad, privacidad y minimización.
+
+##### 2.2. Excluido
+
+- eliminar pantallas, tareas, procesos, acciones, rutas o bindings canónicos;
+- reasignar `VSCREEN-*` entre aplicaciones;
+- convertir TALENTO en `app_code` o asignarle pantallas por inferencia;
+- incorporar VITAL a Vento OS;
+- materializar nuevas superficies para AURA, que conserva cero pantallas en el catálogo vigente;
+- cambiar el alcance de SHELL, aunque sus siete superficies se cubren porque pertenecen al inventario de 177;
+- revocar permisos, capacidades, asignaciones o territorios;
+- diseñar el prototipo visual final, reservado a `AUTH-UI-055`;
+- declarar validación interna o con usuarios, reservada a `AUTH-UI-056..060`;
+- implementar resolutores, componentes, consultas, cachés, telemetría, código, datos, Supabase, migraciones, RLS o despliegues.
+
+---
+
+#### 3. Fuentes y precedencia consumidas
+
+La tarea consume sin redefinir:
+
+- `APPLICATION-ACTOR-HOME-CONTRACT-001` y la cobertura global de `AUTH-UI-052`;
+- `APPLICATION-FREQUENT-TASK-NAVIGATION-CONTRACT-001`, la matriz de diez decisiones y el handoff de `AUTH-UI-053`;
+- la rectificación integral `AUTH-UI-052..060`;
+- `SCREEN-CANONICAL-CATALOG-001`, con 177 superficies y su `app_code` propietario ya aprobado;
+- los contratos de autorización por vista y acción, contexto activo, simulación, sensibilidad, masking, dispositivo compartido, acceso directo y estados interactivos;
+- `UX-FREQUENT-TASK-FRICTION-REDUCTION-CONTRACT-001`, que exige reducir fricción sin eliminar controles materiales;
+- el perfil NEXO preexistente de relevancia, niveles, deduplicación, estados, 29 tareas y 8 contextos.
+
+Precedencia material de esta tarea:
+
+```text
+AUTORIDAD Y ELEGIBILIDAD
+>
+TRABAJO ACTIVO / CUSTODIA / RIESGO / VENCIMIENTO / BLOQUEO
+>
+CONTINUACION REVALIDADA
+>
+RECURRENCIA
+>
+REDUCCION Y PRESENTACION
+```
+
+La reducción opera únicamente después de resolver autoridad. Ninguna regla de esta tarea puede ampliar el conjunto elegible recibido.
+
+---
+
+#### 4. Resultado material
+
+Se materializan ocho artefactos documentales consumibles:
+
+1. `APPLICATION-OPTION-RELEVANCE-CONTRACT-001`, regla común de relevancia y exclusión;
+2. `APPLICATION-OPTION-REDUCTION-SCOPE-001`, las diez decisiones exigidas por la rectificación;
+3. `SURFACE-OPTION-REDUCTION-REGISTER-001`, decisión explícita para las 177 superficies canónicas;
+4. `OPTION-REDUCTION-LAYER-CATALOG-001`, niveles de presentación y reducción;
+5. `OPTION-DEDUPE-AND-COLLAPSE-CONTRACT-001`, deduplicación por intención y contexto;
+6. `OPTION-REDUCTION-STATE-CONTRACT-001`, estados de resolución y recuperación;
+7. `NEXO-OPTION-REDUCTION-PROFILE-001`, preservación del perfil NEXO histórico de 29 tareas y 8 contextos;
+8. `APPLICATION-OPTION-REDUCTION-HANDOFF-001`, entrega a `AUTH-UI-055` sin iniciar prototipos.
 
 Cobertura materializada:
 
-| Elemento                                  | Total esperado | Total materializado | Faltantes | Duplicados |
-| ----------------------------------------- | -------------: | ------------------: | --------: | ---------: |
-| Familias de tareas canónicas              |              8 |                   8 |         0 |          0 |
-| Tareas humanas o resolutores              |             29 |                  29 |         0 |          0 |
-| Contextos de actor, función y dispositivo |              8 |                   8 |         0 |          0 |
-| Grupos humanos conservados                |              4 |                   4 |         0 |          0 |
-| Niveles de presentación                   |              5 |                   5 |         0 |          0 |
-| Salidas fuera de la proyección            |              1 |                   1 |         0 |          0 |
-| Estados de presentación                   |             10 |                  10 |         0 |          0 |
-| Rutas, roles, funciones o permisos nuevos |              0 |                   0 |         0 |          0 |
-| Requisitos de prueba nuevos o modificados |              0 |                   0 |         0 |          0 |
+| Elemento | Esperado | Materializado | Faltantes | Duplicados |
+| --- | ---: | ---: | ---: | ---: |
+| Decisiones exigidas por la rectificación | 10 | 10 | 0 | 0 |
+| Aplicaciones `APLICA` | 8 | 8 | 0 | 0 |
+| Decisiones `NO_APLICA` | 2 | 2 | 0 | 0 |
+| Superficies canónicas `VSCREEN-*` | 177 | 177 | 0 | 0 |
+| `app_code` propietarios presentes en las 177 superficies | 9 | 9 | 0 | 0 |
+| Superficies AURA admitidas | 0 | 0 | 0 | 0 |
+| Contextos NEXO preservados | 8 | 8 | 0 | 0 |
+| Tareas NEXO preservadas | 29 | 29 | 0 | 0 |
+| Rutas, pantallas, permisos o procesos nuevos | 0 | 0 | 0 | 0 |
+| Requisitos de prueba nuevos o modificados | 0 | 0 | 0 | 0 |
 
-El resultado queda `ESPECIFICADO`. No se declara `IMPLEMENTADO`, `VALIDADO` ni
-disponible en producción.
-
----
-
-#### 3. Decisiones y contratos consumidos
-
-La tarea consume sin modificar:
-
-- `NEXO-ACTOR-HOME-PAGE-CONTRACT-001`;
-- `NEXO-ACTOR-HOME-RESOLUTION-MATRIX-001`;
-- `NEXO-ACTOR-HOME-COMPOSITION-MATRIX-001`;
-- `NEXO-ACTOR-HOME-INFORMATION-ARCHITECTURE-001`;
-- `NEXO-ACTOR-HOME-PRIORITY-CONTRACT-001`;
-- `NEXO-FREQUENT-TASK-NAVIGATION-CONTRACT-001`;
-- `NEXO-FREQUENCY-SIGNAL-CONTRACT-001`;
-- `NEXO-ACTOR-FREQUENT-TASK-MATRIX-001`;
-- `NEXO-TASK-PLACEMENT-REGISTER-001`;
-- `NEXO-RECENT-CONTINUATION-CONTRACT-001`;
-- `NEXO-FREQUENT-TASK-STATE-CONTRACT-001`;
-- `NEXO-TASK-NAVIGATION-CONTRACT-001`;
-- `NEXO-NAVIGATION-TASK-CATALOG-001`;
-- `NEXO-ACTOR-TASK-COMPOSITION-MATRIX-001`;
-- `NEXO-ROUTE-TO-TASK-REGISTRY-001`;
-- `NEXO-NAVIGATION-ENTRY-RETURN-CONTRACT-001`;
-- `NEXO-CONTEXTUAL-UTILITY-CONTRACT-001`;
-- `NEXO-NAVIGATION-STATE-CONTRACT-001`;
-- los contratos de inicio de solicitante, bodega, conductor, receptor y
-  supervisor;
-- los contratos vigentes de autorización, contexto, sensibilidad, masking,
-  dispositivo compartido y estados interactivos auxiliares;
-- los requisitos `TREQ-NEXO-050` a `TREQ-NEXO-090` y requisitos relacionados
-  vigentes.
-
-No se cambia la identidad, etiqueta, familia, carril, grupo, audiencia,
-responsable, disposición base o regla de exposición de ninguna tarea
-consumida.
+El resultado queda `ESPECIFICADO`. No se declara `IMPLEMENTADO`, `VALIDADO_CON_USUARIOS` ni disponible en producción por efecto de esta tarea.
 
 ---
 
-#### 4. Alcance y límites
+#### 5. Reconciliación de cobertura de aplicaciones y superficies
 
-##### 4.1. Incluido
+La rectificación `AUTH-UI-052..060` exige diez decisiones de cobertura de experiencia. Ese conjunto no se utiliza para reescribir el catálogo técnico de `app_code` ni el catálogo de pantallas.
 
-- eliminación de opciones no autorizadas antes de construir la presentación;
-- retiro de opciones incompatibles con la función, territorio, recurso, etapa,
-  trabajo o dispositivo vigentes;
-- descenso de tareas autorizadas pero no prioritarias a su familia humana;
-- conservación de una acción primaria y una siguiente tarea sin duplicación;
-- máximo cuatro tareas frecuentes y tres continuaciones recientes;
-- ocultamiento de resolutores, utilidades y pasos que no son tareas humanas;
-- colapso de rutas, instancias y accesos que representan la misma intención;
-- decisión explícita para las veintinueve identidades canónicas;
-- tratamiento de los ocho contextos aprobados;
-- comportamiento de familias vacías, datos parciales, revocación y cambio de
-  función;
-- reglas responsive, accesibilidad, seguridad, privacidad y minimización.
+El inventario de superficies conserva simultáneamente:
 
-##### 4.2. Excluido
+- 177 pantallas asignadas a nueve `app_code`: `shell`, `viso`, `anima`, `nexo`, `fogo`, `origo`, `pulso`, `numera` y `pass`;
+- AURA como aplicación canónica diferida con cero pantallas en `SCREEN-CANONICAL-CATALOG-001`;
+- TALENTO como producto/canal futuro sin `app_code` canónico aplicable a pantallas;
+- VITAL fuera de Vento OS.
 
-- eliminar tareas del catálogo canónico;
-- retirar rutas físicas o bindings aprobados;
-- revocar permisos, asignaciones, capacidades o territorios;
-- diseñar el prototipo visual final;
-- validar con usuarios;
-- modificar el selector de aplicaciones del ecosistema;
-- implementar resolutores, consultas, eventos, cachés, componentes o
-  telemetría;
-- cambiar el modelo de autorización o usar la navegación como guard final;
-- publicar métricas de productividad individual;
-- ejecutar cambios de código, datos, Supabase o despliegue.
+Por tanto, `SURFACE-OPTION-REDUCTION-REGISTER-001` cubre las 177 superficies exactamente como están asignadas; `APPLICATION-OPTION-REDUCTION-SCOPE-001` conserva las diez decisiones heredadas de la rectificación. Esta reconciliación no crea ni elimina aplicaciones.
+
+Distribución heredada de las 177 superficies:
+
+| `app_code` | Superficies |
+| --- | ---: |
+| `shell` | 7 |
+| `viso` | 31 |
+| `anima` | 14 |
+| `nexo` | 37 |
+| `fogo` | 15 |
+| `origo` | 14 |
+| `pulso` | 20 |
+| `numera` | 20 |
+| `pass` | 19 |
+| **Total** | **177** |
 
 ---
 
-#### 5. `NEXO-OPTION-RELEVANCE-CONTRACT-001`
+#### 6. `APPLICATION-OPTION-RELEVANCE-CONTRACT-001`
 
-##### 5.1. Definición de relevancia
-
-Una opción es relevante para una proyección cuando cumple simultáneamente:
+Una opción puede permanecer en una proyección únicamente si supera, cuando aplique:
 
 ```text
-TAREA CANÓNICA VIGENTE
+IDENTIDAD CANONICA VIGENTE
 +
-ACTOR EFECTIVO Y FUNCIÓN ACTIVA
+ACTOR / SUJETO Y FUNCION O RELACION ACTIVA
 +
-PERMISO EXACTO
+PERMISO Y CAPACIDAD EXACTOS
 +
-TERRITORIO, RECURSO, ETAPA Y ESTADO COMPATIBLES
+TERRITORIO / RECURSO / ETAPA / ESTADO / VERSION
 +
-RELACIÓN OPERATIVA, ASIGNACIÓN, CUSTODIA O RESPONSABILIDAD CUANDO APLIQUE
+ASIGNACION / PARTICIPACION / CUSTODIA / RESPONSABILIDAD
 +
-DISPOSITIVO Y SESIÓN COMPATIBLES
+DISPOSITIVO / SESION / FRESCURA
 +
-DISPOSICIÓN BASE ADMISIBLE EN LA SUPERFICIE
-+
-NECESIDAD ACTUAL, CONTINUIDAD VÁLIDA O DESCUBRIMIENTO SECUNDARIO JUSTIFICADO
+TRABAJO ACTUAL, CONTINUIDAD O DESCUBRIMIENTO SECUNDARIO JUSTIFICADO
 ```
 
-La tarea se excluye de la proyección cuando falla cualquiera de los componentes
-obligatorios. La exclusión ocurre antes de enviar etiquetas, conteos, datos o
-acciones al cliente.
+Resultados dinámicos permitidos después de la evaluación:
 
-##### 5.2. Resultados posibles
+| Resultado | Uso |
+| --- | --- |
+| `DESTACAR` | acción primaria o siguiente tarea por decisión autoritativa actual |
+| `MOSTRAR_FRECUENTE` | tarea elegible dentro del máximo de cuatro frecuentes |
+| `MOSTRAR_RECIENTE` | instancia concreta reanudable dentro del máximo de tres continuaciones |
+| `CONSERVAR_EN_FAMILIA` | tarea autorizada secundaria que debe seguir descubrible |
+| `INVOCAR_SOLO_EN_CONTEXTO` | resolutor, utilidad o superficie subordinada accesible desde su tarea propietaria |
+| `EXCLUIR_DE_PROYECCION` | opción no autorizada, incompatible, no aplicable, obsoleta o revocada |
 
-Cada tarea autorizada recibe exactamente uno de estos resultados por render:
-
-| Resultado                  | Significado                                                                                                        |
-| -------------------------- | ------------------------------------------------------------------------------------------------------------------ |
-| `DESTACAR`                 | ocupa acción primaria o siguiente tarea por una decisión autoritativa vigente                                      |
-| `MOSTRAR_FRECUENTE`        | aparece dentro del máximo de cuatro tareas frecuentes después de elegibilidad y deduplicación                      |
-| `MOSTRAR_RECIENTE`         | representa una instancia reanudable dentro del máximo de tres continuaciones recientes                             |
-| `CONSERVAR_EN_FAMILIA`     | permanece disponible en el grupo y familia humanos sin competir en el primer nivel                                 |
-| `INVOCAR_SOLO_EN_CONTEXTO` | se abre desde una tarea invocante y permanece fuera de listas globales                                             |
-| `EXCLUIR_DE_PROYECCION`    | no forma parte de la proyección por falta de autoridad, función, contexto, trabajo, compatibilidad o aplicabilidad |
-
-`EXCLUIR_DE_PROYECCION` no se representa mediante una tarjeta deshabilitada,
-un candado, un conteo cero o una etiqueta “sin acceso”. La opción simplemente no
-forma parte de esa proyección. Los estados de denegación se reservan para una
-solicitud explícita o acceso directo ya realizado.
-
-##### 5.3. Reglas de conservación
-
-- una tarea autorizada sin prioridad ni recurrencia se conserva en su familia;
-- una tarea de configuración nunca se conserva en una función operativa por el
-  solo hecho de que el actor posea otra función administrativa;
-- una referencia contextual se muestra dentro de la tarea que la necesita, no
-  como acceso global;
-- una tarea sin trabajo actual puede conservarse si permite iniciar una acción
-  autorizada o si su descubrimiento secundario está aprobado;
-- una tarea que requiere una instancia, asignación o custodia no se muestra
-  cuando no existe una relación vigente;
-- una opción visible no prueba que una mutación continúe autorizada; cada
-  comando revalida el contrato completo.
-
-##### 5.4. Señales que no justifican relevancia
-
-No justifican mostrar una opción:
-
-- que exista una página o un `href`;
-- que la pantalla esté registrada o activa;
-- que el usuario la haya visitado anteriormente;
-- que otro actor de la sede la utilice;
-- que el rol tenga un nombre parecido a la tarea;
-- que la aplicación pueda renderizar el componente;
-- que exista un conteo parcial o desconocido;
-- que la tarea sea popular globalmente;
-- que el dispositivo haya usado esa función antes;
-- que una lista local del cliente la considere disponible.
+`EXCLUIR_DE_PROYECCION` significa que la opción no se envía a esa proyección. No se sustituye por una tarjeta bloqueada para revelar que existe una capacidad fuera de alcance.
 
 ---
 
-#### 6. `NEXO-OPTION-REDUCTION-LAYER-CATALOG-001`
+#### 7. `OPTION-REDUCTION-LAYER-CATALOG-001`
 
-La presentación utiliza cinco niveles y una salida fuera de la proyección:
+Cada superficie recibe una clase estática de reducción que limita su tratamiento normal, sin fijar la autoridad de un render concreto:
 
-| Nivel | Identidad              | Capacidad máxima | Contenido                                                                                     | Regla de reducción                                                                                         |
-| ----: | ---------------------- | ---------------: | --------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-|     0 | Acción primaria        |                1 | comando o entrada principal de la proyección activa                                           | se oculta cuando no existe acción autorizada; nunca se sustituye con una opción de otra función            |
-|     1 | Siguiente tarea        |                1 | tarea o instancia prioritaria resuelta autoritativamente                                      | no se duplica en frecuentes, recientes o familias destacadas                                               |
-|     2 | Frecuentes y recientes |            4 + 3 | tareas recurrentes elegibles e instancias recientes revalidadas                               | se llenan solo después de retirar duplicados, obsoletas, incompatibles y opciones sin evidencia suficiente |
-|     3 | Familias disponibles   |         variable | tareas restantes autorizadas bajo Mi trabajo, Consultar y controlar o Administrar             | se ocultan familias vacías y se conservan etiquetas humanas                                                |
-|     4 | Contexto de la tarea   |         variable | referencias, utilidades, pasos, impresión, escaneo o acciones auxiliares necesarias           | solo aparece dentro de la tarea invocante y conserva retorno                                               |
-| fuera | Fuera de la proyección |                0 | tareas no autorizadas, incompatibles, no aplicables, revocadas o técnicas sin tarea invocante | no se envían como opciones ni se convierten en elementos deshabilitados                                    |
+| Clase | Significado | Tratamiento normal |
+| --- | --- | --- |
+| `ENTRY_RETURN` | entrada, home o retorno de aplicación | no duplicar como opción dentro de la propia entrada; conservar como destino de retorno |
+| `WORK_ELIGIBLE` | trabajo humano directo o iniciable | puede destacar, aparecer como frecuente/reciente o conservarse en familia según evidencia vigente |
+| `SECONDARY_DISCOVERABLE` | catálogo, administración, análisis, configuración o consulta secundaria | conservar en familia; promover solo con trabajo o recurrencia válida y función compatible |
+| `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, diferencia o condición material | excluir mientras no exista condición o capacidad de inicio autorizada |
+| `CONTEXTUAL_ONLY` | resolución técnica/personal subordinada a otra tarea | invocar solo desde contexto; nunca competir en navegación global |
 
-Reglas adicionales:
-
-1. el nivel inferior no repite una identidad ya materializada en un nivel
-   superior;
-2. el espacio adicional del escritorio no aumenta los máximos;
-3. una familia vacía no se muestra con cero elementos;
-4. “Todas las tareas disponibles” contiene únicamente tareas autorizadas y no
-   rutas técnicas;
-5. el acceso a un paso o detalle ocurre desde su tarea, no desde una opción
-   adicional;
-6. una opción retirada por revocación desaparece antes de permitir otra acción;
-7. cambiar actor, función, sede, área, turno o dispositivo recalcula todos los
-   niveles desde cero.
+La clase es una regla de presentación. No concede permiso y no reemplaza los estados, procesos o tareas propietarios.
 
 ---
 
-#### 7. `NEXO-ACTOR-OPTION-REDUCTION-MATRIX-001`
+#### 8. `APPLICATION-OPTION-REDUCTION-SCOPE-001`
 
-| Caso          | Contexto activo                         | Primer nivel permitido                                                                                           | Descubrimiento secundario permitido                                      | Exclusiones obligatorias                                                                                      | Resultado      |
-| ------------- | --------------------------------------- | ---------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------ | ------------------------------------------------------------------------------------------------------------- | -------------- |
-| `RED-CTX-001` | solicitante autorizado                  | `NEXO-TASK-003`; `NEXO-TASK-002` o continuaciones propias cuando exista trabajo vigente                          | `NEXO-TASK-013` únicamente con lectura necesaria y autorizada            | preparación, transporte, recepción, supervisión, configuración, trabajo ajeno y utilidades globales           | `ESPECIFICADO` |
-| `RED-CTX-002` | bodeguero o preparador autorizado       | `NEXO-TASK-004`; `NEXO-TASK-007` a `NEXO-TASK-011` según trabajo, prioridad y recurrencia                        | `NEXO-TASK-013` a `NEXO-TASK-016` cuando apoyen una tarea o lectura      | conducción, recepción ajena, decisión supervisora, administración y opciones de otra sede o área              | `ESPECIFICADO` |
-| `RED-CTX-003` | conductor o custodio autorizado         | `NEXO-TASK-005` y continuaciones válidas de custodia, tránsito, entrega, incidencia o retorno                    | referencias mínimas de carga, ruta, sello y evidencia dentro de la tarea | solicitud, picking, recepción, ajustes, configuración, trabajo sin asignación y consultas globales            | `ESPECIFICADO` |
-| `RED-CTX-004` | receptor autorizado                     | `NEXO-TASK-006`; `NEXO-TASK-007` cuando el origen empresarial y la autorización lo permitan                      | `NEXO-TASK-013` y `NEXO-TASK-015` como referencias necesarias            | conducción, preparación, decisiones supervisoras, configuración, otras sedes o destinos y utilidades globales | `ESPECIFICADO` |
-| `RED-CTX-005` | supervisor con cobertura territorial    | `NEXO-TASK-012`; tareas `NEXO-TASK-013` a `NEXO-TASK-017` y `NEXO-TASK-026` cuando exista caso o señal admisible | referencias y evidencia dentro de cobertura                              | mutaciones operativas, configuración no concedida, datos fuera de cobertura y métricas individuales           | `ESPECIFICADO` |
-| `RED-CTX-006` | configurador autorizado                 | `NEXO-TASK-021`; `NEXO-TASK-020`, `NEXO-TASK-022` a `NEXO-TASK-025` y `NEXO-TASK-027` según capacidad exacta     | referencias indispensables para evaluar impacto                          | ejecución física, supervisión, colas operativas, trabajo concreto ajeno y capacidades no concedidas           | `ESPECIFICADO` |
-| `RED-CTX-007` | persona con varias funciones            | únicamente opciones de una función activa                                                                        | selector de funciones autorizadas, sin datos de las otras proyecciones   | mezcla de tareas, frecuencia compartida, herencia de autoridad, acciones cruzadas y autoaprobación            | `ESPECIFICADO` |
-| `RED-CTX-008` | dispositivo compartido con actor activo | tareas compatibles con actor, función, turno, contexto y capacidades máximas del dispositivo                     | utilidades requeridas por la tarea vigente                               | administración, información sensible no necesaria, funciones incompatibles y toda acción sin actor atribuible | `ESPECIFICADO` |
+| Cobertura exigida | Aplicabilidad | Superficies canónicas asociadas en este corte | Decisión de reducción |
+| --- | --- | ---: | --- |
+| ANIMA | `APLICA` | 14 | conservar experiencia personal; tareas propias pueden destacar o ser frecuentes; supervisión/administración no se mezcla por asociación |
+| FOGO | `APLICA` | 15 | separar producción en curso de planeación, gobierno, calidad, trazabilidad y excepciones; cada función recibe una sola proyección |
+| NEXO | `APLICA` | 37 | aplicar el perfil específico preservado de 29 tareas y 8 contextos y reconciliarlo con las 37 superficies propietarias |
+| NUMERA | `APLICA` | 20 | separar trabajo financiero actual de reportes, configuración, análisis y cierres excepcionales; filtros no conceden contexto operativo |
+| ORIGO | `APLICA` | 14 | separar solicitud, compra, aprobación, recepción, proveedor y conciliación; una etapa no presta autoridad a otra |
+| PASS | `APLICA` | 19 | conservar navegación del cliente sobre su propia relación; operación PULSO y soporte laboral permanecen fuera |
+| PULSO | `APLICA` | 20 | priorizar venta/servicio/caja vigente; administración comercial, análisis y excepciones se muestran solo cuando corresponden |
+| TALENTO | `NO_APLICA` | 0 | no inventar superficies ni `app_code`; conservar alcance futuro fuera de la proyección actual |
+| VISO | `APLICA` | 31 | separar administración, supervisión, configuración, auditoría y casos por capacidad; no crear backoffice universal |
+| VITAL | `NO_APLICA` | 0 | permanece fuera de Vento OS; no recibe opciones, pantallas ni navegación |
 
-Reconciliación:
+Las siete superficies SHELL no alteran las diez decisiones anteriores: se incluyen en el registro de 177 porque existen en el inventario canónico y se reducen conforme a su función transversal.
+
+---
+
+#### 9. `SURFACE-OPTION-REDUCTION-REGISTER-001`
+
+Cada `VSCREEN-*` aparece exactamente una vez. `Clase` define su comportamiento base; la columna `Condición para mantener visible` todavía exige autorización y contexto efectivos.
+
+| Screen ID | Aplicación | Nombre vigente | Clase | Condición para mantener visible | Reducción cuando no es relevante |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0001` | `shell` | Hub Vento OS | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0002` | `shell` | Inicio de sesión y recuperación | `CONTEXTUAL_ONLY` | invocación desde la tarea o resolución propietaria y contexto todavía válido | invocar solo en contexto; no incluir en listas globales, frecuentes ni familias empresariales |
+| `VSCREEN-0003` | `shell` | Resolución de contexto y acceso | `CONTEXTUAL_ONLY` | invocación desde la tarea o resolución propietaria y contexto todavía válido | invocar solo en contexto; no incluir en listas globales, frecuentes ni familias empresariales |
+| `VSCREEN-0004` | `shell` | Activación de dispositivo compartido | `CONTEXTUAL_ONLY` | invocación desde la tarea o resolución propietaria y contexto todavía válido | invocar solo en contexto; no incluir en listas globales, frecuentes ni familias empresariales |
+| `VSCREEN-0005` | `shell` | Bandeja transversal de tareas y notificaciones | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0006` | `shell` | Centro de soporte y diagnóstico | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0007` | `viso` | Inicio ejecutivo y gerencial | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0008` | `viso` | Estructura organizativa | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0009` | `viso` | Políticas, delegaciones y límites | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0010` | `viso` | Compromisos y transferencias internas | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0011` | `viso` | Embudo de candidatos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0012` | `viso` | Caso de selección | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0013` | `viso` | Vinculación e incorporación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0014` | `viso` | Directorio y expediente laboral | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0015` | `viso` | Programación laboral | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0016` | `viso` | Revisión de asistencia | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0017` | `viso` | Novedades, ausencias y reemplazos | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0018` | `viso` | Retiro y revocación coordinada | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0019` | `viso` | Catálogo de roles y permisos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0020` | `viso` | Perfil de acceso del trabajador | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0021` | `viso` | Simulación de permisos y conflictos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0022` | `viso` | Gobierno de dispositivos compartidos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0023` | `viso` | Riesgos de seguridad y salud | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0024` | `viso` | Incidentes y emergencias | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0025` | `viso` | Controles de higiene y cumplimiento | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0026` | `viso` | Bandeja de casos administrativos transversales | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0027` | `anima` | Inicio personal del trabajador | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0028` | `anima` | Registro de entrada, pausa y salida | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0029` | `anima` | Mi programación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0030` | `anima` | Mi asistencia y solicitud de corrección | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0031` | `anima` | Mis novedades, permisos y ausencias | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0032` | `anima` | Mi perfil laboral | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0033` | `nexo` | Resumen de inventario y abastecimiento interno | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0034` | `nexo` | Catálogo de productos físicos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0035` | `nexo` | Editor de producto, unidad y presentación | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0036` | `nexo` | Especificaciones y criterios de calidad | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0037` | `nexo` | Catálogo de ubicaciones | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0038` | `nexo` | Identificación y detalle de ubicación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0039` | `nexo` | Consulta de existencias | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0040` | `nexo` | Conteo de inventario | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0041` | `nexo` | Revisión de conteo y diferencias | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0042` | `nexo` | Caso de ajuste de inventario | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0043` | `nexo` | Confirmación de entrada a inventario | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0044` | `nexo` | Retiro y consumo de existencias | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0045` | `nexo` | Traslado interno de existencias | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0046` | `nexo` | Solicitud de remisión | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0047` | `nexo` | Preparación de remisión | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0048` | `nexo` | Carga y despacho de remisión | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0049` | `nexo` | Seguimiento de remisión en tránsito | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0050` | `nexo` | Recepción de remisión | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0051` | `nexo` | Vencimiento, cuarentena, daño y merma | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0052` | `nexo` | LPN, contenedores y reutilizables | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0053` | `nexo` | Activos y custodia | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0054` | `nexo` | Etiquetas e impresión logística | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0055` | `fogo` | Inicio y cola de producción | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0056` | `fogo` | Planeación de producción | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0057` | `fogo` | Preparación e inicio de lote | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0058` | `fogo` | Ejecución de lote | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0059` | `fogo` | Registro parcial de producción | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0060` | `fogo` | Finalización y cierre de lote | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0061` | `fogo` | Receta operativa | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0062` | `fogo` | Catálogo y editor de recetas | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0063` | `fogo` | Revisión, aprobación y publicación de receta | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0064` | `fogo` | Prueba de receta y rendimiento | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0065` | `fogo` | Control de calidad y liberación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0066` | `fogo` | Empaque, etiquetado y almacenamiento de terminado | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0067` | `fogo` | Reproceso, aprovechamiento, merma y cierre productivo | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0068` | `origo` | Bandeja de necesidades de compra | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0069` | `origo` | Solicitud de compra | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0070` | `origo` | Catálogo de proveedores | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0071` | `origo` | Alta y expediente de proveedor | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0072` | `origo` | Comparación de cotizaciones | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0073` | `origo` | Editor de orden de compra | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0074` | `origo` | Bandeja de aprobaciones de compra | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0075` | `origo` | Detalle y seguimiento de orden | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0076` | `origo` | Cola de recepciones | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0077` | `origo` | Recepción total o parcial | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0078` | `origo` | Resolución de diferencias de recepción | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0079` | `origo` | Historial y auditoría de abastecimiento | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0080` | `pulso` | Inicio POS | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0081` | `pulso` | Creación de venta o pedido | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0082` | `pulso` | Mapa de salón y mesas | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0083` | `pulso` | Detalle y modificación de pedido | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0084` | `pulso` | Cobro y medios de pago | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0085` | `pulso` | Identificación de cliente y acumulación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0086` | `pulso` | Redención de puntos o beneficios | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0087` | `pulso` | Bandeja de pedidos de canales externos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0088` | `pulso` | Seguimiento de preparación y entrega | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0089` | `pulso` | Apertura de caja | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0090` | `pulso` | Cierre de caja | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0091` | `pulso` | Anulación, devolución y reembolso | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0092` | `pulso` | Oferta, menú, precio comercial y disponibilidad | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0093` | `pulso` | Revisión de ventas, caja y terminales | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0094` | `numera` | Inicio financiero y ejecutivo | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0095` | `numera` | Bandeja de hechos económicos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0096` | `numera` | Registro de gasto y soporte | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0097` | `numera` | Bandeja de aprobaciones financieras | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0098` | `numera` | Cuentas por pagar y obligaciones | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0099` | `numera` | Cuentas por cobrar y cartera | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0100` | `numera` | Caja, bancos y movimientos financieros | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0101` | `numera` | Conciliación de ventas y pagos | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0102` | `numera` | Conciliación de compras y recepciones | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0103` | `numera` | Conciliación de inventario, producción y variaciones | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0104` | `numera` | Costos, rentabilidad y escenarios | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0105` | `numera` | Cierre, reapertura y corrección de periodo | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0106` | `numera` | Reportes y exportaciones financieras | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0107` | `pass` | Inicio del cliente y resumen de beneficios | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0108` | `pass` | QR personal de identificación | `CONTEXTUAL_ONLY` | invocación desde la tarea o resolución propietaria y contexto todavía válido | invocar solo en contexto; no incluir en listas globales, frecuentes ni familias empresariales |
+| `VSCREEN-0109` | `pass` | Catálogo de beneficios y recompensas | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0110` | `pass` | Ticket o QR de redención | `CONTEXTUAL_ONLY` | invocación desde la tarea o resolución propietaria y contexto todavía válido | invocar solo en contexto; no incluir en listas globales, frecuentes ni familias empresariales |
+| `VSCREEN-0111` | `pass` | Historial de puntos y redenciones | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0112` | `pass` | Perfil, privacidad y consentimientos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0113` | `viso` | Registro y seguimiento de decisiones empresariales | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0114` | `viso` | Solicitudes y certificaciones de acceso | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0115` | `viso` | Gobierno de documentos y evidencia | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0116` | `viso` | Registro de riesgos empresariales | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0117` | `viso` | Requerimientos de asesores y autoridades | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0118` | `viso` | Gestión de desempeño y desarrollo | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0119` | `viso` | Asignación y control de elementos de protección | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0120` | `viso` | Mesa de servicio tecnológico | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0121` | `viso` | Continuidad, contingencia y recuperación | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0122` | `viso` | Privacidad, cumplimiento y conservación | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0123` | `viso` | Gestión de comunicaciones internas | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0124` | `anima` | Mis comunicados laborales | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0125` | `anima` | Mi carnet laboral | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0126` | `anima` | Mis documentos laborales | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0127` | `anima` | Mi capacitación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0128` | `anima` | Mis objetivos y retroalimentación | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0129` | `anima` | Mis solicitudes de soporte | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0130` | `anima` | Mis reportes de seguridad y salud | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0131` | `anima` | Mis elementos de protección | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0132` | `nexo` | Reservas de inventario | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0133` | `nexo` | Planes y órdenes de mantenimiento de activos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0134` | `nexo` | Garantías, seguros y reclamaciones de activos | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0135` | `nexo` | Instancias y operación de kits | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0136` | `nexo` | Flota y vehículos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0137` | `nexo` | Kilometraje y combustible | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0138` | `nexo` | Planeación de rutas y despachos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0139` | `nexo` | Ejecución de ruta y prueba de entrega | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0140` | `nexo` | Novedades, rechazos y retornos logísticos | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0141` | `nexo` | Instalaciones, servicios y mantenimiento locativo | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0142` | `nexo` | Configuración de políticas y rutas logísticas | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0143` | `nexo` | Diseñador de etiquetas logísticas | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0144` | `nexo` | Cola y trabajos de impresión logística | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0145` | `origo` | Contratos, precios y condiciones de proveedor | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0146` | `origo` | Desempeño y reclamaciones de proveedor | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0147` | `pulso` | Oportunidades y cotizaciones de catering o B2B | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0148` | `pulso` | Ejecución de catering o venta B2B | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0149` | `pulso` | Operación de reservas y eventos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0150` | `pulso` | Casos de reclamo y compensación | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0151` | `pulso` | Coordinación de entrega mediante tercero | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0152` | `pulso` | Análisis de satisfacción y servicio | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0153` | `numera` | Paquete laboral para pagos y beneficios | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0154` | `numera` | Facturas y documentos fiscales | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0155` | `numera` | Tesorería y programación de pagos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0156` | `numera` | Presupuestos, escenarios y forecast | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0157` | `numera` | Impuestos y obligaciones de cumplimiento | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0158` | `numera` | Distribución y asignación de costos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0159` | `numera` | Indicadores, análisis y planes de mejora | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0160` | `pass` | Inicio y selección del portal de compras | `ENTRY_RETURN` | acceso vigente a la aplicación y contexto resoluble | no duplicar dentro de la propia proyección; conservar únicamente como entrada o retorno |
+| `VSCREEN-0161` | `pass` | Menú y catálogo comercial del cliente | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0162` | `pass` | Carrito y configuración del pedido | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0163` | `pass` | Dirección, modalidad y programación de entrega | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0164` | `pass` | Revisión, checkout e inicio de pago | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0165` | `pass` | Confirmación de pedido y retorno de pago | `CONTEXTUAL_ONLY` | invocación desde la tarea o resolución propietaria y contexto todavía válido | invocar solo en contexto; no incluir en listas globales, frecuentes ni familias empresariales |
+| `VSCREEN-0166` | `pass` | Mis pedidos y detalle | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0167` | `pass` | Seguimiento de preparación y entrega del cliente | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0168` | `pass` | Chat y comunicación asociada al pedido | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0169` | `pass` | Mis reclamos y casos de servicio | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0170` | `pass` | Mis reservas y eventos | `WORK_ELIGIBLE` | tarea autorizada y trabajo vigente, capacidad de inicio o recurrencia válida | si sigue autorizada pero no prioritaria, conservar en familia; si deja de aplicar, excluir |
+| `VSCREEN-0171` | `pass` | Calificación y satisfacción | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0172` | `pass` | Comunicaciones y notificaciones del cliente | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0173` | `fogo` | Trazabilidad e investigación de lote | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0174` | `fogo` | Controles operativos de inocuidad | `CONDITIONAL_WORK` | caso, excepción, revisión, bloqueo, vencimiento o condición material vigente, o capacidad explícita de iniciarlo | excluir mientras la condición no exista; no mostrar deshabilitada para revelar ausencia de permiso |
+| `VSCREEN-0175` | `shell` | Seguridad de cuenta y sesiones | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0176` | `nexo` | Definición de kits y conjuntos | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+| `VSCREEN-0177` | `nexo` | Configuración de impresoras logísticas | `SECONDARY_DISCOVERABLE` | capacidad exacta y función compatible; promoción solo con trabajo o recurrencia autoritativa | mantener en familia o descubrimiento secundario; excluir fuera de función o alcance |
+
+Reconciliación del registro:
 
 ```text
-EXPECTED_CONTEXTS = 8
-MATERIALIZED_CONTEXTS = 8
-UNIQUE_CONTEXT_IDS = 8
-MISSING_CONTEXTS = 0
-DUPLICATE_CONTEXTS = 0
+EXPECTED_SURFACES = 177
+MATERIALIZED_SURFACES = 177
+UNIQUE_SURFACE_IDS = 177
+MISSING_SURFACES = 0
+DUPLICATE_SURFACES = 0
+ENTRY_RETURN = 9
+WORK_ELIGIBLE = 75
+SECONDARY_DISCOVERABLE = 48
+CONDITIONAL_WORK = 39
+CONTEXTUAL_ONLY = 6
 ```
+
+La clasificación no elimina ninguna superficie del catálogo. Una superficie secundaria o condicional continúa siendo accesible cuando la función, el trabajo y la autorización la hacen relevante.
 
 ---
 
-#### 8. `NEXO-TASK-REDUCTION-REGISTER-001`
+#### 10. `OPTION-DEDUPE-AND-COLLAPSE-CONTRACT-001`
 
-Cada identidad conserva su etiqueta, familia y disposición base aprobadas. La
-columna de reducción materializa qué debe ocurrir cuando la tarea no ocupa su
-posición máxima dentro de la proyección activa.
+La deduplicación se realiza por intención canónica y, cuando existe trabajo concreto, por identidad de tarea/instancia, recurso, función, territorio, etapa y versión. No se deduplica únicamente por `href`, etiqueta, componente o pantalla.
 
-| Tarea           | Etiqueta humana                   | Disposición base             | Conservación máxima               | Reducción obligatoria cuando no aplica el máximo                                                                               | Resultado      |
-| --------------- | --------------------------------- | ---------------------------- | --------------------------------- | ------------------------------------------------------------------------------------------------------------------------------ | -------------- |
-| `NEXO-TASK-001` | Ir al inicio                      | `HOME_ONLY`                  | retorno o resolución de inicio    | no se presenta como opción dentro de la propia superficie inicial                                                              | `ESPECIFICADO` |
-| `NEXO-TASK-002` | Gestionar abastecimiento interno  | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | se conserva en Mi trabajo solo si el actor participa; sin etapa propia se excluye                                              | `ESPECIFICADO` |
-| `NEXO-TASK-003` | Solicitar abastecimiento          | `PRIMARY_FIXED`              | acción primaria o continuación    | sin autorización de creación ni solicitud propia continuable se excluye; nunca baja a otro actor                               | `ESPECIFICADO` |
-| `NEXO-TASK-004` | Preparar abastecimiento           | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin preparación, picking, faltante o handoff atribuible se conserva solo si puede iniciarse autorizadamente; si no, se excluye | `ESPECIFICADO` |
-| `NEXO-TASK-005` | Transportar abastecimiento        | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin asignación, custodia, ruta o trabajo iniciable autorizado se excluye                                                       | `ESPECIFICADO` |
-| `NEXO-TASK-006` | Recibir abastecimiento            | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin entrega, handoff, recepción atribuible o capacidad de inicio autorizada se excluye                                         | `ESPECIFICADO` |
-| `NEXO-TASK-007` | Registrar una entrada             | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin fuente empresarial o excepción autorizada se conserva en Mi trabajo solo si puede iniciarse; en otro caso se excluye       | `ESPECIFICADO` |
-| `NEXO-TASK-008` | Ubicar existencias                | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin existencia pendiente ni capacidad de inicio autorizada se conserva en Mi trabajo o se excluye según la función             | `ESPECIFICADO` |
-| `NEXO-TASK-009` | Mover existencias                 | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin traslado vigente se conserva en Mi trabajo únicamente cuando puede iniciarse en el territorio                              | `ESPECIFICADO` |
-| `NEXO-TASK-010` | Registrar un retiro               | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin retiro vigente se conserva en Mi trabajo únicamente cuando existe capacidad de inicio                                      | `ESPECIFICADO` |
-| `NEXO-TASK-011` | Contar inventario                 | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin sesión o campaña asignada se conserva solo si puede iniciarse autorizadamente; captura y control no se mezclan             | `ESPECIFICADO` |
-| `NEXO-TASK-012` | Controlar la operación            | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin caso, bloqueo, vencimiento o responsabilidad se conserva en Consultar y controlar si la lectura continúa autorizada        | `ESPECIFICADO` |
-| `NEXO-TASK-013` | Consultar existencias             | `FREQUENT_CANDIDATE`         | frecuente                         | sin señal suficiente permanece en Consultar y controlar; fuera del territorio se excluye                                       | `ESPECIFICADO` |
-| `NEXO-TASK-014` | Investigar movimientos            | `FREQUENT_CANDIDATE`         | frecuente                         | sin caso ni recurrencia permanece en Consultar y controlar; sin lectura autorizada se excluye                                  | `ESPECIFICADO` |
-| `NEXO-TASK-015` | Consultar ubicaciones             | `FREQUENT_CANDIDATE`         | frecuente                         | sin necesidad ni recurrencia permanece en Consultar y controlar; edición no se añade                                           | `ESPECIFICADO` |
-| `NEXO-TASK-016` | Consultar contenedores logísticos | `SECONDARY_DISCOVERABLE`     | familia secundaria                | se mantiene en Consultar y controlar únicamente con permiso y contexto LPN; nunca sube sin señal propietaria                   | `ESPECIFICADO` |
-| `NEXO-TASK-017` | Gestionar activos                 | `FREQUENT_CANDIDATE`         | frecuente                         | sin trabajo ni recurrencia permanece en su familia; fuera de la función o territorio se excluye                                | `ESPECIFICADO` |
-| `NEXO-TASK-018` | Capturar activos                  | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin captura pendiente ni capacidad de inicio autorizada se conserva en Mi trabajo o se excluye                                 | `ESPECIFICADO` |
-| `NEXO-TASK-019` | Contar activos                    | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin sesión compatible se conserva solo si puede iniciarse; captura y cierre permanecen separados                               | `ESPECIFICADO` |
-| `NEXO-TASK-020` | Configurar activos                | `SECONDARY_DISCOVERABLE`     | familia de configuración          | se conserva únicamente en Administrar con capacidad exacta; en toda función operativa se excluye                               | `ESPECIFICADO` |
-| `NEXO-TASK-021` | Administrar NEXO                  | `PRIMARY_RESOLVED_CANDIDATE` | acción o siguiente administrativa | sin capacidad administrativa se excluye; con una sola capacidad resuelve directamente y no añade un menú intermedio            | `ESPECIFICADO` |
-| `NEXO-TASK-022` | Administrar productos y unidades  | `FREQUENT_CANDIDATE`         | frecuente administrativa          | sin recurrencia permanece en Administrar; en funciones operativas se excluye                                                   | `ESPECIFICADO` |
-| `NEXO-TASK-023` | Administrar ubicaciones           | `FREQUENT_CANDIDATE`         | frecuente administrativa          | sin recurrencia permanece en Administrar; no se confunde con ubicar existencias                                                | `ESPECIFICADO` |
-| `NEXO-TASK-024` | Configurar abastecimiento         | `FREQUENT_CANDIDATE`         | frecuente administrativa          | sin recurrencia permanece en Administrar; no muestra solicitudes concretas como opciones                                       | `ESPECIFICADO` |
-| `NEXO-TASK-025` | Configurar referencias internas   | `SECONDARY_DISCOVERABLE`     | familia de configuración          | se conserva solo con permiso financiero o de referencia exacto; no sube por actividad operativa                                | `ESPECIFICADO` |
-| `NEXO-TASK-026` | Controlar impresión               | `PRIMARY_RESOLVED_CANDIDATE` | siguiente tarea o frecuente       | sin trabajo fallido, bloqueado o pendiente se conserva en Consultar y controlar solo con cobertura autorizada                  | `ESPECIFICADO` |
-| `NEXO-TASK-027` | Configurar impresión              | `SECONDARY_DISCOVERABLE`     | familia de configuración          | se conserva únicamente en Administrar con capacidad exacta; nunca aparece por existencia de trabajos                           | `ESPECIFICADO` |
-| `NEXO-TASK-028` | Resolver un destino contextual    | `CONTEXTUAL_ONLY`            | contexto de tarea                 | permanece fuera de listas; sin tarea invocante compatible se excluye                                                           | `ESPECIFICADO` |
-| `NEXO-TASK-029` | Resolver acceso                   | `CONTEXTUAL_ONLY`            | sistema de acceso                 | permanece fuera de la navegación empresarial; autenticación o denegación se resuelven como estado                              | `ESPECIFICADO` |
-
-Reconciliación:
-
-```text
-EXPECTED_TASK_IDS = 29
-MATERIALIZED_TASK_IDS = 29
-UNIQUE_TASK_IDS = 29
-MISSING_TASK_IDS = 0
-DUPLICATE_TASK_IDS = 0
-```
-
-Distribución heredada y conservada:
-
-| Disposición base             | Cantidad esperada | Cantidad materializada | Diferencia |
-| ---------------------------- | ----------------: | ---------------------: | ---------: |
-| `HOME_ONLY`                  |                 1 |                      1 |          0 |
-| `PRIMARY_FIXED`              |                 1 |                      1 |          0 |
-| `PRIMARY_RESOLVED_CANDIDATE` |                14 |                     14 |          0 |
-| `FREQUENT_CANDIDATE`         |                 7 |                      7 |          0 |
-| `SECONDARY_DISCOVERABLE`     |                 4 |                      4 |          0 |
-| `CONTEXTUAL_ONLY`            |                 2 |                      2 |          0 |
-| **Total**                    |            **29** |                 **29** |      **0** |
-
----
-
-#### 9. `NEXO-OPTION-DEDUPE-AND-COLLAPSE-CONTRACT-001`
-
-##### 9.1. Clave de deduplicación
-
-La deduplicación utiliza `task_id` y, cuando existe trabajo concreto,
-`instance_id`, función, territorio, etapa y versión. No utiliza únicamente
-`href`, etiqueta o componente.
-
-##### 9.2. Precedencia entre zonas
-
-Cuando la misma identidad sea elegible en varias zonas se conserva en la
-primera aplicable:
+Precedencia entre zonas:
 
 1. acción primaria;
 2. siguiente tarea;
-3. continuación reciente de una instancia concreta;
+3. continuación reciente concreta;
 4. tarea frecuente agregada;
 5. familia secundaria;
 6. contexto interno de la tarea.
 
-Una identidad retirada de una zona inferior no pierde sus instancias ni su
-capacidad. Solo evita repetir la misma intención.
+Reglas:
 
-##### 9.3. Colapso obligatorio
-
-- solicitar, preparar, transportar y recibir permanecen tareas separadas; el
-  resolutor de abastecimiento no las duplica como cuatro accesos adicionales;
-- una tarea frecuente muestra una entrada agregada; sus instancias concretas
-  aparecen únicamente como continuaciones válidas;
-- detalle, edición, impresión, escaneo, referencia, configuración subordinada y
-  pasos de flujo se abren desde la tarea propietaria;
-- una misma ruta vinculada a varias etapas no crea varias opciones si conserva
-  una sola intención humana;
-- rutas alias, kioscos, códigos y resolutores no aparecen en familias;
-- una acción primaria que lleva a la misma tarea que la siguiente tarea se
-  presenta una sola vez y conserva el contexto más específico;
-- familias con una sola tarea pueden abrir esa tarea directamente sin mostrar
-  un nivel intermedio vacío;
-- familias sin tareas relevantes se retiran por completo de la proyección.
-
-##### 9.4. Prohibiciones
-
-Queda prohibido:
-
-- mostrar una opción deshabilitada para informar que no existe permiso;
-- repetir una tarea con etiquetas distintas por tener varias rutas;
-- mostrar una opción genérica y otra específica que resuelven la misma
-  instancia;
-- completar máximos con tareas irrelevantes;
-- mantener una opción reciente después de revocación, cambio de actor, función,
-  territorio, etapa, asignación o versión;
-- utilizar ocultamiento visual como sustituto de autorización de servidor.
+- una identidad materializada arriba no vuelve a aparecer abajo;
+- detalle, edición, impresión, escaneo, confirmación, QR, resolución de acceso y utilidades subordinadas permanecen dentro de su tarea cuando corresponda;
+- una misma intención no crea varias opciones por poseer varias rutas o superficies;
+- una familia vacía no se muestra con contador cero;
+- una opción retirada por revocación o cambio de contexto deja de ser accionable antes de recomponer la lista;
+- no se completan máximos con opciones irrelevantes;
+- ocultamiento nunca sustituye autorización server-side.
 
 ---
 
-#### 10. Familias, descubrimiento y opciones vacías
+#### 11. `NEXO-OPTION-REDUCTION-PROFILE-001`
 
-##### 10.1. Grupos humanos conservados
+El perfil NEXO histórico se conserva como especialización de la regla global. No gobierna por analogía el resto de aplicaciones.
 
-Los cuatro grupos permanecen en este orden cuando contienen tareas relevantes:
+##### 11.1. Contextos preservados
 
-1. Inicio;
-2. Mi trabajo;
-3. Consultar y controlar;
-4. Administrar.
+| Caso | Contexto | Primer nivel permitido | Descubrimiento secundario | Exclusiones obligatorias |
+| --- | --- | --- | --- | --- |
+| `RED-CTX-001` | solicitante autorizado | NEXO-TASK-003; NEXO-TASK-002 o continuaciones propias | NEXO-TASK-013 con lectura autorizada | preparación, transporte, recepción, supervisión, configuración y trabajo ajeno |
+| `RED-CTX-002` | bodeguero o preparador autorizado | NEXO-TASK-004; NEXO-TASK-007..011 según trabajo | NEXO-TASK-013..016 cuando apoyen la tarea | conducción, recepción ajena, decisión supervisora, administración y otras sedes |
+| `RED-CTX-003` | conductor o custodio autorizado | NEXO-TASK-005 y continuaciones válidas de custodia/transporte | referencias mínimas de carga, ruta, sello y evidencia | solicitud, picking, recepción, ajustes, configuración y trabajo sin asignación |
+| `RED-CTX-004` | receptor autorizado | NEXO-TASK-006; NEXO-TASK-007 cuando origen y autorización lo permitan | NEXO-TASK-013 y NEXO-TASK-015 como referencias | conducción, preparación, decisiones supervisoras, configuración y otros destinos |
+| `RED-CTX-005` | supervisor con cobertura territorial | NEXO-TASK-012; NEXO-TASK-013..017 y NEXO-TASK-026 según señal | referencias y evidencia dentro de cobertura | mutaciones operativas, configuración no concedida, datos fuera de cobertura y métricas individuales |
+| `RED-CTX-006` | configurador autorizado | NEXO-TASK-021; NEXO-TASK-020, 022..025 y 027 según capacidad | referencias indispensables para evaluar impacto | ejecución física, supervisión, colas operativas y capacidades no concedidas |
+| `RED-CTX-007` | persona con varias funciones | solo opciones de una función activa | selector de funciones autorizadas sin datos cruzados | mezcla de tareas, frecuencia compartida, herencia de autoridad y acciones cruzadas |
+| `RED-CTX-008` | dispositivo compartido con actor activo | tareas compatibles con actor, función, turno, contexto y dispositivo | utilidades requeridas por la tarea vigente | administración, datos sensibles no necesarios, funciones incompatibles y acciones sin actor atribuible |
 
-`Inicio` representa retorno y contexto, no una lista adicional. `Administrar`
-se excluye de proyecciones operativas salvo que la función activa sea de
-configuración. Una persona multifunción cambia explícitamente de función antes
-de obtener otro grupo.
+Reconciliación: 8 contextos esperados, 8 materializados, 0 faltantes y 0 duplicados.
 
-##### 10.2. Familias vacías
+##### 11.2. Registro de 29 tareas preservadas
 
-- una familia con cero tareas relevantes no se renderiza;
-- no se muestra un encabezado vacío, un contador cero ni una explicación de
-  permisos ausentes;
-- si la consulta es parcial, no se declara que la familia está vacía;
-- si la familia falla de manera independiente, se identifica la parcialidad y
-  se ofrece reintento seguro sin fabricar opciones;
-- si todas las familias quedan vacías y la decisión es concluyente, se presenta
-  un vacío válido coherente con la función activa.
+| Tarea | Etiqueta | Disposición base | Reducción preservada |
+| --- | --- | --- | --- |
+| `NEXO-TASK-001` | Ir al inicio | `HOME_ONLY` | retorno o resolución de inicio; no duplicar dentro del inicio |
+| `NEXO-TASK-002` | Gestionar abastecimiento interno | `PRIMARY_RESOLVED_CANDIDATE` | destacar solo con etapa propia o continuación; de otro modo Mi trabajo o excluir |
+| `NEXO-TASK-003` | Solicitar abastecimiento | `PRIMARY_FIXED` | acción primaria del solicitante; excluir sin autorización de creación o continuación propia |
+| `NEXO-TASK-004` | Preparar abastecimiento | `PRIMARY_RESOLVED_CANDIDATE` | destacar con picking/faltante/handoff atribuible; de otro modo conservar solo si puede iniciarse |
+| `NEXO-TASK-005` | Transportar abastecimiento | `PRIMARY_RESOLVED_CANDIDATE` | destacar con asignación/custodia/ruta; excluir sin relación vigente |
+| `NEXO-TASK-006` | Recibir abastecimiento | `PRIMARY_RESOLVED_CANDIDATE` | destacar con entrega/handoff/recepción; excluir sin trabajo o capacidad de inicio |
+| `NEXO-TASK-007` | Registrar una entrada | `PRIMARY_RESOLVED_CANDIDATE` | destacar solo con fuente empresarial o excepción autorizada; si no, familia o excluir |
+| `NEXO-TASK-008` | Ubicar existencias | `PRIMARY_RESOLVED_CANDIDATE` | destacar con putaway pendiente; si no, familia únicamente cuando pueda iniciarse |
+| `NEXO-TASK-009` | Mover existencias | `PRIMARY_RESOLVED_CANDIDATE` | destacar con traslado vigente; si no, familia cuando la función pueda iniciarlo |
+| `NEXO-TASK-010` | Registrar un retiro | `PRIMARY_RESOLVED_CANDIDATE` | destacar con retiro vigente; si no, familia cuando exista capacidad de inicio |
+| `NEXO-TASK-011` | Contar inventario | `PRIMARY_RESOLVED_CANDIDATE` | destacar con sesión/campaña; separar captura de control supervisor |
+| `NEXO-TASK-012` | Controlar la operación | `PRIMARY_RESOLVED_CANDIDATE` | destacar con caso/bloqueo/vencimiento; si no, conservar en control cuando la lectura siga autorizada |
+| `NEXO-TASK-013` | Consultar existencias | `FREQUENT_CANDIDATE` | frecuente con señal válida; si no, conservar en consulta y control |
+| `NEXO-TASK-014` | Investigar movimientos | `FREQUENT_CANDIDATE` | frecuente con caso o recurrencia; si no, conservar en consulta; excluir sin lectura |
+| `NEXO-TASK-015` | Consultar ubicaciones | `FREQUENT_CANDIDATE` | frecuente con necesidad o recurrencia; si no, conservar en consulta |
+| `NEXO-TASK-016` | Consultar contenedores logísticos | `SECONDARY_DISCOVERABLE` | conservar en familia con permiso/contexto LPN; no promover sin señal propietaria |
+| `NEXO-TASK-017` | Gestionar activos | `FREQUENT_CANDIDATE` | frecuente con trabajo o recurrencia; si no, conservar en familia |
+| `NEXO-TASK-018` | Capturar activos | `PRIMARY_RESOLVED_CANDIDATE` | destacar con captura pendiente; si no, Mi trabajo o excluir |
+| `NEXO-TASK-019` | Contar activos | `PRIMARY_RESOLVED_CANDIDATE` | destacar con sesión compatible; separar captura y cierre |
+| `NEXO-TASK-020` | Configurar activos | `SECONDARY_DISCOVERABLE` | solo Administrar con capacidad exacta; excluir de funciones operativas |
+| `NEXO-TASK-021` | Administrar NEXO | `PRIMARY_RESOLVED_CANDIDATE` | resolver capacidad administrativa prioritaria; excluir sin capacidad |
+| `NEXO-TASK-022` | Administrar productos y unidades | `FREQUENT_CANDIDATE` | frecuente solo en configuración; si no, Administrar |
+| `NEXO-TASK-023` | Administrar ubicaciones | `FREQUENT_CANDIDATE` | frecuente solo en configuración; no confundir con ubicar existencias |
+| `NEXO-TASK-024` | Configurar abastecimiento | `FREQUENT_CANDIDATE` | frecuente solo en configuración; no exponer solicitudes concretas como opción |
+| `NEXO-TASK-025` | Configurar referencias internas | `SECONDARY_DISCOVERABLE` | solo Administrar con permiso exacto; no promover por actividad operativa |
+| `NEXO-TASK-026` | Controlar impresión | `PRIMARY_RESOLVED_CANDIDATE` | destacar con trabajo fallido/bloqueado/pendiente; si no, control con cobertura |
+| `NEXO-TASK-027` | Configurar impresión | `SECONDARY_DISCOVERABLE` | solo Administrar con capacidad exacta; nunca por existencia de trabajos |
+| `NEXO-TASK-028` | Resolver un destino contextual | `CONTEXTUAL_ONLY` | invocar desde tarea compatible; fuera de listas globales |
+| `NEXO-TASK-029` | Resolver acceso | `CONTEXTUAL_ONLY` | resolver acceso/denegación como estado; fuera de navegación empresarial |
 
-##### 10.3. Descubrimiento seguro
-
-- las tareas autorizadas pero no destacadas permanecen localizables por su
-  familia;
-- la búsqueda, cuando exista en implementación posterior, opera únicamente
-  sobre el conjunto autorizado y ya minimizado;
-- las etiquetas conservan verbo e intención empresarial;
-- no se muestran nombres de tablas, permisos, rutas, carpetas o componentes;
-- una búsqueda sin resultados no revela la existencia de tareas no autorizadas;
-- una tarea infrecuente conserva propósito y contexto suficiente para reingreso
-  sin depender de memoria del usuario.
-
----
-
-#### 11. `NEXO-OPTION-REDUCTION-STATE-CONTRACT-001`
-
-| Estado                           | Condición                                                                                   | Presentación obligatoria                                                        | Opciones permitidas                                    |
-| -------------------------------- | ------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------- | ------------------------------------------------------ |
-| `RESOLVIENDO_RELEVANCIA`         | actor, función, contexto o conjunto autorizado todavía no son concluyentes                  | estructura mínima sin opciones, conteos ni familias                             | cancelar o esperar                                     |
-| `OPCIONES_LISTAS`                | la decisión es completa y existen tareas relevantes                                         | niveles ordenados, sin duplicados y con contexto visible                        | solo opciones incluidas en la respuesta autoritativa   |
-| `ACCION_PRIMARIA_AUSENTE`        | la proyección es válida pero no existe comando principal autorizado                         | contexto y trabajo disponible sin fabricar una acción                           | navegación secundaria autorizada                       |
-| `VACIO_VALIDO`                   | la decisión es concluyente y no existe trabajo ni tarea iniciable relevante                 | mensaje de ausencia real, sin accesos alternos ni conteos cero                  | cambio de contexto autorizado o salida segura          |
-| `SOLO_DESCUBRIMIENTO_SECUNDARIO` | no existe trabajo destacado, pero permanecen tareas autorizadas dentro de familias          | familias disponibles sin promoverlas artificialmente                            | abrir una tarea secundaria autorizada                  |
-| `DATOS_PARCIALES`                | una fuente de trabajo, frecuencia, recientes o familias perdió frescura o falló             | último conjunto confirmado, sección afectada y advertencia de incompletitud     | lectura segura y reintento; no completar con supuestos |
-| `CONTEXTO_CAMBIADO_O_REVOCADO`   | actor, función, turno, territorio, dispositivo, asignación o permiso dejaron de ser válidos | retirar inmediatamente opciones y datos previos                                 | resolver nuevamente el contexto                        |
-| `OPCION_CAMBIADA_O_RETIRADA`     | tarea o instancia visible dejó de ser relevante antes de abrirse o continuar                | explicar cambio sin presentar culpa ni conservar un control obsoleto            | volver al conjunto recalculado                         |
-| `ACCESO_DIRECTO_DENEGADO`        | se solicitó explícitamente una tarea o ruta que no supera la revalidación                   | denegación canónica minimizada, sin revelar opciones elegibles de otros actores | recuperación segura derivada del perfil                |
-| `FALLO_TECNICO`                  | no existe una decisión estable por indisponibilidad o error                                 | mensaje recuperable diferenciado de vacío, denegación y revocación              | reintentar consulta cuando sea seguro                  |
-
-Reglas transversales:
-
-- un fallo técnico no se degrada a vacío;
-- datos parciales no se completan con cero ni con opciones de una respuesta
-  anterior incompatible;
-- una denegación explícita no provoca que la opción aparezca deshabilitada en
-  renders posteriores;
-- una opción retirada invalida su acción antes de presentar el nuevo conjunto;
-- un cambio de función elimina frecuencia, recientes y caché de la función
-  anterior;
-- un resultado desconocido de escritura no se convierte en reciente ni se
-  utiliza como señal de frecuencia hasta reconciliarse.
+Distribución heredada: `HOME_ONLY=1`, `PRIMARY_FIXED=1`, `PRIMARY_RESOLVED_CANDIDATE=14`, `FREQUENT_CANDIDATE=7`, `SECONDARY_DISCOVERABLE=4`, `CONTEXTUAL_ONLY=2`; total 29, sin faltantes ni duplicados.
 
 ---
 
-#### 12. Responsive y accesibilidad
+#### 12. `OPTION-REDUCTION-STATE-CONTRACT-001`
 
-##### 12.1. Móvil
+| Estado | Condición | Presentación obligatoria |
+| --- | --- | --- |
+| `RESOLVIENDO_RELEVANCIA` | actor, función, contexto o conjunto elegible todavía no son concluyentes | estructura mínima sin opciones ni conteos |
+| `OPCIONES_LISTAS` | evaluación completa y existen opciones relevantes | niveles ordenados, sin duplicados y con contexto visible |
+| `ACCION_PRIMARIA_AUSENTE` | proyección válida sin comando principal autorizado | conservar contexto y opciones secundarias válidas sin fabricar acción |
+| `VACIO_VALIDO` | decisión concluyente y no existe trabajo ni tarea iniciable relevante | vacío real sin accesos alternos inventados |
+| `SOLO_DESCUBRIMIENTO_SECUNDARIO` | no existe trabajo destacado pero quedan tareas autorizadas | familias disponibles sin promoción artificial |
+| `DATOS_PARCIALES` | una fuente perdió frescura o falló | último conjunto confirmado y advertencia de incompletitud; no completar con supuestos |
+| `CONTEXTO_CAMBIADO_O_REVOCADO` | actor, función, territorio, turno, dispositivo, asignación o permiso cambiaron | retirar inmediatamente opciones y datos previos y resolver de nuevo |
+| `OPCION_CAMBIADA_O_RETIRADA` | una opción visible dejó de ser relevante | explicar actualización y volver al conjunto recalculado |
+| `ACCESO_DIRECTO_DENEGADO` | solicitud explícita no supera revalidación | denegación minimizada sin revelar opciones ajenas |
+| `FALLO_TECNICO` | no existe una decisión estable por indisponibilidad | fallo recuperable distinto de vacío o denegación |
 
-- acción primaria y siguiente tarea preceden a toda lista;
-- frecuentes y recientes mantienen sus máximos y no se expanden por scroll
-  horizontal;
-- familias secundarias permanecen colapsables con nombre y cantidad accesible;
-- utilidades contextuales aparecen dentro de la tarea, no en una barra global;
-- ninguna opción depende de hover, gesto oculto o reconocimiento por color.
-
-##### 12.2. Tablet y estación compartida
-
-- la primera vista muestra contexto, siguiente tarea y bloqueo prioritario;
-- los objetivos táctiles son compatibles con operación física;
-- escaneo, impresión y periféricos aparecen únicamente cuando la tarea los
-  requiere;
-- cambiar actor retira inmediatamente opciones y datos del actor anterior;
-- el dispositivo limita el conjunto máximo, pero no aporta autoridad humana.
-
-##### 12.3. Escritorio
-
-- el espacio adicional permite mejor lectura, no más opciones de primer nivel;
-- el sidebar no reproduce todas las rutas autorizadas sin aplicar reducción;
-- las familias secundarias no compiten visualmente con la acción primaria;
-- configuración y supervisión permanecen fuera de funciones operativas.
-
-##### 12.4. Accesibilidad
-
-- el orden de foco sigue los niveles de presentación;
-- la acción primaria tiene nombre y propósito estables;
-- cambios de conjunto, opción retirada y revocación se anuncian de forma
-  accesible;
-- una familia colapsada informa su nombre y estado expandido;
-- etiquetas y descripciones no dependen de iconos;
-- el vacío, la parcialidad, la denegación y el fallo técnico son distinguibles;
-- el cambio de función exige confirmación comprensible y nuevo contexto visible.
+Un resultado desconocido de escritura no se usa como señal de frecuencia ni continuación hasta reconciliarse.
 
 ---
 
-#### 13. Seguridad, privacidad y minimización
+#### 13. Responsive, accesibilidad y dispositivo
 
-1. El servidor filtra tareas y datos antes de construir la proyección.
+- móvil conserva acción/siguiente trabajo antes de listas y no aumenta máximos por scroll;
+- tablet y estación compartida priorizan contexto, trabajo y bloqueo material y retiran información del actor anterior al cambiar sesión;
+- escritorio usa el espacio adicional para lectura y agrupación, no para mostrar más opciones de primer nivel;
+- ninguna opción depende de hover, gesto oculto, color o icono;
+- el orden de foco sigue la jerarquía de presentación;
+- cambios de conjunto, revocación y opción retirada se anuncian de forma accesible;
+- el dispositivo limita compatibilidad, pero nunca aporta autoridad humana.
+
+---
+
+#### 14. Seguridad, privacidad y minimización
+
+1. El servidor o contrato propietario filtra antes de construir la proyección.
 2. El cliente no recibe un catálogo global para ocultarlo después.
-3. Frecuencia y recientes se calculan únicamente sobre eventos del actor,
-   función y territorio aplicables.
-4. La lista no revela tareas, conteos, recursos, sedes, actores ni capacidades
-   fuera de alcance.
-5. Cada acceso y cada comando revalidan actor, función, permiso, territorio,
-   recurso, etapa, estado y versión.
-6. El ocultamiento no se utiliza como control de seguridad final.
-7. La simulación, cuando sea admisible, permanece diferenciada y no produce
-   autoridad ni eventos reales de frecuencia.
-8. Un dispositivo compartido no conserva opciones, recientes o señales del
-   actor anterior.
-9. La reducción no expone claves de permiso, reason codes internos, reglas RLS,
-   nombres de tablas ni rutas técnicas.
-10. Los eventos de navegación no se usan para comparar productividad,
-    desempeño o ranking individual.
-11. Cerrar sesión o revocar contexto elimina proyección, caché y referencias
-    temporales.
-12. Un acceso directo no reintroduce una opción excluida ni concede permiso.
+3. La lista no revela tareas, recursos, sedes, actores ni capacidades fuera de alcance.
+4. Cada acceso y comando revalida autoridad, contexto, recurso, etapa y versión.
+5. Frecuencia, recientes y posición visual nunca conceden autoridad.
+6. Un dispositivo compartido no conserva opciones del actor anterior.
+7. Sensibilidad y masking se aplican antes de etiquetas, conteos o previews.
+8. Resolutores y utilidades técnicas permanecen fuera de listas empresariales.
+9. Acceso directo no reintroduce una opción excluida ni concede permiso.
+10. Eventos de navegación no se convierten en métricas de productividad o ranking individual.
 
 ---
 
-#### 14. Estado técnico y brecha de implementación
+#### 15. Estado técnico, brechas y handoff
 
-| Elemento                                                      | Estado documental        | Evidencia actual permitida                                                                   | Condición de salida                                                          |
-| ------------------------------------------------------------- | ------------------------ | -------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------- |
-| catálogo de 29 tareas y 8 familias                            | `ESPECIFICADO`           | `NEXO-NAVIGATION-TASK-CATALOG-001` y `NEXO-TASK-PLACEMENT-REGISTER-001`                      | consumo íntegro en prototipo e implementación                                |
-| reducción para 8 contextos                                    | `ESPECIFICADO`           | `NEXO-ACTOR-OPTION-REDUCTION-MATRIX-001`                                                     | prototipo diferenciado y pruebas posteriores                                 |
-| decisión individual para 29 tareas                            | `ESPECIFICADO`           | `NEXO-TASK-REDUCTION-REGISTER-001`                                                           | binding físico sin faltantes ni duplicados                                   |
-| filtro actual por permiso en shell                            | `IMPLEMENTADO_PARCIAL`   | `vento-nexo` consulta `app_navigation_items` activas y filtra permisos                       | añadir identidad de tarea, relevancia, disposición, prioridad y reducción    |
-| agrupación y render actual del sidebar                        | `IMPLEMENTADO_PARCIAL`   | `vento-nexo` agrupa por `group_label` y renderiza todos los elementos recibidos              | consumir una proyección reducida y no una lista de pantallas permitidas      |
-| acciones actuales de la superficie inicial                    | `IMPLEMENTADO_PARCIAL`   | `vento-nexo` mantiene una lista local de acciones y reglas de enfoque por rol y tipo de sede | sustituirla por actor, función, tarea y contexto autoritativos               |
-| sincronización técnica de pantallas                           | `IMPLEMENTADO_PARCIAL`   | el sincronizador clasifica páginas y candidatos de menú a partir de rutas y registros        | separar inventario técnico de navegación humana y enlazar `task_id` canónico |
-| prototipo visual de reducción                                 | `NO_IMPLEMENTADO`        | no existe evidencia aprobada en esta tarea                                                   | `AUTH-UI-055`                                                                |
-| validación con usuarios                                       | `PENDIENTE_DE_EVIDENCIA` | no ejecutada                                                                                 | `AUTH-UI-056` a `AUTH-UI-060`                                                |
-| implementación de resolutor, consultas, componentes y pruebas | `NO_IMPLEMENTADO`        | fuera de la fase documental actual                                                           | paquete de implementación NEXO autorizado por la continuidad                 |
+| Elemento | Estado documental | Condición de salida |
+| --- | --- | --- |
+| diez decisiones de rectificación | `ESPECIFICADO` | consumir sin alterar en prototipos |
+| 177 decisiones por superficie | `ESPECIFICADO` | materializar bindings de presentación sin cambiar `VSCREEN` ni `app_code` |
+| NEXO 29 tareas / 8 contextos | `ESPECIFICADO` | consumo íntegro por prototipo e implementación NEXO |
+| reducción física por aplicación | `NO_IMPLEMENTADO` | paquete físico autorizado posterior |
+| prototipo visual testeable | `NO_IMPLEMENTADO` | `AUTH-UI-055` |
+| validación interna | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-056` |
+| criterios medibles por superficie | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-057` |
+| prueba con usuarios reales | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058` |
+| registro/resolución de problemas | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-059` |
+| aprobación final por superficie | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-060` |
 
-La existencia de filtros de permiso, grupos de navegación o reglas locales de
-foco no demuestra que la reducción aquí definida esté implementada o validada.
-
----
-
-#### 15. Criterios de aceptación
-
-La tarea se considera documentalmente completa cuando se confirme que:
-
-- las ocho familias y veintinueve tareas conservan sus identidades canónicas;
-- los ocho contextos tienen una decisión explícita de reducción;
-- cada tarea tiene exactamente una fila y un resultado de conservación o
-  exclusión;
-- se materializan veintinueve identidades únicas, sin faltantes ni duplicados;
-- la distribución heredada de disposiciones suma veintinueve y no cambia;
-- la acción primaria y la siguiente tarea no se duplican;
-- frecuentes no superan cuatro tareas y recientes no superan tres instancias;
-- las tareas autorizadas pero secundarias permanecen accesibles por familia;
-- una familia vacía no produce encabezado, conteo cero ni opción deshabilitada;
-- tareas no autorizadas o incompatibles no se envían al cliente;
-- resolutores, acceso, alias, kioscos, códigos y utilidades permanecen fuera del
-  menú empresarial;
-- rutas, detalles, edición, referencias y pasos no se convierten en tareas
-  adicionales;
-- una persona multifunción conserva una sola función activa por proyección;
-- el dispositivo compartido no conserva opciones del actor anterior;
-- cambiar actor, función o contexto recalcula la proyección completa;
-- frecuencia, orden y visibilidad no conceden autoridad;
-- acceso directo y comandos revalidan el contrato autoritativo;
-- los diez estados distinguen vacío, parcialidad, revocación, retiro,
-  denegación y fallo técnico;
-- las reglas responsive y de accesibilidad no aumentan opciones ni autoridad;
-- no se crean rutas, roles, funciones, permisos, procesos ni requisitos nuevos;
-- las brechas técnicas tienen propietario y condición de salida;
-- `AUTH-UI-055` permanece únicamente reservada.
+`AUTH-UI-055` recibe el registro de 177 superficies, las clases de reducción, los estados y las diez decisiones de cobertura. Debe convertirlos en prototipos testeables sin reabrir autoridad ni inventar superficies.
 
 ---
 
@@ -4862,49 +4856,66 @@ La tarea se considera documentalmente completa cuando se confirme que:
 
 **NO GENERA REQUISITOS DE PRUEBA.**
 
-Justificación: esta tarea no introduce un comportamiento autorizativo,
-operativo, de navegación o de seguridad nuevo. Materializa la reducción y
-presentación de las veintinueve tareas ya protegidas por los requisitos
-vigentes asociados a los contratos consumidos, en particular las reglas sobre
-familias, tareas, contextos, ocultamiento, rutas, utilidades, estados y
-separación entre inventario técnico y navegación humana. No modifica, difiere,
-descarta ni declara obsoleto ningún requisito histórico, por lo que el Registro
-Canónico de Requisitos de Prueba no cambia.
+Justificación: la tarea materializa decisiones de presentación y reducción dentro de identidades, autorización, navegación, contexto, dispositivo, estados y requisitos ya vigentes. No crea una capacidad, proceso, ruta, permiso, transición, dato, pantalla ni efecto nuevo; tampoco modifica, difiere, descarta ni declara obsoleto ningún requisito histórico. El registro canónico de requisitos de prueba no cambia.
 
 ---
 
-#### 17. `NEXO-OPTION-REDUCTION-HANDOFF-001`
+#### 17. Cobertura de prueba vigente reutilizada
 
-| Destino                        | Handoff aprobado                                                                                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `AUTH-UI-055`                  | crear prototipos separados por proyección que materialicen los cinco niveles, máximos, familias, ocultamientos, estados y deduplicación aprobados aquí                    |
-| `AUTH-UI-056`                  | validar el prototipo sin presentar inspección documental o ejecución técnica como prueba con usuarios                                                                     |
-| `AUTH-UI-057`                  | definir criterios de usabilidad por pantalla para relevancia, tiempo de localización, carga cognitiva, recuperación y comprensión                                         |
-| `AUTH-UI-058`                  | probar con usuarios reales las proyecciones de solicitante, bodega, conductor, receptor, supervisor, configuración, multifunción y dispositivo compartido                 |
-| `AUTH-UI-059`                  | registrar problemas sin cambiar silenciosamente tareas, identidades, permisos, disposiciones o continuidad                                                                |
-| `AUTH-UI-060`                  | aprobar cada pantalla únicamente con evidencia real y criterios satisfechos                                                                                               |
-| paquete de implementación NEXO | implementar resolutor, bindings, consultas, componentes, estados, caché, eventos, migraciones desde `vento-shell`, pruebas y telemetría cuando la continuidad lo autorice |
-
-Ningún destino anterior se inicia mediante esta tarea.
+La cobertura posterior reutiliza los contratos existentes de autorización por vista y acción, navegación, contexto activo, dispositivo compartido, continuidad, sensibilidad, masking, estados de carga/vacío/error, reducción segura de fricción y los contratos específicos de cada aplicación. Esta sección es trazabilidad y no modifica el registro 04A.
 
 ---
 
-#### 18. Traza histórica del carril NEXO
+#### 18. Evidencia de validación
 
-> Esta fotografía dejó de ser continuidad vigente. Se conserva únicamente como evidencia de la ejecución parcial que originó los artefactos NEXO.
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout del usuario después de reemplazar `AUTH-UI-054`. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery y validadores de dominio quedan para la batería local del repositorio. |
+| REMOTA | PASS | Se verificaron en `main` vigente la continuidad posterior al cierre de `AUTH-UI-053`, el propietario de `AUTH-UI-054`, la rectificación `AUTH-UI-052..060`, `SCREEN-CANONICAL-CATALOG-001` con 177 superficies, topología/políticas y los comandos de validación aplicables. |
+| OPERATIVA | NOT_EXECUTED | Esta tarea no ejecuta telemetría runtime, validación operacional ni sesiones con usuarios. |
+| FÍSICA | NOT_APPLICABLE | `NO_PHYSICAL_INSTANCE`; la tarea documental no materializa código, datos, Supabase ni despliegues. |
+
+---
+
+#### 19. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se confirma que:
+
+- [ ] existen exactamente diez decisiones de cobertura de la rectificación;
+- [ ] ocho permanecen `APLICA` y TALENTO/VITAL conservan `NO_APLICA`;
+- [ ] ninguna decisión crea `app_code` para TALENTO ni incorpora VITAL;
+- [ ] AURA conserva cero superficies y no se inventa materialización;
+- [ ] las siete superficies SHELL se cubren sin alterar la matriz de rectificación;
+- [ ] `VSCREEN-0001..0177` aparecen exactamente una vez, sin faltantes ni duplicados;
+- [ ] cada superficie conserva nombre y `app_code` propietario del catálogo vigente;
+- [ ] cada superficie recibe exactamente una clase de reducción;
+- [ ] una clase estática no sustituye elegibilidad o autorización dinámica;
+- [ ] trabajo autorizado secundario permanece descubrible cuando no ocupa primer nivel;
+- [ ] opciones no autorizadas o incompatibles no se envían al cliente;
+- [ ] acción primaria, siguiente tarea, frecuentes, recientes y familia no duplican la misma identidad;
+- [ ] no se llenan máximos con opciones irrelevantes;
+- [ ] familia vacía no produce encabezado, conteo cero ni control deshabilitado;
+- [ ] resolutores, acceso, QR técnicos y utilidades contextuales permanecen fuera de listas globales cuando corresponda;
+- [ ] el perfil NEXO conserva 29 tareas y 8 contextos sin faltantes ni duplicados;
+- [ ] frecuencia, visibilidad, historial y posición no conceden autoridad;
+- [ ] responsive y accesibilidad no aumentan opciones ni permisos;
+- [ ] no se crean rutas, pantallas, roles, funciones, permisos, procesos ni requisitos de prueba;
+- [ ] no se ejecuta código, Supabase ni despliegue;
+- [ ] `AUTH-UI-055` permanece únicamente reservada.
+
+---
+
+#### 20. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
-
 `AUTH-UI-053 — Diseñar navegación según tareas frecuentes`
 
 **TAREA ACTUAL APROBADA**
-
 `AUTH-UI-054 — Reducir opciones irrelevantes`
 
 **SIGUIENTE TAREA RESERVADA**
-
 `AUTH-UI-055 — Crear prototipo por rol`
-
 
 ### [ ] AUTH-UI-055 — Crear prototipo por rol
 

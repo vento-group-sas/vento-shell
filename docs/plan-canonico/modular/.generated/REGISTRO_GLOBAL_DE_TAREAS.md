@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1262** |
+| Aprobadas | **1263** |
 | En propuesta | **0** |
-| No iniciadas | **334** |
+| No iniciadas | **333** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.07% (1262/1596)** |
+| Porcentaje de completamiento | **79.14% (1263/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **334** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1163** |
+| ⏸ NO_EVALUADA | **333** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1164** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-053` — Diseñar navegación según tareas frecuentes | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-054` — Reducir opciones irrelevantes | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-055` — Crear prototipo por rol | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-054` — Reducir opciones irrelevantes | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-055` — Crear prototipo por rol | ⬜ NO INICIADA |
+| Siguiente reservada | `AUTH-UI-056` — Validar prototipo antes de implementar | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -906,7 +906,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | PARTIAL_DELTA | `AUTH-UI-051` | Estandarizar errores recuperables | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-052` | Diseñar página inicial según actor | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-053` | Diseñar navegación según tareas frecuentes | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-054` | Reducir opciones irrelevantes | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-054` | Reducir opciones irrelevantes | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-055` | Crear prototipo por rol | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-056` | Validar prototipo antes de implementar | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-057` | Definir criterio de usabilidad por pantalla | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
