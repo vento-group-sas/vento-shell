@@ -4917,379 +4917,622 @@ La tarea queda documentalmente completa cuando se confirma que:
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-UI-055 — Crear prototipo por rol`
 
-### [ ] AUTH-UI-055 — Crear prototipo por rol
+### ✅ AUTH-UI-055 — Crear prototipo por rol
 
-**Estado:** NO INICIADA; evidencia parcial NEXO conservada
-**Tarea anterior:** `AUTH-UI-054 — Reducir opciones irrelevantes` — NO INICIADA
-**Tarea siguiente:** `AUTH-UI-056 — Validar prototipo antes de implementar` — NO INICIADA
-**Tipo de tarea:** documental global; creación de prototipos visuales testeables por aplicación, rol, función, dispositivo y estado crítico
-**Repositorio propietario:** `vento-shell`
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-054 — Reducir opciones irrelevantes
+**Tarea siguiente:** AUTH-UI-056 — Validar prototipo antes de implementar
+**Tipo de tarea:** documental global; materialización de prototipos testeables por aplicación, actor, función, contexto, dispositivo y estado crítico, vinculados al inventario canónico de superficies sin crear implementación productiva
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
 **Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
-**Evidencia parcial inspeccionada:** `vento-nexo`, `NEXO-ROUTE-001` — `/`
-**Ruta vigente:** flujo canónico integral; el carril `NEXO-REMISSIONS-001` queda únicamente como procedencia histórica de la evidencia NEXO
-**Cambios físicos autorizados:** ninguno; no modifica código productivo, componentes de aplicación, rutas, permisos, roles, funciones, procesos, datos, Supabase, migraciones, RLS, configuración, telemetría ni despliegues
-**Artefacto visual asociado:** `NEXO_PROTOTIPO_TEST_USUARIOS_AUTH_UI_055_057.pptx`
-**Instrumento asociado:** cuestionario único `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no modifica código productivo, rutas, componentes, roles, permisos, procesos, datos, Supabase, migraciones, RLS, telemetría, configuración ni despliegues
+**Requisitos de prueba creados o modificados:** 0
 
 ---
 
 #### 1. Propósito
 
-Crear un prototipo visual no productivo que permita probar con personas reales
-las decisiones aprobadas de página inicial, navegación por tareas frecuentes y
-reducción de opciones, sin esperar a implementar la aplicación ni conectar
-Supabase.
+Crear el paquete documental de prototipos testeables que consume las decisiones aprobadas de `AUTH-UI-052`, `AUTH-UI-053` y `AUTH-UI-054` y permite representar, sin efectos reales, cómo cambia la interfaz según aplicación, actor efectivo, función activa, contexto, dispositivo y estado crítico.
 
-El título canónico conserva “por rol”, pero el prototipo se resuelve por actor
-efectivo, función activa, contexto autorizado, trabajo vigente y dispositivo. El
-rol visible no concede autoridad.
-
-La regla canónica de esta corrección es:
+El título conserva “por rol”, pero la unidad real de prototipado es:
 
 ```text
-CONTRATOS APROBADOS AUTH-UI-052 A AUTH-UI-054
+APLICACION / SUPERFICIE CANONICA
 +
-OCHO CONTEXTOS DE PROYECCIÓN
+ACTOR EFECTIVO O SUJETO PERSONAL
 +
-DOS VARIANTES TESTEABLES POR CONTEXTO
+FUNCION ACTIVA
 +
-UN CUESTIONARIO ÚNICO DE OBSERVACIÓN Y PREGUNTAS
-→
-PROTOTIPO VISUAL SUFICIENTE PARA EJECUTAR AUTH-UI-058
+CONTEXTO Y DISPOSITIVO VIGENTES
++
+TRABAJO Y OPCIONES YA ELEGIBLES
++
+REDUCCION APROBADA
++
+VARIANTE NORMAL O DE RECUPERACION
+=
+PROTOTIPO TESTEABLE SIN AUTORIDAD NI EFECTOS REALES
 ```
 
-No se declara implementación, dato real, despliegue, telemetría, autorización
-server-side ni resultado de uso.
+Un prototipo representa una decisión ya aprobada. No concede permisos, no crea una pantalla canónica nueva, no ejecuta una mutación y no demuestra usabilidad por sí mismo.
 
 ---
 
-#### 2. Resultado material
+#### 2. Alcance y límites
 
-Se materializan nueve artefactos documentales consumibles:
+##### 2.1. Incluido
 
-1. `NEXO-TESTABLE-PROTOTYPE-CONTRACT-001`, que define alcance, fidelidad y límites del prototipo;
-2. `NEXO-TESTABLE-SCREEN-CATALOG-001`, que materializa dieciséis pantallas testeables;
-3. `NEXO-TESTABLE-SCREEN-COMPOSITION-RULES-001`, que fija zonas, contenido y prohibiciones visuales;
-4. `NEXO-TESTABLE-SCREEN-FLOW-001`, que define navegación simulada entre pantalla normal, estado de recuperación y formulario;
-5. `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001`, que define un único instrumento para todas las pruebas;
-6. `NEXO-USABILITY-TASK-PROMPT-REGISTER-001`, que vincula cada pantalla con una tarea breve para el participante;
-7. `NEXO-USABILITY-EVIDENCE-MINIMUM-001`, que define la evidencia mínima sin datos sensibles;
-8. `NEXO-PROTOTYPE-PACKAGE-HANDOFF-001`, que entrega el paquete a validación interna;
-9. `NEXO_PROTOTIPO_TEST_USUARIOS_AUTH_UI_055_057.pptx`, que representa las dieciséis pantallas y el formulario único como material visual navegable.
+- decisión explícita para las diez aplicaciones exigidas por la rectificación `AUTH-UI-052..060`;
+- vinculación del paquete de prototipos con las 177 superficies `VSCREEN-*` ya admitidas;
+- suites de prototipo por cada `app_code` que posee superficies en el catálogo vigente;
+- perfiles de actor, función o contexto suficientes para materializar diferencias relevantes de presentación;
+- una variante normal y una variante de recuperación por cada perfil;
+- composición visual de baja/media fidelidad apta para revisión y prueba guiada;
+- contexto activo visible, acción primaria, siguiente tarea, frecuentes, recientes, familias secundarias, bloqueo/estado y recuperación cuando apliquen;
+- datos ficticios, minimizados y no sensibles;
+- preservación íntegra de los ocho contextos y dieciséis vistas históricas NEXO como especialización dentro del paquete global;
+- reglas responsive, accesibilidad, privacidad, sensibilidad, masking y dispositivo compartido;
+- handoff exacto a `AUTH-UI-056` para validación interna.
+
+##### 2.2. Excluido
+
+- implementar cualquiera de las aplicaciones;
+- crear componentes productivos, rutas, bindings, resolutores, queries, eventos o telemetría;
+- conectar el prototipo a Supabase o a datos reales;
+- crear `app_code` para TALENTO;
+- incorporar VITAL a Vento OS;
+- inventar superficies para AURA mientras conserve cero `VSCREEN-*`;
+- ejecutar sesiones con usuarios, reservado a `AUTH-UI-058`;
+- definir umbrales finales de usabilidad por superficie, reservado a `AUTH-UI-057`;
+- registrar problemas observados en sesiones reales, reservado a `AUTH-UI-059`;
+- aprobar pantallas finales, reservado a `AUTH-UI-060`;
+- declarar que un prototipo es accesible, usable, implementado o aprobado por existir documentalmente.
+
+---
+
+#### 3. Resultado material
+
+Se materializan diez artefactos documentales consumibles:
+
+1. `APPLICATION-TESTABLE-PROTOTYPE-CONTRACT-001`, contrato global de fidelidad, autoridad y testabilidad;
+2. `APPLICATION-PROTOTYPE-RECTIFICATION-COVERAGE-001`, decisión para las diez aplicaciones de la rectificación;
+3. `APPLICATION-PROTOTYPE-SURFACE-BINDING-001`, vínculo determinista con las 177 superficies canónicas existentes;
+4. `APPLICATION-PROTOTYPE-SUITE-CATALOG-001`, nueve suites para los nueve `app_code` que poseen superficies;
+5. `APPLICATION-PROTOTYPE-CONTEXT-CATALOG-001`, veintinueve perfiles de actor, función o contexto;
+6. `APPLICATION-PROTOTYPE-NORMAL-RECOVERY-CATALOG-001`, cincuenta y ocho variantes: veintinueve normales y veintinueve de recuperación;
+7. `APPLICATION-PROTOTYPE-COMPOSITION-RULES-001`, gramática visual común sin imponer una sola UI física;
+8. `APPLICATION-PROTOTYPE-FIXTURE-CONTRACT-001`, datos ficticios y reglas de minimización;
+9. `NEXO-TESTABLE-PROTOTYPE-PROFILE-001`, preservación de las dieciséis vistas y ocho contextos NEXO históricos;
+10. `APPLICATION-PROTOTYPE-HANDOFF-001`, entrega íntegra a validación interna.
 
 Cobertura materializada:
 
-| Elemento                                  | Esperado | Materializado | Faltantes | Duplicados |
-| ----------------------------------------- | -------: | ------------: | --------: | ---------: |
-| Contextos canónicos                       |        8 |             8 |         0 |          0 |
-| Pantallas testeables                      |       16 |            16 |         0 |          0 |
-| Variantes normales                        |        8 |             8 |         0 |          0 |
-| Variantes de recuperación                 |        8 |             8 |         0 |          0 |
-| Cuestionarios únicos                      |        1 |             1 |         0 |          0 |
-| Prototipos con pregunta asociada          |       16 |            16 |         0 |          0 |
-| Rutas productivas nuevas                  |        0 |             0 |         0 |          0 |
-| Código, datos o Supabase                  |        0 |             0 |         0 |          0 |
-| Requisitos de prueba nuevos o modificados |        0 |             0 |         0 |          0 |
+| Elemento | Esperado | Materializado | Faltantes | Duplicados |
+| --- | ---: | ---: | ---: | ---: |
+| decisiones de aplicaciones de la rectificación | 10 | 10 | 0 | 0 |
+| aplicaciones de la rectificación con prototipo aplicable | 8 | 8 | 0 | 0 |
+| aplicaciones de la rectificación con `NO_APLICA` | 2 | 2 | 0 | 0 |
+| superficies canónicas vinculadas | 177 | 177 | 0 | 0 |
+| suites para `app_code` con superficies | 9 | 9 | 0 | 0 |
+| perfiles de actor/función/contexto | 29 | 29 | 0 | 0 |
+| variantes normales | 29 | 29 | 0 | 0 |
+| variantes de recuperación | 29 | 29 | 0 | 0 |
+| vistas NEXO históricas preservadas | 16 | 16 | 0 | 0 |
+| contextos NEXO preservados | 8 | 8 | 0 | 0 |
+| rutas, pantallas o permisos nuevos | 0 | 0 | 0 | 0 |
+| requisitos de prueba nuevos o modificados | 0 | 0 | 0 | 0 |
 
-El resultado queda `ESPECIFICADO` y `PROTOTIPO_VISUAL_TESTEABLE_PREPARADO`.
+El resultado queda `ESPECIFICADO` y `PAQUETE_DE_PROTOTIPOS_TESTEABLES_DEFINIDO`. No se declara implementación ni validación humana.
 
 ---
 
-#### 3. Decisiones y contratos consumidos
+#### 4. Fuentes y precedencia consumidas
 
-La tarea consume sin modificar:
+La tarea consume sin reabrir:
 
 - `AUTH-UI-052 — Diseñar página inicial según actor`;
 - `AUTH-UI-053 — Diseñar navegación según tareas frecuentes`;
 - `AUTH-UI-054 — Reducir opciones irrelevantes`;
-- las ocho proyecciones de actor, función y dispositivo;
-- el catálogo de veintinueve tareas `NEXO-TASK-*`;
-- los diez estados de presentación y recuperación;
-- los contratos de contexto, autorización, dispositivo compartido, accesibilidad, tacto, seguridad, privacidad, sensibilidad y masking vigentes.
+- la rectificación integral de `AUTH-UI-052..060`;
+- `SCREEN-CANONICAL-CATALOG-001` y sus 177 identidades `VSCREEN-*`;
+- la matriz de diez decisiones de aplicación;
+- las clases de reducción y decisiones individuales por superficie definidas en `AUTH-UI-054`;
+- contratos de contexto activo, actor, función, territorio, dispositivo, navegación, autorización, sensibilidad, masking, accesibilidad, carga, vacío, denegación y recuperación;
+- la evidencia histórica NEXO ya materializada, únicamente como perfil específico y no como prueba de cobertura global.
 
-Se preservan las decisiones aprobadas: una sola ruta `/`, una sola proyección
-activa, una sola acción primaria, máximos de cuatro frecuentes y tres recientes,
-ocultamiento de opciones irrelevantes y separación entre funciones.
+Precedencia:
 
----
-
-#### 4. Alcance y límites
-
-##### 4.1. Incluido
-
-- dieciséis pantallas visuales de prueba;
-- datos ficticios y no sensibles;
-- un formulario único para observar y preguntar;
-- navegación simulada suficiente para que la persona intente localizar una acción;
-- estados normales y de recuperación;
-- material apto para prueba presencial o remota guiada;
-- vínculos conceptuales hacia `AUTH-UI-056`, `AUTH-UI-057`, `AUTH-UI-058` y `AUTH-UI-059`.
-
-##### 4.2. Excluido
-
-- implementar la aplicación;
-- crear componentes productivos;
-- guardar datos en Supabase;
-- ejecutar migraciones;
-- recolectar telemetría;
-- usar datos reales de trabajadores, proveedores, sedes o remisiones;
-- validar con usuarios;
-- declarar que las pantallas son usables, accesibles o aprobadas;
-- iniciar `AUTH-UI-056`, `AUTH-UI-057`, `AUTH-UI-058`, `AUTH-UI-059` o `AUTH-UI-060`.
+```text
+RECTIFICACION GLOBAL AUTH-UI-052..060
+>
+AUTH-UI-052 / AUTH-UI-053 / AUTH-UI-054 APROBADAS
+>
+CATALOGO CANONICO DE 177 SUPERFICIES
+>
+EVIDENCIA PARCIAL HISTORICA NEXO
+```
 
 ---
 
-#### 5. `NEXO-TESTABLE-PROTOTYPE-CONTRACT-001`
+#### 5. `APPLICATION-TESTABLE-PROTOTYPE-CONTRACT-001`
 
-El prototipo es un artefacto visual de fidelidad media. Debe permitir que una
-persona:
+##### 5.1. Naturaleza
 
-1. vea una pantalla suficientemente parecida al producto objetivo;
-2. identifique su contexto, función y trabajo esperado;
-3. intente encontrar una acción o salida;
-4. responda preguntas sobre lo que entendió;
-5. muestre confusión, error, duda, tiempo, ayuda o recuperación.
+El prototipo es una representación documental de baja o media fidelidad. Debe permitir que una persona o revisor pueda:
 
-No debe permitir:
+1. reconocer aplicación, función o relación activa;
+2. identificar el contexto material que afecta la decisión;
+3. localizar una acción o tarea ya elegible;
+4. distinguir trabajo prioritario de opciones secundarias;
+5. reconocer un bloqueo, cambio, retiro o fallo;
+6. encontrar una salida o recuperación segura;
+7. detectar si existe mezcla indebida de función, actor, territorio o datos.
 
-- ejecutar mutaciones reales;
-- representar datos productivos;
-- simular permisos como si fueran autorización real;
-- registrar resultados automáticamente;
-- sustituir el criterio del evaluador;
-- ocultar que es una maqueta.
+##### 5.2. No autoridad
 
-Cada pantalla mantiene la etiqueta visible `PROTOTIPO DE PRUEBA — SIN EFECTOS REALES`.
+El prototipo nunca se interpreta como:
+
+- decisión real de autorización;
+- evidencia de un permiso concedido;
+- representación de datos productivos;
+- simulación de una mutación real;
+- prueba de que una ruta o componente ya existe;
+- validación de que la UI es usable;
+- aprobación final de una superficie.
+
+Toda acción representada se rotula como ficticia o sin efectos reales cuando pueda confundirse con una mutación.
+
+##### 5.3. Fidelidad mínima
+
+Cada variante debe representar al menos:
+
+- encabezado o resumen de contexto;
+- título humano de la tarea o superficie;
+- una acción primaria como máximo;
+- siguiente tarea cuando exista;
+- frecuentes y recientes dentro de los máximos ya aprobados;
+- familia secundaria únicamente cuando contenga opciones pertinentes;
+- estado crítico cuando aplique;
+- recuperación o salida segura en la variante de recuperación;
+- indicación visible de que se trata de un prototipo sin efectos reales.
 
 ---
 
-#### 6. `NEXO-TESTABLE-SCREEN-CATALOG-001`
+#### 6. `APPLICATION-PROTOTYPE-RECTIFICATION-COVERAGE-001`
 
-| Pantalla         | Prototipo        | Variante     | Contexto probado        | Acción que debe encontrar             | Estado o problema simulado           | Pregunta principal al participante                                    |
-| ---------------- | ---------------- | ------------ | ----------------------- | ------------------------------------- | ------------------------------------ | --------------------------------------------------------------------- |
-| `SCREEN-055-001` | `PROTO-NEXO-001` | normal       | solicitante autorizado  | crear o continuar solicitud propia    | opciones listas                      | ¿Qué debes hacer primero si necesitas pedir abastecimiento?           |
-| `SCREEN-055-002` | `PROTO-NEXO-001` | recuperación | solicitante autorizado  | recuperar solicitud propia            | solicitud propia cambiada o retirada | ¿Qué harías si la solicitud que ibas a continuar cambió?              |
-| `SCREEN-055-003` | `PROTO-NEXO-002` | normal       | bodega o preparación    | continuar tarea prioritaria de bodega | preparación asignada                 | ¿Cuál es la siguiente tarea de bodega y por qué?                      |
-| `SCREEN-055-004` | `PROTO-NEXO-002` | recuperación | bodega o preparación    | detener o recuperar tarea             | datos parciales o tarea revocada     | ¿Qué harías antes de preparar si falta información o cambió la tarea? |
-| `SCREEN-055-005` | `PROTO-NEXO-003` | normal       | conductor o custodio    | abrir transporte asignado             | carga bajo custodia                  | ¿Qué carga está bajo tu responsabilidad y cuál es el siguiente paso?  |
-| `SCREEN-055-006` | `PROTO-NEXO-003` | recuperación | conductor o custodio    | recuperar ante pérdida de asignación  | asignación retirada o fallo técnico  | ¿Qué harías si la ruta o asignación desaparece?                       |
-| `SCREEN-055-007` | `PROTO-NEXO-004` | normal       | receptor autorizado     | iniciar recepción válida              | entrega atribuida                    | ¿Qué debes verificar antes de recibir?                                |
-| `SCREEN-055-008` | `PROTO-NEXO-004` | recuperación | receptor autorizado     | manejar recepción parcial             | diferencia o cantidad incompleta     | ¿Cómo registrarías que no llegó todo?                                 |
-| `SCREEN-055-009` | `PROTO-NEXO-005` | normal       | supervisor territorial  | abrir caso prioritario                | bloqueo o vencimiento                | ¿Qué caso atenderías primero y qué información revisarías?            |
-| `SCREEN-055-010` | `PROTO-NEXO-005` | recuperación | supervisor territorial  | bloquear decisión insegura            | evidencia insuficiente o conflicto   | ¿Qué harías si no tienes evidencia suficiente para decidir?           |
-| `SCREEN-055-011` | `PROTO-NEXO-006` | normal       | configurador autorizado | abrir capacidad administrativa        | configuración prioritaria            | ¿Qué opción administrativa abrirías y qué impacto esperas revisar?    |
-| `SCREEN-055-012` | `PROTO-NEXO-006` | recuperación | configurador autorizado | cancelar cambio no confirmado         | cambio pendiente o fallo técnico     | ¿Cómo sales sin afectar operación?                                    |
-| `SCREEN-055-013` | `PROTO-NEXO-007` | normal       | persona multifunción    | reconocer función activa              | función activa visible               | ¿Con qué función estás trabajando ahora?                              |
-| `SCREEN-055-014` | `PROTO-NEXO-007` | recuperación | persona multifunción    | cambiar función de forma segura       | cambio de función                    | ¿Qué debe desaparecer antes de cambiar de función?                    |
-| `SCREEN-055-015` | `PROTO-NEXO-008` | normal       | dispositivo compartido  | continuar tarea compatible            | actor humano activo                  | ¿Quién está usando la estación y qué trabajo puede hacer?             |
-| `SCREEN-055-016` | `PROTO-NEXO-008` | recuperación | dispositivo compartido  | cambiar actor sin filtrar datos       | cambio de actor                      | ¿Qué debe limpiarse antes de que entre otra persona?                  |
+| Aplicación de la rectificación | Decisión | Proyección cubierta | Salida |
+| --- | --- | --- | --- |
+| ANIMA | APLICA | experiencia personal laboral y supervisión puntual autorizada | suite `PROTO-SUITE-ANIMA-001` |
+| FOGO | APLICA | producción, supervisión, calidad y gobierno productivo según función activa | suite `PROTO-SUITE-FOGO-001` |
+| NEXO | APLICA | solicitud, bodega, custodia, recepción, supervisión, configuración, multifunción y dispositivo compartido | suite `PROTO-SUITE-NEXO-001` |
+| NUMERA | APLICA | trabajo financiero, aprobación, conciliación, análisis y auditoría | suite `PROTO-SUITE-NUMERA-001` |
+| ORIGO | APLICA | solicitud/compra, aprobación y recepción/conciliación | suite `PROTO-SUITE-ORIGO-001` |
+| PASS | APLICA | experiencia personal de cliente | suite `PROTO-SUITE-PASS-001` |
+| PULSO | APLICA | caja, servicio/pedido y administración comercial según sesión y función | suite `PROTO-SUITE-PULSO-001` |
+| TALENTO | NO_APLICA | producto futuro sin `app_code` canónico de pantallas | no se inventa prototipo Vento OS |
+| VISO | APLICA | dirección, administración, aprobación, auditoría y soporte según responsabilidad | suite `PROTO-SUITE-VISO-001` |
+| VITAL | NO_APLICA | producto separado y fuera de Vento OS | no recibe prototipo Vento OS |
+
+Reglas:
+
+1. `TALENTO` no recibe prototipo Vento OS mientras no exista `app_code` canónico de pantallas.
+2. `VITAL` no recibe prototipo Vento OS mientras continúe fuera del sistema.
+3. La cobertura SHELL se documenta únicamente para conservar las siete superficies reales heredadas por `AUTH-UI-054`; no altera la matriz de diez aplicaciones de la rectificación.
+4. AURA conserva cero superficies en el catálogo vigente y por tanto no obtiene una suite visual inventada.
+5. Ninguna aplicación se considera cubierta por asociación con NEXO.
+
+---
+
+#### 7. `APPLICATION-PROTOTYPE-SURFACE-BINDING-001`
+
+Cada `VSCREEN-*` vigente queda vinculado exactamente una vez a una suite de prototipo mediante su `app_code` heredado. La tarea no reasigna identidades.
+
+| Suite | `app_code` | Cobertura `VSCREEN-*` | Superficies | Perfiles | Variantes | Foco |
+| --- | --- | --- | --- | --- | --- | --- |
+| `PROTO-SUITE-SHELL-001` | `shell` | `VSCREEN-0001..0006`; `VSCREEN-0175` | 7 | 3 | 6 | soporte transversal del catálogo de superficies; no altera la matriz de diez aplicaciones |
+| `PROTO-SUITE-VISO-001` | `viso` | `VSCREEN-0007..0026`; `VSCREEN-0113..0123` | 31 | 3 | 6 | dirección, administración/configuración y auditoría/soporte |
+| `PROTO-SUITE-ANIMA-001` | `anima` | `VSCREEN-0027..0032`; `VSCREEN-0124..0131` | 14 | 2 | 4 | trabajador y supervisión puntual |
+| `PROTO-SUITE-NEXO-001` | `nexo` | `VSCREEN-0033..0054`; `VSCREEN-0132..0144`; `VSCREEN-0176..0177` | 37 | 8 | 16 | ocho contextos NEXO preservados |
+| `PROTO-SUITE-FOGO-001` | `fogo` | `VSCREEN-0055..0067`; `VSCREEN-0173..0174` | 15 | 3 | 6 | ejecución productiva, calidad/supervisión y gobierno/planeación |
+| `PROTO-SUITE-ORIGO-001` | `origo` | `VSCREEN-0068..0079`; `VSCREEN-0145..0146` | 14 | 3 | 6 | compra, aprobación y recepción/conciliación |
+| `PROTO-SUITE-PULSO-001` | `pulso` | `VSCREEN-0080..0093`; `VSCREEN-0147..0152` | 20 | 3 | 6 | caja, servicio/pedido y administración |
+| `PROTO-SUITE-NUMERA-001` | `numera` | `VSCREEN-0094..0106`; `VSCREEN-0153..0159` | 20 | 3 | 6 | operación financiera, aprobación/tesorería y análisis/auditoría |
+| `PROTO-SUITE-PASS-001` | `pass` | `VSCREEN-0107..0112`; `VSCREEN-0160..0172` | 19 | 1 | 2 | cliente sobre su propia relación |
 
 Reconciliación:
 
 ```text
-EXPECTED_TESTABLE_SCREENS = 16
-MATERIALIZED_TESTABLE_SCREENS = 16
-NORMAL_VARIANTS = 8
-RECOVERY_VARIANTS = 8
-MISSING_SCREENS = 0
-DUPLICATE_SCREENS = 0
+EXPECTED_VSCREEN = 177
+BOUND_VSCREEN = 177
+UNBOUND_VSCREEN = 0
+DUPLICATE_BINDINGS = 0
+PROTOTYPE_SUITES = 9
+PROFILE_COUNT = 29
+NORMAL_VARIANTS = 29
+RECOVERY_VARIANTS = 29
+TOTAL_VARIANTS = 58
+AURA_VSCREEN = 0
+TALENTO_APP_CODE_CREATED = 0
+VITAL_VSCREEN = 0
 ```
 
----
-
-#### 7. `NEXO-TESTABLE-SCREEN-COMPOSITION-RULES-001`
-
-Cada pantalla usa ocho zonas máximas:
-
-| Orden | Zona                      | Regla de prueba                                                                     |
-| ----: | ------------------------- | ----------------------------------------------------------------------------------- |
-|     1 | contexto activo           | debe permitir reconocer función, sede o área, jornada y dispositivo cuando apliquen |
-|     2 | acción primaria           | debe existir como máximo una acción principal                                       |
-|     3 | siguiente tarea           | debe explicar qué trabajo sigue y por qué                                           |
-|     4 | frecuentes                | máximo cuatro opciones, sin duplicar la acción principal                            |
-|     5 | recientes                 | máximo tres continuaciones válidas                                                  |
-|     6 | bloqueo o problema        | visible solo en variantes de recuperación o cuando aplique                          |
-|     7 | familias secundarias      | solo tareas autorizadas y relevantes                                                |
-|     8 | cambio de función o actor | visible en multifunción y dispositivo compartido                                    |
-
-Las pantallas no muestran datos de otro actor, rutas técnicas, permisos internos,
-SQL, tablas, reason codes ni información productiva.
+El vínculo por suite no significa que todas las superficies se vean idénticas. La suite conserva la gramática y los perfiles; cada superficie mantiene nombre, propósito, `app_code`, clasificación y reducción propios.
 
 ---
 
-#### 8. `NEXO-TESTABLE-SCREEN-FLOW-001`
+#### 8. `APPLICATION-PROTOTYPE-CONTEXT-CATALOG-001`
 
-El flujo de prueba es único:
+Cada perfil representa una diferencia material de actor, función, relación, dispositivo o responsabilidad que debe poder observarse antes de las pruebas reales.
+
+| Prototipo | Aplicación | Actor / función / contexto | Variante normal | Variante de recuperación |
+| --- | --- | --- | --- | --- |
+| `PROTO-SHELL-001` | SHELL | persona autenticada en hub | `NORMAL-01` — reconocer contexto y abrir una aplicación disponible | `RECOVERY-01` — aplicación o contexto retirado mientras se decide |
+| `PROTO-SHELL-002` | SHELL | persona resolviendo acceso o sesión | `NORMAL-02` — recuperar acceso y comprender el siguiente paso seguro | `RECOVERY-02` — sesión expirada, factor faltante o acceso denegado |
+| `PROTO-SHELL-003` | SHELL | actor en dispositivo compartido | `NORMAL-03` — confirmar actor activo y continuar solo trabajo compatible | `RECOVERY-03` — cambio de actor y limpieza de datos de la persona anterior |
+| `PROTO-ANIMA-001` | ANIMA | trabajador en experiencia personal | `NORMAL-04` — reconocer jornada, tarea u obligación personal prioritaria | `RECOVERY-04` — turno/check-in/contexto quedó vencido o cambió |
+| `PROTO-ANIMA-002` | ANIMA | supervisor puntual autorizado | `NORMAL-05` — abrir una responsabilidad de supervisión sin mezclar la vista personal | `RECOVERY-05` — cobertura o capacidad de supervisión retirada |
+| `PROTO-VISO-001` | VISO | dirección o gerencia | `NORMAL-06` — identificar decisión, excepción u obligación prioritaria | `RECOVERY-06` — datos parciales o indicador sin evidencia suficiente |
+| `PROTO-VISO-002` | VISO | administrador o configurador | `NORMAL-07` — abrir la capacidad administrativa exacta sin backoffice universal | `RECOVERY-07` — cambio en alcance, versión o autorización de configuración |
+| `PROTO-VISO-003` | VISO | auditor, cumplimiento o soporte | `NORMAL-08` — consultar caso/evidencia dentro del alcance concedido | `RECOVERY-08` — evidencia indisponible, conflicto o cobertura revocada |
+| `PROTO-NEXO-001` | NEXO | solicitante autorizado | `NORMAL-09` — crear o continuar solicitud propia | `RECOVERY-09` — solicitud propia cambió, fue retirada o dejó de ser continuable |
+| `PROTO-NEXO-002` | NEXO | bodega o preparación | `NORMAL-10` — continuar tarea prioritaria de bodega | `RECOVERY-10` — datos parciales, preparación revocada o tarea cambiada |
+| `PROTO-NEXO-003` | NEXO | conductor o custodio | `NORMAL-11` — abrir transporte/custodia asignados | `RECOVERY-11` — asignación retirada, ruta cambiada o fallo técnico |
+| `PROTO-NEXO-004` | NEXO | receptor autorizado | `NORMAL-12` — iniciar recepción válida | `RECOVERY-12` — recepción parcial, diferencia o cantidad incompleta |
+| `PROTO-NEXO-005` | NEXO | supervisor territorial | `NORMAL-13` — abrir caso/bloqueo prioritario | `RECOVERY-13` — evidencia insuficiente o conflicto que impide decidir |
+| `PROTO-NEXO-006` | NEXO | configurador autorizado | `NORMAL-14` — abrir capacidad administrativa exacta | `RECOVERY-14` — cambio no confirmado, versión conflictiva o salida segura |
+| `PROTO-NEXO-007` | NEXO | persona multifunción | `NORMAL-15` — reconocer una única función activa | `RECOVERY-15` — cambio de función y retiro de opciones/datos de la anterior |
+| `PROTO-NEXO-008` | NEXO | dispositivo compartido con actor activo | `NORMAL-16` — continuar trabajo compatible con actor y dispositivo | `RECOVERY-16` — cambio de actor, limpieza de sesión y re-resolución de contexto |
+| `PROTO-FOGO-001` | FOGO | operador de producción | `NORMAL-17` — continuar lote/tarea productiva prioritaria | `RECOVERY-17` — lote revocado, datos parciales o resultado desconocido |
+| `PROTO-FOGO-002` | FOGO | supervisor o calidad | `NORMAL-18` — revisar excepción, control o liberación atribuible | `RECOVERY-18` — evidencia insuficiente, bloqueo o liberación no disponible |
+| `PROTO-FOGO-003` | FOGO | planeación o gobierno de receta | `NORMAL-19` — abrir plan/receta/versión autorizados | `RECOVERY-19` — conflicto de versión, vigencia o publicación |
+| `PROTO-ORIGO-001` | ORIGO | solicitante o comprador | `NORMAL-20` — continuar solicitud/compra prioritaria | `RECOVERY-20` — cotización, orden o condición de proveedor cambió |
+| `PROTO-ORIGO-002` | ORIGO | aprobador | `NORMAL-21` — resolver aprobación atribuida dentro de alcance | `RECOVERY-21` — aprobación retirada, versión cambió o evidencia insuficiente |
+| `PROTO-ORIGO-003` | ORIGO | recepción o conciliación | `NORMAL-22` — recibir/conciliar sin adquirir autoridad de comprador | `RECOVERY-22` — recepción parcial, diferencia o documento inconsistente |
+| `PROTO-PULSO-001` | PULSO | caja o terminal operativo | `NORMAL-23` — continuar venta/caja compatible con sesión y dispositivo | `RECOVERY-23` — sesión, caja o terminal cambiaron o quedaron inválidos |
+| `PROTO-PULSO-002` | PULSO | servicio o gestión de pedido | `NORMAL-24` — continuar pedido/servicio prioritario | `RECOVERY-24` — pedido cambió, canal quedó inconsistente o entrega no confirmada |
+| `PROTO-PULSO-003` | PULSO | manager o administración comercial | `NORMAL-25` — abrir control/configuración autorizados | `RECOVERY-25` — alcance, sede o configuración cambió antes de confirmar |
+| `PROTO-NUMERA-001` | NUMERA | operación financiera | `NORMAL-26` — continuar obligación, conciliación o cierre vigente | `RECOVERY-26` — periodo, entidad o conciliación quedó desactualizada |
+| `PROTO-NUMERA-002` | NUMERA | aprobación o tesorería | `NORMAL-27` — resolver aprobación/pago atribuible | `RECOVERY-27` — aprobación revocada, lote cambió o ejecución externa quedó incierta |
+| `PROTO-NUMERA-003` | NUMERA | análisis o auditoría | `NORMAL-28` — consultar excepción/análisis con fuentes identificables | `RECOVERY-28` — datos parciales, periodo no consolidado o evidencia indisponible |
+| `PROTO-PASS-001` | PASS | cliente | `NORMAL-29` — continuar compra, pedido, beneficio o caso propio | `RECOVERY-29` — pago/pedido pendiente, estado cambió o servicio no está disponible |
+
+Reglas de cardinalidad:
+
+- cada perfil tiene exactamente dos variantes;
+- la variante normal demuestra una composición coherente cuando el contexto es válido;
+- la variante de recuperación demuestra al menos un cambio, retiro, parcialidad, conflicto, denegación o fallo material;
+- una variante de recuperación no inventa autoridad alternativa para “desbloquear” el flujo;
+- el cambio de función o actor vuelve a resolver el conjunto desde cero.
+
+---
+
+#### 9. `APPLICATION-PROTOTYPE-NORMAL-RECOVERY-CATALOG-001`
+
+##### 9.1. Variante normal
+
+Toda variante normal debe usar únicamente opciones ya permitidas por los contratos consumidos y mostrar:
 
 ```text
-MENÚ DEL PROTOTIPO
-→
-PANTALLA DEL ROL O CONTEXTO
-→
-TAREA CORTA DEL MODERADOR
-→
-OBSERVACIÓN DE LA PRIMERA ACCIÓN
-→
-PREGUNTAS DE COMPRENSIÓN
-→
-REGISTRO EN CUESTIONARIO ÚNICO
-→
-CLASIFICACIÓN PRELIMINAR PARA AUTH-UI-059 SI HAY PROBLEMA
+CONTEXTO RESUELTO
++
+TRABAJO ELEGIBLE
++
+REDUCCION APLICADA
++
+UNA ACCION PRIMARIA COMO MAXIMO
++
+SIGUIENTE TAREA CUANDO EXISTA
++
+DESCUBRIMIENTO SECUNDARIO MINIMO
 ```
 
-La persona no debe recibir explicación previa sobre cuál botón es correcto. El
-moderador puede repetir la consigna, pero si explica la solución, la ejecución
-queda marcada como ayuda del moderador.
+No es obligatorio que exista acción primaria. Un estado normal puede representar vacío válido o solo descubrimiento secundario cuando esa sea la decisión autoritativa.
 
----
+##### 9.2. Variante de recuperación
 
-#### 9. `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001`
+Toda variante de recuperación debe representar al menos una de estas familias cerradas:
 
-El cuestionario único se usa para cualquier pantalla. No existen dieciséis
-formularios distintos.
+| Familia | Ejemplos admitidos | Regla visual |
+| --- | --- | --- |
+| `CONTEXTO_CAMBIADO` | actor, función, turno, sede, área, dispositivo o alcance cambió | retirar datos/opciones incompatibles y pedir nueva resolución |
+| `TRABAJO_CAMBIADO_O_RETIRADO` | tarea, asignación, custodia, pedido, lote, aprobación o caso cambió | no conservar control obsoleto; explicar cambio y recalcular |
+| `DATOS_PARCIALES_O_STALE` | fuente incompleta, periodo no consolidado, versión vencida | distinguir parcialidad de vacío; no completar con supuestos |
+| `DENEGACION_EXPLICITA` | deep link o acción ya no autorizados | mostrar denegación minimizada sin revelar opciones de otros actores |
+| `CONFLICTO_O_EVIDENCIA_INSUFICIENTE` | versión, aprobación, conciliación o prueba no permiten decidir | bloquear decisión insegura y conservar salida segura |
+| `FALLO_TECNICO` | indisponibilidad sin decisión estable | diferenciar fallo de vacío y ofrecer reintento seguro |
+| `RESULTADO_DESCONOCIDO` | pudo existir aceptación de una mutación previa | no repetir efecto; conciliar antes de volver a ejecutar |
+| `CAMBIO_DE_ACTOR_EN_DISPOSITIVO` | estación compartida cambia de persona | limpiar datos, recientes y contexto antes de la nueva proyección |
 
-| Campo                    | Tipo                                  | Uso durante la prueba                                                                                      |
-| ------------------------ | ------------------------------------- | ---------------------------------------------------------------------------------------------------------- |
-| `participant_code`       | código no sensible                    | identificar la sesión sin datos personales innecesarios                                                    |
-| `function_tested`        | selección                             | solicitante, bodega, conductor, receptor, supervisor, configuración, multifunción o dispositivo compartido |
-| `screen_id`              | selección                             | una de las dieciséis pantallas testeables                                                                  |
-| `device_mode`            | selección                             | móvil, tablet, escritorio o estación compartida simulada                                                   |
-| `task_prompt`            | texto controlado                      | instrucción leída al participante                                                                          |
-| `first_action_chosen`    | texto breve                           | primera opción tocada, señalada o verbalizada                                                              |
-| `found_correct_action`   | sí/no                                 | evidencia de localización de la acción esperada                                                            |
-| `time_to_action_seconds` | número                                | tiempo aproximado hasta identificar o iniciar la acción                                                    |
-| `wrong_openings`         | número                                | aperturas, tarjetas u opciones incorrectas antes del objetivo                                              |
-| `moderator_help`         | sí/no + motivo                        | si necesitó explicación para avanzar                                                                       |
-| `context_understanding`  | correcto/parcial/incorrecto           | si entiende actor, función, sede, área o dispositivo                                                       |
-| `effect_understanding`   | correcto/parcial/incorrecto           | si entiende qué ocurre al ejecutar la acción                                                               |
-| `recovery_behavior`      | correcto/parcial/incorrecto/no aplica | qué hace ante cambio, dato parcial, retiro o fallo                                                         |
-| `critical_error`         | sí/no + clase                         | mezcla de función, acción prohibida, dato ajeno, falso éxito, doble efecto o bloqueo de accesibilidad      |
-| `difficulty_1_to_7`      | escala                                | dificultad percibida, donde 1 es muy fácil y 7 muy difícil                                                 |
-| `participant_comment`    | texto libre                           | comentario del usuario sobre lo que confundió o faltó                                                      |
-| `observer_notes`         | texto libre                           | observaciones del evaluador                                                                                |
-| `proposed_issue_id`      | texto opcional                        | vínculo posterior con `AUTH-UI-059` si aparece problema                                                    |
-
-La unidad de registro será:
+##### 9.3. Equivalencias prohibidas
 
 ```text
-participant_code + screen_id + device_mode + task_prompt
+RECUPERACION != BYPASS
+RECUPERACION != PERMISO TEMPORAL
+FALLO != VACIO
+PARCIALIDAD != CERO
+DENEGACION != OPCION DESHABILITADA EN EL MENU
+ROL VISIBLE != AUTORIDAD
+PROTOTIPO != IMPLEMENTACION
 ```
 
-El formulario debe permitir filtrar luego por prototipo, rol, variante normal o
-recuperación, dispositivo, error crítico y dificultad.
+---
+
+#### 10. `APPLICATION-PROTOTYPE-COMPOSITION-RULES-001`
+
+La gramática visual común utiliza hasta nueve zonas conceptuales:
+
+| Orden | Zona | Regla |
+| ---: | --- | --- |
+| 1 | aplicación y contexto | actor/relación, función, territorio o alcance, dispositivo y frescura cuando sean materiales |
+| 2 | estado crítico | solo cuando exista cambio, parcialidad, bloqueo, denegación, conflicto o fallo |
+| 3 | acción primaria | máximo una; puede estar ausente |
+| 4 | siguiente tarea | máximo una; no duplica la acción primaria |
+| 5 | frecuentes | máximo cuatro y solo después de elegibilidad |
+| 6 | recientes | máximo tres instancias revalidadas |
+| 7 | familias secundarias | únicamente con opciones relevantes |
+| 8 | utilidades contextuales | solo dentro de la tarea que las necesita |
+| 9 | cambio de función o actor | únicamente cuando exista más de una función válida o dispositivo compartido |
+
+Plantilla de referencia:
+
+```text
+[ APLICACION / PROTOTIPO SIN EFECTOS REALES ]
+[ ACTOR / FUNCION / CONTEXTO / DISPOSITIVO ]
+
+[ ESTADO CRITICO SI APLICA ]
+
+[ ACCION PRIMARIA ]
+[ SIGUIENTE TAREA ]
+
+[ FRECUENTES <= 4 ]
+[ RECIENTES <= 3 ]
+
+[ FAMILIAS SECUNDARIAS RELEVANTES ]
+
+[ RECUPERACION / SALIDA SEGURA ]
+```
+
+La plantilla es una gramática, no un layout obligatorio. Móvil, tablet, estación compartida y escritorio pueden reorganizarla sin aumentar autoridad ni cardinalidad.
 
 ---
 
-#### 10. `NEXO-USABILITY-TASK-PROMPT-REGISTER-001`
+#### 11. `APPLICATION-PROTOTYPE-FIXTURE-CONTRACT-001`
 
-Cada pantalla tiene una consigna breve, leída de forma neutral. La consigna no
-incluye el nombre exacto del botón esperado si eso revela la solución.
+Los prototipos usan exclusivamente datos ficticios y minimizados.
 
-| Pantalla         | Consigna breve                                                                       |
-| ---------------- | ------------------------------------------------------------------------------------ |
-| `SCREEN-055-001` | Necesitas pedir abastecimiento. Muéstrame qué harías primero.                        |
-| `SCREEN-055-002` | Ibas a continuar una solicitud, pero algo cambió. Muéstrame qué harías.              |
-| `SCREEN-055-003` | Eres bodega al inicio de turno. Muéstrame qué trabajo atenderías.                    |
-| `SCREEN-055-004` | La tarea de bodega tiene datos incompletos o cambió. Muéstrame cómo reaccionas.      |
-| `SCREEN-055-005` | Tienes una carga asignada. Muéstrame cómo continúas.                                 |
-| `SCREEN-055-006` | La asignación o conexión cambió. Muéstrame qué harías antes de seguir.               |
-| `SCREEN-055-007` | Llegó una entrega a tu sede. Muéstrame cómo iniciarías la recepción.                 |
-| `SCREEN-055-008` | La entrega llegó parcial. Muéstrame cómo evitarías marcarla completa.                |
-| `SCREEN-055-009` | Eres supervisor y hay casos abiertos. Muéstrame cuál atenderías.                     |
-| `SCREEN-055-010` | Falta evidencia para decidir. Muéstrame qué harías.                                  |
-| `SCREEN-055-011` | Debes revisar una configuración autorizada. Muéstrame dónde entrarías.               |
-| `SCREEN-055-012` | Hay un cambio no confirmado. Muéstrame cómo salir sin afectar operación.             |
-| `SCREEN-055-013` | Tienes varias funciones. Muéstrame cuál está activa.                                 |
-| `SCREEN-055-014` | Necesitas cambiar de función. Muéstrame cómo lo harías sin mezclar datos.            |
-| `SCREEN-055-015` | Usas una estación compartida. Muéstrame quién está activo y qué trabajo puede hacer. |
-| `SCREEN-055-016` | Otra persona va a usar la estación. Muéstrame qué debe pasar antes del cambio.       |
+Reglas:
+
+1. no usar nombres, correos, teléfonos, documentos, direcciones o identificadores reales;
+2. no usar credenciales, secretos, tokens, claves, URLs privadas ni datos de producción;
+3. los nombres de sedes, productos, pedidos, lotes, proveedores o personas se sustituyen por fixtures claramente ficticios;
+4. los importes, conteos, fechas y estados se eligen únicamente para hacer observable la decisión visual;
+5. una variante de recuperación puede representar ausencia, conflicto o parcialidad sin simular que el backend ya resolvió el caso;
+6. los fixtures no se convierten en seeds, migraciones ni datos persistentes por efecto de esta tarea;
+7. el prototipo no necesita conexión de red para ser válido documentalmente.
 
 ---
 
-#### 11. `NEXO-USABILITY-EVIDENCE-MINIMUM-001`
+#### 12. `NEXO-TESTABLE-PROTOTYPE-PROFILE-001`
 
-La evidencia mínima de una sesión es:
+La evidencia histórica NEXO se preserva como especialización íntegra del catálogo global:
 
-- participante codificado;
-- función evaluada;
-- pantalla evaluada;
-- dispositivo o modalidad;
-- primera acción elegida;
-- tiempo aproximado hasta la primera acción;
-- ayuda del moderador;
-- comprensión de contexto;
-- comprensión del efecto;
-- recuperación cuando aplique;
-- errores críticos;
-- dificultad percibida;
-- observaciones del participante y evaluador.
+| Perfil global NEXO | Vista histórica normal | Vista histórica recuperación | Contexto preservado |
+| --- | --- | --- | --- |
+| `PROTO-NEXO-001` | `SCREEN-055-001` | `SCREEN-055-002` | solicitante autorizado |
+| `PROTO-NEXO-002` | `SCREEN-055-003` | `SCREEN-055-004` | bodega o preparación |
+| `PROTO-NEXO-003` | `SCREEN-055-005` | `SCREEN-055-006` | conductor o custodio |
+| `PROTO-NEXO-004` | `SCREEN-055-007` | `SCREEN-055-008` | receptor autorizado |
+| `PROTO-NEXO-005` | `SCREEN-055-009` | `SCREEN-055-010` | supervisor territorial |
+| `PROTO-NEXO-006` | `SCREEN-055-011` | `SCREEN-055-012` | configurador autorizado |
+| `PROTO-NEXO-007` | `SCREEN-055-013` | `SCREEN-055-014` | persona multifunción |
+| `PROTO-NEXO-008` | `SCREEN-055-015` | `SCREEN-055-016` | dispositivo compartido |
 
-No se exige grabación. Si se graba, debe existir autorización externa al plan y
-no se guardarán secretos, credenciales, datos reales innecesarios ni información
-personal sensible.
+Reconciliación:
 
----
+```text
+NEXO_CONTEXTS_EXPECTED = 8
+NEXO_CONTEXTS_MATERIALIZED = 8
+NEXO_HISTORICAL_VIEWS_EXPECTED = 16
+NEXO_HISTORICAL_VIEWS_PRESERVED = 16
+MISSING = 0
+DUPLICATES = 0
+```
 
-#### 12. Requisitos de prueba derivados
+El artefacto histórico `NEXO_PROTOTIPO_TEST_USUARIOS_AUTH_UI_055_057.pptx` y el instrumento `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001` permanecen como evidencia parcial del carril NEXO. No se promueven por sí solos a contrato global ni prueban cobertura de otras aplicaciones.
 
-**Resultado:** NO GENERA REQUISITOS DE PRUEBA
-
-**Justificación:** esta corrección no introduce una regla nueva de negocio,
-autorización, cálculo, integración, seguridad o navegación. Convierte el
-prototipo documental ya aprobado en un material visual testeable y unifica el
-instrumento de recolección para poder ejecutar los criterios existentes en la
-siguiente prueba. No modifica, difiere, descarta ni declara obsoleto ningún
-requisito histórico; el Registro Canónico de Requisitos de Prueba no cambia.
+La definición global de criterios y medición continúa reservada a `AUTH-UI-057`; las sesiones reales continúan reservadas a `AUTH-UI-058`.
 
 ---
 
-#### 13. Criterios de aceptación
+#### 13. Flujo de prototipo y navegación simulada
 
-La tarea se considera completa cuando se confirme que:
+El flujo común de revisión o prueba guiada es:
 
-- existen dieciséis pantallas testeables;
-- cada uno de los ocho contextos tiene una variante normal y una variante de recuperación;
-- cada pantalla tiene una consigna asociada;
-- existe un único cuestionario aplicable a todas las pantallas;
-- el cuestionario registra observación y preguntas de comprensión;
-- el prototipo no requiere conexión productiva ni datos reales;
-- las pantallas no ejecutan mutaciones;
-- no se declaran resultados con usuarios;
-- no se crean rutas, roles, permisos, funciones, procesos, migraciones ni datos;
-- los problemas observados quedan destinados a `AUTH-UI-059`;
-- la aprobación final permanece destinada a `AUTH-UI-060`;
-- `AUTH-UI-056` permanece únicamente reservada.
+```text
+SELECCIONAR SUITE Y PERFIL
+→
+MOSTRAR VARIANTE NORMAL O RECUPERACION
+→
+PRESENTAR CONTEXTO Y TRABAJO SIN EXPLICAR LA RESPUESTA
+→
+PERMITIR IDENTIFICAR ACCION / SIGUIENTE TAREA / SALIDA
+→
+NAVEGAR SOLO ENTRE ESTADOS FICTICIOS DEL PROTOTIPO
+→
+RETORNAR AL PERFIL SIN EFECTO EMPRESARIAL
+```
 
----
+Las transiciones son conceptuales. No deben:
 
-#### 14. `NEXO-PROTOTYPE-PACKAGE-HANDOFF-001`
-
-| Destino       | Handoff aprobado                                                                                                 |
-| ------------- | ---------------------------------------------------------------------------------------------------------------- |
-| `AUTH-UI-056` | validar internamente que las dieciséis pantallas y el cuestionario son coherentes, completos y aptos para prueba |
-| `AUTH-UI-057` | ajustar criterios y umbrales para que se midan con el cuestionario único y no con formularios dispersos          |
-| `AUTH-UI-058` | ejecutar la prueba real con usuarios usando el prototipo visual y el cuestionario único                          |
-| `AUTH-UI-059` | registrar problemas detectados por pantalla, criterio, severidad, evidencia y propietario                        |
-| `AUTH-UI-060` | aprobar o bloquear pantallas únicamente con evidencia válida y problemas críticos cerrados                       |
-
-Ningún destino anterior se inicia mediante esta tarea.
+- llamar una API productiva;
+- guardar cambios;
+- producir eventos empresariales;
+- cambiar permisos;
+- actualizar estado real;
+- persistir telemetría de usuario;
+- afirmar éxito de una operación.
 
 ---
 
-#### 15. Traza histórica del carril NEXO
+#### 14. Responsive, accesibilidad y dispositivo
 
-> Esta fotografía dejó de ser continuidad vigente. Se conserva únicamente como evidencia de la ejecución parcial que originó los artefactos NEXO.
+##### 14.1. Móvil
+
+- contexto y acción principal preceden a listas secundarias;
+- no se depende de hover;
+- frecuentes y recientes no exceden sus máximos;
+- recuperación permanece visible sin forzar scroll horizontal;
+- acciones táctiles se distinguen de texto informativo.
+
+##### 14.2. Tablet y estación compartida
+
+- actor humano activo y dispositivo quedan inequívocos;
+- el cambio de actor elimina visualmente los datos de la persona anterior antes de mostrar la nueva proyección;
+- periféricos se representan solo cuando la tarea los requiere;
+- ninguna capacidad administrativa aparece por disponibilidad técnica del dispositivo.
+
+##### 14.3. Escritorio
+
+- el espacio adicional mejora lectura, no aumenta opciones de primer nivel;
+- paneles secundarios no compiten con trabajo prioritario;
+- filtros administrativos no se presentan como contexto operativo.
+
+##### 14.4. Accesibilidad
+
+- orden de lectura y foco siguen la precedencia contractual;
+- acciones tienen nombre y propósito textual;
+- estado crítico no depende solo de color;
+- vacío, parcialidad, denegación, revocación y fallo son distinguibles;
+- cambios dinámicos de contexto, actor o función deben poder anunciarse;
+- el prototipo conserva tamaño y separación suficientes para revisar objetivos táctiles cuando corresponda.
+
+---
+
+#### 15. Seguridad, privacidad y minimización
+
+1. El prototipo muestra solo el universo necesario para el perfil seleccionado.
+2. No incluye opciones de otras funciones para luego deshabilitarlas.
+3. No expone reason codes internos, nombres de tablas, reglas RLS, permisos técnicos ni estructuras de backend.
+4. Deep links representados siguen sometidos a revalidación conceptual.
+5. Un cambio de actor o función retira datos, recientes y opciones de la proyección anterior.
+6. Datos sensibles se sustituyen por fixtures.
+7. No se modela ranking de productividad individual.
+8. Un bloqueo de seguridad no se convierte en un botón alternativo que permita continuar.
+9. Un resultado desconocido no se representa como éxito.
+10. La variante visual nunca sustituye los controles de servidor de una implementación futura.
+
+---
+
+#### 16. Estado técnico, brechas y `APPLICATION-PROTOTYPE-HANDOFF-001`
+
+| Elemento | Estado documental | Condición de salida |
+| --- | --- | --- |
+| diez decisiones de rectificación | `ESPECIFICADO` | validación interna global en `AUTH-UI-056` |
+| 177 vínculos de superficie a suite | `ESPECIFICADO` | comprobar integridad y aptitud de prueba en `AUTH-UI-056` |
+| 29 perfiles | `ESPECIFICADO` | validación interna sin omisiones ni solapamientos |
+| 58 variantes normal/recuperación | `ESPECIFICADO` | validación de coherencia, accesibilidad y testabilidad |
+| NEXO 8 contextos / 16 vistas históricas | `PRESERVADO` | validar como subconjunto del paquete global |
+| implementación física | `NO_IMPLEMENTADO` | paquetes físicos autorizados posteriores |
+| validación interna | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-056` |
+| criterios medibles por superficie | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-057` |
+| sesiones con usuarios reales | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058` |
+| problemas observados | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-059` |
+| aprobación final | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-060` |
+
+`AUTH-UI-056` recibe exactamente:
+
+```text
+10 DECISIONES DE RECTIFICACION
++
+177 VINCULOS VSCREEN -> SUITE
++
+9 SUITES
++
+29 PERFILES
++
+29 VARIANTES NORMALES
++
+29 VARIANTES DE RECUPERACION
++
+GRAMATICA VISUAL
++
+FIXTURES FICTICIOS
++
+PERFIL NEXO 8 CONTEXTOS / 16 VISTAS
+```
+
+`AUTH-UI-056` podrá declarar conformidad o hallazgos internos del paquete. No podrá sustituir las sesiones reales de `AUTH-UI-058`.
+
+---
+
+#### 17. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación: esta tarea convierte decisiones documentales ya aprobadas de entrada, navegación, reducción, estados, contexto y seguridad en representaciones ficticias destinadas a validación posterior. No crea comportamiento ejecutable, ruta, permiso, proceso, dato, integración, transición, mutación, pantalla canónica ni efecto empresarial; tampoco modifica, difiere, descarta ni declara obsoleto ningún requisito histórico. El registro canónico de requisitos de prueba no cambia.
+
+---
+
+#### 18. Cobertura de prueba vigente reutilizada
+
+La validación posterior reutiliza la cobertura existente de autorización por vista y acción, contexto activo, actor/función/territorio, navegación, dispositivo compartido, sensibilidad, masking, accesibilidad, estados de carga/vacío/error, continuidad, reducción segura de opciones y contratos específicos de cada aplicación.
+
+Esta sección es trazabilidad heredada y no modifica el registro 04A.
+
+---
+
+#### 19. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout del usuario después del cierre de `AUTH-UI-054`, apertura de 055 y sustitución de este artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, BLOQUE I, topología y batería global quedan para el checkout local. |
+| REMOTA | PASS | Se verificaron el `main` vigente posterior a `AUTH-UI-053`, la continuidad 054→055→056, la rectificación `AUTH-UI-052..060`, el propietario, topología `DEFINE_ONCE`, `NO_PHYSICAL_INSTANCE`, scripts de validación y condición mínima de cierre global de 055. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones, telemetría, observación humana ni pruebas de usabilidad; esas evidencias pertenecen a tareas posteriores. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea instancia física propia ni modifica código, datos, Supabase, componentes o despliegues. |
+
+---
+
+#### 20. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se confirma que:
+
+- [ ] existen exactamente diez decisiones de aplicación de la rectificación;
+- [ ] ocho permanecen `APLICA` y TALENTO/VITAL conservan `NO_APLICA`;
+- [ ] TALENTO no recibe `app_code` ni prototipo Vento OS inventado;
+- [ ] VITAL permanece fuera de Vento OS;
+- [ ] AURA conserva cero superficies y no recibe prototipo inventado;
+- [ ] las siete superficies SHELL permanecen cubiertas como soporte transversal sin alterar la matriz de rectificación;
+- [ ] las 177 superficies quedan vinculadas a exactamente una de nueve suites mediante su `app_code` heredado;
+- [ ] ninguna superficie se renombra, reasigna o duplica;
+- [ ] existen exactamente 29 perfiles de actor, función o contexto;
+- [ ] cada perfil tiene exactamente una variante normal y una de recuperación;
+- [ ] existen 29 variantes normales, 29 de recuperación y 58 variantes totales;
+- [ ] cada variante normal usa únicamente opciones ya elegibles;
+- [ ] cada variante de recuperación representa una salida segura sin bypass de autoridad;
+- [ ] la gramática visual conserva máximo una acción primaria, una siguiente tarea, cuatro frecuentes y tres recientes;
+- [ ] familias vacías y opciones incompatibles no se fabrican;
+- [ ] contexto, actor, función y dispositivo permanecen distinguibles;
+- [ ] datos del prototipo son ficticios y minimizados;
+- [ ] los ocho contextos y dieciséis vistas NEXO históricas se preservan sin convertirse en prueba global;
+- [ ] no se declaran resultados de usuarios ni criterios finales de usabilidad;
+- [ ] no se crean rutas, pantallas canónicas, roles, funciones, permisos, procesos, datos ni requisitos de prueba;
+- [ ] no se ejecuta código, Supabase ni despliegue;
+- [ ] `AUTH-UI-056` permanece únicamente reservada.
+
+---
+
+#### 21. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
-
 `AUTH-UI-054 — Reducir opciones irrelevantes`
 
 **TAREA ACTUAL APROBADA**
-
 `AUTH-UI-055 — Crear prototipo por rol`
 
 **SIGUIENTE TAREA RESERVADA**
-
 `AUTH-UI-056 — Validar prototipo antes de implementar`
 
 ### [ ] AUTH-UI-056 — Validar prototipo antes de implementar
