@@ -5029,7 +5029,701 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-009 — Proteger inicio de producción`
 
-### [ ] FOGO-AUTH-009 — Proteger inicio de producción
+### ✅ FOGO-AUTH-009 — Proteger inicio de producción
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-008 — Definir permisos de supervisor
+**Tarea siguiente:** FOGO-AUTH-010 — Proteger producción parcial
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — protección server-side del inicio productivo de `VPROC-0034`, creación o apertura del lote ejecutable y transición autorizada hacia `IN_PRODUCTION`, con permiso exacto, contexto efectivo, orden, receta/version, materiales preparados, idempotencia y auditoría
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `FOGO-AUTH-009::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la frontera de autorización del **inicio de producción** en FOGO de forma que una pantalla visible, una receta consultable, una orden visible, una firma de dispositivo o una llamada técnica no puedan iniciar por sí solas una ejecución productiva.
+
+La regla raíz queda:
+
+```text
+ORDEN PRODUCTIVA AUTORIZADA
++
+RECETA / VERSION PUBLICADA Y APLICABLE
++
+ACTOR Y CONTEXTO OPERATIVO VALIDOS
++
+SEDE Y AREA EXACTAS
++
+PERMISO fogo.production.batches.create
++
+MATERIALES Y RECURSOS PREPARADOS CUANDO CORRESPONDA
++
+ESTADO DE ORIGEN VALIDO
++
+IDENTIDAD IDEMPOTENTE DE LA ACCION
+=
+INICIO PRODUCTIVO AUTORIZABLE
+```
+
+Ningún elemento aislado sustituye el conjunto completo.
+
+---
+
+#### 2. Handoff recibido de FOGO-AUTH-001..008
+
+Esta tarea consume sin reinterpretación las fronteras ya aprobadas:
+
+1. `FOGO-AUTH-001` inventarió `VSCREEN-0057 — Preparación e inicio de lote`, `VPROC-0034::STEP-PREPARE_AND_START_BATCH` y la acción AS-IS `FOGO-ACTION-ASIS-003 / createBatch`;
+2. `FOGO-AUTH-002` asignó `fogo.production.batches.create` únicamente al carril operativo de `produccion_cocina`, `produccion_panaderia` y `produccion_reposteria`, cada uno en su territorio exacto;
+3. `FOGO-AUTH-003` estableció que visibilidad en la cola no equivale a autoridad de mutación;
+4. `FOGO-AUTH-004`, `FOGO-AUTH-005` y `FOGO-AUTH-006` aislaron Panadería, Repostería y Cocina Caliente y prohibieron iniciar trabajo cruzando áreas;
+5. `FOGO-AUTH-007` separó reserva, disponibilidad y consumo de insumos de la autoridad de iniciar producción;
+6. `FOGO-AUTH-008` estableció que `supervisor` y `gerencia_operativa` no reciben `fogo.production.batches.create` por supervisión y que leer lotes u órdenes no habilita producción.
+
+Por tanto, `FOGO-AUTH-009` no crea roles, áreas, permisos ni autoridad de supervisión. Protege la mutación de inicio y su transición empresarial.
+
+---
+
+#### 3. Identidad canónica de la superficie protegida
+
+| Dimensión | Identidad canónica |
+| --- | --- |
+| Aplicación | `fogo` |
+| Pantalla | `VSCREEN-0057 — Preparación e inicio de lote` |
+| Acción primaria | `VSCREEN-0057::PRIMARY` |
+| Proceso | `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada` |
+| Paso | `VPROC-0034::STEP-PREPARE_AND_START_BATCH — Preparar e iniciar lote` |
+| Permiso de mutación | `fogo.production.batches.create` |
+| Recurso | `PRODUCTION_BATCH` |
+| Territorio de recurso | `SITE_AREA_DRAFT` |
+| Modalidad | `OPERATIONAL_ONLY` |
+| Alcance de escritura | `SITE-WRITE` |
+| Prerrequisito operativo | `T+C` |
+
+`VSCREEN-0057` es una superficie de ejecución. Su existencia no crea autoridad y sus parámetros no son fuente de verdad del permiso, territorio, orden, receta, versión ni estado.
+
+---
+
+#### 4. Actores ordinarios autorizables
+
+La capacidad ordinaria `fogo.production.batches.create` permanece asignada únicamente a los tres perfiles productivos definidos en `FOGO-AUTH-002`:
+
+| Rol operativo efectivo | Sede | Área productiva exacta | Resultado para inicio |
+| --- | --- | --- | --- |
+| `produccion_cocina` | Centro de Producción | Cocina Caliente | autorizable solo dentro de este territorio |
+| `produccion_panaderia` | Centro de Producción | Galletería y Panadería | autorizable solo dentro de este territorio |
+| `produccion_reposteria` | Centro de Producción | Repostería | autorizable solo dentro de este territorio |
+
+No son fuentes de autoridad para esta mutación:
+
+- el rol base `supervisor`;
+- el rol operativo `gerencia_operativa`;
+- `bodeguero` por custodiar insumos;
+- una plantilla de dispositivo;
+- una selección de sede o área en interfaz;
+- el creador previo de una receta, orden o lote;
+- la mera visibilidad de `VSCREEN-0057`.
+
+Una ampliación futura de actores requiere contrato canónico propio; esta tarea no la infiere.
+
+---
+
+#### 5. Significado exacto de “inicio”
+
+`VPROC-0034` distingue preparación de ejecución real.
+
+La progresión relevante es:
+
+```text
+VPROC-0034.PRODUCTION_ORDER_READY
+        ↓
+VPROC-0034.MATERIALS_RESERVING
+        ↓
+VPROC-0034.MATERIALS_READY
+        ↓
+VPROC-0034.IN_PRODUCTION
+```
+
+Interpretación obligatoria:
+
+| Estado | Verdad mínima | No significa |
+| --- | --- | --- |
+| `PRODUCTION_ORDER_READY` | existe una orden autorizada con producto, cantidad, receta o versión, sede, área y fecha requerida | que la preparación o producción hayan comenzado |
+| `MATERIALS_RESERVING` | FOGO inició verificación y obtención de materiales | que exista reserva completa o que pueda producirse |
+| `MATERIALS_READY` | materiales y demás recursos requeridos están preparados y validados | que la producción ya haya comenzado |
+| `IN_PRODUCTION` | comienza la ejecución de pasos y pueden capturarse consumos, tiempos y desviaciones | que exista producción parcial registrada, salida reportada, cierre o liberación de calidad |
+
+Por tanto:
+
+```text
+MATERIALS_RESERVING != INICIO DE PRODUCCION
+MATERIALS_READY != INICIO DE PRODUCCION
+MATERIALS_READY -> IN_PRODUCTION = TRANSICION DE INICIO PRODUCTIVO
+```
+
+La preparación y creación de una identidad de lote ejecutable pueden ocurrir antes del inicio real, pero no autorizan saltar los estados ni anticipar efectos posteriores.
+
+---
+
+#### 6. Condiciones mínimas antes de preparar o abrir el lote
+
+Antes de crear o abrir la identidad ejecutable asociada con `VSCREEN-0057`, el servidor deberá poder resolver y validar de forma determinista:
+
+1. principal autenticado;
+2. actor efectivo;
+3. turno publicado y vigente;
+4. check-in activo cuando corresponda al permiso y superficie;
+5. rol operativo efectivo compatible;
+6. sede activa autorizada;
+7. área productiva exacta autorizada;
+8. permiso exacto `fogo.production.batches.create`;
+9. orden productiva estable y versión vigente;
+10. producto y cantidad autorizados por la orden;
+11. versión exacta de receta publicada y aplicable;
+12. territorio del borrador o lote compatible con la sede y área efectivas;
+13. fecha, estado y restricciones empresariales compatibles;
+14. identidad de correlación e idempotencia suficiente para impedir creación duplicada;
+15. ausencia de una denegación prevalente o contradicción estructural.
+
+La ausencia, ambigüedad o incompatibilidad de un dato requerido produce denegación cerrada.
+
+---
+
+#### 7. Condiciones adicionales para `MATERIALS_READY -> IN_PRODUCTION`
+
+La transición que representa el inicio real exige revalidación completa inmediatamente antes del efecto.
+
+Además de las condiciones anteriores, debe demostrarse:
+
+1. la instancia correcta de `VPROC-0034` existe y sigue en `MATERIALS_READY`;
+2. la orden y su versión continúan vigentes y autorizadas;
+3. la receta/version continúa siendo la que gobierna esa ejecución;
+4. los materiales requeridos y demás recursos aplicables están preparados y validados;
+5. las reservas o excepciones de material necesarias son las vigentes y pertenecen a la ejecución correcta;
+6. actor, turno, check-in, rol, sede y área no cambiaron desde la preparación;
+7. el permiso exacto continúa permitido;
+8. el recurso no fue iniciado, cancelado, sustituido o avanzado por otro actor de forma concurrente;
+9. la identidad idempotente no corresponde a un payload incompatible;
+10. el dispositivo, cuando aplique, continúa permitiendo la acción y el actor fue identificado de forma válida.
+
+Una autorización obtenida al cargar la página no se reutiliza como autorización final de inicio.
+
+---
+
+#### 8. Regla server-side y punto de efecto
+
+La autoridad debe comprobarse en el punto en que el sistema puede crear el lote ejecutable o cambiar el estado productivo.
+
+No basta con:
+
+```text
+CHECK EN UI
+CHECK AL ABRIR LA PAGINA
+CHECK DE LECTURA DEL RECETARIO
+CHECK DE FIRMA DE DISPOSITIVO
+=
+AUTORIZACION DE MUTACION
+```
+
+La Server Action, Route Handler, RPC, función SQL, RLS y cualquier otra frontera capaz de producir el efecto deben impedir que una llamada directa o manipulada salte:
+
+- permiso exacto;
+- actor efectivo;
+- contexto operativo;
+- sede y área;
+- orden y versión;
+- receta y versión;
+- estado de origen;
+- restricciones de recurso;
+- controles de concurrencia e idempotencia.
+
+Si una capa inferior puede ejecutarse directamente, esa capa debe validar el contrato aplicable o permanecer inaccesible a consumidores que no hayan sido autorizados por una frontera equivalente.
+
+---
+
+#### 9. Parámetros de cliente y datos no confiables
+
+Los parámetros enviados por navegador o formulario son localizadores o propuestas de captura; no son autoridad.
+
+En particular, no pueden autorizar por sí solos:
+
+- `recipe_id`;
+- cantidad solicitada o producida;
+- `destination_location_id`;
+- ingredientes;
+- cantidades reales;
+- paquetes;
+- salidas o coproductos;
+- notas;
+- PIN del actor;
+- sede;
+- área;
+- estado;
+- ruta productiva;
+- identificadores ocultos en inputs o query params.
+
+El servidor resuelve nuevamente el recurso canónico y compara cada dato relevante con orden, receta/version, contexto y políticas vigentes antes del efecto.
+
+---
+
+#### 10. Orden productiva obligatoria
+
+El proceso canónico `VPROC-0034` nace desde una orden autorizada.
+
+Por tanto, iniciar producción exige una referencia empresarial verificable a:
+
+```text
+ORDEN PRODUCTIVA
++
+VERSION VIGENTE DE LA ORDEN
++
+PRODUCTO / CANTIDAD
++
+RECETA O VERSION
++
+SEDE / AREA
++
+FECHA REQUERIDA
+```
+
+Una receta publicada por sí sola no crea una orden ni autoriza producción espontánea.
+
+Una señal de demanda, pedido, mínimo, recomendación, remisión o prioridad tampoco crea por sí sola una ejecución aprobada.
+
+Si la implementación transitoria aún permite crear lotes sin una orden canónica, esa capacidad se clasifica como adopción pendiente y no redefine el contrato objetivo.
+
+---
+
+#### 11. Receta y versión
+
+La acción de inicio utiliza una publicación vigente y aplicable, pero no adquiere autoridad administrativa sobre definiciones maestras.
+
+Reglas:
+
+1. la receta debe estar publicada;
+2. la versión utilizada debe quedar identificable de forma estable;
+3. una versión retirada o incompatible no origina un nuevo inicio;
+4. producto, sede, área y aplicabilidad deben corresponder con la orden y el contexto;
+5. una lectura previa del recetario no garantiza que la publicación siga vigente al iniciar;
+6. `fogo.production.recipe_book.view` no sustituye `fogo.production.batches.create`;
+7. `fogo.production.recipes.view` no forma parte de esta mutación.
+
+El inicio revalida la publicación aplicable inmediatamente antes de producir el efecto.
+
+---
+
+#### 12. Materiales y separación FOGO / NEXO
+
+El inicio productivo conserva la frontera aprobada entre producción e inventario.
+
+```text
+FOGO
+orden + receta/version + lote + ejecucion
+
+NEXO
+stock + reserva + retiro/consumo + movimiento + conciliacion
+```
+
+Reglas obligatorias:
+
+1. `MATERIALS_RESERVING` no demuestra reserva física completa;
+2. `MATERIALS_READY` requiere la evidencia productiva de que materiales y recursos aplicables están preparados y validados;
+3. una reserva NEXO no inicia producción por sí sola;
+4. el inicio FOGO no fabrica reserva ni disponibilidad inexistentes;
+5. avanzar a `IN_PRODUCTION` habilita capturas posteriores, pero no equivale por sí mismo a un consumo NEXO ya conciliado;
+6. esta tarea no redefine el ledger, retiro o consumo físico de NEXO;
+7. `FOGO-AUTH-010` conserva la producción parcial y las capturas posteriores.
+
+---
+
+#### 13. Idempotencia y concurrencia
+
+La creación o inicio debe soportar reintentos sin duplicar la ejecución empresarial.
+
+Contrato mínimo:
+
+```text
+MISMA IDENTIDAD IDEMPOTENTE
++
+MISMA OPERACION LOGICA
++
+MISMO CONTENIDO RELEVANTE
+=
+MISMO RESULTADO EMPRESARIAL
+```
+
+Y:
+
+```text
+MISMA IDENTIDAD IDEMPOTENTE
++
+CONTENIDO INCOMPATIBLE
+=
+CONFLICTO
+```
+
+Reglas:
+
+1. un doble clic no crea dos lotes;
+2. un retry por timeout o respuesta perdida no duplica inicio ni efectos correlacionados;
+3. dos actores no pueden iniciar concurrentemente la misma ejecución desde el mismo estado de origen;
+4. una transición basada en versión stale debe revalidarse;
+5. si otro actor ya llevó el recurso a un estado incompatible, el intento posterior no retrocede ni reinicia silenciosamente;
+6. el mecanismo concreto de lock, versión o compare-and-set pertenece a la materialización, pero el resultado observable debe satisfacer estas invariantes.
+
+---
+
+#### 14. Estado de origen y transiciones permitidas
+
+Esta tarea protege únicamente la preparación e inicio.
+
+Transiciones de interés:
+
+```text
+PRODUCTION_ORDER_READY -> MATERIALS_RESERVING
+MATERIALS_RESERVING -> MATERIALS_READY
+MATERIALS_READY -> IN_PRODUCTION
+```
+
+La autoridad para una transición no se hereda a las siguientes.
+
+En particular:
+
+- poder entrar en `MATERIALS_RESERVING` no autoriza `IN_PRODUCTION`;
+- poder iniciar no autoriza registrar producción parcial;
+- poder iniciar no autoriza finalizar;
+- poder iniciar no autoriza corregir o anular;
+- poder iniciar no autoriza editar recetas;
+- poder iniciar no autoriza ajustar inventario general.
+
+Los contratos posteriores permanecen propietarios de esas acciones.
+
+---
+
+#### 15. Dispositivo compartido
+
+Cuando el inicio se ejecuta desde una estación compartida, la autoridad efectiva sigue siendo la intersección entre el actor real y el límite del dispositivo.
+
+La firma de actor:
+
+- identifica y atribuye al humano cuando el dispositivo la exige;
+- usa la acción exacta `production.batches.create` en el runtime observado;
+- no concede el permiso;
+- no sustituye turno, check-in, sede, área, orden, receta/version o estado;
+- no amplía el territorio permitido por el actor;
+- debe quedar correlacionable con el recurso finalmente afectado.
+
+Un dispositivo `production_kitchen`, `production_bakery` o `production_pastry` solo restringe; nunca autoriza por sí mismo.
+
+---
+
+#### 16. Auditoría mínima del inicio
+
+El hecho de inicio debe poder reconstruirse sin depender de logs de interfaz.
+
+La evidencia correlacionable incluye, según aplique:
+
+- principal técnico;
+- actor efectivo;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- permiso evaluado;
+- orden y versión;
+- receta y versión;
+- lote o identidad de ejecución;
+- estado anterior;
+- estado posterior;
+- decisión y razones;
+- identidad de correlación e idempotencia;
+- timestamp;
+- resultado o error;
+- indicador de si existieron efectos persistidos.
+
+`FOGO-AUTH-014` permanece responsable de consolidar actor y turno como evidencia canónica transversal de las acciones productivas; esta tarea define qué debe conservar el inicio para poder cumplir ese handoff.
+
+---
+
+#### 17. Denegación, error y recuperación
+
+Ante una denegación de autorización:
+
+```text
+EFECTOS PRODUCTIVOS = 0
+```
+
+No se crea un lote alternativo, no se avanza estado, no se consume inventario, no se publica salida y no se reintenta automáticamente la mutación con un permiso distinto.
+
+Ante fallo técnico:
+
+1. no se convierte el fallo en `ALLOW`;
+2. el cliente no decide si el efecto ocurrió;
+3. antes de repetir se recupera el resultado durable mediante la identidad de correlación/idempotencia;
+4. un resultado desconocido no habilita crear una segunda ejecución para “asegurar” éxito;
+5. el mensaje al usuario no revela datos protegidos de otra sede, área, orden o receta.
+
+---
+
+#### 18. Estado AS-IS observado en vento-fogo
+
+La implementación vigente contiene controles parciales útiles, pero no demuestra todavía el contrato completo.
+
+En `src/app/production-batches/new/page.tsx` se observa:
+
+1. la página exige acceso a FOGO y usa `production.recipe_book.view` como permiso de entrada;
+2. la receta seleccionada debe existir, estar `published` y tener `site_id` y `area_id`;
+3. antes de renderizar la operación se evalúa `production.batches.create` con la sede y área de la receta;
+4. la Server Action `createBatch` vuelve a entrar mediante `requireAppAccess` usando `production.recipe_book.view`;
+5. la acción valida cantidades y, cuando aplica, destino, ingredientes, empaques y salidas;
+6. en dispositivo compartido solicita firma con `actionCode = production.batches.create`;
+7. la acción invoca `fogo_create_real_production_batch`;
+8. la llamada observada no transporta una referencia canónica de orden productiva ni una identidad explícita de idempotencia;
+9. el permiso exacto de creación sí aparece en la página, pero por esta fuente aislada no queda demostrado que la misma autorización exacta se revalide en el punto final de mutación;
+10. la firma puede asociarse posteriormente con el `batchId` creado.
+
+Estas piezas no se descartan; se clasifican como adopción parcial del contrato objetivo.
+
+---
+
+#### 19. Brecha de acoplamiento del RPC vigente
+
+La evidencia canónica vigente sobre `fogo_create_real_production_batch` indica que la implementación transitoria puede, dentro de una misma operación de producción:
+
+- crear el lote;
+- seleccionar existencias;
+- registrar consumos;
+- modificar proyecciones de inventario;
+- insertar movimientos `production_consume`;
+- registrar salida productiva y, según el modo, afectar inventario de terminado.
+
+Eso excede la semántica aislada de **inicio**.
+
+La regla objetivo queda:
+
+```text
+INICIAR PRODUCCION
+!=
+REGISTRAR TODO EL PARCIAL
+!=
+CONCILIAR TODO EL CONSUMO
+!=
+REPORTAR TODA LA SALIDA
+!=
+FINALIZAR
+!=
+LIBERAR INVENTARIO
+```
+
+`FOGO-AUTH-009` protege la creación/apertura y la transición de inicio; no absorbe la producción parcial de `FOGO-AUTH-010`, la finalización de `FOGO-AUTH-011`, las correcciones/anulaciones de `FOGO-AUTH-012`, la normalización de lotes/recetas de `FOGO-AUTH-013` ni los contratos de integración FOGO/NEXO.
+
+---
+
+#### 20. Invariantes de autorización del inicio
+
+| Invariante | Resultado obligatorio |
+| --- | --- |
+| permiso de lectura sin permiso de creación | `DENY` |
+| actor sin turno vigente | `DENY` |
+| actor sin check-in cuando aplica | `DENY` |
+| rol productivo de otra área | `DENY` |
+| orden de otra sede o área | `DENY` |
+| receta publicada pero no aplicable | `DENY` |
+| receta retirada o versión incompatible | `DENY` |
+| `MATERIALS_RESERVING` sin readiness | no puede pasar a `IN_PRODUCTION` |
+| firma de dispositivo sin permiso humano | `DENY` |
+| supervisor o gerencia operativa sin capacidad productiva exacta | `DENY` |
+| request cliente con `area_id` ampliatorio | `DENY` |
+| estado de origen stale o incompatible | `DENY` o conflicto recuperable, nunca reinicio silencioso |
+| retry equivalente de una operación ya confirmada | mismo resultado empresarial, sin duplicado |
+| retry con payload incompatible | conflicto |
+
+---
+
+#### 21. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `createBatch` entra a la Server Action con `production.recipe_book.view`, aunque la mutación empresarial exige creación de lote. | Bloquea demostrar autorización exacta en el punto de efecto. | `FOGO-AUTH-009::<implementation_unit_id>` | La unidad revalida `fogo.production.batches.create` o su contrato canónico materializado inmediatamente antes del efecto y una llamada directa no puede saltar esa decisión. |
+| La página evalúa `production.batches.create` con sede/área de la receta, pero ese check previo puede quedar stale. | No basta para proteger la mutación. | `FOGO-AUTH-009::<implementation_unit_id>` | Actor, contexto, recurso, estado y permiso se recalculan en la mutación autoritativa. |
+| La llamada observada a `fogo_create_real_production_batch` no incluye una referencia canónica de orden productiva. | Impide demostrar que todo inicio nace de una orden/version autorizada. | `FOGO-AUTH-009::<implementation_unit_id>` | La unidad materializada correlaciona el inicio con orden/version canónicas o demuestra una adaptación equivalente aprobada. |
+| La llamada observada no expone una identidad explícita de idempotencia empresarial. | Existe riesgo de lote o inicio duplicado ante retry o respuesta perdida si capas inferiores no lo resuelven. | `FOGO-AUTH-009::<implementation_unit_id>` | La unidad demuestra replay seguro, conflicto por payload incompatible y ausencia de duplicados. |
+| El RPC transitorio acopla creación con consumos y efectos posteriores. | No impide definir el contrato, pero impide tratar el AS-IS como máquina canónica de inicio. | `FOGO-AUTH-010..013` e integraciones FOGO/NEXO según la responsabilidad exacta | Las unidades propietarias separan progresión, consumo, salida, cierre y reconciliación sin duplicar efectos. |
+| Los literales runtime `production.*` no equivalen automáticamente al namespace `fogo.production.*`. | Bloquea afirmar adopción final del catálogo canónico. | `FOGO-AUTH-013 / FOGO-AUTH-015` | La migración usa claves canónicas exactas y elimina aliases ampliatorios no autorizados. |
+| La asociación final de firma de dispositivo con el lote puede ocurrir después de la inserción. | Puede degradar trazabilidad si falla la asociación aunque el efecto exista. | `FOGO-AUTH-014` y contrato de dispositivo aplicable | La evidencia final conserva actor, dispositivo y recurso de forma recuperable y auditable. |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 22. Frontera con tareas posteriores
+
+| Tarea | Responsabilidad reservada |
+| --- | --- |
+| `FOGO-AUTH-010` | proteger capturas y producción parcial después de `IN_PRODUCTION` |
+| `FOGO-AUTH-011` | proteger finalización productiva |
+| `FOGO-AUTH-012` | proteger correcciones, anulaciones, repriorizaciones u overrides aplicables |
+| `FOGO-AUTH-013` | proteger y normalizar lotes, recetario y definiciones de receta, incluido namespace legacy |
+| `FOGO-AUTH-014` | consolidar actor y turno como evidencia durable de las acciones productivas |
+| `FOGO-AUTH-015` | migrar consumidores al paquete compartido sin aliases o bypass locales |
+| `FOGO-AUTH-016` | certificar integralmente autorización, denegaciones, concurrencia, idempotencia y aislamiento |
+
+La autoridad de iniciar no se reutiliza como autoridad de esas acciones.
+
+---
+
+#### 23. Materialización física posterior
+
+La topología vigente de `FOGO-AUTH-009` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador define el contrato global una sola vez.
+
+Cada materialización futura usa:
+
+```text
+FOGO-AUTH-009::<implementation_unit_id>
+```
+
+La materialización solo puede comenzar después de que el paquete aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+El marcador global no implementa código, RPC, RLS, migraciones, datos ni despliegues.
+
+---
+
+#### 24. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el inicio productivo, el ciclo de lote, permiso exacto, autorización server-side, contexto operativo, territorio, segregación, dispositivo compartido, idempotencia, auditoría y progresión de estados ya están cubiertos por requisitos vigentes. Esta tarea especializa esa cobertura sobre `VSCREEN-0057` y el inicio de `VPROC-0034` sin introducir una obligación verificable nueva fuera de esos contratos.
+
+---
+
+#### 25. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-FOGO-001` para ciclo de inicio, parcial, consumo, desperdicio, resultado, finalización, cancelación/corrección, actor, turno, cantidades, inventario, concurrencia e idempotencia;
+- `TREQ-FOGO-002` para versión exacta e inmutabilidad de receta publicada;
+- `TREQ-FOGO-003` para orden derivada de planificación aprobada, restricciones, materiales, prioridad y overrides trazables;
+- `TREQ-FOGO-004` para ejecución productiva, lote, receta/version, materiales, pasos, desviaciones, rendimiento, merma y separación de finalización/calidad/inventario;
+- `TREQ-AUTH-001` para impedir autorización final por nombres de rol;
+- `TREQ-AUTH-004` para decisiones equivalentes entre evaluadores;
+- `TREQ-AUTH-008` para exigir contexto operativo completo a capacidades operativas;
+- `TREQ-AUTH-009` para resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-010` para segregación de funciones entre producción y bodega;
+- `TREQ-AUTH-011` para identidad efectiva en dispositivo compartido;
+- `TREQ-AUTH-013` para impedir bypass de UI/API/RPC y exigir permiso, actor, territorio, contexto y estado en mutaciones;
+- `TREQ-AUTH-014` para invalidación de decisiones stale;
+- `TREQ-AUTH-015` para evidencia correlacionable de cada decisión y acción protegida.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 26. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@798eb8ca508959f664147e441be13c39890aef26`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `VSCREEN-0057`, `VPROC-0034::STEP-PREPARE_AND_START_BATCH`, estados `PRODUCTION_ORDER_READY`, `MATERIALS_RESERVING`, `MATERIALS_READY`, `IN_PRODUCTION`, permiso `fogo.production.batches.create`, contratos de recurso/alcance/prerrequisitos, 04A vigente y el AS-IS de `createBatch`/`fogo_create_real_production_batch`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron turnos, check-ins, órdenes, recetas, reservas, lotes, transiciones, dispositivos, reintentos ni pruebas reales de concurrencia o denegación. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `FOGO-AUTH-009::<implementation_unit_id>`. |
+
+---
+
+#### 27. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] la superficie protegida es exactamente `VSCREEN-0057` con `VPROC-0034::STEP-PREPARE_AND_START_BATCH`;
+- [ ] el permiso de mutación es exactamente `fogo.production.batches.create`;
+- [ ] el permiso permanece `OPERATIONAL_ONLY`, `SITE-WRITE`, recurso `PRODUCTION_BATCH` y territorio `SITE_AREA_DRAFT`;
+- [ ] los tres roles productivos ordinarios conservan sede y área exactas;
+- [ ] `supervisor` y `gerencia_operativa` no adquieren creación por supervisión;
+- [ ] receta visible o `fogo.production.recipe_book.view` no autorizan crear lote;
+- [ ] `PRODUCTION_ORDER_READY`, `MATERIALS_RESERVING`, `MATERIALS_READY` e `IN_PRODUCTION` conservan significados distintos;
+- [ ] el inicio real queda identificado como transición `MATERIALS_READY -> IN_PRODUCTION`;
+- [ ] una transición previa no autoriza automáticamente la siguiente;
+- [ ] existe orden productiva/version verificable antes del inicio;
+- [ ] receta/version publicada y aplicable se revalida al mutar;
+- [ ] actor, turno, check-in, rol, sede y área se revalidan en el punto de efecto;
+- [ ] parámetros de cliente no se usan como autoridad;
+- [ ] una llamada directa a Server Action/RPC no puede saltar autorización;
+- [ ] el dispositivo compartido identifica al actor pero no concede autoridad;
+- [ ] `MATERIALS_READY` exige evidencia de preparación y no se infiere desde stock visual o reserva aislada;
+- [ ] iniciar FOGO no equivale a consumo NEXO ya conciliado;
+- [ ] retries equivalentes no duplican lote ni inicio;
+- [ ] payload incompatible con la misma identidad idempotente produce conflicto;
+- [ ] estado stale o concurrencia no reinician ni retroceden silenciosamente;
+- [ ] una denegación deja cero efectos productivos;
+- [ ] el AS-IS de `createBatch` queda clasificado como adopción parcial y no como cumplimiento integral;
+- [ ] la producción parcial permanece reservada a `FOGO-AUTH-010`;
+- [ ] cada hallazgo tiene propietario y condición de salida;
+- [ ] cualquier modificación futura de Supabase perteneciente a VENTO se realiza desde `vento-shell` bajo la instancia física propietaria;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 28. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica `fogo_create_real_production_batch`;
+- modifica Server Actions, RPC, RLS, grants o datos;
+- crea o modifica migraciones;
+- crea permisos nuevos;
+- modifica matrices RBAC aprobadas;
+- crea una jerarquía de supervisión;
+- redefine planificación productiva;
+- redefine el contrato completo de reserva NEXO;
+- registra producción parcial;
+- finaliza producción;
+- corrige o anula lotes;
+- administra recetas;
+- libera calidad;
+- publica producto terminado en inventario;
+- redefine empaque o etiquetado;
+- diseña UX final;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 29. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-008 — Definir permisos de supervisor`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-009 — Proteger inicio de producción`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-010 — Proteger producción parcial`
+
 ### [ ] FOGO-AUTH-010 — Proteger producción parcial
 ### [ ] FOGO-AUTH-011 — Proteger finalización
 ### [ ] FOGO-AUTH-012 — Proteger correcciones y anulaciones
