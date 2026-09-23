@@ -10128,4 +10128,1138 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-016 — Ejecutar pruebas integrales`
 
-### [ ] FOGO-AUTH-016 — Ejecutar pruebas integrales
+### ✅ FOGO-AUTH-016 — Ejecutar pruebas integrales
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-015 — Migrar a paquetes de vento-shell
+**Tarea siguiente:** FOGO-UX-001 — Inventariar procesos reales de producción
+**Tipo de tarea:** documental; contrato canónico de certificación integral de autorización FOGO, con ejecución física posterior por `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, evidencia atribuible por unidad y cierre fail-closed
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada la certificación integral que deberá demostrar que las protecciones de `FOGO-AUTH-003` a `FOGO-AUTH-015` funcionan de forma coherente, fail-closed y sin bypass sobre los consumidores FOGO materializados.
+
+La regla principal queda:
+
+```text
+PROTECCIONES FOGO APLICABLES MATERIALIZADAS
++
+CONSUMIDOR Y PACKAGE IDENTIFICADOS
++
+ACTOR / CONTEXTO / RECURSO / ESTADO CONTROLADOS
++
+ALLOW POSITIVO DEMOSTRADO
++
+DENY ADVERSARIAL DEMOSTRADO
++
+IDEMPOTENCIA / CONCURRENCIA / FRESCURA DEMOSTRADAS
++
+AUSENCIA DE BYPASS LEGACY / UI / DISPOSITIVO
++
+EVIDENCIA ATRIBUIBLE A LA MISMA UNIDAD
+=
+PASS INTEGRAL DE LA UNIDAD
+```
+
+El marcador documental especifica qué debe probarse. No declara ejecutadas las pruebas físicas ni convierte la existencia de una baseline técnica en certificación integral.
+
+---
+
+#### 2. Resultado contractual
+
+Una unidad solo puede terminar en `PASS` cuando todos los oracles aplicables hayan sido ejecutados sobre una combinación coherente de consumidor, package, contratos, backend, datos de prueba y ambiente.
+
+Se fija:
+
+```text
+PASS INTEGRAL
+=
+TODOS LOS CASOS APLICABLES PASS
++
+CERO MUTACION NO AUTORIZADA
++
+CERO CRUCE TERRITORIAL INDEBIDO
++
+CERO DOBLE EFECTO
++
+CERO ESCALAMIENTO POR UI / DEVICE / ROLE NAME
++
+CERO WILDCARD LEGACY AUTORIZANTE
++
+ROLLBACK O RECUPERACION SEGUROS
+```
+
+`BLOCKED`, `NOT_EXECUTED`, `STALE` o evidencia incompleta nunca se reinterpretan como PASS parcial.
+
+---
+
+#### 3. Topología y cardinalidad física
+
+La topología aplicable permanece:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+physical_identity = FOGO-AUTH-016::<implementation_unit_id>
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato documental de certificación FOGO;
+2. no existe una certificación física global implícita;
+3. cada ejecución física pertenece a una unidad concreta;
+4. cada unidad declara package, consumidor, versión, fixtures, ambiente, oracles, evidencia y rollback propios;
+5. la unidad espera la planificación y gate E5 aplicables antes de ejecutar;
+6. el PASS de una unidad no certifica automáticamente otra unidad ni otra superficie;
+7. cualquier modificación VENTO de Supabase que resulte necesaria pertenece a `vento-shell` y a la tarea física propietaria, no a este marcador documental.
+
+---
+
+#### 4. Handoff recibido de `FOGO-AUTH-001..015`
+
+La certificación consume, sin reabrirlas, las decisiones aprobadas de la familia:
+
+| Fuente | Obligación que debe quedar demostrada |
+| --- | --- |
+| `FOGO-AUTH-001` | universo de rutas, acciones y superficies inventariado sin convertir infraestructura en cumplimiento |
+| `FOGO-AUTH-002` | matrices de permisos por área productiva y separación de roles productivos |
+| `FOGO-AUTH-003` | cola y lectura restringidas por sede/área y filtros cliente-side no ampliatorios |
+| `FOGO-AUTH-004..006` | Cocina, Panadería y Repostería aisladas a sus áreas y capacidades aprobadas |
+| `FOGO-AUTH-007` | insumos limitados por área, orden, lote y receta sin autoridad de bodega |
+| `FOGO-AUTH-008` | separación `supervisor` / `gerencia_operativa`, lectura multiárea explícita y cero mutación derivada de supervisión |
+| `FOGO-AUTH-009` | inicio y creación de lote con permiso de mutación exacto y revalidación en el punto de efecto |
+| `FOGO-AUTH-010` | producción parcial con actor, turno, área, lote, estado, delta e idempotencia propios |
+| `FOGO-AUTH-011` | finalización separada de lectura, creación, calidad e inventario |
+| `FOGO-AUTH-012` | corrección/anulación no destructivas, auditables y separadas del hecho original |
+| `FOGO-AUTH-013` | lotes, receta/version, permisos legacy, atomicidad y fail-closed de capacidades ausentes |
+| `FOGO-AUTH-014` | principal, actor efectivo, turno, dispositivo, recurso y evidencia correlacionable |
+| `FOGO-AUTH-015` | adopción de contratos compartidos, paridad, rollback y eliminación de aliases ampliatorios |
+
+La 016 no redefine esas reglas. Las convierte en oracles integrales verificables.
+
+---
+
+#### 5. Prerrequisitos de una ejecución física
+
+Una instancia `FOGO-AUTH-016::<implementation_unit_id>` solo puede ejecutar certificación cuando pueda demostrar:
+
+1. `implementation_unit_id` vigente;
+2. package propietario aplicable;
+3. gate E5 satisfecho cuando corresponda;
+4. autorización física explícita;
+5. protecciones FOGO aplicables materializadas para la unidad;
+6. catálogo de permisos, roles, scopes y contratos de recurso compatibles con el consumidor;
+7. versiones identificables de consumidor y backend;
+8. ambiente de prueba controlado;
+9. fixtures reversibles o aislados;
+10. actor, turnos, áreas, recursos y estados de prueba reproducibles;
+11. mecanismo de captura de evidencia y auditoría;
+12. ausencia de cambios concurrentes no reconciliados que invaliden la ejecución.
+
+Si falta una precondición material, el resultado correcto es `BLOCKED` o `NOT_EXECUTED`, nunca PASS inferido.
+
+---
+
+#### 6. Estados de certificación
+
+La certificación física por unidad usa, como mínimo:
+
+| Estado | Significado |
+| --- | --- |
+| `PASS` | todos los oracles aplicables pasaron y la evidencia es suficiente |
+| `FAIL` | al menos un oracle aplicable fue violado |
+| `BLOCKED` | falta una precondición material para ejecutar o interpretar la certificación |
+| `NOT_EXECUTED` | la certificación física no fue ejecutada |
+| `NOT_APPLICABLE` | el caso está fuera del alcance real de la unidad y existe justificación verificable |
+| `STALE` | la evidencia dejó de representar la versión, ambiente, fixture o contrato actual |
+
+La ausencia de implementación no convierte por sí sola un caso en `NOT_APPLICABLE`.
+
+---
+
+#### 7. Identidad y coherencia de evidencia
+
+Toda evidencia utilizada para un PASS debe corresponder a la misma combinación de:
+
+- implementation unit;
+- package;
+- repositorio consumidor;
+- commit del consumidor;
+- manifest y lockfile;
+- versión de contratos compartidos;
+- versión de backend y migraciones aplicables;
+- catálogo de permisos y grants;
+- ambiente;
+- fixture set;
+- runtime y framework;
+- suite y contrato de pruebas;
+- ventana de ejecución.
+
+No se mezclan resultados de versiones incompatibles para construir un PASS compuesto.
+
+---
+
+#### 8. Baseline técnica FOGO y límite de su evidencia
+
+El consumidor remoto observado mantiene una baseline CI008 que declara:
+
+```text
+CONTRACTUAL_TEST_COUNT = 42
+CANONICAL_PACKAGES = 4
+FOGO_SURFACES = 12
+PAGE_FILES = 9
+ROUTE_HANDLERS = 1
+```
+
+Los cuatro packages reconocidos por esa baseline son:
+
+- `@vento/contracts`;
+- `@vento/os-context`;
+- `@vento/supabase`;
+- `@vento/ui-web`.
+
+La baseline cubre compatibilidad potencial, inventario técnico y perfiles por package, pero:
+
+```text
+CI008 BASELINE PASS
+!=
+FOGO-AUTH-016 PASS INTEGRAL
+```
+
+La certificación 016 debe probar la semántica final materializada, no solo la presencia de archivos, perfiles o tokens esperados.
+
+---
+
+#### 9. Universo mínimo de superficies
+
+La certificación conserva como universo técnico inicial las doce superficies observadas por la baseline:
+
+| ID | Superficie |
+| --- | --- |
+| `FOGO-SURFACE-001` | identidad, sesión y permisos |
+| `FOGO-SURFACE-002` | contexto operativo, sede, área y actor |
+| `FOGO-SURFACE-003` | inventario de rutas y acceso |
+| `FOGO-SURFACE-004` | administración de recetas |
+| `FOGO-SURFACE-005` | estructura, unidades e ingredientes de receta |
+| `FOGO-SURFACE-006` | pasos, salidas y publicación de receta |
+| `FOGO-SURFACE-007` | recetario operacional |
+| `FOGO-SURFACE-008` | creación de lote de producción |
+| `FOGO-SURFACE-009` | rutas de producción, destino, empaques y modo de salida |
+| `FOGO-SURFACE-010` | lotes, consumos, rendimiento y trazabilidad |
+| `FOGO-SURFACE-011` | integración y fronteras de dominio |
+| `FOGO-SURFACE-012` | UI, SSR, interacción, accesibilidad y exportación |
+
+Este inventario es base de cobertura. Una unidad puede especializar un subconjunto, pero debe justificar explícitamente toda superficie fuera de alcance.
+
+---
+
+#### 10. Oracle universal de allow
+
+Un allow válido requiere simultáneamente, cuando aplique:
+
+```text
+PRINCIPAL VALIDO
++
+ACTOR EFECTIVO VALIDO
++
+CAPACIDAD EXACTA
++
+CARRIL AUTORIZANTE COMPLETO
++
+SCOPE Y TERRITORIO COMPATIBLES
++
+RECURSO COMPATIBLE
++
+ESTADO / VERSION VIGENTES
++
+CONTEXTO FRESCO
++
+DECISION SERVER-SIDE
+=
+ALLOW
+```
+
+La presencia de una pantalla, botón, ruta, dispositivo, rol nominal, cookie, sede seleccionada o sesión autenticada no sustituye esas condiciones.
+
+---
+
+#### 11. Oracle universal de deny
+
+La certificación debe demostrar denegación segura, sin efecto parcial ni fuga indebida, al menos ante:
+
+- capacidad ausente;
+- capacidad de lectura usada como mutación;
+- scope incompatible;
+- sede incorrecta;
+- área incorrecta;
+- recurso incompatible;
+- estado incompatible;
+- versión stale;
+- actor no resoluble;
+- turno obligatorio ausente o vencido;
+- check-in obligatorio ausente;
+- dispositivo o firma inválidos;
+- llamada directa;
+- payload manipulado;
+- filtro cliente-side ampliatorio;
+- replay incompatible;
+- contexto revocado o supersedido.
+
+---
+
+#### 12. Acceso directo y bypass de interfaz
+
+Toda superficie protegida debe conservar la misma decisión al invocarse sin recorrer la navegación normal.
+
+Se prueban, según aplique:
+
+- URL directa;
+- Server Action directa;
+- Route Handler;
+- API;
+- RPC;
+- envío manual de formulario;
+- request reproducido;
+- manipulación de parámetros, cookies o estado cliente.
+
+Ocultar o deshabilitar un control no cuenta como enforcement.
+
+---
+
+#### 13. Territorio por sede y área
+
+La matriz debe probar como mínimo:
+
+- sede correcta + área correcta;
+- sede correcta + área incorrecta;
+- otra sede;
+- recurso de otra área del mismo Centro de Producción;
+- ausencia de área cuando el contrato la exige;
+- cobertura administrativa revocada;
+- turno o asignación operativa revocados;
+- recurso cuyo territorio persistido contradice el parámetro del cliente.
+
+Se preserva:
+
+```text
+MISMA SEDE
+!=
+MISMA AREA
+!=
+AUTORIZACION SOBRE TODO EL CENTRO DE PRODUCCION
+```
+
+---
+
+#### 14. Roles productivos ordinarios
+
+La certificación debe demostrar que los tres roles productivos permanecen aislados:
+
+| Rol | Área ordinaria | Oracle |
+| --- | --- | --- |
+| `produccion_cocina` | Cocina Caliente | allow solo dentro del área y capacidades aprobadas; deny cruzado fuera de ella |
+| `produccion_panaderia` | Galletería y Panadería | allow solo dentro del área y capacidades aprobadas; deny cruzado fuera de ella |
+| `produccion_reposteria` | Repostería | allow solo dentro del área y capacidades aprobadas; deny cruzado fuera de ella |
+
+Compartir sede, turno, dispositivo o aplicación no fusiona los tres territorios.
+
+---
+
+#### 15. Supervisión: carril base `supervisor`
+
+El carril base debe demostrar de forma independiente:
+
+- `fogo.access` permitido sin convertirlo en wildcard;
+- `fogo.production.batches.view` limitado a cobertura administrativa activa;
+- `fogo.production.orders.view` limitado a cobertura administrativa activa;
+- `fogo.production.batches.create` denegado por supervisión;
+- `fogo.production.recipe_book.view` no concedido por el carril base;
+- `fogo.production.recipes.view` no concedido por la matriz base aprobada;
+- lectura multiárea solo sobre recursos cubiertos por `AS/AA` vigentes.
+
+La certificación debe incluir un recurso permitido y un recurso denegado en la misma sesión de supervisor.
+
+---
+
+#### 16. Supervisión: carril operativo `gerencia_operativa`
+
+El carril operativo debe demostrar de forma independiente:
+
+- acceso a FOGO durante contexto operativo válido;
+- lectura de lotes relacionados con la sede y jornada coordinadas;
+- lectura de órdenes relacionadas con la jornada;
+- acceso al recetario operativo mínimo cuando sea aplicable;
+- `fogo.production.batches.create` denegado por coordinación;
+- `fogo.production.recipes.view` denegado por el carril operativo;
+- expiración inmediata de autoridad al perder turno, rol operativo o contexto válido.
+
+---
+
+#### 17. Composición entre carriles
+
+Cuando un mismo trabajador satisfaga `supervisor` y `gerencia_operativa`, la prueba debe demostrar:
+
+1. cada carril produce una decisión completa e independiente;
+2. no se mezclan permiso de un carril y territorio del otro para fabricar un allow;
+3. la unión efectiva, cuando corresponda, es una unión de recursos autorizados por carriles completos;
+4. una denegación de un carril no se repara con fragmentos incompletos del otro;
+5. cambio de contexto operativo no altera la cobertura administrativa base y viceversa.
+
+---
+
+#### 18. Cola y filtros cliente-side
+
+La cola productiva debe demostrar:
+
+- el servidor entrega únicamente filas autorizadas;
+- los filtros de cliente reducen un conjunto ya autorizado;
+- seleccionar otra área en UI no crea acceso;
+- parámetros manipulados no amplían sede ni área;
+- una fila visible no concede autoridad para mutar;
+- una fila no autorizada no se envía al cliente para ser ocultada después.
+
+---
+
+#### 19. Inicio y creación de lote
+
+La creación debe probar explícitamente:
+
+```text
+fogo.production.batches.create
++
+actor efectivo
++
+contexto vigente
++
+orden/version autorizada
++
+recipe_version_ref aplicable
++
+destino productivo compatible
++
+estado actual
++
+idempotencia
+```
+
+`fogo.production.recipe_book.view` nunca sustituye el permiso de creación.
+
+La Server Action o frontera autoritativa debe revalidar la capacidad inmediatamente antes del efecto.
+
+---
+
+#### 20. Producción parcial
+
+Cada captura parcial debe demostrar:
+
+- actor y turno propios;
+- lote exacto;
+- área y sede compatibles;
+- estado actual compatible;
+- delta válido;
+- versión o revisión observada;
+- idempotencia;
+- replay sin doble efecto;
+- concurrencia sin sobreescritura silenciosa;
+- contexto stale denegado o reconciliado.
+
+Haber tenido acceso al lote antes no conserva autoridad para un parcial posterior.
+
+---
+
+#### 21. Finalización productiva
+
+La finalización debe demostrar:
+
+- autoridad propia de cierre;
+- estado precondición vigente;
+- actor/contexto en el punto de efecto;
+- cantidades y consumos reconciliables;
+- separación entre finalización productiva, disposición de calidad y publicación en inventario;
+- retry sin segundo cierre;
+- versión stale bloqueada;
+- shared device sin privilegio adicional.
+
+Se preserva:
+
+```text
+PRODUCTION FINISHED
+!=
+QUALITY RELEASED
+!=
+INVENTORY PUBLISHED
+```
+
+---
+
+#### 22. Correcciones y anulaciones
+
+La certificación debe probar que una corrección, anulación, reversa, compensación o reexpresión:
+
+- exige autoridad exacta;
+- conserva actor y causa;
+- mantiene vínculo con el hecho original;
+- no borra la historia previa;
+- conserva antes/después;
+- no reutiliza permiso de lectura;
+- no reescribe hechos NEXO confirmados;
+- es idempotente;
+- maneja concurrencia y stale state;
+- conserva evidencia aunque el resultado posterior sea corregido.
+
+---
+
+#### 23. Lotes y `recipe_version_ref`
+
+Todo lote histórico debe conservar la versión exacta de receta utilizada.
+
+Se prueban al menos:
+
+- creación con publicación vigente;
+- intento con publicación retirada;
+- consulta histórica de lote después de retirar la publicación;
+- existencia de una nueva versión sin reescribir lotes previos;
+- sustitución autorizada durante ejecución registrada como hecho del lote;
+- divergencia entre versión solicitada y aplicable denegada;
+- corrección posterior de receta sin alterar el expediente histórico.
+
+---
+
+#### 24. Recetario operativo
+
+`fogo.production.recipe_book.view` debe demostrar:
+
+- solo versiones publicadas y vigentes cuando corresponda;
+- recurso y contexto aplicables;
+- acceso limitado al recetario operacional necesario;
+- ausencia de administración derivada;
+- ausencia de creación de lotes derivada;
+- ausencia de exposición de definiciones maestras sensibles fuera del contrato.
+
+---
+
+#### 25. Definición y administración de receta
+
+La certificación debe preservar la separación:
+
+```text
+RECIPE_DEFINITION
+!=
+RECIPE_PUBLICATION
+```
+
+Se prueba que:
+
+- `recipes.view` no muta;
+- `recipes.manage` legacy no funciona como wildcard canónico;
+- `recipes.create`, `recipes.update` y `recipes.archive` permanecen independientes cuando estén materializados;
+- una capacidad todavía no materializada produce deny, no fallback;
+- aprobación, publicación y exportación fallan cerrado sin binding atómico propietario;
+- editar una definición no reescribe una publicación histórica utilizada.
+
+---
+
+#### 26. Namespace y compatibilidad legacy
+
+La certificación debe demostrar:
+
+```text
+production.*
+!=
+fogo.production.*
+```
+
+Queda prohibido un alias ampliatorio que convierta un literal local en permiso canónico por coincidencia nominal.
+
+Toda compatibilidad temporal permitida debe ser explícita, acotada, versionada, observable y no autorizante cuando el contrato canónico produce deny.
+
+---
+
+#### 27. Actor, turno y principal
+
+La evidencia debe distinguir:
+
+```text
+PRINCIPAL AUTENTICADO
+!=
+ACTOR EFECTIVO
+!=
+ROL
+!=
+TURNO
+!=
+DISPOSITIVO
+!=
+PERMISO
+```
+
+La certificación cubre:
+
+- sesión personal;
+- dispositivo compartido;
+- turno obligatorio válido;
+- turno obligatorio ausente;
+- acción administrativa cuyo contrato no exige turno;
+- cambio de actor;
+- cambio de turno;
+- cambio de área;
+- cambio de rol;
+- revocación de dispositivo;
+- cambio de asignación.
+
+Cada cambio material invalida decisiones stale para efectos posteriores.
+
+---
+
+#### 28. Dispositivo compartido
+
+La prueba debe demostrar que el dispositivo únicamente restringe.
+
+No puede:
+
+- prestar permisos al actor;
+- convertirse en actor humano;
+- ampliar sede o área;
+- convertir una vista en capacidad de mutación;
+- reutilizar una firma expirada;
+- reutilizar actor/turno del trabajador anterior;
+- mantener autoridad después de revocación.
+
+Cuando la acción exige firma humana, firma, actor, turno, dispositivo, recurso y efecto deben quedar correlacionados.
+
+---
+
+#### 29. Frescura y write barrier
+
+Después de cualquier cambio material de:
+
+- sesión;
+- actor;
+- turno;
+- check-in;
+- rol;
+- asignación;
+- sede;
+- área;
+- dispositivo;
+- permiso;
+- estado o versión del recurso;
+
+la siguiente acción sensible debe resolver nuevamente contexto y autorización.
+
+Una decisión tomada antes de la mutación no autoriza silenciosamente el efecto posterior.
+
+---
+
+#### 30. Idempotencia
+
+Toda acción con riesgo de repetición debe demostrar:
+
+```text
+MISMA INTENCION
++
+MISMA IDENTIDAD IDEMPOTENTE
+=
+UN SOLO EFECTO EMPRESARIAL
+```
+
+Se prueban, cuando apliquen:
+
+- crear lote;
+- registrar parcial;
+- finalizar;
+- corregir/anular;
+- crear/actualizar/archivar receta;
+- publicar;
+- exportar cuando produzca side effect o evidencia durable.
+
+El mismo identificador con payload materialmente distinto produce conflicto o una nueva operación gobernada; nunca reutilización silenciosa.
+
+---
+
+#### 31. Concurrencia
+
+La matriz debe cubrir operaciones incompatibles sobre el mismo recurso cuando la superficie las admita.
+
+El sistema debe:
+
+- serializar;
+- rechazar la segunda por estado/revisión;
+- o resolver mediante mecanismo transaccional equivalente.
+
+Casos mínimos:
+
+- dos creaciones equivalentes del mismo lote;
+- parcial contra versión supersedida;
+- finalización concurrente;
+- corrección contra hecho ya corregido;
+- actualización de receta contra versión stale;
+- publicación y modificación incompatibles.
+
+Nunca sobreviven dos efectos incompatibles como si ambos fueran válidos.
+
+---
+
+#### 32. Timeout y resultado desconocido
+
+Timeout, pérdida de conectividad o respuesta ambigua después de una mutación producen resultado desconocido.
+
+Se fija:
+
+```text
+RESULT_UNKNOWN
+-> RECONCILE BEFORE RETRYING SIDE EFFECT
+```
+
+No se resuelve la incertidumbre creando un segundo lote, parcial, cierre, corrección o mutación de receta.
+
+---
+
+#### 33. Offline y reautorización
+
+Cuando exista captura offline o diferida:
+
+- conserva intención y evidencia local como pendiente;
+- no adquiere autoridad final;
+- se revalida al sincronizar;
+- conserva identidad idempotente;
+- usa estado y contexto vigentes del servidor;
+- falla cerrado si permiso, turno, área, recurso o estado dejaron de ser válidos.
+
+`OFFLINE_CAPTURED` no equivale a efecto empresarial confirmado.
+
+---
+
+#### 34. Frontera FOGO ↔ NEXO
+
+La certificación debe preservar:
+
+```text
+production_lot_ref != inventory_batch_id
+RECIPE_PUBLICATION != STOCK DISPONIBLE
+LOTE FOGO != MOVIMIENTO NEXO
+```
+
+FOGO no reescribe hechos propietarios de NEXO y NEXO no reescribe receta, ejecución, calidad o historia propietaria de FOGO.
+
+Una integración puede producir eventos o correlaciones, pero no una transacción cliente que fabrique autoridad cruzada.
+
+---
+
+#### 35. Insumos y autoridad de bodega
+
+La prueba debe demostrar que la visibilidad o consumo de insumos desde FOGO:
+
+- respeta área, orden, lote y receta;
+- no concede autoridad de bodega;
+- no concede ajustes, entradas, traslados, conteos, remisiones ni compras;
+- no permite consultar stock general fuera del contrato aplicable;
+- no convierte al productor o supervisor en `bodeguero`.
+
+---
+
+#### 36. Paquetes compartidos y paridad
+
+Cuando la unidad haya migrado consumidores mediante el contrato de `FOGO-AUTH-015`, la certificación debe comprobar:
+
+- tipos y claves desde `@vento/contracts` sin strings paralelos autorizantes;
+- contexto y autorización mediante la frontera compartida aplicable;
+- acceso Supabase técnico separado de autoridad empresarial;
+- UI compartida sin decisiones de autorización;
+- paridad entre consumidor anterior y canónico cuando la semántica legacy era válida;
+- corrección intencional documentada cuando el legacy era incorrecto;
+- cero doble side effect durante shadow o comparación;
+- deny canónico nunca convertido a allow por fallback legacy.
+
+---
+
+#### 37. Rollback
+
+Un rollback de una unidad certificada solo puede volver a una combinación previamente segura y compatible.
+
+Nunca puede:
+
+- restaurar `production.*` como alias ampliatorio;
+- restaurar `recipes.manage` como wildcard;
+- restaurar heurísticas locales de management como autoridad final;
+- convertir dispositivo en actor;
+- convertir sesión Supabase en autorización empresarial;
+- perder actor, turno o auditoría;
+- reactivar una combinación conocida como vulnerable;
+- reescribir hechos productivos confirmados.
+
+Si no existe combinación segura anterior, la unidad bloquea la operación y corrige hacia adelante.
+
+---
+
+#### 38. Auditoría mínima de la certificación
+
+Cada caso mutador o deny material debe poder reconstruir, según aplique:
+
+- principal;
+- actor efectivo;
+- dispositivo;
+- rol/carril;
+- turno y check-in;
+- sede y área;
+- permiso/capacidad;
+- recurso;
+- estado y versión;
+- decisión y razones;
+- correlación/idempotencia;
+- timestamp;
+- resultado observado;
+- evidencia de ausencia o presencia de efectos.
+
+La telemetría no registra secretos, JWT, service role, PIN, payload sensible innecesario ni grants internos completos.
+
+---
+
+#### 39. Matriz mínima por familia
+
+| Familia | Allow válido | Deny capacidad | Deny territorio | Deny estado/recurso | Acceso directo | Replay/concurrencia | Stale/context | Device/UI bypass | Legacy bypass |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| cola y lectura productiva | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| roles productivos por área | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| supervisión base | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| `gerencia_operativa` | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| creación/inicio de lote | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| producción parcial | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| finalización | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| corrección/anulación | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| lotes y receta/version | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio |
+| recetario operativo | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio | según acción | obligatorio | obligatorio | obligatorio |
+| administración de receta | cuando exista binding atómico | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| integración FOGO/NEXO | obligatorio cuando exista integración | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+| paquetes compartidos | obligatorio para superficies migradas | obligatorio | obligatorio | obligatorio | obligatorio | obligatorio cuando muta | obligatorio | obligatorio | obligatorio |
+
+La matriz es un mínimo contractual, no un máximo de casos.
+
+---
+
+#### 40. Criterio de PASS integral
+
+Una unidad puede declarar `PASS` únicamente cuando:
+
+1. todos los casos aplicables fueron ejecutados;
+2. no existe ningún `FAIL`;
+3. no existe ningún `BLOCKED` sin resolver;
+4. cada `NOT_APPLICABLE` tiene justificación verificable;
+5. los allow se producen solo mediante autoridad compatible;
+6. los deny no dejan efectos parciales;
+7. el acceso directo no elude autorización;
+8. productores, supervisor y gerencia operativa conservan sus fronteras;
+9. área y sede no se amplían por filtros o dispositivo;
+10. lectura no se convierte en mutación;
+11. replay y concurrencia no duplican efectos;
+12. contexto stale no autoriza efectos nuevos;
+13. shared device no presta autoridad;
+14. recetas y lotes conservan historia y versión exacta;
+15. FOGO y NEXO conservan fuentes de verdad separadas;
+16. aliases y heurísticas legacy no son autoridad final;
+17. rollback no restaura bypasses prohibidos;
+18. la evidencia pertenece a la misma versión de la unidad.
+
+---
+
+#### 41. Criterio de FAIL
+
+La certificación termina `FAIL` ante cualquier evidencia de:
+
+- allow sin capacidad exacta compatible;
+- `recipe_book.view` usado para crear lote;
+- `recipes.view` usado para mutar;
+- `recipes.manage` funcionando como wildcard canónico;
+- `production.*` aceptado como alias ampliatorio;
+- cruce no autorizado de sede o área;
+- productor ordinario con autoridad multiárea no concedida;
+- supervisión utilizada para mutar producción;
+- dispositivo o UI prestando autoridad;
+- contexto stale aceptado;
+- doble efecto por retry;
+- estado concurrente sobrescrito silenciosamente;
+- lote histórico con `recipe_version_ref` reescrita;
+- publicación retirada originando lote nuevo;
+- corrección destructiva de historia;
+- escritura propietaria cruzada FOGO/NEXO;
+- rollback que reactive una autoridad más amplia.
+
+---
+
+#### 42. Criterio de bloqueo
+
+La certificación permanece `BLOCKED` cuando falta una precondición necesaria para interpretar la prueba, incluyendo:
+
+- protección aplicable no materializada;
+- package o gate no resuelto;
+- capacidad atómica requerida todavía ausente;
+- catálogo/grants incompatibles;
+- backend o migraciones incompatibles;
+- ambiente no confiable;
+- fixture no controlable;
+- evidencia insuficiente;
+- cambio concurrente no reconciliado;
+- dependencia transversal propietaria pendiente.
+
+Un bloqueo no se resuelve relajando el oracle ni sustituyendo capacidad por alias.
+
+---
+
+#### 43. Evidencia mínima de una ejecución física
+
+Una ejecución posterior debe conservar, como mínimo:
+
+- identidad `FOGO-AUTH-016::<implementation_unit_id>`;
+- package propietario;
+- repositorio y commit consumidor;
+- manifest y lockfile;
+- versión de contratos compartidos aplicables;
+- backend/migraciones aplicables;
+- ambiente;
+- actor o fixture de actor;
+- turno/check-in cuando correspondan;
+- dispositivo cuando aplique;
+- sede y área;
+- recurso o fixture;
+- capacidad/scope esperados;
+- acción ejecutada;
+- resultado esperado;
+- resultado observado;
+- evidencia de auditoría;
+- evidencia de efectos o ausencia de efectos;
+- resultado final de la unidad.
+
+---
+
+#### 44. Relación con `DELIV-PKG-016` y CI de consumidor
+
+La ejecución física reutiliza los perfiles, fixtures, oracles y gates ya definidos por la planificación E5 y por los pipelines de compatibilidad aplicables.
+
+La baseline CI008 de `vento-fogo` puede aportar evidencia de:
+
+- inventario técnico;
+- compatibilidad de package;
+- superficies esperadas;
+- perfiles positivos/negativos;
+- identidad de suite.
+
+Pero 016 no crea un framework paralelo ni permite que CI008 sustituya oracles empresariales no cubiertos por esa baseline.
+
+---
+
+#### 45. Reejecución y regresión
+
+Después de corregir una violación se deben reejecutar:
+
+- el caso corregido;
+- sus deny paths;
+- casos de frontera afectados;
+- replay/concurrencia relacionados;
+- stale/context cuando aplique;
+- device/UI bypass relacionados;
+- legacy bypass relacionado;
+- matriz integral suficiente para volver a declarar PASS de la unidad.
+
+Un PASS posterior no borra la evidencia histórica del FAIL previo.
+
+---
+
+#### 46. Relación con `FOGO-UX-001`
+
+`FOGO-AUTH-016` cierra documentalmente el mini-bloque de autorización.
+
+`FOGO-UX-001 — Inventariar procesos reales de producción` recibe una frontera explícita:
+
+- la UX puede inventariar y diseñar procesos sobre permisos, carriles y oracles ya definidos;
+- la UX no puede convertir visibilidad, selección, botón, ruta, dispositivo o estado local en autorización;
+- la UX no redefine roles productivos, supervisor, `gerencia_operativa`, scopes, recursos o permisos;
+- la UX deberá consumir resultados autorizados y estados de deny/bloqueo sin fabricar autoridad nueva.
+
+Cerrar este marcador no implica que las instancias físicas de autorización estén certificadas.
+
+---
+
+#### 47. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la certificación integral de autorización FOGO ya está prevista por requisitos vigentes de ciclo productivo, recetas/versiones, planificación, autorización exacta, contexto, actor/turno, protección server-side, compatibilidad de packages, rollback y evidencia. Esta tarea consolida los oracles y la futura ejecución por unidad sin introducir una obligación empresarial independiente nueva.
+
+---
+
+#### 48. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones, secuencia ni propietario:
+
+- `TREQ-FOGO-001` para ciclo de lote, parciales, consumos, desperdicio, resultado, finalización, cancelación/corrección, actor, turno e inventario auditable;
+- `TREQ-FOGO-002` para receta publicada inmutable/versionada, versión exacta y protección de fórmulas sensibles;
+- `TREQ-FOGO-003` para planificación por sede/área, prioridad, aprobaciones y overrides auditables;
+- `TREQ-FOGO-004` para ejecución productiva, calidad, materiales, genealogía, reproceso y cierre no destructivo;
+- `TREQ-FOGO-005` a `TREQ-FOGO-024` para inventario de superficies, protección de rutas, acceso directo, evidencia de snapshot y creación de lote revalidada;
+- `TREQ-AUTH-001` y `TREQ-AUTH-002` para autorización por contrato canónico e identificadores de permiso válidos;
+- `TREQ-AUTH-003` para ciclo seguro de dispositivos compartidos;
+- `TREQ-AUTH-004` para equivalencia de decisión entre evaluadores;
+- `TREQ-AUTH-008` y `TREQ-AUTH-009` para carriles y resolución territorial/contextual;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-013` para revalidación server-side contra bypass de URL/formulario/API/RPC;
+- `TREQ-AUTH-014` para invalidación de autoridad stale;
+- `TREQ-AUTH-015` para evidencia correlacionable de principal, actor, contexto, recurso, decisión y tiempo;
+- `TREQ-SHELL-002` para responsabilidades compartidas sin copias manuales divergentes;
+- `TREQ-SHELL-006` y `TREQ-SHELL-007` para matriz de compatibilidad y rollback independiente de packages;
+- `TREQ-SHELL-008` para evidencia reproducible y trazabilidad de requisitos;
+- `TREQ-SHELL-040` a `TREQ-SHELL-044` para roles, scopes, contexto y namespaces cerrados;
+- `TREQ-SHELL-064` y `TREQ-SHELL-065` para versionado, adopción compatible y aislamiento del legacy de `@vento/os-context`.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 49. Estado AS-IS observado al definir 016
+
+La evidencia remota disponible no permite declarar un PASS físico integral FOGO.
+
+Se observan todavía, entre otros:
+
+- literales locales `production.*` en superficies FOGO;
+- `production.recipes.manage` como guard amplio en administración de recetas;
+- una creación de lote cuya superficie histórica ha usado un permiso nominal de recetario;
+- helpers y contexto locales cuya migración a packages compartidos todavía pertenece a unidades físicas posteriores;
+- baseline CI008 con 42 pruebas contractuales y doce superficies, útil como evidencia técnica pero insuficiente por sí sola para certificar toda la semántica de autorización;
+- `vento-fogo` sin adopción completa demostrada de las dependencias `@vento/*` del envelope definido por `FOGO-AUTH-015`.
+
+Por tanto:
+
+```text
+CERTIFICATION CONTRACT DEFINED
+PHYSICAL INTEGRAL PASS NOT YET DEMONSTRATED
+```
+
+---
+
+#### 50. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| el consumidor mantiene literales `production.*` | bloquea certificar namespace final | materialización aplicable de `FOGO-AUTH-015` | consumidor usa claves canónicas exactas sin alias ampliatorio |
+| `production.recipes.manage` continúa representando varias acciones | bloquea PASS de mutaciones administrativas | materialización aplicable de `FOGO-AUTH-013` y `FOGO-AUTH-015` | capacidades atómicas aplicables materializadas o deny seguro |
+| baseline CI008 no demuestra por sí sola toda la autorización empresarial | no bloquea la definición documental; bloquea usarla como PASS final | `FOGO-AUTH-016::<implementation_unit_id>` | matriz integral ejecutada con evidencia de la misma unidad |
+| actor/turno no puede asumirse uniforme por existir helper de shared device | bloquea PASS si una acción protegida carece de atribución equivalente | `FOGO-AUTH-014::<implementation_unit_id>` | cada acción aplicable conserva actor/contexto en el punto de efecto |
+| protección de creación de lote debe demostrar permiso de mutación exacto | bloquea PASS de creación | `FOGO-AUTH-009::<implementation_unit_id>` y `FOGO-AUTH-013::<implementation_unit_id>` | punto de efecto revalida `fogo.production.batches.create` y estado/version |
+| PASS integral físico no existe aún para la familia | no bloquea esta definición documental | `FOGO-AUTH-016::<implementation_unit_id>` | todos los oracles aplicables PASS, sin bloqueos ni bypasses |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 51. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El marcador documental define el contrato de certificación; build, typecheck, lint y suites físicas pertenecen a la instancia y al checkout autorizados. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global, TREQ y lifecycle quedan pendientes del checkout local después de incorporar el artefacto. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@c44455ad376ae29f6b486fc4dd7bc4221ef06a07`, owner FOGO, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, cobertura 04A vigente, contratos `FOGO-AUTH-001..014`, artefacto aprobado de `FOGO-AUTH-015` usado como base anticipada y `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7` con baseline CI008 de 42 pruebas, cuatro packages y doce superficies. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron lotes, recetas, turnos, firmas, parciales, cierres, correcciones, filtros multiárea, concurrencia ni pruebas adversariales sobre operación real. |
+| FÍSICA | NOT_EXECUTED | No se ejecutó ninguna instancia `FOGO-AUTH-016::<implementation_unit_id>` ni se produjo una certificación integral física. |
+
+---
+
+#### 52. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] se conserva `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- [ ] el marcador documental no declara pruebas físicas ejecutadas;
+- [ ] PASS, FAIL, BLOCKED, NOT_EXECUTED, NOT_APPLICABLE y STALE quedan diferenciados;
+- [ ] toda evidencia PASS pertenece a una misma identidad de unidad y versiones compatibles;
+- [ ] la baseline CI008 se trata como evidencia técnica, no como PASS integral automático;
+- [ ] se cubren las doce superficies baseline o se justifica toda no aplicabilidad;
+- [ ] se prueban allow y deny universales;
+- [ ] se prueba acceso directo sin bypass de interfaz;
+- [ ] se prueba aislamiento por sede y área;
+- [ ] Cocina, Panadería y Repostería conservan sus territorios separados;
+- [ ] `supervisor` y `gerencia_operativa` se certifican como carriles distintos;
+- [ ] la lectura multiárea se limita a recursos autorizados;
+- [ ] los filtros cliente-side no amplían acceso;
+- [ ] supervisión no concede creación ni mutación productiva;
+- [ ] creación de lote exige `fogo.production.batches.create` en el punto de efecto;
+- [ ] producción parcial conserva actor, contexto, idempotencia y concurrencia;
+- [ ] finalización permanece separada de calidad e inventario;
+- [ ] correcciones y anulaciones conservan historia y causa;
+- [ ] lote histórico conserva `recipe_version_ref`;
+- [ ] publicación retirada no origina lote nuevo;
+- [ ] `recipe_book.view` no crea lotes;
+- [ ] `recipes.view` no muta;
+- [ ] `recipes.manage` legacy no funciona como wildcard canónico;
+- [ ] capacidades atómicas ausentes fallan cerrado;
+- [ ] `production.*` no se convierte en alias de `fogo.production.*`;
+- [ ] principal, actor, turno, rol, dispositivo y permiso permanecen separados;
+- [ ] shared device no presta autoridad;
+- [ ] cambios de contexto invalidan decisiones stale;
+- [ ] replay no duplica efectos;
+- [ ] concurrencia no sobrescribe silenciosamente estados incompatibles;
+- [ ] resultado desconocido exige reconciliación;
+- [ ] operación offline reautoriza al sincronizar;
+- [ ] FOGO y NEXO conservan fuentes de verdad separadas;
+- [ ] insumos no conceden autoridad de bodega;
+- [ ] adopción de packages compartidos conserva paridad y rollback sin bypass legacy;
+- [ ] rollback no restaura aliases, wildcards o heurísticas ampliatorias;
+- [ ] auditoría y telemetría conservan evidencia sin secretos innecesarios;
+- [ ] los hallazgos AS-IS tienen propietario y condición de salida;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador;
+- [ ] `FOGO-UX-001` recibe una frontera explícita sin desarrollar su contenido.
+
+---
+
+#### 53. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- modifica físicamente `vento-shell`;
+- crea o publica packages;
+- cambia versiones, tags o registry;
+- añade dependencias a `vento-fogo`;
+- modifica lockfiles;
+- crea permisos, roles, grants o scopes;
+- materializa capacidades atómicas pendientes;
+- crea Server Actions, API, RPC o Edge Functions;
+- crea tablas, columnas, vistas, triggers, RLS o migraciones;
+- modifica Supabase remoto;
+- crea datos reales de producción;
+- ejecuta lotes o recetas reales;
+- ejecuta turnos o check-ins reales;
+- imprime o publica inventario real;
+- ejecuta cutover de packages;
+- retira legacy físicamente;
+- autoriza una instancia física;
+- declara PASS físico integral sin evidencia;
+- modifica el Registro 04A;
+- desarrolla `FOGO-UX-001`.
+
+---
+
+#### 54. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-015 — Migrar a paquetes de vento-shell`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-016 — Ejecutar pruebas integrales`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-001 — Inventariar procesos reales de producción`
