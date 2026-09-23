@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1272** |
+| Tareas aprobadas | **1273** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **324** |
+| Tareas no iniciadas | **323** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **79.70% (1272/1596)** |
+| Porcentaje de completamiento | **79.76% (1273/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva** |
-| Tarea actual | **FOGO-AUTH-001 — Inventariar vistas y acciones productivas** |
+| Última tarea aprobada | **FOGO-AUTH-001 — Inventariar vistas y acciones productivas** |
+| Tarea actual | **FOGO-AUTH-002 — Definir permisos por área productiva** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **FOGO-AUTH-002 — Definir permisos por área productiva** |
+| Siguiente tarea | **FOGO-AUTH-003 — Filtrar cola por sede y área** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 3 de 65 aprobadas; FOGO-AUTH-001 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 4 de 65 aprobadas; FOGO-AUTH-002 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — FOGO-AUTH-001** |
+| Carril documental | **ACTIVO — FOGO-AUTH-002** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `OPS-TRZ-001` — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva |
-| Tarea actual | `FOGO-AUTH-001` — Inventariar vistas y acciones productivas — **NO INICIADA** |
-| Siguiente tarea | `FOGO-AUTH-002` — Definir permisos por área productiva |
+| Última aprobada | `FOGO-AUTH-001` — Inventariar vistas y acciones productivas |
+| Tarea actual | `FOGO-AUTH-002` — Definir permisos por área productiva — **NO INICIADA** |
+| Siguiente tarea | `FOGO-AUTH-003` — Filtrar cola por sede y área |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 3 DE 65 APROBADAS — ACTUAL FOGO-AUTH-001** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 4 DE 65 APROBADAS — ACTUAL FOGO-AUTH-002** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-OPS-TRZ-001 — Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva
-        ↓
-TAREA ACTUAL
 FOGO-AUTH-001 — Inventariar vistas y acciones productivas
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 FOGO-AUTH-002 — Definir permisos por área productiva
         ↓
+SIGUIENTE TAREA RESERVADA
+FOGO-AUTH-003 — Filtrar cola por sede y área
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 3 de 65 tareas aprobadas
+BLOQUES L Y M — 4 de 65 tareas aprobadas
 ```
