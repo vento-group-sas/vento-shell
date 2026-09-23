@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1267** |
+| Tareas aprobadas | **1268** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **329** |
+| Tareas no iniciadas | **328** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **79.39% (1267/1596)** |
+| Porcentaje de completamiento | **79.45% (1268/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-058 — Probar con usuarios reales** |
-| Tarea actual | **AUTH-UI-059 — Registrar problemas encontrados** |
+| Última tarea aprobada | **AUTH-UI-059 — Registrar problemas encontrados** |
+| Tarea actual | **AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap** |
+| Siguiente tarea | **OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 125 de 127 aprobadas; AUTH-UI-059 pendiente** |
+| Progreso del bloque | **BLOQUE K: 126 de 127 aprobadas; AUTH-UI-060 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-059** |
+| Carril documental | **ACTIVO — AUTH-UI-060** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-058` — Probar con usuarios reales |
-| Tarea actual | `AUTH-UI-059` — Registrar problemas encontrados — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap |
+| Última aprobada | `AUTH-UI-059` — Registrar problemas encontrados |
+| Tarea actual | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap — **NO INICIADA** |
+| Siguiente tarea | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 125 DE 127 APROBADAS — ACTUAL AUTH-UI-059** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 126 DE 127 APROBADAS — ACTUAL AUTH-UI-060** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-058 — Probar con usuarios reales
-        ↓
-TAREA ACTUAL
 AUTH-UI-059 — Registrar problemas encontrados
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap
         ↓
+SIGUIENTE TAREA RESERVADA
+OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 125 de 127 tareas aprobadas
+BLOQUE K — 126 de 127 tareas aprobadas
 ```

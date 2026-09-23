@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1267** |
+| Aprobadas | **1268** |
 | En propuesta | **0** |
-| No iniciadas | **329** |
+| No iniciadas | **328** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.39% (1267/1596)** |
+| Porcentaje de completamiento | **79.45% (1268/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **329** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1168** |
+| ⏸ NO_EVALUADA | **328** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1169** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `AUTH-UI-058` — Probar con usuarios reales | ✅ APROBADA |
-| Tarea actual | `AUTH-UI-059` — Registrar problemas encontrados | ⬜ NO INICIADA |
-| Siguiente reservada | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap | ⬜ NO INICIADA |
+| Última aprobada | `AUTH-UI-059` — Registrar problemas encontrados | ✅ APROBADA |
+| Tarea actual | `AUTH-UI-060` — Aprobar la pantalla antes de retirarla del roadmap | ⬜ NO INICIADA |
+| Siguiente reservada | `OPS-REC-001` — Definir el contrato canónico de recetas y acceso contextual | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -911,7 +911,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-056` | Validar prototipo antes de implementar | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-057` | Definir criterio de usabilidad por pantalla | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-058` | Probar con usuarios reales | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-059` | Registrar problemas encontrados | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `AUTH-UI-059` | Registrar problemas encontrados | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-060` | Aprobar la pantalla antes de retirarla del roadmap | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `AUTH-UI-061` | Reconciliar rutas y superficies VISO posteriores al inventario aprobado | — | — | `bloques/I_NAVEGACION_Y_PANTALLAS/07_RECONCILIACION_DE_DERIVA_POSTERIOR.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | EXISTING_NEEDS_ADOPTION_EVIDENCE | `AUTH-SRV-001` | Inventariar Server Actions de todos los repositorios | — | — | `bloques/J_ACCIONES_DE_SERVIDOR/01_INVENTARIO_DE_SUPERFICIES_DE_SERVIDOR.md` |

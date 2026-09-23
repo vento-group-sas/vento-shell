@@ -7391,37 +7391,594 @@ Este contrato no ejecuta personas, no programa sesiones, no crea participantes, 
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-UI-059 — Registrar problemas encontrados`
 
-### [ ] AUTH-UI-059 — Registrar problemas encontrados
+### ✅ AUTH-UI-059 — Registrar problemas encontrados
 
-**Estado:** NO INICIADA
-**Tarea anterior:** `AUTH-UI-058 — Probar con usuarios reales` — NO INICIADA
-**Tarea siguiente:** `AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap` — NO INICIADA
-**Tipo de tarea:** documental y de enrutamiento integral; consolidación de todos los hallazgos reales de usabilidad sin corregirlos silenciosamente
-**Cambios físicos autorizados:** ninguno; cada corrección se asigna a su tarea o paquete propietario
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-058 — Probar con usuarios reales
+**Tarea siguiente:** AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap
+**Tipo de tarea:** documental y de enrutamiento integral; definición y reconciliación del registro de observaciones y hallazgos reales de usabilidad, sin corregirlos silenciosamente
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; cada corrección se asigna a su tarea o package propietario y esta tarea no modifica código, datos, permisos, procesos, Supabase, infraestructura ni despliegues
+**Requisitos de prueba creados o modificados:** 0
 
-#### Registro obligatorio por hallazgo
+---
 
-Cada problema deberá conservar un identificador estable, aplicación,
-superficie, actor, dispositivo, escenario, criterio fallido, severidad,
-evidencia, riesgo, pasos de reproducción, propietario, tarea o paquete destino,
-criterio de corrección, prueba de regresión, estado y evidencia de retest.
+#### 1. Propósito
 
-El registro deberá reconciliarse contra todas las sesiones de `AUTH-UI-058` y
-demostrar explícitamente:
+Definir y materializar el registro canónico que consumirá todas las observaciones reales de `AUTH-UI-058`, transformará cada observación en una decisión explícita y enrutará cada hallazgo hacia una resolución demostrada, un diferimiento que bloquee la aprobación correspondiente o un destino posterior completo.
 
-- cero observaciones sin decisión;
-- cero hallazgos sin propietario y destino canónico;
-- cero problemas críticos cerrados solo por aceptación verbal;
-- cero cambios de permisos, procesos o contratos ocultos dentro de una
-  corrección visual;
-- separación entre defecto, deuda, solicitud de cambio, bloqueo de datos,
-  bloqueo físico y resultado `NO_APLICA`.
+La tarea separa el contrato documental del registro y su población operativa posterior:
 
-#### Condición de cierre
+```text
+REGISTRO Y REGLAS DE ENRUTAMIENTO
+=
+APROBABLES DOCUMENTALMENTE
 
-La tarea termina cuando el universo de observaciones está reconciliado y cada
-hallazgo tiene resolución demostrada, diferimiento explícito que bloquee la
-aprobación correspondiente o destino posterior completo.
+OBSERVACIONES Y HALLAZGOS REALES
+=
+SOLO DESPUES DE AUTH-UI-058-USER-TEST-GATE-001
+
+AUSENCIA DE HALLAZGOS REALES
+!=
+CERO PROBLEMAS
+
+PENDIENTE_DE_EVIDENCIA
+!=
+RESUELTO
+```
+
+No se inventan hallazgos para completar el registro.
+
+---
+
+#### 2. Alcance y límites
+
+##### 2.1. Incluido
+
+- reconciliación prospectiva de las 177 superficies;
+- esquema obligatorio por hallazgo;
+- decisión explícita por observación;
+- clasificación separada entre defecto, deuda, solicitud de cambio, bloqueo de datos, bloqueo físico y `NO_APLICA`;
+- severidad reutilizando `INFO`, `LOW`, `MEDIUM`, `HIGH` y `CRITICAL`;
+- reglas de owner y destino;
+- criterio de corrección;
+- prueba de regresión y retest;
+- impacto de cada hallazgo sobre la aprobación de 060;
+- condición de cierre de la reconciliación;
+- handoff íntegro hacia `AUTH-UI-060`.
+
+##### 2.2. Excluido
+
+- inventar sesiones, observaciones o problemas;
+- corregir código, datos, permisos, procesos o contratos desde 059;
+- convertir una solicitud de cambio en defecto para evitar gobernanza;
+- cerrar un hallazgo crítico por aceptación verbal;
+- ocultar un cambio de autorización dentro de una corrección visual;
+- declarar resuelto un hallazgo sin evidencia cuando corresponda retest;
+- aprobar finalmente una pantalla, reservado a 060.
+
+---
+
+#### 3. Dependencia operativa de 058
+
+La población real del registro comienza únicamente después de:
+
+```text
+AUTH-UI-058-USER-TEST-GATE-001
+=
+PASS_TO_AUTH_UI_059
+```
+
+Mientras ese gate permanezca `PENDING_EVIDENCE`, las 177 superficies conservan estado `PENDIENTE_DE_EVIDENCIA` dentro de 059.
+
+El archivo documental de 059 puede definir el registro antes de esa ejecución; no convierte el gate 058 en PASS ni crea resultados.
+
+---
+
+#### 4. Universo de reconciliación
+
+Se preservan exactamente las 177 identidades de superficie heredadas de 057/058.
+
+Distribución:
+
+```text
+WORK_ELIGIBLE = 75
+SECONDARY_DISCOVERABLE = 48
+CONDITIONAL_WORK = 39
+ENTRY_RETURN = 9
+CONTEXTUAL_ONLY = 6
+TOTAL = 177
+```
+
+Cada identidad debe terminar con:
+
+1. todas sus observaciones decididas;
+2. cada hallazgo registrado cuando exista;
+3. owner y destino cuando aplique;
+4. efecto de aprobación explícito;
+5. estado final transferible a 060.
+
+---
+
+#### 5. Registro de reconciliación por superficie
+
+| Pantalla | `app_code` | Criterio 057 | Observaciones reales | Hallazgos registrados | Decisión 059 | Dependencia | Condición de salida |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0001` | `shell` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0002` | `shell` | `USAB-PROFILE-CONTEXTUAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0003` | `shell` | `USAB-PROFILE-CONTEXTUAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0004` | `shell` | `USAB-PROFILE-CONTEXTUAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0005` | `shell` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0006` | `shell` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0007` | `viso` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0008` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0009` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0010` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0011` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0012` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0013` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0014` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0015` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0016` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0017` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0018` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0019` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0020` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0021` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0022` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0023` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0024` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0025` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0026` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0027` | `anima` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0028` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0029` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0030` | `anima` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0031` | `anima` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0032` | `anima` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0033` | `nexo` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0034` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0035` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0036` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0037` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0038` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0039` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0040` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0041` | `nexo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0042` | `nexo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0043` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0044` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0045` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0046` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0047` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0048` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0049` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0050` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0051` | `nexo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0052` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0053` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0054` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0055` | `fogo` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0056` | `fogo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0057` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0058` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0059` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0060` | `fogo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0061` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0062` | `fogo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0063` | `fogo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0064` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0065` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0066` | `fogo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0067` | `fogo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0068` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0069` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0070` | `origo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0071` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0072` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0073` | `origo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0074` | `origo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0075` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0076` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0077` | `origo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0078` | `origo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0079` | `origo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0080` | `pulso` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0081` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0082` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0083` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0084` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0085` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0086` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0087` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0088` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0089` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0090` | `pulso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0091` | `pulso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0092` | `pulso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0093` | `pulso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0094` | `numera` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0095` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0096` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0097` | `numera` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0098` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0099` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0100` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0101` | `numera` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0102` | `numera` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0103` | `numera` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0104` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0105` | `numera` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0106` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0107` | `pass` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0108` | `pass` | `USAB-PROFILE-CONTEXTUAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0109` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0110` | `pass` | `USAB-PROFILE-CONTEXTUAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0111` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0112` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0113` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0114` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0115` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0116` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0117` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0118` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0119` | `viso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0120` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0121` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0122` | `viso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0123` | `viso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0124` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0125` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0126` | `anima` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0127` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0128` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0129` | `anima` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0130` | `anima` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0131` | `anima` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0132` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0133` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0134` | `nexo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0135` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0136` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0137` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0138` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0139` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0140` | `nexo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0141` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0142` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0143` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0144` | `nexo` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0145` | `origo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0146` | `origo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0147` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0148` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0149` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0150` | `pulso` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0151` | `pulso` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0152` | `pulso` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0153` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0154` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0155` | `numera` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0156` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0157` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0158` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0159` | `numera` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0160` | `pass` | `USAB-PROFILE-ENTRY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0161` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0162` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0163` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0164` | `pass` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0165` | `pass` | `USAB-PROFILE-CONTEXTUAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0166` | `pass` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0167` | `pass` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0168` | `pass` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0169` | `pass` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0170` | `pass` | `USAB-PROFILE-WORK-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0171` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0172` | `pass` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0173` | `fogo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0174` | `fogo` | `USAB-PROFILE-CONDITIONAL-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0175` | `shell` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0176` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+| `VSCREEN-0177` | `nexo` | `USAB-PROFILE-SECONDARY-001` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | Consumir evidencia real de sesión y reconciliar toda observación asociada. |
+
+El estado `PENDIENTE_DE_EVIDENCIA` de esta tabla es real: todavía no representa hallazgos ni resultados ejecutados.
+
+---
+
+#### 6. Decisión obligatoria por observación
+
+| Decisión por observación | Regla |
+| --- | --- |
+| `HALLAZGO` | la observación demuestra un problema y debe generar un registro completo |
+| `NO_PROBLEMA_JUSTIFICADO` | la observación no evidencia incumplimiento y queda cerrada con justificación/evidencia |
+| `NO_APLICA` | el caso no aplica y conserva justificación revisable |
+| `PENDIENTE_DE_EVIDENCIA` | la evidencia no alcanza para decidir y no puede transformarse en cierre |
+
+Reglas:
+
+- ninguna observación puede desaparecer por no convertirse en hallazgo;
+- `NO_PROBLEMA_JUSTIFICADO` exige referencia a evidencia;
+- `NO_APLICA` exige justificación revisable;
+- `PENDIENTE_DE_EVIDENCIA` conserva owner y condición de salida;
+- una misma observación no puede clasificarse simultáneamente como problema y `NO_APLICA`.
+
+---
+
+#### 7. Registro obligatorio por hallazgo
+
+| Campo obligatorio | Regla |
+| --- | --- |
+| `finding_id` | identificador estable asignado solo cuando una observación real se convierte en hallazgo; no se preasignan IDs vacíos |
+| `session_id` | sesión real de 058 que origina el hallazgo |
+| `screen_id` | superficie `VSCREEN-*` afectada |
+| `app_code` | aplicación propietaria |
+| `actor_function_context` | actor, función o contexto realmente probado |
+| `device_mode` | dispositivo o modalidad observada |
+| `scenario_state` | escenario normal, vacío, carga, denegación, error, expiración, revocación o recuperación |
+| `criterion_failed` | criterio de 057 incumplido o fricción observada |
+| `classification` | defecto, deuda, solicitud de cambio, bloqueo de datos, bloqueo físico o `NO_APLICA` |
+| `severity` | `INFO`, `LOW`, `MEDIUM`, `HIGH` o `CRITICAL` |
+| `critical_error_class` | clase crítica de 057 cuando exista |
+| `evidence_reference` | referencia saneada y trazable |
+| `risk` | riesgo concreto de mantener el hallazgo |
+| `reproduction_steps` | pasos mínimos para reproducir sin inventar contexto |
+| `owner` | propietario responsable de resolver o enrutar |
+| `destination` | tarea o package canónico propietario cuando la corrección exceda 059 |
+| `correction_criterion` | condición verificable que debe cumplir la corrección |
+| `regression_test` | prueba o retest requerido para impedir reaparición |
+| `status` | estado vigente del hallazgo |
+| `retest_evidence` | evidencia real del retest cuando exista |
+| `approval_impact` | impacto sobre la posibilidad de aprobar la superficie en 060 |
+
+`finding_id` se asigna únicamente cuando existe un hallazgo real. No se precrean identificadores vacíos ni se inventan contadores para superficies sin problemas.
+
+---
+
+#### 8. Clasificación de hallazgos
+
+| Clasificación | Uso |
+| --- | --- |
+| `DEFECTO` | la superficie incumple el comportamiento, criterio o estado ya especificado |
+| `DEUDA` | la solución funciona pero conserva una limitación explícita que requiere trabajo posterior |
+| `SOLICITUD_DE_CAMBIO` | la observación pide alterar un contrato o comportamiento, no corregir el vigente |
+| `BLOQUEO_DE_DATOS` | la prueba o corrección no puede concluir por ausencia, inconsistencia o indisponibilidad de datos autorizados |
+| `BLOQUEO_FISICO` | hardware, dispositivo, periférico, red local u otra condición física impide completar la evaluación |
+| `NO_APLICA` | la observación queda fuera del alcance real de la superficie y conserva justificación revisable |
+
+Separaciones obligatorias:
+
+```text
+DEFECTO != SOLICITUD_DE_CAMBIO
+DEUDA != DEFECTO
+BLOQUEO_DE_DATOS != BLOQUEO_FISICO
+NO_APLICA != RESUELTO
+```
+
+Una corrección visual no puede absorber silenciosamente una modificación de permisos, procesos, contratos o datos.
+
+---
+
+#### 9. Severidad
+
+| Severidad | Criterio |
+| --- | --- |
+| `INFO` | observación informativa sin degradación demostrable ni bloqueo |
+| `LOW` | fricción menor sin pérdida de tarea, autoridad, datos o recuperación |
+| `MEDIUM` | dificultad repetible o desviación que afecta eficiencia/comprensión y exige ajuste antes del cierre recomendado |
+| `HIGH` | degradación importante, bloqueo funcional no crítico o riesgo operacional significativo |
+| `CRITICAL` | error crítico de 057, exposición/autoridad indebida, falso éxito, duplicación de efecto, pérdida de custodia, persistencia entre actores o bloqueo accesible crítico |
+
+Reglas:
+
+- cualquier error crítico de 057 se clasifica `CRITICAL`;
+- severidad no decide por sí sola el owner;
+- una severidad baja no autoriza cerrar sin evidencia cuando existe criterio de retest;
+- una solicitud de cambio puede tener alto impacto sin convertirse por ello en defecto.
+
+---
+
+#### 10. Owner, destino y corrección
+
+Todo hallazgo debe conservar:
+
+```text
+OWNER
++
+DESTINO CANONICO CUANDO CORRESPONDA
++
+CRITERIO DE CORRECCION
++
+PRUEBA DE REGRESION
++
+CONDICION DE SALIDA
+```
+
+Si la corrección pertenece a una tarea o package existente, 059 referencia ese propietario y no crea una tarea administrativa nueva.
+
+Si el destino todavía no puede resolverse con evidencia suficiente, el hallazgo permanece abierto y bloquea el cierre correspondiente; no se inventa un destino.
+
+---
+
+#### 11. Salidas válidas de cada hallazgo
+
+| Salida válida del hallazgo | Condición |
+| --- | --- |
+| `RESOLUCION_DEMOSTRADA` | la corrección está disponible y existe evidencia suficiente de retest/regresión |
+| `DIFERIMIENTO_EXPLICITO_BLOQUEANTE` | la corrección se pospone de forma explícita y la superficie correspondiente no puede aprobarse en 060 |
+| `DESTINO_POSTERIOR_COMPLETO` | el hallazgo queda asignado a tarea/package canónico con owner, alcance, criterio de corrección, regresión y condición de salida completos |
+
+Estas tres salidas implementan literalmente la condición de cierre de 059: resolución demostrada, diferimiento explícito bloqueante o destino posterior completo.
+
+---
+
+#### 12. Retest y regresión
+
+Un hallazgo que declare corrección materializada solo puede usar `RESOLUCION_DEMOSTRADA` cuando:
+
+1. existe evidencia de la corrección;
+2. se ejecutó el retest aplicable;
+3. la evidencia referencia la misma superficie, escenario y criterio fallido;
+4. no se introdujo un error crítico nuevo;
+5. la regresión requerida quedó ejecutada o tiene evidencia propietaria válida.
+
+Si falta cualquiera de estas condiciones, el hallazgo no se considera resuelto.
+
+---
+
+#### 13. Gate de cierre de AUTH-UI-059
+
+El gate se evalúa después del gate 058 y de la reconciliación de observaciones.
+
+Estado documental inicial:
+
+```text
+STATUS = PENDIENTE_DE_EVIDENCIA
+CONSUMER = AUTH-UI-060
+```
+
+Condiciones:
+
+| Condición | Regla de cierre |
+| --- | --- |
+| C01 | `AUTH-UI-058-USER-TEST-GATE-001 = PASS_TO_AUTH_UI_059` |
+| C02 | las 177 identidades `VSCREEN-*` están reconciliadas contra la evidencia real de 058 |
+| C03 | cero observaciones sin una decisión explícita |
+| C04 | cero hallazgos sin owner y destino canónico cuando corresponda |
+| C05 | cero hallazgos críticos cerrados solo por aceptación verbal |
+| C06 | cero correcciones visuales que oculten cambios de permisos, procesos o contratos |
+| C07 | cada hallazgo tiene clasificación y severidad |
+| C08 | cada hallazgo termina en resolución demostrada, diferimiento bloqueante o destino posterior completo |
+| C09 | toda resolución que declare corregido un hallazgo conserva evidencia de retest/regresión |
+| C10 | la salida hacia 060 conserva por superficie los hallazgos abiertos, diferidos y resueltos; ningún agregado sustituye la trazabilidad individual |
+
+Resultados permitidos:
+
+```text
+PASS_TO_AUTH_UI_060
+FAIL
+PENDIENTE_DE_EVIDENCIA
+```
+
+`PASS_TO_AUTH_UI_060` no significa que todas las superficies estén aprobadas. Significa que el universo de observaciones y hallazgos está completamente reconciliado y 060 puede decidir cada pantalla con evidencia suficiente.
+
+---
+
+#### 14. Handoff a AUTH-UI-060
+
+060 recibe por superficie:
+
+```text
+SCREEN_ID
++
+DECISIONES DE OBSERVACION
++
+HALLAZGOS
++
+SEVERIDAD
++
+ERRORES CRITICOS
++
+ESTADO DE RESOLUCION
++
+EVIDENCIA DE RETEST
++
+DIFERIMIENTOS BLOQUEANTES
++
+DESTINOS POSTERIORES
++
+IMPACTO DE APROBACION
+```
+
+Ninguna pantalla puede llegar a 060 como aprobable por ausencia de registros.
+
+---
+
+#### 15. Estado actual y pendientes
+
+| Materia | Estado | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| contrato del registro 059 | `ESPECIFICADO` | `AUTH-UI-059` | aprobación documental |
+| 177 identidades a reconciliar | `ESPECIFICADO` | `AUTH-UI-059` | consumir evidencia real por superficie |
+| evidencia de sesiones | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-058-USER-TEST-GATE-001` | `PASS_TO_AUTH_UI_059` |
+| observaciones reales | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-059` después del gate 058 | reconciliación completa |
+| hallazgos reales | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-059` después del gate 058 | registro completo por hallazgo |
+| retest/corrección | `PENDIENTE_DE_EVIDENCIA` | owner/destino del hallazgo | salida válida demostrada |
+| gate de cierre 059 | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-059` | condiciones C01..C10 satisfechas |
+| aprobación final | `PENDIENTE_DE_EVIDENCIA` | `AUTH-UI-060` | gate 059 en `PASS_TO_AUTH_UI_060` |
+
+---
+
+#### 16. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación: la tarea define el registro, clasificación, enrutamiento, retest y cierre documental de hallazgos de usabilidad derivados de criterios y pruebas ya existentes. No crea comportamiento de producto, autorización, navegación, dato persistente, integración, ruta, pantalla o efecto empresarial nuevo; tampoco modifica, difiere, descarta o declara obsoleto ningún requisito histórico. El registro canónico de requisitos de prueba no cambia.
+
+---
+
+#### 17. Cobertura de prueba vigente reutilizada
+
+Se reutiliza la cobertura vigente de 057 y el contrato de ejecución/evidencia de 058. Las correcciones futuras consumen las pruebas propietarias de la tarea o package destino y no se duplican dentro de 059.
+
+Esta sección es trazabilidad heredada y no modifica 04A.
+
+---
+
+#### 18. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental real corresponde al checkout local después de incorporar 058 y reemplazar este artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, BLOQUE I, topología y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron el owner, título, tipo, condición histórica de cierre de 059, continuidad, topología, `package.json`, preflight y validadores aplicables; 058 se consume desde su versión completa aprobada mientras su incorporación permanece pendiente. |
+| OPERATIVA | NOT_EXECUTED | No existen observaciones o hallazgos reales declarados en esta entrega; dependen del gate operativo de 058. |
+| FÍSICA | NOT_APPLICABLE | 059 no crea instancia física propia ni modifica código, datos, permisos, Supabase o infraestructura. |
+
+---
+
+#### 19. Criterios de aceptación
+
+La tarea documental queda completa cuando:
+
+- [ ] las 177 superficies aparecen exactamente una vez en el registro de reconciliación;
+- [ ] ninguna superficie recibe hallazgos inventados;
+- [ ] toda observación futura deberá tener una decisión explícita;
+- [ ] el registro por hallazgo contiene todos los campos obligatorios;
+- [ ] clasificación distingue defecto, deuda, solicitud de cambio, bloqueo de datos, bloqueo físico y `NO_APLICA`;
+- [ ] severidad usa `INFO`, `LOW`, `MEDIUM`, `HIGH` o `CRITICAL`;
+- [ ] errores críticos de 057 se conservan como `CRITICAL`;
+- [ ] cero hallazgos pueden cerrarse solo por aceptación verbal;
+- [ ] correcciones visuales no ocultan cambios de permisos, procesos o contratos;
+- [ ] cada hallazgo conserva owner y destino cuando corresponda;
+- [ ] un hallazgo resuelto exige evidencia de retest/regresión aplicable;
+- [ ] las únicas salidas finales son resolución demostrada, diferimiento bloqueante o destino posterior completo;
+- [ ] el gate 059 inicia `PENDIENTE_DE_EVIDENCIA`;
+- [ ] 060 solo consume resultados reales después de `PASS_TO_AUTH_UI_060`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos.
+
+---
+
+#### 20. Límites
+
+Este contrato no afirma que ya existan problemas, no corrige ninguno y no aprueba pantallas. La población operativa del registro depende de evidencia real proveniente de 058.
+
+---
+
+#### 21. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`AUTH-UI-058 — Probar con usuarios reales`
+
+**TAREA ACTUAL APROBADA**
+`AUTH-UI-059 — Registrar problemas encontrados`
+
+**SIGUIENTE TAREA RESERVADA**
+`AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap`
 
 ### [ ] AUTH-UI-060 — Aprobar la pantalla antes de retirarla del roadmap
 
