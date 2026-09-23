@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1277** |
+| Aprobadas | **1278** |
 | En propuesta | **0** |
-| No iniciadas | **319** |
+| No iniciadas | **318** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **80.01% (1277/1596)** |
+| Porcentaje de completamiento | **80.08% (1278/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **319** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1178** |
+| ⏸ NO_EVALUADA | **318** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1179** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-AUTH-005` — Restringir Repostería | ✅ APROBADA |
-| Tarea actual | `FOGO-AUTH-006` — Restringir Cocina | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-AUTH-007` — Restringir Insumos | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-AUTH-006` — Restringir Cocina | ✅ APROBADA |
+| Tarea actual | `FOGO-AUTH-007` — Restringir Insumos | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-AUTH-008` — Definir permisos de supervisor | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1055,7 +1055,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-003` | Filtrar cola por sede y área | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-004` | Restringir Panadería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-005` | Restringir Repostería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-006` | Restringir Cocina | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-006` | Restringir Cocina | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-007` | Restringir Insumos | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-008` | Definir permisos de supervisor | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-009` | Proteger inicio de producción | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
