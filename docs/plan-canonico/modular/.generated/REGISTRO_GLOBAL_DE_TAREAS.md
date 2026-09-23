@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1289** |
+| Aprobadas | **1290** |
 | En propuesta | **0** |
-| No iniciadas | **307** |
+| No iniciadas | **306** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **80.76% (1289/1596)** |
+| Porcentaje de completamiento | **80.83% (1290/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **307** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1190** |
+| ⏸ NO_EVALUADA | **306** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1191** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-UX-001` — Inventariar procesos reales de producción | ✅ APROBADA |
-| Tarea actual | `FOGO-UX-002` — Separar cocina, panadería y repostería | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-UX-003` — Diseñar inicio por área productiva | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-UX-002` — Separar cocina, panadería y repostería | ✅ APROBADA |
+| Tarea actual | `FOGO-UX-003` — Diseñar inicio por área productiva | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-UX-004` — Mostrar producción pendiente del turno | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1067,7 +1067,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-016` | Ejecutar pruebas integrales | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-001` | Inventariar procesos reales de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-002` | Separar cocina, panadería y repostería | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-002` | Separar cocina, panadería y repostería | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-003` | Diseñar inicio por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-004` | Mostrar producción pendiente del turno | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-005` | Diseñar inicio de lote | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
