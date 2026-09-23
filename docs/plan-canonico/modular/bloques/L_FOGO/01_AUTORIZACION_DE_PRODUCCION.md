@@ -9418,5 +9418,714 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-015 — Migrar a paquetes de vento-shell`
 
-### [ ] FOGO-AUTH-015 — Migrar a paquetes de vento-shell
+### ✅ FOGO-AUTH-015 — Migrar a paquetes de vento-shell
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-014 — Registrar actor y turno
+**Tarea siguiente:** FOGO-AUTH-016 — Ejecutar pruebas integrales
+**Tipo de tarea:** documental; contrato canónico de migración de consumidores FOGO hacia paquetes compartidos de `vento-shell`, con adopción física posterior por `PER_IMPLEMENTATION_UNIT`, gate `POST_E5_PACKAGE`, paridad verificable y rollback independiente
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** Ninguno durante esta tarea.
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo los consumidores de autorización, contexto, acceso técnico compartido y presentación de FOGO migrarán desde helpers, literales y copias locales hacia las superficies compartidas gobernadas por `vento-shell`, sin cambiar la semántica empresarial aprobada ni convertir la migración técnica en una ampliación de autoridad.
+
+La regla principal queda:
+
+```text
+CONTRATO CANONICO COMPARTIDO LISTO
++
+CONSUMIDOR FOGO INVENTARIADO
++
+BINDING EXACTO DE CAPACIDAD / CONTEXTO / RECURSO
++
+PARIDAD O CORRECCION CANONICA DEMOSTRADA
++
+ROLLBACK SEGURO E INDEPENDIENTE
++
+GATE E5 Y UNIDAD FISICA AUTORIZADA
+=
+ADOPCION FOGO ELEGIBLE PARA CUTOVER
+```
+
+La existencia física de un package, un helper compartido, un import posible o una baseline de compatibilidad no equivale a consumidor migrado.
+
+---
+
+#### 2. Handoff recibido de FOGO-AUTH-013 y FOGO-AUTH-014
+
+`FOGO-AUTH-015` recibe dos contratos que no puede reinterpretar.
+
+De `FOGO-AUTH-013` conserva exactamente:
+
+- namespace `fogo.production.*`;
+- prohibición de alias ampliatorio desde `production.*`;
+- separación `RECIPE_DEFINITION` / `RECIPE_PUBLICATION`;
+- descomposición obligatoria de `recipes.manage`;
+- bindings atómicos para mutaciones sensibles;
+- contexto territorial y recurso exacto;
+- idempotencia y concurrencia;
+- segregación de funciones;
+- denegación fail-closed cuando una capacidad requerida todavía no existe o no está materializada.
+
+De `FOGO-AUTH-014` conserva exactamente:
+
+- principal autenticado separado de actor efectivo;
+- identidad laboral separada de rol, turno, dispositivo y permiso;
+- turno y check-in solo cuando el contrato los exige;
+- actor y contexto revalidados en el punto de efecto;
+- firma de dispositivo compartido como evidencia, nunca como permiso;
+- denegaciones, conflictos y fallos con evidencia correlacionable;
+- invalidación de autoridad stale ante cambio de actor, turno, área, rol, sesión, asignación o dispositivo.
+
+Migrar paquetes no autoriza simplificar ninguna de estas invariantes.
+
+---
+
+#### 3. Topología y cardinalidad física
+
+La topología aplicable permanece:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. esta tarea define una sola vez el contrato documental de migración FOGO;
+2. no existe una instancia física global `FOGO-AUTH-015::GLOBAL`;
+3. cada adopción física usa `FOGO-AUTH-015::<implementation_unit_id>`;
+4. cada unidad declara consumidores concretos, packages objetivo, versiones, bindings, pruebas, rollback y evidencia;
+5. cada unidad espera el package propietario y `E5-GATE-008::<package_id> = PASS` antes de materializarse;
+6. una unidad no habilita automáticamente otra superficie FOGO;
+7. una unidad parcialmente migrada no permite declarar toda la familia FOGO migrada;
+8. cualquier modificación de Supabase perteneciente a VENTO se crea, versiona, documenta y ejecuta desde `vento-shell` bajo la unidad física propietaria.
+
+---
+
+#### 4. Envelope canónico de packages para FOGO
+
+La baseline verificable de `vento-fogo` reconoce exactamente cuatro packages compartidos:
+
+| Package | Relación FOGO | Rol dentro de esta tarea |
+| --- | --- | --- |
+| `@vento/contracts` | `PKG-COMP-MX-004` | contratos estáticos, identidades, catálogos, tipos y vocabularios compartidos |
+| `@vento/os-context` | `PKG-COMP-MX-011` | resolución runtime de contexto y autorización mediante fronteras compartidas |
+| `@vento/supabase` | `PKG-COMP-MX-018` | acceso técnico compartido a Supabase; no contiene autoridad empresarial |
+| `@vento/ui-web` | `PKG-COMP-MX-025` | presentación web compartida; nunca decide permisos, contexto ni efectos |
+
+Este conjunto es el envelope de compatibilidad FOGO observado. No significa que las cuatro dependencias deban tocarse en toda unidad ni que todas tengan autoridad sobre autorización.
+
+La autoridad se conserva separada:
+
+```text
+@vento/contracts
+= CONTRATO ESTATICO
+
+@vento/os-context
+= RESOLUCION RUNTIME COMPARTIDA
+
+@vento/supabase
+= ACCESO TECNICO
+
+@vento/ui-web
+= PRESENTACION
+```
+
+Ninguna inversión de esas responsabilidades está permitida.
+
+---
+
+#### 5. Estado AS-IS de los packages compartidos
+
+El estado remoto verificado demuestra fundaciones físicas, pero no una adopción completa por FOGO.
+
+| Package | Estado observado | Restricción para FOGO-AUTH-015 |
+| --- | --- | --- |
+| `@vento/contracts` | raíz privada `1.0.0-alpha.1`; módulo `authorization` materializado internamente; publicación/adopción pública aún diferenciadas | FOGO no importa rutas internas ni trata una prerelease de autoría como contrato publicado consumible |
+| `@vento/os-context` | workspace privado `0.1.0`, con export raíz sobre `src` y estado transitorio | la adopción estable espera la superficie/versionado autorizado; compatibilidad legacy no se vuelve arquitectura final |
+| `@vento/supabase` | raíz privada `PRE_E5_FOUNDATION`, sin exports npm públicos ni consumidores migrados | solo acceso técnico; no se usa `service_role`, sesión Supabase o factory como autorización empresarial |
+| `@vento/ui-web` | raíz privada `PRE_E5_FOUNDATION`, sin API npm pública, versión ni consumidores migrados | la UI recibe decisiones ya resueltas y nunca sustituye guards server-side |
+
+Una unidad FOGO solo puede adoptar una superficie compartida que sea consumible conforme al lifecycle propietario del package. Está prohibido saltar ese lifecycle mediante imports a rutas internas, copias de archivos o enlaces ad hoc.
+
+---
+
+#### 6. Estado AS-IS de `vento-fogo`
+
+La baseline `SHELL-CI-008::GLOBAL` de `vento-fogo` ya declara compatibilidad potencial con los cuatro packages del envelope y conserva perfiles de prueba específicos para cada uno.
+
+Sin embargo, el `package.json` observado de `vento-fogo` todavía no declara dependencias `@vento/*`.
+
+Por tanto:
+
+```text
+BASELINE DE COMPATIBILIDAD PREPARADA
+!=
+PACKAGE ADOPTADO
+!=
+CONSUMIDOR MIGRADO
+!=
+LEGACY RETIRADO
+```
+
+Además, la baseline observada todavía serializa la identidad histórica `devVentoGroup/vento-fogo`, mientras el remoto canónico verificado se resuelve como `vento-group-sas/vento-fogo`.
+
+La unidad física deberá reconciliar esa identidad de evidencia de forma explícita. Un redirect o alias de repositorio no puede convertirse silenciosamente en dos identidades distintas ni en equivalencia asumida sin prueba.
+
+---
+
+#### 7. Namespace y catálogo de permisos
+
+Los seis permisos FOGO activos observados que ya pertenecen al vocabulario canónico son:
+
+```text
+fogo.access
+fogo.production.batches.view
+fogo.production.batches.create
+fogo.production.orders.view
+fogo.production.recipe_book.view
+fogo.production.recipes.view
+```
+
+La migración consume esas identidades exactas cuando la acción y el recurso correspondan.
+
+Queda prohibido:
+
+```text
+production.*
+=> equivalencia automática
+=> fogo.production.*
+```
+
+También queda prohibido crear por conveniencia:
+
+- wildcards FOGO no registrados;
+- permisos locales equivalentes por nombre aproximado;
+- fallbacks desde una capacidad ausente hacia una capacidad más amplia;
+- aliases entre lectura y mutación;
+- aliases entre recurso de definición y publicación;
+- aliases que concedan una acción porque la vista que la contiene es accesible.
+
+---
+
+#### 8. Descomposición de `recipes.manage`
+
+La normalización vigente conserva:
+
+```text
+fogo.production.recipes.manage
+-> DECOMPOSE_REQUIRED
+```
+
+Y nombra como objetivo separado:
+
+```text
+fogo.production.recipes.view
+fogo.production.recipes.create
+fogo.production.recipes.update
+fogo.production.recipes.archive
+```
+
+La migración debe distinguir dos estados diferentes:
+
+1. `recipes.view` ya pertenece al vocabulario activo observado y puede consumirse cuando su contrato de recurso y contexto sea aplicable;
+2. `recipes.create`, `recipes.update` y `recipes.archive` no se consideran asignables por el solo hecho de estar nombrados en la normalización: requieren su materialización canónica propietaria antes de ser consumidos.
+
+Mientras una capacidad atómica requerida no exista de forma canónica y consumible, el efecto correspondiente queda denegado.
+
+`production.recipes.manage` no puede sobrevivir como alias wildcard que habilite lectura, creación, actualización, archivo, aprobación, publicación o exportación.
+
+---
+
+#### 9. Acciones sin binding atómico materializado
+
+Aprobación, publicación y exportación de receta no obtienen autoridad por inferencia desde `update`, `view`, `manage`, rol, autoría o pantalla.
+
+Para cada efecto sensible:
+
+```text
+BINDING ATOMICO MATERIALIZADO
+?
+SI -> evaluar contrato exacto
+NO -> DENY
+```
+
+La migración técnica no puede adelantarse al contrato propietario de la capacidad.
+
+---
+
+#### 10. Separación de rol base y rol operativo
+
+La adopción compartida conserva sin aliases la separación:
+
+```text
+supervisor
+!=
+gerencia_operativa
+```
+
+`supervisor` pertenece al vocabulario de rol base compartido.
+
+`gerencia_operativa` pertenece al vocabulario de rol operativo compartido.
+
+La migración no podrá:
+
+- convertir uno en alias del otro;
+- inferir `gerencia_operativa` por tener rol base `supervisor`;
+- inferir `supervisor` por ejercer una función operativa;
+- transportar grants entre ambos catálogos por coincidencia nominal o conveniencia local;
+- usar el nombre de cualquiera de los dos como sustituto del permiso exacto.
+
+El evaluador compartido debe recibir y resolver el carril aplicable, no reconstruirlo desde heurísticas del consumidor.
+
+---
+
+#### 11. Contexto efectivo y actor durante la migración
+
+Toda unidad que sustituya helpers locales de contexto debe preservar el contrato de `FOGO-AUTH-014`.
+
+La decisión server-side conserva, según la capacidad:
+
+- principal;
+- actor efectivo;
+- rol base;
+- rol operativo;
+- turno;
+- check-in;
+- sede;
+- área;
+- dispositivo;
+- permiso o capacidad exacta;
+- recurso;
+- estado y versión;
+- decisión y razones.
+
+Un `EffectiveContext` legacy, un `ActiveWorkContext` local, un cookie de selección, una fila UI o un objeto de navegación no se convierten automáticamente en `AccessContext` autoritativo.
+
+La migración debe resolver la equivalencia mediante el contrato compartido vigente o fallar cerrada.
+
+---
+
+#### 12. Dispositivo compartido
+
+El helper local de firma compartida observado en FOGO es una pieza de evidencia existente, no una frontera de autorización definitiva.
+
+Durante la adopción:
+
+1. la identidad técnica del dispositivo permanece separada del actor humano;
+2. `signature_id`, `actor_employee_id` y `actor_shift_id` no conceden permiso;
+3. el actor y el turno se revalidan contra la fuente autoritativa cuando la capacidad lo exige;
+4. cambiar de trabajador invalida atribución previa para acciones nuevas;
+5. una firma stale, revocada o incompatible no se reutiliza;
+6. el package compartido no puede degradar estas reglas para alcanzar paridad superficial con el helper local.
+
+---
+
+#### 13. Frontera de `@vento/contracts`
+
+FOGO consume de `@vento/contracts` únicamente contratos estáticos publicados o expuestos mediante la superficie autorizada del package.
+
+Puede recibir, cuando estén listos para adopción:
+
+- `AppCode`;
+- `PermissionKey`;
+- roles base y operativos;
+- scopes;
+- contratos de contexto;
+- reason codes y estructuras cerradas relacionadas.
+
+No puede:
+
+- importar internals no publicados;
+- copiar artefactos generados hacia el repositorio FOGO para crear una segunda autoridad;
+- mantener un enum local paralelo después del cutover del consumidor;
+- cast-ear strings desconocidos a identidades canónicas;
+- extender localmente un union o catálogo compartido;
+- tratar metadata de package como prueba de autorización runtime.
+
+---
+
+#### 14. Frontera de `@vento/os-context`
+
+`@vento/os-context` es la frontera runtime compartida objetivo para contexto y autorización, no un contenedor de reglas empresariales FOGO.
+
+La adopción debe preservar:
+
+```text
+app_code fijado por adapter propietario
++
+contexto resuelto server-side
++
+permiso exacto
++
+recurso y territorio aplicables
+-> decision compartida
+```
+
+La superficie cliente solo puede recibir proyecciones seguras ya resueltas. No decide permisos ni mutaciones.
+
+Compatibilidad con RPC o helpers legacy permanece aislada y deprecada conforme al contrato compartido; no admite consumidores nuevos ni reexports que la conviertan en API final.
+
+---
+
+#### 15. Frontera de `@vento/supabase`
+
+`@vento/supabase` puede sustituir factories y acceso técnico compartido únicamente cuando la unidad propietaria lo incluya.
+
+Reglas:
+
+- browser, server, native y privileged son fronteras técnicas distintas;
+- la sesión Supabase no equivale a permiso FOGO;
+- `service_role` no equivale a actor, rol, turno ni autoridad empresarial;
+- configuración y secretos no se resuelven desde lógica de dominio del package;
+- un wrapper RPC no se convierte en propietario de la regla FOGO;
+- las mutaciones protegidas continúan revalidando autorización en servidor;
+- cualquier cambio Supabase de VENTO sigue perteneciendo a `vento-shell`.
+
+La migración general de acceso a datos que no sea necesaria para la frontera AUTH permanece en su tarea propietaria y no se absorbe aquí.
+
+---
+
+#### 16. Frontera de `@vento/ui-web`
+
+`@vento/ui-web` solo presenta decisiones y contexto ya resueltos.
+
+Está prohibido que una migración visual:
+
+- derive autoridad desde `disabled`, `hidden`, `visible` o una ruta;
+- interprete `ContextIndicator` como contexto autoritativo;
+- use `AppShell`, `TaskNavigation`, `PrimaryActionPanel` o cualquier superficie visual como guard de servidor;
+- transforme una confirmación humana en permiso;
+- conceda acceso porque el componente compartido renderizó una acción.
+
+La adopción de UI puede compartir el mismo lote físico cuando el package E5 lo autorice, pero su paridad visual no certifica la autorización FOGO.
+
+---
+
+#### 17. Inventario mínimo de consumidores FOGO
+
+La baseline verificable de FOGO conserva doce superficies de consumidor que deben permanecer reconciliadas durante la migración:
+
+| ID | Superficie | Relevancia para esta tarea |
+| --- | --- | --- |
+| `FOGO-SURFACE-001` | identidad, sesión y permisos | directa; contratos y evaluación compartida |
+| `FOGO-SURFACE-002` | contexto operativo, sede, área y actor | directa; contexto y atribución |
+| `FOGO-SURFACE-003` | inventario de rutas y acceso | directa en guards; la ruta no concede autoridad |
+| `FOGO-SURFACE-004` | administración de recetas | directa en permisos y mutaciones |
+| `FOGO-SURFACE-005` | estructura, unidades e ingredientes | indirecta; no adquiere autoridad por migración |
+| `FOGO-SURFACE-006` | pasos, salidas y publicación de receta | directa cuando existe acción protegida; binding atómico obligatorio |
+| `FOGO-SURFACE-007` | recetario operacional | directa en lectura de publicación |
+| `FOGO-SURFACE-008` | creación de lote | directa; mutación protegida |
+| `FOGO-SURFACE-009` | rutas de producción, destino, empaques y modo de salida | contexto/recurso; no crea permiso propio |
+| `FOGO-SURFACE-010` | lotes, consumos, rendimiento y trazabilidad | lectura/efecto bajo permisos exactos |
+| `FOGO-SURFACE-011` | integración y fronteras de dominio | directa en acceso técnico; sin traslado de ownership |
+| `FOGO-SURFACE-012` | UI, SSR, interacción, accesibilidad y exportación | UI no autoritativa; exportación requiere binding propio |
+
+Cada unidad física debe resolver el delta real de archivos y consumidores contra este inventario antes de modificar imports o retirar legacy.
+
+---
+
+#### 18. Relación con SHELL-MIG-001..008
+
+`FOGO-AUTH-015` no redefine el lifecycle compartido de migración de consumidores web.
+
+Consume:
+
+- `SHELL-MIG-001` para inventario ejecutable de consumidores;
+- `SHELL-MIG-002` para lotes reversibles por repositorio;
+- `SHELL-MIG-003` para compatibilidad temporal gobernada y bloqueo de nuevos consumidores legacy;
+- `SHELL-MIG-004` a `SHELL-MIG-006` cuando la unidad incluya scaffold, UI o requisitos visuales compartidos;
+- `SHELL-MIG-007` para contrato de paridad ejecutable por package;
+- `SHELL-MIG-008` para retiro legacy con uso residual cero o migración certificada.
+
+`FOGO-AUTH-015` aporta las invariantes específicas de autorización FOGO que esos mecanismos no pueden reinterpretar.
+
+---
+
+#### 19. Regla de paridad
+
+La paridad se evalúa sobre inputs equivalentes y evidencia atribuible al mismo consumidor, versión, package, contexto y recurso.
+
+Cuando el comportamiento legacy ya coincide con el contrato canónico, la adopción debe demostrar equivalencia de:
+
+- allow/deny;
+- razones relevantes;
+- actor/contexto;
+- territorio;
+- recurso;
+- estado/version;
+- serialización contractual cuando aplique.
+
+Cuando el comportamiento legacy contiene una brecha ya documentada, la migración no imita el bug para producir igualdad artificial.
+
+Ejemplos:
+
+```text
+LEGACY production.recipe_book.view
+usado como guard de crear lote
+!=
+TARGET fogo.production.batches.create
+```
+
+```text
+LEGACY production.recipes.manage
+como wildcard
+!=
+TARGET capacidades atomicas
+```
+
+En esos casos, la salida canónica correcta prevalece y la diferencia debe quedar explicada y probada como corrección intencional, nunca ocultada como “paridad”.
+
+---
+
+#### 20. Compatibilidad temporal y dualidad
+
+Una transición temporal no puede crear dos autoridades activas para el mismo efecto.
+
+Puede existir comparación shadow o adapter temporal únicamente cuando el contrato compartido de migración lo autorice y siempre que:
+
+- un solo evaluador determine el efecto empresarial;
+- el segundo resultado no ejecute una mutación duplicada;
+- el adapter sea versionado, explícito y fail-closed;
+- no cree aliases ampliatorios;
+- no agregue consumidores legacy nuevos;
+- las divergencias queden observables;
+- exista fecha/condición de retiro gobernada por el lifecycle compartido.
+
+Un `DENY` del evaluador canónico nunca se convierte en `ALLOW` por fallback al helper local.
+
+---
+
+#### 21. Rollback
+
+Cada unidad debe demostrar rollback independiente antes del cutover.
+
+El rollback puede restaurar una versión técnica anterior únicamente si conserva el contrato de seguridad vigente.
+
+Queda prohibido que rollback:
+
+- restaure un wildcard `manage` prohibido;
+- reactive un alias `production.* -> fogo.production.*` ampliatorio;
+- vuelva a autorizar por nombre de rol;
+- pierda actor, turno, razones o auditoría generados durante la ventana;
+- revierta datos empresariales confirmados por restaurar código;
+- borre evidencias o eventos creados durante el cutover;
+- requiera bajar simultáneamente todos los repositorios consumidores.
+
+Si no existe un estado anterior seguro y compatible, la unidad no está lista para cutover.
+
+---
+
+#### 22. Versionado y compatibilidad de consumidor
+
+La unidad física conserva evidencia de:
+
+- versión o identidad exacta del package compartido;
+- commit del consumidor;
+- manifest y lockfile;
+- matriz `PKG-COMP-MX-*` aplicable;
+- suite de contrato del consumidor;
+- entorno y runtime;
+- resultado de build, typecheck, lint y pruebas aplicables;
+- ausencia de dependencias flotantes que cambien semántica sin revisión;
+- capacidad de coexistir temporalmente con otros repositorios aún no migrados.
+
+No se exige actualización simultánea de todas las aplicaciones VENTO.
+
+---
+
+#### 23. Gate de materialización por unidad
+
+Una unidad `FOGO-AUTH-015::<implementation_unit_id>` solo es elegible cuando demuestra, como mínimo:
+
+1. package E5 propietario identificado;
+2. `E5-GATE-008::<package_id> = PASS`;
+3. superficie compartida consumible por el mecanismo de distribución aprobado;
+4. consumidores exactos y delta inventariados;
+5. bindings de permiso/contexto/recurso resueltos sin inferencia;
+6. capacidades atómicas requeridas materializadas o efectos no disponibles en `DENY`;
+7. package versions y lockfiles identificables;
+8. pruebas de package y consumidor disponibles;
+9. paridad o corrección canónica explicada;
+10. pruebas negativas fail-closed;
+11. rollback seguro probado;
+12. cero secretos o `service_role` expuestos a superficies no privilegiadas;
+13. cero autoridad cliente-side añadida;
+14. evidencia suficiente para que `FOGO-AUTH-016` ejecute la certificación integral posterior.
+
+---
+
+#### 24. Criterio de retiro de legacy
+
+Migrar un consumidor no autoriza borrar inmediatamente su implementación anterior.
+
+El retiro se gobierna por `SHELL-MIG-008` y exige evidencia de uso residual cero o migración certificada.
+
+Antes del retiro se conserva:
+
+- inventario de referencias estáticas y dinámicas;
+- rutas y handlers alcanzables;
+- jobs, scripts y CI;
+- imports y adapters;
+- dependencias externas conocidas;
+- telemetría o evidencia equivalente cuando el contrato la exija;
+- rollback ya validado.
+
+No se elimina un helper únicamente porque un grep simple no lo encuentre consumido.
+
+---
+
+#### 25. Hallazgos AS-IS y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `vento-fogo` tiene baseline para cuatro packages, pero no declara dependencias `@vento/*`. | Demuestra preparación, no adopción. | `FOGO-AUTH-015::<implementation_unit_id>` + lifecycle `SHELL-MIG-001..008` | dependencia/superficie autorizada, consumidor migrado, pruebas, paridad y rollback acreditados |
+| `@vento/contracts/authorization` está materializado internamente pero su publicación/adopción pública permanece separada. | Bloquea imports internos como solución de migración. | `SHELL-PKG-001..008`; `SHELL-CON-001..008`; `SHELL-AUTH-001` | superficie consumible versionada y matriz compatible disponibles para la unidad |
+| `@vento/os-context@0.1.0` permanece transitorio y con compatibilidad legacy. | Bloquea tratar la API transitoria como estable final. | `SHELL-AUTH-001`; `SHELL-PKG-001..005`; lifecycle `SHELL-MIG-001..008` | superficie/version estable o explícitamente autorizada, legacy aislado y consumidor certificado |
+| `@vento/supabase` y `@vento/ui-web` son raíces privadas PRE_E5 sin consumidores migrados. | Bloquea adopción por imports internos y evita atribuirles autoridad. | propietarios `SHELL-DB-*`, `SHELL-UI-*`, `SHELL-PKG-*` y `SHELL-MIG-*` aplicables | superficie pública/autorizada, compatibilidad y lote reversible demostrados |
+| runtime FOGO conserva literales `production.*`. | Riesgo de alias ampliatorio o decisión divergente. | `FOGO-AUTH-015::<implementation_unit_id>` | consumidor usa identidad canónica exacta o adapter temporal gobernado uno-a-uno, sin fallback ampliatorio |
+| `production.recipes.manage` agrupa acciones distintas. | Bloquea cutover seguro de administración de recetas. | `FOGO-AUTH-013::<implementation_unit_id>` + `FOGO-AUTH-015::<implementation_unit_id>` | capacidades atómicas materializadas; consumidores migrados; wildcard sin nuevas asignaciones ni fallback |
+| `createBatch` puede entrar por un permiso nominal de recetario. | Riesgo de lectura usada como mutación. | `FOGO-AUTH-009::<implementation_unit_id>` + `FOGO-AUTH-013::<implementation_unit_id>` + adopción `FOGO-AUTH-015` | punto de efecto usa binding exacto de `fogo.production.batches.create` y contexto/recurso vigentes |
+| baseline FOGO conserva identidad histórica `devVentoGroup/vento-fogo` mientras el remoto verificado es `vento-group-sas/vento-fogo`. | Puede fragmentar evidencia o producir comparación contra identidad obsoleta. | `FOGO-AUTH-015::<implementation_unit_id>` y gate consumidor `SHELL-CI-008` | evidencia y gate resuelven una identidad canónica única y trazable sin duplicar el repositorio |
+| actor/contexto local todavía debe converger con frontera compartida sin perder evidencia. | Riesgo de paridad superficial con atribución degradada. | `FOGO-AUTH-014::<implementation_unit_id>` + `FOGO-AUTH-015::<implementation_unit_id>` | decisión compartida conserva principal, actor, turno/check-in cuando aplica, territorio, recurso, razones y resultado |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 26. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: compatibilidad de packages, paridad de consumidores, rollback, autorización canónica, contexto, migración reversible, retiro legacy, actor/turno y protección FOGO ya cuentan con cobertura vigente. Esta tarea especializa esas obligaciones para la adopción FOGO y asigna su materialización por unidad sin crear una regla verificable nueva fuera de la cobertura existente.
+
+---
+
+#### 27. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, estado, relaciones, secuencia ni propietario:
+
+- `TREQ-AUTH-001` para autorización final por permisos, contexto y alcance canónicos sin autoridad por listas locales de rol;
+- `TREQ-AUTH-002` para consumir únicamente identificadores de permiso existentes y válidos en el catálogo vigente;
+- `TREQ-AUTH-004` para equivalencia de decisiones entre evaluadores sobre el mismo principal, actor y contexto, sin excepciones locales ampliatorias;
+- `TREQ-AUTH-008` para separación de carril administrativo y operativo y prerrequisitos de turno/check-in cuando correspondan;
+- `TREQ-AUTH-013` para revalidación server-side de principal, actor, territorio, contexto, estado y columnas/efectos permitidos;
+- `TREQ-AUTH-014` para invalidación de autoridad stale ante cambios de sesión, turno, área, trabajador, dispositivo, rol o asignación;
+- `TREQ-AUTH-015` para evidencia correlacionable y compatibilidad de rollback sin perder auditoría;
+- `TREQ-SHELL-002` para que responsabilidades compartidas provengan de implementación compartida/generada o local clasificada y las copias demuestren paridad;
+- `TREQ-SHELL-006` para pruebas de package y matriz de compatibilidad contra cada consumidor antes de publicar o adoptar;
+- `TREQ-SHELL-007` para rollback independiente sin restaurar bypasses ni perder datos o auditoría;
+- `TREQ-SHELL-008` para declaración y evidencia reproducible de requisitos afectados en packages y PR;
+- `TREQ-SHELL-043` y `TREQ-SHELL-044` para contratos compartidos de contexto y namespaces cerrados sin aliases/casts ampliatorios;
+- `TREQ-SHELL-064` para tratar `@vento/os-context@0.1.0` como transitorio y bloquear una primera estable hasta cumplir publicación y compatibilidad;
+- `TREQ-SHELL-065` para aislar compatibilidad legacy de `@vento/os-context`, prohibir consumidores nuevos y gobernar su retiro;
+- `TREQ-FOGO-001` para ciclo productivo con actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` para receta publicada inmutable/versionada y `recipe_version_ref` exacta;
+- `TREQ-FOGO-004` para ejecución productiva, lotes, receta/version, materiales, calidad, genealogía y cierre no destructivo;
+- `TREQ-FOGO-022` para atribuir permisos únicamente desde evidencia real, sin inventar protección o desprotección;
+- `TREQ-FOGO-023` para revalidar permiso, actor, contexto, estado e idempotencia al crear lote, sin autorizar por la vista.
+
+Esta trazabilidad no modifica el Registro 04A.
+
+---
+
+#### 28. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | Build, typecheck, lint y suites de consumidor corresponden a las unidades físicas y al checkout local después de incorporar este contrato. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, batería global y lifecycle documental quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell` vigente, owner FOGO, topología, familias `SHELL-PKG-*`, `SHELL-MIG-*`, packages `@vento/contracts`, `@vento/os-context`, `@vento/supabase`, `@vento/ui-web`, matrices `PKG-COMP-MX-004/011/018/025`, 04A vigente y `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` con baseline CI008 y dependencias actuales. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutó cutover, migración de consumidor, rollback, receta, lote, firma, turno ni acción productiva real. |
+| FÍSICA | NOT_EXECUTED | Las adopciones futuras pertenecen a `FOGO-AUTH-015::<implementation_unit_id>` después del package E5, gate correspondiente y autorización física explícita. |
+
+---
+
+#### 29. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] la migración permanece `PER_IMPLEMENTATION_UNIT` y `POST_E5_PACKAGE`;
+- [ ] el envelope FOGO conserva los cuatro packages observados sin atribuir autoridad indebida a ninguno;
+- [ ] `@vento/contracts` conserva autoridad estática y no se consume mediante internals no publicados;
+- [ ] `@vento/os-context` conserva la frontera runtime sin absorber reglas empresariales FOGO;
+- [ ] `@vento/supabase` conserva acceso técnico y nunca convierte sesión o `service_role` en autoridad empresarial;
+- [ ] `@vento/ui-web` permanece presentacional y no sustituye guards server-side;
+- [ ] baseline de compatibilidad y adopción física permanecen estados distintos;
+- [ ] los seis permisos FOGO activos observados se conservan sin inventar equivalencias;
+- [ ] `production.*` no se trata como alias automático de `fogo.production.*`;
+- [ ] `recipes.manage` permanece descompuesto y no sobrevive como wildcard canónico;
+- [ ] `recipes.create/update/archive` no se habilitan antes de su materialización canónica real;
+- [ ] aprobación, publicación y exportación fallan cerrado sin binding atómico propietario;
+- [ ] `supervisor` y `gerencia_operativa` permanecen en catálogos y carriles distintos;
+- [ ] actor, turno, dispositivo, permiso, recurso y contexto conservan la separación de FOGO-AUTH-014;
+- [ ] las doce superficies baseline FOGO quedan reconciliadas como universo inicial de consumidores;
+- [ ] la mecánica compartida de migración permanece en `SHELL-MIG-001..008`;
+- [ ] la paridad no obliga a reproducir bugs legacy conocidos;
+- [ ] no existe doble side effect durante shadow/paridad;
+- [ ] un deny canónico no cae a allow legacy;
+- [ ] rollback no restaura bypasses, wildcards o pérdida de auditoría;
+- [ ] package, consumidor, lockfile, matriz y evidencia quedan versionados por unidad;
+- [ ] retiro legacy exige uso residual cero o migración certificada;
+- [ ] la identidad histórica del repositorio FOGO queda reconciliada con la identidad canónica actual antes de usarla como evidencia;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 30. Límites
+
+Esta tarea no:
+
+- implementa packages;
+- modifica `vento-fogo`;
+- modifica físicamente `vento-shell`;
+- publica releases, tags, registry o exports npm;
+- crea versiones estables de packages;
+- añade dependencias a `vento-fogo`;
+- cambia lockfiles;
+- ejecuta cutover;
+- retira helpers legacy;
+- materializa capacidades atómicas pendientes;
+- inventa aliases de permisos;
+- convierte `production.*` en namespace canónico;
+- convierte `recipes.manage` en wildcard compartido;
+- redefine catálogo de permisos, roles o scopes;
+- redefine `FOGO-AUTH-013` ni `FOGO-AUTH-014`;
+- crea tablas, columnas, vistas, funciones, RPC, triggers, RLS, grants o migraciones;
+- modifica datos o Supabase remoto;
+- convierte `service_role` en autoridad empresarial;
+- cambia UX final;
+- ejecuta pruebas integrales de `FOGO-AUTH-016`;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 31. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-014 — Registrar actor y turno`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-015 — Migrar a paquetes de vento-shell`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-016 — Ejecutar pruebas integrales`
+
 ### [ ] FOGO-AUTH-016 — Ejecutar pruebas integrales
