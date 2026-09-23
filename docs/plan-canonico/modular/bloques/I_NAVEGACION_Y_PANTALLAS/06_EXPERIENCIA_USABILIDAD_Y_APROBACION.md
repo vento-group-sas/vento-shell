@@ -5535,258 +5535,503 @@ La tarea queda documentalmente completa cuando se confirma que:
 **SIGUIENTE TAREA RESERVADA**
 `AUTH-UI-056 — Validar prototipo antes de implementar`
 
-### [ ] AUTH-UI-056 — Validar prototipo antes de implementar
+### ✅ AUTH-UI-056 — Validar prototipo antes de implementar
 
-**Estado:** NO INICIADA; evidencia parcial NEXO conservada
-**Tarea anterior:** `AUTH-UI-055 — Crear prototipo por rol` — NO INICIADA
-**Tarea siguiente:** `AUTH-UI-057 — Definir criterio de usabilidad por pantalla` — NO INICIADA
-**Tipo de tarea:** documental global; validación interna de integridad, coherencia, accesibilidad y aptitud de prueba de todos los prototipos aplicables, sin ejecución con usuarios
-**Repositorio propietario:** `vento-shell`
+**Estado:** APROBADA
+**Tarea anterior:** AUTH-UI-055 — Crear prototipo por rol
+**Tarea siguiente:** AUTH-UI-057 — Definir criterio de usabilidad por pantalla
+**Tipo de tarea:** documental global; validación interna de integridad, coherencia, accesibilidad documental y aptitud de prueba del paquete completo de prototipos, sin ejecución con usuarios ni implementación física
+**Bloque:** BLOQUE I — Protección y estados de interfaz
+**Repositorio propietario:** `vento-group-sas/vento-shell`
 **Archivo propietario:** `docs/plan-canonico/modular/bloques/I_NAVEGACION_Y_PANTALLAS/06_EXPERIENCIA_USABILIDAD_Y_APROBACION.md`
-**Evidencia parcial inspeccionada:** `vento-nexo`, `NEXO-ROUTE-001` — `/`
-**Ruta vigente:** flujo canónico integral; el carril `NEXO-REMISSIONS-001` queda únicamente como procedencia histórica de la evidencia NEXO
-**Cambios físicos autorizados:** ninguno; no modifica código productivo, componentes de aplicación, rutas, permisos, roles, funciones, procesos, datos, Supabase, migraciones, RLS, configuración, telemetría ni despliegues
-**Artefacto evaluado:** `NEXO_PROTOTIPO_TEST_USUARIOS_AUTH_UI_055_057.pptx`
-**Instrumento evaluado:** `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001`
-**Decisión del gate:** `APTO_PARA_PRUEBA_CON_USUARIOS_CON_VALIDACION_PREVIA_INTERNA`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; no modifica código productivo, componentes, rutas, roles, permisos, procesos, datos, Supabase, migraciones, RLS, configuración, telemetría ni despliegues
+**Requisitos de prueba creados o modificados:** 0
 
 ---
 
 #### 1. Propósito
 
-Validar que el paquete corregido de `AUTH-UI-055` sí contiene material mínimo
-para ser probado con personas reales: pantallas visibles, consignas breves,
-variantes normales y de recuperación, y un cuestionario único que registre
-observación y comprensión.
+Validar internamente que el paquete global aprobado en `AUTH-UI-055` es íntegro, coherente y suficientemente explícito para continuar al diseño de criterios medibles de `AUTH-UI-057`, sin confundir esta revisión documental con pruebas de accesibilidad ejecutadas, sesiones con usuarios o aprobación final.
 
-La validación no evalúa si las pantallas son buenas para usuarios. Solo confirma
-que existe algo testeable y que la prueba no depende de implementar la
-aplicación.
+La unidad validada es el paquete completo:
+
+```text
+10 DECISIONES DE RECTIFICACION
++
+177 VINCULOS VSCREEN -> SUITE
++
+9 SUITES
++
+29 PERFILES DE ACTOR / FUNCION / CONTEXTO
++
+29 VARIANTES NORMALES
++
+29 VARIANTES DE RECUPERACION
++
+GRAMATICA VISUAL
++
+FIXTURES FICTICIOS
++
+PERFIL NEXO HISTORICO PRESERVADO
+=
+PAQUETE DE PROTOTIPOS INTERNAMENTE VALIDABLE
+```
+
+La tarea no decide si una persona real entiende o usa correctamente una superficie. Ese resultado requiere criterios medibles en `AUTH-UI-057` y ejecución humana en `AUTH-UI-058`.
 
 ---
 
-#### 2. Resultado material
+#### 2. Alcance y límites
 
-Se materializan siete artefactos documentales:
+##### 2.1. Incluido
 
-1. `NEXO-TESTABLE-PROTOTYPE-VALIDATION-CONTRACT-001`;
-2. `NEXO-TESTABLE-SCREEN-VALIDATION-MATRIX-001`;
-3. `NEXO-SINGLE-QUESTIONNAIRE-VALIDATION-MATRIX-001`;
-4. `NEXO-SESSION-READINESS-CHECKLIST-001`;
-5. `NEXO-EVIDENCE-READINESS-GATE-001`;
-6. `NEXO-PRETEST-FINDING-REGISTER-001`;
-7. `NEXO-TESTABLE-PROTOTYPE-VALIDATION-HANDOFF-001`.
+- validar que las diez decisiones de rectificación permanecen completas y sin sustituciones;
+- validar que las 177 superficies siguen vinculadas a una suite sin duplicados ni reasignaciones;
+- validar las nueve suites de prototipo existentes;
+- validar los 29 perfiles y sus pares normal/recuperación;
+- validar coherencia con actor, función, contexto, dispositivo, autoridad y reducción aprobados;
+- revisar documentalmente accesibilidad, orden de lectura, estados críticos, tacto, responsive y dispositivo compartido;
+- validar que las ocho familias de recuperación no introducen bypass, autoridad alternativa ni repetición insegura;
+- comprobar que los fixtures son ficticios y minimizados;
+- preservar como subconjunto los ocho contextos y dieciséis vistas históricas NEXO;
+- registrar brechas esperadas y su tarea propietaria;
+- decidir si el paquete puede continuar a `AUTH-UI-057`.
 
-Cobertura validada:
+##### 2.2. Excluido
 
-| Elemento                        | Esperado | Conforme | No conforme | Pendiente de ejecución real |
-| ------------------------------- | -------: | -------: | ----------: | --------------------------: |
-| Pantallas visuales testeables   |       16 |       16 |           0 |                           0 |
-| Contextos cubiertos             |        8 |        8 |           0 |                           0 |
-| Variantes normales              |        8 |        8 |           0 |                           0 |
-| Variantes de recuperación       |        8 |        8 |           0 |                           0 |
-| Consignas breves                |       16 |       16 |           0 |                           0 |
-| Cuestionario único              |        1 |        1 |           0 |                           0 |
-| Campos mínimos del cuestionario |       18 |       18 |           0 |                           0 |
-| Sesiones con usuarios           |        0 |        0 |           0 |                           1 |
-| Requisitos nuevos o modificados |        0 |        0 |           0 |                           0 |
+- ejecutar pruebas con personas;
+- medir tiempo de tarea, éxito, dificultad, satisfacción o comprensión real;
+- ejecutar auditoría automatizada de accesibilidad sobre una aplicación;
+- afirmar conformidad WCAG ejecutada;
+- producir o modificar una implementación;
+- conectar datos reales o Supabase;
+- crear nuevas superficies, rutas, roles, funciones, permisos o procesos;
+- definir los criterios cuantitativos por cada una de las 177 superficies, reservado a `AUTH-UI-057`;
+- ejecutar sesiones, reservado a `AUTH-UI-058`;
+- registrar problemas observados en usuarios, reservado a `AUTH-UI-059`;
+- aprobar pantallas finales, reservado a `AUTH-UI-060`.
 
 ---
 
 #### 3. Entradas evaluadas
 
-La validación consume:
+La validación consume como entrada principal la versión completa aprobada de `AUTH-UI-055`.
 
-- `AUTH-UI-052`;
-- `AUTH-UI-053`;
-- `AUTH-UI-054`;
-- `AUTH-UI-055` corregida;
-- el catálogo de dieciséis pantallas `SCREEN-055-001` a `SCREEN-055-016`;
-- el cuestionario único `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001`;
-- los criterios definidos para usabilidad, seguridad, tacto, comprensión y recuperación;
-- la restricción de no implementar código ni Supabase en esta fase.
+También consume sin redefinir:
 
----
+- `AUTH-UI-052 — Diseñar página inicial según actor`;
+- `AUTH-UI-053 — Diseñar navegación según tareas frecuentes`;
+- `AUTH-UI-054 — Reducir opciones irrelevantes`;
+- la rectificación integral `AUTH-UI-052..060`;
+- `SCREEN-CANONICAL-CATALOG-001`;
+- las decisiones de reducción por superficie heredadas de 054;
+- los contratos de contexto activo, actor, función, territorio, autorización, privacidad, sensibilidad, masking, dispositivo compartido, loading, empty, error y recuperación;
+- los artefactos históricos NEXO únicamente como evidencia parcial reutilizada.
 
-#### 4. Alcance y límites
-
-##### 4.1. Incluido
-
-- validar existencia de pantallas testeables;
-- validar que cada pantalla tiene consigna;
-- validar que el cuestionario puede recoger evidencia mínima;
-- validar que los campos permiten clasificar problemas en `AUTH-UI-059`;
-- validar que las pantallas no usan datos reales ni prometen efectos productivos;
-- validar que el paquete puede usarse antes de implementar la aplicación.
-
-##### 4.2. Excluido
-
-- ejecutar sesiones con usuarios;
-- medir tiempos reales;
-- medir accesibilidad ejecutada;
-- afirmar satisfacción, comprensión o éxito;
-- modificar código, datos, rutas o Supabase;
-- aprobar pantallas finales;
-- iniciar `AUTH-UI-057`, `AUTH-UI-058`, `AUTH-UI-059` o `AUTH-UI-060`.
+La evidencia histórica `NEXO_PROTOTIPO_TEST_USUARIOS_AUTH_UI_055_057.pptx` y `NEXO-USABILITY-SINGLE-QUESTIONNAIRE-001` conserva valor para NEXO, pero no sustituye la validación global.
 
 ---
 
-#### 5. `NEXO-TESTABLE-SCREEN-VALIDATION-MATRIX-001`
+#### 4. Resultado material
 
-| Grupo                  | Pantallas | Validación interna                                   | Resultado  |
-| ---------------------- | --------: | ---------------------------------------------------- | ---------- |
-| solicitante            |         2 | normal y recuperación presentes, sin operación ajena | `CONFORME` |
-| bodega                 |         2 | tarea prioritaria y datos parciales presentes        | `CONFORME` |
-| conductor              |         2 | custodia y pérdida de asignación presentes           | `CONFORME` |
-| receptor               |         2 | recepción normal y parcialidad presentes             | `CONFORME` |
-| supervisor             |         2 | caso prioritario y evidencia insuficiente presentes  | `CONFORME` |
-| configuración          |         2 | capacidad prioritaria y cancelación segura presentes | `CONFORME` |
-| multifunción           |         2 | función activa y cambio seguro presentes             | `CONFORME` |
-| dispositivo compartido |         2 | actor activo y cambio de actor presentes             | `CONFORME` |
+Se materializan nueve artefactos documentales:
+
+1. `APPLICATION-PROTOTYPE-VALIDATION-CONTRACT-001`;
+2. `APPLICATION-PROTOTYPE-SUITE-VALIDATION-MATRIX-001`;
+3. `APPLICATION-PROTOTYPE-PROFILE-VALIDATION-MATRIX-001`;
+4. `APPLICATION-PROTOTYPE-RECOVERY-VALIDATION-MATRIX-001`;
+5. `APPLICATION-PROTOTYPE-ACCESSIBILITY-REVIEW-MATRIX-001`;
+6. `APPLICATION-PROTOTYPE-SESSION-READINESS-CHECKLIST-001`;
+7. `APPLICATION-PROTOTYPE-PRETEST-FINDING-REGISTER-001`;
+8. `NEXO-PROTOTYPE-VALIDATION-PROFILE-001`;
+9. `APPLICATION-PROTOTYPE-VALIDATION-HANDOFF-001`.
+
+Resultado agregado:
+
+| Elemento | Esperado | Validado documentalmente | No conforme | Pendiente de ejecución posterior |
+| --- | ---: | ---: | ---: | ---: |
+| decisiones de rectificación | 10 | 10 | 0 | 0 |
+| suites de prototipo | 9 | 9 | 0 | 0 |
+| superficies vinculadas | 177 | 177 | 0 | 0 |
+| perfiles | 29 | 29 | 0 | 0 |
+| variantes normales | 29 | 29 | 0 | 0 |
+| variantes de recuperación | 29 | 29 | 0 | 0 |
+| familias de recuperación | 8 | 8 | 0 | 0 |
+| dimensiones de accesibilidad documental | 8 | 8 | 0 | 0 |
+| contextos NEXO históricos | 8 | 8 | 0 | 0 |
+| vistas NEXO históricas | 16 | 16 | 0 | 0 |
+| criterios medibles por superficie | 177 | 0 | 0 | 177 |
+| sesiones reales con usuarios | 1 fase | 0 | 0 | 1 fase |
+| requisitos nuevos o modificados | 0 | 0 | 0 | 0 |
+
+**Decisión del gate:** `VALIDACION_INTERNA_CONFORME_PARA_CONTINUAR_A_AUTH_UI_057`.
+
+Esta decisión no equivale a `LISTO_PARA_AUTH_UI_058`, `USABLE`, `ACCESIBLE_EJECUTADO`, `IMPLEMENTADO` ni `APROBADO_FINAL`.
+
+---
+
+#### 5. `APPLICATION-PROTOTYPE-VALIDATION-CONTRACT-001`
+
+El paquete es internamente conforme únicamente cuando:
+
+```text
+INTEGRIDAD ESTRUCTURAL = CONFORME
+AND
+COHERENCIA CONTRACTUAL = CONFORME
+AND
+RECUPERACION SEGURA = CONFORME
+AND
+ACCESIBILIDAD DOCUMENTAL = CONFORME
+AND
+FIXTURES / PRIVACIDAD = CONFORME
+AND
+TESTABILIDAD CONCEPTUAL = CONFORME
+AND
+BLOQUEADORES INTERNOS DE 056 = 0
+```
+
+Definiciones:
+
+- `CONFORME_DOCUMENTAL`: la especificación contiene la decisión, relación o restricción necesaria y no presenta contradicción interna observable;
+- `PENDIENTE_DE_EJECUCION`: requiere evidencia humana, implementación o medición reservada a una tarea posterior;
+- `NO_CONFORME`: existe omisión, contradicción o condición que impide entregar el paquete a 057;
+- `NO_APLICA`: la dimensión no corresponde al elemento validado y existe justificación explícita.
+
+Prohibiciones:
+
+```text
+CONFORME_DOCUMENTAL != PRUEBA EJECUTADA
+CONFORME_DOCUMENTAL != EXITO CON USUARIOS
+CONFORME_DOCUMENTAL != WCAG CERTIFICADO
+CONFORME_DOCUMENTAL != IMPLEMENTACION
+VALIDACION INTERNA != APROBACION FINAL
+```
+
+---
+
+#### 6. `APPLICATION-PROTOTYPE-SUITE-VALIDATION-MATRIX-001`
+
+| Suite | `app_code` | VSCREEN | Perfiles | Variantes | Integridad | Coherencia | Accesibilidad doc. | Aptitud de prueba |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `PROTO-SUITE-SHELL-001` | `shell` | 7 | 3 | 6 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-VISO-001` | `viso` | 31 | 3 | 6 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-ANIMA-001` | `anima` | 14 | 2 | 4 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-NEXO-001` | `nexo` | 37 | 8 | 16 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-FOGO-001` | `fogo` | 15 | 3 | 6 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-ORIGO-001` | `origo` | 14 | 3 | 6 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-PULSO-001` | `pulso` | 20 | 3 | 6 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-NUMERA-001` | `numera` | 20 | 3 | 6 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SUITE-PASS-001` | `pass` | 19 | 1 | 2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
 
 Reconciliación:
 
 ```text
-EXPECTED_SCREEN_GROUPS = 8
-VALIDATED_SCREEN_GROUPS = 8
-EXPECTED_SCREENS = 16
-VALIDATED_SCREENS = 16
-SUBSTANTIVE_BLOCKERS = 0
+EXPECTED_SUITES = 9
+VALIDATED_SUITES = 9
+EXPECTED_VSCREEN_BINDINGS = 177
+VALIDATED_VSCREEN_BINDINGS = 177
+EXPECTED_PROFILES = 29
+VALIDATED_PROFILES = 29
+EXPECTED_VARIANTS = 58
+VALIDATED_VARIANTS = 58
+SUITE_BLOCKERS = 0
 ```
 
----
-
-#### 6. `NEXO-SINGLE-QUESTIONNAIRE-VALIDATION-MATRIX-001`
-
-| Dimensión                  | Campos que la cubren                                     | Resultado  |
-| -------------------------- | -------------------------------------------------------- | ---------- |
-| identificación no sensible | participante, función, pantalla, dispositivo             | `CONFORME` |
-| localización               | primera acción, tiempo, aperturas incorrectas            | `CONFORME` |
-| comprensión                | contexto y efecto                                        | `CONFORME` |
-| recuperación               | comportamiento ante cambio, retiro, dato parcial o fallo | `CONFORME` |
-| ayuda                      | ayuda del moderador y motivo                             | `CONFORME` |
-| seguridad                  | error crítico y clase                                    | `CONFORME` |
-| carga cognitiva            | dificultad de 1 a 7 y comentario                         | `CONFORME` |
-| trazabilidad de problema   | observaciones e ID propuesto para `AUTH-UI-059`          | `CONFORME` |
-
-El cuestionario único es suficiente para ejecutar `AUTH-UI-058` sin crear
-formularios separados por rol.
+TALENTO y VITAL conservan `NO_APLICA` en la matriz de rectificación. AURA conserva cero superficies. SHELL conserva sus siete superficies como soporte transversal del inventario real y no altera la matriz de diez aplicaciones.
 
 ---
 
-#### 7. `NEXO-SESSION-READINESS-CHECKLIST-001`
+#### 7. `APPLICATION-PROTOTYPE-PROFILE-VALIDATION-MATRIX-001`
 
-Antes de ejecutar una sesión real, el evaluador debe confirmar:
+Cada perfil debe conservar:
 
-| Control                              | Condición de salida                                      | Estado inicial         |
-| ------------------------------------ | -------------------------------------------------------- | ---------------------- |
-| pantalla seleccionada                | una de las dieciséis `SCREEN-055-*`                      | `READY_FOR_SESSION`    |
-| consigna preparada                   | texto breve sin revelar la solución                      | `READY_FOR_SESSION`    |
-| participante adecuado                | representa o conoce la función probada                   | `PENDING_AT_EXECUTION` |
-| dispositivo definido                 | móvil, tablet, escritorio o estación compartida simulada | `PENDING_AT_EXECUTION` |
-| cuestionario abierto                 | formulario único disponible                              | `READY_FOR_SESSION`    |
-| datos ficticios                      | no hay datos reales ni credenciales                      | `READY_FOR_SESSION`    |
-| registro de consentimiento si aplica | gestionado fuera del plan canónico                       | `PENDING_AT_EXECUTION` |
-| responsable de observación           | persona que registra evidencia                           | `PENDING_AT_EXECUTION` |
+- actor, relación o sujeto distinguible;
+- función activa cuando aplique;
+- contexto y dispositivo materiales;
+- universo ya elegible, sin autoridad creada por presentación;
+- reducción compatible con 054;
+- exactamente una variante normal y una de recuperación;
+- datos ficticios;
+- ausencia de efecto empresarial real.
 
-Los controles `PENDING_AT_EXECUTION` pertenecen a `AUTH-UI-058`; no bloquean la
-aprobación documental de esta validación interna.
+| Perfil | Aplicación | Actor / función / contexto | Normal + recovery | Contexto/autoridad | Reducción | Testabilidad |
+| --- | --- | --- | --- | --- | --- | --- |
+| `PROTO-SHELL-001` | SHELL | persona autenticada en hub | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SHELL-002` | SHELL | persona resolviendo acceso o sesión | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-SHELL-003` | SHELL | actor en dispositivo compartido | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-ANIMA-001` | ANIMA | trabajador en experiencia personal | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-ANIMA-002` | ANIMA | supervisor puntual autorizado | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-VISO-001` | VISO | dirección o gerencia | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-VISO-002` | VISO | administrador o configurador | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-VISO-003` | VISO | auditor, cumplimiento o soporte | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-001` | NEXO | solicitante autorizado | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-002` | NEXO | bodega o preparación | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-003` | NEXO | conductor o custodio | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-004` | NEXO | receptor autorizado | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-005` | NEXO | supervisor territorial | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-006` | NEXO | configurador autorizado | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-007` | NEXO | persona multifunción | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NEXO-008` | NEXO | dispositivo compartido con actor activo | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-FOGO-001` | FOGO | operador de producción | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-FOGO-002` | FOGO | supervisor o calidad | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-FOGO-003` | FOGO | planeación o gobierno de receta | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-ORIGO-001` | ORIGO | solicitante o comprador | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-ORIGO-002` | ORIGO | aprobador | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-ORIGO-003` | ORIGO | recepción o conciliación | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-PULSO-001` | PULSO | caja o terminal operativo | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-PULSO-002` | PULSO | servicio o gestión de pedido | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-PULSO-003` | PULSO | manager o administración comercial | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NUMERA-001` | NUMERA | operación financiera | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NUMERA-002` | NUMERA | aprobación o tesorería | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-NUMERA-003` | NUMERA | análisis o auditoría | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
+| `PROTO-PASS-001` | PASS | cliente | 2/2 | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL | CONFORME_DOCUMENTAL |
 
----
-
-#### 8. `NEXO-EVIDENCE-READINESS-GATE-001`
-
-El paquete queda apto para prueba cuando:
+Reconciliación:
 
 ```text
-16 pantallas testeables completas
-+
-1 cuestionario único completo
-+
-consignas neutrales
-+
-datos ficticios
-+
-cero mutaciones reales
-+
-cero contradicciones sustantivas
-→
-LISTO PARA PRUEBA GUIADA CON USUARIOS
+EXPECTED_PROFILES = 29
+VALIDATED_PROFILES = 29
+NORMAL_PAIRS = 29
+RECOVERY_PAIRS = 29
+MISSING_PROFILE = 0
+DUPLICATE_PROFILE = 0
+PROFILE_BLOCKERS = 0
 ```
 
-No queda apto para implementación ni aprobación final.
+---
+
+#### 8. `APPLICATION-PROTOTYPE-RECOVERY-VALIDATION-MATRIX-001`
+
+| Familia | Invariante validado | Resultado |
+| --- | --- | --- |
+| `CONTEXTO_CAMBIADO` | retira datos/opciones incompatibles y exige nueva resolución | CONFORME_DOCUMENTAL |
+| `TRABAJO_CAMBIADO_O_RETIRADO` | retira control obsoleto, explica el cambio y recalcula la proyección | CONFORME_DOCUMENTAL |
+| `DATOS_PARCIALES_O_STALE` | distingue parcialidad de vacío y prohíbe completar con supuestos | CONFORME_DOCUMENTAL |
+| `DENEGACION_EXPLICITA` | muestra denegación minimizada sin revelar opciones de otros actores | CONFORME_DOCUMENTAL |
+| `CONFLICTO_O_EVIDENCIA_INSUFICIENTE` | bloquea decisión insegura y conserva salida segura | CONFORME_DOCUMENTAL |
+| `FALLO_TECNICO` | distingue fallo de vacío y admite reintento seguro | CONFORME_DOCUMENTAL |
+| `RESULTADO_DESCONOCIDO` | prohíbe repetir efecto y exige conciliación previa | CONFORME_DOCUMENTAL |
+| `CAMBIO_DE_ACTOR_EN_DISPOSITIVO` | limpia datos, recientes y contexto antes de la nueva proyección | CONFORME_DOCUMENTAL |
+
+Reglas transversales confirmadas:
+
+1. recuperación no crea una segunda ruta de autorización;
+2. una denegación no se convierte en una opción deshabilitada que revele trabajo ajeno;
+3. un resultado desconocido no permite reintentar una mutación ficticia como si fuera seguro;
+4. parcialidad no se representa como vacío;
+5. un cambio de actor limpia la proyección anterior;
+6. un cambio de función obliga a recomponer el conjunto;
+7. un fallo técnico no se presenta como decisión empresarial;
+8. un conflicto o evidencia insuficiente conserva salida segura sin resolver por inferencia.
 
 ---
 
-#### 9. `NEXO-PRETEST-FINDING-REGISTER-001`
+#### 9. `APPLICATION-PROTOTYPE-ACCESSIBILITY-REVIEW-MATRIX-001`
 
-| Hallazgo                   | Clase                | Descripción                                     | Propietario   | Condición de salida                                               | Estado                   |
-| -------------------------- | -------------------- | ----------------------------------------------- | ------------- | ----------------------------------------------------------------- | ------------------------ |
-| `NEXO-PRETEST-FINDING-001` | evidencia humana     | aún no existen sesiones ejecutadas con usuarios | `AUTH-UI-058` | ejecutar sesiones y registrar resultados en el cuestionario único | `PENDIENTE_DE_EVIDENCIA` |
-| `NEXO-PRETEST-FINDING-002` | problemas observados | aún no existen problemas reales clasificados    | `AUTH-UI-059` | registrar severidad, evidencia, propietario y cierre              | `PENDIENTE_DE_EVIDENCIA` |
-| `NEXO-PRETEST-FINDING-003` | aprobación final     | ninguna pantalla puede aprobarse sin evidencia  | `AUTH-UI-060` | decidir por pantalla después de pruebas y correcciones            | `BLOQUEADO`              |
+La accesibilidad en 056 es una **revisión documental de la especificación**, no una medición ejecutada sobre producto o navegador.
 
-No quedan pendientes sin tarea responsable.
+| Dimensión | Comprobación documental | Resultado |
+| --- | --- | --- |
+| orden de lectura y foco | la precedencia sigue contexto → estado → acción → siguiente tarea → secundarios | CONFORME_DOCUMENTAL |
+| nombre y propósito de acciones | cada acción debe ser comprensible sin depender de iconografía aislada | CONFORME_DOCUMENTAL |
+| estado crítico no solo por color | vacío, parcialidad, denegación, revocación y fallo se distinguen semánticamente | CONFORME_DOCUMENTAL |
+| cambios dinámicos | actor, función o contexto deben poder anunciarse en una implementación futura | CONFORME_DOCUMENTAL |
+| tacto y espaciado | la gramática permite revisar objetivos táctiles en superficies correspondientes | CONFORME_DOCUMENTAL |
+| responsive | móvil, tablet, estación y escritorio preservan prioridad sin aumentar opciones | CONFORME_DOCUMENTAL |
+| dispositivo compartido | actor activo y limpieza entre personas permanecen explícitos | CONFORME_DOCUMENTAL |
+| datos sensibles | fixtures ficticios y minimizados; no se requiere información real | CONFORME_DOCUMENTAL |
 
----
+Resultado:
 
-#### 10. Requisitos de prueba derivados
+```text
+ACCESSIBILITY_DOCUMENTARY_DIMENSIONS = 8
+CONFORMING = 8
+NON_CONFORMING = 0
+EXECUTED_ACCESSIBILITY_AUDIT = NO
+USER_ACCESSIBILITY_EVIDENCE = NO
+```
 
-**Resultado:** NO GENERA REQUISITOS DE PRUEBA
-
-**Justificación:** esta tarea valida la aptitud interna del material visual y el
-cuestionario único. No modifica comportamiento ejecutable, autorización,
-navegación, reglas de negocio, seguridad, privacidad, accesibilidad ni datos. No
-crea, modifica, difiere, descarta ni declara obsoleto ningún requisito histórico;
-el Registro Canónico de Requisitos de Prueba no cambia.
-
----
-
-#### 11. Criterios de aceptación
-
-La tarea se considera completa cuando se confirme que:
-
-- las dieciséis pantallas existen y están asociadas a los ocho contextos;
-- hay ocho variantes normales y ocho de recuperación;
-- cada pantalla tiene consigna neutral;
-- existe un cuestionario único;
-- el cuestionario registra observación, comprensión, recuperación, ayuda, error crítico y comentario;
-- el paquete no depende de implementación ni Supabase;
-- no se declaran resultados reales;
-- no se aprueban pantallas finales;
-- los problemas reales quedan destinados a `AUTH-UI-059`;
-- la aprobación final queda destinada a `AUTH-UI-060`;
-- `AUTH-UI-057` permanece únicamente reservada.
+La evidencia ejecutada solo podrá afirmarse cuando exista un soporte real que pueda probarse en la tarea propietaria correspondiente.
 
 ---
 
-#### 12. `NEXO-TESTABLE-PROTOTYPE-VALIDATION-HANDOFF-001`
+#### 10. `APPLICATION-PROTOTYPE-SESSION-READINESS-CHECKLIST-001`
 
-| Destino       | Handoff aprobado                                                         |
-| ------------- | ------------------------------------------------------------------------ |
-| `AUTH-UI-057` | ajustar criterios de usabilidad al prototipo visual y cuestionario único |
-| `AUTH-UI-058` | ejecutar sesiones reales usando el paquete validado                      |
-| `AUTH-UI-059` | registrar problemas observados con evidencia del cuestionario            |
-| `AUTH-UI-060` | decidir aprobación final únicamente con evidencia suficiente             |
+| Control | Estado después de 056 | Propietario siguiente |
+| --- | --- | --- |
+| cobertura 10 decisiones de rectificación | `READY` | ninguno |
+| cobertura 177 superficies → suite | `READY` | ninguno |
+| nueve suites | `READY` | ninguno |
+| 29 perfiles | `READY` | ninguno |
+| 58 variantes normal/recuperación | `READY` | ninguno |
+| fixtures ficticios y minimizados | `READY` | ninguno |
+| recuperación sin bypass | `READY` | ninguno |
+| revisión documental de accesibilidad | `READY` | ninguno |
+| criterios medibles por cada superficie | `PENDING` | `AUTH-UI-057` |
+| instrumento/registro alineado con esos criterios | `PENDING` | `AUTH-UI-057` |
+| participantes y modalidad real | `PENDING` | `AUTH-UI-058` |
+| evidencia humana | `PENDING` | `AUTH-UI-058` |
+| problemas observados y severidad | `PENDING` | `AUTH-UI-059` |
+| decisión final por superficie | `PENDING` | `AUTH-UI-060` |
 
-Ningún destino anterior se inicia mediante esta tarea.
+Por tanto:
+
+```text
+READY_FOR_AUTH_UI_057 = YES
+READY_FOR_AUTH_UI_058 = NO
+READY_FOR_IMPLEMENTATION = NO
+READY_FOR_FINAL_APPROVAL = NO
+```
 
 ---
 
-#### 13. Traza histórica del carril NEXO
+#### 11. `APPLICATION-PROTOTYPE-PRETEST-FINDING-REGISTER-001`
 
-> Esta fotografía dejó de ser continuidad vigente. Se conserva únicamente como evidencia de la ejecución parcial que originó los artefactos NEXO.
+| Hallazgo | Qué falta | Bloquea 056 | Propietario | Condición exacta de salida |
+| --- | --- | --- | --- | --- |
+| `PRETEST-056-001` | criterios medibles por cada superficie aplicable | no | `AUTH-UI-057` | las 177 superficies quedan relacionadas con criterio, umbral y justificación de `NO_APLICA` cuando corresponda |
+| `PRETEST-056-002` | instrumento o mapeo de registro global alineado con los criterios | no | `AUTH-UI-057` | cada criterio de 057 puede registrarse de forma inequívoca durante las sesiones |
+| `PRETEST-056-003` | sesiones ejecutadas con personas reales | no | `AUTH-UI-058` | existe evidencia por aplicación, actor, dispositivo, superficie y escenario aplicable |
+| `PRETEST-056-004` | problemas reales clasificados y resueltos | no | `AUTH-UI-059` | hallazgos de sesiones tienen severidad, evidencia, owner, destino, retest y estado |
+| `PRETEST-056-005` | decisión final por superficie | no | `AUTH-UI-060` | cada superficie tiene evidencia suficiente y bloqueadores cerrados antes de aprobarse |
+
+No existe hallazgo sin propietario. Ninguna brecha anterior se resuelve dentro de 056.
+
+---
+
+#### 12. `NEXO-PROTOTYPE-VALIDATION-PROFILE-001`
+
+La evidencia NEXO se conserva como perfil específico:
+
+| Elemento NEXO | Esperado | Validado | Resultado |
+| --- | ---: | ---: | --- |
+| contextos históricos | 8 | 8 | `CONFORME_DOCUMENTAL` |
+| vistas históricas | 16 | 16 | `CONFORME_DOCUMENTAL` |
+| perfiles `PROTO-NEXO-*` | 8 | 8 | `CONFORME_DOCUMENTAL` |
+| variantes normales | 8 | 8 | `CONFORME_DOCUMENTAL` |
+| variantes recuperación | 8 | 8 | `CONFORME_DOCUMENTAL` |
+| cuestionario histórico | 1 | 1 | `PRESERVADO_COMO_EVIDENCIA_PARCIAL` |
+
+El cuestionario NEXO no se proyecta automáticamente como instrumento global para las demás aplicaciones. `AUTH-UI-057` deberá definir criterios medibles globales sin depender de esa extrapolación.
+
+---
+
+#### 13. Integridad, coherencia y no solapamiento
+
+Se valida documentalmente que:
+
+1. 056 no redefine las decisiones de 052, 053, 054 o 055;
+2. 056 no crea pantallas ni cambia `app_code`;
+3. 056 no reabre las 177 decisiones de reducción;
+4. 056 no convierte frecuencia o presencia visual en autoridad;
+5. 056 no define umbrales cuantitativos por superficie, reservados a 057;
+6. 056 no ejecuta usuarios, reservado a 058;
+7. 056 no registra problemas observados, reservado a 059;
+8. 056 no aprueba pantallas, reservado a 060;
+9. las brechas posteriores están asignadas a owner y condición de salida;
+10. el paquete NEXO es subconjunto, no sustituto del alcance global.
+
+---
+
+#### 14. `APPLICATION-PROTOTYPE-VALIDATION-HANDOFF-001`
+
+`AUTH-UI-057` recibe exactamente:
+
+```text
+PAQUETE AUTH-UI-055
++
+GATE 056 = VALIDACION_INTERNA_CONFORME
++
+10 DECISIONES DE RECTIFICACION
++
+177 VINCULOS DE SUPERFICIE
++
+9 SUITES
++
+29 PERFILES
++
+58 VARIANTES
++
+8 FAMILIAS DE RECUPERACION
++
+8 DIMENSIONES DE ACCESIBILIDAD DOCUMENTAL
++
+5 BRECHAS POSTERIORES CON OWNER
+```
+
+Handoff por destino:
+
+| Destino | Responsabilidad reservada |
+| --- | --- |
+| `AUTH-UI-057` | definir criterio medible y regla de decisión por cada superficie aplicable |
+| `AUTH-UI-058` | ejecutar sesiones con usuarios reales |
+| `AUTH-UI-059` | registrar, asignar, corregir y retestar problemas observados |
+| `AUTH-UI-060` | aprobar o bloquear cada superficie usando evidencia suficiente |
+
+---
+
+#### 15. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+Justificación: la tarea valida documentalmente la integridad y aptitud del paquete de prototipos definido en 055. No modifica comportamiento ejecutable, autorización, navegación, reglas de negocio, seguridad, privacidad, accesibilidad ejecutada, datos, procesos, integraciones, pantallas canónicas ni efectos empresariales; tampoco crea, modifica, difiere, descarta o declara obsoleto ningún requisito histórico. El registro canónico de requisitos de prueba no cambia.
+
+---
+
+#### 16. Cobertura de prueba vigente reutilizada
+
+La validación reutiliza la cobertura existente de contexto activo, autorización por superficie y acción, reducción de opciones, dispositivo compartido, sensibilidad, masking, accesibilidad, loading, vacío, recuperación, continuidad y contratos específicos por aplicación.
+
+Esta sección es trazabilidad heredada. No actualiza el registro 04A.
+
+---
+
+#### 17. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación real corresponde al checkout después del cierre de 055 y de la sustitución de este artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, validadores de BLOQUE I, catálogo de pantallas, topología y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron la tarea canónica 056, su propietario, la rectificación `AUTH-UI-052..060`, la condición mínima de cierre, la topología `DEFINE_ONCE` con `NO_PHYSICAL_INSTANCE`, las políticas y los validadores aplicables; 055 se usa desde su versión completa aprobada mientras su publicación remota permanece pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron personas, sesiones, tiempos, comprensión, errores reales ni métricas de uso. |
+| FÍSICA | NOT_APPLICABLE | La tarea no crea instancia física propia ni modifica código, datos, Supabase o despliegues. |
+
+---
+
+#### 18. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando se confirma que:
+
+- [ ] las diez decisiones de rectificación permanecen reconciliadas;
+- [ ] las nueve suites están presentes y vinculadas al inventario heredado;
+- [ ] las 177 superficies permanecen cubiertas sin faltantes ni duplicados;
+- [ ] los 29 perfiles están presentes;
+- [ ] existen 29 variantes normales y 29 de recuperación;
+- [ ] cada perfil conserva exactamente un par normal/recuperación;
+- [ ] las ocho familias de recuperación cumplen las invariantes de seguridad;
+- [ ] la accesibilidad está revisada como contrato documental sin fingir auditoría ejecutada;
+- [ ] los datos de prototipo siguen siendo ficticios y minimizados;
+- [ ] NEXO conserva 8 contextos, 16 vistas y su evidencia histórica como subconjunto;
+- [ ] TALENTO, VITAL y AURA no reciben materialización inventada;
+- [ ] los cinco pendientes posteriores tienen owner y condición de salida;
+- [ ] no existen bloqueadores internos atribuibles a 056;
+- [ ] el gate queda `VALIDACION_INTERNA_CONFORME_PARA_CONTINUAR_A_AUTH_UI_057`;
+- [ ] 056 no declara resultados de usuarios, implementación ni aprobación final;
+- [ ] no se crean o modifican requisitos de prueba;
+- [ ] `AUTH-UI-057` permanece únicamente reservada.
+
+---
+
+#### 19. Continuidad
 
 **ÚLTIMA TAREA APROBADA**
-
 `AUTH-UI-055 — Crear prototipo por rol`
 
 **TAREA ACTUAL APROBADA**
-
 `AUTH-UI-056 — Validar prototipo antes de implementar`
 
 **SIGUIENTE TAREA RESERVADA**
-
 `AUTH-UI-057 — Definir criterio de usabilidad por pantalla`
 
 ### [ ] AUTH-UI-057 — Definir criterio de usabilidad por pantalla
