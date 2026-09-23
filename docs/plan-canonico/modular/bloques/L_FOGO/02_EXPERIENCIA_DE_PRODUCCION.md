@@ -3637,7 +3637,1003 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-006 — Diseñar producción parcial`
 
-### [ ] FOGO-UX-006 — Diseñar producción parcial
+### ✅ FOGO-UX-006 — Diseñar producción parcial
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-005 — Diseñar inicio de lote
+**Tarea siguiente:** FOGO-UX-007 — Diseñar finalización de lote
+**Tipo de tarea:** diseño documental integral de la experiencia de ejecución activa y captura incremental de producción sobre `VSCREEN-0058` y `VSCREEN-0059`, preservando lote, orden, receta/version, actor/turno, deltas, acumulados, consumos correlacionados, pausas, incidencias, concurrencia, idempotencia e historia sin cerrar prematuramente la ejecución
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir la experiencia canónica de una ejecución productiva ya iniciada para que el trabajador pueda continuar un lote real, seguir su receta/version aplicable y registrar hechos parciales sin convertir cada captura en cierre, sin sobrescribir historia y sin confundir un dato productivo FOGO con un movimiento físico de inventario NEXO.
+
+La regla raíz queda:
+
+```text
+LOTE DURABLE YA INICIADO
++
+VPROC-0034.IN_PRODUCTION VIGENTE
++
+ORDEN + RECETA/VERSION EXACTAS
++
+ACTOR + TURNO + SEDE + AREA FRESCOS
++
+CAPACIDAD CANONICA CONCRETA DE LA ACCION
++
+DELTA PRODUCTIVO VALIDO
++
+VERSION ESPERADA + IDENTIDAD IDEMPOTENTE
+=
+CAPTURA PARCIAL AUTORIZABLE
+```
+
+La experiencia separa dos responsabilidades coordinadas:
+
+```text
+VSCREEN-0058
+EJECUCION DE LOTE / WORKSPACE ACTIVO
+
+!=
+
+VSCREEN-0059
+REGISTRO PARCIAL / CAPTURA INCREMENTAL
+```
+
+Ninguna de las dos superficies equivale por sí sola a finalización, calidad liberada, stock terminado disponible o cierre productivo.
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-005
+
+`FOGO-UX-005` entrega a esta tarea una ejecución ya iniciada con, como mínimo:
+
+```text
+PROCESS_INSTANCE / LOTE DURABLE
+ESTADO = VPROC-0034.IN_PRODUCTION
+ORDEN + VERSION
+RECETA + VERSION EXACTA
+PRODUCTO / SALIDA OBJETIVO
+CANTIDAD OBJETIVO + UNIDAD
+ACTOR / TURNO / SEDE / AREA DEL INICIO
+REFERENCIAS DE MATERIALES PREPARADOS
+CORRELACION / IDEMPOTENCIA DEL INICIO
+TIMESTAMP / VERSION DE ESTADO
+DISPOSITIVO / FIRMA CUANDO APLIQUE
+```
+
+`FOGO-UX-006` no vuelve a crear el lote ni repite `MATERIALS_READY -> IN_PRODUCTION`.
+
+La continuidad del lote tampoco significa continuidad automática de la autoridad personal. Cada captura vuelve a resolver el contexto aplicable.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el contrato UX de ejecución parcial se define una sola vez;
+2. no existe instancia física propia de `FOGO-UX-006`;
+3. esta tarea no implementa rutas, componentes, RPC, persistencia, permisos ni efectos NEXO;
+4. las materializaciones posteriores consumen el contrato sin reinterpretar qué constituye un parcial, un acumulado, un consumo o un cierre;
+5. cualquier modificación de Supabase perteneciente a VENTO continúa bajo `vento-group-sas/vento-shell` y el trabajo físico propietario correspondiente.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-001 — Inventariar procesos reales de producción`;
+- `FOGO-UX-002 — Separar cocina, panadería y repostería`;
+- `FOGO-UX-003 — Diseñar inicio por área productiva`;
+- `FOGO-UX-004 — Mostrar producción pendiente del turno`;
+- `FOGO-UX-005 — Diseñar inicio de lote`;
+- `FOGO-AUTH-010 — Proteger producción parcial`;
+- `FOGO-AUTH-014 — Registrar actor y turno`;
+- `VSCREEN-0058 — Ejecución de lote`;
+- `VSCREEN-0059 — Registro parcial de producción`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- `VPROC-0034::STEP-EXECUTE_BATCH — Ejecutar lote`;
+- `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS — Registrar avance parcial`;
+- estados y eventos canónicos de `VPROC-0034`;
+- `INT-PROD-002 — Definir contrato para que NEXO registre el consumo`;
+- Registro 04A vigente de FOGO y autorización;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`.
+
+---
+
+#### 5. Identidades canónicas de las superficies
+
+La tarea gobierna dos superficies diferentes pero contiguas:
+
+| Dimensión | Ejecución activa | Captura parcial |
+| --- | --- | --- |
+| Pantalla | `VSCREEN-0058 — Ejecución de lote` | `VSCREEN-0059 — Registro parcial de producción` |
+| Aplicación | `fogo` | `fogo` |
+| Proceso | `VPROC-0034` | `VPROC-0034` |
+| Paso | `VPROC-0034::STEP-EXECUTE_BATCH — Ejecutar lote` | `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS — Registrar avance parcial` |
+| Interacción | `EXECUTE` | `CAPTURE` |
+| Momento | `IN_PROGRESS` | `IN_PROGRESS` |
+| Acción funcional primaria | `VSCREEN-0058::PRIMARY` | `VSCREEN-0059::PRIMARY` |
+| Estado ordinario | `VPROC-0034.IN_PRODUCTION` | `VPROC-0034.IN_PRODUCTION` |
+
+Regla de separación:
+
+```text
+WORKSPACE DE EJECUCION
+!=
+COMANDO DE CAPTURA PARCIAL
+!=
+ACCION DE FINALIZACION
+```
+
+---
+
+#### 6. Rol de VSCREEN-0058
+
+`VSCREEN-0058` es el workspace operativo del lote activo.
+
+Debe permitir reconocer inmediatamente:
+
+- qué lote y ejecución están activos;
+- qué producto/salida se está produciendo;
+- qué cantidad objetivo y unidad gobiernan la ejecución;
+- qué receta/version exacta aplica;
+- qué área productiva es propietaria del trabajo;
+- qué actor/turno están operando en el momento actual;
+- qué estado real conserva `VPROC-0034`;
+- qué progreso confirmado existe;
+- qué bloqueos, incidencias o handoffs pendientes existen;
+- qué acción siguiente está permitida.
+
+No convierte ese workspace en editor de orden, receta, planificación o inventario.
+
+---
+
+#### 7. Rol de VSCREEN-0059
+
+`VSCREEN-0059` captura un hecho incremental de una ejecución activa.
+
+Su contrato mínimo es:
+
+```text
+ACUMULADO ANTERIOR VERIFICADO
++
+DELTA ACTUAL PROPUESTO
++
+CONTEXTO FRESCO
++
+VERSION ESPERADA
+→ VALIDACION AUTORITATIVA
+→ CAPTURA DURABLE
+→ ACUMULADO RESULTANTE VERIFICADO
+```
+
+El usuario no edita el acumulado histórico directamente.
+
+Cada captura produce una nueva evidencia vinculada al lote existente y no sustituye capturas anteriores.
+
+---
+
+#### 8. Condición de entrada a la ejecución parcial
+
+El workspace y la captura ordinaria solo operan cuando la instancia de `VPROC-0034` continúa realmente en:
+
+```text
+VPROC-0034.IN_PRODUCTION
+```
+
+No son equivalentes para registrar un parcial ordinario:
+
+```text
+PRODUCTION_ORDER_READY
+MATERIALS_RESERVING
+MATERIALS_READY
+OUTPUT_REPORTED
+CONSUMPTION_RECONCILIATION_PENDING
+READY_FOR_QUALITY
+PRODUCTION_EXECUTION_COMPLETED
+```
+
+Si el recurso ya avanzó a un estado posterior, la UX no lo hace retroceder para aceptar otro parcial.
+
+---
+
+#### 9. Encabezado operativo persistente del lote
+
+Durante la ejecución debe mantenerse visible, con densidad operativa y sin sobrecargar la pantalla:
+
+1. lote / referencia operativa reconocible;
+2. producto o salida principal;
+3. cantidad objetivo y unidad;
+4. área productiva;
+5. estado actual;
+6. receta/version aplicada;
+7. actor/turno efectivos de la sesión de trabajo actual;
+8. progreso confirmado cuando pueda demostrarse;
+9. existencia de bloqueos o diferencias pendientes;
+10. estado de sincronización/confirmación de la última captura cuando sea material.
+
+El encabezado no expone UUID, scopes, SQL, RLS, secretos, logs o datos de otras áreas como requisito operativo ordinario.
+
+---
+
+#### 10. Receta operativa durante la ejecución
+
+El lote conserva la versión exacta de receta fijada para su ejecución.
+
+`VSCREEN-0058` puede enlazar o presentar instrucciones operativas necesarias para ejecutar esa versión, pero:
+
+- no edita la definición maestra;
+- no cambia de versión silenciosamente;
+- no sustituye `VSCREEN-0061 — Receta operativa` cuando se requiera el detalle completo;
+- no adopta una versión nueva publicada después del inicio;
+- no reinterpreta una desviación como cambio de receta;
+- conserva el snapshot/version que explica el lote histórico.
+
+Una versión retirada después del inicio no reescribe el lote ya iniciado; cualquier restricción sobre continuar deberá resolverse por el contrato propietario, no mediante reemplazo silencioso.
+
+---
+
+#### 11. Semántica exacta de una captura parcial
+
+Una captura parcial representa un hecho incremental real ocurrido durante la ejecución.
+
+Puede conservar, según aplique:
+
+- paso o etapa ejecutada;
+- cantidad observada durante el intervalo;
+- tiempo o duración real;
+- material utilizado declarado por FOGO;
+- salida parcial observada;
+- merma, desperdicio o desviación observados;
+- medición o control operacional asociado;
+- pausa;
+- incidencia;
+- comentario estructurado o motivo cuando corresponda;
+- evidencia autorizada;
+- referencias NEXO correlacionadas cuando exista efecto físico.
+
+No significa por sí sola:
+
+```text
+LOTE TERMINADO
+SALIDA FINAL
+RENDIMIENTO FINAL
+CONSUMO NEXO CONCILIADO
+CALIDAD LIBERADA
+PRODUCTO DISPONIBLE
+INVENTARIO TERMINADO PUBLICADO
+CIERRE PRODUCTIVO APROBADO
+```
+
+---
+
+#### 12. Delta actual y acumulado
+
+La UX diferencia siempre:
+
+```text
+DELTA ACTUAL
+!=
+ACUMULADO CONFIRMADO
+```
+
+Contrato conceptual:
+
+```text
+ACUMULADO_ANTERIOR_VERIFICADO
++
+DELTA_ACTUAL_ACEPTADO
+=
+ACUMULADO_RESULTANTE_VERIFICADO
+```
+
+Reglas:
+
+1. el cliente no envía un acumulado autoritativo que reemplace la historia;
+2. cada delta conserva unidad, precisión y conversión aplicables;
+3. un delta negativo no funciona como corrección genérica;
+4. el acumulado se calcula o valida contra la versión vigente;
+5. una diferencia frente al plan permanece visible;
+6. la identidad del lote no cambia por cada captura;
+7. las capturas confirmadas anteriores permanecen inmutables.
+
+---
+
+#### 13. Cantidad objetivo, progreso y saldo
+
+Cuando las cantidades sean comparables bajo una unidad canónica compatible, la experiencia puede proyectar:
+
+```text
+CANTIDAD OBJETIVO
+ACUMULADO CONFIRMADO
+DELTA ACTUAL
+SALDO PRODUCTIVO PROYECTADO
+```
+
+La proyección del saldo sirve para orientar al trabajador y no modifica la orden.
+
+La UX conserva estas reglas:
+
+- producir menos hasta el momento no reduce la cantidad planificada;
+- producir más no amplía retroactivamente la orden;
+- diferencia y sobreproducción quedan explícitas;
+- cualquier aceptación final con diferencia pertenece al cierre o decisión propietaria;
+- la pantalla no convierte una proyección local en verdad empresarial persistida.
+
+---
+
+#### 14. Pasos y operaciones principales del lote
+
+`VSCREEN-0058` guía la ejecución principal de la receta/version aplicada.
+
+Cuando el contrato de receta exponga pasos u operaciones:
+
+- se identifica el paso actual o el contexto operacional pertinente;
+- una captura puede asociarse al paso ejecutado;
+- los pasos ya confirmados no se borran para “volver atrás”;
+- repetir un paso físico se registra como un nuevo hecho cuando el contrato lo permita;
+- una desviación del procedimiento no reescribe la receta esperada;
+- la secuencia mostrada debe corresponder a la versión exacta del lote.
+
+La tarea no inventa un motor de workflow físico nuevo ni congela nombres de columnas para pasos.
+
+---
+
+#### 15. Pausas e interrupciones ordinarias
+
+Una pausa operativa no equivale automáticamente a cancelación, cierre ni finalización.
+
+La UX debe permitir distinguir, cuando aplique:
+
+```text
+PAUSA TEMPORAL
+INTERRUPCION CON BLOQUEO
+INCIDENCIA
+CANCELACION / DETENCION PROPIETARIA
+```
+
+Una pausa confirmada conserva contexto suficiente para explicar discontinuidad temporal sin borrar el progreso previo.
+
+Al reanudar:
+
+- se vuelve a resolver actor/contexto;
+- se verifica que el lote continúe en estado compatible;
+- no se reutiliza una autorización stale;
+- las capturas previas permanecen intactas.
+
+---
+
+#### 16. Incidencias y desviaciones
+
+Durante `IN_PRODUCTION` puede aparecer una incidencia o desviación.
+
+La experiencia debe permitir registrar su existencia y contexto sin convertirla automáticamente en:
+
+- corrección de historia;
+- cambio de receta;
+- anulación del lote;
+- disposición de calidad;
+- desperdicio final;
+- override de planificación.
+
+Cuando la incidencia exija otra acción empresarial, la UX muestra el bloqueo o handoff hacia la tarea propietaria y conserva la ejecución en su verdad actual.
+
+---
+
+#### 17. Salida parcial, rendimiento y merma observados
+
+Una captura puede conservar salida parcial, rendimiento observado, merma o desperdicio observado cuando aplique.
+
+Esos hechos son incrementales y no equivalen a resultado final.
+
+Reglas:
+
+1. una salida parcial no fuerza `VPROC-0034.OUTPUT_REPORTED`;
+2. el rendimiento parcial no se presenta como rendimiento final;
+3. la merma parcial no reemplaza la conciliación final;
+4. una diferencia real no modifica la receta esperada;
+5. los valores confirmados sirven como evidencia para `FOGO-UX-007` y tareas posteriores;
+6. una corrección de una captura ya aceptada usa el contrato correctivo propietario, no edición in-place.
+
+---
+
+#### 18. Materiales y consumo: separación FOGO / NEXO
+
+Durante la ejecución parcial:
+
+```text
+CAPTURA FOGO DE USO / AVANCE
+!=
+MOVIMIENTO NEXO CONFIRMADO
+!=
+CONSUMO NEXO RECONCILIADO
+```
+
+FOGO conserva:
+
+- ejecución;
+- orden;
+- receta/version;
+- material esperado;
+- cantidad real observada o declarada como utilizada;
+- clasificación productiva de consumo, devolución, desperdicio o desviación.
+
+NEXO conserva:
+
+- existencia física;
+- reserva;
+- fuente física;
+- retiro/consumo físico;
+- movimiento canónico;
+- proyecciones de stock;
+- posting y conciliación.
+
+La UX no presenta una captura FOGO como stock descontado hasta que el contrato NEXO produzca evidencia autoritativa suficiente.
+
+---
+
+#### 19. Consumo parcial y efectos pendientes
+
+`INT-PROD-002` admite consumo total, parcial y distribuido entre varias fuentes físicas.
+
+La experiencia debe distinguir, cuando exista el handoff:
+
+- uso productivo capturado;
+- efecto NEXO solicitado;
+- efecto NEXO pendiente;
+- efecto físico aplicado;
+- confirmación pendiente del consumidor;
+- reconciliación completada;
+- diferencia abierta.
+
+Un efecto pendiente no bloquea necesariamente toda captura productiva futura, pero nunca se presenta como reconciliado por conveniencia de interfaz.
+
+La política concreta para continuar ante diferencias pertenece al contrato propietario y debe fallar cerrado cuando la seguridad del efecto no pueda demostrarse.
+
+---
+
+#### 20. Datos mínimos de una captura
+
+Sin imponer nombres físicos, cada parcial durable debe poder reconstruir al menos:
+
+- lote / ejecución;
+- instancia de `VPROC-0034`;
+- orden y versión;
+- receta y versión exacta;
+- producto/salida aplicable;
+- sede y área persistidas;
+- estado y versión del agregado;
+- cantidad planificada y unidad;
+- delta actual;
+- acumulado anterior verificable;
+- acumulado resultante verificable;
+- materiales y deltas productivos cuando apliquen;
+- salida parcial, merma o desviación cuando apliquen;
+- paso, tiempo, pausa, incidencia o control pertinente;
+- actor efectivo;
+- rol operativo;
+- turno/check-in cuando correspondan;
+- dispositivo cuando aplique;
+- momento de ocurrencia y registro;
+- correlación, causalidad, request e idempotencia cuando apliquen;
+- referencia de resultado y auditoría.
+
+---
+
+#### 21. Actor, turno y área en cada captura
+
+Cada captura pertenece al humano que efectivamente realiza la acción.
+
+El actor puede cambiar legítimamente entre parciales del mismo lote.
+
+Ese cambio:
+
+- no cambia la identidad del lote;
+- no transfiere autoridad previa;
+- exige resolución fresca de actor/turno/rol/sede/área;
+- conserva quién hizo cada parcial;
+- no permite editar hechos del actor anterior;
+- invalida drafts o decisiones sensibles que dependan del actor anterior cuando el contrato aplicable así lo exija.
+
+Compartir Centro de Producción no une Cocina Caliente, Galletería y Panadería y Repostería en un mismo territorio.
+
+---
+
+#### 22. Capacidad exacta de mutación
+
+El catálogo FOGO vigente no demuestra una clave dedicada ya materializada para la captura parcial.
+
+Por tanto, la experiencia adopta fail-closed:
+
+```text
+fogo.production.batches.view
+!=
+AUTORIDAD PARA REGISTRAR PARCIAL
+
+fogo.production.batches.create
+!=
+AUTORIDAD AUTOMATICA PARA REGISTRAR PARCIAL
+```
+
+`VSCREEN-0059::PRIMARY` solo puede quedar ejecutable cuando la materialización propietaria vincule la captura a una capacidad canónica concreta y registrada que cubra exactamente esa mutación.
+
+La UX no inventa una clave nueva, wildcard, alias `production.*`, permiso derivado del rol ni compatibilidad temporal basada en ausencia de check.
+
+Mientras ese binding no exista, la experiencia puede presentar el estado y explicar el bloqueo, pero no fabricar autoridad para guardar el parcial.
+
+---
+
+#### 23. Dispositivo compartido
+
+En estación compartida, cada captura aplica la intersección:
+
+```text
+LIMITES DEL DISPOSITIVO
+∩
+AUTORIDAD DEL ACTOR EFECTIVO
+∩
+TERRITORIO DEL LOTE
+∩
+ESTADO ACTUAL
+```
+
+Cuando corresponda identificación o firma del actor:
+
+- se resuelve para la captura actual;
+- identifica al humano;
+- no concede la capacidad;
+- no amplía sede/área;
+- no autoriza un lote en estado incompatible;
+- no permite reutilizar indefinidamente la firma de otro parcial o actor.
+
+---
+
+#### 24. Flujo de captura parcial
+
+El flujo UX mínimo queda:
+
+```text
+LOTE ACTIVO
+→ ABRIR WORKSPACE VSCREEN-0058
+→ RESOLVER ESTADO + CONTEXTO FRESCOS
+→ ABRIR CAPTURA VSCREEN-0059
+→ MOSTRAR ACUMULADO CONFIRMADO
+→ INGRESAR DELTA / HECHO ACTUAL
+→ VALIDAR UNIDAD + CAMPOS + REGLAS
+→ REVALIDAR CAPACIDAD + VERSION + TERRITORIO
+→ CONFIRMAR UNA VEZ
+→ RECUPERAR RESULTADO DURABLE
+→ ACTUALIZAR ACUMULADO Y TIMELINE
+→ CONTINUAR EN IN_PRODUCTION
+```
+
+Guardar un parcial no ejecuta automáticamente la finalización.
+
+---
+
+#### 25. Idempotencia
+
+Cada captura con efecto usa una identidad idempotente estable dentro de su alcance.
+
+Huella conceptual mínima:
+
+```text
+TIPO_DE_ACCION
++
+LOTE / INSTANCIA
++
+VERSION ESPERADA
++
+ACTOR EFECTIVO
++
+DELTA NORMALIZADO
++
+UNIDADES
++
+PASO / CONTEXTO OPERACIONAL
++
+REFERENCIAS DE EFECTO
+```
+
+Resultados obligatorios:
+
+| Caso | Resultado |
+| --- | --- |
+| misma identidad + misma huella | retorna resultado durable previo; no duplica captura |
+| misma identidad + huella incompatible | conflicto; cero segundo efecto |
+| respuesta perdida | recupera resultado antes de repetir |
+| operación aún en curso | estado recuperable; no crea una captura paralela para “asegurar” |
+
+Un retry técnico no representa nueva producción física.
+
+---
+
+#### 26. Concurrencia y control de versión
+
+Dos capturas concurrentes no pueden perder actualizaciones ni contabilizar dos veces el mismo hecho.
+
+La materialización usará versión esperada, compare-and-swap, lock, claim o mecanismo equivalente.
+
+Invariantes UX:
+
+1. una captura aceptada se aplica una sola vez;
+2. un acumulado nuevo incorpora todos los deltas confirmados;
+3. un submit stale no sobrescribe progreso posterior;
+4. si otro actor avanzó el recurso, se recupera el estado actual;
+5. el proceso no retrocede a una versión anterior;
+6. si cambia actor, turno, área o estado, se reautoriza antes del efecto;
+7. la pantalla no oculta un conflicto como “guardado correctamente”.
+
+---
+
+#### 27. Timeline e historia de capturas
+
+El lote debe poder presentar una historia operacional resumida que permita entender qué ocurrió sin editar hechos confirmados.
+
+Cada entrada relevante puede mostrar, según aplique:
+
+- momento;
+- actor;
+- delta o hecho registrado;
+- acumulado resultante;
+- paso o contexto;
+- pausa/incidencia/desviación;
+- estado de efecto NEXO relacionado;
+- resultado confirmado o pendiente.
+
+La timeline es una proyección de hechos durables, no una lista editable de formularios previos.
+
+---
+
+#### 28. Frescura y revalidación
+
+Una pantalla abierta puede quedar stale por cambios de:
+
+- actor;
+- turno/check-in;
+- rol;
+- sede/área;
+- dispositivo;
+- capacidad;
+- estado/version del lote;
+- orden/version;
+- receta/version vinculada;
+- captura concurrente;
+- efecto NEXO material para la operación actual.
+
+Antes de cada mutación se revalida el conjunto requerido.
+
+Un `ALLOW` obtenido al cargar el workspace no autoriza indefinidamente capturas posteriores.
+
+---
+
+#### 29. Relación con VPROC-0034.EVT-003
+
+`VPROC-0034.EVT-003 — producción en curso` conserva la semántica de ejecución activa con captura de consumos, tiempos y desviaciones.
+
+Una captura parcial:
+
+- puede producir o actualizar evidencia que sustenta producción en curso;
+- no crea un catálogo paralelo de eventos;
+- no convierte cada delta en un cierre empresarial;
+- conserva el mismo proceso/lote cuando corresponde;
+- mantiene correlación con su comando/captura.
+
+No se inventa `EVT-*` adicional en esta tarea.
+
+---
+
+#### 30. Frontera con OUTPUT_REPORTED
+
+`VPROC-0034.OUTPUT_REPORTED` significa que se registraron salidas, rendimiento y merma como un resultado productivo reportado sin liberación de calidad.
+
+Por tanto:
+
+```text
+PARCIAL CONFIRMADO
+!=
+OUTPUT_REPORTED AUTOMATICO
+```
+
+Reglas:
+
+1. `produced_qty > 0` no obliga a cambiar estado;
+2. una salida parcial puede permanecer como evidencia incremental;
+3. la transición a `OUTPUT_REPORTED` requiere su propio contrato;
+4. `OUTPUT_REPORTED` no implica consumo reconciliado;
+5. `OUTPUT_REPORTED` no implica finalización, calidad liberada o stock disponible.
+
+---
+
+#### 31. Frontera con finalización
+
+`FOGO-UX-007 — Diseñar finalización de lote` recibe una ejecución con todos sus parciales confirmados y pendientes visibles.
+
+La acción de finalizar no está embebida dentro de `Guardar parcial`.
+
+Antes del handoff a cierre, la experiencia puede mostrar que existen:
+
+- cantidad objetivo;
+- acumulado productivo;
+- diferencias;
+- consumos/efectos NEXO confirmados o pendientes;
+- merma/desperdicio observado;
+- incidencias;
+- controles pendientes;
+- estado/version actual.
+
+La 006 no decide si esos hechos son suficientes para finalizar; entrega evidencia fiel a la 007.
+
+---
+
+#### 32. Interrupción, abandono y recuperación
+
+Si la sesión termina, el dispositivo cambia o el trabajador abandona el workspace:
+
+- los parciales confirmados permanecen;
+- un draft no confirmado no se presenta como hecho productivo;
+- un submit con resultado incierto se reconcilia antes de repetir;
+- el lote no se marca como finalizado por cierre de pestaña;
+- reingresar vuelve a resolver contexto, estado y versión;
+- una captura en curso recuperable se consulta antes de crear otra.
+
+La continuidad del proceso no depende de mantener una página web abierta.
+
+---
+
+#### 33. Estados de experiencia
+
+La UX distingue al menos:
+
+| Estado | Significado |
+| --- | --- |
+| `ACTIVO` | lote en `IN_PRODUCTION`, contexto válido y acciones disponibles según capacidad |
+| `SIN_CAPACIDAD_DE_CAPTURA` | el actor puede ver el lote, pero no existe autoridad concreta para registrar parcial |
+| `STALE` | contexto, estado o versión dejaron de ser frescos |
+| `CONFLICT` | otra captura/acción avanzó el recurso o la versión esperada ya no coincide |
+| `PENDIENTE_DE_EFECTO` | la captura productiva existe pero un handoff material relacionado no está conciliado |
+| `RESULTADO_DESCONOCIDO` | el submit pudo producir efecto y debe recuperarse antes de reintentar |
+| `DENY` | no existe autoridad vigente sobre el recurso/acción |
+| `ERROR_TECNICO` | una dependencia técnica impide resolver la operación con seguridad |
+| `ESTADO_NO_COMPATIBLE` | el lote ya no está en `IN_PRODUCTION` para parcial ordinario |
+
+Ninguno de estos estados se presenta falsamente como “sin cambios pendientes” si existe evidencia contradictoria.
+
+---
+
+#### 34. Tactilidad y densidad operativa
+
+En una estación productiva compartida:
+
+- el lote y producto permanecen reconocibles;
+- el delta actual se diferencia visualmente del acumulado;
+- la acción `Guardar parcial` o equivalente tiene un único significado;
+- `Guardar parcial` se separa de `Finalizar lote`;
+- targets táctiles principales no se superponen;
+- bloqueo, pendiente y éxito no dependen solo de color;
+- el estado de envío bloquea doble submit;
+- la última captura confirmada queda visible sin obligar a navegar a auditoría técnica;
+- acciones secundarias no esconden la acción primaria ni la cambian de semántica.
+
+No se impone framework, color, tamaño físico o componente específico.
+
+---
+
+#### 35. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se observa:
+
+| Superficie / evidencia AS-IS | Qué demuestra | Qué no demuestra |
+| --- | --- | --- |
+| `/production-batches/new` | existe captura de cantidades reales, consumos, outputs y empaques dentro de la creación | ejecución incremental separada después del inicio |
+| `fogo_create_real_production_batch` | capacidad transitoria para producir efectos productivos/físicos | lifecycle `VSCREEN-0058` / `VSCREEN-0059`, parciales versionados o separación FOGO/NEXO completa |
+| `/production-batches` | consulta lotes y `production_batch_consumptions` | mutación parcial protegida ni timeline de deltas |
+| ausencia de ruta/superficie dedicada observada | el snapshot no contiene workspace canónico de lote activo ni captura parcial separada | que la necesidad canónica no exista |
+
+La implementación actual permanece clasificada como:
+
+```text
+VSCREEN-0058 = AS_IS_COLLAPSED
+VSCREEN-0059 = NO_DEDICATED_SURFACE_OBSERVED
+```
+
+La tarea no interpreta el flujo colapsado como contrato objetivo.
+
+---
+
+#### 36. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe una superficie física separada que materialice `VSCREEN-0058`. | el lote en curso no tiene workspace canónico verificable | implementación propietaria FOGO consumiendo `FOGO-UX-006` | existe workspace de lote activo con estado, receta/version, contexto, progreso y handoffs sin recrear el lote |
+| No existe una superficie física separada que materialice `VSCREEN-0059::PRIMARY`. | no puede demostrarse captura incremental protegida | `FOGO-AUTH-010::<implementation_unit_id>` + implementación propietaria | una acción parcial concreta registra deltas versionados, idempotentes y auditables sobre lote `IN_PRODUCTION` |
+| El catálogo FOGO no demuestra una capacidad dedicada a captura parcial. | una mutación podría inferirse indebidamente desde lectura o creación | `FOGO-AUTH-010::<implementation_unit_id>` con normalización/migración propietaria | la acción queda ligada a una capacidad canónica concreta registrada y los permisos no equivalentes fallan cerrado |
+| El AS-IS captura consumos/outputs/empaques durante creación. | inicio y ejecución parcial están colapsados | `FOGO-UX-005..007`, `FOGO-AUTH-009..011` y consumidor físico propietario | creación/inicio, ejecución parcial y cierre son operaciones separadas con estados y efectos propios |
+| Los consumos actuales están acoplados al RPC FOGO. | FOGO puede aparentar propiedad del efecto físico | `INT-PROD-002` + implementaciones FOGO/NEXO | FOGO captura uso productivo y NEXO produce/conciliа el movimiento físico exactamente una vez |
+| No se observan parciales versionados acumulables en runtime. | retry/concurrencia podrían sobrescribir o duplicar progreso | `FOGO-AUTH-010::<implementation_unit_id>` | múltiples deltas conservan versión esperada, acumulado server-side, idempotencia y orden reconstruible |
+| Pausa/incidencia no tiene superficie canónica materializada observada. | interrupciones pueden perder contexto o confundirse con cierre | implementación propietaria de `VSCREEN-0058/0059` | pausa/incidencia quedan registradas sin cerrar ni borrar progreso y con handoff al propietario cuando corresponda |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 37. Handoff inmediato a FOGO-UX-007
+
+`FOGO-UX-007 — Diseñar finalización de lote` recibe una ejecución existente con:
+
+```text
+LOTE / PROCESS_INSTANCE DURABLE
+ESTADO Y VERSION ACTUALES
+ORDEN + VERSION
+RECETA + VERSION EXACTA
+CANTIDAD OBJETIVO + UNIDAD
+CAPTURAS PARCIALES INMUTABLES
+ACUMULADO PRODUCTIVO VERIFICADO
+PASOS / TIEMPOS / PAUSAS / INCIDENCIAS CUANDO APLIQUEN
+MATERIALES Y CONSUMOS PRODUCTIVOS CAPTURADOS
+REFERENCIAS NEXO Y SU ESTADO DE CONCILIACION
+SALIDAS PARCIALES / RENDIMIENTO / MERMA OBSERVADOS
+DIFERENCIAS ABIERTAS
+ACTORES / TURNOS DE CADA CAPTURA
+CORRELACION / IDEMPOTENCIA / VERSIONES
+PENDIENTES Y BLOQUEOS NO OCULTOS
+```
+
+La 007 decide la experiencia de finalización. La 006 no adelanta su transición terminal ni marca automáticamente `OUTPUT_REPORTED`, `READY_FOR_QUALITY` o `PRODUCTION_EXECUTION_COMPLETED`.
+
+---
+
+#### 38. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones ya registradas para producción parcial, ejecución productiva, receta/version, consumos, desperdicio, actor/turno, autorización de mutaciones, territorio, idempotencia, concurrencia, integración FOGO/NEXO e historia no destructiva. No introduce una obligación verificable nueva fuera de esa cobertura ni modifica texto, estado, relación, secuencia o propietario del registro.
+
+---
+
+#### 39. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-001` — ciclo productivo completo con producción parcial, consumo, desperdicio, resultado, actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` — receta publicada inmutable, versión exacta, materiales, unidades, rendimiento, merma, sustituciones y desviaciones sin sobrescritura;
+- `TREQ-FOGO-004` — ejecución con orden, lote, receta/version, cantidades, materiales, pasos, desviaciones, rendimiento, merma y estados posteriores separados;
+- `TREQ-NEXO-011` — fuente canónica de movimientos/proyecciones, reservas diferenciadas, consumo atómico o idempotente y prevención de doble movimiento;
+- `TREQ-INTEGRATION-003` — identidad idempotente, huella lógica, resultado durable, reintento, resultado desconocido y conciliación;
+- `TREQ-INTEGRATION-011` — consumo FOGO hacia NEXO exactamente una vez y correlacionado;
+- `TREQ-AUTH-008` — carril operativo y contexto laboral aplicable;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-011` — identidad efectiva en dispositivo compartido;
+- `TREQ-AUTH-013` — autorización server-side sin bypass por UI/API/RPC;
+- `TREQ-AUTH-014` — invalidación de autoridad stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de actor, contexto, permiso, recurso, decisión, estado y tiempo;
+- `TREQ-UX-001` — tarea actual, acción principal y estado identificables;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 40. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@6299d0e89ca47f0185fcb1f640b545908e6a6a84`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO, `FOGO-AUTH-010`, `VSCREEN-0058`, `VSCREEN-0059`, estados/eventos de `VPROC-0034`, `INT-PROD-002`, cobertura 04A vigente y el AS-IS de creación/lista de lotes. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron lotes, parciales, consumos, pausas, incidencias, cambios de turno, concurrencia, retries ni pruebas con trabajadores reales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-006` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 41. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0058` y `VSCREEN-0059` permanecen como superficies distintas;
+- [ ] `VSCREEN-0058` gobierna el workspace de ejecución activa y `VSCREEN-0059` la captura incremental;
+- [ ] ambas superficies operan ordinariamente sobre `VPROC-0034.IN_PRODUCTION`;
+- [ ] un lote en estado anterior no recibe parciales ordinarios;
+- [ ] un lote en estado posterior no retrocede para aceptar un parcial;
+- [ ] la receta/version exacta del lote permanece visible y no se sustituye silenciosamente;
+- [ ] la UX no edita plan, orden, receta, territorio o identidad del lote desde una captura parcial;
+- [ ] delta actual y acumulado histórico permanecen diferenciados;
+- [ ] el cliente no puede reemplazar el acumulado autoritativo;
+- [ ] un delta negativo no funciona como corrección genérica;
+- [ ] cantidad objetivo y progreso no modifican silenciosamente la orden;
+- [ ] pasos/operaciones se vinculan a la receta/version vigente sin reescribirla;
+- [ ] pausas e incidencias no equivalen a cierre;
+- [ ] una salida parcial no equivale a resultado final;
+- [ ] merma/desperdicio parcial no cierra conciliación;
+- [ ] captura FOGO, movimiento NEXO y consumo reconciliado permanecen distintos;
+- [ ] FOGO no fabrica movimientos de inventario;
+- [ ] NEXO no reinterpreta receta, orden o clasificación productiva;
+- [ ] cada captura conserva actor efectivo y contexto aplicable;
+- [ ] cambio de trabajador/turno no transfiere autoridad histórica;
+- [ ] los tres territorios productivos permanecen aislados;
+- [ ] la captura no obtiene autoridad desde `batches.view` o `batches.create` por inferencia;
+- [ ] ausencia de capacidad canónica concreta mantiene la mutación fail-closed;
+- [ ] dispositivo compartido identifica al actor sin ampliar autoridad;
+- [ ] cada captura con efecto es idempotente;
+- [ ] respuesta perdida recupera resultado antes de repetir;
+- [ ] concurrencia no pierde ni duplica deltas;
+- [ ] una versión stale no sobrescribe progreso posterior;
+- [ ] la timeline conserva hechos confirmados sin edición destructiva;
+- [ ] `VPROC-0034.EVT-003` se reutiliza sin catálogo paralelo;
+- [ ] un parcial no fuerza `OUTPUT_REPORTED`;
+- [ ] la finalización queda reservada a `FOGO-UX-007`;
+- [ ] salir de la pantalla no finaliza el lote;
+- [ ] deny, stale, conflict, pendiente de efecto, resultado desconocido y error técnico permanecen distintos;
+- [ ] el AS-IS colapsado no se trata como contrato objetivo;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 42. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0058` ni `VSCREEN-0059`;
+- crea rutas físicas;
+- crea o modifica RPC, tablas, vistas, RLS, grants, migraciones o datos;
+- inventa una capacidad de autorización para parciales;
+- redefine el inicio de lote de `FOGO-UX-005`;
+- vuelve a crear el lote;
+- cambia la orden productiva;
+- cambia la receta/version histórica;
+- redefine inventario, reservas o movimientos NEXO;
+- presenta uso productivo como consumo físico reconciliado;
+- diseña el algoritmo de costo;
+- finaliza el lote;
+- libera calidad;
+- crea stock terminado disponible;
+- decide empaque final;
+- corrige historia mediante edición destructiva;
+- convierte un parcial en anulación o cancelación;
+- crea un evento empresarial nuevo;
+- inventa nombres físicos de columnas, tablas o enums;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 43. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-005 — Diseñar inicio de lote`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-006 — Diseñar producción parcial`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-007 — Diseñar finalización de lote`
+
 ### [ ] FOGO-UX-007 — Diseñar finalización de lote
 ### [ ] FOGO-UX-008 — Mostrar receta resumida para operación
 ### [ ] FOGO-UX-009 — Separar recetario operativo y administración de recetas

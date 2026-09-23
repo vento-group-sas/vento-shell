@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1293** |
+| Aprobadas | **1294** |
 | En propuesta | **0** |
-| No iniciadas | **303** |
+| No iniciadas | **302** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.02% (1293/1596)** |
+| Porcentaje de completamiento | **81.08% (1294/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **303** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1194** |
+| ⏸ NO_EVALUADA | **302** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1195** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-UX-005` — Diseñar inicio de lote | ✅ APROBADA |
-| Tarea actual | `FOGO-UX-006` — Diseñar producción parcial | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-UX-007` — Diseñar finalización de lote | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-UX-006` — Diseñar producción parcial | ✅ APROBADA |
+| Tarea actual | `FOGO-UX-007` — Diseñar finalización de lote | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-UX-008` — Mostrar receta resumida para operación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1071,7 +1071,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-003` | Diseñar inicio por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-004` | Mostrar producción pendiente del turno | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-005` | Diseñar inicio de lote | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-006` | Diseñar producción parcial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-006` | Diseñar producción parcial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-007` | Diseñar finalización de lote | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-008` | Mostrar receta resumida para operación | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-009` | Separar recetario operativo y administración de recetas | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
