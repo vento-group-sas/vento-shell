@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1286** |
+| Aprobadas | **1287** |
 | En propuesta | **0** |
-| No iniciadas | **310** |
+| No iniciadas | **309** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **80.58% (1286/1596)** |
+| Porcentaje de completamiento | **80.64% (1287/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **310** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1187** |
+| ⏸ NO_EVALUADA | **309** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1188** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-AUTH-014` — Registrar actor y turno | ✅ APROBADA |
-| Tarea actual | `FOGO-AUTH-015` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-AUTH-016` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-AUTH-015` — Migrar a paquetes de vento-shell | ✅ APROBADA |
+| Tarea actual | `FOGO-AUTH-016` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-UX-001` — Inventariar procesos reales de producción | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1064,7 +1064,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-012` | Proteger correcciones y anulaciones | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-013` | Proteger lotes y recetas | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-014` | Registrar actor y turno | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-015` | Migrar a paquetes de vento-shell | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-016` | Ejecutar pruebas integrales | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-001` | Inventariar procesos reales de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-002` | Separar cocina, panadería y repostería | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
