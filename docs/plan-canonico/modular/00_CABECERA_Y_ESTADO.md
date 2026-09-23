@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1261** |
+| Tareas aprobadas | **1262** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **335** |
+| Tareas no iniciadas | **334** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **79.01% (1261/1596)** |
+| Porcentaje de completamiento | **79.07% (1262/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **AUTH-UI-052 — Diseñar página inicial según actor** |
-| Tarea actual | **AUTH-UI-053 — Diseñar navegación según tareas frecuentes** |
+| Última tarea aprobada | **AUTH-UI-053 — Diseñar navegación según tareas frecuentes** |
+| Tarea actual | **AUTH-UI-054 — Reducir opciones irrelevantes** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **AUTH-UI-054 — Reducir opciones irrelevantes** |
+| Siguiente tarea | **AUTH-UI-055 — Crear prototipo por rol** |
 | Bloque actual | **BLOQUE K — NEXO** |
-| Progreso del bloque | **BLOQUE K: 119 de 127 aprobadas; AUTH-UI-053 pendiente** |
+| Progreso del bloque | **BLOQUE K: 120 de 127 aprobadas; AUTH-UI-054 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — AUTH-UI-053** |
+| Carril documental | **ACTIVO — AUTH-UI-054** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `AUTH-UI-052` — Diseñar página inicial según actor |
-| Tarea actual | `AUTH-UI-053` — Diseñar navegación según tareas frecuentes — **NO INICIADA** |
-| Siguiente tarea | `AUTH-UI-054` — Reducir opciones irrelevantes |
+| Última aprobada | `AUTH-UI-053` — Diseñar navegación según tareas frecuentes |
+| Tarea actual | `AUTH-UI-054` — Reducir opciones irrelevantes — **NO INICIADA** |
+| Siguiente tarea | `AUTH-UI-055` — Crear prototipo por rol |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUE K: 119 DE 127 APROBADAS — ACTUAL AUTH-UI-053** |
+| CONTINUIDAD ACTIVA | **BLOQUE K: 120 DE 127 APROBADAS — ACTUAL AUTH-UI-054** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-AUTH-UI-052 — Diseñar página inicial según actor
-        ↓
-TAREA ACTUAL
 AUTH-UI-053 — Diseñar navegación según tareas frecuentes
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 AUTH-UI-054 — Reducir opciones irrelevantes
         ↓
+SIGUIENTE TAREA RESERVADA
+AUTH-UI-055 — Crear prototipo por rol
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUE K — 119 de 127 tareas aprobadas
+BLOQUE K — 120 de 127 tareas aprobadas
 ```
