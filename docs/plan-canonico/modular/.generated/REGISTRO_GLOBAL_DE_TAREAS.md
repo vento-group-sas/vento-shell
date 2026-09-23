@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1275** |
+| Aprobadas | **1276** |
 | En propuesta | **0** |
-| No iniciadas | **321** |
+| No iniciadas | **320** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **79.89% (1275/1596)** |
+| Porcentaje de completamiento | **79.95% (1276/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **321** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1176** |
+| ⏸ NO_EVALUADA | **320** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1177** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-AUTH-003` — Filtrar cola por sede y área | ✅ APROBADA |
-| Tarea actual | `FOGO-AUTH-004` — Restringir Panadería | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-AUTH-005` — Restringir Repostería | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-AUTH-004` — Restringir Panadería | ✅ APROBADA |
+| Tarea actual | `FOGO-AUTH-005` — Restringir Repostería | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-AUTH-006` — Restringir Cocina | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1053,7 +1053,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-001` | Inventariar vistas y acciones productivas | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-002` | Definir permisos por área productiva | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-003` | Filtrar cola por sede y área | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-004` | Restringir Panadería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-AUTH-004` | Restringir Panadería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-005` | Restringir Repostería | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-006` | Restringir Cocina | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-AUTH-007` | Restringir Insumos | — | — | `bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md` |

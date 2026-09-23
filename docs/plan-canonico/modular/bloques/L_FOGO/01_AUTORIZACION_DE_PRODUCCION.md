@@ -1475,7 +1475,743 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-AUTH-004 — Restringir Panadería`
-### [ ] FOGO-AUTH-004 — Restringir Panadería
+### ✅ FOGO-AUTH-004 — Restringir Panadería
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-AUTH-003 — Filtrar cola por sede y área
+**Tarea siguiente:** FOGO-AUTH-005 — Restringir Repostería
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — especialización FOGO de la autorización de `produccion_panaderia` al territorio exacto Centro de Producción + Galletería y Panadería, con aislamiento server-side de órdenes, lotes, creación de lote y recetario operativo
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/01_AUTORIZACION_DE_PRODUCCION.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `FOGO-AUTH-004::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada cómo FOGO restringe la operación ordinaria de Panadería al actor efectivo `produccion_panaderia`, a Centro de Producción y al área exacta Galletería y Panadería, evitando que compartir sede, aplicación, catálogo, receta, producto, dispositivo o permiso base produzca acceso accidental a Cocina Caliente, Repostería, administración de recetas o inventario general.
+
+La regla central queda:
+
+```text
+ROL OPERATIVO EFECTIVO = produccion_panaderia
++
+SEDE EFECTIVA = Centro de Producción
++
+AREA EFECTIVA EXACTA = Galletería y Panadería
++
+PERMISO EXACTO
++
+RECURSO / RELACION APLICABLE A PANADERIA
++
+ESTADO Y PRERREQUISITOS DE LA ACCION
+=
+CAPACIDAD AUTORIZABLE DE PANADERIA
+```
+
+La palabra “Panadería”, el nombre del producto o una selección visual no constituyen autoridad.
+
+---
+
+#### 2. Fuentes y entradas canónicas
+
+La definición consume y conserva:
+
+- `FOGO-AUTH-001` como inventario de superficies y acciones productivas;
+- `FOGO-AUTH-002` como contrato de permisos por área productiva;
+- `FOGO-AUTH-003` como frontera server-side de cola por sede, área, permiso, recurso y estado;
+- la matriz canónica de `produccion_panaderia` de BLOQUE D;
+- `production_bakery` como plantilla de dispositivo operacional compatible con `produccion_panaderia`;
+- contratos de identidad, turno, check-in, sede, área, scope, recurso, denegación y frescura;
+- catálogo canónico de permisos FOGO;
+- `VSCREEN-0055`, `VSCREEN-0057`, `VSCREEN-0061` y superficies posteriores que consuman órdenes, lotes o recetario bajo Panadería;
+- contratos productivos y de receta aprobados;
+- runtime `vento-group-sas/vento-fogo` observado en `a40683b2413d621fb3f54f2eebb8743a42bad3d7`.
+
+La tarea anterior entrega esta entrada exacta:
+
+```text
+COLA YA AUTORIZADA
+=
+Centro de Producción
++
+Galletería y Panadería
++
+permiso exacto
++
+recurso compatible
+```
+
+Esta tarea especializa ese límite para las capacidades FOGO de Panadería; no lo amplía.
+
+---
+
+#### 3. Identidad operativa exacta de Panadería
+
+La identidad operativa ordinaria queda:
+
+| Dimensión | Valor canónico |
+| --- | --- |
+| Rol operativo | `produccion_panaderia` |
+| Familia | Producción |
+| Sede efectiva | Centro de Producción |
+| Área efectiva | Galletería y Panadería |
+| Plantilla compatible de dispositivo | `production_bakery` |
+| Aplicación productiva | FOGO |
+
+Reglas:
+
+1. el rol efectivo procede del turno publicado y vigente;
+2. el área efectiva procede del mismo contexto laboral autorizado;
+3. el área debe pertenecer a la sede efectiva;
+4. un perfil, cookie, query parameter o dispositivo no asigna por sí mismo el rol humano;
+5. un dispositivo puede restringir el contexto, nunca ampliarlo;
+6. la coincidencia parcial con “Panadería” no sustituye la identidad canónica del área;
+7. ausencia de un área requerida produce denegación cerrada.
+
+---
+
+#### 4. Territorio autorizado de Panadería
+
+Para operación ordinaria, el territorio autorizado es exclusivamente:
+
+```text
+Centro de Producción
+└── Galletería y Panadería
+```
+
+No forma parte de este territorio:
+
+- Cocina Caliente;
+- Repostería;
+- bodega general;
+- inventario global del Centro de Producción;
+- áreas de otras sedes;
+- áreas “sin asignar”;
+- áreas inferidas desde texto, producto o receta;
+- una sede completa sin área productiva exacta cuando la capacidad exige área.
+
+Compartir Centro de Producción no crea herencia lateral entre las tres áreas productivas.
+
+---
+
+#### 5. Permisos FOGO aplicables a `produccion_panaderia`
+
+La tarea no crea claves nuevas y conserva exactamente la decisión ya aprobada:
+
+| Permiso | Decisión operativa | Alcance para Panadería |
+| --- | --- | --- |
+| `fogo.access` | ASIGNAR OPERATIVO | Entrada a FOGO bajo turno vigente, Centro de Producción y Galletería y Panadería exacta. No concede recursos internos por sí solo. |
+| `fogo.production.batches.view` | ASIGNAR OPERATIVO | Lotes vinculados a ejecución de Galletería y Panadería dentro del territorio autorizado. |
+| `fogo.production.batches.create` | ASIGNAR OPERATIVO | Creación de lote únicamente para orden, receta, cantidades, área y estado aplicables a Galletería y Panadería. |
+| `fogo.production.orders.view` | ASIGNAR OPERATIVO | Órdenes destinadas o asignadas a Galletería y Panadería dentro del periodo/contexto autorizado. |
+| `fogo.production.recipe_book.view` | ASIGNAR OPERATIVO | Proyección operativa publicada y aplicable a la producción de Galletería y Panadería. |
+| `fogo.production.recipes.view` | NO ASIGNAR | Capacidad administrativa/base; no pertenece al rol operativo de Panadería. |
+
+Ninguna concesión de la tabla funciona como wildcard de FOGO.
+
+---
+
+#### 6. Frontera de entrada a FOGO
+
+`fogo.access` habilita únicamente la entrada contextual a FOGO.
+
+Para `produccion_panaderia`, el servidor deberá comprobar como mínimo:
+
+```text
+ACTOR EFECTIVO
+→ TURNO PUBLICADO Y VIGENTE
+→ ROL produccion_panaderia
+→ Centro de Producción
+→ Galletería y Panadería
+→ fogo.access
+→ ENTRADA A FOGO
+```
+
+La entrada no demuestra automáticamente autoridad para:
+
+- órdenes;
+- lotes;
+- creación de lotes;
+- recetario operativo;
+- recetas administrativas;
+- transiciones posteriores del lote;
+- calidad, liberación, corrección o supervisión.
+
+---
+
+#### 7. Restricción de cola heredada de `FOGO-AUTH-003`
+
+La cola de Panadería parte de un conjunto ya autorizado en servidor.
+
+Un elemento de `VSCREEN-0055` solo puede aparecer como trabajo de Panadería cuando su territorio material o relación canónica trazable resuelva a:
+
+```text
+site = Centro de Producción
+area = Galletería y Panadería
+```
+
+No es válido:
+
+```text
+COLA GLOBAL DEL CENTRO DE PRODUCCION
+→ filtro visual “Panadería”
+→ ocultar Cocina/Repostería en cliente
+```
+
+Los conteos, prioridades y filtros visibles también se calculan sobre el conjunto autorizado, no sobre filas de otras áreas.
+
+---
+
+#### 8. Restricción de órdenes de producción
+
+`fogo.production.orders.view` permite únicamente consultar órdenes cuya relación empresarial las destine o asigne a Galletería y Panadería.
+
+La autorización de una orden exige simultáneamente:
+
+- actor efectivo autorizado;
+- turno y sede compatibles;
+- área efectiva exacta;
+- permiso `fogo.production.orders.view`;
+- relación verificable de la orden con Galletería y Panadería;
+- estado consultable para la superficie o paso actual.
+
+La consulta no concede:
+
+- reasignar la orden;
+- aprobarla;
+- modificarla;
+- cancelarla;
+- moverla a otra área;
+- convertirla en autoridad para crear cualquier lote.
+
+Una orden de Cocina Caliente o Repostería no es visible por compartir sede ni por conocer su identificador.
+
+---
+
+#### 9. Restricción de consulta de lotes
+
+`fogo.production.batches.view` se limita a lotes cuyo territorio o genealogía productiva resuelva a Galletería y Panadería.
+
+La decisión deberá poder demostrarse mediante una relación canónica con uno o más de estos elementos, según el modelo propietario:
+
+- orden productiva;
+- receta/version publicada;
+- ruta productiva;
+- área del lote;
+- ejecución productiva;
+- destino o relación material que determine el área.
+
+No se autoriza un lote únicamente porque:
+
+- fue creado por el mismo actor;
+- pertenece al Centro de Producción;
+- contiene un producto típico de panadería;
+- aparece en un filtro cliente-side;
+- comparte una ubicación general con otra área.
+
+---
+
+#### 10. Restricción de creación de lote
+
+`fogo.production.batches.create` es una capacidad distinta de consultar recetario y de consultar lotes.
+
+Para Panadería, una creación de lote deberá revalidar inmediatamente antes del efecto:
+
+```text
+ACTOR
++
+TURNO / CHECK-IN CUANDO APLIQUE
++
+ROL produccion_panaderia
++
+Centro de Producción
++
+Galletería y Panadería
++
+fogo.production.batches.create
++
+ORDEN APLICABLE
++
+RECETA PUBLICADA Y APLICABLE
++
+CANTIDADES / UNIDADES VALIDAS
++
+ESTADO ELEGIBLE
++
+IDEMPOTENCIA
+=
+CREACION AUTORIZABLE
+```
+
+La creación deberá atribuir el lote al actor efectivo y conservar trazabilidad del recurso y contexto.
+
+Esta tarea no convierte `fogo.production.batches.create` en permiso para iniciar, avanzar, finalizar, corregir, anular, liberar o cerrar cualquier estado posterior. Esas acciones conservan sus tareas propietarias.
+
+---
+
+#### 11. Restricción del recetario operativo
+
+`fogo.production.recipe_book.view` permite únicamente el recetario operativo publicado y aplicable al trabajo autorizado de Galletería y Panadería.
+
+La proyección autorizada puede contener la información necesaria para ejecutar la producción, por ejemplo:
+
+- producto y versión publicada;
+- rendimiento y porciones;
+- ingredientes e insumos operativos necesarios;
+- unidades;
+- pasos y controles;
+- instrucciones aplicables al lote.
+
+No concede por implicación:
+
+- borradores;
+- versiones no publicadas;
+- edición;
+- aprobación o publicación;
+- costos o márgenes administrativos no necesarios;
+- secretos de otro dominio;
+- exportación masiva;
+- maestro completo de recetas;
+- recetas de Cocina Caliente o Repostería no aplicables al contexto.
+
+La aplicabilidad se decide en servidor por publicación, proceso, producto, relaciones y contexto; no por búsqueda de texto.
+
+---
+
+#### 12. Exclusión de `fogo.production.recipes.view`
+
+`fogo.production.recipes.view` permanece `BASE_ONLY` y **NO ASIGNAR** para `produccion_panaderia`.
+
+Por tanto:
+
+```text
+fogo.production.recipe_book.view
+!=
+fogo.production.recipes.view
+```
+
+El rol operativo no obtiene acceso al catálogo administrativo por:
+
+- poder ejecutar una receta;
+- poder consultar un lote;
+- poder crear un lote;
+- aparecer en Centro de Producción;
+- usar una terminal `production_bakery`;
+- ser autor de una observación o consumo.
+
+La administración de recetas conserva su carril propietario.
+
+---
+
+#### 13. Aislamiento frente a Cocina Caliente y Repostería
+
+Para un actor ordinario de Panadería:
+
+| Recurso / capacidad | Galletería y Panadería | Cocina Caliente | Repostería |
+| --- | --- | --- | --- |
+| Cola productiva | PERMITIDA si cumple contrato | DENEGADA | DENEGADA |
+| Orden relacionada | PERMITIDA si cumple contrato | DENEGADA | DENEGADA |
+| Lote relacionado | PERMITIDO si cumple contrato | DENEGADO | DENEGADO |
+| Crear lote | PERMITIDO si cumple contrato | DENEGADO | DENEGADO |
+| Recetario publicado aplicable | PERMITIDO | DENEGADO salvo relación canónica futura explícita | DENEGADO salvo relación canónica futura explícita |
+| Maestro administrativo | DENEGADO | DENEGADO | DENEGADO |
+
+Una relación futura legítima entre áreas deberá ser explícita y modelada por el contrato propietario; no se infiere desde esta tarea.
+
+---
+
+#### 14. Parámetros de cliente y navegación
+
+Valores como:
+
+```text
+site_id
+area_id
+recipe_id
+batch_id
+product_id
+status
+q
+```
+
+son localizadores o filtros de presentación.
+
+Pueden reducir o seleccionar dentro de un conjunto autorizado, pero no pueden:
+
+- cambiar el rol efectivo;
+- cambiar el área del turno;
+- convertir Centro de Producción completo en territorio de Panadería;
+- solicitar filas de Cocina o Repostería;
+- habilitar un permiso no concedido;
+- hacer que un área inválida funcione como wildcard;
+- convertir una receta o lote conocido en recurso autorizable.
+
+La manipulación directa de URL debe fallar cerrada respecto de autoridad.
+
+---
+
+#### 15. Identidad de área y prohibición de heurísticas como autoridad
+
+La autorización debe usar identidad canónica y relaciones resolubles, no coincidencias textuales.
+
+Expresiones como:
+
+```text
+PAN
+PANADERIA
+panaderia
+“producto de panadería”
+```
+
+pueden existir como compatibilidad de presentación o normalización, pero nunca reemplazan:
+
+- `area_id` canónico;
+- pertenencia del área a la sede;
+- rol efectivo;
+- turno;
+- permiso;
+- relación del recurso con el área.
+
+La denominación visible del área no constituye una clave de autorización.
+
+---
+
+#### 16. Dispositivo `production_bakery`
+
+La plantilla `production_bakery` es compatible con:
+
+```text
+produccion_panaderia
++
+Centro de Producción
++
+Galletería y Panadería exacta
+```
+
+Cuando exista una instancia física válida, el dispositivo puede imponer un techo adicional de sede, área, aplicación o acciones permitidas.
+
+Nunca puede:
+
+- asignar por sí solo `produccion_panaderia` a un trabajador;
+- ampliar el área humana;
+- conceder `fogo.production.recipes.view`;
+- conceder multiárea;
+- sustituir turno, check-in o firma del actor cuando apliquen;
+- convertir una terminal de consulta en terminal de mutación no autorizada.
+
+La intersección válida es siempre la más restrictiva entre contexto humano y dispositivo.
+
+---
+
+#### 17. Frescura y revalidación
+
+Una decisión de Panadería queda obsoleta cuando cambia cualquiera de estos hechos materiales:
+
+- actor efectivo;
+- turno;
+- check-in;
+- rol operativo;
+- sede;
+- área;
+- grant o permiso;
+- relación de la orden con el área;
+- receta o versión aplicable;
+- estado del lote;
+- ruta productiva;
+- dispositivo o restricción del dispositivo;
+- cancelación, cierre o reasignación del recurso.
+
+Toda mutación deberá revalidar autoridad en servidor inmediatamente antes del efecto aunque la pantalla o fila se hubiera mostrado correctamente segundos antes.
+
+---
+
+#### 18. Minimización y no revelación
+
+Un recurso de Cocina Caliente, Repostería u otra sede no debe llegar al cliente del actor de Panadería para ser ocultado posteriormente.
+
+Las filas denegadas tampoco se usan para producir:
+
+- conteos;
+- totales;
+- badges;
+- prioridades;
+- filtros descubiertos;
+- autocompletados;
+- nombres de recetas;
+- identificadores de lote u orden;
+- mensajes que confirmen existencia del recurso protegido.
+
+La respuesta autorizada contiene únicamente datos necesarios para la operación de Panadería.
+
+---
+
+#### 19. AS-IS verificado y brechas de adopción
+
+El runtime observado de `vento-fogo` contiene mecanismos parciales de sede, área y permisos, pero no demuestra todavía el contrato completo de Panadería.
+
+Se verificó que `src/app/recipe-book/page.tsx`:
+
+- exige entrada a FOGO;
+- comprueba `production.recipe_book.view`;
+- pasa `siteId` al chequeo observado para roles no owner;
+- pasa `areaId: undefined` en ese chequeo;
+- para usuarios no management deja `selectedAreaId` vacío;
+- consulta `recipe_cards` publicados y, para no owner, los limita por sede;
+- no demuestra desde esta superficie una restricción server-side al área exacta Galletería y Panadería;
+- contiene `isStandalonePanaderiaArea(...)`, basado en código/nombre, útil como comportamiento de presentación pero insuficiente como autoridad.
+
+Se verificó que `src/app/production-batches/page.tsx`:
+
+- exige `production.batches.view`;
+- consulta `production_batches`;
+- acepta `site_id` opcional desde `searchParams`;
+- aplica filtro de sede solo cuando el parámetro existe;
+- no proyecta `area_id` en la fila observada;
+- no demuestra aislamiento de Panadería frente a Cocina o Repostería.
+
+Se verificó que `src/app/production-batches/new/page.tsx`:
+
+- modela recetas con `site_id` y `area_id`;
+- entra a la acción `createBatch` mediante `production.recipe_book.view`;
+- registra/firma la acción con código `production.batches.create` cuando aplica;
+- llama a `fogo_create_real_production_batch`;
+- por esta fuente aislada no queda demostrado que la acción completa revalide el permiso exacto de creación y el área canónica de Panadería antes de producir el efecto.
+
+También se verificó que la capa de autorización runtime acepta `siteId` y `areaId`, por lo que existe soporte técnico para una convergencia contextual; la existencia de esos parámetros no equivale a adopción completa en todas las superficies.
+
+---
+
+#### 20. Convergencia técnica futura
+
+La materialización deberá converger hacia una sola semántica:
+
+```text
+CONTEXTO EFECTIVO
+→ TERRITORIO PANADERIA
+→ PERMISO EXACTO
+→ RECURSO APLICABLE
+→ QUERY / RPC / RLS / SERVER ACTION
+→ PROYECCION MINIMA
+→ REVALIDACION DE MUTACION
+```
+
+No se autoriza mantener rutas en las que:
+
+- una página filtra por área pero el RPC no;
+- el permiso usa sede sin área mientras el recurso exige área;
+- la UI restringe Panadería pero RLS devuelve toda la sede;
+- la Server Action confía en una receta seleccionada sin revalidar territorio;
+- un helper legacy decide por texto y otro por `area_id`.
+
+La futura unidad física deberá reconciliar todas las capas que participen en el mismo efecto.
+
+---
+
+#### 21. Ownership de Supabase
+
+Toda futura modificación VENTO necesaria para materializar esta restricción en:
+
+- RLS;
+- RPC;
+- funciones de autorización;
+- vistas SQL;
+- relaciones de área;
+- índices;
+- grants;
+- triggers;
+- tipos generados;
+- pruebas de base de datos
+
+pertenece exclusivamente a `vento-group-sas/vento-shell`.
+
+Este marcador no ejecuta cambios Supabase.
+
+---
+
+#### 22. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| El recetario observado comprueba el permiso con sede pero `areaId` indefinida para el chequeo mostrado. | Bloquea demostrar aislamiento físico de Panadería desde esa superficie. | `FOGO-AUTH-004::<implementation_unit_id>` | La unidad aplicable deriva/revalida el área efectiva y limita recetas al contexto autorizado antes de serializar. |
+| El recetario observado no aplica `selectedAreaId` para el rol ordinario no management. | Puede dejar la UI en un alcance de sede mayor que el contrato de Panadería si otras capas no restringen. | `FOGO-AUTH-004::<implementation_unit_id>` | El conjunto ordinario queda limitado server-side al área exacta, sin depender de filtro visual. |
+| La vista de lotes observada no proyecta `area_id` y usa `site_id` opcional cliente-side. | No demuestra aislamiento entre áreas del Centro de Producción. | `FOGO-AUTH-004::<implementation_unit_id>` junto con la materialización territorial de `FOGO-AUTH-003` | El recurso resuelve territorio real y la consulta devuelve solo lotes autorizados de Panadería. |
+| `createBatch` entra con `production.recipe_book.view` mientras la acción empresarial es `production.batches.create`. | Riesgo de autoridad insuficientemente explícita si la capa final no revalida el permiso exacto. | `FOGO-AUTH-004::<implementation_unit_id>` / `FOGO-AUTH-009` según unidad propietaria de la mutación | La mutación revalida permiso exacto, actor, contexto, receta, orden, área y estado antes del efecto. |
+| La función `isStandalonePanaderiaArea` usa código/nombre. | No bloquea UX; sí impide tratar esa heurística como autoridad. | `FOGO-AUTH-004::<implementation_unit_id>` / `FOGO-UX` cuando corresponda | La autorización usa identidad canónica; la heurística queda solo como presentación/compatibilidad o se retira. |
+| El acceso a insumos e inventario relacionado pertenece a otra frontera. | No bloquea esta tarea. | `FOGO-AUTH-007` | La tarea 007 restringe insumos sin conceder inventario general. |
+| La lectura multiárea de supervisión no pertenece a un operador ordinario. | No bloquea. | `FOGO-AUTH-008` | El contrato de supervisor define capacidad y alcance explícitos. |
+
+No queda un hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 23. Materialización física posterior
+
+La topología vigente de `FOGO-AUTH-004` es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Este marcador define el contrato global una sola vez.
+
+Cada materialización futura usa:
+
+```text
+FOGO-AUTH-004::<implementation_unit_id>
+```
+
+La unidad exacta y el paquete propietario se resuelven desde las fuentes canónicas de implementación. Esta tarea no inventa `implementation_unit_id`, no reasigna packages y no autoriza código.
+
+La materialización solo puede comenzar después de que el paquete aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita.
+
+---
+
+#### 24. Handoff a FOGO-AUTH-005..008
+
+| Tarea | Entrada exacta proveniente de esta definición |
+| --- | --- |
+| `FOGO-AUTH-005` | Repostería deberá aplicar el mismo patrón de aislamiento con `produccion_reposteria` y Repostería exacta, sin heredar filas, recetas, lotes u órdenes de Panadería. |
+| `FOGO-AUTH-006` | Cocina deberá aplicar el mismo patrón con `produccion_cocina` y Cocina Caliente exacta. |
+| `FOGO-AUTH-007` | Los insumos consumidos desde Panadería deberán conservar relación con orden/lote/receta/área autorizados y no abrir inventario general. |
+| `FOGO-AUTH-008` | Cualquier lectura o acción multiárea de supervisión deberá ser explícita; esta tarea no la concede. |
+
+---
+
+#### 25. Handoff a acciones posteriores de FOGO
+
+Esta tarea no define permisos atómicos nuevos para transiciones todavía propietarias de `FOGO-AUTH-009..016`.
+
+Conserva para esas tareas la regla:
+
+```text
+SER RECURSO DE PANADERIA
++
+SER VISIBLE
+!=
+ESTAR AUTORIZADO PARA CUALQUIER MUTACION
+```
+
+Toda acción posterior deberá revalidar su propio permiso, estado, actor, turno, territorio y recurso.
+
+---
+
+#### 26. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el aislamiento de Panadería especializa obligaciones vigentes de autorización contextual, denegación territorial, planificación/ejecución productiva, recetario aplicable, servidor fail-closed y mutación revalidada. La tarea asigna alcance y ownership de materialización sin introducir una regla verificable independiente que requiera una fila nueva o modificada del registro.
+
+---
+
+#### 27. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación la cobertura vigente de:
+
+- `TREQ-AUTH-001` para impedir autorización final por nombre de rol;
+- `TREQ-AUTH-004` para decisiones equivalentes por actor, permiso, sede, área y contexto;
+- `TREQ-AUTH-008` para exigir turno, rol, sede y área cuando correspondan;
+- `TREQ-AUTH-009` para resolución determinista de sede/área y denegación de cruces territoriales;
+- `TREQ-AUTH-013` para impedir bypass de autorización y exigir decisión server-side;
+- `TREQ-AUTH-014` y `TREQ-AUTH-015` para frescura, convergencia y trazabilidad de decisión;
+- `TREQ-FOGO-001` para ciclo productivo y actor/turno auditables;
+- `TREQ-FOGO-002` para receta publicada/versionada y autorización de fórmulas sensibles;
+- `TREQ-FOGO-003` para planificación con sede y área explícitas;
+- `TREQ-FOGO-004` para ejecución productiva con autoridad y alcance explícitos;
+- `TREQ-FOGO-013` para fail-closed de páginas protegidas;
+- `TREQ-FOGO-023` para impedir que la visibilidad de una vista autorice por sí sola una mutación.
+
+Esta trazabilidad no modifica 04A.
+
+---
+
+#### 28. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@d2d84604df053d0ff49d46395f36f9609c757b8b`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, matriz `produccion_panaderia`, contrato `production_bakery`, catálogo de permisos y el AS-IS de recetario, lotes, creación de lote y autorización runtime. `FOGO-AUTH-003` se consume desde el artefacto completo aprobado por el usuario mientras su cierre remoto permanece pendiente. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron turnos, check-ins, órdenes, lotes, recetas, dispositivos ni pruebas reales de aislamiento entre áreas. |
+| FÍSICA | NOT_APPLICABLE | Este marcador global no crea ni autoriza ninguna instancia `FOGO-AUTH-004::<implementation_unit_id>`. |
+
+---
+
+#### 29. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] el rol objetivo es exactamente `produccion_panaderia`;
+- [ ] la sede ordinaria es Centro de Producción;
+- [ ] el área ordinaria es Galletería y Panadería exacta;
+- [ ] compartir sede no concede Cocina Caliente ni Repostería;
+- [ ] `production_bakery` solo restringe y no asigna autoridad humana;
+- [ ] `fogo.access` no funciona como wildcard;
+- [ ] `fogo.production.orders.view` solo expone órdenes relacionadas con Panadería;
+- [ ] `fogo.production.batches.view` solo expone lotes relacionados con Panadería;
+- [ ] `fogo.production.batches.create` exige permiso exacto y revalidación contextual antes del efecto;
+- [ ] `fogo.production.recipe_book.view` solo expone publicación operativa aplicable;
+- [ ] `fogo.production.recipes.view` permanece fuera del carril operativo;
+- [ ] parámetros de cliente no amplían autoridad;
+- [ ] texto, código visible o slug de “Panadería” no sustituyen `area_id` y relaciones canónicas;
+- [ ] filas denegadas no llegan al cliente ni contaminan conteos/filtros;
+- [ ] una mutación revalida autoridad aunque el recurso hubiera sido visible;
+- [ ] el AS-IS del recetario queda reconocido como insuficiente para demostrar aislamiento exacto por área;
+- [ ] el AS-IS de lotes queda reconocido como insuficiente para demostrar aislamiento exacto por área;
+- [ ] la frontera de insumos permanece reservada a `FOGO-AUTH-007`;
+- [ ] la supervisión multiárea permanece reservada a `FOGO-AUTH-008`;
+- [ ] cualquier cambio futuro de Supabase pertenece a `vento-shell`;
+- [ ] la topología queda `PER_IMPLEMENTATION_UNIT` con gate `POST_E5_PACKAGE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 30. Límites
+
+Esta tarea no:
+
+- implementa código;
+- modifica `vento-fogo`;
+- crea o modifica migraciones;
+- modifica RLS, RPC, grants o datos;
+- modifica matrices RBAC ya aprobadas;
+- crea permisos nuevos;
+- redefine Repostería;
+- redefine Cocina Caliente;
+- abre inventario general;
+- define la frontera completa de insumos de `FOGO-AUTH-007`;
+- concede supervisión multiárea;
+- redefine identidad o lifecycle de dispositivos;
+- diseña UX final;
+- define permisos atómicos de inicio, producción parcial, finalización, corrección, anulación, calidad o cierre;
+- ejecuta E5;
+- crea o autoriza una instancia física;
+- reasigna packages;
+- modifica el Registro 04A.
+
+---
+
+#### 31. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-AUTH-003 — Filtrar cola por sede y área`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-AUTH-004 — Restringir Panadería`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-AUTH-005 — Restringir Repostería`
+
 ### [ ] FOGO-AUTH-005 — Restringir Repostería
 ### [ ] FOGO-AUTH-006 — Restringir Cocina
 ### [ ] FOGO-AUTH-007 — Restringir Insumos
