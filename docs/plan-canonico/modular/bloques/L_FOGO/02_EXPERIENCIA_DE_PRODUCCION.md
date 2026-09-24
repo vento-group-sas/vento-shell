@@ -10571,6 +10571,1311 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-013 — Conectar producto terminado con NEXO`
 
-### [ ] FOGO-UX-013 — Conectar producto terminado con NEXO
+### ✅ FOGO-UX-013 — Conectar producto terminado con NEXO
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-012 — Conectar consumo de insumos con NEXO
+**Tarea siguiente:** FOGO-UX-014 — Diseñar pantalla para supervisor de producción
+**Tipo de tarea:** diseño documental integral de la experiencia FOGO↔NEXO para transferir producto terminado, coproductos y subproductos elegibles desde el hecho productivo y la disposición de calidad hacia el ingreso físico autoritativo de NEXO, separando producción, calidad, empaque, presentación, lote, LPN, recepción, putaway, posting, movimiento, stock, disponibilidad y conciliación; con cantidades por etapa, correlación, idempotencia, concurrencia, parcialidad, excepciones y correcciones sin convertir FOGO en ledger de inventario ni NEXO en propietario de la verdad productiva
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, stock, movimientos, ubicaciones, lotes reales, calidad, empaque, etiquetas ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo la experiencia FOGO entrega una salida productiva **real, identificada y elegible** hacia NEXO para que el dominio de inventario ejecute y confirme el ingreso físico, sin presentar como stock un resultado que todavía solo existe como producción, liberación de calidad, empaque o intención de destino.
+
+La regla raíz queda:
+
+```text
+SALIDA PRODUCTIVA IDENTIFICADA EN FOGO
++
+LOTE + ORDEN + RECETA / VERSION + GENEALOGIA
++
+DISPOSICION DE CALIDAD QUE LIBERA LA CANTIDAD
++
+EMPAQUE / PRESENTACION / LPN CUANDO APLIQUE
++
+CANTIDAD + UNIDAD REALES
++
+HANDOFF CORRELACIONADO E IDEMPOTENTE
++
+VALIDACION Y RECEPCION FISICA NEXO
++
+PUTAWAY + POSTING + MOVIMIENTO + PROYECCIONES NEXO
++
+CONCILIACION
+=
+PRODUCTO TERMINADO INGRESADO FISICAMENTE SIN DOBLE EFECTO
+```
+
+Queda prohibido reducir ese contrato a cualquiera de estas equivalencias:
+
+```text
+PRODUCIDO = LIBERADO POR CALIDAD
+LIBERADO POR CALIDAD = INGRESADO A INVENTARIO
+EMPACADO = INGRESADO A INVENTARIO
+ETIQUETADO = INGRESADO A INVENTARIO
+DESTINO SUGERIDO = UBICACION CONFIRMADA
+POSTING_PENDING = STOCK ACTUALIZADO
+sellable_stock = DISPONIBLE PARA VENTA
+ACK TECNICO = MOVIMIENTO RECONCILIADO
+TIMEOUT = FALLIDO
+CORRECCION FOGO = UPDATE DIRECTO DEL STOCK NEXO
+```
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-012
+
+`FOGO-UX-012` entrega a esta tarea una frontera cerrada:
+
+```text
+FOGO CONSERVA VERDAD PRODUCTIVA
+NEXO CONSERVA VERDAD FISICA DE INVENTARIO
+CONSUMO DE INSUMOS Y PRODUCTO TERMINADO SON EFECTOS DISTINTOS
+UN EFECTO NEXO SOLO SE CONSIDERA CERRADO CON EVIDENCIA AUTORITATIVA
+CORRECCIONES FOGO NO REESCRIBEN MOVIMIENTOS NEXO
+CORRELACION + IDEMPOTENCIA + ACTOR / CONTEXTO SE CONSERVAN
+```
+
+La 013 consume esa frontera y la aplica a la **salida** del proceso productivo:
+
+- no reutiliza `VPROC-0025` de consumo para crear producto terminado;
+- no convierte consumo reconciliado en ingreso de inventario;
+- no usa una cantidad de resultado como movimiento físico;
+- no fabrica ubicación ni disponibilidad desde FOGO;
+- no absorbe la decisión de calidad;
+- no absorbe el cierre productivo;
+- no adelanta la experiencia de supervisión de `FOGO-UX-014`.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente del mini-bloque establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+1. `FOGO-UX-013` define una sola vez el contrato UX reutilizable;
+2. no existe instancia física propia `FOGO-UX-013::<implementation_unit_id>`;
+3. esta tarea no crea una entrada NEXO, no mueve stock y no despliega integración;
+4. las materializaciones posteriores deberán consumir esta frontera junto con `INT-PROD-004`, los contratos FOGO/NEXO, autorización, procesos propietarios y paquetes aplicables;
+5. ninguna capacidad AS-IS observada autoriza a tratar el marcador documental como implementación física.
+
+---
+
+#### 4. Fuentes verificadas
+
+Se consumen como fuentes y dependencias:
+
+- `FOGO-UX-012 — Conectar consumo de insumos con NEXO` como predecesora aprobada;
+- `FOGO-AUTH-011 — Proteger finalización`;
+- `FOGO-AUTH-012 — Proteger correcciones y anulaciones`;
+- `FOGO-AUTH-013 — Proteger lotes y recetas`;
+- `FOGO-AUTH-014 — Registrar actor y turno`;
+- `NEXO-AUTH-007 — Proteger producción vinculada` para las fronteras de producción liberada e inventario exactamente una vez;
+- `INT-PROD-004 — Definir contrato para que NEXO registre el producto terminado`;
+- estados y eventos canónicos de `VPROC-0024`, `VPROC-0035`, `VPROC-0036` y `VPROC-0037`;
+- `VSCREEN-0043`, `VSCREEN-0060`, `VSCREEN-0065`, `VSCREEN-0066` y `VSCREEN-0067`;
+- catálogo canónico de autorización, incluido `nexo.inventory.entries.register`;
+- Registro 04A modular vigente de FOGO, NEXO e INTEGRATION;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`;
+- runtime observado `vento-group-sas/vento-nexo@f0a12557a1a258c84b025933653dc756de4b5a59`;
+- `vento-shell/main@bce87837eb3bc54686d0bbef6d0b9779d7db2098` como estado remoto final revalidado durante la preparación; `FOGO-UX-012` ya está incorporada en esa rama estable.
+
+El AS-IS sirve como evidencia de brecha; no sustituye el contrato objetivo.
+
+---
+
+#### 5. Identidad UX y superficies propietarias
+
+`FOGO-UX-013` **no crea una identidad `VSCREEN-*` nueva**.
+
+La experiencia se distribuye sobre superficies canónicas existentes:
+
+| Superficie | Propietario | Paso | Papel en FOGO-UX-013 |
+| --- | --- | --- | --- |
+| `VSCREEN-0065` — Control de calidad y liberación | FOGO / `VPROC-0035` | `VPROC-0035::STEP-DECIDE_QUALITY_RELEASE` | aportar la disposición que habilita o impide el handoff; la 013 no decide calidad |
+| `VSCREEN-0066` — Empaque, etiquetado y almacenamiento de terminado | FOGO / `VPROC-0036` | `VPROC-0036::STEP-PACK_AND_TRANSFER_FINISHED_GOOD` | superficie principal para preparar e iniciar el handoff del terminado hacia NEXO |
+| `VSCREEN-0043` — Confirmación de entrada a inventario | NEXO / `VPROC-0024` | `VPROC-0024::STEP-CONFIRM_STOCK_ENTRY` | superficie propietaria de confirmación física del ingreso y su continuidad NEXO |
+| `VSCREEN-0060` — Finalización y cierre de lote | FOGO / `VPROC-0037` | `VPROC-0037::STEP-CLOSE_BATCH` | consumir evidencia de efectos NEXO; no fabricarlos |
+| `VSCREEN-0067` — Reproceso, aprovechamiento, merma y cierre productivo | FOGO / `VPROC-0037` | `VPROC-0037::STEP-RESOLVE_PRODUCTION_DISPOSITION` | resolver disposición productiva cuando corresponda, sin sustituir ingreso NEXO |
+
+La acción FOGO de “entregar a NEXO” es un handoff de intención y evidencia. No es una escritura directa de inventario.
+
+---
+
+#### 6. Ownership FOGO, NEXO y SHELL
+
+La separación visible y contractual queda:
+
+| Hecho | Fuente propietaria |
+| --- | --- |
+| orden productiva | FOGO |
+| lote productivo y ejecución | FOGO |
+| receta/version histórica | FOGO |
+| producto/coproducto/subproducto realmente obtenido | FOGO |
+| `produced_qty` | FOGO |
+| disposición de calidad y cantidad liberada | FOGO / calidad |
+| empaque, presentación productiva, etiqueta y vínculo de salida | FOGO mientras pertenecen al ciclo productivo |
+| solicitud de efecto físico | FOGO como emisora del handoff |
+| recepción física | NEXO |
+| LOC/posición confirmados | NEXO |
+| condición física NEXO | NEXO |
+| movimiento canónico | NEXO |
+| ledger y proyecciones de stock | NEXO |
+| disponibilidad física | NEXO |
+| contratos compartidos y cualquier modificación VENTO de Supabase | `vento-shell` |
+
+Regla de UX:
+
+```text
+FOGO DICE QUE SALIDA PRODUJO Y CUAL ESTA LIBERADA PARA EL HANDOFF
+NEXO DICE QUE EXISTENCIA RECIBIO, DONDE QUEDO Y QUE MOVIMIENTO APLICO
+FOGO CONSUME UNA PROYECCION AUTORITATIVA MINIMA DEL RESULTADO NEXO
+NINGUNA APP FABRICA LA VERDAD PROPIETARIA DE LA OTRA
+```
+
+---
+
+#### 7. Proceso propietario del ingreso físico
+
+El producto terminado se ingresa mediante `VPROC-0024`, no mediante `VPROC-0025`.
+
+La progresión canónica NEXO es:
+
+```text
+VPROC-0024.INBOUND_MOVEMENT_REQUESTED
+→ VPROC-0024.VALIDATION_IN_PROGRESS
+→ VPROC-0024.READY_FOR_PHYSICAL_EXECUTION
+→ VPROC-0024.IN_EXECUTION
+→ VPROC-0024.PENDING_CONFIRMATION
+→ VPROC-0024.PUTAWAY_PENDING
+→ VPROC-0024.POSTING_PENDING
+→ VPROC-0024.INBOUND_MOVEMENT_RECONCILED
+```
+
+La UX nunca compacta esa máquina en un booleano `posted`, `stored`, `ready` o equivalente.
+
+---
+
+#### 8. Verdad demostrada por cada estado NEXO
+
+| Estado | Verdad demostrada | Lo que NO demuestra |
+| --- | --- | --- |
+| `INBOUND_MOVEMENT_REQUESTED` | existe una intención válida de ingreso | recepción, ubicación o stock |
+| `VALIDATION_IN_PROGRESS` | NEXO valida recurso, cantidad, unidad, origen, destino, condición y autoridad | que el efecto pueda ejecutarse ya |
+| `READY_FOR_PHYSICAL_EXECUTION` | la operación está preparada y autorizada para comenzar | que el recurso esté recibido |
+| `IN_EXECUTION` | la recepción o movimiento físico está ocurriendo | putaway, posting o conciliación |
+| `PENDING_CONFIRMATION` | existe ejecución física pendiente de aceptación | ingreso conciliado |
+| `PUTAWAY_PENDING` | la existencia recibida espera ubicación final | ubicación final ni disponibilidad |
+| `POSTING_PENDING` | el hecho físico validado espera ledger/proyecciones | saldo aplicado |
+| `INBOUND_MOVEMENT_RECONCILED` | recepción, ubicación, movimiento y proyecciones son coherentes o sus diferencias quedaron resueltas | venta, costo final, pedido cumplido o cierre productivo |
+
+Solo `VPROC-0024.INBOUND_MOVEMENT_RECONCILED` permite a FOGO presentar el **efecto físico normal** como conciliado.
+
+---
+
+#### 9. Calidad como precondición sin dependencia circular
+
+La ruta normal exige una `VPROC-0035.DISPOSITION_DECIDED` vigente cuya decisión **libere expresamente** la cantidad afectada.
+
+Queda:
+
+```text
+PRODUCTION_EXECUTION_COMPLETED
+!=
+DISPOSITION_DECIDED CON LIBERACION
+!=
+VPROC-0035.QUALITY_DISPOSITION_VERIFIED
+!=
+INBOUND_MOVEMENT_RECONCILED
+```
+
+Reglas:
+
+1. terminar la ejecución no habilita inventario por sí solo;
+2. la 013 no decide liberar, retener, rechazar ni reprocesar;
+3. una cantidad retenida, rechazada o destinada a reproceso no sigue el camino ordinario de stock terminado;
+4. `VPROC-0035.QUALITY_DISPOSITION_VERIFIED` no se exige como precondición circular cuando la propia verificación necesita demostrar que NEXO aplicó correctamente la disposición;
+5. el resultado NEXO puede formar parte de la evidencia que permite cerrar la verificación de calidad;
+6. si NEXO detecta después una condición física incompatible, puede aislar la existencia sin reescribir la decisión FOGO original.
+
+---
+
+#### 10. Empaque como hecho separado del inventario
+
+Cuando el producto requiere empaque, presentación, etiqueta o LPN antes de almacenamiento, la experiencia preserva:
+
+```text
+VPROC-0036.PACKAGING_WORK_PENDING
+→ MATERIALS_PREPARED
+→ IN_PACKAGING
+→ LABEL_VERIFICATION_PENDING
+→ VPROC-0036.PACKAGED_OUTPUT_RECORDED
+→ VPROC-0036.STORAGE_TRANSFER_PENDING
+→ RECONCILIATION_PENDING
+→ PACKAGING_CYCLE_RECONCILED
+```
+
+Interpretación UX:
+
+- `VPROC-0036.PACKAGED_OUTPUT_RECORDED`: la salida empacada está identificada, pero no ingresada a NEXO;
+- `VPROC-0036.STORAGE_TRANSFER_PENDING`: existe un handoff directo pendiente de ubicación, custodia y movimiento NEXO;
+- `RECONCILIATION_PENDING`: FOGO compara empaque y transferencia contra el resultado físico NEXO;
+- `PACKAGING_CYCLE_RECONCILED`: el ciclo de empaque quedó conciliado; no es requisito circular para iniciar el movimiento que precisamente aporta evidencia del almacenamiento.
+
+---
+
+#### 11. Salida que no requiere empaque
+
+La ausencia de empaque no se convierte en error universal.
+
+Se permite un handoff sin empaque previo únicamente cuando el perfil canónico del producto y la operación admiten explícitamente:
+
+- almacenamiento a granel;
+- unidad física sin empaque adicional;
+- producto intermedio cuyo destino canónico no exige paquete previo;
+- otra modalidad publicada y verificable equivalente.
+
+La UI no puede deducir “no requiere empaque” porque falte una fila de paquete o porque el usuario deje un campo vacío.
+
+---
+
+#### 12. Condiciones mínimas de elegibilidad para el handoff
+
+Una salida puede entrar al camino normal FOGO→NEXO cuando sean resolubles y vigentes, según corresponda:
+
+- orden productiva;
+- lote productivo;
+- instancia de ejecución `VPROC-0034`;
+- receta/version exacta usada;
+- salida específica dentro del lote;
+- producto canónico;
+- rol de salida: principal, coproducto o subproducto;
+- cantidad real positiva;
+- unidad compatible o conversión determinista;
+- disposición de calidad que libere esa cantidad;
+- empaque/presentación/LPN cuando sean obligatorios;
+- sede y área productiva de origen;
+- destino esperado o regla NEXO que pueda resolverlo;
+- actor/contexto vigentes para la acción humana cuando aplique;
+- versión del recurso;
+- identidad de operación, correlación, causalidad e idempotencia;
+- ausencia de un efecto NEXO previo que ya represente la misma porción física o permanezca con resultado desconocido.
+
+Si una dependencia material no puede resolverse, el handoff no se presenta como exitoso.
+
+---
+
+#### 13. Evidencia insuficiente de ingreso
+
+No demuestran ingreso físico ni autorizan mostrar stock confirmado:
+
+- existencia del lote;
+- `PRODUCTION_EXECUTION_COMPLETED`;
+- cantidad producida mayor que cero;
+- estado local `posted`;
+- `VPROC-0036.PACKAGED_OUTPUT_RECORDED`;
+- etiqueta impresa;
+- LPN creado sin recepción;
+- `destination_location_id` configurado;
+- `output_mode = inventory_stock`;
+- `output_mode = sellable_stock`;
+- `production_output` como tipo o intención local;
+- costo calculado;
+- ACK técnico;
+- redirect de éxito;
+- cambio visual de pantalla;
+- existencia de una fila sin movimiento reconciliado.
+
+---
+
+#### 14. Contrato mínimo del handoff FOGO → NEXO
+
+La solicitud debe transportar o referenciar únicamente la información necesaria para que NEXO valide y cree/recupere su operación `VPROC-0024`.
+
+Contenido empresarial mínimo cuando aplique:
+
+- `production_order_ref`;
+- `production_lot_ref`;
+- instancia de `VPROC-0034`;
+- instancia de `VPROC-0037` cuando exista cierre abierto;
+- `recipe_version_ref`;
+- identidad de la salida específica;
+- `item_ref`;
+- rol de salida;
+- cantidad del handoff;
+- unidad de captura;
+- presentación;
+- lote/serial trazable;
+- paquete/etiqueta/LPN cuando aplique;
+- referencia de disposición de calidad;
+- sede y área productiva de origen;
+- destino esperado cuando exista;
+- momento del hecho productivo y momento esperado de entrega cuando corresponda;
+- referencias de evidencia.
+
+Contexto transversal:
+
+```text
+request_id
+idempotency_key
+source_command_id
+correlation_id
+causation_id
+process_instance_id
+resource_version
+principal tecnico
+actor efectivo
+site / area
+contract_version
+evidence_refs
+```
+
+---
+
+#### 15. Lo que FOGO no puede afirmar por autoridad propia
+
+FOGO no entrega como verdad autoritativa NEXO:
+
+- saldo físico final;
+- saldo disponible final;
+- LOC confirmado cuando todavía falta recepción o putaway;
+- posición confirmada;
+- condición física posterior a la recepción;
+- movimiento aplicado;
+- identificador de movimiento antes de existir;
+- posting confirmado;
+- proyección de stock resultante;
+- aceptación de bodega;
+- reconciliación NEXO;
+- disponibilidad comercial final;
+- vendibilidad;
+- cierre de `VPROC-0024`;
+- un override de la ubicación NEXO.
+
+FOGO puede proponer contexto o destino esperado. NEXO los revalida.
+
+---
+
+#### 16. Cantidades que la UX debe mantener separadas
+
+La experiencia presenta como magnitudes distintas:
+
+```text
+produced_qty
+released_qty
+handoff_qty
+received_qty
+posted_qty
+reconciled_qty
+```
+
+Semántica:
+
+| Magnitud | Owner / significado |
+| --- | --- |
+| `produced_qty` | FOGO; salida real reportada por producción |
+| `released_qty` | FOGO/calidad; porción expresamente liberada |
+| `handoff_qty` | FOGO; cantidad concreta solicitada para efecto físico |
+| `received_qty` | NEXO; cantidad físicamente recibida |
+| `posted_qty` | NEXO; cantidad aplicada al ledger |
+| `reconciled_qty` | NEXO; cantidad explicada por recepción, ubicación, movimiento y proyecciones coherentes |
+
+Ninguna columna se rellena copiando automáticamente la anterior.
+
+---
+
+#### 17. Invariantes cuantitativas
+
+La UX debe impedir o señalar cualquier combinación que viole:
+
+```text
+released_qty <= cantidad cubierta por la disposicion de calidad
+handoff_qty <= released_qty todavía elegible para ese destino/efecto
+received_qty >= 0
+posted_qty >= 0
+reconciled_qty >= 0
+```
+
+Cuando el contrato de cierre exige ingreso físico de toda la salida liberada aplicable:
+
+```text
+SUMA(reconciled_qty de efectos fisicos validos y no superpuestos)
+=
+cantidad de salida FOGO que debe quedar fisicamente ingresada
+```
+
+Las diferencias por rechazo, reproceso, merma, devolución, cumplimiento directo u otra disposición válida permanecen explicadas por su proceso; no se esconden ajustando `produced_qty`.
+
+---
+
+#### 18. Handoff parcial
+
+Un mismo lote o una misma salida pueden transferirse en varias porciones cuando el contrato físico lo permita.
+
+Cada porción debe conservar:
+
+- identidad empresarial propia;
+- cantidad y unidad;
+- salida exacta de origen;
+- lote;
+- disposición de calidad que cubre la porción;
+- presentación/LPN cuando aplique;
+- destino esperado;
+- resultado NEXO;
+- estado;
+- correlación e idempotencia.
+
+La UX muestra por separado:
+
+```text
+CANTIDAD LIBERADA
+CANTIDAD YA ENTREGADA A NEXO
+CANTIDAD RECONCILIADA
+CANTIDAD AUN PENDIENTE DE HANDOFF
+CANTIDAD CON DIFERENCIA / EXCEPCION
+```
+
+Una segunda porción no puede superponerse con una porción ya reconciliada o con resultado desconocido.
+
+---
+
+#### 19. Producto principal, coproductos y subproductos
+
+Una ejecución con varias salidas se presenta como una colección de identidades físicas independientes.
+
+Por cada salida se conserva:
+
+- producto;
+- rol `primary`, `co_product` o `by_product` cuando aplique;
+- cantidad producida y unidad;
+- cantidad liberada;
+- disposición de calidad;
+- presentación/empaque;
+- LPN/lote/serial cuando aplique;
+- destino esperado;
+- estado NEXO;
+- cantidad reconciliada;
+- diferencias.
+
+Se prohíbe:
+
+- sumar productos diferentes como una sola cantidad de terminado;
+- usar el movimiento del principal como evidencia de un coproducto;
+- mezclar unidades incompatibles;
+- cerrar todas las salidas porque una sola quedó reconciliada;
+- inventar una entrada NEXO para una salida cuyo destino canónico no es inventario físico.
+
+---
+
+#### 20. Genealogía mínima visible y auditable
+
+La cadena deberá poder reconstruirse como:
+
+```text
+ORDEN
+→ LOTE PRODUCTIVO
+→ RECETA / VERSION
+→ SALIDA
+→ DISPOSICION DE CALIDAD
+→ PRESENTACION / LPN CUANDO APLIQUE
+→ HANDOFF FOGO
+→ INGRESO NEXO
+→ MOVIMIENTO
+→ LOC / POSICION
+→ PROYECCION RESULTANTE
+```
+
+La UI operativa puede minimizar detalle, pero nunca perder las referencias que permiten navegar o investigar esa cadena bajo autorización.
+
+---
+
+#### 21. Lote, serial, LPN y presentación
+
+Reglas:
+
+1. un producto sujeto a trazabilidad conserva lote o serial;
+2. un LOC no sustituye el lote;
+3. un LPN no sustituye producto, lote ni cantidad;
+4. una presentación no autoriza una conversión arbitraria;
+5. el contenido no puede contabilizarse simultáneamente como stock suelto y contenido de LPN;
+6. reimprimir una etiqueta no crea existencia;
+7. mover el producto no crea otra salida productiva;
+8. dividir o agrupar contenido conserva genealogía y cantidades;
+9. una corrección posterior mantiene vínculo con el efecto físico original.
+
+---
+
+#### 22. Destino esperado y ubicación confirmada
+
+FOGO puede mostrar un destino esperado derivado de la configuración productiva, pero deberá etiquetarlo semánticamente como **esperado/propuesto** hasta recibir el resultado NEXO.
+
+La UI distingue:
+
+```text
+DESTINO ESPERADO FOGO
+!=
+LOC ACEPTADO POR NEXO
+!=
+POSICION CONFIRMADA
+```
+
+NEXO valida al menos:
+
+- existencia y actividad del LOC;
+- sede aplicable;
+- compatibilidad de producto/condición;
+- presentación/LPN;
+- pertenencia de la posición al LOC;
+- bloqueos;
+- condición física;
+- duplicidad del efecto.
+
+---
+
+#### 23. Reroute sin duplicación
+
+Si el destino esperado deja de ser válido antes o durante putaway, la experiencia refleja `VPROC-0024.EX-002 — REROUTE`.
+
+Debe mostrarse cuando sea material:
+
+- destino original;
+- destino confirmado nuevo;
+- causa;
+- estado de aceptación;
+- misma identidad de operación;
+- ausencia de una segunda entrada por el simple cambio de destino.
+
+Un reroute no reescribe el handoff original; añade la decisión de redirección dentro de la misma historia.
+
+---
+
+#### 24. Putaway pendiente
+
+`VPROC-0024.PUTAWAY_PENDING` debe representarse como una condición real de operación:
+
+- producto físicamente recibido;
+- ubicación definitiva todavía pendiente;
+- stock final y disponibilidad todavía no confirmados;
+- acción/owner NEXO claramente identificables;
+- FOGO en espera de resultado.
+
+No se presenta como “guardado”, “almacenado”, “listo” ni “disponible”.
+
+---
+
+#### 25. Posting pendiente
+
+`VPROC-0024.POSTING_PENDING` significa que el hecho físico validado espera el efecto atómico en ledger y proyecciones.
+
+La UX debe evitar:
+
+```text
+POSTING_PENDING → STOCK OK
+POSTING_PENDING → LISTO PARA VENDER
+POSTING_PENDING → CIERRE PRODUCTIVO OK
+```
+
+El estado se muestra como pendiente de contabilización/conciliación física, no como éxito final.
+
+---
+
+#### 26. Resultado autoritativo NEXO consumido por FOGO
+
+FOGO necesita una proyección mínima de resultado, no una copia editable del ledger.
+
+La proyección autoritativa deberá permitir reconstruir cuando aplique:
+
+- `process_id = VPROC-0024`;
+- `process_instance_id`;
+- estado actual;
+- `result_reference`;
+- `request_id`;
+- `correlation_id`;
+- referencia idempotente;
+- producto;
+- cantidad/unidad recibidas;
+- cantidad/unidad posteadas;
+- `reconciled_qty`;
+- lote/serial;
+- LPN;
+- LOC/posición confirmados;
+- condición resultante;
+- referencias de movimiento;
+- evidencia/aceptación;
+- versión del resultado;
+- diferencia o acción compensatoria vinculada.
+
+Todo campo NEXO en FOGO es de lectura/proyección para ese handoff salvo que otro contrato autorice expresamente una acción.
+
+---
+
+#### 27. Estados UX del handoff terminado
+
+La experiencia FOGO puede proyectar estados operativos legibles, siempre derivados de hechos canónicos:
+
+| Estado UX | Condición mínima |
+| --- | --- |
+| `NO_ELEGIBLE` | falta liberación, empaque requerido, identidad, cantidad o dependencia obligatoria |
+| `LISTO_PARA_ENTREGAR` | salida liberada y preparada para construir handoff; todavía no existe efecto NEXO |
+| `HANDOFF_SOLICITADO` | existe `INBOUND_MOVEMENT_REQUESTED` recuperable |
+| `VALIDANDO_EN_NEXO` | NEXO está en validación |
+| `RECEPCION_EN_CURSO` | NEXO ejecuta recepción física |
+| `CONFIRMACION_PENDIENTE` | espera aceptación |
+| `UBICACION_PENDIENTE` | `PUTAWAY_PENDING` |
+| `POSTING_PENDIENTE` | `POSTING_PENDING` |
+| `RECONCILIADO` | `INBOUND_MOVEMENT_RECONCILED` |
+| `RESULTADO_DESCONOCIDO` | el intento puede haber producido efecto, pero no existe respuesta concluyente recuperada |
+| `BLOQUEADO` | dependencia o decisión empresarial impide continuar |
+| `CONFLICTO` | identidad, versión, cantidad, condición o estado incompatibles |
+
+Estos nombres son una taxonomía UX; no crean nuevos estados de proceso persistidos.
+
+---
+
+#### 28. Acción “entregar a NEXO”
+
+La acción primaria de la experiencia en `VSCREEN-0066` no ejecuta un update de stock FOGO.
+
+Debe comportarse conceptualmente así:
+
+```text
+REVALIDAR SALIDA + CALIDAD + EMPAQUE + ACTOR / CONTEXTO
+→ CONSTRUIR / RECUPERAR IDENTIDAD DE HANDOFF
+→ SOLICITAR EFECTO NEXO
+→ MOSTRAR ESTADO RECUPERABLE
+```
+
+No debe:
+
+- insertar directamente una proyección de stock desde la UI FOGO;
+- asumir que el RPC terminó porque hubo redirect;
+- generar una nueva identidad por doble click;
+- convertir destino esperado en ubicación final;
+- ocultar un resultado incierto;
+- marcar vendible por una bandera FOGO.
+
+---
+
+#### 29. Idempotencia de la entrega
+
+Toda porción física obtiene una identidad empresarial estable antes del primer intento.
+
+La huella lógica incluye, cuando aplique:
+
+- instancia productiva;
+- lote;
+- salida exacta;
+- producto;
+- cantidad/unidad;
+- disposición de calidad/version;
+- presentación/LPN;
+- propósito del ingreso;
+- sede;
+- destino esperado cuando forma parte del comando;
+- versión contractual.
+
+Reglas:
+
+1. misma identidad + misma huella recuperan el mismo resultado;
+2. misma identidad + payload materialmente distinto producen conflicto;
+3. una clave técnica nueva no autoriza duplicar el mismo efecto empresarial;
+4. doble click, refresh o retry no crean otro movimiento;
+5. las porciones distintas reciben identidad distinta y no superpuesta;
+6. la deduplicación vive en la frontera propietaria, no solo en el cliente.
+
+---
+
+#### 30. Respuesta perdida y `RESULTADO_DESCONOCIDO`
+
+Si FOGO envía el handoff y no recibe respuesta concluyente:
+
+1. no declara fallo definitivo;
+2. no crea otra operación con nueva identidad;
+3. muestra `RESULTADO_DESCONOCIDO` o semántica equivalente;
+4. consulta/recupera la identidad original;
+5. NEXO devuelve el resultado previo si ya existe;
+6. si el estado sigue incierto, el caso permanece recuperable o en conciliación;
+7. una respuesta tardía converge al mismo efecto;
+8. la acción manual de “reintentar” debe recuperar antes de reenviar.
+
+---
+
+#### 31. Concurrencia
+
+Dos actores, pestañas, dispositivos, workers o procesos no pueden producir dos ingresos válidos sobre la misma porción física.
+
+Se exige conceptualmente:
+
+- versión vigente del recurso;
+- claim/bloqueo/control atómico o mecanismo equivalente en la frontera propietaria;
+- deduplicación empresarial;
+- revalidación de disposición de calidad;
+- detección de movimiento previo;
+- resultado determinista para el perdedor de carrera;
+- preservación de la intención original.
+
+La UX no resuelve una carrera mediante “último guardado gana”.
+
+---
+
+#### 32. Actor, turno y contexto
+
+La preparación o envío humano del handoff debe revalidar, según el contrato de la acción:
+
+- principal autenticado;
+- actor efectivo;
+- rol/capacidad aplicable;
+- turno y check-in cuando sean obligatorios;
+- sede y área productiva;
+- dispositivo/firma cuando corresponda;
+- recurso;
+- estado;
+- versión;
+- decisión de calidad;
+- identidad idempotente.
+
+NEXO revalida por separado la autoridad de su propia mutación, incluida la capacidad canónica aplicable como `nexo.inventory.entries.register` cuando esa sea la acción propietaria materializada.
+
+La autoridad FOGO no se convierte en autoridad NEXO y viceversa.
+
+---
+
+#### 33. Cambio de actor o contexto durante un handoff
+
+Un formulario abierto no congela autoridad.
+
+Si antes del efecto cambia materialmente:
+
+- actor;
+- turno;
+- check-in;
+- sede;
+- área;
+- rol;
+- dispositivo;
+- permiso;
+- lote;
+- disposición;
+- cantidad;
+- versión;
+
+la operación se revalida.
+
+Una misma identidad empresarial no se reutiliza silenciosamente con otro actor o contenido materialmente distinto.
+
+---
+
+#### 34. Capacidad NEXO y separación de responsabilidad
+
+La UX FOGO no expone `nexo.inventory.entries.register` como si fuera un permiso FOGO.
+
+En el lado NEXO, una entrada ordinaria de producto terminado solo es autorizable cuando exista una fuente empresarial válida —por ejemplo, un lote productivo liberado— y el actor/contexto/recurso/destino cumplan el contrato propietario.
+
+Queda prohibido usar:
+
+- rol productivo FOGO;
+- existencia del lote;
+- botón visible;
+- parámetro de URL;
+- ubicación propuesta;
+- output_mode;
+- firma de dispositivo aislada;
+
+como sustitutos de la autorización NEXO.
+
+---
+
+#### 35. Calidad retenida, rechazada o a reproceso
+
+La experiencia representa explícitamente que una salida no elegible **permanece fuera del ingreso normal de terminado**.
+
+Estados/decisiones de calidad que retienen, rechazan o envían a reproceso deben mostrar:
+
+- cantidad afectada;
+- decisión;
+- owner de próxima acción;
+- motivo/evidencia autorizada cuando corresponda;
+- ausencia de handoff de stock terminado;
+- genealogía preservada si se crea un reproceso posterior.
+
+No se permite ocultar el bloqueo creando una entrada “temporal” y corrigiéndola después.
+
+---
+
+#### 36. Cuarentena detectada por NEXO
+
+Si una cantidad liberada llega físicamente a NEXO y allí se detecta una condición incompatible, `VPROC-0024.EX-004 — QUARANTINE` puede aislarla.
+
+La UI FOGO refleja entonces:
+
+- que el handoff físico existe;
+- que la existencia está aislada/no disponible;
+- que la decisión FOGO original no fue borrada;
+- que NEXO es owner de la condición física y su continuidad;
+- que el cierre aplicable debe esperar o consumir la resolución correspondiente.
+
+Cuarentena no equivale a rechazo retroactivo de la producción.
+
+---
+
+#### 37. HOLD y ESCALATE
+
+`VPROC-0024.EX-001 — HOLD` suspende continuidad cuando una condición impide avanzar sin deshacer efectos ya confirmados.
+
+`VPROC-0024.EX-003 — ESCALATE` representa una diferencia que exige decisión y no puede resolverse por inferencia.
+
+FOGO debe poder distinguir al menos:
+
+```text
+PENDIENTE NORMAL
+HOLD
+ESCALADO
+ERROR TECNICO
+CONFLICTO
+RESULTADO_DESCONOCIDO
+```
+
+para evitar que todos los casos aparezcan como “error”.
+
+---
+
+#### 38. Cancelación, nulidad, retorno y ajuste
+
+Se respetan las acciones propietarias de `VPROC-0024`:
+
+| Acción | Semántica UX |
+| --- | --- |
+| `VPROC-0024.CCR-001 — CANCEL` | detiene únicamente trabajo restante o porción no ejecutada |
+| `VPROC-0024.CCR-002 — VOID` | invalida una instrucción errónea/duplicada sin efecto físico válido |
+| `VPROC-0024.CCR-003 — RETURN` | crea un movimiento inverso/compensatorio ligado al ingreso confirmado |
+| `VPROC-0024.CCR-004 — ADJUST` | registra una diferencia demostrada mediante efecto separado |
+
+Ninguna acción elimina o reescribe el movimiento original.
+
+---
+
+#### 39. Corrección FOGO después del posting
+
+Si `FOGO-UX-011` produce una corrección de la salida después de un efecto NEXO confirmado:
+
+```text
+CORRECCION FOGO
+!=
+UPDATE DEL MOVIMIENTO NEXO
+```
+
+La UX debe mostrar la obligación física derivada como una relación pendiente hasta que NEXO ejecute la acción propietaria aplicable.
+
+Se conserva:
+
+- hecho FOGO original;
+- corrección FOGO;
+- movimiento NEXO original;
+- acción NEXO compensatoria/ajuste/retorno cuando aplique;
+- antes/después;
+- motivo;
+- actor/autoridad;
+- correlación;
+- estado de conciliación.
+
+---
+
+#### 40. Reconciliación del empaque
+
+Cuando el producto requiere empaque, la vista debe poder comparar:
+
+```text
+CANTIDAD EMPACADA
+UNIDADES / BULTOS
+ETIQUETAS
+LPN
+CANTIDAD ENTREGADA
+CANTIDAD RECIBIDA NEXO
+CANTIDAD RECONCILIADA
+UBICACION CONFIRMADA
+DIFERENCIAS
+```
+
+Un ingreso NEXO que no corresponde a la salida empacada exacta no cierra `VPROC-0036`.
+
+---
+
+#### 41. Relación con `VPROC-0037.INVENTORY_EFFECTS_PENDING`
+
+FOGO mantiene el cierre en `VPROC-0037.INVENTORY_EFFECTS_PENDING` mientras cualquier efecto físico requerido presente:
+
+- ausencia de instancia NEXO;
+- validación pendiente;
+- ejecución pendiente;
+- confirmación pendiente;
+- putaway pendiente;
+- posting pendiente;
+- `RESULTADO_DESCONOCIDO`;
+- conflicto;
+- diferencia cuantitativa no resuelta;
+- producto/lote no correlacionable;
+- acción compensatoria pendiente;
+- estado normal distinto de `INBOUND_MOVEMENT_RECONCILED` cuando ese efecto debe terminar por la ruta normal.
+
+Solo se habilita la continuidad hacia `VPROC-0037.CLOSURE_REVIEW_PENDING` cuando las obligaciones aplicables tienen evidencia autoritativa coherente o una resolución excepcional permitida por el contrato de cierre.
+
+---
+
+#### 42. Existencia física, disponibilidad, vendibilidad y fulfillment
+
+La experiencia conserva:
+
+```text
+EXISTENCIA FISICA
+!=
+EXISTENCIA DISPONIBLE
+!=
+EXISTENCIA VENDIBLE
+!=
+CANTIDAD ASIGNADA
+!=
+PEDIDO CUMPLIDO
+```
+
+`VPROC-0024.INBOUND_MOVEMENT_RECONCILED` prueba el ingreso físico conciliado, no la vendibilidad universal.
+
+La disponibilidad posterior puede depender de:
+
+- condición;
+- ubicación;
+- cuarentena;
+- vencimiento;
+- presentación;
+- restricciones de lote;
+- reservas;
+- políticas de producto/canal;
+- fulfillment aplicable.
+
+---
+
+#### 43. Tratamiento del AS-IS `sellable_stock`
+
+El runtime FOGO observado utiliza `output_mode = sellable_stock` y lo etiqueta como “Listo para vender”.
+
+Ese literal se clasifica como **AS_IS_TRANSITIONAL** y no constituye una verdad empresarial suficiente para la experiencia objetivo.
+
+La materialización futura deberá evitar que:
+
+```text
+output_mode = sellable_stock
+```
+
+se presente como sustituto de:
+
+```text
+CALIDAD LIBERADA
++
+INGRESO NEXO RECONCILIADO CUANDO APLIQUE
++
+CONDICION ELEGIBLE
++
+UBICACION / PRESENTACION VALIDAS
++
+POLITICA DE DISPONIBILIDAD / CANAL
+```
+
+La tarea no redefine el enum físico actual; fija su límite semántico.
+
+---
+
+#### 44. Cumplimiento directo sin inventario terminado ficticio
+
+Cuando el contrato aplicable use una salida directa a pedido o fulfillment y **no requiera** ingreso intermedio como stock libre, la UX no crea un movimiento de entrada ficticio solo para uniformar pantallas.
+
+Debe preservar, según corresponda:
+
+- producto;
+- cantidad;
+- lote;
+- calidad liberada;
+- staging o ubicación;
+- transferencia de custodia;
+- movimiento/receipt físico propietario;
+- correlación con la necesidad o pedido;
+- evidencia exactamente una vez.
+
+`order_fulfillment` no autoriza saltar calidad, custodia, movimiento o receipt cuando esos hechos son exigibles.
+
+---
+
+#### 45. Minimización de información en FOGO
+
+La proyección FOGO del resultado NEXO muestra únicamente lo necesario para operar y conciliar:
+
+- estado;
+- cantidad;
+- unidad;
+- ubicación confirmada cuando corresponda;
+- condición material;
+- identificador/referencia del resultado;
+- referencia de movimiento cuando sea útil;
+- diferencia/bloqueo;
+- próxima acción/owner.
+
+No incrusta por defecto:
+
+- ledger completo;
+- stock de toda la sede;
+- otras ubicaciones no relacionadas;
+- movimientos de terceros;
+- costos o márgenes no necesarios;
+- configuración de bodega;
+- información sensible ajena al lote.
+
+---
+
+#### 46. Estados vacíos, deny, stale y fallos técnicos
+
+La UX diferencia al menos:
+
+| Estado | Significado |
+| --- | --- |
+| `SIN_SALIDA_ELEGIBLE` | no existe cantidad liberada/aplicable para transferir |
+| `SIN_CONTEXTO` | falta contexto laboral o territorial requerido |
+| `SIN_AUTORIDAD` | la acción aplicable fue denegada |
+| `STALE` | cambió actor, estado, versión, calidad, cantidad, empaque o destino relevante |
+| `CONFLICTO` | existe incompatibilidad empresarial/idempotente/concurrente |
+| `RESULTADO_DESCONOCIDO` | el efecto puede existir; debe recuperarse |
+| `ERROR_TECNICO` | fallo técnico sin conclusión empresarial falsa |
+| `SIN_DATO_AUTORITATIVO_NEXO` | todavía no existe proyección confiable del resultado físico |
+
+`null`, ausencia, deny, stale y error técnico no se convierten en “0”, “disponible” ni “completado”.
+
+---
+
+#### 47. AS-IS de FOGO observado
+
+El runtime observado de FOGO demuestra una capacidad física transitoria y acoplada:
+
+- `src/app/production-batches/new/page.tsx` captura `ingredients_payload`, `packages_payload` y `outputs_payload` en la creación del lote;
+- `outputs_payload` conserva `recipe_output_id`, `product_id`, `output_role`, `produced_qty`, `produced_unit`, `destination_location_id` y contexto relacionado;
+- `output_mode` puede ser `inventory_stock`, `sellable_stock` u `order_fulfillment`;
+- la creación llama `fogo_create_real_production_batch`;
+- el flujo puede exigir un destino para modos que generan stock;
+- la creación usa `production.batches.create` y firma de actor en dispositivo compartido cuando aplica;
+- la implementación transitoria puede actualizar proyecciones de inventario y producir movimientos relacionados con salida productiva dentro del mismo conjunto de funciones.
+
+Esto demuestra capacidad técnica parcial, **no** el lifecycle FOGO→NEXO separado de `INT-PROD-004`.
+
+---
+
+#### 48. AS-IS de NEXO observado
+
+El runtime observado de NEXO conserva una superficie de entradas, pero todavía no demuestra por sí solo el handoff productivo objetivo:
+
+- `src/app/inventory/entries/page.tsx` entra mediante el permiso legacy/local `inventory.entries_emergency`;
+- lista productos inventariables, incluidos `finished`;
+- la experiencia está orientada a entradas manuales, contingencias, proveedores y órdenes de compra;
+- `src/app/inventory/entries/actions.ts` recibe producto, ubicación, cantidad declarada/recibida, unidad y conversión;
+- la operación distingue modo normal/emergencia y exige motivo para emergencia;
+- no se observa en esa superficie una materialización explícita del lifecycle completo `VPROC-0024` correlacionado con lote FOGO, calidad, empaque y salida específica.
+
+La 013 no reutiliza una entrada de emergencia como sustituto del contrato productivo.
+
+---
+
+#### 49. Hallazgos y propietarios
+
+| Hallazgo | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| creación FOGO acopla producción, empaque y efectos de inventario | doble ownership y transición prematura | materialización propietaria FOGO/NEXO + `INT-PROD-004` | producción, calidad, empaque e ingreso usan contratos separados y correlacionados |
+| `sellable_stock` se presenta como “Listo para vender” | vendibilidad inferida desde FOGO | materialización de FOGO-UX-013 + política NEXO/canal aplicable | UI deriva vendibilidad de hechos propietarios y no del enum local |
+| NEXO entries está orientada a proveedor/emergencia | ingreso productivo podría usar una vía manual no correlacionada | materialización NEXO propietaria | entrada productiva consume fuente FOGO válida, actor/contexto, lote, calidad e idempotencia |
+| no se observa lifecycle completo `VPROC-0024` entre apps | ACK o movimiento parcial podría parecer conciliado | `INT-PROD-004` + paquetes de implementación | estados, result reference y recuperación quedan materializados y probados |
+| multi-salida existe parcialmente en FOGO | riesgo de cerrar varias salidas con un solo movimiento | materialización propietaria | cada salida y porción tiene identidad y efecto NEXO no superpuesto |
+| destino FOGO puede parecer definitivo | ubicación ficticia o no autorizada | NEXO / `VPROC-0024` | expected vs confirmed se distinguen y reroute es trazable |
+| corrección posterior puede afectar inventario | update destructivo o doble compensación | `FOGO-UX-011`, `FOGO-UX-013`, NEXO propietario | corrección FOGO y efecto NEXO compensatorio permanecen vinculados |
+
+No queda hallazgo narrativo sin owner y condición de salida.
+
+---
+
+#### 50. Handoff inmediato a FOGO-UX-014
+
+`FOGO-UX-014 — Diseñar pantalla para supervisor de producción` recibe desde esta tarea una proyección de coordinación, no nuevas capacidades de mutación.
+
+Podrá consumir, dentro de su autoridad, por lote/salida:
+
+```text
+AREA PRODUCTIVA
+LOTE / ORDEN
+SALIDA / PRODUCTO
+produced_qty
+released_qty
+handoff_qty
+reconciled_qty
+ESTADO DE CALIDAD
+ESTADO DE EMPAQUE
+ESTADO DEL HANDOFF NEXO
+BLOQUEO / DIFERENCIA
+RESULTADO_DESCONOCIDO CUANDO EXISTA
+OWNER DE LA PROXIMA ACCION
+DESTINO ESPERADO VS CONFIRMADO
+```
+
+La 014 no recibe por implicación autoridad para:
+
+- liberar calidad;
+- registrar entrada NEXO;
+- corregir stock;
+- forzar putaway;
+- marcar vendible;
+- reescribir prioridad productiva;
+- cerrar un lote sin la capacidad exacta.
+
+---
+
+#### 51. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+**Justificación:** la obligación verificable de separar resultado productivo, calidad, empaque, ingreso físico, putaway, posting, ledger, disponibilidad y cierre; conservar lote, receta/version, presentación, cantidades, unidades y genealogía; aplicar idempotencia, concurrencia, compensación y efecto exactamente una vez; y mantener propiedad FOGO/NEXO ya está cubierta por requisitos canónicos vigentes. La 013 especializa esa cobertura para la experiencia de producto terminado sin introducir una obligación materialmente nueva.
+
+---
+
+#### 52. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, identidad, estado, relaciones ni secuencia:
+
+- `TREQ-FOGO-001` — ciclo productivo y efectos de inventario auditables;
+- `TREQ-FOGO-002` — receta/version, salidas, cantidades, unidades, rendimiento y desviaciones históricas;
+- `TREQ-FOGO-004` — separación entre finalización productiva, calidad, empaque, inventario y cierre conciliado;
+- `TREQ-NEXO-010` — unidad, presentación, conversión y política equivalentes;
+- `TREQ-NEXO-011` — ledger/proyecciones, atomicidad/idempotencia, compensación y no doble contabilización;
+- `TREQ-NEXO-012` — lote/serial, origen, liberación, ubicación, cantidad, condición y trazabilidad;
+- `TREQ-INTEGRATION-003` — identidad idempotente, reintentos y resultado recuperable;
+- `TREQ-INTEGRATION-006` — fuente única por dominio y prohibición de verdades competidoras;
+- `TREQ-INTEGRATION-011` — efectos de inventario exactamente una vez y correlacionados;
+- `TREQ-INTEGRATION-013` — cadena producción → calidad → inventario → costo sin efectos duplicados ni producto retenido publicado.
+
+La trazabilidad anterior es cobertura reutilizada y **no** constituye cambio del Registro 04A.
+
+---
+
+#### 53. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | La compilación documental y los validadores del checkout corresponden a la incorporación local del artefacto. |
+| LOCAL | NOT_EXECUTED | `docs:task:preflight`, formato `--write/--check`, quality, delivery, topología, batería global y lifecycle permanecen pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron owner, continuidad, topología, `INT-PROD-004`, E2, estados/eventos, autorización y 04A en `vento-shell`; además se inspeccionaron los runtimes vigentes de `vento-fogo` y `vento-nexo` indicados en fuentes. |
+| OPERATIVA | NOT_EXECUTED | No se produjo, liberó, empacó, recibió, ubicó, posteó, reconcilió ni corrigió un lote real. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-013` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 54. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] FOGO y NEXO conservan ownership separado;
+- [ ] `FOGO-UX-013` no crea una pantalla canónica nueva;
+- [ ] `VSCREEN-0066` queda como superficie FOGO principal del handoff de terminado;
+- [ ] `VSCREEN-0043` queda como superficie NEXO de confirmación de entrada;
+- [ ] producto terminado usa `VPROC-0024`, no `VPROC-0025`;
+- [ ] producción terminada no equivale a inventario;
+- [ ] calidad liberada no equivale a inventario ingresado;
+- [ ] empaque no equivale a inventario ingresado;
+- [ ] `DISPOSITION_DECIDED` con liberación habilita el camino normal sin crear dependencia circular con `VPROC-0035.QUALITY_DISPOSITION_VERIFIED`;
+- [ ] salida retenida, rechazada o a reproceso no entra como stock terminado ordinario;
+- [ ] salida que requiere empaque conserva `VPROC-0036.PACKAGED_OUTPUT_RECORDED` y `VPROC-0036.STORAGE_TRANSFER_PENDING`;
+- [ ] salida sin empaque solo se admite por política explícita;
+- [ ] se conservan orden, lote, receta/version y salida exacta;
+- [ ] producto principal, coproductos y subproductos permanecen separados;
+- [ ] se conservan presentación, lote/serial y LPN cuando aplican;
+- [ ] `produced_qty`, `released_qty`, `handoff_qty`, `received_qty`, `posted_qty` y `reconciled_qty` no se fusionan;
+- [ ] el handoff parcial usa porciones no superpuestas;
+- [ ] destino esperado y ubicación confirmada permanecen distintos;
+- [ ] reroute no crea segunda entrada;
+- [ ] `PUTAWAY_PENDING` no se muestra como almacenado;
+- [ ] `POSTING_PENDING` no se muestra como stock aplicado;
+- [ ] solo `INBOUND_MOVEMENT_RECONCILED` prueba el efecto físico normal conciliado;
+- [ ] FOGO consume una proyección mínima NEXO y no un ledger editable;
+- [ ] `RESULTADO_DESCONOCIDO` obliga a recuperar antes de repetir;
+- [ ] retries y doble click no duplican movimiento;
+- [ ] concurrencia no aplica dos entradas a la misma porción;
+- [ ] NEXO revalida su propia capacidad/actor/contexto;
+- [ ] `nexo.inventory.entries.register` no se trata como permiso FOGO;
+- [ ] cuarentena NEXO no reescribe la decisión FOGO original;
+- [ ] `HOLD`, `REROUTE`, `ESCALATE` y `QUARANTINE` mantienen semántica diferenciada;
+- [ ] `CANCEL`, `VOID`, `RETURN` y `ADJUST` no destruyen historia;
+- [ ] correcciones posteriores se vinculan con efectos compensatorios NEXO;
+- [ ] el empaque se reconcilia contra la existencia realmente recibida;
+- [ ] `VPROC-0037.INVENTORY_EFFECTS_PENDING` permanece mientras exista efecto físico material sin resolver;
+- [ ] existencia física, disponibilidad, vendibilidad y fulfillment permanecen separados;
+- [ ] `sellable_stock` no se usa como verdad autoritativa de vendibilidad;
+- [ ] fulfillment directo no crea stock ficticio;
+- [ ] los hallazgos AS-IS tienen owner y condición de salida;
+- [ ] `FOGO-UX-014` recibe estado de coordinación sin autoridad implícita;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se autoriza cambio físico desde este marcador.
+
+---
+
+#### 55. Límites
+
+Esta tarea no:
+
+- implementa `VPROC-0024`;
+- modifica `vento-fogo`;
+- modifica `vento-nexo`;
+- modifica Supabase;
+- crea una tabla, RPC, trigger, RLS, worker, cola o evento nuevo;
+- crea una entrada real de inventario;
+- mueve stock;
+- decide calidad;
+- ejecuta inspección;
+- crea o reimprime etiquetas;
+- crea LPN;
+- define una política nueva de vendibilidad;
+- decide costeo;
+- crea producto o presentación;
+- cambia receta;
+- corrige cantidades históricas in-place;
+- implementa el supervisor de `FOGO-UX-014`;
+- desarrolla el prototipo integral reservado a tareas posteriores;
+- concede permisos FOGO o NEXO;
+- interpreta un estado AS-IS como cumplimiento del contrato objetivo.
+
+---
+
+#### 56. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-012 — Conectar consumo de insumos con NEXO`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-013 — Conectar producto terminado con NEXO`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-014 — Diseñar pantalla para supervisor de producción`
+
 ### [ ] FOGO-UX-014 — Diseñar pantalla para supervisor de producción
 ### [ ] FOGO-UX-015 — Validar el prototipo por área productiva
