@@ -27,8 +27,8 @@
   "virtual_tasks": [],
   "block_progress": {
     "total_tasks": 13,
-    "approved_tasks": 0,
-    "pending_tasks": 13
+    "approved_tasks": 1,
+    "pending_tasks": 12
   },
   "priority_stage": {
     "order": 1,
@@ -42,7 +42,7 @@
     "sequence_id": "PHASE-06-FOGO-ORIGO",
     "first_pending_task_id": "ORIGO-AUTH-011",
     "covered_tasks": 1596,
-    "pending_tasks": 283,
+    "pending_tasks": 282,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 25
