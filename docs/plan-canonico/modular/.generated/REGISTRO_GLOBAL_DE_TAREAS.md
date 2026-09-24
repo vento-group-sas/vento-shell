@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1305** |
+| Aprobadas | **1306** |
 | En propuesta | **0** |
-| No iniciadas | **291** |
+| No iniciadas | **290** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.77% (1305/1596)** |
+| Porcentaje de completamiento | **81.83% (1306/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **291** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1206** |
+| ⏸ NO_EVALUADA | **290** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1207** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-AUTH-002` — Inventariar vistas de proveedores | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-003` — Inventariar vistas de recepción | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-004` — Definir permisos de consulta | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-003` — Inventariar vistas de recepción | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-004` — Definir permisos de consulta | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-005` — Definir permisos de creación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1086,7 +1086,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-TRZ-001` | Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-001` | Inventariar vistas de compras | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-002` | Inventariar vistas de proveedores | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-003` | Inventariar vistas de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-003` | Inventariar vistas de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-004` | Definir permisos de consulta | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-005` | Definir permisos de creación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-006` | Definir permisos de aprobación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
