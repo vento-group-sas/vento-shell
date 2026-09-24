@@ -11877,5 +11877,961 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-014 — Diseñar pantalla para supervisor de producción`
 
-### [ ] FOGO-UX-014 — Diseñar pantalla para supervisor de producción
+### ✅ FOGO-UX-014 — Diseñar pantalla para supervisor de producción
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-013 — Conectar producto terminado con NEXO
+**Tarea siguiente:** FOGO-UX-015 — Validar el prototipo por área productiva
+**Tipo de tarea:** diseño documental integral de la experiencia de supervisión y planeación FOGO sobre `VSCREEN-0056`, con lectura multiárea autorizada, estado de plan y ejecución, capacidad/restricciones, prioridades y bloqueos, coordinación de incidencias y handoffs FOGO↔NEXO, sin convertir visibilidad en autoridad de mutación ni crear una superficie canónica nueva
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, planificación real, prioridades, órdenes, lotes, calidad, inventario, recetas, dispositivos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la pantalla canónica que permite a un supervisor autorizado comprender y coordinar el estado de producción de una o varias áreas sin convertir la pantalla en fuente de autoridad, sin mezclar los carriles `supervisor` y `gerencia_operativa`, y sin absorber las mutaciones propietarias de planificación, producción, calidad, recetas, inventario o correcciones.
+
+La regla raíz queda:
+
+```text
+RECURSOS AUTORIZADOS POR CARRIL COMPLETO
++
+PLAN / VERSION / HORIZONTE
++
+ESTADO DE EJECUCION POR AREA
++
+CAPACIDAD / RESTRICCIONES CON FUENTE Y FRESCURA
++
+PRIORIDAD AUTORITATIVA
++
+BLOQUEOS / INCIDENCIAS / PENDIENTES
++
+CALIDAD / CONSUMO / TERMINADO COMO PROYECCIONES PROPIETARIAS
+=
+SUPERVISION FOGO EXPLICABLE SIN ESCALAMIENTO DE PRIVILEGIOS
+```
+
+Queda prohibido reducir la experiencia a:
+
+```text
+VER = MUTAR
+SUPERVISOR = TODAS LAS AREAS
+GERENCIA_OPERATIVA = SUPERVISOR BASE
+SEDE ACTIVA = WILDCARD
+FILTRO DE AREA = AUTORIDAD
+COORDINAR PRIORIDAD = REESCRIBIR PRIORIDAD
+VER BLOQUEO = RESOLVERLO
+VER LOTE = INICIAR / FINALIZAR / CORREGIR LOTE
+```
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-013
+
+`FOGO-UX-013` entrega a la supervisión una proyección de coordinación por lote/salida:
+
+```text
+AREA PRODUCTIVA
+LOTE / ORDEN
+SALIDA / PRODUCTO
+produced_qty
+released_qty
+handoff_qty
+reconciled_qty
+ESTADO DE CALIDAD
+ESTADO DE EMPAQUE
+ESTADO DEL HANDOFF NEXO
+BLOQUEO / DIFERENCIA
+RESULTADO_DESCONOCIDO CUANDO EXISTA
+OWNER DE LA PROXIMA ACCION
+DESTINO ESPERADO VS CONFIRMADO
+```
+
+La 014 consume esa información sin adquirir por implicación autoridad para liberar calidad, registrar entrada NEXO, corregir stock, forzar putaway, marcar vendible, reescribir prioridad o cerrar un lote.
+
+---
+
+#### 3. Topología y naturaleza
+
+La tarea mantiene:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `FOGO-UX-014` define una sola vez el contrato UX del supervisor;
+2. no existe instancia física propia `FOGO-UX-014::<implementation_unit_id>`;
+3. no crea ruta, componente, consulta, tabla, RPC, permiso ni dataset;
+4. la materialización posterior pertenece a los consumidores físicos propietarios;
+5. `FOGO-UX-015` valida después el prototipo contra este contrato y el resto del minibloque.
+
+---
+
+#### 4. Identidad canónica de la pantalla
+
+La pantalla supervisora se centra en la identidad ya existente:
+
+| Identidad | Nombre | Proceso | Paso | Interacción | Momento |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0056` | Planeación de producción | `VPROC-0033` | `VPROC-0033::STEP-PLAN_PRODUCTION` — Planear producción | `PLAN` | `IN_PROGRESS` |
+
+La 014 **no crea una `VSCREEN-*` nueva**.
+
+`VSCREEN-0056` funciona como workspace de planeación y supervisión; consume proyecciones resumidas de otras superficies, pero no reemplaza sus acciones propietarias.
+
+---
+
+#### 5. Superficies relacionadas sin fusión
+
+| Superficie | Papel consumido por la supervisión | Límite |
+| --- | --- | --- |
+| `VSCREEN-0055` — Inicio y cola de producción | cola y trabajo autorizado por contexto | no convierte al supervisor en productor |
+| `VSCREEN-0056` — Planeación de producción | workspace supervisor/planeador | superficie primaria de esta tarea |
+| `VSCREEN-0057` — Preparación e inicio de lote | estado de preparación/inicio | la vista no inicia lote por sí sola |
+| `VSCREEN-0058` — Ejecución de lote | estado de ejecución | la vista no registra producción |
+| `VSCREEN-0059` — Registro parcial de producción | avance/parcialidad/incidencias | no corrige parciales por observación |
+| `VSCREEN-0060` — Finalización y cierre de lote | resultados y pendientes de cierre | no concede cierre terminal |
+| `VSCREEN-0065` — Control de calidad y liberación | disposición y pendientes de calidad | no concede liberación |
+| `VSCREEN-0066` — Empaque, etiquetado y almacenamiento | estado de terminado/handoff | no registra entrada NEXO |
+| `VSCREEN-0067` — Reproceso, aprovechamiento y merma | variaciones/disposición productiva | no funciona como editor universal |
+
+---
+
+#### 6. Carriles de supervisión recibidos de FOGO-AUTH-008
+
+La pantalla debe preservar dos carriles completos e independientes:
+
+| Carril | Identidad | Territorio | Vigencia |
+| --- | --- | --- | --- |
+| Base administrativo | `supervisor` | cobertura administrativa activa `AS/AA` | mientras rol, concesión y cobertura permanezcan vigentes |
+| Operativo de coordinación | `gerencia_operativa` | sede operativa activa y recursos/áreas relacionados con la jornada | mientras el contexto operativo sea válido |
+
+Regla:
+
+```text
+ALLOW_FINAL
+=
+ALLOW_BASE_COMPLETO
+OR
+ALLOW_OPERATIVO_COMPLETO
+```
+
+Nunca:
+
+```text
+PERMISO_BASE
++
+TERRITORIO_OPERATIVO
++
+TURNO_DE_OTRO_CONTEXTO
+=
+ALLOW
+```
+
+---
+
+#### 7. Unión multiárea autorizada
+
+La vista puede reunir más de un área únicamente como unión de recursos autorizados de forma completa.
+
+```text
+AREA A AUTORIZADA POR CARRIL BASE
+UNION
+AREA B AUTORIZADA POR CARRIL OPERATIVO
+=
+CONJUNTO VISIBLE
+```
+
+No se admite combinación cartesiana de sede, área, rol, turno o cobertura provenientes de carriles distintos.
+
+Cada fila, tarjeta, alerta, métrica y agregado debe poder derivarse de recursos que ya pertenecen al conjunto autorizado.
+
+---
+
+#### 8. Matriz de lectura por carril
+
+La pantalla conserva la matriz autorizativa vigente:
+
+| Capacidad | `supervisor` base | `gerencia_operativa` |
+| --- | --- | --- |
+| `fogo.access` | permitida según carril base | permitida durante contexto operativo |
+| `fogo.production.batches.view` | lotes en cobertura `AS/AA` | lotes relacionados con la jornada |
+| `fogo.production.orders.view` | órdenes en cobertura `AS/AA` | órdenes relacionadas con la jornada |
+| `fogo.production.recipe_book.view` | no por el carril base | solo mínimo operativo aplicable |
+| `fogo.production.batches.create` | no | no |
+| `fogo.production.recipes.view` | no | no |
+
+La UI no representa una ausencia de permiso como botón deshabilitado sobre datos que ya fueron serializados indebidamente; el filtrado ocurre antes de entregar recursos protegidos al cliente.
+
+---
+
+#### 9. Planificación como proceso propietario
+
+`VSCREEN-0056` consume el lifecycle canónico de `VPROC-0033`:
+
+```text
+VPROC-0033.PRODUCTION_PLAN_DRAFT
+→ VPROC-0033.DEMAND_CONSOLIDATING
+→ VPROC-0033.CAPACITY_VALIDATING
+→ VPROC-0033.PLAN_UNDER_REVIEW
+→ VPROC-0033.PENDING_APPROVAL
+→ VPROC-0033.PUBLISHED
+→ VPROC-0033.REVISION_IN_PROGRESS
+→ VPROC-0033.PRODUCTION_PLAN_RELEASED
+```
+
+Estos estados no se colapsan en “plan activo”.
+
+---
+
+#### 10. Significado de los estados de plan en la supervisión
+
+| Estado | Qué puede mostrar la pantalla | Qué no puede inferir |
+| --- | --- | --- |
+| `PRODUCTION_PLAN_DRAFT` | borrador identificado y horizonte | compromiso ejecutable |
+| `DEMAND_CONSOLIDATING` | señales aún en consolidación | cantidades finales |
+| `CAPACITY_VALIDATING` | validaciones/pedientes de capacidad | capacidad garantizada |
+| `PLAN_UNDER_REVIEW` | revisión de cantidades/prioridades/restricciones | aprobación |
+| `PENDING_APPROVAL` | versión esperando autoridad | publicación |
+| `PUBLISHED` | versión vigente publicable a consumidores | ejecución realizada |
+| `REVISION_IN_PROGRESS` | nueva revisión sin reescribir historia | reemplazo silencioso de la versión anterior |
+| `PRODUCTION_PLAN_RELEASED` | versión liberada y vinculable a órdenes/compromisos | lote iniciado ni materiales garantizados fuera de sus verificaciones |
+
+---
+
+#### 11. Eventos de planificación visibles como hechos, no comandos
+
+La pantalla puede proyectar, cuando el actor esté autorizado:
+
+- `VPROC-0033.EVT-001` — nacimiento del plan;
+- `VPROC-0033.EVT-002` — consolidación de demanda;
+- `VPROC-0033.EVT-003` — pendiente de aprobación;
+- `VPROC-0033.EVT-004` — plan liberado.
+
+La presencia de un evento no concede la acción que lo originó ni permite repetirla.
+
+---
+
+#### 12. Arquitectura de información de la pantalla
+
+`VSCREEN-0056` se organiza por decisión supervisora, no por tablas técnicas:
+
+1. contexto y alcance efectivo;
+2. resumen ejecutivo del horizonte;
+3. estado por área autorizada;
+4. necesidades y cobertura;
+5. capacidad y restricciones;
+6. trabajo pendiente / en curso / cierre;
+7. conflictos, bloqueos, urgencias y excepciones;
+8. calidad y terminado como handoffs resumidos;
+9. cambios/versiones del plan;
+10. panel de próxima acción y owner.
+
+La densidad aumenta por drill-down; la vista primaria no exige consumir todos los detalles de una vez.
+
+---
+
+#### 13. Cabecera de contexto supervisor
+
+Debe mantener visible, como mínimo:
+
+- identidad del actor efectivo;
+- carril o contexto que justifica la vista cuando sea necesario para evitar ambigüedad;
+- sede o cobertura efectiva;
+- áreas incluidas en el conjunto autorizado;
+- turno/jornada cuando el carril operativo dependa de ellos;
+- horizonte del plan visible;
+- versión o revisión del plan;
+- frescura/fecha de corte de la proyección;
+- señal clara de `STALE`, `DENY`, parcialidad o fuente no verificable.
+
+No necesita mostrar UUID, RLS, scopes internos, logs ni hashes en la superficie primaria.
+
+---
+
+#### 14. Resumen por área
+
+Cada área autorizada debe poder resumirse sin perder identidad:
+
+```text
+AREA
+PLAN / VERSION APLICABLE
+TRABAJO PENDIENTE
+TRABAJO EN CURSO
+BLOQUEADOS
+CIERRES PENDIENTES
+CALIDAD PENDIENTE
+HANDOFF NEXO PENDIENTE
+CAPACIDAD CONFIRMADA / NO VERIFICADA
+PRIORIDAD / FECHA REQUERIDA
+OWNER DE PROXIMA ACCION
+```
+
+La agregación no convierte todas las áreas de una sede en visibles automáticamente.
+
+---
+
+#### 15. Separación entre plan, orden, lote y salida
+
+La pantalla debe preservar simultáneamente:
+
+```text
+PLAN / REVISION
+!=
+ORDEN PRODUCTIVA
+!=
+LOTE / EJECUCION
+!=
+SALIDA PRODUCTIVA
+!=
+EFECTO NEXO
+```
+
+Un número agregado no puede ocultar qué nivel contractual explica la diferencia.
+
+---
+
+#### 16. Demanda, necesidad y cobertura
+
+La sección de necesidades puede mostrar señales normalizadas, demanda aceptada, compromisos y cobertura únicamente si provienen de la fuente propietaria.
+
+No se admite:
+
+```text
+VENTAS CRUDAS + REMISIONES + MINIMOS + RECOMENDACIONES
+=
+DEMANDA FOGO SIN DEDUPLICACION
+```
+
+La pantalla distingue, cuando exista evidencia:
+
+- señal recibida;
+- necesidad aceptada;
+- necesidad incorporada al plan;
+- demanda desplazada;
+- faltante;
+- exceso;
+- necesidad aún no resuelta.
+
+---
+
+#### 17. Horizonte, fecha de corte y versión
+
+Todo resumen de plan debe indicar o poder recuperar:
+
+- horizonte cubierto;
+- fecha de corte de señales;
+- versión/revisión;
+- estado canónico;
+- fecha requerida cuando exista;
+- actor/decisión de publicación o aprobación cuando la autoridad propietaria lo materialice;
+- impacto de una revisión sobre trabajo futuro sin reescribir órdenes o compromisos históricos.
+
+Un plan revisado no borra la versión sobre la que nació una orden previa.
+
+---
+
+#### 18. Capacidad como composición de fuentes
+
+La pantalla no presenta una capacidad total como hecho cierto si sus componentes no tienen fuente y frescura suficientes.
+
+Puede mostrar, separadamente:
+
+- materiales;
+- personal;
+- equipo/activo;
+- almacenamiento;
+- tiempo/ventana;
+- logística/handoff;
+- controles de calidad/inocuidad relevantes.
+
+Regla:
+
+```text
+UNA PERSONA EN TURNO != CAPACIDAD HUMANA COMPLETA
+STOCK VISIBLE != MATERIAL DISPONIBLE PARA ESA ORDEN
+EQUIPO EXISTENTE != EQUIPO DISPONIBLE / APTO
+ESPACIO TEORICO != ALMACENAMIENTO DISPONIBLE
+```
+
+---
+
+#### 19. Estados UX de capacidad
+
+Sin crear estados de proceso nuevos, la proyección puede usar etiquetas de presentación explícitamente derivadas:
+
+| Estado UX | Semántica |
+| --- | --- |
+| `CONFIRMADA` | la fuente propietaria vigente confirma suficiencia para el alcance mostrado |
+| `PARCIAL` | existe cobertura demostrada, pero no para toda la necesidad |
+| `BLOQUEADA` | una restricción autoritativa impide avanzar |
+| `NO_VERIFICADA` | no existe evidencia suficiente/fresca para afirmar disponibilidad |
+| `STALE` | la evidencia existió, pero dejó de ser fresca |
+| `ERROR_TECNICO` | no fue posible consultar la fuente propietaria |
+
+`NO_VERIFICADA` nunca se pinta como `DISPONIBLE`.
+
+---
+
+#### 20. Prioridad autoritativa
+
+La pantalla consume prioridad desde la planificación propietaria.
+
+No calcula prioridad desde:
+
+- `created_at`;
+- orden visual;
+- cantidad;
+- producto;
+- popularidad;
+- usuario creador;
+- área seleccionada en UI;
+- color o posición de tarjeta;
+- regla local hardcodeada.
+
+Cuando no existe prioridad explícita, muestra `SIN PRIORIDAD EXPLICITA` o equivalente operativo; no fabrica un nivel.
+
+---
+
+#### 21. Coordinación de prioridad y override
+
+La regla canónica es:
+
+```text
+COORDINAR PRIORIDAD != REESCRIBIR PRIORIDAD
+```
+
+La pantalla puede:
+
+- mostrar prioridad vigente;
+- explicar su fuente/versión cuando corresponda;
+- destacar conflicto o urgencia;
+- dirigir al flujo propietario de decisión.
+
+La pantalla **no inventa** un permiso de repriorización u override.
+
+Si una materialización futura dispone de una acción exacta autorizada, esa acción deberá revalidar recurso, estado, versión, actor, territorio, motivo, antes/después y evidencia; la 014 no define ni concede ese binding.
+
+---
+
+#### 22. Ordenamiento y agregación
+
+La vista puede ordenar para lectura, pero el orden visual debe distinguirse de la prioridad empresarial.
+
+Un orden supervisor razonable consume, cuando existan:
+
+1. continuidad/incidencia activa;
+2. severidad operacional de bloqueo;
+3. prioridad autoritativa;
+4. fecha requerida;
+5. secuencia canónica;
+6. desempate técnico estable sin significado empresarial.
+
+Está prohibido aplicar `TOP N GLOBAL` antes de resolver territorios autorizados y luego ocultar por área.
+
+---
+
+#### 23. Trabajo pendiente y trabajo en curso
+
+La pantalla puede resumir por área:
+
+- órdenes ejecutables;
+- lotes activos;
+- lotes bloqueados;
+- arrastres;
+- ejecuciones esperando conciliación;
+- cierres pendientes.
+
+No ofrece “iniciar” por el hecho de que el supervisor pueda ver una orden. La creación/inicio sigue el carril productivo exacto y `FOGO-UX-005`.
+
+---
+
+#### 24. Bloqueos e incidencias
+
+Cada bloqueo visible debe conservar:
+
+- recurso afectado;
+- área;
+- estado;
+- causa o causa no verificada;
+- owner de resolución;
+- fuente;
+- frescura;
+- impacto sobre plan/orden/lote;
+- siguiente acción permitida para el actor actual.
+
+No se admite un botón genérico “resolver” que invada NEXO, ORIGO, VISO, calidad o autorización.
+
+---
+
+#### 25. Materiales y NEXO
+
+Los materiales visibles provienen de proyecciones NEXO/contratos FOGO↔NEXO.
+
+La pantalla puede mostrar:
+
+- reservado;
+- emitido;
+- consumido;
+- devuelto;
+- faltante;
+- conciliación pendiente;
+- estado no verificado.
+
+No puede:
+
+- ajustar stock;
+- registrar entrada/retiro;
+- mover LPN;
+- hacer conteo;
+- convertir visibilidad multiárea en autoridad de bodega.
+
+---
+
+#### 26. Equipos y activos
+
+Cuando el plan dependa de equipos, la pantalla puede consumir condición/disponibilidad autoritativa NEXO.
+
+Debe diferenciar:
+
+```text
+EXISTE
+!= DISPONIBLE
+!= APTO
+!= RESERVADO
+!= EN USO
+!= FUERA DE SERVICIO
+```
+
+La 014 no crea mantenimiento ni cambia el estado del activo.
+
+---
+
+#### 27. Personal y VISO
+
+La supervisión puede consumir disponibilidad laboral únicamente desde la fuente autorizada.
+
+No se infiere capacidad desde:
+
+- sesión abierta;
+- presencia de un nombre en FOGO;
+- check-in aislado sin reglas de cobertura;
+- rol textual;
+- planificación manual previa.
+
+La ausencia de integración suficiente se muestra como `NO_VERIFICADA`, no como cero capacidad ni como capacidad disponible.
+
+---
+
+#### 28. Calidad
+
+La pantalla puede resumir:
+
+- inspección pendiente;
+- resultados registrados;
+- revisión técnica;
+- disposición pendiente/decidida;
+- verificación de disposición.
+
+Pero:
+
+```text
+VER CALIDAD != LIBERAR
+VER BLOQUEO DE CALIDAD != RECHAZAR
+SUPERVISAR != APROBAR SU PROPIO LOTE
+```
+
+La autoridad de disposición se resuelve en su contrato propietario.
+
+---
+
+#### 29. Producto terminado y handoff NEXO
+
+Se consume el handoff de `FOGO-UX-013` sin convertirlo en inventario editable.
+
+La pantalla puede distinguir:
+
+- salida producida;
+- cantidad liberada;
+- cantidad entregada a handoff;
+- cantidad reconciliada NEXO;
+- destino esperado;
+- destino confirmado;
+- resultado desconocido;
+- bloqueo o diferencia;
+- owner de próxima acción.
+
+La pantalla no marca producto “vendible” por inferencia desde FOGO.
+
+---
+
+#### 30. Cierre y conciliación
+
+El supervisor puede observar que un lote requiere conciliación sin adquirir autoridad terminal.
+
+Debe poder detectar, como mínimo:
+
+- materiales no conciliados;
+- salida/rendimiento pendiente;
+- calidad pendiente;
+- inventario/handoff pendiente;
+- variación bajo revisión;
+- corrección posterior vinculada;
+- owner del pendiente.
+
+`VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` solo se muestra cuando el proceso propietario lo demuestra; la vista no lo fabrica.
+
+---
+
+#### 31. Variaciones y correcciones
+
+La pantalla puede mostrar valor original, corrección vinculada y valor vigente cuando exista.
+
+Nunca presenta una corrección como edición silenciosa.
+
+```text
+OBSERVAR DESVIACION != CORREGIR O ANULAR
+```
+
+Las acciones `CANCEL / VOID / REVERSE / COMPENSATE / ADJUST / CORRECT / RESTATE` permanecen en contratos propietarios y requieren capacidad exacta.
+
+---
+
+#### 32. Drill-down por área, orden y lote
+
+La navegación mantiene tres niveles sin perder contexto:
+
+```text
+SUPERVISION MULTIAREA
+→ AREA AUTORIZADA
+→ ORDEN / LOTE / SALIDA AUTORIZADOS
+```
+
+Un drill-down solo reduce el conjunto ya autorizado. Volver al agregado no amplía territorio.
+
+---
+
+#### 33. Filtros
+
+Filtros de sede, área, estado, producto, receta, prioridad, fecha, bloqueo o búsqueda únicamente refinan un conjunto resuelto server-side.
+
+No pueden:
+
+- agregar una sede fuera de cobertura;
+- inventar un área de coordinación;
+- ampliar una consulta;
+- activar recetario operativo;
+- habilitar mutaciones;
+- reusar filas previamente cargadas después de un cambio de contexto.
+
+---
+
+#### 34. Frescura y revalidación
+
+La revalidación consume `FOGO-AUTH-014` para conservar actor y contexto efectivos y no reutilizar autoridad stale.
+
+La pantalla invalida su decisión cuando cambia cualquiera de estos elementos materiales:
+
+- rol/concesión base;
+- cobertura `AS/AA`;
+- rol operativo efectivo;
+- turno/check-in cuando corresponda;
+- sede/área operativa;
+- permiso;
+- estado/territorio del recurso;
+- versión del plan;
+- prioridad/fecha requerida;
+- estado de orden/lote;
+- estado de calidad;
+- estado de consumo o terminado NEXO;
+- límites del dispositivo;
+- revocaciones/denegaciones.
+
+Una fila visible bajo un contexto anterior no conserva autoridad para una acción posterior.
+
+---
+
+#### 35. Estados globales de la pantalla
+
+La experiencia diferencia al menos:
+
+| Estado UX | Significado |
+| --- | --- |
+| `SUPERVISION_ACTIVA` | existe conjunto autorizado y fresco |
+| `SIN_RECURSOS_AUTORIZADOS` | actor válido, pero el conjunto resultante está vacío |
+| `SIN_CONTEXTO_OPERATIVO` | el carril operativo requerido no puede resolverse |
+| `SIN_PERMISO` | recurso/superficie no autorizados |
+| `STALE` | contexto o proyección dejó de ser fresca |
+| `PARCIAL` | una o más fuentes propietarias están pendientes/no verificadas |
+| `ERROR_TECNICO` | una fuente requerida no pudo resolverse |
+
+Regla:
+
+```text
+VACIO != DENY
+DENY != STALE
+STALE != ERROR
+PARCIAL != TODO DISPONIBLE
+```
+
+---
+
+#### 36. Dispositivos compartidos
+
+`operations_management_terminal` puede alojar la superficie solo cuando el actor y contexto la autorizan.
+
+El dispositivo:
+
+- limita superficie;
+- no concede rol;
+- no concede cobertura;
+- no crea sede/área;
+- no convierte la sesión en `gerencia_operativa`;
+- no transforma lectura en mutación.
+
+Cuando una acción posterior sea sensible, debe reatribuir actor efectivo conforme a su contrato propietario.
+
+---
+
+#### 37. Densidad, legibilidad y tactilidad
+
+La pantalla de supervisión puede ser más densa que la del productor, pero debe mantener jerarquía operacional:
+
+- alertas/bloqueos antes que métricas decorativas;
+- áreas reconocibles sin depender solo de color;
+- estados con texto y semántica consistente;
+- cantidades/unidades legibles;
+- drill-down progresivo;
+- acciones separadas de indicadores;
+- no exponer tablas técnicas crudas como única experiencia;
+- no exigir comparar manualmente múltiples pantallas para identificar un bloqueo crítico.
+
+---
+
+#### 38. AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` no se observa una superficie dedicada equivalente a `VSCREEN-0056` ni un dashboard supervisor canónico completo.
+
+Se observa:
+
+- `/production-batches` como listado histórico/operativo de lotes con `production.batches.view` y datos de sede;
+- ausencia de ruta física observable para planeación `VSCREEN-0056`;
+- `/recipe-book` con heurística local `isManagement` basada en roles como `propietario`, `gerente_general` y `gerente`;
+- selección de área en recetario condicionada por esa heurística local;
+- comprobaciones observadas que no demuestran el contrato completo `supervisor` / `gerencia_operativa` por área;
+- ausencia de un workflow runtime verificable que represente `VPROC-0033` completo, capacidad, restricciones, prioridad y revisión multiárea.
+
+Estas son brechas de adopción, no autoridad alternativa.
+
+---
+
+#### 39. Hallazgos y propietarios
+
+| Hallazgo | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe pantalla dedicada de planeación/supervisión | coordinación dispersa y difícil de auditar | materialización propietaria FOGO consumiendo `FOGO-UX-014` | `VSCREEN-0056` existe como workspace autorizado y diferencia plan, ejecución, bloqueos y handoffs |
+| no existe fuente física única comprobada para plan/programación | señal suelta puede parecer trabajo real | `FOGO-UX-014`, `OPS-PLAN-002..004`, `PROC-CAT-009..018` | proyección FOGO distingue señal, plan/version, orden y ejecución |
+| capacidad integral por área/turno/equipo/persona/insumo no está cerrada | capacidad falsa o incompleta | `FOGO-UX-014`, `CAP-SCOPE-002`, `CAP-SCOPE-007` y propietarios de fuentes | cada componente muestra fuente/frescura y ausencia como no verificada |
+| disponibilidad/condición de equipos no bloquea todavía plan de forma canónica | plan inviable | `CAP-SCOPE-007`, `NEXO-DOM-012`, `NEXO-DOM-026`, `FOGO-UX-014` | equipo aplicable llega como señal autoritativa y bloquea/advierte según contrato |
+| prioridades/urgencias/overrides no tienen mutación uniforme demostrada | override opaco desde UI | `FOGO-UX-014`, `FOGO-AUTH-008`, `FOGO-AUTH-012` | lectura y coordinación se separan de una acción exacta auditada o fallan cerrado |
+| calidad y cierre siguen distribuidos entre superficies | supervisor puede confundir finalizar con liberar/cerrar | `FOGO-UX-007`, `FOGO-UX-014`, propietarios de calidad/cierre | pantalla muestra estados separados y owner de próxima acción |
+| heurística `isManagement` no equivale a carriles canónicos | escalamiento por lista local de roles | `FOGO-AUTH-015` + materialización FOGO | consumidor usa contratos compartidos y conjunto server-side autorizado |
+| lista de lotes no demuestra multiárea canónica | exposición o agregado fuera de territorio | materialización territorial + `FOGO-AUTH-016` | pruebas demuestran allow/deny por ambos carriles y filtros solo reductores |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 40. Handoff inmediato a FOGO-UX-015
+
+`FOGO-UX-015 — Validar el prototipo por área productiva` recibe de esta tarea un contrato supervisor verificable que debe coexistir con las superficies del productor.
+
+Debe poder validar, entre otros escenarios:
+
+```text
+SUPERVISOR BASE CON 1 AREA
+SUPERVISOR BASE CON VARIAS AREAS AS/AA
+GERENCIA_OPERATIVA EN TURNO VALIDO
+MISMO ACTOR CON AMBOS CARRILES SIN FUSION
+RECURSO AUTORIZADO POR UN SOLO CARRIL COMPLETO
+RECURSO FUERA DE TERRITORIO
+CAMBIO DE TURNO / COBERTURA / AREA -> STALE
+FILTRO QUE SOLO REDUCE
+PLAN EN BORRADOR / REVISION / APROBACION / LIBERADO
+CAPACIDAD CONFIRMADA / PARCIAL / NO VERIFICADA
+PRIORIDAD VISIBLE SIN OVERRIDE IMPLICITO
+BLOQUEO CON OWNER
+CALIDAD PENDIENTE
+HANDOFF NEXO PENDIENTE / RECONCILIADO
+RESULTADO_DESCONOCIDO
+CIERRE PENDIENTE
+```
+
+La 015 valida el prototipo; la 014 no ejecuta esa validación operativa.
+
+---
+
+#### 41. Frontera con FOGO-UX-015
+
+La sucesora recibe:
+
+- identidad `VSCREEN-0056`;
+- arquitectura de información;
+- carriles supervisor/gerencia separados;
+- reglas multiárea;
+- lifecycle `VPROC-0033`;
+- estados de capacidad;
+- prioridades y límites de override;
+- bloqueos/handoffs;
+- estados globales `DENY/STALE/PARCIAL/ERROR`;
+- escenarios adversariales;
+- handoffs de `FOGO-UX-001..013` resumidos sin cambiar ownership.
+
+No recibe una autorización para implementar o modificar código.
+
+---
+
+#### 42. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+**Justificación:** la obligación verificable de planificar con versiones, prioridades, capacidad, restricciones y auditoría; separar los carriles de supervisión; resolver territorio y contexto server-side; distinguir producción, calidad e inventario; y conservar frescura y segregación de funciones ya está cubierta por requisitos canónicos vigentes. La 014 especializa esa cobertura en la pantalla supervisora sin crear una obligación materialmente nueva.
+
+---
+
+#### 43. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar texto, identidad, estado, relaciones ni secuencia:
+
+- `TREQ-FOGO-001` — ciclo productivo con actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-003` — señales, plan/versiones, horizonte, sede, área, prioridad, capacidad, restricciones, aprobaciones y overrides auditables;
+- `TREQ-FOGO-004` — ejecución, calidad, empaque, reproceso y cierre como estados separados;
+- `TREQ-AUTH-001` — autorización por permiso/contexto/alcance, no por nombre de rol;
+- `TREQ-AUTH-004` — decisión equivalente entre evaluadores para el mismo actor/recurso/contexto;
+- `TREQ-AUTH-008` — separación de carril base y operativo;
+- `TREQ-AUTH-009` — resolución determinista de sede/área y denegación de cruces;
+- `TREQ-AUTH-010` — segregación entre producción, inventario, logística y administración;
+- `TREQ-AUTH-014` — frescura antes de efectos sensibles;
+- `TREQ-AUTH-015` — trazabilidad de actor, contexto, permiso, recurso, decisión y tiempo;
+- `TREQ-UX-001` — estado y acción principal identificables;
+- `TREQ-UX-003` — información/acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad;
+- `TREQ-INTEGRATION-013` — cadena producción→calidad→inventario→costo sin efectos duplicados.
+
+La enumeración anterior es cobertura reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 44. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Preflight, formato `--write/--check`, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@4a500a4c5dbee0da177ee77baaa97fbd2731ee7d`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, continuidad con `FOGO-UX-013` incorporada y `FOGO-UX-014` como marcador actual, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `FOGO-AUTH-008`, `VSCREEN-0055/0056`, `VPROC-0033`, hallazgos de capacidad/prioridad/calidad/cierre, handoff de `FOGO-UX-013`, 04A vigente y AS-IS de lotes/recetario. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones de supervisor/gerencia, planes, áreas, prioridades, bloqueos, lotes, calidad, handoffs ni pruebas adversariales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-014` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 45. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0056` queda como identidad canónica del workspace supervisor/planeador;
+- [ ] no se crea una pantalla `VSCREEN-*` nueva;
+- [ ] `supervisor` y `gerencia_operativa` permanecen como carriles distintos;
+- [ ] un recurso se muestra solo si al menos un carril completo lo autoriza;
+- [ ] no se combinan fragmentos de carriles para fabricar `ALLOW`;
+- [ ] cobertura `AS/AA` multiárea no se convierte en acceso global;
+- [ ] sede activa de `gerencia_operativa` no se convierte en wildcard;
+- [ ] filtros solo reducen el conjunto server-side autorizado;
+- [ ] `fogo.production.batches.create` no se concede por supervisión;
+- [ ] `fogo.production.recipes.view` no se concede por supervisión;
+- [ ] recetario operativo de `gerencia_operativa` permanece mínimo y contextual;
+- [ ] `VPROC-0033` conserva sus ocho estados sin colapso;
+- [ ] señal, necesidad, plan, orden, lote y salida permanecen diferenciados;
+- [ ] horizonte, versión y fecha de corte permanecen visibles/recuperables;
+- [ ] capacidad separa materiales, personas, equipos, almacenamiento, tiempo y logística;
+- [ ] `CONFIRMADA`, `PARCIAL`, `BLOQUEADA`, `NO_VERIFICADA`, `STALE` y `ERROR_TECNICO` no se confunden;
+- [ ] prioridad proviene de fuente autoritativa;
+- [ ] la UI no deriva prioridad desde `created_at` ni orden visual;
+- [ ] `COORDINAR PRIORIDAD != REESCRIBIR PRIORIDAD` permanece explícito;
+- [ ] no se inventa permiso de override;
+- [ ] bloqueos muestran owner y próxima acción permitida;
+- [ ] información NEXO no concede autoridad de bodega;
+- [ ] información de equipos no concede mantenimiento;
+- [ ] información VISO no infiere capacidad desde sesión o rol textual;
+- [ ] calidad visible no concede liberación/rechazo;
+- [ ] handoff de terminado no concede entrada NEXO ni vendibilidad;
+- [ ] cierre visible no concede autoridad terminal;
+- [ ] correcciones permanecen vinculadas y no destructivas;
+- [ ] cambio de contexto invalida filas/acciones stale;
+- [ ] vacío, deny, stale, parcial y error permanecen diferenciados;
+- [ ] `FOGO-UX-015` recibe escenarios concretos para validar el prototipo;
+- [ ] hallazgos AS-IS tienen owner y condición de salida;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 46. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0056`;
+- crea rutas, componentes, APIs, RPC, tablas o vistas;
+- modifica `vento-fogo`;
+- modifica Supabase, RLS, grants, migraciones o datos;
+- crea permisos de planeación, aprobación, publicación, repriorización u override;
+- cambia matrices RBAC;
+- crea roles;
+- convierte `supervisor` en `gerencia_operativa` ni viceversa;
+- crea lotes;
+- inicia, pausa, reanuda o finaliza producción;
+- registra producción parcial;
+- libera/rechaza calidad;
+- modifica recetas;
+- mueve inventario;
+- registra entradas/retiros NEXO;
+- corrige stock;
+- modifica prioridades reales;
+- publica un plan real;
+- define un algoritmo de forecasting;
+- define mínimos automáticos;
+- crea capacidad ficticia donde falta integración;
+- ejecuta validación de prototipo de `FOGO-UX-015`;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 47. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-013 — Conectar producto terminado con NEXO`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-014 — Diseñar pantalla para supervisor de producción`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-015 — Validar el prototipo por área productiva`
+
 ### [ ] FOGO-UX-015 — Validar el prototipo por área productiva
