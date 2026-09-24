@@ -903,7 +903,846 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-002 — Inventariar vistas de proveedores`
 
-### [ ] ORIGO-AUTH-002 — Inventariar vistas de proveedores
+### ✅ ORIGO-AUTH-002 — Inventariar vistas de proveedores
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-001 — Inventariar vistas de compras
+**Tarea siguiente:** ORIGO-AUTH-003 — Inventariar vistas de recepción
+**Tipo de tarea:** documental; inventario AS-IS/canónico de las vistas, rutas, acciones, datos, permisos observados, relaciones y brechas asociadas al maestro de proveedores en ORIGO, con reconciliación contra pantallas canónicas, recurso `SUPPLIER`, capacidades normalizadas y propietarios posteriores; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, navegación, proveedores reales, órdenes, permisos, roles, datos, Supabase, migraciones, RLS, RPC, Storage, contratos, precios, documentos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma cerrada y verificable las superficies de ORIGO que hoy permiten consultar, crear, editar, activar, desactivar o eliminar información de proveedores, y reconciliarlas contra el catálogo canónico de pantallas, procesos, permisos, recursos y requisitos vigentes sin convertir la existencia de una página, un helper o una lista local de roles en autorización suficiente.
+
+La regla de lectura del inventario queda:
+
+```text
+PATRÓN URL AS-IS
+!=
+PANTALLA CANÓNICA
+!=
+PERMISO CANÓNICO
+!=
+RECURSO AUTORIZADO
+!=
+PROCESO COMPLETO
+```
+
+La tarea fija el universo de proveedor que `ORIGO-AUTH-004`, `ORIGO-AUTH-005`, `ORIGO-AUTH-008`, `ORIGO-AUTH-010` y la experiencia ORIGO posterior deberán proteger o consumir. No redefine compras, recepción ni la autorización final de mutaciones.
+
+---
+
+#### 2. Frontera recibida de ORIGO-AUTH-001
+
+`ORIGO-AUTH-001` reservó expresamente para esta tarea las superficies de proveedor y excluyó `/suppliers*` de su universo propietario de órdenes.
+
+El handoff conserva:
+
+```text
+ORIGO-AUTH-001
+→ orden de compra, documento y relaciones de proveedor
+→ ORIGO-AUTH-002
+→ identidad, consulta y mantenimiento de proveedor
+```
+
+La tarea anterior dejó además separados:
+
+- las dependencias de proveedor consumidas por órdenes;
+- las pantallas canónicas `VSCREEN-0070`, `VSCREEN-0071`, `VSCREEN-0145` y `VSCREEN-0146`;
+- la comparación de cotizaciones `VSCREEN-0072`, que permanece dentro del flujo de abastecimiento/compra y no se duplica aquí;
+- las recepciones, reservadas a `ORIGO-AUTH-003`.
+
+Por tanto, esta tarea inventaría la superficie de proveedor sin reabrir el inventario de órdenes ya aprobado.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+ORIGO-AUTH-001..008
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-AUTH-002` se define una sola vez como contrato documental;
+2. no existe identidad física `ORIGO-AUTH-002::<implementation_unit_id>`;
+3. esta tarea no implementa permisos, guards, RLS, RPC, Server Actions ni migraciones;
+4. puede documentar divergencias del runtime, pero no corregirlas;
+5. cualquier modificación de Supabase perteneciente a VENTO continuará versionándose y ejecutándose desde `vento-group-sas/vento-shell` bajo su propietario físico correspondiente;
+6. las tareas posteriores consumen este inventario sin recontar las superficies aquí fijadas.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+ccd175938961c3957f4163559579e35313421448
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+Se contrastaron, como mínimo:
+
+- mini-bloque `ORIGO-AUTH-001..015`;
+- artefacto aprobado `ORIGO-AUTH-001` utilizado como predecesor documental;
+- `AUTH-UI-003 — Inventariar todas las rutas de ORIGO`;
+- catálogo canónico de aplicaciones, permisos, modalidades, scopes y recursos;
+- catálogo canónico de procesos y pantallas;
+- estados canónicos de `VPROC-0020`;
+- Registro 04A, dominio ORIGO;
+- páginas `src/app/suppliers/*` del consumidor;
+- `src/app/suppliers/actions.ts`;
+- `src/lib/suppliers.ts`;
+- formulario guiado de proveedores;
+- guard de aplicación y sincronizador de navegación de ORIGO.
+
+El snapshot remoto de `vento-shell` aún no contiene la incorporación de `ORIGO-AUTH-001`; la preparación anticipada utiliza su artefacto completo aprobado como base y no simula su publicación.
+
+---
+
+#### 5. Definición exacta de “vistas de proveedores”
+
+El universo propietario de esta tarea comprende superficies cuyo objeto primario es la identidad o ficha del proveedor:
+
+```text
+LISTADO / CATÁLOGO DE PROVEEDORES
+ALTA DE PROVEEDOR
+EDICIÓN DE PROVEEDOR
+ESTADO ACTIVO / INACTIVO
+CONDICIONES BÁSICAS OBSERVADAS EN LA FICHA
+ACCIONES DE MANTENIMIENTO DEL PROVEEDOR
+```
+
+No se incorporan como vistas propietarias:
+
+- `/purchase-orders*`, ya inventariadas por `ORIGO-AUTH-001`;
+- `/receipts*`, reservadas a `ORIGO-AUTH-003`;
+- `/product-master-review`, que pertenece a revisión de catálogo;
+- `/login`, `/no-access` y `/`, que son superficies de acceso o entrada general;
+- el PDF de orden, que pertenece a compras;
+- `VSCREEN-0072 — Comparación de cotizaciones`, que participa en `VPROC-0020` pero fue conservada como superficie de abastecimiento/compra, no como ficha maestra de proveedor.
+
+---
+
+#### 6. Universo AS-IS de páginas de proveedor
+
+El snapshot actual contiene exactamente tres archivos de página cuyo patrón pertenece a `suppliers`:
+
+| Identidad de ruta | Patrón | Archivo fuente | Tipo | Función AS-IS primaria |
+| --- | --- | --- | --- | --- |
+| `ORIGO-ROUTE-011` | `/suppliers` | `src/app/suppliers/page.tsx` | estática | listar, buscar y filtrar proveedores; exponer mantenimiento cuando el helper lo permite |
+| `ORIGO-ROUTE-012` | `/suppliers/[id]/edit` | `src/app/suppliers/[id]/edit/page.tsx` | dinámica | cargar y editar una ficha existente |
+| `ORIGO-ROUTE-013` | `/suppliers/new` | `src/app/suppliers/new/page.tsx` | estática | crear una nueva ficha de proveedor |
+
+Reconciliación:
+
+```text
+PÁGINAS DE PROVEEDOR ESPERADAS EN EL SNAPSHOT: 3
+PÁGINAS DE PROVEEDOR MATERIALIZADAS: 3
+PATRONES ESTÁTICOS: 2
+PATRONES DINÁMICOS: 1
+HANDLERS HTTP ESPECÍFICOS DE PROVEEDOR: 0
+DUPLICADOS DE PATRÓN: 0
+DUPLICADOS DE ARCHIVO: 0
+```
+
+Los filtros y query parameters no crean rutas adicionales.
+
+---
+
+#### 7. Vista AS-IS — catálogo `/suppliers`
+
+`ORIGO-ROUTE-011` observa actualmente:
+
+- acceso de aplicación mediante `requireAppAccess({ appId: "origo" })`;
+- lectura de la tabla `suppliers`;
+- orden alfabético por nombre;
+- búsqueda local por nombre, contacto, email, NIT o condición de pago;
+- filtro por estado activo/inactivo;
+- filtro por modalidad `cash` o `credit`;
+- conteos de total, activos, contado y crédito;
+- visualización de nombre y NIT;
+- contacto, teléfono y email;
+- condición de pago y días de crédito;
+- estado activo/inactivo;
+- cálculo de `canManageSuppliers` para decidir si se muestran alta, edición y eliminación.
+
+La consulta fuente carga además `address`, `notes`, `created_at` y `updated_at`, aunque no todos esos campos se presentan en la tabla principal.
+
+---
+
+#### 8. Vista AS-IS — alta `/suppliers/new`
+
+`ORIGO-ROUTE-013` observa actualmente:
+
+- acceso general a ORIGO;
+- `requireCanManageSuppliers` antes de renderizar el formulario;
+- formulario guiado de ficha comercial;
+- creación mediante `createSupplier`;
+- retorno al listado después de guardar.
+
+La página no demuestra por sí sola la capacidad canónica atómica de creación. Registra el control observado y deja la decisión final a `ORIGO-AUTH-005`.
+
+---
+
+#### 9. Vista AS-IS — edición `/suppliers/[id]/edit`
+
+`ORIGO-ROUTE-012` observa actualmente:
+
+- acceso general a ORIGO;
+- `requireCanManageSuppliers` antes de cargar la ficha;
+- resolución del proveedor por `id`;
+- tratamiento de proveedor inexistente;
+- edición mediante el mismo formulario guiado;
+- persistencia mediante `updateSupplier`.
+
+Conocer el `supplier_id` o alcanzar la ruta dinámica no concede autoridad por sí mismo. La autorización final deberá resolverse sobre recurso y capacidad canónica.
+
+---
+
+#### 10. Campos AS-IS de la ficha de proveedor
+
+La ficha materializada expone o persiste:
+
+```text
+name
+tax_id
+contact_name
+phone
+email
+address
+notes
+is_active
+payment_type
+credit_days
+created_at
+updated_at
+```
+
+El formulario guiado permite editar:
+
+- nombre o razón social;
+- identificación tributaria;
+- estado activo;
+- contacto;
+- teléfono;
+- email;
+- condición de contado o crédito;
+- días de crédito;
+- dirección;
+- notas.
+
+No se interpreta la presencia de esos campos como prueba de que el expediente canónico de proveedor esté completo.
+
+---
+
+#### 11. Server Actions de proveedor confirmadas
+
+`src/app/suppliers/actions.ts` expone exactamente tres acciones invocables:
+
+| Acción | Efecto AS-IS principal | Control observado |
+| --- | --- | --- |
+| `createSupplier` | insertar una fila en `suppliers` | usuario autenticado + `requireCanManageSuppliers` |
+| `updateSupplier` | actualizar la fila por `id` | usuario autenticado + `requireCanManageSuppliers` |
+| `deleteSupplier` | eliminar físicamente la fila si no existen órdenes vinculadas | usuario autenticado + `requireCanManageSuppliers` + comprobación de órdenes vinculadas |
+
+Reconciliación:
+
+```text
+SERVER ACTIONS DE PROVEEDOR ESPERADAS EN EL SNAPSHOT: 3
+SERVER ACTIONS CONFIRMADAS: 3
+DUPLICADOS POR NOMBRE+FUENTE: 0
+```
+
+Los helpers internos de parseo y condiciones de pago no se contabilizan como Server Actions independientes.
+
+---
+
+#### 12. Helper de gestión observado
+
+`src/lib/suppliers.ts` implementa actualmente:
+
+```text
+has_permission("origo.suppliers.manage")
+OR
+rol local ∈ {
+  propietario,
+  gerente_general,
+  gerente
+}
+```
+
+El resultado se reutiliza para:
+
+- mostrar u ocultar acciones en el catálogo;
+- permitir alta;
+- permitir edición;
+- permitir eliminación.
+
+Este helper se registra como evidencia AS-IS. Esta tarea no lo aprueba como autorización canónica final.
+
+---
+
+#### 13. Normalización del permiso legacy
+
+El catálogo canónico vigente establece:
+
+```text
+origo.suppliers.view
+→ RENAME
+→ origo.procurement.suppliers.view
+
+origo.suppliers.manage
+→ DECOMPOSE_REQUIRED
+→ familia origo.procurement.suppliers.*
+```
+
+La familia de capacidades aprobada para descomposición contiene:
+
+```text
+origo.procurement.suppliers.view
+origo.procurement.suppliers.create
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+Consecuencias documentales:
+
+1. `origo.suppliers.manage` permanece evidencia legacy, no permiso final nuevo;
+2. lectura y mutación no deben colapsarse en una capacidad monolítica;
+3. crear, actualizar, activar y desactivar requieren capacidades distintas;
+4. la lista local de roles no sustituye la matriz canónica;
+5. la descomposición se define en las tareas posteriores propietarias, no en este inventario.
+
+---
+
+#### 14. Recurso canónico de proveedor
+
+El catálogo de recursos define para consulta:
+
+```text
+permission = origo.procurement.suppliers.view
+resource = SUPPLIER
+locator = supplier_id o relación desde orden/recepción
+territory = SUPPLIER_SCOPE
+```
+
+Reglas preservadas:
+
+- un proveedor no es propiedad de `employee_sites`;
+- el carril base puede consultar dentro del ámbito organizacional o de negocio autorizado;
+- el carril operativo se limita al proveedor relacionado con el recurso activo;
+- el territorio funciona como filtro relacional, no como propiedad de sede;
+- la proyección operativa debe limitar campos a lo necesario;
+- los datos sensibles requieren autorización adicional.
+
+---
+
+#### 15. Modalidad de consulta de proveedor
+
+La capacidad de consulta está clasificada como:
+
+```text
+origo.procurement.suppliers.view
+BASE_OR_OPERATIONAL
+```
+
+Prerrequisito observado en el catálogo:
+
+```text
+carril base: no requiere turno por esta capacidad
+carril operativo: requiere T
+```
+
+Esto no implica que las mutaciones de proveedor hereden la misma modalidad. La tarea solo registra la modalidad aprobada de consulta y reserva creación/edición/estado para sus propietarios de autorización.
+
+---
+
+#### 16. Proyección administrativa versus operativa
+
+La misma identidad de proveedor puede tener dos proyecciones legítimas sin duplicar el recurso:
+
+```text
+CARRIL BASE
+→ directorio/expediente autorizado dentro del ámbito comercial
+
+CARRIL OPERATIVO
+→ proveedor relacionado con orden o recepción activa
+→ proyección mínima necesaria
+```
+
+Queda prohibido inferir:
+
+```text
+TENER UNA SEDE ASIGNADA
+→ SER DUEÑO DEL PROVEEDOR
+```
+
+También queda prohibido usar la falta de un filtro explícito de `employee_sites` en `/suppliers` como prueba automática de error territorial, porque el recurso canónico de proveedor es organizacional y relacional.
+
+---
+
+#### 17. Pantalla canónica `VSCREEN-0070`
+
+Contrato vigente:
+
+```text
+VSCREEN-0070
+Catálogo de proveedores
+VPROC-0020
+VPROC-0020::STEP-CONSULT_SUPPLIER_CATALOG
+MONITOR / IN_PROGRESS
+```
+
+Propósito canónico:
+
+- consultar proveedores;
+- estados;
+- categorías;
+- condiciones;
+- cobertura autorizada;
+- presentar opciones aptas para comparación.
+
+Relación AS-IS:
+
+```text
+/suppliers
+→ representación material principal de VSCREEN-0070
+→ cobertura parcial respecto del contrato objetivo completo
+```
+
+El runtime cubre identidad básica, contacto, estado y condición de pago, pero no demuestra por sí solo categorías completas, cobertura contractual ni proyección diferenciada por finalidad.
+
+---
+
+#### 18. Pantalla canónica `VSCREEN-0071`
+
+Contrato vigente:
+
+```text
+VSCREEN-0071
+Alta y expediente de proveedor
+VPROC-0020
+VPROC-0020::STEP-ONBOARD_SUPPLIER
+CONFIGURE / IN_PROGRESS
+```
+
+También mantiene relación con `VPROC-0060` para identidad documental/externa aplicable.
+
+Relación AS-IS:
+
+```text
+/suppliers/new
++
+/suppliers/[id]/edit
+→ materializan alta y mantenimiento básico de la ficha
+```
+
+Cobertura observada:
+
+- identidad básica;
+- identificación tributaria;
+- contacto;
+- dirección;
+- estado;
+- condición de pago básica;
+- notas.
+
+No se observa en esas páginas una superficie completa de documentos versionados, vigencias, expediente documental, cuentas bancarias gobernadas, contratos o historial de cambios de condiciones.
+
+---
+
+#### 19. Pantalla canónica `VSCREEN-0145`
+
+Contrato vigente:
+
+```text
+VSCREEN-0145
+Contratos, precios y condiciones de proveedor
+VPROC-0020
+VPROC-0020::STEP-GOVERN_SUPPLIER_TERMS
+CONFIGURE / IN_PROGRESS
+```
+
+Debe versionar, según el contrato de pantalla:
+
+- contratos;
+- listas de precio;
+- impuestos;
+- fletes;
+- mínimos;
+- vigencias;
+- condiciones autorizadas por proveedor.
+
+El runtime inspeccionado únicamente conserva en la ficha:
+
+```text
+payment_type
+credit_days
+notes
+```
+
+Esto constituye una representación parcial de condiciones comerciales, no una implementación demostrada de `VSCREEN-0145`.
+
+No se observó una ruta dedicada equivalente en el snapshot.
+
+---
+
+#### 20. Pantalla canónica `VSCREEN-0146`
+
+Contrato vigente:
+
+```text
+VSCREEN-0146
+Desempeño y reclamaciones de proveedor
+VPROC-0020
+VPROC-0020::STEP-REVIEW_SUPPLIER_PERFORMANCE
+REVIEW / DECISION
+```
+
+Debe analizar cumplimiento desde hechos y gestionar reclamaciones, respuestas, compromisos y resolución con evidencia.
+
+En las tres rutas `suppliers` inspeccionadas no se observó una superficie dedicada de:
+
+- desempeño;
+- cumplimiento histórico;
+- reclamaciones;
+- respuesta del proveedor;
+- compromisos;
+- resolución con evidencia.
+
+La ausencia de una ruta dedicada se registra como brecha de experiencia; no se crea una pantalla nueva porque `VSCREEN-0146` ya existe en el catálogo canónico.
+
+---
+
+#### 21. Frontera con `VSCREEN-0072`
+
+`VSCREEN-0072 — Comparación de cotizaciones` también pertenece a `VPROC-0020`, pero no se duplica dentro del universo de ficha de proveedor de esta tarea.
+
+Se conserva la decisión de `ORIGO-AUTH-001`:
+
+```text
+VSCREEN-0072
+→ abastecimiento / comparación para decidir compra
+→ NO es una ruta maestra /suppliers* materializada en el snapshot
+```
+
+El catálogo de proveedor entrega información a la comparación, pero la comparación permanece una responsabilidad funcional diferente.
+
+---
+
+#### 22. Estados canónicos de `VPROC-0020`
+
+El proceso de evaluación de abastecimiento asociado a las pantallas de proveedor conserva exactamente:
+
+```text
+VPROC-0020.SOURCING_CASE_OPENED
+→ VPROC-0020.MARKET_REVIEW_IN_PROGRESS
+→ VPROC-0020.QUOTES_PENDING
+→ VPROC-0020.COMPARISON_IN_PROGRESS
+→ VPROC-0020.RECOMMENDATION_PREPARED
+→ VPROC-0020.DECISION_PENDING
+→ VPROC-0020.SUPPLIER_SELECTED
+→ VPROC-0020.SOURCING_DECISION_COMPLETED
+```
+
+La fila `suppliers.is_active` no sustituye este lifecycle.
+
+Distinción obligatoria:
+
+```text
+ESTADO DEL MAESTRO DE PROVEEDOR
+!=
+ESTADO DEL CASO DE ABASTECIMIENTO
+```
+
+---
+
+#### 23. Relación con órdenes de compra
+
+El proveedor participa en órdenes mediante:
+
+```text
+purchase_orders.supplier_id
+```
+
+y la creación de órdenes consume proveedores activos.
+
+Reglas del inventario:
+
+- una orden puede referenciar un proveedor sin transferir ownership del proveedor a la orden;
+- la autorización para consultar una orden no concede el directorio completo de proveedores;
+- la autorización para consultar proveedor no concede crear o aprobar una orden;
+- las condiciones utilizadas por una orden histórica no deben reinterpretarse desde una ficha actual mutable.
+
+La última regla ya está cubierta por el contrato vigente de proveedor y se conserva para tareas posteriores.
+
+---
+
+#### 24. Relación producto–proveedor
+
+El runtime de compras consume la tabla `product_suppliers` para validar qué productos están vinculados al proveedor y para alias comerciales.
+
+Sin embargo, las páginas `/suppliers*` inspeccionadas no materializan un editor completo de esa relación.
+
+Distinción obligatoria:
+
+```text
+SUPPLIER
+!=
+PRODUCT_SUPPLIER_RELATION
+!=
+OFFER / PRICE CONDITION
+!=
+PURCHASE_ORDER
+```
+
+Esta tarea no reasigna ownership del maestro de producto ni de presentaciones.
+
+---
+
+#### 25. Sensibilidad y minimización
+
+El catálogo clasifica `origo.procurement.suppliers.view` bajo confidencialidad comercial.
+
+La superficie AS-IS procesa o carga, según ruta:
+
+- identificación tributaria;
+- contacto;
+- teléfono;
+- email;
+- dirección;
+- notas;
+- condiciones de pago;
+- días de crédito;
+- estado;
+- timestamps.
+
+El Registro 04A vigente protege además datos contractuales, bancarios y precios sensibles aunque no estén materializados en estas tres páginas.
+
+Owner de la política de protección:
+
+```text
+ORIGO-AUTH-010 — Proteger precios y datos sensibles
+```
+
+Este inventario no define field masks definitivos ni expone datos adicionales.
+
+---
+
+#### 26. Eliminación física observada y estado canónico
+
+`deleteSupplier` ejecuta actualmente una eliminación física cuando:
+
+1. existe `supplier_id`;
+2. el actor pasa `requireCanManageSuppliers`;
+3. no existen órdenes vinculadas al proveedor.
+
+El catálogo canónico de capacidades, en cambio, descompone el mantenimiento en:
+
+```text
+create
+update
+activate
+deactivate
+```
+
+sin declarar aquí una capacidad canónica `delete`.
+
+Conclusión documental:
+
+```text
+DELETE AS-IS OBSERVADO
+!=
+PERMISO CANÓNICO DE BORRADO APROBADO
+```
+
+La política de corrección, retiro, desactivación o eventual eliminación se resolverá en `ORIGO-AUTH-008` y en las tareas de datos/implementación propietarias que correspondan. Esta tarea no modifica el comportamiento.
+
+---
+
+#### 27. Estado activo e identidad estable
+
+El runtime conserva `is_active` y permite cambiarlo desde la ficha.
+
+El requisito vigente del maestro de proveedores exige identidad estable y estado explícito. Por tanto:
+
+```text
+INACTIVO
+!=
+INEXISTENTE
+```
+
+Una desactivación futura no deberá interpretarse automáticamente como borrado del historial de compras, condiciones, recepciones o evidencia.
+
+La tarea no define todavía el contrato físico de retención ni una migración de datos.
+
+---
+
+#### 28. Matriz de autorización observada
+
+| Superficie / acción | Control observado | Capacidad canónica final demostrada | Tratamiento posterior |
+| --- | --- | --- | --- |
+| `/suppliers` | `requireAppAccess(origo)` | lectura específica no demostrada en la ruta | `ORIGO-AUTH-004` |
+| `/suppliers/new` | `requireAppAccess(origo)` + `requireCanManageSuppliers` | creación atómica no demostrada | `ORIGO-AUTH-005` |
+| `/suppliers/[id]/edit` | `requireAppAccess(origo)` + `requireCanManageSuppliers` | update/activate/deactivate atómicos no demostrados | `ORIGO-AUTH-008` |
+| `createSupplier` | usuario + `requireCanManageSuppliers` | `origo.procurement.suppliers.create` no demostrado como check exacto | `ORIGO-AUTH-005` |
+| `updateSupplier` | usuario + `requireCanManageSuppliers` | `update/activate/deactivate` no separados | `ORIGO-AUTH-008` |
+| `deleteSupplier` | usuario + helper + ausencia de órdenes vinculadas | no existe permiso canónico de delete aprobado en la familia documentada | `ORIGO-AUTH-008` |
+
+“no demostrada” significa evidencia insuficiente en la superficie inspeccionada, no afirmación de ausencia de RLS u otros controles en capas diferentes.
+
+---
+
+#### 29. Matriz de brechas y propietarios
+
+| Brecha | Riesgo contractual | Propietario exacto | Condición de salida |
+| --- | --- | --- | --- |
+| `/suppliers` usa acceso general de aplicación para llegar al directorio | consulta más amplia que la capacidad específica si ninguna capa posterior limita el recurso | `ORIGO-AUTH-004` | consulta de proveedor queda definida sobre `SUPPLIER` y scope autorizado |
+| `origo.suppliers.manage` concentra mutaciones | creación, actualización y estado quedan sin separación atómica en el helper observado | `ORIGO-AUTH-005`; `ORIGO-AUTH-008` | capacidades granulares quedan definidas y fail-closed |
+| fallback de roles locales en `canManageSuppliers` | divergencia entre rol visual/helper y matriz canónica | `ORIGO-AUTH-005`; `ORIGO-AUTH-008` | la decisión final deja de depender de una lista local no autoritativa |
+| alta/edición cubren ficha básica pero no expediente documental completo | expediente incompleto respecto de `VSCREEN-0071` | `ORIGO-UX-001`; `ORIGO-AUTH-010` | experiencia y protección incorporan documentos/condiciones dentro del alcance aprobado |
+| condiciones comerciales se reducen a contado/crédito y notas | `VSCREEN-0145` no queda materializada como superficie completa | `ORIGO-UX-001`; `ORIGO-AUTH-010` | contratos, precios, impuestos, fletes, mínimos y vigencias quedan asignados a superficie autorizada |
+| no existe superficie dedicada de desempeño/reclamaciones | `VSCREEN-0146` sin materialización observada | `ORIGO-UX-001` | experiencia de abastecimiento asigna la pantalla canónica sin crear identidad nueva |
+| `deleteSupplier` elimina físicamente si no hay órdenes | retiro irreversible potencialmente distinto de activar/desactivar | `ORIGO-AUTH-008` | política de corrección/retiro y autoridad quedan definidas |
+| consulta fuente carga campos no mostrados en la tabla | sobrelectura potencial si la proyección final no los requiere | `ORIGO-AUTH-010` | field mask/proyección sensible queda definida y verificada |
+| relación producto–proveedor no se administra en `/suppliers*` | condición de abastecimiento distribuida entre superficies | `ORIGO-UX-001` | relación y ownership quedan representados sin duplicar maestros |
+
+Ninguna brecha queda sin propietario y condición de salida.
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la tarea inventaría superficies, acciones, campos, capacidades legacy y brechas ya protegidas por requisitos vigentes. No crea un permiso nuevo, una pantalla nueva, una transición empresarial nueva, una política de proveedor nueva ni una obligación de seguridad nueva.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-005` para identidad estable de proveedor, separación de relación/oferta/contrato/condición, versionado de condiciones, protección de datos sensibles y evaluación basada en hechos;
+- `TREQ-ORIGO-006` a `TREQ-ORIGO-025` para exhaustividad del inventario ORIGO, identidad de rutas, patrones dinámicos, guards, drift y acceso directo;
+- `TREQ-AUTH-001` para autorización canónica por permiso y alcance;
+- `TREQ-AUTH-004` para decisiones consistentes entre evaluadores;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-013` para protección server-side;
+- `TREQ-AUTH-015` para evidencia correlacionable;
+- obligaciones vigentes de privacidad, minimización, Storage y auditoría cuando el expediente de proveedor incorpore documentos o datos sensibles.
+
+Esta sección es trazabilidad de cobertura existente, no una actualización del registro.
+
+---
+
+#### 32. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en su archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada del artefacto. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-origo/main`, archivo propietario, topología, inventario de rutas aprobado, catálogo de permisos/recursos/pantallas, Registro 04A y código actual de las superficies de proveedor. |
+| OPERATIVA | `NOT_EXECUTED` | No se creó, editó, eliminó, activó ni desactivó un proveedor real; no se ejecutaron flujos desplegados, RLS, RPC ni mutaciones productivas. |
+| FÍSICA | `NOT_APPLICABLE` | `ORIGO-AUTH-002` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 33. Criterios de aceptación
+
+- [x] La tarea mantiene exactamente `ORIGO-AUTH-002 — Inventariar vistas de proveedores`.
+- [x] La tarea anterior es exactamente `ORIGO-AUTH-001` y la siguiente `ORIGO-AUTH-003`.
+- [x] La topología se conserva como `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`.
+- [x] Se fijaron snapshots verificables de `vento-shell` y `vento-origo`.
+- [x] Se separó el universo de proveedor del universo de compras y recepción.
+- [x] Se reconciliaron exactamente tres páginas `suppliers` sin duplicados.
+- [x] Se confirmó que no existe handler HTTP específico de proveedor en el snapshot.
+- [x] Se inventariaron exactamente tres Server Actions de proveedor.
+- [x] Se inventariaron los campos AS-IS de ficha comercial.
+- [x] Se registró el helper `canManageSuppliers` sin aprobarlo como autoridad final.
+- [x] Se preservó `origo.suppliers.manage` únicamente como legacy `DECOMPOSE_REQUIRED`.
+- [x] Se preservó la familia canónica `view/create/update/activate/deactivate`.
+- [x] Se conservó `SUPPLIER` como recurso organizacional y relacional, no propiedad de sede.
+- [x] Se distinguió proyección base de proyección operativa mínima.
+- [x] Se reconciliaron `VSCREEN-0070`, `VSCREEN-0071`, `VSCREEN-0145` y `VSCREEN-0146`.
+- [x] Se preservó `VSCREEN-0072` fuera del universo propietario para no duplicar `ORIGO-AUTH-001`.
+- [x] Se preservaron los ocho estados normales de `VPROC-0020` sin confundirlos con `is_active`.
+- [x] Se registró `deleteSupplier` como comportamiento AS-IS sin inventar un permiso canónico de borrado.
+- [x] Se distinguió desactivación de inexistencia.
+- [x] Se registró sensibilidad comercial y owner de protección posterior.
+- [x] Todas las brechas tienen propietario y condición de salida.
+- [x] No se creó pantalla, proceso, permiso, estado, ruta ni identificador nuevo.
+- [x] No se creó ni modificó requisito de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-AUTH-003` queda como siguiente tarea exacta y no se desarrolla aquí.
+
+---
+
+#### 34. Límites
+
+Esta tarea no:
+
+- define permisos finales de consulta;
+- define permisos finales de creación;
+- define permisos finales de corrección;
+- aprueba el fallback por roles locales;
+- crea un permiso `delete`;
+- elimina, activa o desactiva proveedores reales;
+- crea o edita proveedores reales;
+- crea contratos de proveedor;
+- crea listas de precio;
+- define impuestos, fletes, mínimos o vigencias;
+- diseña evaluación de desempeño;
+- diseña reclamaciones;
+- modifica `product_suppliers`;
+- cambia el maestro de productos;
+- cambia compras o recepciones;
+- cambia rutas o navegación;
+- ejecuta `sync-navigation`;
+- modifica `vento-origo`;
+- modifica Supabase;
+- crea migraciones, RLS, RPC, funciones, triggers, Storage o datos;
+- declara una vulnerabilidad explotable no demostrada;
+- desarrolla `ORIGO-AUTH-003`.
+
+---
+
+#### 35. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-001 — Inventariar vistas de compras`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-002 — Inventariar vistas de proveedores`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-003 — Inventariar vistas de recepción`
+
 ### [ ] ORIGO-AUTH-003 — Inventariar vistas de recepción
 ### [ ] ORIGO-AUTH-004 — Definir permisos de consulta
 ### [ ] ORIGO-AUTH-005 — Definir permisos de creación

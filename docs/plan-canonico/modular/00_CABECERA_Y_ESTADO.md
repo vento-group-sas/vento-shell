@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1304** |
+| Tareas aprobadas | **1305** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **292** |
+| Tareas no iniciadas | **291** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **81.70% (1304/1596)** |
+| Porcentaje de completamiento | **81.77% (1305/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-AUTH-001 — Inventariar vistas de compras** |
-| Tarea actual | **ORIGO-AUTH-002 — Inventariar vistas de proveedores** |
+| Última tarea aprobada | **ORIGO-AUTH-002 — Inventariar vistas de proveedores** |
+| Tarea actual | **ORIGO-AUTH-003 — Inventariar vistas de recepción** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-003 — Inventariar vistas de recepción** |
+| Siguiente tarea | **ORIGO-AUTH-004 — Definir permisos de consulta** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 35 de 65 aprobadas; ORIGO-AUTH-002 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 36 de 65 aprobadas; ORIGO-AUTH-003 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-AUTH-002** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-003** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-AUTH-001` — Inventariar vistas de compras |
-| Tarea actual | `ORIGO-AUTH-002` — Inventariar vistas de proveedores — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-003` — Inventariar vistas de recepción |
+| Última aprobada | `ORIGO-AUTH-002` — Inventariar vistas de proveedores |
+| Tarea actual | `ORIGO-AUTH-003` — Inventariar vistas de recepción — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-004` — Definir permisos de consulta |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 35 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-002** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 36 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-003** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-AUTH-001 — Inventariar vistas de compras
-        ↓
-TAREA ACTUAL
 ORIGO-AUTH-002 — Inventariar vistas de proveedores
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-AUTH-003 — Inventariar vistas de recepción
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-004 — Definir permisos de consulta
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 35 de 65 tareas aprobadas
+BLOQUES L Y M — 36 de 65 tareas aprobadas
 ```
