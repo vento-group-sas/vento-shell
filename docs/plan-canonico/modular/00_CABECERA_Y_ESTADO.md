@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1318** |
+| Tareas aprobadas | **1319** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **278** |
+| Tareas no iniciadas | **277** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **82.58% (1318/1596)** |
+| Porcentaje de completamiento | **82.64% (1319/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-UX-005 — Diseñar redención visible** |
-| Tarea actual | **PASS-UX-006 — Diseñar historial** |
+| Última tarea aprobada | **PASS-UX-006 — Diseñar historial** |
+| Tarea actual | **PASS-UX-007 — Diseñar catálogo de recompensas** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-UX-007 — Diseñar catálogo de recompensas** |
+| Siguiente tarea | **PASS-UX-008 — Diseñar perfil del cliente** |
 | Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE** |
-| Progreso del bloque | **CARRIL PASS: 5 de 13 aprobadas; PASS-UX-006 pendiente** |
+| Progreso del bloque | **CARRIL PASS: 6 de 13 aprobadas; PASS-UX-007 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-UX-006** |
+| Carril documental | **ACTIVO — PASS-UX-007** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-UX-005` — Diseñar redención visible |
-| Tarea actual | `PASS-UX-006` — Diseñar historial — **NO INICIADA** |
-| Siguiente tarea | `PASS-UX-007` — Diseñar catálogo de recompensas |
+| Última aprobada | `PASS-UX-006` — Diseñar historial |
+| Tarea actual | `PASS-UX-007` — Diseñar catálogo de recompensas — **NO INICIADA** |
+| Siguiente tarea | `PASS-UX-008` — Diseñar perfil del cliente |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 5 DE 13 APROBADAS — ACTUAL PASS-UX-006** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 6 DE 13 APROBADAS — ACTUAL PASS-UX-007** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-UX-005 — Diseñar redención visible
-        ↓
-TAREA ACTUAL
 PASS-UX-006 — Diseñar historial
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PASS-UX-007 — Diseñar catálogo de recompensas
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-UX-008 — Diseñar perfil del cliente
+        ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 5 de 13 tareas aprobadas
+CARRIL PASS — 6 de 13 tareas aprobadas
 ```
