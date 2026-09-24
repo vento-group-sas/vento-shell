@@ -8,6 +8,7 @@ import {
   operationalActionSummary,
   parseTaskScopeContracts,
   pendingTaskExecutionContext,
+  projectPriorityPendingTasks,
   physicalLaneSummary,
   physicalOperationalProjection,
   renderDualLaneOverview,
@@ -43,6 +44,47 @@ const task = (id, state = 'NO INICIADA') => ({
   title: `Título ${id}`,
   state,
   relativePath: 'task.md',
+});
+
+test('priority lane omite tareas ya aprobadas sin perder su precedencia', () => {
+  const canonicalTasks = [
+    task('PASS-UX-001', 'APROBADA'),
+    task('PASS-UX-002'),
+    task('PASS-UX-003'),
+  ];
+  const pendingTasks = [
+    { ...task('PASS-UX-002'), canonicalOrder: 2 },
+    { ...task('PASS-UX-003'), canonicalOrder: 3 },
+  ];
+  const result = projectPriorityPendingTasks({
+    canonicalTasks,
+    pendingTasks,
+    active: {
+      route_id: 'PASS-LOYALTY-001',
+      task_ids: ['PASS-UX-001', 'PASS-UX-002', 'PASS-UX-003'],
+      previous_task_id: 'ORIGO-AUTH-010',
+      priority_stage: { order: 1 },
+      sequence_id: 'PRIORITY-PASS-LOYALTY-001-STAGE-001',
+      block_code: 'CARRIL PASS',
+      block_title: 'PASS customer experience',
+    },
+  });
+  assert.deepEqual(result.map(({ id }) => id), ['PASS-UX-002', 'PASS-UX-003']);
+  assert.deepEqual(result.map(({ routePredecessorId }) => routePredecessorId), ['PASS-UX-001', 'PASS-UX-002']);
+});
+
+test('priority lane sigue fallando ante una identidad documental inexistente', () => {
+  assert.throws(
+    () => projectPriorityPendingTasks({
+      canonicalTasks: [task('PASS-UX-001', 'APROBADA')],
+      pendingTasks: [],
+      active: {
+        route_id: 'PASS-LOYALTY-001',
+        task_ids: ['PASS-UX-001', 'PASS-UX-999'],
+      },
+    }),
+    /tarea documental inexistente: PASS-UX-999/u,
+  );
 });
 
 test('ordena las pendientes por etapa y selector, no por orden físico del manifiesto', () => {

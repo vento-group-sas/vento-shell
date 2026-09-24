@@ -807,14 +807,14 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
   const approvedTasks = Math.max(0, totalTasks - tasks.length);
   const proposedTasks = tasks.filter(({ state }) => state === 'PROPUESTA PARA APROBACIÓN').length;
   const rejectedTasks = tasks.filter(({ state }) => state === 'RECHAZADA').length;
-  const activeTaskId = (active.task_ids ?? []).find((id) => !id.includes('::'))
+  const documentaryCurrent = documentary.current;
+  const documentaryNext = documentary.next;
+  const activeTaskId = documentaryCurrent?.id
     ?? (active.segments?.[0]
       ? active.segments[0].prefix + '-' + String(active.segments[0].from).padStart(3, '0')
       : implementationControl?.documentary?.taskId ?? 'NINGUNA');
   const physicalCurrent = physical.current;
   const physicalNext = physical.next;
-  const documentaryCurrent = documentary.current;
-  const documentaryNext = documentary.next;
   const coordination = implementationControl?.coordination ?? {};
   const actionableIds = new Set(physical.actionable.map(({ instanceId }) => instanceId));
   const physicalRows = physical.queue.length > 0
@@ -995,6 +995,34 @@ function render(tasks, route, active, workTopology, implementationControl, corre
   return lines.join('\n');
 }
 
+export function projectPriorityPendingTasks({ canonicalTasks, pendingTasks, active }) {
+  const priorityIds = active?.route_id !== 'NORMAL-CANONICAL-FLOW-001'
+    ? (active?.task_ids ?? []).filter((id) => typeof id === 'string' && !id.includes('::'))
+    : [];
+  if (priorityIds.length === 0) return [];
+
+  const canonicalById = new Map(canonicalTasks.map((task) => [task.id, task]));
+  const pendingById = new Map(pendingTasks.map((task) => [task.id, task]));
+
+  return priorityIds.flatMap((id, index) => {
+    if (!canonicalById.has(id)) {
+      throw new Error('La priority lane referencia una tarea documental inexistente: ' + id + '.');
+    }
+    const task = pendingById.get(id);
+    if (!task) return [];
+    return [{
+      ...task,
+      priorityRoute: true,
+      routePredecessorId: index === 0 ? active.previous_task_id : priorityIds[index - 1],
+      stageOrder: active.priority_stage?.order ?? 1,
+      sequenceId: active.sequence_id,
+      blockCode: active.block_code,
+      blockTitle: active.block_title,
+      activationState: 'ACTIVE',
+    }];
+  });
+}
+
 export function syncPendingTaskContext({
   root = process.cwd(),
   check = false,
@@ -1004,26 +1032,14 @@ export function syncPendingTaskContext({
   const outputPath = path.join(baseDir, OUTPUT);
   const route = JSON.parse(fs.readFileSync(path.join(baseDir, 'continuity-route.json'), 'utf8'));
   const active = JSON.parse(fs.readFileSync(path.join(baseDir, 'active-sequence.json'), 'utf8'));
-  const normalTasks = orderPendingTasksByRoute(readCanonicalTasks(baseDir), route);
-  const priorityIds = active.route_id !== 'NORMAL-CANONICAL-FLOW-001'
-    ? (active.task_ids ?? []).filter((id) => !id.includes('::'))
-    : [];
-  const byId = new Map(normalTasks.map((task) => [task.id, task]));
-  const priorityTasks = priorityIds.map((id, index) => {
-    const task = byId.get(id);
-    if (!task) throw new Error('La priority lane referencia una tarea documental no pendiente o inexistente: ' + id + '.');
-    return {
-      ...task,
-      priorityRoute: true,
-      routePredecessorId: index === 0 ? active.previous_task_id : priorityIds[index - 1],
-      stageOrder: active.priority_stage?.order ?? 1,
-      sequenceId: active.sequence_id,
-      blockCode: active.block_code,
-      blockTitle: active.block_title,
-      activationState: 'ACTIVE',
-    };
+  const canonicalTasks = readCanonicalTasks(baseDir);
+  const normalTasks = orderPendingTasksByRoute(canonicalTasks, route);
+  const priorityTasks = projectPriorityPendingTasks({
+    canonicalTasks,
+    pendingTasks: normalTasks,
+    active,
   });
-  const prioritySet = new Set(priorityIds);
+  const prioritySet = new Set(priorityTasks.map((task) => task.id));
   const tasks = [
     ...priorityTasks,
     ...normalTasks.filter((task) => !prioritySet.has(task.id)),
