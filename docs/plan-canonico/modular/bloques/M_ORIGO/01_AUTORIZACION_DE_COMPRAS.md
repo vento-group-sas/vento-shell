@@ -1743,7 +1743,829 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-003 — Inventariar vistas de recepción`
 
-### [ ] ORIGO-AUTH-003 — Inventariar vistas de recepción
+### ✅ ORIGO-AUTH-003 — Inventariar vistas de recepción
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-002 — Inventariar vistas de proveedores
+**Tarea siguiente:** ORIGO-AUTH-004 — Definir permisos de consulta
+**Tipo de tarea:** documental; inventario AS-IS/canónico de las vistas, rutas, acciones, modos, estados, efectos, recursos y fronteras de autorización asociadas a recepción de compras en ORIGO, con reconciliación contra `VPROC-0022`, pantallas canónicas, recurso `PURCHASE_RECEIPT`, NEXO/NUMERA y propietarios posteriores; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, navegación, permisos, roles, recepciones reales, órdenes, inventario, costos, Supabase, migraciones, RLS, RPC, Storage, NEXO, NUMERA ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Inventariar de forma cerrada y verificable las superficies de ORIGO que hoy consultan, registran, corrigen o reversan recepciones de compra, diferenciando la recepción empresarial, el registro informativo, el efecto físico sobre inventario y la reconciliación posterior sin convertir el comportamiento técnico actual en contrato objetivo aprobado.
+
+La regla de lectura queda:
+
+```text
+SUPERFICIE AS-IS
+!=
+PANTALLA CANÓNICA
+!=
+RECEPCIÓN EMPRESARIAL COMPLETA
+!=
+PERMISO SUFICIENTE
+!=
+EFECTO FÍSICO AUTORIZADO
+!=
+CONCILIACIÓN ECONÓMICA
+```
+
+Esta tarea fija el universo de recepción que `ORIGO-AUTH-004`, `ORIGO-AUTH-007`, `ORIGO-AUTH-008`, `ORIGO-AUTH-009`, `ORIGO-AUTH-010`, `ORIGO-AUTH-011`, `ORIGO-AUTH-012`, `ORIGO-AUTH-015` y las tareas de experiencia e integración posteriores deberán proteger o rediseñar. No redefine compras ni proveedores ya inventariados.
+
+---
+
+#### 2. Frontera recibida de ORIGO-AUTH-002
+
+`ORIGO-AUTH-002` reservó expresamente `/receipts*` para esta tarea y mantuvo separado el maestro de proveedores.
+
+El handoff conserva:
+
+```text
+ORIGO-AUTH-002
+→ identidad y mantenimiento de proveedor
+→ ORIGO-AUTH-003
+→ recepción, corrección, reversión y relaciones posteriores
+```
+
+La tarea anterior dejó fuera de su ownership:
+
+- `/receipts`;
+- `/receipts/new`;
+- las acciones de recepción y reversión;
+- la actualización de cantidades recibidas de órdenes;
+- los efectos observados sobre inventario y costo;
+- la reconciliación con NEXO y NUMERA.
+
+Por tanto, esta tarea no reabre `/suppliers*` ni inventa una segunda identidad para los recursos de proveedor.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+ORIGO-AUTH-001..008
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-AUTH-003` se define una sola vez como contrato documental;
+2. no existe identidad física `ORIGO-AUTH-003::<implementation_unit_id>`;
+3. la tarea no modifica Server Actions, RLS, RPC, tablas, permisos ni integraciones;
+4. puede registrar divergencias del runtime frente al contrato objetivo sin corregirlas;
+5. toda modificación de Supabase perteneciente a VENTO continúa versionándose y ejecutándose desde `vento-group-sas/vento-shell` bajo su tarea propietaria;
+6. las materializaciones posteriores consumen este inventario sin volver a contar las superficies aquí fijadas.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+2725b2e8d7d0d1126e398c7fb1f996b75cf5fac0
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+Se contrastaron como mínimo:
+
+- mini-bloque `ORIGO-AUTH-001..015`;
+- artefacto aprobado de `ORIGO-AUTH-002`;
+- inventario aprobado de rutas ORIGO;
+- inventario aprobado de Server Actions;
+- catálogo canónico de permisos, prerequisitos y recursos;
+- catálogo canónico de pantallas y procesos;
+- estados de `VPROC-0022`;
+- contrato `INT-PROC-002` de recepción y handoff;
+- requisitos ORIGO vigentes del Registro 04A;
+- `src/app/receipts/page.tsx`;
+- `src/app/receipts/new/page.tsx`;
+- `src/components/vento/receipts/receipt-form.tsx`;
+- guard y helpers de autorización del consumidor;
+- sincronizador de navegación de ORIGO.
+
+---
+
+#### 5. Definición exacta de “vistas de recepción”
+
+El universo propietario de `ORIGO-AUTH-003` incluye superficies cuyo objeto primario observado es registrar, consultar, corregir o reversar una recepción de compra:
+
+```text
+HISTORIAL DE RECEPCIONES
+NUEVA RECEPCIÓN
+RECEPCIÓN CONTRA OC
+RECEPCIÓN DIRECTA
+SOLO REGISTRO
+CORRECCIÓN DE RECEPCIÓN
+REVERSIÓN DE RECEPCIÓN
+```
+
+No incorpora como vistas propietarias:
+
+- `/purchase-orders*`, ya inventariadas por `ORIGO-AUTH-001`;
+- `/suppliers*`, ya inventariadas por `ORIGO-AUTH-002`;
+- `/product-master-review`, que es una superficie de revisión de maestro de datos aunque pueda recibir handoffs desde recepción;
+- rutas NEXO de inventario, LOC o posiciones;
+- `/login` y `/no-access`;
+- query parameters como identidades de ruta separadas.
+
+---
+
+#### 6. Universo AS-IS de páginas de recepción
+
+El inventario aprobado de rutas conserva exactamente dos páginas de recepción:
+
+| Identidad aprobada | Patrón | Archivo fuente | Tipo | Función AS-IS primaria |
+| --- | --- | --- | --- | --- |
+| `ORIGO-ROUTE-009` | `/receipts` | `src/app/receipts/page.tsx` | estática | histórico, estado y acciones temporales de corrección/reversión |
+| `ORIGO-ROUTE-010` | `/receipts/new` | `src/app/receipts/new/page.tsx` | estática | crear recepción, solo registro o reemplazo correctivo |
+
+Reconciliación:
+
+```text
+PÁGINAS DE RECEPCIÓN ESPERADAS: 2
+PÁGINAS DE RECEPCIÓN MATERIALIZADAS: 2
+PATRONES ESTÁTICOS: 2
+PATRONES DINÁMICOS: 0
+HANDLERS HTTP ESPECÍFICOS: 0
+DUPLICADOS DE PATRÓN: 0
+DUPLICADOS DE ARCHIVO: 0
+```
+
+Los parámetros `site_id`, `purchase_order_id`, `correction_entry_id`, `draft_id`, `ok`, `error` e `history_error` no crean rutas adicionales.
+
+---
+
+#### 7. Server Actions asociadas a recepción
+
+El inventario técnico vigente confirma exactamente dos acciones de servidor propietarias de estas páginas:
+
+| Acción | Archivo | Estilo observado | Intención AS-IS |
+| --- | --- | --- | --- |
+| `reverseReceipt` | `src/app/receipts/page.tsx` | función inline con `use server` | reversar una recepción existente dentro de ventana temporal |
+| `createReceipt` | `src/app/receipts/new/page.tsx` | función inline con `use server` | crear recepción física, registro informativo o reemplazo correctivo |
+
+No se inventa una acción separada por cada modo de formulario.
+
+---
+
+#### 8. Vista AS-IS — `/receipts`
+
+`ORIGO-ROUTE-009` observa actualmente:
+
+- acceso mediante `requireAppAccess`;
+- permiso solicitado mediante `procurement.receipts`;
+- resolución de sede desde `site_id`, `employee_settings.selected_site_id` o `employees.site_id`;
+- lectura de `inventory_entries` filtrada por sede;
+- preferencia por `source_app = origo`, con fallback cuando la columna no está disponible;
+- límite de cincuenta filas;
+- proveedor, factura, estado, modalidad, razón de emergencia, orden asociada y fechas;
+- conteos de recibidas, solo registro, reversadas y corregidas;
+- vínculo a nueva recepción;
+- corrección y reversión únicamente sobre filas `received` dentro de una ventana observada de treinta minutos.
+
+La página combina historial operativo y acceso a acciones correctivas. Esa combinación no prueba que la misma autoridad deba gobernar lectura, reversión y corrección.
+
+---
+
+#### 9. Estados AS-IS visibles en el historial
+
+El formatter de la página reconoce:
+
+```text
+received
+reversed
+corrected
+recorded
+draft
+cancelled
+```
+
+La creación puede producir además:
+
+```text
+pending_review
+```
+
+Estos valores pertenecen al modelo técnico observado y no se equiparan automáticamente con los estados canónicos de `VPROC-0022`.
+
+---
+
+#### 10. Ventana temporal AS-IS de corrección
+
+El runtime utiliza:
+
+```text
+RECEIPT_ACTION_WINDOW_MINUTES = 30
+```
+
+La ventana habilita visualmente corrección o reversión de una recepción `received` cuando su `created_at` permanece dentro del límite.
+
+Reglas documentales:
+
+1. treinta minutos se registra como comportamiento AS-IS, no como política empresarial aprobada;
+2. `created_at` técnico no se declara equivalente al momento empresarial de recepción;
+3. expiración visual no sustituye autorización ni contrato de corrección;
+4. la política definitiva de corrección pertenece a `ORIGO-AUTH-008` y al contrato de proceso correspondiente.
+
+---
+
+#### 11. Acción AS-IS — `reverseReceipt`
+
+La acción observada:
+
+1. exige usuario autenticado;
+2. recibe `entry_id`, `site_id` y comentario;
+3. exige comentario de reversión;
+4. lee `inventory_entries` por `id`;
+5. comprueba que la fila reporta la misma sede recibida;
+6. exige estado `received`;
+7. exige ventana de treinta minutos abierta;
+8. invoca `origo_reverse_inventory_entry`;
+9. redirige al historial.
+
+No se observa dentro de la propia acción una llamada equivalente a `requireAppAccess`, `checkOperationalSessionPermission` o `has_permission` antes del RPC.
+
+Conclusión limitada:
+
+```text
+CHECK DE PERMISO DE APLICACIÓN EN LA ACCIÓN
+= NO DEMOSTRADO EN LA SUPERFICIE INSPECCIONADA
+```
+
+Esto no demuestra ausencia de protección en RLS/RPC; demuestra que la acción por sí sola no aporta esa evidencia. La suficiencia queda reservada a `ORIGO-AUTH-007`, `ORIGO-AUTH-008` y las auditorías de servidor aplicables.
+
+---
+
+#### 12. Vista AS-IS — `/receipts/new`
+
+`ORIGO-ROUTE-010` observa actualmente:
+
+- acceso mediante `requireAppAccess`;
+- permiso solicitado mediante `procurement.receipts`;
+- sede solicitada por query o sede guardada del empleado;
+- proveedores activos;
+- catálogo de productos inventariables;
+- LOC y posiciones operativas permitidas;
+- órdenes en estados `draft` o `sent` para la sede;
+- presentaciones/unidades de medida;
+- relación producto-proveedor;
+- costos históricos por proveedor/producto;
+- perfiles de inventario, lote y vencimiento;
+- precarga de una orden por `purchase_order_id`;
+- precarga de una recepción original por `correction_entry_id`;
+- borrador UI por `draft_id`;
+- formulario guiado para recepción física o solo registro.
+
+Abrir la página no prueba autoridad suficiente para ejecutar cualquiera de sus mutaciones.
+
+---
+
+#### 13. Modos AS-IS de operación
+
+El formulario distingue dos modos de operación:
+
+```text
+inventory
+record_only
+```
+
+Interpretación observada:
+
+| Modo | Etiqueta funcional | Efecto declarado por UI |
+| --- | --- | --- |
+| `inventory` | Recepción física | registra compra, crea movimientos y aumenta inventario |
+| `record_only` | Solo registro | guarda trazabilidad comercial sin movimientos ni existencias |
+
+Regla crítica:
+
+```text
+RECEPCIÓN REGISTRAL
+!=
+ENTRADA FÍSICA DE INVENTARIO
+```
+
+La separación coincide con la obligación vigente de distinguir si una recepción mueve inventario o es solo registro.
+
+---
+
+#### 14. Modos AS-IS según existencia de orden
+
+El runtime deriva:
+
+```text
+purchase_order_id presente
+→ entry_mode = normal
+
+purchase_order_id ausente
+→ entry_mode = emergency
+```
+
+Una recepción sin OC exige razón de emergencia.
+
+La etiqueta técnica `emergency` se documenta como comportamiento observado; no se interpreta como aprobación canónica de una compra urgente ni como bypass de segregación, monto, presupuesto o aprobación.
+
+---
+
+#### 15. Corrección AS-IS
+
+Cuando existe `correction_entry_id`, `createReceipt` fuerza el modo con inventario y:
+
+1. carga la recepción original;
+2. exige misma sede;
+3. exige estado `received`;
+4. exige ventana temporal abierta;
+5. invoca `origo_reverse_inventory_entry` sobre la original;
+6. crea una nueva recepción;
+7. al final invoca `origo_mark_inventory_entry_corrected` para vincular original y reemplazo.
+
+La secuencia observada contiene varios pasos persistentes.
+
+No se declara atómica ni segura frente a fallo intermedio únicamente por existir esos pasos. `TREQ-ORIGO-003` y el contrato de integración ya cubren la necesidad de evitar una reversión definitiva sin reemplazo correlacionado.
+
+---
+
+#### 16. Autorización observada en la página
+
+Las dos páginas usan:
+
+```text
+RECEIPTS_PERMISSION = procurement.receipts
+```
+
+`requireAppAccess` lo normaliza únicamente agregando el prefijo de aplicación cuando falta:
+
+```text
+procurement.receipts
+→ origo.procurement.receipts
+```
+
+El catálogo canónico vigente registra:
+
+```text
+origo.procurement.receipts
+→ RENAME
+→ origo.procurement.receipts.view
+```
+
+Por tanto:
+
+```text
+PERMISO AS-IS OBSERVADO
+!=
+IDENTIDAD CANÓNICA FINAL DE CONSULTA
+```
+
+La tarea no corrige el código ni inventa los permisos de mutación. `ORIGO-AUTH-004` define consulta y `ORIGO-AUTH-007` define recepción.
+
+---
+
+#### 17. Autorización observada en `createReceipt`
+
+La Server Action revalida autoridad en servidor:
+
+- resuelve sesión operativa con `preferredSiteId = siteId`;
+- en dispositivo compartido usa `checkOperationalSessionPermission`;
+- en carril no compartido ejecuta `has_permission` con `origo.procurement.receipts` y `p_site_id = siteId`;
+- falla cerrado cuando `canReceive` es falso.
+
+La evidencia demuestra revalidación de un permiso AS-IS y de sede en esta acción.
+
+No demuestra que el código de permiso sea la capacidad canónica final ni que una sola capacidad deba autorizar consulta, recepción, corrección y reversión.
+
+---
+
+#### 18. Sede y territorio observados
+
+Las páginas aceptan `site_id` desde query/formulario y también consultan sede guardada del empleado.
+
+`createReceipt` vuelve a resolver la sesión operativa usando esa sede preferida y revalida el permiso con `p_site_id`.
+
+`reverseReceipt` comprueba que la fila pertenece al `site_id` recibido, pero no demuestra dentro de la acción una decisión de permiso equivalente.
+
+Regla:
+
+```text
+site_id recibido
+!=
+sede autorizada
+```
+
+El contrato final debe resolver el territorio desde evidencia autoritativa y el recurso, no por confianza en el parámetro.
+
+---
+
+#### 19. Recurso canónico de consulta
+
+El catálogo vigente define:
+
+```text
+permission = origo.procurement.receipts.view
+resource = PURCHASE_RECEIPT
+locator = receipt_id o filtro
+territory = RECEIPT_DESTINATION
+```
+
+`RECEIPT_DESTINATION` relaciona:
+
+- orden;
+- sede;
+- área receptora;
+- ubicación;
+- productos recibidos.
+
+El receptor es relación auditada, no propietario automático del recurso.
+
+La consulta canónica no concede registrar, revertir ni aprobar recepciones.
+
+---
+
+#### 20. Dispositivo compartido y atribución de actor
+
+`createReceipt` integra:
+
+- `resolveOperationalSession`;
+- `checkOperationalSessionPermission`;
+- `requireSharedDeviceActorSignature`;
+- `attachSharedDeviceActionSignatureTarget`.
+
+La firma registra como metadata, entre otros:
+
+```text
+site_id
+supplier_id
+purchase_order_id
+correction_entry_id
+entry_mode
+receipt_operation_mode
+item_count
+pending_master_data_review
+```
+
+Cuando la firma es requerida, el actor firmado se usa como `created_by` de la recepción y de eventos de costo observados.
+
+La suficiencia final de atribución pertenece también a `ORIGO-AUTH-011`.
+
+---
+
+#### 21. Tablas y recursos consumidos por `createReceipt`
+
+El archivo actual consulta o muta, entre otros:
+
+```text
+employee_settings
+employees
+sites
+suppliers
+products
+product_inventory_profiles
+product_suppliers
+product_uom_profiles
+procurement_supplier_product_costs
+inventory_locations
+inventory_location_positions
+inventory_cost_policies
+purchase_orders
+purchase_order_items
+inventory_entries
+inventory_entry_items
+inventory_movements
+inventory_stock_by_site
+product_cost_events
+product_master_review_requests
+```
+
+La existencia de estas dependencias no transfiere ownership de sus dominios a ORIGO.
+
+---
+
+#### 22. RPC observadas en `createReceipt`
+
+El archivo utiliza:
+
+```text
+has_permission
+origo_reverse_inventory_entry
+origo_mark_inventory_entry_corrected
+upsert_inventory_stock_by_location
+```
+
+La lista registra consumo técnico; no aprueba su implementación, atomicidad, RLS, grants, idempotencia o frontera de dominio.
+
+---
+
+#### 23. Persistencia AS-IS de la cabecera
+
+`createReceipt` inserta una fila en `inventory_entries` con campos observados como:
+
+```text
+site_id
+supplier_id
+supplier_name
+invoice_number
+received_at
+status
+notes
+created_by
+purchase_order_id
+source_app = origo
+entry_mode
+emergency_reason
+```
+
+Existe fallback de inserción cuando columnas más recientes no están disponibles.
+
+Ese fallback se registra como compatibilidad observada, no como contrato canónico de esquema.
+
+---
+
+#### 24. Persistencia AS-IS de líneas
+
+La recepción inserta líneas en `inventory_entry_items` y conserva datos de producto, destino, cantidad, unidad, presentación, conversión, costo, impuestos, referencia de línea de OC, lote, vencimiento y notas según aplique.
+
+La presencia de lote o vencimiento depende del perfil de inventario del producto.
+
+La línea observada puede ser base para trazabilidad, pero no sustituye los contratos propietarios de inventario, ubicaciones o catálogo.
+
+---
+
+#### 25. Efectos físicos AS-IS sobre inventario
+
+Cuando `movesInventory = true`, el runtime observado:
+
+- inserta `inventory_movements` con `movement_type = receipt_in`;
+- lee y actualiza `inventory_stock_by_site`;
+- invoca `upsert_inventory_stock_by_location` para sumar por ubicación;
+- consume `inventory_locations` e `inventory_location_positions`;
+- calcula cantidades posteriores a la recepción.
+
+Esto demuestra que el runtime actual de ORIGO materializa directamente efectos físicos.
+
+El contrato objetivo aprobado de `INT-PROC-002` establece una frontera distinta:
+
+```text
+ORIGO
+→ registra, verifica y acepta recepción
+
+NEXO
+→ materializa entrada, ubicación y custodia física cuando aplica
+```
+
+Por tanto, la escritura física directa se registra como **drift AS-IS a reconciliar**, no como comportamiento objetivo ratificado por esta tarea.
+
+---
+
+#### 26. Efectos AS-IS sobre costos
+
+Cuando mueve inventario, el runtime también:
+
+- consulta `inventory_cost_policies`;
+- calcula costo posterior;
+- actualiza `products.cost`;
+- inserta `product_cost_events` con cantidades y costos antes/después.
+
+La tarea no concluye que esas escrituras sean la frontera económica definitiva.
+
+La conciliación económica canónica de `VPROC-0022` y la integración con NUMERA permanecen separadas.
+
+---
+
+#### 27. Efectos AS-IS sobre la orden de compra
+
+Cuando existe `purchase_order_id`, la acción:
+
+1. carga la orden y comprueba sede/proveedor/estado observado;
+2. acepta normalmente órdenes `draft` o `sent`;
+3. en corrección admite también `received`;
+4. incrementa `purchase_order_items.quantity_received`;
+5. reevalúa si todas las líneas alcanzaron la cantidad ordenada;
+6. cuando todas están recibidas, actualiza la orden a `status = received` y `received_at`.
+
+La lógica se registra como comportamiento AS-IS.
+
+No se equipara automáticamente con recepción parcial, aceptación comercial, reconciliación o lifecycle completo de `VPROC-0022`.
+
+---
+
+#### 28. Handoff AS-IS hacia maestro de datos
+
+Cuando existen solicitudes de producto o presentación pendientes, la recepción puede:
+
+- crear la cabecera con `status = pending_review`;
+- insertar `product_master_review_requests`;
+- relacionarlas con `source_entry_id` y `source_entry_item_id`;
+- diferir los movimientos físicos hasta completar la revisión.
+
+`/product-master-review` es consumidor de ese handoff, pero no se convierte por ello en una tercera vista de recepción.
+
+---
+
+#### 29. Reconciliación con pantallas canónicas
+
+El catálogo ORIGO asigna cuatro pantallas principales a `VPROC-0022`:
+
+| Pantalla | Nombre | Reconciliación con runtime actual |
+| --- | --- | --- |
+| `VSCREEN-0076` | Cola de recepciones | materialización parcial dentro de `/receipts/new`, que lista OC `draft/sent`; no existe cola canónica dedicada observada |
+| `VSCREEN-0077` | Recepción total o parcial | materialización parcial dentro de `/receipts/new` y `createReceipt` |
+| `VSCREEN-0078` | Resolución de diferencias de recepción | cobertura parcial mediante corrección/reversión; no existe superficie dedicada completa observada |
+| `VSCREEN-0079` | Historial y auditoría de abastecimiento | cobertura parcial mediante `/receipts`; no reconstruye por sí sola todo el ciclo canónico |
+
+Resultado:
+
+```text
+PANTALLAS CANÓNICAS DE RECEPCIÓN: 4
+PÁGINAS AS-IS DE RECEPCIÓN: 2
+IDENTIDADES NUEVAS CREADAS: 0
+```
+
+Dos páginas AS-IS pueden cubrir fragmentos de varias pantallas canónicas sin fusionar sus identidades objetivo.
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la tarea inventaría superficies, acciones, modos, tablas, RPC, estados y brechas ya protegidos por requisitos vigentes. No crea una obligación nueva, una política de recepción nueva, una autorización nueva, una transición nueva ni una integración nueva.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para distinguir recepción inventariable de solo registro y evitar duplicidad de efectos;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, cantidades, costos, orden, auditoría y corrección correlacionada;
+- `TREQ-ORIGO-004` para separación del ciclo de compra y recepción;
+- `TREQ-ORIGO-006` a `TREQ-ORIGO-020` para exhaustividad del inventario de rutas, parámetros, guards y drift;
+- `TREQ-AUTH-001`, `TREQ-AUTH-004`, `TREQ-AUTH-010` y `TREQ-AUTH-013` para autorización, consistencia, segregación y protección server-side;
+- requisitos vigentes de integración para el handoff ORIGO → NEXO y la prevención de recepción duplicada.
+
+Esta sección es trazabilidad de cobertura existente, no una actualización del registro.
+
+---
+
+#### 32. Reconciliación con estados canónicos de VPROC-0022
+
+El proceso canónico conserva exactamente nueve estados normales:
+
+```text
+VPROC-0022.RECEIPT_EXPECTED
+→ VPROC-0022.ARRIVAL_REGISTERED
+→ VPROC-0022.PHYSICAL_CHECK_IN_PROGRESS
+→ VPROC-0022.DOCUMENT_CHECK_IN_PROGRESS
+→ VPROC-0022.DIFFERENCE_UNDER_REVIEW
+→ VPROC-0022.ACCEPTANCE_PENDING
+→ VPROC-0022.PUTAWAY_PENDING
+→ VPROC-0022.ECONOMIC_RECONCILIATION_PENDING
+→ VPROC-0022.RECEIPT_RECONCILED
+```
+
+Los estados AS-IS de `inventory_entries` no son alias automáticos de esos estados.
+
+Ejemplos:
+
+```text
+received
+!=
+RECEIPT_RECONCILED
+
+recorded
+!=
+PUTAWAY_PENDING
+
+reversed
+!=
+CCR completo por inferencia
+```
+
+La transición canónica requiere hechos y handoffs que el string técnico por sí solo no demuestra.
+
+---
+
+#### 33. Brechas y propietarios posteriores
+
+| Brecha observada | Riesgo contractual | Propietario exacto | Condición de salida |
+| --- | --- | --- | --- |
+| páginas y acción usan `origo.procurement.receipts` mientras el catálogo normaliza la consulta a `.view` | identidad de permiso AS-IS distinta de la canónica | `ORIGO-AUTH-004`; `ORIGO-AUTH-007` | lectura y recepción usan capacidades canónicas separadas y fail-closed |
+| `reverseReceipt` no demuestra recheck de permiso dentro de la acción | reversión invocable con evidencia de aplicación insuficiente si capas inferiores no bloquean | `ORIGO-AUTH-008`; auditoría server aplicable | acción revalida autoridad exacta o queda demostrada por contrato propietario equivalente |
+| `site_id` llega desde query/formulario | parámetro puede divergir del territorio autorizado | `ORIGO-AUTH-009`; `ORIGO-AUTH-012` | territorio se resuelve/revalida desde contexto y recurso |
+| un solo permiso AS-IS gobierna consulta y recepción | falta segregación entre ver, recibir y corregir | `ORIGO-AUTH-004`; `ORIGO-AUTH-007`; `ORIGO-AUTH-008` | capacidades atómicas quedan definidas y protegidas |
+| ORIGO escribe movimientos, stock y ubicación directamente | runtime invade verdad física que el contrato objetivo entrega a NEXO | `INT-PROC-003`; integración física propietaria | ORIGO emite handoff y NEXO materializa o confirma su verdad física |
+| corrección revierte antes de completar reemplazo y cierre de auditoría | fallo intermedio puede dejar resultado no reconciliado | `ORIGO-AUTH-008`; `INT-PROC-005` | operación correctiva queda atómica o durable/reconciliable |
+| `received` de OC se fija por cantidades técnicas | estado de orden puede confundirse con recepción empresarial completa | `ORIGO-UX-014`; contratos `VPROC-0021/0022` | estado canónico deriva de proceso y evidencia correlacionada |
+| `products.cost` y `product_cost_events` se actualizan desde recepción ORIGO | frontera económica distribuida | integración NUMERA/NEXO aplicable | costo y hecho económico quedan gobernados por owner y contrato explícitos |
+| `VSCREEN-0076..0079` están condensadas en dos páginas | responsabilidades UX distintas quedan fusionadas | `ORIGO-UX-001..016` según matriz de experiencia | prototipo/implementación asigna cada responsabilidad sin inventar IDs |
+| ventana de treinta minutos es constante local | política correctiva codificada sin contrato empresarial demostrado | `ORIGO-AUTH-008` | regla de corrección queda definida canónicamente |
+
+Ninguna brecha queda sin propietario y condición de salida.
+
+---
+
+#### 34. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en su archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada del artefacto. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-origo/main`, archivo propietario, topología, rutas aprobadas, catálogo de procesos/pantallas/permisos/recursos, Registro 04A, contrato de integración y código actual de las dos superficies de recepción. |
+| OPERATIVA | `NOT_EXECUTED` | No se creó, corrigió, reversó ni recibió una compra real; no se ejecutaron flujos desplegados, RLS, RPC, datos productivos ni efectos de inventario. |
+| FÍSICA | `NOT_APPLICABLE` | `ORIGO-AUTH-003` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 35. Criterios de aceptación
+
+- [x] La tarea mantiene exactamente `ORIGO-AUTH-003 — Inventariar vistas de recepción`.
+- [x] La tarea anterior es exactamente `ORIGO-AUTH-002` y la siguiente `ORIGO-AUTH-004`.
+- [x] La topología se conserva como `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`.
+- [x] Se fijaron snapshots verificables de `vento-shell` y `vento-origo`.
+- [x] Se separó recepción de compras y proveedores ya inventariados.
+- [x] Se reconciliaron exactamente dos páginas `receipts` sin duplicados.
+- [x] Se confirmó que no existe handler HTTP específico adicional de recepción en el inventario aprobado.
+- [x] Se inventariaron exactamente dos Server Actions propietarias de recepción.
+- [x] Se distinguieron `inventory` y `record_only`.
+- [x] Se distinguieron `normal` y `emergency` como modos AS-IS.
+- [x] Se registró la ventana AS-IS de treinta minutos sin convertirla en política canónica.
+- [x] Se registró el flujo de corrección y reversión sin declararlo atómico por inferencia.
+- [x] Se registró el check server-side de `createReceipt`.
+- [x] Se registró como no demostrado el recheck de permiso dentro de `reverseReceipt`.
+- [x] Se reconciliaron `origo.procurement.receipts` y `origo.procurement.receipts.view` sin fusionarlos silenciosamente.
+- [x] Se preservó `PURCHASE_RECEIPT` y `RECEIPT_DESTINATION` como contrato de recurso de consulta.
+- [x] Se inventariaron efectos observados sobre inventario, costos y orden.
+- [x] Se documentó el drift entre escrituras físicas ORIGO y la frontera objetivo ORIGO → NEXO.
+- [x] Se inventariaron `VSCREEN-0076`, `VSCREEN-0077`, `VSCREEN-0078` y `VSCREEN-0079`.
+- [x] Se preservaron los nueve estados normales de `VPROC-0022`.
+- [x] Se evitó equiparar estados técnicos con estados empresariales.
+- [x] Todas las brechas tienen propietario y condición de salida.
+- [x] No se creó pantalla, proceso, permiso, estado, ruta, RPC ni identificador nuevo.
+- [x] No se creó ni modificó requisito de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-AUTH-004` queda como siguiente tarea exacta y no se desarrolla aquí.
+
+---
+
+#### 36. Límites
+
+Esta tarea no:
+
+- define permisos finales de consulta;
+- define permisos finales de recepción;
+- define permisos finales de corrección;
+- aprueba `origo.procurement.receipts` como identidad final;
+- crea un permiso nuevo;
+- cambia la ventana temporal de corrección;
+- corrige `reverseReceipt`;
+- corrige `createReceipt`;
+- cambia RLS o RPC;
+- mueve ownership de inventario a ORIGO;
+- mueve ownership económico a ORIGO;
+- cambia NEXO o NUMERA;
+- crea una recepción real;
+- revierte una recepción real;
+- modifica stock, LOC, posiciones, costos u órdenes;
+- cambia rutas o navegación;
+- ejecuta `sync-navigation`;
+- modifica `vento-origo`;
+- modifica Supabase;
+- crea migraciones, funciones, triggers, Storage o datos;
+- desarrolla `ORIGO-AUTH-004`.
+
+---
+
+#### 37. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-002 — Inventariar vistas de proveedores`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-003 — Inventariar vistas de recepción`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-004 — Definir permisos de consulta`
+
 ### [ ] ORIGO-AUTH-004 — Definir permisos de consulta
 ### [ ] ORIGO-AUTH-005 — Definir permisos de creación
 ### [ ] ORIGO-AUTH-006 — Definir permisos de aprobación
