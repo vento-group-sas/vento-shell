@@ -64,20 +64,18 @@ export function validateE3TransitionClosureSources({
       || /^SHELL-[A-Z]+-\d{3}$/u.test(active.previous_task_id ?? '')
     );
   const priorityLaneActive = active.generated_from === 'execution-route.json'
-    && active.route_id === 'NEXO-REMISSIONS-001'
-    && /^PRIORITY-NEXO-REMISSIONS-001-STAGE-\d{3}$/u.test(active.sequence_id ?? '')
-    && (
-      active.previous_task_id === 'SHELL-PKG-008'
-      || /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}(?:::[A-Z0-9_-]+)?$/u.test(
-        active.previous_task_id ?? '',
-      )
+    && active.route_id !== 'NORMAL-CANONICAL-FLOW-001'
+    && /^[A-Z][A-Z0-9-]+-001$/u.test(active.route_id ?? '')
+    && /^PRIORITY-[A-Z0-9-]+-STAGE-\d{3}$/u.test(active.sequence_id ?? '')
+    && /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}(?:::[A-Z0-9_-]+)?$/u.test(
+      active.previous_task_id ?? '',
     );
   const normalCanonicalFlowActive = active.generated_from === 'execution-route.json'
     && active.route_id === 'NORMAL-CANONICAL-FLOW-001'
     && /^PHASE-\d{2}-[A-Z0-9-]+$/u.test(active.sequence_id ?? '')
     && /^[A-Z][A-Z0-9]*(?:-[A-Z0-9]+)+-\d{3}$/u.test(active.previous_task_id ?? '');
   if (!e3StillActive && !hSequenceActive && !priorityLaneActive && !normalCanonicalFlowActive) {
-    fail('active-sequence.json debe reservar H desde E3, haber avanzado por H-SHARED-*, proyectar el flujo canónico integral o proyectar el carril NEXO aprobado después de sus prerrequisitos E3/H.');
+    fail('active-sequence.json debe reservar H desde E3, haber avanzado por H-SHARED-*, proyectar el flujo canónico integral o proyectar un carril prioritario aprobado sin invalidar el cierre E3/H.');
   }
 
   requireOrdered(supa016, [

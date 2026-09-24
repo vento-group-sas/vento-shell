@@ -29,14 +29,14 @@
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
 | Última tarea aprobada | **ORIGO-AUTH-010 — Proteger precios y datos sensibles** |
-| Tarea actual | **ORIGO-AUTH-011 — Registrar actor de recepción** |
+| Tarea actual | **PASS-UX-001 — Inventariar pantallas actuales de cliente** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-012 — Integrar contexto operativo donde aplique** |
-| Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 44 de 65 aprobadas; ORIGO-AUTH-011 pendiente** |
+| Siguiente tarea | **PASS-UX-002 — Diseñar inicio de puntos y beneficios** |
+| Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE** |
+| Progreso del bloque | **CARRIL PASS: 0 de 13 aprobadas; PASS-UX-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-AUTH-011** |
+| Carril documental | **ACTIVO — PASS-UX-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -45,8 +45,8 @@
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
 | Última aprobada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles |
-| Tarea actual | `ORIGO-AUTH-011` — Registrar actor de recepción — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique |
+| Tarea actual | `PASS-UX-001` — Inventariar pantallas actuales de cliente — **NO INICIADA** |
+| Siguiente tarea | `PASS-UX-002` — Diseñar inicio de puntos y beneficios |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 44 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-011** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 0 DE 13 APROBADAS — ACTUAL PASS-UX-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -95,11 +95,11 @@
 ORIGO-AUTH-010 — Proteger precios y datos sensibles
         ↓
 TAREA ACTUAL
-ORIGO-AUTH-011 — Registrar actor de recepción
+PASS-UX-001 — Inventariar pantallas actuales de cliente
         ↓
 SIGUIENTE TAREA RESERVADA
-ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
+PASS-UX-002 — Diseñar inicio de puntos y beneficios
         ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 44 de 65 tareas aprobadas
+CARRIL PASS — 0 de 13 tareas aprobadas
 ```

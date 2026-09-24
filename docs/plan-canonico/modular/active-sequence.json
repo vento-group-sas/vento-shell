@@ -1,37 +1,50 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "generated_from": "execution-route.json",
-  "route_id": "NORMAL-CANONICAL-FLOW-001",
-  "sequence_id": "PHASE-06-FOGO-ORIGO",
-  "block_code": "BLOQUES L Y M",
-  "block_title": "FOGO y ORIGO",
+  "route_id": "PASS-LOYALTY-001",
+  "sequence_id": "PRIORITY-PASS-LOYALTY-001-STAGE-001",
+  "block_code": "CARRIL PASS",
+  "block_title": "PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE",
   "previous_task_id": "ORIGO-AUTH-010",
   "latest_treq_task_id": "NEXO-UX-025",
-  "handoff_task_id": "PULSO-UX-001",
-  "handoff_sequence_id": "PHASE-07-PULSO",
-  "segments": [
-    {
-      "prefix": "ORIGO-AUTH",
-      "from": 11,
-      "to": 15
-    },
-    {
-      "prefix": "ORIGO-UX",
-      "from": 1,
-      "to": 16
-    }
+  "handoff_task_id": "PASS-INT-001",
+  "handoff_sequence_id": "PRIORITY-PASS-LOYALTY-001-STAGE-002",
+  "task_ids": [
+    "PASS-UX-001",
+    "PASS-UX-002",
+    "PASS-UX-003",
+    "PASS-UX-004",
+    "PASS-UX-005",
+    "PASS-UX-006",
+    "PASS-UX-007",
+    "PASS-UX-008",
+    "PASS-UX-009",
+    "PASS-UX-010",
+    "PASS-UX-011",
+    "PASS-UX-012",
+    "PASS-UX-013"
   ],
+  "virtual_tasks": [],
   "block_progress": {
-    "total_tasks": 65,
-    "approved_tasks": 44,
-    "pending_tasks": 21
+    "total_tasks": 13,
+    "approved_tasks": 0,
+    "pending_tasks": 13
   },
-  "route_progress": {
+  "priority_stage": {
+    "order": 1,
+    "stage_id": "PASS_CUSTOMER_EXPERIENCE",
+    "total_stages": 2
+  },
+  "return_policy": "RETURN_TO_NORMAL_AFTER_PRIORITY_COMPLETION",
+  "priority_route_complete": false,
+  "post_priority_route": {
+    "route_id": "NORMAL-CANONICAL-FLOW-001",
+    "sequence_id": "PHASE-06-FOGO-ORIGO",
+    "first_pending_task_id": "ORIGO-AUTH-011",
     "covered_tasks": 1596,
     "pending_tasks": 283,
     "deferred_pending_tasks": 11,
     "total_stages": 32,
     "active_stage": 25
-  },
-  "selected_route_id": "NORMAL-CANONICAL-FLOW-001"
+  }
 }

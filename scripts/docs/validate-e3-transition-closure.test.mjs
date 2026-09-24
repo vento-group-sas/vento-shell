@@ -105,6 +105,20 @@ test('acepta avanzar el carril después de aprobar un control virtual con guione
   assert.equal(result.handoffTask, 'SHELL-AUD-001');
 });
 
+
+test('acepta una prioridad documental PASS derivada de execution-route', () => {
+  const sources = validSources();
+  sources.activeSequence = JSON.stringify({
+    generated_from: 'execution-route.json',
+    route_id: 'PASS-LOYALTY-001',
+    sequence_id: 'PRIORITY-PASS-LOYALTY-001-STAGE-001',
+    previous_task_id: 'ORIGO-AUTH-009',
+    handoff_task_id: 'PASS-INT-001',
+  });
+  const result = validateE3TransitionClosureSources(sources);
+  assert.equal(result.handoffTask, 'SHELL-AUD-001');
+});
+
 test('acepta continuar por el flujo canónico integral sin carril prioritario', () => {
   const sources = validSources();
   sources.activeSequence = JSON.stringify({

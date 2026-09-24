@@ -1,40 +1,10 @@
 {
   "schema_version": 1,
-  "route_id": "NEXO-REMISSIONS-001",
-  "route_status": "SUSPENDED_BY_EXPLICIT_NORMAL_FLOW",
-  "active": false,
-  "superseded_by": "NORMAL-CANONICAL-FLOW-001",
-  "state_semantics": "Registro histórico de decisiones del carril; no gobierna continuidad, no aprueba tareas globales y no habilita paquetes físicos.",
-  "conditional_scopes": {
-    "CONDITIONAL_DESIGN_ARTIFACTS": {
-      "decision_state": "APROBADA",
-      "applicable_groups": [
-        "PRODUCTION_CONDITIONAL",
-        "PRINTING_CONDITIONAL",
-        "EVIDENCE_CONDITIONAL",
-        "NOTIFICATIONS_CONDITIONAL",
-        "TECHNOLOGY_SUPPORT_CONDITIONAL",
-        "INFORMATION_GOVERNANCE_CONDITIONAL",
-        "MASTER_DATA_ANALYTICS_CONDITIONAL",
-        "CONTINUITY_CONDITIONAL"
-      ],
-      "not_applicable_groups": [
-        "QUEUE_CONDITIONAL"
-      ]
-    },
-    "CONDITIONAL_IMPLEMENTATION_SCOPE": {
-      "decision_state": "APROBADA",
-      "applicable_groups": [
-        "PRODUCTION_LINK_IMPLEMENTATION",
-        "PHYSICAL_NORMALIZATION_CONDITIONAL"
-      ],
-      "not_applicable_groups": [
-        "EXTERNAL_INTEGRATION_CONDITIONAL"
-      ]
-    }
-  },
-  "stage_controls": {
-    "CONDITIONAL_IMPLEMENTATION_EXECUTION": "NO INICIADA"
-  },
+  "route_id": "PASS-LOYALTY-001",
+  "route_status": "ACTIVE_DOCUMENTATION_PRIORITY",
+  "active": true,
+  "state_semantics": "La prioridad reordena únicamente documentación PASS; no aprueba tareas por inferencia, no inicia packages, no muta Supabase y no altera el alcance final del plan.",
+  "conditional_scopes": {},
+  "stage_controls": {},
   "instance_states": {}
 }

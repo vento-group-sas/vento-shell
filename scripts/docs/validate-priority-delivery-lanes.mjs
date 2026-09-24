@@ -313,8 +313,8 @@ export function validatePriorityDeliveryLaneData({
   if (routePolicy?.route_selection_source !== 'execution-route.json') {
     errors.push('la selección de ruta debe derivarse de execution-route.json.');
   }
-  if (routePolicy?.priority_route_id !== 'NEXO-REMISSIONS-001') {
-    errors.push('la ruta prioritaria debe ser NEXO-REMISSIONS-001.');
+  if (typeof routePolicy?.priority_route_id !== 'string' || !routePolicy.priority_route_id) {
+    errors.push('priority_route_id debe identificar un carril prioritario registrado.');
   }
   if (routePolicy?.canonical_documentation_continues !== true
     || routePolicy?.final_plan_scope_unchanged !== true) {
@@ -341,6 +341,11 @@ export function validatePriorityDeliveryLaneData({
     if (lane.supabase_repository !== 'vento-shell') {
       errors.push(`${lane.lane_id}: Supabase deberá permanecer en vento-shell.`);
     }
+    const routeMode = lane.route_mode ?? 'FULL_PACKAGE';
+    if (!['FULL_PACKAGE', 'DOCUMENTATION_PRIORITY'].includes(routeMode)) {
+      errors.push(`${lane.lane_id}: route_mode no permitido ${routeMode}.`);
+    }
+    if (routeMode === 'FULL_PACKAGE') {
     if (lane.package_gate !== 'E5-GATE-008') {
       errors.push(`${lane.lane_id}: package_gate debe ser E5-GATE-008.`);
     }
@@ -352,6 +357,16 @@ export function validatePriorityDeliveryLaneData({
     }
     if (!equalArray(lane.package_definition_tasks ?? [], EXPECTED_PACKAGE_TASKS)) {
       errors.push(`${lane.lane_id}: debe conservar DELIV-PKG-001 a DELIV-PKG-025.`);
+    }
+
+    } else {
+      if ((lane.package_definition_tasks ?? []).length > 0
+        || lane.package_gate != null
+        || (lane.execution_cycle ?? []).length > 0
+        || lane.completion_task != null
+        || (lane.implementation_execution_order ?? []).length > 0) {
+        errors.push(`${lane.lane_id}: DOCUMENTATION_PRIORITY no puede declarar package gate, execution cycle, completion task ni implementation order.`);
+      }
     }
     if (!Array.isArray(lane.excluded_from_closure)
       || lane.excluded_from_closure.length === 0) {
@@ -416,6 +431,7 @@ export function validatePriorityDeliveryLaneData({
       }
     }
 
+    if (routeMode === 'FULL_PACKAGE') {
     if (!equalArray(
       lane.implementation_execution_order ?? [],
       EXPECTED_IMPLEMENTATION_ORDER,
@@ -490,6 +506,35 @@ export function validatePriorityDeliveryLaneData({
       errors.push(
         `${lane.lane_id}: CI, E5-GATE-001..008, SHELL-CI-020 e implementación están fuera de orden.`,
       );
+    }
+
+
+    } else {
+      const forbiddenCollections = [
+        lane.conditional_artifacts ?? [],
+        lane.conditional_implementation_artifacts ?? [],
+        lane.execution_prerequisite_artifacts ?? [],
+        lane.implementation_artifacts ?? [],
+        lane.post_package_artifacts ?? [],
+        lane.post_implementation_artifacts ?? [],
+      ];
+      if (forbiddenCollections.some((collection) => collection.length > 0)) {
+        errors.push(`${lane.lane_id}: DOCUMENTATION_PRIORITY solo admite required_task_artifacts y deferred_but_preserved.`);
+      }
+      const expectedStageSources = requiredIds.map(
+        (id) => `required_task_artifacts.${id}`,
+      );
+      const stages = lane.ordered_execution_stages ?? [];
+      const expectedOrders = expectedStageSources.map((_, index) => index + 1);
+      if (!equalArray(stages.map((stage) => stage.order), expectedOrders)) {
+        errors.push(`${lane.lane_id}: DOCUMENTATION_PRIORITY debe numerar sus etapas desde 1 sin huecos.`);
+      }
+      if (!equalArray(stages.map((stage) => stage.task_source), expectedStageSources)) {
+        errors.push(`${lane.lane_id}: DOCUMENTATION_PRIORITY debe seguir exactamente sus required_task_artifacts.`);
+      }
+      if (stages.some((stage) => !stage.stage_id || !stage.rule)) {
+        errors.push(`${lane.lane_id}: cada etapa documental debe declarar stage_id y rule.`);
+      }
     }
 
     if (lane.lane_id === 'NEXO-REMISSIONS-001') {
@@ -605,6 +650,15 @@ export function validatePriorityDeliveryLaneData({
     if (unknownTasks.length) {
       errors.push(`${lane.lane_id}: tareas inexistentes: ${unknownTasks.join(', ')}.`);
     }
+  }
+
+  const configuredPriorityLane = (data.lanes ?? []).find(
+    (lane) => lane.lane_id === routePolicy?.priority_route_id,
+  );
+  if (!configuredPriorityLane) {
+    errors.push('implementation_route_policy.priority_route_id debe existir en lanes.');
+  } else if (configuredPriorityLane.active !== true || configuredPriorityLane.status === 'SUSPENDED') {
+    errors.push(`${configuredPriorityLane.lane_id} debe estar activo mientras figure como priority_route_id.`);
   }
 
   const retiredLane = (data.lanes ?? []).find(

@@ -331,10 +331,15 @@ export function resolvePriorityRoute({ selector, lanes, progress, taskMap }) {
   };
 }
 
+const SUPPORTED_PRIORITY_RETURN_POLICIES = new Set([
+  'RETURN_TO_NORMAL_AFTER_PRIORITY_CERTIFICATION',
+  'RETURN_TO_NORMAL_AFTER_PRIORITY_COMPLETION',
+]);
+
 export function applyPriorityReturnPolicy(selector, priorityConfig, normalConfig) {
   if (
     priorityConfig.priority_route_complete !== true
-    || selector.return_policy !== 'RETURN_TO_NORMAL_AFTER_PRIORITY_CERTIFICATION'
+    || !SUPPORTED_PRIORITY_RETURN_POLICIES.has(selector.return_policy)
   ) {
     const firstSegment = normalConfig.segments?.[0];
     return {

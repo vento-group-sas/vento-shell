@@ -489,7 +489,8 @@ export function physicalLaneSummary(implementationControl, { limit = 12 } = {}) 
   };
 }
 function documentaryLaneSummary(tasks, implementationControl) {
-  const currentId = implementationControl?.documentary?.taskId ?? tasks[0]?.id ?? null;
+  const priorityCurrent = tasks.find((task) => task.priorityRoute === true) ?? null;
+  const currentId = priorityCurrent?.id ?? implementationControl?.documentary?.taskId ?? tasks[0]?.id ?? null;
   const currentIndex = tasks.findIndex(({ id }) => id === currentId);
   const current = currentIndex >= 0 ? tasks[currentIndex] : tasks[0] ?? null;
   const next = currentIndex >= 0 ? tasks[currentIndex + 1] ?? null : tasks[1] ?? null;
@@ -576,6 +577,7 @@ export function operationalActionSummary({
   const correction = corrections[0] ?? null;
   const documentary = documentaryLaneSummary(tasks, implementationControl).current;
   const packageExecution = readiness?.registry?.package_execution ?? null;
+  const priorityDocumentation = tasks.some((task) => task.priorityRoute === true);
   const packageCurrent = packageExecution?.current ?? null;
   const packageRecord = packageCurrent
     ? readiness.registry.packages.find(({ package_id: packageId }) => packageId === packageCurrent.package_id) ?? null
@@ -587,6 +589,7 @@ export function operationalActionSummary({
     packageExecution,
     packageCurrent,
     packageRecord,
+    priorityDocumentation,
     physical: physicalLaneSummary(implementationControl).current,
     physicalSet: physicalLaneSummary(implementationControl).actionable,
   };
@@ -625,6 +628,16 @@ function renderCorrectionAction(action) {
 
 function renderPackageAction(action) {
   const current = action.packageCurrent;
+
+  if (action.priorityDocumentation) {
+    return [
+      '### 2. Package frontier preservada — prioridad documental activa',
+      '',
+      '- **Acción ahora:** `NO_INICIAR_PACKAGE_GATE_DURANTE_DOCUMENTATION_PRIORITY`.',
+      '- **Primary preservado:** ' + (current?.package_id ?? 'NINGUNO') + '.',
+      '- **Regla:** la frontier no se borra, no se marca completa y se reevaluará contra el último main al terminar la prioridad documental.',
+    ];
+  }
 
   if (!current) {
     return [
@@ -709,6 +722,14 @@ function renderDocumentaryAction(action) {
 }
 
 function renderPhysicalAction(action) {
+  if (action.priorityDocumentation) {
+    return [
+      '### 4. Implementación física preservada — prioridad documental activa',
+      '',
+      '- **Acción ahora:** NO_INICIAR_IMPLEMENTACION_FISICA_DURANTE_DOCUMENTATION_PRIORITY.',
+      '- **Regla:** las instancias existentes conservan su estado, pero esta ruta documental no autoriza advance, CI022, piloto ni mutación física.',
+    ];
+  }
   const physicalSet = Array.isArray(action.physicalSet)
     ? action.physicalSet
     : action.physical ? [action.physical] : [];
@@ -754,12 +775,14 @@ export function renderOperationalActionCenter(tasks, implementationControl, corr
     readiness,
   });
   const checkoutPriority = action.correction
-    ? `terminar \`${action.correction.correction_id}\`; este checkout ya pertenece a esa corrección.`
-    : action.packageCurrent
-      ? `ejecutar \`${action.packageCurrent.next_action.type}\` sobre \`${action.packageCurrent.next_action.target}\`.`
-      : action.documentary
-        ? `desarrollar \`${action.documentary.id}\`.`
-        : 'no existe trabajo pendiente materializado.';
+    ? 'terminar ' + action.correction.correction_id + '; este checkout ya pertenece a esa corrección.'
+    : action.priorityDocumentation && action.documentary
+      ? 'desarrollar ' + action.documentary.id + ' dentro de la priority lane documental.'
+      : action.packageCurrent
+        ? 'ejecutar ' + action.packageCurrent.next_action.type + ' sobre ' + action.packageCurrent.next_action.target + '.'
+        : action.documentary
+          ? 'desarrollar ' + action.documentary.id + '.'
+          : 'no existe trabajo pendiente materializado.';
   return [
     '## 🚦 QUÉ HACER AHORA — SIN INTERPRETAR NI ELEGIR',
     '',
@@ -784,9 +807,10 @@ export function renderDualLaneOverview(tasks, route, active, workTopology, imple
   const approvedTasks = Math.max(0, totalTasks - tasks.length);
   const proposedTasks = tasks.filter(({ state }) => state === 'PROPUESTA PARA APROBACIÓN').length;
   const rejectedTasks = tasks.filter(({ state }) => state === 'RECHAZADA').length;
-  const activeTaskId = active.segments?.[0]
-    ? `${active.segments[0].prefix}-${String(active.segments[0].from).padStart(3, '0')}`
-    : implementationControl?.documentary?.taskId ?? 'NINGUNA';
+  const activeTaskId = (active.task_ids ?? []).find((id) => !id.includes('::'))
+    ?? (active.segments?.[0]
+      ? active.segments[0].prefix + '-' + String(active.segments[0].from).padStart(3, '0')
+      : implementationControl?.documentary?.taskId ?? 'NINGUNA');
   const physicalCurrent = physical.current;
   const physicalNext = physical.next;
   const documentaryCurrent = documentary.current;
@@ -980,7 +1004,30 @@ export function syncPendingTaskContext({
   const outputPath = path.join(baseDir, OUTPUT);
   const route = JSON.parse(fs.readFileSync(path.join(baseDir, 'continuity-route.json'), 'utf8'));
   const active = JSON.parse(fs.readFileSync(path.join(baseDir, 'active-sequence.json'), 'utf8'));
-  const tasks = orderPendingTasksByRoute(readCanonicalTasks(baseDir), route);
+  const normalTasks = orderPendingTasksByRoute(readCanonicalTasks(baseDir), route);
+  const priorityIds = active.route_id !== 'NORMAL-CANONICAL-FLOW-001'
+    ? (active.task_ids ?? []).filter((id) => !id.includes('::'))
+    : [];
+  const byId = new Map(normalTasks.map((task) => [task.id, task]));
+  const priorityTasks = priorityIds.map((id, index) => {
+    const task = byId.get(id);
+    if (!task) throw new Error('La priority lane referencia una tarea documental no pendiente o inexistente: ' + id + '.');
+    return {
+      ...task,
+      priorityRoute: true,
+      routePredecessorId: index === 0 ? active.previous_task_id : priorityIds[index - 1],
+      stageOrder: active.priority_stage?.order ?? 1,
+      sequenceId: active.sequence_id,
+      blockCode: active.block_code,
+      blockTitle: active.block_title,
+      activationState: 'ACTIVE',
+    };
+  });
+  const prioritySet = new Set(priorityIds);
+  const tasks = [
+    ...priorityTasks,
+    ...normalTasks.filter((task) => !prioritySet.has(task.id)),
+  ];
   const workTopology = resolveTaskWorkTopology({ root });
   const implementationControl = deriveImplementationControl({ root, workTopology });
   const correctionControl = loadValidatedCorrectionControl({ root });

@@ -5,6 +5,7 @@ import test from 'node:test';
 import {
   buildFoundationEvidenceRef,
   derivePackageExecutionRequirements,
+  discoverCanonicalPackageIds,
   evaluateCapability,
   evaluatePhysicalDependencies,
   evaluatePackageDeploymentEnvironment,
@@ -363,6 +364,23 @@ test('una decisión empresarial suspendida bloquea la capacidad especial', () =>
   const decisions = result.conditions.find(({ id }) => id === 'NO_OPEN_CRITICAL_DECISIONS');
   assert.equal(decisions.status, 'FAIL');
   assert.equal(result.capability_ready, false);
+});
+
+test('una DOCUMENTATION_PRIORITY no se registra como package especial', () => {
+  const ids = discoverCanonicalPackageIds(process.cwd(), {
+    lanes: [
+      {
+        lane_id: 'TEST-PACKAGE-001',
+        route_mode: 'FULL_PACKAGE',
+      },
+      {
+        lane_id: 'PASS-LOYALTY-001',
+        route_mode: 'DOCUMENTATION_PRIORITY',
+      },
+    ],
+  });
+  assert.equal(ids.includes('TEST-PACKAGE-001'), true);
+  assert.equal(ids.includes('PASS-LOYALTY-001'), false);
 });
 
 test('un package especial canónico sin mapping explícito bloquea write/check', () => {

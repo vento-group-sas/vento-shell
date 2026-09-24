@@ -985,11 +985,13 @@ Reglas obligatorias:
 
 1. la fuente estructurada será `priority-delivery-lanes.json`;
 2. `execution-route.json` registrará exactamente una ruta seleccionada y
-   `priority-route-progress.json` conservará controles e instancias por
-   `package_id`; antes de iniciar trabajo deberá declararse una sola ruta:
-   si la prioridad activa es remisiones NEXO se seguirá
-   `NEXO-REMISSIONS-001`; en cualquier otro caso se seguirá
-   `NORMAL_CANONICAL_FLOW`;
+   `priority-route-progress.json` conservará el progreso de la ruta prioritaria;
+   antes de iniciar trabajo deberá declararse una sola ruta: si selecciona un
+   carril activo registrado en `priority-delivery-lanes.json`, se seguirá su
+   `ordered_execution_stages`; si selecciona `NORMAL-CANONICAL-FLOW-001`,
+   se seguirá `NORMAL_CANONICAL_FLOW`. Un carril
+   `DOCUMENTATION_PRIORITY` solo reordena documentación canónica y jamás
+   concede por sí mismo package gate, autorización física, CI, piloto o cierre;
 3. el flujo normal se deriva de `continuity-route.json`; el build descubre las
    tareas de cada familia, selecciona la primera etapa incompleta y regenera
    `active-sequence.json`;
@@ -1052,6 +1054,15 @@ Reglas obligatorias:
 La ejecución de un carril nunca sustituye la aprobación del plan completo. Su
 propósito es validar una capacidad vertical reutilizable y devolver evidencia,
 defectos y contratos comprobados al desarrollo normal.
+23. un carril `DOCUMENTATION_PRIORITY` podrá adelantar únicamente tareas cuya
+    definición canónica sea documental; toda tarea con gate físico posterior,
+    incluida `PASS-QA-001/002` con `POST_E5_PACKAGE`, permanecerá preservada
+    hasta su fase propietaria;
+24. mientras un carril documental prioritario esté activo, una package frontier
+    preexistente podrá conservarse materializada pero no se iniciará por
+    inferencia ni se marcará completada; se reevaluará contra el último `main`
+    cuando termine o cambie la prioridad.
+
 <!-- PRIORITY-PACKAGE-PROTOCOL:END -->
 
 <!-- APPLICATION-CLOSURE-REVALIDATION:PROTOCOL:START -->
