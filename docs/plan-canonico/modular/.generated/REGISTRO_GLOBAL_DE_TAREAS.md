@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1296** |
+| Aprobadas | **1297** |
 | En propuesta | **0** |
-| No iniciadas | **300** |
+| No iniciadas | **299** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.20% (1296/1596)** |
+| Porcentaje de completamiento | **81.27% (1297/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **300** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1197** |
+| ⏸ NO_EVALUADA | **299** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1198** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-UX-008` — Mostrar receta resumida para operación | ✅ APROBADA |
-| Tarea actual | `FOGO-UX-009` — Separar recetario operativo y administración de recetas | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-UX-010` — Registrar cantidades, desperdicio y resultado | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-UX-009` — Separar recetario operativo y administración de recetas | ✅ APROBADA |
+| Tarea actual | `FOGO-UX-010` — Registrar cantidades, desperdicio y resultado | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-UX-011` — Diseñar correcciones sin alterar historial | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1074,7 +1074,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-006` | Diseñar producción parcial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-007` | Diseñar finalización de lote | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-008` | Mostrar receta resumida para operación | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-009` | Separar recetario operativo y administración de recetas | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-009` | Separar recetario operativo y administración de recetas | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-010` | Registrar cantidades, desperdicio y resultado | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-011` | Diseñar correcciones sin alterar historial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-012` | Conectar consumo de insumos con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
