@@ -1729,7 +1729,521 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-005 — Diseñar redención visible`
-### [ ] PASS-UX-005 — Diseñar redención visible
+### ✅ PASS-UX-005 — Diseñar redención visible
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-004 — Diseñar acumulación visible
+**Tarea siguiente:** PASS-UX-006 — Diseñar historial
+**Tipo de tarea:** documental; diseño objetivo de creación, confirmación y presentación de la intención de redención de cliente en `VSCREEN-0110 — Ticket o QR de redención`, preservando la validación y consumo operativo de `VSCREEN-0086 — Redención de puntos o beneficios` en PULSO; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo de redención visible de PASS para que el cliente pueda seleccionar una recompensa elegible, revisar el efecto esperado, confirmar la creación de una intención de redención y recibir un ticket o QR de un solo uso con estado y vigencia visibles, sin confundir la creación del ticket con el consumo efectivo del beneficio.
+
+La tarea diseña `VSCREEN-0110 — Ticket o QR de redención` como superficie de cliente asociada a `VPROC-0045::STEP-CREATE_REDEMPTION_INTENT — Crear ticket de redención` y la entrega a `VSCREEN-0086 — Redención de puntos o beneficios`, donde PULSO ejecuta la validación y consumo dentro de la operación comercial.
+
+El resultado fija semántica, flujo, jerarquía de confirmación, credencial visible, vigencia, certeza, protección frente a reintentos, límites de presentación y handoffs. No implementa la redención, no define el contrato físico PULSO → PASS y no absorbe la taxonomía completa de estados de `PASS-UX-009`.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-004`, que entrega:
+
+- la regla de que una interfaz PASS solo puede afirmar un efecto empresarial después de confirmación autoritativa;
+- separación entre resultado confirmado, saldo proyectado y feedback de interfaz;
+- prohibición de fabricar éxito desde cálculo local, caché, refresh, replay o reintento;
+- obligación de reconciliar resultados ambiguos antes de presentar un efecto nuevo;
+- preservación de PULSO como ejecutor de la operación comercial relacionada.
+
+Se conserva además la base aprobada de `PASS-UX-003`:
+
+- el QR personal identifica al cliente y no es un ticket de redención;
+- presentar el Vento ID no autoriza canje, gasto de puntos ni efecto comercial;
+- el consumidor debe resolver y validar identidad por servidor bajo su propio contexto.
+
+La frontera de esta tarea es exclusivamente la experiencia visible de creación y presentación de la intención de redención. No diseña el catálogo completo de recompensas, el historial, la taxonomía completa pendiente/usado/cancelado, el copy final de errores, la navegación global, la estrategia offline completa ni la integración transaccional detallada.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla PASS primaria | `VSCREEN-0110 — Ticket o QR de redención` |
+| Aplicación propietaria de la experiencia cliente | `pass` |
+| Proceso | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Paso PASS primario | `VPROC-0045::STEP-CREATE_REDEMPTION_INTENT — Crear ticket de redención` |
+| Rol PASS | `OWNER_WORKSPACE` que prepara y presenta una intención de redención |
+| Pantalla PULSO relacionada | `VSCREEN-0086 — Redención de puntos o beneficios` |
+| Paso PULSO relacionado | `VPROC-0045::STEP-REDEEM_LOYALTY_VALUE — Redimir puntos o beneficios` |
+| Rol PULSO | `SUPERVISION_SURFACE` que valida y consume una redención autorizada dentro de la venta |
+| Pantalla de origen relacionada | `VSCREEN-0109 — Catálogo de beneficios y recompensas` |
+| Pantalla de auditoría posterior | `VSCREEN-0111 — Historial de puntos y redenciones` |
+| Superficies AS-IS de referencia | `RedeemModal`, `SuccessModal`, `QrPendingCard`, `QrFullscreenModal` y `RedemptionCard` embebidos en experiencias de fidelización |
+| Estado físico | sin instancia propia; contrato documental `DEFINE_ONCE` |
+
+`PASS-UX-005` no crea una nueva identidad `VSCREEN-*` y no convierte PASS en la superficie operativa de consumo. PASS crea y presenta la intención; PULSO valida y aplica su resultado autorizado.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot observado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` | `ed3d9ae995b4bf429f5e998cca23d0e175f27e70` | plan, continuidad, topología, ownership, catálogo de pantallas, 04A PASS y validadores |
+| archivo propietario de PASS | blob `5d5eeb4f67264af97876adf113e1c702e6c48395` | base remota con `PASS-UX-003` aprobada y marcadores reservados posteriores |
+| `PASS-UX-004_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `2152a678457b0e09a1fd3d74dd1b19b80819b7dfda896a4540ca69187c6787b9` | base documental inmediata aprobada por el usuario y todavía pendiente de publicación |
+| repositorio PASS accesible `carlosibarraariza/vento-pass` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS verificable |
+| `src/components/vento/RedeemModal.tsx` | blob `318e11f3d9fb532bb5c21e14b9e98c8a6cd930eb` | confirmación AS-IS y cálculo local de puntos restantes |
+| `src/components/vento/SuccessModal.tsx` | blob `2dc0479632def321af51781217a8b5c7a3d9a2ce` | mensaje AS-IS de éxito y presentación inicial del QR |
+| `src/components/vento/QrPendingCard.tsx` | blob `062e1b3497fe98a60eedb1439fbd95fab1935540` | presentación AS-IS de QR pendiente |
+| `src/components/vento/QrFullscreenModal.tsx` | blob `d195cc848d5b64a57cdd0a5b2a8865ff90bb8f86` | presentación ampliada AS-IS del ticket |
+| `src/components/vento/RedemptionCard.tsx` | blob `cdd598ce60cb293d474ae8d276e957a6b887f2ce` | labels AS-IS de pendiente, usado y cancelado |
+| `src/hooks/useLoyaltyRedemptions.ts` | blob `8ed79b6ddb2070a870ab9cfd286cc1e120a647c6` | shape AS-IS de redenciones y actualización Realtime |
+| `src/utils/redemption.ts` | blob `845e4b33ba442bef12c40b8846c3730cfbe71319` | flujo AS-IS no atómico, generación cliente del QR y composición de redención + ledger |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura de prueba vigente reutilizada sin modificación |
+| catálogo proceso-pantalla canónico | blob `742ead71e5fc5c4ae85a3cb6a00feb858ba8c2a0` | identidades de `VSCREEN-0110`, `VSCREEN-0086` y pasos de `VPROC-0045` |
+| auditoría técnica y backlog de seguridad/resiliencia | blob `2234bc064cc91e766e4e550fc8c3801d669ec894` | evidencia AS-IS de redención no atómica y contrato objetivo server-side |
+| integraciones de fidelización PASS | blob `8ce60e373f68a9db8f20be0b9d10ec45ddfc17c9` | reserva explícita de `PASS-INT-002` para la integración PULSO → PASS de redención |
+
+La preparación usa la versión completa aprobada de `PASS-UX-004` como base inmediata aunque su incorporación a `main` permanezca condicionada al cierre documental anterior.
+
+---
+
+#### 5. Semántica contractual de redención visible
+
+La redención visible distingue la creación de una intención de su consumo efectivo.
+
+```text
+REDENCION VISIBLE PASS
+=
+INTENCION DE REDENCION CONFIRMADA POR SERVIDOR
++
+CREDENCIAL DE UN SOLO USO
++
+ESTADO Y VIGENCIA PROYECTADOS
+```
+
+No significa:
+
+```text
+BENEFICIO YA CONSUMIDO
+DESCUENTO YA APLICADO EN LA VENTA
+VALIDACION PULSO COMPLETADA
+RESULTADO TERMINAL DE USO
+CALCULO AUTORITATIVO EN EL CLIENTE
+QR PERSONAL DE IDENTIFICACION
+```
+
+Crear el ticket habilita el siguiente paso del proceso; no demuestra que PULSO ya haya consumido la redención.
+
+---
+
+#### 6. Flujo objetivo de cliente
+
+El flujo visible se organiza así:
+
+```text
+VSCREEN-0109
+seleccionar recompensa
+        ↓
+REVISAR INTENCION
+recompensa + costo + saldo confirmado + efecto esperado
+        ↓
+CONFIRMAR CREACION
+comando autoritativo de servidor
+        ↓
+VSCREEN-0110
+redencion creada + ticket/QR + estado + vigencia
+        ↓
+VSCREEN-0086 / PULSO
+validar codigo + contexto + estado + actor + sede
+        ↓
+RESULTADO AUTORITATIVO
+consumida / rechazada / no aplicable segun contrato
+        ↓
+PASS
+reconciliar proyeccion e historial
+```
+
+La interfaz PASS no salta directamente desde selección a “usado” y no convierte la generación visual de un QR en prueba de consumo.
+
+---
+
+#### 7. Revisión previa y confirmación explícita
+
+Antes de crear la intención de redención, la interfaz presenta una revisión comprensible del efecto solicitado.
+
+| Elemento | Regla |
+| --- | --- |
+| recompensa | identidad y nombre provenientes de la proyección vigente, no de un literal alterno |
+| sede o contexto aplicable | visible cuando condicione disponibilidad o uso; no puede inferirse desde una tarjeta equivocada |
+| costo en puntos | valor vigente consultado para la recompensa |
+| saldo disponible | último valor confirmado; un fallo de lectura no se transforma en cero |
+| saldo posterior estimado | puede mostrarse únicamente como previsualización no autoritativa antes de la respuesta del servidor |
+| consecuencia | comunica que se solicitará una redención y que el resultado definitivo depende de confirmación de servidor |
+| acción | requiere confirmación explícita del cliente antes de iniciar la mutación |
+
+La comparación local `saldo >= costo` puede orientar la interfaz, pero no concede elegibilidad ni reemplaza la validación de servidor. Una recompensa que parecía alcanzable puede ser rechazada si cambió saldo, costo, vigencia, sede, regla o estado.
+
+---
+
+#### 8. Resultado de creación y certeza visible
+
+La interfaz solo entra al estado de ticket creado cuando el servidor devuelve un resultado confirmado y reconciliable de la misma operación.
+
+El resultado mínimo visible debe permitir distinguir:
+
+| Verdad confirmada | Presentación |
+| --- | --- |
+| intención creada | existe una redención identificable y consultable |
+| credencial emitida o reservada | existe un código utilizable bajo el contrato autorizado |
+| recompensa | se muestra la recompensa exacta asociada a la intención |
+| costo aplicado | se muestra el valor de puntos confirmado para esa intención |
+| efecto sobre saldo | se refleja únicamente el efecto confirmado o reservado que indique el servidor; no se inventa desde la resta local |
+| estado actual | se presenta la verdad vigente de la intención sin anticipar consumo |
+| vigencia | se presenta la ventana o condición de vigencia provista por la fuente autoritativa |
+
+Si la respuesta no permite saber si la operación se aplicó, PASS no crea una segunda intención por inferencia. El resultado queda sujeto a recuperación y reconciliación mediante el contrato propietario.
+
+---
+
+#### 9. Creación exitosa no equivale a uso exitoso
+
+El diseño debe mantener explícitamente dos verdades distintas:
+
+```text
+TICKET CREADO
+!=
+REDENCION USADA
+```
+
+Por tanto:
+
+- el mensaje inmediatamente posterior a crear una intención no puede afirmar que el beneficio ya fue consumido;
+- un QR pendiente no puede etiquetarse como “usado” ni como resultado terminal;
+- la fecha de creación no puede presentarse como fecha de uso o validación;
+- el cliente puede recibir una credencial lista para presentar sin que PULSO la haya validado todavía;
+- solo una transición confirmada por el contrato autorizado puede permitir que PASS represente el uso efectivo.
+
+`PASS-UX-009` definirá la diferenciación completa de estados pendiente, usado y cancelado; esta tarea fija únicamente la frontera semántica que esa taxonomía no podrá contradecir.
+
+---
+
+#### 10. Contrato de la credencial de redención
+
+El ticket o QR de redención es una credencial de operación distinta del QR personal de identificación.
+
+Debe cumplir simultáneamente:
+
+1. originarse en el resultado autoritativo de creación de la intención;
+2. ser emitido o reservado por servidor, no fabricado por el cliente mediante tiempo, aleatoriedad local o estado visual;
+3. identificar de forma inequívoca la intención que será validada;
+4. admitir validación de un solo uso según el estado autoritativo;
+5. conservar correlación con cliente, recompensa y contexto sin codificar innecesariamente datos personales visibles en el payload;
+6. no incorporar access token, refresh token, PIN laboral ni secreto de sesión;
+7. no sustituir las validaciones de usuario, recompensa, sede, estado, vigencia, actor y no utilización previa;
+8. devolver el mismo resultado para el mismo hecho ante replay idempotente cuando el contrato lo permita;
+9. fallar cerrado ante código desconocido, manipulado, usado, cancelado, vencido o territorialmente incompatible.
+
+Esta tarea no fija formato físico, longitud, algoritmo, endpoint ni nombre de campo. Esos detalles pertenecen al contrato de integración y servidor propietario.
+
+---
+
+#### 11. Presentación del ticket o QR
+
+`VSCREEN-0110` debe hacer comprensible qué representa la credencial sin obligar al cliente a interpretar detalles técnicos.
+
+Contenido mínimo de la presentación:
+
+| Elemento | Regla |
+| --- | --- |
+| recompensa | nombre e identidad coherentes con la intención creada |
+| QR o código | representación legible de la credencial confirmada |
+| estado | verdad actual visible; nunca se infiere solo porque el QR exista |
+| vigencia | fecha, ventana o condición comunicable proveniente de la fuente autoritativa |
+| puntos comprometidos o aplicados | valor confirmado para la intención, sin nueva resta local |
+| contexto de uso | sede o marca cuando el contrato limite dónde puede utilizarse |
+| instrucción | explica que debe presentarse para validación; no declara que ya fue usado |
+| salida | permite cerrar la vista sin cancelar ni alterar la intención por efecto de navegación |
+
+El QR debe conservar contraste, zona limpia y tamaño suficiente. Estado, vigencia y resultado no dependen exclusivamente de color, animación o iconografía.
+
+---
+
+#### 12. Vigencia y usabilidad
+
+La pantalla canónica exige estado y vigencia visibles.
+
+Reglas:
+
+- una credencial sin vigencia autoritativa disponible no se presenta como válida indefinidamente;
+- una vigencia vencida no puede conservar el mismo tratamiento de una credencial utilizable;
+- la interfaz no calcula una nueva fecha de expiración por su cuenta;
+- la hora del dispositivo no constituye autoridad para extender o reactivar una intención;
+- refresh, Realtime o regreso desde background pueden actualizar la proyección, pero no crear una vigencia nueva;
+- la política exacta de expiración, cancelación y transición pertenece a los contratos propietarios y a `PASS-UX-009` cuando corresponda a la experiencia de estados.
+
+La ausencia actual de una vigencia visible en el runtime se considera brecha de presentación, no autorización para inventar un campo o una duración.
+
+---
+
+#### 13. Sede, marca y contexto comercial
+
+La redención visible conserva el contexto empresarial real de la intención.
+
+Por tanto:
+
+- un componente reutilizado entre Vento Café, Saudo u otro satélite no puede hardcodear una marca diferente como lugar de uso;
+- la sede presentada debe provenir de la redención o de su proyección autorizada;
+- una recompensa global y una recompensa restringida por sede no se presentan con la misma promesa territorial si sus contratos difieren;
+- cambiar de pantalla o de satélite no migra una intención ya creada a otra sede;
+- PULSO vuelve a validar sede y contexto al consumir la redención.
+
+La convergencia de experiencias no autoriza duplicar una misma intención entre rutas estáticas y dinámicas.
+
+---
+
+#### 14. Reintento, doble toque y resultado ambiguo
+
+La interfaz debe tratar la confirmación como una sola intención empresarial.
+
+Reglas visibles:
+
+1. después del primer submit, el control de confirmación deja de permitir envíos concurrentes mientras la solicitud esté en curso;
+2. un timeout o pérdida de respuesta no se interpreta como “no ocurrió”; primero se recupera o reconcilia la operación;
+3. un retry del mismo hecho debe reutilizar la identidad estable definida por el contrato de servidor;
+4. una respuesta de “ya aplicado” o equivalente se presenta como recuperación del mismo resultado, no como una nueva redención;
+5. refresh y Realtime no vuelven a disparar la mutación;
+6. el QR no se regenera localmente por volver a abrir la pantalla;
+7. una credencial existente se vuelve a consultar o presentar según su estado; no se reemplaza silenciosamente por otra.
+
+La idempotencia transaccional, la clave estable y la reconciliación física permanecen reservadas a `PASS-INT-002` y a su implementación posterior.
+
+---
+
+#### 15. Relación con saldo y ledger
+
+La redención puede afectar puntos, pero PASS no construye ese efecto mediante una secuencia de escrituras cliente.
+
+Se preserva:
+
+```text
+COSTO DE RECOMPENSA
+!=
+RESTA LOCAL AUTORITATIVA
+
+INTENCION DE REDENCION
+!=
+MOVIMIENTO DE LEDGER AISLADO
+```
+
+La interfaz puede mostrar antes de confirmar una previsualización matemática. Después de confirmar, saldo, gasto o reserva solo se presentan desde el resultado reconciliable del servidor.
+
+La política exacta de si los puntos quedan debitados, reservados o sujetos a otra semántica durante el estado previo al uso no se decide en esta tarea. `PASS-INT-002` deberá definir el contrato transaccional sin contradecir la exigencia de que PULSO valide posteriormente estado, vigencia y no utilización previa.
+
+---
+
+#### 16. Relación con historial
+
+`VSCREEN-0110` presenta la intención vigente; no sustituye `VSCREEN-0111`.
+
+La experiencia puede ofrecer una salida hacia el historial o mostrar la existencia de la intención actual, pero:
+
+- no replica el ledger completo;
+- no reconstruye movimientos históricos desde el QR;
+- no atribuye fecha de creación como fecha de uso;
+- no oculta una redención histórica porque su credencial ya no sea utilizable;
+- no decide cómo agrupar movimientos, redenciones, ajustes o reversos.
+
+La consulta integral de movimientos permanece reservada a `PASS-UX-006`.
+
+---
+
+#### 17. Relación con catálogo y elegibilidad
+
+`VSCREEN-0109` conserva la consulta de beneficios y recompensas; `PASS-UX-007` conserva el diseño completo de ese catálogo.
+
+`PASS-UX-005` consume una recompensa ya seleccionada y solo fija estas invariantes:
+
+- conocer una recompensa no acredita elegibilidad;
+- una tarjeta que muestra “Canjear” no autoriza el efecto por sí sola;
+- saldo local suficiente no sustituye la revalidación de costo, regla, sede, vigencia y disponibilidad;
+- si la regla cambió entre catálogo y confirmación, la interfaz presenta el resultado actual y no fuerza el valor anterior;
+- el ticket se crea únicamente para una recompensa que el servidor acepte bajo la regla vigente.
+
+---
+
+#### 18. Online, caché y recuperación
+
+La creación y consumo de redención requieren verdad autoritativa y no se confirman desde caché.
+
+Esta tarea fija únicamente:
+
+- una recompensa cacheada puede servir como referencia de lectura, nunca como autorización de canje;
+- una intención no se declara creada mientras el servidor no confirme un resultado;
+- una credencial cacheada puede volver a mostrarse solo si conserva una proyección identificable de su estado y la interfaz comunica cualquier degradación de frescura;
+- la app no crea una nueva redención offline para sincronizarla después por inferencia;
+- un fallo de red no convierte la intención en cancelada ni usada.
+
+`PASS-UX-012` diseñará el tratamiento final de carga, error, offline y recuperación móvil. `PASS-UX-010` definirá el copy final correspondiente.
+
+---
+
+#### 19. Hallazgos AS-IS y handoff
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `RedeemModal` calcula `puntos restantes` como resta local entre saldo y costo | presentar como definitivo un valor que el servidor todavía no confirmó | `PASS-UX-005` + `PASS-INT-002` | la resta previa queda claramente como previsualización y el resultado posterior proviene de la operación autoritativa |
+| `RedeemModal` afirma que la acción “no se puede deshacer” antes de que exista contrato final de cancelación/reversión | promesa irreversible no demostrada | `PASS-UX-009` + `PASS-UX-010` + `PASS-INT-002` | estado, reversibilidad y copy se alinean con el contrato final sin afirmar irreversibilidad por defecto |
+| `processRedemption` lee saldo, genera QR e inserta redención y ledger desde el cliente en pasos separados | doble gasto, redención huérfana, carrera y resultado ambiguo | `PASS-INT-002` + `PASS-QA-002` | una operación server-side atómica e idempotente crea el efecto y emite o reserva el código |
+| el QR AS-IS se genera con tiempo y aleatoriedad local | credencial no gobernada por la operación autoritativa y regenerable desde cliente | `PASS-INT-002` | el servidor emite o reserva una credencial estable asociada a la intención |
+| `SuccessModal` muestra “Canje exitoso” inmediatamente después de crear una redención `pending` | confundir ticket creado con beneficio ya consumido | `PASS-UX-005` + `PASS-UX-010` | el resultado de creación comunica intención/ticket confirmado sin afirmar uso antes de PULSO |
+| `SuccessModal` indica “Muéstralo en Vento Café” aunque el componente se usa en otras experiencias | uso en sede o marca incorrecta | `PASS-UX-005` + implementación posterior | el contexto visible proviene de la intención y nunca de un literal de otra marca |
+| `QrPendingCard` muestra “Listo para usar” únicamente por estar en la lista pending | omitir vigencia, elegibilidad actual o degradación de estado | `PASS-UX-005` + `PASS-UX-009` | usabilidad visible depende de estado y vigencia autoritativos; la taxonomía final queda en la tarea de estados |
+| `QrFullscreenModal` etiqueta `created_at` como “Canjeado el” | presentar creación como consumo | `PASS-UX-005` + `PASS-UX-009` + `PASS-UX-010` | fecha de creación y fecha de validación/uso permanecen semánticamente separadas |
+| el shape móvil actual no expone una vigencia visible en el ticket | `VSCREEN-0110` no puede demostrar hasta cuándo puede usarse la credencial | `PASS-INT-002` + implementación de `PASS-UX-005` | la proyección autorizada entrega la vigencia necesaria y la interfaz la representa sin inventarla |
+
+Ningún hallazgo autoriza modificación física desde esta tarea.
+
+---
+
+#### 20. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| movimientos, recibos e historial completo | `PASS-UX-006` |
+| catálogo completo, condiciones y descubrimiento de recompensas | `PASS-UX-007` |
+| perfil, privacidad y consentimientos | `PASS-UX-008` |
+| taxonomía y presentación completa de pendiente, usado y cancelado | `PASS-UX-009` |
+| copy final de confirmación, error y recuperación | `PASS-UX-010` |
+| rutas y navegación canónicas | `PASS-UX-011` |
+| carga, error, offline y recuperación móvil | `PASS-UX-012` |
+| integración PULSO → PASS para redención, atomicidad, idempotencia, código, reversión y conciliación | `PASS-INT-002` |
+| protección operativa de redención en PULSO | `PULSO-AUTH-010` y contratos posteriores aplicables |
+| prueba completa de redención | `PASS-QA-002` |
+
+`PASS-UX-005` no adelanta ni materializa esas responsabilidades.
+
+---
+
+#### 21. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la atomicidad e idempotencia de redención, la prohibición de mutar ledger desde cliente, la validación de código, usuario, recompensa, sede, estado, vigencia y no utilización previa, la separación entre QR personal y ticket de canje, la convergencia de superficies y la prohibición de mostrar una redención validada antes de confirmación de servidor ya cuentan con cobertura vigente. Esta tarea materializa el diseño visible, su frontera semántica y los handoffs sin introducir una obligación de prueba nueva ni alterar el Registro 04A.
+
+---
+
+#### 22. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-006` para convergencia de sede, recompensas e historial entre experiencias sin rutas divergentes;
+- `TREQ-PASS-008` para exigir que gasto y redención se ejecuten mediante contratos de servidor autorizados, atómicos e idempotentes y no mediante inserciones cliente del ledger;
+- `TREQ-PASS-010` para ledger inmutable y reconciliable, saldo como proyección y conservación de evento origen, regla y versión;
+- `TREQ-PASS-027` para validar código, usuario, recompensa, sede, estado pendiente, vigencia, saldo debitado o reservado, actor y no utilización previa, con consumo atómico e idempotente;
+- `TREQ-PASS-032` para impedir que la interfaz muestre un canje validado antes de confirmar el efecto y para distinguir resultados ambiguos o ya aplicados;
+- `TREQ-PASS-034` para conservar propiedad y consumo entre PASS y PULSO sin duplicar mutaciones operativas;
+- `TREQ-PASS-039` para mantener el QR personal separado de acumulación y redención operativa;
+- `TREQ-PASS-041` y `TREQ-PASS-042` para conservar la reconciliación entre superficies canónicas, runtime e inventario verificable.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 23. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará únicamente cuando `PASS-UX-004` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-005` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, el archivo propietario, topología `PASS-UX`, catálogo y bindings `VSCREEN-*`, `VPROC-0045`, 04A PASS, ownership PULSO-PASS, hallazgos de redención no atómica, `vento-pass/main`, `RedeemModal`, `SuccessModal`, `QrPendingCard`, `QrFullscreenModal`, `RedemptionCard`, `useLoyaltyRedemptions` y `processRedemption`. |
+| OPERATIVA | `NOT_EXECUTED` | No se creó, presentó, validó, consumió, canceló ni expiró una redención en ambiente desplegado, PULSO, POS o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-005` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 24. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-005 — Diseñar redención visible`.
+- [x] El diseño queda anclado a `VSCREEN-0110` y `VPROC-0045::STEP-CREATE_REDEMPTION_INTENT`.
+- [x] `VSCREEN-0086` y `STEP-REDEEM_LOYALTY_VALUE` permanecen como ejecución operativa PULSO.
+- [x] Crear un ticket se diferencia explícitamente de consumir una redención.
+- [x] La interfaz no afirma “usado” o equivalente terminal al crear una intención pendiente.
+- [x] La fecha de creación no se presenta como fecha de uso.
+- [x] El QR de redención permanece separado del QR personal de identificación.
+- [x] La credencial de redención se emite o reserva desde el contrato autoritativo y no mediante `Date.now`, `Math.random` o estado cliente.
+- [x] El ticket presenta recompensa, estado y vigencia sin inventar valores ausentes.
+- [x] La elegibilidad local y la resta de puntos son previsualizaciones, no autoridad empresarial.
+- [x] Saldo, gasto o reserva posterior se presentan solo desde un resultado confirmado y reconciliable.
+- [x] Doble toque, timeout, retry, refresh y Realtime no crean una segunda intención por inferencia.
+- [x] Un resultado ya aplicado se recupera como el mismo hecho y no como un nuevo canje.
+- [x] El contexto de sede o marca no se hardcodea desde un componente reutilizado.
+- [x] Un ticket vencido, cancelado, usado o incompatible no conserva tratamiento de credencial utilizable.
+- [x] La taxonomía completa pendiente/usado/cancelado queda reservada a `PASS-UX-009`.
+- [x] El historial completo queda reservado a `PASS-UX-006`.
+- [x] El catálogo completo queda reservado a `PASS-UX-007`.
+- [x] Atomicidad, idempotencia, formato del código, reversión y conciliación detalladas quedan reservadas a `PASS-INT-002`.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, PULSO runtime, Supabase, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-006` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 25. Límites
+
+Esta tarea no:
+
+- implementa `RedeemModal`, `SuccessModal`, `QrPendingCard`, `QrFullscreenModal`, `RedemptionCard` ni hooks;
+- modifica `processRedemption`;
+- crea endpoints, RPC, funciones, triggers, tablas, columnas, migraciones, RLS, políticas o secretos;
+- define el algoritmo físico del código de redención;
+- define la idempotency key física;
+- ejecuta una redención o movimiento de puntos;
+- valida códigos desde PULSO;
+- cambia permisos de caja, sede o dispositivo compartido;
+- define la política completa de cancelación, expiración, reversión o compensación;
+- define la taxonomía completa de estados;
+- diseña el historial completo;
+- diseña el catálogo completo de recompensas;
+- define copy final de éxito, advertencia o error;
+- define navegación global;
+- resuelve estrategia offline o recuperación completa;
+- modifica Wallet;
+- modifica datos o Supabase;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- declara validación operativa realizada;
+- desarrolla `PASS-UX-006`, `PASS-UX-009` ni `PASS-INT-002`.
+
+---
+
+#### 26. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-004 — Diseñar acumulación visible`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-005 — Diseñar redención visible`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-006 — Diseñar historial`
 ### [ ] PASS-UX-006 — Diseñar historial
 ### [ ] PASS-UX-007 — Diseñar catálogo de recompensas
 ### [ ] PASS-UX-008 — Diseñar perfil del cliente
