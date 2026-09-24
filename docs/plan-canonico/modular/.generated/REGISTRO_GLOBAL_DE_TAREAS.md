@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1317** |
+| Aprobadas | **1318** |
 | En propuesta | **0** |
-| No iniciadas | **279** |
+| No iniciadas | **278** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.52% (1317/1596)** |
+| Porcentaje de completamiento | **82.58% (1318/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **279** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1218** |
+| ⏸ NO_EVALUADA | **278** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1219** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-UX-004` — Diseñar acumulación visible | ✅ APROBADA |
-| Tarea actual | `PASS-UX-005` — Diseñar redención visible | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-UX-006` — Diseñar historial | ⬜ NO INICIADA |
+| Última aprobada | `PASS-UX-005` — Diseñar redención visible | ✅ APROBADA |
+| Tarea actual | `PASS-UX-006` — Diseñar historial | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-UX-007` — Diseñar catálogo de recompensas | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1419,7 +1419,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-002` | Diseñar inicio de puntos y beneficios | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-003` | Diseñar QR personal | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-004` | Diseñar acumulación visible | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-005` | Diseñar redención visible | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-005` | Diseñar redención visible | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-006` | Diseñar historial | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-007` | Diseñar catálogo de recompensas | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-008` | Diseñar perfil del cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
