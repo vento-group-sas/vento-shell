@@ -8179,7 +8179,1023 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`
 
-### [ ] ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
+### ✅ ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-008 — Definir permisos de corrección
+**Tarea siguiente:** ORIGO-AUTH-010 — Proteger precios y datos sensibles
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición de la política territorial canónica para lectura y mutación de órdenes de compra ORIGO por sede, destinos y centro de costo, con recurso `PURCHASE_ORDER`, alcance `PO_DESTINATIONS`, separación base/operativa, tratamiento multidestino, revalidación server-side, denegación cerrada y reconciliación del runtime AS-IS, sin materializar todavía ninguna unidad física
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `ORIGO-AUTH-009::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **dónde** puede consultar o actuar un actor sobre una orden de compra ORIGO sin confundir permiso, sede seleccionada, sede asignada, centro de costo, relación con el proveedor, comprador, contexto operativo o identificador de la orden.
+
+La regla raíz queda:
+
+```text
+PERMISO EXACTO
++
+PURCHASE_ORDER RESUELTA EN SERVIDOR
++
+ALCANCE DEL ACTOR
++
+DESTINOS AUTORIZADOS
++
+CENTRO DE COSTO AUTORIZADO CUANDO APLIQUE
++
+ESTADO / POLÍTICA DE LA ACCIÓN
+=
+DECISIÓN TERRITORIAL AUTORIZABLE
+```
+
+Nunca:
+
+```text
+site_id DEL CLIENTE
+OR
+selected_site_id
+OR
+employee.site_id
+OR
+purchase_order_id CONOCIDO
+OR
+CENTRO DE COSTO INFERIDO
+=
+AUTORIZACIÓN
+```
+
+La tarea especializa para órdenes el modelo transversal de territorio y recurso ya aprobado; no crea un sistema paralelo de scopes.
+
+---
+
+#### 2. Handoff recibido de ORIGO-AUTH-004..008
+
+Esta tarea consume sin reinterpretación las decisiones ya cerradas:
+
+1. `ORIGO-AUTH-004` definió `origo.procurement.purchase_orders.view` como lectura `BASE_OR_OPERATIONAL` sobre `PURCHASE_ORDER`, con alcance `PO_DESTINATIONS`;
+2. `ORIGO-AUTH-005` definió `origo.procurement.purchase_orders.create` como `BASE_ONLY` y reservó a esta tarea el cierre territorial de sede y centro de costo;
+3. `ORIGO-AUTH-006` definió `origo.procurement.purchase_orders.approve` como `BASE_ONLY`, sujeto además a política de aprobación, segregación y autoridad decisoria;
+4. `ORIGO-AUTH-007` confirmó que una recepción debe reautorizar la orden relacionada y que el `site_id` de cliente no es autoridad;
+5. `ORIGO-AUTH-008` definió `origo.procurement.purchase_orders.update` y `origo.procurement.purchase_orders.cancel` como capacidades `BASE_ONLY` separadas.
+
+Por tanto, `ORIGO-AUTH-009` no redefine quién posee cada capacidad. Define la intersección territorial que esas capacidades deben respetar cuando operan sobre `PURCHASE_ORDER`.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global reutilizable;
+2. no se crea una instancia física durante la aprobación documental del marcador;
+3. cada materialización futura usa `ORIGO-AUTH-009::<implementation_unit_id>`;
+4. una misma unidad puede ser consumida por varios paquetes mediante lineage cuando el lifecycle lo determine;
+5. toda unidad física exige previamente el `E5-GATE-008::<package_id>` aplicable en `PASS` y autorización física explícita;
+6. esta conversación documental no selecciona `package_id`, `implementation_unit_id`, target paths ni ambiente de despliegue;
+7. cualquier modificación VENTO de Supabase continúa perteneciendo a `vento-shell` y a la instancia física propietaria.
+
+---
+
+#### 4. Fuentes y snapshots de preparación
+
+La preparación se ancla a:
+
+```text
+vento-shell/main
+c4425c5a8ac0e9da078bff8ec2b11b9db7743bef
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+El remoto de `vento-shell` ya incorpora `ORIGO-AUTH-008`. El bloque publicado coincide exactamente con el artefacto aprobado utilizado como predecessor de esta tarea, por lo que `ORIGO-AUTH-009` es la tarea documental actual y no una preparación anticipada.
+
+Se contrastaron, como mínimo:
+
+- topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`;
+- contrato de recurso `PURCHASE_ORDER`;
+- alcance `PO_DESTINATIONS`;
+- modelo de scopes global, sede, área y contexto;
+- matrices base y operativas aplicables a lectura de órdenes;
+- contratos de creación, aprobación y recepción ya aprobados;
+- Registro 04A ORIGO vigente;
+- contrato de integración de compra y evento económico;
+- runtime actual de listado, creación, detalle, edición y Server Actions de `purchase-orders`;
+- migración de hardening que retira la policy genérica `employees_crud_purchase_orders`;
+- dossier de package actualmente existente que referencia esta tarea sin resolver aún unidades físicas.
+
+---
+
+#### 5. Universo exacto de capacidades territorializadas
+
+La tarea aplica a exactamente cinco capacidades de orden:
+
+```text
+origo.procurement.purchase_orders.view
+origo.procurement.purchase_orders.create
+origo.procurement.purchase_orders.approve
+origo.procurement.purchase_orders.update
+origo.procurement.purchase_orders.cancel
+```
+
+Cardinalidad:
+
+```text
+CAPACIDADES DE ORDEN TERRITORIALIZADAS: 5
+LECTURA BASE_OR_OPERATIONAL: 1
+MUTACIONES BASE_ONLY: 4
+```
+
+No se crea una capacidad territorial adicional. El territorio restringe una acción existente; no sustituye su permiso.
+
+---
+
+#### 6. Recurso, alcance territorial y dimensión de centro de costo
+
+La identidad de autorización permanece:
+
+```text
+RECURSO
+PURCHASE_ORDER
+
+LOCALIZADOR
+purchase_order_id o filtro autorizado
+
+ALCANCE TERRITORIAL DE RECURSO
+PO_DESTINATIONS
+
+DIMENSIÓN ADICIONAL DE POLÍTICA CUANDO APLIQUE
+cost_center_ref
+```
+
+`PO_DESTINATIONS` conserva exactamente la relación aprobada de la orden con:
+
+- negocio aplicable;
+- proveedor como relación comercial, no como propietario de territorio;
+- sede o sedes destino;
+- áreas receptoras cuando correspondan;
+- comprador como relación con el recurso, no como ownership universal.
+
+Esta tarea **no redefine** `PO_DESTINATIONS` para convertir el centro de costo en territorio de recurso. `cost_center_ref` se evalúa como una dimensión adicional de política/atribución cuando la compra la requiera y se intersecta con el alcance territorial de la orden.
+
+El localizador identifica el recurso. Nunca concede autoridad sobre él.
+
+---
+
+#### 7. Sede, área y centro de costo son dimensiones distintas
+
+La tarea fija estas desigualdades:
+
+```text
+site_id != cost_center_ref
+site_id != area_id
+area_id != cost_center_ref
+selected_site_id != authorized_site_id
+employee.site_id != conjunto autorizado de sedes
+```
+
+Una sede describe territorio empresarial. Un área describe una subdivisión empresarial dentro de una sede. Un centro de costo describe una referencia de atribución y control económico/organizacional.
+
+Ninguna dimensión se deriva automáticamente de otra por nombre, UI, rol o conveniencia.
+
+---
+
+#### 8. Fuente territorial de sede
+
+Para scopes administrativos por sedes asignadas, la fuente de verdad permanece:
+
+```text
+public.employee_sites
+WHERE employee_id = actor
+AND is_active = true
+```
+
+No:
+
+```text
+employees.site_id
+selected_site_id
+query.site_id
+form.site_id
+prefill.site_id
+```
+
+Reglas:
+
+1. `employees.site_id` puede existir como dato legado o primario, pero no sustituye el conjunto autorizado;
+2. `selected_site_id` es contexto de interfaz y no autoridad;
+3. un filtro de listado no crea scope;
+4. una sede recibida desde formulario es una propuesta de destino que el servidor debe validar;
+5. una relación activa con una sede no concede automáticamente todas las capacidades ORIGO sobre ella.
+
+---
+
+#### 9. Centro de costo como referencia autorizable
+
+Cuando una compra deba atribuirse o limitarse por centro de costo, el sistema deberá consumir un `cost_center_ref` canónico o una identidad equivalente aprobada por su fuente propietaria.
+
+El centro de costo utilizado debe:
+
+1. existir;
+2. estar vigente para la fecha aplicable;
+3. pertenecer al ámbito organizacional compatible;
+4. ser compatible con el negocio, sede o estructura de la orden según el contrato vigente;
+5. estar dentro de la cobertura autorizada del actor para la acción concreta;
+6. quedar vinculado de forma estable a la versión de la orden o decisión que lo utilizó cuando sea material para auditoría.
+
+No se autoriza inferirlo únicamente desde:
+
+- nombre de sede;
+- actor;
+- rol;
+- proveedor;
+- texto libre;
+- query parameter;
+- resultado aislado de un helper técnico.
+
+---
+
+#### 10. `get_site_cost_center` no es autoridad
+
+La auditoría técnica registró una RPC `get_site_cost_center` que puede devolver un identificador interno de centro de costo por sede.
+
+Su existencia no establece:
+
+```text
+UNA SEDE = UN ÚNICO CENTRO DE COSTO
+```
+
+ni:
+
+```text
+RPC RESPONDE UN ID
+=
+ACTOR AUTORIZADO SOBRE ESE CENTRO
+```
+
+Si una materialización futura consume esa función o una sustituta, deberá tratar su resultado como referencia a validar, no como concesión de acceso.
+
+La protección de exposición anónima de helpers y centros de costo permanece en sus owners de Supabase/autorización; esta tarea no modifica la RPC.
+
+---
+
+#### 11. Política territorial de lectura
+
+Para `origo.procurement.purchase_orders.view`, la lectura final requiere:
+
+```text
+PERMISO view
++
+CARRIL BASE U OPERATIVO VÁLIDO
++
+PURCHASE_ORDER RESUELTA
++
+RELACIÓN TERRITORIAL AUTORIZADA
++
+PROYECCIÓN COMPATIBLE
+```
+
+Reglas:
+
+1. conocer `purchase_order_id` no concede lectura;
+2. un actor debe tener al menos una relación autorizada con el recurso para recibir una proyección;
+3. cada destino mostrado debe estar autorizado individualmente;
+4. si la orden contiene destinos fuera del alcance, la lectura solo puede usar la proyección parcial permitida por el contrato de recurso;
+5. una proyección parcial no amplía autoridad sobre destinos ocultos;
+6. cero destinos autorizados produce `DENY`;
+7. el permiso operativo nunca se convierte en directorio global de compras.
+
+---
+
+#### 12. Política territorial de mutación
+
+Las mutaciones no admiten una semántica de “edición parcial invisible” sobre una misma orden.
+
+Para:
+
+```text
+purchase_orders.create
+purchase_orders.approve
+purchase_orders.update
+purchase_orders.cancel
+```
+
+la regla es:
+
+```text
+TODOS LOS DESTINOS AFECTADOS AUTORIZADOS
++
+TODOS LOS CENTROS DE COSTO APLICABLES AUTORIZADOS
++
+PERMISO EXACTO DE LA ACCIÓN
++
+ESTADO Y POLÍTICA DE LA ACCIÓN
+=
+MUTACIÓN TERRITORIALMENTE AUTORIZABLE
+```
+
+Si un solo extremo obligatorio queda fuera de alcance, la mutación completa falla cerrada.
+
+---
+
+#### 13. Órdenes multidestino
+
+El modelo canónico admite que una orden relacione más de un destino aunque el consumidor actual observe principalmente un `site_id`.
+
+Reglas:
+
+| Operación | Regla multidestino |
+| --- | --- |
+| listado/detalle | solo se muestran destinos autorizados; una proyección parcial no concede autoridad sobre los demás |
+| crear | todos los destinos propuestos deben quedar dentro del alcance de creación |
+| actualizar | todos los destinos actuales y todos los destinos propuestos afectados deben ser autorizables |
+| aprobar | la decisión exige autoridad territorial sobre la totalidad del objeto aprobable |
+| cancelar | la cancelación de la orden completa exige autoridad sobre todos los destinos que afecta |
+
+Esta tarea no inventa aprobación o cancelación por línea/destino. Si el negocio necesitara esa granularidad, deberá existir un contrato canónico explícito.
+
+---
+
+#### 14. Regla de movimiento territorial
+
+Cambiar sede, área receptora o centro de costo de una orden es una mutación de territorio.
+
+Por tanto:
+
+```text
+AUTORIDAD SOBRE ORIGEN
++
+AUTORIDAD SOBRE DESTINO
++
+permission = purchase_orders.update
++
+estado editable
+=
+MOVIMIENTO TERRITORIAL AUTORIZABLE
+```
+
+No se permite:
+
+```text
+ORDEN EN SEDE AUTORIZADA
+→ editar site_id / cost_center_ref
+→ moverla a territorio no autorizado
+```
+
+El servidor debe revalidar simultáneamente el recurso actual y la propuesta de nuevo territorio antes de persistir.
+
+---
+
+#### 15. `purchase_orders.view` — carril base
+
+La matriz vigente conserva:
+
+| Rol base | Decisión | Alcance territorial relevante |
+| --- | --- | --- |
+| `propietario` | `ASIGNAR` | `G(B)` sobre organización productiva ordinaria, sin atravesar entornos aislados |
+| `gerente_general` | `ASIGNAR` | `G(B)` sobre organización productiva ordinaria, sin wildcard de acciones |
+| `gerente` | `ASIGNAR` | `AS-REL`; órdenes relacionadas con sedes asignadas y extremos autorizados |
+| `supervisor` | `ASIGNAR` | `AS-REL`; lectura local relacionada, sin mutación implícita |
+| `auxiliar_administrativa` | `ASIGNAR` | `AS-REL`; soporte documental sobre recursos relacionados |
+| `contador` | `ASIGNAR` | `G-SRC`; evidencia comercial para revisión, conciliación y soporte contable |
+| `marketing` | `NO_ASIGNAR` | denegación por defecto |
+
+`G(B)` sigue exigiendo el permiso exacto. No equivale a todas las capacidades ORIGO.
+
+---
+
+#### 16. `purchase_orders.view` — carril operativo
+
+El carril operativo conserva:
+
+| Rol operativo | Decisión | Alcance |
+| --- | --- | --- |
+| `bodeguero` | `ASIGNAR_OPERATIVO` | `CTX-WH-PURCHASE-ORDERS`; órdenes aprobadas o vigentes cuyo destino receptor sea la sede/bodega activa; proyección mínima para recepción |
+| `gerencia_operativa` | `ASIGNAR_OPERATIVO` | `CTX-MGR-ORIGO`; órdenes relacionadas con abastecimientos o entregas de la sede activa; solo consulta operativa |
+| `conductor_logistica` | `NO_ASIGNAR` | la orden de compra no es su contrato operativo ordinario |
+
+El carril operativo requiere los prerrequisitos de contexto aplicables, incluido `T+C` cuando lo exige la matriz.
+
+Una sesión operativa en una sede no autoriza órdenes de otras sedes ni crea `G(B)`.
+
+---
+
+#### 17. Territorio de `purchase_orders.create`
+
+`origo.procurement.purchase_orders.create` permanece `BASE_ONLY`.
+
+Los grants definidos son:
+
+- `propietario`;
+- `gerente_general`;
+- `gerente` dentro de su cobertura administrativa;
+- `auxiliar_administrativa` dentro de su cobertura de soporte.
+
+Reglas territoriales:
+
+1. todos los destinos propuestos se resuelven en servidor;
+2. la sede elegida en el formulario es solo una propuesta;
+3. el actor debe poseer cobertura administrativa suficiente sobre cada destino;
+4. el centro de costo aplicable debe ser válido y autorizable cuando la política lo exija;
+5. crear una orden no amplía después el territorio del creador;
+6. `created_by` es trazabilidad, no ownership universal;
+7. el proveedor relacionado no convierte su catálogo en territorio de sede.
+
+---
+
+#### 18. Territorio de `purchase_orders.approve`
+
+`origo.procurement.purchase_orders.approve` permanece `BASE_ONLY` y conserva además las reglas de autoridad decisoria de `ORIGO-AUTH-006`.
+
+La evaluación combina:
+
+```text
+PERMISO approve
++
+ACTOR APROBADOR VÁLIDO
++
+SEGREGACIÓN
++
+POLÍTICA empresa / sede / centro de costo / categoría / importe / riesgo / urgencia
++
+TODOS LOS DESTINOS AUTORIZADOS
++
+ESTADO Y VERSIÓN ELEGIBLES
+```
+
+Un gerente con autoridad de aprobación sobre una sede no puede aprobar una orden que incluya destinos fuera de su cobertura.
+
+`propietario` tampoco omite la resolución de autoridad aprobadora, aunque su cobertura territorial base pueda ser `G(B)`.
+
+---
+
+#### 19. Territorio de `purchase_orders.update`
+
+`origo.procurement.purchase_orders.update` permanece `BASE_ONLY` y limitado a edición ordinaria permitida antes de aprobación/emisión.
+
+La autorización requiere:
+
+1. permiso `update`;
+2. orden actual dentro de alcance;
+3. estado editable;
+4. todos los destinos actuales relevantes autorizados;
+5. todos los destinos nuevos propuestos autorizados;
+6. centros de costo actuales y propuestos compatibles cuando apliquen;
+7. revalidación de proveedor y relaciones requeridas;
+8. nueva aprobación posterior cuando un cambio material la exija por contrato.
+
+No puede utilizarse `update` para escapar del scope territorial vigente.
+
+---
+
+#### 20. Territorio de `purchase_orders.cancel`
+
+`origo.procurement.purchase_orders.cancel` permanece `BASE_ONLY` y separado de eliminación física.
+
+La cancelación exige:
+
+- permiso exacto `cancel`;
+- autoridad sobre la orden completa;
+- todos los destinos afectados autorizados;
+- centros de costo aplicables dentro de alcance;
+- estado cancelable;
+- causa y auditoría cuando corresponda;
+- preservación de historia y efectos ya materializados.
+
+Una orden parcialmente visible no puede cancelarse completa desde esa visibilidad parcial.
+
+---
+
+#### 21. Consulta desde contexto de recepción
+
+Una orden puede ser visible durante una recepción sin que el actor adquiera autoridad administrativa sobre compras.
+
+Para `bodeguero` o `gerencia_operativa`:
+
+```text
+ORDEN RELACIONADA CON RECEPCIÓN / ENTREGA ACTIVA
++
+SEDE OPERATIVA COINCIDENTE
++
+permission purchase_orders.view
++
+contexto operativo válido
+=
+PROYECCIÓN MÍNIMA AUTORIZABLE
+```
+
+Eso no concede:
+
+- crear;
+- aprobar;
+- actualizar;
+- cancelar;
+- ver otros destinos no autorizados;
+- acceder a campos sensibles reservados a `ORIGO-AUTH-010`.
+
+---
+
+#### 22. PDF interno y token externo
+
+El documento de orden conserva dos fronteras diferentes.
+
+Para sesión interna:
+
+```text
+purchase_orders.view
++
+PURCHASE_ORDER autorizada territorialmente
++
+proyección permitida
+```
+
+Para token externo de proveedor:
+
+```text
+TOKEN RESOURCE-SCOPED VÁLIDO
+!=
+ASIGNACIÓN DE SEDE
+!=
+ASIGNACIÓN DE CENTRO DE COSTO
+```
+
+El token externo no adquiere un scope laboral. Su secreto, expiración, revocación y minimización de campos permanecen en `ORIGO-AUTH-010` y contratos aplicables.
+
+---
+
+#### 23. Evaluación server-side obligatoria
+
+La decisión territorial final debe ocurrir en el límite de confianza capaz de leer o mutar el recurso.
+
+No basta con:
+
+```text
+FILTRAR SELECT EN UI
+CARGAR employee_sites PARA UN COMBO
+OCULTAR BOTÓN
+VALIDAR query.site_id
+VALIDAR form.site_id
+```
+
+La frontera autoritativa debe resolver nuevamente:
+
+- actor efectivo;
+- permiso exacto;
+- carril base u operativo;
+- recurso real;
+- destinos reales;
+- centros de costo aplicables;
+- contexto operativo cuando aplique;
+- estado y versión;
+- columnas/efecto autorizado de la acción.
+
+Una llamada directa no puede saltar esa evaluación.
+
+---
+
+#### 24. Precedencia territorial
+
+Para órdenes, la precedencia relevante queda:
+
+```text
+ACTOR AUTENTICADO
+→ EMPLEADO / ACTOR EFECTIVO VÁLIDO
+→ PERMISO EXACTO
+→ CARRIL BASE U OPERATIVO
+→ PURCHASE_ORDER REAL
+→ NEGOCIO / DESTINOS REALES
+→ SEDES Y ÁREAS REALES
+→ CENTRO DE COSTO REAL CUANDO APLIQUE
+→ COBERTURA DEL ACTOR
+→ CONTEXTO OPERATIVO CUANDO APLIQUE
+→ ESTADO / VERSIÓN / POLÍTICA
+→ DENEGACIONES
+→ DECISIÓN
+```
+
+Los valores enviados por cliente nunca tienen prioridad sobre el recurso persistido y sus relaciones canónicas.
+
+---
+
+#### 25. Denegación y errores
+
+Ante territorio insuficiente:
+
+```text
+LECTURA NO AUTORIZADA
+→ DENY O PROYECCIÓN PARCIAL EXPLÍCITAMENTE PERMITIDA
+
+MUTACIÓN NO AUTORIZADA
+→ DENY
+→ WRITES EMPRESARIALES = 0
+```
+
+Reglas:
+
+1. no se reintenta con un scope más amplio;
+2. no se degrada a `origo.access`;
+3. no se usa el nombre del rol como bypass;
+4. un fallo técnico no se convierte en `ALLOW`;
+5. la respuesta no debe filtrar detalles de destinos o centros fuera de alcance;
+6. la auditoría debe poder explicar qué recurso, acción, scope y bloqueo produjeron la decisión.
+
+---
+
+#### 26. Estado AS-IS — listado
+
+En `src/app/purchase-orders/page.tsx` se observa:
+
+- `requireAppAccess({ appId: "origo" })` como entrada;
+- lectura de `purchase_orders`;
+- filtro opcional `status`;
+- filtro opcional `site_id` recibido desde query;
+- carga de `employee_sites` para construir el selector de sedes del usuario.
+
+El filtro `site_id` reduce el resultado solicitado, pero no constituye una prueba de autorización territorial porque:
+
+```text
+FILTRO DE QUERY
+!=
+SCOPE DEL ACTOR
+```
+
+La materialización deberá evitar que un `site_id` arbitrario enviado en URL amplíe la consulta.
+
+---
+
+#### 27. Estado AS-IS — creación
+
+En `src/app/purchase-orders/new/page.tsx` y `createPurchaseOrder` se observa:
+
+- sedes construidas a partir de `employee_sites` para la UI;
+- `prefill` capaz de transportar `site_id`;
+- `site_id` leído desde `FormData` en la Server Action;
+- persistencia de ese `site_id` en la orden.
+
+No se observa dentro de la acción una reconciliación explícita del `site_id` propuesto contra la cobertura territorial canónica de `purchase_orders.create`.
+
+Esto no demuestra ausencia de controles inferiores desplegados; impide considerar probado el contrato completo desde la acción inspeccionada.
+
+---
+
+#### 28. Estado AS-IS — detalle y edición
+
+En `/purchase-orders/[id]` y `/purchase-orders/[id]/edit` se observa:
+
+- acceso general a ORIGO;
+- búsqueda de la orden por `id`;
+- `site_id` cargado como parte del recurso;
+- edición permitida por UI cuando el estado es `draft`;
+- carga de `employee_sites` para opciones de sede en edición.
+
+No se observa en esas páginas una condición territorial explícita equivalente a `PO_DESTINATIONS` al resolver el `id`.
+
+La autorización final debe residir en la frontera autoritativa y no depender de que la navegación haya ofrecido previamente el recurso.
+
+---
+
+#### 29. Estado AS-IS — mutaciones
+
+En `src/app/purchase-orders/actions.ts` se observa:
+
+| Acción AS-IS | Territorio visible en la función inspeccionada |
+| --- | --- |
+| `createPurchaseOrder` | recibe `site_id` desde formulario y lo persiste |
+| `setPurchaseOrderSent` | actualiza por `id` y `status = draft` |
+| `updatePurchaseOrder` | consulta estado por `id`, recibe nuevo `site_id` y lo persiste |
+| `deletePurchaseOrder` | usa lista local de roles y `status = draft`; elimina por `id` |
+
+Estas funciones no demuestran por sí mismas enforcement final de `PO_DESTINATIONS` o centro de costo.
+
+La semántica canónica de `deletePurchaseOrder` ya fue reconciliada por `ORIGO-AUTH-008` hacia `purchase_orders.cancel`; esta tarea solo añade la frontera territorial correspondiente.
+
+---
+
+#### 30. Estado AS-IS — centro de costo
+
+En las superficies y acciones de compra inspeccionadas de `vento-origo` no se observó un `cost_center_id` o `cost_center_ref` integrado al contrato de la orden.
+
+Resultado documental:
+
+```text
+SITE DIMENSION AS-IS: PRESENTE
+COST CENTER DIMENSION EN CONSUMIDOR INSPECCIONADO: NO DEMOSTRADA
+```
+
+La tarea no inventa una columna nueva.
+
+La materialización deberá:
+
+- incorporar la referencia canónica requerida cuando el modelo físico propietario la defina; o
+- demostrar una representación equivalente ya aprobada;
+- preservar la relación histórica de la orden con la dimensión utilizada;
+- impedir que sede y centro de costo se sustituyan silenciosamente.
+
+---
+
+#### 31. Estado de RLS en el repositorio vigente
+
+El hallazgo histórico `H-CODE-017-011` registró una policy `employees_crud_purchase_orders` demasiado amplia.
+
+El repositorio vigente contiene una migración de hardening `AUTH-DB-002` que elimina explícitamente esa policy:
+
+```text
+drop policy employees_crud_purchase_orders
+on public.purchase_orders;
+```
+
+Por tanto, esta tarea **no** describe la policy genérica histórica como baseline actual del repositorio.
+
+A la vez, en las migraciones inspeccionadas no se identificó una nueva policy específica de `purchase_orders` que por sí sola demuestre el contrato completo de permiso + territorio + estado + acción.
+
+Esto no permite concluir el estado efectivo de un ambiente remoto no observado. La obligación para la materialización es demostrar enforcement autoritativo final en las capas propietarias correspondientes.
+
+---
+
+#### 32. Matriz territorial por capacidad
+
+| Capacidad | Modalidad | Territorio mínimo | Regla de totalidad |
+| --- | --- | --- | --- |
+| `purchase_orders.view` | `BASE_OR_OPERATIONAL` | `PO_DESTINATIONS` según carril | puede existir proyección parcial; cada destino mostrado debe estar autorizado |
+| `purchase_orders.create` | `BASE_ONLY` | todos los destinos propuestos + centro de costo aplicable | todos los extremos requeridos antes de insertar |
+| `purchase_orders.approve` | `BASE_ONLY` | todos los destinos + centro de costo/política aplicable | no existe aprobación territorial parcial de la orden completa |
+| `purchase_orders.update` | `BASE_ONLY` | territorio actual + territorio propuesto | origen y destino deben ser autorizables |
+| `purchase_orders.cancel` | `BASE_ONLY` | todos los destinos y centros afectados | una visibilidad parcial no autoriza cancelación total |
+
+---
+
+#### 33. Invariantes de seguridad territorial
+
+| Caso | Resultado |
+| --- | --- |
+| `purchase_order_id` válido pero sin relación territorial | `DENY` |
+| query `site_id` fuera de alcance | no amplía lectura |
+| form `site_id` fuera de alcance | `DENY`, cero writes |
+| `selected_site_id` fuera de cobertura | `DENY` |
+| `employees.site_id` coincide pero `employee_sites`/scope no | no concede autoridad |
+| gerente AS-REL sobre sede A intenta mutar orden de sede B | `DENY` |
+| orden A+B y actor solo cubre A | lectura únicamente mediante proyección parcial permitida; mutación total `DENY` |
+| cambio de sede A autorizada a B no autorizada | `DENY` |
+| centro de costo no vigente | `DENY` para acción que lo requiera |
+| centro de costo de ámbito incompatible | `DENY` |
+| helper devuelve centro de costo pero actor no tiene scope | `DENY` |
+| `bodeguero` consulta orden destinada a bodega activa | proyección operativa mínima autorizable con contexto válido |
+| `bodeguero` intenta actualizar/aprobar/cancelar | `DENY` |
+| `gerencia_operativa` consulta orden de sede activa | consulta operativa autorizable; nunca global |
+| token externo válido | no crea scope laboral ni RBAC |
+
+---
+
+#### 34. Hallazgos y propietarios
+
+| Hallazgo | Impacto contractual | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| listado usa `site_id` de query como filtro sin demostrar que el filtro sea scope | un filtro de cliente podría confundirse con autorización | `ORIGO-AUTH-009::<implementation_unit_id>` | el backend resuelve alcance y el query solo reduce dentro del conjunto autorizado |
+| creación recibe y persiste `site_id` desde formulario | el cliente propone territorio | `ORIGO-AUTH-009::<implementation_unit_id>` | cada destino se valida server-side contra permiso y cobertura antes del insert |
+| detalle/edición resuelven por `id` sin territorio explícito visible en la página | riesgo de acceso directo si ninguna capa autoritativa lo limita | `ORIGO-AUTH-009::<implementation_unit_id>` | el recurso se autoriza por `PO_DESTINATIONS` antes de exponer o mutar |
+| `setPurchaseOrderSent` y `updatePurchaseOrder` no muestran chequeo territorial explícito | la mutación podría depender de controles no demostrados | `ORIGO-AUTH-009::<implementation_unit_id>` | el punto de efecto revalida permiso, recurso, territorio, estado y versión |
+| `deletePurchaseOrder` usa rol local y no muestra territorio | semántica y scope divergentes del contrato objetivo | `ORIGO-AUTH-008` + `ORIGO-AUTH-009::<implementation_unit_id>` | consumer usa `cancel` y territorio canónicos, sin lista local ampliatoria |
+| centro de costo no está demostrado en el consumidor de órdenes inspeccionado | no puede probarse enforcement por esa dimensión | `ORIGO-AUTH-009::<implementation_unit_id>` | unidad materializa o consume la referencia canónica aplicable y prueba su scope |
+| la policy genérica histórica fue retirada, pero el contrato territorial final no queda probado por esa retirada | quitar un bypass no equivale a implementar autorización completa | `ORIGO-AUTH-009::<implementation_unit_id>` + owners `AUTH-SRV/AUTH-DB` aplicables | pruebas demuestran enforcement final server-side/RLS/RPC según la arquitectura materializada |
+| PDF interno requiere scope del recurso y el token externo usa otra frontera | riesgo de mezclar autorización laboral y canal externo | `ORIGO-AUTH-009::<implementation_unit_id>` + `ORIGO-AUTH-010` | sesión interna usa permiso+territorio; token externo queda resource-scoped y minimizado |
+
+Ningún hallazgo queda sin owner ni condición de salida.
+
+---
+
+#### 35. Frontera con ORIGO-AUTH-010
+
+`ORIGO-AUTH-009` decide **qué recurso territorial puede alcanzar el actor**.
+
+`ORIGO-AUTH-010` decidirá **qué campos sensibles y datos de precio puede ver o extraer dentro de ese recurso autorizado**, además del endurecimiento del documento externo.
+
+Por tanto:
+
+```text
+ORDEN TERRITORIALMENTE AUTORIZADA
+!=
+TODAS LAS COLUMNAS AUTORIZADAS
+```
+
+Esta tarea no asigna exposición de precios, contratos, impuestos, márgenes, cuentas bancarias ni otros datos sensibles por el solo hecho de autorizar la orden.
+
+---
+
+#### 36. Frontera con recepción y NEXO
+
+La orden conserva su territorio comercial en ORIGO.
+
+La recepción y el ingreso físico conservan sus contratos propios:
+
+```text
+ORIGO PURCHASE_ORDER
+→ autorización comercial / territorial de la orden
+
+ORIGO PURCHASE_RECEIPT
+→ aceptación y recepción comercial
+
+NEXO
+→ entrada, ubicación y custodia física
+```
+
+Una sede receptora autorizada para una recepción no reescribe el territorio histórico de la orden ni concede mutaciones administrativas sobre ella.
+
+---
+
+#### 37. Frontera con NUMERA y centros de costo
+
+ORIGO puede consumir una referencia de centro de costo para limitar, atribuir y preservar la compra.
+
+No adquiere por ello autoridad para:
+
+- crear centros de costo;
+- modificar su estructura;
+- cambiar su vigencia;
+- redefinir su clasificación financiera;
+- publicar efectos contables.
+
+El evento económico posterior conservará `cost_center_ref` cuando corresponda y deberá validarlo según su propio contrato; una distribución financiera posterior no borra la atribución fuente de la compra.
+
+---
+
+#### 38. Auditoría mínima territorial
+
+Cada decisión sensible sobre una orden debe poder reconstruir, según aplique:
+
+- actor/principal;
+- permiso exacto;
+- carril base u operativo;
+- `purchase_order_id`;
+- negocio;
+- destinos reales;
+- destinos autorizados;
+- áreas relevantes;
+- centro o centros de costo aplicables;
+- scope/grant que hizo match;
+- contexto operativo cuando aplique;
+- estado y versión;
+- acción solicitada;
+- decisión `ALLOW` / `DENY`;
+- razones de bloqueo;
+- timestamp y correlación.
+
+La auditoría no convierte el dato registrado en autoridad retroactiva.
+
+---
+
+#### 39. Materialización física posterior
+
+El contrato global queda listo para materializaciones futuras:
+
+```text
+ORIGO-AUTH-009::<implementation_unit_id>
+```
+
+Cada unidad deberá resolver por su lifecycle:
+
+1. `implementation_unit_id` exacto;
+2. package o packages consumidores;
+3. `E5-GATE-008::<package_id>` aplicable;
+4. target paths reales;
+5. capa autoritativa a modificar;
+6. pruebas negativas por rol, sede, destino, centro de costo y estado;
+7. compatibilidad con consumidores;
+8. rollback;
+9. evidencia de enforcement desplegado.
+
+Este marcador no selecciona ni autoriza ninguna de esas unidades.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la limitación de órdenes por permiso, sede o centro de costo, estado y columnas, la resolución territorial determinista, la protección server-side, la segregación de funciones, la revalidación de decisiones stale y la auditoría de autorización ya están protegidas por requisitos canónicos vigentes. Esta tarea especializa esas obligaciones sobre las cinco capacidades de `PURCHASE_ORDER` sin introducir una obligación verificable nueva fuera del contrato existente.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-002` para lectura y mutación de órdenes por permiso, sede/centro de costo, estado y columnas y para el canal externo de documento;
+- `TREQ-ORIGO-004` para políticas de aprobación por empresa, sede, centro de costo, categoría, importe, riesgo y urgencia y separación de funciones;
+- `TREQ-AUTH-001` para autorización por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-004` para equivalencia de decisiones entre evaluadores;
+- `TREQ-AUTH-009` para resolución territorial determinista y denegación de cruces;
+- `TREQ-AUTH-013` para revalidación server-side de actor, permiso, territorio, recurso, estado y efecto;
+- `TREQ-AUTH-014` para impedir reutilización de decisiones stale;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones protegidas.
+
+Esta sección es solo trazabilidad de cobertura existente.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará en el checkout local después de incorporar el artefacto. |
+| LOCAL | `NOT_EXECUTED` | Formato, quality, delivery, topología, EOL, dominio, plan y TREQ quedan pendientes del checkout local de la tarea. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main@c4425c5a8ac0e9da078bff8ec2b11b9db7743bef`, `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, owner ORIGO, `active-sequence.previous_task_id = ORIGO-AUTH-008`, coincidencia exacta del bloque 008 publicado con el artefacto aprobado, topología `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`, `PURCHASE_ORDER`, `PO_DESTINATIONS`, contratos de scope/recurso, matrices base/operativas, 04A ORIGO, integración de `cost_center_ref`, runtime de `purchase-orders` y la migración que retira `employees_crud_purchase_orders`. |
+| OPERATIVA | `NOT_EXECUTED` | No se probaron actores, órdenes, sedes, centros de costo, multidestino, denegaciones, PDF, sesiones operativas ni ambientes desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global no crea ni autoriza ninguna instancia `ORIGO-AUTH-009::<implementation_unit_id>`. |
+
+---
+
+#### 43. Criterios de aceptación
+
+- [x] La topología queda `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] El marcador global no crea una instancia física.
+- [x] Se territorializan exactamente cinco capacidades de orden.
+- [x] El recurso es `PURCHASE_ORDER` y el alcance es `PO_DESTINATIONS`.
+- [x] `purchase_order_id` es localizador y no autoridad.
+- [x] `site_id`, `area_id` y `cost_center_ref` quedan diferenciados.
+- [x] `selected_site_id` y `employees.site_id` no sustituyen el scope canónico.
+- [x] `employee_sites` permanece fuente para sedes administrativas asignadas cuando el scope lo requiera.
+- [x] un helper de centro de costo no concede autorización.
+- [x] lectura permite únicamente destinos autorizados y proyección parcial cuando el contrato lo permita.
+- [x] mutación exige todos los destinos y centros de costo afectados.
+- [x] una edición territorial exige autoridad sobre origen y destino.
+- [x] `G(B)` no es wildcard de acciones.
+- [x] `AS-REL`, `G-SRC`, `CTX-WH-PURCHASE-ORDERS` y `CTX-MGR-ORIGO` conservan su semántica.
+- [x] crear, aprobar, actualizar y cancelar conservan sus grants ya definidos.
+- [x] el carril operativo solo consulta órdenes relacionadas con el contexto activo.
+- [x] el PDF interno consume permiso y territorio de orden.
+- [x] el token externo no adquiere scope laboral.
+- [x] filtros y parámetros cliente no son autoridad.
+- [x] se documenta la ausencia no demostrada de centro de costo en el consumidor sin inventar columna.
+- [x] se reconoce que la policy genérica histórica fue retirada y no se presenta como baseline actual.
+- [x] la retirada de la policy no se confunde con prueba de enforcement territorial final.
+- [x] cada hallazgo tiene owner y condición de salida.
+- [x] no se crean ni modifican requisitos de prueba.
+- [x] no se ejecutan cambios físicos desde este marcador.
+
+---
+
+#### 44. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica `vento-origo`;
+- crea o altera `site_id`, `area_id` o `cost_center_ref` en base de datos;
+- inventa una columna de centro de costo;
+- crea o modifica centros de costo;
+- modifica `get_site_cost_center`;
+- crea RLS, RPC, policies, grants o funciones;
+- modifica Server Actions;
+- crea migraciones;
+- modifica datos;
+- ejecuta Supabase;
+- cambia matrices RBAC ya aprobadas;
+- cambia las capacidades definidas por `ORIGO-AUTH-004..008`;
+- autoriza recepción;
+- autoriza inventario físico;
+- define campos sensibles o precios visibles;
+- endurece el secreto o vigencia del PDF externo;
+- redefine estados de `VPROC-0021` o `VPROC-0022`;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza una instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-AUTH-010`.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-008 — Definir permisos de corrección`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-010 — Proteger precios y datos sensibles`
+
 ### [ ] ORIGO-AUTH-010 — Proteger precios y datos sensibles
 ### [ ] ORIGO-AUTH-011 — Registrar actor de recepción
 ### [ ] ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
