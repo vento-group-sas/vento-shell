@@ -2566,7 +2566,1180 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-004 — Definir permisos de consulta`
 
-### [ ] ORIGO-AUTH-004 — Definir permisos de consulta
+### ✅ ORIGO-AUTH-004 — Definir permisos de consulta
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-003 — Inventariar vistas de recepción
+**Tarea siguiente:** ORIGO-AUTH-005 — Definir permisos de creación
+**Tipo de tarea:** documental; definición cerrada de los permisos canónicos de consulta de ORIGO, sus recursos, modalidades, scopes, prerrequisitos, proyecciones, asignaciones, denegaciones, compatibilidad con dispositivos/simulación, binding a rutas y pantallas y brechas AS-IS del consumidor, sin crear permisos mutantes ni materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, catálogo de permisos, roles, rutas, navegación, Server Actions, RLS, RPC, tablas, datos, Supabase, migraciones, Storage, secretos, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma inequívoca qué capacidad de consulta debe proteger cada recurso de ORIGO, cómo se resuelve por carril base u operativo, qué alcance y contexto exige, qué proyección puede entregar y qué acciones quedan expresamente fuera de la lectura.
+
+La regla central queda:
+
+```text
+ORIGO.ACCESS
+!=
+PERMISO DE CONSULTA DEL RECURSO
+!=
+PERMISO DE MUTACIÓN
+!=
+ALCANCE TERRITORIAL
+!=
+PROYECCIÓN DE CAMPOS
+```
+
+Esta tarea no crea un permiso genérico de consulta de ORIGO. Congela cuatro capacidades de lectura ya existentes en el catálogo canónico y define su uso obligatorio en las superficies inventariadas por `ORIGO-AUTH-001..003`.
+
+---
+
+#### 2. Frontera recibida de ORIGO-AUTH-003
+
+`ORIGO-AUTH-003` entrega un inventario cerrado de recepción con:
+
+```text
+2 páginas AS-IS
+2 Server Actions
+4 pantallas canónicas de recepción
+9 estados VPROC-0022
+```
+
+Además deja demostrado que:
+
+- `/purchase-orders*` pertenece al universo de compras inventariado por `ORIGO-AUTH-001`;
+- `/suppliers*` pertenece al universo de proveedores inventariado por `ORIGO-AUTH-002`;
+- `/receipts*` pertenece al universo de recepción inventariado por `ORIGO-AUTH-003`;
+- `/product-master-review` permanece como superficie administrativa de catálogo ya inventariada transversalmente;
+- una ruta o pantalla visible no demuestra autorización suficiente;
+- los efectos mutantes quedan fuera del permiso de consulta.
+
+El handoff queda:
+
+```text
+ORIGO-AUTH-001..003
+→ universos de recursos y superficies
+→ ORIGO-AUTH-004
+→ permiso exacto de consulta por recurso
+```
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente establece:
+
+```text
+ORIGO-AUTH-001..008
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-AUTH-004` define una sola vez el contrato documental de consulta;
+2. no existe identidad física `ORIGO-AUTH-004::<implementation_unit_id>`;
+3. no se crean permisos nuevos en Supabase ni en paquetes compartidos;
+4. no se migra ningún alias legacy en esta tarea;
+5. no se corrige código consumidor;
+6. no se modifica RLS, RPC, grants, navegación ni matrices ya aprobadas;
+7. las brechas observadas quedan asignadas a tareas posteriores con condición de salida verificable.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+d00dac8757d958d50e9f6ce06e0ccd9a85970d25
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+Se contrastaron como mínimo:
+
+- `ORIGO-AUTH-001` y `ORIGO-AUTH-002` materializadas en el owner remoto;
+- artefacto completo aprobado de `ORIGO-AUTH-003` todavía pendiente de publicación;
+- catálogo canónico de permisos y aliases;
+- clasificación `BASE_ONLY` / `BASE_OR_OPERATIONAL`;
+- alcance de permisos;
+- prerequisitos de turno y check-in;
+- compatibilidad con dispositivo compartido;
+- comportamiento de simulación;
+- contrato de recurso;
+- matrices RBAC de propietario, gerencias, roles funcionales, producción, logística y excepciones;
+- inventario de rutas ORIGO;
+- inventario de Server Actions;
+- guard y helper de permisos del consumidor;
+- páginas de compras, proveedores, recepción y revisión de productos;
+- sincronizador de navegación;
+- Registro 04A de ORIGO y AUTH.
+
+El remoto todavía no contiene la incorporación de `ORIGO-AUTH-003`; el artefacto aprobado de esa tarea es la base inmediata autorizada para esta preparación anticipada.
+
+---
+
+#### 5. Universo exacto de permisos de consulta ORIGO
+
+El catálogo canónico vigente contiene exactamente cuatro permisos de consulta internos de ORIGO distintos del acceso general a la aplicación:
+
+| Permiso canónico | Capacidad | Modalidad | Solo lectura |
+| --- | --- | --- | --- |
+| `origo.procurement.purchase_orders.view` | consultar órdenes de compra | `BASE_OR_OPERATIONAL` | sí |
+| `origo.procurement.receipts.view` | consultar recepciones de compra | `BASE_OR_OPERATIONAL` | sí |
+| `origo.procurement.suppliers.view` | consultar proveedores | `BASE_OR_OPERATIONAL` | sí |
+| `origo.catalog.product_reviews.view` | consultar revisiones de productos | `BASE_ONLY` | sí |
+
+Resultado:
+
+```text
+PERMISOS DE CONSULTA ORIGO: 4
+BASE_OR_OPERATIONAL: 3
+BASE_ONLY: 1
+PERMISOS MUTANTES CREADOS: 0
+ALIASES LEGACY APROBADOS COMO DESTINO: 0
+```
+
+`origo.access` permanece como capacidad de entrada a la aplicación y no sustituye ninguno de los cuatro permisos anteriores.
+
+---
+
+#### 6. Regla de decisión por carriles
+
+Para los tres permisos `BASE_OR_OPERATIONAL`, la autorización final de consulta se resuelve como:
+
+```text
+ALLOW_VIEW
+=
+ALLOW_BASE_COMPLETO
+OR
+ALLOW_OPERATIVO_COMPLETO
+```
+
+Está prohibido fabricar autorización mezclando piezas incompletas de ambos carriles.
+
+Ejemplos prohibidos:
+
+```text
+permiso base
++
+territorio operativo ajeno
+→ NO
+
+rol operativo
++
+cobertura administrativa de otro carril
+→ NO
+
+visibilidad de menú
++
+recurso conocido
+→ NO
+```
+
+Para `origo.catalog.product_reviews.view`:
+
+```text
+ALLOW_VIEW
+=
+ALLOW_BASE_COMPLETO
+```
+
+No existe carril operativo para esa capacidad.
+
+---
+
+#### 7. Prerrequisitos comunes de toda consulta protegida
+
+Toda consulta real de recurso exige, como mínimo:
+
+1. principal autenticado válido;
+2. acceso válido a ORIGO cuando la superficie pertenezca a la aplicación;
+3. permiso canónico exacto del recurso;
+4. modalidad compatible con el actor;
+5. alcance del permiso compatible con el recurso;
+6. contexto requerido por el carril seleccionado;
+7. recurso resuelto en servidor cuando la consulta es por identidad concreta;
+8. proyección de campos limitada al permiso y finalidad;
+9. decisión fail-closed ante ausencia, ambigüedad o error de autorización;
+10. auditoría conforme al contrato transversal cuando aplique.
+
+La interfaz puede ocultar navegación, pero esa ocultación no constituye autorización.
+
+---
+
+#### 8. `origo.procurement.purchase_orders.view`
+
+Definición canónica:
+
+```text
+CAPACIDAD
+Consultar órdenes de compra registradas y su estado.
+
+MODALIDAD
+BASE_OR_OPERATIONAL
+
+RECURSO
+PURCHASE_ORDER
+
+CLAVE
+purchase_order_id o filtro autorizado
+
+ALCANCE
+PO_DESTINATIONS
+```
+
+La consulta puede incluir, dentro de la proyección autorizada:
+
+- identidad y referencia de la orden;
+- estado;
+- proveedor relacionado;
+- negocio y sedes/destinos autorizados;
+- líneas, cantidades y presentaciones necesarias;
+- fechas operativas;
+- información económica únicamente cuando el campo no esté restringido por la protección posterior de datos sensibles;
+- cantidades recibidas o pendientes cuando formen parte del seguimiento autorizado.
+
+No concede:
+
+- crear orden;
+- editar orden;
+- eliminar orden;
+- aprobar o rechazar compra;
+- marcarla como enviada;
+- registrar recepción;
+- abrir datos sensibles fuera de la proyección autorizada;
+- autoridad sobre una sede no autorizada por conocer una orden multidestino.
+
+---
+
+#### 9. Alcance territorial de órdenes
+
+La regla de recurso aprobada exige considerar:
+
+```text
+negocio
++
+proveedor relacionado
++
+todos los destinos o áreas mostrados
+```
+
+Para consulta base de propietario o gerente general puede existir alcance amplio `G(B)` dentro de la organización productiva ordinaria.
+
+Para gerente, supervisor u otros roles con cobertura administrativa acotada:
+
+```text
+AS-REL
+→ la orden debe involucrar un recurso o destino dentro de la cobertura autorizada
+```
+
+Para carril operativo:
+
+```text
+orden vinculada a sede/área activa
++
+turno válido
++
+check-in válido
++
+recurso resuelto
+```
+
+Una orden multidestino no concede automáticamente visibilidad completa de todos sus destinos si alguno queda fuera del alcance permitido. La salida puede requerir proyección parcial.
+
+---
+
+#### 10. Prerrequisito operativo de órdenes
+
+El catálogo fija:
+
+```text
+origo.procurement.purchase_orders.view
+→ T+C
+```
+
+Por tanto, en carril operativo exige:
+
+```text
+TURNO PUBLICADO Y VIGENTE
++
+CHECK-IN ACTIVO
+```
+
+El mismo permiso usado por carril base no hereda esa exigencia cuando su contrato base autoriza la consulta sin turno ni check-in.
+
+---
+
+#### 11. `origo.procurement.receipts.view`
+
+Definición canónica:
+
+```text
+CAPACIDAD
+Consultar recepciones de compra registradas.
+
+MODALIDAD
+BASE_OR_OPERATIONAL
+
+RECURSO
+PURCHASE_RECEIPT
+
+CLAVE
+receipt_id o filtro autorizado
+
+ALCANCE
+RECEIPT_DESTINATION
+```
+
+La consulta puede incluir:
+
+- identidad de la recepción;
+- referencia de orden cuando exista;
+- sede y destino receptor autorizados;
+- proveedor relacionado;
+- cantidades;
+- diferencias visibles dentro del alcance;
+- estado;
+- productos y presentaciones necesarias;
+- actor receptor como relación, no como propietario del recurso;
+- historial versionado permitido.
+
+No concede:
+
+- registrar recepción;
+- aceptar físicamente mercancía;
+- reversar;
+- corregir;
+- aprobar diferencias;
+- alterar inventario;
+- modificar costos;
+- cambiar cantidades recibidas de la orden.
+
+---
+
+#### 12. Alcance y contexto de recepciones
+
+La recepción se limita por:
+
+```text
+orden
++
+sede
++
+área receptora
++
+ubicación
++
+productos recibidos
+```
+
+El catálogo fija para carril operativo:
+
+```text
+origo.procurement.receipts.view
+→ T+C
+```
+
+Una recepción consultable desde un punto general de recepción de sede no convierte toda la sede ni todas sus áreas en territorio irrestricto. El recurso concreto sigue gobernando el alcance final.
+
+---
+
+#### 13. `origo.procurement.suppliers.view`
+
+Definición canónica:
+
+```text
+CAPACIDAD
+Consultar proveedores registrados y su información general.
+
+MODALIDAD
+BASE_OR_OPERATIONAL
+
+RECURSO
+SUPPLIER
+
+CLAVE
+supplier_id o relación desde orden/recepción
+
+ALCANCE
+SUPPLIER_SCOPE
+```
+
+El proveedor es un recurso organizacional o de negocio.
+
+Regla obligatoria:
+
+```text
+PROVEEDOR
+!=
+RECURSO PROPIEDAD DE UNA SEDE
+```
+
+La sede puede actuar como filtro relacional, pero `employee_sites` no crea propiedad sobre el proveedor.
+
+---
+
+#### 14. Proyección base y operativa de proveedor
+
+Carril base autorizado:
+
+- puede consultar terceros dentro del ámbito comercial permitido;
+- conserva la relación organizacional o de negocio;
+- puede acceder a la información general autorizada;
+- sigue sujeto a protección de campos sensibles.
+
+Carril operativo autorizado:
+
+- solo obtiene proveedores relacionados con el recurso activo;
+- recibe proyección mínima necesaria para abastecimiento o recepción;
+- no obtiene el directorio completo por tener una sede activa;
+- no obtiene datos bancarios, negociación, contratos o precios sensibles por inferencia.
+
+El catálogo fija:
+
+```text
+origo.procurement.suppliers.view
+→ T
+```
+
+En carril operativo requiere turno publicado y vigente, pero no exige por sí mismo check-in para la proyección mínima de referencia previa al inicio físico.
+
+---
+
+#### 15. Clasificación configurativa de proveedor
+
+`origo.procurement.suppliers.view` es el único permiso ORIGO actual clasificado como:
+
+```text
+is_configuration = true
+```
+
+Esto significa que el proveedor es dato maestro reutilizado.
+
+No significa:
+
+- capacidad de crear proveedor;
+- capacidad de editar proveedor;
+- capacidad de activar/desactivar;
+- autoridad sobre datos contractuales sensibles;
+- autoridad para reescribir relaciones producto-proveedor.
+
+La lectura configurativa sigue siendo solo lectura.
+
+---
+
+#### 16. `origo.catalog.product_reviews.view`
+
+Definición canónica:
+
+```text
+CAPACIDAD
+Consultar revisiones de productos.
+
+MODALIDAD
+BASE_ONLY
+
+RECURSO
+PRODUCT_REVIEW_QUEUE
+
+CLAVE
+review_id o filtro de cola
+
+ALCANCE
+ORG exacto
+```
+
+La capacidad permite consultar la cola organizacional de revisión dentro del alcance base autorizado.
+
+No concede:
+
+- aprobar producto;
+- rechazar solicitud;
+- crear producto;
+- crear presentación;
+- modificar proveedor;
+- mover inventario;
+- registrar recepción;
+- convertir filtros de sede en autoridad territorial.
+
+---
+
+#### 17. Regla BASE_ONLY de revisión de productos
+
+Para esta capacidad:
+
+```text
+turno
+check-in
+rol operativo
+gerencia_operativa
+bodeguero
+```
+
+no pueden fabricar autoridad.
+
+Un filtro por sede puede reducir una cola mostrada, pero no transforma `PRODUCT_REVIEW_QUEUE` en recurso territorial de sede.
+
+El permiso se resuelve exclusivamente desde el carril base y la cobertura organizacional aprobada.
+
+---
+
+#### 18. Matriz canónica de modalidad y contexto
+
+| Permiso | Modalidad | Carril operativo | Prerrequisito operativo | Recurso principal |
+| --- | --- | --- | --- | --- |
+| `origo.procurement.purchase_orders.view` | `BASE_OR_OPERATIONAL` | sí | `T+C` | `PURCHASE_ORDER` |
+| `origo.procurement.receipts.view` | `BASE_OR_OPERATIONAL` | sí | `T+C` | `PURCHASE_RECEIPT` |
+| `origo.procurement.suppliers.view` | `BASE_OR_OPERATIONAL` | sí | `T` | `SUPPLIER` |
+| `origo.catalog.product_reviews.view` | `BASE_ONLY` | no | no aplica | `PRODUCT_REVIEW_QUEUE` |
+
+No existe equivalencia entre estas cuatro decisiones.
+
+---
+
+#### 19. Matriz base — asignaciones positivas
+
+Las matrices canónicas existentes conceden las cuatro capacidades según rol base de la siguiente forma:
+
+| Rol base | Órdenes | Recepciones | Proveedores | Revisiones de producto |
+| --- | --- | --- | --- | --- |
+| `propietario` | ASIGNAR | ASIGNAR | ASIGNAR | ASIGNAR |
+| `gerente_general` | ASIGNAR | ASIGNAR | ASIGNAR | ASIGNAR |
+| `gerente` | ASIGNAR | ASIGNAR | ASIGNAR | ASIGNAR |
+| `supervisor` | ASIGNAR | ASIGNAR | ASIGNAR | NO ASIGNAR |
+| `auxiliar_administrativa` | ASIGNAR | ASIGNAR | ASIGNAR | ASIGNAR |
+| `contador` | ASIGNAR | ASIGNAR | ASIGNAR | NO ASIGNAR |
+
+La asignación nunca elimina el scope propio del recurso ni la protección de campos.
+
+---
+
+#### 20. Roles base sin consulta ORIGO ordinaria
+
+Las matrices vigentes niegan por defecto las cuatro capacidades a `marketing`.
+
+La ausencia de asignación expresa se interpreta como:
+
+```text
+DENY
+```
+
+No como “permitir porque tiene acceso a la aplicación”.
+
+---
+
+#### 21. Matriz operativa
+
+| Rol operativo | Órdenes | Recepciones | Proveedores | Revisiones de producto |
+| --- | --- | --- | --- | --- |
+| `bodeguero` | ASIGNAR OPERATIVO | ASIGNAR OPERATIVO | ASIGNAR OPERATIVO | NO ASIGNAR |
+| `gerencia_operativa` | ASIGNAR OPERATIVO | ASIGNAR OPERATIVO | ASIGNAR OPERATIVO | NO ASIGNAR |
+| `conductor_logistica` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `cajero_satelite` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `barista_satelite` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `cocinero_satelite` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `servicio_salon` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `mostrador_satelite` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `operador_integral_satelite` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `produccion_cocina` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `produccion_panaderia` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+| `produccion_reposteria` | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR | NO ASIGNAR |
+
+Estas decisiones no crean nuevas filas RBAC; esta tarea las consume como contrato vigente.
+
+---
+
+#### 22. Proyección operativa del bodeguero
+
+Para `bodeguero`, la consulta queda acotada a:
+
+```text
+ORDEN
+→ aprobada o vigente
+→ destino receptor compatible con sede/bodega activa
+→ campos necesarios para recepción
+
+RECEPCIÓN
+→ vinculada a sede/bodega activa
+→ cantidades, diferencias y estado
+
+PROVEEDOR
+→ identidad mínima necesaria para entrega/documentos
+```
+
+Quedan excluidos:
+
+- datos bancarios;
+- negociación;
+- contratos;
+- precios no necesarios;
+- administración del maestro;
+- revisión administrativa de productos.
+
+---
+
+#### 23. Proyección operativa de gerencia_operativa
+
+`gerencia_operativa` puede consultar órdenes, recepciones y proyección mínima de proveedores únicamente cuando estén vinculadas con entregas o abastecimientos de la sede activa.
+
+La consulta operativa exige:
+
+```text
+actor activo
++
+turno publicado y vigente
++
+check-in cuando el permiso sea T+C
++
+sede/área compatibles
++
+permiso exacto
++
+recurso resuelto en servidor
+```
+
+Nunca produce alcance global.
+
+---
+
+#### 24. Dispositivo compartido
+
+La compatibilidad aprobada es:
+
+| Permiso | Requisito de dispositivo |
+| --- | --- |
+| `origo.procurement.purchase_orders.view` | `STANDARD` |
+| `origo.procurement.receipts.view` | `STANDARD` |
+| `origo.procurement.suppliers.view` | `STANDARD` |
+| `origo.catalog.product_reviews.view` | `STRONG` |
+
+El dispositivo no satisface por sí mismo:
+
+- actor efectivo;
+- turno;
+- check-in;
+- permiso;
+- territorio;
+- scope de recurso.
+
+`STRONG` para revisión de productos exige reautenticación fuerte en terminal autorizada y no convierte esa capacidad en operativa.
+
+---
+
+#### 25. Simulación
+
+La simulación conserva la siguiente exposición:
+
+| Permiso | Exposición simulada |
+| --- | --- |
+| `origo.procurement.purchase_orders.view` | `DECISION` |
+| `origo.procurement.receipts.view` | `DECISION` |
+| `origo.procurement.suppliers.view` | `DECISION` |
+| `origo.catalog.product_reviews.view` | `FULL` con datos sintéticos, vacíos o enmascarados |
+
+`DECISION` significa que la simulación puede mostrar decisión y razones, pero no documentos reales de compra, recepciones ni información comercial real del proveedor.
+
+`FULL` en revisión de productos no concede datos reales: solo permite previsualizar navegación/componentes con datos sintéticos, vacíos o enmascarados. Los datos reales siguen dependiendo de la autorización real del actor.
+
+---
+
+#### 26. Binding de rutas de consulta
+
+El binding objetivo queda:
+
+| Ruta / superficie | Permiso mínimo de consulta | Nota |
+| --- | --- | --- |
+| `/purchase-orders` | `origo.procurement.purchase_orders.view` | listado y filtros autorizados |
+| `/purchase-orders/[id]` | `origo.procurement.purchase_orders.view` | detalle del recurso autorizado |
+| `GET /purchase-orders/[id]/pdf` con sesión interna | `origo.procurement.purchase_orders.view` | además de las reglas específicas del documento |
+| `/suppliers` | `origo.procurement.suppliers.view` | directorio/proyección según carril |
+| `/receipts` | `origo.procurement.receipts.view` | cola/historial autorizado |
+| `/product-master-review` | `origo.catalog.product_reviews.view` | carril base únicamente |
+
+Las rutas mutantes no quedan autorizadas por esta matriz.
+
+---
+
+#### 27. Rutas mutantes que NO quedan autorizadas por `.view`
+
+El permiso de consulta no basta para:
+
+```text
+/purchase-orders/new
+/purchase-orders/[id]/edit
+/suppliers/new
+/suppliers/[id]/edit
+/receipts/new
+```
+
+Estas superficies pueden consultar datos auxiliares necesarios para su formulario, pero el acceso y las acciones mutantes deben quedar gobernados por las capacidades específicas que definan `ORIGO-AUTH-005..008` y por los contratos transversales correspondientes.
+
+La existencia de un permiso `.view` nunca se interpreta como permiso implícito de crear, editar, aprobar, recibir, corregir o eliminar.
+
+---
+
+#### 28. Binding de pantallas canónicas
+
+| Pantalla | Consulta propietaria | Regla |
+| --- | --- | --- |
+| `VSCREEN-0070 — Catálogo de proveedores` | `origo.procurement.suppliers.view` | consulta del catálogo según scope |
+| `VSCREEN-0071 — Alta y expediente de proveedor` | `origo.procurement.suppliers.view` para la parte de lectura | acciones de alta/edición requieren permiso mutante separado |
+| `VSCREEN-0073 — Editor de orden de compra` | `origo.procurement.purchase_orders.view` solo para lectura de contexto | editar/crear no queda autorizado |
+| `VSCREEN-0075 — Detalle y seguimiento de orden` | `origo.procurement.purchase_orders.view` | consulta del recurso y seguimiento permitido |
+| `VSCREEN-0076 — Cola de recepciones` | `origo.procurement.receipts.view` | consulta de recepciones pendientes/relacionadas |
+| `VSCREEN-0077 — Recepción total o parcial` | `origo.procurement.receipts.view` solo para leer contexto | registrar recepción requiere capacidad mutante separada |
+| `VSCREEN-0078 — Resolución de diferencias de recepción` | `origo.procurement.receipts.view` solo para leer contexto | resolver/corregir requiere capacidad separada |
+| `VSCREEN-0079 — Historial y auditoría de abastecimiento` | autorización por recurso mostrado | no existe permiso compuesto que sustituya los permisos de cada recurso |
+| `VSCREEN-0145 — Contratos, precios y condiciones de proveedor` | `origo.procurement.suppliers.view` solo para identidad/proyección general | campos sensibles se rigen por `ORIGO-AUTH-010` |
+| `VSCREEN-0146 — Desempeño y reclamaciones de proveedor` | `origo.procurement.suppliers.view` para identidad/proyección permitida | gestionar reclamaciones o datos sensibles no nace del `.view` |
+
+---
+
+#### 29. Regla para pantallas compuestas
+
+Una pantalla que combina orden, proveedor y recepción no recibe un permiso “superior” por composición.
+
+Debe evaluar cada recurso:
+
+```text
+SECCIÓN DE ORDEN
+→ purchase_orders.view
+
+SECCIÓN DE RECEPCIÓN
+→ receipts.view
+
+FICHA COMPLETA DE PROVEEDOR
+→ suppliers.view
+
+COLA DE REVISIÓN DE PRODUCTO
+→ product_reviews.view
+```
+
+Una proyección mínima embebida puede formar parte del contrato del recurso principal cuando así esté aprobado.
+
+Ejemplo:
+
+```text
+purchase_orders.view
+→ puede mostrar identidad mínima del proveedor dentro de la orden
+→ NO concede abrir el directorio completo de proveedores
+```
+
+---
+
+#### 30. Menú y navegación
+
+La visibilidad de navegación debe derivar del permiso objetivo correspondiente, pero:
+
+```text
+MENÚ VISIBLE
+!=
+AUTORIZACIÓN DEL RECURSO
+```
+
+Y:
+
+```text
+MENÚ OCULTO
+!=
+PROTECCIÓN SUFICIENTE DE URL DIRECTA
+```
+
+Toda URL directa debe producir la misma decisión server-side que la navegación ordinaria.
+
+---
+
+#### 31. Documento PDF interno de orden
+
+El handler `GET /purchase-orders/[id]/pdf` conserva dos canales conceptualmente distintos:
+
+1. acceso interno autenticado;
+2. acceso externo mediante token válido conforme al contrato específico del documento.
+
+Para el canal interno:
+
+```text
+origo.access
+```
+
+por sí solo no es permiso suficiente de consulta de la orden.
+
+El permiso de recurso aplicable es:
+
+```text
+origo.procurement.purchase_orders.view
+```
+
+El canal externo por token no se convierte en asignación RBAC y su protección de secreto, scope, vigencia y campos permanece en `ORIGO-AUTH-010` y requisitos existentes.
+
+---
+
+#### 32. Brecha AS-IS — compras
+
+El runtime verificado de:
+
+```text
+/purchase-orders
+/purchase-orders/[id]
+/purchase-orders/new
+/purchase-orders/[id]/edit
+```
+
+usa actualmente `requireAppAccess({ appId: "origo" })` sin demostrar en esas páginas un `permissionCode` específico de órdenes.
+
+Clasificación:
+
+```text
+AS_IS_GAP_PURCHASE_ORDER_VIEW_BINDING
+```
+
+Propietario de salida:
+
+- `ORIGO-AUTH-004` congela el permiso objetivo;
+- la materialización posterior deberá usar el catálogo/guard compartido sin ampliar alcance;
+- `ORIGO-AUTH-009` conserva la limitación territorial;
+- `ORIGO-AUTH-010` conserva los campos sensibles.
+
+Condición de salida:
+
+```text
+consulta de orden directa y navegación
+→ misma decisión con purchase_orders.view
+→ scope de recurso aplicado
+→ campos autorizados
+```
+
+---
+
+#### 33. Brecha AS-IS — recepción
+
+El runtime de recepción usa:
+
+```text
+procurement.receipts
+```
+
+y lo normaliza como:
+
+```text
+origo.procurement.receipts
+```
+
+mientras el catálogo canónico vigente define:
+
+```text
+origo.procurement.receipts.view
+```
+
+Clasificación:
+
+```text
+AS_IS_LEGACY_PERMISSION_ALIAS_RECEIPTS
+```
+
+Esta tarea no modifica el consumidor ni crea alias nuevo.
+
+Condición de salida:
+
+```text
+superficie de consulta de recepción
+→ permission key canónico .view
+→ compatibilidad legacy solo en frontera de migración aprobada
+```
+
+---
+
+#### 34. Brecha AS-IS — proveedores
+
+El runtime observado conserva simultáneamente:
+
+```text
+origo.suppliers.view
+origo.suppliers.manage
+fallback por roles locales
+```
+
+mientras el catálogo canónico de consulta define:
+
+```text
+origo.procurement.suppliers.view
+```
+
+Clasificación:
+
+```text
+AS_IS_LEGACY_PERMISSION_ALIAS_SUPPLIERS
+AS_IS_ROLE_FALLBACK_SUPPLIERS
+```
+
+El permiso de consulta no hereda `manage` y una lista local de roles no puede conceder autoridad final.
+
+Propietarios de salida:
+
+- consulta: contrato fijado por esta tarea;
+- creación/edición/activación/desactivación: `ORIGO-AUTH-005..008` según acción;
+- campos sensibles: `ORIGO-AUTH-010`;
+- enforcement transversal: tareas AUTH/SHELL propietarias.
+
+---
+
+#### 35. Brecha AS-IS — revisión de productos
+
+La superficie `/product-master-review` utiliza actualmente como permiso:
+
+```text
+procurement.receipts
+/
+origo.procurement.receipts
+```
+
+El catálogo canónico define:
+
+```text
+origo.catalog.product_reviews.view
+```
+
+Clasificación:
+
+```text
+AS_IS_WRONG_RESOURCE_PERMISSION_PRODUCT_REVIEW
+```
+
+La revisión de productos es `BASE_ONLY` y no puede obtener autoridad por reutilizar el permiso operativo de recepción.
+
+Condición de salida:
+
+```text
+/product-master-review
+→ product_reviews.view
+→ carril base
+→ ORG exacto
+→ sin autoridad operativa fabricada desde sede/recepción
+```
+
+---
+
+#### 36. Brecha AS-IS — sincronización de navegación
+
+`scripts/sync-navigation.mjs` conserva claves legacy o pre-canónicas para las superficies ORIGO relevantes:
+
+```text
+origo.procurement.purchase_orders
+origo.procurement.receipts
+origo.suppliers.view
+origo.product_master_review.view
+```
+
+El binding objetivo de consulta es:
+
+```text
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.suppliers.view
+origo.catalog.product_reviews.view
+```
+
+La tarea no modifica el script.
+
+Condición de salida posterior:
+
+```text
+required_permission_code
+→ clave canónica activa o alias de compatibilidad explícitamente aprobado
+→ sin strings huérfanos
+```
+
+---
+
+#### 37. Denegaciones obligatorias
+
+La consulta se deniega cuando cualquiera de estas condiciones requeridas falla:
+
+- sesión/principal inválidos;
+- `origo.access` inválido cuando aplica;
+- permiso de recurso ausente;
+- permiso legacy sin reconciliación válida;
+- recurso inexistente;
+- recurso fuera de scope;
+- sede/área incompatibles cuando aplican;
+- turno inválido para carril operativo;
+- check-in ausente cuando el permiso exige `T+C`;
+- rol operativo no autorizado;
+- dispositivo incompatible;
+- proyección solicitada excede campos permitidos;
+- decisión de simulación intenta mostrar datos reales fuera de su modo;
+- fallo técnico impide demostrar autorización.
+
+No se transforma un error técnico en `ALLOW`.
+
+---
+
+#### 38. Resultado contractual consolidado
+
+```text
+PERMISOS DE CONSULTA: 4
+
+purchase_orders.view
+→ PURCHASE_ORDER
+→ BASE_OR_OPERATIONAL
+→ T+C operativo
+
+receipts.view
+→ PURCHASE_RECEIPT
+→ BASE_OR_OPERATIONAL
+→ T+C operativo
+
+suppliers.view
+→ SUPPLIER
+→ BASE_OR_OPERATIONAL
+→ T operativo
+
+product_reviews.view
+→ PRODUCT_REVIEW_QUEUE
+→ BASE_ONLY
+```
+
+La tarea fija permiso, modalidad, recurso, scope, proyección y binding objetivo sin crear mutaciones.
+
+---
+
+#### 39. Hallazgos diferidos y propietarios
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| páginas de compra protegidas solo por acceso general | no | materialización posterior de autorización ORIGO + `ORIGO-AUTH-009/010` | permiso exacto y scope aplicados en servidor |
+| recepción usa clave sin `.view` | no | migración/adopción posterior ORIGO | consumidor usa clave canónica o alias aprobado |
+| proveedores usan aliases y fallback por rol | no | `ORIGO-AUTH-005..010` + fundación AUTH | operaciones atómicas y consulta usan catálogo canónico |
+| revisión de productos reutiliza permiso de recepción | no | adopción posterior ORIGO | usa `origo.catalog.product_reviews.view` BASE_ONLY |
+| navegación sincroniza claves legacy | no | paquete de adopción de contratos/navegación | `required_permission_code` reconciliado |
+| PDF interno solo demuestra acceso general | no | `ORIGO-AUTH-004`, `ORIGO-AUTH-009`, `ORIGO-AUTH-010` en materialización | consulta interna exige permiso de orden y scope |
+
+Ningún hallazgo autoriza una escritura en esta tarea.
+
+---
+
+#### 40. Requisitos de prueba derivados
+
+**NO GENERA REQUISITOS DE PRUEBA.**
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la lectura por permiso exacto, la prohibición de confiar en roles locales, la separación base/operativo, el scope territorial, la protección contra URL directa, el uso de claves canónicas y la limitación de datos sensibles ya poseen cobertura en el registro vigente. Esta tarea especializa esas obligaciones para los cuatro recursos de consulta ORIGO sin introducir una regla verificable nueva.
+
+---
+
+#### 41. Cobertura de prueba vigente reutilizada
+
+Trazabilidad existente, sin actualización del Registro 04A:
+
+- `TREQ-ORIGO-002` — lectura y mutación de órdenes limitadas por permiso, sede/centro de costo, estado y columnas;
+- `TREQ-ORIGO-004` — segregación del ciclo de abastecimiento y capacidades separadas;
+- `TREQ-ORIGO-005` — identidad y protección del maestro de proveedores y datos sensibles;
+- `TREQ-ORIGO-014` — páginas protegidas fallan cerradas ante ausencia de autorización/contexto;
+- `TREQ-AUTH-001` — autorización final no puede derivar de listas locales de roles;
+- `TREQ-AUTH-002` — todo permission key consumido debe existir en el catálogo vigente;
+- `TREQ-AUTH-008` — separación entre carril base y operativo;
+- `TREQ-AUTH-009` — resolución territorial determinista y denegación de cruces;
+- `TREQ-AUTH-013` — URL/API/RPC no pueden eludir autorización server-side;
+- `TREQ-AUTH-014` — cambios de contexto invalidan autoridad derivada;
+- `TREQ-AUTH-015` — decisiones protegidas conservan evidencia correlacionable.
+
+---
+
+#### 42. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó `docs:plan:build` contra un checkout local actualizado durante la preparación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se insertó la tarea en un checkout real ni se ejecutaron los validadores locales del repositorio. |
+| REMOTA | PASS | Se consultaron `vento-shell/main`, `vento-origo/main`, owner, continuidad, topología, catálogos, matrices, 04A y código consumidor vigente. |
+| OPERATIVA | NOT_EXECUTED | No se inició sesión ni se ejecutaron rutas ORIGO con actores reales, simulados o dispositivos compartidos. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no tiene materialización física propia. |
+
+---
+
+#### 43. Criterios de aceptación
+
+- [x] Existen exactamente cuatro permisos de consulta ORIGO distintos de `origo.access`.
+- [x] Los cuatro IDs coinciden con el catálogo canónico vigente.
+- [x] Tres permisos conservan `BASE_OR_OPERATIONAL` y uno `BASE_ONLY`.
+- [x] Órdenes y recepciones conservan prerrequisito operativo `T+C`.
+- [x] Proveedores conserva prerrequisito operativo `T`.
+- [x] Revisión de productos no adquiere carril operativo.
+- [x] Cada permiso conserva su recurso canónico.
+- [x] El proveedor no se convierte en recurso propiedad de una sede.
+- [x] Las pantallas compuestas autorizan cada recurso por separado.
+- [x] `.view` no concede crear, editar, aprobar, recibir, corregir, reversar ni eliminar.
+- [x] Se preservan asignaciones y denegaciones de matrices RBAC vigentes.
+- [x] Se preserva compatibilidad de dispositivo `STANDARD` / `STRONG`.
+- [x] Se preserva comportamiento de simulación `DECISION` / `FULL` según permiso.
+- [x] Se identifican los permission keys legacy observados sin convertirlos en destino canónico.
+- [x] Se identifica la brecha de páginas de compra protegidas solo por acceso general.
+- [x] Se identifica la reutilización incorrecta del permiso de recepción en revisión de productos.
+- [x] Se identifica la brecha del PDF interno sin crear un nuevo canal de autoridad.
+- [x] Toda brecha tiene propietario y condición de salida.
+- [x] No se crea ningún permiso mutante.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, Supabase, migración, datos ni despliegue.
+
+---
+
+#### 44. Límites
+
+Esta tarea no:
+
+- crea permisos de creación;
+- crea permisos de aprobación;
+- crea permisos de recepción;
+- crea permisos de corrección;
+- define autorización final de eliminación;
+- modifica matrices RBAC;
+- convierte `origo.access` en permiso de recurso;
+- aprueba aliases legacy como claves objetivo;
+- decide el mecanismo físico de migración de aliases;
+- implementa guards;
+- modifica `has_permission`;
+- modifica RLS;
+- modifica RPC;
+- cambia el sincronizador de navegación;
+- modifica rutas ORIGO;
+- modifica `vento-origo`;
+- modifica Supabase;
+- crea migraciones;
+- cambia datos reales;
+- ejecuta pruebas operativas;
+- desarrolla `ORIGO-AUTH-005`.
+
+---
+
+#### 45. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-003 — Inventariar vistas de recepción`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-004 — Definir permisos de consulta`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-005 — Definir permisos de creación`
+
 ### [ ] ORIGO-AUTH-005 — Definir permisos de creación
 ### [ ] ORIGO-AUTH-006 — Definir permisos de aprobación
 ### [ ] ORIGO-AUTH-007 — Definir permisos de recepción
