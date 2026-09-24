@@ -140,13 +140,23 @@ export function executionDependencyGateErrors(topology, dependencies) {
   return errors;
 }
 
-export function activeDocumentaryTaskId(active) {
-  const priorityTaskId = active?.route_id !== 'NORMAL-CANONICAL-FLOW-001'
-    ? (active?.task_ids ?? []).find(
+export function activeDocumentaryTaskId(active, inventory = null) {
+  const priorityTaskIds = active?.route_id !== 'NORMAL-CANONICAL-FLOW-001'
+    ? (active?.task_ids ?? []).filter(
       (id) => typeof id === 'string' && !id.includes('::'),
-    ) ?? null
-    : null;
-  if (priorityTaskId) return priorityTaskId;
+    )
+    : [];
+  if (priorityTaskIds.length > 0) {
+    if (inventory instanceof Map) {
+      for (const id of priorityTaskIds) {
+        const task = inventory.get(id);
+        if (!task) throw new Error('La priority lane referencia una tarea documental inexistente: ' + id + '.');
+        if (stateFromMarker(task.marker) !== 'APROBADA') return id;
+      }
+      return null;
+    }
+    return priorityTaskIds[0] ?? null;
+  }
   const segment = active?.segments?.[0];
   return segment
     ? `${segment.prefix}-${String(segment.from).padStart(3, '0')}`
@@ -346,7 +356,7 @@ export function resolveTaskWorkTopology({ root = process.cwd() } = {}) {
   errors.push(...executionDependencyGateErrors(topology, dependencies));
 
   const active = JSON.parse(fs.readFileSync(path.join(baseDir, 'active-sequence.json'), 'utf8'));
-  const currentId = activeDocumentaryTaskId(active);
+  const currentId = activeDocumentaryTaskId(active, inventory);
   if (currentId && dependencies.has(currentId)) {
     for (const dependency of dependencies.get(currentId).development) {
       const owner = inventory.get(dependency);

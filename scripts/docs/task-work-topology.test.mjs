@@ -19,6 +19,35 @@ test('resuelve la tarea documental actual desde una priority lane', () => {
   );
 });
 
+test('priority lane avanza al primer task_id no aprobado del stage', () => {
+  const inventory = new Map([
+    ['PASS-UX-001', { marker: '✅' }],
+    ['PASS-UX-002', { marker: '[ ]' }],
+    ['PASS-UX-003', { marker: '[ ]' }],
+  ]);
+  assert.equal(
+    activeDocumentaryTaskId({
+      route_id: 'PASS-LOYALTY-001',
+      task_ids: ['PASS-UX-001', 'PASS-UX-002', 'PASS-UX-003'],
+    }, inventory),
+    'PASS-UX-002',
+  );
+});
+
+test('priority lane devuelve null cuando el stage documental ya quedó aprobado', () => {
+  const inventory = new Map([
+    ['PASS-UX-001', { marker: '✅' }],
+    ['PASS-UX-002', { marker: '✅' }],
+  ]);
+  assert.equal(
+    activeDocumentaryTaskId({
+      route_id: 'PASS-LOYALTY-001',
+      task_ids: ['PASS-UX-001', 'PASS-UX-002'],
+    }, inventory),
+    null,
+  );
+});
+
 test('conserva la resolución documental por segments en el flujo normal', () => {
   assert.equal(
     activeDocumentaryTaskId({
