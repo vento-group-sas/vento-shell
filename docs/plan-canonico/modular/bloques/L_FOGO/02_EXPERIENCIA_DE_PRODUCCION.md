@@ -6566,7 +6566,923 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-009 — Separar recetario operativo y administración de recetas`
 
-### [ ] FOGO-UX-009 — Separar recetario operativo y administración de recetas
+### ✅ FOGO-UX-009 — Separar recetario operativo y administración de recetas
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-008 — Mostrar receta resumida para operación
+**Tarea siguiente:** FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
+**Tipo de tarea:** diseño documental integral de la separación entre `VSCREEN-0061` como recetario operativo de solo lectura sobre `RECIPE_PUBLICATION` y `VSCREEN-0062` / `VSCREEN-0063` como carril administrativo de autoría, revisión, aprobación, publicación, versionado, retiro y exposición sensible sobre `RECIPE_DEFINITION`, preservando `VSCREEN-0064` como prueba técnica independiente, ciclo `VPROC-0016`, inmutabilidad histórica, segregación de funciones, capacidades atómicas, concurrencia y fail-closed sin convertir el permiso legacy `recipes.manage` en autoridad canónica
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, contratos generados, recetas reales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Separar de forma inequívoca la experiencia de **consultar una receta para ejecutar producción** de la experiencia de **definir, cambiar, revisar, aprobar, publicar, retirar o exportar conocimiento de receta**.
+
+La regla raíz queda:
+
+```text
+RECETARIO OPERATIVO
+=
+RECIPE_PUBLICATION
++
+VERSION PUBLICADA / VIGENTE / APLICABLE
++
+EXPOSICION MINIMA NECESARIA
++
+fogo.production.recipe_book.view
+
+!=
+
+ADMINISTRACION DE RECETAS
+=
+RECIPE_DEFINITION
++
+BORRADORES / CANDIDATOS / VERSIONADO
++
+REVISION / APROBACION / PUBLICACION
++
+AUTORIDAD ATOMICA POR ACCION
+```
+
+La experiencia no permite que una ruta, un rol productivo, la autoría, la visibilidad de una pantalla o un permiso amplio legacy conviertan lectura en mutación.
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-008
+
+`FOGO-UX-008` entrega una frontera cerrada:
+
+```text
+VSCREEN-0061
+→ RECIPE_PUBLICATION
+→ OPERACION
+→ SOLO LECTURA OPERATIVA
+→ VERSION PUBLICADA / VIGENTE / APLICABLE
+→ EXPOSICION MINIMA NECESARIA
+
+VSCREEN-0062 / VSCREEN-0063
+→ RECIPE_DEFINITION + VERSIONADO ADMINISTRATIVO
+→ ADMINISTRACION
+→ CREAR / EDITAR / REVISAR / APROBAR / PUBLICAR SEGUN AUTORIDAD
+```
+
+También entrega estas invariantes:
+
+- `fogo.production.recipe_book.view` no equivale a `fogo.production.recipes.view`;
+- consulta operativa no concede `fogo.production.batches.create`;
+- una publicación usada por un lote conserva versión exacta e historia;
+- una versión retirada no origina nuevos lotes, pero puede seguir consultable para historia autorizada;
+- el recetario operativo minimiza fórmula y datos sensibles;
+- costos, márgenes, borradores, historial administrativo y decisiones de aprobación no pertenecen por defecto a la proyección operacional;
+- las áreas productivas comparten vocabulario de lectura operativa sin compartir territorio.
+
+`FOGO-UX-009` no reabre esas decisiones. Diseña el carril administrativo que debe permanecer separado de ellas.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. el contrato UX de separación administrativo/operativo se define una sola vez;
+2. no existe instancia física propia `FOGO-UX-009::<implementation_unit_id>`;
+3. esta tarea no materializa permisos, rutas, estados, storage, RLS, RPC ni mutaciones;
+4. las materializaciones posteriores consumen este contrato dentro de sus packages e instancias propietarias;
+5. cualquier modificación de Supabase perteneciente a VENTO continúa bajo `vento-group-sas/vento-shell` y la unidad física autorizada correspondiente.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-008 — Mostrar receta resumida para operación`;
+- `OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual`;
+- `FOGO-AUTH-002 — Definir permisos por área productiva`;
+- `FOGO-AUTH-013 — Proteger lotes y recetas`;
+- `FOGO-AUTH-014 — Registrar actor y turno` como frontera de atribución;
+- `FOGO-AUTH-015 — Migrar a paquetes de vento-shell` como frontera de normalización física;
+- `VSCREEN-0061 — Receta operativa`;
+- `VSCREEN-0062 — Catálogo y editor de recetas`;
+- `VSCREEN-0063 — Revisión, aprobación y publicación de receta`;
+- `VSCREEN-0064 — Prueba de receta y rendimiento` como superficie relacionada que no debe colapsarse dentro del editor;
+- `VPROC-0016 — Gestionar desarrollo, prueba, aprobación, publicación y versión de recetas`;
+- `RECIPE_DEFINITION`, `RECIPE_PUBLICATION`, `recipe_definition_id`, `published_recipe_version_id` y `recipe_version_ref`;
+- ciclo de estados de `VPROC-0016`;
+- Registro 04A vigente de FOGO y autorización;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`;
+- versión completa aprobada de `FOGO-UX-008` SHA-256 `895249968a7f4a4c0d11b20afe0c4a6074d82031dbc41516281c0a2d8b43b649` mientras su incorporación remota permanece pendiente durante esta preparación anticipada.
+
+---
+
+#### 5. Universo canónico de superficies de receta
+
+| Pantalla | Propietario | Paso canónico | Interacción | Momento | Responsabilidad en esta tarea |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0061 — Receta operativa` | `VPROC-0016` | `VPROC-0016::STEP-CONSULT_APPLICABLE_RECIPE` | `MONITOR` | `IN_PROGRESS` | consulta operativa de publicación aplicable; no administra |
+| `VSCREEN-0062 — Catálogo y editor de recetas` | `VPROC-0016` | `VPROC-0016::STEP-AUTHOR_RECIPE` | `CONFIGURE` | `IN_PROGRESS` | catálogo administrativo, definición, candidato y edición autorizada |
+| `VSCREEN-0063 — Revisión, aprobación y publicación de receta` | `VPROC-0016` | `VPROC-0016::STEP-APPROVE_AND_PUBLISH_RECIPE` | `APPROVE` | `DECISION` | revisión y decisiones diferenciadas de aprobación/publicación |
+| `VSCREEN-0064 — Prueba de receta y rendimiento` | `VPROC-0016` | `VPROC-0016::STEP-TEST_RECIPE_AND_YIELD` | `VALIDATE` | `IN_PROGRESS` | prueba técnica y rendimiento; no se absorbe en el editor |
+
+Las cuatro pantallas pueden compartir navegación o referencias, pero no comparten automáticamente permiso, efecto ni estado empresarial.
+
+---
+
+#### 6. Separación principal de carriles
+
+La experiencia mantiene dos carriles con propósitos distintos:
+
+```text
+CARRIL OPERATIVO
+VSCREEN-0061
+RECIPE_PUBLICATION
+OPERATIONAL_ONLY
+SOLO LECTURA NECESARIA PARA PRODUCIR
+
+CARRIL ADMINISTRATIVO
+VSCREEN-0062 + VSCREEN-0063
+RECIPE_DEFINITION + VERSIONADO GOBERNADO
+BASE_ONLY / AUTORIDAD ADMINISTRATIVA
+CREACION + CAMBIO + REVISION + DECISION
+```
+
+Reglas obligatorias:
+
+1. un actor productivo ordinario no recibe administración por pertenecer a Cocina, Panadería o Repostería;
+2. un actor administrativo no se convierte en trabajador productivo por poder leer o editar una definición;
+3. el permiso de una superficie no se hereda por navegación a la otra;
+4. una publicación operacional no es una copia editable de la definición;
+5. la administración no puede usar el recetario operativo como atajo para publicar o corregir;
+6. una acción administrativa no se autoriza por el hecho de que su resultado pueda terminar visible en operación.
+
+---
+
+#### 7. Separación de recursos
+
+La frontera de recurso permanece:
+
+```text
+RECIPE_DEFINITION
+=
+IDENTIDAD ADMINISTRATIVA Y CONOCIMIENTO VERSIONADO
+
+RECIPE_PUBLICATION
+=
+VERSION PUBLICADA, INMUTABLE Y APLICABLE
+```
+
+Localizadores canónicos:
+
+```text
+recipe_definition_id
+published_recipe_version_id
+recipe_version_ref
+```
+
+`RECIPE_DEFINITION` puede tener candidatos, borradores, revisión y cambios.
+
+`RECIPE_PUBLICATION` representa una versión ya publicada que no se edita destructivamente.
+
+Una referencia de producto, un nombre de receta o un `recipe_card` local no sustituyen estas identidades contractuales.
+
+---
+
+#### 8. Vocabulario de permisos y autoridad
+
+La UX consume la separación ya aprobada por autorización:
+
+| Acción | Recurso | Capacidad contractual |
+| --- | --- | --- |
+| consultar definición administrativa | `RECIPE_DEFINITION` | `fogo.production.recipes.view` |
+| crear definición o candidato | `RECIPE_DEFINITION` | `fogo.production.recipes.create` cuando exista materialización canónica consumible |
+| actualizar borrador/candidato autorizado | `RECIPE_DEFINITION` | `fogo.production.recipes.update` cuando exista materialización canónica consumible |
+| archivar/desactivar definición | `RECIPE_DEFINITION` | `fogo.production.recipes.archive` cuando exista materialización canónica consumible |
+| consultar publicación operativa | `RECIPE_PUBLICATION` | `fogo.production.recipe_book.view` |
+| aprobar versión candidata | transición `VPROC-0016` | capacidad atómica propietaria con `CAPABILITY_BINDING_REQUIRED` |
+| publicar versión aprobada | transición `VPROC-0016` | capacidad atómica propietaria con `CAPABILITY_BINDING_REQUIRED` |
+| exportar proyección sensible | proyección de receta | capacidad atómica propietaria o contrato server-side específico con `CAPABILITY_BINDING_REQUIRED` |
+
+La experiencia no inventa nombres para capacidades que todavía no tienen binding canónico materializado.
+
+Mientras falte una capacidad requerida:
+
+```text
+NO BINDING ATOMICO
+→ NO ACCION
+→ DENY / SOLO LECTURA SEGUN CORRESPONDA
+```
+
+---
+
+#### 9. `recipes.manage` permanece legacy y descompuesto
+
+La normalización vigente conserva:
+
+```text
+fogo.production.recipes.manage
+→ DECOMPOSE_REQUIRED
+```
+
+Y nombra como objetivos separados:
+
+```text
+fogo.production.recipes.view
+fogo.production.recipes.create
+fogo.production.recipes.update
+fogo.production.recipes.archive
+```
+
+Reglas UX:
+
+1. `manage` no aparece como permiso canónico atómico final;
+2. no se crean nuevas experiencias que dependan de `manage` como wildcard;
+3. `view` no concede `create`, `update` ni `archive`;
+4. `create` no concede `update` ni `archive`;
+5. `update` no concede `archive`, aprobación ni publicación;
+6. un literal runtime `production.recipes.manage` no se considera equivalente automático a `fogo.production.recipes.manage` ni a toda la familia canónica;
+7. la UI no habilita acciones sensibles porque un helper legacy haya permitido abrir la página.
+
+---
+
+#### 10. Entrada al catálogo administrativo
+
+`VSCREEN-0062` presenta un catálogo administrativo únicamente a actores con lectura administrativa autorizada.
+
+El catálogo puede organizar, según alcance autorizado:
+
+- definiciones de receta;
+- estado de desarrollo/versionado;
+- producto o preparación objetivo;
+- sede/área de aplicabilidad cuando corresponda;
+- vigencia/publicación relacionada;
+- responsable o procedencia de trabajo cuando sea necesario;
+- advertencias de bloqueo;
+- última evidencia o revisión relevante.
+
+La lista administrativa puede incluir borradores, candidatos o versiones que el recetario operativo no puede mostrar.
+
+Abrir el catálogo no concede capacidad para modificar ninguna fila.
+
+---
+
+#### 11. Creación de una definición o candidato
+
+Crear una receta administrativa requiere una capacidad de creación materializada y evaluable.
+
+La creación inicia conocimiento gobernado; no publica por sí sola.
+
+La experiencia debe distinguir:
+
+```text
+CREAR DEFINICION / CANDIDATO
+!=
+APROBAR
+!=
+PUBLICAR
+!=
+HABILITAR PARA PRODUCCION
+```
+
+Una creación válida conserva identidad estable de definición y los metadatos mínimos exigibles por `VPROC-0016`, pero la tarea no prescribe tablas, columnas o payload físico.
+
+Si `fogo.production.recipes.create` todavía no es consumible en la materialización propietaria, la UX falla cerrado y no reutiliza `recipes.view`, `recipes.update` o un permiso legacy para crear.
+
+---
+
+#### 12. Edición de borrador o candidato
+
+La edición administrativa ordinaria se limita a estados y versiones que permitan cambio conforme al lifecycle propietario.
+
+Antes del efecto, la materialización deberá revalidar:
+
+```text
+ACTOR EFECTIVO
++
+CAPACIDAD DE UPDATE
++
+RECIPE_DEFINITION EXACTA
++
+VERSION / ESTADO DE ORIGEN
++
+ALCANCE ORGANIZACIONAL
++
+FRESCURA
++
+SIN CONFLICTO CONCURRENTE
+```
+
+Un actor con lectura administrativa puede abrir una definición sin poder editarla.
+
+Una receta cuyo estado ya exige revisión, aprobación o publicación no retrocede silenciosamente por una edición ordinaria.
+
+---
+
+#### 13. Publicación inmutable y nueva versión
+
+Una publicación ya utilizada o vigente no se modifica in-place para representar un cambio material.
+
+La regla contractual es:
+
+```text
+CAMBIO MATERIAL SOBRE VERSION PUBLICADA
+→ NUEVA VERSION CANDIDATA
+→ NUEVA REVISION / APROBACION / PUBLICACION
+
+NO
+→ SOBREESCRIBIR PUBLICACION HISTORICA
+```
+
+La UX debe diferenciar claramente:
+
+- definición estable;
+- versión candidata editable cuando corresponda;
+- publicación vigente;
+- publicación histórica/retirada;
+- versión exacta utilizada por lotes previos.
+
+Los lotes históricos conservan `recipe_version_ref` y no se actualizan a una receta posterior.
+
+---
+
+#### 14. Ciclo de vida de `VPROC-0016`
+
+La administración conserva exactamente el ciclo:
+
+```text
+VPROC-0016.RECIPE_DRAFT
+→ VPROC-0016.IN_DEVELOPMENT
+→ VPROC-0016.IN_TESTING
+→ VPROC-0016.UNDER_TECHNICAL_REVIEW
+→ VPROC-0016.PENDING_APPROVAL
+→ VPROC-0016.APPROVED
+→ VPROC-0016.PUBLISHED
+→ VPROC-0016.RECIPE_VERSION_RELEASED
+```
+
+La UI no sustituye este lifecycle por un selector genérico de `status`.
+
+Invariantes:
+
+```text
+GUARDAR != APROBAR
+APROBAR != PUBLICAR
+PUBLICAR != EJECUTAR
+PROBAR != PUBLICAR
+PUBLISHED != RECIPE_VERSION_RELEASED
+```
+
+Cada transición conserva estado de origen compatible y autoridad exacta.
+
+---
+
+#### 15. Frontera con `VSCREEN-0064` — prueba de receta y rendimiento
+
+`VSCREEN-0064` conserva la prueba técnica como experiencia separada.
+
+La administración puede derivar hacia la prueba cuando una versión candidata la requiera, pero `VSCREEN-0062` no absorbe:
+
+- ejecución controlada de prueba;
+- captura del rendimiento real de prueba;
+- evidencia técnica;
+- comparación entre esperado y observado;
+- decisión técnica derivada de la prueba.
+
+La prueba puede aportar evidencia a `UNDER_TECHNICAL_REVIEW`, pero no publica automáticamente la receta.
+
+`FOGO-UX-009` preserva esta frontera y deja la materialización/prototipo detallado de `VSCREEN-0064` a sus propietarios ya existentes.
+
+---
+
+#### 16. Revisión técnica
+
+`VPROC-0016.UNDER_TECHNICAL_REVIEW` representa revisión de una candidata, no publicación.
+
+La experiencia de `VSCREEN-0063` debe permitir revisar, según materialidad:
+
+- identidad y versión candidata;
+- cambio frente a publicación anterior;
+- ingredientes y preparaciones intermedias;
+- cantidades y unidades;
+- rendimiento y porciones;
+- pasos/método;
+- escalamiento, redondeo y tolerancias;
+- alérgenos e inocuidad;
+- conservación;
+- criterios de calidad;
+- aplicabilidad y vigencia propuesta;
+- evidencia de prueba;
+- impactos relevantes a consumidores.
+
+La revisión no modifica hechos hasta obtener coherencia visual; cualquier corrección vuelve al carril de edición/versionado que corresponda.
+
+---
+
+#### 17. Pendiente de aprobación
+
+`VPROC-0016.PENDING_APPROVAL` significa que la candidata espera una decisión autorizada.
+
+La UX diferencia:
+
+- preparada para aprobación;
+- bloqueada por evidencia faltante;
+- bloqueada por conflicto/version stale;
+- actor sin capacidad de aprobación;
+- decisión pendiente de otro responsable.
+
+No se habilita aprobación por haber creado, editado, probado o revisado la candidata.
+
+---
+
+#### 18. Aprobación
+
+`VPROC-0016.APPROVED` es una decisión independiente.
+
+La aprobación crítica conserva la segregación aprobada por `OPS-REC-001`:
+
+- desarrollo primario: `RESPONSABLE_PRODUCTIVO`;
+- participación técnica: `RESPONSABLE_DE_CALIDAD_E_INOCUIDAD`;
+- aprobación final crítica: `GERENCIA_GENERAL`;
+- iniciar/preparar o ejecutar la prueba no concede por sí solo autoridad para aprobar la misma decisión crítica.
+
+Estas responsabilidades funcionales no se convierten automáticamente en nombres de rol de autenticación ni en permisos por texto.
+
+La UX exige la capacidad atómica propietaria materializada; si no existe, la acción queda `DENY`.
+
+---
+
+#### 19. Publicación
+
+Publicar es una decisión posterior y distinta de aprobar.
+
+Antes de publicar, la experiencia debe poder demostrar, según aplicabilidad:
+
+- versión candidata exacta;
+- estado aprobado compatible;
+- contenido mínimo completo;
+- vigencia definida;
+- aplicabilidad definida;
+- revisión técnica suficiente;
+- evidencia exigible;
+- capacidad de publicación materializada;
+- ausencia de cambio concurrente;
+- ausencia de una condición que obligue a revisar de nuevo.
+
+La publicación genera una versión operativamente utilizable dentro de vigencia y alcance, pero no demuestra disponibilidad de ingredientes, producción ejecutada, costo realizado ni calidad de un lote.
+
+---
+
+#### 20. `RECIPE_VERSION_RELEASED`
+
+`VPROC-0016.RECIPE_VERSION_RELEASED` conserva el terminal normal del proceso de versión.
+
+Demuestra que la versión aprobada y publicada quedó liberada con rendimiento, ingredientes, pasos, controles y restricciones completos y aceptados por sus consumidores autorizados.
+
+No demuestra:
+
+- que un lote haya sido creado;
+- que exista stock;
+- que la receta haya sido ejecutada;
+- que la calidad real de un lote sea conforme;
+- que el costo realizado sea el esperado;
+- que los ingredientes estén disponibles.
+
+La experiencia no usa `released` como alias genérico de cualquier `published` local.
+
+---
+
+#### 21. Comparación entre versiones
+
+Cuando existe publicación anterior, la revisión administrativa debe permitir comprender el delta sin depender de comparar manualmente dos formularios completos.
+
+La comparación puede incluir:
+
+- ingrediente agregado, retirado o sustituido;
+- cantidad/unidad modificada;
+- rendimiento o porción;
+- paso agregado, retirado o modificado;
+- tiempo o condición operativa;
+- control/tolerancia;
+- alérgeno, inocuidad o conservación;
+- aplicabilidad;
+- vigencia;
+- evidencia de prueba.
+
+La comparación es informativa y no crea una mutación por sí misma.
+
+No se imponen componentes visuales concretos.
+
+---
+
+#### 22. Aplicabilidad y vigencia no son autoridad
+
+El carril administrativo puede definir o revisar a qué contexto se propone aplicar una publicación.
+
+Eso puede incluir, cuando corresponda:
+
+- producto o proceso;
+- sede;
+- área productiva;
+- función productiva;
+- tipo de preparación;
+- vigencia temporal.
+
+Pero seleccionar una sede o área en el editor:
+
+```text
+NO
+=
+AUTORIZACION DEL ACTOR SOBRE ESA SEDE O AREA
+```
+
+La materialización valida por separado la autoridad del actor para modificar la definición/publicación y la validez empresarial del alcance propuesto.
+
+---
+
+#### 23. Sensibilidad y exposición administrativa
+
+La administración puede requerir más información que el recetario operativo, pero tampoco es un wildcard de datos.
+
+La experiencia aplica necesidad de trabajo:
+
+```text
+LECTURA ADMINISTRATIVA
+→ INFORMACION NECESARIA PARA CONSULTAR DEFINICION
+
+EDICION / REVISION
+→ INFORMACION NECESARIA PARA CAMBIO Y ANALISIS
+
+APROBACION
+→ INFORMACION NECESARIA PARA DECISION
+
+OPERACION
+→ SOLO INFORMACION NECESARIA PARA PREPARAR Y CONTROLAR
+```
+
+La autoría no concede acceso posterior.
+
+La UI y sus errores no deben filtrar fórmula sensible, costos, aprobaciones o evidencia a quien solo tiene carril operativo.
+
+Alérgenos, inocuidad y controles necesarios para ejecutar no se ocultan en operación por tratarse de información sensible.
+
+---
+
+#### 24. Segregación de funciones
+
+La experiencia refleja la segregación de responsabilidades, sin inferirla únicamente del rol visual.
+
+Reglas:
+
+1. crear no autoriza aprobar;
+2. editar no autoriza publicar;
+3. ejecutar una prueba no autoriza aprobar automáticamente;
+4. revisar técnicamente no sustituye la aprobación final crítica;
+5. aprobar no concede capacidad administrativa general sobre todas las recetas;
+6. publicar no concede capacidad de archivo o exportación;
+7. una capacidad materializada puede conservar restricciones adicionales por actor, alcance, estado o separación de funciones.
+
+Si una combinación está prohibida por el contrato de autorización, la UI debe mostrar el estado correspondiente sin ofrecer un bypass alternativo.
+
+---
+
+#### 25. Concurrencia, versión y estado stale
+
+Las acciones administrativas sensibles operan sobre estado/version esperados.
+
+Si otra sesión o actor avanzó el recurso:
+
+- el intento stale no sobrescribe;
+- la UX recupera estado vigente;
+- muestra el conflicto material;
+- conserva el trabajo local cuando sea seguro sin presentarlo como aplicado;
+- exige revisar el nuevo delta antes de reintentar;
+- no usa `last-write-wins` silencioso;
+- no retrocede una publicación o aprobación posterior.
+
+Editar una candidata y aprobar/publicar esa misma versión requieren control de concurrencia independiente del componente visual utilizado.
+
+---
+
+#### 26. Idempotencia y respuesta incierta
+
+Crear definición, archivar y ejecutar transiciones sensibles deben tolerar reintentos conforme a la materialización propietaria.
+
+Invariantes UX:
+
+1. doble clic no crea dos definiciones ni dos versiones;
+2. repetir una aprobación confirmada no produce otra decisión;
+3. repetir publicación no crea dos publicaciones equivalentes;
+4. una respuesta perdida obliga a recuperar resultado durable antes de generar otra identidad de operación;
+5. misma identidad + payload incompatible produce conflicto;
+6. un timeout no se presenta como fracaso definitivo si el resultado empresarial todavía es desconocido.
+
+Esta tarea no prescribe el mecanismo físico de idempotencia.
+
+---
+
+#### 27. Evidencia y auditoría administrativa
+
+Las acciones sensibles deben poder reconstruir:
+
+- actor efectivo;
+- contexto y alcance;
+- recurso y versión;
+- acción intentada;
+- capacidad evaluada;
+- estado de origen;
+- decisión de autorización;
+- cambio propuesto;
+- evidencia/revisión aplicable;
+- resultado;
+- estado posterior;
+- correlación y tiempo.
+
+La timeline o historial que muestre la UX es una proyección de hechos durables; no constituye el ledger por sí misma.
+
+---
+
+#### 28. Archivo, retiro y desactivación
+
+Archivar una definición y retirar una publicación no se tratan como borrado histórico.
+
+Reglas:
+
+- una publicación retirada no origina nuevos lotes;
+- los lotes históricos conservan acceso a la versión exacta cuando estén autorizados;
+- archivar/desactivar requiere capacidad propia cuando corresponda;
+- `recipes.update` no se usa como alias de `recipes.archive`;
+- retirar no reescribe la receta usada por lotes anteriores;
+- la UI distingue “no utilizable para nuevo trabajo” de “inexistente”.
+
+No se define aquí la persistencia física exacta del retiro.
+
+---
+
+#### 29. Frontera con el recetario operativo
+
+La administración nunca empuja un borrador directamente a `VSCREEN-0061` por proximidad de navegación.
+
+La progresión válida es:
+
+```text
+DEFINICION / CANDIDATO
+→ PRUEBA CUANDO APLIQUE
+→ REVISION
+→ APROBACION
+→ PUBLICACION
+→ RECIPE_PUBLICATION APLICABLE
+→ VSCREEN-0061
+```
+
+El recetario operativo recibe únicamente la publicación que satisface su contrato contextual.
+
+Un actor administrativo puede utilizar una vista previa segura cuando el diseño lo requiera, pero esa preview:
+
+- no se confunde con la receta operativa autorizada;
+- no habilita producción;
+- no modifica la publicación;
+- no se entrega a un rol operativo como si estuviera publicada.
+
+---
+
+#### 30. PDF y exportación
+
+`/recipes/pdf` es una superficie técnica y sensible separada.
+
+La experiencia conserva:
+
+```text
+VER DEFINICION
+!=
+EXPORTAR
+
+EDITAR
+!=
+EXPORTAR
+
+PUBLICAR
+!=
+EXPORTAR
+```
+
+La exportación requiere binding propietario o contrato server-side específico.
+
+Mientras no exista una capacidad canónica atómica consumible para exportación, la UX no la infiere desde `recipes.view`, `recipes.update`, `recipes.manage`, rol, autoría o acceso a `/recipes`.
+
+El permiso operativo `fogo.production.recipe_book.view` tampoco concede PDF administrativo.
+
+---
+
+#### 31. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se observa:
+
+1. `/recipes` funciona como catálogo administrativo y se protege con el literal legacy `production.recipes.manage`;
+2. `/recipes/new` contiene `saveRecipe`, usa el mismo literal legacy y permite seleccionar directamente `draft`, `published` o `archived`;
+3. la creación puede insertar `recipe_cards`, outputs, relaciones de uso, ingredientes y pasos dentro del mismo flujo;
+4. `/recipes/[id]/edit` usa también `production.recipes.manage` y permite cambiar `draft`, `published` o `archived`;
+5. la edición observada actualiza `recipe_cards` in-place;
+6. outputs, relaciones de uso, ingredientes y pasos pueden eliminarse y recrearse durante edición;
+7. no se observa una superficie física independiente que materialice completamente `VSCREEN-0063`;
+8. no se observa una superficie física dedicada de `VSCREEN-0064`;
+9. el modelo visible `draft/published/archived` no representa todo `VPROC-0016`;
+10. `/recipes/pdf` usa `production.recipes.manage` aunque exportación requiere frontera propia;
+11. `/recipe-book` ya existe como superficie operativa separada, pero su separación contractual completa fue definida en `FOGO-UX-008`.
+
+Conclusión:
+
+```text
+RUTAS /recipes* AS-IS
+=
+BASE ADMINISTRATIVA REAL
++
+LIFECYCLE COLAPSADO
++
+PERMISO LEGACY AMPLIO
+
+!=
+VSCREEN-0062 + VSCREEN-0063 COMPLETAMENTE CONFORMES
+```
+
+---
+
+#### 32. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `production.recipes.manage` agrupa lectura, creación, edición, archivo y exportación. | Puede convertir visibilidad en autoridad amplia. | `FOGO-AUTH-013::<implementation_unit_id>` + `FOGO-AUTH-015::<implementation_unit_id>` | consumidores usan capacidades atómicas; no existen asignaciones nuevas ni fallback wildcard |
+| `fogo.production.recipes.create/update/archive` están nombrados pero no son asignables por inferencia. | La UX no puede habilitarlos solo por existir en documentación. | `FOGO-AUTH-013::<implementation_unit_id>` | catálogo/binding canónico materializado y evaluable para cada capacidad antes de habilitar acción |
+| aprobación, publicación y exportación no tienen binding atómico materializado observado. | Riesgo de reutilizar `update` o `manage` para decisiones críticas. | `FOGO-AUTH-013::<implementation_unit_id>` | cada efecto consume capacidad propietaria registrada; hasta entonces `DENY` |
+| `saveRecipe` permite seleccionar `published` dentro del mismo formulario de creación/edición. | Colapsa autoría, aprobación y publicación. | materialización propietaria FOGO consumiendo `FOGO-UX-009` + `FOGO-AUTH-013` | guardar, revisar, aprobar y publicar quedan como efectos y gates diferenciados |
+| una publicación puede actualizarse in-place en el AS-IS. | Riesgo de perder inmutabilidad e historia. | persistencia E3 + materialización FOGO | cambio material crea nueva versión candidata y la publicación previa permanece inmutable |
+| ingredientes, outputs y pasos pueden reemplazarse por delete+insert durante edición. | Puede destruir la composición histórica si la versión ya fue utilizada. | persistencia E3 + materialización FOGO | edición opera sobre candidato/version nueva y conserva publicaciones históricas |
+| `draft/published/archived` no representa el lifecycle completo. | Estados críticos de prueba, revisión y aprobación quedan invisibles o colapsados. | `FOGO-UX-009`, `OPS-REC-001`, materialización propietaria | UX representa `VPROC-0016` sin saltos ni alias locales que oculten decisiones |
+| `VSCREEN-0063` no tiene superficie dedicada observada. | Revisión/aprobación/publicación pueden quedar embebidas en editor. | implementación propietaria FOGO | existe experiencia separada o claramente segregada que materializa la decisión sin mezclar edición |
+| `VSCREEN-0064` no tiene superficie dedicada observada. | Prueba técnica puede confundirse con guardar/publicar. | `OPS-REC-001` / `FOGO-UX-015` + materialización propietaria | prueba y rendimiento quedan demostrables sin publicación automática |
+| `/recipes/pdf` usa el mismo permiso legacy. | Exportación sensible puede heredar autoridad excesiva. | `FOGO-AUTH-013::<implementation_unit_id>` / `FOGO-AUTH-015::<implementation_unit_id>` | exportación consume binding propio y no depende de wildcard legacy |
+| el recetario operativo y administración ya están en rutas distintas, pero comparten datos/fuentes legacy. | Separación visual podría ocultar acoplamiento de autoridad o exposición. | `FOGO-UX-008`, `FOGO-UX-009` y materializaciones propietarias | recursos, permisos, datasets y acciones quedan separados por contrato server-side, no solo navegación |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 33. Handoff a FOGO-UX-010..015
+
+| Tarea | Frontera preservada desde FOGO-UX-009 |
+| --- | --- |
+| `FOGO-UX-010` | rendimiento esperado/publicado permanece separado de cantidad real, desperdicio y resultado del lote |
+| `FOGO-UX-011` | corregir un lote no modifica la publicación histórica ni la definición administrativa usada |
+| `FOGO-UX-012` | consumo NEXO referencia ingredientes/version aplicables sin convertir administración de receta en movimiento físico |
+| `FOGO-UX-013` | producto terminado conserva genealogía hacia receta/version sin que publicar receta cree stock |
+| `FOGO-UX-014` | supervisión no obtiene edición/aprobación/publicación por observar varias áreas |
+| `FOGO-UX-015` | prototipo deberá demostrar separación efectiva entre consulta operativa, autoría, prueba, revisión, aprobación y publicación |
+
+La sucesora inmediata `FOGO-UX-010` recibe como base que el conocimiento esperado de receta/version queda gobernado y no debe sobrescribirse con resultados reales del lote.
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: la tarea especializa obligaciones ya registradas para receta publicada inmutable, versionado, fórmula sensible, segregación entre operación y administración, autorización atómica, revisión/aprobación/publicación por acción, concurrencia, trazabilidad y ausencia de maestros competidores. La cobertura vigente ya asigna explícitamente esta responsabilidad a la tarea; no se introduce una obligación verificable nueva ni se modifica texto, estado, relación, secuencia o propietario del Registro 04A.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-002` — receta publicada inmutable/versionada, versión exacta, snapshot, ingredientes, unidades, pasos, controles, rendimiento, conservación, alérgenos, fórmula sensible y revisión/aprobación/publicación validadas por acción, contexto y actor;
+- `TREQ-FOGO-004` — ejecución conserva receta/version y no sobrescribe conocimiento esperado con resultado real;
+- `TREQ-FOGO-015` — exportación `/recipes/pdf` permanece protegida server-side durante el estado legacy observado;
+- `TREQ-FOGO-020` — ruta, guard, permiso local o enlace no demuestran autorización completa;
+- `TREQ-FOGO-022` — solo se atribuye un permiso exacto desde evidencia real y no por inferencia;
+- `TREQ-AUTH-010` — segregación de funciones entre carriles y responsabilidades sensibles;
+- `TREQ-AUTH-013` — mutaciones revalidan server-side actor, permiso exacto, territorio, contexto, recurso, estado y columnas aplicables;
+- `TREQ-AUTH-014` — contexto y decisiones stale se invalidan antes de efectos sensibles;
+- `TREQ-AUTH-015` — evidencia correlacionable de contexto, permiso, decisión y resultado;
+- `TREQ-AUTH-017` — autoridad explícita para operaciones sensibles cuando corresponda;
+- `TREQ-UX-001` — tarea, acción principal y estado identificables;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo real sin autoridad fabricada desde cliente;
+- `TREQ-INTEGRATION-006` — una única fuente empresarial y ausencia de maestros editables competidores.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@03cc52e0f7fe2562d4fdaac15f2cb7fd5dcecd28`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO-UX, reconciliación `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `OPS-REC-001`, `FOGO-AUTH-013`, `FOGO-AUTH-015`, `VSCREEN-0061..0064`, ciclo `VPROC-0016`, cobertura 04A y las superficies AS-IS `/recipes*` y `/recipe-book`; `FOGO-UX-008` se consume desde su versión completa aprobada SHA-256 `895249968a7f4a4c0d11b20afe0c4a6074d82031dbc41516281c0a2d8b43b649` mientras su incorporación remota permanece pendiente durante esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se crearon, editaron, probaron, revisaron, aprobaron, publicaron, archivaron, retiraron ni exportaron recetas reales y no se probó segregación con actores reales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-009` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 37. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0061` permanece operativo sobre `RECIPE_PUBLICATION` y no administra recetas;
+- [ ] `VSCREEN-0062` conserva `VPROC-0016::STEP-AUTHOR_RECIPE`, `CONFIGURE / IN_PROGRESS`;
+- [ ] `VSCREEN-0063` conserva `VPROC-0016::STEP-APPROVE_AND_PUBLISH_RECIPE`, `APPROVE / DECISION`;
+- [ ] `VSCREEN-0064` conserva `VPROC-0016::STEP-TEST_RECIPE_AND_YIELD`, `VALIDATE / IN_PROGRESS` y no se absorbe dentro del editor;
+- [ ] `RECIPE_DEFINITION` y `RECIPE_PUBLICATION` permanecen separados;
+- [ ] `recipe_definition_id`, `published_recipe_version_id` y `recipe_version_ref` conservan responsabilidades distintas;
+- [ ] `fogo.production.recipe_book.view` no concede administración;
+- [ ] `fogo.production.recipes.view` no concede mutaciones;
+- [ ] `fogo.production.recipes.manage` permanece `DECOMPOSE_REQUIRED`;
+- [ ] el literal runtime `production.recipes.manage` no se trata como equivalencia canónica automática;
+- [ ] `fogo.production.recipes.create`, `update` y `archive` no se habilitan hasta ser materializaciones canónicas consumibles;
+- [ ] aprobación, publicación y exportación permanecen `CAPABILITY_BINDING_REQUIRED` hasta disponer de capacidad propietaria real;
+- [ ] crear, guardar, probar, revisar, aprobar y publicar permanecen efectos distintos;
+- [ ] el lifecycle completo de `VPROC-0016` no se reemplaza por `draft/published/archived`;
+- [ ] `APPROVED` no se presenta como `PUBLISHED`;
+- [ ] `PUBLISHED` no se presenta como `RECIPE_VERSION_RELEASED`;
+- [ ] una versión publicada no se edita destructivamente;
+- [ ] un cambio material sobre publicación genera nueva candidata/version;
+- [ ] lotes históricos conservan `recipe_version_ref` y publicación previa;
+- [ ] una publicación retirada no origina nuevos lotes y no desaparece de historia autorizada;
+- [ ] revisión técnica permite comprender ingredientes, unidades, rendimiento, pasos, controles, alérgenos, conservación y aplicabilidad relevantes;
+- [ ] la prueba técnica no publica automáticamente;
+- [ ] aprobación crítica conserva segregación de funciones;
+- [ ] responsabilidades `RESPONSABLE_PRODUCTIVO`, `RESPONSABLE_DE_CALIDAD_E_INOCUIDAD` y `GERENCIA_GENERAL` no se transforman por texto en permisos runtime;
+- [ ] seleccionar sede/área de aplicabilidad no crea autoridad sobre ese territorio;
+- [ ] un actor de solo lectura puede consultar sin editar;
+- [ ] un estado/version stale no se sobrescribe mediante last-write-wins;
+- [ ] retries o doble submit no duplican creación/aprobación/publicación;
+- [ ] una respuesta incierta se reconcilia antes de repetir la operación con nueva identidad;
+- [ ] la UX puede reconstruir actor, recurso, versión, acción, decisión y resultado de mutaciones sensibles;
+- [ ] archivar/retirar no borra historia;
+- [ ] PDF/exportación no se deriva de lectura, update, rol ni wildcard legacy;
+- [ ] el AS-IS se clasifica como base real con lifecycle colapsado, no como contrato objetivo completo;
+- [ ] cada hallazgo conserva propietario y condición exacta de salida;
+- [ ] `FOGO-UX-010` recibe conocimiento esperado de receta/version sin reabrir administración;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0062`, `VSCREEN-0063` ni `VSCREEN-0064`;
+- modifica `/recipes`, `/recipes/new`, `/recipes/[id]/edit`, `/recipes/pdf` ni `/recipe-book`;
+- crea rutas, componentes, RPC, tablas, vistas, RLS, grants, migraciones o datos;
+- crea o asigna permisos;
+- materializa `fogo.production.recipes.create`, `update` o `archive`;
+- inventa nombres de capacidad para aprobar, publicar o exportar;
+- convierte `recipes.manage` en alias;
+- migra físicamente `production.*` a `fogo.production.*`;
+- crea, edita, publica, retira, archiva o exporta recetas reales;
+- define el esquema físico de versiones;
+- ejecuta una prueba de receta;
+- registra rendimiento real de lote;
+- modifica productos, ingredientes, unidades o conversiones maestras de NEXO;
+- crea lotes ni modifica producción;
+- cambia calidad, inventario, costos o disponibilidad;
+- desarrolla el detalle de `FOGO-UX-010`;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-008 — Mostrar receta resumida para operación`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-009 — Separar recetario operativo y administración de recetas`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-010 — Registrar cantidades, desperdicio y resultado`
+
 ### [ ] FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
 ### [ ] FOGO-UX-011 — Diseñar correcciones sin alterar historial
 ### [ ] FOGO-UX-012 — Conectar consumo de insumos con NEXO
