@@ -12834,4 +12834,1245 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-015 — Validar el prototipo por área productiva`
 
-### [ ] FOGO-UX-015 — Validar el prototipo por área productiva
+### ✅ FOGO-UX-015 — Validar el prototipo por área productiva
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-014 — Diseñar pantalla para supervisor de producción
+**Tarea siguiente:** ORIGO-AUTH-001 — Inventariar vistas de compras
+**Tipo de tarea:** validación documental integral del prototipo FOGO por área productiva, actor, contexto, pantalla, proceso, estado, autorización, handoff y escenario adversarial, cerrando la coherencia de `FOGO-UX-001..014` sin fingir pruebas físicas, sesiones con trabajadores ni certificación productiva y dejando la validación real posterior a `UX-QA-025`
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, dispositivos, lotes, recetas, inventario, calidad, despliegues ni ambientes
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Validar de forma cerrada y trazable que el prototipo contractual de FOGO definido por `FOGO-UX-001..014` es coherente para las tres áreas productivas ordinarias, conserva sus fronteras de autorización e integración y entrega una línea base suficientemente completa para implementación posterior sin declarar evidencia física que todavía no existe.
+
+La regla raíz queda:
+
+```text
+CONTRATOS FOGO-UX-001..014 APROBADOS
++
+3 AREAS PRODUCTIVAS EXACTAS
++
+ACTORES / TURNOS / TERRITORIOS AUTORIZADOS
++
+15 PANTALLAS CANONICAS FOGO
++
+6 PROCESOS FOGO RELEVANTES
++
+ESTADOS / VERSIONES / HANDOFFS / RECUPERACION
++
+ESCENARIOS POSITIVOS Y ADVERSARIALES DEFINIDOS
+=
+PROTOTIPO DOCUMENTAL COHERENTE Y MATERIALIZABLE
+```
+
+Pero:
+
+```text
+VALIDACION DOCUMENTAL
+!=
+PRUEBA CON TRABAJADORES REALES
+!=
+RENDER EJECUTADO
+!=
+CERTIFICACION FISICA
+!=
+CERTIFICACION PARA PRODUCCION
+```
+
+La tarea cierra el minibloque `FOGO-UX-001..015` como contrato de experiencia. La validación humana, técnica y física sobre una implementación real permanece reservada a los paquetes propietarios, al piloto y a `UX-QA-025 — Probar FOGO por área productiva`.
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-014
+
+`FOGO-UX-014` entrega un contrato supervisor completo centrado en `VSCREEN-0056 — Planeación de producción` y, además, un handoff explícito de escenarios que esta tarea debe comprobar contra el resto del minibloque.
+
+La entrada recibida conserva:
+
+```text
+SUPERVISOR BASE CON 1 AREA
+SUPERVISOR BASE CON VARIAS AREAS AS/AA
+GERENCIA_OPERATIVA EN TURNO VALIDO
+MISMO ACTOR CON AMBOS CARRILES SIN FUSION
+RECURSO AUTORIZADO POR UN SOLO CARRIL COMPLETO
+RECURSO FUERA DE TERRITORIO
+CAMBIO DE TURNO / COBERTURA / AREA -> STALE
+FILTRO QUE SOLO REDUCE
+PLAN EN BORRADOR / REVISION / APROBACION / LIBERADO
+CAPACIDAD CONFIRMADA / PARCIAL / NO_VERIFICADA
+PRIORIDAD VISIBLE SIN OVERRIDE IMPLICITO
+BLOQUEO CON OWNER
+CALIDAD PENDIENTE
+HANDOFF NEXO PENDIENTE / RECONCILIADO
+RESULTADO_DESCONOCIDO
+CIERRE PENDIENTE
+```
+
+También conserva estas fronteras:
+
+```text
+VER LOTE != CREAR LOTE
+VER ORDEN != INICIAR PRODUCCION
+VER RECETARIO OPERATIVO != MODIFICAR RECETA
+COORDINAR PRIORIDAD != REESCRIBIR PRIORIDAD
+OBSERVAR DESVIACION != CORREGIR O ANULAR
+```
+
+`FOGO-UX-015` no reabre esas decisiones. Las somete a una matriz de coherencia junto con las superficies productivas, administrativas y de integración definidas anteriormente.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente del minibloque establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `FOGO-UX-015` se define una sola vez como cierre documental del prototipo FOGO;
+2. no existe una instancia física propia `FOGO-UX-015::<implementation_unit_id>`;
+3. esta tarea no ejecuta un prototipo en navegador, tablet o estación productiva;
+4. esta tarea no crea componentes, rutas, consultas, acciones, permisos, datos ni migraciones;
+5. los consumidores posteriores materializan el diseño mediante sus packages e instancias propietarias;
+6. la validación física y con trabajadores se ejecuta después sobre software real y no se simula documentalmente;
+7. ninguna conclusión de esta tarea autoriza producción real.
+
+---
+
+#### 4. Significado canónico de “validar el prototipo”
+
+En esta etapa, validar significa demostrar que el conjunto de contratos UX ya aprobados puede recorrerse sin contradicciones, huecos de ownership ni ampliaciones de autoridad para cada área productiva y para los carriles de supervisión relacionados.
+
+La validación documental comprueba:
+
+- identidad de área y actor;
+- separación territorial;
+- navegación y continuidad entre superficies;
+- estados y transiciones visibles;
+- límites entre lectura y mutación;
+- receta y versión;
+- cantidades y unidades;
+- prioridad y capacidad;
+- bloqueos y siguiente owner;
+- idempotencia y resultado desconocido como obligaciones visibles;
+- handoffs FOGO↔NEXO;
+- separación de calidad, inventario y cierre;
+- correcciones no destructivas;
+- estados de error, deny, stale y parcialidad;
+- tactilidad, legibilidad y recuperación como criterios de diseño;
+- carryover explícito hacia pruebas reales posteriores.
+
+No se considera evidencia de validación real:
+
+- que una pantalla esté descrita en Markdown;
+- que una ruta AS-IS tenga nombre parecido;
+- que exista una tabla o RPC;
+- que una acción compile;
+- que un botón sea visible;
+- que un actor conozca informalmente el proceso;
+- que una captura estática “se vea bien”;
+- que una prueba de otra área haya pasado;
+- que un supervisor pueda observar el mismo recurso.
+
+---
+
+#### 5. Jerarquía de evidencia aplicable
+
+Esta tarea adopta la jerarquía ya aprobada para prototipado y validación de experiencia:
+
+```text
+AHORA
+→ evidencia interna
+→ contratos canónicos
+→ revisión heurística
+→ walkthrough adversarial
+→ matriz de escenarios
+
+DURANTE MATERIALIZACION
+→ render / componentes
+→ pruebas automatizadas
+→ accesibilidad
+→ regresión visual
+→ integración
+→ errores / offline cuando aplique
+
+ANTES DE PRODUCCION
+→ piloto controlado
+→ trabajadores reales
+→ unidad física real
+→ UX-QA-025
+→ BLOQUE U
+```
+
+La ausencia de prueba humana inmediata no se convierte en `PASS` humano. Se conserva como carryover obligatorio.
+
+---
+
+#### 6. Universo exacto de áreas productivas
+
+El prototipo debe funcionar sobre exactamente las tres áreas productivas ordinarias aprobadas:
+
+| Área productiva | Rol operativo efectivo | Plantilla especializada | Regla territorial |
+| --- | --- | --- | --- |
+| Cocina Caliente | `produccion_cocina` | `production_kitchen` | solo recursos compatibles con Cocina Caliente y contexto efectivo |
+| Galletería y Panadería | `produccion_panaderia` | `production_bakery` | solo recursos compatibles con Galletería y Panadería y contexto efectivo |
+| Repostería | `produccion_reposteria` | `production_pastry` | solo recursos compatibles con Repostería y contexto efectivo |
+
+La validación no crea una cuarta área, un rol genérico `produccion`, ni una experiencia distinta por copiar pantallas.
+
+La regla es:
+
+```text
+MISMAS IDENTIDADES CANONICAS DE PROCESO Y PANTALLA
++
+MISMO VOCABULARIO DE PERMISOS
++
+AREA EFECTIVA EXACTA
++
+RECURSOS AUTORIZADOS PARA ESA AREA
+=
+VARIANTE CONTEXTUAL DE LA MISMA EXPERIENCIA FOGO
+```
+
+---
+
+#### 7. Universo exacto de procesos FOGO consumidos
+
+La validación conserva los seis procesos FOGO definidos por el inventario del minibloque:
+
+| Proceso | Papel dentro del prototipo |
+| --- | --- |
+| `VPROC-0016` | receta, prueba, revisión, aprobación, publicación y versión |
+| `VPROC-0033` | planificación, necesidad, capacidad, prioridad y cola productiva |
+| `VPROC-0034` | preparación, inicio, ejecución y avance de lote |
+| `VPROC-0035` | calidad, retención, rechazo, liberación y trazabilidad de disposición |
+| `VPROC-0036` | empaque, etiquetado y almacenamiento de terminado |
+| `VPROC-0037` | resultado, merma, aprovechamiento, reproceso y cierre productivo |
+
+`VPROC-0014` puede aparecer en `VSCREEN-0174` como proceso propietario de controles de inocuidad con integración FOGO; no se reclasifica como séptimo proceso FOGO.
+
+---
+
+#### 8. Universo exacto de pantallas
+
+La validación cubre las quince identidades canónicas FOGO ya inventariadas:
+
+| Pantalla | Nombre | Papel en la validación |
+| --- | --- | --- |
+| `VSCREEN-0055` | Inicio y cola de producción | entrada operativa por área y trabajo autorizado |
+| `VSCREEN-0056` | Planeación de producción | supervisión, plan, capacidad, prioridad y bloqueos |
+| `VSCREEN-0057` | Preparación e inicio de lote | readiness e inicio autorizado |
+| `VSCREEN-0058` | Ejecución de lote | continuidad del lote activo |
+| `VSCREEN-0059` | Registro parcial de producción | captura incremental sin cierre implícito |
+| `VSCREEN-0060` | Finalización y cierre de lote | finalización y pendientes de closeout |
+| `VSCREEN-0061` | Receta operativa | lectura mínima de publicación aplicable |
+| `VSCREEN-0062` | Catálogo y editor de recetas | administración separada de operación |
+| `VSCREEN-0063` | Revisión, aprobación y publicación de receta | segregación de decisiones sensibles |
+| `VSCREEN-0064` | Prueba de receta y rendimiento | prueba técnica separada de lote productivo |
+| `VSCREEN-0065` | Control de calidad y liberación | disposición independiente de producción |
+| `VSCREEN-0066` | Empaque, etiquetado y almacenamiento de terminado | terminado e ingreso físico posterior |
+| `VSCREEN-0067` | Reproceso, aprovechamiento, merma y cierre productivo | desviaciones, reproceso y cierre |
+| `VSCREEN-0173` | Trazabilidad e investigación de lote | genealogía e investigación sin edición destructiva |
+| `VSCREEN-0174` | Controles operativos de inocuidad | controles vinculados sin absorber ownership externo |
+
+La validación no exige que las quince superficies tengan hoy una ruta física equivalente. Su objetivo es comprobar coherencia del contrato objetivo.
+
+---
+
+#### 9. Semántica de resultado de esta tarea
+
+Se usan únicamente estos resultados documentales para las matrices internas de esta tarea:
+
+| Resultado | Significado |
+| --- | --- |
+| `CUBIERTO_CONTRACTUALMENTE` | el escenario tiene identidad, fuente, regla, owner y resultado esperado suficientes |
+| `CARRYOVER_MATERIALIZACION` | la obligación está especificada, pero requiere software real para probarse |
+| `CARRYOVER_PILOTO` | requiere trabajador, contexto o dispositivo real antes de producción |
+| `BLOQUEO_CONTRACTUAL` | faltaría una decisión canónica y no podría cerrarse documentalmente |
+
+No se utiliza `PASS` de ejecución para una interacción que no fue ejecutada.
+
+Resultado de esta revisión documental:
+
+```text
+BLOQUEOS_CONTRACTUALES_NUEVOS = 0
+CARRYOVER_MATERIALIZACION = SI
+CARRYOVER_PILOTO = SI
+CERTIFICACION_PARA_PRODUCCION = NO
+```
+
+---
+
+#### 10. Invariantes compartidas por las tres áreas
+
+Toda variante por área debe conservar simultáneamente:
+
+1. actor efectivo identificable;
+2. turno y check-in cuando la capacidad operativa los exige;
+3. sede efectiva compatible;
+4. área efectiva exacta;
+5. recurso dentro del territorio autorizado;
+6. permiso o capacidad exactos;
+7. estado y versión vigentes;
+8. receta/publicación y versión exactas cuando aplique;
+9. prioridad proveniente de fuente autoritativa;
+10. filtros que solo reduzcan el conjunto autorizado;
+11. cantidad y unidad explícitas;
+12. captura separada de confirmación cuando el efecto sea sensible;
+13. error, deny, stale y resultado desconocido diferenciados;
+14. historial no destructivo;
+15. handoff con owner siguiente;
+16. separación FOGO/NEXO/calidad/recetas/supervisión;
+17. no transferencia de autoridad por dispositivo;
+18. no transferencia de autoridad por visibilidad.
+
+Si una variante necesitara romper una de estas invariantes para funcionar, el prototipo quedaría contractualmente bloqueado. No se observó tal necesidad en la línea base aprobada.
+
+---
+
+#### 11. Recorrido de Cocina Caliente
+
+Para `produccion_cocina`, el recorrido contractual válido es:
+
+```text
+CONTEXTO COCINA CALIENTE
+→ VSCREEN-0055
+→ COLA AUTORIZADA DEL AREA
+→ VSCREEN-0057
+→ PREPARACION / READINESS
+→ INICIO AUTORIZADO
+→ VSCREEN-0058
+→ VSCREEN-0059 CUANDO HAY PARCIALIDAD
+→ VSCREEN-0061 PARA RECETA OPERATIVA
+→ VSCREEN-0060 PARA FINALIZACION
+→ VSCREEN-0065 / 0066 / 0067 SEGUN RESULTADO Y HANDOFF
+→ NEXO SOLO POR CONTRATO PROPIETARIO
+```
+
+Validación documental:
+
+- Cocina Caliente no necesita identidades de pantalla distintas;
+- la cola no muestra por defecto trabajo de Panadería ni Repostería;
+- seleccionar o buscar otra área no amplía territorio;
+- iniciar lote exige `fogo.production.batches.create` y contexto completo;
+- el recetario operativo no habilita administración de receta;
+- un resultado producido no se presenta como liberado ni como stock por implicación;
+- la pantalla supervisora puede observar el recurso solo mediante un carril completo independiente.
+
+Resultado: `CUBIERTO_CONTRACTUALMENTE`.
+
+---
+
+#### 12. Recorrido de Galletería y Panadería
+
+Para `produccion_panaderia`, el mismo contrato se especializa a `Galletería y Panadería` y `production_bakery`.
+
+```text
+CONTEXTO GALLETERIA Y PANADERIA
+→ MISMAS IDENTIDADES CANONICAS
+→ RECURSOS DEL AREA
+→ RECETA / VERSION APLICABLE
+→ EJECUCION / PARCIALIDAD / FINALIZACION
+→ CALIDAD / EMPAQUE / CIERRE SEGUN OWNER
+```
+
+Validación documental:
+
+- Panadería no hereda Cocina Caliente por compartir Centro de Producción;
+- la plantilla `production_bakery` limita superficie y no concede permisos;
+- la cola conserva plan, fecha requerida y prioridad autoritativa;
+- los lotes mantienen área persistida y no migran por un filtro de UI;
+- la captura parcial no finaliza el lote;
+- la finalización no libera calidad ni publica inventario;
+- los consumos y terminados mantienen handoffs NEXO independientes.
+
+Resultado: `CUBIERTO_CONTRACTUALMENTE`.
+
+---
+
+#### 13. Recorrido de Repostería
+
+Para `produccion_reposteria`, el contrato se especializa a `Repostería` y `production_pastry`.
+
+Validación documental:
+
+- Repostería no puede consumir recursos de Cocina o Panadería por selección cliente-side;
+- la receta visible debe corresponder a la publicación/version aplicable al trabajo autorizado;
+- rendimiento esperado y resultado real permanecen separados;
+- merma, desperdicio, reproceso y diferencia no explicada no se colapsan;
+- una corrección crea una acción vinculada y no reescribe el hecho original;
+- calidad, empaque y NEXO conservan sus propios owners;
+- una sesión o turno stale invalida nuevas acciones sensibles.
+
+Resultado: `CUBIERTO_CONTRACTUALMENTE`.
+
+---
+
+#### 14. Matriz territorial positiva y negativa
+
+La validación territorial mínima queda:
+
+| Actor / contexto | Cocina Caliente | Galletería y Panadería | Repostería |
+| --- | --- | --- | --- |
+| `produccion_cocina` en Cocina Caliente | recurso propio autorizable | `DENY` | `DENY` |
+| `produccion_panaderia` en Galletería y Panadería | `DENY` | recurso propio autorizable | `DENY` |
+| `produccion_reposteria` en Repostería | `DENY` | `DENY` | recurso propio autorizable |
+
+`autorizable` no significa autorización automática. Cada acción conserva permiso, estado, versión y demás precondiciones aplicables.
+
+Los seis cruces negativos son obligatorios en la futura materialización y no pueden sustituirse por “ocultar el botón”.
+
+---
+
+#### 15. Inicio y cola de producción
+
+`VSCREEN-0055` queda validada contractualmente cuando:
+
+- el área efectiva ya fue resuelta server-side;
+- el trabajador reconoce dónde está operando;
+- la cola contiene solo recursos autorizados;
+- trabajo listo, en curso, bloqueado, arrastrado o no clasificable no se confunden;
+- prioridad y fecha requerida provienen de la planificación;
+- una fila visible no equivale a autoridad para iniciar;
+- la siguiente acción es reconocible;
+- un vacío autorizado se distingue de deny y error;
+- el cambio material de contexto invalida la proyección stale.
+
+No queda autorizada una lista global seguida de filtrado cliente-side.
+
+---
+
+#### 16. Planeación y supervisión sin invadir operación
+
+`VSCREEN-0056` debe coexistir con la experiencia productiva sin convertirse en un atajo de mutación.
+
+La validación conserva:
+
+```text
+SUPERVISOR / GERENCIA_OPERATIVA
+→ OBSERVAN Y COORDINAN RECURSOS AUTORIZADOS
+
+PRODUCTOR DE AREA
+→ EJECUTA SOLO CAPACIDADES PRODUCTIVAS AUTORIZADAS
+```
+
+Un supervisor puede observar un lote de Cocina y un lote de Repostería cuando un carril completo autorice cada recurso, pero esa agregación no concede `fogo.production.batches.create`, liberación de calidad, edición de receta ni movimiento de inventario.
+
+Resultado: `CUBIERTO_CONTRACTUALMENTE`.
+
+---
+
+#### 17. Plan, orden, lote y salida permanecen separados
+
+La validación debe conservar la cadena:
+
+```text
+SEÑAL / NECESIDAD
+!=
+PLAN / REVISION
+!=
+ORDEN PRODUCTIVA
+!=
+LOTE / EJECUCION
+!=
+SALIDA PRODUCTIVA
+!=
+DISPOSICION DE CALIDAD
+!=
+EFECTO NEXO
+```
+
+Ninguna pantalla por área puede simplificar esas identidades hasta volver imposible explicar una diferencia, un bloqueo o una corrección.
+
+---
+
+#### 18. Planificación y prioridad
+
+La experiencia debe poder representar el lifecycle de `VPROC-0033` sin reducirlo a “plan activo”:
+
+```text
+VPROC-0033.PRODUCTION_PLAN_DRAFT
+→ VPROC-0033.DEMAND_CONSOLIDATING
+→ VPROC-0033.CAPACITY_VALIDATING
+→ VPROC-0033.PLAN_UNDER_REVIEW
+→ VPROC-0033.PENDING_APPROVAL
+→ VPROC-0033.PUBLISHED
+→ VPROC-0033.REVISION_IN_PROGRESS
+→ VPROC-0033.PRODUCTION_PLAN_RELEASED
+```
+
+La prioridad visible:
+
+- no se deriva de `created_at`;
+- no se deriva de posición de tarjeta;
+- no se deriva de área seleccionada;
+- no se deriva de cantidad;
+- no se reescribe por coordinación supervisora.
+
+La futura prueba debe verificar que la UI distingue ordenar para lectura de cambiar prioridad empresarial.
+
+---
+
+#### 19. Capacidad y restricciones
+
+El prototipo puede mostrar por área componentes de capacidad relativos a:
+
+- materiales;
+- personal;
+- equipo o activo;
+- almacenamiento;
+- tiempo o ventana;
+- logística/handoff;
+- controles de calidad o inocuidad aplicables.
+
+Las etiquetas UX aprobadas permanecen:
+
+```text
+CONFIRMADA
+PARCIAL
+BLOQUEADA
+NO_VERIFICADA
+STALE
+ERROR_TECNICO
+```
+
+`NO_VERIFICADA` no se transforma en disponibilidad por ausencia de integración.
+
+---
+
+#### 20. Preparación e inicio de lote
+
+`VSCREEN-0057` queda contractualmente validada solo si conserva:
+
+- orden autorizada y vigente;
+- receta/publicación y versión exactas;
+- actor, turno, sede y área frescos;
+- `fogo.production.batches.create` cuando corresponda;
+- readiness de materiales y recursos sin inferencias;
+- estado de origen compatible;
+- identidad idempotente;
+- concurrencia y revalidación antes del efecto.
+
+La UI no puede representar “preparado” como “iniciado”.
+
+---
+
+#### 21. Ejecución y producción parcial
+
+`VSCREEN-0058` y `VSCREEN-0059` deben mantener visible que:
+
+- el lote ya existe;
+- la orden y receta/version permanecen vinculadas;
+- cada captura parcial es un hecho incremental;
+- delta y acumulado no se confunden;
+- un retry no crea doble registro;
+- un timeout puede producir `RESULTADO_DESCONOCIDO`;
+- una captura parcial no equivale a finalización;
+- el consumo físico NEXO no se fabrica desde un campo de FOGO.
+
+La futura materialización deberá demostrar recuperación después de respuesta incierta sin doble efecto.
+
+---
+
+#### 22. Finalización y cierre
+
+`VSCREEN-0060` valida la separación entre:
+
+```text
+FINALIZAR EJECUCION
+!=
+APROBAR CLOSEOUT
+!=
+LIBERAR CALIDAD
+!=
+INGRESAR TERMINADO A NEXO
+```
+
+La pantalla puede mostrar pendientes de materiales, salida, calidad, inventario/handoff, variación o corrección, pero no puede resolverlos por visibilidad.
+
+`VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` solo aparece cuando el proceso propietario lo demuestra.
+
+---
+
+#### 23. Receta operativa
+
+`VSCREEN-0061` debe funcionar igual en las tres áreas respecto de semántica, cambiando únicamente el contexto y la publicación aplicable.
+
+Debe conservar:
+
+- `RECIPE_PUBLICATION`;
+- versión publicada/vigente/aplicable;
+- escala y unidades necesarias;
+- ingredientes y pasos autorizados;
+- controles y datos operativos necesarios;
+- minimización de fórmula sensible;
+- solo lectura operativa.
+
+```text
+fogo.production.recipe_book.view
+!=
+fogo.production.recipes.view
+!=
+AUTORIDAD DE EDICION
+```
+
+---
+
+#### 24. Administración de recetas
+
+`VSCREEN-0062`, `VSCREEN-0063` y `VSCREEN-0064` permanecen fuera del carril productivo ordinario por el hecho de existir en la misma aplicación.
+
+La validación exige:
+
+- autoría separada de publicación;
+- revisión/aprobación separadas cuando el contrato lo exige;
+- versiones históricas inmutables;
+- una versión retirada no origina nuevos lotes;
+- prueba de receta distinta de ejecución productiva real;
+- permisos administrativos atómicos y fail-closed;
+- cero equivalencia automática desde un alias legacy amplio.
+
+Una estación productiva no se convierte en editor de receta.
+
+---
+
+#### 25. Cantidades, rendimiento, merma y resultado
+
+La experiencia debe distinguir al menos:
+
+```text
+CANTIDAD ESPERADA
+SALIDA REAL
+RENDIMIENTO
+MERMA / DESPERDICIO
+COPRODUCTO / SUBPRODUCTO
+MATERIAL RECUPERABLE
+REPROCESO
+RESULTADO NO CONFORME
+DIFERENCIA NO EXPLICADA
+```
+
+La validación documental confirma que `FOGO-UX-010` define unidades, tolerancias, actor, evidencia y versionado suficientes para evitar cambiar lo esperado con el fin de “hacer cuadrar” lo real.
+
+---
+
+#### 26. Correcciones no destructivas
+
+El prototipo no puede ofrecer una edición silenciosa de un hecho confirmado.
+
+Debe conservar:
+
+```text
+HECHO ORIGINAL
++
+ACCION CORRECTIVA EXPLICITA
++
+MOTIVO / EVIDENCIA
++
+ANTES / DESPUES O COMPENSACION
++
+ACTOR / CONTEXTO / AUTORIDAD
++
+LINEAGE
+```
+
+`CANCEL`, `VOID`, `REVERSE`, `COMPENSATE`, `ADJUST`, `CORRECT` y `RESTATE` no se tratan como sinónimos.
+
+Resultado: `CUBIERTO_CONTRACTUALMENTE`.
+
+---
+
+#### 27. Consumo de insumos y NEXO
+
+El prototipo debe mostrar la frontera:
+
+```text
+USO PRODUCTIVO CAPTURADO EN FOGO
+!=
+RESERVA NEXO
+!=
+RETIRO / CONSUMO FISICO NEXO
+!=
+MOVIMIENTO
+!=
+CONCILIACION
+```
+
+El trabajador puede comprender el estado del handoff, pero FOGO no se convierte en ledger de inventario.
+
+Un retry, respuesta perdida o corrección debe conservar correlación y no duplicar efectos físicos.
+
+---
+
+#### 28. Producto terminado y NEXO
+
+El prototipo debe distinguir:
+
+```text
+produced_qty
+released_qty
+handoff_qty
+reconciled_qty
+```
+
+Y además:
+
+- destino esperado;
+- destino confirmado;
+- calidad;
+- empaque;
+- estado NEXO;
+- bloqueo o diferencia;
+- `RESULTADO_DESCONOCIDO` cuando aplique;
+- owner de próxima acción.
+
+`producido`, `liberado`, `empacado`, `ingresado`, `ubicado`, `conciliado` y `vendible` no son equivalentes.
+
+---
+
+#### 29. Calidad, empaque, reproceso y trazabilidad
+
+Las superficies `VSCREEN-0065`, `VSCREEN-0066`, `VSCREEN-0067`, `VSCREEN-0173` y `VSCREEN-0174` deben integrarse al recorrido sin conceder capacidades por proximidad visual.
+
+La validación documental exige:
+
+- calidad independiente de finalización productiva;
+- liberación/rechazo con autoridad propia;
+- empaque y etiqueta derivados de lote/presentación aprobados;
+- reproceso con genealogía;
+- trazabilidad sin edición destructiva;
+- inocuidad con owner y controles propios;
+- investigación separada de corrección o anulación.
+
+---
+
+#### 30. Supervisión multiárea
+
+La validación de `VSCREEN-0056` cubre dos carriles completos e independientes:
+
+| Carril | Territorio | Regla |
+| --- | --- | --- |
+| `supervisor` base | cobertura administrativa activa `AS/AA` | lectura y coordinación dentro de cobertura base válida |
+| `gerencia_operativa` | sede operativa activa y recursos de la jornada | lectura y coordinación durante contexto operativo válido |
+
+Regla final:
+
+```text
+ALLOW_FINAL
+=
+ALLOW_BASE_COMPLETO
+OR
+ALLOW_OPERATIVO_COMPLETO
+```
+
+Nunca se mezclan permiso de un carril, territorio de otro y turno de un tercero.
+
+---
+
+#### 31. Estados globales de experiencia
+
+La experiencia por área y la supervisión deben distinguir:
+
+| Estado UX | Interpretación |
+| --- | --- |
+| `SUPERVISION_ACTIVA` | existe conjunto autorizado y fresco para supervisión |
+| `SIN_RECURSOS_AUTORIZADOS` | actor válido, conjunto resultante vacío |
+| `SIN_CONTEXTO_OPERATIVO` | no puede resolverse el carril operativo requerido |
+| `SIN_PERMISO` | recurso o superficie no autorizados |
+| `STALE` | contexto o proyección perdió frescura |
+| `PARCIAL` | una fuente necesaria no está completamente confirmada |
+| `ERROR_TECNICO` | una fuente requerida no pudo resolverse |
+
+Para operación ordinaria se conserva además la diferencia entre vacío, deny, stale, error y resultado desconocido.
+
+---
+
+#### 32. Cambio de contexto y frescura
+
+La futura implementación debe invalidar o revalidar cuando cambie materialmente:
+
+- actor;
+- rol o concesión;
+- turno;
+- check-in;
+- sede;
+- área;
+- cobertura `AS/AA`;
+- permiso;
+- recurso;
+- estado;
+- versión de plan;
+- receta/version;
+- prioridad;
+- calidad;
+- handoff NEXO;
+- dispositivo o sesión cuando aplique.
+
+Una fila visible antes del cambio no conserva autoridad después del cambio.
+
+---
+
+#### 33. Dispositivos y actor efectivo
+
+Las plantillas `production_kitchen`, `production_bakery` y `production_pastry` especializan la superficie operativa, pero no conceden autoridad.
+
+El prototipo debe poder mostrar actor efectivo y permitir cambio/reidentificación conforme al contrato compartido sin transferir permisos, estado sensible ni reautenticación de otro trabajador.
+
+La futura prueba física deberá verificar interacción real en las condiciones del puesto. Esta tarea no afirma que esas condiciones ya fueron ensayadas.
+
+---
+
+#### 34. Tactilidad y legibilidad
+
+La línea base de diseño queda aceptable solo si la futura materialización conserva:
+
+- siguiente acción reconocible;
+- blancos táctiles suficientes para la operación objetivo;
+- texto de estado además de color;
+- foco y navegación accesibles cuando apliquen;
+- cantidades y unidades legibles;
+- confirmación explícita antes de efectos sensibles;
+- mensajes de error accionables;
+- ausencia de códigos internos como lenguaje principal;
+- no dependencia exclusiva de color, sonido o posición;
+- ausencia de clipping que impida comprender o ejecutar una acción necesaria.
+
+Estas son obligaciones de materialización y piloto, no resultados ejecutados en esta tarea.
+
+---
+
+#### 35. Accesibilidad y prevención de error
+
+La validación contractual reserva para implementación:
+
+- navegación por teclado cuando el dispositivo la soporte;
+- foco visible;
+- semántica suficiente para tecnologías de asistencia;
+- contraste y legibilidad;
+- etiquetas persistentes;
+- errores asociados al campo o acción relevante;
+- revisión previa de consecuencias sensibles;
+- recuperación sin redigitación innecesaria;
+- no exigir memoria de códigos técnicos;
+- no usar una acción irreversible como camino ordinario sin confirmación.
+
+No se declara WCAG, accesibilidad física ni regresión visual en `PASS` hasta ejecutar evidencia real.
+
+---
+
+#### 36. Matriz consolidada de escenarios contractuales
+
+| # | Escenario | Resultado documental | Ejecución real |
+| ---: | --- | --- | --- |
+| 1 | Cocina ve solo trabajo autorizado de Cocina | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 2 | Panadería ve solo trabajo autorizado de Panadería | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 3 | Repostería ve solo trabajo autorizado de Repostería | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 4 | productor intenta leer otra área | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 5 | productor intenta iniciar en otra área | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 6 | selector cliente-side intenta ampliar territorio | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 7 | cola vacía autorizada | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 8 | contexto operativo ausente | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 9 | contexto stale por cambio de turno | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 10 | plan en borrador | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 11 | plan en revisión | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 12 | plan publicado/liberado | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 13 | capacidad `CONFIRMADA` | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 14 | capacidad `PARCIAL` | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 15 | capacidad `NO_VERIFICADA` | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 16 | capacidad `STALE` | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 17 | prioridad visible sin override | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 18 | inicio con precondiciones completas | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 19 | inicio sin permiso exacto | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 20 | lote activo con captura parcial | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 21 | retry de captura | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 22 | timeout con resultado desconocido | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 23 | finalización con pendientes | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 24 | receta operativa en solo lectura | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 25 | productor intenta administrar receta | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 26 | merma/diferencia visible sin ocultarla | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 27 | corrección preserva hecho original | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 28 | consumo FOGO pendiente de NEXO | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 29 | consumo NEXO reconciliado | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 30 | terminado producido pero no liberado | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 31 | terminado liberado pero no ingresado a NEXO | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 32 | handoff NEXO reconciliado | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 33 | calidad pendiente | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 34 | supervisor base con una área | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 35 | supervisor base multiárea `AS/AA` | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 36 | `gerencia_operativa` en turno válido | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 37 | ambos carriles disponibles sin fusión | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 38 | recurso autorizado por un solo carril completo | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 39 | supervisor observa pero intenta mutar | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 40 | filtro supervisor reduce conjunto | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 41 | cambio de cobertura vuelve stale la vista | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+| 42 | bloqueo conserva owner y próxima acción | `CUBIERTO_CONTRACTUALMENTE` | pendiente |
+
+Cobertura contractual: 42/42 escenarios definidos con comportamiento esperado y owner derivable. Ejecución real: 0/42 en esta tarea, de forma deliberada por `NO_PHYSICAL_INSTANCE`.
+
+---
+
+#### 37. Matriz de cobertura de pantallas
+
+| Pantalla | Contrato UX existente | Área/actor validado documentalmente | Evidencia real pendiente |
+| --- | --- | --- | --- |
+| `VSCREEN-0055` | sí | tres áreas productivas | render + integración + piloto |
+| `VSCREEN-0056` | sí | supervisor / gerencia_operativa | render + integración + piloto |
+| `VSCREEN-0057` | sí | tres áreas productivas | mutación protegida + piloto |
+| `VSCREEN-0058` | sí | tres áreas productivas | ejecución real + piloto |
+| `VSCREEN-0059` | sí | tres áreas productivas | parcialidad/retry + piloto |
+| `VSCREEN-0060` | sí | tres áreas productivas | finalización/closeout + piloto |
+| `VSCREEN-0061` | sí | tres áreas productivas | lectura contextual + piloto |
+| `VSCREEN-0062` | sí | actor administrativo autorizado | render + autorización |
+| `VSCREEN-0063` | sí | actor administrativo autorizado | segregación + autorización |
+| `VSCREEN-0064` | sí | actor autorizado de prueba | flujo técnico + evidencia |
+| `VSCREEN-0065` | sí | actor de calidad autorizado | decisión de calidad + piloto |
+| `VSCREEN-0066` | sí | actor autorizado de terminado | handoff físico + piloto |
+| `VSCREEN-0067` | sí | actor autorizado de cierre/reproceso | cierre + piloto |
+| `VSCREEN-0173` | sí | actor autorizado de trazabilidad | investigación + evidencia |
+| `VSCREEN-0174` | sí | actor autorizado de control | control operativo + evidencia |
+
+No existe una identidad sin propietario ni una pantalla que deba inventarse para cerrar el recorrido.
+
+---
+
+#### 38. Matriz de fronteras que no pueden colapsarse
+
+| Observación visible | No concede |
+| --- | --- |
+| orden visible | inicio de producción |
+| lote visible | creación, parcialidad, finalización o corrección |
+| receta operativa visible | edición, aprobación, publicación o exportación |
+| prioridad visible | repriorización |
+| capacidad visible | override de restricción |
+| calidad visible | liberación o rechazo |
+| inventario visible | movimiento, ajuste o conteo |
+| handoff visible | recepción NEXO |
+| desviación visible | corrección o anulación |
+| bloqueo visible | resolución en otro dominio |
+| supervisión multiárea | mutación productiva multiárea |
+| dispositivo compatible | rol, permiso o territorio |
+
+Esta matriz debe sobrevivir intacta a la materialización.
+
+---
+
+#### 39. AS-IS observado y diferencia con el prototipo objetivo
+
+El runtime vigente de `vento-fogo` continúa mostrando una implementación parcial respecto del contrato objetivo:
+
+- nueve archivos de página observados en el inventario base;
+- `/production-batches` como lectura de lotes y métricas existentes;
+- `/production-batches/new` como creación real de lote con flujo colapsado;
+- `/recipe-book` como recetario operativo;
+- `/recipes`, `/recipes/new` y `/recipes/[id]/edit` como administración de recetas;
+- ausencia de una superficie dedicada equivalente a `VSCREEN-0056`;
+- ausencia de un workflow alcanzable que demuestre todo `VPROC-0033`;
+- ausencia de superficies dedicadas observadas para varias etapas de calidad, empaque, reproceso y closeout;
+- heurísticas locales observadas que no sustituyen los carriles canónicos de autorización.
+
+Por tanto:
+
+```text
+PROTOTIPO CONTRACTUAL VALIDADO DOCUMENTALMENTE
+!=
+PRODUCTO FOGO YA MATERIALIZADO
+```
+
+La tarea no degrada el objetivo para hacerlo coincidir con el AS-IS.
+
+---
+
+#### 40. Hallazgos y propietarios de salida
+
+| Hallazgo / carryover | Bloquea esta validación documental | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| superficies objetivo aún no materializadas | no | packages E5 FOGO y consumidores físicos | implementación real consume identidades y contratos sin reducir alcance |
+| carriles de autorización aún no materializados integralmente | no | `FOGO-AUTH-009..016` y fundaciones compartidas aplicables | unit correspondiente demuestra protección server-side y paridad |
+| ciclo productivo AS-IS colapsado | no | materialización FOGO de `FOGO-UX-005..011` | inicio, avance, finalización, corrección y closeout se demuestran como acciones/estados distinguibles |
+| integración NEXO no cerrada de extremo a extremo en runtime actual | no | `FOGO-UX-012`, `FOGO-UX-013`, `INT-PROD-001..005` y owners NEXO | efectos exactamente una vez y conciliación quedan demostrados |
+| pantalla supervisora `VSCREEN-0056` no observada físicamente | no | materialización FOGO de `FOGO-UX-014` | workspace existe y respeta carriles/territorios/prioridad/capacidad |
+| accesibilidad y regresión visual sin ejecución | no | materialización UI + `UX-QA-025` | suite y revisión aplicables producen evidencia real |
+| ergonomía física por estación sin ejecución | no | `UX-QA-025` + piloto | trabajador y dispositivo reales validan la interacción en contexto |
+| validación humana final pendiente | no | `UX-QA-025` / BLOQUE U | pilotos controlados cierran hallazgos críticos antes de producción |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 41. Evidencia mínima que deberá producir la materialización
+
+Cuando exista software real, cada escenario aplicable deberá poder asociarse con:
+
+- commit/build del consumidor;
+- área y contexto efectivo;
+- actor y rol/carril;
+- dispositivo o perfil cuando aplique;
+- pantalla y acción;
+- proceso/paso/estado;
+- recurso y versión;
+- datos de prueba o fixture;
+- precondiciones;
+- interacción realizada;
+- resultado esperado;
+- resultado observado;
+- deny o efecto empresarial comprobado;
+- correlación/idempotency key cuando corresponda;
+- evidencia de antes/después para mutaciones;
+- error o defecto asociado cuando falle;
+- frescura de la evidencia.
+
+La evidencia no debe incluir secretos reutilizables.
+
+---
+
+#### 42. Regla de herencia de evidencia entre áreas
+
+Una prueba de Cocina no certifica automáticamente Panadería o Repostería.
+
+La evidencia técnica puede reutilizarse solo cuando coincidan materialmente:
+
+- contrato;
+- componente;
+- interacción;
+- riesgo;
+- dispositivo/perfil relevante;
+- autorización;
+- recuperación.
+
+Debe ejecutarse directamente cuando cambien territorio, actor, datos, ergonomía, hardware, riesgo o resultado empresarial.
+
+Por tanto:
+
+```text
+MISMO COMPONENTE
+!=
+MISMA EVIDENCIA OPERATIVA
+```
+
+---
+
+#### 43. Validación humana diferida
+
+La validación con trabajadores reales no desaparece. Queda explícitamente diferida a la fase que dispone de software y entorno representativos.
+
+`UX-QA-025 — Probar FOGO por área productiva` deberá ejecutar escenarios representativos, registrar resultados y defectos reales y comprobar al menos:
+
+- comprensión de la siguiente acción;
+- aislamiento territorial;
+- tiempo y esfuerzo razonables para tareas frecuentes;
+- errores críticos y recuperación;
+- legibilidad y tactilidad;
+- accesibilidad aplicable;
+- cambio de actor/contexto;
+- trabajo con bloqueos;
+- parcialidad y resultado incierto;
+- handoffs con NEXO;
+- supervisión sin escalamiento de privilegios.
+
+`FOGO-UX-015` entrega el oracle contractual; `UX-QA-025` entrega evidencia de uso real.
+
+---
+
+#### 44. Cierre del minibloque FOGO-UX
+
+Con esta tarea, el minibloque queda documentalmente cerrado con la siguiente cadena:
+
+```text
+FOGO-UX-001  INVENTARIO AS-IS / UNIVERSO
+FOGO-UX-002  SEPARACION POR AREA
+FOGO-UX-003  INICIO POR AREA
+FOGO-UX-004  COLA DEL TURNO
+FOGO-UX-005  INICIO DE LOTE
+FOGO-UX-006  PRODUCCION PARCIAL
+FOGO-UX-007  FINALIZACION
+FOGO-UX-008  RECETA OPERATIVA
+FOGO-UX-009  ADMINISTRACION DE RECETAS
+FOGO-UX-010  CANTIDADES / MERMA / RESULTADO
+FOGO-UX-011  CORRECCIONES NO DESTRUCTIVAS
+FOGO-UX-012  CONSUMO -> NEXO
+FOGO-UX-013  TERMINADO -> NEXO
+FOGO-UX-014  SUPERVISION
+FOGO-UX-015  VALIDACION DOCUMENTAL POR AREA
+```
+
+El cierre no implica materialización física ni certificación productiva.
+
+---
+
+#### 45. Frontera con el siguiente minibloque
+
+Después de `FOGO-UX-015`, la ruta canónica sale de experiencia FOGO y entra a autorización ORIGO con:
+
+```text
+ORIGO-AUTH-001 — Inventariar vistas de compras
+```
+
+No existe una tarea intermedia adicional de experiencia FOGO entre este cierre y el inicio de ORIGO.
+
+El handoff entre bloques no transfiere decisiones FOGO a ORIGO. Únicamente cierra la secuencia documental FOGO y permite continuar la ruta canónica hacia el inventario de autorización de compras cuando la continuidad vigente lo habilite.
+
+---
+
+#### 46. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+
+**Requisitos modificados:** 0
+
+**Requisitos diferidos:** 0
+
+**Requisitos obsoletos:** 0
+
+**Justificación:** la obligación material de validar FOGO por área, su ciclo productivo, planificación, receta/version, autorización, handoffs, calidad, cierre y experiencia ya está cubierta por requisitos canónicos vigentes y por una tarea posterior de certificación real. Esta tarea consolida oracles y escenarios sin crear una obligación materialmente nueva.
+
+---
+
+#### 47. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificar identidad, texto, estado, relaciones ni secuencia:
+
+- `TREQ-FOGO-001` — ciclo productivo con actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` — receta publicada inmutable/versionada y lote ligado a versión exacta;
+- `TREQ-FOGO-003` — planificación, horizonte, prioridad, capacidad, restricciones, aprobación y overrides auditables;
+- `TREQ-FOGO-004` — ejecución, calidad, empaque, reproceso y cierre como estados y owners diferenciados;
+- `TREQ-AUTH-001` — autorización por permiso/contexto/alcance y no por nombre de rol;
+- `TREQ-AUTH-004` — decisión equivalente entre evaluadores para el mismo contexto;
+- `TREQ-AUTH-008` — separación de capacidades administrativas y operativas;
+- `TREQ-AUTH-009` — sede/área efectivas y denegación de cruces territoriales;
+- `TREQ-AUTH-010` — segregación de funciones entre producción, inventario, logística y administración;
+- `TREQ-AUTH-014` — invalidación de contexto y autoridad stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de actor, contexto, permiso, recurso, decisión y tiempo;
+- `TREQ-INTEGRATION-011` — efectos físicos hacia NEXO exactamente una vez y conciliables;
+- `TREQ-INTEGRATION-013` — cadena demanda→planificación→capacidad→materiales→ejecución→calidad→inventario→costo;
+- `TREQ-UX-001` — estado y acción principal identificables;
+- `TREQ-UX-003` — información, acciones y densidad adecuadas al actor y autorización;
+- `TREQ-UX-005` — experiencia consistente entre fuentes y consumidores sin duplicar verdad empresarial;
+- `TREQ-UX-006` — estados, recuperación y handoffs comprensibles;
+- `TREQ-UX-009` — contexto operativo resuelto sin fabricar autoridad.
+
+La enumeración anterior es únicamente trazabilidad de cobertura vigente y no constituye modificación del Registro 04A.
+
+---
+
+#### 48. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | El build documental corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, validadores de pantallas, plan, TREQ y diff quedan pendientes del checkout local. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@4a500a4c5dbee0da177ee77baaa97fbd2731ee7d`, la continuidad remota con `FOGO-UX-014` aún pendiente de incorporación y `FOGO-UX-015` como sucesora, la topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, los contratos FOGO-UX/AUTH aplicables, el Registro 04A modular relevante, `UX-QA-025` como prueba real posterior y `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7` como baseline AS-IS. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron sesiones de trabajadores, lotes, áreas, supervisión, calidad, handoffs ni escenarios reales; quedan para materialización y `UX-QA-025`. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-015` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no genera una unidad física propia. |
+
+La preparación de esta tarea utiliza además `FOGO-UX-014` como base aprobada entregada fuera del remoto mientras su cierre GitHub sigue pendiente. Esto conserva la continuidad sin presentar el remoto como si ya incluyera la 014.
+
+---
+
+#### 49. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] las tres áreas productivas exactas quedan cubiertas;
+- [ ] los tres roles productivos exactos quedan vinculados a sus áreas;
+- [ ] las tres plantillas especializadas no se convierten en permisos;
+- [ ] las quince pantallas canónicas FOGO quedan cubiertas sin crear una nueva;
+- [ ] los seis procesos FOGO permanecen identificados sin inventar un séptimo;
+- [ ] `VSCREEN-0055` mantiene entrada y cola acotadas al área;
+- [ ] `VSCREEN-0056` mantiene supervisión multiárea sin mutación implícita;
+- [ ] `VSCREEN-0057` separa preparación de inicio real;
+- [ ] `VSCREEN-0058` y `VSCREEN-0059` separan ejecución de parcialidad y cierre;
+- [ ] `VSCREEN-0060` separa finalización, closeout, calidad e inventario;
+- [ ] `VSCREEN-0061` permanece solo lectura operacional;
+- [ ] `VSCREEN-0062..0064` permanecen en carril administrativo/técnico autorizado;
+- [ ] `VSCREEN-0065..0067` preservan calidad, empaque, reproceso y cierre como owners distintos;
+- [ ] `VSCREEN-0173` y `VSCREEN-0174` conservan trazabilidad/controles sin editar historia;
+- [ ] Cocina, Panadería y Repostería no se cruzan por filtros o selección cliente-side;
+- [ ] los seis cruces territoriales negativos permanecen deny;
+- [ ] plan, orden, lote, salida, calidad y efecto NEXO permanecen distintos;
+- [ ] `VPROC-0033` conserva sus ocho estados relevantes de planificación;
+- [ ] `CONFIRMADA`, `PARCIAL`, `BLOQUEADA`, `NO_VERIFICADA`, `STALE` y `ERROR_TECNICO` no se confunden;
+- [ ] prioridad visible no equivale a override;
+- [ ] supervisor y `gerencia_operativa` permanecen como carriles completos independientes;
+- [ ] una fila visible no conserva autoridad después de un cambio material de contexto;
+- [ ] receta/publicación y versión permanecen ligadas al trabajo;
+- [ ] cantidades esperadas y reales no se sobrescriben entre sí;
+- [ ] correcciones preservan el hecho original;
+- [ ] consumo y terminado mantienen handoffs NEXO separados e idempotentes;
+- [ ] `RESULTADO_DESCONOCIDO` no se trata como fallo confirmado;
+- [ ] calidad visible no concede liberación;
+- [ ] inventario visible no concede movimiento;
+- [ ] dispositivo compatible no concede actor, rol, permiso ni territorio;
+- [ ] tactilidad, legibilidad, error y accesibilidad quedan como obligaciones de materialización;
+- [ ] no se declara prueba humana ejecutada;
+- [ ] no se declara render o regresión visual ejecutados;
+- [ ] no se declara certificación para producción;
+- [ ] `UX-QA-025` queda como propietario de la validación real por área;
+- [ ] 42 escenarios documentales quedan cubiertos con ejecución real pendiente;
+- [ ] todos los carryovers tienen owner y condición de salida;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] el siguiente trabajo documental exacto queda en `ORIGO-AUTH-001`.
+
+---
+
+#### 50. Límites
+
+Esta tarea no:
+
+- implementa FOGO;
+- crea una ruta o componente;
+- genera Storybook, screenshots o prototipos navegables;
+- ejecuta render;
+- ejecuta regresión visual;
+- ejecuta pruebas de accesibilidad;
+- ejecuta E2E;
+- ejecuta pruebas offline;
+- ejecuta sesiones con trabajadores;
+- certifica una tablet o estación;
+- certifica ergonomía física;
+- inicia producción;
+- crea, modifica o cierra lotes reales;
+- registra producción parcial real;
+- modifica recetas;
+- publica recetas;
+- libera o rechaza calidad;
+- mueve o ajusta inventario;
+- ejecuta handoffs NEXO;
+- cambia permisos, roles, turnos o contextos;
+- modifica `vento-fogo`;
+- modifica Supabase;
+- crea migraciones, RLS, RPC, tablas o datos;
+- modifica prioridades reales;
+- convierte supervisión en mutación;
+- sustituye `UX-QA-025`;
+- sustituye la certificación del BLOQUE U;
+- declara `CERTIFIED_FOR_PRODUCTION`;
+- modifica el Registro 04A;
+- adelanta el desarrollo de ORIGO.
+
+---
+
+#### 51. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-014 — Diseñar pantalla para supervisor de producción`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-015 — Validar el prototipo por área productiva`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-001 — Inventariar vistas de compras`

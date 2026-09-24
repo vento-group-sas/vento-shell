@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1302** |
+| Aprobadas | **1303** |
 | En propuesta | **0** |
-| No iniciadas | **294** |
+| No iniciadas | **293** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.58% (1302/1596)** |
+| Porcentaje de completamiento | **81.64% (1303/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **294** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1203** |
+| ⏸ NO_EVALUADA | **293** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1204** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-UX-014` — Diseñar pantalla para supervisor de producción | ✅ APROBADA |
-| Tarea actual | `FOGO-UX-015` — Validar el prototipo por área productiva | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-001` — Inventariar vistas de compras | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-UX-015` — Validar el prototipo por área productiva | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-001` — Inventariar vistas de compras | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-002` — Inventariar vistas de proveedores | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1080,7 +1080,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-012` | Conectar consumo de insumos con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-013` | Conectar producto terminado con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-014` | Diseñar pantalla para supervisor de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-015` | Validar el prototipo por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-015` | Validar el prototipo por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-REC-001` | Definir el contrato canónico de recetas y acceso contextual | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-PRD-001` | Diseñar el Centro de Pesaje, Premezclas y Porcionamiento | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-TRZ-001` | Definir el contrato empresarial de lotes, etiquetas y trazabilidad productiva | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |

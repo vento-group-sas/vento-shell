@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1302** |
+| Tareas aprobadas | **1303** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **294** |
+| Tareas no iniciadas | **293** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **81.58% (1302/1596)** |
+| Porcentaje de completamiento | **81.64% (1303/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **FOGO-UX-014 — Diseñar pantalla para supervisor de producción** |
-| Tarea actual | **FOGO-UX-015 — Validar el prototipo por área productiva** |
+| Última tarea aprobada | **FOGO-UX-015 — Validar el prototipo por área productiva** |
+| Tarea actual | **ORIGO-AUTH-001 — Inventariar vistas de compras** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-001 — Inventariar vistas de compras** |
+| Siguiente tarea | **ORIGO-AUTH-002 — Inventariar vistas de proveedores** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 33 de 65 aprobadas; FOGO-UX-015 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 34 de 65 aprobadas; ORIGO-AUTH-001 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — FOGO-UX-015** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-001** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `FOGO-UX-014` — Diseñar pantalla para supervisor de producción |
-| Tarea actual | `FOGO-UX-015` — Validar el prototipo por área productiva — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-001` — Inventariar vistas de compras |
+| Última aprobada | `FOGO-UX-015` — Validar el prototipo por área productiva |
+| Tarea actual | `ORIGO-AUTH-001` — Inventariar vistas de compras — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-002` — Inventariar vistas de proveedores |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 33 DE 65 APROBADAS — ACTUAL FOGO-UX-015** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 34 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-001** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-FOGO-UX-014 — Diseñar pantalla para supervisor de producción
-        ↓
-TAREA ACTUAL
 FOGO-UX-015 — Validar el prototipo por área productiva
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-AUTH-001 — Inventariar vistas de compras
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-002 — Inventariar vistas de proveedores
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 33 de 65 tareas aprobadas
+BLOQUES L Y M — 34 de 65 tareas aprobadas
 ```
