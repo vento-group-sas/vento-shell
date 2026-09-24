@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1308** |
+| Tareas aprobadas | **1309** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **288** |
+| Tareas no iniciadas | **287** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **81.95% (1308/1596)** |
+| Porcentaje de completamiento | **82.02% (1309/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-AUTH-005 — Definir permisos de creación** |
-| Tarea actual | **ORIGO-AUTH-006 — Definir permisos de aprobación** |
+| Última tarea aprobada | **ORIGO-AUTH-006 — Definir permisos de aprobación** |
+| Tarea actual | **ORIGO-AUTH-007 — Definir permisos de recepción** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-007 — Definir permisos de recepción** |
+| Siguiente tarea | **ORIGO-AUTH-008 — Definir permisos de corrección** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 39 de 65 aprobadas; ORIGO-AUTH-006 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 40 de 65 aprobadas; ORIGO-AUTH-007 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-AUTH-006** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-007** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-AUTH-005` — Definir permisos de creación |
-| Tarea actual | `ORIGO-AUTH-006` — Definir permisos de aprobación — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-007` — Definir permisos de recepción |
+| Última aprobada | `ORIGO-AUTH-006` — Definir permisos de aprobación |
+| Tarea actual | `ORIGO-AUTH-007` — Definir permisos de recepción — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-008` — Definir permisos de corrección |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 39 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-006** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 40 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-007** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-AUTH-005 — Definir permisos de creación
-        ↓
-TAREA ACTUAL
 ORIGO-AUTH-006 — Definir permisos de aprobación
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-AUTH-007 — Definir permisos de recepción
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-008 — Definir permisos de corrección
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 39 de 65 tareas aprobadas
+BLOQUES L Y M — 40 de 65 tareas aprobadas
 ```
