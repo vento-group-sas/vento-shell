@@ -6942,7 +6942,1243 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-008 — Definir permisos de corrección`
 
-### [ ] ORIGO-AUTH-008 — Definir permisos de corrección
+### ✅ ORIGO-AUTH-008 — Definir permisos de corrección
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-007 — Definir permisos de recepción
+**Tarea siguiente:** ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
+**Tipo de tarea:** documental; definición cerrada de capacidades atómicas de corrección, actualización, cancelación, activación/desactivación y reversión en ORIGO, separando cambios administrativos, cambios de estado y compensaciones operativas por recurso, modalidad, actor, estado, segregación y evidencia, sin activar todavía las claves en el catálogo compartido ni materializar cambios físicos; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, permisos persistidos, matrices físicas, navegación, Server Actions, RLS, RPC, tablas, datos, Supabase, migraciones, Storage, secretos, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable qué capacidades de ORIGO permiten corregir información o efectos ya existentes sin convertir un permiso genérico de edición en autoridad para aprobar, recibir, borrar historia o alterar recursos fuera de estado y alcance.
+
+La regla contractual queda:
+
+```text
+CONSULTAR
+!=
+CREAR
+!=
+ACTUALIZAR
+!=
+CANCELAR
+!=
+ACTIVAR / DESACTIVAR
+!=
+REVERSAR
+!=
+APROBAR
+!=
+RECIBIR
+```
+
+La tarea diferencia tres familias de corrección:
+
+```text
+ORDEN DE COMPRA
+→ actualización ordinaria previa a aprobación/emisión
+→ cancelación explícita con historia preservada
+
+PROVEEDOR
+→ actualización ordinaria
+→ activación y desactivación separadas
+
+RECEPCIÓN
+→ reversión compensatoria de un efecto ya aplicado
+→ corrección con sustitución = reversión autorizada + nueva recepción autorizada + correlación durable
+```
+
+No se crea una capacidad genérica `manage`, `edit` o `correct` que absorba operaciones con distinta sensibilidad.
+
+---
+
+#### 2. Frontera recibida de ORIGO-AUTH-007
+
+`ORIGO-AUTH-007` definió la recepción nueva mediante:
+
+```text
+origo.procurement.receipts.register
+```
+
+con modalidad:
+
+```text
+OPERATIONAL_ONLY
+T+C
+```
+
+y dejó fuera de esa capacidad:
+
+```text
+reversión
+corrección de una recepción existente
+resolución autorizante de una diferencia
+```
+
+La frontera se conserva:
+
+```text
+RECEPCIÓN NUEVA
+→ receipts.register
+
+REVERSIÓN
+→ receipts.reverse
+
+CORRECCIÓN CON SUSTITUCIÓN
+→ receipts.reverse + receipts.register
+```
+
+Por tanto, `correction_entry_id` en el runtime actual no amplía el significado canónico de `receipts.register`.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+ORIGO-AUTH-001..008
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-AUTH-008` define contrato documental una sola vez;
+2. no existe una instancia física propia para esta tarea;
+3. no se modifican permisos persistidos, guards, Server Actions, RPC, RLS ni datos;
+4. las claves definidas aquí no se presentan como activas hasta su materialización propietaria posterior;
+5. toda modificación VENTO de Supabase continúa perteneciendo a `vento-shell`;
+6. `ORIGO-AUTH-009` inicia la fase `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE` y no se materializa desde esta tarea.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+3afbd279eae8875896bfdd22a895846e9afbf065
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+owner blob
+7f66dd324626e42cccff5d49f113918ab6474548
+```
+
+La secuencia remota verificada registra `ORIGO-AUTH-007` como última tarea incorporada y expone `ORIGO-AUTH-008` como actual. El bloque publicado de `ORIGO-AUTH-007` fue contrastado con el artefacto aprobado y coincide en contenido.
+
+Se contrastaron como mínimo:
+
+- mini-bloque `ORIGO-AUTH-001..015`;
+- artefacto aprobado de `ORIGO-AUTH-007`;
+- catálogo canónico de convención y normalización de permisos;
+- modalidad, prerequisitos, alcance y contratos de recurso vigentes;
+- matrices base y operativas aprobadas;
+- roles y responsabilidades de `VPROC-0020`, `VPROC-0021` y `VPROC-0022`;
+- catálogo de pantallas y pasos;
+- estados canónicos de `VPROC-0021` y `VPROC-0022`;
+- experiencia administrativa de abastecimiento;
+- Registro 04A de ORIGO;
+- `src/app/purchase-orders/actions.ts`;
+- `src/app/suppliers/actions.ts`;
+- `src/app/receipts/page.tsx`;
+- `src/app/receipts/new/page.tsx`.
+
+---
+
+#### 5. Convención canónica que gobierna la corrección
+
+La convención aprobada distingue:
+
+```text
+update
+→ modificar información ordinaria de un recurso existente
+
+cancel
+→ detener un proceso sin representar borrado físico
+
+activate / deactivate
+→ cambiar estado activo/inactivo de un recurso de ciclo administrado
+
+reverse
+→ generar una operación compensatoria sobre un efecto ya aplicado
+
+delete
+→ eliminación real del registro
+```
+
+Reglas obligatorias:
+
+1. `update` no representa aprobación, reversión ni cancelación;
+2. `delete` no se utiliza para cancelar, desactivar o reversar;
+3. una operación sensible utiliza el verbo empresarial específico;
+4. un permiso representa una única capacidad verificable;
+5. frontend, Server Action, RPC, RLS y auditoría deben converger en la misma identidad canónica cuando aplique.
+
+---
+
+#### 6. Universo de capacidades definido por ORIGO-AUTH-008
+
+La tarea define exactamente seis capacidades:
+
+```text
+origo.procurement.purchase_orders.update
+origo.procurement.purchase_orders.cancel
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+origo.procurement.receipts.reverse
+```
+
+Cardinalidad:
+
+```text
+CAPACIDADES DE CORRECCIÓN DEFINIDAS: 6
+
+ORDEN DE COMPRA: 2
+PROVEEDOR: 3
+RECEPCIÓN: 1
+```
+
+No se crean:
+
+```text
+origo.procurement.purchase_orders.delete
+origo.procurement.receipts.correct
+origo.procurement.receipts.update
+origo.procurement.suppliers.delete
+```
+
+Tampoco se crea una clave `receipts.resolve` sin una identidad canónica previa explícita. `VPROC-0022::STEP-RESOLVE_RECEIPT_VARIANCE` conserva su significado de proceso y decisión; esta tarea protege las mutaciones correctivas materiales que sí tienen verbo canónico soportado.
+
+---
+
+#### 7. Resumen contractual de las seis capacidades
+
+| Permiso | Recurso | Modalidad | Prerrequisito operativo | Naturaleza |
+| --- | --- | --- | --- | --- |
+| `origo.procurement.purchase_orders.update` | `PURCHASE_ORDER` | `BASE_ONLY` | no aplica | actualización ordinaria preaprobación/preemisión |
+| `origo.procurement.purchase_orders.cancel` | `PURCHASE_ORDER` | `BASE_ONLY` | no aplica | cancelación empresarial con historia preservada |
+| `origo.procurement.suppliers.update` | `SUPPLIER` | `BASE_ONLY` | no aplica | actualización ordinaria de expediente permitido |
+| `origo.procurement.suppliers.activate` | `SUPPLIER` | `BASE_ONLY` | no aplica | activación explícita del proveedor |
+| `origo.procurement.suppliers.deactivate` | `SUPPLIER` | `BASE_ONLY` | no aplica | desactivación explícita sin borrar historia |
+| `origo.procurement.receipts.reverse` | `PURCHASE_RECEIPT` | `BASE_AND_OPERATIONAL` | `T+C` | compensación sensible de recepción aplicada |
+
+Las seis capacidades son mutadoras:
+
+```text
+is_read_only = false
+```
+
+---
+
+#### 8. `purchase_orders.update` — intención exacta
+
+`origo.procurement.purchase_orders.update` permite modificar una orden únicamente mientras el proceso conserve un estado editable previo a aprobación o emisión.
+
+Puede cubrir, según política y field mask aplicables:
+
+- proveedor seleccionado;
+- sede o destino todavía editable;
+- fecha esperada;
+- notas;
+- líneas;
+- cantidades;
+- presentación/unidad;
+- condiciones ordinarias permitidas antes de aprobación.
+
+No concede:
+
+```text
+approve
+issue
+cancel
+receive
+delete
+reopen
+```
+
+---
+
+#### 9. Estados elegibles para actualización ordinaria de orden
+
+La semántica canónica exige que la actualización ordinaria ocurra antes de que la decisión de aprobación quede consumada.
+
+Como mínimo:
+
+```text
+PURCHASE_REQUEST_PENDING_APPROVAL
+UNDER_REVIEW
+PENDING_APPROVAL
+```
+
+pueden admitir edición conforme a la política del caso y su versión.
+
+Después de:
+
+```text
+APPROVED
+ORDER_PREPARING
+ORDER_ISSUED
+SUPPLIER_ACK_PENDING
+PURCHASE_COMMITMENT_FORMALIZED
+```
+
+una modificación material no puede representarse como edición destructiva de la versión ya autorizada.
+
+Regla:
+
+```text
+CAMBIO MATERIAL POST-APROBACIÓN
+→ NUEVA REVISIÓN / VERSIÓN
+→ NUEVA APROBACIÓN CUANDO CORRESPONDA
+→ EVIDENCIA DE CAMBIO Y ENVÍO
+```
+
+---
+
+#### 10. Field mask de `purchase_orders.update`
+
+La autorización de actualización no implica autoridad universal sobre todas las columnas.
+
+La evaluación deberá considerar:
+
+```text
+PERMISO EXACTO
++
+ESTADO EDITABLE
++
+VERSIÓN VIGENTE
++
+ALCANCE DEL RECURSO
++
+FIELD MASK AUTORIZADO
+```
+
+Quedan fuera por defecto de una actualización ordinaria:
+
+- estados empresariales que exigen verbo específico;
+- campos de auditoría;
+- actor creador/aprobador;
+- evidencia de aprobación;
+- evidencia de emisión;
+- cantidades recibidas;
+- timestamps derivados de otros procesos;
+- campos sensibles cuya visibilidad o mutación pertenezca a `ORIGO-AUTH-010`.
+
+---
+
+#### 11. Grants base de `purchase_orders.update`
+
+Decisión objetivo:
+
+| Rol base | Decisión |
+| --- | --- |
+| `propietario` | `ASIGNAR` |
+| `gerente_general` | `ASIGNAR` |
+| `gerente` | `ASIGNAR` |
+| `supervisor` | `NO_ASIGNAR` |
+| `auxiliar_administrativa` | `ASIGNAR` |
+| `contador` | `NO_ASIGNAR` |
+| `marketing` | `NO_ASIGNAR` |
+| `trabajador_operativo` | `NO_ASIGNAR` |
+
+Justificación:
+
+- la preparación y mantenimiento administrativo de la orden pertenece a Compras;
+- `auxiliar_administrativa` puede ejecutar correcciones administrativas acotadas;
+- consulta contable no concede edición;
+- supervisión territorial no concede administración de compras por defecto;
+- un rol operativo nunca obtiene actualización de orden por turno.
+
+---
+
+#### 12. `purchase_orders.cancel` — intención exacta
+
+`origo.procurement.purchase_orders.cancel` representa cancelar una orden de compra sin convertir la cancelación en borrado físico del recurso.
+
+Regla:
+
+```text
+CANCEL
+!=
+DELETE
+```
+
+La cancelación debe conservar:
+
+- identidad de la orden;
+- versión;
+- actor;
+- motivo;
+- fecha efectiva;
+- estado previo;
+- efectos o compromisos ya generados;
+- referencias a proveedor y documentos;
+- trazabilidad necesaria para conciliación posterior.
+
+---
+
+#### 13. Estados y límites de `purchase_orders.cancel`
+
+La cancelación solo puede ejecutarse cuando el estado contractual admita detener el proceso sin falsear hechos ya ocurridos.
+
+Antes de emisión o formalización puede existir una cancelación directa gobernada.
+
+Después de:
+
+```text
+ORDER_ISSUED
+SUPPLIER_ACK_PENDING
+PURCHASE_COMMITMENT_FORMALIZED
+```
+
+la acción debe evaluar compromisos externos y puede requerir una operación de revisión, anulación contractual o compensación distinta.
+
+Después de recepción o efectos económicos, `cancel` no puede borrar esos hechos.
+
+Resultado fail-closed:
+
+```text
+ESTADO NO CANCELABLE
+→ DENY
+→ NO DEGRADAR A DELETE
+```
+
+---
+
+#### 14. Grants base de `purchase_orders.cancel`
+
+Decisión objetivo:
+
+| Rol base | Decisión |
+| --- | --- |
+| `propietario` | `ASIGNAR` |
+| `gerente_general` | `ASIGNAR` |
+| `gerente` | `ASIGNAR` |
+| `supervisor` | `NO_ASIGNAR` |
+| `auxiliar_administrativa` | `NO_ASIGNAR` |
+| `contador` | `NO_ASIGNAR` |
+| `marketing` | `NO_ASIGNAR` |
+| `trabajador_operativo` | `NO_ASIGNAR` |
+
+La matriz de apoyo administrativo conserva expresamente fuera de su autoridad las cancelaciones.
+
+---
+
+#### 15. Reconciliación AS-IS de `updatePurchaseOrder`
+
+El runtime actual permite `updatePurchaseOrder` únicamente cuando:
+
+```text
+status = draft
+```
+
+Después:
+
+1. modifica cabecera;
+2. elimina líneas actuales;
+3. inserta las nuevas líneas;
+4. recalcula total.
+
+La acción no demuestra dentro de su propia evidencia un check explícito de:
+
+```text
+origo.procurement.purchase_orders.update
+```
+
+Resultado documental:
+
+```text
+AS_IS_PURCHASE_ORDER_UPDATE_WITHOUT_CANONICAL_PERMISSION
+```
+
+La restricción `draft` observada es útil, pero no sustituye permiso, territorio, versión, field mask ni atomicidad.
+
+---
+
+#### 16. Reconciliación AS-IS de `deletePurchaseOrder`
+
+El runtime actual:
+
+- exige usuario autenticado;
+- usa una lista local de roles;
+- limita borrado a `draft`;
+- elimina líneas;
+- elimina la cabecera.
+
+No existe una identidad canónica aprobada `origo.procurement.purchase_orders.delete` para esta familia.
+
+El contrato objetivo de esta tarea adopta:
+
+```text
+AS_IS_PURCHASE_ORDER_DELETE_SHOULD_BE_CANCEL
+```
+
+Regla:
+
+```text
+BORRADO FÍSICO AS-IS
+!=
+AUTORIZACIÓN CANÓNICA DE CANCELACIÓN
+```
+
+La materialización posterior deberá reconciliar la operación sin inventar que la lista local de roles equivale a permiso final.
+
+---
+
+#### 17. `suppliers.update` — intención exacta
+
+`origo.procurement.suppliers.update` permite actualizar información ordinaria del expediente de un proveedor sin cambiar automáticamente su estado activo.
+
+Puede abarcar, dentro del field mask permitido:
+
+- nombre o identidad visible corregible;
+- contactos;
+- teléfono;
+- correo;
+- dirección;
+- notas;
+- documentos ordinarios;
+- condiciones administrativas no sensibles cuya edición esté autorizada.
+
+No concede automáticamente:
+
+```text
+activate
+deactivate
+delete
+```
+
+Ni concede por sí sola acceso o edición de contratos, cuentas bancarias, precios sensibles u otros campos protegidos por `ORIGO-AUTH-010`.
+
+---
+
+#### 18. Grants base de `suppliers.update`
+
+Decisión objetivo:
+
+| Rol base | Decisión |
+| --- | --- |
+| `propietario` | `ASIGNAR` |
+| `gerente_general` | `ASIGNAR` |
+| `gerente` | `ASIGNAR` |
+| `supervisor` | `NO_ASIGNAR` |
+| `auxiliar_administrativa` | `ASIGNAR` |
+| `contador` | `NO_ASIGNAR` |
+| `marketing` | `NO_ASIGNAR` |
+| `trabajador_operativo` | `NO_ASIGNAR` |
+
+El rol de apoyo administrativo puede mantener expediente dentro de límites explícitos, pero no adquiere autoridad operativa ni de decisión sensible.
+
+---
+
+#### 19. `suppliers.activate` — intención exacta
+
+`origo.procurement.suppliers.activate` habilita un proveedor para nuevas operaciones conforme a su expediente y controles aplicables.
+
+Activar exige como mínimo:
+
+- identidad válida;
+- ausencia de contradicción de estado;
+- documentación obligatoria aplicable;
+- actor autorizado;
+- alcance organizacional permitido;
+- auditoría de la transición.
+
+Regla:
+
+```text
+CREATE
+!=
+ACTIVATE
+```
+
+Crear un proveedor no lo habilita automáticamente para uso operativo.
+
+---
+
+#### 20. `suppliers.deactivate` — intención exacta
+
+`origo.procurement.suppliers.deactivate` impide nuevas operaciones con el proveedor sin borrar su historia.
+
+La desactivación debe preservar:
+
+- órdenes históricas;
+- recepciones;
+- contratos y condiciones históricas;
+- evaluaciones;
+- documentos;
+- referencias económicas;
+- trazabilidad del actor y motivo.
+
+Regla:
+
+```text
+DEACTIVATE
+!=
+DELETE
+```
+
+---
+
+#### 21. Grants base de activación y desactivación de proveedor
+
+Decisión objetivo para ambas capacidades:
+
+| Rol base | `activate` | `deactivate` |
+| --- | --- | --- |
+| `propietario` | `ASIGNAR` | `ASIGNAR` |
+| `gerente_general` | `ASIGNAR` | `ASIGNAR` |
+| `gerente` | `ASIGNAR` | `ASIGNAR` |
+| `supervisor` | `NO_ASIGNAR` | `NO_ASIGNAR` |
+| `auxiliar_administrativa` | `NO_ASIGNAR` | `NO_ASIGNAR` |
+| `contador` | `NO_ASIGNAR` | `NO_ASIGNAR` |
+| `marketing` | `NO_ASIGNAR` | `NO_ASIGNAR` |
+| `trabajador_operativo` | `NO_ASIGNAR` | `NO_ASIGNAR` |
+
+La separación permite que el apoyo administrativo mantenga información sin poder habilitar o retirar unilateralmente una contraparte comercial.
+
+---
+
+#### 22. Reconciliación AS-IS de `updateSupplier`
+
+El runtime actual `updateSupplier` utiliza el helper amplio `requireCanManageSuppliers` y actualiza en una misma mutación:
+
+- datos ordinarios;
+- condiciones de pago observadas;
+- `is_active`.
+
+Resultado:
+
+```text
+AS_IS_SUPPLIER_UPDATE_AND_STATUS_COUPLED
+```
+
+El contrato objetivo separa:
+
+```text
+suppliers.update
+suppliers.activate
+suppliers.deactivate
+```
+
+Un solo helper `manage` no satisface por sí mismo esa separación.
+
+---
+
+#### 23. Reconciliación AS-IS de `deleteSupplier`
+
+El runtime actual permite borrado físico si no existen órdenes vinculadas y el helper `requireCanManageSuppliers` lo autoriza.
+
+La familia canónica documentada no contiene:
+
+```text
+origo.procurement.suppliers.delete
+```
+
+Resultado:
+
+```text
+AS_IS_SUPPLIER_DELETE_WITHOUT_CANONICAL_DELETE
+```
+
+Esta tarea no inventa esa capacidad.
+
+La política objetivo privilegia `deactivate` para retiro del uso ordinario y preservación histórica. Cualquier eliminación física excepcional requeriría un contrato explícito distinto y no queda autorizada aquí.
+
+---
+
+#### 24. `receipts.reverse` — intención exacta
+
+`origo.procurement.receipts.reverse` representa una operación compensatoria sobre una recepción cuyos efectos ya fueron aplicados.
+
+No es:
+
+```text
+update
+cancel
+delete
+register
+```
+
+La reversión debe conservar la recepción original como evidencia histórica y producir una relación compensatoria auditable.
+
+---
+
+#### 25. Modalidad de `receipts.reverse`
+
+La reversión combina decisión administrativa sensible con presencia operativa sobre el recurso afectado.
+
+Contrato:
+
+```text
+authorization_requirement = BASE_AND_OPERATIONAL
+base prerequisite = N
+operational prerequisite = T+C
+is_read_only = false
+```
+
+Decisión final:
+
+```text
+BASE VÁLIDO
+AND
+OPERATIVO VÁLIDO
+→ puede continuar a validación de recurso/estado
+
+FALTA UNO DE LOS DOS
+→ DENY
+```
+
+---
+
+#### 26. Recurso y territorio de `receipts.reverse`
+
+Contrato de recurso objetivo:
+
+```text
+resource = PURCHASE_RECEIPT
+locator = receipt_id
+target = RECEIPT_DESTINATION_INTERSECTION
+```
+
+La autorización debe resolver como mínimo:
+
+- recepción original;
+- orden relacionada cuando exista;
+- sede receptora;
+- área/ubicación afectada;
+- productos y cantidades;
+- actor receptor;
+- movimientos o efectos ya generados;
+- contexto operativo actual;
+- alcance base del actor.
+
+La intersección debe ser válida tanto para autoridad base como para contexto operativo.
+
+---
+
+#### 27. Prerrequisitos operativos de `receipts.reverse`
+
+El componente operativo exige:
+
+```text
+TURNO VIGENTE
++
+CHECK-IN ACTIVO
++
+ACTOR EFECTIVO
++
+SEDE COMPATIBLE
++
+ÁREA COMPATIBLE
++
+RECURSO RESUELTO
+```
+
+Además, por sensibilidad, la materialización deberá exigir motivo y mecanismo de reautenticación reforzada cuando el contrato transversal aplicable lo determine.
+
+El `site_id` recibido desde cliente nunca sustituye la resolución autoritativa del territorio.
+
+---
+
+#### 28. Componente base de `receipts.reverse`
+
+Decisión objetivo:
+
+| Rol base | Componente base |
+| --- | --- |
+| `propietario` | `ASIGNAR COMPONENTE BASE` |
+| `gerente_general` | `ASIGNAR COMPONENTE BASE` |
+| `gerente` | `ASIGNAR COMPONENTE BASE` |
+| `supervisor` | `NO_ASIGNAR` |
+| `auxiliar_administrativa` | `NO_ASIGNAR` |
+| `contador` | `NO_ASIGNAR` |
+| `marketing` | `NO_ASIGNAR` |
+| `trabajador_operativo` | `NO_ASIGNAR` |
+
+La concesión base por sí sola nunca ejecuta la reversión.
+
+---
+
+#### 29. Componente operativo de `receipts.reverse`
+
+Decisión objetivo:
+
+| Rol operativo | Componente operativo |
+| --- | --- |
+| `cajero_satelite` | `NO_ASIGNAR` |
+| `barista_satelite` | `NO_ASIGNAR` |
+| `cocinero_satelite` | `NO_ASIGNAR` |
+| `servicio_salon` | `NO_ASIGNAR` |
+| `mostrador_satelite` | `NO_ASIGNAR` |
+| `operador_integral_satelite` | `NO_ASIGNAR` |
+| `produccion_cocina` | `NO_ASIGNAR` |
+| `produccion_panaderia` | `NO_ASIGNAR` |
+| `produccion_reposteria` | `NO_ASIGNAR` |
+| `bodeguero` | `NO_ASIGNAR` |
+| `conductor_logistica` | `NO_ASIGNAR` |
+| `gerencia_operativa` | `ASIGNAR COMPONENTE OPERATIVO` |
+
+La decisión sigue el patrón canónico de las correcciones físicas sensibles: el ejecutor ordinario puede registrar el hecho, pero no revertirlo unilateralmente.
+
+---
+
+#### 30. Estado elegible de una reversión
+
+La reversión no se autoriza solo porque el runtime tenga una fila con estado técnico `received`.
+
+La evaluación deberá comprobar:
+
+```text
+RECURSO EXISTENTE
++
+ESTADO CORREGIBLE
++
+EFECTOS IDENTIFICABLES
++
+NO CONTRADICCIÓN DE CONCILIACIÓN
++
+MOTIVO
++
+AUTORIDAD BASE
++
+CONTEXTO OPERATIVO
+```
+
+Si los efectos posteriores ya hacen imposible una compensación simple, la acción falla cerrado y escala al flujo de resolución/reconciliación correspondiente.
+
+La constante AS-IS de treinta minutos no se convierte en política empresarial canónica por esta tarea.
+
+---
+
+#### 31. Corrección de recepción con sustitución
+
+Una corrección que reemplaza una recepción errónea requiere dos capacidades distintas:
+
+```text
+origo.procurement.receipts.reverse
++
+origo.procurement.receipts.register
+```
+
+La primera autoriza compensar la recepción original.
+
+La segunda autoriza registrar el reemplazo.
+
+La corrección completa exige además correlación:
+
+```text
+ORIGINAL
+↔ REVERSIÓN
+↔ REEMPLAZO
+```
+
+No se crea `receipts.correct` porque el contrato puede expresarse con las dos capacidades atómicas existentes y la obligación de correlación.
+
+---
+
+#### 32. Atomicidad y durabilidad de la corrección de recepción
+
+La operación empresarial no puede dejar definitivamente la recepción original reversada si el reemplazo requerido no queda garantizado.
+
+Contrato:
+
+```text
+REVERSIÓN ORIGINAL
++
+CREACIÓN DE REEMPLAZO
++
+VÍNCULO ORIGINAL/REEMPLAZO
++
+EFECTOS DE INVENTARIO/COSTO/ORDEN
++
+AUDITORÍA
+→ ATÓMICOS
+  O DURABLES, IDENTIFICABLES Y RECONCILIABLES
+```
+
+Un fallo intermedio debe producir un estado recuperable y visible, nunca éxito parcial silencioso.
+
+---
+
+#### 33. Reconciliación AS-IS de `reverseReceipt`
+
+La Server Action actual:
+
+- exige autenticación;
+- exige comentario;
+- comprueba `entry_id`;
+- compara la sede de la fila con `site_id` recibido;
+- exige `status = received`;
+- aplica la ventana local de treinta minutos;
+- invoca `origo_reverse_inventory_entry`.
+
+No demuestra dentro de la acción un check equivalente de permiso antes del RPC.
+
+Resultado:
+
+```text
+AS_IS_RECEIPT_REVERSE_PERMISSION_RECHECK_NOT_DEMONSTRATED
+```
+
+La conclusión no afirma ausencia de RLS o protección dentro del RPC; afirma únicamente que la Server Action no constituye por sí sola evidencia suficiente del permiso canónico exacto.
+
+---
+
+#### 34. Reconciliación AS-IS de corrección dentro de `createReceipt`
+
+Cuando existe `correction_entry_id`, el runtime actual:
+
+1. fuerza modo inventariable;
+2. verifica la recepción original;
+3. invoca reversión;
+4. crea un nuevo registro;
+5. genera sus efectos;
+6. intenta vincular original y reemplazo.
+
+El mismo permiso AS-IS de recepción gobierna ese flujo.
+
+Resultado:
+
+```text
+AS_IS_REGISTER_AND_CORRECTION_COUPLED
+```
+
+El contrato objetivo exige:
+
+```text
+REGISTER AUTHORITY
+!=
+REVERSE AUTHORITY
+```
+
+---
+
+#### 35. VSCREEN-0078 y resolución de diferencias
+
+`VSCREEN-0078 — Resolución de diferencias de recepción` pertenece a:
+
+```text
+VPROC-0022
+VPROC-0022::STEP-RESOLVE_RECEIPT_VARIANCE
+```
+
+La tarea preserva esa decisión de proceso.
+
+Sin embargo, no existe en las fuentes consumidas una identidad previa exacta `origo.procurement.receipts.resolve` que esta tarea pueda asumir sin una decisión adicional del catálogo.
+
+Por ello:
+
+1. no se inventa una séptima clave;
+2. `receipts.reverse` protege la compensación material cuando una resolución exige reversión;
+3. `receipts.register` protege el nuevo registro cuando existe reemplazo;
+4. una decisión de aceptar, rechazar o resolver una diferencia no hereda automáticamente ninguno de esos permisos;
+5. la experiencia y materialización posterior deberán preservar `VSCREEN-0078` y sus decisiones sin degradarlas a un botón de reversión.
+
+---
+
+#### 36. Frontera con VSCREEN-0071, VSCREEN-0073 y VSCREEN-0075
+
+La tarea conserva:
+
+```text
+VSCREEN-0071
+→ expediente de proveedor
+→ suppliers.update / activate / deactivate según acción
+
+VSCREEN-0073
+→ preparación/versionado de orden
+→ purchase_orders.update para edición ordinaria permitida
+
+VSCREEN-0075
+→ seguimiento de orden
+→ cancel solo cuando estado y autoridad lo permiten
+```
+
+Abrir una pantalla o visualizar un botón no concede la mutación.
+
+---
+
+#### 37. Separación de permisos por sensibilidad
+
+Matriz de fronteras:
+
+| Acción | Permiso requerido | No sustituye |
+| --- | --- | --- |
+| editar orden preaprobación | `purchase_orders.update` | aprobar, emitir, cancelar |
+| cancelar orden | `purchase_orders.cancel` | borrar, reversar recepción |
+| editar expediente proveedor | `suppliers.update` | activar/desactivar |
+| activar proveedor | `suppliers.activate` | crear/editar |
+| desactivar proveedor | `suppliers.deactivate` | borrar historia |
+| registrar recepción | `receipts.register` | reversar/corregir |
+| reversar recepción | `receipts.reverse` | registrar nueva recepción |
+
+No existe herencia implícita entre filas.
+
+---
+
+#### 38. Regla de administración versus operación
+
+Las cinco capacidades de orden/proveedor definidas aquí son administrativas:
+
+```text
+BASE_ONLY
+```
+
+No dependen de turno ni check-in.
+
+`receipts.reverse` es distinta:
+
+```text
+BASE_AND_OPERATIONAL
+```
+
+porque modifica una recepción ya aplicada y puede exigir compensar verdad operativa vinculada con inventario, ubicación, cantidades y otros efectos.
+
+Regla:
+
+```text
+GERENCIA ADMINISTRATIVA
+!=
+CONTEXTO OPERATIVO
+```
+
+Para `receipts.reverse` se necesitan ambos carriles.
+
+---
+
+#### 39. Segregación de funciones
+
+La tarea preserva separación entre:
+
+```text
+CREADOR DE ORDEN
+APROBADOR
+RECEPTOR
+AUTOR DE CORRECCIÓN
+```
+
+No se prohíbe que una misma persona tenga múltiples capacidades en abstracto cuando el modelo organizacional lo autorice, pero la decisión concreta debe aplicar las reglas de segregación y autoaprobación correspondientes.
+
+Para reversión sensible, el actor que registró la recepción no adquiere por ese hecho autoridad para revertirla.
+
+---
+
+#### 40. Auditoría mínima de correcciones
+
+Toda corrección autorizada debe conservar como mínimo:
+
+- actor real;
+- actor operativo cuando aplique;
+- permiso exacto;
+- carril que autorizó;
+- recurso;
+- versión o estado previo;
+- cambio solicitado;
+- motivo cuando la acción sea cancelación, desactivación o reversión;
+- territorio resuelto;
+- resultado;
+- correlación con reemplazo o efecto compensatorio cuando aplique;
+- timestamp autoritativo;
+- identificador de auditoría.
+
+No se sobrescribe silenciosamente el hecho anterior.
+
+---
+
+#### 41. Frontera con territorio y centro de costo
+
+Esta tarea define capacidades, pero no materializa la política territorial final de órdenes.
+
+Toda mutación de orden seguirá necesitando:
+
+```text
+PERMISO
++
+RECURSO
++
+ESTADO
++
+ALCANCE
+```
+
+La resolución completa por sede o centro de costo pertenece a:
+
+```text
+ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
+```
+
+No se presume que `site_id` enviado por cliente sea territorio autorizado.
+
+---
+
+#### 42. Frontera con precios y datos sensibles
+
+`purchase_orders.update` y `suppliers.update` no conceden por sí mismos acceso a todos los campos sensibles.
+
+Protecciones sobre:
+
+- precios;
+- totales;
+- condiciones comerciales sensibles;
+- contratos;
+- datos tributarios;
+- cuentas bancarias;
+- documentos externos;
+- exportación;
+
+permanecen bajo `ORIGO-AUTH-010` y contratos de privacidad aplicables.
+
+Un permiso de actualización con field mask limitado no se convierte en permiso de revelar campos ocultos.
+
+---
+
+#### 43. Brechas AS-IS y propietarios posteriores
+
+| Brecha | Riesgo | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| `updatePurchaseOrder` sin permiso canónico exacto demostrado | edición fuera de política si capas inferiores no restringen | `ORIGO-AUTH-014` + package propietario | consumidor usa `purchase_orders.update` server-side y por recurso/estado |
+| borrado físico de orden `draft` | pérdida de historia o equivalencia falsa con cancelación | `ORIGO-AUTH-014` + package propietario | cancelación canónica preserva historia; delete no se usa como alias |
+| `updateSupplier` mezcla datos y `is_active` | update obtiene autoridad de activación/desactivación | `ORIGO-AUTH-014` + package propietario | capacidades quedan separadas y verificadas |
+| `deleteSupplier` carece de permiso canónico de delete | eliminación fuera del contrato definido | `ORIGO-AUTH-014` + package propietario | runtime retira/transforma la operación o existe contrato explícito independiente antes de habilitarla |
+| `reverseReceipt` no demuestra recheck de permiso en la acción | compensación invocable con evidencia incompleta | `ORIGO-AUTH-014` + package propietario | `receipts.reverse` se revalida en límite de confianza |
+| corrección usa el mismo permiso AS-IS que recepción nueva | capacidad operativa ordinaria amplía corrección sensible | `ORIGO-AUTH-014` + package propietario | reverse y register se evalúan independientemente |
+| corrección multi-step puede fallar entre reversión y reemplazo | recepción original reversada sin reemplazo | integración/DB propietaria + `ORIGO-AUTH-015` | operación atómica o durable/reconciliable e idempotente |
+| constante local de 30 minutos actúa como política implícita | ventana correctiva sin contrato empresarial | implementación propietaria de `VPROC-0022` | estado/ventana se deriva de política canónica y evidencia |
+
+Ninguna brecha queda sin dueño y condición de salida.
+
+---
+
+#### 44. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** las capacidades definidas concretan fronteras ya protegidas por requisitos vigentes sobre mutación de órdenes, separación de capacidades, historia de proveedores, corrección de recepción, atomicidad, idempotencia, segregación y autorización server-side. No se introduce una obligación verificable adicional que requiera modificar el registro.
+
+---
+
+#### 45. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para corrección/repetición de recepción sin duplicar cantidades, costos, orden ni evento financiero;
+- `TREQ-ORIGO-002` para limitar mutaciones de órdenes por permiso, territorio, estado y columnas;
+- `TREQ-ORIGO-003` para corrección de recepción atómica o durable, idempotente y con reemplazo correlacionado;
+- `TREQ-ORIGO-004` para impedir edición destructiva postaprobación/postemisión y exigir revisión/aprobación cuando corresponda;
+- `TREQ-ORIGO-005` para identidad, estado e historia del proveedor sin sobrescribir condiciones históricas;
+- `TREQ-AUTH-001` para permiso, contexto, alcance y recurso;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-013` para protección server-side;
+- `TREQ-AUTH-015` para evidencia correlacionable.
+
+Esta sección es trazabilidad de cobertura existente, no actualización del registro.
+
+---
+
+#### 46. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en el archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-origo/main`, owner, topología, catálogo de permisos, matrices, procesos/pantallas/estados, Registro 04A y runtime actual de órdenes, proveedores y recepciones. |
+| OPERATIVA | `NOT_EXECUTED` | No se actualizó/canceló una orden, proveedor o recepción real; no se ejecutaron RPC, RLS, datos productivos ni flujos desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | `ORIGO-AUTH-008` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`. |
+
+---
+
+#### 47. Criterios de aceptación
+
+- [x] La tarea mantiene exactamente `ORIGO-AUTH-008 — Definir permisos de corrección`.
+- [x] La tarea anterior es `ORIGO-AUTH-007` y la siguiente `ORIGO-AUTH-009`.
+- [x] La topología se conserva como `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`.
+- [x] Se definieron exactamente seis capacidades atómicas.
+- [x] `purchase_orders.update` queda separado de `approve`, `cancel` y `delete`.
+- [x] `purchase_orders.cancel` preserva historia y no se representa como borrado.
+- [x] `suppliers.update`, `activate` y `deactivate` quedan separados.
+- [x] No se crea `suppliers.delete`.
+- [x] `receipts.reverse` queda separado de `receipts.register`.
+- [x] La corrección con sustitución exige `reverse + register` y correlación durable.
+- [x] No se crea un permiso genérico `correct`.
+- [x] No se inventa `receipts.resolve` sin identidad canónica explícita.
+- [x] Se preserva `VSCREEN-0078` como resolución de diferencias de `VPROC-0022`.
+- [x] Cinco capacidades administrativas quedan `BASE_ONLY`.
+- [x] `receipts.reverse` queda `BASE_AND_OPERATIONAL` con `T+C`.
+- [x] Se definieron grants base para actualización/cancelación de orden y mantenimiento de proveedor.
+- [x] Se definieron componentes base y operativos para reversión de recepción.
+- [x] `bodeguero` puede registrar recepción ordinaria por contrato anterior, pero no recibe reversión por defecto.
+- [x] `gerencia_operativa` recibe únicamente el componente operativo de reversión.
+- [x] Se registraron los gaps AS-IS sin afirmar ausencia de RLS/RPC cuando no está demostrada.
+- [x] Se preservaron los estados de `VPROC-0021` y `VPROC-0022` sin crear aliases.
+- [x] No se modifica Registro 04A.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se autoriza cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-AUTH-009` queda reservada y no se desarrolla aquí.
+
+---
+
+#### 48. Límites
+
+Esta tarea no:
+
+- implementa las seis capacidades;
+- activa permisos en el catálogo compartido;
+- migra grants físicos;
+- cambia `employees.role`;
+- cambia `requireCanManageSuppliers`;
+- modifica `updatePurchaseOrder`;
+- modifica `deletePurchaseOrder`;
+- modifica `updateSupplier`;
+- modifica `deleteSupplier`;
+- modifica `reverseReceipt`;
+- modifica `createReceipt`;
+- cambia la ventana de treinta minutos;
+- crea `purchase_orders.delete`;
+- crea `suppliers.delete`;
+- crea `receipts.correct`;
+- crea `receipts.resolve`;
+- define la política territorial final por sede/centro de costo;
+- define field masks sensibles finales;
+- ejecuta RLS o RPC;
+- modifica Supabase;
+- crea migraciones;
+- modifica NEXO o NUMERA;
+- desarrolla `ORIGO-AUTH-009`.
+
+---
+
+#### 49. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-007 — Definir permisos de recepción`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-008 — Definir permisos de corrección`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`
+
 ### [ ] ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
 ### [ ] ORIGO-AUTH-010 — Proteger precios y datos sensibles
 ### [ ] ORIGO-AUTH-011 — Registrar actor de recepción

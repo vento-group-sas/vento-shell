@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1310** |
+| Aprobadas | **1311** |
 | En propuesta | **0** |
-| No iniciadas | **286** |
+| No iniciadas | **285** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.08% (1310/1596)** |
+| Porcentaje de completamiento | **82.14% (1311/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **286** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1211** |
+| ⏸ NO_EVALUADA | **285** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1212** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-AUTH-007` — Definir permisos de recepción | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-008` — Definir permisos de corrección | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-009` — Limitar órdenes por sede o centro de costo | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-008` — Definir permisos de corrección | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-009` — Limitar órdenes por sede o centro de costo | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1091,7 +1091,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-005` | Definir permisos de creación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-006` | Definir permisos de aprobación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-007` | Definir permisos de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-008` | Definir permisos de corrección | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-008` | Definir permisos de corrección | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-009` | Limitar órdenes por sede o centro de costo | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-010` | Proteger precios y datos sensibles | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-011` | Registrar actor de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
