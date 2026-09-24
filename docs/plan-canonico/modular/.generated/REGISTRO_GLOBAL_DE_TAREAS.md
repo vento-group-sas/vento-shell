@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1318** |
+| Aprobadas | **1319** |
 | En propuesta | **0** |
-| No iniciadas | **278** |
+| No iniciadas | **277** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.58% (1318/1596)** |
+| Porcentaje de completamiento | **82.64% (1319/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **278** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1219** |
+| ⏸ NO_EVALUADA | **277** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1220** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-UX-005` — Diseñar redención visible | ✅ APROBADA |
-| Tarea actual | `PASS-UX-006` — Diseñar historial | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-UX-007` — Diseñar catálogo de recompensas | ⬜ NO INICIADA |
+| Última aprobada | `PASS-UX-006` — Diseñar historial | ✅ APROBADA |
+| Tarea actual | `PASS-UX-007` — Diseñar catálogo de recompensas | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-UX-008` — Diseñar perfil del cliente | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1420,7 +1420,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-003` | Diseñar QR personal | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-004` | Diseñar acumulación visible | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-005` | Diseñar redención visible | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-006` | Diseñar historial | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-006` | Diseñar historial | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-007` | Diseñar catálogo de recompensas | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-008` | Diseñar perfil del cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-009` | Diferenciar estado pendiente, usado y cancelado | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |

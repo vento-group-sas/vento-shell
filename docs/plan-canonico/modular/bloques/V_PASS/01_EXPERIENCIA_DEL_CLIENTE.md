@@ -2244,7 +2244,604 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-006 — Diseñar historial`
-### [ ] PASS-UX-006 — Diseñar historial
+### ✅ PASS-UX-006 — Diseñar historial
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-005 — Diseñar redención visible
+**Tarea siguiente:** PASS-UX-007 — Diseñar catálogo de recompensas
+**Tipo de tarea:** documental; diseño objetivo de `VSCREEN-0111 — Historial de puntos y redenciones` como proyección personal reconciliable del ledger de fidelización y sus recibos de redención, preservando identidad de origen, atribución territorial, completitud explícita y separación entre movimiento contable y ciclo de redención; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo del historial de fidelización de PASS para que el cliente pueda consultar de forma completa, comprensible y reconciliable sus movimientos de puntos y sus redenciones, con referencia al hecho de origen, sin perder registros por filtros locales, sin duplicar un mismo canje como dos efectos independientes y sin convertir datos parciales o no atribuidos en una historia falsamente completa.
+
+La tarea diseña `VSCREEN-0111 — Historial de puntos y redenciones` como workspace personal de `VPROC-0045::STEP-AUDIT_PERSONAL_LOYALTY_LEDGER — Consultar historial de puntos y redenciones`.
+
+El resultado fija semántica, fuentes de verdad, composición de entradas, correlación ledger-redención, atribución de sede, cronología, completitud, filtros, detalle, reglas de no duplicación y handoffs. No implementa consultas, no cambia el esquema, no define la taxonomía completa de estados de redención de `PASS-UX-009` y no consolida todavía rutas o navegación de `PASS-UX-011`.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-005`, que entrega:
+
+- separación entre creación de una intención de redención y consumo efectivo;
+- obligación de conservar una identidad estable de redención;
+- necesidad de correlacionar el gasto de puntos con la redención que lo originó;
+- prohibición de presentar la fecha de creación como fecha de uso;
+- prohibición de fabricar resultados terminales desde el cliente;
+- preservación del ledger como verdad del movimiento de puntos;
+- reserva de la taxonomía completa de estados a `PASS-UX-009`;
+- reserva del contrato atómico e idempotente de redención a `PASS-INT-002`.
+
+Se conserva además la base de `PASS-UX-004` y `PASS-UX-002`:
+
+- `PUNTOS_DISPONIBLES` es una proyección reconciliable del ledger, no el ledger mismo;
+- `PUNTOS_GANADOS_HISTORICOS` es una métrica distinta del saldo gastable;
+- acumulación visible, saldo e historial no pueden reconciliarse mediante sumas locales inventadas;
+- el home solo abre `VSCREEN-0111`; no replica el ledger completo;
+- Club y su wallet monetaria permanecen separados del historial de fidelización PASS.
+
+La frontera de esta tarea es exclusivamente la experiencia de consulta histórica de fidelización. No absorbe historial de pedidos, historial de Club, catálogo de recompensas, navegación global, estados finales de redención, copy final de errores ni estrategia offline completa.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla | `VSCREEN-0111 — Historial de puntos y redenciones` |
+| Aplicación | `pass` |
+| Proceso | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Paso | `VPROC-0045::STEP-AUDIT_PERSONAL_LOYALTY_LEDGER — Consultar historial de puntos y redenciones` |
+| Patrón | `OWNER_WORKSPACE` |
+| Autoridad del movimiento de puntos | ledger personal de fidelización confirmado |
+| Autoridad del ciclo de redención | recibo/registro de redención confirmado |
+| Evidencia AS-IS | `TransactionItem` y `RedemptionCard` embebidos en experiencias de fidelización |
+| Topología | `DEFINE_ONCE` |
+| Estado físico | `NO_PHYSICAL_INSTANCE` |
+
+`VSCREEN-0111` no es historial de pedidos, timeline de entrega, historial financiero de Club ni historial laboral. Puede referenciar el hecho comercial que originó un movimiento, pero no absorbe el workspace propietario de ese hecho.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot observado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` | `1e8f4027c6b4a7de6c0050324530d0a9324861f7` | plan, continuidad, topología, ownership, catálogo de pantallas, 04A PASS y validadores |
+| archivo propietario de PASS | blob `104c23ed19ee75e76af60689aa1212cd5e4bbb01` | base remota con `PASS-UX-004` aprobada y marcadores posteriores reservados |
+| `PASS-UX-005_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `e8004a22f130c899c8659e2e654f774c6f6be82c678a55bd56538c7cb43ed256` | base documental inmediata aprobada por el usuario y todavía pendiente de publicación |
+| repositorio PASS accesible `carlosibarraariza/vento-pass` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS verificable |
+| `src/hooks/useLoyaltyTransactions.ts` | blob `d96bfe5ea3251e643f109b73535b484a4a6c94c6` | shape AS-IS del ledger visible, orden descendente y límite de 100 filas |
+| `src/components/vento/TransactionItem.tsx` | blob `8ae1c979eb79f39100da315d6303202d7c33b2d5` | presentación AS-IS de movimientos `earn`, `spend` y `adjust` |
+| `src/components/vento/RedemptionCard.tsx` | blob `cdd598ce60cb293d474ae8d276e957a6b887f2ce` | presentación AS-IS de recibos de redención y etiquetas de estado |
+| `src/components/Saudo.tsx` | blob `f63602bf604ff3c045256205bff09fbed0276dd2` | historial AS-IS basado en transacciones y exclusión de filas sin `metadata.site_id` |
+| `src/components/VentoCafe.tsx` | blob `b7d592486b935f2f3415ddb4390390df9efa35f7` | historial AS-IS basado principalmente en redenciones |
+| `src/components/SatelliteExperience.tsx` | blob `7d0cc7fd9be280844af2810b9c507dfad5764dc3` | historial dinámico AS-IS basado principalmente en redenciones |
+| `src/utils/navigation.ts` | blob `0ea042e5fd30b2df98ebb98864b4c6a62a8f90eb` | acceso AS-IS `goToMovements` todavía expuesto como capacidad “Próximamente” |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura vigente del historial, convergencia y ledger |
+| catálogo proceso-pantalla canónico | blob `742ead71e5fc5c4ae85a3cb6a00feb858ba8c2a0` | identidad y propósito de `VSCREEN-0111` |
+| auditoría de procesos parciales/legacy | blob `17da474928d7d0042170441ca79eb18dab412e72` | hallazgo de exclusión silenciosa de transacciones Saudo sin sede |
+| auditoría técnica y backlog | blob `2234bc064cc91e766e4e550fc8c3801d669ec894` | backlog `BKL-PASS-002` de atribución histórica y convergencia PASS |
+
+La preparación usa la versión completa aprobada de `PASS-UX-005` como base inmediata aunque su incorporación a `main` permanezca condicionada al cierre documental anterior.
+
+---
+
+#### 5. Semántica contractual del historial
+
+El historial PASS representa hechos de fidelización confirmados y reconciliables.
+
+```text
+HISTORIAL PASS
+=
+MOVIMIENTOS DEL LEDGER
++
+RECIBOS DE REDENCION
++
+CORRELACION DE ORIGEN
++
+ATRIBUCION EXPLICITA
++
+CRONOLOGIA Y COMPLETITUD VISIBLES
+```
+
+No significa:
+
+```text
+SALDO RECONSTRUIDO POR EL CLIENTE
+HISTORIAL DE PEDIDOS COMPLETO
+LEDGER DE CLUB
+LISTA DE REDENCIONES SIN MOVIMIENTOS
+LISTA DE MOVIMIENTOS SIN RECIBOS
+FILTRO DE SEDE QUE OCULTA DATOS LEGITIMOS
+DUPLICACION DEL MISMO CANJE
+```
+
+El historial explica qué ocurrió con la fidelización del cliente y por qué, sin convertir una proyección de interfaz en nueva fuente de verdad.
+
+---
+
+#### 6. Unidad visible de historial
+
+La unidad primaria es un `HECHO_DE_FIDELIZACION_VISIBLE`, construido desde una o más fuentes correlacionadas del mismo hecho empresarial.
+
+Cada entrada debe poder expresar, cuando la fuente lo confirme:
+
+| Campo visible o derivable | Regla |
+| --- | --- |
+| identidad estable | proviene del evento/ledger/recibo; no se genera desde índice visual |
+| categoría | acumulación, redención, ajuste, reversión, compensación, expiración u otra categoría canónica disponible |
+| delta de puntos | valor confirmado, con signo; puede ser no aplicable para un recibo sin movimiento de puntos |
+| fecha principal | fecha autoritativa del hecho representado; no se sustituye por otra fecha de lifecycle |
+| origen | compra, redención, reseña, ajuste autorizado u otra fuente confirmada |
+| referencia de origen | referencia estable y segura cuando exista; no se infiere desde descripción libre |
+| sede o contexto comercial | identidad canónica cuando exista atribución determinista |
+| estado de atribución | atribuido, no atribuido o pendiente de reconciliación; nunca se oculta por ausencia de sede |
+| detalle de redención | recompensa, costo confirmado y ciclo cuando el hecho incluya redención |
+| información de soporte | identificador o referencia segura suficiente para investigación cuando corresponda, sin exponer secretos |
+
+La interfaz puede resumir una entrada, pero no puede borrar la relación entre el movimiento y su hecho de origen.
+
+---
+
+#### 7. Ledger como autoridad de puntos
+
+El ledger de fidelización es la autoridad del movimiento de puntos.
+
+Reglas:
+
+1. un `points_delta` visible debe provenir de un movimiento confirmado;
+2. una redención visible no puede inventar un segundo débito adicional al ya representado por el ledger;
+3. un recibo de redención puede aportar recompensa, estado, vigencia y referencias, pero no reemplaza el movimiento contable cuando existen puntos afectados;
+4. el historial no recalcula `PUNTOS_DISPONIBLES` sumando las filas cargadas;
+5. el historial no recalcula `PUNTOS_GANADOS_HISTORICOS` desde una ventana parcial de eventos;
+6. un saldo o balance posterior solo se muestra cuando la fuente autoritativa lo entregue; no se reconstruye desde la lista local;
+7. reordenar, filtrar o paginar la vista no cambia el saldo ni crea efectos.
+
+El límite AS-IS de las últimas 100 transacciones impide tratar el conjunto local actual como un ledger completo.
+
+---
+
+#### 8. Recibo de redención como complemento del ledger
+
+Una redención tiene dos dimensiones que no deben confundirse:
+
+```text
+MOVIMIENTO DE PUNTOS
+=
+EFECTO CONTABLE EN LEDGER
+
+RECIBO DE REDENCION
+=
+INTENCION + RECOMPENSA + ESTADO + VIGENCIA + EVIDENCIA DE USO
+```
+
+Cuando una redención consume puntos, el historial usa el movimiento del ledger para el delta y el recibo para el ciclo de la redención.
+
+Cuando una redención no afecte puntos, el recibo puede existir como entrada de historial sin inventar un delta.
+
+`PASS-UX-009` seguirá siendo propietaria de la taxonomía completa de estados pendiente, usado y cancelado. `PASS-UX-006` reserva el espacio de presentación y consume el estado confirmado sin redefinir sus transiciones.
+
+---
+
+#### 9. Correlación ledger-redención y no duplicación
+
+Un mismo canje no puede aparecer como dos efectos empresariales independientes cuando el ledger y el recibo describen el mismo hecho.
+
+Regla objetivo:
+
+```text
+LEDGER SPEND
++ stable redemption_id / business reference
++ REDEMPTION RECEIPT
+=
+UNA ENTRADA COMPUESTA DE HISTORIAL
+```
+
+La correlación debe usar una referencia estable provista por el contrato o persistida en la fuente. No se permite fusionar registros por:
+
+- misma fecha aproximada;
+- mismo monto;
+- mismo texto de descripción;
+- mismo nombre de recompensa;
+- cercanía temporal;
+- posición en la lista.
+
+Si falta correlación estable:
+
+- no se descarta el movimiento del ledger;
+- no se descarta el recibo de redención;
+- no se inventa que son el mismo hecho;
+- la vista los distingue como registros no correlacionados o pendientes de reconciliación;
+- los resúmenes no cuentan ambos como dos débitos confirmados si solo uno es autoridad del efecto de puntos.
+
+La reparación de correlación histórica o de datos pertenece a las tareas de integración/transición correspondientes, no a esta tarea documental.
+
+---
+
+#### 10. Categorías visibles y adaptación AS-IS
+
+La experiencia debe poder representar las categorías semánticas aprobadas por el ledger aunque el runtime actual solo modele `earn`, `spend` y `adjust`.
+
+| Categoría visible | Semántica |
+| --- | --- |
+| acumulación | incremento confirmado originado en una regla o hecho elegible |
+| redención | uso o reserva de valor de fidelización correlacionado con su recibo |
+| ajuste | corrección autorizada que no se presenta como acumulación comercial normal |
+| reversión | deshace o compensa un efecto anterior conservando referencia al hecho original |
+| compensación | movimiento correctivo con causa y referencia explícitas |
+| expiración | reducción por regla de vigencia cuando exista contrato aprobado |
+
+Esta matriz es semántica de presentación. No ordena crear nuevos valores de base de datos ni modifica el enum AS-IS.
+
+El cliente no clasifica eventos leyendo palabras de `description`; la clasificación procede del contrato o de un adaptador gobernado.
+
+---
+
+#### 11. Hecho de origen y trazabilidad visible
+
+Todo movimiento debe conservar o poder resolver el hecho que lo originó cuando exista.
+
+Ejemplos válidos de origen incluyen:
+
+- compra elegible;
+- redención;
+- reseña o actividad promocional autorizada;
+- ajuste manual autorizado;
+- reversión de un evento previo;
+- compensación;
+- expiración por regla versionada.
+
+La vista puede presentar una etiqueta humana y un detalle contextual, pero la referencia técnica no se sustituye por texto libre.
+
+Cuando el origen sea una compra o pedido, `VSCREEN-0111` puede ofrecer referencia o handoff hacia la experiencia propietaria; no replica el historial completo del pedido ni sus estados operativos.
+
+Cuando el origen sea feedback, reseña, reclamo u otra interacción, el historial muestra únicamente el efecto de fidelización confirmado y su referencia; no convierte esa interacción en un nuevo tipo de caso dentro de PASS.
+
+---
+
+#### 12. Atribución de sede y estado sin atribución
+
+La atribución territorial debe ser determinista o explícitamente desconocida.
+
+Reglas:
+
+1. `site_id` confirmado se resuelve contra la identidad canónica de sede;
+2. marca, nombre, dirección o etiqueta comercial no se deducen desde literales divergentes;
+3. una fila legítima sin `site_id` no se elimina del historial;
+4. una fila sin atribución determinista se presenta como `SIN_ATRIBUCION` o equivalente comprensible, no como perteneciente a la sede abierta;
+5. una vista contextual por sede no puede hacer desaparecer definitivamente eventos no atribuidos; el historial canónico conserva acceso a ellos;
+6. backfill o reconciliación posterior puede completar atribución sin cambiar el hecho original;
+7. la ausencia de sede no se corrige mediante heurística de descripción, fecha o recompensa.
+
+El filtro AS-IS de Saudo que devuelve `false` cuando falta `metadata.site_id` se considera incompatible con este contrato porque oculta silenciosamente movimientos legítimos.
+
+---
+
+#### 13. Convergencia entre Vento Café, Saudo y satélites dinámicos
+
+Todas las experiencias que proyecten `VSCREEN-0111` deben respetar la misma semántica de historial.
+
+Estado AS-IS observado:
+
+| Superficie | Historial visible actual | Brecha |
+| --- | --- | --- |
+| `VentoCafe` | redenciones agrupadas por fecha y estado | no representa conjuntamente el ledger de puntos |
+| `Saudo` | movimientos de `loyalty_transactions` filtrados por `metadata.site_id` | no representa conjuntamente recibos de redención y omite filas sin sede |
+| `SatelliteExperience` | redenciones agrupadas por fecha y estado | no representa conjuntamente el ledger de puntos |
+
+Contrato objetivo:
+
+- ninguna ruta puede definir una historia funcionalmente distinta para el mismo cliente;
+- el mismo hecho correlacionado conserva identidad y significado entre experiencias;
+- la selección de marca o sede puede cambiar contexto y filtros permitidos, no la verdad del ledger;
+- experiencias estáticas y dinámicas deben converger antes de considerarse equivalentes;
+- una implementación temporal puede reutilizar componentes distintos, pero su resultado semántico debe ser compatible.
+
+La consolidación de rutas y aliases permanece reservada a `PASS-UX-011`.
+
+---
+
+#### 14. Cronología y fechas
+
+El historial distingue fechas con semántica diferente.
+
+| Fecha | Uso |
+| --- | --- |
+| fecha del movimiento | momento autoritativo del efecto en ledger |
+| fecha de creación de redención | creación de la intención o recibo |
+| fecha de validación/uso | consumo efectivo cuando exista |
+| fecha de cancelación/reversión | transición correctiva cuando exista |
+| fecha de origen comercial | referencia del hecho externo cuando el contrato la provea |
+
+Reglas:
+
+- `created_at` de una redención no se presenta como fecha de uso;
+- el orden visual se basa en una cronología autoritativa identificada, no en el orden de llegada al cliente;
+- si solo existe una fecha técnica, se presenta con su significado real sin renombrarla como otra;
+- eventos tardíos no se reescriben como si hubieran ocurrido en el momento de sincronización;
+- zona horaria y formateo visual no alteran el instante persistido.
+
+La definición final de copy de fechas permanece sujeta a `PASS-UX-010` cuando corresponda.
+
+---
+
+#### 15. Completitud, ventana y paginación
+
+Una lista parcial no puede presentarse como historial completo.
+
+El contrato visible distingue al menos:
+
+```text
+HISTORIAL_COMPLETO_SEGUN_CONTRATO
+HISTORIAL_PARCIAL_CON_MAS_DATOS
+HISTORIAL_FILTRADO
+HISTORIAL_SIN_ATRIBUCION_COMPLETA
+LECTURA_NO_DISPONIBLE
+```
+
+Reglas:
+
+1. un límite técnico de filas debe acompañarse de paginación, carga incremental o alcance visible;
+2. `limit(100)` no autoriza afirmar que se muestran todos los movimientos históricos;
+3. filtros no modifican el conjunto subyacente ni se interpretan como ausencia de eventos;
+4. una página vacía tras un cursor no equivale a “nunca hubo movimientos” sin conocer el alcance consultado;
+5. totales históricos no se derivan de la página cargada;
+6. refresh conserva identidad de elementos y no duplica entradas ya recibidas;
+7. carga incremental usa identidad estable, no índice de posición, para deduplicación.
+
+`PASS-UX-012` definirá la experiencia completa de carga, error, offline, retry y recuperación. Esta tarea fija únicamente la verdad que esos estados deberán preservar.
+
+---
+
+#### 16. Orden, agrupación y filtros
+
+La experiencia puede ofrecer agrupación y filtros para comprensión sin cambiar la verdad de origen.
+
+Dimensiones permitidas de diseño:
+
+- periodo o fecha;
+- categoría de movimiento;
+- presencia de redención;
+- sede o marca cuando exista atribución determinista;
+- estado de redención una vez consumido el contrato de `PASS-UX-009`.
+
+Reglas:
+
+- `Todos` significa todos los elementos dentro del alcance realmente cargado/consultado, no “todo el historial de la cuenta” si existe paginación pendiente;
+- filtrar por sede nunca elimina del modelo los eventos `SIN_ATRIBUCION`;
+- filtrar por estado de redención no oculta movimientos de puntos que no sean redenciones;
+- una agrupación por fecha no cambia la fecha semántica de la entrada;
+- no se crean filtros basados en texto libre como mecanismo de clasificación autoritativa.
+
+La selección exacta de controles visuales puede evolucionar durante implementación siempre que conserve estas invariantes.
+
+---
+
+#### 17. Detalle de una entrada
+
+Cada entrada puede abrir o expandir detalle sin ejecutar nuevas mutaciones.
+
+El detalle puede incluir, cuando exista y sea seguro:
+
+- categoría y descripción humana;
+- delta de puntos;
+- fecha y hora;
+- sede o estado sin atribución;
+- origen y referencia;
+- recompensa asociada;
+- costo confirmado de redención;
+- estado confirmado de la redención;
+- fecha de creación y, separadamente, fecha de validación/uso;
+- referencia a pedido, compra o recibo propietario;
+- motivo de ajuste, reversión o compensación cuando esté autorizado para el cliente.
+
+No expone:
+
+- secretos;
+- tokens;
+- PIN laborales;
+- metadata interna sin contrato de presentación;
+- datos personales de otros actores;
+- detalles administrativos que excedan la finalidad del cliente.
+
+---
+
+#### 18. Historial y saldo actual
+
+Historial y saldo se complementan, pero no se sustituyen.
+
+```text
+SALDO ACTUAL
+=
+PROYECCION CONFIRMADA DEL LEDGER
+
+HISTORIAL
+=
+SECUENCIA CONSULTABLE DE HECHOS Y RECIBOS
+```
+
+Por tanto:
+
+- una discrepancia entre saldo y filas visibles no se “corrige” sumando localmente;
+- un historial parcial puede no explicar por sí solo el saldo total;
+- una operación reciente puede aparecer con distinta frescura en saldo e historial;
+- la interfaz debe reconciliar o refrescar desde fuentes autoritativas, no insertar una fila sintética para hacer cuadrar valores;
+- una entrada duplicada visual no puede compensarse ocultando otro movimiento real.
+
+Los contratos de integración son responsables de la consistencia material entre ledger, saldo, redención y eventos de origen.
+
+---
+
+#### 19. Historial PASS frente a otros historiales
+
+`VSCREEN-0111` conserva una frontera explícita:
+
+| Historial | Propietario | Relación con `VSCREEN-0111` |
+| --- | --- | --- |
+| puntos y redenciones | PASS | contenido propietario de esta pantalla |
+| pedidos y detalle | experiencia comercial PASS/PULSO correspondiente | solo referencia/handoff desde el hecho de origen |
+| seguimiento de preparación y entrega | proceso comercial propietario | no se replica |
+| Club wallet monetaria | Club | no se mezcla con puntos |
+| pagos y conciliación | proceso financiero/comercial propietario | no se replica |
+| casos, reclamos o conversaciones | proceso de servicio propietario | solo se referencia si originan un movimiento de fidelización |
+| contexto laboral | aplicaciones laborales | no altera identidad, sede atribuida ni movimientos del cliente |
+
+La palabra “historial” usada por otra superficie no autoriza fusionar dominios distintos en una sola lista.
+
+---
+
+#### 20. Hallazgos AS-IS y handoff
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `useLoyaltyTransactions` limita a 100 filas sin paginación visible | historial puede parecer completo siendo parcial | `PASS-UX-006` para contrato UX; implementación en package PASS correspondiente | paginación/carga incremental o alcance parcial explícito sin falsos totales |
+| `Saudo` excluye movimientos sin `metadata.site_id` | pérdida silenciosa de historia legítima | `PASS-UX-006`, `PASS-QA-001`, `PASS-QA-002`, transición de datos aplicable | atribución determinista o presentación explícita sin atribución; cero omisión silenciosa |
+| `VentoCafe` muestra redenciones en historial pero no el ledger de puntos | experiencia incompleta frente a `VSCREEN-0111` | `PASS-UX-006` | proyección convergente de movimientos y recibos |
+| `SatelliteExperience` muestra redenciones en historial pero no el ledger de puntos | experiencia dinámica incompleta | `PASS-UX-006` | misma proyección semántica que el resto de PASS |
+| `Saudo` muestra movimientos pero no recibos de redención en el mismo historial | falta de composición completa | `PASS-UX-006` | ledger y recibos reconciliados bajo una única semántica |
+| `TransactionItem` usa solo `earn/spend/adjust` y descripción libre | semántica visible más estrecha que el contrato objetivo | adaptación de implementación PASS correspondiente | adaptador gobernado que represente categorías canónicas sin inferencia textual |
+| `RedemptionCard` usa `created_at` como fecha principal incluso para recibos usados | posible confusión entre creación y uso | `PASS-UX-005`, `PASS-UX-006`, `PASS-UX-009` | fechas diferenciadas según evento confirmado |
+| `goToMovements` comunica “Próximamente” | acción de movimientos no abre capacidad real | `PASS-UX-011` para navegación; `PASS-UX-006` entrega el destino semántico | ruta canónica abre `VSCREEN-0111` o la acción no se expone |
+| múltiples runtimes proyectan historias distintas | deriva entre experiencia estática y dinámica | `PASS-UX-006`, `PASS-UX-011`, paquetes de convergencia | paridad semántica y navegación convergente demostradas |
+
+Ningún hallazgo autoriza cambios físicos dentro de esta tarea documental.
+
+---
+
+#### 21. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| catálogo completo de recompensas y condiciones visibles | `PASS-UX-007` |
+| perfil, privacidad y consentimientos | `PASS-UX-008` |
+| taxonomía y diferenciación completa pendiente/usado/cancelado | `PASS-UX-009` |
+| copy final y mensajes comprensibles | `PASS-UX-010` |
+| rutas, aliases y navegación canónica hacia historial | `PASS-UX-011` |
+| carga, error, offline, retry y recuperación móvil | `PASS-UX-012` |
+| validación con clientes reales | `PASS-UX-013` |
+| contrato detallado PULSO → PASS para acumulación y correlación de origen | `PASS-INT-001` |
+| contrato detallado PULSO → PASS para redención, idempotencia y recibo | `PASS-INT-002` |
+| administración de datos de cliente y reconciliación cuando corresponda | `PASS-INT-004` |
+| pruebas completas de acumulación | `PASS-QA-001` |
+| pruebas completas de redención | `PASS-QA-002` |
+| backfill, transición y saneamiento de atribución histórica | tareas `SUPA-TRANS-*` y packages ya propietarios según 04A/backlog |
+
+---
+
+#### 22. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** completitud del historial, atribución determinista o explícitamente desconocida, convergencia entre rutas, ledger reconciliable, referencia al hecho de origen y prohibición de ocultar movimientos ya cuentan con cobertura PASS vigente. Esta tarea materializa el diseño objetivo de `VSCREEN-0111` sin introducir una obligación de prueba nueva ni alterar el Registro 04A.
+
+---
+
+#### 23. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-001` para impedir que una acción visible de movimientos apunte a una capacidad ficticia;
+- `TREQ-PASS-003` para atribuir transacciones Saudo determinísticamente o mostrarlas sin atribución, sin omitir registros legítimos;
+- `TREQ-PASS-006` para convergencia de `site_id`, marca, recompensas e historial entre experiencias estáticas y dinámicas;
+- `TREQ-PASS-010` para ledger inmutable/reconciliable y conservación de evento origen, regla y versión en acumulación, redención, expiración, ajuste, reversión y compensación;
+- `TREQ-PASS-041` para no asumir equivalencia uno a uno entre superficies AS-IS e identidades `VSCREEN-*`;
+- `TREQ-PASS-042` para detectar deriva entre inventario canónico y runtime PASS cuando exista checkout hermano.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 24. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará únicamente cuando `PASS-UX-005` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-006` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, archivo propietario, topología `PASS-UX`, `VSCREEN-0111`, `VPROC-0045`, Registro 04A PASS, auditorías de historial, `vento-pass/main`, `useLoyaltyTransactions`, `TransactionItem`, `RedemptionCard`, `Saudo`, `VentoCafe`, `SatelliteExperience` y `navigation.ts`. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó consulta histórica, paginación, reconciliación ledger-redención, atribución de sede ni navegación en ambiente desplegado o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-006` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 25. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-006 — Diseñar historial`.
+- [x] El objetivo queda anclado a `VSCREEN-0111` y `VPROC-0045::STEP-AUDIT_PERSONAL_LOYALTY_LEDGER`.
+- [x] Ledger y recibos de redención se conservan como fuentes complementarias con responsabilidades distintas.
+- [x] Un movimiento de puntos usa el ledger como autoridad del delta.
+- [x] Un mismo canje correlacionado no se presenta dos veces como dos efectos empresariales.
+- [x] La correlación exige referencia estable y no usa fecha, monto, descripción ni proximidad como heurística.
+- [x] Un registro legítimo sin sede no se omite silenciosamente.
+- [x] `SIN_ATRIBUCION` permanece una verdad visible y reconciliable, no una sede inferida.
+- [x] Vento Café, Saudo y satélites dinámicos quedan sujetos al mismo contrato semántico de historial.
+- [x] Una ventana de 100 filas no se presenta como historial completo.
+- [x] El historial no reconstruye saldo ni acumulado histórico desde una página parcial.
+- [x] Fechas de movimiento, creación de redención y uso/validación permanecen diferenciadas.
+- [x] El historial de pedidos, Club, pagos y contexto laboral no se fusionan con `VSCREEN-0111`.
+- [x] La taxonomía completa de estados de redención permanece reservada a `PASS-UX-009`.
+- [x] La navegación global permanece reservada a `PASS-UX-011`.
+- [x] Carga, error, offline y recuperación completa permanecen reservados a `PASS-UX-012`.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, Supabase, PULSO runtime, Wallet, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-007` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 26. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0111`;
+- modifica `useLoyaltyTransactions.ts`, `TransactionItem.tsx`, `RedemptionCard.tsx`, `Saudo.tsx`, `VentoCafe.tsx`, `SatelliteExperience.tsx` ni `navigation.ts`;
+- crea tablas, columnas, índices, vistas, RPC, funciones, triggers, RLS o migraciones;
+- ejecuta backfill de `site_id` ni corrige datos históricos;
+- redefine el ledger;
+- crea nuevos enums persistidos de movimientos;
+- decide esquema físico de paginación o cursor;
+- fusiona registros por heurísticas;
+- recalcula saldo desde movimientos locales;
+- implementa integración PULSO → PASS;
+- redefine creación o validación de redención;
+- define por anticipado la taxonomía completa pendiente/usado/cancelado;
+- define copy final de errores o estados;
+- consolida rutas, deep links o aliases;
+- define estrategia offline/retry completa;
+- integra historial de pedidos, Club, pagos, reclamos o actividad laboral dentro del ledger PASS;
+- modifica datos, Supabase, secretos o despliegues;
+- autoriza packages, implementación física, CI022, piloto ni rollout;
+- declara validación operativa realizada;
+- desarrolla `PASS-UX-007`, `PASS-UX-009`, `PASS-UX-011`, `PASS-INT-001` ni `PASS-INT-002`.
+
+---
+
+#### 27. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-005 — Diseñar redención visible`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-006 — Diseñar historial`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-007 — Diseñar catálogo de recompensas`
 ### [ ] PASS-UX-007 — Diseñar catálogo de recompensas
 ### [ ] PASS-UX-008 — Diseñar perfil del cliente
 ### [ ] PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
