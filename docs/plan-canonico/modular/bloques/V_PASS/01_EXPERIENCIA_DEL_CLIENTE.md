@@ -1300,7 +1300,435 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-004 — Diseñar acumulación visible`
-### [ ] PASS-UX-004 — Diseñar acumulación visible
+### ✅ PASS-UX-004 — Diseñar acumulación visible
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-003 — Diseñar QR personal
+**Tarea siguiente:** PASS-UX-005 — Diseñar redención visible
+**Tipo de tarea:** documental; diseño objetivo de visibilidad de acumulación confirmada, delta acreditado, saldo resultante y progreso de fidelización dentro de la experiencia cliente PASS, preservando la ejecución operativa de `VSCREEN-0085 — Identificación de cliente y acumulación` en PULSO; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, Wallet, PULSO, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo de acumulación visible de PASS para que el cliente pueda comprender cuándo una acumulación de puntos fue confirmada, cuánto valor de fidelización fue acreditado y cuál es el saldo resultante, sin convertir la interfaz cliente en ejecutora del otorgamiento ni anticipar un efecto que el servidor todavía no confirmó.
+
+La tarea especializa la experiencia de `VSCREEN-0107 — Inicio del cliente y resumen de beneficios` después de un hecho de acumulación y la relaciona con `VSCREEN-0085 — Identificación de cliente y acumulación`, superficie PULSO que ejecuta la acumulación dentro de la operación comercial.
+
+El resultado fija semántica, jerarquía visual, estados, frescura, idempotencia de presentación y handoffs. No implementa la acumulación, no define su tasa y no diseña la integración física PULSO → PASS.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-003`, que entrega:
+
+- el QR personal como credencial de identificación y no como autorización de acumulación;
+- resolución server-side de identidad por el consumidor;
+- separación entre identificación, acumulación y redención;
+- la obligación de que PULSO vuelva a validar sesión, sede, permiso y finalidad antes de ejecutar una acción;
+- la regla de que copiar, fotografiar o volver a presentar el QR no produce efectos empresariales por sí solo.
+
+Se conserva además la base de `PASS-UX-002`:
+
+- `PUNTOS_DISPONIBLES` es saldo actualmente utilizable y una proyección reconciliable del ledger;
+- `PUNTOS_GANADOS_HISTORICOS` es una métrica distinta usada para nivel y progreso;
+- fallo, ausencia o timeout no equivalen a saldo cero confirmado;
+- el home de fidelización resume estado personal sin ejecutar acumulación, redención ni operación PULSO.
+
+La frontera de esta tarea es exclusivamente la presentación al cliente del resultado de acumulación. No absorbe el algoritmo o tasa de acumulación, la integración PULSO → PASS, el historial completo, la redención, el catálogo de recompensas, el copy final de errores ni la estrategia offline completa.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla PASS primaria | `VSCREEN-0107 — Inicio del cliente y resumen de beneficios` |
+| Aplicación propietaria de la experiencia cliente | `pass` |
+| Proceso | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Paso PASS relacionado | `VPROC-0045::STEP-ENTER_LOYALTY_HOME — Entrar a fidelización personal` |
+| Pantalla ejecutora relacionada | `VSCREEN-0085 — Identificación de cliente y acumulación` |
+| Aplicación ejecutora relacionada | `pulso` |
+| Paso ejecutor relacionado | `VPROC-0045::STEP-IDENTIFY_CUSTOMER_AND_ACCRUE — Identificar cliente y acumular puntos` |
+| Rol PASS | `OWNER_WORKSPACE` de presentación personal y saldo proyectado |
+| Rol PULSO | `SUPERVISION_SURFACE` que ejecuta acumulación durante la venta sin mantener el ledger de PASS |
+| Superficie AS-IS de referencia PASS | `PASS-CUSTOMER-SURFACE-003 — Home`, especialmente `MembershipCard` |
+| Estado físico | sin instancia propia; contrato documental `DEFINE_ONCE` |
+
+`PASS-UX-004` no crea una nueva identidad `VSCREEN-*`. La acumulación visible es una especialización del estado presentado por la experiencia PASS después de un efecto confirmado, mientras la ejecución transaccional permanece en PULSO.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot observado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` | `12d197d8ec058f393cbc7685f4a975601439c425` | plan, topología, catálogo de pantallas, `VPROC-0045`, 04A PASS, ownership y validadores |
+| archivo propietario de PASS | blob `9be86bfbfa21f365a32c498fcc6444235b6712b9` | base remota con `PASS-UX-002` aprobada y marcador reservado de `PASS-UX-004` |
+| `PASS-UX-003_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `caacd68cc0762c7635c4cad6304c152ecc445afbee3772564622972ee3c4b917` | base documental inmediata aprobada por el usuario |
+| repositorio PASS accesible `carlosibarraariza/vento-pass` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS verificable |
+| `src/components/Home.tsx` | blob `ef6a3814dd54cb728b1473a0848a7cc4dd4e0df3` | separación AS-IS entre saldo disponible y total histórico ganado |
+| `src/components/home/MembershipCard.tsx` | blob `82a2a7dd36acb3ed72b094f3268f3f466240a5e1` | presentación AS-IS de puntos, tier y progreso |
+| `src/hooks/useUserData.ts` | blob `b37929f6d6f7a542fd3a37d995863265c3a38d5c` | lectura AS-IS de `loyalty_points` y fallback de error a cero |
+| `src/hooks/useTotalEarnedPoints.ts` | blob `c578ff53d4b279e9481815fcd7d8776aa4bd5d57` | total histórico AS-IS y fallback de error a cero |
+| `src/utils/tier.ts` | blob `71f4aa85747e9035547f29573392932191ba465d` | umbrales y cálculo de tier AS-IS que no se adoptan como regla empresarial por esta tarea |
+
+La preparación usa la versión completa aprobada de `PASS-UX-003` como base inmediata aunque su publicación en `main` permanezca condicionada al cierre documental anterior.
+
+---
+
+#### 5. Semántica contractual de acumulación visible
+
+La acumulación visible representa un resultado confirmado de fidelización y no una intención local de otorgar puntos.
+
+```text
+ACUMULACION VISIBLE PASS
+=
+PROYECCION DE UN EFECTO DE ACUMULACION YA CONFIRMADO
+```
+
+No significa:
+
+```text
+CALCULO AUTORITATIVO EN EL CLIENTE
+ORDEN DE OTORGAR PUNTOS
+CONFIRMACION ANTICIPADA
+AUTORIZACION DERIVADA DEL QR
+MUTACION DEL LEDGER
+REINTENTO TRANSACCIONAL
+REDENCION
+AJUSTE MANUAL
+```
+
+La interfaz puede explicar el resultado; nunca lo fabrica.
+
+---
+
+#### 6. Unidad visible del resultado
+
+Cuando exista evidencia confirmada y correlacionable de una acumulación, la experiencia puede presentar conjuntamente:
+
+| Concepto visible | Significado | Regla |
+| --- | --- | --- |
+| puntos acreditados | delta positivo confirmado para un hecho de acumulación | se muestra únicamente desde un resultado confirmado; no se deriva localmente del monto de compra |
+| saldo disponible resultante | proyección confirmada utilizable después del efecto | sustituye el saldo anterior únicamente cuando la fuente autorizada confirma el nuevo valor |
+| nivel actual | categoría vigente derivada de la regla aplicable | no se recalcula desde una tasa inventada por la interfaz |
+| progreso de nivel | avance derivado de la métrica histórica autorizada | no usa el saldo gastable como sustituto del acumulado histórico |
+| referencia contextual | contexto mínimo que permita entender el origen cuando esté autorizado | no expone secretos, actor interno innecesario ni datos de otra venta |
+
+Estas son identidades semánticas de presentación, no nombres de columnas, payloads, RPC, eventos ni contratos físicos.
+
+---
+
+#### 7. Jerarquía de presentación
+
+Después de una acumulación confirmada, la jerarquía objetivo es:
+
+1. **resultado** — comunicar que el efecto fue confirmado;
+2. **delta** — destacar los puntos realmente acreditados cuando el resultado lo proporcione de forma correlacionable;
+3. **saldo resultante** — mostrar la nueva proyección confirmada de puntos disponibles;
+4. **progreso** — actualizar nivel y progreso solo desde fuentes válidas;
+5. **detalle** — ofrecer acceso al historial cuando el cliente requiera trazabilidad adicional.
+
+El feedback transitorio de delta no sustituye el saldo persistente. Si no existe una referencia estable que permita atribuir el delta a un hecho confirmado, PASS actualiza la proyección persistente sin inventar una animación o mensaje de puntos ganados.
+
+---
+
+#### 8. Frontera PULSO → PASS
+
+La secuencia contractual de experiencia es:
+
+```text
+PULSO IDENTIFICA CLIENTE BAJO SU AUTORIDAD
+        ↓
+PULSO SOLICITA ACUMULACION MEDIANTE EL CONTRATO AUTORIZADO
+        ↓
+SERVIDOR VALIDA HECHO COMERCIAL + REGLA + ACTOR + SEDE + REFERENCIA
+        ↓
+SERVIDOR CONFIRMA EFECTO Y PROYECCION RESULTANTE
+        ↓
+PASS PUEDE MOSTRAR DELTA CONFIRMADO + SALDO RESULTANTE
+        ↓
+PASS CONSERVA ACCESO A HISTORIAL SIN REEJECUTAR EL EFECTO
+```
+
+La integración, correlación evento-cuenta-movimiento, idempotency key, reversión, compensación y conciliación detalladas pertenecen a `PASS-INT-001`. Esta tarea solo define qué puede afirmar la experiencia cliente cuando esos contratos entregan un resultado verificable.
+
+---
+
+#### 9. Regla de confirmación
+
+PASS no presenta una acumulación como exitosa antes de la confirmación de servidor.
+
+Reglas:
+
+- una intención iniciada en PULSO no equivale a puntos acreditados;
+- una respuesta de red perdida no autoriza asumir éxito ni fracaso definitivo;
+- un cambio local de estado no modifica el saldo;
+- una animación no precede al resultado confirmado;
+- un resultado duplicado o `already applied` no vuelve a sumar el delta en la interfaz;
+- una denegación, conflicto o error no conserva copy de éxito de una operación anterior;
+- una actualización posterior del saldo debe reconciliarse con la fuente autorizada y no con aritmética acumulada en memoria del cliente.
+
+---
+
+#### 10. Estados funcionales de acumulación visible
+
+La tarea reconoce los siguientes estados contractuales sin fijar todavía el copy final:
+
+| Estado | Presentación permitida | Prohibición |
+| --- | --- | --- |
+| `NO_ACCRUAL_CONTEXT` | saldo normal de fidelización sin afirmar un evento reciente | inventar un delta |
+| `ACCRUAL_PENDING_CONFIRMATION` | estado neutro de procesamiento cuando exista una operación correlacionada | mostrar “puntos ganados” o incrementar saldo por anticipado |
+| `ACCRUAL_CONFIRMED` | delta confirmado, saldo resultante y progreso reconciliado cuando estén disponibles | recalcular el efecto desde datos de venta locales |
+| `ACCRUAL_ALREADY_APPLIED` | resultado estable del mismo hecho sin segundo efecto visual acumulativo | volver a sumar o celebrar como una nueva acreditación |
+| `ACCRUAL_REJECTED` | ausencia de acreditación y recuperación o salida correspondiente | conservar delta o saldo optimista |
+| `ACCRUAL_CONFLICT` | estado no concluido que requiere reconciliación | elegir silenciosamente entre valores incompatibles |
+| `CONFIRMED_NO_DELTA` | saldo confirmado sin presentar `+0` como una ganancia | tratar cero como éxito promocional |
+| `BALANCE_STALE_AFTER_ACCRUAL` | último saldo confirmado con señal explícita de frescura degradada | mezclar un delta reciente con un saldo antiguo como si fueran una misma confirmación |
+
+`PASS-UX-010` definirá el copy final y `PASS-UX-012` especializará carga, error, offline, retry y recuperación.
+
+---
+
+#### 11. Idempotencia de presentación
+
+La idempotencia transaccional pertenece al servidor y a `PASS-INT-001`; la experiencia debe respetar su resultado.
+
+Para la presentación:
+
+1. el mismo resultado confirmado no genera múltiples incrementos visuales acumulativos;
+2. reabrir el home no vuelve a acreditar visualmente un delta como si fuera un hecho nuevo;
+3. pull-to-refresh no suma el último delta al saldo obtenido del servidor;
+4. volver desde background no reproduce una acreditación sin evidencia de un nuevo hecho;
+5. un replay del QR personal no activa feedback de acumulación;
+6. si la correlación estable del hecho no está disponible, se omite el feedback transitorio y se conserva únicamente la proyección de saldo confirmada;
+7. la clave o identidad física que permita correlacionar el hecho no se diseña en esta tarea.
+
+---
+
+#### 12. Saldo, acumulado histórico y progreso
+
+La acumulación visible no colapsa tres magnitudes distintas:
+
+```text
+DELTA ACREDITADO DEL HECHO
+!=
+SALDO DISPONIBLE
+!=
+ACUMULADO HISTORICO PARA NIVEL
+```
+
+Consecuencias:
+
+- el delta describe un único hecho confirmado;
+- el saldo disponible es la proyección utilizable actual y puede disminuir por redenciones u otros movimientos válidos;
+- el acumulado histórico puede conservarse aunque el saldo gastable disminuya;
+- nivel y progreso no deben derivarse de sumar el delta al saldo visible;
+- una reversión o ajuste posterior no se representa como nueva acumulación;
+- la tarea no fija la tasa de acumulación ni los umbrales de nivel.
+
+Los umbrales hardcodeados observados en `src/utils/tier.ts` quedan registrados como AS-IS y no se elevan a regla empresarial canónica por esta tarea. La implementación posterior deberá consumir la regla vigente y versionada definida por el dominio propietario.
+
+---
+
+#### 13. Frescura, cero y fallo de lectura
+
+Se preserva el contrato de certeza de `PASS-UX-002`.
+
+- `0` solo es saldo confirmado cuando una fuente válida confirma cero;
+- un error de `useUserData` no puede convertirse en evidencia de saldo cero;
+- un error de `useTotalEarnedPoints` no puede convertirse en evidencia de nivel inicial o progreso cero;
+- un valor cacheado puede mostrarse únicamente con semántica de frescura adecuada;
+- un delta confirmado no autoriza afirmar un saldo nuevo si la proyección resultante no pudo confirmarse;
+- un saldo confirmado nuevo no autoriza inventar cuál fue el delta del último hecho;
+- saldo, delta y acumulado histórico pueden tener frescuras diferentes y no deben fusionarse en una sola afirmación si sus evidencias no coinciden.
+
+---
+
+#### 14. Relación con historial y comprobación del movimiento
+
+`PASS-UX-004` puede ofrecer un handoff hacia `VSCREEN-0111 — Historial de puntos y redenciones`, pero no replica el ledger completo.
+
+El resumen de acumulación reciente puede exponer únicamente el contexto mínimo autorizado para comprender el efecto. El detalle de movimientos, ajustes, reversión, origen, fecha y trazabilidad corresponde a `PASS-UX-006` y a los contratos de integración aplicables.
+
+Si una proyección visible y el historial posteriormente discrepan, la interfaz no resuelve la contradicción por suma local: debe entrar en estado de reconciliación o recuperación gobernado por las tareas propietarias.
+
+---
+
+#### 15. Relación con Wallet
+
+Wallet puede proyectar saldo o nivel cuando exista un contrato autorizado, pero no se convierte en autoridad de acumulación.
+
+Reglas:
+
+- una actualización tardía de Wallet no revierte ni vuelve a ejecutar un efecto;
+- el barcode del QR personal no contiene el delta ni concede acumulación;
+- la app PASS y Wallet pueden tener distinta frescura temporal sin convertirse en dos ledgers;
+- una notificación o cambio de pase no sustituye la confirmación transaccional del servidor;
+- la experiencia cliente no debe sumar localmente un delta al valor mostrado por Wallet para producir un saldo supuesto.
+
+---
+
+#### 16. Accesibilidad y movimiento
+
+El feedback visible de acumulación debe conservar:
+
+- comprensión sin depender exclusivamente del color;
+- contraste suficiente para delta, saldo y estado;
+- lectura numérica clara y diferenciación entre saldo y progreso;
+- soporte a preferencias de movimiento reducido;
+- animaciones decorativas que no oculten ni retrasen la cifra confirmada;
+- ausencia de confeti, pulse o incremento animado antes de confirmación;
+- estabilidad del valor final aunque la animación se omita.
+
+La animación es feedback; nunca evidencia del efecto.
+
+---
+
+#### 17. Hallazgos AS-IS y handoff
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `Home.tsx` usa `userData?.loyalty_points || 0` como saldo visible | ausencia o error puede colapsar a cero antes de distinguir certeza | `PASS-UX-012` + implementación posterior | cero confirmado, unavailable y stale quedan estados distintos |
+| `useUserData` guarda `loyalty_points: 0` ante error o excepción | un fallo técnico puede presentarse como pérdida total del saldo | `PASS-UX-012` + consumidor de datos | el error preserva estado de incertidumbre y no se cachea como saldo confirmado |
+| `useTotalEarnedPoints` guarda `0` ante error | tier y progreso pueden retroceder visualmente por fallo de lectura | `PASS-UX-012` + contrato de métrica histórica | error no se convierte en acumulado histórico confirmado de cero |
+| `MembershipCard` presenta puntos, tier y progreso, pero no distingue un resultado de acumulación reciente | el cliente puede ver un saldo cambiado sin comprender el hecho o puede asociar una animación con una acreditación no confirmada | `PASS-UX-004` + implementación posterior | feedback de delta existe solo con resultado confirmado y saldo persistente permanece separado |
+| `src/utils/tier.ts` contiene umbrales de tier hardcodeados | el cliente puede divergir de una regla empresarial futura o versionada | dominio de fidelización + implementación posterior | nivel y progreso consumen regla vigente gobernada; esta tarea no canoniza los umbrales AS-IS |
+| PULSO `VSCREEN-0085` ejecuta identificación y acumulación | PASS podría duplicar lógica transaccional para explicar el resultado | `PASS-INT-001` + PULSO | ejecución permanece server-side y PASS consume una proyección confirmada |
+| QR personal identifica pero no autoriza acumulación | un consumidor podría usar presencia o replay del QR como gatillo de feedback | `PASS-UX-003` + `PASS-UX-004` | presentar o repetir el QR nunca muestra acreditación sin efecto confirmado |
+
+Ningún hallazgo autoriza modificación física desde esta tarea.
+
+---
+
+#### 18. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| redención visible y ticket o QR de canje | `PASS-UX-005` |
+| historial completo de movimientos y redenciones | `PASS-UX-006` |
+| catálogo de recompensas | `PASS-UX-007` |
+| perfil, privacidad y consentimientos | `PASS-UX-008` |
+| estados pendiente, usado y cancelado de redención | `PASS-UX-009` |
+| copy final y mensajes comprensibles | `PASS-UX-010` |
+| navegación y rutas canónicas | `PASS-UX-011` |
+| carga, error, offline, retry y recuperación | `PASS-UX-012` |
+| contrato detallado PULSO → PASS para acumulación, correlación, idempotencia, reversión y conciliación | `PASS-INT-001` |
+| protección de acumulación en operación PULSO | `PULSO-AUTH-009` y contratos PULSO aplicables |
+| prueba completa de acumulación | `PASS-QA-001` |
+
+---
+
+#### 19. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la autoridad server-side de acumulación, ledger y saldo, la idempotencia, la separación entre identificación y efecto, la prohibición de mostrar éxito antes de confirmación y la consistencia de superficies PASS ya cuentan con cobertura vigente. Esta tarea materializa el diseño visible y sus estados sin introducir una obligación de prueba nueva ni alterar el Registro 04A.
+
+---
+
+#### 20. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-008` para exigir contratos de servidor autorizados, atómicos e idempotentes en acumulación, gasto, ajuste, reversión y redención;
+- `TREQ-PASS-010` para ledger inmutable y reconciliable, saldo como proyección y conservación de evento origen, regla y versión;
+- `TREQ-PASS-025` para confirmar juntos saldo y ledger al otorgar puntos y evitar duplicación ante reintentos o respuesta perdida;
+- `TREQ-PASS-026` para exigir una referencia de idempotencia estable derivada del hecho empresarial;
+- `TREQ-PASS-032` para impedir que la interfaz muestre puntos otorgados antes de confirmación de servidor y distinguir duplicado, conflicto, denegación y resultado ya aplicado;
+- `TREQ-PASS-034` para mantener PULSO como operación propietaria sin duplicar sus mutaciones dentro de PASS;
+- `TREQ-PASS-039` para impedir que el QR personal autorice acumulación;
+- `TREQ-PASS-041` y `TREQ-PASS-042` para conservar la reconciliación entre superficies canónicas, runtime e inventario verificable.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 21. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará únicamente cuando `PASS-UX-003` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-004` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, el archivo propietario, topología `PASS-UX`, catálogo `VSCREEN-*`, `VPROC-0045`, 04A PASS, ownership PULSO-PASS, `vento-pass/main`, `Home`, `MembershipCard`, `useUserData`, `useTotalEarnedPoints` y `tier.ts`. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó una venta, acumulación, actualización de saldo, animación, Wallet ni reconciliación en ambiente desplegado o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-004` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 22. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-004 — Diseñar acumulación visible`.
+- [x] La acumulación visible se especializa sobre `VSCREEN-0107` sin inventar una nueva pantalla canónica.
+- [x] `VSCREEN-0085` permanece como superficie PULSO que ejecuta acumulación durante la venta.
+- [x] PASS solo afirma puntos acreditados después de confirmación de servidor.
+- [x] Delta acreditado, saldo disponible y acumulado histórico permanecen conceptos distintos.
+- [x] Nivel y progreso no se calculan a partir del saldo gastable.
+- [x] La tarea no fija tasa de acumulación ni canoniza los umbrales hardcodeados AS-IS.
+- [x] Reintento, refresh, regreso desde background o replay del QR no duplican feedback de acreditación.
+- [x] Un resultado `already applied` no se presenta como una nueva acumulación.
+- [x] Fallo o ausencia de lectura no se convierten en cero confirmado.
+- [x] Si no existe correlación estable de un delta, se actualiza únicamente la proyección confirmada sin inventar un evento.
+- [x] La animación permanece subordinada al valor confirmado y a preferencias de movimiento reducido.
+- [x] El historial completo queda reservado a `PASS-UX-006`.
+- [x] La redención visible queda reservada a `PASS-UX-005`.
+- [x] La integración, idempotencia transaccional, reversión y conciliación detalladas quedan reservadas a `PASS-INT-001`.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, PULSO runtime, Supabase, Wallet, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-005` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 23. Límites
+
+Esta tarea no:
+
+- implementa componentes o hooks de PASS;
+- modifica `Home.tsx`, `MembershipCard.tsx`, `useUserData.ts`, `useTotalEarnedPoints.ts` ni `tier.ts`;
+- modifica PULSO ni `VSCREEN-0085`;
+- define tasa, fórmula, redondeo o elegibilidad de acumulación;
+- canoniza umbrales de tier hardcodeados del runtime actual;
+- crea columnas, tablas, vistas, RPC, funciones, triggers, eventos, colas o contratos físicos;
+- inserta, actualiza ni reconcilia el ledger;
+- calcula autoritativamente puntos desde el cliente;
+- crea una nueva pantalla `VSCREEN-*`;
+- diseña el historial completo;
+- crea ni valida redenciones;
+- define copy final de éxito o error;
+- define estrategia offline o retry completa;
+- modifica Wallet o su barcode;
+- modifica datos, RLS, políticas, secretos o Supabase;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- declara validación operativa realizada;
+- desarrolla `PASS-UX-005` ni `PASS-INT-001`.
+
+---
+
+#### 24. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-003 — Diseñar QR personal`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-004 — Diseñar acumulación visible`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-005 — Diseñar redención visible`
 ### [ ] PASS-UX-005 — Diseñar redención visible
 ### [ ] PASS-UX-006 — Diseñar historial
 ### [ ] PASS-UX-007 — Diseñar catálogo de recompensas
