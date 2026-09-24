@@ -7483,7 +7483,932 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-010 — Registrar cantidades, desperdicio y resultado`
 
-### [ ] FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
+### ✅ FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-009 — Separar recetario operativo y administración de recetas
+**Tarea siguiente:** FOGO-UX-011 — Diseñar correcciones sin alterar historial
+**Tipo de tarea:** diseño documental integral de la captura cuantitativa final de una ejecución productiva, separando cantidad esperada, salida real, rendimiento, merma o desperdicio, coproductos, subproductos, material recuperable, reproceso, resultado no conforme y diferencia no explicada, con unidades compatibles, tolerancias, actor, evidencia, versionado, idempotencia y continuidad hacia cierre, calidad e inventario sin convertir el registro UX en movimiento NEXO, corrección histórica ni cierre automático
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, inventario, recetas, lotes reales ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo FOGO registra y presenta las **cantidades reales y el resultado cuantitativo** de una ejecución productiva sin modificar lo que estaba planificado, sin ocultar pérdidas, sin confundir resultado observado con producto liberado y sin duplicar los efectos físicos que pertenecen a NEXO.
+
+La regla raíz queda:
+
+```text
+RECETA / VERSION EXACTA
++
+CANTIDAD ESPERADA Y UNIDAD CANONICA
++
+SALIDA REAL OBSERVADA
++
+CLASIFICACION EXPLICITA DE MERMA / DESPERDICIO / OTROS RESULTADOS
++
+TOLERANCIAS Y CONVERSIONES GOBERNADAS
++
+ACTOR + CONTEXTO + EVIDENCIA
++
+VERSION DEL LOTE / EXPEDIENTE
+=
+RESULTADO PRODUCTIVO CUANTITATIVO TRAZABLE
+```
+
+Y permanece prohibido:
+
+```text
+CAMBIAR LO ESPERADO PARA QUE COINCIDA CON LO REAL
+OCULTAR UNA DIFERENCIA EN NOTAS LIBRES
+CONTAR MERMA DOS VECES EN INVENTARIO
+TRATAR EMPAQUE COMO SALIDA PRODUCTIVA
+TRATAR SALIDA OBSERVADA COMO CALIDAD LIBERADA
+TRATAR RESULTADO FOGO COMO STOCK NEXO
+```
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-009
+
+`FOGO-UX-009` entrega una receta/version gobernada y una separación cerrada entre conocimiento esperado y operación real.
+
+La entrada relevante para esta tarea es:
+
+```text
+RECIPE_DEFINITION
+RECIPE_PUBLICATION
+recipe_definition_id
+published_recipe_version_id
+recipe_version_ref
+RENDIMIENTO ESPERADO DE LA VERSION
+UNIDADES / CONVERSIONES / TOLERANCIAS GOBERNADAS
+LOTE / ORDEN / CONTEXTO PRODUCTIVO
+```
+
+La 010 no edita ninguna de esas identidades. Las utiliza para explicar qué se esperaba y contra qué versión se compara el resultado real.
+
+Un cambio en cantidades reales nunca modifica retrospectivamente `RECIPE_PUBLICATION` ni crea una nueva versión de receta.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `FOGO-UX-010` define una sola vez el contrato UX cuantitativo;
+2. no existe instancia física propia `FOGO-UX-010::<implementation_unit_id>`;
+3. la tarea no crea tablas, columnas, enums, RPC, Server Actions ni permisos;
+4. las materializaciones posteriores consumen este contrato dentro del package y la unidad técnica propietaria;
+5. cualquier modificación futura de Supabase perteneciente a VENTO continúa versionada y ejecutada desde `vento-group-sas/vento-shell`.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-006 — Diseñar producción parcial`;
+- `FOGO-UX-007 — Diseñar finalización de lote`;
+- `FOGO-UX-009 — Separar recetario operativo y administración de recetas`;
+- `FOGO-AUTH-010 — Proteger producción parcial`;
+- `FOGO-AUTH-011 — Proteger finalización`;
+- `FOGO-AUTH-012 — Proteger correcciones y anulaciones`;
+- `OPS-REC-001 — Definir el contrato canónico de recetas y acceso contextual`;
+- contratos `INT-PROD-001..005` de producción e inventario;
+- `VSCREEN-0059 — Registro parcial de producción`;
+- `VSCREEN-0060 — Finalización y cierre de lote`;
+- `VSCREEN-0067 — Reproceso, aprovechamiento, merma y cierre productivo`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- `VPROC-0037 — Gestionar reproceso, aprovechamiento, rendimiento, merma y cierre productivo`;
+- estados y eventos canónicos de `VPROC-0034` y `VPROC-0037`;
+- familia 04A vigente de FOGO, autorización e integración;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`;
+- versión completa aprobada de `FOGO-UX-009` SHA-256 `1beae3ae7183da2a63380b2e5899d592a0da9a15c997baf1b62b77337be2a18b` mientras su incorporación remota permanece pendiente durante esta preparación anticipada.
+
+---
+
+#### 5. Responsabilidad UX sin crear una pantalla nueva
+
+`FOGO-UX-010` no introduce una identidad `VSCREEN-*` nueva.
+
+Especializa la dimensión cuantitativa de superficies ya canónicas:
+
+| Superficie | Propietario | Paso | Papel de FOGO-UX-010 |
+| --- | --- | --- | --- |
+| `VSCREEN-0059` | `VPROC-0034` | `VPROC-0034::STEP-CAPTURE_BATCH_PROGRESS` | fuente de parciales ya confirmados; la 010 no los reescribe |
+| `VSCREEN-0060` | `VPROC-0037` | `VPROC-0037::STEP-CLOSE_BATCH` | recopila y confirma el resultado cuantitativo requerido por finalización/cierre |
+| `VSCREEN-0067` | `VPROC-0037` | `VPROC-0037::STEP-RESOLVE_PRODUCTION_DISPOSITION` | explica variaciones, merma, aprovechamiento, reproceso o diferencia bajo revisión |
+
+`FOGO-UX-007` sigue siendo propietaria de la finalización/cierre. `FOGO-UX-010` entrega los hechos cuantitativos que esa experiencia consume.
+
+---
+
+#### 6. Modelo cuantitativo conceptual
+
+La UX debe mantener magnitudes distintas, aunque una materialización futura use otros nombres físicos.
+
+```text
+CANTIDAD ESPERADA
+CANTIDAD REAL DE SALIDA PRINCIPAL
+CANTIDAD DE COPRODUCTO
+CANTIDAD DE SUBPRODUCTO
+CANTIDAD CLASIFICADA COMO MERMA / DESPERDICIO
+CANTIDAD RECUPERABLE
+CANTIDAD ENVIADA A REPROCESO
+CANTIDAD NO CONFORME
+DIFERENCIA NO EXPLICADA
+```
+
+Estos nombres son **conceptos UX/empresariales**, no nombres de columnas ni obligación de esquema físico.
+
+No se crea una sola cantidad genérica que represente a la vez producido, empacado, liberado e ingresado a inventario.
+
+---
+
+#### 7. Cantidad esperada
+
+La referencia esperada se deriva de la orden y de la receta/version que gobiernan la ejecución.
+
+Debe conservar, según aplique:
+
+- producto o preparación objetivo;
+- cantidad objetivo;
+- unidad canónica;
+- `recipe_version_ref`;
+- escala aplicada;
+- tolerancia y regla de redondeo aplicables;
+- revisión/version de la orden o expediente que fija el objetivo.
+
+La cantidad esperada es histórica para esa ejecución.
+
+```text
+RESULTADO REAL DIFERENTE
+!=
+REESCRIBIR CANTIDAD ESPERADA
+```
+
+---
+
+#### 8. Salida real observada
+
+La salida real registra qué cantidad se obtuvo efectivamente en la ejecución.
+
+Para cada resultado materialmente relevante la UX debe poder conservar:
+
+- identidad del producto/salida;
+- rol de salida cuando aplique;
+- cantidad observada;
+- unidad;
+- momento de captura;
+- actor responsable cuando corresponda;
+- método o evidencia de medición cuando sea exigible;
+- lote/ejecución y versión a la que pertenece;
+- desviación respecto de lo esperado cuando exista base comparable.
+
+La salida real no se modifica para forzar coincidencia con la receta, inventario o costo esperado.
+
+---
+
+#### 9. Familias de resultado
+
+La experiencia conserva categorías productivas distintas cuando apliquen:
+
+1. salida principal;
+2. coproducto;
+3. subproducto;
+4. merma o desperdicio;
+5. material recuperable;
+6. material enviado a reproceso;
+7. resultado no conforme;
+8. diferencia todavía no explicada.
+
+La tarea no inventa un enum físico ni una taxonomía adicional a estas familias contractuales.
+
+Cuando una clasificación más específica dependa de una fuente empresarial todavía pendiente, la UX conserva el valor disponible y evita fabricar una categoría local definitiva.
+
+---
+
+#### 10. Merma y desperdicio
+
+FOGO conserva la clasificación productiva de merma o desperdicio dentro de la ejecución.
+
+Cada registro material debe poder conservar, según aplicabilidad:
+
+```text
+CANTIDAD
+UNIDAD
+CAUSA
+ETAPA
+ACTOR
+LOTE / EJECUCION
+MOMENTO
+EVIDENCIA
+TRATAMIENTO / DISPOSICION CUANDO CORRESPONDA
+```
+
+Reglas:
+
+1. una cantidad ya emitida o consumida físicamente por NEXO no se descuenta otra vez por ser clasificada después como merma;
+2. la clasificación no modifica el movimiento original;
+3. una merma no explicada permanece como diferencia;
+4. una nota libre no sustituye cantidad, unidad, causa ni vínculo con la ejecución;
+5. la UX no inventa una fuente maestra de merma mientras el contrato empresarial correspondiente permanezca pendiente de materialización.
+
+---
+
+#### 11. Diferencia no explicada
+
+La experiencia conserva explícitamente una diferencia cuando no puede reconciliarse mediante unidades, conversiones, tolerancias y clasificaciones gobernadas.
+
+```text
+DIFERENCIA NO EXPLICADA
+!=
+MERMA ASUMIDA
+!=
+AJUSTE AUTOMATICO
+!=
+CORRECCION HISTORICA
+```
+
+Una diferencia material abre o mantiene la revisión correspondiente en `VPROC-0037.VARIANCE_UNDER_REVIEW`.
+
+La UX debe mostrar que existe una obligación pendiente y no transformar la diferencia en cero por conveniencia visual.
+
+---
+
+#### 12. Rendimiento esperado y rendimiento real
+
+La experiencia conserva la cadena:
+
+```text
+RENDIMIENTO ESPERADO SEGUN RECETA Y VERSION
+!=
+SALIDA REAL OBSERVADA
+!=
+SALIDA CUYA DISPOSICION AUTORIZA LA LIBERACION
+!=
+SALIDA INGRESADA FISICAMENTE EN NEXO
+```
+
+La comparación se realiza únicamente cuando las identidades y unidades son compatibles o existe una conversión canónica reproducible.
+
+Una diferencia fuera de tolerancia genera una variación; no cambia ni el esperado ni el real.
+
+---
+
+#### 13. Unidades, conversiones y comparabilidad
+
+Toda comparación cuantitativa debe identificar:
+
+- unidad del valor esperado;
+- unidad del valor real;
+- conversión canónica usada cuando sean distintas;
+- precisión;
+- redondeo;
+- tolerancia.
+
+Si las cantidades no son compatibles:
+
+```text
+NO COMPARABLE
+```
+
+es preferible a fabricar una equivalencia local.
+
+No se suman productos, familias o unidades incompatibles para producir un balance aparente.
+
+---
+
+#### 14. Tolerancias y redondeo
+
+La tolerancia pertenece al contrato de receta, proceso o dato aplicable; no se inventa desde la UI.
+
+La UX debe diferenciar:
+
+- diferencia matemática;
+- diferencia dentro de tolerancia;
+- diferencia fuera de tolerancia;
+- diferencia sin regla de tolerancia disponible;
+- diferencia no comparable.
+
+Un redondeo de presentación no modifica el valor durable ni puede esconder una variación material.
+
+---
+
+#### 15. Relación con capturas parciales
+
+Los parciales confirmados por `FOGO-UX-006` son hechos durables.
+
+La 010 puede consumir su acumulado para explicar el resultado final, pero no los edita ni sustituye.
+
+Regla:
+
+```text
+PARCIALES CONFIRMADOS
++
+CAPTURA FINAL APLICABLE
+=
+EXPEDIENTE CUANTITATIVO ACUMULADO
+```
+
+Siempre que el contrato propietario determine que esa agregación es válida y no duplique el mismo hecho.
+
+Un parcial erróneo se corrige mediante `FOGO-UX-011`, no con un delta negativo silencioso en la 010.
+
+---
+
+#### 16. Frontera con consumo de insumos
+
+La 010 puede mostrar información necesaria para conciliar el resultado con materiales, pero no posee el movimiento físico de inventario.
+
+```text
+CONSUMO / MOVIMIENTO FISICO
+→ NEXO
+
+CLASIFICACION PRODUCTIVA Y RESULTADO
+→ FOGO
+```
+
+La captura detallada y handoff exactamente una vez de insumos permanece en `FOGO-UX-012` y los contratos `INT-PROD-*`.
+
+Una cantidad productiva registrada no equivale a movimiento NEXO confirmado.
+
+---
+
+#### 17. Frontera con empaque
+
+Empaque real no sustituye salida productiva.
+
+```text
+SALIDA REAL
+!=
+CANTIDAD EMPACADA
+!=
+NUMERO DE EMPAQUES
+```
+
+`FOGO-UX-013` conserva empaque, etiqueta, almacenamiento y conexión del producto terminado con NEXO.
+
+La 010 puede usar el estado de empaque como evidencia posterior del expediente, pero no deriva el rendimiento final sumando empaques si el contrato de producto/unidad no lo permite.
+
+---
+
+#### 18. Frontera con calidad
+
+Resultado cuantitativo y disposición de calidad permanecen independientes.
+
+```text
+SALIDA REAL REGISTRADA
+!=
+CALIDAD LIBERADA
+```
+
+`VPROC-0034.OUTPUT_REPORTED` significa que salidas, rendimiento y merma fueron registrados **sin liberación de calidad**.
+
+La 010 no habilita liberación, retención, rechazo ni aceptación de calidad.
+
+---
+
+#### 19. Frontera con producto terminado en NEXO
+
+FOGO registra qué produjo; NEXO confirma qué ingresó físicamente a inventario.
+
+```text
+RESULTADO FOGO
+!=
+INGRESO FISICO NEXO
+!=
+STOCK DISPONIBLE
+```
+
+La conexión del producto terminado permanece en `FOGO-UX-013`.
+
+La cantidad observada en FOGO puede existir mientras el efecto físico correlacionado permanece pendiente.
+
+---
+
+#### 20. Captura cuantitativa en `VSCREEN-0060`
+
+`VSCREEN-0060` debe poder presentar el resumen cuantitativo necesario antes de una finalización o cierre, sin convertir esa superficie en un editor destructivo.
+
+La composición mínima puede incluir:
+
+- esperado de la ejecución;
+- salida principal real;
+- otras salidas reales aplicables;
+- variación absoluta y relativa cuando sea comparable;
+- merma/desperdicio clasificados;
+- diferencia no explicada;
+- estado de conciliación de consumos;
+- estado de calidad;
+- estado de efectos NEXO;
+- bloqueos que impiden avanzar.
+
+Guardar o registrar datos no equivale a finalizar ejecución ni aprobar cierre.
+
+---
+
+#### 21. Disposición y variaciones en `VSCREEN-0067`
+
+`VSCREEN-0067` conserva:
+
+```text
+VPROC-0037::STEP-RESOLVE_PRODUCTION_DISPOSITION
+DECIDE / DECISION
+```
+
+La 010 alimenta esa superficie cuando existe:
+
+- merma relevante;
+- material recuperable;
+- salida no conforme;
+- reproceso propuesto;
+- diferencia fuera de tolerancia;
+- diferencia no explicada;
+- aprovechamiento que requiere tratamiento explícito.
+
+La decisión de reproceso o disposición no cambia por sí misma las cantidades originales. Conserva el resultado y añade tratamiento/genealogía conforme al proceso propietario.
+
+---
+
+#### 22. Estados de `VPROC-0034` relevantes
+
+La secuencia cuantitativa debe respetar:
+
+```text
+VPROC-0034.IN_PRODUCTION
+→ VPROC-0034.OUTPUT_REPORTED
+→ VPROC-0034.CONSUMPTION_RECONCILIATION_PENDING
+→ VPROC-0034.READY_FOR_QUALITY
+→ VPROC-0034.PRODUCTION_EXECUTION_COMPLETED
+```
+
+Reglas:
+
+1. un borrador local de resultado no equivale a `OUTPUT_REPORTED`;
+2. `OUTPUT_REPORTED` conserva salida, rendimiento y merma sin calidad liberada;
+3. consumos pendientes permanecen visibles;
+4. `READY_FOR_QUALITY` no significa producto aprobado;
+5. `PRODUCTION_EXECUTION_COMPLETED` no significa inventario disponible.
+
+El evento `VPROC-0034.EVT-004` conserva el hecho de resultado reportado y `VPROC-0034.EVT-006` la finalización operativa; no son el mismo hito.
+
+---
+
+#### 23. Estados de `VPROC-0037` relevantes
+
+La conciliación posterior conserva:
+
+```text
+VPROC-0037.PRODUCTION_CLOSEOUT_OPENED
+→ VPROC-0037.DATA_COLLECTING
+→ VPROC-0037.YIELD_RECONCILIATION_IN_PROGRESS
+→ VPROC-0037.VARIANCE_UNDER_REVIEW
+→ ...
+→ VPROC-0037.INVENTORY_EFFECTS_PENDING
+→ VPROC-0037.CLOSURE_REVIEW_PENDING
+→ VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED
+```
+
+`FOGO-UX-010` participa especialmente en:
+
+- recopilación de datos;
+- conciliación de rendimiento;
+- exposición de variaciones;
+- preservación del resultado original para decisiones posteriores.
+
+No absorbe reproceso, cierre definitivo, correcciones ni movimientos de inventario.
+
+---
+
+#### 24. Resultado inferior a lo planificado
+
+Una ejecución puede terminar con salida inferior a la planificada únicamente cuando el proceso y la autoridad aplicable permitan continuar con esa diferencia.
+
+La UX debe conservar:
+
+- cantidad esperada original;
+- cantidad real;
+- diferencia;
+- unidad y tolerancia;
+- causa conocida o estado `NO_EXPLICADA`;
+- materiales consumidos/devueltos/desperdiciados cuando estén disponibles;
+- motivo y autoridad de cualquier aceptación posterior con diferencia.
+
+La cantidad faltante no se transforma en producto terminado ni se borra reduciendo el objetivo histórico.
+
+---
+
+#### 25. Resultado superior a lo esperado
+
+Una salida superior al esperado también es una variación.
+
+La UX no la presenta automáticamente como eficiencia positiva ni como stock adicional disponible.
+
+Debe conservar:
+
+- cantidad esperada;
+- cantidad real;
+- diferencia;
+- unidad compatible;
+- tolerancia;
+- causa/evidencia cuando sea material;
+- necesidad de revisión cuando corresponda.
+
+El exceso observado requiere el mismo rigor de trazabilidad que una pérdida.
+
+---
+
+#### 26. Cero, negativos y ausencia
+
+La UX distingue:
+
+```text
+0 REGISTRADO
+!=
+DATO AUSENTE
+!=
+NO APLICA
+!=
+DATO INVALIDO
+```
+
+Una cantidad negativa no se utiliza como mecanismo genérico de corrección.
+
+Si un hecho previamente confirmado debe corregirse, la experiencia deriva a `FOGO-UX-011` y a la acción correctiva propietaria.
+
+---
+
+#### 27. Causa, etapa y evidencia
+
+Cuando existe merma, desperdicio, variación material, resultado no conforme o diferencia no explicada, la UX debe poder conservar contexto suficiente para investigar.
+
+Como mínimo, según materialidad:
+
+- categoría del resultado;
+- causa o estado de causa pendiente;
+- etapa del proceso donde se observó;
+- actor;
+- momento;
+- evidencia;
+- relación con parcial, lote u orden;
+- tratamiento posterior cuando exista.
+
+Una causa desconocida puede registrarse como pendiente; no se inventa una causa para permitir cierre.
+
+---
+
+#### 28. Actor, turno y atribución
+
+Cada confirmación cuantitativa sensible debe quedar atribuible al actor efectivo.
+
+La experiencia conserva, cuando aplique:
+
+- principal autenticado;
+- actor efectivo;
+- turno/check-in vigente;
+- sede y área;
+- dispositivo/estación;
+- lote/recurso;
+- acción;
+- timestamp;
+- resultado durable.
+
+Cambiar de actor o turno no cambia las cantidades ya confirmadas por el actor anterior y obliga a revalidar la autoridad para el siguiente efecto.
+
+---
+
+#### 29. Autoridad y fail-closed
+
+`FOGO-UX-010` no inventa una clave de permiso para registrar resultado, merma o disposición.
+
+La materialización debe consumir las capacidades propietarias definidas por `FOGO-AUTH-010..013` y el catálogo canónico realmente disponible.
+
+Reglas:
+
+```text
+batches.view
+!=
+AUTORIDAD PARA CAMBIAR RESULTADO
+
+batches.create
+!=
+AUTORIDAD PARA FINALIZAR O CLASIFICAR MERMA
+
+LECTURA DE RECETA
+!=
+AUTORIDAD PARA REGISTRAR RESULTADO
+```
+
+Si la capacidad exacta requerida no puede demostrarse, la acción sensible queda `DENY`.
+
+---
+
+#### 30. Idempotencia y concurrencia
+
+Cada confirmación con efecto durable debe ser recuperable por una identidad idempotente estable.
+
+La UX debe soportar:
+
+- doble clic;
+- retry equivalente;
+- timeout;
+- respuesta perdida;
+- dos operadores sobre el mismo lote;
+- versión stale;
+- transición de estado concurrente.
+
+Resultados obligatorios:
+
+1. mismo identificador + misma huella devuelve el resultado durable previo;
+2. mismo identificador + contenido incompatible produce conflicto;
+3. una escritura stale no sobrescribe una versión más nueva;
+4. dos confirmaciones concurrentes no contabilizan dos veces el mismo resultado;
+5. un resultado desconocido se consulta antes de repetir el efecto.
+
+---
+
+#### 31. Operación con resultado incierto
+
+Ante pérdida de respuesta después de enviar una confirmación, la UX no asume ni éxito ni fracaso.
+
+Presenta un estado recuperable:
+
+```text
+RESULTADO_DESCONOCIDO
+```
+
+Y consulta por la identidad original hasta resolver:
+
+- aplicado;
+- duplicado recuperado;
+- en progreso;
+- conflicto;
+- rechazado;
+- no encontrado de forma concluyente;
+- reconciliación requerida.
+
+No se genera una nueva identidad para “probar otra vez”.
+
+---
+
+#### 32. Estados de experiencia
+
+La experiencia distingue, como mínimo:
+
+| Estado UX | Significado |
+| --- | --- |
+| `CAPTURA_EN_CURSO` | existen datos todavía no confirmados |
+| `RESULTADO_REPORTADO` | salida/rendimiento/merma fueron confirmados como hecho productivo |
+| `RESULTADO_INCOMPLETO` | falta una dimensión necesaria para continuar |
+| `DENTRO_DE_TOLERANCIA` | diferencia comparable aceptable según regla gobernada |
+| `VARIACION_FUERA_DE_TOLERANCIA` | diferencia material requiere tratamiento |
+| `DIFERENCIA_NO_EXPLICADA` | balance o resultado todavía no tiene explicación suficiente |
+| `MERMA_REGISTRADA` | cantidad clasificada con unidad y contexto suficientes |
+| `REPROCESO_O_DISPOSICION_PENDIENTE` | el resultado requiere decisión posterior |
+| `CONSUMOS_PENDIENTES` | conciliación material todavía no está cerrada |
+| `CALIDAD_PENDIENTE` | resultado cuantitativo existe, pero no disposición de calidad |
+| `EFECTO_NEXO_PENDIENTE` | producto terminado todavía no tiene efecto físico confirmado |
+| `SIN_CAPACIDAD` | el actor puede consultar pero no ejecutar la acción sensible |
+| `STALE` | lote, versión, actor o estado cambiaron |
+| `CONFLICT` | existe una operación concurrente incompatible |
+| `RESULTADO_DESCONOCIDO` | debe recuperarse el efecto durable |
+| `DENY` | autorización/contexto/territorio impiden la acción |
+| `ERROR_TECNICO` | no puede decidirse de forma segura |
+
+`RESULTADO_INCOMPLETO` no se usa para ocultar `DENY`, `STALE` ni un fallo técnico.
+
+---
+
+#### 33. Densidad y claridad operacional
+
+La captura debe reducir errores de digitación y de interpretación.
+
+Debe favorecer:
+
+- esperado y real visibles simultáneamente;
+- unidad junto a cada cantidad;
+- variación legible;
+- categorías de salida inequívocas;
+- advertencia explícita ante incompatibilidad de unidad;
+- causa y evidencia accesibles cuando son obligatorias;
+- confirmación clara antes de un efecto terminal;
+- distinción visual entre dato editable no confirmado y hecho durable;
+- navegación al lote, receta/version y expediente relacionado sin perder contexto.
+
+No se impone framework, color, layout ni componente específico.
+
+---
+
+#### 34. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` existe una base cuantitativa real pero colapsada:
+
+1. `/production-batches/new` pide `qty` como rendimiento real;
+2. compara `qty` contra `recipe.yield_qty` y muestra variación absoluta/porcentual;
+3. permite editar `actual_qty` de ingredientes frente a cantidad teórica;
+4. construye `outputs_payload` con `produced_qty`, unidad y rol de salida;
+5. soporta roles `primary`, `co_product` y `by_product` en outputs;
+6. captura empaque real y exige que su suma coincida con el rendimiento real para rutas aplicables;
+7. calcula costo estimado usando consumo real y rendimiento real;
+8. `production_batches` expone `produced_qty`, `produced_unit`, `expected_qty`, `expected_unit`, empaque y costo;
+9. `/production-batches` calcula diferencia y porcentaje entre producido y esperado;
+10. la búsqueda del runtime no demuestra un campo o workflow explícito dedicado a `merma` o `desperdicio`;
+11. creación, consumo, resultado y empaque se confirman dentro del mismo flujo `fogo_create_real_production_batch`;
+12. no se observa una superficie dedicada que materialice `VSCREEN-0067::PRIMARY` para variación/merma/disposición.
+
+Conclusión:
+
+```text
+CAPTURA AS-IS DE RENDIMIENTO
+=
+BASE REAL REUTILIZABLE
+
+!=
+CONTRATO CUANTITATIVO COMPLETO FOGO-UX-010
+```
+
+---
+
+#### 35. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| Rendimiento, consumo, outputs y empaque se capturan dentro de creación del lote. | colapsa inicio, ejecución, resultado y efectos posteriores | materialización propietaria FOGO consumiendo `FOGO-UX-005..010` | cada hito se confirma en la transición/superficie propietaria sin duplicar efectos |
+| No se observa captura dedicada de merma/desperdicio con cantidad, causa y etapa. | pérdida productiva puede quedar implícita o solo narrativa | `FOGO-UX-010` + materialización propietaria | la ejecución conserva clasificación cuantitativa, unidad, causa/pendiente, etapa, actor y evidencia |
+| La fuente/formato empresarial de merma conserva una dependencia pendiente. | una UI podría congelar una taxonomía local incorrecta | `OPS-PLAN-004`, `FOGO-UX-010` y puerta propietaria de migración | existe fuente gobernada; hasta entonces la UX no inventa enum definitivo ni backfill automático |
+| El runtime calcula variación contra receta, pero no demuestra tolerancia gobernada. | diferencia podría interpretarse sin criterio empresarial | contrato de receta/version + materialización de la 010 | comparación usa unidad, conversión, redondeo y tolerancia canónicos; ausencia de regla queda visible |
+| `outputs_payload` permite roles de salida, pero no demuestra el lifecycle completo de disposición. | coproducto/subproducto puede confundirse con stock liberado | `FOGO-UX-010`, `FOGO-UX-013`, integración propietaria | resultado FOGO, calidad, empaque y efecto NEXO quedan como hechos separados y correlacionados |
+| La suma de empaques coincide con rendimiento en el flujo actual. | riesgo de usar empaque como fuente maestra de producción | `FOGO-UX-013` + materialización de la 010 | salida productiva permanece fuente FOGO y empaque conserva su hecho propio sin reescribir resultado |
+| Correcciones futuras podrían implementarse como edición de cantidades confirmadas. | pérdida de historia y auditoría | `FOGO-UX-011` / `FOGO-AUTH-012` | original y corrección quedan vinculados; no existe update destructivo de hechos confirmados |
+| No se observa `VSCREEN-0067::PRIMARY` dedicado. | variaciones/merma/reproceso pueden quedar sin decisión explícita | materialización propietaria + `FOGO-UX-015` | prototipo y runtime distinguen captura cuantitativa de disposición/reproceso/cierre |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 36. Handoff al resto de FOGO-UX
+
+| Tarea | Frontera entregada por FOGO-UX-010 |
+| --- | --- |
+| `FOGO-UX-011` | corrige cantidades o clasificaciones confirmadas mediante historia vinculada; nunca edita el original in-place |
+| `FOGO-UX-012` | consume las cantidades de materiales necesarias para reconciliar FOGO con movimientos NEXO exactamente una vez |
+| `FOGO-UX-013` | toma la salida validada que corresponda y la conecta con empaque/producto terminado/NEXO sin tratar resultado FOGO como stock |
+| `FOGO-UX-014` | supervisor puede revisar variaciones y bloqueos dentro de su autoridad; no obtiene mutación por lectura |
+| `FOGO-UX-015` | prototipo debe demostrar esperado vs real, merma/diferencia, estados, deny/stale/conflict y separación de calidad/inventario |
+
+La sucesora inmediata `FOGO-UX-011` recibe hechos cuantitativos **durables**; por eso debe diseñar correcciones vinculadas y no mutación destructiva.
+
+---
+
+#### 37. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: el registro cuantitativo de ejecución, resultado, rendimiento, pérdida productiva, variación, unidades, actor, historia, cierre, calidad, inventario e integración ya está cubierto por obligaciones vigentes. Esta tarea especializa la experiencia y la separación de hechos sin introducir una obligación observable adicional ni modificar texto, estado, relación, secuencia o propietario del registro.
+
+---
+
+#### 38. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-001` — ciclo productivo con producción parcial, consumo, desperdicio, resultado, finalización, cancelación/corrección, actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` — receta/version exactas, unidades, rendimiento real, merma, sustituciones y desviaciones sin sobrescritura;
+- `TREQ-FOGO-004` — ejecución con orden, lote, receta/version, materiales, cantidades, pasos, desviaciones, rendimiento, merma, calidad, reproceso y cierre conciliado;
+- `TREQ-NEXO-010` — unidad, conversión y política de operación coherentes entre consumidores;
+- `TREQ-NEXO-011` — movimientos/proyecciones canónicos, cantidades físicas/reservadas diferenciadas, idempotencia, compensación y prevención de doble movimiento;
+- `TREQ-INTEGRATION-003` — identidad idempotente, resultado durable, reintento, concurrencia y recuperación de resultado incierto;
+- `TREQ-INTEGRATION-006` — fuente empresarial única y prohibición de maestros competidores;
+- `TREQ-INTEGRATION-011` — efectos de inventario FOGO↔NEXO exactamente una vez y correlacionados;
+- `TREQ-INTEGRATION-013` — cadena materiales, ejecución, calidad, inventario y costo correlacionada y reconciliable;
+- `TREQ-AUTH-011` — actor efectivo en dispositivo compartido;
+- `TREQ-AUTH-013` — mutaciones server-side con permiso, actor, territorio, contexto, estado y campos permitidos;
+- `TREQ-AUTH-014` — invalidación de autoridad stale;
+- `TREQ-AUTH-015` — evidencia correlacionable de contexto, decisión y efecto;
+- `TREQ-AUTH-017` — autoridad explícita para operaciones sensibles;
+- `TREQ-UX-001` — tarea, acción y estado identificables;
+- `TREQ-UX-002` — fallos/bloqueos explicables con recuperación;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo real sin fabricar autoridad desde cliente.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 39. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@e790f61b669bf62bf7a848face5612204813259a`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO-UX, reconciliación `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VSCREEN-0059`, `VSCREEN-0060`, `VSCREEN-0067`, estados/eventos de `VPROC-0034` y `VPROC-0037`, `FOGO-AUTH-010..012`, contratos `INT-PROD`, cobertura 04A y el AS-IS de `production-batches`; `FOGO-UX-009` se consume desde su versión completa aprobada SHA-256 `1beae3ae7183da2a63380b2e5899d592a0da9a15c997baf1b62b77337be2a18b` mientras su incorporación remota permanece pendiente durante esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se registraron cantidades, mermas, desperdicios, resultados, variaciones, reprocesos, cierres, turnos, dispositivos ni efectos NEXO sobre lotes reales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-010` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 40. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] no se crea una pantalla nueva y la responsabilidad cuantitativa se integra en `VSCREEN-0060` / `VSCREEN-0067` consumiendo parciales de `VSCREEN-0059`;
+- [ ] cantidad esperada y cantidad real permanecen separadas;
+- [ ] salida principal, coproducto, subproducto, merma/desperdicio, recuperable, reproceso, no conforme y diferencia no explicada permanecen distinguibles cuando apliquen;
+- [ ] la tarea no inventa un enum físico de resultado;
+- [ ] cada cantidad conserva unidad y comparabilidad explícitas;
+- [ ] conversiones, redondeo y tolerancia provienen de contratos gobernados;
+- [ ] una unidad incompatible produce `NO COMPARABLE` y no equivalencia local;
+- [ ] una diferencia fuera de tolerancia no modifica esperado ni real;
+- [ ] una diferencia no explicada permanece abierta y visible;
+- [ ] merma/desperdicio conserva cantidad, unidad, causa o causa pendiente, etapa, actor y relación con ejecución cuando sea material;
+- [ ] clasificar merma no descuenta inventario por segunda vez;
+- [ ] el resultado FOGO no se presenta como movimiento o stock NEXO;
+- [ ] salida real no se presenta como calidad liberada;
+- [ ] salida real no se deriva de empaque como fuente maestra;
+- [ ] parciales confirmados no se reescriben para formar el resultado final;
+- [ ] un parcial equivocado deriva a corrección y no usa delta negativo genérico;
+- [ ] `VPROC-0034.OUTPUT_REPORTED` permanece distinto de `PRODUCTION_EXECUTION_COMPLETED`;
+- [ ] `VPROC-0034.EVT-004` y `VPROC-0034.EVT-006` permanecen hitos distintos;
+- [ ] `VPROC-0037.DATA_COLLECTING`, `YIELD_RECONCILIATION_IN_PROGRESS` y `VARIANCE_UNDER_REVIEW` mantienen su semántica;
+- [ ] una salida inferior al plan conserva objetivo, real y diferencia;
+- [ ] una salida superior al esperado se trata como variación y no como stock disponible automático;
+- [ ] cero, ausencia, no aplica e inválido permanecen distintos;
+- [ ] hechos confirmados no aceptan edición destructiva desde esta experiencia;
+- [ ] actor, turno/contexto, lote, versión y territorio se revalidan antes de efectos sensibles;
+- [ ] no se inventa una capacidad de mutación desde lectura, creación o receta;
+- [ ] doble submit, retry o timeout no duplican cantidades;
+- [ ] concurrencia no produce dos resultados finales incompatibles;
+- [ ] `RESULTADO_DESCONOCIDO` se reconcilia antes de repetir;
+- [ ] los estados UX distinguen captura, incompleto, tolerancia, variación, merma, consumos, calidad, NEXO, deny, stale, conflicto y error;
+- [ ] el AS-IS se clasifica como base cuantitativa colapsada, no como lifecycle objetivo completo;
+- [ ] cada hallazgo conserva propietario y condición exacta de salida;
+- [ ] `FOGO-UX-011` recibe hechos durables para corregir sin alterar historial;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 41. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0060` ni `VSCREEN-0067`;
+- crea una nueva pantalla;
+- modifica `/production-batches` ni `/production-batches/new`;
+- modifica `fogo_create_real_production_batch`;
+- crea tablas, columnas, enums, RPC, RLS, grants, migraciones ni datos;
+- define nombres físicos de campos para cantidades o merma;
+- crea una taxonomía de merma paralela;
+- crea o asigna permisos;
+- implementa producción parcial;
+- modifica receta/version esperada;
+- ejecuta movimientos NEXO;
+- registra devolución física de material;
+- libera calidad;
+- define empaque o etiquetado;
+- crea stock terminado;
+- calcula costo final o asiento económico;
+- ejecuta reproceso;
+- corrige hechos ya confirmados;
+- reabre un cierre por edición;
+- desarrolla el detalle de `FOGO-UX-011`;
+- crea una instancia física;
+- modifica el Registro 04A.
+
+---
+
+#### 42. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-009 — Separar recetario operativo y administración de recetas`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-010 — Registrar cantidades, desperdicio y resultado`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-011 — Diseñar correcciones sin alterar historial`
+
 ### [ ] FOGO-UX-011 — Diseñar correcciones sin alterar historial
 ### [ ] FOGO-UX-012 — Conectar consumo de insumos con NEXO
 ### [ ] FOGO-UX-013 — Conectar producto terminado con NEXO
