@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1310** |
+| Tareas aprobadas | **1311** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **286** |
+| Tareas no iniciadas | **285** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **82.08% (1310/1596)** |
+| Porcentaje de completamiento | **82.14% (1311/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-AUTH-007 — Definir permisos de recepción** |
-| Tarea actual | **ORIGO-AUTH-008 — Definir permisos de corrección** |
+| Última tarea aprobada | **ORIGO-AUTH-008 — Definir permisos de corrección** |
+| Tarea actual | **ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo** |
+| Siguiente tarea | **ORIGO-AUTH-010 — Proteger precios y datos sensibles** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 41 de 65 aprobadas; ORIGO-AUTH-008 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 42 de 65 aprobadas; ORIGO-AUTH-009 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-AUTH-008** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-009** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-AUTH-007` — Definir permisos de recepción |
-| Tarea actual | `ORIGO-AUTH-008` — Definir permisos de corrección — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-009` — Limitar órdenes por sede o centro de costo |
+| Última aprobada | `ORIGO-AUTH-008` — Definir permisos de corrección |
+| Tarea actual | `ORIGO-AUTH-009` — Limitar órdenes por sede o centro de costo — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-010` — Proteger precios y datos sensibles |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 41 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-008** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 42 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-009** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-AUTH-007 — Definir permisos de recepción
-        ↓
-TAREA ACTUAL
 ORIGO-AUTH-008 — Definir permisos de corrección
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-010 — Proteger precios y datos sensibles
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 41 de 65 tareas aprobadas
+BLOQUES L Y M — 42 de 65 tareas aprobadas
 ```
