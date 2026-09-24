@@ -896,7 +896,410 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-003 — Diseñar QR personal`
-### [ ] PASS-UX-003 — Diseñar QR personal
+### ✅ PASS-UX-003 — Diseñar QR personal
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-002 — Diseñar inicio de puntos y beneficios
+**Tarea siguiente:** PASS-UX-004 — Diseñar acumulación visible
+**Tipo de tarea:** documental; diseño objetivo de identidad QR personal, semántica del payload, presentación, estados y fronteras de consumo de `VSCREEN-0108 — QR personal de identificación`; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo del QR personal de PASS para que el cliente pueda presentar una credencial de identificación inequívoca, legible y coherente entre la app y Wallet, sin convertir esa credencial en autorización de acumulación, redención, venta, acceso laboral o cualquier otra mutación.
+
+La tarea diseña `VSCREEN-0108 — QR personal de identificación` como `OWNER_WORKSPACE` de PASS y materializa `VPROC-0045::STEP-PRESENT_CUSTOMER_ID — Presentar identificación personal`.
+
+El resultado fija qué representa el QR, qué puede contener, qué no puede contener, cómo se presenta, cómo lo consume PULSO y qué estados y handoffs deben respetarse. No implementa el contrato.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-002`, que entrega:
+
+- `VSCREEN-0107` como home de fidelización;
+- acceso desde el home hacia el QR personal como acción secundaria;
+- separación entre saldo disponible, acumulación histórica, nivel, beneficio, recompensa, canje, promoción y Club;
+- la regla de que el home abre la identificación personal pero no escanea ni ejecuta operación PULSO;
+- la etiqueta objetivo de acceso como presentación del QR propio, no como scanner del cliente;
+- la frontera cliente versus contexto laboral.
+
+La frontera de esta tarea es exclusivamente la credencial QR personal. No absorbe acumulación visible, redención, historial, catálogo de recompensas, perfil, copy general de errores, navegación global ni estados offline finales.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla | `VSCREEN-0108 — QR personal de identificación` |
+| Aplicación | `pass` |
+| Proceso primario | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Paso primario | `VPROC-0045::STEP-PRESENT_CUSTOMER_ID — Presentar identificación personal` |
+| Rol de la pantalla | `OWNER_WORKSPACE` |
+| Superficie AS-IS de referencia | `QrModal` / `PASS-CUSTOMER-SURFACE` de identificación personal |
+| Modalidad | credencial personal de cliente |
+| Estado físico | sin instancia propia; contrato documental `DEFINE_ONCE` |
+
+El QR es una proyección de identidad de cliente. No es una orden, un ticket de redención, una sesión laboral, una firma, un permiso ni una confirmación de efecto.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot observado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` | `8ea90e71477f73ab6848a20eef270f6bcb85b852` | plan, topología, `VSCREEN-0108`, `VPROC-0045`, 04A, contratos PULSO-PASS y validadores |
+| `PASS-UX-002_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `b3de3a8499359a916b46a81c90159dfde8922162569ac5e6e736be3738d5e9be` | base documental inmediata aprobada por el usuario |
+| repositorio PASS accesible `carlosibarraariza/vento-pass` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil verificable |
+| `src/components/home/QrModal.tsx` | blob `70e699e813222116b42bd8a6ebff8d56df09d670` | QR AS-IS, copy, Wallet y payload actual |
+| `src/contexts/QrModalContext.tsx` | blob `c29e36ae92c99e97e94816c171e00ac49f71b0b8` | montaje global y fuente de identidad autenticada |
+| `src/components/Home.tsx` | vigente en `vento-pass/main` | entrada AS-IS desde el home |
+| `src/components/home/MembershipCard.tsx` | vigente en `vento-pass/main` | CTA AS-IS de apertura del QR |
+| `supabase/functions/wallet-pass/index.ts` | vigente en `vento-shell/main` | proyección Wallet y barcode AS-IS |
+
+La preparación de esta tarea usa la versión completa aprobada de `PASS-UX-002` aunque su incorporación al repositorio permanezca condicionada por el lifecycle documental anterior.
+
+---
+
+#### 5. Semántica contractual del QR personal
+
+La credencial tiene una única semántica primaria:
+
+```text
+QR PERSONAL PASS
+=
+IDENTIFICADOR PRESENTABLE DEL CLIENTE
+```
+
+No significa:
+
+```text
+AUTORIZACION DE ACUMULACION
+AUTORIZACION DE REDENCION
+CONFIRMACION DE VENTA
+CONFIRMACION DE SALDO
+PERMISO LABORAL
+SESION PULSO
+FIRMA DEL TRABAJADOR
+TICKET DE CANJE
+```
+
+Presentar, copiar, guardar o volver a mostrar el QR solo puede identificar al mismo sujeto según el contrato de identidad. Cualquier efecto posterior pertenece al proceso y a la autoridad del consumidor.
+
+---
+
+#### 6. Contrato del payload
+
+El payload del QR debe conservar un formato canónico de Vento ID y cumplir simultáneamente:
+
+1. identificar una única referencia de cliente resoluble por servidor;
+2. mantener namespace inequívoco para impedir interpretar el mismo valor con otra semántica;
+3. ser estable para la finalidad de identificación mientras la identidad siga vigente;
+4. no contener saldo, puntos, tier, recompensa, redención, sede, rol laboral, permiso, correo, teléfono, documento, access token, refresh token ni secreto;
+5. no ser tratado como evidencia de autorización;
+6. permitir rechazo fail-closed de formato desconocido, manipulado o con namespace incompatible;
+7. admitir evolución versionada sin reutilizar silenciosamente un formato con significado distinto.
+
+El formato AS-IS observado es:
+
+```text
+VENTO: + user.id
+```
+
+La app móvil, Apple Wallet y la proyección Wallet de `vento-shell` utilizan actualmente la misma semántica de barcode. Esta tarea no cambia el formato físico; lo clasifica como contrato de identificación y exige que cualquier evolución futura preserve compatibilidad explícita o tenga migración/versionado gobernado.
+
+El identificador incluido en el barcode se considera dato identificador presentable, no secreto. Su posesión no concede ningún efecto empresarial.
+
+---
+
+#### 7. Contrato de presentación
+
+La superficie objetivo presenta como mínimo:
+
+| Elemento | Regla |
+| --- | --- |
+| identidad visual | Vento Pass claramente reconocible |
+| título | comunica identidad propia, por ejemplo `Tu Vento ID` o `Mi QR` |
+| nombre | nombre mínimo del cliente cuando esté disponible y permitido |
+| QR | código principal legible, con contraste suficiente y sin elementos superpuestos que comprometan lectura |
+| ayuda contextual | indica que se presenta para identificación en un punto autorizado |
+| cierre | salida explícita sin mutar estado de fidelización |
+| Wallet | acción secundaria independiente para guardar la misma identidad cuando la plataforma lo permita |
+
+El CTA que abre esta superficie desde el home debe comunicar presentación, no escaneo. La etiqueta AS-IS `Escanear ID` se considera ambigua porque el teléfono del cliente no está escaneando; la intención correcta es `Mostrar mi QR`, `Mi QR` o equivalente aprobado por `PASS-UX-010` para copy final.
+
+---
+
+#### 8. App y Wallet conservan la misma identidad
+
+La app y Wallet son dos presentaciones de la misma credencial personal, no dos identidades distintas.
+
+Reglas:
+
+- ambos canales representan el mismo cliente y namespace canónico;
+- guardar en Wallet no crea una nueva cuenta ni un nuevo saldo;
+- el token utilizado para autenticar la generación del Wallet pass nunca forma parte del barcode;
+- Apple Wallet y Google Wallet no adquieren autoridad de acumulación o redención;
+- una falla al generar o abrir Wallet no vuelve inválido el QR visible dentro de PASS;
+- una credencial Wallet obsoleta o revocada deberá resolverse conforme al contrato de identidad vigente antes de cualquier operación;
+- el ledger, saldo y tier pueden proyectarse visualmente en Wallet cuando exista contrato autorizado, pero nunca se convierten en autoridad transaccional del barcode.
+
+---
+
+#### 9. Frontera PASS → PULSO
+
+PULSO consume la identificación; PASS no ejecuta la operación de caja.
+
+Secuencia contractual:
+
+```text
+CLIENTE PRESENTA QR
+        ↓
+PULSO RECIBE FORMATO CANONICO
+        ↓
+PULSO VALIDA SESION + APP + SEDE + PERMISO DE IDENTIFICACION
+        ↓
+SERVIDOR RESUELVE IDENTIDAD
+        ↓
+SERVIDOR DEVUELVE PROYECCION MINIMA AUTORIZADA
+        ↓
+PULSO MUESTRA CLIENTE IDENTIFICADO
+        ↓
+CUALQUIER ACUMULACION O REDENCION EXIGE SU PROPIO COMANDO Y PERMISO
+```
+
+La identificación no hereda permisos de la acción posterior.
+
+El consumidor debe respetar la cobertura ya establecida por `TREQ-PASS-022`, `TREQ-PASS-023` y `TREQ-PASS-024`: sesión válida, sede y permiso exactos, formato canónico, resolución server-side y proyección mínima.
+
+---
+
+#### 10. Separación entre QR personal y redención
+
+`VSCREEN-0108` y `VSCREEN-0110` son identidades distintas.
+
+| QR personal | Ticket o QR de redención |
+| --- | --- |
+| identifica cliente | representa intención o estado de redención |
+| pertenece a `PASS-UX-003` | pertenece a `PASS-UX-005` |
+| puede ser estable para identificación | conserva ciclo, vigencia y estado propios |
+| no prueba saldo | depende de recompensa, saldo y reglas de redención |
+| no se consume como canje | puede ser validado como canje por PULSO |
+| repetirlo vuelve a identificar el mismo cliente | reutilizar un código de canje puede estar prohibido por estado |
+
+PULSO debe conservar modos de identificación y redención separados aunque compartan el mismo contenedor `/scanner`.
+
+---
+
+#### 11. Copia, screenshot y replay
+
+El QR personal no se diseña como secreto de un solo uso.
+
+Una fotografía, screenshot o copia puede volver a presentar la misma identidad. Esa propiedad no puede transformarse en fraude por sí sola porque:
+
+1. el QR no autoriza efectos;
+2. el consumidor debe validar actor, sede, permiso y finalidad;
+3. la resolución de identidad ocurre en servidor;
+4. acumulación y redención tienen comandos, reglas e idempotencia propias;
+5. un QR personal nunca sustituye firma del trabajador ni comprobación de operación.
+
+Si una capacidad futura requiere prueba de posesión, desafío temporal o token de un solo uso, deberá modelarse como credencial distinta y no reinterpretar silenciosamente `VSCREEN-0108`.
+
+---
+
+#### 12. Privacidad y minimización
+
+El QR y su resolución deben aplicar minimización de datos.
+
+Prohibiciones:
+
+- codificar correo, teléfono, documento o nombre en el QR;
+- codificar saldo o tier como autoridad de negocio;
+- codificar rol laboral, sede laboral o permisos;
+- incluir tokens de sesión o secretos;
+- devolver la fila completa de `public.users` al scanner como sustituto de una proyección mínima;
+- mantener visible el perfil del cliente anterior después de limpiar, cambiar de cliente, cerrar sesión o expirar la operación.
+
+La eliminación de la antigua policy amplia `users_select_cashier_for_qr` confirma que la resolución no debe depender de lectura directa completa de `public.users`.
+
+---
+
+#### 13. Estados funcionales de la superficie
+
+La tarea reconoce estos estados sin definir todavía copy final ni estrategia offline completa:
+
+| Estado | Contrato |
+| --- | --- |
+| `READY` | identidad autenticada disponible y QR presentable |
+| `IDENTITY_LOADING` | no se afirma una credencial hasta resolver la identidad mínima necesaria |
+| `IDENTITY_UNAVAILABLE` | no se muestra un QR vacío o inventado; se ofrece salida o recuperación |
+| `WALLET_IDLE` | QR disponible; acción Wallet secundaria lista |
+| `WALLET_ADDING` | generación/apertura Wallet en progreso sin bloquear el QR principal |
+| `WALLET_ERROR` | Wallet falló pero la credencial PASS permanece disponible cuando `READY` |
+
+`PASS-UX-010` definirá copy final de error y `PASS-UX-012` definirá carga, offline y recuperación. Esta tarea fija únicamente la semántica que esas tareas no podrán contradecir.
+
+---
+
+#### 14. Accesibilidad y legibilidad
+
+El diseño debe conservar:
+
+- tamaño de QR suficiente para lectura en condiciones normales de caja;
+- zona limpia alrededor del código;
+- contraste alto entre módulos y fondo;
+- ausencia de overlays, shimmer o animaciones sobre los módulos del QR;
+- nombre y contexto textual fuera del patrón QR;
+- cierre accesible;
+- respeto a preferencias de movimiento reducido para animaciones circundantes;
+- orientación comprensible sin depender exclusivamente del color.
+
+Estas reglas protegen la lectura sin convertir la tarea en certificación física de cámaras o POS.
+
+---
+
+#### 15. Hallazgos AS-IS y handoff
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `QrModal` codifica `VENTO:` seguido por `user.id` | el consumidor podría confundir identificador presentable con autorización o depender directamente del UUID interno | `PASS-UX-003` + `PASS-INT-004` / consumidor PULSO | formato clasificado como identificación, resolución server-side y ninguna mutación autorizada por posesión del código |
+| `MembershipCard` etiqueta la acción `Escanear ID` | sugiere que el cliente ejecuta scanner en vez de mostrar su credencial | `PASS-UX-003` + `PASS-UX-010` | CTA final comunica presentación del QR propio |
+| `QrModal` usa `userName` visible | una superficie presentada en público puede exponer más contexto del necesario | `PASS-UX-003` + revisión de privacidad posterior | nombre mínimo visible solo cuando esté permitido y sin datos adicionales en el barcode |
+| `QrModal` usa `session.access_token` para generar Wallet | confundir transporte autenticado con contenido del barcode ampliaría exposición | implementación Wallet / integración correspondiente | token permanece solo en la solicitud autenticada y nunca entra en el QR |
+| Android invoca actualmente endpoint Wallet remoto y Apple abre endpoint web | dos rutas de generación pueden divergir en identidad o barcode | integración Wallet propietaria | ambos canales conservan el mismo contrato de identidad y barcode canónico |
+| la proyección Wallet de `vento-shell` también usa `VENTO:` seguido por `user.id` | compatibilidad actual depende del mismo formato | integración Wallet + consumidor PULSO | cualquier cambio de formato es versionado/migrado y no reinterpretado silenciosamente |
+| PULSO comparte `/scanner` para identificación y redención | estado o semántica de un modo podría contaminar al otro | `TREQ-PASS-028` / PULSO | cambio de modo limpia estado incompatible y conserva contratos distintos |
+
+Ningún hallazgo autoriza modificación física desde esta tarea.
+
+---
+
+#### 16. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| acumulación visible después de una operación confirmada | `PASS-UX-004` |
+| redención visible y ticket/QR de canje | `PASS-UX-005` |
+| historial de puntos y redenciones | `PASS-UX-006` |
+| catálogo de recompensas | `PASS-UX-007` |
+| perfil, privacidad y consentimientos | `PASS-UX-008` |
+| estados de redención pendiente, usado y cancelado | `PASS-UX-009` |
+| copy final y mensajes comprensibles | `PASS-UX-010` |
+| rutas, aliases y navegación canónica | `PASS-UX-011` |
+| carga, error, offline y recuperación | `PASS-UX-012` |
+| pruebas con clientes reales | `PASS-UX-013` |
+| resolución operativa de identidad y permisos de acciones en PULSO | `PASS-INT-004`, `PASS-INT-005` y contratos PULSO/AUTH aplicables |
+
+---
+
+#### 17. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la frontera entre QR personal e identificación operativa, la resolución server-side, la proyección mínima, la separación identificación/redención, la autorización PULSO y el inventario de `QrModal` ya cuentan con cobertura PASS vigente. Esta tarea materializa el diseño objetivo sin introducir una obligación de prueba nueva ni alterar el Registro 04A.
+
+---
+
+#### 18. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-022` para sesión, app, sede y permisos exactos de las acciones PULSO relacionadas con PASS;
+- `TREQ-PASS-023` para formato canónico de Vento ID, resolución server-side y proyección mínima;
+- `TREQ-PASS-024` para minimización y limpieza de datos personales en la tarjeta operativa;
+- `TREQ-PASS-028` para mantener identificación y redención como modos separados del mismo scanner;
+- `TREQ-PASS-034` para reconciliar PASS y PULSO sin duplicar ownership;
+- `TREQ-PASS-038` para conservar `QrModal` como superficie lógica diferenciada;
+- `TREQ-PASS-039` para impedir que el QR personal autorice acumulación, canje, venta o acceso laboral;
+- `TREQ-PASS-040` para mantener la superficie fuera de operación interna de primera línea.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 19. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará únicamente cuando `PASS-UX-002` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-003` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `VSCREEN-0108`, `VPROC-0045`, 04A PASS, contratos PULSO-PASS, `QrModal`, `QrModalContext` y proyecciones Wallet accesibles. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó lectura física del QR, Wallet ni identificación PULSO en un ambiente desplegado o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-003` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 20. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-003 — Diseñar QR personal`.
+- [x] El objetivo queda anclado a `VSCREEN-0108` y `VPROC-0045::STEP-PRESENT_CUSTOMER_ID`.
+- [x] El QR queda definido como identificación personal y no como autorización.
+- [x] La app y Wallet conservan una sola identidad semántica.
+- [x] El payload no contiene saldo, tier, recompensa, redención, sede, rol, permiso, contacto ni secretos.
+- [x] El formato AS-IS `VENTO:` seguido por `user.id` queda registrado sin declararlo autorización.
+- [x] La resolución de identidad corresponde al servidor consumidor.
+- [x] PULSO debe volver a validar sesión, sede y permiso de identificación.
+- [x] Identificación y redención permanecen contratos distintos aunque compartan `/scanner`.
+- [x] Copia o replay del QR no pueden producir por sí solos un efecto empresarial.
+- [x] Wallet no incorpora tokens de sesión al barcode.
+- [x] La falla de Wallet no bloquea la credencial principal cuando el QR está listo.
+- [x] No se muestra un QR vacío como credencial válida.
+- [x] La etiqueta AS-IS `Escanear ID` queda identificada como ambigua y entregada a copy final.
+- [x] Cada hallazgo AS-IS tiene propietario y condición de salida.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, Supabase, Wallet runtime, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-004` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 21. Límites
+
+Esta tarea no:
+
+- implementa ni modifica `QrModal`;
+- cambia el barcode actual;
+- crea un token dinámico, challenge, OTP o credencial de un solo uso;
+- modifica Wallet, Edge Functions o endpoints;
+- modifica PULSO ni su `/scanner`;
+- otorga puntos;
+- crea o valida redenciones;
+- diseña estados de canje;
+- modifica políticas RLS, RPC, funciones, triggers, tablas o secretos;
+- define copy final de todos los errores;
+- define estrategia offline completa;
+- certifica cámaras, lectores, POS o Wallet físicos;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- declara validación operativa realizada;
+- desarrolla `PASS-UX-004`.
+
+---
+
+#### 22. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-002 — Diseñar inicio de puntos y beneficios`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-003 — Diseñar QR personal`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-004 — Diseñar acumulación visible`
 ### [ ] PASS-UX-004 — Diseñar acumulación visible
 ### [ ] PASS-UX-005 — Diseñar redención visible
 ### [ ] PASS-UX-006 — Diseñar historial

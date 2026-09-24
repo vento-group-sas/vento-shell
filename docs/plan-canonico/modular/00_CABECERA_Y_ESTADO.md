@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1315** |
+| Tareas aprobadas | **1316** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **281** |
+| Tareas no iniciadas | **280** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **82.39% (1315/1596)** |
+| Porcentaje de completamiento | **82.46% (1316/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-UX-002 — Diseñar inicio de puntos y beneficios** |
-| Tarea actual | **PASS-UX-003 — Diseñar QR personal** |
+| Última tarea aprobada | **PASS-UX-003 — Diseñar QR personal** |
+| Tarea actual | **PASS-UX-004 — Diseñar acumulación visible** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-UX-004 — Diseñar acumulación visible** |
+| Siguiente tarea | **PASS-UX-005 — Diseñar redención visible** |
 | Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE** |
-| Progreso del bloque | **CARRIL PASS: 2 de 13 aprobadas; PASS-UX-003 pendiente** |
+| Progreso del bloque | **CARRIL PASS: 3 de 13 aprobadas; PASS-UX-004 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-UX-003** |
+| Carril documental | **ACTIVO — PASS-UX-004** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-UX-002` — Diseñar inicio de puntos y beneficios |
-| Tarea actual | `PASS-UX-003` — Diseñar QR personal — **NO INICIADA** |
-| Siguiente tarea | `PASS-UX-004` — Diseñar acumulación visible |
+| Última aprobada | `PASS-UX-003` — Diseñar QR personal |
+| Tarea actual | `PASS-UX-004` — Diseñar acumulación visible — **NO INICIADA** |
+| Siguiente tarea | `PASS-UX-005` — Diseñar redención visible |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 2 DE 13 APROBADAS — ACTUAL PASS-UX-003** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 3 DE 13 APROBADAS — ACTUAL PASS-UX-004** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-UX-002 — Diseñar inicio de puntos y beneficios
-        ↓
-TAREA ACTUAL
 PASS-UX-003 — Diseñar QR personal
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PASS-UX-004 — Diseñar acumulación visible
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-UX-005 — Diseñar redención visible
+        ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 2 de 13 tareas aprobadas
+CARRIL PASS — 3 de 13 tareas aprobadas
 ```
