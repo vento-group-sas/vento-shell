@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1301** |
+| Tareas aprobadas | **1302** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **295** |
+| Tareas no iniciadas | **294** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **81.52% (1301/1596)** |
+| Porcentaje de completamiento | **81.58% (1302/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **FOGO-UX-013 — Conectar producto terminado con NEXO** |
-| Tarea actual | **FOGO-UX-014 — Diseñar pantalla para supervisor de producción** |
+| Última tarea aprobada | **FOGO-UX-014 — Diseñar pantalla para supervisor de producción** |
+| Tarea actual | **FOGO-UX-015 — Validar el prototipo por área productiva** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **FOGO-UX-015 — Validar el prototipo por área productiva** |
+| Siguiente tarea | **ORIGO-AUTH-001 — Inventariar vistas de compras** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 32 de 65 aprobadas; FOGO-UX-014 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 33 de 65 aprobadas; FOGO-UX-015 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — FOGO-UX-014** |
+| Carril documental | **ACTIVO — FOGO-UX-015** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `FOGO-UX-013` — Conectar producto terminado con NEXO |
-| Tarea actual | `FOGO-UX-014` — Diseñar pantalla para supervisor de producción — **NO INICIADA** |
-| Siguiente tarea | `FOGO-UX-015` — Validar el prototipo por área productiva |
+| Última aprobada | `FOGO-UX-014` — Diseñar pantalla para supervisor de producción |
+| Tarea actual | `FOGO-UX-015` — Validar el prototipo por área productiva — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-001` — Inventariar vistas de compras |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 32 DE 65 APROBADAS — ACTUAL FOGO-UX-014** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 33 DE 65 APROBADAS — ACTUAL FOGO-UX-015** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-FOGO-UX-013 — Conectar producto terminado con NEXO
-        ↓
-TAREA ACTUAL
 FOGO-UX-014 — Diseñar pantalla para supervisor de producción
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 FOGO-UX-015 — Validar el prototipo por área productiva
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-001 — Inventariar vistas de compras
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 32 de 65 tareas aprobadas
+BLOQUES L Y M — 33 de 65 tareas aprobadas
 ```
