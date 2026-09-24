@@ -6015,7 +6015,933 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-007 — Definir permisos de recepción`
 
-### [ ] ORIGO-AUTH-007 — Definir permisos de recepción
+### ✅ ORIGO-AUTH-007 — Definir permisos de recepción
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-006 — Definir permisos de aprobación
+**Tarea siguiente:** ORIGO-AUTH-008 — Definir permisos de corrección
+**Tipo de tarea:** documental; definición cerrada de la capacidad canónica para registrar recepciones de compra en ORIGO, con identidad de permiso, modalidad operativa, prerrequisitos de turno/check-in, recurso, territorio, actores operativos, modos normal/emergencia y con/sin inventario, segregación respecto de consulta, aprobación, corrección y reversión, y reconciliación del runtime AS-IS, sin activar todavía la clave en el catálogo compartido ni realizar materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, catálogo compartido, matrices físicas, navegación, Server Actions, RLS, RPC, tablas, datos, Supabase, migraciones, Storage, NEXO, NUMERA, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable la autoridad para **registrar una recepción de compra nueva** en ORIGO, separándola de consulta, aprobación de compra, corrección, reversión, resolución de diferencias y materialización física de inventario.
+
+La decisión contractual queda:
+
+```text
+VER RECEPCIÓN
+!=
+REGISTRAR RECEPCIÓN
+!=
+CORREGIR RECEPCIÓN
+!=
+REVERSAR RECEPCIÓN
+!=
+RESOLVER DIFERENCIA
+```
+
+La tarea consume el inventario aprobado de `ORIGO-AUTH-003` y la separación de autoridad fijada por `ORIGO-AUTH-004..006` sin reabrir esas decisiones.
+
+---
+
+#### 2. Frontera recibida de ORIGO-AUTH-006
+
+`ORIGO-AUTH-006` dejó la aprobación de compras en una capacidad administrativa distinta de la recepción:
+
+```text
+origo.procurement.purchase_orders.approve
+```
+
+Handoff obligatorio:
+
+```text
+COMPRA APROBADA / ORDEN ELEGIBLE
+→ puede quedar disponible para recepción
+
+RECEPCIÓN
+→ exige autoridad operativa propia
+```
+
+Aprobar una compra no concede recibirla y recibir una compra no concede aprobarla.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `ORIGO-AUTH-001..008` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Resultado:
+
+```text
+CONTRATO DOCUMENTAL ÚNICO
+→ SIN INSTANCIA FÍSICA PROPIA
+→ SIN MIGRACIÓN
+→ SIN CAMBIO DE RUNTIME
+```
+
+La materialización futura deberá consumir esta decisión sin reinterpretar el permiso de recepción.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+53da857dd85d38171090bd3c6e8f189e68a31459
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+owner remoto
+blob 3aa2a4571088cf9765bffba764bcb85c8d7e957b
+```
+
+La base documental inmediata es el artefacto completo aprobado `ORIGO-AUTH-006 — Definir permisos de aprobación`.
+
+El remoto puede conservar `ORIGO-AUTH-006` como tarea actual mientras termina su lifecycle. Esta preparación anticipada no autoriza incorporación antes del cierre de la tarea anterior.
+
+También se contrastaron:
+
+- convención canónica de permisos y acciones;
+- clasificación de modalidades y prerrequisitos de turno/check-in;
+- matrices base y operativas vigentes;
+- responsabilidades de `VPROC-0022`;
+- estados canónicos de `VPROC-0022`;
+- `VSCREEN-0076..0079` y sus bindings;
+- contrato de recurso de recepción;
+- inventario aprobado de `ORIGO-AUTH-003`;
+- `src/app/receipts/page.tsx`;
+- `src/app/receipts/new/page.tsx`;
+- helpers de sesión operativa y firma de actor;
+- Registro 04A de ORIGO y AUTH;
+- scripts y validadores documentales vigentes.
+
+---
+
+#### 5. Universo exacto de recepción
+
+La tarea define exactamente una identidad de mutación para recepción ordinaria:
+
+```text
+origo.procurement.receipts.register
+```
+
+Procedencia canónica previa:
+
+- aparece como ejemplo válido de permiso funcional ORIGO;
+- aparece en el registro canónico de acciones;
+- está declarada como capacidad mutante futura de ORIGO;
+- está contemplada por la simulación como acción de vista previa completa;
+- las matrices operativas actuales reconocen explícitamente que su ausencia impide considerar completa la recepción de compra.
+
+Resultado:
+
+```text
+PERMISOS DE RECEPCIÓN NUEVA DEFINIDOS: 1
+PERMISOS DE CORRECCIÓN NUEVOS: 0
+PERMISOS DE REVERSIÓN NUEVOS: 0
+PERMISOS DE DIFERENCIAS NUEVOS: 0
+```
+
+---
+
+#### 6. Estado frente al catálogo compartido
+
+El conjunto activo de permisos ORIGO todavía conserva únicamente capacidades de consulta para este recurso.
+
+Por tanto:
+
+```text
+IDENTIDAD OBJETIVO DEFINIDA
+!=
+CLAVE ACTIVA EN DATASET COMPARTIDO
+!=
+GRANT MATERIALIZADO
+!=
+ENFORCEMENT FINAL EN RUNTIME
+```
+
+`ORIGO-AUTH-007` fija el contrato documental.
+
+`ORIGO-AUTH-014` conserva la incorporación a paquetes compartidos, tipos, grants y consumidores cuando corresponda.
+
+---
+
+#### 7. Identidad y acción
+
+```text
+PERMISSION
+origo.procurement.receipts.register
+
+APLICACIÓN
+origo
+
+MÓDULO
+procurement
+
+RECURSO LÓGICO
+receipts
+
+ACCIÓN
+register
+```
+
+Significado contractual:
+
+> Permite registrar una recepción de compra nueva y atribuida dentro del contexto operativo autorizado, sin conceder por sí sola consulta global, aprobación de compra, corrección, reversión, resolución de diferencias, administración de proveedores ni autoridad financiera.
+
+---
+
+#### 8. Modalidad de autorización
+
+La recepción de compra es una acción operacional presencial que registra un hecho empresarial y puede desencadenar efectos físicos posteriores.
+
+Modalidad aprobada:
+
+```text
+authorization_requirement = OPERATIONAL_ONLY
+is_read_only = false
+```
+
+Consecuencias:
+
+```text
+CARRIL BASE
+→ NO AUTORIZA
+
+CARRIL OPERATIVO
+→ OBLIGATORIO
+```
+
+Un cargo administrativo, sede primaria, oficio legacy o jerarquía no sustituye la resolución del carril operativo.
+
+---
+
+#### 9. Prerrequisito de turno y check-in
+
+La mutación corresponde al grupo de acciones que registran movimientos, crean operaciones y reciben recursos.
+
+Prerrequisito:
+
+```text
+T+C
+```
+
+Significado:
+
+```text
+TURNO VIGENTE
++
+CHECK-IN ACTIVO
+```
+
+Sin ambos:
+
+```text
+DENY
+```
+
+La existencia de `origo.access` o de `receipts.view` no suple este prerrequisito.
+
+---
+
+#### 10. Recurso protegido
+
+El recurso empresarial protegido es:
+
+```text
+PURCHASE_RECEIPT
+```
+
+Para una recepción aún no persistida, la autorización se resuelve contra un objetivo de recepción suficientemente determinado por:
+
+- sede receptora;
+- área receptora cuando aplique;
+- orden de compra o causa controlada de recepción directa;
+- proveedor;
+- líneas y productos recibidos;
+- presentación/unidad;
+- modalidad de recepción;
+- actor efectivo.
+
+Contrato objetivo del borrador:
+
+```text
+RECEIPT_DESTINATION_DRAFT
+```
+
+La recepción persistida conserva `receipt_id` como identidad estable.
+
+---
+
+#### 11. Territorio de recepción
+
+La recepción física sigue ligada a una sede exacta.
+
+La decisión exige:
+
+```text
+SEDE AUTORIZADA
++
+ÁREA COMPATIBLE
++
+RECURSO COMPATIBLE
++
+CONTEXTO OPERATIVO COINCIDENTE
+```
+
+Un `site_id` recibido desde query, formulario o estado cliente no es autoridad.
+
+La tarea `ORIGO-AUTH-009` conserva la definición detallada de sede/centro de costo y las reglas de cruce territorial.
+
+---
+
+#### 12. Binding de proceso y pantalla
+
+Proceso propietario:
+
+```text
+VPROC-0022
+Recibir compras, verificar conformidad y resolver diferencias sin separar recepción física, documental y económica
+```
+
+Pantalla canónica primaria de ejecución:
+
+```text
+VSCREEN-0077 — Recepción total o parcial
+```
+
+Paso canónico:
+
+```text
+VPROC-0022::STEP-RECEIVE_PURCHASE
+— Registrar recepción total o parcial
+```
+
+Tipo de interacción:
+
+```text
+EXECUTE
+IN_PROGRESS
+```
+
+---
+
+#### 13. Relación con la cola de recepciones
+
+`VSCREEN-0076 — Cola de recepciones` puede presentar trabajo susceptible de recepción, pero verla no concede `receipts.register`.
+
+Regla:
+
+```text
+TRIAGE / VIEW
+!=
+EXECUTE / REGISTER
+```
+
+La selección de una orden pendiente debe volver a autorizarse en servidor antes de materializar una recepción.
+
+---
+
+#### 14. Roles operativos que reciben la capacidad
+
+La concesión operativa objetivo queda limitada a:
+
+| Rol operativo | Decisión | Condición |
+| --- | --- | --- |
+| `bodeguero` | `ASIGNAR_OPERATIVO` | recepción dentro de sede/bodega/área autorizadas, con `T+C`, recurso y actor resueltos |
+| `gerencia_operativa` | `ASIGNAR_OPERATIVO` | coordinación/recepción en sede activa, con `T+C`, territorio y recurso coincidentes; sin alcance global |
+
+La concesión no nace del nombre del oficio. Debe existir asignación operativa vigente y permiso exacto.
+
+---
+
+#### 15. Roles operativos sin concesión por defecto
+
+No reciben `origo.procurement.receipts.register` por defecto:
+
+```text
+cajero_satelite
+barista_satelite
+cocinero_satelite
+servicio_salon
+mostrador_satelite
+operador_integral_satelite
+produccion_cocina
+produccion_panaderia
+produccion_reposteria
+conductor_logistica
+```
+
+La participación de alguno de estos actores en una necesidad, inspección, entrega o evidencia no equivale a autoridad para registrar la recepción empresarial.
+
+---
+
+#### 16. Roles base y autoridad administrativa
+
+Ningún rol base recibe la capacidad por sí solo porque la modalidad es `OPERATIONAL_ONLY`.
+
+Por tanto:
+
+```text
+propietario
+gerente_general
+gerente
+supervisor
+auxiliar_administrativa
+contador
+marketing
+trabajador_operativo
+```
+
+no autorizan `receipts.register` únicamente por su rol base.
+
+Una persona con rol base administrativo solo puede registrar recepción cuando además posea un rol operativo autorizado, contexto `T+C`, territorio y recurso válidos.
+
+---
+
+#### 17. Recepción normal contra orden de compra
+
+Cuando existe orden de compra, el permiso autoriza únicamente una recepción nueva contra una orden elegible y relacionada con la sede receptora.
+
+Condiciones mínimas:
+
+- orden identificada;
+- proveedor coherente;
+- sede receptora autorizada;
+- líneas recibibles;
+- cantidades positivas y válidas;
+- actor receptor atribuido;
+- ausencia de replay ya consumido;
+- estado empresarial compatible con recepción.
+
+La tarea no equipara los literales AS-IS `draft`, `sent` o `received` con el lifecycle canónico completo.
+
+---
+
+#### 18. Recepción directa o de emergencia
+
+La ausencia de `purchase_order_id` no concede un bypass.
+
+Una recepción directa o de emergencia exige como mínimo:
+
+```text
+receipts.register válido
++
+T+C
++
+sede/área autorizadas
++
+actor efectivo
++
+proveedor y líneas válidos
++
+causa obligatoria
++
+evidencia y auditoría
+```
+
+La regularización comercial, presupuestal o de aprobación que corresponda permanece obligatoria según la política propietaria.
+
+No se inventan montos o umbrales.
+
+---
+
+#### 19. Modo inventariable
+
+El modo AS-IS `inventory` representa una recepción que pretende producir efectos físicos.
+
+Contrato objetivo:
+
+```text
+ORIGO
+→ registra/verifica/acepta la recepción empresarial
+
+NEXO
+→ materializa entrada, ubicación y custodia física cuando corresponda
+```
+
+Por tanto, `receipts.register` no concede autoridad general para escribir stock, LOC, posiciones o costo fuera del handoff propietario.
+
+Las escrituras físicas directas observadas en ORIGO permanecen drift AS-IS a reconciliar por las integraciones propietarias.
+
+---
+
+#### 20. Modo solo registro
+
+El modo AS-IS `record_only` no mueve inventario, pero sigue afirmando un hecho de recepción/registro de compra.
+
+Regla:
+
+```text
+SIN MOVIMIENTO DE INVENTARIO
+!=
+SIN AUTORIZACIÓN
+```
+
+`record_only` continúa requiriendo `receipts.register`, actor efectivo, `T+C`, sede autorizada y evidencia suficiente.
+
+No habilita importaciones históricas, backfills administrativos ni correcciones retrospectivas por inferencia.
+
+---
+
+#### 21. Actor efectivo y dispositivo compartido
+
+La autorización siempre pertenece al actor humano efectivo.
+
+En dispositivo compartido:
+
+```text
+DISPOSITIVO AUTORIZADO
+!=
+ACTOR AUTORIZADO
+```
+
+La sesión debe resolver actor, turno, check-in, sede, área, permiso y recurso antes de mutar.
+
+La firma/PIN observada en el runtime se conserva como evidencia AS-IS. La definición completa de atribución y auditoría de actor permanece en `ORIGO-AUTH-011`.
+
+---
+
+#### 22. Reconciliación con createReceipt
+
+La Server Action `createReceipt` ya revalida en servidor:
+
+- usuario autenticado;
+- sede solicitada;
+- sesión operativa;
+- permiso observado `origo.procurement.receipts`;
+- permiso operativo en dispositivo compartido;
+- `has_permission` en carril no compartido;
+- firma de actor cuando aplica.
+
+La evidencia demuestra un enforcement AS-IS real, pero la identidad usada aún es amplia/legacy respecto del contrato objetivo.
+
+Resultado:
+
+```text
+AS_IS_PERMISSION = origo.procurement.receipts
+TARGET_PERMISSION = origo.procurement.receipts.register
+```
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_REGISTER_BINDING_NEEDS_RENAME
+```
+
+---
+
+#### 23. Consulta y registro no comparten autoridad
+
+La consulta permanece en:
+
+```text
+origo.procurement.receipts.view
+```
+
+La mutación definida aquí es:
+
+```text
+origo.procurement.receipts.register
+```
+
+Por tanto:
+
+```text
+receipts.view
+!=
+receipts.register
+```
+
+El runtime actual que reutiliza `origo.procurement.receipts` para página y mutación debe descomponerse durante la materialización correspondiente.
+
+---
+
+#### 24. Corrección fuera del alcance de register
+
+El runtime actual permite que `createReceipt` reciba `correction_entry_id`, reverse la recepción original y cree un reemplazo.
+
+Ese flujo no queda autorizado por `receipts.register`.
+
+Regla:
+
+```text
+NUEVA RECEPCIÓN
+→ receipts.register
+
+REEMPLAZO CORRECTIVO
+→ AUTORIDAD DE CORRECCIÓN SEPARADA
+```
+
+Owner:
+
+```text
+ORIGO-AUTH-008 — Definir permisos de corrección
+```
+
+Clasificación AS-IS:
+
+```text
+AS_IS_REGISTER_AND_CORRECTION_COUPLED
+```
+
+---
+
+#### 25. Reversión fuera del alcance de register
+
+La convención canónica ya reconoce la identidad:
+
+```text
+origo.procurement.receipts.reverse
+```
+
+`receipts.register` no puede sustituirla.
+
+`reverseReceipt` y el RPC correctivo permanecen fuera de esta tarea y son responsabilidad de `ORIGO-AUTH-008` y contratos server-side aplicables.
+
+---
+
+#### 26. Resolución de diferencias fuera del alcance de register
+
+`VSCREEN-0078` y:
+
+```text
+VPROC-0022::STEP-RESOLVE_RECEIPT_VARIANCE
+```
+
+representan una decisión distinta de la captura ordinaria.
+
+Registrar una recepción con diferencia puede abrir o alimentar esa decisión, pero no autoriza resolverla.
+
+Regla:
+
+```text
+CAPTURAR DIFERENCIA
+!=
+RESOLVER DIFERENCIA
+```
+
+---
+
+#### 27. Estados canónicos preservados
+
+El proceso `VPROC-0022` conserva:
+
+```text
+RECEIPT_EXPECTED
+→ ARRIVAL_REGISTERED
+→ PHYSICAL_CHECK_IN_PROGRESS
+→ DOCUMENT_CHECK_IN_PROGRESS
+→ DIFFERENCE_UNDER_REVIEW
+→ ACCEPTANCE_PENDING
+→ PUTAWAY_PENDING
+→ ECONOMIC_RECONCILIATION_PENDING
+→ RECEIPT_RECONCILED
+```
+
+`receipts.register` no autoriza saltar automáticamente al estado final.
+
+Una captura puede aportar hechos para una o varias transiciones, pero cada verdad canónica debe quedar respaldada por la evidencia requerida.
+
+---
+
+#### 28. Estados técnicos AS-IS
+
+El runtime usa estados como:
+
+```text
+received
+recorded
+pending_review
+reversed
+corrected
+```
+
+Reglas:
+
+```text
+received
+!=
+RECEIPT_RECONCILED
+
+recorded
+!=
+PUTAWAY_PENDING
+
+pending_review
+!=
+DIFFERENCE_UNDER_REVIEW por inferencia
+```
+
+La autorización se evalúa contra el estado empresarial y el recurso, no únicamente contra un literal técnico.
+
+---
+
+#### 29. Idempotencia y atomicidad
+
+Registrar una recepción es una mutación empresarial crítica.
+
+El contrato exige:
+
+- idempotency key estable;
+- replay sin segunda recepción;
+- una sola contabilización de cantidades recibidas;
+- cero duplicación de movimientos o costos;
+- efectos atómicos o estado durable/reconciliable;
+- bloqueo o control de concurrencia sobre la orden/recurso afectado;
+- auditoría reforzada.
+
+`receipts.register` no autoriza una implementación no idempotente.
+
+---
+
+#### 30. Efectos sobre orden de compra
+
+Actualizar cantidades recibidas o el resumen técnico de una orden es un efecto derivado de la recepción.
+
+No convierte el permiso en autoridad para:
+
+```text
+aprobar compra
+editar orden aprobada
+emitir orden
+cancelar orden
+pagar obligación
+```
+
+La recepción y el compromiso comercial permanecen procesos distintos.
+
+---
+
+#### 31. Maestro de productos y presentaciones
+
+Una recepción puede detectar producto, presentación o dato maestro pendiente.
+
+`receipts.register` puede producir un handoff de revisión, pero no concede autoridad para aprobar o modificar el maestro.
+
+La revisión de producto conserva su permiso y owner propios.
+
+---
+
+#### 32. Datos comerciales y costos
+
+La recepción puede necesitar una proyección mínima de proveedor, orden, cantidades, presentación, factura y costo aplicable.
+
+El permiso no concede acceso general a:
+
+- contratos completos;
+- cuentas bancarias;
+- negociaciones;
+- márgenes;
+- condiciones no necesarias;
+- información financiera ajena a la recepción.
+
+`ORIGO-AUTH-010` conserva la protección detallada de precios y datos sensibles.
+
+---
+
+#### 33. Regla fail-closed
+
+Se debe denegar cuando falte o sea ambiguo cualquiera de:
+
+```text
+actor efectivo
+rol operativo autorizado
+turno vigente
+check-in activo
+permiso exacto
+sede
+área cuando aplique
+recurso/objetivo de recepción
+estado elegible
+relación con proveedor/orden
+```
+
+No existe fallback por rol base, nombre de oficio, sede primaria, parámetro cliente ni acceso general a ORIGO.
+
+---
+
+#### 34. Frontera de auditoría
+
+Toda recepción autorizada debe conservar al menos:
+
+- actor real;
+- actor efectivo cuando exista dispositivo compartido;
+- rol operativo efectivo;
+- sede/área;
+- permiso evaluado;
+- orden o causa de recepción directa;
+- proveedor;
+- modalidad `inventory` o `record_only`;
+- modo normal o emergencia;
+- líneas y cantidades;
+- resultado;
+- timestamp;
+- correlación/idempotencia.
+
+La granularidad final de actor y firma pertenece también a `ORIGO-AUTH-011`.
+
+---
+
+#### 35. Matriz de fronteras
+
+| Capacidad | Identidad | Pertenece a esta tarea |
+| --- | --- | --- |
+| consultar recepción | `origo.procurement.receipts.view` | no; definida por `ORIGO-AUTH-004` |
+| registrar recepción nueva | `origo.procurement.receipts.register` | sí |
+| aprobar compra | `origo.procurement.purchase_orders.approve` | no; definida por `ORIGO-AUTH-006` |
+| reversar recepción | `origo.procurement.receipts.reverse` | no; reservada a `ORIGO-AUTH-008` |
+| reemplazar/corregir recepción | autoridad correctiva separada | no; reservada a `ORIGO-AUTH-008` |
+| resolver diferencia | decisión de `VPROC-0022` | no; fuera de recepción ordinaria |
+| administrar stock/LOC | permisos NEXO propietarios | no |
+| aprobar maestro | permiso propietario del catálogo/revisión | no |
+
+---
+
+#### 36. Brechas AS-IS y propietarios
+
+| Brecha | Riesgo contractual | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `origo.procurement.receipts` agrupa lectura y mutación | permiso demasiado amplio respecto del contrato atómico | `ORIGO-AUTH-004`, `ORIGO-AUTH-007`, `ORIGO-AUTH-014` | consumidor usa `.view` y `.register` según acción |
+| `createReceipt` usa el alias amplio | enforcement real con identidad no final | `ORIGO-AUTH-007`, `ORIGO-AUTH-014` | action revalida `receipts.register` exacto |
+| `createReceipt` también ejecuta corrección cuando existe `correction_entry_id` | register puede absorber autoridad correctiva | `ORIGO-AUTH-008` | corrección exige capacidad propia y no deriva de register |
+| `reverseReceipt` no demuestra recheck equivalente dentro de la acción | reversión con evidencia de autorización insuficiente en esa superficie | `ORIGO-AUTH-008` | reversión revalida autoridad exacta o contrato propietario equivalente |
+| ORIGO escribe stock/LOC/costo directamente | frontera física/económica distribuida | integraciones propietarias ORIGO→NEXO/NUMERA | handoff y owner materializan su verdad sin doble escritura |
+| recepción directa usa modo `emergency` local | posible bypass si se confunde con autorización comercial | `ORIGO-AUTH-007`, `ORIGO-AUTH-009`, flujo de urgencia propietario | causa, autoridad, límites y regularización quedan fail-closed |
+| estados técnicos condensan proceso | cierre prematuro o ambigüedad | contratos `VPROC-0022`, tareas UX/integración | estados canónicos derivan de hechos correlacionados |
+| actor en dispositivo compartido depende de firma/PIN AS-IS | atribución insuficiente si actor/contexto divergen | `ORIGO-AUTH-011` | actor real/efectivo y firma quedan auditables end-to-end |
+
+Ninguna brecha queda sin owner y condición de salida.
+
+---
+
+#### 37. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** esta tarea concreta una capacidad ya prevista por el catálogo y por requisitos vigentes de recepción, autorización, segregación, idempotencia e integración. No introduce una obligación empresarial nueva, un algoritmo nuevo, un estado nuevo, una integración nueva ni una política de seguridad adicional que requiera ampliar el registro.
+
+---
+
+#### 38. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para distinguir recepción inventariable de solo registro y evitar duplicidad de efectos;
+- `TREQ-ORIGO-003` para atomicidad, idempotencia, cantidades, costos, orden y corrección correlacionada;
+- `TREQ-ORIGO-004` para separar solicitante, comprador, aprobador y receptor y conservar el ciclo de abastecimiento;
+- `TREQ-AUTH-001` para permiso, contexto, alcance y recurso;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-013` para enforcement server-side;
+- `TREQ-AUTH-015` para evidencia correlacionable;
+- requisitos vigentes de integración ORIGO→NEXO/NUMERA cuando la recepción produzca handoffs físicos o económicos.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 39. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en su archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada del artefacto. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, `vento-origo/main`, archivo propietario, topología, catálogos de autorización, matrices operativas, `VPROC-0022`, pantallas, Registro 04A y código actual de recepción. |
+| OPERATIVA | `NOT_EXECUTED` | No se registró, corrigió, reversó ni recibió una compra real; no se ejecutaron RLS, RPC, stock, costos ni flujos desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | `ORIGO-AUTH-007` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 40. Criterios de aceptación
+
+- [x] La tarea mantiene exactamente `ORIGO-AUTH-007 — Definir permisos de recepción`.
+- [x] La tarea anterior es `ORIGO-AUTH-006` y la siguiente `ORIGO-AUTH-008`.
+- [x] La topología se conserva como `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`.
+- [x] Se define exactamente una capacidad de recepción nueva.
+- [x] La identidad es `origo.procurement.receipts.register`.
+- [x] La modalidad es `OPERATIONAL_ONLY`.
+- [x] El prerrequisito es `T+C`.
+- [x] El recurso es `PURCHASE_RECEIPT` con objetivo previo suficientemente determinado.
+- [x] El binding es `VPROC-0022` / `VSCREEN-0077` / `STEP-RECEIVE_PURCHASE`.
+- [x] `bodeguero` y `gerencia_operativa` reciben concesión operativa objetivo.
+- [x] Los demás roles operativos listados permanecen sin concesión por defecto.
+- [x] Ningún rol base autoriza la recepción por sí solo.
+- [x] Se preservan recepción normal y directa/emergencia sin crear bypass.
+- [x] Se preservan `inventory` y `record_only` con autorización en ambos casos.
+- [x] Se separa consulta de registro.
+- [x] Se separa registro de corrección y reversión.
+- [x] `origo.procurement.receipts.reverse` queda reservado a la 008.
+- [x] Se documenta el acoplamiento AS-IS de register/correction sin aprobarlo.
+- [x] Se preservan los nueve estados canónicos de `VPROC-0022`.
+- [x] Se exige idempotencia, atomicidad o estado durable/reconciliable.
+- [x] Se preserva la frontera ORIGO→NEXO para verdad física.
+- [x] Se preserva la frontera económica con NUMERA.
+- [x] Todas las brechas tienen owner y condición de salida.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza cambio físico, Supabase, migración ni despliegue.
+
+---
+
+#### 41. Límites
+
+Esta tarea no:
+
+- activa el permiso en el catálogo compartido;
+- crea grants físicos;
+- modifica matrices persistidas;
+- modifica `createReceipt`;
+- modifica `reverseReceipt`;
+- autoriza corrección o reversión;
+- define el permiso final de corrección;
+- cambia la ventana de treinta minutos;
+- crea estados de recepción;
+- cambia RLS o RPC;
+- modifica stock, LOC, posiciones o costos;
+- transfiere ownership de inventario a ORIGO;
+- transfiere ownership económico a ORIGO;
+- cambia NEXO o NUMERA;
+- crea o registra una recepción real;
+- cambia navegación o pantallas;
+- modifica Supabase;
+- crea migraciones, funciones, triggers, Storage o datos;
+- desarrolla `ORIGO-AUTH-008`.
+
+---
+
+#### 42. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-006 — Definir permisos de aprobación`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-007 — Definir permisos de recepción`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-008 — Definir permisos de corrección`
+
 ### [ ] ORIGO-AUTH-008 — Definir permisos de corrección
 ### [ ] ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
 ### [ ] ORIGO-AUTH-010 — Proteger precios y datos sensibles
