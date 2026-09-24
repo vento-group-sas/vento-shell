@@ -509,7 +509,393 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-002 — Diseñar inicio de puntos y beneficios`
-### [ ] PASS-UX-002 — Diseñar inicio de puntos y beneficios
+### ✅ PASS-UX-002 — Diseñar inicio de puntos y beneficios
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-001 — Inventariar pantallas actuales de cliente
+**Tarea siguiente:** PASS-UX-003 — Diseñar QR personal
+**Tipo de tarea:** documental; diseño objetivo de arquitectura de información, jerarquía visual, estados y handoffs de `VSCREEN-0107 — Inicio del cliente y resumen de beneficios`; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Storage, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo del inicio de cliente de PASS para que una sola superficie permita comprender de inmediato la relación de fidelización sin mezclar saldo, acumulación histórica, recompensa, redención, promociones, compras, Club ni operación laboral.
+
+La tarea diseña `VSCREEN-0107 — Inicio del cliente y resumen de beneficios` como `OWNER_WORKSPACE` de PASS y entrada de `VPROC-0045::STEP-ENTER_LOYALTY_HOME — Entrar a fidelización personal`.
+
+El resultado fija qué debe mostrarse, en qué orden, con qué significado y a qué tarea o pantalla entrega cada acción. No implementa el diseño.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-001`, que entrega:
+
+- quince `Stack.Screen` actuales;
+- veintiuna superficies lógicas de cliente o transversales;
+- `PASS-CUSTOMER-SURFACE-003` como identidad AS-IS de `Home`;
+- la relación no uno a uno entre superficies AS-IS y `VSCREEN-*`;
+- separación entre experiencia cliente PASS, superficies laborales PASS y operación PULSO;
+- hallazgos de aliases y navegación reservados a `PASS-UX-011`;
+- tres `VSCREEN-*` futuras sin superficie runtime dedicada, que no deben simularse desde el home.
+
+La frontera de esta tarea es únicamente el home de fidelización. No absorbe el detalle de QR, acumulación, redención, historial, catálogo, perfil, estados de redención, errores, navegación global ni resiliencia móvil.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla | `VSCREEN-0107 — Inicio del cliente y resumen de beneficios` |
+| Aplicación | `pass` |
+| Proceso primario | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Proceso relacionado | `VPROC-0068 — Medir satisfacción del cliente` |
+| Paso primario | `VPROC-0045::STEP-ENTER_LOYALTY_HOME — Entrar a fidelización personal` |
+| Rol de la pantalla | `OWNER_WORKSPACE` |
+| Superficie AS-IS de referencia | `PASS-CUSTOMER-SURFACE-003 — Home` |
+| Modalidad | experiencia personal de cliente |
+| Estado físico | sin instancia propia; contrato documental `DEFINE_ONCE` |
+
+La relación con `VPROC-0068` no convierte el home en encuesta ni autoriza mezclar satisfacción con beneficios. Cualquier captura de satisfacción mantiene identidad y flujo propios.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot observado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` | `cd5c0d60aed6bc5302c8e9b3b69efe7aede62e82` | plan, topología, catálogo `VSCREEN-*`, procesos, 04A y validadores |
+| `PASS-UX-001_APROBADA_PARA_REEMPLAZAR.md` | artefacto completo aprobado por el usuario y pendiente de publicación | base documental inmediata y handoff AS-IS |
+| repositorio PASS accesible `carlosibarraariza/vento-pass` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil verificable |
+| `vento-pass/App.js` | blob `162e686ff5ec363a0f6f991da58f6ce84816e8aa` | navegación, gates, feature flags y montaje de `Home` |
+| `src/components/Home.tsx` | vigente en `vento-pass/main` | composición AS-IS del home |
+| `src/components/HomeOptimized.tsx` | vigente en `vento-pass/main` | wrapper efectivo de `Home` y aviso de pedido activo |
+| `src/components/home/MembershipCard.tsx` | vigente en `vento-pass/main` | presentación AS-IS de nivel, puntos y QR |
+| hooks de usuario, puntos, rewards y redemptions | vigentes en `vento-pass/main` | semántica AS-IS de datos y riesgos de representación |
+
+La ausencia de publicación de `PASS-UX-001` en `main` no invalida esta preparación anticipada: se usa su versión completa aprobada como base y se mantiene `CIERRE_ANTERIOR: PENDIENTE` fuera del artefacto canónico.
+
+---
+
+#### 5. Semántica obligatoria de fidelización
+
+El home debe conservar las siguientes identidades semánticas sin intercambiarlas:
+
+| Concepto | Significado en el home | No significa |
+| --- | --- | --- |
+| `PUNTOS_DISPONIBLES` | saldo actualmente utilizable por el cliente, como proyección reconciliable del ledger | total histórico ganado, nivel o dinero |
+| `PUNTOS_GANADOS_HISTORICOS` | acumulado histórico utilizado para calcular nivel y progreso | saldo gastable actual |
+| `NIVEL` | categoría de fidelización derivada de la regla vigente y del acumulado histórico | beneficio concreto, membresía Club o autorización |
+| `PROGRESO_DE_NIVEL` | avance hacia el siguiente nivel según regla vigente | promesa de saldo futuro |
+| `BENEFICIO` | ventaja elegible o condición favorable vigente para el cliente | recompensa necesariamente canjeable con puntos |
+| `RECOMPENSA` | elemento del catálogo con condiciones y, cuando aplique, costo en puntos | promoción genérica o saldo |
+| `CANJE` | intención y resultado de redención con ciclo y estado propios | descuento automático en el home |
+| `PROMOCION` | comunicación u oferta comercial con vigencia propia | beneficio de fidelización por defecto |
+| `CLUB_MEMBERSHIP` | relación de membresía Club, cuando esté habilitada | nivel de fidelización |
+| `CLUB_WALLET` | saldo monetario o ledger del Club, cuando exista | puntos PASS |
+
+La separación anterior cierra para este diseño el hallazgo `H-CAP-SCOPE-010-012`: punto, beneficio, recompensa, cupón, membresía y promoción no se presentan como sinónimos.
+
+---
+
+#### 6. Arquitectura de información del home objetivo
+
+El home se organiza en seis zonas funcionales, en este orden:
+
+| Orden | Zona | Contenido obligatorio | Propósito |
+| ---: | --- | --- | --- |
+| 1 | Identidad y cuenta | saludo o identidad mínima, acceso a configuración del cliente | confirmar contexto personal sin exponer información laboral como contenido principal |
+| 2 | Resumen de fidelización | nivel, puntos disponibles y progreso de nivel | responder inmediatamente “qué tengo” y “dónde estoy” |
+| 3 | Acciones personales | acceso a QR personal y accesos resumidos a recompensas/historial/perfil cuando correspondan | entregar a capacidades propias sin duplicarlas dentro del home |
+| 4 | Beneficios y recompensas | resumen contextual de beneficios o recompensas vigentes, sin ejecutar redención | permitir descubrir valor disponible y entrar al catálogo canónico |
+| 5 | Comercio contextual | acceso a compra únicamente cuando `SHOW_PURCHASE_FEATURES` lo habilite | conservar la compra como capacidad separada de fidelización |
+| 6 | Contexto operativo personal | aviso de pedido activo u otro estado personal vigente cuando exista | informar sin convertir el home en pantalla de operación interna |
+
+El bloque laboral del menú, cuando exista para un cliente que también es trabajador, permanece separado de estas seis zonas y no modifica saldo, nivel, elegibilidad ni navegación de cliente.
+
+---
+
+#### 7. Resumen de fidelización
+
+La zona principal debe presentar como máximo una verdad primaria por concepto:
+
+1. **Nivel actual** — etiqueta humana del nivel vigente.
+2. **Puntos disponibles** — dato principal de saldo utilizable confirmado.
+3. **Progreso al siguiente nivel** — calculado con acumulación histórica, nunca con saldo disponible.
+4. **Meta siguiente** — diferencia necesaria para el siguiente nivel, únicamente cuando exista otro nivel.
+5. **Estado de nivel máximo** — reemplaza la meta cuando no exista nivel superior.
+
+El saldo disponible y el acumulado histórico pueden cambiar de forma distinta. Gastar puntos puede reducir `PUNTOS_DISPONIBLES` sin reducir `PUNTOS_GANADOS_HISTORICOS` ni retroceder el nivel cuando la regla vigente defina el tier sobre lifetime earned.
+
+---
+
+#### 8. Contrato de certeza y frescura del saldo
+
+El home no puede transformar un fallo de lectura en un saldo confirmado de cero.
+
+Estados contractuales del dato:
+
+| Estado | Presentación permitida | Prohibición |
+| --- | --- | --- |
+| `LOADING` | skeleton o placeholder sin cifra afirmada | mostrar `0` como saldo confirmado |
+| `CONFIRMED` | valor confirmado y nivel/progreso derivados de fuentes válidas | mezclar con Club wallet o monto monetario |
+| `CONFIRMED_ZERO` | `0` únicamente cuando la fuente válida confirme saldo cero | inferir cero por ausencia, timeout o error |
+| `STALE_CONFIRMED` | último valor confirmado con señal explícita de desactualización | presentarlo como fresco |
+| `UNAVAILABLE` | estado no disponible y acción de reintento | inventar saldo, tier o beneficio |
+
+`PASS-UX-012` definirá el tratamiento visual final de carga, offline y recuperación; `PASS-UX-010` definirá copy final de error. Esta tarea fija solo la semántica que esas tareas no podrán contradecir.
+
+---
+
+#### 9. Acciones personales del home
+
+Las acciones del home son puertas de entrada, no implementaciones duplicadas.
+
+| Acción del home | Destino canónico | Propietario documental | Regla |
+| --- | --- | --- | --- |
+| mostrar identificación personal | `VSCREEN-0108` | `PASS-UX-003` | el home no escanea ni valida operación; presenta acceso a la credencial personal |
+| consultar recompensas | `VSCREEN-0109` | `PASS-UX-007` | el home solo resume; el catálogo conserva condiciones y detalle |
+| consultar historial | `VSCREEN-0111` | `PASS-UX-006` | el home no replica el ledger completo |
+| abrir perfil y privacidad | `VSCREEN-0112` | `PASS-UX-008` | configuración, datos y consentimientos mantienen workspace propio |
+| iniciar compra | `VSCREEN-0160` | tareas de experiencia comercial correspondientes | solo cuando la feature de compras esté habilitada |
+
+La etiqueta del acceso a `VSCREEN-0108` debe comunicar presentación de la identificación propia, por ejemplo “Mi QR” o “Mostrar mi QR”. No debe describirse como escaneo ejecutado por el cliente.
+
+---
+
+#### 10. Resumen de beneficios y recompensas
+
+El home puede mostrar una vista resumida del valor disponible, pero no sustituye `VSCREEN-0109`.
+
+Reglas:
+
+- solo se presentan beneficios o recompensas vigentes para el contexto permitido del cliente;
+- cualquier dato dependiente de sede conserva filtro de sede y no mezcla rewards de sedes distintas;
+- nombre, descripción, costo en puntos, vigencia o elegibilidad deben provenir de su fuente vigente, no de literales divergentes del home;
+- una recompensa cuyo detalle no pueda confirmarse no se presenta como canjeable;
+- un cliente con saldo insuficiente puede conocer una recompensa, pero la interfaz no debe presentarla como redención ejecutable si no cumple condiciones;
+- el home no genera ticket, QR de redención ni transición de estado de canje;
+- el CTA de detalle entrega al catálogo de recompensas;
+- las tarjetas de marca o sede no implican por sí mismas que exista un beneficio elegible.
+
+---
+
+#### 11. Relación con comercio y marcas
+
+La compra permanece separada de la fidelización:
+
+```text
+HOME DE FIDELIZACION
+!=
+PORTAL DE COMPRAS
+```
+
+Cuando `SHOW_PURCHASE_FEATURES = false`, el home de puntos y beneficios debe seguir siendo íntegro y utilizable.
+
+Cuando `SHOW_PURCHASE_FEATURES = true`:
+
+- `Pedir` puede existir como CTA secundario;
+- su destino es la selección de contexto de compra, no el catálogo de recompensas;
+- no cambia el saldo ni confirma acumulación por sí mismo;
+- no mezcla estados de pedido con estados de redención;
+- `ActiveOrderNotice` permanece como proyección personal de pedido y no como parte del ledger de fidelización.
+
+La existencia de una marca o sede en `BrandCard` no autoriza mostrar puntos, canjes o beneficios no confirmados para esa sede.
+
+---
+
+#### 12. Relación con Club
+
+Club y fidelización permanecen contractualmente separados.
+
+El home puede ofrecer entrada a Club solo cuando la capacidad esté habilitada, pero:
+
+- `club_active` no determina el nivel PASS;
+- `plan_code` no sustituye el tier de fidelización;
+- `CLUB_WALLET.available_minor` y `pending_minor` son importes monetarios y nunca se suman, comparan ni muestran como puntos;
+- el ledger Club no se mezcla con el historial de `VSCREEN-0111`;
+- una falla de Club no vuelve indisponible el resumen de fidelización PASS.
+
+---
+
+#### 13. Separación cliente versus contexto laboral
+
+El home sigue siendo una pantalla de cliente aunque el principal autenticado también tenga perfil laboral.
+
+Reglas:
+
+1. nivel, saldo, QR, recompensas e historial corresponden siempre al cliente autenticado;
+2. rol laboral, sede laboral o simulación no cambian la identidad del cliente ni el saldo mostrado;
+3. un error en `useEmployeeProfile`, `useEmployeeSites` o un override laboral no puede convertir el saldo del cliente en error ni ocultar el home de fidelización;
+4. controles laborales se mantienen en una zona secundaria explícita y no se cuentan como acciones de fidelización;
+5. ninguna acción del home concede acumulación, redención, ajuste o permiso laboral.
+
+---
+
+#### 14. Estados funcionales del home
+
+El diseño reconoce los siguientes estados sin definir todavía copy final ni animaciones finales:
+
+| Estado | Comportamiento contractual |
+| --- | --- |
+| `LOADING_IDENTITY` | no se afirma información de fidelización hasta conocer el cliente válido |
+| `LOADING_LOYALTY` | se conserva estructura del home sin afirmar cifras desconocidas |
+| `READY_WITH_BALANCE` | se muestran saldo, nivel, progreso y accesos permitidos |
+| `READY_ZERO_BALANCE` | se muestra cero confirmado sin tratarlo como error |
+| `READY_NO_REWARDS` | se conserva fidelización y se indica ausencia de rewards para el contexto, sin ocultar saldo |
+| `PARTIAL_REWARDS_UNAVAILABLE` | saldo confirmado permanece visible; el resumen de rewards se degrada de forma independiente |
+| `STALE` | datos confirmados anteriores pueden mostrarse solo con señal de frescura degradada |
+| `ERROR_RETRYABLE` | no se inventan puntos, beneficios ni tier; se ofrece recuperación |
+
+`PASS-UX-012` especializará carga, error, offline y recuperación. `PASS-UX-010` especializará mensajes comprensibles.
+
+---
+
+#### 15. Responsabilidad de cada tarea posterior
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| credencial y QR personal | `PASS-UX-003` |
+| visibilidad de acumulación | `PASS-UX-004` |
+| redención visible | `PASS-UX-005` |
+| movimientos e historial | `PASS-UX-006` |
+| catálogo completo de recompensas | `PASS-UX-007` |
+| perfil, datos y consentimientos | `PASS-UX-008` |
+| estados pendiente, usado y cancelado | `PASS-UX-009` |
+| copy y mensajes de error | `PASS-UX-010` |
+| rutas y navegación canónicas | `PASS-UX-011` |
+| carga, error, offline y recuperación móvil | `PASS-UX-012` |
+| validación con clientes reales | `PASS-UX-013` |
+
+Esta tarea entrega las invariantes de home a esas tareas sin resolver por anticipado su detalle propietario.
+
+---
+
+#### 16. Hallazgos AS-IS y handoff
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `useUserData` convierte error de lectura en `loyalty_points: 0` | un fallo puede presentarse como saldo real cero | `PASS-UX-012` + implementación posterior | error y cero confirmado quedan estados distinguibles sin perder recuperación |
+| `MembershipCard` usa la etiqueta `Escanear ID` aunque la acción abre el QR propio | la interfaz puede sugerir función de scanner que el cliente no ejecuta | `PASS-UX-003` | la acción comunica presentación de identificación personal y mantiene frontera con PULSO |
+| `Home` mezcla resumen de fidelización, compra y tarjetas de marca | el home puede perder jerarquía de fidelización o insinuar beneficios inexistentes | `PASS-UX-002` / `PASS-UX-007` / `PASS-UX-011` | fidelización queda primaria, comercio secundario y rewards entregan a catálogo canónico |
+| `HomeOptimized` monta `ActiveOrderNotice` sobre el home | pedido activo puede competir visualmente con el resumen de fidelización | `PASS-UX-011` / `PASS-UX-012` | la navegación y prioridad visual conservan una sola jerarquía de cliente |
+| `Header` contiene controles laborales condicionales | contexto laboral puede contaminar una experiencia de cliente | tareas AUTH/PASS de frontera laboral ya existentes | controles laborales permanecen secundarios y no alteran identidad ni datos de fidelización |
+| Club dispone de membership y wallet propios | riesgo de mezclar membresía o dinero Club con puntos PASS | tarea Club propietaria + `PASS-UX-002` como frontera visual | balances y estados conservan labels, fuentes y navegación independientes |
+
+Ningún hallazgo autoriza modificación física desde esta tarea.
+
+---
+
+#### 17. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la separación de identidades de fidelización, ledger y saldo como proyección, la convergencia de experiencias, la frontera cliente/laboral y los riesgos del home ya están cubiertos por requisitos PASS vigentes. Esta tarea materializa el diseño objetivo y los handoffs sin introducir una obligación de prueba nueva ni alterar el Registro 04A.
+
+---
+
+#### 18. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-006` para convergencia de experiencia comercial, sede, recompensas e historial sin rutas paralelas divergentes;
+- `TREQ-PASS-010` para identidad cliente separada, ledger inmutable, saldo como proyección y no duplicación de puntos o beneficios;
+- `TREQ-PASS-015` para mantener el home como experiencia de cliente aunque exista contexto laboral embebido;
+- `TREQ-PASS-033` para impedir que fallos de módulos laborales afecten la experiencia normal del cliente;
+- `TREQ-PASS-035` a `TREQ-PASS-042` para conservar el inventario PASS y su relación con superficies canónicas durante el rediseño.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 19. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará únicamente después de que `PASS-UX-001` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-002` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, fuentes de `VSCREEN-0107`, `VPROC-0045`, 04A PASS, backlog de convergencia y el snapshot runtime accesible de `vento-pass/main`. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó el home en un ambiente desplegado ni se probaron puntos, rewards, Club, compras o estados offline con un cliente real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-002` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 20. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-002 — Diseñar inicio de puntos y beneficios`.
+- [x] El objetivo queda anclado a `VSCREEN-0107` y `VPROC-0045::STEP-ENTER_LOYALTY_HOME`.
+- [x] `PASS-CUSTOMER-SURFACE-003` se conserva como referencia AS-IS sin declarar implementación objetivo completada.
+- [x] Se separan saldo disponible, acumulado histórico, nivel, beneficio, recompensa, canje, promoción, Club membership y Club wallet.
+- [x] El saldo se trata como proyección reconciliable y no como ledger primario.
+- [x] Error o ausencia de lectura no pueden convertirse en cero confirmado.
+- [x] Nivel y progreso se calculan sobre la métrica histórica definida, no sobre saldo gastable.
+- [x] El home resume recompensas pero no sustituye el catálogo.
+- [x] El home abre el QR personal pero no escanea ni ejecuta operación PULSO.
+- [x] El home no genera ticket ni estado de redención.
+- [x] El historial conserva pantalla y tarea propias.
+- [x] Perfil y consentimientos conservan pantalla y tarea propias.
+- [x] Compra permanece secundaria y gobernada por su feature flag.
+- [x] `FIDELIZATION_ONLY_MODE` puede retirar compra sin degradar el home de fidelización.
+- [x] Club y puntos PASS permanecen separados.
+- [x] Contexto laboral no altera identidad ni datos del cliente.
+- [x] Cada hallazgo AS-IS tiene propietario y condición de salida.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, Supabase, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-003` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 21. Límites
+
+Esta tarea no:
+
+- implementa el home;
+- cambia `Home.tsx`, `HomeOptimized.tsx`, `MembershipCard.tsx` ni hooks;
+- define el diseño interno del QR personal;
+- define algoritmo, regla o tasa de acumulación;
+- crea ni valida una redención;
+- diseña el historial completo;
+- diseña el catálogo completo de recompensas;
+- diseña el perfil del cliente;
+- decide copy final de errores;
+- decide navegación global o aliases;
+- resuelve todavía offline, retry, skeletons o recuperación visual final;
+- modifica feature flags;
+- mezcla puntos PASS con Club wallet;
+- modifica PULSO;
+- modifica datos o Supabase;
+- crea migraciones, RLS, RPC, funciones, triggers o secretos;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- declara PASS completo;
+- desarrolla `PASS-UX-003`.
+
+---
+
+#### 22. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-001 — Inventariar pantallas actuales de cliente`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-002 — Diseñar inicio de puntos y beneficios`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-003 — Diseñar QR personal`
 ### [ ] PASS-UX-003 — Diseñar QR personal
 ### [ ] PASS-UX-004 — Diseñar acumulación visible
 ### [ ] PASS-UX-005 — Diseñar redención visible
