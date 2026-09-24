@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1300** |
+| Aprobadas | **1301** |
 | En propuesta | **0** |
-| No iniciadas | **296** |
+| No iniciadas | **295** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.45% (1300/1596)** |
+| Porcentaje de completamiento | **81.52% (1301/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **296** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1201** |
+| ⏸ NO_EVALUADA | **295** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1202** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-UX-012` — Conectar consumo de insumos con NEXO | ✅ APROBADA |
-| Tarea actual | `FOGO-UX-013` — Conectar producto terminado con NEXO | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-UX-014` — Diseñar pantalla para supervisor de producción | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-UX-013` — Conectar producto terminado con NEXO | ✅ APROBADA |
+| Tarea actual | `FOGO-UX-014` — Diseñar pantalla para supervisor de producción | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-UX-015` — Validar el prototipo por área productiva | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1078,7 +1078,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-010` | Registrar cantidades, desperdicio y resultado | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-011` | Diseñar correcciones sin alterar historial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-012` | Conectar consumo de insumos con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-013` | Conectar producto terminado con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-013` | Conectar producto terminado con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-014` | Diseñar pantalla para supervisor de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-015` | Validar el prototipo por área productiva | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `OPS-REC-001` | Definir el contrato canónico de recetas y acceso contextual | — | — | `bloques/L_FOGO/01_TAREAS_DERIVADAS_OPS_AUD_001.md` |
