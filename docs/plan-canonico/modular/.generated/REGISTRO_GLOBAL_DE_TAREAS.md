@@ -66,8 +66,8 @@
 | Relación | Tarea | Estado |
 | --- | --- | --- |
 | Última aprobada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-011` — Registrar actor de recepción | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique | ⬜ NO INICIADA |
+| Tarea actual | `PASS-UX-001` — Inventariar pantallas actuales de cliente | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-UX-002` — Diseñar inicio de puntos y beneficios | ⬜ NO INICIADA |
 
 ## Registro completo
 
