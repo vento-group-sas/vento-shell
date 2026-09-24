@@ -3740,7 +3740,1235 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-005 — Definir permisos de creación`
 
-### [ ] ORIGO-AUTH-005 — Definir permisos de creación
+### ✅ ORIGO-AUTH-005 — Definir permisos de creación
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-004 — Definir permisos de consulta
+**Tarea siguiente:** ORIGO-AUTH-006 — Definir permisos de aprobación
+**Tipo de tarea:** documental; definición cerrada de las capacidades de creación de ORIGO ya reservadas por las fuentes canónicas, con identidad, recurso, modalidad, alcance, actor objetivo, denegaciones, separación frente a aprobación/recepción/corrección, binding a superficies y reconciliación del runtime AS-IS, sin activar todavía las claves en el catálogo compartido ni realizar materialización física; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, catálogo compartido, matrices físicas, navegación, Server Actions, RLS, RPC, tablas, datos, Supabase, migraciones, Storage, secretos, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable las capacidades de **creación** que ORIGO necesita para separar la autoridad de crear una orden de compra y la autoridad de crear un proveedor de las capacidades de consulta, aprobación, recepción, corrección, activación y administración sensible.
+
+La decisión contractual queda:
+
+```text
+CREAR RECURSO
+!=
+CONSULTAR RECURSO
+!=
+APROBAR RECURSO
+!=
+RECIBIR COMPRA
+!=
+CORREGIR RECURSO
+!=
+ACTIVAR PROVEEDOR
+```
+
+La tarea consume los inventarios aprobados de órdenes y proveedores y el contrato de consulta definido por `ORIGO-AUTH-004`.
+
+No activa físicamente nuevos permisos en `vento-shell` ni modifica el consumidor ORIGO. La incorporación física y contractual compartida permanece reservada a `ORIGO-AUTH-014`.
+
+---
+
+#### 2. Frontera recibida de ORIGO-AUTH-004
+
+`ORIGO-AUTH-004` dejó cerradas cuatro capacidades de consulta y una regla obligatoria:
+
+```text
+VIEW != CREATE
+```
+
+Por tanto:
+
+- `origo.procurement.purchase_orders.view` no permite crear una orden;
+- `origo.procurement.suppliers.view` no permite crear un proveedor;
+- `origo.access` no permite crear ningún recurso interno;
+- una página visible no concede autoridad mutante;
+- un dato precargado no concede autoridad sobre el recurso;
+- la autoridad final debe comprobarse en servidor antes del primer efecto.
+
+La presente tarea desarrolla únicamente la creación y conserva reservadas:
+
+```text
+ORIGO-AUTH-006 → aprobación
+ORIGO-AUTH-007 → recepción
+ORIGO-AUTH-008 → corrección / update / activación / desactivación / retiro
+ORIGO-AUTH-009 → sede y centro de costo de órdenes
+ORIGO-AUTH-010 → precios, condiciones y datos sensibles
+```
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente para `ORIGO-AUTH-001..008` es:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Resultado:
+
+```text
+CONTRATO DOCUMENTAL ÚNICO
+→ SIN INSTANCIA FÍSICA PROPIA
+→ SIN MIGRACIÓN
+→ SIN CAMBIO DE RUNTIME
+```
+
+La tarea define qué debe significar una decisión de creación para ORIGO. La materialización posterior deberá consumir este contrato sin reinterpretarlo.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La definición se construye sobre evidencia actual y verificable:
+
+```text
+vento-shell/main
+20002e284aa472814e7e606829d5ca7216375e53
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+owner remoto:
+docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md
+
+owner blob:
+fe019cc375d804d31b1cba2e74c9df0c40b421bc
+
+base aprobada usada:
+ORIGO-AUTH-004_APROBADA_PARA_REEMPLAZAR.md
+
+base SHA-256:
+d1d44d462ea06f40457b1613426c2101030a7285bdf7601c2f26e652280d8b74
+```
+
+También se verificaron:
+
+- convención canónica de permisos;
+- normalización de proveedores;
+- modalidades y clasificaciones;
+- contratos de alcance, contexto y recurso;
+- matrices RBAC vigentes;
+- procesos y pantallas de ORIGO;
+- requisitos vigentes ORIGO y AUTH;
+- código actual de creación de órdenes y proveedores;
+- scripts y validadores documentales vigentes.
+
+---
+
+#### 5. Universo exacto de capacidades de creación
+
+La tarea materializa exactamente **dos** identidades de creación:
+
+```text
+origo.procurement.purchase_orders.create
+origo.procurement.suppliers.create
+```
+
+Estado de procedencia:
+
+| Capacidad | Evidencia canónica previa | Situación frente al catálogo activo de 112 |
+| --- | --- | --- |
+| `origo.procurement.purchase_orders.create` | ejemplo canónico ORIGO y capacidad futura explícita | no forma parte del conjunto activo de cinco permisos ORIGO |
+| `origo.procurement.suppliers.create` | descomposición requerida de `origo.suppliers.manage` | no forma parte del conjunto activo de cinco permisos ORIGO |
+
+Estas identidades **no son inventadas por esta tarea**. Ya estaban reservadas por las fuentes canónicas.
+
+La tarea tampoco incorpora:
+
+```text
+origo.procurement.receipts.register
+origo.procurement.purchase_orders.approve
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+porque pertenecen a tareas posteriores del mismo minibloque.
+
+---
+
+#### 6. Estado contractual frente al catálogo compartido
+
+El catálogo canónico activo de ORIGO continúa teniendo cinco permisos y todos son de solo lectura.
+
+Por tanto, esta tarea distingue:
+
+```text
+IDENTIDAD OBJETIVO DEFINIDA
+!=
+CLAVE ACTIVA EN CATÁLOGO COMPARTIDO
+!=
+GRANT MATERIALIZADO
+!=
+ENFORCEMENT EN RUNTIME
+```
+
+`ORIGO-AUTH-005` define el contrato objetivo de las dos capacidades.
+
+`ORIGO-AUTH-014` será responsable de migrar estas decisiones a los paquetes compartidos y al catálogo versionado cuando corresponda.
+
+Hasta esa migración:
+
+- no se debe afirmar que la clave ya exista en el dataset activo;
+- no se debe sembrar un grant físico por inferencia;
+- no se debe reemplazar una clave legacy sin compatibilidad gobernada;
+- no se debe considerar corregido el consumidor ORIGO.
+
+---
+
+#### 7. Regla común de autorización de creación
+
+Una creación solo puede proceder cuando exista simultáneamente:
+
+```text
+CREATE_ALLOW
+=
+APP_ACCESS
+AND
+EXACT_CREATE_PERMISSION
+AND
+BASE_LANE_VALID
+AND
+RESOURCE_INPUT_VALID
+AND
+TERRITORY_OR_ORG_SCOPE_VALID
+AND
+UPSTREAM_RELATIONS_VALID
+AND
+FIELD_WRITE_SET_VALID
+AND
+CURRENT_POLICY_VALID
+```
+
+Ausencia o indeterminación de cualquiera de esas dimensiones produce:
+
+```text
+DENY
+```
+
+No son fuentes suficientes de autoridad:
+
+- visibilidad del botón;
+- acceso a ORIGO;
+- conocimiento de un identificador;
+- query parameter;
+- valor oculto de formulario;
+- cookie;
+- lista local de roles;
+- permiso `.view`;
+- permiso legacy amplio;
+- pertenencia nominal a una sede;
+- prefill recibido desde cliente.
+
+---
+
+#### 8. `origo.procurement.purchase_orders.create`
+
+Identidad:
+
+```text
+PERMISSION:
+origo.procurement.purchase_orders.create
+
+ACCIÓN:
+create
+
+RECURSO:
+PURCHASE_ORDER
+
+APLICACIÓN:
+origo
+
+MÓDULO:
+procurement
+```
+
+Significado:
+
+> Permite materializar una orden de compra en estado no aprobado y no emitido, con cabecera y líneas válidas, dentro del ámbito autorizado del actor y sin conceder por ese hecho aprobación, emisión, recepción, corrección o eliminación.
+
+La creación debe ser una operación empresarial separada de la decisión de aprobar.
+
+---
+
+#### 9. Resultado permitido de la creación de orden
+
+La creación puede materializar un objeto de trabajo que todavía no represente compromiso aprobado ni emisión al proveedor.
+
+Invariantes:
+
+```text
+CREATE
+→ NO APPROVED
+→ NO ORDER_ISSUED
+→ NO SUPPLIER_ACK
+→ NO RECEIPT
+→ NO PAYMENT
+```
+
+El literal AS-IS:
+
+```text
+status = draft
+```
+
+se conserva como evidencia del runtime actual y **no se eleva** a estado canónico de `VPROC-0021`.
+
+La relación con los estados canónicos debe respetar:
+
+```text
+VPROC-0021.PURCHASE_REQUEST_PENDING_APPROVAL
+VPROC-0021.UNDER_REVIEW
+VPROC-0021.PENDING_APPROVAL
+VPROC-0021.APPROVED
+VPROC-0021.ORDER_PREPARING
+VPROC-0021.ORDER_ISSUED
+VPROC-0021.SUPPLIER_ACK_PENDING
+VPROC-0021.PURCHASE_COMMITMENT_FORMALIZED
+```
+
+La capacidad `create` nunca permite saltar directamente a `APPROVED`, `ORDER_ISSUED` ni al estado final.
+
+---
+
+#### 10. Entradas mínimas para crear una orden
+
+El runtime actual evidencia, como mínimo:
+
+```text
+supplier_id
+site_id
+expected_at
+notes
+líneas
+product_id
+presentation_id
+quantity
+unit_cost
+```
+
+y resuelve además:
+
+- producto activo;
+- `product_type = insumo`;
+- presentación activa;
+- presentación perteneciente al producto;
+- relación producto–proveedor;
+- conversión hacia unidad de stock;
+- costo de línea;
+- total derivado.
+
+La tarea no declara que todo valor enviado por cliente sea autoritativo.
+
+Regla:
+
+```text
+CLIENT_INPUT
+→ VALIDAR
+→ RESOLVER RELACIONES EN SERVIDOR
+→ AUTORIZAR
+→ ESCRIBIR
+```
+
+---
+
+#### 11. Relación con proveedor y catálogo
+
+`purchase_orders.create` no concede:
+
+```text
+origo.procurement.suppliers.create
+origo.procurement.suppliers.update
+nexo.catalog.products.create
+```
+
+El proveedor, producto y presentación deben existir y ser admisibles antes de consumirse en la orden.
+
+La relación producto–proveedor tampoco se fabrica por crear una orden.
+
+Si una entrada referencia:
+
+- proveedor inexistente;
+- proveedor no admisible;
+- producto inactivo;
+- presentación inválida;
+- relación producto–proveedor inexistente;
+
+la creación falla cerrada.
+
+---
+
+#### 12. Territorio de la orden
+
+La orden contiene al menos una sede objetivo en el runtime actual.
+
+Por tanto:
+
+```text
+site_id EN FORMULARIO
+!=
+AUTORIDAD SOBRE LA SEDE
+```
+
+`purchase_orders.create` requiere que el territorio objetivo sea compatible con la cobertura administrativa del actor.
+
+La política exacta para:
+
+- sede;
+- multisede;
+- centro de costo;
+- lados obligatorios de una relación;
+- cruces territoriales;
+
+permanece propietaria de `ORIGO-AUTH-009`.
+
+Esta tarea no redefine esas reglas.
+
+---
+
+#### 13. Modalidad de `purchase_orders.create`
+
+La creación de una orden pertenece al carril administrativo.
+
+Decisión:
+
+```text
+origo.procurement.purchase_orders.create
+→ BASE_ONLY
+```
+
+Justificación:
+
+- `VPROC-0021` no admite rol operativo directo;
+- crear la orden no es una acción física de recepción;
+- un turno operativo no crea autoridad de compra;
+- `gerencia_operativa` puede consultar contexto de abastecimiento sin adquirir autoridad para crear la obligación;
+- la creación administrativa debe poder operar sin check-in cuando el rol base y la cobertura sean válidos.
+
+Por tanto:
+
+```text
+OPERATIVE_LANE
+→ DENY
+```
+
+para esta capacidad.
+
+---
+
+#### 14. Política objetivo de grants base para crear órdenes
+
+La nueva capacidad no puede heredarse automáticamente desde los grants `.view`.
+
+La decisión objetivo es:
+
+| Rol base | Decisión | Alcance objetivo | Condición |
+| --- | --- | --- | --- |
+| `propietario` | `ASIGNAR` | organización productiva ordinaria | no concede aprobación automática |
+| `gerente_general` | `ASIGNAR` | organización productiva ordinaria | no concede aprobación automática |
+| `gerente` | `ASIGNAR` | sedes y relaciones dentro de su cobertura administrativa | territorio final se cierra en la 009 |
+| `auxiliar_administrativa` | `ASIGNAR` | soporte documental de compras dentro de cobertura administrativa | puede preparar; no aprobar |
+| `supervisor` | `NO_ASIGNAR` | — | seguimiento local no equivale a creación administrativa |
+| `contador` | `NO_ASIGNAR` | — | consulta y conciliación no permiten crear órdenes |
+| `marketing` | `NO_ASIGNAR` | — | fuera del dominio de abastecimiento |
+| `trabajador_operativo` | `NO_ASIGNAR` | — | el rol base operativo no crea órdenes |
+
+Esta matriz es el **objetivo contractual** de `ORIGO-AUTH-005`.
+
+No modifica todavía los datasets físicos del BLOQUE D.
+
+---
+
+#### 15. Separación respecto de aprobación
+
+Un actor con:
+
+```text
+purchase_orders.create = ALLOW
+```
+
+no obtiene por inferencia:
+
+```text
+purchase_orders.approve
+```
+
+La regla es:
+
+```text
+CREADOR
+!=
+APROBADOR
+```
+
+La misma persona podría poseer ambas capacidades por una matriz posterior válida, pero cada acción debe evaluarse por separado.
+
+La política de aprobación, segregación, importe, urgencia y excepción pertenece a:
+
+```text
+ORIGO-AUTH-006
+```
+
+---
+
+#### 16. Binding de orden de compra
+
+Superficie principal:
+
+```text
+VSCREEN-0073 — Editor de orden de compra
+```
+
+Representación AS-IS:
+
+```text
+/purchase-orders/new
+```
+
+Acción observada:
+
+```text
+createPurchaseOrder
+```
+
+Binding objetivo:
+
+```text
+VSCREEN-0073
++
+acción create
+→ origo.procurement.purchase_orders.create
+```
+
+La misma pantalla puede consultar recursos auxiliares mediante permisos de lectura separados.
+
+---
+
+#### 17. Brecha AS-IS — creación de orden
+
+El runtime actual observa:
+
+```text
+/purchase-orders/new
+→ requireAppAccess(origo)
+→ carga proveedores y sedes
+→ createPurchaseOrder
+```
+
+Dentro de `createPurchaseOrder` se observa:
+
+- usuario autenticado;
+- `supplier_id`;
+- `site_id`;
+- validación de líneas;
+- validación de producto/presentación/proveedor;
+- `created_by = user.id`;
+- creación `status = draft`;
+- inserción de líneas;
+- cálculo posterior de total.
+
+No se observa en la propia acción:
+
+```text
+has_permission("origo.procurement.purchase_orders.create")
+```
+
+Resultado:
+
+```text
+AS_IS_GAP_PURCHASE_ORDER_CREATE_BINDING
+```
+
+Esto significa que el enforcement exacto no queda demostrado por la acción inspeccionada. No constituye por sí solo una afirmación sobre RLS u otras capas no observadas.
+
+---
+
+#### 18. `origo.procurement.suppliers.create`
+
+Identidad:
+
+```text
+PERMISSION:
+origo.procurement.suppliers.create
+
+ACCIÓN:
+create
+
+RECURSO:
+SUPPLIER
+
+APLICACIÓN:
+origo
+
+MÓDULO:
+procurement
+```
+
+Significado:
+
+> Permite crear la identidad y el expediente inicial de un proveedor dentro del ámbito organizacional autorizado, sin conceder por sí sola actualización, activación, desactivación, eliminación, contratos, precios sensibles ni autoridad de compra.
+
+La identidad proviene de la descomposición canónica exigida para `origo.suppliers.manage`.
+
+---
+
+#### 19. Proveedor como recurso organizacional
+
+Un proveedor no pertenece a `employee_sites`.
+
+Regla:
+
+```text
+SUPPLIER
+→ RECURSO ORGANIZACIONAL / RELACIONAL
+
+EMPLOYEE_SITE
+→ COBERTURA DEL ACTOR
+
+EMPLOYEE_SITE
+!=
+PROPIEDAD DEL SUPPLIER
+```
+
+La creación debe resolver:
+
+- organización o unidad empresarial aplicable;
+- identidad suficiente;
+- ausencia de duplicado incompatible;
+- actor autorizado;
+- finalidad de alta;
+- campos permitidos.
+
+Una sede seleccionada no puede fabricar ownership sobre el proveedor.
+
+---
+
+#### 20. `create` no incluye activación
+
+La familia objetivo separa:
+
+```text
+suppliers.create
+suppliers.update
+suppliers.activate
+suppliers.deactivate
+```
+
+Por tanto:
+
+```text
+CREATE
+!=
+ACTIVATE
+```
+
+El runtime actual permite enviar:
+
+```text
+is_active
+```
+
+durante `createSupplier`.
+
+Ese comportamiento se registra como:
+
+```text
+AS_IS_CREATE_AND_ACTIVATE_COUPLED
+```
+
+La materialización futura deberá evitar que `suppliers.create` satisfaga silenciosamente `suppliers.activate`.
+
+La política de activación/desactivación permanece reservada a `ORIGO-AUTH-008`.
+
+---
+
+#### 21. Campos observados en alta de proveedor
+
+El runtime actual puede persistir:
+
+```text
+name
+tax_id
+contact_name
+phone
+email
+address
+notes
+is_active
+payment_type
+credit_days
+```
+
+`suppliers.create` no debe interpretarse como autoridad ilimitada sobre todos esos campos.
+
+La decisión por campo debe respetar:
+
+```text
+IDENTIDAD / CONTACTO BÁSICO
+→ puede formar parte del alta si está permitido
+
+ESTADO ACTIVO
+→ requiere autoridad de activación
+
+CONDICIÓN COMERCIAL
+→ queda sujeta a protección y contrato específico
+
+DATO SENSIBLE
+→ queda sujeto a minimización y protección
+```
+
+La protección de precios, datos tributarios, contratos y demás información sensible se cierra en `ORIGO-AUTH-010`.
+
+---
+
+#### 22. Modalidad de `suppliers.create`
+
+Crear un proveedor modifica un dato maestro organizacional.
+
+Decisión:
+
+```text
+origo.procurement.suppliers.create
+→ BASE_ONLY
+```
+
+No existe carril operativo de creación.
+
+Un bodeguero o `gerencia_operativa` puede recibir una proyección mínima de proveedor para una entrega autorizada, pero esa visibilidad:
+
+```text
+SUPPLIER VIEW OPERATIVO
+!=
+SUPPLIER CREATE
+```
+
+Por tanto:
+
+```text
+OPERATIVE_LANE
+→ DENY
+```
+
+para `suppliers.create`.
+
+---
+
+#### 23. Política objetivo de grants base para crear proveedores
+
+Decisión objetivo:
+
+| Rol base | Decisión | Alcance objetivo | Condición |
+| --- | --- | --- | --- |
+| `propietario` | `ASIGNAR` | organización productiva ordinaria | alta no concede contratos ni activación automática |
+| `gerente_general` | `ASIGNAR` | organización productiva ordinaria | alta no concede contratos ni activación automática |
+| `gerente` | `ASIGNAR` | unidades de negocio cubiertas por su responsabilidad administrativa | proveedor sigue siendo recurso organizacional |
+| `auxiliar_administrativa` | `ASIGNAR` | soporte administrativo de abastecimiento | no activa ni modifica condiciones sensibles por inferencia |
+| `supervisor` | `NO_ASIGNAR` | — | seguimiento local no gobierna el maestro |
+| `contador` | `NO_ASIGNAR` | — | conciliación no modifica proveedores |
+| `marketing` | `NO_ASIGNAR` | — | fuera del dominio de abastecimiento |
+| `trabajador_operativo` | `NO_ASIGNAR` | — | un rol operativo no administra maestros |
+
+La futura materialización deberá reproducir esta política con capacidades explícitas y sin fallback por nombre de rol.
+
+---
+
+#### 24. Binding de alta de proveedor
+
+Pantalla:
+
+```text
+VSCREEN-0071 — Alta y expediente de proveedor
+```
+
+Proceso propietario:
+
+```text
+VPROC-0020 — Comparar proveedores y condiciones con evidencia suficiente para decidir
+```
+
+Representación AS-IS:
+
+```text
+/suppliers/new
+```
+
+Acción observada:
+
+```text
+createSupplier
+```
+
+Binding objetivo:
+
+```text
+VSCREEN-0071
++
+VPROC-0020
++
+acción create
+→ origo.procurement.suppliers.create
+```
+
+La pantalla puede combinar otras acciones, pero cada una conserva permiso independiente.
+
+---
+
+#### 25. Brecha AS-IS — creación de proveedor
+
+El runtime actual usa:
+
+```text
+requireCanManageSuppliers
+```
+
+que primero consulta:
+
+```text
+origo.suppliers.manage
+```
+
+y después conserva fallback por nombres de rol locales.
+
+La creación observada queda:
+
+```text
+createSupplier
+→ usuario autenticado
+→ requireCanManageSuppliers
+→ insert suppliers
+```
+
+No se demuestra como check exacto:
+
+```text
+origo.procurement.suppliers.create
+```
+
+Resultado:
+
+```text
+AS_IS_LEGACY_SUPPLIER_MANAGE_CREATE
+```
+
+La transición futura debe retirar la dependencia autoritativa del permiso agregado y de la lista local de roles para esta acción.
+
+---
+
+#### 26. Matriz consolidada de las dos capacidades
+
+| Capacidad | Recurso | Modalidad | Carril operativo | Efecto máximo |
+| --- | --- | --- | --- | --- |
+| `origo.procurement.purchase_orders.create` | `PURCHASE_ORDER` | `BASE_ONLY` | `DENY` | crear orden no aprobada/no emitida dentro del alcance |
+| `origo.procurement.suppliers.create` | `SUPPLIER` | `BASE_ONLY` | `DENY` | crear identidad/expediente inicial sin activar ni administrar condiciones sensibles |
+
+Total:
+
+```text
+CAPACIDADES DE CREACIÓN: 2
+BASE_ONLY: 2
+BASE_OR_OPERATIONAL: 0
+OPERATIONAL_ONLY: 0
+BASE_AND_OPERATIONAL: 0
+```
+
+---
+
+#### 27. Matriz de separación de acciones
+
+| Acción | Orden | Proveedor | Propietario |
+| --- | --- | --- | --- |
+| consultar | `purchase_orders.view` | `suppliers.view` | `ORIGO-AUTH-004` |
+| crear | `purchase_orders.create` | `suppliers.create` | `ORIGO-AUTH-005` |
+| aprobar | `purchase_orders.approve` | no se infiere | `ORIGO-AUTH-006` |
+| recibir | `receipts.register` | no se infiere | `ORIGO-AUTH-007` |
+| actualizar/corregir | capacidad separada | `suppliers.update` | `ORIGO-AUTH-008` |
+| activar/desactivar | no aplica | `suppliers.activate/deactivate` | `ORIGO-AUTH-008` |
+| proteger datos sensibles | campos/proyecciones | campos/proyecciones | `ORIGO-AUTH-010` |
+
+Ninguna fila hereda autoridad de otra.
+
+---
+
+#### 28. Dispositivo compartido
+
+Las dos capacidades de creación no aparecen hoy en el catálogo activo de permisos ni en el techo vigente de dispositivos compartidos.
+
+Decisión fail-closed:
+
+```text
+SHARED_DEVICE
++
+CREATE_PERMISSION_NOT_EXPLICITLY_IN_DEVICE_CEILING
+→ DENY
+```
+
+La tarea no crea una entrada de dispositivo por inferencia.
+
+Una futura incorporación deberá exigir simultáneamente:
+
+- actor humano efectivo;
+- permiso base exacto;
+- aplicación permitida;
+- dispositivo autorizado;
+- techo de capacidad que incluya explícitamente la acción;
+- territorio y recurso válidos cuando aplique.
+
+---
+
+#### 29. Simulación
+
+La simulación nunca produce el efecto real de creación.
+
+Para ambas capacidades:
+
+```text
+SIMULATED_ALLOW
+→ DECISIÓN / PREVISUALIZACIÓN
+→ ZERO BUSINESS WRITE
+```
+
+Una simulación puede explicar:
+
+- permiso faltante;
+- scope;
+- rol;
+- territorio;
+- recurso;
+- campos bloqueados;
+
+pero no crea una orden ni un proveedor.
+
+La incorporación de estas nuevas claves al contrato de simulación pertenece a la migración compartida posterior y no se materializa aquí.
+
+---
+
+#### 30. Auditoría mínima de creación
+
+Toda ejecución física futura deberá conservar evidencia correlacionable de:
+
+```text
+principal
+actor efectivo
+permission_key
+resource_type
+resource_id creado
+scope
+territorio cuando aplique
+decisión
+razones
+timestamp
+versión contractual
+resultado
+```
+
+Además:
+
+```text
+purchase_orders.create
+→ created_by / actor trazable
+
+suppliers.create
+→ actor de alta trazable
+```
+
+La identidad técnica de sesión no deberá ocultar al actor humano efectivo cuando exista un dispositivo compartido.
+
+---
+
+#### 31. Regla de primer efecto
+
+El permiso exacto debe resolverse **antes** del primer write empresarial.
+
+Secuencia objetivo:
+
+```text
+AUTHENTICATE
+→ RESOLVE ACTOR
+→ RESOLVE EXACT CREATE PERMISSION
+→ RESOLVE SCOPE / TERRITORY
+→ VALIDATE INPUT AND RELATIONS
+→ AUTHORIZE FIELD SET
+→ WRITE
+```
+
+Está prohibido usar como patrón:
+
+```text
+WRITE
+→ LUEGO COMPROBAR PERMISO
+```
+
+Si una operación de creación requiere varios writes técnicos, todos pertenecen a una sola intención autorizada y deben preservar actor, correlación y resultado coherentes.
+
+---
+
+#### 32. Errores y denegaciones
+
+Deben distinguirse como mínimo:
+
+```text
+NO_SESSION
+NO_APP_ACCESS
+MISSING_CREATE_PERMISSION
+RESOURCE_INPUT_INVALID
+OUT_OF_SCOPE
+TERRITORY_INVALID
+RELATION_INVALID
+FIELD_NOT_ALLOWED
+UPSTREAM_STATE_INVALID
+TECHNICAL_FAILURE
+```
+
+No deben colapsarse:
+
+```text
+DENY
+!=
+NOT_FOUND
+!=
+INVALID_INPUT
+!=
+TECHNICAL_ERROR
+```
+
+Un error técnico nunca se convierte en autorización por fallback.
+
+---
+
+#### 33. Aliases y controles legacy
+
+Se observaron controles legacy relevantes:
+
+```text
+origo.suppliers.manage
+lista local de roles de proveedor
+origo.access como único guard visible de /purchase-orders/new
+```
+
+Tratamiento:
+
+```text
+LEGACY
+→ COMPATIBILIDAD TRANSITORIA
+→ NO FUENTE OBJETIVO DE AUTORIDAD
+```
+
+No se crea alias nuevo.
+
+No se permite que:
+
+```text
+origo.suppliers.manage
+→ equivalga automáticamente a todas las operaciones suppliers.*
+```
+
+La equivalencia exacta, si se requiere durante migración, deberá declararse explícitamente y retirarse de forma gobernada.
+
+---
+
+#### 34. Relación con `ORIGO-AUTH-006`
+
+La siguiente tarea define aprobación.
+
+Handoff exacto:
+
+```text
+ORIGO-AUTH-005
+→ una orden puede ser creada/preparada sin quedar aprobada
+
+ORIGO-AUTH-006
+→ define quién y cómo aprueba/rechaza
+```
+
+La presente tarea no decide:
+
+- niveles de aprobación;
+- montos;
+- doble control;
+- urgencia;
+- excepción;
+- autoaprobación;
+- emisión al proveedor.
+
+---
+
+#### 35. Relación con `ORIGO-AUTH-007` y `ORIGO-AUTH-008`
+
+`ORIGO-AUTH-007` conserva:
+
+```text
+origo.procurement.receipts.register
+```
+
+y la autoridad de recepción.
+
+`ORIGO-AUTH-008` conserva:
+
+```text
+purchase order update/correction
+suppliers.update
+suppliers.activate
+suppliers.deactivate
+retiro o eliminación
+```
+
+Por tanto:
+
+```text
+CREATE
+→ NO ABSORBE RECEIVE
+→ NO ABSORBE UPDATE
+→ NO ABSORBE ACTIVATE
+→ NO ABSORBE DELETE
+```
+
+---
+
+#### 36. Hallazgos diferidos y propietarios
+
+| Hallazgo | Bloquea esta definición | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `createPurchaseOrder` no demuestra check exacto de creación | no | `ORIGO-AUTH-014` + package físico | consumer usa la clave materializada y enforcement server-side |
+| `createSupplier` usa `origo.suppliers.manage` | no | `ORIGO-AUTH-014` + package físico | acción consume `suppliers.create` exacto |
+| fallback local por rol en proveedor | no | `ORIGO-AUTH-014` + package físico | decisión deriva del catálogo/matriz canónicos |
+| `createSupplier` mezcla alta con `is_active` | no | `ORIGO-AUTH-008` | activación queda separada y verificable |
+| orden recibe `site_id` desde formulario | no | `ORIGO-AUTH-009` | territorio y centro de costo se resuelven server-side |
+| orden/proveedor exponen datos comerciales | no | `ORIGO-AUTH-010` | field masks y acceso sensible quedan cerrados |
+| permisos nuevos no están en dataset activo de 112 | no | `ORIGO-AUTH-014` | catálogo versionado, tipos, grants y consumidores incorporados |
+
+Ningún hallazgo autoriza un bypass temporal.
+
+---
+
+#### 37. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la separación entre creación, consulta, aprobación, recepción y corrección, el uso de permisos exactos, el bloqueo de fallbacks por rol, la protección territorial, la segregación de estados y el gobierno de proveedores ya están cubiertos por requisitos canónicos vigentes. Esta tarea concreta el contrato de dos capacidades ya reservadas por fuentes canónicas y no introduce una obligación verificable sin cobertura.
+
+---
+
+#### 38. Cobertura de prueba vigente reutilizada
+
+La trazabilidad existente se reutiliza sin modificar el Registro 04A:
+
+- `TREQ-ORIGO-002` — lectura y mutación de órdenes limitadas por permiso, territorio, estado y columnas;
+- `TREQ-ORIGO-004` — separación de necesidad, selección, aprobación, orden y recepción, con segregación de capacidades;
+- `TREQ-ORIGO-005` — identidad estable de proveedor, condiciones separadas y protección de datos sensibles;
+- `TREQ-AUTH-001` — la autorización final depende de permiso, contexto y alcance canónicos y no de listas locales de roles;
+- `TREQ-AUTH-002` — toda clave consumida por código debe existir en el catálogo vigente;
+- `TREQ-AUTH-013` — cada mutación revalida en servidor permiso exacto, actor, territorio, contexto, estado y columnas;
+- `TREQ-AUTH-015` — decisiones y acciones protegidas conservan evidencia correlacionable.
+
+Estas referencias son cobertura heredada; no representan cambios al registro.
+
+---
+
+#### 39. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | No se ejecutó `docs:plan:build` contra un checkout local actualizado durante la preparación del artefacto. |
+| LOCAL | NOT_EXECUTED | No se insertó la tarea en un checkout real ni se ejecutaron validadores locales del repositorio. |
+| REMOTA | PASS | Se consultaron `vento-shell/main`, `vento-origo/main`, owner, continuidad, topología, catálogos, matrices, procesos, 04A y código consumidor vigente. |
+| OPERATIVA | NOT_EXECUTED | No se inició sesión ni se ejecutó creación real de orden o proveedor. |
+| FÍSICA | NOT_APPLICABLE | `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`; esta tarea no tiene materialización física propia. |
+
+---
+
+#### 40. Criterios de aceptación
+
+- [x] El universo de creación contiene exactamente dos capacidades.
+- [x] Ambas identidades existían previamente en fuentes canónicas.
+- [x] Ninguna se declara activa todavía en el dataset compartido de 112 permisos.
+- [x] `purchase_orders.create` protege `PURCHASE_ORDER`.
+- [x] `suppliers.create` protege `SUPPLIER`.
+- [x] Ambas capacidades quedan `BASE_ONLY`.
+- [x] Ningún rol operativo recibe autoridad de creación por turno.
+- [x] Crear una orden no aprueba ni emite la compra.
+- [x] El literal AS-IS `draft` no se confunde con un estado canónico de proceso.
+- [x] Crear una orden requiere proveedor, territorio y relaciones válidas sin convertir inputs cliente en autoridad.
+- [x] Crear proveedor no incluye `update`, `activate` ni `deactivate`.
+- [x] El proveedor sigue siendo recurso organizacional y no propiedad de una sede.
+- [x] `is_active` del runtime se identifica como acoplamiento a separar.
+- [x] Se define política objetivo de grants base sin modificar datasets físicos.
+- [x] `contador`, `supervisor`, `marketing` y `trabajador_operativo` no reciben las dos capacidades por defecto.
+- [x] `bodeguero` y `gerencia_operativa` no obtienen creación por carril operativo.
+- [x] Un dispositivo compartido no recibe estas capacidades por inferencia.
+- [x] La simulación tiene cero writes empresariales.
+- [x] El permiso exacto debe resolverse antes del primer write.
+- [x] Se identifican los dos gaps principales del runtime.
+- [x] Todos los hallazgos diferidos tienen propietario y condición de salida.
+- [x] No se modifica el Registro 04A.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se autoriza modificación física, Supabase, migración, datos ni despliegue.
+- [x] `ORIGO-AUTH-006` queda como siguiente tarea exacta y no se desarrolla aquí.
+
+---
+
+#### 41. Límites
+
+Esta tarea no:
+
+- activa permisos nuevos en el catálogo compartido;
+- modifica matrices RBAC físicas;
+- crea grants;
+- modifica `origo.suppliers.manage`;
+- modifica `has_permission`;
+- cambia RLS;
+- cambia RPC;
+- modifica Server Actions;
+- crea o edita una orden real;
+- crea o edita un proveedor real;
+- aprueba una compra;
+- emite una orden;
+- registra una recepción;
+- corrige o elimina una orden;
+- actualiza, activa, desactiva o elimina un proveedor;
+- decide el detalle de sede o centro de costo;
+- define field masks finales de precios y datos sensibles;
+- cambia navegación;
+- modifica `vento-origo`;
+- modifica Supabase;
+- crea migraciones;
+- modifica datos;
+- ejecuta pruebas operativas;
+- desarrolla `ORIGO-AUTH-006`.
+
+---
+
+#### 42. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-004 — Definir permisos de consulta`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-005 — Definir permisos de creación`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-006 — Definir permisos de aprobación`
+
 ### [ ] ORIGO-AUTH-006 — Definir permisos de aprobación
 ### [ ] ORIGO-AUTH-007 — Definir permisos de recepción
 ### [ ] ORIGO-AUTH-008 — Definir permisos de corrección

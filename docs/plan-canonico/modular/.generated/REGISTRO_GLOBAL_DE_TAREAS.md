@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1307** |
+| Aprobadas | **1308** |
 | En propuesta | **0** |
-| No iniciadas | **289** |
+| No iniciadas | **288** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.89% (1307/1596)** |
+| Porcentaje de completamiento | **81.95% (1308/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **289** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1208** |
+| ⏸ NO_EVALUADA | **288** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1209** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-AUTH-004` — Definir permisos de consulta | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-005` — Definir permisos de creación | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-006` — Definir permisos de aprobación | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-005` — Definir permisos de creación | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-006` — Definir permisos de aprobación | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-007` — Definir permisos de recepción | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1088,7 +1088,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-002` | Inventariar vistas de proveedores | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-003` | Inventariar vistas de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-004` | Definir permisos de consulta | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-005` | Definir permisos de creación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-005` | Definir permisos de creación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-006` | Definir permisos de aprobación | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-007` | Definir permisos de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-008` | Definir permisos de corrección | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
