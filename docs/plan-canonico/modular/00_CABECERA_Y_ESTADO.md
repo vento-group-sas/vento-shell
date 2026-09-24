@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1319** |
+| Tareas aprobadas | **1320** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **277** |
+| Tareas no iniciadas | **276** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **82.64% (1319/1596)** |
+| Porcentaje de completamiento | **82.71% (1320/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-UX-006 — Diseñar historial** |
-| Tarea actual | **PASS-UX-007 — Diseñar catálogo de recompensas** |
+| Última tarea aprobada | **PASS-UX-007 — Diseñar catálogo de recompensas** |
+| Tarea actual | **PASS-UX-008 — Diseñar perfil del cliente** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-UX-008 — Diseñar perfil del cliente** |
+| Siguiente tarea | **PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado** |
 | Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE** |
-| Progreso del bloque | **CARRIL PASS: 6 de 13 aprobadas; PASS-UX-007 pendiente** |
+| Progreso del bloque | **CARRIL PASS: 7 de 13 aprobadas; PASS-UX-008 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-UX-007** |
+| Carril documental | **ACTIVO — PASS-UX-008** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-UX-006` — Diseñar historial |
-| Tarea actual | `PASS-UX-007` — Diseñar catálogo de recompensas — **NO INICIADA** |
-| Siguiente tarea | `PASS-UX-008` — Diseñar perfil del cliente |
+| Última aprobada | `PASS-UX-007` — Diseñar catálogo de recompensas |
+| Tarea actual | `PASS-UX-008` — Diseñar perfil del cliente — **NO INICIADA** |
+| Siguiente tarea | `PASS-UX-009` — Diferenciar estado pendiente, usado y cancelado |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 6 DE 13 APROBADAS — ACTUAL PASS-UX-007** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 7 DE 13 APROBADAS — ACTUAL PASS-UX-008** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-UX-006 — Diseñar historial
-        ↓
-TAREA ACTUAL
 PASS-UX-007 — Diseñar catálogo de recompensas
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PASS-UX-008 — Diseñar perfil del cliente
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
+        ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 6 de 13 tareas aprobadas
+CARRIL PASS — 7 de 13 tareas aprobadas
 ```
