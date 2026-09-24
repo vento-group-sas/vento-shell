@@ -2828,6 +2828,7 @@ export function applyPhysicalOverlay({ registry, contract, instances, capability
 export function discoverCanonicalPackageIds(root = process.cwd(), priorityLanes = { lanes: [] }) {
   const ids = new Set(
     (priorityLanes?.lanes ?? [])
+      .filter((lane) => String(lane?.route_mode ?? 'FULL_PACKAGE').trim().toUpperCase() !== 'DOCUMENTATION_PRIORITY')
       .map(({ lane_id: laneId }) => String(laneId ?? '').trim())
       .filter((laneId) => /^[A-Z][A-Z0-9-]*-\d{3,4}$/u.test(laneId)),
   );
@@ -3456,7 +3457,8 @@ export function scanPackageReadiness({
     : loadPackageGateRecords({ root, policy: packageGatePolicy, taskPrerequisitesById });
   assertPackageGateRecordsValid(packageGateResult);
 
-  // This coverage audit is intentionally limited to special package identities outside GAP-PKG-001..207.
+  // This coverage audit is intentionally limited to special physical package identities outside GAP-PKG-001..207.
+  // DOCUMENTATION_PRIORITY lanes reorder canonical documentation only and are not package identities.
   const specialCanonicalPackageIds = supplied.canonicalPackageIds
     ?? [...new Set([
       ...(contract.canonical_package_catalog.special_package_ids ?? []),

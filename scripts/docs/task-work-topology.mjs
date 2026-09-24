@@ -140,6 +140,19 @@ export function executionDependencyGateErrors(topology, dependencies) {
   return errors;
 }
 
+export function activeDocumentaryTaskId(active) {
+  const priorityTaskId = active?.route_id !== 'NORMAL-CANONICAL-FLOW-001'
+    ? (active?.task_ids ?? []).find(
+      (id) => typeof id === 'string' && !id.includes('::'),
+    ) ?? null
+    : null;
+  if (priorityTaskId) return priorityTaskId;
+  const segment = active?.segments?.[0];
+  return segment
+    ? `${segment.prefix}-${String(segment.from).padStart(3, '0')}`
+    : null;
+}
+
 export function resolveTaskWorkTopology({ root = process.cwd() } = {}) {
   const baseDir = path.join(root, 'docs', 'plan-canonico', 'modular');
   const policy = JSON.parse(fs.readFileSync(path.join(baseDir, 'task-work-topology.json'), 'utf8'));
@@ -333,8 +346,7 @@ export function resolveTaskWorkTopology({ root = process.cwd() } = {}) {
   errors.push(...executionDependencyGateErrors(topology, dependencies));
 
   const active = JSON.parse(fs.readFileSync(path.join(baseDir, 'active-sequence.json'), 'utf8'));
-  const segment = active.segments?.[0];
-  const currentId = segment ? `${segment.prefix}-${String(segment.from).padStart(3, '0')}` : null;
+  const currentId = activeDocumentaryTaskId(active);
   if (currentId && dependencies.has(currentId)) {
     for (const dependency of dependencies.get(currentId).development) {
       const owner = inventory.get(dependency);

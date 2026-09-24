@@ -138,6 +138,25 @@ test('retorna al flujo normal únicamente después de certificar todo el carril'
   assert.equal(resumed.resumed_after_priority_route_id, 'TEST-LANE-001');
 });
 
+test('retorna al flujo normal al completar una priority lane documental', () => {
+  const normalConfig = {
+    route_id: 'NORMAL-CANONICAL-FLOW-001',
+    sequence_id: 'NORMAL-NEXT',
+    segments: [{ prefix: 'NEXT-TEST', from: 1, to: 2 }],
+    route_progress: { covered_tasks: 8, pending_tasks: 2 },
+  };
+  const resumed = applyPriorityReturnPolicy(
+    {
+      ...selector,
+      return_policy: 'RETURN_TO_NORMAL_AFTER_PRIORITY_COMPLETION',
+    },
+    { route_id: 'TEST-LANE-001', priority_route_complete: true },
+    normalConfig,
+  );
+  assert.equal(resumed.route_id, 'NORMAL-CANONICAL-FLOW-001');
+  assert.equal(resumed.resumed_after_priority_route_id, 'TEST-LANE-001');
+});
+
 test('execution-route conserva la autoridad única sobre latest_treq_task_id en el flujo normal', () => {
   const selected = applyNormalRouteSelection(
     {
