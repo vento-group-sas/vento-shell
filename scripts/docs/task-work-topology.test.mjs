@@ -2,11 +2,32 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 
 import {
+  activeDocumentaryTaskId,
   developmentDependencyOrderErrors,
   executionDependencyGateErrors,
   resolveTaskWorkTopology,
   taskDependencies,
 } from './task-work-topology.mjs';
+
+test('resuelve la tarea documental actual desde una priority lane', () => {
+  assert.equal(
+    activeDocumentaryTaskId({
+      route_id: 'PASS-LOYALTY-001',
+      task_ids: ['PASS-UX-001', 'PASS-UX-002'],
+    }),
+    'PASS-UX-001',
+  );
+});
+
+test('conserva la resolución documental por segments en el flujo normal', () => {
+  assert.equal(
+    activeDocumentaryTaskId({
+      route_id: 'NORMAL-CANONICAL-FLOW-001',
+      segments: [{ prefix: 'ORIGO-AUTH', from: 11, to: 15 }],
+    }),
+    'ORIGO-AUTH-011',
+  );
+});
 
 test('clasifica todas las tareas y separa definición, unidad, paquete y cierre global', () => {
   const result = resolveTaskWorkTopology();

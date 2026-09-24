@@ -89,8 +89,9 @@ if (retiredLane?.status !== 'SUSPENDED' || retiredLane?.active !== false || reti
 }
 
 const progress = JSON.parse(fs.readFileSync(path.join(docsRoot, 'priority-route-progress.json'), 'utf8'));
-if (progress.active !== false || progress.superseded_by !== 'NORMAL-CANONICAL-FLOW-001') {
-  throw new Error('priority-route-progress.json intenta gobernar la continuidad después de retirado el carril.');
+if (progress.route_id === 'NEXO-REMISSIONS-001'
+  && (progress.active !== false || progress.superseded_by !== 'NORMAL-CANONICAL-FLOW-001')) {
+  throw new Error('priority-route-progress.json intenta reactivar el carril NEXO retirado.');
 }
 
 const authUiPath = path.join(

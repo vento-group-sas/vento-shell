@@ -6,9 +6,9 @@
     "default_route": "NORMAL_CANONICAL_FLOW",
     "normal_route_source": "continuity-route.json",
     "route_selection_source": "execution-route.json",
-    "priority_route_trigger": "La prioridad de implementación activa es remisiones NEXO.",
-    "priority_route_id": "NEXO-REMISSIONS-001",
-    "selection_rule": "Si la prioridad activa es remisiones NEXO se sigue el ordered_execution_stages del carril; para cualquier otra prioridad se sigue el flujo normal del plan.",
+    "priority_route_trigger": "La prioridad documental activa es Vento PASS para fidelización, puntos y beneficios.",
+    "priority_route_id": "PASS-LOYALTY-001",
+    "selection_rule": "Si execution-route.json selecciona un carril activo registrado se siguen sus ordered_execution_stages; NORMAL-CANONICAL-FLOW-001 conserva el flujo integral por defecto.",
     "canonical_documentation_continues": true,
     "final_plan_scope_unchanged": true
   },
@@ -1016,6 +1016,97 @@
               "to": 48
             }
           ]
+        }
+      ]
+    },
+    {
+      "lane_id": "PASS-LOYALTY-001",
+      "title": "PASS — fidelización, puntos y beneficios como prioridad documental",
+      "route_mode": "DOCUMENTATION_PRIORITY",
+      "status": "DESIGNATED_NOT_READY",
+      "active": true,
+      "historical_evidence_only": false,
+      "owner_application": "pass",
+      "application_repository": "vento-pass",
+      "supabase_repository": "vento-shell",
+      "scope": [
+        "experiencia cliente PASS",
+        "puntos, beneficios, QR personal, historial y catálogo de recompensas",
+        "acumulación y redención definidas contractualmente con PULSO",
+        "perfil de cliente y estados comprensibles",
+        "separación estricta entre identidad cliente e identidad trabajador"
+      ],
+      "excluded_from_closure": [
+        "implementación física de PASS antes de completar dependency closure y packages E5",
+        "ejecución de PASS-QA-001 y PASS-QA-002 antes de POST_E5_PACKAGE",
+        "cierre completo de PULSO",
+        "cierre integral de Vento OS"
+      ],
+      "invariants": [
+        "canonical_sequence_unchanged=true",
+        "global_task_partial_approval_forbidden=true",
+        "canonical_documentation_continues=true",
+        "final_plan_scope_unchanged=true",
+        "DOCUMENTATION_PRIORITY no autoriza implementación física",
+        "DOCUMENTATION_PRIORITY no autoriza package gates",
+        "PASS-QA-001 y PASS-QA-002 permanecen POST_E5_PACKAGE",
+        "el silencio nunca equivale a no aplica",
+        "dependencias futuras permanecen preservadas por owner y fase",
+        "COMPLETE_EXPLICIT_SCOPE permanece revalidable",
+        "Supabase permanece bajo vento-shell",
+        "la package frontier normal vigente conserva estado y no se cierra por esta prioridad",
+        "ninguna instancia de carril aprueba una tarea global por inferencia",
+        "al terminar la prioridad documental se vuelve al flujo normal antes de materializar prioridad física"
+      ],
+      "required_task_artifacts": [
+        {
+          "artifact_group_id": "PASS_CUSTOMER_EXPERIENCE",
+          "task_ranges": [
+            {
+              "prefix": "PASS-UX",
+              "from": 1,
+              "to": 13
+            }
+          ],
+          "required_scope": "definir y aprobar completamente la experiencia cliente PASS antes de dependency closure y diseño físico"
+        },
+        {
+          "artifact_group_id": "PASS_LOYALTY_INTEGRATIONS",
+          "task_ranges": [
+            {
+              "prefix": "PASS-INT",
+              "from": 1,
+              "to": 5
+            }
+          ],
+          "required_scope": "definir y aprobar integraciones de fidelización, acumulación, redención y separación cliente/trabajador"
+        }
+      ],
+      "deferred_but_preserved": [
+        {
+          "artifact_group_id": "PASS_QA_POST_E5",
+          "task_ranges": [
+            {
+              "prefix": "PASS-QA",
+              "from": 1,
+              "to": 2
+            }
+          ],
+          "reason": "PER_IMPLEMENTATION_UNIT con gate POST_E5_PACKAGE; se ejecutan cuando exista la unidad física correspondiente."
+        }
+      ],
+      "ordered_execution_stages": [
+        {
+          "order": 1,
+          "stage_id": "PASS_CUSTOMER_EXPERIENCE",
+          "task_source": "required_task_artifacts.PASS_CUSTOMER_EXPERIENCE",
+          "rule": "Completar PASS-UX-001..013 en orden y con aprobación explícita por tarea."
+        },
+        {
+          "order": 2,
+          "stage_id": "PASS_LOYALTY_INTEGRATIONS",
+          "task_source": "required_task_artifacts.PASS_LOYALTY_INTEGRATIONS",
+          "rule": "Completar PASS-INT-001..005 en orden y con aprobación explícita por tarea."
         }
       ]
     }

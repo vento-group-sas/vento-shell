@@ -1,8 +1,10 @@
 {
   "schema_version": 1,
-  "selected_route_id": "NORMAL-CANONICAL-FLOW-001",
+  "selected_route_id": "PASS-LOYALTY-001",
   "normal_route_id": "NORMAL-CANONICAL-FLOW-001",
   "latest_treq_task_id": "NEXO-UX-025",
-  "selection_basis": "Decisión empresarial explícita: completar el plan canónico integral de Vento OS sin priorizar Remisiones, NEXO ni otra aplicación.",
+  "priority_entry_task_id": "ORIGO-AUTH-010",
+  "return_policy": "RETURN_TO_NORMAL_AFTER_PRIORITY_COMPLETION",
+  "selection_basis": "Decisión empresarial explícita: priorizar ahora la documentación completa de Vento PASS antes de construir su dependency closure y priorización física de GAP packages, preservando el alcance final de Vento OS.",
   "selected_explicitly": true
 }

@@ -119,8 +119,8 @@ test('acepta un carril que separa diseño, puerta e implementación física', ()
     taskIds,
     documents: activeDocuments,
   });
-  assert.equal(stats.lanes, 1);
-  assert.equal(stats.designated, 1);
+  assert.equal(stats.lanes, 2);
+  assert.equal(stats.designated, 2);
 });
 
 test('acepta conservar el carril como registro histórico mientras gobierna el flujo normal', () => {
@@ -144,7 +144,7 @@ test('acepta conservar el carril como registro histórico mientras gobierna el f
     taskIds,
     documents: historicalDocuments,
   });
-  assert.equal(stats.designated, 0);
+  assert.equal(stats.designated, 1);
 });
 
 test('rechaza habilitar aprobación parcial de tareas globales', () => {
