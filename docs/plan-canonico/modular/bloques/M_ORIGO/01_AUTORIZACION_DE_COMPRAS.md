@@ -9196,7 +9196,1848 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-010 — Proteger precios y datos sensibles`
 
-### [ ] ORIGO-AUTH-010 — Proteger precios y datos sensibles
+### ✅ ORIGO-AUTH-010 — Proteger precios y datos sensibles
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo
+**Tarea siguiente:** ORIGO-AUTH-011 — Registrar actor de recepción
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — definición de la política canónica de minimización, proyección y field masking para precios, costos, condiciones comerciales, datos sensibles de proveedor y documentos de órdenes ORIGO, incluido el canal externo por token, sin materializar todavía ninguna unidad física
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `ORIGO-AUTH-010::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable **qué datos puede recibir cada actor después de que el recurso ya fue autorizado**, sin confundir autorización de recurso con autorización de columnas, precios, costos, condiciones comerciales, documentos o secretos.
+
+La regla raíz queda:
+
+```text
+PERMISO EXACTO
++
+RECURSO AUTORIZADO
++
+ALCANCE / CONTEXTO AUTORIZADO
++
+FINALIDAD DE LA ACCIÓN
++
+FIELD MASK AUTORIZADO
+=
+PROYECCIÓN ENTREGABLE
+```
+
+Nunca:
+
+```text
+RECURSO AUTORIZADO
+=
+TODAS LAS COLUMNAS AUTORIZADAS
+```
+
+Y nunca:
+
+```text
+PUEDE VER / EDITAR EL PROVEEDOR
+=
+PUEDE VER / EDITAR PRECIOS, CONTRATOS, DATOS TRIBUTARIOS, CUENTAS BANCARIAS O DOCUMENTOS SENSIBLES
+```
+
+La tarea protege tanto la **lectura** como la **sobrelectura**, la **mutación de campos**, la **exportación**, los **documentos internos** y el **canal externo al proveedor**.
+
+---
+
+#### 2. Handoff recibido de ORIGO-AUTH-002, 004, 005, 006, 008 y 009
+
+Esta tarea consume sin reinterpretación:
+
+1. `ORIGO-AUTH-002` separó la proyección administrativa de proveedor de la proyección operativa mínima y reservó a esta tarea los field masks sensibles;
+2. `ORIGO-AUTH-004` definió `origo.procurement.purchase_orders.view` y `origo.procurement.suppliers.view`, sus modalidades, scopes, grants y proyecciones generales;
+3. `ORIGO-AUTH-005` separó creación de orden/proveedor y dejó precios, condiciones y datos sensibles fuera de la autoridad implícita de crear;
+4. `ORIGO-AUTH-006` estableció que una aprobación puede necesitar importe, precio y condición comercial, pero no por ello obtiene acceso irrestricto a cualquier dato sensible;
+5. `ORIGO-AUTH-008` separó `purchase_orders.update`, `suppliers.update`, `suppliers.activate` y `suppliers.deactivate`, y declaró que un permiso mutante no revela campos ocultos;
+6. `ORIGO-AUTH-009` cerró la autorización territorial de órdenes y estableció expresamente que una orden territorialmente autorizada no equivale a todas sus columnas autorizadas.
+
+Por tanto, esta tarea no redefine permisos, territorio, estados ni grants ya aprobados. Define la **proyección sensible resultante**.
+
+---
+
+#### 3. Topología y frontera física
+
+La topología vigente es:
+
+```text
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Consecuencias:
+
+1. este marcador define una sola vez el contrato global reutilizable;
+2. no se crea una instancia física durante la aprobación documental;
+3. cada materialización futura usa `ORIGO-AUTH-010::<implementation_unit_id>`;
+4. una unidad puede ser consumida por varios paquetes mediante lineage cuando el lifecycle lo determine;
+5. toda unidad física exige previamente el `E5-GATE-008::<package_id>` aplicable en `PASS` y autorización física explícita;
+6. esta conversación no selecciona `package_id`, `implementation_unit_id`, target paths ni ambiente;
+7. cualquier modificación VENTO de Supabase continúa perteneciendo a `vento-shell`.
+
+---
+
+#### 4. Fuentes y snapshot de preparación
+
+La preparación se ancla a:
+
+```text
+vento-shell/main
+c4425c5a8ac0e9da078bff8ec2b11b9db7743bef
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+El bloque propietario remoto incorpora `ORIGO-AUTH-008` y mantiene todavía los marcadores de `ORIGO-AUTH-009` y `ORIGO-AUTH-010`.
+
+Para esta preparación anticipada se consume además el artefacto completo aprobado de `ORIGO-AUTH-009`:
+
+```text
+SHA-256
+cc5f55c963c5973e5c0735a9655308b893801743c2a566a5ac1dc6d77c524112
+```
+
+La incorporación posterior de esta tarea exige que la 009 publicada conserve el mismo contrato sustantivo utilizado como base.
+
+Se contrastaron, como mínimo:
+
+- catálogo y clasificación sensible de permisos;
+- scopes y proyecciones de órdenes/proveedores;
+- matrices base y operativas;
+- contratos de creación, aprobación, corrección y territorio;
+- Registro 04A ORIGO y AUTH;
+- inventario de pantallas `VSCREEN-0071`, `VSCREEN-0073`, `VSCREEN-0075` y `VSCREEN-0145`;
+- runtime actual de órdenes, proveedores y PDF;
+- helper actual del token de PDF;
+- hallazgos `H-CODE-017-011` y `H-CODE-017-012`.
+
+---
+
+#### 5. Clasificación sensible heredada
+
+El catálogo vigente ya clasifica como `COMMERCIAL_CONFIDENTIALITY`:
+
+```text
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.suppliers.view
+```
+
+Esta tarea no cambia esa clasificación.
+
+La consecuencia es:
+
+```text
+PERMISO SENSIBLE
++
+RECURSO AUTORIZADO
+!=
+SELECT *
+```
+
+La materialización deberá satisfacer también el diagnóstico contractual:
+
+```text
+sensitive_field_masking_required
+```
+
+cuando la finalidad no autorice el conjunto completo de campos.
+
+---
+
+#### 6. La tarea no crea permisos nuevos
+
+No se crean claves como:
+
+```text
+purchase_orders.prices.view
+suppliers.bank_accounts.view
+suppliers.contracts.view
+suppliers.prices.view
+```
+
+ni equivalentes inferidos.
+
+La política de campos se acopla a:
+
+- permiso canónico existente;
+- recurso;
+- scope;
+- carril base u operativo;
+- acción concreta;
+- finalidad;
+- field mask;
+- estado del recurso;
+- denegaciones aplicables.
+
+Si en el futuro el negocio necesita una capacidad independiente que no pueda expresarse de forma segura con este contrato, deberá existir una decisión canónica separada antes de materializarla.
+
+---
+
+#### 7. Familias de datos de orden de compra
+
+Para `PURCHASE_ORDER`, la tarea distingue cuatro familias.
+
+##### 7.1. Identidad y operación
+
+Incluye, cuando corresponda:
+
+- `purchase_order_id` / referencia visible;
+- estado;
+- proveedor relacionado en proyección mínima;
+- sedes/destinos autorizados;
+- productos;
+- presentación;
+- cantidades;
+- fechas de creación, expectativa y recepción necesarias;
+- cantidades recibidas o pendientes;
+- identificadores técnicos estrictamente necesarios para continuar un flujo autorizado.
+
+##### 7.2. Información económica sensible
+
+Incluye, como mínimo:
+
+```text
+currency
+unit_cost
+line_total
+total_amount
+```
+
+y cualquier equivalente futuro de:
+
+- precio unitario;
+- precio pactado;
+- descuento;
+- impuesto;
+- flete;
+- mínimo económico;
+- total;
+- subtotal;
+- presupuesto;
+- condición comercial;
+- importe de aprobación.
+
+##### 7.3. Información de costo interno sensible
+
+Incluye:
+
+```text
+stock_unit_cost
+```
+
+y cualquier costo normalizado, de inventario, valoración, margen o transformación que no sea parte del documento comercial autorizado para el destinatario.
+
+##### 7.4. Notas y metadatos internos
+
+El campo actual:
+
+```text
+notes
+```
+
+se trata como **interno por defecto** porque el consumidor lo presenta como `Notas internas`.
+
+Una nota interna no puede cruzar al canal externo por el solo hecho de estar almacenada en la orden.
+
+---
+
+#### 8. Regla de minimización para órdenes
+
+Toda consulta debe seleccionar únicamente las columnas que la proyección final necesita.
+
+Se prohíbe el patrón:
+
+```text
+LEER COLUMNAS SENSIBLES
+→ OCULTARLAS SOLO EN UI
+```
+
+El contrato exige:
+
+```text
+FIELD MASK
+→ SELECT MÍNIMO
+→ SERIALIZACIÓN MÍNIMA
+→ RENDER MÍNIMO
+```
+
+Cuando una capa inferior deba cargar un campo por una necesidad técnica demostrable, ese campo no podrá propagarse a una capa superior fuera del propósito autorizado.
+
+---
+
+#### 9. Proyección base de órdenes — propietario y gerente_general
+
+Para un actor con:
+
+```text
+purchase_orders.view
++
+scope base válido
++
+recurso autorizado por ORIGO-AUTH-009
+```
+
+`propietario` y `gerente_general` pueden recibir la proyección económica interna necesaria para administración de compras dentro de la organización productiva ordinaria.
+
+Eso puede incluir:
+
+- moneda;
+- costo unitario de compra;
+- total de línea;
+- total de orden;
+- condición comercial aplicable;
+- costo normalizado cuando sea necesario para administrar o reconciliar la compra.
+
+No concede automáticamente:
+
+- cuentas bancarias del proveedor;
+- documentos tributarios completos;
+- contratos ajenos a la compra;
+- secretos;
+- credenciales;
+- datos fuera del recurso o finalidad consultada.
+
+`G(B)` sigue sin ser wildcard de columnas ni acciones.
+
+---
+
+#### 10. Proyección base de órdenes — gerente
+
+`gerente` conserva la cobertura definida por el contrato territorial y recibe información económica únicamente sobre órdenes dentro de su alcance.
+
+Regla:
+
+```text
+purchase_orders.view
++
+AS-REL / scope aplicable
++
+orden autorizada
++
+finalidad administrativa válida
+=
+proyección económica interna autorizable
+```
+
+No puede usar una orden relacionada con una sede para descubrir:
+
+- precios de otras órdenes;
+- condiciones de otros proveedores;
+- contratos globales;
+- cuentas bancarias;
+- costos fuera del recurso autorizado.
+
+---
+
+#### 11. Proyección base de órdenes — supervisor
+
+`supervisor` conserva `purchase_orders.view` para lectura relacionada, pero la mera consulta no concede por defecto precios internos completos.
+
+Su proyección ordinaria queda en:
+
+- identidad;
+- estado;
+- proveedor mínimo;
+- destino autorizado;
+- productos/presentaciones;
+- cantidades;
+- fechas;
+- seguimiento permitido.
+
+Se excluyen por defecto:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+```
+
+salvo que una capacidad o proceso canónico posterior le conceda expresamente una finalidad económica adicional.
+
+---
+
+#### 12. Proyección base de órdenes — auxiliar_administrativa
+
+`auxiliar_administrativa` puede requerir información económica cuando ejecuta preparación o corrección administrativa de una orden con permiso mutante válido.
+
+Por tanto:
+
+- `purchase_orders.view` por sí solo no amplía todas las columnas;
+- `purchase_orders.create` puede habilitar los campos económicos necesarios para construir la orden;
+- `purchase_orders.update` puede habilitar esos campos únicamente mientras el estado y field mask permitan la corrección;
+- no obtiene por inferencia contratos, cuentas bancarias ni condiciones sensibles fuera de la orden.
+
+La autorización económica se vincula a la acción y al recurso concreto.
+
+---
+
+#### 13. Proyección base de órdenes — contador
+
+`contador` conserva la consulta de órdenes aprobada para evidencia comercial, revisión y conciliación.
+
+Dentro de `G-SRC` puede recibir:
+
+- moneda;
+- costo unitario;
+- total de línea;
+- total de orden;
+- referencias económicas necesarias para conciliación.
+
+No obtiene por ello:
+
+- administración del proveedor;
+- actualización de órdenes;
+- aprobación;
+- cancelación;
+- directorio completo de proveedores;
+- contratos o cuentas bancarias no requeridos por el recurso conciliado.
+
+---
+
+#### 14. Roles sin proyección de órdenes
+
+`marketing` continúa sin asignación ordinaria.
+
+Un actor sin `purchase_orders.view` no puede obtener precios, cantidades, totales ni metadatos de una orden por:
+
+- URL directa;
+- identificador conocido;
+- filtro;
+- exportación;
+- PDF;
+- llamada de servidor;
+- token laboral inexistente;
+- pertenencia a una sede.
+
+---
+
+#### 15. Proyección operativa de órdenes
+
+Para `bodeguero` y `gerencia_operativa`, el carril operativo conserva la proyección mínima ya aprobada.
+
+Por defecto incluye:
+
+- referencia;
+- estado relevante;
+- proveedor mínimo;
+- destino receptor;
+- productos/presentaciones;
+- cantidades ordenadas/recibidas necesarias;
+- fecha esperada;
+- datos necesarios para recepción o abastecimiento activo.
+
+Por defecto excluye:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+contratos
+negociación
+cuentas bancarias
+datos tributarios no necesarios
+```
+
+Un check-in o turno válido nunca convierte una proyección operativa en una proyección financiera.
+
+---
+
+#### 16. Proyección económica para aprobación
+
+`origo.procurement.purchase_orders.approve` puede requerir una proyección económica mayor que una consulta ordinaria.
+
+Para un aprobador autorizado, la decisión puede consumir:
+
+- moneda;
+- importe total;
+- costo/precio de línea;
+- condición comercial relevante;
+- presupuesto o umbral aplicable cuando exista en el contrato propietario;
+- evidencia necesaria para política de aprobación.
+
+Regla:
+
+```text
+APROBAR
+→ VER LO NECESARIO PARA DECIDIR
+!=
+VER TODO EL EXPEDIENTE SENSIBLE DEL PROVEEDOR
+```
+
+La proyección de aprobación no concede:
+
+- cuenta bancaria;
+- documentos tributarios completos;
+- contratos no relacionados;
+- secretos;
+- datos de otros proveedores;
+- exportación masiva.
+
+---
+
+#### 17. Field mask de creación de orden
+
+`purchase_orders.create` puede escribir únicamente campos permitidos por su contrato de creación.
+
+Para líneas de la orden, los valores económicos propuestos pueden incluir:
+
+```text
+unit_cost
+line_total derivado
+```
+
+y la representación necesaria para preservar el snapshot económico de la compra.
+
+No permite que el cliente:
+
+- escriba un costo normalizado autoritativo sin validación;
+- fuerce `total_amount` arbitrario;
+- introduzca márgenes o costos internos fuera del contrato;
+- convierta un campo oculto en write autorizado por enviarlo en `FormData`.
+
+Los campos derivados deben recalcularse o validarse en la frontera autoritativa.
+
+---
+
+#### 18. Field mask de actualización de orden
+
+`purchase_orders.update` conserva el field mask definido por `ORIGO-AUTH-008` y esta tarea lo restringe respecto de datos sensibles.
+
+Una actualización autorizable puede modificar el precio/costo de una línea solo cuando:
+
+1. el estado permita edición;
+2. el actor tenga `purchase_orders.update`;
+3. el territorio actual y propuesto sea válido;
+4. el campo económico esté permitido para esa acción;
+5. el valor se valide en servidor;
+6. el total derivado se recalcule;
+7. la política determine si el cambio exige nueva aprobación.
+
+No se permite un `UPDATE` amplio sobre la fila completa como sustituto del field mask.
+
+---
+
+#### 19. Documento interno de orden
+
+El PDF interno es una representación de `PURCHASE_ORDER`.
+
+Para generarlo internamente se requiere:
+
+```text
+purchase_orders.view
++
+orden autorizada territorialmente
++
+field mask interno autorizado
+```
+
+No basta:
+
+```text
+origo.access
+```
+
+El PDF interno puede incluir información económica cuando el actor está autorizado a verla.
+
+Si el actor solo posee proyección operativa mínima, el documento interno entregado a ese actor debe respetar esa misma minimización.
+
+---
+
+#### 20. Canal externo al proveedor
+
+El canal externo por token no es una sesión laboral ni una asignación RBAC.
+
+Su proyección se limita a información necesaria para que el proveedor atienda la solicitud/orden autorizada.
+
+La proyección externa actual objetivo puede incluir:
+
+- referencia de orden;
+- proveedor destinatario;
+- sede/destino comercial necesario;
+- fecha esperada;
+- producto o alias destinado al proveedor;
+- presentación;
+- cantidad;
+- estado comercial compatible con el documento.
+
+Por defecto no incluye:
+
+```text
+stock_unit_cost
+cost_center_ref
+presupuesto interno
+margen
+historial de aprobación
+actor interno
+auditoría interna
+datos de otros proveedores
+Notas internas
+```
+
+Los campos económicos de compra no se exponen externamente por inferencia.
+
+Si un contrato canónico de documento exige en el futuro mostrar un precio pactado al proveedor, deberá ser exactamente el precio comercial destinado a ese proveedor y nunca un costo normalizado, margen o valor interno distinto.
+
+---
+
+#### 21. `notes` no cruza al proveedor por defecto
+
+El runtime actual presenta `purchase_orders.notes` como:
+
+```text
+Notas internas
+```
+
+Por tanto:
+
+```text
+order.notes
+→ INTERNAL_ONLY por defecto
+```
+
+No puede copiarse automáticamente a:
+
+- PDF público;
+- mensaje al proveedor;
+- URL;
+- exportación externa;
+- payload de integración externa.
+
+Si se necesita una nota para proveedor, deberá existir una semántica canónica explícitamente supplier-facing o una representación equivalente aprobada; esta tarea no inventa una columna física nueva.
+
+---
+
+#### 22. Contrato obligatorio del token de PDF externo
+
+El token externo deberá cumplir simultáneamente:
+
+```text
+SECRETO DEDICADO OBLIGATORIO
++
+SIN FALLBACK
++
+SCOPE DE UNA SOLA ORDEN
++
+PROPÓSITO EXCLUSIVO DE DOCUMENTO DE PROVEEDOR
++
+EXPIRACIÓN CORTA Y EXPLÍCITA
++
+REVOCACIÓN COMPROBABLE
++
+COMPARACIÓN CRIPTOGRÁFICA SEGURA
++
+PROYECCIÓN EXTERNA MÍNIMA
++
+AUDITORÍA
+```
+
+La ausencia del secreto bloquea emisión y validación.
+
+Si se conserva el helper actual, `PURCHASE_ORDER_PDF_SECRET` deberá ser obligatorio.
+
+Quedan prohibidos como fallback de firma:
+
+```text
+NEXTAUTH_SECRET
+SESSION_SECRET
+secreto hardcoded
+```
+
+---
+
+#### 23. Vigencia del token
+
+La vigencia AS-IS de **30 días** no satisface el objetivo de corta duración.
+
+Esta tarea fija:
+
+```text
+VIGENCIA MÁXIMA DEL TOKEN EXTERNO: 15 MINUTOS
+```
+
+El vencimiento se evalúa server-side.
+
+Un token vencido produce denegación cerrada y no se renueva silenciosamente mediante otro secreto o scope.
+
+La duración podrá reducirse por política de despliegue, pero no ampliarse por encima de este máximo sin cambio canónico explícito.
+
+---
+
+#### 24. Revocación
+
+El token debe poder invalidarse antes de su vencimiento.
+
+La implementación futura deberá disponer de una referencia de emisión/revocación comprobable —por ejemplo un identificador opaco, versión de documento o mecanismo equivalente— sin que esta tarea imponga una columna física concreta.
+
+La validación deberá rechazar:
+
+- emisión revocada;
+- versión invalidada;
+- documento retirado;
+- orden no elegible para el canal externo;
+- token de otra orden;
+- token de otro propósito.
+
+Rotar el secreto global puede ser mecanismo de emergencia, pero no sustituye por sí solo la revocación selectiva exigida por el contrato.
+
+---
+
+#### 25. Scope criptográfico del token
+
+La firma deberá quedar vinculada, directa o verificablemente, como mínimo a:
+
+- `purchase_order_id`;
+- propósito de documento externo;
+- instante de emisión;
+- expiración;
+- referencia revocable.
+
+No debe autorizar:
+
+- otra orden;
+- otro handler;
+- API general;
+- acceso a proveedor;
+- acceso laboral;
+- mutaciones;
+- lectura libre mediante `service_role`.
+
+Conocer una URL firmada no concede ninguna otra capacidad ORIGO.
+
+---
+
+#### 26. Frontera de `service_role`
+
+El uso de `service_role` detrás del token externo es una frontera privilegiada.
+
+Solo es admisible después de validar completamente el token y únicamente para construir la proyección externa autorizada.
+
+Regla:
+
+```text
+TOKEN VÁLIDO
+→ CONSULTA EXTERNA MÍNIMA
+```
+
+Nunca:
+
+```text
+TOKEN VÁLIDO
+→ SERVICE_ROLE
+→ LEER TODA LA ORDEN
+→ OCULTAR DESPUÉS
+```
+
+La rama externa debe evitar leer campos económicos o internos que no renderizará.
+
+---
+
+#### 27. Familias de datos de proveedor
+
+Para `SUPPLIER`, la tarea distingue:
+
+##### 27.1. Identidad mínima
+
+- identificador necesario;
+- nombre;
+- estado cuando sea necesario;
+- contacto estrictamente necesario para la operación.
+
+##### 27.2. Datos administrativos protegidos
+
+Incluyen:
+
+```text
+tax_id
+contact_name
+phone
+email
+address
+notes
+```
+
+La necesidad de uno de estos campos no autoriza los demás.
+
+##### 27.3. Condiciones comerciales sensibles
+
+Incluyen:
+
+```text
+payment_type
+credit_days
+```
+
+y cualquier representación futura de:
+
+- precio o lista de precio;
+- moneda;
+- impuesto;
+- descuento;
+- flete;
+- mínimo;
+- plazo de entrega;
+- condición de pago;
+- fuente;
+- versión;
+- vigencia.
+
+##### 27.4. Datos financieros y documentales altamente restringidos
+
+Incluyen:
+
+- cuentas bancarias;
+- contratos;
+- documentos tributarios;
+- certificados;
+- anexos;
+- credenciales o secretos;
+- documentos de soporte sensibles;
+- referencias de pago que no sean necesarias para la acción.
+
+---
+
+#### 28. Proyección base general de proveedor
+
+`origo.procurement.suppliers.view` permite consultar información general dentro de `SUPPLIER_SCOPE`, pero no implica un expediente completo.
+
+Para `propietario`, `gerente_general` y `gerente` dentro de su cobertura, la proyección base puede incluir:
+
+- identidad;
+- estado;
+- contactos;
+- identificación tributaria cuando sea necesaria;
+- condición comercial aplicable a la relación autorizada.
+
+Los datos bancarios, contratos y documentos completos solo se entregan cuando la finalidad administrativa concreta los requiera y el field mask lo permita.
+
+---
+
+#### 29. Proyección base de supervisor
+
+`supervisor` conserva consulta de proveedor, pero su proyección ordinaria se limita a:
+
+- identidad;
+- estado;
+- contacto necesario;
+- relación con el recurso autorizado.
+
+Por defecto no incluye:
+
+```text
+tax_id completo salvo necesidad documental explícita
+payment_type
+credit_days
+precios
+contratos
+cuentas bancarias
+documentos tributarios
+notas internas
+```
+
+La relación con una sede no convierte al proveedor en propiedad de esa sede.
+
+---
+
+#### 30. Proyección de auxiliar_administrativa
+
+`auxiliar_administrativa` puede mantener información ordinaria cuando posee `suppliers.update`.
+
+Puede recibir los campos necesarios para:
+
+- identidad corregible;
+- contactos;
+- teléfono;
+- correo;
+- dirección;
+- notas administrativas;
+- documentos ordinarios expresamente permitidos.
+
+No obtiene por inferencia:
+
+- cuentas bancarias;
+- contratos;
+- precios sensibles;
+- negociación;
+- activación/desactivación;
+- exportación masiva.
+
+Los datos tributarios requieren finalidad administrativa explícita y no forman parte de la proyección operativa mínima.
+
+---
+
+#### 31. Contador y proveedor
+
+La matriz vigente no asigna `origo.procurement.suppliers.view` a `contador`.
+
+Por tanto, su capacidad de consultar importes de una orden para conciliación no puede reutilizarse para abrir:
+
+- catálogo completo de proveedores;
+- expediente de proveedor;
+- cuenta bancaria;
+- contrato;
+- documentos tributarios;
+- listas de precio del proveedor.
+
+Cualquier necesidad financiera posterior deberá consumir su recurso y contrato propietarios, no ampliar `suppliers.view` por inferencia.
+
+---
+
+#### 32. Proyección operativa de proveedor
+
+`bodeguero` y `gerencia_operativa` conservan `CTX-WH-SUPPLIER-IDENTITY`.
+
+La proyección operativa mínima puede incluir:
+
+- nombre;
+- referencia necesaria;
+- contacto requerido para coordinar la entrega;
+- estado necesario para validar el recurso activo.
+
+Excluye:
+
+```text
+datos bancarios
+negociación
+contratos
+precios no requeridos
+condiciones comerciales completas
+administración del maestro
+documentos tributarios completos
+notas internas
+```
+
+El turno o check-in nunca amplía este field mask.
+
+---
+
+#### 33. Field mask de `suppliers.update`
+
+`origo.procurement.suppliers.update` continúa permitiendo mantenimiento ordinario, no administración sensible irrestricta.
+
+El field mask ordinario puede abarcar:
+
+- nombre/identidad visible corregible;
+- contacto;
+- teléfono;
+- correo;
+- dirección;
+- notas administrativas;
+- documentos ordinarios autorizados;
+- condiciones administrativas no sensibles.
+
+No puede editar por esa sola capacidad:
+
+```text
+cuentas bancarias
+contratos
+listas de precio sensibles
+condiciones comerciales protegidas fuera del mask
+is_active como alias de activate/deactivate
+```
+
+La materialización deberá desacoplar además `is_active` de la actualización ordinaria conforme a `ORIGO-AUTH-008`.
+
+---
+
+#### 34. Activación y datos sensibles
+
+`suppliers.activate` y `suppliers.deactivate` pueden necesitar saber si la documentación obligatoria existe y está vigente.
+
+Eso no significa que el decisor reciba el contenido completo de cada documento.
+
+La política admite:
+
+```text
+DOCUMENTO PRESENTE / VIGENTE / VALIDADO
+```
+
+como evidencia mínima cuando el contenido no sea necesario para decidir.
+
+La activación no concede una sesión de lectura permanente sobre contratos o archivos sensibles.
+
+---
+
+#### 35. `VSCREEN-0145` — contratos, precios y condiciones
+
+`VSCREEN-0145 — Contratos, precios y condiciones de proveedor` permanece la superficie canónica para versionar:
+
+- contratos;
+- listas de precio;
+- impuestos;
+- fletes;
+- mínimos;
+- vigencias;
+- condiciones autorizadas.
+
+La pantalla no obtiene acceso por existir.
+
+Requiere:
+
+```text
+actor base autorizado
++
+suppliers.view
++
+SUPPLIER autorizado
++
+field mask sensible compatible
++
+finalidad administrativa
+```
+
+El carril operativo no puede abrir `VSCREEN-0145` mediante una relación de entrega.
+
+---
+
+#### 36. Versionado de precios y condiciones
+
+Un precio o condición aplicable deberá preservar, cuando exista en el modelo propietario:
+
+- proveedor;
+- producto/servicio;
+- presentación/unidad;
+- escala;
+- moneda;
+- impuesto;
+- descuento;
+- flete;
+- mínimo;
+- plazo de entrega;
+- condición de pago;
+- fuente;
+- versión;
+- vigencia.
+
+Regla:
+
+```text
+NUEVA CONDICIÓN
+!=
+SOBRESCRIBIR HISTORIA
+```
+
+La orden histórica conserva el snapshot económico que utilizó.
+
+---
+
+#### 37. Precio histórico y precio vigente
+
+Consultar una orden histórica debe devolver el valor asociado a esa orden, no recalcularlo silenciosamente con la condición vigente del proveedor.
+
+Consultar una condición vigente no debe reescribir:
+
+- `unit_cost`;
+- `line_total`;
+- `total_amount`;
+- snapshot de presentación;
+- evidencia de aprobación;
+- evidencia de emisión.
+
+La corrección de una orden sigue las reglas de estado y revisión ya aprobadas.
+
+---
+
+#### 38. Storage y documentos sensibles
+
+Cuando contratos, anexos, datos tributarios o documentos sensibles se materialicen como archivos:
+
+```text
+STORAGE PRIVADO
++
+AUTORIZACIÓN SERVER-SIDE
++
+OBJETO / PROVEEDOR RESUELTO
++
+FIELD / DOCUMENT MASK
++
+AUDITORÍA
+```
+
+Un bucket público, URL permanente o path conocido no satisface este contrato.
+
+La tarea no crea buckets ni define aquí el esquema físico del documento.
+
+---
+
+#### 39. Exportación
+
+La capacidad `.view` no concede por sí sola exportación masiva.
+
+Para datos sensibles:
+
+```text
+VIEW
+!=
+EXPORT
+```
+
+Mientras no exista una capacidad canónica que autorice una exportación sensible concreta, la exportación queda `DENY_BY_DEFAULT`.
+
+Una futura exportación autorizada deberá:
+
+- respetar el mismo scope de recursos;
+- aplicar field mask;
+- excluir campos no requeridos;
+- registrar actor, finalidad, volumen y resultado;
+- evitar enlaces públicos permanentes;
+- preservar retención y clasificación aplicables.
+
+---
+
+#### 40. Búsqueda, filtros y conteos
+
+La minimización también aplica a:
+
+- búsquedas;
+- filtros;
+- autocompletados;
+- selects;
+- conteos;
+- cards;
+- opciones de formulario.
+
+Ejemplo:
+
+```text
+SELECCIONAR PROVEEDOR
+→ identidad mínima
+```
+
+No:
+
+```text
+SELECCIONAR PROVEEDOR
+→ cargar tax_id + notas + crédito + documentos + banco + contratos
+```
+
+La existencia, conteo o metadata de un dato sensible tampoco se expone cuando esa información revele más de lo necesario.
+
+---
+
+#### 41. URL directa, API y Server Actions
+
+El field mask se revalida en la frontera autoritativa.
+
+No se confía en:
+
+- columnas ocultas por React;
+- inputs `disabled`;
+- campos omitidos visualmente;
+- cliente que no envía un campo;
+- ruta desde la que llegó el usuario;
+- botón oculto;
+- filtro previo;
+- objeto serializado por una página anterior.
+
+Una llamada directa debe producir la misma decisión de columnas que la navegación ordinaria.
+
+---
+
+#### 42. Dispositivo compartido y simulación
+
+La clasificación sensible ya aprobada continúa vigente.
+
+Un dispositivo compatible no elimina:
+
+- permiso;
+- scope;
+- field mask;
+- finalidad;
+- reautenticación cuando corresponda;
+- auditoría.
+
+La simulación que no pueda usar datos reales sensibles deberá recibir:
+
+- decisiones;
+- datos sintéticos;
+- valores vacíos;
+- valores enmascarados;
+
+según el contrato transversal vigente.
+
+No se copian precios, contratos, cuentas bancarias o documentos reales a simulación por conveniencia.
+
+---
+
+#### 43. Auditoría mínima de lectura sensible
+
+Una lectura o generación sensible deberá poder correlacionar, según aplique:
+
+- principal;
+- actor efectivo;
+- permiso;
+- recurso;
+- scope;
+- carril;
+- finalidad;
+- field mask aplicado;
+- campos/familias solicitadas;
+- decisión;
+- razones;
+- documento o exportación involucrado;
+- referencia de token externo cuando aplique;
+- timestamp;
+- versión contractual.
+
+No es obligatorio almacenar el valor sensible completo en el log para demostrar que se consultó.
+
+La auditoría nunca debe convertirse en una segunda fuga de información.
+
+---
+
+#### 44. Auditoría del token externo
+
+La emisión y uso del token deberán registrar, sin registrar el secreto:
+
+- orden;
+- propósito;
+- referencia de emisión;
+- instante de emisión;
+- expiración;
+- revocación cuando ocurra;
+- resultado de validación;
+- acceso concedido o denegado;
+- versión de proyección externa.
+
+Nunca se registra:
+
+- secreto de firma;
+- token completo reutilizable;
+- `service_role` key.
+
+---
+
+#### 45. Denegación y errores
+
+Ante campo no autorizado:
+
+```text
+RECURSO AUTORIZADO
++
+CAMPO NO AUTORIZADO
+→ CAMPO NO ENTREGADO
+```
+
+Ante acción que exige ese campo y no puede ejecutarse sin él:
+
+```text
+DENY
+```
+
+Reglas:
+
+1. no ampliar proyección para “hacer funcionar” una pantalla;
+2. no degradar a `origo.access`;
+3. no reintentar con `service_role` para un actor interno;
+4. no filtrar la existencia de datos bancarios/contratos fuera de scope;
+5. no serializar primero y borrar después;
+6. no incluir valores sensibles en mensajes de error;
+7. una falla técnica no se convierte en `ALLOW`.
+
+---
+
+#### 46. Estado AS-IS — listado de órdenes
+
+En `src/app/purchase-orders/page.tsx` se observa:
+
+- `requireAppAccess({ appId: "origo" })`;
+- lectura de órdenes;
+- exposición de `total_amount`;
+- visualización del total en la tabla.
+
+No se observa en esa página un field mask que diferencie:
+
+- supervisor;
+- auxiliar administrativa;
+- contador;
+- carril operativo;
+- finalidad.
+
+Resultado:
+
+```text
+AS_IS_PURCHASE_ORDER_LIST_TOTAL_VISIBLE
+```
+
+La materialización deberá consultar y renderizar el total únicamente para actores/finalidades autorizados.
+
+---
+
+#### 47. Estado AS-IS — detalle de orden
+
+En `src/app/purchase-orders/[id]/page.tsx` se observa:
+
+```text
+total_amount
+unit_cost
+line_total
+stock_quantity_ordered
+```
+
+y el runtime muestra bloques rotulados:
+
+```text
+Total interno
+Notas internas
+```
+
+La página entra por `requireAppAccess({ appId: "origo" })` y no demuestra por sí sola un field mask sensible por actor/finalidad.
+
+Resultado:
+
+```text
+AS_IS_PURCHASE_ORDER_DETAIL_INTERNAL_DATA_BROADLY_LOADED
+```
+
+Esto no prueba el estado efectivo de capas inferiores; sí impide considerar demostrado el contrato final de minimización.
+
+---
+
+#### 48. Estado AS-IS — PDF interno
+
+El PDF interno actual incluye:
+
+- total de orden;
+- costo operativo;
+- costo base normalizado;
+- total de línea;
+- notas.
+
+El handler interno valida actualmente `origo.access` cuando no existe token externo válido.
+
+Resultado:
+
+```text
+AS_IS_INTERNAL_PDF_APP_ACCESS_ONLY
+```
+
+El contrato objetivo exige `purchase_orders.view` sobre la orden y el field mask del actor.
+
+---
+
+#### 49. Estado AS-IS — PDF externo
+
+Cuando el token es válido, el handler usa un cliente con `service_role`.
+
+Antes de bifurcar el render externo, la consulta actual lee:
+
+```text
+total_amount
+currency
+notes
+unit_cost
+line_total
+```
+
+aunque el PDF proveedor actual no muestra costos/totales.
+
+Además, el PDF externo y el mensaje preparado consumen `notes`, mientras el detalle interno lo rotula como `Notas internas`.
+
+Resultados:
+
+```text
+AS_IS_EXTERNAL_PDF_OVERREADS_INTERNAL_ECONOMIC_FIELDS
+AS_IS_EXTERNAL_PDF_EXPOSES_INTERNAL_NOTES
+```
+
+La salida futura debe separar consulta externa y consulta interna desde el origen.
+
+---
+
+#### 50. Estado AS-IS — token externo
+
+El helper actual:
+
+```text
+TOKEN_MAX_AGE_SECONDS = 30 días
+```
+
+y obtiene el secreto mediante una cadena de fallback que termina en un secreto hardcoded de desarrollo.
+
+No se observa revocación selectiva.
+
+Resultado:
+
+```text
+AS_IS_PUBLIC_PDF_TOKEN_LONG_LIVED
+AS_IS_PUBLIC_PDF_TOKEN_SECRET_FALLBACK
+AS_IS_PUBLIC_PDF_TOKEN_NOT_SELECTIVELY_REVOCABLE
+```
+
+Esto coincide con `H-CODE-017-012`.
+
+---
+
+#### 51. Estado AS-IS — listado de proveedores
+
+En `src/app/suppliers/page.tsx` la consulta actual selecciona:
+
+```text
+id
+name
+tax_id
+contact_name
+phone
+email
+address
+notes
+is_active
+payment_type
+credit_days
+created_at
+updated_at
+```
+
+aunque la tabla no presenta todos esos campos.
+
+Resultado:
+
+```text
+AS_IS_SUPPLIER_LIST_OVERREAD
+```
+
+La selección futura debe adaptarse al field mask de la finalidad y carril.
+
+---
+
+#### 52. Estado AS-IS — edición de proveedor
+
+`src/app/suppliers/[id]/edit/page.tsx` carga:
+
+```text
+tax_id
+contact_name
+phone
+email
+address
+notes
+is_active
+payment_type
+credit_days
+```
+
+y `src/app/suppliers/actions.ts` actualiza esos campos bajo el helper actual `requireCanManageSuppliers`.
+
+Esto mezcla:
+
+- datos ordinarios;
+- datos tributarios;
+- condiciones comerciales;
+- estado activo.
+
+`ORIGO-AUTH-008` ya separó activación/desactivación; esta tarea añade la separación sensible de campos.
+
+---
+
+#### 53. Estado AS-IS — contratos, banco y listas de precio
+
+En las superficies de proveedor inspeccionadas no se observa una materialización completa de:
+
+- contratos versionados;
+- listas de precio versionadas;
+- cuentas bancarias gobernadas;
+- documentos tributarios privados;
+- historial de condiciones comerciales completo.
+
+Resultado:
+
+```text
+SENSITIVE_SUPPLIER_MODEL_AS_IS: PARCIAL
+```
+
+Esta tarea no inventa columnas, tablas, buckets ni rutas para completar lo que aún no está materializado.
+
+---
+
+#### 54. Matriz de proyección por finalidad
+
+| Finalidad | Recurso | Proyección económica | Datos proveedor sensibles |
+| --- | --- | --- | --- |
+| administración de compra por propietario/gerencia autorizada | `PURCHASE_ORDER` | permitida dentro del recurso | solo los relacionados y necesarios |
+| supervisión de estado/flujo | `PURCHASE_ORDER` | denegada por defecto | identidad mínima |
+| preparación/corrección administrativa con permiso mutante | `PURCHASE_ORDER` | campos económicos necesarios para la acción | sin expediente sensible completo |
+| conciliación contable de orden | `PURCHASE_ORDER` | permitida dentro de `G-SRC` | no abre catálogo/expediente de proveedor |
+| recepción operativa | `PURCHASE_ORDER` / `SUPPLIER` | denegada por defecto | `CTX-WH-SUPPLIER-IDENTITY` |
+| aprobación | `PURCHASE_ORDER` | mínima suficiente para decidir | sin banco/contrato completo por inferencia |
+| proveedor externo por token | documento de una orden | no se expone por defecto | solo identidad propia y datos supplier-facing |
+| mantenimiento ordinario de proveedor | `SUPPLIER` | no concede listas de precio sensibles | field mask ordinario |
+| `VSCREEN-0145` | `SUPPLIER` | condiciones sensibles autorizadas | actor base + field mask sensible |
+
+---
+
+#### 55. Matriz de campos AS-IS de orden
+
+| Campo / familia | Base administrativa autorizada | Supervisión | Contabilidad | Operativo | Externo proveedor |
+| --- | --- | --- | --- | --- | --- |
+| referencia/estado | sí | sí | sí | sí | sí |
+| destino autorizado | sí | sí | sí | sí | solo lo necesario |
+| producto/presentación/cantidad | sí | sí | sí | sí | sí |
+| `currency` | según finalidad | no por defecto | sí | no por defecto | solo si acompaña precio supplier-facing aprobado |
+| `unit_cost` | según finalidad | no | sí | no | no por defecto |
+| `stock_unit_cost` | según finalidad interna | no | según conciliación | no | no |
+| `line_total` | según finalidad | no | sí | no | no por defecto |
+| `total_amount` | según finalidad | no | sí | no | no por defecto |
+| `notes` | interna según finalidad | interna según necesidad | interna según necesidad | solo si necesaria y autorizada | no |
+| auditoría/aprobación interna | según permiso/finalidad | mínima | según conciliación | no | no |
+
+---
+
+#### 56. Matriz de campos AS-IS de proveedor
+
+| Campo / familia | Administración base | Supervisor | Auxiliar administrativa con `suppliers.update` | Operativo |
+| --- | --- | --- | --- | --- |
+| `name` | sí | sí | sí | sí |
+| `is_active` lectura | sí | sí | sí | solo si necesaria |
+| `contact_name` | sí | según necesidad | sí | según entrega |
+| `phone` / `email` | sí | según necesidad | sí | según entrega |
+| `address` | según finalidad | no por defecto | sí | solo si necesaria |
+| `tax_id` | según finalidad tributaria | no por defecto | según finalidad administrativa | no por defecto |
+| `notes` | según finalidad | no por defecto | sí, administrativas | no |
+| `payment_type` / `credit_days` | según finalidad comercial | no por defecto | no por inferencia | no |
+| precios/contratos | solo field mask sensible | no | no por `suppliers.update` ordinario | no |
+| cuentas bancarias | solo finalidad explícita y mínima | no | no por defecto | no |
+| documentos tributarios | solo finalidad explícita | no | solo si el workflow administrativo lo autoriza | no |
+
+---
+
+#### 57. Invariantes de seguridad
+
+| Caso | Resultado |
+| --- | --- |
+| actor autorizado a orden pero no a precio | orden sin campos económicos |
+| supervisor abre detalle directo | no recibe costos/totales por defecto |
+| bodeguero consulta orden de recepción | proyección operativa sin costos internos |
+| contador consulta orden dentro de `G-SRC` | proyección económica de conciliación |
+| actor con `suppliers.view` operativo | proveedor mínimo, sin banco/contratos/precios |
+| `suppliers.update` recibe `is_active` desde formulario | no autoriza activar/desactivar |
+| token de PDF sin secreto dedicado | emisión/validación bloqueada |
+| token de otra orden | `DENY` |
+| token vencido | `DENY` |
+| token revocado | `DENY` |
+| token válido intenta otro handler | `DENY` |
+| token válido de proveedor | solo proyección externa mínima |
+| `notes` internas presentes | no salen al proveedor |
+| query externa no renderiza precio | tampoco debe leerlo |
+| `.view` intenta exportación masiva sensible | `DENY_BY_DEFAULT` |
+| URL directa pide campo oculto | mismo field mask server-side |
+| error incluye dato bancario oculto | prohibido |
+
+---
+
+#### 58. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| listado de órdenes muestra `total_amount` sin field mask demostrado | exposición económica más amplia que la finalidad | `ORIGO-AUTH-010::<implementation_unit_id>` | query y render aplican proyección sensible |
+| detalle carga costos/totales/notas bajo acceso general ORIGO | sobrelectura y exposición interna | `ORIGO-AUTH-010::<implementation_unit_id>` + owner de binding de permisos | `purchase_orders.view` + territorio + field mask antes de seleccionar |
+| PDF interno valida `origo.access` y muestra costos | permiso de aplicación sustituye permiso de recurso | unidad propietaria de autorización/PDF | requiere `purchase_orders.view` y proyección del actor |
+| token dura 30 días | ventana excesiva | `ORIGO-AUTH-010::<implementation_unit_id>` | TTL máximo 15 minutos |
+| token usa fallback de secreto | firma puede quedar predecible ante mala configuración | `ORIGO-AUTH-010::<implementation_unit_id>` + owner de secretos | secreto dedicado obligatorio, sin fallback |
+| token no demuestra revocación selectiva | enlace no puede invalidarse antes de expirar | `ORIGO-AUTH-010::<implementation_unit_id>` | revocación verificable |
+| rama externa usa `service_role` y sobrelee costos | bypass privilegiado amplifica exposición | `ORIGO-AUTH-010::<implementation_unit_id>` | query externa mínima después de token válido |
+| PDF/mensaje externo usan `notes` internas | fuga de contenido interno | `ORIGO-AUTH-010::<implementation_unit_id>` | notas internas excluidas o semántica supplier-facing explícita |
+| listado de proveedores selecciona campos no renderizados | sobrelectura de datos comerciales | `ORIGO-AUTH-010::<implementation_unit_id>` | select mínimo por finalidad |
+| edición de proveedor mezcla datos ordinarios, condiciones y `is_active` | field mask y estado acoplados | `ORIGO-AUTH-008` + `ORIGO-AUTH-010::<implementation_unit_id>` | update ordinario, sensible y status quedan separados |
+| modelo completo de contratos/banco/precios no está demostrado | no puede protegerse físicamente algo no materializado | `ORIGO-AUTH-010::<implementation_unit_id>` + owners de `VSCREEN-0145`/Supabase aplicables | unidad consume modelo físico aprobado sin inventarlo |
+
+Ningún hallazgo queda sin owner ni condición de salida.
+
+---
+
+#### 59. Frontera con ORIGO-AUTH-011
+
+`ORIGO-AUTH-010` decide:
+
+```text
+QUÉ CAMPOS / DOCUMENTOS PUEDE VER O RECIBIR EL ACTOR
+```
+
+`ORIGO-AUTH-011` decidirá:
+
+```text
+CÓMO QUEDA REGISTRADO EL ACTOR DE RECEPCIÓN
+```
+
+Esta tarea no redefine:
+
+- actor receptor;
+- firma de recepción;
+- atribución de quién recibió;
+- identidad del receptor en inventario;
+- reglas de recepción total/parcial.
+
+---
+
+#### 60. Frontera con ORIGO-AUTH-012 y 013
+
+`ORIGO-AUTH-012` conserva integración de contexto operativo.
+
+`ORIGO-AUTH-013` conserva administración sin check-in cuando corresponda.
+
+Esta tarea solo consume el carril resultante para elegir field mask.
+
+Regla:
+
+```text
+CONTEXTO
+→ condiciona la proyección
+```
+
+pero:
+
+```text
+CONTEXTO
+!=
+AUTORIZACIÓN DE CAMPO SENSIBLE
+```
+
+---
+
+#### 61. Frontera con ORIGO-AUTH-014 y 015
+
+`ORIGO-AUTH-014` conserva la migración a paquetes de `vento-shell`.
+
+`ORIGO-AUTH-015` conserva pruebas integrales.
+
+Esta tarea define el contrato que esas materializaciones y pruebas deberán respetar; no ejecuta migración ni certificación final.
+
+---
+
+#### 62. Frontera con NUMERA
+
+ORIGO preserva el precio/costo y condición comercial fuente de la compra.
+
+NUMERA conserva la autoridad sobre:
+
+- contabilidad;
+- presupuesto;
+- clasificación financiera;
+- centros de costo;
+- efectos contables;
+- reportes financieros.
+
+Mostrar un importe de compra autorizado en ORIGO no concede acceso a reportes o libros de NUMERA.
+
+---
+
+#### 63. Frontera con NEXO
+
+NEXO puede necesitar cantidades, producto, presentación y referencia de compra para recibir inventario.
+
+No necesita por defecto:
+
+- costo de compra;
+- precio de proveedor;
+- cuenta bancaria;
+- contrato;
+- notas internas;
+- total de orden.
+
+Cualquier costo que NEXO consuma para valoración deberá provenir de su contrato de integración autorizado, no de una ampliación accidental de la proyección operativa ORIGO.
+
+---
+
+#### 64. Frontera con documentos y evidencia
+
+Un documento adjunto puede contener más sensibilidad que su metadata.
+
+Por tanto:
+
+```text
+PUEDE VER QUE EXISTE EL DOCUMENTO
+!=
+PUEDE DESCARGAR SU CONTENIDO
+```
+
+y:
+
+```text
+PUEDE VALIDAR VIGENCIA
+!=
+PUEDE EXPORTARLO
+```
+
+La materialización deberá separar esas decisiones cuando el modelo físico las soporte.
+
+---
+
+#### 65. Materialización física posterior
+
+El contrato global queda listo para:
+
+```text
+ORIGO-AUTH-010::<implementation_unit_id>
+```
+
+Cada unidad deberá resolver mediante su lifecycle:
+
+1. `implementation_unit_id` exacto;
+2. package o packages consumidores;
+3. `E5-GATE-008::<package_id>` aplicable;
+4. target paths reales;
+5. field masks físicos;
+6. queries/selects a minimizar;
+7. guards y Server Actions a reconciliar;
+8. token externo y secreto;
+9. revocación;
+10. Storage/exports cuando apliquen;
+11. pruebas negativas por rol, carril, recurso, campo y canal;
+12. compatibilidad con consumidores;
+13. rollback;
+14. evidencia desplegada.
+
+Este marcador no selecciona ni autoriza ninguna unidad.
+
+---
+
+#### 66. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la limitación de órdenes por columnas y canal externo, el token scoped/corto/revocable/sin fallback, la protección de datos sensibles de proveedor, la minimización de campos, la protección server-side, la auditoría y la denegación segura ya están protegidas por requisitos canónicos vigentes. Esta tarea especializa esas obligaciones en field masks y proyecciones concretas sin introducir una obligación verificable nueva fuera del registro existente.
+
+---
+
+#### 67. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-002` para columnas de orden y documento externo con token obligatorio, scoped, corto, revocable y sin fallback;
+- `TREQ-ORIGO-004` para importes, condiciones de aprobación, segregación y preservación de la orden;
+- `TREQ-ORIGO-005` para contratos, precios, impuestos, descuentos, fletes, mínimos, vigencias, datos tributarios, cuentas bancarias, Storage privado, exportación y auditoría;
+- `TREQ-AUTH-001` para permiso/contexto/scope canónicos sin listas locales de rol como autoridad final;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC y validar columnas permitidas server-side;
+- `TREQ-AUTH-014` para impedir uso de decisiones/tokens derivados obsoletos;
+- `TREQ-AUTH-015` para evidencia correlacionable de toda decisión y acción protegida.
+
+Esta sección es solo trazabilidad de cobertura existente.
+
+---
+
+#### 68. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará en el checkout local después de incorporar el artefacto. |
+| LOCAL | `NOT_EXECUTED` | Formato, quality, delivery, topología, EOL, dominio, plan y TREQ quedan pendientes del checkout local. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main@c4425c5a8ac0e9da078bff8ec2b11b9db7743bef`, `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, owner ORIGO, catálogo sensible, scopes, matrices, 04A ORIGO/AUTH, pantallas y runtime actual de órdenes, proveedores y PDF, incluido el helper de token. |
+| OPERATIVA | `NOT_EXECUTED` | No se probaron actores reales, precios, proveedores, documentos, tokens, revocación, Storage, exportaciones, RLS, RPC ni ambientes desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | Este marcador global no crea ni autoriza ninguna instancia `ORIGO-AUTH-010::<implementation_unit_id>`. |
+
+---
+
+#### 69. Criterios de aceptación
+
+- [x] La topología queda `PER_IMPLEMENTATION_UNIT / POST_E5_PACKAGE`.
+- [x] El marcador global no crea instancia física.
+- [x] Se preservan permisos y grants aprobados; no se inventan claves nuevas.
+- [x] `purchase_orders.view`, `receipts.view` y `suppliers.view` conservan clasificación `COMMERCIAL_CONFIDENTIALITY`.
+- [x] Se diferencia autorización de recurso de autorización de columnas.
+- [x] Se definen familias sensibles de orden y proveedor.
+- [x] Se define minimización desde query/select y no solo desde UI.
+- [x] `unit_cost`, `stock_unit_cost`, `line_total` y `total_amount` quedan protegidos por finalidad.
+- [x] `notes` queda interna por defecto y no cruza al proveedor.
+- [x] Supervisor y carril operativo no reciben precios internos por defecto.
+- [x] Contabilidad conserva proyección económica de orden dentro de su recurso, sin abrir expediente de proveedor.
+- [x] Aprobación recibe información económica mínima suficiente, no expediente sensible irrestricto.
+- [x] `suppliers.update` no concede contratos, banco, precios ni `is_active` por inferencia.
+- [x] `VSCREEN-0145` queda base-only de hecho por su dependencia de actor base y field mask sensible; el carril operativo no puede abrirla.
+- [x] Se protege historial/versionado de precios y condiciones.
+- [x] Storage sensible requiere privacidad y autorización.
+- [x] `.view` no implica exportación sensible.
+- [x] PDF interno requiere permiso de recurso y field mask.
+- [x] PDF externo queda scoped a una orden y propósito.
+- [x] El secreto del token es obligatorio y sin fallback.
+- [x] `PURCHASE_ORDER_PDF_SECRET` queda como secreto dedicado obligatorio si se conserva el helper actual.
+- [x] `NEXTAUTH_SECRET`, `SESSION_SECRET` y secreto hardcoded no pueden actuar como fallback.
+- [x] La vigencia máxima del token externo queda en 15 minutos.
+- [x] Se exige revocación selectiva comprobable.
+- [x] `service_role` no autoriza sobrelectura.
+- [x] Se documenta la sobrelectura AS-IS del PDF externo.
+- [x] Se documenta la exposición AS-IS de notas internas al canal externo.
+- [x] Se documenta el sobreselect AS-IS de proveedores.
+- [x] No se inventan columnas, tablas, buckets ni rutas ausentes.
+- [x] Cada hallazgo tiene owner y condición de salida.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se ejecuta cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-AUTH-011` queda reservada y no se desarrolla aquí.
+
+---
+
+#### 70. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica `vento-origo`;
+- crea permisos nuevos;
+- cambia grants ya aprobados;
+- cambia el territorio definido por `ORIGO-AUTH-009`;
+- crea columnas de precio, contrato, banco o documento;
+- crea tablas;
+- crea buckets;
+- crea rutas;
+- implementa `VSCREEN-0145`;
+- modifica `purchase_orders`;
+- modifica `purchase_order_items`;
+- modifica `suppliers`;
+- modifica `product_suppliers`;
+- modifica Server Actions;
+- modifica el PDF;
+- cambia el helper del token;
+- crea el mecanismo físico de revocación;
+- crea secretos;
+- rota secretos;
+- ejecuta `service_role`;
+- crea RLS;
+- crea RPC;
+- modifica Storage;
+- crea exportaciones;
+- modifica datos;
+- ejecuta Supabase;
+- crea migraciones;
+- modifica NEXO o NUMERA;
+- define el actor de recepción;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza una instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-AUTH-011`.
+
+---
+
+#### 71. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-009 — Limitar órdenes por sede o centro de costo`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-010 — Proteger precios y datos sensibles`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-011 — Registrar actor de recepción`
+
 ### [ ] ORIGO-AUTH-011 — Registrar actor de recepción
 ### [ ] ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
 ### [ ] ORIGO-AUTH-013 — Mantener administración sin check-in

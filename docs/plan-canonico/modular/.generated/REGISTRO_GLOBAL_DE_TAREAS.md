@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1312** |
+| Aprobadas | **1313** |
 | En propuesta | **0** |
-| No iniciadas | **284** |
+| No iniciadas | **283** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.21% (1312/1596)** |
+| Porcentaje de completamiento | **82.27% (1313/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **284** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1213** |
+| ⏸ NO_EVALUADA | **283** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1214** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-AUTH-009` — Limitar órdenes por sede o centro de costo | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-010` — Proteger precios y datos sensibles | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-011` — Registrar actor de recepción | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-010` — Proteger precios y datos sensibles | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-011` — Registrar actor de recepción | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1093,7 +1093,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-007` | Definir permisos de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-008` | Definir permisos de corrección | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-009` | Limitar órdenes por sede o centro de costo | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-010` | Proteger precios y datos sensibles | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-010` | Proteger precios y datos sensibles | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-011` | Registrar actor de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-012` | Integrar contexto operativo donde aplique | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-013` | Mantener administración sin check-in | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
