@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1298** |
+| Aprobadas | **1299** |
 | En propuesta | **0** |
-| No iniciadas | **298** |
+| No iniciadas | **297** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **81.33% (1298/1596)** |
+| Porcentaje de completamiento | **81.39% (1299/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **298** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1199** |
+| ⏸ NO_EVALUADA | **297** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1200** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `FOGO-UX-010` — Registrar cantidades, desperdicio y resultado | ✅ APROBADA |
-| Tarea actual | `FOGO-UX-011` — Diseñar correcciones sin alterar historial | ⬜ NO INICIADA |
-| Siguiente reservada | `FOGO-UX-012` — Conectar consumo de insumos con NEXO | ⬜ NO INICIADA |
+| Última aprobada | `FOGO-UX-011` — Diseñar correcciones sin alterar historial | ✅ APROBADA |
+| Tarea actual | `FOGO-UX-012` — Conectar consumo de insumos con NEXO | ⬜ NO INICIADA |
+| Siguiente reservada | `FOGO-UX-013` — Conectar producto terminado con NEXO | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1076,7 +1076,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-008` | Mostrar receta resumida para operación | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-009` | Separar recetario operativo y administración de recetas | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-010` | Registrar cantidades, desperdicio y resultado | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-011` | Diseñar correcciones sin alterar historial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `FOGO-UX-011` | Diseñar correcciones sin alterar historial | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-012` | Conectar consumo de insumos con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-013` | Conectar producto terminado con NEXO | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `FOGO-UX-014` | Diseñar pantalla para supervisor de producción | — | — | `bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md` |

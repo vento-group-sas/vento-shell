@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1298** |
+| Tareas aprobadas | **1299** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **298** |
+| Tareas no iniciadas | **297** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **81.33% (1298/1596)** |
+| Porcentaje de completamiento | **81.39% (1299/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **FOGO-UX-010 — Registrar cantidades, desperdicio y resultado** |
-| Tarea actual | **FOGO-UX-011 — Diseñar correcciones sin alterar historial** |
+| Última tarea aprobada | **FOGO-UX-011 — Diseñar correcciones sin alterar historial** |
+| Tarea actual | **FOGO-UX-012 — Conectar consumo de insumos con NEXO** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **FOGO-UX-012 — Conectar consumo de insumos con NEXO** |
+| Siguiente tarea | **FOGO-UX-013 — Conectar producto terminado con NEXO** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 29 de 65 aprobadas; FOGO-UX-011 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 30 de 65 aprobadas; FOGO-UX-012 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — FOGO-UX-011** |
+| Carril documental | **ACTIVO — FOGO-UX-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `FOGO-UX-010` — Registrar cantidades, desperdicio y resultado |
-| Tarea actual | `FOGO-UX-011` — Diseñar correcciones sin alterar historial — **NO INICIADA** |
-| Siguiente tarea | `FOGO-UX-012` — Conectar consumo de insumos con NEXO |
+| Última aprobada | `FOGO-UX-011` — Diseñar correcciones sin alterar historial |
+| Tarea actual | `FOGO-UX-012` — Conectar consumo de insumos con NEXO — **NO INICIADA** |
+| Siguiente tarea | `FOGO-UX-013` — Conectar producto terminado con NEXO |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 29 DE 65 APROBADAS — ACTUAL FOGO-UX-011** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 30 DE 65 APROBADAS — ACTUAL FOGO-UX-012** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
-        ↓
-TAREA ACTUAL
 FOGO-UX-011 — Diseñar correcciones sin alterar historial
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 FOGO-UX-012 — Conectar consumo de insumos con NEXO
         ↓
+SIGUIENTE TAREA RESERVADA
+FOGO-UX-013 — Conectar producto terminado con NEXO
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 29 de 65 tareas aprobadas
+BLOQUES L Y M — 30 de 65 tareas aprobadas
 ```

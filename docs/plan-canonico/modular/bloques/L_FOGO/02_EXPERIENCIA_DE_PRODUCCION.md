@@ -8409,7 +8409,1071 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `FOGO-UX-011 — Diseñar correcciones sin alterar historial`
 
-### [ ] FOGO-UX-011 — Diseñar correcciones sin alterar historial
+### ✅ FOGO-UX-011 — Diseñar correcciones sin alterar historial
+
+**Estado:** APROBADA
+**Tarea anterior:** FOGO-UX-010 — Registrar cantidades, desperdicio y resultado
+**Tarea siguiente:** FOGO-UX-012 — Conectar consumo de insumos con NEXO
+**Tipo de tarea:** diseño documental integral de la experiencia de corrección, cancelación, anulación, reversa, compensación, ajuste y reexpresión de hechos productivos ya registrados, preservando el hecho original, su actor, tiempo, sede, área, receta/version, cantidades, efectos y evidencias, con acción correctiva explícita, antes/después, motivo, impacto, autoridad fresca, idempotencia, concurrencia y lineage sin convertir una edición de interfaz, un estado local o un rol de supervisión en autoridad para reescribir historia
+**Bloque:** BLOQUE L — FOGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/L_FOGO/02_EXPERIENCIA_DE_PRODUCCION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, pantallas, permisos, datos, Supabase, migraciones, RLS, RPC, lotes reales, inventario, calidad, recetas ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo FOGO permite **corregir o neutralizar un hecho productivo ya registrado sin destruir su historia**, sin convertir la experiencia en un editor genérico del lote y sin trasladar a FOGO autoridad que pertenece a calidad, NEXO u otros dominios.
+
+La regla raíz queda:
+
+```text
+HECHO PRODUCTIVO ORIGINAL E INMUTABLE
++
+ACCION CORRECTIVA EXPLICITA
++
+MOTIVO Y EVIDENCIA
++
+ANTES / DESPUES O EFECTO COMPENSATORIO
++
+ACTOR + CONTEXTO + AUTORIDAD VIGENTES
++
+RECURSO + VERSION ACTUALES
++
+CORRELACION + IDEMPOTENCIA + CONCURRENCIA
+=
+CORRECCION TRAZABLE SIN REESCRITURA DE HISTORIA
+```
+
+Y permanece prohibido:
+
+```text
+EDITAR EL ORIGINAL PARA QUE PAREZCA CORRECTO
+BORRAR EL HECHO ANTERIOR
+CAMBIAR ACTOR O TIMESTAMP HISTORICOS
+CAMBIAR RETROACTIVAMENTE SEDE / AREA / RECETA / VERSION
+USAR CANCELAR COMO SINONIMO DE DESHACER
+USAR VOID CUANDO YA EXISTEN EFECTOS REALES
+USAR UN DELTA NEGATIVO COMO CORRECCION GENERICA
+CORREGIR STOCK NEXO DESDE FOGO
+CORREGIR CALIDAD DESDE AUTORIDAD PRODUCTIVA
+```
+
+---
+
+#### 2. Entrada aprobada de FOGO-UX-010
+
+`FOGO-UX-010` entrega hechos cuantitativos durables y una frontera explícita entre esperado, observado, merma, desperdicio, reproceso, resultados y diferencias.
+
+La entrada relevante para esta tarea es:
+
+```text
+HECHO / CAPTURA ORIGINAL
+LOTE / ORDEN / EJECUCION
+VERSION DEL RECURSO
+RECIPE_VERSION_REF HISTORICA
+CANTIDAD / UNIDAD / CLASIFICACION ORIGINAL
+ACTOR / TURNO / CONTEXTO ORIGINALES
+EVIDENCIA Y MOMENTO ORIGINALES
+ESTADO PRODUCTIVO ACTUAL
+EFECTOS FOGO YA CONFIRMADOS
+EFECTOS NEXO / CALIDAD / EMPAQUE YA CONFIRMADOS O PENDIENTES
+```
+
+La 011 no vuelve editables esos campos históricos. Los utiliza como referencia del hecho que necesita una acción correctiva vinculada.
+
+Un valor incorrecto ya confirmado deja de ser “un campo por editar” y pasa a ser **un hecho original que necesita una operación correctiva explícita**.
+
+---
+
+#### 3. Naturaleza y topología
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `FOGO-UX-011` define una sola vez el contrato UX de correcciones;
+2. no existe instancia física propia `FOGO-UX-011::<implementation_unit_id>`;
+3. esta tarea no crea tablas, columnas, enums, RPC, Server Actions, permisos ni eventos físicos;
+4. la protección server-side de acciones correctivas permanece en `FOGO-AUTH-012::<implementation_unit_id>` y contratos relacionados;
+5. los consumidores posteriores materializan este contrato dentro de sus packages y unidades técnicas propietarias;
+6. cualquier modificación futura de Supabase perteneciente a VENTO continúa creada, versionada, documentada y ejecutada desde `vento-group-sas/vento-shell`.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva, como mínimo:
+
+- `FOGO-UX-006 — Diseñar producción parcial`;
+- `FOGO-UX-007 — Diseñar finalización de lote`;
+- `FOGO-UX-010 — Registrar cantidades, desperdicio y resultado`;
+- `FOGO-AUTH-010 — Proteger producción parcial`;
+- `FOGO-AUTH-011 — Proteger finalización`;
+- `FOGO-AUTH-012 — Proteger correcciones y anulaciones`;
+- `FOGO-AUTH-013 — Proteger lotes y recetas`;
+- `FOGO-AUTH-014` para actor y turno durables;
+- contratos de integración FOGO/NEXO y familias condicionales de eventos;
+- `VSCREEN-0059 — Registro parcial de producción`;
+- `VSCREEN-0060 — Finalización y cierre de lote`;
+- `VSCREEN-0067 — Reproceso, aprovechamiento, merma y cierre productivo`;
+- `VPROC-0034 — Preparar materiales y ejecutar producción contra una versión aprobada`;
+- `VPROC-0037 — Gestionar reproceso, aprovechamiento, rendimiento, merma y cierre productivo`;
+- estados y eventos canónicos de `VPROC-0034` y `VPROC-0037`;
+- plantillas condicionales `cancellation-recorded`, `void-recorded`, `reversal-applied`, `compensation-posted`, `correction-applied` y `linked-review-opened`;
+- familia 04A vigente de FOGO, autorización, integración y UX;
+- runtime observado `vento-group-sas/vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7`;
+- versión completa aprobada de `FOGO-UX-010` SHA-256 `ac3bf30acd8a07d19696ad41fdda646420fb6f4092a40f0c84b5a4409402480a` mientras su cierre/incorporación permanece pendiente durante esta preparación anticipada.
+
+---
+
+#### 5. Identidad UX sin inventar una pantalla universal de corrección
+
+No existe una identidad canónica `VSCREEN-*` dedicada exclusivamente a “corrección/anulación de producción”.
+
+`VSCREEN-0067` conserva su binding canónico a `VPROC-0037::STEP-RESOLVE_PRODUCTION_DISPOSITION`; ese binding gobierna disposición, reproceso, aprovechamiento y merma, no una mutación correctiva universal.
+
+Por tanto, `FOGO-UX-011` **no crea una pantalla nueva**. `VSCREEN-0067` no se convierte en un editor universal del lote ni en una puerta genérica para cualquier acción correctiva.
+
+La experiencia correctiva se invoca desde la superficie propietaria donde el hecho es visible o revisable y mantiene un contrato común:
+
+| Origen UX | Uso permitido por FOGO-UX-011 | Límite |
+| --- | --- | --- |
+| `VSCREEN-0059` | iniciar corrección de un parcial ya confirmado | no editar el parcial in-place ni usar delta negativo genérico |
+| `VSCREEN-0060` | corregir evidencia o resultado relacionado con finalización/cierre mediante acción posterior vinculada | no reabrir un cierre cambiando directamente su estado |
+| `VSCREEN-0067` | corregir o revisar hechos de disposición, merma, aprovechamiento o reproceso cuando su contrato lo permita | no adquirir por ello todas las acciones correctivas de FOGO |
+| superficies de consulta/trazabilidad posteriores | mostrar original, correcciones y proyección vigente | no conceder mutación por visibilidad |
+
+La misma semántica correctiva puede aparecer como panel, drawer, diálogo o flujo dedicado dentro de la materialización futura, pero esta tarea no fija framework ni componente físico.
+
+---
+
+#### 6. Invariante de historia
+
+La regla de experiencia es:
+
+```text
+HECHO ORIGINAL
++
+ACCION CORRECTIVA VINCULADA
++
+RESULTADO DE ESA ACCION
+=
+HISTORIA EXPLICABLE
+```
+
+Nunca:
+
+```text
+HECHO ORIGINAL
+→ UPDATE DESTRUCTIVO / DELETE EMPRESARIAL
+→ HISTORIA PERDIDA
+```
+
+`DELETE` está prohibido como mecanismo empresarial de corrección; neutralizar, revertir, compensar o ajustar exige una acción vinculada y trazable.
+
+La experiencia debe poder responder siempre:
+
+- qué ocurrió originalmente;
+- quién lo registró;
+- cuándo ocurrió;
+- bajo qué sede, área, lote, orden y receta/version;
+- qué se consideró incorrecto después;
+- quién solicitó o aplicó la corrección;
+- cuál fue el motivo;
+- qué acción correctiva exacta se utilizó;
+- cuál fue el nuevo resultado o estado efectivo;
+- qué efectos derivados quedaron pendientes o fueron compensados.
+
+---
+
+#### 7. Entrada a una corrección
+
+La UX no comienza con un formulario vacío de “editar lote”.
+
+Debe partir de un hecho identificable y mostrar, como mínimo:
+
+```text
+TIPO DE HECHO
+IDENTIDAD DEL HECHO ORIGINAL
+LOTE / ORDEN / EJECUCION
+VERSION DEL RECURSO
+FECHA / HORA ORIGINAL
+ACTOR ORIGINAL
+SEDE / AREA HISTORICAS
+RECETA / VERSION HISTORICA CUANDO APLIQUE
+VALOR / CANTIDAD / CLASIFICACION ORIGINAL
+ESTADO PRODUCTIVO ACTUAL
+EFECTOS POSTERIORES CONOCIDOS
+```
+
+El usuario selecciona **qué necesita corregir** sobre ese hecho; no obtiene acceso a un objeto completo editable.
+
+---
+
+#### 8. Taxonomía correctiva visible
+
+La experiencia conserva las siete semánticas aprobadas:
+
+| Acción | Semántica UX | Qué no significa |
+| --- | --- | --- |
+| `CANCEL` | detener trabajo futuro válido preservando residuales | no deshacer efectos ya confirmados |
+| `VOID` | neutralizar un registro inválido/duplicado sin efecto válido | no borrar un hecho que sí produjo efecto |
+| `REVERSE` | crear operación inversa legítima y vinculada | no eliminar la operación original |
+| `COMPENSATE` | crear restitución o mitigación medible cuando no existe reverso literal | no declarar que el hecho original nunca ocurrió |
+| `ADJUST` | registrar una diferencia o ajuste separado | no reescribir acumulados históricos |
+| `CORRECT` | crear corrección versionada con antes/después | no editar el registro original |
+| `RESTATE` | reexpresar clasificación o presentación | no cambiar cantidad física ni efectos que requieren otra acción |
+
+La UX evita etiquetas ambiguas como `Editar`, `Arreglar`, `Deshacer` o `Anular todo` cuando oculten cuál de estas semánticas se aplicará realmente.
+
+---
+
+#### 9. Selección de la acción correcta
+
+La experiencia debe ayudar a distinguir la intención sin convertir la UI en motor de autoridad.
+
+La decisión considera:
+
+1. qué hecho se intenta cambiar;
+2. si el hecho produjo efecto empresarial válido;
+3. si existe trabajo futuro por detener;
+4. si existe un reverso literal permitido por el dominio propietario;
+5. si el efecto es irreversible y requiere compensación;
+6. si solo cambia una clasificación/presentación;
+7. si la corrección altera un dato confirmado pero no el hecho fuente;
+8. si existen efectos NEXO, calidad, empaque, cierre o externos vinculados;
+9. estado y versión actuales;
+10. capacidad exacta disponible para la acción.
+
+La UI puede orientar al actor hacia una acción, pero el servidor vuelve a resolver semántica permitida, autoridad, estado y versión antes de aplicar cualquier efecto.
+
+---
+
+#### 10. Resumen del hecho original
+
+Antes de confirmar una acción correctiva, la experiencia muestra un resumen no editable del original.
+
+Como mínimo, cuando existan:
+
+- identidad del hecho;
+- lote y orden;
+- tipo de registro;
+- fecha/hora;
+- actor;
+- sede y área;
+- receta/version;
+- cantidad y unidad;
+- clasificación original;
+- estado original relevante;
+- evidencia o referencia del registro;
+- correlaciones con efectos ya conocidos.
+
+El propósito es impedir que la corrección se perciba como edición ordinaria del mismo objeto.
+
+---
+
+#### 11. Antes, después y efecto
+
+Para `CORRECT`, `ADJUST` y `RESTATE`, la UX debe distinguir explícitamente:
+
+```text
+ANTES
+DESPUES PROPUESTO
+RAZON
+IMPACTO ESPERADO
+```
+
+Para `REVERSE` o `COMPENSATE` debe distinguir:
+
+```text
+EFECTO ORIGINAL
+OPERACION VINCULADA PROPUESTA
+MAGNITUD / UNIDAD CUANDO APLIQUE
+RESULTADO ESPERADO DE LA OPERACION
+```
+
+Para `CANCEL`:
+
+```text
+TRABAJO FUTURO QUE SE DETIENE
+HECHOS YA CONFIRMADOS QUE PERMANECEN
+OBLIGACIONES RESIDUALES
+```
+
+Para `VOID`:
+
+```text
+REGISTRO A NEUTRALIZAR
+PRUEBA DE AUSENCIA DE EFECTO VALIDO O DUPLICACION
+REGISTRO / SUCESOR VALIDO CUANDO EXISTA
+```
+
+---
+
+#### 12. Cancelación
+
+`CANCEL / FUTURE_STOP_WITH_RESIDUALS` se presenta como una acción para impedir trabajo futuro, no como “borrar lote”.
+
+La confirmación debe dejar claro qué permanece:
+
+- parciales confirmados;
+- consumos ya registrados;
+- movimientos físicos ya aplicados;
+- salida ya producida;
+- calidad ya registrada;
+- evidencias del actor;
+- obligaciones de devolución, ajuste, disposición o conciliación.
+
+Si no existe trabajo futuro que pueda detenerse, la UX no debe proponer `CANCEL` como sustituto de corrección, reversa o compensación.
+
+---
+
+#### 13. Anulación / VOID
+
+`VOID / INVALID_RECORD_NEUTRALIZATION` solo es elegible cuando el registro no produjo un efecto empresarial válido o quedó demostrado como duplicado/inválido.
+
+La UX exige evidencia suficiente para explicar por qué puede neutralizarse sin reversa/compensación.
+
+Si detecta consumo, producción, movimiento, calidad, cierre, inventario u otro efecto durable, presenta `VOID` como **no aplicable** y deriva a la acción propietaria adecuada.
+
+La anulación no oculta la fila ni la reemplaza por ausencia.
+
+---
+
+#### 14. Reversa
+
+`REVERSE / LINKED_REVERSAL` representa una operación inversa legítima.
+
+La UX conserva:
+
+- referencia al efecto original;
+- alcance exacto del reverso;
+- cantidad/unidad cuando aplique;
+- dominio propietario;
+- actor y autoridad de la reversa;
+- identidad idempotente nueva pero vinculada;
+- resultado propio.
+
+Una reversa confirmada aparece junto al original; no transforma el original en “nunca ocurrido”.
+
+---
+
+#### 15. Compensación
+
+`COMPENSATE / LINKED_COMPENSATION` se usa cuando un efecto no puede deshacerse literalmente y necesita restitución o mitigación medible.
+
+La experiencia conserva:
+
+- hecho original;
+- razón de compensación;
+- magnitud/alcance de la compensación;
+- unidad cuando aplique;
+- dominio que debe ejecutar el efecto;
+- relación con el original;
+- estado de aplicación;
+- evidencia y resultado.
+
+La UX evita frases como “revertido” si el efecto original permanece real y solo fue compensado.
+
+---
+
+#### 16. Ajuste
+
+`ADJUST / LINKED_ADJUSTMENT` representa una diferencia separada después de una conciliación.
+
+Ejemplos de comportamiento UX prohibido:
+
+```text
+CAMBIAR ACTUAL_QTY HISTORICO
+CAMBIAR EL ACUMULADO HASTA QUE CUADRE
+BORRAR UN CONSUMO PREVIO
+EDITAR UNA SALIDA PARA HACERLA COINCIDIR CON INVENTARIO
+```
+
+El ajuste conserva su propia identidad, motivo, cantidad/unidad cuando aplique y efecto derivado.
+
+---
+
+#### 17. Corrección versionada
+
+`CORRECT / VERSIONED_CORRECTION` crea una enmienda enlazada.
+
+La experiencia presenta y conserva como mínimo:
+
+- identidad del hecho original;
+- versión original;
+- campos afectados;
+- valor o clasificación anterior;
+- valor o clasificación corregida;
+- causa;
+- actor que aplica la corrección;
+- contexto efectivo;
+- instante;
+- versión resultante;
+- impacto declarado;
+- correlación;
+- identidad idempotente;
+- evidencia de autorización.
+
+Una corrección aplicada no habilita editar la corrección anterior; una rectificación posterior crea otra capa vinculada.
+
+---
+
+#### 18. Reexpresión
+
+`RESTATE / LINKED_RESTATEMENT` modifica una clasificación o representación derivada sin cambiar el hecho fuente.
+
+Puede servir, cuando el contrato propietario lo permita, para corregir una clasificación explicativa sin alterar:
+
+- cantidad física;
+- consumo;
+- salida;
+- receta/version;
+- actor histórico;
+- timestamps;
+- movimientos NEXO;
+- decisiones de calidad;
+- estados que requieran otra acción empresarial.
+
+La UX explica que la reexpresión cambia la interpretación vigente, no la ocurrencia histórica.
+
+---
+
+#### 19. Corrección de producción parcial
+
+Un parcial aceptado es un hecho durable.
+
+Por tanto:
+
+```text
+PARCIAL EQUIVOCADO
+!=
+DELTA NEGATIVO GENERICO
+```
+
+El flujo de corrección:
+
+1. identifica el parcial exacto;
+2. muestra su cantidad/unidad, actor, tiempo y versión;
+3. selecciona la semántica correctiva aplicable;
+4. conserva el parcial original;
+5. revalida estado, territorio, versión y capacidad;
+6. aplica una acción vinculada;
+7. recalcula la proyección/acumulado a partir de hechos originales y correctivos válidos.
+
+`FOGO-UX-006` conserva la captura ordinaria; la 011 solo gobierna su rectificación excepcional.
+
+---
+
+#### 20. Corrección posterior a finalización o cierre
+
+`VPROC-0034.PRODUCTION_EXECUTION_COMPLETED` y `VPROC-0037.PRODUCTION_CLOSEOUT_APPROVED` no vuelven editable la historia.
+
+Después de cualquiera de esos hitos:
+
+- el cierre original permanece visible;
+- la corrección se registra como acción posterior vinculada;
+- puede abrirse una revisión enlazada mediante `linked-review-opened` cuando el contrato aplicable lo requiera;
+- un efecto físico posterior se resuelve en su dominio propietario;
+- el estado histórico de cierre no se cambia directamente para “reabrir” el lote.
+
+La experiencia puede mostrar `CORRECCION_POST_CIERRE` como estado UX explicativo, pero no lo presenta como un nuevo estado canónico de `VPROC-0037`.
+
+---
+
+#### 21. Cadena de múltiples correcciones
+
+Un hecho puede requerir más de una acción correctiva a lo largo del tiempo.
+
+La experiencia conserva una cadena ordenada:
+
+```text
+ORIGINAL
+→ CORRECCION / AJUSTE / REVERSA / COMPENSACION 1
+→ CORRECCION / AJUSTE / REVERSA / COMPENSACION 2
+→ ...
+```
+
+Cada nueva acción:
+
+- revalida la versión efectiva actual;
+- enlaza el hecho o la capa que corrige;
+- no modifica las capas anteriores;
+- conserva actor, razón y momento propios;
+- actualiza la proyección vigente solo después de confirmarse.
+
+Una corrección concurrente basada en una versión anterior produce `STALE` o `CONFLICT`; no se fusiona por last-write-wins silencioso.
+
+---
+
+#### 22. Proyección vigente vs. historia
+
+La UX distingue dos vistas conceptuales:
+
+```text
+VALOR / ESTADO VIGENTE
+```
+
+que representa la proyección efectiva tras correcciones válidas, y:
+
+```text
+HISTORIA COMPLETA
+```
+
+que conserva originales y acciones vinculadas.
+
+Nunca se presenta el valor vigente como si hubiera sido el valor original.
+
+La proyección puede simplificar el trabajo operativo cotidiano, pero debe permitir abrir la trazabilidad suficiente para explicar cómo se llegó a ese valor.
+
+---
+
+#### 23. Motivo y evidencia
+
+Toda acción correctiva sensible necesita un motivo explícito.
+
+La UX conserva, según aplique:
+
+- motivo seleccionado desde taxonomía propietaria cuando exista;
+- explicación adicional cuando sea necesaria;
+- referencia a evidencia;
+- observación del impacto;
+- relación con incidente, revisión o investigación cuando exista contrato propietario.
+
+Esta tarea no inventa una taxonomía física de motivos ni exige adjuntos universales.
+
+`MOTIVO VACIO` no se sustituye por un texto genérico generado por la interfaz.
+
+---
+
+#### 24. Vista previa de impacto
+
+Antes de aplicar una corrección, la experiencia debe diferenciar:
+
+- qué dato o efecto productivo cambiará en la proyección vigente;
+- qué historia permanecerá intacta;
+- si el cierre queda sujeto a revisión posterior;
+- si calidad debe revisar su propia decisión;
+- si existe efecto NEXO que requiere reversa, devolución, ajuste o compensación propietaria;
+- si hay empaque, etiqueta o salida terminada relacionada;
+- si quedan obligaciones residuales;
+- si la acción solo corrige clasificación sin efecto físico.
+
+La vista previa no afirma que un efecto externo será ejecutado hasta recibir evidencia del dominio propietario.
+
+---
+
+#### 25. Autoridad, actor y contexto
+
+Abrir la experiencia no concede corrección.
+
+En el punto de confirmación se revalidan, según aplique:
+
+```text
+ACTOR EFECTIVO
+SESION / ACTOR_SESSION_ID
+TURNO / CHECK-IN CUANDO APLIQUE
+ROL / CARRIL EFECTIVO
+SEDE
+AREA
+RECURSO REAL
+ESTADO ACTUAL
+VERSION ACTUAL
+ACCION CORRECTIVA EXACTA
+CAPACIDAD CANONICA CONCRETA
+```
+
+No bastan por sí solos:
+
+- haber creado el lote;
+- haber registrado el hecho original;
+- ser productor del área;
+- ser supervisor;
+- ser `gerencia_operativa`;
+- poder ver el lote;
+- poder crear lotes;
+- poder cerrar lotes;
+- administrar recetas;
+- haber tenido autoridad anteriormente.
+
+Mientras no exista binding de capacidad canónica concreto para una acción correctiva, la UX falla cerrada y no inventa un permiso.
+
+---
+
+#### 26. Campos protegidos y mass assignment
+
+Una acción correctiva modifica únicamente los campos declarados por su contrato.
+
+No puede aceptar como patch genérico:
+
+- actor original;
+- timestamp original;
+- sede/área histórica;
+- receta/version histórica;
+- identidad original del lote;
+- estados arbitrarios;
+- flags de autorización;
+- ownership;
+- acumulados derivados;
+- eventos ya emitidos;
+- identificadores de movimiento NEXO;
+- evidencia de calidad;
+- auditoría histórica.
+
+La UI tampoco ofrece esos campos como editables para “facilitar” la corrección.
+
+---
+
+#### 27. Frontera con NEXO
+
+FOGO no corrige stock mediante edición de hechos productivos.
+
+Cuando una corrección afecta un efecto físico ya confirmado:
+
+```text
+CORRECCION FOGO
+!=
+REVERSA / AJUSTE / DEVOLUCION NEXO
+```
+
+La experiencia FOGO conserva:
+
+- hecho productivo original;
+- acción correctiva;
+- motivo;
+- cantidad/unidad relevante;
+- correlación con el efecto NEXO conocido;
+- estado de la obligación física.
+
+NEXO conserva propiedad sobre:
+
+- stock;
+- LOC;
+- LPN;
+- lote físico;
+- movimiento;
+- devolución;
+- ajuste físico;
+- conciliación.
+
+`FOGO-UX-012` y `FOGO-UX-013` reciben las fronteras de consumo y terminado; la 011 no ejecuta sus efectos.
+
+---
+
+#### 28. Frontera con calidad
+
+Una corrección productiva no cambia silenciosamente una decisión de `VPROC-0035`.
+
+Si la corrección afecta información material para calidad:
+
+1. la corrección productiva se registra y conserva;
+2. la decisión de calidad original permanece en historia;
+3. la UX indica `REVISION_DE_CALIDAD_REQUERIDA` o equivalente descriptivo cuando exista obligación propietaria;
+4. el proceso de calidad decide si requiere nueva inspección, revisión o disposición;
+5. la corrección no transforma `retenido/rechazado` en `liberado`.
+
+La autoridad productiva y la autoridad de calidad permanecen separadas.
+
+---
+
+#### 29. Frontera con lote, área y receta
+
+Una corrección no puede usarse para reconstruir retrospectivamente la identidad del hecho.
+
+Queda prohibido:
+
+```text
+MOVER RETROACTIVAMENTE EL LOTE A OTRA AREA
+CAMBIAR LA SEDE HISTORICA
+CAMBIAR LA RECETA / VERSION QUE SE USO
+CAMBIAR LA IDENTIDAD DEL LOTE
+CONVERTIR UNA RECETA RETIRADA EN VIGENTE
+```
+
+Si el trabajo futuro debe continuar bajo otro contexto, se crea la acción/ejecución propietaria que corresponda; no se altera el contexto histórico del hecho corregido.
+
+---
+
+#### 30. Idempotencia y concurrencia
+
+Toda acción correctiva sensible usa identidad empresarial recuperable.
+
+Reglas UX:
+
+- doble toque no crea dos correcciones;
+- retry equivalente devuelve el mismo resultado empresarial;
+- misma identidad con contenido distinto produce conflicto;
+- timeout o respuesta perdida no habilitan repetir con una identidad nueva;
+- dos correcciones incompatibles sobre la misma versión no aplican ambas;
+- la segunda operación revalida la versión vigente;
+- una cancelación repetida no recrea obligaciones residuales;
+- una reversa o compensación repetida no duplica efectos;
+- la cadena original → corrección/reversa/compensación permanece única y trazable.
+
+---
+
+#### 31. Resultado desconocido y recuperación
+
+Ante timeout o pérdida de respuesta después de confirmar:
+
+```text
+NO GENERAR OTRA CORRECCION
+NO CAMBIAR IDEMPOTENCY_ID
+CONSULTAR RESULTADO DURABLE
+```
+
+La UX conserva:
+
+- identidad idempotente original;
+- correlación;
+- recurso y versión esperada;
+- acción solicitada;
+- estado de recuperación.
+
+Debe distinguir:
+
+- `APLICADA`;
+- `DUPLICADO_RECUPERADO`;
+- `EN_PROGRESO`;
+- `CONFLICT`;
+- `STALE`;
+- `RESULTADO_DESCONOCIDO`;
+- `RECONCILIACION_REQUERIDA`;
+- `ERROR_TECNICO`.
+
+---
+
+#### 32. Dispositivo compartido
+
+En una estación compartida, la corrección se atribuye al actor efectivo que la confirma.
+
+Reglas:
+
+1. el dispositivo no concede autoridad;
+2. un borrador preparado por A no puede confirmarse con autoridad residual de A cuando B ocupa la estación;
+3. cambiar de actor invalida cualquier autorización sensible no confirmada;
+4. una corrección aplicada conserva al actor que la aplicó;
+5. el actor original del hecho corregido no cambia;
+6. la firma/reautenticación adicional se exige solo cuando el contrato de autorización aplicable lo determine.
+
+---
+
+#### 33. Estados de experiencia
+
+La UX puede proyectar, sin crear estados nuevos de proceso, al menos:
+
+| Estado UX | Significado |
+| --- | --- |
+| `ORIGINAL_VISIBLE` | hecho original consultable e intacto |
+| `CORRECCION_PREPARANDOSE` | intención todavía no aplicada |
+| `IMPACTO_POR_REVISAR` | faltan consecuencias o dependencias por determinar |
+| `NO_APLICABLE_A_ESTA_ACCION` | la semántica elegida no corresponde al hecho/estado |
+| `AUTORIDAD_PENDIENTE` | aún no se ha confirmado autoridad fresca |
+| `APLICANDO` | acción enviada con identidad idempotente estable |
+| `APLICADA` | acción correctiva durable confirmada |
+| `EFECTO_EXTERNO_PENDIENTE` | NEXO/calidad/u otro owner debe resolver un efecto propio |
+| `REVISION_VINCULADA` | existe revisión posterior relacionada sin mutar el original |
+| `STALE` | recurso/version/contexto cambió |
+| `CONFLICT` | otra acción incompatible ganó o requiere reconciliación |
+| `RESULTADO_DESCONOCIDO` | no se sabe aún si el efecto fue aplicado |
+| `DENY` | falta autoridad/contexto/territorio válido |
+| `ERROR_TECNICO` | dependencia impide decidir con seguridad |
+
+No se reduce todo a “corregido / no corregido”.
+
+---
+
+#### 34. Confirmación y prevención de acciones destructivas
+
+La experiencia separa claramente:
+
+```text
+VOLVER
+REVISAR IMPACTO
+CONFIRMAR ACCION CORRECTIVA EXACTA
+```
+
+La confirmación:
+
+- nombra la acción (`Cancelar`, `Corregir`, `Ajustar`, `Reversar`, etc.);
+- identifica el hecho afectado;
+- explica que el original permanece;
+- muestra el efecto propuesto;
+- exige motivo;
+- advierte obligaciones residuales o efectos externos pendientes;
+- evita un CTA genérico `Guardar cambios` para acciones sensibles distintas.
+
+Una confirmación nunca afirma “todo volvió al estado anterior” si la operación real es una compensación o si existen efectos residuales.
+
+---
+
+#### 35. Denegación, conflicto y error
+
+La UX diferencia:
+
+```text
+SIN_AUTORIDAD
+ACCION_NO_APLICABLE
+RECURSO_STALE
+CONFLICTO_CONCURRENTE
+DEPENDENCIA_PENDIENTE
+RESULTADO_DESCONOCIDO
+ERROR_TECNICO
+```
+
+Reglas:
+
+- un `DENY` no se presenta como error técnico;
+- un error técnico no se presenta como denegación del actor;
+- `STALE` exige refrescar antes de intentar otra acción;
+- `CONFLICT` muestra la nueva verdad autoritativa disponible;
+- `RESULTADO_DESCONOCIDO` ofrece recuperación por identidad, no un segundo submit;
+- los mensajes al operador no exponen nombres internos de permisos, RLS, tablas, RPC o reglas de seguridad.
+
+---
+
+#### 36. Legibilidad y uso en estación productiva
+
+La experiencia prioriza:
+
+- hecho original siempre identificable;
+- diferencia entre original y vigente visible sin depender solo de color;
+- acción correctiva escrita con verbo inequívoco;
+- targets táctiles suficientes;
+- confirmaciones con foco y navegación por teclado cuando aplique;
+- motivo y error asociados al control correspondiente;
+- historia resumida comprensible sin mostrar logs técnicos;
+- detalle progresivo para no sobrecargar la estación.
+
+No se requiere mostrar UUID, payloads, hashes, permisos internos o eventos completos al trabajador ordinario.
+
+---
+
+#### 37. Contraste con el AS-IS observado
+
+En `vento-fogo@a40683b2413d621fb3f54f2eebb8743a42bad3d7` se observa:
+
+1. `/production-batches` consulta `production_batches` y muestra estados locales como `draft`, `posted`, `cancelled` y `completed`;
+2. la ruta utiliza `production.batches.view` para consulta;
+3. no se observó una Server Action dedicada de corrección, anulación o cancelación empresarial de lote;
+4. no se observó un `update/delete` directo de `production_batches` desde las superficies auditadas que materialice un lifecycle correctivo canónico;
+5. la creación continúa concentrada en `fogo_create_real_production_batch` con consumos, salidas y empaques acoplados;
+6. el literal visual `cancelled` no demuestra `CANCEL / FUTURE_STOP_WITH_RESIDUALS` con residuales, autoridad, motivo, lineage e idempotencia;
+7. no se observa una proyección explícita original → corrección → vigente para hechos productivos.
+
+Conclusión:
+
+```text
+LABEL LOCAL cancelled
+!=
+CANCEL CANONICO MATERIALIZADO
+
+STATUS LOCAL completed
+!=
+CIERRE INMUTABLE + CORRECCION POSTERIOR VINCULADA
+```
+
+El AS-IS se clasifica como **sin experiencia correctiva canónica materializada**.
+
+---
+
+#### 38. Hallazgos, propietario y condición de salida
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| No existe superficie física dedicada ni patrón runtime verificable para acciones correctivas productivas. | riesgo de resolver errores con edición ad hoc o fuera de flujo | materialización propietaria FOGO consumiendo `FOGO-UX-011` + `FOGO-AUTH-012::<implementation_unit_id>` | existe experiencia protegida que conserva original, acción, motivo, antes/después, lineage, autoridad e idempotencia |
+| No existe capacidad FOGO dedicada demostrada como permiso universal de corrección. | la UI podría inferir autoridad desde view/create/close/supervisión | `FOGO-AUTH-012::<implementation_unit_id>` con normalización `FOGO-AUTH-013/015` cuando aplique | cada acción correctiva está ligada a una capacidad canónica concreta; sin binding falla cerrado |
+| `cancelled` existe como label local sin demostrar lifecycle correctivo. | cancelación visual podría ocultar efectos residuales | materialización FOGO propietaria | `CANCEL` conserva trabajo detenido, hechos ejecutados, residuales, motivo, actor y correlación |
+| Correcciones posteriores a cierre podrían implementarse como update in-place. | pérdida crítica de historia y auditoría | `FOGO-UX-011` + persistencia propietaria + `FOGO-AUTH-012` | original y correcciones permanecen vinculados/versionados y la proyección vigente es derivable |
+| Correcciones sobre consumos/salidas pueden requerir efectos físicos. | riesgo de editar stock desde FOGO o duplicar compensaciones | `FOGO-UX-012`, `FOGO-UX-013` e integración FOGO/NEXO | todo efecto físico usa contrato NEXO correlacionado y FOGO solo conserva la razón/estado de la obligación |
+| Correcciones productivas pueden cambiar evidencia relevante para calidad. | riesgo de liberar o rechazar producto desde autoridad equivocada | proceso `VPROC-0035` y materialización FOGO/calidad propietaria | la corrección preserva decisión original y abre revisión propietaria cuando sea material |
+| No existe historial UX original → corrección → vigente demostrado en runtime. | operador/supervisor no puede explicar por qué cambió el valor actual | materialización propietaria FOGO, con trazabilidad consumida después por `FOGO-UX-015` | la experiencia muestra proyección vigente y timeline explicable sin logs técnicos |
+
+No queda hallazgo narrativo sin propietario y condición de salida.
+
+---
+
+#### 39. Handoff inmediato a FOGO-UX-012
+
+`FOGO-UX-012 — Conectar consumo de insumos con NEXO` recibe desde esta tarea una frontera explícita:
+
+```text
+LOTE / ORDEN / EJECUCION
+RECETA / VERSION HISTORICA
+HECHOS DE CONSUMO PRODUCTIVO ORIGINALES
+CORRECCIONES / AJUSTES / REVERSAS / COMPENSACIONES FOGO VINCULADAS
+CANTIDAD + UNIDAD
+CORRELACION E IDEMPOTENCIA
+EFECTO NEXO CONOCIDO O ESTADO DE APLICACION
+OBLIGACION FISICA PENDIENTE CUANDO EXISTA
+ACTOR / CONTEXTO / EVIDENCIA
+```
+
+La 012 debe conservar que:
+
+- FOGO expresa el hecho productivo y su corrección;
+- NEXO decide/aplica el movimiento físico bajo su contrato;
+- una corrección FOGO no modifica directamente stock;
+- una corrección de consumo no crea automáticamente devolución o ajuste;
+- original y efecto compensatorio permanecen correlacionados;
+- retries no duplican el movimiento físico.
+
+La 011 no adelanta el diseño detallado de integración de la 012.
+
+---
+
+#### 40. Continuidad funcional con FOGO-UX-012..015
+
+| Tarea | Frontera preservada desde FOGO-UX-011 |
+| --- | --- |
+| `FOGO-UX-012` | conecta consumos y correcciones relacionadas con efectos físicos NEXO sin reescribir el hecho FOGO |
+| `FOGO-UX-013` | conecta producto terminado y sus efectos físicos sin convertir salida corregida en stock automático |
+| `FOGO-UX-014` | supervisión puede consultar/coordinar, pero no adquiere autoridad correctiva por rol o visibilidad |
+| `FOGO-UX-015` | prototipo debe demostrar historia, correcciones, bloqueos y diferencias entre valor original y vigente |
+
+La sucesora inmediata es `FOGO-UX-012`; esta tarea no desarrolla sus pantallas, contratos físicos ni integración.
+
+---
+
+#### 41. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: ciclo productivo, cancelación/corrección, historia inmutable, versionado, autorización server-side, actor/contexto, territorio, idempotencia, concurrencia, calidad, inventario, compensación, UX de error y trazabilidad ya están cubiertos por requisitos vigentes. Esta tarea especializa cómo esa cobertura se presenta y opera en la experiencia FOGO sin introducir una obligación verificable nueva ni modificar texto, estado, relación, secuencia o propietario del registro.
+
+---
+
+#### 42. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación, entre otra cobertura vigente:
+
+- `TREQ-FOGO-001` — ciclo de lote con cancelación/corrección, actor, turno, cantidades y efectos auditables;
+- `TREQ-FOGO-002` — receta/version histórica, rendimiento y desviaciones sin sobrescribir conocimiento esperado;
+- `TREQ-FOGO-004` — ejecución, calidad, reproceso, genealogía y cierre sin sobrescritura destructiva;
+- `TREQ-AUTH-013` — mutaciones server-side con permiso exacto, actor, territorio, contexto, estado y campos permitidos;
+- `TREQ-AUTH-014` — frescura e invalidación antes de efectos sensibles;
+- `TREQ-AUTH-015` — evidencia correlacionable de decisión y efecto;
+- `TREQ-AUTH-017` — autoridad explícita para operaciones sensibles;
+- `TREQ-INTEGRATION-003` — identidad idempotente, resultado durable, concurrencia, retry y resultado desconocido;
+- `TREQ-INTEGRATION-011` — efectos de inventario exactamente una vez y compensaciones vinculadas al original;
+- `TREQ-INTEGRATION-013` — cadena materiales, ejecución, calidad, inventario y costo correlacionada y reconciliable;
+- `TREQ-UX-001` — tarea, acción principal y estado identificables;
+- `TREQ-UX-002` — fallos y bloqueos explicables con recuperación segura;
+- `TREQ-UX-003` — información y acciones adecuadas al actor y autorización;
+- `TREQ-UX-009` — contexto operativo real sin fabricar autoridad desde parámetros cliente.
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 43. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local posterior a la incorporación del artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@dddb3cbc4ce4fd1b802efcd4cab76850457a3a7e`, `vento-fogo/main@a40683b2413d621fb3f54f2eebb8743a42bad3d7`, owner FOGO-UX, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `FOGO-AUTH-012`, `VSCREEN-0059`, `VSCREEN-0060`, `VSCREEN-0067`, estados/eventos de `VPROC-0037`, familias condicionales de corrección, cobertura 04A y AS-IS de lotes; `FOGO-UX-010` se consume desde su versión completa aprobada SHA-256 `ac3bf30acd8a07d19696ad41fdda646420fb6f4092a40f0c84b5a4409402480a` mientras su incorporación remota permanece pendiente durante esta preparación anticipada. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron correcciones, cancelaciones, anulaciones, reversas, compensaciones, ajustes, reexpresiones, cierres, movimientos NEXO ni decisiones de calidad sobre lotes reales. |
+| FÍSICA | NOT_APPLICABLE | `FOGO-UX-011` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 44. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] no se crea una pantalla `VSCREEN-*` nueva para correcciones;
+- [ ] `VSCREEN-0067` permanece superficie de disposición/cierre y no se convierte en editor universal de lote;
+- [ ] `CANCEL`, `VOID`, `REVERSE`, `COMPENSATE`, `ADJUST`, `CORRECT` y `RESTATE` permanecen semánticamente distintos;
+- [ ] la UX no usa un CTA genérico que oculte la acción correctiva real;
+- [ ] el hecho original siempre permanece visible e inmutable;
+- [ ] actor, timestamp, sede, área, lote y receta/version históricos no se reescriben;
+- [ ] `CANCEL` detiene trabajo futuro y conserva efectos/residuales;
+- [ ] `VOID` solo neutraliza un registro sin efecto válido o duplicado demostrado;
+- [ ] `REVERSE` conserva y referencia el efecto original;
+- [ ] `COMPENSATE` no declara inexistente el hecho original;
+- [ ] `ADJUST` no modifica acumulados históricos in-place;
+- [ ] `CORRECT` conserva antes/después, causa, actor, impacto y versión;
+- [ ] `RESTATE` no cambia cantidad física ni decisiones que pertenecen a otro dominio;
+- [ ] un parcial equivocado no usa delta negativo genérico;
+- [ ] una corrección posterior a finalización/cierre queda vinculada y no reabre por edición directa;
+- [ ] múltiples correcciones forman una cadena reconstruible;
+- [ ] valor vigente e historia completa permanecen diferenciados;
+- [ ] motivo y evidencia se conservan sin inventar una taxonomía física universal;
+- [ ] la vista previa distingue efectos productivos, NEXO, calidad y residuales;
+- [ ] lectura, creación, cierre, receta, supervisión o rol no conceden corrección por inferencia;
+- [ ] ausencia de binding de capacidad concreto produce fail-closed;
+- [ ] los campos sensibles quedan fuera de mass assignment;
+- [ ] una corrección FOGO no modifica stock NEXO;
+- [ ] una corrección FOGO no modifica decisión de calidad;
+- [ ] el lote no se mueve retroactivamente entre áreas/sedes;
+- [ ] idempotencia evita duplicado por doble toque, retry o respuesta perdida;
+- [ ] concurrencia no permite last-write-wins silencioso;
+- [ ] `RESULTADO_DESCONOCIDO` recupera por identidad antes de reintentar;
+- [ ] dispositivo compartido revalida actor y no transfiere autoridad;
+- [ ] estados UX distinguen preparación, autoridad, aplicada, externo pendiente, stale, conflict, deny y error;
+- [ ] mensajes al operador no exponen detalles internos de autorización;
+- [ ] el AS-IS `cancelled/completed` no se declara lifecycle correctivo canónico;
+- [ ] cada hallazgo conserva propietario y condición de salida;
+- [ ] `FOGO-UX-012` recibe consumo/corrección correlacionados sin inventar movimiento NEXO;
+- [ ] la topología permanece `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 45. Límites
+
+Esta tarea no:
+
+- crea una pantalla nueva;
+- implementa `VSCREEN-0059`, `VSCREEN-0060` ni `VSCREEN-0067`;
+- modifica `/production-batches` ni `/production-batches/new`;
+- modifica `fogo_create_real_production_batch`;
+- crea tablas, columnas, enums, RPC, RLS, grants, migraciones ni datos;
+- crea una capacidad de corrección;
+- decide el binding físico de permisos;
+- crea taxonomías de motivo universales;
+- ejecuta cancelaciones, anulaciones, reversas, compensaciones ni ajustes reales;
+- modifica hechos originales;
+- modifica stock, LOC, LPN o movimientos NEXO;
+- decide calidad;
+- cambia receta/version histórica;
+- cambia sede o área histórica;
+- reabre cierres mediante edición directa;
+- corrige acumulados mediante update in-place;
+- implementa trazabilidad física;
+- desarrolla el detalle de `FOGO-UX-012`;
+- crea una instancia física propia;
+- modifica el Registro 04A.
+
+---
+
+#### 46. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`FOGO-UX-010 — Registrar cantidades, desperdicio y resultado`
+
+**TAREA ACTUAL APROBADA**
+`FOGO-UX-011 — Diseñar correcciones sin alterar historial`
+
+**SIGUIENTE TAREA RESERVADA**
+`FOGO-UX-012 — Conectar consumo de insumos con NEXO`
+
 ### [ ] FOGO-UX-012 — Conectar consumo de insumos con NEXO
 ### [ ] FOGO-UX-013 — Conectar producto terminado con NEXO
 ### [ ] FOGO-UX-014 — Diseñar pantalla para supervisor de producción
