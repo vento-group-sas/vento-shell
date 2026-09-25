@@ -12976,7 +12976,1066 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-012 — Ocultar precios cuando no correspondan`
-### [ ] ORIGO-UX-012 — Ocultar precios cuando no correspondan
+### ✅ ORIGO-UX-012 — Ocultar precios cuando no correspondan
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-011 — Diseñar diferencias contra orden
+**Tarea siguiente:** ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO
+**Tipo de tarea:** diseño documental integral de la experiencia de minimización y ocultamiento de precios, costos, totales y condiciones comerciales sensibles en ORIGO, consumiendo el field masking aprobado por `ORIGO-AUTH-010` para que cada superficie entregue únicamente la proyección económica necesaria por permiso, recurso, alcance, finalidad y acción, sin ocultar la existencia de una diferencia ni convertir el render de UI en frontera de seguridad; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación, componentes, permisos, roles, grants, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, contratos generados, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar la experiencia objetivo para que ORIGO muestre precios, costos, totales y condiciones comerciales únicamente cuando la finalidad, autoridad y recurso autorizados los requieran.
+
+La tarea evita dos errores opuestos:
+
+```text
+RECURSO VISIBLE
+→ EXPONER TODO SU CONTENIDO ECONÓMICO
+```
+
+Y:
+
+```text
+OCULTAR EN PANTALLA
+→ PERO HABER LEÍDO / SERIALIZADO / EXPORTADO EL DATO SENSIBLE
+```
+
+La regla de experiencia queda:
+
+```text
+PERMISO EXACTO
++
+RECURSO AUTORIZADO
++
+ALCANCE / CONTEXTO AUTORIZADO
++
+FINALIDAD
++
+ACCIÓN
++
+FIELD MASK
+=
+PROYECCIÓN ENTREGABLE
+```
+
+---
+
+#### 2. Handoff recibido de ORIGO-UX-011
+
+`ORIGO-UX-011` entrega una frontera obligatoria:
+
+```text
+DIFERENCIA DE PRECIO O CONDICIÓN
+→ DEBE PODER EXISTIR Y SER TRATADA
+→ SIN OBLIGAR A REVELAR IMPORTES A UN ACTOR NO AUTORIZADO
+```
+
+Por tanto:
+
+```text
+PRECIO OCULTO
+!=
+DIFERENCIA OCULTA
+```
+
+Un actor puede conocer que existe una diferencia económica que bloquea o requiere revisión sin conocer necesariamente:
+
+- precio unitario comprometido;
+- precio observado;
+- delta monetario;
+- porcentaje de variación;
+- total de línea;
+- total de orden;
+- costo interno;
+- margen;
+- condición comercial sensible.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. esta tarea define experiencia y contrato documental una sola vez;
+2. no crea una instancia física propia;
+3. no selecciona package, implementation unit, ambiente ni target path;
+4. no activa materialización de `ORIGO-AUTH-010`;
+5. no cambia código ni datos;
+6. toda materialización posterior debe consumir este contrato y el contrato de autorización sin reinterpretarlos.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se contrastó contra:
+
+```text
+vento-shell/main
+30b7c8276220c34370438e0867958ed1f18a4b55
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+```
+
+También se verificaron:
+
+- `ORIGO-AUTH-010 — Proteger precios y datos sensibles`;
+- `VSCREEN-0073..0079`;
+- `VSCREEN-0145`;
+- contratos de recurso y autorización aplicables;
+- experiencia administrativa de compra y recepción;
+- Registro 04A ORIGO y AUTH;
+- runtime de listado, detalle, edición y PDF de órdenes;
+- runtime de recepción y sus consultas de costo;
+- validadores y scripts documentales vigentes.
+
+---
+
+#### 5. Contrato de autorización consumido
+
+La tarea consume sin redefinir `ORIGO-AUTH-010`.
+
+La clasificación sensible vigente incluye:
+
+```text
+COMMERCIAL_CONFIDENTIALITY
+```
+
+para capacidades como:
+
+```text
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.suppliers.view
+```
+
+La autorización del recurso no concede todas sus columnas.
+
+---
+
+#### 6. La tarea no crea permisos nuevos
+
+No se crean claves como:
+
+```text
+purchase_orders.prices.view
+receipts.prices.view
+suppliers.prices.view
+prices.reveal
+costs.view
+```
+
+ni equivalentes inferidos.
+
+La visibilidad económica se deriva de permisos canónicos existentes, recurso, scope, finalidad, acción y field mask.
+
+---
+
+#### 7. Familias económicas sensibles
+
+La experiencia trata como sensibles, como mínimo:
+
+```text
+currency
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+precio pactado
+descuento
+impuesto
+flete
+mínimo económico
+subtotal
+presupuesto
+condición comercial
+importe de aprobación
+costo normalizado
+margen
+```
+
+Un equivalente futuro hereda la misma política si revela el mismo hecho económico.
+
+---
+
+#### 8. Valores derivados también son sensibles
+
+Ocultar el precio base pero mostrar un derivado que permita reconstruirlo no satisface el contrato.
+
+Se consideran revelaciones económicas, según contexto:
+
+- delta monetario;
+- porcentaje de variación cuando permite inferir el valor;
+- total extendido;
+- subtotal;
+- impuestos calculados;
+- costo por unidad normalizada;
+- costo de stock;
+- promedio o último costo;
+- margen;
+- acumulados o agregados por proveedor;
+- exportaciones que permitan reconstrucción indirecta.
+
+---
+
+#### 9. Regla de minimización end-to-end
+
+La experiencia exige:
+
+```text
+FIELD MASK
+→ SELECT MÍNIMO
+→ SERIALIZACIÓN MÍNIMA
+→ RENDER MÍNIMO
+```
+
+No:
+
+```text
+SELECT SENSIBLE
+→ SERIALIZAR SENSIBLE
+→ OCULTAR CON CSS
+```
+
+El dato no autorizado no debe llegar a la capa cliente, props, payload, HTML, JSON, exportación, tooltip ni error.
+
+---
+
+#### 10. Proyección operativa sin precios
+
+Para recepción y abastecimiento operativo, la proyección ordinaria puede incluir:
+
+- referencia de orden;
+- estado relevante;
+- proveedor mínimo;
+- sede/destino receptor;
+- producto;
+- presentación;
+- cantidad ordenada;
+- cantidad recibida;
+- saldo recibible;
+- fecha esperada;
+- documentos operativos necesarios;
+- lote, vencimiento o condición cuando aplique.
+
+Por defecto excluye:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+contratos
+negociación
+cuentas bancarias
+```
+
+---
+
+#### 11. Matriz de superficies objetivo
+
+| Superficie | Finalidad | Proyección económica por defecto |
+| --- | --- | --- |
+| `VSCREEN-0073` | crear/editar orden | solo si la acción autorizada necesita valores económicos |
+| `VSCREEN-0074` | aprobar/rechazar | mínima suficiente para decidir |
+| `VSCREEN-0075` | detalle/seguimiento | según actor, scope y finalidad |
+| `VSCREEN-0076` | cola de recepciones | denegada |
+| `VSCREEN-0077` | recepción total/parcial | denegada por defecto |
+| `VSCREEN-0078` | resolver diferencia | existencia/tipo siempre según acceso al caso; importes solo si field mask lo permite |
+| `VSCREEN-0079` | auditoría | únicamente proyección autorizada para investigación |
+| `VSCREEN-0145` | contratos/precios/condiciones | económica sensible autorizada explícitamente |
+
+---
+
+#### 12. `VSCREEN-0073` — creación y edición de orden
+
+La pantalla puede mostrar valores económicos cuando el actor ejecuta una acción autorizada que requiere construir o corregir una orden.
+
+Regla:
+
+```text
+purchase_orders.create / update
++
+estado editable
++
+recurso y territorio válidos
++
+field mask económico
+→ campos económicos necesarios
+```
+
+La existencia de la pantalla no habilita por sí sola precios.
+
+---
+
+#### 13. `VSCREEN-0074` — aprobación
+
+Un aprobador autorizado puede necesitar:
+
+- moneda;
+- importe total;
+- precio/costo de línea;
+- condición comercial relevante;
+- umbral o presupuesto aplicable cuando exista.
+
+Regla:
+
+```text
+APROBAR
+→ VER LO NECESARIO PARA DECIDIR
+!=
+VER TODO EL EXPEDIENTE SENSIBLE
+```
+
+---
+
+#### 14. `VSCREEN-0075` — detalle y seguimiento
+
+El detalle de una orden no tiene una única proyección universal.
+
+Debe adaptar la experiencia al actor y finalidad:
+
+- administración autorizada: proyección económica permitida dentro del recurso;
+- supervisión: estado, proveedor mínimo, productos, cantidades, fechas y seguimiento, sin costos/totales por defecto;
+- contabilidad: proyección económica necesaria para conciliación dentro de su alcance;
+- operación: proyección mínima sin costos internos;
+- actor sin permiso de vista: sin recurso.
+
+---
+
+#### 15. `VSCREEN-0076` — cola de recepciones
+
+La cola prioriza trabajo operativo.
+
+No necesita por defecto:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+```
+
+El costo no se usa como sustituto de prioridad operacional si la política de priorización no lo autoriza.
+
+---
+
+#### 16. `VSCREEN-0077` — recepción total o parcial
+
+Para `bodeguero` y `gerencia_operativa`, la recepción ordinaria necesita cantidades y condición física/documental, no costos internos.
+
+La experiencia objetivo excluye por defecto:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+último costo
+costo promedio
+margen
+```
+
+El actor puede registrar cantidades sin conocer el precio.
+
+---
+
+#### 17. `VSCREEN-0078` — diferencia de precio
+
+Cuando existe una diferencia económica, la superficie debe preservar el problema sin filtrar valores no autorizados.
+
+Actor sin proyección económica:
+
+```text
+TIPO: DIFERENCIA DE PRECIO
+ESTADO: REQUIERE REVISIÓN AUTORIZADA
+IMPACTO: BLOQUEANTE / NO BLOQUEANTE SEGÚN DECISIÓN CANÓNICA
+VALORES: OCULTOS
+```
+
+Actor con proyección económica autorizada puede recibir los valores necesarios para decidir.
+
+---
+
+#### 18. Diferencia visible, importes ocultos
+
+No mostrar importes no autoriza esconder:
+
+- que existe una diferencia;
+- qué línea está afectada;
+- que el caso está bloqueado;
+- que requiere escalamiento;
+- que existe una decisión pendiente;
+- que un actor distinto debe intervenir.
+
+La experiencia debe evitar el falso mensaje de “sin diferencias”.
+
+---
+
+#### 19. `VSCREEN-0079` — auditoría
+
+La auditoría reconstruye hechos sin convertirse en bypass de visibilidad.
+
+Un actor autorizado a auditar el flujo no recibe automáticamente todos los campos económicos históricos.
+
+La evidencia de acceso sensible conserva trazabilidad cuando corresponda.
+
+---
+
+#### 20. `VSCREEN-0145` — contratos, precios y condiciones
+
+La superficie de contratos/precios requiere:
+
+```text
+actor base autorizado
++
+suppliers.view
++
+SUPPLIER autorizado
++
+field mask sensible compatible
++
+finalidad administrativa
+```
+
+Una relación operativa de entrega no abre esta superficie.
+
+---
+
+#### 21. Propietario y gerente_general
+
+Con `purchase_orders.view`, recurso autorizado y finalidad administrativa válida pueden recibir la proyección económica interna necesaria dentro del recurso.
+
+Esto no abre automáticamente:
+
+- cuentas bancarias;
+- documentos tributarios completos;
+- contratos ajenos;
+- secretos;
+- datos de otros proveedores.
+
+---
+
+#### 22. Gerente
+
+`gerente` recibe información económica únicamente dentro del scope y recurso autorizados.
+
+Una relación territorial con una orden no concede descubrimiento de precios de otras órdenes, otros proveedores o contratos globales.
+
+---
+
+#### 23. Supervisor
+
+La proyección ordinaria de `supervisor` excluye por defecto:
+
+```text
+unit_cost
+stock_unit_cost
+line_total
+total_amount
+```
+
+Puede ver identidad, estado, proveedor mínimo, productos, presentaciones, cantidades, fechas y seguimiento permitido.
+
+---
+
+#### 24. Auxiliar administrativa
+
+La visibilidad económica depende de la acción concreta.
+
+Puede necesitar campos económicos al crear o actualizar una orden con permiso mutante válido y estado editable.
+
+`purchase_orders.view` por sí solo no amplía esos campos.
+
+---
+
+#### 25. Contador
+
+`contador` puede recibir la proyección económica necesaria para conciliación dentro del recurso y alcance autorizados.
+
+No obtiene por ello administración de proveedor, aprobación, cancelación ni contratos no relacionados.
+
+---
+
+#### 26. Bodeguero
+
+`bodeguero` necesita una proyección operacional.
+
+Puede ver:
+
+- orden/referencia;
+- proveedor mínimo;
+- producto/presentación;
+- cantidades;
+- saldo;
+- fechas;
+- condición y documentos operativos.
+
+No recibe precios ni costos internos por defecto.
+
+---
+
+#### 27. Gerencia operativa
+
+`gerencia_operativa` conserva el mismo principio de minimización durante recepción.
+
+Un rol operativo con mayor coordinación no se convierte automáticamente en rol financiero.
+
+---
+
+#### 28. Proveedor externo
+
+El canal externo al proveedor no es equivalente al documento interno.
+
+Por defecto no expone:
+
+- `stock_unit_cost`;
+- costo interno;
+- margen;
+- notas internas;
+- auditoría interna;
+- datos de aprobación interna;
+- información de otros proveedores.
+
+Los valores supplier-facing solo aparecen cuando pertenecen al documento externo autorizado.
+
+---
+
+#### 29. Actor sin permiso del recurso
+
+Un actor sin permiso de vista del recurso no obtiene precios por ninguna ruta indirecta.
+
+No basta conocer:
+
+- ID de orden;
+- URL;
+- proveedor;
+- sede;
+- número de documento;
+- endpoint;
+- token laboral inexistente;
+- referencia incluida en otra pantalla.
+
+---
+
+#### 30. Field mask por finalidad
+
+La experiencia distingue, como mínimo:
+
+| Finalidad | Proyección económica |
+| --- | --- |
+| administrar compra | permitida dentro del recurso y field mask |
+| supervisar flujo | denegada por defecto |
+| crear/corregir orden | campos necesarios para la acción |
+| aprobar | mínima suficiente para decidir |
+| conciliar | necesaria dentro del recurso correlacionado |
+| recibir | denegada por defecto |
+| resolver diferencia económica | solo actor autorizado para los importes |
+| proveedor externo | solo supplier-facing autorizado |
+
+---
+
+#### 31. Select mínimo server-side
+
+La proyección económica se resuelve antes de seleccionar columnas cuando sea posible.
+
+El patrón objetivo es:
+
+```text
+AUTORIZAR
+→ RESOLVER FIELD MASK
+→ CONSTRUIR SELECT MÍNIMO
+→ CONSULTAR
+```
+
+No:
+
+```text
+SELECT *
+→ DESPUÉS DECIDIR QUÉ ESCONDER
+```
+
+---
+
+#### 32. Serialización mínima
+
+Un valor oculto no puede permanecer en:
+
+- props de Server Components hacia Client Components;
+- JSON embebido;
+- payload de Server Action;
+- estado de formulario;
+- atributos HTML;
+- objetos de hidratación;
+- respuestas API;
+- archivos temporales entregados al cliente.
+
+---
+
+#### 33. Render mínimo
+
+Cuando el actor no puede ver el precio, la interfaz no debe reservar un valor recuperable mediante inspección del DOM.
+
+La experiencia puede:
+
+- omitir la columna;
+- omitir la celda sensible;
+- mostrar “Restringido” cuando la existencia del campo sea útil;
+- mostrar “Requiere revisión autorizada” para diferencias económicas.
+
+Nunca contiene el valor oculto detrás de estilos.
+
+---
+
+#### 34. Ausencia, restricción y cero no son equivalentes
+
+Se distinguen:
+
+```text
+0
+NULL / AUSENTE
+NO APLICA
+NO DISPONIBLE
+RESTRINGIDO
+ERROR TÉCNICO
+```
+
+Un precio restringido nunca se representa como `0`.
+
+---
+
+#### 35. Delta económico protegido
+
+Si el actor no puede ver los valores económicos base, tampoco debe recibir un delta que permita inferirlos.
+
+La superficie puede conservar:
+
+```text
+DIFERENCIA ECONÓMICA: SI
+```
+
+sin exponer:
+
+```text
+VALOR PEDIDO
+VALOR OBSERVADO
+DELTA
+PORCENTAJE
+TOTAL AFECTADO
+```
+
+---
+
+#### 36. Necesidad técnica interna
+
+Si una capa autoritativa necesita cargar un costo para calcular o validar un efecto, esa necesidad técnica no amplía la proyección de experiencia.
+
+Regla:
+
+```text
+USO SERVER-SIDE JUSTIFICADO
+!=
+ENTREGA AL ACTOR
+```
+
+El campo permanece fuera de serialización y render cuando el actor no está autorizado.
+
+---
+
+#### 37. Creación y edición de orden
+
+Los campos económicos de creación/edición son inputs gobernados, no secretos liberados por defecto.
+
+El servidor debe validar:
+
+- actor;
+- permiso mutante;
+- estado editable;
+- recurso/scope;
+- field mask;
+- valor;
+- recálculo de derivados;
+- necesidad de nueva aprobación cuando aplique.
+
+---
+
+#### 38. Aprobación
+
+La vista de aprobación puede mostrar economía suficiente para decidir sin revelar datos del proveedor que no formen parte del caso.
+
+La decisión económica se vincula a la versión exacta aprobada.
+
+---
+
+#### 39. PDF interno
+
+El PDF interno respeta la misma proyección que el actor que lo solicita.
+
+```text
+PDF INTERNO
+!=
+BYPASS DE FIELD MASK
+```
+
+Un actor operativo no obtiene un PDF con costos por el solo hecho de poder ver la orden.
+
+---
+
+#### 40. PDF externo
+
+El documento externo conserva proyección supplier-facing y el contrato de token correspondiente.
+
+Ocultar un valor en HTML pero incluirlo en PDF, metadata o payload viola la minimización.
+
+---
+
+#### 41. Exportación
+
+La capacidad `.view` no concede por sí sola exportación económica masiva.
+
+Una exportación sensible requiere contrato y finalidad autorizados.
+
+La ausencia de permiso produce denegación, no archivo con columnas vacías después de haber leído todos los valores.
+
+---
+
+#### 42. Búsqueda, filtros, ordenamiento y conteos
+
+Una columna oculta tampoco puede filtrarse, ordenarse o agregarse de forma que revele valores a actores no autorizados.
+
+Se evita:
+
+- ordenar por precio y revelar ranking sensible;
+- filtrar por rangos económicos ocultos;
+- mostrar totales agregados;
+- conteos segmentados que expongan condición comercial.
+
+---
+
+#### 43. Errores, ayudas y tooltips
+
+Errores, validaciones, tooltips y ayudas no pueden revelar el valor oculto.
+
+Ejemplo correcto:
+
+```text
+La diferencia económica requiere revisión autorizada.
+```
+
+No:
+
+```text
+El precio esperado era X y llegó Y
+```
+
+para un actor sin field mask económico.
+
+---
+
+#### 44. URL, API y llamada directa
+
+El mismo field mask aplica a:
+
+- navegación normal;
+- URL directa;
+- Server Action;
+- API;
+- RPC;
+- query manipulada;
+- formulario alterado.
+
+No existe una ruta alternativa que entregue el campo porque la UI principal lo oculta.
+
+---
+
+#### 45. Caché, stale y cambio de autoridad
+
+Una proyección económica autorizada en un momento no puede reutilizarse cuando cambian:
+
+- actor;
+- rol;
+- scope;
+- sede;
+- recurso;
+- estado;
+- permiso;
+- finalidad;
+- versión contractual.
+
+Un dato sensible cacheado no conserva autoridad por antigüedad.
+
+---
+
+#### 46. Precio histórico y precio vigente
+
+La orden histórica muestra, cuando el actor está autorizado, el snapshot económico utilizado por esa orden.
+
+No se recalcula silenciosamente con la condición vigente.
+
+La ocultación tampoco reemplaza la obligación de conservar el snapshot histórico autoritativo.
+
+---
+
+#### 47. Frontera con NEXO
+
+NEXO recibe la proyección necesaria para el efecto físico.
+
+No necesita por defecto los precios internos de ORIGO para:
+
+- identificar producto;
+- cantidad;
+- presentación;
+- recepción correlacionada;
+- ubicación/custodia.
+
+Una integración no se usa para ampliar visibilidad económica del operador.
+
+---
+
+#### 48. Frontera con NUMERA
+
+NUMERA consume la proyección económica que su proceso propietario requiera.
+
+La existencia de ese handoff no autoriza a ORIGO a mostrar el mismo conjunto económico a un receptor operativo.
+
+```text
+CONSUMIDOR FINANCIERO AUTORIZADO
+!=
+ACTOR OPERATIVO AUTORIZADO A VER FINANZAS
+```
+
+---
+
+#### 49. Datos maestros y presentaciones
+
+Producto y presentación pueden ser visibles sin revelar costo.
+
+Una solicitud de maestro de datos pendiente no puede depender de exponer costo al actor si el contrato no lo autoriza.
+
+---
+
+#### 50. Runtime AS-IS — listado de órdenes
+
+El runtime observado de `/purchase-orders`:
+
+- entra con acceso general a ORIGO;
+- selecciona `total_amount` y `currency`;
+- renderiza una columna `Total` para las filas consultadas.
+
+Clasificación:
+
+```text
+AS_IS_PURCHASE_ORDER_LIST_ECONOMIC_OVERREAD
+```
+
+La existencia de ese comportamiento no redefine el contrato objetivo.
+
+---
+
+#### 51. Runtime AS-IS — detalle y PDF de orden
+
+El detalle observado:
+
+- selecciona `total_amount`;
+- selecciona `unit_cost` y `line_total` por línea;
+- renderiza información económica sin demostrar en esa superficie un field mask por finalidad.
+
+El PDF también consulta valores económicos.
+
+Clasificación:
+
+```text
+AS_IS_PURCHASE_ORDER_DETAIL_FIELD_MASK_NOT_DEMONSTRATED
+AS_IS_PURCHASE_ORDER_PDF_FIELD_MASK_NOT_DEMONSTRATED
+```
+
+---
+
+#### 52. Runtime AS-IS — recepción
+
+La recepción observada puede consultar y procesar:
+
+```text
+unit_cost
+stock_unit_cost
+line_total_cost
+último costo
+costo promedio
+```
+
+junto con cantidades y presentaciones.
+
+La acción puede necesitar parte de esa información internamente, pero la experiencia no demuestra todavía separación completa entre uso server-side y proyección del actor.
+
+Clasificación:
+
+```text
+AS_IS_RECEIPT_ECONOMIC_PROJECTION_NEEDS_MASKING
+```
+
+---
+
+#### 53. Brechas y propietarios
+
+| Brecha | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| listado consulta/renderiza `total_amount` | sobreexposición económica | `ORIGO-AUTH-010` + materialización propietaria | select y render dependen de proyección autorizada |
+| detalle consulta costos/totales | actor de seguimiento puede recibir economía no necesaria | `ORIGO-AUTH-010` + materialización propietaria | field mask aplicado antes del select/serialización |
+| PDF interno carga economía | documento puede ampliar visibilidad | `ORIGO-AUTH-010` + package propietario | PDF respeta proyección del solicitante |
+| recepción consulta costos | operación física puede heredar economía sin finalidad | `ORIGO-AUTH-010` + `ORIGO-UX-012` + package propietario | cálculo interno separado de proyección operativa |
+| diferencia de precio requiere tratarse sin revelar importes | ocultar el problema o filtrar valores | `ORIGO-UX-011` + `ORIGO-UX-012` | existencia/tipo visibles; importes sujetos a field mask |
+| integración financiera consume economía | posible contaminación de UI operativa | `ORIGO-UX-015` + NUMERA | handoff financiero separado de la proyección del actor ORIGO |
+
+No quedan hallazgos narrativos sin dueño y condición de salida.
+
+---
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la minimización de columnas, protección server-side, proyección por finalidad, datos sensibles de proveedor, documentos externos, stale authorization y auditoría ya están protegidos por requisitos canónicos vigentes. Esta tarea concreta su experiencia en las superficies ORIGO sin introducir una obligación verificable nueva.
+
+---
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-002` para limitar columnas y proteger documentos externos de orden;
+- `TREQ-ORIGO-004` para importes, aprobación, segregación y preservación de la orden;
+- `TREQ-ORIGO-005` para contratos, precios, impuestos, descuentos, fletes, mínimos, vigencias, datos sensibles y auditoría;
+- `TREQ-AUTH-001` para permiso, contexto, scope y recurso canónicos;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC y validar columnas permitidas server-side;
+- `TREQ-AUTH-014` para impedir uso de decisiones o contexto derivados obsoletos;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones y accesos protegidos.
+
+Esta sección es trazabilidad de cobertura existente, no actualización del registro.
+
+---
+
+#### 56. Handoffs documentales posteriores
+
+| Tarea posterior | Handoff recibido desde ORIGO-UX-012 |
+| --- | --- |
+| `ORIGO-UX-013` | la automatización ORIGO→NEXO no puede reintroducir precios ocultos ni exigir recaptura manual para obtenerlos |
+| `ORIGO-UX-014` | el handoff físico usa identidad, cantidades y presentación sin ampliar la proyección económica del receptor |
+| `ORIGO-UX-015` | el handoff financiero contiene economía necesaria para NUMERA sin convertir esa proyección en visibilidad operativa ORIGO |
+| `ORIGO-UX-016` | el prototipo valida que cada actor recibe la proyección correcta y que una diferencia de precio puede existir con importes restringidos |
+
+La tarea no desarrolla esos contratos posteriores.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en el archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada. |
+| REMOTA | `PASS` | Se verificaron owner, topología, `ORIGO-AUTH-010`, `VSCREEN-0073..0079`, `VSCREEN-0145`, Registro 04A y runtime actual de órdenes, PDF y recepción. |
+| OPERATIVA | `NOT_EXECUTED` | No se probaron actores reales ni se consultaron/modificaron precios, órdenes, recepciones, documentos, tokens o entornos desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | `ORIGO-UX-012` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`. |
+
+---
+
+#### 58. Criterios de aceptación
+
+- [x] La tarea mantiene exactamente `ORIGO-UX-012 — Ocultar precios cuando no correspondan`.
+- [x] La tarea anterior es `ORIGO-UX-011` y la siguiente `ORIGO-UX-013`.
+- [x] Se conserva `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`.
+- [x] Se consume `ORIGO-AUTH-010` sin redefinir permisos ni field masks.
+- [x] No se crean permission keys nuevas de precios/costos.
+- [x] Se preserva `COMMERCIAL_CONFIDENTIALITY`.
+- [x] Se exige `FIELD MASK → SELECT MÍNIMO → SERIALIZACIÓN MÍNIMA → RENDER MÍNIMO`.
+- [x] Precio oculto no se representa como cero.
+- [x] Valores derivados no pueden filtrar el precio.
+- [x] `VSCREEN-0073` muestra economía solo cuando la acción autorizada la requiere.
+- [x] `VSCREEN-0074` limita economía a lo necesario para decidir.
+- [x] `VSCREEN-0075` adapta proyección por actor/finalidad.
+- [x] `VSCREEN-0076` no necesita precios por defecto.
+- [x] `VSCREEN-0077` mantiene proyección operativa sin costos internos por defecto.
+- [x] `VSCREEN-0078` puede mostrar existencia/tipo de diferencia económica sin revelar importes.
+- [x] `VSCREEN-0079` no se convierte en bypass histórico.
+- [x] `VSCREEN-0145` conserva acceso administrativo sensible explícito.
+- [x] Supervisor no recibe `unit_cost`, `stock_unit_cost`, `line_total` ni `total_amount` por defecto.
+- [x] Bodeguero y gerencia_operativa reciben proyección operativa sin precios por defecto.
+- [x] Contador recibe únicamente economía necesaria para conciliación autorizada.
+- [x] Auxiliar administrativa recibe economía solo cuando una acción mutante válida la necesita.
+- [x] PDF interno respeta la proyección del solicitante.
+- [x] PDF externo no expone costo interno ni notas internas por inferencia.
+- [x] Exportaciones, filtros, ordenamiento, tooltips y errores no filtran campos ocultos.
+- [x] NEXO y NUMERA no amplían la visibilidad del actor ORIGO.
+- [x] Se documentan brechas AS-IS con propietario y condición de salida.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se ejecuta cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-UX-013` queda reservada y no se desarrolla aquí.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- implementa field masking;
+- modifica `ORIGO-AUTH-010`;
+- crea permisos de precios/costos;
+- cambia roles o grants;
+- cambia scopes;
+- implementa `VSCREEN-0073..0079` ni `VSCREEN-0145`;
+- modifica consultas SQL/Supabase del runtime;
+- modifica Server Components, Client Components, Server Actions, APIs o PDFs;
+- crea exportaciones;
+- define nuevos umbrales económicos;
+- modifica precios, contratos o condiciones de proveedor;
+- cambia una orden real;
+- registra una recepción real;
+- resuelve una diferencia real;
+- mueve stock en NEXO;
+- reconoce obligación o pago en NUMERA;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants, Storage o datos;
+- modifica contratos generados;
+- modifica el Registro 04A;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-013`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-011 — Diseñar diferencias contra orden`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-012 — Ocultar precios cuando no correspondan`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO`
 ### [ ] ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO
 ### [ ] ORIGO-UX-014 — Conectar recepción con entrada de inventario
 ### [ ] ORIGO-UX-015 — Conectar compra con evento financiero
