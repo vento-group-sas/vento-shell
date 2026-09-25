@@ -4634,7 +4634,851 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-010 — Definir mensajes de error comprensibles`
-### [ ] PASS-UX-010 — Definir mensajes de error comprensibles
+### ✅ PASS-UX-010 — Definir mensajes de error comprensibles
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
+**Tarea siguiente:** PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
+**Tipo de tarea:** documental; definición del contrato visible de mensajes humanos, seguros y accionables para bloqueos, validaciones, esperas, conflictos, fallos técnicos, resultados inciertos, advertencias y estados informativos de las diecinueve pantallas canónicas PASS y sus superficies globales de acceso/recuperación, consumiendo la gramática transversal de `UX-BASE-006` y los contratos de `PROC-SCREEN-018..021` sin redefinir lógica de dominio, recuperación, retry u offline; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, Wallet, secretos, despliegues, componentes, traducciones, reason codes, estados de dominio ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo PASS comunica al cliente una condición que impide, limita, retrasa, rechaza o deja incierto un resultado sin obligarlo a interpretar excepciones técnicas, códigos internos o estados ambiguos.
+
+El contrato visible debe permitir responder, según corresponda:
+
+```text
+¿QUÉ OCURRIÓ?
+¿QUÉ ACCIÓN O DATO QUEDÓ AFECTADO?
+¿QUÉ INFORMACIÓN SIGUE CONFIRMADA O GUARDADA?
+¿QUÉ PUEDO HACER AHORA?
+¿ES SEGURO REINTENTAR?
+¿DEBO ESPERAR, CORREGIR, ACTUALIZAR O PEDIR AYUDA?
+¿QUÉ REFERENCIA PUEDO USAR SI NECESITO SOPORTE?
+```
+
+La tarea no convierte copy en lógica. La causa, categoría, estado, autorización, retry y resultado empresarial deben provenir de contratos propietarios; PASS únicamente los traduce a una explicación comprensible y segura.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-009`, aprobada por el usuario, que entrega una taxonomía visible de redención donde pendiente, usado, cancelado y vencido/no utilizable permanecen semánticamente diferenciados y donde un estado desconocido no puede degradarse a pendiente.
+
+Se conservan además estas decisiones aprobadas:
+
+- `PASS-UX-002` define la arquitectura del home y prohíbe fabricar valores o capacidades desde la presentación;
+- `PASS-UX-003` separa identificación personal de autorización, acumulación y redención;
+- `PASS-UX-004` distingue confirmación, rechazo, conflicto y resultado todavía no conciliado para acumulación;
+- `PASS-UX-005` distingue ticket creado de redención usada y prohíbe afirmar consumo antes de confirmación;
+- `PASS-UX-006` distingue ausencia de historial de error, parcialidad o atribución desconocida;
+- `PASS-UX-007` separa visibilidad, elegibilidad, intención de redención y efecto comercial;
+- `PASS-UX-008` separa perfil, cuenta, datos, preferencias, consentimientos y solicitudes de privacidad;
+- `PASS-UX-009` fija la semántica de estado de redención que esta tarea deberá expresar sin alterarla.
+
+Se consumen como contratos transversales vigentes:
+
+- `UX-BASE-006 — Explicar bloqueos con lenguaje humano`;
+- `PROC-SCREEN-018 — Definir estados vacíos`;
+- `PROC-SCREEN-019 — Definir estados de carga`;
+- `PROC-SCREEN-020 — Definir estados de bloqueo`;
+- `PROC-SCREEN-021 — Definir recuperación ante errores`.
+
+La frontera de `PASS-UX-010` es exclusivamente el **contenido visible, estructura, seguridad, tono, acción comunicada y consistencia semántica** de los mensajes PASS. La mecánica de recuperación, reintento, conectividad, caché, reanudación y offline permanece en `PASS-UX-012` y en los contratos transversales propietarios.
+
+---
+
+#### 3. Universo canónico cubierto
+
+La tarea aplica a las diecinueve pantallas canónicas PASS ya registradas:
+
+| Grupo | Identidades |
+| --- | --- |
+| fidelización personal | `VSCREEN-0107` a `VSCREEN-0112` |
+| compra, pedido y servicio | `VSCREEN-0160` a `VSCREEN-0172` |
+
+También gobierna el copy de las superficies runtime globales ya inventariadas cuando representan estados de cliente:
+
+| Superficie | Uso dentro de esta tarea |
+| --- | --- |
+| `PASS-CUSTOMER-SURFACE-001 — Auth` | acceso, recuperación y errores sin enumeración de cuenta |
+| `PASS-CUSTOMER-SURFACE-002 — CompleteProfile` | validación y persistencia del perfil |
+| `PASS-CUSTOMER-SURFACE-018 — QrModal` | identificación y Wallet sin filtrar detalles técnicos |
+| `PASS-CUSTOMER-SURFACE-019 — AppUpdateGate` | actualización requerida u opcional como bloqueo/aviso, no como error genérico |
+| `PASS-CUSTOMER-SURFACE-020 — App runtime gates` | carga/configuración/perfil separados de error |
+| `PASS-CUSTOMER-SURFACE-021 — AppErrorBoundary` | fallo inesperado global con copy seguro y recuperación acotada |
+
+`PASS-UX-010` no crea nuevas `VSCREEN-*`, rutas ni superficies lógicas.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot verificado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` `main` | `5a82fc516a0b040c852e7c9df1ad8d7f68ecf231` | continuidad, owner, topología, catálogo de pantallas y contratos transversales |
+| archivo propietario PASS | blob `689cf2c9d1b98da8a6923f711768af825ef29697` | base remota con `PASS-UX-008` aprobada y marcadores posteriores reservados |
+| `PASS-UX-009_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `f119cb5f9bcfefcbd33a509da203134f55f721b303b7d64c02c34b5010cf28c0` | base documental inmediata aprobada por el usuario y todavía pendiente de publicación |
+| contrato de mensajes transversal | blob `f83ad4a91fbaf6fe6644ff77ee85786a8cfc2e98` | gramática de explicación humana, categorías y límites de seguridad |
+| contrato transversal de recuperación | blob `fa96a630fa12cf6e0618cd7c2bda33abfd955626` | error ≠ vacío/bloqueo/carga, resultado unknown, preservación y políticas de retry |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura vigente PASS |
+| Registro 04A UX | blob `3a571f6e15147d6c26199fcbe671a66c9bbe0ff9` | cobertura transversal vigente de mensajes y recuperación |
+| `carlosibarraariza/vento-pass` `main` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS verificable |
+| `EmptyState.tsx` | blob `c027713de25d6d4cb676f4759dedb87bce976836` | componente AS-IS de título/mensaje vacío sin semántica de error propia |
+| `RedeemModal.tsx` | blob `318e11f3d9fb532bb5c21e14b9e98c8a6cd930eb` | warning AS-IS de irreversibilidad no demostrado |
+| `SuccessModal.tsx` | blob `2dc0479632def321af51781217a8b5c7a3d9a2ce` | copy AS-IS que afirma “Canje exitoso” antes del consumo PULSO |
+| `QrFullscreenModal.tsx` | blob `d195cc848d5b64a57cdd0a5b2a8865ff90bb8f86` | “QR no disponible”, fecha de creación rotulada como canje y contexto hardcoded |
+| `CompleteProfile.tsx` | blob `aea4a6a509f347da3f87063b18b9b07cec86e5eb` | exposición AS-IS de `error.message` y mensajes genéricos de sesión |
+| `AccountSettings.tsx` | blob `f9fc199ecdd1b7fbdd26e000bbdad4635bb7a308` | error genérico de apertura de enlaces |
+| `DeleteAccountFlow.tsx` | blob `c6317fe52420920300462f60b9d9043eb708940d` | copy AS-IS que puede equiparar comando exitoso con eliminación completamente reconciliada |
+| `DataCleanupFlow.tsx` | blob `e947a4967ff521ce87affdc9b8c596f279552dbd` | copy AS-IS de limpieza de datos opcionales |
+| `AppUpdateGate.js` | blob `0fee8cdcc04720eca8f79314ca8f5441490c70b8` | actualización requerida/opcional y estado de enlace de tienda |
+| `AppErrorBoundary.js` | blob `3b4510be910d69504614623eceb1cf98a786889c` | render AS-IS de `error.message` técnico directamente al cliente |
+| `clubErrors.ts` | blob `654f8e5ef86d0b2903d1aeea161029873daf3fbb` | precedente AS-IS de traducción de error técnico a mensaje amigable |
+| `useSatelliteExperiences.ts` | blob `eb216e02932e9e814aae6d7ef16e3a933384f621` | ausencia, not-found y fallo de carga diferenciados parcialmente |
+| `OrderMenu.tsx` | blob `6ee4619c1504dce17ac84c4715ce7e6e48be6295` | validaciones locales, fallo de catálogo y vacío AS-IS |
+| `OrderCheckout.tsx` | blob `ad5895ae98c6f1c2e58de327c340aa0d47fb539c` | validación contextual de modalidad/programación |
+| `OrderPlacedScreen.tsx` | blob `e6c06e3f571c3a50914277c352b0853e247d4cae` | espera, pago confirmado/fallido, error de lectura y parcialidad de detalle |
+| `OrderTrackingScreen.tsx` | blob `b006f4443f39b443f38cd71ad4142d777ff66c91` | estados de PIN, espera, vencimiento/cancelación y fallo silencioso de RPC |
+| `OrderChatScreen.tsx` | blob `647a279b2dbec8077c8ad044e064f51639bb2ed0` | carga, realtime offline, error de apertura y fallo de envío con preservación de borrador |
+| `DeliveryAddressesScreen.tsx` | blob `d0793580c30b8a712ea6e61e8d2de720bb6f9a32` | fallo de lectura silencioso y error de eliminación |
+
+La revisión es documental y remota; no demuestra comportamiento operativo desplegado.
+
+---
+
+#### 5. Regla raíz: mensaje visible no es autoridad
+
+```text
+MENSAJE HUMANO
+!=
+REASON CODE
+!=
+ESTADO DE DOMINIO
+!=
+DECISION DE AUTORIZACION
+!=
+EXCEPCION TECNICA
+!=
+POLITICA DE RETRY
+```
+
+El mensaje se deriva de una razón o estado gobernado y nunca se utiliza para decidir qué ocurrió.
+
+Prohibiciones:
+
+1. comparar strings visibles para inferir estado;
+2. usar `error.message` como contrato de negocio;
+3. convertir un texto local en autorización o elegibilidad;
+4. transformar un copy de éxito en evidencia de persistencia;
+5. elegir retry, cancelación o navegación a partir de palabras mostradas al cliente.
+
+El mismo hecho empresarial debe conservar significado aunque cambie su redacción humana.
+
+---
+
+#### 6. Clasificación visible obligatoria
+
+PASS adopta la clasificación transversal ya aprobada sin crear un vocabulario competidor:
+
+| Clase | Significado en PASS | Presentación esperada |
+| --- | --- | --- |
+| `VALIDATION_REQUIRED` | el cliente puede corregir un dato o selección | señalar exactamente qué debe corregir y conservar el resto |
+| `BLOCKED` | la acción puede ser válida después, pero falta una condición | explicar condición y siguiente paso seguro |
+| `DENIED` | la acción no está permitida para ese actor, cuenta, alcance o recurso | explicar el límite sin revelar controles internos ni bypass |
+| `WAITING` | se espera normalmente confirmación, tiempo, proveedor o actor | comunicar qué se espera y qué no debe repetirse |
+| `CONFLICT` | cambió recurso, versión, precio, disponibilidad o estado | detener, actualizar y comparar sin sobrescribir silenciosamente |
+| `TECHNICAL_FAILURE` | falló o no respondió una dependencia técnica | informar alcance conocido, estado preservado y acción segura |
+| `WARNING` | puede continuarse, pero existe una consecuencia relevante | explicar consecuencia sin presentar fallo |
+| `INFO` | condición o resultado relevante sin acción urgente | informar sin competir con la tarea principal |
+
+Un resultado distinto de éxito no se convierte automáticamente en `TECHNICAL_FAILURE`.
+
+---
+
+#### 7. Estados que no son errores
+
+PASS debe mantener separadas estas condiciones:
+
+```text
+VACIO CONFIRMADO
+CARGA EN CURSO
+ESPERA NORMAL
+BLOQUEO CONOCIDO
+FALLO O RESULTADO INCIERTO
+CONTENIDO PARCIAL
+RESULTADO CONFIRMADO
+```
+
+Reglas:
+
+- cero filas después de una consulta completa, fresca y autorizada puede ser vacío;
+- cero filas producido por error, timeout, caché ausente o respuesta parcial no es vacío;
+- `Pendiente`, `Esperando pago`, `Esperando confirmación` o una redención pendiente no son errores por sí mismos;
+- una actualización requerida de aplicación es un bloqueo de compatibilidad; una actualización opcional es aviso/información;
+- un recurso inexistente dentro del alcance propio y confirmado puede ser vacío/not-found; un fallo al consultarlo no permite afirmar inexistencia;
+- realtime desconectado no implica que el último dato confirmado sea falso ni que un mensaje ya enviado haya fallado.
+
+---
+
+#### 8. Anatomía mínima del mensaje PASS
+
+Cuando la situación lo requiera, el mensaje se compone de estas piezas semánticas:
+
+| Pieza | Contrato |
+| --- | --- |
+| título humano | describe el impedimento o situación, no el subsistema técnico |
+| causa segura | explica la condición conocida sin secretos ni detalles internos |
+| efecto | indica qué acción o información queda afectada |
+| estado preservado | aclara qué datos, selección, borrador o resultado confirmado se conservan |
+| acción siguiente | ofrece una acción real y segura para el cliente actual |
+| condición de reintento | indica si puede reintentar ahora, después, o si primero debe verificarse estado |
+| soporte o propietario | identifica ayuda útil cuando el cliente no puede resolverlo |
+| referencia segura | permite correlacionar soporte sin mostrar tokens, SQL, UUID sensibles completos ni trazas |
+
+La interfaz puede condensar piezas cuando el contexto ya sea evidente, pero nunca puede eliminar información necesaria para evitar duplicidad, pérdida o una interpretación falsa del resultado.
+
+---
+
+#### 9. Reglas de redacción
+
+Todo copy PASS de bloqueo/error deberá:
+
+1. empezar por la consecuencia comprensible para el cliente;
+2. utilizar verbos concretos y evitar jerga técnica;
+3. diferenciar lo que se sabe de lo que todavía no se confirmó;
+4. indicar una acción solo cuando exista realmente;
+5. conservar tono neutral y no culpar al cliente por fallos del sistema;
+6. no prometer tiempos, devolución, saldo, disponibilidad o resolución que la fuente no confirme;
+7. no llamar “error” a una espera normal;
+8. no llamar “éxito” a una aceptación aún pendiente de reconciliación;
+9. no usar únicamente color, emoji o icono para comunicar severidad;
+10. evitar dobles negaciones, códigos internos y frases como “algo salió mal” sin contexto adicional.
+
+##### Catálogo mínimo de patrones humanos
+
+Los siguientes patrones fijan una base semántica común. El detalle se especializa con la causa segura y el contexto real, sin convertir estos literales en códigos de lógica.
+
+| Situación | Título base | Explicación mínima | Acción comunicable |
+| --- | --- | --- | --- |
+| validación corregible | `Revisa la información` | existe un dato o selección que debe corregirse antes de continuar | corregir el dato señalado |
+| bloqueo conocido | `Todavía no puedes continuar` | falta una condición necesaria y conocida | completar la condición o esperar su resolución |
+| denegación | `Esta acción no está disponible` | el alcance actual no permite realizarla | volver o usar una alternativa autorizada ya existente |
+| espera normal | `Estamos esperando confirmación` | la operación sigue abierta y todavía no tiene resultado terminal | consultar/actualizar cuando el contrato lo permita; no repetir la mutación |
+| conflicto | `La información cambió` | el recurso ya no coincide con la versión revisada | actualizar y revisar diferencias |
+| fallo técnico de lectura | `No pudimos actualizar esta información` | la fuente no entregó un resultado confiable; se conserva lo último confirmado cuando exista | reintentar lectura segura o continuar con dato marcado como anterior si está permitido |
+| resultado unknown de mutación | `Todavía no pudimos confirmar el resultado` | la operación pudo haber sido aceptada y requiere consulta/reconciliación | no repetir; consultar el mismo intento |
+| duplicado o already-applied confirmado | `Esta operación ya fue registrada` | el mismo hecho ya tiene un resultado estable | mostrar el resultado existente sin generar otro efecto |
+| resultado parcial | `Falta parte de la información` | solo una porción quedó confirmada | revisar lo disponible y actualizar la parte incompleta |
+| recuperación global de pantalla | `Tuvimos un problema al abrir esta pantalla` | la vista no pudo continuar de forma segura | reiniciar/reintentar la vista sin inferir el estado de mutaciones previas |
+
+Estos patrones no autorizan una CTA nueva ni sustituyen `PASS-UX-011` para navegación o `PASS-UX-012` para recuperación.
+
+---
+
+#### 10. Información técnica prohibida en copy de cliente
+
+No se muestra directamente:
+
+- `error.message` crudo proveniente de Supabase, PostgREST, proveedor, RPC, JavaScript o sistema operativo;
+- códigos SQL, HTTP internos o PostgREST como `42501`, `PGRST*` o equivalentes salvo que exista una referencia pública expresamente diseñada para el cliente;
+- nombres de tablas, schemas, policies, RPC, funciones, buckets o columnas;
+- stack traces, archivos, líneas, nombres de clases internas o mensajes de excepción;
+- access tokens, refresh tokens, PIN, OTP, session IDs, firmas, secretos o idempotency keys completas;
+- existencia de recursos de terceros, permisos de otras personas o reglas antifraude;
+- identificadores completos que no sean necesarios para soporte seguro.
+
+Los detalles técnicos permanecen en observabilidad restringida y se correlacionan mediante una referencia segura.
+
+---
+
+#### 11. Validación corregible
+
+Para `VALIDATION_REQUIRED`:
+
+- el mensaje se ubica junto al dato afectado cuando exista campo concreto;
+- si hay varios errores, se conserva además un resumen accesible;
+- solo se muestran errores de campos que el cliente puede ver y corregir;
+- el valor ingresado permanece salvo que su conservación sea insegura;
+- corregir un campo no reinicia toda la captura;
+- no se usa “Error” como único título cuando puede decirse exactamente qué falta o qué formato es inválido.
+
+Ejemplos de intención válidos:
+
+```text
+Revisa tu número de teléfono.
+Selecciona una franja disponible para esta modalidad.
+Elige al menos una opción para este producto.
+Confirma la política requerida para continuar con la activación.
+```
+
+La redacción final puede variar; la semántica no.
+
+---
+
+#### 12. Bloqueo, denegación y no elegibilidad
+
+Estas condiciones permanecen diferentes:
+
+```text
+BLOCKED
+-> falta una condición que puede llegar a satisfacerse
+
+DENIED
+-> la acción no está permitida bajo el alcance actual
+
+NO ELEGIBLE
+-> una regla de producto o fidelización no se cumple
+```
+
+Reglas PASS:
+
+- saldo insuficiente no se presenta como error técnico;
+- recompensa vencida o no disponible no se presenta como fallo de red;
+- falta de sesión confirmada puede requerir autenticación; fallo al consultar sesión no autoriza afirmar que la sesión expiró;
+- una actualización obligatoria puede bloquear uso hasta instalar versión compatible;
+- una denegación no ofrece cambiar permisos, usar otra cuenta o buscar un bypass;
+- la causa visible solo incluye la información que el cliente necesita y está autorizado a conocer.
+
+---
+
+#### 13. Espera normal y confirmaciones pendientes
+
+`WAITING` se utiliza cuando el sistema conoce que el proceso sigue abierto y espera una confirmación legítima.
+
+Ejemplos PASS:
+
+- pago iniciado y todavía no confirmado;
+- redención creada y todavía no usada;
+- pedido aceptado pero aún no preparado;
+- código de entrega que todavía no debe emitirse;
+- solicitud de privacidad o eliminación aceptada pero aún no reconciliada completamente;
+- mensaje o caso recibido y pendiente de respuesta.
+
+Un estado `WAITING` debe indicar:
+
+- qué confirmación falta;
+- qué último estado está confirmado;
+- si el cliente puede cerrar la vista y volver después;
+- si existe una acción de actualización segura;
+- qué acción no debe repetirse mientras el resultado siga pendiente.
+
+---
+
+#### 14. Conflictos y datos que cambiaron
+
+Cuando precio, disponibilidad, recompensa, dirección, franja, pedido, perfil o versión cambien durante la interacción:
+
+- no se sobrescribe silenciosamente;
+- el mensaje indica qué parte debe revisarse;
+- se preservan selecciones seguras cuando sea posible;
+- la fuente vigente prevalece sobre el snapshot antiguo;
+- la acción propuesta es actualizar/revisar, no forzar el valor anterior;
+- una diferencia de precio o disponibilidad no se presenta como error genérico de servidor.
+
+Patrón humano objetivo:
+
+```text
+La información cambió mientras la revisabas.
+Conservamos tus selecciones compatibles.
+Actualiza y revisa los cambios antes de continuar.
+```
+
+---
+
+#### 15. Fallos técnicos de lectura
+
+Ante fallo de una consulta segura e idempotente:
+
+- se identifica qué contenido no pudo actualizarse;
+- si existe un último snapshot confirmado y permitido, se diferencia de información fresca;
+- un fallo parcial no elimina datos confirmados no afectados;
+- la acción `Actualizar` o `Reintentar` solo aparece cuando el contrato de recuperación la permite;
+- no se transforma el error en lista vacía ni valor `0` confirmado;
+- no se muestran mensajes técnicos crudos.
+
+Ejemplo semántico:
+
+```text
+No pudimos actualizar tus recompensas.
+Lo que ves corresponde al último estado confirmado disponible.
+Puedes intentar actualizar nuevamente.
+```
+
+La implementación de caché, backoff, retry y offline pertenece a `PASS-UX-012` y contratos propietarios.
+
+---
+
+#### 16. Resultado desconocido después de una mutación
+
+Cuando una acción pudo haber sido aceptada pero PASS perdió su confirmación:
+
+```text
+TIMEOUT
+!=
+NO OCURRIO
+```
+
+El mensaje debe:
+
+1. declarar que todavía no puede confirmarse el resultado;
+2. conservar el identificador/correlación segura de la operación;
+3. indicar que no debe repetirse a ciegas;
+4. ofrecer consultar o reconciliar el estado cuando exista esa capacidad;
+5. evitar mostrar éxito o fallo terminal hasta obtener evidencia.
+
+Patrón objetivo:
+
+```text
+Todavía no pudimos confirmar el resultado.
+No repitas la acción por ahora.
+Estamos verificando el estado de la misma operación.
+```
+
+La mecánica de consulta por idempotency key, referencia o estado pertenece al contrato de integración correspondiente.
+
+---
+
+#### 17. Duplicado y resultado ya aplicado
+
+Un replay idempotente, una operación duplicada detectada o un resultado ya aplicado no se presenta automáticamente como error.
+
+Si el servidor demuestra que el mismo hecho ya quedó aplicado:
+
+- se muestra el resultado estable confirmado;
+- no se celebra como un segundo éxito;
+- no se crea un segundo recibo visual como si fuera otro evento;
+- no se ofrecen acciones que repitan el efecto;
+- el historial conserva una sola identidad empresarial.
+
+Si no puede demostrarse equivalencia, se trata como conflicto o resultado desconocido, no como `ya aplicado` por inferencia.
+
+---
+
+#### 18. Fidelización, saldo y catálogo
+
+Mensajes de fidelización deben respetar:
+
+| Situación | Semántica visible |
+| --- | --- |
+| saldo no disponible por fallo | no mostrar `0 pts`; informar que el saldo no pudo actualizarse |
+| saldo insuficiente confirmado | condición de elegibilidad/capacidad, no error técnico |
+| reward sin coincidencias por filtro | vacío filtrado, no fallo |
+| catálogo no cargado | fallo de lectura, no “no hay recompensas” |
+| reward retirado/vencido | no disponible bajo regla vigente, no error de red |
+| contexto de sede no resuelto | no completar con rewards de otra sede; explicar que no puede confirmarse disponibilidad |
+| recomendación ausente | no es error si el catálogo autorizado sigue disponible |
+| favorito retirado | preferencia conservada o limpiada según contrato, pero nunca vuelve utilizable la recompensa |
+
+El copy no redefine costo, elegibilidad, tier, saldo o regla de recompensa.
+
+---
+
+#### 19. Redención y QR
+
+Los mensajes de redención consumen `PASS-UX-005` y `PASS-UX-009`:
+
+| Hecho | Mensaje permitido |
+| --- | --- |
+| intención creada y pendiente | ticket/QR creado y pendiente de uso; no “canje exitoso” como consumo |
+| redención usada confirmada | informar uso confirmado y fecha de uso autoritativa |
+| redención cancelada confirmada | informar cancelación sin prometer devolución automática |
+| credencial vencida/no utilizable | informar que ya no puede presentarse; no inferir cancelación |
+| código ya usado | resultado terminal existente; no permitir volver a presentar como pendiente |
+| código desconocido/manipulado | rechazo seguro sin revelar si otra cuenta o reward existe |
+| creación con resultado unknown | no generar un segundo QR por reintento ciego |
+| QR ausente por fallo de proyección | no decir simplemente `QR no disponible` si puede aclararse que la redención existe pero la credencial no pudo cargarse |
+
+`RedeemModal` no puede afirmar irreversibilidad hasta que el contrato propietario la demuestre. `SuccessModal` no puede equiparar creación `pending` con beneficio ya consumido.
+
+---
+
+#### 20. Perfil, privacidad y cuenta
+
+El copy de `VSCREEN-0112` y sus superficies AS-IS debe separar:
+
+- error de validación del formulario;
+- fallo al guardar;
+- resultado desconocido de una actualización;
+- dato no autogestionable;
+- consentimiento obligatorio para una finalidad concreta;
+- preferencia opcional;
+- solicitud de privacidad;
+- revocación de acceso;
+- eliminación o anonimización todavía en proceso;
+- cierre confirmado.
+
+Reglas:
+
+1. no mostrar el `error.message` de base de datos directamente;
+2. no afirmar “Cuenta eliminada” si solo se aceptó una solicitud y falta reconciliación;
+3. no afirmar que datos sujetos a retención fueron borrados cuando no corresponda;
+4. indicar qué acceso o dato se vio afectado sin exponer políticas internas;
+5. separar una sesión inválida confirmada de un fallo técnico al consultar sesión.
+
+`INFO-UX-004` conserva propiedad del caso transversal de privacidad; esta tarea solo define cómo PASS explica el estado visible.
+
+---
+
+#### 21. Compra, checkout y pago
+
+PASS debe diferenciar como mínimo:
+
+```text
+VALIDACION DE CARRITO
+OFERTA O PRECIO CAMBIADO
+CAPACIDAD O FRANJA NO DISPONIBLE
+PEDIDO NO CREADO
+PEDIDO CREADO
+PAGO PENDIENTE
+PAGO CONFIRMADO
+PAGO RECHAZADO
+RESULTADO DE PAGO DESCONOCIDO
+PEDIDO CANCELADO CONFIRMADO
+```
+
+Reglas:
+
+- `Esperando pago` o `Esperando confirmación` no usan tono de error;
+- una ventana de pago cerrada no se presenta como rechazo bancario si la fuente no lo afirma;
+- fallo al cargar detalle de productos puede ser parcialidad: el pedido principal puede seguir confirmado;
+- un error técnico del proveedor no se muestra con su mensaje crudo;
+- ante resultado de pago desconocido se consulta estado antes de iniciar otro intento equivalente;
+- cambiar modalidad/programación produce validación comprensible y conserva las selecciones compatibles;
+- un carrito vacío permanece vacío, no “error de checkout”.
+
+---
+
+#### 22. Pedido, entrega y chat
+
+Para seguimiento y servicio:
+
+- “pedido no encontrado” solo se usa cuando la consulta propia autorizada confirma ausencia; un fallo de lectura no prueba inexistencia;
+- un PIN de entrega todavía no emitido es espera normal;
+- PIN vencido y entrega cancelada son estados distintos;
+- fallo al leer el PIN no se oculta indefinidamente ni se convierte en “todavía no disponible” si la causa es técnica;
+- realtime del chat desconectado no marca mensajes confirmados como fallidos;
+- si enviar un mensaje falla antes de aceptación, el borrador se conserva;
+- si el resultado de envío es desconocido, PASS debe consultar estado antes de reenviar automáticamente;
+- el mensaje de soporte debe mantener relación con pedido/caso sin exponer participantes ajenos.
+
+La estrategia detallada de reconexión y recuperación permanece en `PASS-UX-012`.
+
+---
+
+#### 23. Reclamos, reservas, satisfacción y comunicaciones
+
+Las `VSCREEN-0169..0172` deben heredar la misma gramática aunque algunas no tengan todavía superficie runtime dedicada verificada.
+
+| Pantalla | Frontera de mensaje |
+| --- | --- |
+| `VSCREEN-0169` | error de registro/consulta de caso no equivale a reclamo rechazado; recepción pendiente se comunica como espera |
+| `VSCREEN-0170` | capacidad no disponible, reserva rechazada, conflicto de versión y error técnico permanecen diferenciados |
+| `VSCREEN-0171` | calificación enviada, duplicada, inválida o con resultado unknown no se confunden; una calificación negativa no se convierte en reclamo |
+| `VSCREEN-0172` | ausencia de mensajes, fallo de carga, realtime desconectado, preferencia/consentimiento y entrega fallida son estados distintos |
+
+El copy no materializa estas capacidades si su runtime aún no existe.
+
+---
+
+#### 24. Matriz de intención de mensajes por las diecinueve VSCREEN PASS
+
+| Pantalla | Familias visibles que debe distinguir | No puede afirmar por copy |
+| --- | --- | --- |
+| `VSCREEN-0107` | carga de resumen, parcialidad, saldo/beneficio no actualizado, vacío autorizado | saldo `0` por fallo o beneficio confirmado desde caché incierta |
+| `VSCREEN-0108` | identidad presentable, credencial no cargada, Wallet no generado, sesión/contexto inválido | que presentar QR autoriza puntos, canje o compra |
+| `VSCREEN-0109` | vacío filtrado, catálogo no cargado, reward no disponible, elegibilidad no confirmada | que `Canjear` prueba elegibilidad |
+| `VSCREEN-0110` | validación, creación pending, usado, cancelado, vencido/no utilizable, unknown | que ticket creado equivale a uso exitoso |
+| `VSCREEN-0111` | sin historial, lectura fallida, parcialidad, atribución desconocida | que cero filas por error significa cero movimientos |
+| `VSCREEN-0112` | validación de perfil, guardado, consentimiento, solicitud pendiente, cierre confirmado | que éxito de comando prueba eliminación total o consentimiento válido para otra finalidad |
+| `VSCREEN-0160` | sin oferta autorizada, fallo de carga, selección inválida | existencia de sedes/oferta no confirmadas |
+| `VSCREEN-0161` | catálogo vacío, no-match por filtro, fallo de carga, oferta retirada | disponibilidad/precio confirmado desde snapshot obsoleto |
+| `VSCREEN-0162` | carrito vacío, selección inválida, configuración incompatible, conflicto de oferta | pedido creado solo por tener carrito local |
+| `VSCREEN-0163` | validación de dirección, modalidad/franja no disponible, conflicto de capacidad | reserva logística antes de confirmación |
+| `VSCREEN-0164` | validación, precio/cargos cambiados, inicio de pago, resultado unknown | pago o pedido confirmado por abrir checkout |
+| `VSCREEN-0165` | pago pendiente, confirmado, rechazado/fallido, cancelación confirmada, error de consulta | que timeout significa pago fallido |
+| `VSCREEN-0166` | sin pedidos propios, lectura fallida, detalle parcial, estado confirmado | inexistencia de pedido por fallo de consulta |
+| `VSCREEN-0167` | espera, snapshot stale, realtime interrumpido, PIN pendiente/vencido/cancelado | estado operativo nuevo por inferencia cliente |
+| `VSCREEN-0168` | apertura fallida, envío fallido, envío unknown, realtime offline | mensaje entregado solo por cola/local state |
+| `VSCREEN-0169` | validación, caso recibido, espera, conflicto, resultado unknown | resolución o compensación antes de decisión propietaria |
+| `VSCREEN-0170` | validación, capacidad no disponible, confirmación pendiente, cancelación/conflicto | reserva confirmada sin receipt |
+| `VSCREEN-0171` | validación, enviado, duplicado, unknown | reclamo automático o incentivo confirmado |
+| `VSCREEN-0172` | sin mensajes, fallo de lectura, entrega/realtime degradados, restricción por consentimiento | recepción/lectura de mensaje no confirmada |
+
+La matriz define semántica de copy, no estados físicos nuevos.
+
+---
+
+#### 25. Superficies globales y pre-navegación
+
+##### Auth
+
+- error de credenciales, canal no disponible, rate limit y fallo técnico no se expresan con mensajes que permitan enumerar si una cuenta existe;
+- secretos y códigos de un solo uso nunca se repiten en el mensaje;
+- recuperación debe identificar una acción válida sin revelar estado de otras cuentas.
+
+##### CompleteProfile
+
+- validación corregible se muestra cerca del campo;
+- error técnico de persistencia se traduce a copy seguro;
+- resultado unknown no se convierte en nuevo submit automático;
+- éxito exige confirmación de persistencia suficiente para continuar.
+
+##### AppUpdateGate
+
+- `required` se presenta como compatibilidad requerida para continuar;
+- `optional` como actualización disponible;
+- ausencia temporal de enlace de tienda no se presenta como fallo del producto completo.
+
+##### AppErrorBoundary
+
+- no renderiza la excepción cruda al cliente;
+- comunica que la pantalla no pudo abrirse;
+- ofrece reinicio/reintento únicamente como acción de recuperación de UI, sin afirmar que mutaciones previas fallaron;
+- cerrar sesión solo se ofrece cuando sea una salida válida y no como remedio universal.
+
+---
+
+#### 26. EmptyState no es componente universal de error
+
+`EmptyState.tsx` puede representar ausencia confirmada cuando el caller ya resolvió la semántica correspondiente.
+
+No se utiliza para ocultar:
+
+- error de consulta;
+- timeout;
+- bloqueo;
+- denegación;
+- resultado parcial;
+- falta de conectividad sin snapshot confirmado;
+- resultado unknown;
+- carga todavía en curso.
+
+La reutilización visual no cambia la categoría semántica: si se reutiliza layout, accesibilidad y copy deben seguir indicando que se trata de error/recuperación y no de vacío.
+
+---
+
+#### 27. Acción siguiente y frontera con navegación
+
+La acción mencionada en un mensaje debe existir como acción autorizada o intención ya aprobada.
+
+`PASS-UX-010` define **qué tipo de acción debe comunicarse**, pero no crea la ruta que la ejecuta.
+
+Ejemplos de intención permitida:
+
+- corregir un campo;
+- actualizar una lectura;
+- revisar cambios;
+- consultar estado de la operación;
+- volver a una superficie anterior segura;
+- abrir soporte/caso cuando exista la capacidad;
+- autenticarse de nuevo cuando la pérdida de sesión esté confirmada.
+
+`PASS-UX-011` conserva propiedad de rutas, aliases, deep links y destinos exactos. Si una acción todavía no tiene ruta canónica, el copy no puede inventarla.
+
+---
+
+#### 28. Frontera con recuperación, offline y retry
+
+`PASS-UX-010` no decide:
+
+- número de reintentos;
+- backoff;
+- retry-after;
+- TTL de caché;
+- persistencia offline;
+- reconciliación de cola;
+- cursor realtime;
+- background sync;
+- estrategia de snapshot stale;
+- cuándo una mutación puede repetirse físicamente.
+
+Esas reglas pertenecen a `PASS-UX-012` y contratos transversales propietarios.
+
+Esta tarea solo exige que el mensaje visible sea compatible con la política real y no invite a una acción que dicha política prohíba.
+
+---
+
+#### 29. Accesibilidad, tono y consistencia
+
+Todo mensaje importante deberá:
+
+- tener título y cuerpo comprensibles sin depender de color;
+- mantener contraste y lectura compatibles con accesibilidad;
+- usar una acción primaria clara cuando exista;
+- evitar bloques extensos de texto en móvil;
+- preservar la misma semántica entre Vento Café, Saudo y satélites;
+- mantener vocabulario coherente entre historial, ticket, pedido y chat;
+- no usar mayúsculas sostenidas como único mecanismo de urgencia;
+- no depender de emoji para indicar éxito o fallo;
+- soportar traducción futura mediante claves estables sin convertir el literal español en reason code.
+
+---
+
+#### 30. Referencia de soporte y observabilidad
+
+Cuando un fallo requiera soporte, PASS puede presentar una referencia segura y corta derivada de una correlación gobernada.
+
+La referencia visible:
+
+- no contiene secreto;
+- no expone PII innecesaria;
+- no sustituye logs ni trazas;
+- permite al equipo autorizado localizar el incidente;
+- permanece asociada al mismo intento cuando el resultado sea unknown;
+- no cambia el estado empresarial.
+
+No se exige referencia para validaciones ordinarias, vacíos o condiciones que el cliente puede resolver inmediatamente.
+
+---
+
+#### 31. Hallazgos AS-IS y handoff
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `AppErrorBoundary` renderiza `error?.message` directamente | exposición de excepción técnica y copy no gobernado | `PASS-UX-012` + paquete E5 propietario de la superficie PASS afectada | el cliente recibe copy seguro y la excepción completa queda solo en observabilidad restringida |
+| `CompleteProfile` usa `error.message` como mensaje visible | códigos/mensajes de persistencia pueden filtrarse y no ser accionables | paquete E5 propietario de `VSCREEN-0112` | reason/error técnico se traduce a categoría y copy seguro; validación de campo permanece diferenciada |
+| `VentoCafe`/experiencias muestran `result.error` o fallback genérico de canje | semántica puede variar según texto retornado por implementación | `PASS-INT-002` + paquete E5 propietario de `VSCREEN-0110` | resultado estructurado distingue validación, conflicto, denegación, duplicado, already-applied y unknown antes del copy |
+| `SuccessModal` afirma `Canje exitoso` inmediatamente después de crear `pending` | éxito falso antes del consumo PULSO | `PASS-UX-009` + paquete E5 propietario de `VSCREEN-0110` | copy distingue ticket creado de redención usada |
+| `RedeemModal` afirma irreversibilidad | política de cancelación/reversión no demostrada | `PASS-INT-002` + paquete E5 propietario de `VSCREEN-0110` | warning deriva de la regla vigente y no promete irreversibilidad sin contrato |
+| `QrFullscreenModal` usa `QR no disponible` sin distinguir causa | error, ausencia de credencial y estado no utilizable quedan colapsados | paquete E5 propietario de `VSCREEN-0110` | causa segura se clasifica antes de elegir copy |
+| `DeleteAccountFlow` afirma `Cuenta eliminada` tras éxito del comando | aceptación de solicitud puede confundirse con cierre reconciliado | `INFO-UX-004` + paquete E5 propietario de `VSCREEN-0112` | mensaje distingue acceso revocado, procesamiento y cierre confirmado según evidencia |
+| `useSatelliteExperiences` puede devolver lista vacía más `error` tras fallo sin caché | caller puede mostrar vacío donde hubo fallo | `PASS-UX-012` + paquete E5 propietario de las superficies `VSCREEN-0160`/`VSCREEN-0161` afectadas | precedencia error/recuperación ocurre antes que vacío |
+| `OrderMenu` y `OrderPlacedScreen` muestran strings de error provenientes de hooks/backend | detalles técnicos o mensajes inconsistentes pueden llegar a UI | paquete E5 propietario de `VSCREEN-0161`/`VSCREEN-0165` | capa de presentación usa categoría estructurada y safe detail, no string técnico crudo |
+| `OrderPlacedScreen` trata fallo de detalle de items como mensaje parcial separado | patrón positivo pero no sistemático | `PASS-UX-012` + paquete E5 propietario de `VSCREEN-0165` | parcialidad se conserva explícita sin degradar pedido confirmado |
+| `OrderTrackingScreen` ignora visualmente el error del RPC de PIN | fallo técnico puede parecer espera normal | `PASS-UX-012` + paquete E5 propietario de `VSCREEN-0167` | fallo de lectura se distingue de PIN todavía no emitido |
+| `OrderChatScreen` restaura draft cuando falla envío | patrón positivo de preservación | `PASS-UX-012` + paquete E5 propietario de `VSCREEN-0168` | preservación se conserva y resultado unknown se diferencia de fallo previo a aceptación |
+| `clubErrors.ts` ya traduce ciertos errores técnicos a copy amigable | mapeo local puede divergir de otras superficies | paquete E5 propietario de los componentes compartidos de experiencia cliente PASS | una semántica común de categorías y claves evita mappers contradictorios |
+
+Ningún hallazgo autoriza cambios físicos dentro de esta tarea documental.
+
+---
+
+#### 32. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Propietario |
+| --- | --- |
+| rutas, aliases, deep links y destino exacto de acciones de recuperación | `PASS-UX-011` |
+| carga, error, offline, caché, retry, reconciliación y recuperación móvil | `PASS-UX-012` |
+| comprensión, terminología y efectividad de mensajes con clientes reales | `PASS-UX-013` |
+| integración autoritativa de acumulación | `PASS-INT-001` |
+| integración autoritativa de redención, idempotencia y resultados estructurados | `PASS-INT-002` |
+| perfil/cliente y administración de datos | `PASS-INT-004` y `PASS-INT-005` según alcance canónico |
+| caso transversal de privacidad | `INFO-UX-004` |
+| comportamiento de pantallas ante recuperación | contratos `PROC-SCREEN-018..021` ya aprobados |
+| gramática transversal de bloqueo humano | `UX-BASE-006` ya aprobada |
+| implementación física del copy y mappers en apps | paquetes de materialización gobernados por E5; esta tarea no crea ni selecciona un package |
+
+---
+
+#### 33. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** el registro vigente ya exige explicación humana de errores/bloqueos, preservación del trabajo, recuperación sin duplicidad, diferenciación entre error recuperable, duplicado, conflicto, denegación y resultado ya aplicado, y trazabilidad de casos/comunicaciones. `PASS-UX-010` especializa esa cobertura para la experiencia cliente PASS y materializa el contrato de copy sin introducir una obligación de prueba nueva ni cambiar una regla protegida existente.
+
+---
+
+#### 34. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-UX-002` — todo error, bloqueo o fallo parcial comunica en lenguaje humano qué ocurrió, por qué, qué se conservó y cómo continuar sin duplicar efectos;
+- `TREQ-UX-006` — pérdida de red/sesión/dispositivo/proveedor diferencia pendiente, confirmado, fallido, conflicto y requiere intervención;
+- `TREQ-PASS-006` — convergencia semántica de experiencias y rutas PASS;
+- `TREQ-PASS-008` — redención y movimientos mediante contratos autorizados, atómicos e idempotentes;
+- `TREQ-PASS-009` — ambigüedad de pagos permanece pendiente de conciliación y no regresa estados terminales;
+- `TREQ-PASS-010` — saldo como proyección reconciliable y reintentos sin duplicar puntos/beneficios;
+- `TREQ-PASS-011` — casos, comunicaciones, entrega, error y fallback permanecen trazables y separados;
+- `TREQ-PASS-032` — estados de procesamiento, éxito y error corresponden al resultado confirmado y distinguen recuperable, duplicado, conflicto, denegación y ya aplicado;
+- `TREQ-PASS-033` — fallos de soporte laboral no degradan ni bloquean indebidamente la experiencia normal de cliente;
+- `TREQ-PASS-038`, `TREQ-PASS-041` y `TREQ-PASS-042` — superficies lógicas, identidades `VSCREEN-*` y runtime permanecen reconciliables y verificables.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 35. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | No se ejecutó compilación documental para esta preparación anticipada; la validación de build corresponde a su incorporación canónica posterior. |
+| LOCAL | `NOT_EXECUTED` | No existe evidencia de validación local ejecutada para esta preparación anticipada. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, owner PASS, continuidad, topología `DEFINE_ONCE`, catálogo de diecinueve `VSCREEN-*`, `UX-BASE-006`, `PROC-SCREEN-018..021`, 04A PASS/UX, `vento-pass/main` y superficies runtime representativas de fidelización, perfil, cuenta, actualización, error boundary, compra, pedido, entrega y chat. |
+| OPERATIVA | `NOT_EXECUTED` | No se provocaron errores, bloqueos, timeouts, conflictos, resultados unknown, fallos de pago, redención, perfil, chat u offline en staging o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-010` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 36. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-010 — Definir mensajes de error comprensibles`.
+- [x] Se preservan las diecinueve identidades `VSCREEN-*` PASS sin crear pantallas nuevas.
+- [x] Se adopta la gramática transversal de `UX-BASE-006` sin vocabulario competidor.
+- [x] Se preserva la precedencia error ≠ vacío ≠ carga ≠ bloqueo de `PROC-SCREEN-018..021`.
+- [x] Se define anatomía mínima de título, causa segura, efecto, estado preservado, siguiente acción, condición de retry, soporte y referencia.
+- [x] Se prohíbe exponer `error.message`, SQL, PostgREST, tablas, policies, stack traces, secretos y detalles antifraude al cliente.
+- [x] Validación, bloqueo, denegación, espera, conflicto, fallo técnico, warning e info permanecen diferenciados.
+- [x] Resultado unknown de una mutación no permite retry ciego ni copy terminal.
+- [x] Duplicado/already-applied no se presenta automáticamente como un nuevo error o segundo éxito.
+- [x] Se definen fronteras de mensajes para fidelización, redención, perfil, privacidad, compras, pagos, pedidos, entrega, chat, reclamos, reservas, satisfacción y comunicaciones.
+- [x] Se cubren Auth, CompleteProfile, AppUpdateGate y AppErrorBoundary sin crear nuevas superficies canónicas.
+- [x] EmptyState no absorbe error, bloqueo, timeout, partial o unknown.
+- [x] Las acciones comunicadas no inventan rutas; `PASS-UX-011` conserva ownership de navegación.
+- [x] Retry/offline/caché/recuperación física permanecen reservados a `PASS-UX-012` y contratos propietarios.
+- [x] La prueba con clientes reales permanece reservada a `PASS-UX-013`.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, datos, Supabase, PULSO, Wallet, packages, implementación física, CI022, piloto ni despliegue.
+- [x] `PASS-UX-011` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 37. Límites
+
+Esta tarea no:
+
+- implementa componentes, hooks, mappers ni catálogos de strings;
+- modifica `EmptyState`, `AppErrorBoundary`, `CompleteProfile`, `RedeemModal`, `SuccessModal`, `QrFullscreenModal`, `AccountSettings`, flujos de eliminación/limpieza, pantallas de pedido, entrega o chat;
+- crea `reason_code`, enum, estado de dominio, excepción, RPC o respuesta API;
+- modifica lógica de autorización, elegibilidad, saldo, puntos, pagos, pedidos, reservas o privacidad;
+- define rutas, aliases, deep links ni navegación;
+- decide backoff, retry count, TTL, cache, realtime, offline, queue o sincronización;
+- crea un sistema de traducción físico;
+- redefine `UX-BASE-006` ni `PROC-SCREEN-018..021`;
+- crea requisitos de prueba;
+- modifica 04A;
+- modifica datos, tablas, RLS, policies, Storage, Edge Functions, migraciones, secretos o configuración remota;
+- ejecuta pruebas operativas o con clientes reales;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- desarrolla `PASS-UX-011`, `PASS-UX-012` ni `PASS-UX-013`.
+
+---
+
+#### 38. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-010 — Definir mensajes de error comprensibles`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente`
 ### [ ] PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
 ### [ ] PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
 ### [ ] PASS-UX-013 — Ejecutar pruebas con clientes reales

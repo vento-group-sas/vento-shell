@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1322** |
+| Aprobadas | **1323** |
 | En propuesta | **0** |
-| No iniciadas | **274** |
+| No iniciadas | **273** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.83% (1322/1596)** |
+| Porcentaje de completamiento | **82.89% (1323/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **274** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1223** |
+| ⏸ NO_EVALUADA | **273** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1224** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-UX-009` — Diferenciar estado pendiente, usado y cancelado | ✅ APROBADA |
-| Tarea actual | `PASS-UX-010` — Definir mensajes de error comprensibles | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-UX-011` — Consolidar navegación y rutas canónicas de la experiencia cliente | ⬜ NO INICIADA |
+| Última aprobada | `PASS-UX-010` — Definir mensajes de error comprensibles | ✅ APROBADA |
+| Tarea actual | `PASS-UX-011` — Consolidar navegación y rutas canónicas de la experiencia cliente | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-UX-012` — Simplificar interfaz móvil, estados de carga, error, offline y recuperación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1424,7 +1424,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-007` | Diseñar catálogo de recompensas | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-008` | Diseñar perfil del cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-009` | Diferenciar estado pendiente, usado y cancelado | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-010` | Definir mensajes de error comprensibles | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-010` | Definir mensajes de error comprensibles | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-011` | Consolidar navegación y rutas canónicas de la experiencia cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-012` | Simplificar interfaz móvil, estados de carga, error, offline y recuperación | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-013` | Ejecutar pruebas con clientes reales | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
