@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1333** |
+| Aprobadas | **1334** |
 | En propuesta | **0** |
-| No iniciadas | **263** |
+| No iniciadas | **262** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.52% (1333/1596)** |
+| Porcentaje de completamiento | **83.58% (1334/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **263** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1234** |
+| ⏸ NO_EVALUADA | **262** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1235** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-013` — Mantener administración sin check-in | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-AUTH-014` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-013` — Mantener administración sin check-in | ✅ APROBADA |
+| Tarea actual | `ORIGO-AUTH-014` — Migrar a paquetes de vento-shell | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-AUTH-015` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1096,7 +1096,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-010` | Proteger precios y datos sensibles | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-011` | Registrar actor de recepción | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-012` | Integrar contexto operativo donde aplique | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-013` | Mantener administración sin check-in | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-013` | Mantener administración sin check-in | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-014` | Migrar a paquetes de vento-shell | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-015` | Ejecutar pruebas integrales | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-001` | Inventariar el proceso completo de abastecimiento | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |

@@ -14235,6 +14235,1514 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-AUTH-013 — Mantener administración sin check-in`
 
-### [ ] ORIGO-AUTH-013 — Mantener administración sin check-in
+### ✅ ORIGO-AUTH-013 — Mantener administración sin check-in
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
+**Tarea siguiente:** ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
+**Tipo de tarea:** contrato global con materialización por unidad (`PER_IMPLEMENTATION_UNIT`) — preservación cerrada del carril base administrativo de ORIGO sin dependencia artificial de turno o check-in, manteniendo independientes permiso exacto, cobertura administrativa, recurso, territorio, segregación, field mask, sensibilidad, dispositivo, reautenticación y auditoría, sin relajar las capacidades `OPERATIONAL_ONLY` ni el componente operativo de `BASE_AND_OPERATIONAL` y sin materializar todavía ninguna unidad física
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md`
+**Estado físico resultante:** `ESPECIFICADO_NO_MATERIALIZADO`
+**Cambios físicos autorizados:** 0 durante este marcador global; las materializaciones futuras ocurren únicamente mediante `ORIGO-AUTH-013::<implementation_unit_id>` después de que el paquete propietario aplicable supere `E5-GATE-008::<package_id>` y exista autorización física explícita
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir de forma cerrada y verificable la frontera que permite administrar ORIGO por el carril base cuando el contrato del permiso lo admite, sin exigir artificialmente turno, check-in, rol operativo o sede de jornada como condición de autoridad.
+
+La regla raíz queda:
+
+```text
+ACTOR LABORAL ACTIVO
++
+PERMISO BASE EXACTO
++
+COBERTURA ADMINISTRATIVA VÁLIDA
++
+RECURSO / ESTADO / TERRITORIO VÁLIDOS
++
+FIELD MASK Y SENSIBILIDAD APLICABLES
++
+SEGREGACIÓN Y POLÍTICA APLICABLES
++
+DISPOSITIVO / REAUTENTICACIÓN CUANDO CORRESPONDA
++
+SIN DENEGACIÓN APLICABLE
+=
+AUTORIZACIÓN ADMINISTRATIVA POSIBLE
+```
+
+No participa como requisito positivo del carril base:
+
+```text
+turno vigente
+check-in activo
+rol operativo
+navigation_role
+sede del turno
+área del turno
+```
+
+La ausencia de esos elementos no transforma una capacidad base válida en una capacidad operativa.
+
+---
+
+#### 2. Handoff recibido de ORIGO-AUTH-012
+
+`ORIGO-AUTH-012` dejó cerrada la integración del contexto operativo y entregó expresamente la frontera complementaria:
+
+```text
+CAPACIDADES ADMINISTRATIVAS
+→ NO DEBEN DEPENDER ARTIFICIALMENTE DE TURNO O CHECK-IN
+```
+
+Además fijó tres límites que esta tarea conserva:
+
+1. una capacidad `OPERATIONAL_ONLY` no puede convertirse en administrativa;
+2. una capacidad `BASE_AND_OPERATIONAL` no puede perder su componente operativo;
+3. el carril base y el carril operativo se evalúan de forma independiente cuando la modalidad es `BASE_OR_OPERATIONAL`.
+
+Esta tarea no reabre la resolución de contexto operativo de la 012; define la independencia administrativa que debe coexistir con ella.
+
+---
+
+#### 3. Topología y frontera física
+
+La reconciliación vigente del mini-bloque establece:
+
+```text
+ORIGO-AUTH-009..015
+mode = PER_IMPLEMENTATION_UNIT
+execution_gate = POST_E5_PACKAGE
+```
+
+Por tanto:
+
+```text
+MARCADOR GLOBAL ORIGO-AUTH-013
+→ DEFINE EL CONTRATO
+→ NO EJECUTA CAMBIOS FÍSICOS
+
+ORIGO-AUTH-013::<implementation_unit_id>
+→ MATERIALIZACIÓN POSTERIOR
+→ SOLO DESPUÉS DE E5-GATE-008::<package_id> = PASS
+→ SOLO CON AUTORIZACIÓN FÍSICA EXPLÍCITA
+```
+
+Este marcador no modifica código, permisos físicos, datos, RLS, RPC, Server Actions, paquetes, migraciones ni despliegues.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+La preparación documental se ancla a:
+
+```text
+vento-shell/main
+ff805f86ed2cfce78640c1f3b3385ef781833f50
+
+owner blob
+83a1991e3a64df66b22cbf36a7f8a2c93209c5bf
+
+vento-origo/main
+70860f1ca5f0a4a73e894cbb840956f9f7eda2ad
+
+ORIGO-AUTH-012 artefacto aprobado
+SHA-256 raw:
+48f376967eb6f6dd8cddf0556456959b1360b4f333de5a1f2481aafb0e94d7dd
+
+ORIGO-AUTH-012 semantic SHA-256:
+3c36055e2337480e3a989eba09c4ff511fae57674d4734b029a8f7521a767ed2
+
+04A ORIGO
+2d813655be391e4e8039a3ed30cbda4f7b3ed72a
+
+04A AUTH
+59e52b938b1110ba0ab4defc42f8fe1bb138d81a
+```
+
+Se contrastaron como mínimo:
+
+- `ORIGO-AUTH-004..012`;
+- `AUTH-CAT-012` y los contratos de modalidad/prerrequisito;
+- matrices base y operativas vigentes;
+- contratos de decisión y recurso;
+- contratos de dispositivo compartido;
+- requisitos ORIGO y AUTH vigentes del Registro 04A;
+- guard y resolución de sesión de `vento-origo`;
+- páginas y Server Actions de órdenes;
+- páginas y Server Actions de proveedores;
+- superficie de revisión de maestro;
+- superficies de recepción necesarias para preservar las excepciones operativas.
+
+---
+
+#### 5. Invariante principal
+
+La independencia administrativa se expresa así:
+
+```text
+BASE LANE
+→ N
+→ turno NO requerido
+→ check-in NO requerido
+```
+
+Pero:
+
+```text
+N
+!=
+ALLOW AUTOMÁTICO
+```
+
+`N` elimina únicamente la dependencia de jornada y presencia. Continúan obligatorios todos los controles que correspondan al permiso, recurso, actor y operación.
+
+---
+
+#### 6. Universo exacto gobernado
+
+La tarea consume las quince capacidades reconciliadas por `ORIGO-AUTH-012`.
+
+Resultado:
+
+```text
+CAPACIDADES ORIGO RECONCILIADAS: 15
+FINAL ALLOW POSIBLE POR CARRIL BASE SIN CHECK-IN: 13
+COMPONENTE BASE RESOLUBLE SIN CHECK-IN PERO FINAL EXIGE OPERACIÓN: 1
+SIN CARRIL BASE: 1
+CAPACIDADES NUEVAS: 0
+```
+
+Las trece que pueden alcanzar autorización final exclusivamente mediante carril base son:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.suppliers.view
+origo.catalog.product_reviews.view
+origo.procurement.purchase_orders.create
+origo.procurement.suppliers.create
+origo.procurement.purchase_orders.approve
+origo.procurement.purchase_orders.update
+origo.procurement.purchase_orders.cancel
+origo.procurement.suppliers.update
+origo.procurement.suppliers.activate
+origo.procurement.suppliers.deactivate
+```
+
+La capacidad con componente base pero sin autorización final exclusivamente administrativa es:
+
+```text
+origo.procurement.receipts.reverse
+```
+
+La capacidad sin carril base es:
+
+```text
+origo.procurement.receipts.register
+```
+
+---
+
+#### 7. Matriz canónica consolidada
+
+| Capacidad | Modalidad | Base | Operativo | ¿ALLOW final sin turno/check-in por base válido? |
+| --- | --- | --- | --- | --- |
+| `origo.access` | `BASE_OR_OPERATIONAL` | `N` | `T` | sí |
+| `origo.procurement.purchase_orders.view` | `BASE_OR_OPERATIONAL` | `N` | `T+C` | sí |
+| `origo.procurement.receipts.view` | `BASE_OR_OPERATIONAL` | `N` | `T+C` | sí |
+| `origo.procurement.suppliers.view` | `BASE_OR_OPERATIONAL` | `N` | `T` | sí |
+| `origo.catalog.product_reviews.view` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.purchase_orders.create` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.suppliers.create` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.purchase_orders.approve` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.receipts.register` | `OPERATIONAL_ONLY` | `—` | `T+C` | no |
+| `origo.procurement.purchase_orders.update` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.purchase_orders.cancel` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.suppliers.update` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.suppliers.activate` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.suppliers.deactivate` | `BASE_ONLY` | `N` | `—` | sí |
+| `origo.procurement.receipts.reverse` | `BASE_AND_OPERATIONAL` | `N` | `T+C` | no; solo resuelve el componente base |
+
+Esta matriz no activa físicamente las claves todavía no materializadas.
+
+---
+
+#### 8. Semántica exacta de `N`
+
+Para ORIGO:
+
+```text
+base_prerequisite = N
+```
+
+significa exclusivamente:
+
+```text
+TURNO
+→ NO REQUERIDO
+
+CHECK-IN
+→ NO REQUERIDO
+```
+
+No significa:
+
+- alcance global;
+- recurso sin resolver;
+- permiso implícito;
+- bypass por rol;
+- ausencia de field mask;
+- omisión de segregación;
+- ausencia de auditoría;
+- uso irrestricto desde dispositivo compartido;
+- omisión de reautenticación sensible;
+- autorización sobre cualquier sede o negocio.
+
+---
+
+#### 9. Administración no es operación
+
+La frontera se conserva:
+
+```text
+ADMINISTRAR
+!=
+OPERAR FÍSICAMENTE
+```
+
+Ejemplos:
+
+```text
+crear una orden
+!=
+recibir mercancía
+
+aprobar una compra
+!=
+registrar recepción
+
+mantener proveedor
+!=
+actuar como receptor
+
+consultar una orden por autoridad base
+!=
+consultarla por rol operativo de bodega
+```
+
+Un mismo humano puede tener ambos carriles, pero cada decisión conserva procedencia, alcance y evidencia propios.
+
+---
+
+#### 10. Regla `BASE_ONLY`
+
+Para toda capacidad `BASE_ONLY` de esta tarea:
+
+```text
+BASE
+→ EVALUAR
+
+OPERATIVO
+→ NOT_APPLICABLE
+```
+
+La ausencia de turno o check-in no produce denegación.
+
+La decisión se resuelve mediante:
+
+- actor laboral activo;
+- grant base exacto;
+- cobertura administrativa;
+- recurso y estado;
+- territorio cuando aplique;
+- políticas específicas;
+- sensibilidad y field mask;
+- denegaciones;
+- auditoría.
+
+---
+
+#### 11. Regla `BASE_OR_OPERATIONAL`
+
+Para:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.suppliers.view
+```
+
+los carriles son alternativas independientes:
+
+```text
+BASE VÁLIDO
+→ ALLOW POSIBLE SIN TURNO
+
+OR
+
+OPERATIVO VÁLIDO
+→ ALLOW POSIBLE CUMPLIENDO T O T+C
+```
+
+No se permite exigir que ambos carriles estén listos.
+
+---
+
+#### 12. Carril operativo inválido no invalida por sí solo un base válido
+
+Para una capacidad `BASE_OR_OPERATIONAL`, si el actor posee grant base válido y el recurso cae dentro de su cobertura:
+
+```text
+BASE = ALLOW
+OPERATIVO = DENY / UNAVAILABLE
+→ FINAL = ALLOW POR BASE
+```
+
+siempre que la causa operativa fallida no revele una contradicción estructural transversal del actor, principal, recurso o dispositivo que también invalide legítimamente el carril base.
+
+Ejemplos de fallos puramente operativos que no deben bloquear un base válido:
+
+- ausencia de turno;
+- ausencia de check-in;
+- fin de turno;
+- check-out;
+- falta de rol operativo;
+- rol operativo sin grant.
+
+---
+
+#### 13. `BASE_AND_OPERATIONAL` no se degrada a administración
+
+`origo.procurement.receipts.reverse` conserva:
+
+```text
+BASE_AND_OPERATIONAL
+base = N
+operational = T+C
+```
+
+El componente base puede resolverse sin turno ni check-in.
+
+Pero:
+
+```text
+BASE = ALLOW
++
+OPERATIVO = DENY POR AUSENCIA DE T+C
+→ FINAL = DENY
+```
+
+La 013 no convierte la reversión en una acción administrativa ejecutable fuera de operación.
+
+---
+
+#### 14. `OPERATIONAL_ONLY` permanece fuera
+
+`origo.procurement.receipts.register` conserva:
+
+```text
+OPERATIONAL_ONLY
+T+C
+```
+
+No existe una vía administrativa equivalente.
+
+Un propietario, gerente_general, gerente, auxiliar o cualquier otro rol base no puede registrar una recepción únicamente por su autoridad administrativa.
+
+---
+
+#### 15. Ausencia de turno
+
+Para una decisión base válida:
+
+```text
+NO TURNO
+→ NO AFECTA EL CARRIL BASE
+```
+
+La ausencia de turno no puede transformarse en una razón de bloqueo administrativa.
+
+Esto aplica también cuando el trabajador nunca tuvo turno operativo asignado ese día.
+
+---
+
+#### 16. Ausencia de check-in
+
+Para una decisión base válida:
+
+```text
+NO CHECK-IN
+→ NO AFECTA EL CARRIL BASE
+```
+
+Una capacidad administrativa no puede exigir marcar entrada como condición para:
+
+- consultar por autoridad base;
+- crear una orden;
+- crear un proveedor;
+- aprobar cuando la autoridad funcional sea válida;
+- editar o cancelar dentro del estado permitido;
+- mantener un expediente de proveedor;
+- activar o desactivar proveedor;
+- revisar maestro de productos.
+
+---
+
+#### 17. Fin de turno y check-out
+
+Regla:
+
+```text
+FIN DE TURNO
+→ revoca T y T+C
+→ NO revoca por sí solo un grant base vigente
+
+CHECK-OUT
+→ revoca T+C
+→ NO revoca por sí solo un grant base vigente
+```
+
+Una persona con responsabilidad administrativa válida puede continuar administrando fuera de una jornada operativa cuando el contrato base lo permita.
+
+---
+
+#### 18. Check-in incompatible y carril base
+
+Un check-in incompatible puede bloquear el carril operativo correspondiente.
+
+No debe reinterpretarse automáticamente como denegación del carril base cuando:
+
+- la identidad laboral base es inequívoca;
+- la concesión base es válida;
+- la cobertura administrativa es válida;
+- el recurso es válido;
+- no existe un bloqueo transversal aplicable.
+
+El check-in es evidencia operativa, no una restricción territorial universal del administrador.
+
+---
+
+#### 19. Actor con doble autoridad
+
+Cuando el mismo humano tiene grant base y rol operativo:
+
+```text
+UNA IDENTIDAD HUMANA
+→ DOS CARRILES POSIBLES
+→ DOS EVALUACIONES INDEPENDIENTES
+```
+
+La decisión debe conservar cuál carril produjo el resultado.
+
+No se permite usar la existencia de contexto operativo para sustituir la autoridad base ni usar la autoridad base para completar un carril operativo incompleto.
+
+---
+
+#### 20. Cobertura administrativa versus sede operativa
+
+La sede efectiva de un turno no sustituye la cobertura administrativa.
+
+Para un actor base:
+
+```text
+ADMINISTRATIVE_COVERAGE
+→ define dónde puede administrar
+```
+
+No:
+
+```text
+SHIFT_SITE
+→ redefine toda su autoridad base
+```
+
+Un gerente sigue limitado a las sedes y relaciones de su cobertura administrativa, aunque se encuentre operativamente en otra sede.
+
+---
+
+#### 21. `selected_site_id` no crea ni reduce autoridad base por sí solo
+
+Una sede seleccionada puede utilizarse como filtro o localizador.
+
+No puede:
+
+- crear cobertura administrativa;
+- sustituir la cobertura real;
+- convertir un permiso base en operativo;
+- bloquear por sí sola una capacidad organizacional no territorial;
+- reducir silenciosamente un grant base más amplio sin una regla contractual.
+
+El servidor debe resolver el recurso contra la cobertura administrativa real.
+
+---
+
+#### 22. Área operativa y administración
+
+Un área activa de turno no se exige por inferencia a una capacidad administrativa.
+
+Cuando un recurso base posea alcance por área, la autoridad procede del contrato de recurso y la cobertura administrativa aprobada, no de haber marcado entrada en esa área.
+
+---
+
+#### 23. `origo.access` por carril base
+
+`origo.access` conserva:
+
+```text
+BASE_OR_OPERATIONAL
+base = N
+operational = T
+```
+
+Un actor con grant base puede entrar a ORIGO sin turno ni check-in.
+
+La entrada de aplicación no concede capacidades internas.
+
+Cada capacidad posterior vuelve a evaluarse con su permiso exacto.
+
+---
+
+#### 24. `purchase_orders.view` por carril base
+
+La lectura administrativa de órdenes puede autorizarse sin turno/check-in cuando exista grant base y alcance válido.
+
+Continúan aplicando:
+
+- territorio y centros de costo definidos por `ORIGO-AUTH-009`;
+- field mask y sensibilidad definidos por `ORIGO-AUTH-010`;
+- recurso y estado;
+- restricciones por rol y cobertura.
+
+La falta de presencia operativa no amplía ni reduce esas reglas.
+
+---
+
+#### 25. `receipts.view` por carril base
+
+La lectura administrativa de recepciones puede autorizarse sin turno/check-in dentro de la cobertura base aprobada.
+
+Esto no concede:
+
+```text
+receipts.register
+receipts.reverse
+```
+
+La relación de receptor documentada por `ORIGO-AUTH-011` sigue siendo información de trazabilidad, no fuente automática de autoridad administrativa.
+
+---
+
+#### 26. `suppliers.view` por carril base
+
+La consulta base de proveedores conserva el ámbito comercial aprobado y no exige turno ni check-in.
+
+La proyección operativa mínima de proveedor continúa separada.
+
+```text
+SUPPLIER BASE VIEW
+!=
+SUPPLIER OPERATIONAL PROJECTION
+```
+
+Field masks, contratos, bancos y precios sensibles siguen protegidos por `ORIGO-AUTH-010`.
+
+---
+
+#### 27. `product_reviews.view`
+
+`origo.catalog.product_reviews.view` es:
+
+```text
+BASE_ONLY
+N
+```
+
+Su recurso es una cola organizacional de revisión.
+
+Por tanto:
+
+```text
+PRODUCT_REVIEW_QUEUE
+→ NO REQUIERE TURNO
+→ NO REQUIERE CHECK-IN
+→ NO ADQUIERE TERRITORIO POR selected_site_id
+```
+
+Un filtro por sede puede reducir presentación si existe una relación legítima, pero no crea autoridad ni convierte la cola en recurso operacional.
+
+---
+
+#### 28. `purchase_orders.create`
+
+La creación de orden conserva `BASE_ONLY`.
+
+Autoridad objetivo ya aprobada:
+
+- `propietario`;
+- `gerente_general`;
+- `gerente` dentro de su cobertura administrativa;
+- `auxiliar_administrativa` dentro de su función de soporte.
+
+La ausencia de turno/check-in no bloquea una creación válida.
+
+Continúan obligatorios proveedor, territorio, líneas, presentación, campos permitidos, segregación respecto de aprobación y demás validaciones definidas por `ORIGO-AUTH-005`.
+
+---
+
+#### 29. `purchase_orders.approve`
+
+La aprobación conserva `BASE_ONLY`.
+
+El actor debe resolver autoridad funcional y segregación según `ORIGO-AUTH-006`.
+
+Regla:
+
+```text
+APPROVER_AUTHORITY_VALID
++
+BASE GRANT VÁLIDO
++
+POLÍTICA / ESTADO / SEGREGACIÓN VÁLIDOS
+→ DECISIÓN POSIBLE SIN TURNO NI CHECK-IN
+```
+
+Un turno o check-in no otorga ni mejora autoridad de aprobación.
+
+---
+
+#### 30. `purchase_orders.update`
+
+La actualización administrativa ordinaria conserva `BASE_ONLY`.
+
+Grants objetivo ya aprobados:
+
+```text
+propietario
+gerente_general
+gerente
+auxiliar_administrativa
+```
+
+La acción continúa limitada a estados, fields y reglas de `ORIGO-AUTH-008`.
+
+No requiere presencia operativa.
+
+---
+
+#### 31. `purchase_orders.cancel`
+
+La cancelación empresarial conserva `BASE_ONLY`.
+
+Grants objetivo:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+La cancelación exige estado cancelable, motivo, historia y efectos consistentes.
+
+La ausencia de turno/check-in no es una razón de denegación.
+
+---
+
+#### 32. `suppliers.create`
+
+La creación de proveedor conserva `BASE_ONLY`.
+
+Grants objetivo ya aprobados:
+
+```text
+propietario
+gerente_general
+gerente
+auxiliar_administrativa
+```
+
+Crear proveedor no activa automáticamente el proveedor ni concede acceso a campos sensibles.
+
+No requiere turno/check-in.
+
+---
+
+#### 33. `suppliers.update`
+
+La actualización ordinaria conserva `BASE_ONLY`.
+
+Grants objetivo:
+
+```text
+propietario
+gerente_general
+gerente
+auxiliar_administrativa
+```
+
+La acción no concede por inferencia:
+
+- activación;
+- desactivación;
+- bancos;
+- contratos;
+- precios sensibles;
+- condiciones protegidas.
+
+No requiere turno/check-in.
+
+---
+
+#### 34. `suppliers.activate`
+
+La activación conserva `BASE_ONLY`.
+
+Grants objetivo:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+Exige expediente, estado, documentos y política aplicables, pero no exige jornada operativa.
+
+---
+
+#### 35. `suppliers.deactivate`
+
+La desactivación conserva `BASE_ONLY`.
+
+Grants objetivo:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+Debe preservar historia y referencias; no exige turno/check-in.
+
+---
+
+#### 36. `receipts.reverse` — excepción explícita
+
+El componente base de reversión se concede según `ORIGO-AUTH-008` a:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+Ese componente:
+
+```text
+base = N
+```
+
+se resuelve sin turno/check-in.
+
+Sin embargo, la ejecución final requiere además:
+
+```text
+gerencia_operativa
++
+T+C
++
+recurso/estado corregible
++
+resto de controles
+```
+
+Por tanto, una gerencia administrativa fuera de turno puede conservar su componente base, pero no completar la reversión.
+
+---
+
+#### 37. `receipts.register` — exclusión explícita
+
+`receipts.register` no participa del contrato administrativo.
+
+```text
+BASE
+→ NOT_APPLICABLE
+
+OPERATIVO
+→ T+C
+```
+
+No existe excepción por jerarquía administrativa.
+
+---
+
+#### 38. Dependencia de `origo.access`
+
+Cuando una superficie administrativa requiera entrar a ORIGO, el acceso a la aplicación debe resolverse por un carril compatible.
+
+Un actor base con `origo.access` base válido no necesita turno para llegar a una capacidad administrativa.
+
+No se permite el patrón:
+
+```text
+ADMIN PERMISSION BASE
++
+ORIGO.ACCESS EVALUADO SOLO COMO OPERATIVO
+→ BLOQUEO ARTIFICIAL
+```
+
+---
+
+#### 39. Recurso y estado siguen siendo obligatorios
+
+Administración sin check-in no elimina validación de recurso.
+
+Ejemplos:
+
+- una orden fuera de cobertura sigue denegada;
+- una orden en estado no editable sigue denegada;
+- un proveedor fuera del ámbito aprobado sigue denegado;
+- una cancelación imposible sigue denegada;
+- una aprobación sin autoridad funcional sigue denegada.
+
+La causa correcta debe ser de permiso, alcance, recurso, estado, política o seguridad; no de ausencia de presencia cuando el contrato base no la exige.
+
+---
+
+#### 40. Field mask y sensibilidad
+
+Una autorización base válida no implica todas las columnas.
+
+`ORIGO-AUTH-010` continúa gobernando:
+
+- costos;
+- precios;
+- totales;
+- condiciones comerciales;
+- información sensible de proveedor;
+- documentos y contratos;
+- campos internos.
+
+No se utiliza check-in como sustituto de una política de campos.
+
+---
+
+#### 41. Segregación de funciones
+
+No exigir check-in no relaja segregación.
+
+La administración conserva separadas, según corresponda:
+
+```text
+solicitar
+crear
+aprobar
+emitir
+recibir
+corregir
+revertir
+conciliar
+```
+
+El actor con capacidad base múltiple sigue sujeto a las reglas de autoaprobación y conflicto definidas en tareas precedentes.
+
+---
+
+#### 42. Reautenticación sensible
+
+Una capacidad base puede requerir reautenticación reforzada cuando el contrato transversal aplicable lo exija.
+
+Regla:
+
+```text
+REAUTENTICACIÓN FUERTE
+!=
+CHECK-IN LABORAL
+```
+
+La primera confirma de nuevo la identidad para una acción sensible.
+
+El segundo demuestra presencia operativa dentro de un turno.
+
+No se sustituyen mutuamente.
+
+---
+
+#### 43. Dispositivo compartido
+
+Administración sin check-in no convierte un dispositivo compartido en consola administrativa irrestricta.
+
+Un dispositivo puede imponer:
+
+- techo de aplicaciones;
+- techo de capacidades;
+- restricciones por tipo;
+- identificación reforzada;
+- prohibición de acciones sensibles.
+
+Si el device policy deniega una acción administrativa, la razón es el dispositivo o su techo, no la ausencia de check-in cuando el permiso base no lo exige.
+
+El dispositivo nunca crea grant base.
+
+---
+
+#### 44. Principal y actor
+
+La independencia del check-in no elimina la identidad.
+
+Toda acción administrativa conserva:
+
+- principal autenticado;
+- actor efectivo;
+- empleado activo cuando corresponda;
+- permiso exacto;
+- recurso;
+- decisión;
+- timestamp;
+- evidencia suficiente.
+
+Un dispositivo, usuario técnico o sesión no identificable no puede actuar como administrador humano por inferencia.
+
+---
+
+#### 45. Cobertura administrativa del gerente
+
+El gerente no obtiene organización completa por operar sin check-in.
+
+Regla:
+
+```text
+NO CHECK-IN REQUIRED
+!=
+GLOBAL SCOPE
+```
+
+Su cobertura sigue limitada por sedes, unidades, relaciones y territorios administrativos aprobados por las tareas precedentes.
+
+---
+
+#### 46. Cobertura organizacional
+
+Para recursos organizacionales como proveedor o cola de revisión:
+
+```text
+ORG / G(B) / RELACIÓN APROBADA
+```
+
+se resuelve desde el contrato base correspondiente.
+
+No se fabrica una sede artificial para satisfacer un helper de interfaz.
+
+---
+
+#### 47. Filtros de interfaz
+
+Los filtros por:
+
+```text
+site_id
+business_id
+status
+supplier_id
+```
+
+pueden reducir un conjunto ya autorizado.
+
+No pueden:
+
+- crear grant;
+- sustituir cobertura;
+- imponer turno;
+- imponer check-in;
+- transformar un recurso organizacional en territorial;
+- ampliar el conjunto autorizado.
+
+---
+
+#### 48. Razones de denegación
+
+Para una capacidad `BASE_ONLY` o un carril base válido de `BASE_OR_OPERATIONAL`, la mera ausencia de turno/check-in no debe producir como razón final de bloqueo:
+
+```text
+AUTH_OUTSIDE_SHIFT_WINDOW
+AUTH_CHECKIN_REQUIRED
+AUTH_OPERATIONAL_ROLE_REQUIRED
+```
+
+Esas razones corresponden al carril operativo cuando el permiso las exige.
+
+Una denegación base deberá reflejar la causa real aplicable.
+
+---
+
+#### 49. Proveniencia de la decisión
+
+Toda decisión final de una capacidad híbrida debe permitir distinguir:
+
+```text
+ALLOW_SOURCE = BASE
+```
+
+versus:
+
+```text
+ALLOW_SOURCE = OPERATIONAL
+```
+
+No se permite registrar simplemente `ALLOW` y perder el carril que lo produjo cuando esa diferencia sea material para auditoría, invalidación o explicación.
+
+---
+
+#### 50. Invalidación selectiva
+
+Al finalizar turno o check-in:
+
+```text
+INVALIDAR DECISIONES OPERATIVAS DERIVADAS
+```
+
+No:
+
+```text
+INVALIDAR AUTOMÁTICAMENTE TODA DECISIÓN BASE DEL MISMO ACTOR
+```
+
+Las decisiones base se invalidan por sus propios eventos relevantes, por ejemplo:
+
+- retiro del grant;
+- cambio de cobertura administrativa;
+- inactivación del empleado;
+- cambio del recurso;
+- nueva versión/política;
+- denegación aplicable;
+- expiración de evidencia sensible cuando corresponda.
+
+---
+
+#### 51. Equivalencia entre UI, servidor, RPC y RLS
+
+La independencia administrativa debe ser coherente en todos los canales.
+
+No se admite:
+
+```text
+UI permite sin check-in
+pero Server Action exige T+C
+```
+
+ni:
+
+```text
+UI bloquea por check-in
+pero RPC permite por base
+```
+
+La modalidad y el prerrequisito proceden del mismo contrato versionado.
+
+---
+
+#### 52. Runtime AS-IS — revisión de maestro acoplada a recepción legacy
+
+La superficie `product-master-review` observada define:
+
+```text
+REVIEW_PERMISSION = "procurement.receipts"
+```
+
+y consulta además:
+
+```text
+origo.procurement.receipts
+```
+
+mientras el contrato canónico de la pantalla corresponde a:
+
+```text
+origo.catalog.product_reviews.view
+BASE_ONLY
+```
+
+Clasificación:
+
+```text
+AS_IS_PRODUCT_REVIEW_COUPLED_TO_LEGACY_RECEIPT_PERMISSION
+```
+
+Riesgo:
+
+- exigir contexto operativo donde no corresponde;
+- utilizar un permiso de recepción para una cola administrativa;
+- mezclar field/resource policies distintos.
+
+La corrección física pertenece a `ORIGO-AUTH-014`.
+
+---
+
+#### 53. Runtime AS-IS — cola organizacional condicionada a sede seleccionada
+
+La revisión de maestro observada resuelve:
+
+```text
+selected_site_id
+fallback employee.site_id
+```
+
+y falla si no obtiene `siteId`.
+
+El recurso canónico de `product_reviews.view` es organizacional.
+
+Clasificación:
+
+```text
+AS_IS_PRODUCT_REVIEW_ORG_QUEUE_REQUIRES_SITE_HINT
+```
+
+Esto no demuestra por sí solo acceso indebido, pero sí un acoplamiento de interfaz que puede bloquear una capacidad base válida por ausencia de una sede que el recurso no exige como fuente de autoridad.
+
+---
+
+#### 54. Runtime AS-IS — helper de sesión operativa usado por guard general
+
+`requireAppAccess` resuelve primero `OperationalSession` incluso para una sesión personal y pasa `siteId`/`areaId` a `has_permission`.
+
+Clasificación:
+
+```text
+AS_IS_GENERAL_GUARD_CARRIES_OPERATIONAL_SESSION_PROJECTION_IN_BASE_PATH
+```
+
+La existencia del helper no demuestra que el evaluador exija check-in al carril base.
+
+La condición de salida es más estricta: la materialización deberá demostrar que la modalidad base se evalúa con `N` y que cualquier site/area aportado actúa solo conforme al contrato del recurso y la cobertura base.
+
+---
+
+#### 55. Runtime AS-IS — gestión de proveedores con permiso legacy y fallback de rol
+
+`requireCanManageSuppliers` intenta:
+
+```text
+origo.suppliers.manage
+```
+
+y, si no obtiene allow, conserva fallback local para:
+
+```text
+propietario
+gerente_general
+gerente
+```
+
+Clasificación:
+
+```text
+AS_IS_SUPPLIER_MANAGEMENT_LEGACY_ROLE_FALLBACK
+```
+
+La salida correcta no es añadir check-in.
+
+La salida es adoptar las capacidades base atómicas definidas en `ORIGO-AUTH-005` y `ORIGO-AUTH-008`, sin fallback por nombre de rol.
+
+---
+
+#### 56. Runtime AS-IS — mutaciones administrativas de orden sin guard atómico demostrado
+
+Las Server Actions observadas de orden incluyen superficies de creación, actualización, cambio de estado y borrado técnico sin demostrar de forma uniforme un guard atómico equivalente a las capacidades canónicas aprobadas.
+
+Clasificación:
+
+```text
+AS_IS_PURCHASE_ORDER_ADMIN_MUTATIONS_WITHOUT_UNIFORM_EXACT_BASE_GUARD
+```
+
+La solución no puede ser exigir turno o check-in genérico.
+
+`ORIGO-AUTH-014` deberá adoptar únicamente las claves ya aprobadas y respetar las acciones que todavía no tengan identidad canónica propia sin inventarlas desde esta tarea.
+
+---
+
+#### 57. Runtime AS-IS — lectura de órdenes protegida por app access
+
+La lista y detalle observados de órdenes usan `requireAppAccess({ appId: "origo" })` sin demostrar en esas fronteras el permiso exacto `purchase_orders.view`.
+
+Clasificación heredada:
+
+```text
+AS_IS_PURCHASE_ORDER_READ_APP_ACCESS_ONLY
+```
+
+La corrección deberá permitir el carril base de `.view` sin turno/check-in y, en paralelo, conservar el carril operativo con `T+C` cuando corresponda.
+
+---
+
+#### 58. Runtime AS-IS — actualización de proveedor acopla estado
+
+`updateSupplier` observado modifica campos ordinarios y `is_active` mediante el helper amplio de gestión.
+
+Clasificación heredada:
+
+```text
+AS_IS_SUPPLIER_UPDATE_AND_STATUS_COUPLED
+```
+
+La independencia administrativa no elimina la separación entre:
+
+```text
+suppliers.update
+suppliers.activate
+suppliers.deactivate
+```
+
+Las tres son base y ninguna requiere check-in, pero continúan siendo permisos distintos.
+
+---
+
+#### 59. Runtime AS-IS — borrados técnicos no equivalen a administración canónica
+
+El runtime observado conserva:
+
+```text
+deletePurchaseOrder
+
+deleteSupplier
+```
+
+con controles legacy o locales.
+
+Las tareas precedentes ya establecieron:
+
+```text
+DELETE AS-IS
+!=
+CANCEL / DEACTIVATE CANÓNICOS
+```
+
+La 013 no utiliza “administración sin check-in” para legitimar esos borrados ni inventa permisos de eliminación.
+
+---
+
+#### 60. Runtime AS-IS — shared device no demuestra carril base independiente
+
+En dispositivo compartido, el guard observado diferencia app permitida y permisos operativos mediante la sesión del dispositivo.
+
+La 013 no afirma que una acción administrativa deba habilitarse en ese dispositivo.
+
+Clasificación contractual:
+
+```text
+ADMIN_BASE_WITHOUT_CHECKIN
+!=
+SHARED_DEVICE_ADMIN_ALLOWED
+```
+
+Si una futura superficie administrativa se habilita en dispositivo compartido, deberá satisfacer simultáneamente grant base, actor humano, device ceiling, reautenticación y demás controles aplicables sin transformar check-in en requisito base.
+
+---
+
+#### 61. Matriz de brechas, owner y condición de salida
+
+| Brecha | Riesgo | Propietario posterior | Condición de salida |
+| --- | --- | --- | --- |
+| `AS_IS_PRODUCT_REVIEW_COUPLED_TO_LEGACY_RECEIPT_PERMISSION` | administración bloqueada o ampliada por permiso operativo equivocado | `ORIGO-AUTH-014` | adoptar `origo.catalog.product_reviews.view` base exacto y retirar dependencia artificial de recepción |
+| `AS_IS_PRODUCT_REVIEW_ORG_QUEUE_REQUIRES_SITE_HINT` | cola organizacional bloqueada por sede artificial | `ORIGO-AUTH-014` | resolver `PRODUCT_REVIEW_QUEUE` por cobertura organizacional y tratar site solo como filtro legítimo |
+| `AS_IS_GENERAL_GUARD_CARRIES_OPERATIONAL_SESSION_PROJECTION_IN_BASE_PATH` | contexto operativo puede filtrarse a decisiones base | `ORIGO-AUTH-014` | demostrar carril base `N` independiente y argumentos territoriales coherentes con el recurso |
+| `AS_IS_SUPPLIER_MANAGEMENT_LEGACY_ROLE_FALLBACK` | rol local concede administración sin permiso atómico | `ORIGO-AUTH-014` | permisos base atómicos, sin fallback por nombre de rol |
+| `AS_IS_PURCHASE_ORDER_ADMIN_MUTATIONS_WITHOUT_UNIFORM_EXACT_BASE_GUARD` | mutación administrativa sin permiso exacto o corrección errónea con T+C | `ORIGO-AUTH-014` | cada acción aprobada usa su clave base exacta; acciones sin identidad no se inventan |
+| `AS_IS_PURCHASE_ORDER_READ_APP_ACCESS_ONLY` | lectura demasiado amplia o bloqueo de carril correcto | `ORIGO-AUTH-014` | `.view` exacto con base `N` y operativo según contrato |
+| `AS_IS_SUPPLIER_UPDATE_AND_STATUS_COUPLED` | un helper base amplio mezcla permisos distintos | `ORIGO-AUTH-014` | separar `update`, `activate`, `deactivate` con grants y field sets exactos |
+| `AS_IS_SHARED_DEVICE_BASE_LANE_NOT_PROVEN_IN_ORIGO_GUARD` | device policy y modalidad pueden mezclarse | `ORIGO-AUTH-014` | decisión de device y lane separadas; check-in no se usa como sustituto del techo del dispositivo |
+
+Ninguna brecha autoriza una modificación física desde este marcador global.
+
+---
+
+#### 62. Handoff hacia ORIGO-AUTH-014
+
+`ORIGO-AUTH-014` recibe un contrato cerrado de materialización:
+
+```text
+13 CAPACIDADES
+→ ALLOW BASE POSIBLE SIN TURNO/CHECK-IN
+
+1 CAPACIDAD BASE_AND_OPERATIONAL
+→ COMPONENTE BASE SIN CHECK-IN
+→ FINAL TODAVÍA EXIGE T+C
+
+1 CAPACIDAD OPERATIONAL_ONLY
+→ SIN CARRIL BASE
+```
+
+La migración deberá preservar simultáneamente:
+
+- claves atómicas aprobadas;
+- modalidad;
+- prerrequisitos;
+- grants base;
+- grants operativos;
+- cobertura y territorio;
+- recursos/estados;
+- field masks;
+- sensibilidad;
+- segregación;
+- device policy;
+- reautenticación;
+- auditoría;
+- reason provenance;
+- invalidación selectiva.
+
+No puede corregir la independencia administrativa fabricando un bypass.
+
+---
+
+#### 63. Handoff hacia ORIGO-AUTH-015
+
+`ORIGO-AUTH-015` deberá probar integralmente, entre otros:
+
+- actor base válido sin turno → `ALLOW` en capacidad base aplicable;
+- actor base válido sin check-in → `ALLOW` en capacidad base aplicable;
+- actor base válido después de check-out → base conserva validez si nada más cambió;
+- actor base válido con turno terminado → base conserva validez si nada más cambió;
+- `BASE_OR_OPERATIONAL` con base válido y operativo no disponible → final `ALLOW` por base;
+- `BASE_OR_OPERATIONAL` sin base y sin contexto operativo → `DENY`;
+- `product_reviews.view` no depende de permiso de recepción ni de check-in;
+- cola de revisión organizacional no exige sede artificial como fuente de autoridad;
+- create/update/cancel/approve administrativos no adquieren `T+C`;
+- supplier create/update/activate/deactivate no adquieren `T+C`;
+- `receipts.register` sin `T+C` → `DENY`;
+- `receipts.reverse` con base válido pero sin componente operativo → `DENY` final;
+- ausencia de check-in no se reporta como causa administrativa cuando `N` aplica;
+- fin de turno/check-out invalida decisiones operativas sin invalidar indiscriminadamente decisiones base;
+- shared device no convierte ausencia de check-in en sustituto de device policy;
+- UI, Server Action, RPC y RLS producen modalidad y razones compatibles.
+
+---
+
+#### 64. Requisitos de prueba derivados
+
+NO GENERA REQUISITOS DE PRUEBA.
+
+```text
+Requisitos creados: 0
+Requisitos modificados: 0
+Requisitos diferidos: 0
+Requisitos obsoletos: 0
+```
+
+La obligación ya está cubierta por requisitos transversales y ORIGO vigentes; esta tarea especializa su aplicación al dominio sin crear una nueva identidad de requisito.
+
+---
+
+#### 65. Cobertura de prueba vigente reutilizada
+
+La trazabilidad existente que cubre esta tarea incluye, sin modificar sus filas:
+
+- `TREQ-AUTH-001` — permiso, contexto y alcance canónicos; no lista local de roles;
+- `TREQ-AUTH-008` — administración por rol base/cobertura sin turno ni check-in cuando el contrato lo permite y operación con contexto vigente;
+- `TREQ-AUTH-009` — sede y área efectivas resueltas de forma determinista;
+- `TREQ-AUTH-013` — enforcement server-side contra bypass de UI/API/RPC;
+- `TREQ-AUTH-015` — evidencia correlacionable también para operaciones administrativas;
+- `TREQ-AUTH-229` — `T+C` sin check-in produce deny en el carril operativo aplicable;
+- `TREQ-AUTH-231` — check-in compatible y resoluble cuando sí es requerido;
+- `TREQ-ORIGO-002` — permiso, territorio, estado y columnas para órdenes;
+- `TREQ-ORIGO-004` — segregación de solicitante, comprador, aprobador y receptor;
+- `TREQ-ORIGO-005` — protección y gobierno del maestro de proveedores.
+
+Esta sección es únicamente trazabilidad heredada y no declara cambios al Registro 04A.
+
+---
+
+#### 66. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | no se ejecutó build de producto durante esta definición documental |
+| LOCAL | NOT_EXECUTED | la incorporación local, formato y validadores del checkout se ejecutarán únicamente al incorporar el artefacto |
+| REMOTA | PASS | se verificaron `vento-shell/main`, archivo propietario, topología, políticas, 04A y `vento-origo/main` contra los snapshots declarados |
+| OPERATIVA | NOT_EXECUTED | no se ejecutaron escenarios E2E de administración ni operación durante este marcador global |
+| FÍSICA | NOT_EXECUTED | `PER_IMPLEMENTATION_UNIT` permanece sin materialización hasta el gate y autorización correspondientes |
+
+---
+
+#### 67. Criterios de aceptación
+
+La tarea se considera documentalmente satisfecha cuando:
+
+1. conserva exactamente quince capacidades reconciliadas;
+2. identifica trece capacidades con autorización final posible por carril base sin turno/check-in;
+3. mantiene `receipts.reverse` como `BASE_AND_OPERATIONAL` y no confunde el componente base con autorización final;
+4. mantiene `receipts.register` como `OPERATIONAL_ONLY`;
+5. ningún `BASE_ONLY` adquiere turno/check-in;
+6. ningún `BASE_OR_OPERATIONAL` exige simultáneamente los dos carriles;
+7. fin de turno y check-out no revocan por sí solos grants base;
+8. cobertura administrativa no se sustituye por sede/área operativas;
+9. selected site se trata como filtro/hint y no como autoridad;
+10. field masks, sensibilidad, segregación y recurso continúan vigentes;
+11. reautenticación fuerte no se confunde con check-in laboral;
+12. device policy no se confunde con presencia operativa;
+13. el runtime AS-IS queda documentado sin elevar fallbacks legacy a contrato;
+14. cada brecha diferida conserva owner y condición de salida;
+15. no se crean permisos ni requisitos nuevos;
+16. la 014 recibe un handoff materializable y la 015 recibe escenarios de prueba verificables.
+
+---
+
+#### 68. Límites
+
+Esta tarea no:
+
+- modifica código;
+- modifica `vento-origo`;
+- modifica `vento-shell` físicamente más allá de la futura incorporación documental del marcador;
+- crea permisos;
+- activa permisos;
+- cambia grants;
+- cambia matrices;
+- cambia `authorization_requirement`;
+- cambia `base_prerequisite`;
+- cambia `operational_prerequisite`;
+- crea turnos;
+- crea check-ins;
+- modifica ANIMA;
+- modifica device policies;
+- modifica RLS;
+- modifica RPC;
+- modifica Server Actions;
+- modifica datos;
+- ejecuta Supabase;
+- crea migraciones;
+- modifica el Registro 04A;
+- crea un bypass administrativo;
+- permite registrar recepción por rol base;
+- permite reversar recepción solo con componente base;
+- elimina field masks;
+- elimina reautenticación aplicable;
+- elimina segregación;
+- legitima aliases legacy;
+- legitima listas locales de roles;
+- inventa permisos de emisión o borrado;
+- selecciona package o implementation unit;
+- ejecuta E5;
+- autoriza una instancia física;
+- desarrolla `ORIGO-AUTH-014`.
+
+---
+
+#### 69. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-AUTH-012 — Integrar contexto operativo donde aplique`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-AUTH-013 — Mantener administración sin check-in`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-AUTH-014 — Migrar a paquetes de vento-shell`
+
 ### [ ] ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
 ### [ ] ORIGO-AUTH-015 — Ejecutar pruebas integrales
