@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1323** |
+| Tareas aprobadas | **1324** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **273** |
+| Tareas no iniciadas | **272** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **82.89% (1323/1596)** |
+| Porcentaje de completamiento | **82.96% (1324/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **PASS-UX-010 — Definir mensajes de error comprensibles** |
-| Tarea actual | **PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente** |
+| Última tarea aprobada | **PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente** |
+| Tarea actual | **PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación** |
+| Siguiente tarea | **PASS-UX-013 — Ejecutar pruebas con clientes reales** |
 | Bloque actual | **CARRIL PASS — PASS — fidelización, puntos y beneficios como prioridad documental — etapa 1: PASS_CUSTOMER_EXPERIENCE** |
-| Progreso del bloque | **CARRIL PASS: 10 de 13 aprobadas; PASS-UX-011 pendiente** |
+| Progreso del bloque | **CARRIL PASS: 11 de 13 aprobadas; PASS-UX-012 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — PASS-UX-011** |
+| Carril documental | **ACTIVO — PASS-UX-012** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `PASS-UX-010` — Definir mensajes de error comprensibles |
-| Tarea actual | `PASS-UX-011` — Consolidar navegación y rutas canónicas de la experiencia cliente — **NO INICIADA** |
-| Siguiente tarea | `PASS-UX-012` — Simplificar interfaz móvil, estados de carga, error, offline y recuperación |
+| Última aprobada | `PASS-UX-011` — Consolidar navegación y rutas canónicas de la experiencia cliente |
+| Tarea actual | `PASS-UX-012` — Simplificar interfaz móvil, estados de carga, error, offline y recuperación — **NO INICIADA** |
+| Siguiente tarea | `PASS-UX-013` — Ejecutar pruebas con clientes reales |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **CARRIL PASS: 10 DE 13 APROBADAS — ACTUAL PASS-UX-011** |
+| CONTINUIDAD ACTIVA | **CARRIL PASS: 11 DE 13 APROBADAS — ACTUAL PASS-UX-012** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-PASS-UX-010 — Definir mensajes de error comprensibles
-        ↓
-TAREA ACTUAL
 PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
         ↓
+SIGUIENTE TAREA RESERVADA
+PASS-UX-013 — Ejecutar pruebas con clientes reales
+        ↓
 CONTINUIDAD DEL BLOQUE
-CARRIL PASS — 10 de 13 tareas aprobadas
+CARRIL PASS — 11 de 13 tareas aprobadas
 ```

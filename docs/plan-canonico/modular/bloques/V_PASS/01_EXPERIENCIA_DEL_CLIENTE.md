@@ -5479,6 +5479,818 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente`
-### [ ] PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
+### ✅ PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-010 — Definir mensajes de error comprensibles
+**Tarea siguiente:** PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
+**Tipo de tarea:** documental; consolidación del contrato objetivo de navegación de cliente PASS sobre las diecinueve identidades canónicas `VSCREEN-*`, las quince identidades actuales de `Stack.Screen`, las seis superficies globales/pre-navegación, los deep links vigentes y la resolución de módulos de runtime, definiendo destinos directos, embebidos, compuestos, compartidos, de compatibilidad y todavía no materializados sin crear rutas físicas ni adelantar recuperación móvil; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pass`, navegación runtime, nombres de `Stack.Screen`, aliases Babel/TypeScript, deep links, feature flags, componentes, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Consolidar una arquitectura de navegación única y verificable para la experiencia cliente de PASS, de forma que una acción visible conduzca a una identidad funcional conocida sin depender de rutas paralelas, nombres técnicos, aliases de tooling contradictorios, placeholders o interpretaciones distintas de una misma pantalla canónica.
+
+El contrato debe poder responder, para cada capacidad de cliente:
+
+```text
+¿CUÁL ES LA IDENTIDAD CANÓNICA VSCREEN?
+¿EXISTE HOY UNA RUTA RUNTIME DEDICADA?
+¿ES UNA SUPERFICIE GLOBAL O EMBEBIDA?
+¿COMPARTE RUTA CON OTRA IDENTIDAD?
+¿REQUIERE CONTEXTO PREVIO?
+¿TIENE DEEP LINK?
+¿ESTÁ DETRÁS DE FEATURE FLAG?
+¿QUÉ IMPLEMENTACIÓN EJECUTA REALMENTE EL RUNTIME?
+¿QUÉ ENTRYPOINTS SON SOLO COMPATIBILIDAD?
+¿QUÉ DESTINOS AÚN NO DEBEN MOSTRARSE COMO IMPLEMENTADOS?
+```
+
+La navegación no se convierte en fuente de autoridad. Abrir una ruta no concede elegibilidad, permiso, saldo, estado, ownership, sede, pago, redención ni derecho sobre un recurso.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-010`, aprobada por el usuario, que entrega el contrato de mensajes humanos y reserva expresamente a esta tarea las rutas, aliases, deep links y destinos de las acciones visibles.
+
+Se conservan además estas decisiones ya aprobadas:
+
+- `PASS-UX-001` congela quince `Stack.Screen`, veintiuna superficies lógicas de cliente/transversales y diecinueve `VSCREEN-*` PASS, sin relación uno a uno obligatoria;
+- `PASS-UX-002` define el home como puerta de entrada a QR, recompensas, historial, perfil y compra, sin duplicar esos workspaces;
+- `PASS-UX-003` mantiene `QrModal` como presentación del identificador personal y no como scanner operativo;
+- `PASS-UX-005` y `PASS-UX-009` mantienen ticket/QR de redención y lifecycle de canje separados de la navegación que los presenta;
+- `PASS-UX-006` define `VSCREEN-0111` como historial global reconciliable y prohíbe que una vista por sede o una ventana parcial se haga pasar por historial completo;
+- `PASS-UX-007` define `VSCREEN-0109` como catálogo PASS y exige convergencia semántica entre Vento Café, Saudo y satélites dinámicos;
+- `PASS-UX-008` define `VSCREEN-0112` como un solo workspace semántico aunque onboarding y mantenimiento tengan superficies distintas;
+- `PASS-UX-009` exige que una misma redención no presente estados incompatibles por ruta;
+- `PASS-UX-010` prohíbe inventar destinos desde el copy y entrega la selección de rutas a esta tarea.
+
+La frontera de `PASS-UX-011` es el **contrato de identidad de navegación, destino, entrada, compatibilidad, composición y resolución de módulo**. Carga, error, offline, retry, caché, Realtime, restauración de estado y recuperación móvil permanecen en `PASS-UX-012` y en los contratos transversales propietarios.
+
+---
+
+#### 3. Modelo de identidad de navegación
+
+PASS conserva separadas cinco identidades que no pueden intercambiarse:
+
+```text
+VSCREEN CANÓNICA
+≠
+NOMBRE DE STACK
+≠
+RUTA EXTERNA / DEEP LINK
+≠
+ARCHIVO IMPORTADO
+≠
+ARCHIVO EFECTIVAMENTE RESUELTO POR EL BUNDLER
+```
+
+Reglas:
+
+1. `VSCREEN-*` expresa la identidad funcional canónica.
+2. `Stack.Screen` expresa una identidad de navegación runtime de React Navigation.
+3. un deep link expresa un entrypoint externo hacia una identidad runtime y nunca crea otra pantalla canónica;
+4. un alias de módulo cambia qué archivo implementa una identidad, pero no crea una ruta nueva;
+5. un componente embebido puede materializar una `VSCREEN-*` sin `Stack.Screen` independiente;
+6. una misma ruta puede representar más de una `VSCREEN-*` cuando la composición esté aprobada y sus estados permanezcan distinguibles;
+7. la presencia de una `VSCREEN-*` en catálogo no demuestra que exista una ruta runtime;
+8. la presencia de una ruta runtime no demuestra que la capacidad esté completa o autorizada.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot verificado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` `main` | `21348b12cfed8046b7a666496cf47d76c39aa573` | continuidad, owner, topología, políticas, catálogo, 04A y validadores |
+| archivo propietario PASS | blob `741f245b06a61eaf50e30ae51dd9b6c869b57af1` | `PASS-UX-009` incorporada y marcadores `PASS-UX-010+` vigentes |
+| `PASS-UX-010_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `060e337c3a24ed460bf934e3c6d3cad2a490bbb19d5c9c8d1e625ab18a970f96` | base documental inmediata aprobada por el usuario y pendiente de publicación |
+| catálogo proceso-pantalla | blob `742ead71e5fc5c4ae85a3cb6a00feb858ba8c2a0` | diecinueve `VSCREEN-*` PASS, procesos, pasos y roles |
+| inventario integral BLOQUE I | blob `b9d32ceac40db584b3e39c0c975acb978d2a79cd` | superficies PASS, fronteras cliente/laboral y reglas de reconciliación |
+| depuración de vistas/rutas BLOQUE I | blob `d59f178cbd8a7de02d0d7eff638e0111cc6543b9` | semántica de alias, redirect, duplicidad, compatibilidad y retiro |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura vigente de inventario, convergencia, rutas y deriva |
+| validador de matrices BLOQUE I | blob `be6c89303484fa417d6e22bf60d6cb30cb71b0f3` | comparación de stack PASS y matrices canónicas |
+| `carlosibarraariza/vento-pass` `main` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS |
+| `vento-pass/App.js` | blob `162e686ff5ec363a0f6f991da58f6ce84816e8aa` | quince rutas de stack, tres deep links y feature gates |
+| `vento-pass/babel.config.js` | blob `27efaeb7cc7e0ddbdd0970cef153e7524bde8d27` | resolución efectiva de aliases en runtime |
+| `vento-pass/tsconfig.json` | blob `19458728f23d32e7e3951e789116b4aa147fa1a5` | resolución de tooling TypeScript y divergencias observadas |
+| `OrderTrackingScreen.tsx` | blob `b006f4443f39b443f38cd71ad4142d777ff66c91` | composición actual de receipt/pago y seguimiento bajo `OrderPlaced` |
+| `src/utils/navigation.ts` | blob `0ea042e5fd30b2df98ebb98864b4c6a62a8f90eb` | helpers AS-IS y placeholder de historial |
+| `SatelliteExperience.tsx` | blob `7d0cc7fd9be280844af2810b9c507dfad5764dc3` | host dinámico actual de catálogo, historial y QR pendientes por sede |
+
+---
+
+#### 5. Universo de navegación que debe conservarse trazable
+
+La tarea no modifica las cardinalidades congeladas:
+
+| Universo | Cardinalidad |
+| --- | ---: |
+| `Stack.Screen` declaradas en `App.js` | 15 |
+| superficies lógicas cliente/transversales PASS | 21 |
+| pantallas canónicas PASS | 19 |
+| superficies canónicas con evidencia runtime dedicada, compartida o embebida | 16 |
+| pantallas canónicas sin superficie runtime dedicada demostrada | 3 |
+
+Las quince identidades actuales de stack permanecen inventariadas aunque esta tarea clasifique algunas como entrypoints de compatibilidad o partes de un flujo compuesto. Ninguna se retira físicamente desde `PASS-UX-011`.
+
+---
+
+#### 6. Clases canónicas de destino
+
+| Clase | Significado |
+| --- | --- |
+| `DIRECT_ROUTE` | una identidad `Stack.Screen` es el destino runtime principal de la `VSCREEN-*` |
+| `GLOBAL_SURFACE` | modal, gate o superficie global materializa la capacidad sin ruta de stack propia |
+| `EMBEDDED_DESTINATION` | la capacidad vive dentro de un host y no necesita ruta independiente |
+| `COMPOSITE_ROUTE_CHAIN` | varias rutas representan etapas necesarias de una misma identidad canónica sin ser duplicados |
+| `SHARED_CANONICAL_ROUTE` | una ruta sirve dos identidades canónicas relacionadas mediante composición explícita y estado distinguible |
+| `CONTEXTUAL_HOST_ROUTE` | el destino depende de una identidad de sede/marca/contexto ya resuelta |
+| `COMPATIBILITY_ENTRYPOINT` | ruta existente conservada temporalmente por compatibilidad; no se convierte en segunda fuente canónica |
+| `ADJACENT_ROUTE` | ruta real de una capacidad relacionada que no debe apropiarse de la `VSCREEN-*` evaluada |
+| `UNMATERIALIZED_DESTINATION` | identidad canónica sin ruta/superficie suficiente; no se muestra como capacidad implementada |
+
+Una clasificación documental no borra ni crea rutas. El cutover físico de cualquier entrypoint exige paridad, consumidores conocidos, rollback y evidencia de cero navegación huérfana.
+
+---
+
+#### 7. Matriz canónica de las diecinueve `VSCREEN-*` PASS
+
+| VSCREEN | Función | Representación objetivo de navegación | Runtime AS-IS relacionado | Decisión |
+| --- | --- | --- | --- | --- |
+| `VSCREEN-0107` | inicio y resumen de beneficios | `DIRECT_ROUTE` | `Home` | `Home` continúa como entrada principal autenticada de cliente |
+| `VSCREEN-0108` | QR personal | `GLOBAL_SURFACE` | `QrModal` | se abre como credencial global; no se crea `Stack.Screen` ni se confunde con scanner PULSO |
+| `VSCREEN-0109` | catálogo de beneficios/recompensas | `CONTEXTUAL_HOST_ROUTE` | `SatellitePass` y proyecciones legacy `VentoCafe`/`Saudo` | el destino canónico resuelve contexto de sede/marca y usa un host de fidelización; rutas estáticas quedan como compatibilidad hasta convergencia |
+| `VSCREEN-0110` | ticket/QR de redención | `EMBEDDED_DESTINATION` | modales/tarjetas dentro del host de fidelización | no requiere ruta nueva; se abre desde el catálogo y conserva estado de redención propio |
+| `VSCREEN-0111` | historial de puntos/redenciones | `UNMATERIALIZED_DESTINATION` para navegación global; proyecciones embebidas de compatibilidad por sede | tabs `historial` de `VentoCafe`, `Saudo`, `SatellitePass`; `goToMovements` placeholder | ninguna pestaña limitada por sede se canoniza como historial global; el acceso global permanece no materializado hasta existir un host que cumpla `PASS-UX-006` |
+| `VSCREEN-0112` | perfil, privacidad y consentimientos | `DIRECT_ROUTE` + gate inicial | `AccountSettings` + `CompleteProfile` | `AccountSettings` es mantenimiento autenticado; `CompleteProfile` es gate de completitud inicial, no segunda ruta competidora |
+| `VSCREEN-0160` | inicio/selección del portal de compras | `COMPOSITE_ROUTE_CHAIN` | `ChooseSatellite` → `OrderHome` | selección de contexto y entrada contextual son etapas de una misma identidad, no duplicados |
+| `VSCREEN-0161` | menú/catalogo comercial | `DIRECT_ROUTE` | `OrderMenu` | una sola identidad runtime; no se duplica por variantes de módulo |
+| `VSCREEN-0162` | carrito/configuración de pedido | `EMBEDDED_DESTINATION` | `OrderMenu` | carrito sigue embebido y no crea ruta paralela |
+| `VSCREEN-0163` | dirección/modalidad/programación | `COMPOSITE_ROUTE_CHAIN` | `DeliveryAddresses` + controles de modalidad/programación del flujo de compra | direcciones administrables y selección del pedido cooperan sin convertirse en dos fuentes de verdad |
+| `VSCREEN-0164` | revisión/checkout/inicio de pago | `DIRECT_ROUTE` | `OrderCheckout` | destino único de revisión antes de iniciar pago |
+| `VSCREEN-0165` | confirmación y retorno de pago | `SHARED_CANONICAL_ROUTE` | `OrderPlaced` | conserva el entrypoint externo `payment-return` y la presentación de receipt/pago dentro del host compartido |
+| `VSCREEN-0166` | mis pedidos y detalle | `DIRECT_ROUTE` | `MyOrders` | destino canónico de consulta de pedidos propios |
+| `VSCREEN-0167` | seguimiento de preparación/entrega | `SHARED_CANONICAL_ROUTE` | `OrderPlaced` resuelto a `OrderTrackingScreen.tsx` | comparte host con `VSCREEN-0165` porque el runtime efectivo compone receipt/pago y seguimiento; ambos contratos permanecen distinguibles |
+| `VSCREEN-0168` | chat del pedido | `DIRECT_ROUTE` | `OrderChat` | requiere `orderId` propio y no se convierte en reclamo por navegar al chat |
+| `VSCREEN-0169` | reclamos/casos de servicio | `UNMATERIALIZED_DESTINATION` | sin superficie dedicada verificada | no se crea alias a `OrderChat`; no se presenta como implementada hasta existir workspace trazable |
+| `VSCREEN-0170` | reservas/eventos | `UNMATERIALIZED_DESTINATION` | sin superficie dedicada verificada | no se inventa ruta, modal ni enlace “próximamente” como sustituto |
+| `VSCREEN-0171` | calificación/satisfacción | `EMBEDDED_DESTINATION` | `RatingModal` y `FeedbackModal` | permanece disparada desde contexto elegible; no necesita `Stack.Screen` solo para igualar el catálogo |
+| `VSCREEN-0172` | comunicaciones/notificaciones | `UNMATERIALIZED_DESTINATION` | sin superficie dedicada verificada | una push notification puede navegar al recurso propietario, pero no prueba que exista el workspace de comunicaciones |
+
+Resultado: **19/19 identidades reciben una decisión de navegación**, sin inventar rutas runtime para cerrar diferencias documentales.
+
+---
+
+#### 8. Clasificación de las quince identidades actuales de stack
+
+| `Stack.Screen` | Estado objetivo | Papel dentro de la navegación consolidada |
+| --- | --- | --- |
+| `Home` | `CANONICAL_DIRECT` | entrada principal de cliente y handoffs a capacidades propias |
+| `Club` | `ADJACENT_ROUTE` | membresía/Club separado de puntos PASS; no sustituye automáticamente `VSCREEN-0109` |
+| `MyOrders` | `CANONICAL_DIRECT` | pedidos propios y entrada a detalle/chat/reorden aplicable |
+| `ChooseSatellite` | `CANONICAL_COMPOSITE_STAGE` | selección de contexto para compra |
+| `DeliveryAddresses` | `CANONICAL_COMPOSITE_STAGE` | mantenimiento/selección de dirección dentro del flujo de entrega |
+| `AccountSettings` | `CANONICAL_DIRECT` | mantenimiento de perfil, privacidad y cuenta autenticada |
+| `VentoCafe` | `COMPATIBILITY_ENTRYPOINT` | experiencia estática que debe converger al host contextual sin conservar semántica propia divergente |
+| `Saudo` | `COMPATIBILITY_ENTRYPOINT` | experiencia estática que debe converger al host contextual sin conservar semántica propia divergente |
+| `SatelliteExperience` | `CANONICAL_CONTEXT_HUB` | hub dinámico de una sede/marca y puente hacia experiencia de fidelización/compra |
+| `SatellitePass` | `CANONICAL_CONTEXTUAL_HOST` | host dinámico actual de fidelización por sede/marca |
+| `OrderHome` | `CANONICAL_COMPOSITE_STAGE` | entrada contextual de compra tras resolver sede/marca |
+| `OrderMenu` | `CANONICAL_DIRECT` | menú comercial y host del carrito |
+| `OrderCheckout` | `CANONICAL_DIRECT` | revisión e inicio de pago |
+| `OrderPlaced` | `CANONICAL_SHARED` | receipt/retorno de pago + seguimiento de pedido bajo composición efectiva |
+| `OrderChat` | `CANONICAL_DIRECT` | conversación asociada a un pedido propio |
+
+Esta tabla no renombra ni elimina ninguna ruta actual. Define qué identidades son objetivo, compatibilidad o adyacentes para evitar que todas se traten como fuentes canónicas equivalentes.
+
+---
+
+#### 9. Superficies globales y previas a navegación
+
+Las seis superficies no-stack conservan su naturaleza:
+
+| Superficie | Decisión de navegación |
+| --- | --- |
+| `Auth` | gate previo; resuelve identidad/sesión y luego entrega al destino permitido |
+| `CompleteProfile` | gate previo de completitud; no aparece como destino ordinario de menú |
+| `QrModal` | superficie global invocada desde contexto autenticado; no crea ruta |
+| `AppUpdateGate` | gate global de compatibilidad; no sustituye el destino solicitado |
+| `App runtime gates` | resuelven carga/configuración/perfil antes del stack |
+| `AppErrorBoundary` | superficie global de recuperación; no crea navegación empresarial |
+
+Un gate puede interrumpir o diferir una navegación, pero no reescribe por sí mismo la identidad funcional solicitada.
+
+---
+
+#### 10. Navegación del home de cliente
+
+`Home` mantiene una función de distribución, no de duplicación.
+
+| Acción conceptual | Destino canónico | Regla |
+| --- | --- | --- |
+| mostrar QR personal | `VSCREEN-0108` / `QrModal` | abre credencial propia; no navega a scanner |
+| consultar recompensas | `VSCREEN-0109` / host contextual de fidelización | exige contexto de sede/marca cuando la fuente lo requiera |
+| consultar historial global | `VSCREEN-0111` | no usa una pestaña de sede como sustituto; si el destino global no existe, la acción no se presenta como implementada |
+| abrir perfil/privacidad | `VSCREEN-0112` / `AccountSettings` | mantenimiento autenticado |
+| iniciar compra | `VSCREEN-0160` / `ChooseSatellite` o contexto ya resuelto | respeta `SHOW_PURCHASE_FEATURES` |
+| abrir pedido activo | `VSCREEN-0165/0167` / `OrderPlaced` | usa `orderId` propio y estado autoritativo |
+| consultar pedidos | `VSCREEN-0166` / `MyOrders` | solo pedidos propios |
+| abrir Club | `Club` | capacidad adyacente; no altera nivel, saldo ni catálogo PASS por navegación |
+
+Ninguna CTA del home apunta a una ruta inexistente con un placeholder como sustituto de producto.
+
+---
+
+#### 11. Catálogo, redención e historial dentro del host de fidelización
+
+El runtime actual de `SatellitePass`/`SatelliteExperience.tsx` contiene tabs `canjear`, `historial` y `qr-pendientes`.
+
+La consolidación los interpreta así:
+
+- `canjear` es una proyección contextual de `VSCREEN-0109`;
+- `qr-pendientes` presenta `VSCREEN-0110` de forma embebida;
+- `historial` es una proyección contextual/compatibilidad de `VSCREEN-0111`, pero no sustituye el workspace global definido por `PASS-UX-006` mientras su consulta esté limitada a una sede o no combine ledger + recibos de forma completa;
+- cambiar de tab no crea una nueva ruta ni otra identidad de negocio;
+- el host debe conservar el mismo `site_id`/contexto durante la sesión de sede y no reinterpretar un canje existente al cambiar de tab;
+- la navegación global hacia historial no puede elegir arbitrariamente la última sede para hacer parecer completo un conjunto parcial.
+
+---
+
+#### 12. Decisión sobre `goToMovements`
+
+`src/utils/navigation.ts` conserva actualmente una acción `goToMovements` que responde con “Próximamente” en lugar de abrir un historial real.
+
+Decisión objetivo:
+
+```text
+ACCIÓN VISIBLE “HISTORIAL”
+→ DESTINO REAL QUE CUMPLE VSCREEN-0111
+O
+→ ACCIÓN NO EXPUESTA COMO IMPLEMENTADA
+```
+
+Por tanto:
+
+1. `goToMovements` no constituye una implementación de `VSCREEN-0111`;
+2. un `Alert` de “Próximamente” no es destino canónico;
+3. no se redirige el historial global a una pestaña de sede que pueda ocultar hechos no atribuidos o de otras sedes;
+4. cuando exista un host global compatible con `PASS-UX-006`, el helper podrá adaptarse a ese destino o retirarse en favor de navegación directa gobernada;
+5. la eliminación física del placeholder pertenece al package/implementación posterior, no a esta tarea.
+
+---
+
+#### 13. Convergencia de Vento Café, Saudo y satélites dinámicos
+
+La semántica de fidelización no puede depender de tres familias de rutas competidoras.
+
+Estado actual:
+
+```text
+VentoCafe
+Saudo
+SatellitePass / SatelliteExperience
+```
+
+Decisión objetivo:
+
+```text
+UNA IDENTIDAD DE SEDE/MARCA
++
+UN CONTRATO DE HOST CONTEXTUAL
++
+PROYECCIONES SEMÁNTICAMENTE EQUIVALENTES
+```
+
+Reglas:
+
+- `SatelliteExperience`/`SatellitePass` constituyen el camino dinámico objetivo por identidad estable de satélite/sede;
+- `VentoCafe` y `Saudo` permanecen `COMPATIBILITY_ENTRYPOINT` mientras existan consumidores o paridad no demostrada;
+- los entrypoints estáticos no mantienen reglas propias de rewards, historial, QR, favoritos, recomendaciones o estado que contradigan el host dinámico;
+- helpers como `goToMenuVento` y `goToMenuSaudo` no definen la arquitectura canónica por el hecho de hardcodear un nombre de pantalla;
+- una migración futura deberá resolver el `site_id`/satellite estable y preservar deep links, back behavior, estado pendiente y rollback antes de retirar un entrypoint;
+- ninguna ruta reemplazada permanece accesible indefinidamente sin una decisión explícita de compatibilidad.
+
+---
+
+#### 14. Club permanece separado de fidelización PASS
+
+`Club` es una ruta real, pero no se convierte por navegación en propietario del catálogo PASS.
+
+Reglas:
+
+- `Club` conserva membresía y wallet monetaria con identidad propia;
+- `VSCREEN-0109` conserva beneficios/recompensas PASS;
+- un beneficio Club solo se proyecta en PASS cuando exista contrato explícito que preserve su identidad;
+- abrir `Club` no cambia el saldo de puntos ni el contexto de `SatellitePass`;
+- ocultar o mostrar `Club` con `SHOW_CLUB_FEATURES` no elimina `VSCREEN-0109` ni el home PASS.
+
+---
+
+#### 15. Cadena canónica de compra
+
+El flujo objetivo de compra queda:
+
+```text
+Home
+→ ChooseSatellite
+→ OrderHome
+→ OrderMenu
+→ OrderCheckout
+→ OrderPlaced
+→ MyOrders / OrderChat según necesidad posterior
+```
+
+Con ramas permitidas:
+
+- `DeliveryAddresses` se abre desde selección/checkout y retorna al caller autorizado;
+- un contexto de satélite ya resuelto puede entrar a `OrderHome` sin repetir selección cuando el contrato lo permita;
+- reordenar desde `MyOrders` puede volver a `OrderCheckout` con un draft validado;
+- `OrderChat` exige un `orderId` propio;
+- `OrderPlaced` puede volver a `Home`, `MyOrders`, `OrderMenu` o `OrderChat` según el resultado y acciones disponibles;
+- ninguna ruta crea por navegación un pedido, una reserva o un pago.
+
+`ChooseSatellite` y `OrderHome` no se consideran duplicados: representan selección de contexto y entrada contextual del mismo `VSCREEN-0160`.
+
+---
+
+#### 16. Decisión explícita sobre `OrderPlaced`
+
+El alias Babel actual resuelve:
+
+```text
+@/components/OrderPlacedScreen
+→ src/components/OrderTrackingScreen.tsx
+```
+
+`OrderTrackingScreen.tsx` monta `OrderPlacedScreenLive` y añade seguimiento/entrega, de modo que el runtime efectivo compone actualmente:
+
+```text
+VSCREEN-0165 — CONFIRMACIÓN / RETORNO DE PAGO
++
+VSCREEN-0167 — SEGUIMIENTO DE PREPARACIÓN / ENTREGA
+→ UNA RUTA RUNTIME `OrderPlaced`
+```
+
+Esta composición queda documentalmente aceptada como `SHARED_CANONICAL_ROUTE` bajo estas condiciones:
+
+1. receipt/pago y seguimiento siguen siendo contratos distinguibles;
+2. `transactionId`/`checkoutOpened` no son requisitos para consultar seguimiento de un pedido ya existente;
+3. `orderId` identifica el recurso propio y se vuelve a validar contra sesión/ownership;
+4. la ruta no declara pago aprobado solo por haber sido abierta;
+5. el seguimiento no oculta el resultado de pago ni el receipt;
+6. un cambio futuro de nombre o separación en dos rutas deberá preservar `payment-return`, enlaces internos, pedidos activos, historial y rollback;
+7. el nombre técnico `OrderPlaced` no obliga al copy visible a llamar “pedido creado” a estados que todavía no lo son.
+
+No se crea una segunda ruta `OrderTracking` en esta tarea.
+
+---
+
+#### 17. Deep links canónicos vigentes
+
+Se preservan exactamente los entrypoints externos observados:
+
+| Destino runtime | Path externo | Función |
+| --- | --- | --- |
+| `Home` | raíz | entrada principal de PASS |
+| `MyOrders` | `orders` | pedidos propios |
+| `OrderPlaced` | `payment-return` | retorno de pago y recuperación del contexto del pedido |
+
+Prefijos observados:
+
+```text
+vento-pass://
+vento-pass-dev://
+https://pass.ventogroup.co
+```
+
+Reglas:
+
+- la ausencia de deep link no elimina una pantalla;
+- un deep link no crea una `VSCREEN-*` adicional;
+- el path `payment-return` entra por `VSCREEN-0165` aunque la ruta compartida también materialice seguimiento;
+- parámetros se parsean como entrada y después se revalidan contra sesión, ownership y fuente autoritativa;
+- no se inventan deep links para reclamos, reservas, comunicaciones, catálogo, perfil o historial desde esta tarea;
+- cualquier alias o path nuevo requiere decisión de compatibilidad y no puede abrir una superficie protegida por inferencia.
+
+---
+
+#### 18. Entradas externas, sesión y continuidad segura
+
+Toda navegación externa debe respetar los gates de aplicación.
+
+```text
+DEEPLINK / URL
+→ RESOLVER APP
+→ RESOLVER SESIÓN / PERFIL
+→ REVALIDAR RECURSO PROPIO Y FEATURE DISPONIBLE
+→ ABRIR DESTINO
+```
+
+Reglas:
+
+1. abrir un enlace no omite `Auth`, `CompleteProfile`, `AppUpdateGate` ni los gates runtime aplicables;
+2. un `orderId` recibido por URL no prueba ownership;
+3. parámetros desconocidos no amplían la pantalla ni conceden contexto;
+4. un retorno de pago no se redirige silenciosamente a un pedido distinto;
+5. una sesión ausente puede diferir la navegación, pero el destino restaurado debe volver a validarse;
+6. al cerrar sesión no se conserva navegación privada del usuario anterior;
+7. un recurso no encontrado, denegado o fuera de ownership usa los contratos de mensaje/recuperación, no un fallback hacia otro recurso.
+
+La persistencia concreta del destino durante recuperación de sesión pertenece a la implementación y a `PASS-UX-012` cuando implique restauración de estado.
+
+---
+
+#### 19. Feature flags y rutas existentes
+
+Los feature flags gobiernan disponibilidad runtime, no existencia documental.
+
+| Flag | Superficies observadas | Regla |
+| --- | --- | --- |
+| `SHOW_CLUB_FEATURES` | `Club` | puede ocultar la ruta Club; no afecta la existencia del home o catálogo PASS |
+| `SHOW_PURCHASE_FEATURES` | `MyOrders`, `ChooseSatellite`, `DeliveryAddresses`, `VentoCafe`, `Saudo`, `OrderHome`, `OrderMenu`, `OrderCheckout`, `OrderPlaced`, `OrderChat` | deshabilita entrada ordinaria de compra, pero no borra el inventario ni convierte rutas en inexistentes |
+
+Reglas adicionales:
+
+- una CTA no se muestra como activa si su destino no está montado;
+- desactivar compra no invalida retrospectivamente pedidos o pagos ya existentes;
+- un retorno `payment-return` de una operación previamente iniciada debe tener una salida segura aunque la creación de nuevas compras esté temporalmente deshabilitada;
+- un flag no autoriza a declarar un pedido inexistente, borrar estado ni redirigir a una ruta semánticamente distinta;
+- el contrato detallado de recuperación cuando una ruta no esté disponible se resuelve en `PASS-UX-012` y la implementación propietaria.
+
+---
+
+#### 20. Resolución de módulos y aliases
+
+Los aliases de implementación no son aliases de navegación.
+
+El runtime Babel observado resuelve cinco identidades inventariadas hacia implementaciones distintas:
+
+| Import lógico | Fuente runtime efectiva observada | Identidad de navegación conservada |
+| --- | --- | --- |
+| `@/components/Home` | `HomeOptimized.tsx` | `Home` |
+| `@/components/ChooseSatelliteScreen` | `ChooseSatelliteScreenOptimized.tsx` | `ChooseSatellite` |
+| `@/components/DeliveryAddressesScreen` | `DeliveryAddressesScreenV2.tsx` | `DeliveryAddresses` |
+| `@/components/MyOrdersScreen` | `MyOrdersScreenV2.tsx` | `MyOrders` |
+| `@/components/OrderPlacedScreen` | `OrderTrackingScreen.tsx` | `OrderPlaced` |
+
+Regla canónica:
+
+```text
+ALIAS DE MÓDULO
+≠
+SEGUNDA RUTA
+≠
+SEGUNDA VSCREEN
+```
+
+La identidad de navegación se mantiene estable hasta que una migración explícita cambie el contrato y sus consumidores.
+
+---
+
+#### 21. Divergencia Babel / TypeScript
+
+`tsconfig.json` declara además:
+
+```text
+@/components/OrderMenu → OrderMenuAvailability.tsx
+@/components/OrderCheckout → BaseOrderCheckout.tsx
+```
+
+mientras Babel no conserva aliases equivalentes y el runtime observado resuelve los imports lógicos hacia `OrderMenu.tsx` y `OrderCheckout.tsx`.
+
+Decisión:
+
+1. la fuente ejecutable actual se determina por la resolución efectiva del bundler, no por la asistencia del editor;
+2. TypeScript no puede certificar como runtime una variante que Babel/Metro no adopta;
+3. la materialización deberá hacer converger tooling y runtime sobre una resolución explícita por import lógico;
+4. elegir una variante nueva exige demostrar paridad y no se hace por esta tarea documental;
+5. mientras exista divergencia, revisiones de código y pruebas deben identificar si inspeccionan fuente lógica, fuente runtime o variante de tooling;
+6. una política futura de alias único debe evitar que dos archivos parezcan implementar simultáneamente la misma ruta.
+
+---
+
+#### 22. Contexto y parámetros de navegación
+
+Los parámetros transportan contexto; no crean autoridad.
+
+| Parámetro o familia | Uso permitido | Límite |
+| --- | --- | --- |
+| `satelliteId` / satélite | resolver sede/marca y host contextual | debe corresponder a identidad activa/autorizada; no se inventa por label |
+| `orderId` | consultar pedido propio, seguimiento o chat | debe revalidarse por servidor/ownership |
+| `transactionId` | correlacionar retorno de pago cuando aplique | no confirma pago por existencia |
+| `checkoutOpened` | contexto de presentación del retorno | no sustituye estado de pago |
+| `returnTo` interno de direcciones | regresar al caller aprobado | no acepta destino arbitrario como autoridad |
+| `orderContext` | transportar intención de compra entre etapas | fuente propietaria vuelve a validar precio, disponibilidad, entrega y pago |
+
+Una pantalla no adopta parámetros de otra ruta solo para reutilizar componentes.
+
+---
+
+#### 23. Navegación hacia atrás, reset y cierre de superficies
+
+El contrato distingue navegación de efectos empresariales.
+
+```text
+GO BACK
+RESET NAVIGATION
+CERRAR MODAL
+CAMBIAR TAB
+≠
+CANCELAR PEDIDO
+≠
+CANCELAR REDENCIÓN
+≠
+REVOCAR PAGO
+≠
+ELIMINAR CUENTA
+```
+
+Reglas:
+
+- `goBack` retorna en la historia de navegación y no revierte mutaciones confirmadas;
+- `reset` se usa para limpiar historia de navegación cuando el flujo lo requiera, sin fabricar estado empresarial;
+- cerrar `QrModal`, `RedeemModal` o un host de sede no cancela la identidad o intención ya persistida;
+- cambiar de tab en fidelización no dispara una nueva redención;
+- después de eliminación/cierre de sesión, los gates de autenticación determinan el siguiente estado; un reset visual hacia `Home` no prueba que la sesión siga siendo válida.
+
+---
+
+#### 24. Pantallas canónicas todavía no materializadas
+
+Se preservan explícitamente tres identidades sin superficie runtime dedicada suficiente:
+
+| VSCREEN | Decisión |
+| --- | --- |
+| `VSCREEN-0169 — Mis reclamos y casos de servicio` | `UNMATERIALIZED_DESTINATION`; `OrderChat` no se usa como alias de caso |
+| `VSCREEN-0170 — Mis reservas y eventos` | `UNMATERIALIZED_DESTINATION`; no se crea ruta ficticia |
+| `VSCREEN-0172 — Comunicaciones y notificaciones del cliente` | `UNMATERIALIZED_DESTINATION`; recibir una notificación no equivale a disponer de inbox/workspace |
+
+Mientras no exista materialización verificable:
+
+- no aparecen como destino navegable “implementado”;
+- no usan una alerta “Próximamente” como prueba de cobertura;
+- no heredan arbitrariamente otra ruta de cliente;
+- no se crean aliases documentales para reducir el conteo de brechas;
+- su owner funcional, proceso y `VSCREEN-*` permanecen reservados para implementación posterior.
+
+---
+
+#### 25. Satisfacción permanece embebida
+
+`VSCREEN-0171 — Calificación y satisfacción` dispone de evidencia runtime en `RatingModal` y `FeedbackModal` embebidos.
+
+Decisión:
+
+- no se crea una `Stack.Screen` solo para obtener correspondencia uno a uno;
+- el trigger debe provenir de un hecho elegible y contexto propio;
+- cerrar la modal no crea un reclamo;
+- una calificación negativa no redirige automáticamente a `VSCREEN-0169` sin contrato de caso;
+- la representación embebida continúa siendo canónica mientras preserve consentimiento, contexto, no duplicación y trazabilidad definidos por su propietario.
+
+---
+
+#### 26. Placeholders y capacidades no disponibles
+
+La navegación consolidada prohíbe usar placeholders como sustituto de una capacidad real.
+
+No constituyen destino canónico:
+
+```text
+Alert “Próximamente”
+Toast sin navegación
+botón que abre la misma pantalla sin función
+ruta vacía usada solo para reservar nombre
+alias hacia un workspace semánticamente distinto
+```
+
+Una capacidad no materializada se oculta, se marca como no disponible cuando exista razón de producto para mostrarla, o se entrega a un owner real; no se cuenta como implementada por tener un CTA.
+
+---
+
+#### 27. Compatibilidad y retiro de rutas
+
+Una ruta existente solo puede dejar de ser entrypoint cuando exista evidencia de transición segura.
+
+Contrato mínimo de retiro/convergencia:
+
+1. identificar origen, destino canónico y consumidores;
+2. probar paridad funcional aplicable;
+3. preservar deep links y enlaces internos todavía soportados;
+4. migrar navegación de componentes/helpers;
+5. preservar parámetros y contexto válidos;
+6. resolver borradores, pagos, pedidos, redenciones y estado pendiente;
+7. impedir doble analítica o doble efecto por origen/destino;
+8. definir rollback;
+9. observar uso residual y enlaces huérfanos;
+10. retirar el origen únicamente cuando la puerta propietaria lo permita.
+
+Por tanto, `VentoCafe` y `Saudo` no se eliminan por esta tarea aunque queden clasificados como compatibilidad frente al host dinámico.
+
+---
+
+#### 28. Reglas de destino para helpers y componentes
+
+Los helpers de navegación deben expresar intención, no nombres históricos como contrato empresarial.
+
+Reglas objetivo:
+
+- un helper hacia Vento Café o Saudo resuelve primero la identidad de sede/marca antes de elegir un entrypoint compatible;
+- un helper de historial no muestra un placeholder ni elige una sede implícita;
+- un componente que abre pedidos usa `MyOrders` o `OrderPlaced` según intención, no por conveniencia de archivo;
+- un componente que abre chat transporta únicamente el pedido necesario y deja la autorización al destino;
+- un caller de `DeliveryAddresses` solo recibe retorno hacia destinos internos conocidos por el flujo;
+- un wrapper optimizado o V2 conserva exactamente la misma identidad de navegación que el import lógico al que sustituye.
+
+---
+
+#### 29. Nombres técnicos y copy visible
+
+El nombre de una ruta es una clave técnica y no obliga a utilizar ese literal en UI.
+
+Ejemplos:
+
+- `OrderPlaced` puede alojar estados pendientes o tracking sin mostrar “Pedido confirmado” antes de evidencia;
+- `SatellitePass` no obliga a llamar “Pass” al catálogo si el copy aprobado usa beneficios/recompensas;
+- `VentoCafe` y `Saudo` pueden convertirse en entrypoints de compatibilidad aunque el cliente vea el nombre de la marca;
+- `AccountSettings` representa el mantenimiento de `VSCREEN-0112` sin limitar el workspace visible a “configuración” si incluye privacidad/consentimientos;
+- los labels visibles deben seguir `PASS-UX-010` y no expondrán nombres internos de ruta o archivo.
+
+---
+
+#### 30. Frontera cliente frente a operación PULSO y contexto laboral
+
+La navegación cliente no absorbe rutas operativas.
+
+```text
+PASS CUSTOMER NAVIGATION
+≠
+PULSO /scanner
+≠
+PASS LABOR SUPPORT SURFACES
+```
+
+Reglas:
+
+- el QR personal abre `QrModal`, no `/scanner`;
+- redimir desde PASS crea/presenta intención y PULSO conserva validación/consumo operativo;
+- una ruta cliente no recibe `pos.main` ni permisos laborales por compartir proceso;
+- contexto laboral embebido en `Home` no cambia el mapa de rutas del cliente;
+- simulación laboral no altera el `site_id` de una experiencia de cliente ni la propiedad del pedido;
+- ninguna ruta de cliente se duplica en PULSO para “facilitar” una operación de caja.
+
+---
+
+#### 31. Handoffs posteriores
+
+| Responsabilidad pendiente | Propietario |
+| --- | --- |
+| estados de carga, error, offline, retry, caché, Realtime y recuperación móvil | `PASS-UX-012` |
+| prueba de arquitectura, labels y comprensión con clientes reales | `PASS-UX-013` |
+| integración PULSO → PASS de acumulación/redención | `PASS-INT-001`, `PASS-INT-002` |
+| administración de productos de fidelización | `PASS-INT-003` |
+| identidad cliente-trabajador e integración operativa | `PASS-INT-004`, `PASS-INT-005` y contratos AUTH/PULSO aplicables |
+| materialización de aliases, rutas, deep links, helpers y convergencia de componentes | package de implementación propietario posterior |
+| retiro físico de `VentoCafe`/`Saudo` u otro entrypoint | transición con paridad, consumidores, rollback y evidencia runtime |
+| materialización de reclamos, reservas y comunicaciones | tareas propietarias de esas capacidades y packages posteriores |
+
+`PASS-UX-011` entrega el contrato de navegación; no ejecuta ninguno de estos handoffs.
+
+---
+
+#### 32. Hallazgos AS-IS y condición de salida
+
+| Hallazgo | Riesgo | Decisión de esta tarea | Condición de salida física posterior |
+| --- | --- | --- | --- |
+| cinco imports lógicos de stack resuelven a variantes Babel | inspección o cambio sobre archivo no ejecutado | identidad de ruta se separa de archivo efectivo | tooling, runtime y pruebas reconocen una resolución única por import lógico |
+| `OrderMenu` y `OrderCheckout` tienen aliases TypeScript sin equivalente Babel | editor/test y app pueden razonar sobre fuentes distintas | runtime efectivo no se redefine desde TypeScript | Babel/Metro y TypeScript convergen sobre la misma fuente o migración explícita |
+| `OrderPlaced` resuelve a `OrderTrackingScreen.tsx` | retorno de pago y seguimiento podían parecer conflicto | se aprueba `SHARED_CANONICAL_ROUTE` con contratos separados | pruebas demuestran receipt, pago, seguimiento, deep link y ownership sin regresión |
+| `goToMovements` muestra “Próximamente” | capacidad visible ficticia | placeholder no cuenta como `VSCREEN-0111` | existe destino global compatible o la acción deja de mostrarse como disponible |
+| Vento Café, Saudo y satélite dinámico duplican navegación/semántica | deriva de rewards e historial | estáticos quedan compatibilidad; host dinámico es objetivo contextual | paridad, consumidores y rollback permiten convergencia física |
+| tres `VSCREEN-*` carecen de superficie dedicada | falsa cobertura si se crean aliases narrativos | permanecen `UNMATERIALIZED_DESTINATION` | package propietario aporta runtime verificable y navegación real |
+| satisfacción es modal embebida | presión por inventar ruta solo para 1:1 | `EMBEDDED_DESTINATION` aprobado | no requiere ruta mientras cumpla contrato funcional |
+| `payment-return` entra a ruta detrás de purchase flag | retorno previo puede quedar huérfano ante rollout | creación de compra y recuperación de resultado se separan | implementación ofrece salida segura para operaciones ya iniciadas |
+
+Ningún hallazgo autoriza una mutación física desde esta tarea.
+
+---
+
+#### 33. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** el inventario exacto de rutas/superficies, la convergencia entre experiencias, la unicidad del retorno de pago/seguimiento, la persistencia de superficies detrás de feature flags, la reconciliación `VSCREEN-*` ↔ runtime y la detección de deriva ya están cubiertos por requisitos PASS vigentes. Esta tarea especializa la arquitectura objetivo y decide compatibilidad/representación sin introducir una obligación verificable nueva.
+
+---
+
+#### 34. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-006` para convergencia de `site_id`, marca, enlaces, recompensas e historial entre rutas estáticas y dinámicas, y para impedir rutas reemplazadas sin decisión de compatibilidad;
+- `TREQ-PASS-007` para una única experiencia canónica de retorno de pago y seguimiento, con integración o retiro explícito de alternativas;
+- `TREQ-PASS-034` para impedir navegación duplicada entre superficies cliente/laborales PASS y la operación PULSO relacionada;
+- `TREQ-PASS-035` para conservar el inventario de quince pantallas de stack y veintiuna superficies cliente/transversales;
+- `TREQ-PASS-036` para conservar los quince nombres reales de `Stack.Screen` y exigir reconciliación ante altas, retiros o renombres;
+- `TREQ-PASS-037` para mantener inventariadas las superficies de compra aunque `SHOW_PURCHASE_FEATURES` esté deshabilitado;
+- `TREQ-PASS-038` para mantener Auth, CompleteProfile, QrModal, AppUpdateGate, runtime gates y AppErrorBoundary separados de las quince rutas de stack;
+- `TREQ-PASS-039` para mantener `QrModal` como identificación personal separada de scanner/acumulación/redención operativa;
+- `TREQ-PASS-040` para impedir que la navegación cliente adopte contexto o permisos laborales;
+- `TREQ-PASS-041` para permitir relaciones no uno a uno entre superficies AS-IS y `VSCREEN-*` sin declarar futuras capacidades como implementadas;
+- `TREQ-PASS-042` para comparar el runtime PASS con el inventario congelado y fallar ante deriva cuando exista checkout hermano.
+
+Esta sección documenta trazabilidad existente; no modifica ni amplía el Registro 04A.
+
+---
+
+#### 35. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real se ejecutará únicamente después de que `PASS-UX-010` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-011` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, owner, topología `PASS-UX`, catálogo de 19 `VSCREEN-*`, inventario BLOQUE I, reglas de aliases/redirects, Registro 04A PASS, validador de matrices, `vento-pass/main`, `App.js`, Babel, TypeScript, helpers de navegación, Home, satélites, fidelización, compra, pedidos, retorno de pago, tracking, chat y direcciones. |
+| OPERATIVA | `NOT_EXECUTED` | No se navegó una build desplegada, deep link real, pago, pedido, chat, catálogo, historial, perfil, feature flag ni dispositivo móvil. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-011` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 36. Criterios de aceptación
+
+- [x] Se desarrolla exactamente `PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente`.
+- [x] Se preservan las diecinueve `VSCREEN-*`, quince identidades de stack y veintiuna superficies cliente/transversales sin inflar conteos.
+- [x] `VSCREEN`, nombre de stack, deep link, import lógico y módulo runtime quedan diferenciados.
+- [x] Cada una de las diecinueve `VSCREEN-*` recibe una decisión explícita de navegación.
+- [x] No se inventan rutas para reclamos, reservas ni comunicaciones todavía no materializadas.
+- [x] `VSCREEN-0171` permanece embebida sin exigir `Stack.Screen` artificial.
+- [x] `VSCREEN-0111` no se degrada a una pestaña limitada por sede ni a `goToMovements` “Próximamente”.
+- [x] Vento Café y Saudo quedan clasificados como entrypoints de compatibilidad frente al host dinámico objetivo, sin retiro físico anticipado.
+- [x] Club permanece separado de puntos/recompensas PASS salvo proyección explícita.
+- [x] `ChooseSatellite` y `OrderHome` se reconocen como etapas compuestas de `VSCREEN-0160`, no duplicados.
+- [x] `OrderPlaced` queda aprobado documentalmente como ruta compartida de `VSCREEN-0165` y `VSCREEN-0167` bajo composición verificable.
+- [x] Se preservan raíz, `orders` y `payment-return` como únicos deep links observados; no se inventan otros.
+- [x] Feature flags no borran inventario ni convierten una ruta en inexistente.
+- [x] Las cinco resoluciones Babel no crean rutas adicionales.
+- [x] La divergencia TypeScript/Babel de `OrderMenu` y `OrderCheckout` queda identificada y con política de convergencia.
+- [x] Back/reset/cierre de modal/tab no se confunden con cancelación o reversión empresarial.
+- [x] Navegación cliente permanece separada de `/scanner` PULSO y de contexto laboral PASS.
+- [x] Los retiros futuros exigen paridad, consumidores, compatibilidad, rollback y evidencia de uso residual.
+- [x] `PASS-UX-012` conserva ownership de carga, error, offline, retry y recuperación.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, datos, Supabase, packages, CI022, piloto ni despliegue.
+
+---
+
+#### 37. Límites
+
+Esta tarea no:
+
+- modifica `App.js`, `babel.config.js`, `tsconfig.json`, helpers, componentes ni navegación runtime;
+- agrega, retira o renombra `Stack.Screen`;
+- crea rutas `OrderTracking`, `History`, `Claims`, `Reservations`, `Notifications` ni equivalentes;
+- crea deep links, prefixes, universal links ni redirects;
+- ejecuta la convergencia física de `VentoCafe`, `Saudo`, `SatelliteExperience` o `SatellitePass`;
+- decide qué implementación variante debe reemplazar físicamente `OrderMenu` u `OrderCheckout`;
+- retira aliases de módulo ni cambia configuración del bundler;
+- implementa un historial global nuevo;
+- implementa reclamos, reservas, comunicaciones o satisfacción como rutas;
+- crea permisos ni usa nombres de ruta como autorización;
+- modifica feature flags;
+- modifica pedidos, pagos, redenciones, ledger, perfil, consentimientos o reglas de negocio;
+- decide persistencia física de parámetros, navegación restaurada o estado offline;
+- define backoff, retry, caché, Realtime, colas o reconciliación móvil;
+- modifica datos, tablas, RLS, RPC, Storage, Edge Functions, migraciones, secretos o configuración remota;
+- ejecuta pruebas de navegación en dispositivo, deep links reales o rollout;
+- crea requisitos de prueba ni modifica 04A;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- desarrolla `PASS-UX-012` ni `PASS-UX-013`.
+
+---
+
+#### 38. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-010 — Definir mensajes de error comprensibles`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación`
 ### [ ] PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
 ### [ ] PASS-UX-013 — Ejecutar pruebas con clientes reales
