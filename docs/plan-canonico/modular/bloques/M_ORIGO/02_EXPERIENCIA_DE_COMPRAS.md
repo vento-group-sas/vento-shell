@@ -1997,7 +1997,849 @@ Esta tarea no:
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-003 — Diseñar inicio para solicitante`
 
-### [ ] ORIGO-UX-003 — Diseñar inicio para solicitante
+### ✅ ORIGO-UX-003 — Diseñar inicio para solicitante
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción
+**Tarea siguiente:** ORIGO-UX-004 — Diseñar inicio para comprador
+**Tipo de tarea:** diseño documental integral de la experiencia inicial del solicitante sobre `VPROC-0019`, con `VSCREEN-0068` como bandeja contextual y `VSCREEN-0069` como solicitud de compra, preservando separación funcional, estados canónicos, minimización, fail-closed y handoff hacia abastecimiento sin crear orden, selección, aprobación ni recepción; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, rutas, navegación, componentes, procesos, permisos, roles, grants, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para la entrada de una persona que actúa como solicitante dentro del ciclo de abastecimiento ORIGO, de forma que pueda:
+
+- reconocer su contexto de solicitud;
+- iniciar una necesidad de compra sin saltar directamente a una orden;
+- seguir las necesidades y solicitudes que le corresponden;
+- distinguir estado, bloqueo, validación, prioridad y handoff sin asumir autoridad ajena;
+- aportar información suficiente para que abastecimiento continúe;
+- recibir una proyección mínima del progreso posterior cuando exista relación legítima;
+- operar con una experiencia simple, enfocada y sin exposición innecesaria de proveedores, precios, aprobación o recepción.
+
+La tarea define la experiencia objetivo del solicitante sobre:
+
+```text
+VSCREEN-0068 — Bandeja de necesidades de compra
+VSCREEN-0069 — Solicitud de compra
+VPROC-0019    — Capturar y priorizar necesidades de compra
+```
+
+No implementa esas superficies ni crea capacidades de autorización nuevas.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-002
+
+`ORIGO-UX-002` entrega una separación cerrada:
+
+```text
+FUNCION = SOLICITANTE
+PROCESO PRINCIPAL = VPROC-0019
+INICIADOR PRIMARIO = AREA_SOLICITANTE
+PANTALLAS PRINCIPALES = VSCREEN-0068 + VSCREEN-0069
+NO CREA ORDEN
+NO SELECCIONA PROVEEDOR
+NO APRUEBA COMPRA
+NO RECIBE MERCANCIA
+PUEDE CONSULTAR SOLO LA PROYECCION NECESARIA DEL ESTADO POSTERIOR
+```
+
+La tarea actual consume esa frontera sin reabrir la separación entre solicitante, comprador, aprobador y receptor.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Consecuencias:
+
+1. `ORIGO-UX-003` se define una sola vez;
+2. no existe una instancia física propia de esta tarea;
+3. no se crea ni modifica una ruta en `vento-origo`;
+4. no se implementa formulario, query, Server Action, RPC, RLS o migración;
+5. el contrato se materializará posteriormente por los propietarios físicos y packages aplicables;
+6. una ausencia AS-IS no autoriza a inventar una implementación local desde este marcador.
+
+---
+
+#### 4. Fuentes verificadas
+
+El diseño consume y conserva:
+
+- `ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento`;
+- `ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`;
+- `ORIGO-AUTH-001..015` como frontera de autorización, territorio, actor, seguridad y auditoría;
+- `VPROC-0019` y sus siete estados canónicos;
+- `VSCREEN-0068` y `VSCREEN-0069` como identidades canónicas de experiencia;
+- matrices E2 de iniciadores, ejecutores, aprobadores, información, eventos, estados y handoffs;
+- Registro 04A vigente de ORIGO y cobertura UX/AUTH relacionada;
+- catálogo compartido vigente de permisos ORIGO;
+- runtime observado `vento-group-sas/vento-origo@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`;
+- `vento-group-sas/vento-shell@7358bb8bb4cce3360655faebe20f3f455b183ea0` como estado remoto publicado de las fuentes canónicas consultadas.
+
+La base inmediata `ORIGO-UX-002` se consume desde el artefacto completo aprobado de esta conversación conforme al modo documental adelantado.
+
+---
+
+#### 5. Identidad canónica de las dos superficies
+
+La experiencia del solicitante conserva dos identidades distintas:
+
+| Pantalla | Nombre | Proceso | Paso canónico | Interacción | Momento |
+| --- | --- | --- | --- | --- | --- |
+| `VSCREEN-0068` | Bandeja de necesidades de compra | `VPROC-0019` | `VPROC-0019::STEP-TRIAGE_PURCHASE_NEEDS` — Priorizar necesidades de compra | `TRIAGE` | `INITIAL` |
+| `VSCREEN-0069` | Solicitud de compra | `VPROC-0019` | `VPROC-0019::STEP-SUBMIT_PURCHASE_REQUEST` — Crear solicitud de compra | `INITIATE` | `INITIAL` |
+
+Regla:
+
+```text
+VSCREEN-0068 INICIO / SEGUIMIENTO
+!=
+VSCREEN-0069 CREACION DE SOLICITUD
+```
+
+`VSCREEN-0068` es una superficie compartida del proceso y puede contener acciones que el solicitante no posee. La proyección del solicitante nunca convierte la clasificación `TRIAGE` en autoridad para priorizar.
+
+---
+
+#### 6. Decisión principal del inicio
+
+El inicio del solicitante se diseña alrededor de una pregunta operativa simple:
+
+```text
+¿QUE NECESITO SOLICITAR O QUE ESTA PASANDO CON LO QUE YA SOLICITE?
+```
+
+La experiencia queda compuesta por:
+
+```text
+CONTEXTO DEL SOLICITANTE
++
+ACCION PRIMARIA: NUEVA SOLICITUD
++
+MIS NECESIDADES / SOLICITUDES
++
+ESTADO Y SIGUIENTE RESPONSABLE
++
+SEÑALES O SUGERENCIAS NO VINCULANTES CUANDO APLIQUEN
+=
+INICIO DEL SOLICITANTE
+```
+
+No se presenta al solicitante un home de compras completo.
+
+---
+
+#### 7. AREA_SOLICITANTE es una función, no un rol nuevo
+
+El iniciador primario canónico de `VPROC-0019` es:
+
+```text
+AREA_SOLICITANTE
+```
+
+Esto expresa una función empresarial. No crea un rol técnico llamado `solicitante` ni autoriza por nombre.
+
+El proceso admite iniciadores alternos:
+
+- `BODEGA_Y_ABASTECIMIENTO`;
+- `RESPONSABLE_PRODUCTIVO`;
+- `GERENCIA_O_SUPERVISION_DE_SEDE`;
+- `UMBRAL_O_ALERTA`.
+
+Por tanto, la experiencia debe poder presentar la misma función de solicitud a distintos actores legítimos sin convertir el tipo de iniciador en permiso final.
+
+---
+
+#### 8. Contexto mínimo al entrar
+
+La superficie del solicitante consume contexto ya resuelto y suficiente para limitar lo visible y lo accionable.
+
+Como mínimo deberá poder distinguir:
+
+- actor efectivo;
+- unidad o área solicitante aplicable;
+- sede o alcance empresarial aplicable cuando corresponda;
+- centro de costo o referencia presupuestal cuando el contrato lo requiera;
+- capacidades exactas disponibles;
+- estado de frescura del contexto;
+- restricciones de sensibilidad y territorio.
+
+La UX no fabrica autoridad desde:
+
+- un selector de sede;
+- un centro de costo escrito manualmente;
+- una query string;
+- el último contexto visual usado;
+- pertenecer al mismo edificio;
+- `origo.access` por sí solo.
+
+---
+
+#### 9. Composición de VSCREEN-0068 para el solicitante
+
+La proyección del solicitante de `VSCREEN-0068` contiene cinco zonas lógicas:
+
+| Zona | Contenido | Acción del solicitante | Regla |
+| --- | --- | --- | --- |
+| contexto | unidad/área, sede aplicable y actor efectivo | ninguna mutación de autoridad | solo informa contexto ya resuelto |
+| acción principal | crear nueva solicitud | abrir `VSCREEN-0069` | no crea orden ni sourcing |
+| mis necesidades | necesidades propias o del alcance permitido | consultar detalle/estado | no muestra necesidades ajenas fuera de alcance |
+| atención requerida | información faltante o seguimiento requerido cuando exista un contrato que lo soporte | aportar información permitida | no inventa un estado nuevo del proceso |
+| progreso posterior | proyección mínima de handoff/sourcing/compra cuando exista relación legítima | consultar referencia | no concede editar, aprobar ni recibir |
+
+La pantalla no se convierte en bandeja global del comprador.
+
+---
+
+#### 10. Acción primaria: nueva solicitud
+
+La acción principal del solicitante es abrir `VSCREEN-0069` para expresar una necesidad.
+
+La secuencia UX es:
+
+```text
+VSCREEN-0068
+MIS NECESIDADES
+        ↓
+NUEVA SOLICITUD
+        ↓
+VSCREEN-0069
+CAPTURA DE NECESIDAD
+        ↓
+VALIDACION SERVER-SIDE
+        ↓
+VPROC-0019.PURCHASE_NEED_SUBMITTED
+```
+
+La navegación hacia el formulario no significa que la mutación esté autorizada. La autoridad se vuelve a comprobar en servidor al intentar registrar la necesidad.
+
+---
+
+#### 11. Datos mínimos de la solicitud
+
+`VPROC-0019` conserva como información mínima:
+
+```text
+requesting_unit_ref
+need_description
+item_or_service_refs
+required_quantities
+required_by
+business_justification
+```
+
+`VSCREEN-0069` además exige que la experiencia pueda expresar, cuando corresponda al contrato:
+
+- necesidad;
+- sede;
+- centro de costo;
+- fecha requerida;
+- justificación.
+
+La UX debe preferir referencias canónicas de ítem/servicio, unidad y contexto cuando existan, sin obligar al solicitante a conocer identificadores técnicos.
+
+---
+
+#### 12. Datos opcionales y señales complementarias
+
+El proceso admite información complementaria como:
+
+- señal de stock;
+- referencia presupuestal;
+- preferencia de proveedor;
+- motivo de urgencia;
+- especificaciones;
+- estimación de costo.
+
+Reglas:
+
+1. una preferencia de proveedor es contexto no vinculante y no equivale a selección;
+2. una estimación de costo no equivale a precio aprobado;
+3. una señal de stock no crea por sí sola una necesidad aprobada;
+4. un motivo de urgencia no asigna por sí solo prioridad final;
+5. una especificación no permite modificar el catálogo maestro desde esta superficie;
+6. datos sensibles se minimizan según autorización y finalidad.
+
+---
+
+#### 13. No se inventa un borrador empresarial persistente
+
+El estado inicial canónico de `VPROC-0019` es:
+
+```text
+PURCHASE_NEED_SUBMITTED
+```
+
+Por tanto, esta tarea no crea estados empresariales como:
+
+```text
+DRAFT_REQUEST
+REQUEST_DRAFT
+PENDING_FORM
+```
+
+La interfaz puede conservar estado local no persistente mientras la persona completa el formulario, pero una persistencia empresarial previa al submit exigiría un contrato propietario adicional y no se inventa aquí.
+
+---
+
+#### 14. Estados visibles de VPROC-0019
+
+El solicitante debe poder comprender los siete estados canónicos sin interpretarlos como compra aprobada:
+
+| Estado canónico | Etiqueta UX recomendada | Lectura para el solicitante |
+| --- | --- | --- |
+| `PURCHASE_NEED_SUBMITTED` | Solicitud enviada | ORIGO recibió la necesidad; todavía no hay sourcing ni orden |
+| `UNDER_VALIDATION` | En validación | se comprueban necesidad, cantidades, fecha, alternativas y contexto |
+| `PRIORITIZED` | Priorizada | la prioridad fue establecida por el carril competente |
+| `APPROVED_FOR_SOURCING` | Aprobada para abastecimiento | puede avanzar a sourcing; no existe compromiso económico |
+| `SOURCING_REQUESTED` | En abastecimiento | la necesidad fue transferida a evaluación/compra autorizada |
+| `CONSOLIDATION_PENDING` | En consolidación | puede agruparse sin perder origen, cantidades ni fecha |
+| `PURCHASE_NEED_HANDOFF_COMPLETED` | Transferida a compras | la fase de necesidad terminó; no significa proveedor seleccionado ni orden emitida |
+
+No se muestran `draft`, `sent` o `received` como estados equivalentes de `VPROC-0019`.
+
+---
+
+#### 15. El solicitante no controla prioridad final
+
+El solicitante puede expresar:
+
+- fecha requerida;
+- impacto de no disponer del ítem/servicio;
+- motivo de urgencia;
+- justificación empresarial;
+- evidencia permitida.
+
+Pero no convierte directamente esa declaración en:
+
+```text
+PRIORITIZED
+APPROVED_FOR_SOURCING
+SOURCING_REQUESTED
+```
+
+La prioridad y las decisiones posteriores pertenecen a los actores y políticas competentes.
+
+La interfaz distingue:
+
+```text
+URGENCIA DECLARADA POR SOLICITANTE
+!=
+PRIORIDAD VALIDADA
+!=
+COMPRA URGENTE AUTORIZADA
+```
+
+---
+
+#### 16. Señales automáticas y sugerencias
+
+`UMBRAL_O_ALERTA` puede iniciar el proceso según el contrato canónico, pero una señal automática no debe aparecer como orden ni como aprobación.
+
+La experiencia puede presentar una sugerencia o alerta relacionada cuando el solicitante tenga contexto para verla, manteniendo:
+
+```text
+SEÑAL
+!=
+NECESIDAD REGISTRADA
+!=
+SOLICITUD VALIDADA
+!=
+ORDEN
+```
+
+Si la política exige intervención humana, el solicitante confirma o completa la necesidad antes de que exista `PURCHASE_NEED_SUBMITTED`.
+
+---
+
+#### 17. Seguimiento de mis necesidades
+
+El inicio prioriza seguimiento comprensible sobre administración.
+
+Cada elemento visible debe poder mostrar, según autorización:
+
+- referencia legible de la necesidad/solicitud;
+- resumen del objeto solicitado;
+- cantidad o resultado esperado resumido;
+- fecha requerida;
+- estado canónico traducido a lenguaje operativo;
+- antigüedad o fecha relevante;
+- bloqueo o atención requerida cuando exista;
+- siguiente responsable o etapa en términos comprensibles;
+- correlación posterior mínima cuando la necesidad ya fue transferida.
+
+No es necesario cargar por defecto la historia técnica completa.
+
+---
+
+#### 18. Proyección del estado posterior
+
+Cuando `VPROC-0019` complete su handoff, la persona solicitante puede necesitar saber si su necesidad continúa avanzando.
+
+La proyección posterior es de solo lectura y mínima.
+
+Puede expresar, cuando exista evidencia correlacionada y autorización suficiente:
+
+```text
+EN ABASTECIMIENTO
+EN DECISION
+COMPRA APROBADA
+ORDEN EMITIDA
+ENTREGA PENDIENTE
+RECIBIDA / CON DIFERENCIA
+```
+
+Estas etiquetas son una proyección de procesos posteriores; no se convierten en nuevos estados de `VPROC-0019`.
+
+La proyección nunca concede al solicitante:
+
+- seleccionar proveedor;
+- ver precios sensibles por defecto;
+- modificar la orden;
+- aprobar compra;
+- registrar recepción;
+- resolver diferencias.
+
+---
+
+#### 19. Minimización de precios y proveedores
+
+El solicitante no necesita por defecto conocer:
+
+- matriz completa de proveedores;
+- cuentas bancarias;
+- documentos tributarios sensibles;
+- precios históricos completos;
+- márgenes;
+- evaluación interna del proveedor;
+- cotizaciones competidoras;
+- reglas internas de aprobación.
+
+Si una preferencia de proveedor o estimación de costo forma parte de la captura permitida, se presenta como dato auxiliar no vinculante.
+
+La proyección del estado posterior conserva field masks y finalidad de uso.
+
+---
+
+#### 20. Separación frente al comprador
+
+El solicitante no recibe las superficies que corresponden a `ORIGO-UX-004` por la sola razón de haber creado una solicitud.
+
+No obtiene implícitamente:
+
+- catálogo completo de proveedores para sourcing;
+- comparación de cotizaciones;
+- negociación;
+- recomendación;
+- selección;
+- edición de orden;
+- emisión de compra.
+
+Regla:
+
+```text
+CREAR NECESIDAD
+!=
+GESTIONAR ABASTECIMIENTO
+```
+
+---
+
+#### 21. Separación frente al aprobador
+
+El solicitante puede consultar que una necesidad o compra relacionada espera decisión, pero no se presenta como aprobador salvo que el mismo actor posea una autoridad adicional válida y la acción se resuelva bajo esa función distinta.
+
+Incluso cuando una misma persona acumule capacidades:
+
+```text
+FUNCION ACTUAL = SOLICITANTE
+```
+
+no hereda automáticamente:
+
+```text
+FUNCION = APROBADOR
+```
+
+La aprobación permanece en `ORIGO-UX-005` y `ORIGO-UX-008`.
+
+---
+
+#### 22. Separación frente al receptor
+
+El solicitante puede recibir información de que una entrega relacionada fue recibida o presenta diferencia cuando esa proyección sea legítima.
+
+No puede desde su inicio:
+
+- registrar cantidades recibidas;
+- confirmar condición física;
+- aceptar/rechazar mercancía;
+- corregir recepción;
+- crear entrada NEXO;
+- resolver diferencia de recepción.
+
+`ORIGO-UX-006`, `009`, `010` y `011` conservan esas responsabilidades.
+
+---
+
+#### 23. Estados de experiencia del inicio
+
+La superficie distingue al menos:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `LISTO` | contexto válido y acciones disponibles | mostrar acción primaria y necesidades autorizadas |
+| `SIN_SOLICITUDES` | contexto válido sin necesidades visibles | estado vacío real + acción nueva solicitud si está autorizada |
+| `SIN_CAPACIDAD_DE_SOLICITAR` | puede consultar, pero no registrar | ocultar/deshabilitar mutación según patrón y explicar límite sin exponer política sensible |
+| `SIN_CONTEXTO` | no puede determinarse unidad/sede/alcance suficiente | bloquear captura hasta resolver contexto propietario |
+| `DATOS_DESACTUALIZADOS` | la proyección no puede declararse vigente | revalidar antes de mutaciones y señalar antigüedad |
+| `FALLO_TECNICO` | fuente o servicio requerido falló | error recuperable; no equivale a lista vacía |
+| `DENEGADO` | autoridad insuficiente | no serializar datos protegidos |
+
+Reglas:
+
+```text
+SIN_SOLICITUDES != DENEGADO
+DENEGADO != SIN_CONTEXTO
+SIN_CONTEXTO != FALLO_TECNICO
+FALLO_TECNICO != CERO NECESIDADES
+```
+
+---
+
+#### 24. Validación y errores del formulario
+
+`VSCREEN-0069` debe explicar errores en lenguaje operativo y conservar la información no sensible ya introducida cuando sea seguro.
+
+Debe distinguir:
+
+- campo faltante;
+- referencia inválida o inactiva;
+- cantidad/unidad incompatible;
+- fecha requerida inválida;
+- contexto vencido;
+- falta de autoridad;
+- duplicado o necesidad ya existente detectada;
+- fallo técnico.
+
+Un error no debe transformarse silenciosamente en una nueva solicitud ni generar reintentos con efectos duplicados.
+
+---
+
+#### 25. Duplicados y consolidación
+
+La experiencia reconoce que `VPROC-0019` puede llegar a:
+
+```text
+CONSOLIDATION_PENDING
+```
+
+pero el solicitante no fusiona necesidades arbitrariamente.
+
+Si ORIGO detecta posible duplicado o consolidación:
+
+- conserva el origen de cada necesidad;
+- conserva cantidades y fechas requeridas;
+- explica que existe consolidación en curso;
+- evita crear una segunda solicitud por reintento accidental;
+- no sustituye la decisión del actor competente.
+
+---
+
+#### 26. Historial y trazabilidad visibles
+
+El solicitante necesita una historia comprensible, no el log técnico completo.
+
+La proyección puede incluir:
+
+- creación/envío;
+- validación;
+- cambio de prioridad cuando sea publicable;
+- solicitud de información;
+- transferencia a abastecimiento;
+- correlación posterior relevante.
+
+La auditoría completa sigue perteneciendo al contrato de autorización y evidencia; la UI no expone por defecto principals técnicos, scopes, hashes o razones internas sensibles.
+
+---
+
+#### 27. Accesibilidad, densidad y uso cotidiano
+
+El inicio debe favorecer una persona que solicita ocasionalmente y no necesariamente domina compras.
+
+Debe priorizar:
+
+- una acción primaria evidente;
+- lenguaje de necesidad y solicitud, no jerga de sourcing;
+- estado legible;
+- filtros mínimos;
+- búsqueda cuando exista volumen suficiente;
+- objetivos táctiles adecuados;
+- estados distinguibles sin depender solo del color;
+- foco y navegación accesibles;
+- detalle progresivo;
+- ausencia de tablas administrativas densas como primera experiencia.
+
+Esta tarea no fija tokens visuales, colores, tamaños exactos ni breakpoints.
+
+---
+
+#### 28. Frontera de autorización no resuelta por UX
+
+El catálogo compartido observado contiene seis permisos ORIGO:
+
+```text
+origo.access
+origo.procurement.purchase_orders.view
+origo.procurement.receipts.view
+origo.procurement.receipts.register
+origo.procurement.suppliers.view
+origo.catalog.product_reviews.view
+```
+
+No se observó una capacidad atómica publicada para crear o gestionar `purchase_need` / `purchase_request`.
+
+Consecuencias:
+
+1. `ORIGO-UX-003` no inventa una permission key;
+2. `origo.access` no se trata como wildcard de mutación;
+3. la materialización física no puede habilitar el submit protegido únicamente por visibilidad de pantalla;
+4. antes de habilitar la mutación, el propietario de autorización debe proporcionar una capacidad exacta o un contrato equivalente gobernado;
+5. mientras esa autoridad no sea demostrable, la acción sensible permanece fail-closed.
+
+Esta ausencia no impide definir el diseño UX, pero sí es condición de salida para una materialización segura.
+
+---
+
+#### 29. Contraste AS-IS de vento-origo
+
+En `vento-origo@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad` no se observan superficies dedicadas a necesidades o solicitudes de compra.
+
+No se encontraron rutas o contratos equivalentes a:
+
+```text
+purchase_need
+purchase request
+Bandeja de necesidades de compra
+Solicitud de compra
+```
+
+El menú canónico AS-IS sincronizado contiene:
+
+```text
+/purchase-orders
+/receipts
+/suppliers
+/product-master-review
+```
+
+La experiencia actual entra demasiado tarde en el ciclo para satisfacer el inicio del solicitante.
+
+---
+
+#### 30. Contraste con creación AS-IS de orden
+
+La existencia de `/purchase-orders/new` no satisface `VSCREEN-0069`.
+
+La orden actual parte de proveedor, sede y líneas y pertenece a una fase posterior.
+
+Regla:
+
+```text
+NUEVA ORDEN DE COMPRA
+!=
+NUEVA SOLICITUD DE COMPRA
+```
+
+La materialización futura no deberá resolver la ausencia del solicitante enlazándolo directamente a crear una orden.
+
+---
+
+#### 31. Hallazgos y propietarios
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe superficie AS-IS dedicada de necesidades/solicitudes | el ciclo puede comenzar fuera de ORIGO o directamente en orden | materialización UX propietaria consumiendo `ORIGO-UX-003` | `VSCREEN-0068/0069` quedan materializadas con identidad distinta de orden |
+| no existe permiso atómico publicado para registrar necesidad/solicitud | riesgo de habilitar mutación por `origo.access` o lógica local | contrato/paquete de autorización ORIGO asociado a `TREQ-ORIGO-004`, `GAP-PKG-120` y `GAP-PKG-102` | la mutación posee capacidad exacta gobernada y server-side enforcement antes de habilitarse |
+| `VSCREEN-0068` es `TRIAGE`, pero el solicitante no gobierna la prioridad | riesgo de exponer priorización por estar en la misma pantalla | `ORIGO-UX-003` + autorización propietaria | la proyección del solicitante limita acciones; priorizar requiere autoridad distinta |
+| la home AS-IS enlaza directo a órdenes/proveedores | incentiva saltar necesidad y sourcing | materialización UX ORIGO | el inicio del solicitante prioriza necesidad/seguimiento y no compra directa |
+| el proceso admite señales automáticas | una alerta podría confundirse con orden aprobada | `ORIGO-UX-003` + proceso `VPROC-0019` | señal, necesidad registrada y orden permanecen estados/identidades separadas |
+| no existe estado canónico de borrador persistente | riesgo de inventar lifecycle fuera de contrato | propietario de proceso si en el futuro se requiere | no persistir draft empresarial sin contrato explícito; estado local no modifica `VPROC-0019` |
+
+No queda un hallazgo narrativo sin propietario ni condición de salida.
+
+---
+
+#### 32. Handoff inmediato a ORIGO-UX-004
+
+`ORIGO-UX-004 — Diseñar inicio para comprador` recibe una frontera limpia:
+
+```text
+SOLICITANTE YA TIENE SU ENTRADA
+VPROC-0019 CONSERVA NECESIDAD Y HANDOFF
+VSCREEN-0068/0069 NO SON WORKSPACE DE SOURCING DEL COMPRADOR
+SOLICITANTE NO SELECCIONA PROVEEDOR
+SOLICITANTE NO EDITA ORDEN
+SOLICITANTE NO APRUEBA
+SOLICITANTE NO RECIBE
+HANDOFF COMPLETADO → COMPRADOR CONTINUA EN VPROC-0020 / VPROC-0021
+```
+
+La 004 diseñará el inicio del comprador sin absorber la experiencia del solicitante definida aquí.
+
+---
+
+#### 33. Handoff al resto de ORIGO-UX
+
+| Tarea | Entrada exacta proveniente de ORIGO-UX-003 |
+| --- | --- |
+| `ORIGO-UX-004` | comprador recibe necesidades transferidas; no recrea ni edita la intención del solicitante |
+| `ORIGO-UX-005` | aprobador consume una propuesta separada y no la solicitud como decisión ya tomada |
+| `ORIGO-UX-006` | receptor recibe contexto de compra/entrega, no autoridad del solicitante |
+| `ORIGO-UX-007` | orden consume necesidad/sourcing válidos; no nace directamente del home del solicitante |
+| `ORIGO-UX-008` | aprobación/rechazo se mantiene fuera del flujo de solicitud |
+| `ORIGO-UX-009` | recepción total no altera retrospectivamente la solicitud |
+| `ORIGO-UX-010` | recepción parcial proyecta progreso sin cambiar `VPROC-0019` |
+| `ORIGO-UX-011` | diferencias pueden proyectarse al solicitante de forma mínima sin conceder resolución |
+| `ORIGO-UX-012` | precios/proveedores se minimizan según función y finalidad |
+| `ORIGO-UX-013` | seguimiento no induce una segunda recepción manual NEXO |
+| `ORIGO-UX-014` | entrada física NEXO conserva referencia correlacionada sin cambiar ownership |
+| `ORIGO-UX-015` | hecho económico NUMERA se proyecta solo cuando corresponda y sin convertirlo en estado ORIGO local |
+| `ORIGO-UX-016` | prototipo valida que una persona solicitante pueda iniciar y seguir sin invadir comprador/aprobador/receptor |
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA.
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+
+Justificación: identidad separada de necesidad/solicitud, segregación solicitante-comprador-aprobador-receptor, autorización server-side, minimización, estados de experiencia y trazabilidad ya cuentan con obligaciones verificables registradas. Esta tarea especializa la composición UX del solicitante sin introducir una obligación observable nueva ni modificar el registro.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Se reutiliza sin modificación:
+
+- `TREQ-ORIGO-004` para separar necesidad, solicitud, sourcing, aprobación, orden y revisión y mantener capacidades distintas por función;
+- `TREQ-AUTH-001` para exigir autorización por permiso, contexto y alcance en lugar de nombres de rol;
+- `TREQ-AUTH-013` para impedir bypass por URL, formulario, API o RPC y revalidar mutaciones en servidor;
+- `TREQ-AUTH-015` para conservar evidencia correlacionable de actor, permiso, contexto, recurso y decisión;
+
+Esta enumeración es trazabilidad reutilizada y no constituye modificación del Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | NOT_EXECUTED | `docs:plan:build` corresponde al checkout local después de incorporar el artefacto. |
+| LOCAL | NOT_EXECUTED | Formato, quality, delivery, topología, EOL, TREQ y batería global quedan pendientes del checkout local de la tarea. |
+| REMOTA | PASS | Se verificaron `vento-shell/main@7358bb8bb4cce3360655faebe20f3f455b183ea0`, `vento-origo/main@70860f1ca5f0a4a73e894cbb840956f9f7eda2ad`, topología `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`, `VPROC-0019`, sus siete estados, `VSCREEN-0068/0069`, roles e iniciadores del proceso, 04A ORIGO, catálogo de permisos ORIGO y ausencia AS-IS de superficie dedicada de necesidad/solicitud. La entrada inmediata `ORIGO-UX-002` se consume desde su artefacto aprobado SHA-256 `5ed9a980c537e1f717db58f2bf0b184c94322a05ca9cef66dce3e10049c5a952`. |
+| OPERATIVA | NOT_EXECUTED | No se ejecutaron solicitudes reales, validaciones, priorizaciones, handoffs, actores, sedes, centros de costo ni pruebas con usuarios. |
+| FÍSICA | NOT_APPLICABLE | `ORIGO-UX-003` no crea instancia física propia ni autoriza cambios de producto, datos o infraestructura. |
+
+---
+
+#### 37. Criterios de aceptación
+
+La tarea queda documentalmente completa cuando:
+
+- [ ] `VSCREEN-0068` queda definida como inicio/seguimiento del solicitante sin conceder triage global;
+- [ ] `VSCREEN-0069` queda definida como captura de solicitud y no como orden de compra;
+- [ ] ambas superficies conservan `VPROC-0019` como proceso principal;
+- [ ] el iniciador primario `AREA_SOLICITANTE` se trata como función empresarial y no como rol inventado;
+- [ ] los iniciadores alternos no se convierten en permiso final;
+- [ ] la acción primaria del inicio es crear solicitud, no crear orden;
+- [ ] la captura conserva necesidad, unidad solicitante, ítems/servicios, cantidades, fecha y justificación;
+- [ ] sede y centro de costo se tratan como contexto validado cuando apliquen;
+- [ ] una preferencia de proveedor no equivale a selección;
+- [ ] una estimación no equivale a precio aprobado;
+- [ ] urgencia declarada no equivale a prioridad validada;
+- [ ] señal automática no equivale a necesidad registrada ni orden;
+- [ ] no se inventa un estado empresarial persistente de borrador;
+- [ ] los siete estados de `VPROC-0019` son distinguibles y comprensibles;
+- [ ] `PURCHASE_NEED_HANDOFF_COMPLETED` no se presenta como orden emitida;
+- [ ] el solicitante recibe seguimiento de sus necesidades dentro del alcance autorizado;
+- [ ] la proyección de procesos posteriores es mínima y de solo lectura;
+- [ ] precios, cotizaciones y proveedor se minimizan por defecto;
+- [ ] crear solicitud no concede funciones de comprador, aprobador o receptor;
+- [ ] vacío, deny, falta de contexto, stale y error técnico no se confunden;
+- [ ] un reintento no crea duplicado silencioso;
+- [ ] consolidación no elimina origen, cantidad ni fecha requerida;
+- [ ] no se usa `origo.access` como wildcard para registrar necesidad;
+- [ ] la ausencia de permiso atómico queda como condición de materialización y no se resuelve desde UX;
+- [ ] la home AS-IS de órdenes/proveedores no se eleva a contrato objetivo;
+- [ ] los hallazgos tienen propietario y condición de salida;
+- [ ] `ORIGO-UX-004` recibe un handoff suficiente para diseñar comprador sin reabrir solicitante;
+- [ ] no se crean ni modifican requisitos de prueba;
+- [ ] no se ejecutan cambios físicos desde esta tarea.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- implementa un home de solicitante;
+- crea `/purchase-needs`, `/purchase-requests` ni otra URL;
+- define una URL física definitiva para `VSCREEN-0068/0069`;
+- crea componentes, endpoints o Server Actions;
+- crea permiso nuevo;
+- concede submit por `origo.access`;
+- crea un rol técnico `solicitante`;
+- crea estados nuevos de `VPROC-0019`;
+- persiste un borrador empresarial no gobernado;
+- selecciona proveedor;
+- compara cotizaciones;
+- negocia condiciones;
+- muestra precios sensibles por defecto;
+- crea o edita orden de compra;
+- aprueba o rechaza compra;
+- registra recepción;
+- modifica inventario NEXO;
+- crea hecho económico NUMERA;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants o datos;
+- modifica contratos generados;
+- ejecuta E5;
+- crea instancia física;
+- modifica el Registro 04A;
+- desarrolla `ORIGO-UX-004`.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-003 — Diseñar inicio para solicitante`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-004 — Diseñar inicio para comprador`
 ### [ ] ORIGO-UX-004 — Diseñar inicio para comprador
 ### [ ] ORIGO-UX-005 — Diseñar inicio para aprobador
 ### [ ] ORIGO-UX-006 — Diseñar inicio para receptor
