@@ -11699,7 +11699,1283 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `ORIGO-UX-011 — Diseñar diferencias contra orden`
-### [ ] ORIGO-UX-011 — Diseñar diferencias contra orden
+### ✅ ORIGO-UX-011 — Diseñar diferencias contra orden
+
+**Estado:** APROBADA
+**Tarea anterior:** ORIGO-UX-010 — Diseñar recepción parcial
+**Tarea siguiente:** ORIGO-UX-012 — Ocultar precios cuando no correspondan
+**Tipo de tarea:** diseño documental integral de la experiencia de diferencias de recepción contra orden sobre `VSCREEN-0078` y `VPROC-0022`, definiendo detección tipada, conservación de pedido/observado/documentado, tratamiento por línea, decisiones de aceptar, retener, reclamar, corregir o rechazar, transición `DOCUMENT_CHECK_IN_PROGRESS → DIFFERENCE_UNDER_REVIEW → ACCEPTANCE_PENDING`, excepciones `QUARANTINE/HOLD/ESCALATE/REJECT`, relación con corrección y reversión sin inventar `receipts.resolve`, y efectos separados hacia NEXO, NUMERA y expediente de proveedor; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE M — ORIGO
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación, componentes, procesos, permisos, roles, grants, datos, tablas, RLS, RPC, migraciones, Supabase, Storage, packages, consumidores ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Diseñar el contrato de experiencia para identificar, revisar y decidir diferencias entre una orden o compromiso de compra y una recepción observada, sin borrar la evidencia original ni convertir una discrepancia en edición silenciosa de la orden, inventario o hecho económico.
+
+La experiencia debe permitir:
+
+- comparar lo comprometido contra lo observado y documentado;
+- clasificar la diferencia por tipo y alcance;
+- conservar una decisión por línea o alcance afectado;
+- distinguir parcialidad legítima de diferencia material;
+- retener o poner en cuarentena cuando la aceptación no deba continuar;
+- escalar una diferencia sin conceder aprobación por el solo escalamiento;
+- rechazar antes de la aceptación cuando corresponda;
+- aceptar únicamente el alcance autorizado y suficientemente tratado;
+- abrir devolución o reclamación como expediente de resolución con proveedor cuando corresponda;
+- derivar corrección o reversión solo cuando exista un efecto ya aplicado que deba compensarse;
+- mantener separados el efecto comercial de ORIGO, el efecto físico de NEXO y el efecto económico de NUMERA.
+
+La tarea diseña la experiencia objetivo sobre:
+
+```text
+VSCREEN-0078 — Resolución de diferencias de recepción
+VPROC-0022    — Recibir compras, verificar conformidad y resolver diferencias
+```
+
+No implementa la superficie ni crea una nueva permission key.
+
+---
+
+#### 2. Entrada aprobada de ORIGO-UX-010
+
+`ORIGO-UX-010` entrega una frontera obligatoria:
+
+```text
+ENTREGA PARCIAL LEGÍTIMA
+!=
+DIFERENCIA CONTRA ORDEN
+```
+
+La parcialidad conserva saldo recibible cuando el alcance observado es válido para esa llegada.
+
+La diferencia aparece cuando existe una desviación material entre una referencia autorizada y el hecho observado, documentado o aceptable.
+
+La tarea actual consume:
+
+- referencia de orden o compromiso y su versión vigente;
+- líneas comprometidas y saldo aplicable;
+- recepción y observación física/documental;
+- proveedor y documentos relacionados;
+- cantidades, unidades y presentaciones;
+- condición o calidad observada cuando aplique;
+- valores o condiciones comerciales cuando el actor tenga autorización para verlos;
+- evidencia de recepciones parciales anteriores;
+- identidad de actor, sede y contexto operativo;
+- diferencia detectada y su alcance.
+
+---
+
+#### 3. Naturaleza y topología
+
+La topología vigente de `ORIGO-UX-001..016` establece:
+
+```text
+mode = DEFINE_ONCE
+execution_gate = NO_PHYSICAL_INSTANCE
+```
+
+Por tanto:
+
+```text
+CONTRATO DOCUMENTAL ÚNICO
+→ SIN INSTANCIA FÍSICA PROPIA
+→ SIN MIGRACIÓN
+→ SIN CAMBIO DE RUNTIME
+```
+
+Esta tarea diseña la decisión de experiencia y sus fronteras; no materializa componentes, permisos ni persistencia.
+
+---
+
+#### 4. Fuentes contractuales preservadas
+
+La tarea conserva sin redefinir:
+
+- `VPROC-0022` y su lifecycle aprobado;
+- `VSCREEN-0077` como captura de recepción total o parcial;
+- `VSCREEN-0078` como resolución de diferencias;
+- `VSCREEN-0079` como historia y auditoría posterior;
+- `ORIGO-AUTH-007` para registrar una recepción nueva;
+- `ORIGO-AUTH-008` para reversión y corrección con sustitución;
+- la regla de ownership ORIGO → NEXO → NUMERA;
+- la definición canónica de diferencia como desviación tipada entre orden, entrega, documento y aceptación;
+- la definición de devolución o reclamación como expediente de resolución con proveedor;
+- la separación entre observación, decisión y efectos derivados;
+- el contrato de idempotencia y reconciliación de recepción.
+
+No se adopta un literal técnico AS-IS como nuevo estado empresarial.
+
+---
+
+#### 5. Pantalla y paso canónicos
+
+Superficie propietaria:
+
+```text
+VSCREEN-0078 — Resolución de diferencias de recepción
+```
+
+Binding:
+
+```text
+VPROC-0022
+VPROC-0022::STEP-RESOLVE_RECEIPT_VARIANCE
+DECIDE / DECISION
+```
+
+La pantalla no sustituye `VSCREEN-0077`.
+
+Regla:
+
+```text
+CAPTURAR RECEPCIÓN
+!=
+RESOLVER DIFERENCIA
+```
+
+---
+
+#### 6. Estado empresarial de entrada
+
+La diferencia material se introduce mediante:
+
+```text
+VPROC-0022.TR-004
+DOCUMENT_CHECK_IN_PROGRESS
+→ DIFFERENCE_UNDER_REVIEW
+```
+
+`DIFFERENCE_UNDER_REVIEW` significa que existe una discrepancia documentada pendiente de decisión o aceptación autorizada.
+
+No significa automáticamente:
+
+```text
+RECHAZADA
+REVERSADA
+CORREGIDA
+ACEPTADA
+PAGADA
+```
+
+---
+
+#### 7. Bypass cuando no existe diferencia
+
+Cuando la verificación física y documental concluye sin diferencia material se conserva:
+
+```text
+VPROC-0022.TR-005
+DOCUMENT_CHECK_IN_PROGRESS
+→ ACCEPTANCE_PENDING
+```
+
+con bypass justificado.
+
+La UX no debe forzar `DIFFERENCE_UNDER_REVIEW` para:
+
+- una recepción parcial legítima prevista;
+- una segunda entrega válida contra saldo pendiente;
+- una diferencia visual sin impacto empresarial;
+- una discrepancia ya descartada por comparación autoritativa.
+
+No se inventan umbrales numéricos en esta tarea.
+
+---
+
+#### 8. Definición operativa de diferencia
+
+Se preserva:
+
+```text
+DIFERENCIA
+=
+DESVIACIÓN TIPADA ENTRE
+ORDEN / COMPROMISO
+ENTREGA
+DOCUMENTO
+ACEPTACIÓN
+```
+
+Una diferencia debe poder responder:
+
+```text
+QUÉ SE ESPERABA
+QUÉ SE OBSERVÓ O DOCUMENTÓ
+DÓNDE ESTÁ LA DESVIACIÓN
+QUÉ ALCANCE AFECTA
+QUÉ DECISIÓN SE TOMÓ
+QUÉ EFECTO QUEDÓ PENDIENTE O PRODUCIDO
+```
+
+---
+
+#### 9. Cinco familias mínimas de diferencia
+
+`VSCREEN-0078` debe representar al menos las familias canónicas:
+
+```text
+CANTIDAD
+CALIDAD
+PRECIO
+DOCUMENTO
+PRESENTACIÓN
+```
+
+Estas familias pueden tener detalle adicional, pero la UX no debe inventar categorías paralelas que oculten su naturaleza empresarial.
+
+---
+
+#### 10. Diferencia de cantidad
+
+Existe diferencia de cantidad cuando lo observado para una línea no coincide con el alcance cuantitativo esperado aplicable a esa llegada o decisión.
+
+La UX debe mostrar por línea, cuando corresponda:
+
+- cantidad comprometida;
+- saldo recibible previo;
+- cantidad observada;
+- cantidad propuesta para aceptación;
+- exceso, faltante o cantidad retenida;
+- residual posterior esperado.
+
+Regla:
+
+```text
+PARCIALIDAD PREVISTA
+!=
+FALTANTE MATERIAL POR INFERENCIA
+```
+
+Un faltante solo se trata como diferencia cuando contradice el compromiso o expectativa aplicable; una recepción parcial legítima conserva saldo sin convertirse automáticamente en incidencia.
+
+---
+
+#### 11. Exceso de cantidad
+
+Una cantidad observada por encima del saldo o alcance permitido no se incorpora automáticamente.
+
+Debe quedar explícito:
+
+```text
+ESPERADO
+OBSERVADO
+EXCESO
+DECISIÓN
+```
+
+La UX no puede resolver un exceso:
+
+- ampliando silenciosamente la orden;
+- sumándolo al inventario como autorizado por defecto;
+- convirtiéndolo en nueva línea aprobada;
+- suponiendo una obligación económica adicional.
+
+El tratamiento puede requerir retención, rechazo, reclamación o una decisión comercial posterior autorizada.
+
+---
+
+#### 12. Diferencia de calidad o condición
+
+La familia `CALIDAD` incluye la conformidad del bien frente a condición o especificación aplicable.
+
+La evidencia puede considerar, cuando corresponda:
+
+- estado físico;
+- integridad;
+- lote;
+- vencimiento;
+- temperatura;
+- especificación acordada;
+- documentación de calidad;
+- evidencia visual o técnica autorizada.
+
+Una diferencia de calidad no se resuelve alterando la descripción original de lo observado.
+
+---
+
+#### 13. Diferencia de precio
+
+La diferencia de precio compara la condición económica aplicable contra el documento o valor presentado para la recepción.
+
+Puede involucrar, según el contrato de compra:
+
+- precio aplicable;
+- presentación o unidad económica;
+- moneda;
+- impuestos o componentes permitidos;
+- condiciones vigentes relacionadas.
+
+La UX no concede por esta tarea visibilidad general de precios.
+
+`ORIGO-UX-012` conserva el field mask y la minimización de datos sensibles.
+
+Un actor sin autoridad para ver precio no debe recibir el valor protegido como efecto secundario de participar en una diferencia.
+
+---
+
+#### 14. Diferencia documental
+
+Una diferencia documental puede surgir por ausencia, inconsistencia o contradicción entre los soportes aplicables.
+
+La UX debe poder distinguir al menos:
+
+- documento faltante;
+- referencia que no coincide;
+- proveedor o identidad documental inconsistente;
+- soporte vencido o no aplicable;
+- información de factura, remisión, certificado o condición que no coincide con la referencia vigente.
+
+La ausencia documental no se convierte automáticamente en rechazo; debe pasar por la decisión correspondiente.
+
+---
+
+#### 15. Diferencia de presentación
+
+Una diferencia de presentación ocurre cuando lo entregado o documentado no coincide con la presentación/unidad acordada o su conversión gobernada.
+
+La UX debe mantener separados:
+
+```text
+PRODUCTO
+PRESENTACIÓN
+UNIDAD DE ENTRADA
+CONVERSIÓN
+UNIDAD CANÓNICA
+```
+
+No se corrige una presentación:
+
+- reasignando silenciosamente otra unidad;
+- creando una conversión no aprobada;
+- aprobando maestro de datos desde la recepción;
+- haciendo coincidir cantidades mediante una conversión improvisada.
+
+Una presentación nueva o pendiente mantiene su tratamiento de maestro de datos y no equivale a diferencia resuelta.
+
+---
+
+#### 16. Diferencias múltiples en una misma recepción
+
+Una recepción puede contener varias diferencias simultáneas.
+
+Ejemplo conceptual:
+
+```text
+LÍNEA A → CANTIDAD
+LÍNEA B → PRESENTACIÓN + PRECIO
+LÍNEA C → CALIDAD
+CABECERA / SOPORTE → DOCUMENTO
+```
+
+La UX debe mantener una decisión y evidencia suficientemente granular para cada alcance afectado.
+
+No se obliga a que toda la recepción tenga un único resultado cuando existen líneas con tratamientos distintos.
+
+---
+
+#### 17. Modelo mínimo de comparación
+
+Toda diferencia debe conservar, como mínimo según aplique:
+
+```text
+REFERENCIA DE COMPRA / ORDEN
+VERSIÓN DE REFERENCIA
+RECEPCIÓN
+LÍNEA O ALCANCE AFECTADO
+TIPO DE DIFERENCIA
+VALOR ESPERADO
+VALOR OBSERVADO O DOCUMENTADO
+EVIDENCIA
+ACTOR / FUENTE
+DECISIÓN
+EFECTOS PENDIENTES O PRODUCIDOS
+```
+
+La referencia aprobada no se sobrescribe para eliminar la discrepancia.
+
+---
+
+#### 18. Regla pedido → observado → diferencia → decisión → efecto
+
+La experiencia conserva explícitamente:
+
+```text
+LO PEDIDO
++
+LO OBSERVADO
++
+LA DIFERENCIA
++
+LA DECISIÓN
++
+EL EFECTO POSTERIOR
+```
+
+Ninguno de esos cinco componentes puede ser sustituido por un único `status` genérico.
+
+---
+
+#### 19. La orden no se edita para resolver la diferencia
+
+Regla:
+
+```text
+DIFERENCIA DE RECEPCIÓN
+!=
+PERMISO PARA REESCRIBIR LA ORDEN
+```
+
+Una orden aprobada o emitida conserva su versión histórica.
+
+Si una diferencia revela que el compromiso debe cambiar materialmente, ese cambio sigue el contrato de revisión de orden aplicable; no se produce desde `VSCREEN-0078` mediante edición destructiva.
+
+---
+
+#### 20. La observación original tampoco se reescribe
+
+La recepción debe preservar lo efectivamente observado.
+
+No:
+
+```text
+OBSERVADO = 8
+ORDENADO = 10
+→ CAMBIAR OBSERVADO A 10 PARA CERRAR
+```
+
+Tampoco:
+
+```text
+PRESENTACIÓN RECIBIDA B
+→ EDITAR LA OBSERVACIÓN COMO PRESENTACIÓN A
+```
+
+La corrección posterior crea un nuevo hecho o relación correctiva; no borra la observación histórica.
+
+---
+
+#### 21. Acciones de decisión de la experiencia
+
+El prototipo administrativo aprobado exige poder decidir entre:
+
+```text
+ACEPTAR
+RETENER
+RECLAMAR
+CORREGIR
+RECHAZAR
+```
+
+Estas son decisiones de experiencia.
+
+No todas equivalen a una permission key ni a una transición directa del proceso.
+
+La UX debe mapear cada decisión al contrato propietario que realmente produzca su efecto.
+
+---
+
+#### 22. Aceptar una diferencia tratada
+
+Aceptar no significa borrar la diferencia.
+
+Cuando existe tratamiento suficiente para someter la recepción a decisión se conserva:
+
+```text
+VPROC-0022.TR-006
+DIFFERENCE_UNDER_REVIEW
+→ ACCEPTANCE_PENDING
+```
+
+Después, la aceptación autorizada usa:
+
+```text
+VPROC-0022.TR-007
+ACCEPTANCE_PENDING
+→ PUTAWAY_PENDING
+```
+
+La aceptación debe identificar exactamente el alcance aceptado.
+
+---
+
+#### 23. Alcance mixto de aceptación
+
+Una recepción puede tener líneas o cantidades con resultados diferentes.
+
+La decisión debe distinguir, según corresponda:
+
+- aceptado;
+- aceptado parcialmente;
+- aceptado bajo condición autorizada;
+- retenido;
+- en cuarentena;
+- rechazado;
+- pendiente de resolución.
+
+Solo el alcance autorizado como aceptado puede participar en el handoff físico o económico correspondiente.
+
+Un resultado mixto no autoriza representar todo el documento como limpio.
+
+---
+
+#### 24. Retener mediante HOLD
+
+Se preserva:
+
+```text
+VPROC-0022.EX-002 — HOLD
+```
+
+`HOLD` suspende la aceptación durante revisión física o documental y mantiene mercancía y evidencia bajo tratamiento explícito.
+
+La UX debe mostrar:
+
+- motivo;
+- alcance retenido;
+- responsable;
+- evidencia pendiente;
+- condición de salida.
+
+`HOLD` no equivale a rechazo ni aceptación.
+
+---
+
+#### 25. Cuarentena
+
+Se preserva:
+
+```text
+VPROC-0022.EX-001 — QUARANTINE
+```
+
+La cuarentena puede aplicarse desde la llegada hasta la aceptación cuando la condición requiere segregación controlada.
+
+Mientras esté activa:
+
+```text
+NO PUTAWAY UTILIZABLE
+NO EFECTO ECONÓMICO DEFINITIVO
+NO REPRESENTAR COMO ACEPTADO LIMPIO
+```
+
+La evidencia original se conserva.
+
+---
+
+#### 26. Escalamiento
+
+Se preserva:
+
+```text
+VPROC-0022.EX-003 — ESCALATE
+```
+
+El escalamiento registra, como mínimo:
+
+- nivel o destino competente;
+- motivo;
+- alcance;
+- evidencia;
+- plazo o condición de respuesta cuando exista política aplicable.
+
+Escalar no concede aprobación ni resuelve la diferencia por sí mismo.
+
+---
+
+#### 27. Rechazo
+
+Se preserva:
+
+```text
+VPROC-0022.EX-004 — REJECT
+```
+
+El rechazo aplicable ocurre antes de la aceptación del alcance afectado y conserva:
+
+- motivo estructurado;
+- evidencia;
+- proveedor y entrega;
+- alcance rechazado;
+- documentos relacionados;
+- custodia o instrucción de retorno aplicable.
+
+Rechazar no elimina el hecho de que la entrega llegó.
+
+---
+
+#### 28. Reclamar al proveedor
+
+Una reclamación se conserva como expediente de resolución con el proveedor.
+
+La UX puede derivar desde una diferencia:
+
+```text
+DIFERENCIA DOCUMENTADA
+→ EXPEDIENTE DE RECLAMACIÓN / DEVOLUCIÓN
+→ RESPUESTA / COMPROMISO / RESOLUCIÓN
+```
+
+No se inventa una nueva transición de `VPROC-0022` solo por abrir la reclamación.
+
+La reclamación debe mantener referencia a la diferencia, recepción, proveedor, evidencia y efectos bloqueados o pendientes.
+
+`VSCREEN-0146` conserva la experiencia de desempeño y reclamaciones de proveedor.
+
+---
+
+#### 29. Corregir antes de efectos aplicados
+
+Si la diferencia se detecta durante verificación y aún no existe un efecto propietario aplicado que deba compensarse, la corrección consiste en tratar la discrepancia y conservar el antes/después de la decisión.
+
+No requiere por inferencia:
+
+```text
+receipts.reverse
+```
+
+La observación original permanece auditable.
+
+---
+
+#### 30. Corregir después de efectos aplicados
+
+Cuando ya existe una recepción aplicada y la resolución exige sustituirla, se conserva el contrato de `ORIGO-AUTH-008`:
+
+```text
+origo.procurement.receipts.reverse
++
+origo.procurement.receipts.register
+```
+
+con correlación:
+
+```text
+ORIGINAL
+↔ REVERSIÓN
+↔ REEMPLAZO
+```
+
+`VSCREEN-0078` no amplía `receipts.register` para absorber reversión.
+
+---
+
+#### 31. No se crea `receipts.resolve`
+
+Las fuentes vigentes no definen una identidad exacta:
+
+```text
+origo.procurement.receipts.resolve
+```
+
+Por tanto esta tarea:
+
+- no inventa esa clave;
+- no presenta una séptima capacidad correctiva;
+- no trata `STEP-RESOLVE_RECEIPT_VARIANCE` como permiso;
+- no convierte una decisión de aceptar, retener, reclamar, corregir o rechazar en autoridad implícita para mutaciones materiales.
+
+Cada efecto consume la capacidad propietaria que corresponda.
+
+---
+
+#### 32. Frontera con `receipts.register`
+
+`origo.procurement.receipts.register` autoriza una recepción nueva dentro del contexto operativo permitido.
+
+No autoriza por sí sola:
+
+```text
+RESOLVER DIFERENCIA
+REVERSAR RECEPCIÓN
+EDITAR ORDEN
+APROBAR DATOS MAESTROS
+RECONOCER OBLIGACIÓN ECONÓMICA
+```
+
+Registrar una diferencia durante la recepción no concede la decisión posterior.
+
+---
+
+#### 33. Frontera con `receipts.reverse`
+
+`origo.procurement.receipts.reverse` protege una compensación material de un efecto ya aplicado.
+
+Contrato aprobado:
+
+```text
+authorization_requirement = BASE_AND_OPERATIONAL
+operational prerequisite = T+C
+resource = PURCHASE_RECEIPT
+```
+
+La decisión requiere autoridad base y contexto operativo válido.
+
+El receptor ordinario no adquiere reversión por haber registrado la recepción original.
+
+---
+
+#### 34. Reversión no es rechazo
+
+Regla:
+
+```text
+REJECT
+!=
+REVERSE
+```
+
+`REJECT` rehúsa el alcance antes de aceptación aplicable.
+
+`REVERSE` compensa un efecto ya aplicado.
+
+La UX no debe presentar ambos verbos como equivalentes ni usar una reversión para fabricar un rechazo histórico.
+
+---
+
+#### 35. Acciones CCR preservadas
+
+Se preservan exactamente:
+
+```text
+VPROC-0022.CCR-001 — CANCEL
+VPROC-0022.CCR-002 — VOID
+VPROC-0022.CCR-003 — REVERSE
+VPROC-0022.CCR-004 — RESTATE
+```
+
+Reglas:
+
+- `CANCEL` detiene trabajo futuro permitido y conserva residuales;
+- `VOID` marca como nulo un instrumento inválido o duplicado sin borrarlo;
+- `REVERSE` crea un efecto inverso autorizado cuando ya existe efecto aplicado;
+- `RESTATE` rectifica referencia o clasificación preservando el hecho original.
+
+Ninguna acción CCR borra la evidencia de la diferencia.
+
+---
+
+#### 36. Diferencia y saldo pendiente
+
+Una diferencia puede afectar el saldo recibible, pero no debe modificarlo por inferencia.
+
+Ejemplos:
+
+```text
+FALTANTE ACEPTADO COMO PARCIAL LEGÍTIMA
+→ SALDO PERMANECE PENDIENTE
+
+EXCESO RECHAZADO
+→ NO AUMENTA COMPROMISO
+
+LÍNEA RECHAZADA POR CALIDAD
+→ NO SE PRESENTA COMO ACEPTADA
+
+PRESENTACIÓN EN HOLD
+→ NO SE CONSUME COMO ACEPTACIÓN LIMPIA
+```
+
+La determinación final del saldo usa únicamente resultados válidos y correlacionados.
+
+---
+
+#### 37. Diferencia y recepciones múltiples
+
+Se conserva:
+
+```text
+1 PURCHASE_COMMITMENT
+→ 0..N RECEPCIONES VPROC-0022
+```
+
+Una diferencia en una recepción no autoriza:
+
+- reescribir recepciones anteriores;
+- fusionar dos llegadas reales;
+- reutilizar la identidad idempotente de otra recepción;
+- recalcular historia mediante borrado destructivo.
+
+Cada recepción conserva su identidad y la diferencia queda correlacionada con la recepción donde fue detectada.
+
+---
+
+#### 38. Idempotencia de la decisión
+
+Resolver una diferencia es una decisión empresarial sensible.
+
+La UX y materialización futura deben preservar:
+
+- identidad estable de la intención;
+- versión de recepción y referencia evaluadas;
+- replay del mismo comando sin duplicar efectos;
+- conflicto cuando la misma identidad se reutiliza con contenido incompatible;
+- revalidación de autoridad, estado y alcance en retry;
+- resultado durable recuperable.
+
+Un doble clic no puede producir doble rechazo, doble reversión, doble reemplazo ni doble reclamación.
+
+---
+
+#### 39. Concurrencia y versión
+
+Antes de confirmar una decisión debe reevaluarse:
+
+- versión de orden/compromiso;
+- estado de recepción;
+- diferencias ya decididas;
+- saldo aplicable;
+- correcciones o reversas posteriores;
+- contexto y autoridad del actor;
+- efectos físicos o económicos ya confirmados.
+
+Si la base cambió:
+
+```text
+STALE_VERSION
+→ BLOQUEAR COMMIT CIEGO
+→ RECARGAR Y REEVALUAR
+```
+
+---
+
+#### 40. Resultado desconocido
+
+Un timeout o fallo técnico no autoriza repetir indiscriminadamente la decisión.
+
+Regla:
+
+```text
+RESULT_UNKNOWN
+→ RECONCILIAR
+→ DETERMINAR RESULTADO DURABLE
+→ REINTENTAR SOLO SI ES SEGURO
+```
+
+No se presenta un fallo técnico como rechazo, hold o diferencia resuelta.
+
+---
+
+#### 41. Frontera ORIGO ↔ NEXO
+
+ORIGO conserva la aceptación comercial y documental.
+
+NEXO conserva el efecto físico de entrada, ubicación y custodia.
+
+Por tanto:
+
+```text
+DIFERENCIA RESUELTA EN ORIGO
+!=
+MOVIMIENTO NEXO YA APLICADO
+```
+
+Cuando existe alcance aceptado:
+
+```text
+VPROC-0022.TR-007
+ACCEPTANCE_PENDING
+→ PUTAWAY_PENDING
+```
+
+solo el alcance aceptado participa en el handoff físico.
+
+`ORIGO-UX-013` y `ORIGO-UX-014` conservan la continuidad posterior.
+
+---
+
+#### 42. Frontera ORIGO ↔ NUMERA
+
+Una diferencia de cantidad, precio, documento, rechazo, retención o reclamación puede afectar la proyección económica.
+
+Pero:
+
+```text
+DECISIÓN ORIGO
+!=
+OBLIGACIÓN NUMERA YA RECONOCIDA
+```
+
+La proyección posterior debe conservar el alcance aceptado, retenido, rechazado o pendiente necesario para la conciliación.
+
+`ORIGO-UX-015` conserva el handoff financiero.
+
+---
+
+#### 43. Diferencia de precio y minimización
+
+La resolución puede requerir un actor autorizado para revisar precio o condición económica.
+
+Regla:
+
+```text
+NECESIDAD DE DECIDIR DIFERENCIA
+!=
+AUTORIZACIÓN GENERAL PARA VER PRECIOS
+```
+
+Cuando el receptor no tenga visibilidad suficiente:
+
+- se mantiene la existencia de la diferencia;
+- se muestra una razón minimizada;
+- se deriva a un actor autorizado;
+- no se filtra el valor protegido.
+
+`ORIGO-UX-012` define la experiencia de ocultamiento y field masks.
+
+---
+
+#### 44. Maestro de producto o presentación
+
+Una diferencia puede descubrir que el producto o presentación no existe, está mal definido o requiere aprobación.
+
+La experiencia puede abrir el handoff correspondiente, pero no concede autoridad para aprobar maestro.
+
+Regla:
+
+```text
+DIFERENCIA DETECTADA
+!=
+MAESTRO APROBADO
+```
+
+Mientras el maestro permanezca pendiente, la UX no debe presentar la recepción como resuelta limpiamente por haber creado una solicitud de revisión.
+
+---
+
+#### 45. Devolución y reclamación
+
+Las diferencias y devoluciones deben producir efectos correlacionados y compensatorios cuando corresponda.
+
+Una devolución o reclamación debe conservar:
+
+- recepción y diferencia origen;
+- proveedor;
+- líneas y cantidades;
+- motivo;
+- evidencia;
+- custodia o estado del bien cuando aplique;
+- decisión y actor;
+- resultado del proveedor;
+- compensación o efecto económico pendiente cuando exista.
+
+No se borra la recepción para representar una devolución.
+
+---
+
+#### 46. Estado `RECEIPT_RECONCILED`
+
+El cierre normal continúa siendo:
+
+```text
+VPROC-0022.RECEIPT_RECONCILED
+```
+
+Una diferencia puede coexistir con cierre únicamente cuando su tratamiento y residuales estén suficientemente resueltos o asignados según el contrato.
+
+No:
+
+```text
+DIFERENCIA ABIERTA SIN OWNER
+→ RECEIPT_RECONCILED
+```
+
+Tampoco:
+
+```text
+RECEIPT_RECONCILED
+→ PROVEEDOR PAGADO
+```
+
+---
+
+#### 47. Historia y auditoría
+
+La evidencia debe permitir reconstruir:
+
+- orden/compromiso y versión;
+- recepción;
+- línea o alcance;
+- esperado;
+- observado/documentado;
+- tipo de diferencia;
+- evidencia;
+- actor y fuente;
+- decisiones intermedias;
+- hold, cuarentena o escalamiento;
+- aceptación/rechazo;
+- reclamación o devolución;
+- corrección/reversa cuando exista;
+- handoff físico;
+- handoff económico;
+- resultado final.
+
+`VSCREEN-0079` conserva la reconstrucción transversal del ciclo.
+
+---
+
+#### 48. Estado de experiencia de VSCREEN-0078
+
+La superficie debe distinguir al menos:
+
+| Estado UX | Significado | Tratamiento |
+| --- | --- | --- |
+| `DIFERENCIA_PENDIENTE` | existe discrepancia sin decisión suficiente | mostrar comparación y acciones permitidas |
+| `EN_RETENCIÓN` | aceptación suspendida | mostrar motivo, owner y condición de salida |
+| `EN_CUARENTENA` | alcance segregado por condición | impedir presentación como aceptado utilizable |
+| `ESCALADA` | decisión requiere nivel competente | conservar destino y evidencia |
+| `RECLAMACIÓN_ABIERTA` | existe expediente con proveedor | mostrar correlación sin fingir cierre |
+| `TRATADA_PARA_ACEPTACIÓN` | existe tratamiento suficiente para pasar a aceptación | derivar al contrato de aceptación |
+| `RECHAZADA` | alcance fue rechazado antes de aceptación | conservar retorno/custodia y evidencia |
+| `DESACTUALIZADA` | cambió la base evaluada | recargar y reevaluar |
+| `FALLO_TÉCNICO` | no se conoce el resultado de una dependencia | no presentarlo como decisión empresarial |
+
+Estos son estados de experiencia, no nuevos estados de `VPROC-0022`.
+
+---
+
+#### 49. Vacío, diferencia y fallo no se confunden
+
+Reglas:
+
+```text
+SIN DIFERENCIA
+!=
+DIFERENCIA RESUELTA
+
+DIFERENCIA RESUELTA
+!=
+DIFERENCIA RECHAZADA
+
+DIFERENCIA RECHAZADA
+!=
+REVERSIÓN
+
+DESACTUALIZADA
+!=
+FALLO TÉCNICO
+
+FALLO TÉCNICO
+!=
+HOLD EMPRESARIAL
+```
+
+La razón de bloqueo debe ser suficiente para orientar sin exponer datos protegidos.
+
+---
+
+#### 50. Implementación AS-IS observada
+
+El runtime actual no demuestra una superficie dedicada equivalente a `VSCREEN-0078` con workflow integral de diferencias.
+
+Sí existen capacidades parciales:
+
+- captura de cantidades por línea;
+- presentación/unidad de entrada;
+- costos e impuestos observados en la recepción;
+- lote y vencimiento;
+- notas;
+- estado técnico `pending_review` cuando existe revisión de maestro;
+- reversión de recepción desde historial;
+- corrección mediante `correction_entry_id` y reemplazo.
+
+Esto demuestra piezas reales, no el contrato completo de resolución de diferencias.
+
+---
+
+#### 51. Reversión AS-IS observada
+
+La acción `reverseReceipt` observada:
+
+- exige autenticación;
+- exige comentario;
+- valida existencia y sede;
+- exige estado técnico `received`;
+- aplica una ventana local de treinta minutos;
+- invoca `origo_reverse_inventory_entry`.
+
+La ventana local no se eleva a política empresarial canónica.
+
+La acción observada no sustituye la decisión de diferencia ni demuestra por sí sola la autoridad canónica completa de `receipts.reverse`.
+
+---
+
+#### 52. Corrección AS-IS observada
+
+El flujo de corrección observado usa `correction_entry_id` para:
+
+1. identificar la recepción original;
+2. reversar el efecto anterior;
+3. crear una nueva recepción;
+4. producir efectos derivados;
+5. vincular original y reemplazo.
+
+Clasificación preservada:
+
+```text
+AS_IS_REGISTER_AND_CORRECTION_COUPLED
+```
+
+El contrato objetivo mantiene:
+
+```text
+REGISTER AUTHORITY
+!=
+REVERSE AUTHORITY
+```
+
+---
+
+#### 53. Brechas AS-IS y propietarios
+
+| Brecha | Riesgo | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| no existe workflow integral de `VSCREEN-0078` | diferencias tratadas como nota/corrección técnica | `ORIGO-UX-011` + materialización propietaria posterior | la experiencia conserva tipo, esperado, observado, decisión y efecto |
+| parcialidad puede confundirse con diferencia | cierre o incidencia falsa | `ORIGO-UX-010` / `ORIGO-UX-011` | parcialidad válida y discrepancia quedan separadas |
+| corrección y registro comparten permiso AS-IS | receptor ordinario podría absorber corrección sensible | `ORIGO-AUTH-008` + materialización propietaria | `reverse` y `register` se evalúan independientemente |
+| reversión técnica puede confundirse con rechazo | historia empresarial falsa | `ORIGO-UX-011` + `ORIGO-AUTH-008` | rechazo preaceptación y reversión posefecto usan contratos distintos |
+| ventana local de corrección actúa como política implícita | decisiones bloqueadas por constante no gobernada | implementación propietaria de `VPROC-0022` | política se resuelve desde contrato canónico |
+| precio puede exponerse al receptor por diferencia | fuga de información sensible | `ORIGO-UX-012` / `ORIGO-AUTH-010` | field mask y derivación a actor autorizado |
+| efectos físicos/económicos pueden mezclarse con la decisión | stock u obligación incorrectos | `ORIGO-UX-014` / `ORIGO-UX-015` | cada dominio confirma su efecto correlacionado |
+| reclamación de proveedor no tiene superficie dedicada observada | seguimiento informal o no trazable | `ORIGO-UX-016` + contratos propietarios de proveedor/evidencia | prototipo e historia conservan expediente y resolución |
+
+No se crean pendientes narrativos sin owner.
+
+---
+
+#### 54. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** la tarea concreta obligaciones ya protegidas por requisitos vigentes sobre recepción, parcialidad, corrección, idempotencia, autorización, segregación, server-side enforcement y auditoría. No introduce una obligación verificable nueva que requiera modificar el registro.
+
+---
+
+#### 55. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, esta tarea reutiliza:
+
+- `TREQ-ORIGO-001` para impedir que corrección, conversión o repetición duplique cantidades, costos, orden o hecho financiero;
+- `TREQ-ORIGO-003` para atomicidad, durabilidad, idempotencia y corrección correlacionada de la recepción;
+- `TREQ-ORIGO-004` para preservar separación entre compra, aprobación, orden y recepción sin edición destructiva;
+- `TREQ-AUTH-001` para resolver capacidades por permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-008` para distinguir autoridad administrativa de contexto operativo cuando corresponda;
+- `TREQ-AUTH-010` para segregación de funciones;
+- `TREQ-AUTH-013` para revalidación server-side de cada mutación;
+- `TREQ-AUTH-015` para evidencia correlacionable de actor, contexto, permiso, recurso, decisión y timestamp.
+
+Esta sección es trazabilidad de cobertura existente, no actualización del registro.
+
+---
+
+#### 56. Handoffs documentales posteriores
+
+| Tarea posterior | Handoff recibido desde ORIGO-UX-011 |
+| --- | --- |
+| `ORIGO-UX-012` | diferencia de precio o condición comercial requiere minimización y field mask sin ocultar la existencia del problema |
+| `ORIGO-UX-013` | una diferencia resuelta en ORIGO no debe generar una segunda captura manual equivalente en NEXO |
+| `ORIGO-UX-014` | solo el alcance aceptado y correlacionado puede producir entrada física en NEXO |
+| `ORIGO-UX-015` | NUMERA consume únicamente la proyección económica autorizada, incluyendo diferencias, retenciones o rechazos relevantes |
+| `ORIGO-UX-016` | el prototipo debe reconstruir orden, recepción, diferencia, decisión, reclamación/corrección y efectos sin inventar score ni borrar historia |
+
+La tarea no desarrolla esos contratos posteriores.
+
+---
+
+#### 57. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará después de incorporar la tarea en el archivo propietario. |
+| LOCAL | `NOT_EXECUTED` | No se ejecutaron validadores del checkout del usuario durante la preparación anticipada. |
+| REMOTA | `PASS` | Se verificaron owner, topología, `VPROC-0022`, `VSCREEN-0077..0079`, `ORIGO-AUTH-007/008`, Registro 04A, contratos de experiencia y runtime actual de recepción/corrección/reversión. |
+| OPERATIVA | `NOT_EXECUTED` | No se registró, retuvo, rechazó, corrigió ni reversó una recepción real; no se ejecutaron mutaciones de datos o flujos desplegados. |
+| FÍSICA | `NOT_APPLICABLE` | `ORIGO-UX-011` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`. |
+
+---
+
+#### 58. Criterios de aceptación
+
+- [x] La tarea mantiene exactamente `ORIGO-UX-011 — Diseñar diferencias contra orden`.
+- [x] La tarea anterior es `ORIGO-UX-010` y la siguiente `ORIGO-UX-012`.
+- [x] Se conserva `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`.
+- [x] `VSCREEN-0078` queda vinculada a `VPROC-0022::STEP-RESOLVE_RECEIPT_VARIANCE` como `DECIDE / DECISION`.
+- [x] La diferencia se define como desviación tipada entre orden, entrega, documento y aceptación.
+- [x] Se preservan las familias cantidad, calidad, precio, documento y presentación.
+- [x] Parcialidad legítima no se convierte automáticamente en diferencia.
+- [x] `TR-004` abre `DIFFERENCE_UNDER_REVIEW` y `TR-006` permite volver a `ACCEPTANCE_PENDING` tras tratamiento suficiente.
+- [x] `TR-005` permanece como bypass cuando no existen diferencias.
+- [x] Se preservan `QUARANTINE`, `HOLD`, `ESCALATE` y `REJECT`.
+- [x] Se preservan `CANCEL`, `VOID`, `REVERSE` y `RESTATE`.
+- [x] Aceptar, retener, reclamar, corregir y rechazar quedan representados como decisiones de experiencia con efecto propietario separado.
+- [x] No se inventa `origo.procurement.receipts.resolve`.
+- [x] `receipts.register` no absorbe reversión ni resolución material.
+- [x] `receipts.reverse` no se confunde con rechazo.
+- [x] Corrección con sustitución conserva `reverse + register` y vínculo original/reemplazo.
+- [x] La orden aprobada no se edita destructivamente para eliminar la diferencia.
+- [x] La observación original no se reescribe.
+- [x] Solo el alcance aceptado puede pasar a handoff físico/económico.
+- [x] Precio y datos sensibles quedan entregados a `ORIGO-UX-012` sin exposición adicional.
+- [x] NEXO y NUMERA conservan ownership de sus efectos.
+- [x] Se preserva idempotencia, revalidación, stale y resultado desconocido.
+- [x] Se documentan brechas AS-IS con owner y condición de salida.
+- [x] No se crea ni modifica requisito de prueba.
+- [x] No se modifica el Registro 04A.
+- [x] No se ejecuta cambio físico, Supabase, migración ni despliegue.
+- [x] `ORIGO-UX-012` queda reservada y no se desarrolla aquí.
+
+---
+
+#### 59. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0078`;
+- crea componentes, Server Actions o endpoints;
+- crea `receipts.resolve` ni otra permission key;
+- activa `receipts.register` o `receipts.reverse` en catálogos/grants;
+- define tolerancias numéricas de cantidad, precio o calidad;
+- define políticas comerciales nuevas de aceptación;
+- modifica una orden aprobada;
+- registra una recepción real;
+- resuelve una diferencia real;
+- reversa una recepción real;
+- crea una recepción de reemplazo;
+- abre una reclamación real con proveedor;
+- mueve stock propietario de NEXO;
+- reconoce obligación o pago en NUMERA;
+- aprueba producto, presentación o conversión maestra;
+- modifica `vento-origo`;
+- modifica Supabase, migraciones, RLS, RPC, grants, Storage o datos;
+- modifica contratos generados;
+- modifica el Registro 04A;
+- ejecuta E5;
+- crea instancia física;
+- desarrolla `ORIGO-UX-012`.
+
+---
+
+#### 60. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`ORIGO-UX-010 — Diseñar recepción parcial`
+
+**TAREA ACTUAL APROBADA**
+`ORIGO-UX-011 — Diseñar diferencias contra orden`
+
+**SIGUIENTE TAREA RESERVADA**
+`ORIGO-UX-012 — Ocultar precios cuando no correspondan`
 ### [ ] ORIGO-UX-012 — Ocultar precios cuando no correspondan
 ### [ ] ORIGO-UX-013 — Evitar repetir recepción manualmente en NEXO
 ### [ ] ORIGO-UX-014 — Conectar recepción con entrada de inventario
