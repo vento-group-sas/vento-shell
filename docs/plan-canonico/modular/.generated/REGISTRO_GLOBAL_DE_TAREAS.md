@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1335** |
+| Aprobadas | **1336** |
 | En propuesta | **0** |
-| No iniciadas | **261** |
+| No iniciadas | **260** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **83.65% (1335/1596)** |
+| Porcentaje de completamiento | **83.71% (1336/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **261** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1236** |
+| ⏸ NO_EVALUADA | **260** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1237** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `ORIGO-AUTH-014` — Migrar a paquetes de vento-shell | ✅ APROBADA |
-| Tarea actual | `ORIGO-AUTH-015` — Ejecutar pruebas integrales | ⬜ NO INICIADA |
-| Siguiente reservada | `ORIGO-UX-001` — Inventariar el proceso completo de abastecimiento | ⬜ NO INICIADA |
+| Última aprobada | `ORIGO-AUTH-015` — Ejecutar pruebas integrales | ✅ APROBADA |
+| Tarea actual | `ORIGO-UX-001` — Inventariar el proceso completo de abastecimiento | ⬜ NO INICIADA |
+| Siguiente reservada | `ORIGO-UX-002` — Separar solicitud, compra, aprobación y recepción | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1098,7 +1098,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-012` | Integrar contexto operativo donde aplique | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-013` | Mantener administración sin check-in | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-014` | Migrar a paquetes de vento-shell | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-AUTH-015` | Ejecutar pruebas integrales | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `ORIGO-AUTH-015` | Ejecutar pruebas integrales | — | — | `bloques/M_ORIGO/01_AUTORIZACION_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-001` | Inventariar el proceso completo de abastecimiento | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-002` | Separar solicitud, compra, aprobación y recepción | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `ORIGO-UX-003` | Diseñar inicio para solicitante | — | — | `bloques/M_ORIGO/02_EXPERIENCIA_DE_COMPRAS.md` |
