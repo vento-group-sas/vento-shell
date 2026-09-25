@@ -4066,7 +4066,574 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado`
-### [ ] PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
+### ✅ PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-008 — Diseñar perfil del cliente
+**Tarea siguiente:** PASS-UX-010 — Definir mensajes de error comprensibles
+**Tipo de tarea:** documental; definición objetivo de la taxonomía visible y reglas de transición de una redención PASS entre pendiente, usada y cancelada, preservando vigencia/vencimiento como condición no utilizable distinta, separando creación de ticket, consumo PULSO, efecto de puntos e historial, y reconciliando la presentación de `VSCREEN-0110`, `VSCREEN-0111` y `VSCREEN-0086` sin crear un enum físico nuevo; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, Wallet, secretos, despliegues, enums, constraints ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir cómo debe comprender el cliente el ciclo de una redención desde que existe una intención confirmada hasta que la credencial es usada, cancelada o deja de ser utilizable por vencimiento, sin confundir el estado de presentación con el momento del débito de puntos ni con una inferencia local.
+
+La tarea especializa la semántica ya entregada por `PASS-UX-005` y `PASS-UX-006`:
+
+- `VSCREEN-0110 — Ticket o QR de redención` presenta la intención vigente, su credencial, estado y vigencia;
+- `VSCREEN-0086 — Redención de puntos o beneficios` valida y consume operativamente una redención autorizada desde PULSO;
+- `VSCREEN-0111 — Historial de puntos y redenciones` conserva el recibo y la evidencia histórica del ciclo;
+- el ledger de puntos sigue siendo autoridad del movimiento contable y no se sustituye por una etiqueta de estado de redención.
+
+El resultado fija taxonomía visible, transiciones permitidas, fechas, usabilidad del QR, filtros, estados desconocidos, relación con vencimiento, cancelación, reversión y handoffs posteriores. No crea estados de base de datos, no materializa la cancelación ni implementa el contrato PULSO → PASS.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-008`, aprobada por el usuario, que mantiene la separación entre identidad, cuenta, perfil, preferencias, consentimientos y contexto laboral y no altera el ciclo de fidelización.
+
+Se consumen además estas decisiones aprobadas del mismo mini-bloque:
+
+- `PASS-UX-005` separa `TICKET CREADO` de `REDENCIÓN USADA`, exige estado y vigencia visibles y prohíbe fabricar una credencial o un resultado terminal desde el cliente;
+- `PASS-UX-006` separa recibo de redención y movimiento del ledger, exige fecha autoritativa por hecho y reserva a esta tarea la taxonomía completa de estados;
+- `PASS-UX-007` separa recompensa visible, elegibilidad, redención y efecto comercial;
+- PULSO conserva `VSCREEN-0086` como superficie operativa de validación y consumo.
+
+La frontera de esta tarea es la semántica del lifecycle visible de la redención. La atomicidad, idempotencia, vigencia física, cancelación física, reserva o devolución de puntos, actor, permisos, sede, RPC y persistencia pertenecen a `PASS-INT-002`, contratos PULSO/AUTH y su materialización posterior.
+
+---
+
+#### 3. Identidades canónicas afectadas
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla PASS de intención vigente | `VSCREEN-0110 — Ticket o QR de redención` |
+| Pantalla PASS de auditoría histórica | `VSCREEN-0111 — Historial de puntos y redenciones` |
+| Pantalla PULSO de consumo | `VSCREEN-0086 — Redención de puntos o beneficios` |
+| Proceso | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Paso de creación | `VPROC-0045::STEP-CREATE_REDEMPTION_INTENT — Crear ticket de redención` |
+| Paso de consumo | `VPROC-0045::STEP-REDEEM_LOYALTY_VALUE — Redimir puntos o beneficios` |
+| Paso de auditoría | `VPROC-0045::STEP-AUDIT_PERSONAL_LOYALTY_LEDGER — Consultar historial de puntos y redenciones` |
+| Topología | `DEFINE_ONCE` |
+| Estado físico | `NO_PHYSICAL_INSTANCE` |
+
+`PASS-UX-009` no crea una nueva identidad `VSCREEN-*`. Define un contrato común que las tres superficies consumen desde responsabilidades distintas.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot verificado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` `main` | `9e90f695ecc09e13d771441d8ac2a4910c471228` | continuidad, owner, topología, proceso, pantallas, 04A y backlog |
+| archivo propietario | blob `b062b626ba7f9b95a7e5544ac9734be92fe0f939` | base remota con `PASS-UX-007` aprobada y marcador de `PASS-UX-009` reservado |
+| `PASS-UX-008_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `174d0fee843dd107ddc2273d8793eb1019d4d812685f2353bf73a6bd082afd11` | base documental inmediata aprobada por el usuario y todavía pendiente de publicación |
+| catálogo proceso-pantalla | blob `742ead71e5fc5c4ae85a3cb6a00feb858ba8c2a0` | `VSCREEN-0086`, `VSCREEN-0110`, `VSCREEN-0111` y sus pasos |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura vigente de redención y presentación confirmada |
+| auditoría de procesos parciales/legacy | blob `17da474928d7d0042170441ca79eb18dab412e72` | destino explícito hacia esta tarea y pruebas de redención |
+| auditoría técnica y backlog | blob `2234bc064cc91e766e4e550fc8c3801d669ec894` | redención cliente no atómica y `BKL-PASS-005` |
+| `carlosibarraariza/vento-pass` `main` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS |
+| `useLoyaltyRedemptions.ts` | blob `8ed79b6ddb2070a870ab9cfd286cc1e120a647c6` | shape móvil `pending / validated / cancelled`, `created_at` y `validated_at` |
+| `RedemptionCard.tsx` | blob `cdd598ce60cb293d474ae8d276e957a6b887f2ce` | etiquetas AS-IS `Pendiente`, `Usado`, `Cancelado` y fallback a pendiente |
+| `QrPendingCard.tsx` | blob `062e1b3497fe98a60eedb1439fbd95fab1935540` | QR AS-IS rotulado `Listo para usar` por pertenecer a lista pending |
+| `redemption.ts` | blob `845e4b33ba442bef12c40b8846c3730cfbe71319` | creación cliente AS-IS de redención `pending` y movimiento separado |
+| `docs/SUPABASE-SCHEMA-ACTUAL.md` | blob `170d3af0c50516ef925023017502582408891862` | documento AS-IS que declara `pending / used / expired` y ausencia de `expires_at` |
+| `vento-group-sas/vento-pulso` `main` | `715b5683db05caa010d725679b5ada4705a6da6e` | consumidor PULSO AS-IS |
+| `redemption.api.ts` | blob `d4ea3e444b680b14ec39afe4a803e9fa3141c07c` | acepta solo `pending`, distingue `validated/cancelled` y escribe `validated_at` |
+| `validate-redemption.action.ts` | blob `510f29d98747ff063876f3c5a14cd183f7faac9c` | orquestación de validación y consumo PULSO |
+| `qr-scanner.tsx` | blob `345b624ed26ccd7257f700c2faaa430223b5ff55` | superficie que informa `Canje validado` después de respuesta del servidor |
+
+Estos snapshots documentan el AS-IS; no autorizan adoptar sus nombres o vacíos como contrato físico definitivo.
+
+---
+
+#### 5. Modelo semántico raíz
+
+La experiencia debe conservar estas diferencias:
+
+```text
+INTENCION CREADA
+≠
+CREDENCIAL UTILIZABLE
+≠
+REDENCION USADA
+≠
+REDENCION CANCELADA
+≠
+CREDENCIAL VENCIDA
+≠
+MOVIMIENTO DE PUNTOS
+```
+
+Consecuencias:
+
+1. crear una redención no significa usarla;
+2. disponer de QR no garantiza que siga utilizable;
+3. `USADO` requiere confirmación autoritativa de consumo;
+4. `CANCELADO` requiere una decisión autoritativa distinta del uso;
+5. vencimiento y cancelación no son sinónimos;
+6. el estado de redención no determina por sí solo cuándo se debitó, reservó, revirtió o compensó el saldo;
+7. una etiqueta móvil nunca sustituye el estado confirmado de servidor.
+
+---
+
+#### 6. Taxonomía visible objetivo
+
+La taxonomía principal solicitada por la tarea queda definida así:
+
+| Estado visible | Significado mínimo | Usabilidad de credencial | Terminalidad visible |
+| --- | --- | --- | --- |
+| `PENDIENTE` | existe una intención confirmada que todavía no ha sido consumida ni cancelada y conserva las condiciones necesarias para intentar uso | puede presentarse únicamente cuando la vigencia y el estado autoritativos permitan intentar validación | no terminal |
+| `USADO` | PULSO/servidor confirmó consumo de la misma redención exactamente una vez | no utilizable de nuevo | terminal para esa credencial |
+| `CANCELADO` | una fuente autorizada confirmó que la intención fue cancelada antes de consumo o conforme al contrato aplicable | no utilizable | terminal para esa credencial |
+
+El nombre físico AS-IS `validated` puede proyectarse al cliente como `USADO` porque el runtime actual lo utiliza para representar consumo confirmado. Esta tarea no renombra el valor persistido.
+
+---
+
+#### 7. Vencimiento como condición diferenciada
+
+El contrato canónico operativo exige rechazar códigos usados, cancelados o vencidos. Por tanto, una credencial cuya vigencia autoritativa terminó no puede seguir presentándose simplemente como `PENDIENTE` utilizable.
+
+Se fija:
+
+```text
+PENDIENTE Y VIGENTE
+≠
+VENCIDO
+≠
+CANCELADO
+```
+
+Reglas:
+
+- `VENCIDO` representa imposibilidad de uso por fin de la vigencia autorizada;
+- no implica que un actor haya cancelado la intención;
+- no se transforma en `CANCELADO` para reutilizar una etiqueta existente;
+- no se deriva de una duración inventada por el cliente;
+- la fuente autoritativa debe entregar la vigencia o el resultado de no disponibilidad necesario para proyectarlo;
+- esta tarea no exige que `VENCIDO` sea un cuarto valor físico de `status`; puede ser una proyección derivada de estado + vigencia autorizada;
+- si la implementación futura decide persistirlo, esa decisión pertenece al contrato físico propietario y no a esta tarea documental.
+
+Mientras no exista vigencia autoritativa suficiente, PASS no puede declarar una credencial indefinidamente válida ni vencida por inferencia.
+
+---
+
+#### 8. Estado desconocido, inconsistente o en conciliación
+
+Un estado no reconocido, una combinación imposible o datos insuficientes no se degradan a `PENDIENTE`.
+
+La UI debe representar una condición neutral no utilizable, por ejemplo conceptualmente:
+
+```text
+ESTADO_NO_CONFIRMADO
+```
+
+sin fijar todavía el copy final.
+
+Casos que requieren este tratamiento incluyen:
+
+- valor de estado desconocido para el adaptador vigente;
+- `validated_at` presente con estado no usado;
+- respuesta ambigua después de timeout;
+- discrepancia entre recibo, ledger y respuesta de validación;
+- credencial con vigencia ausente cuando el contrato exige conocerla para permitir uso;
+- transición concurrente cuya respuesta final todavía no fue reconciliada.
+
+`PASS-UX-010` definirá el mensaje humano y `PASS-UX-012` la recuperación visual/offline. Esta tarea solo prohíbe presentar esos casos como pendientes utilizables o terminales confirmados.
+
+---
+
+#### 9. Máquina de transición visible
+
+Las transiciones de presentación permitidas son:
+
+```text
+PENDIENTE
+  ├──> USADO
+  ├──> CANCELADO
+  └──> VENCIDO
+```
+
+Invariantes:
+
+1. `PENDIENTE → USADO` solo después de consumo confirmado por contrato autorizado;
+2. `PENDIENTE → CANCELADO` solo después de cancelación confirmada;
+3. `PENDIENTE → VENCIDO` solo por vigencia autoritativa terminada;
+4. `USADO` no vuelve a `PENDIENTE` por refresh, reinstalación, navegación, reloj local o replay;
+5. `CANCELADO` no vuelve a `PENDIENTE` por volver a abrir el QR;
+6. `VENCIDO` no se reactiva por cambiar la hora del dispositivo;
+7. una reversión, compensación o corrección empresarial posterior conserva el hecho histórico original y se representa como efecto separado; no reescribe silenciosamente un uso ya confirmado.
+
+La implementación física de estas transiciones pertenece al contrato de servidor e integración.
+
+---
+
+#### 10. Estado y efecto de puntos permanecen separados
+
+La taxonomía de redención no decide por sí sola la semántica contable.
+
+Se conserva:
+
+```text
+ESTADO DE REDENCION
+≠
+ESTADO DEL LEDGER
+```
+
+Por tanto:
+
+- `PENDIENTE` no significa necesariamente que los puntos sigan disponibles;
+- `USADO` no significa necesariamente que el débito de puntos ocurrió exactamente en ese instante;
+- `CANCELADO` no promete devolución automática de puntos;
+- `VENCIDO` no promete compensación automática;
+- cualquier reserva, débito, reversión o compensación debe provenir de un movimiento autoritativo y reconciliable;
+- `PASS-INT-002` define la relación transaccional definitiva entre intención, saldo y consumo sin contradecir esta separación.
+
+---
+
+#### 11. Presentación del estado pendiente
+
+Una redención `PENDIENTE` debe comunicar que existe una intención todavía no consumida.
+
+La presentación puede incluir:
+
+- recompensa asociada;
+- costo confirmado de la intención;
+- fecha de creación correctamente rotulada como creación;
+- sede o contexto de uso cuando aplique;
+- vigencia autoritativa disponible;
+- QR o código únicamente cuando la credencial esté disponible para intentar validación;
+- acción de presentar/ver QR cuando siga siendo pertinente.
+
+No puede afirmar:
+
+- “usado”, “consumido” o equivalente;
+- que el beneficio ya fue entregado;
+- que una credencial sin vigencia conocida es válida indefinidamente;
+- que saldo local suficiente garantiza consumo;
+- que la presencia en una lista `pending` equivale por sí sola a `LISTO_PARA_USAR`.
+
+---
+
+#### 12. Presentación del estado usado
+
+`USADO` representa consumo confirmado exactamente una vez.
+
+Reglas:
+
+- la fecha principal del uso debe provenir de la confirmación autoritativa correspondiente, actualmente `validated_at` en el shape AS-IS;
+- `created_at` permanece fecha de creación y no se renombra como fecha de canje efectivo;
+- el QR deja de presentarse como acción utilizable;
+- un replay debe recuperar el mismo resultado o rechazarse sin crear un segundo uso;
+- el historial conserva la redención aunque la credencial ya no sea utilizable;
+- cualquier referencia a pedido o venta se presenta únicamente cuando exista correlación autorizada;
+- el estado no depende de que una animación, notificación de rating o mensaje local haya ocurrido.
+
+---
+
+#### 13. Presentación del estado cancelado
+
+`CANCELADO` representa una decisión terminal distinta del uso y del vencimiento.
+
+Reglas:
+
+- el QR no se ofrece como utilizable;
+- no se muestra fecha de creación como fecha de cancelación;
+- una fecha o motivo de cancelación solo se muestra si la fuente autorizada los entrega;
+- la cancelación no implica automáticamente que el movimiento de puntos fue revertido;
+- si existe devolución, reversión o compensación de puntos, el historial debe mostrar el efecto reconciliable correspondiente;
+- el cliente no puede cancelar por mera navegación, cierre de modal o eliminación local de una tarjeta;
+- esta tarea no crea un CTA de cancelación ni define quién puede ejecutar la cancelación física.
+
+---
+
+#### 14. Presentación del vencimiento
+
+Cuando la fuente autoritativa demuestre que la vigencia terminó:
+
+- el QR deja de exponerse como utilizable;
+- la UI distingue vencimiento de cancelación;
+- se conserva la fecha original de creación;
+- la fecha o ventana de vigencia se presenta cuando exista;
+- el historial conserva el recibo aunque ya no pueda utilizarse;
+- el vencimiento no crea por sí mismo un nuevo débito, devolución o compensación;
+- una credencial vencida permanece rechazada aunque el dispositivo cambie su reloj hacia atrás.
+
+El runtime móvil AS-IS no expone `expires_at` en `useLoyaltyRedemptions` y su documento de esquema declara ese campo como faltante. La ausencia se registra como brecha física, no como permiso para inventar una duración.
+
+---
+
+#### 15. Fechas y hechos de lifecycle
+
+Cada fecha debe conservar su significado:
+
+| Hecho | Fecha visible objetivo |
+| --- | --- |
+| intención creada | `created_at` o equivalente autoritativo de creación |
+| redención usada | `validated_at` o equivalente autoritativo de consumo |
+| redención cancelada | timestamp de cancelación cuando exista en la fuente autorizada |
+| vigencia termina | timestamp o condición de expiración autoritativa cuando exista |
+| reversión/compensación de puntos | fecha propia del movimiento de ledger correspondiente |
+
+Prohibiciones:
+
+- etiquetar `created_at` como “Canjeado el” para una redención usada;
+- usar la hora de apertura de pantalla como fecha de cambio de estado;
+- copiar `validated_at` como fecha de cancelación;
+- inventar una fecha de expiración desde `created_at` + duración local no autorizada.
+
+---
+
+#### 16. QR y acciones por estado
+
+| Estado/condición | Mostrar QR como acción utilizable | Regla |
+| --- | --- | --- |
+| `PENDIENTE` vigente | sí, cuando la fuente autoritativa permita presentarlo | revalidación PULSO sigue siendo obligatoria |
+| `USADO` | no | puede conservarse referencia histórica, nunca como credencial reejecutable |
+| `CANCELADO` | no | cancelación terminal de la credencial |
+| `VENCIDO` | no | vigencia terminada |
+| estado no confirmado/conflicto | no | primero reconciliar |
+
+Ocultar el QR utilizable no elimina la entrada histórica ni el recibo de redención.
+
+---
+
+#### 17. Filtros, agrupación e historial
+
+Los filtros de historial son mecanismos de lectura, no fuentes de estado.
+
+Se fija:
+
+- “Todos” incluye todas las redenciones recuperadas dentro del alcance de consulta, incluidas vencidas y estados no confirmados;
+- `validated` AS-IS se adapta a la categoría visible `USADO`;
+- `cancelled` AS-IS se adapta a `CANCELADO`;
+- una redención vencida no se oculta dentro de `CANCELADO`;
+- un estado desconocido no cae al filtro `PENDIENTE` por defecto;
+- agrupar por fecha no cambia la fecha autoritativa que corresponde al estado representado;
+- la lista de QR pendientes solo contiene credenciales cuya proyección permita intentar uso; no basta con `status === "pending"` si la vigencia autoritativa indica lo contrario.
+
+Esta tarea no fija nombres finales de tabs o chips; el copy final pertenece a `PASS-UX-010`.
+
+---
+
+#### 18. Convergencia entre experiencias PASS
+
+Vento Café, Saudo y las experiencias satélite deben presentar la misma semántica para la misma redención.
+
+Una misma identidad de redención no puede aparecer simultáneamente:
+
+- `PENDIENTE` en una ruta y `USADO` en otra por caché no reconciliada;
+- `USADO` en historial y todavía utilizable en la cuadrícula de QR;
+- `CANCELADO` en una experiencia y omitido silenciosamente en otra;
+- con `created_at` como fecha de uso en una ruta y `validated_at` en otra.
+
+La implementación puede reutilizar componentes distintos, pero la proyección semántica debe converger. `PASS-UX-011` resolverá navegación y rutas, y `PASS-UX-012` frescura, retry y recuperación.
+
+---
+
+#### 19. Relación con PULSO y consumo operativo
+
+PULSO conserva `VSCREEN-0086` y debe validar una redención bajo su contexto operativo.
+
+La experiencia PASS consume únicamente el resultado autoritativo:
+
+```text
+PASS PENDIENTE
+→ PULSO VALIDA
+→ SERVIDOR TRANSICIONA EXACTAMENTE UNA VEZ
+→ PASS RECONCILIA
+→ USADO
+```
+
+Una respuesta PULSO fallida no se convierte automáticamente en `CANCELADO`. Debe distinguirse entre:
+
+- código ya usado;
+- código cancelado;
+- código vencido;
+- código de otra sede o contexto incompatible;
+- denegación de actor/permisos;
+- conflicto concurrente;
+- error técnico recuperable;
+- resultado ya aplicado.
+
+`PASS-UX-010` definirá el mensaje final para cada familia y `PASS-INT-002` el contrato transaccional.
+
+---
+
+#### 20. Drift AS-IS detectado
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `useLoyaltyRedemptions` tipa `pending / validated / cancelled`, mientras `docs/SUPABASE-SCHEMA-ACTUAL.md` documenta `pending / used / expired` | dos taxonomías físicas aparentes para el mismo dominio | `PASS-INT-002`, transición Supabase/contrato aplicable | schema, tipos, adaptadores y servidor convergen sobre un contrato versionado sin romper historia |
+| `RedemptionCard` convierte cualquier estado desconocido en `Pendiente` | un estado inválido o nuevo puede mostrarse como utilizable | implementación de `PASS-UX-009` + `PASS-UX-012` | fallback fail-closed y no utilizable con recuperación explícita |
+| `RedemptionCard` siempre muestra `created_at` como fecha principal | una redención usada puede mostrar creación como si fuera uso | implementación de `PASS-UX-009` | fecha visible depende del hecho representado y conserva etiquetas correctas |
+| `QrPendingCard` muestra `Listo para usar` solo por pertenecer a la lista pending | omite vigencia, cancelación concurrente o conflicto | implementación de `PASS-UX-009` + `PASS-INT-002` | usabilidad deriva de proyección autoritativa y vigencia confirmada |
+| `useLoyaltyRedemptions` no expone `expires_at` | PASS no puede representar vencimiento autoritativo desde ese shape | `PASS-INT-002` + transición de datos/contrato | proyección entrega vigencia necesaria sin duración inventada |
+| documento de esquema PASS declara que `expires_at` falta | contrato visible exige vigencia pero el runtime documentado no la materializa | `PASS-INT-002` + transición Supabase aplicable | vigencia materializada y consumida por PASS/PULSO con pruebas |
+| `processRedemption` crea `pending` y movimiento de puntos desde cliente en pasos separados | estado y ledger pueden divergir | `PASS-INT-002`, `PASS-QA-002`, `BKL-PASS-005` | operación server-side atómica e idempotente gobierna intención y efecto |
+| PULSO actual acepta cualquier `pending`, escribe `validated` y no verifica vigencia ni sede en `redemption.api.ts` | puede consumir un código vencido o territorialmente inválido | `PULSO-AUTH-010`, `PASS-INT-002`, packages propietarios | validación de código, usuario, recompensa, sede, estado, vigencia, actor y no uso previo queda implementada y probada |
+| PULSO actual distingue `validated/cancelled` por mensaje, pero no existe rama explícita de vencimiento en ese API | vencimiento contractual no está materializado en el consumidor observado | `PASS-INT-002` + PULSO/Auth propietario | código vencido se rechaza sin efecto y la razón se conserva de forma verificable |
+| filtros PASS usan `pending / validated / cancelled` | vencidos o estados nuevos pueden quedar fuera de la taxonomía visible | implementación de `PASS-UX-009` | filtros no omiten vencidos ni estados no confirmados |
+
+Ningún hallazgo autoriza cambios físicos desde esta tarea documental.
+
+---
+
+#### 21. Reversión, compensación y corrección
+
+Una corrección posterior no reescribe el hecho histórico de uso.
+
+Ejemplo conceptual:
+
+```text
+REDENCION USADA
++
+MOVIMIENTO DE REVERSIÓN O COMPENSACIÓN
+```
+
+no se representa como:
+
+```text
+REDENCION NUNCA USADA
+```
+
+Reglas:
+
+- si un canje usado debe compensarse, el recibo conserva que fue usado;
+- el movimiento correctivo conserva identidad y causa propias;
+- una cancelación previa al uso puede tener efecto de puntos diferente de una compensación posterior al uso;
+- la UI no asume devolución porque el estado cambie;
+- `PASS-UX-006` conserva la historia y `PASS-INT-002` la semántica transaccional.
+
+---
+
+#### 22. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| copy final de estados, rechazos y errores | `PASS-UX-010` |
+| navegación y rutas canónicas | `PASS-UX-011` |
+| carga, error, offline, frescura, retry y recuperación | `PASS-UX-012` |
+| validación con clientes reales | `PASS-UX-013` |
+| atomicidad, idempotencia, código, vigencia, cancelación, consumo, reversión y conciliación PULSO → PASS | `PASS-INT-002` |
+| administración laboral de productos de fidelización | `PASS-INT-003` |
+| protección operativa de redenciones | `PULSO-AUTH-010` y contratos de autorización aplicables |
+| prueba completa de redención | `PASS-QA-002` |
+| saneamiento de esquema, datos o transición de estados | tareas `SUPA-*` y packages propietarios ya definidos por el plan |
+
+`PASS-UX-009` no adelanta ni materializa esas responsabilidades.
+
+---
+
+#### 23. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** el registro vigente ya exige que la redención sea autorizada, atómica e idempotente; que PULSO valide código, usuario, recompensa, sede, estado pendiente, vigencia, actor y no utilización previa; que códigos usados, cancelados o vencidos fallen sin efecto; que la interfaz no anticipe éxito y distinga resultados ambiguos o ya aplicados; y que las superficies PASS converjan sin inventar estado. Esta tarea convierte esas obligaciones en una taxonomía visible coherente y en reglas de presentación/transición sin introducir una obligación verificable material nueva.
+
+---
+
+#### 24. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-006`, para convergencia de recompensas e historial entre experiencias estáticas y dinámicas;
+- `TREQ-PASS-008`, para contratos autorizados, atómicos e idempotentes de gasto y redención y para impedir mutación cliente del ledger;
+- `TREQ-PASS-010`, para ledger reconciliable, evento origen, regla, versión, expiración, reversión y compensación;
+- `TREQ-PASS-027`, para validar código, usuario, recompensa, sede, estado pendiente, vigencia, saldo debitado o reservado, actor efectivo y no utilización previa, y rechazar usados, cancelados o vencidos;
+- `TREQ-PASS-032`, para que procesamiento, éxito y error correspondan al resultado confirmado de servidor y distingan duplicado, conflicto, denegación y resultado ya aplicado;
+- `TREQ-PASS-034`, para conservar propiedad PASS/PULSO sin duplicar mutaciones operativas;
+- `TREQ-PASS-041`, para no asumir equivalencia uno a uno entre superficie AS-IS e identidad canónica;
+- `TREQ-PASS-042`, para detectar deriva entre inventario canónico y runtime cuando exista checkout hermano.
+
+Esta sección es únicamente trazabilidad de cobertura existente.
+
+---
+
+#### 25. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La batería documental real se ejecutará únicamente después del cierre de `PASS-UX-008` con `NEXT_TASK_ALLOWED: SI` y de la incorporación de esta tarea en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-009` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, owner, topología `PASS-UX`, catálogo `VSCREEN-0086/0110/0111`, `VPROC-0045`, Registro 04A PASS, auditorías de redención, `vento-pass/main`, hooks/componentes de redención, documento de esquema PASS, `vento-pulso/main`, API/acción/scanner de redención y los contratos TREQ vigentes. |
+| OPERATIVA | `NOT_EXECUTED` | No se creó, usó, canceló, venció, revirtió ni reconcilió una redención en ambiente desplegado, POS, Supabase remoto o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-009` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 26. Criterios de aceptación
+
+- [x] Se desarrolla exactamente `PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado`.
+- [x] No se crea una nueva identidad `VSCREEN-*`.
+- [x] `VSCREEN-0110`, `VSCREEN-0111` y `VSCREEN-0086` consumen una semántica coherente desde responsabilidades distintas.
+- [x] `PENDIENTE` se diferencia de creación local, uso y terminalidad.
+- [x] `USADO` exige confirmación autoritativa y conserva fecha real de uso.
+- [x] `CANCELADO` se diferencia de usado y vencido.
+- [x] El vencimiento queda distinguido como condición no utilizable sin exigir un enum físico nuevo.
+- [x] Un estado desconocido o inconsistente no se degrada a pendiente.
+- [x] `created_at` no se presenta como fecha de uso, cancelación ni expiración.
+- [x] El QR solo se presenta como utilizable cuando estado y vigencia lo permiten.
+- [x] El estado de redención se mantiene separado del efecto de puntos.
+- [x] Una reversión o compensación no reescribe el hecho histórico de uso.
+- [x] Se documenta la deriva AS-IS `pending/validated/cancelled` frente a `pending/used/expired` sin adoptar silenciosamente ninguna como contrato físico nuevo.
+- [x] Se documenta que PULSO AS-IS no verifica vigencia ni sede en el API observado y se asigna salida a sus propietarios canónicos.
+- [x] Las experiencias PASS deben converger sobre la misma redención.
+- [x] `PASS-UX-010` queda reservada para copy final y no se desarrolla en esta tarea.
+- [x] Se crean cero requisitos de prueba y no se modifica 04A.
+- [x] No se autoriza código, Supabase, PULSO runtime, package, CI022, piloto ni despliegue.
+
+---
+
+#### 27. Límites
+
+Esta tarea no:
+
+- implementa `RedemptionCard`, `QrPendingCard`, `QrFullscreenModal`, `useLoyaltyRedemptions` ni `processRedemption`;
+- modifica `redemption.api.ts`, `validate-redemption.action.ts` ni `qr-scanner.tsx`;
+- crea o renombra valores físicos de `status`;
+- crea `expires_at`, `cancelled_at` ni otro campo;
+- modifica constraints, tablas, RLS, RPC, Edge Functions, migraciones o datos;
+- define una duración fija de redención;
+- autoriza cancelación desde cliente;
+- decide cuándo se debitan, reservan, devuelven o compensan puntos;
+- define política económica de devolución;
+- implementa validación territorial, de actor o dispositivo;
+- define copy final de estados, errores o confirmaciones;
+- diseña navegación global;
+- resuelve estrategia offline, caché o retry completa;
+- ejecuta pruebas E2E de redención;
+- modifica Wallet;
+- autoriza packages, implementación física, CI022, piloto o despliegue;
+- desarrolla `PASS-UX-010`, `PASS-INT-002` ni `PASS-QA-002`.
+
+---
+
+#### 28. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-008 — Diseñar perfil del cliente`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-010 — Definir mensajes de error comprensibles`
 ### [ ] PASS-UX-010 — Definir mensajes de error comprensibles
 ### [ ] PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
 ### [ ] PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
