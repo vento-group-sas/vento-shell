@@ -2842,7 +2842,637 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-007 — Diseñar catálogo de recompensas`
-### [ ] PASS-UX-007 — Diseñar catálogo de recompensas
+### ✅ PASS-UX-007 — Diseñar catálogo de recompensas
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-006 — Diseñar historial
+**Tarea siguiente:** PASS-UX-008 — Diseñar perfil del cliente
+**Tipo de tarea:** documental; diseño objetivo de `VSCREEN-0109 — Catálogo de beneficios y recompensas` como workspace personal de descubrimiento de beneficios publicados por PASS, con contexto de sede o marca, condiciones, costo, vigencia, alcance y estado visibles, preservando la separación entre visibilidad, elegibilidad, intención de redención y efecto comercial; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica código, navegación runtime, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, AURA, NUMERA, NEXO, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato objetivo del catálogo de beneficios y recompensas de PASS para que el cliente pueda descubrir qué valor de fidelización está publicado para su contexto, comprender qué es, cuánto cuesta cuando aplique, bajo qué condiciones puede utilizarse, cuál es su vigencia y qué acción puede iniciar, sin confundir visibilidad con elegibilidad efectiva ni convertir una tarjeta, un favorito, una recomendación o un saldo local en autorización de canje.
+
+La tarea diseña `VSCREEN-0109 — Catálogo de beneficios y recompensas` como workspace personal de `VPROC-0045::STEP-CONSULT_REWARDS_CATALOG — Consultar beneficios y recompensas`.
+
+El resultado fija semántica, taxonomía visible, conjunto publicado, contexto territorial, condiciones mínimas, descubrimiento, orden, filtros, favoritos, recomendaciones, asequibilidad visible, handoff hacia redención y fronteras con marketing, comercio y administración. No implementa consultas, no define esquema físico, no administra productos de fidelización y no ejecuta redenciones.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-006`, que entrega:
+
+- `VSCREEN-0111` como historial reconciliable de puntos y redenciones;
+- conservación de regla, versión, referencia de origen y recibo cuando el hecho histórico lo requiera;
+- separación entre saldo actual, ledger e historia visible;
+- prohibición de ocultar hechos legítimos por filtros locales;
+- convergencia semántica entre Vento Café, Saudo y satélites dinámicos.
+
+Se conserva además la base de `PASS-UX-005`, `PASS-UX-004` y `PASS-UX-002`:
+
+- seleccionar una recompensa en catálogo no crea todavía una redención;
+- una tarjeta visible no acredita elegibilidad;
+- saldo local suficiente no reemplaza revalidación de costo, sede, vigencia, regla y disponibilidad;
+- una redención válida se crea mediante contrato autoritativo y no desde la UI;
+- el home solo resume beneficios y entrega a `VSCREEN-0109`; no replica el catálogo completo;
+- puntos, saldo gastable, acumulado histórico, nivel, Club membership y Club wallet permanecen conceptos separados.
+
+Se consume asimismo `INT-MKT-002 — Definir beneficios publicados en PASS`, que fija que beneficio definido, beneficio publicado, elegibilidad confirmada, redención y efecto comercial son estados o responsabilidades distintas.
+
+La frontera de esta tarea es exclusivamente la experiencia visible del catálogo de fidelización. No absorbe administración laboral de productos, campañas, catálogo comercial vendible, checkout, validación comercial PULSO, perfil/consentimientos, taxonomía completa de redención, copy final de errores ni estrategia offline completa.
+
+---
+
+#### 3. Identidad canónica diseñada
+
+| Campo | Decisión |
+| --- | --- |
+| Pantalla | `VSCREEN-0109 — Catálogo de beneficios y recompensas` |
+| Aplicación | `pass` |
+| Proceso | `VPROC-0045 — Identificar cliente y administrar fidelización mediante ledgers y consentimientos separados` |
+| Paso | `VPROC-0045::STEP-CONSULT_REWARDS_CATALOG — Consultar beneficios y recompensas` |
+| Acción | `MONITOR` |
+| Posición | `IN_PROGRESS` |
+| Patrón | `OWNER_WORKSPACE` |
+| Proceso relacionado | `VPROC-0017 — Publicar oferta y disponibilidad desde una definición gobernada hacia todos los canales` únicamente como relación de condiciones comerciales cuando corresponda |
+| Fuente de fidelización | beneficio/recompensa + regla + versión gobernados por PASS |
+| Salida de cliente | proyección publicada, contextual y comprensible |
+| Handoff de redención | `VSCREEN-0110 — Ticket o QR de redención` mediante `PASS-UX-005` |
+| Topología | `DEFINE_ONCE` |
+| Estado físico | `NO_PHYSICAL_INSTANCE` |
+
+`VSCREEN-0109` no es menú de venta, campaña, catálogo de inventario ni administración laboral. Proyecta valor de fidelización publicado por PASS sin apropiarse de las fuentes empresariales externas que puedan condicionar ese valor.
+
+---
+
+#### 4. Fuentes y snapshots verificados
+
+| Fuente | Snapshot observado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` | `2e89e287faee0804823dbd8fb805aa3878fe7905` | plan, continuidad, topología, ownership, catálogo de pantallas, 04A PASS y validadores |
+| archivo propietario de PASS | blob `c09bfa2195d1cd46c892c34ca3c9a197e97ff277` | base remota con `PASS-UX-005` aprobada y marcadores `PASS-UX-006+` reservados |
+| `PASS-UX-006_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `da0649c67086b45ea74bdcae69be45dd61555b725ac775fa9002fe5b856c0b76` | base documental inmediata aprobada por el usuario y pendiente de incorporación |
+| catálogo proceso-pantalla canónico | blob `742ead71e5fc5c4ae85a3cb6a00feb858ba8c2a0` | identidad, propósito y paso de `VSCREEN-0109` |
+| `INT-MKT-002` dentro del bloque de marketing/beneficios | blob `5b02ca2063c297c88a0ae10c9695289813a75bc1` | frontera beneficio publicado, elegibilidad, redención, campaña y efecto comercial |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura vigente de convergencia, contratos autorizados, reglas versionadas y ledger |
+| `carlosibarraariza/vento-pass` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS verificable |
+| `src/hooks/useLoyaltyRewards.ts` | blob `59ea4a33ae6f4d4f8c145fad47f5ade4ce673966` | lectura AS-IS por `site_id`, `is_active`, costo ascendente y caché de 60 s |
+| `src/components/vento/ProductCard.tsx` | blob `54b274d7733fc7f33629e2dde6073f238a675414` | tarjeta AS-IS, costo, asequibilidad local, favorito y CTA `Canjear` |
+| `src/components/vento/CategoryFilters.tsx` | blob `09c67c69bf10f1c4c4134a0ae8995eb203ab3cdc` | filtros AS-IS por categoría |
+| `src/hooks/useRecommendations.ts` | blob `aa24224f8ec9c0d2ee05da651469ff5d4dd1242a` | recomendaciones AS-IS basadas en redenciones previas y costo |
+| `src/hooks/useFavorites.ts` | blob `48b6317395bee108d2be7872db4dddc4e6261f79` | persistencia AS-IS de favoritos por cliente |
+| `src/components/VentoCafe.tsx` | blob `b7d592486b935f2f3415ddb4390390df9efa35f7` | catálogo estático AS-IS de Vento Café |
+| `src/components/Saudo.tsx` | blob `f63602bf604ff3c045256205bff09fbed0276dd2` | catálogo estático AS-IS de Saudo |
+| `src/components/SatelliteExperience.tsx` | blob `7d0cc7fd9be280844af2810b9c507dfad5764dc3` | catálogo dinámico AS-IS por satélite |
+| `src/utils/redemption.ts` | blob `845e4b33ba442bef12c40b8846c3730cfbe71319` | revalidación AS-IS de reward, sede, costo y saldo antes del canje |
+
+La preparación usa la versión completa aprobada de `PASS-UX-006` como base inmediata aunque su incorporación a `main` permanezca condicionada al cierre documental anterior.
+
+---
+
+#### 5. Semántica contractual del catálogo
+
+El catálogo PASS representa beneficios y recompensas que pueden mostrarse al cliente bajo un contexto autorizado.
+
+```text
+BENEFICIO DEFINIDO EN PASS
+→ REGLA + VERSION
+→ BENEFICIO PUBLICADO
+→ PROYECCION EN VSCREEN-0109
+```
+
+La proyección visible no significa:
+
+```text
+ELEGIBILIDAD CONFIRMADA
+REDENCION CREADA
+REDENCION USADA
+DESCUENTO APLICADO
+VENTA CONFIRMADA
+CAMPANA ACTIVA
+```
+
+La regla raíz es:
+
+```text
+VISIBLE
+≠
+ELEGIBLE
+≠
+REDIMIDO
+≠
+APLICADO EN VENTA
+```
+
+El catálogo comunica posibilidades y condiciones de fidelización; el servidor y los contratos propietarios deciden si una operación concreta puede ejecutarse.
+
+---
+
+#### 6. Taxonomía visible de valor
+
+La experiencia debe conservar identidades funcionales distintas.
+
+| Concepto | Significado | No equivale a |
+| --- | --- | --- |
+| puntos | unidad del ledger y saldo de fidelización | recompensa |
+| recompensa | objeto o valor obtenible bajo una regla | cupón o promoción por defecto |
+| beneficio | valor de fidelización gobernado por PASS | campaña |
+| cupón | instrumento o referencia aplicable bajo condiciones | saldo de puntos |
+| nivel | condición de relación o progreso | recompensa consumida |
+| membresía | relación o programa | saldo monetario Club |
+| promoción | intención comercial con condiciones | beneficio PASS por defecto |
+| cortesía | decisión distinta de fidelización ordinaria | recompensa de puntos por defecto |
+| beneficio por campaña | beneficio PASS correlacionado con iniciativa autorizada | campaña almacenada en PASS |
+
+La UI no colapsa estas identidades bajo una sola etiqueta genérica si ello cambia su autoridad, condición de uso o efecto.
+
+---
+
+#### 7. Unidad visible de catálogo
+
+La unidad primaria es un `BENEFICIO_PUBLICADO_VISIBLE` o `RECOMPENSA_PUBLICADA_VISIBLE` derivado de una fuente PASS autorizada.
+
+Cada tarjeta o detalle debe poder expresar, cuando aplique y exista fuente confirmada:
+
+| Campo | Regla |
+| --- | --- |
+| identidad estable | no depende de índice visual, posición o nombre |
+| nombre | procede de la versión publicada vigente |
+| descripción | explica el valor sin sustituir condiciones |
+| tipo | diferencia recompensa, beneficio, cupón u otra identidad aprobada |
+| costo en puntos | solo cuando el valor utilice puntos; proviene de regla vigente |
+| regla y versión | trazables aunque no necesariamente expuestas completas al cliente |
+| vigencia | fecha/rango o condición temporal cuando aplique |
+| condiciones | requisitos relevantes para comprender el uso |
+| límites y exclusiones | restricciones necesarias antes de iniciar redención |
+| alcance | marca, sede, canal o cliente cuando la regla lo establezca |
+| estado publicable | impide mostrar como utilizable un valor retirado, vencido o no disponible |
+| media | imagen o representación visual secundaria; nunca autoridad de identidad |
+| acción disponible | handoff hacia revisión/redención, sin afirmar resultado antes del servidor |
+
+La tarea no crea columnas físicas para estos campos. Si una fuente AS-IS no los representa, la implementación posterior deberá consumir o adaptar el contrato autorizado correspondiente.
+
+---
+
+#### 8. Publicación, vigencia y disponibilidad
+
+`is_active = true` en el runtime actual es una señal AS-IS de publicación, pero no basta para representar por sí sola todas las condiciones canónicas.
+
+El catálogo objetivo distingue:
+
+```text
+PUBLICADO
+VIGENTE
+VISIBLE EN CONTEXTO
+POSIBLEMENTE ELEGIBLE
+ELEGIBLE AL VALIDAR
+```
+
+Reglas:
+
+1. un elemento retirado no se presenta como canjeable nuevo;
+2. un elemento vencido no se mantiene utilizable por caché o favorito;
+3. una regla futura o todavía no vigente no se presenta como actualmente utilizable;
+4. un elemento publicado puede exigir condiciones adicionales de elegibilidad;
+5. un cambio de costo, condición, límite o vigencia debe conservar versión;
+6. una proyección desactualizada no conserva autoridad por haber sido mostrada antes;
+7. retirar una proyección no borra historia ni recibos ya generados bajo otra versión.
+
+La definición física de estados, vigencias y versionado pertenece a contratos/administración posteriores ya propietarios; esta tarea fija únicamente su semántica visible.
+
+---
+
+#### 9. Contexto de sede, marca y canal
+
+El catálogo debe resolver el contexto de forma determinista.
+
+Reglas:
+
+- un reward o beneficio limitado por sede se muestra únicamente dentro de la sede autorizada;
+- una experiencia no consulta rewards de otra sede para llenar un catálogo vacío;
+- la ausencia de `site_id` o contexto no autoriza una consulta global implícita;
+- un beneficio global futuro requiere alcance global explícito; no se infiere desde `null`;
+- nombre de marca, sede, dirección o etiquetas comerciales proceden de fuentes canónicas, no de literales divergentes;
+- cambiar de satélite cambia el contexto consultado, no reescribe la identidad del beneficio;
+- Vento Café, Saudo y `SatelliteExperience` deben converger sobre la misma semántica aunque utilicen superficies distintas.
+
+El comportamiento AS-IS de `useLoyaltyRewards` de no consultar sin un `site_id` válido preserva la frontera anti-fuga entre sedes y no se convierte por esta tarea en una regla para beneficios globales no definidos.
+
+---
+
+#### 10. Costo en puntos y asequibilidad visible
+
+El catálogo puede ayudar al cliente a entender cuánto cuesta una recompensa y si su saldo confirmado parece suficiente para iniciar el flujo.
+
+Se distinguen:
+
+```text
+COSTO PUBLICADO
+SALDO CONFIRMADO
+ASEQUIBILIDAD VISUAL
+ELEGIBILIDAD TRANSACCIONAL
+```
+
+Reglas:
+
+1. el costo visible procede de la regla/version vigente;
+2. la UI puede mostrar progreso hacia el costo cuando dispone de saldo confirmado;
+3. `saldo >= costo` permite únicamente presentar una capacidad de inicio, no confirmar elegibilidad;
+4. `saldo < costo` puede explicar faltante cuando ambos valores estén confirmados;
+5. saldo desconocido, error de lectura o dato stale no se convierten en cero confirmado ni en `No alcanza` definitivo;
+6. el umbral AS-IS del 80 % usado para el estado “Faltan N pts” es una decisión visual actual, no una regla canónica de elegibilidad;
+7. el servidor revalida costo, saldo, sede, vigencia y demás condiciones al iniciar la redención.
+
+`PASS-UX-005` conserva la experiencia de revisión y creación de intención de redención.
+
+---
+
+#### 11. Descubrimiento por búsqueda y categoría
+
+Búsqueda y categorías son ayudas de descubrimiento sobre el conjunto publicado permitido.
+
+La búsqueda puede considerar campos visibles como:
+
+- nombre;
+- descripción;
+- categoría cuando exista taxonomía autorizada.
+
+Los filtros por categoría:
+
+- no cambian elegibilidad;
+- no hacen visible un elemento fuera del contexto autorizado;
+- no convierten metadata libre en taxonomía canónica por inferencia;
+- deben permitir volver al conjunto completo del alcance consultado;
+- no ocultan permanentemente elementos por una categoría desconocida o ausente.
+
+El uso AS-IS de `metadata.category` se registra como adaptación actual. Esta tarea no canoniza esos valores libres como taxonomía empresarial definitiva.
+
+---
+
+#### 12. Favoritos
+
+Favorito significa preferencia de descubrimiento del cliente, no disponibilidad ni reserva.
+
+Reglas:
+
+1. marcar favorito no crea una recompensa;
+2. no reserva stock, cupo, beneficio ni saldo;
+3. no extiende vigencia;
+4. no evita retiro o cambio de regla;
+5. no convierte al cliente en elegible;
+6. un favorito que deja de estar publicado no permanece como CTA utilizable;
+7. si el sistema conserva la referencia histórica del favorito, debe diferenciar “ya no disponible” de “disponible para canje”;
+8. la vista `Favoritos` sigue siendo un filtro del catálogo autorizado, no un catálogo paralelo.
+
+`user_favorites` AS-IS es una preferencia del cliente y no una fuente de verdad de rewards.
+
+---
+
+#### 13. Recomendaciones
+
+Las recomendaciones son una capa de orden o destaque sobre recompensas ya publicadas y permitidas.
+
+Reglas:
+
+- una recomendación no crea ni activa beneficios;
+- no puede introducir rewards de otra sede o fuera de vigencia;
+- no puede omitir del conjunto general una recompensa válida de forma que deje de ser descubrible;
+- recomendar por historial de redención no cambia la autoridad del catálogo;
+- la recomendación no acredita elegibilidad;
+- el algoritmo puede evolucionar sin cambiar el contrato de `VSCREEN-0109`;
+- cualquier uso de datos personales debe respetar finalidad, autorización y contratos de perfil/consentimiento aplicables;
+- si no existe base suficiente para recomendar, el catálogo general sigue disponible.
+
+El algoritmo AS-IS prioriza categorías previamente redimidas y costo ascendente. Esa estrategia no se canoniza como regla de negocio.
+
+---
+
+#### 14. Integridad del conjunto visible
+
+Si la interfaz separa “Recomendados” y “Todos”, el conjunto debe conservar integridad.
+
+```text
+RECOMENDADOS
+∪
+LISTA PRINCIPAL
+=
+CATALOGO VISIBLE DEL CONTEXTO
+```
+
+con la condición de que una misma identidad no se duplique visualmente dentro de la misma vista salvo que exista una razón explícita de navegación.
+
+Reglas:
+
+- retirar recomendaciones de la lista principal es válido solo si siguen visibles en la sección recomendada;
+- activar búsqueda, categoría o favoritos puede ocultar la sección recomendada sin cambiar el universo autorizado;
+- “Todos” no significa todo VENTO si el contexto contractual es una sede concreta;
+- un conjunto vacío debe distinguir “no hay elementos publicados para este contexto” de error, contexto no resuelto o filtro sin coincidencias.
+
+La redacción final de vacíos y errores permanece reservada a `PASS-UX-010` y `PASS-UX-012`.
+
+---
+
+#### 15. Orden del catálogo
+
+El orden visual es una decisión de presentación, no de autoridad.
+
+Puede considerar, según implementación aprobada:
+
+- costo en puntos;
+- prioridad editorial de fidelización;
+- categoría;
+- recomendación personalizada;
+- vigencia o proximidad de expiración cuando el contrato lo permita.
+
+Invariantes:
+
+- ordenar por costo ascendente no implica que el más barato sea el más recomendado;
+- posición superior no significa elegibilidad confirmada;
+- una promoción no puede comprar prioridad dentro de PASS sin un contrato autorizado;
+- el orden no altera costo, regla, vigencia ni alcance;
+- reordenar no crea identidades duplicadas.
+
+El orden AS-IS por `points_cost` ascendente permanece evidencia de runtime, no norma permanente.
+
+---
+
+#### 16. Handoff hacia redención
+
+El catálogo termina su responsabilidad cuando el cliente selecciona un valor para revisar o intentar redimirlo.
+
+Flujo objetivo:
+
+```text
+VSCREEN-0109
+beneficio/recompensa visible
+        ↓
+SELECCIONAR
+        ↓
+REVISAR CONDICIONES Y COSTO VIGENTES
+        ↓
+VSCREEN-0110 / PASS-UX-005
+crear intención de redención por contrato autoritativo
+        ↓
+PULSO valida/consume cuando corresponda
+```
+
+La acción visible puede llamarse “Canjear” u otra etiqueta aprobada, pero su presencia significa `INICIAR FLUJO`, no `CANJE CONFIRMADO`.
+
+Ante cambios entre catálogo y confirmación:
+
+- costo nuevo prevalece si la regla vigente así lo determina;
+- una recompensa retirada no se fuerza por haber sido seleccionada previamente;
+- el saldo se vuelve a confirmar;
+- la sede y vigencia se vuelven a validar;
+- la UI presenta el resultado autoritativo y no conserva una promesa basada en el snapshot anterior.
+
+---
+
+#### 17. Frontera con catálogo comercial y producto
+
+`VSCREEN-0109` no es `VSCREEN-0161 — Menú y catálogo comercial del cliente`.
+
+Se conserva:
+
+```text
+CATALOGO DE RECOMPENSAS PASS
+≠
+MENU VENDIBLE
+≠
+INVENTARIO
+≠
+RECETA
+≠
+PRECIO COMERCIAL
+```
+
+Consecuencias:
+
+- una recompensa puede referenciar un producto sin convertirse en maestro de producto;
+- NEXO conserva atributos maestros de producto cuando correspondan;
+- FOGO/NEXO conservan disponibilidad/capacidad operacional según el hecho;
+- PULSO conserva oferta vendible y operación comercial;
+- NUMERA conserva verdad económica;
+- el catálogo PASS no calcula stock, margen o precio de venta por inferencia;
+- si una regla de recompensa depende de disponibilidad externa, la dependencia se valida por su contrato propietario y no mediante copia manual dentro de la tarjeta.
+
+---
+
+#### 18. Frontera con marketing y campañas
+
+PASS conserva fidelización; una campaña no se convierte en recompensa por ser visible.
+
+Se mantiene:
+
+```text
+CAMPANA
+≠
+PROMOCION
+≠
+BENEFICIO PASS
+≠
+RECOMPENSA PASS
+≠
+REGLA TRANSACCIONAL PULSO
+```
+
+Reglas:
+
+1. un beneficio PASS puede existir sin campaña;
+2. una campaña autorizada puede correlacionar un beneficio sin apropiárselo;
+3. mostrar una pieza promocional no crea una recompensa;
+4. AURA no decide elegibilidad de fidelización;
+5. PASS no se convierte en sistema de campañas por mostrar beneficios;
+6. PULSO no mantiene un maestro paralelo de beneficios por validarlos en una venta;
+7. una referencia de campaña solo aparece cuando existe correlación autorizada;
+8. mientras AURA permanezca diferida, el catálogo PASS no depende de AURA para conservar beneficios propios.
+
+---
+
+#### 19. Frontera con nivel, membresía y Club
+
+El catálogo no mezcla programas con naturalezas distintas.
+
+- nivel PASS puede condicionar un beneficio, pero no es una recompensa consumida;
+- membresía puede habilitar beneficios, pero no equivale a saldo de puntos;
+- Club membership y Club wallet permanecen separados de puntos PASS;
+- un beneficio de Club solo aparece en `VSCREEN-0109` si existe contrato explícito que lo proyecte como beneficio PASS o relacionado sin borrar su identidad;
+- dinero, crédito o saldo monetario no se presenta como puntos;
+- una ventaja de nivel no requiere inventar un `points_cost` cuando su regla no usa puntos.
+
+---
+
+#### 20. Caché, frescura y actualización
+
+El runtime AS-IS conserva un caché de rewards de 60 segundos por sede. Ese caché es una optimización, no una fuente de autoridad.
+
+La experiencia debe preservar:
+
+- identidad del contexto cacheado;
+- momento o condición de frescura cuando sea material;
+- invalidación o revalidación antes de una acción sensible;
+- ausencia de fuga entre sedes;
+- capacidad de reemplazar una proyección stale por la versión vigente;
+- no afirmar vigencia actual únicamente porque una tarjeta quedó en memoria.
+
+`PASS-UX-012` definirá carga, offline, error, retry y recuperación. `PASS-UX-007` fija que ninguna estrategia de caché puede transformar datos stale en elegibilidad o canje autorizado.
+
+---
+
+#### 21. Hallazgos AS-IS y handoff
+
+| Hallazgo | Impacto | Propietario | Condición de salida |
+| --- | --- | --- | --- |
+| `useLoyaltyRewards` selecciona `id`, `code`, `name`, `description`, `points_cost`, `is_active` y `metadata`, sin contrato visible de vigencia, límites, exclusiones, tipo y versión | catálogo actual no puede explicar todas las condiciones canónicas | `PASS-UX-007` para contrato visible; `PASS-INT-003` y package propietario para materialización administrativa/datos | la proyección autorizada expone condiciones necesarias sin inventar columnas ni metadata implícita |
+| `metadata.category` funciona como categoría AS-IS | valores libres pueden convertirse accidentalmente en taxonomía canónica | implementación PASS + administración propietaria | categorías visibles provienen de taxonomía/contrato gobernado o permanecen claramente adaptativas |
+| `ProductCard` decide `canAfford` con saldo local y costo local | puede confundirse capacidad visual con elegibilidad real | `PASS-UX-007` + `PASS-UX-005` | CTA significa iniciar revisión; servidor revalida costo, saldo, sede, vigencia y condiciones |
+| `ProductCard` usa umbral local de 80 % para “Faltan N pts” | heurística visual puede parecer regla de programa | implementación PASS | el umbral queda solo como presentación o se retira; nunca gobierna elegibilidad |
+| `userData?.loyalty_points || 0` puede colapsar dato ausente/error en cero | un fallo puede presentarse como insuficiencia de puntos | `PASS-UX-012` + implementación posterior | desconocido/error y cero confirmado permanecen estados distintos |
+| recomendaciones AS-IS se derivan de redenciones previas y costo | algoritmo local puede percibirse como regla oficial | `PASS-UX-007` | recomendaciones quedan como orden/destaque sobre catálogo autorizado, sin cambiar elegibilidad |
+| recomendados se excluyen de la lista principal mientras la sección esté visible | una implementación incorrecta puede omitir elementos del conjunto | `PASS-UX-007` | unión de recomendados + lista principal conserva todo el catálogo visible sin duplicidad |
+| favoritos se guardan por `reward_id` | un favorito retirado podría conservar una referencia obsoleta | `PASS-UX-007` | preferencia no mantiene utilizable un reward retirado/vencido |
+| `ProductCard` conserva `brandLabel = "Vento Café"` como default reutilizable | un caller incompleto puede mostrar contexto de marca incorrecto | `PASS-UX-007` + convergencia de superficies | contexto de marca/sede se resuelve desde fuente canónica, no desde default accidental |
+| Vento Café, Saudo y satélites duplican lógica de filtros/recomendaciones | riesgo de deriva semántica entre experiencias | `PASS-UX-007`, `PASS-UX-011`, package de convergencia | misma semántica de catálogo y navegación demostrada en todas las rutas |
+| `processRedemption` revalida reward, `site_id`, costo y saldo | confirma que la tarjeta no es autoridad de canje | `PASS-UX-005` / `PASS-INT-002` | creación de intención usa contrato autoritativo, atómico e idempotente |
+
+Ningún hallazgo autoriza cambios físicos dentro de esta tarea documental.
+
+---
+
+#### 22. Responsabilidad de tareas posteriores
+
+| Responsabilidad | Tarea propietaria |
+| --- | --- |
+| perfil, privacidad, preferencias y consentimientos | `PASS-UX-008` |
+| taxonomía y diferenciación completa pendiente/usado/cancelado | `PASS-UX-009` |
+| copy final de condiciones, avisos, vacíos y errores | `PASS-UX-010` |
+| rutas, aliases y navegación canónicas hacia catálogo | `PASS-UX-011` |
+| carga, error, offline, retry, caché y recuperación móvil | `PASS-UX-012` |
+| validación con clientes reales | `PASS-UX-013` |
+| creación y presentación de intención de redención | `PASS-UX-005` |
+| historial de movimientos y redenciones | `PASS-UX-006` |
+| integración de redención PULSO → PASS | `PASS-INT-002` |
+| administración laboral de productos de fidelización | `PASS-INT-003` |
+| administración de cliente y separación de identidades | `PASS-INT-004`, `PASS-INT-005` |
+| validación comercial del efecto | `INT-MKT-003` |
+| campañas/promociones y sus guardas | tareas AURA propietarias cuando su puerta permita continuidad |
+| pruebas completas de redención | `PASS-QA-002` |
+
+---
+
+#### 23. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** convergencia de recompensas entre experiencias, contratos autorizados para gasto/redención, preservación de reglas/versiones y no duplicación de beneficios ya cuentan con cobertura vigente. Esta tarea materializa el diseño visible de `VSCREEN-0109` y consume la frontera ya aprobada de beneficios publicados en PASS sin introducir una obligación verificable nueva ni alterar el Registro 04A.
+
+---
+
+#### 24. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza como cobertura principal:
+
+- `TREQ-PASS-006` para convergencia de `site_id`, marca, recompensas e historial entre experiencias estáticas y dinámicas;
+- `TREQ-PASS-008` para que gasto, ajuste, reversión y redención se ejecuten mediante contratos autorizados, atómicos e idempotentes y no por mutación cliente del ledger;
+- `TREQ-PASS-010` para reglas/versiones, ledger reconciliable, saldo como proyección y no duplicación de puntos o beneficios;
+- `TREQ-PASS-041` para reconciliar superficies AS-IS con identidades canónicas sin asumir equivalencia uno a uno;
+- `TREQ-PASS-042` para detectar deriva entre inventario canónico y runtime PASS cuando exista checkout hermano.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el registro.
+
+---
+
+#### 25. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental se ejecutará únicamente cuando `PASS-UX-006` cierre con `NEXT_TASK_ALLOWED: SI` y esta tarea pueda incorporarse en su rama propia. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto `task/pass-ux-007` ni se ha reemplazado el marcador en el checkout del usuario. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, archivo propietario, topología `PASS-UX`, `VSCREEN-0109`, `VPROC-0045::STEP-CONSULT_REWARDS_CATALOG`, `INT-MKT-002`, Registro 04A PASS, `vento-pass/main`, `useLoyaltyRewards`, `ProductCard`, `CategoryFilters`, `useRecommendations`, `useFavorites`, `VentoCafe`, `Saudo`, `SatelliteExperience` y `redemption.ts`. |
+| OPERATIVA | `NOT_EXECUTED` | No se ejecutó catálogo, búsqueda, favoritos, recomendaciones, caché, cambio de sede, elegibilidad ni redención en ambiente desplegado o dispositivo real. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-007` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no existe unidad física propia que certificar. |
+
+---
+
+#### 26. Criterios de aceptación
+
+- [x] Se diseña exactamente `PASS-UX-007 — Diseñar catálogo de recompensas`.
+- [x] El objetivo queda anclado a `VSCREEN-0109` y `VPROC-0045::STEP-CONSULT_REWARDS_CATALOG`.
+- [x] Beneficio definido, beneficio publicado, elegibilidad, redención y efecto comercial permanecen distintos.
+- [x] El catálogo conserva identidad, tipo, condiciones, costo cuando aplique, vigencia, límites, exclusiones y alcance cuando existan fuentes autorizadas.
+- [x] `is_active` AS-IS no se convierte en sustituto universal de vigencia o elegibilidad.
+- [x] El catálogo evita fuga de rewards entre sedes y no infiere un catálogo global desde contexto ausente.
+- [x] Búsqueda, categoría, favoritos y recomendaciones operan únicamente sobre el conjunto autorizado.
+- [x] Favorito no reserva, extiende vigencia ni acredita elegibilidad.
+- [x] Recomendación no crea, activa ni vuelve elegible un beneficio.
+- [x] Recomendados + lista principal preservan el conjunto visible sin omisiones ni duplicados funcionales.
+- [x] El orden por costo AS-IS no se canoniza como regla de negocio.
+- [x] Asequibilidad visual se distingue de elegibilidad transaccional.
+- [x] Error o saldo desconocido no se convierten en cero confirmado ni insuficiencia definitiva.
+- [x] El CTA del catálogo inicia revisión/redención; no confirma el canje.
+- [x] El catálogo de recompensas permanece separado del menú comercial, inventario, precio de venta y campañas.
+- [x] PASS conserva fidelización; PULSO conserva ejecución comercial; AURA no se apropia del beneficio por correlación de campaña.
+- [x] Vento Café, Saudo y satélites dinámicos quedan sujetos a la misma semántica de catálogo.
+- [x] La administración laboral de productos queda reservada a `PASS-INT-003`.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, Supabase, PULSO runtime, AURA, NUMERA, NEXO, package, CI022, piloto ni despliegue.
+- [x] `PASS-UX-008` queda reservada y no se desarrolla en esta tarea.
+
+---
+
+#### 27. Límites
+
+Esta tarea no:
+
+- implementa `VSCREEN-0109`;
+- modifica `useLoyaltyRewards.ts`, `ProductCard.tsx`, `CategoryFilters.tsx`, `useRecommendations.ts`, `useFavorites.ts`, `VentoCafe.tsx`, `Saudo.tsx`, `SatelliteExperience.tsx` ni `redemption.ts`;
+- crea tablas, columnas, índices, vistas, RPC, funciones, triggers, RLS, Edge Functions o migraciones;
+- define nombres físicos para regla, versión, vigencia, límites o exclusiones;
+- crea taxonomía persistida de categorías por inferencia desde `metadata.category`;
+- administra altas, bajas o cambios de rewards;
+- decide stock, disponibilidad productiva, margen, costo o precio comercial;
+- convierte catálogo de fidelización en menú de venta;
+- convierte campaña en beneficio ni beneficio en campaña;
+- convierte favorito o recomendación en elegibilidad;
+- confirma redención desde la tarjeta;
+- define el algoritmo definitivo de recomendaciones;
+- define copy final de vacíos, condiciones, advertencias o errores;
+- consolida rutas, deep links o aliases;
+- define estrategia offline/retry completa;
+- modifica Wallet, Club wallet o balance monetario;
+- modifica datos, Supabase, secretos o despliegues;
+- autoriza packages, implementación física, CI022, piloto ni rollout;
+- declara validación operativa realizada;
+- desarrolla `PASS-UX-008`, `PASS-UX-009`, `PASS-UX-011`, `PASS-INT-002`, `PASS-INT-003` ni `INT-MKT-003`.
+
+---
+
+#### 28. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-006 — Diseñar historial`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-007 — Diseñar catálogo de recompensas`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-008 — Diseñar perfil del cliente`
 ### [ ] PASS-UX-008 — Diseñar perfil del cliente
 ### [ ] PASS-UX-009 — Diferenciar estado pendiente, usado y cancelado
 ### [ ] PASS-UX-010 — Definir mensajes de error comprensibles
