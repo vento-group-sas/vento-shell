@@ -93,9 +93,16 @@ export function classifyTaskFinishContinuity({
     return { allowed: true, mode: 'STANDARD' };
   }
 
-  const baseCurrentTaskId = activeSequenceTaskIds(baseActiveSequence)[0] ?? null;
-  const baseNextTaskId = activeSequenceTaskIds(baseActiveSequence)[1] ?? null;
+  const baseTaskIds = activeSequenceTaskIds(baseActiveSequence);
+  const baseCurrentTaskId = baseTaskIds[0] ?? null;
+  const baseLastTaskId = baseTaskIds.at(-1) ?? null;
+  const baseNextTaskId = baseTaskIds[1] ?? null;
   const baseHandoffTaskId = String(baseActiveSequence?.handoff_task_id ?? '').trim();
+  const basePriorityReturnTaskId = String(
+    baseActiveSequence?.post_priority_route?.first_pending_task_id ?? '',
+  ).trim();
+  const baseReturnPolicy = String(baseActiveSequence?.return_policy ?? '').trim();
+
   const activeSequenceTransition = (
     activeSequenceCurrent === true
     && baseCurrentTaskId === taskId
@@ -109,13 +116,30 @@ export function classifyTaskFinishContinuity({
 
   const terminalStageTransition = (
     activeSequenceCurrent === true
-    && baseCurrentTaskId === taskId
+    && baseLastTaskId === taskId
     && baseHandoffTaskId.length > 0
     && continuityCurrent === baseHandoffTaskId
   );
 
   if (terminalStageTransition) {
     return { allowed: true, mode: 'TERMINAL_STAGE_TRANSITION' };
+  }
+
+  const priorityRouteReturn = (
+    activeSequenceCurrent === true
+    && baseLastTaskId === taskId
+    && baseHandoffTaskId.length === 0
+    && basePriorityReturnTaskId.length > 0
+    && baseActiveSequence?.priority_route_complete === false
+    && (
+      baseReturnPolicy === 'RETURN_TO_NORMAL_AFTER_PRIORITY_COMPLETION'
+      || baseReturnPolicy === 'RETURN_TO_NORMAL_AFTER_PRIORITY_CERTIFICATION'
+    )
+    && continuityCurrent === basePriorityReturnTaskId
+  );
+
+  if (priorityRouteReturn) {
+    return { allowed: true, mode: 'PRIORITY_ROUTE_RETURN' };
   }
 
   return { allowed: false, mode: 'CONTINUITY_MISMATCH' };

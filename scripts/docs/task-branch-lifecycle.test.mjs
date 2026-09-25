@@ -158,6 +158,54 @@ test('finish admite cierre terminal solo contra el handoff declarado por main', 
   );
 });
 
+test('finish admite retorno desde ruta prioritaria completada a ruta normal', () => {
+  const baseActiveSequence = {
+    task_ids: ['PRIORITY-TEST-001', 'PRIORITY-TEST-002'],
+    handoff_task_id: null,
+    return_policy: 'RETURN_TO_NORMAL_AFTER_PRIORITY_COMPLETION',
+    priority_route_complete: false,
+    post_priority_route: {
+      first_pending_task_id: 'NORMAL-TEST-001',
+    },
+  };
+
+  assert.deepEqual(
+    classifyTaskFinishContinuity({
+      taskId: 'PRIORITY-TEST-002',
+      taskState: 'APROBADA',
+      continuityPrevious: 'NORMAL-PRE-001',
+      continuityCurrent: 'NORMAL-TEST-001',
+      activeSequenceCurrent: true,
+      baseActiveSequence,
+    }),
+    { allowed: true, mode: 'PRIORITY_ROUTE_RETURN' },
+  );
+
+  assert.deepEqual(
+    classifyTaskFinishContinuity({
+      taskId: 'PRIORITY-TEST-001',
+      taskState: 'APROBADA',
+      continuityPrevious: 'NORMAL-PRE-001',
+      continuityCurrent: 'NORMAL-TEST-001',
+      activeSequenceCurrent: true,
+      baseActiveSequence,
+    }),
+    { allowed: false, mode: 'CONTINUITY_MISMATCH' },
+  );
+
+  assert.deepEqual(
+    classifyTaskFinishContinuity({
+      taskId: 'PRIORITY-TEST-002',
+      taskState: 'APROBADA',
+      continuityPrevious: 'NORMAL-PRE-001',
+      continuityCurrent: 'NORMAL-TEST-002',
+      activeSequenceCurrent: true,
+      baseActiveSequence,
+    }),
+    { allowed: false, mode: 'CONTINUITY_MISMATCH' },
+  );
+});
+
 test('parsea git status sin perder rutas renombradas', () => {
   const source = [
     ' M docs/plan-canonico/modular/active-sequence.json',

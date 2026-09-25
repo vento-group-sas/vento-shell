@@ -38,10 +38,12 @@ installTerminalSafeConsole();
 const root = process.cwd();
 
 try {
+  const { syncPlanContinuity } = await import('./plan-continuity-final-newline.mjs');
   const {
     deriveImplementationControl,
     ensurePendingImplementationRecord,
   } = await import('./implementation-control.mjs');
+  syncPlanContinuity({ root, checkOnly: false });
   const preBuildControl = deriveImplementationControl({ root });
   ensurePendingImplementationRecord({ root, control: preBuildControl });
 } catch (error) {
