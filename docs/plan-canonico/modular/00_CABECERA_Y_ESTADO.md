@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1333** |
+| Tareas aprobadas | **1334** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **263** |
+| Tareas no iniciadas | **262** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.52% (1333/1596)** |
+| Porcentaje de completamiento | **83.58% (1334/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-AUTH-012 — Integrar contexto operativo donde aplique** |
-| Tarea actual | **ORIGO-AUTH-013 — Mantener administración sin check-in** |
+| Última tarea aprobada | **ORIGO-AUTH-013 — Mantener administración sin check-in** |
+| Tarea actual | **ORIGO-AUTH-014 — Migrar a paquetes de vento-shell** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-AUTH-014 — Migrar a paquetes de vento-shell** |
+| Siguiente tarea | **ORIGO-AUTH-015 — Ejecutar pruebas integrales** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 46 de 65 aprobadas; ORIGO-AUTH-013 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 47 de 65 aprobadas; ORIGO-AUTH-014 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-AUTH-013** |
+| Carril documental | **ACTIVO — ORIGO-AUTH-014** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-AUTH-012` — Integrar contexto operativo donde aplique |
-| Tarea actual | `ORIGO-AUTH-013` — Mantener administración sin check-in — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-AUTH-014` — Migrar a paquetes de vento-shell |
+| Última aprobada | `ORIGO-AUTH-013` — Mantener administración sin check-in |
+| Tarea actual | `ORIGO-AUTH-014` — Migrar a paquetes de vento-shell — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-AUTH-015` — Ejecutar pruebas integrales |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 46 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-013** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 47 DE 65 APROBADAS — ACTUAL ORIGO-AUTH-014** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-AUTH-012 — Integrar contexto operativo donde aplique
-        ↓
-TAREA ACTUAL
 ORIGO-AUTH-013 — Mantener administración sin check-in
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-AUTH-014 — Migrar a paquetes de vento-shell
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-AUTH-015 — Ejecutar pruebas integrales
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 46 de 65 tareas aprobadas
+BLOQUES L Y M — 47 de 65 tareas aprobadas
 ```
