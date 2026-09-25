@@ -20,23 +20,23 @@
 | Fragmentos canónicos | **315** |
 | Tareas canónicas con marcador | **1596** |
 | Tareas `AUTH` únicas | **319** |
-| Tareas aprobadas | **1337** |
+| Tareas aprobadas | **1338** |
 | Tareas en propuesta | **0** |
-| Tareas no iniciadas | **259** |
+| Tareas no iniciadas | **258** |
 | Tareas rechazadas | **0** |
-| Porcentaje de completamiento | **83.77% (1337/1596)** |
+| Porcentaje de completamiento | **83.83% (1338/1596)** |
 | Compilado derivado local      | `.generated/PLAN_IMPLEMENTACION_VENTO_OS_CANONICO_COMPILADO.md` — regenerable; no versionado    |
 | Estado del compilado          | **REGENERABLE LOCALMENTE; CI LO PUBLICA TEMPORALMENTE TRAS VALIDAR**                             |
 | ADR vigente                   | `ADR-AUTH-001 — ACCEPTED`                                                                       |
-| Última tarea aprobada | **ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento** |
-| Tarea actual | **ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción** |
+| Última tarea aprobada | **ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción** |
+| Tarea actual | **ORIGO-UX-003 — Diseñar inicio para solicitante** |
 | Estado de la tarea actual | **NO INICIADA** |
-| Siguiente tarea | **ORIGO-UX-003 — Diseñar inicio para solicitante** |
+| Siguiente tarea | **ORIGO-UX-004 — Diseñar inicio para comprador** |
 | Bloque actual | **BLOQUES L Y M — FOGO y ORIGO** |
-| Progreso del bloque | **BLOQUES L Y M: 50 de 65 aprobadas; ORIGO-UX-002 pendiente** |
+| Progreso del bloque | **BLOQUES L Y M: 51 de 65 aprobadas; ORIGO-UX-003 pendiente** |
 | Estado de implementación | **GOVERNED_ACTIVE_SET** |
 | Acción principal obligatoria | **AUTORIZAR_IMPLEMENTACION — SHELL-CI-022::GAP-PKG-001** |
-| Carril documental | **ACTIVO — ORIGO-UX-002** |
+| Carril documental | **ACTIVO — ORIGO-UX-003** |
 | Carril físico | **PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-001 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-018 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-019 | PENDING_AUTHORIZATION — SHELL-CI-022::GAP-PKG-045** |
 | Alcance físico autorizado | **NINGUNO** |
 
@@ -44,9 +44,9 @@
 
 | Estado          | Valor                                                                                                  |
 | --------------- | ------------------------------------------------------------------------------------------------------ |
-| Última aprobada | `ORIGO-UX-001` — Inventariar el proceso completo de abastecimiento |
-| Tarea actual | `ORIGO-UX-002` — Separar solicitud, compra, aprobación y recepción — **NO INICIADA** |
-| Siguiente tarea | `ORIGO-UX-003` — Diseñar inicio para solicitante |
+| Última aprobada | `ORIGO-UX-002` — Separar solicitud, compra, aprobación y recepción |
+| Tarea actual | `ORIGO-UX-003` — Diseñar inicio para solicitante — **NO INICIADA** |
+| Siguiente tarea | `ORIGO-UX-004` — Diseñar inicio para comprador |
 | Restricción | **NO EJECUTAR CÓDIGO, DATOS, SUPABASE NI DESPLIEGUES SIN UNA INSTANCIA EXPLÍCITAMENTE AUTORIZADA** |
 
 ## Progreso documental aprobado
@@ -59,7 +59,7 @@
 | `AUTH-MOD-001` a `AUTH-MOD-020`   | **APROBADAS**                                |
 | `AUTH-MOD-021` | **APROBADA — PUERTA SUPERADA** |
 | `AUTH-CTX-001` a `AUTH-CTX-030` | **APROBADAS** |
-| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 50 DE 65 APROBADAS — ACTUAL ORIGO-UX-002** |
+| CONTINUIDAD ACTIVA | **BLOQUES L Y M: 51 DE 65 APROBADAS — ACTUAL ORIGO-UX-003** |
 | Implementación física | **SHELL-CI-022::GAP-PKG-001 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-018 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-019 — PENDING_AUTHORIZATION | SHELL-CI-022::GAP-PKG-045 — PENDING_AUTHORIZATION** |
 
 ## Reglas de edición
@@ -92,14 +92,14 @@
 
 ```text
 ÚLTIMA TAREA APROBADA
-ORIGO-UX-001 — Inventariar el proceso completo de abastecimiento
-        ↓
-TAREA ACTUAL
 ORIGO-UX-002 — Separar solicitud, compra, aprobación y recepción
         ↓
-SIGUIENTE TAREA RESERVADA
+TAREA ACTUAL
 ORIGO-UX-003 — Diseñar inicio para solicitante
         ↓
+SIGUIENTE TAREA RESERVADA
+ORIGO-UX-004 — Diseñar inicio para comprador
+        ↓
 CONTINUIDAD DEL BLOQUE
-BLOQUES L Y M — 50 de 65 tareas aprobadas
+BLOQUES L Y M — 51 de 65 tareas aprobadas
 ```
