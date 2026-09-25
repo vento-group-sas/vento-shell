@@ -14,18 +14,18 @@
 | --- | ---: |
 | Tareas con marcador | **1596** |
 | Tareas `AUTH` | **319** |
-| Aprobadas | **1324** |
+| Aprobadas | **1325** |
 | En propuesta | **0** |
-| No iniciadas | **272** |
+| No iniciadas | **271** |
 | Rechazadas | **0** |
-| Porcentaje de completamiento | **82.96% (1324/1596)** |
+| Porcentaje de completamiento | **83.02% (1325/1596)** |
 
 ## Resumen de materialización física
 
 | Estado físico | Tareas |
 | --- | ---: |
-| ⏸ NO_EVALUADA | **272** |
-| ⚠️ SIN_TRAZABILIDAD_FISICA | **1225** |
+| ⏸ NO_EVALUADA | **271** |
+| ⚠️ SIN_TRAZABILIDAD_FISICA | **1226** |
 | 🧩 MAPEADA | **1** |
 | 🟡 EN_IMPLEMENTACION | **0** |
 | 🟠 PARCIAL | **2** |
@@ -65,9 +65,9 @@
 
 | Relación | Tarea | Estado |
 | --- | --- | --- |
-| Última aprobada | `PASS-UX-011` — Consolidar navegación y rutas canónicas de la experiencia cliente | ✅ APROBADA |
-| Tarea actual | `PASS-UX-012` — Simplificar interfaz móvil, estados de carga, error, offline y recuperación | ⬜ NO INICIADA |
-| Siguiente reservada | `PASS-UX-013` — Ejecutar pruebas con clientes reales | ⬜ NO INICIADA |
+| Última aprobada | `PASS-UX-012` — Simplificar interfaz móvil, estados de carga, error, offline y recuperación | ✅ APROBADA |
+| Tarea actual | `PASS-UX-013` — Ejecutar pruebas con clientes reales | ⬜ NO INICIADA |
+| Siguiente reservada | `PASS-INT-001` — Definir integración PULSO → PASS para acumulación | ⬜ NO INICIADA |
 
 ## Registro completo
 
@@ -1426,7 +1426,7 @@
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-009` | Diferenciar estado pendiente, usado y cancelado | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-010` | Definir mensajes de error comprensibles | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-011` | Consolidar navegación y rutas canónicas de la experiencia cliente | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
-| ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-012` | Simplificar interfaz móvil, estados de carga, error, offline y recuperación | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
+| ✅ APROBADA | ⚠️ SIN_TRAZABILIDAD_FISICA | — | `PASS-UX-012` | Simplificar interfaz móvil, estados de carga, error, offline y recuperación | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-UX-013` | Ejecutar pruebas con clientes reales | — | — | `bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-001` | Definir integración PULSO → PASS para acumulación | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |
 | ⬜ NO INICIADA | ⏸ NO_EVALUADA | — | `PASS-INT-002` | Definir integración PULSO → PASS para redención | — | — | `bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md` |

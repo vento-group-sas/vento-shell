@@ -6292,5 +6292,896 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación`
-### [ ] PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
+### ✅ PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente
+**Tarea siguiente:** PASS-UX-013 — Ejecutar pruebas con clientes reales
+**Tipo de tarea:** documental; especialización móvil del contrato objetivo de carga, refresco, frescura, caché, conectividad degradada, offline, retry, Realtime, resultado desconocido, reanudación y recuperación para las diecinueve identidades canónicas `VSCREEN-*` de PASS y sus superficies globales de acceso/recuperación, consumiendo `PROC-SCREEN-018..021`, `UX-BASE-013`, `UX-BASE-014` y las decisiones aprobadas `PASS-UX-001..011` sin crear un enum físico, una cola offline, una política numérica de retry ni una nueva ruta runtime; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — EXPERIENCIA DEL CLIENTE
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/01_EXPERIENCIA_DEL_CLIENTE.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pass`, componentes, hooks, cachés, AsyncStorage, navegación runtime, Realtime, colas, datos, Supabase, migraciones, RLS, RPC, Edge Functions, PULSO, Wallet, secretos, despliegues ni aplicaciones consumidoras
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir una experiencia móvil PASS que siga siendo comprensible y segura cuando los datos todavía cargan, una fuente responde parcialmente, la conectividad se degrada, un snapshot queda desactualizado, un canal Realtime pierde continuidad, una mutación tiene resultado incierto o la aplicación debe reanudarse después de una interrupción.
+
+La simplificación no consiste en ocultar estados. Consiste en mostrar **una verdad principal por región**, conservar la última información confirmada cuando sea seguro y ofrecer únicamente la acción de recuperación que el contrato realmente autoriza.
+
+```text
+ESTADO VISIBLE SIMPLE
+=
+VERDAD CONFIRMADA
++
+FRESCURA EXPLÍCITA
++
+OPERACIÓN EN CURSO IDENTIFICABLE
++
+LIMITACIÓN ACTUAL
++
+UNA ACCIÓN SEGURA CUANDO EXISTA
+```
+
+La interfaz no puede convertir silencio técnico en dato empresarial. Un spinner, una caché, un callback, un estado local o un mensaje de red no prueban por sí mismos que exista saldo, historial, recompensa, pedido, pago, redención, entrega, mensaje, consentimiento o resultado terminal.
+
+---
+
+#### 2. Base aprobada y frontera documental
+
+La base inmediata es `PASS-UX-011`, aprobada por el usuario, que entrega una arquitectura de navegación única para las diecinueve `VSCREEN-*` PASS y reserva expresamente a esta tarea carga, error, offline, retry, caché, Realtime, restauración de estado y recuperación móvil.
+
+Se preservan además las decisiones de `PASS-UX-001..010`:
+
+- el home no fabrica saldo, nivel, historial, rewards ni estados desde fallos de lectura;
+- QR personal, acumulación, redención, historial, catálogo y perfil conservan responsabilidades distintas;
+- una redención pendiente, usada, cancelada o vencida no cambia por navegación, caché o reloj local;
+- el historial no puede interpretar una consulta fallida como ausencia de movimientos;
+- una tarjeta de recompensa visible no acredita elegibilidad ni autoriza un canje;
+- perfil, consentimiento, preferencia, eliminación y solicitudes de privacidad conservan estados distintos;
+- un mensaje humano no es un `reason_code`, un estado de dominio ni una política de retry;
+- `PASS-UX-011` fija identidad de destino y prohíbe inventar rutas para capacidades todavía no materializadas.
+
+Esta tarea consume los contratos transversales ya aprobados:
+
+- `PROC-SCREEN-018 — Definir estados vacíos`;
+- `PROC-SCREEN-019 — Definir estados de carga`;
+- `PROC-SCREEN-020 — Definir estados de bloqueo`;
+- `PROC-SCREEN-021 — Definir recuperación ante errores`;
+- `UX-BASE-013 — Definir comportamiento con conectividad inestable`;
+- `UX-BASE-014 — Definir reanudación del proceso después de interrupciones`.
+
+La frontera de `PASS-UX-012` es la **presentación y comportamiento documental objetivo de esos contratos dentro de la experiencia móvil PASS**. No crea persistencia offline, no implementa una outbox, no define el número físico de reintentos, no materializa detectores de red, no cambia contratos de dominio y no certifica comportamiento en dispositivo real.
+
+---
+
+#### 3. Fuentes y snapshots verificados
+
+| Fuente | Snapshot verificado | Uso |
+| --- | --- | --- |
+| `vento-group-sas/vento-shell` `main` | `0dfc68b2cbeb3c726506bea906da20e78ff6d8bc` | continuidad, owner, topología, políticas y cierre publicado de `PASS-UX-010` |
+| archivo propietario PASS | blob `4b7611a49af55c54d4cb1065afafb23a0f406b14` | base remota con `PASS-UX-010` aprobada y marcadores `PASS-UX-011+` vigentes |
+| `PASS-UX-011_APROBADA_PARA_REEMPLAZAR.md` | SHA-256 `31184c8bdf4effced72bb880db6bb8baf25142827e3e075881299f7673d59c74` | base documental inmediata aprobada por el usuario y todavía pendiente de publicación |
+| estados y recuperación transversal | blob `fa96a630fa12cf6e0618cd7c2bda33abfd955626` | precedencia vacío/carga/bloqueo/recuperación, perfiles PASS y políticas de retry |
+| conectividad y reanudación transversal | blob `24a0118bc968af300d8e3541d0665557b76f1d40` | conectividad por capacidad, frescura, offline, sincronización y reanudación segura |
+| Registro 04A PASS | blob `855cc2869e570995e6736d016ca571309154d3b7` | cobertura PASS vigente; no se modifica en esta tarea |
+| `carlosibarraariza/vento-pass` `main` | `b5a4aec908ef12226f798078577ab089a29ccda2` | runtime móvil AS-IS verificable |
+| `vento-pass/App.js` | blob `162e686ff5ec363a0f6f991da58f6ce84816e8aa` | gates globales, caché de sesión/perfil, timeout, retry y revalidación AS-IS |
+| `AppErrorBoundary.js` | blob `3b4510be910d69504614623eceb1cf98a786889c` | recuperación global AS-IS y exposición actual de `error.message` |
+| `AppUpdateGate.js` | blob `0fee8cdcc04720eca8f79314ca8f5441490c70b8` | actualización requerida/opcional y carga del enlace de tienda |
+| `useUserData.ts` | blob `b37929f6d6f7a542fd3a37d995863265c3a38d5c` | caché AS-IS y colapso de error hacia `loyalty_points: 0` |
+| `useTotalEarnedPoints.ts` | blob `c578ff53d4b279e9481815fcd7d8776aa4bd5d57` | caché AS-IS y colapso de fallo RPC hacia total ganado `0` |
+| `useSatelliteExperiences.ts` | blob `eb216e02932e9e814aae6d7ef16e3a933384f621` | caché pública persistida, refresco y error con snapshot previo |
+| `useLoyaltyRewards.ts` | blob `59ea4a33ae6f4d4f8c145fad47f5ade4ce673966` | caché por sede, refresco y error de catálogo |
+| `useLoyaltyTransactions.ts` | blob `d96bfe5ea3251e643f109b73535b484a4a6c94c6` | error AS-IS convertido en lista vacía de transacciones |
+| `useLoyaltyRedemptions.ts` | blob `8ed79b6ddb2070a870ab9cfd286cc1e120a647c6` | error AS-IS convertido en lista vacía y Realtime sin estado visible de gap |
+| `OrderTrackingScreen.tsx` | blob `b006f4443f39b443f38cd71ad4142d777ff66c91` | tracking Realtime y fallo de RPC de PIN no diferenciado visualmente |
+| `OrderChatScreen.tsx` | blob `647a279b2dbec8077c8ad044e064f51639bb2ed0` | carga, error, stream degradado y preservación AS-IS del draft ante fallo de envío |
+
+La revisión remota confirma diseño y divergencias AS-IS. No demuestra el comportamiento desplegado bajo pérdida real de red, suspensión de aplicación, reinicio, cambio de versión ni resultados inciertos.
+
+---
+
+#### 4. Regla raíz de simplificación móvil
+
+PASS aplica una sola precedencia de presentación:
+
+```text
+1. IDENTIDAD / AUTORIZACIÓN / PRERREQUISITO NO SATISFECHO
+   → BLOQUEO
+
+2. OPERACIÓN IDENTIFICABLE TODAVÍA EN CURSO
+   → CARGA
+
+3. FALLO / TIMEOUT / PARCIALIDAD / CONFLICTO / RESULTADO UNKNOWN
+   → RECUPERACIÓN
+
+4. DATOS CONFIRMADOS DISPONIBLES
+   → CONTENIDO
+
+5. CONSULTA COMPLETA, FRESCA Y AUTORIZADA SIN RESULTADOS
+   → VACÍO
+```
+
+Reglas obligatorias:
+
+1. una región no puede mostrarse simultáneamente como vacía y fallida;
+2. una lectura vieja no puede presentarse como fresca solo porque todavía sea visible;
+3. refrescar no borra el último dato confirmado cuando conservarlo sea seguro;
+4. cargar una sección no bloquea toda la pantalla si otras regiones continúan utilizables;
+5. una operación pendiente no se vuelve fallo solo por tardar dentro de su contrato;
+6. una espera que excede su condición de carga pasa a recuperación; no existe spinner infinito;
+7. un resultado desconocido de mutación no se resuelve repitiendo la misma mutación a ciegas;
+8. cerrar, navegar atrás, cambiar tab, minimizar la aplicación o reiniciar la UI no equivale a cancelar el hecho empresarial.
+
+---
+
+#### 5. Vocabulario de presentación móvil PASS
+
+Este vocabulario es una adaptación de presentación y **no crea un enum físico de dominio**.
+
+| Modo visible | Cuándo aplica | Regla de presentación |
+| --- | --- | --- |
+| `INITIAL_LOADING` | todavía no existe snapshot seguro para la región | skeleton o estructura mínima sin valores inventados |
+| `SECTION_LOADING` | una región independiente espera su primera respuesta | carga localizada; otras regiones útiles permanecen activas |
+| `BACKGROUND_REFRESH` | existe contenido confirmado y se consulta una versión más reciente | conservar contenido, mostrar actualización discreta y frescura |
+| `READY_FRESH` | snapshot confirmado dentro de la política de frescura aplicable | contenido normal |
+| `READY_STALE` | existe último snapshot confirmado utilizable como referencia, pero ya no puede tratarse como actual | conservarlo con `as_of`/última verificación y limitar acciones sensibles |
+| `CONFIRMED_EMPTY` | consulta completa, autorizada y suficientemente fresca confirma cero elementos | estado vacío real; nunca se activa por error |
+| `PARTIAL_RESULT` | solo una porción del snapshot quedó confirmada | indicar incompletitud; no fabricar totales ni conclusiones |
+| `RECOVERABLE_READ_FAILURE` | falló una lectura segura y existe opción de nueva consulta | preservar último snapshot seguro y ofrecer retry de lectura acotado |
+| `SERVICE_OR_CONNECTIVITY_DEGRADED` | la fuente o conectividad no puede garantizar lectura fresca, sin demostrar offline completo | mostrar limitación y frescura; no etiquetar arbitrariamente “sin conexión” |
+| `REALTIME_RECONNECT` | un stream perdió continuidad | conservar snapshot confirmado con marca de desactualización mientras se recupera continuidad |
+| `ACTION_PENDING` | una mutación fue iniciada y aún no alcanza evidencia terminal | bloquear duplicidad del mismo efecto y mostrar espera identificable |
+| `RESULT_UNKNOWN` | la mutación pudo ser aceptada pero se perdió la confirmación | no repetir; consultar/reconciliar el mismo intento |
+| `REAUTH_OR_CONTEXT_BLOCK` | sesión, ownership, consentimiento o contexto requerido no están confirmados | preservar solo información segura y revalidar antes de continuar |
+| `UPDATE_REQUIRED` | la versión de app es incompatible para continuar | gate explícito de actualización, no error genérico |
+| `FATAL_UI_RECOVERY` | la vista no puede seguir por fallo no controlado | recuperar UI con copy seguro; no inferir qué pasó con mutaciones previas |
+
+Una pantalla puede contener varios modos por región, pero cada región muestra una sola condición principal.
+
+---
+
+#### 6. Jerarquía visual y reducción de estados simultáneos
+
+La experiencia móvil evita transformar cada hook en un spinner, banner o modal independiente.
+
+Reglas:
+
+- **pantalla completa** solo cuando no exista contenido seguro utilizable, el acceso esté bloqueado, una actualización sea obligatoria o ocurra un fallo fatal de UI;
+- **skeleton local** para primera carga de una región;
+- **indicador discreto** para refresh con contenido ya confirmado;
+- **banner compacto** para frescura, conectividad degradada o Realtime interrumpido cuando la pantalla todavía sea utilizable;
+- **estado inline** para error de sección o validación localizada;
+- **una acción primaria de recuperación** por estado; las alternativas quedan subordinadas;
+- una región no apila simultáneamente spinner, toast, modal y banner para comunicar la misma condición;
+- controles y mensajes importantes conservan semántica accesible y no dependen solo de color, icono, animación o vibración;
+- las acciones críticas permanecen deshabilitadas únicamente cuando la condición contractual lo exige; la indisponibilidad de una región secundaria no congela toda la aplicación.
+
+---
+
+#### 7. Carga inicial, carga de sección y refresco
+
+PASS distingue tres experiencias que hoy pueden verse similares:
+
+##### Carga inicial
+
+Solo ocupa la región completa cuando todavía no existe una representación confirmada y segura. No presenta `0`, “sin datos”, “sin pedidos”, “sin puntos” ni “sin canjes” mientras la fuente siga sin resolver.
+
+##### Carga de sección
+
+Mantiene navegación y regiones independientes disponibles. Por ejemplo, cargar historial no debe borrar el saldo ya confirmado si ambas fuentes tienen contratos separados.
+
+##### Refresco
+
+Cuando existe un snapshot seguro:
+
+```text
+CONTENIDO CONFIRMADO
++
+INDICADOR DE ACTUALIZACIÓN
++
+FRESCURA / AS_OF
+```
+
+El refresh no regresa la región a blanco ni reemplaza un valor confirmado por un fallback local.
+
+---
+
+#### 8. Frescura y último dato confirmado
+
+La interfaz diferencia:
+
+```text
+DATO CONFIRMADO FRESCO
+DATO CONFIRMADO ANTERIOR
+DATO PARCIAL
+DATO DESCONOCIDO
+DATO AUSENTE CONFIRMADO
+```
+
+Un tiempo de caché implementado localmente puede determinar cuándo intentar refrescar, pero **no se convierte automáticamente en la definición empresarial de frescura**.
+
+Todo uso de información anterior que siga siendo visible debe poder expresar, cuando el contrato lo permita:
+
+- momento de última verificación o `as_of`;
+- identidad del sujeto y contexto al que pertenece;
+- fuente o versión relevante cuando exista;
+- limitaciones actuales;
+- si se admite solo lectura;
+- qué acción exige revalidación antes de continuar.
+
+Los TTL AS-IS de 60 segundos observados en hooks PASS son detalles técnicos actuales. Esta tarea no los congela como política canónica ni los reutiliza para decidir elegibilidad, saldo, vigencia, disponibilidad, precio, pago o estado terminal.
+
+---
+
+#### 9. Caché y separación entre referencia y autoridad
+
+La caché puede reducir latencia visual, pero no adquirir autoridad que la fuente no le concedió.
+
+Reglas:
+
+1. un snapshot cacheado conserva su identidad de usuario, sede, recurso y momento;
+2. cambiar de usuario invalida cualquier dato personal visible del usuario anterior;
+3. cambiar de sede no reutiliza rewards, redenciones, direcciones o pedidos de otra sede como si fueran del contexto actual;
+4. una caché pública de satélites puede servir como referencia stale si la interfaz muestra su frescura, pero no acredita oferta, reward, disponibilidad comercial ni elegibilidad actual;
+5. un perfil o sesión cacheados pueden reducir parpadeo durante bootstrap, pero no sustituyen revalidación de sesión, ownership o consentimiento para acciones protegidas;
+6. error, `null`, ausencia, lista vacía y cero confirmado permanecen estados diferentes;
+7. un fallback producido por error no se guarda ni se vuelve a presentar como dato confirmado;
+8. una caché anterior puede conservarse durante un fallo de refresh si es segura, marcándola como anterior;
+9. datos sensibles o de otra sesión no permanecen visibles durante reautenticación o cambio de principal;
+10. limpiar UI no borra una operación empresarial ya enviada ni demuestra que se canceló.
+
+---
+
+#### 10. Corrección del patrón AS-IS de “error → cero”
+
+El runtime inspeccionado contiene dos riesgos explícitos:
+
+- `useUserData.ts` convierte error de lectura en `{ full_name: null, loyalty_points: 0 }` y cachea ese fallback;
+- `useTotalEarnedPoints.ts` convierte error del RPC en `0` y cachea el valor.
+
+Contrato objetivo:
+
+```text
+ERROR DE LECTURA
+≠ 0 CONFIRMADO
+
+ERROR DE LECTURA
+≠ PERFIL VACÍO CONFIRMADO
+
+ERROR DE LECTURA
+→ UNKNOWN / STALE_CONFIRMED / RECOVERY
+SEGÚN EVIDENCIA DISPONIBLE
+```
+
+Por tanto:
+
+- puntos disponibles no muestran `0` salvo confirmación de la fuente;
+- puntos históricos no muestran `0` salvo confirmación de la fuente;
+- tier/progreso no se recalculan desde un cero fabricado por fallo;
+- el error no envenena la caché como si fuese una lectura válida;
+- si existe un valor anterior confirmado, puede conservarse como stale cuando el contrato lo permita;
+- si no existe snapshot seguro, se muestra estado desconocido/recuperación y no una cifra.
+
+---
+
+#### 11. Corrección del patrón AS-IS de “error → lista vacía”
+
+`useLoyaltyTransactions.ts` y `useLoyaltyRedemptions.ts` convierten fallos de lectura en arrays vacíos.
+
+Contrato objetivo:
+
+```text
+CONSULTA COMPLETA + FRESCA + 0 FILAS
+→ VACÍO CONFIRMADO
+
+CONSULTA FALLIDA
+→ ERROR / RECUPERACIÓN
+
+CONSULTA PARCIAL
+→ PARCIAL
+
+SNAPSHOT ANTERIOR + REFRESH FALLIDO
+→ STALE CONFIRMADO + RECUPERACIÓN
+```
+
+Consecuencias:
+
+- historial no muestra “todavía no hay movimientos” si la consulta falló;
+- redenciones no desaparecen visualmente por un fallo temporal;
+- QR pendientes no se declaran inexistentes por una lectura fallida;
+- filtros se aplican sobre el conjunto confirmado realmente disponible y no ocultan la condición de error;
+- las vistas por sede no hacen pasar un conjunto parcial por historial global.
+
+---
+
+#### 12. Política de conectividad por capacidad
+
+PASS no adopta un “modo offline” global.
+
+Cada capacidad usa la clasificación transversal aplicable:
+
+```text
+ONLINE_REQUIRED
+ONLINE_PREFERRED
+STALE_READ_ONLY
+OFFLINE_CAPTURE_ALLOWED
+OFFLINE_QUEUE_ALLOWED
+MANUAL_CONTINGENCY
+NOT_AVAILABLE_OFFLINE
+```
+
+Reglas específicas de esta tarea:
+
+- las **lecturas** pueden conservar snapshot anterior como `STALE_READ_ONLY` únicamente si identidad, alcance, sensibilidad, frescura y expiración lo permiten;
+- las **mutaciones de cliente inspeccionadas** no se declaran offline-capable por defecto;
+- no se ha verificado una outbox durable de cliente PASS que permita afirmar envío offline de perfil, redención, pedido, pago, chat, rating o solicitud de privacidad;
+- una futura cola offline requiere identidad estable, persistencia durable, idempotencia, estado local visible, reconciliación y pruebas antes de habilitarse;
+- una capacidad que requiere confirmación de servidor permanece `ONLINE_REQUIRED` aunque el formulario o carrito pueda conservarse localmente como borrador;
+- visualizar un dato stale no autoriza ejecutar una mutación contra ese dato sin revalidación.
+
+---
+
+#### 13. No confundir stream degradado con dispositivo offline
+
+El runtime inspeccionado no demuestra un monitor transversal capaz de afirmar por sí mismo `OFFLINE_CONFIRMED` para toda la aplicación.
+
+Por tanto:
+
+```text
+CHANNEL_ERROR
+≠ OFFLINE_CONFIRMED
+
+TIMEOUT DE UNA FUENTE
+≠ OFFLINE_CONFIRMED
+
+WIFI VISIBLE
+≠ SERVICIO DISPONIBLE
+
+STREAM ACTIVO
+≠ DATOS FRESCOS
+```
+
+`OrderChatScreen` puede usar un estado visual de Realtime degradado, pero la etiqueta debe describir la continuidad del chat/stream y no afirmar una condición de red más amplia que la evidencia disponible.
+
+Cuando no pueda distinguirse red, servicio, sesión o cursor, la presentación permanece en `SERVICE_OR_CONNECTIVITY_DEGRADED` o estado equivalente comprensible, sin inventar diagnóstico.
+
+---
+
+#### 14. Realtime y recuperación de continuidad
+
+Para tracking, chat, redenciones y cualquier stream futuro:
+
+1. el último snapshot confirmado permanece visible cuando sea seguro;
+2. se marca la última verificación o el punto desde el que existe incertidumbre;
+3. un hueco de stream no genera automáticamente un nuevo estado empresarial;
+4. la UI entra a `REALTIME_RECONNECT` y solicita snapshot/cursor según el contrato propietario;
+5. una respuesta atrasada no puede sobrescribir una versión posterior confirmada;
+6. al volver de background se revalida el snapshot relevante;
+7. una reconexión no reenvía mutaciones automáticamente;
+8. la recuperación termina solo cuando la continuidad o un snapshot completo queden reconciliados.
+
+`OrderTrackingScreen` no puede interpretar el fallo de `get_order_delivery_pin` como “el código todavía no apareció”. Debe distinguir fallo de lectura de un estado autoritativamente pendiente.
+
+---
+
+#### 15. Retry: lectura segura versus mutación
+
+La UI no muestra “Reintentar” como acción universal.
+
+##### Lecturas
+
+Pueden usar retry automático acotado con backoff cuando sean idempotentes y el contrato lo permita. El detalle numérico pertenece a implementación/política propietaria y no se fija en esta tarea.
+
+##### Mutaciones con rechazo previo a aceptación
+
+Pueden permitir un nuevo intento después de corregir/revalidar la causa y únicamente cuando exista evidencia de que el intento anterior no produjo efecto.
+
+##### Mutaciones con resultado incierto
+
+```text
+POSIBLE ACEPTACIÓN
++
+RESPUESTA PERDIDA / TIMEOUT
+→ RESULT_UNKNOWN
+→ CONSULTAR ESTADO DEL MISMO INTENTO
+→ RECONCILIAR
+→ SOLO ENTONCES DECIDIR SI EXISTE NUEVO INTENTO
+```
+
+No se repiten a ciegas:
+
+- canje o consumo de puntos;
+- acumulación o ajuste de puntos;
+- creación/confirmación de pedido;
+- inicio o resultado de pago;
+- solicitud de eliminación/limpieza con efecto;
+- envío de mensaje cuando la fuente pudo aceptarlo;
+- rating/feedback con efecto persistente;
+- cualquier operación que pueda duplicar dinero, beneficio, comunicación o estado.
+
+Los reintentos locales observados en `App.js` son comportamiento AS-IS; no se convierten en política universal de PASS.
+
+---
+
+#### 16. Acción pendiente y prevención de doble toque
+
+Cuando una mutación está `ACTION_PENDING`:
+
+- el control que produciría el mismo efecto queda protegido contra doble toque/replay;
+- la pantalla conserva una referencia del intento cuando el contrato la provea;
+- navegar dentro de la aplicación no crea otro intento;
+- volver a entrar consulta el estado actual antes de ofrecer repetir;
+- un spinner del botón no se presenta como confirmación;
+- una respuesta intermedia no dispara automáticamente el siguiente efecto empresarial;
+- si el resultado tarda más que la ventana de carga, la UI cambia a seguimiento/recuperación y no permanece bloqueada indefinidamente.
+
+---
+
+#### 17. Preservación de trabajo local
+
+La recuperación prioriza conservar lo que el cliente ya ingresó cuando hacerlo sea seguro.
+
+Puede preservarse, según superficie y sensibilidad:
+
+- búsqueda y filtros;
+- selección de sede o contexto no autoritativo;
+- carrito y configuración local todavía no enviada;
+- formulario corregible;
+- borrador de chat;
+- selección de recompensa antes de crear la intención;
+- navegación de retorno segura;
+- última lectura confirmada.
+
+Nunca se conserva como autoridad:
+
+- permiso;
+- sesión indefinidamente válida;
+- ownership no revalidado;
+- saldo actual inferido;
+- elegibilidad;
+- precio vigente;
+- pago confirmado;
+- redención usada;
+- mensaje entregado;
+- resultado empresarial incierto.
+
+El patrón AS-IS de `OrderChatScreen`, que restaura el texto del draft ante un fallo de envío confirmado, se conserva como patrón positivo de preservación, sin convertirlo en una cola de envío offline.
+
+---
+
+#### 18. Reanudación después de background, reinicio, navegación o actualización
+
+PASS aplica la regla transversal:
+
+```text
+REANUDAR
+≠ VOLVER A LA ÚLTIMA PANTALLA
+```
+
+Una reanudación segura reconstruye:
+
+1. principal/sesión vigente;
+2. contexto y ownership actuales;
+3. recurso y versión autoritativos;
+4. último snapshot confirmado;
+5. borrador local compatible cuando exista;
+6. operaciones pendientes o con resultado desconocido;
+7. continuidad Realtime cuando aplique;
+8. destino canónico definido por `PASS-UX-011`.
+
+Una URL, screen name, valor de React, `AsyncStorage` o caché no restablecen por sí mismos permiso, estado o resultado.
+
+Al volver desde background, actualizar la app o reiniciar después de un fallo, la aplicación revalida antes de ofrecer continuar una operación sensible.
+
+---
+
+#### 19. Bootstrap y sesión cacheada
+
+`App.js` conserva AS-IS `lastSession` y `lastProfile` para reducir espera visual mientras verifica la sesión real.
+
+Contrato objetivo:
+
+- el snapshot local puede facilitar render transitorio del mismo sujeto cuando sea seguro;
+- su existencia no prueba que la sesión siga válida;
+- controles que requieren sesión/ownership vigente permanecen protegidos hasta revalidación;
+- si la revalidación falla, la UI distingue `REAUTH_OR_CONTEXT_BLOCK` de error técnico de consulta;
+- datos de un usuario anterior se limpian antes de mostrar contexto de otro principal;
+- un fallo al validar red no transforma automáticamente una sesión cacheada en sesión vigente ni en cierre de sesión confirmado;
+- la pérdida de sesión confirmada transfiere al flujo de autenticación sin borrar silenciosamente el estado empresarial remoto.
+
+---
+
+#### 20. Actualización requerida y opcional
+
+`AppUpdateGate` conserva dos naturalezas:
+
+| Estado | Tratamiento |
+| --- | --- |
+| actualización requerida | bloqueo de compatibilidad; no continúa hacia una versión no admitida |
+| actualización opcional | información/aviso; puede posponerse según el contrato actual |
+| enlace de tienda todavía no resuelto | carga localizada del destino de actualización; no fallo general de PASS |
+
+Después de una actualización que reinicie la aplicación:
+
+- se revalida sesión y contexto;
+- se reconstruyen estados desde fuentes autoritativas;
+- no se reenvían mutaciones previas por el solo hecho de reiniciar;
+- una operación con resultado desconocido se consulta/reconcilia antes de ofrecer repetir.
+
+---
+
+#### 21. Recuperación fatal de interfaz
+
+`AppErrorBoundary` es recuperación de UI, no recuperación de dominio.
+
+Contrato objetivo:
+
+- no expone `error.message` crudo;
+- registra el detalle técnico únicamente en observabilidad restringida;
+- `Reintentar` reinicia la representación necesaria, no repite automáticamente la última mutación;
+- si existía una mutación pendiente o desconocida, la pantalla posterior consulta su estado antes de volver a habilitar la acción;
+- cerrar sesión solo se ofrece cuando sea una salida válida, no como remedio universal;
+- el reset no convierte una operación pendiente en fallida ni una operación desconocida en cancelada.
+
+---
+
+#### 22. Matriz de las diecinueve pantallas canónicas PASS
+
+| VSCREEN | Carga y lectura | Caché / offline visible | Mutación y retry | Recuperación objetivo |
+| --- | --- | --- | --- | --- |
+| `VSCREEN-0107` Inicio | secciones de saldo, nivel, beneficios y contexto cargan independientemente | último dato confirmado puede permanecer stale cuando la fuente y sensibilidad lo permitan | acciones que cambian estado requieren revalidación; navegación no es mutación | error de una fuente no convierte saldo en cero ni bloquea todo el home |
+| `VSCREEN-0108` QR personal | generación/lectura de credencial separada de bootstrap general | esta tarea no autoriza disponibilidad offline de una credencial sin política de vigencia/revocación demostrada | presentar QR no ejecuta puntos, canje ni compra | fallo de generación/lectura se distingue de “QR inexistente” |
+| `VSCREEN-0109` Catálogo de recompensas | catálogo puede cargar por región, búsqueda y filtros | snapshot anterior puede ser referencia stale, nunca prueba elegibilidad actual | iniciar redención revalida reward, sede, costo, saldo, vigencia y regla | error de catálogo no se presenta como “no hay productos” |
+| `VSCREEN-0110` Ticket/QR de redención | carga de intención/estado separada de catálogo | último recibo confirmado puede mostrarse como referencia; QR utilizable exige estado/vigencia autoritativos | creación/uso/cancelación no se repiten a ciegas; unknown consulta estado | una credencial no disponible distingue fallo, usado, cancelado, vencido y unknown |
+| `VSCREEN-0111` Historial | carga inicial, paginación/refresco y correlación de hechos permanecen separadas | snapshot histórico confirmado puede ser stale/read-only; no se fabrica completitud | lectura retryable; no crea efectos | error/parcial no se transforma en historial vacío; conserva alcance realmente cargado |
+| `VSCREEN-0112` Perfil/privacidad | perfil, consentimientos y solicitudes pueden tener carga localizada | datos propios confirmados pueden preservarse como referencia segura; acciones requieren sesión actual | guardado/eliminación/solicitudes con resultado incierto consultan estado antes de repetir | valida campos sin perder entrada; error técnico no equivale a dato ausente o solicitud fallida |
+| `VSCREEN-0160` Inicio/selección de compras | sedes/oferta y contexto se cargan sin bloquear fidelización completa | catálogo público stale puede orientar navegación, no confirmar oferta vigente | selección local no crea pedido | error de oferta no se presenta como inexistencia confirmada |
+| `VSCREEN-0161` Menú comercial | menú, media y disponibilidad pueden cargar por regiones | lectura stale solo como referencia; precio/disponibilidad se revalidan antes de efectos | carrito local puede preservarse, pero submit depende de contrato online | fallo de catálogo se distingue de filtro sin resultados y producto retirado |
+| `VSCREEN-0162` Carrito/configuración | configuración local utilizable sin simular confirmación de servidor | borrador local puede preservarse si la implementación propietaria lo soporta de forma segura | no crea pedido ni reserva por existir localmente | conflicto de oferta/configuración obliga a refrescar/comparar sin perder campos compatibles |
+| `VSCREEN-0163` Dirección/modalidad/programación | direcciones y cotización pueden cargar de forma independiente | datos anteriores no prueban cobertura/capacidad actual | guardar/cambiar condiciones exige revalidación de ownership y cobertura | falla de cotización no se presenta como “fuera de cobertura” sin evidencia |
+| `VSCREEN-0164` Checkout/inicio de pago | resumen confirmado se mantiene mientras se recalculan cargos autorizados | snapshot previo no autoriza pago; requiere versión vigente | pago o creación de pedido con resultado incierto usa status-before-retry | timeout después del envío no significa pago fallido ni permite segundo cargo |
+| `VSCREEN-0165` Confirmación/retorno de pago | retorno reconstruye pedido/pago desde referencias autoritativas | puede conservar último estado confirmado con marca de frescura | no repite pago desde retorno/reload | pago pendiente, fallo de consulta y rechazo confirmado permanecen distintos |
+| `VSCREEN-0166` Mis pedidos/detalle | lista, detalle y paginación pueden cargar separadamente | último conjunto confirmado puede verse stale si ownership sigue válido | lectura retryable; reorden/acciones futuras revalidan estado | fallo de consulta no significa “sin pedidos” ni borra detalle confirmado |
+| `VSCREEN-0167` Tracking | snapshot + `REALTIME_RECONNECT` | último estado confirmado visible con `as_of`; stream caído no genera estado terminal | acciones vinculadas a entrega consultan estado vigente antes de repetir | gap Realtime solicita snapshot; fallo de PIN se diferencia de PIN aún no emitido |
+| `VSCREEN-0168` Chat de pedido | mensajes confirmados + carga/reconexión del stream | draft local se preserva; no se declara envío offline durable | fallo confirmado de envío restaura draft; resultado unknown consulta estado antes de reenviar | stream degradado no elimina mensajes confirmados ni afirma que el dispositivo esté offline |
+| `VSCREEN-0169` Reclamos/casos | contrato de estado definido, pero `PASS-UX-011` no demuestra ruta runtime dedicada | no se inventa caché/offline de una superficie todavía no materializada | futura mutación seguirá status-before-retry e idempotencia propietaria | esta tarea no presenta la capacidad como implementada |
+| `VSCREEN-0170` Reservas/eventos | contrato de estado definido, pero `PASS-UX-011` no demuestra ruta runtime dedicada | no se inventa disponibilidad offline ni capacidad stale ejecutable | reserva/cancelación futuras requieren receipt y reconciliación | esta tarea no presenta la capacidad como implementada |
+| `VSCREEN-0171` Calificación/satisfacción | experiencia embebida carga sobre contexto confirmado del hecho evaluable | borrador puede preservarse solo si la implementación propietaria lo soporta | submit con unknown no se repite a ciegas ni crea reclamo automático | fallo no borra que el pedido/redención origen ya esté confirmado |
+| `VSCREEN-0172` Comunicaciones/notificaciones | contrato Realtime/comunicación definido, pero `PASS-UX-011` no demuestra ruta runtime dedicada | no se inventa inbox offline materializado | futura entrega/envío conserva correlación y receipt | esta tarea no presenta la capacidad como implementada |
+
+La matriz conserva las diecinueve identidades sin afirmar que todas tengan superficie runtime dedicada.
+
+---
+
+#### 23. Superficies globales y pre-navegación
+
+| Superficie | Contrato de carga/recuperación |
+| --- | --- |
+| `PASS-CUSTOMER-SURFACE-001 — Auth` | progreso acotado; rate limit, credenciales inválidas, canal indisponible y fallo técnico permanecen distinguibles; no conserva secretos como borrador indefinido |
+| `PASS-CUSTOMER-SURFACE-002 — CompleteProfile` | validación localizada; borrador seguro preservado; error de persistencia no borra campos ni se convierte en “perfil incompleto” confirmado |
+| `PASS-CUSTOMER-SURFACE-018 — QrModal` | apertura de modal no recalcula autoridad; carga/fallo del QR no se confunden con autorización operativa |
+| `PASS-CUSTOMER-SURFACE-019 — AppUpdateGate` | requerida bloquea; opcional informa; búsqueda de enlace es carga de subacción, no fallo general |
+| `PASS-CUSTOMER-SURFACE-020 — App runtime gates` | bootstrap de sesión/perfil distingue caché, validación viva, bloqueo y recuperación sin spinner infinito |
+| `PASS-CUSTOMER-SURFACE-021 — AppErrorBoundary` | reinicia UI con copy seguro y reconsulta estado empresarial; nunca repite automáticamente la mutación que precedió al crash |
+
+---
+
+#### 24. Compatibilidad con la navegación aprobada
+
+`PASS-UX-012` consume sin modificar `PASS-UX-011`:
+
+- `VSCREEN-0111` continúa sin ruta global runtime demostrada; la recuperación no inventa una;
+- `VentoCafe` y `Saudo` continúan entrypoints de compatibilidad durante la convergencia;
+- `OrderPlaced` continúa como ruta compartida de confirmación/retorno y tracking conforme a la decisión aprobada;
+- `VSCREEN-0169`, `VSCREEN-0170` y `VSCREEN-0172` continúan sin superficie runtime dedicada demostrada;
+- `VSCREEN-0171` continúa embebida;
+- deep links existentes conservan sus destinos; retry o recovery no crean deep links nuevos;
+- recuperar una operación no implica volver a la misma ruta si el estado autoritativo exige otro destino seguro.
+
+---
+
+#### 25. Comprensión móvil de conectividad y frescura
+
+La interfaz evita estados técnicos vagos y presenta, cuando sea material para la acción:
+
+- **qué información se pudo confirmar**;
+- **cuándo se confirmó**;
+- **qué parte no pudo actualizarse**;
+- **si la acción actual requiere conexión**;
+- **si existe un intento pendiente**;
+- **si el cliente puede seguir consultando**;
+- **si debe esperar, actualizar, reautenticarse, revisar cambios o pedir soporte**.
+
+La pantalla no exige al cliente distinguir “RPC”, “Realtime”, “PostgREST”, “Supabase”, “timeout de socket” o “cache miss”. Esa taxonomía permanece técnica; la semántica visible consume el contrato de mensajes de `PASS-UX-010`.
+
+---
+
+#### 26. Pagos, pedidos y resultados inciertos
+
+Las superficies comerciales aplican una regla más estricta:
+
+```text
+SOLICITUD DE PAGO / PEDIDO ENVIADA
++
+RESPUESTA PERDIDA
+≠ FALLO CONFIRMADO
+≠ ÉXITO CONFIRMADO
+```
+
+La UI:
+
+1. conserva referencia del intento;
+2. consulta estado del mismo pedido/transacción;
+3. mantiene separados pedido, pago, preparación, entrega y comunicación;
+4. evita crear un segundo pedido o pago para “salir de la duda”;
+5. muestra último estado confirmado y la falta de confirmación actual;
+6. solo habilita un nuevo intento cuando el contrato propietario confirma que el anterior no produjo efecto o autoriza una nueva referencia.
+
+---
+
+#### 27. Fidelización y resultados inciertos
+
+Para puntos y redenciones:
+
+- un refresh fallido no cambia saldo;
+- una lectura fallida no reduce saldo a cero;
+- una redención creada localmente no se presenta como usada;
+- un timeout después de crear/consumir una redención exige reconciliación por identidad estable;
+- un estado stale nunca rehabilita un QR usado, cancelado o vencido;
+- cambiar de sede no borra ni reinterpreta el historial global;
+- una nueva lectura más antigua no regresa un estado terminal válido;
+- cualquier retry de mutación depende del contrato autoritativo PASS/PULSO y no de un botón local.
+
+---
+
+#### 28. Chat, mensajes y draft
+
+El chat separa tres verdades:
+
+```text
+BORRADOR LOCAL
+MENSAJE ACEPTADO POR SERVIDOR
+MENSAJE OBSERVADO EN STREAM
+```
+
+Reglas:
+
+- un draft local no se muestra como enviado;
+- el stream puede degradarse después de que un mensaje ya fue aceptado;
+- perder el stream no autoriza reenviar el último mensaje;
+- si el envío falla antes de aceptación confirmada, el draft se conserva;
+- si el resultado es incierto, se consulta el thread/estado antes de reenviar;
+- al reconectar se solicita snapshot suficiente para detectar gaps y deduplicar;
+- mensajes confirmados no desaparecen por un error de refresh;
+- la capacidad actual no se declara `OFFLINE_QUEUE_ALLOWED` sin outbox durable demostrada.
+
+---
+
+#### 29. Parcialidad sin falso fallo global
+
+Una pantalla puede conservar un resultado principal confirmado aunque falle una dependencia secundaria.
+
+Ejemplo ya observado: `OrderPlacedScreen` puede tener pedido/estado confirmado mientras falla el detalle de items.
+
+Contrato objetivo:
+
+- el bloque confirmado conserva su estado;
+- la región incompleta muestra `PARTIAL_RESULT` o recuperación local;
+- no se transforma toda la pantalla en error si la acción principal ya es segura;
+- no se oculta la incompletitud;
+- los totales o conclusiones que dependen de la región faltante no se fabrican;
+- reintentar la región secundaria no repite la operación principal.
+
+---
+
+#### 30. Estados que nunca deben colapsarse
+
+PASS preserva estas diferencias:
+
+```text
+0 CONFIRMADO                    ≠ DESCONOCIDO
+LISTA VACÍA CONFIRMADA          ≠ CONSULTA FALLIDA
+DATO STALE CONFIRMADO           ≠ DATO FRESCO
+FALLO DE STREAM                 ≠ OFFLINE CONFIRMADO
+BORRADOR LOCAL                  ≠ MUTACIÓN ACEPTADA
+MUTACIÓN ACEPTADA               ≠ RESULTADO TERMINAL
+TIMEOUT                         ≠ NO EJECUTADO
+ERROR DE PIN                    ≠ PIN TODAVÍA NO EMITIDO
+PAGO PENDIENTE                  ≠ PAGO FALLIDO
+TICKET DE REDENCIÓN CREADO      ≠ REDENCIÓN USADA
+APP REINICIADA                  ≠ OPERACIÓN CANCELADA
+UI RESETEADA                    ≠ EFECTO EMPRESARIAL REVERTIDO
+```
+
+---
+
+#### 31. Hallazgos AS-IS y condición de salida
+
+| Hallazgo observado | Riesgo | Propietario de salida | Condición de salida |
+| --- | --- | --- | --- |
+| `App.js` aplica timeout y retry locales con valores fijos | política local puede convertirse accidentalmente en estándar transversal | `PASS-UX-012` para contrato; materialización PASS gobernada por el package E5 propietario | valores físicos quedan configurados/justificados por capacidad y no se interpretan como regla empresarial universal |
+| `App.js` hidrata `lastSession`/`lastProfile` antes de validación viva | contexto cacheado puede parecer sesión vigente | `PASS-UX-012` + materialización propietaria de bootstrap PASS | snapshot local queda marcado como transitorio y las acciones protegidas esperan revalidación autoritativa |
+| `useUserData` cachea `loyalty_points: 0` después de error | fallo puede reducir saldo visible y contaminar caché | materialización PASS del hook compartido | error conserva unknown o último confirmado; cero solo proviene de respuesta válida |
+| `useTotalEarnedPoints` cachea `0` después de fallo RPC | tier/progreso puede degradarse por una indisponibilidad | materialización PASS del hook compartido | total ganado conserva unknown/stale o valor confirmado; cero exige fuente válida |
+| `useLoyaltyTransactions` vacía el array ante error | historial fallido puede aparecer como “sin movimientos” | materialización de `VSCREEN-0111` | hook/superficie exponen error separado y conservan último snapshot permitido |
+| `useLoyaltyRedemptions` vacía el array ante error y no expone gap Realtime a la UI | redenciones/QR pueden desaparecer o parecer inexistentes | materialización de `VSCREEN-0110/0111` | lectura, empty, stale y stream gap son estados distintos y reconciliables |
+| `useSatelliteExperiences` conserva caché pública persistida pero no expone claramente frescura al caller | datos anteriores pueden verse actuales | materialización de `VSCREEN-0160/0161` | snapshot indica última verificación/limitación y no autoriza oferta o elegibilidad actual |
+| `useLoyaltyRewards` usa caché por sede y error separado, pero callers pueden mezclar error/vacío | catálogo vacío puede ocultar fallo | materialización de `VSCREEN-0109` | precedencia recovery antes de empty y stale visible cuando exista snapshot seguro |
+| `OrderTrackingScreen` silencia fallo de `get_order_delivery_pin` | fallo técnico puede parecer espera normal | materialización de `VSCREEN-0167` | `PIN pendiente` solo se muestra cuando la fuente lo confirma; fallo de lectura usa recuperación local |
+| tracking usa Realtime sin estado visible de continuidad | gap puede dejar snapshot desactualizado sin señal | materialización de `VSCREEN-0167` | stream degradado conserva `as_of`, solicita snapshot y no genera estado terminal por inferencia |
+| `OrderChatScreen` clasifica estados del canal como “offline” | fallo de stream puede presentarse como diagnóstico de red global | materialización de `VSCREEN-0168` | UI describe conexión del chat/stream y no afirma offline global sin evidencia |
+| `OrderChatScreen` restaura draft ante error de envío | patrón positivo puede perderse durante refactor | materialización de `VSCREEN-0168` | draft sigue preservado y separado de mensaje aceptado; unknown no se reenvía a ciegas |
+| `AppErrorBoundary` renderiza excepción cruda y su retry solo resetea UI | exposición técnica y riesgo de repetir una acción sin saber su resultado | materialización de superficie global de recovery PASS | copy seguro + reset de UI + consulta/reconciliación de cualquier operación pendiente antes de repetir |
+
+Los propietarios físicos anteriores se resuelven dentro del lifecycle E5 correspondiente; esta tarea documental no selecciona, abre ni autoriza un package.
+
+---
+
+#### 32. Handoff hacia pruebas con clientes reales
+
+`PASS-UX-013` recibe de esta tarea escenarios observables, no implementación asumida.
+
+La prueba con clientes deberá poder evaluar, cuando exista prototipo/runtime materializado:
+
+- si el cliente distingue carga de error;
+- si comprende cuándo ve información anterior;
+- si sabe cuándo una acción fue enviada o todavía no;
+- si evita repetir una operación con resultado incierto;
+- si puede continuar después de un error sin perder su trabajo;
+- si reconoce la diferencia entre “reconectando” y resultado empresarial;
+- si un estado vacío se entiende como ausencia real y no como fallo;
+- si una actualización o reautenticación mantiene una salida clara;
+- si la interfaz móvil presenta una sola acción principal de recuperación;
+- si el comportamiento conserva contexto sin saturar la pantalla.
+
+`PASS-UX-012` no ejecuta esas sesiones ni declara comprensión demostrada.
+
+---
+
+#### 33. Responsabilidades posteriores y fronteras
+
+| Responsabilidad | Propietario |
+| --- | --- |
+| validación con clientes reales | `PASS-UX-013` |
+| semántica autoritativa de acumulación | `PASS-INT-001` |
+| semántica autoritativa e idempotencia de redención | `PASS-INT-002` |
+| administración de productos de fidelización | `PASS-INT-003` |
+| identidad/cliente e integraciones relacionadas | `PASS-INT-004` y `PASS-INT-005` según alcance canónico |
+| pagos, pedidos, delivery y mutaciones operativas | contratos PULSO/INT propietarios ya aprobados |
+| política transversal de pantalla ante recuperación | `PROC-SCREEN-018..021` |
+| conectividad degradada y offline por capacidad | `UX-BASE-013` |
+| reanudación después de interrupciones | `UX-BASE-014` |
+| implementación física de estos contratos en PASS | packages E5 propietarios resueltos por el pipeline canónico; esta tarea no selecciona package |
+
+---
+
+#### 34. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** los contratos transversales vigentes ya cubren precedencia entre vacío, carga, bloqueo y recuperación; preservación del último estado confirmado; frescura; conectividad por capacidad; offline; retry seguro; idempotencia; resultado desconocido; Realtime; reanudación; cache; privacidad y no duplicación. La tarea especializa esas obligaciones para PASS y cierra decisiones de presentación móvil sin introducir una regla verificable nueva ni cambiar un requisito existente.
+
+---
+
+#### 35. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-UX-002` para explicación humana de errores, bloqueos y fallos parciales con estado preservado y recuperación;
+- `TREQ-UX-006` para recuperación segura ante pérdida de red, sesión, dispositivo o proveedor;
+- `TREQ-UX-250` a `TREQ-UX-273` para vector de conectividad, política por capacidad, frescura, caché, offline, reconexión, idempotencia y sincronización;
+- `TREQ-UX-274` a `TREQ-UX-296` para checkpoint, interrupciones, reanudación, borradores, receipts, resultado unknown, cambio de actor/contexto y conflictos;
+- `TREQ-UX-1097` a `TREQ-UX-1130` para perfiles de recuperación, preservación, retry, Realtime, offline, parcialidad y evidencia terminal de pantallas;
+- `TREQ-PASS-006` para convergencia de experiencia entre rutas y sedes;
+- `TREQ-PASS-008` para mutaciones de puntos/redención autorizadas, atómicas e idempotentes;
+- `TREQ-PASS-009` para pagos e intentos concurrentes/duplicados/tardíos con resultado reconciliable;
+- `TREQ-PASS-010` para ledger reconciliable, proyección de saldo y no duplicación de puntos o beneficios;
+- `TREQ-PASS-011` para casos, mensajes, reservas y comunicaciones con estados y fallback trazables;
+- `TREQ-PASS-032` para que procesamiento, éxito y error correspondan al resultado confirmado y distingan duplicado, conflicto, denegación y already-applied;
+- `TREQ-PASS-033` para que fallos del soporte laboral no degraden la experiencia cliente;
+- `TREQ-PASS-038`, `TREQ-PASS-041` y `TREQ-PASS-042` para superficies lógicas, reconciliación `VSCREEN-*` y detección de deriva runtime;
+- `TREQ-INTEGRATION-003` para idempotencia, correlación, resultado recuperable y tratamiento seguro de operaciones asíncronas/reintentables.
+
+Esta sección registra cobertura heredada y no modifica el Registro 04A.
+
+---
+
+#### 36. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación posterior de esta preparación en la rama propia de `PASS-UX-012`. |
+| LOCAL | `NOT_EXECUTED` | No se ha abierto ni reemplazado `PASS-UX-012` en el checkout del usuario y no se ejecutaron formateador, quality ni delivery check sobre el repositorio modificado. |
+| REMOTA | `PASS` | Se verificaron `vento-shell/main`, owner PASS, continuidad, topología `DEFINE_ONCE`, `PASS-UX-010` incorporada, `PASS-UX-011` aprobada como base inmediata, contratos `PROC-SCREEN-018..021`, `UX-BASE-013`, `UX-BASE-014`, Registro 04A PASS, `vento-pass/main` y runtime representativo de bootstrap, caché, puntos, historial, redenciones, satélites, actualización, error boundary, tracking y chat. |
+| OPERATIVA | `NOT_EXECUTED` | No se forzó pérdida real de red, degradación de servicio, timeout, background, restart, update, Realtime gap, pago/redención unknown, cache stale ni reanudación en staging o dispositivo físico. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-UX-012` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; no crea una unidad física propia que certificar. |
+
+---
+
+#### 37. Criterios de aceptación
+
+- [x] Se desarrolla exactamente `PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación`.
+- [x] Se preservan las diecinueve identidades `VSCREEN-*` PASS sin crear nuevas pantallas.
+- [x] Se consume sin modificar la navegación aprobada en `PASS-UX-011`.
+- [x] Se conserva la precedencia bloqueo → carga → recuperación → contenido → vacío.
+- [x] Error, vacío, carga, stale, parcialidad, bloqueo y resultado unknown permanecen distintos.
+- [x] Carga inicial, carga de sección y background refresh tienen tratamientos diferentes.
+- [x] Refresh con snapshot seguro conserva contenido en lugar de blanquear la pantalla.
+- [x] No existe spinner infinito: la espera fuera de contrato transfiere a recuperación.
+- [x] Los TTL AS-IS no se convierten en definición empresarial de frescura.
+- [x] `loyalty_points: 0` y total ganado `0` no pueden fabricarse desde un error.
+- [x] Error de historial/redenciones no puede convertirse en lista vacía confirmada.
+- [x] La caché conserva identidad, alcance y frescura y no concede autoridad adicional.
+- [x] PASS no declara un modo offline global; la política se decide por capacidad.
+- [x] No se declara ninguna mutación cliente PASS offline-capable sin outbox durable demostrada.
+- [x] Stream degradado no equivale a dispositivo offline.
+- [x] Realtime gap conserva último snapshot confirmado y exige snapshot/cursor reconciliado.
+- [x] Retry automático queda limitado a lecturas idempotentes según contrato propietario.
+- [x] Resultado incierto de mutación exige status/reconciliación antes de repetir.
+- [x] Doble toque/replay no genera un segundo efecto mientras una acción está pendiente.
+- [x] Borradores y selecciones seguras se preservan sin convertirlas en estado empresarial.
+- [x] Reanudar revalida sesión, contexto, recurso, versión y operaciones pendientes.
+- [x] Sesión/perfil cacheados no sustituyen validación viva para acciones protegidas.
+- [x] Actualización requerida y opcional conservan naturalezas distintas.
+- [x] `AppErrorBoundary` se trata como recuperación de UI y no como rollback/retry de dominio.
+- [x] PIN no emitido se diferencia de fallo al consultar PIN.
+- [x] Pago pendiente se diferencia de fallo de consulta y rechazo confirmado.
+- [x] Chat preserva draft, pero no se declara cola offline de mensajes sin evidencia.
+- [x] Las capacidades no materializadas `VSCREEN-0169`, `VSCREEN-0170` y `VSCREEN-0172` no se presentan como implementadas.
+- [x] `PASS-UX-013` conserva ownership de pruebas con clientes reales.
+- [x] No se crean ni modifican TREQ.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza código, datos, Supabase, Realtime, colas, packages, implementación física, piloto ni despliegue.
+
+---
+
+#### 38. Límites
+
+Esta tarea no:
+
+- modifica `App.js`, `AppErrorBoundary.js`, `AppUpdateGate.js`, hooks, pantallas ni componentes;
+- crea un enum físico de estados móviles;
+- crea Network Monitor, Service Worker, background task, outbox, queue, job o mecanismo de sincronización;
+- define número exacto de retries, timeout, backoff, jitter, `retry-after`, TTL o expiración empresarial;
+- canoniza los 60 segundos observados en cachés AS-IS;
+- convierte `AsyncStorage` en fuente autoritativa;
+- declara una sesión cacheada como vigente;
+- habilita mutaciones offline;
+- inventa `idempotency_key`, receipt, cursor o referencia si el contrato propietario no los entrega;
+- implementa reconciliation de pagos, redenciones, mensajes o tracking;
+- cambia navegación, aliases, deep links, nombres de stack o feature flags;
+- crea rutas para reclamos, reservas o notificaciones todavía no materializadas;
+- modifica lógica de saldo, tier, reward, elegibilidad, pago, pedido, entrega o privacidad;
+- redefine `PROC-SCREEN-018..021`, `UX-BASE-013` ni `UX-BASE-014`;
+- cambia copy final ya gobernado por `PASS-UX-010` salvo exigir compatibilidad semántica con el estado real;
+- ejecuta pruebas con clientes reales;
+- crea requisitos de prueba;
+- modifica 04A;
+- autoriza packages, implementación física, CI022, piloto o rollout;
+- desarrolla `PASS-UX-013`.
+
+---
+
+#### 39. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-UX-011 — Consolidar navegación y rutas canónicas de la experiencia cliente`
+
+**TAREA ACTUAL APROBADA**
+`PASS-UX-012 — Simplificar interfaz móvil, estados de carga, error, offline y recuperación`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-UX-013 — Ejecutar pruebas con clientes reales`
 ### [ ] PASS-UX-013 — Ejecutar pruebas con clientes reales
