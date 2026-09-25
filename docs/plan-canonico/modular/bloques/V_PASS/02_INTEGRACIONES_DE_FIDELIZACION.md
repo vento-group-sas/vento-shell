@@ -1181,6 +1181,801 @@ Esta tarea no:
 
 **SIGUIENTE TAREA RESERVADA**
 `PASS-INT-003 — Definir administración laboral de productos de fidelización`
-### [ ] PASS-INT-003 — Definir administración laboral de productos de fidelización
+### ✅ PASS-INT-003 — Definir administración laboral de productos de fidelización
+
+**Estado:** APROBADA
+**Tarea anterior:** PASS-INT-002 — Definir integración PULSO → PASS para redención
+**Tarea siguiente:** PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
+**Tipo de tarea:** documental; define una sola vez el contrato de administración laboral de productos de fidelización gobernados por PASS, incluyendo identidad y taxonomía del recurso, ownership empresarial, autorización base, alcance administrativo, borrador, versión, revisión, activación/publicación, vigencia, elegibilidad, costo en puntos, límites, aplicabilidad territorial/comercial, referencias a producto maestro, retiro, concurrencia, auditoría, recuperación y handoff hacia implementación sin crear una instancia física propia; `DEFINE_ONCE` / `NO_PHYSICAL_INSTANCE`
+**Bloque:** BLOQUE V — PASS — INTEGRACIONES DE FIDELIZACIÓN
+**Repositorio propietario:** `vento-group-sas/vento-shell`
+**Archivo propietario:** `docs/plan-canonico/modular/bloques/V_PASS/02_INTEGRACIONES_DE_FIDELIZACION.md`
+**Estado físico resultante:** `NO_PHYSICAL_INSTANCE`
+**Cambios físicos autorizados:** ninguno; esta tarea no modifica `vento-pass`, `vento-viso`, `vento-pulso`, `vento-nexo`, `vento-fogo`, Supabase, tablas, RPC, RLS, contratos, permisos, rutas, pantallas, campañas, catálogo maestro, reglas runtime, packages, datos, secretos ni despliegues
+**Requisitos de prueba creados o modificados:** 0
+
+---
+
+#### 1. Propósito
+
+Definir el contrato canónico mediante el cual un trabajador explícitamente autorizado puede consultar y administrar productos de fidelización gobernados por PASS sin convertir la interfaz laboral, una campaña, un producto maestro, una sede o un permiso de lectura en fuente paralela de beneficios, reglas o autoridad de mutación.
+
+El resultado debe permitir que implementación y pruebas posteriores respondan de forma inequívoca:
+
+```text
+¿QUÉ ES UN PRODUCTO DE FIDELIZACIÓN?
+¿QUIÉN ES SU PROPIETARIO EMPRESARIAL?
+¿QUIÉN PUEDE CONSULTARLO Y QUIÉN PUEDE MODIFICARLO?
+¿QUÉ ALCANCE ADMINISTRATIVO APLICA?
+¿CÓMO SE VERSIONAN REGLAS, VIGENCIAS Y CONDICIONES?
+¿CÓMO SE PUBLICA O RETIRA SIN REESCRIBIR HISTORIA?
+¿CÓMO SE RELACIONA CON PRODUCTOS, SEDES, CAMPAÑAS Y DISPONIBILIDAD?
+¿QUÉ OCURRE ANTE EDICIONES CONCURRENTES O RESULTADOS INCIERTOS?
+¿CÓMO SE AUDITA Y SE RECUPERA UNA DECISIÓN ADMINISTRATIVA?
+```
+
+PASS conserva la propiedad del beneficio, la recompensa, la regla de fidelización y su versión. La superficie laboral administra esa fuente mediante autorización canónica y no adquiere ownership empresarial por presentarla.
+
+---
+
+#### 2. Reconciliación topológica
+
+`PASS-INT-003` pertenece al mini-bloque `PASS-INT-001..005`, cuya reconciliación vigente establece:
+
+```text
+DEFINE_ONCE
++
+NO_PHYSICAL_INSTANCE
+```
+
+Por tanto, esta tarea define contrato, responsabilidades, invariantes, estados semánticos y handoff. No implementa pantallas, permisos, tablas, RPC, migraciones ni flujos reales de administración.
+
+La materialización posterior pertenece a las aplicaciones, consumidores y packages propietarios, junto con los gates de autorización, datos, integración y UX administrativa aplicables.
+
+---
+
+#### 3. Base documental consumida
+
+La base inmediata es `PASS-INT-002`, que cerró el contrato PULSO → PASS para redención y reservó explícitamente la administración laboral de productos de fidelización para `PASS-INT-003`.
+
+Esta tarea conserva además decisiones canónicas ya vigentes:
+
+- PASS es propietaria de beneficios y reglas de fidelización;
+- la proyección visible al cliente no es una fuente distinta del beneficio;
+- una recompensa, un cupón, una promoción, una cortesía, una membresía, un nivel, puntos y un beneficio por campaña conservan identidades distintas;
+- el producto y sus atributos maestros pertenecen a NEXO;
+- disponibilidad y capacidad operacional permanecen en NEXO/FOGO según el hecho;
+- PULSO conserva la ejecución comercial y no administra el maestro de fidelización;
+- NUMERA conserva costo, margen, presupuesto y resultado económico;
+- AURA conserva intención promocional únicamente cuando su continuidad esté autorizada y no adquiere ownership del beneficio;
+- cambios de reglas son prospectivos y no reescriben ledger, redenciones ni evidencia histórica;
+- la visibilidad de un beneficio no demuestra elegibilidad efectiva ni redención consumida.
+
+---
+
+#### 4. Definición canónica de producto de fidelización
+
+Para esta tarea, `LOYALTY_PRODUCT` es el recurso administrativo que representa una definición gobernada por PASS capaz de producir o describir un beneficio de fidelización bajo reglas explícitas.
+
+El término es una envolvente administrativa y no colapsa la taxonomía del dominio.
+
+Se conserva:
+
+```text
+PUNTOS
+!=
+RECOMPENSA
+!=
+CUPÓN
+!=
+NIVEL
+!=
+MEMBRESÍA
+!=
+PROMOCIÓN
+!=
+CORTESÍA
+!=
+BENEFICIO POR CAMPAÑA
+```
+
+Cada identidad conserva su semántica, regla, versión, aplicabilidad y efectos propios. Una interfaz común de administración no autoriza a tratarlas como el mismo objeto empresarial.
+
+---
+
+#### 5. Ownership empresarial
+
+La propiedad se conserva así:
+
+| Materia | Propietaria o autoridad | Frontera |
+| --- | --- | --- |
+| beneficio, recompensa y regla de fidelización | `PASS` | fuente canónica del dominio de fidelización |
+| proyección visible al cliente | `PASS` | deriva de beneficio/regla/versión; no crea otra fuente |
+| producto y atributos maestros | `NEXO` | PASS solo conserva referencias autorizadas |
+| disponibilidad o capacidad operacional | `NEXO` / `FOGO` según el hecho | no se edita como dato PASS |
+| pedido, venta y efecto comercial | `PULSO` | no administra el maestro de fidelización |
+| costo, margen, presupuesto y resultado económico | `NUMERA` | no publica ni redime beneficios |
+| intención promocional y campaña | `AURA`, cuando su gate lo permita | puede referenciar; no posee el beneficio |
+| autorización laboral | catálogo y evaluadores canónicos de autorización | no cambia el ownership del recurso |
+
+Ninguna superficie administrativa puede duplicar estas fuentes ni escribir cruzadamente sobre dominios ajenos para “completar” un producto de fidelización.
+
+---
+
+#### 6. Administración laboral versus experiencia de cliente
+
+La administración laboral y la experiencia PASS de cliente son contextos separados.
+
+```text
+SUPERFICIE LABORAL DE ADMINISTRACIÓN
+!=
+CATÁLOGO VISIBLE AL CLIENTE
+```
+
+Un trabajador autorizado administra definiciones empresariales. Un cliente consulta únicamente la proyección que le corresponde.
+
+Por tanto:
+
+- una cuenta PASS de cliente no concede acceso laboral;
+- un trabajador no obtiene identidad de cliente por administrar productos;
+- una pantalla de cliente no concede autoridad para crear, modificar, activar o retirar beneficios;
+- una vista laboral no permite actuar como cliente ni fabricar redenciones;
+- los datos administrativos no se exponen íntegramente en la proyección cliente.
+
+`PASS-INT-004` conserva ownership de administración laboral de clientes y `PASS-INT-005` de separación cliente/trabajador.
+
+---
+
+#### 7. Recurso y alcance administrativo
+
+El recurso canónico de autorización observado para consulta es:
+
+```text
+LOYALTY_PRODUCT
+```
+
+con identidad lógica:
+
+```text
+loyalty_product_id
+```
+
+El alcance administrativo vigente es `CLIENT_CONFIG_SCOPE`, donde el recurso puede pertenecer a:
+
+- organización;
+- negocio;
+- campaña cuando exista correlación autorizada;
+- sede o conjunto territorial únicamente como aplicabilidad declarada por el recurso.
+
+La sede de actividad de un trabajador no se convierte automáticamente en ownership territorial del producto de fidelización.
+
+`employee_sites` no constituye por sí mismo el límite obligatorio de este recurso.
+
+---
+
+#### 8. Modalidad de autorización
+
+La administración laboral de productos de fidelización pertenece al carril base.
+
+La capacidad de consulta canónica observada:
+
+```text
+viso.loyalty.products.view
+```
+
+es:
+
+```text
+BASE_ONLY
+```
+
+Por tanto:
+
+- no depende de turno;
+- no depende de check-in;
+- no se transforma en permiso operativo por abrir PULSO o PASS;
+- no se concede a roles operativos por inferencia;
+- requiere responsabilidad laboral específica y finalidad autorizada;
+- conserva el alcance exacto permitido para el recurso.
+
+La autorización base no equivale a globalidad irrestricta.
+
+---
+
+#### 9. Lectura no implica mutación
+
+Se conserva obligatoriamente:
+
+```text
+viso.loyalty.products.view
+!=
+AUTORIDAD PARA CREAR
+!=
+AUTORIDAD PARA MODIFICAR
+!=
+AUTORIDAD PARA PUBLICAR
+!=
+AUTORIDAD PARA RETIRAR
+```
+
+La existencia de un permiso de lectura no autoriza ninguna mutación.
+
+Esta tarea no inventa nombres de permisos de escritura, aprobación o publicación. La implementación futura solo podrá habilitar esas acciones cuando exista una capacidad canónica explícita, con modalidad, alcance, actor, evaluación y evidencia definidos.
+
+Mientras esa capacidad no pueda resolverse de forma válida, la acción mutante deberá fallar cerrada.
+
+---
+
+#### 10. Capacidades administrativas semánticas
+
+La administración de un producto de fidelización puede requerir, según el tipo de recurso y siempre bajo autorización explícita:
+
+- crear un borrador;
+- consultar detalle y versiones;
+- modificar un borrador no publicado;
+- preparar una nueva versión de una definición vigente;
+- definir nombre y presentación administrativa;
+- definir tipo de beneficio o recompensa sin colapsar taxonomías;
+- definir costo en puntos cuando aplique;
+- configurar condiciones, límites y exclusiones;
+- configurar elegibilidad declarativa;
+- definir vigencia y expiración;
+- definir aplicabilidad por negocio, marca, sede o canal cuando corresponda;
+- relacionar referencias autorizadas a producto u oferta;
+- configurar cupo o límite lógico cuando el dominio lo contemple;
+- revisar impacto y diferencias entre versiones;
+- aprobar o publicar cuando exista autoridad separada;
+- despublicar, retirar o programar vencimiento;
+- consultar historial y auditoría.
+
+La lista define semántica, no nombres físicos de endpoints, tablas, RPC ni permisos.
+
+---
+
+#### 11. Contrato conceptual mínimo
+
+Un producto de fidelización administrable debe poder conservar, según aplicabilidad:
+
+- identidad estable;
+- tipo semántico;
+- nombre y descripción gobernados;
+- regla de fidelización;
+- versión de regla;
+- estado administrativo;
+- vigencia o expiración;
+- costo o relación en puntos cuando aplique;
+- condiciones de elegibilidad;
+- límites y exclusiones;
+- alcance organizacional/comercial;
+- aplicabilidad por sede/canal cuando exista;
+- referencia a producto u oferta, sin copiar su maestro;
+- referencia opcional a campaña autorizada;
+- cuota, límite o restricción lógica cuando aplique;
+- fuente de disponibilidad externa cuando sea necesaria;
+- versión/proyección visible vigente;
+- actor y decisión administrativa;
+- fechas autoritativas y correlación de auditoría.
+
+Este contrato es conceptual y no define columnas físicas.
+
+---
+
+#### 12. Borrador, versión, revisión y publicación
+
+La administración deberá separar como mínimo los siguientes momentos semánticos:
+
+```text
+BORRADOR
+->
+REVISIÓN
+->
+VERSIÓN APROBADA
+->
+PUBLICACIÓN / ACTIVACIÓN
+```
+
+cuando el tipo de producto requiera todos esos pasos.
+
+No se presupone que esos nombres sean enums físicos.
+
+Invariantes:
+
+- un borrador no visible no se trata como beneficio publicado;
+- revisar no equivale a publicar;
+- publicar no equivale a ejecutar una redención;
+- retirar visibilidad no elimina historia;
+- una versión activa conserva su identidad y vigencia;
+- una modificación material a una versión activa produce una nueva versión cuando pueda alterar condiciones o interpretación histórica.
+
+---
+
+#### 13. Versionado y no reescritura histórica
+
+Se conserva:
+
+```text
+CAMBIO DE REGLA
+->
+NUEVA VERSIÓN PROSPECTIVA
+```
+
+No se admite:
+
+```text
+CAMBIO DE REGLA
+->
+REESCRIBIR MOVIMIENTOS O REDENCIONES HISTÓRICAS
+```
+
+Una acumulación, redención, expiración, ajuste, reversión o compensación ya ejecutados deben conservar la regla y versión que explican el efecto aplicado.
+
+Cambios de nombre, costo en puntos, condiciones, vigencia, límites, exclusiones o aplicabilidad no alteran retroactivamente evidencia histórica.
+
+---
+
+#### 14. Alta y deduplicación
+
+Crear un producto de fidelización exige una identidad empresarial nueva solo cuando no exista ya el mismo recurso lógico.
+
+La administración futura deberá impedir, según corresponda:
+
+- crear dos beneficios equivalentes por doble envío;
+- duplicar un recurso por refresh o retry;
+- reutilizar un identificador con semántica incompatible;
+- crear una recompensa nueva únicamente porque cambió su proyección visible;
+- crear otro beneficio por cada campaña que lo referencie;
+- copiar un producto NEXO dentro de PASS para usarlo como recompensa.
+
+Un retry de la misma operación administrativa debe poder recuperar el resultado ya creado o actualizado sin producir otro recurso empresarial.
+
+---
+
+#### 15. Elegibilidad
+
+La administración puede definir condiciones de elegibilidad, pero la elegibilidad efectiva se evalúa contra hechos vigentes al momento de uso.
+
+Se conserva:
+
+```text
+REGLA CONFIGURADA
+!=
+CLIENTE ELEGIBLE AHORA
+```
+
+La elegibilidad puede depender, según contrato, de:
+
+- cliente o relación PASS;
+- marca o negocio;
+- sede o canal;
+- vigencia;
+- saldo o estado de fidelización;
+- límites de uso;
+- producto u oferta referenciada;
+- pedido o venta;
+- disponibilidad o capacidad;
+- condiciones comerciales autorizadas.
+
+La pantalla administrativa no fabrica los hechos externos usados por esas condiciones.
+
+---
+
+#### 16. Costo en puntos y reglas de fidelización
+
+El costo en puntos, cuando exista, pertenece a la regla de fidelización y debe quedar versionado.
+
+La administración puede configurar esa regla dentro del dominio PASS, pero no puede:
+
+- fijar saldo de un cliente;
+- insertar directamente movimientos de ledger;
+- ejecutar una acumulación;
+- ejecutar una redención;
+- convertir el costo en puntos en costo económico;
+- cambiar el efecto histórico de tickets o movimientos ya emitidos bajo otra versión.
+
+`PASS-INT-001` y `PASS-INT-002` conservan la ejecución runtime de acumulación y redención.
+
+---
+
+#### 17. Aplicabilidad por sede, negocio y canal
+
+Una definición puede declarar aplicabilidad territorial o comercial sin convertir la sede del trabajador administrador en fuente de verdad.
+
+La administración deberá distinguir:
+
+```text
+ALCANCE DE AUTORIZACIÓN DEL TRABAJADOR
+!=
+APLICABILIDAD DEL BENEFICIO
+```
+
+Un trabajador puede estar autorizado a administrar un conjunto empresarial que incluye varias sedes, mientras cada beneficio conserva su propia aplicabilidad.
+
+Una sede retirada de la aplicabilidad futura no borra redenciones, movimientos o evidencia originados cuando la versión anterior era válida.
+
+---
+
+#### 18. Frontera con producto maestro, disponibilidad y capacidad
+
+Cuando una recompensa o beneficio se refiera a un producto físico/comercial, PASS conserva una referencia autorizada y no replica el maestro.
+
+Se mantiene:
+
+```text
+LOYALTY_PRODUCT
+!=
+PRODUCTO MAESTRO NEXO
+!=
+INVENTARIO
+!=
+CAPACIDAD PRODUCTIVA
+```
+
+La administración PASS no puede declarar como verdad propia:
+
+- existencia de producto;
+- SKU maestro;
+- atributos físicos maestros;
+- stock disponible;
+- capacidad comprometible;
+- receta o composición;
+- restricción técnica;
+- disponibilidad operacional actual.
+
+Esos hechos se consumen desde su propietaria cuando la regla lo necesite.
+
+---
+
+#### 19. Frontera con AURA y campañas
+
+Un producto de fidelización puede existir sin campaña.
+
+Cuando exista una campaña autorizada:
+
+```text
+CAMPAÑA AURA
+->
+REFERENCIA A BENEFICIO PASS
+```
+
+No se admite:
+
+```text
+CAMPAÑA AURA
+->
+ESCRITURA DIRECTA DEL BENEFICIO PASS
+```
+
+La administración laboral puede conservar una referencia de correlación, pero no convierte:
+
+- campaña en beneficio;
+- beneficio en campaña;
+- AURA en propietaria de fidelización;
+- PASS en propietaria de intención promocional.
+
+Mientras AURA permanezca diferida, PASS no depende de ella para crear o administrar beneficios propios.
+
+---
+
+#### 20. Frontera con PULSO
+
+PULSO consume reglas y resultados autorizados para ejecutar la operación comercial.
+
+PULSO no puede:
+
+- administrar el maestro de fidelización;
+- modificar una regla para hacer pasar una venta;
+- activar un beneficio desde caja;
+- cambiar vigencia o costo en puntos;
+- publicar una recompensa;
+- convertir un estado local en versión PASS vigente.
+
+La validación comercial del efecto permanece fuera de esta tarea y debe revalidar la versión aplicable antes de ejecutar un efecto.
+
+---
+
+#### 21. Publicación y proyección visible
+
+Publicar un producto de fidelización significa habilitar una proyección gobernada por PASS para los clientes o consumidores autorizados.
+
+Se conserva:
+
+```text
+FUENTE PASS
+->
+BENEFICIO + REGLA + VERSIÓN
+->
+PROYECCIÓN PUBLICADA
+```
+
+La proyección no puede convertirse en fuente independiente.
+
+Además:
+
+```text
+VISIBLE
+!=
+ELEGIBLE
+!=
+REDIMIDO
+```
+
+La publicación no reserva puntos, no descuenta puntos, no crea una redención, no marca una redención como usada y no modifica ledger.
+
+---
+
+#### 22. Cupos, límites y disponibilidad
+
+Cuando el producto de fidelización incluya cupo o límite lógico, la administración puede versionar su configuración, pero el runtime debe confirmar el estado autoritativo antes de ejecutar efectos.
+
+Cuando la disponibilidad dependa de producto, inventario o capacidad externa:
+
+- PASS no copia la disponibilidad como maestro;
+- la configuración puede declarar la dependencia;
+- la publicación puede mostrar una proyección con frescura gobernada;
+- la elegibilidad efectiva debe revalidar la fuente propietaria cuando corresponda;
+- una proyección desactualizada no obliga a PULSO a cumplir un efecto imposible.
+
+---
+
+#### 23. Concurrencia, idempotencia y conflicto administrativo
+
+Las mutaciones futuras deberán impedir que dos actores o dos requests silenciosamente sobrescriban una versión vigente.
+
+Como mínimo:
+
+- la misma operación reintentada conserva una identidad estable cuando sea material;
+- un retry no crea una segunda versión equivalente;
+- un identificador reutilizado con contenido incompatible produce conflicto;
+- una edición basada en una versión obsoleta no reemplaza silenciosamente cambios posteriores;
+- publicar dos revisiones concurrentes no puede dejar dos versiones vigentes incompatibles cuando el contrato admita solo una;
+- un timeout posterior al commit se trata como resultado desconocido hasta recuperar el resultado durable.
+
+Esta tarea no define el mecanismo físico de locking o compare-and-swap.
+
+---
+
+#### 24. Corrección, retiro, vencimiento y rollback
+
+Se conserva:
+
+```text
+CORREGIR
+!=
+BORRAR HISTORIA
+```
+
+```text
+RETIRAR VISIBILIDAD
+!=
+ANULAR MOVIMIENTOS
+```
+
+```text
+VENCER BENEFICIO
+!=
+BORRAR REDENCIONES
+```
+
+Una corrección material crea la versión prospectiva necesaria.
+
+Retirar o vencer impide efectos futuros según la regla, pero no elimina evidencia histórica ni modifica por sí solo ledger, tickets o ventas existentes.
+
+Un rollback administrativo debe restaurar una versión compatible o publicar una nueva decisión trazable; no debe mutar silenciosamente el contenido histórico de una versión ya aplicada.
+
+---
+
+#### 25. Fallo cerrado y resultados administrativos
+
+La superficie laboral debe distinguir, como mínimo, resultados semánticos de:
+
+- lectura autorizada;
+- lectura denegada;
+- borrador guardado;
+- cambio rechazado por validación;
+- conflicto de versión;
+- aprobación o publicación confirmada;
+- resultado ya aplicado;
+- retiro confirmado;
+- resultado desconocido;
+- fallo técnico.
+
+Una UI optimista no puede presentar publicación o retiro como hecho final antes de confirmación autoritativa.
+
+Falta de permiso, alcance irresoluble, versión incompatible, referencia externa inválida o dependencia crítica no demostrable deben fallar cerrados.
+
+---
+
+#### 26. Auditoría mínima
+
+La administración materializada deberá poder reconstruir, según aplicabilidad:
+
+```text
+QUE LOYALTY_PRODUCT
+QUE TIPO
+QUE REGLA
+QUE VERSION ANTERIOR
+QUE VERSION RESULTANTE
+QUE CAMPOS / CONDICIONES CAMBIARON
+QUE VIGENCIA
+QUE ALCANCE / APLICABILIDAD
+QUE REFERENCIAS EXTERNAS
+QUE ACTOR
+QUE AUTORIDAD / ALCANCE
+QUE ACCION ADMINISTRATIVA
+CUANDO
+QUE RESULTADO
+CON QUE CORRELACION
+```
+
+No se almacenan PIN, tokens, secretos ni información de cliente innecesaria en la auditoría administrativa del producto.
+
+---
+
+#### 27. Experiencia administrativa mínima
+
+La implementación futura deberá permitir que el trabajador autorizado comprenda antes de confirmar una mutación:
+
+- qué recurso está editando;
+- qué versión sirve de base;
+- qué cambió;
+- desde cuándo aplica;
+- a qué organización, negocio, campaña, sede o canal aplica;
+- qué consumidores o efectos pueden verse afectados;
+- qué validaciones externas son requeridas;
+- si está guardando borrador, aprobando, publicando, retirando o corrigiendo;
+- qué resultado autoritativo devolvió el servidor.
+
+Las acciones sensibles deben evitar formularios que mezclen sin separación clara creación, publicación y efectos runtime.
+
+---
+
+#### 28. Separación de responsabilidades dentro del mini-bloque
+
+| Tarea | Responsabilidad |
+| --- | --- |
+| `PASS-INT-001` | contrato PULSO → PASS para acumulación |
+| `PASS-INT-002` | contrato PULSO → PASS para redención |
+| `PASS-INT-003` | administración laboral de productos de fidelización |
+| `PASS-INT-004` | administración laboral de clientes cuando corresponda |
+| `PASS-INT-005` | impedir mezcla de identidad cliente y trabajador |
+
+`PASS-INT-003` no administra clientes individuales y no redefine identidad laboral.
+
+---
+
+#### 29. Handoff hacia implementación
+
+La materialización posterior deberá conservar este contrato en las capas propietarias:
+
+- fuente PASS de productos, beneficios y reglas de fidelización;
+- autorización laboral canónica y sus alcances;
+- superficie administrativa aprobada;
+- contratos de versión, publicación y auditoría;
+- referencias a NEXO/FOGO/PULSO/NUMERA/AURA sin escrituras cruzadas;
+- persistencia y RLS/grants/funciones de Supabase desde `vento-shell` cuando corresponda;
+- contratos y tipos compartidos cuando sean necesarios;
+- proyección cliente PASS;
+- pruebas de autorización, versión, concurrencia, integración y regresión.
+
+La implementación no podrá usar `viso.loyalty.products.view` como sustituto de autoridad mutante.
+
+---
+
+#### 30. Requisitos de prueba derivados
+
+**Resultado:** NO GENERA REQUISITOS DE PRUEBA
+
+**Requisitos creados:** 0
+**Requisitos modificados:** 0
+**Requisitos diferidos:** 0
+**Requisitos obsoletos:** 0
+**Fragmentos del Registro 04A afectados:** 0
+
+**Justificación:** las obligaciones verificables de ownership PASS, reglas/versiones, consistencia de recompensas, fuente empresarial única, autorización explícita, alcance, auditoría, idempotencia, integración y protección del ledger ya están cubiertas por requisitos canónicos vigentes. Esta tarea organiza esas obligaciones para la administración laboral de `LOYALTY_PRODUCT` sin introducir una conducta material nueva que requiera otra fila de prueba.
+
+---
+
+#### 31. Cobertura de prueba vigente reutilizada
+
+Sin modificar el Registro 04A, se reutiliza principalmente:
+
+- `TREQ-PASS-004` para impedir divergencia de metadatos administrables de sede consumidos por PASS;
+- `TREQ-PASS-006` para conservar recompensas y experiencia comercial coherentes por sede y ruta;
+- `TREQ-PASS-010` para reglas/versiones de fidelización, ledger inmutable y efectos reconciliables;
+- `TREQ-PASS-025` para que acumulación runtime use reglas vigentes sin conceder mutación de ledger a la administración;
+- `TREQ-PASS-027` para que redención runtime valide recompensa, sede, vigencia y estado vigentes;
+- `TREQ-AUTH-001` para autorización mediante permiso, contexto y alcance canónicos;
+- `TREQ-AUTH-004` para equivalencia de decisiones entre evaluadores;
+- `TREQ-AUTH-015` para evidencia correlacionable de decisiones protegidas;
+- `TREQ-INTEGRATION-003` para identidad estable, idempotencia, retry y recuperación de resultados;
+- `TREQ-INTEGRATION-006` para preservar una sola fuente empresarial y evitar maestros competidores;
+- `TREQ-PROC-021` para preservar ownership y evitar duplicidad de responsabilidades entre dominios.
+
+Esta sección es trazabilidad de cobertura existente y no actualiza el Registro 04A.
+
+---
+
+#### 32. Evidencia de validación
+
+| Clase | Estado | Evidencia |
+| --- | --- | --- |
+| BUILD | `NOT_EXECUTED` | La compilación documental real corresponde a la incorporación de `PASS-INT-003` mediante los scripts canónicos. |
+| LOCAL | `NOT_EXECUTED` | La tarea todavía no ha sido insertada en un checkout para ejecutar formateador, quality, delivery check, validadores proporcionales y batería global. |
+| REMOTA | `PASS` | Se verificaron en `vento-shell/main` protocolo, contrato de entrega, manifiesto, continuidad, topología/políticas, archivo propietario, permisos `BASE_ONLY`, contrato `LOYALTY_PRODUCT`, experiencia administrativa, fronteras PASS/AURA/PULSO/NEXO/FOGO/NUMERA, cobertura 04A y scripts documentales vigentes. |
+| OPERATIVA | `NOT_EXECUTED` | No se crearon, editaron, publicaron, retiraron ni vencieron productos de fidelización reales y no se probaron actores, concurrencia o flujos runtime. |
+| FÍSICA | `NOT_APPLICABLE` | `PASS-INT-003` es `DEFINE_ONCE / NO_PHYSICAL_INSTANCE`; la implementación pertenece a consumidores/packages posteriores. |
+
+---
+
+#### 33. Criterios de aceptación
+
+- [x] Se define `LOYALTY_PRODUCT` sin confundirlo con producto maestro NEXO.
+- [x] Se preserva la taxonomía entre puntos, recompensa, cupón, nivel, membresía, promoción, cortesía y beneficio por campaña.
+- [x] PASS conserva ownership de beneficio, recompensa y regla de fidelización.
+- [x] La administración laboral queda separada de la experiencia de cliente.
+- [x] Se conserva `CLIENT_CONFIG_SCOPE` y sede como aplicabilidad cuando corresponda, no como ownership automático por `employee_sites`.
+- [x] Se conserva modalidad `BASE_ONLY` para la consulta administrativa vigente.
+- [x] Se declara explícitamente que `viso.loyalty.products.view` no concede mutación.
+- [x] No se inventan permisos de crear, editar, aprobar, publicar o retirar.
+- [x] Se definen capacidades administrativas semánticas sin nombres físicos.
+- [x] Se separan borrador, revisión, versión aprobada y publicación/activación.
+- [x] Los cambios materiales son prospectivos y no reescriben efectos históricos.
+- [x] Se define alta idempotente y conflicto ante identificador reutilizado con contenido incompatible.
+- [x] Se separa regla configurada de elegibilidad efectiva.
+- [x] El costo en puntos queda en la regla PASS y no se confunde con costo económico.
+- [x] Se separa alcance del trabajador de aplicabilidad del beneficio.
+- [x] Se preservan ownership de producto, disponibilidad y capacidad en NEXO/FOGO.
+- [x] Se preserva frontera con AURA sin dependencia obligatoria de campaña.
+- [x] Se preserva PULSO como ejecutora comercial y no administradora del maestro de fidelización.
+- [x] Se define publicación como proyección, no como redención ni movimiento de ledger.
+- [x] Se definen concurrencia, idempotencia y resultado desconocido para mutaciones administrativas futuras.
+- [x] Se preservan corrección, retiro, vencimiento y rollback sin borrado histórico.
+- [x] Se define auditoría mínima sin secretos ni datos de cliente innecesarios.
+- [x] Se conserva ownership de `PASS-INT-004` y `PASS-INT-005`.
+- [x] No se crean ni modifican requisitos de prueba.
+- [x] No se modifica Registro 04A.
+- [x] No se autoriza implementación física ni cambios de Supabase.
+
+---
+
+#### 34. Límites
+
+Esta tarea no:
+
+- implementa una pantalla administrativa;
+- decide una ruta física de VISO o PASS;
+- crea nombres de permisos de mutación;
+- modifica el catálogo canónico de autorización;
+- concede permisos a roles;
+- modifica `loyalty_rewards` ni otra estructura física equivalente;
+- crea tablas, columnas, RPC, triggers, RLS, grants, Edge Functions o migraciones;
+- crea o modifica productos maestros de NEXO;
+- edita inventario o capacidad de NEXO/FOGO;
+- crea campañas de AURA;
+- ejecuta promociones o ventas en PULSO;
+- calcula margen, presupuesto o costo económico de NUMERA;
+- cambia saldo de clientes;
+- inserta, ajusta o revierte ledger;
+- ejecuta acumulaciones o redenciones;
+- administra datos de cliente individual;
+- resuelve identidad cliente/trabajador completa;
+- publica productos reales;
+- declara que una implementación actual ya cumple este contrato;
+- modifica 04A;
+- crea requisitos de prueba;
+- inicia una instancia física o package.
+
+---
+
+#### 35. Continuidad
+
+**ÚLTIMA TAREA APROBADA**
+`PASS-INT-002 — Definir integración PULSO → PASS para redención`
+
+**TAREA ACTUAL APROBADA**
+`PASS-INT-003 — Definir administración laboral de productos de fidelización`
+
+**SIGUIENTE TAREA RESERVADA**
+`PASS-INT-004 — Definir administración laboral de clientes cuando corresponda`
 ### [ ] PASS-INT-004 — Definir administración laboral de clientes cuando corresponda
 ### [ ] PASS-INT-005 — Evitar mezclar identidad cliente y trabajador
